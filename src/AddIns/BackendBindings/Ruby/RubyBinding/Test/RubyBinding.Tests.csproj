@@ -344,10 +344,8 @@
     <Compile Include="Utils\MockEventBindingService.cs" />
     <Compile Include="Utils\MockEventDescriptor.cs" />
     <Compile Include="Utils\MockExtenderProviderService.cs" />
-    <Compile Include="Utils\MockKeyboardDevice.cs" />
     <Compile Include="Utils\MockMethod.cs" />
     <Compile Include="Utils\MockOpenedFile.cs" />
-    <Compile Include="Utils\MockPresentationSource.cs" />
     <Compile Include="Utils\MockProject.cs" />
     <Compile Include="Utils\MockProjectContent.cs" />
     <Compile Include="Utils\MockPropertyDescriptor.cs" />

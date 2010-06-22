@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
 using PythonBinding.Tests;
 

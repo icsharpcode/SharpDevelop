@@ -14,7 +14,6 @@ using System.ComponentModel.Design.Serialization;
 using System.IO;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.FormsDesigner;
-using ICSharpCode.TextEditor.Document;
 
 namespace PythonBinding.Tests.Utils
 {

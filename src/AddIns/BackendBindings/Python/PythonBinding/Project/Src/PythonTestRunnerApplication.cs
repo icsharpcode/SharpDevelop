@@ -17,7 +17,7 @@ namespace ICSharpCode.PythonBinding
 	public class PythonTestRunnerApplication
 	{
 		string testResultsFileName = String.Empty;
-		AddInOptions options;
+		PythonAddInOptions options;
 		PythonStandardLibraryPath pythonStandardLibraryPath;
 		PythonTestRunnerResponseFile responseFile;
 		IPythonFileService fileService;
@@ -25,7 +25,7 @@ namespace ICSharpCode.PythonBinding
 		PythonConsoleApplication consoleApplication;
 		
 		public PythonTestRunnerApplication(string testResultsFileName,
-			AddInOptions options,
+			PythonAddInOptions options,
 			PythonStandardLibraryPath pythonStandardLibraryPath,
 			IPythonFileService fileService)
 		{

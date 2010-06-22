@@ -53,6 +53,12 @@
     <Reference Include="Microsoft.Scripting">
       <HintPath>..\..\RequiredLibraries\Microsoft.Scripting.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -60,14 +66,22 @@
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Src\CommandLineHistory.cs" />
+    <Compile Include="Src\ConsoleTextEditorKeyEventArgs.cs" />
     <Compile Include="Src\ConstructorInfo.cs" />
+    <Compile Include="Src\ControlDispatcher.cs" />
     <Compile Include="Src\ConvertProjectToPythonProjectCommand.cs" />
     <Compile Include="Src\ConvertToPythonMenuCommand.cs" />
     <Compile Include="Src\ApplicationSettingsPanel.cs" />
@@ -75,16 +89,20 @@
     <Compile Include="Src\AddInOptions.cs" />
     <Compile Include="Src\CompilingOptionsPanel.cs" />
     <Compile Include="Src\CreateTextWriterInfo.cs" />
+    <Compile Include="Src\IControlDispatcher.cs" />
     <Compile Include="Src\IPythonFileService.cs" />
     <Compile Include="Src\IPythonResolver.cs" />
     <Compile Include="Src\MemberName.cs" />
     <Compile Include="Src\PythonBuiltInModuleMemberName.cs" />
     <Compile Include="Src\PythonClassResolver.cs" />
+    <Compile Include="Src\PythonConsoleCompletionData.cs" />
     <Compile Include="Src\PythonConsoleApplication.cs" />
+    <Compile Include="Src\PythonConsoleTextEditorKeyEventArgs.cs" />
     <Compile Include="Src\PythonDotNetMethodResolver.cs" />
     <Compile Include="Src\PythonFileService.cs" />
     <Compile Include="Src\PythonFromImport.cs" />
     <Compile Include="Src\PythonImport.cs" />
+    <Compile Include="Src\PythonLanguageBinding.cs" />
     <Compile Include="Src\PythonMethodGroupResolveResult.cs" />
     <Compile Include="Src\PythonMethodResolver.cs" />
     <Compile Include="Src\PythonModuleCompletionItems.cs" />
@@ -105,11 +123,12 @@
     <Compile Include="Src\PythonTestRunner.cs" />
     <Compile Include="Src\PythonTestRunnerApplication.cs" />
     <Compile Include="Src\PythonTestRunnerResponseFile.cs" />
+    <Compile Include="Src\PythonTextEditorViewContent.cs" />
     <Compile Include="Src\SysModuleCompletionItems.cs" />
     <Compile Include="Src\IComponentCreator.cs" />
     <Compile Include="Src\IMemberProvider.cs" />
     <Compile Include="Src\IPadDescriptor.cs" />
-    <Compile Include="Src\ITextEditor.cs" />
+    <Compile Include="Src\IConsoleTextEditor.cs" />
     <Compile Include="Src\NRefactoryToPythonConverter.cs" />
     <Compile Include="Src\PythonAstWalker.cs" />
     <Compile Include="Src\PythonCodeCompletionBinding.cs" />
@@ -151,7 +170,7 @@
     <Compile Include="Src\PythonStandardModules.cs" />
     <Compile Include="Src\PythonVariableResolver.cs" />
     <Compile Include="Src\StringTextContentProvider.cs" />
-    <Compile Include="Src\TextEditor.cs" />
+    <Compile Include="Src\PythonConsoleTextEditor.cs" />
     <None Include="Lib\runpy.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -201,9 +220,9 @@
     <Folder Include="TestRunner" />
     <Folder Include="Templates" />
     <Folder Include="Resources" />
-    <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
-      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
-      <Name>ICSharpCode.TextEditor</Name>
+    <ProjectReference Include="..\..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">

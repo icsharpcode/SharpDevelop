@@ -23,8 +23,8 @@ namespace PythonBinding.Tests.Designer
 	{
 		public override void AfterSetUpFixture()
 		{
-			textEditorProperties.ConvertTabsToSpaces = true;
-			textEditorProperties.IndentationSize = 4;
+			base.textEditorOptions.ConvertTabsToSpaces = true;
+			base.textEditorOptions.IndentationSize = 4;
 			MockEventDescriptor mockEventDescriptor = new MockEventDescriptor("Click");
 			insertedEventHandler = generator.InsertComponentEvent(null, mockEventDescriptor, "button1_click", String.Empty, out file, out position);
 		}
@@ -33,8 +33,9 @@ namespace PythonBinding.Tests.Designer
 		public void ExpectedCodeAfterEventHandlerInserted()
 		{
 			string expectedCode = GetTextEditorCode();			
-			string eventHandler = "    def button1_click(self, sender, e):\r\n" +
-								"        pass";
+			string eventHandler = 
+				"    def button1_click(self, sender, e):\r\n" +
+				"        pass";
 			expectedCode = expectedCode + "\r\n" + eventHandler;
 			
 			Assert.AreEqual(expectedCode, viewContent.DesignerCodeFileContent);

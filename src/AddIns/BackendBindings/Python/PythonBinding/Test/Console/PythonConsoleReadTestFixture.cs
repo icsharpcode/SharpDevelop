@@ -7,11 +7,11 @@
 
 using System;
 using System.Threading;
-using System.Windows.Forms;
+using System.Windows.Input;
 
 using ICSharpCode.PythonBinding;
-using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
+using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Console
 {
@@ -25,14 +25,14 @@ namespace PythonBinding.Tests.Console
 		int initialAutoIndentSize = 4;
 		string readLine;
 		int autoIndentSize;
-		MockTextEditor mockTextEditor;
+		MockConsoleTextEditor mockTextEditor;
 		bool raiseKeyPressEvent;
 		bool raiseDialogKeyPressEvent;
 		
 		[TestFixtureSetUp]
 		public void Init()
 		{
-			mockTextEditor = new MockTextEditor();
+			mockTextEditor = new MockConsoleTextEditor();
 			pythonConsole = new PythonConsole(mockTextEditor, null);
 
 			autoIndentSize = initialAutoIndentSize;
@@ -42,16 +42,16 @@ namespace PythonBinding.Tests.Console
 			int sleepInterval = 10;
 			int maxWait = 2000;
 			int currentWait = 0;
-			while (mockTextEditor.Text.Length < autoIndentSize && currentWait < maxWait) {
+			while ((mockTextEditor.Text.Length < autoIndentSize) && (currentWait < maxWait)) {
 				Thread.Sleep(sleepInterval);
 				currentWait += sleepInterval;
 			}
 			
-			raiseKeyPressEvent = mockTextEditor.RaiseKeyPressEvent('a');
-			raiseDialogKeyPressEvent = mockTextEditor.RaiseDialogKeyPressEvent(Keys.Enter);
+			raiseKeyPressEvent = mockTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			raiseDialogKeyPressEvent = mockTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
 			
 			currentWait = 0;
-			while (mockTextEditor.Text.Length < autoIndentSize + 2 && currentWait < maxWait) {
+			while ((mockTextEditor.Text.Length < autoIndentSize + 2) && (currentWait < maxWait)) {
 				Thread.Sleep(10);
 				currentWait += sleepInterval;				
 			}
@@ -67,14 +67,14 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void ReadLineFromConsole()
 		{
-			string expectedString = String.Empty.PadLeft(initialAutoIndentSize) + "a";
+			string expectedString = String.Empty.PadLeft(initialAutoIndentSize) + "A";
 			Assert.AreEqual(expectedString, readLine);
 		}
 		
 		[Test]
 		public void ReadLineWithNonZeroAutoIndentSizeWritesSpacesToTextEditor()
 		{
-			string expectedString = String.Empty.PadLeft(initialAutoIndentSize) + "a\r\n";
+			string expectedString = String.Empty.PadLeft(initialAutoIndentSize) + "A\r\n";
 			Assert.AreEqual(expectedString, mockTextEditor.Text);
 		}
 		
@@ -87,22 +87,16 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void NoTextWrittenWhenAutoIndentSizeIsZero()
 		{
-			MockTextEditor textEditor = new MockTextEditor();
+			MockConsoleTextEditor textEditor = new MockConsoleTextEditor();
 			PythonConsole console = new PythonConsole(textEditor, null);
-			textEditor.RaiseKeyPressEvent('a');
-			textEditor.RaiseDialogKeyPressEvent(Keys.Enter);
+			textEditor.RaisePreviewKeyDownEvent(Key.A);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
 			
 			textEditor.IsWriteCalled = false;
 			console.ReadLine(0);
 			Assert.IsFalse(textEditor.IsWriteCalled);
 		}
-
-		[Test]
-		public void TextEditorIndentStyleSetToNone()
-		{
-			Assert.AreEqual(IndentStyle.None, mockTextEditor.IndentStyle);
-		}
-
+		
 		/// <summary>
 		/// Should return false for any character that should be handled by the text editor itself.s
 		/// </summary>

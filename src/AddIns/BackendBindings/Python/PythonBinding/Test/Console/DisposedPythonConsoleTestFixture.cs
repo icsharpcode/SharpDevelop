@@ -8,6 +8,7 @@
 using System;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
+using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Console
 {
@@ -20,14 +21,14 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void PythonConsoleImplementsIDisposable()
 		{
-			PythonConsole console = new PythonConsole(new MockTextEditor(), null);
+			PythonConsole console = new PythonConsole(new MockConsoleTextEditor(), null);
 			Assert.IsNotNull(console as IDisposable);
 		}
 		
 		[Test]
 		public void ReadLineReturnsNullWhenConsoleDisposed()
 		{
-			PythonConsole console = new PythonConsole(new MockTextEditor(), null);
+			PythonConsole console = new PythonConsole(new MockConsoleTextEditor(), null);
 			console.Dispose();
 			Assert.IsNull(console.ReadLine(0));
 		}

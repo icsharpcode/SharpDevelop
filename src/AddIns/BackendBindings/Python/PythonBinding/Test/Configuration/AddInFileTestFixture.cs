@@ -11,7 +11,6 @@ using System.IO;
 using System.Reflection;
 
 using ICSharpCode.Core;
-using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
@@ -54,6 +53,7 @@ namespace PythonBinding.Tests.Configuration
 		Runtime ironpythonModulesRuntime;
 		Runtime unitTestingRuntime;
 		Codon testFrameworkCodon;
+		Codon languageBindingCodon;
 		
 		[TestFixtureSetUp]
 		public void SetupFixture()
@@ -88,6 +88,7 @@ namespace PythonBinding.Tests.Configuration
 				convertVBNetProjectCodon = GetCodon("/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions/Convert", "VBNetProjectToPythonProjectConverter");
 				formattingStrategyCodon = GetCodon("/AddIns/DefaultTextEditor/Formatter/Python", "PythonFormatter");
 				testFrameworkCodon = GetCodon("/SharpDevelop/UnitTesting/TestFrameworks", "pyunit");
+				languageBindingCodon = GetCodon("/SharpDevelop/Workbench/LanguageBindings", "Python");
 				
 				// Get the PythonBinding runtime.
 				foreach (Runtime runtime in addin.Runtimes) {
@@ -762,12 +763,6 @@ namespace PythonBinding.Tests.Configuration
 		}
 		
 		[Test]
-		public void PythonFormatterClass()
-		{
-			Assert.AreEqual("ICSharpCode.PythonBinding.PythonFormattingStrategy", formattingStrategyCodon["class"]);
-		}
-		
-		[Test]
 		public void TestFrameworkCodonExists()
 		{
 			Assert.IsNotNull(testFrameworkCodon);
@@ -783,6 +778,24 @@ namespace PythonBinding.Tests.Configuration
 		public void TestFrameworkSupportedProjectsIsPythonProject()
 		{
 			Assert.AreEqual(".pyproj", testFrameworkCodon["supportedProjects"]);
+		}
+		
+		[Test]
+		public void LanguageBindingCodonExists()
+		{
+			Assert.IsNotNull(languageBindingCodon);
+		}
+		
+		[Test]
+		public void LanguageBindingClass()
+		{
+			Assert.AreEqual("ICSharpCode.PythonBinding.PythonLanguageBinding", languageBindingCodon["class"]);
+		}
+		
+		[Test]
+		public void LanguageBindingFileExtensions()
+		{
+			Assert.AreEqual(".py", languageBindingCodon["extensions"]);
 		}
 		
 		Codon GetCodon(string name, string extensionPath)

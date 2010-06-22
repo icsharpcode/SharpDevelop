@@ -24,7 +24,7 @@ namespace PythonBinding.Tests.Gui
 	{
 		PythonOptionsPanel optionsPanel;
 		Properties properties;
-		AddInOptions options;
+		PythonAddInOptions options;
 		TextBox fileNameTextBox;
 		TextBox pythonLibraryPathTextBox;
 		
@@ -32,7 +32,7 @@ namespace PythonBinding.Tests.Gui
 		public void SetUp()
 		{
 			properties = new Properties();
-			options = new AddInOptions(properties);
+			options = new PythonAddInOptions(properties);
 			options.PythonFileName = @"C:\Python\ipy.exe";
 			options.PythonLibraryPath = @"C:\Python26\lib";
 			optionsPanel = new PythonOptionsPanel(options);

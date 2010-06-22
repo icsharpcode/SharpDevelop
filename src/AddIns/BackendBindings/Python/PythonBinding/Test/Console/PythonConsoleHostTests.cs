@@ -7,14 +7,15 @@
 
 using System;
 
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.PythonBinding;
-using ICSharpCode.TextEditor;
 using IronPython.Hosting;
 using IronPython.Runtime;
 using NUnit.Framework;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
+using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Console
 {
@@ -25,14 +26,14 @@ namespace PythonBinding.Tests.Console
 	public class PythonConsoleHostTests
 	{
 		DerivedPythonConsoleHost host;
-		TextEditorControl textEditorControl;
-		TextEditor textEditor;
+		TextEditor textEditorControl;
+		PythonConsoleTextEditor textEditor;
 		
 		[TestFixtureSetUp]
 		public void Init()
 		{
-			textEditorControl = new TextEditorControl();
-			textEditor = new TextEditor(textEditorControl);
+			textEditorControl = new TextEditor();
+			textEditor = new PythonConsoleTextEditor(textEditorControl);
 			host = new DerivedPythonConsoleHost(textEditor);
 			
 			ScriptRuntime runtime = IronPython.Hosting.Python.CreateRuntime();
@@ -42,7 +43,6 @@ namespace PythonBinding.Tests.Console
 		public void TearDown()
 		{
 			host.Dispose();
-			textEditorControl.Dispose();
 		}
 		
 		[Test]
@@ -90,7 +90,7 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void HostDisposesPythonConsole()
 		{
-			DerivedPythonConsoleHost host = new DerivedPythonConsoleHost(new MockTextEditor());
+			DerivedPythonConsoleHost host = new DerivedPythonConsoleHost(new MockConsoleTextEditor());
 			PythonConsole console = host.CallCreateConsole(null, null, null) as PythonConsole;
 			host.Dispose();
 
@@ -103,13 +103,14 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void DisposingPythonConsoleHostWithoutCreatingPythonConsole()
 		{
-			PythonConsoleHost host = new PythonConsoleHost(new MockTextEditor());
+			PythonConsoleHost host = new PythonConsoleHost(new MockConsoleTextEditor());
 			host.Dispose();
 		}
 		
 		[Test]
 		public void DefaultOutputStreamReplacedByCustomStreamClass()
 		{
+			host.CallCreateConsole(null, null, null);
 			Assert.IsNotNull(host.OutputStream);
 		}
 	}

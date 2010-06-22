@@ -6,37 +6,36 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
+using AvalonEdit = ICSharpCode.AvalonEdit;
 
 namespace ICSharpCode.PythonBinding
 {
 	public class PythonConsolePad : AbstractPadContent
 	{
-		TextEditor textEditor;
-		TextEditorControl textEditorControl;
+		PythonConsoleTextEditor consoleTextEditor;
+		AvalonEdit.TextEditor textEditor;
 		PythonConsoleHost host;
 		
 		public PythonConsolePad()
 		{
-			textEditorControl = new TextEditorControl();
-			textEditorControl.CreateControl();
-			textEditor = new TextEditor(textEditorControl);
-			host = new PythonConsoleHost(textEditor);
-			host.Run();			
+			textEditor = new AvalonEdit.TextEditor();
+			consoleTextEditor = new PythonConsoleTextEditor(textEditor);
+			host = new PythonConsoleHost(consoleTextEditor);
+			host.Run();		
 		}
 		
 		public override object Control {
-			get { return textEditorControl; }
+			get { return textEditor; }
 		}		
 		
 		public override void Dispose()
 		{
 			host.Dispose();
-			textEditorControl.Dispose();
+		}
+		
+		public override object InitiallyFocusedControl {
+			get { return textEditor; }
 		}
 	}
 }

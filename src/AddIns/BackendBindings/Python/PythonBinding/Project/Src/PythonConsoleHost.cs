@@ -22,10 +22,10 @@ namespace ICSharpCode.PythonBinding
 	public class PythonConsoleHost : ConsoleHost, IDisposable
 	{
 		Thread thread;
-		ITextEditor textEditor;
+		IConsoleTextEditor textEditor;
 		PythonConsole pythonConsole;
 				
-		public PythonConsoleHost(ITextEditor textEditor)
+		public PythonConsoleHost(IConsoleTextEditor textEditor)
 		{
 			this.textEditor = textEditor;
 		}

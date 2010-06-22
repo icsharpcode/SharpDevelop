@@ -7,11 +7,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using System.Windows.Input;
 using System.Threading;
 using Microsoft.Scripting.Hosting.Shell;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
+using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Console
 {
@@ -21,14 +22,14 @@ namespace PythonBinding.Tests.Console
 	[TestFixture]
 	public class PythonConsoleHomeKeyTestFixture
 	{
-		MockTextEditor textEditor;
+		MockConsoleTextEditor textEditor;
 		PythonConsole console;
 		string prompt = ">>> ";
 
 		[SetUp]
 		public void Init()
 		{
-			textEditor = new MockTextEditor();
+			textEditor = new MockConsoleTextEditor();
 			console = new PythonConsole(textEditor, null);
 			console.Write(prompt, Style.Prompt);
 		}
@@ -36,7 +37,7 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void HomeKeyPressedWhenNoUserTextInConsole()
 		{
-			textEditor.RaiseDialogKeyPressEvent(Keys.Home);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Home);
 		
 			int expectedColumn = prompt.Length;
 			Assert.AreEqual(expectedColumn, textEditor.Column);
@@ -45,8 +46,8 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void HomeKeyPressedWhenTextInConsole()
 		{
-			textEditor.RaiseKeyPressEvent('a');
-			textEditor.RaiseDialogKeyPressEvent(Keys.Home);
+			textEditor.RaisePreviewKeyDownEvent(Key.A);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Home);
 
 			int expectedColumn = prompt.Length;
 			Assert.AreEqual(expectedColumn, textEditor.Column);

@@ -39,7 +39,6 @@ namespace PythonBinding.Tests.Designer
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MockTextEditorProperties textEditorProperties = new MockTextEditorProperties();
 			generator = new DerivedPythonDesignerGenerator();
 			mockViewContent = new MockTextEditorViewContent();
 			viewContent = new FormsDesignerViewContent(mockViewContent, new MockOpenedFile("Test.py"));

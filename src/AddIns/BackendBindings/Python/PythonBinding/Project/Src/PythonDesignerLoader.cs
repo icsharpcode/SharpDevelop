@@ -18,7 +18,6 @@ using System.Security.Permissions;
 
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.FormsDesigner.Services;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.PythonBinding
 {

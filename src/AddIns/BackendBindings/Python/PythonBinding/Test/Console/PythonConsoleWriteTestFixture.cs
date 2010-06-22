@@ -10,6 +10,7 @@ using System.Drawing;
 using ICSharpCode.PythonBinding;
 using Microsoft.Scripting.Hosting.Shell;
 using NUnit.Framework;
+using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Console
 {
@@ -20,12 +21,12 @@ namespace PythonBinding.Tests.Console
 	public class PythonConsoleWriteTestFixture
 	{
 		PythonConsole pythonConsole;
-		MockTextEditor mockTextEditor;
+		MockConsoleTextEditor mockTextEditor;
 		
 		[SetUp]
 		public void Init()
 		{
-			mockTextEditor = new MockTextEditor();
+			mockTextEditor = new MockConsoleTextEditor();
 			mockTextEditor.Text = String.Empty;			
 			pythonConsole = new PythonConsole(mockTextEditor, null);
 		}

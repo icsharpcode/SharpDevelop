@@ -11,6 +11,7 @@ using System.Text;
 
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
+using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Console
 {
@@ -18,12 +19,12 @@ namespace PythonBinding.Tests.Console
 	public class PythonOutputStreamTestFixture
 	{
 		PythonOutputStream stream;
-		MockTextEditor textEditor;
+		MockConsoleTextEditor textEditor;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			textEditor = new MockTextEditor();
+			textEditor = new MockConsoleTextEditor();
 			stream = new PythonOutputStream(textEditor);
 		}
 		

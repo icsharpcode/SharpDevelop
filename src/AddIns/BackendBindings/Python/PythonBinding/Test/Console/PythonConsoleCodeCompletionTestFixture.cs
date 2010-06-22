@@ -7,11 +7,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using System.Windows.Input;
 using System.Threading;
 using Microsoft.Scripting.Hosting.Shell;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
+using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Console
 {
@@ -21,7 +22,7 @@ namespace PythonBinding.Tests.Console
 	[TestFixture]
 	public class PythonConsoleCodeCompletionTestFixture
 	{
-		MockTextEditor textEditor;
+		MockConsoleTextEditor textEditor;
 		PythonConsole console;
 		string prompt = ">>> ";
 		bool showCompletionWindowCalledBeforeDotTypedIn;
@@ -29,13 +30,13 @@ namespace PythonBinding.Tests.Console
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			textEditor = new MockTextEditor();
+			textEditor = new MockConsoleTextEditor();
 			console = new PythonConsole(textEditor, null);
 			console.WriteLine(prompt, Style.Prompt);
 									
-			textEditor.RaiseKeyPressEvents("__builtins__");
-			showCompletionWindowCalledBeforeDotTypedIn = textEditor.IsShowCompletionWindowCalled;
-			textEditor.RaiseKeyPressEvent('.');		
+			textEditor.RaisePreviewKeyDownEvent(Key.A);
+ 			showCompletionWindowCalledBeforeDotTypedIn = textEditor.IsShowCompletionWindowCalled;
+			textEditor.RaisePreviewKeyDownEvent(Key.OemPeriod);		
 		}
 		
 		[Test]

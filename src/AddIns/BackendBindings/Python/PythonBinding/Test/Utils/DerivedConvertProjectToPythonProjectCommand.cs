@@ -8,11 +8,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using ICSharpCode.PythonBinding;
 using ICSharpCode.Core;
+using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.TextEditor.Document;
 
 namespace PythonBinding.Tests.Utils
 {
@@ -37,14 +37,15 @@ namespace PythonBinding.Tests.Utils
 		List<ConvertedFile> savedFiles = new List<ConvertedFile>();
 		List<ConvertedFile> parseableFileContent = new List<ConvertedFile>();
 		IProjectContent projectContent;
+		Encoding fileServiceDefaultEncoding = Encoding.ASCII;	
 		
-		public DerivedConvertProjectToPythonProjectCommand(ITextEditorProperties textEditorProperties) 
-			: base(textEditorProperties)
-		{
-		}
-					
 		public List<SourceAndTargetFile> SourceAndTargetFilesPassedToBaseClass {
 			get { return sourceAndTargetFilesPassedToBaseClass; }
+		}
+		
+		public Encoding FileServiceDefaultEncoding {
+			get { return fileServiceDefaultEncoding; }
+			set { fileServiceDefaultEncoding = value; }
 		}
 		
 		/// <summary>
@@ -105,6 +106,11 @@ namespace PythonBinding.Tests.Utils
 		protected override IProjectContent GetProjectContent(IProject project)
 		{
 			return projectContent;
+		}
+		
+		protected override Encoding GetDefaultFileEncoding()
+		{
+			return fileServiceDefaultEncoding;
 		}
 	}
 }

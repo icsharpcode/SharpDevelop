@@ -55,11 +55,11 @@ namespace PythonBinding.Tests.Designer
 					PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
 					namePropertyDescriptor.SetValue(form, "MainForm");
 					
-					MockTextEditorProperties textEditorProperties = new MockTextEditorProperties();
-					textEditorProperties.ConvertTabsToSpaces = true;
-					textEditorProperties.IndentationSize = 1;
+					MockTextEditorOptions textEditorOptions = new MockTextEditorOptions();
+					textEditorOptions.ConvertTabsToSpaces = true;
+					textEditorOptions.IndentationSize = 1;
  	
-					DerivedPythonDesignerGenerator generator = new DerivedPythonDesignerGenerator(textEditorProperties);
+					DerivedPythonDesignerGenerator generator = new DerivedPythonDesignerGenerator(textEditorOptions);
 					generator.ParseInfoToReturnFromParseFileMethod = parseInfo;
 					generator.Attach(viewContent);
 					DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
@@ -73,18 +73,19 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "class MainForm(Form):\r\n" + 
-								" def __init__(self):\r\n" +
-								"  self.InitializeComponent()\r\n" +
-								"\r\n" +
-								" def InitializeComponent(self):\r\n" +
-								"  self.SuspendLayout()\r\n" +
-								"  # \r\n" +
-								"  # MainForm\r\n" +
-								"  # \r\n" +
-								"  self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
-								"  self.Name = \"MainForm\"\r\n" +
-								"  self.ResumeLayout(False)\r\n";
+			string expectedCode =
+				"class MainForm(Form):\r\n" +
+				" def __init__(self):\r\n" +
+				"  self.InitializeComponent()\r\n" +
+				"\r\n" +
+				" def InitializeComponent(self):\r\n" +
+				"  self.SuspendLayout()\r\n" +
+				"  # \r\n" +
+				"  # MainForm\r\n" +
+				"  # \r\n" +
+				"  self.ClientSize = System.Drawing.Size(284, 264)\r\n" +
+				"  self.Name = \"MainForm\"\r\n" +
+				"  self.ResumeLayout(False)\r\n";
 			
 			Assert.AreEqual(expectedCode, document.Text);
 		}

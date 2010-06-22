@@ -6,17 +6,16 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
+using System.Windows.Input;
 
 using ICSharpCode.PythonBinding;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using IronPython.Hosting;
 using IronPython.Runtime;
-using NUnit.Framework;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
+using NUnit.Framework;
+using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Console
 {
@@ -27,12 +26,12 @@ namespace PythonBinding.Tests.Console
 	public class PythonConsoleUnreadLinesTestFixture
 	{
 		PythonConsole pythonConsole;
-		MockTextEditor textEditor;
+		MockConsoleTextEditor textEditor;
 		
 		[SetUp]
 		public void Init()
 		{
-			textEditor = new MockTextEditor();
+			textEditor = new MockConsoleTextEditor();
 			pythonConsole = new PythonConsole(textEditor, null);
 		}
 		
@@ -51,10 +50,10 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void AddOneLine()
 		{
-			textEditor.RaiseKeyPressEvent('a');
-			textEditor.RaiseDialogKeyPressEvent(Keys.Enter);
+			textEditor.RaisePreviewKeyDownEvent(System.Windows.Input.Key.A);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(System.Windows.Input.Key.Enter);
 			
-			string[] expectedLines = new string[] {"a"};
+			string[] expectedLines = new string[] {"A"};
 			
 			Assert.AreEqual(expectedLines, pythonConsole.GetUnreadLines());
 			Assert.IsTrue(pythonConsole.IsLineAvailable);

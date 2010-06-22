@@ -7,17 +7,16 @@
 
 using System;
 using System.Threading;
-using System.Windows.Forms;
+using Input = System.Windows.Input;
 
 using ICSharpCode.PythonBinding;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using IronPython.Hosting;
 using IronPython.Runtime;
 using NUnit.Framework;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
+using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Console
 {
@@ -38,20 +37,20 @@ namespace PythonBinding.Tests.Console
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MockTextEditor textEditor = new MockTextEditor();
+			MockConsoleTextEditor textEditor = new MockConsoleTextEditor();
 			using (pythonConsole = new PythonConsole(textEditor, null)) {
-
-				textEditor.RaiseKeyPressEvent('a');
-				textEditor.RaiseKeyPressEvent('=');
-				textEditor.RaiseKeyPressEvent('1');
+ 
+				textEditor.RaisePreviewKeyDownEvent(Input.Key.A);
+				textEditor.RaisePreviewKeyDownEvent(Input.Key.B);
+				textEditor.RaisePreviewKeyDownEvent(Input.Key.C);
 				lineAvailableBeforeFirstEnterKey = pythonConsole.IsLineAvailable;
-				textEditor.RaiseDialogKeyPressEvent(Keys.Enter);
+				textEditor.RaisePreviewKeyDownEventForDialogKey(Input.Key.Enter);
 				lineAvailableAfterFirstEnterKey = pythonConsole.IsLineAvailable;
-				
-				textEditor.RaiseKeyPressEvent('b');
-				textEditor.RaiseKeyPressEvent('=');
-				textEditor.RaiseKeyPressEvent('2');
-				textEditor.RaiseDialogKeyPressEvent(Keys.Enter);
+ 				
+				textEditor.RaisePreviewKeyDownEvent(Input.Key.D);
+				textEditor.RaisePreviewKeyDownEvent(Input.Key.E);
+				textEditor.RaisePreviewKeyDownEvent(Input.Key.F);
+				textEditor.RaisePreviewKeyDownEventForDialogKey(Input.Key.Enter);
 
 				Thread t = new Thread(ReadLinesOnSeparateThread);
 				t.Start();
@@ -72,13 +71,13 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void FirstLineRead()
 		{
-			Assert.AreEqual("a=1", line1);
+			Assert.AreEqual("ABC", line1);
 		}
 		
 		[Test]
 		public void SecondLineRead()
 		{
-			Assert.AreEqual("b=2", line2);
+			Assert.AreEqual("DEF", line2);
 		}
 		
 		[Test]

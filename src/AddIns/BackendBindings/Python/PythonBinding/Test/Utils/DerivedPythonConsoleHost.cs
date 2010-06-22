@@ -8,7 +8,6 @@
 using System;
 using System.IO;
 
-using ICSharpCode.TextEditor;
 using ICSharpCode.PythonBinding;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
@@ -20,11 +19,11 @@ namespace PythonBinding.Tests.Console
 	{
 		PythonOutputStream outputStream;
 		
-		public DerivedPythonConsoleHost(ITextEditor textEditor) : base(textEditor)
+		public DerivedPythonConsoleHost(IConsoleTextEditor textEditor) : base(textEditor)
 		{
 		}
 		
-		public Type GetProvider() 
+		public Type GetProvider()
 		{
 			return base.Provider;
 		}

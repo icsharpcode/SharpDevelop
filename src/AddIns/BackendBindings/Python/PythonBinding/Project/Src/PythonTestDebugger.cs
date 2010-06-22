@@ -13,7 +13,7 @@ namespace ICSharpCode.PythonBinding
 {
 	public class PythonTestDebugger : TestDebuggerBase
 	{
-		AddInOptions options;
+		PythonAddInOptions options;
 		IPythonFileService fileService;
 		PythonTestRunnerApplication testRunnerApplication;
 		PythonStandardLibraryPath pythonStandardLibraryPath;
@@ -22,7 +22,7 @@ namespace ICSharpCode.PythonBinding
 			: this(new UnitTestDebuggerService(),
 				new UnitTestMessageService(),
 				new TestResultsMonitor(),
-				new AddInOptions(),
+				new PythonAddInOptions(),
 				new PythonStandardLibraryPath(),
 				new PythonFileService())
 		{
@@ -31,7 +31,7 @@ namespace ICSharpCode.PythonBinding
 		public PythonTestDebugger(IUnitTestDebuggerService debuggerService,
 			IUnitTestMessageService messageService,
 			ITestResultsMonitor testResultsMonitor,
-			AddInOptions options,
+			PythonAddInOptions options,
 			PythonStandardLibraryPath pythonStandardLibraryPath,
 			IPythonFileService fileService)
 			: base(debuggerService, messageService, testResultsMonitor)

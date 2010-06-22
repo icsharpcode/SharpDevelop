@@ -9,9 +9,9 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Scripting.Hosting;
 
+using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.PythonBinding;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using NUnit.Framework;
 
 namespace PythonBinding.Tests.Console
@@ -30,18 +30,16 @@ namespace PythonBinding.Tests.Console
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{			
-			using (TextEditorControl textEditorControl = new TextEditorControl()) {
-				textEditorControl.Text = ">>> __builtins__";
-				TextEditor textEditor = new TextEditor(textEditorControl);
-					
-				memberProvider = new MockMemberProvider();
-				memberProvider.SetMemberNames(new string[] {"a", "b", "c"});
-				expectedCompletionItems = CreateCompletionItems(memberProvider.GetMemberNames("__builtins__"));
-		
-				provider = new PythonConsoleCompletionDataProvider(memberProvider);
-				completionItems = provider.GenerateCompletionData(String.Empty, textEditorControl.ActiveTextAreaControl.TextArea, '.');
-	
-			}
+			TextEditor textEditorControl = new TextEditor();
+			textEditorControl.Text = ">>> __builtins__";
+			PythonConsoleTextEditor textEditor = new PythonConsoleTextEditor(textEditorControl);
+				
+			memberProvider = new MockMemberProvider();
+			memberProvider.SetMemberNames(new string[] {"a", "b", "c"});
+			expectedCompletionItems = CreateCompletionItems(memberProvider.GetMemberNames("__builtins__"));
+			
+			provider = new PythonConsoleCompletionDataProvider(memberProvider);
+			completionItems = provider.GenerateCompletionData(textEditor);
 		}
 		
 		[Test]
@@ -65,18 +63,6 @@ namespace PythonBinding.Tests.Console
 		}
 		
 		[Test]
-		public void PreSelectionIsNull()
-		{
-			Assert.IsNull(provider.PreSelection);
-		}
-		
-		[Test]
-		public void DefaultIndexIsZero()
-		{
-			Assert.AreEqual(0, provider.DefaultIndex);
-		}
-		
-		[Test]
 		public void BuiltinsPassedToMemberProvider()
 		{
 			Assert.AreEqual("__builtins__", memberProvider.GetMemberNamesParameter);
@@ -84,9 +70,9 @@ namespace PythonBinding.Tests.Console
 		
 		ICompletionData[] CreateCompletionItems(IList<string> memberNames)
 		{
-			List<DefaultCompletionData> items = new List<DefaultCompletionData>();
+			List<PythonConsoleCompletionData> items = new List<PythonConsoleCompletionData>();
 			foreach (string memberName in memberNames) {
-				items.Add(new DefaultCompletionData(memberName, String.Empty, 0));
+				items.Add(new PythonConsoleCompletionData(memberName));
 			}
 			return items.ToArray();
 		}

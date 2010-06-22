@@ -13,9 +13,9 @@ namespace ICSharpCode.PythonBinding
 {
 	public class PythonOutputStream : Stream
 	{
-		ITextEditor textEditor;
+		IConsoleTextEditor textEditor;
 		
-		public PythonOutputStream(ITextEditor textEditor)
+		public PythonOutputStream(IConsoleTextEditor textEditor)
 		{
 			this.textEditor = textEditor;
 		}
@@ -66,6 +66,6 @@ namespace ICSharpCode.PythonBinding
 		{
 			string text = UTF8Encoding.UTF8.GetString(buffer, offset, count);
 			textEditor.Write(text);
-		}		
+		}
 	}
 }

@@ -7,7 +7,6 @@
 
 using System;
 using ICSharpCode.PythonBinding;
-using ICSharpCode.TextEditor.Document;
 using NUnit.Framework;
 
 namespace PythonBinding.Tests.Designer

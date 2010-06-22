@@ -6,11 +6,12 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
+using System.Windows.Input;
 
 using ICSharpCode.PythonBinding;
 using Microsoft.Scripting.Hosting.Shell;
 using NUnit.Framework;
+using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Console
 {
@@ -22,13 +23,13 @@ namespace PythonBinding.Tests.Console
 	public class PythonConsoleReadOnlyRegionsTestFixture
 	{
 		PythonConsole console;
-		MockTextEditor textEditor;
+		MockConsoleTextEditor textEditor;
 		string prompt = ">>> ";
 
 		[SetUp]
 		public void Init()
 		{
-			textEditor = new MockTextEditor();
+			textEditor = new MockConsoleTextEditor();
 			console = new PythonConsole(textEditor, null);
 			console.Write(prompt, Style.Prompt);
 		}
@@ -42,19 +43,19 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void LeftArrowThenInsertNewCharacterInsertsText()
 		{
-			textEditor.RaiseKeyPressEvent('a');
-			textEditor.RaiseKeyPressEvent('b');
-			textEditor.RaiseDialogKeyPressEvent(Keys.Left);
-			textEditor.RaiseKeyPressEvent('c');
+			textEditor.RaisePreviewKeyDownEvent(Key.A);
+			textEditor.RaisePreviewKeyDownEvent(Key.B);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
+			textEditor.RaisePreviewKeyDownEvent(Key.C);
 			
-			Assert.AreEqual("acb", console.GetCurrentLine());
+			Assert.AreEqual("ACB", console.GetCurrentLine());
 		}
 		
 		[Test]
 		public void MoveOneCharacterIntoPromptTypingShouldBePrevented()
 		{
-			textEditor.RaiseDialogKeyPressEvent(Keys.Left);
-			textEditor.RaiseKeyPressEvent('a');
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
+			textEditor.RaisePreviewKeyDownEvent(Key.A);
 			
 			Assert.AreEqual(String.Empty, console.GetCurrentLine());
 		}
@@ -62,94 +63,105 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void MoveOneCharacterIntoPromptAndBackspaceKeyShouldNotRemoveAnything()
 		{
-			textEditor.RaiseKeyPressEvent('a');
-			textEditor.RaiseDialogKeyPressEvent(Keys.Left);
-			textEditor.RaiseDialogKeyPressEvent(Keys.Back);
+			textEditor.RaisePreviewKeyDownEvent(Key.A);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back);
 			
-			Assert.AreEqual("a", console.GetCurrentLine());
-			Assert.AreEqual(prompt + "a", textEditor.Text);
+			Assert.AreEqual("A", console.GetCurrentLine());
+			Assert.AreEqual(prompt + "A", textEditor.Text);
 		}
 		
 		[Test]
 		public void MoveTwoCharactersIntoPromptAndBackspaceKeyShouldNotRemoveAnything()
 		{
-			textEditor.RaiseKeyPressEvent('a');
-			textEditor.RaiseDialogKeyPressEvent(Keys.Left);
-			textEditor.RaiseDialogKeyPressEvent(Keys.Left);
-			textEditor.RaiseDialogKeyPressEvent(Keys.Back);
+			textEditor.RaisePreviewKeyDownEvent(Key.A);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back);
 			
-			Assert.AreEqual("a", console.GetCurrentLine());
-			Assert.AreEqual(prompt + "a", textEditor.Text);
+			Assert.AreEqual("A", console.GetCurrentLine());
+			Assert.AreEqual(prompt + "A", textEditor.Text);
 		}
 		
 		[Test]
 		public void SelectLastCharacterOfPromptThenPressingTheBackspaceKeyShouldNotRemoveAnything()
 		{
-			textEditor.RaiseKeyPressEvent('a');
+			textEditor.RaisePreviewKeyDownEvent(Key.A);
 			textEditor.SelectionStart = prompt.Length - 1;
 			textEditor.SelectionLength = 2;
 			textEditor.Column += 2;
-			textEditor.RaiseDialogKeyPressEvent(Keys.Back);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back);
 			
-			Assert.AreEqual("a", console.GetCurrentLine());
-			Assert.AreEqual(prompt + "a", textEditor.Text);
+			Assert.AreEqual("A", console.GetCurrentLine());
+			Assert.AreEqual(prompt + "A", textEditor.Text);
 		}
 		
 		[Test]
 		public void CanMoveIntoPromptRegionWithLeftCursorKey()
 		{
-			textEditor.RaiseDialogKeyPressEvent(Keys.Left);
-			Assert.IsFalse(textEditor.RaiseDialogKeyPressEvent(Keys.Left));
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
+			Assert.IsFalse(textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left));
 		}
 		
 		[Test]
 		public void CanMoveOutOfPromptRegionWithRightCursorKey()
 		{
 			textEditor.Column = 0;
-			Assert.IsFalse(textEditor.RaiseDialogKeyPressEvent(Keys.Right));
+			Assert.IsFalse(textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Right));
 		}
 		
 		[Test]
 		public void CanMoveOutOfPromptRegionWithUpCursorKey()
 		{
-			textEditor.RaiseDialogKeyPressEvent(Keys.Enter);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
 			console.Write(prompt, Style.Prompt);
 			textEditor.Column = 0;
-			Assert.IsFalse(textEditor.RaiseDialogKeyPressEvent(Keys.Up));
+			Assert.IsFalse(textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up));
 		}
 		
 		[Test]
 		public void CanMoveInReadOnlyRegionWithDownCursorKey()
 		{
-			textEditor.RaiseDialogKeyPressEvent(Keys.Enter);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
 			console.Write(prompt, Style.Prompt);
 			textEditor.Column = 0;
 			textEditor.Line = 0;
-			Assert.IsFalse(textEditor.RaiseDialogKeyPressEvent(Keys.Down));
+			Assert.IsFalse(textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Down));
 		}		
 		
 		[Test]
 		public void BackspaceKeyPressedIgnoredIfLineIsEmpty()
 		{
-			Assert.IsTrue(textEditor.RaiseDialogKeyPressEvent(Keys.Back));
+			Assert.IsTrue(textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back));
 		}
 		
 		[Test]
 		public void BackspaceOnPreviousLine()
 		{
-			textEditor.RaiseKeyPressEvent('a');
-			textEditor.RaiseKeyPressEvent('b');
-			textEditor.RaiseDialogKeyPressEvent(Keys.Enter);
+			textEditor.RaisePreviewKeyDownEvent(Key.A);
+			textEditor.RaisePreviewKeyDownEvent(Key.B);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
 
 			console.Write(prompt, Style.Prompt);
 			
-			textEditor.RaiseKeyPressEvent('c');
+			textEditor.RaisePreviewKeyDownEvent(Key.C);
 			
 			// Move up a line with cursor.
 			textEditor.Line = 0;
 			
-			Assert.IsTrue(textEditor.RaiseDialogKeyPressEvent(Keys.Back));
-			Assert.AreEqual("c", console.GetCurrentLine());
-		}		
+			Assert.IsTrue(textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back));
+			Assert.AreEqual("C", console.GetCurrentLine());
+		}
+		
+		[Test]
+		public void CanBackspaceFirstCharacterOnLine()
+		{
+			textEditor.RaisePreviewKeyDownEvent(Key.A);
+			textEditor.Column = 5;
+			textEditor.SelectionStart = 5;
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back);
+			
+			Assert.AreEqual(String.Empty, console.GetCurrentLine());
+		}
 	}
 }

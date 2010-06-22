@@ -21,16 +21,16 @@ namespace ICSharpCode.PythonBinding
 	public class RunPythonCommand : AbstractMenuCommand
 	{
 		IDebugger debugger;
-		AddInOptions options;
+		PythonAddInOptions options;
 		IWorkbench workbench;
 		PythonConsoleApplication ipy;
 		
 		public RunPythonCommand()
-			: this(WorkbenchSingleton.Workbench, new AddInOptions(), DebuggerService.CurrentDebugger)
+			: this(WorkbenchSingleton.Workbench, new PythonAddInOptions(), DebuggerService.CurrentDebugger)
 		{
 		}
 		
-		public RunPythonCommand(IWorkbench workbench, AddInOptions options, IDebugger debugger)
+		public RunPythonCommand(IWorkbench workbench, PythonAddInOptions options, IDebugger debugger)
 		{
 			this.workbench = workbench;
 			this.debugger = debugger;

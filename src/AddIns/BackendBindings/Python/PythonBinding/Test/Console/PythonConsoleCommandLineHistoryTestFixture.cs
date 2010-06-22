@@ -6,13 +6,14 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
+using System.Windows.Input;
 
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
+using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Console
 {
@@ -23,42 +24,42 @@ namespace PythonBinding.Tests.Console
 	public class PythonConsoleCommandLineHistoryTestFixture
 	{
 		PythonConsole pythonConsole;
-		MockTextEditor textEditor;
+		MockConsoleTextEditor textEditor;
 		string prompt = ">>> ";
 		
 		[SetUp]
 		public void Init()
 		{
-			textEditor = new MockTextEditor();
+			textEditor = new MockConsoleTextEditor();
 			pythonConsole = new PythonConsole(textEditor, null);
 			pythonConsole.Write(prompt, Style.Prompt);
 			
-			textEditor.RaiseKeyPressEvent('a');
-			textEditor.RaiseDialogKeyPressEvent(Keys.Enter);
+			textEditor.RaisePreviewKeyDownEvent(Key.A);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
 			pythonConsole.Write(prompt, Style.Prompt);
-			textEditor.RaiseKeyPressEvent('b');
-			textEditor.RaiseKeyPressEvent('c');
-			textEditor.RaiseDialogKeyPressEvent(Keys.Enter);
+			textEditor.RaisePreviewKeyDownEvent(Key.B);
+			textEditor.RaisePreviewKeyDownEvent(Key.C);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
 			pythonConsole.Write(prompt, Style.Prompt);
 		}
 
 		[Test]
 		public void UpArrowKeyPressed()
 		{
-			Assert.IsTrue(textEditor.RaiseDialogKeyPressEvent(Keys.Up));
+			Assert.IsTrue(textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up));
 		}
 		
 		[Test]
 		public void CurrentLineAfterUpArrowKeyPressed()
 		{
-			textEditor.RaiseDialogKeyPressEvent(Keys.Up);
-			Assert.AreEqual("bc", pythonConsole.GetCurrentLine());
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			Assert.AreEqual("BC", pythonConsole.GetCurrentLine());
 		}
 		
 		[Test]
 		public void TextEditorCursorIsAtEndOfLineAfterUpArrowKeyPressed()
 		{
-			textEditor.RaiseDialogKeyPressEvent(Keys.Up);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
 			Assert.AreEqual(prompt.Length + 2, textEditor.Column);
 		}
 		
@@ -66,28 +67,28 @@ namespace PythonBinding.Tests.Console
 		public void TextAfterUpArrowKeyPressedTwiceThenDownArrowKey()
 		{
 			UpArrowKeyPressedTwiceThenDownArrowKey();
-			Assert.AreEqual("bc", pythonConsole.GetCurrentLine());
+			Assert.AreEqual("BC", pythonConsole.GetCurrentLine());
 		}
 
 		[Test]
 		public void TextEditorCursorAfterUpArrowKeyPressedTwice()
 		{
-			textEditor.RaiseDialogKeyPressEvent(Keys.Up);
-			textEditor.RaiseDialogKeyPressEvent(Keys.Up);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
 			Assert.AreEqual(prompt.Length + 1, textEditor.Column);
 		}
 		
 		[Test]
 		public void DownArrowKeyHandled()
 		{
-			Assert.IsTrue(textEditor.RaiseDialogKeyPressEvent(Keys.Down));
+			Assert.IsTrue(textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Down));
 		}
 		
 		void UpArrowKeyPressedTwiceThenDownArrowKey()
 		{
-			textEditor.RaiseDialogKeyPressEvent(Keys.Up);
-			textEditor.RaiseDialogKeyPressEvent(Keys.Up);
-			textEditor.RaiseDialogKeyPressEvent(Keys.Down);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Down);
 		}
 	}
 }

@@ -6,9 +6,8 @@
 // </file>
 
 using System;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Actions;
-using ICSharpCode.TextEditor.Document;
+using System.Text;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -18,49 +17,62 @@ namespace ICSharpCode.PythonBinding
 		{
 		}
 		
-		protected override int SmartIndentLine(TextArea textArea, int line)
+		public override void IndentLine(ITextEditor editor, IDocumentLine line)
 		{
-			if (line == 0) {
-				return base.SmartIndentLine(textArea, line);
+			if (line.LineNumber == 1) {
+				base.IndentLine(editor, line);
+				return;
 			}
 			
-			IDocument document = textArea.Document;
-			LineSegment previousLine = document.GetLineSegment(line - 1);
-			string previousLineText = document.GetText(previousLine).Trim();
+			IDocument document = editor.Document;
+			IDocumentLine previousLine = document.GetLine(line.LineNumber - 1);
+			string previousLineText = previousLine.Text.Trim();
 			
 			if (previousLineText.EndsWith(":")) {
-				return IncreaseLineIndent(textArea, line);
+				IncreaseLineIndent(editor, line);
 			} else if (previousLineText == "pass") {
-				return DecreaseLineIndent(textArea, line);
+				DecreaseLineIndent(editor, line);
 			} else if ((previousLineText == "return") || (previousLineText.StartsWith("return "))) {
-				return DecreaseLineIndent(textArea, line);
+				DecreaseLineIndent(editor, line);
 			} else if ((previousLineText == "raise") || (previousLineText.StartsWith("raise "))) {
-				return DecreaseLineIndent(textArea, line);
+				DecreaseLineIndent(editor, line);
 			} else if (previousLineText == "break") {
-				return DecreaseLineIndent(textArea, line);
+				DecreaseLineIndent(editor, line);
+			} else {
+				base.IndentLine(editor, line);
 			}
-			return base.SmartIndentLine(textArea, line);
 		}
 		
-		int IncreaseLineIndent(TextArea textArea, int line)
+		void IncreaseLineIndent(ITextEditor editor, IDocumentLine line)
 		{
-			return ModifyLineIndent(textArea, line, true);
+			ModifyLineIndent(editor, line, true);
 		}
 		
-		int DecreaseLineIndent(TextArea textArea, int line)
+		void DecreaseLineIndent(ITextEditor editor, IDocumentLine line)
 		{
-			return ModifyLineIndent(textArea, line, false);
+			ModifyLineIndent(editor, line, false);
 		}
 		
-		int ModifyLineIndent(TextArea textArea, int line, bool increaseIndent)
+		void ModifyLineIndent(ITextEditor editor, IDocumentLine line, bool increaseIndent)
 		{
-			IDocument document = textArea.Document;
-			LineSegment currentLine = document.GetLineSegment(line);
-			string indentation = GetIndentation(textArea, line - 1);
-			indentation = GetNewLineIndentation(indentation, Tab.GetIndentationString(document), increaseIndent);
-			string newIndentedText = indentation + document.GetText(currentLine);
-			SmartReplaceLine(document, currentLine, newIndentedText);
-			return indentation.Length;
+			string indentation = GetLineIndentation(editor, line.LineNumber - 1);
+			indentation = GetNewLineIndentation(indentation, editor.Options.IndentationString, increaseIndent);
+			string newIndentedText = indentation + line.Text;
+			editor.Document.Replace(line.Offset, line.Length, newIndentedText);
+		}
+		
+		string GetLineIndentation(ITextEditor editor, int line)
+		{
+			IDocumentLine documentLine = editor.Document.GetLine(line);
+			StringBuilder whitespace = new StringBuilder();			
+			foreach (char ch in documentLine.Text) {
+				if (Char.IsWhiteSpace(ch)) {
+					whitespace.Append(ch);
+				} else {
+					break;
+				}
+			}
+			return whitespace.ToString();
 		}
 		
 		string GetNewLineIndentation(string previousLineIndentation, string singleIndent, bool increaseIndent)

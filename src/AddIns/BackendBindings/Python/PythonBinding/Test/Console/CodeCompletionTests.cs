@@ -7,9 +7,9 @@
 
 using System;
 
+using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using NUnit.Framework;
 
 namespace PythonBinding.Tests.Console
@@ -53,15 +53,6 @@ namespace PythonBinding.Tests.Console
 			memberProvider.ExceptionToThrow = new ApplicationException("Should not be thrown");
 			
 			Assert.AreEqual(0, completionProvider.GenerateCompletionData(">>> a").Length);
-		}
-		
-		[Test]
-		public void ImageIndexIsMethod()
-		{
-			memberProvider.SetMemberNames(new string[] {"a"});
-			
-			ICompletionData[] items = completionProvider.GenerateCompletionData(">>> a");
-			Assert.AreEqual(ClassBrowserIconService.Method.ImageIndex, items[0].ImageIndex);
 		}
 		
 		[Test]

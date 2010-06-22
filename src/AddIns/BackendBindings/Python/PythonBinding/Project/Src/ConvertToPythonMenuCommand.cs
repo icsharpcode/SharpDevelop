@@ -7,12 +7,13 @@
 
 using System;
 using System.IO;
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -21,24 +22,30 @@ namespace ICSharpCode.PythonBinding
 	/// </summary>
 	public class ConvertToPythonMenuCommand : AbstractMenuCommand
 	{
+		PythonTextEditorViewContent view;
+		
 		public override void Run()
 		{
-			Run(WorkbenchSingleton.Workbench, SharpDevelopTextEditorProperties.Instance);
+			Run(WorkbenchSingleton.Workbench);
 		}
 		
-		protected void Run(IWorkbench workbench, ITextEditorProperties textEditorProperties)
+		protected void Run(IWorkbench workbench)
 		{
-			// Get the code to convert.
-			IViewContent viewContent = workbench.ActiveWorkbenchWindow.ActiveViewContent;
-			IEditable editable = viewContent as IEditable;
+			view = new PythonTextEditorViewContent(workbench);
+			string code = GeneratePythonCode();
+			ShowPythonCodeInNewWindow(code);
+		}
 			
-			// Generate the python code.
-			NRefactoryToPythonConverter converter = NRefactoryToPythonConverter.Create(viewContent.PrimaryFileName);
-			converter.IndentString = NRefactoryToPythonConverter.GetIndentString(textEditorProperties);
-			string pythonCode = converter.Convert(editable.Text);
-			
-			// Show the python code in a new window.
-			NewFile("Generated.py", "Python", pythonCode);
+		string GeneratePythonCode()
+		{
+			NRefactoryToPythonConverter converter = NRefactoryToPythonConverter.Create(view.PrimaryFileName);
+			converter.IndentString = view.TextEditorOptions.IndentationString;
+			return converter.Convert(view.EditableView.Text);
+		}
+		
+		void ShowPythonCodeInNewWindow(string code)
+		{
+			NewFile("Generated.py", "Python", code);
 		}
 		
 		/// <summary>

@@ -16,7 +16,7 @@ namespace ICSharpCode.PythonBinding
 {
 	public class PythonTestRunner : TestProcessRunnerBase
 	{
-		AddInOptions options;
+		PythonAddInOptions options;
 		PythonStandardLibraryPath pythonStandardLibraryPath;
 		IPythonFileService fileService;
 		PythonTestRunnerApplication testRunnerApplication;
@@ -24,7 +24,7 @@ namespace ICSharpCode.PythonBinding
 		public PythonTestRunner()
 			: this(new UnitTestProcessRunner(),
 				new TestResultsMonitor(),
-				new AddInOptions(),
+				new PythonAddInOptions(),
 				new PythonStandardLibraryPath(),
 				new PythonFileService())
 		{
@@ -32,7 +32,7 @@ namespace ICSharpCode.PythonBinding
 		
 		public PythonTestRunner(IUnitTestProcessRunner processRunner,
 			ITestResultsMonitor testResultsMonitor,
-			AddInOptions options,
+			PythonAddInOptions options,
 			PythonStandardLibraryPath pythonStandardLibraryPath,
 			IPythonFileService fileService)
 			: base(processRunner, testResultsMonitor)

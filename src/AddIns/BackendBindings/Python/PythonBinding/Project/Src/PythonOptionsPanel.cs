@@ -19,15 +19,15 @@ namespace ICSharpCode.PythonBinding
 	/// </summary>
 	public class PythonOptionsPanel : XmlFormsOptionPanel
 	{
-		AddInOptions options;
+		PythonAddInOptions options;
 		TextBox pythonFileNameTextBox;
 		TextBox pythonLibraryPathTextBox;
 		
-		public PythonOptionsPanel() : this(new AddInOptions())
+		public PythonOptionsPanel() : this(new PythonAddInOptions())
 		{
 		}
 		
-		public PythonOptionsPanel(AddInOptions options)
+		public PythonOptionsPanel(PythonAddInOptions options)
 		{
 			this.options = options;
 		}

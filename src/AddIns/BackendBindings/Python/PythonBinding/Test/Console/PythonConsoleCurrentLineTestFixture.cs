@@ -6,12 +6,14 @@
 // </file>
 
 using System;
+using System.Windows.Input;
 
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
+using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Console
 {
@@ -22,13 +24,13 @@ namespace PythonBinding.Tests.Console
 	public class PythonConsoleCurrentLineTestFixture
 	{
 		PythonConsole pythonConsole;
-		MockTextEditor textEditor;
+		MockConsoleTextEditor textEditor;
 		string prompt = ">>> ";
 		
 		[SetUp]
 		public void Init()
 		{
-			textEditor = new MockTextEditor();
+			textEditor = new MockConsoleTextEditor();
 			pythonConsole = new PythonConsole(textEditor, null);
 			pythonConsole.Write(prompt, Style.Prompt);
 		}
@@ -42,8 +44,8 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void SingleCharacterAddedToTextEditor()
 		{
-			textEditor.RaiseKeyPressEvent('a');
-			Assert.AreEqual("a", pythonConsole.GetCurrentLine());
+			textEditor.RaisePreviewKeyDownEvent(Key.A);
+			Assert.AreEqual("A", pythonConsole.GetCurrentLine());
 		}
 	}
 }

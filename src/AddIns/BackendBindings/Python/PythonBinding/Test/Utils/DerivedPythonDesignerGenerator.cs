@@ -15,9 +15,8 @@ using System.Reflection;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 
 namespace PythonBinding.Tests.Utils
 {
@@ -31,12 +30,12 @@ namespace PythonBinding.Tests.Utils
 		string textContentPassedToParseFile;
 		ParseInformation parseInfoToReturnFromParseFile;
 
-		public DerivedPythonDesignerGenerator() : this(new MockTextEditorProperties())
+		public DerivedPythonDesignerGenerator() : this(new MockTextEditorOptions())
 		{
 		}
 		
-		public DerivedPythonDesignerGenerator(ITextEditorProperties textEditorProperties) 
-			: base(textEditorProperties)
+		public DerivedPythonDesignerGenerator(ITextEditorOptions textEditorOptions) 
+			: base(textEditorOptions)
 		{
 		}
 								

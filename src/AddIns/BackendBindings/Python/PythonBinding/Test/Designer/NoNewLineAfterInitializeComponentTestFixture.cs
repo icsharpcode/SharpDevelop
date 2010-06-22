@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Refactoring;
 using System;
 using System.CodeDom;
 using System.ComponentModel;
@@ -14,11 +13,14 @@ using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using ICSharpCode.PythonBinding;
+using AvalonEdit = ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
+using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.PythonBinding;
 using NUnit.Framework;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Designer
@@ -29,31 +31,32 @@ namespace PythonBinding.Tests.Designer
 	[TestFixture]
 	public class NoNewLineAfterInitializeComponentMethodTestFixture
 	{
-		IDocument document;
+		TextDocument document;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			using (TextEditorControl textEditor = new TextEditorControl()) {
-				document = textEditor.Document;
-				textEditor.Text = GetTextEditorCode();
+			AvalonEdit.TextEditor textEditor = new AvalonEdit.TextEditor();
+			document = textEditor.Document;
+			textEditor.Text = GetTextEditorCode();
 
-				PythonParser parser = new PythonParser();
-				ICompilationUnit compilationUnit = parser.Parse(new DefaultProjectContent(), @"test.py", document.TextContent);
+			PythonParser parser = new PythonParser();
+			ICompilationUnit compilationUnit = parser.Parse(new DefaultProjectContent(), @"test.py", document.Text);
 
-				using (DesignSurface designSurface = new DesignSurface(typeof(UserControl))) {
-					IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
-					UserControl userControl = (UserControl)host.RootComponent;			
-					userControl.ClientSize = new Size(489, 389);
-					
-					PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(userControl);
-					PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
-					namePropertyDescriptor.SetValue(userControl, "userControl1");
-					
-					DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
-					using (serializationManager.CreateSession()) {
-						PythonDesignerGenerator.Merge(host, new TextEditorDocument(document), compilationUnit, new MockTextEditorProperties(), serializationManager);
-					}
+			using (DesignSurface designSurface = new DesignSurface(typeof(UserControl))) {
+				IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
+				UserControl userControl = (UserControl)host.RootComponent;			
+				userControl.ClientSize = new Size(489, 389);
+				
+				PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(userControl);
+				PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
+				namePropertyDescriptor.SetValue(userControl, "userControl1");
+				
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {
+					AvalonEditDocumentAdapter adapter = new AvalonEditDocumentAdapter(document, null);
+					MockTextEditorOptions options = new MockTextEditorOptions();
+					PythonDesignerGenerator.Merge(host, adapter, compilationUnit, options, serializationManager);
 				}
 			}
 		}
@@ -61,22 +64,23 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "from System.Windows.Forms import UserControl\r\n" +
-									"\r\n" +
-									"class MyUserControl(UserControl):\r\n" +
-									"\tdef __init__(self):\r\n" +
-									"\t\tself.InitializeComponent()\r\n" +
-									"\t\r\n" +
-									"\tdef InitializeComponent(self):\r\n" +
-									"\t\tself.SuspendLayout()\r\n" +
-									"\t\t# \r\n" +
-									"\t\t# userControl1\r\n" +
-									"\t\t# \r\n" + 
-									"\t\tself.Name = \"userControl1\"\r\n" +
-									"\t\tself.Size = System.Drawing.Size(489, 389)\r\n" +
-									"\t\tself.ResumeLayout(False)\r\n";
+			string expectedCode = 
+				"from System.Windows.Forms import UserControl\r\n" +
+				"\r\n" +
+				"class MyUserControl(UserControl):\r\n" +
+				"\tdef __init__(self):\r\n" +
+				"\t\tself.InitializeComponent()\r\n" +
+				"\t\r\n" +
+				"\tdef InitializeComponent(self):\r\n" +
+				"\t\tself.SuspendLayout()\r\n" +
+				"\t\t# \r\n" +
+				"\t\t# userControl1\r\n" +
+				"\t\t# \r\n" + 
+				"\t\tself.Name = \"userControl1\"\r\n" +
+				"\t\tself.Size = System.Drawing.Size(489, 389)\r\n" +
+				"\t\tself.ResumeLayout(False)\r\n";
 			
-			Assert.AreEqual(expectedCode, document.TextContent);
+			Assert.AreEqual(expectedCode, document.Text);
 		}
 		
 		/// <summary>

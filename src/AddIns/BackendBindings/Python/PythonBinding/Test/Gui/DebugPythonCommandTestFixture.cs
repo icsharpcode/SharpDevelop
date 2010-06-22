@@ -34,7 +34,7 @@ namespace PythonBinding.Tests.Gui
 
 			// Create the Python binding addin options.
 			Properties p = new Properties();
-			AddInOptions options = new AddInOptions(p);
+			PythonAddInOptions options = new PythonAddInOptions(p);
 			options.PythonFileName = @"C:\IronPython\ipy.exe";
 		
 			debugger = new MockDebugger();

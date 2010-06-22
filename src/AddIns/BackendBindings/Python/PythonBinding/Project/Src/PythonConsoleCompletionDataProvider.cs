@@ -7,33 +7,31 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using ICSharpCode.AvalonEdit.CodeCompletion;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.PythonBinding
 {
 	/// <summary>
 	/// Provides code completion for the Python Console window.
 	/// </summary>
-	public class PythonConsoleCompletionDataProvider : AbstractCompletionDataProvider
+	public class PythonConsoleCompletionDataProvider
 	{
 		IMemberProvider memberProvider;
 		
 		public PythonConsoleCompletionDataProvider(IMemberProvider memberProvider)
 		{
 			this.memberProvider = memberProvider;
-			DefaultIndex = 0;
 		}
 				
-		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
-		{
-			return GenerateCompletionData(GetLineText(textArea));
-		}
+		public ICompletionData[] GenerateCompletionData(IConsoleTextEditor textEditor)
+ 		{
+			string line = textEditor.GetLine(textEditor.TotalLines - 1);
+			return GenerateCompletionData(line);
+ 		}
 		
 		/// <summary>
 		/// Generates completion data for the specified text. The text should be everything before
@@ -42,13 +40,13 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public ICompletionData[] GenerateCompletionData(string line)
 		{
-			List<DefaultCompletionData> items = new List<DefaultCompletionData>();
+			List<PythonConsoleCompletionData> items = new List<PythonConsoleCompletionData>();
 
 			string name = GetName(line);
 			if (!String.IsNullOrEmpty(name)) {
 				try {
 					foreach (string member in memberProvider.GetMemberNames(name)) {
-						items.Add(new DefaultCompletionData(member, String.Empty, ClassBrowserIconService.Method.ImageIndex));
+						items.Add(new PythonConsoleCompletionData(member));
 					}
 				} catch { 
 					// Do nothing.
@@ -61,15 +59,6 @@ namespace ICSharpCode.PythonBinding
 		{
 			int startIndex = text.LastIndexOf(' ');
 			return text.Substring(startIndex + 1);
-		}
-		
-		/// <summary>
-		/// Gets the line of text up to the cursor position.
-		/// </summary>
-		string GetLineText(TextArea textArea)
-		{
-			LineSegment lineSegment = textArea.Document.GetLineSegmentForOffset(textArea.Caret.Offset);
-			return textArea.Document.GetText(lineSegment);
 		}
 	}
 }

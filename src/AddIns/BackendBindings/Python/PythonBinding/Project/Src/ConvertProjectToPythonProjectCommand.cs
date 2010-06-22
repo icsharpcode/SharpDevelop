@@ -14,9 +14,9 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Converter;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -25,17 +25,6 @@ namespace ICSharpCode.PythonBinding
 	/// </summary>
 	public class ConvertProjectToPythonProjectCommand : LanguageConverter
 	{
-		ITextEditorProperties textEditorProperties;
-		
-		public ConvertProjectToPythonProjectCommand(ITextEditorProperties textEditorProperties)
-		{
-			this.textEditorProperties = textEditorProperties;
-		}
-		
-		public ConvertProjectToPythonProjectCommand() : this(SharpDevelopTextEditorProperties.Instance)
-		{
-		}
-		
 		public override string TargetLanguageName {
 			get { return PythonProjectBinding.LanguageName; }
 		}
@@ -59,7 +48,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			NRefactoryToPythonConverter converter = NRefactoryToPythonConverter.Create(sourceItem.Include);
 			if (converter != null) {
-				targetItem.Include = ChangeExtension(sourceItem.Include);
+				targetItem.Include = ChangeFileExtensionToPythonFileExtension(sourceItem.Include);
 
 				string code = GetParseableFileContent(sourceItem.FileName);
 				string pythonCode = converter.Convert(code);
@@ -72,7 +61,7 @@ namespace ICSharpCode.PythonBinding
 					pythonCode += "\r\n\r\n" + converter.GenerateMainMethodCall(converter.EntryPointMethods[0]);
 				}
 				
-				SaveFile(targetItem.FileName, pythonCode, textEditorProperties.Encoding);
+				SaveFile(targetItem.FileName, pythonCode, GetDefaultFileEncoding());
 			} else {
 				LanguageConverterConvertFile(sourceItem, targetItem);
 			}
@@ -103,6 +92,11 @@ namespace ICSharpCode.PythonBinding
 		protected virtual void SaveFile(string fileName, string content, Encoding encoding)
 		{
 			File.WriteAllText(fileName, content, encoding);
+		}
+		
+		protected virtual Encoding GetDefaultFileEncoding()
+		{
+			return FileService.DefaultFileEncoding.GetEncoding();
 		}
 		
 		/// <summary>
@@ -138,7 +132,7 @@ namespace ICSharpCode.PythonBinding
 				IClass c = FindClass(sourceProject, startupObject);
 				if (c != null) {
 					string fileName = FileUtility.GetRelativePath(sourceProject.Directory, c.CompilationUnit.FileName);
-					targetProject.AddMainFile(ChangeExtension(fileName));
+					targetProject.AddMainFile(ChangeFileExtensionToPythonFileExtension(fileName));
 				}
 			}			
 		}
@@ -160,7 +154,7 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Changes the extension to ".py"
 		/// </summary>
-		static string ChangeExtension(string fileName)
+		static string ChangeFileExtensionToPythonFileExtension(string fileName)
 		{
 			return Path.ChangeExtension(fileName, ".py");	
 		}

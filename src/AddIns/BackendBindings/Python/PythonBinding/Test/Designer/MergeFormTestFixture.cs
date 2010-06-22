@@ -14,10 +14,11 @@ using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using AvalonEdit = ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
@@ -30,7 +31,7 @@ namespace PythonBinding.Tests.Designer
 	[TestFixture]
 	public class MergeFormTestFixture
 	{
-		IDocument document;
+		TextDocument document;
 		MockResourceService resourceService;
 		MockResourceWriter resourceWriter;
 		
@@ -41,26 +42,27 @@ namespace PythonBinding.Tests.Designer
 			resourceService = new MockResourceService();
 			resourceService.SetResourceWriter(resourceWriter);
 			
-			using (TextEditorControl textEditor = new TextEditorControl()) {
-				document = textEditor.Document;
-				textEditor.Text = GetTextEditorCode();
+			AvalonEdit.TextEditor textEditor = new AvalonEdit.TextEditor();
+			document = textEditor.Document;
+			textEditor.Text = GetTextEditorCode();
+			
+			PythonParser parser = new PythonParser();
+			ICompilationUnit compilationUnit = parser.Parse(new DefaultProjectContent(), @"test.py", document.Text);
 
-				PythonParser parser = new PythonParser();
-				ICompilationUnit compilationUnit = parser.Parse(new DefaultProjectContent(), @"test.py", document.TextContent);
+			using (DesignSurface designSurface = new DesignSurface(typeof(Form))) {
+				IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
+				Form form = (Form)host.RootComponent;
+				form.ClientSize = new Size(499, 309);
 
-				using (DesignSurface designSurface = new DesignSurface(typeof(Form))) {
-					IDesignerHost host = (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
-					Form form = (Form)host.RootComponent;
-					form.ClientSize = new Size(499, 309);
-
-					PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(form);
-					PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
-					namePropertyDescriptor.SetValue(form, "MainForm");
-					
-					DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
-					using (serializationManager.CreateSession()) {
-						PythonDesignerGenerator.Merge(host, new TextEditorDocument(document), compilationUnit, new MockTextEditorProperties(), serializationManager);
-					}
+				PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(form);
+				PropertyDescriptor namePropertyDescriptor = descriptors.Find("Name", false);
+				namePropertyDescriptor.SetValue(form, "MainForm");
+				
+				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
+				using (serializationManager.CreateSession()) {
+					AvalonEditDocumentAdapter adapter = new AvalonEditDocumentAdapter(document, null);
+					MockTextEditorOptions options = new MockTextEditorOptions();
+					PythonDesignerGenerator.Merge(host, adapter, compilationUnit, options, serializationManager);
 				}
 			}
 		}
@@ -69,7 +71,7 @@ namespace PythonBinding.Tests.Designer
 		public void MergedDocumentText()
 		{
 			string expectedText = GetTextEditorCode().Replace(GetTextEditorInitializeComponentMethod(), GetGeneratedInitializeComponentMethod());
-			Assert.AreEqual(expectedText, document.TextContent);
+			Assert.AreEqual(expectedText, document.Text);
 		}
 
 		string GetGeneratedCode()

@@ -18,12 +18,12 @@ namespace PythonBinding.Tests.Testing
 	public class PythonConsoleApplicationTestFixture
 	{
 		PythonConsoleApplication app;
-		AddInOptions options;
+		PythonAddInOptions options;
 		
 		[SetUp]
 		public void Init()
 		{
-			options = new AddInOptions(new Properties());
+			options = new PythonAddInOptions(new Properties());
 			options.PythonFileName = @"C:\IronPython\ipy.exe";
 			app = new PythonConsoleApplication(options);
 		}

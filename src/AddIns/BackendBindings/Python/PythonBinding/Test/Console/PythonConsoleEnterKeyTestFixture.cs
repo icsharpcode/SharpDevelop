@@ -6,10 +6,11 @@
 // </file>
 
 using System;
-using System.Windows.Forms;
+using System.Windows.Input;
 using Microsoft.Scripting.Hosting.Shell;
 using ICSharpCode.PythonBinding;
 using NUnit.Framework;
+using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Console
 {
@@ -21,45 +22,45 @@ namespace PythonBinding.Tests.Console
 	[TestFixture]
 	public class PythonConsoleEnterKeyTestFixture
 	{
-		MockTextEditor textEditor;
+		MockConsoleTextEditor textEditor;
 		PythonConsole console;
 		string prompt = ">>> ";
 
 		[SetUp]
 		public void Init()
 		{
-			textEditor = new MockTextEditor();
+			textEditor = new MockConsoleTextEditor();
 			console = new PythonConsole(textEditor, null);
 			console.Write(prompt, Style.Prompt);
 		}
 		
-		[Test]
 		public void EnterKeyDoesNotBreakUpExistingLine()
-		{
-			textEditor.RaiseKeyPressEvent('a');
-			textEditor.RaiseKeyPressEvent('b');
-			textEditor.SelectionStart = 1 + prompt.Length;
-			textEditor.Column = 1 + prompt.Length;
-			textEditor.RaiseDialogKeyPressEvent(Keys.Enter);
-			
-			Assert.AreEqual(">>> ab\r\n", textEditor.Text);
-		}
-		
-		[Test]
-		public void PreviousLineIsReadOnlyAfterEnterPressed()
-		{
-			textEditor.RaiseKeyPressEvent('a');
-			textEditor.RaiseKeyPressEvent('b');
-			textEditor.RaiseDialogKeyPressEvent(Keys.Enter);
-			console.Write(prompt, Style.Prompt);
-			
-			// Move up a line with cursor.
-			textEditor.Line = 0;
-			Assert.IsTrue(textEditor.RaiseKeyPressEvent('c'));
-			
-			string expectedText = ">>> ab\r\n" +
-								">>> ";
-			Assert.AreEqual(expectedText, textEditor.Text);
-		}
+ 		{
+			textEditor.RaisePreviewKeyDownEvent(Key.A);
+			textEditor.RaisePreviewKeyDownEvent(Key.B);
+ 			textEditor.SelectionStart = 1 + prompt.Length;
+ 			textEditor.Column = 1 + prompt.Length;
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+ 			
+			Assert.AreEqual(">>> AB\r\n", textEditor.Text);
+ 		}
+ 		
+ 		[Test]
+ 		public void PreviousLineIsReadOnlyAfterEnterPressed()
+ 		{
+			textEditor.RaisePreviewKeyDownEvent(Key.A);
+			textEditor.RaisePreviewKeyDownEvent(Key.B);
+			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+ 			console.Write(prompt, Style.Prompt);
+ 			
+ 			// Move up a line with cursor.
+ 			textEditor.Line = 0;
+			textEditor.RaisePreviewKeyDownEvent(Key.C);
+ 			
+			string expectedText = 
+				">>> AB\r\n" +
+				">>> ";
+ 			Assert.AreEqual(expectedText, textEditor.Text);
+ 		}
 	}
 }

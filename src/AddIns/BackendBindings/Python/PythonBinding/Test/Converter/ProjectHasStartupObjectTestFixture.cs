@@ -31,7 +31,6 @@ namespace PythonBinding.Tests.Converter
 		FileProjectItem targetMain2File;
 		MSBuildBasedProject sourceProject;
 		PythonProject targetProject;
-		MockTextEditorProperties mockTextEditorProperties;
 		PythonBinding.Tests.Utils.MockProjectContent mockProjectContent;
 		
 		string startupObject = "RootNamespace.Main";
@@ -70,10 +69,9 @@ namespace PythonBinding.Tests.Converter
 			mainClass.CompilationUnit.FileName = @"d:\projects\test\src\Main2.cs";
 			mockProjectContent.ClassToReturnFromGetClass = mainClass;
 			
-			mockTextEditorProperties = new MockTextEditorProperties();
-			convertProjectCommand = new DerivedConvertProjectToPythonProjectCommand(mockTextEditorProperties);
+			convertProjectCommand = new DerivedConvertProjectToPythonProjectCommand();
 			convertProjectCommand.ProjectContent = mockProjectContent;
-			mockTextEditorProperties.Encoding = Encoding.Unicode;
+			convertProjectCommand.FileServiceDefaultEncoding = Encoding.Unicode;
 			
 			Solution solution = new Solution();
 			sourceProject = new MSBuildBasedProject(

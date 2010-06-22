@@ -15,7 +15,7 @@ namespace ICSharpCode.PythonBinding
 	/// <summary>
 	/// Holds the options for the PythonBinding AddIn
 	/// </summary>
-	public class AddInOptions
+	public class PythonAddInOptions
 	{
 		/// <summary>
 		/// The name of the options as read from the PropertyService.
@@ -34,7 +34,7 @@ namespace ICSharpCode.PythonBinding
 		
 		Properties properties;
 		
-		public AddInOptions()
+		public PythonAddInOptions()
 			: this(PropertyService.Get(AddInOptionsName, new Properties()))
 		{
 		}
@@ -43,7 +43,7 @@ namespace ICSharpCode.PythonBinding
 		/// Creates the addin options class which will use
 		/// the options from the properties class specified.
 		/// </summary>
-		public AddInOptions(Properties properties)
+		public PythonAddInOptions(Properties properties)
 		{
 			this.properties = properties;
 		}

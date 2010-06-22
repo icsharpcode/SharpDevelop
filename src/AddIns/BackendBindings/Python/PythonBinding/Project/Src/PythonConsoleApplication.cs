@@ -20,7 +20,7 @@ namespace ICSharpCode.PythonBinding
 		string pythonScriptCommandLineArguments = String.Empty;
 		string workingDirectory = String.Empty;
 		
-		public PythonConsoleApplication(AddInOptions options)
+		public PythonConsoleApplication(PythonAddInOptions options)
 			: this(options.PythonFileName)
 		{
 		}

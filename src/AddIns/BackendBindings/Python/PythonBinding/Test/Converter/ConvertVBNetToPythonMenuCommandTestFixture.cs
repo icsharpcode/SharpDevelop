@@ -27,8 +27,9 @@ namespace PythonBinding.Tests.Converter
 		public void SetUpFixture()
 		{
 			mockViewContent = new MockEditableViewContent();
-			mockViewContent.Text = "class Foo\r\n" +
-									"end class";
+			mockViewContent.Text =
+				"class Foo\r\n" +
+				"end class";
 			mockViewContent.PrimaryFileName = new ICSharpCode.Core.FileName("test.vb");
 			
 			MockWorkbench workbench = new MockWorkbench();
@@ -36,11 +37,12 @@ namespace PythonBinding.Tests.Converter
 			window.ActiveViewContent = mockViewContent;
 			workbench.ActiveWorkbenchWindow = window;
 			
-			MockTextEditorProperties textEditorProperties = new MockTextEditorProperties();
-			textEditorProperties.ConvertTabsToSpaces = false;
-			textEditorProperties.IndentationSize = 2;
+			MockTextEditorOptions options = new MockTextEditorOptions();
+			options.ConvertTabsToSpaces = false;
+			options.IndentationSize = 2;
+			mockViewContent.TextEditorOptions = options;
 			
-			Run(workbench, textEditorProperties);
+			Run(workbench);
 		}
 		
 		[Test]

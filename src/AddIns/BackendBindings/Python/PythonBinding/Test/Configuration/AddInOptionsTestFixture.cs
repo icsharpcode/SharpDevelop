@@ -20,7 +20,7 @@ namespace PythonBinding.Tests.Configuration
 	[TestFixture]
 	public class AddInOptionsTestFixture
 	{
-		AddInOptions options;
+		PythonAddInOptions options;
 		Properties properties;
 		AddIn addin;
 		
@@ -35,7 +35,7 @@ namespace PythonBinding.Tests.Configuration
 		public void Init()
 		{
 			properties = new Properties();
-			options = new AddInOptions(properties);
+			options = new PythonAddInOptions(properties);
 		}
 		
 		[Test]

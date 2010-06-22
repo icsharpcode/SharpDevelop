@@ -35,18 +35,20 @@ namespace PythonBinding.Tests.Converter
 			window.ActiveViewContent = mockViewContent;
 			workbench.ActiveWorkbenchWindow = window;
 			
-			MockTextEditorProperties textEditorProperties = new MockTextEditorProperties();
-			textEditorProperties.IndentationSize = 4;
-			textEditorProperties.ConvertTabsToSpaces = true;
+			MockTextEditorOptions options = new MockTextEditorOptions();
+			options.IndentationSize = 4;
+			options.ConvertTabsToSpaces = true;
+			mockViewContent.TextEditorOptions = options;
 			
-			Run(workbench, textEditorProperties);
+			Run(workbench);
 		}
 		
 		[Test]
 		public void GeneratedPythonCode()
 		{
-			string code = "class Foo(object):\r\n" +
-						  "    pass";
+			string code = 
+				"class Foo(object):\r\n" +
+				"    pass";
 			Assert.AreEqual(code, newFileText);
 		}
 		
@@ -61,23 +63,6 @@ namespace PythonBinding.Tests.Converter
 		{
 			Assert.AreEqual("Python", language);
 		}
-		
-		[Test]
-		public void TabIndent()
-		{
-			MockTextEditorProperties properties = new MockTextEditorProperties();
-			properties.ConvertTabsToSpaces = false;
-			Assert.AreEqual("\t", NRefactoryToPythonConverter.GetIndentString(properties));
-		}
-		
-		[Test]
-		public void TwoChaSpaceIndent()
-		{
-			MockTextEditorProperties properties = new MockTextEditorProperties();
-			properties.ConvertTabsToSpaces = true;
-			properties.IndentationSize = 2;
-			Assert.AreEqual("  ", NRefactoryToPythonConverter.GetIndentString(properties));
-		}		
 		
 		protected override void NewFile(string defaultName, string language, string content)
 		{
