@@ -260,7 +260,9 @@ ExpressionFinder =
 	(. PushContext(Context.Global, t); .)
 	{ OptionStatement }
 	{ ImportsStatement }
-	{ AttributeBlock }
+	{ EXPECTEDCONFLICT("<") AttributeBlock } /* Expected LL(1) conflict: we can't tell global attributes */
+	                                         /* from those on types. */
+	                                         /* This isn't a problem, we can just treat all as global attributes */
 	{ NamespaceMemberDeclaration }
 	(. PopContext(); .)
 .
@@ -463,12 +465,12 @@ LambdaExpression =
 .
 
 SubLambdaExpression =
-	"Sub" [ "(" [ ParameterList ] ")" ]
-	( Statement | StatementTerminatorAndBlock "End" "Sub" )
+	"Sub" "(" [ ParameterList ] ")"
+	( GREEDY Statement | StatementTerminatorAndBlock "End" "Sub" )
 .
 
 FunctionLambdaExpression =
-	"Function" [ "(" [ ParameterList ] ")" ]
+	"Function" "(" [ ParameterList ] ")"
 	( Expression | [ "As" TypeName ] StatementTerminatorAndBlock "End" "Function" )
 .
 
@@ -532,7 +534,7 @@ Statement =
 	| WithOrLockStatement
 	| AddOrRemoveHandlerStatement
 	| RaiseEventStatement
-	| IfStatement
+	| EXPECTEDCONFLICT("If") IfStatement /* prefer if-statement to if-expression */
 	| SelectStatement
 	| WhileStatement
 	| DoLoopStatement
@@ -675,7 +677,9 @@ BranchStatement =
 .
 
 ReDimStatement =
-	"ReDim" [ "Preserve" ] Expression
+	"ReDim"
+	[ EXPECTEDCONFLICT("Preserve") "Preserve" ] /* Preserve is context-dependend keyword */
+	Expression
 .
 
 EraseStatement =
