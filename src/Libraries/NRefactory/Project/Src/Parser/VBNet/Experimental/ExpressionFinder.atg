@@ -367,17 +367,29 @@ Parameter =
 StatementTerminatorAndBlock =
 	(. PushContext(Context.Body, t); .)
 	StatementTerminator
-	{ [ Statement] StatementTerminator }
+	{ EXPECTEDCONFLICT("End")
+		(
+			[ Statement] StatementTerminator
+		|	"End"
+			( StatementTerminator /* End+StatementTerminator is end statement */
+			| /* End+anything else is the end of this block. */
+			  (.
+				currentState = endOfStatementTerminatorAndBlock; /* leave this block */
+				InformToken(t); /* process End again*/
+				/* for processing current token (la): go to the position after processing End */
+				goto switchlbl;
+			  .)
+			  ANY /* never reached due to goto above: */
+			      /* this ANY is just so that Coco knows this branch isn't empty */
+			)
+		)
+	}
+	(.NamedState:endOfStatementTerminatorAndBlock.)
 	(. PopContext(); .)
 .
 
 Expression =
-	(
 	SimpleExpressionWithSuffix { BinaryOperator SimpleExpressionWithSuffix }
-		| ConditionalExpression
-		| LambdaExpression
-//		| QueryExpression
-	)
 .
 
 BinaryOperator =
@@ -408,7 +420,9 @@ SimpleExpression =
     |    "GetType" "(" TypeName ")"
     |    "GetXmlNamespace" "(" (. readXmlIdentifier = true; .) Identifier ")"
     |    XmlLiteral
+    |    LambdaExpression
     |    CastExpression
+    |    ConditionalExpression
     )
 .
 
@@ -471,12 +485,12 @@ SubLambdaExpression =
 
 FunctionLambdaExpression =
 	"Function" "(" [ ParameterList ] ")"
-	( Expression | [ "As" TypeName ] StatementTerminatorAndBlock "End" "Function" )
+	( GREEDY Expression | [ "As" TypeName ] StatementTerminatorAndBlock "End" "Function" )
 .
 
-/* semantic action in front of = will be inserted on all paths that possibly lead to XmlLiteral */
+/* semantic action will be inserted on all paths that possibly lead to XmlLiteral */
 XmlLiteral
-    (. nextTokenIsPotentialStartOfXmlMode = true; .)
+    (.OnEachPossiblePath: nextTokenIsPotentialStartOfXmlMode = true; .)
 =
     (. PushContext(Context.Xml, t); .)
     { XmlComment } XmlElement { XmlComment }
@@ -672,7 +686,7 @@ BranchStatement =
 	| "Exit" ( "Do" | "For" | "While" | "Select" | "Sub" | "Function" | "Property" | "Try" )
 	| "Continue" ( "Do" | "For" | "While" )
 	| "Stop"
-  /*| "End" HACK End-Statements are not passed to EF-Parser from Lexer */
+  /*| "End" HACK End-Statements has special handling in Block */
 	| "Return" [ Expression ]
 .
 

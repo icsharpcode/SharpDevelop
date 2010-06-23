@@ -42,46 +42,30 @@ partial class ExpressionFinder {
 		stateStack.Push(-1); // required so that we don't crash when leaving the root production
 	}
 
-	void Expect(int expectedKind, Token t)
+	void Expect(int expectedKind, Token la)
 	{
-		if (t.kind != expectedKind)
-			Error(t);
+		if (la.kind != expectedKind)
+			Error(la);
 	}
 	
-	void Error(Token t) 
+	void Error(Token la) 
 	{
 	}
 	
-	Token consumedEndToken;
+	Token t;
 	
-	public void InformToken(Token t) 
-	{
-		if (consumedEndToken != null) {
-			if (t.kind == Tokens.EOL || t.kind == Tokens.Colon) {
-				consumedEndToken = null;
-				return; // ignore End statement
-			}
-			InformTokenInternal(consumedEndToken);
-			consumedEndToken = null;
-		}
-		if (t.kind == Tokens.End) {
-			consumedEndToken = t;
-		} else {
-			InformTokenInternal(t);
-		}
-	}
-
-	void InformTokenInternal(Token t) 
+	public void InformToken(Token la) 
 	{
 		nextTokenIsPotentialStartOfXmlMode = false;
-		ApplyToken(t);
 		-->informToken
+		ApplyToken(la);
+		if (la != null) t = la;
 	}
 	
 	public void Advance()
 	{
 		Console.WriteLine("Advance");
-		InformTokenInternal(null);
+		InformToken(null);
 	}
 	
 	static readonly bool[,] set = {
