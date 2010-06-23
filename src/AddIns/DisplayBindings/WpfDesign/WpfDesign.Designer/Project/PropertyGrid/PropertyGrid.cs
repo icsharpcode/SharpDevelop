@@ -27,16 +27,18 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		{
 			Categories = new ObservableCollection<Category>(new [] {
 				specialCategory, 
-				popularCategory, 
-				otherCategory
+				popularCategory, 				
+				otherCategory,
+				attachedCategory
 			});
 
 			Events = new PropertyNodeCollection();
 		}
 
 		Category specialCategory = new Category("Special");
-		Category popularCategory = new Category("Popular");
+		Category popularCategory = new Category("Popular");		
 		Category otherCategory = new Category("Other");
+		Category attachedCategory = new Category("Attached");
 
 		Dictionary<MemberDescriptor, PropertyNode> nodeFromDescriptor = new Dictionary<MemberDescriptor, PropertyNode>();
 
@@ -192,14 +194,14 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			List<MemberDescriptor> list = new List<MemberDescriptor>();
 
 			if (SelectedItems.Count() == 1) {
-				foreach (MemberDescriptor d in TypeHelper.GetAvailableProperties(SingleItem.ComponentType)) {
+				foreach (MemberDescriptor d in TypeHelper.GetAvailableProperties(SingleItem.Component)) {
 					list.Add(d);
 				}
 				foreach (MemberDescriptor d in TypeHelper.GetAvailableEvents(SingleItem.ComponentType)) {
 					list.Add(d);
 				}
 			} else {
-				foreach (MemberDescriptor d in TypeHelper.GetCommonAvailableProperties(SelectedItems.Select(t => t.ComponentType))) {
+				foreach (MemberDescriptor d in TypeHelper.GetCommonAvailableProperties(SelectedItems.Select(t => t.Component))) {
 					list.Add(d);
 				}
 			}
@@ -248,6 +250,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 		Category PickCategory(PropertyNode node)
 		{
 			if (Metadata.IsPopularProperty(node.FirstProperty)) return popularCategory;
+			if (node.FirstProperty.Name.Contains(".")) return attachedCategory;
 			var typeName = node.FirstProperty.DeclaringType.FullName;
 			if (typeName.StartsWith("System.Windows.") || typeName.StartsWith("ICSharpCode.WpfDesign.Designer.Controls."))
 				return otherCategory;
