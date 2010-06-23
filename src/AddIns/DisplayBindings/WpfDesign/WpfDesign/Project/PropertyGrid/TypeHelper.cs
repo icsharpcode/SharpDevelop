@@ -51,6 +51,7 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 			foreach (PropertyDescriptor p in TypeDescriptor.GetProperties(forType)) {
 				if (!p.IsBrowsable) continue;
 				if (p.IsReadOnly) continue;
+				if (p.Attributes.OfType<ObsoleteAttribute>().Count()!=0) continue;
 				if (p.Name.Contains(".")) continue;
 				yield return p;
 			}
@@ -63,6 +64,7 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 		{
 			foreach (EventDescriptor e in TypeDescriptor.GetEvents(forType)) {
 				if (!e.IsBrowsable) continue;
+				if (e.Attributes.OfType<ObsoleteAttribute>().Count()!=0) continue;
 				if (e.Name.Contains(".")) continue;
 				yield return e;
 			}
@@ -76,6 +78,7 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 			foreach(PropertyDescriptor p in TypeDescriptor.GetProperties(element)){
 				if (!p.IsBrowsable) continue;
 				if (p.IsReadOnly) continue;
+				if (p.Attributes.OfType<ObsoleteAttribute>().Count()!=0) continue;
 				yield return p;
 			}
 		}
