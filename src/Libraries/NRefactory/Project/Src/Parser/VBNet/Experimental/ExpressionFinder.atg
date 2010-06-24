@@ -295,7 +295,7 @@ NamespaceDeclaration =
 TypeDeclaration =
 	{ AttributeBlock }
 	{ TypeModifier }
-	( "Module" |  "Class" ) { ANY } StatementTerminator
+	( "Module" |  "Class" ) (. PushContext(Context.IdentifierExpected, t); .) ANY (. PopContext(); .) { ANY } StatementTerminator
 	(. PushContext(Context.Type, t); .)
 	{ MemberDeclaration }
 	"End" ( "Module" | "Class" ) StatementTerminator
@@ -325,12 +325,12 @@ SubOrFunctionDeclaration =
 .
 
 ExternalMemberDeclaration =
-	"Declare" [ "Ansi" | "Unicode" | "Auto" ] ( "Sub" | "Function" ) Identifier
+	"Declare" [ "Ansi" | "Unicode" | "Auto" ] ( "Sub" | "Function" ) (. PushContext(Context.IdentifierExpected, t); .) Identifier (. PopContext(); .)
 	"Lib" LiteralString [ "Alias" LiteralString ] [ "(" [ ParameterList ] ")" ] StatementTerminator
 .
 
 EventMemberDeclaration =
-	"Event" Identifier ( "As" TypeName | [ "(" [ ParameterList ] ")" ] )
+	"Event" (. PushContext(Context.IdentifierExpected, t); .) Identifier (. PopContext(); .) ( "As" TypeName | [ "(" [ ParameterList ] ")" ] )
 	[ "Implements" TypeName /*"." IdentifierOrKeyword*/ { "," TypeName /*"." IdentifierOrKeyword*/ } ]
 	/* the TypeName production already allows the "." IdentifierOrKeyword syntax, so to avoid an ambiguous grammer we just leave that out */
 	StatementTerminator
@@ -347,13 +347,13 @@ CustomEventMemberDeclaration =
 .
 
 OperatorDeclaration =
-	"Operator" ANY "(" ParameterList ")" [ "As" { AttributeBlock } TypeName ]
+	"Operator" (. PushContext(Context.IdentifierExpected, t); .) ANY (. PopContext(); .) "(" ParameterList ")" [ "As" { AttributeBlock } TypeName ]
 	StatementTerminatorAndBlock
 	"End" "Operator" StatementTerminator
 .
 
 MemberVariableOrConstantDeclaration =
-	[ "Const" ] IdentifierForFieldDeclaration [ "As" TypeName ] [ "=" Expression ] StatementTerminator
+	[ "Const" ] (. PushContext(Context.IdentifierExpected, t); .) IdentifierForFieldDeclaration (. PopContext(); .)  [ "As" TypeName ] [ "=" Expression ] StatementTerminator
 .
 
 ParameterList =
@@ -361,7 +361,7 @@ ParameterList =
 .
 
 Parameter =
-	{ AttributeBlock } { ParameterModifier } Identifier [ "As" TypeName ] [ "=" Expression ] 
+	{ AttributeBlock } { ParameterModifier } (. PushContext(Context.IdentifierExpected, t); .) Identifier (. PopContext(); .) [ "As" TypeName ] [ "=" Expression ] 
 .
 
 StatementTerminatorAndBlock =
@@ -594,7 +594,7 @@ ExpressionRangeVariable =
 						  "Explicit", "Equals", "Distinct", "Descending", "Compare", "By",
 						  "Binary", "Auto", "Assembly", "Ascending", "Ansi", "Aggregate", ident)
 		(
-			Identifier 
+			(. PushContext(Context.IdentifierExpected, t); .) Identifier (. PopContext(); .) 
 			(
 				"As" TypeName "="
 				| "="
@@ -613,7 +613,7 @@ ExpressionRangeVariable =
 .
 
 CollectionRangeVariable =
-	Identifier [ "As" TypeName ] "In" Expression
+	(. PushContext(Context.IdentifierExpected, t); .) Identifier (. PopContext(); .) [ "As" TypeName ] "In" Expression
 .
 
 /* semantic action will be inserted on all paths that possibly lead to XmlLiteral */
@@ -692,7 +692,7 @@ Statement =
 .
 
 VariableDeclarationStatement =
-	( "Dim" | "Static" | "Const" ) Identifier [ "?" ] [ ( "(" { "," } ")" ) ] { "," Identifier [ "?" ] [ ( "(" { "," } ")" ) ] } [ "As" [ "New" ] TypeName ] [ "=" Expression ]
+	( "Dim" | "Static" | "Const" ) (. PushContext(Context.IdentifierExpected, t); .) Identifier (. PopContext(); .) [ "?" ] [ ( "(" { "," } ")" ) ] { "," (. PushContext(Context.IdentifierExpected, t); .) Identifier (. PopContext(); .) [ "?" ] [ ( "(" { "," } ")" ) ] } [ "As" [ "New" ] TypeName ] [ "=" Expression ]
 .
 
 WithOrLockStatement =
@@ -781,7 +781,7 @@ ForEachLoopStatement =
 .
 
 ForLoopVariable =
-	SimpleExpression [ "?" ] { ExpressionSuffix }
+	(. PushContext(Context.IdentifierExpected, t); .) SimpleExpression (. PopContext(); .) [ "?" ] { ExpressionSuffix } [ "As" TypeName ]
 .
 
 ErrorHandlingStatement =
@@ -798,7 +798,7 @@ TryStatement =
 	StatementTerminatorAndBlock
 	{
 		"Catch"
-		[ Identifier [ "As" TypeName ] ]
+		[ (. PushContext(Context.IdentifierExpected, t); .) Identifier (. PopContext(); .) [ "As" TypeName ] ]
 		[ "When" Expression ]
 		StatementTerminatorAndBlock
 	}
@@ -845,11 +845,8 @@ ArgumentList =
 
 /* This production handles pseudo keywords that are needed in the grammar */
 Identifier =
-	(
-		IdentifierForFieldDeclaration
-	|
-		"Custom"
-	)
+	IdentifierForFieldDeclaration
+	| "Custom"
 .
 
  IdentifierForFieldDeclaration =

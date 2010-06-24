@@ -50,6 +50,8 @@ partial class ExpressionFinder {
 	
 	void Error(Token la) 
 	{
+		output.AppendLine("not expected: " + la);
+		Console.WriteLine("not expected: " + la);
 	}
 	
 	Token t;

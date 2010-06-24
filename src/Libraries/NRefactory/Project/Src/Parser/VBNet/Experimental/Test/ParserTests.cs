@@ -41,6 +41,8 @@ exit Global
 End Class
 ",
 				@"enter Global
+	enter IdentifierExpected
+	exit IdentifierExpected
 	enter Type
 		enter Member
 			enter IdentifierExpected
@@ -71,6 +73,8 @@ exit Global
 End Class
 ",
 				@"enter Global
+	enter IdentifierExpected
+	exit IdentifierExpected
 	enter Type
 		enter Member
 			enter IdentifierExpected
@@ -108,6 +112,8 @@ End Class
 								@"enter Global
 	enter Attribute
 	exit Attribute
+	enter IdentifierExpected
+	exit IdentifierExpected
 	enter Type
 		enter Member
 			enter IdentifierExpected
@@ -137,6 +143,8 @@ End Class
 								@"enter Global
 	enter Attribute
 	exit Attribute
+	enter IdentifierExpected
+	exit IdentifierExpected
 	enter Type
 		enter Member
 			enter IdentifierExpected
@@ -164,6 +172,8 @@ exit Global
 End Class
 ",
 								@"enter Global
+	enter IdentifierExpected
+	exit IdentifierExpected
 	enter Type
 		enter Member
 			enter Attribute
@@ -194,11 +204,63 @@ exit Global
 End Class
 ",
 								@"enter Global
+	enter IdentifierExpected
+	exit IdentifierExpected
 	enter Type
 		enter Member
 			enter IdentifierExpected
 			exit IdentifierExpected
 			enter Body
+				enter Body
+				exit Body
+			exit Body
+		exit Member
+	exit Type
+exit Global
+"
+			);
+		}
+		
+		[Test]
+		public void StatementsTest()
+		{
+			RunTest(
+				@"Class Test
+	Public Sub New()
+		For i As Integer = 0 To 10
+		
+		Next
+	
+		For Each x As Integer In list
+		
+		Next
+		
+		Try
+		
+		Catch e As Exception
+		
+		End Try
+	End Sub
+End Class
+",
+								@"enter Global
+	enter IdentifierExpected
+	exit IdentifierExpected
+	enter Type
+		enter Member
+			enter IdentifierExpected
+			exit IdentifierExpected
+			enter Body
+				enter IdentifierExpected
+				exit IdentifierExpected
+				enter Body
+				exit Body
+				enter IdentifierExpected
+				exit IdentifierExpected
+				enter Body
+				exit Body
+				enter Body
+				exit Body
 				enter IdentifierExpected
 				exit IdentifierExpected
 				enter Body
