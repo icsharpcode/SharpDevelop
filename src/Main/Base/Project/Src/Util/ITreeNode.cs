@@ -5,6 +5,7 @@
 //     <version>$Revision: $</version>
 // </file>
 using System;
+using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -14,5 +15,7 @@ namespace ICSharpCode.SharpDevelop
 	public interface ITreeNode<TContent>
 	{
 		TContent Content { get; }
+		
+		IEnumerable<ITreeNode<TContent>> Children { get; }
 	}
 }

@@ -55,6 +55,16 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 					new CodeSnippet {
 						Name = "prop",
 						Description = "Property",
+						Text = "public ${Type=object} ${Property=Property} { get; set; }${Caret}"
+					},
+					new CodeSnippet {
+						Name = "propg",
+						Description = "Property with private setter",
+						Text = "public ${Type=object} ${Property=Property} { get; private set; }${Caret}"
+					},
+					new CodeSnippet {
+						Name = "propfull",
+						Description = "Property with backing field",
 						Text = "${type} ${toFieldName(name)};\n\npublic ${type=int} ${name=Property} {\n\tget { return ${toFieldName(name)}; }\n\tset { ${toFieldName(name)} = value; }\n}${Caret}"
 					},
 					new CodeSnippet {
@@ -70,11 +80,6 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 							+ Environment.NewLine + "}${Caret}"
 					},
 					new CodeSnippet {
-						Name = "props",
-						Description = "Property",
-						Text = "public ${Type=object} ${Property=Property} { get; set; }${Caret}"
-					},
-					new CodeSnippet {
 						Name = "ctor",
 						Description = "Constructor",
 						Text = "${refactoring:ctor}"
@@ -84,8 +89,6 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 						Description = "Switch statement",
 						// dynamic switch snippet (inserts switch body dependent on condition)
 						Text = "switch (${condition}) {\n\t${refactoring:switchbody}\n}"
-						// static switch snippet (always inserts the same, independent of condition)
-						//Text = "switch (${condition}) {\n\tcase ${firstcase=0}:\n\t\t${Caret}\n\t\tbreak;\n\tdefault:\n\t\t${Selection}\n\t\tbreak;\n}"
 					},
 					new CodeSnippet {
 						Name = "try",
