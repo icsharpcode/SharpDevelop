@@ -415,19 +415,46 @@ SimpleExpressionWithSuffix =
 SimpleExpression =
     (    Literal
     |    ( "(" Expression ")" )
-    |    Identifier
+    |    IdentifierForExpressionStart
     |    ( "." | "!" ) IdentifierOrKeyword
     |    "GetType" "(" TypeName ")"
     |    "GetXmlNamespace" "(" (. readXmlIdentifier = true; .) Identifier ")"
     |    XmlLiteral
     |    LambdaExpression
+    |    GREEDY QueryExpression
     |    CastExpression
     |    ConditionalExpression
     )
 .
 
 NewExpression =
-	"New" [ TypeName [ "From" CollectionInitializer ] ] [ "With" ObjectInitializer ]
+	"New"
+	(
+		TypeName
+		
+		[
+			EXPECTEDCONFLICT("From")
+			(
+				"From"
+				(
+					CollectionInitializer /* From + CollectionInitializer is a NewExpression */
+				|
+					(.
+						currentState = endOfStatementTerminatorAndBlock; /* leave this block */
+						InformToken(t); /* process From again*/
+						/* for processing current token (la): go to the position after processing End */
+						goto switchlbl;
+					.)
+					ANY /* never reached due to goto above: */
+					/* this ANY is just so that Coco knows this branch isn't empty */
+				)
+			|
+				"With" ObjectInitializer
+			)
+		]
+	|
+		"With" ObjectInitializer
+	)
 .
 
 ObjectInitializer =
@@ -486,6 +513,107 @@ SubLambdaExpression =
 FunctionLambdaExpression =
 	"Function" "(" [ ParameterList ] ")"
 	( GREEDY Expression | [ "As" TypeName ] StatementTerminatorAndBlock "End" "Function" )
+.
+
+QueryExpression =
+	( FromQueryOperator | AggregateQueryOperator )
+	{ QueryOperator }
+.
+ 
+QueryOperator =
+	FromQueryOperator
+	| AggregateQueryOperator
+	| SelectQueryOperator
+	| DistinctQueryOperator
+	| WhereQueryOperator
+	| OrderByQueryOperator
+	| PartitionQueryOperator
+	| LetQueryOperator
+	| GroupByOrGroupJoinQueryOperator
+	| JoinQueryOperator 
+.
+
+FromQueryOperator =
+	"From" CollectionRangeVariable { "," CollectionRangeVariable }
+.
+
+AggregateQueryOperator =
+	"Aggregate" CollectionRangeVariable { QueryOperator } "Into" ExpressionRangeVariable { "," ExpressionRangeVariable }
+.
+
+SelectQueryOperator =
+	"Select" ExpressionRangeVariable { "," ExpressionRangeVariable }
+.
+
+DistinctQueryOperator =
+	"Distinct"
+.
+
+WhereQueryOperator =
+	"Where" Expression
+.
+
+OrderByQueryOperator =
+	"Order" "By" Expression ( "Ascending" | "Descending" ) { "," Expression ( "Ascending" | "Descending" ) }
+.
+
+PartitionQueryOperator =
+	( "Take" | "Skip" ) [ "While" ] Expression
+.
+
+LetQueryOperator =
+	"Let" ExpressionRangeVariable { "," ExpressionRangeVariable }
+.
+
+GroupByOrGroupJoinQueryOperator =
+	"Group"
+	(
+		EXPECTEDCONFLICT("Join")
+		JoinQueryOperator { ( "Group"  JoinQueryOperator GroupJoinSuffix | JoinQueryOperator ) }
+		GroupJoinSuffix
+	|
+		( EXPECTEDCONFLICT("By") () | ExpressionRangeVariable { "," ExpressionRangeVariable } )
+		"By" ExpressionRangeVariable { "," ExpressionRangeVariable }
+		"Into" ExpressionRangeVariable { "," ExpressionRangeVariable }
+	)
+.
+
+JoinQueryOperator =
+	"Join" CollectionRangeVariable
+	"On" Expression "Equals" Expression { "," Expression "Equals" Expression }
+.
+
+GroupJoinSuffix =
+	"Into" ExpressionRangeVariable { "," ExpressionRangeVariable }
+.
+
+ExpressionRangeVariable =
+	[
+		EXPECTEDCONFLICT("Where", "Until", "Unicode", "Text", "Take", "Skip", "Preserve",
+						  "Order", "Off", "Key", "Join", "Into", "Infer", "Group", "From",
+						  "Explicit", "Equals", "Distinct", "Descending", "Compare", "By",
+						  "Binary", "Auto", "Assembly", "Ascending", "Ansi", "Aggregate", ident)
+		(
+			Identifier 
+			(
+				"As" TypeName "="
+				| "="
+				| (.
+					currentState = endOfStatementTerminatorAndBlock; /* leave this block */
+					InformToken(t); /* process Identifier again*/
+					/* for processing current token (la): go to the position after processing End */
+					goto switchlbl;
+				.)
+				ANY /* never reached due to goto above: */
+				/* this ANY is just so that Coco knows this branch isn't empty */
+			)
+		)
+	]
+	Expression
+.
+
+CollectionRangeVariable =
+	Identifier [ "As" TypeName ] "In" Expression
 .
 
 /* semantic action will be inserted on all paths that possibly lead to XmlLiteral */
@@ -717,18 +845,21 @@ ArgumentList =
 
 /* This production handles pseudo keywords that are needed in the grammar */
 Identifier =
-	(. PushContext(Context.IdentifierExpected, t); .)
 	(
 		IdentifierForFieldDeclaration
 	|
 		"Custom"
 	)
-	(. PopContext(); .)
 .
 
-IdentifierForFieldDeclaration =
-	ident
+ IdentifierForFieldDeclaration =
+	IdentifierForExpressionStart
 	| "Aggregate"
+	| "From"
+.
+
+IdentifierForExpressionStart =
+	ident
 	| "Ansi"
 	| "Ascending"
 	| "Assembly"
@@ -740,7 +871,6 @@ IdentifierForFieldDeclaration =
 	| "Distinct"
 	| "Equals"
 	| "Explicit"
-	| "From"
 	| "Group"
 	| "Infer"
 	| "Into"

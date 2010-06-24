@@ -222,6 +222,8 @@ exit Global
 				p.InformToken(t);
 			} while (t.Kind != VB.Tokens.EOF);
 			
+			Console.WriteLine(p.Output);
+			
 			Assert.AreEqual(expectedOutput, p.Output);
 		}
 	}
