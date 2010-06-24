@@ -35,20 +35,22 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return resultList.OrderBy(c => c.FullyQualifiedName);
 		}
 		
+		public static IEnumerable<ITreeNode<IClass>> FindDerivedClasses(IClass baseClass, IEnumerable<IProjectContent> projectContents)
+		{
+			return null;
+		}
+		
 		static void FindDerivedClasses(HashSet<IClass> resultList, IClass baseClass, IEnumerable<IProjectContent> projectContents, bool directDerivationOnly)
 		{
 			baseClass = baseClass.GetCompoundClass();
-			string baseClassName = baseClass.Name;
-			string baseClassFullName = baseClass.FullyQualifiedName;
-			LoggingService.Debug("FindDerivedClasses for " + baseClassFullName);
+			LoggingService.Debug("FindDerivedClasses for " + baseClass.FullyQualifiedName);
 			List<IClass> list = new List<IClass>();
 			foreach (IProjectContent pc in projectContents) {
-				if (pc != baseClass.ProjectContent && !pc.ReferencedContents.Contains(baseClass.ProjectContent)) {
+				if ((pc == baseClass.ProjectContent) || pc.ReferencedContents.Contains(baseClass.ProjectContent)) {
 					// only project contents referencing the content of the base class
 					// can derive from the class
-					continue;
+					AddDerivedClasses(pc, baseClass, pc.Classes, list);
 				}
-				AddDerivedClasses(pc, baseClass, baseClassName, baseClassFullName, pc.Classes, list);
 			}
 			if (directDerivationOnly) {
 				resultList.AddRange(list);
@@ -61,20 +63,19 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
-		static void AddDerivedClasses(IProjectContent pc, IClass baseClass, string baseClassName, string baseClassFullName,
-		                              IEnumerable<IClass> classList, IList<IClass> resultList)
+		static void AddDerivedClasses(IProjectContent pc, IClass baseClass, IEnumerable<IClass> classList, IList<IClass> resultList)
 		{
+			string baseClassName = baseClass.Name;
+			string baseClassFullName = baseClass.FullyQualifiedName;
 			foreach (IClass c in classList) {
-				AddDerivedClasses(pc, baseClass, baseClassName, baseClassFullName, c.InnerClasses, resultList);
-				int count = c.BaseTypes.Count;
-				for (int i = 0; i < count; i++) {
-					string baseTypeName = c.BaseTypes[i].Name;
-					if (pc.Language.NameComparer.Equals(baseTypeName, baseClassName) ||
-					    pc.Language.NameComparer.Equals(baseTypeName, baseClassFullName)) {
-						IReturnType possibleBaseClass = c.GetBaseType(i);
-						if (possibleBaseClass.FullyQualifiedName == baseClass.FullyQualifiedName
-						    && possibleBaseClass.TypeArgumentCount == baseClass.TypeParameters.Count)
-						{
+				AddDerivedClasses(pc, baseClass, c.InnerClasses, resultList);
+				foreach (var baseType in c.BaseTypes) {
+					string baseTypeName = baseType.Name;
+					// If this type has our type as base, add it to derived
+					if (pc.Language.NameComparer.Equals(baseType.Name, baseClassName) ||
+					    pc.Language.NameComparer.Equals(baseType.Name, baseClassFullName)) {
+						if (baseType.FullyQualifiedName == baseClassFullName &&
+						    baseType.TypeArgumentCount == baseClass.TypeParameters.Count) {
 							resultList.Add(c);
 						}
 					}

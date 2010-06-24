@@ -507,11 +507,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get { return false; }
 		}
 		
-		public IReturnType GetBaseType(int index)
-		{
-			return BaseTypes[index];
-		}
-		
 		IReturnType cachedBaseType;
 		
 		public IReturnType BaseType {

@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System.Linq;
 using ICSharpCode.SharpDevelop.Editor.Search;
 using System;
 using System.Collections.Generic;

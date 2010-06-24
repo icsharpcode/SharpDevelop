@@ -43,9 +43,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
-		/// <summary>Gets the class associated with the base type with the same index.</summary>
-		IReturnType GetBaseType(int index);
-		
 		IList<IClass> InnerClasses {
 			get;
 		}

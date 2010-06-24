@@ -56,9 +56,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			
 			IProjectContent content = c.ProjectContent;
 			if (content != null) {
-				int count = c.BaseTypes.Count;
-				for (int i = 0; i < count; i++) {
-					IReturnType baseType = c.GetBaseType(i);
+				foreach (var baseType in c.BaseTypes) {
 					IClass baseClass = (baseType != null) ? baseType.GetUnderlyingClass() : null;
 					if (baseClass != null) {
 						new ClassNode(project, baseClass).AddTo(this);
