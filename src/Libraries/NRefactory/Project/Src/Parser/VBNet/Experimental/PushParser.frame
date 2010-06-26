@@ -36,6 +36,7 @@ partial class ExpressionFinder {
 	readonly Stack<int> stateStack = new Stack<int>();
 	bool nextTokenIsPotentialStartOfXmlMode = false;
 	bool readXmlIdentifier = false;
+	bool nextTokenIsStartOfImportsOrAccessExpression = false;
 	
 	public ExpressionFinder()
 	{
@@ -59,6 +60,8 @@ partial class ExpressionFinder {
 	public void InformToken(Token la) 
 	{
 		nextTokenIsPotentialStartOfXmlMode = false;
+		readXmlIdentifier = false;
+		nextTokenIsStartOfImportsOrAccessExpression = false;
 		-->informToken
 		ApplyToken(la);
 		if (la != null) t = la;

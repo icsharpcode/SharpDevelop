@@ -66,6 +66,20 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		}
 
 		[Test]
+		public void TestTripleDot()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("..."));
+			Assert.AreEqual(Tokens.TripleDot, lexer.NextToken().Kind);
+		}
+
+		[Test]
+		public void TestDotAt()
+		{
+			ILexer lexer = GenerateLexer(new StringReader(".@"));
+			Assert.AreEqual(Tokens.DotAt, lexer.NextToken().Kind);
+		}
+
+		[Test]
 		public void TestExclamationMark()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("!"));

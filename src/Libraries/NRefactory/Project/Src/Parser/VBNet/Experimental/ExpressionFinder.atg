@@ -42,6 +42,8 @@ TOKENS
 	"/"
 	"\\"
 	"."
+	"..."
+	".@"
 	"!"
 	"-"
 	"+"
@@ -274,7 +276,7 @@ OptionStatement =
 .
 
 ImportsStatement = 
-	"Imports" (. nextTokenIsPotentialStartOfXmlMode = true; .) { ANY } StatementTerminator
+	"Imports" (. nextTokenIsStartOfImportsOrAccessExpression = true; .) { ANY } StatementTerminator
 .
 
 AttributeBlock =
@@ -282,8 +284,8 @@ AttributeBlock =
 .
 
 NamespaceMemberDeclaration =
-	NamespaceDeclaration |
-	TypeDeclaration
+	NamespaceDeclaration
+	| TypeDeclaration
 .
 
 NamespaceDeclaration =
@@ -388,7 +390,12 @@ StatementTerminatorAndBlock =
 	(. PopContext(); .)
 .
 
-Expression =
+Expression
+	(.
+		if (la != null)
+			CurrentBlock.lastExpressionStart = la.Location;
+	.)
+=
 	SimpleExpressionWithSuffix { BinaryOperator SimpleExpressionWithSuffix }
 .
 
@@ -467,7 +474,7 @@ CollectionInitializer =
 
 ExpressionSuffix =
     "(" ( "Of" TypeName { "," TypeName } ")" | ArgumentList ")" )
-|    ( "." | "!" ) IdentifierOrKeyword
+|    ( "." | "!" | ".@" | "..." ) (. nextTokenIsStartOfImportsOrAccessExpression = true; .) [ XmlOpenTag ] IdentifierOrKeyword [ XmlCloseTag ]
 .
 
 CastExpression =
@@ -621,12 +628,20 @@ XmlLiteral
     (.OnEachPossiblePath: nextTokenIsPotentialStartOfXmlMode = true; .)
 =
     (. PushContext(Context.Xml, t); .)
-    { XmlComment } XmlElement { XmlComment }
+    { XmlComment [ XmlContent ] | XmlProcessingInstruction [ XmlContent ] } XmlElement { XmlComment [ XmlContent ] }
     (. PopContext(); .)
 .
 
 XmlElement =
-	XmlOpenTag { ANY } ( XmlCloseTagEmptyElement | XmlCloseTag { ANY | XmlElement } XmlOpenEndTag { ANY } XmlCloseTag )
+	XmlOpenTag { ANY | XmlEmbeddedExpression } ( XmlCloseTagEmptyElement | XmlCloseTag { ANY | XmlEmbeddedExpression | XmlElement } XmlOpenEndTag { ANY | XmlEmbeddedExpression } XmlCloseTag )
+.
+
+XmlProcessingInstruction =
+	XmlProcessingInstructionStart Identifier { Identifier [ "=" LiteralString ] } XmlProcessingInstructionEnd
+.
+
+XmlEmbeddedExpression =
+	XmlStartInlineVB Expression XmlEndInlineVB
 .
 
 PrimitiveTypeName = 
@@ -652,7 +667,189 @@ TypeName = ( "Global" | Identifier | PrimitiveTypeName ) { TypeSuffix } { "." Id
 
 TypeSuffix = "(" ( "Of" [ TypeName ] { "," [ TypeName ] } | [ ArgumentList ] ) ")" .
 
-IdentifierOrKeyword = ANY .
+IdentifierOrKeyword = ident
+| "AddHandler"
+| "AddressOf"
+| "Aggregate"
+| "Alias"
+| "And"
+| "AndAlso"
+| "Ansi"
+| "As"
+| "Ascending"
+| "Assembly"
+| "Auto"
+| "Binary"
+| "Boolean"
+| "ByRef"
+| "By"
+| "Byte"
+| "ByVal"
+| "Call"
+| "Case"
+| "Catch"
+| "CBool"
+| "CByte"
+| "CChar"
+| "CDate"
+| "CDbl"
+| "CDec"
+| "Char"
+| "CInt"
+| "Class"
+| "CLng"
+| "CObj"
+| "Compare"
+| "Const"
+| "Continue"
+| "CSByte"
+| "CShort"
+| "CSng"
+| "CStr"
+| "CType"
+| "CUInt"
+| "CULng"
+| "CUShort"
+| "Custom"
+| "Date"
+| "Decimal"
+| "Declare"
+| "Default"
+| "Delegate"
+| "Descending"
+| "Dim"
+| "DirectCast"
+| "Distinct"
+| "Do"
+| "Double"
+| "Each"
+| "Else"
+| "ElseIf"
+| "End"
+| "EndIf"
+| "Enum"
+| "Equals"
+| "Erase"
+| "Error"
+| "Event"
+| "Exit"
+| "Explicit"
+| "False"
+| "Finally"
+| "For"
+| "Friend"
+| "From"
+| "Function"
+| "Get"
+| "GetType"
+| "Global"
+| "GoSub"
+| "GoTo"
+| "Group"
+| "Handles"
+| "If"
+| "Implements"
+| "Imports"
+| "In"
+| "Infer"
+| "Inherits"
+| "Integer"
+| "Interface"
+| "Into"
+| "Is"
+| "IsNot"
+| "Join"
+| "Key"
+| "Let"
+| "Lib"
+| "Like"
+| "Long"
+| "Loop"
+| "Me"
+| "Mod"
+| "Module"
+| "MustInherit"
+| "MustOverride"
+| "MyBase"
+| "MyClass"
+| "Namespace"
+| "Narrowing"
+| "New"
+| "Next"
+| "Not"
+| "Nothing"
+| "NotInheritable"
+| "NotOverridable"
+| "Object"
+| "Of"
+| "Off"
+| "On"
+| "Operator"
+| "Option"
+| "Optional"
+| "Or"
+| "Order"
+| "OrElse"
+| "Overloads"
+| "Overridable"
+| "Overrides"
+| "ParamArray"
+| "Partial"
+| "Preserve"
+| "Private"
+| "Property"
+| "Protected"
+| "Public"
+| "RaiseEvent"
+| "ReadOnly"
+| "ReDim"
+| "Rem"
+| "RemoveHandler"
+| "Resume"
+| "Return"
+| "SByte"
+| "Select"
+| "Set"
+| "Shadows"
+| "Shared"
+| "Short"
+| "Single"
+| "Skip"
+| "Static"
+| "Step"
+| "Stop"
+| "Strict"
+| "String"
+| "Structure"
+| "Sub"
+| "SyncLock"
+| "Take"
+| "Text"
+| "Then"
+| "Throw"
+| "To"
+| "True"
+| "Try"
+| "TryCast"
+| "TypeOf"
+| "UInteger"
+| "ULong"
+| "Unicode"
+| "Until"
+| "UShort"
+| "Using"
+| "Variant"
+| "Wend"
+| "When"
+| "Where"
+| "While"
+| "Widening"
+| "With"
+| "WithEvents"
+| "WriteOnly"
+| "Xor"
+| "GetXmlNamespace"
+ .
 
 Literal =
 	LiteralString |
@@ -671,7 +868,12 @@ Literal =
 	"MyClass"
 .
 
-Statement =
+Statement
+(.
+	if (la != null)
+		CurrentBlock.lastExpressionStart = la.Location;
+.)
+=
 	VariableDeclarationStatement
 	| WithOrLockStatement
 	| AddOrRemoveHandlerStatement
@@ -692,7 +894,13 @@ Statement =
 .
 
 VariableDeclarationStatement =
-	( "Dim" | "Static" | "Const" ) (. PushContext(Context.IdentifierExpected, t); .) Identifier (. PopContext(); .) [ "?" ] [ ( "(" { "," } ")" ) ] { "," (. PushContext(Context.IdentifierExpected, t); .) Identifier (. PopContext(); .) [ "?" ] [ ( "(" { "," } ")" ) ] } [ "As" [ "New" ] TypeName ] [ "=" Expression ]
+	( "Dim" | "Static" | "Const" )
+	(.
+		PushContext(Context.IdentifierExpected, t);
+		if (la != null)
+			CurrentBlock.lastExpressionStart = la.Location;
+	.)
+	Identifier (. PopContext(); .) [ "?" ] [ ( "(" { "," } ")" ) ] { "," (. PushContext(Context.IdentifierExpected, t); .) Identifier (. PopContext(); .) [ "?" ] [ ( "(" { "," } ")" ) ] } [ "As" [ "New" ] TypeName ] [ "=" Expression ]
 .
 
 WithOrLockStatement =
@@ -849,7 +1057,7 @@ Identifier =
 	| "Custom"
 .
 
- IdentifierForFieldDeclaration =
+IdentifierForFieldDeclaration =
 	IdentifierForExpressionStart
 	| "Aggregate"
 	| "From"

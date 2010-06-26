@@ -327,6 +327,87 @@ namespace DefaultNamespace
 		}
 		
 		[Test]
+		public void InlineVB()
+		{
+			string code = @"Dim xml = <?xml version='1.0'?>
+                  <menu>
+                      <course name=""appetizer"">
+                          <%= From m In menu _
+                              Where m.Course = ""appetizer"" _
+                              Select <dish><%= m.Food %></dish> _
+                          %>
+                      </course>
+                      <course name=""main"">
+                          <%= From m In menu _
+                              Where m.Course = ""main"" _
+                              Select <dish><%= m.Food %></dish> _
+                          %>
+                      </course>
+                      <course name=""dessert"">
+                          <%= From m In menu _
+                              Where m.Course = ""dessert"" _
+                              Select <dish><%= m.Food %></dish> _
+                          %>
+                      </course>
+                  </menu>";
+			
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(code)));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign, Tokens.XmlProcessingInstructionStart, Tokens.Identifier,
+			            Tokens.Identifier, Tokens.Assign, Tokens.LiteralString, Tokens.XmlProcessingInstructionEnd, Tokens.XmlContent,
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlOpenTag, Tokens.Identifier,
+			            Tokens.Identifier, Tokens.Assign, Tokens.LiteralString, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlStartInlineVB,
+			            Tokens.From, Tokens.Identifier, Tokens.In, Tokens.Identifier, Tokens.Where, Tokens.Identifier, Tokens.Dot,
+			            Tokens.Identifier, Tokens.Assign, Tokens.LiteralString, Tokens.Select, Tokens.XmlOpenTag, Tokens.Identifier,
+			            Tokens.XmlCloseTag, Tokens.XmlStartInlineVB, Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.XmlEndInlineVB,
+			            Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlEndInlineVB, Tokens.XmlContent, Tokens.XmlOpenEndTag,
+			            Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlOpenTag, Tokens.Identifier,
+			            Tokens.Identifier, Tokens.Assign, Tokens.LiteralString, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlStartInlineVB,
+			            Tokens.From, Tokens.Identifier, Tokens.In, Tokens.Identifier, Tokens.Where, Tokens.Identifier, Tokens.Dot,
+			            Tokens.Identifier, Tokens.Assign, Tokens.LiteralString, Tokens.Select, Tokens.XmlOpenTag, Tokens.Identifier,
+			            Tokens.XmlCloseTag, Tokens.XmlStartInlineVB, Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.XmlEndInlineVB,
+			            Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlEndInlineVB, Tokens.XmlContent, Tokens.XmlOpenEndTag,
+			            Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlOpenTag, Tokens.Identifier,
+			            Tokens.Identifier, Tokens.Assign, Tokens.LiteralString, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlStartInlineVB,
+			            Tokens.From, Tokens.Identifier, Tokens.In, Tokens.Identifier, Tokens.Where, Tokens.Identifier, Tokens.Dot,
+			            Tokens.Identifier, Tokens.Assign, Tokens.LiteralString, Tokens.Select, Tokens.XmlOpenTag, Tokens.Identifier,
+			            Tokens.XmlCloseTag, Tokens.XmlStartInlineVB, Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.XmlEndInlineVB,
+			            Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlEndInlineVB, Tokens.XmlContent, Tokens.XmlOpenEndTag,
+			            Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag
+			           );
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
+		public void XmlAccessOperators()
+		{
+			string code = @"Dim childAxis = xml.<menu>.<course>
+Dim course3 = xml...<course>(2)
+Dim childAxis = xml...<course>
+For Each item In childAxis
+    Console.WriteLine(item.@name)
+Next";
+			
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(code)));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign, Tokens.Identifier, Tokens.Dot, Tokens.XmlOpenTag,
+			            Tokens.Identifier, Tokens.XmlCloseTag, Tokens.Dot, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag,
+			            Tokens.EOL, Tokens.Dim, Tokens.Identifier, Tokens.Assign, Tokens.Identifier, Tokens.TripleDot, Tokens.XmlOpenTag,
+			            Tokens.Identifier, Tokens.XmlCloseTag, Tokens.OpenParenthesis, Tokens.LiteralInteger, Tokens.CloseParenthesis,
+			            Tokens.EOL, Tokens.Dim, Tokens.Identifier, Tokens.Assign, Tokens.Identifier, Tokens.TripleDot, Tokens.XmlOpenTag,
+			            Tokens.Identifier, Tokens.XmlCloseTag, Tokens.EOL, Tokens.For, Tokens.Each, Tokens.Identifier, Tokens.In, Tokens.Identifier, Tokens.EOL,
+			            Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.OpenParenthesis, Tokens.Identifier, Tokens.DotAt, Tokens.Identifier, Tokens.CloseParenthesis, Tokens.EOL,
+			            Tokens.Next);
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
 		public void GetXmlNamespace()
 		{
 			ILexer lexer = GenerateLexer(new StringReader(TestStatement("Dim name = GetXmlNamespace(x)")));
@@ -335,7 +416,6 @@ namespace DefaultNamespace
 			
 			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign,
 			            Tokens.GetXmlNamespace, Tokens.OpenParenthesis, Tokens.Identifier, Tokens.CloseParenthesis);
-			
 			
 			CheckFoot(lexer);
 		}
@@ -350,6 +430,21 @@ namespace DefaultNamespace
 			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign,
 			            Tokens.GetXmlNamespace, Tokens.OpenParenthesis, Tokens.Identifier, Tokens.CloseParenthesis);
 			
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
+		public void XmlInSelect()
+		{
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement("Dim data = From x In list Select <test>x</test>")));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign,
+			            Tokens.From, Tokens.Identifier, Tokens.In, Tokens.Identifier, Tokens.Select,
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlOpenEndTag,
+			            Tokens.Identifier, Tokens.XmlCloseTag);
 			
 			CheckFoot(lexer);
 		}

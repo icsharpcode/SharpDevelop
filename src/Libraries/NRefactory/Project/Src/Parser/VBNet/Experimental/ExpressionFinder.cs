@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 		
 		void ApplyToken(Token token)
 		{
-			Console.WriteLine(token);
+			//Console.WriteLine(token);
 			
 			if (stack.Count == 0 || token == null)
 				return;
@@ -96,6 +96,11 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 		public bool ReadXmlIdentifier {
 			get { return readXmlIdentifier; }
 			set { readXmlIdentifier = value; }
+		}
+		
+		public bool NextTokenIsStartOfImportsOrAccessExpression {
+			get { return nextTokenIsStartOfImportsOrAccessExpression; }
+			set { nextTokenIsStartOfImportsOrAccessExpression = value; }
 		}
 	}
 	
