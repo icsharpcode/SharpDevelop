@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// <summary>
 	/// Description of GoToClassAction.
 	/// </summary>
-	public class GoToClassAction : ContextAction
+	public class GoToClassAction : IContextAction
 	{
 		public IClass Class { get; private set; }
 		

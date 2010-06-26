@@ -26,11 +26,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public ObservableCollection<ContextActionViewModel> ChildActions { get; set; }
 		
-		ContextAction action;
+		IContextAction action;
 		/// <summary>
 		/// Action that gets executed when this view model is activated by user.
 		/// </summary>
-		public ContextAction Action {
+		public IContextAction Action {
 			get { return action; }
 			set { 
 				action = value; 

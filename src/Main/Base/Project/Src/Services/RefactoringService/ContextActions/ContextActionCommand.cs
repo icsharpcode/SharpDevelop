@@ -14,9 +14,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// </summary>
 	public class ContextActionCommand : ICommand
 	{
-		ContextAction action;
+		IContextAction action;
 		
-		public ContextActionCommand(ContextAction action)
+		public ContextActionCommand(IContextAction action)
 		{
 			if (action == null)
 				throw new ArgumentNullException("action");
