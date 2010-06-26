@@ -130,7 +130,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 
 		public void CloseOnLostFocus()
 		{
-			// when leaf below us closes, we become the leaf
+			// when we close, parent becomes leaf
 			if (this.containingPopup != null) {
 				this.containingPopup.IsLeaf = true;
 			}

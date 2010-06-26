@@ -8,13 +8,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.Visitors;
@@ -107,13 +108,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				resultItems.Insert(insertIndex, item);
 			}
 			
-			List<IRefactoringMenuItemFactory> refactorings = AddInTree.BuildItems<IRefactoringMenuItemFactory>("/SharpDevelop/ViewContent/TextEditor/ContextMenu/Refactorings", null, false);
-			
-			foreach (IRefactoringMenuItemFactory r in refactorings) {
-				MenuItem refactoringItem = r.Create(context);
-				if (refactoringItem != null)
-					resultItems.Insert(0, refactoringItem);
-			}
+			AddRefactoringItemsToTheBeginning(resultItems, context);
 			
 			// Include menu for current class and method
 			ICompilationUnit cu = null;
@@ -141,8 +136,102 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (resultItems.Count > 0) {
 				resultItems.Add(new Separator());
 			}
+			
+			AddContextItems(resultItems, context);
+			
 			return resultItems;
 		}
+		
+		void AddRefactoringItemsToTheBeginning(List<object> resultItems, RefactoringMenuContext refactoringContext)
+		{
+			List<IRefactoringMenuItemFactory> refactorings = AddInTree.BuildItems<IRefactoringMenuItemFactory>("/SharpDevelop/ViewContent/TextEditor/ContextMenu/Refactorings", null, false);
+			
+			foreach (IRefactoringMenuItemFactory r in refactorings) {
+				MenuItem refactoringItem = r.Create(refactoringContext);
+				if (refactoringItem != null)
+					resultItems.Insert(0, refactoringItem);
+			}
+		}
+		
+		#region AddTopLevelContextItems
+		
+		/// <summary>
+		/// Adds top-level context items like "Go to definition", "Find references", "Find derived classes", "Find overrides"
+		/// </summary>
+		void AddContextItems(List<object> resultItems, RefactoringMenuContext context)
+		{
+			var contextItems = MakeContextItems(context);
+			resultItems.AddRange(contextItems);
+			if (contextItems.Count > 0)
+				resultItems.Add(new Separator());
+		}
+		
+		List<object> MakeContextItems(RefactoringMenuContext context)
+		{
+			var contextItems = new List<object>();
+			if (context.ResolveResult is TypeResolveResult) {
+				var clickedClass = ((TypeResolveResult)context.ResolveResult).ResolvedClass;
+				contextItems.AddIfNotNull(MakeFindDerivedClassesItem(clickedClass, context));
+				contextItems.AddIfNotNull(MakeFindBaseClassesItem(clickedClass, context));
+			}
+			if (context.ResolveResult is MethodGroupResolveResult) {
+				// find overrides
+			}
+			return contextItems;
+		}
+		
+		MenuItem MakeFindDerivedClassesItem(IClass baseClass, RefactoringMenuContext context)
+		{
+			if (baseClass == null)
+				return null;
+			var item = new MenuItem { Header = MenuService.ConvertLabel(StringParser.Parse("${res:SharpDevelop.Refactoring.FindDerivedClassesCommand}")) };
+			item.Icon = ClassBrowserIconService.Class.CreateImage();
+			item.InputGestureText = new KeyGesture(Key.F11).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+			item.Click += delegate {
+				var derivedClassesTree = RefactoringService.FindDerivedClassesTree(baseClass);
+				var popupViewModel = BuildDerivedClassesPopupViewModel(baseClass, derivedClassesTree);
+				var popup = new ContextActionsPopup { DataContext = popupViewModel };
+				// position popup to caret - how?
+				popup.Open();
+				popup.Focus();
+			};
+			return item;
+		}
+		
+		ContextActionsViewModel BuildDerivedClassesPopupViewModel(IClass baseClass, IEnumerable<ITreeNode<IClass>> derivedClassesTree)
+		{
+			var viewModel = new ContextActionsViewModel { Title = "Classes deriving from " + baseClass.Name };
+			viewModel.Actions = BuildClassTreeViewModel(derivedClassesTree);
+			return viewModel;
+		}
+		
+		ObservableCollection<ContextActionViewModel> BuildClassTreeViewModel(IEnumerable<ITreeNode<IClass>> derivedClassesTree)
+		{
+			return new ObservableCollection<ContextActionViewModel>(
+				derivedClassesTree.Select(
+					node =>
+					new ContextActionViewModel {
+						Name = node.Content.Name,
+						Comment = string.Format("(in {0})", node.Content.Namespace),
+						Action = new GoToClassAction(node.Content),
+						ChildActions = BuildClassTreeViewModel(node.Children)
+					}));
+		}
+		
+		MenuItem MakeFindBaseClassesItem(IClass c, RefactoringMenuContext context)
+		{
+			if (c == null)
+				return null;
+			var item = new MenuItem { Header = MenuService.ConvertLabel("Find base classes") };
+			item.Icon = ClassBrowserIconService.Interface.CreateImage();
+			item.InputGestureText = new KeyGesture(Key.F10).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+			item.Click += delegate {
+				// find base classes
+			};
+			return item;
+		}
+		
+		#endregion
 		
 		MenuItem MakeItemForResolveError(UnknownIdentifierResolveResult rr, ExpressionContext context, ITextEditor textArea)
 		{

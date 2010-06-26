@@ -18,4 +18,23 @@ namespace ICSharpCode.SharpDevelop
 		
 		IEnumerable<ITreeNode<TContent>> Children { get; }
 	}
+	
+	public class TreeNode<TContent> : ITreeNode<TContent>
+	{
+		public TreeNode(TContent content)
+		{
+			if (content == null)
+				throw new ArgumentNullException("content");
+			this.Content = content;
+		}
+		
+		public TContent Content { get; private set; }
+		
+		public IEnumerable<ITreeNode<TContent>> Children { get; set; }
+		
+		public override string ToString()
+		{
+			return string.Format("[TreeNode {0}]", this.Content.ToString());
+		}
+	}
 }

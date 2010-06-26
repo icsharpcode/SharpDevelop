@@ -1746,6 +1746,7 @@
 		<Include id = "Paste" item = "/SharpDevelop/Workbench/MainMenu/Edit/Paste"/>
 		<Include id = "Delete" item = "/SharpDevelop/Workbench/MainMenu/Edit/Delete"/>
 		<MenuItem id = "Separator1" type = "Separator" />
+		<!-- All these items are accessible from main menu. Users rarely use them from context menu, and they occupy space.
 		<MenuItem id = "Save"
 		          label = "${res:XML.MainMenu.FileMenu.Save}"
 		          icon = "Icons.16x16.SaveIcon"
@@ -1758,7 +1759,9 @@
 		          label = "${res:XML.MainMenu.FileMenu.Close}"
 		          icon  = "Icons.16x16.CloseFileIcon"
 		          class ="ICSharpCode.SharpDevelop.Commands.CloseFile"/>
+		
 		<MenuItem id = "Separator2" type = "Separator" />
+		-->
 		<MenuItem id = "Comment"
 		          icon  = "Icons.16x16.CommentRegion"
 		          label = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"

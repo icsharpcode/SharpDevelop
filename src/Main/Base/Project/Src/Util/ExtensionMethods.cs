@@ -447,5 +447,14 @@ namespace ICSharpCode.SharpDevelop
 			
 			return -1;
 		}
+		
+		/// <summary>
+		/// Adds item to the list if the item is not null.
+		/// </summary>
+		public static void AddIfNotNull<T>(this IList<T> list, T itemToAdd)
+		{
+			if (itemToAdd != null)
+				list.Add(itemToAdd);
+		}
 	}
 }

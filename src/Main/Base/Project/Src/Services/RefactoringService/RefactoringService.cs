@@ -22,6 +22,17 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	public static class RefactoringService
 	{
 		#region FindDerivedClasses
+		
+		/// <summary>
+		/// Finds all classes deriving from baseClass.
+		/// </summary>
+		/// <param name="baseClass">The base class.</param>
+		/// <param name="directDerivationOnly">If true, gets only the classes that derive directly from <paramref name="baseClass"/>.</param>
+		public static IEnumerable<IClass> FindDerivedClasses(IClass baseClass, bool directDerivationOnly)
+		{
+			return FindDerivedClasses(baseClass, ParserService.AllProjectContents, directDerivationOnly);
+		}
+		
 		/// <summary>
 		/// Finds all classes deriving from baseClass.
 		/// </summary>
@@ -35,9 +46,37 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return resultList.OrderBy(c => c.FullyQualifiedName);
 		}
 		
-		public static IEnumerable<ITreeNode<IClass>> FindDerivedClasses(IClass baseClass, IEnumerable<IProjectContent> projectContents)
+		/// <summary>
+		/// Returns all classes deriving from baseClass as inheritance tree.
+		/// </summary>
+		/// <param name="baseClass">The base class.</param>
+		public static IEnumerable<ITreeNode<IClass>> FindDerivedClassesTree(IClass baseClass)
 		{
-			return null;
+			return FindDerivedClassesTree(baseClass, ParserService.AllProjectContents);
+		}
+		
+		/// <summary>
+		/// Returns all classes deriving from baseClass as inheritance tree.
+		/// </summary>
+		/// <param name="baseClass">The base class.</param>
+		/// <param name="projectContents">The project contents in which derived classes should be searched.</param>
+		public static IEnumerable<ITreeNode<IClass>> FindDerivedClassesTree(IClass baseClass, IEnumerable<IProjectContent> projectContents)
+		{
+			baseClass = baseClass.GetCompoundClass();
+			LoggingService.Debug("FindDerivedClasses tree for " + baseClass.FullyQualifiedName);
+			
+			var result = new List<TreeNode<IClass>>();
+			
+			foreach (IProjectContent pc in GetSuitableProjectContents(projectContents, baseClass)) {
+				foreach (var directlyDerivedFromBase in GetDerivedClasses(pc, baseClass, pc.Classes)) {
+					var derivedChild = new TreeNode<IClass>(directlyDerivedFromBase);
+					result.Add(derivedChild);
+					derivedChild.Children = FindDerivedClassesTree(directlyDerivedFromBase, projectContents);
+				}
+			}
+			
+			result.OrderBy(node => node.Content.FullyQualifiedName);
+			return result;
 		}
 		
 		static void FindDerivedClasses(HashSet<IClass> resultList, IClass baseClass, IEnumerable<IProjectContent> projectContents, bool directDerivationOnly)
@@ -45,12 +84,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			baseClass = baseClass.GetCompoundClass();
 			LoggingService.Debug("FindDerivedClasses for " + baseClass.FullyQualifiedName);
 			List<IClass> list = new List<IClass>();
-			foreach (IProjectContent pc in projectContents) {
-				if ((pc == baseClass.ProjectContent) || pc.ReferencedContents.Contains(baseClass.ProjectContent)) {
-					// only project contents referencing the content of the base class
-					// can derive from the class
-					AddDerivedClasses(pc, baseClass, pc.Classes, list);
-				}
+			foreach (IProjectContent pc in GetSuitableProjectContents(projectContents, baseClass)) {
+				AddDerivedClasses(pc, baseClass, pc.Classes, list);
 			}
 			if (directDerivationOnly) {
 				resultList.AddRange(list);
@@ -61,6 +96,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					}
 				}
 			}
+		}
+		
+		static IEnumerable<IProjectContent> GetSuitableProjectContents(IEnumerable<IProjectContent> projectContents, IClass baseClass)
+		{
+			// only project contents referencing the content of the base class
+			// can derive from the class
+			return projectContents.Where(pc => (pc == baseClass.ProjectContent) || pc.ReferencedContents.Contains(baseClass.ProjectContent));
 		}
 		
 		static void AddDerivedClasses(IProjectContent pc, IClass baseClass, IEnumerable<IClass> classList, IList<IClass> resultList)
@@ -81,6 +123,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					}
 				}
 			}
+		}
+		
+		static IList<IClass> GetDerivedClasses(IProjectContent pc, IClass baseClass, IEnumerable<IClass> classList)
+		{
+			var result = new List<IClass>();
+			AddDerivedClasses(pc, baseClass, classList, result);
+			return result;
 		}
 		#endregion
 		

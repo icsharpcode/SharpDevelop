@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+	x:Class="ICSharpCode.SharpDevelop.Refactoring.ContextActionsControl"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+>
+	
+	<UserControl.Resources>
+		<Style x:Key="ClearButton" TargetType="Button">
+			<Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>	<!-- Disable the dashed focus rectangle -->
+			<Setter Property="Template">
+				<Setter.Value>
+					<!-- Workaround: TreeViewItem has no Command property.
+							To be able to associate actions with TreeViewItems, we use Buttons as content of TreeViewItems. -->
+					<ControlTemplate TargetType="Button">
+						<Border Name="Border"
+						        Padding="4"
+						        Background="Transparent">
+							<ContentPresenter></ContentPresenter>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsFocused" Value="True">
+								<Setter Property="Background" TargetName="Border" Value="LightBlue">
+									<!--<Setter.Value>
+										<DynamicResource ResourceKey="{x:Static SystemColors.HighlightTextBrushKey}" />
+									</Setter.Value>-->
+								</Setter>
+								<Setter Property="TextElement.Foreground">
+									<Setter.Value>
+										<DynamicResource ResourceKey="{x:Static SystemColors.HighlightTextBrushKey}" />
+									</Setter.Value>
+								</Setter>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+	</UserControl.Resources>
+	
+	<Grid Background="White">
+		<Grid.RowDefinitions>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		<Border Grid.Row="0" Grid.Column="0" BorderThickness="1" BorderBrush="Black" HorizontalAlignment="Left">
+			<StackPanel Orientation="Horizontal">
+				<Image Source="{Binding Image}"></Image>
+				<TextBlock Text="{Binding Title}"></TextBlock>
+			</StackPanel>
+		</Border>
+		<Border Grid.Row="1" Grid.Column="0" BorderThickness="1" BorderBrush="Black" HorizontalAlignment="Stretch">
+			<TreeView ItemsSource="{Binding Actions}" x:Name="TreeView">
+				<TreeView.ItemContainerStyle>
+					<Style TargetType="{x:Type TreeViewItem}">
+						<Setter Property="Template">
+							<Setter.Value>
+								<ControlTemplate TargetType="TreeViewItem">
+									<StackPanel>
+										<Button Command="{Binding ActionCommand}" Style="{StaticResource ClearButton}">
+											<Border SnapsToDevicePixels="True">
+												<ContentPresenter Content="{TemplateBinding HeaderedContentControl.Header}" ContentTemplate="{TemplateBinding HeaderedContentControl.HeaderTemplate}" ContentStringFormat="{TemplateBinding HeaderedItemsControl.HeaderStringFormat}" ContentSource="Header" Name="PART_Header"
+													HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+											</Border>
+										</Button>
+										<ItemsPresenter Name="ItemsHost" Margin="18 0 0 0" />
+									</StackPanel>
+									<ControlTemplate.Triggers>
+										<!-- Disable collapsing -->
+										<!--<Trigger Property="TreeViewItem.IsExpanded">
+											<Setter Property="UIElement.Visibility" TargetName="ItemsHost">
+												<Setter.Value>
+													<x:Static Member="Visibility.Collapsed" />
+												</Setter.Value>
+											</Setter>
+											<Trigger.Value>
+												<s:Boolean>False</s:Boolean>
+											</Trigger.Value>
+										</Trigger>-->
+									</ControlTemplate.Triggers>
+								</ControlTemplate>
+							</Setter.Value>
+						</Setter>
+						<!-- Make all items expanded -->
+						<Setter Property="IsExpanded" Value="True"></Setter>
+						<!-- Make items not focusable so that contained button gets focus on Down arrow, not the item -->
+						<Setter Property="Focusable" Value="False"></Setter>
+						<!--<EventSetter Event="GotFocus" Handler="GotFocusHandler"></EventSetter>-->
+					</Style>
+				</TreeView.ItemContainerStyle>
+				<TreeView.ItemTemplate>
+					<HierarchicalDataTemplate ItemsSource="{Binding ChildActions}">
+						<DockPanel HorizontalAlignment="Stretch">
+							<TextBlock Text="{Binding Name}" Margin="0 2 20 2" />
+							<TextBlock Text="{Binding Comment}" Foreground="Gray" TextAlignment="Right" HorizontalAlignment="Right"/>
+						</DockPanel>
+					</HierarchicalDataTemplate>
+				</TreeView.ItemTemplate>
+			</TreeView>
+		</Border>
+	</Grid>
+</UserControl>

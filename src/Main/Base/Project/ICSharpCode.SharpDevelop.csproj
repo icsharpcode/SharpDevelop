@@ -315,7 +315,16 @@
     <Compile Include="Src\Services\ParserService\ParserService.cs" />
     <Compile Include="Src\Services\ProjectService\CompileModifiedProjectsOnly.cs" />
     <Compile Include="Src\Services\ProjectService\SolutionConfigurationEventHandler.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\IContextAction.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionCommand.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsControl.xaml.cs">
+      <DependentUpon>ContextActionsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsPopup.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsViewModel.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionViewModel.cs" />
     <Compile Include="Src\Services\RefactoringService\ExtractInterfaceOptions.cs" />
+    <Compile Include="Src\Services\RefactoringService\GoToClassAction.cs" />
     <Compile Include="Src\Services\Tasks\ErrorPainter.cs" />
     <Compile Include="Src\Services\Tasks\Task.cs" />
     <Compile Include="Src\Services\Tasks\TaskService.cs" />
@@ -693,7 +702,7 @@
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AsyncDiscoveryState.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\DiscoveryNetworkCredential.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectLoader.cs" />
-    <Compile Include="Src\Util\ITreeNode.cs" />
+    <Compile Include="Src\Util\TreeNode.cs" />
     <Compile Include="Src\Util\NativeMethods.cs" />
     <Compile Include="Src\Util\ProcessRunnerException.cs" />
     <Compile Include="Src\Util\LineReceivedEventArgs.cs" />
@@ -773,6 +782,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsControl.xaml" />
     <ProjectReference Include="..\..\..\Libraries\AvalonDock\AvalonDock\AvalonDock.csproj">
       <Project>{2FF700C2-A38A-48BD-A637-8CAFD4FE6237}</Project>
       <Name>AvalonDock</Name>
@@ -806,6 +816,7 @@
     <Content Include="..\..\..\..\AddIns\ICSharpCode.SharpDevelop.addin">
       <Link>ICSharpCode.SharpDevelop.addin</Link>
     </Content>
+    <Folder Include="Src\Services\RefactoringService\ContextActions" />
     <Folder Include="Src\Util" />
     <Folder Include="Src\Gui\Pads\ClassBrowser\NodeBuilder" />
     <Folder Include="Src\Services\NavigationService" />
