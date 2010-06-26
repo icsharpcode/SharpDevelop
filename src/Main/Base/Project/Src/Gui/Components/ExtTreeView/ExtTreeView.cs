@@ -136,6 +136,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		#region label editing
 		
+		string labelEditOldLabel;
+		
 		public void StartLabelEdit(ExtTreeNode node)
 		{
 			if (node == null) {
@@ -148,6 +150,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				LabelEdit = true;
 				node.BeforeLabelEdit();
 				node.BeginEdit();
+				// remove node's label so that it doesn't get rendered behind the label editing textbox
+				// (if the user deletes some characters so that the text box shrinks)
+				labelEditOldLabel = node.Text;
+				node.Text = "";
 			}
 		}
 		
@@ -173,10 +179,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			e.CancelEdit = true;
 			
 			ExtTreeNode node = e.Node as ExtTreeNode;
-			if (node != null && e.Label != null) {
-				node.AfterLabelEdit(e.Label);
+			if (node != null) {
+				node.Text = labelEditOldLabel;
+				labelEditOldLabel = null;
+				if (e.Label != null) {
+					node.AfterLabelEdit(e.Label);
+				}
 			}
 			SortParentNodes(e.Node);
+			SelectedNode = e.Node;
 		}
 
 		private void SortParentNodes(TreeNode treeNode)
