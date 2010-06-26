@@ -190,7 +190,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			item.Click += delegate {
 				var derivedClassesTree = RefactoringService.FindDerivedClassesTree(baseClass);
 				var popupViewModel = BuildDerivedClassesPopupViewModel(baseClass, derivedClassesTree);
-				var popup = new ContextActionsPopup { DataContext = popupViewModel };
+				var popup = new ContextActionsPopup { Actions = popupViewModel };
 				// position popup to caret - how?
 				popup.Open();
 				popup.Focus();
@@ -200,7 +200,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		ContextActionsViewModel BuildDerivedClassesPopupViewModel(IClass baseClass, IEnumerable<ITreeNode<IClass>> derivedClassesTree)
 		{
-			var viewModel = new ContextActionsViewModel { Title = "Classes deriving from " + baseClass.Name };
+			var viewModel = new ContextActionsViewModel { Title = MenuService.ConvertLabel(StringParser.Parse(
+				"${res:SharpDevelop.Refactoring.ClassesDerivingFrom}", new StringTagPair("Name", baseClass.Name)))};
 			viewModel.Actions = BuildClassTreeViewModel(derivedClassesTree);
 			return viewModel;
 		}

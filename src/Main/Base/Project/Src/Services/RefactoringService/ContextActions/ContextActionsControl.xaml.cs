@@ -26,12 +26,20 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			InitializeComponent();
 		}
 		
+		public event EventHandler ActionExecuted;
+		
 		public new void Focus()
 		{
 			var firstButton = SearchVisualTree<Button>(this);
 			if (firstButton == null)
 				return;
 			firstButton.Focus();
+		}
+		
+		void ActionButtonClick(object sender, RoutedEventArgs e)
+		{
+			if (ActionExecuted != null)
+				ActionExecuted(this, EventArgs.Empty);
 		}
 		
 		/// <summary>

@@ -60,7 +60,7 @@
 							<Setter.Value>
 								<ControlTemplate TargetType="TreeViewItem">
 									<StackPanel>
-										<Button Command="{Binding ActionCommand}" Style="{StaticResource ClearButton}">
+										<Button Command="{Binding ActionCommand}" Style="{StaticResource ClearButton}" Click="ActionButtonClick">
 											<Border SnapsToDevicePixels="True">
 												<ContentPresenter Content="{TemplateBinding HeaderedContentControl.Header}" ContentTemplate="{TemplateBinding HeaderedContentControl.HeaderTemplate}" ContentStringFormat="{TemplateBinding HeaderedItemsControl.HeaderStringFormat}" ContentSource="Header" Name="PART_Header"
 													HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
