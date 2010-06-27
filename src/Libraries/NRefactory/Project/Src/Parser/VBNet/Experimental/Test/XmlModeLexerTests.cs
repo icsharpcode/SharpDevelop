@@ -382,6 +382,25 @@ namespace DefaultNamespace
 		}
 		
 		[Test]
+		public void InlineVB2()
+		{
+			string code = @"Dim contact As XElement =  <<%=elementName %>>
+                               <name><%= MyName %></name>
+                           </>";
+			
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(code)));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.As, Tokens.Identifier, Tokens.Assign, Tokens.XmlOpenTag,
+			            Tokens.XmlStartInlineVB, Tokens.Identifier, Tokens.XmlEndInlineVB, Tokens.XmlCloseTag, Tokens.XmlContent,
+			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlStartInlineVB, Tokens.Identifier, Tokens.XmlEndInlineVB,
+			            Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.XmlCloseTag);
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
 		public void XmlAccessOperators()
 		{
 			string code = @"Dim childAxis = xml.<menu>.<course>
