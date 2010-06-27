@@ -37,6 +37,7 @@ partial class ExpressionFinder {
 	bool nextTokenIsPotentialStartOfXmlMode = false;
 	bool readXmlIdentifier = false;
 	bool nextTokenIsStartOfImportsOrAccessExpression = false;
+	List<Token> errors = new List<Token>();
 	
 	public ExpressionFinder()
 	{
@@ -45,14 +46,18 @@ partial class ExpressionFinder {
 
 	void Expect(int expectedKind, Token la)
 	{
-		if (la.kind != expectedKind)
+		if (la.kind != expectedKind) {
 			Error(la);
+			output.AppendLine("expected: " + expectedKind);
+			Console.WriteLine("expected: " + expectedKind);
+		}
 	}
 	
 	void Error(Token la) 
 	{
 		output.AppendLine("not expected: " + la);
 		Console.WriteLine("not expected: " + la);
+		errors.Add(la);
 	}
 	
 	Token t;

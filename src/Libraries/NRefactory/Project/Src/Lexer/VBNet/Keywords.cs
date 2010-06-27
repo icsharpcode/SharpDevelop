@@ -128,6 +128,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"OR",
 			"ORDER",
 			"ORELSE",
+			"OUT",
 			"OVERLOADS",
 			"OVERRIDABLE",
 			"OVERRIDES",

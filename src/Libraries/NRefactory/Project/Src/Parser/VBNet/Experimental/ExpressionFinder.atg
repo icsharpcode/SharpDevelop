@@ -195,6 +195,7 @@ TOKENS
 	"Or"
 	"Order"
 	"OrElse"
+	"Out"
 	"Overloads"
 	"Overridable"
 	"Overrides"
@@ -297,11 +298,33 @@ NamespaceDeclaration =
 TypeDeclaration =
 	{ AttributeBlock }
 	{ TypeModifier }
-	( "Module" |  "Class" ) (. PushContext(Context.IdentifierExpected, t); .) ANY (. PopContext(); .) { ANY } StatementTerminator
+	( ClassOrModuleOrStructureTypeDeclaration |
+	DelegateTypeDeclaration )
+.
+
+ClassOrModuleOrStructureTypeDeclaration =
+	( "Module" | "Class" | "Structure" ) (. PushContext(Context.IdentifierExpected, t); .) ANY (. PopContext(); .)
+	[ "(" "Of"  [ "Out" | "In" ] IdentifierExceptOut [ "As" GenericConstraintList ] { "," [ "Out" | "In" ] IdentifierExceptOut [ "As" GenericConstraintList ] } ")" ] { ANY } [ StatementTerminator ]
+	[ "Inherits" { ANY } StatementTerminator ]
+	[ "Implements" { ANY } StatementTerminator ]
 	(. PushContext(Context.Type, t); .)
 	{ MemberDeclaration }
-	"End" ( "Module" | "Class" ) StatementTerminator
+	"End" ( "Module" | "Class" | "Structure" ) StatementTerminator
 	(. PopContext(); .)
+.
+
+GenericConstraint =
+	TypeName | "New" | "Class" | "Structure"
+.
+
+GenericConstraintList =
+	GenericConstraint | "{" GenericConstraint { "," GenericConstraint } "}"
+.
+
+DelegateTypeDeclaration =
+	"Delegate" ("Sub" | "Function")
+	(. PushContext(Context.IdentifierExpected, t); .) ANY (. PopContext(); .)
+	[ "(" [ ParameterList ] ")" ] [ "As" TypeName ] StatementTerminator
 .
 
 MemberDeclaration =
@@ -314,7 +337,7 @@ MemberDeclaration =
 		EventMemberDeclaration |
 		CustomEventMemberDeclaration |
 		OperatorDeclaration
-	)
+	) 
 	(. PopContext(); .)
 .
 
@@ -328,7 +351,7 @@ SubOrFunctionDeclaration =
 
 ExternalMemberDeclaration =
 	"Declare" [ "Ansi" | "Unicode" | "Auto" ] ( "Sub" | "Function" ) (. PushContext(Context.IdentifierExpected, t); .) Identifier (. PopContext(); .)
-	"Lib" LiteralString [ "Alias" LiteralString ] [ "(" [ ParameterList ] ")" ] StatementTerminator
+	"Lib" LiteralString [ "Alias" LiteralString ] [ "(" [ ParameterList ] ")" ] [ "As" TypeName ] StatementTerminator
 .
 
 EventMemberDeclaration =
@@ -597,7 +620,7 @@ GroupJoinSuffix =
 ExpressionRangeVariable =
 	[
 		EXPECTEDCONFLICT("Where", "Until", "Unicode", "Text", "Take", "Skip", "Preserve",
-						  "Order", "Off", "Key", "Join", "Into", "Infer", "Group", "From",
+						  "Order", "Off", "Out", "Key", "Join", "Into", "Infer", "Group", "From",
 						  "Explicit", "Equals", "Distinct", "Descending", "Compare", "By",
 						  "Binary", "Auto", "Assembly", "Ascending", "Ansi", "Aggregate", ident)
 		(
@@ -790,6 +813,7 @@ IdentifierOrKeyword = ident
 | "Or"
 | "Order"
 | "OrElse"
+| "Out"
 | "Overloads"
 | "Overridable"
 | "Overrides"
@@ -1063,7 +1087,12 @@ IdentifierForFieldDeclaration =
 	| "From"
 .
 
-IdentifierForExpressionStart =
+IdentifierForExpressionStart = 
+	IdentifierExceptOut
+	| "Out"
+.
+
+IdentifierExceptOut =
 	ident
 	| "Ansi"
 	| "Ascending"

@@ -1123,6 +1123,13 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		}
 
 		[Test]
+		public void TestOut()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Out"));
+			Assert.AreEqual(Tokens.Out, lexer.NextToken().Kind);
+		}
+
+		[Test]
 		public void TestOverloads()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Overloads"));

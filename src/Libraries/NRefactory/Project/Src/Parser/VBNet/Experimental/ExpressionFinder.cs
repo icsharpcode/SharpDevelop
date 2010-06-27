@@ -100,7 +100,10 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 		
 		public bool NextTokenIsStartOfImportsOrAccessExpression {
 			get { return nextTokenIsStartOfImportsOrAccessExpression; }
-			set { nextTokenIsStartOfImportsOrAccessExpression = value; }
+		}
+		
+		public List<Token> Errors {
+			get { return errors; }
 		}
 	}
 	

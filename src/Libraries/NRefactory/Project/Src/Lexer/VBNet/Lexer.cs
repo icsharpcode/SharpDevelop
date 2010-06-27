@@ -9,8 +9,10 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
+
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Parser.VBNet.Experimental;
 
@@ -446,6 +448,12 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		{
 			Token t = NextInternal();
 			ef.InformToken(t);
+//			if (ef.Errors.Any()) {
+//				foreach (Token token in ef.Errors) {
+//					if (token != null)
+//						errors.Error(token.Location.Line, token.Location.Column, "unexpected: " + token.ToString());
+//				}
+//			}
 			ef.Advance();
 			return t;
 		}
