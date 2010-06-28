@@ -323,6 +323,7 @@
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsPopup.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsViewModel.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionViewModel.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActionsHelper.cs" />
     <Compile Include="Src\Services\RefactoringService\ExtractInterfaceOptions.cs" />
     <Compile Include="Src\Services\RefactoringService\GoToClassAction.cs" />
     <Compile Include="Src\Services\Tasks\ErrorPainter.cs" />

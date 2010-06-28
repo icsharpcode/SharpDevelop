@@ -188,46 +188,26 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			item.Icon = ClassBrowserIconService.Class.CreateImage();
 			item.InputGestureText = new KeyGesture(Key.F11).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			item.Click += delegate {
-				var derivedClassesTree = RefactoringService.FindDerivedClassesTree(baseClass);
-				var popupViewModel = BuildDerivedClassesPopupViewModel(baseClass, derivedClassesTree);
-				var popup = new ContextActionsPopup { Actions = popupViewModel };
+				var derivedClassesPopup = ContextActionsHelper.MakePopupWithDerivedClasses(baseClass);
 				// position popup to caret - how?
-				popup.Open();
-				popup.Focus();
+				derivedClassesPopup.Open();
+				derivedClassesPopup.Focus();
 			};
 			return item;
 		}
 		
-		ContextActionsViewModel BuildDerivedClassesPopupViewModel(IClass baseClass, IEnumerable<ITreeNode<IClass>> derivedClassesTree)
+		MenuItem MakeFindBaseClassesItem(IClass @class, RefactoringMenuContext context)
 		{
-			var viewModel = new ContextActionsViewModel { Title = MenuService.ConvertLabel(StringParser.Parse(
-				"${res:SharpDevelop.Refactoring.ClassesDerivingFrom}", new StringTagPair("Name", baseClass.Name)))};
-			viewModel.Actions = BuildClassTreeViewModel(derivedClassesTree);
-			return viewModel;
-		}
-		
-		ObservableCollection<ContextActionViewModel> BuildClassTreeViewModel(IEnumerable<ITreeNode<IClass>> derivedClassesTree)
-		{
-			return new ObservableCollection<ContextActionViewModel>(
-				derivedClassesTree.Select(
-					node =>
-					new ContextActionViewModel {
-						Name = node.Content.Name,
-						Comment = string.Format("(in {0})", node.Content.Namespace),
-						Action = new GoToClassAction(node.Content),
-						ChildActions = BuildClassTreeViewModel(node.Children)
-					}));
-		}
-		
-		MenuItem MakeFindBaseClassesItem(IClass c, RefactoringMenuContext context)
-		{
-			if (c == null)
+			if (@class == null)
 				return null;
 			var item = new MenuItem { Header = MenuService.ConvertLabel("Find base classes") };
 			item.Icon = ClassBrowserIconService.Interface.CreateImage();
 			item.InputGestureText = new KeyGesture(Key.F10).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			item.Click += delegate {
-				// find base classes
+				var baseClassesPopup = ContextActionsHelper.MakePopupWithBaseClasses(@class);
+				// position popup to caret - how?
+				baseClassesPopup.Open();
+				baseClassesPopup.Focus();
 			};
 			return item;
 		}

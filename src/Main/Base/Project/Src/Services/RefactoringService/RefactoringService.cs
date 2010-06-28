@@ -62,16 +62,26 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// <param name="projectContents">The project contents in which derived classes should be searched.</param>
 		public static IEnumerable<ITreeNode<IClass>> FindDerivedClassesTree(IClass baseClass, IEnumerable<IProjectContent> projectContents)
 		{
+			return FindDerivedClassesTree(baseClass, projectContents, new HashSet<IClass>());
+		}
+		
+		static IEnumerable<ITreeNode<IClass>> FindDerivedClassesTree(IClass baseClass, IEnumerable<IProjectContent> projectContents, HashSet<IClass> seenClasses)
+		{
 			baseClass = baseClass.GetCompoundClass();
 			LoggingService.Debug("FindDerivedClasses tree for " + baseClass.FullyQualifiedName);
 			
 			var result = new List<TreeNode<IClass>>();
 			
 			foreach (IProjectContent pc in GetSuitableProjectContents(projectContents, baseClass)) {
-				foreach (var directlyDerivedFromBase in GetDerivedClasses(pc, baseClass, pc.Classes)) {
-					var derivedChild = new TreeNode<IClass>(directlyDerivedFromBase);
-					result.Add(derivedChild);
-					derivedChild.Children = FindDerivedClassesTree(directlyDerivedFromBase, projectContents);
+				foreach (var directlyDerived in GetDerivedClasses(pc, baseClass, pc.Classes).Select(c => c.GetCompoundClass())) {
+					
+					if (!seenClasses.Contains(directlyDerived)) {
+						seenClasses.Add(directlyDerived);
+						
+						var derivedChild = new TreeNode<IClass>(directlyDerived);
+						result.Add(derivedChild);
+						derivedChild.Children = FindDerivedClassesTree(directlyDerived, projectContents, seenClasses);
+					}
 				}
 			}
 			
