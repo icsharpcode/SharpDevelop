@@ -21,81 +21,66 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// </summary>
 	public class ContextActionsHelper
 	{
-		#region Derived classes popup
 		public static ContextActionsPopup MakePopupWithDerivedClasses(IClass baseClass)
 		{
 			var derivedClassesTree = RefactoringService.FindDerivedClassesTree(baseClass);
-			var popupViewModel = BuildDerivedClassesPopupViewModel(baseClass, derivedClassesTree);
+			var popupViewModel = new ContextActionsViewModel { Title = MenuService.ConvertLabel(StringParser.Parse(
+				"${res:SharpDevelop.Refactoring.ClassesDerivingFrom}", new StringTagPair("Name", baseClass.Name)))};
+			popupViewModel.Actions = new PopupTreeViewModelBuilder().BuildTreeViewModel(derivedClassesTree);
 			return new ContextActionsPopup { Actions = popupViewModel };
 		}
 		
-		static ContextActionsViewModel BuildDerivedClassesPopupViewModel(IClass baseClass, IEnumerable<ITreeNode<IClass>> derivedClassesTree)
-		{
-			var viewModel = new ContextActionsViewModel { Title = MenuService.ConvertLabel(StringParser.Parse(
-				"${res:SharpDevelop.Refactoring.ClassesDerivingFrom}", new StringTagPair("Name", baseClass.Name)))};
-			viewModel.Actions = BuildClassTreeViewModel(derivedClassesTree);
-			return viewModel;
-		}
-		
-		static ObservableCollection<ContextActionViewModel> BuildClassTreeViewModel(IEnumerable<ITreeNode<IClass>> derivedClassesTree)
-		{
-			return new ObservableCollection<ContextActionViewModel>(
-				derivedClassesTree.Select(
-					node => MakeGoToClassAction (node.Content, BuildClassTreeViewModel(node.Children))));
-		}
-		#endregion
-		
-		static ContextActionViewModel MakeGoToClassAction(IClass @class, ObservableCollection<ContextActionViewModel> childActions)
-		{
-			return new ContextActionViewModel {
-						Name = @class.Name,
-						Comment = string.Format("(in {0})", @class.Namespace),
-						Action = new GoToClassAction(@class),
-						ChildActions = childActions
-					};
-		}
-		
-		#region Base classes popup
 		public static ContextActionsPopup MakePopupWithBaseClasses(IClass @class)
 		{
 			var baseClassList = @class.ClassInheritanceTree.Where(
 				baseClass => (baseClass != @class) && (baseClass.CompilationUnit != null) && (baseClass.CompilationUnit.FileName != null));
-				// Reverse to show the base classes from the most general to the most derived one
-				//.Reverse();
+			// Reverse to show the base classes from the most general to the most derived one
+			//.Reverse();
 			//baseClassList.Sort(new BaseClassComparer());
-			var popupViewModel = BuildBaseClassesPopupViewModel(@class, baseClassList);
+			var popupViewModel = new ContextActionsViewModel { Title = MenuService.ConvertLabel(StringParser.Parse(
+				"${res:SharpDevelop.Refactoring.BaseClassesOf}", new StringTagPair("Name", @class.Name)))};
+			popupViewModel.Actions = new PopupListViewModelBuilder().BuildListViewModel(baseClassList);
 			return new ContextActionsPopup { Actions = popupViewModel };
 		}
 		
-		/// <summary>
-		/// Used to sort base classes by name.
-		/// </summary>
-		/*class BaseClassComparer : IComparer<IClass>
+		class PopupViewModelBuilder
 		{
-			public int Compare(IClass x, IClass y)
+			protected IAmbience LabelAmbience { get; set; }
+			
+			protected PopupViewModelBuilder()
 			{
-				// Sort by name, put abstract classes to the end of the list
-				var compInterface = CompareClassType(x.ClassType).CompareTo(CompareClassType(y.ClassType));
-				if (compInterface != 0)
-					return compInterface;
-				else
-					return x.Name.CompareTo(y.Name);
+				this.LabelAmbience = AmbienceService.GetCurrentAmbience();
+				this.LabelAmbience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
 			}
 			
-			int CompareClassType(ClassType classType)
+			protected ContextActionViewModel MakeGoToClassAction(IClass @class, ObservableCollection<ContextActionViewModel> childActions)
 			{
-				return classType == ClassType.Interface ? 1 : 0;
+				return new ContextActionViewModel {
+					Name = this.LabelAmbience.Convert(@class),
+					Comment = string.Format("(in {0})", @class.Namespace),
+					Action = new GoToClassAction(@class),
+					ChildActions = childActions
+				};
 			}
-		}*/
-		
-		static ContextActionsViewModel BuildBaseClassesPopupViewModel(IClass @class, IEnumerable<IClass> baseClassList)
-		{
-			var viewModel = new ContextActionsViewModel { Title = MenuService.ConvertLabel(StringParser.Parse(
-				"${res:SharpDevelop.Refactoring.BaseClassesOf}", new StringTagPair("Name", @class.Name)))};
-			viewModel.Actions = new ObservableCollection<ContextActionViewModel>(
-				baseClassList.Select(baseClass => MakeGoToClassAction(baseClass, null)));
-			return viewModel;
 		}
-		#endregion
+		
+		class PopupListViewModelBuilder : PopupViewModelBuilder
+		{
+			public ObservableCollection<ContextActionViewModel> BuildListViewModel(IEnumerable<IClass> classList)
+			{
+				return new ObservableCollection<ContextActionViewModel>(
+					classList.Select(@class => MakeGoToClassAction(@class, null)));
+			}
+		}
+		
+		class PopupTreeViewModelBuilder : PopupViewModelBuilder
+		{
+			public ObservableCollection<ContextActionViewModel> BuildTreeViewModel(IEnumerable<ITreeNode<IClass>> classTree)
+			{
+				return new ObservableCollection<ContextActionViewModel>(
+					classTree.Select(
+						node => MakeGoToClassAction (node.Content, BuildTreeViewModel(node.Children))));
+			}
+		}
 	}
 }
