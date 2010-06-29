@@ -68,7 +68,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				cmd.Tag = member;
 				list.Add(cmd);
 			}
-			if (member.IsVirtual || member.IsAbstract || (member.IsOverride && !member.DeclaringType.IsSealed)) {
+			if (member.IsVirtual || member.IsAbstract || (member.IsOverride && !member.DeclaringType.IsSealed)
+				// Interface members have IsVirtual == IsAbstract == false. These properties are based on modifiers only.
+			    || (member.DeclaringType != null && member.DeclaringType.ClassType == ClassType.Interface)) {
 				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.FindOverridesCommand}", FindOverrides);
 				cmd.Tag = member;
 				list.Add(cmd);
