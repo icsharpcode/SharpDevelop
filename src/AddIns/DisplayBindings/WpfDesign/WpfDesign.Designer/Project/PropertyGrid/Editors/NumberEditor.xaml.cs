@@ -111,6 +111,42 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 				ClearValue(LargeChangeProperty);
 			}
 		}
+		
+		public override void OnApplyTemplate()
+		{
+			base.OnApplyTemplate();
+			TextBox textBox=Template.FindName("PART_TextBox",this) as TextBox;
+			if(textBox!=null)
+				textBox.TextChanged += TextValueChanged;
+		}
+		
+		private void TextValueChanged(object sender, TextChangedEventArgs e)
+		{
+			TextBox textBox = sender as TextBox;
+			if(PropertyNode==null)
+				return;
+			if(textBox==null)
+				return;
+			double val;
+			if(double.TryParse(textBox.Text, out val)){
+				if(PropertyNode.FirstProperty.TypeConverter.IsValid(textBox.Text)){
+			   	   	if(val >= Minimum && val <= Maximum){
+			   	   		textBox.Foreground=Brushes.Black;
+			   	   		textBox.ToolTip=textBox.Text;
+			   	   	}else{
+			   	   		textBox.Foreground = Brushes.DarkBlue;
+			   	   		textBox.ToolTip = "Value should be in between "+Minimum+" and "+Maximum;			   	   		
+			   	   	}			   	   	
+		   	   }else{
+			   	   	textBox.Foreground = Brushes.DarkRed;
+			   	   	textBox.ToolTip = "Cannot Convert to Type : " + PropertyNode.FirstProperty.ReturnType.Name;
+		   	   }
+		   	}else{
+			   	textBox.Foreground = Brushes.DarkRed;
+			   	textBox.ToolTip = string.IsNullOrWhiteSpace(textBox.Text)? null:"Value does not belong to any numeric type";
+		   }
+			   
+		}
 
 		ChangeGroup group;
 
