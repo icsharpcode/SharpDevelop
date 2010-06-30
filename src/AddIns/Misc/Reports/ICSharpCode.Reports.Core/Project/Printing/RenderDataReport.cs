@@ -164,7 +164,7 @@ namespace ICSharpCode.Reports.Core {
 				}
 				
 				
-				tableContainer.RenderTable(this.CurrentSection,this.SectionBounds,rpea,this.Layout);
+				//tableContainer.RenderTable(this.CurrentSection,this.SectionBounds,rpea,this.Layout);
 			
 				base.RenderTable (base.CurrentSection,tableContainer,rpea);
 			

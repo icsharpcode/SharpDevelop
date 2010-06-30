@@ -8,6 +8,7 @@
  */
 using System;
 using System.Drawing;
+using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Core.old_Exporter;
 
 namespace ICSharpCode.Reports.Core.BaseClasses.Printing
@@ -21,6 +22,17 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		{
 		}
 		
+		
+		public static void AdjustBackColor (ISimpleContainer container)
+		{
+			BaseReportItem parent = container as BaseReportItem;
+			foreach (BaseReportItem item in container.Items)
+			{
+				item.BackColor = parent.BackColor;
+			}
+		}
+		
+		
 		public static void FillBackground (Graphics  graphics,BaseStyleDecorator decorator,Rectangle rectangle)
 		{
 			RectangleShape backgroundShape = new RectangleShape();
@@ -31,7 +43,8 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 		
-		public static void DrawBorder (Graphics graphics,BaseStyleDecorator decorator,Rectangle rectangle)
+		
+		public static void DrawBorder (Graphics graphics,BaseStyleDecorator decorator)
 		{
 			if (decorator.DrawBorder)
 			{
@@ -40,7 +53,9 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 					decorator.FrameColor = decorator.ForeColor;
 				}
 				Border border = new Border(new BaseLine (decorator.FrameColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
-				border.DrawBorder(graphics,rectangle);
+
+				Console.WriteLine("\t border {0}",decorator.DisplayRectangle);
+				border.DrawBorder(graphics,decorator.DisplayRectangle);
 			}
 		}
 	

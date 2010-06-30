@@ -67,7 +67,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		#endregion
 		
-		protected BaseStyleDecorator BaseStyleDecorator
+		public BaseStyleDecorator BaseStyleDecorator
 		{
 			get {
 				return this.GetBaseStyleDecorator();

@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.Globalization;
 
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
@@ -231,9 +232,12 @@ namespace ICSharpCode.Reports.Core
 				}
 				
 				
-				currentPosition = RenderPlainCollection (this.CurrentSection,this.CurrentSection.Items,new Point(this.CurrentSection.Location.X,
+//				currentPosition = RenderPlainCollection (this.CurrentSection,this.CurrentSection.Items,new Point(this.CurrentSection.Location.X,
+//				                                                                               this.CurrentSection.SectionOffset),rpea);
+				Rectangle r =  RenderPlainCollection (this.CurrentSection,this.CurrentSection.Items,new Point(this.CurrentSection.Location.X,
 				                                                                               this.CurrentSection.SectionOffset),rpea);
 				
+				currentPosition = ConvertRectangleToCurentPosition(r);
 				
 				if ((this.CurrentSection.CanGrow == false)&& (this.CurrentSection.CanShrink == false)) {
 //					return new Point(this.CurrentSection.Location.X,
@@ -246,12 +250,13 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		
-		protected Point RenderPlainCollection (BaseReportItem parent,ReportItemCollection items, Point offset,ReportPageEventArgs rpea)
+		protected Rectangle RenderPlainCollection (BaseReportItem parent,ReportItemCollection items, Point offset,ReportPageEventArgs rpea)
 		{
+			Rectangle retVal = Rectangle.Empty;
+			Size size = Size.Empty;
 			
 			if (items.Count > 0) {
-				
+//				StandardPrinter.AdjustBackColor(parent);
 				foreach (BaseReportItem child in items) {
 					child.Parent = parent;
 					
@@ -262,9 +267,59 @@ namespace ICSharpCode.Reports.Core
 					                           offset.Y + child.Location.Y);
 					
 					
-					if (parent.BackColor != GlobalValues.DefaultBackColor) {
-						child.BackColor = parent.BackColor;
+//					if (parent.BackColor != GlobalValues.DefaultBackColor) {
+//						child.BackColor = parent.BackColor;
+//					}
+					
+					BaseTextItem textItem = child as BaseTextItem;
+					
+					if (textItem != null) {
+						string str = textItem.Text;
+						textItem.Text = Evaluator.Evaluate(textItem.Text);
+						textItem.Render(rpea);
+						textItem.Text = str;
+					} else {
+						child.Render (rpea);
 					}
+					size = child.Size;
+					child.Location = saveLocation;
+				}
+				retVal = new Rectangle(offset,size);
+				return retVal;
+				//return rpea.LocationAfterDraw;
+				
+			} else {
+//				return offset;
+				retVal = new Rectangle(offset.X,offset.Y,0,0);
+				return retVal;
+			}
+		}
+		
+		
+		protected Point ConvertRectangleToCurentPosition (Rectangle r)
+		{
+			return new Point(r.Left,r.Bottom);
+		}
+		
+		
+		protected Point old_RenderPlainCollection (BaseReportItem parent,ReportItemCollection items, Point offset,ReportPageEventArgs rpea)
+		{
+			
+			if (items.Count > 0) {
+//				StandardPrinter.AdjustBackColor(parent);
+				foreach (BaseReportItem child in items) {
+					child.Parent = parent;
+					
+					Point saveLocation = new Point (child.Location.X,child.Location.Y);
+					
+					
+					child.Location = new Point(offset.X + child.Location.X,
+					                           offset.Y + child.Location.Y);
+					
+					
+//					if (parent.BackColor != GlobalValues.DefaultBackColor) {
+//						child.BackColor = parent.BackColor;
+//					}
 					
 					BaseTextItem textItem = child as BaseTextItem;
 					

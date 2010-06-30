@@ -36,6 +36,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				throw new ArgumentNullException("graphics");
 			}
 			StringFormat stringFormat = BuildStringFormat(stringTrimming,alignment);
+				Console.WriteLine("\t text 1 {0}",rectangle);
 			graphics.DrawString(text,
 			                    font,
 			                    brush,
@@ -55,6 +56,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			}
 			StringFormat stringFormat = BuildStringFormat(decorator.StringTrimming,decorator.ContentAlignment);
 			graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
+			
 			graphics.DrawString (text,decorator.Font,
 			                     new SolidBrush(decorator.ForeColor),
 			                     new Rectangle(decorator.Location.X,

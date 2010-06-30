@@ -77,7 +77,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 			}
 			RectangleShape shape = new RectangleShape();
 			this.FillShape(graphics,shape);
-			StandardPrinter.DrawBorder(graphics,this.StyleDecorator as BaseStyleDecorator,this.StyleDecorator.DisplayRectangle);
+			StandardPrinter.DrawBorder(graphics,this.StyleDecorator as BaseStyleDecorator);
 		}
 		
 		

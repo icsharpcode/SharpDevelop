@@ -81,6 +81,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		public override void Render(ReportPageEventArgs rpea)
 		{
+			/*
 			if (rpea == null) {
 				throw new ArgumentNullException("rpea");
 			}
@@ -125,9 +126,10 @@ namespace ICSharpCode.Reports.Core {
 			}
 			rpea.LocationAfterDraw = new Point(rpea.LocationAfterDraw.X,rpea.LocationAfterDraw.Y + 20);
 			base.NotifyAfterPrint (rpea.LocationAfterDraw);
+			*/
 		}
 		
-		
+		/*
 		private Point PrintTextRow(ReportPageEventArgs rpea,BaseRowItem row,int left,Point currentPos	)
 		{
 			Rectangle saveRec = new Rectangle (row.Location,row.Size);
@@ -149,7 +151,7 @@ namespace ICSharpCode.Reports.Core {
 			this.dataNavigator.Fill(row.Items);
 			return this.PrintTextRow(rpea,row,left,currentPos);
 		}
-		
+		*/
 		
 		
 		public override string ToString(){

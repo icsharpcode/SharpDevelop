@@ -8,6 +8,7 @@
  */
 using System;
 using System.Drawing;
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Events;
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
@@ -88,8 +89,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 				BaseReportItem baseReportItem = row as BaseReportItem;
 
 				this.exportItemsConverter.ParentRectangle = new Rectangle(baseReportItem.Location,baseReportItem.Size);
-				AdjustBackColor (row,baseReportItem);
-
+				StandardPrinter.AdjustBackColor(row);
 				ExporterCollection list = this.exportItemsConverter.ConvertSimpleItems(offset,row.Items);
 					
 				lineItem.Items.AddRange(list);
@@ -101,16 +101,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 			return null;
 		}
 		
-		
-		private static void AdjustBackColor (ISimpleContainer container,BaseReportItem item)
-		{
-			if (item.BackColor != GlobalValues.DefaultBackColor) {
-					foreach (BaseReportItem i in container.Items) {
-						i.BackColor = item.BackColor;
-					}
-				}
-		}
-			
+	
 		
 		#region IBaseConverter
 		

@@ -384,7 +384,6 @@
     <Folder Include="Project\Resources" />
     <Folder Include="Project\Printing" />
     <Folder Include="Project\Printing\Graphics" />
-    <Folder Include="Project\Printing\Text" />
     <Folder Include="Project\Xml" />
     <Folder Include="Project\Configuration" />
     <Folder Include="Project\BaseClasses" />

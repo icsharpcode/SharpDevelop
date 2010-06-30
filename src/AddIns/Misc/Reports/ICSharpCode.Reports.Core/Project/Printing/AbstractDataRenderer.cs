@@ -8,6 +8,8 @@
 using System;
 using System.Drawing;
 using System.Drawing.Printing;
+
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Interfaces;
 
 namespace ICSharpCode.Reports.Core
@@ -64,31 +66,31 @@ namespace ICSharpCode.Reports.Core
 			}
 
 			Point saveLocation = tableContainer.Location;
-			
 			Point currentPosition = new Point(this.CurrentSection.Location.X,this.CurrentSection.Location.Y);
-			
-			Point tableStart = currentPosition;
 
-			
-			int defaultLeftPos = PrintHelper.DrawingAreaRelativeToParent(parent,tableContainer).Left;
-			
 			tableContainer.Items.SortByLocation();
 			
 			rpea.SinglePage.StartRow  = this.dataNavigator.CurrentRow;
+			
 			foreach (BaseRowItem row in tableContainer.Items)
 			{
 				if (row != null)
 				{
 					PrintHelper.AdjustParent(tableContainer as BaseReportItem,tableContainer.Items);
-
 					
 					if (PrintHelper.IsTextOnlyRow(row) )
 					{
-						currentPosition = this.RenderContainer(row,currentPosition,rpea);
+						
+						Rectangle r =  this.RenderContainer(row,currentPosition,rpea);
+						currentPosition = ConvertRectangleToCurentPosition (r);
+						
 						currentPosition = new Point(parent.Location.X + row.Location.X,currentPosition.Y);
 						tableContainer.Location = saveLocation;
 					}
 					else {
+						int adjust = row.Location.Y - saveLocation.Y;
+						row.Location = new Point(row.Location.X,row.Location.Y - adjust - 3 * GlobalValues.GapBetweenContainer);
+						
 						do {
 							if (PrintHelper.IsPageFull(new Rectangle(currentPosition,row.Size),this.SectionBounds)) {
 								tableContainer.Location = saveLocation;
@@ -98,43 +100,44 @@ namespace ICSharpCode.Reports.Core
 								return;
 							}
 							this.dataNavigator.Fill(row.Items);
-							currentPosition = this.RenderContainer(row,currentPosition,rpea);
+//							Point start = currentPosition;
+							
+							Rectangle r =  this.RenderContainer(row,currentPosition,rpea);
+							currentPosition = ConvertRectangleToCurentPosition (r);
+							
 							currentPosition = new Point(parent.Location.X + row.Location.X,currentPosition.Y);
+							
 						}
 						while (this.dataNavigator.MoveNext());
 					}
 				}
 			}
-			/*
-			if (this.DrawBorder) {
-				Border border = new Border(new BaseLine (this.ForeColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
-				border.DrawBorder(rpea.PrintPageEventArgs.Graphics,
-				                  new Rectangle(parent.Location.X,tableStart.Y,
-				                                parent.Size.Width,currentPosition.Y + 5));
-			}
-			*/
+		
+//			
+//			if (this.DrawBorder) {
+//				Border border = new Border(new BaseLine (this.ForeColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
+//				border.DrawBorder(rpea.PrintPageEventArgs.Graphics,
+//				                  new Rectangle(parent.Location.X,tableStart.Y,
+//				                                parent.Size.Width,currentPosition.Y + 5));
+//			}
+		
 			
 			rpea.LocationAfterDraw = new Point(rpea.LocationAfterDraw.X,rpea.LocationAfterDraw.Y + 20);
 //			base.NotifyAfterPrint (rpea.LocationAfterDraw);
 		}
 		
-		
+	
 		
 		protected Point RenderItems (ReportPageEventArgs rpea) 
 		{
+			
 			base.SinglePage.IDataNavigator = this.dataNavigator;
 			base.CurrentRow = this.dataNavigator.CurrentRow;
-			ISimpleContainer container = null;
-			bool hasContainer = false;
 			
-			foreach (BaseReportItem item in this.CurrentSection.Items) {
-				 container = item as ISimpleContainer;
-				if (container != null) {
-					hasContainer = true;
-					break;
-				}
-			}
-			if (hasContainer) {
+			ISimpleContainer container = PrintHelper.FindContainer(this.CurrentSection.Items);
+		
+			if (container != null) {
+				
 				return RenderSectionWithSimpleContainer(this.CurrentSection,container,
 				                                        new Point(CurrentSection.Location.X,CurrentSection.SectionOffset),
 				                                        rpea);
@@ -144,6 +147,7 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
+
 		
 		
 		private  Point RenderSectionWithSimpleContainer (BaseSection section,
@@ -169,47 +173,93 @@ namespace ICSharpCode.Reports.Core
 				
 				PrintHelper.AdjustParent(section,section.Items);
 				
-				foreach (BaseReportItem item in section.Items) {
+				int i = section.Items.Count;
+					foreach (BaseReportItem item in section.Items) {
 
-					item.SectionOffset = section.SectionOffset;
-					Point saveLocation = item.Location;
-					item.Render(rpea);
+					ISimpleContainer con = item as ISimpleContainer;
+					if (con != null) {
+						Rectangle r = RenderContainer(container,offset,rpea);
+						currentPosition = base.ConvertRectangleToCurentPosition(r);
+					}
 					
-					item.Location = saveLocation;
-					
-					ISimpleContainer cont = item as ISimpleContainer;
+					else
+					{
+						
+						item.SectionOffset = section.SectionOffset;
+						Point saveLocation = item.Location;
+						item.Render(rpea);
+						
+						item.Location = saveLocation;
+						
+						ISimpleContainer cont = item as ISimpleContainer;
 
-					currentPosition = RenderContainer (cont,currentPosition,rpea);
-					item.Location = saveLocation;
-					currentPosition = new Point(item.Location.X,
-					                            section.SectionOffset + section.Size.Height);
+						Rectangle r =  this.RenderContainer(cont,currentPosition,rpea);
+						currentPosition = ConvertRectangleToCurentPosition (r);
+						
+						item.Location = saveLocation;
+						currentPosition = new Point(item.Location.X,
+						                            section.SectionOffset + section.Size.Height);
+						
+						rpea.LocationAfterDraw = new Point (rpea.LocationAfterDraw.X,section.SectionOffset + section.Size.Height);
 					
-					rpea.LocationAfterDraw = new Point (rpea.LocationAfterDraw.X,section.SectionOffset + section.Size.Height);
+					}
+					
+					if ((section.CanGrow == false)&& (section.CanShrink == false)) {
+						return new Point(section.Location.X,section.Size.Height);
+					}
+					
+					section.Items[0].Size = containerSize;
+					return currentPosition;
 				}
 				
-				if ((section.CanGrow == false)&& (section.CanShrink == false)) {
-					return new Point(section.Location.X,section.Size.Height);
-				}
-				section.Items[0].Size = containerSize;
 				return currentPosition;
 			}
-			
 			return currentPosition;
 		}
 		
 		
+		private Rectangle RenderContainer (ISimpleContainer simpleContainer,Point offset,ReportPageEventArgs rpea)
+		{
+			
+			BaseReportItem item = simpleContainer as BaseReportItem;
+			Rectangle retVal = new Rectangle(offset,item.Size);
+			Point loc = item.Location;
+			item.Location = new Point (offset.X + item.Location.X,offset.Y + item.Location.Y);
+			
+			item.Render(rpea);
+			
+			if (simpleContainer.Items != null)  {
+				retVal = base.RenderPlainCollection(item,simpleContainer.Items,offset,rpea);
+			}
 		
-		private Point RenderContainer (ISimpleContainer simpleContainer,Point offset,ReportPageEventArgs rpea)
+//			retVal = new Point (retVal.X,retVal.Y + item.Size.Height + 3 * GlobalValues.GapBetweenContainer);
+			retVal = new Rectangle (retVal.X,retVal.Y,
+		                        retVal.X + item.Size.Width,
+		                        item.Size.Height + 3 * GlobalValues.GapBetweenContainer);
+			item.Location = loc;
+			return retVal;
+		}
+		
+		
+		
+		private Point old_RenderContainer (ISimpleContainer simpleContainer,Point offset,ReportPageEventArgs rpea)
 		{
 			
 			BaseReportItem item = simpleContainer as BaseReportItem;
 			Point retVal = offset;
+//			StandardPrinter.AdjustBackColor(simpleContainer);
+			Point loc = item.Location;
 			
-			if (simpleContainer.Items != null)  {	
-				
+			item.Location = new Point (offset.X + item.Location.X,offset.Y + item.Location.Y);
+			
+			item.Render(rpea);
+			/*
+			if (simpleContainer.Items != null)  {
 				retVal = base.RenderPlainCollection(item,simpleContainer.Items,offset,rpea);
-				
 			}
+		*/
+			retVal = new Point (retVal.X,retVal.Y + item.Size.Height + 3 * GlobalValues.GapBetweenContainer);
+			item.Location = loc;
 			return retVal;
 		}
 		

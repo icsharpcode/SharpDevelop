@@ -9,6 +9,7 @@
 
 using System;
 using System.Drawing;
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
@@ -113,7 +114,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 
 						ExportContainer exportContainer = this.exportItemsConverter.ConvertToContainer(offset,container);
 			          
-			          AdjustBackColor (container);
+			          StandardPrinter.AdjustBackColor (container);
 						
 						ExporterCollection clist = this.exportItemsConverter.ConvertSimpleItems(offset,container.Items);
 						exportContainer.Items.AddRange(clist);
@@ -149,14 +150,14 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		}
 		
 		
-		private static void AdjustBackColor (ISimpleContainer container)
-		{
-			BaseReportItem parent = container as BaseReportItem;
-			foreach (BaseReportItem item in container.Items)
-			{
-				item.BackColor = parent.BackColor;
-			}
-		}
+//		private static void AdjustBackColor (ISimpleContainer container)
+//		{
+//			BaseReportItem parent = container as BaseReportItem;
+//			foreach (BaseReportItem item in container.Items)
+//			{
+//				item.BackColor = parent.BackColor;
+//			}
+//		}
 		#endregion
 		
 		

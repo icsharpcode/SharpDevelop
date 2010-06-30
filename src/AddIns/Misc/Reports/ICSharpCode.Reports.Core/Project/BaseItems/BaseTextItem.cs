@@ -83,8 +83,14 @@ namespace ICSharpCode.Reports.Core
 			
 			base.Render(rpea);
 		
-			StandardPrinter.FillBackground(rpea.PrintPageEventArgs.Graphics,this.BaseStyleDecorator,this.DrawingRectangle);
-			StandardPrinter.DrawBorder(rpea.PrintPageEventArgs.Graphics,this.BaseStyleDecorator,base.DrawingRectangle);
+			if (this.BackColor != GlobalValues.DefaultBackColor) {
+				StandardPrinter.FillBackground(rpea.PrintPageEventArgs.Graphics,this.BaseStyleDecorator,this.DrawingRectangle);
+			}
+			
+			
+			
+		
+			StandardPrinter.DrawBorder(rpea.PrintPageEventArgs.Graphics,this.BaseStyleDecorator);
 			
 			string formated = StandardFormatter.FormatOutput(this.text,this.FormatString,this.DataType,String.Empty);
 			

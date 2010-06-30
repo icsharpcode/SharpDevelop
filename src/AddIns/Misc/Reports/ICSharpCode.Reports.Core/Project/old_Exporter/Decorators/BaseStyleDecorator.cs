@@ -16,9 +16,6 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 	public class BaseStyleDecorator : IBaseStyleDecorator
 	{
 
-		private Point location;
-		private Size size;
-
 		public BaseStyleDecorator() : this(GlobalValues.DefaultBackColor, Color.Black)
 		{
 		}

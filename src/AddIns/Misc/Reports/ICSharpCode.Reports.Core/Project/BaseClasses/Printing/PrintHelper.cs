@@ -119,6 +119,20 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
+		public static ISimpleContainer FindContainer (ReportItemCollection items)
+		{
+			ISimpleContainer container = null;
+			
+			foreach (BaseReportItem item in items) {
+				 container = item as ISimpleContainer;
+				if (container != null) {
+					break;
+				}
+			}
+			return 
+				container;
+		}
+		
 		public static bool IsPageFull (Rectangle rectangle,SectionBounds bounds)
 		{
 			if (rectangle.Bottom > bounds.PageFooterRectangle.Top) {
@@ -142,6 +156,7 @@ namespace ICSharpCode.Reports.Core
 			evaluatorFacade.SinglePage.IDataNavigator = dataNavigator;
 			return evaluatorFacade;
 		}
+		
 		
 		public static IExpressionEvaluatorFacade  SetupEvaluator ()
 		{
