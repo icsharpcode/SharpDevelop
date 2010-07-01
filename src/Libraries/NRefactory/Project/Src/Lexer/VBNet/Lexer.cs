@@ -1049,5 +1049,10 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				kind = lastToken.kind;
 			}
 		}
+		
+		public void SetInitialContext(SnippetType type)
+		{
+			ef.SetContext(type);
+		}
 	}
 }

@@ -14,11 +14,13 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental {
 
 
 partial class ExpressionFinder {
+	const int startOfExpression = 35;
+	const int endOfStatementTerminatorAndBlock = 157;
 
 	const bool T = true;
 	const bool x = false;
 
-int currentState = 0;
+	int currentState = 0;
 
 	readonly Stack<int> stateStack = new Stack<int>();
 	bool nextTokenIsPotentialStartOfXmlMode = false;
@@ -54,7 +56,6 @@ int currentState = 0;
 		nextTokenIsPotentialStartOfXmlMode = false;
 		readXmlIdentifier = false;
 		nextTokenIsStartOfImportsOrAccessExpression = false;
-		const int endOfStatementTerminatorAndBlock = 157;
 		switchlbl: switch (currentState) {
 			case 0: {
 				PushContext(Context.Global, t);

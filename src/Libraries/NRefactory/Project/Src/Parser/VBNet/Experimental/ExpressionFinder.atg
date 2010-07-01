@@ -413,11 +413,12 @@ StatementTerminatorAndBlock =
 .
 
 Expression
+	(.NamedState:startOfExpression.)
+=
 	(.
 		if (la != null)
 			CurrentBlock.lastExpressionStart = la.Location;
 	.)
-=
 	SimpleExpressionWithSuffix { BinaryOperator SimpleExpressionWithSuffix }
 .
 

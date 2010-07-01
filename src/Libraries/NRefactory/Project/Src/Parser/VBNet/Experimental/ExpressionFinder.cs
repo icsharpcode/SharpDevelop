@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 				return;
 			
 			Block current = stack.Peek();
-//			
+//
 //			switch (token.kind) {
 //				case Tokens.EOL:
 //				case Tokens.Colon:
@@ -79,6 +79,15 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 		{
 			//Console.WriteLine(text);
 			output.AppendLine(text);
+		}
+		
+		public void SetContext(SnippetType type)
+		{
+			switch (type) {
+				case SnippetType.Expression:
+					currentState = startOfExpression;
+					break;
+			}
 		}
 		
 		public string Output {

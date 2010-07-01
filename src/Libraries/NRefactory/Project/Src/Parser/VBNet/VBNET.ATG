@@ -1675,10 +1675,10 @@ SimpleExpr<out Expression pexpr>
 	SimpleNonInvocationExpression<out pexpr>
 	{
 			"." (
-				IdentifierOrKeyword<out name>
-				(. pexpr = new MemberReferenceExpression(pexpr, name); .)
-				| XmlOpenTag IdentifierOrKeyword<out name> XmlCloseTag
+				XmlOpenTag IdentifierOrKeyword<out name> XmlCloseTag
 				(. pexpr = new XmlMemberAccessExpression(pexpr, XmlAxisType.Element, name, true); .)
+				| IdentifierOrKeyword<out name>
+				(. pexpr = new MemberReferenceExpression(pexpr, name); .)
 			)
 			[ IF (la.kind == Tokens.OpenParenthesis && Peek(1).kind == Tokens.Of)
 					"(" "Of" TypeArgumentList<((MemberReferenceExpression)pexpr).TypeArguments> ")"
@@ -1752,14 +1752,24 @@ SimpleNonInvocationExpression<out Expression pexpr>
 		|   /* 11.22 */ ConditionalExpression<out pexpr>
 		)
 	|
-		/* this form only occurs in WithStatements*/
-		"." IdentifierOrKeyword<out name> (. pexpr = new MemberReferenceExpression(null, name);.)
+		/* this form only occurs in WithStatements */
+		"." (
+			XmlOpenTag IdentifierOrKeyword<out name> XmlCloseTag
+			(. pexpr = new XmlMemberAccessExpression(null, XmlAxisType.Element, name, true); .)
+			| IdentifierOrKeyword<out name>
+			(. pexpr = new MemberReferenceExpression(null, name); .)
+		) |
+		(. XmlAxisType axisType = XmlAxisType.Element; bool isXmlIdentifier = false; .)
+		( "..." (. axisType = XmlAxisType.Descendents; .) | ".@" (. axisType = XmlAxisType.Attribute; .) ) (
+			[ XmlOpenTag (. isXmlIdentifier = true; .) ] IdentifierOrKeyword<out name> [ XmlCloseTag ]
+			(. pexpr = new XmlMemberAccessExpression(null, axisType, name, isXmlIdentifier); .)
+		)
 	)
 .
 
 XmlLiteralExpression<out Expression pexpr>
 (.
-	XmlLiteralExpression expr = pexpr = new XmlLiteralExpression();
+	XmlLiteralExpression expr = new XmlLiteralExpression();
 	List<XmlExpression> exprs = expr.Expressions;
 	XmlExpression currentExpression = null;
 .)
@@ -1771,9 +1781,10 @@ XmlLiteralExpression<out Expression pexpr>
 		| XmlProcessingInstruction (. currentExpression = new XmlContentExpression(t.val, XmlContentType.ProcessingInstruction); .)
 	)
 	(.
-		currentExpression.Location = t.Location;
+		currentExpression.StartLocation = t.Location;
 		currentExpression.EndLocation = t.EndLocation;
 		exprs.Add(currentExpression);
+		pexpr = expr;
 	.)
 .
 
@@ -3541,7 +3552,7 @@ MemberModifier<ModifierList m> =
 	| "Private"			(.m.Add(Modifiers.Private, t.Location);.)
 	| "Protected"		(.m.Add(Modifiers.Protected, t.Location);.)
 	| "Public"			(.m.Add(Modifiers.Public, t.Location);.)
-	 | "NotInheritable"	(.m.Add(Modifiers.Sealed, t.Location);.)
+	| "NotInheritable"	(.m.Add(Modifiers.Sealed, t.Location);.)
 	| "NotOverridable"	(.m.Add(Modifiers.Sealed, t.Location);.)
 	| "Shared"			(.m.Add(Modifiers.Static, t.Location);.)
 	| "Overridable"		(.m.Add(Modifiers.Virtual, t.Location);.)

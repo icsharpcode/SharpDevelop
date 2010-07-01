@@ -96,6 +96,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		
 		public override Expression ParseExpression()
 		{
+			lexer.SetInitialContext(SnippetType.Expression);
 			lexer.NextToken();
 			Location startLocation = la.Location;
 			Expression expr;
