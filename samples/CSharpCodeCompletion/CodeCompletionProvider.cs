@@ -30,7 +30,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
-
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using Dom = ICSharpCode.SharpDevelop.Dom;
@@ -134,9 +133,10 @@ namespace CSharpEditor
 			// Add the completion data as returned by SharpDevelop.Dom to the
 			// list for the text editor
 			foreach (object obj in completionData) {
-				if (obj is string) {
-					// namespace names are returned as string
-					resultList.Add(new DefaultCompletionData((string)obj, "namespace " + obj, 5));
+				if (obj is Dom.NamespaceEntry) {
+					resultList.Add(new DefaultCompletionData(obj.ToString(), "namespace " + obj, 5));
+				} else if (obj is Dom.NRefactoryResolver.KeywordEntry) {
+					resultList.Add(new DefaultCompletionData(obj.ToString(), obj.ToString(), 5));
 				} else if (obj is Dom.IClass) {
 					Dom.IClass c = (Dom.IClass)obj;
 					resultList.Add(new CodeCompletionData(c));
