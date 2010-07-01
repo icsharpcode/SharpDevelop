@@ -2244,6 +2244,85 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return null;
 		}
 		
+		public virtual object VisitXmlAttribute(XmlAttribute xmlAttribute, object data) {
+			Debug.Assert((xmlAttribute != null));
+			Debug.Assert((xmlAttribute.ExpressionValue != null));
+			nodeStack.Push(xmlAttribute.ExpressionValue);
+			xmlAttribute.ExpressionValue.AcceptVisitor(this, data);
+			xmlAttribute.ExpressionValue = ((Expression)(nodeStack.Pop()));
+			return null;
+		}
+		
+		public virtual object VisitXmlCommentExpression(XmlCommentExpression xmlCommentExpression, object data) {
+			Debug.Assert((xmlCommentExpression != null));
+			return null;
+		}
+		
+		public virtual object VisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data) {
+			Debug.Assert((xmlContentExpression != null));
+			return null;
+		}
+		
+		public virtual object VisitXmlElementExpression(XmlElementExpression xmlElementExpression, object data) {
+			Debug.Assert((xmlElementExpression != null));
+			Debug.Assert((xmlElementExpression.Content != null));
+			Debug.Assert((xmlElementExpression.NameExpression != null));
+			Debug.Assert((xmlElementExpression.Attributes != null));
+			nodeStack.Push(xmlElementExpression.Content);
+			xmlElementExpression.Content.AcceptVisitor(this, data);
+			xmlElementExpression.Content = ((Expression)(nodeStack.Pop()));
+			nodeStack.Push(xmlElementExpression.NameExpression);
+			xmlElementExpression.NameExpression.AcceptVisitor(this, data);
+			xmlElementExpression.NameExpression = ((Expression)(nodeStack.Pop()));
+			for (int i = 0; i < xmlElementExpression.Attributes.Count; i++) {
+				XmlExpression o = xmlElementExpression.Attributes[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (XmlExpression)nodeStack.Pop();
+				if (o == null)
+					xmlElementExpression.Attributes.RemoveAt(i--);
+				else
+					xmlElementExpression.Attributes[i] = o;
+			}
+			return null;
+		}
+		
+		public virtual object VisitXmlEmbeddedExpression(XmlEmbeddedExpression xmlEmbeddedExpression, object data) {
+			Debug.Assert((xmlEmbeddedExpression != null));
+			Debug.Assert((xmlEmbeddedExpression.InlineVBExpression != null));
+			nodeStack.Push(xmlEmbeddedExpression.InlineVBExpression);
+			xmlEmbeddedExpression.InlineVBExpression.AcceptVisitor(this, data);
+			xmlEmbeddedExpression.InlineVBExpression = ((Expression)(nodeStack.Pop()));
+			return null;
+		}
+		
+		public virtual object VisitXmlLiteralExpression(XmlLiteralExpression xmlLiteralExpression, object data) {
+			Debug.Assert((xmlLiteralExpression != null));
+			Debug.Assert((xmlLiteralExpression.Expressions != null));
+			for (int i = 0; i < xmlLiteralExpression.Expressions.Count; i++) {
+				XmlExpression o = xmlLiteralExpression.Expressions[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = (XmlExpression)nodeStack.Pop();
+				if (o == null)
+					xmlLiteralExpression.Expressions.RemoveAt(i--);
+				else
+					xmlLiteralExpression.Expressions[i] = o;
+			}
+			return null;
+		}
+		
+		public virtual object VisitXmlMemberAccessExpression(XmlMemberAccessExpression xmlMemberAccessExpression, object data) {
+			Debug.Assert((xmlMemberAccessExpression != null));
+			Debug.Assert((xmlMemberAccessExpression.TargetObject != null));
+			nodeStack.Push(xmlMemberAccessExpression.TargetObject);
+			xmlMemberAccessExpression.TargetObject.AcceptVisitor(this, data);
+			xmlMemberAccessExpression.TargetObject = ((Expression)(nodeStack.Pop()));
+			return null;
+		}
+		
 		public virtual object VisitYieldStatement(YieldStatement yieldStatement, object data) {
 			Debug.Assert((yieldStatement != null));
 			Debug.Assert((yieldStatement.Statement != null));

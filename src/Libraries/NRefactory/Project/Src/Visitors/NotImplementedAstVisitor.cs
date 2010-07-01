@@ -510,6 +510,34 @@ namespace ICSharpCode.NRefactory.Visitors {
 			throw new global::System.NotImplementedException("WithStatement");
 		}
 		
+		public virtual object VisitXmlAttribute(XmlAttribute xmlAttribute, object data) {
+			throw new global::System.NotImplementedException("XmlAttribute");
+		}
+		
+		public virtual object VisitXmlCommentExpression(XmlCommentExpression xmlCommentExpression, object data) {
+			throw new global::System.NotImplementedException("XmlCommentExpression");
+		}
+		
+		public virtual object VisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data) {
+			throw new global::System.NotImplementedException("XmlContentExpression");
+		}
+		
+		public virtual object VisitXmlElementExpression(XmlElementExpression xmlElementExpression, object data) {
+			throw new global::System.NotImplementedException("XmlElementExpression");
+		}
+		
+		public virtual object VisitXmlEmbeddedExpression(XmlEmbeddedExpression xmlEmbeddedExpression, object data) {
+			throw new global::System.NotImplementedException("XmlEmbeddedExpression");
+		}
+		
+		public virtual object VisitXmlLiteralExpression(XmlLiteralExpression xmlLiteralExpression, object data) {
+			throw new global::System.NotImplementedException("XmlLiteralExpression");
+		}
+		
+		public virtual object VisitXmlMemberAccessExpression(XmlMemberAccessExpression xmlMemberAccessExpression, object data) {
+			throw new global::System.NotImplementedException("XmlMemberAccessExpression");
+		}
+		
 		public virtual object VisitYieldStatement(YieldStatement yieldStatement, object data) {
 			throw new global::System.NotImplementedException("YieldStatement");
 		}

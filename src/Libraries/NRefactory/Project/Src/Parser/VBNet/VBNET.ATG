@@ -30,8 +30,7 @@ TOKENS
 	XmlContent
 	XmlComment
 	XmlCData
-	XmlProcessingInstructionStart
-	XmlProcessingInstructionEnd
+	XmlProcessingInstruction
 
 	/* ----- special character ----- */
 	"="

@@ -398,4 +398,19 @@ namespace ICSharpCode.NRefactory.Ast
 		Skip,
 		SkipWhile
 	}
+	
+	public enum XmlAxisType
+	{
+		Element, // .
+		Attribute, // .@
+		Descendents // ...
+	}
+	
+	public enum XmlContentType
+	{
+		Comment,
+		Text,
+		CData,
+		ProcessingInstruction
+	}
 }

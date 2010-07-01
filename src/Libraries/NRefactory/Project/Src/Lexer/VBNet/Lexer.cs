@@ -129,8 +129,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 								}
 								if (ReaderPeek() == '?') {
 									ReaderRead();
-									info.inXmlTag = true;
-									return new Token(Tokens.XmlProcessingInstructionStart, x, y);
+									Token t = ReadXmlProcessingInstruction(x, y);
+									info.wasProcessingInstruction = true;
+									ReaderRead();
+									ReaderRead();
+									return t;
 								}
 								if (ReaderPeek() == '!') {
 									ReaderRead();
@@ -148,14 +151,6 @@ namespace ICSharpCode.NRefactory.Parser.VB
 									info.inXmlTag = false;
 									info.level--;
 									return new Token(Tokens.XmlCloseTagEmptyElement, x, y);
-								}
-								break;
-							case '?':
-								if (ReaderPeek() == '>') {
-									ReaderRead();
-									info.inXmlTag = false;
-									info.wasProcessingInstruction = true;
-									return new Token(Tokens.XmlProcessingInstructionEnd, x, y);
 								}
 								break;
 							case '>':
@@ -374,8 +369,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 							}
 							if (ReaderPeek() == '?') {
 								ReaderRead();
-								info.inXmlTag = true;
-								return new Token(Tokens.XmlProcessingInstructionStart, x, y);
+								Token t = ReadXmlProcessingInstruction(x, y);
+								info.wasProcessingInstruction = true;
+								ReaderRead();
+								ReaderRead();
+								return t;
 							}
 							info.inXmlTag = true;
 							info.level++;
@@ -393,15 +391,32 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			}
 		}
 		
+		Token ReadXmlProcessingInstruction(int x, int y)
+		{
+			sb.Length = 0;
+			int nextChar = -1;
+			
+			while (ReaderPeek() != '?' || ReaderPeek(1) != '>') {
+				nextChar = ReaderRead();
+				if (nextChar == -1)
+					break;
+				sb.Append((char)nextChar);
+			}
+			
+			return new Token(Tokens.XmlProcessingInstruction, x, y, sb.ToString());
+		}
+		
 		Token ReadXmlCommentOrCData(int x, int y)
 		{
 			sb.Length = 0;
 			int nextChar = -1;
 			
 			for (int i = 0; i < 7; i++) {
-				nextChar = ReaderRead();
-				if (nextChar > -1)
+				nextChar = ReaderPeek();
+				if (nextChar > -1 && nextChar != '>') {
+					ReaderRead();
 					sb.Append((char)nextChar);
+				}
 			}
 			
 			if (sb.ToString().StartsWith("--")) {

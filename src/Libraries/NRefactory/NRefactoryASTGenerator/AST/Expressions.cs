@@ -390,5 +390,49 @@ namespace NRefactoryASTGenerator.Ast
 		List<ExpressionRangeVariable> intoVariables;
 	}
 	
+	enum XmlAxisType { }
 	
+	class XmlMemberAccessExpression : Expression {
+		Expression targetObject;
+		XmlAxisType type;
+		bool isXmlIdentifier;
+		string identifier;
+	}
+
+	abstract class XmlExpression : Expression { }
+
+	class XmlLiteralExpression : Expression {
+		List<XmlExpression> expressions;
+	}
+
+	class XmlCommentExpression : XmlExpression {
+		string content;
+	}
+	
+	enum XmlContentType { }
+	
+	class XmlContentExpression : XmlExpression {
+		string content;
+		XmlContentType type;
+	}
+	
+	class XmlEmbeddedExpression : XmlExpression {
+		Expression inlineVBExpression;
+	}
+
+	[IncludeBoolProperty("IsExpression", "return !content.IsNull;")]
+	[IncludeBoolProperty("NameIsExpression", "return !nameExpression.IsNull;")]
+	class XmlElementExpression : XmlExpression {
+		Expression content;
+		Expression nameExpression;
+		string xmlName;
+		List<XmlExpression> attributes;
+	}
+	
+	[IncludeBoolProperty("IsLiteralValue", "return expressionValue.IsNull;")]
+	class XmlAttribute : XmlExpression {
+		string name;
+		string literalValue;
+		Expression expressionValue;
+	}
 }

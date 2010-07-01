@@ -1665,9 +1665,9 @@ namespace ICSharpCode.NRefactory.Ast {
 			initializer = Expression.Null;
 		}
 		
-		public bool HasAddRegion {
+		public bool HasRaiseRegion {
 			get {
-				return !addRegion.IsNull;
+				return !raiseRegion.IsNull;
 			}
 		}
 		
@@ -1677,9 +1677,9 @@ namespace ICSharpCode.NRefactory.Ast {
 			}
 		}
 		
-		public bool HasRaiseRegion {
+		public bool HasAddRegion {
 			get {
-				return !raiseRegion.IsNull;
+				return !addRegion.IsNull;
 			}
 		}
 		
@@ -1983,15 +1983,6 @@ namespace ICSharpCode.NRefactory.Ast {
 		}
 		
 
-		public TypeReference GetTypeForField(int fieldIndex)
-		{
-			if (!typeReference.IsNull) {
-				return typeReference;
-			}
-			return ((VariableDeclaration)Fields[fieldIndex]).TypeReference;
-		}
-		
-
 		public VariableDeclaration GetVariableDeclaration(string variableName)
 		{
 			foreach (VariableDeclaration variableDeclaration in Fields) {
@@ -2000,6 +1991,15 @@ namespace ICSharpCode.NRefactory.Ast {
 				}
 			}
 			return null;
+		}
+		
+
+		public TypeReference GetTypeForField(int fieldIndex)
+		{
+			if (!typeReference.IsNull) {
+				return typeReference;
+			}
+			return ((VariableDeclaration)Fields[fieldIndex]).TypeReference;
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
@@ -2421,24 +2421,17 @@ namespace ICSharpCode.NRefactory.Ast {
 			elseIfSections = new List<ElseIfSection>();
 		}
 		
-		public bool HasElseStatements {
-			get {
-				return falseStatement.Count > 0;
-			}
-		}
-		
 		public bool HasElseIfSections {
 			get {
 				return elseIfSections.Count > 0;
 			}
 		}
 		
-
-			public IfElseStatement(Expression condition, Statement trueStatement)
-				: this(condition) {
-				this.trueStatement.Add(Statement.CheckNull(trueStatement));
-				if (trueStatement != null) trueStatement.Parent = this;
+		public bool HasElseStatements {
+			get {
+				return falseStatement.Count > 0;
 			}
+		}
 		
 
 			public IfElseStatement(Expression condition, Statement trueStatement, Statement falseStatement)
@@ -2447,6 +2440,13 @@ namespace ICSharpCode.NRefactory.Ast {
 				this.falseStatement.Add(Statement.CheckNull(falseStatement));
 				if (trueStatement != null) trueStatement.Parent = this;
 				if (falseStatement != null) falseStatement.Parent = this;
+			}
+		
+
+			public IfElseStatement(Expression condition, Statement trueStatement)
+				: this(condition) {
+				this.trueStatement.Add(Statement.CheckNull(trueStatement));
+				if (trueStatement != null) trueStatement.Parent = this;
 			}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
@@ -3423,12 +3423,6 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public bool HasSetRegion {
-			get {
-				return !setRegion.IsNull;
-			}
-		}
-		
 		public bool IsReadOnly {
 			get {
 				return HasGetRegion && !HasSetRegion;
@@ -3444,6 +3438,12 @@ public Location ExtendedEndLocation { get; set; }
 		public bool IsIndexer {
 			get {
 				return (Modifier & Modifiers.Default) != 0;
+			}
+		}
+		
+		public bool HasSetRegion {
+			get {
+				return !setRegion.IsNull;
 			}
 		}
 		
@@ -5257,15 +5257,15 @@ public Location ExtendedEndLocation { get; set; }
 			alias = TypeReference.Null;
 		}
 		
-		public bool IsAlias {
-			get {
-				return !alias.IsNull;
-			}
-		}
-		
 		public bool IsXml {
 			get {
 				return xmlPrefix != null;
+			}
+		}
+		
+		public bool IsAlias {
+			get {
+				return !alias.IsNull;
 			}
 		}
 		
@@ -5295,11 +5295,11 @@ public Location ExtendedEndLocation { get; set; }
 			Usings = usings;
 		}
 		
-public UsingDeclaration(string @namespace, TypeReference alias) { usings = new List<Using>(1); usings.Add(new Using(@namespace, alias)); }
-		
 public UsingDeclaration(string @namespace) : this(@namespace, TypeReference.Null) {}
 		
 public UsingDeclaration(string xmlNamespace, string prefix) { usings = new List<Using>(1); usings.Add(new Using(xmlNamespace, prefix)); }
+		
+public UsingDeclaration(string @namespace, TypeReference alias) { usings = new List<Using>(1); usings.Add(new Using(@namespace, alias)); }
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
 			return visitor.VisitUsingDeclaration(this, data);
@@ -5455,6 +5455,323 @@ public UsingDeclaration(string xmlNamespace, string prefix) { usings = new List<
 		
 		public override string ToString() {
 			return string.Format("[WithStatement Expression={0} Body={1}]", Expression, Body);
+		}
+	}
+	
+	public class XmlAttribute : XmlExpression {
+		
+		string name;
+		
+		string literalValue;
+		
+		Expression expressionValue;
+		
+		public string Name {
+			get {
+				return name;
+			}
+			set {
+				name = value ?? "";
+			}
+		}
+		
+		public string LiteralValue {
+			get {
+				return literalValue;
+			}
+			set {
+				literalValue = value ?? "";
+			}
+		}
+		
+		public Expression ExpressionValue {
+			get {
+				return expressionValue;
+			}
+			set {
+				expressionValue = value ?? Expression.Null;
+				if (!expressionValue.IsNull) expressionValue.Parent = this;
+			}
+		}
+		
+		public XmlAttribute() {
+			name = "";
+			literalValue = "";
+			expressionValue = Expression.Null;
+		}
+		
+		public bool IsLiteralValue {
+			get {
+				return expressionValue.IsNull;
+			}
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitXmlAttribute(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[XmlAttribute Name={0} LiteralValue={1} ExpressionValue={2}]", Name, LiteralValue, ExpressionValue);
+		}
+	}
+	
+	public class XmlCommentExpression : XmlExpression {
+		
+		string content;
+		
+		public string Content {
+			get {
+				return content;
+			}
+			set {
+				content = value ?? "";
+			}
+		}
+		
+		public XmlCommentExpression() {
+			content = "";
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitXmlCommentExpression(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[XmlCommentExpression Content={0}]", Content);
+		}
+	}
+	
+	public class XmlContentExpression : XmlExpression {
+		
+		string content;
+		
+		XmlContentType type;
+		
+		public string Content {
+			get {
+				return content;
+			}
+			set {
+				content = value ?? "";
+			}
+		}
+		
+		public XmlContentType Type {
+			get {
+				return type;
+			}
+			set {
+				type = value;
+			}
+		}
+		
+		public XmlContentExpression() {
+			content = "";
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitXmlContentExpression(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[XmlContentExpression Content={0} Type={1}]", Content, Type);
+		}
+	}
+	
+	public class XmlElementExpression : XmlExpression {
+		
+		Expression content;
+		
+		Expression nameExpression;
+		
+		string xmlName;
+		
+		List<XmlExpression> attributes;
+		
+		public Expression Content {
+			get {
+				return content;
+			}
+			set {
+				content = value ?? Expression.Null;
+				if (!content.IsNull) content.Parent = this;
+			}
+		}
+		
+		public Expression NameExpression {
+			get {
+				return nameExpression;
+			}
+			set {
+				nameExpression = value ?? Expression.Null;
+				if (!nameExpression.IsNull) nameExpression.Parent = this;
+			}
+		}
+		
+		public string XmlName {
+			get {
+				return xmlName;
+			}
+			set {
+				xmlName = value ?? "";
+			}
+		}
+		
+		public List<XmlExpression> Attributes {
+			get {
+				return attributes;
+			}
+			set {
+				attributes = value ?? new List<XmlExpression>();
+			}
+		}
+		
+		public XmlElementExpression() {
+			content = Expression.Null;
+			nameExpression = Expression.Null;
+			xmlName = "";
+			attributes = new List<XmlExpression>();
+		}
+		
+		public bool IsExpression {
+			get {
+				return !content.IsNull;
+			}
+		}
+		
+		public bool NameIsExpression {
+			get {
+				return !nameExpression.IsNull;
+			}
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitXmlElementExpression(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[XmlElementExpression Content={0} NameExpression={1} XmlName={2} Attributes={3}]", Content, NameExpression, XmlName, GetCollectionString(Attributes));
+		}
+	}
+	
+	public class XmlEmbeddedExpression : XmlExpression {
+		
+		Expression inlineVBExpression;
+		
+		public Expression InlineVBExpression {
+			get {
+				return inlineVBExpression;
+			}
+			set {
+				inlineVBExpression = value ?? Expression.Null;
+				if (!inlineVBExpression.IsNull) inlineVBExpression.Parent = this;
+			}
+		}
+		
+		public XmlEmbeddedExpression() {
+			inlineVBExpression = Expression.Null;
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitXmlEmbeddedExpression(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[XmlEmbeddedExpression InlineVBExpression={0}]", InlineVBExpression);
+		}
+	}
+	
+	public abstract class XmlExpression : Expression {
+		
+		protected XmlExpression() {
+		}
+	}
+	
+	public class XmlLiteralExpression : Expression {
+		
+		List<XmlExpression> expressions;
+		
+		public List<XmlExpression> Expressions {
+			get {
+				return expressions;
+			}
+			set {
+				expressions = value ?? new List<XmlExpression>();
+			}
+		}
+		
+		public XmlLiteralExpression() {
+			expressions = new List<XmlExpression>();
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitXmlLiteralExpression(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[XmlLiteralExpression Expressions={0}]", GetCollectionString(Expressions));
+		}
+	}
+	
+	public class XmlMemberAccessExpression : Expression {
+		
+		Expression targetObject;
+		
+		XmlAxisType type;
+		
+		bool isXmlIdentifier;
+		
+		string identifier;
+		
+		public Expression TargetObject {
+			get {
+				return targetObject;
+			}
+			set {
+				targetObject = value ?? Expression.Null;
+				if (!targetObject.IsNull) targetObject.Parent = this;
+			}
+		}
+		
+		public XmlAxisType Type {
+			get {
+				return type;
+			}
+			set {
+				type = value;
+			}
+		}
+		
+		public bool IsXmlIdentifier {
+			get {
+				return isXmlIdentifier;
+			}
+			set {
+				isXmlIdentifier = value;
+			}
+		}
+		
+		public string Identifier {
+			get {
+				return identifier;
+			}
+			set {
+				identifier = value ?? "";
+			}
+		}
+		
+		public XmlMemberAccessExpression() {
+			targetObject = Expression.Null;
+			identifier = "";
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitXmlMemberAccessExpression(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[XmlMemberAccessExpression TargetObject={0} Type={1} IsXmlIdentifier={2} Identifi" +
+					"er={3}]", TargetObject, Type, IsXmlIdentifier, Identifier);
 		}
 	}
 	

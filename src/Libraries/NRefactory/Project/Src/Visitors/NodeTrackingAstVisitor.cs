@@ -892,6 +892,55 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return result;
 		}
 		
+		public sealed override object VisitXmlAttribute(XmlAttribute xmlAttribute, object data) {
+			this.BeginVisit(xmlAttribute);
+			object result = this.TrackedVisitXmlAttribute(xmlAttribute, data);
+			this.EndVisit(xmlAttribute);
+			return result;
+		}
+		
+		public sealed override object VisitXmlCommentExpression(XmlCommentExpression xmlCommentExpression, object data) {
+			this.BeginVisit(xmlCommentExpression);
+			object result = this.TrackedVisitXmlCommentExpression(xmlCommentExpression, data);
+			this.EndVisit(xmlCommentExpression);
+			return result;
+		}
+		
+		public sealed override object VisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data) {
+			this.BeginVisit(xmlContentExpression);
+			object result = this.TrackedVisitXmlContentExpression(xmlContentExpression, data);
+			this.EndVisit(xmlContentExpression);
+			return result;
+		}
+		
+		public sealed override object VisitXmlElementExpression(XmlElementExpression xmlElementExpression, object data) {
+			this.BeginVisit(xmlElementExpression);
+			object result = this.TrackedVisitXmlElementExpression(xmlElementExpression, data);
+			this.EndVisit(xmlElementExpression);
+			return result;
+		}
+		
+		public sealed override object VisitXmlEmbeddedExpression(XmlEmbeddedExpression xmlEmbeddedExpression, object data) {
+			this.BeginVisit(xmlEmbeddedExpression);
+			object result = this.TrackedVisitXmlEmbeddedExpression(xmlEmbeddedExpression, data);
+			this.EndVisit(xmlEmbeddedExpression);
+			return result;
+		}
+		
+		public sealed override object VisitXmlLiteralExpression(XmlLiteralExpression xmlLiteralExpression, object data) {
+			this.BeginVisit(xmlLiteralExpression);
+			object result = this.TrackedVisitXmlLiteralExpression(xmlLiteralExpression, data);
+			this.EndVisit(xmlLiteralExpression);
+			return result;
+		}
+		
+		public sealed override object VisitXmlMemberAccessExpression(XmlMemberAccessExpression xmlMemberAccessExpression, object data) {
+			this.BeginVisit(xmlMemberAccessExpression);
+			object result = this.TrackedVisitXmlMemberAccessExpression(xmlMemberAccessExpression, data);
+			this.EndVisit(xmlMemberAccessExpression);
+			return result;
+		}
+		
 		public sealed override object VisitYieldStatement(YieldStatement yieldStatement, object data) {
 			this.BeginVisit(yieldStatement);
 			object result = this.TrackedVisitYieldStatement(yieldStatement, data);
@@ -1389,6 +1438,34 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object TrackedVisitWithStatement(WithStatement withStatement, object data) {
 			return base.VisitWithStatement(withStatement, data);
+		}
+		
+		public virtual object TrackedVisitXmlAttribute(XmlAttribute xmlAttribute, object data) {
+			return base.VisitXmlAttribute(xmlAttribute, data);
+		}
+		
+		public virtual object TrackedVisitXmlCommentExpression(XmlCommentExpression xmlCommentExpression, object data) {
+			return base.VisitXmlCommentExpression(xmlCommentExpression, data);
+		}
+		
+		public virtual object TrackedVisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data) {
+			return base.VisitXmlContentExpression(xmlContentExpression, data);
+		}
+		
+		public virtual object TrackedVisitXmlElementExpression(XmlElementExpression xmlElementExpression, object data) {
+			return base.VisitXmlElementExpression(xmlElementExpression, data);
+		}
+		
+		public virtual object TrackedVisitXmlEmbeddedExpression(XmlEmbeddedExpression xmlEmbeddedExpression, object data) {
+			return base.VisitXmlEmbeddedExpression(xmlEmbeddedExpression, data);
+		}
+		
+		public virtual object TrackedVisitXmlLiteralExpression(XmlLiteralExpression xmlLiteralExpression, object data) {
+			return base.VisitXmlLiteralExpression(xmlLiteralExpression, data);
+		}
+		
+		public virtual object TrackedVisitXmlMemberAccessExpression(XmlMemberAccessExpression xmlMemberAccessExpression, object data) {
+			return base.VisitXmlMemberAccessExpression(xmlMemberAccessExpression, data);
 		}
 		
 		public virtual object TrackedVisitYieldStatement(YieldStatement yieldStatement, object data) {

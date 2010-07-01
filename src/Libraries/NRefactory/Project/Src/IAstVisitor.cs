@@ -261,6 +261,20 @@ namespace ICSharpCode.NRefactory {
 		
 		object VisitWithStatement(WithStatement withStatement, object data);
 		
+		object VisitXmlAttribute(XmlAttribute xmlAttribute, object data);
+		
+		object VisitXmlCommentExpression(XmlCommentExpression xmlCommentExpression, object data);
+		
+		object VisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data);
+		
+		object VisitXmlElementExpression(XmlElementExpression xmlElementExpression, object data);
+		
+		object VisitXmlEmbeddedExpression(XmlEmbeddedExpression xmlEmbeddedExpression, object data);
+		
+		object VisitXmlLiteralExpression(XmlLiteralExpression xmlLiteralExpression, object data);
+		
+		object VisitXmlMemberAccessExpression(XmlMemberAccessExpression xmlMemberAccessExpression, object data);
+		
 		object VisitYieldStatement(YieldStatement yieldStatement, object data);
 	}
 }

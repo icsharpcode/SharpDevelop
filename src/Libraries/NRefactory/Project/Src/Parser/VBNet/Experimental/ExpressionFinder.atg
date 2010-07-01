@@ -31,8 +31,7 @@ TOKENS
 	XmlContent
 	XmlComment
 	XmlCData
-	XmlProcessingInstructionStart
-	XmlProcessingInstructionEnd
+	XmlProcessingInstruction
 
 	/* ----- special character ----- */
 	"="
@@ -651,16 +650,12 @@ XmlLiteral
     (.OnEachPossiblePath: nextTokenIsPotentialStartOfXmlMode = true; .)
 =
     (. PushContext(Context.Xml, t); .)
-    { XmlComment [ XmlContent ] | XmlProcessingInstruction [ XmlContent ] } XmlElement { XmlComment [ XmlContent ] }
+    { ( XmlComment | XmlProcessingInstruction ) [ XmlContent ] } XmlElement { XmlComment [ XmlContent ] }
     (. PopContext(); .)
 .
 
 XmlElement =
 	XmlOpenTag { ANY | XmlEmbeddedExpression } ( XmlCloseTagEmptyElement | XmlCloseTag { ANY | XmlEmbeddedExpression | XmlElement } XmlOpenEndTag { ANY | XmlEmbeddedExpression } XmlCloseTag )
-.
-
-XmlProcessingInstruction =
-	XmlProcessingInstructionStart Identifier { Identifier [ "=" LiteralString ] } XmlProcessingInstructionEnd
 .
 
 XmlEmbeddedExpression =

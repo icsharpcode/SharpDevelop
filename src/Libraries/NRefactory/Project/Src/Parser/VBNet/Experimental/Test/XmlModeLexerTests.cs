@@ -355,8 +355,7 @@ namespace DefaultNamespace
 			
 			CheckHead(lexer);
 			
-			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign, Tokens.XmlProcessingInstructionStart, Tokens.Identifier,
-			            Tokens.Identifier, Tokens.Assign, Tokens.LiteralString, Tokens.XmlProcessingInstructionEnd, Tokens.XmlContent,
+			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign, Tokens.XmlProcessingInstruction, Tokens.XmlContent,
 			            Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlOpenTag, Tokens.Identifier,
 			            Tokens.Identifier, Tokens.Assign, Tokens.LiteralString, Tokens.XmlCloseTag, Tokens.XmlContent, Tokens.XmlStartInlineVB,
 			            Tokens.From, Tokens.Identifier, Tokens.In, Tokens.Identifier, Tokens.Where, Tokens.Identifier, Tokens.Dot,
