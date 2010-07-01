@@ -899,13 +899,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return result;
 		}
 		
-		public sealed override object VisitXmlCommentExpression(XmlCommentExpression xmlCommentExpression, object data) {
-			this.BeginVisit(xmlCommentExpression);
-			object result = this.TrackedVisitXmlCommentExpression(xmlCommentExpression, data);
-			this.EndVisit(xmlCommentExpression);
-			return result;
-		}
-		
 		public sealed override object VisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data) {
 			this.BeginVisit(xmlContentExpression);
 			object result = this.TrackedVisitXmlContentExpression(xmlContentExpression, data);
@@ -1442,10 +1435,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 		
 		public virtual object TrackedVisitXmlAttribute(XmlAttribute xmlAttribute, object data) {
 			return base.VisitXmlAttribute(xmlAttribute, data);
-		}
-		
-		public virtual object TrackedVisitXmlCommentExpression(XmlCommentExpression xmlCommentExpression, object data) {
-			return base.VisitXmlCommentExpression(xmlCommentExpression, data);
 		}
 		
 		public virtual object TrackedVisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data) {

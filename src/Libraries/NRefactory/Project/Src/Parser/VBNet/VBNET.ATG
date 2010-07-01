@@ -1651,6 +1651,7 @@ Expr<out Expression expr>
 	  QueryExpr<out expr>
 	| LambdaExpr<out expr>
 	| DisjunctionExpr<out expr>
+	| XmlLiteralExpression<out expr>
 .
 
 AssignmentOperator<out AssignmentOperatorType op>
@@ -1673,12 +1674,19 @@ SimpleExpr<out Expression pexpr>
 =
 	SimpleNonInvocationExpression<out pexpr>
 	{
-			"." IdentifierOrKeyword<out name> 
-			(. pexpr = new MemberReferenceExpression(pexpr, name); .)
+			"." (
+				IdentifierOrKeyword<out name>
+				(. pexpr = new MemberReferenceExpression(pexpr, name); .)
+				| XmlOpenTag IdentifierOrKeyword<out name> XmlCloseTag
+				(. pexpr = new XmlMemberAccessExpression(pexpr, XmlAxisType.Element, name, true); .)
+			)
 			[ IF (la.kind == Tokens.OpenParenthesis && Peek(1).kind == Tokens.Of)
 					"(" "Of" TypeArgumentList<((MemberReferenceExpression)pexpr).TypeArguments> ")"
 			]
 		|	"!" IdentifierOrKeyword<out name> (. pexpr = new BinaryOperatorExpression(pexpr, BinaryOperatorType.DictionaryAccess, new PrimitiveExpression(name, name)); .)
+		|	(. XmlAxisType type = XmlAxisType.Attribute; bool isXmlName = false; .)
+			( ".@" | "..." (. type = XmlAxisType.Descendents; .) ) [ XmlOpenTag (. isXmlName = true; .) ] IdentifierOrKeyword<out name> [ XmlCloseTag ]
+			(. pexpr = new XmlMemberAccessExpression(pexpr, type, name, isXmlName); .)
 		|	InvocationExpression<ref pexpr>
 	}
 .
@@ -1747,6 +1755,26 @@ SimpleNonInvocationExpression<out Expression pexpr>
 		/* this form only occurs in WithStatements*/
 		"." IdentifierOrKeyword<out name> (. pexpr = new MemberReferenceExpression(null, name);.)
 	)
+.
+
+XmlLiteralExpression<out Expression pexpr>
+(.
+	XmlLiteralExpression expr = pexpr = new XmlLiteralExpression();
+	List<XmlExpression> exprs = expr.Expressions;
+	XmlExpression currentExpression = null;
+.)
+	=
+	(
+		XmlContent (. currentExpression = new XmlContentExpression(t.val, XmlContentType.Text); .)
+		| XmlCData (. currentExpression = new XmlContentExpression(t.val, XmlContentType.CData); .)
+		| XmlComment (. currentExpression = new XmlContentExpression(t.val, XmlContentType.Comment); .)
+		| XmlProcessingInstruction (. currentExpression = new XmlContentExpression(t.val, XmlContentType.ProcessingInstruction); .)
+	)
+	(.
+		currentExpression.Location = t.Location;
+		currentExpression.EndLocation = t.EndLocation;
+		exprs.Add(currentExpression);
+	.)
 .
 
 ConditionalExpression<out Expression expr>

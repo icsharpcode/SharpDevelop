@@ -15,8 +15,7 @@ using ICSharpCode.SharpDevelop.Dom.VBNet;
 
 namespace ICSharpCode.SharpDevelop.Tests
 {
-	[TestFixture]
-	[Ignore("currently not working because VBExpressionFinder is not yet completed.")]
+	[TestFixture, Ignore]
 	public class VBExpressionFinderTests
 	{
 		const string program1 = @"

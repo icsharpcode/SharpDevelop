@@ -394,9 +394,11 @@ namespace NRefactoryASTGenerator.Ast
 	
 	class XmlMemberAccessExpression : Expression {
 		Expression targetObject;
-		XmlAxisType type;
+		XmlAxisType axisType;
 		bool isXmlIdentifier;
 		string identifier;
+		
+		public XmlMemberAccessExpression(Expression targetObject, XmlAxisType axisType, string identifier, bool isXmlIdentifier) {}
 	}
 
 	abstract class XmlExpression : Expression { }
@@ -404,16 +406,14 @@ namespace NRefactoryASTGenerator.Ast
 	class XmlLiteralExpression : Expression {
 		List<XmlExpression> expressions;
 	}
-
-	class XmlCommentExpression : XmlExpression {
-		string content;
-	}
 	
 	enum XmlContentType { }
 	
 	class XmlContentExpression : XmlExpression {
 		string content;
 		XmlContentType type;
+		
+		public XmlContentExpression(string content, XmlContentType type) {}
 	}
 	
 	class XmlEmbeddedExpression : XmlExpression {

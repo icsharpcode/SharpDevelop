@@ -514,10 +514,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			throw new global::System.NotImplementedException("XmlAttribute");
 		}
 		
-		public virtual object VisitXmlCommentExpression(XmlCommentExpression xmlCommentExpression, object data) {
-			throw new global::System.NotImplementedException("XmlCommentExpression");
-		}
-		
 		public virtual object VisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data) {
 			throw new global::System.NotImplementedException("XmlContentExpression");
 		}

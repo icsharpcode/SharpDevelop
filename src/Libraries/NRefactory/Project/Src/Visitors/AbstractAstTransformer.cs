@@ -2253,11 +2253,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return null;
 		}
 		
-		public virtual object VisitXmlCommentExpression(XmlCommentExpression xmlCommentExpression, object data) {
-			Debug.Assert((xmlCommentExpression != null));
-			return null;
-		}
-		
 		public virtual object VisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data) {
 			Debug.Assert((xmlContentExpression != null));
 			return null;

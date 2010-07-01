@@ -264,5 +264,35 @@ namespace NRefactoryToBooConverter
 		{
 			throw new NotImplementedException();
 		}
+		
+		public object VisitXmlAttribute(XmlAttribute xmlAttribute, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object VisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object VisitXmlElementExpression(XmlElementExpression xmlElementExpression, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object VisitXmlEmbeddedExpression(XmlEmbeddedExpression xmlEmbeddedExpression, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object VisitXmlLiteralExpression(XmlLiteralExpression xmlLiteralExpression, object data)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public object VisitXmlMemberAccessExpression(XmlMemberAccessExpression xmlMemberAccessExpression, object data)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

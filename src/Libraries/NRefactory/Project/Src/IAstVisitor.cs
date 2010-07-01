@@ -263,8 +263,6 @@ namespace ICSharpCode.NRefactory {
 		
 		object VisitXmlAttribute(XmlAttribute xmlAttribute, object data);
 		
-		object VisitXmlCommentExpression(XmlCommentExpression xmlCommentExpression, object data);
-		
 		object VisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data);
 		
 		object VisitXmlElementExpression(XmlElementExpression xmlElementExpression, object data);

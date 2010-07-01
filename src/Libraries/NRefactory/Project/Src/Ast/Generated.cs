@@ -2421,12 +2421,6 @@ namespace ICSharpCode.NRefactory.Ast {
 			elseIfSections = new List<ElseIfSection>();
 		}
 		
-		public bool HasElseIfSections {
-			get {
-				return elseIfSections.Count > 0;
-			}
-		}
-		
 		public bool HasElseStatements {
 			get {
 				return falseStatement.Count > 0;
@@ -2441,6 +2435,12 @@ namespace ICSharpCode.NRefactory.Ast {
 				if (trueStatement != null) trueStatement.Parent = this;
 				if (falseStatement != null) falseStatement.Parent = this;
 			}
+		
+		public bool HasElseIfSections {
+			get {
+				return elseIfSections.Count > 0;
+			}
+		}
 		
 
 			public IfElseStatement(Expression condition, Statement trueStatement)
@@ -5515,32 +5515,6 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 		}
 	}
 	
-	public class XmlCommentExpression : XmlExpression {
-		
-		string content;
-		
-		public string Content {
-			get {
-				return content;
-			}
-			set {
-				content = value ?? "";
-			}
-		}
-		
-		public XmlCommentExpression() {
-			content = "";
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitXmlCommentExpression(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[XmlCommentExpression Content={0}]", Content);
-		}
-	}
-	
 	public class XmlContentExpression : XmlExpression {
 		
 		string content;
@@ -5565,8 +5539,9 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			}
 		}
 		
-		public XmlContentExpression() {
-			content = "";
+		public XmlContentExpression(string content, XmlContentType type) {
+			Content = content;
+			Type = type;
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
@@ -5717,7 +5692,7 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 		
 		Expression targetObject;
 		
-		XmlAxisType type;
+		XmlAxisType axisType;
 		
 		bool isXmlIdentifier;
 		
@@ -5733,12 +5708,12 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			}
 		}
 		
-		public XmlAxisType Type {
+		public XmlAxisType AxisType {
 			get {
-				return type;
+				return axisType;
 			}
 			set {
-				type = value;
+				axisType = value;
 			}
 		}
 		
@@ -5760,9 +5735,11 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			}
 		}
 		
-		public XmlMemberAccessExpression() {
-			targetObject = Expression.Null;
-			identifier = "";
+		public XmlMemberAccessExpression(Expression targetObject, XmlAxisType axisType, string identifier, bool isXmlIdentifier) {
+			TargetObject = targetObject;
+			AxisType = axisType;
+			Identifier = identifier;
+			IsXmlIdentifier = isXmlIdentifier;
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
@@ -5770,8 +5747,8 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 		}
 		
 		public override string ToString() {
-			return string.Format("[XmlMemberAccessExpression TargetObject={0} Type={1} IsXmlIdentifier={2} Identifi" +
-					"er={3}]", TargetObject, Type, IsXmlIdentifier, Identifier);
+			return string.Format("[XmlMemberAccessExpression TargetObject={0} AxisType={1} IsXmlIdentifier={2} Iden" +
+					"tifier={3}]", TargetObject, AxisType, IsXmlIdentifier, Identifier);
 		}
 	}
 	
