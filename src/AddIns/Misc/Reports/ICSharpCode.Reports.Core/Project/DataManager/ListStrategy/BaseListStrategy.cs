@@ -49,21 +49,14 @@ namespace ICSharpCode.Reports.Core {
 		
 	
 	internal  abstract class BaseListStrategy :IDataViewStrategy,IEnumerator {
-		private bool isSorted;
-//		private bool isFiltered;
-//		private bool isGrouped;
-		
+
 		//Index to plain Datat
 		private IndexList indexList;
 		private ReportSettings reportSettings;
 
 		private AvailableFieldsCollection availableFields;
 		
-//	private ListChangedEventArgs resetList = new ListChangedEventArgs(ListChangedType.Reset,-1,-1);
-		
-//		public event EventHandler <ListChangedEventArgs> ListChanged;
-//		public event EventHandler <GroupChangedEventArgs> GroupChanged;
-		
+
 		#region Constructor
 		
 		protected BaseListStrategy(ReportSettings reportSettings)
@@ -79,14 +72,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		#region Event's
 		
-		/*
-		protected void NotifyResetList()
-		{
-			if (this.ListChanged != null) {
-				this.ListChanged (this,this.resetList);
-			}
-		}
-		*/
+	
 		
 		/*
 		protected void NotifyGroupChanging (object source,GroupSeparator groupSeperator)
@@ -100,16 +86,16 @@ namespace ICSharpCode.Reports.Core {
 		#endregion
 		
 		
-		protected Collection<AbstractColumn> AbstractCollection
+		protected Collection<AbstractColumn> CreateSortCollection (ColumnCollection items)
 		{
-			get {
+			
 				Collection<AbstractColumn> abstrCol = new Collection<AbstractColumn>();
-				foreach(SortColumn sc in ReportSettings.SortColumnCollection)
+				foreach(SortColumn sc in items)
 				{
 					abstrCol.Add(sc);
 				}
 				return abstrCol;
-			}
+		
 		}
 
 		public IndexList IndexList
@@ -203,10 +189,9 @@ namespace ICSharpCode.Reports.Core {
 			ListSortDirection sd = scc.SortDirection;
 			List<BaseComparer> lbc = null;
 			if (sd == ListSortDirection.Ascending) {
-//				lbc = list.OrderBy(i => i.ObjectArray[0]).ToList();
 				lbc = list.AsQueryable().AscendingOrder().ToList();
 			} else {
-//				lbc = list.OrderByDescending(i => i.ObjectArray[0]).ToList();
+
 				lbc = list.AsQueryable().DescendingOrder().ToList();
 			}
 			return lbc;
@@ -215,6 +200,17 @@ namespace ICSharpCode.Reports.Core {
 		
 		#endregion
 		
+		protected  void ShowIndexList (IndexList list)
+		{
+			System.Diagnostics.Trace.WriteLine("Ch listeckIndexList ");
+			foreach (SortComparer element in list) {
+				string v = element.ObjectArray[0].ToString();
+				System.Diagnostics.Trace.WriteLine(v);
+				System.Console.WriteLine(v);
+			}
+		}
+		
+
 		/*
 		protected static void CheckSortArray (ExtendedIndexCollection arr,string text)
 		{
@@ -309,15 +305,11 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		public virtual bool IsSorted
-		{
-			get {
-				return this.isSorted;
-			}
-			set {
-				this.isSorted = value;
-			}
-		}
+		public virtual bool IsSorted {get;set;}
+		
+		
+		
+		public bool IsGrouped {get;set;}
 		
 		/*
 		public bool IsFiltered
@@ -329,14 +321,9 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 		*/
-		/*
-		public bool IsGrouped 
-		{
-			get {
-				return this.isGrouped;
-			}
-		}
-		*/
+		
+		
+		
 		
 		/*
 		protected virtual void Group() 
@@ -357,6 +344,13 @@ namespace ICSharpCode.Reports.Core {
 			this.indexList.Clear();
 		}
 		
+		
+		public virtual void Group()
+		{
+			this.indexList.Clear();
+			this.IsGrouped = true;
+			
+		}
 		
 		public virtual void Bind() 
 		{

@@ -9,6 +9,7 @@
 
 using System;
 using System.Drawing;
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Test.TestHelpers;
 using NUnit.Framework;
 

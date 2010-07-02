@@ -64,6 +64,8 @@ namespace ICSharpCode.Reports.Core
 		
 		public bool IsSorted {get {return this.store.IsSorted;}}
 		
+		public bool IsGrouped {get {return this.store.IsGrouped;}}
+	
 		
 		public int CurrentRow  {
 			get {return this.store.CurrentPosition;}

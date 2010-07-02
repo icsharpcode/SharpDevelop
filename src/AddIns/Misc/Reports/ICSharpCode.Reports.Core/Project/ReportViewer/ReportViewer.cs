@@ -14,6 +14,7 @@ using System.Drawing.Text;
 using System.Globalization;
 using System.Windows.Forms;
 
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Core.old_Exporter;
 using ICSharpCode.Reports.Core.old_Exporter.ExportRenderer;

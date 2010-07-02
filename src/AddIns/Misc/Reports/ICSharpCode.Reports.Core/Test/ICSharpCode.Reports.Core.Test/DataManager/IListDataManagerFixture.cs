@@ -125,7 +125,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		{
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,new ReportSettings());
 			DataNavigator dataNav = dm.GetNavigator;
-			Assert.AreEqual(5,dataNav.AvailableFields.Count);
+			Assert.AreEqual(6,dataNav.AvailableFields.Count);
 		}
 		
 		

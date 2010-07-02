@@ -12,7 +12,7 @@ using System.Globalization;
 /// This Class handles the formatting of Output Values depending on there
 /// Type and DbValue
 /// </summary>
-namespace ICSharpCode.Reports.Core
+namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 {
 	internal static class StandardFormatter
 	{

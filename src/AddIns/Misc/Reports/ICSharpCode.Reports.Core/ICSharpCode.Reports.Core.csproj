@@ -104,7 +104,6 @@
     <Compile Include="Project\DataManager\ListStrategy\BaseListStrategy.cs" />
     <Compile Include="Project\DataManager\ListStrategy\CollectionStrategy.cs" />
     <Compile Include="Project\DataManager\DataManager.cs" />
-    <Compile Include="Project\DataSource\ReportDataSource.cs" />
     <Compile Include="Project\Dialogs\EditorDialog.cs">
     </Compile>
     <Compile Include="Project\Dialogs\EditorDialog.Designer.cs" />

@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Xml.Serialization;
 
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.old_Exporter;
 
 /// <summary>

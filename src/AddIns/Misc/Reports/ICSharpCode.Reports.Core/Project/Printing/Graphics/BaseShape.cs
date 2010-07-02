@@ -44,7 +44,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		#region GDI+
 		
-		public void FillShape (Graphics graphics, Brush brush,Rectangle rectangle)
+		private void FillShape (Graphics graphics, Brush brush,Rectangle rectangle)
 		{
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");

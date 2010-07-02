@@ -8,6 +8,7 @@
 
 using System;
 using System.Drawing.Printing;
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Interfaces;
 
 	/// <summary>

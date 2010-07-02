@@ -378,8 +378,8 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 				Assert.AreEqual(typeof(string),c[0].DataType);
 				Assert.AreEqual(typeof(string),c[1].DataType);
 				Assert.AreEqual(typeof(string),c[2].DataType);
-				Assert.AreEqual(typeof(int),c[3].DataType);
-				Assert.AreEqual(typeof(DateTime),c[4].DataType);
+				Assert.AreEqual(typeof(int),c[4].DataType);
+				Assert.AreEqual(typeof(DateTime),c[5].DataType);
 			}
 		}
 		

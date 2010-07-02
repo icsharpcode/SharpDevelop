@@ -20,7 +20,6 @@ namespace ICSharpCode.Reports.Core
 	/// <see cref="SharpBaseList"></see>
 	/// </summary>
 	public class IndexList :List<BaseComparer> 
-//	public class IndexList :List<BaseComparer> ,IEnumerable<BaseComparer>
 	{
 		string name;
 		int currentPosition;

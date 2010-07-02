@@ -35,7 +35,14 @@ namespace ICSharpCode.Reports.Core
 		public override void Bind()
 		{
 			base.Bind();
-			this.Sort ();
+			
+			if (base.ReportSettings.GroupColumnsCollection.Count > 0) {
+				
+				this.Group();
+				
+			} else {
+				this.Sort ();
+			}
 			Reset();
 		}
 		
@@ -82,21 +89,34 @@ namespace ICSharpCode.Reports.Core
 			base.Reset();
 		}
 		
+		
+		
 		public override void Sort()
 		{
 			base.Sort();
 			if ((base.ReportSettings.SortColumnCollection != null)) {
 				if (base.ReportSettings.SortColumnCollection.Count > 0) {
-					base.IndexList = this.BuildSortIndex (base.AbstractCollection);
+					base.IndexList = this.BuildSortIndex (base.CreateSortCollection(ReportSettings.SortColumnCollection));
 					base.IsSorted = true;
 				} else {
 					// if we have no sorting, we build the indexlist as well
-					base.IndexList = this.IndexBuilder(base.AbstractCollection);                                  
+					base.IndexList = this.IndexBuilder(ReportSettings.SortColumnCollection);
 					base.IsSorted = false;
 				}
 			}
 		}
 		
+		
+		public override void Group ()
+		{
+			base.Group();
+			IndexList gl = new IndexList("group");
+			
+			gl = this.BuildSortIndex (base.CreateSortCollection(ReportSettings.GroupColumnsCollection));
+			base.ShowIndexList(gl);
+			BuildGroup(gl);
+			
+		}
 		#endregion
 		
 		
@@ -136,6 +156,45 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 	
+		private void BuildGroup (IndexList list)
+		{
+			string compVal = String.Empty;
+			base.IndexList.Clear();
+			
+			foreach (SortComparer element in list)
+			{
+				string v = element.ObjectArray[0].ToString();
+				if (compVal != v) {
+//					Console.WriteLine("Header {0}",v);
+					GHeader(element);
+					GChild(element);
+				} else {
+//					Console.WriteLine("\t {0}",v);
+					GChild(element);
+				}
+				compVal = v;
+			}
+				Console.WriteLine("-------------------------");
+			ShowIndexList(base.IndexList);
+		}
+		
+		private void GHeader (SortComparer sc)
+		{
+			string v = sc.ObjectArray[0].ToString();
+			Console.WriteLine("");
+			Console.WriteLine("Header {0}",v);
+			Console.WriteLine("-----");
+			base.IndexList.Add(sc);
+		}
+		
+		
+		private void GChild(SortComparer sc)
+		{
+			string v = sc.ObjectArray[0].ToString();
+			Console.WriteLine("child {0}",v);
+		}
+		
+		
 		private IndexList IndexBuilder(Collection<AbstractColumn> col)
 		{
 			IndexList arrayList = new IndexList();

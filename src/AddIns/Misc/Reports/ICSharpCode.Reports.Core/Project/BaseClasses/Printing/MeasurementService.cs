@@ -9,7 +9,7 @@ using System;
 using System.Drawing;
 using ICSharpCode.Reports.Core.Interfaces;
 
-namespace ICSharpCode.Reports.Core
+namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 {
 	/// <summary>
 	/// Description of MeasurementService.

@@ -14,6 +14,8 @@ namespace ICSharpCode.Reports.Core{
 		
 		void Sort ();
 		
+		void Group();
+		
 		void Bind();
 		
 		void Fill (IReportItem item);
@@ -33,9 +35,11 @@ namespace ICSharpCode.Reports.Core{
  		bool IsSorted {get;}
  		/*
  		bool IsFiltered{get;}
+ 		*/
  		
- 		bool IsGrouped {get;}
+ 		bool IsGrouped {get;set;}
  		
+ 		/*
  		bool HasChildren {get;}
  		
  		IndexList ChildRows {get;}

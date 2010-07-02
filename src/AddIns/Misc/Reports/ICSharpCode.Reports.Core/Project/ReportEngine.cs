@@ -13,8 +13,9 @@ using System.IO;
 using System.Windows.Forms;
 using System.Xml;
 
-using ICSharpCode.Reports.Core.old_Exporter;
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Interfaces;
+using ICSharpCode.Reports.Core.old_Exporter;
 
 /// <summary>
 /// This Class contains the basic Functions to handle reports

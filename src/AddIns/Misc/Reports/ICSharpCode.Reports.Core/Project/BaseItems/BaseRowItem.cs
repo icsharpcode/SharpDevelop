@@ -67,17 +67,8 @@ namespace ICSharpCode.Reports.Core{
 			base.Render(rpea);
 			
 			StandardPrinter.AdjustBackColor(this);
-			
-			if (this.BackColor != GlobalValues.DefaultBackColor) {
-				StandardPrinter.FillBackground(rpea.PrintPageEventArgs.Graphics,this.BaseStyleDecorator,this.DrawingRectangle);
-			}
-			
-			if (this.DrawBorder) {
-				Console.WriteLine("dec {0} ",BaseStyleDecorator.DisplayRectangle);
-				Console.WriteLine("rec {0}  ",DrawingRectangle);
-				Console.WriteLine("loc {0} ",this.Location);
-				Console.WriteLine("--");
-			}
+		
+			StandardPrinter.FillBackground(rpea.PrintPageEventArgs.Graphics,this.BaseStyleDecorator);
 			
 			StandardPrinter.DrawBorder(rpea.PrintPageEventArgs.Graphics,this.BaseStyleDecorator);
 			

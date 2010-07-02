@@ -7,13 +7,14 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
-using System.Drawing;
-using System.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
+using System.Linq;
+
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Exporter.Converter;
 using ICSharpCode.Reports.Core.Interfaces;
-
 
 namespace ICSharpCode.Reports.Core.Exporter
 {

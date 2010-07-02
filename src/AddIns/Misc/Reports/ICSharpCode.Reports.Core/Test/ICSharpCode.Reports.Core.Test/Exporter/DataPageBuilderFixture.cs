@@ -9,6 +9,7 @@
 
 using System;
 using System.Data;
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Exporter;
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Core.Project.Interfaces;

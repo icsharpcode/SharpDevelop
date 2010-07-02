@@ -7,7 +7,9 @@
 
 using System;
 using System.Drawing;
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.old_Exporter;
+
 /// <summary>
 /// This class draws a Rectangle
 /// </summary>
@@ -45,7 +47,7 @@ namespace ICSharpCode.Reports.Core {
 			base.Render(rpea);
 			Rectangle rect = base.DrawingRectangle;
 			
-			base.FillBackground(rpea.PrintPageEventArgs.Graphics);
+			StandardPrinter.FillBackground(rpea.PrintPageEventArgs.Graphics,this.BaseStyleDecorator);
 			shape.DrawShape (rpea.PrintPageEventArgs.Graphics,
 			                 base.Baseline(),
 			                 rect);
@@ -55,19 +57,6 @@ namespace ICSharpCode.Reports.Core {
 		public override string ToString() {
 			return "BaseRectangleItem";
 		}
-		
-		
-		#region System.IDisposable interface implementation
-//		public override void Dispose() {
-//			base.Dispose();
-//			for (int i = 0; i < arrayList.Count;i ++ ) {
-//				IComponent curObj = (IComponent)arrayList[i];
-//            curObj.Dispose();
-//			}
-//			arrayList = null;
-//		}
-		#endregion
-		
 		
 	}
 }

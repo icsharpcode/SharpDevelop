@@ -9,7 +9,8 @@ using System;
 using System.ComponentModel;
 
  namespace ICSharpCode.Reports.Core {
- 	public interface IDataNavigator {
+ 	
+	public interface IDataNavigator {
  		
  		void Fill (ReportItemCollection collection);
  		bool MoveNext () ;
@@ -20,12 +21,16 @@ using System.ComponentModel;
  		bool HasMoreData {
  			get;
  		}
+ 		
  		/*
  		bool HasChildren {
 			get;
  		}
  		*/
+ 		
  		bool IsSorted {get;}
+ 		
+ 		bool IsGrouped {get;}
  		
  		int CurrentRow  {
  			get;
@@ -43,6 +48,5 @@ using System.ComponentModel;
  		 
  		System.Collections.IEnumerator RangeEnumerator(int start, int end);
  			
-// 		event EventHandler <ListChangedEventArgs> ListChanged;
  	}
  }

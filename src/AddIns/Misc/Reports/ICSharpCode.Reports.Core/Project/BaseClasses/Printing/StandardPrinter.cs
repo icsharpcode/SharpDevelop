@@ -33,13 +33,16 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 		
-		public static void FillBackground (Graphics  graphics,BaseStyleDecorator decorator,Rectangle rectangle)
+		public static void FillBackground (Graphics  graphics,BaseStyleDecorator decorator)
 		{
-			RectangleShape backgroundShape = new RectangleShape();
-			
-			backgroundShape.FillShape(graphics,
-			                new SolidFillPattern(decorator.BackColor),
-			                rectangle);
+			if (decorator.BackColor != GlobalValues.DefaultBackColor) {
+				
+				RectangleShape backgroundShape = new RectangleShape();
+				
+				backgroundShape.FillShape(graphics,
+				                          new SolidFillPattern(decorator.BackColor),
+				                          decorator.DisplayRectangle);
+			}
 		}
 		
 		
@@ -54,7 +57,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				}
 				Border border = new Border(new BaseLine (decorator.FrameColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
 
-				Console.WriteLine("\t border {0}",decorator.DisplayRectangle);
 				border.DrawBorder(graphics,decorator.DisplayRectangle);
 			}
 		}

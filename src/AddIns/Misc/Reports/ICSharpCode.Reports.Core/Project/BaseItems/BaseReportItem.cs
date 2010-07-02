@@ -89,7 +89,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		protected void FillBackground (Graphics  graphics)
 		{
-			StandardPrinter.FillBackground(graphics,this.BaseStyleDecorator,this.DrawingRectangle);
+			StandardPrinter.FillBackground(graphics,this.BaseStyleDecorator);
 		}
 		
 		

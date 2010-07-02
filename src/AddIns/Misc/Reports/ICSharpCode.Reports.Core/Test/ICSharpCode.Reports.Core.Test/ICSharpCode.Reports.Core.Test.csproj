@@ -71,6 +71,7 @@
     <Compile Include="Collections\ColumnCollectionFixture.cs" />
     <Compile Include="Collections\ParametersCollectionFixture.cs" />
     <Compile Include="Collections\ReportItemCollectionFixture.cs" />
+    <Compile Include="DataManager\GroupTableFixture.cs" />
     <Compile Include="DataManager\IConnectionDataManagerFixture.cs" />
     <Compile Include="DataManager\IListDataManagerFixture.cs" />
     <Compile Include="DataManager\MockDataAccess.cs" />
