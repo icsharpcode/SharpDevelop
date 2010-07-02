@@ -118,19 +118,17 @@ namespace ICSharpCode.NRefactory.Parser.VB
 								if (ReaderPeek() == '/') {
 									ReaderRead();
 									info.inXmlCloseTag = true;
-									return new Token(Tokens.XmlOpenEndTag, x, y);
+									return new Token(Tokens.XmlOpenEndTag, new Location(x, y), new Location(Col, Line));
 								}
 								if (ReaderPeek() == '%' && ReaderPeek(1) == '=') {
 									inXmlMode = false;
 									ReaderRead(); ReaderRead();
-									return new Token(Tokens.XmlStartInlineVB, x, y);
+									return new Token(Tokens.XmlStartInlineVB, new Location(x, y), new Location(Col, Line));
 								}
 								if (ReaderPeek() == '?') {
 									ReaderRead();
 									Token t = ReadXmlProcessingInstruction(x, y);
 									info.wasProcessingInstruction = true;
-									ReaderRead();
-									ReaderRead();
 									return t;
 								}
 								if (ReaderPeek() == '!') {
@@ -147,7 +145,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 									ReaderRead();
 									info.inXmlTag = false;
 									info.level--;
-									return new Token(Tokens.XmlCloseTagEmptyElement, x, y);
+									return new Token(Tokens.XmlCloseTagEmptyElement, new Location(x, y), new Location(Col, Line));
 								}
 								break;
 							case '>':
@@ -338,7 +336,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 							int y = Line;
 							inXmlMode = true;
 							ReaderRead();
-							return new Token(Tokens.XmlEndInlineVB, x, y);
+							return new Token(Tokens.XmlEndInlineVB, new Location(x, y), new Location(Col, Line));
 						}
 						#endregion
 						if (ch == '<' && (ef.NextTokenIsPotentialStartOfXmlMode || ef.NextTokenIsStartOfImportsOrAccessExpression)) {
@@ -350,12 +348,12 @@ namespace ICSharpCode.NRefactory.Parser.VB
 							if (ReaderPeek() == '/') {
 								ReaderRead();
 								info.inXmlCloseTag = true;
-								return new Token(Tokens.XmlOpenEndTag, x, y);
+								return new Token(Tokens.XmlOpenEndTag, new Location(x, y), new Location(Col, Line));
 							}
 							if (ReaderPeek() == '%' && ReaderPeek(1) == '=') {
 								// TODO : suspend xml mode tracking
 								ReaderRead(); ReaderRead();
-								return new Token(Tokens.XmlStartInlineVB, x, y);
+								return new Token(Tokens.XmlStartInlineVB, new Location(x, y), new Location(Col, Line));
 							}
 							if (ReaderPeek() == '!') {
 								ReaderRead();
@@ -367,8 +365,6 @@ namespace ICSharpCode.NRefactory.Parser.VB
 								ReaderRead();
 								Token t = ReadXmlProcessingInstruction(x, y);
 								info.wasProcessingInstruction = true;
-								ReaderRead();
-								ReaderRead();
 								return t;
 							}
 							info.inXmlTag = true;
@@ -399,7 +395,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				sb.Append((char)nextChar);
 			}
 			
-			return new Token(Tokens.XmlProcessingInstruction, x, y, sb.ToString());
+			ReaderSkip("?>".Length);
+			
+			return new Token(Tokens.XmlProcessingInstruction, new Location(x, y), new Location(Col, Line), sb.ToString(), null, LiteralFormat.None);
 		}
 		
 		Token ReadXmlCommentOrCData(int x, int y)

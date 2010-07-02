@@ -1778,9 +1778,9 @@ XmlLiteralExpression<out Expression pexpr>
 .)
 	=
 	(
-		XmlContentExpression<exprs> { XmlContentExpression<exprs> } [ XmlElement<out currentExpression> { XmlContentExpression<exprs> } ]
+		XmlContentExpression<exprs> { XmlContentExpression<exprs> } [ XmlElement<out currentExpression> (. exprs.Add(currentExpression); .) { XmlContentExpression<exprs> } ]
 	|
-		XmlElement<out currentExpression> { XmlContentExpression<exprs> }
+		XmlElement<out currentExpression> (. exprs.Add(currentExpression); .) { XmlContentExpression<exprs> }
 	)
 .
 
@@ -1817,11 +1817,11 @@ XmlElement<out XmlExpression expr>
 	(. XmlElementExpression el = new XmlElementExpression(); .)
 =
 	(
-		XmlOpenTag
+		XmlOpenTag (. el.StartLocation = t.Location; .)
 		( XmlStartInlineVB (. Expression innerExpression; .) Expr<out innerExpression> XmlEndInlineVB
 		(. el.NameExpression = new XmlEmbeddedExpression() { InlineVBExpression = innerExpression }; .)
 		| Identifier (. el.XmlName = t.val; .) ) { XmlAttribute<el.Attributes> }
-		( XmlCloseTagEmptyElement | XmlCloseTag { (. XmlExpression child; .) XmlNestedContent<out child> (. el.Children.Add(child); .) } XmlOpenEndTag { ANY } XmlCloseTag )
+		( XmlCloseTagEmptyElement (. el.EndLocation = t.EndLocation; .) | XmlCloseTag { (. XmlExpression child; .) XmlNestedContent<out child> (. el.Children.Add(child); .) } XmlOpenEndTag { ANY } XmlCloseTag (. el.EndLocation = t.EndLocation; .) )
 	)
 	(. expr = el; .)
 .

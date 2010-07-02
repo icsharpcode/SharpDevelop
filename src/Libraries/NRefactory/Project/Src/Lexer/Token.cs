@@ -64,6 +64,10 @@ namespace ICSharpCode.NRefactory.Parser
 		{
 		}
 		
+		public Token(int kind, Location startLocation, Location endLocation) : this(kind, startLocation, endLocation, "", null, LiteralFormat.None)
+		{
+		}
+		
 		public Token(int kind, int col, int line, string val)
 		{
 			this.kind         = kind;

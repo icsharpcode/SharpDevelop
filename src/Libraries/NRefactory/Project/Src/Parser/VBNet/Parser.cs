@@ -3692,6 +3692,9 @@ exprs);
 				XmlElement(
 #line  1781 "VBNET.ATG" 
 out currentExpression);
+
+#line  1781 "VBNET.ATG" 
+				exprs.Add(currentExpression); 
 				while (StartOf(32)) {
 					XmlContentExpression(
 #line  1781 "VBNET.ATG" 
@@ -3702,6 +3705,9 @@ exprs);
 			XmlElement(
 #line  1783 "VBNET.ATG" 
 out currentExpression);
+
+#line  1783 "VBNET.ATG" 
+			exprs.Add(currentExpression); 
 			while (StartOf(32)) {
 				XmlContentExpression(
 #line  1783 "VBNET.ATG" 
@@ -4612,6 +4618,9 @@ out XmlExpression expr) {
 #line  1817 "VBNET.ATG" 
 		XmlElementExpression el = new XmlElementExpression(); 
 		Expect(10);
+
+#line  1820 "VBNET.ATG" 
+		el.StartLocation = t.Location; 
 		if (la.kind == 12) {
 			lexer.NextToken();
 
@@ -4637,6 +4646,9 @@ el.Attributes);
 		}
 		if (la.kind == 14) {
 			lexer.NextToken();
+
+#line  1824 "VBNET.ATG" 
+			el.EndLocation = t.EndLocation; 
 		} else if (la.kind == 11) {
 			lexer.NextToken();
 			while (StartOf(37)) {
@@ -4655,6 +4667,9 @@ out child);
 				lexer.NextToken();
 			}
 			Expect(11);
+
+#line  1824 "VBNET.ATG" 
+			el.EndLocation = t.EndLocation; 
 		} else SynErr(288);
 
 #line  1826 "VBNET.ATG" 
