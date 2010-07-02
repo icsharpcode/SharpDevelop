@@ -188,14 +188,15 @@ namespace VBParserExperiment
 			                                                                        <Data />
 			                                                                      </Test>
 			                                                                      <!-- eof -->
-			                                                                      <!-- hey, wait! -->")));
+			                                                                      <!-- hey, wait! -->
+			                                                                      <?target some data?>")));
 			
 			CheckHead(lexer);
 			
 			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign,
 			            Tokens.XmlComment, Tokens.XmlContent, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag,
 			            Tokens.XmlContent, Tokens.XmlComment, Tokens.XmlContent, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement,
-			            Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlComment, Tokens.XmlComment);
+			            Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlComment, Tokens.XmlComment, Tokens.XmlProcessingInstruction);
 			
 			CheckFoot(lexer);
 		}

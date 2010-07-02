@@ -97,11 +97,15 @@ namespace ICSharpCode.NRefactory.Parser.VB
 							while ((peek = ReaderPeek(step)) != -1 && XmlConvert.IsWhitespaceChar((char)peek))
 								step++;
 
-							if (ReaderPeek(step) == '<' && ReaderPeek(step + 1) == '!') {
+							if (ReaderPeek(step) == '<' && (ReaderPeek(step + 1) == '!' || ReaderPeek(step + 1) == '?')) {
+								char lastCh = '\0';
 								for (int i = 0; i < step + 2; i++)
-									ReaderRead();
+									lastCh = (char)ReaderRead();
 								
-								return ReadXmlCommentOrCData(Col - 1, Line);
+								if (lastCh == '!')
+									return ReadXmlCommentOrCData(Col - 2, Line);
+								else
+									return ReadXmlProcessingInstruction(Col - 2, Line);
 							}
 							
 							break;
@@ -166,7 +170,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 										continue;
 									return new Token(Tokens.Identifier, x, y, ReadXmlIdent(ch));
 								} else {
-									return new Token(Tokens.XmlContent, x, y, ReadXmlContent(ch));
+									string content = ReadXmlContent(ch);
+									return new Token(Tokens.XmlContent, startLocation, new Location(Col, Line), content, null, LiteralFormat.None);
 								}
 						}
 						#endregion
@@ -350,8 +355,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 								info.inXmlCloseTag = true;
 								return new Token(Tokens.XmlOpenEndTag, new Location(x, y), new Location(Col, Line));
 							}
+							// should we allow <%= at start of an expression? not valid with vbc ...
 							if (ReaderPeek() == '%' && ReaderPeek(1) == '=') {
-								// TODO : suspend xml mode tracking
+								inXmlMode = false;
 								ReaderRead(); ReaderRead();
 								return new Token(Tokens.XmlStartInlineVB, new Location(x, y), new Location(Col, Line));
 							}

@@ -1800,7 +1800,7 @@ XmlContentExpression<List<XmlExpression> exprs> =
 .
 
 XmlNestedContent<out XmlExpression expr>
-	(. XmlExpression tmpExpr = null; .)
+	(. XmlExpression tmpExpr = null; Location start = la.Location; .)
 =
 	(
 		XmlContent (. tmpExpr = new XmlContentExpression(t.val, XmlContentType.Text); .)
@@ -1810,7 +1810,13 @@ XmlNestedContent<out XmlExpression expr>
 		| XmlStartInlineVB (. Expression innerExpression; .) Expr<out innerExpression> XmlEndInlineVB (. tmpExpr = new XmlEmbeddedExpression() { InlineVBExpression = innerExpression }; .)
 		| XmlElement<out tmpExpr>
 	)
-	(. expr = tmpExpr; .)
+	(.
+		if (tmpExpr.StartLocation.IsEmpty)
+			tmpExpr.StartLocation = start;
+		if (tmpExpr.EndLocation.IsEmpty)
+			tmpExpr.EndLocation = t.EndLocation;
+		expr = tmpExpr;
+	.)
 .
 
 XmlElement<out XmlExpression expr>
@@ -1826,13 +1832,16 @@ XmlElement<out XmlExpression expr>
 	(. expr = el; .)
 .
 
-XmlAttribute<List<XmlExpression> attrs> =
-	Identifier (. string name = t.val; .) "="
-	(. string literalValue = null; Expression expressionValue = null; .)
-	( LiteralString (. literalValue = t.literalValue.ToString(); .) | XmlStartInlineVB Expr<out expressionValue> XmlEndInlineVB )
-	(. attrs.Add(new XmlAttribute() { Name = name, ExpressionValue = expressionValue, LiteralValue = literalValue }); .)
-	| XmlStartInlineVB (. Expression innerExpression; .) Expr<out innerExpression> XmlEndInlineVB
-	(. attrs.Add(new XmlEmbeddedExpression() { InlineVBExpression = innerExpression }); .)
+XmlAttribute<List<XmlExpression> attrs>
+	(. Location start = la.Location; .)
+=
+		Identifier (. string name = t.val; .) "="
+		(. string literalValue = null; Expression expressionValue = null; .)
+		( LiteralString (. literalValue = t.literalValue.ToString(); .) | XmlStartInlineVB Expr<out expressionValue> XmlEndInlineVB )
+		(. attrs.Add(new XmlAttribute() { Name = name, ExpressionValue = expressionValue, LiteralValue = literalValue, StartLocation = start, EndLocation = t.EndLocation }); .)
+	|
+		XmlStartInlineVB (. Expression innerExpression; .) Expr<out innerExpression> XmlEndInlineVB
+		(. attrs.Add(new XmlEmbeddedExpression() { InlineVBExpression = innerExpression, StartLocation = start, EndLocation = t.EndLocation }); .)
 .
 
 ConditionalExpression<out Expression expr>
