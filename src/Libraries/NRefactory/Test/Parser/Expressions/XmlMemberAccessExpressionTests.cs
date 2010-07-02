@@ -55,6 +55,57 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.IsTrue(xmae.TargetObject is IdentifierExpression);
 			Assert.AreEqual("xml", ((IdentifierExpression)xmae.TargetObject).Identifier);
 		}
+		
+		[Test]
+		public void VBNetSimpleDescendentsReferenceTest()
+		{
+			XmlMemberAccessExpression xmae = ParseUtilVBNet.ParseExpression<XmlMemberAccessExpression>("xml...<ns:Element>");
+			Assert.AreEqual("ns:Element", xmae.Identifier);
+			Assert.IsTrue(xmae.IsXmlIdentifier);
+			Assert.AreEqual(XmlAxisType.Descendents, xmae.AxisType);
+			Assert.IsTrue(xmae.TargetObject is IdentifierExpression);
+			Assert.AreEqual("xml", ((IdentifierExpression)xmae.TargetObject).Identifier);
+		}
+		
+		[Test]
+		public void VBNetSimpleElementReferenceWithDotTest()
+		{
+			XmlMemberAccessExpression xmae = ParseUtilVBNet.ParseExpression<XmlMemberAccessExpression>(".<ns:MyElement>");
+			Assert.AreEqual("ns:MyElement", xmae.Identifier);
+			Assert.IsTrue(xmae.IsXmlIdentifier);
+			Assert.AreEqual(XmlAxisType.Element, xmae.AxisType);
+			Assert.IsTrue(xmae.TargetObject.IsNull);
+		}
+		
+		[Test]
+		public void VBNetSimpleAttributeReferenceWithDotTest()
+		{
+			XmlMemberAccessExpression xmae = ParseUtilVBNet.ParseExpression<XmlMemberAccessExpression>(".@attribute");
+			Assert.AreEqual("attribute", xmae.Identifier);
+			Assert.IsFalse(xmae.IsXmlIdentifier);
+			Assert.AreEqual(XmlAxisType.Attribute, xmae.AxisType);
+			Assert.IsTrue(xmae.TargetObject.IsNull);
+		}
+		
+		[Test]
+		public void VBNetXmlNameAttributeReferenceWithDotTest()
+		{
+			XmlMemberAccessExpression xmae = ParseUtilVBNet.ParseExpression<XmlMemberAccessExpression>(".@<ns:attribute>");
+			Assert.AreEqual("ns:attribute", xmae.Identifier);
+			Assert.IsTrue(xmae.IsXmlIdentifier);
+			Assert.AreEqual(XmlAxisType.Attribute, xmae.AxisType);
+			Assert.IsTrue(xmae.TargetObject.IsNull);
+		}
+		
+		[Test]
+		public void VBNetSimpleDescendentsReferenceWithDotTest()
+		{
+			XmlMemberAccessExpression xmae = ParseUtilVBNet.ParseExpression<XmlMemberAccessExpression>("...<ns:Element>");
+			Assert.AreEqual("ns:Element", xmae.Identifier);
+			Assert.IsTrue(xmae.IsXmlIdentifier);
+			Assert.AreEqual(XmlAxisType.Descendents, xmae.AxisType);
+			Assert.IsTrue(xmae.TargetObject.IsNull);
+		}
 		#endregion
 	}
 }

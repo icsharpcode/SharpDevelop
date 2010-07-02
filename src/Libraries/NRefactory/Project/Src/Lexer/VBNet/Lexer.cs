@@ -101,9 +101,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 								for (int i = 0; i < step + 2; i++)
 									ReaderRead();
 								
-								Token token = ReadXmlCommentOrCData(Col - 1, Line);
-								ReaderRead();
-								return token;
+								return ReadXmlCommentOrCData(Col - 1, Line);
 							}
 							
 							break;
@@ -139,7 +137,6 @@ namespace ICSharpCode.NRefactory.Parser.VB
 									ReaderRead();
 									Token token = ReadXmlCommentOrCData(x, y);
 									info.wasComment = token.Kind == Tokens.XmlComment;
-									ReaderRead();
 									return token;
 								}
 								info.level++;
@@ -364,7 +361,6 @@ namespace ICSharpCode.NRefactory.Parser.VB
 								ReaderRead();
 								Token t = ReadXmlCommentOrCData(x, y);
 								info.wasComment = t.Kind == Tokens.XmlComment;
-								ReaderRead();
 								return t;
 							}
 							if (ReaderPeek() == '?') {
@@ -411,32 +407,24 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			sb.Length = 0;
 			int nextChar = -1;
 			
-			for (int i = 0; i < 7; i++) {
-				nextChar = ReaderPeek();
-				if (nextChar > -1 && nextChar != '>') {
-					ReaderRead();
-					sb.Append((char)nextChar);
-				}
-			}
-			
-			if (sb.ToString().StartsWith("--")) {
-				sb.Length = 0;
+			if (string.CompareOrdinal(ReaderPeekString("--".Length), "--") == 0) {
+				ReaderSkip("--".Length);
 				while ((nextChar = ReaderRead()) != -1) {
 					sb.Append((char)nextChar);
-					if (ReaderPeek() == '>' && sb.ToString().EndsWith("--")) {
-						string text = sb.Remove(sb.Length - 2, 2).ToString();
-						return new Token(Tokens.XmlComment, x, y, text);
+					if (string.CompareOrdinal(ReaderPeekString("-->".Length), "-->") == 0) {
+						ReaderSkip("-->".Length);
+						return new Token(Tokens.XmlComment, new Location(x, y), new Location(Col, Line), sb.ToString(), null, LiteralFormat.None);
 					}
 				}
 			}
 			
-			if (sb.ToString().StartsWith("[CDATA[")) {
-				sb.Length = 0;
+			if (string.CompareOrdinal(ReaderPeekString("[CDATA[".Length), "[CDATA[") == 0) {
+				ReaderSkip("[CDATA[".Length);
 				while ((nextChar = ReaderRead()) != -1) {
 					sb.Append((char)nextChar);
-					if (ReaderPeek() == '>' && sb.ToString().EndsWith("]]")) {
-						string text = sb.Remove(sb.Length - 2, 2).ToString();
-						return new Token(Tokens.XmlCData, x, y, text);
+					if (string.CompareOrdinal(ReaderPeekString("]]>".Length), "]]>") == 0) {
+						ReaderSkip("]]>".Length);
+						return new Token(Tokens.XmlCData, new Location(x, y), new Location(Col, Line), sb.ToString(), null, LiteralFormat.None);
 					}
 				}
 			}

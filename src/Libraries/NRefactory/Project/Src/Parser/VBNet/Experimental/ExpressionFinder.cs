@@ -88,6 +88,8 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 					currentState = startOfExpression;
 					break;
 			}
+			
+			Advance();
 		}
 		
 		public string Output {

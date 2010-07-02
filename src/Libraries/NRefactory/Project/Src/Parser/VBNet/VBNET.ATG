@@ -1752,17 +1752,19 @@ SimpleNonInvocationExpression<out Expression pexpr>
 		|   /* 11.22 */ ConditionalExpression<out pexpr>
 		)
 	|
-		/* this form only occurs in WithStatements */
-		"." (
-			XmlOpenTag IdentifierOrKeyword<out name> XmlCloseTag
-			(. pexpr = new XmlMemberAccessExpression(null, XmlAxisType.Element, name, true); .)
-			| IdentifierOrKeyword<out name>
-			(. pexpr = new MemberReferenceExpression(null, name); .)
-		) |
-		(. XmlAxisType axisType = XmlAxisType.Element; bool isXmlIdentifier = false; .)
-		( "..." (. axisType = XmlAxisType.Descendents; .) | ".@" (. axisType = XmlAxisType.Attribute; .) ) (
-			[ XmlOpenTag (. isXmlIdentifier = true; .) ] IdentifierOrKeyword<out name> [ XmlCloseTag ]
-			(. pexpr = new XmlMemberAccessExpression(null, axisType, name, isXmlIdentifier); .)
+		(
+			/* this form only occurs in WithStatements */
+			"." (
+				XmlOpenTag IdentifierOrKeyword<out name> XmlCloseTag
+				(. pexpr = new XmlMemberAccessExpression(null, XmlAxisType.Element, name, true); .)
+				| IdentifierOrKeyword<out name>
+				(. pexpr = new MemberReferenceExpression(null, name); .)
+			) |
+			(. XmlAxisType axisType = XmlAxisType.Element; bool isXmlIdentifier = false; .)
+			( "..." (. axisType = XmlAxisType.Descendents; .) | ".@" (. axisType = XmlAxisType.Attribute; .) ) (
+				[ XmlOpenTag (. isXmlIdentifier = true; .) ] IdentifierOrKeyword<out name> [ XmlCloseTag ]
+				(. pexpr = new XmlMemberAccessExpression(null, axisType, name, isXmlIdentifier); .)
+			)
 		)
 	)
 .
@@ -1772,20 +1774,65 @@ XmlLiteralExpression<out Expression pexpr>
 	XmlLiteralExpression expr = new XmlLiteralExpression();
 	List<XmlExpression> exprs = expr.Expressions;
 	XmlExpression currentExpression = null;
+	pexpr = expr;
 .)
 	=
 	(
-		XmlContent (. currentExpression = new XmlContentExpression(t.val, XmlContentType.Text); .)
-		| XmlCData (. currentExpression = new XmlContentExpression(t.val, XmlContentType.CData); .)
-		| XmlComment (. currentExpression = new XmlContentExpression(t.val, XmlContentType.Comment); .)
-		| XmlProcessingInstruction (. currentExpression = new XmlContentExpression(t.val, XmlContentType.ProcessingInstruction); .)
+		XmlContentExpression<exprs> { XmlContentExpression<exprs> } [ XmlElement<out currentExpression> { XmlContentExpression<exprs> } ]
+	|
+		XmlElement<out currentExpression> { XmlContentExpression<exprs> }
+	)
+.
+
+XmlContentExpression<List<XmlExpression> exprs> =
+(. XmlContentExpression expr = null; .)
+	(
+		XmlContent (. expr = new XmlContentExpression(t.val, XmlContentType.Text); .)
+		| XmlCData (. expr = new XmlContentExpression(t.val, XmlContentType.CData); .)
+		| XmlComment (. expr = new XmlContentExpression(t.val, XmlContentType.Comment); .)
+		| XmlProcessingInstruction (. expr = new XmlContentExpression(t.val, XmlContentType.ProcessingInstruction); .)
 	)
 	(.
-		currentExpression.StartLocation = t.Location;
-		currentExpression.EndLocation = t.EndLocation;
-		exprs.Add(currentExpression);
-		pexpr = expr;
+		expr.StartLocation = t.Location;
+		expr.EndLocation = t.EndLocation;
+		exprs.Add(expr);
 	.)
+.
+
+XmlNestedContent<out XmlExpression expr>
+	(. XmlExpression tmpExpr = null; .)
+=
+	(
+		XmlContent (. tmpExpr = new XmlContentExpression(t.val, XmlContentType.Text); .)
+		| XmlCData (. tmpExpr = new XmlContentExpression(t.val, XmlContentType.CData); .)
+		| XmlComment (. tmpExpr = new XmlContentExpression(t.val, XmlContentType.Comment); .)
+		| XmlProcessingInstruction (. tmpExpr = new XmlContentExpression(t.val, XmlContentType.ProcessingInstruction); .)
+		| XmlStartInlineVB (. Expression innerExpression; .) Expr<out innerExpression> XmlEndInlineVB (. tmpExpr = new XmlEmbeddedExpression() { InlineVBExpression = innerExpression }; .)
+		| XmlElement<out tmpExpr>
+	)
+	(. expr = tmpExpr; .)
+.
+
+XmlElement<out XmlExpression expr>
+	(. XmlElementExpression el = new XmlElementExpression(); .)
+=
+	(
+		XmlOpenTag
+		( XmlStartInlineVB (. Expression innerExpression; .) Expr<out innerExpression> XmlEndInlineVB
+		(. el.NameExpression = new XmlEmbeddedExpression() { InlineVBExpression = innerExpression }; .)
+		| Identifier (. el.XmlName = t.val; .) ) { XmlAttribute<el.Attributes> }
+		( XmlCloseTagEmptyElement | XmlCloseTag { (. XmlExpression child; .) XmlNestedContent<out child> (. el.Children.Add(child); .) } XmlOpenEndTag { ANY } XmlCloseTag )
+	)
+	(. expr = el; .)
+.
+
+XmlAttribute<List<XmlExpression> attrs> =
+	Identifier (. string name = t.val; .) "="
+	(. string literalValue = null; Expression expressionValue = null; .)
+	( LiteralString (. literalValue = t.literalValue.ToString(); .) | XmlStartInlineVB Expr<out expressionValue> XmlEndInlineVB )
+	(. attrs.Add(new XmlAttribute() { Name = name, ExpressionValue = expressionValue, LiteralValue = literalValue }); .)
+	| XmlStartInlineVB (. Expression innerExpression; .) Expr<out innerExpression> XmlEndInlineVB
+	(. attrs.Add(new XmlEmbeddedExpression() { InlineVBExpression = innerExpression }); .)
 .
 
 ConditionalExpression<out Expression expr>

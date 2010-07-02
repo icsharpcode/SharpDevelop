@@ -66,6 +66,7 @@
     <Compile Include="Parser\Expressions\QueryExpressionTests.cs" />
     <Compile Include="Output\SnippetConversion.cs" />
     <Compile Include="Parser\Expressions\QueryExpressionVBTests.cs" />
+    <Compile Include="Parser\Expressions\XmlLiteralExpressionTests.cs" />
     <Compile Include="Parser\Expressions\XmlMemberAccessExpressionTests.cs" />
     <Compile Include="Parser\GlobalScope\AttributeSectionTests.cs" />
     <Compile Include="Output\CSharp\CSharpOutputTest.cs" />

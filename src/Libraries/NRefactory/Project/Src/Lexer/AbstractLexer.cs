@@ -85,7 +85,7 @@ namespace ICSharpCode.NRefactory.Parser
 			if ((val == '\r' && reader.Peek() != '\n') || val == '\n') {
 				++line;
 				col = 1;
-				LineBreak ();
+				LineBreak();
 			} else if (val >= 0) {
 				col++;
 			}
@@ -100,6 +100,26 @@ namespace ICSharpCode.NRefactory.Parser
 		protected int ReaderPeek(int step)
 		{
 			return reader.Peek(step);
+		}
+		
+		protected void ReaderSkip(int steps)
+		{
+			for (int i = 0; i < steps; i++) {
+				ReaderRead();
+			}
+		}
+		
+		protected string ReaderPeekString(int length)
+		{
+			StringBuilder builder = new StringBuilder();
+			
+			for (int i = 0; i < length; i++) {
+				int peek = ReaderPeek(i);
+				if (peek != -1)
+					builder.Append((char)peek);
+			}
+			
+			return builder.ToString();
 		}
 		
 		public void SetInitialLocation(Location location)

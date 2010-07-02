@@ -437,16 +437,17 @@ UnaryOperator =
 SimpleExpressionWithSuffix =
 	{ UnaryOperator }
 	(
-	   SimpleExpression { ExpressionSuffix }
-	| "TypeOf" SimpleExpressionWithSuffix "Is" TypeName
-	| NewExpression
-	).
+		SimpleExpression { ExpressionSuffix }
+		| "TypeOf" SimpleExpressionWithSuffix "Is" TypeName
+		| NewExpression
+	)
+.
 
 SimpleExpression =
     (    Literal
     |    ( "(" Expression ")" )
     |    IdentifierForExpressionStart
-    |    ( "." | "!" ) IdentifierOrKeyword
+    |    ( "." | "!" | ".@" | "..." ) (. nextTokenIsStartOfImportsOrAccessExpression = true; .) [ XmlOpenTag ] IdentifierOrKeyword [ XmlCloseTag ]
     |    "GetType" "(" TypeName ")"
     |    "GetXmlNamespace" "(" (. readXmlIdentifier = true; .) Identifier ")"
     |    XmlLiteral
