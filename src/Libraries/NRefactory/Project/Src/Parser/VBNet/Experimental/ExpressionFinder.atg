@@ -415,11 +415,13 @@ StatementTerminatorAndBlock =
 Expression
 	(.NamedState:startOfExpression.)
 =
+	(. PushContext(Context.Expression, t); .)
 	(.
 		if (la != null)
 			CurrentBlock.lastExpressionStart = la.Location;
 	.)
 	SimpleExpressionWithSuffix { BinaryOperator SimpleExpressionWithSuffix }
+	(. PopContext(); .)
 .
 
 BinaryOperator =
@@ -447,7 +449,7 @@ SimpleExpression =
     (    Literal
     |    ( "(" Expression ")" )
     |    IdentifierForExpressionStart
-    |    ( "." | "!" | ".@" | "..." ) (. nextTokenIsStartOfImportsOrAccessExpression = true; .) [ XmlOpenTag ] IdentifierOrKeyword [ XmlCloseTag ]
+    |    ( "." | "!" | ".@" | "..." ) (. nextTokenIsStartOfImportsOrAccessExpression = true; wasQualifierTokenAtStart = true; .) [ XmlOpenTag ] IdentifierOrKeyword [ XmlCloseTag ]
     |    "GetType" "(" TypeName ")"
     |    "GetXmlNamespace" "(" (. readXmlIdentifier = true; .) Identifier ")"
     |    XmlLiteral
@@ -546,9 +548,12 @@ FunctionLambdaExpression =
 	( GREEDY Expression | [ "As" TypeName ] StatementTerminatorAndBlock "End" "Function" )
 .
 
-QueryExpression =
+QueryExpression
+	(. PushContext(Context.Query, t); .)
+=
 	( FromQueryOperator | AggregateQueryOperator )
 	{ QueryOperator }
+	(. PopContext(); .)
 .
  
 QueryOperator =

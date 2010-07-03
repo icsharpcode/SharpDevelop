@@ -228,7 +228,6 @@ namespace ICSharpCode.NRefactory.Parser
 //			Console.WriteLine("Call to Peek");
 			if (peekToken.next == null) {
 				peekToken.next = Next();
-				specialTracker.InformToken(peekToken.next.kind);
 			}
 			peekToken = peekToken.next;
 			return peekToken;
@@ -242,7 +241,6 @@ namespace ICSharpCode.NRefactory.Parser
 		{
 			if (curToken == null) {
 				curToken = Next();
-				specialTracker.InformToken(curToken.kind);
 				//Console.WriteLine(ICSharpCode.NRefactory.Parser.CSharp.Tokens.GetTokenString(curToken.kind) + " -- " + curToken.val + "(" + curToken.kind + ")");
 				return curToken;
 			}
@@ -251,9 +249,6 @@ namespace ICSharpCode.NRefactory.Parser
 			
 			if (curToken.next == null) {
 				curToken.next = Next();
-				if (curToken.next != null) {
-					specialTracker.InformToken(curToken.next.kind);
-				}
 			}
 			
 			curToken  = curToken.next;

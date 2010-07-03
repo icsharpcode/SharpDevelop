@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-
 using System;
 using System.IO;
 using ICSharpCode.NRefactory;
@@ -50,8 +49,10 @@ End Class
 			enter Body
 				enter IdentifierExpected
 				exit IdentifierExpected
-				enter Xml
-				exit Xml
+				enter Expression
+					enter Xml
+					exit Xml
+				exit Expression
 			exit Body
 		exit Member
 	exit Type
@@ -79,8 +80,10 @@ End Class
 		enter Member
 			enter IdentifierExpected
 			exit IdentifierExpected
-			enter Xml
-			exit Xml
+			enter Expression
+				enter Xml
+				exit Xml
+			exit Expression
 		exit Member
 		enter Member
 			enter IdentifierExpected
@@ -88,8 +91,10 @@ End Class
 			enter Body
 				enter IdentifierExpected
 				exit IdentifierExpected
-				enter Xml
-				exit Xml
+				enter Expression
+					enter Xml
+					exit Xml
+				exit Expression
 			exit Body
 		exit Member
 	exit Type
@@ -121,6 +126,8 @@ End Class
 			enter Body
 				enter IdentifierExpected
 				exit IdentifierExpected
+				enter Expression
+				exit Expression
 			exit Body
 		exit Member
 	exit Type
@@ -152,6 +159,8 @@ End Class
 			enter Body
 				enter IdentifierExpected
 				exit IdentifierExpected
+				enter Expression
+				exit Expression
 			exit Body
 		exit Member
 	exit Type
@@ -183,6 +192,8 @@ End Class
 			enter Body
 				enter IdentifierExpected
 				exit IdentifierExpected
+				enter Expression
+				exit Expression
 			exit Body
 		exit Member
 	exit Type
@@ -211,6 +222,8 @@ End Class
 			enter IdentifierExpected
 			exit IdentifierExpected
 			enter Body
+				enter Expression
+				exit Expression
 				enter Body
 				exit Body
 			exit Body
@@ -253,10 +266,14 @@ End Class
 			enter Body
 				enter IdentifierExpected
 				exit IdentifierExpected
+				enter Expression
+				exit Expression
 				enter Body
 				exit Body
 				enter IdentifierExpected
 				exit IdentifierExpected
+				enter Expression
+				exit Expression
 				enter Body
 				exit Body
 				enter Body

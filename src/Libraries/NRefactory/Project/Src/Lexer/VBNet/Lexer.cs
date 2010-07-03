@@ -1,12 +1,13 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Andrea Paatz" email="andrea@icsharpcode.net"/>
+//     <owner name="Siegfried Pammer" email="siegfriedpammer@gmail.com" />
 //     <version>$Revision$</version>
 // </file>
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -22,43 +23,12 @@ namespace ICSharpCode.NRefactory.Parser.VB
 	{
 		bool lineEnd = true;
 		bool isAtLineBegin = false; // TODO: handle line begin, if neccessarry
+		bool misreadExclamationMarkAsTypeCharacter;
+		bool encounteredLineContinuation;
 		
 		ExpressionFinder ef;
 		
-		public Lexer(TextReader reader) : base(reader)
-		{
-			ef = new ExpressionFinder();
-		}
-		
-		public override Token NextToken()
-		{
-			if (curToken == null) { // first call of NextToken()
-				curToken = Next();
-				specialTracker.InformToken(curToken.kind);
-				//Console.WriteLine("Tok:" + Tokens.GetTokenString(curToken.kind) + " --- " + curToken.val);
-				return curToken;
-			}
-			
-			lastToken = curToken;
-			
-			if (curToken.next == null) {
-				curToken.next = Next();
-				specialTracker.InformToken(curToken.next.kind);
-			}
-			
-			curToken = curToken.next;
-			
-			if (curToken.kind == Tokens.EOF && !(lastToken.kind == Tokens.EOL)) { // be sure that before EOF there is an EOL token
-				curToken = new Token(Tokens.EOL, curToken.col, curToken.line, string.Empty);
-				specialTracker.InformToken(curToken.kind);
-				curToken.next = new Token(Tokens.EOF, curToken.col, curToken.line, string.Empty);
-				specialTracker.InformToken(curToken.next.kind);
-			}
-			//Console.WriteLine("Tok:" + Tokens.GetTokenString(curToken.kind) + " --- " + curToken.val);
-			return curToken;
-		}
-		
-		bool misreadExclamationMarkAsTypeCharacter;
+		#region XmlModeStackInfo
 		bool inXmlMode;
 		
 		class XmlModeStackInfo {
@@ -73,6 +43,12 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		}
 		
 		Stack<XmlModeStackInfo> xmlModeStack = new Stack<XmlModeStackInfo>();
+		#endregion
+		
+		public Lexer(TextReader reader) : base(reader)
+		{
+			ef = new ExpressionFinder();
+		}
 		
 		Token NextInternal()
 		{
@@ -202,6 +178,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 								lineEnd = false;
 								return new Token(Tokens.Identifier, x, y, s);
 							}
+							encounteredLineContinuation = true;
 							ch = (char)ReaderRead();
 							
 							bool oldLineEnd = lineEnd;
@@ -389,82 +366,128 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			}
 		}
 		
-		Token ReadXmlProcessingInstruction(int x, int y)
-		{
-			sb.Length = 0;
-			int nextChar = -1;
-			
-			while (ReaderPeek() != '?' || ReaderPeek(1) != '>') {
-				nextChar = ReaderRead();
-				if (nextChar == -1)
-					break;
-				sb.Append((char)nextChar);
-			}
-			
-			ReaderSkip("?>".Length);
-			
-			return new Token(Tokens.XmlProcessingInstruction, new Location(x, y), new Location(Col, Line), sb.ToString(), null, LiteralFormat.None);
-		}
-		
-		Token ReadXmlCommentOrCData(int x, int y)
-		{
-			sb.Length = 0;
-			int nextChar = -1;
-			
-			if (string.CompareOrdinal(ReaderPeekString("--".Length), "--") == 0) {
-				ReaderSkip("--".Length);
-				while ((nextChar = ReaderRead()) != -1) {
-					sb.Append((char)nextChar);
-					if (string.CompareOrdinal(ReaderPeekString("-->".Length), "-->") == 0) {
-						ReaderSkip("-->".Length);
-						return new Token(Tokens.XmlComment, new Location(x, y), new Location(Col, Line), sb.ToString(), null, LiteralFormat.None);
-					}
-				}
-			}
-			
-			if (string.CompareOrdinal(ReaderPeekString("[CDATA[".Length), "[CDATA[") == 0) {
-				ReaderSkip("[CDATA[".Length);
-				while ((nextChar = ReaderRead()) != -1) {
-					sb.Append((char)nextChar);
-					if (string.CompareOrdinal(ReaderPeekString("]]>".Length), "]]>") == 0) {
-						ReaderSkip("]]>".Length);
-						return new Token(Tokens.XmlCData, new Location(x, y), new Location(Col, Line), sb.ToString(), null, LiteralFormat.None);
-					}
-				}
-			}
-			
-			return null;
-		}
-		
-		string ReadXmlContent(char ch)
-		{
-			sb.Length = 0;
-			while (true) {
-				sb.Append(ch);
-				int next = ReaderPeek();
-				
-				if (next == -1 || next == '<')
-					break;
-				ch = (char)ReaderRead();
-			}
-			
-			return sb.ToString();
-		}
+		Token prevToken;
 		
 		protected override Token Next()
 		{
 			Token t = NextInternal();
+			if (t.kind == Tokens.EOL) {
+				Debug.Assert(t.next == null); // NextInternal() must return only 1 token
+				t.next = NextInternal();
+				Debug.Assert(t.next.next == null);
+				if (SkipEOL(prevToken, t.next)) {
+					t = t.next;
+				}
+			}
+			// inform EF only once we're sure it's really a token
+			// this means we inform it about EOL tokens "1 token too late", but that's not a problem because
+			// XML literals cannot start immediately after an EOL token
 			ef.InformToken(t);
-//			if (ef.Errors.Any()) {
-//				foreach (Token token in ef.Errors) {
-//					if (token != null)
-//						errors.Error(token.Location.Line, token.Location.Column, "unexpected: " + token.ToString());
-//				}
-//			}
+			if (t.next != null) {
+				// Next() isn't called again when it returns 2 tokens, so we need to process both tokens
+				ef.InformToken(t.next);
+				prevToken = t.next;
+			} else {
+				prevToken = t;
+			}
 			ef.Advance();
 			return t;
 		}
 		
+		/// <remarks>see VB language specification 10; pg. 6</remarks>
+		bool SkipEOL(Token prevToken, Token nextToken)
+		{
+			// exception directly after _
+			if (encounteredLineContinuation) {
+				return encounteredLineContinuation = false;
+			}
+			
+			// 1st rule
+			// after a comma (,), open parenthesis ((), open curly brace ({), or open embedded expression (<%=)
+			if (new[] { Tokens.Comma, Tokens.OpenParenthesis, Tokens.OpenCurlyBrace, Tokens.XmlStartInlineVB }
+			    .Contains(prevToken.kind))
+				return true;
+			
+			// 2nd rule
+			// after a member qualifier (. or .@ or ...), provided that something is being qualified (i.e. is not
+			// using an implicit With context)
+			if (new[] { Tokens.Dot, Tokens.DotAt, Tokens.TripleDot }.Contains(prevToken.kind)
+			    && !ef.WasQualifierTokenAtStart)
+				return true;
+			
+			// 3rd rule
+			// before a close parenthesis ()), close curly brace (}), or close embedded expression (%>)
+			if (new[] { Tokens.CloseParenthesis, Tokens.CloseCurlyBrace, Tokens.XmlEndInlineVB }
+			    .Contains(nextToken.kind))
+				return true;
+			
+			// 4th rule
+			// after a less-than (<) in an attribute context
+			if (prevToken.kind == Tokens.LessThan && ef.CurrentBlock.context == Context.Attribute)
+				return true;
+			
+			// 5th rule
+			// before a greater-than (>) in an attribute context
+			if (nextToken.kind == Tokens.GreaterThan && ef.CurrentBlock.context == Context.Attribute)
+				return true;
+			
+			// 6th rule
+			// after a greater-than (>) in a non-file-level attribute context
+			if (prevToken.kind == Tokens.GreaterThan && ef.CurrentBlock.context == Context.Attribute)
+				return true;
+			
+			// 7th rule
+			// before and after query operators (Where, Order, Select, etc.)
+			var queryOperators = new int[] { Tokens.From, Tokens.Aggregate, Tokens.Select, Tokens.Distinct,
+				Tokens.Where, Tokens.Order, Tokens.By, Tokens.Ascending, Tokens.Descending, Tokens.Take,
+				Tokens.Skip, Tokens.Let, Tokens.Group, Tokens.Into, Tokens.On, Tokens.While, Tokens.Join };
+			if ((queryOperators.Contains(prevToken.kind) || queryOperators.Contains(nextToken.kind))
+			    && ef.CurrentBlock.context == Context.Query)
+				return true;
+			
+			// 8th rule
+			// after binary operators (+, -, /, *, etc.) in an expression context
+			if (new[] { Tokens.Plus, Tokens.Minus, Tokens.Div, Tokens.DivInteger, Tokens.Times, Tokens.Mod, Tokens.Power,
+			   Tokens.Assign, Tokens.NotEqual, Tokens.LessThan, Tokens.LessEqual, Tokens.GreaterThan, Tokens.GreaterEqual,
+			   Tokens.Like, Tokens.ConcatString, Tokens.AndAlso, Tokens.OrElse, Tokens.And, Tokens.Or, Tokens.Xor, 
+			   Tokens.ShiftLeft, Tokens.ShiftRight }.Contains(prevToken.kind) && ef.CurrentBlock.context == Context.Expression)
+				return true;
+			
+			// 9th rule
+			// after assignment operators (=, :=, +=, -=, etc.) in any context.
+			if (new[] { Tokens.Assign, Tokens.ColonAssign, Tokens.ConcatStringAssign, Tokens.DivAssign,
+			    	Tokens.DivIntegerAssign, Tokens.MinusAssign, Tokens.PlusAssign, Tokens.PowerAssign,
+			    	Tokens.ShiftLeftAssign, Tokens.ShiftRightAssign, Tokens.TimesAssign }.Contains(prevToken.kind))
+				return true;
+			
+			return false;
+		}
+		
+		public override Token NextToken()
+		{
+			if (curToken == null) { // first call of NextToken()
+				curToken = Next();
+				//Console.WriteLine("Tok:" + Tokens.GetTokenString(curToken.kind) + " --- " + curToken.val);
+				return curToken;
+			}
+			
+			lastToken = curToken;
+			
+			if (curToken.next == null) {
+				curToken.next = Next();
+			}
+			
+			curToken = curToken.next;
+			
+			if (curToken.kind == Tokens.EOF && !(lastToken.kind == Tokens.EOL)) { // be sure that before EOF there is an EOL token
+				curToken = new Token(Tokens.EOL, curToken.col, curToken.line, string.Empty);
+				curToken.next = new Token(Tokens.EOF, curToken.col, curToken.line, string.Empty);
+			}
+			//Console.WriteLine("Tok:" + Tokens.GetTokenString(curToken.kind) + " --- " + curToken.val);
+			return curToken;
+		}
+		
+		#region VB Readers
 		string ReadIdent(char ch)
 		{
 			char typeCharacter;
@@ -502,25 +525,6 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 			}
 			return sb.ToString();
-		}
-		
-		string ReadXmlIdent(char ch)
-		{
-			sb.Length = 0;
-			sb.Append(ch);
-			
-			int peek;
-			
-			while ((peek = ReaderPeek()) != -1 && (peek == ':' || XmlConvert.IsNCNameChar((char)peek))) {
-				sb.Append((char)ReaderRead());
-			}
-			
-			return sb.ToString();
-		}
-		
-		char PeekUpperChar()
-		{
-			return Char.ToUpper((char)ReaderPeek(), CultureInfo.InvariantCulture);
 		}
 		
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1818:DoNotConcatenateStringsInsideLoops")]
@@ -809,27 +813,6 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			return sb.ToString();
 		}
 		
-		string ReadXmlString(char terminator)
-		{
-			char ch = '\0';
-			sb.Length = 0;
-			int nextChar;
-			while ((nextChar = ReaderRead()) != -1) {
-				ch = (char)nextChar;
-				if (ch == terminator) {
-					break;
-				} else if (ch == '\n') {
-					errors.Error(Line, Col, String.Format("No return allowed inside String literal"));
-				} else {
-					sb.Append(ch);
-				}
-			}
-			if (ch != terminator) {
-				errors.Error(Line, Col, String.Format("End of File reached before String terminated "));
-			}
-			return sb.ToString();
-		}
-		
 		void ReadComment()
 		{
 			Location startPos = new Location(Col, Line);
@@ -1027,6 +1010,111 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					return new Token(Tokens.ExclamationMark, x, y);
 			}
 			return null;
+		}
+		#endregion
+		
+		#region XML Readers
+		Token ReadXmlProcessingInstruction(int x, int y)
+		{
+			sb.Length = 0;
+			int nextChar = -1;
+			
+			while (ReaderPeek() != '?' || ReaderPeek(1) != '>') {
+				nextChar = ReaderRead();
+				if (nextChar == -1)
+					break;
+				sb.Append((char)nextChar);
+			}
+			
+			ReaderSkip("?>".Length);
+			
+			return new Token(Tokens.XmlProcessingInstruction, new Location(x, y), new Location(Col, Line), sb.ToString(), null, LiteralFormat.None);
+		}
+		
+		Token ReadXmlCommentOrCData(int x, int y)
+		{
+			sb.Length = 0;
+			int nextChar = -1;
+			
+			if (string.CompareOrdinal(ReaderPeekString("--".Length), "--") == 0) {
+				ReaderSkip("--".Length);
+				while ((nextChar = ReaderRead()) != -1) {
+					sb.Append((char)nextChar);
+					if (string.CompareOrdinal(ReaderPeekString("-->".Length), "-->") == 0) {
+						ReaderSkip("-->".Length);
+						return new Token(Tokens.XmlComment, new Location(x, y), new Location(Col, Line), sb.ToString(), null, LiteralFormat.None);
+					}
+				}
+			}
+			
+			if (string.CompareOrdinal(ReaderPeekString("[CDATA[".Length), "[CDATA[") == 0) {
+				ReaderSkip("[CDATA[".Length);
+				while ((nextChar = ReaderRead()) != -1) {
+					sb.Append((char)nextChar);
+					if (string.CompareOrdinal(ReaderPeekString("]]>".Length), "]]>") == 0) {
+						ReaderSkip("]]>".Length);
+						return new Token(Tokens.XmlCData, new Location(x, y), new Location(Col, Line), sb.ToString(), null, LiteralFormat.None);
+					}
+				}
+			}
+			
+			return null;
+		}
+		
+		string ReadXmlContent(char ch)
+		{
+			sb.Length = 0;
+			while (true) {
+				sb.Append(ch);
+				int next = ReaderPeek();
+				
+				if (next == -1 || next == '<')
+					break;
+				ch = (char)ReaderRead();
+			}
+			
+			return sb.ToString();
+		}
+		
+		string ReadXmlString(char terminator)
+		{
+			char ch = '\0';
+			sb.Length = 0;
+			int nextChar;
+			while ((nextChar = ReaderRead()) != -1) {
+				ch = (char)nextChar;
+				if (ch == terminator) {
+					break;
+				} else if (ch == '\n') {
+					errors.Error(Line, Col, String.Format("No return allowed inside String literal"));
+				} else {
+					sb.Append(ch);
+				}
+			}
+			if (ch != terminator) {
+				errors.Error(Line, Col, String.Format("End of File reached before String terminated "));
+			}
+			return sb.ToString();
+		}
+		
+		string ReadXmlIdent(char ch)
+		{
+			sb.Length = 0;
+			sb.Append(ch);
+			
+			int peek;
+			
+			while ((peek = ReaderPeek()) != -1 && (peek == ':' || XmlConvert.IsNCNameChar((char)peek))) {
+				sb.Append((char)ReaderRead());
+			}
+			
+			return sb.ToString();
+		}
+		#endregion
+		
+		char PeekUpperChar()
+		{
+			return Char.ToUpper((char)ReaderPeek(), CultureInfo.InvariantCulture);
 		}
 		
 		public override void SkipCurrentBlock(int targetToken)

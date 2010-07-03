@@ -113,6 +113,10 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 			get { return nextTokenIsStartOfImportsOrAccessExpression; }
 		}
 		
+		public bool WasQualifierTokenAtStart {
+			get { return wasQualifierTokenAtStart; }
+		}
+		
 		public List<Token> Errors {
 			get { return errors; }
 		}
@@ -127,6 +131,8 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 		Body,
 		Xml,
 		Attribute,
+		Query,
+		Expression,
 		Debug,
 		Default
 	}
