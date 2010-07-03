@@ -410,8 +410,9 @@ TypeParameterList<List<TemplateDefinition> templates>
 
 /* 4.9.1 */
 TypeParameter<out TemplateDefinition template>
+	(. VarianceModifier modifier = VarianceModifier.Invariant; .)
 =
-	Identifier (. template = new TemplateDefinition(t.val, null); .)
+	[ "In" (. modifier = VarianceModifier.Contravariant; .) | "Out" (. modifier = VarianceModifier.Covariant; .) ] Identifier (. template = new TemplateDefinition(t.val, null) { VarianceModifier = modifier }; .)
 	[TypeParameterConstraints<template>]
 .
 
