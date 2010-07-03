@@ -75,6 +75,7 @@
     <Compile Include="DataManager\IConnectionDataManagerFixture.cs" />
     <Compile Include="DataManager\IListDataManagerFixture.cs" />
     <Compile Include="DataManager\MockDataAccess.cs" />
+    <Compile Include="DataManager\Strategy\TableStrategyFixture.cs" />
     <Compile Include="DataManager\TableDataManagerFixture.cs" />
     <Compile Include="Exporter\AbstractExportListBuilder.cs" />
     <Compile Include="Exporter\Converter\ItemsConverterFixture.cs" />
@@ -121,6 +122,7 @@
       <Name>ICSharpCode.Reports.Core</Name>
     </ProjectReference>
     <Folder Include="BaseItems" />
+    <Folder Include="DataManager\Strategy" />
     <Folder Include="Exporter\Converter" />
     <Folder Include="Layout" />
     <Folder Include="DataManager" />

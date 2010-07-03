@@ -27,6 +27,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		{
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,new ReportSettings());
 			DataNavigator dataNav = dm.GetNavigator;
+			
 			Assert.That(dataNav.IsGrouped == false);
 		}
 		

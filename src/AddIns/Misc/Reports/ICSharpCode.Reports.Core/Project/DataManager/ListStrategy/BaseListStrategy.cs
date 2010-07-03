@@ -52,7 +52,7 @@ namespace ICSharpCode.Reports.Core {
 
 		//Index to plain Datat
 		private IndexList indexList;
-		private ReportSettings reportSettings;
+//		private ReportSettings reportSettings;
 
 		private AvailableFieldsCollection availableFields;
 		
@@ -64,7 +64,7 @@ namespace ICSharpCode.Reports.Core {
 			if (reportSettings == null) {
 				throw new ArgumentNullException("reportSettings");
 			}
-			this.reportSettings = reportSettings;
+			this.ReportSettings = reportSettings;
 			this.indexList = new IndexList("IndexList");
 		}
 		
@@ -109,76 +109,8 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		public ReportSettings ReportSettings 
-		{
-			get {
-				return reportSettings;
-			}
-		}
-		
-		
-		#region Building Groups
-		/*
-		private static void WriteToIndexFile (IndexList destination,
-		                                      BaseComparer comparer) 
-		{
-			destination.Add(comparer);
-		}
-		*/
-		/*
-		private static GroupSeparator BuildGroupSeperator (BaseComparer newGroup,int groupLevel)
-		{
-			
-			GroupSeparator seperator = new GroupSeparator (newGroup.ColumnCollection,
-			                                               newGroup.ListIndex,
-			                                               newGroup.ObjectArray,
-			                                               groupLevel);
-			
-			return seperator;
-		}
-		
-		
-		protected void CreateGroupedIndexList (IndexList sourceList) 
-		{
-			if (sourceList == null) {
-				throw new ArgumentNullException("sourceList");
-			}
-			int level = 0;
-			this.indexList.Clear();
-			
-			
-			SortComparer compareComparer = null;
-			GroupSeparator parent = null;
-			for (int i = 0;i < sourceList.Count ;i++ ) {
-				SortComparer currentComparer = (SortComparer)sourceList[i];
-				
-				if (compareComparer != null) {
-					string str1,str2;
-					str1 = currentComparer.ObjectArray[0].ToString();
-					str2 = compareComparer.ObjectArray[0].ToString();
-					int compareVal = str1.CompareTo(str2);
-					
-					if (compareVal != 0) {
-						BaseListStrategy.WriteToIndexFile(parent.GetChildren,compareComparer);
-						parent = BaseListStrategy.BuildGroupSeperator (currentComparer,level);
-						this.indexList.Add(parent);
-						BaseListStrategy.WriteToIndexFile(parent.GetChildren,currentComparer);
-					} else {
-						BaseListStrategy.WriteToIndexFile(parent.GetChildren,compareComparer);
-						
-					}
-				}
-				else {
-					parent = BaseListStrategy.BuildGroupSeperator (currentComparer,level);
-				this.indexList.Add(parent);
-				}		
-				compareComparer = (SortComparer)sourceList[i];
-			}
-			BaseListStrategy.WriteToIndexFile(parent.GetChildren,compareComparer);
-		}
-		*/
-		#endregion
-		
+		protected ReportSettings ReportSettings {get;private set;}
+	
 		
 		#region Sorting delegates
 		
@@ -202,11 +134,23 @@ namespace ICSharpCode.Reports.Core {
 		
 		protected  void ShowIndexList (IndexList list)
 		{
-			System.Diagnostics.Trace.WriteLine("Ch listeckIndexList ");
-			foreach (SortComparer element in list) {
-				string v = element.ObjectArray[0].ToString();
-				System.Diagnostics.Trace.WriteLine(v);
-				System.Console.WriteLine(v);
+			System.Diagnostics.Trace.WriteLine("CheckIndexList ");
+			foreach (BaseComparer element in list) {
+				string s = String.Format("{0} ",element.ObjectArray[0]);
+				GroupComparer gc = element as GroupComparer;
+				
+				if ( gc != null) {
+					s = s + "GroupHeader";
+					if (gc.IndexList != null) {
+						
+						s = s + String.Format(" <{0}> Childs",gc.IndexList.Count);
+					}
+					System.Console.WriteLine(s);
+					foreach (BaseComparer c in gc.IndexList) {
+							Console.WriteLine("---- {0}",c.ObjectArray[0]);
+					}
+				}
+//				
 			}
 		}
 		

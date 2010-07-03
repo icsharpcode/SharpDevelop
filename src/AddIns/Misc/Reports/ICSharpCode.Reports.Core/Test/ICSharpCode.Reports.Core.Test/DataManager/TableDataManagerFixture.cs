@@ -116,7 +116,8 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		
 		
 		#region Sorting
-		
+		//Tests moved to \Strategy
+		/*
 		[Test]
 		public void SortAscendingByOneColumn()
 		{
@@ -134,7 +135,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			}
 			Assert.IsTrue(dataNav.IsSorted);
 		}
-		
+		*/
 		/*
 		[Test]
 		[Ignore("Sort of integer not working")]

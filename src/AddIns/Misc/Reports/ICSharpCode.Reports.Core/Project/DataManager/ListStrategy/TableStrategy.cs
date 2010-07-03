@@ -111,12 +111,12 @@ namespace ICSharpCode.Reports.Core
 		{
 			base.Group();
 			IndexList gl = new IndexList("group");
-			
 			gl = this.BuildSortIndex (base.CreateSortCollection(ReportSettings.GroupColumnsCollection));
 			base.ShowIndexList(gl);
 			BuildGroup(gl);
 			
 		}
+		
 		#endregion
 		
 		
@@ -160,38 +160,43 @@ namespace ICSharpCode.Reports.Core
 		{
 			string compVal = String.Empty;
 			base.IndexList.Clear();
-			
-			foreach (SortComparer element in list)
+			IndexList childList = null;
+			BaseComparer checkElem = list[0];
+			foreach (BaseComparer element in list)
 			{
 				string v = element.ObjectArray[0].ToString();
 				if (compVal != v) {
-//					Console.WriteLine("Header {0}",v);
-					GHeader(element);
-					GChild(element);
+					childList = new IndexList();
+					GroupComparer gc = GHeader(element);
+					gc.IndexList = childList;
+					
+					GChild(childList,element);
 				} else {
-//					Console.WriteLine("\t {0}",v);
-					GChild(element);
+					GChild(childList,element);
 				}
 				compVal = v;
 			}
-				Console.WriteLine("-------------------------");
+			Console.WriteLine("-------------------------");
 			ShowIndexList(base.IndexList);
 		}
 		
-		private void GHeader (SortComparer sc)
+		private GroupComparer GHeader (BaseComparer sc)
 		{
 			string v = sc.ObjectArray[0].ToString();
-			Console.WriteLine("");
-			Console.WriteLine("Header {0}",v);
-			Console.WriteLine("-----");
-			base.IndexList.Add(sc);
+//			Console.WriteLine("");
+//			Console.WriteLine("Header {0}",v);
+//			Console.WriteLine("-----");
+			GroupComparer gc = new GroupComparer(sc.ColumnCollection,sc.ListIndex,sc.ObjectArray);
+			base.IndexList.Add(gc);
+			return gc;
 		}
 		
 		
-		private void GChild(SortComparer sc)
+		private void GChild(IndexList list,BaseComparer sc)
 		{
 			string v = sc.ObjectArray[0].ToString();
-			Console.WriteLine("child {0}",v);
+//			Console.WriteLine("child {0}",v);
+			list.Add(sc);
 		}
 		
 		

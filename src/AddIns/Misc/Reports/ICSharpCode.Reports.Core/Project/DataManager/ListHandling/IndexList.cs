@@ -33,25 +33,7 @@ namespace ICSharpCode.Reports.Core
 			this.name = name;
 		}
 		
-		#region IEnumerable implementation
-		/*
-		IEnumerator<BaseComparer> IEnumerable<BaseComparer>.GetEnumerator()
-		{
-			//return new MyEnumerator(this);
-			
-			for (int i =0;i < this.Count;i++){
-				yield return this[i];
-			}
-			
-		}
-		
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return ((IEnumerable<BaseComparer>)this).GetEnumerator();
-		}
-		*/
-		#endregion
-		
+	
 		
 		#region properties
 		
@@ -126,7 +108,6 @@ namespace ICSharpCode.Reports.Core
 		
 		public void RemoveAt(int index)
 		{
-//			T item = list[index];
 			list.RemoveAt(index);
 		}
 		
