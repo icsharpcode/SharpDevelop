@@ -326,6 +326,7 @@
     <Compile Include="Src\Services\RefactoringService\ContextActionsHelper.cs" />
     <Compile Include="Src\Services\RefactoringService\ExtractInterfaceOptions.cs" />
     <Compile Include="Src\Services\RefactoringService\GoToClassAction.cs" />
+    <Compile Include="Src\Services\RefactoringService\GoToMemberAction.cs" />
     <Compile Include="Src\Services\Tasks\ErrorPainter.cs" />
     <Compile Include="Src\Services\Tasks\Task.cs" />
     <Compile Include="Src\Services\Tasks\TaskService.cs" />

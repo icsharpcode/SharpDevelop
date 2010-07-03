@@ -174,8 +174,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				contextItems.AddIfNotNull(MakeFindDerivedClassesItem(clickedClass, context));
 				contextItems.AddIfNotNull(MakeFindBaseClassesItem(clickedClass, context));
 			}
-			if (context.ResolveResult is MethodGroupResolveResult) {
-				// find overrides
+			if (context.ResolveResult is MemberResolveResult) {
+				IMember member = ((MemberResolveResult)context.ResolveResult).ResolvedMember as IMember;
+				if (member != null && member.IsVirtual || member.IsAbstract || (member.IsOverride && !member.DeclaringType.IsSealed)
+				// Interface members have IsVirtual == IsAbstract == false. These properties are based on modifiers only.
+			    || (member.DeclaringType != null && member.DeclaringType.ClassType == ClassType.Interface)) {
+					contextItems.AddIfNotNull(MakeFindOverridesItem(member, context));
+				}
 			}
 			return contextItems;
 		}
@@ -200,7 +205,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (@class == null)
 				return null;
-			var item = new MenuItem { Header = MenuService.ConvertLabel("Find base classes") };
+			var item = new MenuItem { Header = MenuService.ConvertLabel("Go to base class..") };
 			item.Icon = ClassBrowserIconService.Interface.CreateImage();
 			item.InputGestureText = new KeyGesture(Key.F10).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			item.Click += delegate {
@@ -208,6 +213,22 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				// position popup to caret - how?
 				baseClassesPopup.Open();
 				baseClassesPopup.Focus();
+			};
+			return item;
+		}
+		
+		MenuItem MakeFindOverridesItem(IMember member, RefactoringMenuContext context)
+		{
+			if (member == null)
+				return null;
+			var item = new MenuItem { Header = MenuService.ConvertLabel(StringParser.Parse("${res:SharpDevelop.Refactoring.OverridesOf}", new string[,] {{ "Name", member.Name }})) };
+			item.Icon = ClassBrowserIconService.Method.CreateImage();
+			item.InputGestureText = new KeyGesture(Key.F11).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+			item.Click += delegate {
+				var overridesPopup = ContextActionsHelper.MakePopupWithOverrides(member);
+				// position popup to caret - how?
+				overridesPopup.Open();
+				overridesPopup.Focus();
 			};
 			return item;
 		}

@@ -43,6 +43,15 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return new ContextActionsPopup { Actions = popupViewModel };
 		}
 		
+		public static ContextActionsPopup MakePopupWithOverrides(IMember member)
+		{
+			var derivedClassesTree = RefactoringService.FindDerivedClassesTree(member.DeclaringType);
+			var popupViewModel = new ContextActionsViewModel { Title = MenuService.ConvertLabel(StringParser.Parse(
+				"${res:SharpDevelop.Refactoring.OverridesOf}", new string[,] {{ "Name", member.Name }}))};
+			popupViewModel.Actions = new OverridesPopupTreeViewModelBuilder(member).BuildTreeViewModel(derivedClassesTree);
+			return new ContextActionsPopup { Actions = popupViewModel };
+		}
+		
 		class PopupViewModelBuilder
 		{
 			protected IAmbience LabelAmbience { get; set; }
@@ -80,6 +89,39 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return new ObservableCollection<ContextActionViewModel>(
 					classTree.Select(
 						node => MakeGoToClassAction (node.Content, BuildTreeViewModel(node.Children))));
+			}
+		}
+		
+		class OverridesPopupTreeViewModelBuilder : PopupViewModelBuilder
+		{
+			IMember member;
+			
+			public OverridesPopupTreeViewModelBuilder(IMember member)
+			{
+				if (member == null)
+					throw new ArgumentNullException("member");
+				this.member = member;
+			}
+			
+			protected ContextActionViewModel MakeGoToMemberAction(IClass @class, ObservableCollection<ContextActionViewModel> childActions)
+			{
+				var overridenMember = MemberLookupHelper.FindSimilarMember(@class, this.member);
+				if (overridenMember == null || overridenMember.Region.IsEmpty)
+					return null;
+				
+				return new ContextActionViewModel {
+					Name = this.LabelAmbience.Convert(overridenMember),
+					Comment = string.Format("(in {0})", @class.FullyQualifiedName),
+					Action = new GoToMemberAction(overridenMember),
+					ChildActions = childActions
+				};
+			}
+			
+			public ObservableCollection<ContextActionViewModel> BuildTreeViewModel(IEnumerable<ITreeNode<IClass>> classTree)
+			{
+				return new ObservableCollection<ContextActionViewModel>(
+					classTree.Select(
+						node => MakeGoToMemberAction(node.Content, BuildTreeViewModel(node.Children))).Where(action => action != null));
 			}
 		}
 	}
