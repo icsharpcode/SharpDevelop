@@ -7,16 +7,13 @@
 
 using System;
 using System.Collections.Generic;
-
 using ICSharpCode.AvalonEdit.AddIn;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.RubyBinding;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
-using RubyBinding.Tests;
 
 namespace RubyBinding.Tests.Parsing
 {

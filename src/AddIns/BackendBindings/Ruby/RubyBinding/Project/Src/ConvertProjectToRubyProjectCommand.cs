@@ -6,15 +6,11 @@
 // </file>
 
 using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
-using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Ast;
+
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Converter;
 

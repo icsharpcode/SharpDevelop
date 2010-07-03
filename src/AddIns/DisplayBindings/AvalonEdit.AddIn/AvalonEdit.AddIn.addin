@@ -28,8 +28,8 @@
 		<Include id="DefaultEditor" path="/SharpDevelop/ViewContent/TextEditor/ContextMenu"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/ViewContent/AvalonEdit/TextEditorInstance">
-		<Class id="CodeEditorView" class="ICSharpCode.AvalonEdit.AddIn.SharpDevelopTextEditor"/>
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/EditorControlService">
+		<Class id="CodeEditorView" class="ICSharpCode.AvalonEdit.AddIn.AvalonEditorControlService"/>
 	</Path>
 	
 	<!-- 

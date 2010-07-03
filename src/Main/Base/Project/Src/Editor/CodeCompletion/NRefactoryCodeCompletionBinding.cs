@@ -15,7 +15,6 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
-using ICSharpCode.TextEditor;
 using CSTokens = ICSharpCode.NRefactory.Parser.CSharp.Tokens;
 using VBTokens = ICSharpCode.NRefactory.Parser.VB.Tokens;
 

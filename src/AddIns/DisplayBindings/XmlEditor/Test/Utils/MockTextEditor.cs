@@ -12,7 +12,6 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
-using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace XmlEditor.Tests.Utils
 {
@@ -173,11 +172,6 @@ namespace XmlEditor.Tests.Utils
 		}
 		
 		public IEnumerable<ICompletionItem> GetSnippets()
-		{
-			throw new NotImplementedException();
-		}
-		
-		public void ShowCompletionWindow(ICompletionDataProvider provider, char ch)
 		{
 			throw new NotImplementedException();
 		}

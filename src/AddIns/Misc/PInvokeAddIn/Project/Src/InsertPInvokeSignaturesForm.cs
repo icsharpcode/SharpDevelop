@@ -13,7 +13,6 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.PInvokeAddIn.WebServices;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;

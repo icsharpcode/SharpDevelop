@@ -12,7 +12,7 @@ using System.Diagnostics;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.TextEditor.Util;
+using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {

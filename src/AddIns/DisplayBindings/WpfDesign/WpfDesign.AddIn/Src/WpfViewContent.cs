@@ -8,23 +8,19 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Text;
 using System.Threading;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Xml;
 
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.WpfDesign.Designer;
 using ICSharpCode.WpfDesign.Designer.OutlineView;
 using ICSharpCode.WpfDesign.Designer.PropertyGrid;
 using ICSharpCode.WpfDesign.Designer.Services;
 using ICSharpCode.WpfDesign.Designer.Xaml;
-using ICSharpCode.WpfDesign.PropertyGrid;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
@@ -103,7 +99,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		{
 			XmlWriterSettings settings = new XmlWriterSettings();
 			settings.Indent = true;
-			settings.IndentChars = SharpDevelopTextEditorProperties.Instance.IndentationString;
+			settings.IndentChars = EditorControlService.GlobalOptions.IndentationString;
 			settings.NewLineOnAttributes = true;
 			using (XmlWriter xmlWriter = XmlTextWriter.Create(stream, settings)) {
 				designer.SaveDesigner(xmlWriter);

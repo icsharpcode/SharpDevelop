@@ -13,9 +13,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
@@ -376,8 +376,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			string parsedContent = StringParser.Parse(StringParser.Parse(content));
 			
 			if (parsedContent != null) {
-				if (SharpDevelopTextEditorProperties.Instance.IndentationString != "\t") {
-					parsedContent = parsedContent.Replace("\t", SharpDevelopTextEditorProperties.Instance.IndentationString);
+				if (EditorControlService.GlobalOptions.IndentationString != "\t") {
+					parsedContent = parsedContent.Replace("\t", EditorControlService.GlobalOptions.IndentationString);
 				}
 			}
 			

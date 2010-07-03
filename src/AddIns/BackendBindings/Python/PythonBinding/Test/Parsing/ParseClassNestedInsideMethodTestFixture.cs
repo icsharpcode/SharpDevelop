@@ -6,12 +6,9 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
 using ICSharpCode.PythonBinding;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
-using PythonBinding.Tests;
 
 namespace PythonBinding.Tests.Parsing
 {

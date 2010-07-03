@@ -325,11 +325,6 @@
       <Name>ICSharpCode.SharpDevelop</Name>
       <Private>True</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
-      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
-      <Name>ICSharpCode.TextEditor</Name>
-      <Private>True</Private>
-    </ProjectReference>
     <Content Include="..\..\..\..\..\AddIns\AddIns\DisplayBindings\FormsDesigner\FormsDesigner.dll">
       <Link>FormsDesigner.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

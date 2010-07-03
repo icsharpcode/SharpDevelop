@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Commands;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor.Actions;
 
 using System.Windows.Forms;
 

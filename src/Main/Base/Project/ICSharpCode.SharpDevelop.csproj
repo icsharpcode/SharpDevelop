@@ -91,8 +91,10 @@
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditTextSourceAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\ISnippetElementProvider.cs" />
+    <Compile Include="Src\Editor\AvalonEdit\TextContentCondition.cs" />
     <Compile Include="Src\Editor\CodeCompletion\ICompletionItemHandler.cs" />
     <Compile Include="Src\Editor\CodeCompletion\NRefactoryCompletionItemList.cs" />
+    <Compile Include="Src\Editor\IEditorControlService.cs" />
     <Compile Include="Src\Editor\IEditorUIService.cs" />
     <Compile Include="Src\Editor\CodeCompletion\AttributesItemProvider.cs" />
     <Compile Include="Src\Editor\CodeCompletion\CodeCompletionBinding.cs" />
@@ -607,13 +609,8 @@
     <Compile Include="Src\Bookmarks\BookmarkEventHandler.cs" />
     <Compile Include="Src\Bookmarks\BookmarkManager.cs" />
     <Compile Include="Src\Bookmarks\SDMarkerBookmark.cs" />
-    <Compile Include="Src\TextEditor\ClipboardHandling.cs" />
     <Compile Include="Src\TextEditor\Commands\SearchCommands.cs" />
-    <Compile Include="Src\TextEditor\Commands\ToolCommands.cs" />
-    <Compile Include="Src\TextEditor\Conditions\TextContentCondition.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\ITextAreaControlProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\SharpDevelopTextEditorProperties.cs" />
-    <Compile Include="Src\TextEditor\Gui\TextEditorAdapter.cs" />
     <Compile Include="Src\Services\Tasks\TaskEventHandler.cs" />
     <Compile Include="Src\Gui\Pads\DefinitionViewPad.cs" />
     <Compile Include="Src\Project\MSBuildEnums.cs" />
@@ -653,7 +650,6 @@
     <Compile Include="Src\Services\RefactoringService\Reference.cs" />
     <Compile Include="Src\Services\ProjectService\ParseableFileContentEnumerator.cs" />
     <Compile Include="Src\Services\ParserService\ParseProjectContent.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\AbstractCompletionDataProvider.cs" />
     <Compile Include="Src\Project\Items\ImportProjectItem.cs" />
     <EmbeddedResource Include="Resources\CodeCompletionOptionPanel.xfrm" />
     <Compile Include="Src\TextEditor\Gui\OptionPanels\CodeCompletionPanel.cs">
@@ -731,7 +727,6 @@
     <Compile Include="Src\Project\BuildError.cs" />
     <Compile Include="Src\Services\HelpProvider.cs" />
     <Compile Include="Src\Services\ParserService\CodeCompletionOptions.cs" />
-    <Compile Include="Src\Services\RefactoringService\TextEditorDocument.cs" />
     <Compile Include="Src\Services\ParserService\DomHostCallback.cs" />
     <Compile Include="Src\Services\ParserService\Doozer\ProjectContentRegistryDescriptor.cs" />
     <Compile Include="Src\Services\ParserService\Doozer\ProjectContentRegistryDoozer.cs" />
@@ -765,6 +760,7 @@
     <Compile Include="Src\Internal\Templates\TemplateLoadException.cs" />
     <Compile Include="Src\Util\ThreadSafeServiceProvider.cs" />
     <Compile Include="Src\Util\UnclosableStream.cs" />
+    <Compile Include="Src\Util\WeakCollection.cs" />
     <Compile Include="Src\Util\WindowsFormsPrinting.cs" />
     <Compile Include="Src\Util\WpfSynchronizeInvoke.cs" />
     <Compile Include="Src\Util\WorkerThread.cs" />
@@ -793,11 +789,6 @@
     <ProjectReference Include="..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
-      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
-      <Name>ICSharpCode.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">

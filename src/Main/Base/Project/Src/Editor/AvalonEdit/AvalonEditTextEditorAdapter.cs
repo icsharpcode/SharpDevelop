@@ -47,12 +47,11 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		
 		public static TextEditor CreateAvalonEditInstance()
 		{
-			var node = Core.AddInTree.GetTreeNode("/SharpDevelop/ViewContent/AvalonEdit/TextEditorInstance", false);
-			if (node != null && node.Codons.Count > 0) {
-				return (TextEditor)node.Codons[0].BuildItem(null, null);
-			} else {
-				return new TextEditor();
-			}
+			object editor;
+			EditorControlService.CreateEditor(out editor);
+			if (!(editor is TextEditor))
+				throw new NotSupportedException("Expected text editor to be AvalonEdit");
+			return (TextEditor)editor;
 		}
 		
 		protected virtual bool ReceiveWeakEvent(Type managerType, object sender, EventArgs e)

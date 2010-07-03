@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
-using ICSharpCode.TextEditor;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;

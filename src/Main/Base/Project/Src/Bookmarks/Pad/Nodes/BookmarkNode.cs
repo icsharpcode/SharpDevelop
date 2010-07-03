@@ -10,8 +10,6 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
@@ -21,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	public class BookmarkNode : ExtTreeNode
 	{
 		SDBookmark bookmark;
-		LineSegment line;
+		//LineSegment line;
 		
 		SizeF  spaceSize;
 		static StringFormat sf = (StringFormat)System.Drawing.StringFormat.GenericTypographic.Clone();
@@ -74,9 +72,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			Graphics g = e.Graphics;
 			int x = MeasureTextWidth(g, positionText, BoldMonospacedFont);
-			if (line != null && !line.IsDeleted) {
+//			if (line != null && !line.IsDeleted) {
 //				x += MeasureTextWidth(g, bookmark.Document.GetText(line).Replace("\t", "    "), BoldMonospacedFont);
-			}
+//			}
 			return x;
 		}
 		
@@ -88,9 +86,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			
 			spaceSize = g.MeasureString("-", RegularBigFont,  new PointF(0, 0), StringFormat.GenericTypographic);
 			
-			if (line != null && !line.IsDeleted) {
-				DrawLine(g, line, e.Bounds.Y, x, e.State);
-			}
+//			if (line != null && !line.IsDeleted) {
+//				DrawLine(g, line, e.Bounds.Y, x, e.State);
+//			}
 		}
 		
 		public override void ActivateItem()
@@ -98,6 +96,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			FileService.JumpToFilePosition(bookmark.FileName, bookmark.LineNumber, 1);
 		}
 		
+		/*
 		float DrawDocumentWord(Graphics g, string word, PointF position, Font font, Color foreColor)
 		{
 			if (word == null || word.Length == 0) {
@@ -146,6 +145,6 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 //				                 GetTextColor(state, Color.Black)
 //				                );
 			}
-		}
+		}*/
 	}
 }

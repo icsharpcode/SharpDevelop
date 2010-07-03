@@ -78,6 +78,7 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AvalonEditDisplayBinding.cs" />
     <Compile Include="Src\AvalonEditEditorUIService.cs" />
+    <Compile Include="Src\AvalonEditorControlService.cs" />
     <Compile Include="Src\AvalonEditViewContent.cs" />
     <Compile Include="Src\BracketHighlightRenderer.cs" />
     <Compile Include="Src\CaretReferencesRenderer.cs" />

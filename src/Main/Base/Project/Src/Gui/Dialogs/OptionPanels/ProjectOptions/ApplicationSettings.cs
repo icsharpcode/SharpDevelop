@@ -13,6 +13,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
@@ -123,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 						defaultManifest = r.ReadToEnd();
 					}
 				}
-				defaultManifest = defaultManifest.Replace("\t", DefaultEditor.Gui.Editor.SharpDevelopTextEditorProperties.Instance.IndentationString);
+				defaultManifest = defaultManifest.Replace("\t", EditorControlService.GlobalOptions.IndentationString);
 				File.WriteAllText(manifestFile, defaultManifest, System.Text.Encoding.UTF8);
 				FileService.FireFileCreated(manifestFile, false);
 			}

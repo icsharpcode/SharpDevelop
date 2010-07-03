@@ -7,9 +7,7 @@
 
 using System;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.TextEditor;
 
 namespace WixBinding.Tests.Utils
 {

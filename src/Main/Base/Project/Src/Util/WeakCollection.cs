@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ICSharpCode.TextEditor.Util
+namespace ICSharpCode.SharpDevelop.Util
 {
 	/// <summary>
 	/// A collection that allows its elements to be garbage-collected (unless there are other

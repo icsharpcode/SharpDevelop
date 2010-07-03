@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.0.0.5967
+# SharpDevelop 4.0.0.5950
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Main", "Main", "{256F5C28-532C-44C0-8AB8-D8EC5E492E01}"
 	ProjectSection(SolutionItems) = postProject
 	EndProjectSection
@@ -78,11 +78,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.TreeView", "src
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aga.Controls", "src\Libraries\TreeViewAdv\Aga.Controls\Aga.Controls.csproj", "{E73BB233-D88B-44A7-A98F-D71EE158381D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.TextEditor", "src\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj", "{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Build.Tasks", "src\Libraries\ICSharpCode.Build.Tasks\Project\ICSharpCode.Build.Tasks.csproj", "{4139CCF6-FB49-4A9D-B2CF-331E9EA3198D}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -541,8 +536,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ruby", "Ruby", "{C7288E72-F
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RubyBinding", "src\AddIns\BackendBindings\Ruby\RubyBinding\Project\RubyBinding.csproj", "{C896FFFF-5B6C-4B0E-B6DF-049865F501B4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RubyBinding.Tests", "src\AddIns\BackendBindings\Ruby\RubyBinding\Test\RubyBinding.Tests.csproj", "{01DF0475-0CB2-4E81-971B-BADC60CDE3A5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Profiler", "Profiler", "{C4035C32-026F-4158-AF15-113EA1EF1960}"
 	ProjectSection(SolutionItems) = postProject
@@ -635,10 +636,6 @@ Global
 		{4139CCF6-FB49-4A9D-B2CF-331E9EA3198D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4139CCF6-FB49-4A9D-B2CF-331E9EA3198D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4139CCF6-FB49-4A9D-B2CF-331E9EA3198D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -1106,7 +1103,6 @@ Global
 		{2FF700C2-A38A-48BD-A637-8CAFD4FE6237} = {2A232EF1-EB95-41C6-B63A-C106E0C95D3C}
 		{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1} = {2A232EF1-EB95-41C6-B63A-C106E0C95D3C}
 		{4139CCF6-FB49-4A9D-B2CF-331E9EA3198D} = {2A232EF1-EB95-41C6-B63A-C106E0C95D3C}
-		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D} = {2A232EF1-EB95-41C6-B63A-C106E0C95D3C}
 		{E73BB233-D88B-44A7-A98F-D71EE158381D} = {2A232EF1-EB95-41C6-B63A-C106E0C95D3C}
 		{DDE2A481-8271-4EAC-A330-8FA6A38D13D1} = {2A232EF1-EB95-41C6-B63A-C106E0C95D3C}
 		{870115DD-960A-4406-A6B9-600BCDC36A03} = {E5A0F4D8-37FD-4A30-BEB0-4409DC4E0865}

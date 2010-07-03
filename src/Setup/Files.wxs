@@ -1,4 +1,4 @@
-<!-- Defines all the directories, files and components to be installed -->
+﻿<!-- Defines all the directories, files and components to be installed -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
 	<Fragment>
 		<DirectoryRef Id="TARGETDIR">
@@ -181,9 +181,6 @@
 								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Sda.dll" Id="ICSharpCode.SharpDevelop.Sda.dll" Name="ICSharpCode.SharpDevelop.Sda.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Sda.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Sda.dll" KeyPath="yes" />
 								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Sda.dll.config" Id="ICSharpCode.SharpDevelop.Sda.dll.config" Name="ICSharpCode.SharpDevelop.Sda.dll.config" />
 								<File Source="..\..\bin\ICSharpCode.SharpDevelop.Sda.xml" Id="ICSharpCode.SharpDevelop.Sda.xml" Name="ICSharpCode.SharpDevelop.Sda.xml" />
-							</Component>
-							<Component Id="ICSharpCodeTextEditorDll" Guid="E67D85A5-A891-4E61-9980-C1F1523C7972" DiskId="1">
-								<File Source="..\..\bin\ICSharpCode.TextEditor.dll" Id="ICSharpCode.TextEditor.dll" Name="ICSharpCode.TextEditor.dll" Assembly=".net" AssemblyApplication="ICSharpCode.SharpDevelop.Sda.dll" AssemblyManifest="ICSharpCode.SharpDevelop.Sda.dll" KeyPath="yes" />
 							</Component>
 							<Component Id="log4netDll" Guid="0CE6ECAC-3C96-419E-9EA9-01F95C2C17BC" DiskId="1">
 								<File Source="..\..\bin\log4net.dll" Name="log4net.dll" Id="log4net.dll" Assembly=".net" AssemblyApplication="log4net.dll" AssemblyManifest="log4net.dll" KeyPath="yes" />

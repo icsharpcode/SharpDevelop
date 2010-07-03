@@ -6,13 +6,8 @@
 // </file>
 
 using System;
-using System.IO;
-using ICSharpCode.AvalonEdit;
 using ICSharpCode.Core;
-using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PythonBinding

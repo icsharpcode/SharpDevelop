@@ -20,7 +20,6 @@ using ICSharpCode.FormsDesigner;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.TextEditor;
 using Microsoft.CSharp;
 
 namespace ICSharpCode.WixBinding

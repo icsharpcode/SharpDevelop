@@ -14,6 +14,7 @@ using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Exceptions;
@@ -405,8 +406,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 							StreamWriter sr = new StreamWriter(File.Create(fileName), ParserService.DefaultFileEncoding);
 							string fileContent = StringParser.Parse(file.Content, new string[,] { {"ProjectName", projectCreateInformation.ProjectName}, {"FileName", fileName}});
 							fileContent = StringParser.Parse(fileContent);
-							if (SharpDevelopTextEditorProperties.Instance.IndentationString != "\t") {
-								fileContent = fileContent.Replace("\t", SharpDevelopTextEditorProperties.Instance.IndentationString);
+							if (EditorControlService.GlobalOptions.IndentationString != "\t") {
+								fileContent = fileContent.Replace("\t", EditorControlService.GlobalOptions.IndentationString);
 							}
 							sr.Write(fileContent);
 							sr.Close();

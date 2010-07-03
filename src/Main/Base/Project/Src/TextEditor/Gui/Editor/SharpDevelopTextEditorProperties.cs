@@ -13,10 +13,10 @@ using System.Text;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
-using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
+	/*
 	public sealed class SharpDevelopTextEditorProperties : ITextEditorProperties
 	{
 		static SharpDevelopTextEditorProperties textEditorProperties;
@@ -346,5 +346,5 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				properties.Set("TextRenderingHint", value);
 			}
 		}
-	}
+	}*/
 }
