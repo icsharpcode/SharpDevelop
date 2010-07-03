@@ -41,7 +41,8 @@ namespace ICSharpCode.CodeQualityAnalysis
                                       Name = moduleDefinition.Name
                                   };
 
-            ReadTypes(MainModule, moduleDefinition.Types);
+            if (moduleDefinition.HasTypes)
+                ReadTypes(MainModule, moduleDefinition.Types);
         }
 
         /// <summary>
@@ -53,13 +54,19 @@ namespace ICSharpCode.CodeQualityAnalysis
         {
             // first add all types, because i will need find depend types
 
+            AddTypes(module, types);
+
+            ReadFromTypes(module, types);
+        }
+
+        private void AddTypes(Module module, Collection<TypeDefinition> types)
+        {
             foreach (TypeDefinition typeDefinition in types)
             {
                 if (typeDefinition.Name != "<Module>")
                 {
                     var type = new Type()
                     {
-                        FullName = FormatTypeName(typeDefinition),
                         Name = FormatTypeName(typeDefinition)
                     };
 
@@ -73,19 +80,25 @@ namespace ICSharpCode.CodeQualityAnalysis
                     if (ns == null)
                     {
                         ns = new Namespace()
-                               {
-                                   Name = nsName,
-                                   Module = module
-                               };
+                        {
+                            Name = nsName,
+                            Module = module
+                        };
 
                         module.Namespaces.Add(ns);
                     }
 
                     type.Namespace = ns;
                     ns.Types.Add(type);
+
+                    if (typeDefinition.HasNestedTypes)
+                        AddTypes(module, typeDefinition.NestedTypes);
                 }
             }
+        }
 
+        private void ReadFromTypes(Module module, Collection<TypeDefinition> types)
+        {
             foreach (TypeDefinition typeDefinition in types)
             {
                 if (typeDefinition.Name != "<Module>")
@@ -94,7 +107,7 @@ namespace ICSharpCode.CodeQualityAnalysis
                         (from n in module.Namespaces
                          from t in n.Types
                          where (t.Name == FormatTypeName(typeDefinition))
-                        select t).SingleOrDefault();
+                         select t).SingleOrDefault();
 
 
                     if (typeDefinition.HasFields)
@@ -108,9 +121,11 @@ namespace ICSharpCode.CodeQualityAnalysis
 
                     /*if (typeDefinition.HasConstructors)
                         ReadConstructors(type, typeDefinition.Constructors);*/
+
+                    if (typeDefinition.HasNestedTypes)
+                        ReadFromTypes(module, typeDefinition.NestedTypes);
                 }
             }
-
         }
 
         private void ReadEvents(Type type, Collection<EventDefinition> events)

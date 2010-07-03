@@ -27,5 +27,10 @@ namespace ICSharpCode.CodeQualityAnalysis
         {
             return null;
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

@@ -26,7 +26,13 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <summary>
         /// Name of type with a name of namespace.
         /// </summary>
-        public string FullName { get; set; }
+        public string FullName
+        {
+            get
+            {
+                return Namespace.Name + "." + Name;
+            }
+        }
 
         /// <summary>
         /// Name of type
@@ -94,6 +100,11 @@ namespace ICSharpCode.CodeQualityAnalysis
             }
 
             return g;
+        }
+
+        public override string ToString()
+        {
+            return FullName;
         }
     }
 }

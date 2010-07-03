@@ -50,5 +50,10 @@ namespace ICSharpCode.CodeQualityAnalysis
 
             return g;
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }
