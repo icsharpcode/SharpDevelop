@@ -404,6 +404,23 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitTemplateDefinition(TemplateDefinition templateDefinition, object data)
 		{
 			VisitAttributes(templateDefinition.Attributes, data);
+			switch (templateDefinition.VarianceModifier) {
+				case VarianceModifier.Invariant:
+					// nothing
+					break;
+				case VarianceModifier.Covariant:
+					outputFormatter.Space();
+					outputFormatter.PrintToken(Tokens.Out);
+					outputFormatter.Space();
+					break;
+				case VarianceModifier.Contravariant:
+					outputFormatter.Space();
+					outputFormatter.PrintToken(Tokens.In);
+					outputFormatter.Space();
+					break;
+				default:
+					throw new Exception("Invalid value for VarianceModifier");
+			}
 			outputFormatter.PrintIdentifier(templateDefinition.Name);
 			if (templateDefinition.Bases.Count > 0) {
 				outputFormatter.PrintText(" As ");
