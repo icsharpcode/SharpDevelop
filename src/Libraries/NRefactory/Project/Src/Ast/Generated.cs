@@ -5464,6 +5464,8 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 		
 		string literalValue;
 		
+		bool useDoubleQuotes;
+		
 		Expression expressionValue;
 		
 		public string Name {
@@ -5481,6 +5483,15 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			}
 			set {
 				literalValue = value ?? "";
+			}
+		}
+		
+		public bool UseDoubleQuotes {
+			get {
+				return useDoubleQuotes;
+			}
+			set {
+				useDoubleQuotes = value;
 			}
 		}
 		
@@ -5511,7 +5522,7 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 		}
 		
 		public override string ToString() {
-			return string.Format("[XmlAttribute Name={0} LiteralValue={1} ExpressionValue={2}]", Name, LiteralValue, ExpressionValue);
+			return string.Format("[XmlAttribute Name={0} LiteralValue={1} UseDoubleQuotes={2} ExpressionValue={3}]", Name, LiteralValue, UseDoubleQuotes, ExpressionValue);
 		}
 	}
 	
@@ -5608,15 +5619,15 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			attributes = new List<XmlExpression>();
 		}
 		
-		public bool IsExpression {
-			get {
-				return !content.IsNull;
-			}
-		}
-		
 		public bool NameIsExpression {
 			get {
 				return !nameExpression.IsNull;
+			}
+		}
+		
+		public bool IsExpression {
+			get {
+				return !content.IsNull;
 			}
 		}
 		

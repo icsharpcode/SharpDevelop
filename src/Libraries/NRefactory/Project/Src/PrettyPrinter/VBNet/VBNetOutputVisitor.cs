@@ -2998,21 +2998,26 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.Function);
 		}
 		
-		public override object TrackedVisitQueryExpression(QueryExpression queryExpression, object data)
+		public override object TrackedVisitQueryExpressionVB(QueryExpressionVB queryExpression, object data)
 		{
 			outputFormatter.IndentationLevel++;
-			queryExpression.MiddleClauses.ForEach(PrintClause);
+			for (int i = 0; i < queryExpression.Clauses.Count; i++) {
+				QueryExpressionClause clause = queryExpression.Clauses[i];
+				if (!clause.IsNull) {
+					if (i != 0) {
+						outputFormatter.PrintLineContinuation();
+						outputFormatter.Indent();
+					}
+					clause.AcceptVisitor(this, null);
+				}
+			}
 			outputFormatter.IndentationLevel--;
 			return null;
 		}
 		
 		void PrintClause(QueryExpressionClause clause)
 		{
-			if (!clause.IsNull) {
-				outputFormatter.PrintLineContinuation();
-				outputFormatter.Indent();
-				clause.AcceptVisitor(this, null);
-			}
+
 		}
 		
 		public override object TrackedVisitQueryExpressionFromClause(QueryExpressionFromClause fromClause, object data)
@@ -3111,15 +3116,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public override object TrackedVisitQueryExpressionSelectClause(QueryExpressionSelectClause selectClause, object data)
+		public override object TrackedVisitQueryExpressionSelectVBClause(QueryExpressionSelectVBClause selectClause, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Select);
 			outputFormatter.Space();
-			return selectClause.Projection.AcceptVisitor(this, data);
+			foreach (ExpressionRangeVariable var in selectClause.Variables) {
+				var.AcceptVisitor(this, data);
+			}
+			return null;
 		}
 		
 		public override object TrackedVisitQueryExpressionWhereClause(QueryExpressionWhereClause whereClause, object data)
 		{
+			outputFormatter.Space();
 			outputFormatter.PrintText("Where");
 			outputFormatter.Space();
 			return whereClause.Condition.AcceptVisitor(this, data);
@@ -3128,6 +3137,111 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitExternAliasDirective(ExternAliasDirective externAliasDirective, object data)
 		{
 			UnsupportedNode(externAliasDirective);
+			return null;
+		}
+		
+		public override object TrackedVisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data)
+		{
+			switch (xmlContentExpression.Type) {
+				case XmlContentType.Comment:
+					outputFormatter.PrintText("<!--" + xmlContentExpression.Content + "-->");
+					break;
+				case XmlContentType.Text:
+					outputFormatter.PrintText(xmlContentExpression.Content);
+					break;
+				case XmlContentType.CData:
+					outputFormatter.PrintText("<![CDATA[" + xmlContentExpression.Content + "]]>");
+					break;
+				case XmlContentType.ProcessingInstruction:
+					outputFormatter.PrintText("<?" + xmlContentExpression.Content + "?>");
+					break;
+				default:
+					throw new Exception("Invalid value for XmlContentType");
+			}
+			return null;
+		}
+		
+		public override object TrackedVisitXmlEmbeddedExpression(XmlEmbeddedExpression xmlEmbeddedExpression, object data)
+		{
+			outputFormatter.PrintText("<%=");
+			outputFormatter.Space();
+			xmlEmbeddedExpression.InlineVBExpression.AcceptVisitor(this, data);
+			outputFormatter.Space();
+			outputFormatter.PrintText("%>");
+			return null;
+		}
+		
+		public override object TrackedVisitXmlAttribute(XmlAttribute xmlAttribute, object data)
+		{
+			outputFormatter.PrintText(xmlAttribute.Name);
+			outputFormatter.PrintToken(Tokens.Assign);
+			if (xmlAttribute.IsLiteralValue) {
+				if (xmlAttribute.UseDoubleQuotes)
+					outputFormatter.PrintText("\"");
+				else
+					outputFormatter.PrintText("'");
+				outputFormatter.PrintText(xmlAttribute.LiteralValue);
+				if (xmlAttribute.UseDoubleQuotes)
+					outputFormatter.PrintText("\"");
+				else
+					outputFormatter.PrintText("'");
+			} else
+				xmlAttribute.ExpressionValue.AcceptVisitor(this, data);
+			return null;
+		}
+		
+		public override object TrackedVisitXmlElementExpression(XmlElementExpression xmlElementExpression, object data)
+		{
+			outputFormatter.PrintText("<");
+			if (xmlElementExpression.NameIsExpression) {
+				outputFormatter.PrintToken(Tokens.XmlStartInlineVB);
+				outputFormatter.Space();
+				xmlElementExpression.NameExpression.AcceptVisitor(this, data);
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.XmlEndInlineVB);
+			} else {
+				outputFormatter.PrintText(xmlElementExpression.XmlName);
+			}
+			foreach (XmlExpression attribute in xmlElementExpression.Attributes) {
+				outputFormatter.Space();
+				attribute.AcceptVisitor(this, data);
+			}
+			if (xmlElementExpression.Children.Any()) {
+				outputFormatter.PrintText(">");
+				foreach (INode node in xmlElementExpression.Children) {
+					node.AcceptVisitor(this, data);
+				}
+				outputFormatter.PrintText("</");
+				if (!xmlElementExpression.NameIsExpression)
+					outputFormatter.PrintText(xmlElementExpression.XmlName);
+				outputFormatter.PrintText(">");
+			} else {
+				outputFormatter.Space();
+				outputFormatter.PrintText("/>");
+			}
+			return null;
+		}
+		
+		public override object TrackedVisitXmlMemberAccessExpression(XmlMemberAccessExpression xmlMemberAccessExpression, object data)
+		{
+			xmlMemberAccessExpression.TargetObject.AcceptVisitor(this, data);
+			switch (xmlMemberAccessExpression.AxisType) {
+				case XmlAxisType.Element:
+					outputFormatter.PrintToken(Tokens.Dot);
+					break;
+				case XmlAxisType.Attribute:
+					outputFormatter.PrintToken(Tokens.DotAt);
+					break;
+				case XmlAxisType.Descendents:
+					outputFormatter.PrintToken(Tokens.TripleDot);
+					break;
+				default:
+					throw new Exception("Invalid value for XmlAxisType");
+			}
+			if (xmlMemberAccessExpression.IsXmlIdentifier)
+				outputFormatter.PrintText("<" + xmlMemberAccessExpression.Identifier + ">");
+			else
+				outputFormatter.PrintIdentifier(xmlMemberAccessExpression.Identifier);
 			return null;
 		}
 	}

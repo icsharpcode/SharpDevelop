@@ -422,6 +422,7 @@ namespace NRefactoryASTGenerator.Ast
 
 	[IncludeBoolProperty("IsExpression", "return !content.IsNull;")]
 	[IncludeBoolProperty("NameIsExpression", "return !nameExpression.IsNull;")]
+	[HasChildren]
 	class XmlElementExpression : XmlExpression {
 		Expression content;
 		Expression nameExpression;
@@ -433,6 +434,7 @@ namespace NRefactoryASTGenerator.Ast
 	class XmlAttribute : XmlExpression {
 		string name;
 		string literalValue;
+		bool useDoubleQuotes;
 		Expression expressionValue;
 	}
 }

@@ -4757,12 +4757,12 @@ List<XmlExpression> attrs) {
 			Expect(20);
 
 #line  1839 "VBNET.ATG" 
-			string literalValue = null; Expression expressionValue = null; 
+			string literalValue = null; Expression expressionValue = null; bool useDoubleQuotes = false; 
 			if (la.kind == 3) {
 				lexer.NextToken();
 
 #line  1840 "VBNET.ATG" 
-				literalValue = t.literalValue.ToString(); 
+				literalValue = t.literalValue.ToString(); useDoubleQuotes = t.val[0] == '"'; 
 			} else if (la.kind == 12) {
 				lexer.NextToken();
 				Expr(
@@ -4772,7 +4772,7 @@ out expressionValue);
 			} else SynErr(290);
 
 #line  1841 "VBNET.ATG" 
-			attrs.Add(new XmlAttribute() { Name = name, ExpressionValue = expressionValue, LiteralValue = literalValue, StartLocation = start, EndLocation = t.EndLocation }); 
+			attrs.Add(new XmlAttribute() { Name = name, ExpressionValue = expressionValue, LiteralValue = literalValue, UseDoubleQuotes = useDoubleQuotes, StartLocation = start, EndLocation = t.EndLocation }); 
 		} else if (la.kind == 12) {
 			lexer.NextToken();
 

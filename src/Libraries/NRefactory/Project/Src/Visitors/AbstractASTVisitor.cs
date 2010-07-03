@@ -1273,7 +1273,7 @@ namespace ICSharpCode.NRefactory.Visitors {
 				Debug.Assert(o != null);
 				o.AcceptVisitor(this, data);
 			}
-			return null;
+			return xmlElementExpression.AcceptChildren(this, data);
 		}
 		
 		public virtual object VisitXmlEmbeddedExpression(XmlEmbeddedExpression xmlEmbeddedExpression, object data) {

@@ -31,7 +31,11 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		
 		string StripWhitespace(string text)
 		{
-			return text.Trim().Replace("\t", "").Replace("\r", "").Replace("\n", " ").Replace("  ", " ");
+			text = text.Trim().Replace("\t", "").Replace("\r", "").Replace("\n", " ").Replace("  ", " ");
+			while (text.Contains("  ")) {
+				text = text.Replace("  ", " ");
+			}
+			return text;
 		}
 		
 		void TestTypeMember(string program)
@@ -589,6 +593,79 @@ End Using");
 			               "	End If\n" +
 			               "	Return x * x\n" +
 			               "End Function");
+		}
+		
+		[Test]
+		public void XmlSimple()
+		{
+			TestExpression("<!-- test -->\n" +
+			               "<Test>\n" +
+			               "	<A />\n" +
+			               "	<B test='a' <%= test %> />\n" +
+			               "</Test>");
+		}
+		
+		[Test]
+		public void XmlNested()
+		{
+			TestExpression(@"<menu>
+              <course name=""appetizer"">
+                  <dish>Shrimp Cocktail</dish>
+                  <dish>Escargot</dish>
+              </course>
+              <course name=""main"">
+                  <dish>Filet Mignon</dish>
+                  <dish>Garlic Potatoes</dish>
+                  <dish>Broccoli</dish>
+              </course>
+              <course name=""dessert"">
+                  <dish>Chocolate Cheesecake</dish>
+              </course>
+          </menu>");
+		}
+		
+		[Test]
+		public void XmlDocument()
+		{
+			TestExpression(@"<?xml version=""1.0""?>
+                  <menu>
+                      <course name=""appetizer"">
+                          <dish>Shrimp Cocktail</dish>
+                          <dish>Escargot</dish>
+                      </course>
+                  </menu>");
+		}
+		
+		[Test]
+		public void XmlNestedWithExpressions()
+		{
+			TestExpression(@"<?xml version=""1.0""?>
+          <menu>
+              <course name=""appetizer"">
+                  <%= From m In menu _
+                      Where m.Course = ""appetizer"" _
+                      Select <dish><%= m.Food %></dish> %>
+              </course>
+              <course name=""main"">
+                  <%= From m In menu _
+                      Where m.Course = ""main"" _
+                      Select <dish><%= m.Food %></dish> %>
+              </course>
+              <course name=""dessert"">
+                  <%= From m In menu _
+                      Where m.Course = ""dessert"" _
+                      Select <dish><%= m.Food %></dish> %>
+              </course>
+          </menu>");
+		}
+		
+		[Test]
+		public void XmlAccessExpressions()
+		{
+			TestExpression("xml.<menu>.<course>");
+			TestExpression("xml...<course>");
+			TestExpression("xml...<course>(2)");
+			TestExpression("item.@name");
 		}
 	}
 }

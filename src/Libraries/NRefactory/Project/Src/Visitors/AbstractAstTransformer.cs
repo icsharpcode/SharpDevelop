@@ -2280,6 +2280,17 @@ namespace ICSharpCode.NRefactory.Visitors {
 				else
 					xmlElementExpression.Attributes[i] = o;
 			}
+			for (int i = 0; i < xmlElementExpression.Children.Count; i++) {
+				INode o = xmlElementExpression.Children[i];
+				Debug.Assert(o != null);
+				nodeStack.Push(o);
+				o.AcceptVisitor(this, data);
+				o = nodeStack.Pop();
+				if (o == null)
+					xmlElementExpression.Children.RemoveAt(i--);
+				else
+					xmlElementExpression.Children[i] = o;
+			}
 			return null;
 		}
 		
