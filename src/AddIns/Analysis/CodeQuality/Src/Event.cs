@@ -6,37 +6,26 @@ using QuickGraph;
 
 namespace ICSharpCode.CodeQualityAnalysis
 {
-    public class Field : IDependency
+    public class Event : IDependency
     {
         /// <summary>
-        /// Name of field
+        /// Name of event
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Type of field
+        /// Type of event
         /// </summary>
-        public Type FieldType { get; set; }
+        public Type EventType { get; set; }
 
         /// <summary>
-        /// Type which owns this field
+        /// Type which owns this event
         /// </summary>
         public Type Owner { get; set; }
 
-        /// <summary>
-        /// Whether this field is event
-        /// </summary>
-        public bool IsEvent { get; set; }
-        
         public BidirectionalGraph<object, IEdge<object>> BuildDependencyGraph()
         {
             return null;
         }
-
-        public override string ToString()
-        {
-            return Name;
-        }
-        
     }
 }

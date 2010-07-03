@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Mono.Cecil;
@@ -101,6 +100,7 @@ namespace ICSharpCode.CodeQualityAnalysis
         {
             foreach (TypeDefinition typeDefinition in types)
             {
+
                 if (typeDefinition.Name != "<Module>")
                 {
                     var type =
@@ -113,14 +113,11 @@ namespace ICSharpCode.CodeQualityAnalysis
                     if (typeDefinition.HasFields)
                         ReadFields(type, typeDefinition.Fields);
 
-                    /*if (typeDefinition.HasEvents)
-                        ReadEvents(type, typeDefinition.Events);*/
+                    if (typeDefinition.HasEvents)
+                        ReadEvents(type, typeDefinition.Events);
 
                     if (typeDefinition.HasMethods)
                         ReadMethods(type, typeDefinition.Methods);
-
-                    /*if (typeDefinition.HasConstructors)
-                        ReadConstructors(type, typeDefinition.Constructors);*/
 
                     if (typeDefinition.HasNestedTypes)
                         ReadFromTypes(module, typeDefinition.NestedTypes);
@@ -130,7 +127,37 @@ namespace ICSharpCode.CodeQualityAnalysis
 
         private void ReadEvents(Type type, Collection<EventDefinition> events)
         {
-            throw new NotImplementedException();
+            foreach (var eventDefinition in events)
+            {
+                var e = new Event()
+                            {
+                                Name = eventDefinition.Name,
+                                Owner = type
+                            };
+
+                type.Events.Add(e);
+
+                var declaringType =
+                    (from n in type.Namespace.Module.Namespaces
+                     from t in n.Types
+                     where t.Name == e.Name
+                     select t).SingleOrDefault();
+
+                e.EventType = declaringType;
+
+                // Mono.Cecil threats Events as regular fields
+                // so I have to find a field and set IsEvent to true
+
+                var field =
+                    (from n in type.Namespace.Module.Namespaces
+                     from t in n.Types
+                     from f in t.Fields
+                     where f.Name == e.Name
+                     select f).SingleOrDefault();
+
+                if (field != null)
+                    field.IsEvent = true;
+            }
         }
 
         /// <summary>
@@ -144,7 +171,9 @@ namespace ICSharpCode.CodeQualityAnalysis
             {
                 var field = new Field()
                                 {
-                                    Name = fieldDefinition.Name
+                                    Name = fieldDefinition.Name,
+                                    IsEvent = false,
+                                    Owner = type
                                 };
 
                 type.Fields.Add(field);
@@ -152,10 +181,10 @@ namespace ICSharpCode.CodeQualityAnalysis
                 var declaringType =
                         (from n in type.Namespace.Module.Namespaces
                          from t in n.Types
-                         where t.Name == field.Name
+                         where t.Name == FormatTypeName(fieldDefinition.DeclaringType)
                          select t).SingleOrDefault();
 
-                field.Type = declaringType;
+                field.FieldType = declaringType;
             }
         }
 
@@ -171,8 +200,17 @@ namespace ICSharpCode.CodeQualityAnalysis
                 var method = new Method
                 {
                     Name = FormatMethodName(methodDefinition),
-                    Type = type
+                    Owner = type,
+                    IsConstructor = methodDefinition.IsConstructor
                 };
+
+                var declaringType =
+                        (from n in type.Namespace.Module.Namespaces
+                         from t in n.Types
+                         where t.Name == FormatTypeName(methodDefinition.DeclaringType)
+                         select t).SingleOrDefault();
+
+                method.MethodType = declaringType;
 
                 type.Methods.Add(method);
             }
@@ -186,37 +224,6 @@ namespace ICSharpCode.CodeQualityAnalysis
                 if (methodDefinition.Body != null)
                 {
                     ReadInstructions(method, methodDefinition, methodDefinition.Body.Instructions);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Reads constructors and add them to method list for type
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="constructors"></param>
-        private void ReadConstructors(Type type, Collection<MethodDefinition> constructors)
-        {
-            foreach (MethodDefinition constructor in constructors)
-            {
-                var method = new Method
-                {
-                    Name = FormatMethodName(constructor),
-                    Type = type
-                };
-
-                type.Methods.Add(method);
-            }
-
-            foreach (MethodDefinition constructor in  constructors)
-            {
-                var method = (from m in type.Methods
-                              where m.Name == FormatMethodName(constructor)
-                              select m).SingleOrDefault();
-
-                if (constructor.Body != null)
-                {
-                    ReadInstructions(method, constructor, constructor.Body.Instructions);
                 }
             }
         }
@@ -237,7 +244,7 @@ namespace ICSharpCode.CodeQualityAnalysis
                 if (instr is MethodDefinition)
                 {
                     var md = instr as MethodDefinition;
-                    var type = (from n in method.Type.Namespace.Module.Namespaces
+                    var type = (from n in method.MethodType.Namespace.Module.Namespaces
                                 from t in n.Types
                                 where t.Name == FormatTypeName(md.DeclaringType) &&
                                 n.Name == t.Namespace.Name
@@ -249,20 +256,23 @@ namespace ICSharpCode.CodeQualityAnalysis
                                             where m.Name == FormatMethodName(md)
                                             select m).SingleOrDefault();
 
-                    if (findTargetMethod != null && type == method.Type) 
+                    if (findTargetMethod != null && type == method.MethodType) 
                         method.MethodUses.Add(findTargetMethod);
                 }
 
                 if (instr is FieldDefinition)
                 {
                     var fd = instr as FieldDefinition;
-                    var field = (from f in method.Type.Fields
+                    var field = (from f in method.MethodType.Fields
                                 where f.Name == fd.Name
                                 select f).SingleOrDefault();
 
                     if (field != null)
                         method.FieldUses.Add(field);
                 }
+
+                if (instr != null)
+                    Console.WriteLine(instr.GetType().ToString());
             }
         }
 
@@ -300,13 +310,13 @@ namespace ICSharpCode.CodeQualityAnalysis
                 bool hasNext = enumerator.MoveNext();
                 while (hasNext)
                 {
-                    builder.Append(((ParameterDefinition) enumerator.Current).ParameterType.FullName);
+                    builder.Append((enumerator.Current).ParameterType.FullName);
                     hasNext = enumerator.MoveNext();
                     if (hasNext)
                         builder.Append(", ");
                 }
 
-                return methodDefinition.Name + "(" + builder.ToString() + ")";
+                return methodDefinition.Name + "(" + builder + ")";
             }
             else
             {
@@ -333,13 +343,13 @@ namespace ICSharpCode.CodeQualityAnalysis
                 bool hasNext = enumerator.MoveNext();
                 while (hasNext)
                 {
-                    builder.Append(((GenericParameter)enumerator.Current).Name);
+                    builder.Append((enumerator.Current).Name);
                     hasNext = enumerator.MoveNext();
                     if (hasNext)
                         builder.Append(",");
                 }
 
-                return StripGenericName(typeDefinition.Name) + "<" + builder.ToString() + ">";
+                return StripGenericName(typeDefinition.Name) + "<" + builder + ">";
             }
 
             return typeDefinition.Name; 
@@ -364,13 +374,11 @@ namespace ICSharpCode.CodeQualityAnalysis
         {
             if (type.IsNested && type.DeclaringType != null)
                 return GetNamespaceName(type.DeclaringType);
-            else
-            {
-                if (!String.IsNullOrEmpty(type.Namespace))
-                    return type.Namespace;
-                else
-                    return "-";
-            }
+            
+            if (!String.IsNullOrEmpty(type.Namespace))
+                return type.Namespace;
+            
+            return "-";
         }
     }
 }

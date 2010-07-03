@@ -94,6 +94,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Src\DependencyGraphCommand.cs" />
+    <Compile Include="Src\Event.cs" />
     <Compile Include="Src\Field.cs" />
     <Compile Include="Src\IDependency.cs" />
     <Compile Include="Src\MetricsReader.cs" />

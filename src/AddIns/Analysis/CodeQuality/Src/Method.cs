@@ -31,7 +31,17 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <summary>
         /// A return type of method
         /// </summary>
-        public Type Type { get; set; }
+        public Type MethodType { get; set; }
+
+        /// <summary>
+        /// Type which owns this method
+        /// </summary>
+        public Type Owner { get; set; }
+
+        /// <summary>
+        /// Whether a method is constructor or not
+        /// </summary>
+        public bool IsConstructor { get; set; }
 
         public Method()
         {

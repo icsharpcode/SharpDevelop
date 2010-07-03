@@ -11,7 +11,7 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <summary>
         /// Nested types like inner classes, interfaces and so on.
         /// </summary>
-        public ISet<Type> InnerTypes { get; set; }
+        public ISet<Type> NestedTypes { get; set; }
 
         /// <summary>
         /// Methods within type
@@ -22,6 +22,11 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// Fields within type
         /// </summary>
         public ISet<Field> Fields { get; set; }
+
+        /// <summary>
+        /// Events within type
+        /// </summary>
+        public ISet<Event> Events { get; set; }
 
         /// <summary>
         /// Name of type with a name of namespace.
@@ -48,6 +53,8 @@ namespace ICSharpCode.CodeQualityAnalysis
         {
             Methods = new HashSet<Method>();
             Fields = new HashSet<Field>();
+            Events = new HashSet<Event>();
+            NestedTypes = new HashSet<Type>();
         }
 
         /// <summary>
@@ -65,8 +72,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 
             foreach (var field in Fields)
             {
-                if (field.Type != null) // if it is null so it is type from outside of this assembly
-                    set.Add(field.Type); // TODO: find solution to handle them
+                if (field.FieldType != null) // if it is null so it is type from outside of this assembly
+                    set.Add(field.FieldType); // TODO: find solution to handle them
             }
 
             return set;
