@@ -322,10 +322,13 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 						StringParser.Parse(projectItem.Include)
 					);
 					foreach (string metadataName in projectItem.MetadataNames) {
-						newProjectItem.SetEvaluatedMetadata(
-							StringParser.Parse(metadataName),
-							StringParser.Parse(projectItem.GetMetadata(metadataName))
-						);
+						string metadataValue = projectItem.GetMetadata(metadataName);
+						// if the input contains any special MSBuild sequences, don't escape the value
+						// we want to escape only when the special characters are introduced by the StringParser.Parse replacement
+						if (metadataValue.Contains("$(") || metadataValue.Contains("%"))
+							newProjectItem.SetMetadata(StringParser.Parse(metadataName), StringParser.Parse(metadataValue));
+						else
+							newProjectItem.SetEvaluatedMetadata(StringParser.Parse(metadataName), StringParser.Parse(metadataValue));
 					}
 					((IProjectItemListProvider)project).AddProjectItem(newProjectItem);
 				}
