@@ -20,9 +20,9 @@ namespace ICSharpCode.CodeQualityAnalysis
         }
 
         /// <summary>
-        /// Opens file as assembly and starts reading MainModule
+        /// Opens a file as assembly and starts reading MainModule.
         /// </summary>
-        /// <param name="file"></param>
+        /// <param name="file">A file which will be analyzed</param>
         private void ReadAssembly(string file)
         {
             var assembly = AssemblyDefinition.ReadAssembly(file);
@@ -30,9 +30,9 @@ namespace ICSharpCode.CodeQualityAnalysis
         }
 
         /// <summary>
-        /// Reads main module from assembly
+        /// Reads a module from assembly.
         /// </summary>
-        /// <param name="moduleDefinition"></param>
+        /// <param name="moduleDefinition">A module which contains information</param>
         private void ReadModule(ModuleDefinition moduleDefinition)
         {
             this.MainModule = new Module()
@@ -45,10 +45,10 @@ namespace ICSharpCode.CodeQualityAnalysis
         }
 
         /// <summary>
-        /// Reads types from module
+        /// Reads types from module.
         /// </summary>
-        /// <param name="module"></param>
-        /// <param name="types"></param>
+        /// <param name="module">A module where types will be added</param>
+        /// <param name="types">A collection of types</param>
         private void ReadTypes(Module module, Collection<TypeDefinition> types)
         {
             // first add all types, because i will need find depend types
@@ -58,44 +58,89 @@ namespace ICSharpCode.CodeQualityAnalysis
             ReadFromTypes(module, types);
         }
 
+        /// <summary>
+        /// Iterates through a collection of types and add them to the module.
+        /// </summary>
+        /// <param name="module">A module where types will be added</param>
+        /// <param name="types">A collection of types</param>
         private void AddTypes(Module module, Collection<TypeDefinition> types)
         {
             foreach (TypeDefinition typeDefinition in types)
             {
                 if (typeDefinition.Name != "<Module>")
                 {
-                    var type = new Type()
-                    {
-                        Name = FormatTypeName(typeDefinition)
-                    };
-
-                    // try find namespace
-                    var nsName = GetNamespaceName(typeDefinition);
-
-                    var ns = (from n in module.Namespaces
-                              where n.Name == nsName
-                              select n).SingleOrDefault();
-
-                    if (ns == null)
-                    {
-                        ns = new Namespace()
-                        {
-                            Name = nsName,
-                            Module = module
-                        };
-
-                        module.Namespaces.Add(ns);
-                    }
-
-                    type.Namespace = ns;
-                    ns.Types.Add(type);
+                    var type = CreateType(module, typeDefinition);
 
                     if (typeDefinition.HasNestedTypes)
-                        AddTypes(module, typeDefinition.NestedTypes);
+                        AddNestedTypes(type, typeDefinition.NestedTypes);
                 }
             }
         }
 
+        /// <summary>
+        /// Iterates through a collection of nested types and add them to the parent type.
+        /// </summary>
+        /// <param name="parentType">A type which is owner of nested types</param>
+        /// <param name="types">A collection of nested types</param>
+        private void AddNestedTypes(Type parentType, Collection<TypeDefinition> types)
+        {
+            foreach (TypeDefinition typeDefinition in types)
+            {
+                if (typeDefinition.Name != "<Module>")
+                {
+                    var type = CreateType(parentType.Namespace.Module, typeDefinition);
+
+                    parentType.NestedTypes.Add(type);
+                    type.Owner = parentType;
+
+                    if (typeDefinition.HasNestedTypes)
+                        AddNestedTypes(type, typeDefinition.NestedTypes);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Creates a type. If type exist in namespace which isn't created yet so it will be created.
+        /// </summary>
+        /// <param name="module">A module where type will be added</param>
+        /// <param name="typeDefinition">TypeDefinition which will used to create a type.</param>
+        /// <returns>A new type</returns>
+        private Type CreateType(Module module, TypeDefinition typeDefinition)
+        {
+            var type = new Type()
+                           {
+                               Name = FormatTypeName(typeDefinition),
+                               Owner = null
+                           };
+
+            // try find namespace
+            var nsName = GetNamespaceName(typeDefinition);
+
+            var ns = (from n in module.Namespaces
+                      where n.Name == nsName
+                      select n).SingleOrDefault();
+
+            if (ns == null)
+            {
+                ns = new Namespace()
+                         {
+                             Name = nsName,
+                             Module = module
+                         };
+
+                module.Namespaces.Add(ns);
+            }
+
+            type.Namespace = ns;
+            ns.Types.Add(type);
+            return type;
+        }
+
+        /// <summary>
+        /// Reads fields, events, methods from a type.
+        /// </summary>
+        /// <param name="module">A module where are types located</param>
+        /// <param name="types">A collection of types</param>
         private void ReadFromTypes(Module module, Collection<TypeDefinition> types)
         {
             foreach (TypeDefinition typeDefinition in types)
@@ -125,6 +170,11 @@ namespace ICSharpCode.CodeQualityAnalysis
             }
         }
 
+        /// <summary>
+        /// Reads events and add them to the type.
+        /// </summary>
+        /// <param name="type">A type where events will be added</param>
+        /// <param name="events">A collection of events</param>
         private void ReadEvents(Type type, Collection<EventDefinition> events)
         {
             foreach (var eventDefinition in events)
@@ -161,10 +211,10 @@ namespace ICSharpCode.CodeQualityAnalysis
         }
 
         /// <summary>
-        /// Reads fields and add them to field list for type
+        /// Reads fields and add them to the type.
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="fields"></param>
+        /// <param name="type">A type where fields will be added</param>
+        /// <param name="fields">A collection of fields</param>
         private void ReadFields(Type type, Collection<FieldDefinition> fields)
         {
             foreach (FieldDefinition fieldDefinition in fields)
@@ -189,10 +239,10 @@ namespace ICSharpCode.CodeQualityAnalysis
         }
 
         /// <summary>
-        /// Extracts methods and add them to method list for type
+        /// Extracts methods and add them to method list for type.
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="methods"></param>
+        /// <param name="type">A type where methods will be added</param>
+        /// <param name="methods">A collection of methods</param>
         private void ReadMethods(Type type, Collection<MethodDefinition> methods)
         {
             foreach (MethodDefinition methodDefinition in methods)
@@ -229,11 +279,11 @@ namespace ICSharpCode.CodeQualityAnalysis
         }
 
         /// <summary>
-        /// Reads method calls by extracting instrunctions
+        /// Reads method calls by extracting instructions.
         /// </summary>
-        /// <param name="method"></param>
-        /// <param name="methodDefinition"></param>
-        /// <param name="instructions"></param>
+        /// <param name="method">A method where information will be added</param>
+        /// <param name="methodDefinition">A method definition with instructions</param>
+        /// <param name="instructions">A collection of instructions</param>
         public void ReadInstructions(Method method, MethodDefinition methodDefinition,
             Collection<Instruction> instructions)
         {
@@ -270,9 +320,6 @@ namespace ICSharpCode.CodeQualityAnalysis
                     if (field != null)
                         method.FieldUses.Add(field);
                 }
-
-                if (instr != null)
-                    Console.WriteLine(instr.GetType().ToString());
             }
         }
 
@@ -280,8 +327,8 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// Reads instruction operand by recursive calling until non-instruction
         /// operand is found 
         /// </summary>
-        /// <param name="instruction"></param>
-        /// <returns></returns>
+        /// <param name="instruction">An instruction with operand</param>
+        /// <returns>An instruction operand</returns>
         public object ReadInstruction(Instruction instruction)
         {
             if (instruction.Operand == null)
@@ -291,16 +338,16 @@ namespace ICSharpCode.CodeQualityAnalysis
 
             if (nextInstruction != null)
                 return ReadInstruction(nextInstruction);
-            else
-                return instruction.Operand;
+            
+            return instruction.Operand;
         }
 
         /// <summary>
         /// Formats method name by adding parameters to it. If there are not any parameters
         /// only empty brackers will be added.
         /// </summary>
-        /// <param name="methodDefinition"></param>
-        /// <returns></returns>
+        /// <param name="methodDefinition">A method definition with parameters and name</param>
+        /// <returns>A name with parameters</returns>
         public string FormatMethodName(MethodDefinition methodDefinition)
         {
             if (methodDefinition.HasParameters)
@@ -318,17 +365,15 @@ namespace ICSharpCode.CodeQualityAnalysis
 
                 return methodDefinition.Name + "(" + builder + ")";
             }
-            else
-            {
-                return methodDefinition.Name + "()";
-            }
+
+            return methodDefinition.Name + "()";
         }
 
         /// <summary>
         /// Formats a specific type name. If type is generic. Brackets <> will be added with proper names of parameters.
         /// </summary>
-        /// <param name="typeDefinition"></param>
-        /// <returns></returns>
+        /// <param name="typeDefinition">A type definition with declaring type and name</param>
+        /// <returns>A type name</returns>
         public string FormatTypeName(TypeDefinition typeDefinition)
         {
             if (typeDefinition.IsNested && typeDefinition.DeclaringType != null)
@@ -358,18 +403,18 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <summary>
         /// Removes a number of generics parameters. Eg. `3 will be removed from end of name.
         /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        /// <param name="name">A name with a number of generics parameters</param>
+        /// <returns>A name without generics parameters</returns>
         private string StripGenericName(string name)
         {
             return name.IndexOf('`') != -1 ? name.Remove(name.IndexOf('`')) : name;
         }
 
         /// <summary>
-        /// Gets namespace name. If type is nested it looks recursively to parent type until finds his namespace.
+        /// Gets a namespace name. If type is nested it looks recursively to parent type until finds his namespace.
         /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
+        /// <param name="type">A type definition with namespace</param>
+        /// <returns>A namespace</returns>
         private string GetNamespaceName(TypeDefinition type)
         {
             if (type.IsNested && type.DeclaringType != null)

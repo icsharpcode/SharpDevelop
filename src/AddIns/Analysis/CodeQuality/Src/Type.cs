@@ -14,6 +14,11 @@ namespace ICSharpCode.CodeQualityAnalysis
         public ISet<Type> NestedTypes { get; set; }
 
         /// <summary>
+        /// Type which owns this type. If this isn't nested type so Owner is null.
+        /// </summary>
+        public Type Owner { get; set; }
+
+        /// <summary>
         /// Methods within type
         /// </summary>
         public ISet<Method> Methods { get; set; }
