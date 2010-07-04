@@ -133,7 +133,7 @@ namespace ICSharpCode.Reports.Addin
 					this.SelectedNode = newNode;
 					this.CheckNode (newNode);
 					sectionNode.Nodes.Add(newNode);
-					this.reportModel.ReportSettings.SortColumnCollection.Add(new SortColumn(newNode.Text,
+					this.reportModel.ReportSettings.SortColumnsCollection.Add(new SortColumn(newNode.Text,
 					                                                                        ListSortDirection.Ascending,
 					                                                                        typeof(System.String),false));
 					this.OnPropertyChanged ("Sort_Group");
@@ -211,9 +211,9 @@ namespace ICSharpCode.Reports.Addin
 		public void RemoveNode()
 		{
 			if (this.SelectedNode != null) {
-				AbstractColumn abstr = this.reportModel.ReportSettings.SortColumnCollection.Find(this.SelectedNode.Text);
+				AbstractColumn abstr = this.reportModel.ReportSettings.SortColumnsCollection.Find(this.SelectedNode.Text);
 				if (abstr != null) {
-					this.reportModel.ReportSettings.SortColumnCollection.Remove(abstr as SortColumn);
+					this.reportModel.ReportSettings.SortColumnsCollection.Remove(abstr as SortColumn);
 				}
 				TreeNode parent = this.SelectedNode.Parent;
 				this.SelectedNode.Remove();
@@ -225,7 +225,7 @@ namespace ICSharpCode.Reports.Addin
 		public void ClearSection ()
 		{
 			this.nodeSorting.Nodes.Clear();
-			this.reportModel.ReportSettings.SortColumnCollection.Clear();
+			this.reportModel.ReportSettings.SortColumnsCollection.Clear();
 			this.OnPropertyChanged ("ClearSection");
 		}
 		
@@ -243,7 +243,7 @@ namespace ICSharpCode.Reports.Addin
 					scn.ImageIndex = ascendingIcon;
 					scn.SelectedImageIndex = ascendingIcon;
 				}
-				SortColumn abstr = (SortColumn)this.reportModel.ReportSettings.SortColumnCollection.Find(this.SelectedNode.Text);
+				SortColumn abstr = (SortColumn)this.reportModel.ReportSettings.SortColumnsCollection.Find(this.SelectedNode.Text);
 				abstr.SortDirection = scn.SortDirection;
 				this.OnPropertyChanged ("ToggleSortOrder");
 			}
@@ -272,7 +272,7 @@ namespace ICSharpCode.Reports.Addin
 		{
 			this.nodeSorting.Nodes.Clear();
 			SortColumnNode scn = null;
-			foreach (SortColumn sc in this.reportModel.ReportSettings.SortColumnCollection){
+			foreach (SortColumn sc in this.reportModel.ReportSettings.SortColumnsCollection){
 				if (sc.SortDirection == ListSortDirection.Ascending) {
 					scn  = new SortColumnNode (sc.ColumnName,ascendingIcon,"/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnTreeNode");
 				} else {

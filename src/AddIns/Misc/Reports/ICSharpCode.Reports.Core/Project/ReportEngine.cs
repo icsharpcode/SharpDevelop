@@ -103,7 +103,7 @@ namespace ICSharpCode.Reports.Core {
 			if (reportParameters != null) {
 				
 				if (reportParameters.SortColumnCollection.Count > 0) {
-					model.ReportSettings.SortColumnCollection.AddRange(reportParameters.SortColumnCollection);
+					model.ReportSettings.SortColumnsCollection.AddRange(reportParameters.SortColumnCollection);
 				}
 				
 				if (reportParameters.SqlParameters.Count > 0) {

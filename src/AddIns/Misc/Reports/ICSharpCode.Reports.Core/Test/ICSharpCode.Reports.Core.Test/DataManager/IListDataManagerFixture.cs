@@ -138,7 +138,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		{
 			SortColumn sc = new SortColumn("Last",System.ComponentModel.ListSortDirection.Ascending);
 			ReportSettings rs = new ReportSettings();
-			rs.SortColumnCollection.Add(sc);
+			rs.SortColumnsCollection.Add(sc);
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,rs);
 			DataNavigator dataNav = dm.GetNavigator;
 			string v1 = String.Empty;
@@ -185,7 +185,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			SortColumn sc = new SortColumn("RandomDate",System.ComponentModel.ListSortDirection.Ascending,
 			                               typeof(System.Int16),false);
 			ReportSettings rs = new ReportSettings();
-			rs.SortColumnCollection.Add(sc);
+			rs.SortColumnsCollection.Add(sc);
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,rs);
 			DataNavigator dataNav = dm.GetNavigator;
 			DateTime d1 = new DateTime(1,1,1);
@@ -204,7 +204,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			SortColumn sc = new SortColumn("RandomDate",System.ComponentModel.ListSortDirection.Descending,
 			                               typeof(System.Int16),false);
 			ReportSettings rs = new ReportSettings();
-			rs.SortColumnCollection.Add(sc);
+			rs.SortColumnsCollection.Add(sc);
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,rs);
 			DataNavigator dataNav = dm.GetNavigator;
 			DateTime d1 = new DateTime(2099,12,30);
@@ -224,8 +224,8 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			SortColumn sc1 = new SortColumn("RandomInt",System.ComponentModel.ListSortDirection.Ascending);
 			
 			ReportSettings rs = new ReportSettings();
-			rs.SortColumnCollection.Add(sc);
-			rs.SortColumnCollection.Add(sc1);
+			rs.SortColumnsCollection.Add(sc);
+			rs.SortColumnsCollection.Add(sc1);
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,rs);
 			DataNavigator dataNav = dm.GetNavigator;
 			string v1 = String.Empty;
@@ -247,7 +247,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		{
 			SortColumn sc = new SortColumn("Last",System.ComponentModel.ListSortDirection.Descending);
 			ReportSettings rs = new ReportSettings();
-			rs.SortColumnCollection.Add(sc);
+			rs.SortColumnsCollection.Add(sc);
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,rs);
 			DataNavigator dataNav = dm.GetNavigator;
 			string compareTo = "z";

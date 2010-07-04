@@ -223,13 +223,13 @@ namespace ICSharpCode.Reports.Core{
 		/// Get/Set a Collection of <see cref="SortColumn">SortColumn</see>
 		/// </summary>
 		
-		
-		public ColumnCollection SortColumnCollection {
+		[Category("Sorting/Grouping")]
+		public ColumnCollection SortColumnsCollection {
 			get {return sortingCollection;}
 		}
 		
 		
-		[Browsable(false)]
+		[Category("Sorting/Grouping")]
 		public ColumnCollection GroupColumnsCollection {
 			get {
 				return groupingsCollection;

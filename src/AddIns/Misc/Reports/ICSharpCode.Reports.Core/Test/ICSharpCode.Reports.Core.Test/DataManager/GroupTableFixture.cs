@@ -45,18 +45,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		
 		
 		[Test]
-		public void aaAddGroupToSettings ()
-		{
-			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
-			ReportSettings rs = new ReportSettings();
-			
-			rs.GroupColumnsCollection.Add(gc);
-			Assert.AreEqual(1,rs.GroupColumnsCollection.Count);
-		}
-			
-		
-		
-		[Test]
 		public void aaa()
 		{
 			

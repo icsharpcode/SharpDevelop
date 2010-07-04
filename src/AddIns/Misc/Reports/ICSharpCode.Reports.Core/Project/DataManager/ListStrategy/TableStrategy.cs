@@ -94,13 +94,13 @@ namespace ICSharpCode.Reports.Core
 		public override void Sort()
 		{
 			base.Sort();
-			if ((base.ReportSettings.SortColumnCollection != null)) {
-				if (base.ReportSettings.SortColumnCollection.Count > 0) {
-					base.IndexList = this.BuildSortIndex (base.CreateSortCollection(ReportSettings.SortColumnCollection));
+			if ((base.ReportSettings.SortColumnsCollection != null)) {
+				if (base.ReportSettings.SortColumnsCollection.Count > 0) {
+					base.IndexList = this.BuildSortIndex (base.CreateSortCollection(ReportSettings.SortColumnsCollection));
 					base.IsSorted = true;
 				} else {
 					// if we have no sorting, we build the indexlist as well
-					base.IndexList = this.IndexBuilder(ReportSettings.SortColumnCollection);
+					base.IndexList = this.IndexBuilder(ReportSettings.SortColumnsCollection);
 					base.IsSorted = false;
 				}
 			}

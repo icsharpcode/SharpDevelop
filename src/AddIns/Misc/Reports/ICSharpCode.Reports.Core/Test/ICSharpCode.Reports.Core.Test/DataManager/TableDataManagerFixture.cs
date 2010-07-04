@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections;
+using System.ComponentModel;
 using System.Data;
 
 using ICSharpCode.Reports.Core;
@@ -109,78 +110,28 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		{
 			SortColumn sc = new SortColumn("notexist",System.ComponentModel.ListSortDirection.Ascending);
 			ReportSettings rs = new ReportSettings();
-			rs.SortColumnCollection.Add(sc);
+			rs.SortColumnsCollection.Add(sc);
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
 			DataNavigator dataNav = dm.GetNavigator;
 		}
+		
+		#region Grouping
+		
+		[Test]
+		public void can_add_GroupColumn ()
+		{
+			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
+			ReportSettings rs = new ReportSettings();
+			
+			rs.GroupColumnsCollection.Add(gc);
+			Assert.AreEqual(1,rs.GroupColumnsCollection.Count);
+		}
+		
+		#endregion
 		
 		
 		#region Sorting
 		//Tests moved to \Strategy
-		/*
-		[Test]
-		public void SortAscendingByOneColumn()
-		{
-			SortColumn sc = new SortColumn("Last",System.ComponentModel.ListSortDirection.Ascending);
-			ReportSettings rs = new ReportSettings();
-			rs.SortColumnCollection.Add(sc);
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
-			DataNavigator dataNav = dm.GetNavigator;
-			string v1 = String.Empty;
-			while (dataNav.MoveNext()) {
-				DataRow r = dataNav.Current as DataRow;
-				string v2 = r["last"].ToString();
-				Assert.LessOrEqual(v1,v2);
-				v1 = v2;
-			}
-			Assert.IsTrue(dataNav.IsSorted);
-		}
-		*/
-		/*
-		[Test]
-		[Ignore("Sort of integer not working")]
-		public void SortAscendingByInteger()
-		{
-			SortColumn sc = new SortColumn("RandomInt",System.ComponentModel.ListSortDirection.Ascending,
-			                               typeof(System.Int16),false);
-			ReportSettings rs = new ReportSettings();
-			rs.SortColumnCollection.Add(sc);
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
-			DataNavigator dataNav = dm.GetNavigator;
-			string v1 = String.Empty;
-			while (dataNav.MoveNext()) {
-				DataRow r = dataNav.Current as DataRow;
-				string v2 = r["randomInt"].ToString();
-//				string ss = String.Format("< {0} > <{1}>",v1,v2);
-				//Console.WriteLine(v2);
-				Assert.LessOrEqual(v1,v2);
-				v1 = v2;
-			}
-			Assert.IsTrue(dataNav.IsSorted);
-		}
-		*/
-		
-		[Test]
-		public void SortAscendingByDateTime()
-		{
-			SortColumn sc = new SortColumn("RandomDate",System.ComponentModel.ListSortDirection.Ascending,
-			                               typeof(System.Int16),false);
-			ReportSettings rs = new ReportSettings();
-			rs.SortColumnCollection.Add(sc);
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
-			DataNavigator dataNav = dm.GetNavigator;
-			DateTime d1 = new DateTime(1,1,1);
-			while (dataNav.MoveNext()) {
-				DataRow r = dataNav.Current as DataRow;
-				DateTime d2 = Convert.ToDateTime(r["randomDate"]);
-//				string ss = String.Format("<{0}>",d2);
-//				Console.WriteLine(ss);
-				Assert.LessOrEqual(d1,d2);
-				d1 = d2;
-			}
-			Assert.IsTrue(dataNav.IsSorted);
-		}
-		
 		
 		
 		[Test]
@@ -189,7 +140,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			SortColumn sc = new SortColumn("RandomDate",System.ComponentModel.ListSortDirection.Descending,
 			                               typeof(System.Int16),false);
 			ReportSettings rs = new ReportSettings();
-			rs.SortColumnCollection.Add(sc);
+			rs.SortColumnsCollection.Add(sc);
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
 			DataNavigator dataNav = dm.GetNavigator;
 			DateTime d1 = new DateTime(2099,12,30);
@@ -206,35 +157,11 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		
 		
 		[Test]
-		public void SortAscendingByTwoColumns()
-		{
-			SortColumn sc = new SortColumn("Last",System.ComponentModel.ListSortDirection.Ascending);
-			SortColumn sc1 = new SortColumn("RandomInt",System.ComponentModel.ListSortDirection.Ascending);
-			
-			ReportSettings rs = new ReportSettings();
-			rs.SortColumnCollection.Add(sc);
-			rs.SortColumnCollection.Add(sc1);
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
-			DataNavigator dataNav = dm.GetNavigator;
-			string v1 = String.Empty;
-			while (dataNav.MoveNext()) {
-				DataRow r = dataNav.Current as DataRow;
-				string v2 = r["last"].ToString() + "-" + r["RandomInt"].ToString();
-				//string ss = String.Format("< {0} > <{1}>",v1,v2);
-				//Console.WriteLine(ss);
-				//Console.WriteLine(v2);
-				Assert.LessOrEqual(v1,v2);
-				v1 = v2;
-			}
-			Assert.IsTrue(dataNav.IsSorted);
-		}
-		
-		[Test]
 		public void SortDescendingByOneColumn()
 		{
 			SortColumn sc = new SortColumn("Last",System.ComponentModel.ListSortDirection.Descending);
 			ReportSettings rs = new ReportSettings();
-			rs.SortColumnCollection.Add(sc);
+			rs.SortColumnsCollection.Add(sc);
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
 			DataNavigator dataNav = dm.GetNavigator;
 			string compareTo = "z";

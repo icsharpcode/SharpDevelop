@@ -85,8 +85,8 @@ namespace ICSharpCode.Reports.Core.Test
 			Assert.IsNotNull (rs.GroupColumnsCollection);
 			Assert.AreEqual (0,rs.GroupColumnsCollection.Count);
 			
-			Assert.IsNotNull (rs.SortColumnCollection);
-			Assert.AreEqual (0,rs.SortColumnCollection.Count);
+			Assert.IsNotNull (rs.SortColumnsCollection);
+			Assert.AreEqual (0,rs.SortColumnsCollection.Count);
 			
 			Assert.IsNotNull (rs.ParameterCollection);
 			Assert.AreEqual (0,rs.ParameterCollection.Count);

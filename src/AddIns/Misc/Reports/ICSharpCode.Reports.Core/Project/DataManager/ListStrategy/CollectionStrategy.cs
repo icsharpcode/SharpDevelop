@@ -211,15 +211,15 @@ namespace ICSharpCode.Reports.Core {
 		public override void Sort() 
 		{
 			base.Sort();		
-			if ((base.ReportSettings.SortColumnCollection != null)) {
-				if (base.ReportSettings.SortColumnCollection.Count > 0) {
+			if ((base.ReportSettings.SortColumnsCollection != null)) {
+				if (base.ReportSettings.SortColumnsCollection.Count > 0) {
 					
 //					base.IndexList = this.BuildSortIndex (base.CreateSortCollection());
-					base.IndexList = this.BuildSortIndex (base.CreateSortCollection(ReportSettings.SortColumnCollection));
+					base.IndexList = this.BuildSortIndex (base.CreateSortCollection(ReportSettings.SortColumnsCollection));
 					base.IsSorted = true;
 //					BaseListStrategy.CheckSortArray (base.IndexList,"TableStrategy - CheckSortArray");
 				} else {
-					base.IndexList = this.IndexBuilder(base.CreateSortCollection(ReportSettings.SortColumnCollection));
+					base.IndexList = this.IndexBuilder(base.CreateSortCollection(ReportSettings.SortColumnsCollection));
 					base.IsSorted = false;
 				}
 			}
@@ -243,7 +243,7 @@ namespace ICSharpCode.Reports.Core {
 				return;
 			}
 			*/
-			if (base.ReportSettings.SortColumnCollection != null) {
+			if (base.ReportSettings.SortColumnsCollection != null) {
 				this.Sort ();
 			}
 			Reset();

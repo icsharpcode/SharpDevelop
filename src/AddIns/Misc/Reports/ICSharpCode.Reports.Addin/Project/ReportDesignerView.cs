@@ -295,7 +295,7 @@ namespace ICSharpCode.Reports.Addin
 			this.MakeDirty();
 			ReportExplorerPad explorerPad = CheckReportExplorer();
 			IComponentChangeService change = Host.GetService(typeof(IComponentChangeService)) as IComponentChangeService;
-			change.OnComponentChanged(explorerPad.ReportModel.ReportSettings.SortColumnCollection, null, null, null);
+			change.OnComponentChanged(explorerPad.ReportModel.ReportSettings.SortColumnsCollection, null, null, null);
 		}
 		
 		
