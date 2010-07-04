@@ -202,7 +202,7 @@ namespace ICSharpCode.CodeQualityAnalysis
                     (from n in type.Namespace.Module.Namespaces
                      from t in n.Types
                      from f in t.Fields
-                     where f.Name == e.Name
+                     where f.Name == e.Name && f.Owner == e.Owner
                      select f).SingleOrDefault();
 
                 if (field != null)
