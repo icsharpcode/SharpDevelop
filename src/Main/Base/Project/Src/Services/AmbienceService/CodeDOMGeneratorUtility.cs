@@ -9,10 +9,7 @@ using System;
 using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections;
-using System.Text;
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop

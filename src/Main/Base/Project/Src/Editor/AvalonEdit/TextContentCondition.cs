@@ -5,12 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Gui;
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop.DefaultEditor.Conditions
+namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 {
 	/// <summary>
 	/// Tests the name of the highlighting strategy of the text editor.
@@ -28,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Conditions
 			string textcontent = condition.Properties["textcontent"];
 			IViewContent content = WorkbenchSingleton.Workbench.ActiveViewContent;
 			if (content is ITextEditorProvider) {
-				var ctrl = (content as ITextEditorProvider).TextEditor.GetService(typeof(AvalonEdit.TextEditor)) as AvalonEdit.TextEditor;
+				var ctrl = (content as ITextEditorProvider).TextEditor.GetService(typeof(ICSharpCode.AvalonEdit.TextEditor)) as ICSharpCode.AvalonEdit.TextEditor;
 				if (ctrl != null && ctrl.SyntaxHighlighting != null) {
 					return string.Equals(textcontent, ctrl.SyntaxHighlighting.Name, StringComparison.OrdinalIgnoreCase);
 				}

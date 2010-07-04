@@ -5,19 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.IO;
-using System.Text;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.AstBuilder;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Editor.Commands
 {

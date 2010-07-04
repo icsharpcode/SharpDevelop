@@ -23,7 +23,7 @@
 			<ConditionEvaluator name="WriteableProject" class="ICSharpCode.SharpDevelop.WriteableProjectConditionEvaluator"/>
 			<ConditionEvaluator name="WriteableSolution" class="ICSharpCode.SharpDevelop.WriteableSolutionConditionEvaluator"/>
 			<ConditionEvaluator name="ProjectActive" class="ICSharpCode.SharpDevelop.ProjectActiveConditionEvaluator"/>
-			<ConditionEvaluator name="TextContent" class="ICSharpCode.SharpDevelop.DefaultEditor.Conditions.TextContentConditionEvaluator"/>
+			<ConditionEvaluator name="TextContent" class="ICSharpCode.SharpDevelop.Editor.AvalonEdit.TextContentConditionEvaluator"/>
 			<ConditionEvaluator name="BrowserLocation" class="ICSharpCode.SharpDevelop.BrowserDisplayBinding.BrowserLocationConditionEvaluator"/>
 			<ConditionEvaluator name="RefactoringProviderSupports" class="ICSharpCode.SharpDevelop.Refactoring.RefactoringProviderSupportsConditionEvaluator"/>
 			<ConditionEvaluator name="CanNavigateBack" class="ICSharpCode.SharpDevelop.CanNavigateBackConditionEvaluator"/>
@@ -1552,7 +1552,7 @@
 			<MenuItem id = "GotoLineNr"
 			          label = "${res:XML.MainMenu.SearchMenu.Goto}"
 			          shortcut = "Control|G"
-			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoLineNumber"/>
+			          class = "ICSharpCode.SharpDevelop.Editor.Commands.GotoLineNumber"/>
 			<MenuItem id = "GotoDefinition"
 			          label = "${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"
 			          shortcut = "Control|Return"
@@ -1699,19 +1699,19 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu">
-		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ClassMemberMenuBuilder" />
+		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.Editor.Commands.ClassMemberMenuBuilder" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu">
-		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ClassBookmarkMenuBuilder" />
+		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.Editor.Commands.ClassBookmarkMenuBuilder" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ClassBrowser/MemberContextMenu">
-		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ClassMemberMenuBuilder" />
+		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.Editor.Commands.ClassMemberMenuBuilder" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ClassBrowser/ClassContextMenu">
-		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ClassBookmarkMenuBuilder" />
+		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.Editor.Commands.ClassBookmarkMenuBuilder" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Common">
@@ -1833,21 +1833,6 @@
 		<MenuItem insertbefore = "SelectAll" id = "Separator3" type = "Separator" />
 	</Path>
 	
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/OptionsDialog">
-		<OptionPanel id = "General"
-		             label = "${res:Dialog.Options.IDEOptions.General}"
-		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.GeneralTextEditorPanel"/>
-		<OptionPanel id = "Markers"
-		             label = "${res:Dialog.Options.IDEOptions.TextEditor.Markers.PanelName}"
-		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.MarkersTextEditorPanel"/>
-		<OptionPanel id = "Behavior"
-		             label = "${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.PanelName}"
-		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.BehaviorTextEditorPanel"/>
-		<OptionPanel id = "CodeCompletion"
-		             label = "${res:Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName}"
-		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.CodeCompletionPanel"/>
-	</Path>
-	
 	<Path name = "/SharpDevelop/ViewContent/Browser/Toolbar">
 		<ToolbarItem id      = "Back"
 		             icon    = "Icons.16x16.BrowserBefore"
@@ -1896,7 +1881,7 @@
 		<OptionPanel id = "CodeCompletion"
 		             insertafter="Behavior"
 		             label = "${res:Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName}"
-		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.CodeCompletionPanel"/>
+		             class = "ICSharpCode.SharpDevelop.Editor.CodeCompletion.CodeCompletionPanel"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/BookmarkPad/Toolbar">

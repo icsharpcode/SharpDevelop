@@ -13,8 +13,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.SharpDevelop.Internal.Templates;

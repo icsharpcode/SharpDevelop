@@ -7,11 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.DefaultEditor.Commands;
-using ICSharpCode.SharpDevelop.Gui;
-
 using System.Windows.Forms;
+
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {

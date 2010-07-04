@@ -11,7 +11,6 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;

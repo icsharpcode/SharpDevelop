@@ -13,7 +13,6 @@ using System.Text;
 using System.Xml;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;

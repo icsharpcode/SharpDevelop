@@ -24,7 +24,7 @@ using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Refactoring;
 
-namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
+namespace ICSharpCode.SharpDevelop.Editor.Commands
 {
 	/// <summary>
 	/// Build context menu for class members in the text editor.

@@ -9,7 +9,7 @@ using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
+namespace ICSharpCode.SharpDevelop.Editor.Commands
 {
 	public class GotoLineNumber : AbstractMenuCommand
 	{

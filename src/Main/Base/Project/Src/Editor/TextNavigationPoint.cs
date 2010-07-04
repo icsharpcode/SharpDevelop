@@ -9,7 +9,7 @@ using System;
 using System.Drawing;
 using System.IO;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Editor
 {
 	/// <summary>
 	/// Description of TextNavigationPoint.

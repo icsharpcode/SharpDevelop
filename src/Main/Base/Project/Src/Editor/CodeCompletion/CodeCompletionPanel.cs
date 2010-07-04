@@ -10,7 +10,7 @@ using System;
 using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
+namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	public class CodeCompletionPanel : XmlFormsOptionPanel
 	{

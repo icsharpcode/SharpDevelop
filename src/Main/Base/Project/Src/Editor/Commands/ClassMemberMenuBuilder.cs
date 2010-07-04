@@ -25,7 +25,7 @@ using ICSharpCode.SharpDevelop.Gui.ClassBrowser;
 using ICSharpCode.SharpDevelop.Refactoring;
 using Ast = ICSharpCode.NRefactory.Ast;
 
-namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
+namespace ICSharpCode.SharpDevelop.Editor.Commands
 {
 	/// <summary>
 	/// Build context menu for class members in the text editor.

@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.DefaultEditor;
 using System;
 using System.Windows.Forms;
 using System.Windows.Forms.Integration;
 using System.Windows.Input;
+
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Util;
 

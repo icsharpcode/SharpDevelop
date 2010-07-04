@@ -92,8 +92,14 @@
     <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\ISnippetElementProvider.cs" />
     <Compile Include="Src\Editor\AvalonEdit\TextContentCondition.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\CodeCompletionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\Editor\CodeCompletion\ICompletionItemHandler.cs" />
     <Compile Include="Src\Editor\CodeCompletion\NRefactoryCompletionItemList.cs" />
+    <Compile Include="Src\Editor\Commands\ClassBookmarkMenuBuilder.cs" />
+    <Compile Include="Src\Editor\Commands\ClassMemberMenuBuilder.cs" />
+    <Compile Include="Src\Editor\Commands\GotoLineNumber.cs" />
     <Compile Include="Src\Editor\IEditorControlService.cs" />
     <Compile Include="Src\Editor\IEditorUIService.cs" />
     <Compile Include="Src\Editor\CodeCompletion\AttributesItemProvider.cs" />
@@ -151,6 +157,7 @@
     <Compile Include="Src\Editor\Search\SearchResultsPad.cs" />
     <Compile Include="Src\Editor\Search\SearchResultPadToolbarCommands.cs" />
     <Compile Include="Src\Editor\TextChangeEventArgs.cs" />
+    <Compile Include="Src\Editor\TextNavigationPoint.cs" />
     <Compile Include="Src\Editor\ToolTipRequestEventArgs.cs">
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
@@ -609,8 +616,6 @@
     <Compile Include="Src\Bookmarks\BookmarkEventHandler.cs" />
     <Compile Include="Src\Bookmarks\BookmarkManager.cs" />
     <Compile Include="Src\Bookmarks\SDMarkerBookmark.cs" />
-    <Compile Include="Src\TextEditor\Commands\SearchCommands.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\SharpDevelopTextEditorProperties.cs" />
     <Compile Include="Src\Services\Tasks\TaskEventHandler.cs" />
     <Compile Include="Src\Gui\Pads\DefinitionViewPad.cs" />
     <Compile Include="Src\Project\MSBuildEnums.cs" />
@@ -645,18 +650,13 @@
     </Compile>
     <Compile Include="Src\Bookmarks\BookmarkConverter.cs" />
     <Compile Include="Src\Bookmarks\ClassMemberBookmark.cs" />
-    <Compile Include="Src\TextEditor\Commands\ClassMemberMenuBuilder.cs" />
     <Compile Include="Src\Services\RefactoringService\RefactoringService.cs" />
     <Compile Include="Src\Services\RefactoringService\Reference.cs" />
     <Compile Include="Src\Services\ProjectService\ParseableFileContentEnumerator.cs" />
     <Compile Include="Src\Services\ParserService\ParseProjectContent.cs" />
     <Compile Include="Src\Project\Items\ImportProjectItem.cs" />
     <EmbeddedResource Include="Resources\CodeCompletionOptionPanel.xfrm" />
-    <Compile Include="Src\TextEditor\Gui\OptionPanels\CodeCompletionPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\Services\Debugger\CurrentLineBookmark.cs" />
-    <Compile Include="Src\TextEditor\Commands\ClassBookmarkMenuBuilder.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserCommands.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserLocationConditionEvaluator.cs" />
     <Compile Include="Src\Services\Debugger\DebuggerDoozer.cs" />
@@ -722,7 +722,6 @@
     <Compile Include="Src\Services\NavigationService\NavigationService.cs" />
     <Compile Include="Src\Commands\NavigationCommands.cs" />
     <Compile Include="Src\Internal\ConditionEvaluators\NavigationConditionEvaluators.cs" />
-    <Compile Include="Src\TextEditor\Gui\Editor\TextNavigationPoint.cs" />
     <Compile Include="Src\Project\BuildResults.cs" />
     <Compile Include="Src\Project\BuildError.cs" />
     <Compile Include="Src\Services\HelpProvider.cs" />

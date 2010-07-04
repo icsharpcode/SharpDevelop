@@ -7,16 +7,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Text;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.DefaultEditor.Commands;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.CSharp;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Tests.Utils;
 using NUnit.Framework;
 
 namespace ICSharpCode.SharpDevelop.Tests
