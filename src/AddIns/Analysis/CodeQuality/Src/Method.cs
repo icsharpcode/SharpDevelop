@@ -31,7 +31,7 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <summary>
         /// A return type of method
         /// </summary>
-        public Type MethodType { get; set; }
+        public Type ReturnType { get; set; }
 
         /// <summary>
         /// Type which owns this method
@@ -39,15 +39,63 @@ namespace ICSharpCode.CodeQualityAnalysis
         public Type Owner { get; set; }
 
         /// <summary>
-        /// Whether a method is constructor or not
+        /// Whether the method is constructor or not
         /// </summary>
         public bool IsConstructor { get; set; }
+
+        /// <summary>
+        /// Whether the method is public
+        /// </summary>
+        public bool IsPublic { get; set; }
+
+        /// <summary>
+        /// Whether the method is private
+        /// </summary>
+        public bool IsPrivate { get; set; }
+
+        /// <summary>
+        /// Whether the method is protected
+        /// </summary>
+        public bool IsProtected { get; set; }
+
+        /// <summary>
+        /// Whether the method is static
+        /// </summary>
+        public bool IsStatic { get; set; }
+
+        /// <summary>
+        /// Whether the method is sealed
+        /// </summary>
+        public bool IsSealed { get; set; }
+
+        /// <summary>
+        /// Whether the method is abstract
+        /// </summary>
+        public bool IsAbstract { get; set; }
+
+        /// <summary>
+        /// Whether the method is setter
+        /// </summary>
+        public bool IsSetter { get; set; }
+
+        /// <summary>
+        /// Whether the method is getter
+        /// </summary>
+        public bool IsGetter { get; set; }
+
+        /// <summary>
+        /// Whether the method is virtual
+        /// </summary>
+        public bool IsVirtual { get; set; }
 
         public Method()
         {
             TypeUses = new HashSet<Type>();
             MethodUses = new HashSet<Method>();
             FieldUses = new HashSet<Field>();
+
+            ReturnType = null;
+            Owner = null;
         }
 
         public BidirectionalGraph<object, IEdge<object>> BuildDependencyGraph()

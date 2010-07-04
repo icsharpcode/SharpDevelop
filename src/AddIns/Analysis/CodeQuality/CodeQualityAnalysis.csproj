@@ -96,6 +96,7 @@
     <Compile Include="Src\DependencyGraphCommand.cs" />
     <Compile Include="Src\Event.cs" />
     <Compile Include="Src\Field.cs" />
+    <Compile Include="Src\NodeIconService.cs" />
     <Compile Include="Src\IDependency.cs" />
     <Compile Include="Src\MetricsReader.cs" />
     <Compile Include="Src\Method.cs" />
@@ -171,6 +172,10 @@
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

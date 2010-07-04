@@ -24,9 +24,46 @@ namespace ICSharpCode.CodeQualityAnalysis
         public Type Owner { get; set; }
 
         /// <summary>
-        /// Whether this field is event
+        /// Whether the field is event
         /// </summary>
         public bool IsEvent { get; set; }
+
+        /// <summary>
+        /// Whether the field is public
+        /// </summary>
+        public bool IsPublic { get; set; }
+
+        /// <summary>
+        /// Whether the field is private
+        /// </summary>
+        public bool IsPrivate { get; set; }
+
+        /// <summary>
+        /// Whether the field is protected
+        /// </summary>
+        public bool IsProtected { get; set; }
+
+        /// <summary>
+        /// Whether the field is static
+        /// </summary>
+        public bool IsStatic { get; set; }
+
+        /// <summary>
+        /// Whether the field is constant
+        /// </summary>
+        public bool IsConstant { get; set; }
+
+        /// <summary>
+        /// Whether the field is read only
+        /// </summary>
+        public bool IsReadOnly { get; set; }
+
+        public Field()
+        {
+            FieldType = null;
+            IsEvent = false;
+            Owner = null;
+        }
         
         public BidirectionalGraph<object, IEdge<object>> BuildDependencyGraph()
         {
@@ -37,6 +74,5 @@ namespace ICSharpCode.CodeQualityAnalysis
         {
             return Name;
         }
-        
     }
 }

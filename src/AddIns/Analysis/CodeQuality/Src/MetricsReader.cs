@@ -107,10 +107,23 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <returns>A new type</returns>
         private Type CreateType(Module module, TypeDefinition typeDefinition)
         {
-            var type = new Type()
+            var type = new Type
                            {
                                Name = FormatTypeName(typeDefinition),
-                               Owner = null
+                               IsInterface = typeDefinition.IsInterface,
+                               IsEnum = typeDefinition.IsEnum,
+                               IsClass = typeDefinition.IsClass,
+                               IsSealed = typeDefinition.IsSealed,
+                               IsAbstract = typeDefinition.IsAbstract,
+                               IsPublic = typeDefinition.IsPublic,
+                               IsStruct = typeDefinition.IsValueType && !typeDefinition.IsEnum && typeDefinition.IsSealed,
+                               IsInternal = typeDefinition.IsNotPublic,
+                               IsDelegate = (typeDefinition.BaseType != null ?
+                                    typeDefinition.BaseType.FullName == "System.MulticastDelegate" : false),
+                               IsNestedPrivate = typeDefinition.IsNestedPrivate,
+                               IsNestedPublic = typeDefinition.IsNestedPublic,
+                               IsNestedProtected = (!typeDefinition.IsNestedPrivate && !typeDefinition.IsNestedPublic && 
+                                    typeDefinition.IsNestedFamily)
                            };
 
             // try find namespace
@@ -122,7 +135,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 
             if (ns == null)
             {
-                ns = new Namespace()
+                ns = new Namespace
                          {
                              Name = nsName,
                              Module = module
@@ -154,6 +167,30 @@ namespace ICSharpCode.CodeQualityAnalysis
                          where (t.Name == FormatTypeName(typeDefinition))
                          select t).SingleOrDefault();
 
+                    if (typeDefinition.BaseType != null)
+                    {
+                        var baseType = (from n in module.Namespaces
+                                        from t in n.Types
+                                        where (t.Name == FormatTypeName(typeDefinition.BaseType))
+                                        select t).SingleOrDefault();
+
+                        type.BaseType = baseType; // if baseType is null so propably inherits from another assembly
+                    }
+
+                    // looks for implemented interfaces
+                    if (typeDefinition.HasInterfaces)
+                    {
+                        foreach (var ic in typeDefinition.Interfaces)
+                        {
+                            var implementedIc = (from n in module.Namespaces
+                                            from t in n.Types
+                                            where (t.Name == FormatTypeName(ic))
+                                            select t).SingleOrDefault();
+
+                            if (implementedIc != null)
+                                type.ImplementedInterfaces.Add(implementedIc);
+                        }    
+                    }
 
                     if (typeDefinition.HasFields)
                         ReadFields(type, typeDefinition.Fields);
@@ -179,7 +216,7 @@ namespace ICSharpCode.CodeQualityAnalysis
         {
             foreach (var eventDefinition in events)
             {
-                var e = new Event()
+                var e = new Event
                             {
                                 Name = eventDefinition.Name,
                                 Owner = type
@@ -219,11 +256,16 @@ namespace ICSharpCode.CodeQualityAnalysis
         {
             foreach (FieldDefinition fieldDefinition in fields)
             {
-                var field = new Field()
+                var field = new Field
                                 {
                                     Name = fieldDefinition.Name,
-                                    IsEvent = false,
-                                    Owner = type
+                                    Owner = type,
+                                    IsPublic = fieldDefinition.IsPublic,
+                                    IsPrivate = fieldDefinition.IsPrivate,
+                                    IsProtected = !fieldDefinition.IsPublic && !fieldDefinition.IsPrivate,
+                                    IsStatic = fieldDefinition.IsStatic,
+                                    IsConstant = fieldDefinition.HasConstant,
+                                    IsReadOnly = fieldDefinition.IsInitOnly
                                 };
 
                 type.Fields.Add(field);
@@ -251,16 +293,25 @@ namespace ICSharpCode.CodeQualityAnalysis
                 {
                     Name = FormatMethodName(methodDefinition),
                     Owner = type,
-                    IsConstructor = methodDefinition.IsConstructor
+                    IsConstructor = methodDefinition.IsConstructor,
+                    IsPublic = methodDefinition.IsPublic,
+                    IsPrivate = methodDefinition.IsPrivate,
+                    IsProtected = !methodDefinition.IsPublic && !methodDefinition.IsPrivate,
+                    IsStatic = methodDefinition.IsStatic,
+                    IsSealed = methodDefinition.IsFinal, // not sure if final is sealed
+                    IsAbstract = methodDefinition.IsAbstract,
+                    IsSetter = methodDefinition.IsSetter,
+                    IsGetter = methodDefinition.IsGetter,
+                    IsVirtual = methodDefinition.IsVirtual
                 };
 
-                var declaringType =
+                var returnType =
                         (from n in type.Namespace.Module.Namespaces
                          from t in n.Types
-                         where t.Name == FormatTypeName(methodDefinition.DeclaringType)
+                         where t.Name == FormatTypeName(methodDefinition.ReturnType)
                          select t).SingleOrDefault();
 
-                method.MethodType = declaringType;
+                method.ReturnType = returnType; // if null so return type is outside of assembly
 
                 type.Methods.Add(method);
             }
@@ -290,11 +341,11 @@ namespace ICSharpCode.CodeQualityAnalysis
             foreach (Instruction instruction in instructions)
             {
                 var instr = ReadInstruction(instruction);
-                
-                if (instr is MethodDefinition)
+
+                if (instr is MethodDefinition && method.ReturnType != null) // null means outside assembly
                 {
                     var md = instr as MethodDefinition;
-                    var type = (from n in method.MethodType.Namespace.Module.Namespaces
+                    var type = (from n in method.ReturnType.Namespace.Module.Namespaces
                                 from t in n.Types
                                 where t.Name == FormatTypeName(md.DeclaringType) &&
                                 n.Name == t.Namespace.Name
@@ -306,14 +357,14 @@ namespace ICSharpCode.CodeQualityAnalysis
                                             where m.Name == FormatMethodName(md)
                                             select m).SingleOrDefault();
 
-                    if (findTargetMethod != null && type == method.MethodType) 
+                    if (findTargetMethod != null && type == method.ReturnType) 
                         method.MethodUses.Add(findTargetMethod);
                 }
 
                 if (instr is FieldDefinition)
                 {
                     var fd = instr as FieldDefinition;
-                    var field = (from f in method.MethodType.Fields
+                    var field = (from f in method.ReturnType.Fields
                                 where f.Name == fd.Name
                                 select f).SingleOrDefault();
 
@@ -372,19 +423,19 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <summary>
         /// Formats a specific type name. If type is generic. Brackets <> will be added with proper names of parameters.
         /// </summary>
-        /// <param name="typeDefinition">A type definition with declaring type and name</param>
+        /// <param name="type">A type definition with declaring type and name</param>
         /// <returns>A type name</returns>
-        public string FormatTypeName(TypeDefinition typeDefinition)
+        public string FormatTypeName(TypeReference type)
         {
-            if (typeDefinition.IsNested && typeDefinition.DeclaringType != null)
+            if (type.IsNested && type.DeclaringType != null)
             {
-                return FormatTypeName(typeDefinition.DeclaringType) + "+" + typeDefinition.Name;
+                return FormatTypeName(type.DeclaringType) + "+" + type.Name;
             }
 
-            if (typeDefinition.HasGenericParameters)
+            if (type.HasGenericParameters)
             {
                 var builder = new StringBuilder();
-                var enumerator = typeDefinition.GenericParameters.GetEnumerator();
+                var enumerator = type.GenericParameters.GetEnumerator();
                 bool hasNext = enumerator.MoveNext();
                 while (hasNext)
                 {
@@ -394,10 +445,10 @@ namespace ICSharpCode.CodeQualityAnalysis
                         builder.Append(",");
                 }
 
-                return StripGenericName(typeDefinition.Name) + "<" + builder + ">";
+                return StripGenericName(type.Name) + "<" + builder + ">";
             }
 
-            return typeDefinition.Name; 
+            return type.Name; 
         }
 
         /// <summary>

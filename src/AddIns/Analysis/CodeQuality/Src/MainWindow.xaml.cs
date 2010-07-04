@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ICSharpCode.Core.Presentation;
 using Microsoft.Win32;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -51,32 +52,62 @@ namespace ICSharpCode.CodeQualityAnalysis
         }
 
         /// <summary>
-        /// Fill tree with module, types and methods and TODO: fields
+        /// Fill tree with module, types and methods and fields
         /// </summary>
         private void FillTree()
         {
-            var itemModule = new MetricTreeViewItem() { Header = _metricsReader.MainModule.Name, Dependency = _metricsReader.MainModule };
-            definitionTree.Items.Add(itemModule);
+            var itemModule = new MetricTreeViewItem
+                                 {
+                                     Text = _metricsReader.MainModule.Name,
+                                     Dependency = _metricsReader.MainModule,
+                                     Icon = NodeIconService.GetIcon(_metricsReader.MainModule)
+                                 };
 
+            definitionTree.Items.Add(itemModule);
+            
             foreach (var ns in _metricsReader.MainModule.Namespaces)
             {
-                var nsType = new MetricTreeViewItem() { Header = ns.Name, Dependency = ns };
+                var nsType = new MetricTreeViewItem
+                                 {
+                                     Text = ns.Name, 
+                                     Dependency = ns, 
+                                     Icon = NodeIconService.GetIcon(ns)
+                                 };
+
                 itemModule.Items.Add(nsType);
 
                 foreach (var type in ns.Types)
                 {
-                    var itemType = new MetricTreeViewItem() { Header = type.Name, Dependency = type };
+                    var itemType = new MetricTreeViewItem
+                                       {
+                                           Text = type.Name, 
+                                           Dependency = type, 
+                                           Icon = NodeIconService.GetIcon(type)
+                                       };
+
                     nsType.Items.Add(itemType);
 
                     foreach (var method in type.Methods)
                     {
-                        var itemMethod = new MetricTreeViewItem() { Header = method.Name, Dependency = method };
+                        var itemMethod = new MetricTreeViewItem
+                                             {
+                                                 Text = method.Name,
+                                                 Dependency = method,
+                                                 Icon = NodeIconService.GetIcon(method)
+                                             };
+
                         itemType.Items.Add(itemMethod);
                     }
 
                     foreach (var field in type.Fields)
                     {
-                        var itemField = new MetricTreeViewItem() { Header = field.Name, Dependency = field };
+                        var itemField = new MetricTreeViewItem
+                                            {
+                                                Text = field.Name,
+                                                Dependency = field,
+                                                Icon = NodeIconService.GetIcon(field)
+                                            };
+
                         itemType.Items.Add(itemField);
                     }
                 }
@@ -109,7 +140,64 @@ namespace ICSharpCode.CodeQualityAnalysis
 
         private class MetricTreeViewItem : TreeViewItem
         {
+            private readonly Image _iconControl;
+            private readonly TextBlock _textControl;
+            private BitmapSource _bitmap;
+
             public IDependency Dependency { get; set; }
+
+            /// <summary>
+            /// Gets or sets the text content for the item
+            /// </summary>
+            public string Text
+            {
+                get
+                {
+                    return _textControl.Text;   
+                }
+                set
+                {
+                    _textControl.Text = value;
+                }
+            }
+
+            /// <summary>
+            /// Gets or sets the icon for the item
+            /// </summary>
+            public BitmapSource Icon
+            {
+                get
+                {
+                    return _bitmap;
+                } 
+                set
+                {
+                    _iconControl.Source = _bitmap = value;
+                }
+            }
+            
+            public MetricTreeViewItem()
+            {
+                var stack = new StackPanel
+                                {
+                                    Orientation = Orientation.Horizontal
+                                };
+
+                Header = stack;
+
+                _iconControl = new Image
+                                    {
+                                        Margin = new Thickness(0, 0, 5, 0)
+                                    };
+
+                _textControl = new TextBlock()
+                                   {
+                                       VerticalAlignment = VerticalAlignment.Center
+                                   };
+
+                stack.Children.Add(_iconControl);
+                stack.Children.Add(_textControl);
+            }
         }
     }
 }

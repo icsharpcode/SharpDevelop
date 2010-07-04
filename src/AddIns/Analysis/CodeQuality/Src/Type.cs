@@ -19,6 +19,16 @@ namespace ICSharpCode.CodeQualityAnalysis
         public Type Owner { get; set; }
 
         /// <summary>
+        /// Inherited type. If there is no inheritance so it is null.
+        /// </summary>
+        public Type BaseType { get; set; }
+
+        /// <summary>
+        /// Interfaces which are implemented by this type
+        /// </summary>
+        public ISet<Type> ImplementedInterfaces { get; set; }
+
+        /// <summary>
         /// Methods within type
         /// </summary>
         public ISet<Method> Methods { get; set; }
@@ -54,12 +64,77 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// </summary>
         public Namespace Namespace { get; set; }
 
+        /// <summary>
+        /// Whether the type is interface
+        /// </summary>
+        public bool IsInterface { get; set; }
+
+        /// <summary>
+        /// Whether the type is enum
+        /// </summary>
+        public bool IsEnum { get; set; }
+
+        /// <summary>
+        /// Whether the type is class
+        /// </summary>
+        public bool IsClass { get; set; }
+
+        /// <summary>
+        /// Whether the type is sealed
+        /// </summary>
+        public bool IsSealed { get; set; }
+
+        /// <summary>
+        /// Whether the type is abstract
+        /// </summary>
+        public bool IsAbstract { get; set; }
+
+        /// <summary>
+        /// Whether the type is public
+        /// </summary>
+        public bool IsPublic { get; set; }
+
+        /// <summary>
+        /// Whether the type is struct
+        /// </summary>
+        public bool IsStruct { get; set; }
+
+        /// <summary>
+        /// Whether the type is internal
+        /// </summary>
+        public bool IsInternal { get; set; }
+
+        /// <summary>
+        /// Whether the type is delagate
+        /// </summary>
+        public bool IsDelegate { get; set; }
+
+        /// <summary>
+        /// If it is nested type whether is private
+        /// </summary>
+        public bool IsNestedPrivate { get; set; }
+
+        /// <summary>
+        /// If it is nested type whether is public
+        /// </summary>
+        public bool IsNestedPublic { get; set; }
+
+        /// <summary>
+        /// If it is nested type whether is protected
+        /// </summary>
+        public bool IsNestedProtected { get; set; }
+
+
         public Type()
         {
             Methods = new HashSet<Method>();
             Fields = new HashSet<Field>();
             Events = new HashSet<Event>();
             NestedTypes = new HashSet<Type>();
+            ImplementedInterfaces = new HashSet<Type>();
+
+            Owner = null;
+            BaseType = null;
         }
 
         /// <summary>
