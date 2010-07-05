@@ -51,6 +51,9 @@ namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
 				buffer.Add(reader.Read());
 			}
 			
+			if (step < 0)
+				return -1;
+			
 			return buffer[step];
 		}
 	}

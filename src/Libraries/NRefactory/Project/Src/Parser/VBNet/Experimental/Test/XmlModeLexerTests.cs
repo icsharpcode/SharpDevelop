@@ -182,7 +182,7 @@ namespace VBParserExperiment
 		[Test]
 		public void SimpleXmlWithComments()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(@"Dim x = <!-- Test file -->
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(@"Dim x = <?xml version=""1.0""?> <!-- Test file -->
 			                                                                      <Test>
 			                                                                        <!-- Test data -->
 			                                                                        <Data />
@@ -194,7 +194,7 @@ namespace VBParserExperiment
 			CheckHead(lexer);
 			
 			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign,
-			            Tokens.XmlComment, Tokens.XmlContent, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag,
+			            Tokens.XmlProcessingInstruction, Tokens.XmlContent, Tokens.XmlComment, Tokens.XmlContent, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTag,
 			            Tokens.XmlContent, Tokens.XmlComment, Tokens.XmlContent, Tokens.XmlOpenTag, Tokens.Identifier, Tokens.XmlCloseTagEmptyElement,
 			            Tokens.XmlContent, Tokens.XmlOpenEndTag, Tokens.Identifier, Tokens.XmlCloseTag, Tokens.XmlComment, Tokens.XmlComment, Tokens.XmlProcessingInstruction);
 			
@@ -492,6 +492,45 @@ Next";
 			CheckTokens(lexer, Tokens.If, Tokens.Identifier, Tokens.NotEqual, Tokens.LiteralInteger,
 			            Tokens.Then, Tokens.Return);
 			
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
+		public void Bug1()
+		{
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(@"Dim xml = <!-- test -->")));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign, Tokens.XmlComment);
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
+		public void Bug2()
+		{
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(@"Dim xml = <?xml?><Data /><!-- test -->")));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign,
+			            Tokens.XmlProcessingInstruction, Tokens.XmlOpenTag, Tokens.Identifier,
+			            Tokens.XmlCloseTagEmptyElement, Tokens.XmlComment);
+			
+			CheckFoot(lexer);
+		}
+		
+		[Test]
+		public void LessThanCheck()
+		{
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(@"Dim xml = <!-- test --><Data")));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign,
+			            Tokens.XmlComment, Tokens.LessThan, Tokens.Identifier);
 			
 			CheckFoot(lexer);
 		}

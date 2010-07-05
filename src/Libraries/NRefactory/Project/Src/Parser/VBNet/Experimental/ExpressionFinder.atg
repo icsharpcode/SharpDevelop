@@ -875,7 +875,7 @@ IdentifierOrKeyword = ident
 | "WriteOnly"
 | "Xor"
 | "GetXmlNamespace"
- .
+.
 
 Literal =
 	LiteralString |
