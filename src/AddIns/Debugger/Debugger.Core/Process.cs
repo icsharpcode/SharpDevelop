@@ -114,7 +114,7 @@ namespace Debugger
 		
 		static unsafe public Process CreateProcess(NDebugger debugger, string filename, string workingDirectory, string arguments)
 		{
-			debugger.TraceMessage("Executing " + filename);
+			debugger.TraceMessage("Executing " + filename + " " + arguments);
 			
 			uint[] processStartupInfo = new uint[17];
 			processStartupInfo[0] = sizeof(uint) * 17;

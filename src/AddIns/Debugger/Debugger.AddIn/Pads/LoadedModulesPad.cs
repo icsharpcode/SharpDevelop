@@ -153,7 +153,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				new string[] {
 					module.Filename,
 					String.Format("{0:X8}", module.BaseAdress),
-					module.DirectoryName,
+					module.FullPath,
 					module.OrderOfLoading.ToString(),
 					"",
 					"",

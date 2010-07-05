@@ -111,6 +111,9 @@ namespace Debugger
 			}
 			if (string.IsNullOrEmpty(debuggeeVersion)) {
 				debuggeeVersion = GetDebuggerVersion();
+				TraceMessage("Debuggee version: Unknown (assuming " + debuggeeVersion + ")");
+			} else {
+				TraceMessage("Debuggee version: " + debuggeeVersion);
 			}
 			this.debuggeeVersion = debuggeeVersion;
 			
@@ -118,8 +121,10 @@ namespace Debugger
 			// The CLR does not provide 4.0 debugger interface for older versions
 			if (debuggeeVersion.StartsWith("v1") || debuggeeVersion.StartsWith("v2")) {
 				debuggerVersion = 3; // 2.0 CLR
+				TraceMessage("Debugger interface version: v2.0");
 			} else {
 				debuggerVersion = 4; // 4.0 CLR
+				TraceMessage("Debugger interface version: v4.0");
 			}
 			
 			corDebug = NativeMethods.CreateDebuggingInterfaceFromVersion(debuggerVersion, debuggeeVersion);
@@ -131,7 +136,7 @@ namespace Debugger
 			corDebug.Initialize();
 			corDebug.SetManagedHandler(managedCallbackProxy);
 			
-			TraceMessage("ICorDebug initialized, debugee version " + debuggeeVersion);
+			TraceMessage("ICorDebug initialized");
 		}
 		
 		internal void TerminateDebugger()

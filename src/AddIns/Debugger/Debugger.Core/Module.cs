@@ -202,6 +202,8 @@ namespace Debugger
 				symReader = metaData.GetSymReader(fullPath, string.Join("; ", searchPath ?? new string[0]));
 				if (symReader != null) {
 					OnSymbolsLoaded(new ModuleEventArgs(this));
+					
+					ResetJustMyCodeStatus();
 				}
 			}
 		}
@@ -216,6 +218,8 @@ namespace Debugger
 			if (symReader != null) {
 				OnSymbolsLoaded(new ModuleEventArgs(this));
 			}
+			
+			ResetJustMyCodeStatus();
 		}
 		
 		/// <summary> Sets all code as being 'my code'.  The code will be gradually
