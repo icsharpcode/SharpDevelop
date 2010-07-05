@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.WpfDesign.Designer.Controls;
 using Microsoft.Win32;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -49,6 +50,16 @@ namespace ICSharpCode.CodeQualityAnalysis
             _metricsReader = new MetricsReader(fileDialog.FileName);
 
             FillTree();
+        }
+        
+        private void btnRelayout_Click(object sender, RoutedEventArgs e)
+        {
+            graphLayout.Relayout();
+        }
+
+        private void btnContinueLayout_Click(object sender, RoutedEventArgs e)
+        {
+            graphLayout.ContinueLayout();
         }
 
         /// <summary>
@@ -130,10 +141,17 @@ namespace ICSharpCode.CodeQualityAnalysis
                             select t).SingleOrDefault();*/
 
                 var graph = item.Dependency.BuildDependencyGraph();
-                if (graph != null && graph.VertexCount > 0)
+
+                try
                 {
-                    graphLayout.Graph = graph;
+                    if (graph != null && graph.VertexCount > 0)
+                    {
+                        graphLayout.Graph = graph;
+                    }
                 }
+                catch
+                {
+                } // ignore it if it fails
             }
 
         }

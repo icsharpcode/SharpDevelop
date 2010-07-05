@@ -2,9 +2,17 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:graphsharp="clr-namespace:GraphSharp.Controls;assembly=GraphSharp.Controls"
-        xmlns:zoom="clr-namespace:WPFExtensions.Controls;assembly=WPFExtensions" 
+        xmlns:Controls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls;assembly=ICSharpCode.WpfDesign.Designer" 
         Title="Code Quality Analysis"
         x:Name="root">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Resources/GraphTemplate.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -17,22 +25,23 @@
             <ColumnDefinition Width="200px" />
         </Grid.ColumnDefinitions>
 
-        <ToolBarTray Background="White" Grid.Row="0">
+        <ToolBarTray Background="White" Grid.Row="0" Grid.ColumnSpan="2">
             <ToolBar>
-                <Button Name="btnOpenAssembly" Click="btnOpenAssembly_Click">Open Assembly</Button>
+                <Button Name="btnOpenAssembly" Click="btnOpenAssembly_Click" Margin="0 0 5 0">Open Assembly</Button>
+                <Button Name="btnRelayout" Click="btnRelayout_Click" Margin="0 0 5 0">Relayout</Button>
+                <Button Name="btnContinueLayout" Click="btnContinueLayout_Click">Continue Layout</Button>
             </ToolBar>
         </ToolBarTray>
 
         <TreeView Name="definitionTree" Grid.Row="1" Grid.Column="0" SelectedItemChanged="definitionTree_SelectedItemChanged" />
 
-        <!-- gonna replace with ISharpDevelop ZoomControl -->
-        <zoom:ZoomControl ForceCursor="True" Grid.Row="1" Grid.Column="1" Name="zoom">
+        <Controls:ZoomControl Grid.Row="1" Grid.Column="1" Name="zoom" AlwaysShowZoomButtons="True" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
             <graphsharp:GraphLayout x:Name="graphLayout"
                                         LayoutAlgorithmType="LinLog"
                                         OverlapRemovalAlgorithmType="FSA"
                                         HighlightAlgorithmType="Simple"
                                         />
-        </zoom:ZoomControl>
+        </Controls:ZoomControl>
         
         <TextBlock Name="txbTypeInfo" Grid.Column="3" Grid.Row="1"/>
     </Grid>

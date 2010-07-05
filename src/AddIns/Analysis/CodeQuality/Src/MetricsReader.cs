@@ -342,10 +342,10 @@ namespace ICSharpCode.CodeQualityAnalysis
             {
                 var instr = ReadInstruction(instruction);
 
-                if (instr is MethodDefinition && method.ReturnType != null) // null means outside assembly
+                if (instr is MethodDefinition)
                 {
                     var md = instr as MethodDefinition;
-                    var type = (from n in method.ReturnType.Namespace.Module.Namespaces
+                    var type = (from n in method.Owner.Namespace.Module.Namespaces
                                 from t in n.Types
                                 where t.Name == FormatTypeName(md.DeclaringType) &&
                                 n.Name == t.Namespace.Name
@@ -364,7 +364,7 @@ namespace ICSharpCode.CodeQualityAnalysis
                 if (instr is FieldDefinition)
                 {
                     var fd = instr as FieldDefinition;
-                    var field = (from f in method.ReturnType.Fields
+                    var field = (from f in method.Owner.Fields
                                 where f.Name == fd.Name
                                 select f).SingleOrDefault();
 
