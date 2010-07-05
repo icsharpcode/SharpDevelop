@@ -58,6 +58,16 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// </summary>
         public bool IsReadOnly { get; set; }
 
+        /// <summary>
+        /// Whether the type of field is generic
+        /// </summary>
+        public bool IsGenericInstance { get; set; }
+
+        /// <summary>
+        /// If the field has generic instance so all types used in generic are presented in this set.
+        /// </summary>
+        public ISet<Type> GenericTypes { get; set; }
+
         public Field()
         {
             FieldType = null;

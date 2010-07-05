@@ -9,6 +9,11 @@ namespace ICSharpCode.CodeQualityAnalysis
     public class Method : IDependency
     {
         /// <summary>
+        /// Parameters which are used by method
+        /// </summary>
+        public ISet<MethodParameter> Parameters { get; set; }
+
+        /// <summary>
         /// Types which are used in body of method
         /// </summary>
         public ISet<Type> TypeUses { get; set; }
@@ -88,14 +93,29 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// </summary>
         public bool IsVirtual { get; set; }
 
+        /// <summary>
+        /// If the return type is generic instance so all types used in generic are presented in this set.
+        /// </summary>
+        public ISet<Type> GenericReturnTypes { get; set; }
+
+        /// <summary>
+        /// Whether the return type is generic instance
+        /// </summary>
+        public bool IsReturnTypeGenericInstance { get; set; }
+
         public Method()
         {
+            Parameters = new HashSet<MethodParameter>();
+
             TypeUses = new HashSet<Type>();
             MethodUses = new HashSet<Method>();
             FieldUses = new HashSet<Field>();
+            GenericReturnTypes = new HashSet<Type>();
 
             ReturnType = null;
             Owner = null;
+
+            IsReturnTypeGenericInstance = false;
         }
 
         public BidirectionalGraph<object, IEdge<object>> BuildDependencyGraph()
@@ -106,6 +126,45 @@ namespace ICSharpCode.CodeQualityAnalysis
         public override string ToString()
         {
             return Name;
+        }
+    }
+
+    public class MethodParameter
+    {
+        /// <summary>
+        /// The type of the parameter
+        /// </summary>
+        public Type ParameterType { get; set; }
+
+        /// <summary>
+        /// Whether the parameter is generic instance
+        /// </summary>
+        public bool IsGenericInstance { get; set; }
+
+        /// <summary>
+        /// Whether the parameter is in
+        /// </summary>
+        public bool IsIn { get; set; }
+
+        /// <summary>
+        /// Whether the parameter is out
+        /// </summary>
+        public bool IsOut { get; set; }
+
+        /// <summary>
+        /// Whether the parameter is optional
+        /// </summary>
+        public bool IsOptional { get; set; }
+
+        /// <summary>
+        /// If the parameter is generic instance so all types used in generic are presented in this set.
+        /// </summary>
+        public ISet<Type> GenericTypes { get; set; }
+
+        public MethodParameter()
+        {
+            GenericTypes = new HashSet<Type>();
+            IsGenericInstance = false;
         }
     }
 }

@@ -35,7 +35,7 @@
 
         <TreeView Name="definitionTree" Grid.Row="1" Grid.Column="0" SelectedItemChanged="definitionTree_SelectedItemChanged" />
 
-        <Controls:ZoomControl Grid.Row="1" Grid.Column="1" Name="zoom" AlwaysShowZoomButtons="True" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden">
+        <Controls:ZoomControl Grid.Row="1" Grid.Column="1" Name="zoom" AlwaysShowZoomButtons="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
             <graphsharp:GraphLayout x:Name="graphLayout"
                                         LayoutAlgorithmType="LinLog"
                                         OverlapRemovalAlgorithmType="FSA"

@@ -124,6 +124,20 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// </summary>
         public bool IsNestedProtected { get; set; }
 
+        /// <summary>
+        /// Whether the base type is generic instance
+        /// </summary>
+        public bool IsBaseTypeGenericInstance { get; set; }
+
+        /// <summary>
+        /// If the base type is generic instance so all types used in generic are presented in this set.
+        /// </summary>
+        public ISet<Type> GenericBaseTypes { get; set; }
+
+        /// <summary>
+        /// If one of implemented interfaces is generic instance so all types used in generic are presented in this set.
+        /// </summary>
+        public ISet<Type> GenericImplementedInterfacesTypes { get; set; }
 
         public Type()
         {
@@ -132,9 +146,13 @@ namespace ICSharpCode.CodeQualityAnalysis
             Events = new HashSet<Event>();
             NestedTypes = new HashSet<Type>();
             ImplementedInterfaces = new HashSet<Type>();
+            GenericBaseTypes = new HashSet<Type>();
+            GenericImplementedInterfacesTypes = new HashSet<Type>();
 
             Owner = null;
             BaseType = null;
+
+            IsBaseTypeGenericInstance = false;
         }
 
         /// <summary>
@@ -148,13 +166,40 @@ namespace ICSharpCode.CodeQualityAnalysis
             foreach (var method in Methods)
             {
                 set.UnionWith(method.TypeUses);
+
+                foreach (var parameter in method.Parameters)
+                {
+                    if (parameter.IsGenericInstance)
+                        set.UnionWith(parameter.GenericTypes);
+
+                    if (parameter.ParameterType != null)
+                        set.Add(parameter.ParameterType);
+                }
+
+                if (method.IsReturnTypeGenericInstance)
+                    set.UnionWith(method.GenericReturnTypes);
+
+                if (method.ReturnType != null)
+                    set.Add(method.ReturnType);
             }
 
             foreach (var field in Fields)
             {
+                if (field.IsGenericInstance)
+                    set.UnionWith(field.GenericTypes);
+
                 if (field.FieldType != null) // if it is null so it is type from outside of this assembly
                     set.Add(field.FieldType); // TODO: find solution to handle them
             }
+
+            if (BaseType != null)
+                set.Add(BaseType);
+
+            if (IsBaseTypeGenericInstance)
+                set.UnionWith(GenericBaseTypes);
+
+            set.UnionWith(ImplementedInterfaces);
+            set.UnionWith(GenericImplementedInterfacesTypes);
 
             return set;
         }

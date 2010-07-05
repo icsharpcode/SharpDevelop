@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Mono.Cecil;
@@ -175,6 +176,13 @@ namespace ICSharpCode.CodeQualityAnalysis
                                         select t).SingleOrDefault();
 
                         type.BaseType = baseType; // if baseType is null so propably inherits from another assembly
+
+                        if (typeDefinition.BaseType.IsGenericInstance)
+                        {
+                            type.IsBaseTypeGenericInstance = true;
+                            type.GenericBaseTypes = ReadGenericArguments(type.Namespace.Module,
+                                                                             (GenericInstanceType)typeDefinition.BaseType);
+                        }
                     }
 
                     // looks for implemented interfaces
@@ -189,6 +197,12 @@ namespace ICSharpCode.CodeQualityAnalysis
 
                             if (implementedIc != null)
                                 type.ImplementedInterfaces.Add(implementedIc);
+
+                            if (ic.IsGenericInstance)
+                            {
+                                type.GenericBaseTypes.UnionWith(ReadGenericArguments(type.Namespace.Module,
+                                                                             (GenericInstanceType)typeDefinition.BaseType));
+                            }
                         }    
                     }
 
@@ -227,10 +241,12 @@ namespace ICSharpCode.CodeQualityAnalysis
                 var declaringType =
                     (from n in type.Namespace.Module.Namespaces
                      from t in n.Types
-                     where t.Name == e.Name
+                     where t.Name == FormatTypeName(eventDefinition.EventType)
                      select t).SingleOrDefault();
 
                 e.EventType = declaringType;
+
+                // TODO:check eventDefinition.OtherMethods
 
                 // Mono.Cecil threats Events as regular fields
                 // so I have to find a field and set IsEvent to true
@@ -270,13 +286,20 @@ namespace ICSharpCode.CodeQualityAnalysis
 
                 type.Fields.Add(field);
 
-                var declaringType =
+                var fieldType =
                         (from n in type.Namespace.Module.Namespaces
                          from t in n.Types
-                         where t.Name == FormatTypeName(fieldDefinition.DeclaringType)
+                         where t.Name == FormatTypeName(fieldDefinition.FieldType)
                          select t).SingleOrDefault();
 
-                field.FieldType = declaringType;
+                if (fieldDefinition.FieldType.IsGenericInstance)
+                {
+                    field.IsGenericInstance = true;
+                    field.GenericTypes = ReadGenericArguments(type.Namespace.Module, 
+                                                                (GenericInstanceType)fieldDefinition.FieldType);
+                }
+
+                field.FieldType = fieldType;
             }
         }
 
@@ -312,6 +335,44 @@ namespace ICSharpCode.CodeQualityAnalysis
                          select t).SingleOrDefault();
 
                 method.ReturnType = returnType; // if null so return type is outside of assembly
+
+                if (methodDefinition.ReturnType.IsGenericInstance)
+                {
+                    method.IsReturnTypeGenericInstance = true;
+                    method.GenericReturnTypes = ReadGenericArguments(type.Namespace.Module,
+                                                                     (GenericInstanceType) methodDefinition.ReturnType);
+                }
+
+                // reading types from parameters
+                foreach (var parameter in methodDefinition.Parameters)
+                {
+                    var parameterType =
+                        (from n in type.Namespace.Module.Namespaces
+                         from t in n.Types
+                         where t.Name == FormatTypeName(parameter.ParameterType)
+                         select t).SingleOrDefault();
+
+                    if (parameterType != null)
+                    {
+                        var param = new MethodParameter
+                                        {
+                                            ParameterType = parameterType,
+                                            IsIn = parameter.IsIn,
+                                            IsOut = parameter.IsOut,
+                                            IsOptional = parameter.IsOptional,
+                                        };
+
+                        // generic parameters
+                        if (parameter.ParameterType.IsGenericInstance)
+                        {
+                            param.IsGenericInstance = true;
+                            param.GenericTypes = ReadGenericArguments(type.Namespace.Module, 
+                                                                        (GenericInstanceType) parameter.ParameterType);
+                        }
+
+                        method.Parameters.Add(param);
+                    }
+                }
 
                 type.Methods.Add(method);
             }
@@ -357,7 +418,7 @@ namespace ICSharpCode.CodeQualityAnalysis
                                             where m.Name == FormatMethodName(md)
                                             select m).SingleOrDefault();
 
-                    if (findTargetMethod != null && type == method.ReturnType) 
+                    if (findTargetMethod != null && type == method.Owner) 
                         method.MethodUses.Add(findTargetMethod);
                 }
 
@@ -372,6 +433,34 @@ namespace ICSharpCode.CodeQualityAnalysis
                         method.FieldUses.Add(field);
                 }
             }
+        }
+
+        /// <summary>
+        /// Reads generic arguments from type and returns them as a set of types
+        /// </summary>
+        /// <param name="module">The module where are types located</param>
+        /// <param name="genericInstance">The instance type</param>
+        /// <returns>A set of types used by generic instance</returns>
+        public ISet<Type> ReadGenericArguments(Module module, GenericInstanceType genericInstance)
+        {
+            var types = new HashSet<Type>();
+
+            foreach (var parameter in genericInstance.GenericArguments)
+            {
+                var type =
+                    (from n in module.Namespaces
+                     from t in n.Types
+                     where t.Name == FormatTypeName(parameter)
+                     select t).SingleOrDefault();
+
+                if (type != null) //
+                    types.Add(type);
+
+                if (parameter.IsGenericInstance)
+                    types.UnionWith(ReadGenericArguments(module, (GenericInstanceType) parameter));
+            }
+
+            return types;
         }
 
         /// <summary>
@@ -427,6 +516,8 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <returns>A type name</returns>
         public string FormatTypeName(TypeReference type)
         {
+            type = type.GetElementType();
+
             if (type.IsNested && type.DeclaringType != null)
             {
                 return FormatTypeName(type.DeclaringType) + "+" + type.Name;
@@ -439,7 +530,7 @@ namespace ICSharpCode.CodeQualityAnalysis
                 bool hasNext = enumerator.MoveNext();
                 while (hasNext)
                 {
-                    builder.Append((enumerator.Current).Name);
+                    builder.Append(enumerator.Current.Name);
                     hasNext = enumerator.MoveNext();
                     if (hasNext)
                         builder.Append(",");
