@@ -598,7 +598,7 @@ End Using");
 		[Test]
 		public void XmlSimple()
 		{
-			TestExpression("<!-- test -->\n" +
+			TestExpression("<?xml?><!-- test -->\n" +
 			               "<Test>\n" +
 			               "	<A />\n" +
 			               "	<B test='a' <%= test %> />\n" +
