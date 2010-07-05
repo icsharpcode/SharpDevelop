@@ -1262,6 +1262,16 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return null;
 		}
 		
+		public virtual object VisitXmlDocumentExpression(XmlDocumentExpression xmlDocumentExpression, object data) {
+			Debug.Assert((xmlDocumentExpression != null));
+			Debug.Assert((xmlDocumentExpression.Expressions != null));
+			foreach (XmlExpression o in xmlDocumentExpression.Expressions) {
+				Debug.Assert(o != null);
+				o.AcceptVisitor(this, data);
+			}
+			return null;
+		}
+		
 		public virtual object VisitXmlElementExpression(XmlElementExpression xmlElementExpression, object data) {
 			Debug.Assert((xmlElementExpression != null));
 			Debug.Assert((xmlElementExpression.Content != null));
@@ -1280,16 +1290,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			Debug.Assert((xmlEmbeddedExpression != null));
 			Debug.Assert((xmlEmbeddedExpression.InlineVBExpression != null));
 			return xmlEmbeddedExpression.InlineVBExpression.AcceptVisitor(this, data);
-		}
-		
-		public virtual object VisitXmlLiteralExpression(XmlLiteralExpression xmlLiteralExpression, object data) {
-			Debug.Assert((xmlLiteralExpression != null));
-			Debug.Assert((xmlLiteralExpression.Expressions != null));
-			foreach (XmlExpression o in xmlLiteralExpression.Expressions) {
-				Debug.Assert(o != null);
-				o.AcceptVisitor(this, data);
-			}
-			return null;
 		}
 		
 		public virtual object VisitXmlMemberAccessExpression(XmlMemberAccessExpression xmlMemberAccessExpression, object data) {

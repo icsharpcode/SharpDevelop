@@ -906,6 +906,13 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return result;
 		}
 		
+		public sealed override object VisitXmlDocumentExpression(XmlDocumentExpression xmlDocumentExpression, object data) {
+			this.BeginVisit(xmlDocumentExpression);
+			object result = this.TrackedVisitXmlDocumentExpression(xmlDocumentExpression, data);
+			this.EndVisit(xmlDocumentExpression);
+			return result;
+		}
+		
 		public sealed override object VisitXmlElementExpression(XmlElementExpression xmlElementExpression, object data) {
 			this.BeginVisit(xmlElementExpression);
 			object result = this.TrackedVisitXmlElementExpression(xmlElementExpression, data);
@@ -917,13 +924,6 @@ namespace ICSharpCode.NRefactory.Visitors {
 			this.BeginVisit(xmlEmbeddedExpression);
 			object result = this.TrackedVisitXmlEmbeddedExpression(xmlEmbeddedExpression, data);
 			this.EndVisit(xmlEmbeddedExpression);
-			return result;
-		}
-		
-		public sealed override object VisitXmlLiteralExpression(XmlLiteralExpression xmlLiteralExpression, object data) {
-			this.BeginVisit(xmlLiteralExpression);
-			object result = this.TrackedVisitXmlLiteralExpression(xmlLiteralExpression, data);
-			this.EndVisit(xmlLiteralExpression);
 			return result;
 		}
 		
@@ -1441,16 +1441,16 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return base.VisitXmlContentExpression(xmlContentExpression, data);
 		}
 		
+		public virtual object TrackedVisitXmlDocumentExpression(XmlDocumentExpression xmlDocumentExpression, object data) {
+			return base.VisitXmlDocumentExpression(xmlDocumentExpression, data);
+		}
+		
 		public virtual object TrackedVisitXmlElementExpression(XmlElementExpression xmlElementExpression, object data) {
 			return base.VisitXmlElementExpression(xmlElementExpression, data);
 		}
 		
 		public virtual object TrackedVisitXmlEmbeddedExpression(XmlEmbeddedExpression xmlEmbeddedExpression, object data) {
 			return base.VisitXmlEmbeddedExpression(xmlEmbeddedExpression, data);
-		}
-		
-		public virtual object TrackedVisitXmlLiteralExpression(XmlLiteralExpression xmlLiteralExpression, object data) {
-			return base.VisitXmlLiteralExpression(xmlLiteralExpression, data);
 		}
 		
 		public virtual object TrackedVisitXmlMemberAccessExpression(XmlMemberAccessExpression xmlMemberAccessExpression, object data) {

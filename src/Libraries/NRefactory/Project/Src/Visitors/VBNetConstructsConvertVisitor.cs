@@ -36,6 +36,10 @@ namespace ICSharpCode.NRefactory.Visitors
 		/// </summary>
 		public bool AddDefaultValueInitializerToLocalVariableDeclarations = true;
 		
+		public bool OptionInfer { get; set; }
+		
+		public bool OptionStrict { get; set; }
+		
 		Dictionary<string, string> usings;
 		List<UsingDeclaration> addedUsings;
 		TypeDeclaration currentTypeDeclaration;
@@ -492,16 +496,33 @@ namespace ICSharpCode.NRefactory.Visitors
 		
 		public override object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
 		{
-			if (AddDefaultValueInitializerToLocalVariableDeclarations && (localVariableDeclaration.Modifier & Modifiers.Static) == 0) {
-				for (int i = 0; i < localVariableDeclaration.Variables.Count; i++) {
-					VariableDeclaration decl = localVariableDeclaration.Variables[i];
-					if (decl.FixedArrayInitialization.IsNull && decl.Initializer.IsNull) {
-						TypeReference type = localVariableDeclaration.GetTypeForVariable(i);
-						decl.Initializer = ExpressionBuilder.CreateDefaultValueForType(type);
-					}
+			for (int i = 0; i < localVariableDeclaration.Variables.Count; i++) {
+				VariableDeclaration decl = localVariableDeclaration.Variables[i];
+				if (AddDefaultValueInitializerToLocalVariableDeclarations &&
+				    (localVariableDeclaration.Modifier & Modifiers.Static) == 0 &&
+				    decl.FixedArrayInitialization.IsNull && decl.Initializer.IsNull) {
+					TypeReference type = localVariableDeclaration.GetTypeForVariable(i);
+					decl.Initializer = ExpressionBuilder.CreateDefaultValueForType(type);
+				}
+				if (decl.TypeReference.IsNull) {
+					if (OptionInfer && !(decl.Initializer is PrimitiveExpression && (decl.Initializer as PrimitiveExpression).Value == null))
+						decl.TypeReference = new TypeReference("var", true);
+					else if (OptionStrict)
+						decl.TypeReference = new TypeReference("System.Object", true);
+					else
+						decl.TypeReference = new TypeReference("dynamic", true);
 				}
 			}
 			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
+		}
+		
+		public override object VisitOptionDeclaration(OptionDeclaration optionDeclaration, object data)
+		{
+			if (optionDeclaration.OptionType == OptionType.Infer)
+				OptionInfer = optionDeclaration.OptionValue;
+			if (optionDeclaration.OptionType == OptionType.Strict)
+				OptionStrict = optionDeclaration.OptionValue;
+			return base.VisitOptionDeclaration(optionDeclaration, data);
 		}
 	}
 }

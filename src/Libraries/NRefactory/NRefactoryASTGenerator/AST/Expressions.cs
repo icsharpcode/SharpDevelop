@@ -403,7 +403,7 @@ namespace NRefactoryASTGenerator.Ast
 
 	abstract class XmlExpression : Expression { }
 
-	class XmlLiteralExpression : Expression {
+	class XmlDocumentExpression : XmlExpression {
 		List<XmlExpression> expressions;
 	}
 	

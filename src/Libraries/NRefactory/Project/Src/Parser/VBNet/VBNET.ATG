@@ -1772,10 +1772,8 @@ SimpleNonInvocationExpression<out Expression pexpr>
 
 XmlLiteralExpression<out Expression pexpr>
 (.
-	XmlLiteralExpression expr = new XmlLiteralExpression();
-	List<XmlExpression> exprs = expr.Expressions;
+	List<XmlExpression> exprs = new List<XmlExpression>();
 	XmlExpression currentExpression = null;
-	pexpr = expr;
 .)
 	=
 	(
@@ -1783,6 +1781,13 @@ XmlLiteralExpression<out Expression pexpr>
 	|
 		XmlElement<out currentExpression> (. exprs.Add(currentExpression); .) { XmlContentExpression<exprs> }
 	)
+	(.
+		if (exprs.Count > 1) {
+			pexpr = new XmlDocumentExpression() { Expressions = exprs };
+		} else {
+			pexpr = exprs[0];
+		}
+	.)
 .
 
 XmlContentExpression<List<XmlExpression> exprs> =

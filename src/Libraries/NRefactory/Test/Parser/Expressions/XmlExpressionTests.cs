@@ -14,7 +14,7 @@ using ICSharpCode.NRefactory.Ast;
 namespace ICSharpCode.NRefactory.Tests.Ast
 {
 	[TestFixture]
-	public class XmlLiteralExpressionTests
+	public class XmlExpressionTests
 	{
 		#region C#
 		
@@ -26,10 +26,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void VBNetSimpleCommentTest()
 		{
-			XmlLiteralExpression xle = ParseUtilVBNet.ParseExpression<XmlLiteralExpression>("<!-- test -->");
-			Assert.IsNotEmpty(xle.Expressions);
-			Assert.IsTrue(xle.Expressions[0] is XmlContentExpression);
-			XmlContentExpression content = xle.Expressions[0] as XmlContentExpression;
+			XmlContentExpression content = ParseUtilVBNet.ParseExpression<XmlContentExpression>("<!-- test -->");
 			Assert.AreEqual(XmlContentType.Comment, content.Type);
 			Assert.AreEqual(" test ", content.Content);
 			Assert.AreEqual(new Location(1,1), content.StartLocation);
@@ -39,10 +36,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void VBNetSimplePreprocessingInstructionTest()
 		{
-			XmlLiteralExpression xle = ParseUtilVBNet.ParseExpression<XmlLiteralExpression>("<?xml version='1.0'?>");
-			Assert.IsNotEmpty(xle.Expressions);
-			Assert.IsTrue(xle.Expressions[0] is XmlContentExpression);
-			XmlContentExpression content = xle.Expressions[0] as XmlContentExpression;
+			XmlContentExpression content = ParseUtilVBNet.ParseExpression<XmlContentExpression>("<?xml version='1.0'?>");
 			Assert.AreEqual(XmlContentType.ProcessingInstruction, content.Type);
 			Assert.AreEqual("xml version='1.0'", content.Content);
 			Assert.AreEqual(new Location(1,1), content.StartLocation);
@@ -52,10 +46,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void VBNetSimpleCDataTest()
 		{
-			XmlLiteralExpression xle = ParseUtilVBNet.ParseExpression<XmlLiteralExpression>("<![CDATA[<simple> <cdata>]]>");
-			Assert.IsNotEmpty(xle.Expressions);
-			Assert.IsTrue(xle.Expressions[0] is XmlContentExpression);
-			XmlContentExpression content = xle.Expressions[0] as XmlContentExpression;
+			XmlContentExpression content = ParseUtilVBNet.ParseExpression<XmlContentExpression>("<![CDATA[<simple> <cdata>]]>");
 			Assert.AreEqual(XmlContentType.CData, content.Type);
 			Assert.AreEqual("<simple> <cdata>", content.Content);
 			Assert.AreEqual(new Location(1,1), content.StartLocation);
@@ -65,10 +56,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void VBNetSimpleEmptyElementTest()
 		{
-			XmlLiteralExpression xle = ParseUtilVBNet.ParseExpression<XmlLiteralExpression>("<Test />");
-			Assert.IsNotEmpty(xle.Expressions);
-			Assert.IsTrue(xle.Expressions[0] is XmlElementExpression);
-			XmlElementExpression element = xle.Expressions[0] as XmlElementExpression;
+			XmlElementExpression element = ParseUtilVBNet.ParseExpression<XmlElementExpression>("<Test />");
 			Assert.IsFalse(element.NameIsExpression);
 			Assert.AreEqual("Test", element.XmlName);
 			Assert.IsEmpty(element.Attributes);
@@ -80,10 +68,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void VBNetSimpleEmptyElementWithAttributeTest()
 		{
-			XmlLiteralExpression xle = ParseUtilVBNet.ParseExpression<XmlLiteralExpression>("<Test id='0' />");
-			Assert.IsNotEmpty(xle.Expressions);
-			Assert.IsTrue(xle.Expressions[0] is XmlElementExpression);
-			XmlElementExpression element = xle.Expressions[0] as XmlElementExpression;
+			XmlElementExpression element = ParseUtilVBNet.ParseExpression<XmlElementExpression>("<Test id='0' />");
 			Assert.IsFalse(element.NameIsExpression);
 			Assert.AreEqual("Test", element.XmlName);
 			Assert.IsNotEmpty(element.Attributes);
@@ -104,11 +89,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void VBNetSimpleEmptyElementWithAttributesTest()
 		{
-			XmlLiteralExpression xle = ParseUtilVBNet.ParseExpression<XmlLiteralExpression>("<Test id='0' name=<%= name %> <%= contentData %> />");
-			Assert.IsNotEmpty(xle.Expressions);
-			Assert.IsTrue(xle.Expressions[0] is XmlElementExpression);
-			XmlElementExpression element = xle.Expressions[0] as XmlElementExpression;
-			Assert.IsFalse(element.NameIsExpression);
+			XmlElementExpression element = ParseUtilVBNet.ParseExpression<XmlElementExpression>("<Test id='0' name=<%= name %> <%= contentData %> />");			Assert.IsFalse(element.NameIsExpression);
 			Assert.AreEqual("Test", element.XmlName);
 			Assert.IsNotEmpty(element.Attributes);
 			Assert.AreEqual(3, element.Attributes.Count);
@@ -158,13 +139,10 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void VBNetElementWithAttributeTest()
 		{
-			XmlLiteralExpression xle = ParseUtilVBNet.ParseExpression<XmlLiteralExpression>("<Test id='0'>\n" +
+			XmlElementExpression element = ParseUtilVBNet.ParseExpression<XmlElementExpression>("<Test id='0'>\n" +
 			                                                                                "	<Item />\n" +
 			                                                                                "	<Item />\n" +
 			                                                                                "</Test>");
-			Assert.IsNotEmpty(xle.Expressions);
-			Assert.IsTrue(xle.Expressions[0] is XmlElementExpression);
-			XmlElementExpression element = xle.Expressions[0] as XmlElementExpression;
 			Assert.IsFalse(element.NameIsExpression);
 			Assert.AreEqual("Test", element.XmlName);
 			
@@ -196,15 +174,12 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void VBNetElementWithMixedContentTest()
 		{
-			XmlLiteralExpression xle = ParseUtilVBNet.ParseExpression<XmlLiteralExpression>("<Test id='0'>\n" +
+			XmlElementExpression element = ParseUtilVBNet.ParseExpression<XmlElementExpression>("<Test id='0'>\n" +
 			                                                                                "	<!-- test -->\n" +
 			                                                                                "	<Item />\n" +
 			                                                                                "	<Item />\n" +
 			                                                                                "	<![CDATA[<cdata> section]]>\n" +
 			                                                                                "</Test>");
-			Assert.IsNotEmpty(xle.Expressions);
-			Assert.IsTrue(xle.Expressions[0] is XmlElementExpression);
-			XmlElementExpression element = xle.Expressions[0] as XmlElementExpression;
 			Assert.IsFalse(element.NameIsExpression);
 			Assert.AreEqual("Test", element.XmlName);
 			
@@ -240,15 +215,15 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		[Test]
 		public void VBNetProcessingInstructionAndCommentAtEndTest()
 		{
-			XmlLiteralExpression xle = ParseUtilVBNet.ParseExpression<XmlLiteralExpression>("<Test />\n" +
+			XmlDocumentExpression document = ParseUtilVBNet.ParseExpression<XmlDocumentExpression>("<Test />\n" +
 			                                                                                "<!-- test -->\n" +
 			                                                                                "<?target some text?>");
-			Assert.IsNotEmpty(xle.Expressions);
-			Assert.AreEqual(3, xle.Expressions.Count);
+			Assert.IsNotEmpty(document.Expressions);
+			Assert.AreEqual(3, document.Expressions.Count);
 			
-			CheckElement(xle.Expressions[0], "Test", new Location(1,1), new Location(9,1));			
-			CheckContent(xle.Expressions[1], " test ", XmlContentType.Comment, new Location(1,2), new Location(14,2));
-			CheckContent(xle.Expressions[2], "target some text", XmlContentType.ProcessingInstruction, new Location(1,3), new Location(21,3));
+			CheckElement(document.Expressions[0], "Test", new Location(1,1), new Location(9,1));			
+			CheckContent(document.Expressions[1], " test ", XmlContentType.Comment, new Location(1,2), new Location(14,2));
+			CheckContent(document.Expressions[2], "target some text", XmlContentType.ProcessingInstruction, new Location(1,3), new Location(21,3));
 		}
 		#endregion
 		

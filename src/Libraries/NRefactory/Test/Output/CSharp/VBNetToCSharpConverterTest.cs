@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 				}
 			}
 			b.AppendLine("}");
-			TestProgram("Class tmp1 \n" + input + "\nEnd Class", b.ToString());
+			TestProgram("Option Strict On \n Class tmp1 \n" + input + "\nEnd Class", b.ToString());
 		}
 		
 		public void TestStatement(string input, string expectedOutput)
@@ -76,7 +76,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			}
 			b.AppendLine("  }");
 			b.AppendLine("}");
-			TestProgram("Class tmp1 \n Sub tmp2() \n" + input + "\n End Sub \n End Class", b.ToString());
+			TestProgram("Option Strict On \n Option Infer On \n Class tmp1 \n Sub tmp2() \n" + input + "\n End Sub \n End Class", b.ToString());
 		}
 		
 		[Test]
@@ -777,6 +777,20 @@ static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.Stat
 		public void CastToInteger()
 		{
 			TestStatement("Dim x As Integer = CInt(obj)", "int x = Convert.ToInt32(obj);");
+		}
+		
+		[Test, Ignore]
+		public void XmlElement()
+		{
+			TestStatement("Dim xml = <Test />",
+			              @"var xml = new XElement(""Test"");");
+		}
+		
+		[Test, Ignore]
+		public void XmlComment()
+		{
+			TestStatement("Dim xml = <!-- test -->",
+			              @"var xml = new XComment("" test "");");
 		}
 	}
 }

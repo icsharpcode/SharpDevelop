@@ -518,16 +518,16 @@ namespace ICSharpCode.NRefactory.Visitors {
 			throw new global::System.NotImplementedException("XmlContentExpression");
 		}
 		
+		public virtual object VisitXmlDocumentExpression(XmlDocumentExpression xmlDocumentExpression, object data) {
+			throw new global::System.NotImplementedException("XmlDocumentExpression");
+		}
+		
 		public virtual object VisitXmlElementExpression(XmlElementExpression xmlElementExpression, object data) {
 			throw new global::System.NotImplementedException("XmlElementExpression");
 		}
 		
 		public virtual object VisitXmlEmbeddedExpression(XmlEmbeddedExpression xmlEmbeddedExpression, object data) {
 			throw new global::System.NotImplementedException("XmlEmbeddedExpression");
-		}
-		
-		public virtual object VisitXmlLiteralExpression(XmlLiteralExpression xmlLiteralExpression, object data) {
-			throw new global::System.NotImplementedException("XmlLiteralExpression");
 		}
 		
 		public virtual object VisitXmlMemberAccessExpression(XmlMemberAccessExpression xmlMemberAccessExpression, object data) {

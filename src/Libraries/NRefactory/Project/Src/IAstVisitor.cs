@@ -265,11 +265,11 @@ namespace ICSharpCode.NRefactory {
 		
 		object VisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data);
 		
+		object VisitXmlDocumentExpression(XmlDocumentExpression xmlDocumentExpression, object data);
+		
 		object VisitXmlElementExpression(XmlElementExpression xmlElementExpression, object data);
 		
 		object VisitXmlEmbeddedExpression(XmlEmbeddedExpression xmlEmbeddedExpression, object data);
-		
-		object VisitXmlLiteralExpression(XmlLiteralExpression xmlLiteralExpression, object data);
 		
 		object VisitXmlMemberAccessExpression(XmlMemberAccessExpression xmlMemberAccessExpression, object data);
 		

@@ -5564,6 +5564,32 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 		}
 	}
 	
+	public class XmlDocumentExpression : XmlExpression {
+		
+		List<XmlExpression> expressions;
+		
+		public List<XmlExpression> Expressions {
+			get {
+				return expressions;
+			}
+			set {
+				expressions = value ?? new List<XmlExpression>();
+			}
+		}
+		
+		public XmlDocumentExpression() {
+			expressions = new List<XmlExpression>();
+		}
+		
+		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+			return visitor.VisitXmlDocumentExpression(this, data);
+		}
+		
+		public override string ToString() {
+			return string.Format("[XmlDocumentExpression Expressions={0}]", GetCollectionString(Expressions));
+		}
+	}
+	
 	public class XmlElementExpression : XmlExpression {
 		
 		Expression content;
@@ -5670,32 +5696,6 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 	public abstract class XmlExpression : Expression {
 		
 		protected XmlExpression() {
-		}
-	}
-	
-	public class XmlLiteralExpression : Expression {
-		
-		List<XmlExpression> expressions;
-		
-		public List<XmlExpression> Expressions {
-			get {
-				return expressions;
-			}
-			set {
-				expressions = value ?? new List<XmlExpression>();
-			}
-		}
-		
-		public XmlLiteralExpression() {
-			expressions = new List<XmlExpression>();
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitXmlLiteralExpression(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[XmlLiteralExpression Expressions={0}]", GetCollectionString(Expressions));
 		}
 	}
 	

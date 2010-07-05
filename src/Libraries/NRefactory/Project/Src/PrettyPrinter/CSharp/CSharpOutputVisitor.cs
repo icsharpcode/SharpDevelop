@@ -537,8 +537,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitOptionDeclaration(OptionDeclaration optionDeclaration, object data)
 		{
-			if ((optionDeclaration.OptionType == OptionType.Explicit || optionDeclaration.OptionType == OptionType.Strict)
-			    && optionDeclaration.OptionValue == true)
+			if (((optionDeclaration.OptionType == OptionType.Explicit || optionDeclaration.OptionType == OptionType.Strict)
+			     && optionDeclaration.OptionValue == true) || optionDeclaration.OptionType == OptionType.Infer)
 			{
 				// Explicit On/Strict On is what C# does, do not report an error
 			} else {
