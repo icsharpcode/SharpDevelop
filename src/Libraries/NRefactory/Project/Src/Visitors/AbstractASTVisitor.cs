@@ -1251,10 +1251,10 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return withStatement.Body.AcceptVisitor(this, data);
 		}
 		
-		public virtual object VisitXmlAttribute(XmlAttribute xmlAttribute, object data) {
-			Debug.Assert((xmlAttribute != null));
-			Debug.Assert((xmlAttribute.ExpressionValue != null));
-			return xmlAttribute.ExpressionValue.AcceptVisitor(this, data);
+		public virtual object VisitXmlAttributeExpression(XmlAttributeExpression xmlAttributeExpression, object data) {
+			Debug.Assert((xmlAttributeExpression != null));
+			Debug.Assert((xmlAttributeExpression.ExpressionValue != null));
+			return xmlAttributeExpression.ExpressionValue.AcceptVisitor(this, data);
 		}
 		
 		public virtual object VisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data) {

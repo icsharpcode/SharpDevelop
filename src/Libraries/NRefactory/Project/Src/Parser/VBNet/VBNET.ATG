@@ -1844,7 +1844,7 @@ XmlAttribute<List<XmlExpression> attrs>
 		Identifier (. string name = t.val; .) "="
 		(. string literalValue = null; Expression expressionValue = null; bool useDoubleQuotes = false; .)
 		( LiteralString (. literalValue = t.literalValue.ToString(); useDoubleQuotes = t.val[0] == '"'; .) | XmlStartInlineVB Expr<out expressionValue> XmlEndInlineVB )
-		(. attrs.Add(new XmlAttribute() { Name = name, ExpressionValue = expressionValue, LiteralValue = literalValue, UseDoubleQuotes = useDoubleQuotes, StartLocation = start, EndLocation = t.EndLocation }); .)
+		(. attrs.Add(new XmlAttributeExpression() { Name = name, ExpressionValue = expressionValue, LiteralValue = literalValue, UseDoubleQuotes = useDoubleQuotes, StartLocation = start, EndLocation = t.EndLocation }); .)
 	|
 		XmlStartInlineVB (. Expression innerExpression; .) Expr<out innerExpression> XmlEndInlineVB
 		(. attrs.Add(new XmlEmbeddedExpression() { InlineVBExpression = innerExpression, StartLocation = start, EndLocation = t.EndLocation }); .)

@@ -510,8 +510,8 @@ namespace ICSharpCode.NRefactory.Visitors {
 			throw new global::System.NotImplementedException("WithStatement");
 		}
 		
-		public virtual object VisitXmlAttribute(XmlAttribute xmlAttribute, object data) {
-			throw new global::System.NotImplementedException("XmlAttribute");
+		public virtual object VisitXmlAttributeExpression(XmlAttributeExpression xmlAttributeExpression, object data) {
+			throw new global::System.NotImplementedException("XmlAttributeExpression");
 		}
 		
 		public virtual object VisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data) {

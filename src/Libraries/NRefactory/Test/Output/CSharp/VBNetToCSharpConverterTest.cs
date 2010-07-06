@@ -779,18 +779,117 @@ static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.Stat
 			TestStatement("Dim x As Integer = CInt(obj)", "int x = Convert.ToInt32(obj);");
 		}
 		
-		[Test, Ignore]
+		[Test]
 		public void XmlElement()
 		{
 			TestStatement("Dim xml = <Test />",
 			              @"var xml = new XElement(""Test"");");
 		}
 		
-		[Test, Ignore]
+		[Test]
+		public void XmlElement2()
+		{
+			TestStatement(@"Dim xml = <Test name=""test"" name2=<%= testVal %> />",
+			              @"var xml = new XElement(""Test"", new XAttribute(""name"", ""test""), new XAttribute(""name2"", testVal));");
+		}
+		
+		[Test]
+		public void XmlElement3()
+		{
+			TestStatement(@"Dim xml = <Test name=""test"" name2=<%= testVal %> <%= testVal2 %> />",
+			              @"var xml = new XElement(""Test"", new XAttribute(""name"", ""test""), new XAttribute(""name2"", testVal), testVal2);");
+		}
+		
+		[Test]
+		public void XmlNestedElement()
+		{
+			TestStatement("Dim xml = <Test>      <Test2 />        </Test>",
+			              @"var xml = new XElement(""Test"", new XElement(""Test2""));");
+		}
+		
+		[Test]
+		public void XmlNestedElement2()
+		{
+			TestStatement("Dim xml = <Test>      <Test2 />    hello    </Test>",
+			              @"var xml = new XElement(""Test"", new XElement(""Test2""), new XText(""    hello    ""));");
+		}
+		
+		[Test]
+		public void XmlNestedElement3()
+		{
+			TestStatement("Dim xml = <Test>      <Test2 a='b' />    hello    </Test>",
+			              @"var xml = new XElement(""Test"", new XElement(""Test2"", new XAttribute(""a"", ""b"")), new XText(""    hello    ""));");
+		}
+		
+		[Test]
+		public void XmlNestedElement4()
+		{
+			TestStatement("Dim xml = <Test>      <Test2 a='b' />    hello    \t<![CDATA[any & <>]]></Test>",
+			              @"var xml = new XElement(""Test"", new XElement(""Test2"", new XAttribute(""a"", ""b"")), new XText(""    hello    \t""), new XCData(""any & <>""));");
+		}
+		
+		[Test]
 		public void XmlComment()
 		{
 			TestStatement("Dim xml = <!-- test -->",
 			              @"var xml = new XComment("" test "");");
+		}
+		
+		[Test]
+		public void XmlCData()
+		{
+			TestStatement("Dim xml = <![CDATA[any & <> char]]>",
+			              @"var xml = new XCData(""any & <> char"");");
+		}
+		
+		[Test]
+		public void XmlProcessingInstruction()
+		{
+			TestStatement("Dim xml = <?target testcontent?>",
+			              @"var xml = new XProcessingInstruction(""target"", "" testcontent"");");
+		}
+		
+		[Test]
+		public void XmlDocumentTest()
+		{
+			TestStatement(@"Dim xml = <?xml version=""1.0""?><!-- test --><Data a='true'><A/></Data><!-- test -->",
+			              @"var xml = new XDocument(new XDeclaration(""1.0"", null, null), new XComment("" test ""), new XElement(""Data"", new XAttribute(""a"", ""true""), new XElement(""A"")), new XComment("" test ""));");
+		}
+		
+		
+		[Test]
+		public void XmlDocumentTest2()
+		{
+			TestStatement(@"Dim xml = <?xml?><!-- test --><Data a='true'><A/></Data><!-- test -->",
+			              @"var xml = new XDocument(new XDeclaration(null, null, null), new XComment("" test ""), new XElement(""Data"", new XAttribute(""a"", ""true""), new XElement(""A"")), new XComment("" test ""));");
+		}
+		
+		[Test]
+		public void XmlDocumentTest3()
+		{
+			TestStatement(@"Dim xml = <?xml version=""1.0"" encoding=""utf-8""?><!-- test --><Data a='true'><A/></Data><!-- test -->",
+			              @"var xml = new XDocument(new XDeclaration(""1.0"", ""utf-8"", null), new XComment("" test ""), new XElement(""Data"", new XAttribute(""a"", ""true""), new XElement(""A"")), new XComment("" test ""));");
+		}
+		
+		[Test]
+		public void XmlDocumentTest4()
+		{
+			TestStatement(@"Dim xml = <?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?><!-- test --><Data a='true'><A <%= content %> /></Data><!-- test -->",
+			              @"var xml = new XDocument(new XDeclaration(""1.0"", ""utf-8"", ""yes""), new XComment("" test ""), new XElement(""Data"", new XAttribute(""a"", ""true""), new XElement(""A"", content)), new XComment("" test ""));");
+		}
+		
+		[Test]
+		public void XmlEmbeddedExpression()
+		{
+			TestStatement(@"Dim xml = <<%= name %>>Test</>",
+			              @"var xml = new XElement(name, new XText(""Test""));");
+		}
+		
+		[Test]
+		public void XmlEmbeddedExpression2()
+		{
+			TestStatement(@"Dim xml = <<%= name %>><%= content %></>",
+			              @"var xml = new XElement(name, content);");
 		}
 	}
 }

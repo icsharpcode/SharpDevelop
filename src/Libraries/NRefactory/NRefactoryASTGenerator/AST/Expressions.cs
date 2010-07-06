@@ -431,7 +431,7 @@ namespace NRefactoryASTGenerator.Ast
 	}
 	
 	[IncludeBoolProperty("IsLiteralValue", "return expressionValue.IsNull;")]
-	class XmlAttribute : XmlExpression {
+	class XmlAttributeExpression : XmlExpression {
 		string name;
 		string literalValue;
 		bool useDoubleQuotes;

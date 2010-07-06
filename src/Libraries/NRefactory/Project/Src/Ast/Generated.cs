@@ -5458,7 +5458,7 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 		}
 	}
 	
-	public class XmlAttribute : XmlExpression {
+	public class XmlAttributeExpression : XmlExpression {
 		
 		string name;
 		
@@ -5505,7 +5505,7 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			}
 		}
 		
-		public XmlAttribute() {
+		public XmlAttributeExpression() {
 			name = "";
 			literalValue = "";
 			expressionValue = Expression.Null;
@@ -5518,11 +5518,12 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitXmlAttribute(this, data);
+			return visitor.VisitXmlAttributeExpression(this, data);
 		}
 		
 		public override string ToString() {
-			return string.Format("[XmlAttribute Name={0} LiteralValue={1} UseDoubleQuotes={2} ExpressionValue={3}]", Name, LiteralValue, UseDoubleQuotes, ExpressionValue);
+			return string.Format("[XmlAttributeExpression Name={0} LiteralValue={1} UseDoubleQuotes={2} ExpressionV" +
+					"alue={3}]", Name, LiteralValue, UseDoubleQuotes, ExpressionValue);
 		}
 	}
 	

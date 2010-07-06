@@ -265,7 +265,7 @@ namespace NRefactoryToBooConverter
 			throw new NotImplementedException();
 		}
 		
-		public object VisitXmlAttribute(XmlAttribute xmlAttribute, object data)
+		public object VisitXmlAttributeExpression(XmlAttributeExpression xmlAttributeExpression, object data)
 		{
 			throw new NotImplementedException();
 		}

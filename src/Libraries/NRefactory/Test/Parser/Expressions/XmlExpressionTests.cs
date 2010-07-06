@@ -73,8 +73,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual("Test", element.XmlName);
 			Assert.IsNotEmpty(element.Attributes);
 			Assert.AreEqual(1, element.Attributes.Count);
-			Assert.IsTrue(element.Attributes[0] is XmlAttribute);
-			XmlAttribute attribute = element.Attributes[0] as XmlAttribute;
+			Assert.IsTrue(element.Attributes[0] is XmlAttributeExpression);
+			XmlAttributeExpression attribute = element.Attributes[0] as XmlAttributeExpression;
 			Assert.AreEqual("id", attribute.Name);
 			Assert.IsTrue(attribute.IsLiteralValue);
 			Assert.IsTrue(attribute.ExpressionValue.IsNull);
@@ -94,8 +94,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.IsNotEmpty(element.Attributes);
 			Assert.AreEqual(3, element.Attributes.Count);
 			
-			Assert.IsTrue(element.Attributes[0] is XmlAttribute);
-			XmlAttribute attribute = element.Attributes[0] as XmlAttribute;
+			Assert.IsTrue(element.Attributes[0] is XmlAttributeExpression);
+			XmlAttributeExpression attribute = element.Attributes[0] as XmlAttributeExpression;
 			Assert.AreEqual("id", attribute.Name);
 			Assert.IsTrue(attribute.IsLiteralValue);
 			Assert.IsTrue(attribute.ExpressionValue.IsNull);
@@ -103,8 +103,8 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual(new Location(7,1), attribute.StartLocation);
 			Assert.AreEqual(new Location(13,1), attribute.EndLocation);
 			
-			Assert.IsTrue(element.Attributes[1] is XmlAttribute);
-			XmlAttribute attribute2 = element.Attributes[1] as XmlAttribute;
+			Assert.IsTrue(element.Attributes[1] is XmlAttributeExpression);
+			XmlAttributeExpression attribute2 = element.Attributes[1] as XmlAttributeExpression;
 			Assert.AreEqual("name", attribute2.Name);
 			Assert.IsFalse(attribute2.IsLiteralValue);
 			Assert.IsFalse(attribute2.ExpressionValue.IsNull);
@@ -140,16 +140,16 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void VBNetElementWithAttributeTest()
 		{
 			XmlElementExpression element = ParseUtilVBNet.ParseExpression<XmlElementExpression>("<Test id='0'>\n" +
-			                                                                                "	<Item />\n" +
-			                                                                                "	<Item />\n" +
-			                                                                                "</Test>");
+			                                                                                    "	<Item />\n" +
+			                                                                                    "	<Item />\n" +
+			                                                                                    "</Test>");
 			Assert.IsFalse(element.NameIsExpression);
 			Assert.AreEqual("Test", element.XmlName);
 			
 			Assert.IsNotEmpty(element.Attributes);
 			Assert.AreEqual(1, element.Attributes.Count);
-			Assert.IsTrue(element.Attributes[0] is XmlAttribute);
-			XmlAttribute attribute = element.Attributes[0] as XmlAttribute;
+			Assert.IsTrue(element.Attributes[0] is XmlAttributeExpression);
+			XmlAttributeExpression attribute = element.Attributes[0] as XmlAttributeExpression;
 			Assert.AreEqual("id", attribute.Name);
 			Assert.IsTrue(attribute.IsLiteralValue);
 			Assert.IsTrue(attribute.ExpressionValue.IsNull);
@@ -175,18 +175,18 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		public void VBNetElementWithMixedContentTest()
 		{
 			XmlElementExpression element = ParseUtilVBNet.ParseExpression<XmlElementExpression>("<Test id='0'>\n" +
-			                                                                                "	<!-- test -->\n" +
-			                                                                                "	<Item />\n" +
-			                                                                                "	<Item />\n" +
-			                                                                                "	<![CDATA[<cdata> section]]>\n" +
-			                                                                                "</Test>");
+			                                                                                    "	<!-- test -->\n" +
+			                                                                                    "	<Item />\n" +
+			                                                                                    "	<Item />\n" +
+			                                                                                    "	<![CDATA[<cdata> section]]>\n" +
+			                                                                                    "</Test>");
 			Assert.IsFalse(element.NameIsExpression);
 			Assert.AreEqual("Test", element.XmlName);
 			
 			Assert.IsNotEmpty(element.Attributes);
 			Assert.AreEqual(1, element.Attributes.Count);
-			Assert.IsTrue(element.Attributes[0] is XmlAttribute);
-			XmlAttribute attribute = element.Attributes[0] as XmlAttribute;
+			Assert.IsTrue(element.Attributes[0] is XmlAttributeExpression);
+			XmlAttributeExpression attribute = element.Attributes[0] as XmlAttributeExpression;
 			Assert.AreEqual("id", attribute.Name);
 			Assert.IsTrue(attribute.IsLiteralValue);
 			Assert.IsTrue(attribute.ExpressionValue.IsNull);
@@ -213,15 +213,28 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
+		public void VBNetElementWithMixedContentTest2()
+		{
+			XmlElementExpression element = ParseUtilVBNet.ParseExpression<XmlElementExpression>("<Test>  aaaa	</Test>");
+			Assert.IsFalse(element.NameIsExpression);
+			Assert.AreEqual("Test", element.XmlName);
+			
+			Assert.IsNotEmpty(element.Children);
+			Assert.AreEqual(1, element.Children.Count);
+			
+			CheckContent(element.Children[0], "  aaaa	", XmlContentType.Text, new Location(7,1), new Location(14,1));
+		}
+		
+		[Test]
 		public void VBNetProcessingInstructionAndCommentAtEndTest()
 		{
 			XmlDocumentExpression document = ParseUtilVBNet.ParseExpression<XmlDocumentExpression>("<Test />\n" +
-			                                                                                "<!-- test -->\n" +
-			                                                                                "<?target some text?>");
+			                                                                                       "<!-- test -->\n" +
+			                                                                                       "<?target some text?>");
 			Assert.IsNotEmpty(document.Expressions);
 			Assert.AreEqual(3, document.Expressions.Count);
 			
-			CheckElement(document.Expressions[0], "Test", new Location(1,1), new Location(9,1));			
+			CheckElement(document.Expressions[0], "Test", new Location(1,1), new Location(9,1));
 			CheckContent(document.Expressions[1], " test ", XmlContentType.Comment, new Location(1,2), new Location(14,2));
 			CheckContent(document.Expressions[2], "target some text", XmlContentType.ProcessingInstruction, new Location(1,3), new Location(21,3));
 		}

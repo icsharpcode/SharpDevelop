@@ -5,11 +5,15 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NRefactory.AstBuilder;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Xml;
+using System.Xml.Linq;
+
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.AstBuilder;
 using Attribute = ICSharpCode.NRefactory.Ast.Attribute;
 
 namespace ICSharpCode.NRefactory.Visitors
@@ -29,6 +33,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		//   Array creation => add 1 to upper bound to get array length
 		//   Comparison with empty string literal -> string.IsNullOrEmpty
 		//   Add default value to local variable declarations without initializer
+		//   XML literals -> XLinq
 		
 		/// <summary>
 		/// Specifies whether the "Add default value to local variable declarations without initializer"
@@ -523,6 +528,118 @@ namespace ICSharpCode.NRefactory.Visitors
 			if (optionDeclaration.OptionType == OptionType.Strict)
 				OptionStrict = optionDeclaration.OptionValue;
 			return base.VisitOptionDeclaration(optionDeclaration, data);
+		}
+		
+		public override object VisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data)
+		{
+
+			ObjectCreateExpression newNode = ConvertXmlContentExpression(xmlContentExpression);
+			
+			if (newNode == null)
+				return base.VisitXmlContentExpression(xmlContentExpression, data);
+			
+			ReplaceCurrentNode(newNode);
+			
+			return base.VisitObjectCreateExpression(newNode, data);
+		}
+
+		ObjectCreateExpression ConvertXmlContentExpression(XmlContentExpression xmlContentExpression)
+		{
+			ObjectCreateExpression newNode = null;
+			switch (xmlContentExpression.Type) {
+				case XmlContentType.Comment:
+					newNode = new ObjectCreateExpression(new TypeReference("XComment"), Expressions(xmlContentExpression.Content));
+					break;
+				case XmlContentType.Text:
+					newNode = new ObjectCreateExpression(new TypeReference("XText"), Expressions(xmlContentExpression.Content));
+					break;
+				case XmlContentType.CData:
+					newNode = new ObjectCreateExpression(new TypeReference("XCData"), Expressions(xmlContentExpression.Content));
+					break;
+				case XmlContentType.ProcessingInstruction:
+					string content = xmlContentExpression.Content.Trim();
+					if (content.StartsWith("xml", StringComparison.OrdinalIgnoreCase)) {
+						XDeclaration decl;
+						try {
+							decl = XDocument.Parse("<?" + content + "?><Dummy />").Declaration;
+						} catch (XmlException) {
+							decl = new XDeclaration(null, null, null);
+						}
+						newNode = new ObjectCreateExpression(new TypeReference("XDeclaration"), Expressions(decl.Version, decl.Encoding, decl.Standalone));
+					} else {
+						string target = content.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "";
+						string piData = content.IndexOf(' ') > -1 ? content.Substring(content.IndexOf(' ')) : "";
+						newNode = new ObjectCreateExpression(new TypeReference("XProcessingInstruction"), Expressions(target, piData));
+					}
+					break;
+				default:
+					throw new Exception("Invalid value for XmlContentType");
+			}
+			return newNode;
+		}
+		
+		public override object VisitXmlDocumentExpression(XmlDocumentExpression xmlDocumentExpression, object data)
+		{
+			var newNode = new ObjectCreateExpression(new TypeReference("XDocument"), null);
+			
+			foreach (XmlExpression expr in xmlDocumentExpression.Expressions)
+				newNode.Parameters.Add(ConvertXmlExpression(expr));
+			
+			ReplaceCurrentNode(newNode);
+			
+			return base.VisitObjectCreateExpression(newNode, data);
+		}
+		
+		public override object VisitXmlElementExpression(XmlElementExpression xmlElementExpression, object data)
+		{
+			ObjectCreateExpression newNode = ConvertXmlElementExpression(xmlElementExpression);
+			
+			ReplaceCurrentNode(newNode);
+			
+			return base.VisitObjectCreateExpression(newNode, data);
+		}
+
+		ObjectCreateExpression ConvertXmlElementExpression(XmlElementExpression xmlElementExpression)
+		{
+			var newNode = new ObjectCreateExpression(new TypeReference("XElement"), xmlElementExpression.NameIsExpression ? new List<Expression> { xmlElementExpression.NameExpression } : Expressions(xmlElementExpression.XmlName));
+			
+			foreach (XmlExpression attr in xmlElementExpression.Attributes) {
+				if (attr is XmlAttributeExpression) {
+					var a = attr as XmlAttributeExpression;
+					newNode.Parameters.Add(new ObjectCreateExpression(new TypeReference("XAttribute"), new List<Expression> {
+					                                                  	new PrimitiveExpression(a.Name),
+					                                                  	a.IsLiteralValue ? new PrimitiveExpression(a.LiteralValue) : a.ExpressionValue
+					                                                  }));
+				} else if (attr is XmlEmbeddedExpression) {
+					newNode.Parameters.Add((attr as XmlEmbeddedExpression).InlineVBExpression);
+				}
+			}
+			
+			foreach (XmlExpression expr in xmlElementExpression.Children) {
+				XmlContentExpression c = expr as XmlContentExpression;
+				// skip whitespace text
+				if (!(expr is XmlContentExpression && c.Type == XmlContentType.Text && string.IsNullOrWhiteSpace(c.Content)))
+					newNode.Parameters.Add(ConvertXmlExpression(expr));
+			}
+			
+			return newNode;
+		}
+		
+		Expression ConvertXmlExpression(XmlExpression expr)
+		{
+			if (expr is XmlElementExpression)
+				return ConvertXmlElementExpression(expr as XmlElementExpression);
+			else if (expr is XmlContentExpression)
+				return ConvertXmlContentExpression(expr as XmlContentExpression);
+			else if (expr is XmlEmbeddedExpression)
+				return (expr as XmlEmbeddedExpression).InlineVBExpression;
+			
+			throw new Exception();
+		}
+		
+		List<Expression> Expressions(params string[] exprs)
+		{
+			return new List<Expression>(exprs.Select(expr => new PrimitiveExpression(expr)));
 		}
 	}
 }

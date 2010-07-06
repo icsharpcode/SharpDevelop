@@ -2244,12 +2244,12 @@ namespace ICSharpCode.NRefactory.Visitors {
 			return null;
 		}
 		
-		public virtual object VisitXmlAttribute(XmlAttribute xmlAttribute, object data) {
-			Debug.Assert((xmlAttribute != null));
-			Debug.Assert((xmlAttribute.ExpressionValue != null));
-			nodeStack.Push(xmlAttribute.ExpressionValue);
-			xmlAttribute.ExpressionValue.AcceptVisitor(this, data);
-			xmlAttribute.ExpressionValue = ((Expression)(nodeStack.Pop()));
+		public virtual object VisitXmlAttributeExpression(XmlAttributeExpression xmlAttributeExpression, object data) {
+			Debug.Assert((xmlAttributeExpression != null));
+			Debug.Assert((xmlAttributeExpression.ExpressionValue != null));
+			nodeStack.Push(xmlAttributeExpression.ExpressionValue);
+			xmlAttributeExpression.ExpressionValue.AcceptVisitor(this, data);
+			xmlAttributeExpression.ExpressionValue = ((Expression)(nodeStack.Pop()));
 			return null;
 		}
 		

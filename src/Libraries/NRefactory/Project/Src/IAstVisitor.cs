@@ -261,7 +261,7 @@ namespace ICSharpCode.NRefactory {
 		
 		object VisitWithStatement(WithStatement withStatement, object data);
 		
-		object VisitXmlAttribute(XmlAttribute xmlAttribute, object data);
+		object VisitXmlAttributeExpression(XmlAttributeExpression xmlAttributeExpression, object data);
 		
 		object VisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data);
 		

@@ -4794,7 +4794,7 @@ out expressionValue);
 			} else SynErr(290);
 
 #line  1847 "VBNET.ATG" 
-			attrs.Add(new XmlAttribute() { Name = name, ExpressionValue = expressionValue, LiteralValue = literalValue, UseDoubleQuotes = useDoubleQuotes, StartLocation = start, EndLocation = t.EndLocation }); 
+			attrs.Add(new XmlAttributeExpression() { Name = name, ExpressionValue = expressionValue, LiteralValue = literalValue, UseDoubleQuotes = useDoubleQuotes, StartLocation = start, EndLocation = t.EndLocation }); 
 		} else if (la.kind == 12) {
 			lexer.NextToken();
 

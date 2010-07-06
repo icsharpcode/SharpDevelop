@@ -3188,22 +3188,22 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public override object TrackedVisitXmlAttribute(XmlAttribute xmlAttribute, object data)
+		public override object TrackedVisitXmlAttributeExpression(XmlAttributeExpression xmlAttributeExpression, object data)
 		{
-			outputFormatter.PrintText(xmlAttribute.Name);
+			outputFormatter.PrintText(xmlAttributeExpression.Name);
 			outputFormatter.PrintToken(Tokens.Assign);
-			if (xmlAttribute.IsLiteralValue) {
-				if (xmlAttribute.UseDoubleQuotes)
+			if (xmlAttributeExpression.IsLiteralValue) {
+				if (xmlAttributeExpression.UseDoubleQuotes)
 					outputFormatter.PrintText("\"");
 				else
 					outputFormatter.PrintText("'");
-				outputFormatter.PrintText(xmlAttribute.LiteralValue);
-				if (xmlAttribute.UseDoubleQuotes)
+				outputFormatter.PrintText(xmlAttributeExpression.LiteralValue);
+				if (xmlAttributeExpression.UseDoubleQuotes)
 					outputFormatter.PrintText("\"");
 				else
 					outputFormatter.PrintText("'");
 			} else
-				xmlAttribute.ExpressionValue.AcceptVisitor(this, data);
+				xmlAttributeExpression.ExpressionValue.AcceptVisitor(this, data);
 			return null;
 		}
 		
