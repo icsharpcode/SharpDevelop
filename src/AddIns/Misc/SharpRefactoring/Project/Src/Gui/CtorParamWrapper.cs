@@ -22,31 +22,61 @@ namespace SharpRefactoring.Gui
 {
 	public class CtorParamWrapper : INotifyPropertyChanged
 	{
-		IField field;
+		/// <summary>
+		/// Underlying member. Always IField or IProperty.
+		/// </summary>
+		readonly IMember member;
+		
+		public CtorParamWrapper(IMember member)
+		{
+			if (member == null || member.ReturnType == null)
+				throw new ArgumentNullException("field");
+			if (!(member is IField || member is IProperty))
+				throw new ArgumentException("member must be IField or IProperty");
+			
+			this.member = member;
+		}
+		
+		public string MemberName {
+			get { return member.Name; }
+		}
+		
+		string parameterName;
+		public string ParameterName {
+			get { 
+				if (parameterName == null)
+					parameterName = ToParameterName(this.MemberName);
+				return parameterName;
+			}
+		}
+		
+		public IReturnType Type {
+			get { return member.ReturnType; }
+		}
+		
+		public int Index { get; set; }
 		
 		public string Text {
-			get { return field.ProjectContent.Language.GetAmbience().Convert(field); }
+			get { return member.ProjectContent.Language.GetAmbience().Convert(member); }
 		}
 		
 		public bool IsNullable {
 			get {
-				return field.ReturnType.IsReferenceType == true ||
-					field.ReturnType.IsConstructedReturnType && field.ReturnType.Name == "Nullable";
+				return member.ReturnType.IsReferenceType == true ||
+					member.ReturnType.IsConstructedReturnType && member.ReturnType.Name == "Nullable";
 			}
 		}
 		
 		public bool HasRange {
 			get {
-				return (field.ReturnType.IsConstructedReturnType &&
-				        IsTypeWithRange(field.ReturnType.CastToConstructedReturnType().TypeArguments.First())
-				       ) || IsTypeWithRange(field.ReturnType);
+				return IsTypeWithRange(member.ReturnType) ||
+					// IsConstructedReturnType handles Nullable types
+					(member.ReturnType.IsConstructedReturnType &&
+					 IsTypeWithRange(member.ReturnType.CastToConstructedReturnType().TypeArguments.First()));
 			}
 		}
 		
-		public int Index { get; set; }
-		
 		bool isSelected;
-		
 		public bool IsSelected {
 			get { return isSelected; }
 			set {
@@ -56,7 +86,6 @@ namespace SharpRefactoring.Gui
 		}
 		
 		bool addCheckForNull;
-		
 		public bool AddCheckForNull {
 			get { return addCheckForNull; }
 			set {
@@ -66,21 +95,12 @@ namespace SharpRefactoring.Gui
 		}
 		
 		bool addRangeCheck;
-		
 		public bool AddRangeCheck {
 			get { return addRangeCheck; }
 			set {
 				addRangeCheck = value;
-				if (value) IsSelected = true; 
+				if (value) IsSelected = true;
 			}
-		}
-		
-		public string Name {
-			get { return field.Name; }
-		}
-		
-		public IReturnType Type {
-			get { return field.ReturnType; }
 		}
 		
 		bool IsTypeWithRange(IReturnType type)
@@ -95,12 +115,11 @@ namespace SharpRefactoring.Gui
 				type.Name == "UInt64";
 		}
 		
-		public CtorParamWrapper(IField field)
+		static string ToParameterName(string memberName)
 		{
-			if (field == null || field.ReturnType == null)
-				throw new ArgumentNullException("field");
-			
-			this.field = field;
+			if (string.IsNullOrEmpty(memberName))
+				return memberName;
+			return char.ToLower(memberName[0]) + memberName.Substring(1);
 		}
 		
 		public event PropertyChangedEventHandler PropertyChanged;

@@ -33,15 +33,23 @@ namespace SharpRefactoring.Gui
 		{
 			InitializeComponent();
 			
-			this.varList.ItemsSource = paramList = CreateCtorParams(current.Fields).ToList();
+			this.varList.ItemsSource = paramList = CreateCtorParams(current.Fields, current.Properties).
+				// "Add check for null" is checked for every item by default
+				//Select(w => { if(w.IsNullable) w.AddCheckForNull = true; return w; }).
+				ToList();
 		}
 		
-		IEnumerable<CtorParamWrapper> CreateCtorParams(IEnumerable<IField> fields)
+		IEnumerable<CtorParamWrapper> CreateCtorParams(IEnumerable<IField> fields, IEnumerable<IProperty> properties)
 		{
 			int i = 0;
 			
-			foreach (IField f in fields) {
-				yield return new CtorParamWrapper(f) { Index = i, IsSelected = f.IsReadonly };
+			foreach (var f in fields) {
+				yield return new CtorParamWrapper(f) { Index = i, IsSelected = !f.IsReadonly };
+				i++;
+			}
+			
+			foreach (var p in properties.Where(prop => prop.CanSet && !prop.IsIndexer)) {
+				yield return new CtorParamWrapper(p) { Index = i, IsSelected = !p.IsReadonly };
 				i++;
 			}
 		}
@@ -63,15 +71,15 @@ namespace SharpRefactoring.Gui
 					if (w.Type.IsReferenceType == true)
 						block.AddChild(
 							new IfElseStatement(
-								new BinaryOperatorExpression(new IdentifierExpression(w.Name), BinaryOperatorType.Equality, new PrimitiveExpression(null)),
-								new ThrowStatement(new ObjectCreateExpression(new TypeReference("ArgumentNullException"), new List<Expression>() { new PrimitiveExpression(w.Name, '"' + w.Name + '"') }))
+								new BinaryOperatorExpression(new IdentifierExpression(w.ParameterName), BinaryOperatorType.Equality, new PrimitiveExpression(null)),
+								new ThrowStatement(new ObjectCreateExpression(new TypeReference("ArgumentNullException"), new List<Expression>() { new PrimitiveExpression(w.ParameterName, '"' + w.ParameterName + '"') }))
 							)
 						);
 					else
 						block.AddChild(
 							new IfElseStatement(
-								new UnaryOperatorExpression(new MemberReferenceExpression(new IdentifierExpression(w.Name), "HasValue"), UnaryOperatorType.Not),
-								new ThrowStatement(new ObjectCreateExpression(new TypeReference("ArgumentNullException"), new List<Expression>() { new PrimitiveExpression(w.Name, '"' + w.Name + '"') }))
+								new UnaryOperatorExpression(new MemberReferenceExpression(new IdentifierExpression(w.MemberName), "HasValue"), UnaryOperatorType.Not),
+								new ThrowStatement(new ObjectCreateExpression(new TypeReference("ArgumentNullException"), new List<Expression>() { new PrimitiveExpression(w.ParameterName, '"' + w.ParameterName + '"') }))
 							)
 						);
 				}
@@ -79,14 +87,14 @@ namespace SharpRefactoring.Gui
 					block.AddChild(
 						new IfElseStatement(
 							new BinaryOperatorExpression(
-								new BinaryOperatorExpression(new IdentifierExpression(w.Name), BinaryOperatorType.LessThan, new IdentifierExpression("lower")),
+								new BinaryOperatorExpression(new IdentifierExpression(w.ParameterName), BinaryOperatorType.LessThan, new IdentifierExpression("lower")),
 								BinaryOperatorType.LogicalOr,
-								new BinaryOperatorExpression(new IdentifierExpression(w.Name), BinaryOperatorType.GreaterThan, new IdentifierExpression("upper"))
+								new BinaryOperatorExpression(new IdentifierExpression(w.ParameterName), BinaryOperatorType.GreaterThan, new IdentifierExpression("upper"))
 							),
 							new ThrowStatement(
 								new ObjectCreateExpression(
 									new TypeReference("ArgumentOutOfRangeException"),
-									new List<Expression>() { new PrimitiveExpression(w.Name, '"' + w.Name + '"'), new IdentifierExpression(w.Name), new BinaryOperatorExpression(new PrimitiveExpression("Value must be between "), BinaryOperatorType.Add, new BinaryOperatorExpression(new IdentifierExpression("lower"), BinaryOperatorType.Add, new BinaryOperatorExpression(new PrimitiveExpression(" and "), BinaryOperatorType.Add, new IdentifierExpression("upper")))) }
+									new List<Expression>() { new PrimitiveExpression(w.ParameterName, '"' + w.ParameterName + '"'), new IdentifierExpression(w.ParameterName), new BinaryOperatorExpression(new PrimitiveExpression("Value must be between "), BinaryOperatorType.Add, new BinaryOperatorExpression(new IdentifierExpression("lower"), BinaryOperatorType.Add, new BinaryOperatorExpression(new PrimitiveExpression(" and "), BinaryOperatorType.Add, new IdentifierExpression("upper")))) }
 								)
 							)
 						)
@@ -95,9 +103,9 @@ namespace SharpRefactoring.Gui
 			}
 			
 			foreach (CtorParamWrapper w in filtered)
-				block.AddChild(new ExpressionStatement(new AssignmentExpression(new MemberReferenceExpression(new ThisReferenceExpression(), w.Name), AssignmentOperatorType.Assign, new IdentifierExpression(w.Name))));
+				block.AddChild(new ExpressionStatement(new AssignmentExpression(new MemberReferenceExpression(new ThisReferenceExpression(), w.MemberName), AssignmentOperatorType.Assign, new IdentifierExpression(w.ParameterName))));
 			
-			ConstructorDeclaration ctor = new ConstructorDeclaration(currentClass.Name, Modifiers.Public, filtered.Select(p => new ParameterDeclarationExpression(ConvertType(p.Type), p.Name)).ToList(), null) {
+			ConstructorDeclaration ctor = new ConstructorDeclaration(currentClass.Name, Modifiers.Public, filtered.Select(p => new ParameterDeclarationExpression(ConvertType(p.Type), p.ParameterName)).ToList(), null) {
 				Body = block
 			};
 			
