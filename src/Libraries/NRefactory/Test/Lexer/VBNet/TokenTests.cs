@@ -10,7 +10,7 @@ using System;
 using ICSharpCode.NRefactory.Parser;
 using NUnit.Framework;
 
-namespace VBParserExperiment
+namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 {
 	[TestFixture]
 	public class TokenTests

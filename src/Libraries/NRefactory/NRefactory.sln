@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.0.0.5897
+# SharpDevelop 4.0.0.5967
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactory", "Project\NRefactory.csproj", "{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactoryTests", "Test\NRefactoryTests.csproj", "{870115DD-960A-4406-A6B9-600BCDC36A03}"
@@ -9,8 +9,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactoryASTGenerator", "NRefactoryASTGenerator\NRefactoryASTGenerator.csproj", "{B22522AA-B5BF-4A58-AC6D-D4B45805521F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactoryDemo", "..\..\..\samples\NRefactoryDemo\NRefactoryDemo.csproj", "{63199047-9D5D-474C-B3CC-62ABBB071B67}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VBParserExperiment", "Project\Src\Parser\VBNet\Experimental\Test\VBParserExperiment.csproj", "{A21BF46E-27BC-4DCA-AB11-462BE5B0B028}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,14 +34,6 @@ Global
 		{63199047-9D5D-474C-B3CC-62ABBB071B67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{63199047-9D5D-474C-B3CC-62ABBB071B67}.Release|Any CPU.Build.0 = Release|Any CPU
 		{63199047-9D5D-474C-B3CC-62ABBB071B67}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A21BF46E-27BC-4DCA-AB11-462BE5B0B028}.Debug|Any CPU.Build.0 = Debug|x86
-		{A21BF46E-27BC-4DCA-AB11-462BE5B0B028}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{A21BF46E-27BC-4DCA-AB11-462BE5B0B028}.Debug|x86.Build.0 = Debug|x86
-		{A21BF46E-27BC-4DCA-AB11-462BE5B0B028}.Debug|x86.ActiveCfg = Debug|x86
-		{A21BF46E-27BC-4DCA-AB11-462BE5B0B028}.Release|Any CPU.Build.0 = Release|x86
-		{A21BF46E-27BC-4DCA-AB11-462BE5B0B028}.Release|Any CPU.ActiveCfg = Release|x86
-		{A21BF46E-27BC-4DCA-AB11-462BE5B0B028}.Release|x86.Build.0 = Release|x86
-		{A21BF46E-27BC-4DCA-AB11-462BE5B0B028}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

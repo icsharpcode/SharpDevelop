@@ -8,10 +8,10 @@
 
 using System;
 using System.IO;
-using ICSharpCode.NRefactory.Parser.VBNet.Experimental;
+using ICSharpCode.NRefactory.Parser;
 using NUnit.Framework;
 
-namespace VBParserExperiment
+namespace ICSharpCode.NRefactory.Tests.Lexer
 {
 	[TestFixture]
 	public class LATextReaderTests

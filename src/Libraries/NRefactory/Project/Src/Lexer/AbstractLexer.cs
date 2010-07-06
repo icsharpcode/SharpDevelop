@@ -11,8 +11,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-using ICSharpCode.NRefactory.Parser.VBNet.Experimental;
-
 namespace ICSharpCode.NRefactory.Parser
 {
 	/// <summary>

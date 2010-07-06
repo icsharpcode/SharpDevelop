@@ -14,9 +14,6 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.Parser.VBNet.Experimental;
-
 namespace ICSharpCode.NRefactory.Parser.VB
 {
 	internal sealed class Lexer : AbstractLexer

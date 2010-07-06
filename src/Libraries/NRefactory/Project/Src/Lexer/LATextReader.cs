@@ -9,11 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
+namespace ICSharpCode.NRefactory.Parser
 {
-	/// <summary>
-	/// Description of LATextReader.
-	/// </summary>
 	public class LATextReader : TextReader
 	{
 		List<int> buffer;

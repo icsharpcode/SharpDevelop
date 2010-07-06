@@ -12,7 +12,7 @@ using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
 using NUnit.Framework;
 
-namespace VBParserExperiment
+namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 {
 	[TestFixture]
 	public class ImplicitLineContinuationTests

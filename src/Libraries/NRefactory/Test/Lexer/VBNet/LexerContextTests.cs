@@ -7,16 +7,15 @@
 
 using System;
 using System.IO;
-using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
-using VB = ICSharpCode.NRefactory.Parser.VB;
-using ICSharpCode.NRefactory.Parser.VBNet.Experimental;
+using ICSharpCode.NRefactory.Parser.VB;
 using NUnit.Framework;
+using VBParser = ICSharpCode.NRefactory.Parser.VB;
 
-namespace VBParserExperiment
+namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 {
 	[TestFixture]
-	public class ParserTests
+	public class LexerContextTests
 	{
 		[Test]
 		public void SimpleGlobal()
@@ -299,7 +298,7 @@ exit Global
 			do {
 				t = lexer.NextToken();
 				p.InformToken(t);
-			} while (t.Kind != VB.Tokens.EOF);
+			} while (t.Kind != VBParser.Tokens.EOF);
 			
 			Console.WriteLine(p.Output);
 			

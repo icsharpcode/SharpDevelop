@@ -9,7 +9,7 @@ using ASTAttribute = ICSharpCode.NRefactory.Ast.Attribute;
 
 
 
-namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental {
+namespace ICSharpCode.NRefactory.Parser.VB {
 
 
 

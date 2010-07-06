@@ -9,9 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ICSharpCode.NRefactory.Parser.VB;
 
-namespace ICSharpCode.NRefactory.Parser.VBNet.Experimental
+namespace ICSharpCode.NRefactory.Parser.VB
 {
 	public partial class ExpressionFinder
 	{

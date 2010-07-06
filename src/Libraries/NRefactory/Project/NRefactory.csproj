@@ -60,9 +60,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\Parser\VBNet\Experimental\ExpressionFinder.cs" />
-    <Compile Include="Src\Parser\VBNet\Experimental\LATextReader.cs" />
-    <Compile Include="Src\Parser\VBNet\Experimental\Parser.cs">
+    <Compile Include="Src\Lexer\LATextReader.cs" />
+    <Compile Include="Src\Lexer\VBNet\ExpressionFinder.cs" />
+    <Compile Include="Src\Lexer\VBNet\Parser.cs">
       <DependentUpon>ExpressionFinder.atg</DependentUpon>
     </Compile>
     <None Include="Resources\ICSharpCode.NRefactory.snk" />
@@ -143,20 +143,14 @@
     <Compile Include="Src\Ast\TypeReference.cs" />
     <Compile Include="Src\Parser\VBNet\ParamModifierList.cs" />
     <Compile Include="Src\Visitors\NodeTrackingAstVisitor.cs" />
-    <None Include="Src\Parser\Frames\Parser.frame" />
-    <None Include="Src\Parser\VBNet\Experimental\ExpressionFinder.atg">
+    <None Include="Src\Lexer\VBNet\ExpressionFinder.atg">
       <Generator>CocoParserGenerator</Generator>
-      <CustomToolNamespace>ICSharpCode.NRefactory.Parser.VBNet.Experimental</CustomToolNamespace>
+      <CustomToolNamespace>ICSharpCode.NRefactory.Parser.VB</CustomToolNamespace>
     </None>
-    <None Include="Src\Parser\VBNet\Experimental\Parser.frame">
+    <None Include="Src\Lexer\VBNet\PushParser.frame">
       <DependentUpon>ExpressionFinder.atg</DependentUpon>
     </None>
-    <None Include="Src\Parser\VBNet\Experimental\PushParser.frame">
-      <DependentUpon>ExpressionFinder.atg</DependentUpon>
-    </None>
-    <None Include="Src\Parser\VBNet\Experimental\Scanner.frame">
-      <DependentUpon>ExpressionFinder.atg</DependentUpon>
-    </None>
+    <None Include="Src\Parser\Frames\Parser.frame" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Src\Lexer\CSharp\KeywordList.txt" />
@@ -174,7 +168,6 @@
       <CustomToolNamespace>ICSharpCode.NRefactory.Parser.VB</CustomToolNamespace>
     </None>
     <Content Include="Src\Parser\gen.bat" />
-    <Folder Include="Src\Parser\VBNet\Experimental" />
     <Folder Include="Src\PrettyPrinter" />
     <Folder Include="Src\PrettyPrinter\CSharp" />
     <Folder Include="Src\PrettyPrinter\VBNet" />
