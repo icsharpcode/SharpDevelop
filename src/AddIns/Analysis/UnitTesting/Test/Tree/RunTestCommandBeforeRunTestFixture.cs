@@ -153,7 +153,7 @@ namespace UnitTesting.Tests.Tree
 		public void BuildProjectBeforeTestRunIsCreatedWhenRunMethodCalled()
 		{
 			runTestCommand.Run();
-			Assert.AreEqual(project, buildProjectBeforeTestRun.Project);
+			Assert.AreEqual(new[] { project }, buildProjectBeforeTestRun.Projects);
 		}
 		
 		[Test]

@@ -55,6 +55,9 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
@@ -94,7 +97,6 @@
     <Compile Include="Project\TwoBaseClassesWithTestMethodsTestFixture.cs" />
     <Compile Include="Tree\AddNUnitReferenceToProjectTestFixture.cs" />
     <Compile Include="Tree\BuildErrorWhenRunningTestsTestFixture.cs" />
-    <Compile Include="Tree\BuildProjectBeforeTestRunTestFixture.cs" />
     <Compile Include="Tree\ClassTestFixtureSelectedTestFixture.cs" />
     <Compile Include="Tree\GoToSelectedBaseClassMethodTestFixture.cs" />
     <Compile Include="Tree\GoToSelectedClassTestFixture.cs" />

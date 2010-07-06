@@ -57,6 +57,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\MultipleProjectBuildable.cs" />
     <Compile Include="Src\UnitTestAddInTree.cs" />
     <Compile Include="Src\UnitTestBuildOptions.cs" />
     <Compile Include="Src\UnitTestBuildProjectFactory.cs" />
@@ -74,7 +75,6 @@
     </None>
     <Compile Include="Src\AllTestsTreeNode.cs" />
     <Compile Include="Src\BaseTestMethod.cs" />
-    <Compile Include="Src\BuildProjectBeforeTestRun.cs" />
     <Compile Include="Src\EmptyUnitTestsPad.cs" />
     <Compile Include="Src\IAddInTree.cs" />
     <Compile Include="Src\IBuildOptions.cs" />

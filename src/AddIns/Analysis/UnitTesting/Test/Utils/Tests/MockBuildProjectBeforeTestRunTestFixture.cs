@@ -28,7 +28,7 @@ namespace UnitTesting.Tests.Utils.Tests
 			buildProject = new MockBuildProjectBeforeTestRun();
 			factory.AddBuildProjectBeforeTestRun(buildProject);
 			
-			createdBuildProject = factory.CreateBuildProjectBeforeTestRun(project) as MockBuildProjectBeforeTestRun;
+			createdBuildProject = factory.CreateBuildProjectBeforeTestRun(new[] { project }) as MockBuildProjectBeforeTestRun;
 		}
 		
 		[Test]
@@ -40,7 +40,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		[Test]
 		public void ProjectPassedToBuildProjectObject()
 		{
-			Assert.AreEqual(project, buildProject.Project);
+			Assert.AreEqual(new[] { project }, buildProject.Projects);
 		}
 		
 		[Test]

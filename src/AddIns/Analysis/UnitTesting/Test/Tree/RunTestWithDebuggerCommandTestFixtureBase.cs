@@ -7,7 +7,7 @@
 
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.UnitTesting;
+using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using UnitTesting.Tests.Utils;
 
@@ -60,7 +60,7 @@ namespace UnitTesting.Tests.Tree
 		public void ExpectedBuildProjectReturnedFromBuildFactory()
 		{
 			InitBase();
-			Assert.AreEqual(buildProject, context.MockBuildProjectFactory.CreateBuildProjectBeforeTestRun(null));
+			Assert.AreEqual(buildProject, context.MockBuildProjectFactory.CreateBuildProjectBeforeTestRun(new IProject[0]));
 		}
 		
 		[Test]

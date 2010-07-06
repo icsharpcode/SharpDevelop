@@ -123,7 +123,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	
 	public class BuildProjectBeforeExecute : BuildProject
 	{
-		public BuildProjectBeforeExecute(IProject project) : base(project)
+		public BuildProjectBeforeExecute(IBuildable project) : base(project)
 		{
 		}
 		
@@ -162,8 +162,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	
 	public abstract class AbstractProjectBuildMenuCommand : AbstractBuildMenuCommand
 	{
-		protected IProject targetProject;
-		protected IProject ProjectToBuild {
+		protected IBuildable targetProject;
+		protected IBuildable ProjectToBuild {
 			get {
 				return targetProject ?? ProjectService.CurrentProject;
 			}
@@ -180,7 +180,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public BuildProject()
 		{
 		}
-		public BuildProject(IProject targetProject)
+		public BuildProject(IBuildable targetProject)
 		{
 			this.targetProject = targetProject;
 		}
@@ -194,7 +194,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	public class RebuildProject : BuildProject
 	{
 		public RebuildProject() {}
-		public RebuildProject(IProject targetProject) : base(targetProject) {}
+		public RebuildProject(IBuildable targetProject) : base(targetProject) {}
 		
 		public override void StartBuild()
 		{

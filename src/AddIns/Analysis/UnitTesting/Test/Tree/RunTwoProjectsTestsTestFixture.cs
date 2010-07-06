@@ -20,7 +20,6 @@ namespace UnitTesting.Tests.Tree
 		TestProject testProject2;
 		MockCSharpProject project2;
 		MockBuildProjectBeforeTestRun buildProject1;
-		MockBuildProjectBeforeTestRun buildProject2;
 		
 		[SetUp]
 		public void Init()
@@ -41,10 +40,8 @@ namespace UnitTesting.Tests.Tree
 			context.MockUnitTestsPad.AddTestProject(testProject2);
 			
 			buildProject1 = new MockBuildProjectBeforeTestRun();
-			buildProject2 = new MockBuildProjectBeforeTestRun();
 			
 			context.MockBuildProjectFactory.AddBuildProjectBeforeTestRun(buildProject1);
-			context.MockBuildProjectFactory.AddBuildProjectBeforeTestRun(buildProject2);
 			
 			runTestCommand.Run();
 			
@@ -61,7 +58,8 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void SecondProjectIsBuilt()
 		{
-			Assert.IsTrue(buildProject2.IsRunMethodCalled);
+			Assert.IsTrue(buildProject1.IsRunMethodCalled);
+			Assert.AreEqual(new[] { project1, project2 }, buildProject1.Projects);
 		}
 		
 		[Test]

@@ -7,13 +7,13 @@
 
 using System;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Project.Commands;
 using ICSharpCode.UnitTesting;
 
 namespace UnitTesting.Tests.Utils
 {
-	public class MockBuildProjectBeforeTestRun : BuildProjectBeforeTestRun
+	public class MockBuildProjectBeforeTestRun : BuildProjectBeforeExecute
 	{
-		IProject project;
 		bool runMethodCalled;
 		
 		public MockBuildProjectBeforeTestRun()
@@ -21,10 +21,7 @@ namespace UnitTesting.Tests.Utils
 		{
 		}
 		
-		public IProject Project {
-			get { return project; }
-			set { project = value; }
-		}
+		public IProject[] Projects { get; set; }
 		
 		public void FireBuildCompleteEvent()
 		{

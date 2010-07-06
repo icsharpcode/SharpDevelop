@@ -6,15 +6,17 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Project.Commands;
 
 namespace ICSharpCode.UnitTesting
 {
 	public class UnitTestBuildProjectFactory : IBuildProjectFactory
 	{
-		public BuildProjectBeforeTestRun CreateBuildProjectBeforeTestRun(IProject project)
+		public BuildProject CreateBuildProjectBeforeTestRun(IEnumerable<IProject> projects)
 		{
-			return new BuildProjectBeforeTestRun(project);
+			return new BuildProjectBeforeExecute(new MultipleProjectBuildable(projects));
 		}
 	}
 }

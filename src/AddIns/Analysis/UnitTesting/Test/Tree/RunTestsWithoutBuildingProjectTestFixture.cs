@@ -72,11 +72,13 @@ namespace UnitTesting.Tests.Tree
 		}
 		
 		[Test]
-		public void WhenTestRunCompletedAllFilesAreSaved()
+		public void WhenTestRunCompletedAllFilesAreNotSavedAgain()
 		{
+			// feature change 2010/07/05: we save all files only once
+			// during the build, not whenever a new test run starts
 			context.MockSaveAllFilesCommand.IsSaveAllFilesMethodCalled = false;
 			runTestCommand.CallTestsCompleted();
-			Assert.IsTrue(context.MockSaveAllFilesCommand.IsSaveAllFilesMethodCalled);
+			Assert.IsFalse(context.MockSaveAllFilesCommand.IsSaveAllFilesMethodCalled);
 		}
 	}
 }

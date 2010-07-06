@@ -6,12 +6,14 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.IO;
-
+using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Project.Commands;
 
 namespace ICSharpCode.UnitTesting
 {
@@ -60,7 +62,7 @@ namespace ICSharpCode.UnitTesting
 			if (selectedTests.HasProjects) {
 				runningTestCommand = this;
 				BeforeRun();
-				RunTests();
+				BuildAndRunTests();
 			}
 		}
 		
@@ -91,7 +93,7 @@ namespace ICSharpCode.UnitTesting
 			OnBeforeRunTests();
 		}
 		
-		void RunTests()
+		void BuildAndRunTests()
 		{
 			if (IsBuildNeededBeforeTestRun()) {
 				BuildProjectBeforeRunningTests(selectedTests);
@@ -103,7 +105,7 @@ namespace ICSharpCode.UnitTesting
 		
 		bool IsBuildNeededBeforeTestRun()
 		{
-			return context.RegisteredTestFrameworks.IsBuildNeededBeforeTestRunForProject(selectedTests.Project);
+			return selectedTests.Projects.Any(p => context.RegisteredTestFrameworks.IsBuildNeededBeforeTestRunForProject(p));
 		}
 		
 		void ClearTasks()
@@ -138,20 +140,21 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
-		/// Runs the tests after building the project under test.
+		/// Runs the tests after building the project(s) under test.
 		/// </summary>
 		void BuildProjectBeforeRunningTests(SelectedTests selectedTests)
 		{
-			BuildProjectBeforeTestRun build = CreateBuildProjectBeforeTestRun(selectedTests);
+			BuildProject build = CreateBuildProjectBeforeTestRun(selectedTests);
 			build.BuildComplete += delegate {
 				OnBuildComplete(build.LastBuildResults, selectedTests);
 			};
 			build.Run();
 		}
 		
-		BuildProjectBeforeTestRun CreateBuildProjectBeforeTestRun(SelectedTests selectedTests)
+		BuildProject CreateBuildProjectBeforeTestRun(SelectedTests selectedTests)
 		{
-			return context.BuildProjectFactory.CreateBuildProjectBeforeTestRun(selectedTests.Project);
+			var projects = selectedTests.Projects.Where(p => context.RegisteredTestFrameworks.IsBuildNeededBeforeTestRunForProject(p));
+			return context.BuildProjectFactory.CreateBuildProjectBeforeTestRun(projects);
 		}
 		
 		/// <summary>
@@ -197,7 +200,7 @@ namespace ICSharpCode.UnitTesting
 			StopActiveTestRunner();
 			selectedTests.RemoveFirstProject();
 			if (selectedTests.HasProjects) {
-				RunTests();
+				RunTests(selectedTests);
 			} else {
 				runningTestCommand = null;
 				UpdateUnitTestsPadToolbar();

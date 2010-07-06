@@ -7,7 +7,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Project.Commands;
 using ICSharpCode.UnitTesting;
 
 namespace UnitTesting.Tests.Utils
@@ -16,11 +19,11 @@ namespace UnitTesting.Tests.Utils
 	{
 		List<MockBuildProjectBeforeTestRun> buildProjectInstances = new List<MockBuildProjectBeforeTestRun>();
 		
-		public BuildProjectBeforeTestRun CreateBuildProjectBeforeTestRun(IProject project)
+		public BuildProject CreateBuildProjectBeforeTestRun(IEnumerable<IProject> projects)
 		{
 			MockBuildProjectBeforeTestRun buildProject = RemoveBuildProjectInstance();
 			if (buildProject != null) {
-				buildProject.Project = project;
+				buildProject.Projects = projects.ToArray();
 			}
 			return buildProject;
 		}
