@@ -533,25 +533,30 @@ namespace ICSharpCode.NRefactory.Visitors
 		public override object VisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data)
 		{
 
-			ObjectCreateExpression newNode = ConvertXmlContentExpression(xmlContentExpression);
+			Expression newNode = ConvertXmlContentExpression(xmlContentExpression);
 			
 			if (newNode == null)
 				return base.VisitXmlContentExpression(xmlContentExpression, data);
 			
 			ReplaceCurrentNode(newNode);
 			
-			return base.VisitObjectCreateExpression(newNode, data);
+			if (newNode is ObjectCreateExpression)
+				return base.VisitObjectCreateExpression((ObjectCreateExpression)newNode, data);
+			else if (newNode is PrimitiveExpression)
+				return base.VisitPrimitiveExpression((PrimitiveExpression)newNode , data);
+			
+			return null;
 		}
 
-		ObjectCreateExpression ConvertXmlContentExpression(XmlContentExpression xmlContentExpression)
+		Expression ConvertXmlContentExpression(XmlContentExpression xmlContentExpression)
 		{
-			ObjectCreateExpression newNode = null;
+			Expression newNode = null;
 			switch (xmlContentExpression.Type) {
 				case XmlContentType.Comment:
 					newNode = new ObjectCreateExpression(new TypeReference("XComment"), Expressions(xmlContentExpression.Content));
 					break;
 				case XmlContentType.Text:
-					newNode = new ObjectCreateExpression(new TypeReference("XText"), Expressions(xmlContentExpression.Content));
+					newNode = new PrimitiveExpression(ConvertEntities(xmlContentExpression.Content));
 					break;
 				case XmlContentType.CData:
 					newNode = new ObjectCreateExpression(new TypeReference("XCData"), Expressions(xmlContentExpression.Content));
@@ -576,6 +581,15 @@ namespace ICSharpCode.NRefactory.Visitors
 					throw new Exception("Invalid value for XmlContentType");
 			}
 			return newNode;
+		}
+		
+		string ConvertEntities(string content)
+		{
+			try {
+				return XElement.Parse("<Dummy>" + content + "</Dummy>").Value;
+			} catch (XmlException) {
+				return content;
+			}
 		}
 		
 		public override object VisitXmlDocumentExpression(XmlDocumentExpression xmlDocumentExpression, object data)
@@ -608,7 +622,7 @@ namespace ICSharpCode.NRefactory.Visitors
 					var a = attr as XmlAttributeExpression;
 					newNode.Parameters.Add(new ObjectCreateExpression(new TypeReference("XAttribute"), new List<Expression> {
 					                                                  	new PrimitiveExpression(a.Name),
-					                                                  	a.IsLiteralValue ? new PrimitiveExpression(a.LiteralValue) : a.ExpressionValue
+					                                                  	a.IsLiteralValue ? new PrimitiveExpression(ConvertEntities(a.LiteralValue)) : a.ExpressionValue
 					                                                  }));
 				} else if (attr is XmlEmbeddedExpression) {
 					newNode.Parameters.Add((attr as XmlEmbeddedExpression).InlineVBExpression);

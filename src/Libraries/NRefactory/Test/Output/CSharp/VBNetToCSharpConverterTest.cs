@@ -811,21 +811,21 @@ static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.Stat
 		public void XmlNestedElement2()
 		{
 			TestStatement("Dim xml = <Test>      <Test2 />    hello    </Test>",
-			              @"var xml = new XElement(""Test"", new XElement(""Test2""), new XText(""    hello    ""));");
+			              @"var xml = new XElement(""Test"", new XElement(""Test2""), ""    hello    "");");
 		}
 		
 		[Test]
 		public void XmlNestedElement3()
 		{
 			TestStatement("Dim xml = <Test>      <Test2 a='b' />    hello    </Test>",
-			              @"var xml = new XElement(""Test"", new XElement(""Test2"", new XAttribute(""a"", ""b"")), new XText(""    hello    ""));");
+			              @"var xml = new XElement(""Test"", new XElement(""Test2"", new XAttribute(""a"", ""b"")), ""    hello    "");");
 		}
 		
 		[Test]
 		public void XmlNestedElement4()
 		{
 			TestStatement("Dim xml = <Test>      <Test2 a='b' />    hello    \t<![CDATA[any & <>]]></Test>",
-			              @"var xml = new XElement(""Test"", new XElement(""Test2"", new XAttribute(""a"", ""b"")), new XText(""    hello    \t""), new XCData(""any & <>""));");
+			              @"var xml = new XElement(""Test"", new XElement(""Test2"", new XAttribute(""a"", ""b"")), ""    hello    \t"", new XCData(""any & <>""));");
 		}
 		
 		[Test]
@@ -882,7 +882,7 @@ static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.Stat
 		public void XmlEmbeddedExpression()
 		{
 			TestStatement(@"Dim xml = <<%= name %>>Test</>",
-			              @"var xml = new XElement(name, new XText(""Test""));");
+			              @"var xml = new XElement(name, ""Test"");");
 		}
 		
 		[Test]
@@ -890,6 +890,20 @@ static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.Stat
 		{
 			TestStatement(@"Dim xml = <<%= name %>><%= content %></>",
 			              @"var xml = new XElement(name, content);");
+		}
+		
+		[Test]
+		public void XmlEntityReference()
+		{
+			TestStatement(@"Dim xml = <A b=""&quot;""/>",
+			              @"var xml = new XElement(""A"", new XAttribute(""b"", ""\""""));");
+		}
+		
+		[Test]
+		public void XmlEntityReference2()
+		{
+			TestStatement(@"Dim xml = <A>&quot;</A>",
+			              @"var xml = new XElement(""A"", ""\"""");");
 		}
 	}
 }
