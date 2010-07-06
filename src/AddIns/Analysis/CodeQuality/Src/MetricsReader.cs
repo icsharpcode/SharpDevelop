@@ -201,7 +201,7 @@ namespace ICSharpCode.CodeQualityAnalysis
                             if (ic.IsGenericInstance)
                             {
                                 type.GenericBaseTypes.UnionWith(ReadGenericArguments(type.Namespace.Module,
-                                                                             (GenericInstanceType)typeDefinition.BaseType));
+                                                                             (GenericInstanceType)ic));
                             }
                         }    
                     }
