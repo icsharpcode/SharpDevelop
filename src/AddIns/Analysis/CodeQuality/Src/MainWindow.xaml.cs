@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -152,6 +153,51 @@ namespace ICSharpCode.CodeQualityAnalysis
             }
         }
 
+        private void btnResetGraph_Click(object sender, RoutedEventArgs e)
+        {
+            graphLayout.ResetGraph();
+        }
+
+        private void btnSaveImageGraph_Click(object sender, RoutedEventArgs e)
+        {
+            var fileDialog = new SaveFileDialog()
+            {
+                Filter = "PNG Image (*.png)|*.png"
+            };
+
+            fileDialog.ShowDialog();
+
+            if (String.IsNullOrEmpty(fileDialog.FileName))
+                return;
+            
+            var transform = graphLayout.LayoutTransform;
+            graphLayout.LayoutTransform = null;
+
+            // calculate size
+            var size = new Size(graphLayout.ActualWidth, graphLayout.ActualHeight);
+            
+            graphLayout.Measure(size);
+            graphLayout.Arrange(new Rect(size));
+
+            // render it
+            var renderBitmap = new RenderTargetBitmap((int) size.Width,
+                                                      (int) size.Height,
+                                                      96d,
+                                                      96d,
+                                                      PixelFormats.Pbgra32);
+            renderBitmap.Render(graphLayout);
+
+            using (var outStream = new FileStream(fileDialog.FileName, FileMode.Create))
+            {
+                // for now only PNG
+                var encoder = new PngBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+                encoder.Save(outStream);
+            }
+
+            graphLayout.LayoutTransform = transform;
+        }
+
         private class MetricTreeViewItem : TreeViewItem
         {
             private readonly Image _iconControl;
@@ -167,7 +213,7 @@ namespace ICSharpCode.CodeQualityAnalysis
             {
                 get
                 {
-                    return _textControl.Text;   
+                    return _textControl.Text;
                 }
                 set
                 {
@@ -183,31 +229,31 @@ namespace ICSharpCode.CodeQualityAnalysis
                 get
                 {
                     return _bitmap;
-                } 
+                }
                 set
                 {
                     _iconControl.Source = _bitmap = value;
                 }
             }
-            
+
             public MetricTreeViewItem()
             {
                 var stack = new StackPanel
-                                {
-                                    Orientation = Orientation.Horizontal
-                                };
+                {
+                    Orientation = Orientation.Horizontal
+                };
 
                 Header = stack;
 
                 _iconControl = new Image
-                                    {
-                                        Margin = new Thickness(0, 0, 5, 0)
-                                    };
+                {
+                    Margin = new Thickness(0, 0, 5, 0)
+                };
 
                 _textControl = new TextBlock()
-                                   {
-                                       VerticalAlignment = VerticalAlignment.Center
-                                   };
+                {
+                    VerticalAlignment = VerticalAlignment.Center
+                };
 
                 stack.Children.Add(_iconControl);
                 stack.Children.Add(_textControl);
