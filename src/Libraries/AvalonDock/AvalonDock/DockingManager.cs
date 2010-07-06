@@ -427,21 +427,6 @@ namespace AvalonDock
             }
         }
 
-        /// <summary>
-        /// Gets an array of all dockable contents currenty managed
-        /// </summary>
-        //public DockableContent[] DockableContents
-        //{
-        //    get
-        //    {
-        //        List<DockableContent> contents = FindContents<DockableContent>();
-
-        //        foreach (DockableContent content in HiddenContents)
-        //            contents.Add(content);
-
-        //        return contents.ToArray();
-        //    }
-        //}
         #region DockableContents
 
         /// <summary>
@@ -480,7 +465,7 @@ namespace AvalonDock
 
         /// <summary>
         /// Gets the DockableContents property.  This dependency property 
-        /// retrives the collection of <see cref="DocumentContents"/> that are bound to <see cref="DockingManager"/>
+        /// retrives the collection of <see cref="DocumentContent"/> that are bound to <see cref="DockingManager"/>
         /// </summary>
         public ManagedContentCollection<DocumentContent> Documents
         {
@@ -489,18 +474,6 @@ namespace AvalonDock
         }
         #endregion
 
-
-
-        ///// <summary>
-        ///// Gets an array of all document contents
-        ///// </summary>
-        //public DocumentContent[] Documents
-        //{
-        //    get
-        //    {
-        //        return FindContents<DocumentContent>().ToArray();
-        //    }
-        //}
 
         #region Documents Source
 
@@ -535,32 +508,17 @@ namespace AvalonDock
             }
         }
 
-        void DocumentsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {          
+        void DocumentsSourceCollectionChanged(
+            object sender, 
+            NotifyCollectionChangedEventArgs e)
+        {
             if (e.Action == NotifyCollectionChangedAction.Reset)
             {
                 //close first documents that do not belong to the MainDocumentPane
                 DocumentContent[] docs = this.Documents.ToArray();
-                List<DocumentContent> documentsToCloseFirst = new List<DocumentContent>();
 
-                foreach (DocumentContent doc in docs)
-                {
-                    if (doc.Parent is DocumentPane)
-                    {
-                        if ((doc.Parent as DocumentPane).IsMainDocumentPane == false)
-                        {
-                            documentsToCloseFirst.Add(doc);
-                        }
-                    }
-                }
-
-                foreach (DocumentContent doc in documentsToCloseFirst)
-                {
-                    doc.InternalClose();
-                }
-
-                foreach (DocumentContent doc in docs)
-                    doc.InternalClose();
+                docs.Where(d => ((DocumentPane)d.Parent).IsMainDocumentPane.GetValueOrDefault()).ForEach(d => d.InternalClose());
+                docs.Where(d => d.Parent != null && !((DocumentPane)d.Parent).IsMainDocumentPane.GetValueOrDefault()).ForEach(d => d.InternalClose());
             }
 
             if (e.OldItems != null &&
@@ -590,7 +548,6 @@ namespace AvalonDock
                 if (MainDocumentPane == null)
                     throw new InvalidOperationException("DockingManager must have at least a DocumentPane to host documents");
 
-                int iInsertIndex = e.NewStartingIndex;
                 foreach (object newDoc in e.NewItems)
                 {
                     if (newDoc is DocumentContent)
@@ -601,7 +558,7 @@ namespace AvalonDock
                             ((DocumentPane)documentToAdd.Parent).Items.Clear();
                         }
 
-                        MainDocumentPane.Items.Insert(iInsertIndex, documentToAdd);
+                        MainDocumentPane.Items.Add(documentToAdd);
                     }
                     else if (newDoc is UIElement) //limit objects to be at least framework elements
                     {
@@ -610,14 +567,14 @@ namespace AvalonDock
                             Content = newDoc
                         };
 
-                        MainDocumentPane.Items.Insert(iInsertIndex, documentToAdd);
+                        MainDocumentPane.Items.Add(documentToAdd);
                     }
                     else
                         throw new InvalidOperationException(string.Format("Unable to add type {0} as DocumentContent", newDoc));
-
-                    iInsertIndex++;
                 }
             }
+
+            RefreshContents();
         }
 
         internal void HandleDocumentClose(DocumentContent contentClosed)
@@ -754,8 +711,13 @@ namespace AvalonDock
             RefreshContents();
         }
 
+        bool _allowRefreshContents = true;
+
         internal void RefreshContents()
         {
+            if (!_allowRefreshContents)
+                return;
+
             var contentsFoundUnderMe = new LogicalTreeAdapter(this).Descendants<DependencyObject>().Where(d => d.Item is ManagedContent).Select(d => d.Item).Cast<ManagedContent>();
             var contentsFoundInFloatingMode = _floatingWindows.SelectMany(d => d.HostedPane.Items.Cast<ManagedContent>());
             DockableContent contentFoundInFlyoutMode = null;
@@ -1077,7 +1039,7 @@ namespace AvalonDock
             navigatorWindow.Height = this.ActualHeight;
             navigatorWindow.ShowActivated = false;
             navigatorWindow.Show();
-            navigatorWindow.Focus();
+            //navigatorWindow.Focus();
         }
 
         void HideNavigatorWindow()
@@ -1102,12 +1064,13 @@ namespace AvalonDock
                 {
                     ShowNavigatorWindow();
                 }
-
-                navigatorWindow.MoveNextSelectedContent();
+                
                 e.Handled = true;
             }
-            else
+            else if (NavigatorWindow.IsKeyHandled(e.Key))
+            {
                 HideNavigatorWindow();
+            }
 
 
             base.OnKeyDown(e);
@@ -1119,93 +1082,38 @@ namespace AvalonDock
             bool _navigatorWindowIsVisible = navigatorWindow != null ? navigatorWindow.IsVisible : false;
             Debug.WriteLine(string.Format("OnKeyUp {0} CtrlDn={1}", e.Key, isCtrlDown));
 
-            if (e.Key != Key.Tab || !isCtrlDown)
-                HideNavigatorWindow();
+            if (NavigatorWindow.IsKeyHandled(e.Key) && isCtrlDown)
+            {
+                if (!_navigatorWindowIsVisible && e.Key == Key.Tab)
+                {
+                    ShowNavigatorWindow();
+                }
+
+                if (_navigatorWindowIsVisible)
+                    navigatorWindow.HandleKey(e.Key); 
+            }
+            else
+            {
+                if (_navigatorWindowIsVisible)
+                {
+                    if (navigatorWindow.Documents.CurrentItem != null)
+                    {
+                        var docSelected = (navigatorWindow.Documents.CurrentItem as NavigatorWindowDocumentItem).ItemContent as DocumentContent;
+                        docSelected.Activate();
+                    }
+                    else if (navigatorWindow.DockableContents.CurrentItem != null)
+                    {
+                        var cntSelected = (navigatorWindow.DockableContents.CurrentItem as NavigatorWindowItem).ItemContent as DockableContent;
+                        cntSelected.Activate();
+                    }
+
+                    HideNavigatorWindow();
+                }
+
+            }
 
             base.OnKeyUp(e);
         }
-
-        //void OnExecuteCommand(object sender, ExecutedRoutedEventArgs e)
-        //{
-        //    if (e.Command == ShowNavigatorWindowCommand && ((Keyboard.Modifiers & ModifierKeys.Control)>0) )
-        //    {
-        //        ShowNavigatorWindow();
-        //        e.Handled = true;
-        //    }
-        //    else if (e.Command == ShowDocumentNavigatorWindowCommand && ((Keyboard.Modifiers & ModifierKeys.Shift) > 0))
-        //    {
-        //        ShowDocumentNavigatorWindow();
-        //        e.Handled = true;
-        //    }
-            
-        //}
-
-        //void OnCanExecuteCommand(object sender, CanExecuteRoutedEventArgs e)
-        //{
-        //    e.CanExecute = true;
-        //}
-
-
-        //private static RoutedUICommand showDocumentNavigatorCommand = null;
-
-        ///// <summary>
-        ///// Get the command to show document navigator window
-        ///// </summary>
-        //public static RoutedUICommand ShowDocumentNavigatorWindowCommand
-        //{
-        //    get
-        //    {
-        //        lock (syncRoot)
-        //        {
-        //            if (null == showDocumentNavigatorCommand)
-        //            {
-        //                showDocumentNavigatorCommand = new RoutedUICommand("S_how document navigator window", "DocumentNavigator", typeof(DockingManager));
-        //                showDocumentNavigatorCommand.InputGestures.Add(new KeyGesture(Key.Tab, ModifierKeys.Shift));
-        //            }
-
-        //        }
-        //        return showDocumentNavigatorCommand;
-        //    }
-        //}
-
-        //DocumentNavigatorWindow documentNavigatorWindow = null;
-
-        //void ShowDocumentNavigatorWindow()
-        //{
-        //    HideDocumentNavigatorWindow();
-
-        //    //if (documentNavigatorWindow == null)
-        //    {
-        //        documentNavigatorWindow = new DocumentNavigatorWindow(this);
-        //        documentNavigatorWindow.Owner = Window.GetWindow(this);
-        //    }
-
-        //    if (MainDocumentPane == null)
-        //        return;
-
-        //    Point locMainDocumentPane = MainDocumentPane.PointToScreenDPI(new Point());
-        //    documentNavigatorWindow.Left = locMainDocumentPane.X;
-        //    documentNavigatorWindow.Top = locMainDocumentPane.Y;
-        //    documentNavigatorWindow.Width = MainDocumentPane.ActualWidth;
-        //    documentNavigatorWindow.Height = MainDocumentPane.ActualHeight;
-        //    documentNavigatorWindow.Show();
-        //    documentNavigatorWindow.Focus();
-        //}
-
-        //void HideDocumentNavigatorWindow()
-        //{
-        //    //if (documentNavigatorWindow != null)
-        //    //{
-        //    //    documentNavigatorWindow.Hide();
-                
-        //    //    //don't close this window to be more responsive
-        //    //    documentNavigatorWindow.Close();
-        //    //    documentNavigatorWindow = null;
-        //    //}
-        //}
-
-
-        //#endregion
 
         #region DockablePane operations
         /// <summary>
@@ -1268,7 +1176,9 @@ namespace AvalonDock
                 toplevelPanel.Orientation = requestedOrientation;
 
                 FrameworkElement contentElement = Content as FrameworkElement;
-                Content = toplevelPanel;
+                
+                _allowRefreshContents = false;
+                Content = null;
 
                 if (anchor == AnchorStyle.Left ||
                     anchor == AnchorStyle.Top)
@@ -1281,6 +1191,9 @@ namespace AvalonDock
                     toplevelPanel.Children.Add(paneToAnchor);
                     toplevelPanel.InsertChildRelativeTo(contentElement, paneToAnchor, false);
                 }
+
+                _allowRefreshContents = true;
+                Content = toplevelPanel;
             }
             else
             {
@@ -1329,16 +1242,13 @@ namespace AvalonDock
             }
             
             //refresh contents state
-            foreach (ManagedContent content in paneToAnchor.Items)
-            {
-                if (content is DockableContent)
+            paneToAnchor.Items.OfType<DockableContent>().ForEach(dc =>
                 {
-                    ((DockableContent)content).SetStateToDock();
-                }
-            }           
+                    dc.SetStateToDock();
+                });          
             
             
-            paneToAnchor.Focus();
+            //paneToAnchor.Focus();
             toplevelPanel.InvalidateMeasure();
         }
 
@@ -1533,7 +1443,7 @@ namespace AvalonDock
 
             //than set the new anchor style for the pane
             paneToAnchor.Anchor = anchor;
-            paneToAnchor.Focus();
+            //paneToAnchor.Focus();
         }
 
         /// <summary>
@@ -1632,20 +1542,20 @@ namespace AvalonDock
                             relativePane, true);
                     }
 
-                    if (relativePaneContainer.Orientation == Orientation.Horizontal)
-                    {
-                        Size desideredSize = ResizingPanel.GetEffectiveSize(paneToAnchor);
-                        double approxStarForNewPane = desideredSize.Width / relativePaneContainer.ActualWidth;
-                        approxStarForNewPane = Math.Min(approxStarForNewPane, 1.0);
-                        paneToAnchor.SetValue(ResizingPanel.ResizeWidthProperty, new GridLength(approxStarForNewPane, GridUnitType.Star));
-                    }
+                    //if (relativePaneContainer.Orientation == Orientation.Horizontal)
+                    //{
+                    //    Size desideredSize = ResizingPanel.GetEffectiveSize(paneToAnchor);
+                    //    double approxStarForNewPane = desideredSize.Width / relativePaneContainer.ActualWidth;
+                    //    approxStarForNewPane = Math.Min(approxStarForNewPane, 1.0);
+                    //    paneToAnchor.SetValue(ResizingPanel.ResizeWidthProperty, new GridLength(approxStarForNewPane, GridUnitType.Star));
+                    //}
                 }
 
                 relativePaneContainer.InvalidateMeasure();
             }
             #endregion
 
-            paneToAnchor.Focus();
+            //paneToAnchor.Focus();
 
             //(paneToAnchor.SelectedItem as ManagedContent).Activate();
             //if (paneToAnchor.SelectedItem is DocumentContent)
@@ -1766,7 +1676,7 @@ namespace AvalonDock
             if (relativePaneContainer != null)
                 relativePaneContainer.AdjustPanelSizes();
 
-            paneToAnchor.Focus();
+            //paneToAnchor.Focus();
         }
 
         #region DropInto methods
@@ -1788,19 +1698,20 @@ namespace AvalonDock
         {
             //transfer tha contents of dragged pane (conatined in a FloatingWindow)
             //to the pane which user select
-            ManagedContent contentToFocus = null;
+            //ManagedContent contentToFocus = null;
             while (paneDragged.Items.Count > 0)
             {
-                ManagedContent contentToTransfer = paneDragged.RemoveContent(0);
+                var contentToTransfer = paneDragged.RemoveContent(0);
                 paneToDropInto.Items.Insert(0, contentToTransfer);
-                contentToFocus = contentToTransfer;
+                //contentToFocus = contentToTransfer;
+                contentToTransfer.Activate();
             }
 
-            
-            paneToDropInto.SelectedIndex = 0;
-            paneToDropInto.Focus();
-            if (contentToFocus != null)
-                contentToFocus.Activate();
+     
+            //paneToDropInto.SelectedIndex = 0;
+            //paneToDropInto.Focus();
+            //if (contentToFocus != null)
+            //    contentToFocus.Activate();
         }
         internal void DropInto(DockablePane paneDragged, DocumentPane paneToDropInto)
         {
@@ -1812,18 +1723,20 @@ namespace AvalonDock
             //to Dock (using Dock() method of class DockablePane).
             while (paneDragged.Items.Count > 0)
             {
-                ManagedContent contentToTransfer = paneDragged.RemoveContent(0);
+                var contentToTransfer = paneDragged.RemoveContent(0);
                 paneToDropInto.Items.Add(contentToTransfer);
 
 
-                DockableContent dockContentToTransfer = contentToTransfer as DockableContent;
+                var dockContentToTransfer = contentToTransfer as DockableContent;
 
                 if (dockContentToTransfer != null)
                     dockContentToTransfer.SetStateToDocument();
+                
+                contentToTransfer.Activate();
             }
 
-            paneToDropInto.SelectedIndex = paneToDropInto.Items.Count - 1;
-            paneToDropInto.Focus();
+            //paneToDropInto.SelectedIndex = paneToDropInto.Items.Count - 1;
+            //paneToDropInto.Focus();
         }
         internal void DropInto(DockablePane paneDragged, DockablePane paneToDropInto)
         {
@@ -1844,7 +1757,7 @@ namespace AvalonDock
 
 
             paneToDropInto.SelectedIndex = paneToDropInto.Items.Count - 1;
-            paneToDropInto.Focus();
+            //paneToDropInto.Focus();
         }
         #endregion
 
@@ -2175,6 +2088,7 @@ namespace AvalonDock
                 if (floating)
                 {
                     DocumentFloatingWindow floatingWindow = new DocumentFloatingWindow(this);
+                    floatingWindow.Owner = Window.GetWindow(this);
                     floatingWindow.Content = document;
                     floatingWindow.Show();
                 }
@@ -2286,6 +2200,11 @@ namespace AvalonDock
                         else
                         {
                             //if no suitable pane was found create e new one on the fly
+                            if (content.ContainerPane != null)
+                            {
+                                content.ContainerPane.RemoveContent(content);
+                            }
+
                             DockablePane pane = new DockablePane();
                             pane.Items.Add(content);
                             Anchor(pane, desideredAnchor);
@@ -2370,9 +2289,9 @@ namespace AvalonDock
                         ResizingPanel.SetEffectiveSize(dockParent, new Size(200, 0.0));
                     }
                     else if (content.ActualWidth == 0.0 && (
-                        dockParent.Anchor == AnchorStyle.Left || dockParent.Anchor == AnchorStyle.Right))
+                        dockParent.Anchor == AnchorStyle.Top || dockParent.Anchor == AnchorStyle.Bottom))
                     {
-                        ResizingPanel.SetResizeWidth(dockParent, new GridLength(200));
+                        ResizingPanel.SetResizeHeight(dockParent, new GridLength(200));
                         ResizingPanel.SetEffectiveSize(dockParent, new Size(200, 0.0));
                     }
                     
@@ -2628,9 +2547,12 @@ namespace AvalonDock
         #region Anchor Style Update routines
         protected override Size ArrangeOverride(Size arrangeBounds)
         {
-            //at the moment this is the easy way to get anchor properties always updated
+            //at the moment this is the easiest way to get anchor properties always updated
             if (this.Content as ResizingPanel != null)
                 UpdateAnchorStyle();
+
+            //hide the flyout window because transform could be changed
+            HideFlyoutWindow();
 
             return base.ArrangeOverride(arrangeBounds);
         }
@@ -2741,10 +2663,10 @@ namespace AvalonDock
         {
             if (_flyoutWindow != null && !_flyoutWindow.IsClosing)
             {
-                _flyoutWindow.Height = 0.0;
-                _flyoutWindow.Width = 0.0;
-                _flyoutWindow.Close();
+                var flWindow = _flyoutWindow;
                 _flyoutWindow = null;
+                flWindow.Closing -= new System.ComponentModel.CancelEventHandler(OnFlyoutWindowClosing);
+                flWindow.Close();
             }
         }
 
@@ -2770,12 +2692,12 @@ namespace AvalonDock
                 //_flyoutWindow.KeepWindowOpen();
                 return;
             }
-            //hide previous create window
+
+            //hide previous window
             HideFlyoutWindow();
 
             //select this content in the referenced pane
             content.ContainerPane.SelectedItem = content;
-
 
             if (_wndInteropWrapper == null)
             {
@@ -2819,8 +2741,11 @@ namespace AvalonDock
         /// <param name="e"></param>
         void OnFlyoutWindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            _flyoutWindow.Closing -= new System.ComponentModel.CancelEventHandler(OnFlyoutWindowClosing);
-            _flyoutWindow.Owner = null;
+            if (_flyoutWindow != null)
+            {
+                _flyoutWindow.Closing -= new System.ComponentModel.CancelEventHandler(OnFlyoutWindowClosing);
+                _flyoutWindow.Owner = null;
+            }
         }
 
         /// <summary>
@@ -2839,70 +2764,86 @@ namespace AvalonDock
         {
             if (_flyoutWindow == null)
                 return;
-            
-            double leftTabsWidth = FlowDirection == FlowDirection.LeftToRight ? _leftAnchorTabPanel.ActualWidth : _rightAnchorTabPanel.ActualWidth;
-            double rightTabsWidth = FlowDirection == FlowDirection.LeftToRight ? _rightAnchorTabPanel.ActualWidth : _leftAnchorTabPanel.ActualWidth;
-            double topTabsHeight = _topAnchorTabPanel.ActualHeight;
-            double bottomTabsHeight = _bottomAnchorTabPanel.ActualHeight;
+            if (_flyoutWindow.ReferencedPane == null)
+                return;
+            if (_flyoutWindow.ReferencedPane.SelectedItem == null)
+                return;
+
+            var actualSize = this.TransformedActualSize();
+
+            double leftTabsWidth = FlowDirection == FlowDirection.LeftToRight ? _leftAnchorTabPanel.TransformedActualSize().Width : _rightAnchorTabPanel.TransformedActualSize().Width;
+            double rightTabsWidth = FlowDirection == FlowDirection.LeftToRight ? _rightAnchorTabPanel.TransformedActualSize().Width : _leftAnchorTabPanel.TransformedActualSize().Width;
+            double topTabsHeight = _topAnchorTabPanel.TransformedActualSize().Height;
+            double bottomTabsHeight = _bottomAnchorTabPanel.TransformedActualSize().Height;
+            bool hOrientation = _flyoutWindow.ReferencedPane.Anchor == AnchorStyle.Right || _flyoutWindow.ReferencedPane.Anchor == AnchorStyle.Left;
 
             Point locDockingManager = HelperFunc.PointToScreenWithoutFlowDirection(this, new Point());
             Point locContent = HelperFunc.PointToScreenWithoutFlowDirection(Content as FrameworkElement, new Point());
 
-            double resWidth = initialSetup ? ResizingPanel.GetResizeWidth(_flyoutWindow.ReferencedPane).Value : _flyoutWindow.Width;
-            double resHeight = initialSetup ? ResizingPanel.GetResizeHeight(_flyoutWindow.ReferencedPane).Value : _flyoutWindow.Height;
+            Size initialSetupFlyoutWindowSize = Size.Empty;
+            initialSetupFlyoutWindowSize = (_flyoutWindow.ReferencedPane.SelectedItem as DockableContent).FlyoutWindowSize;
 
-                
+            if (hOrientation && initialSetupFlyoutWindowSize.Width <= 0.0)
+                initialSetupFlyoutWindowSize = ResizingPanel.GetEffectiveSize(_flyoutWindow.ReferencedPane.ReferencedPane);
+
+            if (!hOrientation && initialSetupFlyoutWindowSize.Height <= 0.0)
+                initialSetupFlyoutWindowSize = ResizingPanel.GetEffectiveSize(_flyoutWindow.ReferencedPane.ReferencedPane);
+
+            initialSetupFlyoutWindowSize = this.TransformSize(initialSetupFlyoutWindowSize);
+
+            double resWidth = initialSetup ? initialSetupFlyoutWindowSize.Width : _flyoutWindow.Width;
+            double resHeight = initialSetup ? initialSetupFlyoutWindowSize.Height : _flyoutWindow.Height;
+
             if (_flyoutWindow.ReferencedPane.Anchor == AnchorStyle.Right)
             {
-                _flyoutWindow.Top = locDockingManager.Y + topTabsHeight;
-                _flyoutWindow.Height = this.ActualHeight - topTabsHeight - bottomTabsHeight;
+                _flyoutWindow.MaxWidth = actualSize.Width - rightTabsWidth;
+                _flyoutWindow.MaxHeight = actualSize.Height - topTabsHeight - bottomTabsHeight;
 
-                _flyoutWindow.MaxWidth = ActualWidth - rightTabsWidth;
-                _flyoutWindow.MaxHeight = ActualHeight;
+                _flyoutWindow.Top = locDockingManager.Y + topTabsHeight;
+                _flyoutWindow.Height = _flyoutWindow.MaxHeight;
+
 
                 if (initialSetup)
                 {
-                    _flyoutWindow.Left = FlowDirection == FlowDirection.LeftToRight ? locDockingManager.X + this.ActualWidth - rightTabsWidth : locDockingManager.X + leftTabsWidth;
+                    _flyoutWindow.Left = (FlowDirection == FlowDirection.LeftToRight ? locDockingManager.X + actualSize.Width - rightTabsWidth : locDockingManager.X + leftTabsWidth);
                     _flyoutWindow.Width = 0.0;
                     _flyoutWindow.TargetWidth = resWidth;
                 }
                 else
                 {
                     if (!_flyoutWindow.IsOpening && !_flyoutWindow.IsClosing)
-                        _flyoutWindow.Left = FlowDirection == FlowDirection.LeftToRight ? locDockingManager.X + this.ActualWidth - rightTabsWidth - _flyoutWindow.Width : locDockingManager.X + leftTabsWidth;
+                        _flyoutWindow.Left = (FlowDirection == FlowDirection.LeftToRight ? locDockingManager.X + actualSize.Width - rightTabsWidth - _flyoutWindow.Width : locDockingManager.X + leftTabsWidth);
                 }
             }
             if (_flyoutWindow.ReferencedPane.Anchor == AnchorStyle.Left)
             {
-                _flyoutWindow.Top = locDockingManager.Y + topTabsHeight;
-                //_flyoutWindow.Top = locContent.Y;
-                _flyoutWindow.Height = this.ActualHeight - topTabsHeight - bottomTabsHeight;
-                //_flyoutWindow.Height = ((FrameworkElement)this.Content).ActualHeight;
+                _flyoutWindow.MaxWidth = actualSize.Width - leftTabsWidth;
+                _flyoutWindow.MaxHeight = actualSize.Height - topTabsHeight - bottomTabsHeight;
 
-                _flyoutWindow.MaxWidth = ActualWidth - leftTabsWidth;
-                _flyoutWindow.MaxHeight = ActualHeight;
-               
+                _flyoutWindow.Top = locDockingManager.Y + topTabsHeight;
+                _flyoutWindow.Height = _flyoutWindow.MaxHeight;
+
 
                 if (initialSetup)
                 {
-                    _flyoutWindow.Left = FlowDirection == FlowDirection.RightToLeft ? locDockingManager.X + this.ActualWidth - rightTabsWidth : locDockingManager.X + leftTabsWidth;
+                    _flyoutWindow.Left = FlowDirection == FlowDirection.RightToLeft ? locDockingManager.X + actualSize.Width - rightTabsWidth : locDockingManager.X + leftTabsWidth;
                     _flyoutWindow.Width = 0.0;
                     _flyoutWindow.TargetWidth = resWidth;
                 }
                 else
                 {
                     if (!_flyoutWindow.IsOpening && !_flyoutWindow.IsClosing)
-                        _flyoutWindow.Left = FlowDirection == FlowDirection.RightToLeft ? locDockingManager.X + this.ActualWidth - rightTabsWidth - _flyoutWindow.Width : locDockingManager.X + leftTabsWidth;
+                        _flyoutWindow.Left = FlowDirection == FlowDirection.RightToLeft ? locDockingManager.X + actualSize.Width - rightTabsWidth - _flyoutWindow.Width : locDockingManager.X + leftTabsWidth;
                 }
             }
             if (_flyoutWindow.ReferencedPane.Anchor == AnchorStyle.Top)
             {
+                _flyoutWindow.MaxWidth = actualSize.Width - rightTabsWidth - leftTabsWidth;
+                _flyoutWindow.MaxHeight = actualSize.Height - topTabsHeight;
+
                 _flyoutWindow.Left = locDockingManager.X + leftTabsWidth;
-                _flyoutWindow.Width = this.ActualWidth - rightTabsWidth -leftTabsWidth;
-
-                _flyoutWindow.MaxWidth = ActualWidth;
-                _flyoutWindow.MaxHeight = ActualHeight - topTabsHeight;
-
+                _flyoutWindow.Width = _flyoutWindow.MaxWidth;
+                
                 if (initialSetup)
                 {
                     _flyoutWindow.Height = 0.0;
@@ -2916,31 +2857,35 @@ namespace AvalonDock
             }
             if (_flyoutWindow.ReferencedPane.Anchor == AnchorStyle.Bottom)
             {
-                _flyoutWindow.Left = locDockingManager.X + leftTabsWidth;
-                _flyoutWindow.Width = this.ActualWidth - rightTabsWidth - leftTabsWidth;
+                _flyoutWindow.MaxWidth = actualSize.Width - rightTabsWidth - leftTabsWidth;
+                _flyoutWindow.MaxHeight = actualSize.Height - bottomTabsHeight;
 
-                _flyoutWindow.MaxWidth = ActualWidth;
-                _flyoutWindow.MaxHeight = ActualHeight - bottomTabsHeight;
+                _flyoutWindow.Left = locDockingManager.X + leftTabsWidth;
+                _flyoutWindow.Width = _flyoutWindow.MaxWidth;
 
                 if (initialSetup)
                 {
-                    _flyoutWindow.Top = locDockingManager.Y + this.ActualHeight - bottomTabsHeight;
+                    _flyoutWindow.Top = locDockingManager.Y + actualSize.Height - bottomTabsHeight;
                     _flyoutWindow.Height = 0.0;
                     _flyoutWindow.TargetHeight = resHeight;
                 }
                 else
                 {
                     if (!_flyoutWindow.IsOpening && !_flyoutWindow.IsClosing)
-                        _flyoutWindow.Top = locDockingManager.Y + this.ActualHeight - bottomTabsHeight - _flyoutWindow.Height;
-                    if (_flyoutWindow.IsClosing)
-                        _flyoutWindow.Top = locDockingManager.Y + this.ActualHeight - bottomTabsHeight - _flyoutWindow.Height; 
+                        _flyoutWindow.Top = locDockingManager.Y + actualSize.Height - bottomTabsHeight - _flyoutWindow.Height;
+                    //if (_flyoutWindow.IsClosing)
+                    //    _flyoutWindow.Top = locDockingManager.Y + actualSize.Height - bottomTabsHeight - _flyoutWindow.Height;
                 }
             }
 
             if (_flyoutWindow != null && !_flyoutWindow.IsClosing)
                 _flyoutWindow.UpdatePositionAndSize();
-        }
 
+            if (initialSetup)
+                _flyoutWindow.ReferencedPane.LayoutTransform = (MatrixTransform)this.TansformToAncestor();
+
+            Debug.WriteLine(string.Format("UpdateFlyoutWindowPosition() Rect->{0} InitialSetup={1}", new Rect(_flyoutWindow.Left, _flyoutWindow.Top, _flyoutWindow.Width, _flyoutWindow.Height), initialSetup));
+        }
         
         #endregion
 
@@ -2999,7 +2944,7 @@ namespace AvalonDock
         {
             if (CaptureMouse())
             {
-                DockableFloatingWindow floatingWindow = new DockableFloatingWindow(this);
+                var floatingWindow = new DockableFloatingWindow(this);
                 floatingWindow.Content = dockablePane;
                 floatingWindow.Owner = Window.GetWindow(this);
                 Drag(floatingWindow, point, offset);
@@ -3079,9 +3024,13 @@ namespace AvalonDock
         Rect IDropSurface.SurfaceRectangle
         {
             get
-            { 
+            {
                 if (PresentationSource.FromVisual(this) != null)
-                    return new Rect(HelperFunc.PointToScreenWithoutFlowDirection(this, new Point(0, 0)), new Size(ActualWidth, ActualHeight));
+                {
+                    var actualSize = this.TransformedActualSize();
+                    return new Rect(HelperFunc.PointToScreenWithoutFlowDirection(this, new Point(0, 0)), new Size(actualSize.Width, actualSize.Height));
+                }
+
                 return Rect.Empty;
             }
         }
@@ -3117,15 +3066,15 @@ namespace AvalonDock
             if (OverlayWindow.IsVisible)
                 return;
 
+            var actualSize = this.TransformedActualSize();
             OverlayWindow.Owner = DragPaneServices.FloatingWindow;
-            //OverlayWindow.Left = PointToScreen(new Point(0, 0)).X;
-            //OverlayWindow.Top = PointToScreen(new Point(0, 0)).Y;
             Point origPoint = HelperFunc.PointToScreenWithoutFlowDirection(this, new Point());
             OverlayWindow.Left = origPoint.X;
             OverlayWindow.Top = origPoint.Y;
-            OverlayWindow.Width = ActualWidth;
-            OverlayWindow.Height = ActualHeight;
+            OverlayWindow.Width = actualSize.Width;
+            OverlayWindow.Height = actualSize.Height;
 
+            //don't pass transform matrix to Overlay window otherwise anchor thumbs will be resized
             OverlayWindow.Show();
         }
 
@@ -3146,9 +3095,6 @@ namespace AvalonDock
         {
             OverlayWindow.Owner = null;
             OverlayWindow.Hide();
-            //Window mainWindow = Window.GetWindow(this);
-            //if (mainWindow != null)
-            //    mainWindow.Activate();
         }
 
         /// <summary>
@@ -3193,6 +3139,9 @@ namespace AvalonDock
                 xmlWriter.WriteAttributeString("EffectiveSize", new SizeConverter().ConvertToInvariantString(ResizingPanel.GetEffectiveSize(pane)));
                 xmlWriter.WriteAttributeString("ID", pane.ID.ToString());
                 xmlWriter.WriteAttributeString("Anchor", pane.Anchor.ToString());
+                
+                if (pane.Items.Count > 1)
+                    xmlWriter.WriteAttributeString("SelectedIndex", XmlConvert.ToString(pane.SelectedIndex));
 
                 xmlWriter.WriteAttributeString("IsAutoHidden", XmlConvert.ToString(pane.IsAutoHidden));
 
@@ -3234,7 +3183,6 @@ namespace AvalonDock
                 xmlWriter.WriteStartElement("DockableContent");
 
                 xmlWriter.WriteAttributeString("Name", content.Name);
-                //xmlWriter.WriteAttributeString("AutoHide", XmlConvert.ToString(content.State == DockableContentState.AutoHide));
 
                 content.SaveLayout(xmlWriter);
 
@@ -3265,6 +3213,13 @@ namespace AvalonDock
 
             if (pane.IsMainDocumentPane.GetValueOrDefault())
                 xmlWriter.WriteAttributeString("IsMain", "true");
+
+            if (pane.Items.Count > 1)
+                xmlWriter.WriteAttributeString("SelectedIndex", XmlConvert.ToString(pane.SelectedIndex));
+
+            xmlWriter.WriteAttributeString("ResizeWidth", ResizingPanel.GetResizeWidth(pane).ToString());
+            xmlWriter.WriteAttributeString("ResizeHeight", ResizingPanel.GetResizeHeight(pane).ToString());
+            xmlWriter.WriteAttributeString("EffectiveSize", new SizeConverter().ConvertToInvariantString(ResizingPanel.GetEffectiveSize(pane)));
 
             foreach (ManagedContent content in pane.Items)
             {
@@ -3402,8 +3357,6 @@ namespace AvalonDock
                 SaveLayout(sw, Content as ResizingPanel);
             else if (Content is DocumentPane)
                 SaveLayout(sw, Content as DocumentPane);
-            //else if (Content is DocumentPaneResizingPanel)
-            //    SaveLayout(sw, Content as DocumentPaneResizingPanel);
 
             sw.WriteStartElement("Hidden");
 
@@ -3610,6 +3563,13 @@ namespace AvalonDock
         {
             var documentPane = new DocumentPane();
 
+            if (mainElement.HasAttribute("ResizeWidth"))
+                ResizingPanel.SetResizeWidth(documentPane, (GridLength)GLConverter.ConvertFromInvariantString(mainElement.GetAttribute("ResizeWidth")));
+            if (mainElement.HasAttribute("ResizeHeight"))
+                ResizingPanel.SetResizeHeight(documentPane, (GridLength)GLConverter.ConvertFromInvariantString(mainElement.GetAttribute("ResizeHeight")));
+            if (mainElement.HasAttribute("EffectiveSize"))
+                ResizingPanel.SetEffectiveSize(documentPane, (Size)(new SizeConverter()).ConvertFromInvariantString(mainElement.GetAttribute("EffectiveSize")));
+
             foreach (XmlElement contentElement in mainElement.ChildNodes)
             {
                 if (contentElement.Name == "DockableContent" &&
@@ -3666,6 +3626,9 @@ namespace AvalonDock
                 }
             }
 
+            if (mainElement.HasAttribute("SelectedIndex"))
+                documentPane.SelectedIndex = XmlConvert.ToInt32(mainElement.GetAttribute("SelectedIndex"));
+
             return documentPane;
 
         }
@@ -3684,7 +3647,7 @@ namespace AvalonDock
             if (mainElement.HasAttribute("EffectiveSize"))
                 ResizingPanel.SetEffectiveSize(pane, (Size)(new SizeConverter()).ConvertFromInvariantString(mainElement.GetAttribute("EffectiveSize")));
             if (mainElement.HasAttribute("ID"))
-                pane.ID = Guid.Parse(mainElement.GetAttribute("ID"));
+                pane.ID = new Guid(mainElement.GetAttribute("ID"));
 
             bool toggleAutoHide = false;
             if (mainElement.HasAttribute("IsAutoHidden"))
@@ -3723,6 +3686,9 @@ namespace AvalonDock
 
             if (toggleAutoHide && pane.Items.Count > 0)
                 ToggleAutoHide(pane);
+
+            if (mainElement.HasAttribute("SelectedIndex"))
+                pane.SelectedIndex = XmlConvert.ToInt32(mainElement.GetAttribute("SelectedIndex"));
 
             return pane;
         }
@@ -3989,16 +3955,17 @@ namespace AvalonDock
             ClearEmptyPanes();
             RefreshContents();
 
-            if (Documents.Count() > 0)
+            if (ActiveDocument != null &&
+               (ActiveDocument.ContainerPane == null ||
+               ActiveDocument.ContainerPane.GetManager() != this))
             {
-                ActiveContent = Documents[0];
-            }
-            else
-            {
-                ActiveContent = null;
-                ActiveDocument = null;
+                if (Documents.Count > 0)
+                    ActiveDocument = Documents[0];
+                else
+                    ActiveDocument = null;
             }
 
+            ActiveContent = ActiveDocument;
         } 
         #endregion
         

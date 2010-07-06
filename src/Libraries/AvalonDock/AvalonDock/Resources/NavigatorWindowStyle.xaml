@@ -33,8 +33,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <!--<Image Source="{Binding Icon, Converter={x:Static ad:Converters.ObjectToImageConverter}}" Width="16" UseLayoutRounding="True"/>-->
-                <Image Source="{Binding Icon}" UseLayoutRounding="True" Width="16"/>
+                <ad:ImageEx Source="{Binding Icon}" Width="16"/>
                 <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" Margin="4,0,0,0" TextWrapping="NoWrap" Grid.Column="1"/>
             </Grid>
         </Border>            
@@ -47,8 +46,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <!--<Image Source="{Binding Icon, Converter={x:Static ad:Converters.ObjectToImageConverter}}" Width="16" UseLayoutRounding="True"/>-->
-                <Image Source="{Binding Icon}" UseLayoutRounding="True" Width="16"/>
+                <ad:ImageEx Source="{Binding Icon}"  Width="16"/>
                 <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" Margin="4,0,0,0" TextWrapping="NoWrap" Grid.Column="1"/>
             </Grid>
         </Border>
@@ -82,13 +80,17 @@
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Visibility" Value="Visible" TargetName="intMouseOverBorder"/>
                         </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Visibility" Value="Visible" TargetName="intMouseOverBorder"/>
+                            <Setter Property="Opacity" Value="1.0" TargetName="intSelectedItemBorder"/>
+                        </Trigger>                        
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
-    <Style x:Key="NavigatorWindowDocumentsListItemContainerStyle" TargetType="ListBoxItem">
+    <!--<Style x:Key="NavigatorWindowDocumentsListItemContainerStyle" TargetType="ListBoxItem">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBoxItem">
@@ -123,7 +125,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
+    </Style>-->
 
     <Style x:Key="NavigatorWindowContentsListStyle"	 TargetType="ListBox">
         <Setter Property="ItemTemplate" Value="{StaticResource NavigatorWindowContentsListItemTemplate}"/>
@@ -134,8 +136,8 @@
     </Style>
 
     <Style x:Key="NavigatorWindowDocumentsListStyle" TargetType="ListBox">
-        <Setter Property="ItemTemplate" Value="{StaticResource NavigatorWindowDocumentsListItemTemplate}"/>
-        <Setter Property="ItemContainerStyle" Value="{StaticResource NavigatorWindowDocumentsListItemContainerStyle}"/>
+        <Setter Property="ItemTemplate" Value="{StaticResource NavigatorWindowContentsListItemTemplate}"/>
+        <Setter Property="ItemContainerStyle" Value="{StaticResource NavigatorWindowContentsListItemContainerStyle}"/>
         <Setter Property="Background" Value="{x:Null}"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
@@ -174,10 +176,10 @@
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="*"/>
                                             </Grid.ColumnDefinitions>
-                                            <Image UseLayoutRounding="True" Source="{Binding Path=SelectedItem.Icon, ElementName=activeFileList}" Width="16"/>
-                                            <TextBlock x:Name="titleSelectedDocument" Grid.Column="1" Text="{Binding Path=SelectedItem.Title, ElementName=activeFileList}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" Margin="4,0,0,0" TextTrimming="CharacterEllipsis"/>
+                                        <ad:ImageEx Source="{Binding Path=SelectedContent.Icon, RelativeSource={RelativeSource TemplatedParent}}" Width="16"/>
+                                        <TextBlock x:Name="titleSelectedDocument" Grid.Column="1" Text="{Binding Path=SelectedContent.Title, RelativeSource={RelativeSource TemplatedParent}}" FontSize="14" FontWeight="Bold" VerticalAlignment="Center" Margin="4,0,0,0" TextTrimming="CharacterEllipsis"/>
                                         </Grid>
-                                    <TextBlock Grid.Row="1" Text="{Binding Path=SelectedItem.ContentTypeDescription, ElementName=activeFileList}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Grid.Row="1" Text="{Binding Path=SelectedContent.ContentTypeDescription, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=''}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                                     </Grid>
                                 </Border>
                                 <Border Grid.Row="1" Background="{StaticResource NavigatorWindowContentsBackground}">
@@ -218,7 +220,7 @@
                                 </Border>
 
                                 <Border Grid.Row="2" Margin="5">
-                                <TextBlock Text="{Binding Path=SelectedItem.ItemContent.InfoTip, ElementName=activeFileList}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Text="{Binding Path=SelectedContent.ItemContent.InfoTip, RelativeSource={RelativeSource TemplatedParent}, FallbackValue=''}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                                 </Border>
                             </Grid>
                         </Border>

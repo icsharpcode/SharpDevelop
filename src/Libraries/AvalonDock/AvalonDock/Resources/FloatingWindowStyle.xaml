@@ -76,32 +76,32 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <ContentPresenter Name="INT_pane" Grid.Column="1" Grid.Row="1"/>
-                        <ad:Resizer x:Name="PART_Resizer" Grid.Column="2" Grid.Row="1" 
+                        <ad:Resizer x:Name="PART_Resizer" 
 							Background="Transparent"/>                        
                     </Grid>
                     <ControlTemplate.Triggers>
                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Anchor}" Value="Right">
                             <Setter Property="Grid.Row" Value="1" TargetName="PART_Resizer"/>
                             <Setter Property="Grid.Column" Value="0" TargetName="PART_Resizer"/>
-                            <Setter Property="Width" Value="4" TargetName="PART_Resizer"/>
+                            <Setter Property="Width" Value="5" TargetName="PART_Resizer"/>
                             <Setter Property="Cursor" Value="SizeWE" TargetName="PART_Resizer"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Anchor}" Value="Left">
                             <Setter Property="Grid.Row" Value="1" TargetName="PART_Resizer"/>
                             <Setter Property="Grid.Column" Value="2" TargetName="PART_Resizer"/>
-                            <Setter Property="Width" Value="4" TargetName="PART_Resizer"/>
+                            <Setter Property="Width" Value="5" TargetName="PART_Resizer"/>
                             <Setter Property="Cursor" Value="SizeWE" TargetName="PART_Resizer"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Anchor}" Value="Bottom">
                             <Setter Property="Grid.Column" Value="1" TargetName="PART_Resizer"/>
                             <Setter Property="Grid.Row" Value="0" TargetName="PART_Resizer"/>
-                            <Setter Property="Height" Value="4" TargetName="PART_Resizer"/>
+                            <Setter Property="Height" Value="5" TargetName="PART_Resizer"/>
                             <Setter Property="Cursor" Value="SizeNS" TargetName="PART_Resizer"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Anchor}" Value="Top">
-                            <Setter Property="Grid.Row" Value="2" TargetName="PART_Resizer"/>
                             <Setter Property="Grid.Column" Value="1" TargetName="PART_Resizer"/>
-                            <Setter Property="Height" Value="4" TargetName="PART_Resizer"/>
+                            <Setter Property="Grid.Row" Value="2" TargetName="PART_Resizer"/>
+                            <Setter Property="Height" Value="5" TargetName="PART_Resizer"/>
                             <Setter Property="Cursor" Value="SizeNS" TargetName="PART_Resizer"/>
                         </DataTrigger>
                     </ControlTemplate.Triggers>

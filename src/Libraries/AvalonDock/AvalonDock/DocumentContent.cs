@@ -226,13 +226,13 @@ namespace AvalonDock
             if (!e.Handled && e.Command == DocumentContentCommands.FloatingDocument)
             {
                 this.Show(true);
-
+                Activate();
                 e.Handled = true;
             }
             else if (!e.Handled && e.Command == DocumentContentCommands.TabbedDocument)
             {
                 this.Show(false);
-
+                Activate();
                 e.Handled = true;
             }
         }
@@ -307,6 +307,13 @@ namespace AvalonDock
                     parentPane.SelectedIndex = 0;
                 }
             }
+
+            //Active this content as the active document
+            if (Manager != null)
+                Manager.ActiveDocument = this;
+
+            //ensure this content is rendered first
+            Panel.SetZIndex(this, 2);
         }
 
         /// <summary>
@@ -391,8 +398,8 @@ namespace AvalonDock
 
             DockingManager oldManager = Manager;
 
-            if (Manager != null)
-                Manager.FireDocumentClosingEvent(e);
+            if (oldManager != null)
+                oldManager.FireDocumentClosingEvent(e);
 
             if (e.Cancel)
                 return false;
@@ -403,9 +410,10 @@ namespace AvalonDock
 
             //if documents are attached to an external source via DockingManager.DocumentsSource
             //let application host handle the document closing by itself
-            if (Manager != null && Manager.DocumentsSource != null)
+            if (oldManager != null &&
+                oldManager.DocumentsSource != null)
             {
-                Manager.HandleDocumentClose(this);
+                oldManager.HandleDocumentClose(this);
             }
 
             if (oldManager != null)

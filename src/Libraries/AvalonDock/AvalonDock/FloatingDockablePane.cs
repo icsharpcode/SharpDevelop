@@ -29,6 +29,7 @@ using System.Text;
 using System.Windows;
 using System.Linq;
 using System.Windows.Data;
+using System.Windows.Media;
 
 namespace AvalonDock
 {
@@ -40,7 +41,6 @@ namespace AvalonDock
             //by design avoid style change
 
             Pane.ShowHeaderProperty.OverrideMetadata(typeof(FloatingDockablePane), new FrameworkPropertyMetadata(false));
-
         }
 
 
@@ -106,6 +106,8 @@ namespace AvalonDock
                 AttachStyleFromPane(_paneToTransfer);
                 
                 ApplyTemplate();
+
+                LayoutTransform = (MatrixTransform)_paneToTransfer.TansformToAncestor();
             }
             else if (_contentToTransfer != null)
             {
@@ -131,10 +133,7 @@ namespace AvalonDock
 
                 SelectedIndex = 0;
 
-                //if (_previousPane is DockablePane)
-                //{
-                //    Style = _previousPane.Style;
-                //}
+                
                 AttachStyleFromPane(_previousPane as DockablePane);
 
                 DocumentPane originalDocumentPane = _previousPane as DocumentPane;
@@ -143,6 +142,7 @@ namespace AvalonDock
 
 
                 _contentToTransfer.SetStateToDockableWindow();
+                LayoutTransform = (MatrixTransform)_contentToTransfer.TansformToAncestor();
             }
 
             base.OnInitialized(e);
@@ -153,11 +153,11 @@ namespace AvalonDock
             if (copyFromPane == null)
                 return;
 
-            Binding bnd = new Binding("Style");
-            bnd.Source = copyFromPane;
-            bnd.Mode = BindingMode.OneWay;
+            //Binding bnd = new Binding("Style");
+            //bnd.Source = copyFromPane;
+            //bnd.Mode = BindingMode.OneWay;
 
-            SetBinding(StyleProperty, bnd);
+            //SetBinding(StyleProperty, bnd);
         }
 
         DockablePane _paneToTransfer = null;

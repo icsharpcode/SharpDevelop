@@ -52,7 +52,7 @@
 											<ColumnDefinition Width="Auto"/>
 											<ColumnDefinition Width="*"/>
 										</Grid.ColumnDefinitions>
-                                        <Image x:Name="Icon" Width="16" Source="{TemplateBinding Icon}" UseLayoutRounding="True"/>
+                                    <ad:ImageEx x:Name="Icon" Width="16" Source="{TemplateBinding Icon}"/>
 										<TextBlock 
 											x:Name="tabItemTitle"
 											Grid.Column="1"
@@ -136,17 +136,17 @@
                                 <DockPanel LastChildFill="True">
                                     <Button DockPanel.Dock="Right" Width="15" Height="15" Style="{StaticResource PaneHeaderCommandStyle}" Command="ad:DockablePaneCommands.Close" Visibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedItem.IsCloseable, Converter={x:Static ad:Converters.BoolToVisibilityConverter}}" ToolTip="{x:Static adRes:Resources.DockablePaneCommands_Close}">
 										<!--<ad:AlignedImage>-->
-                                        <Image Source="Images\PinClose.png" Width="13" UseLayoutRounding="True"/>
+                                        <ad:ImageEx Source="Images\PinClose.png" Width="13" />
 										<!--</ad:AlignedImage>-->
                                     </Button>
                                     <Button x:Name="btnPinAutoHide" DockPanel.Dock="Right" Width="15" Height="15"  Style="{StaticResource PaneHeaderCommandStyle}" Command="ad:DockablePaneCommands.ToggleAutoHide" ToolTip="{x:Static adRes:Resources.DockablePaneCommands_ToggleAutoHide}">
 										<!--<ad:AlignedImage>-->
-                                        <Image Source="Images\PinAutoHide.png" Width="13" UseLayoutRounding="True"/>
+                                        <ad:ImageEx Source="Images\PinAutoHide.png" Width="13" />
 										<!--</ad:AlignedImage>-->
 									</Button>
                                     <Border x:Name="PART_ShowContextMenuButton"  DockPanel.Dock="Right" Width="15" Height="15"  Style="{StaticResource PaneHeaderContextMenuCommandStyle}"  ToolTip="{x:Static adRes:Resources.DockablePane_ShowOptionsMenu}">
 										<!--<ad:AlignedImage>-->
-											<Image Source="Images\PinMenu.png" Width="13" UseLayoutRounding="True"/>
+                                        <ad:ImageEx Source="Images\PinMenu.png" Width="13" />
 										<!--</ad:AlignedImage>-->
                                     </Border>
                                     <TextBlock 

@@ -702,14 +702,12 @@ namespace AvalonDock
 
                 if (e.Cancel)
                     return false;
-
-                DockingManager oldManager = Manager;
-
-                if (e.Cancel)
-                    return false;
-
-                ((DockablePane)ContainerPane).RemoveContent(
-                    ContainerPane.Items.IndexOf(this));
+                
+                if (ContainerPane != null)
+                {
+                    ContainerPane.RemoveContent(
+                        ContainerPane.Items.IndexOf(this));
+                }
 
                 OnClosed();
                 return true;
@@ -870,6 +868,12 @@ namespace AvalonDock
                     "FloatingWindowSize", new SizeConverter().ConvertToInvariantString(FloatingWindowSize));
             }
 
+            if (!FlyoutWindowSize.IsEmpty)
+            {
+                storeWriter.WriteAttributeString(
+                    "FlyoutWindowSize", new SizeConverter().ConvertToInvariantString(FlyoutWindowSize));
+            }
+
             if (SavedStateAndPosition != null)
             {
                 storeWriter.WriteAttributeString(
@@ -902,6 +906,8 @@ namespace AvalonDock
         {
             if (contentElement.HasAttribute("FloatingWindowSize"))
                 FloatingWindowSize = (Size)(new SizeConverter()).ConvertFromInvariantString(contentElement.GetAttribute("FloatingWindowSize"));
+            if (contentElement.HasAttribute("FlyoutWindowSize"))
+                FlyoutWindowSize = (Size)(new SizeConverter()).ConvertFromInvariantString(contentElement.GetAttribute("FlyoutWindowSize"));
 
             Size effectiveSize = new Size(0d, 0d);
             if (contentElement.HasAttribute("EffectiveSize"))
@@ -918,7 +924,7 @@ namespace AvalonDock
                 Guid containerPaneGuid = Guid.Empty;
                 if (contentElement.HasAttribute("ContainerPaneID"))
                 {
-                    containerPaneGuid = Guid.Parse(contentElement.GetAttribute("ContainerPaneID"));
+                    containerPaneGuid = new Guid(contentElement.GetAttribute("ContainerPaneID"));
 
                     if (Manager != null)
                     { 
@@ -950,5 +956,54 @@ namespace AvalonDock
             }
         } 
         #endregion
+
+        #region FlyoutWindowSize
+
+        /// <summary>
+        /// FlyoutWindowSize Dependency Property
+        /// </summary>
+        public static readonly DependencyProperty FlyoutWindowSizeProperty =
+            DependencyProperty.Register("FlyoutWindowSize", typeof(Size), typeof(DockableContent),
+                new FrameworkPropertyMetadata((Size)Size.Empty,
+                    new PropertyChangedCallback(OnFlyoutWindowSizeChanged),
+                    new CoerceValueCallback(CoerceFlyoutWindowSizeValue)));
+
+        /// <summary>
+        /// Gets or sets the FlyoutWindowSize property.  This dependency property 
+        /// indicates size of the window hosting this content when is in auto-hidden state.
+        /// This property is persisted when layout of the container <see cref="DockingManager"/> is saved.
+        /// </summary>
+        public Size FlyoutWindowSize
+        {
+            get { return (Size)GetValue(FlyoutWindowSizeProperty); }
+            set { SetValue(FlyoutWindowSizeProperty, value); }
+        }
+
+        /// <summary>
+        /// Handles changes to the FlyoutWindowSize property.
+        /// </summary>
+        private static void OnFlyoutWindowSizeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+        }
+
+
+        /// <summary>
+        /// Coerces the FlyoutWindowSize value.
+        /// </summary>
+        private static object CoerceFlyoutWindowSizeValue(DependencyObject d, object value)
+        {
+            //coerces size to 100.0-100.0
+            Size newSize = (Size)value;
+
+            newSize.Width = Math.Max(100.0, newSize.Width);
+            newSize.Height = Math.Max(100.0, newSize.Height);
+
+            return newSize;
+        }
+
+        #endregion
+
+
+
     }
 }

@@ -147,6 +147,7 @@ namespace AvalonDock
                 IsResizing = true;
 
                 ShowResizerOverlayWindow(s as Resizer);
+                Debug.WriteLine(string.Format("resizer.DragStarted() Rect->{0}", new Rect(Left, Top, Width, Height)));
             };
 
             if (resizer != null) resizer.DragDelta += (s, e) =>
@@ -175,6 +176,9 @@ namespace AvalonDock
                         break;
 
                 }
+
+                Debug.WriteLine(string.Format("resizer.DragDelta() Rect->{0}", new Rect(Left, Top, Width, Height)));
+
             };
 
             if (resizer != null) resizer.DragCompleted += (s, e) =>
@@ -216,14 +220,33 @@ namespace AvalonDock
                 }
 
                 IsResizing = false;
+                SaveFlyoutSizeToContent();
                 HideResizerOverlayWindow();
-            };
+                Debug.WriteLine(string.Format("resizer.DragCompleted() Rect->{0}", new Rect(Left, Top, Width, Height)));
 
-            
+            };
             
             base.OnApplyTemplate();
         }
 
+        void SaveFlyoutSizeToContent()
+        {
+            if (ReferencedPane.ActualWidth > 0.0 &&
+                ReferencedPane.ActualHeight > 0.0)
+            {
+                var flyoutContent = ReferencedPane.SelectedItem as DockableContent;
+
+                if (Anchor == AnchorStyle.Left ||
+                    Anchor == AnchorStyle.Right)
+                    flyoutContent.FlyoutWindowSize =
+                        new Size(ReferencedPane.ActualWidth, flyoutContent.FlyoutWindowSize.Height <= 0 ? ReferencedPane.ActualHeight : flyoutContent.FlyoutWindowSize.Height);
+                else
+                    flyoutContent.FlyoutWindowSize =
+                        new Size(flyoutContent.FlyoutWindowSize.Width <= 0 ? ReferencedPane.ActualWidth : flyoutContent.FlyoutWindowSize.Width, ReferencedPane.ActualHeight);
+
+                Debug.WriteLine(string.Format("Save flyout size for content '{0}' -> {1}", flyoutContent.Name, flyoutContent.FlyoutWindowSize));
+            }        
+        }
 
         /// <summary>
         /// Handles the closed event
@@ -239,6 +262,7 @@ namespace AvalonDock
 
             IsClosed = true;
         }
+
 
         /// <summary>
         /// Gets a value indicating i fthis window is closed
@@ -402,136 +426,6 @@ namespace AvalonDock
             }
         }
 
-
-        //void ShowResizerPopup()
-        //{
-        //    _resizerPopup = new Window()
-        //    {
-        //        AllowsTransparency = true,
-        //        Background = Brushes.Transparent,
-        //        ShowActivated = false,
-        //        ShowInTaskbar = false,
-        //        ResizeMode = System.Windows.ResizeMode.NoResize,
-        //        WindowStyle = System.Windows.WindowStyle.None,
-        //        Owner = this
-        //    };
-
-        //    Debug.WriteLine(string.Format("{0}-{1} {2}-{3}",
-        //        Left,
-        //        Top,
-        //        Width,
-        //        Height));
-
-        //    Canvas resizerCanvas = new Canvas() { Width = MaxWidth, Height = MaxHeight, Background = null};
-        //    Border resizer = new Border() { Background = new SolidColorBrush(Colors.DarkGray), Opacity = 0.1 };
-
-        //    switch (CorrectedAnchor)
-        //    {
-        //        case AnchorStyle.Left:
-        //            {
-        //                _resizerPopup.Left = Left;
-        //                _resizerPopup.Top = Top;
-        //                _resizerPopup.Width = MaxWidth;
-        //                _resizerPopup.Height = MaxHeight;
-                       
-        //                resizer.Width = 4;
-        //                resizer.Height = MaxHeight;
-        //                resizer.Cursor = Cursors.SizeWE;                     
-                        
-        //                Canvas.SetLeft(resizer, Width - resizer.Width);
-        //                Canvas.SetTop(resizer, 0.0);
-        //            }
-        //            break;
-        //        case AnchorStyle.Right:
-        //            {
-        //                _resizerPopup.Left = Left - MaxWidth + Width;
-        //                _resizerPopup.Top = Top;
-        //                _resizerPopup.Width = MaxWidth;
-        //                _resizerPopup.Height = MaxHeight; 
-                        
-        //                resizer.Width = 4;
-        //                resizer.Height = MaxHeight;
-        //                resizer.Cursor = Cursors.SizeWE;
-
-        //                Canvas.SetLeft(resizer, MaxWidth - Width);
-        //                Canvas.SetTop(resizer, 0.0);
-        //            }
-        //            break;
-        //        case AnchorStyle.Top:
-        //            {
-        //                _resizerPopup.Left = Left;
-        //                _resizerPopup.Top = Top;
-        //                _resizerPopup.Width = MaxWidth;
-        //                _resizerPopup.Height = MaxHeight;
-
-        //                resizer.Width = MaxWidth;
-        //                resizer.Height = 4;
-        //                resizer.Cursor = Cursors.SizeNS;
-
-        //                Canvas.SetLeft(resizer, 4);
-        //                Canvas.SetTop(resizer, Height - resizer.Height);
-        //            }
-        //            break;
-        //        case AnchorStyle.Bottom:
-        //            {
-        //                _resizerPopup.Left = Left;
-        //                _resizerPopup.Top = Top - MaxHeight + Height;
-        //                _resizerPopup.Width = MaxWidth;
-        //                _resizerPopup.Height = MaxHeight;
-
-        //                resizer.Width = MaxWidth;
-        //                resizer.Height = 4;
-        //                resizer.Cursor = Cursors.SizeNS;
-
-        //                Canvas.SetLeft(resizer, 4);
-        //                Canvas.SetTop(resizer, MaxHeight - Height);
-        //            }
-        //            break;
-        //    }
-
-        //    resizerCanvas.Children.Add(resizer);
-
-
-        //    _resizerPopup.Content = resizerCanvas;
-        //    _resizerPopup.Show();
-        //}
-
-        //void HideResizerPopup()
-        //{
-        //    if (_resizerPopup == null)
-        //        return;
-
-        //    //_resizerPopup.IsOpen = false;
-        //    _resizerPopup.Close();
-        //    _resizerPopup = null;
-        //}
-
-        //void UpdateResizerPopup()
-        //{
-        //    if (_resizerPopup == null)
-        //        return;
-
-        //    switch (CorrectedAnchor)
-        //    {
-        //        case AnchorStyle.Left:
-        //            {
-        //                //_resizerPopup.PlacementRectangle = new Rect(Left, Top, MaxWidth, MaxHeight);
-        //                _resizerPopup.Left = Left;
-        //                _resizerPopup.Top = Top;
-        //                _resizerPopup.Width = MaxWidth;
-        //                _resizerPopup.Height = MaxHeight;
-
-        //            }
-        //            break;
-        //        case AnchorStyle.Right:
-        //            {
-        //                //_resizerPopup.PlacementRectangle = new Rect(Left - MaxWidth + Width, Top, MaxWidth, MaxHeight);
-        //            }
-        //            break;
-        //    }
-
-        //}
-
         /// <summary>
         /// Gets a value indicating if user is resizer the window
         /// </summary>
@@ -543,15 +437,6 @@ namespace AvalonDock
 
 
         DispatcherTimer _closingTimer = null;
-
-        ///// <summary>
-        ///// Start the closing timer
-        ///// </summary>
-        //void StartClosingTimer()
-        //{
-        //    //if (_closingTimer != null)
-        //    //    _closingTimer.Start();
-        //}
 
         /// <summary>
         /// Creates the closing timer
@@ -580,15 +465,6 @@ namespace AvalonDock
                 _closingTimer = null;
             }
         }
-
-        ///// <summary>
-        ///// Stop the closing timer
-        ///// </summary>
-        //void StopClosingTimer()
-        //{
-        //    //if (_closingTimer != null)
-        //    //    _closingTimer.Stop();
-        //}
 
         /// <summary>
         /// This handler is called when the closing time delay is elapsed (user is focusing to something else of the UI)
@@ -639,55 +515,6 @@ namespace AvalonDock
         }
 
 
-        //protected override void OnMouseLeave(MouseEventArgs e)
-        //{
-        //    base.OnMouseLeave(e);
-
-        //    if (!IsFocused && !IsKeyboardFocusWithin && !ReferencedPane.IsOptionsMenuOpen)
-        //        StartClosingTimer();
-        //}
-
-        //protected override void OnMouseMove(MouseEventArgs e)
-        //{
-        //    base.OnMouseMove(e);
-
-        //    StopClosingTimer();
-        //}
-
-        //protected override void OnLostFocus(RoutedEventArgs e)
-        //{
-        //    base.OnLostFocus(e);
-
-        //    if (!IsMouseOver && !ReferencedPane.IsOptionsMenuOpen)
-        //        StartClosingTimer();
-        //}
-
-        //protected override void OnLostKeyboardFocus(KeyboardFocusChangedEventArgs e)
-        //{
-        //    base.OnLostKeyboardFocus(e);
-
-        //    if (!IsMouseOver)
-        //        StopClosingTimer();
-        //}
-
-        //protected override void OnGotFocus(RoutedEventArgs e)
-        //{
-        //    base.OnGotFocus(e);
-
-        //    StopClosingTimer();
-        //}
-
-        //protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
-        //{
-        //    base.OnGotKeyboardFocus(e);
-
-        //    StopClosingTimer();
-        //}
-
-        //internal void KeepWindowOpen()
-        //{
-        //    StopClosingTimer();
-        //}
         #endregion
 
         #region Open/Close Flyout window
@@ -1003,7 +830,6 @@ namespace AvalonDock
             }
         }
 
-
         /// <summary>
         /// Close the flyout window with or without animation depending on the ShowAnimated flag
         /// </summary>
@@ -1019,6 +845,7 @@ namespace AvalonDock
                     Close();
             }
         }
+
         #endregion
 
 

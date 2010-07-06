@@ -53,8 +53,8 @@ namespace AvalonDock
             _arrayIndexPreviousPane = _referencedPane.Items.IndexOf(content);
             Anchor = _referencedPane.Anchor;
 
-            SetValue(ResizingPanel.ResizeWidthProperty, new GridLength(ResizingPanel.GetEffectiveSize(_referencedPane).Width));
-            SetValue(ResizingPanel.ResizeHeightProperty, new GridLength(ResizingPanel.GetEffectiveSize(_referencedPane).Height));
+            //SetValue(ResizingPanel.ResizeWidthProperty, new GridLength(ResizingPanel.GetEffectiveSize(_referencedPane).Width));
+            //SetValue(ResizingPanel.ResizeHeightProperty, new GridLength(ResizingPanel.GetEffectiveSize(_referencedPane).Height));
 
             this.Style = _referencedPane.Style;
 
@@ -78,8 +78,8 @@ namespace AvalonDock
             if (this.Items.Count == 1)
             {
                 _referencedPane.Items.Insert(_arrayIndexPreviousPane, RemoveContent(0));
-                ResizingPanel.SetResizeWidth(_referencedPane, ResizingPanel.GetResizeWidth(this));
-                ResizingPanel.SetResizeHeight(_referencedPane, ResizingPanel.GetResizeHeight(this));
+                //ResizingPanel.SetResizeWidth(_referencedPane, ResizingPanel.GetResizeWidth(this));
+                //ResizingPanel.SetResizeHeight(_referencedPane, ResizingPanel.GetResizeHeight(this));
             }            
         }
 

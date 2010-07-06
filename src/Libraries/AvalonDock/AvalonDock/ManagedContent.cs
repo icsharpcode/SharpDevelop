@@ -101,8 +101,8 @@ namespace AvalonDock
         //    return contentHost;
         //}
 
-		void ManagedContent_SizeChanged(object sender, SizeChangedEventArgs e)
-		{
+        //void ManagedContent_SizeChanged(object sender, SizeChangedEventArgs e)
+        //{
             //WindowsFormsHost contentHost = GetWinFormsHost();
 
             //if (contentHost != null)
@@ -114,7 +114,7 @@ namespace AvalonDock
             //        this.Dispatcher.Invoke(new Action<object>((o) => o.CallMethod("Refresh", null)), DispatcherPriority.Render, childCtrl);
             //    }
             //}
-		}
+        //}
 
         protected virtual void OnContentLoaded()
         {
@@ -265,6 +265,24 @@ namespace AvalonDock
             if (_dragEnabledArea != null)
                 _dragEnabledArea.InputBindings.Add(new InputBinding(ManagedContentCommands.Close, new MouseGesture(MouseAction.MiddleClick)));
 
+            if (_dragEnabledArea != null && _dragEnabledArea.ContextMenu == null)
+            {
+                _dragEnabledArea.MouseRightButtonDown += (s, e) =>
+                    {
+                        if (!e.Handled)
+                        {
+                            Activate();
+                            if (_dragEnabledArea.ContextMenu == null)
+                            {
+                                Dispatcher.BeginInvoke(DispatcherPriority.Input, new ThreadStart(delegate
+                                {
+                                    ContainerPane.OpenOptionsMenu(null);
+                                }));
+                            }
+                            e.Handled = true;
+                        }
+                    };
+            }
         }
 
         #region Mouse management
@@ -294,6 +312,7 @@ namespace AvalonDock
 
         protected virtual void OnDragMouseDown(object sender, MouseButtonEventArgs e)
         {
+            Debug.WriteLine("OnDragMouseDown" + e.ClickCount);
             if (!e.Handled && Manager != null)// && State != DockableContentState.AutoHide)
             {
                 isMouseDown = true;
@@ -308,17 +327,18 @@ namespace AvalonDock
         protected virtual void OnDragMouseUp(object sender, MouseButtonEventArgs e)
         {
             isMouseDown = false;
+
+            Debug.WriteLine("OnDragMouseUp" + e.ClickCount);
         }
 
         Point ptRelativePosition;
 
         protected virtual void OnDragMouseLeave(object sender, MouseEventArgs e)
         {
-            if (!e.Handled && e.LeftButton == MouseButtonState.Pressed && Manager != null)
+            if (!e.Handled && isMouseDown && e.LeftButton == MouseButtonState.Pressed && Manager != null)
             {
                 if (!IsMouseCaptured)
                 {
-                    //Point ptMouseMove = e.GetPosition(this);
                     Point ptMouseMove = e.GetPosition((IInputElement)System.Windows.Media.VisualTreeHelper.GetParent(this));
                     ManagedContent contentToSwap = null;
                     if (ContainerPane != null)
@@ -337,7 +357,8 @@ namespace AvalonDock
                         }
                     }
 
-                    if (contentToSwap != null)
+                    if (contentToSwap != null &&
+                        contentToSwap != this)
                     {
                         Pane containerPane = ContainerPane;
                         int myIndex = containerPane.Items.IndexOf(this);
@@ -352,8 +373,9 @@ namespace AvalonDock
                         containerPane.Items.Insert(myIndex, contentToSwap);
 
                         containerPane.SelectedItem = this;
-
+                        
                         e.Handled = false;
+                        //avoid ismouseDown = false call
                         return;
                     }
                     else if (Math.Abs(ptMouseMove.X - StartDragPoint.X) > SystemParameters.MinimumHorizontalDragDistance ||
@@ -367,8 +389,8 @@ namespace AvalonDock
                     }
                 }
             }
-            
-            isMouseDown = false;
+
+            ResetIsMouseDownFlag();
         }
 
 
@@ -579,52 +601,77 @@ namespace AvalonDock
         {
             if (IsActiveContent && !IsKeyboardFocused)
             {
-                Dispatcher.BeginInvoke(DispatcherPriority.Input, new ThreadStart(delegate
+                #region Focus on winforms content
+                if (this.Content is WindowsFormsHost)
                 {
-                    if (IsActiveContent && !IsKeyboardFocused)
-                    {
-                        if (this.Content is WindowsFormsHost)
+                    //Use reflection in order to remove WinForms assembly reference
+                    //WindowsFormsHost contentHost = this.Content as WindowsFormsHost;
+
+                    //object childCtrl = contentHost.GetType().GetProperty("Child").GetValue(contentHost, null);
+
+                    //if (childCtrl != null)
+                    //{
+                    //    if (!childCtrl.GetPropertyValue<bool>("Focused"))
+                    //    {
+                    //        childCtrl.CallMethod("Focus", null);
+                    //    }
+                    //}
+
+                    //Dispatcher.BeginInvoke(DispatcherPriority.Background, new ThreadStart(delegate
+                    //        {
+                    //            if (IsActiveContent && !IsKeyboardFocused)
+                    //            {
+                    //                if (this.Content is WindowsFormsHost)
+                    //                {
+                    //                    //Use reflection in order to remove WinForms assembly reference
+                    //                    WindowsFormsHost contentHost = this.Content as WindowsFormsHost;
+
+                    //                    object childCtrl = contentHost.GetType().GetProperty("Child").GetValue(contentHost, null);
+
+                    //                    if (childCtrl != null)
+                    //                    {
+                    //                        if (!childCtrl.GetPropertyValue<bool>("Focused"))
+                    //                        {
+                    //                            childCtrl.CallMethod("Focus", null);
+                    //                        }
+                    //                    }
+                    //                }
+                    //            }
+                    //        }));
+                }
+                #endregion
+
+                Dispatcher.BeginInvoke(DispatcherPriority.Input, new ThreadStart(delegate
                         {
-                            //Use reflection in order to remove WinForms assembly reference
-                            WindowsFormsHost contentHost = this.Content as WindowsFormsHost;
-
-                            object childCtrl = contentHost.GetType().GetProperty("Child").GetValue(contentHost, null);
-
-                            if (childCtrl != null)
+                            if (IsActiveContent && !IsKeyboardFocused)
                             {
-                                if (!childCtrl.GetPropertyValue<bool>("Focused"))
+                                if (DefaultElement != null)
                                 {
-                                    childCtrl.CallMethod("Focus", null);
+                                    Debug.WriteLine("Try to set kb focus to " + DefaultElement);
+
+                                    IInputElement kbFocused = Keyboard.Focus(DefaultElement);
+
+                                    if (kbFocused != null)
+                                        Debug.WriteLine("Focused element " + kbFocused);
+                                    else
+                                        Debug.WriteLine("No focused element");
+
+                                }
+                                else if (Content is UIElement && Content is DependencyObject)
+                                {
+                                    Debug.WriteLine("Try to set kb focus to " + this.Content.ToString());
+                                    (Content as UIElement).Focus();
+                                    IInputElement kbFocused = Keyboard.Focus(this.Content as IInputElement);
+                                    if (kbFocused != null)
+                                        Debug.WriteLine("Focused element " + kbFocused);
+                                    else
+                                        Debug.WriteLine("No focused element");
                                 }
                             }
-                        }
-                        else if (DefaultElement != null)
-                        {
-                            Debug.WriteLine("Try to set kb focus to " + DefaultElement);
+                        }));
 
-                            IInputElement kbFocused = Keyboard.Focus(DefaultElement);
-
-                            if (kbFocused != null)
-                                Debug.WriteLine("Focused element " + kbFocused);
-                            else
-                                Debug.WriteLine("No focused element");
-
-                        }
-                        else if (this.Content is IInputElement)
-                        {
-                            Debug.WriteLine("Try to set kb focus to " + this.Content.ToString());
-                            IInputElement kbFocused = Keyboard.Focus(this.Content as IInputElement);
-                            if (kbFocused != null)
-                                Debug.WriteLine("Focused element " + kbFocused);
-                            else
-                                Debug.WriteLine("No focused element");
-                        }
-                    }
-                }));
+                      
             }
-        
-           
-           
         }
 
         /// <summary>
@@ -690,7 +737,7 @@ namespace AvalonDock
                 parentDocumentPane.RefreshContainsActiveDocumentProperty();
             }
 
-            Debug.WriteLine("{0}-{1}-{2}", IsFocused, IsKeyboardFocused, IsKeyboardFocusWithin);
+            //Debug.WriteLine("{0}-{1}-{2}", IsFocused, IsKeyboardFocused, IsKeyboardFocusWithin);
 
             //for backward compatibility
             RaisePropertyChanged("IsActiveDocumentChanged");
@@ -763,6 +810,7 @@ namespace AvalonDock
         }
 
         #endregion
+
 
         #region INotifyPropertyChanged Members
 
@@ -930,7 +978,9 @@ namespace AvalonDock
             if (ContainerPane != null && Manager != null)// && Manager.ActiveContent != this)
             {
                 ContainerPane.SelectedItem = this;
-                ContainerPane.Focus();
+
+                FocusContent();
+
                 if (Manager != null)
                     Manager.ActiveContent = this;
             }
@@ -956,6 +1006,8 @@ namespace AvalonDock
         {
         }
         #endregion
+
+
 
     }
 }

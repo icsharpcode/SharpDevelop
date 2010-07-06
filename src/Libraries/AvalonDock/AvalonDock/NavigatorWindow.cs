@@ -134,7 +134,7 @@ namespace AvalonDock
     /// </summary>
     /// <remarks>This window allow user to rapidly select a <see cref="DockableContent"/> object or a <see cref="DocumentContent"/> object.
     /// When selected a content is also activate with the function <see cref="ManagedContent.Activate"/></remarks>
-    public class NavigatorWindow : AvalonDockWindow
+    public class NavigatorWindow : AvalonDockWindow, INotifyPropertyChanged
     {
         #region Constructors
         static NavigatorWindow()
@@ -191,33 +191,66 @@ namespace AvalonDock
         #endregion
 
         #region Handlers for Tab+ctrl keys events
-        protected override void OnPreviewKeyDown(KeyEventArgs e)
+
+        internal bool HandleKey(Key key)
         {
-            if (e.Key != Key.Tab)
-                Hide();
-            else
+            if (key == Key.Tab)
             {
-                e.Handled = true;
-                MoveNextSelectedContent();
+                MoveToNextContent();
+                return true;
+            }
+            else if (key == Key.Down)
+            {
+                MoveToNextContent(true);
+                return true;
+            }
+            else if (key == Key.Up)
+            {
+                MoveToPreviousContent(true);
+                return true;
+            }
+            else if (key == Key.Left || key == Key.Right)
+            {
+                MoveToOtherList();
+                return true;
             }
 
-            base.OnKeyDown(e);
+            return false;
         }
 
-        protected override void OnPreviewKeyUp(KeyEventArgs e)
-        {
-            if (e.Key != Key.Tab)
-            {
-                var docSelected = (Documents.CurrentItem as NavigatorWindowDocumentItem).ItemContent as DocumentContent;
-                docSelected.Activate();
-                Hide();
-            }
-            else
-            {
-                e.Handled = true;
-            }
+        //protected override void OnPreviewKeyDown(KeyEventArgs e)
+        //{
+        //    if (e.Key == Key.Tab)
+        //    {
+        //        e.Handled = true;
+        //        MoveToNextContent();
+        //    }
+        //    else
+        //        Hide();
 
-            base.OnPreviewKeyUp(e);
+        //    base.OnKeyDown(e);
+        //}
+
+        //protected override void OnPreviewKeyUp(KeyEventArgs e)
+        //{
+        //    if (e.Key == Key.Tab)
+        //    {
+        //        e.Handled = true;
+        //    }
+        //    else
+        //    {
+        //        var docSelected = (Documents.CurrentItem as NavigatorWindowDocumentItem).ItemContent as DocumentContent;
+        //        docSelected.Activate();
+        //        Hide();
+        //    }
+
+        //    base.OnPreviewKeyUp(e);
+        //}
+
+        internal static bool IsKeyHandled(Key key)
+        {
+            return key == Key.Tab || key == Key.Down ||
+                key == Key.Up || key == Key.Left || key == Key.Right;
         }
         
         #endregion
@@ -232,7 +265,13 @@ namespace AvalonDock
 
         void DockableContents_CurrentChanged(object sender, EventArgs e)
         {
+            if (!_documentsSelected)
+                SelectedContent = DockableContents.CurrentItem as NavigatorWindowItem;
+
             if (DockableContents.CurrentItem == null)
+                return;
+
+            if (_intMoveFlag)
                 return;
 
             Debug.WriteLine(string.Format("DockContent current changed to {0}", (DockableContents.CurrentItem as NavigatorWindowItem).ItemContent.Title));
@@ -243,6 +282,9 @@ namespace AvalonDock
 
         void Documents_CurrentChanged(object sender, EventArgs e)
         {
+            if (_documentsSelected)
+                SelectedContent = Documents.CurrentItem as NavigatorWindowItem;
+
             if (Documents.CurrentItem == null)
                 return;
             if (_intMoveFlag)
@@ -253,7 +295,36 @@ namespace AvalonDock
             var docSelected = (Documents.CurrentItem as NavigatorWindowDocumentItem).ItemContent as DocumentContent;
             docSelected.Activate();
             Hide();
-        } 
+        }
+
+        #region SelectedContent
+
+        private NavigatorWindowItem _selectedContent = null;
+        public NavigatorWindowItem SelectedContent
+        {
+            get { return _selectedContent; }
+            set
+            {
+                if (_selectedContent != value)
+                {
+                    NavigatorWindowItem oldValue = _selectedContent;
+                    _selectedContent = value;
+                    OnSelectedContentChanged(oldValue, value);
+                    RaisePropertyChanged("SelectedContent");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Provides derived classes an opportunity to handle changes to the SelectedContent property.
+        /// </summary>
+        protected virtual void OnSelectedContentChanged(NavigatorWindowItem oldValue, NavigatorWindowItem newValue)
+        {
+        }
+
+        #endregion
+
+
         #endregion
 
         #region Documents
@@ -324,14 +395,113 @@ namespace AvalonDock
 
         #region Move to Next document
         bool _intMoveFlag = false;
-        public void MoveNextSelectedContent()
+        bool _documentsSelected = true;
+        public void MoveToNextContent(bool moveToNextList = false)
         {
             _intMoveFlag = true;
-            if (!Documents.MoveCurrentToNext())
-                Documents.MoveCurrentToFirst();
-            if (Documents.IsCurrentAfterLast)
-                Documents.MoveCurrentToFirst();
+
+            if (_documentsSelected)
+            {
+                if (!Documents.MoveCurrentToNext())
+                {
+                    if (moveToNextList)
+                    {
+                        _documentsSelected = false;
+                        DockableContents.MoveCurrentToFirst();
+                    }
+                    else
+                        Documents.MoveCurrentToFirst();
+                }
+            }
+            else
+            {
+                if (!DockableContents.MoveCurrentToNext())
+                {
+                    if (moveToNextList)
+                    {
+                        _documentsSelected = true;
+                        Documents.MoveCurrentToFirst();
+                    }
+                    else
+                        DockableContents.MoveCurrentToFirst();
+                }          
+            }
+
             _intMoveFlag = false;
+        }
+        public void MoveToPreviousContent(bool moveToNextList = false)
+        {
+            _intMoveFlag = true;
+
+            if (_documentsSelected)
+            {
+                if (!Documents.MoveCurrentToPrevious())
+                {
+                    if (moveToNextList)
+                    {
+                        _documentsSelected = false;
+                        DockableContents.MoveCurrentToLast();
+                    }
+                    else
+                        Documents.MoveCurrentToLast();
+                }
+            }
+            else
+            {
+                if (!DockableContents.MoveCurrentToPrevious())
+                {
+                    if (moveToNextList)
+                    {
+                        _documentsSelected = true;
+                        Documents.MoveCurrentToLast();
+                    }
+                    else
+                        DockableContents.MoveCurrentToLast();
+                }
+            }
+
+            _intMoveFlag = false;
+        }
+        public void MoveToOtherList()
+        {
+            _intMoveFlag = true;
+            if (_documentsSelected)
+            {
+                _documentsSelected = false;
+                int currentPos = Documents.CurrentPosition;
+                if (currentPos <= 0)
+                    DockableContents.MoveCurrentToFirst();
+                else if (currentPos >= DockableContents.Count)
+                    DockableContents.MoveCurrentToLast();
+                else
+                    DockableContents.MoveCurrentToPosition(currentPos);
+                Documents.MoveCurrentTo(null);
+            }
+            else
+            {
+                _documentsSelected = true;
+                int currentPos = DockableContents.CurrentPosition;
+                if (currentPos <= 0)
+                    Documents.MoveCurrentToFirst();
+                else if (currentPos >= Documents.Count)
+                    Documents.MoveCurrentToLast();
+                else
+                    Documents.MoveCurrentToPosition(currentPos);
+                DockableContents.MoveCurrentTo(null);
+            }
+            _intMoveFlag = false;
+
+        }
+        #endregion
+
+
+        #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void RaisePropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
     }

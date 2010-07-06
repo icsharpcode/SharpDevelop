@@ -39,6 +39,8 @@ using System.Diagnostics;
 using System.ComponentModel;
 using System.Collections;
 using System.Linq;
+using System.Windows.Threading;
+using System.Threading;
 
 namespace AvalonDock
 {
@@ -108,14 +110,11 @@ namespace AvalonDock
 
         protected override void OnItemsChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if (e.NewItems != null)
+            Items.Cast<DockableContent>().ForEach(c =>
             {
-                e.NewItems.Cast<DockableContent>().ForEach(c =>
-                {
-                    if (c.State == DockableContentState.None)
-                        c.SetStateToDock();
-                });
-            }
+                if (c.State == DockableContentState.None)
+                    c.SetStateToDock();
+            });
 
             UpdateCanAutohideProperty();
             base.OnItemsChanged(e);
@@ -176,7 +175,20 @@ namespace AvalonDock
 
                 _partHeader.MouseRightButtonDown += (s, e) =>
                     {
-                        OpenOptionsMenu(null); e.Handled = true;
+                        if (_partHeader.ContextMenu == null)
+                        {
+                            FocusContent();
+                            if (_partHeader.ContextMenu == null)
+                            {
+                                Dispatcher.BeginInvoke(DispatcherPriority.Input, new ThreadStart(delegate
+                                {
+                                    OpenOptionsMenu(null);
+                                }));
+
+                                e.Handled = true;
+                            }
+                            
+                        }
                     };
             }
 
@@ -233,7 +245,7 @@ namespace AvalonDock
 
                     flag = flag && ((c.DockableStyle & DockableStyle.AutoHide) > 0);
 #if DEBUG
-                    Debug.WriteLine("{0} CanAutohide()= {1}", c.Title, flag);
+                    Debug.WriteLine(string.Format("{0} CanAutohide()= {1}", c.Title, flag));
 #endif
                     return flag;
                 })
@@ -266,93 +278,108 @@ namespace AvalonDock
 
 
         #region OptionsContextMenu
-        ContextMenu cxOptions = null;
 
-        /// <summary>
-        /// Open the option context menu
-        /// </summary>
-        public bool OpenOptionsMenu(UIElement menuTarget)
+        public override bool OpenOptionsMenu(UIElement menuTarget)
         {
             if (cxOptions == null)
             {
-                Debug.Assert(cxOptions == null);
                 cxOptions = TryFindResource(new ComponentResourceKey(typeof(DockingManager), ContextMenuElement.DockablePane)) as ContextMenu;
-                if (cxOptions != null)
-                {
-                    cxOptions.Opened += (s, e) => IsOptionsMenuOpen = true;
-                    cxOptions.Closed += (s, e) => IsOptionsMenuOpen = false;
-                }
             }
 
-            if (cxOptions != null)
-            {
-                cxOptions.DataContext = this.SelectedItem as DockableContent;
-
-                foreach (MenuItem menuItem in cxOptions.Items.OfType<MenuItem>())
-                    menuItem.CommandTarget = this.SelectedItem as DockableContent;
-
-                if (menuTarget != null)
-                {
-                    cxOptions.Placement = PlacementMode.Bottom;
-                    cxOptions.PlacementTarget = menuTarget;
-                }
-                else
-                {
-                    cxOptions.Placement = PlacementMode.MousePoint;
-                    cxOptions.PlacementTarget = this;
-                }
-
-                FocusContent();
-                cxOptions.IsOpen = true;
-            }
-
-            return (cxOptions != null && cxOptions.IsOpen);
+            return base.OpenOptionsMenu(menuTarget);
         }
 
-        /// <summary>
-        /// Close the options context menu
-        /// </summary>
-        public void CloseOptionsMenu()
-        {
-            if (cxOptions != null)
-            {
-                cxOptions.IsOpen = false;
-                cxOptions = null;
-            }
-        }
+        //ContextMenu cxOptions = null;
 
-        /// <summary>
-        /// Gets a value indicating if the options context menu is open
-        /// </summary>
-        public bool IsOptionsMenuOpen
-        {
-            get { return (bool)GetValue(IsOptionsMenuOpenProperty); }
-            protected set { SetValue(IsOptionsMenuOpenPropertyKey, value); }
-        }
+        ///// <summary>
+        ///// Open the option context menu
+        ///// </summary>
+        ///// <param name="menuTarget">Target element under which context menu will be shown. Pass null if context menu
+        ///// should be shown at mouse position.</param>
+        ///// <returns>True if context menu resource was found and open, false otherwise.</returns>
+        //public bool OpenOptionsMenu(UIElement menuTarget)
+        //{
+        //    if (cxOptions == null)
+        //    {
+        //        cxOptions = TryFindResource(new ComponentResourceKey(typeof(DockingManager), ContextMenuElement.DockablePane)) as ContextMenu;
+        //        if (cxOptions != null)
+        //        {
+        //            cxOptions.Opened += (s, e) => UpdateIsOptionsMenuOpen();
+        //            cxOptions.Closed += (s, e) => UpdateIsOptionsMenuOpen();
+        //        }
+        //    }
 
-        // Using a DependencyProperty as the backing store for IsOptionsMenuOpen.  This enables animation, styling, binding, etc...
-        static readonly DependencyPropertyKey IsOptionsMenuOpenPropertyKey =
-            DependencyProperty.RegisterReadOnly("IsOptionsMenuOpen", typeof(bool), typeof(DockablePane), new UIPropertyMetadata(false));
+        //    if (cxOptions != null)
+        //    {
+        //        cxOptions.DataContext = this.SelectedItem as DockableContent;
 
-        public static readonly DependencyProperty IsOptionsMenuOpenProperty = IsOptionsMenuOpenPropertyKey.DependencyProperty;
+        //        foreach (MenuItem menuItem in cxOptions.Items.OfType<MenuItem>())
+        //            menuItem.CommandTarget = this.SelectedItem as DockableContent;
 
-        
+        //        if (menuTarget != null)
+        //        {
+        //            cxOptions.Placement = PlacementMode.Bottom;
+        //            cxOptions.PlacementTarget = menuTarget;
+        //        }
+        //        else
+        //        {
+        //            cxOptions.Placement = PlacementMode.MousePoint;
+        //            cxOptions.PlacementTarget = this;
+        //        }
+
+        //        FocusContent();
+        //        cxOptions.IsOpen = true;
+        //    }
+
+        //    return (cxOptions != null && cxOptions.IsOpen);
+        //}
+
+        ///// <summary>
+        ///// Close the options context menu
+        ///// </summary>
+        //public void CloseOptionsMenu()
+        //{
+        //    if (cxOptions != null)
+        //    {
+        //        cxOptions.IsOpen = false;
+        //        cxOptions = null;
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Gets a value indicating if the options context menu is open
+        ///// </summary>
+        //public bool IsOptionsMenuOpen
+        //{
+        //    get { return (bool)GetValue(IsOptionsMenuOpenProperty); }
+        //    protected set { SetValue(IsOptionsMenuOpenPropertyKey, value); }
+        //}
+
+        //// Using a DependencyProperty as the backing store for IsOptionsMenuOpen.  This enables animation, styling, binding, etc...
+        //static readonly DependencyPropertyKey IsOptionsMenuOpenPropertyKey =
+        //    DependencyProperty.RegisterReadOnly("IsOptionsMenuOpen", typeof(bool), typeof(DockablePane), new UIPropertyMetadata(false));
+
+        //public static readonly DependencyProperty IsOptionsMenuOpenProperty = IsOptionsMenuOpenPropertyKey.DependencyProperty;
+
+        //void UpdateIsOptionsMenuOpen()
+        //{
+        //    if (cxOptions != null)
+        //    {
+        //        var selectedContent = cxOptions.DataContext as DockableContent;
+                
+        //        if (selectedContent != null)
+        //        {
+        //            (selectedContent.ContainerPane as DockablePane).IsOptionsMenuOpen =
+        //                cxOptions.IsOpen;
+        //        }
+        //    }            
+        //}
 
         #endregion
 
         #region Mouse management
 
-        void FocusContent()
-        {
-            ManagedContent selectedContent = SelectedItem as ManagedContent;
-            if (selectedContent != null)// && selectedContent.Content is UIElement)
-            {
-                UIElement internalContent = selectedContent.Content as UIElement;
-                bool res = Focus();
-                //Keyboard.Focus(internalContent);
-                selectedContent.Activate();
-            }
-        }
+
 
         Point ptStartDrag;
         bool isMouseDown = false;

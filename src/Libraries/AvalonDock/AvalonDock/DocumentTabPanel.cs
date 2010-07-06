@@ -58,7 +58,6 @@ namespace AvalonDock
         public static readonly DependencyProperty IsHeaderVisibleProperty =
             DependencyProperty.RegisterAttached("IsHeaderVisible", typeof(bool), typeof(DocumentTabPanel), new UIPropertyMetadata(false));
 
-
         protected override Size MeasureOverride(Size availableSize)
         {
             Size desideredSize = new Size();
@@ -66,18 +65,14 @@ namespace AvalonDock
 
             foreach (ManagedContent child in Children)
             {
-                Panel.SetZIndex(child, Selector.GetIsSelected(child)?1:-i);
+                Panel.SetZIndex(child, Selector.GetIsSelected(child) ? 1 : -i);
                 i++;
-                //child.Width = double.NaN;
-                //child.Height = double.NaN;
                 child.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
                 desideredSize.Width += child.DesiredSize.Width;
                 desideredSize.Height = Math.Max(desideredSize.Height, child.DesiredSize.Height);
             }
 
             return new Size(Math.Min(desideredSize.Width, availableSize.Width), desideredSize.Height);
-            //return base.MeasureOverride(availableSize);
-            //return desideredSize;
         }
 
         protected override Size ArrangeOverride(Size finalSize)
@@ -103,29 +98,6 @@ namespace AvalonDock
             return finalSize;
 
         }
-
-        //#region Padding
-
-        ///// <summary>
-        ///// Padding Dependency Property
-        ///// </summary>
-        //public static readonly DependencyProperty PaddingProperty =
-        //    DependencyProperty.Register("Padding", typeof(Thickness), typeof(DocumentTabPanel),
-        //        new FrameworkPropertyMetadata((Thickness)new Thickness(),
-        //            FrameworkPropertyMetadataOptions.AffectsMeasure));
-
-        ///// <summary>
-        ///// Gets or sets the Padding property.  This dependency property 
-        ///// indicates internal padding of the panel.
-        ///// </summary>
-        //public Thickness Padding
-        //{
-        //    get { return (Thickness)GetValue(PaddingProperty); }
-        //    set { SetValue(PaddingProperty, value); }
-        //}
-
-        //#endregion
-
 
     }
 }

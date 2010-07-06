@@ -140,7 +140,8 @@ namespace AvalonDock
             //    Close();
             //}
 
-            ((FloatingDocumentPane)HostedPane).PreviousPane.CheckContentsEmpty();
+            if (((FloatingDocumentPane)HostedPane).PreviousPane != null)
+                ((FloatingDocumentPane)HostedPane).PreviousPane.CheckContentsEmpty();
 
             if (HostedPane.Items.Count == 0)
                 Close();

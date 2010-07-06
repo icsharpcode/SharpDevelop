@@ -608,8 +608,8 @@ namespace AvalonDock
                 {
                     if (cnt.Manager == null ||
                         cnt.Manager != Manager ||
-                        (!cnt.Manager.DockableContents.Contains(cnt) &&
-                        !cnt.Manager.Documents.Contains(cnt)))
+                        (!cnt.Manager.DockableContents.Contains(cnt as DockableContent) &&
+                        !cnt.Manager.Documents.Contains(cnt as DocumentContent)))
                         cnt.ContainerPane.RemoveContent(cnt);
                 });
         }

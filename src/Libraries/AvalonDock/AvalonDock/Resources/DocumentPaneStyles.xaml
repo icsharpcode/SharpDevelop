@@ -9,22 +9,23 @@
     </ResourceDictionary.MergedDictionaries>
 
     <ContextMenu x:Key="{ComponentResourceKey TypeInTargetAssembly={x:Type ad:DockingManager}, ResourceId={x:Static ad:ContextMenuElement.DocumentPane}}">
-        <MenuItem Command="ad:DocumentPaneCommands.CloseThis"  />
-        <MenuItem Command="ad:DocumentPaneCommands.CloseAllButThis" />
+        <MenuItem Command="ad:DocumentPaneCommands.CloseThis" />
+        <MenuItem Command="ad:DocumentPaneCommands.CloseAllButThis"  />
         <Separator/>
         <MenuItem Command="ad:DocumentPaneCommands.NewHorizontalTabGroup">
             <MenuItem.Icon>
-                <Image Source="/AvalonDock;component/resources/Images/HTabGroup.png" Width="13" Height="14" UseLayoutRounding="True"/>
+                <ad:ImageEx Source="/AvalonDock;component/resources/Images/HTabGroup.png" Width="13" Height="14"/>
             </MenuItem.Icon>
         </MenuItem> 
         <MenuItem 
-            Command="ad:DocumentPaneCommands.NewVerticalTabGroup">
+            Command="ad:DocumentPaneCommands.NewVerticalTabGroup"  >
             <MenuItem.Icon>
-                <Image Source="/AvalonDock;component/resources/Images/VTabGroup.png" Width="13" UseLayoutRounding="True" />
+                <ad:ImageEx Source="/AvalonDock;component/resources/Images/VTabGroup.png" Width="13"/>
             </MenuItem.Icon>
         </MenuItem>
     </ContextMenu>
 
+    <!--ContextMenu="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:ContextMenuElement.DocumentPane}}}"-->
 
     <!--DocumentTabItemStyle-->
     <Style x:Key="DocumentTabItemStyle" TargetType="{x:Type ad:ManagedContent}">
@@ -38,9 +39,7 @@
 						x:Name="PART_DragArea" 
 						BorderBrush="{StaticResource ManagedContentTabControlNormalBorderBrush}"
                         Margin="0,0,-10,0"
-						SnapsToDevicePixels="True"
-                        ContextMenu="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:ContextMenuElement.DocumentPane}}}"
-                        >
+						SnapsToDevicePixels="True">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="20"/>
@@ -72,12 +71,12 @@
 							            x:Name="tabItemTitle" 
 							            TextTrimming="CharacterEllipsis" 
                                         TextWrapping="NoWrap"
-							            Text="{TemplateBinding Title}" 
+							            Text="{Binding Title, RelativeSource={RelativeSource TemplatedParent}}" 
 							            Margin="5,0,4,0"  
 							            Foreground="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DocumentHeaderForeground}}}"/>
-									<ad:AlignedImage x:Name="PART_LockedIcon" Margin="2,0,0,0" Visibility="Collapsed" VerticalAlignment="Center" HorizontalAlignment="Center">
-										<Image Source="/AvalonDock;component/resources/Images/Locked.png" Width="6" Height="8" Stretch="Uniform"/>
-									</ad:AlignedImage>
+									<!--<ad:AlignedImage x:Name="PART_LockedIcon" Margin="2,0,0,0" Visibility="Collapsed" VerticalAlignment="Center" HorizontalAlignment="Center">-->
+                                    <ad:ImageEx  x:Name="PART_LockedIcon" Margin="2,0,0,0" Visibility="Collapsed" Source="/AvalonDock;component/resources/Images/Locked.png" Width="6" />
+									<!--</ad:AlignedImage>-->
 								</StackPanel>
                             </Border>  
                         </Grid>
@@ -128,12 +127,20 @@
 
 
     <!--DocumentPane MenuItem Style-->
-    <Style x:Key="DocumentPaneMenuItemStyle" TargetType="{x:Type MenuItem}">
+    <!--Setting MenuItem.Icon in style doesn't work even in .NET 4
+    http://connect.microsoft.com/VisualStudio/feedback/details/497408/wpf-menuitem-icon-cannot-be-set-via-setter#
+    -->
+    <!--<Style x:Key="DocumentPaneMenuItemStyle" TargetType="{x:Type MenuItem}">
         <Setter Property="MenuItem.CommandTarget" Value="{Binding}"/>
         <Setter Property="MenuItem.Command" Value="{x:Static ad:ManagedContentCommands.Activate}"/>
         <Setter Property="MenuItem.Header" Value="{Binding Path=Title}"/>
-        <Setter Property="MenuItem.Icon" Value="{Binding Icon, Converter={x:Static ad:Converters.ObjectToImageConverter}}"/>
-    </Style>
+        <Setter Property="MenuItem.Icon">
+            <Setter.Value>
+                <Image Source="{Binding Icon,Converter={x:Static ad:Converters.ObjectToImageConverter}}" Style="{StaticResource DefaultAvalonDockImageStyle}"/>
+            </Setter.Value>
+        </Setter>
+    </Style>-->
+
 
     <!--DocumentPane-->
     <Style x:Key="{x:Type ad:DocumentPane}" TargetType="{x:Type ad:DocumentPane}">
@@ -143,7 +150,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ad:DocumentPane}" >
                     <ControlTemplate.Resources>
-                        <ContextMenu x:Key="DocumentsListMenu" StaysOpen="True" ItemContainerStyle="{StaticResource DocumentPaneMenuItemStyle}"/>
+                        <ContextMenu x:Key="DocumentsListMenu" StaysOpen="True" />
                     </ControlTemplate.Resources>
                     <Border 
                         Focusable="False"
@@ -176,10 +183,10 @@
                                     <Button DockPanel.Dock="Right" Width="18" Height="18" Style="{StaticResource PaneHeaderCommandStyle}" 
                                             Command="ad:ManagedContentCommands.Close" 
                                             CommandTarget="{TemplateBinding SelectedItem}">
-										<Image Source="Images\PinClose.png" Width="13" UseLayoutRounding="True"/>
+                                        <ad:ImageEx Source="Images\PinClose.png" Width="13" />
                                     </Button>
                                     <Button x:Name="PART_ShowContextMenuButton" DockPanel.Dock="Right" Width="18" Height="18" Style="{StaticResource PaneHeaderCommandStyle}">
-										<Image x:Name="ShowContextMenuIcon" Source="Images\PinMenu.png" Width="13" UseLayoutRounding="True"/>
+                                        <ad:ImageEx x:Name="ShowContextMenuIcon" Source="Images\PinMenu.png" Width="13"/>
                                     </Button>
                                     <ad:DocumentTabPanel 
                                         x:Name="paneTabsPanel" 

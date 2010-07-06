@@ -14,18 +14,18 @@
                         <Border x:Name="PART_SelectionBox" Background="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}" BorderBrush="Gray" BorderThickness="3" Opacity="0.2" Visibility="Hidden"/>
                         </Canvas>
                         <Grid x:Name="panelDrag" >
-                            <ad:AlignedImage x:Name="PART_btnDockLeft" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                <Image Source="Images\DockLeft.PNG" Stretch="None"/>
-                            </ad:AlignedImage>
-                            <ad:AlignedImage x:Name="PART_btnDockRight" VerticalAlignment="Center" HorizontalAlignment="Right">
-                                <Image Source="Images\DockRight.PNG" Stretch="None" />
-                            </ad:AlignedImage>
-                            <ad:AlignedImage x:Name="PART_btnDockBottom" VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                                <Image Source="Images\DockBottom.PNG" Stretch="None" />
-                            </ad:AlignedImage>
-                            <ad:AlignedImage x:Name="PART_btnDockTop" VerticalAlignment="Top" HorizontalAlignment="Center">
-                                <Image Source="Images\DockTop.PNG" Stretch="None"/>
-                            </ad:AlignedImage>
+                            <!--<ad:AlignedImage >-->
+                            <ad:ImageEx x:Name="PART_btnDockLeft" VerticalAlignment="Center" HorizontalAlignment="Left" Source="Images\DockLeft.PNG" Stretch="None" />
+                            <!--</ad:AlignedImage>-->
+                            <!--<ad:AlignedImage >-->
+                            <ad:ImageEx x:Name="PART_btnDockRight" VerticalAlignment="Center" HorizontalAlignment="Right" Source="Images\DockRight.PNG" Stretch="None"  />
+                            <!--</ad:AlignedImage>-->
+                            <!--<ad:AlignedImage >-->
+                            <ad:ImageEx x:Name="PART_btnDockBottom" VerticalAlignment="Bottom" HorizontalAlignment="Center" Source="Images\DockBottom.PNG" Stretch="None" />
+                            <!--</ad:AlignedImage>-->
+                            <!--<ad:AlignedImage >-->
+                            <ad:ImageEx x:Name="PART_btnDockTop" VerticalAlignment="Top" HorizontalAlignment="Center" Source="Images\DockTop.PNG" Stretch="None"/>
+                            <!--</ad:AlignedImage>-->
                         </Grid>
                         <Canvas>
                             <Grid Name="PART_gridPaneRelativeDockingOptions" Visibility="Collapsed">
@@ -40,9 +40,9 @@
                                         <RowDefinition/>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
-                                    <ad:AlignedImage Grid.ColumnSpan="3" Grid.RowSpan="3" >
-                                        <Image Source="Images\DockPane.png" Stretch="Uniform"/>
-                                    </ad:AlignedImage>
+                                    <!--<ad:AlignedImage  >-->
+                                    <Image Grid.ColumnSpan="3" Grid.RowSpan="3" Source="Images\DockPane.png" Stretch="Uniform"/>
+                                    <!--</ad:AlignedImage>-->
                                     <Border Name="PART_btnDockPaneTop" Grid.Column="1" Grid.Row="0"/>
                                     <Border Name="PART_btnDockPaneRight" Grid.Column="2" Grid.Row="1"/>
                                     <Border Name="PART_btnDockPaneBottom" Grid.Column="1" Grid.Row="2"/>

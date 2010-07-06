@@ -42,13 +42,6 @@ namespace AvalonDock
 {
     public abstract class PaneTabPanel : Panel
     {
-        //static PaneTabPanel()
-        //{
-        //    //This OverrideMetadata call tells the system that this element wants to provide a style that is different than its base class.
-        //    //This style is defined in themes\generic.xaml
-        //    DefaultStyleKeyProperty.OverrideMetadata(typeof(PaneTabPanel), new FrameworkPropertyMetadata(typeof(PaneTabPanel)));
-        //}
-
         protected override void OnVisualChildrenChanged(DependencyObject visualAdded, DependencyObject visualRemoved)
         {
             base.OnVisualChildrenChanged(visualAdded, visualRemoved);
@@ -62,8 +55,7 @@ namespace AvalonDock
 
         }
 
-        
-
+ 
         internal PaneTabPanel()
         { 
             

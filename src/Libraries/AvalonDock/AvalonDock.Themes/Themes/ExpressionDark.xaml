@@ -283,7 +283,7 @@
 						    x:Name="PART_DragArea" 
                             Background="{StaticResource ManagedContentTabItemNormalBackground}"   
                             CornerRadius="3,0,0,0"
-                            ContextMenu="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:ContextMenuElement.DockablePane}}}"
+                            
                             >
                             <Grid Margin="4,2,4,2">
                                 <Grid.ColumnDefinitions>
@@ -305,7 +305,7 @@
                                         Style="{StaticResource PaneHeaderCommandStyle}" 
                                         Command="ad:ManagedContentCommands.Close"
                                         Width="13" Height="13" Opacity="0.6">
-                                    <Image Source="/AvalonDock;component/resources/Images/PinClose.png"/>
+                                    <ad:ImageEx Source="/AvalonDock;component/resources/Images/PinClose.png" />
                                 </Button>
                             </Grid>
                         </Border>
@@ -385,14 +385,14 @@
                                     </Grid.ColumnDefinitions>
                                     <Button x:Name="btnPinAutoHide" Grid.Column="1" Style="{StaticResource PaneHeaderCommandStyle}" Command="ad:DockablePaneCommands.ToggleAutoHide"
                                                 Width="15" Height="15" VerticalAlignment="Center" Opacity="0.6">
-                                        <Image Source="/AvalonDock.Themes;component/Images/ExpDark/PinAutoHide.png" Width="13" Height="13" Stretch="None"/>
+                                        <ad:ImageEx Source="/AvalonDock.Themes;component/Images/ExpDark/PinAutoHide.png" Width="13"  />
                                     </Button>
                                     <Button x:Name="PART_CloseButton" Grid.Column="2" Margin="6,0,2,0" 
                                             Style="{StaticResource PaneHeaderCommandStyle}" 
                                             Width="14"
                                             Height="13"
                                             Command="ad:DockablePaneCommands.Close" Opacity="0.8">
-                                        <Image Source="/AvalonDock.Themes;component/Images/ExpDark/PinClose.png" Stretch="None"/>
+                                        <ad:ImageEx Source="/AvalonDock.Themes;component/Images/ExpDark/PinClose.png" Width="13" />
                                     </Button>
                                     <ad:DockableTabPanel	
                                                 IsItemsHost="True" 
@@ -435,15 +435,16 @@
                 <ControlTemplate TargetType="{x:Type ad:ManagedContent}">
                     <Grid SnapsToDevicePixels="True">
                         <Border x:Name="tabItemIntBorder"
-                                BorderThickness="1,1,1,0"
-                                Padding="5,0,5,4"
-                                Margin="-1,0,2,-4"
-                                CornerRadius="3,3,0,0"
-                                Background="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DocumentHeaderBackground}}}">
-                                                                                                            <StackPanel x:Name="PART_DragArea" 
-                                    Orientation="Horizontal"
-                                    Margin="0,2,0,2"
-                                    ContextMenu="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:ContextMenuElement.DocumentPane}}}">
+                            BorderThickness="1,1,1,0"
+                            Padding="5,0,5,4"
+                            Margin="-1,0,2,-4"
+                            CornerRadius="3,3,0,0"
+                            Background="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DocumentHeaderBackground}}}">
+                            <StackPanel x:Name="PART_DragArea" 
+                                Orientation="Horizontal"
+                                Background="Transparent"
+                                Margin="0,2,0,2"
+                                >
                                 <!--This image with width=0 is required to connect the icon visual to the presentation source,
                                 without this navigatorwindow won't work-->
                                 <Image Source="{TemplateBinding Icon}" Width="0"/>
@@ -454,7 +455,7 @@
                                     Text="{TemplateBinding Title}" 
 							        Foreground="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DocumentHeaderForeground}}}"/>
 
-                            <Image Source="/AvalonDock;component/resources/Images/Locked.png" x:Name="PART_LockedIcon" Margin="2,0,0,0" Visibility="Collapsed" VerticalAlignment="Center" HorizontalAlignment="Center" Width="6" UseLayoutRounding="True"/>
+                                <ad:ImageEx Source="/AvalonDock;component/resources/Images/Locked.png" x:Name="PART_LockedIcon" Margin="2,0,0,0" Visibility="Collapsed" VerticalAlignment="Center" HorizontalAlignment="Center" Width="6"/>
                             
                             <Button x:Name="PART_CloseButton"  Visibility="Collapsed" Margin="6,0,2,0" 
                                     Style="{StaticResource PaneHeaderCommandStyle}" 
@@ -509,7 +510,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ad:DocumentPane}" >
                     <ControlTemplate.Resources>
-                        <ContextMenu x:Key="DocumentsListMenu" StaysOpen="True" ItemContainerStyle="{StaticResource ResourceKey=DocumentPaneMenuItemStyle}" />
+                        <ContextMenu x:Key="DocumentsListMenu" StaysOpen="True" />
                     </ControlTemplate.Resources>
                     <Border 
                         Background="{TemplateBinding Background}">
@@ -543,7 +544,6 @@
                                 <Border
                                     Background="{StaticResource DefaultDocumentPaneBackground}">
                                     <ContentPresenter 
-                                            FocusManager.IsFocusScope="True"
                                             Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedItem.Content}"
                                             KeyboardNavigation.TabNavigation="Local"
 								            KeyboardNavigation.DirectionalNavigation="Contained"/>                                
@@ -764,23 +764,55 @@
                             <ad:Resizer x:Name="PART_RightBottomAnchor" Cursor="SizeNWSE" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="4" Height="4" 
                                         Grid.Row="3" Grid.Column="3"/>
                             <Border  
-                                Grid.Row="1"
-                                Grid.RowSpan="2"
+                                Grid.Row="2"
                                 Grid.Column="1"
                                 Background="{TemplateBinding Background}"  
                                 BorderBrush="{TemplateBinding BorderBrush}"  
-                                BorderThickness="{TemplateBinding BorderThickness}" >
-                                <ContentPresenter/>
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                                <ContentPresenter  />
                             </Border>
                             
                             <Border x:Name="PART_MoveAnchor" 
                                     Grid.Row="1" 
                                     Grid.Column="1" 
                                     CornerRadius="2,2,0,0" 
-                                    Margin="0,0,20,0"
                                     Background="Transparent">
+                                    <Grid SnapsToDevicePixels="True">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="20"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border 
+						                    Background="{StaticResource ManagedContentTabItemHotBackground}"   
+                                            CornerRadius="3,0,0,0">
+                                            <Grid Margin="4,2,4,2">
+                                                <TextBlock 
+								                    x:Name="tabItemTitle"
+                                                    Grid.Column="0"
+								                    TextTrimming="CharacterEllipsis" 
+                                                    TextWrapping="NoWrap"
+								                    Text="{TemplateBinding Title}" 
+								                    Margin="2,0,0,0" VerticalAlignment="Center"
+								                    Foreground="{StaticResource ResourceKey=LightForegroundBrush}"/>
+                                            </Grid>
+                                        </Border>
+                                        <Path x:Name="intPathLabel" Stretch="Fill"  Grid.Column="1" Fill="{StaticResource ManagedContentTabItemHotBackground}" Data="M0,0 L20,20 L0,20 L0,0"/>
+                                    </Grid>
                             </Border>
-                        </Grid>                    
+
+                            <Button x:Name="PART_CloseButton" 
+                                    Grid.Row="1" 
+                                    Grid.Column="1"
+                                    Style="{StaticResource PaneHeaderCommandStyle}" 
+                                    HorizontalAlignment="Right"
+                                    Width="14"
+                                    Height="13"
+                                    Command="ad:DockablePaneCommands.Close"
+                                    CommandTarget="{Binding HostedPane, RelativeSource={RelativeSource TemplatedParent}}"
+                                    Opacity="0.8">
+                                <ad:ImageEx Source="/AvalonDock.Themes;component/Images/ExpDark/PinClose.png" Width="13"  />
+                            </Button>
+                        </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                     </ControlTemplate.Triggers>

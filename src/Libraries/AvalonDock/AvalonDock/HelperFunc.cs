@@ -54,8 +54,9 @@ namespace AvalonDock
         { 
             if (FrameworkElement.GetFlowDirection(element) == FlowDirection.RightToLeft)
             {
+                var actualSize = element.TransformedActualSize();
                 Point leftToRightPoint = new Point(
-                    element.ActualWidth - point.X,
+                    actualSize.Width - point.X,
                     point.Y);
                 return element.PointToScreenDPI(leftToRightPoint);
             }
@@ -190,6 +191,34 @@ namespace AvalonDock
             return PresentationSource.FromVisual(visual) != null;
         }
 
+        public static Size TransformedActualSize(this FrameworkElement element)
+        {
+            if (PresentationSource.FromVisual(element) == null)
+                return new Size(element.ActualWidth, element.ActualHeight);
+
+            var parentWindow = PresentationSource.FromVisual(element).RootVisual;
+            var transformToWindow = element.TransformToAncestor(parentWindow);
+            return transformToWindow.TransformBounds(new Rect(0, 0, element.ActualWidth, element.ActualHeight)).Size;
+        }
+
+        public static Size TransformSize(this FrameworkElement element, Size sizeToTransform)
+        {
+            if (PresentationSource.FromVisual(element) == null)
+                return sizeToTransform;
+
+            var parentWindow = PresentationSource.FromVisual(element).RootVisual;
+            var transformToWindow = element.TransformToAncestor(parentWindow);
+            return transformToWindow.TransformBounds(new Rect(0, 0, sizeToTransform.Width, sizeToTransform.Height)).Size;
+        }
+
+        public static GeneralTransform TansformToAncestor(this FrameworkElement element)
+        {
+            if (PresentationSource.FromVisual(element) == null)
+                return new MatrixTransform(Matrix.Identity);
+
+            var parentWindow = PresentationSource.FromVisual(element).RootVisual;
+            return element.TransformToAncestor(parentWindow);
+        }
 
         public static void CallMethod(this object o, string methodName, object[] args)
         {

@@ -879,13 +879,21 @@ namespace AvalonDock
         {
             Resizer splitter = sender as Resizer;
 
+            //Point draggedPoint = this.PointToScreenDPI(
+            //    new Point(e.HorizontalChange, e.VerticalChange));
+            Window wnd = Window.GetWindow(this);
+            var trToWnd = TransformToAncestor(wnd);
+            Vector transformedDelta = trToWnd.Transform(new Point(e.HorizontalChange, e.VerticalChange)) -
+                trToWnd.Transform(new Point());
+            
+
             if (Orientation == System.Windows.Controls.Orientation.Horizontal)
             {
-                Canvas.SetLeft(_resizerGhost, _initialStartPoint.X + e.HorizontalChange);
+                Canvas.SetLeft(_resizerGhost, _initialStartPoint.X + transformedDelta.X);
             }
             else
             {
-                Canvas.SetTop(_resizerGhost, _initialStartPoint.Y + e.VerticalChange);
+                Canvas.SetTop(_resizerGhost, _initialStartPoint.Y + transformedDelta.Y);
             }
 
 
@@ -1163,7 +1171,11 @@ namespace AvalonDock
                 visibleChildren.RemoveAt(visibleChildren.Count - 1);
 
             Size[] currentSizes = new Size[visibleChildren.Count];
-            double delta = Orientation == Orientation.Horizontal ? e.HorizontalChange : e.VerticalChange;
+            Window wnd = Window.GetWindow(this);
+            var trToWnd = TransformToAncestor(wnd).Inverse;
+            Vector transformedDelta = trToWnd.Transform(new Point(e.HorizontalChange, e.VerticalChange)) -
+                trToWnd.Transform(new Point());
+            double delta = Orientation == Orientation.Horizontal ? transformedDelta.X : transformedDelta.Y;
 
             if (_childrenFinalSizes == null)
                 return;
@@ -1352,7 +1364,7 @@ namespace AvalonDock
 
         void ShowResizerOverlayWindow(Resizer splitter)
         { 
-            Point ptTopLeftScreen = this.PointToScreen(new Point());
+            Point ptTopLeftScreen = this.PointToScreenDPI(new Point());
 
             _resizerGhost = new Border()
             {
@@ -1360,18 +1372,20 @@ namespace AvalonDock
                 Opacity = 0.7
             };
 
+            Size actualSize = this.TransformedActualSize();
+
             if (Orientation == System.Windows.Controls.Orientation.Horizontal)
             {
                 _resizerGhost.Width = 5.0;
-                _resizerGhost.Height = ActualHeight;
+                _resizerGhost.Height = actualSize.Height;
             }
             else
             {
                 _resizerGhost.Height = 5.0;
-                _resizerGhost.Width = ActualWidth;
+                _resizerGhost.Width = actualSize.Width;
             }
 
-            _initialStartPoint = splitter.PointToScreen(new Point()) - this.PointToScreen(new Point());
+            _initialStartPoint = splitter.PointToScreenDPI(new Point()) - this.PointToScreenDPI(new Point());
 
             if (Orientation == System.Windows.Controls.Orientation.Horizontal)
             {
@@ -1389,7 +1403,8 @@ namespace AvalonDock
             };
 
             panelHostResizer.Children.Add(_resizerGhost);
-
+            
+            
             _resizerWindowHost = new Window()
             {
                 ResizeMode = ResizeMode.NoResize,
@@ -1397,13 +1412,15 @@ namespace AvalonDock
                 ShowInTaskbar = false,
                 AllowsTransparency = true,
                 Background = null,
-                Width = ActualWidth,
-                Height = ActualHeight,
+                Width = actualSize.Width,
+                Height = actualSize.Height,
                 Left = ptTopLeftScreen.X,
                 Top = ptTopLeftScreen.Y,
                 ShowActivated = false,
                 Owner = Window.GetWindow(this),
                 Content = panelHostResizer
+                //,
+                //LayoutTransform = (MatrixTransform)this.TansformToAncestor()
             };
 
             _resizerWindowHost.Show();
