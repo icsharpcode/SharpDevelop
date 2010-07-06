@@ -9,6 +9,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 {
     public class Module : IDependency, INode
     {
+        private DependencyGraph _graphCache;
+        
         /// <summary>
         /// Namespaces within module
         /// </summary>
@@ -28,6 +30,9 @@ namespace ICSharpCode.CodeQualityAnalysis
 
         public DependencyGraph BuildDependencyGraph()
         {
+            if (_graphCache != null)
+                return _graphCache;
+
             var g = new DependencyGraph();
 
             foreach (var ns in Namespaces)
@@ -50,6 +55,7 @@ namespace ICSharpCode.CodeQualityAnalysis
                 }
             }
 
+            _graphCache = g;
             return g;
         }
 

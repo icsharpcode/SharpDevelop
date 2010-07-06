@@ -9,6 +9,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 {
     public class Type : IDependency, INode
     {
+        private DependencyGraph _graphCache;
+
         /// <summary>
         /// Nested types like inner classes, interfaces and so on.
         /// </summary>
@@ -209,6 +211,9 @@ namespace ICSharpCode.CodeQualityAnalysis
 
         public DependencyGraph BuildDependencyGraph()
         {
+            if (_graphCache != null)
+                return _graphCache;
+
             var g = new DependencyGraph();
 
             foreach (var method in Methods)
@@ -234,6 +239,7 @@ namespace ICSharpCode.CodeQualityAnalysis
                 }
             }
 
+            _graphCache = g;
             return g;
         }
 
