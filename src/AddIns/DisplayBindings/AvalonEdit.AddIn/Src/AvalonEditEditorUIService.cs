@@ -9,6 +9,7 @@ using System;
 using System.Windows;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -22,6 +23,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.textView = textView;
 		}	
 		
+		/// <inheritdoc />
 		public IInlineUIElement CreateInlineUIElement(ITextAnchor position, UIElement element)
 		{
 			if (position == null)
@@ -31,6 +33,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			InlineUIElementGenerator inline = new InlineUIElementGenerator(textView, element, position);
 			this.textView.ElementGenerators.Add(inline);
 			return inline;
+		}
+		
+		/// <inheritdoc />
+		public Point GetScreenPosition(int line, int column)
+		{
+			var positionInPixels =	 textView.PointToScreen(
+				textView.GetVisualPosition(new TextViewPosition(line, column), VisualYPosition.LineBottom) - textView.ScrollOffset);
+			return positionInPixels.TransformFromDevice(textView);
 		}
 	}
 }
