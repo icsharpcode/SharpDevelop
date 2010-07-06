@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.UnitTesting;
 
@@ -25,6 +26,7 @@ namespace UnitTesting.Tests.Utils
 		MockUnitTestsPad unitTestsPad = new MockUnitTestsPad();
 		MockMessageService messageService = new MockMessageService();
 		MockSaveAllFilesCommand saveAllFilesCommand = new MockSaveAllFilesCommand();
+		MockStatusBarService statusBarService = new MockStatusBarService();
 		
 		public UnitTestingOptions UnitTestingOptions {
 			get { return options; }
@@ -87,7 +89,7 @@ namespace UnitTesting.Tests.Utils
 			set { unitTestsPad = value; }
 		}
 		
-		public IUnitTestMessageService MessageService {
+		public IMessageService MessageService {
 			get { return messageService; }
 		}
 		
@@ -101,6 +103,10 @@ namespace UnitTesting.Tests.Utils
 		
 		public MockSaveAllFilesCommand MockSaveAllFilesCommand {
 			get { return saveAllFilesCommand; }
+		}
+		
+		public IStatusBarService StatusBarService {
+			get { return statusBarService; }
 		}
 	}
 }

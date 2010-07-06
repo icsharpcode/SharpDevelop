@@ -203,7 +203,7 @@ namespace ICSharpCode.SharpDevelop
 					if (!this.threadIsRunning && this.actions.Count > 0) {
 						this.threadIsRunning = true;
 						
-						progressMonitor = StatusBarService.CreateProgressMonitor(cancellationSource.Token);
+						progressMonitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor(cancellationSource.Token);
 						progressMonitor.TaskName = this.actions.Peek().name;
 						
 						Thread thread = new Thread(new ThreadStart(RunThread));

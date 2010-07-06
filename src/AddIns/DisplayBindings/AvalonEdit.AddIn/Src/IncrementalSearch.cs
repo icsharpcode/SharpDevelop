@@ -6,8 +6,8 @@
 // </file>
 
 using System;
-using System.Text;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -16,6 +16,7 @@ using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -145,7 +146,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			
 			string fullMessage = incrementalSearchStartMessage + message;
-			StatusBarService.SetMessage(fullMessage, highlight);
+			WorkbenchSingleton.StatusBar.SetMessage(fullMessage, highlight);
 		}
 		
 		/// <summary>
@@ -162,7 +163,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		void ClearStatusBarMessage()
 		{
-			StatusBarService.SetMessage(String.Empty);
+			WorkbenchSingleton.StatusBar.SetMessage(String.Empty);
 		}
 		#endregion
 		

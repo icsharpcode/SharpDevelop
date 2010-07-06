@@ -40,6 +40,10 @@ namespace PythonBinding.Tests.Utils
 			get { return null; }
 		}
 		
+		public IStatusBarService StatusBar {
+			get { throw new NotImplementedException(); }
+		}
+		
 		public string Title {
 			get {
 				throw new NotImplementedException();

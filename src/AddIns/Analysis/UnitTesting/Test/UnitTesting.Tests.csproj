@@ -162,6 +162,7 @@
     <Compile Include="Utils\MockRegisteredTestFrameworks.cs" />
     <Compile Include="Utils\MockRunTestCommandContext.cs" />
     <Compile Include="Utils\MockSaveAllFilesCommand.cs" />
+    <Compile Include="Utils\MockStatusBarService.cs" />
     <Compile Include="Utils\MockTaskService.cs" />
     <Compile Include="Utils\MockTestFixture.cs" />
     <Compile Include="Utils\MockTestFramework.cs" />

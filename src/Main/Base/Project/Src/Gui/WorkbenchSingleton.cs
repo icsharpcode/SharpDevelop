@@ -57,6 +57,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		public static IStatusBarService StatusBar { 
+			get {
+				return workbench != null ? workbench.StatusBar : null;
+			}
+		}
+		
 		public static void InitializeWorkbench(IWorkbench workbench, IWorkbenchLayout layout)
 		{
 			WorkbenchSingleton.workbench = workbench;
@@ -64,7 +70,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			DisplayBindingService.InitializeService();
 			LayoutConfiguration.LoadLayoutConfiguration();
 			FileService.InitializeService();
-			StatusBarService.Initialize();
 			DomHostCallback.Register(); // must be called after StatusBarService.Initialize()
 			ParserService.InitializeParserService();
 			TaskService.Initialize();

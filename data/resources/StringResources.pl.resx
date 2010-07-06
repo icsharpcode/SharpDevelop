@@ -229,6 +229,9 @@ Pobierz Dodatek z Internetu, potem kliknij "Instaluj  Dodatek" i wskaż pobrany 
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Nieznany format pliku:</value>
   </data>
+  <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
+    <value>Pokaż Diagram Klas</value>
+  </data>
   <data name="AddIns.HtmlHelp2.AddToFavorites" xml:space="preserve">
     <value>Dodaj do Ulubionych Pomocy</value>
   </data>

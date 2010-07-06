@@ -151,7 +151,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			BrowserPane browser = workbench.ActiveViewContent as BrowserPane;
 			if (browser == null) return;
 			if (browser.HtmlViewPane == this) {
-				StatusBarService.SetMessage(webBrowser.StatusText);
+				WorkbenchSingleton.StatusBar.SetMessage(webBrowser.StatusText);
 			}
 		}
 		

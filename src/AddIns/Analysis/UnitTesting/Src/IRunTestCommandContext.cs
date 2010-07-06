@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.UnitTesting
@@ -19,7 +20,8 @@ namespace ICSharpCode.UnitTesting
 		IBuildOptions BuildOptions { get; }
 		MessageViewCategory UnitTestCategory { get; }
 		IUnitTestsPad OpenUnitTestsPad { get; }
-		IUnitTestMessageService MessageService { get; }
+		IMessageService MessageService { get; }
 		IUnitTestSaveAllFilesCommand SaveAllFilesCommand { get; }
+		IStatusBarService StatusBarService { get; }
 	}
 }

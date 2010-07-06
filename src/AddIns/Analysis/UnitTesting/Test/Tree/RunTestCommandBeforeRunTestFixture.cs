@@ -47,10 +47,10 @@ namespace UnitTesting.Tests.Tree
 		}
 		
 		[Test]
-		public void RunCallsOnBeforeRunTestsMethod()
+		public void RunCallsOnBeforeBuildMethod()
 		{
 			runTestCommand.Run();
-			Assert.IsTrue(runTestCommand.IsOnBeforeRunTestsMethodCalled);
+			Assert.IsTrue(runTestCommand.IsOnBeforeBuildMethodCalled);
 		}
 		
 		[Test]
@@ -132,14 +132,14 @@ namespace UnitTesting.Tests.Tree
 		public void RunningTestCommandPropertyIsSetToRunningCommandWhenOnBeforeRunIsCalled()
 		{
 			runTestCommand.Run();
-			Assert.AreEqual(runTestCommand, runTestCommand.RunningTestCommandPropertyWhenOnBeforeRunCalled);
+			Assert.AreEqual(runTestCommand, runTestCommand.RunningTestCommandPropertyWhenOnBeforeBuildCalled);
 		}
 		
 		[Test]
 		public void IsRunningTestPropertyReturnsTrueWhenOnBeforeRunIsCalled()
 		{
 			runTestCommand.Run();
-			Assert.IsTrue(runTestCommand.IsRunningTestPropertyWhenOnBeforeRunCalled);
+			Assert.IsTrue(runTestCommand.IsRunningTestPropertyWhenOnBeforeBuildCalled);
 		}
 		
 		[Test]

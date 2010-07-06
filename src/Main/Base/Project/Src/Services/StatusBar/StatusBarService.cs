@@ -8,45 +8,71 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
 using System.Threading;
 using System.Windows;
-using System.Windows.Media.Imaging;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.SharpDevelop.Gui
 {
-	public static class StatusBarService
+	public interface IStatusBarService
 	{
-		static SdStatusBar statusBar = null;
+		//bool Visible { get; set; }
 		
-		internal static void Initialize()
+		/// <summary>
+		/// Sets the caret position shown in the status bar.
+		/// </summary>
+		/// <param name="x">column number</param>
+		/// <param name="y">line number</param>
+		/// <param name="charOffset">character number</param>
+		void SetCaretPosition(int x, int y, int charOffset);
+		//void SetInsertMode(bool insertMode);
+		
+		/// <summary>
+		/// Sets the message shown in the left-most pane in the status bar.
+		/// </summary>
+		/// <param name="message">The message text.</param>
+		/// <param name="highlighted">Whether to highlight the text</param>
+		/// <param name="icon">Icon to show next to the text</param>
+		void SetMessage(string message, bool highlighted = false, IImage icon = null);
+		
+		/// <summary>
+		/// Creates a new <see cref="IProgressMonitor"/> that can be used to report
+		/// progress to the status bar.
+		/// </summary>
+		/// <param name="cancellationToken">Cancellation token to use for
+		/// <see cref="IProgressMonitor.CancellationToken"/></param>
+		/// <returns>The new IProgressMonitor instance. This return value must be disposed
+		/// once the background task has completed.</returns>
+		IProgressMonitor CreateProgressMonitor(CancellationToken cancellationToken = default(CancellationToken));
+		
+		/// <summary>
+		/// Shows progress for the specified ProgressCollector in the status bar.
+		/// </summary>
+		void AddProgress(ProgressCollector progress);
+	}
+	
+	sealed class SdStatusBarService : IStatusBarService
+	{
+		readonly SdStatusBar statusBar;
+		
+		public SdStatusBarService(SdStatusBar statusBar)
 		{
-			statusBar = new SdStatusBar();
+			if (statusBar == null)
+				throw new ArgumentNullException("statusBar");
+			this.statusBar = statusBar;
 		}
 		
-		public static bool Visible {
+		public bool Visible {
 			get {
-				System.Diagnostics.Debug.Assert(statusBar != null);
 				return statusBar.Visibility == Visibility.Visible;
 			}
 			set {
-				System.Diagnostics.Debug.Assert(statusBar != null);
 				statusBar.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
 			}
 		}
 		
-		internal static SdStatusBar Control {
-			get {
-				System.Diagnostics.Debug.Assert(statusBar != null);
-				return statusBar;
-			}
-		}
-		
-		public static void SetCaretPosition(int x, int y, int charOffset)
+		public void SetCaretPosition(int x, int y, int charOffset)
 		{
 			statusBar.CursorStatusBarPanel.Content = StringParser.Parse(
 				"${res:StatusBarService.CursorStatusBarPanelText}",
@@ -57,65 +83,31 @@ namespace ICSharpCode.SharpDevelop
 				});
 		}
 		
-		public static void SetInsertMode(bool insertMode)
+		public void SetInsertMode(bool insertMode)
 		{
 			statusBar.ModeStatusBarPanel.Content = insertMode ? StringParser.Parse("${res:StatusBarService.CaretModes.Insert}") : StringParser.Parse("${res:StatusBarService.CaretModes.Overwrite}");
 		}
 		
-		public static void ShowErrorMessage(string message)
+		public void SetMessage(string message, bool highlighted, IImage icon)
 		{
-			System.Diagnostics.Debug.Assert(statusBar != null);
-			statusBar.ShowErrorMessage(StringParser.Parse(message));
-		}
-		
-		public static void SetMessage(string message)
-		{
-			System.Diagnostics.Debug.Assert(statusBar != null);
-			lastMessage = message;
-			statusBar.SetMessage(StringParser.Parse(message));
-		}
-		
-		public static void SetMessage(BitmapSource image, string message)
-		{
-			System.Diagnostics.Debug.Assert(statusBar != null);
-			statusBar.SetMessage(image, StringParser.Parse(message));
-		}
-		
-		public static void SetMessage(string message, bool highlighted)
-		{
-			statusBar.SetMessage(message, highlighted);
-		}
-		
-		static bool   wasError    = false;
-		static string lastMessage = "";
-		
-		public static void RedrawStatusbar()
-		{
-			if (wasError) {
-				ShowErrorMessage(lastMessage);
-			} else {
-				SetMessage(lastMessage);
-			}
-			
-			Visible = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.StatusBarVisible", true);
+			statusBar.SetMessage(StringParser.Parse(message), highlighted);
 		}
 		
 		#region Progress Monitor
-		static Stack<ProgressCollector> waitingProgresses = new Stack<ProgressCollector>();
-		static ProgressCollector currentProgress;
+		Stack<ProgressCollector> waitingProgresses = new Stack<ProgressCollector>();
+		ProgressCollector currentProgress;
 		
-		public static IProgressMonitor CreateProgressMonitor(CancellationToken cancellationToken)
+		public IProgressMonitor CreateProgressMonitor(CancellationToken cancellationToken = default(CancellationToken))
 		{
 			ProgressCollector progress = new ProgressCollector(WorkbenchSingleton.Workbench.SynchronizingObject, cancellationToken);
 			AddProgress(progress);
 			return progress.ProgressMonitor;
 		}
 		
-		public static void AddProgress(ProgressCollector progress)
+		public void AddProgress(ProgressCollector progress)
 		{
 			if (progress == null)
 				throw new ArgumentNullException("progress");
-			System.Diagnostics.Debug.Assert(statusBar != null);
 			WorkbenchSingleton.AssertMainThread();
 			if (currentProgress != null) {
 				currentProgress.ProgressMonitorDisposed -= progress_ProgressMonitorDisposed;
@@ -125,7 +117,7 @@ namespace ICSharpCode.SharpDevelop
 			SetActiveProgress(progress);
 		}
 		
-		static void SetActiveProgress(ProgressCollector progress)
+		void SetActiveProgress(ProgressCollector progress)
 		{
 			WorkbenchSingleton.AssertMainThread();
 			currentProgress = progress;
@@ -142,13 +134,13 @@ namespace ICSharpCode.SharpDevelop
 			progress.PropertyChanged += progress_PropertyChanged;
 		}
 		
-		static void progress_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		void progress_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			Debug.Assert(sender == currentProgress);
 			statusBar.DisplayProgress(currentProgress.TaskName, currentProgress.Progress, currentProgress.Status);
 		}
 		
-		static void progress_ProgressMonitorDisposed(object sender, EventArgs e)
+		void progress_ProgressMonitorDisposed(object sender, EventArgs e)
 		{
 			Debug.Assert(sender == currentProgress);
 			SetActiveProgress(waitingProgresses.Pop()); // stack is never empty: we push null as first element

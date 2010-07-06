@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.UnitTesting
@@ -19,8 +20,9 @@ namespace ICSharpCode.UnitTesting
 		UnitTestBuildProjectFactory buildProjectFactory = new UnitTestBuildProjectFactory();
 		UnitTestBuildOptions buildOptions = new UnitTestBuildOptions();
 		MessageViewCategory unitTestCategory = TestService.UnitTestMessageView;
-		UnitTestMessageService messageService = new UnitTestMessageService();
+		IMessageService messageService = ServiceManager.Instance.MessageService;
 		UnitTestSaveAllFilesCommand saveAllFilesCommand = new UnitTestSaveAllFilesCommand();
+		IStatusBarService statusBarService = WorkbenchSingleton.StatusBar;
 		
 		public IRegisteredTestFrameworks RegisteredTestFrameworks {
 			get { return testFrameworks; }
@@ -50,12 +52,16 @@ namespace ICSharpCode.UnitTesting
 			get { return UnitTestsPad.Instance; }
 		}
 		
-		public IUnitTestMessageService MessageService {
+		public IMessageService MessageService {
 			get { return messageService; }
 		}
 		
 		public IUnitTestSaveAllFilesCommand SaveAllFilesCommand {
 			get { return saveAllFilesCommand; }
+		}
+		
+		public IStatusBarService StatusBarService {
+			get { return statusBarService; }
 		}
 	}
 }

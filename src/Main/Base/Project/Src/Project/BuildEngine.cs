@@ -7,10 +7,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -44,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			WorkbenchSingleton.AssertMainThread();
 			if (guiBuildCancellation != null) {
 				BuildResults results = new BuildResults();
-				StatusBarService.ShowErrorMessage(Core.ResourceService.GetString("MainWindow.CompilerMessages.MSBuildAlreadyRunning"));
+				WorkbenchSingleton.StatusBar.SetMessage(Core.ResourceService.GetString("MainWindow.CompilerMessages.MSBuildAlreadyRunning"));
 				BuildError error = new BuildError(null, Core.ResourceService.GetString("MainWindow.CompilerMessages.MSBuildAlreadyRunning"));
 				results.Add(error);
 				TaskService.Add(new Task(error));
@@ -54,12 +54,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			} else {
 				guiBuildCancellation = new CancellationTokenSource();
-				IProgressMonitor progressMonitor = StatusBarService.CreateProgressMonitor(guiBuildCancellation.Token);
+				IProgressMonitor progressMonitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor(guiBuildCancellation.Token);
 				guiBuildTrackedFeature = AnalyticsMonitorService.TrackFeature("Build");
-				StatusBarService.SetMessage(StringParser.Parse("${res:MainWindow.CompilerMessages.BuildVerb}..."));
+				WorkbenchSingleton.StatusBar.SetMessage(StringParser.Parse("${res:MainWindow.CompilerMessages.BuildVerb}..."));
 				ProjectService.RaiseEventBuildStarted(new BuildEventArgs(project, options));
 				StartBuild(project, options,
-				           new MessageViewSink(TaskService.BuildMessageViewCategory, progressMonitor));
+				           new MessageViewSink(TaskService.BuildMessageViewCategory, progressMonitor, WorkbenchSingleton.StatusBar));
 			}
 		}
 		
@@ -90,13 +90,19 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		sealed class MessageViewSink : IBuildFeedbackSink
 		{
-			Gui.MessageViewCategory messageView;
-			Gui.IProgressMonitor progressMonitor;
+			MessageViewCategory messageView;
+			IProgressMonitor progressMonitor;
+			IStatusBarService statusBarService;
 			
-			public MessageViewSink(MessageViewCategory messageView, Gui.IProgressMonitor progressMonitor)
+			public MessageViewSink(MessageViewCategory messageView, IProgressMonitor progressMonitor, IStatusBarService statusBarService)
 			{
+				Debug.Assert(messageView != null);
+				Debug.Assert(progressMonitor != null);
+				Debug.Assert(statusBarService != null);
+				
 				this.messageView = messageView;
 				this.progressMonitor = progressMonitor;
+				this.statusBarService = statusBarService;
 			}
 			
 			public IProgressMonitor ProgressMonitor {
@@ -144,7 +150,7 @@ namespace ICSharpCode.SharpDevelop.Project
 							if (results.WarningCount > 0)
 								message += " " + results.WarningCount + " warning(s)";
 						}
-						StatusBarService.SetMessage(StringParser.Parse(message));
+						statusBarService.SetMessage(message);
 						ProjectService.RaiseEventBuildFinished(new BuildEventArgs(buildable, options, results));
 					});
 			}

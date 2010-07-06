@@ -57,6 +57,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public System.Windows.Forms.IWin32Window MainWin32Window { get { return this; } }
 		public ISynchronizeInvoke SynchronizingObject { get; private set; }
 		public Window MainWindow { get { return this; } }
+		public IStatusBarService StatusBar { get; private set; }
 		
 		IntPtr System.Windows.Forms.IWin32Window.Handle {
 			get {
@@ -69,12 +70,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		List<PadDescriptor> padDescriptorCollection = new List<PadDescriptor>();
-		
+		SdStatusBar statusBar = new SdStatusBar();
 		ToolBar[] toolBars;
 		
 		public WpfWorkbench()
 		{
 			this.SynchronizingObject = new WpfSynchronizeInvoke(this.Dispatcher);
+			this.StatusBar = new SdStatusBarService(statusBar);
 			InitializeComponent();
 			InitFocusTrackingEvents();
 		}
@@ -100,8 +102,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				DockPanel.SetDock(tb, Dock.Top);
 				dockPanel.Children.Insert(1, tb);
 			}
-			DockPanel.SetDock(StatusBarService.Control, Dock.Bottom);
-			dockPanel.Children.Insert(dockPanel.Children.Count - 2, StatusBarService.Control);
+			DockPanel.SetDock(statusBar, Dock.Bottom);
+			dockPanel.Children.Insert(dockPanel.Children.Count - 2, statusBar);
 			
 			UpdateMenu();
 			
@@ -119,7 +121,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			CommandManager.RequerySuggested += requerySuggestedEventHandler;
 			ResourceService.LanguageChanged += OnLanguageChanged;
 			
-			StatusBarService.SetMessage("${res:MainWindow.StatusBar.ReadyMessage}");
+			this.StatusBar.SetMessage("${res:MainWindow.StatusBar.ReadyMessage}");
 		}
 		
 		// keep a reference to the event handler to prevent it from being garbage collected
@@ -663,14 +665,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			if (!e.Handled && e.Key == Key.L && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
 				this.UseLayoutRounding = !this.UseLayoutRounding;
-				StatusBarService.SetMessage("UseLayoutRounding=" + this.UseLayoutRounding);
+				this.StatusBar.SetMessage("UseLayoutRounding=" + this.UseLayoutRounding);
 			}
 			if (!e.Handled && e.Key == Key.F && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
 				if (TextOptions.GetTextFormattingMode(this) == TextFormattingMode.Display)
 					TextOptions.SetTextFormattingMode(this, TextFormattingMode.Ideal);
 				else
 					TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
-				StatusBarService.SetMessage("TextFormattingMode=" + TextOptions.GetTextFormattingMode(this));
+				this.StatusBar.SetMessage("TextFormattingMode=" + TextOptions.GetTextFormattingMode(this));
 			}
 			if (!e.Handled && e.Key == Key.R && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
 				switch (TextOptions.GetTextRenderingMode(this)) {
@@ -685,7 +687,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						TextOptions.SetTextRenderingMode(this, TextRenderingMode.ClearType);
 						break;
 				}
-				StatusBarService.SetMessage("TextRenderingMode=" + TextOptions.GetTextRenderingMode(this));
+				this.StatusBar.SetMessage("TextRenderingMode=" + TextOptions.GetTextRenderingMode(this));
 			}
 		}
 		

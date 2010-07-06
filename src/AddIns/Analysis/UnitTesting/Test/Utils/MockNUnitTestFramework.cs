@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
+using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
@@ -22,7 +23,7 @@ namespace UnitTesting.Tests.Utils
 		ITestResultsMonitor testResultsMonitor;
 		UnitTestingOptions options;
 		IUnitTestDebuggerService debuggerService;
-		IUnitTestMessageService messageService;
+		IMessageService messageService;
 
 		public MockNUnitTestFramework(IUnitTestProcessRunner processRunner,
 			ITestResultsMonitor testResultsMonitor, 
@@ -34,7 +35,7 @@ namespace UnitTesting.Tests.Utils
 		public MockNUnitTestFramework(IUnitTestDebuggerService debuggerService,
 			ITestResultsMonitor testResultsMonitor, 
 			UnitTestingOptions options,
-			IUnitTestMessageService messageService)
+			IMessageService messageService)
 			: this(debuggerService, null, testResultsMonitor, options, messageService)
 		{
 		}
@@ -43,7 +44,7 @@ namespace UnitTesting.Tests.Utils
 			IUnitTestProcessRunner processRunner,
 			ITestResultsMonitor testResultsMonitor, 
 			UnitTestingOptions options,
-			IUnitTestMessageService messageService)
+			IMessageService messageService)
 		{
 			this.debuggerService = debuggerService;
 			this.processRunner = processRunner;

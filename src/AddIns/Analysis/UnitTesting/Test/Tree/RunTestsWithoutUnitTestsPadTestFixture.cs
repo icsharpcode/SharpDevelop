@@ -51,7 +51,7 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void OnBeforeTestsRunMethodIsCalled()
 		{
-			Assert.IsTrue(runTestCommand.IsOnBeforeRunTestsMethodCalled);
+			Assert.IsTrue(runTestCommand.IsOnBeforeBuildMethodCalled);
 		}
 	}
 }

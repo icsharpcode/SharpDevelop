@@ -15,10 +15,10 @@ namespace UnitTesting.Tests.Utils
 {
 	public class DerivedRunTestCommand : AbstractRunTestCommand
 	{
-		bool onBeforeRunTestsMethodCalled;
+		bool onBeforeBuildMethodCalled;
 		bool onAfterRunTestsMethodCalled;
-		AbstractRunTestCommand runningTestCommandWhenOnBeforeRunCalled;
-		bool runningTestWhenOnBeforeRunCalled;
+		AbstractRunTestCommand runningTestCommandWhenOnBeforeBuildCalled;
+		bool runningTestWhenOnBeforeBuildCalled;
 		bool onStopMethodCalled;
 		List<NUnitConsoleApplication> helpers = new List<NUnitConsoleApplication>();
 		List<MockTestRunner> testRunnersCreated = new List<MockTestRunner>();
@@ -28,20 +28,20 @@ namespace UnitTesting.Tests.Utils
 		{
 		}
 		
-		public bool IsOnBeforeRunTestsMethodCalled {
-			get { return onBeforeRunTestsMethodCalled; }
+		public bool IsOnBeforeBuildMethodCalled {
+			get { return onBeforeBuildMethodCalled; }
 		}
 
-		public void CallOnBeforeRunTestsMethod()
+		public void CallOnBeforeBuildMethod()
 		{
-			OnBeforeRunTests();
+			OnBeforeBuild();
 		}
 		
-		protected override void OnBeforeRunTests()
+		protected override void OnBeforeBuild()
 		{
-			onBeforeRunTestsMethodCalled = true;
-			runningTestCommandWhenOnBeforeRunCalled = AbstractRunTestCommand.RunningTestCommand;
-			runningTestWhenOnBeforeRunCalled = AbstractRunTestCommand.IsRunningTest;
+			onBeforeBuildMethodCalled = true;
+			runningTestCommandWhenOnBeforeBuildCalled = AbstractRunTestCommand.RunningTestCommand;
+			runningTestWhenOnBeforeBuildCalled = AbstractRunTestCommand.IsRunningTest;
 		}
 		
 		protected override ITestRunner CreateTestRunner(IProject project)
@@ -64,12 +64,12 @@ namespace UnitTesting.Tests.Utils
 			get { return helpers; }
 		}
 		
-		public AbstractRunTestCommand RunningTestCommandPropertyWhenOnBeforeRunCalled {
-			get { return runningTestCommandWhenOnBeforeRunCalled; }
+		public AbstractRunTestCommand RunningTestCommandPropertyWhenOnBeforeBuildCalled {
+			get { return runningTestCommandWhenOnBeforeBuildCalled; }
 		}
 		
-		public bool IsRunningTestPropertyWhenOnBeforeRunCalled {
-			get { return runningTestWhenOnBeforeRunCalled; }
+		public bool IsRunningTestPropertyWhenOnBeforeBuildCalled {
+			get { return runningTestWhenOnBeforeBuildCalled; }
 		}
 		
 		public bool IsOnStopMethodCalled {

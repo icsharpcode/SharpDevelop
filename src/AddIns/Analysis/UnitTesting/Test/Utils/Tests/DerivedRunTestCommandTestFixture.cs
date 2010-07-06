@@ -34,46 +34,46 @@ namespace UnitTesting.Tests.Utils.Tests
 		[Test]
 		public void IsOnBeforeRunTestsMethodCalledReturnsFalseByDefault()
 		{
-			Assert.IsFalse(runTestCommand.IsOnBeforeRunTestsMethodCalled);
+			Assert.IsFalse(runTestCommand.IsOnBeforeBuildMethodCalled);
 		}
 		
 		[Test]
 		public void IsOnBeforeRunTestsMethodCalledReturnsTrueAfterOnBeforeRunMethodCalled()
 		{
-			runTestCommand.CallOnBeforeRunTestsMethod();
-			Assert.IsTrue(runTestCommand.IsOnBeforeRunTestsMethodCalled);
+			runTestCommand.CallOnBeforeBuildMethod();
+			Assert.IsTrue(runTestCommand.IsOnBeforeBuildMethodCalled);
 		}
 		
 		[Test]
 		public void IsRunningTestPropertyWhenOnBeforeRunCalledReturnsFalseByDefault()
 		{
 			AbstractRunTestCommand.RunningTestCommand = null;
-			runTestCommand.CallOnBeforeRunTestsMethod();
-			Assert.IsFalse(runTestCommand.IsRunningTestPropertyWhenOnBeforeRunCalled);
+			runTestCommand.CallOnBeforeBuildMethod();
+			Assert.IsFalse(runTestCommand.IsRunningTestPropertyWhenOnBeforeBuildCalled);
 		}
 		
 		[Test]
 		public void IsRunningTestPropertyWhenOnBeforeRunCalledReturnsTrueWhenRunningTestCommandIsNonNullWhenOnBeforeRunMethodCalled()
 		{
 			AbstractRunTestCommand.RunningTestCommand = runTestCommand;
-			runTestCommand.CallOnBeforeRunTestsMethod();
-			Assert.IsTrue(runTestCommand.IsRunningTestPropertyWhenOnBeforeRunCalled);
+			runTestCommand.CallOnBeforeBuildMethod();
+			Assert.IsTrue(runTestCommand.IsRunningTestPropertyWhenOnBeforeBuildCalled);
 		}
 		
 		[Test]
 		public void RunningTestCommandPropertyWhenOnBeforeRunCalledReturnsNullByDefault()
 		{
 			AbstractRunTestCommand.RunningTestCommand = null;
-			runTestCommand.CallOnBeforeRunTestsMethod();
-			Assert.IsNull(runTestCommand.RunningTestCommandPropertyWhenOnBeforeRunCalled);
+			runTestCommand.CallOnBeforeBuildMethod();
+			Assert.IsNull(runTestCommand.RunningTestCommandPropertyWhenOnBeforeBuildCalled);
 		}
 		
 		[Test]
 		public void RunningTestCommandPropertyWhenOnBeforeRunCalledReturnsNonNullWhenRunningTestCommandIsNonNullWhenOnBeforeRunMethodCalled()
 		{
 			AbstractRunTestCommand.RunningTestCommand = runTestCommand;
-			runTestCommand.CallOnBeforeRunTestsMethod();
-			Assert.AreEqual(runTestCommand, runTestCommand.RunningTestCommandPropertyWhenOnBeforeRunCalled);
+			runTestCommand.CallOnBeforeBuildMethod();
+			Assert.AreEqual(runTestCommand, runTestCommand.RunningTestCommandPropertyWhenOnBeforeBuildCalled);
 		}
 		
 		[Test]

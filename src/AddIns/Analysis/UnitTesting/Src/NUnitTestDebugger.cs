@@ -7,6 +7,7 @@
 
 using System;
 using System.Diagnostics;
+using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop.Debugging;
 
 namespace ICSharpCode.UnitTesting
@@ -17,14 +18,14 @@ namespace ICSharpCode.UnitTesting
 		
 		public NUnitTestDebugger()
 			: this(new UnitTestDebuggerService(),
-				new UnitTestMessageService(),
+				ServiceManager.Instance.MessageService,
 				new TestResultsMonitor(),
 				new UnitTestingOptions())
 		{
 		}
 		
 		public NUnitTestDebugger(IUnitTestDebuggerService debuggerService,
-			IUnitTestMessageService messageService,
+			IMessageService messageService,
 			ITestResultsMonitor testResultsMonitor,
 			UnitTestingOptions options)
 			: base(debuggerService, messageService, testResultsMonitor)

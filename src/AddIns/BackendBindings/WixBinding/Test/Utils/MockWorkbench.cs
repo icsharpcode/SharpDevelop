@@ -42,6 +42,10 @@ namespace WixBinding.Tests.Utils
 			}
 		}
 		
+		public IStatusBarService StatusBar {
+			get { throw new NotImplementedException(); }
+		}
+		
 		public string Title {
 			get {
 				throw new NotImplementedException();

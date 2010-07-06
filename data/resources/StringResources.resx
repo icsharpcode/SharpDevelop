@@ -4826,6 +4826,9 @@ Goto 'Options-&gt;Visual Style' and change the current language ambience.</value
   <data name="ICSharpCode.UnitTesting.RunWithDebugger" xml:space="preserve">
     <value>Run with debugger</value>
   </data>
+  <data name="ICSharpCode.UnitTesting.StatusBarProgressLabel" xml:space="preserve">
+    <value>Testing ${Name}...</value>
+  </data>
   <data name="ICSharpCode.UnitTesting.TestMenu" xml:space="preserve">
     <value>&amp;Test</value>
   </data>

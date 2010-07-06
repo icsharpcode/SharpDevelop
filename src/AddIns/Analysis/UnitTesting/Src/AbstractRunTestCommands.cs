@@ -90,7 +90,7 @@ namespace ICSharpCode.UnitTesting
 			UpdateUnitTestsPadToolbar();
 			ResetAllTestResultsInUnitTestsPad();
 			
-			OnBeforeRunTests();
+			OnBeforeBuild();
 		}
 		
 		void BuildAndRunTests()
@@ -132,8 +132,16 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
-		/// Called before all tests are run. If multiple projects are
-		/// to be tested this is called only once.
+		/// Called before the build is started (even if no build needs to be performed).
+		/// If multiple projects are to be tested this is called only once.
+		/// </summary>
+		protected virtual void OnBeforeBuild()
+		{
+		}
+		
+		/// <summary>
+		/// Called before all tests are run (after the build has finished successfully).
+		/// If multiple projects are to be tested this is called only once.
 		/// </summary>
 		protected virtual void OnBeforeRunTests()
 		{
@@ -202,6 +210,10 @@ namespace ICSharpCode.UnitTesting
 			if (selectedTests.HasProjects) {
 				RunTests(selectedTests);
 			} else {
+				if (testProgressMonitor != null) {
+					testProgressMonitor.Dispose();
+					testProgressMonitor = null;
+				}
 				runningTestCommand = null;
 				UpdateUnitTestsPadToolbar();
 				ShowErrorList();
@@ -218,6 +230,12 @@ namespace ICSharpCode.UnitTesting
 		{
 			if (IsTestResultFailureOrIsIgnored(result)) {
 				AddTaskForTestResult(result);
+				if (testProgressMonitor != null) {
+					if (result.IsFailure)
+						testProgressMonitor.Status = OperationStatus.Error;
+					else if (result.IsIgnored && testProgressMonitor.Status == OperationStatus.Normal)
+						testProgressMonitor.Status = OperationStatus.Warning;
+				}
 			}
 			UpdateTestResult(result);
 		}
@@ -284,8 +302,19 @@ namespace ICSharpCode.UnitTesting
 			return (results.ErrorCount == 0) && IsRunningTest;
 		}
 		
+		IProgressMonitor testProgressMonitor;
+		int totalProjectCount;
+		
 		void RunTests(SelectedTests selectedTests)
 		{
+			if (testProgressMonitor == null) {
+				testProgressMonitor = context.StatusBarService.CreateProgressMonitor();
+				totalProjectCount = selectedTests.Projects.Count;
+				OnBeforeRunTests();
+			}
+			testProgressMonitor.TaskName = StringParser.Parse("${res:ICSharpCode.UnitTesting.StatusBarProgressLabel}", new StringTagPair("Name", selectedTests.Project.Name));
+			testProgressMonitor.Progress = (double)(totalProjectCount-selectedTests.Projects.Count)/totalProjectCount;
+			
 			testRunner = CreateTestRunner(selectedTests.Project);
 			if (testRunner != null) {
 				testRunner.MessageReceived += TestRunnerMessageReceived;

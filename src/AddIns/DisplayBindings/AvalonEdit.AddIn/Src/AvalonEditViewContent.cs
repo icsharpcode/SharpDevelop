@@ -178,7 +178,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void CaretChanged(object sender, EventArgs e)
 		{
 			NavigationService.Log(this.BuildNavPoint());
-			StatusBarService.SetCaretPosition(this.Column, this.Line, this.Column);
+			WorkbenchSingleton.StatusBar.SetCaretPosition(this.Column, this.Line, this.Column);
 		}
 		
 		public override bool IsReadOnly {

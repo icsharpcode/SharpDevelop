@@ -36,6 +36,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		Window MainWindow { get; }
 		
 		/// <summary>
+		/// Gets the status bar.
+		/// </summary>
+		IStatusBarService StatusBar { get; }
+		
+		/// <summary>
 		/// Gets/Sets whether the window is displayed in full-screen mode.
 		/// </summary>
 		bool FullScreen { get; set; }

@@ -2486,7 +2486,7 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
     <value>&amp;Benutzerspezifische Daten mit Dokument laden</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.MacintoshRadioButton" xml:space="preserve">
-    <value>Macintosh</value>
+    <value>Macintosh (CR)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.PanelName" xml:space="preserve">
     <value>Laden/Speichern</value>
@@ -2495,13 +2495,13 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
     <value>Speichern</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.UnixRadioButton" xml:space="preserve">
-    <value>Unix</value>
+    <value>Unix (LF)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.UseRecycleBin" xml:space="preserve">
     <value>&amp;Papierkorb zum Löschen von Dateien verwenden</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.WindowsRadioButton" xml:space="preserve">
-    <value>Windows</value>
+    <value>Windows (CRLF)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.OutputPanel.Format" xml:space="preserve">
     <value>Format</value>
@@ -3626,6 +3626,9 @@ Bitte einen anderen Dateinamen wählen.</value>
   </data>
   <data name="Hornung.ResourceToolkit.ValueLabel" xml:space="preserve">
     <value>Ressourceninhalt:</value>
+  </data>
+  <data name="ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow.EmptyText" xml:space="preserve">
+    <value>Drücken Sie Strg+Leertaste, um Elemente aus allen Namespaces anzuzeigen</value>
   </data>
   <data name="ICSharpCode.BooInterpreter" xml:space="preserve">
     <value>Boo-Interpreter</value>

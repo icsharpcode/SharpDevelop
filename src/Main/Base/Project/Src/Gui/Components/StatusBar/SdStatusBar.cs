@@ -67,21 +67,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Items.Add(txtStatusBarPanel);
 		}
 		
-		public void ShowErrorMessage(string message)
-		{
-			SetMessage("Error : " + message);
-		}
-		
-		public void ShowErrorMessage(BitmapSource image, string message)
-		{
-			SetMessage(image, "Error : " + message);
-		}
-		
-		public void SetMessage(string message)
-		{
-			SetMessage(message, false);
-		}
-		
 		public void SetMessage(string message, bool highlighted)
 		{
 			Action setMessageAction = delegate {
@@ -98,11 +83,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				WorkbenchSingleton.SafeThreadAsyncCall(setMessageAction);
 			else
 				setMessageAction();
-		}
-		
-		public void SetMessage(BitmapSource image, string message)
-		{
-			SetMessage(message);
 		}
 		
 		// Displaying progress
