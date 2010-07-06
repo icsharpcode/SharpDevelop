@@ -39,6 +39,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 			
 		public Size Size {get;set;}
 		
+		public Rectangle DisplayRectangle{get;set;}
 		
 		public iTextSharp.text.BaseColor PdfBackColor {
 			get {return ConvertToPdfBaseColor(this.BackColor);}
@@ -55,11 +56,11 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		}
 		
 	
-		public Rectangle DisplayRectangle {
-			get {
-				return new Rectangle(Location,Size); 
-			}
-		}
+//		public Rectangle DisplayRectangle {
+//			get {
+//				return new Rectangle(Location,Size); 
+//			}
+//		}
 		
 		private static iTextSharp.text.BaseColor ConvertToPdfBaseColor (Color color)
 		{

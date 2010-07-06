@@ -84,13 +84,13 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 
 			if (exportLineBuilder != null) {
 
-				ExportContainer lineItem = this.exportItemsConverter.ConvertToContainer(offset,row);
+				ExportContainer lineItem = this.exportItemsConverter.ConvertToContainer(row.Parent,offset,row);
 				
 				BaseReportItem baseReportItem = row as BaseReportItem;
 
 				this.exportItemsConverter.ParentRectangle = new Rectangle(baseReportItem.Location,baseReportItem.Size);
 				StandardPrinter.AdjustBackColor(row);
-				ExporterCollection list = this.exportItemsConverter.ConvertSimpleItems(offset,row.Items);
+				ExporterCollection list = this.exportItemsConverter.ConvertSimpleItems(row as BaseReportItem,offset,row.Items);
 					
 				lineItem.Items.AddRange(list);
 				

@@ -17,13 +17,12 @@ namespace ICSharpCode.Reports.Core.Test.TestHelpers
 	 public abstract class ConcernOf<T>  
 	 {  
 	 	
-	 	protected ConcernOf()  
+	 	public ConcernOf()  
 	 	{ 
-//	 		MockRepository = new MockRepository();
 	 	} 
 	 	
-	 	public T Sut { get; set; } 
-//	 	public MockRepository MockRepository { get; private set; }  
+	 	protected T Sut { get; set; } 
+
 	 	
 	 	[SetUp]
 	 	public abstract void Setup();

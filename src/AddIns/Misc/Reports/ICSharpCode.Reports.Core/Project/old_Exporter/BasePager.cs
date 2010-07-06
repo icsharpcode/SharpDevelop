@@ -107,16 +107,17 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 			if (section.Items.Count > 0) {
 				
 				Point offset = new Point(section.Location.X,section.SectionOffset);
-				foreach (IReportItem item in section.Items) {
+				
+				foreach (BaseReportItem item in section.Items) {
 					
 					ISimpleContainer container = item as ISimpleContainer;
 					if (container != null) {
 
-						ExportContainer exportContainer = this.exportItemsConverter.ConvertToContainer(offset,container);
+						ExportContainer exportContainer = this.exportItemsConverter.ConvertToContainer(section,offset,container);
 			          
 			          StandardPrinter.AdjustBackColor (container);
 						
-						ExporterCollection clist = this.exportItemsConverter.ConvertSimpleItems(offset,container.Items);
+						ExporterCollection clist = this.exportItemsConverter.ConvertSimpleItems(item,offset,container.Items);
 						exportContainer.Items.AddRange(clist);
 						list.Add(exportContainer);
 						
@@ -131,7 +132,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 							section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height);
 						}
 						
-						list = this.exportItemsConverter.ConvertSimpleItems(offset,section.Items);
+						list = this.exportItemsConverter.ConvertSimpleItems(section,offset,section.Items);
 					}
 				}
 			}

@@ -100,8 +100,7 @@ namespace ICSharpCode.Reports.Core
 								return;
 							}
 							this.dataNavigator.Fill(row.Items);
-//							Point start = currentPosition;
-							
+
 							Rectangle r =  this.RenderContainer(row,currentPosition,rpea);
 							currentPosition = ConvertRectangleToCurentPosition (r);
 							
@@ -220,7 +219,6 @@ namespace ICSharpCode.Reports.Core
 		
 		private Rectangle RenderContainer (ISimpleContainer simpleContainer,Point offset,ReportPageEventArgs rpea)
 		{
-			
 			BaseReportItem item = simpleContainer as BaseReportItem;
 			Rectangle retVal = new Rectangle(offset,item.Size);
 			Point loc = item.Location;
@@ -232,7 +230,6 @@ namespace ICSharpCode.Reports.Core
 				retVal = base.RenderPlainCollection(item,simpleContainer.Items,offset,rpea);
 			}
 		
-//			retVal = new Point (retVal.X,retVal.Y + item.Size.Height + 3 * GlobalValues.GapBetweenContainer);
 			retVal = new Rectangle (retVal.X,retVal.Y,
 		                        retVal.X + item.Size.Width,
 		                        item.Size.Height + 3 * GlobalValues.GapBetweenContainer);
@@ -240,28 +237,6 @@ namespace ICSharpCode.Reports.Core
 			return retVal;
 		}
 		
-		
-		
-		private Point old_RenderContainer (ISimpleContainer simpleContainer,Point offset,ReportPageEventArgs rpea)
-		{
-			
-			BaseReportItem item = simpleContainer as BaseReportItem;
-			Point retVal = offset;
-//			StandardPrinter.AdjustBackColor(simpleContainer);
-			Point loc = item.Location;
-			
-			item.Location = new Point (offset.X + item.Location.X,offset.Y + item.Location.Y);
-			
-			item.Render(rpea);
-			/*
-			if (simpleContainer.Items != null)  {
-				retVal = base.RenderPlainCollection(item,simpleContainer.Items,offset,rpea);
-			}
-		*/
-			retVal = new Point (retVal.X,retVal.Y + item.Size.Height + 3 * GlobalValues.GapBetweenContainer);
-			item.Location = loc;
-			return retVal;
-		}
 		
 		
 		#region Properties

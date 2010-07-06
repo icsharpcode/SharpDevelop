@@ -58,7 +58,6 @@
   <ItemGroup>
     <Compile Include="BaseClasses\AbstractColumnFixture.cs" />
     <Compile Include="BaseClasses\GroupColumnFixture.cs" />
-    <Compile Include="BaseClasses\LayouterFixture.cs" />
     <Compile Include="BaseClasses\Parameters.cs" />
     <Compile Include="BaseClasses\SortColumnFixture.cs" />
     <Compile Include="BaseItems\BaseDataItemFixture.cs" />

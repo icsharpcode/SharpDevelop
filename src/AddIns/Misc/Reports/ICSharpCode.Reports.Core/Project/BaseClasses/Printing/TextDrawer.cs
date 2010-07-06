@@ -36,7 +36,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				throw new ArgumentNullException("graphics");
 			}
 			StringFormat stringFormat = BuildStringFormat(stringTrimming,alignment);
-				Console.WriteLine("\t text 1 {0}",rectangle);
 			graphics.DrawString(text,
 			                    font,
 			                    brush,

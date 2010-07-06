@@ -20,7 +20,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		}
 		
 		
-		public ExporterCollection ConvertSimpleItems (Point offset,ReportItemCollection items)
+		public ExporterCollection ConvertSimpleItems (BaseReportItem parent,Point offset,ReportItemCollection items)
 		{
 			if (items == null) {
 				throw new ArgumentNullException("items");
@@ -30,7 +30,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 				
 				foreach(BaseReportItem item in items)
 				{
-					col.Add(ConvertToLineItem(offset,item));
+					col.Add(ConvertToLineItem(parent,item,offset));
 				}
 			}
 			return col;
@@ -43,7 +43,11 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		/// <param name="offset"> only Y value is used, gives the offset to Items location.Y </param>
 		/// <param name="item">Item to convert</param>
 		/// <returns></returns>
-		private BaseExportColumn ConvertToLineItem (Point offset,BaseReportItem item)
+		
+//		protected Rectangle RenderPlainCollection (BaseReportItem parent,ReportItemCollection items, Point offset,ReportPageEventArgs rpea)
+		
+		
+		private static BaseExportColumn ConvertToLineItem (BaseReportItem parent,BaseReportItem item,Point offset)
 		{
 			if (item == null) {
 				throw new ArgumentNullException("item");
@@ -55,14 +59,19 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 			if (columnBuilder != null) {
 				lineItem = columnBuilder.CreateExportColumn();
 				
-				lineItem.StyleDecorator.Location = new Point(this.ParentRectangle.Location.X + lineItem.StyleDecorator.Location.X,
+				
+				lineItem.StyleDecorator.Location = new Point(parent.Location.X + lineItem.StyleDecorator.Location.X,
 				                                             lineItem.StyleDecorator.Location.Y + offset.Y);
+				
+				lineItem.StyleDecorator.DisplayRectangle = new Rectangle(lineItem.StyleDecorator.Location,
+				                                                         lineItem.StyleDecorator.Size);
 			} 
 			return lineItem;
 		}
 		
 		
-		public ExportContainer ConvertToContainer (Point offset,ISimpleContainer item) 
+		
+		public ExportContainer ConvertToContainer (BaseReportItem parent,Point offset,ISimpleContainer item) 
 		{
 			if (item == null) {
 				throw new ArgumentNullException("item");
@@ -72,8 +81,10 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 			if (lineBuilder != null) {
 				ExportContainer lineItem = (ExportContainer)lineBuilder.CreateExportColumn();
 
-				lineItem.StyleDecorator.Location = new Point (lineItem.StyleDecorator.Location.X,
+				lineItem.StyleDecorator.Location = new Point (parent.Location.X + lineItem.StyleDecorator.Location.X,
 				                                              offset.Y);
+				lineItem.StyleDecorator.DisplayRectangle = new Rectangle(lineItem.StyleDecorator.Location,
+				                                                         lineItem.StyleDecorator.Size);
 				
 				return lineItem;
 			}

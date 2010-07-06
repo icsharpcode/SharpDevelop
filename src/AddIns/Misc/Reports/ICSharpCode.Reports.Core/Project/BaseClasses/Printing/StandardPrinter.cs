@@ -25,10 +25,13 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		public static void AdjustBackColor (ISimpleContainer container)
 		{
+			
 			BaseReportItem parent = container as BaseReportItem;
-			foreach (BaseReportItem item in container.Items)
-			{
-				item.BackColor = parent.BackColor;
+			if (parent.BackColor != GlobalValues.DefaultBackColor) {
+				foreach (BaseReportItem item in container.Items)
+				{
+					item.BackColor = parent.BackColor;
+				}
 			}
 		}
 		

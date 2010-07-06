@@ -60,6 +60,7 @@ namespace ICSharpCode.Reports.Core {
 		#endregion
 		
 		#region overrides
+		
 		public virtual void Render(ReportPageEventArgs rpea)
 		{
 			this.NotifyBeforePrint();
@@ -84,14 +85,16 @@ namespace ICSharpCode.Reports.Core {
 			bsd.FrameColor = this.FrameColor;
 			bsd.Location = this.Location;
 			bsd.Size = this.Size;
+			bsd.DisplayRectangle = this.DrawingRectangle;
+			
 			return bsd;
 		}
+		
 		
 		protected void FillBackground (Graphics  graphics)
 		{
 			StandardPrinter.FillBackground(graphics,this.BaseStyleDecorator);
 		}
-		
 		
 		
 		protected void DrawFrame (Graphics graphics,Border border) {
@@ -101,7 +104,7 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		public Rectangle DrawingRectangle
+		protected Rectangle DrawingRectangle
 		{
 			get {
 				if (Parent != null) {

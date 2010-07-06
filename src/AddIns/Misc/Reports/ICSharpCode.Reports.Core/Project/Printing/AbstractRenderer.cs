@@ -256,20 +256,14 @@ namespace ICSharpCode.Reports.Core
 			Size size = Size.Empty;
 			
 			if (items.Count > 0) {
-//				StandardPrinter.AdjustBackColor(parent);
 				foreach (BaseReportItem child in items) {
 					child.Parent = parent;
-					
 					Point saveLocation = new Point (child.Location.X,child.Location.Y);
 					
 					
 					child.Location = new Point(offset.X + child.Location.X,
 					                           offset.Y + child.Location.Y);
 					
-					
-//					if (parent.BackColor != GlobalValues.DefaultBackColor) {
-//						child.BackColor = parent.BackColor;
-//					}
 					
 					BaseTextItem textItem = child as BaseTextItem;
 					
@@ -286,10 +280,8 @@ namespace ICSharpCode.Reports.Core
 				}
 				retVal = new Rectangle(offset,size);
 				return retVal;
-				//return rpea.LocationAfterDraw;
 				
 			} else {
-//				return offset;
 				retVal = new Rectangle(offset.X,offset.Y,0,0);
 				return retVal;
 			}
@@ -301,43 +293,6 @@ namespace ICSharpCode.Reports.Core
 			return new Point(r.Left,r.Bottom);
 		}
 		
-		
-		protected Point old_RenderPlainCollection (BaseReportItem parent,ReportItemCollection items, Point offset,ReportPageEventArgs rpea)
-		{
-			
-			if (items.Count > 0) {
-//				StandardPrinter.AdjustBackColor(parent);
-				foreach (BaseReportItem child in items) {
-					child.Parent = parent;
-					
-					Point saveLocation = new Point (child.Location.X,child.Location.Y);
-					
-					
-					child.Location = new Point(offset.X + child.Location.X,
-					                           offset.Y + child.Location.Y);
-					
-					
-//					if (parent.BackColor != GlobalValues.DefaultBackColor) {
-//						child.BackColor = parent.BackColor;
-//					}
-					
-					BaseTextItem textItem = child as BaseTextItem;
-					
-					if (textItem != null) {
-						string str = textItem.Text;
-						textItem.Text = Evaluator.Evaluate(textItem.Text);
-						textItem.Render(rpea);
-						textItem.Text = str;
-					} else {
-						child.Render (rpea);
-					}
-					child.Location = saveLocation;
-				}
-				return rpea.LocationAfterDraw;
-			} else {
-				return offset;
-			}
-		}
 		
 		
 		#region PrintDocument Events

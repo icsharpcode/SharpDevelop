@@ -92,6 +92,7 @@
     <Compile Include="Project\BaseItems\BaseDataItem.cs" />
     <Compile Include="Project\BaseItems\ErrorItem.cs" />
     <Compile Include="Project\BaseItems\Graphics\BaseLineItem.cs" />
+    <Compile Include="Project\Collections\GroupColumn.cs" />
     <Compile Include="Project\DataManager\Comparer\BaseComparer.cs" />
     <Compile Include="Project\DataManager\Comparer\GroupSeparator.cs" />
     <Compile Include="Project\DataManager\Comparer\SortComparer.cs" />
@@ -287,7 +288,6 @@
     <Compile Include="Project\Configuration\AssemblyInfo.cs" />
     <Compile Include="Project\BaseClasses\AbstractColumn.cs" />
     <Compile Include="Project\BaseClasses\BasicParameter.cs" />
-    <Compile Include="Project\BaseClasses\GroupColumn.cs" />
     <Compile Include="Project\BaseClasses\SqlParameter.cs" />
     <Compile Include="Project\Collections\Collections.cs" />
     <Compile Include="Project\DataManager\SqlQueryChecker.cs" />

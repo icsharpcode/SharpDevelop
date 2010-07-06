@@ -89,6 +89,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 				
 				base.ReportModel.ReportHeader.SectionOffset = base.SinglePage.SectionBounds.ReportHeaderRectangle.Top;
 				ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.ReportHeader,this.dataNavigator.CurrentRow);
+				base.SectionBounds.MeasurePageHeader(base.ReportModel.ReportHeader);
 				base.SinglePage.Items.AddRange(convertedList);
 			}
 		}
@@ -98,12 +99,9 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		{
 			base.ReportModel.PageHeader.SectionOffset = base.AdjustPageHeader();
 			ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.PageHeader,this.dataNavigator.CurrentRow);
-			
-			PrintHelper.ShowLocations(convertedList);
-			
+//			PrintHelper.ShowLocations(convertedList);
+			base.SectionBounds.MeasurePageHeader(base.ReportModel.PageHeader);
 			base.SinglePage.Items.AddRange(convertedList);
-			//orginal
-			//base.ConvertSection(base.ReportModel.PageHeader,0);
 		}
 		
 		

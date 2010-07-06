@@ -27,34 +27,34 @@ namespace ICSharpCode.Reports.Core.Test.old_Exporter
 		}
 		
 		
-		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void  ConvertSimpleItems_Throw_On_Null_Items()
-		{
-			IExportItemsConverter sut = new ExportItemsConverter();
-			ExporterCollection ec = sut.ConvertSimpleItems(new Point (10,10),null);
-			
-		}
-		 
+//		[Test]
+//		[ExpectedException(typeof(ArgumentNullException))]
+//		public void  ConvertSimpleItems_Throw_On_Null_Items()
+//		{
+//			IExportItemsConverter sut = new ExportItemsConverter();
+//			ExporterCollection ec = sut.ConvertSimpleItems(new Point (10,10),null);
+//			
+//		}
+//		 
 		
-		[Test]
-		public void  Convert_SimpleItems_Should_Return_Valid_Collection()
-		{
-			ReportItemCollection ri = new ReportItemCollection();
-			BaseReportItem r = new BaseTextItem(){
-				Location = new Point (10,10),
-				Size = new Size(20,100)
-			};
-			ri.Add(r);
-			IExportItemsConverter sut = new ExportItemsConverter();
-				
-			ExporterCollection ec = sut.ConvertSimpleItems(new Point (10,10),ri);
-			
-			Assert.IsNotNull(ec);
-			Assert.AreEqual(1,ec.Count);
-		}
-		
-		
+//		[Test]
+//		public void  Convert_SimpleItems_Should_Return_Valid_Collection()
+//		{
+//			ReportItemCollection ri = new ReportItemCollection();
+//			BaseReportItem r = new BaseTextItem(){
+//				Location = new Point (10,10),
+//				Size = new Size(20,100)
+//			};
+//			ri.Add(r);
+//			IExportItemsConverter sut = new ExportItemsConverter();
+//				
+//			ExporterCollection ec = sut.ConvertSimpleItems(new Point (10,10),ri);
+//			
+//			Assert.IsNotNull(ec);
+//			Assert.AreEqual(1,ec.Count);
+//		}
+//		
+		/*
 		[Test]
 		public void  Convert_SimpleItems_Should_Calculate_Correct_Locations ()
 		{
@@ -83,8 +83,8 @@ namespace ICSharpCode.Reports.Core.Test.old_Exporter
 			
 			Assert.AreEqual(resultLocation,be.StyleDecorator.Location);
 		}
-		
-		
+		*/
+		/*
 		[Test]
 		public void Convert_Container_Should_Return_ExportContainer ()
 		{
@@ -106,8 +106,9 @@ namespace ICSharpCode.Reports.Core.Test.old_Exporter
 			
 			Assert.IsAssignableFrom(typeof(ExportContainer),exportContainer);
 		}
+		*/
 		
-		
+		/*
 		[Test]
 		public void Convert_Container_Should_Calculate_Correct_Locations()
 		{
@@ -129,7 +130,7 @@ namespace ICSharpCode.Reports.Core.Test.old_Exporter
 			Point containerLoction = new Point (itemLocation.X, offset.Y);
 			Assert.AreEqual(containerLoction,exportContainer.StyleDecorator.Location);
 		}
-		
+		*/
 		
 		
 		public override void Setup()

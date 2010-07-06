@@ -113,13 +113,7 @@ namespace ICSharpCode.Reports.Core{
 			if (section == null) {
 				throw new ArgumentNullException("section");
 			}
-			/*
-			section.SectionOffset = this.printableArea.Bottom - section.Size.Height;
-			this.pageFooterRectangle =  new Rectangle(this.printableArea.Location.X,
-			                                          section.SectionOffset,
-			                                          this.marginBounds.Width,
-			                                          section.Size.Height);
-			*/
+			
 			this.pageFooterRectangle =  new Rectangle(this.printableArea.Location.X,
 			                                          this.marginBounds.Bottom  - section.Size.Height,
 			                                          this.marginBounds.Width,

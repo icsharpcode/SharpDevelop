@@ -12,17 +12,18 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 {
 	public interface IBaseStyleDecorator
 	{
-		bool DrawBorder { get; set; }
-		Color BackColor { get; set; }
-		iTextSharp.text.BaseColor PdfBackColor { get; }
-		
+		bool DrawBorder { get; set;}
+		Color BackColor { get; set;}
+		Color ForeColor { get; set;}
 		Color FrameColor {get;set;}
-		iTextSharp.text.BaseColor PdfFrameColor { get; }
-		
-		Color ForeColor { get; set; }
-		iTextSharp.text.BaseColor PdfForeColor { get; }
-		Point Location { get; set; }
+		Point Location { get; set;}
 		Size Size { get; set; }
-		Rectangle DisplayRectangle { get; }
+		Rectangle DisplayRectangle { get;set; }
+		
+		
+		iTextSharp.text.BaseColor PdfBackColor { get; }
+		iTextSharp.text.BaseColor PdfFrameColor { get; }
+		iTextSharp.text.BaseColor PdfForeColor { get; }
+		
 	}
 }
