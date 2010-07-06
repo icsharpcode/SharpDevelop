@@ -12,7 +12,6 @@ using System.IO;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
-using ICSharpCode.NRefactory.Parser.VBNet.Experimental;
 
 namespace ICSharpCode.SharpDevelop.Dom.VBNet
 {
