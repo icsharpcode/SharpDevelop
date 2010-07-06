@@ -11,6 +11,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using GraphSharp.Controls;
+using ICSharpCode.CodeQualityAnalysis.Controls;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.WpfDesign.Designer.Controls;
 using Microsoft.Win32;
@@ -27,6 +29,7 @@ namespace ICSharpCode.CodeQualityAnalysis
     public partial class MainWindow : Window
     {
         private MetricsReader _metricsReader;
+        private VertexControl _selectedVertexControl;
 
         public MainWindow()
         {
@@ -103,7 +106,7 @@ namespace ICSharpCode.CodeQualityAnalysis
                         var itemMethod = new MetricTreeViewItem
                                              {
                                                  Text = method.Name,
-                                                 Dependency = method,
+                                                 Dependency = null,
                                                  Icon = NodeIconService.GetIcon(method)
                                              };
 
@@ -115,7 +118,7 @@ namespace ICSharpCode.CodeQualityAnalysis
                         var itemField = new MetricTreeViewItem
                                             {
                                                 Text = field.Name,
-                                                Dependency = field,
+                                                Dependency = null,
                                                 Icon = NodeIconService.GetIcon(field)
                                             };
 
@@ -129,31 +132,24 @@ namespace ICSharpCode.CodeQualityAnalysis
         {
             var item = definitionTree.SelectedItem as MetricTreeViewItem;
 
-            if (item != null)
+            if (item != null && item.Dependency != null)
             {
-                // would be better inherit from TreeViewItem and add reference into it
-                // will do it later or will use another tree maybe tree from SharpDevelop
-                string name = item.Header.ToString();
-                txbTypeInfo.Text = "Infobox: \n" + name;
-                /*var type = (from n in this._metricsReader.MainModule.Namespaces
-                            from t in n.Types
-                            where t.Name == name
-                            select t).SingleOrDefault();*/
-
                 var graph = item.Dependency.BuildDependencyGraph();
-
-                try
-                {
-                    if (graph != null && graph.VertexCount > 0)
-                    {
-                        graphLayout.Graph = graph;
-                    }
-                }
-                catch
-                {
-                } // ignore it if it fails
+                graphLayout.ChangeGraph(graph);
             }
+        }
 
+        private void graphLayout_VertexClick(object sender, MouseButtonEventArgs e)
+        {
+            var vertexControl = sender as VertexControl;
+            if (vertexControl != null)
+            {
+                var vertex = vertexControl.Vertex as DependencyVertex;
+                if (vertex != null)
+                {
+                    txbTypeInfo.Text = "Summary: \n" + vertex.Node.GetInfo();
+                }
+            }
         }
 
         private class MetricTreeViewItem : TreeViewItem

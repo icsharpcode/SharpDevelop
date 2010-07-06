@@ -6,7 +6,7 @@ using QuickGraph;
 
 namespace ICSharpCode.CodeQualityAnalysis
 {
-    public class Event : IDependency
+    public class Event : INode
     {
         /// <summary>
         /// Name of event
@@ -23,14 +23,21 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// </summary>
         public Type Owner { get; set; }
 
-        public BidirectionalGraph<object, IEdge<object>> BuildDependencyGraph()
+        public Event()
         {
-            return null;
+            Dependency = null;
         }
 
         public override string ToString()
         {
             return Name;
+        }
+
+        public IDependency Dependency { get; set; }
+
+        public string GetInfo()
+        {
+            return this.ToString();
         }
     }
 }

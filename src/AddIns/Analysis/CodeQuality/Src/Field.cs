@@ -6,7 +6,7 @@ using QuickGraph;
 
 namespace ICSharpCode.CodeQualityAnalysis
 {
-    public class Field : IDependency
+    public class Field : INode
     {
         /// <summary>
         /// Name of field
@@ -73,16 +73,20 @@ namespace ICSharpCode.CodeQualityAnalysis
             FieldType = null;
             IsEvent = false;
             Owner = null;
-        }
-        
-        public BidirectionalGraph<object, IEdge<object>> BuildDependencyGraph()
-        {
-            return null;
+
+            Dependency = null;
         }
 
         public override string ToString()
         {
             return Name;
+        }
+
+        public IDependency Dependency { get; set; }
+
+        public string GetInfo()
+        {
+            return this.ToString();
         }
     }
 }

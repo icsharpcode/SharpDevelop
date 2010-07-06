@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ICSharpCode.CodeQualityAnalysis.Controls;
-using QuickGraph;
 
 namespace ICSharpCode.CodeQualityAnalysis
 {
-    public interface IDependency
+    public interface INode
     {
-        DependencyGraph BuildDependencyGraph();
+        string Name { set; get; }
+        IDependency Dependency { set; get; }
+        string GetInfo();
     }
 }

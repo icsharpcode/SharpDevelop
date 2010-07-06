@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ICSharpCode.CodeQualityAnalysis.Controls;
 using QuickGraph;
 
 namespace ICSharpCode.CodeQualityAnalysis
 {
-    public class Type : IDependency
+    public class Type : IDependency, INode
     {
         /// <summary>
         /// Nested types like inner classes, interfaces and so on.
@@ -153,6 +154,8 @@ namespace ICSharpCode.CodeQualityAnalysis
             BaseType = null;
 
             IsBaseTypeGenericInstance = false;
+
+            Dependency = this;
         }
 
         /// <summary>
@@ -204,30 +207,30 @@ namespace ICSharpCode.CodeQualityAnalysis
             return set;
         }
 
-        public BidirectionalGraph<object, IEdge<object>> BuildDependencyGraph()
+        public DependencyGraph BuildDependencyGraph()
         {
-            var g = new BidirectionalGraph<object, IEdge<object>>();
+            var g = new DependencyGraph();
 
             foreach (var method in Methods)
             {
-                g.AddVertex(method.Name);
+                g.AddVertex(new DependencyVertex(method));
             }
 
             foreach (var field in Fields)
             {
-                g.AddVertex(field.Name);
+                g.AddVertex(new DependencyVertex(field));
             }
 
             foreach (var method in Methods)
             {
                 foreach (var methodUse in method.MethodUses)
                 {
-                    g.AddEdge(new Edge<object>(method.Name, methodUse.Name));
+                    g.AddEdge(new DependencyEdge(new DependencyVertex(method), new DependencyVertex(methodUse)));
                 }
 
                 foreach (var fieldUse in method.FieldUses)
                 {
-                    g.AddEdge(new Edge<object>(method.Name, fieldUse.Name));
+                    g.AddEdge(new DependencyEdge(new DependencyVertex(method), new DependencyVertex(fieldUse)));
                 }
             }
 
@@ -236,7 +239,14 @@ namespace ICSharpCode.CodeQualityAnalysis
 
         public override string ToString()
         {
-            return FullName;
+            return Name;
+        }
+
+        public IDependency Dependency { get; set; }
+
+        public string GetInfo()
+        {
+            return this.ToString();
         }
     }
 }

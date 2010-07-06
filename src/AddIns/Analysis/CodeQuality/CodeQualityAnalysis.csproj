@@ -93,9 +93,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Src\Controls\DependencyEdge.cs" />
+    <Compile Include="Src\Controls\DependencyGraph.cs" />
+    <Compile Include="Src\Controls\DependencyGraphLayout.cs" />
+    <Compile Include="Src\Controls\DependencyVertex.cs" />
     <Compile Include="Src\DependencyGraphCommand.cs" />
     <Compile Include="Src\Event.cs" />
     <Compile Include="Src\Field.cs" />
+    <Compile Include="Src\INode.cs" />
     <Compile Include="Src\NodeIconService.cs" />
     <Compile Include="Src\IDependency.cs" />
     <Compile Include="Src\MetricsReader.cs" />

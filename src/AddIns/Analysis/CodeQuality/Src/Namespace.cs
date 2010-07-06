@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ICSharpCode.CodeQualityAnalysis.Controls;
 using QuickGraph;
 
 namespace ICSharpCode.CodeQualityAnalysis
 {
-    public class Namespace : IDependency
+    public class Namespace : IDependency, INode
     {
         /// <summary>
         /// Types within namespace
@@ -26,15 +27,17 @@ namespace ICSharpCode.CodeQualityAnalysis
         public Namespace()
         {
             Types = new HashSet<Type>();
+
+            Dependency = this;
         }
-        
-        public BidirectionalGraph<object, IEdge<object>> BuildDependencyGraph()
+
+        public DependencyGraph BuildDependencyGraph()
         {
-            var g = new BidirectionalGraph<object, IEdge<object>>();
+            var g = new DependencyGraph();
 
             foreach (var type in Types)
             {
-                g.AddVertex(type.Name);
+                g.AddVertex(new DependencyVertex(type));
             }
 
             foreach (var type in Types)
@@ -44,7 +47,7 @@ namespace ICSharpCode.CodeQualityAnalysis
                 foreach (var dependType in types)
                 {
                     if (dependType != type && dependType.Namespace == type.Namespace)
-                        g.AddEdge(new Edge<object>(type.Name, dependType.Name));
+                        g.AddEdge(new DependencyEdge(new DependencyVertex(type), new DependencyVertex(dependType)));
                 }
             }
 
@@ -54,6 +57,13 @@ namespace ICSharpCode.CodeQualityAnalysis
         public override string ToString()
         {
             return Name;
+        }
+
+        public IDependency Dependency { get; set; }
+
+        public string GetInfo()
+        {
+            return this.ToString();
         }
     }
 }

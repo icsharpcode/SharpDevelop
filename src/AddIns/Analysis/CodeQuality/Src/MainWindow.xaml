@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:graphsharp="clr-namespace:GraphSharp.Controls;assembly=GraphSharp.Controls"
         xmlns:Controls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls;assembly=ICSharpCode.WpfDesign.Designer" 
+        xmlns:Graph="clr-namespace:ICSharpCode.CodeQualityAnalysis.Controls" 
         Title="Code Quality Analysis"
         x:Name="root">
     <Window.Resources>
@@ -36,10 +37,11 @@
         <TreeView Name="definitionTree" Grid.Row="1" Grid.Column="0" SelectedItemChanged="definitionTree_SelectedItemChanged" />
 
         <Controls:ZoomControl Grid.Row="1" Grid.Column="1" Name="zoom" AlwaysShowZoomButtons="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
-            <graphsharp:GraphLayout x:Name="graphLayout"
+            <Graph:DependencyGraphLayout x:Name="graphLayout"
                                         LayoutAlgorithmType="LinLog"
                                         OverlapRemovalAlgorithmType="FSA"
                                         HighlightAlgorithmType="Simple"
+                                        VertexClick="graphLayout_VertexClick"
                                         />
         </Controls:ZoomControl>
         

@@ -6,7 +6,7 @@ using QuickGraph;
 
 namespace ICSharpCode.CodeQualityAnalysis
 {
-    public class Method : IDependency
+    public class Method : INode
     {
         /// <summary>
         /// Parameters which are used by method
@@ -116,16 +116,20 @@ namespace ICSharpCode.CodeQualityAnalysis
             Owner = null;
 
             IsReturnTypeGenericInstance = false;
-        }
 
-        public BidirectionalGraph<object, IEdge<object>> BuildDependencyGraph()
-        {
-            return null;
+            Dependency = null;
         }
 
         public override string ToString()
         {
             return Name;
+        }
+
+        public IDependency Dependency { get; set; }
+
+        public string GetInfo()
+        {
+            return this.ToString();
         }
     }
 
