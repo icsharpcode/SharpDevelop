@@ -178,21 +178,12 @@ namespace ICSharpCode.CodeAnalysis
 			setup.ApplicationBase = fxCopPath;
 			AppDomain domain = AppDomain.CreateDomain("FxCop Rule Loading Domain", AppDomain.CurrentDomain.Evidence, setup);
 			
-			ResolveEventHandler onResolve = delegate(object sender, ResolveEventArgs args) {
-				if (args.Name == typeof(FxCopWrapper).Assembly.FullName) {
-					return typeof(FxCopWrapper).Assembly;
-				} else {
-					return null;
-				}
-			};
 			FxCopRule[] ruleList;
 			try {
-				AppDomain.CurrentDomain.AssemblyResolve += onResolve;
 				FxCopWrapper wrapper = (FxCopWrapper)domain.CreateInstanceFromAndUnwrap(typeof(FxCopWrapper).Assembly.Location, typeof(FxCopWrapper).FullName);
 				
 				ruleList = wrapper.GetRuleListInstanceMethod(fxCopPath, ruleAssemblies);
 			} finally {
-				AppDomain.CurrentDomain.AssemblyResolve -= onResolve;
 				AppDomain.Unload(domain);
 			}
 			

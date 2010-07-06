@@ -132,7 +132,6 @@
     <Compile Include="Src\ReflectionLayer\ReflectionClass.cs" />
     <Compile Include="Src\ReflectionLayer\ReflectionEvent.cs" />
     <Compile Include="Src\ReflectionLayer\ReflectionField.cs" />
-    <Compile Include="Src\ReflectionLayer\ReflectionLoader.cs" />
     <Compile Include="Src\ReflectionLayer\ReflectionMethod.cs" />
     <Compile Include="Src\ReflectionLayer\ReflectionParameter.cs" />
     <Compile Include="Src\ReflectionLayer\ReflectionProperty.cs" />

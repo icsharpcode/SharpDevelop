@@ -89,6 +89,7 @@ namespace ICSharpCode.Core
 			// However, we need to make sure we don't return before the dependencies are ready,
 			// so "bool dependenciesLoaded" must be volatile and set only at the very end of this method.
 			if (!dependenciesLoaded) {
+				AssemblyLocator.Init();
 				foreach (AddInReference r in manifest.Dependencies) {
 					if (r.RequirePreload) {
 						bool found = false;
