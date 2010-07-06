@@ -162,40 +162,51 @@ namespace ICSharpCode.CodeQualityAnalysis
         {
             var fileDialog = new SaveFileDialog()
             {
-                Filter = "PNG Image (*.png)|*.png"
+                Filter = "PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|GIF (*.gif)|*.gif|BMP (*.bmp)|*.bmp|TIFF (.tiff)|*.tiff"
             };
 
             fileDialog.ShowDialog();
 
             if (String.IsNullOrEmpty(fileDialog.FileName))
                 return;
-            
-            var transform = graphLayout.LayoutTransform;
-            graphLayout.LayoutTransform = null;
-
-            // calculate size
-            var size = new Size(graphLayout.ActualWidth, graphLayout.ActualHeight);
-            
-            graphLayout.Measure(size);
-            graphLayout.Arrange(new Rect(size));
 
             // render it
-            var renderBitmap = new RenderTargetBitmap((int) size.Width,
-                                                      (int) size.Height,
+            var renderBitmap = new RenderTargetBitmap((int)graphLayout.ActualWidth,
+                                                      (int)graphLayout.ActualHeight,
                                                       96d,
                                                       96d,
-                                                      PixelFormats.Pbgra32);
+                                                      PixelFormats.Default);
             renderBitmap.Render(graphLayout);
 
             using (var outStream = new FileStream(fileDialog.FileName, FileMode.Create))
             {
-                // for now only PNG
-                var encoder = new PngBitmapEncoder();
+                BitmapEncoder encoder;
+
+                switch (fileDialog.FilterIndex)
+                {
+                    case 1:
+                        encoder = new PngBitmapEncoder();
+                        break;
+                    case 2:
+                        encoder = new JpegBitmapEncoder();
+                        break;
+                    case 3:
+                        encoder = new GifBitmapEncoder();
+                        break;
+                    case 4:
+                        encoder = new BmpBitmapEncoder();
+                        break;
+                    case 5:
+                        encoder = new TiffBitmapEncoder();
+                        break;
+                    default:
+                        encoder = new PngBitmapEncoder();
+                        break;
+                }
+                    
                 encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
                 encoder.Save(outStream);
             }
-
-            graphLayout.LayoutTransform = transform;
         }
 
         private class MetricTreeViewItem : TreeViewItem
