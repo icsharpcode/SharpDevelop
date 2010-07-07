@@ -61,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			do {
 				t = lexer.NextToken();
 				p.InformToken(t);
-			} while (t.Location < targetPosition);
+			} while (t.Location <= targetPosition);
 			
 			Block block = p.CurrentBlock;
 			
@@ -70,6 +70,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				tokenOffset = text.Length;
 			else
 				tokenOffset = LocationToOffset(t.Location);
+
 			int lastExpressionStartOffset = LocationToOffset(block.lastExpressionStart);
 			if (lastExpressionStartOffset >= 0) {
 				if (offset < tokenOffset) {

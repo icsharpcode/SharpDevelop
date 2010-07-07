@@ -15,14 +15,18 @@ using ICSharpCode.SharpDevelop.Dom.VBNet;
 
 namespace ICSharpCode.SharpDevelop.Tests
 {
-	[TestFixture, Ignore]
+	[TestFixture]
 	public class VBExpressionFinderTests
 	{
 		const string program1 = @"
+Imports System
+Imports System.Linq
+		
 Class MainClass ' a comment
 	Dim under_score_field As Integer
 	Sub SomeMethod()
 		simple += 1
+		Dim text = ""Text""
 		For Each loopVarName In collection
 		Next
 	End Sub
@@ -74,11 +78,46 @@ End Class
 			FindFull(program1, "arName", "loopVarName", ExpressionContext.Default);
 		}
 		
+		[Test]
+		public void LocalVariableDecl()
+		{
+			FindFull(program1, "ext", "text", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void Imports1()
+		{
+			FindFull(program1, "ystem", "System", ExpressionContext.Global);
+		}
+		
+		[Test]
+		public void Imports2()
+		{
+			FindFull(program1, "Lin", "System.Linq", ExpressionContext.Global);
+		}
+		
+		[Test]
+		public void ClassName()
+		{
+			FindFull(program1, "ainClas", "MainClass", ExpressionContext.Global);
+		}
+		
+		[Test]
+		public void SubName()
+		{
+			FindFull(program1, "omeMe", "SomeMethod", ExpressionContext.Default);
+		}
 		#region Old Tests
 		void OldTest(string expr, int offset)
 		{
-			string fulltext = "Test\n " + expr + ".AnotherField \n TestEnde";
-			Assert.AreEqual(expr, ef.FindFullExpression(fulltext, 6 + offset).Expression);
+			string body = @"Class Test
+	Sub A
+		{0}.AnotherField
+	End Sub
+End Class";
+			Assert.AreEqual(expr, ef.FindFullExpression(string.Format(body, expr), @"Class Test
+	Sub A
+		".Length + offset).Expression);
 		}
 		
 		[Test]
@@ -95,7 +134,7 @@ End Class
 			OldTest(".abc.def", 7);
 		}
 		
-		[Test]
+		[Test, Ignore("FindFullExpression not yet implemented")]
 		public void MethodCall()
 		{
 			OldTest("abc.Method().Method()", 16);
