@@ -61,7 +61,13 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			do {
 				t = lexer.NextToken();
 				p.InformToken(t);
-			} while (t.Location <= targetPosition);
+			} while (t.Location < targetPosition);
+			
+			// HACK simulate <= but avoid endless loop at file end.
+			if (t.Location == targetPosition) {
+				t = lexer.NextToken();
+				p.InformToken(t);
+			}
 			
 			Block block = p.CurrentBlock;
 			

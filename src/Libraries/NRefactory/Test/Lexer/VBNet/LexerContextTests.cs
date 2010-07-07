@@ -113,7 +113,7 @@ Class Test
 	End Sub
 End Class
 ",
-								@"enter Global
+				@"enter Global
 	enter Attribute
 	exit Attribute
 	enter IdentifierExpected
@@ -146,7 +146,7 @@ Class Test
 	End Sub
 End Class
 ",
-								@"enter Global
+				@"enter Global
 	enter Attribute
 	exit Attribute
 	enter IdentifierExpected
@@ -179,7 +179,7 @@ exit Global
 	End Sub
 End Class
 ",
-								@"enter Global
+				@"enter Global
 	enter IdentifierExpected
 	exit IdentifierExpected
 	enter Type
@@ -213,7 +213,7 @@ exit Global
 	End Sub
 End Class
 ",
-								@"enter Global
+				@"enter Global
 	enter IdentifierExpected
 	exit IdentifierExpected
 	enter Type
@@ -255,7 +255,7 @@ exit Global
 	End Sub
 End Class
 ",
-								@"enter Global
+				@"enter Global
 	enter IdentifierExpected
 	exit IdentifierExpected
 	enter Type
@@ -301,7 +301,7 @@ exit Global
 		Next
 	End Sub
 End Class",
-			@"enter Global
+				@"enter Global
 	enter IdentifierExpected
 	exit IdentifierExpected
 	enter Type
@@ -357,7 +357,7 @@ Module Program
 		Console.ReadKey()
 	End Sub
 End Module",
-			@"enter Global
+			        @"enter Global
 	enter IdentifierExpected
 	exit IdentifierExpected
 	enter Type
@@ -418,6 +418,8 @@ exit Global
 			} while (t.Kind != VBParser.Tokens.EOF);
 			
 			Console.WriteLine(p.Output);
+			
+			Assert.IsEmpty(p.Errors);
 			
 			Assert.AreEqual(expectedOutput, p.Output);
 		}
