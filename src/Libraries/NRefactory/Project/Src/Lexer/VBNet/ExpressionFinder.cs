@@ -28,19 +28,22 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			}
 		}
 		
-		void PushContext(Context context, Token token)
+		void PushContext(Context context, Token la, Token t)
 		{
 			string indent = new string('\t', stack.Count);
-			Location l = token == null ? Location.Empty : token.EndLocation;
+			Location l = la == null ? Location.Empty : la.EndLocation;
+			
+			if (la != null)
+				CurrentBlock.lastExpressionStart = la.Location;
 			
 			stack.Push(new Block() { context = context, lastExpressionStart = l });
 			Print(indent + "enter " + context);
 		}
 		
-		void SetContext(Context context, Token token)
+		void SetContext(Context context, Token la, Token t)
 		{
 			PopContext();
-			PushContext(context, token);
+			PushContext(context, la, t);
 		}
 		
 		void ApplyToken(Token token)
@@ -145,5 +148,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		
 		public Context context;
 		public Location lastExpressionStart;
+		
+		public override string ToString()
+		{
+			return string.Format("[Block Context={0}, LastExpressionStart={1}]", context, lastExpressionStart);
+		}
+
 	}
 }

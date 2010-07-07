@@ -289,6 +289,123 @@ exit Global
 			);
 		}
 		
+		[Test]
+		public void ClassTest()
+		{
+			RunTest(
+				@"Class MainClass ' a comment
+	Dim under_score_field As Integer
+	Sub SomeMethod()
+		simple += 1
+		For Each loopVarName In collection
+		Next
+	End Sub
+End Class",
+			@"enter Global
+	enter IdentifierExpected
+	exit IdentifierExpected
+	enter Type
+		enter Member
+			enter IdentifierExpected
+			exit IdentifierExpected
+		exit Member
+		enter Member
+			enter IdentifierExpected
+			exit IdentifierExpected
+			enter Body
+				enter Expression
+				exit Expression
+				enter IdentifierExpected
+				exit IdentifierExpected
+				enter Expression
+				exit Expression
+				enter Body
+				exit Body
+			exit Body
+		exit Member
+	exit Type
+exit Global
+");
+		}
+		
+		[Test]
+		public void CollectionInitializer()
+		{
+			RunTest(@"'
+' Created by SharpDevelop.
+' User: Siegfried
+' Date: 22.06.2010
+' Time: 21:29
+'
+' To change this template use Tools | Options | Coding | Edit Standard Headers.
+'
+
+Option Infer On
+
+Imports System.Linq
+Imports System.Xml.Linq
+
+Module Program
+	Sub Main()
+		Console.WriteLine(""Hello World!"")
+		
+		Dim name = ""Test""
+		Dim content = { 4, 5, New XAttribute(""a"", 3) }
+		
+		Dim xml = <<%= name %> <%= content %> />
+		
+		Console.ReadKey()
+	End Sub
+End Module",
+			@"enter Global
+	enter IdentifierExpected
+	exit IdentifierExpected
+	enter Type
+		enter Member
+			enter IdentifierExpected
+			exit IdentifierExpected
+			enter Body
+				enter Expression
+					enter Expression
+					exit Expression
+				exit Expression
+				enter IdentifierExpected
+				exit IdentifierExpected
+				enter Expression
+				exit Expression
+				enter IdentifierExpected
+				exit IdentifierExpected
+				enter Expression
+					enter Expression
+					exit Expression
+					enter Expression
+					exit Expression
+					enter Expression
+						enter Expression
+						exit Expression
+						enter Expression
+						exit Expression
+					exit Expression
+				exit Expression
+				enter IdentifierExpected
+				exit IdentifierExpected
+				enter Expression
+					enter Xml
+						enter Expression
+						exit Expression
+						enter Expression
+						exit Expression
+					exit Xml
+				exit Expression
+				enter Expression
+				exit Expression
+			exit Body
+		exit Member
+	exit Type
+exit Global
+");
+		}
+		
 		void RunTest(string code, string expectedOutput)
 		{
 			ExpressionFinder p = new ExpressionFinder();
