@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Windows;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -25,6 +26,8 @@ using ICSharpCode.WpfDesign.Designer.PropertyGrid;
 using ICSharpCode.WpfDesign.Designer.Services;
 using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.PropertyGrid;
+
+using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
@@ -86,6 +89,8 @@ namespace ICSharpCode.WpfDesign.AddIn
 				settings.TypeFinder = MyTypeFinder.Create(this.PrimaryFile);
 				
 				designer.LoadDesigner(r, settings);
+				
+				designer.ContextMenuOpening += (sender, e) => MenuService.ShowContextMenu(e.OriginalSource as UIElement, designer, "/Addins/WpfDesign/Designer/ContextMenu");
 				
 				UpdateTasks();
 				

@@ -25,8 +25,14 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 	public sealed class XamlDesignContext : DesignContext
 	{
 		readonly XamlDocument _doc;
-		readonly XamlDesignItem _rootItem;
+		readonly XamlDesignItem _rootItem;		
 		internal readonly XamlComponentService _componentService;
+		
+		readonly XamlEditOperations _xamlEditOperations;
+		
+		internal XamlEditOperations XamlEditAction {
+			get { return _xamlEditOperations; }
+		}
 		
 		internal XamlDocument Document {
 			get { return _doc; }
@@ -85,7 +91,10 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			parserSettings.ServiceProvider = this.Services;
 			_doc = XamlParser.Parse(xamlReader, parserSettings);
 				_rootItem = _componentService.RegisterXamlComponentRecursive(_doc.RootElement);
+			
+				_xamlEditOperations=new XamlEditOperations(this,parserSettings);
 		}
+				
 		
 		/// <summary>
 		/// Saves the XAML DOM into the XML writer.

@@ -60,6 +60,11 @@
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AbstractEventHandlerService.cs" />
+    <Compile Include="Src\Commands\CutCopyPaste.cs" />
+    <Compile Include="Src\Commands\Pads.cs" />
+    <Compile Include="Src\Commands\Remove.cs" />
+    <Compile Include="Src\Commands\UndoRedo.cs" />
+    <Compile Include="Src\Commands\ViewXaml.cs" />
     <Compile Include="Src\CSharpEventHandlerService.cs" />
     <Compile Include="Src\FileUriContext.cs" />
     <Compile Include="Src\IdeChooseClassService.cs" />
@@ -146,5 +151,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\ImageSourceEditor" />
+    <Folder Include="Src\Commands" />
   </ItemGroup>
 </Project>

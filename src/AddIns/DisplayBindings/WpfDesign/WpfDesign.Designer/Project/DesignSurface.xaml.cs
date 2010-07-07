@@ -33,6 +33,7 @@ namespace ICSharpCode.WpfDesign.Designer
 	/// </summary>
 	public partial class DesignSurface
 	{
+		private FocusNavigator _focusNav;
 		static DesignSurface()
 		{
 			//TODO: this is for converters (see PropertyGrid)
@@ -45,8 +46,8 @@ namespace ICSharpCode.WpfDesign.Designer
 
 			this.AddCommandHandler(ApplicationCommands.Undo, Undo, CanUndo);
 			this.AddCommandHandler(ApplicationCommands.Redo, Redo, CanRedo);
-			this.AddCommandHandler(ApplicationCommands.Copy, Copy, HasSelection);
-			this.AddCommandHandler(ApplicationCommands.Cut, Cut, HasSelection);
+			this.AddCommandHandler(ApplicationCommands.Copy, Copy, CanCopyOrCut);
+			this.AddCommandHandler(ApplicationCommands.Cut, Cut, CanCopyOrCut);
 			this.AddCommandHandler(ApplicationCommands.Delete, Delete, CanDelete);
 			this.AddCommandHandler(ApplicationCommands.Paste, Paste, CanPaste);
 			this.AddCommandHandler(ApplicationCommands.SelectAll, SelectAll, CanSelectAll);
@@ -114,6 +115,10 @@ namespace ICSharpCode.WpfDesign.Designer
 			context.Services.Selection.SelectionChanged += delegate {
 				CommandManager.InvalidateRequerySuggested();
 			};
+			
+			context.Services.AddService(typeof(IKeyBindingService), new DesignerKeyBindings(this));
+			_focusNav=new FocusNavigator(this);
+			_focusNav.Start();
 		}
 		
 		/// <summary>
@@ -121,12 +126,14 @@ namespace ICSharpCode.WpfDesign.Designer
 		/// </summary>
 		public void UnloadDesigner()
 		{
+			if(_focusNav!=null)
+				_focusNav.End();
 			if (_designContext != null) {
 				foreach (object o in _designContext.Services.AllServices) {
 					IDisposable d = o as IDisposable;
 					if (d != null) d.Dispose();
 				}
-			}
+			}			
 			_designContext = null;
 			_designPanel.Context = null;
 			_sceneContainer.Child = null;
@@ -165,17 +172,32 @@ namespace ICSharpCode.WpfDesign.Designer
 			_designContext.Services.Selection.SetSelectedComponents(GetLiveElements(action.AffectedElements));
 		}
 
-		public bool HasSelection()
+		public bool CanCopyOrCut()
 		{
-			return false;
+			ISelectionService selectionService = GetService<ISelectionService>();
+            if (selectionService.SelectedItems.Count == 0)
+                return false;
+            if (selectionService.SelectedItems.Count == 1 && selectionService.PrimarySelection == DesignContext.RootItem)
+                return false;
+		    return true;
 		}
 
 		public void Copy()
 		{
+			XamlDesignContext xamlContext = _designContext as XamlDesignContext;
+			ISelectionService selection = _designContext.Services.Selection;
+			if(xamlContext != null && selection != null){
+				xamlContext.XamlEditAction.Copy(selection.SelectedItems);
+			}
 		}
 
 		public void Cut()
 		{
+			XamlDesignContext xamlContext = _designContext as XamlDesignContext;
+			ISelectionService selection = _designContext.Services.Selection;
+			if(xamlContext != null && selection != null){
+				xamlContext.XamlEditAction.Cut(selection.SelectedItems);
+			}
 		}
 
 		public bool CanDelete()
@@ -195,11 +217,21 @@ namespace ICSharpCode.WpfDesign.Designer
 
 		public bool CanPaste()
 		{
+			ISelectionService selection = _designContext.Services.Selection;
+			if(selection.SelectedItems.Count!=0){
+				string xaml = Clipboard.GetText(TextDataFormat.Xaml);
+				if(xaml != "" && xaml != " ")
+					return true;
+			}
 			return false;
 		}
 
 		public void Paste()
 		{
+			XamlDesignContext xamlContext = _designContext as XamlDesignContext;
+			if(xamlContext != null){
+				xamlContext.XamlEditAction.Paste();
+			}
 		}
 
 		public bool CanSelectAll()

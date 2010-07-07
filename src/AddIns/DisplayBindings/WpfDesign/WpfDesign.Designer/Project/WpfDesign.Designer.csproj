@@ -104,6 +104,7 @@
     <Compile Include="Controls\WindowClone.cs" />
     <Compile Include="Controls\ZoomControl.cs" />
     <Compile Include="Converters.cs" />
+    <Compile Include="DesignCommand.cs" />
     <Compile Include="DesignPanel.cs" />
     <Compile Include="DesignSurface.xaml.cs">
       <DependentUpon>DesignSurface.xaml</DependentUpon>
@@ -127,6 +128,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Extensions\PanelMove.cs" />
+    <Compile Include="FocusNavigator.cs" />
     <Compile Include="ModelTools.cs" />
     <Compile Include="Extensions\PanelInstanceFactory.cs" />
     <Compile Include="Extensions\PanelSelectionHandler.cs" />
@@ -195,6 +197,7 @@
     <Compile Include="Services\ChooseClassServiceBase.cs" />
     <Compile Include="Services\ClickOrDragMouseGesture.cs" />
     <Compile Include="Services\CreateComponentTool.cs" />
+    <Compile Include="Services\DesignerKeyBindings.cs" />
     <Compile Include="Services\DragMoveMouseGesture.cs" />
     <Compile Include="Services\ErrorService.cs" />
     <Compile Include="Services\MouseGestureBase.cs" />
@@ -210,6 +213,7 @@
     <Compile Include="Services\WpfTopLevelWindowService.cs" />
     <Compile Include="Services\XamlErrorService.cs" />
     <Compile Include="SharedInstances.cs" />
+    <Compile Include="Xaml\XamlEditOperations.cs" />
     <Compile Include="Xaml\XamlLoadSettings.cs" />
     <Compile Include="Xaml\XamlModelCollectionElementsCollection.cs" />
     <Compile Include="Xaml\XamlComponentService.cs" />
