@@ -778,5 +778,13 @@ static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.Stat
 		{
 			TestStatement("Dim x As Integer = CInt(obj)", "int x = Convert.ToInt32(obj);");
 		}
+		
+		[Test]
+		public void ConditionalExprPrecedence()
+		{
+			TestStatement("Dim x As Integer = If(If(a,b,c),d,e)", "int x = (a ? b : c) ? d : e;");
+			TestStatement("Dim x As Integer = If(a,If(b,c,d),e)", "int x = a ? b ? c : d : e;");
+			TestStatement("Dim x As Integer = If(a,b,If(c,d,e))", "int x = a ? b : c ? d : e;");
+		}
 	}
 }
