@@ -22,6 +22,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			if (stack.Count > 0) {
 				string indent = new string('\t', stack.Count - 1);
 				var item = stack.Pop();
+				item.isClosed = true;
 				Print(indent + "exit " + item.context);
 			} else {
 				Print("empty stack");
@@ -31,10 +32,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		void PushContext(Context context, Token la, Token t)
 		{
 			string indent = new string('\t', stack.Count);
-			Location l = la == null ? Location.Empty : la.EndLocation;
-			
-			if (la != null)
-				CurrentBlock.lastExpressionStart = la.Location;
+			Location l = la == null ? Location.Empty : la.Location;
 			
 			stack.Push(new Block() { context = context, lastExpressionStart = l });
 			Print(indent + "enter " + context);
@@ -98,6 +96,18 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			get { return output.ToString(); }
 		}
 		
+		public string Stacktrace {
+			get {
+				string text = "";
+				
+				foreach (Block b in stack) {
+					text += b.ToString() + "\n";
+				}
+				
+				return text;
+			}
+		}
+		
 		public Block CurrentBlock {
 			get { return stack.Any() ? stack.Peek() : Block.Default; }
 		}
@@ -148,11 +158,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		
 		public Context context;
 		public Location lastExpressionStart;
+		public bool isClosed;
 		
 		public override string ToString()
 		{
-			return string.Format("[Block Context={0}, LastExpressionStart={1}]", context, lastExpressionStart);
+			return string.Format("[Block Context={0}, LastExpressionStart={1}, IsClosed={2}]", context, lastExpressionStart, isClosed);
 		}
-
 	}
 }

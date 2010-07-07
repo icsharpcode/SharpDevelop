@@ -276,10 +276,14 @@ OptionStatement =
 .
 
 ImportsStatement = 
-	"Imports"
-	(. nextTokenIsStartOfImportsOrAccessExpression = true;
-	if (la != null)
-		CurrentBlock.lastExpressionStart = la.Location; .) { ANY } StatementTerminator
+	"Imports" 
+	(.
+		nextTokenIsStartOfImportsOrAccessExpression = true;
+		if (la != null)
+			CurrentBlock.lastExpressionStart = la.Location;
+	.)
+	{ ANY }
+	StatementTerminator
 .
 
 AttributeBlock =
@@ -305,9 +309,7 @@ TypeDeclaration =
 .
 
 ClassOrModuleOrStructureTypeDeclaration =
-	( "Module" | "Class" | "Structure" ) (.
-	if (la != null)
-		CurrentBlock.lastExpressionStart = la.Location; PushContext(Context.IdentifierExpected, la, t); .) ANY (. PopContext(); .)
+	( "Module" | "Class" | "Structure" ) (. PushContext(Context.IdentifierExpected, la, t); .) ANY (. PopContext(); .)
 	[ "(" "Of"  [ "Out" | "In" ] IdentifierExceptOut [ "As" GenericConstraintList ] { "," [ "Out" | "In" ] IdentifierExceptOut [ "As" GenericConstraintList ] } ")" ] { ANY } [ StatementTerminator ]
 	[ "Inherits" { ANY } StatementTerminator ]
 	[ "Implements" { ANY } StatementTerminator ]
@@ -327,8 +329,7 @@ GenericConstraintList =
 
 DelegateTypeDeclaration =
 	"Delegate" ("Sub" | "Function")
-	(. if (la != null)
-		CurrentBlock.lastExpressionStart = la.Location; PushContext(Context.IdentifierExpected, la, t); .) ANY (. PopContext(); .)
+	(. PushContext(Context.IdentifierExpected, la, t); .) ANY (. PopContext(); .)
 	[ "(" [ ParameterList ] ")" ] [ "As" TypeName ] StatementTerminator
 .
 
@@ -384,13 +385,7 @@ OperatorDeclaration =
 
 MemberVariableOrConstantDeclaration =
 	[ "Const" ]
-	(.
-		if (la != null)
-			CurrentBlock.lastExpressionStart = la.Location;
-		PushContext(Context.IdentifierExpected, la, t);
-		if (la != null)
-			CurrentBlock.lastExpressionStart = la.Location;
-	.) IdentifierForFieldDeclaration (. PopContext(); .)  [ "As" TypeName ] [ "=" Expression ] StatementTerminator
+	(. PushContext(Context.IdentifierExpected, la, t); .) IdentifierForFieldDeclaration (. PopContext(); .)  [ "As" TypeName ] [ "=" Expression ] StatementTerminator
 .
 
 ParameterList =
@@ -428,11 +423,7 @@ StatementTerminatorAndBlock =
 Expression
 	(.NamedState:startOfExpression.)
 =
-	(. if (la != null)
-		CurrentBlock.lastExpressionStart = la.Location; .)
 	(. PushContext(Context.Expression, la, t); .)
-	(. if (la != null)
-		CurrentBlock.lastExpressionStart = la.Location; .)
 	SimpleExpressionWithSuffix { BinaryOperator SimpleExpressionWithSuffix }
 	(. PopContext(); .)
 .
@@ -450,6 +441,7 @@ UnaryOperator =
 .
 
 SimpleExpressionWithSuffix =
+	(. PushContext(Context.Expression, la, t); .)
 	{ UnaryOperator }
 	(
 		SimpleExpression { ExpressionSuffix }
@@ -457,12 +449,11 @@ SimpleExpressionWithSuffix =
 		| NewExpression
 		| CollectionInitializer
 	)
+	(. PopContext(); .)
 .
 
-SimpleExpression
-	(. if (la != null)
-			CurrentBlock.lastExpressionStart = la.Location; .)
-=
+SimpleExpression =
+	(. PushContext(Context.Expression, la, t); .)
     (    Literal
     |    ( "(" Expression ")" )
     |    IdentifierForExpressionStart
@@ -475,6 +466,7 @@ SimpleExpression
     |    CastExpression
     |    ConditionalExpression
     )
+	(. PopContext(); .)
 .
 
 NewExpression =
@@ -911,12 +903,7 @@ Literal =
 	"MyClass"
 .
 
-Statement
-(.
-	if (la != null)
-		CurrentBlock.lastExpressionStart = la.Location;
-.)
-=
+Statement =
 	VariableDeclarationStatement
 	| WithOrLockStatement
 	| AddOrRemoveHandlerStatement
@@ -938,13 +925,7 @@ Statement
 
 VariableDeclarationStatement =
 	( "Dim" | "Static" | "Const" )
-	(.
-		if (la != null)
-			CurrentBlock.lastExpressionStart = la.Location;
-		PushContext(Context.IdentifierExpected, la, t);
-		if (la != null)
-			CurrentBlock.lastExpressionStart = la.Location;
-	.)
+	(. PushContext(Context.IdentifierExpected, la, t);	.)
 	Identifier (. PopContext(); .) [ "?" ] [ ( "(" { "," } ")" ) ] { "," (. PushContext(Context.IdentifierExpected, la, t); .) Identifier (. PopContext(); .) [ "?" ] [ ( "(" { "," } ")" ) ] } [ "As" [ "New" ] TypeName ] [ "=" Expression ]
 .
 
@@ -1034,8 +1015,7 @@ ForEachLoopStatement =
 .
 
 ForLoopVariable =
-		(. if (la != null)
-			CurrentBlock.lastExpressionStart = la.Location; .)(. PushContext(Context.IdentifierExpected, la, t); .) SimpleExpression (. PopContext(); .) [ "?" ] { ExpressionSuffix } [ "As" TypeName ]
+	(. PushContext(Context.IdentifierExpected, la, t); .) SimpleExpression (. PopContext(); .) [ "?" ] { ExpressionSuffix } [ "As" TypeName ]
 .
 
 ErrorHandlingStatement =

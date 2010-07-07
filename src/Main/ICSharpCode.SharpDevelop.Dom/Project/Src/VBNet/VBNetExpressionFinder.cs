@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
@@ -135,7 +136,44 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 		
 		public ExpressionResult FindFullExpression(string text, int offset)
 		{
-			return FindExpression(text, offset);
+			Init(text, offset);
+			
+			ExpressionFinder p = new ExpressionFinder();
+			lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(text));
+			Token t;
+			
+			Block block = null;
+			
+			var expressionDelimiters = new[] { Tokens.EOL, Tokens.Colon, Tokens.Dot, Tokens.TripleDot, Tokens.DotAt };
+			
+			while (true) {
+				t = lexer.NextToken();
+				p.InformToken(t);
+				
+				if (block == null && t.EndLocation >= targetPosition)
+					block = p.CurrentBlock;
+				if (block != null && (block.isClosed || expressionDelimiters.Contains(t.Kind) && block == p.CurrentBlock))
+					break;
+			}
+			
+			int tokenOffset;
+			if (t == null || t.Kind == Tokens.EOF)
+				tokenOffset = text.Length;
+			else
+				tokenOffset = LocationToOffset(t.Location);
+
+			int lastExpressionStartOffset = LocationToOffset(block.lastExpressionStart);
+			if (lastExpressionStartOffset >= 0) {
+				if (offset < tokenOffset) {
+					// offset is in front of this token
+					return MakeResult(text, lastExpressionStartOffset, tokenOffset, GetContext(block));
+				} else {
+					// offset is IN this token
+					return MakeResult(text, lastExpressionStartOffset, offset, GetContext(block));
+				}
+			} else {
+				return new ExpressionResult(null, GetContext(block));
+			}
 		}
 		
 		public string RemoveLastPart(string expression)

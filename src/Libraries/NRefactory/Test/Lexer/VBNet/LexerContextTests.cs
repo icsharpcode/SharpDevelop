@@ -49,8 +49,12 @@ End Class
 				enter IdentifierExpected
 				exit IdentifierExpected
 				enter Expression
-					enter Xml
-					exit Xml
+					enter Expression
+						enter Expression
+							enter Xml
+							exit Xml
+						exit Expression
+					exit Expression
 				exit Expression
 			exit Body
 		exit Member
@@ -80,8 +84,12 @@ End Class
 			enter IdentifierExpected
 			exit IdentifierExpected
 			enter Expression
-				enter Xml
-				exit Xml
+				enter Expression
+					enter Expression
+						enter Xml
+						exit Xml
+					exit Expression
+				exit Expression
 			exit Expression
 		exit Member
 		enter Member
@@ -91,8 +99,12 @@ End Class
 				enter IdentifierExpected
 				exit IdentifierExpected
 				enter Expression
-					enter Xml
-					exit Xml
+					enter Expression
+						enter Expression
+							enter Xml
+							exit Xml
+						exit Expression
+					exit Expression
 				exit Expression
 			exit Body
 		exit Member
@@ -126,6 +138,10 @@ End Class
 				enter IdentifierExpected
 				exit IdentifierExpected
 				enter Expression
+					enter Expression
+						enter Expression
+						exit Expression
+					exit Expression
 				exit Expression
 			exit Body
 		exit Member
@@ -159,6 +175,10 @@ End Class
 				enter IdentifierExpected
 				exit IdentifierExpected
 				enter Expression
+					enter Expression
+						enter Expression
+						exit Expression
+					exit Expression
 				exit Expression
 			exit Body
 		exit Member
@@ -192,6 +212,10 @@ End Class
 				enter IdentifierExpected
 				exit IdentifierExpected
 				enter Expression
+					enter Expression
+						enter Expression
+						exit Expression
+					exit Expression
 				exit Expression
 			exit Body
 		exit Member
@@ -222,6 +246,10 @@ End Class
 			exit IdentifierExpected
 			enter Body
 				enter Expression
+					enter Expression
+						enter Expression
+						exit Expression
+					exit Expression
 				exit Expression
 				enter Body
 				exit Body
@@ -264,14 +292,30 @@ End Class
 			exit IdentifierExpected
 			enter Body
 				enter IdentifierExpected
+					enter Expression
+					exit Expression
 				exit IdentifierExpected
 				enter Expression
+					enter Expression
+						enter Expression
+						exit Expression
+					exit Expression
+					enter Expression
+						enter Expression
+						exit Expression
+					exit Expression
 				exit Expression
 				enter Body
 				exit Body
 				enter IdentifierExpected
+					enter Expression
+					exit Expression
 				exit IdentifierExpected
 				enter Expression
+					enter Expression
+						enter Expression
+						exit Expression
+					exit Expression
 				exit Expression
 				enter Body
 				exit Body
@@ -314,10 +358,24 @@ End Class",
 			exit IdentifierExpected
 			enter Body
 				enter Expression
+					enter Expression
+						enter Expression
+						exit Expression
+					exit Expression
+					enter Expression
+						enter Expression
+						exit Expression
+					exit Expression
 				exit Expression
 				enter IdentifierExpected
+					enter Expression
+					exit Expression
 				exit IdentifierExpected
 				enter Expression
+					enter Expression
+						enter Expression
+						exit Expression
+					exit Expression
 				exit Expression
 				enter Body
 				exit Body
@@ -367,41 +425,100 @@ End Module",
 			enter Body
 				enter Expression
 					enter Expression
-					exit Expression
-				exit Expression
-				enter IdentifierExpected
-				exit IdentifierExpected
-				enter Expression
-				exit Expression
-				enter IdentifierExpected
-				exit IdentifierExpected
-				enter Expression
-					enter Expression
-					exit Expression
-					enter Expression
-					exit Expression
-					enter Expression
 						enter Expression
 						exit Expression
 						enter Expression
+							enter Expression
+								enter Expression
+								exit Expression
+							exit Expression
 						exit Expression
 					exit Expression
 				exit Expression
 				enter IdentifierExpected
 				exit IdentifierExpected
 				enter Expression
-					enter Xml
+					enter Expression
 						enter Expression
 						exit Expression
+					exit Expression
+				exit Expression
+				enter IdentifierExpected
+				exit IdentifierExpected
+				enter Expression
+					enter Expression
 						enter Expression
+							enter Expression
+								enter Expression
+								exit Expression
+							exit Expression
 						exit Expression
-					exit Xml
+						enter Expression
+							enter Expression
+								enter Expression
+								exit Expression
+							exit Expression
+						exit Expression
+						enter Expression
+							enter Expression
+								enter Expression
+									enter Expression
+										enter Expression
+										exit Expression
+									exit Expression
+								exit Expression
+								enter Expression
+									enter Expression
+										enter Expression
+										exit Expression
+									exit Expression
+								exit Expression
+							exit Expression
+						exit Expression
+					exit Expression
+				exit Expression
+				enter IdentifierExpected
+				exit IdentifierExpected
+				enter Expression
+					enter Expression
+						enter Expression
+							enter Xml
+								enter Expression
+									enter Expression
+										enter Expression
+										exit Expression
+									exit Expression
+								exit Expression
+								enter Expression
+									enter Expression
+										enter Expression
+										exit Expression
+									exit Expression
+								exit Expression
+							exit Xml
+						exit Expression
+					exit Expression
 				exit Expression
 				enter Expression
+					enter Expression
+						enter Expression
+						exit Expression
+					exit Expression
 				exit Expression
 			exit Body
 		exit Member
 	exit Type
+exit Global
+");
+		}
+		
+		[Test]
+		public void Imports()
+		{
+			RunTest(@"Imports System
+Imports System.Linq
+Imports System.Collections.Generic",
+			@"enter Global
 exit Global
 ");
 		}

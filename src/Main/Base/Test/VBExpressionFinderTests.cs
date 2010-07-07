@@ -69,7 +69,7 @@ End Class
 		[Test]
 		public void Underscore()
 		{
-			FindFull(program1, "der_score_field", "under_score_field", ExpressionContext.Default);
+			FindFull(program1, "der_score_field", "under_score_field", ExpressionContext.IdentifierExpected);
 		}
 		
 		[Test]
@@ -81,7 +81,7 @@ End Class
 		[Test]
 		public void LocalVariableDecl()
 		{
-			FindFull(program1, "ext", "text", ExpressionContext.Default);
+			FindFull(program1, "ext", "text", ExpressionContext.IdentifierExpected);
 		}
 		
 		[Test]
@@ -93,19 +93,19 @@ End Class
 		[Test]
 		public void Imports2()
 		{
-			FindFull(program1, "Lin", "System.Linq", ExpressionContext.Global);
+			FindFull(program1, "inq", "System.Linq", ExpressionContext.Global);
 		}
 		
 		[Test]
 		public void ClassName()
 		{
-			FindFull(program1, "ainClas", "MainClass", ExpressionContext.Global);
+			FindFull(program1, "ainClas", "MainClass", ExpressionContext.IdentifierExpected);
 		}
 		
 		[Test]
 		public void SubName()
 		{
-			FindFull(program1, "omeMe", "SomeMethod", ExpressionContext.Default);
+			FindFull(program1, "omeMe", "SomeMethod", ExpressionContext.IdentifierExpected);
 		}
 		#region Old Tests
 		void OldTest(string expr, int offset)
@@ -134,10 +134,16 @@ End Class";
 			OldTest(".abc.def", 7);
 		}
 		
-		[Test, Ignore("FindFullExpression not yet implemented")]
+		[Test]
 		public void MethodCall()
 		{
 			OldTest("abc.Method().Method()", 16);
+		}
+		
+		[Test]
+		public void ComplexMethodCall()
+		{
+			OldTest("abc.Method().Method(5, a.b, 5 + a)", 16);
 		}
 		#endregion
 	}
