@@ -112,6 +112,12 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			get { return stack.Any() ? stack.Peek() : Block.Default; }
 		}
 		
+		public bool IsIdentifierExpected {
+			get {
+				return stack.Take(2).Any(c => c.context == Context.IdentifierExpected);
+			}
+		}
+		
 		public bool NextTokenIsPotentialStartOfExpression {
 			get { return nextTokenIsPotentialStartOfExpression; }
 		}

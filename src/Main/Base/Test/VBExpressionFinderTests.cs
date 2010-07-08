@@ -83,25 +83,31 @@ End Class
 		[Test]
 		public void FindSimple()
 		{
-			Find(program2, "sole", 0,"Console", ExpressionContext.Default);
+			Find(program2, "sole", 0,"Con", ExpressionContext.Default);
 		}
 		
 		[Test]
 		public void FindSimple2()
 		{
-			Find(program2, "Wri", 0, "Console.WriteLine", ExpressionContext.Default);
+			Find(program2, "Wri", 0, "Console.", ExpressionContext.Default);
 		}
 		
 		[Test]
 		public void FindSimple3()
 		{
-			Find(program3, "WriteLine", "WriteLine".Length, "Console.WriteLine", ExpressionContext.MethodBody);
+			Find(program3, "WriteLine", "WriteLine".Length, "Console.WriteLine", ExpressionContext.Default);
 		}
 		
 		[Test]
 		public void FindAfterBrace()
 		{
 			Find(program2, "WriteLine", "WriteLine(".Length, "", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void ForEachLoop()
+		{
+			Find(program1, "loopVarName", 4, "loop", ExpressionContext.Default);
 		}
 		#endregion
 		
@@ -173,14 +179,14 @@ End Class";
 		".Length + offset).Expression);
 		}
 		
-		void OldTestFind(string expr, int offset)
+		void OldTestFind(string expr, string expected, int offset)
 		{
 			string body = @"Class Test
 	Sub A
 		Dim x = abc + {0}
 	End Sub
 End Class";
-			Assert.AreEqual(expr, ef.FindExpression(string.Format(body, expr), @"Class Test
+			Assert.AreEqual(expected, ef.FindExpression(string.Format(body, expr), @"Class Test
 	Sub A
 		Dim x = abc + ".Length + offset).Expression);
 		}
@@ -211,10 +217,16 @@ End Class";
 			OldTest("abc.Method().Method(5, a.b, 5 + a)", 16);
 		}
 		
-		[Test, Ignore]
+		[Test]
 		public void PlusExpression()
 		{
-			OldTestFind("def", 2);
+			OldTestFind("def", "de", 2);
+		}
+		
+		[Test]
+		public void PlusExpression2()
+		{
+			OldTestFind("def", "", 0);
 		}
 		#endregion
 		#endregion

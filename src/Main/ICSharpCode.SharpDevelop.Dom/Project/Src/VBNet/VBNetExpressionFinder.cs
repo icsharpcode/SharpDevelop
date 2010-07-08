@@ -59,38 +59,29 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			ExpressionFinder p = new ExpressionFinder();
 			lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(text));
 			Token t;
+			
 			do {
 				t = lexer.NextToken();
+				if (t.Location >= targetPosition)
+					break;
 				p.InformToken(t);
-			} while (t.Location < targetPosition);
+			} while (t.EndLocation < targetPosition);
+			
+			var block = p.CurrentBlock;
+			
+			p.Advance();
 			
 			if (p.NextTokenIsPotentialStartOfExpression)
 				return new ExpressionResult("", GetContext(p.CurrentBlock));
 			
-			Block block = p.CurrentBlock;
-			
-			var expressionDelimiters = new[] { Tokens.EOL, Tokens.Colon, Tokens.Dot, Tokens.TripleDot, Tokens.DotAt, Tokens.OpenParenthesis };
-			
-			int tokenOffset;
-			if (t == null || t.Kind == Tokens.EOF)
-				tokenOffset = text.Length;
-			else
-				tokenOffset = expressionDelimiters.Contains(t.Kind)
-					? LocationToOffset(t.Location)
-					: LocationToOffset(t.EndLocation);
-
 			int lastExpressionStartOffset = LocationToOffset(block.lastExpressionStart);
-			if (lastExpressionStartOffset >= 0) {
-				if (offset < tokenOffset) {
-					// offset is in front of this token
-					return MakeResult(text, lastExpressionStartOffset, tokenOffset, GetContext(block));
-				} else {
-					// offset is IN this token
-					return MakeResult(text, lastExpressionStartOffset, offset, GetContext(block));
-				}
-			} else {
-				return new ExpressionResult(null, GetContext(block));
-			}
+			
+			ExpressionContext context = p.IsIdentifierExpected ? ExpressionContext.IdentifierExpected : GetContext(block);
+			
+			if (lastExpressionStartOffset < 0)
+				return new ExpressionResult(null, context);
+			
+			return MakeResult(text, lastExpressionStartOffset, offset, context);
 		}
 
 		ExpressionResult MakeResult(string text, int startOffset, int endOffset, ExpressionContext context)
