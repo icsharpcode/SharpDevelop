@@ -136,6 +136,69 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 						Text = "For ${counter=i} As ${type=Integer} = ${start=0} To ${end} Step ${step=1}\n" +
 							"\t${Selection}\n" +
 							"Next ${counter}"
+					},
+					new CodeSnippet {
+						Name = "DoLoopUn",
+						Description = "Do ... Loop Until statement",
+						Text = "Do\n" +
+							"\t${Selection}\n" +
+							"Loop Until ${expression}"
+					},
+					new CodeSnippet {
+						Name = "DoLoopWh",
+						Description = "Do ... Loop While statement",
+						Text = "Do\n" +
+							"\t${Selection}\n" +
+							"Loop While ${expression}"
+					},
+					new CodeSnippet {
+						Name = "DoWhile",
+						Description = "Do While ... Loop statement",
+						Text = "Do While ${expression}\n" +
+							"\t${Selection}\n" +
+							"Loop"
+					},
+					new CodeSnippet {
+						Name = "DoUntil",
+						Description = "Do Until ... Loop statement",
+						Text = "Do Until ${expression}\n" +
+							"\t${Selection}\n" +
+							"Loop"
+					},
+					new CodeSnippet {
+						Name = "ForEach",
+						Description = "For Each statement",
+						Text = "For Each ${item} As ${type} In ${collection}\n" +
+							"\t${Selection}\n" +
+							"Next"
+					},
+					new CodeSnippet {
+						Name = "IfElseIf",
+						Description = "If ... ElseIf ... End If statement",
+						Text = @"If ${condition1} Then
+	${Selection}
+ElseIf ${condition2} Then
+	${Caret}
+Else
+
+End If"
+					},
+					new CodeSnippet {
+						Name = "While",
+						Description = "While statement",
+						Text = @"While ${condition}
+	${Selection}
+End While"
+					},
+					new CodeSnippet {
+						Name = "Select",
+						Description = "Select statement",
+						Text = @"Select Case ${variable}
+    Case ${case1}
+		${Selection}
+    Case Else
+		${Caret}
+End Select"
 					}
 				}
 			}
