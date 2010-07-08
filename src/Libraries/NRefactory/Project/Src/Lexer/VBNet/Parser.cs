@@ -104,7 +104,8 @@ partial class ExpressionFinder {
 			case 5: {
 				if (la == null) { currentState = 5; break; }
 				if (la.kind == 160) {
-					goto case 446;
+					currentState = 446;
+					break;
 				} else {
 					if (set[1, la.kind]) {
 						goto case 7;
@@ -3475,15 +3476,16 @@ partial class ExpressionFinder {
 				}
 			}
 			case 446: {
-				if (la == null) { currentState = 446; break; }
-				currentState = 447;
-				break;
+				PushContext(Context.IdentifierExpected, la, t);
+				goto case 447;
 			}
 			case 447: {
 				if (la == null) { currentState = 447; break; }
 				if (set[26, la.kind]) {
-					goto case 446;
+					currentState = 447;
+					break;
 				} else {
+					PopContext();
 					stateStack.Push(448);
 					goto case 15;
 				}

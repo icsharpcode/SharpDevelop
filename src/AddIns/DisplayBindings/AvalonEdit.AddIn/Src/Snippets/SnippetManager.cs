@@ -84,8 +84,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 						Description = "Switch statement",
 						// dynamic switch snippet (inserts switch body dependent on condition)
 						Text = "switch (${condition}) {\n\t${refactoring:switchbody}\n}"
-						// static switch snippet (always inserts the same, independent of condition)
-						//Text = "switch (${condition}) {\n\tcase ${firstcase=0}:\n\t\t${Caret}\n\t\tbreak;\n\tdefault:\n\t\t${Selection}\n\t\tbreak;\n}"
+							// static switch snippet (always inserts the same, independent of condition)
+							//Text = "switch (${condition}) {\n\tcase ${firstcase=0}:\n\t\t${Caret}\n\t\tbreak;\n\tdefault:\n\t\t${Selection}\n\t\tbreak;\n}"
 					},
 					new CodeSnippet {
 						Name = "try",
@@ -102,6 +102,41 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 						Description = "Try-finally statement",
 						Text = "try {\n\t${Selection}\n} finally {\n\t${Caret}\n}"
 					},
+				}
+			},
+			new CodeSnippetGroup {
+				Extensions = ".vb",
+				Snippets = {
+					new CodeSnippet {
+						Name = "If",
+						Description = "If statement",
+						Text = "If ${condition} Then\n" +
+							"\t${Selection}\n" +
+							"End If"
+					},
+					new CodeSnippet {
+						Name = "IfElse",
+						Description = "If-Else statement",
+						Text = "If ${condition} Then\n" +
+							"\t${Selection}\n" +
+							"Else\n" +
+							"\t${Caret}\n" +
+							"End If"
+					},
+					new CodeSnippet {
+						Name = "For",
+						Description = "For loop",
+						Text = "For ${counter=i} As ${type=Integer} = ${start=0} To ${end}\n" +
+							"\t${Selection}\n" +
+							"Next ${counter}"
+					},
+					new CodeSnippet {
+						Name = "ForStep",
+						Description = "For loop with Step",
+						Text = "For ${counter=i} As ${type=Integer} = ${start=0} To ${end} Step ${step=1}\n" +
+							"\t${Selection}\n" +
+							"Next ${counter}"
+					}
 				}
 			}
 		};

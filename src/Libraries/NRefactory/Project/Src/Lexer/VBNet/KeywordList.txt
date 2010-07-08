@@ -274,6 +274,11 @@ TypeLevel("Sub", "Function", "Property")
 
 # List of keywords that are valid identifiers, must be the same as the "Identifier" production in VBNET.ATG
 IdentifierTokens("Text", "Binary", "Compare", "Assembly", "Ansi", "Auto", "Preserve", "Unicode", "Until", "Off", "Out", "Key", "Explicit", "Infer", "From", "Join", "Equals", "Distinct", "Where", "Take", "Skip", "Order", "By", "Ascending", "Descending", "Group", "Into", "Aggregate")
-ExpressionStart("Me", "MyBase", "MyClass", "False", "New", "Nothing", "True", "GetType")
+ExpressionStart("Me", "MyBase", "MyClass", @BooleanExpressions, @OperatorsAtStart, "New", @Null, "AddressOf", "GetType", "TypeOf", "GetXmlNamespace", "Global", @TypeKW, @LambdaStart, @CastExpressions)
+StatementStart(@Null, @ExpressionStart, "Dim", "Const", "Static", "For", "While", "Do", "Select")
 SimpleTypeName(@TypeKW, @IdentifierTokens)
+CastExpressions("DirectCast", "TryCast", "CType", "CBool", "CByte", "CChar", "CDate", "CDec", "CDbl", "CInt", "CLng", "CObj", "CSByte", "CShort", "CSng", "CStr", "CUInt", "CULng", "CUShort")
+BooleanExpressions("True", "False")
+LambdaStart("Sub", "Function")
+OperatorsAtStart("Not", "From", "Aggregate")
 TypeKW("Boolean", "Date", "Char", "String", "Decimal", "Byte", "Short", "Integer", "Long", "Single", "Double", "UInteger", "ULong", "UShort", "SByte")

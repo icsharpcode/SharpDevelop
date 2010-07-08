@@ -1153,6 +1153,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					AddVBNetKeywords(result, NR.Parser.VB.Tokens.TypeLevel);
 				} else if (context == ExpressionContext.Global) {
 					AddVBNetKeywords(result, NR.Parser.VB.Tokens.GlobalLevel);
+				} else if (context == ExpressionContext.MethodBody) {
+					AddVBNetKeywords(result, NR.Parser.VB.Tokens.StatementStart);
 				} else {
 					AddVBNetPrimitiveTypes(result);
 					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);

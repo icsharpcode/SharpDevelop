@@ -296,7 +296,7 @@ NamespaceMemberDeclaration =
 .
 
 NamespaceDeclaration =
-	"Namespace" { ANY } StatementTerminator
+	"Namespace" (. PushContext(Context.IdentifierExpected, la, t); .) { ANY } (. PopContext(); .) StatementTerminator
 	{ NamespaceMemberDeclaration }
 	"End" "Namespace" StatementTerminator
 .

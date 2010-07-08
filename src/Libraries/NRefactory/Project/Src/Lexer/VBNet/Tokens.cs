@@ -264,8 +264,13 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		public static BitArray GlobalLevel = NewSet(Namespace, Module, Class, Structure, Imports, Option);
 		public static BitArray TypeLevel = NewSet(Sub, Function, Property);
 		public static BitArray IdentifierTokens = NewSet(Text, Binary, Compare, Assembly, Ansi, Auto, Preserve, Unicode, Until, Off, Out, Key, Explicit, Infer, From, Join, Equals, Distinct, Where, Take, Skip, Order, By, Ascending, Descending, Group, Into, Aggregate);
-		public static BitArray ExpressionStart = NewSet(Me, MyBase, MyClass, False, New, Nothing, True, GetType);
+		public static BitArray ExpressionStart = NewSet(Me, MyBase, MyClass, True, False, Not, From, Aggregate, New, Nothing, AddressOf, GetType, TypeOf, GetXmlNamespace, Global, Boolean, Date, Char, String, Decimal, Byte, Short, Integer, Long, Single, Double, UInteger, ULong, UShort, SByte, Sub, Function, DirectCast, TryCast, CType, CBool, CByte, CChar, CDate, CDec, CDbl, CInt, CLng, CObj, CSByte, CShort, CSng, CStr, CUInt, CULng, CUShort);
+		public static BitArray StatementStart = NewSet(Nothing, Me, MyBase, MyClass, True, False, Not, From, Aggregate, New, Nothing, AddressOf, GetType, TypeOf, GetXmlNamespace, Global, Boolean, Date, Char, String, Decimal, Byte, Short, Integer, Long, Single, Double, UInteger, ULong, UShort, SByte, Sub, Function, DirectCast, TryCast, CType, CBool, CByte, CChar, CDate, CDec, CDbl, CInt, CLng, CObj, CSByte, CShort, CSng, CStr, CUInt, CULng, CUShort, Dim, Const, Static, For, While, Do, Select);
 		public static BitArray SimpleTypeName = NewSet(Boolean, Date, Char, String, Decimal, Byte, Short, Integer, Long, Single, Double, UInteger, ULong, UShort, SByte, Text, Binary, Compare, Assembly, Ansi, Auto, Preserve, Unicode, Until, Off, Out, Key, Explicit, Infer, From, Join, Equals, Distinct, Where, Take, Skip, Order, By, Ascending, Descending, Group, Into, Aggregate);
+		public static BitArray CastExpressions = NewSet(DirectCast, TryCast, CType, CBool, CByte, CChar, CDate, CDec, CDbl, CInt, CLng, CObj, CSByte, CShort, CSng, CStr, CUInt, CULng, CUShort);
+		public static BitArray BooleanExpressions = NewSet(True, False);
+		public static BitArray LambdaStart = NewSet(Sub, Function);
+		public static BitArray OperatorsAtStart = NewSet(Not, From, Aggregate);
 		public static BitArray TypeKW = NewSet(Boolean, Date, Char, String, Decimal, Byte, Short, Integer, Long, Single, Double, UInteger, ULong, UShort, SByte);
 
 		static string[] tokenList = new string[] {
