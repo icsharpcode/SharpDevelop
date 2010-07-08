@@ -35,7 +35,7 @@ partial class ExpressionFinder {
 -->declarations
 	readonly Stack<int> stateStack = new Stack<int>();
 	bool wasQualifierTokenAtStart = false;
-	bool nextTokenIsPotentialStartOfXmlMode = false;
+	bool nextTokenIsPotentialStartOfExpression = false;
 	bool readXmlIdentifier = false;
 	bool nextTokenIsStartOfImportsOrAccessExpression = false;
 	List<Token> errors = new List<Token>();
@@ -50,14 +50,14 @@ partial class ExpressionFinder {
 		if (la.kind != expectedKind) {
 			Error(la);
 			output.AppendLine("expected: " + expectedKind);
-			Console.WriteLine("expected: " + expectedKind);
+			//Console.WriteLine("expected: " + expectedKind);
 		}
 	}
 	
 	void Error(Token la) 
 	{
 		output.AppendLine("not expected: " + la);
-		Console.WriteLine("not expected: " + la);
+		//Console.WriteLine("not expected: " + la);
 		errors.Add(la);
 	}
 	
@@ -65,7 +65,7 @@ partial class ExpressionFinder {
 	
 	public void InformToken(Token la) 
 	{
-		nextTokenIsPotentialStartOfXmlMode = false;
+		nextTokenIsPotentialStartOfExpression = false;
 		readXmlIdentifier = false;
 		nextTokenIsStartOfImportsOrAccessExpression = false;
 		wasQualifierTokenAtStart = false;
@@ -76,7 +76,7 @@ partial class ExpressionFinder {
 	
 	public void Advance()
 	{
-		Console.WriteLine("Advance");
+		//Console.WriteLine("Advance");
 		InformToken(null);
 	}
 	

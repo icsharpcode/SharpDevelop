@@ -318,7 +318,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 							return new Token(Tokens.XmlEndInlineVB, new Location(x, y), new Location(Col, Line));
 						}
 						#endregion
-						if (ch == '<' && (ef.NextTokenIsPotentialStartOfXmlMode || ef.NextTokenIsStartOfImportsOrAccessExpression)) {
+						if (ch == '<' && (ef.NextTokenIsPotentialStartOfExpression || ef.NextTokenIsStartOfImportsOrAccessExpression)) {
 							xmlModeStack.Push(new XmlModeStackInfo(ef.NextTokenIsStartOfImportsOrAccessExpression));
 							XmlModeStackInfo info = xmlModeStack.Peek();
 							int x = Col - 1;

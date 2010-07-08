@@ -504,11 +504,11 @@ ObjectInitializer =
 .
 
 CollectionInitializer =
-	"{" ( Expression | GREEDY CollectionInitializer ) { "," ( Expression | GREEDY CollectionInitializer ) } "}"
+	"{" Expression { "," Expression } "}"
 .
 
 ExpressionSuffix =
-    "(" ( "Of" TypeName { "," TypeName } ")" | [ ArgumentList ] ")" )
+    "(" ( "Of" TypeName { "," TypeName } ")" |  [ ArgumentList ] ")" )
 |    ( "." | "!" | ".@" | "..." ) (. nextTokenIsStartOfImportsOrAccessExpression = true; .) [ XmlOpenTag ] IdentifierOrKeyword [ XmlCloseTag ]
 .
 
@@ -663,7 +663,7 @@ CollectionRangeVariable =
 
 /* semantic action will be inserted on all paths that possibly lead to XmlLiteral */
 XmlLiteral
-    (.OnEachPossiblePath: nextTokenIsPotentialStartOfXmlMode = true; .)
+    (.OnEachPossiblePath: nextTokenIsPotentialStartOfExpression = true; .)
 =
     (. PushContext(Context.Xml, la, t); .)
     { ( XmlComment | XmlProcessingInstruction ) [ XmlContent ] } XmlElement { XmlComment [ XmlContent ] }

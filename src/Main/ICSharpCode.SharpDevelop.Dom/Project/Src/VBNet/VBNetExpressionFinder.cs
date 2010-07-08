@@ -64,19 +64,20 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				p.InformToken(t);
 			} while (t.Location < targetPosition);
 			
-			// HACK simulate <= but avoid endless loop at file end.
-			if (t.Location == targetPosition) {
-				t = lexer.NextToken();
-				p.InformToken(t);
-			}
+			if (p.NextTokenIsPotentialStartOfExpression)
+				return new ExpressionResult("", GetContext(p.CurrentBlock));
 			
 			Block block = p.CurrentBlock;
+			
+			var expressionDelimiters = new[] { Tokens.EOL, Tokens.Colon, Tokens.Dot, Tokens.TripleDot, Tokens.DotAt, Tokens.OpenParenthesis };
 			
 			int tokenOffset;
 			if (t == null || t.Kind == Tokens.EOF)
 				tokenOffset = text.Length;
 			else
-				tokenOffset = LocationToOffset(t.Location);
+				tokenOffset = expressionDelimiters.Contains(t.Kind)
+					? LocationToOffset(t.Location)
+					: LocationToOffset(t.EndLocation);
 
 			int lastExpressionStartOffset = LocationToOffset(block.lastExpressionStart);
 			if (lastExpressionStartOffset >= 0) {

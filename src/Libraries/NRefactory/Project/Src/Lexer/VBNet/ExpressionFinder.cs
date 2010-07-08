@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		
 		void PopContext()
 		{
-			if (stack.Count > 0) {
+			if (stack.Any()) {
 				string indent = new string('\t', stack.Count - 1);
 				var item = stack.Pop();
 				item.isClosed = true;
@@ -112,8 +112,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			get { return stack.Any() ? stack.Peek() : Block.Default; }
 		}
 		
-		public bool NextTokenIsPotentialStartOfXmlMode {
-			get { return nextTokenIsPotentialStartOfXmlMode; }
+		public bool NextTokenIsPotentialStartOfExpression {
+			get { return nextTokenIsPotentialStartOfExpression; }
 		}
 		
 		public bool ReadXmlIdentifier {

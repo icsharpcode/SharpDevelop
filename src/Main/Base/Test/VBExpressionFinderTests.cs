@@ -33,6 +33,22 @@ Class MainClass ' a comment
 End Class
 ";
 		
+		const string program2 = @"
+Class MainClass
+	Sub A
+		Console.WriteLine(""Hello World!"")
+	End Sub
+End Class
+		";
+		
+		const string program3 = @"
+Class MainClass
+	Sub A
+		Console.WriteLine
+	End Sub
+End Class
+		";
+		
 		VBNetExpressionFinder ef;
 		
 		[SetUp]
@@ -54,6 +70,42 @@ End Class
 			Assert.AreEqual(expectedContext.ToString(), er.Context.ToString());
 		}
 		
+		void Find(string program, string location, int offset, string expectedExpression, ExpressionContext expectedContext)
+		{
+			int pos = program.IndexOf(location);
+			if (pos < 0) Assert.Fail("location not found in program");
+			ExpressionResult er = ef.FindExpression(program, pos + offset);
+			Assert.AreEqual(expectedExpression, er.Expression);
+			Assert.AreEqual(expectedContext.ToString(), er.Context.ToString());
+		}
+		
+		#region Find
+		[Test]
+		public void FindSimple()
+		{
+			Find(program2, "sole", 0,"Console", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void FindSimple2()
+		{
+			Find(program2, "Wri", 0, "Console.WriteLine", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void FindSimple3()
+		{
+			Find(program3, "WriteLine", "WriteLine".Length, "Console.WriteLine", ExpressionContext.MethodBody);
+		}
+		
+		[Test]
+		public void FindAfterBrace()
+		{
+			Find(program2, "WriteLine", "WriteLine(".Length, "", ExpressionContext.Default);
+		}
+		#endregion
+		
+		#region FindFull
 		[Test]
 		public void Simple()
 		{
@@ -107,6 +159,7 @@ End Class
 		{
 			FindFull(program1, "omeMe", "SomeMethod", ExpressionContext.IdentifierExpected);
 		}
+		
 		#region Old Tests
 		void OldTest(string expr, int offset)
 		{
@@ -118,6 +171,18 @@ End Class";
 			Assert.AreEqual(expr, ef.FindFullExpression(string.Format(body, expr), @"Class Test
 	Sub A
 		".Length + offset).Expression);
+		}
+		
+		void OldTestFind(string expr, int offset)
+		{
+			string body = @"Class Test
+	Sub A
+		Dim x = abc + {0}
+	End Sub
+End Class";
+			Assert.AreEqual(expr, ef.FindExpression(string.Format(body, expr), @"Class Test
+	Sub A
+		Dim x = abc + ".Length + offset).Expression);
 		}
 		
 		[Test]
@@ -145,6 +210,13 @@ End Class";
 		{
 			OldTest("abc.Method().Method(5, a.b, 5 + a)", 16);
 		}
+		
+		[Test, Ignore]
+		public void PlusExpression()
+		{
+			OldTestFind("def", 2);
+		}
+		#endregion
 		#endregion
 	}
 }
