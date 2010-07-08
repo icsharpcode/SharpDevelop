@@ -4769,10 +4769,10 @@ Only letters, digits, space, '.' or '_' are allowed.</value>
     <value>Project file ${projectLocation} already exists, do you want to overwrite the existing file ?</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
-    <value>File ${fileName} already exists, do you want to overwrite the existing file ?</value>
+    <value>The File(s) ${fileNames} already exist, do you want to overwrite the existing file(s)?</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
-    <value>File already exists</value>
+    <value>File(s) already exist</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Loading ${Filename}...</value>

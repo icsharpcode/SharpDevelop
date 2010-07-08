@@ -245,7 +245,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		}
 		#endregion
 		
+		
 		#region Create new project from template
+		//Show prompt, create files from template, create project, execute command, save project
 		public IProject CreateProject(ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
 			// remember old outerProjectBasePath
@@ -305,6 +307,83 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				
 				StringParserPropertyContainer.FileCreation["StandardNamespace"] = projectCreateInformation.RootNamespace;
 				
+				if (File.Exists(projectLocation))
+				{
+					
+					if (!MessageService.AskQuestion(
+						StringParser.Parse("${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion}",
+						                   new StringTagPair("projectLocation", projectLocation)),
+						"${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName}"))
+					{
+						return null; //The user doesnt want to overwrite the project...
+					}
+				}
+				
+				//Show prompt if any of the files exist
+				StringBuilder existingFileNames = new StringBuilder();
+				foreach (FileDescriptionTemplate file in files)
+				{
+					string fileName = Path.Combine(projectCreateInformation.ProjectBasePath, StringParser.Parse(file.Name, new string[,] { { "ProjectName", projectCreateInformation.ProjectName } }));
+					
+					if (File.Exists(fileName))
+					{
+						if (existingFileNames.Length > 0)
+							existingFileNames.Append(", ");
+						existingFileNames.Append(Path.GetFileName(fileName));
+					}
+				}
+				
+				bool overwriteFiles = true;
+				if (existingFileNames.Length > 0)
+				{
+					if (!MessageService.AskQuestion(
+						StringParser.Parse("${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion}",
+						                   new StringTagPair("fileNames", existingFileNames.ToString())),
+						"${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName}"))
+					{
+						overwriteFiles = false;
+					}
+				}
+				
+				
+				
+				#region Copy files to target directory
+				foreach (FileDescriptionTemplate file in files)
+				{
+					string fileName = Path.Combine(projectCreateInformation.ProjectBasePath, StringParser.Parse(file.Name, new string[,] { { "ProjectName", projectCreateInformation.ProjectName } }));
+					if (File.Exists(fileName) && !overwriteFiles)
+					{
+						continue;
+					}
+					
+					try
+					{
+						if (!Directory.Exists(Path.GetDirectoryName(fileName))) {
+							Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+						}
+						if (!String.IsNullOrEmpty(file.BinaryFileName)) {
+							// Binary content
+							File.Copy(file.BinaryFileName,fileName);
+						} else {
+							// Textual content
+							StreamWriter sr = new StreamWriter(File.Create(fileName), ParserService.DefaultFileEncoding);
+							string fileContent = StringParser.Parse(file.Content, new string[,] { { "ProjectName", projectCreateInformation.ProjectName }, { "FileName", fileName } });
+							fileContent = StringParser.Parse(fileContent);
+							if (EditorControlService.GlobalOptions.IndentationString != "\t") {
+								fileContent = fileContent.Replace("\t", EditorControlService.GlobalOptions.IndentationString);
+							}
+							sr.Write(fileContent);
+							sr.Close();
+						}
+					}
+					catch (Exception ex)
+					{
+						MessageService.ShowException(ex, "Exception writing " + fileName);
+					}
+				}
+				#endregion
+				
+				#region Create Project
 				IProject project;
 				try {
 					project = languageinfo.CreateProject(projectCreateInformation);
@@ -312,24 +391,29 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					MessageService.ShowError(ex.Message);
 					return null;
 				}
+				#endregion
 				
+				#region Create Project Items, Imports and Files
 				// Add Project items
-				foreach (ProjectItem projectItem in projectItems) {
-					ProjectItem newProjectItem = new UnknownProjectItem(
-						project,
-						StringParser.Parse(projectItem.ItemType.ItemName),
-						StringParser.Parse(projectItem.Include)
-					);
-					foreach (string metadataName in projectItem.MetadataNames) {
-						string metadataValue = projectItem.GetMetadata(metadataName);
-						// if the input contains any special MSBuild sequences, don't escape the value
-						// we want to escape only when the special characters are introduced by the StringParser.Parse replacement
-						if (metadataValue.Contains("$(") || metadataValue.Contains("%"))
-							newProjectItem.SetMetadata(StringParser.Parse(metadataName), StringParser.Parse(metadataValue));
-						else
-							newProjectItem.SetEvaluatedMetadata(StringParser.Parse(metadataName), StringParser.Parse(metadataValue));
+				if (project is IProjectItemListProvider)
+				{
+					foreach (ProjectItem projectItem in projectItems) {
+						ProjectItem newProjectItem = new UnknownProjectItem(
+							project,
+							StringParser.Parse(projectItem.ItemType.ItemName),
+							StringParser.Parse(projectItem.Include)
+						);
+						foreach (string metadataName in projectItem.MetadataNames) {
+							string metadataValue = projectItem.GetMetadata(metadataName);
+							// if the input contains any special MSBuild sequences, don't escape the value
+							// we want to escape only when the special characters are introduced by the StringParser.Parse replacement
+							if (metadataValue.Contains("$(") || metadataValue.Contains("%"))
+								newProjectItem.SetMetadata(StringParser.Parse(metadataName), StringParser.Parse(metadataValue));
+							else
+								newProjectItem.SetEvaluatedMetadata(StringParser.Parse(metadataName), StringParser.Parse(metadataValue));
+						}
+						((IProjectItemListProvider)project).AddProjectItem(newProjectItem);
 					}
-					((IProjectItemListProvider)project).AddProjectItem(newProjectItem);
 				}
 				
 				// Add Imports
@@ -377,62 +461,27 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				}
 				
 				// Add Files
-				foreach (FileDescriptionTemplate file in files) {
-					string fileName = Path.Combine(projectCreateInformation.ProjectBasePath, StringParser.Parse(file.Name, new string[,] { {"ProjectName", projectCreateInformation.ProjectName} }));
-					FileProjectItem projectFile = new FileProjectItem(project, project.GetDefaultItemType(fileName));
+				if (project is IProjectItemListProvider) {
 					
-					projectFile.Include = FileUtility.GetRelativePath(project.Directory, fileName);
-					
-					file.SetProjectItemProperties(projectFile);
-					
-					((IProjectItemListProvider)project).AddProjectItem(projectFile);
-					
-					if (File.Exists(fileName)) {
-						if (!MessageService.AskQuestion(
-							StringParser.Parse("${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion}",
-							                   new StringTagPair("fileName", fileName)),
-							"${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName}")) {
-							continue;
-						}
-					}
-					
-					try {
-						if (!Directory.Exists(Path.GetDirectoryName(fileName))) {
-							Directory.CreateDirectory(Path.GetDirectoryName(fileName));
-						}
-						if (file.ContentData != null) {
-							// Binary content
-							File.WriteAllBytes(fileName, file.ContentData);
-						} else {
-							// Textual content
-							StreamWriter sr = new StreamWriter(File.Create(fileName), ParserService.DefaultFileEncoding);
-							string fileContent = StringParser.Parse(file.Content, new string[,] { {"ProjectName", projectCreateInformation.ProjectName}, {"FileName", fileName}});
-							fileContent = StringParser.Parse(fileContent);
-							if (EditorControlService.GlobalOptions.IndentationString != "\t") {
-								fileContent = fileContent.Replace("\t", EditorControlService.GlobalOptions.IndentationString);
-							}
-							sr.Write(fileContent);
-							sr.Close();
-						}
-					} catch (Exception ex) {
-						MessageService.ShowException(ex, "Exception writing " + fileName);
+					foreach (FileDescriptionTemplate file in files) {
+						string fileName = Path.Combine(projectCreateInformation.ProjectBasePath, StringParser.Parse(file.Name, new string[,] { { "ProjectName", projectCreateInformation.ProjectName } }));
+						FileProjectItem projectFile = new FileProjectItem(project, project.GetDefaultItemType(fileName));
+						
+						projectFile.Include = FileUtility.GetRelativePath(project.Directory, fileName);
+						
+						file.SetProjectItemProperties(projectFile);
+						
+						((IProjectItemListProvider)project).AddProjectItem(projectFile);
 					}
 				}
+				
+				#endregion
 				
 				RunCreateActions(project);
 				
 				// Save project
-				if (File.Exists(projectLocation)) {
-					if (MessageService.AskQuestion(
-						StringParser.Parse("${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion}",
-						                   new StringTagPair("projectLocation", projectLocation)),
-						"${res:ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName}"))
-					{
-						project.Save();
-					}
-				} else {
-					project.Save();
-				}
+				project.Save();
+				
 				
 				projectCreateInformation.createdProjects.Add(project);
 				ProjectService.OnProjectCreated(new ProjectEventArgs(project));

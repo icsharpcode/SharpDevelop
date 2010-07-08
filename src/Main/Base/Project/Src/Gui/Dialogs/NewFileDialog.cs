@@ -369,7 +369,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return true;
 		}
 		
-		public void SaveFile(FileDescriptionTemplate newfile, string content, byte[] binaryContent)
+		public void SaveFile(FileDescriptionTemplate newfile, string content, string binaryFileName)
 		{
 			string parsedFileName = StringParser.Parse(newfile.Name);
 			// Parse twice so that tags used in included standard header are parsed
@@ -393,13 +393,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			if (newfile.IsDependentFile && Path.IsPathRooted(parsedFileName)) {
 				Directory.CreateDirectory(Path.GetDirectoryName(parsedFileName));
-				if (binaryContent != null)
-					File.WriteAllBytes(parsedFileName, binaryContent);
+				if (!String.IsNullOrEmpty(binaryFileName))
+					File.Copy(binaryFileName, parsedFileName);
 				else
 					File.WriteAllText(parsedFileName, parsedContent, ParserService.DefaultFileEncoding);
 				ParserService.ParseFile(parsedFileName, new StringTextBuffer(parsedContent));
 			} else {
-				if (binaryContent != null) {
+				if (!String.IsNullOrEmpty(binaryFileName)) {
 					LoggingService.Warn("binary file was skipped");
 					return;
 				}
@@ -511,8 +511,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				ScriptRunner scriptRunner = new ScriptRunner();
 				
 				foreach (FileDescriptionTemplate newfile in item.Template.FileDescriptionTemplates) {
-					if (newfile.ContentData != null) {
-						SaveFile(newfile, null, newfile.ContentData);
+					if (!String.IsNullOrEmpty(newfile.BinaryFileName)) {
+						SaveFile(newfile, null, newfile.BinaryFileName);
 					} else {
 						SaveFile(newfile, scriptRunner.CompileScript(item.Template, newfile), null);
 					}
