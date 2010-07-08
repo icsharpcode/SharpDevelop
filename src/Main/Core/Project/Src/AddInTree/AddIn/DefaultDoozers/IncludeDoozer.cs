@@ -69,13 +69,12 @@ namespace ICSharpCode.Core
 			
 			public void Apply(IList items)
 			{
-				AddInTreeNode node;
-				try {
-					node = AddInTree.GetTreeNode(path);
+				AddInTreeNode node = AddInTree.GetTreeNode(path, false);
+				if (node != null) {
 					foreach (object o in node.BuildChildItems(caller)) {
 						items.Add(o);
 					}
-				} catch (TreePathNotFoundException) {
+				} else {
 					MessageService.ShowError("IncludeDoozer: AddinTree-Path not found: " + path);
 				}
 			}

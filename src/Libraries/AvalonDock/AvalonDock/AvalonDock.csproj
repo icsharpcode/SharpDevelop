@@ -36,7 +36,7 @@
     <DefineConstants>TRACE;NET4</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\AvalonDock.XML</DocumentationFile>
+    <DocumentationFile>$(OutputPath)\AvalonDock.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
