@@ -16,7 +16,7 @@ using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Converter;
 
-namespace VBNetBinding
+namespace ICSharpCode.VBNetBinding
 {
 	public class CSharpToVBNetConverter : NRefactoryLanguageConverter
 	{

@@ -9,7 +9,7 @@
 	</Manifest>
 	
 	<Runtime>
-		<Import assembly = "VBNetBinding.dll"/>
+		<Import assembly = "ICSharpCode.VBNetBinding.dll"/>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 		<Import assembly = ":ICSharpCode.SharpDevelop.Dom"/>
 	</Runtime>
@@ -43,28 +43,28 @@
 		<TaskBoundLoggerFilter
 			id = "VbcEncodingFixingLogger"
 			taskname = "vbc"
-			class = "VBNetBinding.VbcEncodingFixingLogger"/>
+			class = "ICSharpCode.VBNetBinding.VbcEncodingFixingLogger"/>
 	</Path>
 	
 	<Path name = "/Workspace/Parser">
 		<Parser id    = "VBNet" 
 			supportedextensions  = ".vb"
 			projectfileextension = ".vbproj"
-			class = "VBNetBinding.Parser.TParser"/>
+			class = "ICSharpCode.VBNetBinding.Parser.TParser"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions/Convert">
 		<Condition name = "ProjectActive" activeproject="C#">
 			<MenuItem id = "CSharpToVBConverter"
 			          label = "${res:ICSharpCode.SharpDevelop.Commands.CharpConvertProjectToVB}"
-			          class = "VBNetBinding.CSharpToVBNetConverter"/>
+			          class = "ICSharpCode.VBNetBinding.CSharpToVBNetConverter"/>
 		</Condition>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
 		<OptionPanel id = "VBSpecificOptions"
 			             label = "${res:Dialog.Options.IDEOptions.TextEditor.VB.PanelName}"
-			             class = "VBNetBinding.OptionPanels.VBNetTextEditorPanel"/>
+			             class = "ICSharpCode.VBNetBinding.OptionPanels.VBNetTextEditorPanel"/>
 	</Path>
 	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/VBNet">
@@ -82,7 +82,7 @@
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>
 		<OptionPanel id    = "BuildOptions"
 		             label = "${res:Dialog.ProjectOptions.BuildOptions}"
-		             class = "VBNetBinding.OptionPanels.BuildOptions"/>
+		             class = "ICSharpCode.VBNetBinding.OptionPanels.BuildOptions"/>
 		<OptionPanel id    = "DebugOptions"
 		             label = "${res:Dialog.ProjectOptions.DebugOptions}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
@@ -91,7 +91,7 @@
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Publish"/>-->
 		<OptionPanel id    = "ProjectImports"
 		             label = "${res:Dialog.ProjectOptions.ProjectImports}"
-		             class = "VBNetBinding.OptionPanels.ProjectImports"/>
+		             class = "ICSharpCode.VBNetBinding.OptionPanels.ProjectImports"/>
 		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>
 	</Path>
 
@@ -100,7 +100,7 @@
 	</Path>
 	
 	<Path name="/SharpDevelop/Workbench/LanguageBindings">
-		<LanguageBinding id="VBNet" class="VBNetBinding.VBNetLanguageBinding" extensions=".vb" />
+		<LanguageBinding id="VBNet" class="ICSharpCode.VBNetBinding.VBNetLanguageBinding" extensions=".vb" />
 	</Path>
 	
 	<Path name = "/Workspace/Icons">
@@ -119,7 +119,7 @@
 		                guid                 = "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
 		                supportedextensions  = ".vb"
 		                projectfileextension = ".vbproj"
-		                class                = "VBNetBinding.VBNetProjectBinding" />
+		                class                = "ICSharpCode.VBNetBinding.VBNetProjectBinding" />
 	</Path>
 	
 	<Path name="/SharpDevelop/Services/ParserService/SingleFileGacReferences">

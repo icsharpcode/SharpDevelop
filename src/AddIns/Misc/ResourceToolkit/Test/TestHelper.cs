@@ -35,7 +35,7 @@ namespace ResourceToolkit.Tests
 		{
 			Dictionary<string, IParser> parsers = new Dictionary<string, IParser>();
 			parsers.Add(".cs", new CSharpBinding.Parser.TParser());
-			parsers.Add(".vb", new VBNetBinding.Parser.TParser());
+			parsers.Add(".vb", new ICSharpCode.VBNetBinding.Parser.TParser());
 			ResourceResolverService.SetParsersUnitTestOnly(parsers);
 		}
 		

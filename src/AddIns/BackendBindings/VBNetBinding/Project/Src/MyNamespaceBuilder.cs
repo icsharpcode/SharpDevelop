@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace VBNetBinding
+namespace ICSharpCode.VBNetBinding
 {
 	public static class MyNamespaceBuilder
 	{

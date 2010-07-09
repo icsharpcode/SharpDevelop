@@ -11,7 +11,7 @@ using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Build.Framework;
 using System.IO;
 
-namespace VBNetBinding
+namespace ICSharpCode.VBNetBinding
 {
 	/// <summary>
 	/// Fixes SD2-995 : Special characters not correctly encoded for languages others than English

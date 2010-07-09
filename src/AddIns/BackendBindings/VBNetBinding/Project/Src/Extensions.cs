@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace VBNetBinding
+namespace ICSharpCode.VBNetBinding
 {
 	public static class Extensions
 	{

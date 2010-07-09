@@ -14,7 +14,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace VBNetBinding.OptionPanels
+namespace ICSharpCode.VBNetBinding.OptionPanels
 {
 	public class ProjectImports : AbstractXmlFormsProjectOptionPanel
 	{

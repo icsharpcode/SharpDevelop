@@ -16,7 +16,7 @@ using ICSharpCode.SharpDevelop.Dom.VBNet;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace VBNetBinding
+namespace ICSharpCode.VBNetBinding
 {
 	public class VBNetProject : CompilableProject
 	{

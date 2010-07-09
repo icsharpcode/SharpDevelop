@@ -10,7 +10,7 @@ using System.Xml;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace VBNetBinding
+namespace ICSharpCode.VBNetBinding
 {
 	public class VBNetProjectBinding : IProjectBinding
 	{

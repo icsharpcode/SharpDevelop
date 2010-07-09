@@ -19,7 +19,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 
-namespace VBNetBinding
+namespace ICSharpCode.VBNetBinding
 {
 	/// <summary>
 	/// This class handles the auto and smart indenting in the textbuffer while

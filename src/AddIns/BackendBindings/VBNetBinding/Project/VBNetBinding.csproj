@@ -6,7 +6,7 @@
     <ProductVersion>8.0.50630</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BF38FB72-B380-4196-AF8C-95749D726C61}</ProjectGuid>
-    <AssemblyName>VBNetBinding</AssemblyName>
+    <AssemblyName>ICSharpCode.VBNetBinding</AssemblyName>
     <OutputTarget>Library</OutputTarget>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>False</NoStdLib>
@@ -21,6 +21,7 @@
     <BaseAddress>104857600</BaseAddress>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
+    <RootNamespace>ICSharpCode.VBNetBinding</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -53,6 +54,7 @@
     <Compile Include="Src\Extensions.cs" />
     <Compile Include="Src\FormattingStrategy\VBStatement.cs" />
     <Compile Include="Src\VBNetBracketSearcher.cs" />
+    <Compile Include="Src\VBNetCompletionBindingOld.cs" />
     <Compile Include="Src\VBNetLanguageBinding.cs" />
     <Compile Include="Src\VBNetProjectBinding.cs" />
     <Compile Include="Src\FormattingStrategy\VBNetFormattingStrategy.cs" />

@@ -80,7 +80,9 @@ partial class ExpressionFinder {
 		InformToken(null);
 	}
 	
-	static readonly bool[,] set = {
+	public BitArray GetExpectedSet() { return GetExpectedSet(currentState); }
+	
+	static readonly BitArray[] set = {
 -->initialization
 	};
 

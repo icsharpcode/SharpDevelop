@@ -13,7 +13,7 @@ using ICSharpCode.SharpDevelop.Dom.VBNet;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace VBNetBinding.Parser
+namespace ICSharpCode.VBNetBinding.Parser
 {
 	public class TParser : IParser
 	{

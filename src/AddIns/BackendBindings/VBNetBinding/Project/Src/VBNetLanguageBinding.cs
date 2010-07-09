@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 
-namespace VBNetBinding
+namespace ICSharpCode.VBNetBinding
 {
 	/// <summary>
 	/// Description of VBNetLanguageBinding.

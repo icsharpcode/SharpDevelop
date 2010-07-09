@@ -15,7 +15,7 @@ using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
 using ICSharpCode.SharpDevelop.Editor;
 
-namespace VBNetBinding
+namespace ICSharpCode.VBNetBinding
 {
 	public class VBNetBracketSearcher : IBracketSearcher
 	{

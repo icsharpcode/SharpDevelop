@@ -1149,21 +1149,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			List<ICompletionEntry> result = new List<ICompletionEntry>();
 			if (language == NR.SupportedLanguage.VBNet) {
 				
-				if (context == ExpressionContext.TypeDeclaration) {
-					AddVBNetKeywords(result, NR.Parser.VB.Tokens.TypeLevel);
-				} else if (context == ExpressionContext.Global) {
-					AddVBNetKeywords(result, NR.Parser.VB.Tokens.GlobalLevel);
-				} else if (context == ExpressionContext.MethodBody) {
-					AddVBNetKeywords(result, NR.Parser.VB.Tokens.StatementStart);
-					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
-				} else {
-					AddVBNetPrimitiveTypes(result);
-					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
-				}
-				
-				result.Add(new KeywordEntry("Global"));
-				result.Add(new KeywordEntry("New"));
-				
+//				if (context == ExpressionContext.TypeDeclaration) {
+//				} else if (context == ExpressionContext.Global) {
+//				} else if (context == ExpressionContext.MethodBody) {
+//					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
+//				} else {
+//					AddVBNetPrimitiveTypes(result);
+//					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
+//				}
 			} else {
 				if (context == ExpressionContext.TypeDeclaration) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.TypeLevel);
@@ -1247,17 +1240,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			return result;
-		}
-
-		void AddVBNetPrimitiveTypes(List<ICompletionEntry> result)
-		{
-			foreach (KeyValuePair<string, string> pair in TypeReference.PrimitiveTypesVB) {
-				if ("System." + pair.Key != pair.Value) {
-					IClass c = GetPrimitiveClass(pair.Value, pair.Key);
-					if (c != null)
-						result.Add(c);
-				}
-			}
 		}
 		
 		void AddCSharpPrimitiveTypes(List<ICompletionEntry> result)

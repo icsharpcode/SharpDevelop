@@ -9,7 +9,7 @@ using System;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
 
-namespace VBNetBinding
+namespace ICSharpCode.VBNetBinding
 {
 	public class VBStatement
 	{
