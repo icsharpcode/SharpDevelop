@@ -17,7 +17,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		public ContextActionsPopup()
 		{
-			this.StaysOpen = false;	// Close on lost focus
+			this.StaysOpen = false;
+			// Close on lost focus
+			this.AllowsTransparency = true;
 			this.ActionsControl = new ContextActionsControl();
 			// Close when any action excecuted
 			this.ActionsControl.ActionExecuted += delegate { this.Close(); };

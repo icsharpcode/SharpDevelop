@@ -113,12 +113,12 @@
                 <DataGrid.Background>
                 	  
                 	  <!-- Control backgound -->
-                    <LinearGradientBrush StartPoint="0,-0.03" EndPoint="0,1">
-                            <GradientStop Color="White"/>
-                            <GradientStop Color="#FFFAFCFE" Offset="0.983"/>
-                            <GradientStop Color="#FFECF7FC" Offset="0.07"/>
-                            <GradientStop Color="#FFEEF7FA" Offset="0.436"/>
-                        </LinearGradientBrush>
+                	<LinearGradientBrush StartPoint="0,-0.03" EndPoint="0,1">
+                		<GradientStop Color="White"/>
+                		<GradientStop Color="#FFFAFCFE" Offset="0.983"/>
+                		<GradientStop Color="#FFECF7FC" Offset="0.07"/>
+                		<GradientStop Color="#FFEEF7FA" Offset="0.436"/>
+                	</LinearGradientBrush>
                 </DataGrid.Background>
                 <DataGrid.RowStyle>
                     <Style TargetType="{x:Type DataGridRow}">

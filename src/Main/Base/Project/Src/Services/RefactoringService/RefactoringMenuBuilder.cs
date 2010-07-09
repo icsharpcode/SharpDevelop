@@ -203,7 +203,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (@class == null)
 				return null;
-			var item = new MenuItem { Header = MenuService.ConvertLabel("Go to base class..") };
+			var item = new MenuItem { Header = MenuService.ConvertLabel("Find base classes..") };
 			item.Icon = ClassBrowserIconService.Interface.CreateImage();
 			item.InputGestureText = new KeyGesture(Key.F10).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			item.Click += delegate {
@@ -216,7 +216,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (member == null)
 				return null;
-			var item = new MenuItem { Header = MenuService.ConvertLabel(StringParser.Parse("${res:SharpDevelop.Refactoring.OverridesOf}", new string[,] {{ "Name", member.Name }})) };
+			var item = new MenuItem { Header = MenuService.ConvertLabel(StringParser.Parse("${res:SharpDevelop.Refactoring.FindOverridesCommand}")) };
 			item.Icon = ClassBrowserIconService.Method.CreateImage();
 			item.InputGestureText = new KeyGesture(Key.F11).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			item.Click += delegate {

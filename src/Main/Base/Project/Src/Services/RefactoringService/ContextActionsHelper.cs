@@ -47,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			var derivedClassesTree = RefactoringService.FindDerivedClassesTree(member.DeclaringType);
 			var popupViewModel = new ContextActionsViewModel { Title = MenuService.ConvertLabel(StringParser.Parse(
-				"${res:SharpDevelop.Refactoring.OverridesOf}", new string[,] {{ "Name", member.Name }}))};
+				"${res:SharpDevelop.Refactoring.OverridesOf}", new string[,] {{ "Name", member.FullyQualifiedName }}))};
 			popupViewModel.Actions = new OverridesPopupTreeViewModelBuilder(member).BuildTreeViewModel(derivedClassesTree);
 			return new ContextActionsPopup { Actions = popupViewModel };
 		}
@@ -66,6 +66,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			{
 				return new ContextActionViewModel {
 					Name = this.LabelAmbience.Convert(@class),
+					Image = ClassBrowserIconService.GetIcon(@class).ImageSource,
 					Comment = string.Format("(in {0})", @class.Namespace),
 					Action = new GoToClassAction(@class),
 					ChildActions = childActions
@@ -103,15 +104,16 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				this.member = member;
 			}
 			
-			protected ContextActionViewModel MakeGoToMemberAction(IClass @class, ObservableCollection<ContextActionViewModel> childActions)
+			protected ContextActionViewModel MakeGoToMemberAction(IClass containingClass, ObservableCollection<ContextActionViewModel> childActions)
 			{
-				var overridenMember = MemberLookupHelper.FindSimilarMember(@class, this.member);
+				var overridenMember = MemberLookupHelper.FindSimilarMember(containingClass, this.member);
 				if (overridenMember == null || overridenMember.Region.IsEmpty)
 					return null;
 				
 				return new ContextActionViewModel {
 					Name = this.LabelAmbience.Convert(overridenMember),
-					Comment = string.Format("(in {0})", @class.FullyQualifiedName),
+					Image = ClassBrowserIconService.GetIcon(overridenMember).ImageSource,
+					Comment = string.Format("(in {0})", containingClass.FullyQualifiedName),
 					Action = new GoToMemberAction(overridenMember),
 					ChildActions = childActions
 				};
