@@ -86,7 +86,30 @@ namespace ICSharpCode.CodeQualityAnalysis
 
         public string GetInfo()
         {
-            return this.ToString();
+            var builder = new StringBuilder();
+            builder.AppendLine("Field Summary");
+            builder.Append(Environment.NewLine);
+            builder.AppendLine(String.Format("Name: {0}", Name));
+            // more to come
+
+            builder.Append(Environment.NewLine);
+
+            if (IsConstant)
+                builder.AppendLine("IsConstant");
+            if (IsEvent)
+                builder.AppendLine("IsEvent");
+            if (IsPrivate)
+                builder.AppendLine("IsPrivate");
+            if (IsProtected)
+                builder.AppendLine("IsProtected");
+            if (IsPublic)
+                builder.AppendLine("IsPublic");
+            if (IsReadOnly)
+                builder.AppendLine("IsReadOnly");
+            if (IsStatic)
+                builder.AppendLine("IsStatic");
+
+            return builder.ToString();
         }
     }
 }

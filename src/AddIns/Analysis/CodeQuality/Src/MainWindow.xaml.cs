@@ -148,7 +148,7 @@ namespace ICSharpCode.CodeQualityAnalysis
                 var vertex = vertexControl.Vertex as DependencyVertex;
                 if (vertex != null)
                 {
-                    txbTypeInfo.Text = "Summary: \n" + vertex.Node.GetInfo();
+                    txbTypeInfo.Text = vertex.Node.GetInfo();
                 }
             }
         }

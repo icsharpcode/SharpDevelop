@@ -129,7 +129,37 @@ namespace ICSharpCode.CodeQualityAnalysis
 
         public string GetInfo()
         {
-            return this.ToString();
+            var builder = new StringBuilder();
+            builder.AppendLine("Method Summary");
+            builder.Append(Environment.NewLine);
+            builder.AppendLine(String.Format("Name: {0}", Name));
+            builder.AppendLine(String.Format("Parameters: {0}", Parameters.Count));
+            // more to come
+
+            builder.Append(Environment.NewLine);
+
+            if (IsAbstract)
+                builder.AppendLine("IsAbstract");
+            if (IsConstructor)
+                builder.AppendLine("IsConstructor");
+            if (IsGetter)
+                builder.AppendLine("IsGetter");
+            if (IsSetter)
+                builder.AppendLine("IsSetter");
+            if (IsPrivate)
+                builder.AppendLine("IsPrivate");
+            if (IsProtected)
+                builder.AppendLine("IsProtected");
+            if (IsPublic)
+                builder.AppendLine("IsPublic");
+            if (IsSealed)
+                builder.AppendLine("IsSealed");
+            if (IsStatic)
+                builder.AppendLine("IsStatic");
+            if (IsVirtual)
+                builder.AppendLine("IsVirtual");
+
+            return builder.ToString();
         }
     }
 

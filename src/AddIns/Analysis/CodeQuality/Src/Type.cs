@@ -252,7 +252,44 @@ namespace ICSharpCode.CodeQualityAnalysis
 
         public string GetInfo()
         {
-            return this.ToString();
+            var builder = new StringBuilder();
+            builder.AppendLine("Type Summary");
+            builder.Append(Environment.NewLine);
+            builder.AppendLine(String.Format("Name: {0}", Name));
+            builder.AppendLine(String.Format("Methods: {0}", Methods.Count));
+            builder.AppendLine(String.Format("Fields: {0}", Fields.Count));
+            builder.AppendLine(String.Format("Nested types: {0}", NestedTypes.Count));
+            builder.AppendLine(String.Format("Implemented interfaces: {0}", ImplementedInterfaces.Count));
+            // more to come
+
+            builder.Append(Environment.NewLine);
+
+            if (IsAbstract)
+                builder.AppendLine("IsAbstract");
+            if (IsClass)
+                builder.AppendLine("IsClass");
+            if (IsDelegate)
+                builder.AppendLine("IsDelegate");
+            if (IsEnum)
+                builder.AppendLine("IsEnum");
+            if (IsInterface)
+                builder.AppendLine("IsInterface");
+            if (IsInternal)
+                builder.AppendLine("IsInternal");
+            if (IsNestedPrivate)
+                builder.AppendLine("IsNestedPrivate");
+            if (IsNestedProtected)
+                builder.AppendLine("IsNestedProtected");
+            if (IsNestedPublic)
+                builder.AppendLine("IsNestedPublic");
+            if (IsPublic)
+                builder.AppendLine("IsPublic");
+            if (IsSealed)
+                builder.AppendLine("IsSealed");
+            if (IsStruct)
+                builder.AppendLine("IsStruct");
+            
+            return builder.ToString();
         }
     }
 }

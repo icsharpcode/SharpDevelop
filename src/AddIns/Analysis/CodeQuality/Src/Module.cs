@@ -68,7 +68,17 @@ namespace ICSharpCode.CodeQualityAnalysis
 
         public string GetInfo()
         {
-            return this.ToString();
+            var builder = new StringBuilder();
+            builder.AppendLine("Module Summary");
+            builder.Append(Environment.NewLine);
+            builder.AppendLine(String.Format("Name: {0}", Name));
+            builder.AppendLine(String.Format("Methods: {0}", Namespaces.Sum(ns => ns.Types.Sum(type => type.Methods.Count))));
+            builder.AppendLine(String.Format("Fields: {0}", Namespaces.Sum(ns => ns.Types.Sum(type => type.Fields.Count))));
+            builder.AppendLine(String.Format("Types: {0}", Namespaces.Sum(ns => ns.Types.Count)));
+            builder.AppendLine(String.Format("Namespaces: {0}", Namespaces.Count));
+            // more to come
+
+            return builder.ToString();
         }
     }
 }

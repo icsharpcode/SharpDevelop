@@ -37,6 +37,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 
         public string GetInfo()
         {
+            // Events aren't visible. They are showed like fields instead.
             return this.ToString();
         }
     }
