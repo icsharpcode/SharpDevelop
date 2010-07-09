@@ -343,7 +343,18 @@ namespace ICSharpCode.AvalonEdit.Utils
 					n = n.Successor;
 				}
 			}
+			Debug.Assert(index == this.Count);
 			return -1;
+		}
+		
+		/// <summary>
+		/// Gets the number of elements after <paramref name="index"/> that have the same value as each other.
+		/// </summary>
+		public int GetRunLength(int index)
+		{
+			if (index < 0 || index >= this.Count)
+				throw new ArgumentOutOfRangeException("index", index, "Value must be between 0 and " + (this.Count - 1));
+			return GetNode(ref index).count - index;
 		}
 		
 		/// <summary>
