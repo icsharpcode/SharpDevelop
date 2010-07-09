@@ -13,28 +13,26 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 {
     public class DependencyGraphLayout : GraphLayout<DependencyVertex, DependencyEdge, DependencyGraph>
     {
+        private Style _defaultVertexControlStyle;
+
         public event MouseButtonEventHandler VertexClick;
         public event MouseButtonEventHandler VertexRightClick;
 
+        public VertexControl SelectedVertexControl { get; set; }
+
         public void ChangeGraph(DependencyGraph graph)
         {
-            try
-            {
+            try {
                 if (graph != null && graph.VertexCount > 0)
-                {
                     Graph = graph;
-                }
-            }
-            catch
-            {
-            } // ignore it if it fails
+            } catch {} // ignore it if it fails
 
             AttachEvents();
         }
 
         private void AttachEvents()
         {
-            foreach (UIElement element in this.Children)
+            foreach (UIElement element in Children)
             {
                 var vertex = element as VertexControl;
 
@@ -247,8 +245,48 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
         {
             if (VertexClick != null)
                 VertexClick(sender, e);
+            
+            var vertex = sender as VertexControl;
+            if (vertex != null)
+            {
+                if (SelectedVertexControl == vertex)
+                {
+                    SelectedVertexControl.Style = _defaultVertexControlStyle;
+                    SelectedVertexControl = null;
+                    return;
+                }
 
-            // TODO: Implement SelectedVertex and change its color
+                if (SelectedVertexControl != null)
+                {
+                    SelectedVertexControl.Style = vertex.Style;
+                }
+
+                SelectedVertexControl = vertex;
+
+                _defaultVertexControlStyle = vertex.Style;
+
+                // workaround which doesnt brake triggers of highlighting
+                var style = new Style();
+
+                foreach (Setter setter in vertex.Style.Setters)
+                {
+                    style.Setters.Add(setter);
+                }
+
+                foreach (var trigger in vertex.Style.Triggers)
+                {
+                    style.Triggers.Add(trigger);
+                }
+
+                style.Setters.Add(new Setter
+                                      {
+                                          Property = Control.BackgroundProperty,
+                                          Value = new SolidColorBrush(Color.FromRgb(255, 165, 0)) // orange
+                                      });
+
+
+                SelectedVertexControl.Style = style;
+            }
         }
 
         public void ResetGraph()

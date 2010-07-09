@@ -23,12 +23,10 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
         {
             var dependencyVertex = obj as DependencyVertex;
 
-            if (obj == null)
+            if (dependencyVertex == null)
                 return false;
-            else
-            {
-                return this.Node.Equals(dependencyVertex.Node);
-            }
+            
+            return Node.Equals(dependencyVertex.Node);
         }
 
         public override int GetHashCode()
