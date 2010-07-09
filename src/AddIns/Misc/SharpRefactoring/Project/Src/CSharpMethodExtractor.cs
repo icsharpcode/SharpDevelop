@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
@@ -17,6 +17,7 @@ using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 using SharpRefactoring.Visitors;
 using Dom = ICSharpCode.SharpDevelop.Dom;
@@ -184,11 +185,17 @@ namespace SharpRefactoring
 			                                                    Dom.DomRegion.FromLocation(variable.StartPos, variable.EndPos),
 			                                                    Dom.ExpressionContext.Default, null);
 			Dom.ResolveResult result = this.GetResolver().Resolve(res, info, this.textEditor.Document.Text);
-
+			
+			Dom.IReturnType type = currentProjectContent.SystemTypes.Object;
+			Dom.ClassFinder finder = new Dom.ClassFinder(currentClass, textEditor.Caret.Line, textEditor.Caret.Column);
+			
+			if (result != null)
+				type = result.ResolvedType;
+			
 			if (variable.Type.Type == "var")
-				variable.Type = Dom.Refactoring.CodeGenerator.ConvertType(result.ResolvedType, new Dom.ClassFinder(result.CallingMember));
-
-			variable.IsReferenceType = result.ResolvedType.IsReferenceType == true;
+				variable.Type = Dom.Refactoring.CodeGenerator.ConvertType(type, finder);
+			
+			variable.IsReferenceType = type.IsReferenceType == true;
 			
 			return variable;
 		}
