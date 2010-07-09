@@ -11,6 +11,7 @@ using System.Drawing.Printing;
 
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Interfaces;
+using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core
 {
@@ -81,7 +82,7 @@ namespace ICSharpCode.Reports.Core
 					if (PrintHelper.IsTextOnlyRow(row) )
 					{
 						
-						Rectangle r =  this.RenderContainer(row,currentPosition,rpea);
+						Rectangle r =  StandardPrinter.RenderContainer(row,Evaluator,currentPosition,rpea);
 						currentPosition = ConvertRectangleToCurentPosition (r);
 						
 						currentPosition = new Point(parent.Location.X + row.Location.X,currentPosition.Y);
@@ -101,7 +102,7 @@ namespace ICSharpCode.Reports.Core
 							}
 							this.dataNavigator.Fill(row.Items);
 
-							Rectangle r =  this.RenderContainer(row,currentPosition,rpea);
+							Rectangle r =  StandardPrinter.RenderContainer(row,Evaluator,currentPosition,rpea);
 							currentPosition = ConvertRectangleToCurentPosition (r);
 							
 							currentPosition = new Point(parent.Location.X + row.Location.X,currentPosition.Y);
@@ -177,7 +178,7 @@ namespace ICSharpCode.Reports.Core
 
 					ISimpleContainer con = item as ISimpleContainer;
 					if (con != null) {
-						Rectangle r = RenderContainer(container,offset,rpea);
+						Rectangle r = StandardPrinter.RenderContainer(container,Evaluator,offset,rpea);
 						currentPosition = base.ConvertRectangleToCurentPosition(r);
 					}
 					
@@ -192,7 +193,7 @@ namespace ICSharpCode.Reports.Core
 						
 						ISimpleContainer cont = item as ISimpleContainer;
 
-						Rectangle r =  this.RenderContainer(cont,currentPosition,rpea);
+						Rectangle r =  StandardPrinter.RenderContainer(cont,Evaluator,currentPosition,rpea);
 						currentPosition = ConvertRectangleToCurentPosition (r);
 						
 						item.Location = saveLocation;
@@ -217,25 +218,7 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		private Rectangle RenderContainer (ISimpleContainer simpleContainer,Point offset,ReportPageEventArgs rpea)
-		{
-			BaseReportItem item = simpleContainer as BaseReportItem;
-			Rectangle retVal = new Rectangle(offset,item.Size);
-			Point loc = item.Location;
-			item.Location = new Point (offset.X + item.Location.X,offset.Y + item.Location.Y);
-			
-			item.Render(rpea);
-			
-			if (simpleContainer.Items != null)  {
-				retVal = base.RenderPlainCollection(item,simpleContainer.Items,offset,rpea);
-			}
 		
-			retVal = new Rectangle (retVal.X,retVal.Y,
-		                        retVal.X + item.Size.Width,
-		                        item.Size.Height + 3 * GlobalValues.GapBetweenContainer);
-			item.Location = loc;
-			return retVal;
-		}
 		
 		
 		

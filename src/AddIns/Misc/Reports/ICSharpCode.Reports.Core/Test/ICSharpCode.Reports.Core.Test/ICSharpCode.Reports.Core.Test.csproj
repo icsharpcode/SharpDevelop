@@ -80,7 +80,6 @@
     <Compile Include="Exporter\Converter\ItemsConverterFixture.cs" />
     <Compile Include="Exporter\DataPageBuilderFixture.cs" />
     <Compile Include="Exporter\DataListBuilderFixture.cs" />
-    <Compile Include="old_Exporter\ExportItemsConverterFixture.cs" />
     <Compile Include="Printing\SectionBoundFixture.cs" />
     <Compile Include="Printing\Shapes\BaseLineFixture.cs" />
     <Compile Include="Printing\Shapes\EllipseShapeFixture.cs" />
@@ -128,7 +127,6 @@
     <Folder Include="Collections" />
     <Folder Include="BaseClasses" />
     <Folder Include="Exporter" />
-    <Folder Include="old_Exporter" />
     <Folder Include="Printing\Shapes" />
     <Folder Include="TestHelpers" />
     <Folder Include="Printing" />

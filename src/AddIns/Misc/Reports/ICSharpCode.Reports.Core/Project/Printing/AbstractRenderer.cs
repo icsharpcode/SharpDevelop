@@ -36,7 +36,6 @@ namespace ICSharpCode.Reports.Core
 		
 		private int currentPageNumber;		
 		
-		//private IExpressionEvaluatorFacade expressionFassade;
 		private ILayouter layout;
 		private IReportModel reportModel;
 		
@@ -232,9 +231,7 @@ namespace ICSharpCode.Reports.Core
 				}
 				
 				
-//				currentPosition = RenderPlainCollection (this.CurrentSection,this.CurrentSection.Items,new Point(this.CurrentSection.Location.X,
-//				                                                                               this.CurrentSection.SectionOffset),rpea);
-				Rectangle r =  RenderPlainCollection (this.CurrentSection,this.CurrentSection.Items,new Point(this.CurrentSection.Location.X,
+				Rectangle r = StandardPrinter.RenderPlainCollection (this.CurrentSection,this.CurrentSection.Items,Evaluator,new Point(this.CurrentSection.Location.X,
 				                                                                               this.CurrentSection.SectionOffset),rpea);
 				
 				currentPosition = ConvertRectangleToCurentPosition(r);
@@ -249,8 +246,8 @@ namespace ICSharpCode.Reports.Core
 			return currentPosition;
 		}
 		
-		
-		protected Rectangle RenderPlainCollection (BaseReportItem parent,ReportItemCollection items, Point offset,ReportPageEventArgs rpea)
+		/*
+		protected static Rectangle RenderPlainCollection (BaseReportItem parent,ReportItemCollection items,IExpressionEvaluatorFacade evaluator, Point offset,ReportPageEventArgs rpea)
 		{
 			Rectangle retVal = Rectangle.Empty;
 			Size size = Size.Empty;
@@ -258,26 +255,9 @@ namespace ICSharpCode.Reports.Core
 			if (items.Count > 0) {
 				foreach (BaseReportItem child in items) {
 					child.Parent = parent;
-					Point saveLocation = new Point (child.Location.X,child.Location.Y);
-					
-					
-					child.Location = new Point(offset.X + child.Location.X,
-					                           offset.Y + child.Location.Y);
-					
-					
-					BaseTextItem textItem = child as BaseTextItem;
-					
-					if (textItem != null) {
-						string str = textItem.Text;
-						textItem.Text = Evaluator.Evaluate(textItem.Text);
-						textItem.Render(rpea);
-						textItem.Text = str;
-					} else {
-						child.Render (rpea);
-					}
-					size = child.Size;
-					child.Location = saveLocation;
+					 StandardPrinter.RenderLineItem (child,offset,evaluator,rpea);
 				}
+				
 				retVal = new Rectangle(offset,size);
 				return retVal;
 				
@@ -286,6 +266,7 @@ namespace ICSharpCode.Reports.Core
 				return retVal;
 			}
 		}
+		*/
 		
 		
 		protected Point ConvertRectangleToCurentPosition (Rectangle r)

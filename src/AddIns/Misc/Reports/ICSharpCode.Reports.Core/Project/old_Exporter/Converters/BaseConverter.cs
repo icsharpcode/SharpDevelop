@@ -27,7 +27,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		private ExporterPage singlePage;
 		private SectionBounds sectionBounds;
 		private Rectangle parentRectangle;
-		private IExportItemsConverter exportItemsConverter;
+//		private IExportItemsConverter exportItemsConverter;
 		private ILayouter layouter;
 		private Size saveSize;
 		private IExpressionEvaluatorFacade evaluator;
@@ -36,8 +36,11 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
 		
 		
+//		public BaseConverter(IDataNavigator dataNavigator,ExporterPage singlePage,
+//		                     IExportItemsConverter exportItemsConverter,ILayouter layouter)
+		
 		public BaseConverter(IDataNavigator dataNavigator,ExporterPage singlePage,
-		                     IExportItemsConverter exportItemsConverter,ILayouter layouter)
+		                     ILayouter layouter)
 		{
 			if (dataNavigator == null) {
 				throw new ArgumentNullException("dataNavigator");
@@ -45,16 +48,16 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 			if (singlePage == null) {
 				throw new ArgumentNullException("singlePage");
 			}
-			if (exportItemsConverter == null) {
-				throw new ArgumentNullException("exportItemsConverter");
-			}
+//			if (exportItemsConverter == null) {
+//				throw new ArgumentNullException("exportItemsConverter");
+//			}
 			if (layouter == null) {
 				throw new ArgumentNullException("layouter");
 			}
 			this.singlePage = singlePage;
 			this.dataNavigator = dataNavigator;
 			this.sectionBounds = this.singlePage.SectionBounds;
-			this.exportItemsConverter = exportItemsConverter;
+//			this.exportItemsConverter = exportItemsConverter;
 			this.layouter = layouter;
 			this.evaluator = PrintHelper.SetupEvaluator(this.singlePage,this.dataNavigator);
 		}
@@ -84,13 +87,13 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 
 			if (exportLineBuilder != null) {
 
-				ExportContainer lineItem = this.exportItemsConverter.ConvertToContainer(row.Parent,offset,row);
+				ExportContainer lineItem = StandardPrinter.ConvertToContainer(row.Parent,row,offset);
 				
 				BaseReportItem baseReportItem = row as BaseReportItem;
 
-				this.exportItemsConverter.ParentRectangle = new Rectangle(baseReportItem.Location,baseReportItem.Size);
+//				this.exportItemsConverter.ParentRectangle = new Rectangle(baseReportItem.Location,baseReportItem.Size);
 				StandardPrinter.AdjustBackColor(row);
-				ExporterCollection list = this.exportItemsConverter.ConvertSimpleItems(row as BaseReportItem,offset,row.Items);
+				ExporterCollection list = StandardPrinter.ConvertPlainCollection(row as BaseReportItem,row.Items,offset);
 					
 				lineItem.Items.AddRange(list);
 				
@@ -178,7 +181,6 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		
 		protected Point BaseConvert(ExporterCollection myList,ISimpleContainer container,int leftPos,Point curPos)
 		{
-			container.Location = new Point (leftPos,container.Location.Y);	
 			ExporterCollection ml = this.ConvertItems (container, curPos);		
 			myList.AddRange(ml);
 			return new Point (leftPos,curPos.Y + container.Size.Height + (3 *GlobalValues.GapBetweenContainer));

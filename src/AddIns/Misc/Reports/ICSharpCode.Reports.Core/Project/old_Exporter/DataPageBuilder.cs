@@ -130,9 +130,14 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 			
 			foreach (BaseReportItem item in section.Items)
 			{
-				IBaseConverter baseConverter = ConverterFactory.CreateConverter(item,dataNavigator,
-				                                                                this.SinglePage,this.ExportItemsConverter,
+//				IBaseConverter baseConverter = ConverterFactory.CreateConverter(item,dataNavigator,
+//				                                                                this.SinglePage,this.ExportItemsConverter,
+//				                                                                base.Layouter);
+				
+					IBaseConverter baseConverter = ConverterFactory.CreateConverter(item,dataNavigator,
+				                                                                this.SinglePage,
 				                                                                base.Layouter);
+				
 				if (baseConverter != null) {
 					
 					

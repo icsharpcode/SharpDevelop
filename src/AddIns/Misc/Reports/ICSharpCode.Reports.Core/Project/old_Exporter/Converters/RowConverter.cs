@@ -27,8 +27,8 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		
 		public RowConverter(IDataNavigator dataNavigator,
 		                    ExporterPage singlePage,
-		                    IExportItemsConverter exportItemsConverter,
-		                    ILayouter layouter):base(dataNavigator,singlePage,exportItemsConverter,layouter)
+		                   
+		                    ILayouter layouter):base(dataNavigator,singlePage,layouter)
 		{
 		}
 		
@@ -77,6 +77,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 				base.LayoutRow(simpleContainer);
 				
 				base.FireSectionRendering(section);
+				
 				currentPosition = base.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
 				
 				EvaluateRow(mylist);

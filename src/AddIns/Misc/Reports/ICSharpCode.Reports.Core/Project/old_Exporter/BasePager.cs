@@ -26,7 +26,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		private Graphics graphics;
 		private bool pageFull;
 		private readonly object pageLock = new object();
-		private IExportItemsConverter exportItemsConverter;
+//		private IExportItemsConverter exportItemsConverter;
 		private ILayouter layouter;
 		
 		public event EventHandler<PageCreatedEventArgs> PageCreated;
@@ -45,7 +45,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 			this.reportModel = reportModel;
 			this.layouter = layouter;
 			this.graphics = CreateGraphicObject.FromSize(this.reportModel.ReportSettings.PageSize);
-			this.exportItemsConverter = new ExportItemsConverter();
+//			this.exportItemsConverter = new ExportItemsConverter();
 		}
 		
 		#endregion
@@ -89,6 +89,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		
 		#endregion
 		
+		
 		#region Converters
 		
 		
@@ -113,17 +114,17 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 					ISimpleContainer container = item as ISimpleContainer;
 					if (container != null) {
 
-						ExportContainer exportContainer = this.exportItemsConverter.ConvertToContainer(section,offset,container);
+						ExportContainer exportContainer = StandardPrinter.ConvertToContainer(section,container,offset);
 			          
 			          StandardPrinter.AdjustBackColor (container);
 						
-						ExporterCollection clist = this.exportItemsConverter.ConvertSimpleItems(item,offset,container.Items);
+						ExporterCollection clist = StandardPrinter.ConvertPlainCollection(item,container.Items,offset);
 						exportContainer.Items.AddRange(clist);
 						list.Add(exportContainer);
 						
 					} else {
 
-						this.exportItemsConverter.ParentRectangle = new Rectangle (section.Location,section.Size);
+//						this.exportItemsConverter.ParentRectangle = new Rectangle (section.Location,section.Size);
 						
 						Rectangle desiredRectangle = layouter.Layout(this.graphics,section);
 						Rectangle sectionRectangle = new Rectangle(0,0,section.Size.Width,section.Size.Height);
@@ -132,7 +133,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 							section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height);
 						}
 						
-						list = this.exportItemsConverter.ConvertSimpleItems(section,offset,section.Items);
+						list = StandardPrinter.ConvertPlainCollection(section,section.Items,offset);
 					}
 				}
 			}
@@ -151,14 +152,6 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		}
 		
 		
-//		private static void AdjustBackColor (ISimpleContainer container)
-//		{
-//			BaseReportItem parent = container as BaseReportItem;
-//			foreach (BaseReportItem item in container.Items)
-//			{
-//				item.BackColor = parent.BackColor;
-//			}
-//		}
 		#endregion
 		
 		
@@ -315,11 +308,11 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		}
 		
 		
-		protected IExportItemsConverter ExportItemsConverter
-		{
-			get { return exportItemsConverter; }
-			set { exportItemsConverter = value; }
-		}
+//		protected IExportItemsConverter ExportItemsConverter
+//		{
+//			get { return exportItemsConverter; }
+//			set { exportItemsConverter = value; }
+//		}
 		
 		#endregion
 	}

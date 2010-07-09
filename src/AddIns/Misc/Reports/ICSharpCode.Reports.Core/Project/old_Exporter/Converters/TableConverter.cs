@@ -23,8 +23,8 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		
 		public TableConverter(IDataNavigator dataNavigator,
 		                      ExporterPage singlePage,
-		                      IExportItemsConverter exportItemsConverter,
-		                      ILayouter layouter ):base(dataNavigator,singlePage,exportItemsConverter,layouter)
+		                     
+		                      ILayouter layouter ):base(dataNavigator,singlePage,layouter)
 		{
 		}
 		
@@ -59,7 +59,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 			foreach (ISimpleContainer simpleContainer in this.baseTable.Items)
 			{
 				if (simpleContainer.Items.Count > 0) {
-					simpleContainer.Location = new Point (simpleContainer.Location.X + defaultLeftPos,simpleContainer.Location.Y);
+					simpleContainer.Location = new Point (simpleContainer.Location.X,simpleContainer.Location.Y);
 					simpleContainer.Parent = (BaseReportItem)this.baseTable;
 					base.SaveSize( new Size (simpleContainer.Size.Width,simpleContainer.Size.Height));
 					// Header/FooterRow

@@ -21,16 +21,16 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		
 		
 		public static IBaseConverter CreateConverter (BaseReportItem itemToConvert,IDataNavigator dataNavigator,
-		                                             ExporterPage singlePage,IExportItemsConverter exportItemsConverter,ILayouter layouter)
+		                                             ExporterPage singlePage,ILayouter layouter)
 		{
 
 			Type t = itemToConvert.GetType();
 			if (t.Equals(typeof(BaseTableItem))) {
-				return new TableConverter(dataNavigator,singlePage,exportItemsConverter,layouter);
+				return new TableConverter(dataNavigator,singlePage,layouter);
 			}
 			
 			if (t.Equals(typeof(BaseRowItem))) {
-				return new RowConverter (dataNavigator,singlePage,exportItemsConverter,layouter);
+				return new RowConverter (dataNavigator,singlePage,layouter);
 			}
 			
 			return null;
