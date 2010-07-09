@@ -37,7 +37,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Commands
 			
 			DefaultCompletionItemList list = new DefaultCompletionItemList();
 			
-			list.Items.AddRange(group.Snippets.Select(item => item.CreateCompletionItem(provider.TextEditor)));
+			list.Items.AddRange(group.Snippets.Where(i => i.HasSelection).Select(item => item.CreateCompletionItem(provider.TextEditor)));
 			
 			new CodeSnippetCompletionWindow(provider.TextEditor, list).Show();
 		}

@@ -58,6 +58,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			}
 		}
 		
+		public bool HasSelection {
+			get {
+				return pattern.Matches(this.Text)
+					.OfType<Match>()
+					.Any(item => item.Value == "${Selection}");
+			}
+		}
+		
 		public event PropertyChangedEventHandler PropertyChanged;
 		
 		protected virtual void OnPropertyChanged(string propertyName)
