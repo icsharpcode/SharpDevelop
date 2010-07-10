@@ -55,16 +55,30 @@ namespace ICSharpCode.WixBinding
 		}
 
 		/// <summary>
-		/// Adds a new directory with the specified name and id. A short name
-		/// will be generated if the name is too long.
+		/// Adds a new directory with the specified name and generates a unique id 
+		/// for the directory.
 		/// </summary>
 		public WixDirectoryElement AddDirectory(string name)
 		{
-			WixDirectoryElement directoryElement = new WixDirectoryElement((WixDocument)OwnerDocument);
-			directoryElement.Id = WixFileElement.GenerateId(name);
+			WixDirectoryElement directoryElement = new WixDirectoryElement(OwnerWixDocument);
+			directoryElement.Id = GenerateUniqueChildDirectoryId(name);
 			directoryElement.DirectoryName = name;
 			AppendChild(directoryElement);
 			return directoryElement;
+		}
+		
+		string GenerateUniqueChildDirectoryId(string childDirectoryId)
+		{
+			childDirectoryId = WixFileElement.GenerateId(childDirectoryId);
+			if (!OwnerWixDocument.DirectoryIdExists(childDirectoryId)) {
+				return childDirectoryId;
+			}
+			return GenerateUniqueChildDirectoryIdUsingParentDirectoryId(childDirectoryId);
+		}
+		
+		string GenerateUniqueChildDirectoryIdUsingParentDirectoryId(string childDirectoryId)
+		{
+			return Id + childDirectoryId;
 		}
 	}
 }

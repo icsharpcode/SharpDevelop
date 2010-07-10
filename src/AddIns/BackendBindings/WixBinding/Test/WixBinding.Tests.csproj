@@ -63,6 +63,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Diff\MissingDirectoryTestFixture.cs" />
+    <Compile Include="DirectoryImport\AddDuplicateDirectoryIdTestFixture.cs" />
     <Compile Include="Document\DuplicateBinaryIdTestFixture.cs" />
     <Compile Include="Document\GenerateComponentIdFromDirectoryWithDotsTestFixture.cs" />
     <Compile Include="Document\NewWixFileElementTests.cs" />
@@ -237,7 +238,7 @@
     <Compile Include="PackageFiles\AttributeValueChangedTestFixture.cs" />
     <Compile Include="PackageFiles\MissingFileAttributesTestFixture.cs" />
     <Compile Include="PackageFiles\EmptyAttributesRemovedTestFixture.cs" />
-    <Compile Include="PackageFiles\AddDirectoryTestFixture.cs" />
+    <Compile Include="PackageFiles\AddDirectoryElementToPackageWithNoDirectoriesTestFixture.cs" />
     <Compile Include="PackageFiles\NoRootDirectoryInWixProductFileTestFixture.cs" />
     <Compile Include="PackageFiles\NoWixProductFileTestFixture.cs" />
     <Compile Include="PackageFiles\SaveChangesTestFixture.cs" />

@@ -257,6 +257,11 @@ namespace ICSharpCode.WixBinding
 			return ElementIdExists(WixComponentElement.ComponentElementName, id);
 		}
 		
+		public bool DirectoryIdExists(string id)
+		{
+			return ElementIdExists(WixDirectoryElement.DirectoryElementName, id);
+		}
+		
 		/// <summary>
 		/// Returns the full path based on the location of 
 		/// this WixDocument.

@@ -19,7 +19,7 @@ namespace WixBinding.Tests.PackageFiles
 	/// Adds a directory to a package with no directories.
 	/// </summary>
 	[TestFixture]
-	public class AddDirectoryTestFixture : PackageFilesTestFixtureBase
+	public class AddDirectoryElementToPackageWithNoDirectoriesTestFixture : PackageFilesTestFixtureBase
 	{
 		XmlElement directoryElement;
 		XmlElement childDirectoryElement;
