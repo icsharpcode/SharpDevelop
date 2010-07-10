@@ -126,8 +126,6 @@ namespace ICSharpCode.WpfDesign.Designer
 		/// </summary>
 		public void UnloadDesigner()
 		{
-			if(_focusNav!=null)
-				_focusNav.End();
 			if (_designContext != null) {
 				foreach (object o in _designContext.Services.AllServices) {
 					IDisposable d = o as IDisposable;
@@ -175,10 +173,12 @@ namespace ICSharpCode.WpfDesign.Designer
 		public bool CanCopyOrCut()
 		{
 			ISelectionService selectionService = GetService<ISelectionService>();
+			if(selectionService!=null){
             if (selectionService.SelectedItems.Count == 0)
                 return false;
             if (selectionService.SelectedItems.Count == 1 && selectionService.PrimarySelection == DesignContext.RootItem)
                 return false;
+			}
 		    return true;
 		}
 
@@ -218,7 +218,7 @@ namespace ICSharpCode.WpfDesign.Designer
 		public bool CanPaste()
 		{
 			ISelectionService selection = _designContext.Services.Selection;
-			if(selection.SelectedItems.Count!=0){
+			if(selection!=null && selection.SelectedItems.Count!=0){
 				string xaml = Clipboard.GetText(TextDataFormat.Xaml);
 				if(xaml != "" && xaml != " ")
 					return true;
