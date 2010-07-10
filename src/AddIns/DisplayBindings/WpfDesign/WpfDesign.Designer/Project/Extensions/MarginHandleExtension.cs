@@ -19,7 +19,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
     [ExtensionServer(typeof(PrimarySelectionExtensionServer))]
     public class MarginHandleExtension : AdornerProvider
     {
-        MarginHandle leftHandle, topHandle, rightHandle, bottomHandle;
+        private MarginHandle _leftHandle, _topHandle, _rightHandle, _bottomHandle;
+        
         protected override void OnInitialized()
         {
             base.OnInitialized();
@@ -32,16 +33,45 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
                     // If the Element is rotated/skewed in the grid, then margin handles do not appear
                     if (extendedControl.LayoutTransform.Value == Matrix.Identity && extendedControl.RenderTransform.Value == Matrix.Identity)
                     {
-                        MarginHandle leftHandle = new MarginHandle(this.ExtendedItem, adornerPanel, HandleOrientation.Left);
-                        MarginHandle topHandle = new MarginHandle(this.ExtendedItem, adornerPanel, HandleOrientation.Top);
-                        MarginHandle rightHandle = new MarginHandle(this.ExtendedItem, adornerPanel, HandleOrientation.Right);
-                        MarginHandle bottomHandle = new MarginHandle(this.ExtendedItem, adornerPanel, HandleOrientation.Bottom);
+                        _leftHandle = new MarginHandle(this.ExtendedItem, adornerPanel, HandleOrientation.Left);
+                        _topHandle = new MarginHandle(this.ExtendedItem, adornerPanel, HandleOrientation.Top);
+                        _rightHandle = new MarginHandle(this.ExtendedItem, adornerPanel, HandleOrientation.Right);
+                        _bottomHandle = new MarginHandle(this.ExtendedItem, adornerPanel, HandleOrientation.Bottom);
                     }
                     
                     if (adornerPanel != null)
                         this.Adorners.Add(adornerPanel);
                 }
             }
+        }
+        
+        public void HideHandles()
+        {
+        	_leftHandle.Visibility=Visibility.Hidden;
+        	_leftHandle.ShouldBeVisible=false;
+        	_topHandle.Visibility=Visibility.Hidden;
+        	_rightHandle.ShouldBeVisible=false;
+        	_rightHandle.Visibility=Visibility.Hidden;
+        	_rightHandle.ShouldBeVisible=false;
+        	_bottomHandle.Visibility=Visibility.Hidden;
+        	_bottomHandle.ShouldBeVisible=false;
+        	
+        }
+        
+        public void ShowHandles()
+        {
+        	_leftHandle.Visibility=Visibility.Visible;
+        	_leftHandle.ShouldBeVisible=true;
+        	_leftHandle.DecideVisiblity(_leftHandle.HandleLength);
+        	_topHandle.Visibility=Visibility.Visible;
+        	_topHandle.ShouldBeVisible=true;
+        	_rightHandle.DecideVisiblity(_rightHandle.HandleLength);
+        	_rightHandle.Visibility=Visibility.Visible;
+        	_rightHandle.ShouldBeVisible=true;
+        	_rightHandle.DecideVisiblity(_rightHandle.HandleLength);
+        	_bottomHandle.Visibility=Visibility.Visible; 
+        	_bottomHandle.ShouldBeVisible=true;
+        	_bottomHandle.DecideVisiblity(_bottomHandle.HandleLength);
         }
     }
 }

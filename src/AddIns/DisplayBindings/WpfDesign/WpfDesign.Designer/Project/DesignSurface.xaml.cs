@@ -185,18 +185,18 @@ namespace ICSharpCode.WpfDesign.Designer
 		public void Copy()
 		{
 			XamlDesignContext xamlContext = _designContext as XamlDesignContext;
-			ISelectionService selection = _designContext.Services.Selection;
-			if(xamlContext != null && selection != null){
-				xamlContext.XamlEditAction.Copy(selection.SelectedItems);
+			ISelectionService selectionService = GetService<ISelectionService>();			
+			if(xamlContext != null && selectionService != null){
+				xamlContext.XamlEditAction.Copy(selectionService.SelectedItems);
 			}
 		}
 
 		public void Cut()
 		{
 			XamlDesignContext xamlContext = _designContext as XamlDesignContext;
-			ISelectionService selection = _designContext.Services.Selection;
-			if(xamlContext != null && selection != null){
-				xamlContext.XamlEditAction.Cut(selection.SelectedItems);
+			ISelectionService selectionService = GetService<ISelectionService>();			
+			if(xamlContext != null && selectionService != null){
+				xamlContext.XamlEditAction.Cut(selectionService.SelectedItems);
 			}
 		}
 
@@ -217,8 +217,8 @@ namespace ICSharpCode.WpfDesign.Designer
 
 		public bool CanPaste()
 		{
-			ISelectionService selection = _designContext.Services.Selection;
-			if(selection!=null && selection.SelectedItems.Count!=0){
+			ISelectionService selectionService = GetService<ISelectionService>();
+			if(selectionService!=null && selectionService.SelectedItems.Count!=0){
 				string xaml = Clipboard.GetText(TextDataFormat.Xaml);
 				if(xaml != "" && xaml != " ")
 					return true;

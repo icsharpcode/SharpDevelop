@@ -39,8 +39,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		readonly Orientation orientation;
 		readonly GridUnitSelector unitSelector;
 		
-		static readonly SolidColorBrush bgBrush;
-		static readonly SolidColorBrush selBrush;
+		static readonly SolidColorBrush bgBrush;		
 		
 		public const double RailSize = 10;
 		public const double RailDistance = 6;

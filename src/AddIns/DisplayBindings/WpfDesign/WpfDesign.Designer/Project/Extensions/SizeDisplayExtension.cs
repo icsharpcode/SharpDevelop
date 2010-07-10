@@ -23,8 +23,17 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
     [ExtensionFor(typeof(UIElement))]
     class SizeDisplayExtension : PrimarySelectionAdornerProvider
     {
-        HeightDisplay heightDisplay;
-        WidthDisplay widthDisplay;
+        HeightDisplay _heightDisplay;
+        WidthDisplay _widthDisplay;
+        
+        public HeightDisplay HeightDisplay{
+        	get { return _heightDisplay; }
+        }
+        
+        public WidthDisplay WidthDisplay{
+        	get { return _widthDisplay; }
+        }
+		         
         protected override void OnInitialized()
         {
             base.OnInitialized();
@@ -32,16 +41,18 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
             {
                 RelativePlacement placementHeight = new RelativePlacement(HorizontalAlignment.Right, VerticalAlignment.Stretch);
                 placementHeight.XOffset = 10;
-                heightDisplay = new HeightDisplay();
-                heightDisplay.DataContext = this.ExtendedItem.Component;
+                _heightDisplay = new HeightDisplay();
+                _heightDisplay.DataContext = this.ExtendedItem.Component;
 
                 RelativePlacement placementWidth = new RelativePlacement(HorizontalAlignment.Stretch, VerticalAlignment.Bottom);
                 placementWidth.YOffset = 10;
-                widthDisplay = new WidthDisplay();
-                widthDisplay.DataContext = this.ExtendedItem.Component;
+                _widthDisplay = new WidthDisplay();
+                _widthDisplay.DataContext = this.ExtendedItem.Component;
 
-                this.AddAdorners(placementHeight, heightDisplay);
-                this.AddAdorners(placementWidth, widthDisplay);         
+                this.AddAdorners(placementHeight, _heightDisplay);
+                this.AddAdorners(placementWidth, _widthDisplay); 
+                _heightDisplay.Visibility=Visibility.Hidden;
+                _widthDisplay.Visibility=Visibility.Hidden;
             }
         }   
     }

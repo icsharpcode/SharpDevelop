@@ -106,6 +106,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			else {
 				changeGroup = this.ExtendedItem.Context.OpenGroup("Resize", extendedItemArray);
 			}
+			ShowSizeAndHideHandles();
 		}
 
 		void drag_Changed(DragListener drag)
@@ -153,6 +154,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				else changeGroup.Commit();
 				changeGroup = null;
 			}
+			HideSizeAndShowHandles();
 		}
 		
 		protected override void OnInitialized()
@@ -194,5 +196,44 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				r.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
 			}
 		}
+		void ShowSizeAndHideHandles()
+    	{
+            SizeDisplayExtension sizeDisplay=null;
+            MarginHandleExtension marginDisplay=null;
+            foreach(var extension in ExtendedItem.Extensions) {
+                if (extension is SizeDisplayExtension)
+                    sizeDisplay = extension as SizeDisplayExtension;
+                if (extension is MarginHandleExtension)
+            		 marginDisplay = extension as MarginHandleExtension;
+            }
+
+            if(sizeDisplay!=null) {
+                sizeDisplay.HeightDisplay.Visibility = Visibility.Visible;
+                sizeDisplay.WidthDisplay.Visibility = Visibility.Visible;
+            }
+            
+            if(marginDisplay!=null)
+            	marginDisplay.HideHandles();
+        }
+
+        void HideSizeAndShowHandles()
+        {
+            SizeDisplayExtension sizeDisplay = null;
+            MarginHandleExtension marginDisplay=null;
+            foreach (var extension in ExtendedItem.Extensions){
+                if (extension is SizeDisplayExtension)
+                    sizeDisplay = extension as SizeDisplayExtension;
+                if (extension is MarginHandleExtension)
+            		 marginDisplay = extension as MarginHandleExtension;
+            }
+
+            if (sizeDisplay != null) {
+                sizeDisplay.HeightDisplay.Visibility = Visibility.Hidden;
+                sizeDisplay.WidthDisplay.Visibility = Visibility.Hidden;
+            }
+            if (marginDisplay !=null ) {
+            	marginDisplay.ShowHandles();
+            }
+        }		
 	}
 }

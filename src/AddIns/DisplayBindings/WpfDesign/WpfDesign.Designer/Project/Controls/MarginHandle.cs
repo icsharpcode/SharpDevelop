@@ -83,6 +83,11 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
             MarginHandle mar=(MarginHandle)d;
             mar.DecideVisiblity((double)e.NewValue);
         }
+        
+        /// <summary>
+        /// Decides whether to permanently display the handle or not.
+        /// </summary>
+        public bool ShouldBeVisible { get; set; }
 
         public MarginHandle(DesignItem adornedControlItem, AdornerPanel adornerPanel, HandleOrientation orientation)
         {
@@ -144,11 +149,13 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
         /// <param name="handleLength"></param>
         public void DecideVisiblity(double handleLength)
         {
-            marginStub.Visibility = handleLength == 0.0 ? Visibility.Visible : Visibility.Hidden;
-            this.Visibility = handleLength != 0.0 ? Visibility.Visible : Visibility.Hidden;
-            if (this.lineArrow != null){            
-                lineArrow.Visibility = handleLength < 23 ? Visibility.Hidden : Visibility.Visible;
-            }
+        	 if(ShouldBeVisible){
+            	marginStub.Visibility = handleLength == 0.0 ? Visibility.Visible : Visibility.Hidden;
+            	this.Visibility = handleLength != 0.0 ? Visibility.Visible : Visibility.Hidden;
+            	if (this.lineArrow != null){            
+                	lineArrow.Visibility = handleLength < 23 ? Visibility.Hidden : Visibility.Visible;
+            	}
+        	}
         }
      
         public override void OnApplyTemplate()
