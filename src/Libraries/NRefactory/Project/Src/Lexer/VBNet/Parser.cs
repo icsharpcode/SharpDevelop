@@ -2,12 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Text;
+
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Parser.VB;
 using ASTAttribute = ICSharpCode.NRefactory.Ast.Attribute;
-
-
 
 namespace ICSharpCode.NRefactory.Parser.VB {
 
@@ -1188,6 +1188,18 @@ partial class ExpressionFinder {
 	public ExpressionFinder()
 	{
 		stateStack.Push(-1); // required so that we don't crash when leaving the root production
+	}
+	
+	public ExpressionFinder(ExpressionFinderState state)
+	{
+		wasQualifierTokenAtStart = state.WasQualifierTokenAtStart;
+		nextTokenIsPotentialStartOfExpression = state.NextTokenIsPotentialStartOfExpression;
+		nextTokenIsStartOfImportsOrAccessExpression = state.NextTokenIsStartOfImportsOrAccessExpression;
+		readXmlIdentifier = state.ReadXmlIdentifier;
+		stateStack = new Stack<int>(state.StateStack.Reverse());
+		stack = new Stack<Block>(state.BlockStack.Select(x => (Block)x.Clone()).Reverse());
+		currentState = state.CurrentState;
+		output = new StringBuilder();
 	}
 
 	void Expect(int expectedKind, Token la)

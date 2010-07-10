@@ -138,6 +138,30 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		public List<Token> Errors {
 			get { return errors; }
 		}
+		
+		public ExpressionFinderState Export()
+		{
+			return new ExpressionFinderState() {
+				WasQualifierTokenAtStart = wasQualifierTokenAtStart,
+				NextTokenIsPotentialStartOfExpression = nextTokenIsPotentialStartOfExpression,
+				NextTokenIsStartOfImportsOrAccessExpression = nextTokenIsStartOfImportsOrAccessExpression,
+				ReadXmlIdentifier = readXmlIdentifier,
+				StateStack = new Stack<int>(stateStack.Reverse()),
+				BlockStack = new Stack<Block>(stack.Select(x => (Block)x.Clone()).Reverse()),
+				CurrentState = currentState
+			};
+		}
+	}
+	
+	public class ExpressionFinderState
+	{
+		public bool WasQualifierTokenAtStart { get; set; }
+		public bool NextTokenIsPotentialStartOfExpression { get; set; }
+		public bool ReadXmlIdentifier { get; set; }
+		public bool NextTokenIsStartOfImportsOrAccessExpression { get; set; }
+		public Stack<int> StateStack { get; set; }
+		public Stack<Block> BlockStack { get; set; }
+		public int CurrentState { get; set; }
 	}
 	
 	public enum Context
@@ -155,7 +179,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		Default
 	}
 	
-	public class Block
+	public class Block : ICloneable
 	{
 		public static readonly Block Default = new Block() {
 			context = Context.Global,
@@ -169,6 +193,15 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		public override string ToString()
 		{
 			return string.Format("[Block Context={0}, LastExpressionStart={1}, IsClosed={2}]", context, lastExpressionStart, isClosed);
+		}
+		
+		public object Clone()
+		{
+			return new Block() {
+				context = this.context,
+				lastExpressionStart = this.lastExpressionStart,
+				isClosed = this.isClosed
+			};
 		}
 	}
 }

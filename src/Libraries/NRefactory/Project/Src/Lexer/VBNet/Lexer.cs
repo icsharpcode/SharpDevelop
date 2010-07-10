@@ -25,26 +25,26 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		
 		ExpressionFinder ef;
 		
-		#region XmlModeStackInfo
 		bool inXmlMode;
 		
-		class XmlModeStackInfo {
-			public bool inXmlTag, inXmlCloseTag, isDocumentStart;
-			public int level;
-			
-			public XmlModeStackInfo(bool isSpecial)
-			{
-				level = isSpecial ? -1 : 0;
-				inXmlTag = inXmlCloseTag = isDocumentStart = false;
-			}
-		}
-		
-		Stack<XmlModeStackInfo> xmlModeStack = new Stack<XmlModeStackInfo>();
-		#endregion
+		Stack<XmlModeInfo> xmlModeStack = new Stack<XmlModeInfo>();
 		
 		public Lexer(TextReader reader) : base(reader)
 		{
 			ef = new ExpressionFinder();
+		}
+		
+		public Lexer(TextReader reader, LexerState state) : base(reader)
+		{
+			ef = new ExpressionFinder(state.ExpressionFinder);
+			SetInitialLocation(new Location(state.Column, state.Line));
+			lineEnd = state.LineEnd;
+			isAtLineBegin = state.IsAtLineBegin;
+			lastToken = new Token(state.PrevTokenKind, 0, 0);
+			encounteredLineContinuation = state.EncounteredLineContinuation;
+			misreadExclamationMarkAsTypeCharacter = state.MisreadExclamationMarkAsTypeCharacter;
+			xmlModeStack = new Stack<XmlModeInfo>(state.XmlModeInfoStack.Select(i => (XmlModeInfo)i.Clone()).Reverse());
+			inXmlMode = state.InXmlMode;
 		}
 		
 		Token NextInternal()
@@ -63,7 +63,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					char ch = (char)nextChar;
 					#region XML mode
 					if (inXmlMode && xmlModeStack.Peek().level <= 0 && !xmlModeStack.Peek().isDocumentStart && !xmlModeStack.Peek().inXmlTag) {
-						XmlModeStackInfo info = xmlModeStack.Peek();
+						XmlModeInfo info = xmlModeStack.Peek();
 						int peek = nextChar;
 						while (true) {
 							int step = -1;
@@ -89,7 +89,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						xmlModeStack.Pop();
 					}
 					if (inXmlMode) {
-						XmlModeStackInfo info = xmlModeStack.Peek();
+						XmlModeInfo info = xmlModeStack.Peek();
 						int x = Col - 1;
 						int y = Line;
 						switch (ch) {
@@ -319,8 +319,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						}
 						#endregion
 						if (ch == '<' && (ef.NextTokenIsPotentialStartOfExpression || ef.NextTokenIsStartOfImportsOrAccessExpression)) {
-							xmlModeStack.Push(new XmlModeStackInfo(ef.NextTokenIsStartOfImportsOrAccessExpression));
-							XmlModeStackInfo info = xmlModeStack.Peek();
+							xmlModeStack.Push(new XmlModeInfo(ef.NextTokenIsStartOfImportsOrAccessExpression));
+							XmlModeInfo info = xmlModeStack.Peek();
 							int x = Col - 1;
 							int y = Line;
 							inXmlMode = true;
@@ -371,7 +371,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				Debug.Assert(t.next == null); // NextInternal() must return only 1 token
 				t.next = NextInternal();
 				Debug.Assert(t.next.next == null);
-				if (SkipEOL(prevToken, t.next)) {
+				if (SkipEOL(prevToken.kind, t.next.kind)) {
 					t = t.next;
 				}
 			}
@@ -391,7 +391,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		}
 		
 		/// <remarks>see VB language specification 10; pg. 6</remarks>
-		bool SkipEOL(Token prevToken, Token nextToken)
+		bool SkipEOL(int prevTokenKind, int nextTokenKind)
 		{
 			// exception directly after _
 			if (encounteredLineContinuation) {
@@ -401,35 +401,35 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			// 1st rule
 			// after a comma (,), open parenthesis ((), open curly brace ({), or open embedded expression (<%=)
 			if (new[] { Tokens.Comma, Tokens.OpenParenthesis, Tokens.OpenCurlyBrace, Tokens.XmlStartInlineVB }
-			    .Contains(prevToken.kind))
+			    .Contains(prevTokenKind))
 				return true;
 			
 			// 2nd rule
 			// after a member qualifier (. or .@ or ...), provided that something is being qualified (i.e. is not
 			// using an implicit With context)
-			if (new[] { Tokens.Dot, Tokens.DotAt, Tokens.TripleDot }.Contains(prevToken.kind)
+			if (new[] { Tokens.Dot, Tokens.DotAt, Tokens.TripleDot }.Contains(prevTokenKind)
 			    && !ef.WasQualifierTokenAtStart)
 				return true;
 			
 			// 3rd rule
 			// before a close parenthesis ()), close curly brace (}), or close embedded expression (%>)
 			if (new[] { Tokens.CloseParenthesis, Tokens.CloseCurlyBrace, Tokens.XmlEndInlineVB }
-			    .Contains(nextToken.kind))
+			    .Contains(nextTokenKind))
 				return true;
 			
 			// 4th rule
 			// after a less-than (<) in an attribute context
-			if (prevToken.kind == Tokens.LessThan && ef.CurrentBlock.context == Context.Attribute)
+			if (prevTokenKind == Tokens.LessThan && ef.CurrentBlock.context == Context.Attribute)
 				return true;
 			
 			// 5th rule
 			// before a greater-than (>) in an attribute context
-			if (nextToken.kind == Tokens.GreaterThan && ef.CurrentBlock.context == Context.Attribute)
+			if (nextTokenKind == Tokens.GreaterThan && ef.CurrentBlock.context == Context.Attribute)
 				return true;
 			
 			// 6th rule
 			// after a greater-than (>) in a non-file-level attribute context
-			if (prevToken.kind == Tokens.GreaterThan && ef.CurrentBlock.context == Context.Attribute)
+			if (prevTokenKind == Tokens.GreaterThan && ef.CurrentBlock.context == Context.Attribute)
 				return true;
 			
 			// 7th rule
@@ -437,23 +437,23 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			var queryOperators = new int[] { Tokens.From, Tokens.Aggregate, Tokens.Select, Tokens.Distinct,
 				Tokens.Where, Tokens.Order, Tokens.By, Tokens.Ascending, Tokens.Descending, Tokens.Take,
 				Tokens.Skip, Tokens.Let, Tokens.Group, Tokens.Into, Tokens.On, Tokens.While, Tokens.Join };
-			if ((queryOperators.Contains(prevToken.kind) || queryOperators.Contains(nextToken.kind))
+			if ((queryOperators.Contains(prevTokenKind) || queryOperators.Contains(nextTokenKind))
 			    && ef.CurrentBlock.context == Context.Query)
 				return true;
 			
 			// 8th rule
 			// after binary operators (+, -, /, *, etc.) in an expression context
 			if (new[] { Tokens.Plus, Tokens.Minus, Tokens.Div, Tokens.DivInteger, Tokens.Times, Tokens.Mod, Tokens.Power,
-			   Tokens.Assign, Tokens.NotEqual, Tokens.LessThan, Tokens.LessEqual, Tokens.GreaterThan, Tokens.GreaterEqual,
-			   Tokens.Like, Tokens.ConcatString, Tokens.AndAlso, Tokens.OrElse, Tokens.And, Tokens.Or, Tokens.Xor, 
-			   Tokens.ShiftLeft, Tokens.ShiftRight }.Contains(prevToken.kind) && ef.CurrentBlock.context == Context.Expression)
+			    	Tokens.Assign, Tokens.NotEqual, Tokens.LessThan, Tokens.LessEqual, Tokens.GreaterThan, Tokens.GreaterEqual,
+			    	Tokens.Like, Tokens.ConcatString, Tokens.AndAlso, Tokens.OrElse, Tokens.And, Tokens.Or, Tokens.Xor,
+			    	Tokens.ShiftLeft, Tokens.ShiftRight }.Contains(prevTokenKind) && ef.CurrentBlock.context == Context.Expression)
 				return true;
 			
 			// 9th rule
 			// after assignment operators (=, :=, +=, -=, etc.) in any context.
 			if (new[] { Tokens.Assign, Tokens.ColonAssign, Tokens.ConcatStringAssign, Tokens.DivAssign,
 			    	Tokens.DivIntegerAssign, Tokens.MinusAssign, Tokens.PlusAssign, Tokens.PowerAssign,
-			    	Tokens.ShiftLeftAssign, Tokens.ShiftRightAssign, Tokens.TimesAssign }.Contains(prevToken.kind))
+			    	Tokens.ShiftLeftAssign, Tokens.ShiftRightAssign, Tokens.TimesAssign }.Contains(prevTokenKind))
 				return true;
 			
 			return false;
@@ -1130,5 +1130,57 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		{
 			ef.SetContext(type);
 		}
+		
+		public LexerState Export()
+		{
+			return new LexerState() {
+				Column = Col,
+				Line = Line,
+				EncounteredLineContinuation = encounteredLineContinuation,
+				ExpressionFinder = ef.Export(),
+				InXmlMode = inXmlMode,
+				IsAtLineBegin = isAtLineBegin,
+				LineEnd = lineEnd,
+				PrevTokenKind = prevToken.kind,
+				MisreadExclamationMarkAsTypeCharacter = misreadExclamationMarkAsTypeCharacter,
+				XmlModeInfoStack = new Stack<XmlModeInfo>(xmlModeStack.Select(i => (XmlModeInfo)i.Clone()).Reverse())
+			};
+		}
+	}
+	
+	public class XmlModeInfo : ICloneable
+	{
+		public bool inXmlTag, inXmlCloseTag, isDocumentStart;
+		public int level;
+		
+		public XmlModeInfo(bool isSpecial)
+		{
+			level = isSpecial ? -1 : 0;
+			inXmlTag = inXmlCloseTag = isDocumentStart = false;
+		}
+		
+		public object Clone()
+		{
+			return new XmlModeInfo(false) {
+				inXmlCloseTag = this.inXmlCloseTag,
+				inXmlTag = this.inXmlTag,
+				isDocumentStart = this.isDocumentStart,
+				level = this.level
+			};
+		}
+	}
+	
+	public class LexerState
+	{
+		public bool LineEnd { get; set; }
+		public bool IsAtLineBegin { get; set; }
+		public bool MisreadExclamationMarkAsTypeCharacter { get; set; }
+		public bool EncounteredLineContinuation { get; set; }
+		public ExpressionFinderState ExpressionFinder { get; set; }
+		public Stack<XmlModeInfo> XmlModeInfoStack { get; set; }
+		public bool InXmlMode { get; set; }
+		public int Line { get; set; }
+		public int Column { get; set; }
+		public int PrevTokenKind { get; set; }
 	}
 }
