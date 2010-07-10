@@ -196,6 +196,13 @@ namespace ICSharpCode.NRefactory.Parser
 			this.reader = new LATextReader(reader);
 		}
 		
+		protected AbstractLexer(TextReader reader, AbstractLexerState state)
+			: this(reader)
+		{
+			SetInitialLocation(new Location(state.Column, state.Line));
+			lastToken = new Token(state.PrevTokenKind, 0, 0);
+		}
+		
 		#region System.IDisposable interface implementation
 		public virtual void Dispose()
 		{
@@ -360,5 +367,19 @@ namespace ICSharpCode.NRefactory.Parser
 		/// After the call, Lexer.LookAhead will be the block-closing token.
 		/// </summary>
 		public abstract void SkipCurrentBlock(int targetToken);
+		
+		public event EventHandler SavepointReached;
+		
+		protected virtual void OnSavepointReached(EventArgs e)
+		{
+			if (SavepointReached != null) {
+				SavepointReached(this, e);
+			}
+		}
+		
+		public virtual AbstractLexerState Export()
+		{
+			throw new NotSupportedException();
+		}
 	}
 }

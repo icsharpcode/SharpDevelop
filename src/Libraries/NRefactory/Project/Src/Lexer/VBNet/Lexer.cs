@@ -34,17 +34,19 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			ef = new ExpressionFinder();
 		}
 		
-		public Lexer(TextReader reader, LexerState state) : base(reader)
+		public Lexer(TextReader reader, AbstractLexerState state) : base(reader, state)
 		{
-			ef = new ExpressionFinder(state.ExpressionFinder);
-			SetInitialLocation(new Location(state.Column, state.Line));
-			lineEnd = state.LineEnd;
-			isAtLineBegin = state.IsAtLineBegin;
-			lastToken = new Token(state.PrevTokenKind, 0, 0);
-			encounteredLineContinuation = state.EncounteredLineContinuation;
-			misreadExclamationMarkAsTypeCharacter = state.MisreadExclamationMarkAsTypeCharacter;
-			xmlModeStack = new Stack<XmlModeInfo>(state.XmlModeInfoStack.Select(i => (XmlModeInfo)i.Clone()).Reverse());
-			inXmlMode = state.InXmlMode;
+			if (!(state is VBLexerState))
+				throw new InvalidOperationException("state must be a VBLexerState");
+			
+			var vbState = state as VBLexerState;
+			ef = new ExpressionFinder(vbState.ExpressionFinder);
+			lineEnd = vbState.LineEnd;
+			isAtLineBegin = vbState.IsAtLineBegin;
+			encounteredLineContinuation = vbState.EncounteredLineContinuation;
+			misreadExclamationMarkAsTypeCharacter = vbState.MisreadExclamationMarkAsTypeCharacter;
+			xmlModeStack = new Stack<XmlModeInfo>(vbState.XmlModeInfoStack.Select(i => (XmlModeInfo)i.Clone()).Reverse());
+			inXmlMode = vbState.InXmlMode;
 		}
 		
 		Token NextInternal()
@@ -1131,9 +1133,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			ef.SetContext(type);
 		}
 		
-		public LexerState Export()
+		public override AbstractLexerState Export()
 		{
-			return new LexerState() {
+			return new VBLexerState() {
 				Column = Col,
 				Line = Line,
 				EncounteredLineContinuation = encounteredLineContinuation,
@@ -1146,41 +1148,5 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				XmlModeInfoStack = new Stack<XmlModeInfo>(xmlModeStack.Select(i => (XmlModeInfo)i.Clone()).Reverse())
 			};
 		}
-	}
-	
-	public class XmlModeInfo : ICloneable
-	{
-		public bool inXmlTag, inXmlCloseTag, isDocumentStart;
-		public int level;
-		
-		public XmlModeInfo(bool isSpecial)
-		{
-			level = isSpecial ? -1 : 0;
-			inXmlTag = inXmlCloseTag = isDocumentStart = false;
-		}
-		
-		public object Clone()
-		{
-			return new XmlModeInfo(false) {
-				inXmlCloseTag = this.inXmlCloseTag,
-				inXmlTag = this.inXmlTag,
-				isDocumentStart = this.isDocumentStart,
-				level = this.level
-			};
-		}
-	}
-	
-	public class LexerState
-	{
-		public bool LineEnd { get; set; }
-		public bool IsAtLineBegin { get; set; }
-		public bool MisreadExclamationMarkAsTypeCharacter { get; set; }
-		public bool EncounteredLineContinuation { get; set; }
-		public ExpressionFinderState ExpressionFinder { get; set; }
-		public Stack<XmlModeInfo> XmlModeInfoStack { get; set; }
-		public bool InXmlMode { get; set; }
-		public int Line { get; set; }
-		public int Column { get; set; }
-		public int PrevTokenKind { get; set; }
 	}
 }

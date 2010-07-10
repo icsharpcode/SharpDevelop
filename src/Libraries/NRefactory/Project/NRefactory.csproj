@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\Lexer\LATextReader.cs" />
+    <Compile Include="Src\Lexer\AbstractLexerState.cs" />
     <Compile Include="Src\Lexer\VBNet\ExpressionFinder.cs" />
     <Compile Include="Src\Lexer\VBNet\Parser.cs">
       <DependentUpon>ExpressionFinder.atg</DependentUpon>
@@ -90,6 +91,8 @@
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Src\Lexer\VBNet\VBLexerState.cs" />
+    <Compile Include="Src\Lexer\VBNet\XmlModeInfo.cs" />
     <Compile Include="Src\OperatorPrecedence.cs" />
     <Compile Include="Src\Parser\CSharp\CSharpParser.cs" />
     <Compile Include="Src\Parser\CSharp\Parser.cs" />

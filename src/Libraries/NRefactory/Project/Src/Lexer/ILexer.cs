@@ -106,5 +106,17 @@ namespace ICSharpCode.NRefactory.Parser
 		/// After the call, Lexer.LookAhead will be the block-closing token.
 		/// </summary>
 		void SkipCurrentBlock(int targetToken);
+		
+		/// <summary>
+		/// Used to export the current state of the lexer. The exported state should be
+		/// complete, so that it is possible to reset the lexer to a previous state completely.
+		/// </summary>
+		AbstractLexerState Export();
+		
+		/// <summary>
+		/// Is fired by the lexer as soon as a savepoint is reached.
+		/// The Export-method can be used to retrieve the current state.
+		/// </summary>
+		event EventHandler SavepointReached;
 	}
 }
