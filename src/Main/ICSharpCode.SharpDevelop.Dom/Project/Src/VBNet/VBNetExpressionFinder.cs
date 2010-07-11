@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			ExpressionContext context = p.IsIdentifierExpected ? ExpressionContext.IdentifierExpected : GetContext(block);
 			
 			if (lastExpressionStartOffset < 0)
-				return new ExpressionResult(null, context);
+				return new ExpressionResult(null, DomRegion.Empty, context, p.GetExpectedSet());
 			
 			return MakeResult(text, lastExpressionStartOffset, offset, context, p.GetExpectedSet());
 		}

@@ -110,7 +110,7 @@ namespace ICSharpCode.VBNetBinding
 			if (inXml) {
 				return true;
 			} else {
-				string lineText = editor.Document.GetLine(t.Location.Line).Text;
+				string lineText = editor.Document.GetLine(editor.Caret.Line).Text;
 				
 				bool inString = false;
 				bool inComment = false;
