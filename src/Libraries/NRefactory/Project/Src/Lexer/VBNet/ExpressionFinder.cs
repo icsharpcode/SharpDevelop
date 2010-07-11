@@ -44,35 +44,16 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			PushContext(context, la, t);
 		}
 		
-		void ApplyToken(Token token)
+		public ExpressionFinder(ExpressionFinderState state)
 		{
-			//Console.WriteLine(token);
-			
-			if (stack.Count == 0 || token == null)
-				return;
-			
-			Block current = stack.Peek();
-//
-//			switch (token.kind) {
-//				case Tokens.EOL:
-//				case Tokens.Colon:
-//					current.lastExpressionStart = token.EndLocation;
-//					break;
-//				default:
-//					if (Tokens.IdentifierTokens[token.Kind]) {
-//						if (lastToken != Tokens.Dot) {
-//							if (Tokens.IdentifierTokens[lastToken]) {
-//								current.context = Context.Default;
-//							}
-//							current.lastExpressionStart = token.Location;
-//						}
-//					} else if (Tokens.SimpleTypeName[token.Kind] || Tokens.ExpressionStart[token.Kind] || token.Kind == Tokens.Literal) {
-//						current.lastExpressionStart = token.Location;
-//					} else {
-//						current.lastExpressionStart = Location.Empty;
-//						current.context = Context.Default;
-//					}
-//			}
+			wasQualifierTokenAtStart = state.WasQualifierTokenAtStart;
+			nextTokenIsPotentialStartOfExpression = state.NextTokenIsPotentialStartOfExpression;
+			nextTokenIsStartOfImportsOrAccessExpression = state.NextTokenIsStartOfImportsOrAccessExpression;
+			readXmlIdentifier = state.ReadXmlIdentifier;
+			stateStack = new Stack<int>(state.StateStack.Reverse());
+			stack = new Stack<Block>(state.BlockStack.Select(x => (Block)x.Clone()).Reverse());
+			currentState = state.CurrentState;
+			output = new StringBuilder();
 		}
 		
 		void Print(string text)

@@ -36,6 +36,11 @@ namespace ICSharpCode.VBNetBinding
 			if (expectedSet != null)
 				AddVBNetKeywords(list, expectedSet);
 			
+			// Inherits, Implements
+			if (ExpressionContext.Type == context) {
+				
+			}
+			
 			return list;
 		}
 		

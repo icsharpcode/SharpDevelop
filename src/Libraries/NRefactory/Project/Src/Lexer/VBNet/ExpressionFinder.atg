@@ -272,7 +272,7 @@ ExpressionFinder =
 StatementTerminator = EOL | ":" .
 
 OptionStatement = 
-	"Option" { ANY } StatementTerminator
+	"Option" ( ( "Explicit" | "Strict" | "Infer" ) [ "Off" | "On" ] | "Compare" ( "Text" | "Binary" ) )  StatementTerminator
 .
 
 ImportsStatement = 

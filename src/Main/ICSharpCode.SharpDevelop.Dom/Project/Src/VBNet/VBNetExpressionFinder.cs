@@ -72,17 +72,25 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			
 			p.Advance();
 			
+			BitArray expectedSet;
+			
+			try {
+				expectedSet = p.GetExpectedSet();
+			} catch (InvalidOperationException) {
+				expectedSet = null;
+			}
+			
 			if (p.NextTokenIsPotentialStartOfExpression)
-				return new ExpressionResult("", GetContext(p.CurrentBlock));
+				return new ExpressionResult("", DomRegion.Empty, GetContext(p.CurrentBlock), expectedSet);
 			
 			int lastExpressionStartOffset = LocationToOffset(block.lastExpressionStart);
 			
 			ExpressionContext context = p.IsIdentifierExpected ? ExpressionContext.IdentifierExpected : GetContext(block);
 			
 			if (lastExpressionStartOffset < 0)
-				return new ExpressionResult(null, DomRegion.Empty, context, p.GetExpectedSet());
+				return new ExpressionResult(null, DomRegion.Empty, context, expectedSet);
 			
-			return MakeResult(text, lastExpressionStartOffset, offset, context, p.GetExpectedSet());
+			return MakeResult(text, lastExpressionStartOffset, offset, context, expectedSet);
 		}
 
 		ExpressionResult MakeResult(string text, int startOffset, int endOffset, ExpressionContext context, BitArray expectedKeywords)

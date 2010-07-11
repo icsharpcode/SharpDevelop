@@ -7,14 +7,12 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Dom.VBNet;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
@@ -38,30 +36,32 @@ namespace ICSharpCode.VBNetBinding
 			if (IsInComment(editor))
 				return CodeCompletionKeyPressResult.None;
 			
+			if (editor.SelectionLength > 0) {
+				// allow code completion when overwriting an identifier
+				int endOffset = editor.SelectionStart + editor.SelectionLength;
+				// but block code completion when overwriting only part of an identifier
+				if (endOffset < editor.Document.TextLength && char.IsLetterOrDigit(editor.Document.GetCharAt(endOffset)))
+					return CodeCompletionKeyPressResult.None;
+				
+				editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
+			}
+			
+			VBNetExpressionFinder ef = new VBNetExpressionFinder(ParserService.GetParseInformation(editor.FileName));
+			
+			ExpressionResult result;
+			
 			switch (ch) {
 				case '\n':
 					break;
 				case ' ':
-					if (CodeCompletionOptions.KeywordCompletionEnabled) {
-						string word = editor.GetWordBeforeCaret();
-						if (!string.IsNullOrEmpty(word)) {
-							var list = HandleKeyword(editor, word);
-							editor.ShowCompletionWindow(list);
-							return CodeCompletionKeyPressResult.Completed;
-						}
+					result = ef.FindExpression(editor.Document.Text, editor.Caret.Offset);
+					if (HasKeywordsOnly(result.Tag as BitArray)) {
+						ShowCodeCompletion(editor, result, false);
+						return CodeCompletionKeyPressResult.Completed;
 					}
 					break;
 				default:
 					if (CodeCompletionOptions.CompleteWhenTyping) {
-						if (editor.SelectionLength > 0) {
-							// allow code completion when overwriting an identifier
-							int endOffset = editor.SelectionStart + editor.SelectionLength;
-							// but block code completion when overwriting only part of an identifier
-							if (endOffset < editor.Document.TextLength && char.IsLetterOrDigit(editor.Document.GetCharAt(endOffset)))
-								return CodeCompletionKeyPressResult.None;
-							
-							editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
-						}
 						int cursor = editor.Caret.Offset;
 						char prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
 						bool afterUnderscore = prevChar == '_';
@@ -69,23 +69,41 @@ namespace ICSharpCode.VBNetBinding
 							cursor--;
 							prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
 						}
-						if (!char.IsLetterOrDigit(prevChar) && prevChar != '.') {
-							VBNetExpressionFinder ef = new VBNetExpressionFinder(ParserService.GetParseInformation(editor.FileName));
-							ExpressionResult result = ef.FindExpression(editor.Document.Text, cursor);
-							LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
-							if (result.Context != ExpressionContext.IdentifierExpected) {
-								var provider = new VBNetCodeCompletionDataProvider(result);
-								provider.ShowTemplates = true;
-								provider.AllowCompleteExistingExpression = afterUnderscore;
-								provider.ShowCompletion(editor);
-								return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
-							}
+						
+						result = ef.FindExpression(editor.Document.Text, cursor);
+						
+						if ((result.Context != ExpressionContext.IdentifierExpected) &&
+						    (!char.IsLetterOrDigit(prevChar) && prevChar != '.')) {
+							ShowCodeCompletion(editor, result, afterUnderscore);
+							return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
 						}
 					}
 					break;
 			}
 			
 			return CodeCompletionKeyPressResult.None;
+		}
+		
+		void ShowCodeCompletion(ITextEditor editor, ExpressionResult result, bool afterUnderscore)
+		{
+			LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
+			var provider = new VBNetCodeCompletionDataProvider(result);
+			provider.ShowTemplates = true;
+			provider.AllowCompleteExistingExpression = afterUnderscore;
+			provider.ShowCompletion(editor);
+		}
+		
+		bool HasKeywordsOnly(BitArray array)
+		{
+			if (array == null)
+				return false;
+			
+			for (int i = 0; i < array.Length; i++) {
+				if (array[i] && i < Tokens.AddHandler)
+					return false;
+			}
+			
+			return true;
 		}
 		
 		bool IsInComment(ITextEditor editor)
@@ -142,13 +160,16 @@ namespace ICSharpCode.VBNetBinding
 				
 				editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
 			}
+			
 			int cursor = editor.Caret.Offset;
 			char prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
 			bool afterUnderscore = prevChar == '_';
+			
 			if (afterUnderscore) {
 				cursor--;
 				prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
 			}
+			
 			if (!char.IsLetterOrDigit(prevChar) && prevChar != '.') {
 				VBNetExpressionFinder ef = new VBNetExpressionFinder(ParserService.GetParseInformation(editor.FileName));
 				ExpressionResult result = ef.FindExpression(editor.Document.Text, cursor);
@@ -164,35 +185,5 @@ namespace ICSharpCode.VBNetBinding
 			
 			return false;
 		}
-		
-		sealed class GlobalCompletionItemProvider : CodeCompletionItemProvider
-		{
-			public override ExpressionResult GetExpression(ITextEditor editor)
-			{
-				return new ExpressionResult("Global", ExpressionContext.Importable);
-			}
-		}
-		
-		ICompletionItemList HandleKeyword(ITextEditor editor, string word)
-		{
-			DefaultCompletionItemList list = new DefaultCompletionItemList();
-			
-			switch (word.ToLowerInvariant()) {
-				case "option":
-					return new TextCompletionItemProvider(
-						"Explicit On", "Explicit Off",
-						"Strict On", "Strict Off",
-						"Compare Binary", "Compare Text",
-						"Infer On", "Infer Off"
-					).GenerateCompletionList(editor);
-				case "imports":
-					return new GlobalCompletionItemProvider().GenerateCompletionList(editor);
-					break;
-			}
-			
-			return list;
-		}
 	}
-	
-
 }
