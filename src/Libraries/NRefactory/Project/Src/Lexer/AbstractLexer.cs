@@ -196,7 +196,7 @@ namespace ICSharpCode.NRefactory.Parser
 			this.reader = new LATextReader(reader);
 		}
 		
-		protected AbstractLexer(TextReader reader, AbstractLexerState state)
+		protected AbstractLexer(TextReader reader, LexerMemento state)
 			: this(reader)
 		{
 			SetInitialLocation(new Location(state.Column, state.Line));
@@ -368,16 +368,16 @@ namespace ICSharpCode.NRefactory.Parser
 		/// </summary>
 		public abstract void SkipCurrentBlock(int targetToken);
 		
-		public event EventHandler SavepointReached;
+		public event EventHandler<SavepointEventArgs> SavepointReached;
 		
-		protected virtual void OnSavepointReached(EventArgs e)
+		protected virtual void OnSavepointReached(SavepointEventArgs e)
 		{
 			if (SavepointReached != null) {
 				SavepointReached(this, e);
 			}
 		}
 		
-		public virtual AbstractLexerState Export()
+		public virtual LexerMemento Export()
 		{
 			throw new NotSupportedException();
 		}

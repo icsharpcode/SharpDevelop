@@ -1,7 +1,7 @@
-<AddIn name        = "VB Binding"
-       author      = "Mike Krueger, Markus Palme"
+<AddIn name        = "VB .NET Binding"
+       author      = "Siegfried Pammer"
        copyright   = "prj:///doc/copyright.txt"
-       description = "Backing binding for VB.NET"
+       description = "Backend binding for VB.NET"
        addInManagerHidden = "preinstalled">
 	
 	<Manifest>
@@ -96,7 +96,7 @@
 	</Path>
 
 	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
-		<CodeCompletionBinding id = "VBNet" extensions = ".vb" class = "VBNetBinding.VBNetCompletionBinding"/>
+		<CodeCompletionBinding id = "VBNet" extensions = ".vb" class = "ICSharpCode.VBNetBinding.VBNetCompletionBinding"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Workbench/LanguageBindings">

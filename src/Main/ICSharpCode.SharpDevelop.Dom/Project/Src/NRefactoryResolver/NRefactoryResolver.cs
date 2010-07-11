@@ -1122,15 +1122,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		static void AddVBNetKeywords(List<ICompletionEntry> ar, BitArray keywords)
-		{
-			for (int i = 0; i < keywords.Length; i++) {
-				if (keywords[i]) {
-					ar.Add(new KeywordEntry(NR.Parser.VB.Tokens.GetTokenString(i)));
-				}
-			}
-		}
-		
 		/// <summary>
 		/// Returns code completion entries for given context.
 		/// </summary>

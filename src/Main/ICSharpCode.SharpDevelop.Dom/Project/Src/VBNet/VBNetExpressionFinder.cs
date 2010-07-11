@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -81,14 +82,14 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			if (lastExpressionStartOffset < 0)
 				return new ExpressionResult(null, context);
 			
-			return MakeResult(text, lastExpressionStartOffset, offset, context);
+			return MakeResult(text, lastExpressionStartOffset, offset, context, p.GetExpectedSet());
 		}
 
-		ExpressionResult MakeResult(string text, int startOffset, int endOffset, ExpressionContext context)
+		ExpressionResult MakeResult(string text, int startOffset, int endOffset, ExpressionContext context, BitArray expectedKeywords)
 		{
 			return new ExpressionResult(text.Substring(startOffset, endOffset - startOffset).Trim(),
 			                            DomRegion.FromLocation(OffsetToLocation(startOffset), OffsetToLocation(endOffset)),
-			                            context, null);
+			                            context, expectedKeywords);
 		}
 		
 		void Init(string text, int offset)
@@ -160,10 +161,10 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			if (lastExpressionStartOffset >= 0) {
 				if (offset < tokenOffset) {
 					// offset is in front of this token
-					return MakeResult(text, lastExpressionStartOffset, tokenOffset, GetContext(block));
+					return MakeResult(text, lastExpressionStartOffset, tokenOffset, GetContext(block), p.GetExpectedSet());
 				} else {
 					// offset is IN this token
-					return MakeResult(text, lastExpressionStartOffset, offset, GetContext(block));
+					return MakeResult(text, lastExpressionStartOffset, offset, GetContext(block), p.GetExpectedSet());
 				}
 			} else {
 				return new ExpressionResult(null, GetContext(block));

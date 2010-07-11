@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.VB
 {
-	public sealed class VBLexerState : AbstractLexerState
+	public sealed class VBLexerMemento : LexerMemento
 	{
 		public bool LineEnd { get; set; }
 		public bool IsAtLineBegin { get; set; }

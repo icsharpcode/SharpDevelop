@@ -8,7 +8,7 @@ using System;
 
 namespace ICSharpCode.NRefactory.Parser
 {
-	public abstract class AbstractLexerState
+	public abstract class LexerMemento
 	{
 		public int Line { get; set; }
 		public int Column { get; set; }

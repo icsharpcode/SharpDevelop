@@ -34,12 +34,12 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			ef = new ExpressionFinder();
 		}
 		
-		public Lexer(TextReader reader, AbstractLexerState state) : base(reader, state)
+		public Lexer(TextReader reader, LexerMemento state) : base(reader, state)
 		{
-			if (!(state is VBLexerState))
+			if (!(state is VBLexerMemento))
 				throw new InvalidOperationException("state must be a VBLexerState");
 			
-			var vbState = state as VBLexerState;
+			var vbState = state as VBLexerMemento;
 			ef = new ExpressionFinder(vbState.ExpressionFinder);
 			lineEnd = vbState.LineEnd;
 			isAtLineBegin = vbState.IsAtLineBegin;
@@ -421,17 +421,17 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			
 			// 4th rule
 			// after a less-than (<) in an attribute context
-			if (prevTokenKind == Tokens.LessThan && ef.CurrentBlock.context == Context.Attribute)
+			if (prevTokenKind == Tokens.LessThan && ef.InContext(Context.Attribute))
 				return true;
 			
 			// 5th rule
 			// before a greater-than (>) in an attribute context
-			if (nextTokenKind == Tokens.GreaterThan && ef.CurrentBlock.context == Context.Attribute)
+			if (nextTokenKind == Tokens.GreaterThan && ef.InContext(Context.Attribute))
 				return true;
 			
 			// 6th rule
 			// after a greater-than (>) in a non-file-level attribute context
-			if (prevTokenKind == Tokens.GreaterThan && ef.CurrentBlock.context == Context.Attribute)
+			if (prevTokenKind == Tokens.GreaterThan && ef.InContext(Context.Attribute))
 				return true;
 			
 			// 7th rule
@@ -440,7 +440,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				Tokens.Where, Tokens.Order, Tokens.By, Tokens.Ascending, Tokens.Descending, Tokens.Take,
 				Tokens.Skip, Tokens.Let, Tokens.Group, Tokens.Into, Tokens.On, Tokens.While, Tokens.Join };
 			if ((queryOperators.Contains(prevTokenKind) || queryOperators.Contains(nextTokenKind))
-			    && ef.CurrentBlock.context == Context.Query)
+			    && ef.InContext(Context.Query))
 				return true;
 			
 			// 8th rule
@@ -1133,9 +1133,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			ef.SetContext(type);
 		}
 		
-		public override AbstractLexerState Export()
+		public override LexerMemento Export()
 		{
-			return new VBLexerState() {
+			return new VBLexerMemento() {
 				Column = Col,
 				Line = Line,
 				EncounteredLineContinuation = encounteredLineContinuation,

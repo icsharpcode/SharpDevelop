@@ -93,6 +93,52 @@ End Module";
 			            Tokens.End, Tokens.Module);
 		}
 		
+		[Test]
+		public void Query()
+		{
+			string code = @"Module Test
+	Sub A
+		Dim q = From x In a
+			Select x
+	End Sub
+End Module";
+			
+			ILexer lexer = GenerateLexer(new StringReader(code));
+			
+			CheckTokens(lexer, Tokens.Module, Tokens.Identifier, Tokens.EOL,
+			            Tokens.Sub, Tokens.Identifier, Tokens.EOL,
+			            Tokens.Dim, Tokens.Identifier, Tokens.Assign, Tokens.From, Tokens.Identifier, Tokens.In, Tokens.Identifier,
+			            Tokens.Select, Tokens.Identifier, Tokens.EOL,
+			            Tokens.End, Tokens.Sub, Tokens.EOL,
+			            Tokens.End, Tokens.Module);
+		}
+		
+		[Test]
+		public void Query1()
+		{
+			string code = @"Module Test
+	Sub A
+		Dim actions = From a in b Select Sub()
+									    Dim i = 1
+									    Select Case i
+									    End Select
+									End Sub
+	End Sub
+End Module";
+			
+			ILexer lexer = GenerateLexer(new StringReader(code));
+			
+			CheckTokens(lexer, Tokens.Module, Tokens.Identifier, Tokens.EOL,
+			            Tokens.Sub, Tokens.Identifier, Tokens.EOL,
+			            Tokens.Dim, Tokens.Identifier, Tokens.Assign, Tokens.From, Tokens.Identifier, Tokens.In, Tokens.Identifier, Tokens.Select, Tokens.Sub, Tokens.OpenParenthesis, Tokens.CloseParenthesis, Tokens.EOL,
+			            Tokens.Dim, Tokens.Identifier, Tokens.Assign, Tokens.LiteralInteger, Tokens.EOL,
+			            Tokens.Select, Tokens.Case, Tokens.Identifier, Tokens.EOL,
+			            Tokens.End, Tokens.Select, Tokens.EOL,
+			            Tokens.End, Tokens.Sub, Tokens.EOL,
+			            Tokens.End, Tokens.Sub, Tokens.EOL,
+			            Tokens.End, Tokens.Module);
+		}
+		
 		#region Helpers
 		ILexer GenerateLexer(StringReader sr)
 		{

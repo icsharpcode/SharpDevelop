@@ -118,6 +118,13 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			}
 		}
 		
+		public bool InContext(Context expected)
+		{
+			return stack
+				.SkipWhile(f => f.context == Context.Expression)
+				.IsElement(fx => fx.context == expected);
+		}
+		
 		public bool NextTokenIsPotentialStartOfExpression {
 			get { return nextTokenIsPotentialStartOfExpression; }
 		}
@@ -149,58 +156,6 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				StateStack = new Stack<int>(stateStack.Reverse()),
 				BlockStack = new Stack<Block>(stack.Select(x => (Block)x.Clone()).Reverse()),
 				CurrentState = currentState
-			};
-		}
-	}
-	
-	public class ExpressionFinderState
-	{
-		public bool WasQualifierTokenAtStart { get; set; }
-		public bool NextTokenIsPotentialStartOfExpression { get; set; }
-		public bool ReadXmlIdentifier { get; set; }
-		public bool NextTokenIsStartOfImportsOrAccessExpression { get; set; }
-		public Stack<int> StateStack { get; set; }
-		public Stack<Block> BlockStack { get; set; }
-		public int CurrentState { get; set; }
-	}
-	
-	public enum Context
-	{
-		Global,
-		Type,
-		Member,
-		IdentifierExpected,
-		Body,
-		Xml,
-		Attribute,
-		Query,
-		Expression,
-		Debug,
-		Default
-	}
-	
-	public class Block : ICloneable
-	{
-		public static readonly Block Default = new Block() {
-			context = Context.Global,
-			lastExpressionStart = Location.Empty
-		};
-		
-		public Context context;
-		public Location lastExpressionStart;
-		public bool isClosed;
-		
-		public override string ToString()
-		{
-			return string.Format("[Block Context={0}, LastExpressionStart={1}, IsClosed={2}]", context, lastExpressionStart, isClosed);
-		}
-		
-		public object Clone()
-		{
-			return new Block() {
-				context = this.context,
-				lastExpressionStart = this.lastExpressionStart,
-				isClosed = this.isClosed
 			};
 		}
 	}

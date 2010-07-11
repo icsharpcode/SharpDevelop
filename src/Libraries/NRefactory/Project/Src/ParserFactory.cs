@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory
 			throw new System.NotSupportedException(language + " not supported.");
 		}
 		
-		public static Parser.ILexer CreateLexer(SupportedLanguage language, TextReader textReader, AbstractLexerState state)
+		public static Parser.ILexer CreateLexer(SupportedLanguage language, TextReader textReader, LexerMemento state)
 		{
 			switch (language) {
 				case SupportedLanguage.CSharp:
