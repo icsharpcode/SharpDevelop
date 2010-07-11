@@ -341,17 +341,27 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		#endregion
 		
 		#region Ctrl+Click Go To Definition
+		GoToDefinition goToDefinitionCommand;
+		protected GoToDefinition GotoDefinitionCommand { 
+			get
+			{
+				if (goToDefinitionCommand == null)
+					goToDefinitionCommand = new GoToDefinition();
+				return goToDefinitionCommand;
+			}
+		}
+		
 		void TextViewMouseDown(object sender, MouseButtonEventArgs e)
 		{
 			// close existing popup immediately on text editor mouse down
 			TryCloseExistingPopup(false);
 			if (options.CtrlClickGoToDefinition && e.ChangedButton == MouseButton.Left && Keyboard.Modifiers == ModifierKeys.Control) {
 				var position = GetPositionFromPoint(e.GetPosition(this));
-				if (position != null) {
-					Core.AnalyticsMonitorService.TrackFeature(typeof(GoToDefinition).FullName, "Ctrl+Click");
-					GoToDefinition.Run(this.Adapter, this.Document.GetOffset(position.Value));
-					e.Handled = true;
-				}
+				if (position == null)
+					return;
+				Core.AnalyticsMonitorService.TrackFeature(typeof(GoToDefinition).FullName, "Ctrl+Click");
+				this.GotoDefinitionCommand.Run(this.Adapter, this.Document.GetOffset(position.Value));
+				e.Handled = true;
 			}
 		}
 		#endregion

@@ -285,7 +285,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		public bool IsOverridable {
 			get {
-				return (IsOverride || IsVirtual || IsAbstract) && !IsSealed;
+				return (IsOverride || IsVirtual || IsAbstract || 
+				    // Interface members have IsVirtual == IsAbstract == false. These properties are based on modifiers only.
+				    (this.DeclaringType != null && this.DeclaringType.ClassType == ClassType.Interface)) 
+					&& !IsSealed;
 			}
 		}
 		public bool IsNew {

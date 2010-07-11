@@ -63,14 +63,12 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 					list.Add(cmd);
 				}
 			}
-			if (member.IsOverride) {
+			if (member != null && member.IsOverride) {
 				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.GoToBaseClassCommand}", GoToBase);
 				cmd.Tag = member;
 				list.Add(cmd);
 			}
-			if (member.IsVirtual || member.IsAbstract || (member.IsOverride && !member.DeclaringType.IsSealed)
-				// Interface members have IsVirtual == IsAbstract == false. These properties are based on modifiers only.
-			    || (member.DeclaringType != null && member.DeclaringType.ClassType == ClassType.Interface)) {
+			if (member != null && member.IsOverridable) {
 				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.FindOverridesCommand}", FindOverrides);
 				cmd.Tag = member;
 				list.Add(cmd);
@@ -240,13 +238,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IMember member = (IMember)item.Tag;
-			string memberName = member.DeclaringType.Name + "." + member.Name;
-			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}"))
-			{
-				FindReferencesAndRenameHelper.ShowAsSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
-				                                                                     new string[,] {{ "Name", memberName }}),
-				                                                  RefactoringService.FindReferences(member, monitor));
-			}
+			FindReferencesAndRenameHelper.RunFindReferences(member);
 		}
 		
 		bool IsAutomaticProperty(ITextEditor editor, IProperty property)

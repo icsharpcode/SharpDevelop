@@ -8,7 +8,6 @@
 	
 	<UserControl.Resources>
 		<SolidColorBrush x:Key="OuterBorderBrush" Color="#436C82"></SolidColorBrush>
-		<BitmapImage x:Key="Magnifier" UriSource="magnifier.png" />
 		
 		<Style x:Key="ClearButton" TargetType="Button">
 			<Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>	<!-- Disable the dashed focus rectangle -->

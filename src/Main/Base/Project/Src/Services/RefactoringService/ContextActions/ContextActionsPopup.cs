@@ -7,6 +7,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls.Primitives;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
@@ -50,6 +51,32 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public void Close()
 		{
 			this.IsOpen = false;
+		}
+		
+		public void Open(ITextEditor editor)
+		{
+			var editorUIService = editor.GetService(typeof(IEditorUIService)) as IEditorUIService;
+			if (editorUIService != null) {
+				var document = editor.Document;
+				int line = editor.Caret.Line;
+				int column = editor.Caret.Column;
+				int offset = document.PositionToOffset(line, column);
+				int wordStart = document.FindPrevWordStart(offset);
+				if (wordStart != -1) {
+					var wordStartLocation = document.OffsetToPosition(wordStart);
+					line = wordStartLocation.Line;
+					column = wordStartLocation.Column;
+				}
+				var caretScreenPos = editorUIService.GetScreenPosition(line, column);
+				this.Placement = PlacementMode.Absolute;
+				this.HorizontalOffset = caretScreenPos.X;
+				this.VerticalOffset = caretScreenPos.Y;
+			} else {
+				this.HorizontalOffset = 200;
+				this.VerticalOffset = 200;
+			}
+			this.Open();
+			this.Focus();
 		}
 	}
 }

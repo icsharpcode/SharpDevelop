@@ -519,5 +519,38 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 		
 		#endregion
+		
+		
+		#region Find references
+		public static void RunFindReferences(IMember member)
+		{
+			string memberName = member.DeclaringType.Name + "." + member.Name;
+			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}"))
+			{
+				FindReferencesAndRenameHelper.ShowAsSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
+				                                                                     new string[,] {{ "Name", memberName }}),
+				                                                  RefactoringService.FindReferences(member, monitor));
+			}
+		}
+		
+		public static void RunFindReferences(IClass c)
+		{
+			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}"))
+			{
+				FindReferencesAndRenameHelper.ShowAsSearchResults(
+					StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
+					                   new string[,] {{ "Name", c.Name }}),
+					RefactoringService.FindReferences(c, monitor)
+				);
+			}
+		}
+		
+		public static ICSharpCode.Core.WinForms.MenuCommand MakeFindReferencesMenuCommand(EventHandler handler)
+		{
+			return new ICSharpCode.Core.WinForms.MenuCommand("${res:SharpDevelop.Refactoring.FindReferencesCommand}", handler) {
+			                                                 	ShortcutKeys = System.Windows.Forms.Keys.F12
+			                                                 };
+		}
+		#endregion
 	}
 }

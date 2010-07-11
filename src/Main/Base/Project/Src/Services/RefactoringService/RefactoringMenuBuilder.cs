@@ -177,9 +177,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 			if (context.ResolveResult is MemberResolveResult) {
 				IMember member = ((MemberResolveResult)context.ResolveResult).ResolvedMember as IMember;
-				if (member != null && member.IsVirtual || member.IsAbstract || (member.IsOverride && !member.DeclaringType.IsSealed)
-				    // Interface members have IsVirtual == IsAbstract == false. These properties are based on modifiers only.
-				    || (member.DeclaringType != null && member.DeclaringType.ClassType == ClassType.Interface)) {
+				if (member != null && member.IsOverridable) {
 					contextItems.AddIfNotNull(MakeFindOverridesItem(member, context));
 				}
 			}
@@ -194,7 +192,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			item.Icon = ClassBrowserIconService.Class.CreateImage();
 			item.InputGestureText = new KeyGesture(Key.F11).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			item.Click += delegate { 
-				OpenPopup(ContextActionsHelper.MakePopupWithDerivedClasses(baseClass), context); 
+				ContextActionsHelper.MakePopupWithDerivedClasses(baseClass).Open(context.Editor);
 			};
 			return item;
 		}
@@ -203,11 +201,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (@class == null)
 				return null;
-			var item = new MenuItem { Header = MenuService.ConvertLabel("Find base classes..") };
+			var item = new MenuItem { Header = MenuService.ConvertLabel("${res:SharpDevelop.Refactoring.FindBaseClassesCommand}") };
 			item.Icon = ClassBrowserIconService.Interface.CreateImage();
-			item.InputGestureText = new KeyGesture(Key.F10).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+			//item.InputGestureText = new KeyGesture(Key.F10).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			item.Click += delegate {
-				OpenPopup(ContextActionsHelper.MakePopupWithBaseClasses(@class), context);
+				ContextActionsHelper.MakePopupWithBaseClasses(@class).Open(context.Editor);
 			};
 			return item;
 		}
@@ -220,36 +218,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			item.Icon = ClassBrowserIconService.Method.CreateImage();
 			item.InputGestureText = new KeyGesture(Key.F11).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			item.Click += delegate {
-				OpenPopup(ContextActionsHelper.MakePopupWithOverrides(member), context);
+				ContextActionsHelper.MakePopupWithOverrides(member).Open(context.Editor);
 			};
 			return item;
 		}
-		
-		void OpenPopup(ContextActionsPopup popup, RefactoringMenuContext context)
-		{
-			var editorUIService = context.Editor.GetService(typeof(IEditorUIService)) as IEditorUIService;
-			if (editorUIService != null) {
-				int line = context.Editor.Caret.Line;
-				int column = context.Editor.Caret.Column;
-				int offset = context.Editor.Document.PositionToOffset(line, column);
-				int wordStart = context.Editor.Document.FindPrevWordStart(offset);
-				if (wordStart != -1) {
-					var wordStartLocation = context.Editor.Document.OffsetToPosition(wordStart);
-					line = wordStartLocation.Line;
-					column = wordStartLocation.Column;
-				}
-				var caretScreenPos = editorUIService.GetScreenPosition(line, column);
-				popup.Placement = PlacementMode.Absolute;
-				popup.HorizontalOffset = caretScreenPos.X;
-				popup.VerticalOffset = caretScreenPos.Y;
-			} else {
-				popup.HorizontalOffset = 200;
-				popup.VerticalOffset = 200;
-			}
-			popup.Open();
-			popup.Focus();
-		}
-		
+				
 		#endregion
 		
 		MenuItem MakeItemForResolveError(UnknownIdentifierResolveResult rr, ExpressionContext context, ITextEditor textArea)

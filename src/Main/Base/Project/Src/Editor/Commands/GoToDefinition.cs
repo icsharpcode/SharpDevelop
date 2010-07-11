@@ -12,41 +12,22 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Editor.Commands
 {
-	public class GoToDefinition : AbstractMenuCommand
+	public class GoToDefinition : SymbolUnderCaretCommand
 	{
-		public override void Run()
+		protected override void RunImpl(ITextEditor editor, int offset, ResolveResult symbol)
 		{
-			ITextEditorProvider editorProvider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-			if (editorProvider != null) {
-				Run(editorProvider.TextEditor, editorProvider.TextEditor.Caret.Offset);
-			}
-		}
-		
-		public static void Run(ITextEditor editor, int offset)
-		{
-			IDocument document = editor.Document;
-			string textContent = document.Text;
-			
-			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(editor.FileName);
-			if (expressionFinder == null)
+			if (symbol == null)
 				return;
-			ExpressionResult expression = expressionFinder.FindFullExpression(textContent, offset);
-			if (expression.Expression == null || expression.Expression.Length == 0)
+			FilePosition pos = symbol.GetDefinitionPosition();
+			if (pos.IsEmpty)
 				return;
-			var caretPos = editor.Document.OffsetToPosition(offset);
-			ResolveResult result = ParserService.Resolve(expression, caretPos.Line, caretPos.Column, editor.FileName, textContent);
-			if (result != null) {
-				FilePosition pos = result.GetDefinitionPosition();
-				if (pos.IsEmpty == false) {
-					try {
-						if (pos.Position.IsEmpty)
-							FileService.OpenFile(pos.FileName);
-						else
-							FileService.JumpToFilePosition(pos.FileName, pos.Line, pos.Column);
-					} catch (Exception ex) {
-						MessageService.ShowException(ex, "Error jumping to '" + pos.FileName + "'.");
-					}
-				}
+			try {
+				if (pos.Position.IsEmpty)
+					FileService.OpenFile(pos.FileName);
+				else
+					FileService.JumpToFilePosition(pos.FileName, pos.Line, pos.Column);
+			} catch (Exception ex) {
+				MessageService.ShowException(ex, "Error jumping to '" + pos.FileName + "'.");
 			}
 		}
 	}

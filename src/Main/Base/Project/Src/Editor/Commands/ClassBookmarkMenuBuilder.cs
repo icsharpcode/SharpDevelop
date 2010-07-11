@@ -149,6 +149,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 				}
 				
 				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.RenameCommand}", Rename);
+				cmd.ShortcutKeys = MenuCommand.ParseShortcut("Control|R");
 				cmd.Tag = c;
 				list.Add(cmd);
 				
@@ -179,7 +180,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 				list.Add(cmd);
 			}
 			
-			cmd = new MenuCommand("${res:SharpDevelop.Refactoring.FindReferencesCommand}", FindReferences);
+			cmd = FindReferencesAndRenameHelper.MakeFindReferencesMenuCommand(FindReferences);
 			cmd.Tag = c;
 			list.Add(cmd);
 			
@@ -309,14 +310,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IClass c = (IClass)item.Tag;
-			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}"))
-			{
-				FindReferencesAndRenameHelper.ShowAsSearchResults(
-					StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
-					                   new string[,] {{ "Name", c.Name }}),
-					RefactoringService.FindReferences(c, monitor)
-				);
-			}
+			FindReferencesAndRenameHelper.RunFindReferences(c);
 		}
 	}
 }

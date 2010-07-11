@@ -99,7 +99,11 @@
     <Compile Include="Src\Editor\CodeCompletion\NRefactoryCompletionItemList.cs" />
     <Compile Include="Src\Editor\Commands\ClassBookmarkMenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\ClassMemberMenuBuilder.cs" />
+    <Compile Include="Src\Editor\Commands\FindBaseClasses.cs" />
+    <Compile Include="Src\Editor\Commands\FindDerivedClassesOrOverrides.cs" />
+    <Compile Include="Src\Editor\Commands\FindReferences.cs" />
     <Compile Include="Src\Editor\Commands\GotoLineNumber.cs" />
+    <Compile Include="Src\Editor\Commands\SymbolUnderCaretCommand.cs" />
     <Compile Include="Src\Editor\IEditorControlService.cs" />
     <Compile Include="Src\Editor\IEditorUIService.cs" />
     <Compile Include="Src\Editor\CodeCompletion\AttributesItemProvider.cs" />

@@ -1340,7 +1340,8 @@
 			<MenuItem id = "Refactor" label = "${res:XML.MainMenu.RefactorMenu}" type="Menu">
 				<MenuItem id    = "Rename"
 				          label = "${res:SharpDevelop.Refactoring.RenameCommand}"
-				          class = "ICSharpCode.SharpDevelop.Refactoring.RenameCommand" />
+				          class = "ICSharpCode.SharpDevelop.Refactoring.RenameCommand" 
+				          shortcut = "Control|R" />
 				<Condition name="RefactoringProviderSupports" supports="FindUnusedUsingDeclarations">
 					<MenuItem id    = "RemoveUnusedUsings"
 					          label = "${res:SharpDevelop.Refactoring.RemoveUnusedImports}"
@@ -1549,15 +1550,36 @@
 			          icon = "Bookmarks.ClearAll"
 			          class = "ICSharpCode.SharpDevelop.Bookmarks.ClearBookmarks"/>
 			<MenuItem id = "Separator2" type = "Separator" />
+			
 			<MenuItem id = "GotoLineNr"
 			          label = "${res:XML.MainMenu.SearchMenu.Goto}"
 			          shortcut = "Control|G"
 			          class = "ICSharpCode.SharpDevelop.Editor.Commands.GotoLineNumber"/>
+			
 			<MenuItem id = "GotoDefinition"
 			          label = "${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"
 			          shortcut = "Control|Return"
 			          icon="Icons.16x16.SelectionArrow"
 			          class = "ICSharpCode.SharpDevelop.Editor.Commands.GoToDefinition"/>
+			
+			<MenuItem id = "FindReferences"
+			          label = "${res:SharpDevelop.Refactoring.FindReferences}"
+			          shortcut = "F12"
+			          icon="Icons.16x16.SelectionArrow"
+			          class = "ICSharpCode.SharpDevelop.Editor.Commands.FindReferences"/>
+			
+			<MenuItem id = "FindDerivedOrOverridesClasses"
+			          label = "${res:SharpDevelop.Refactoring.FindDerivedClassesOrOverridesCommand}"
+			          shortcut = "F11"
+			          icon="Icons.16x16.Class"
+			          class = "ICSharpCode.SharpDevelop.Editor.Commands.FindDerivedClassesOrOverrides"/>
+			
+			<MenuItem id = "FindBaseClasses"
+			          label = "${res:SharpDevelop.Refactoring.FindBaseClassesCommand}"
+			          shortcut = ""
+			          icon="Icons.16x16.Interface"
+			          class = "ICSharpCode.SharpDevelop.Editor.Commands.FindBaseClasses"/>
+			
 			<MenuItem id = "GotoBrace"
 			          label = "${res:XML.MainMenu.SearchMenu.GotoBrace}"
 			          shortcut = "Control|B"
