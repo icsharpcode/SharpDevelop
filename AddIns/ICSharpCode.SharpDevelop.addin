@@ -1532,17 +1532,17 @@
 			<!--			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable"> -->
 			<MenuItem id = "ToggleBookmark"
 			          label = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
-			          shortcut = "Control|F2"
+			          shortcut = "Control|M"
 			          icon = "Bookmarks.ToggleMark"
 			          class = "ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark"/>
 			<MenuItem id = "PrevBookmark"
 			          label = "${res:XML.MainMenu.SearchMenu.PrevBookmark}"
-			          shortcut = "Alt|F2"
+			          shortcut = "Control|OemComma"
 			          icon = "Bookmarks.GotoPrevInFile"
 			          class = "ICSharpCode.SharpDevelop.Bookmarks.PrevBookmark"/>
 			<MenuItem id = "NextBookmark"
 			          label = "${res:XML.MainMenu.SearchMenu.NextBookmark}"
-			          shortcut = "F2"
+			          shortcut = "Control|OemPeriod"
 			          icon = "Bookmarks.GotoNextInFile"
 			          class = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmark"/>
 			<MenuItem id = "ClearBookmarks"

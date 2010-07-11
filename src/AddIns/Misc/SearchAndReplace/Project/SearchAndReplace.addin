@@ -33,7 +33,7 @@
 		          insertafter = "FindNextSelected"
 		          label = "${res:XML.MainMenu.SearchMenu.Replace}"
 		          icon = "Icons.16x16.ReplaceIcon"
-		          shortcut = "Alt|R"
+		          shortcut = "Control|H"
 		          class = "SearchAndReplace.Replace"/>
 	</Path>
 	
