@@ -250,7 +250,6 @@
     <Compile Include="Project\Globals\UnitConverter.cs" />
     <Compile Include="Project\Interfaces\IDataAccessStrategy.cs" />
     <Compile Include="Project\Interfaces\IDataViewStrategy.cs" />
-    <Compile Include="Project\Interfaces\IExportItemsConverter.cs" />
     <Compile Include="Project\Interfaces\IHierarchyInterfaces.cs" />
     <Compile Include="Project\Interfaces\IItemConverter.cs" />
     <Compile Include="Project\Interfaces\ILayouter.cs" />

@@ -475,6 +475,7 @@ namespace ICSharpCode.Reports.Addin
 		#region IHasPropertyContainer impementation
 		
 		PropertyContainer propertyContainer = new PropertyContainer();
+		
 		public PropertyContainer PropertyContainer {
 			get {
 				return propertyContainer;

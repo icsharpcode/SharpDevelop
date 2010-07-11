@@ -52,7 +52,6 @@ namespace ICSharpCode.Reports.Core {
 
 		//Index to plain Datat
 		private IndexList indexList;
-//		private ReportSettings reportSettings;
 
 		private AvailableFieldsCollection availableFields;
 		
@@ -86,7 +85,7 @@ namespace ICSharpCode.Reports.Core {
 		#endregion
 		
 		
-		protected Collection<AbstractColumn> CreateSortCollection (ColumnCollection items)
+		protected static Collection<AbstractColumn> CreateSortCollection (ColumnCollection items)
 		{
 			
 				Collection<AbstractColumn> abstrCol = new Collection<AbstractColumn>();

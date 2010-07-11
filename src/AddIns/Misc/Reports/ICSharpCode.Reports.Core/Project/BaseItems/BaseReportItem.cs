@@ -25,7 +25,6 @@ namespace ICSharpCode.Reports.Core {
 		public event EventHandler<BeforePrintEventArgs> ItemPrinting;
 		[Obsolete("will be deleted")]
 		public event EventHandler<AfterPrintEventArgs> ItemPrinted;
-		private RectangleShape backgroundShape = new RectangleShape();
 		
 		
 		public BaseReportItem() 

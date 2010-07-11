@@ -164,6 +164,12 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 		
+		public static Point ConvertRectangleToCurentPosition (Rectangle r)
+		{
+			return new Point(r.Left,r.Bottom);
+		}
+		
+		
 		#region Debug Code
 		
 		///<summary>

@@ -27,7 +27,6 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		private ExporterPage singlePage;
 		private SectionBounds sectionBounds;
 		private Rectangle parentRectangle;
-//		private IExportItemsConverter exportItemsConverter;
 		private ILayouter layouter;
 		private Size saveSize;
 		private IExpressionEvaluatorFacade evaluator;
@@ -36,9 +35,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
 		
 		
-//		public BaseConverter(IDataNavigator dataNavigator,ExporterPage singlePage,
-//		                     IExportItemsConverter exportItemsConverter,ILayouter layouter)
-		
+
 		public BaseConverter(IDataNavigator dataNavigator,ExporterPage singlePage,
 		                     ILayouter layouter)
 		{
@@ -48,16 +45,13 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 			if (singlePage == null) {
 				throw new ArgumentNullException("singlePage");
 			}
-//			if (exportItemsConverter == null) {
-//				throw new ArgumentNullException("exportItemsConverter");
-//			}
+
 			if (layouter == null) {
 				throw new ArgumentNullException("layouter");
 			}
 			this.singlePage = singlePage;
 			this.dataNavigator = dataNavigator;
 			this.sectionBounds = this.singlePage.SectionBounds;
-//			this.exportItemsConverter = exportItemsConverter;
 			this.layouter = layouter;
 			this.evaluator = PrintHelper.SetupEvaluator(this.singlePage,this.dataNavigator);
 		}
@@ -80,7 +74,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		
 		
 		
-		protected  ExporterCollection ConvertItems (ISimpleContainer row,Point offset)		                                          
+		protected  static ExporterCollection ConvertItems (ISimpleContainer row,Point offset)		                                          
 		{
 
 			IExportColumnBuilder exportLineBuilder = row as IExportColumnBuilder;
@@ -90,8 +84,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 				ExportContainer lineItem = StandardPrinter.ConvertToContainer(row.Parent,row,offset);
 				
 				BaseReportItem baseReportItem = row as BaseReportItem;
-
-//				this.exportItemsConverter.ParentRectangle = new Rectangle(baseReportItem.Location,baseReportItem.Size);
+				
 				StandardPrinter.AdjustBackColor(row);
 				ExporterCollection list = StandardPrinter.ConvertPlainCollection(row as BaseReportItem,row.Items,offset);
 					
@@ -181,7 +174,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		
 		protected Point BaseConvert(ExporterCollection myList,ISimpleContainer container,int leftPos,Point curPos)
 		{
-			ExporterCollection ml = this.ConvertItems (container, curPos);		
+			ExporterCollection ml = BaseConverter.ConvertItems (container, curPos);		
 			myList.AddRange(ml);
 			return new Point (leftPos,curPos.Y + container.Size.Height + (3 *GlobalValues.GapBetweenContainer));
 		}

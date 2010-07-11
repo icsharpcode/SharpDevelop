@@ -83,7 +83,7 @@ namespace ICSharpCode.Reports.Core
 					{
 						
 						Rectangle r =  StandardPrinter.RenderContainer(row,Evaluator,currentPosition,rpea);
-						currentPosition = ConvertRectangleToCurentPosition (r);
+						currentPosition =PrintHelper. ConvertRectangleToCurentPosition (r);
 						
 						currentPosition = new Point(parent.Location.X + row.Location.X,currentPosition.Y);
 						tableContainer.Location = saveLocation;
@@ -103,7 +103,7 @@ namespace ICSharpCode.Reports.Core
 							this.dataNavigator.Fill(row.Items);
 
 							Rectangle r =  StandardPrinter.RenderContainer(row,Evaluator,currentPosition,rpea);
-							currentPosition = ConvertRectangleToCurentPosition (r);
+							currentPosition = PrintHelper.ConvertRectangleToCurentPosition (r);
 							
 							currentPosition = new Point(parent.Location.X + row.Location.X,currentPosition.Y);
 							
@@ -173,13 +173,12 @@ namespace ICSharpCode.Reports.Core
 				
 				PrintHelper.AdjustParent(section,section.Items);
 				
-				int i = section.Items.Count;
-					foreach (BaseReportItem item in section.Items) {
+				foreach (BaseReportItem item in section.Items) {
 
 					ISimpleContainer con = item as ISimpleContainer;
 					if (con != null) {
 						Rectangle r = StandardPrinter.RenderContainer(container,Evaluator,offset,rpea);
-						currentPosition = base.ConvertRectangleToCurentPosition(r);
+						currentPosition = PrintHelper.ConvertRectangleToCurentPosition(r);
 					}
 					
 					else
@@ -194,14 +193,14 @@ namespace ICSharpCode.Reports.Core
 						ISimpleContainer cont = item as ISimpleContainer;
 
 						Rectangle r =  StandardPrinter.RenderContainer(cont,Evaluator,currentPosition,rpea);
-						currentPosition = ConvertRectangleToCurentPosition (r);
+						currentPosition = PrintHelper.ConvertRectangleToCurentPosition (r);
 						
 						item.Location = saveLocation;
 						currentPosition = new Point(item.Location.X,
 						                            section.SectionOffset + section.Size.Height);
 						
 						rpea.LocationAfterDraw = new Point (rpea.LocationAfterDraw.X,section.SectionOffset + section.Size.Height);
-					
+						
 					}
 					
 					if ((section.CanGrow == false)&& (section.CanShrink == false)) {
@@ -216,9 +215,6 @@ namespace ICSharpCode.Reports.Core
 			}
 			return currentPosition;
 		}
-		
-		
-		
 		
 		
 		

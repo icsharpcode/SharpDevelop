@@ -214,12 +214,10 @@ namespace ICSharpCode.Reports.Core {
 			if ((base.ReportSettings.SortColumnsCollection != null)) {
 				if (base.ReportSettings.SortColumnsCollection.Count > 0) {
 					
-//					base.IndexList = this.BuildSortIndex (base.CreateSortCollection());
-					base.IndexList = this.BuildSortIndex (base.CreateSortCollection(ReportSettings.SortColumnsCollection));
+					base.IndexList = this.BuildSortIndex (BaseListStrategy.CreateSortCollection(ReportSettings.SortColumnsCollection));
 					base.IsSorted = true;
-//					BaseListStrategy.CheckSortArray (base.IndexList,"TableStrategy - CheckSortArray");
 				} else {
-					base.IndexList = this.IndexBuilder(base.CreateSortCollection(ReportSettings.SortColumnsCollection));
+					base.IndexList = this.IndexBuilder(BaseListStrategy.CreateSortCollection(ReportSettings.SortColumnsCollection));
 					base.IsSorted = false;
 				}
 			}

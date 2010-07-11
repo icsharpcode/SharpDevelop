@@ -113,7 +113,6 @@ namespace ICSharpCode.Reports.Addin
 					}
 				}
 			}
-			Console.WriteLine("------------------");
 		}
 		
 		
@@ -123,7 +122,7 @@ namespace ICSharpCode.Reports.Addin
 			return t;
 		}
 		
-		
+		/*
 		#region Properties
 		
 		public string ReportName {
@@ -131,6 +130,6 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		#endregion
-		
+		*/
 	}
 }

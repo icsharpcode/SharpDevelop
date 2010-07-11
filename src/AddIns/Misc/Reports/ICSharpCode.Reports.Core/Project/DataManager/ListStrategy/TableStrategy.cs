@@ -96,7 +96,7 @@ namespace ICSharpCode.Reports.Core
 			base.Sort();
 			if ((base.ReportSettings.SortColumnsCollection != null)) {
 				if (base.ReportSettings.SortColumnsCollection.Count > 0) {
-					base.IndexList = this.BuildSortIndex (base.CreateSortCollection(ReportSettings.SortColumnsCollection));
+					base.IndexList = this.BuildSortIndex (BaseListStrategy.CreateSortCollection(ReportSettings.SortColumnsCollection));
 					base.IsSorted = true;
 				} else {
 					// if we have no sorting, we build the indexlist as well
@@ -111,7 +111,7 @@ namespace ICSharpCode.Reports.Core
 		{
 			base.Group();
 			IndexList gl = new IndexList("group");
-			gl = this.BuildSortIndex (base.CreateSortCollection(ReportSettings.GroupColumnsCollection));
+			gl = this.BuildSortIndex (BaseListStrategy.CreateSortCollection(ReportSettings.GroupColumnsCollection));
 			base.ShowIndexList(gl);
 			BuildGroup(gl);
 			

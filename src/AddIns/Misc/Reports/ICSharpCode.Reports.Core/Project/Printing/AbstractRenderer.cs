@@ -234,7 +234,7 @@ namespace ICSharpCode.Reports.Core
 				Rectangle r = StandardPrinter.RenderPlainCollection (this.CurrentSection,this.CurrentSection.Items,Evaluator,new Point(this.CurrentSection.Location.X,
 				                                                                               this.CurrentSection.SectionOffset),rpea);
 				
-				currentPosition = ConvertRectangleToCurentPosition(r);
+				currentPosition = PrintHelper.ConvertRectangleToCurentPosition(r);
 				
 				if ((this.CurrentSection.CanGrow == false)&& (this.CurrentSection.CanShrink == false)) {
 //					return new Point(this.CurrentSection.Location.X,
@@ -246,33 +246,8 @@ namespace ICSharpCode.Reports.Core
 			return currentPosition;
 		}
 		
-		/*
-		protected static Rectangle RenderPlainCollection (BaseReportItem parent,ReportItemCollection items,IExpressionEvaluatorFacade evaluator, Point offset,ReportPageEventArgs rpea)
-		{
-			Rectangle retVal = Rectangle.Empty;
-			Size size = Size.Empty;
-			
-			if (items.Count > 0) {
-				foreach (BaseReportItem child in items) {
-					child.Parent = parent;
-					 StandardPrinter.RenderLineItem (child,offset,evaluator,rpea);
-				}
-				
-				retVal = new Rectangle(offset,size);
-				return retVal;
-				
-			} else {
-				retVal = new Rectangle(offset.X,offset.Y,0,0);
-				return retVal;
-			}
-		}
-		*/
 		
-		
-		protected Point ConvertRectangleToCurentPosition (Rectangle r)
-		{
-			return new Point(r.Left,r.Bottom);
-		}
+	
 		
 		
 		

@@ -85,7 +85,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 	
-		
+		/*
 		private static Rectangle FindSurroundingRectangle_2 (Graphics graphics,IEnumerable<BaseReportItem> canGrowShrinkCollection)
 		{
 			int top = int.MaxValue;
@@ -102,7 +102,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			}
 			return rec;
 		}
-		
+		*/
 		
 		private static Rectangle FindSurroundingRectangle (Graphics graphics,IEnumerable<BaseReportItem> canGrowShrinkCollection)
 		{

@@ -98,7 +98,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 		
-		public static void RenderLineItem (BaseReportItem item, Point offset,IExpressionEvaluatorFacade evaluator,ReportPageEventArgs rpea)
+		private static void RenderLineItem (BaseReportItem item, Point offset,IExpressionEvaluatorFacade evaluator,ReportPageEventArgs rpea)
 		{
 			
 			Point saveLocation = new Point (item.Location.X,item.Location.Y);
@@ -195,6 +195,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			if (item == null) {
 				throw new ArgumentNullException("item");
 			}
+			
 			IExportColumnBuilder lineBuilder = item as IExportColumnBuilder;
 	
 			if (lineBuilder != null) {

@@ -99,7 +99,6 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		{
 			base.ReportModel.PageHeader.SectionOffset = base.AdjustPageHeader();
 			ExporterCollection convertedList =  base.ConvertSection (base.ReportModel.PageHeader,this.dataNavigator.CurrentRow);
-//			PrintHelper.ShowLocations(convertedList);
 			base.SectionBounds.MeasurePageHeader(base.ReportModel.PageHeader);
 			base.SinglePage.Items.AddRange(convertedList);
 		}
@@ -125,16 +124,9 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		{
 			ExporterCollection convertedList = new ExporterCollection();
 			
-			
-		
-			
 			foreach (BaseReportItem item in section.Items)
 			{
-//				IBaseConverter baseConverter = ConverterFactory.CreateConverter(item,dataNavigator,
-//				                                                                this.SinglePage,this.ExportItemsConverter,
-//				                                                                base.Layouter);
-				
-					IBaseConverter baseConverter = ConverterFactory.CreateConverter(item,dataNavigator,
+				IBaseConverter baseConverter = ConverterFactory.CreateConverter(item,dataNavigator,
 				                                                                this.SinglePage,
 				                                                                base.Layouter);
 				
@@ -146,12 +138,13 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 					baseConverter.PageFull += new EventHandler<NewPageEventArgs>(OnPageFull);
 					
 					convertedList = baseConverter.Convert(section,item);
-				
+					
 					base.SinglePage.Items.AddRange(convertedList);
 					SetPageFull();
 				}
 			}
 		}
+		
 		
 		void OnSectionRendering (object sender,SectionRenderEventArgs e)
 		{
