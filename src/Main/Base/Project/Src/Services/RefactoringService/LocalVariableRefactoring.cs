@@ -18,11 +18,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			RefactoringMenuContext context = (RefactoringMenuContext)Owner;
 			LocalResolveResult local = (LocalResolveResult)context.ResolveResult;
-			FindReferencesAndRenameHelper.ShowAsSearchResults(
-				StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
-				                   new string[,] {{ "Name", local.VariableName }}),
-				RefactoringService.FindReferences(local, null)
-			);
+			FindReferencesAndRenameHelper.RunFindReferences(local);
 		}
 	}
 	

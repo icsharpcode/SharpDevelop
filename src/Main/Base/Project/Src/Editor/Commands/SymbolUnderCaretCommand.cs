@@ -30,6 +30,22 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			RunImpl(editor, caretOffset, resolveResult);
 		}
 		
+		public IClass GetClass(ResolveResult symbol)
+		{
+			if (symbol == null || !(symbol is TypeResolveResult)) {
+				return null;
+			}
+			return ((TypeResolveResult)symbol).ResolvedClass;
+		}
+		
+		public IMember GetMember(ResolveResult symbol)
+		{
+			if (symbol == null || !(symbol is MemberResolveResult)) {
+				return null;
+			}
+			return ((MemberResolveResult)symbol).ResolvedMember;
+		}
+		
 		protected abstract void RunImpl(ITextEditor editor, int caretOffset, ResolveResult symbol);
 	}
 }

@@ -17,19 +17,19 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	{
 		protected override void RunImpl(ITextEditor editor, int offset, ResolveResult symbol)
 		{
-			if (symbol == null)
-				return;
-			if (symbol is TypeResolveResult) {
-				var classUnderCaret = ((TypeResolveResult)symbol).ResolvedClass;
-				if (classUnderCaret == null)
-					return;
+			var classUnderCaret = GetClass(symbol);
+			if (classUnderCaret != null) {
 				FindReferencesAndRenameHelper.RunFindReferences(classUnderCaret);
+				return;
 			}
-			if (symbol is MemberResolveResult) {
-				IMember memberUnderCaret = ((MemberResolveResult)symbol).ResolvedMember as IMember;
-				if (memberUnderCaret == null)
-					return;
+			var memberUnderCaret = GetMember(symbol);
+			if (memberUnderCaret != null)
+			{
 				FindReferencesAndRenameHelper.RunFindReferences(memberUnderCaret);
+				return;
+			}
+			if (symbol is LocalResolveResult) {
+				FindReferencesAndRenameHelper.RunFindReferences((LocalResolveResult)symbol);
 			}
 		}
 	}

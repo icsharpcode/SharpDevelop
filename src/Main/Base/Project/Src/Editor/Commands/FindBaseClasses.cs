@@ -5,6 +5,7 @@
 //     <version>$Revision: $</version>
 // </file>
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Refactoring;
 
@@ -17,14 +18,13 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	{
 		protected override void RunImpl(ITextEditor editor, int offset, ResolveResult symbol)
 		{
-			if (symbol == null)
-				return;
-			if (symbol is TypeResolveResult) {
-				var classUnderCaret = ((TypeResolveResult)symbol).ResolvedClass;
-				if (classUnderCaret == null)
-					return;
+			var classUnderCaret = GetClass(symbol);
+			if (classUnderCaret != null)
+			{
 				ContextActionsHelper.MakePopupWithBaseClasses(classUnderCaret).Open(editor);
+				return;
 			}
+			MessageService.ShowError("${res:ICSharpCode.Refactoring.NoClassUnderCursorError}");
 		}
 	}
 }

@@ -545,11 +545,20 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
+		public static void RunFindReferences(LocalResolveResult local)
+		{
+			FindReferencesAndRenameHelper.ShowAsSearchResults(
+				StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
+				                   new string[,] {{ "Name", local.VariableName }}),
+				RefactoringService.FindReferences(local, null)
+			);
+		}
+		
 		public static ICSharpCode.Core.WinForms.MenuCommand MakeFindReferencesMenuCommand(EventHandler handler)
 		{
 			return new ICSharpCode.Core.WinForms.MenuCommand("${res:SharpDevelop.Refactoring.FindReferencesCommand}", handler) {
-			                                                 	ShortcutKeys = System.Windows.Forms.Keys.F12
-			                                                 };
+				ShortcutKeys = System.Windows.Forms.Keys.F12
+			};
 		}
 		#endregion
 	}
