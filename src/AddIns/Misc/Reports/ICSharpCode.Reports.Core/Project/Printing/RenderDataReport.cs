@@ -155,7 +155,8 @@ namespace ICSharpCode.Reports.Core {
 			ITableContainer tableContainer = base.CurrentSection.Items[0] as ITableContainer;
 			
 			// branch to render table's etc
-			if (tableContainer != null) {
+			if (tableContainer != null)
+			{
 				tableContainer.DataNavigator = nav;
 				tableContainer.Parent = base.CurrentSection;
 				tableContainer.ExpressionEvaluatorFacade = base.Evaluator;
@@ -166,10 +167,7 @@ namespace ICSharpCode.Reports.Core {
 				}
 				
 				
-				//tableContainer.RenderTable(this.CurrentSection,this.SectionBounds,rpea,this.Layout);
-			
 				base.RenderTable (base.CurrentSection,tableContainer,rpea);
-			
 				
 				this.ReportDocument.DetailsDone = true;
 			}

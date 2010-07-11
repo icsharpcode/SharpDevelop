@@ -33,7 +33,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			}
 			
 			BaseReportItem containerItem = container as BaseReportItem;
-//			container.Items.SortByLocation();
 			Rectangle desiredContainerRectangle = new Rectangle (containerItem.Location,containerItem.Size);
 			
 			System.Collections.Generic.IEnumerable<BaseReportItem> canGrowShrinkCollection = from bt in container.Items where bt.CanGrow == true select bt;
@@ -42,7 +41,8 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				int extend = containerItem.Size.Height - canGrowShrinkCollection.First().Size.Height;
 				Rectangle surroundingRec = FindSurroundingRectangle(graphics,canGrowShrinkCollection);
 				
-				if (surroundingRec.Height > desiredContainerRectangle.Height) {
+				if (surroundingRec.Height > desiredContainerRectangle.Height)
+				{
 					desiredContainerRectangle = new Rectangle(containerItem.Location.X,
 					                                          containerItem  .Location.Y,
 					                                          containerItem .Size.Width,
@@ -85,28 +85,11 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 	
-		/*
-		private static Rectangle FindSurroundingRectangle_2 (Graphics graphics,IEnumerable<BaseReportItem> canGrowShrinkCollection)
-		{
-			int top = int.MaxValue;
-			Rectangle rec = new Rectangle(canGrowShrinkCollection.First().Location.X,
-			                              canGrowShrinkCollection.First().Location.Y,
-			                              canGrowShrinkCollection.First().Size.Width,
-			                              canGrowShrinkCollection.First().Size.Height);
-			
-			foreach (BaseReportItem elemToLayout in canGrowShrinkCollection) {
-				Size textSize = MeasurementService.MeasureReportItem (graphics,elemToLayout);
-				elemToLayout.Size = new Size(elemToLayout.Size.Width,textSize.Height);
-				rec = Rectangle.Union(rec,new Rectangle(elemToLayout.Location,elemToLayout.Size));
-				top = Math.Min(top, elemToLayout.Location.Y);
-			}
-			return rec;
-		}
-		*/
 		
 		private static Rectangle FindSurroundingRectangle (Graphics graphics,IEnumerable<BaseReportItem> canGrowShrinkCollection)
 		{
 			int top = int.MaxValue;
+			
 			Rectangle rec = new Rectangle(canGrowShrinkCollection.First().Location.X,
 			                              canGrowShrinkCollection.First().Location.Y,
 			                              canGrowShrinkCollection.First().Size.Width,

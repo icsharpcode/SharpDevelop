@@ -311,6 +311,7 @@ namespace ICSharpCode.Reports.Addin
 		#endregion
 		
 		
+		
 		#region SelectionService
 		
 		private void SelectionChangedHandler(object sender, EventArgs args)
@@ -326,6 +327,7 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		#endregion
+		
 		
 		#region Transaction
 		
@@ -343,6 +345,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		
 		#endregion
+		
 		
 		
 		#region ComponentChangeService
@@ -384,6 +387,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		
 		#endregion
+		
 		
 		
 		#region unload Designer
@@ -445,6 +449,7 @@ namespace ICSharpCode.Reports.Addin
 		}
 		 */
 		#endregion
+		
 		
 		#region HasPropertyContainer implementation
 		
@@ -618,6 +623,7 @@ namespace ICSharpCode.Reports.Addin
 				return ReportingSideTabProvider.ReportingSideBar;
 			}
 		}
+		
 		#endregion
 		
 		

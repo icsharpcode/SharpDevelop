@@ -38,6 +38,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		#endregion
 		
+		
 		#region AdjustParentInSection
 		
 		public  static void AdjustParent (BaseReportItem parent,ReportItemCollection items)

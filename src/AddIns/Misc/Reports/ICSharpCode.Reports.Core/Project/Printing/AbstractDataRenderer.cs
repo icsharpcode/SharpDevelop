@@ -81,6 +81,7 @@ namespace ICSharpCode.Reports.Core
 					
 					if (PrintHelper.IsTextOnlyRow(row) )
 					{
+						PrintHelper.SetLayoutForRow(rpea.PrintPageEventArgs.Graphics,base.Layout,row);
 						
 						Rectangle r =  StandardPrinter.RenderContainer(row,Evaluator,currentPosition,rpea);
 						currentPosition =PrintHelper. ConvertRectangleToCurentPosition (r);
@@ -101,8 +102,10 @@ namespace ICSharpCode.Reports.Core
 								return;
 							}
 							this.dataNavigator.Fill(row.Items);
-
+							
+							PrintHelper.SetLayoutForRow(rpea.PrintPageEventArgs.Graphics,base.Layout,row);
 							Rectangle r =  StandardPrinter.RenderContainer(row,Evaluator,currentPosition,rpea);
+							
 							currentPosition = PrintHelper.ConvertRectangleToCurentPosition (r);
 							
 							currentPosition = new Point(parent.Location.X + row.Location.X,currentPosition.Y);
