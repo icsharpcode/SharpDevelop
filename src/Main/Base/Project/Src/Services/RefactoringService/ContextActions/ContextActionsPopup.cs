@@ -7,6 +7,8 @@
 using System;
 using System.Windows;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
@@ -24,6 +26,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.ActionsControl = new ContextActionsControl();
 			// Close when any action excecuted
 			this.ActionsControl.ActionExecuted += delegate { this.Close(); };
+			this.KeyDown += new KeyEventHandler(ContextActionsPopup_KeyDown);
+		}
+
+		void ContextActionsPopup_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Escape)
+				Close();
 		}
 		
 		private ContextActionsControl ActionsControl 
