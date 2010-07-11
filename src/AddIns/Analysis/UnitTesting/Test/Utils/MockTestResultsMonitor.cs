@@ -17,12 +17,18 @@ namespace UnitTesting.Tests.Utils
 		bool disposeMethodCalled;
 		bool readMethodCalled;
 		string fileName;
+		long filePosition;
 		
 		public MockTestResultsMonitor()
 		{
 		}
 		
 		public event TestFinishedEventHandler TestFinished;
+		
+		public long InitialFilePosition {
+			get { return filePosition; }
+			set { filePosition = value; }
+		}
 		
 		public bool IsStartMethodCalled {
 			get { return startMethodCalled; }

@@ -26,6 +26,7 @@ namespace ICSharpCode.RubyBinding
 		
 		#region Property names
 		public static readonly string RubyFileNameProperty = "RubyFileName";
+		public static readonly string RubyLibraryPathProperty = "RubyLibraryPath";
 		#endregion
 		
 		Properties properties;
@@ -42,6 +43,15 @@ namespace ICSharpCode.RubyBinding
 		public RubyAddInOptions(Properties properties)
 		{
 			this.properties = properties;
+		}
+		
+		public string RubyLibraryPath {
+			get { return properties.Get<string>(RubyLibraryPathProperty, String.Empty); }
+			set { properties.Set(RubyLibraryPathProperty, value.Trim()); }
+		}
+		
+		public bool HasRubyLibraryPath {
+			get { return !String.IsNullOrEmpty(RubyLibraryPath); }
 		}
 
 		/// <summary>

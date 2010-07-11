@@ -317,8 +317,21 @@
     <Compile Include="RubyLanguage\ProjectBindingTestFixture.cs" />
     <Compile Include="RubyLanguage\RubyLanguageBindingTestFixture.cs" />
     <Compile Include="RubyLanguage\RubyLanguagePropertiesTests.cs" />
+    <Compile Include="Testing\CreateRubyTestRunnerTestFixture.cs" />
+    <Compile Include="Testing\CreateTextWriterInfoEqualsTestFixture.cs" />
+    <Compile Include="Testing\CreateTextWriterFromCreateTextWriterInfoTestFixture.cs" />
+    <Compile Include="Testing\RubyConsoleApplicationTestFixture.cs" />
+    <Compile Include="Testing\RubyTestDebuggerRunsSelectedTestMethodTestFixture.cs" />
+    <Compile Include="Testing\RubyTestFrameworkIsTestClassTests.cs" />
+    <Compile Include="Testing\RubyTestFrameworkIsTestMethodTests.cs" />
+    <Compile Include="Testing\RubyTestFrameworkIsTestProjectTests.cs" />
+    <Compile Include="Testing\RubyTestResultFailureTestFixture.cs" />
+    <Compile Include="Testing\RubyTestRunnerApplicationTests.cs" />
+    <Compile Include="Testing\RubyTestRunnerRunsSelectedTestMethodTestFixture.cs" />
+    <Compile Include="Testing\RubyTestRunnerResponseFileTestFixture.cs" />
     <Compile Include="Utils\AddedComponent.cs" />
     <Compile Include="Utils\AddInHelper.cs" />
+    <Compile Include="Utils\AddInPathHelper.cs" />
     <Compile Include="Utils\BarItemCollection.cs" />
     <Compile Include="Utils\ConvertedFile.cs" />
     <Compile Include="Utils\CreatedComponent.cs" />
@@ -344,7 +357,6 @@
     <Compile Include="Utils\MockEventBindingService.cs" />
     <Compile Include="Utils\MockEventDescriptor.cs" />
     <Compile Include="Utils\MockExtenderProviderService.cs" />
-    <Compile Include="Utils\MockMethod.cs" />
     <Compile Include="Utils\MockOpenedFile.cs" />
     <Compile Include="Utils\MockProject.cs" />
     <Compile Include="Utils\MockProjectContent.cs" />
@@ -352,6 +364,7 @@
     <Compile Include="Utils\MockResourceReader.cs" />
     <Compile Include="Utils\MockResourceService.cs" />
     <Compile Include="Utils\MockResourceWriter.cs" />
+    <Compile Include="Utils\MockRubyFileService.cs" />
     <Compile Include="Utils\MockSite.cs" />
     <Compile Include="Utils\MockConsoleTextEditor.cs" />
     <Compile Include="Utils\MockTextEditor.cs" />
@@ -365,10 +378,13 @@
     <Compile Include="Utils\NullPropertyUserControl.cs" />
     <Compile Include="Utils\RubyBindingAddInFile.cs" />
     <Compile Include="Utils\RubyParserHelper.cs" />
+    <Compile Include="Utils\RubySelectedTestsHelper.cs" />
     <Compile Include="Utils\SupportInitCustomControl.cs" />
+    <Compile Include="Utils\Tests\AddInPathHelperTestFixture.cs" />
     <Compile Include="Utils\Tests\MockControlDispatcherTestFixture.cs" />
     <Compile Include="Utils\Tests\MockConsoleTextEditorTestFixture.cs" />
     <Compile Include="Utils\Tests\MockEditableViewContentTestFixture.cs" />
+    <Compile Include="Utils\Tests\MockRubyFileServiceTestFixture.cs" />
     <EmbeddedResource Include="..\Project\RubyBinding.addin">
       <Link>RubyBinding.addin</Link>
     </EmbeddedResource>
@@ -377,6 +393,7 @@
     <EmbeddedResource Include="Strings.resx" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Testing" />
     <Folder Include="Utils\Tests" />
     <ProjectReference Include="..\..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
@@ -401,6 +418,14 @@
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Analysis\UnitTesting\Test\UnitTesting.Tests.csproj">
+      <Project>{44A8DE09-CAB9-49D8-9CFC-5EB0A552F181}</Project>
+      <Name>UnitTesting.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Analysis\UnitTesting\UnitTesting.csproj">
+      <Project>{1F261725-6318-4434-A1B1-6C70CE4CD324}</Project>
+      <Name>UnitTesting</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\DisplayBindings\AvalonEdit.AddIn\AvalonEdit.AddIn.csproj">
       <Project>{0162E499-42D0-409B-AA25-EED21F75336B}</Project>

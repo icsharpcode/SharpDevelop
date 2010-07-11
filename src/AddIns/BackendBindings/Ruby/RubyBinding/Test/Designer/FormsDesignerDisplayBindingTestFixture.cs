@@ -14,7 +14,7 @@ using ICSharpCode.SharpDevelop.Gui;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 
-namespace RubyBinding.Tests
+namespace RubyBinding.Tests.Designer
 {
 	/// <summary>
 	/// Tests the RubyFormsDesignerDisplayBinding.

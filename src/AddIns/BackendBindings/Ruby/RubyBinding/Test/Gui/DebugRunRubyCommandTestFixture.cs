@@ -49,15 +49,15 @@ namespace RubyBinding.Tests.Gui
 		}
 		
 		[Test]
-		public void ProcessInfoFileName()
+		public void ProcessInfoFileNameContainsPathToIronRubyConsole()
 		{
 			Assert.AreEqual(@"C:\IronRuby\ir.exe", debugger.ProcessStartInfo.FileName);
 		}
 		
 		[Test]
-		public void ProcessInfoArgs()
+		public void ProcessInfoArgsHasDebugArgument()
 		{
-			Assert.AreEqual("-D -1.9 test.rb", debugger.ProcessStartInfo.Arguments);
+			Assert.AreEqual("-D test.rb", debugger.ProcessStartInfo.Arguments);
 		}
 	}
 }

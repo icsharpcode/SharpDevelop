@@ -21,7 +21,9 @@ namespace ICSharpCode.UnitTesting
 		TestResultsReader testResultsReader;
 		FileSystemWatcher fileSystemWatcher;
 
+		long initialFilePosition = 3;
 		long filePosition;
+		
 		const int BytesBufferLength = 1024;
 		byte[] bytes = new byte[BytesBufferLength];
 		
@@ -40,6 +42,11 @@ namespace ICSharpCode.UnitTesting
 			: this(Path.GetTempFileName())
 		{
 			ResetFilePosition();
+		}
+		
+		public long InitialFilePosition {
+			get { return initialFilePosition; }
+			set { initialFilePosition = value; }
 		}
 		
 		/// <summary>
@@ -169,7 +176,7 @@ namespace ICSharpCode.UnitTesting
 		
 		void ResetFilePosition()
 		{
-			filePosition = 3; // Use 3 to ignores UTF-8 preamble.
+			filePosition = initialFilePosition;
 		}
 	}
 }

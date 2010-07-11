@@ -17,6 +17,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
+using UnitTesting.Tests.Utils;
 
 namespace RubyBinding.Tests.Designer
 {
@@ -26,7 +27,7 @@ namespace RubyBinding.Tests.Designer
 		[Test]
 		public void GetMethodReplaceRegion()
 		{
-			MockMethod method = new MockMethod();
+			MockMethod method = MockMethod.CreateMockMethodWithoutAnyAttributes();
 			DomRegion bodyRegion = new DomRegion(0, 4, 1, 4);
 			method.BodyRegion = bodyRegion;
 			DomRegion expectedRegion = new DomRegion(bodyRegion.BeginLine + 1, 1, bodyRegion.EndLine, 1);

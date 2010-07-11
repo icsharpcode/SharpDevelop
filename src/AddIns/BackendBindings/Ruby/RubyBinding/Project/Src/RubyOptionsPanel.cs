@@ -21,6 +21,7 @@ namespace ICSharpCode.RubyBinding
 	{
 		RubyAddInOptions options;
 		TextBox rubyFileNameTextBox;
+		TextBox rubyLibraryPathTextBox;
 		
 		public RubyOptionsPanel() : this(new RubyAddInOptions())
 		{
@@ -37,6 +38,8 @@ namespace ICSharpCode.RubyBinding
 			
 			rubyFileNameTextBox = (TextBox)ControlDictionary["rubyFileNameTextBox"];
 			rubyFileNameTextBox.Text = options.RubyFileName;
+			rubyLibraryPathTextBox = (TextBox)ControlDictionary["rubyLibraryPathTextBox"];
+			rubyLibraryPathTextBox.Text = options.RubyLibraryPath;
 			
 			ConnectBrowseButton("browseButton", "rubyFileNameTextBox", "${res:SharpDevelop.FileFilter.ExecutableFiles}|*.exe", TextBoxEditMode.EditRawProperty);
 		}
@@ -44,6 +47,7 @@ namespace ICSharpCode.RubyBinding
 		public override bool StorePanelContents()
 		{
 			options.RubyFileName = rubyFileNameTextBox.Text;
+			options.RubyLibraryPath = rubyLibraryPathTextBox.Text;
 			return true;
 		}
 	}

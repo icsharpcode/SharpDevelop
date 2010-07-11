@@ -67,5 +67,42 @@ namespace RubyBinding.Tests.Configuration
 			Assert.AreEqual(fileName, options.RubyFileName);
 			Assert.AreEqual(fileName, p["RubyFileName"]);
 		}
+		
+		[Test]
+		public void RubyLibraryPathTakenFromProperties()
+		{
+			Properties p = new Properties();
+			RubyAddInOptions options = new RubyAddInOptions(p);
+			string expectedRubyLibraryPath = @"c:\ruby\lib;c:\ruby\lib\lib-tk";
+			p["RubyLibraryPath"] = expectedRubyLibraryPath;
+			Assert.AreEqual(expectedRubyLibraryPath, options.RubyLibraryPath);
+		}
+		
+		[Test]
+		public void HasRubyLibraryPathReturnsTrueForNonEmptyPath()
+		{
+			Properties p = new Properties();
+			RubyAddInOptions options = new RubyAddInOptions(p);
+			options.RubyLibraryPath = @"c:\ruby\lib";
+			Assert.IsTrue(options.HasRubyLibraryPath);
+		}
+		
+		[Test]
+		public void HasRubyLibraryPathReturnsFalseForEmptyPath()
+		{
+			Properties p = new Properties();
+			RubyAddInOptions options = new RubyAddInOptions(p);
+			options.RubyLibraryPath = String.Empty;
+			Assert.IsFalse(options.HasRubyLibraryPath);
+		}
+		
+		[Test]
+		public void RubyLibraryPathTrimsPath()
+		{
+			Properties p = new Properties();
+			RubyAddInOptions options = new RubyAddInOptions(p);
+			options.RubyLibraryPath = "    ";
+			Assert.AreEqual(String.Empty, options.RubyLibraryPath);
+		}		
 	}
 }

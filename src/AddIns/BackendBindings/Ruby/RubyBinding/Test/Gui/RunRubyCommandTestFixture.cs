@@ -59,22 +59,19 @@ namespace RubyBinding.Tests.Gui
 		}
 		
 		[Test]
-		public void ProcessInfoFileName()
+		public void ProcessInfoFileNameIsIronRubyConsole()
 		{
 			Assert.AreEqual(@"C:\IronRuby\ir.exe", debugger.ProcessStartInfo.FileName);
 		}
 		
-		/// <summary>
-		/// The -1.9 parameter is used to enable Ruby 1.9 mode otherwise UTF8 files cannot be processed.
-		/// </summary>
 		[Test]
-		public void ProcessInfoArgs()
+		public void ProcessInfoArgsContainsFileNameActiveInTextEditor()
 		{
-			Assert.AreEqual("-1.9 test.rb", debugger.ProcessStartInfo.Arguments);
+			Assert.AreEqual("test.rb", debugger.ProcessStartInfo.Arguments);
 		}
 		
 		[Test]
-		public void WorkingDirectory()
+		public void WorkingDirectoryIsSameDirectoryAsFileBeingRun()
 		{
 			Assert.AreEqual(@"C:\Projects", debugger.ProcessStartInfo.WorkingDirectory);
 		}

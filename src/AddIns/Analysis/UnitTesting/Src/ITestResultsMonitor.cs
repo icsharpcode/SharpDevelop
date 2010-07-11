@@ -18,5 +18,7 @@ namespace ICSharpCode.UnitTesting
 		void Stop();
 		void Start();
 		void Read();
+		
+		long InitialFilePosition { get; set; }
 	}
 }

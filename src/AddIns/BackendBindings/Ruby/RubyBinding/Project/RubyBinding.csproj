@@ -83,7 +83,10 @@
     <Compile Include="Src\CommandLineHistory.cs" />
     <Compile Include="Src\ConsoleTextEditorKeyEventArgs.cs" />
     <Compile Include="Src\ControlDispatcher.cs" />
+    <Compile Include="Src\CreateTextWriterInfo.cs" />
     <Compile Include="Src\IControlDispatcher.cs" />
+    <Compile Include="Src\IRubyFileService.cs" />
+    <Compile Include="Src\RubyConsoleApplication.cs" />
     <Compile Include="Src\RubyConsoleCompletionData.cs" />
     <Compile Include="Src\ConvertProjectToRubyProjectCommand.cs" />
     <Compile Include="Src\ConvertToRubyMenuCommand.cs" />
@@ -109,6 +112,7 @@
     <Compile Include="Src\RubyDesignerGenerator.cs" />
     <Compile Include="Src\RubyDesignerLoader.cs" />
     <Compile Include="Src\RubyDesignerLoaderProvider.cs" />
+    <Compile Include="Src\RubyFileService.cs" />
     <Compile Include="Src\RubyFormattingStrategy.cs" />
     <Compile Include="Src\RubyFormsDesignerDisplayBinding.cs" />
     <Compile Include="Src\RubyLanguageBinding.cs" />
@@ -120,6 +124,12 @@
     <Compile Include="Src\RubyParser.cs" />
     <Compile Include="Src\RubyProject.cs" />
     <Compile Include="Src\RubyPropertyValueAssignment.cs" />
+    <Compile Include="Src\RubyTestDebugger.cs" />
+    <Compile Include="Src\RubyTestFramework.cs" />
+    <Compile Include="Src\RubyTestResult.cs" />
+    <Compile Include="Src\RubyTestRunner.cs" />
+    <Compile Include="Src\RubyTestRunnerApplication.cs" />
+    <Compile Include="Src\RubyTestRunnerResponseFile.cs" />
     <Compile Include="Src\RubyTextEditorViewContent.cs" />
     <Compile Include="Src\RunDebugRubyCommand.cs" />
     <Compile Include="Src\RunRubyCommand.cs" />
@@ -154,8 +164,24 @@
     <None Include="Templates\LibraryProject.xpt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="TestRunner\sdselectedtestsfile.rb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestRunner\sdtest.rb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestRunner\sdtestresult.rb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestRunner\sdtestresultwriter.rb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="TestRunner\sdtestrunner.rb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="TestRunner" />
     <Folder Include="Resources" />
     <Folder Include="Src" />
     <Folder Include="Templates" />
@@ -182,6 +208,11 @@
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Analysis\UnitTesting\UnitTesting.csproj">
+      <Project>{1F261725-6318-4434-A1B1-6C70CE4CD324}</Project>
+      <Name>UnitTesting</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">

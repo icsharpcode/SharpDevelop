@@ -26,6 +26,7 @@ namespace RubyBinding.Tests.Gui
 		Properties properties;
 		RubyAddInOptions options;
 		TextBox fileNameTextBox;
+		TextBox rubyLibraryPathTextBox;
 		
 		[SetUp]
 		public void SetUp()
@@ -33,9 +34,11 @@ namespace RubyBinding.Tests.Gui
 			properties = new Properties();
 			options = new RubyAddInOptions(properties);
 			options.RubyFileName = @"C:\Ruby\ir.exe";
+			options.RubyLibraryPath = @"C:\Ruby\lib";
 			optionsPanel = new RubyOptionsPanel(options);
 			optionsPanel.LoadPanelContents();
 			fileNameTextBox = (TextBox)optionsPanel.ControlDictionary["rubyFileNameTextBox"];
+			rubyLibraryPathTextBox = (TextBox)optionsPanel.ControlDictionary["rubyLibraryPathTextBox"];
 		}
 		
 		[TearDown]
@@ -51,18 +54,33 @@ namespace RubyBinding.Tests.Gui
 		}
 		
 		[Test]
+		public void RubyLibraryPathDisplayed()
+		{
+			Assert.AreEqual(options.RubyLibraryPath, rubyLibraryPathTextBox.Text);
+		}
+		
+		[Test]
 		public void PanelIsOptionsPanel()
 		{
 			Assert.IsNotNull(optionsPanel as XmlFormsOptionPanel);
 		}
 		
 		[Test]
-		public void SaveOptions()
+		public void SavingOptionsUpdatesRubyFileName()
 		{
 			string fileName = @"C:\Program Files\IronRuby\ir.exe";
 			fileNameTextBox.Text = fileName;
 			optionsPanel.StorePanelContents();
 			Assert.AreEqual(fileName, options.RubyFileName);
+		}
+		
+		[Test]
+		public void SavingOptionsUpdatesRubyLibraryPath()
+		{
+			string path = @"c:\Program Files\Python\lib";
+			rubyLibraryPathTextBox.Text = path;
+			optionsPanel.StorePanelContents();
+			Assert.AreEqual(path, options.RubyLibraryPath);
 		}
 	}
 }

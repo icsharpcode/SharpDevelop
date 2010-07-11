@@ -57,21 +57,32 @@ namespace ICSharpCode.RubyBinding
 			ProcessStartInfo info = new ProcessStartInfo();
 			info.FileName = options.RubyFileName;
 			info.Arguments = GetArguments();
-			info.WorkingDirectory = Path.GetDirectoryName(workbench.ActiveWorkbenchWindow.ActiveViewContent.PrimaryFileName);
+			info.WorkingDirectory = GetWorkingDirectory();
 				
 			return info;
 		}
 		
+		string GetWorkingDirectory()
+		{
+			return Path.GetDirectoryName(WorkbenchPrimaryFileName);
+		}
+		
+		FileName WorkbenchPrimaryFileName {
+			get { return workbench.ActiveWorkbenchWindow.ActiveViewContent.PrimaryFileName; }
+		}
+		
 		string GetArguments()
 		{
-			// Get the Ruby script filename.
-			string rubyScriptFileName = Path.GetFileName(workbench.ActiveWorkbenchWindow.ActiveViewContent.PrimaryFileName);
-			string args = "-1.9 " + rubyScriptFileName;
-			
+			string args = GetRubyScriptFileName();			
 			if (Debug) {
 				return "-D " + args;
 			}
 			return args;
+		}
+		
+		string GetRubyScriptFileName()
+		{
+			return Path.GetFileName(WorkbenchPrimaryFileName);
 		}
 	}
 }
