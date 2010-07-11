@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			RoutedCommand routedCommand = e.Command as RoutedCommand;
 			AvalonWorkbenchWindow workbenchWindow = ActiveWorkbenchWindow as AvalonWorkbenchWindow;
 			if (!e.Handled && routedCommand != null && workbenchWindow != null && !isInNestedCanExecute) {
-				IInputElement target = CustomFocusManager.GetFocusedChild(workbenchWindow);
+				IInputElement target = workbenchWindow.GetCommandTarget();
 				if (target != null && target != e.OriginalSource) {
 					isInNestedCanExecute = true;
 					try {
@@ -158,7 +158,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			RoutedCommand routedCommand = e.Command as RoutedCommand;
 			AvalonWorkbenchWindow workbenchWindow = ActiveWorkbenchWindow as AvalonWorkbenchWindow;
 			if (!e.Handled && routedCommand != null && workbenchWindow != null && !isInNestedExecute) {
-				IInputElement target = CustomFocusManager.GetFocusedChild(workbenchWindow);
+				IInputElement target = workbenchWindow.GetCommandTarget();
 				if (target != null && target != e.OriginalSource) {
 					isInNestedExecute = true;
 					try {
