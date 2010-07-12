@@ -1139,6 +1139,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			List<ICompletionEntry> result = new List<ICompletionEntry>();
 			if (language == NR.SupportedLanguage.VBNet) {
+				if (context == ExpressionContext.MethodBody)
+					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 			} else {
 				if (context == ExpressionContext.TypeDeclaration) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.TypeLevel);
