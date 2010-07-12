@@ -300,13 +300,16 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Other, "UpdateModuleSymbols", pAppDomain);
 			
-			foreach (Module module in process.Modules) {
-				if (module.CorModule == pModule) {
-					process.TraceMessage("UpdateModuleSymbols: Found module: " + pModule.GetName());
-					module.UpdateSymbolsFromStream(pSymbolStream);
-					process.Debugger.Breakpoints.SetInModule(module);
-					break;
-				}
+			Module module = process.Modules[pModule];
+			if (module.CorModule is ICorDebugModule3 && module.IsDynamic) {
+				// In .NET 4.0, we use the LoadClass callback to load dynamic modules
+				// because it always works - UpdateModuleSymbols does not.
+				//  - Simple dynamic code generation seems to trigger both callbacks.
+				//  - IronPython for some reason causes just the LoadClass callback
+				//    so we choose to rely on it out of the two.
+			} else {
+				// In .NET 2.0, this is the the only method and it works fine
+				module.LoadSymbolsFromMemory(pSymbolStream);
 			}
 			
 			ExitCallback();
@@ -346,7 +349,8 @@ namespace Debugger
 		{
 			EnterCallback(PausedReason.Other, "LoadModule " + pModule.GetName(), pAppDomain);
 			
-			process.Modules.Add(new Module(process.AppDomains[pAppDomain], pModule));
+			Module module = new Module(process.AppDomains[pAppDomain], pModule);
+			process.Modules.Add(module);
 			
 			ExitCallback();
 		}
@@ -389,6 +393,11 @@ namespace Debugger
 		public void LoadClass(ICorDebugAppDomain pAppDomain, ICorDebugClass c)
 		{
 			EnterCallback(PausedReason.Other, "LoadClass", pAppDomain);
+			
+			Module module = process.Modules[c.GetModule()];
+			
+			// Dynamic module has been extended - reload symbols to inlude new class
+			module.LoadSymbolsDynamic();
 			
 			ExitCallback();
 		}

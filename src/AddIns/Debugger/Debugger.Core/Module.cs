@@ -23,7 +23,8 @@ namespace Debugger
 		Process   process;
 		
 		bool   unloaded = false;
-		string fullPath;
+		string name;
+		string fullPath = string.Empty;
 		
 		int orderOfLoading = 0;
 		ICorDebugModule corModule;
@@ -32,14 +33,10 @@ namespace Debugger
 		
 		internal Dictionary<string, DebugType> LoadedDebugTypes = new Dictionary<string, DebugType>();
 		
-		public event EventHandler<ModuleEventArgs> SymbolsLoaded;
-		
-		protected virtual void OnSymbolsLoaded(ModuleEventArgs e)
-		{
-			if (SymbolsLoaded != null) {
-				SymbolsLoaded(this, e);
-			}
-		}
+		/// <summary>
+		/// Occurs when symbols are loaded or unloaded (for memory modules)
+		/// </summary>
+		public event EventHandler<ModuleEventArgs> SymbolsUpdated;
 		
 		public AppDomain AppDomain {
 			get { return appDomain; }
@@ -120,18 +117,17 @@ namespace Debugger
 			}
 		}
 		
+		public string Name {
+			get {
+				return name;
+			}
+		}
+		
 		[Debugger.Tests.Ignore]
 		public string FullPath { 
 			get {
 				return fullPath;
 			} 
-		}
-		
-		public string Filename {
-			get {
-				if (IsDynamic || IsInMemory) return String.Empty;
-				return System.IO.Path.GetFileName(FullPath);
-			}
 		}
 		
 		[Debugger.Tests.Ignore]
@@ -188,38 +184,96 @@ namespace Debugger
 			
 			metaData = new MetaDataImport(corModule);
 			
-			fullPath = corModule.GetName();
+			if (IsDynamic || IsInMemory) {
+				name     = corModule.GetName();
+			} else {
+				fullPath = corModule.GetName();
+				name     = System.IO.Path.GetFileName(FullPath);
+			}
 			
-			LoadSymbols(process.Options.SymbolsSearchPaths);
-			
+			LoadSymbolsFromDisk(process.Options.SymbolsSearchPaths);
 			ResetJustMyCodeStatus();
 		}
 		
-		/// <summary> Try to load the debugging symbols (.pdb) from the given path </summary>
-		public void LoadSymbols(string[] searchPath)
+		public void UnloadSymbols()
 		{
-			if (symReader == null) {
-				symReader = metaData.GetSymReader(fullPath, string.Join("; ", searchPath ?? new string[0]));
-				if (symReader != null) {
-					OnSymbolsLoaded(new ModuleEventArgs(this));
-					
-					ResetJustMyCodeStatus();
+			if (symReader != null) {
+				((ISymUnmanagedDispose)symReader).Destroy();
+				symReader = null;
+			}
+		}
+		
+		/// <summary>
+		/// Load symblos for on-disk module
+		/// </summary>
+		public void LoadSymbolsFromDisk(string[] searchPath)
+		{
+			if (!IsDynamic && !IsInMemory) {
+				if (symReader == null) {
+					symReader = metaData.GetSymReader(fullPath, string.Join("; ", searchPath ?? new string[0]));
+					if (symReader != null) {
+						process.TraceMessage("Loaded symbols from disk for " + this.Name);
+						OnSymbolsUpdated();
+					}
 				}
 			}
 		}
 		
-		public void UpdateSymbolsFromStream(IStream pSymbolStream)
+		/// <summary>
+		/// Load symbols for in-memory module
+		/// </summary>
+		public void LoadSymbolsFromMemory(IStream pSymbolStream)
 		{
-			if (symReader != null) {
-				((ISymUnmanagedDispose)symReader).Destroy();
+			if (this.IsInMemory) {
+				UnloadSymbols();
+				
+				symReader = metaData.GetSymReader(pSymbolStream);
+				if (symReader != null) {
+					process.TraceMessage("Loaded symbols from memory for " + this.Name);
+				} else {
+					process.TraceMessage("Failed to load symbols from memory");
+				}
+				
+				OnSymbolsUpdated();
 			}
-			
-			symReader = metaData.GetSymReader(pSymbolStream);
-			if (symReader != null) {
-				OnSymbolsLoaded(new ModuleEventArgs(this));
+		}
+		
+		/// <summary>
+		/// Load symbols for dynamic module
+		/// (as of .NET 4.0)
+		/// </summary>
+		public void LoadSymbolsDynamic()
+		{
+			if (this.CorModule is ICorDebugModule3 && this.IsDynamic) {
+				Guid guid = new Guid(0, 0, 0, 0xc0, 0, 0, 0, 0, 0, 0, 70);
+				symReader = (ISymUnmanagedReader)((ICorDebugModule3)this.CorModule).CreateReaderForInMemorySymbols(guid);
+				TrackedComObjects.Track(symReader);
+				process.TraceMessage("Loaded dynamic symbols for " + this.Name);
+				OnSymbolsUpdated();
 			}
-			
+		}
+		
+		void OnSymbolsUpdated()
+		{
+			SetBreakpoints();
 			ResetJustMyCodeStatus();
+			if (SymbolsUpdated != null) {
+				SymbolsUpdated(this, new ModuleEventArgs(this));
+			}
+		}
+		
+		void SetBreakpoints() 
+		{
+			if (this.HasSymbols) {
+				// This is in case that the client modifies the collection as a response to set breakpoint
+				// NB: If client adds new breakpoint, it will be set directly as a result of his call, not here (because module is already loaded)
+				List<Breakpoint> collection = new List<Breakpoint>();
+				collection.AddRange(this.Debugger.Breakpoints);
+				
+				foreach (Breakpoint b in collection) {
+					b.SetBreakpoint(this);
+				}
+			}
 		}
 		
 		/// <summary> Sets all code as being 'my code'.  The code will be gradually
@@ -251,17 +305,15 @@ namespace Debugger
 		
 		public void Dispose()
 		{
+			UnloadSymbols();
 			metaData.Dispose();
-			if (symReader != null) {
-				((ISymUnmanagedDispose)symReader).Destroy();
-			}
 			
 			unloaded = true;
 		}
 		
 		public override string ToString()
 		{
-			return string.Format("{0}", this.Filename);
+			return string.Format("{0}", this.Name);
 		}
 	}
 	

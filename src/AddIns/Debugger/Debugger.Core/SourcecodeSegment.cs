@@ -123,9 +123,11 @@ namespace Debugger
 					if (!symDoc.GetURL().ToLower().EndsWith(filename)) continue;
 					byte[] symDocCheckSum = symDoc.GetCheckSum();
 					if (symDocCheckSum.Length != checksum.Length) continue;
+					bool match = true;
 					for (int i = 0; i < checksum.Length; i++) {
-						if (symDocCheckSum[i] != checksum[i]) continue;
+						if (symDocCheckSum[i] != checksum[i]) match = false;
 					}
+					if (!match) continue;
 					return symDoc;
 				}
 				return null; // Not found

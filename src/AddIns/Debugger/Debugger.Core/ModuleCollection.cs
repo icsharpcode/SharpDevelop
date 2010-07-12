@@ -19,7 +19,7 @@ namespace Debugger
 		public Module this[string filename] {
 			get {
 				foreach(Module module in this) {
-					if (module.Filename == filename) {
+					if (module.Name == filename) {
 						return module;
 					}
 				}
@@ -42,7 +42,6 @@ namespace Debugger
 		{
 			module.OrderOfLoading = lastAssignedModuleOrderOfLoading;
 			lastAssignedModuleOrderOfLoading++;
-			this.Debugger.Breakpoints.SetInModule(module);
 			base.OnAdded(module);
 		}
 		

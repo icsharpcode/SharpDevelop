@@ -245,7 +245,7 @@ namespace Debugger
 		{
 			foreach(Process process in this.Processes) {
 				foreach(Module module in process.Modules) {
-					module.LoadSymbols(process.Options.SymbolsSearchPaths);
+					module.LoadSymbolsFromDisk(process.Options.SymbolsSearchPaths);
 				}
 			}
 			TraceMessage("Reloaded symbols");

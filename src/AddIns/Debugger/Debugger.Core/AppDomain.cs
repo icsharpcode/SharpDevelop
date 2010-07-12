@@ -36,7 +36,7 @@ namespace Debugger
 			get {
 				if (mscorlib != null) return mscorlib;
 				foreach(Module m in Process.Modules) {
-					if (m.Filename == "mscorlib.dll" &&
+					if (m.Name == "mscorlib.dll" &&
 					    m.AppDomain == this) {
 						mscorlib = m;
 						return mscorlib;

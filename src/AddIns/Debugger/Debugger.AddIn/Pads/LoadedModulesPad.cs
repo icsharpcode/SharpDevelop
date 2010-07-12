@@ -141,7 +141,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			ListViewItem newItem = new ListViewItem();
 			newItem.Tag = module;
 			RefreshItem(newItem);
-			module.SymbolsLoaded += delegate { RefreshItem(newItem); };
+			module.SymbolsUpdated += delegate { RefreshItem(newItem); };
 			loadedModulesList.Items.Add(newItem);
 		}
 		
@@ -151,9 +151,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			item.SubItems.Clear();
 			item.SubItems.AddRange(
 				new string[] {
-					module.Filename,
+					module.Name,
 					String.Format("{0:X8}", module.BaseAdress),
-					module.FullPath,
+					module.IsDynamic ? "(dynamic)" : module.IsInMemory ? "(in memory)" : module.FullPath,
 					module.OrderOfLoading.ToString(),
 					"",
 					"",
