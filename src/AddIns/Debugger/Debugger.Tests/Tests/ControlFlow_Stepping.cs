@@ -188,6 +188,9 @@ namespace Debugger.Tests {
 				Assert.AreEqual("Main", process.SelectedStackFrame.MethodInfo.Name);
 			}
 			
+			// Restore default state
+			process.Options.EnableJustMyCode = true;
+			
 			EndTest();
 		}
 	}

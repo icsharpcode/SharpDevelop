@@ -48,6 +48,7 @@
     <Compile Include="DebuggerTestsBase.cs" />
     <Compile Include="Tests\AppDomain_Tests.cs" />
     <Compile Include="Tests\ControlFlow_NoBreak.cs" />
+    <Compile Include="Tests\DynamicCode.cs" />
     <Compile Include="Tests\ExpressionEvaluator_Tests.cs" />
     <Compile Include="Tests\Breakpoint_Tests.cs" />
     <Compile Include="Tests\StackFrame_Callstack.cs" />

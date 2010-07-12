@@ -50,6 +50,7 @@ namespace Debugger
 			get { return this.AppDomain.Process.Debugger; }
 		}
 		
+		[Debugger.Tests.Ignore]
 		public MetaDataImport MetaData {
 			get {
 				return metaData;
@@ -62,12 +63,14 @@ namespace Debugger
 			}
 		}
 		
+		[Debugger.Tests.Ignore]
 		public ISymUnmanagedReader SymReader {
 			get {
 				return symReader;
 			}
 		}
 		
+		[Debugger.Tests.Ignore]
 		public ISymUnmanagedDocument[] SymDocuments {
 			get {
 				ISymUnmanagedDocument[] docs;
@@ -93,6 +96,7 @@ namespace Debugger
 			get { return (ICorDebugModule2)corModule; }
 		}
 		
+		[Debugger.Tests.Ignore]
 		public ulong BaseAdress { 
 			get {
 				return this.CorModule.GetBaseAddress();
@@ -128,14 +132,6 @@ namespace Debugger
 			get {
 				return fullPath;
 			} 
-		}
-		
-		[Debugger.Tests.Ignore]
-		public string DirectoryName {
-			get {
-				if (IsDynamic || IsInMemory) return String.Empty;
-				return System.IO.Path.GetDirectoryName(FullPath);
-			}
 		}
 		
 		public bool HasSymbols { 
