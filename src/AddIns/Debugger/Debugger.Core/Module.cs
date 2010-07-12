@@ -242,7 +242,16 @@ namespace Debugger
 		{
 			if (this.CorModule is ICorDebugModule3 && this.IsDynamic) {
 				Guid guid = new Guid(0, 0, 0, 0xc0, 0, 0, 0, 0, 0, 0, 70);
-				symReader = (ISymUnmanagedReader)((ICorDebugModule3)this.CorModule).CreateReaderForInMemorySymbols(guid);
+				try {
+					symReader = (ISymUnmanagedReader)((ICorDebugModule3)this.CorModule).CreateReaderForInMemorySymbols(guid);
+				} catch (COMException e) {
+					// 0x80131C3B The application did not supply symbols when it loaded or created this module, or they are not yet available.
+					if ((uint)e.ErrorCode == 0x80131C3B) {
+						process.TraceMessage("Failed to load dynamic symbols for " + this.Name);
+						return;
+					}
+					throw;
+				}
 				TrackedComObjects.Track(symReader);
 				process.TraceMessage("Loaded dynamic symbols for " + this.Name);
 				OnSymbolsUpdated();
