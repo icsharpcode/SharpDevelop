@@ -28,6 +28,8 @@ namespace Debugger
 		ThreadCollection threads;
 		AppDomainCollection appDomains;
 		
+		string workingDirectory;
+		
 		public NDebugger Debugger {
 			get { return debugger; }
 		}
@@ -99,10 +101,15 @@ namespace Debugger
 			get { return steppers; }
 		}
 		
-		internal Process(NDebugger debugger, ICorDebugProcess corProcess)
+		public string WorkingDirectory {
+			get { return workingDirectory; }
+		}
+		
+		internal Process(NDebugger debugger, ICorDebugProcess corProcess, string workingDirectory)
 		{
 			this.debugger = debugger;
 			this.corProcess = corProcess;
+			this.workingDirectory = workingDirectory;
 			
 			this.callbackInterface = new ManagedCallback(this);
 			
@@ -149,7 +156,7 @@ namespace Debugger
 							CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS   // debuggingFlags
 							);
 			
-			return new Process(debugger, outProcess);
+			return new Process(debugger, outProcess, workingDirectory);
 		}
 		
 		/// <summary> Fired when System.Diagnostics.Trace.WriteLine() is called in debuged process </summary>

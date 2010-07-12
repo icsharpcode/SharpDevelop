@@ -6,9 +6,9 @@
 // </file>
 
 using System;
+using System.IO;
 using System.Text;
 using System.Threading;
-
 using Debugger.Interop;
 using Debugger.Interop.CorDebug;
 using Microsoft.Win32;
@@ -199,9 +199,11 @@ namespace Debugger
 		
 		public Process Attach(System.Diagnostics.Process existingProcess)		
 		{
-			InitDebugger(GetProgramVersion(existingProcess.MainModule.FileName));
+			string mainModule = existingProcess.MainModule.FileName;
+			InitDebugger(GetProgramVersion(mainModule));
 			ICorDebugProcess corDebugProcess = corDebug.DebugActiveProcess((uint)existingProcess.Id, 0);
-			Process process = new Process(this, corDebugProcess);
+			// TODO: Can we get the acutal working directory?
+			Process process = new Process(this, corDebugProcess, Path.GetDirectoryName(mainModule));
 			this.Processes.Add(process);
 			return process;
 		}

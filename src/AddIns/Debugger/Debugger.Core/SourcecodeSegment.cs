@@ -79,54 +79,92 @@ namespace Debugger
 		{
 		}
 		
-		/// <returns> "\lowercasename.cs" or absolute path </returns>
-		static string NormalizeFilename(string filename, out bool isRooted)
+		/// <summary>
+		/// Use the module path to figure out where to look for the source file
+		/// </summary>
+		static IEnumerable<string> RelocateSymURL(Module module, string symUrl)
 		{
-			isRooted = Path.IsPathRooted(filename);
-			if (!isRooted) {
-				while (filename.StartsWith(@".\")) filename = filename.Substring(2);
-				if (!filename.StartsWith(@"\"))    filename = @"\" + filename;
+			string modulePath = module.Process.WorkingDirectory;
+			if (module.IsInMemory || module.IsDynamic) {
+				// Just use any module with symboles
+				foreach(Module m in module.Process.Modules) {
+					if (m.HasSymbols) {
+						if (!string.IsNullOrEmpty(m.FullPath)) {
+							modulePath = Path.GetDirectoryName(m.FullPath);
+							break;
+						}
+					}
+				}
+			} else {
+				if (!string.IsNullOrEmpty(module.FullPath))
+					modulePath = Path.GetDirectoryName(module.FullPath);
 			}
-			return filename.ToLowerInvariant();
+			if (string.IsNullOrEmpty(modulePath)) {
+				yield return symUrl;
+				yield break;
+			}
+				
+			if (Path.IsPathRooted(symUrl)) {
+				Dictionary<string, object> returned = new Dictionary<string, object>();
+				
+				// Try without relocating
+				returned.Add(symUrl, null);
+				yield return symUrl;
+				
+				// The two paths to combine
+				string[] moduleDirs = modulePath.Split('\\');
+				string[] urlDirs = symUrl.Split('\\');
+				
+				// Join the paths at some point (joining directry must match)
+				for (int i = 0; i < moduleDirs.Length; i++) {
+					for (int j = 0; j < urlDirs.Length; j++) {
+						if (!string.IsNullOrEmpty(moduleDirs[i]) &&
+						    !string.IsNullOrEmpty(urlDirs[j])    &&
+						    string.Equals(moduleDirs[i], urlDirs[j], StringComparison.OrdinalIgnoreCase))
+						{
+							// Join the paths
+							string[] joinedDirs = new string[i + (urlDirs.Length - j)];
+							Array.Copy(moduleDirs, joinedDirs, i);
+							Array.Copy(urlDirs, j, joinedDirs, i, urlDirs.Length - j);
+							string joined = string.Join(@"\", joinedDirs);
+							
+							// Return joined path
+							if (!returned.ContainsKey(joined)) {
+								returned.Add(joined, null);
+								yield return joined;
+							}
+						}
+					}
+				}
+			} else {
+				if (symUrl.StartsWith(@".\")) symUrl = symUrl.Substring(2);
+				if (symUrl.StartsWith(@"\"))  symUrl = symUrl.Substring(1);
+				// Try 0, 1 and 2 levels above the module directory
+				string dir = modulePath;
+				if (!string.IsNullOrEmpty(dir)) yield return Path.Combine(dir, symUrl);
+				dir = Path.GetDirectoryName(dir);
+				if (!string.IsNullOrEmpty(dir)) yield return Path.Combine(dir, symUrl);
+				dir = Path.GetDirectoryName(dir);
+				if (!string.IsNullOrEmpty(dir)) yield return Path.Combine(dir, symUrl);
+			}
 		}
 		
 		static ISymUnmanagedDocument GetSymDocumentFromFilename(Module module, string filename, byte[] checksum)
 		{
 			if (filename == null) throw new ArgumentNullException("filename");
 			
-			ISymUnmanagedDocument[] symDocs = module.SymDocuments;
-			
-			// Normalize input
-			bool filenameRooted;
-			filename = NormalizeFilename(filename, out filenameRooted);
-			
-			// Exact match of all the data that is available
-			foreach(ISymUnmanagedDocument symDoc in symDocs) {
-				bool urlRooted;
-				string url = NormalizeFilename(symDoc.GetURL(), out urlRooted);
-				
-				if (filenameRooted && urlRooted) {
-					if (url == filename)        return symDoc;
-				} else if (filenameRooted && !urlRooted) {
-					if (filename.EndsWith(url)) return symDoc;
-				} else if (!filenameRooted && urlRooted) {
-					if (url.EndsWith(filename)) return symDoc;
-				} else {
-					if (url == filename)        return symDoc;
+			if (Path.IsPathRooted(filename)) {
+				foreach(ISymUnmanagedDocument symDoc in module.SymDocuments) {
+					foreach (string url in RelocateSymURL(module, symDoc.GetURL())) {
+						if (string.Equals(url, filename, StringComparison.OrdinalIgnoreCase))
+							return symDoc;
+					}
 				}
-			}
-			
-			// Relaxed matching if we have checksum
-			if (checksum != null) {
-				foreach(ISymUnmanagedDocument symDoc in symDocs) {
-					if (Path.GetFileName(filename).ToLowerInvariant() == Path.GetFileName(symDoc.GetURL()).ToLowerInvariant()) {
-						byte[] symDocCheckSum = symDoc.GetCheckSum();
-						if (symDocCheckSum.Length != checksum.Length) continue;
-						bool match = true;
-						for (int i = 0; i < checksum.Length; i++) {
-							if (symDocCheckSum[i] != checksum[i]) match = false;
-						}
-						if (!match) continue;
+			} else {
+				foreach(ISymUnmanagedDocument symDoc in module.SymDocuments) {
+					if (filename.StartsWith(@".\")) filename = filename.Substring(2);
+					if (filename.StartsWith(@"\"))  filename = filename.Substring(1);
+					if (symDoc.GetURL().ToLowerInvariant().EndsWith(@"\" + filename.ToLowerInvariant())) {
 						return symDoc;
 					}
 				}
@@ -182,50 +220,10 @@ namespace Debugger
 		
 		static string GetFilenameFromSymDocument(Module module, ISymUnmanagedDocument symDoc)
 		{
-			if (File.Exists(symDoc.GetURL())) return symDoc.GetURL();
-			
-			List<string> searchPaths = new List<string>();
-			
-			searchPaths.AddRange(module.Process.Options.SymbolsSearchPaths);
-			
-			string modulePath = module.FullPath;
-			while (true) {
-				// Get parent directory
-				int index = modulePath.LastIndexOf('\\');
-				if (index == -1) break;
-				modulePath = modulePath.Substring(0, index);
-				// Add the directory to search path list
-				if (modulePath.Length == 2 && modulePath[1] == ':') {
-					searchPaths.Add(modulePath + '\\');
-				} else {
-					searchPaths.Add(modulePath);
-				}
+			foreach (string filename in RelocateSymURL(module, symDoc.GetURL())) {
+				if (File.Exists(filename))
+					return filename;
 			}
-			
-			List<string> filenames = new List<string>();
-			string filename = symDoc.GetURL();
-			while (true) {
-				// Remove start of the path
-				int index = filename.IndexOf('\\');
-				if (index == -1) break;
-				filename = filename.Substring(index + 1);
-				// Add the filename as candidate
-				filenames.Add(filename);
-			}
-			
-			List<string> candidates = new List<string>();
-			foreach(string path in searchPaths) {
-				foreach(string name in filenames) {
-					candidates.Add(Path.Combine(path, name));
-				}
-			}
-			
-			foreach(string candiate in candidates) {
-				if (File.Exists(candiate)) {
-					return candiate;
-				}
-			}
-			
 			return symDoc.GetURL();
 		}
 		
