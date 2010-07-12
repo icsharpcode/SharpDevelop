@@ -73,7 +73,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		protected void ReFilterProperties()
 		{
 			globalizedProps = null;
-			WorkbenchSingleton.SafeThreadAsyncCall(delegate { PropertyPad.RefreshItem(this); });
+			if (WorkbenchSingleton.Workbench != null) {
+				WorkbenchSingleton.SafeThreadAsyncCall(delegate { PropertyPad.RefreshItem(this); });
+			}
 		}
 		
 		protected virtual void FilterProperties(PropertyDescriptorCollection globalizedProps)

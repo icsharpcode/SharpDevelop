@@ -158,10 +158,6 @@ namespace PythonBinding.Tests.Testing
 		[Test]
 		public void WriteTestsWritesDirectoriesForReferencedProjectsToSysPathCommandLineArguments()
 		{
-			// Have to initialize the workbench since ProjectReferenceProjectItem has a dependency on
-			// WorkbenchSingleton.
-			InitializeWorkbench();
-			
 			MockCSharpProject referencedProject = new MockCSharpProject();
 			referencedProject.FileName = @"c:\projects\pyproject\pyproject.pyproj";
 			
@@ -181,26 +177,6 @@ namespace PythonBinding.Tests.Testing
 				"MyNamespace.MyTests.MyTestMethod\r\n";
 			
 			Assert.AreEqual(expectedText, responseFileText.ToString());
-		}
-		
-		void InitializeWorkbench()
-		{
-			string addInXml =
-				 "<AddIn name=\"Test\" author= \"\" copyright=\"\" description=\"\">\r\n" +
-					"<Manifest>\r\n" +
-					"	<Identity name=\"Test\"/>\r\n" +
-					"</Manifest>\r\n" +
-					"<Path name=\"/SharpDevelop/Workbench/DisplayBindings\"/>\r\n " +
-					"</AddIn>";
-			AddIn addin = AddIn.Load(new StringReader(addInXml));
-			addin.Enabled = true;
-			AddInTree.InsertAddIn(addin);
-			if (!PropertyService.Initialized) {
-				PropertyService.InitializeService(String.Empty, String.Empty, String.Empty);
-			}
-			DummyServiceManager serviceManager = new DummyServiceManager();
-			ServiceManager.Instance = serviceManager;
-			WorkbenchSingleton.InitializeWorkbench(new MockWorkbench(), null);
 		}
 	}
 }

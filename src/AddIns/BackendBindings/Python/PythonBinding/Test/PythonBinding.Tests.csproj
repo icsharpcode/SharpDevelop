@@ -453,7 +453,6 @@
     <Compile Include="Utils\DerivedPythonFormsDesignerDisplayBinding.cs" />
     <Compile Include="Utils\DerivedToolStripMenuItem.cs" />
     <Compile Include="Utils\DoublePropertyUserControl.cs" />
-    <Compile Include="Utils\DummyServiceManager.cs" />
     <Compile Include="Utils\DummySynchronizeInvoke.cs" />
     <Compile Include="Utils\FooItemCollection.cs" />
     <Compile Include="Utils\MockComponentCreator.cs" />
