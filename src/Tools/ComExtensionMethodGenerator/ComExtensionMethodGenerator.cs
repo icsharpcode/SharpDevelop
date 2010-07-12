@@ -28,7 +28,7 @@ namespace ComExtensionMethodGenerator
 				"//     <version>$Revision$</version>" + "\r\n" + 
 				"// </file>" + "\r\n" + "\r\n";
 		
-		static string path = Path.Combine(Assembly.GetExecutingAssembly().Location, @"..\..\..\..\..\..\src\AddIns\Misc\Debugger\Debugger.Core\Project\Src\Interop\");
+		static string path = Path.Combine(Assembly.GetExecutingAssembly().Location, @"..\..\..\..\..\..\src\AddIns\Debugger\Debugger.Core\Interop\");
 		
 		public static void Main(string[] args)
 		{

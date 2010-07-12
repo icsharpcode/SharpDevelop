@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -2187,6 +2187,14 @@ namespace Debugger.Interop.CorDebug
 			ProcessOutParameter(ppAssembly);
 		}
 		
+		public static object CreateReaderForInMemorySymbols(this ICorDebugModule3 instance, ref Guid riid)
+		{
+			object ppObj;
+			instance.__CreateReaderForInMemorySymbols(ref riid, out ppObj);
+			ProcessOutParameter(ppObj);
+			return ppObj;
+		}
+		
 		public static void Activate(this ICorDebugModuleBreakpoint instance, int bActive)
 		{
 			instance.__Activate(bActive);
@@ -3149,6 +3157,7 @@ namespace Debugger.Interop.CorDebug
 		{
 			uint pceltFetched;
 			instance.__Next(celt, threads, out pceltFetched);
+			ProcessOutParameter(threads);
 			return pceltFetched;
 		}
 		

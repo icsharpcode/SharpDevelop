@@ -1153,6 +1153,13 @@ namespace Debugger.Interop.CorDebug
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void __ResolveAssembly([In] uint tkAssemblyRef, [In, MarshalAs(UnmanagedType.Interface)] ref ICorDebugAssembly ppAssembly);
     }
+    
+    [ComImport, InterfaceType((short) 1), Guid("86F012BF-FF15-4372-BD30-B6F11CAAE1DD")]
+    public interface ICorDebugModule3
+    {
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
+        void __CreateReaderForInMemorySymbols([In] ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out object ppObj);
+    }
 
     [ComImport, Guid("CC7BCAEA-8A68-11D2-983C-0000F808342D"), InterfaceType((short) 1)]
     public interface ICorDebugModuleBreakpoint : ICorDebugBreakpoint
