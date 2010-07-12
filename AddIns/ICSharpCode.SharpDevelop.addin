@@ -1388,7 +1388,7 @@
 					<MenuItem id = "Separator1" type = "Separator" />
 					<MenuItem id       = "Build project"
 					          label    = "${res:XML.MainMenu.BuildMenu.BuildProject}"
-					          shortcut = "F9"
+					          shortcut = "Control|F8"
 					          icon     = "Icons.16x16.BuildCurrentSelectedProject"
 					          class    = "ICSharpCode.SharpDevelop.Project.Commands.BuildProject"/>
 					<MenuItem id       = "Rebuild project"
@@ -1570,7 +1570,7 @@
 			
 			<MenuItem id = "FindDerivedOrOverridesClasses"
 			          label = "${res:SharpDevelop.Refactoring.FindDerivedClassesOrOverridesCommand}"
-			          shortcut = "F11"
+			          shortcut = "F9"
 			          icon="Icons.16x16.Class"
 			          class = "ICSharpCode.SharpDevelop.Editor.Commands.FindDerivedClassesOrOverrides"/>
 			
