@@ -269,7 +269,11 @@ ExpressionFinder =
 	(. PopContext(); .)
 .
 
-StatementTerminator = EOL | ":" .
+StatementTerminator
+	(. if (la != null) CurrentBlock.lastExpressionStart = la.Location; .)
+=
+	EOL | ":"
+.
 
 OptionStatement = 
 	"Option" ( ( "Explicit" | "Strict" | "Infer" ) [ "Off" | "On" ] | "Compare" ( "Text" | "Binary" ) )  StatementTerminator
@@ -289,8 +293,9 @@ ImportsStatement
 		( "Global" | Identifier | PrimitiveTypeName ) { TypeSuffix } [ ( "." | "=" ) TypeName ]
 		| XmlOpenTag Identifier "=" LiteralString XmlCloseTag
 	)
-	StatementTerminator
 	(. PopContext(); .)
+	StatementTerminator
+
 .
 
 AttributeBlock =

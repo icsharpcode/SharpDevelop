@@ -109,6 +109,12 @@ End Class
 		{
 			Find(program1, "loopVarName", 4, "loop", ExpressionContext.Default);
 		}
+		
+		[Test]
+		public void FindEmptyAfterImports()
+		{
+			Find(program1, "		", 1, "", ExpressionContext.Global);
+		}
 		#endregion
 		
 		#region FindFull

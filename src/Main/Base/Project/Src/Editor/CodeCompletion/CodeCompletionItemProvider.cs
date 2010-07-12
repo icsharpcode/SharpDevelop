@@ -114,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		
 		protected virtual DefaultCompletionItemList CreateCompletionItemList()
 		{
-			// This is overriden in DotCodeCompletionItemProvider (C# and VB dot completion) 
+			// This is overriden in DotCodeCompletionItemProvider (C# and VB dot completion)
 			// and NRefactoryCtrlSpaceCompletionItemProvider (C# and VB Ctrl+Space completion)
 			return new DefaultCompletionItemList();
 		}
@@ -126,10 +126,17 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		
 		public virtual ICompletionItemList GenerateCompletionListForCompletionData(List<ICompletionEntry> arr, ExpressionContext context)
 		{
-			if (arr == null)
-				return null;
+			var list = ConvertCompletionData(CreateCompletionItemList(), arr, context);
+			InitializeCompletionItemList(list);
 			
-			DefaultCompletionItemList result = CreateCompletionItemList();
+			return list;
+		}
+		
+		public static DefaultCompletionItemList ConvertCompletionData(DefaultCompletionItemList result, List<ICompletionEntry> arr, ExpressionContext context)
+		{
+			if (arr == null)
+				return result;
+			
 			Dictionary<string, CodeCompletionItem> methodItems = new Dictionary<string, CodeCompletionItem>();
 			foreach (ICompletionEntry o in arr) {
 				if (context != null && !context.ShowEntry(o))
@@ -155,7 +162,6 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 						result.SuggestedItem = item;
 				}
 			}
-			InitializeCompletionItemList(result);
 			
 			if (context.SuggestedItem != null) {
 				if (result.SuggestedItem == null) {
@@ -168,7 +174,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			return result;
 		}
 		
-		public virtual ICompletionItem CreateCompletionItem(object o, ExpressionContext context)
+		public static ICompletionItem CreateCompletionItem(object o, ExpressionContext context)
 		{
 			IEntity entity = o as IEntity;
 			if (entity != null) {

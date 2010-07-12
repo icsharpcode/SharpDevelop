@@ -37,8 +37,8 @@ namespace ICSharpCode.VBNetBinding
 					InitializeOpenedInsightWindow(editor, insightWindow);
 				return CodeCompletionKeyPressResult.Completed;
 			} else if(ch == ',' && CodeCompletionOptions.InsightRefreshOnComma && CodeCompletionOptions.InsightEnabled) {
-				if (InsightRefreshOnComma(editor, ch))
-					return CodeCompletionKeyPressResult.Completed;
+//				if (InsightRefreshOnComma(editor, ch))
+//					return CodeCompletionKeyPressResult.Completed;
 			} else if (ch == '\n') {
 				TryDeclarationTypeInference(editor, editor.Document.GetLineForOffset(editor.Caret.Offset));
 			} else if (char.IsLetter(ch) && CodeCompletionOptions.CompleteWhenTyping) {

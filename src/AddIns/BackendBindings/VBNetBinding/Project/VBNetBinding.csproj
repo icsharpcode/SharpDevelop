@@ -54,7 +54,7 @@
     <Compile Include="Src\Extensions.cs" />
     <Compile Include="Src\FormattingStrategy\VBStatement.cs" />
     <Compile Include="Src\VBNetBracketSearcher.cs" />
-    <Compile Include="Src\VBNetCodeCompletionDataProvider.cs" />
+    <Compile Include="Src\CompletionDataHelper.cs" />
     <Compile Include="Src\VBNetCompletionBindingOld.cs" />
     <Compile Include="Src\VBNetLanguageBinding.cs" />
     <Compile Include="Src\VBNetProjectBinding.cs" />
