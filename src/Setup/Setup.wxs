@@ -421,6 +421,11 @@
 				<ComponentRef Id="RubyEmptyUserControlFileTemplate"/>
 				<ComponentRef Id="RubyFormsProjectTemplate"/>
 				<ComponentRef Id="RubyLibraryProjectTemplate"/>
+				<ComponentRef Id="RubyBindingSdSelectedTestsFileRb"/>
+				<ComponentRef Id="RubyBindingSdTestRb"/>
+				<ComponentRef Id="RubyBindingSdTestResultRb"/>
+				<ComponentRef Id="RubyBindingSdTestResultWriterRb"/>
+				<ComponentRef Id="RubyBindingSdTestRunnerRb"/>
 				
 				<ComponentRef Id="FSharpBindingDll"/>
 				<ComponentRef Id="FSharpBindingAddin"/>	
