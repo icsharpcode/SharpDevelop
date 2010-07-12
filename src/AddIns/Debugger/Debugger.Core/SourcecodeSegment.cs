@@ -79,58 +79,57 @@ namespace Debugger
 		{
 		}
 		
+		/// <returns> "\lowercasename.cs" or absolute path </returns>
+		static string NormalizeFilename(string filename, out bool isRooted)
+		{
+			isRooted = Path.IsPathRooted(filename);
+			if (!isRooted) {
+				while (filename.StartsWith(@".\")) filename = filename.Substring(2);
+				if (!filename.StartsWith(@"\"))    filename = @"\" + filename;
+			}
+			return filename.ToLowerInvariant();
+		}
+		
 		static ISymUnmanagedDocument GetSymDocumentFromFilename(Module module, string filename, byte[] checksum)
 		{
 			if (filename == null) throw new ArgumentNullException("filename");
-			filename = filename.ToLower();
 			
 			ISymUnmanagedDocument[] symDocs = module.SymDocuments;
 			
-			// "c:\project\file.cs" N/A
-			if (Path.IsPathRooted(filename) && checksum == null) {
-				foreach(ISymUnmanagedDocument symDoc in symDocs) {
-					if (symDoc.GetURL().ToLower() == filename) return symDoc;
+			// Normalize input
+			bool filenameRooted;
+			filename = NormalizeFilename(filename, out filenameRooted);
+			
+			// Exact match of all the data that is available
+			foreach(ISymUnmanagedDocument symDoc in symDocs) {
+				bool urlRooted;
+				string url = NormalizeFilename(symDoc.GetURL(), out urlRooted);
+				
+				if (filenameRooted && urlRooted) {
+					if (url == filename)        return symDoc;
+				} else if (filenameRooted && !urlRooted) {
+					if (filename.EndsWith(url)) return symDoc;
+				} else if (!filenameRooted && urlRooted) {
+					if (url.EndsWith(filename)) return symDoc;
+				} else {
+					if (url == filename)        return symDoc;
 				}
-				return null; // Not found
 			}
 			
-			// "c:\project\file.cs" 0123456789
-			if (Path.IsPathRooted(filename) && checksum != null) {
+			// Relaxed matching if we have checksum
+			if (checksum != null) {
 				foreach(ISymUnmanagedDocument symDoc in symDocs) {
-					if (symDoc.GetURL().ToLower() == filename) return symDoc;
-				}
-				// Not found - try to find using checksum
-				filename = Path.GetFileName(filename);
-			}
-			
-			// "file.cs" N/A
-			if (!Path.IsPathRooted(filename) && checksum == null) {
-				if (!filename.StartsWith(@"\")) {
-					filename = @"\" + filename;
-				}
-				foreach(ISymUnmanagedDocument symDoc in symDocs) {
-					if (symDoc.GetURL().ToLower().EndsWith(filename)) return symDoc;
-				}
-				return null; // Not found
-			}
-			
-			// "file.cs" 0123456789
-			if (!Path.IsPathRooted(filename) && checksum != null) {
-				if (!filename.StartsWith(@"\")) {
-					filename = @"\" + filename;
-				}
-				foreach(ISymUnmanagedDocument symDoc in symDocs) {
-					if (!symDoc.GetURL().ToLower().EndsWith(filename)) continue;
-					byte[] symDocCheckSum = symDoc.GetCheckSum();
-					if (symDocCheckSum.Length != checksum.Length) continue;
-					bool match = true;
-					for (int i = 0; i < checksum.Length; i++) {
-						if (symDocCheckSum[i] != checksum[i]) match = false;
+					if (Path.GetFileName(filename).ToLowerInvariant() == Path.GetFileName(symDoc.GetURL()).ToLowerInvariant()) {
+						byte[] symDocCheckSum = symDoc.GetCheckSum();
+						if (symDocCheckSum.Length != checksum.Length) continue;
+						bool match = true;
+						for (int i = 0; i < checksum.Length; i++) {
+							if (symDocCheckSum[i] != checksum[i]) match = false;
+						}
+						if (!match) continue;
+						return symDoc;
 					}
-					if (!match) continue;
-					return symDoc;
 				}
-				return null; // Not found
 			}
 			
 			return null;
@@ -174,7 +173,7 @@ namespace Debugger
 					segment.corFunction   = module.CorModule.GetFunctionFromToken(symMethod.GetToken());
 					segment.ilStart = (int)sqPoint.Offset;
 					segment.ilEnd   = (int)sqPoint.Offset;
-					segment.stepRanges    = null;
+					segment.stepRanges    = null;					
 					return segment;
 				}
 			}

@@ -47,6 +47,7 @@ namespace Debugger.Interop.CorSym
 				fixed(byte* pCheckSum = checkSum)
 					symDoc.GetCheckSum((uint)checkSum.Length, out actualLength, new IntPtr(pCheckSum));
 			}
+			if (actualLength == 0) return null;
 			Array.Resize(ref checkSum, (int)actualLength);
 			return checkSum;
 		}
@@ -182,11 +183,9 @@ namespace Debugger.Interop.CorSym
 		
 		public int CompareTo(SequencePoint other)
 		{
-			if (this.Line == other.Line) {
-				return this.Column.CompareTo(other.Column);
-			} else {
-				return this.Line.CompareTo(other.Line);
-			}
+			if (this.Line != other.Line)     return this.Line.CompareTo(other.Line);
+			if (this.Column != other.Column) return this.Column.CompareTo(other.Column);
+			return this.Offset.CompareTo(other.Offset);
 		}
 	}
 }
