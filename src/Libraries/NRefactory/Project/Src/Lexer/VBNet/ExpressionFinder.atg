@@ -275,15 +275,22 @@ OptionStatement =
 	"Option" ( ( "Explicit" | "Strict" | "Infer" ) [ "Off" | "On" ] | "Compare" ( "Text" | "Binary" ) )  StatementTerminator
 .
 
-ImportsStatement = 
+ImportsStatement
+	(. PushContext(Context.Importable, la, t); .)
+= 
 	"Imports" 
 	(.
 		nextTokenIsStartOfImportsOrAccessExpression = true;
+		
 		if (la != null)
 			CurrentBlock.lastExpressionStart = la.Location;
 	.)
-	{ ANY }
+	(
+		( "Global" | Identifier | PrimitiveTypeName ) { TypeSuffix } [ ( "." | "=" ) TypeName ]
+		| XmlOpenTag Identifier "=" LiteralString XmlCloseTag
+	)
 	StatementTerminator
+	(. PopContext(); .)
 .
 
 AttributeBlock =
@@ -313,7 +320,7 @@ ClassOrModuleOrStructureTypeDeclaration =
 	[ "(" "Of"  [ "Out" | "In" ] IdentifierExceptOut [ "As" GenericConstraintList ] { "," [ "Out" | "In" ] IdentifierExceptOut [ "As" GenericConstraintList ] } ")" ] { ANY } [ StatementTerminator ]
 	[ "Inherits" { ANY } StatementTerminator ]
 	[ "Implements" { ANY } StatementTerminator ]
-	(. PushContext(Context.Type, la, t); .)
+	(. PushContext(Context.TypeDeclaration, la, t); .)
 	{ MemberDeclaration }
 	"End" ( "Module" | "Class" | "Structure" ) StatementTerminator
 	(. PopContext(); .)

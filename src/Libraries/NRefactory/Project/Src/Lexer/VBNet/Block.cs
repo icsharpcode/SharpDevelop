@@ -15,12 +15,13 @@ namespace ICSharpCode.NRefactory.Parser.VB
 	public enum Context
 	{
 		Global,
-		Type,
+		TypeDeclaration,
 		Member,
 		IdentifierExpected,
 		Body,
 		Xml,
 		Attribute,
+		Importable,
 		Query,
 		Expression,
 		Debug,

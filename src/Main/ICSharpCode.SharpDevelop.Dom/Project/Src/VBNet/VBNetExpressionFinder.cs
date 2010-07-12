@@ -128,10 +128,12 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 					return ExpressionContext.Global;
 				case Context.IdentifierExpected:
 					return ExpressionContext.IdentifierExpected;
-				case Context.Type:
+				case Context.TypeDeclaration:
 					return ExpressionContext.TypeDeclaration;
 				case Context.Body:
 					return ExpressionContext.MethodBody;
+				case Context.Importable:
+					return ExpressionContext.Importable;
 			}
 			
 			return ExpressionContext.Default;

@@ -78,9 +78,10 @@ namespace ICSharpCode.VBNetBinding
 		
 		bool IsInComment(ITextEditor editor)
 		{
-			VBExpressionFinder ef = new VBExpressionFinder();
-			int cursor = editor.Caret.Offset - 1;
-			return ef.FilterComments(editor.Document.GetText(0, cursor + 1), ref cursor) == null;
+//			VBExpressionFinder ef = new VBExpressionFinder();
+//			int cursor = editor.Caret.Offset - 1;
+//			return ef.FilterComments(editor.Document.GetText(0, cursor + 1), ref cursor) == null;
+			return false;
 		}
 		
 		sealed class GlobalCompletionItemProvider : CodeCompletionItemProvider

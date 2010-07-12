@@ -1139,15 +1139,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			List<ICompletionEntry> result = new List<ICompletionEntry>();
 			if (language == NR.SupportedLanguage.VBNet) {
-				
-//				if (context == ExpressionContext.TypeDeclaration) {
-//				} else if (context == ExpressionContext.Global) {
-//				} else if (context == ExpressionContext.MethodBody) {
-//					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
-//				} else {
-//					AddVBNetPrimitiveTypes(result);
-//					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
-//				}
 			} else {
 				if (context == ExpressionContext.TypeDeclaration) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.TypeLevel);
@@ -1276,12 +1267,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			
 			if (showEntriesFromAllNamespaces) {
-			// CC contains contents of all referenced assemblies
-			CtrlSpaceResolveHelper.AddReferencedProjectsContents(result, cu, callingClass);
+				// CC contains contents of all referenced assemblies
+				CtrlSpaceResolveHelper.AddReferencedProjectsContents(result, cu, callingClass);
 			} else {
 				// CC contains contents of all imported namespaces
 				CtrlSpaceResolveHelper.AddImportedNamespaceContents(result, cu, callingClass);
-		}
+			}
 		}
 		
 		sealed class CompareLambdaByLocation : IEqualityComparer<LambdaExpression>

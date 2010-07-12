@@ -53,10 +53,16 @@ namespace ICSharpCode.VBNetBinding
 			switch (ch) {
 				case '\n':
 					break;
+				case '.':
+					result = ef.FindExpression(editor.Document.Text, editor.Caret.Offset);
+					LoggingService.Debug("CC: After dot, result=" + result + ", context=" + result.Context);
+					ShowCodeCompletion(editor, result, false, '.');
+					return CodeCompletionKeyPressResult.Completed;
 				case ' ':
 					result = ef.FindExpression(editor.Document.Text, editor.Caret.Offset);
-					if (HasKeywordsOnly(result.Tag as BitArray)) {
-						ShowCodeCompletion(editor, result, false);
+					if (HasKeywordsOnly(result.Tag as BitArray) || result.Context == ExpressionContext.Importable) {
+						LoggingService.Debug("CC: After space, result=" + result + ", context=" + result.Context);
+						ShowCodeCompletion(editor, result, false, ' ');
 						return CodeCompletionKeyPressResult.Completed;
 					}
 					break;
@@ -74,7 +80,8 @@ namespace ICSharpCode.VBNetBinding
 						
 						if ((result.Context != ExpressionContext.IdentifierExpected) &&
 						    (!char.IsLetterOrDigit(prevChar) && prevChar != '.')) {
-							ShowCodeCompletion(editor, result, afterUnderscore);
+							LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
+							ShowCodeCompletion(editor, result, afterUnderscore, ch);
 							return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
 						}
 					}
@@ -84,10 +91,9 @@ namespace ICSharpCode.VBNetBinding
 			return CodeCompletionKeyPressResult.None;
 		}
 		
-		void ShowCodeCompletion(ITextEditor editor, ExpressionResult result, bool afterUnderscore)
+		void ShowCodeCompletion(ITextEditor editor, ExpressionResult result, bool afterUnderscore, char ch)
 		{
-			LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
-			var provider = new VBNetCodeCompletionDataProvider(result);
+			var provider = new VBNetCodeCompletionDataProvider(result, ch);
 			provider.ShowTemplates = true;
 			provider.AllowCompleteExistingExpression = afterUnderscore;
 			provider.ShowCompletion(editor);
@@ -175,7 +181,7 @@ namespace ICSharpCode.VBNetBinding
 				ExpressionResult result = ef.FindExpression(editor.Document.Text, cursor);
 				LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
 				if (result.Context != ExpressionContext.IdentifierExpected) {
-					var provider = new VBNetCodeCompletionDataProvider(result);
+					var provider = new VBNetCodeCompletionDataProvider(result, ' ');
 					provider.ShowTemplates = true;
 					provider.AllowCompleteExistingExpression = afterUnderscore;
 					provider.ShowCompletion(editor);

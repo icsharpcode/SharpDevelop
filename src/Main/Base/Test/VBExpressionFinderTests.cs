@@ -145,13 +145,13 @@ End Class
 		[Test]
 		public void Imports1()
 		{
-			FindFull(program1, "ystem", "System", ExpressionContext.Global);
+			FindFull(program1, "ystem", "System", ExpressionContext.Importable);
 		}
 		
 		[Test]
 		public void Imports2()
 		{
-			FindFull(program1, "inq", "System.Linq", ExpressionContext.Global);
+			FindFull(program1, "inq", "System.Linq", ExpressionContext.Importable);
 		}
 		
 		[Test]

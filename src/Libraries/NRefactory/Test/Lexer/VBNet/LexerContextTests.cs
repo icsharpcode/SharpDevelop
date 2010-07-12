@@ -41,7 +41,7 @@ End Class
 				@"enter Global
 	enter IdentifierExpected
 	exit IdentifierExpected
-	enter Type
+	enter TypeDeclaration
 		enter Member
 			enter IdentifierExpected
 			exit IdentifierExpected
@@ -58,7 +58,7 @@ End Class
 				exit Expression
 			exit Body
 		exit Member
-	exit Type
+	exit TypeDeclaration
 exit Global
 "
 			);
@@ -79,7 +79,7 @@ End Class
 				@"enter Global
 	enter IdentifierExpected
 	exit IdentifierExpected
-	enter Type
+	enter TypeDeclaration
 		enter Member
 			enter IdentifierExpected
 			exit IdentifierExpected
@@ -108,7 +108,7 @@ End Class
 				exit Expression
 			exit Body
 		exit Member
-	exit Type
+	exit TypeDeclaration
 exit Global
 "
 			);
@@ -130,7 +130,7 @@ End Class
 	exit Attribute
 	enter IdentifierExpected
 	exit IdentifierExpected
-	enter Type
+	enter TypeDeclaration
 		enter Member
 			enter IdentifierExpected
 			exit IdentifierExpected
@@ -145,7 +145,7 @@ End Class
 				exit Expression
 			exit Body
 		exit Member
-	exit Type
+	exit TypeDeclaration
 exit Global
 "
 			);
@@ -167,7 +167,7 @@ End Class
 	exit Attribute
 	enter IdentifierExpected
 	exit IdentifierExpected
-	enter Type
+	enter TypeDeclaration
 		enter Member
 			enter IdentifierExpected
 			exit IdentifierExpected
@@ -182,7 +182,7 @@ End Class
 				exit Expression
 			exit Body
 		exit Member
-	exit Type
+	exit TypeDeclaration
 exit Global
 "
 			);
@@ -202,7 +202,7 @@ End Class
 				@"enter Global
 	enter IdentifierExpected
 	exit IdentifierExpected
-	enter Type
+	enter TypeDeclaration
 		enter Member
 			enter Attribute
 			exit Attribute
@@ -219,7 +219,7 @@ End Class
 				exit Expression
 			exit Body
 		exit Member
-	exit Type
+	exit TypeDeclaration
 exit Global
 "
 			);
@@ -240,7 +240,7 @@ End Class
 				@"enter Global
 	enter IdentifierExpected
 	exit IdentifierExpected
-	enter Type
+	enter TypeDeclaration
 		enter Member
 			enter IdentifierExpected
 			exit IdentifierExpected
@@ -255,7 +255,7 @@ End Class
 				exit Body
 			exit Body
 		exit Member
-	exit Type
+	exit TypeDeclaration
 exit Global
 "
 			);
@@ -286,7 +286,7 @@ End Class
 				@"enter Global
 	enter IdentifierExpected
 	exit IdentifierExpected
-	enter Type
+	enter TypeDeclaration
 		enter Member
 			enter IdentifierExpected
 			exit IdentifierExpected
@@ -327,7 +327,7 @@ End Class
 				exit Body
 			exit Body
 		exit Member
-	exit Type
+	exit TypeDeclaration
 exit Global
 "
 			);
@@ -348,7 +348,7 @@ End Class",
 				@"enter Global
 	enter IdentifierExpected
 	exit IdentifierExpected
-	enter Type
+	enter TypeDeclaration
 		enter Member
 			enter IdentifierExpected
 			exit IdentifierExpected
@@ -381,7 +381,7 @@ End Class",
 				exit Body
 			exit Body
 		exit Member
-	exit Type
+	exit TypeDeclaration
 exit Global
 ");
 		}
@@ -416,9 +416,13 @@ Module Program
 	End Sub
 End Module",
 			        @"enter Global
+	enter Importable
+	exit Importable
+	enter Importable
+	exit Importable
 	enter IdentifierExpected
 	exit IdentifierExpected
-	enter Type
+	enter TypeDeclaration
 		enter Member
 			enter IdentifierExpected
 			exit IdentifierExpected
@@ -507,7 +511,7 @@ End Module",
 				exit Expression
 			exit Body
 		exit Member
-	exit Type
+	exit TypeDeclaration
 exit Global
 ");
 		}
@@ -519,6 +523,12 @@ exit Global
 Imports System.Linq
 Imports System.Collections.Generic",
 			@"enter Global
+	enter Importable
+	exit Importable
+	enter Importable
+	exit Importable
+	enter Importable
+	exit Importable
 exit Global
 ");
 		}
