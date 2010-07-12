@@ -47,6 +47,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
         
         public void HideHandles()
         {
+        	if (_leftHandle != null && _topHandle != null && _rightHandle != null && _bottomHandle != null) {
         	_leftHandle.Visibility=Visibility.Hidden;
         	_leftHandle.ShouldBeVisible=false;
         	_topHandle.Visibility=Visibility.Hidden;
@@ -55,11 +56,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
         	_rightHandle.ShouldBeVisible=false;
         	_bottomHandle.Visibility=Visibility.Hidden;
         	_bottomHandle.ShouldBeVisible=false;
-        	
+        	}        	
         }
         
         public void ShowHandles()
         {
+        	if (_leftHandle != null && _topHandle != null && _rightHandle != null && _bottomHandle != null){
         	_leftHandle.Visibility=Visibility.Visible;
         	_leftHandle.ShouldBeVisible=true;
         	_leftHandle.DecideVisiblity(_leftHandle.HandleLength);
@@ -72,6 +74,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
         	_bottomHandle.Visibility=Visibility.Visible; 
         	_bottomHandle.ShouldBeVisible=true;
         	_bottomHandle.DecideVisiblity(_bottomHandle.HandleLength);
+        	}
         }
     }
 }

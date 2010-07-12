@@ -489,4 +489,19 @@
 			</Setter.Value>
 		</Setter>
 	</Style>
+	<Style TargetType="{x:Type Controls:QuickOperationMenu}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Controls:QuickOperationMenu}">
+                    <Menu Height="15" HorizontalAlignment="Left" Name="menu1" VerticalAlignment="Top" Width="15" BorderThickness="0">
+                        <MenuItem Height="15" Width="15"  Padding="0" BorderBrush="LightGray" BorderThickness="1" Name="MainHeader">
+                        <MenuItem.Header>
+                            <Path Data="M3,5.5 L12,5.5 L7.5,11 z" Fill="Gray" />
+                        </MenuItem.Header>
+                        </MenuItem>
+                    </Menu>                    
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

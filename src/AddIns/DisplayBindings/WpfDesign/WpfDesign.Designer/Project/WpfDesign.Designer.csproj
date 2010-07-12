@@ -95,6 +95,7 @@
     <Compile Include="Controls\InPlaceEditor.cs" />
     <Compile Include="Controls\MarginHandle.cs" />
     <Compile Include="Controls\PanelMoveAdorner.cs" />
+    <Compile Include="Controls\QuickOperationMenu.cs" />
     <Compile Include="Controls\SelectionFrame.cs" />
     <Compile Include="Controls\ErrorBalloon.cs" />
     <Compile Include="Controls\ResizeThumb.cs" />
@@ -123,6 +124,7 @@
     <Compile Include="Extensions\GridPlacementSupport.cs" />
     <Compile Include="Extensions\InPlaceEditorExtension.cs" />
     <Compile Include="Extensions\MarginHandleExtension.cs" />
+    <Compile Include="Extensions\QuickOperationMenuExtension.cs" />
     <Compile Include="Extensions\SizeDisplayExtension.cs" />
     <Compile Include="Extensions\SnaplinePlacementBehavior.cs">
       <SubType>Code</SubType>

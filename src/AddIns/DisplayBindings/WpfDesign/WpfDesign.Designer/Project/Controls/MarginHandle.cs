@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,6 +89,11 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
         /// Decides whether to permanently display the handle or not.
         /// </summary>
         public bool ShouldBeVisible { get; set; }
+        
+        /// <summary>
+        /// Decides whether stub has to be only displayed.
+        /// </summary>
+        public bool DisplayOnlyStub { get; set; }
 
         public MarginHandle(DesignItem adornedControlItem, AdornerPanel adornerPanel, HandleOrientation orientation)
         {
@@ -148,16 +154,22 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
         /// </summary>
         /// <param name="handleLength"></param>
         public void DecideVisiblity(double handleLength)
-        {
-        	 if(ShouldBeVisible){
-            	marginStub.Visibility = handleLength == 0.0 ? Visibility.Visible : Visibility.Hidden;
-            	this.Visibility = handleLength != 0.0 ? Visibility.Visible : Visibility.Hidden;
-            	if (this.lineArrow != null){            
-                	lineArrow.Visibility = handleLength < 23 ? Visibility.Hidden : Visibility.Visible;
-            	}
+        {   
+        	if(!DisplayOnlyStub){
+        	 	if(ShouldBeVisible){
+            		marginStub.Visibility = handleLength == 0.0 ? Visibility.Visible : Visibility.Hidden;
+            		this.Visibility = handleLength != 0.0 ? Visibility.Visible : Visibility.Hidden;
+            		if (this.lineArrow != null){            
+                		lineArrow.Visibility = handleLength < 23 ? Visibility.Hidden : Visibility.Visible;
+            		}
+        		}
         	}
-        }
-     
+        	else {
+        		DisplayOnlyStub=false;
+        		DecideVisiblity(this.HandleLength);        		
+        	}        	
+        }        
+        
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
