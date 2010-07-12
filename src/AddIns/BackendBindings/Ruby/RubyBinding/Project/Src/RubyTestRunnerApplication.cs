@@ -11,6 +11,7 @@ using System.IO;
 using System.Text;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.RubyBinding
@@ -69,19 +70,36 @@ namespace ICSharpCode.RubyBinding
 		public ProcessStartInfo CreateProcessStartInfo(SelectedTests selectedTests)
 		{
 			consoleApplication.RubyScriptFileName = GetSharpDevelopTestRubyScriptFileName();
-			AddLoadPaths();
+			AddLoadPaths(selectedTests.Project);
 			consoleApplication.RubyScriptCommandLineArguments = GetCommandLineArguments(selectedTests);
 			consoleApplication.WorkingDirectory = selectedTests.Project.Directory;
 			return consoleApplication.GetProcessStartInfo();
 		}
 		
-		void AddLoadPaths()
+		void AddLoadPaths(IProject project)
+		{
+			AddLoadPathForRubyStandardLibrary();
+			AddLoadPathForReferencedProjects(project);
+		}
+		
+		void AddLoadPathForRubyStandardLibrary()
 		{
 			if (options.HasRubyLibraryPath) {
 				consoleApplication.AddLoadPath(options.RubyLibraryPath);
 			}
 			string testRunnerLoadPath = Path.GetDirectoryName(consoleApplication.RubyScriptFileName);
 			consoleApplication.AddLoadPath(testRunnerLoadPath);
+		}
+		
+		void AddLoadPathForReferencedProjects(IProject project)
+		{
+			foreach (ProjectItem item in project.Items) {
+				ProjectReferenceProjectItem projectRef = item as ProjectReferenceProjectItem;
+				if (projectRef != null) {
+					string directory = Path.GetDirectoryName(projectRef.FileName);
+					consoleApplication.AddLoadPath(directory);
+				}
+			}
 		}
 		
 		string GetSharpDevelopTestRubyScriptFileName()

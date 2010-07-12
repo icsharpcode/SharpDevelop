@@ -11,6 +11,7 @@ using System.Diagnostics;
 using ICSharpCode.Core;
 using ICSharpCode.RubyBinding;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
 using RubyBinding.Tests.Testing;
@@ -118,6 +119,37 @@ namespace RubyBinding.Tests.Testing
 			string expectedCommandLine = 
 				"\"-Ic:\\ruby\\lib\" " +
 				"\"-Ic:\\rubybinding\\TestRunner\" " +
+				"\"c:\\rubybinding\\TestRunner\\sdtest.rb\" " +
+				"-- " +
+				"\"results.txt\" " +
+				"\"temp.tmp\"";
+			
+			Assert.AreEqual(expectedCommandLine, processStartInfo.Arguments);
+		}
+		
+		[Test]
+		public void CreateProcessInfoReturnsCommandLineWithDirectoriesForReferencedProjects()
+		{
+			MockCSharpProject referencedProject = new MockCSharpProject();
+			referencedProject.FileName = @"c:\projects\rbproject\rbproject.rbproj";
+			
+			MockCSharpProject unitTestProject = new MockCSharpProject();
+			ProjectReferenceProjectItem projectRef = new ProjectReferenceProjectItem(unitTestProject, referencedProject);
+			projectRef.FileName = @"c:\projects\rbproject\pyproject.rbproj";
+			ProjectService.AddProjectItem(unitTestProject, projectRef);
+			
+			MockMethod method = MockMethod.CreateMockMethodWithoutAnyAttributes();
+			method.CompilationUnit.FileName = @"d:\mytest.rb";
+			FileProjectItem fileItem = new FileProjectItem(unitTestProject, ItemType.Compile);
+			fileItem.FileName = @"d:\mytest.rb";
+			ProjectService.AddProjectItem(unitTestProject, fileItem);
+			
+			SelectedTests tests = RubySelectedTestsHelper.CreateSelectedTests(unitTestProject);
+			ProcessStartInfo processStartInfo = GetProcessStartInfoFromTestRunnerApp(tests);
+						
+			string expectedCommandLine = 
+				"\"-Ic:\\rubybinding\\TestRunner\" " +
+				"\"-Ic:\\projects\\rbproject\" " +
 				"\"c:\\rubybinding\\TestRunner\\sdtest.rb\" " +
 				"-- " +
 				"\"results.txt\" " +
