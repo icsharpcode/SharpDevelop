@@ -33,7 +33,7 @@ namespace ICSharpCode.VBNetBinding
 		
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
-			if (IsInComment(editor))
+			if (IsInComment(editor) || IsInString(editor))
 				return CodeCompletionKeyPressResult.None;
 			
 			if (editor.SelectionLength > 0) {
@@ -59,10 +59,6 @@ namespace ICSharpCode.VBNetBinding
 						return CodeCompletionKeyPressResult.Completed;
 					}
 					break;
-				case '"':
-				case '\n':
-				case ')':
-					break;
 				case '.':
 					result = ef.FindExpression(editor.Document.Text, editor.Caret.Offset);
 					LoggingService.Debug("CC: After dot, result=" + result + ", context=" + result.Context);
@@ -70,7 +66,7 @@ namespace ICSharpCode.VBNetBinding
 					return CodeCompletionKeyPressResult.Completed;
 				case ' ':
 					result = ef.FindExpression(editor.Document.Text, editor.Caret.Offset);
-					if (HasKeywordsOnly(result.Tag as BitArray) || result.Context == ExpressionContext.Importable || result.Context == ExpressionContext.Type || result.Context == ExpressionContext.ObjectCreation) {
+					if (HasKeywordsOnly((BitArray)result.Tag) && ExpressionContext.IdentifierExpected != result.Context) {
 						LoggingService.Debug("CC: After space, result=" + result + ", context=" + result.Context);
 						editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor, ch));
 						return CodeCompletionKeyPressResult.Completed;
@@ -88,7 +84,7 @@ namespace ICSharpCode.VBNetBinding
 						
 						result = ef.FindExpression(editor.Document.Text, cursor);
 						
-						if ((result.Context != ExpressionContext.IdentifierExpected) &&
+						if ((result.Context != ExpressionContext.IdentifierExpected && char.IsLetter(ch)) &&
 						    (!char.IsLetterOrDigit(prevChar) && prevChar != '.')) {
 							LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
 							editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor, ch));
@@ -114,12 +110,15 @@ namespace ICSharpCode.VBNetBinding
 			return true;
 		}
 		
-		bool IsInComment(ITextEditor editor)
+		void GetCommentOrStringState(ITextEditor editor, out bool inString, out bool inComment)
 		{
 			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, editor.Document.CreateReader());
 			
 			Token t = lexer.NextToken();
 			bool inXml = false;
+			
+			inString = false;
+			inComment = false;
 			
 			while (t.Location < editor.Caret.Position) {
 				t = lexer.NextToken();
@@ -134,14 +133,11 @@ namespace ICSharpCode.VBNetBinding
 			}
 			
 			if (inXml) {
-				return true;
+				// TODO
 			} else {
 				string lineText = editor.Document.GetLine(editor.Caret.Line).Text;
 				
-				bool inString = false;
-				bool inComment = false;
-				
-				for (int i = 0; i < lineText.Length; i++) {
+				for (int i = 0; i < editor.Caret.Column - 1; i++) {
 					char ch = lineText[i];
 					
 					if (!inComment && ch == '"')
@@ -149,9 +145,21 @@ namespace ICSharpCode.VBNetBinding
 					if (!inString && ch == '\'')
 						inComment = true;
 				}
-				
-				return inComment;
 			}
+		}
+		
+		bool IsInString(ITextEditor editor)
+		{
+			bool inString, inComment;
+			GetCommentOrStringState(editor, out inString, out inComment);
+			return inString;
+		}
+		
+		bool IsInComment(ITextEditor editor)
+		{
+			bool inString, inComment;
+			GetCommentOrStringState(editor, out inString, out inComment);
+			return inComment;
 		}
 		
 		public bool CtrlSpace(ITextEditor editor)

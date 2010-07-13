@@ -139,6 +139,12 @@ End Class
 		{
 			ContextTest(program4, " a ", 3, ExpressionContext.MethodBody);
 		}
+		
+		[Test]
+		public void ContextAfterDim()
+		{
+			ContextTest(program4, "Dim ", "Dim".Length, ExpressionContext.IdentifierExpected);
+		}
 		#endregion
 		
 		#region FindFull

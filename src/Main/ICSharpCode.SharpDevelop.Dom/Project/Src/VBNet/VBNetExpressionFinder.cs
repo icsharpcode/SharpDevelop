@@ -77,6 +77,9 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				p.Advance();
 			}
 			
+			if (p.IsIdentifierExpected)
+				context = ExpressionContext.IdentifierExpected;
+			
 			BitArray expectedSet;
 			
 			try {
@@ -86,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			}
 			
 			if (p.NextTokenIsPotentialStartOfExpression)
-				return new ExpressionResult("", DomRegion.Empty, GetContext(block), expectedSet);
+				return new ExpressionResult("", DomRegion.Empty, context, expectedSet);
 			
 			int lastExpressionStartOffset = LocationToOffset(block.lastExpressionStart);
 			

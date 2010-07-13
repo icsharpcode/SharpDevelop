@@ -41,7 +41,6 @@ namespace ICSharpCode.VBNetBinding
 					if (expressionResult.Context == ExpressionContext.Importable && expressionResult.Expression.Equals("Imports", StringComparison.OrdinalIgnoreCase)) {
 						expressionResult.Expression = "Global";
 					}
-					
 					var rr = resolver.Resolve(expressionResult, info, editor.Document.Text);
 					
 					if (rr == null)
@@ -51,12 +50,11 @@ namespace ICSharpCode.VBNetBinding
 				}
 			}
 			
-			
 			bool addedKeywords = false;
 			
 			if (expressionResult.Tag != null && (expressionResult.Context != ExpressionContext.Importable) && pressedKey != '.') {
 				AddVBNetKeywords(data, (BitArray)expressionResult.Tag);
-				if (((BitArray)expressionResult.Tag)[Tokens.New])
+				if (!((BitArray)expressionResult.Tag)[Tokens.New] &&  expressionResult.Context == ExpressionContext.Type)
 					data.Add(new KeywordEntry("New"));
 				addedKeywords = true;
 			}
