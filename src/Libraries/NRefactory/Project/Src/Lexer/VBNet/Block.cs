@@ -16,6 +16,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 	{
 		Global,
 		TypeDeclaration,
+		ObjectCreation,
+		Type,
 		Member,
 		IdentifierExpected,
 		Body,

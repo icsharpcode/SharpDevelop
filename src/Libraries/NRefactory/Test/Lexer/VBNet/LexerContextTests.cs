@@ -83,6 +83,8 @@ End Class
 		enter Member
 			enter IdentifierExpected
 			exit IdentifierExpected
+			enter Type
+			exit Type
 			enter Expression
 				enter Expression
 					enter Expression
@@ -295,6 +297,8 @@ End Class
 					enter Expression
 					exit Expression
 				exit IdentifierExpected
+				enter Type
+				exit Type
 				enter Expression
 					enter Expression
 						enter Expression
@@ -311,6 +315,8 @@ End Class
 					enter Expression
 					exit Expression
 				exit IdentifierExpected
+				enter Type
+				exit Type
 				enter Expression
 					enter Expression
 						enter Expression
@@ -323,6 +329,8 @@ End Class
 				exit Body
 				enter IdentifierExpected
 				exit IdentifierExpected
+				enter Type
+				exit Type
 				enter Body
 				exit Body
 			exit Body
@@ -352,6 +360,8 @@ End Class",
 		enter Member
 			enter IdentifierExpected
 			exit IdentifierExpected
+			enter Type
+			exit Type
 		exit Member
 		enter Member
 			enter IdentifierExpected
@@ -465,18 +475,20 @@ End Module",
 						exit Expression
 						enter Expression
 							enter Expression
-								enter Expression
+								enter ObjectCreation
 									enter Expression
 										enter Expression
+											enter Expression
+											exit Expression
 										exit Expression
 									exit Expression
-								exit Expression
-								enter Expression
 									enter Expression
 										enter Expression
+											enter Expression
+											exit Expression
 										exit Expression
 									exit Expression
-								exit Expression
+								exit ObjectCreation
 							exit Expression
 						exit Expression
 					exit Expression
@@ -522,7 +534,7 @@ exit Global
 			RunTest(@"Imports System
 Imports System.Linq
 Imports System.Collections.Generic",
-			@"enter Global
+			        @"enter Global
 	enter Importable
 	exit Importable
 	enter Importable

@@ -59,18 +59,23 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			
 			ExpressionFinder p = new ExpressionFinder();
 			lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(text));
-			Token t;
+			Token t = lexer.NextToken();
 			
-			do {
-				t = lexer.NextToken();
-				if (t.Location >= targetPosition)
-					break;
+			while (t.EndLocation < targetPosition) {
 				p.InformToken(t);
-			} while (t.EndLocation < targetPosition);
+				t = lexer.NextToken();
+			}
+			
+			p.Advance();
 			
 			var block = p.CurrentBlock;
 			
-			p.Advance();
+			ExpressionContext context = p.IsIdentifierExpected ? ExpressionContext.IdentifierExpected : GetContext(block);
+			
+			if (t.Location < targetPosition) {
+				p.InformToken(t);
+				p.Advance();
+			}
 			
 			BitArray expectedSet;
 			
@@ -81,11 +86,10 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			}
 			
 			if (p.NextTokenIsPotentialStartOfExpression)
-				return new ExpressionResult("", DomRegion.Empty, GetContext(p.CurrentBlock), expectedSet);
+				return new ExpressionResult("", DomRegion.Empty, GetContext(block), expectedSet);
 			
 			int lastExpressionStartOffset = LocationToOffset(block.lastExpressionStart);
 			
-			ExpressionContext context = p.IsIdentifierExpected ? ExpressionContext.IdentifierExpected : GetContext(block);
 			
 			if (lastExpressionStartOffset < 0)
 				return new ExpressionResult(null, DomRegion.Empty, context, expectedSet);
@@ -130,10 +134,14 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 					return ExpressionContext.IdentifierExpected;
 				case Context.TypeDeclaration:
 					return ExpressionContext.TypeDeclaration;
+				case Context.Type:
+					return ExpressionContext.Type;
 				case Context.Body:
 					return ExpressionContext.MethodBody;
 				case Context.Importable:
 					return ExpressionContext.Importable;
+				case Context.ObjectCreation:
+					return ExpressionContext.ObjectCreation;
 			}
 			
 			return ExpressionContext.Default;

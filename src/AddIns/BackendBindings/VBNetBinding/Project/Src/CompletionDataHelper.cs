@@ -21,9 +21,9 @@ namespace ICSharpCode.VBNetBinding
 {
 	public static class CompletionDataHelper
 	{
-		public static ICompletionItemList GenerateCompletionData(this ExpressionResult expressionResult, ITextEditor editor)
+		public static ICompletionItemList GenerateCompletionData(this ExpressionResult expressionResult, ITextEditor editor, char pressedKey)
 		{
-			var result = new NRefactoryCompletionItemList();
+			DefaultCompletionItemList result = new NRefactoryCompletionItemList();
 			
 			IResolver resolver = ParserService.CreateResolver(editor.FileName);
 			ParseInformation info = ParserService.GetParseInformation(editor.FileName);
@@ -33,12 +33,12 @@ namespace ICSharpCode.VBNetBinding
 			
 			List<ICompletionEntry> data = new List<ICompletionEntry>();
 			
-			if (string.IsNullOrEmpty(expressionResult.Expression)) {
-				data = new NRefactoryResolver(LanguageProperties.VBNet)
-					.CtrlSpace(editor.Caret.Line, editor.Caret.Column, info, editor.Document.Text, expressionResult.Context, result.ContainsItemsFromAllNamespaces);
-			} else {
-				if (expressionResult.Context != ExpressionContext.Global && expressionResult.Context != ExpressionContext.TypeDeclaration) {
-					if (expressionResult.Context == ExpressionContext.Importable && expressionResult.Expression == "Imports") {
+			if (expressionResult.Context != ExpressionContext.Global && expressionResult.Context != ExpressionContext.TypeDeclaration) {
+				if (string.IsNullOrEmpty(expressionResult.Expression) || IdentifierExpected(expressionResult.Tag)) {
+					data = new NRefactoryResolver(LanguageProperties.VBNet)
+						.CtrlSpace(editor.Caret.Line, editor.Caret.Column, info, editor.Document.Text, expressionResult.Context, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces);
+				} else {
+					if (expressionResult.Context == ExpressionContext.Importable && expressionResult.Expression.Equals("Imports", StringComparison.OrdinalIgnoreCase)) {
 						expressionResult.Expression = "Global";
 					}
 					
@@ -47,14 +47,33 @@ namespace ICSharpCode.VBNetBinding
 					if (rr == null)
 						return result;
 					
-					data = rr.GetCompletionData(info.CompilationUnit.ProjectContent, result.ContainsItemsFromAllNamespaces);
+					data = rr.GetCompletionData(info.CompilationUnit.ProjectContent, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces);
 				}
 			}
 			
-			if (expressionResult.Tag != null && (expressionResult.Context != ExpressionContext.Importable))
-				AddVBNetKeywords(data, (BitArray)expressionResult.Tag);
 			
-			return CodeCompletionItemProvider.ConvertCompletionData(result, data, expressionResult.Context);
+			bool addedKeywords = false;
+			
+			if (expressionResult.Tag != null && (expressionResult.Context != ExpressionContext.Importable) && pressedKey != '.') {
+				AddVBNetKeywords(data, (BitArray)expressionResult.Tag);
+				if (((BitArray)expressionResult.Tag)[Tokens.New])
+					data.Add(new KeywordEntry("New"));
+				addedKeywords = true;
+			}
+			
+			result = CodeCompletionItemProvider.ConvertCompletionData(result, data, expressionResult.Context);
+			
+			if (addedKeywords)
+				AddTemplates(editor, result);
+			
+			return result;
+		}
+		
+		static bool IdentifierExpected(object tag)
+		{
+			if (tag is BitArray)
+				return (tag as BitArray)[2];
+			return false;
 		}
 		
 		static void AddVBNetKeywords(List<ICompletionEntry> ar, BitArray keywords)
@@ -64,6 +83,16 @@ namespace ICSharpCode.VBNetBinding
 					ar.Add(new KeywordEntry(Tokens.GetTokenString(i)));
 				}
 			}
+		}
+		
+		static void AddTemplates(ITextEditor editor, DefaultCompletionItemList list)
+		{
+			if (list == null)
+				return;
+			List<ICompletionItem> snippets = editor.GetSnippets().ToList();
+			list.Items.RemoveAll(item => item.Image == ClassBrowserIconService.Keyword && snippets.Exists(i => i.Text == item.Text));
+			list.Items.AddRange(snippets);
+			list.SortItems();
 		}
 	}
 }

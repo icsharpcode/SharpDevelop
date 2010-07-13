@@ -61,17 +61,18 @@ namespace ICSharpCode.VBNetBinding
 					break;
 				case '"':
 				case '\n':
+				case ')':
 					break;
 				case '.':
 					result = ef.FindExpression(editor.Document.Text, editor.Caret.Offset);
 					LoggingService.Debug("CC: After dot, result=" + result + ", context=" + result.Context);
-					editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor));
+					editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor, ch));
 					return CodeCompletionKeyPressResult.Completed;
 				case ' ':
 					result = ef.FindExpression(editor.Document.Text, editor.Caret.Offset);
-					if (HasKeywordsOnly(result.Tag as BitArray) || result.Context == ExpressionContext.Importable) {
+					if (HasKeywordsOnly(result.Tag as BitArray) || result.Context == ExpressionContext.Importable || result.Context == ExpressionContext.Type || result.Context == ExpressionContext.ObjectCreation) {
 						LoggingService.Debug("CC: After space, result=" + result + ", context=" + result.Context);
-						editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor));
+						editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor, ch));
 						return CodeCompletionKeyPressResult.Completed;
 					}
 					break;
@@ -90,7 +91,7 @@ namespace ICSharpCode.VBNetBinding
 						if ((result.Context != ExpressionContext.IdentifierExpected) &&
 						    (!char.IsLetterOrDigit(prevChar) && prevChar != '.')) {
 							LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
-							editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor));
+							editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor, ch));
 							return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
 						}
 					}
@@ -182,7 +183,7 @@ namespace ICSharpCode.VBNetBinding
 				ExpressionResult result = ef.FindExpression(editor.Document.Text, cursor);
 				LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
 				if (result.Context != ExpressionContext.IdentifierExpected) {
-					editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor));
+					editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor, ' '));
 					return true;
 				}
 			}

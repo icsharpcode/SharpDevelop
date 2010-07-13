@@ -49,6 +49,14 @@ Class MainClass
 End Class
 		";
 		
+		const string program4 = @"
+Class MainClass
+	Sub A
+		Dim a 
+	End Sub
+End Class
+		";
+		
 		VBNetExpressionFinder ef;
 		
 		[SetUp]
@@ -83,7 +91,7 @@ End Class
 		[Test]
 		public void FindSimple()
 		{
-			Find(program2, "sole", 0,"Con", ExpressionContext.Default);
+			Find(program2, "sole", 0,"Con", ExpressionContext.MethodBody);
 		}
 		
 		[Test]
@@ -107,13 +115,29 @@ End Class
 		[Test]
 		public void ForEachLoop()
 		{
-			Find(program1, "loopVarName", 4, "loop", ExpressionContext.Default);
+			Find(program1, "loopVarName", 4, "loop", ExpressionContext.IdentifierExpected);
 		}
 		
 		[Test]
 		public void FindEmptyAfterImports()
 		{
 			Find(program1, "		", 1, "", ExpressionContext.Global);
+		}
+		#endregion
+		
+		#region Context Tests
+		void ContextTest(string program, string location, int offset, ExpressionContext context)
+		{
+			int pos = program.IndexOf(location);
+			if (pos < 0) Assert.Fail("location not found in program");
+			ExpressionResult er = ef.FindExpression(program, pos + offset);
+			Assert.AreEqual(context.ToString(), er.Context.ToString());
+		}
+		
+		[Test]
+		public void ContextAfterDimIdentifier()
+		{
+			ContextTest(program4, " a ", 3, ExpressionContext.MethodBody);
 		}
 		#endregion
 		

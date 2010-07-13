@@ -322,7 +322,7 @@ TypeDeclaration =
 
 ClassOrModuleOrStructureTypeDeclaration =
 	( "Module" | "Class" | "Structure" ) (. PushContext(Context.IdentifierExpected, la, t); .) ANY (. PopContext(); .)
-	[ "(" "Of"  [ "Out" | "In" ] IdentifierExceptOut [ "As" GenericConstraintList ] { "," [ "Out" | "In" ] IdentifierExceptOut [ "As" GenericConstraintList ] } ")" ] { ANY } [ StatementTerminator ]
+	[ "(" "Of"  [ "Out" | "In" ] IdentifierExceptOut [ (. PushContext(Context.Type, la, t); .) "As" GenericConstraintList (. PopContext(); .) ] { "," [ "Out" | "In" ] IdentifierExceptOut [ (. PushContext(Context.Type, la, t); .) "As" GenericConstraintList (. PopContext(); .) ] } ")" ] { ANY } [ StatementTerminator ]
 	[ "Inherits" { ANY } StatementTerminator ]
 	[ "Implements" { ANY } StatementTerminator ]
 	(. PushContext(Context.TypeDeclaration, la, t); .)
@@ -342,7 +342,7 @@ GenericConstraintList =
 DelegateTypeDeclaration =
 	"Delegate" ("Sub" | "Function")
 	(. PushContext(Context.IdentifierExpected, la, t); .) ANY (. PopContext(); .)
-	[ "(" [ ParameterList ] ")" ] [ "As" TypeName ] StatementTerminator
+	[ "(" [ ParameterList ] ")" ] [ (. PushContext(Context.Type, la, t); .) "As" TypeName (. PopContext(); .) ] StatementTerminator
 .
 
 MemberDeclaration =
@@ -362,18 +362,18 @@ MemberDeclaration =
 SubOrFunctionDeclaration = 
 	("Sub" | "Function")
 	(. PushContext(Context.IdentifierExpected, la, t); .) ANY (. PopContext(); .)
-	[ "(" [ ParameterList ] ")" ] [ "As" TypeName ]
+	[ "(" [ ParameterList ] ")" ] [ (. PushContext(Context.Type, la, t); .) "As" TypeName (. PopContext(); .) ]
 	StatementTerminatorAndBlock
 	"End" ("Sub" | "Function") StatementTerminator
 .
 
 ExternalMemberDeclaration =
 	"Declare" [ "Ansi" | "Unicode" | "Auto" ] ( "Sub" | "Function" ) (. PushContext(Context.IdentifierExpected, la, t); .) Identifier (. PopContext(); .)
-	"Lib" LiteralString [ "Alias" LiteralString ] [ "(" [ ParameterList ] ")" ] [ "As" TypeName ] StatementTerminator
+	"Lib" LiteralString [ "Alias" LiteralString ] [ "(" [ ParameterList ] ")" ] [ (. PushContext(Context.Type, la, t); .) "As" TypeName (. PopContext(); .) ] StatementTerminator
 .
 
 EventMemberDeclaration =
-	"Event" (. PushContext(Context.IdentifierExpected, la, t); .) Identifier (. PopContext(); .) ( "As" TypeName | [ "(" [ ParameterList ] ")" ] )
+	"Event" (. PushContext(Context.IdentifierExpected, la, t); .) Identifier (. PopContext(); .) ( (. PushContext(Context.Type, la, t); .) "As" TypeName (. PopContext(); .) | [ "(" [ ParameterList ] ")" ] )
 	[ "Implements" TypeName /*"." IdentifierOrKeyword*/ { "," TypeName /*"." IdentifierOrKeyword*/ } ]
 	/* the TypeName production already allows the "." IdentifierOrKeyword syntax, so to avoid an ambiguous grammer we just leave that out */
 	StatementTerminator
@@ -390,14 +390,14 @@ CustomEventMemberDeclaration =
 .
 
 OperatorDeclaration =
-	"Operator" (. PushContext(Context.IdentifierExpected, la, t); .) ANY (. PopContext(); .) "(" ParameterList ")" [ "As" { AttributeBlock } TypeName ]
+	"Operator" (. PushContext(Context.IdentifierExpected, la, t); .) ANY (. PopContext(); .) "(" ParameterList ")" [ "As" { AttributeBlock } (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
 	StatementTerminatorAndBlock
 	"End" "Operator" StatementTerminator
 .
 
 MemberVariableOrConstantDeclaration =
 	[ "Const" ]
-	(. PushContext(Context.IdentifierExpected, la, t); .) IdentifierForFieldDeclaration (. PopContext(); .)  [ "As" TypeName ] [ "=" Expression ] StatementTerminator
+	(. PushContext(Context.IdentifierExpected, la, t); .) IdentifierForFieldDeclaration (. PopContext(); .)  [ (. PushContext(Context.Type, la, t); .) "As" TypeName (. PopContext(); .) ] [ "=" Expression ] StatementTerminator
 .
 
 ParameterList =
@@ -405,7 +405,7 @@ ParameterList =
 .
 
 Parameter =
-	{ AttributeBlock } { ParameterModifier } (. PushContext(Context.IdentifierExpected, la, t); .) Identifier (. PopContext(); .) [ "As" TypeName ] [ "=" Expression ] 
+	{ AttributeBlock } { ParameterModifier } (. PushContext(Context.IdentifierExpected, la, t); .) Identifier (. PopContext(); .) [ (. PushContext(Context.Type, la, t); .) "As" TypeName (. PopContext(); .) ] [ "=" Expression ] 
 .
 
 StatementTerminatorAndBlock =
@@ -482,7 +482,7 @@ SimpleExpression =
 .
 
 NewExpression =
-	"New"
+	(. PushContext(Context.ObjectCreation, la, t); .) "New"
 	(
 		TypeName
 		
@@ -509,6 +509,7 @@ NewExpression =
 	|
 		"With" ObjectInitializer
 	)
+	(. PopContext(); .)
 .
 
 ObjectInitializer =
@@ -566,7 +567,7 @@ SubLambdaExpression =
 
 FunctionLambdaExpression =
 	"Function" "(" [ ParameterList ] ")"
-	( GREEDY Expression | [ "As" TypeName ] StatementTerminatorAndBlock "End" "Function" )
+	( GREEDY Expression | [ (. PushContext(Context.Type, la, t); .) "As" TypeName (. PopContext(); .) ] StatementTerminatorAndBlock "End" "Function" )
 .
 
 QueryExpression
@@ -653,7 +654,7 @@ ExpressionRangeVariable =
 		(
 			(. PushContext(Context.IdentifierExpected, la, t); .) Identifier (. PopContext(); .) 
 			(
-				"As" TypeName "="
+				(. PushContext(Context.Type, la, t); .) "As" TypeName (. PopContext(); .) "="
 				| "="
 				| (.
 					currentState = endOfStatementTerminatorAndBlock; /* leave this block */
@@ -670,7 +671,7 @@ ExpressionRangeVariable =
 .
 
 CollectionRangeVariable =
-	(. PushContext(Context.IdentifierExpected, la, t); .) Identifier (. PopContext(); .) [ "As" TypeName ] "In" Expression
+	(. PushContext(Context.IdentifierExpected, la, t); .) Identifier (. PopContext(); .) [ (. PushContext(Context.Type, la, t); .) "As" TypeName (. PopContext(); .) ] "In" Expression
 .
 
 /* semantic action will be inserted on all paths that possibly lead to XmlLiteral */
@@ -938,7 +939,21 @@ Statement =
 VariableDeclarationStatement =
 	( "Dim" | "Static" | "Const" )
 	(. PushContext(Context.IdentifierExpected, la, t);	.)
-	Identifier (. PopContext(); .) [ "?" ] [ ( "(" { "," } ")" ) ] { "," (. PushContext(Context.IdentifierExpected, la, t); .) Identifier (. PopContext(); .) [ "?" ] [ ( "(" { "," } ")" ) ] } [ "As" [ "New" ] TypeName ] [ "=" Expression ]
+	Identifier (. PopContext(); .) [ "?" ] [ ( "(" { "," } ")" ) ]
+	{ ","
+		(. PushContext(Context.IdentifierExpected, la, t); .)
+		Identifier (. PopContext(); .) [ "?" ] [ ( "(" { "," } ")" ) ]
+	}
+	[ (. PushContext(Context.Type, la, t); .)
+		"As" TypeName
+		[ "New" (. PushContext(Context.ObjectCreation, la, t); .) ]
+		TypeName
+		(.
+		if (CurrentBlock.context == Context.ObjectCreation)
+			PopContext();
+		PopContext();
+		.) ]
+	[ "=" Expression ]
 .
 
 WithOrLockStatement =
@@ -1027,7 +1042,7 @@ ForEachLoopStatement =
 .
 
 ForLoopVariable =
-	(. PushContext(Context.IdentifierExpected, la, t); .) SimpleExpression (. PopContext(); .) [ "?" ] { ExpressionSuffix } [ "As" TypeName ]
+	(. PushContext(Context.IdentifierExpected, la, t); .) SimpleExpression (. PopContext(); .) [ "?" ] { ExpressionSuffix } [ (. PushContext(Context.Type, la, t); .) "As" TypeName (. PopContext(); .) ]
 .
 
 ErrorHandlingStatement =
@@ -1044,7 +1059,7 @@ TryStatement =
 	StatementTerminatorAndBlock
 	{
 		"Catch"
-		[ (. PushContext(Context.IdentifierExpected, la, t); .) Identifier (. PopContext(); .) [ "As" TypeName ] ]
+		[ (. PushContext(Context.IdentifierExpected, la, t); .) Identifier (. PopContext(); .) [ (. PushContext(Context.Type, la, t); .) "As" TypeName (. PopContext(); .) ] ]
 		[ "When" Expression ]
 		StatementTerminatorAndBlock
 	}

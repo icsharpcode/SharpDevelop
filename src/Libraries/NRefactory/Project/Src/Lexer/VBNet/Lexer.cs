@@ -389,6 +389,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				prevToken = t;
 			}
 			ef.Advance();
+			Debug.Assert(t != null);
 			return t;
 		}
 		
