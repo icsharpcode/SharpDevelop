@@ -474,6 +474,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Controls:InPlaceEditor}">
                     <TextBox Name="editor"
+                             ToolTip="Edit the Text. Press ESC key to make changes."
                              SnapsToDevicePixels="True"
                              Padding="{Binding Path=Padding}"    
                              FontSize="{Binding Path=FontSize}"
