@@ -199,7 +199,42 @@ End While"
     Case Else
 		${Caret}
 End Select"
-					}
+					},
+					new CodeSnippet {
+						Name = "Try",
+						Description = "Try-catch statement",
+						Text = "Try\n\t${Selection}\nCatch ${var=ex} As ${Exception=Exception}\n\t${Caret}\n\tThrow\nEnd Try"
+					},
+					new CodeSnippet {
+						Name = "TryCF",
+						Description = "Try-catch-finally statement",
+						Text = "Try\n\t${Selection}\nCatch ${var=ex} As ${Exception=Exception}\n\t${Caret}\n\tThrow\nFinally\n\t\nEnd Try"
+					},
+					new CodeSnippet {
+						Name = "TryF",
+						Description = "Try-finally statement",
+						Text = "Try\n\t${Selection}\nFinally\n\t${Caret}\nEnd Try"
+					},
+					new CodeSnippet {
+						Name = "Using",
+						Description = "Using statement",
+						Text = @"Using ${var=obj} As ${type}
+	${Selection}
+End Using"
+					},
+					new CodeSnippet {
+						Name = "propfull",
+						Description = "Property",
+						Text = @"Private ${toFieldName(name)} As ${type}
+Public Property ${name=Property} As ${type=Integer}
+	Get
+		Return ${toFieldName(name)}
+	End Get
+	Set(${value=value} As ${type})
+		${toFieldName(name)} = ${value}
+	End Set
+End Property${Caret}"
+					},
 				}
 			}
 		};
