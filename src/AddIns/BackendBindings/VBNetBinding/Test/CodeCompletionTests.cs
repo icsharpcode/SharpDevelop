@@ -36,7 +36,7 @@ namespace ICSharpCode.VBNetBinding.Tests
 		[Test]
 		public void TestOptions()
 		{
-			TestKeyPress("Option", "", ' ', CodeCompletionKeyPressResult.Completed,
+			TestKeyPress("Option", "", ' ', CodeCompletionKeyPressResult.EatKey,
 			             list => {
 			             	Assert.IsTrue(list.Items.Any());
 			             	Assert.IsTrue(list.Items.All(item => item.Image == ClassBrowserIconService.Keyword));
@@ -49,7 +49,7 @@ namespace ICSharpCode.VBNetBinding.Tests
 		[Test]
 		public void TestOptionCompare()
 		{
-			TestKeyPress("Option Compare", "", ' ', CodeCompletionKeyPressResult.Completed,
+			TestKeyPress("Option Compare", "", ' ', CodeCompletionKeyPressResult.EatKey,
 			             list => {
 			             	Assert.IsTrue(list.Items.Any());
 			             	Assert.IsTrue(list.Items.All(item => item.Image == ClassBrowserIconService.Keyword));

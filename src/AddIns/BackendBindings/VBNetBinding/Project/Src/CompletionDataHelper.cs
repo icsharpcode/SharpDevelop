@@ -34,19 +34,17 @@ namespace ICSharpCode.VBNetBinding
 			List<ICompletionEntry> data = new List<ICompletionEntry>();
 			
 			if (expressionResult.Context != ExpressionContext.Global && expressionResult.Context != ExpressionContext.TypeDeclaration) {
-				if (string.IsNullOrEmpty(expressionResult.Expression) || IdentifierExpected(expressionResult.Tag)) {
-					data = new NRefactoryResolver(LanguageProperties.VBNet)
-						.CtrlSpace(editor.Caret.Line, editor.Caret.Column, info, editor.Document.Text, expressionResult.Context, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces);
+				if (expressionResult.Context == ExpressionContext.Importable && expressionResult.Expression.Equals("Imports", StringComparison.OrdinalIgnoreCase)) {
+					expressionResult.Expression = "Global";
+				}
+				var rr = resolver.Resolve(expressionResult, info, editor.Document.Text);
+				
+				if (rr == null) {
+					if (IdentifierExpected(expressionResult.Tag))
+						data = new NRefactoryResolver(LanguageProperties.VBNet)
+							.CtrlSpace(editor.Caret.Line, editor.Caret.Column, info, editor.Document.Text, expressionResult.Context, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces);
 				} else {
-					if (expressionResult.Context == ExpressionContext.Importable && expressionResult.Expression.Equals("Imports", StringComparison.OrdinalIgnoreCase)) {
-						expressionResult.Expression = "Global";
-					}
-					var rr = resolver.Resolve(expressionResult, info, editor.Document.Text);
-					
-					if (rr == null)
-						return result;
-					
-					data = rr.GetCompletionData(info.CompilationUnit.ProjectContent, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces);
+					data = rr.GetCompletionData(info.CompilationUnit.ProjectContent, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces) ?? data;
 				}
 			}
 			

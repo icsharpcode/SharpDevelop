@@ -135,7 +135,7 @@ End Class
 		}
 		
 		[Test]
-		public void ContextAfterDimIdentifier()
+		public void ContextAfterDimIdentifierSpace()
 		{
 			ContextTest(program4, " a ", 3, ExpressionContext.MethodBody);
 		}

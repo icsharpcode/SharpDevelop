@@ -46,6 +46,10 @@ namespace ICSharpCode.VBNetBinding
 				editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
 			}
 			
+			if (ch == ' ') {
+
+			}
+			
 			VBNetExpressionFinder ef = new VBNetExpressionFinder(ParserService.GetParseInformation(editor.FileName));
 			
 			ExpressionResult result;
@@ -65,13 +69,13 @@ namespace ICSharpCode.VBNetBinding
 					editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor, ch));
 					return CodeCompletionKeyPressResult.Completed;
 				case ' ':
+					editor.Document.Insert(editor.Caret.Offset, " ");
 					result = ef.FindExpression(editor.Document.Text, editor.Caret.Offset);
-					if (HasKeywordsOnly((BitArray)result.Tag) && ExpressionContext.IdentifierExpected != result.Context) {
+					if (!LiteralMayFollow((BitArray)result.Tag) && !OperatorMayFollow((BitArray)result.Tag) && ExpressionContext.IdentifierExpected != result.Context) {
 						LoggingService.Debug("CC: After space, result=" + result + ", context=" + result.Context);
 						editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor, ch));
-						return CodeCompletionKeyPressResult.Completed;
 					}
-					break;
+					return CodeCompletionKeyPressResult.EatKey;
 				default:
 					if (CodeCompletionOptions.CompleteWhenTyping) {
 						int cursor = editor.Caret.Offset;
@@ -95,6 +99,27 @@ namespace ICSharpCode.VBNetBinding
 			}
 			
 			return CodeCompletionKeyPressResult.None;
+		}
+		
+		bool OperatorMayFollow(BitArray array)
+		{
+			if (array == null)
+				return false;
+			
+			return array[Tokens.Xor];
+		}
+		
+		bool LiteralMayFollow(BitArray array)
+		{
+			if (array == null)
+				return false;
+			
+			for (int i = 0; i < array.Length; i++) {
+				if (array[i] && i >= Tokens.LiteralString && i <= Tokens.LiteralDate)
+					return true;
+			}
+			
+			return false;
 		}
 		
 		bool HasKeywordsOnly(BitArray array)
