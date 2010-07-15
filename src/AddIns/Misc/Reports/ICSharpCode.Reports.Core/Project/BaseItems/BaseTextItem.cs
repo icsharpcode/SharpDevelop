@@ -84,21 +84,14 @@ namespace ICSharpCode.Reports.Core
 			
 			base.Render(rpea);
 			
-			Console.WriteLine ("text  {0} - {1}",base.BaseStyleDecorator.Location,base.DrawingRectangle.Location);
-			base.BaseStyleDecorator.Location = base.DrawingRectangle.Location;
-			
 			StandardPrinter.FillBackground(rpea.PrintPageEventArgs.Graphics,this.BaseStyleDecorator);
-			Console.WriteLine ("text  {0} - {1}",base.BaseStyleDecorator.Location,base.DrawingRectangle.Location);
 			
 			StandardPrinter.DrawBorder(rpea.PrintPageEventArgs.Graphics,this.BaseStyleDecorator);
 			
 			string formated = StandardFormatter.FormatOutput(this.text,this.FormatString,this.DataType,String.Empty);
-			
-			Console.WriteLine ("text  {0} - {1}",base.BaseStyleDecorator.Location,base.DrawingRectangle.Location);
-			
+		
 			Print (rpea,formated,base.DrawingRectangle);
-			Console.WriteLine ("-----------------------");
-			
+		
 			base.NotifyAfterPrint (rpea.LocationAfterDraw);
 		}
 		

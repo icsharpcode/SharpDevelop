@@ -175,21 +175,21 @@ namespace ICSharpCode.Reports.Core.old_Exporter.ExportRenderer
 		float lowerleftY;
 		float upperRightX;
 		float upperRightY;
-		ReportSettings reportsettings;
+		ReportSettings reportSettings;
 		
-		public PdfUnitConverter (Rectangle pageSize,ReportSettings reportsettings)
+		public PdfUnitConverter (Rectangle pageSize,ReportSettings reportSettings)
 		{
 			if (pageSize == null) {
 				throw new ArgumentNullException("pageSize");
 			}
-			if (reportsettings == null) {
+			if (reportSettings == null) {
 				throw new ArgumentNullException("reportsettings");
 			}
 			this.pageSize = pageSize;
-			this.reportsettings = reportsettings;
-			this.lowerLeftX = UnitConverter.FromPixel(this.reportsettings.LeftMargin);
+			this.reportSettings = reportSettings;
+			this.lowerLeftX = UnitConverter.FromPixel(this.reportSettings.LeftMargin);
 			
-			this.lowerleftY = UnitConverter.FromPixel(this.reportsettings.BottomMargin);
+			this.lowerleftY = UnitConverter.FromPixel(this.reportSettings.BottomMargin);
 			
 			this.upperRightX = PageSize.A4.Width;
 			this.upperRightY = PageSize.A4.Height;

@@ -31,7 +31,6 @@ namespace ICSharpCode.Reports.Addin
 		
 		public void Save(object obj, XmlWriter writer)
 		{
-			System.Console.WriteLine("Save <{0}>",obj.GetType().Name);
 			Type t = obj.GetType();
 		
 //			writer.WriteStartElement(GetTypeName(t));

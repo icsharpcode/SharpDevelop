@@ -62,7 +62,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			if (section == null) {
 				throw new ArgumentNullException("section");
 			}
-			//section.Items.SortByLocation();
 		
 			IEnumerable<BaseReportItem> canGrowShrinkCollection = from bt in section.Items where bt.CanGrow == true select bt;
 			

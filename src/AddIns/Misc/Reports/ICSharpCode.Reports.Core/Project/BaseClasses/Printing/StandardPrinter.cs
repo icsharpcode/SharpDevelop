@@ -84,10 +84,11 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			IExportColumnBuilder columnBuilder = item as IExportColumnBuilder;
 			BaseExportColumn lineItem = null;
 			
+			
 			if (columnBuilder != null) {
 				lineItem = columnBuilder.CreateExportColumn();
 				
-				
+				                                              
 				lineItem.StyleDecorator.Location = new Point(offset.X + lineItem.StyleDecorator.Location.X,
 				                                             lineItem.StyleDecorator.Location.Y + offset.Y);
 				
@@ -108,12 +109,26 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			item.Location = new Point(offset.X + item.Location.X,
 			                           offset.Y + item.Location.Y);
 			
+			var ss = MeasurementService.MeasureReportItem(rpea.PrintPageEventArgs.Graphics,item);
+			Console.WriteLine ("RenderLineItem  {0} - {1}",ss,item.Size);
 			
 			BaseTextItem textItem = item as BaseTextItem;
 			
 			if (textItem != null) {
+				
 				string str = textItem.Text;
 				textItem.Text = evaluator.Evaluate(textItem.Text);
+				
+				if (str != textItem.Text) {
+					
+					var ss1 = MeasurementService.MeasureReportItem(rpea.PrintPageEventArgs.Graphics,item);
+					
+					int i = Convert.ToInt16(UnitConverter.FromPixel(ss1.Height).Point);
+					Console.WriteLine ("RenderLineItemxx  {0} - {1} - {2} ",ss1,
+					                   item.Size,
+					                   i);
+				}
+				
 				textItem.Render(rpea);
 				textItem.Text = str;
 			} else {

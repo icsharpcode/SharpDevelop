@@ -61,25 +61,16 @@ namespace ICSharpCode.Reports.Core.old_Exporter {
 				                           (int)this.StyleDecorator.Font.Style,
 				                           this.StyleDecorator.PdfForeColor);
 			}
-//			
-//			http://www.google.de/search?hl=de&q=itextsharp+%2B+measure+text&start=10&sa=N
-//			http://www.mikesdotnetting.com/Article/82/iTextSharp-Adding-Text-with-Chunks-Phrases-and-Paragraphs
-//			http://www.mikesdotnetting.com/Category/20
-			
-//	itextsharp + columntext + textheight		
-//itextsharp + columntext + rectangle			
 
-//itextsharp + simulate
-//http://www.mail-archive.com/itext-questions@lists.sourceforge.net/msg04747.html
 			base.Decorate();
 			PdfContentByte contentByte = base.PdfWriter.DirectContent;
 			iTextSharp.text.Rectangle r = base.ConvertToPdfRectangle();
+			
 			ColumnText columnText = new ColumnText(contentByte);
 			PdfFormat pdfFormat = new PdfFormat(this.StyleDecorator,font);
 			
-			columnText.SetSimpleColumn(r.Left, r.Top , r.Left + r.Width,r.Height,pdfFormat.Leading,pdfFormat.Alignment);
-//			int a = Convert.ToInt16((r.Height/font.Size) + 1);
-//			columnText.SetSimpleColumn(r.Left, r.Top , r.Left + r.Width,r.Height,a,pdfFormat.Alignment);
+			columnText.SetSimpleColumn(r.Left, r.Top , r.Left + r.Width,r.Top - r.Height,pdfFormat.Leading,pdfFormat.Alignment);
+
 			string formated = StandardFormatter.FormatOutput(this.text,this.StyleDecorator.FormatString,
 			                                                 this.StyleDecorator.DataType,String.Empty);
 			
@@ -88,12 +79,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter {
 			columnText.AddText(chunk);
 			
 			columnText.Go();
-			int i = columnText.LinesWritten;
-			
-			if (i > 1) {
-				Console.WriteLine("{0} - {1}",i,this.text);
-				Console.WriteLine("dif {0}",r.Height/font.Size);
-			}
+		
 		}
 		
 		
@@ -155,7 +141,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter {
 			}
 			this.font = font;
 			this.textDecorator = textDecorator;
-			this.height = UnitConverter.FromPixel(this.textDecorator.DisplayRectangle.Height).Point;
+			this.height = Convert.ToInt16(UnitConverter.FromPixel(this.textDecorator.DisplayRectangle.Height).Point) + 1;
 			this.CalculateFormat();
 		}
 		
