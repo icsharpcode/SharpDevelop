@@ -1455,6 +1455,7 @@
 					<MenuItem id    = "Stop"
 					          label = "${res:XML.MainMenu.DebugMenu.Stop}"
 					          icon  = "Icons.16x16.StopProcess"
+					          shortcut = "Shift|F5"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.StopDebuggingCommand"/>
 				</Condition>
 			</Condition>
