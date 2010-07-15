@@ -19,14 +19,14 @@
 		<MenuItem id="classCodeGenerators"
 		          type="Builder"
 		          class="SharpRefactoring.ClassCodeGeneratorMenuBuilder"
-		          insertafter="MenuBuilder" />
+		          insertbefore="MenuBuilder" />
 	</Path>
 	
 	<Path name="/SharpDevelop/Pads/ClassBrowser/ClassContextMenu">
 		<MenuItem id="classCodeGenerators"
 		          type="Builder"
 		          class="SharpRefactoring.ClassCodeGeneratorMenuBuilder"
-		          insertafter="MenuBuilder" />
+		          insertbefore="MenuBuilder" />
 	</Path>
 	
 	<Path name="/SharpDevelop/ViewContent/TextEditor/ContextMenu/Refactorings">

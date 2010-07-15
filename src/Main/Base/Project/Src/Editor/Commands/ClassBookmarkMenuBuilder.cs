@@ -102,8 +102,6 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 				return new ToolStripMenuItem[0];
 			}
 			
-			
-			
 			LanguageProperties language = c.ProjectContent.Language;
 			
 			List<ToolStripItem> list = new List<ToolStripItem>();
@@ -166,9 +164,6 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.GoToBaseCommand}", GoToBase);
 				cmd.Tag = c;
 				list.Add(cmd);
-				if (c.ClassType != ClassType.Interface && !FindReferencesAndRenameHelper.IsReadOnly(c)) {
-					AddImplementInterfaceCommands(c, list);
-				}
 			}
 			
 			// Search actions
@@ -209,49 +204,6 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 							RenameFile(p, fileItem.FileName, Path.Combine(directory, newPrefix + fileName.Substring(oldPrefix.Length)));
 						}
 					}
-				}
-			}
-		}
-		
-		void AddImplementInterfaceCommandItems(List<ToolStripItem> subItems, IClass c, bool explicitImpl)
-		{
-			CodeGenerator codeGen = c.ProjectContent.Language.CodeGenerator;
-			IAmbience ambience = AmbienceService.GetCurrentAmbience();
-			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
-			foreach (IReturnType rt in c.BaseTypes) {
-				IClass interf = rt.GetUnderlyingClass();
-				if (interf != null && interf.ClassType == ClassType.Interface) {
-					IReturnType rtCopy = rt; // copy for access by anonymous method
-					EventHandler eh = delegate {
-						var d = FindReferencesAndRenameHelper.GetDocument(c);
-						if (d != null)
-							codeGen.ImplementInterface(rtCopy, new RefactoringDocumentAdapter(d), explicitImpl, c);
-						ParserService.ParseCurrentViewContent();
-					};
-					subItems.Add(new MenuCommand(ambience.Convert(interf), eh));
-				}
-			}
-		}
-		
-		void AddImplementInterfaceCommands(IClass c, List<ToolStripItem> list)
-		{
-			CodeGenerator codeGen = c.ProjectContent.Language.CodeGenerator;
-			if (codeGen == null) return;
-			List<ToolStripItem> subItems = new List<ToolStripItem>();
-			if (c.ProjectContent.Language.SupportsImplicitInterfaceImplementation) {
-				AddImplementInterfaceCommandItems(subItems, c, false);
-				if (subItems.Count > 0) {
-					list.Add(new ICSharpCode.Core.WinForms.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceImplicit}", subItems.ToArray()));
-					subItems = new List<ToolStripItem>();
-				}
-			}
-			AddImplementInterfaceCommandItems(subItems, c, true);
-			
-			if (subItems.Count > 0) {
-				if (c.ProjectContent.Language.SupportsImplicitInterfaceImplementation) {
-					list.Add(new ICSharpCode.Core.WinForms.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceExplicit}", subItems.ToArray()));
-				} else {
-					list.Add(new ICSharpCode.Core.WinForms.Menu("${res:SharpDevelop.Refactoring.ImplementInterface}", subItems.ToArray()));
 				}
 			}
 		}

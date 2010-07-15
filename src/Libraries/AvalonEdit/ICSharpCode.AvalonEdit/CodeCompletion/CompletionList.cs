@@ -228,10 +228,11 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			                    query.StartsWith(this.currentText)) ?
 				this.currentList : this.completionData;
 			
-			var itemsWithQualities =
+			var matchingItems =
 				from item in listToFilter
-				select new { Item = item, Quality = GetMatchQuality(item.Text, query) };
-			var matchingItems = itemsWithQualities.Where(item => item.Quality > 0);
+				let quality = GetMatchQuality(item.Text, query)
+				where quality > 0
+				select new { Item = item, Quality = quality };
 			
 			// e.g. "DateTimeKind k = (*cc here suggests DateTimeKind*)"
 			ICompletionData suggestedItem = listBox.SelectedIndex != -1 ? (ICompletionData)(listBox.Items[listBox.SelectedIndex]) : null;

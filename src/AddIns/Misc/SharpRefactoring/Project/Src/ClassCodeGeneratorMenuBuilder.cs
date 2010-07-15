@@ -50,7 +50,64 @@ namespace SharpRefactoring
 			
 			AddImplementAbstractClassCommands(c, resultItems);
 			
+			if (c.BaseTypes.Count > 0 && c.ClassType != ClassType.Interface && !FindReferencesAndRenameHelper.IsReadOnly(c)) {
+				AddImplementInterfaceCommands(c, resultItems);
+			}
+			
 			return resultItems.ToArray();
+		}
+		
+		void AddImplementInterfaceCommands(IClass c, List<ToolStripItem> list)
+		{
+			CodeGenerator codeGen = c.ProjectContent.Language.CodeGenerator;
+			if (codeGen == null) return;
+			List<ToolStripItem> subItems = new List<ToolStripItem>();
+			if (c.ProjectContent.Language.SupportsImplicitInterfaceImplementation) {
+				AddImplementInterfaceCommandItems(subItems, c, false);
+				if (subItems.Count > 0) {
+					list.Add(new ICSharpCode.Core.WinForms.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceImplicit}", subItems.ToArray()));
+					subItems = new List<ToolStripItem>();
+				}
+			}
+			AddImplementInterfaceCommandItems(subItems, c, true);
+			
+			if (subItems.Count > 0) {
+				if (c.ProjectContent.Language.SupportsImplicitInterfaceImplementation) {
+					list.Add(new ICSharpCode.Core.WinForms.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceExplicit}", subItems.ToArray()));
+				} else {
+					list.Add(new ICSharpCode.Core.WinForms.Menu("${res:SharpDevelop.Refactoring.ImplementInterface}", subItems.ToArray()));
+				}
+			}
+		}
+		
+		void AddImplementInterfaceCommandItems(List<ToolStripItem> subItems, IClass c, bool explicitImpl)
+		{
+			CodeGenerator codeGen = c.ProjectContent.Language.CodeGenerator;
+			IAmbience ambience = AmbienceService.GetCurrentAmbience();
+			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
+			foreach (IReturnType rt in c.BaseTypes) {
+				IClass interf = rt.GetUnderlyingClass();
+				if (interf != null && interf.ClassType == ClassType.Interface) {
+					IReturnType rtCopy = rt; // copy for access by anonymous method
+					EventHandler eh = delegate {
+						var d = FindReferencesAndRenameHelper.GetDocument(c);
+						if (d != null)
+							codeGen.ImplementInterface(rtCopy, new RefactoringDocumentAdapter(d), explicitImpl, c);
+						ParserService.ParseCurrentViewContent();
+					};
+					subItems.Add(new MenuCommand(ambience.Convert(interf), eh));
+				}
+			}
+		}
+		
+		void AddImplementAbstractClassCommands(IClass c, List<ToolStripItem> list)
+		{
+			List<ToolStripItem> subItems = new List<ToolStripItem>();
+			AddImplementAbstractClassCommandItems(subItems, c);
+			
+			if (subItems.Count > 0) {
+				list.Add(new ICSharpCode.Core.WinForms.Menu("${res:SharpDevelop.Refactoring.ImplementAbstractClass}", subItems.ToArray()));
+			}
 		}
 		
 		void AddImplementAbstractClassCommandItems(List<ToolStripItem> subItems, IClass c)
@@ -69,16 +126,6 @@ namespace SharpRefactoring
 					};
 					subItems.Add(new MenuCommand(ambience.Convert(abstractClass), eh));
 				}
-			}
-		}
-		
-		void AddImplementAbstractClassCommands(IClass c, List<ToolStripItem> list)
-		{
-			List<ToolStripItem> subItems = new List<ToolStripItem>();
-			AddImplementAbstractClassCommandItems(subItems, c);
-			
-			if (subItems.Count > 0) {
-				list.Add(new ICSharpCode.Core.WinForms.Menu("${res:SharpDevelop.Refactoring.ImplementAbstractClass}", subItems.ToArray()));
 			}
 		}
 		
