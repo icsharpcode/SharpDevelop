@@ -46,7 +46,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	}
 	
 	/// <summary>
-	/// Build a menu with refactoring commands for the item that has been clicked on in the text editor.
+	/// Build refactoring commands for the item that has been clicked on in the text editor.
+	/// The commands are inserted to the top level of the context menu.
+	/// Path:
+	/// /SharpDevelop/ViewContent/TextEditor/ContextMenu, id=Refactoring
 	/// </summary>
 	public class RefactoringMenuBuilder : IMenuItemBuilder
 	{

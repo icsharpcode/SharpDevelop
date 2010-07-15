@@ -97,7 +97,7 @@
     </Compile>
     <Compile Include="Src\Editor\CodeCompletion\ICompletionItemHandler.cs" />
     <Compile Include="Src\Editor\CodeCompletion\NRefactoryCompletionItemList.cs" />
-    <Compile Include="Src\Editor\Commands\ClassBookmarkMenuBuilder.cs" />
+    <Compile Include="Src\Editor\Commands\ClassBookmarkSubmenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\ClassMemberMenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\FindBaseClasses.cs" />
     <Compile Include="Src\Editor\Commands\FindDerivedClassesOrOverrides.cs" />

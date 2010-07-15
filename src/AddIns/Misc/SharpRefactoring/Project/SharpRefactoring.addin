@@ -18,14 +18,14 @@
 	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu">
 		<MenuItem id="classCodeGenerators"
 		          type="Builder"
-		          class="SharpRefactoring.ClassCodeGeneratorMenuBuilder"
+		          class="SharpRefactoring.ClassRefactoringSubmenuBuilder"
 		          insertbefore="MenuBuilder" />
 	</Path>
 	
 	<Path name="/SharpDevelop/Pads/ClassBrowser/ClassContextMenu">
 		<MenuItem id="classCodeGenerators"
 		          type="Builder"
-		          class="SharpRefactoring.ClassCodeGeneratorMenuBuilder"
+		          class="SharpRefactoring.ClassRefactoringSubmenuBuilder"
 		          insertbefore="MenuBuilder" />
 	</Path>
 	

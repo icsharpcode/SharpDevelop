@@ -69,7 +69,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\ClassCodeGeneratorMenuBuilder.cs" />
+    <Compile Include="Src\ClassRefactoringSubmenuBuilder.cs" />
     <Compile Include="Src\CSharpMethodExtractor.cs" />
     <Compile Include="Src\Extensions.cs" />
     <Compile Include="Src\ExtractMethodCommand.cs" />
@@ -106,6 +106,7 @@
     <Compile Include="Src\OverrideToStringMethodRefactoring.cs" />
     <Compile Include="Src\ParameterCheckRefactoringMenuBuilder.cs" />
     <Compile Include="Src\Options.cs" />
+    <Compile Include="Src\RefactoringHelpers.cs" />
     <Compile Include="Src\ResolveAttribute.cs" />
     <Compile Include="Src\ResolveExtensionMethod.cs" />
     <Compile Include="Src\SwitchBodySnippetElement.cs" />
