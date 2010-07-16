@@ -37,6 +37,7 @@ partial class ExpressionFinder {
 	bool wasQualifierTokenAtStart = false;
 	bool nextTokenIsPotentialStartOfExpression = false;
 	bool readXmlIdentifier = false;
+	bool identifierExpected = false;
 	bool nextTokenIsStartOfImportsOrAccessExpression = false;
 	List<Token> errors = new List<Token>();
 	
@@ -68,6 +69,7 @@ partial class ExpressionFinder {
 		nextTokenIsPotentialStartOfExpression = false;
 		readXmlIdentifier = false;
 		nextTokenIsStartOfImportsOrAccessExpression = false;
+		identifierExpected = false;
 		wasQualifierTokenAtStart = false;
 		-->informToken
 		if (la != null) t = la;

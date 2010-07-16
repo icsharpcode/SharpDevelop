@@ -12,6 +12,7 @@ using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.CSharp;
 
 namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
@@ -71,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			} else if (expressionResult.Context.IsObjectCreation) {
 				constructorInsight = true;
 				expressionResult.Context = ExpressionContext.Type;
-			} else if (expressionResult.Context == ExpressionContext.BaseConstructorCall) {
+			} else if (expressionResult.Context == CSharpExpressionContext.BaseConstructorCall) {
 				constructorInsight = true;
 			}
 			
@@ -93,7 +94,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			
 			List<IMethod> methods = new List<IMethod>();
 			if (constructorInsight) {
-				if (trr != null || expressionResult.Context == ExpressionContext.BaseConstructorCall) {
+				if (trr != null || expressionResult.Context == CSharpExpressionContext.BaseConstructorCall) {
 					if (result.ResolvedType != null) {
 						methods.AddRange(GetConstructors(result.ResolvedType));
 					}

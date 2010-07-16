@@ -50,6 +50,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			nextTokenIsPotentialStartOfExpression = state.NextTokenIsPotentialStartOfExpression;
 			nextTokenIsStartOfImportsOrAccessExpression = state.NextTokenIsStartOfImportsOrAccessExpression;
 			readXmlIdentifier = state.ReadXmlIdentifier;
+			identifierExpected = state.IdentifierExpected;
 			stateStack = new Stack<int>(state.StateStack.Reverse());
 			stack = new Stack<Block>(state.BlockStack.Select(x => (Block)x.Clone()).Reverse());
 			currentState = state.CurrentState;
@@ -94,9 +95,14 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		}
 		
 		public bool IsIdentifierExpected {
-			get {
-				return stack.Take(2).Any(c => c.context == Context.IdentifierExpected);
-			}
+			get { return identifierExpected; }
+		}
+		
+		void SetIdentifierExpected(Token la)
+		{
+			identifierExpected = true;
+			if (la != null)
+				CurrentBlock.lastExpressionStart = la.Location;
 		}
 		
 		public bool InContext(Context expected)
@@ -134,6 +140,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				NextTokenIsPotentialStartOfExpression = nextTokenIsPotentialStartOfExpression,
 				NextTokenIsStartOfImportsOrAccessExpression = nextTokenIsStartOfImportsOrAccessExpression,
 				ReadXmlIdentifier = readXmlIdentifier,
+				IdentifierExpected = identifierExpected,
 				StateStack = new Stack<int>(stateStack.Reverse()),
 				BlockStack = new Stack<Block>(stack.Select(x => (Block)x.Clone()).Reverse()),
 				CurrentState = currentState

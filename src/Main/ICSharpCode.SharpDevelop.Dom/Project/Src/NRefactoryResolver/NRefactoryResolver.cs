@@ -7,14 +7,15 @@
 
 using System;
 using System.Collections;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
-using System.IO;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.SharpDevelop.Dom.CSharp;
 using NR = ICSharpCode.NRefactory;
 
 namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
@@ -236,7 +237,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			ResolveResult rr;
 			if (expressionResult.Context == ExpressionContext.Attribute) {
 				return ResolveAttribute(expr, new NR.Location(caretColumn, caretLine));
-			} else if (expressionResult.Context == ExpressionContext.ObjectInitializer && expr is IdentifierExpression) {
+			} else if (expressionResult.Context == CSharpExpressionContext.ObjectInitializer && expr is IdentifierExpression) {
 				bool isCollectionInitializer;
 				rr = ResolveObjectInitializer((expr as IdentifierExpression).Identifier, fileContent, out isCollectionInitializer);
 				if (!isCollectionInitializer || rr != null) {
@@ -1145,7 +1146,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.TypeLevel);
 					AddCSharpPrimitiveTypes(result);
 					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
-				} else if (context == ExpressionContext.InterfaceDeclaration) {
+				} else if (context == CSharpExpressionContext.InterfaceDeclaration) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.InterfaceLevel);
 					AddCSharpPrimitiveTypes(result);
 					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
@@ -1156,15 +1157,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
 				} else if (context == ExpressionContext.Global) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.GlobalLevel);
-				} else if (context == ExpressionContext.InterfacePropertyDeclaration) {
+				} else if (context == CSharpExpressionContext.InterfacePropertyDeclaration) {
 					result.Add(new KeywordEntry("get"));
 					result.Add(new KeywordEntry("set"));
-				} else if (context == ExpressionContext.BaseConstructorCall) {
+				} else if (context == CSharpExpressionContext.BaseConstructorCall) {
 					result.Add(new KeywordEntry("this"));
 					result.Add(new KeywordEntry("base"));
-				} else if (context == ExpressionContext.ConstraintsStart) {
+				} else if (context == CSharpExpressionContext.ConstraintsStart) {
 					result.Add(new KeywordEntry("where"));
-				} else if (context == ExpressionContext.Constraints) {
+				} else if (context == CSharpExpressionContext.Constraints) {
 					result.Add(new KeywordEntry("where"));
 					result.Add(new KeywordEntry("new"));
 					result.Add(new KeywordEntry("struct"));
@@ -1175,24 +1176,24 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					result.Add(new KeywordEntry("where")); // the inheritance list can be followed by constraints
 					AddCSharpPrimitiveTypes(result);
 					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
-				} else if (context == ExpressionContext.PropertyDeclaration) {
+				} else if (context == CSharpExpressionContext.PropertyDeclaration) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.InPropertyDeclaration);
-				} else if (context == ExpressionContext.EventDeclaration) {
+				} else if (context == CSharpExpressionContext.EventDeclaration) {
 					AddCSharpKeywords(result, NR.Parser.CSharp.Tokens.InEventDeclaration);
-				} else if (context == ExpressionContext.FullyQualifiedType) {
+				} else if (context == CSharpExpressionContext.FullyQualifiedType) {
 					cu.ProjectContent.AddNamespaceContents(result, "", languageProperties, true);
-				} else if (context == ExpressionContext.ParameterType || context == ExpressionContext.FirstParameterType) {
+				} else if (context == CSharpExpressionContext.ParameterType || context == CSharpExpressionContext.FirstParameterType) {
 					result.Add(new KeywordEntry("ref"));
 					result.Add(new KeywordEntry("out"));
 					result.Add(new KeywordEntry("params"));
-					if (context == ExpressionContext.FirstParameterType && languageProperties.SupportsExtensionMethods) {
+					if (context == CSharpExpressionContext.FirstParameterType && languageProperties.SupportsExtensionMethods) {
 						if (callingMember != null && callingMember.IsStatic) {
 							result.Add(new KeywordEntry("this"));
 						}
 					}
 					AddCSharpPrimitiveTypes(result);
 					CtrlSpaceInternal(result, fileContent, showEntriesFromAllNamespaces);
-				} else if (context == ExpressionContext.ObjectInitializer) {
+				} else if (context == CSharpExpressionContext.ObjectInitializer) {
 					bool isCollectionInitializer;
 					result.AddRange(ObjectInitializerCtrlSpace(fileContent, out isCollectionInitializer));
 					if (isCollectionInitializer) {

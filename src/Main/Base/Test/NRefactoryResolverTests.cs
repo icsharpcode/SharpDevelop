@@ -13,6 +13,7 @@ using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.CSharp;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
@@ -1951,13 +1952,13 @@ public class MyCollectionType : System.Collections.IEnumerable
 		[Test]
 		public void ObjectInitializerCtrlSpaceCompletion()
 		{
-			var results = CtrlSpaceResolveCSharp(objectInitializerTestProgram, 5, ExpressionContext.ObjectInitializer);
+			var results = CtrlSpaceResolveCSharp(objectInitializerTestProgram, 5, CSharpExpressionContext.ObjectInitializer);
 			Assert.AreEqual(new[] { "P1", "P2" }, (from IMember p in results orderby p.Name select p.Name).ToArray() );
 			
-			results = CtrlSpaceResolveCSharp(objectInitializerTestProgram, 9, ExpressionContext.ObjectInitializer);
+			results = CtrlSpaceResolveCSharp(objectInitializerTestProgram, 9, CSharpExpressionContext.ObjectInitializer);
 			Assert.AreEqual(new[] { "X", "Y" }, (from IMember p in results orderby p.Name select p.Name).ToArray() );
 			
-			results = CtrlSpaceResolveCSharp(objectInitializerTestProgram, 13, ExpressionContext.ObjectInitializer);
+			results = CtrlSpaceResolveCSharp(objectInitializerTestProgram, 13, CSharpExpressionContext.ObjectInitializer);
 			// collection type: expect system types
 			Assert.IsTrue(results.OfType<IClass>().Any((IClass c) => c.FullyQualifiedName == "System.Int32"));
 			Assert.IsTrue(results.OfType<IClass>().Any((IClass c) => c.FullyQualifiedName == "System.AppDomain"));
@@ -1968,30 +1969,30 @@ public class MyCollectionType : System.Collections.IEnumerable
 			Assert.IsFalse(results.OfType<IField>().Any((IField f) => f.FullyQualifiedName == "MyCollectionType.ReadOnlyValueTypeField"));
 			Assert.IsFalse(results.OfType<IProperty>().Any((IProperty f) => f.FullyQualifiedName == "MyCollectionType.ReadOnlyValueTypeProperty"));
 			
-			results = CtrlSpaceResolveCSharp(objectInitializerTestProgram, 17, ExpressionContext.ObjectInitializer);
+			results = CtrlSpaceResolveCSharp(objectInitializerTestProgram, 17, CSharpExpressionContext.ObjectInitializer);
 			Assert.AreEqual(new[] { "X", "Y" }, (from IMember p in results orderby p.Name select p.Name).ToArray() );
 		}
 		
 		[Test]
 		public void ObjectInitializerCompletion()
 		{
-			MemberResolveResult mrr = (MemberResolveResult)Resolve(objectInitializerTestProgram, "P2", 5, 1, ExpressionContext.ObjectInitializer);
+			MemberResolveResult mrr = (MemberResolveResult)Resolve(objectInitializerTestProgram, "P2", 5, 1, CSharpExpressionContext.ObjectInitializer);
 			Assert.IsNotNull(mrr);
 			Assert.AreEqual("Rectangle.P2", mrr.ResolvedMember.FullyQualifiedName);
 			
-			mrr = (MemberResolveResult)Resolve(objectInitializerTestProgram, "X", 9, 1, ExpressionContext.ObjectInitializer);
+			mrr = (MemberResolveResult)Resolve(objectInitializerTestProgram, "X", 9, 1, CSharpExpressionContext.ObjectInitializer);
 			Assert.IsNotNull(mrr);
 			Assert.AreEqual("Point.X", mrr.ResolvedMember.FullyQualifiedName);
 			
-			mrr = (MemberResolveResult)Resolve(objectInitializerTestProgram, "Field", 13, 1, ExpressionContext.ObjectInitializer);
+			mrr = (MemberResolveResult)Resolve(objectInitializerTestProgram, "Field", 13, 1, CSharpExpressionContext.ObjectInitializer);
 			Assert.IsNotNull(mrr);
 			Assert.AreEqual("MyCollectionType.Field", mrr.ResolvedMember.FullyQualifiedName);
 			
-			LocalResolveResult lrr = (LocalResolveResult)Resolve(objectInitializerTestProgram, "r1", 13, 1, ExpressionContext.ObjectInitializer);
+			LocalResolveResult lrr = (LocalResolveResult)Resolve(objectInitializerTestProgram, "r1", 13, 1, CSharpExpressionContext.ObjectInitializer);
 			Assert.IsNotNull(lrr);
 			Assert.AreEqual("r1", lrr.Field.Name);
 			
-			mrr = (MemberResolveResult)Resolve(objectInitializerTestProgram, "X", 17, 1, ExpressionContext.ObjectInitializer);
+			mrr = (MemberResolveResult)Resolve(objectInitializerTestProgram, "X", 17, 1, CSharpExpressionContext.ObjectInitializer);
 			Assert.IsNotNull(mrr);
 			Assert.AreEqual("Point.X", mrr.ResolvedMember.FullyQualifiedName);
 		}

@@ -77,9 +77,6 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				p.Advance();
 			}
 			
-			if (p.IsIdentifierExpected)
-				context = ExpressionContext.IdentifierExpected;
-			
 			BitArray expectedSet;
 			
 			try {
@@ -92,7 +89,6 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				return new ExpressionResult("", DomRegion.Empty, context, expectedSet);
 			
 			int lastExpressionStartOffset = LocationToOffset(block.lastExpressionStart);
-			
 			
 			if (lastExpressionStartOffset < 0)
 				return new ExpressionResult(null, DomRegion.Empty, context, expectedSet);
@@ -133,8 +129,6 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			switch (block.context) {
 				case Context.Global:
 					return ExpressionContext.Global;
-				case Context.IdentifierExpected:
-					return ExpressionContext.IdentifierExpected;
 				case Context.TypeDeclaration:
 					return ExpressionContext.TypeDeclaration;
 				case Context.Type:

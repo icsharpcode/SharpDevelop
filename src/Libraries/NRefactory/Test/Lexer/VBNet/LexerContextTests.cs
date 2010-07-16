@@ -39,15 +39,15 @@ exit Global
 End Class
 ",
 				@"enter Global
-	enter IdentifierExpected
-	exit IdentifierExpected
+	enter Identifier
+	exit Identifier
 	enter TypeDeclaration
 		enter Member
-			enter IdentifierExpected
-			exit IdentifierExpected
+			enter Identifier
+			exit Identifier
 			enter Body
-				enter IdentifierExpected
-				exit IdentifierExpected
+				enter Identifier
+				exit Identifier
 				enter Expression
 					enter Expression
 						enter Expression
@@ -77,12 +77,12 @@ exit Global
 End Class
 ",
 				@"enter Global
-	enter IdentifierExpected
-	exit IdentifierExpected
+	enter Identifier
+	exit Identifier
 	enter TypeDeclaration
 		enter Member
-			enter IdentifierExpected
-			exit IdentifierExpected
+			enter Identifier
+			exit Identifier
 			enter Type
 			exit Type
 			enter Expression
@@ -95,11 +95,11 @@ End Class
 			exit Expression
 		exit Member
 		enter Member
-			enter IdentifierExpected
-			exit IdentifierExpected
+			enter Identifier
+			exit Identifier
 			enter Body
-				enter IdentifierExpected
-				exit IdentifierExpected
+				enter Identifier
+				exit Identifier
 				enter Expression
 					enter Expression
 						enter Expression
@@ -130,15 +130,15 @@ End Class
 				@"enter Global
 	enter Attribute
 	exit Attribute
-	enter IdentifierExpected
-	exit IdentifierExpected
+	enter Identifier
+	exit Identifier
 	enter TypeDeclaration
 		enter Member
-			enter IdentifierExpected
-			exit IdentifierExpected
+			enter Identifier
+			exit Identifier
 			enter Body
-				enter IdentifierExpected
-				exit IdentifierExpected
+				enter Identifier
+				exit Identifier
 				enter Expression
 					enter Expression
 						enter Expression
@@ -167,15 +167,15 @@ End Class
 				@"enter Global
 	enter Attribute
 	exit Attribute
-	enter IdentifierExpected
-	exit IdentifierExpected
+	enter Identifier
+	exit Identifier
 	enter TypeDeclaration
 		enter Member
-			enter IdentifierExpected
-			exit IdentifierExpected
+			enter Identifier
+			exit Identifier
 			enter Body
-				enter IdentifierExpected
-				exit IdentifierExpected
+				enter Identifier
+				exit Identifier
 				enter Expression
 					enter Expression
 						enter Expression
@@ -202,17 +202,17 @@ exit Global
 End Class
 ",
 				@"enter Global
-	enter IdentifierExpected
-	exit IdentifierExpected
+	enter Identifier
+	exit Identifier
 	enter TypeDeclaration
 		enter Member
 			enter Attribute
 			exit Attribute
-			enter IdentifierExpected
-			exit IdentifierExpected
+			enter Identifier
+			exit Identifier
 			enter Body
-				enter IdentifierExpected
-				exit IdentifierExpected
+				enter Identifier
+				exit Identifier
 				enter Expression
 					enter Expression
 						enter Expression
@@ -240,12 +240,12 @@ exit Global
 End Class
 ",
 				@"enter Global
-	enter IdentifierExpected
-	exit IdentifierExpected
+	enter Identifier
+	exit Identifier
 	enter TypeDeclaration
 		enter Member
-			enter IdentifierExpected
-			exit IdentifierExpected
+			enter Identifier
+			exit Identifier
 			enter Body
 				enter Expression
 					enter Expression
@@ -286,17 +286,17 @@ exit Global
 End Class
 ",
 				@"enter Global
-	enter IdentifierExpected
-	exit IdentifierExpected
+	enter Identifier
+	exit Identifier
 	enter TypeDeclaration
 		enter Member
-			enter IdentifierExpected
-			exit IdentifierExpected
+			enter Identifier
+			exit Identifier
 			enter Body
-				enter IdentifierExpected
+				enter Identifier
 					enter Expression
 					exit Expression
-				exit IdentifierExpected
+				exit Identifier
 				enter Type
 				exit Type
 				enter Expression
@@ -311,10 +311,10 @@ End Class
 				exit Expression
 				enter Body
 				exit Body
-				enter IdentifierExpected
+				enter Identifier
 					enter Expression
 					exit Expression
-				exit IdentifierExpected
+				exit Identifier
 				enter Type
 				exit Type
 				enter Expression
@@ -327,8 +327,8 @@ End Class
 				exit Body
 				enter Body
 				exit Body
-				enter IdentifierExpected
-				exit IdentifierExpected
+				enter Identifier
+				exit Identifier
 				enter Type
 				exit Type
 				enter Body
@@ -354,18 +354,18 @@ exit Global
 	End Sub
 End Class",
 				@"enter Global
-	enter IdentifierExpected
-	exit IdentifierExpected
+	enter Identifier
+	exit Identifier
 	enter TypeDeclaration
 		enter Member
-			enter IdentifierExpected
-			exit IdentifierExpected
+			enter Identifier
+			exit Identifier
 			enter Type
 			exit Type
 		exit Member
 		enter Member
-			enter IdentifierExpected
-			exit IdentifierExpected
+			enter Identifier
+			exit Identifier
 			enter Body
 				enter Expression
 					enter Expression
@@ -377,10 +377,10 @@ End Class",
 						exit Expression
 					exit Expression
 				exit Expression
-				enter IdentifierExpected
+				enter Identifier
 					enter Expression
 					exit Expression
-				exit IdentifierExpected
+				exit Identifier
 				enter Expression
 					enter Expression
 						enter Expression
@@ -430,12 +430,12 @@ End Module",
 	exit Importable
 	enter Importable
 	exit Importable
-	enter IdentifierExpected
-	exit IdentifierExpected
+	enter Identifier
+	exit Identifier
 	enter TypeDeclaration
 		enter Member
-			enter IdentifierExpected
-			exit IdentifierExpected
+			enter Identifier
+			exit Identifier
 			enter Body
 				enter Expression
 					enter Expression
@@ -449,16 +449,16 @@ End Module",
 						exit Expression
 					exit Expression
 				exit Expression
-				enter IdentifierExpected
-				exit IdentifierExpected
+				enter Identifier
+				exit Identifier
 				enter Expression
 					enter Expression
 						enter Expression
 						exit Expression
 					exit Expression
 				exit Expression
-				enter IdentifierExpected
-				exit IdentifierExpected
+				enter Identifier
+				exit Identifier
 				enter Expression
 					enter Expression
 						enter Expression
@@ -493,8 +493,8 @@ End Module",
 						exit Expression
 					exit Expression
 				exit Expression
-				enter IdentifierExpected
-				exit IdentifierExpected
+				enter Identifier
+				exit Identifier
 				enter Expression
 					enter Expression
 						enter Expression

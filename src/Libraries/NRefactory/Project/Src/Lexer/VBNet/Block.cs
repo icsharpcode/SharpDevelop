@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		Type,
 		Member,
 		Parameter,
-		IdentifierExpected,
+		Identifier,
 		Body,
 		Xml,
 		Attribute,

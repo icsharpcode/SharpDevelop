@@ -151,7 +151,7 @@ End Module", "(", 1, "", ExpressionContext.Parameter);
 		[Test]
 		public void ContextAfterDim()
 		{
-			ContextTest(program4, "Dim ", "Dim".Length, ExpressionContext.IdentifierExpected);
+			ContextTest(program4, "Dim ", "Dim".Length, ExpressionContext.MethodBody);
 		}
 		#endregion
 		
@@ -171,7 +171,7 @@ End Module", "(", 1, "", ExpressionContext.Parameter);
 		[Test]
 		public void Underscore()
 		{
-			FindFull(program1, "der_score_field", "under_score_field", ExpressionContext.IdentifierExpected);
+			FindFull(program1, "der_score_field", "under_score_field", ExpressionContext.Default);
 		}
 		
 		[Test]
@@ -183,7 +183,7 @@ End Module", "(", 1, "", ExpressionContext.Parameter);
 		[Test]
 		public void LocalVariableDecl()
 		{
-			FindFull(program1, "ext", "text", ExpressionContext.IdentifierExpected);
+			FindFull(program1, "ext", "text", ExpressionContext.Default);
 		}
 		
 		[Test]
@@ -201,13 +201,13 @@ End Module", "(", 1, "", ExpressionContext.Parameter);
 		[Test]
 		public void ClassName()
 		{
-			FindFull(program1, "ainClas", "MainClass", ExpressionContext.IdentifierExpected);
+			FindFull(program1, "ainClas", "MainClass", ExpressionContext.Default);
 		}
 		
 		[Test]
 		public void SubName()
 		{
-			FindFull(program1, "omeMe", "SomeMethod", ExpressionContext.IdentifierExpected);
+			FindFull(program1, "omeMe", "SomeMethod", ExpressionContext.Default);
 		}
 		
 		#region Old Tests
