@@ -120,6 +120,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public readonly static ExpressionContext ObjectInitializer = new DefaultExpressionContext("ObjectInitializer");
 		#endregion
 		
+		#region VB specific contexts (public static fields) * MOVE TO ANOTHER CLASS *
+		/// <summary>The context expects a new parameter declaration</summary>
+		/// <example>Function Test(*expr*, *expr*, ...)</example>
+		public static readonly ExpressionContext Parameter = new DefaultExpressionContext("Parameter");
+		#endregion
+		
 		#region Default contexts (public static fields)
 		/// <summary>Default/unknown context</summary>
 		public readonly static ExpressionContext Default = new DefaultExpressionContext("Default");

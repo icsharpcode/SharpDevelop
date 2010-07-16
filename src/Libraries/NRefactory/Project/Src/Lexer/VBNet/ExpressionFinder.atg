@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Text;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.Parser.VB;
-using ASTAttribute = ICSharpCode.NRefactory.Ast.Attribute;
 
 PUSHCOMPILER WITH EXPECTEDSETS ExpressionFinder
 
@@ -405,7 +400,12 @@ ParameterList =
 .
 
 Parameter =
-	{ AttributeBlock } { ParameterModifier } (. PushContext(Context.IdentifierExpected, la, t); .) Identifier (. PopContext(); .) [ (. PushContext(Context.Type, la, t); .) "As" TypeName (. PopContext(); .) ] [ "=" Expression ] 
+	(. PushContext(Context.Parameter, la, t); .)
+	{ AttributeBlock } { ParameterModifier }
+	(. PushContext(Context.IdentifierExpected, la, t); .) Identifier (. PopContext(); .)
+	[ (. PushContext(Context.Type, la, t); .) "As" TypeName (. PopContext(); .) ]
+	[ "=" Expression ]
+	(. PopContext(); .)
 .
 
 StatementTerminatorAndBlock =

@@ -145,6 +145,8 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 					return ExpressionContext.Importable;
 				case Context.ObjectCreation:
 					return ExpressionContext.ObjectCreation;
+				case Context.Parameter:
+					return ExpressionContext.Parameter;
 			}
 			
 			return ExpressionContext.Default;

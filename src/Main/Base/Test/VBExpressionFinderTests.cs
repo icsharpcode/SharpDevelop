@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <owner name="Siegfried Pammer" email="siegfriedpammer@gmail.com" />
 //     <version>$Revision$</version>
 // </file>
 
@@ -122,6 +122,14 @@ End Class
 		public void FindEmptyAfterImports()
 		{
 			Find(program1, "		", 1, "", ExpressionContext.Global);
+		}
+		
+		[Test, Ignore]
+		public void FindParameterStart()
+		{
+			Find(@"Module Program
+	Private Function CreateFolder(
+End Module", "(", 1, "", ExpressionContext.Parameter);
 		}
 		#endregion
 		
