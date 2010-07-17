@@ -13,7 +13,7 @@ using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
-namespace ICSharpCode.Reports.Core.old_Exporter
+namespace ICSharpCode.Reports.Core.Exporter
 {
 	/// <summary>
 	/// Description of BasePager.

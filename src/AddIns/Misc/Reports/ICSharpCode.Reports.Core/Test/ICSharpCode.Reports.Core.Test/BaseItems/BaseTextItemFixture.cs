@@ -11,7 +11,7 @@ using System;
 using System.Drawing;
 using NUnit.Framework;
 using ICSharpCode.Reports.Core;
-using ICSharpCode.Reports.Core.old_Exporter;
+using ICSharpCode.Reports.Core.Exporter;
 
 namespace ICSharpCode.Reports.Core.Test.BaseItems
 {

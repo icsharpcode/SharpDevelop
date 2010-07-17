@@ -17,7 +17,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 
-using ICSharpCode.Reports.Core.old_Exporter;
+using ICSharpCode.Reports.Core.Exporter;
 
 namespace ICSharpCode.Reports.Core {
 	

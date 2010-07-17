@@ -10,7 +10,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-using ICSharpCode.Reports.Core.old_Exporter;
+using ICSharpCode.Reports.Core.Exporter;
 
 /// <summary>
 /// Draw a simple Line

@@ -50,7 +50,7 @@ namespace ICSharpCode.Reports.Core {
 
 		public void DrawBorder (iTextSharp.text.pdf.PdfContentByte contentByte,
 		                        iTextSharp.text.Rectangle rectangle,
-		                        ICSharpCode.Reports.Core.old_Exporter.IBaseStyleDecorator style)
+		                        ICSharpCode.Reports.Core.Exporter.IBaseStyleDecorator style)
 		{
 			if ( contentByte == null) {
 				throw new ArgumentNullException("contentByte");

@@ -8,7 +8,7 @@
 using System;
 using System.Drawing;
 
-namespace ICSharpCode.Reports.Core.old_Exporter
+namespace ICSharpCode.Reports.Core.Exporter
 {
 	/// <summary>
 	/// Description of TextStyleDecorator.

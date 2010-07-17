@@ -8,7 +8,7 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-namespace ICSharpCode.Reports.Core.old_Exporter
+namespace ICSharpCode.Reports.Core.Exporter
 {
 	/// <summary>
 	/// Description of LineStyle.
@@ -56,11 +56,6 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		}
 		
 	
-//		public Rectangle DisplayRectangle {
-//			get {
-//				return new Rectangle(Location,Size); 
-//			}
-//		}
 		
 		private static iTextSharp.text.BaseColor ConvertToPdfBaseColor (Color color)
 		{

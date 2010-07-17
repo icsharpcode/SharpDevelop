@@ -9,7 +9,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
-using ICSharpCode.Reports.Core.old_Exporter;
+using ICSharpCode.Reports.Core.Exporter;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core.Interfaces

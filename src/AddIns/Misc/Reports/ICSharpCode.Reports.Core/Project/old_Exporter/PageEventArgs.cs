@@ -7,7 +7,7 @@
 
 using System;
 
-namespace ICSharpCode.Reports.Core.old_Exporter
+namespace ICSharpCode.Reports.Core.Exporter
 {
 	/// <summary>
 	/// Description of PageCreatedEventArgs.

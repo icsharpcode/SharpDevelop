@@ -7,7 +7,7 @@
 
 using System;
 using ICSharpCode.Reports.Core;
-using ICSharpCode.Reports.Core.old_Exporter;
+using ICSharpCode.Reports.Core.Exporter;
 
 namespace ICSharpCode.Reports.Core.ReportViewer
 {

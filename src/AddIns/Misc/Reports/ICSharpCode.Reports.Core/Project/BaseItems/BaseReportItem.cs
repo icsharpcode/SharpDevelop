@@ -11,7 +11,7 @@ using System.Drawing;
 using System.Xml.Serialization;
 
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
-using ICSharpCode.Reports.Core.old_Exporter;
+using ICSharpCode.Reports.Core.Exporter;
 
 /// <summary>
 /// This Class is the BaseClass for <see cref="BaseTextItem"></see>

@@ -6,9 +6,9 @@
  * 
  * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
  */
-using ICSharpCode.Reports.Core.Exporter;
-using ICSharpCode.Reports.Core.old_Exporter;
+
 using System;
+using ICSharpCode.Reports.Core.Exporter;
 
 namespace ICSharpCode.Reports.Core
 {
@@ -19,15 +19,6 @@ namespace ICSharpCode.Reports.Core
 	{
 		void BuildExportList ();
 		PagesCollection Pages{get;}
-		event EventHandler<PageCreatedEventArgs> PageCreated;
-		event EventHandler<SectionRenderEventArgs> SectionRendering;
-	}
-	
-	
-	public interface IReportCreator_2
-	{
-		void BuildExportList ();
-		PageDescriptions Pages{get;}
 		event EventHandler<PageCreatedEventArgs> PageCreated;
 		event EventHandler<SectionRenderEventArgs> SectionRendering;
 	}

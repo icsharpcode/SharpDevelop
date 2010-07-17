@@ -128,13 +128,6 @@
     <Compile Include="Project\Exceptions\UnknownItemException.cs" />
     <Compile Include="Project\Exceptions\WrongColumnException.cs" />
     <Compile Include="Project\Exceptions\WrongSectionException.cs" />
-    <Compile Include="Project\Exporter\AbstractExportListBuilder.cs" />
-    <Compile Include="Project\Exporter\AbstractReportCreator.cs" />
-    <Compile Include="Project\Exporter\Converter\ItemsConverter.cs" />
-    <Compile Include="Project\Exporter\DataExportListBuilder.cs" />
-    <Compile Include="Project\Exporter\DataReportCreator.cs" />
-    <Compile Include="Project\Exporter\PageCreatedEventArgs.cs" />
-    <Compile Include="Project\Exporter\PageDescription.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService\FieldReference.cs" />
     <Compile Include="Project\old_Exporter\BasePager.cs" />
     <Compile Include="Project\old_Exporter\Converters\BaseConverter.cs" />
@@ -359,9 +352,7 @@
     <Folder Include="Project\Dialogs" />
     <Folder Include="Project\Events" />
     <Folder Include="Project\Exceptions" />
-    <Folder Include="Project\Exporter" />
     <Folder Include="Project\Converter" />
-    <Folder Include="Project\Exporter\Converter" />
     <Folder Include="Project\old_Exporter\Converters" />
     <Folder Include="Project\Expressions\SimpleExpressionEvaluator" />
     <Folder Include="Project\Expressions\ReportingLanguage" />

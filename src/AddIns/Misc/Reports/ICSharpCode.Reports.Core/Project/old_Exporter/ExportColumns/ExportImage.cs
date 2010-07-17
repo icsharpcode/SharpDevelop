@@ -10,7 +10,7 @@ using System.Drawing;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 
-namespace ICSharpCode.Reports.Core.old_Exporter
+namespace ICSharpCode.Reports.Core.Exporter
 {
 	/// <summary>
 	/// Description of ExportImage.
@@ -56,7 +56,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		}
 
 		public override void DrawItem(iTextSharp.text.pdf.PdfWriter pdfWriter, 
-		                              ICSharpCode.Reports.Core.old_Exporter.ExportRenderer.PdfUnitConverter converter)
+		                              ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter)
 		{
 			
 			base.DrawItem(pdfWriter, converter);

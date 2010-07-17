@@ -18,9 +18,9 @@ namespace ICSharpCode.Reports.Core
 	
 	public class ScreenRectToPdfRectConverter :System.Drawing.RectangleConverter
 	{
-		ICSharpCode.Reports.Core.old_Exporter.ExportRenderer.PdfUnitConverter converter;
+		ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter;
 		
-		public ScreenRectToPdfRectConverter(ICSharpCode.Reports.Core.old_Exporter.ExportRenderer.PdfUnitConverter converter)
+		public ScreenRectToPdfRectConverter(ICSharpCode.Reports.Core.Exporter.ExportRenderer.PdfUnitConverter converter)
 		{
 			if (converter == null) {
 				throw new ArgumentNullException("converter");

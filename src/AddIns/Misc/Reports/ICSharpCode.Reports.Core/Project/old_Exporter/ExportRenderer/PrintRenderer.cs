@@ -9,7 +9,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Printing;
 
-namespace ICSharpCode.Reports.Core.old_Exporter.ExportRenderer{
+namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer{
 	/// <summary>
 	/// Description of PrintRenderer.
 	/// </summary>

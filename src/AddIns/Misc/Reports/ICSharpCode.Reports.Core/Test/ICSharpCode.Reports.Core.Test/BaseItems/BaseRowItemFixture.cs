@@ -8,7 +8,7 @@
  */
 
 using System;
-using ICSharpCode.Reports.Core.old_Exporter;
+using ICSharpCode.Reports.Core.Exporter;
 using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Core.Test.BaseItems

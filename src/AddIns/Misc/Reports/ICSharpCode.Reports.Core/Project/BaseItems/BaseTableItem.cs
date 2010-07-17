@@ -8,7 +8,7 @@
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 using System;
 using System.Drawing;
-using ICSharpCode.Reports.Core.old_Exporter;
+using ICSharpCode.Reports.Core.Exporter;
 using ICSharpCode.Reports.Core.Interfaces;
 
 namespace ICSharpCode.Reports.Core {
@@ -36,7 +36,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		#region IExportColumnBuilder
 		
-		public ICSharpCode.Reports.Core.old_Exporter.BaseExportColumn CreateExportColumn()
+		public ICSharpCode.Reports.Core.Exporter.BaseExportColumn CreateExportColumn()
 		{
 			BaseStyleDecorator st = this.CreateItemStyle();
 			ExportContainer item = new ExportContainer(st);
