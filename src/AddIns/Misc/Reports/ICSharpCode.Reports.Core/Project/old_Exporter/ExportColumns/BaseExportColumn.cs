@@ -84,10 +84,10 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		protected virtual void Decorate ()
 		{
 			RectangleShape shape = new RectangleShape();
-			iTextSharp.text.Rectangle rect = ConvertToPdfRectangle();
 			shape.DrawShape(this.pdfWriter.DirectContent,
 			            null,
-			            this.styleDecorator,rect);
+			            this.styleDecorator,
+			            ConvertToPdfRectangle());
 			this.DrawFrame();
 		}
 		
@@ -119,13 +119,21 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		
 		#endregion
 		
+		
 		protected iTextSharp.text.Rectangle ConvertToPdfRectangle ()
 		{
-			ScreenRectToPdfRectConverter rectangleToPage = new ScreenRectToPdfRectConverter(this.converter);
-			return (iTextSharp.text.Rectangle)rectangleToPage.ConvertTo(null,System.Globalization.CultureInfo.InvariantCulture,
-			                                                            this.styleDecorator.DisplayRectangle,
-			                                                            typeof(iTextSharp.text.Rectangle));
+			ScreenRectToPdfRectConverter rectangleConverter = new ScreenRectToPdfRectConverter(this.converter);
+			
+			iTextSharp.text.Rectangle r = (iTextSharp.text.Rectangle)rectangleConverter.ConvertTo(null,System.Globalization.CultureInfo.InvariantCulture,
+			                                                                                      this.styleDecorator.DisplayRectangle,
+			                                                                                      typeof(iTextSharp.text.Rectangle));
+			
+			iTextSharp.text.Rectangle rr = new iTextSharp.text.Rectangle(r.Left,r.Bottom -2,
+			                                                             r.Left + r.Width,r.Bottom  + r.Height);
+			
+			return rr;
 		}
+		
 		
 		#region DrawFrame
 		
@@ -143,8 +151,9 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		{
 			if (this.styleDecorator.DrawBorder) {
 				Border b = this.CreateDefaultBorder();
-				iTextSharp.text.Rectangle rect = ConvertToPdfRectangle();
-				b.DrawBorder(this.pdfWriter.DirectContent,rect,this.styleDecorator);
+				b.DrawBorder(this.pdfWriter.DirectContent,
+				             ConvertToPdfRectangle(),
+				             this.styleDecorator);
 			}
 		}
 

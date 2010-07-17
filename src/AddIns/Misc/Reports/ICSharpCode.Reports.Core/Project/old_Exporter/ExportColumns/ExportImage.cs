@@ -17,9 +17,10 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 	/// </summary>
 	public class ExportImage:BaseExportColumn
 	{
-		string fileName;
+
+		
 		System.Drawing.Image image;
-		bool scaleImageToSize;
+	
 		
 		#region Constructor
 		
@@ -28,13 +29,11 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		}
 		
 		
-		public ExportImage (BaseStyleDecorator itemStyle):this(itemStyle,false) 
+		public ExportImage (BaseStyleDecorator itemStyle):base(itemStyle,false) 
 		{
+			
 		}
 		
-		public ExportImage (BaseStyleDecorator itemStyle,bool isContainer):base(itemStyle,isContainer)
-		{
-		}
 		
 		#endregion
 		
@@ -47,7 +46,7 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 			}
 			base.DrawItem(graphics);
 			
-			if (this.scaleImageToSize) {
+			if (this.ScaleImageToSize) {
 				graphics.DrawImageUnscaled(this.Image,this.StyleDecorator.DisplayRectangle);
 			} else {
 
@@ -71,63 +70,9 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		}
 		
 		
-		/*
-		 * 
-		  ColumnText ct2 = new ColumnText(t);
-
->                 ct2.RunDirection = runDirection;
-
->                 ct2.SetSimpleColumn(signatureRect.X, signatureRect.Y, 
-
-> signatureRect.Width, signatureRect.Height, 0, Element.ALIGN_RIGHT);
-
-> 
-
->                 Image im = Image.GetInstance(SignatureGraphic);
-
->                 im.ScaleToFit(signatureRect.Width, signatureRect.Height);
-
-> 
-
->                 System.Drawing.SizeF imageSize = new System.Drawing.SizeF(im.ScaledWidth, im.ScaledHeight);
-
->                 Paragraph p = new Paragraph();
-
->                 // must calculate the point to draw from to make image appear in middle of column
-
->                 System.Drawing.PointF originPoint = System.Drawing.PointF.Empty;
-
->                 originPoint.X = 0;
-
->                 // experimentation found this magic number to counteract Adobe's signature graphic, which
-
->                 // offsets the y co-ordinate by 15 units
-
->                 originPoint.Y = -im.ScaledHeight + 15;
-
-> 
-
->                 System.Drawing.PointF graphicLocation = System.Drawing.PointF.Empty;
-
->                 graphicLocation.X = originPoint.X + (signatureRect.Width - im.ScaledWidth) / 2;
-
->                 graphicLocation.Y = originPoint.Y - (signatureRect.Height - im.ScaledHeight) / 2;
-
->                 p.Add(new Chunk(im, graphicLocation.X, graphicLocation.Y, false));
-
->                 ct2.AddElement(p);
-
->                 ct2.Go();
-
-
-		 */
+	
 		#endregion
 		
-		public override IBaseStyleDecorator StyleDecorator 
-		{
-			get { return base.StyleDecorator; }
-			set { base.StyleDecorator = value; }
-		}
 		
 		// return a copy of image, otherwise pdf is not working
 		public System.Drawing.Image Image 
@@ -137,14 +82,10 @@ namespace ICSharpCode.Reports.Core.old_Exporter
 		}
 		
 		
-		public string FileName {
-			get { return fileName; }
-			set { fileName = value; }
-		}
+		public string FileName {get;set;}
 		
-		public bool ScaleImageToSize {
-			get { return scaleImageToSize; }
-			set { scaleImageToSize = value; }
-		}
+		
+		public bool ScaleImageToSize {get;set;}
+		
 	}
 }
