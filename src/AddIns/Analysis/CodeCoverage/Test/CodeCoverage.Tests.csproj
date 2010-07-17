@@ -57,41 +57,41 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="CodeCoveragePropertyCollectionWithGetterAndSetterTestFixture.cs" />
-    <Compile Include="CodeCoveragePropertyTestFixture.cs" />
-    <Compile Include="CodeCoverageResultsMissingFileIdTestFixture.cs" />
-    <Compile Include="CodeCoverageResultsPropertyFlagsTestFixture.cs" />
-    <Compile Include="CodeCoverageResultsTestFixture.cs" />
-    <Compile Include="CodeCoverageResultsWithEmptyMethodElementTestFixture.cs" />
-    <Compile Include="CodeCoverageTreeViewTestFixture.cs" />
-    <Compile Include="DerivedCodeCoverageTreeView.cs" />
-    <Compile Include="ListViewSortingTestFixture.cs" />
-    <Compile Include="ModuleVisitedSequencePointsTestFixture.cs" />
-    <Compile Include="AddCodeCoverageMarkersTestFixture.cs" />
-    <Compile Include="PartCoverCommandLineTests.cs" />
-    <Compile Include="PartCoverExitEventArgsTestFixture.cs" />
-    <Compile Include="PartCoverSettingsMissingRulePrefixTestFixture.cs" />
-    <Compile Include="PartCoverSettingsTestFixture.cs" />
-    <Compile Include="PropertiesInCodeCoverageTreeView.cs" />
-    <Compile Include="RemoveCodeCoverageMarkersTestFixture.cs" />
-    <Compile Include="CodeCoverageMarkersCoverTwoLinesTestFixture.cs" />
-    <Compile Include="CodeCoverageMarkersCoverMultipleLinesTestFixture.cs" />
-    <Compile Include="GetSequencePointsForFileNameTestFixture.cs" />
-    <Compile Include="CodeCoverageMarkersInvalidStartLineTestFixture.cs" />
-    <Compile Include="CodeCoverageMarkersInvalidEndLineTestFixture.cs" />
-    <Compile Include="CodeCoverageMarkersInvalidStartColumnTestFixture.cs" />
-    <Compile Include="CodeCoverageMarkersInvalidEndColumnTestFixture.cs" />
+    <Compile Include="Coverage\CodeCoverageNamespaceTestFixture.cs" />
+    <Compile Include="Coverage\CodeCoveragePropertyCollectionWithGetterAndSetterTestFixture.cs" />
+    <Compile Include="Coverage\CodeCoveragePropertyTestFixture.cs" />
+    <Compile Include="Coverage\CodeCoverageResultsMissingFileIdTestFixture.cs" />
+    <Compile Include="Coverage\CodeCoverageResultsPropertyFlagsTestFixture.cs" />
+    <Compile Include="Coverage\CodeCoverageResultsTestFixture.cs" />
+    <Compile Include="Coverage\CodeCoverageResultsWithEmptyMethodElementTestFixture.cs" />
+    <Compile Include="Coverage\ExcludedModuleTestFixture.cs" />
+    <Compile Include="Coverage\GetSequencePointsForFileNameTestFixture.cs" />
+    <Compile Include="Coverage\InvalidSequencePointDataTestFixture.cs" />
+    <Compile Include="Coverage\MethodHasNoNamespaceTestFixture.cs" />
+    <Compile Include="Coverage\ModuleVisitedSequencePointsTestFixture.cs" />
+    <Compile Include="Coverage\PartCoverCommandLineTests.cs" />
+    <Compile Include="Coverage\PartCoverExitEventArgsTestFixture.cs" />
+    <Compile Include="Coverage\PartCoverSettingsMissingRulePrefixTestFixture.cs" />
+    <Compile Include="Coverage\PartCoverSettingsTestFixture.cs" />
+    <Compile Include="Coverage\SimilarRootNamespaceTestFixture.cs" />
+    <Compile Include="Gui\DisplayItemTestFixture.cs" />
+    <Compile Include="Gui\PropertiesInCodeCoverageTreeView.cs" />
+    <Compile Include="Gui\TreeViewSortingTestFixture.cs" />
+    <Compile Include="Gui\ZeroCodeCoverageTreeViewTestFixture.cs" />
+    <Compile Include="Highlighting\AddCodeCoverageMarkersTestFixture.cs" />
+    <Compile Include="Highlighting\CodeCoverageMarkersCoverMultipleLinesTestFixture.cs" />
+    <Compile Include="Highlighting\CodeCoverageMarkersCoverTwoLinesTestFixture.cs" />
+    <Compile Include="Highlighting\CodeCoverageMarkersInvalidEndColumnTestFixture.cs" />
+    <Compile Include="Highlighting\CodeCoverageMarkersInvalidEndLineTestFixture.cs" />
+    <Compile Include="Highlighting\CodeCoverageMarkersInvalidStartColumnTestFixture.cs" />
+    <Compile Include="Highlighting\CodeCoverageMarkersInvalidStartLineTestFixture.cs" />
+    <Compile Include="Highlighting\RemoveCodeCoverageMarkersTestFixture.cs" />
     <None Include="Strings.resources" />
-    <Compile Include="SimilarRootNamespaceTestFixture.cs" />
-    <Compile Include="TreeViewAfterSelectTestFixture.cs" />
-    <Compile Include="TreeViewSortingTestFixture.cs" />
-    <Compile Include="ZeroCodeCoverageTreeViewTestFixture.cs" />
-    <Compile Include="InvalidSequencePointDataTestFixture.cs" />
-    <Compile Include="MethodHasNoNamespaceTestFixture.cs" />
-    <Compile Include="DisplayItemTestFixture.cs" />
-    <Compile Include="CodeCoverageNamespaceTestFixture.cs" />
-    <Compile Include="ClassWithNoNamespaceInTreeViewTestFixture.cs" />
-    <Compile Include="ExcludedModuleTestFixture.cs" />
+    <Compile Include="Gui\ClassWithNoNamespaceInTreeViewTestFixture.cs" />
+    <Compile Include="Gui\CodeCoverageTreeViewTestFixture.cs" />
+    <Compile Include="Gui\ListViewSortingTestFixture.cs" />
+    <Compile Include="Gui\TreeViewAfterSelectTestFixture.cs" />
+    <Compile Include="Utils\DerivedCodeCoverageTreeView.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
@@ -127,6 +127,12 @@
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Coverage" />
+    <Folder Include="Highlighting" />
+    <Folder Include="Utils" />
+    <Folder Include="Gui" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
