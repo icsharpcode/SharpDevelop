@@ -154,7 +154,7 @@ End Module", "(", 1, "", ExpressionContext.Parameter);
 			ContextTest(program4, "Dim ", "Dim".Length, ExpressionContext.MethodBody);
 		}
 		
-		[Test, Ignore]
+		[Test]
 		public void ContextInModule()
 		{
 			ContextTest(@"Module Test

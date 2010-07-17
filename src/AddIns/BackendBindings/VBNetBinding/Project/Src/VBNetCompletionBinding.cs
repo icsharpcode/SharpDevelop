@@ -215,10 +215,8 @@ namespace ICSharpCode.VBNetBinding
 				VBNetExpressionFinder ef = new VBNetExpressionFinder(ParserService.GetParseInformation(editor.FileName));
 				ExpressionResult result = ef.FindExpression(editor.Document.Text, cursor);
 				LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
-				if (result.Context != ExpressionContext.IdentifierExpected) {
-					editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor, ' '));
-					return true;
-				}
+				editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor, ' '));
+				return true;
 			}
 			
 			return false;

@@ -103,6 +103,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			identifierExpected = true;
 			if (la != null)
 				CurrentBlock.lastExpressionStart = la.Location;
+			else if (t != null)
+				CurrentBlock.lastExpressionStart = t.EndLocation;
 		}
 		
 		public bool InContext(Context expected)

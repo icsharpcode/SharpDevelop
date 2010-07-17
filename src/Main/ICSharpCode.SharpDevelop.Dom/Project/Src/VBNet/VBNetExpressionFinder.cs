@@ -81,8 +81,6 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			
 			try {
 				expectedSet = p.GetExpectedSet();
-				if (p.IsMissingModifier)
-					expectedSet.Set(Tokens.Identifier, false);
 			} catch (InvalidOperationException) {
 				expectedSet = null;
 			}
