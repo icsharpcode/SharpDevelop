@@ -129,6 +129,10 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			get { return wasQualifierTokenAtStart; }
 		}
 		
+		public bool IsMissingModifier {
+			get { return isMissingModifier; }
+		}
+		
 		public List<Token> Errors {
 			get { return errors; }
 		}

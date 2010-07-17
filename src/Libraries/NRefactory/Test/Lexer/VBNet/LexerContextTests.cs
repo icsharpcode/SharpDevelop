@@ -39,9 +39,9 @@ exit Global
 End Class
 ",
 				@"enter Global
-	enter Identifier
-	exit Identifier
 	enter TypeDeclaration
+		enter Identifier
+		exit Identifier
 		enter Member
 			enter Identifier
 			exit Identifier
@@ -77,9 +77,9 @@ exit Global
 End Class
 ",
 				@"enter Global
-	enter Identifier
-	exit Identifier
 	enter TypeDeclaration
+		enter Identifier
+		exit Identifier
 		enter Member
 			enter Identifier
 			exit Identifier
@@ -130,9 +130,9 @@ End Class
 				@"enter Global
 	enter Attribute
 	exit Attribute
-	enter Identifier
-	exit Identifier
 	enter TypeDeclaration
+		enter Identifier
+		exit Identifier
 		enter Member
 			enter Identifier
 			exit Identifier
@@ -167,9 +167,9 @@ End Class
 				@"enter Global
 	enter Attribute
 	exit Attribute
-	enter Identifier
-	exit Identifier
 	enter TypeDeclaration
+		enter Identifier
+		exit Identifier
 		enter Member
 			enter Identifier
 			exit Identifier
@@ -202,9 +202,9 @@ exit Global
 End Class
 ",
 				@"enter Global
-	enter Identifier
-	exit Identifier
 	enter TypeDeclaration
+		enter Identifier
+		exit Identifier
 		enter Member
 			enter Attribute
 			exit Attribute
@@ -240,9 +240,9 @@ exit Global
 End Class
 ",
 				@"enter Global
-	enter Identifier
-	exit Identifier
 	enter TypeDeclaration
+		enter Identifier
+		exit Identifier
 		enter Member
 			enter Identifier
 			exit Identifier
@@ -286,9 +286,9 @@ exit Global
 End Class
 ",
 				@"enter Global
-	enter Identifier
-	exit Identifier
 	enter TypeDeclaration
+		enter Identifier
+		exit Identifier
 		enter Member
 			enter Identifier
 			exit Identifier
@@ -354,9 +354,9 @@ exit Global
 	End Sub
 End Class",
 				@"enter Global
-	enter Identifier
-	exit Identifier
 	enter TypeDeclaration
+		enter Identifier
+		exit Identifier
 		enter Member
 			enter Identifier
 			exit Identifier
@@ -430,9 +430,9 @@ End Module",
 	exit Importable
 	enter Importable
 	exit Importable
-	enter Identifier
-	exit Identifier
 	enter TypeDeclaration
+		enter Identifier
+		exit Identifier
 		enter Member
 			enter Identifier
 			exit Identifier

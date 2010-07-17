@@ -70,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			
 			var block = p.CurrentBlock;
 			
-			ExpressionContext context = p.IsIdentifierExpected ? ExpressionContext.IdentifierExpected : GetContext(block);
+			ExpressionContext context = p.IsIdentifierExpected && !p.IsMissingModifier ? ExpressionContext.IdentifierExpected : GetContext(block);
 			
 			if (t.Location < targetPosition) {
 				p.InformToken(t);
@@ -81,6 +81,8 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			
 			try {
 				expectedSet = p.GetExpectedSet();
+				if (p.IsMissingModifier)
+					expectedSet.Set(Tokens.Identifier, false);
 			} catch (InvalidOperationException) {
 				expectedSet = null;
 			}

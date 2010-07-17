@@ -153,6 +153,17 @@ End Module", "(", 1, "", ExpressionContext.Parameter);
 		{
 			ContextTest(program4, "Dim ", "Dim".Length, ExpressionContext.MethodBody);
 		}
+		
+		[Test, Ignore]
+		public void ContextInModule()
+		{
+			ContextTest(@"Module Test
+	
+End Module", @"Module Test
+	", @"Module Test
+	".Length, ExpressionContext.TypeDeclaration);
+			
+		}
 		#endregion
 		
 		#region FindFull
