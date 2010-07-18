@@ -538,7 +538,7 @@ SimpleExpression =
 .
 
 NewExpression =
-	(. PushContext(Context.ObjectCreation, la, t); .) "New"
+	"New" (. PushContext(Context.ObjectCreation, la, t); .)
 	(
 		TypeName
 		
