@@ -312,7 +312,8 @@ TypeDeclaration =
 	{ AttributeBlock }
 	{ TypeModifier }
 	( ClassOrModuleOrStructureTypeDeclaration |
-	DelegateTypeDeclaration )
+	DelegateTypeDeclaration |
+	EnumTypeDeclaration )
 .
 
 ClassOrModuleOrStructureTypeDeclaration =
@@ -324,6 +325,12 @@ ClassOrModuleOrStructureTypeDeclaration =
 	{ MemberDeclaration } (. isMissingModifier = false; Console.WriteLine("after {MemberDeclaration}"); .)
 	"End" ( "Module" | "Class" | "Structure" ) StatementTerminator
 	(. PopContext(); .)
+.
+
+EnumTypeDeclaration =
+	"Enum" Identifier [ "As" TypeName ] StatementTerminator
+	{ { AttributeBlock } Identifier [ "=" Expression ] StatementTerminator }
+	"End" "Enum" StatementTerminator
 .
 
 GenericConstraint =
