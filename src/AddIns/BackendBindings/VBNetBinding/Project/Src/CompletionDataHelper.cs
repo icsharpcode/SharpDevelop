@@ -39,7 +39,7 @@ namespace ICSharpCode.VBNetBinding
 				}
 				var rr = resolver.Resolve(expressionResult, info, editor.Document.Text);
 				
-				if (rr == null) {
+				if (rr == null || !rr.IsValid) {
 					if (IdentifierExpected(expressionResult.Tag))
 						data = new NRefactoryResolver(LanguageProperties.VBNet)
 							.CtrlSpace(editor.Caret.Line, editor.Caret.Column, info, editor.Document.Text, expressionResult.Context, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces);
@@ -76,7 +76,7 @@ namespace ICSharpCode.VBNetBinding
 		static bool IdentifierExpected(object tag)
 		{
 			if (tag is BitArray)
-				return (tag as BitArray)[2];
+				return (tag as BitArray)[Tokens.Identifier];
 			return false;
 		}
 		
