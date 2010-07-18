@@ -67,32 +67,41 @@ namespace ICSharpCode.Reports.Core
 			}
 
 			Point saveLocation = tableContainer.Location;
-			Point currentPosition = new Point(this.CurrentSection.Location.X,this.CurrentSection.Location.Y);
-
+			
+			Point currentPosition = new Point(PrintHelper.DrawingAreaRelativeToParent(this.CurrentSection,tableContainer).Location.X,
+			                                                                           this.CurrentSection.Location.Y);
 			tableContainer.Items.SortByLocation();
 			
 			rpea.SinglePage.StartRow  = this.dataNavigator.CurrentRow;
+			Size rs = Size.Empty;
 			
 			foreach (BaseRowItem row in tableContainer.Items)
 			{
+			
 				if (row != null)
 				{
+					rs = row.Size;
 					PrintHelper.AdjustParent(tableContainer as BaseReportItem,tableContainer.Items);
 					
 					if (PrintHelper.IsTextOnlyRow(row) )
 					{
+						
 						PrintHelper.SetLayoutForRow(rpea.PrintPageEventArgs.Graphics,base.Layout,row);
 						
 						Rectangle r =  StandardPrinter.RenderContainer(row,Evaluator,currentPosition,rpea);
-						currentPosition =PrintHelper. ConvertRectangleToCurentPosition (r);
 						
-						currentPosition = new Point(parent.Location.X + row.Location.X,currentPosition.Y);
+						
+						currentPosition =PrintHelper.ConvertRectangleToCurentPosition (r);
+						
+//						currentPosition = new Point(parent.Location.X + row.Location.X,currentPosition.Y);
+					
 						tableContainer.Location = saveLocation;
+						Console.WriteLine("----");
 					}
 					else {
 						int adjust = row.Location.Y - saveLocation.Y;
 						row.Location = new Point(row.Location.X,row.Location.Y - adjust - 3 * GlobalValues.GapBetweenContainer);
-						
+						rs = row.Size;
 						do {
 							if (PrintHelper.IsPageFull(new Rectangle(currentPosition,row.Size),this.SectionBounds)) {
 								tableContainer.Location = saveLocation;
@@ -101,30 +110,26 @@ namespace ICSharpCode.Reports.Core
 								AbstractRenderer.PageBreak(rpea);
 								return;
 							}
+							
 							this.dataNavigator.Fill(row.Items);
 							
+							Console.WriteLine("org row size {0}",row.Size);
 							PrintHelper.SetLayoutForRow(rpea.PrintPageEventArgs.Graphics,base.Layout,row);
+							
+							Console.WriteLine("new row size {0}",row.Size);
+							Console.WriteLine("");
 							Rectangle r =  StandardPrinter.RenderContainer(row,Evaluator,currentPosition,rpea);
 							
 							currentPosition = PrintHelper.ConvertRectangleToCurentPosition (r);
-							
-							currentPosition = new Point(parent.Location.X + row.Location.X,currentPosition.Y);
-							
+
+							row.Size = rs;
 						}
 						while (this.dataNavigator.MoveNext());
 					}
 				}
+				row.Size = rs;
 			}
 		
-//			
-//			if (this.DrawBorder) {
-//				Border border = new Border(new BaseLine (this.ForeColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
-//				border.DrawBorder(rpea.PrintPageEventArgs.Graphics,
-//				                  new Rectangle(parent.Location.X,tableStart.Y,
-//				                                parent.Size.Width,currentPosition.Y + 5));
-//			}
-		
-			
 			rpea.LocationAfterDraw = new Point(rpea.LocationAfterDraw.X,rpea.LocationAfterDraw.Y + 20);
 //			base.NotifyAfterPrint (rpea.LocationAfterDraw);
 		}

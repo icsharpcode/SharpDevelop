@@ -29,10 +29,10 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		public static void SetLayoutForRow (Graphics graphics, ILayouter layouter,ISimpleContainer row)
 		{
 			BaseReportItem item = row as BaseReportItem;
-			int extend = item.Size.Height - row.Items[0].Size.Height;
+
 			Rectangle textRect = layouter.Layout(graphics,row);
 			if (textRect.Height > item.Size.Height) {
-				item.Size = new Size(item.Size.Width,textRect.Height + extend );
+				item.Size = new Size(item.Size.Width,textRect.Height);
 			}
 		}
 		
@@ -169,6 +169,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		{
 			return new Point(r.Left,r.Bottom);
 		}
+		
 		
 		
 		#region Debug Code

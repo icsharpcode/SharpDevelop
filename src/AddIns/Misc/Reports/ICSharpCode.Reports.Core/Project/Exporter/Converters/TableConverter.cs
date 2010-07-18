@@ -48,11 +48,17 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		private ExporterCollection ConvertInternal(ExporterCollection mylist)
 		{
-			Point currentPosition = new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y);
+			
+			Point currentPosition = new Point(PrintHelper.DrawingAreaRelativeToParent(this.baseTable.Parent,this.baseTable).Location.X,
+			                                                                           base.SectionBounds.DetailStart.Y);
+			
+			int defaultLeftPos = currentPosition.X;
+			
 			Point dataAreaStart = new Point(baseTable.Items[0].Location.X,baseTable.Items[0].Location.Y + currentPosition.Y);
+			
 			ISimpleContainer headerContainer = null;
 			
-			int defaultLeftPos = PrintHelper.DrawingAreaRelativeToParent(this.baseTable.Parent,this.baseTable).Left;
+			
 			
 			this.baseTable.Items.SortByLocation();
 			
@@ -79,6 +85,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 							section.Location = new Point(section.Location.X,section.SectionOffset );
 							
 							base.FillRow(simpleContainer);
+							
+							StandardPrinter.EvaluateRow(base.Evaluator,mylist);
+							
 							base.LayoutRow(simpleContainer);
 
 							
@@ -93,7 +102,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 							
 							currentPosition = base.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
 							
-							EvaluateRow(mylist);
+//							EvaluateRow(mylist);
 							
 							simpleContainer.Size = base.RestoreSize;
 						}

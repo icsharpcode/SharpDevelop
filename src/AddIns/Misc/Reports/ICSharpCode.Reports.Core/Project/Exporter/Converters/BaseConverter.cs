@@ -144,6 +144,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 			get {return this.saveSize;}
 		}
 		
+		protected IExpressionEvaluatorFacade Evaluator
+		{
+			get {return this.evaluator;}
+		}
 		
 		protected void FillRow (ISimpleContainer row)
 		{
@@ -154,24 +158,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected void LayoutRow (ISimpleContainer row)
 		{
-
 			PrintHelper.SetLayoutForRow(Graphics,Layouter,row);
 		}
 		
 		
-		protected void EvaluateRow(ExporterCollection row)
-		{
-			foreach (BaseExportColumn element in row) {
-				ExportText textItem = element as ExportText;
-				
-				if (textItem != null) {
-					Console.WriteLine (textItem.Text);
-						textItem.Text = evaluator.Evaluate(textItem.Text);
-				}
-			}
-		}
-		
-		
+	
 		protected Point BaseConvert(ExporterCollection myList,ISimpleContainer container,int leftPos,Point curPos)
 		{
 			ExporterCollection ml = BaseConverter.ConvertItems (container, curPos);		

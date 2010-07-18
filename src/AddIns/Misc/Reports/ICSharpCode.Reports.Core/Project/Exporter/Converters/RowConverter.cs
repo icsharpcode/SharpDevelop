@@ -74,13 +74,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 				
 				
 				base.FillRow(simpleContainer);
+				
+				
 				base.LayoutRow(simpleContainer);
 				
 				base.FireSectionRendering(section);
 				
 				currentPosition = base.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
 				
-				EvaluateRow(mylist);
+				StandardPrinter.EvaluateRow(base.Evaluator,mylist);
 				
 				section.Items[0].Size = base.RestoreSize;
 				section.SectionOffset += section.Size.Height + 2 * base.SinglePage.SectionBounds.Gap;

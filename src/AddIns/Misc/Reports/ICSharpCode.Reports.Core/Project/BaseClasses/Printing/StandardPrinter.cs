@@ -110,7 +110,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			                           offset.Y + item.Location.Y);
 			
 			var ss = MeasurementService.MeasureReportItem(rpea.PrintPageEventArgs.Graphics,item);
-			Console.WriteLine ("RenderLineItem  {0} - {1}",ss,item.Size);
 			
 			BaseTextItem textItem = item as BaseTextItem;
 			
@@ -122,11 +121,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				if (str != textItem.Text) {
 					
 					var ss1 = MeasurementService.MeasureReportItem(rpea.PrintPageEventArgs.Graphics,item);
-					
-					int i = Convert.ToInt16(UnitConverter.FromPixel(ss1.Height).Point);
-					Console.WriteLine ("RenderLineItemxx  {0} - {1} - {2} ",ss1,
-					                   item.Size,
-					                   i);
 				}
 				
 				textItem.Render(rpea);
@@ -227,6 +221,22 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			}
 			return null;
 		}
+		
+		#endregion
+		
+		#region Evaluate
+		
+		public static void EvaluateRow(IExpressionEvaluatorFacade evaluator,ExporterCollection row)
+		{
+			foreach (BaseExportColumn element in row) {
+				ExportText textItem = element as ExportText;
+				
+				if (textItem != null) {
+					textItem.Text = evaluator.Evaluate(textItem.Text);
+				}
+			}
+		}
+		
 		#endregion
 	}
 }

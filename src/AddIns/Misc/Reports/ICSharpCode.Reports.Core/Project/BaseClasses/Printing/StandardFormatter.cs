@@ -14,6 +14,7 @@ using System.Globalization;
 /// </summary>
 namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 {
+	
 	internal static class StandardFormatter
 	{
 		
