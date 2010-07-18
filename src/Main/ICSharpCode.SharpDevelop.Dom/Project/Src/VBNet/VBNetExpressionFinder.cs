@@ -66,6 +66,11 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				t = lexer.NextToken();
 			}
 			
+			if (t.EndLocation == targetPosition && t.Kind <= Tokens.ColonAssign && t.Kind > Tokens.Identifier) {
+				p.InformToken(t);
+				t = lexer.NextToken();
+			}
+			
 			p.Advance();
 			
 			var block = p.CurrentBlock;
@@ -73,6 +78,11 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			ExpressionContext context = p.IsIdentifierExpected && !p.IsMissingModifier ? ExpressionContext.IdentifierExpected : GetContext(block);
 			
 			if (t.Location < targetPosition) {
+				p.InformToken(t);
+				p.Advance();
+			}
+			
+			if (t.EndLocation == targetPosition && t.Kind <= Tokens.ColonAssign && t.Kind > Tokens.Identifier) {
 				p.InformToken(t);
 				p.Advance();
 			}
