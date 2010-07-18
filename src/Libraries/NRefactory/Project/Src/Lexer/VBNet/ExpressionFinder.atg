@@ -274,16 +274,9 @@ OptionStatement =
 	"Option" ( ( "Explicit" | "Strict" | "Infer" ) [ "Off" | "On" ] | "Compare" ( "Text" | "Binary" ) )  StatementTerminator
 .
 
-ImportsStatement
-	(. PushContext(Context.Importable, la, t); .)
-= 
-	"Imports" 
-	(.
-		nextTokenIsStartOfImportsOrAccessExpression = true;
-		
-		if (la != null)
-			CurrentBlock.lastExpressionStart = la.Location;
-	.)
+ImportsStatement =
+	"Imports" (. PushContext(Context.Importable, la, t); .)
+	(. nextTokenIsStartOfImportsOrAccessExpression = true;	.)
 	(
 		( "Global" | Identifier | PrimitiveTypeName ) { TypeSuffix } [ ( "." | "=" ) TypeName ]
 		| XmlOpenTag Identifier "=" LiteralString XmlCloseTag

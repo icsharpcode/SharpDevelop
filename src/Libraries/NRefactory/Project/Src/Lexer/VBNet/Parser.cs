@@ -1442,7 +1442,6 @@ partial class ExpressionFinder {
 				if (la == null) { currentState = 2; break; }
 				if (la.kind == 137) {
 					stateStack.Push(2);
-					PushContext(Context.Importable, la, t);
 					goto case 618;
 				} else {
 					goto case 3;
@@ -7092,11 +7091,8 @@ partial class ExpressionFinder {
 				break;
 			}
 			case 619: {
-				nextTokenIsStartOfImportsOrAccessExpression = true;
-					
-					if (la != null)
-						CurrentBlock.lastExpressionStart = la.Location;
-
+				PushContext(Context.Importable, la, t);
+				nextTokenIsStartOfImportsOrAccessExpression = true;	
 				goto case 620;
 			}
 			case 620: {

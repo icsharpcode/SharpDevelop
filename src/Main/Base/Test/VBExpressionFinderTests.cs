@@ -52,7 +52,7 @@ End Class
 		const string program4 = @"
 Class MainClass
 	Sub A
-		Dim a 
+		Dim a " + @"
 	End Sub
 End Class
 		";
@@ -130,6 +130,12 @@ End Class
 			Find(@"Module Program
 	Private Function CreateFolder(
 End Module", "(", 1, "", ExpressionContext.Parameter);
+		}
+		
+		[Test]
+		public void FindAfterNewLineImport()
+		{
+			Find("Imports System\n", "\n", 1, "", ExpressionContext.Global);
 		}
 		#endregion
 		

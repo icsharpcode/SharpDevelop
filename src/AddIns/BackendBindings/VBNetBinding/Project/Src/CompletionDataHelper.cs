@@ -34,7 +34,7 @@ namespace ICSharpCode.VBNetBinding
 			List<ICompletionEntry> data = new List<ICompletionEntry>();
 			
 			if (expressionResult.Context != ExpressionContext.Global && expressionResult.Context != ExpressionContext.TypeDeclaration) {
-				if (expressionResult.Context == ExpressionContext.Importable && expressionResult.Expression.Equals("Imports", StringComparison.OrdinalIgnoreCase)) {
+				if (expressionResult.Context == ExpressionContext.Importable && string.IsNullOrWhiteSpace(expressionResult.Expression)) {
 					expressionResult.Expression = "Global";
 				}
 				var rr = resolver.Resolve(expressionResult, info, editor.Document.Text);
