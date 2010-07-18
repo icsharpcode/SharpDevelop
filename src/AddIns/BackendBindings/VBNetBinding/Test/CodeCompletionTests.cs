@@ -36,7 +36,7 @@ namespace ICSharpCode.VBNetBinding.Tests
 		[Test]
 		public void TestOptions()
 		{
-			TestKeyPress("Option", "", ' ', CodeCompletionKeyPressResult.EatKey,
+			TestKeyPress("Option", "\n", ' ', CodeCompletionKeyPressResult.EatKey,
 			             list => {
 			             	Assert.IsTrue(list.Items.Any());
 			             	Assert.IsTrue(list.Items.All(item => item.Image == ClassBrowserIconService.Keyword));
@@ -49,7 +49,7 @@ namespace ICSharpCode.VBNetBinding.Tests
 		[Test]
 		public void TestOptionCompare()
 		{
-			TestKeyPress("Option Compare", "", ' ', CodeCompletionKeyPressResult.EatKey,
+			TestKeyPress("Option Compare", "\n", ' ', CodeCompletionKeyPressResult.EatKey,
 			             list => {
 			             	Assert.IsTrue(list.Items.Any());
 			             	Assert.IsTrue(list.Items.All(item => item.Image == ClassBrowserIconService.Keyword));
@@ -63,7 +63,7 @@ namespace ICSharpCode.VBNetBinding.Tests
 		public void TestOnOffOptions()
 		{
 			foreach (string option in new[] { "Infer", "Strict", "Explicit" }) {
-				TestKeyPress(string.Format("Option {0} ", option), "", 'o', CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion,
+				TestKeyPress(string.Format("Option {0} ", option), "\n", 'o', CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion,
 				             list => {
 				             	Assert.IsTrue(list.Items.Any());
 				             	Assert.IsTrue(list.Items.All(item => item.Image == ClassBrowserIconService.Keyword));

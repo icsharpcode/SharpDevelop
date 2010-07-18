@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections;
+using System.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Parser;
@@ -67,7 +69,7 @@ namespace ICSharpCode.VBNetBinding
 				case ' ':
 					editor.Document.Insert(editor.Caret.Offset, " ");
 					result = ef.FindExpression(editor.Document.Text, editor.Caret.Offset);
-					if (!LiteralMayFollow((BitArray)result.Tag) && !OperatorMayFollow((BitArray)result.Tag) && ExpressionContext.IdentifierExpected != result.Context) {
+					if (editor.GetWordBeforeCaret().Trim().Equals("return", StringComparison.InvariantCultureIgnoreCase) || !LiteralMayFollow((BitArray)result.Tag) && !OperatorMayFollow((BitArray)result.Tag) && ExpressionContext.IdentifierExpected != result.Context) {
 						LoggingService.Debug("CC: After space, result=" + result + ", context=" + result.Context);
 						editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor, ch));
 					}

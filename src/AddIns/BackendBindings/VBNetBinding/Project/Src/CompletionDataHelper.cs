@@ -33,6 +33,8 @@ namespace ICSharpCode.VBNetBinding
 			
 			List<ICompletionEntry> data = new List<ICompletionEntry>();
 			
+			bool contextCompletion = false;
+			
 			if (expressionResult.Context != ExpressionContext.Global && expressionResult.Context != ExpressionContext.TypeDeclaration) {
 				if (expressionResult.Context == ExpressionContext.Importable && string.IsNullOrWhiteSpace(expressionResult.Expression)) {
 					expressionResult.Expression = "Global";
@@ -43,6 +45,8 @@ namespace ICSharpCode.VBNetBinding
 					if (IdentifierExpected(expressionResult.Tag))
 						data = new NRefactoryResolver(LanguageProperties.VBNet)
 							.CtrlSpace(editor.Caret.Line, editor.Caret.Column, info, editor.Document.Text, expressionResult.Context, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces);
+					
+					contextCompletion = true;
 				} else {
 					data = rr.GetCompletionData(info.CompilationUnit.ProjectContent, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces) ?? data;
 				}
@@ -61,6 +65,24 @@ namespace ICSharpCode.VBNetBinding
 			
 			if (addedKeywords)
 				AddTemplates(editor, result);
+			
+			
+			if (contextCompletion) {
+				IMember m = GetCurrentMember(editor);
+				
+				if (editor.GetWordBeforeCaret().Trim().Equals("return", StringComparison.InvariantCultureIgnoreCase) && m != null) {
+					IClass c = m.ReturnType != null ? m.ReturnType.GetUnderlyingClass() : null;
+					if (c != null) {
+						foreach (CodeCompletionItem item in result.Items.OfType<CodeCompletionItem>()) {
+							IClass itemClass = item.Entity as IClass;
+							if (itemClass != null && c.FullyQualifiedName == itemClass.FullyQualifiedName && c.TypeParameters.Count == itemClass.TypeParameters.Count) {
+								result.SuggestedItem = item;
+								break;
+							}
+						}
+					}
+				}
+			}
 			
 			if (pressedKey == '\0') { // ctrl+space
 				char prevChar =  editor.Caret.Offset > 0 ? editor.Document.GetCharAt(editor.Caret.Offset - 1) : '\0';
@@ -97,6 +119,17 @@ namespace ICSharpCode.VBNetBinding
 			list.Items.RemoveAll(item => item.Image == ClassBrowserIconService.Keyword && snippets.Exists(i => i.Text == item.Text));
 			list.Items.AddRange(snippets);
 			list.SortItems();
+		}
+		
+		static IMember GetCurrentMember(ITextEditor editor)
+		{
+			var caret = editor.Caret;
+			NRefactoryResolver r = new NRefactoryResolver(LanguageProperties.VBNet);
+			if (r.Initialize(ParserService.GetParseInformation(editor.FileName), caret.Line, caret.Column)) {
+				return r.CallingMember;
+			} else {
+				return null;
+			}
 		}
 	}
 }

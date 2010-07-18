@@ -1125,7 +1125,7 @@ BranchStatement =
 	| "Continue" ( "Do" | "For" | "While" )
 	| "Stop"
   /*| "End" HACK End-Statements has special handling in Block */
-	| "Return" [ Expression ]
+	| "Return" (. PushContext(Context.Expression, la, t); .) [ Expression ] (. PopContext(); .)
 .
 
 ReDimStatement =
