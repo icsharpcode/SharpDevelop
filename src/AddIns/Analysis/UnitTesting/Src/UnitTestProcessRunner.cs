@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.UnitTesting
@@ -42,6 +43,10 @@ namespace ICSharpCode.UnitTesting
 		public string WorkingDirectory {
 			get { return runner.WorkingDirectory; }
 			set { runner.WorkingDirectory = value; }
+		}
+		
+		public Dictionary<string, string> EnvironmentVariables {
+			get { return runner.EnvironmentVariables; }
 		}
 		
 		public void Start(string command, string arguments)

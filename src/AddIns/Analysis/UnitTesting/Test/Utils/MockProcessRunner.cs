@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Util;
 using ICSharpCode.UnitTesting;
 
@@ -18,6 +19,8 @@ namespace UnitTesting.Tests.Utils
 		string commandPassedToStartMethod;
 		string commandArgumentsPassedToStartMethod;
 		bool killMethodCalled;
+		Dictionary<string, string> environmentVariables = 
+			new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		
 		public event EventHandler ProcessExited;
 		public event LineReceivedEventHandler OutputLineReceived;
@@ -31,6 +34,10 @@ namespace UnitTesting.Tests.Utils
 		public string WorkingDirectory {
 			get { return workingDirectory; }
 			set { workingDirectory = value; }
+		}
+		
+		public Dictionary<string, string> EnvironmentVariables {
+			get { return environmentVariables; }
 		}
 		
 		public void Start(string command, string arguments)

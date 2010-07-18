@@ -77,7 +77,7 @@ namespace UnitTesting.Tests.Tree
 		public void BuildCompleteEventFiringDoesNotCauseTestsToRunAfterStopMethodCalled()
 		{
 			buildProjectBeforeTestRun.FireBuildCompleteEvent();
-			Assert.AreEqual(0, runTestCommand.Helpers.Count);
+			Assert.AreEqual(0, runTestCommand.TestRunnersCreated.Count);
 		}
 		
 		[Test]

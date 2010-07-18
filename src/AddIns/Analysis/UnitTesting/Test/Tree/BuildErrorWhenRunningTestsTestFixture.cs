@@ -43,9 +43,9 @@ namespace UnitTesting.Tests.Tree
 		}
 		
 		[Test]
-		public void RunTestMethodIsNotCalled()
+		public void NoTestRunnersCreated()
 		{
-			Assert.AreEqual(0, runTestCommand.Helpers.Count);
+			Assert.AreEqual(0, runTestCommand.TestRunnersCreated.Count);
 		}
 		
 		[Test]

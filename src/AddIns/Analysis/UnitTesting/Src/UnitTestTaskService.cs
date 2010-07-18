@@ -35,5 +35,10 @@ namespace ICSharpCode.UnitTesting
 		public bool SomethingWentWrong {
 			get { return TaskService.SomethingWentWrong; }
 		}
+		
+		public bool HasCriticalErrors(bool treatWarningsAsErrors)
+		{
+			return TaskService.HasCriticalErrors(treatWarningsAsErrors);
+		}
 	}
 }

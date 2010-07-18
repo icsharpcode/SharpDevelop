@@ -39,10 +39,9 @@ namespace ICSharpCode.UnitTesting
 			get { return testResultsMonitor; }
 		}
 		
-//		public override event EventHandler AllTestsFinished {
-//			add { processRunner.ProcessExited += value; }
-//			remove { processRunner.ProcessExited -= value; }
-//		}
+		protected IUnitTestProcessRunner ProcessRunner {
+			get { return processRunner; }
+		}
 		
 		void OutputLineReceived(object source, LineReceivedEventArgs e)
 		{

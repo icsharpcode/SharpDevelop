@@ -19,10 +19,6 @@ namespace ICSharpCode.CodeCoverage
 	/// </summary>
 	public class CodeCoverageHighlighter
 	{
-		public CodeCoverageHighlighter()
-		{
-		}
-		
 		/// <summary>
 		/// Adds text markers for the code coverage sequence points.
 		/// </summary>
@@ -59,8 +55,14 @@ namespace ICSharpCode.CodeCoverage
 		{
 			ITextMarkerService markerService = document.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
 			if (markerService != null) {
-				markerService.RemoveAll(marker => (Type)marker.Tag == typeof(CodeCoverageHighlighter));
+				markerService.RemoveAll(IsCodeCoverageTextMarker);
 			}
+		}
+		
+		bool IsCodeCoverageTextMarker(ITextMarker marker)
+		{
+			Type type = marker.Tag as Type;
+			return type == typeof(CodeCoverageHighlighter);
 		}
 		
 		/// <summary>

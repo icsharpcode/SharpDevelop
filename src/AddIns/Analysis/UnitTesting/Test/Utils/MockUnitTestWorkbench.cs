@@ -22,33 +22,26 @@ namespace UnitTesting.Tests.Utils
 	
 	public class MockUnitTestWorkbench : IUnitTestWorkbench
 	{
-		List<PadDescriptor> padDescriptors = new List<PadDescriptor>();
-		List<Action> safeThreadAsyncMethodCalls = new List<Action>();
-		List<object> safeThreadAsyncMethodCallsWithArguments = 
+		public List<Action> SafeThreadAsyncMethodCalls = new List<Action>();
+		public List<object> SafeThreadAsyncMethodCallsWithArguments = 
 			new List<object>();
-		bool makeSafeThreadAsyncMethodCallsWithArguments;
-		bool makeNonGenericSafeThreadAsyncMethodCalls;
-		List<Type> typesPassedToGetPadMethod = new List<Type>();
-		PadDescriptor compilerMessageViewPadDescriptor;
-		PadDescriptor errorListPadDescriptor;
+		public bool MakeSafeThreadAsyncMethodCallsWithArguments;
+		public bool MakeNonGenericSafeThreadAsyncMethodCalls;
+		public List<Type> TypesPassedToGetPadMethod = new List<Type>();
+		public PadDescriptor CompilerMessageViewPadDescriptor;
+		public PadDescriptor ErrorListPadDescriptor;
+		
+		List<PadDescriptor> padDescriptors = new List<PadDescriptor>();
 		
 		public MockUnitTestWorkbench()
 		{
-			compilerMessageViewPadDescriptor = new PadDescriptor(typeof(CompilerMessageView), "Output", String.Empty);
-			AddPadDescriptor(compilerMessageViewPadDescriptor);
+			CompilerMessageViewPadDescriptor = new PadDescriptor(typeof(CompilerMessageView), "Output", String.Empty);
+			AddPadDescriptor(CompilerMessageViewPadDescriptor);
 			
-			errorListPadDescriptor = new PadDescriptor(typeof(ErrorListPad), "Errors", String.Empty);
-			AddPadDescriptor(errorListPadDescriptor);
+			ErrorListPadDescriptor = new PadDescriptor(typeof(ErrorListPad), "Errors", String.Empty);
+			AddPadDescriptor(ErrorListPadDescriptor);
 		}
-		
-		public PadDescriptor CompilerMessageViewPadDescriptor {
-			get { return compilerMessageViewPadDescriptor; }
-		}
-		
-		public PadDescriptor ErrorListPadDescriptor {
-			get { return errorListPadDescriptor; }
-		}
-		
+
 		public void AddPadDescriptor(PadDescriptor padDescriptor)
 		{
 			padDescriptors.Add(padDescriptor);
@@ -56,7 +49,7 @@ namespace UnitTesting.Tests.Utils
 		
 		public PadDescriptor GetPad(Type type)
 		{
-			typesPassedToGetPadMethod.Add(type);
+			TypesPassedToGetPadMethod.Add(type);
 			
 			foreach (PadDescriptor padDescriptor in padDescriptors) {
 				if (padDescriptor.Class == type.FullName) {
@@ -66,31 +59,13 @@ namespace UnitTesting.Tests.Utils
 			return null;
 		}
 		
-		public List<Type> TypesPassedToGetPadMethod {
-			get { return typesPassedToGetPadMethod; }
-		}
-		
-		public List<Action> SafeThreadAsyncMethodCalls {
-			get { return safeThreadAsyncMethodCalls; }
-		}
-		
-		public bool MakeNonGenericSafeThreadAsyncMethodCalls {
-			get { return makeNonGenericSafeThreadAsyncMethodCalls; }
-			set { makeNonGenericSafeThreadAsyncMethodCalls = value; }
-		}
-		
 		public void SafeThreadAsyncCall(Action method)
 		{
-			safeThreadAsyncMethodCalls.Add(method);
+			SafeThreadAsyncMethodCalls.Add(method);
 			
-			if (makeNonGenericSafeThreadAsyncMethodCalls) {
+			if (MakeNonGenericSafeThreadAsyncMethodCalls) {
 				method();
 			}
-		}
-		
-		public bool MakeSafeThreadAsyncMethodCallsWithArguments {
-			get { return makeSafeThreadAsyncMethodCallsWithArguments; }
-			set { makeSafeThreadAsyncMethodCallsWithArguments = value; }
 		}
 		
 		public void SafeThreadAsyncCall<T>(Action<T> method, T arg)
@@ -99,15 +74,11 @@ namespace UnitTesting.Tests.Utils
 			actionArgs.Action = method;
 			actionArgs.Arg = arg;
 			
-			safeThreadAsyncMethodCallsWithArguments.Add(actionArgs);
+			SafeThreadAsyncMethodCallsWithArguments.Add(actionArgs);
 			
-			if (makeSafeThreadAsyncMethodCallsWithArguments) {
+			if (MakeSafeThreadAsyncMethodCallsWithArguments) {
 				method(arg);
 			}
-		}
-		
-		public List<object> SafeThreadAsyncMethodCallsWithArguments {
-			get { return safeThreadAsyncMethodCallsWithArguments; }
 		}
 	}
 }

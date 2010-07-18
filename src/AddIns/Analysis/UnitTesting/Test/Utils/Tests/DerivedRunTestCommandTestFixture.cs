@@ -49,7 +49,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		{
 			AbstractRunTestCommand.RunningTestCommand = null;
 			runTestCommand.CallOnBeforeBuildMethod();
-			Assert.IsFalse(runTestCommand.IsRunningTestPropertyWhenOnBeforeBuildCalled);
+			Assert.IsFalse(runTestCommand.IsRunningTestWhenOnBeforeBuildCalled);
 		}
 		
 		[Test]
@@ -57,7 +57,7 @@ namespace UnitTesting.Tests.Utils.Tests
 		{
 			AbstractRunTestCommand.RunningTestCommand = runTestCommand;
 			runTestCommand.CallOnBeforeBuildMethod();
-			Assert.IsTrue(runTestCommand.IsRunningTestPropertyWhenOnBeforeBuildCalled);
+			Assert.IsTrue(runTestCommand.IsRunningTestWhenOnBeforeBuildCalled);
 		}
 		
 		[Test]

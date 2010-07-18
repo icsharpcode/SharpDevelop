@@ -98,5 +98,33 @@ namespace UnitTesting.Tests.Utils.Tests
 			
 			Assert.AreEqual(tasks, taskService.Tasks.ToArray());
 		}
+		
+		[Test]
+		public void HasCriticalErrorsWhenReturnValueSetToTrueReturnsTrue()
+		{
+			taskService.HasCriticalErrorsReturnValue = true;
+			Assert.IsTrue(taskService.HasCriticalErrors(false));
+		}
+		
+		[Test]
+		public void HasCriticalErrorsWhenReturnValueSetToFalseReturnsFalse()
+		{
+			taskService.HasCriticalErrorsReturnValue = false;
+			Assert.IsFalse(taskService.HasCriticalErrors(false));
+		}
+		
+		[Test]
+		public void HasCriticalErrorsWhenTreatWarningsAsErrorsParameterSetToFalseRecordsParameterValue()
+		{
+			taskService.HasCriticalErrors(false);
+			Assert.IsFalse(taskService.TreatWarningsAsErrorsParameterPassedToHasCriticalErrors);
+		}
+		
+		[Test]
+		public void HasCriticalErrorsWhenTreatWarningsAsErrorsParameterSetToTrueRecordsParameterValue()
+		{
+			taskService.HasCriticalErrors(true);
+			Assert.IsTrue(taskService.TreatWarningsAsErrorsParameterPassedToHasCriticalErrors);
+		}
 	}
 }

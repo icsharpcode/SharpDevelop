@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.UnitTesting
@@ -14,6 +15,8 @@ namespace ICSharpCode.UnitTesting
 	{
 		bool LogStandardOutputAndError { get; set; }
 		string WorkingDirectory { get; set; }
+		
+		Dictionary<string, string> EnvironmentVariables { get; }
 		
 		void Start(string command, string arguments);
 		void Kill();

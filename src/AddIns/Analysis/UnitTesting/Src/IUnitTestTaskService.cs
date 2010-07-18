@@ -19,5 +19,6 @@ namespace ICSharpCode.UnitTesting
 		void ClearExceptCommentTasks();
 		void Add(Task task);
 		bool SomethingWentWrong { get; }
+		bool HasCriticalErrors(bool treatWarningsAsErrors);
 	}
 }

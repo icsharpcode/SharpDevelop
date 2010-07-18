@@ -139,7 +139,7 @@ namespace UnitTesting.Tests.Tree
 		public void IsRunningTestPropertyReturnsTrueWhenOnBeforeRunIsCalled()
 		{
 			runTestCommand.Run();
-			Assert.IsTrue(runTestCommand.IsRunningTestPropertyWhenOnBeforeBuildCalled);
+			Assert.IsTrue(runTestCommand.IsRunningTestWhenOnBeforeBuildCalled);
 		}
 		
 		[Test]

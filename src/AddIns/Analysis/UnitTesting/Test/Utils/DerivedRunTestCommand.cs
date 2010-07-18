@@ -15,21 +15,16 @@ namespace UnitTesting.Tests.Utils
 {
 	public class DerivedRunTestCommand : AbstractRunTestCommand
 	{
-		bool onBeforeBuildMethodCalled;
-		bool onAfterRunTestsMethodCalled;
-		AbstractRunTestCommand runningTestCommandWhenOnBeforeBuildCalled;
-		bool runningTestWhenOnBeforeBuildCalled;
-		bool onStopMethodCalled;
-		List<NUnitConsoleApplication> helpers = new List<NUnitConsoleApplication>();
-		List<MockTestRunner> testRunnersCreated = new List<MockTestRunner>();
+		public bool IsOnBeforeBuildMethodCalled;
+		public bool IsOnAfterRunTestsMethodCalled;
+		public AbstractRunTestCommand RunningTestCommandPropertyWhenOnBeforeBuildCalled;
+		public bool IsRunningTestWhenOnBeforeBuildCalled;
+		public bool IsOnStopMethodCalled;
+		public List<MockTestRunner> TestRunnersCreated = new List<MockTestRunner>();
 		
 		public DerivedRunTestCommand(IRunTestCommandContext context)
 			: base(context)
 		{
-		}
-		
-		public bool IsOnBeforeBuildMethodCalled {
-			get { return onBeforeBuildMethodCalled; }
 		}
 
 		public void CallOnBeforeBuildMethod()
@@ -39,46 +34,21 @@ namespace UnitTesting.Tests.Utils
 		
 		protected override void OnBeforeBuild()
 		{
-			onBeforeBuildMethodCalled = true;
-			runningTestCommandWhenOnBeforeBuildCalled = AbstractRunTestCommand.RunningTestCommand;
-			runningTestWhenOnBeforeBuildCalled = AbstractRunTestCommand.IsRunningTest;
+			IsOnBeforeBuildMethodCalled = true;
+			RunningTestCommandPropertyWhenOnBeforeBuildCalled = AbstractRunTestCommand.RunningTestCommand;
+			IsRunningTestWhenOnBeforeBuildCalled = AbstractRunTestCommand.IsRunningTest;
 		}
 		
 		protected override ITestRunner CreateTestRunner(IProject project)
 		{
 			MockTestRunner testRunner = new MockTestRunner();
-			testRunnersCreated.Add(testRunner);
+			TestRunnersCreated.Add(testRunner);
 			return testRunner;
-		}
-		
-		public List<MockTestRunner> TestRunnersCreated {
-			get { return testRunnersCreated; }
-		}
-		
-		protected override void RunTests(NUnitConsoleApplication helper)
-		{
-			helpers.Add(helper);
-		}
-		
-		public List<NUnitConsoleApplication> Helpers {
-			get { return helpers; }
-		}
-		
-		public AbstractRunTestCommand RunningTestCommandPropertyWhenOnBeforeBuildCalled {
-			get { return runningTestCommandWhenOnBeforeBuildCalled; }
-		}
-		
-		public bool IsRunningTestPropertyWhenOnBeforeBuildCalled {
-			get { return runningTestWhenOnBeforeBuildCalled; }
-		}
-		
-		public bool IsOnStopMethodCalled {
-			get { return onStopMethodCalled; }
 		}
 		
 		protected override void OnStop()
 		{
-			onStopMethodCalled = true;
+			IsOnStopMethodCalled = true;
 		}
 		
 		public Action<TestResult> ShowResultAction {
@@ -89,10 +59,6 @@ namespace UnitTesting.Tests.Utils
 		{
 			base.TestRunCompleted();
 		}
-		
-		public bool IsOnAfterRunTestsMethodCalled {
-			get { return onAfterRunTestsMethodCalled; }
-		}
 
 		public void CallOnAfterRunTestsMethod()
 		{
@@ -101,7 +67,7 @@ namespace UnitTesting.Tests.Utils
 		
 		protected override void OnAfterRunTests()
 		{
-			onAfterRunTestsMethodCalled = true;
+			IsOnAfterRunTestsMethodCalled = true;
 		}
 		
 		public ITestRunner CallCreateTestRunner(IProject project)

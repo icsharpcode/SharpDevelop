@@ -15,25 +15,19 @@ namespace UnitTesting.Tests.Utils
 {
 	public class MockTaskService : IUnitTestTaskService
 	{
-		MessageViewCategory buildMessageViewCategory = new MessageViewCategory("Build");
-		bool clearExceptCommentTasksMethodCalled;
-		bool isInUpdateWhilstClearExceptCommentTasksMethodCalled;
-		bool inUpdate;
+		public bool IsClearExceptCommentTasksMethodCalled;
+		public bool IsInUpdateWhilstClearExceptCommentTasksMethodCalled;
+		public List<Task> Tasks = new List<Task>();
+		public bool HasCriticalErrorsReturnValue;
+		public bool TreatWarningsAsErrorsParameterPassedToHasCriticalErrors;
+		
 		bool somethingWentWrong;
-		List<Task> tasks = new List<Task>();
+		bool inUpdate;
+		MessageViewCategory buildMessageViewCategory = new MessageViewCategory("Build");
 		
-		public bool IsClearExceptCommentTasksMethodCalled {
-			get { return clearExceptCommentTasksMethodCalled; }
-		}
-		
-		public void ClearExceptCommentTasks()
-		{
-			clearExceptCommentTasksMethodCalled = true;
-			isInUpdateWhilstClearExceptCommentTasksMethodCalled = inUpdate;
-		}
-		
-		public bool IsInUpdateWhilstClearExceptCommentTasksMethodCalled {
-			get { return isInUpdateWhilstClearExceptCommentTasksMethodCalled; }
+		public bool SomethingWentWrong {
+			get { return somethingWentWrong; }
+			set { somethingWentWrong = value; }
 		}
 		
 		public bool InUpdate {
@@ -45,20 +39,24 @@ namespace UnitTesting.Tests.Utils
 			get { return buildMessageViewCategory; }
 		}
 		
-		public bool SomethingWentWrong {
-			get { return somethingWentWrong; }
-		}
-		
-		public List<Task> Tasks {
-			get { return tasks; }
+		public void ClearExceptCommentTasks()
+		{
+			IsClearExceptCommentTasksMethodCalled = true;
+			IsInUpdateWhilstClearExceptCommentTasksMethodCalled = inUpdate;
 		}
 		
 		public void Add(Task task)
 		{
 			if ((task.TaskType == TaskType.Error) || (task.TaskType == TaskType.Warning))  {
-				somethingWentWrong = true; 
+				SomethingWentWrong = true; 
 			}
-			tasks.Add(task);
+			Tasks.Add(task);
+		}
+						
+		public bool HasCriticalErrors(bool treatWarningsAsErrors)
+		{
+			TreatWarningsAsErrorsParameterPassedToHasCriticalErrors = treatWarningsAsErrors;
+			return HasCriticalErrorsReturnValue;
 		}
 	}
 }
