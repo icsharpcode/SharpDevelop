@@ -28,7 +28,7 @@ namespace ICSharpCode.VBNetBinding.Tests
 			             	ContainsAll(list.Items.Select(item => item.Text).ToArray(),
 			             	            "Class", "Delegate", "Friend", "Imports", "Module",
 			             	            "Namespace", "Option", "Private", "Protected", "Public",
-			             	            "Shadows", "Structure");
+			             	            "Shadows", "Structure", "Interface", "Enum");
 			             }
 			            );
 		}

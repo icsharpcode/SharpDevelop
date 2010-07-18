@@ -313,7 +313,8 @@ TypeDeclaration =
 	{ TypeModifier }
 	( ClassOrModuleOrStructureTypeDeclaration |
 	DelegateTypeDeclaration |
-	EnumTypeDeclaration )
+	EnumTypeDeclaration |
+	InterfaceDeclaration )
 .
 
 ClassOrModuleOrStructureTypeDeclaration =
@@ -322,7 +323,7 @@ ClassOrModuleOrStructureTypeDeclaration =
 	[ "(" "Of" GenericTypeParameterDeclaration ")" ] StatementTerminator
 	[ (. isMissingModifier = false; .) "Inherits" { ANY } StatementTerminator ]
 	[ (. isMissingModifier = false; .) "Implements" { ANY } StatementTerminator ]
-	{ MemberDeclaration } (. isMissingModifier = false; Console.WriteLine("after {MemberDeclaration}"); .)
+	{ MemberDeclaration } (. isMissingModifier = false; .)
 	"End" ( "Module" | "Class" | "Structure" ) StatementTerminator
 	(. PopContext(); .)
 .
@@ -331,6 +332,43 @@ EnumTypeDeclaration =
 	"Enum" Identifier [ "As" TypeName ] StatementTerminator
 	{ { AttributeBlock } Identifier [ "=" Expression ] StatementTerminator }
 	"End" "Enum" StatementTerminator
+.
+
+InterfaceDeclaration =
+	"Interface" Identifier [ "(" "Of" GenericTypeParameterDeclaration ")" ] StatementTerminator
+	[ "Inherits" TypeName { "," TypeName } StatementTerminator ]
+	{
+		{ AttributeBlock } (.OnEachPossiblePath: isMissingModifier = true; .)
+		{ TypeAndMemberModifier (. isMissingModifier = false; .) } (. isMissingModifier = false; .)
+		( ClassOrModuleOrStructureTypeDeclaration | DelegateTypeDeclaration | EnumTypeDeclaration
+		| InterfaceDeclaration | InterfaceMemberDeclaration )
+	}
+	(. isMissingModifier = false; .)
+	"End" "Interface" StatementTerminator	
+.
+
+InterfaceMemberDeclaration =
+	InterfaceEvent | InterfaceProperty | InterfaceSubOrFunction
+.
+
+TypeAndMemberModifier =
+	MemberModifier /* contains all modifiers for types */
+.
+
+InterfaceEvent =
+	"Event" Identifier [ "As" TypeName | "(" [ ParameterList ] ")" ] StatementTerminator
+.
+
+InterfaceProperty =
+	"Property" Identifier [ "(" [ ParameterList ] ")" ] [ "As" { AttributeBlock } TypeName ] StatementTerminator
+.
+
+InterfaceSubOrFunction =
+	("Sub" | "Function")
+	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) ANY (. PopContext(); .)
+	{ "(" [ ( "Of" GenericTypeParameterDeclaration | ParameterList ) ] ")" }
+	[ (. PushContext(Context.Type, la, t); .) "As" TypeName (. PopContext(); .) ]
+	StatementTerminator
 .
 
 GenericConstraint =
@@ -356,7 +394,7 @@ MemberDeclaration =
 	(.OnEachPossiblePath: isMissingModifier = true; .)
 	(. PushContext(Context.Member, la, t); .)
 	{ AttributeBlock } { MemberModifier (. isMissingModifier = false; .) } (. isMissingModifier = false; .)
-		(
+	(
 		MemberVariableOrConstantDeclaration |
 		SubOrFunctionDeclaration |
 		ExternalMemberDeclaration |
