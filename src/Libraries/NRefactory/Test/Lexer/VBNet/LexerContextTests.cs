@@ -205,9 +205,9 @@ End Class
 	enter TypeDeclaration
 		enter Identifier
 		exit Identifier
+		enter Attribute
+		exit Attribute
 		enter Member
-			enter Attribute
-			exit Attribute
 			enter Identifier
 			exit Identifier
 			enter Body
