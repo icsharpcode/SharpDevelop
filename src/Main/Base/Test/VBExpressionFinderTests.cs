@@ -91,7 +91,7 @@ End Class
 		[Test]
 		public void FindSimple()
 		{
-			Find(program2, "sole", 0,"Con", ExpressionContext.MethodBody);
+			Find(program2, "sole", 0, "Con", ExpressionContext.MethodBody);
 		}
 		
 		[Test]

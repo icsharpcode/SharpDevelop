@@ -67,13 +67,13 @@ partial class ExpressionFinder {
 	
 	public void InformToken(Token la) 
 	{
-		if (la != null) {
-			nextTokenIsPotentialStartOfExpression = false;
-			readXmlIdentifier = false;
-			nextTokenIsStartOfImportsOrAccessExpression = false;
+		nextTokenIsPotentialStartOfExpression = false;
+		readXmlIdentifier = false;
+		nextTokenIsStartOfImportsOrAccessExpression = false;
+		wasQualifierTokenAtStart = false;
+		
+		//if (la != null)
 			identifierExpected = false;
-			wasQualifierTokenAtStart = false;
-		}
 		-->informToken
 		if (la != null) t = la;
 	}

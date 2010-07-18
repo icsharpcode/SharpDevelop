@@ -46,10 +46,6 @@ namespace ICSharpCode.VBNetBinding
 				editor.Document.Remove(editor.SelectionStart, editor.SelectionLength);
 			}
 			
-			if (ch == ' ') {
-
-			}
-			
 			VBNetExpressionFinder ef = new VBNetExpressionFinder(ParserService.GetParseInformation(editor.FileName));
 			
 			ExpressionResult result;
@@ -211,15 +207,11 @@ namespace ICSharpCode.VBNetBinding
 				prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
 			}
 			
-			if (!char.IsLetterOrDigit(prevChar) && prevChar != '.') {
-				VBNetExpressionFinder ef = new VBNetExpressionFinder(ParserService.GetParseInformation(editor.FileName));
-				ExpressionResult result = ef.FindExpression(editor.Document.Text, cursor);
-				LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
-				editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor, ' '));
-				return true;
-			}
-			
-			return false;
+			VBNetExpressionFinder ef = new VBNetExpressionFinder(ParserService.GetParseInformation(editor.FileName));
+			ExpressionResult result = ef.FindExpression(editor.Document.Text, cursor);
+			LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
+			editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor, '\0'));
+			return true;
 		}
 	}
 }

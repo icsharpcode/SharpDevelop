@@ -1333,13 +1333,13 @@ partial class ExpressionFinder {
 	
 	public void InformToken(Token la) 
 	{
-		if (la != null) {
-			nextTokenIsPotentialStartOfExpression = false;
-			readXmlIdentifier = false;
-			nextTokenIsStartOfImportsOrAccessExpression = false;
+		nextTokenIsPotentialStartOfExpression = false;
+		readXmlIdentifier = false;
+		nextTokenIsStartOfImportsOrAccessExpression = false;
+		wasQualifierTokenAtStart = false;
+		
+		//if (la != null)
 			identifierExpected = false;
-			wasQualifierTokenAtStart = false;
-		}
 		switchlbl: switch (currentState) {
 			case 0: {
 				PushContext(Context.Global, la, t);
@@ -4814,7 +4814,8 @@ partial class ExpressionFinder {
 				}
 			}
 			case 335: {
-				PushContext(Context.Identifier, la, t);	
+				PushContext(Context.Identifier, la, t);
+				SetIdentifierExpected(la);
 				stateStack.Push(336);
 				goto case 154;
 			}

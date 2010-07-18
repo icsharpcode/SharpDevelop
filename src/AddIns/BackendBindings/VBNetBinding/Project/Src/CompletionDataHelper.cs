@@ -62,6 +62,14 @@ namespace ICSharpCode.VBNetBinding
 			if (addedKeywords)
 				AddTemplates(editor, result);
 			
+			if (pressedKey == '\0') { // ctrl+space
+				char prevChar =  editor.Caret.Offset > 0 ? editor.Document.GetCharAt(editor.Caret.Offset - 1) : '\0';
+				string word = char.IsLetterOrDigit(prevChar) || prevChar == '_' ? editor.GetWordBeforeCaret() : "";
+				
+				if (!string.IsNullOrWhiteSpace(word))
+					result.PreselectionLength = word.Length;
+			}
+			
 			return result;
 		}
 		
