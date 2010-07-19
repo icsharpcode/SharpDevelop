@@ -30,6 +30,11 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		}
 	}
 	
+	public interface ISnippetCompletionItem : ICompletionItem
+	{
+		string Keyword { get; }
+	}
+	
 	public class DefaultCompletionItem : ICompletionItem
 	{
 		public string Text { get; private set; }

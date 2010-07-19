@@ -21,7 +21,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 	/// <summary>
 	/// Code completion item for snippets.
 	/// </summary>
-	public class SnippetCompletionItem : IFancyCompletionItem
+	public class SnippetCompletionItem : IFancyCompletionItem, ISnippetCompletionItem
 	{
 		readonly CodeSnippet codeSnippet;
 		readonly ITextEditor textEditor;
@@ -46,6 +46,10 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		
 		public string Text {
 			get { return codeSnippet.Name; }
+		}
+		
+		public string Keyword {
+			get { return codeSnippet.Keyword; }
 		}
 		
 		public string Description {

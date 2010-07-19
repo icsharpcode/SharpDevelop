@@ -44,6 +44,8 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			if (list == null)
 				return;
 			List<ICompletionItem> snippets = editor.GetSnippets().ToList();
+			snippets.RemoveAll(item => item is ISnippetCompletionItem
+			                   && !list.Items.Any(item2 => item2.Text == (item as ISnippetCompletionItem).Keyword));
 			list.Items.RemoveAll(item => item.Image == ClassBrowserIconService.Keyword && snippets.Exists(i => i.Text == item.Text));
 			list.Items.AddRange(snippets);
 			list.SortItems();
