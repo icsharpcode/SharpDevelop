@@ -34,17 +34,28 @@ namespace ICSharpCode.VBNetBinding
 			List<ICompletionEntry> data = new List<ICompletionEntry>();
 			
 			bool contextCompletion = false;
+			bool completingDotExpression = false;
 			
 			if (expressionResult.Context != ExpressionContext.Global && expressionResult.Context != ExpressionContext.TypeDeclaration) {
 				if (expressionResult.Context == ExpressionContext.Importable && string.IsNullOrWhiteSpace(expressionResult.Expression)) {
 					expressionResult.Expression = "Global";
 				}
+				
+				int idx = string.IsNullOrWhiteSpace(expressionResult.Expression)
+					? -1
+					: expressionResult.Expression.LastIndexOf('.');
+				
+				if (idx > -1) {
+					expressionResult.Expression = expressionResult.Expression.Substring(0, idx);
+					// its the same as if . was pressed
+					completingDotExpression = true;
+				}
+				
 				var rr = resolver.Resolve(expressionResult, info, editor.Document.Text);
 				
 				if (rr == null || !rr.IsValid) {
-					if (IdentifierExpected(expressionResult.Tag))
-						data = new NRefactoryResolver(LanguageProperties.VBNet)
-							.CtrlSpace(editor.Caret.Line, editor.Caret.Column, info, editor.Document.Text, expressionResult.Context, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces);
+					data = new NRefactoryResolver(LanguageProperties.VBNet)
+						.CtrlSpace(editor.Caret.Line, editor.Caret.Column, info, editor.Document.Text, expressionResult.Context, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces);
 					
 					contextCompletion = true;
 				} else {
@@ -54,7 +65,7 @@ namespace ICSharpCode.VBNetBinding
 			
 			bool addedKeywords = false;
 			
-			if (expressionResult.Tag != null && (expressionResult.Context != ExpressionContext.Importable) && pressedKey != '.') {
+			if (expressionResult.Tag != null && (expressionResult.Context != ExpressionContext.Importable) && pressedKey != '.' && !completingDotExpression) {
 				AddVBNetKeywords(data, (BitArray)expressionResult.Tag);
 				if (!((BitArray)expressionResult.Tag)[Tokens.New] &&  expressionResult.Context == ExpressionContext.Type)
 					data.Add(new KeywordEntry("New"));
@@ -65,7 +76,6 @@ namespace ICSharpCode.VBNetBinding
 			
 			if (addedKeywords)
 				AddTemplates(editor, result);
-			
 			
 			if (contextCompletion) {
 				IMember m = GetCurrentMember(editor);
