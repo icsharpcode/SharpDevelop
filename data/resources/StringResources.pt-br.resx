@@ -4274,9 +4274,6 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion" xml:space="preserve">
     <value>O arquivo ${projectLocation} do projeto já existe, você deseja sobrescrever o arquivo existente?</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
-    <value>O arquivo ${fileName} já existe, você deseja sobrescrever o arquivo existente?</value>
-  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
     <value>O arquivo já existe</value>
   </data>

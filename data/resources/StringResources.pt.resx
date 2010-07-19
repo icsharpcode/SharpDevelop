@@ -3912,9 +3912,6 @@ Só poderá utilizar letras, algarismos, espaço, '.' ou '_'.</value>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion" xml:space="preserve">
     <value>Já existe o ficheiro de projecto ${projectLocation}, deseja substituir o ficheiro existente?</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
-    <value>O ficheiro ${fileName} já existe. Deseja substituir o ficheiro existente?</value>
-  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
     <value>Ficheiro já existente.</value>
   </data>

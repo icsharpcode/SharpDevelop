@@ -103,6 +103,9 @@
 						Header="{core:Localize Dialog.Options.CodeTemplate.Template}"
 						Binding="{Binding Name}" />
 					<DataGridTextColumn
+						Header="{core:Localize Dialog.Options.CodeTemplate.Keyword}"
+						Binding="{Binding Keyword}" />
+					<DataGridTextColumn
 						Header="{core:Localize Dialog.Options.CodeTemplate.Description}"
 						Width="*"
 						Binding="{Binding Description}" />

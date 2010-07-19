@@ -2131,6 +2131,9 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.CodeTemplate.ExtensionsLabel" xml:space="preserve">
     <value>E&amp;xtensions</value>
   </data>
+  <data name="Dialog.Options.CodeTemplate.Keyword" xml:space="preserve">
+    <value>Keyword mapping</value>
+  </data>
   <data name="Dialog.Options.CodeTemplate.PressTabToInsertTemplate" xml:space="preserve">
     <value>Press Tab to insert this code template.</value>
   </data>

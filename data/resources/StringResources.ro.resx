@@ -2583,9 +2583,6 @@ Toate modificările se vor pierde.</value>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion" xml:space="preserve">
     <value>Fişierul proiect ${projectLocation} există deja, doriţi să-l suprascrieţi ?</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
-    <value>Fişierul ${fileName} deja există, doriţi să-l suprascrieţi ?</value>
-  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
     <value>Fişierul există deja</value>
   </data>

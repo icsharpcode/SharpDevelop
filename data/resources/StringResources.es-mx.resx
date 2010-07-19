@@ -4757,7 +4757,7 @@ Utilice solamente letras, dígitos, espacio, '.' ó '_'.</value>
     <value>El archivo de proyecto ${projectLocation} ya existe, ¿desea sobrescribir el archivo existente?</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
-    <value>El archivo ${fileName} ya existe, ¿desea sobrescribir el archivo existente?</value>
+    <value>El archivo ${fileNames} ya existe, ¿quiere sobrescribir el archivo existente?</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
     <value>El archivo ya existe</value>
@@ -4813,6 +4813,9 @@ Vaya a 'Opciones-&gt;Estilo Visual' y cambie el lenguaje del ambiente.</value>
   </data>
   <data name="ICSharpCode.UnitTesting.RunWithDebugger" xml:space="preserve">
     <value>Ejecutar con el depurador</value>
+  </data>
+  <data name="ICSharpCode.UnitTesting.StatusBarProgressLabel" xml:space="preserve">
+    <value>Probando ${Name}...</value>
   </data>
   <data name="ICSharpCode.UnitTesting.TestMenu" xml:space="preserve">
     <value>&amp;Pruebas</value>

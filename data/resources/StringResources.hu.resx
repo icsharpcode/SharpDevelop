@@ -3494,9 +3494,6 @@ Csak betűk, számok, szóköz, '.' vagy '_' engedélyezett.</value>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion" xml:space="preserve">
     <value>A Projekt fájl ${projectLocation} már létezik. Akarja felülírni a meglévő fájlt?</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
-    <value>A fájl ${fileName} már létezik. Akarja felülírni a meglévő fájlt?</value>
-  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
     <value>A fájl már létezik</value>
   </data>

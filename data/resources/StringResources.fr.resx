@@ -4753,10 +4753,10 @@ Utilisez seulement des lettres, chiffres, espace, '.' ou '_'.</value>
     <value>Le projet ${projectLocation} existe déjà, voulez-vous l'écraser ?</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
-    <value>Le ficher ${fileName} existe déjà, voulez-vous l'écraser ?</value>
+    <value>Fichier(s) ${fileNames} existants, voulez-vous les écraser ?</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
-    <value>Le fichier existe déjà</value>
+    <value>Fichier(s) existant</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Chargement de ${Filename}...</value>
@@ -4809,6 +4809,9 @@ Allez dans 'Outils/Options-&gt;Style Visuel pour changer l'ambiance actuelle.</v
   </data>
   <data name="ICSharpCode.UnitTesting.RunWithDebugger" xml:space="preserve">
     <value>Exécuter avec le débogueur</value>
+  </data>
+  <data name="ICSharpCode.UnitTesting.StatusBarProgressLabel" xml:space="preserve">
+    <value>En cours de test ${Name}...</value>
   </data>
   <data name="ICSharpCode.UnitTesting.TestMenu" xml:space="preserve">
     <value>&amp;Test</value>

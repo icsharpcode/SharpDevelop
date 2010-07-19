@@ -4246,9 +4246,6 @@ Bare bokstaver, tall, mellomrom, '.' eller '_' er tillatt.</value>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion" xml:space="preserve">
     <value>Prosjektfilen ${projectLocation} finnes fra før. Vil du overskrive den eksisterende filen?</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
-    <value>Filen ${fileName} finnes fra før. Vil du overskrive den eksisterende filen?</value>
-  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
     <value>Filen finnes fra før</value>
   </data>

@@ -3227,9 +3227,6 @@ Sono ammesse solo lettere, numeri, spazi, '.' o '_'</value>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion" xml:space="preserve">
     <value>Il file ${projectLocation} del progetto  già esiste, si vuole sovrascriverlo?</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
-    <value>Il file ${fileName} già esiste, si vuole sovrascriverlo?</value>
-  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
     <value>File già esistente</value>
   </data>

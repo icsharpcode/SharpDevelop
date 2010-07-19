@@ -4754,10 +4754,10 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
     <value>Project bestand ${projectLocation} bestaat reeds, wilt u het bestaande bestand overschrijven?</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
-    <value>Bestand ${fileName} bestaat al, wilt u deze overschrijven?</value>
+    <value>Bestand(en) ${filenames} bestaan reeds. Wilt u deze overschrijven?</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
-    <value>Bestand bestaat reeds.</value>
+    <value>Bestand(en) is/zijn reeds bestaand.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Laden van ${Filename}...</value>
@@ -4810,6 +4810,9 @@ Ga naar 'Opties-&gt;Vormgeving' en wijzig de momentele taal ambience.</value>
   </data>
   <data name="ICSharpCode.UnitTesting.RunWithDebugger" xml:space="preserve">
     <value>Uitvoeren met foutopsporing</value>
+  </data>
+  <data name="ICSharpCode.UnitTesting.StatusBarProgressLabel" xml:space="preserve">
+    <value>Testen ${Name}...</value>
   </data>
   <data name="ICSharpCode.UnitTesting.TestMenu" xml:space="preserve">
     <value>&amp;Testen</value>

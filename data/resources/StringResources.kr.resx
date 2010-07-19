@@ -4172,9 +4172,6 @@ Windows Forms 구성 요소가 아무 것도 사용가능하지 않습니다. �
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion" xml:space="preserve">
     <value>${projectLocation} 프로젝트 파일이 이미 있습니다, 있는 파일에 덮어 쓰겠습니까?</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
-    <value>${fileName} 파일이 이미 있습니다. 기존 파일 위에 덮어쓰겠습니까?</value>
-  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
     <value>파일이 이미 있습니다</value>
   </data>

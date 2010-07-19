@@ -4021,9 +4021,6 @@ Povolena jsou písmena, číslice, mezery, tečky a podtržítka.</value>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion" xml:space="preserve">
     <value>Soubor projektu ${projectLocation} již existuje, chcete ho přepsat?</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
-    <value>Soubor ${fileName} již existuje, chcete ho přepsat?</value>
-  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
     <value>Soubor již existuje</value>
   </data>

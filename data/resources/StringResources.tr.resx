@@ -3815,9 +3815,6 @@ Sadece harf,rakam, boşluk, '.' yada '_' kullanabilirsiniz.</value>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion" xml:space="preserve">
     <value>${projectLocation} proje dosyası zaten var, var olanın üstüne yazılsın mı?</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
-    <value>${fileName} zaten var, varolan dosyanın üzerine yazmak ister misiniz?</value>
-  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
     <value>Dosya zaten var</value>
   </data>

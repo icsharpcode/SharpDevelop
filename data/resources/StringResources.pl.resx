@@ -3774,9 +3774,6 @@ Można użyć tylko liter, cyfr, spacji, '.' lub '_'.</value>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion" xml:space="preserve">
     <value>Plik projektu ${projectLocation} już istnieje, czy chcesz nadpisać istniejący plik?</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
-    <value>Plik ${fileName} już istnieje, czy chcesz nadpisać istniejący plik?</value>
-  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
     <value>Plik już istnieje</value>
   </data>

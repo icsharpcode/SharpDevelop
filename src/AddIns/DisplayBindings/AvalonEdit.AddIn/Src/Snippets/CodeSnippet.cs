@@ -26,12 +26,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 	/// </summary>
 	public class CodeSnippet : INotifyPropertyChanged
 	{
-		string name, description, text;
+		string name, description, text, keyword;
+		bool isUserModified;
 		
 		public string Name {
 			get { return name; }
 			set {
 				if (name != value) {
+					isUserModified = true;
 					name = value;
 					OnPropertyChanged("Name");
 				}
@@ -42,6 +44,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			get { return text; }
 			set {
 				if (text != value) {
+					isUserModified = true;
 					text = value;
 					OnPropertyChanged("Text");
 				}
@@ -52,6 +55,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			get { return description; }
 			set {
 				if (description != value) {
+					isUserModified = true;
 					description = value;
 					OnPropertyChanged("Description");
 				}
@@ -63,6 +67,27 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 				return pattern.Matches(this.Text)
 					.OfType<Match>()
 					.Any(item => item.Value == "${Selection}");
+			}
+		}
+		
+		public string Keyword {
+			get { return keyword; }
+			set {
+				if (keyword != value) {
+					isUserModified = true;
+					keyword = value;
+					OnPropertyChanged("Keyword");
+				}
+			}
+		}
+		
+		public bool IsUserModified {
+			get { return isUserModified; }
+			set {
+				if (isUserModified != value) {
+					isUserModified = value;
+					OnPropertyChanged("IsUserModified");
+				}
 			}
 		}
 		

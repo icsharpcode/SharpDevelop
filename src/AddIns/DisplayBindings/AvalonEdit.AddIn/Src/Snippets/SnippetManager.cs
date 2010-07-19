@@ -10,8 +10,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Snippets
@@ -21,7 +21,6 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 	/// </summary>
 	public sealed class SnippetManager
 	{
-		public static readonly SnippetManager Instance = new SnippetManager();
 		readonly object lockObj = new object();
 		static readonly List<CodeSnippetGroup> defaultSnippets = new List<CodeSnippetGroup> {
 			new CodeSnippetGroup {
@@ -30,42 +29,50 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 					new CodeSnippet {
 						Name = "for",
 						Description = "for loop",
-						Text = "for (int ${counter=i} = 0; ${counter} < ${end}; ${counter}++) {\n\t${Selection}\n}"
+						Text = "for (int ${counter=i} = 0; ${counter} < ${end}; ${counter}++) {\n\t${Selection}\n}",
+						Keyword = "for"
 					},
 					new CodeSnippet {
 						Name = "foreach",
 						Description = "foreach loop",
-						Text = "foreach (${var} ${element} in ${collection}) {\n\t${Selection}\n}"
+						Text = "foreach (${var} ${element} in ${collection}) {\n\t${Selection}\n}",
+						Keyword = "foreach"
 					},
 					new CodeSnippet {
 						Name = "if",
 						Description = "if statement",
-						Text = "if (${condition}) {\n\t${Selection}\n}"
+						Text = "if (${condition}) {\n\t${Selection}\n}",
+						Keyword = "if"
 					},
 					new CodeSnippet {
 						Name = "ifelse",
 						Description = "if-else statement",
-						Text = "if (${condition}) {\n\t${Selection}\n} else {\n\t${Caret}\n}"
+						Text = "if (${condition}) {\n\t${Selection}\n} else {\n\t${Caret}\n}",
+						Keyword = "if"
 					},
 					new CodeSnippet {
 						Name = "while",
 						Description = "while loop",
-						Text = "while (${condition}) {\n\t${Selection}\n}"
+						Text = "while (${condition}) {\n\t${Selection}\n}",
+						Keyword = "while"
 					},
 					new CodeSnippet {
 						Name = "prop",
 						Description = "Property",
-						Text = "public ${Type=object} ${Property=Property} { get; set; }${Caret}"
+						Text = "public ${Type=object} ${Property=Property} { get; set; }${Caret}",
+						Keyword = "event" // properties can be declared where events can be.
 					},
 					new CodeSnippet {
 						Name = "propg",
 						Description = "Property with private setter",
-						Text = "public ${Type=object} ${Property=Property} { get; private set; }${Caret}"
+						Text = "public ${Type=object} ${Property=Property} { get; private set; }${Caret}",
+						Keyword = "event"
 					},
 					new CodeSnippet {
 						Name = "propfull",
 						Description = "Property with backing field",
-						Text = "${type} ${toFieldName(name)};\n\npublic ${type=int} ${name=Property} {\n\tget { return ${toFieldName(name)}; }\n\tset { ${toFieldName(name)} = value; }\n}${Caret}"
+						Text = "${type} ${toFieldName(name)};\n\npublic ${type=int} ${name=Property} {\n\tget { return ${toFieldName(name)}; }\n\tset { ${toFieldName(name)} = value; }\n}${Caret}",
+						Keyword = "event"
 					},
 					new CodeSnippet {
 						Name = "propdp",
@@ -77,37 +84,45 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 							+ "public ${type=int} ${name=Property} {" + Environment.NewLine
 							+ "\tget { return (${type})GetValue(${name}Property); }" + Environment.NewLine
 							+ "\tset { SetValue(${name}Property, value); }"
-							+ Environment.NewLine + "}${Caret}"
+							+ Environment.NewLine + "}${Caret}",
+						Keyword = "event"
 					},
 					new CodeSnippet {
 						Name = "ctor",
 						Description = "Constructor",
-						Text = "${refactoring:ctor}"
+						Text = "${refactoring:ctor}",
+						Keyword = "event"
 					},
 					new CodeSnippet {
 						Name = "switch",
 						Description = "Switch statement",
 						// dynamic switch snippet (inserts switch body dependent on condition)
-						Text = "switch (${condition}) {\n\t${refactoring:switchbody}\n}"
+						Text = "switch (${condition}) {\n\t${refactoring:switchbody}\n}",
+						Keyword = "switch"
 					},
 					new CodeSnippet {
 						Name = "try",
 						Description = "Try-catch statement",
-						Text = "try {\n\t${Selection}\n} catch (Exception) {\n\t${Caret}\n\tthrow;\n}"
+						Text = "try {\n\t${Selection}\n} catch (Exception) {\n\t${Caret}\n\tthrow;\n}",
+						Keyword = "try"
 					},
 					new CodeSnippet {
 						Name = "trycf",
 						Description = "Try-catch-finally statement",
-						Text = "try {\n\t${Selection}\n} catch (Exception) {\n\t${Caret}\n\tthrow;\n} finally {\n\t\n}"
+						Text = "try {\n\t${Selection}\n} catch (Exception) {\n\t${Caret}\n\tthrow;\n} finally {\n\t\n}",
+						Keyword = "try"
 					},
 					new CodeSnippet {
 						Name = "tryf",
 						Description = "Try-finally statement",
-						Text = "try {\n\t${Selection}\n} finally {\n\t${Caret}\n}"
+						Text = "try {\n\t${Selection}\n} finally {\n\t${Caret}\n}",
+						Keyword = "try"
 					},
 				}
 			}
 		};
+		
+		public static readonly SnippetManager Instance = new SnippetManager();
 		
 		readonly List<ISnippetElementProvider> snippetElementProviders;
 		
@@ -118,6 +133,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		private SnippetManager()
 		{
 			snippetElementProviders = AddInTree.BuildItems<ISnippetElementProvider>("/SharpDevelop/ViewContent/AvalonEdit/SnippetElementProviders", null, false);
+			defaultSnippets.ForEach(x => x.Snippets.ForEach(s => s.IsUserModified = false));
 		}
 		
 		/// <summary>
@@ -125,7 +141,52 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		/// </summary>
 		public List<CodeSnippetGroup> LoadGroups()
 		{
-			return PropertyService.Get("CodeSnippets", defaultSnippets);
+			var savedSnippets = PropertyService.Get("CodeSnippets", new List<CodeSnippetGroup>());
+			
+			foreach (var group in savedSnippets) {
+				var defaultGroup = defaultSnippets.FirstOrDefault(i => i.Extensions == group.Extensions);
+				if (defaultGroup != null) {
+					var merged = group.Snippets.Concat(
+						defaultGroup.Snippets.Except(
+							group.Snippets,
+							new PredicateComparer<CodeSnippet>((x, y) => x.Name == y.Name, x => x.Name.GetHashCode())
+						)
+					).OrderBy(s => s.Name).ToList();
+					group.Snippets.Clear();
+					group.Snippets.AddRange(merged);
+				}
+			}
+			
+			foreach (var group in defaultSnippets.Except(savedSnippets, new PredicateComparer<CodeSnippetGroup>(
+				(x, y) => x.Extensions == y.Extensions,
+				x => x.Extensions.GetHashCode()
+			))) {
+				savedSnippets.Add(group);
+			}
+			
+			return savedSnippets;
+		}
+		
+		class PredicateComparer<T> : IEqualityComparer<T>
+		{
+			Func<T, T, bool> equalsFunc;
+			Func<T, int> getHashCodeFunc;
+			
+			public PredicateComparer(Func<T, T, bool> equalsFunc, Func<T, int> getHashCodeFunc)
+			{
+				this.equalsFunc = equalsFunc;
+				this.getHashCodeFunc = getHashCodeFunc;
+			}
+			
+			public bool Equals(T x, T y)
+			{
+				return equalsFunc(x, y);
+			}
+			
+			public int GetHashCode(T obj)
+			{
+				return getHashCodeFunc(obj);
+			}
 		}
 		
 		/// <summary>
@@ -135,7 +196,18 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		{
 			lock (lockObj) {
 				activeGroups = null;
-				PropertyService.Set("CodeSnippets", groups.ToList());
+				List<CodeSnippetGroup> modifiedGroups = new List<CodeSnippetGroup>();
+				
+				foreach (var group in groups) {
+					// save all groups, even if they're empty
+					var copy = new CodeSnippetGroup() {
+						Extensions = group.Extensions
+					};
+					copy.Snippets.AddRange(group.Snippets.Where(s => s.IsUserModified));
+					modifiedGroups.Add(copy);
+				}
+				
+				PropertyService.Set("CodeSnippets", modifiedGroups);
 			}
 		}
 		

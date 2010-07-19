@@ -4746,9 +4746,6 @@ Grund: Der Wert zu dem zurückgesetzt werden soll ist ungültig weil sich eine a
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion" xml:space="preserve">
     <value>Die Projektdatei ${projectLocation} existiert schon. Wollen Sie die vorhandene Datei überschreiben?</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
-    <value>Die Datei ${fileName} existiert schon. Wollen Sie die vorhandene Datei überschreiben?</value>
-  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
     <value>Die Datei existiert schon</value>
   </data>

@@ -3161,9 +3161,6 @@ Endast bokstäver, siffror, mellanslag, '.' eller '_' får användas.</value>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion" xml:space="preserve">
     <value>Projektfilen ${projectLocation} finns redan, vill du ersätta den befintliga filen?</value>
   </data>
-  <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
-    <value>Filen ${fileName} finns redan, vill du ersätta den befintliga filen?</value>
-  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
     <value>Filen finns redan</value>
   </data>
