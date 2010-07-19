@@ -16,9 +16,16 @@ namespace ICSharpCode.Core.Presentation
 	public static class GlobalStyles
 	{
 		public static Style WindowStyle {
-			get {
+			get { return FindResource(windowStyleKey); }
+		}
+		
+		static Style FindResource(ResourceKey key)
+		{
+			// don't crash if controls using GlobalStyles are instanciated in unit test mode
+			if (Application.Current == null)
+				return null;
+			else
 				return (Style)Application.Current.FindResource(WindowStyleKey);
-			}
 		}
 		
 		static readonly ResourceKey windowStyleKey = new ComponentResourceKey(typeof(GlobalStyles), "WindowStyle");
@@ -28,9 +35,7 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		public static Style DialogWindowStyle {
-			get {
-				return (Style)Application.Current.FindResource(DialogWindowStyleKey);
-			}
+			get { return FindResource(dialogWindowStyleKey); }
 		}
 		
 		static readonly ResourceKey dialogWindowStyleKey = new ComponentResourceKey(typeof(GlobalStyles), "DialogWindowStyle");
@@ -40,9 +45,7 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		public static Style ButtonStyle {
-			get {
-				return (Style)Application.Current.FindResource(ButtonStyleKey);
-			}
+			get { return FindResource(buttonStyleKey); }
 		}
 		
 		static readonly ResourceKey buttonStyleKey = new ComponentResourceKey(typeof(GlobalStyles), "ButtonStyle");
@@ -52,9 +55,7 @@ namespace ICSharpCode.Core.Presentation
 		}
 		
 		public static Style WordWrapCheckBoxStyle {
-			get {
-				return (Style)Application.Current.FindResource(WordWrapCheckBoxStyleKey);
-			}
+			get { return FindResource(wordWrapCheckBoxStyleKey); }
 		}
 		
 		static readonly ResourceKey wordWrapCheckBoxStyleKey = new ComponentResourceKey(typeof(GlobalStyles), "WordWrapCheckBoxStyle");
