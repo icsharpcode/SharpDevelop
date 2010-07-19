@@ -890,6 +890,21 @@ SharpDevelop can collect this information and upload it automatically.</value>
   <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle" xml:space="preserve">
     <value>Extract properties as style</value>
   </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ErrorNoSelection" xml:space="preserve">
+    <value>No valid element selected!</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.PropertyColumn" xml:space="preserve">
+    <value>Property/Event Name</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ReplaceQuestion" xml:space="preserve">
+    <value>The selected control has already a style assigned. Do you want to replace the style with the newly created style?</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.StyleName" xml:space="preserve">
+    <value>Style name:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ValueColumn" xml:space="preserve">
+    <value>Property Value</value>
+  </data>
   <data name="AddIns.XamlBinding.Menu.GroupInto" xml:space="preserve">
     <value>Group into</value>
   </data>

@@ -3,12 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
         xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
-        Title="ICSharpCode.XamlBinding.PowerToys.Dialogs" Height="300" Width="500"
+        Title="{sd:Localize AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle}" Height="300" Width="500"
         Style="{x:Static sd:GlobalStyles.DialogWindowStyle}"
         WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen">
 	<DockPanel>
 		<DockPanel DockPanel.Dock="Top" Margin="5">
-			<Label Content="Style Name:" />
+			<Label Content="{sd:Localize AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.StyleName}" />
 			<TextBox x:Name="txtStyleName" />
 		</DockPanel>
 		<widgets:UniformGridWithSpacing Columns="2" DockPanel.Dock="Bottom" Margin="5" HorizontalAlignment="Center">
@@ -25,14 +25,14 @@
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
-					<GridViewColumn Header="Property/Event Name">
+					<GridViewColumn Header="{sd:Localize AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.PropertyColumn}">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<TextBlock Text="{Binding PropertyName}" />
 							</DataTemplate>
 						</GridViewColumn.CellTemplate>
 					</GridViewColumn>
-					<GridViewColumn Header="Property Value">
+					<GridViewColumn Header="{sd:Localize AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ValueColumn}">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<TextBlock Text="{Binding PropertyValue}" />

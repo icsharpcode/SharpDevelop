@@ -25,52 +25,62 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 	{
 		protected override bool Refactor(ITextEditor editor, XDocument document)
 		{
-			if (editor.SelectionLength == 0) {
-				MessageService.ShowError("Nothing selected!");
+			XElement selectedItem = GetInnermostElement(document.Root, editor.Document, editor.SelectionStart);
+			
+			if (selectedItem == null) {
+				MessageService.ShowError("${res:AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ErrorNoSelection}");
 				return false;
 			}
 			
-			Location startLoc = editor.Document.OffsetToPosition(editor.SelectionStart);
-			Location endLoc = editor.Document.OffsetToPosition(editor.SelectionStart + editor.SelectionLength);
-			
-			XElement selectedItem = (from item in document.Root.Descendants()
-			                         where item.IsInRange(startLoc, endLoc) select item).FirstOrDefault();
-			
-			if (selectedItem != null) {
-				var attributes = selectedItem.Attributes().Select(item => new PropertyEntry(item, Resolve(item, editor))).ToList();
-				attributes = attributes.Concat(selectedItem.Elements().Where(el => el.Name.LocalName.Contains("."))
-				                               .Select(element => new PropertyEntry(element, Resolve(element, editor)))
-				                              ).ToList();
-				ExtractPropertiesAsStyleDialog dialog = new ExtractPropertiesAsStyleDialog(attributes);
-				if (dialog.ShowDialog() ?? false) {
-					XElement resourcesRoot = document.Root.Descendants(document.Root.Name + ".Resources").FirstOrDefault();
-					
-					if (resourcesRoot == null) {
-						resourcesRoot = new XElement(document.Root.Name + ".Resources");
-						document.Root.AddFirst(resourcesRoot);
-					}
-					
-					string currentWpfXamlNamespace = resourcesRoot.GetCurrentNamespaces()
-						.First(i => CompletionDataHelper.WpfXamlNamespaces.Contains(i));
-					
-					var selectedAttributes = attributes.Where(item => item.Selected);
-					
-					resourcesRoot.AddFirst(CreateStyle(dialog.StyleName, selectedItem.Name.LocalName, selectedAttributes, currentWpfXamlNamespace));
-					
-					selectedAttributes.Where(p => p.Attribute != null).Select(prop => prop.Attribute).Remove();
-					selectedAttributes.Where(p => p.Element != null).Select(prop => prop.Element).Remove();
-					
-					if (!string.IsNullOrEmpty(dialog.StyleName) && selectedItem.Attributes(XName.Get("Style")).Any()) {
-						if (MessageService.AskQuestion("The selected control has a style assigned already. " +
-						                               "Do you want to replace the style with the newly created style?"))
-							selectedItem.SetAttributeValue("Style", "{StaticResource " + dialog.StyleName + "}");
-					}
-					
-					return true;
+			var attributes = selectedItem.Attributes().Select(item => new PropertyEntry(item, Resolve(item, editor))).ToList();
+			attributes = attributes.Concat(selectedItem.Elements().Where(el => el.Name.LocalName.Contains("."))
+			                               .Select(element => new PropertyEntry(element, Resolve(element, editor)))
+			                              ).ToList();
+			ExtractPropertiesAsStyleDialog dialog = new ExtractPropertiesAsStyleDialog(attributes);
+			if (dialog.ShowDialog() ?? false) {
+				XElement resourcesRoot = document.Root.Descendants(document.Root.Name + ".Resources").FirstOrDefault();
+				
+				if (resourcesRoot == null) {
+					resourcesRoot = new XElement(document.Root.Name + ".Resources");
+					document.Root.AddFirst(resourcesRoot);
 				}
+				
+				string currentWpfXamlNamespace = resourcesRoot.GetCurrentNamespaces()
+					.First(i => CompletionDataHelper.WpfXamlNamespaces.Contains(i));
+				
+				var selectedAttributes = attributes.Where(item => item.Selected);
+				
+				resourcesRoot.AddFirst(CreateStyle(dialog.StyleName, selectedItem.Name.LocalName, selectedAttributes, currentWpfXamlNamespace));
+				
+				selectedAttributes.Where(p => p.Attribute != null).Select(prop => prop.Attribute).Remove();
+				selectedAttributes.Where(p => p.Element != null).Select(prop => prop.Element).Remove();
+				
+				if (!string.IsNullOrEmpty(dialog.StyleName) && selectedItem.Attributes(XName.Get("Style")).Any()) {
+					if (MessageService.AskQuestion("${res:AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ReplaceQuestion}"))
+						selectedItem.SetAttributeValue("Style", "{StaticResource " + dialog.StyleName + "}");
+				}
+				
+				return true;
 			}
 			
 			return false;
+		}
+		
+		XElement GetInnermostElement(XElement parent, IDocument document, int offset)
+		{
+			int startOffset = document.PositionToOffset(parent.GetLineNumber(), parent.GetLinePosition());
+			int endOffset = parent.ToString().Length + startOffset;
+			
+			if (startOffset > offset || endOffset < offset)
+				return null;
+			
+			foreach (XElement element in parent.Elements()) {
+				XElement innermostElement = GetInnermostElement(element, document, offset);
+				if (innermostElement != null)
+					return innermostElement;
+			}
+			
+			return parent;
 		}
 		
 		static IMember Resolve(XAttribute attribute, ITextEditor editor)

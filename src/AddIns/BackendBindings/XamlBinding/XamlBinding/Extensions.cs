@@ -240,6 +240,11 @@ namespace ICSharpCode.XamlBinding
 			return thisValue.LinePosition;
 		}
 		
+		public static Location GetLocation(this IXmlLineInfo thisValue)
+		{
+			return new Location(thisValue.GetLinePosition(), thisValue.GetLineNumber());
+		}
+		
 		public static bool IsInRange(this IXmlLineInfo item, Location begin, Location end)
 		{
 			return IsInRange(item, begin.Line, begin.Column, end.Line, end.Column);
