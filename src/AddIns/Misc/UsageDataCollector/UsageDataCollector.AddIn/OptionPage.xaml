@@ -9,7 +9,7 @@
 		<RadioButton
 			Name="declineRadio"
 			Content="{core:Localize AddIns.UsageDataCollector.DeclineRadioButton}"/>
-		<Button Name="showCollectedDataButton" Click="ShowCollectedDataButton_Click" Margin="4" HorizontalAlignment="Left" Content="{core:Localize AddIns.UsageDataCollector.ShowCollectedData}"/>
+		<Button Name="showCollectedDataButton" Click="ShowCollectedDataButton_Click" Margin="4" HorizontalAlignment="Left" Content="{core:Localize AddIns.UsageDataCollector.ShowCollectedData}" Style="{x:Static core:GlobalStyles.ButtonStyle}" />
 		<TextBlock HorizontalAlignment="Left">
 			<Hyperlink
 				NavigateUri="{x:Static local:AnalyticsMonitor.PrivacyStatementUrl}">

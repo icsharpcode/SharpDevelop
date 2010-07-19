@@ -1,6 +1,7 @@
 <UserControl x:Class="ICSharpCode.XmlEditor.XmlSchemasPanel"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+             xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 	<UserControl.Resources>
 		<Style TargetType="{x:Type ListBoxItem}">
@@ -14,10 +15,10 @@
 	<StackPanel>
 		<GroupBox Header="{sd:Localize ICSharpCode.XmlEditor.XmlSchemaPanel.SchemasGroupBoxText}">
 			<DockPanel>
-				<StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
-					<Button Margin="3,0" Name="addSchemaButton" Content="{sd:StringParse ${res:Global.AddButtonText}...}" Click="AddSchemaButtonClick" />
-					<Button Margin="3,0" Name="removeSchemaButton" IsEnabled="False" Content="{sd:Localize Global.RemoveButtonText}" Click="RemoveSchemaButtonClick" />
-				</StackPanel>
+				<widgets:UniformGridWithSpacing Columns="2" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
+					<Button Style="{x:Static sd:GlobalStyles.ButtonStyle}" Name="addSchemaButton" Content="{sd:StringParse ${res:Global.AddButtonText}...}" Click="AddSchemaButtonClick" />
+					<Button Style="{x:Static sd:GlobalStyles.ButtonStyle}" Name="removeSchemaButton" IsEnabled="False" Content="{sd:Localize Global.RemoveButtonText}" Click="RemoveSchemaButtonClick" />
+				</widgets:UniformGridWithSpacing>
 				<ListBox Name="schemaListBox" Height="100" Margin="5" SelectionChanged="SchemaListBoxSelectionChanged" />
 			</DockPanel>
 		</GroupBox>

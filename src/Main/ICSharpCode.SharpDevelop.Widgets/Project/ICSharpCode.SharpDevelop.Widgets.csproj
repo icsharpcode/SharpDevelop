@@ -75,6 +75,7 @@
     <Compile Include="NumericUpDown.cs">
       <DependentUpon>NumericUpDown.xaml</DependentUpon>
     </Compile>
+    <Compile Include="RadioButtonGroup.cs" />
     <Compile Include="Resources\BitmapResources.cs" />
     <Compile Include="SideBar\SideBar.cs">
       <SubType>UserControl</SubType>
@@ -85,6 +86,8 @@
     <Compile Include="DesignTimeSupport\DropDownEditorListBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="StackPanelWithSpacing.cs" />
+    <Compile Include="UniformGridWithSpacing.cs" />
     <Compile Include="ZoomButtons.cs">
       <DependentUpon>ZoomScrollViewer.xaml</DependentUpon>
     </Compile>

@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <gui:OptionPanel
-	x:Class="ICSharpCode.AvalonEdit.AddIn.Options.BehaviorOptions" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop" xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn.Options">
+	x:Class="ICSharpCode.AvalonEdit.AddIn.Options.BehaviorOptions" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop" xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn.Options"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets">
+	
 	<StackPanel>
 		<GroupBox
 			Header="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.TabsGroupBox}">
@@ -9,21 +11,25 @@
 					Orientation="Horizontal">
 					<Label
 						Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.IndentLabel}" />
-					<TextBox
-						Text="{core:OptionBinding local:CodeEditorOptions.IndentationSize}"
-						Width="40"/>
+					<widgets:NumericUpDown
+						Minimum="1"
+						Maximum="16"
+						Value="{core:OptionBinding local:CodeEditorOptions.IndentationSize}"
+						VerticalAlignment="Center"
+						Width="50"/>
 				</StackPanel>
 				<CheckBox
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.ConvertTabsToSpaces}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.ConvertTabsToSpacesCheckBox}" />
 				<CheckBox
+					Margin="0,5,0,0"
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.UseSmartIndentation}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.UseSmartIndent}" />
 			</StackPanel>
 		</GroupBox>
 		<GroupBox
 			Header="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.BehaviourGroupBox}">
-			<StackPanel>
+			<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
 				<CheckBox
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.MouseWheelZoom}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.General.MouseWheelZoomCheckBoxCheckBox}" />
@@ -33,7 +39,7 @@
 				<CheckBox
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.CtrlClickGoToDefinition}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Behaviour.CtrlClickGotoDefinition}" />
-			</StackPanel>
+			</widgets:StackPanelWithSpacing>
 		</GroupBox>
 	</StackPanel>
 </gui:OptionPanel>

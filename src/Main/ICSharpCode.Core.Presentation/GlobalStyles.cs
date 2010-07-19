@@ -38,5 +38,29 @@ namespace ICSharpCode.Core.Presentation
 		public static ResourceKey DialogWindowStyleKey {
 			get { return dialogWindowStyleKey; }
 		}
+		
+		public static Style ButtonStyle {
+			get {
+				return (Style)Application.Current.FindResource(ButtonStyleKey);
+			}
+		}
+		
+		static readonly ResourceKey buttonStyleKey = new ComponentResourceKey(typeof(GlobalStyles), "ButtonStyle");
+		
+		public static ResourceKey ButtonStyleKey {
+			get { return buttonStyleKey; }
+		}
+		
+		public static Style WordWrapCheckBoxStyle {
+			get {
+				return (Style)Application.Current.FindResource(WordWrapCheckBoxStyleKey);
+			}
+		}
+		
+		static readonly ResourceKey wordWrapCheckBoxStyleKey = new ComponentResourceKey(typeof(GlobalStyles), "WordWrapCheckBoxStyle");
+		
+		public static ResourceKey WordWrapCheckBoxStyleKey {
+			get { return wordWrapCheckBoxStyleKey; }
+		}
 	}
 }

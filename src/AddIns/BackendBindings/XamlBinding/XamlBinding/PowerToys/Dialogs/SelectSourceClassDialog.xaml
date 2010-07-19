@@ -3,14 +3,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:ICSharpCode.XamlBinding.PowerToys.Dialogs"
     xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+    xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
     Title="Select Source Class" Height="500" Width="700"
 	Style="{x:Static sd:GlobalStyles.DialogWindowStyle}"
 	WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow">
 	<Window.Resources>
-		<Style TargetType="{x:Type Button}">
-			<Setter Property="Margin" Value="3" />
-			<Setter Property="Padding" Value="3" />
-		</Style>
 		<local:SelectionConverter x:Key="selectionConverter" />
 	</Window.Resources>
 	<DockPanel>
@@ -18,10 +15,10 @@
 		<StatusBar DockPanel.Dock="Bottom">
 			<TextBlock Text="{Binding Items.Count, ElementName=lvClasses, StringFormat=Count: {0}}" />
 		</StatusBar>
-		<StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
-			<Button x:Name="btnOK" Content="{sd:Localize Global.OKButtonText}" Click="BtnOKClick" IsEnabled="{Binding SelectedIndex, ElementName=lvClasses, Converter={StaticResource selectionConverter}}" />
-			<Button x:Name="btnCancel" Content="{sd:Localize Global.CancelButtonText}" Click="BtnCancelClick" />
-		</StackPanel>
+		<widgets:UniformGridWithSpacing Columns="2" DockPanel.Dock="Bottom" HorizontalAlignment="Center" Margin="3">
+			<Button x:Name="btnOK" Content="{sd:Localize Global.OKButtonText}" Click="BtnOKClick" IsEnabled="{Binding SelectedIndex, ElementName=lvClasses, Converter={StaticResource selectionConverter}}" Style="{x:Static sd:GlobalStyles.ButtonStyle}" />
+			<Button x:Name="btnCancel" Content="{sd:Localize Global.CancelButtonText}" Click="BtnCancelClick" Style="{x:Static sd:GlobalStyles.ButtonStyle}" />
+		</widgets:UniformGridWithSpacing>
 		<TextBox Margin="3" DockPanel.Dock="Top" x:Name="txtFilter" TextChanged="TxtFilterTextChanged" />
 		<ListBox x:Name="lvClasses" Margin="3">
 			<ListBox.ItemTemplate>

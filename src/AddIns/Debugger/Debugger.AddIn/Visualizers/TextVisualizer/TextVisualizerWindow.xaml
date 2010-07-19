@@ -21,13 +21,13 @@
       <Button
         Name="btnCopy"
         HorizontalAlignment="Left"
-        Padding="4 2"
+        Style="{x:Static core:GlobalStyles.ButtonStyle}"
         Margin="4"
         Click="BtnCopy_Click">Copy to clipboard</Button>
       <Button
         Name="btnClose"
         HorizontalAlignment="Left"
-        Padding="4 2"
+        Style="{x:Static core:GlobalStyles.ButtonStyle}"
         Margin="0 4"
         Click="BtnClose_Click">Close</Button>
       <CheckBox

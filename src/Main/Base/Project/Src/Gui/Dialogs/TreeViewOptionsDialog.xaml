@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core"
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
         x:Class="ICSharpCode.SharpDevelop.Gui.TreeViewOptionsDialog"
         Height="414"
         Width="552"
@@ -64,27 +64,19 @@
 				</DockPanel>
 			</ScrollViewer>
 		</Grid>
-		<Button
-			Content="{core:Localize Global.OKButtonText}"
-			Grid.Column="0"
-			Grid.Row="1"
-			HorizontalAlignment="Right"
-			VerticalAlignment="Stretch"
-			Margin="0,6,117,8"
-			Width="100"
-			IsDefault="True"
-			Name="okButton"
-			Click="okButtonClick" />
-		<Button
-			Content="{core:Localize Global.CancelButtonText}"
-			Grid.Column="0"
-			Grid.Row="1"
-			HorizontalAlignment="Right"
-			VerticalAlignment="Stretch"
-			Margin="0,6,8,8"
-			Width="100"
-			IsCancel="True"
-			Name="cancelButton"
-			Click="cancelButtonClick" />
+		<widgets:UniformGridWithSpacing Columns="2" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right" Margin="0,4,12,12">
+			<Button
+				Content="{core:Localize Global.OKButtonText}"
+				IsDefault="True"
+				Name="okButton"
+				Style="{x:Static core:GlobalStyles.ButtonStyle}"
+				Click="okButtonClick" />
+			<Button
+				Content="{core:Localize Global.CancelButtonText}"
+				IsCancel="True"
+				Name="cancelButton"
+				Style="{x:Static core:GlobalStyles.ButtonStyle}"
+				Click="cancelButtonClick" />
+		</widgets:UniformGridWithSpacing>
 	</Grid>
 </Window>

@@ -27,6 +27,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			                                new FrameworkPropertyMetadata(new Thickness(2, 0, 4, 0)));
 		}
 		
+		public OptionPanel()
+		{
+			this.Resources.Add(
+				typeof(GroupBox),
+				new Style(typeof(GroupBox)) { Setters = {
+						new Setter(GroupBox.PaddingProperty, new Thickness(3, 3, 3, 7))
+					}});
+			this.Resources.Add(typeof(CheckBox), GlobalStyles.WordWrapCheckBoxStyle);
+			this.Resources.Add(typeof(RadioButton), GlobalStyles.WordWrapCheckBoxStyle);
+		}
+		
 		public virtual object Owner { get; set; }
 		
 		readonly List<OptionBinding> bindings = new List<OptionBinding>();

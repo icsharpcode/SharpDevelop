@@ -13,11 +13,12 @@
 				<Label Content="{core:Localize Dialog.Options.IDEOptions.ProjectAndSolutionOptions.ProjectLocationLabel}"
 				       Target="{Binding ElementName=defaultProjectLocationTextBox}" />
 				<DockPanel>
-					<Button Content="..." Click="defaultProjectLocationButtonClick" DockPanel.Dock="Right" />
-					<TextBox Name="defaultProjectLocationTextBox" />
+					<Button Content="..." Click="defaultProjectLocationButtonClick" DockPanel.Dock="Right" Padding="4,0" />
+					<TextBox Name="defaultProjectLocationTextBox" Margin="18,0,4,0" />
 				</DockPanel>
 				<CheckBox Content="{core:Localize Dialog.Options.IDEOptions.ProjectAndSolutionOptions.LoadPrevProjectCheckBox}"
-				          IsChecked="{core:OptionBinding local:ProjectAndSolutionOptions.LoadPrevProjectAtStartup}" />
+				          IsChecked="{core:OptionBinding local:ProjectAndSolutionOptions.LoadPrevProjectAtStartup}"
+				          Margin="0,5,0,0"/>
 			</StackPanel>
 		</GroupBox>
 		<GroupBox Header="{core:Localize Dialog.Options.IDEOptions.ProjectAndSolutionOptions.BuildAndRunGroupBox}">
@@ -34,13 +35,13 @@
 					<Label
 						Content="Build Verbosity:"
 						Target="{Binding ElementName=verbosityComboBox}" />
-					<ComboBox Name="verbosityComboBox" />
+					<ComboBox Name="verbosityComboBox" VerticalAlignment="Center" />
 				</StackPanel>
 				<StackPanel Orientation="Horizontal">
 					<Label
 						Content="{core:Localize Dialog.Options.IDEOptions.ProjectAndSolutionOptions.WhenRunning}"
 						Target="{Binding ElementName=onExecuteComboBox}" />
-					<ComboBox Name="onExecuteComboBox" />
+					<ComboBox Name="onExecuteComboBox" VerticalAlignment="Center" />
 				</StackPanel>
 			</StackPanel>
 		</GroupBox>

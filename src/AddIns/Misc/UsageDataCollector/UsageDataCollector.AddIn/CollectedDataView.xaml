@@ -1,22 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Window
-  x:Class="ICSharpCode.UsageDataCollector.CollectedDataView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
-  Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
-  Title="Collected Data"
-  Width="649"
-  Height="418">
-  <DockPanel>
-    <TextBlock
-      DockPanel.Dock="Top">This window shows the data that was collected but not yet uploaded.</TextBlock>
-    <Button
-      DockPanel.Dock="Bottom"
-      Width="75"
-      Height="23"
-      Content="{core:Localize Global.CloseButtonText}"
-      Margin="16,8,16,8"
-      Click="Button_Click" />
-    <avalonEdit:TextEditor
-    	x:Name="textEditor"
-       IsReadOnly="True" />
-  </DockPanel>
+	x:Class="ICSharpCode.UsageDataCollector.CollectedDataView" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+	Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
+	Title="Collected Data"
+	Width="649"
+	Height="418">
+	<DockPanel>
+		<TextBlock
+			TextWrapping="WrapWithOverflow"
+			DockPanel.Dock="Top">This window shows the data that was collected but not yet uploaded.</TextBlock>
+		<Button
+			DockPanel.Dock="Bottom"
+			Style="{x:Static core:GlobalStyles.ButtonStyle}"
+			IsCancel="True"
+			Content="{core:Localize Global.CloseButtonText}"
+			Margin="16,8,16,8"
+			Click="Button_Click" />
+		<avalonEdit:TextEditor
+			x:Name="textEditor"
+			IsReadOnly="True" />
+	</DockPanel>
 </Window>

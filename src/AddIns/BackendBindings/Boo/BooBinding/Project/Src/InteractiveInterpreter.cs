@@ -71,7 +71,8 @@ namespace Grunwald.BooBinding
 				interpreter.LoopEval("import System\n" +
 				                     "import System.Collections.Generic\n" +
 				                     "import System.IO\n" +
-				                     "import System.Text");
+				                     "import System.Text\n" +
+				                     "import System.Linq.Enumerable");
 			}
 			processing = true;
 			try {

@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <gui:OptionPanel
-	x:Class="ICSharpCode.AvalonEdit.AddIn.Options.TextViewOptions" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop" xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn.Options">
+	x:Class="ICSharpCode.AvalonEdit.AddIn.Options.TextViewOptions" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui;assembly=ICSharpCode.SharpDevelop" xmlns:local="clr-namespace:ICSharpCode.AvalonEdit.AddIn.Options" xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets">
 	<StackPanel>
 		<GroupBox
 			Header="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.MarkersGroupBox}">
-			<StackPanel>
+			<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
 				<CheckBox
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.ShowSpaces}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.SpacesCheckBox}" />
@@ -24,7 +24,7 @@
 				<CheckBox
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.HighlightSymbol}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox}" />
-			</StackPanel>
+			</widgets:StackPanelWithSpacing>
 		</GroupBox>
 	</StackPanel>
 </gui:OptionPanel>

@@ -45,20 +45,17 @@
 				<Button
 					Content="{core:Localize Dialog.Options.CodeTemplate.AddGroupLabel}"
 					Margin="0,8,0,8"
-					Height="23"
-					Padding="9,1,9,1"
+					Style="{x:Static core:GlobalStyles.ButtonStyle}"
 					Click="AddGroupButton_Click" />
 				<Button
 					Content="{core:Localize Dialog.Options.CodeTemplate.RemoveGroupLabel}"
 					Margin="8,8,0,8"
-					Height="23"
-					Padding="9,1,9,1"
+					Style="{x:Static core:GlobalStyles.ButtonStyle}"
 					Click="RemoveGroupButton_Click" />
-			<Button
+				<Button
 					Content="{core:Localize Dialog.Options.CodeTemplate.EditGroupLabel}"
 					Margin="8,8,0,8"
-					Height="23"
-					Padding="9,1,9,1"
+					Style="{x:Static core:GlobalStyles.ButtonStyle}"
 					Click="EditGroupButton_Click" />
 			</StackPanel>
 		</Grid>

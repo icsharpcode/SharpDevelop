@@ -7,6 +7,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 	<gui:AbstractInlineRefactorDialog.Resources>
 		<gui:IntToBoolConverter x:Key="intToBoolConverter" />
+		<Style TargetType="Button" BasedOn="{x:Static sd:GlobalStyles.ButtonStyle}"/>
 	</gui:AbstractInlineRefactorDialog.Resources>
 	<DockPanel Cursor="Arrow">
 		<TextBlock DockPanel.Dock="Top" Margin="3"

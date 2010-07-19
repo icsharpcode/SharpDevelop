@@ -42,9 +42,11 @@
 		<StackPanel
 			Orientation="Horizontal">
 			<Button
+				Style="{x:Static core:GlobalStyles.ButtonStyle}"
 				Content="{core:Localize StartPage.StartMenu.OpenCombineButton}"
 				Click="openSolutionClick" />
 			<Button
+				Style="{x:Static core:GlobalStyles.ButtonStyle}"
 				Content="{core:Localize StartPage.StartMenu.NewCombineButton}"
 				Click="newSolutionClick"
 				Margin="8,0,0,0" />

@@ -4,13 +4,15 @@
         xmlns:gui="clr-namespace:ICSharpCode.SharpDevelop.Gui" 
         xmlns:addin="clr-namespace:ICSharpCode.SharpDevelop.Refactoring" 
         xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+        xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
         WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow" ResizeMode="NoResize"
+        Style="{x:Static sd:GlobalStyles.DialogWindowStyle}"
         Title="{sd:Localize Dialog.Refactoring.IntroduceMethod.Title}" Height="400" Width="600">
   <DockPanel>
-    <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
-      <Button Content="{sd:Localize Global.OKButtonText}" Margin="3" Click="OKButtonClick" IsDefault="True" />
-      <Button Content="{sd:Localize Global.CancelButtonText}" Margin="3" Click="CancelButtonClick" IsCancel="True" />
-    </StackPanel>
+		<widgets:UniformGridWithSpacing Columns="2" DockPanel.Dock="Bottom" Margin="3" HorizontalAlignment="Center">
+			<Button Content="{sd:Localize Global.OKButtonText}" Click="OKButtonClick" Style="{x:Static sd:GlobalStyles.ButtonStyle}" />
+			<Button Content="{sd:Localize Global.CancelButtonText}" Click="CancelButtonClick" Style="{x:Static sd:GlobalStyles.ButtonStyle}" />
+		</widgets:UniformGridWithSpacing>
     <TextBlock Text="{sd:Localize Dialog.Refactoring.IntroduceMethod.Description}" DockPanel.Dock="Top" Margin="3" TextWrapping="Wrap" />
     <Grid>
       <Grid.RowDefinitions>

@@ -4,12 +4,13 @@
 	xmlns:gui="clr-namespace:SharpRefactoring.Gui"
 	xmlns:addin="clr-namespace:SharpRefactoring"
 	xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 	<DockPanel Cursor="Arrow">
-		<StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom">
-			<Button Content="{sd:Localize Global.OKButtonText}" Margin="3" Click="OKButtonClick" />
-			<Button Content="{sd:Localize Global.CancelButtonText}" Margin="3" Click="CancelButtonClick" />
-		</StackPanel>
+		<widgets:UniformGridWithSpacing Columns="2" DockPanel.Dock="Bottom" Margin="3" HorizontalAlignment="Center">
+			<Button Content="{sd:Localize Global.OKButtonText}" Click="OKButtonClick" Style="{x:Static sd:GlobalStyles.ButtonStyle}" />
+			<Button Content="{sd:Localize Global.CancelButtonText}" Click="CancelButtonClick" Style="{x:Static sd:GlobalStyles.ButtonStyle}" />
+		</widgets:UniformGridWithSpacing>
 		<StackPanel Orientation="Vertical">
 			<!-- TODO : remove Visibilty="Collapsed" -->
 			<CheckBox

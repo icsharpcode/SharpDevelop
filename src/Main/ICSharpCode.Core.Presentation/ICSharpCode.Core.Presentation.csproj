@@ -88,7 +88,6 @@
     <Compile Include="OptionBinding.cs" />
     <Compile Include="PresentationResourceService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RadioButtonGroup.cs" />
     <Compile Include="SplitButton.cs" />
     <Compile Include="StringParseExtension.cs" />
     <Compile Include="ToolBar\ToolBarButton.cs" />
