@@ -856,6 +856,20 @@ End Module
 		}
 		
 		[Test]
+		public void VBNetArrayParameterTest()
+		{
+			string program = @"Module Main
+	Sub Main()
+		
+	End Sub
+End Module
+";
+			TypeResolveResult result = ResolveVB<TypeResolveResult>(program, "String()", 3, 3, ExpressionContext.Type);
+			Assert.AreEqual("System.String", result.ResolvedType.FullyQualifiedName);
+			Assert.IsTrue(result.ResolvedType.IsArrayReturnType);
+		}
+		
+		[Test]
 		public void ConstructorBaseCall()
 		{
 			string program = @"using System;

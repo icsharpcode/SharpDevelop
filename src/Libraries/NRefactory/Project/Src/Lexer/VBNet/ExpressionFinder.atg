@@ -518,6 +518,7 @@ SimpleExpression =
     (    Literal
     |    ( "(" Expression ")" )
     |    IdentifierForExpressionStart
+    |    PrimitiveTypeName
     |    ( "." | "!" | ".@" | "..." ) (. nextTokenIsStartOfImportsOrAccessExpression = true; wasQualifierTokenAtStart = true; .) [ XmlOpenTag ] IdentifierOrKeyword [ XmlCloseTag ]
     |    "GetType" "(" TypeName ")"
     |    "GetXmlNamespace" "(" (. readXmlIdentifier = true; .) Identifier ")"

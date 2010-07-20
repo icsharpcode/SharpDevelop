@@ -91,12 +91,12 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			}
 			
 			if (p.NextTokenIsPotentialStartOfExpression)
-				return new ExpressionResult("", DomRegion.Empty, context, expectedSet);
+				return new ExpressionResult("", new DomRegion(targetPosition.Line, targetPosition.Column), context, expectedSet);
 			
 			int lastExpressionStartOffset = LocationToOffset(block.lastExpressionStart);
 			
 			if (lastExpressionStartOffset < 0)
-				return new ExpressionResult(null, DomRegion.Empty, context, expectedSet);
+				return new ExpressionResult("", new DomRegion(targetPosition.Line, targetPosition.Column), context, expectedSet);
 			
 			return MakeResult(text, lastExpressionStartOffset, offset, context, expectedSet);
 		}

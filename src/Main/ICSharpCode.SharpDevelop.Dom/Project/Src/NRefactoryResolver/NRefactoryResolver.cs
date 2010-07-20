@@ -12,7 +12,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Dom.CSharp;
@@ -121,41 +121,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (language == NR.SupportedLanguage.CSharp && !expression.EndsWith(";"))
 					expression += ";";
 				using (NR.IParser p = NR.ParserFactory.CreateParser(language, new System.IO.StringReader(expression))) {
+					p.Lexer.SetInitialLocation(new NR.Location(caretColumn + caretColumnOffset, caretLine));
 					expr = p.ParseExpression();
-					if (expr != null) {
-						expr.AcceptVisitor(new FixAllNodeLocations(new NR.Location(caretColumn + caretColumnOffset, caretLine)), null);
-					}
 				}
 			}
 			return expr;
 		}
-		
-		sealed class FixAllNodeLocations : NodeTrackingAstVisitor
-		{
-			readonly NR.Location expressionStart;
-			
-			public FixAllNodeLocations(ICSharpCode.NRefactory.Location expressionStart)
-			{
-				this.expressionStart = expressionStart;
-			}
-			
-			protected override void BeginVisit(INode node)
-			{
-				node.StartLocation = FixLocation(node.StartLocation);
-				node.EndLocation = FixLocation(node.EndLocation);
-			}
-			
-			NR.Location FixLocation(NR.Location location)
-			{
-				if (location.IsEmpty) {
-					return expressionStart;
-				} else if (location.Line == 1) {
-					return new NR.Location(location.Column - 1 + expressionStart.Column, expressionStart.Line);
-				} else {
-					return new NR.Location(location.Column, location.Line - 1 + expressionStart.Line);
-				}
-			}
-		}
+
 		
 		string GetFixedExpression(ExpressionResult expressionResult)
 		{
@@ -207,8 +179,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					return new NamespaceResolveResult(null, null, "");
 				}
 				// array
-			} else if (language == NR.SupportedLanguage.CSharp && expressionResult.Context.IsTypeContext && !expressionResult.Context.IsObjectCreation) {
-				expr = ParseTypeReference(expression);
+			}
+			if (expressionResult.Context.IsTypeContext && !expressionResult.Context.IsObjectCreation) {
+				expr = ParseTypeReference(expression, language);
 			}
 			if (expr == null) {
 				expr = ParseExpression(expression, 0);
@@ -253,13 +226,19 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return ResolveInternal(expr, expressionResult.Context);
 		}
 		
-		TypeReferenceExpression ParseTypeReference(string typeReference)
+		TypeReferenceExpression ParseTypeReference(string typeReference, SupportedLanguage language)
 		{
-			TypeOfExpression toe = ParseExpression("typeof(" + typeReference + ")", -7) as TypeOfExpression;
+			string typeOfFunc = "typeof";
+			
+			if (language == SupportedLanguage.VBNet)
+				typeOfFunc = "GetType";
+			
+			TypeOfExpression toe = ParseExpression(typeOfFunc + "(" + typeReference + ")", -(typeOfFunc.Length + 1)) as TypeOfExpression;
+			
 			if (toe != null)
 				return new TypeReferenceExpression(toe.TypeReference);
-			else
-				return null;
+			
+			return null;
 		}
 		
 		ResolveResult WithResolve(string expression, string fileContent)

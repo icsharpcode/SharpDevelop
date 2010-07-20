@@ -256,6 +256,16 @@ End Module", @"Module Test
 End Module", "x", "x", ExpressionContext.Default);
 		}
 		
+		[Test]
+		public void TypeKeywordMember()
+		{
+			FindFull(@"Module Test
+	Sub Main()
+		String.Format(""{0}"", ""Test"")
+	End Sub
+End Module", "mat", "String.Format(\"{0}\", \"Test\")", ExpressionContext.Default);
+		}
+		
 		#region Old Tests
 		void OldTest(string expr, int offset)
 		{
