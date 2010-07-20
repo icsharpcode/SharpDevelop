@@ -98,6 +98,10 @@ namespace ICSharpCode.WpfDesign.AddIn
 					outline.Root = OutlineNode.Create(designer.DesignContext.RootItem);
 				}
 				
+				var outlineContent = GetService(typeof(IOutlineContentHost));
+				if(outlineContent==null)
+					this.Services.AddService(typeof(IOutlineContentHost),Outline);
+				
 				propertyGridView.PropertyGrid.SelectedItems = null;
 				designer.DesignContext.Services.Selection.SelectionChanged += OnSelectionChanged;
 				designer.DesignContext.Services.GetService<UndoService>().UndoStackChanged += OnUndoStackChanged;

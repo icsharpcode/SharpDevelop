@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.ComponentModel.Design;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -510,6 +511,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 					isActiveViewContentChanged(this, e);
 			}
 		}
+		#endregion
+		
+		#region IServiceProvider
+		ServiceContainer _services=new ServiceContainer();
+		
+		public object GetService(Type serviceType){
+			return _services.GetService(serviceType);
+		}
+		
+		public ServiceContainer Services {
+			get { return _services; }
+		}
+		
 		#endregion
 		
 		public virtual void Save(OpenedFile file, Stream stream)

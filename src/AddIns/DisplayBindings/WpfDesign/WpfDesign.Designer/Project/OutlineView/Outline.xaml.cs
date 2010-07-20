@@ -18,10 +18,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.WpfDesign.Designer.OutlineView
 {
-	public partial class Outline
+	public partial class Outline : IOutlineContentHost
 	{
 		public Outline()
 		{
@@ -34,6 +36,10 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 		public OutlineNode Root {
 			get { return (OutlineNode)GetValue(RootProperty); }
 			set { SetValue(RootProperty, value); }
+		}
+		
+		public object OutlineContent {
+			get { return this; }
 		}
 	}
 }
