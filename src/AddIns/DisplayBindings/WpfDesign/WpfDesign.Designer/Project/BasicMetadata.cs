@@ -208,6 +208,7 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddPopularControl(typeof(ComboBox));
 			Metadata.AddPopularControl(typeof(Label));
 			Metadata.AddPopularControl(typeof(TextBox));
+			Metadata.AddPopularControl(typeof(TextBlock));
 			Metadata.AddPopularControl(typeof(RadioButton));
 			Metadata.AddPopularControl(typeof(Canvas));
 			Metadata.AddPopularControl(typeof(Grid));
@@ -216,7 +217,9 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddPopularControl(typeof(Expander));
 			Metadata.AddPopularControl(typeof(GroupBox));
 			Metadata.AddPopularControl(typeof(Image));
+			Metadata.AddPopularControl(typeof(MediaElement));
 			Metadata.AddPopularControl(typeof(InkCanvas));
+			Metadata.AddPopularControl(typeof(DataGrid));
 			Metadata.AddPopularControl(typeof(ListBox));
 			Metadata.AddPopularControl(typeof(ListView));
 			Metadata.AddPopularControl(typeof(Menu));

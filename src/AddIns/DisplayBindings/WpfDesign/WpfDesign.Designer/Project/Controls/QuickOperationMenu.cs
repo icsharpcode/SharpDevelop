@@ -70,8 +70,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
             base.OnApplyTemplate();
             var mainHeader = Template.FindName("MainHeader", this) as MenuItem;
             if (mainHeader != null) {
-                _mainHeader = mainHeader;
-                _mainHeader.MouseLeave += OnMouseOut;
+                _mainHeader = mainHeader;                
             }
         }
         
@@ -117,17 +116,6 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
                 }
             }
             return check;
-        }
-
-        protected override void OnMouseEnter(MouseEventArgs e)
-        {
-            base.OnMouseEnter(e);
-            MainHeader.IsSubmenuOpen = true;
-        }
-
-        private void OnMouseOut(object sender, MouseEventArgs e)
-        {
-            MainHeader.IsSubmenuOpen = false;
         }
     }
 }

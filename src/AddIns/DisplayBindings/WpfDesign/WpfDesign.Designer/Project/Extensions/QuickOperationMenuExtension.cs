@@ -47,6 +47,15 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
                     _menu.MainHeader.Items.Add(new Separator());
                     menuItemsAdded++;
                 }
+                
+                if(this.ExtendedItem.Parent!=null && this.ExtendedItem.Parent.View is DockPanel) {
+                    var sda = new MenuItem() {Header = "Set Dock to"};
+                    _menu.AddSubMenuInTheHeader(sda);
+                    setValue = this.ExtendedItem.Properties.GetAttachedProperty(DockPanel.DockProperty).ValueOnInstance.ToString();
+                    _menu.AddSubMenuCheckable(sda, Enum.GetValues(typeof (Dock)), Dock.Left.ToString(), setValue);
+                    _menu.MainHeader.Items.Add(new Separator());
+                    menuItemsAdded++;
+                }
 
                 var ha = new MenuItem() {Header = "Horizontal Alignment"};
                 _menu.AddSubMenuInTheHeader(ha);
@@ -80,6 +89,15 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
                                 this.ExtendedItem.Properties[StackPanel.OrientationProperty].SetValue(orientation);
                         }
                     }
+            		 if ((string)parent.Header == "Set Dock to") {
+                        var value = _menu.UncheckChildrenAndSelectClicked(parent, clickedOn);
+                        if(value!=null) {
+                            var dock = Enum.Parse(typeof (Dock), value);
+                            if (dock != null)
+                                this.ExtendedItem.Properties.GetAttachedProperty(DockPanel.DockProperty).SetValue(dock);
+                        }
+                    }
+                	
 
                     if ((string) parent.Header == "Horizontal Alignment") {
                         var value = _menu.UncheckChildrenAndSelectClicked(parent, clickedOn);

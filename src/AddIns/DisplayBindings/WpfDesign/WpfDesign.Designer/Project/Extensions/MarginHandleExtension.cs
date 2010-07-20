@@ -51,7 +51,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
         	_leftHandle.Visibility=Visibility.Hidden;
         	_leftHandle.ShouldBeVisible=false;
         	_topHandle.Visibility=Visibility.Hidden;
-        	_rightHandle.ShouldBeVisible=false;
+        	_topHandle.ShouldBeVisible=false;
         	_rightHandle.Visibility=Visibility.Hidden;
         	_rightHandle.ShouldBeVisible=false;
         	_bottomHandle.Visibility=Visibility.Hidden;

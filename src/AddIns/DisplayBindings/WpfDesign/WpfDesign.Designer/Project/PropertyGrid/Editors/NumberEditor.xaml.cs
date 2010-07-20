@@ -139,7 +139,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 			   	   	}			   	   	
 		   	   }else{
 			   	   	textBox.Foreground = Brushes.DarkRed;
-			   	   	textBox.ToolTip = "Cannot Convert to Type : " + PropertyNode.FirstProperty.ReturnType.Name;
+			   	   	textBox.ToolTip = "Cannot convert to Type : " + PropertyNode.FirstProperty.ReturnType.Name;
 		   	   }
 		   	}else{
 			   	textBox.Foreground = Brushes.DarkRed;
