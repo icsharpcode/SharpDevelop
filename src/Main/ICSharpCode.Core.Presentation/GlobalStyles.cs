@@ -15,17 +15,17 @@ namespace ICSharpCode.Core.Presentation
 	/// </summary>
 	public static class GlobalStyles
 	{
-		public static Style WindowStyle {
-			get { return FindResource(windowStyleKey); }
-		}
-		
 		static Style FindResource(ResourceKey key)
 		{
 			// don't crash if controls using GlobalStyles are instanciated in unit test mode
 			if (Application.Current == null)
 				return null;
 			else
-				return (Style)Application.Current.FindResource(WindowStyleKey);
+				return (Style)Application.Current.FindResource(key);
+		}
+		
+		public static Style WindowStyle {
+			get { return FindResource(windowStyleKey); }
 		}
 		
 		static readonly ResourceKey windowStyleKey = new ComponentResourceKey(typeof(GlobalStyles), "WindowStyle");
