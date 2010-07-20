@@ -39,16 +39,18 @@ namespace ICSharpCode.VBNetBinding
 			if (expressionResult.Context != ExpressionContext.Global && expressionResult.Context != ExpressionContext.TypeDeclaration) {
 				if (expressionResult.Context == ExpressionContext.Importable && string.IsNullOrWhiteSpace(expressionResult.Expression)) {
 					expressionResult.Expression = "Global";
-				}
-				
-				int idx = string.IsNullOrWhiteSpace(expressionResult.Expression)
-					? -1
-					: expressionResult.Expression.LastIndexOf('.');
-				
-				if (idx > -1) {
-					expressionResult.Expression = expressionResult.Expression.Substring(0, idx);
-					// its the same as if . was pressed
-					completingDotExpression = true;
+				} else if (pressedKey != '.') {
+					int idx = string.IsNullOrWhiteSpace(expressionResult.Expression)
+						? -1
+						: expressionResult.Expression.LastIndexOf('.');
+					
+					if (idx > -1) {
+						expressionResult.Expression = expressionResult.Expression.Substring(0, idx);
+						// its the same as if . was pressed
+						completingDotExpression = true;
+					} else {
+						expressionResult.Expression = "";
+					}
 				}
 				
 				var rr = resolver.Resolve(expressionResult, info, editor.Document.Text);

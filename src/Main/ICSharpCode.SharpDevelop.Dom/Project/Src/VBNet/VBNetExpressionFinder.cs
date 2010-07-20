@@ -103,9 +103,40 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 
 		ExpressionResult MakeResult(string text, int startOffset, int endOffset, ExpressionContext context, BitArray expectedKeywords)
 		{
-			return new ExpressionResult(text.Substring(startOffset, endOffset - startOffset).Trim(),
+			return new ExpressionResult(TrimComment(text.Substring(startOffset, endOffset - startOffset)).Trim(),
 			                            DomRegion.FromLocation(OffsetToLocation(startOffset), OffsetToLocation(endOffset)),
 			                            context, expectedKeywords);
+		}
+		
+		string TrimComment(string text)
+		{
+			bool inString = false;
+			int i = 0;
+			
+			while (i < text.Length) {
+				char ch = text[i];
+				
+				if (ch == '"')
+					inString = !inString;
+				if (ch == '\'' && !inString) {
+					int eol = text.IndexOfAny(new[] { '\r', '\n' }, i);
+					
+					if (eol > -1) {
+						if(text[eol] == '\r' && eol + 1 < text.Length && text[eol + 1] == '\n')
+							eol++;
+						
+						text = text.Remove(i, eol - i);
+					} else {
+						text = text.Remove(i);
+					}
+					
+					continue;
+				}
+				
+				i++;
+			}
+			
+			return text;
 		}
 		
 		void Init(string text, int offset)
@@ -167,10 +198,18 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				t = lexer.NextToken();
 				p.InformToken(t);
 				
-				if (block == null && t.EndLocation >= targetPosition)
+				if (block == null && t.EndLocation > targetPosition)
 					block = p.CurrentBlock;
 				if (block != null && (block.isClosed || expressionDelimiters.Contains(t.Kind) && block == p.CurrentBlock))
 					break;
+			}
+			
+			BitArray expectedSet;
+			
+			try {
+				expectedSet = p.GetExpectedSet();
+			} catch (InvalidOperationException) {
+				expectedSet = null;
 			}
 			
 			int tokenOffset;
@@ -183,10 +222,10 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			if (lastExpressionStartOffset >= 0) {
 				if (offset < tokenOffset) {
 					// offset is in front of this token
-					return MakeResult(text, lastExpressionStartOffset, tokenOffset, GetContext(block), p.GetExpectedSet());
+					return MakeResult(text, lastExpressionStartOffset, tokenOffset, GetContext(block), expectedSet);
 				} else {
 					// offset is IN this token
-					return MakeResult(text, lastExpressionStartOffset, offset, GetContext(block), p.GetExpectedSet());
+					return MakeResult(text, lastExpressionStartOffset, offset, GetContext(block), expectedSet);
 				}
 			} else {
 				return new ExpressionResult(null, GetContext(block));

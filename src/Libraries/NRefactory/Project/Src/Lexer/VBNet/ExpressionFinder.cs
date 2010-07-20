@@ -38,12 +38,6 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			Print(indent + "enter " + context);
 		}
 		
-		void SetContext(Context context, Token la, Token t)
-		{
-			PopContext();
-			PushContext(context, la, t);
-		}
-		
 		public ExpressionFinder(ExpressionFinderState state)
 		{
 			wasQualifierTokenAtStart = state.WasQualifierTokenAtStart;

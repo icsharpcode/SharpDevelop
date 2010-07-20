@@ -187,8 +187,7 @@ End Class", "Test2", 5, "Test2", ExpressionContext.Default);
 	
 End Module", @"Module Test
 	", @"Module Test
-	".Length, ExpressionContext.TypeDeclaration);
-			
+	".Length, ExpressionContext.TypeDeclaration);	
 		}
 		#endregion
 		
@@ -245,6 +244,16 @@ End Module", @"Module Test
 		public void SubName()
 		{
 			FindFull(program1, "omeMe", "SomeMethod", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void ParameterName()
+		{
+			FindFull(@"Module Test
+	Function Fibo(x As Integer) As Integer
+	
+	End Function
+End Module", "x", "x", ExpressionContext.Default);
 		}
 		
 		#region Old Tests
