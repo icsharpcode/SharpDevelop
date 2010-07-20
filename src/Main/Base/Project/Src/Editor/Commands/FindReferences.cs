@@ -13,7 +13,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	/// <summary>
 	/// Description of FindReferences.
 	/// </summary>
-	public class FindReferences : SymbolUnderCaretCommand
+	public class FindReferences : SymbolUnderCaretMenuCommand
 	{
 		protected override void RunImpl(ITextEditor editor, int offset, ResolveResult symbol)
 		{

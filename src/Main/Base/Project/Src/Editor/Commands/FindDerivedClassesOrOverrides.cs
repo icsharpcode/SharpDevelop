@@ -14,19 +14,19 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	/// <summary>
 	/// Description of FindDerivedClassesOrOverrides.
 	/// </summary>
-	public class FindDerivedClassesOrOverrides : SymbolUnderCaretCommand
+	public class FindDerivedClassesOrOverrides : SymbolUnderCaretMenuCommand
 	{
 		protected override void RunImpl(ITextEditor editor, int offset, ResolveResult symbol)
 		{
 			var classUnderCaret = GetClass(symbol);
 			if (classUnderCaret != null) {
-				ContextActionsHelper.MakePopupWithDerivedClasses(classUnderCaret).Open(editor);
+				ContextActionsHelper.MakePopupWithDerivedClasses(classUnderCaret).OpenAtCaretAndFocus(editor);
 				return;
 			}
 			var memberUnderCaret = GetMember(symbol);
 			if (memberUnderCaret != null && memberUnderCaret.IsOverridable)
 			{
-				ContextActionsHelper.MakePopupWithOverrides(memberUnderCaret).Open(editor);
+				ContextActionsHelper.MakePopupWithOverrides(memberUnderCaret).OpenAtCaretAndFocus(editor);
 				return;
 			}
 			MessageService.ShowError("${res:ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError}");

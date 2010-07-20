@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	/// <summary>
 	/// A menu command that uses the symbol under the editor's caret.
 	/// </summary>
-	public abstract class SymbolUnderCaretCommand : AbstractMenuCommand
+	public abstract class SymbolUnderCaretMenuCommand : AbstractMenuCommand
 	{
 		public override void Run()
 		{
@@ -29,6 +29,8 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			var resolveResult = ParserService.Resolve(caretOffset, editor.Document, editor.FileName);
 			RunImpl(editor, caretOffset, resolveResult);
 		}
+		
+		protected abstract void RunImpl(ITextEditor editor, int caretOffset, ResolveResult symbol);
 		
 		public IClass GetClass(ResolveResult symbol)
 		{
@@ -45,7 +47,5 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			}
 			return ((MemberResolveResult)symbol).ResolvedMember;
 		}
-		
-		protected abstract void RunImpl(ITextEditor editor, int caretOffset, ResolveResult symbol);
 	}
 }

@@ -70,6 +70,10 @@
     </None>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\ClassRefactoringSubmenuBuilder.cs" />
+    <Compile Include="Src\ContextActions\AddUsing.cs" />
+    <Compile Include="Src\ContextActions\GenerateMember.cs" />
+    <Compile Include="Src\ContextActions\ImplementAbstractClass.cs" />
+    <Compile Include="Src\ContextActions\ImplementInterface.cs" />
     <Compile Include="Src\CSharpMethodExtractor.cs" />
     <Compile Include="Src\Extensions.cs" />
     <Compile Include="Src\ExtractMethodCommand.cs" />
@@ -122,6 +126,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Gui" />
+    <Folder Include="Src\ContextActions" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\Gui\InsertCtorDialog.xaml" />

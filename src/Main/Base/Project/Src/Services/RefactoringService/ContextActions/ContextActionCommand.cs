@@ -10,7 +10,7 @@ using System.Windows.Input;
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
-	/// Description of ContextActionCommand.
+	/// Just wraps <see cref="IContextAction"></see> inside a WPF Command to be used in XAML.
 	/// </summary>
 	public class ContextActionCommand : ICommand
 	{
@@ -25,6 +25,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public event EventHandler CanExecuteChanged
 		{
+			// not supported - Context actions can always be executed
 			add { }
 			remove { }
 		}

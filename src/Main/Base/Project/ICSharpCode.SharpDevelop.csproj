@@ -89,6 +89,8 @@
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditSyntaxHighlighterAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditTextEditorAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditTextSourceAdapter.cs" />
+    <Compile Include="Src\Editor\AvalonEdit\ContextActionsService.cs" />
+    <Compile Include="Src\Editor\AvalonEdit\IContextActionsProvider.cs" />
     <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\ISnippetElementProvider.cs" />
     <Compile Include="Src\Editor\AvalonEdit\TextContentCondition.cs" />
@@ -103,7 +105,7 @@
     <Compile Include="Src\Editor\Commands\FindDerivedClassesOrOverrides.cs" />
     <Compile Include="Src\Editor\Commands\FindReferences.cs" />
     <Compile Include="Src\Editor\Commands\GotoLineNumber.cs" />
-    <Compile Include="Src\Editor\Commands\SymbolUnderCaretCommand.cs" />
+    <Compile Include="Src\Editor\Commands\SymbolUnderCaretMenuCommand.cs" />
     <Compile Include="Src\Editor\IEditorControlService.cs" />
     <Compile Include="Src\Editor\IEditorUIService.cs" />
     <Compile Include="Src\Editor\CodeCompletion\AttributesItemProvider.cs" />

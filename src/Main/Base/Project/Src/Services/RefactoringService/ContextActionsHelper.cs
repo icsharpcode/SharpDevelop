@@ -65,10 +65,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			protected ContextActionViewModel MakeGoToClassAction(IClass @class, ObservableCollection<ContextActionViewModel> childActions)
 			{
 				return new ContextActionViewModel {
-					Name = this.LabelAmbience.Convert(@class),
+					Action = new GoToClassAction(@class, this.LabelAmbience),
 					Image = ClassBrowserIconService.GetIcon(@class).ImageSource,
 					Comment = string.Format("(in {0})", @class.Namespace),
-					Action = new GoToClassAction(@class),
 					ChildActions = childActions
 				};
 			}
@@ -111,10 +110,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					return null;
 				
 				return new ContextActionViewModel {
-					Name = this.LabelAmbience.Convert(overridenMember),
+					Action = new GoToMemberAction(overridenMember, this.LabelAmbience),
 					Image = ClassBrowserIconService.GetIcon(overridenMember).ImageSource,
 					Comment = string.Format("(in {0})", containingClass.FullyQualifiedName),
-					Action = new GoToMemberAction(overridenMember),
 					ChildActions = childActions
 				};
 			}

@@ -42,6 +42,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		BracketHighlightRenderer bracketRenderer;
 		CaretReferencesRenderer caretReferencesRenderer;
+		ContextActionsRenderer contextActionsRenderer;
 		
 		public CodeEditorView()
 		{
@@ -51,6 +52,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			this.bracketRenderer = new BracketHighlightRenderer(this.TextArea.TextView);
 			this.caretReferencesRenderer = new CaretReferencesRenderer(this);
+			this.contextActionsRenderer = new ContextActionsRenderer(this);
 			
 			this.MouseHover += TextEditorMouseHover;
 			this.MouseHoverStopped += TextEditorMouseHoverStopped;

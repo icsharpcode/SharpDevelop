@@ -18,7 +18,18 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// </summary>
 	public class ContextActionViewModel
 	{
-		public string Name { get; set; }
+		public ContextActionViewModel()
+		{
+		}
+		
+		public ContextActionViewModel(IContextAction action)
+		{
+			if (action == null)
+				throw new ArgumentNullException("action");
+			this.Action = action;
+		}
+		
+		public string Name { get { return this.action.Title; } }
 		
 		public string Comment { get; set; }
 		

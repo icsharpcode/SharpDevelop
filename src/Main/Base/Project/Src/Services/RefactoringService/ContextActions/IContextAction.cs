@@ -14,6 +14,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// </summary>
 	public interface IContextAction
 	{
+		string Title { get; }
 		void Execute();
 	}
 }

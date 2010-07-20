@@ -14,14 +14,14 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 	/// <summary>
 	/// Description of FindBaseClasses.
 	/// </summary>
-	public class FindBaseClasses : SymbolUnderCaretCommand
+	public class FindBaseClasses : SymbolUnderCaretMenuCommand
 	{
 		protected override void RunImpl(ITextEditor editor, int offset, ResolveResult symbol)
 		{
 			var classUnderCaret = GetClass(symbol);
 			if (classUnderCaret != null)
 			{
-				ContextActionsHelper.MakePopupWithBaseClasses(classUnderCaret).Open(editor);
+				ContextActionsHelper.MakePopupWithBaseClasses(classUnderCaret).OpenAtCaretAndFocus(editor);
 				return;
 			}
 			MessageService.ShowError("${res:ICSharpCode.Refactoring.NoClassUnderCursorError}");

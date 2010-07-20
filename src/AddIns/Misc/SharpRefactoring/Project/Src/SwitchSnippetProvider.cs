@@ -11,7 +11,8 @@ using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 namespace SharpRefactoring
 {
 	/// <summary>
-	/// Description of SwitchSnippetProvider.
+	/// Registers refactoring:switchbody snippet tag.
+	/// (path /SharpDevelop/ViewContent/AvalonEdit/SnippetElementProviders)
 	/// </summary>
 	public class SwitchSnippetProvider : ISnippetElementProvider
 	{

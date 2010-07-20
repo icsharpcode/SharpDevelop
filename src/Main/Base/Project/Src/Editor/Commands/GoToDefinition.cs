@@ -12,7 +12,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Editor.Commands
 {
-	public class GoToDefinition : SymbolUnderCaretCommand
+	public class GoToDefinition : SymbolUnderCaretMenuCommand
 	{
 		protected override void RunImpl(ITextEditor editor, int offset, ResolveResult symbol)
 		{

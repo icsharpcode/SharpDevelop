@@ -89,6 +89,7 @@
     <Compile Include="Src\CodeEditor.cs" />
     <Compile Include="Src\CodeEditorAdapter.cs" />
     <Compile Include="Src\CodeEditorView.cs" />
+    <Compile Include="Src\ContextActionsRenderer.cs" />
     <Compile Include="Src\ExpressionHighlightRenderer.cs" />
     <Compile Include="Src\NewLineConsistencyCheck.cs" />
     <Compile Include="Src\SharpDevelopTextEditor.cs" />

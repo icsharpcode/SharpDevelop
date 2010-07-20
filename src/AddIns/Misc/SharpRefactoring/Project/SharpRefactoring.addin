@@ -48,7 +48,14 @@
 
 	<Path name="/SharpDevelop/ViewContent/AvalonEdit/SnippetElementProviders">
 		<Class id="ctor" class="SharpRefactoring.InsertCtorSnippetRefactoring" />
-		<Class id="ctor" class="SharpRefactoring.SwitchSnippetProvider" />
+		<Class id="switch" class="SharpRefactoring.SwitchSnippetProvider" />
+	</Path>
+	
+	<Path name="/SharpDevelop/ViewContent/AvalonEdit/ContextActionProviders">
+		<Class id="addUsing" class="SharpRefactoring.ContextActions.AddUsingProvider" />
+		<Class id="implementInterface" class="SharpRefactoring.ContextActions.ImplementInterfaceProvider" />
+		<Class id="implementAbstractClass" class="SharpRefactoring.ContextActions.ImplementAbstractClassProvider" />
+		<Class id="generateMember" class="SharpRefactoring.ContextActions.GenerateMemberProvider" />	
 	</Path>
 
 	<Path name="/SharpDevelop/ViewContent/TextEditor/OverrideCompletionHandler">

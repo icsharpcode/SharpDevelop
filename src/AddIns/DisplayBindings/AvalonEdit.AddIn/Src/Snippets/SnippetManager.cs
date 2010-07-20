@@ -38,6 +38,12 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 						Text = "foreach (${var} ${element} in ${collection}) {\n\t${Selection}\n}",
 						Keyword = "foreach"
 					},
+					/*new CodeSnippet {
+						Name = "ff",
+						Description = "foreach loop",
+						Text = "foreach (var ${toElementName(items)} in ${items}) {\n\t${Selection}\n}",
+						Keyword = "foreach"
+					},*/
 					new CodeSnippet {
 						Name = "if",
 						Description = "if statement",

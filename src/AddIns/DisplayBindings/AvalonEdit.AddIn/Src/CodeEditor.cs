@@ -180,17 +180,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		protected virtual CodeEditorView CreateTextEditor()
 		{
-			CodeEditorView textEditor = new CodeEditorView();
-			CodeEditorAdapter adapter = new CodeEditorAdapter(this, textEditor);
-			textEditor.Adapter = adapter;
-			TextView textView = textEditor.TextArea.TextView;
+			CodeEditorView codeEditorView = new CodeEditorView();
+			CodeEditorAdapter adapter = new CodeEditorAdapter(this, codeEditorView);
+			codeEditorView.Adapter = adapter;
+			TextView textView = codeEditorView.TextArea.TextView;
 			textView.Services.AddService(typeof(ITextEditor), adapter);
 			textView.Services.AddService(typeof(CodeEditor), this);
 			
-			textEditor.TextArea.TextEntering += TextAreaTextEntering;
-			textEditor.TextArea.TextEntered += TextAreaTextEntered;
-			textEditor.TextArea.Caret.PositionChanged += TextAreaCaretPositionChanged;
-			textEditor.TextArea.DefaultInputHandler.CommandBindings.Add(
+			codeEditorView.TextArea.TextEntering += TextAreaTextEntering;
+			codeEditorView.TextArea.TextEntered += TextAreaTextEntered;
+			codeEditorView.TextArea.Caret.PositionChanged += TextAreaCaretPositionChanged;
+			codeEditorView.TextArea.DefaultInputHandler.CommandBindings.Add(
 				new CommandBinding(CustomCommands.CtrlSpaceCompletion, OnCodeCompletion));
 			
 			textView.BackgroundRenderers.Add(textMarkerService);
@@ -200,16 +200,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textView.Services.AddService(typeof(IEditorUIService), new AvalonEditEditorUIService(textView));
 			
 			textView.Services.AddService(typeof(IBookmarkMargin), iconBarManager);
-			textEditor.TextArea.LeftMargins.Insert(0, new IconBarMargin(iconBarManager));
+			codeEditorView.TextArea.LeftMargins.Insert(0, new IconBarMargin(iconBarManager));
 			
 			textView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(textView));
 			
-			textEditor.TextArea.MouseRightButtonDown += TextAreaMouseRightButtonDown;
-			textEditor.TextArea.ContextMenuOpening += TextAreaContextMenuOpening;
-			textEditor.TextArea.TextCopied += textEditor_TextArea_TextCopied;
-			textEditor.GotFocus += textEditor_GotFocus;
+			codeEditorView.TextArea.MouseRightButtonDown += TextAreaMouseRightButtonDown;
+			codeEditorView.TextArea.ContextMenuOpening += TextAreaContextMenuOpening;
+			codeEditorView.TextArea.TextCopied += textEditor_TextArea_TextCopied;
+			codeEditorView.GotFocus += textEditor_GotFocus;
 			
-			return textEditor;
+			return codeEditorView;
 		}
 		
 		public event EventHandler<TextEventArgs> TextCopied;

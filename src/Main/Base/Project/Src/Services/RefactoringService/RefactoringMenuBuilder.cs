@@ -195,7 +195,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			item.Icon = ClassBrowserIconService.Class.CreateImage();
 			item.InputGestureText = new KeyGesture(Key.F9).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			item.Click += delegate { 
-				ContextActionsHelper.MakePopupWithDerivedClasses(baseClass).Open(context.Editor);
+				ContextActionsHelper.MakePopupWithDerivedClasses(baseClass).OpenAtCaretAndFocus(context.Editor);
 			};
 			return item;
 		}
@@ -208,7 +208,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			item.Icon = ClassBrowserIconService.Interface.CreateImage();
 			//item.InputGestureText = new KeyGesture(Key.F10).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			item.Click += delegate {
-				ContextActionsHelper.MakePopupWithBaseClasses(@class).Open(context.Editor);
+				ContextActionsHelper.MakePopupWithBaseClasses(@class).OpenAtCaretAndFocus(context.Editor);
 			};
 			return item;
 		}
@@ -221,7 +221,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			item.Icon = ClassBrowserIconService.Method.CreateImage();
 			item.InputGestureText = new KeyGesture(Key.F9).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			item.Click += delegate {
-				ContextActionsHelper.MakePopupWithOverrides(member).Open(context.Editor);
+				ContextActionsHelper.MakePopupWithOverrides(member).OpenAtCaretAndFocus(context.Editor);
 			};
 			return item;
 		}
