@@ -397,6 +397,7 @@ MemberDeclaration =
 		ExternalMemberDeclaration |
 		EventMemberDeclaration |
 		CustomEventMemberDeclaration |
+		PropertyDeclaration |
 		OperatorDeclaration
 	) 
 	(. PopContext(); .)
@@ -433,6 +434,29 @@ CustomEventMemberDeclaration =
 	"End" "Event" StatementTerminator
 .
 
+PropertyDeclaration =
+	"Property"
+	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
+	[ "(" [ ParameterList ] ")" ]
+	[ "As"  { AttributeBlock } ( NewExpression | (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ) ]
+	[ "Implements" TypeName /*"." IdentifierOrKeyword*/ { "," TypeName /*"." IdentifierOrKeyword*/ } ]
+	[ "=" Expression ] StatementTerminator
+	(. PopContext(); .) { EXPECTEDCONFLICT("<") AttributeBlock }
+	{ EXPECTEDCONFLICT("Public", "Protected", "Private", "Friend") AccessModifier
+	// HACK : OnEachPossiblePath cannot detect that this might be the end of an auto property
+	//        so we need to simulate it
+	(.OnEachPossiblePath: SetIdentifierExpected(la); .) }
+	[ (. PushContext(Context.Member, la, t); .)
+	( "Get" | "Set" ) [ "(" [ ParameterList ] ")" ]
+		StatementTerminatorAndBlock
+		"End" ( "Get" | "Set" ) StatementTerminator
+	[ { AttributeBlock } { AccessModifier } ( "Get" | "Set" ) [ "(" [ ParameterList ] ")" ]
+		StatementTerminatorAndBlock
+		"End" ( "Get" | "Set" ) StatementTerminator ]
+	
+	"End" "Property" StatementTerminator ]
+.
+
 OperatorDeclaration =
 	"Operator" (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) ANY (. PopContext(); .) "(" ParameterList ")" [ "As" { AttributeBlock } (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
 	StatementTerminatorAndBlock
@@ -440,8 +464,14 @@ OperatorDeclaration =
 .
 
 MemberVariableOrConstantDeclaration =
+	MemberVariableOrConstantDeclarator { "," MemberVariableOrConstantDeclarator } StatementTerminator
+.
+
+MemberVariableOrConstantDeclarator =
 	[ "Const" ]
-	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) IdentifierForFieldDeclaration (. PopContext(); .)  [ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] [ "=" Expression ] StatementTerminator
+	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) IdentifierForFieldDeclaration (. PopContext(); .)
+	[ "As" ( NewExpression | (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ) ]
+	[ "=" Expression ]
 .
 
 ParameterList =
@@ -1209,7 +1239,8 @@ AccessModifier =
 
 TypeModifier =
 	AccessModifier |
-	"Shadows"
+	"Shadows" |
+	"Partial"
 .
 
 MemberModifier =
@@ -1225,6 +1256,9 @@ MemberModifier =
 	"MustOverride" |
 	"Widening" |
 	"Narrowing" |
+	"ReadOnly" |
+	"WriteOnly" |
+	"Default" |
 	"Dim"
 .
 
