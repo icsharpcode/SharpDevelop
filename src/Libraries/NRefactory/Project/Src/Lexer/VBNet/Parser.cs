@@ -9,8 +9,8 @@ namespace ICSharpCode.NRefactory.Parser.VB {
 
 
 partial class ExpressionFinder {
-	const int startOfExpression = 49;
-	const int endOfStatementTerminatorAndBlock = 227;
+	const int startOfExpression = 50;
+	const int endOfStatementTerminatorAndBlock = 229;
 	static BitArray GetExpectedSet(int state)
 	{
 		switch (state) {
@@ -25,9 +25,9 @@ partial class ExpressionFinder {
 			case 5:
 				return set[3];
 			case 6:
-			case 64:
-			case 228:
-			case 463:
+			case 65:
+			case 230:
+			case 465:
 				{
 					BitArray a = new BitArray(239);
 					return a;
@@ -37,26 +37,26 @@ partial class ExpressionFinder {
 			case 8:
 				return set[5];
 			case 9:
-			case 154:
-			case 160:
-			case 167:
-			case 205:
-			case 209:
-			case 248:
-			case 351:
-			case 363:
-			case 412:
-			case 453:
-			case 461:
-			case 469:
-			case 493:
-			case 540:
-			case 555:
-			case 625:
+			case 156:
+			case 162:
+			case 169:
+			case 207:
+			case 211:
+			case 250:
+			case 353:
+			case 365:
+			case 414:
+			case 455:
+			case 463:
+			case 471:
+			case 495:
+			case 542:
+			case 557:
+			case 627:
 				return set[6];
 			case 10:
-			case 494:
-			case 495:
+			case 496:
+			case 497:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(1, true);
@@ -68,36 +68,36 @@ partial class ExpressionFinder {
 			case 18:
 			case 19:
 			case 32:
-			case 220:
-			case 223:
-			case 224:
-			case 234:
-			case 249:
-			case 253:
-			case 276:
-			case 292:
-			case 303:
-			case 306:
-			case 312:
-			case 317:
-			case 326:
-			case 327:
-			case 340:
-			case 348:
-			case 372:
-			case 471:
-			case 487:
-			case 496:
-			case 505:
-			case 522:
-			case 526:
-			case 535:
-			case 538:
-			case 564:
-			case 574:
-			case 579:
-			case 603:
-			case 624:
+			case 222:
+			case 225:
+			case 226:
+			case 236:
+			case 251:
+			case 255:
+			case 278:
+			case 294:
+			case 305:
+			case 308:
+			case 314:
+			case 319:
+			case 328:
+			case 329:
+			case 342:
+			case 350:
+			case 374:
+			case 473:
+			case 489:
+			case 498:
+			case 507:
+			case 524:
+			case 528:
+			case 537:
+			case 540:
+			case 566:
+			case 576:
+			case 581:
+			case 605:
+			case 626:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(1, true);
@@ -111,30 +111,30 @@ partial class ExpressionFinder {
 			case 15:
 				return set[8];
 			case 16:
-			case 221:
-			case 235:
-			case 251:
-			case 307:
-			case 349:
-			case 398:
-			case 503:
-			case 523:
-			case 536:
-			case 575:
+			case 223:
+			case 237:
+			case 253:
+			case 309:
+			case 351:
+			case 400:
+			case 505:
+			case 525:
+			case 538:
+			case 577:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(113, true);
 					return a;
 				}
 			case 17:
-			case 467:
+			case 469:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(142, true);
 					return a;
 				}
 			case 20:
-			case 337:
+			case 339:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(1, true);
@@ -144,7 +144,7 @@ partial class ExpressionFinder {
 			case 22:
 				return set[9];
 			case 23:
-			case 607:
+			case 609:
 				return set[10];
 			case 24:
 				return set[11];
@@ -152,49 +152,49 @@ partial class ExpressionFinder {
 				return set[12];
 			case 26:
 			case 27:
-			case 120:
-			case 177:
-			case 178:
-			case 229:
-			case 388:
-			case 389:
-			case 404:
-			case 405:
+			case 121:
+			case 179:
+			case 180:
+			case 231:
+			case 390:
+			case 391:
 			case 406:
-			case 480:
-			case 481:
-			case 515:
-			case 516:
-			case 570:
-			case 571:
-			case 617:
-			case 618:
+			case 407:
+			case 408:
+			case 482:
+			case 483:
+			case 517:
+			case 518:
+			case 572:
+			case 573:
+			case 619:
+			case 620:
 				return set[13];
 			case 28:
 			case 29:
-			case 454:
-			case 462:
-			case 482:
-			case 483:
-			case 560:
-			case 572:
-			case 573:
+			case 456:
+			case 464:
+			case 484:
+			case 485:
+			case 562:
+			case 574:
+			case 575:
 				return set[14];
 			case 30:
-			case 164:
-			case 181:
-			case 260:
-			case 286:
-			case 357:
-			case 370:
-			case 384:
-			case 442:
-			case 450:
-			case 485:
-			case 549:
-			case 562:
-			case 577:
-			case 590:
+			case 166:
+			case 183:
+			case 262:
+			case 288:
+			case 359:
+			case 372:
+			case 386:
+			case 444:
+			case 452:
+			case 487:
+			case 551:
+			case 564:
+			case 579:
+			case 592:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(63, true);
@@ -202,33 +202,33 @@ partial class ExpressionFinder {
 				}
 			case 31:
 			case 33:
-			case 124:
-			case 133:
-			case 149:
-			case 165:
-			case 182:
-			case 261:
-			case 287:
-			case 358:
+			case 125:
+			case 135:
+			case 151:
+			case 167:
+			case 184:
+			case 263:
+			case 289:
 			case 360:
 			case 362:
-			case 371:
-			case 385:
-			case 415:
-			case 457:
-			case 477:
-			case 486:
-			case 544:
-			case 550:
-			case 563:
-			case 578:
-			case 591:
-			case 596:
-			case 599:
-			case 602:
-			case 609:
-			case 612:
-			case 630:
+			case 364:
+			case 373:
+			case 387:
+			case 417:
+			case 459:
+			case 479:
+			case 488:
+			case 546:
+			case 552:
+			case 565:
+			case 580:
+			case 593:
+			case 598:
+			case 601:
+			case 604:
+			case 611:
+			case 614:
+			case 632:
 				return set[15];
 			case 34:
 			case 37:
@@ -236,23 +236,23 @@ partial class ExpressionFinder {
 			case 35:
 				return set[17];
 			case 36:
-			case 70:
-			case 74:
-			case 129:
-			case 343:
-			case 418:
+			case 71:
+			case 75:
+			case 130:
+			case 345:
+			case 420:
 				return set[18];
 			case 38:
-			case 139:
-			case 146:
-			case 150:
-			case 214:
-			case 392:
-			case 411:
-			case 414:
-			case 517:
-			case 518:
-			case 532:
+			case 141:
+			case 148:
+			case 152:
+			case 216:
+			case 394:
+			case 413:
+			case 416:
+			case 519:
+			case 520:
+			case 534:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(37, true);
@@ -260,25 +260,26 @@ partial class ExpressionFinder {
 				}
 			case 39:
 			case 40:
-			case 131:
 			case 132:
+			case 133:
 				return set[19];
 			case 41:
-			case 217:
-			case 368:
-			case 395:
-			case 413:
-			case 429:
-			case 460:
-			case 466:
-			case 490:
-			case 520:
-			case 534:
-			case 548:
-			case 567:
-			case 582:
-			case 606:
-			case 616:
+			case 134:
+			case 219:
+			case 370:
+			case 397:
+			case 415:
+			case 431:
+			case 462:
+			case 468:
+			case 492:
+			case 522:
+			case 536:
+			case 550:
+			case 569:
+			case 584:
+			case 608:
+			case 618:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(38, true);
@@ -286,526 +287,527 @@ partial class ExpressionFinder {
 				}
 			case 42:
 			case 43:
-			case 46:
 			case 47:
-			case 423:
-			case 424:
+			case 48:
+			case 425:
+			case 426:
 				return set[20];
 			case 44:
-				return set[21];
 			case 45:
-			case 141:
-			case 148:
-			case 346:
+				return set[21];
+			case 46:
+			case 143:
+			case 150:
+			case 348:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(22, true);
 					return a;
 				}
-			case 48:
-			case 134:
-			case 143:
-			case 367:
+			case 49:
+			case 136:
+			case 145:
 			case 369:
-			case 374:
-			case 382:
-			case 422:
-			case 426:
-			case 436:
-			case 444:
-			case 452:
+			case 371:
+			case 376:
+			case 384:
+			case 424:
+			case 428:
+			case 438:
+			case 446:
+			case 454:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(22, true);
 					a.Set(38, true);
 					return a;
 				}
-			case 49:
 			case 50:
-			case 52:
+			case 51:
 			case 53:
 			case 54:
-			case 57:
-			case 72:
-			case 122:
-			case 140:
+			case 55:
+			case 58:
+			case 73:
+			case 123:
 			case 142:
 			case 144:
-			case 147:
-			case 156:
+			case 146:
+			case 149:
 			case 158:
-			case 200:
-			case 233:
-			case 237:
+			case 160:
+			case 202:
+			case 235:
 			case 239:
-			case 240:
-			case 257:
-			case 275:
-			case 280:
-			case 290:
-			case 296:
+			case 241:
+			case 242:
+			case 259:
+			case 277:
+			case 282:
+			case 292:
 			case 298:
-			case 302:
-			case 305:
-			case 311:
-			case 322:
+			case 300:
+			case 304:
+			case 307:
+			case 313:
 			case 324:
-			case 330:
-			case 345:
+			case 326:
+			case 332:
 			case 347:
-			case 383:
-			case 408:
-			case 420:
-			case 421:
-			case 476:
-			case 589:
+			case 349:
+			case 385:
+			case 410:
+			case 422:
+			case 423:
+			case 478:
+			case 591:
 				return set[22];
-			case 51:
-			case 55:
-			case 65:
-				return set[23];
+			case 52:
 			case 56:
 			case 66:
+				return set[23];
+			case 57:
 			case 67:
+			case 68:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(35, true);
 					return a;
 				}
-			case 58:
-			case 73:
-			case 447:
+			case 59:
+			case 74:
+			case 449:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(22, true);
 					a.Set(36, true);
 					return a;
 				}
-			case 59:
+			case 60:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(36, true);
 					return a;
 				}
-			case 60:
-			case 94:
+			case 61:
+			case 95:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(162, true);
 					return a;
 				}
-			case 61:
 			case 62:
-				return set[24];
 			case 63:
-			case 75:
+				return set[24];
+			case 64:
+			case 76:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(233, true);
-					return a;
-				}
-			case 68:
-				{
-					BitArray a = new BitArray(239);
-					a.Set(26, true);
-					a.Set(147, true);
 					return a;
 				}
 			case 69:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(26, true);
+					a.Set(147, true);
 					return a;
 				}
-			case 71:
-			case 180:
-			case 183:
-			case 184:
-			case 289:
-			case 626:
+			case 70:
+				{
+					BitArray a = new BitArray(239);
+					a.Set(26, true);
+					return a;
+				}
+			case 72:
+			case 182:
+			case 185:
+			case 186:
+			case 291:
+			case 628:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(20, true);
 					return a;
 				}
-			case 76:
-			case 308:
+			case 77:
+			case 310:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(231, true);
 					return a;
 				}
-			case 77:
+			case 78:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(230, true);
 					return a;
 				}
-			case 78:
+			case 79:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(224, true);
 					return a;
 				}
-			case 79:
+			case 80:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(223, true);
 					return a;
 				}
-			case 80:
-			case 252:
+			case 81:
+			case 254:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(218, true);
 					return a;
 				}
-			case 81:
+			case 82:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(213, true);
 					return a;
 				}
-			case 82:
+			case 83:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(212, true);
 					return a;
 				}
-			case 83:
+			case 84:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(211, true);
 					return a;
 				}
-			case 84:
-			case 399:
+			case 85:
+			case 401:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(210, true);
 					return a;
 				}
-			case 85:
+			case 86:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(209, true);
 					return a;
 				}
-			case 86:
+			case 87:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(206, true);
 					return a;
 				}
-			case 87:
+			case 88:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(203, true);
 					return a;
 				}
-			case 88:
-			case 314:
+			case 89:
+			case 316:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(197, true);
 					return a;
 				}
-			case 89:
+			case 90:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(186, true);
 					return a;
 				}
-			case 90:
+			case 91:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(184, true);
 					return a;
 				}
-			case 91:
+			case 92:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(176, true);
 					return a;
 				}
-			case 92:
+			case 93:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(170, true);
 					return a;
 				}
-			case 93:
-			case 270:
-			case 277:
-			case 293:
+			case 94:
+			case 272:
+			case 279:
+			case 295:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(163, true);
 					return a;
 				}
-			case 95:
+			case 96:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(147, true);
 					return a;
 				}
-			case 96:
-			case 187:
-			case 192:
+			case 97:
+			case 189:
 			case 194:
+			case 196:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(146, true);
 					return a;
 				}
-			case 97:
-			case 189:
-			case 193:
+			case 98:
+			case 191:
+			case 195:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(143, true);
 					return a;
 				}
-			case 98:
+			case 99:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(139, true);
 					return a;
 				}
-			case 99:
+			case 100:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(133, true);
 					return a;
 				}
-			case 100:
-			case 222:
+			case 101:
+			case 224:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(127, true);
 					return a;
 				}
-			case 101:
-			case 212:
+			case 102:
+			case 214:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(126, true);
-					return a;
-				}
-			case 102:
-				{
-					BitArray a = new BitArray(239);
-					a.Set(124, true);
 					return a;
 				}
 			case 103:
 				{
 					BitArray a = new BitArray(239);
-					a.Set(121, true);
+					a.Set(124, true);
 					return a;
 				}
 			case 104:
-			case 157:
+				{
+					BitArray a = new BitArray(239);
+					a.Set(121, true);
+					return a;
+				}
+			case 105:
+			case 159:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(116, true);
 					return a;
 				}
-			case 105:
+			case 106:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(108, true);
 					return a;
 				}
-			case 106:
+			case 107:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(107, true);
 					return a;
 				}
-			case 107:
+			case 108:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(104, true);
 					return a;
 				}
-			case 108:
-			case 527:
+			case 109:
+			case 529:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(98, true);
 					return a;
 				}
-			case 109:
+			case 110:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(87, true);
 					return a;
 				}
-			case 110:
+			case 111:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(84, true);
 					return a;
 				}
-			case 111:
-			case 170:
-			case 199:
+			case 112:
+			case 172:
+			case 201:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(70, true);
 					return a;
 				}
-			case 112:
+			case 113:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(67, true);
 					return a;
 				}
-			case 113:
+			case 114:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(66, true);
 					return a;
 				}
-			case 114:
+			case 115:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(65, true);
 					return a;
 				}
-			case 115:
+			case 116:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(64, true);
 					return a;
 				}
-			case 116:
+			case 117:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(62, true);
 					return a;
 				}
-			case 117:
-			case 211:
+			case 118:
+			case 213:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(58, true);
 					return a;
 				}
-			case 118:
+			case 119:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(2, true);
 					return a;
 				}
-			case 119:
+			case 120:
 				return set[25];
-			case 121:
+			case 122:
 				return set[26];
-			case 123:
+			case 124:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(144, true);
 					return a;
 				}
-			case 125:
-				return set[27];
 			case 126:
-				return set[28];
+				return set[27];
 			case 127:
+				return set[28];
 			case 128:
-			case 416:
-			case 417:
+			case 129:
+			case 418:
+			case 419:
 				return set[29];
-			case 130:
+			case 131:
 				return set[30];
-			case 135:
-			case 136:
-			case 273:
-			case 282:
-				return set[31];
 			case 137:
-				return set[32];
 			case 138:
-			case 329:
+			case 275:
+			case 284:
+				return set[31];
+			case 139:
+				return set[32];
+			case 140:
+			case 331:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(135, true);
 					return a;
 				}
-			case 145:
+			case 147:
 				return set[33];
-			case 151:
+			case 153:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(58, true);
 					a.Set(126, true);
 					return a;
 				}
-			case 152:
-			case 153:
-				return set[34];
+			case 154:
 			case 155:
+				return set[34];
+			case 157:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(171, true);
 					return a;
 				}
-			case 159:
-			case 174:
-			case 191:
-			case 196:
-			case 202:
-			case 204:
-			case 208:
-			case 210:
-				return set[35];
 			case 161:
-			case 162:
+			case 176:
+			case 193:
+			case 198:
+			case 204:
+			case 206:
+			case 210:
+			case 212:
+				return set[35];
+			case 163:
+			case 164:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(63, true);
 					a.Set(138, true);
 					return a;
 				}
-			case 163:
-			case 166:
-			case 274:
+			case 165:
+			case 168:
+			case 276:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(138, true);
 					return a;
 				}
-			case 168:
-			case 169:
+			case 170:
 			case 171:
 			case 173:
 			case 175:
-			case 176:
-			case 185:
-			case 190:
-			case 195:
-			case 203:
-			case 207:
+			case 177:
+			case 178:
+			case 187:
+			case 192:
+			case 197:
+			case 205:
+			case 209:
 				return set[36];
-			case 172:
+			case 174:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(22, true);
 					a.Set(143, true);
 					return a;
 				}
-			case 179:
+			case 181:
 				return set[37];
-			case 186:
+			case 188:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(22, true);
 					a.Set(70, true);
 					return a;
 				}
-			case 188:
+			case 190:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(133, true);
@@ -813,79 +815,79 @@ partial class ExpressionFinder {
 					a.Set(146, true);
 					return a;
 				}
-			case 197:
-			case 198:
+			case 199:
+			case 200:
 				return set[38];
-			case 201:
+			case 203:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(64, true);
 					a.Set(104, true);
 					return a;
 				}
-			case 206:
+			case 208:
 				return set[39];
-			case 213:
-			case 479:
-			case 554:
-			case 569:
-			case 576:
+			case 215:
+			case 481:
+			case 556:
+			case 571:
+			case 578:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(127, true);
 					a.Set(210, true);
 					return a;
 				}
-			case 215:
-			case 216:
-			case 393:
-			case 394:
-			case 458:
-			case 459:
-			case 464:
-			case 465:
-			case 488:
-			case 489:
-			case 546:
-			case 547:
-			case 565:
-			case 566:
-				return set[40];
+			case 217:
 			case 218:
-			case 219:
+			case 395:
+			case 396:
+			case 460:
+			case 461:
+			case 466:
+			case 467:
+			case 490:
+			case 491:
+			case 548:
+			case 549:
+			case 567:
+			case 568:
+				return set[40];
+			case 220:
+			case 221:
 				return set[41];
-			case 225:
-			case 226:
-				return set[42];
 			case 227:
+			case 228:
+				return set[42];
+			case 229:
 				return set[43];
-			case 230:
-				return set[44];
-			case 231:
 			case 232:
-			case 335:
+				return set[44];
+			case 233:
+			case 234:
+			case 337:
 				return set[45];
-			case 236:
+			case 238:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(226, true);
 					return a;
 				}
-			case 238:
-			case 281:
-			case 297:
+			case 240:
+			case 283:
+			case 299:
 				return set[46];
-			case 241:
-			case 242:
-			case 263:
-			case 264:
-			case 278:
-			case 279:
-			case 294:
-			case 295:
-				return set[47];
 			case 243:
-			case 336:
+			case 244:
+			case 265:
+			case 266:
+			case 280:
+			case 281:
+			case 296:
+			case 297:
+				return set[47];
+			case 245:
+			case 338:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(1, true);
@@ -893,7 +895,7 @@ partial class ExpressionFinder {
 					a.Set(111, true);
 					return a;
 				}
-			case 244:
+			case 246:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(108, true);
@@ -901,18 +903,18 @@ partial class ExpressionFinder {
 					a.Set(231, true);
 					return a;
 				}
-			case 245:
-				return set[48];
-			case 246:
-			case 266:
-				return set[49];
 			case 247:
+				return set[48];
+			case 248:
+			case 268:
+				return set[49];
+			case 249:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(5, true);
 					return a;
 				}
-			case 250:
+			case 252:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(75, true);
@@ -920,11 +922,11 @@ partial class ExpressionFinder {
 					a.Set(123, true);
 					return a;
 				}
-			case 254:
-			case 255:
-				return set[50];
 			case 256:
-			case 262:
+			case 257:
+				return set[50];
+			case 258:
+			case 264:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(1, true);
@@ -932,36 +934,36 @@ partial class ExpressionFinder {
 					a.Set(229, true);
 					return a;
 				}
-			case 258:
-			case 259:
+			case 260:
+			case 261:
 				return set[51];
-			case 265:
-				return set[52];
 			case 267:
+				return set[52];
+			case 269:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(118, true);
 					return a;
 				}
-			case 268:
-			case 269:
-				return set[53];
+			case 270:
 			case 271:
-			case 272:
+				return set[53];
+			case 273:
+			case 274:
 				return set[54];
-			case 283:
-			case 284:
-				return set[55];
 			case 285:
+			case 286:
+				return set[55];
+			case 287:
 				return set[56];
-			case 288:
+			case 290:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(20, true);
 					a.Set(138, true);
 					return a;
 				}
-			case 291:
+			case 293:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(1, true);
@@ -969,41 +971,41 @@ partial class ExpressionFinder {
 					a.Set(205, true);
 					return a;
 				}
-			case 299:
+			case 301:
 				return set[57];
-			case 300:
-			case 304:
+			case 302:
+			case 306:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(152, true);
 					return a;
 				}
-			case 301:
+			case 303:
 				return set[58];
-			case 309:
-			case 310:
+			case 311:
+			case 312:
 				return set[59];
-			case 313:
+			case 315:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(74, true);
 					a.Set(113, true);
 					return a;
 				}
-			case 315:
-			case 316:
-				return set[60];
+			case 317:
 			case 318:
-			case 319:
-				return set[61];
+				return set[60];
 			case 320:
-			case 545:
-			case 597:
-			case 598:
+			case 321:
+				return set[61];
+			case 322:
+			case 547:
+			case 599:
 			case 600:
-			case 610:
-			case 611:
+			case 602:
+			case 612:
 			case 613:
+			case 615:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(1, true);
@@ -1011,11 +1013,11 @@ partial class ExpressionFinder {
 					a.Set(22, true);
 					return a;
 				}
-			case 321:
 			case 323:
-				return set[62];
 			case 325:
-			case 331:
+				return set[62];
+			case 327:
+			case 333:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(1, true);
@@ -1023,7 +1025,7 @@ partial class ExpressionFinder {
 					a.Set(214, true);
 					return a;
 				}
-			case 328:
+			case 330:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(111, true);
@@ -1031,7 +1033,7 @@ partial class ExpressionFinder {
 					a.Set(113, true);
 					return a;
 				}
-			case 332:
+			case 334:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(1, true);
@@ -1039,54 +1041,54 @@ partial class ExpressionFinder {
 					a.Set(135, true);
 					return a;
 				}
-			case 333:
-			case 334:
-			case 338:
-			case 339:
-			case 396:
-			case 397:
-				return set[63];
+			case 335:
+			case 336:
+			case 340:
 			case 341:
-			case 342:
-				return set[64];
+			case 398:
+			case 399:
+				return set[63];
+			case 343:
 			case 344:
+				return set[64];
+			case 346:
 				return set[65];
-			case 350:
+			case 352:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(211, true);
 					a.Set(233, true);
 					return a;
 				}
-			case 352:
-			case 353:
-			case 364:
-			case 365:
-				return set[66];
 			case 354:
-			case 366:
-				return set[67];
 			case 355:
-				return set[68];
+			case 366:
+			case 367:
+				return set[66];
 			case 356:
-			case 361:
+			case 368:
+				return set[67];
+			case 357:
+				return set[68];
+			case 358:
+			case 363:
 				return set[69];
-			case 359:
+			case 361:
 				return set[70];
-			case 373:
 			case 375:
-			case 376:
-			case 519:
-			case 533:
-				return set[71];
 			case 377:
 			case 378:
-				return set[72];
+			case 521:
+			case 535:
+				return set[71];
 			case 379:
 			case 380:
-				return set[73];
+				return set[72];
 			case 381:
-			case 386:
+			case 382:
+				return set[73];
+			case 383:
+			case 388:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(20, true);
@@ -1094,16 +1096,16 @@ partial class ExpressionFinder {
 					a.Set(38, true);
 					return a;
 				}
-			case 387:
+			case 389:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(40, true);
 					return a;
 				}
-			case 390:
-			case 391:
+			case 392:
+			case 393:
 				return set[74];
-			case 400:
+			case 402:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(10, true);
@@ -1111,56 +1113,56 @@ partial class ExpressionFinder {
 					a.Set(19, true);
 					return a;
 				}
-			case 401:
-				return set[75];
-			case 402:
-				return set[76];
 			case 403:
+				return set[75];
+			case 404:
+				return set[76];
+			case 405:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(10, true);
 					return a;
 				}
-			case 407:
+			case 409:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(12, true);
 					return a;
 				}
-			case 409:
+			case 411:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(13, true);
 					return a;
 				}
-			case 410:
+			case 412:
 				return set[77];
-			case 419:
+			case 421:
 				return set[78];
-			case 425:
-				return set[79];
 			case 427:
-			case 428:
-			case 580:
-			case 581:
-				return set[80];
+				return set[79];
+			case 429:
 			case 430:
-			case 431:
-			case 432:
-			case 437:
-			case 438:
+			case 582:
 			case 583:
-			case 605:
-			case 615:
-				return set[81];
+				return set[80];
+			case 432:
 			case 433:
-			case 439:
-			case 449:
-				return set[82];
 			case 434:
-			case 435:
+			case 439:
 			case 440:
+			case 585:
+			case 607:
+			case 617:
+				return set[81];
+			case 435:
 			case 441:
+			case 451:
+				return set[82];
+			case 436:
+			case 437:
+			case 442:
+			case 443:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(22, true);
@@ -1168,18 +1170,18 @@ partial class ExpressionFinder {
 					a.Set(63, true);
 					return a;
 				}
-			case 443:
 			case 445:
-			case 451:
+			case 447:
+			case 453:
 				return set[83];
-			case 446:
 			case 448:
+			case 450:
 				return set[84];
-			case 455:
-			case 470:
-			case 484:
-			case 521:
-			case 561:
+			case 457:
+			case 472:
+			case 486:
+			case 523:
+			case 563:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(1, true);
@@ -1187,23 +1189,23 @@ partial class ExpressionFinder {
 					a.Set(63, true);
 					return a;
 				}
-			case 456:
-			case 525:
+			case 458:
+			case 527:
 				return set[85];
-			case 468:
-			case 473:
+			case 470:
+			case 475:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(115, true);
 					return a;
 				}
-			case 472:
-				return set[86];
 			case 474:
+				return set[86];
+			case 476:
 				return set[87];
-			case 475:
-			case 588:
-			case 592:
+			case 477:
+			case 590:
+			case 594:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(1, true);
@@ -1211,15 +1213,15 @@ partial class ExpressionFinder {
 					a.Set(21, true);
 					return a;
 				}
-			case 478:
+			case 480:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(103, true);
 					return a;
 				}
-			case 491:
-			case 492:
-			case 504:
+			case 493:
+			case 494:
+			case 506:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(84, true);
@@ -1227,49 +1229,49 @@ partial class ExpressionFinder {
 					a.Set(209, true);
 					return a;
 				}
-			case 497:
-			case 498:
-				return set[88];
 			case 499:
 			case 500:
-				return set[89];
+				return set[88];
 			case 501:
 			case 502:
-			case 513:
+				return set[89];
+			case 503:
+			case 504:
+			case 515:
 				return set[90];
-			case 506:
-				return set[91];
-			case 507:
 			case 508:
-				return set[92];
+				return set[91];
 			case 509:
 			case 510:
-			case 594:
-				return set[93];
+				return set[92];
 			case 511:
-				return set[94];
 			case 512:
-				return set[95];
+			case 596:
+				return set[93];
+			case 513:
+				return set[94];
 			case 514:
-			case 524:
+				return set[95];
+			case 516:
+			case 526:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(172, true);
 					return a;
 				}
-			case 528:
 			case 530:
-			case 539:
+			case 532:
+			case 541:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(119, true);
 					return a;
 				}
-			case 529:
-				return set[96];
 			case 531:
+				return set[96];
+			case 533:
 				return set[97];
-			case 537:
+			case 539:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(56, true);
@@ -1277,11 +1279,11 @@ partial class ExpressionFinder {
 					a.Set(193, true);
 					return a;
 				}
-			case 541:
-			case 542:
-				return set[98];
 			case 543:
-			case 551:
+			case 544:
+				return set[98];
+			case 545:
+			case 553:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(1, true);
@@ -1289,100 +1291,100 @@ partial class ExpressionFinder {
 					a.Set(136, true);
 					return a;
 				}
-			case 552:
+			case 554:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(101, true);
 					return a;
 				}
-			case 553:
+			case 555:
 				return set[99];
-			case 556:
-			case 557:
+			case 558:
+			case 559:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(149, true);
 					return a;
 				}
-			case 558:
-			case 568:
-			case 627:
+			case 560:
+			case 570:
+			case 629:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(3, true);
 					return a;
 				}
-			case 559:
+			case 561:
 				return set[100];
-			case 584:
-				return set[101];
-			case 585:
-			case 593:
-				return set[102];
 			case 586:
+				return set[101];
 			case 587:
-				return set[103];
 			case 595:
+				return set[102];
+			case 588:
+			case 589:
+				return set[103];
+			case 597:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(136, true);
 					return a;
 				}
-			case 601:
-			case 608:
+			case 603:
+			case 610:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(140, true);
 					return a;
 				}
-			case 604:
-			case 614:
+			case 606:
+			case 616:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(169, true);
 					return a;
 				}
-			case 619:
+			case 621:
 				return set[104];
-			case 620:
+			case 622:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(160, true);
 					return a;
 				}
-			case 621:
+			case 623:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(137, true);
 					return a;
 				}
-			case 622:
-			case 623:
+			case 624:
+			case 625:
 				return set[105];
-			case 628:
+			case 630:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(11, true);
 					return a;
 				}
-			case 629:
-				return set[106];
 			case 631:
+				return set[106];
+			case 633:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(173, true);
 					return a;
 				}
-			case 632:
+			case 634:
 				return set[107];
-			case 633:
+			case 635:
 				{
 					BitArray a = new BitArray(239);
 					a.Set(67, true);
 					a.Set(213, true);
 					return a;
 				}
-			case 634:
+			case 636:
 				return set[108];
 			default: throw new InvalidOperationException();
 		}
@@ -1436,7 +1438,7 @@ partial class ExpressionFinder {
 				if (la == null) { currentState = 1; break; }
 				if (la.kind == 173) {
 					stateStack.Push(1);
-					goto case 631;
+					goto case 633;
 				} else {
 					goto case 2;
 				}
@@ -1445,7 +1447,7 @@ partial class ExpressionFinder {
 				if (la == null) { currentState = 2; break; }
 				if (la.kind == 137) {
 					stateStack.Push(2);
-					goto case 621;
+					goto case 623;
 				} else {
 					goto case 3;
 				}
@@ -1454,7 +1456,7 @@ partial class ExpressionFinder {
 				if (la == null) { currentState = 3; break; }
 				if (la.kind == 40) {
 					stateStack.Push(3);
-					goto case 387;
+					goto case 389;
 				} else {
 					goto case 4;
 				}
@@ -1473,7 +1475,7 @@ partial class ExpressionFinder {
 			case 5: {
 				if (la == null) { currentState = 5; break; }
 				if (la.kind == 160) {
-					currentState = 617;
+					currentState = 619;
 					break;
 				} else {
 					if (set[4].Get(la.kind)) {
@@ -1492,7 +1494,7 @@ partial class ExpressionFinder {
 				if (la == null) { currentState = 7; break; }
 				if (la.kind == 40) {
 					stateStack.Push(7);
-					goto case 387;
+					goto case 389;
 				} else {
 					goto case 8;
 				}
@@ -1504,14 +1506,14 @@ partial class ExpressionFinder {
 					break;
 				} else {
 					if (la.kind == 84 || la.kind == 155 || la.kind == 209) {
-						goto case 491;
+						goto case 493;
 					} else {
 						if (la.kind == 103) {
-							currentState = 479;
+							currentState = 481;
 							break;
 						} else {
 							if (la.kind == 115) {
-								currentState = 469;
+								currentState = 471;
 								break;
 							} else {
 								if (la.kind == 142) {
@@ -1527,12 +1529,12 @@ partial class ExpressionFinder {
 			}
 			case 9: {
 				stateStack.Push(10);
-				goto case 167;
+				goto case 169;
 			}
 			case 10: {
 				if (la == null) { currentState = 10; break; }
 				if (la.kind == 37) {
-					currentState = 614;
+					currentState = 616;
 					break;
 				} else {
 					goto case 11;
@@ -1550,7 +1552,7 @@ partial class ExpressionFinder {
 				if (la == null) { currentState = 13; break; }
 				if (la.kind == 140) {
 					PushContext(Context.Type, la, t);
-					goto case 608;
+					goto case 610;
 				} else {
 					goto case 14;
 				}
@@ -1610,7 +1612,7 @@ partial class ExpressionFinder {
 				if (la == null) { currentState = 22; break; }
 				if (la.kind == 40) {
 					stateStack.Push(21);
-					goto case 387;
+					goto case 389;
 				} else {
 					isMissingModifier = true;
 					goto case 23;
@@ -1619,7 +1621,7 @@ partial class ExpressionFinder {
 			case 23: {
 				if (la == null) { currentState = 23; break; }
 				if (set[110].Get(la.kind)) {
-					currentState = 607;
+					currentState = 609;
 					break;
 				} else {
 					isMissingModifier = false;
@@ -1630,19 +1632,19 @@ partial class ExpressionFinder {
 				if (la == null) { currentState = 24; break; }
 				if (la.kind == 84 || la.kind == 155 || la.kind == 209) {
 					stateStack.Push(14);
-					goto case 491;
+					goto case 493;
 				} else {
 					if (la.kind == 103) {
 						stateStack.Push(14);
-						goto case 478;
+						goto case 480;
 					} else {
 						if (la.kind == 115) {
 							stateStack.Push(14);
-							goto case 468;
+							goto case 470;
 						} else {
 							if (la.kind == 142) {
 								stateStack.Push(14);
-								goto case 467;
+								goto case 469;
 							} else {
 								if (set[12].Get(la.kind)) {
 									stateStack.Push(14);
@@ -1659,11 +1661,11 @@ partial class ExpressionFinder {
 			case 25: {
 				if (la == null) { currentState = 25; break; }
 				if (la.kind == 119) {
-					currentState = 461;
+					currentState = 463;
 					break;
 				} else {
 					if (la.kind == 186) {
-						currentState = 453;
+						currentState = 455;
 						break;
 					} else {
 						if (la.kind == 127 || la.kind == 210) {
@@ -1692,7 +1694,7 @@ partial class ExpressionFinder {
 			case 29: {
 				if (la == null) { currentState = 29; break; }
 				if (la.kind == 37) {
-					currentState = 427;
+					currentState = 429;
 					break;
 				} else {
 					if (la.kind == 63) {
@@ -1758,7 +1760,7 @@ partial class ExpressionFinder {
 			}
 			case 36: {
 				stateStack.Push(37);
-				goto case 74;
+				goto case 75;
 			}
 			case 37: {
 				if (la == null) { currentState = 37; break; }
@@ -1782,7 +1784,7 @@ partial class ExpressionFinder {
 			case 40: {
 				if (la == null) { currentState = 40; break; }
 				if (la.kind == 169) {
-					currentState = 425;
+					currentState = 427;
 					break;
 				} else {
 					if (set[20].Get(la.kind)) {
@@ -1807,63 +1809,66 @@ partial class ExpressionFinder {
 				if (la == null) { currentState = 43; break; }
 				if (set[21].Get(la.kind)) {
 					stateStack.Push(41);
-					nextTokenIsPotentialStartOfExpression = true;
 					goto case 44;
 				} else {
 					goto case 41;
 				}
 			}
 			case 44: {
-				if (la == null) { currentState = 44; break; }
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 45;
+			}
+			case 45: {
+				if (la == null) { currentState = 45; break; }
 				if (set[22].Get(la.kind)) {
-					goto case 421;
+					goto case 423;
 				} else {
 					if (la.kind == 22) {
-						goto case 45;
+						goto case 46;
 					} else {
 						goto case 6;
 					}
 				}
 			}
-			case 45: {
-				if (la == null) { currentState = 45; break; }
-				currentState = 46;
+			case 46: {
+				if (la == null) { currentState = 46; break; }
+				currentState = 47;
 				break;
 			}
-			case 46: {
-				nextTokenIsPotentialStartOfExpression = true;
-				goto case 47;
-			}
 			case 47: {
-				if (la == null) { currentState = 47; break; }
-				if (set[22].Get(la.kind)) {
-					stateStack.Push(48);
-					goto case 49;
-				} else {
-					goto case 48;
-				}
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 48;
 			}
 			case 48: {
 				if (la == null) { currentState = 48; break; }
+				if (set[22].Get(la.kind)) {
+					stateStack.Push(49);
+					goto case 50;
+				} else {
+					goto case 49;
+				}
+			}
+			case 49: {
+				if (la == null) { currentState = 49; break; }
 				if (la.kind == 22) {
-					goto case 45;
+					goto case 46;
 				} else {
 					currentState = stateStack.Pop();
 					goto switchlbl;
 				}
 			}
-			case 49: {
-				PushContext(Context.Expression, la, t);
-				goto case 50;
-			}
 			case 50: {
-				stateStack.Push(51);
-				goto case 52;
+				PushContext(Context.Expression, la, t);
+				goto case 51;
 			}
 			case 51: {
-				if (la == null) { currentState = 51; break; }
+				stateStack.Push(52);
+				goto case 53;
+			}
+			case 52: {
+				if (la == null) { currentState = 52; break; }
 				if (set[112].Get(la.kind)) {
-					currentState = 50;
+					currentState = 51;
 					break;
 				} else {
 					PopContext();
@@ -1871,163 +1876,163 @@ partial class ExpressionFinder {
 					goto switchlbl;
 				}
 			}
-			case 52: {
-				PushContext(Context.Expression, la, t);
-				goto case 53;
-			}
 			case 53: {
-				nextTokenIsPotentialStartOfExpression = true;
+				PushContext(Context.Expression, la, t);
 				goto case 54;
 			}
 			case 54: {
-				if (la == null) { currentState = 54; break; }
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 55;
+			}
+			case 55: {
+				if (la == null) { currentState = 55; break; }
 				if (set[113].Get(la.kind)) {
-					currentState = 53;
+					currentState = 54;
 					break;
 				} else {
 					if (set[31].Get(la.kind)) {
-						stateStack.Push(125);
-						goto case 135;
+						stateStack.Push(126);
+						goto case 137;
 					} else {
 						if (la.kind == 220) {
-							currentState = 122;
+							currentState = 123;
 							break;
 						} else {
 							if (la.kind == 162) {
-								stateStack.Push(55);
-								goto case 60;
+								stateStack.Push(56);
+								goto case 61;
 							} else {
 								if (la.kind == 35) {
-									stateStack.Push(55);
-									goto case 56;
+									stateStack.Push(56);
+									goto case 57;
 								} else {
 									Error(la);
-									goto case 55;
+									goto case 56;
 								}
 							}
 						}
 					}
 				}
 			}
-			case 55: {
+			case 56: {
 				PopContext();
 				currentState = stateStack.Pop();
 				goto switchlbl;
 			}
-			case 56: {
-				if (la == null) { currentState = 56; break; }
+			case 57: {
+				if (la == null) { currentState = 57; break; }
 				Expect(35, la); // "{"
-				currentState = 57;
+				currentState = 58;
 				break;
 			}
-			case 57: {
-				stateStack.Push(58);
-				goto case 49;
-			}
 			case 58: {
-				if (la == null) { currentState = 58; break; }
-				if (la.kind == 22) {
-					currentState = 57;
-					break;
-				} else {
-					goto case 59;
-				}
+				stateStack.Push(59);
+				goto case 50;
 			}
 			case 59: {
 				if (la == null) { currentState = 59; break; }
+				if (la.kind == 22) {
+					currentState = 58;
+					break;
+				} else {
+					goto case 60;
+				}
+			}
+			case 60: {
+				if (la == null) { currentState = 60; break; }
 				Expect(36, la); // "}"
 				currentState = stateStack.Pop();
 				break;
 			}
-			case 60: {
-				if (la == null) { currentState = 60; break; }
+			case 61: {
+				if (la == null) { currentState = 61; break; }
 				Expect(162, la); // "New"
-				currentState = 61;
+				currentState = 62;
 				break;
 			}
-			case 61: {
-				PushContext(Context.ObjectCreation, la, t);
-				goto case 62;
-			}
 			case 62: {
-				if (la == null) { currentState = 62; break; }
-				if (set[15].Get(la.kind)) {
-					stateStack.Push(119);
-					goto case 33;
-				} else {
-					goto case 63;
-				}
+				PushContext(Context.ObjectCreation, la, t);
+				goto case 63;
 			}
 			case 63: {
 				if (la == null) { currentState = 63; break; }
-				if (la.kind == 233) {
-					currentState = 66;
-					break;
+				if (set[15].Get(la.kind)) {
+					stateStack.Push(120);
+					goto case 33;
 				} else {
 					goto case 64;
 				}
 			}
 			case 64: {
-				Error(la);
-				goto case 65;
+				if (la == null) { currentState = 64; break; }
+				if (la.kind == 233) {
+					currentState = 67;
+					break;
+				} else {
+					goto case 65;
+				}
 			}
 			case 65: {
+				Error(la);
+				goto case 66;
+			}
+			case 66: {
 				PopContext();
 				currentState = stateStack.Pop();
 				goto switchlbl;
 			}
-			case 66: {
-				stateStack.Push(65);
-				goto case 67;
-			}
 			case 67: {
-				if (la == null) { currentState = 67; break; }
-				Expect(35, la); // "{"
-				currentState = 68;
-				break;
+				stateStack.Push(66);
+				goto case 68;
 			}
 			case 68: {
 				if (la == null) { currentState = 68; break; }
-				if (la.kind == 147) {
-					currentState = 69;
-					break;
-				} else {
-					goto case 69;
-				}
+				Expect(35, la); // "{"
+				currentState = 69;
+				break;
 			}
 			case 69: {
 				if (la == null) { currentState = 69; break; }
-				Expect(26, la); // "."
-				currentState = 70;
-				break;
-			}
-			case 70: {
-				stateStack.Push(71);
-				goto case 74;
-			}
-			case 71: {
-				if (la == null) { currentState = 71; break; }
-				Expect(20, la); // "="
-				currentState = 72;
-				break;
-			}
-			case 72: {
-				stateStack.Push(73);
-				goto case 49;
-			}
-			case 73: {
-				if (la == null) { currentState = 73; break; }
-				if (la.kind == 22) {
-					currentState = 68;
+				if (la.kind == 147) {
+					currentState = 70;
 					break;
 				} else {
-					goto case 59;
+					goto case 70;
 				}
+			}
+			case 70: {
+				if (la == null) { currentState = 70; break; }
+				Expect(26, la); // "."
+				currentState = 71;
+				break;
+			}
+			case 71: {
+				stateStack.Push(72);
+				goto case 75;
+			}
+			case 72: {
+				if (la == null) { currentState = 72; break; }
+				Expect(20, la); // "="
+				currentState = 73;
+				break;
+			}
+			case 73: {
+				stateStack.Push(74);
+				goto case 50;
 			}
 			case 74: {
 				if (la == null) { currentState = 74; break; }
+				if (la.kind == 22) {
+					currentState = 69;
+					break;
+				} else {
+					goto case 60;
+				}
+			}
+			case 75: {
+				if (la == null) { currentState = 75; break; }
 				if (la.kind == 2) {
-					goto case 118;
+					goto case 119;
 				} else {
 					if (la.kind == 56) {
 						currentState = stateStack.Pop();
@@ -2038,7 +2043,7 @@ partial class ExpressionFinder {
 							break;
 						} else {
 							if (la.kind == 58) {
-								goto case 117;
+								goto case 118;
 							} else {
 								if (la.kind == 59) {
 									currentState = stateStack.Pop();
@@ -2053,23 +2058,23 @@ partial class ExpressionFinder {
 											break;
 										} else {
 											if (la.kind == 62) {
-												goto case 116;
+												goto case 117;
 											} else {
 												if (la.kind == 63) {
 													currentState = stateStack.Pop();
 													break;
 												} else {
 													if (la.kind == 64) {
-														goto case 115;
+														goto case 116;
 													} else {
 														if (la.kind == 65) {
-															goto case 114;
+															goto case 115;
 														} else {
 															if (la.kind == 66) {
-																goto case 113;
+																goto case 114;
 															} else {
 																if (la.kind == 67) {
-																	goto case 112;
+																	goto case 113;
 																} else {
 																	if (la.kind == 68) {
 																		currentState = stateStack.Pop();
@@ -2080,7 +2085,7 @@ partial class ExpressionFinder {
 																			break;
 																		} else {
 																			if (la.kind == 70) {
-																				goto case 111;
+																				goto case 112;
 																			} else {
 																				if (la.kind == 71) {
 																					currentState = stateStack.Pop();
@@ -2135,7 +2140,7 @@ partial class ExpressionFinder {
 																																	break;
 																																} else {
 																																	if (la.kind == 84) {
-																																		goto case 110;
+																																		goto case 111;
 																																	} else {
 																																		if (la.kind == 85) {
 																																			currentState = stateStack.Pop();
@@ -2146,7 +2151,7 @@ partial class ExpressionFinder {
 																																				break;
 																																			} else {
 																																				if (la.kind == 87) {
-																																					goto case 109;
+																																					goto case 110;
 																																				} else {
 																																					if (la.kind == 88) {
 																																						currentState = stateStack.Pop();
@@ -2189,7 +2194,7 @@ partial class ExpressionFinder {
 																																															break;
 																																														} else {
 																																															if (la.kind == 98) {
-																																																goto case 108;
+																																																goto case 109;
 																																															} else {
 																																																if (la.kind == 99) {
 																																																	currentState = stateStack.Pop();
@@ -2212,7 +2217,7 @@ partial class ExpressionFinder {
 																																																					break;
 																																																				} else {
 																																																					if (la.kind == 104) {
-																																																						goto case 107;
+																																																						goto case 108;
 																																																					} else {
 																																																						if (la.kind == 105) {
 																																																							currentState = stateStack.Pop();
@@ -2223,10 +2228,10 @@ partial class ExpressionFinder {
 																																																								break;
 																																																							} else {
 																																																								if (la.kind == 107) {
-																																																									goto case 106;
+																																																									goto case 107;
 																																																								} else {
 																																																									if (la.kind == 108) {
-																																																										goto case 105;
+																																																										goto case 106;
 																																																									} else {
 																																																										if (la.kind == 109) {
 																																																											currentState = stateStack.Pop();
@@ -2257,7 +2262,7 @@ partial class ExpressionFinder {
 																																																																	break;
 																																																																} else {
 																																																																	if (la.kind == 116) {
-																																																																		goto case 104;
+																																																																		goto case 105;
 																																																																	} else {
 																																																																		if (la.kind == 117) {
 																																																																			currentState = stateStack.Pop();
@@ -2276,7 +2281,7 @@ partial class ExpressionFinder {
 																																																																						break;
 																																																																					} else {
 																																																																						if (la.kind == 121) {
-																																																																							goto case 103;
+																																																																							goto case 104;
 																																																																						} else {
 																																																																							if (la.kind == 122) {
 																																																																								currentState = stateStack.Pop();
@@ -2287,17 +2292,17 @@ partial class ExpressionFinder {
 																																																																									break;
 																																																																								} else {
 																																																																									if (la.kind == 124) {
-																																																																										goto case 102;
+																																																																										goto case 103;
 																																																																									} else {
 																																																																										if (la.kind == 125) {
 																																																																											currentState = stateStack.Pop();
 																																																																											break;
 																																																																										} else {
 																																																																											if (la.kind == 126) {
-																																																																												goto case 101;
+																																																																												goto case 102;
 																																																																											} else {
 																																																																												if (la.kind == 127) {
-																																																																													goto case 100;
+																																																																													goto case 101;
 																																																																												} else {
 																																																																													if (la.kind == 128) {
 																																																																														currentState = stateStack.Pop();
@@ -2320,7 +2325,7 @@ partial class ExpressionFinder {
 																																																																																		break;
 																																																																																	} else {
 																																																																																		if (la.kind == 133) {
-																																																																																			goto case 99;
+																																																																																			goto case 100;
 																																																																																		} else {
 																																																																																			if (la.kind == 134) {
 																																																																																				currentState = stateStack.Pop();
@@ -2343,7 +2348,7 @@ partial class ExpressionFinder {
 																																																																																								break;
 																																																																																							} else {
 																																																																																								if (la.kind == 139) {
-																																																																																									goto case 98;
+																																																																																									goto case 99;
 																																																																																								} else {
 																																																																																									if (la.kind == 140) {
 																																																																																										currentState = stateStack.Pop();
@@ -2358,7 +2363,7 @@ partial class ExpressionFinder {
 																																																																																												break;
 																																																																																											} else {
 																																																																																												if (la.kind == 143) {
-																																																																																													goto case 97;
+																																																																																													goto case 98;
 																																																																																												} else {
 																																																																																													if (la.kind == 144) {
 																																																																																														currentState = stateStack.Pop();
@@ -2369,10 +2374,10 @@ partial class ExpressionFinder {
 																																																																																															break;
 																																																																																														} else {
 																																																																																															if (la.kind == 146) {
-																																																																																																goto case 96;
+																																																																																																goto case 97;
 																																																																																															} else {
 																																																																																																if (la.kind == 147) {
-																																																																																																	goto case 95;
+																																																																																																	goto case 96;
 																																																																																																} else {
 																																																																																																	if (la.kind == 148) {
 																																																																																																		currentState = stateStack.Pop();
@@ -2431,10 +2436,10 @@ partial class ExpressionFinder {
 																																																																																																															break;
 																																																																																																														} else {
 																																																																																																															if (la.kind == 162) {
-																																																																																																																goto case 94;
+																																																																																																																goto case 95;
 																																																																																																															} else {
 																																																																																																																if (la.kind == 163) {
-																																																																																																																	goto case 93;
+																																																																																																																	goto case 94;
 																																																																																																																} else {
 																																																																																																																	if (la.kind == 164) {
 																																																																																																																		currentState = stateStack.Pop();
@@ -2461,7 +2466,7 @@ partial class ExpressionFinder {
 																																																																																																																							break;
 																																																																																																																						} else {
 																																																																																																																							if (la.kind == 170) {
-																																																																																																																								goto case 92;
+																																																																																																																								goto case 93;
 																																																																																																																							} else {
 																																																																																																																								if (la.kind == 171) {
 																																																																																																																									currentState = stateStack.Pop();
@@ -2484,7 +2489,7 @@ partial class ExpressionFinder {
 																																																																																																																													break;
 																																																																																																																												} else {
 																																																																																																																													if (la.kind == 176) {
-																																																																																																																														goto case 91;
+																																																																																																																														goto case 92;
 																																																																																																																													} else {
 																																																																																																																														if (la.kind == 177) {
 																																																																																																																															currentState = stateStack.Pop();
@@ -2515,14 +2520,14 @@ partial class ExpressionFinder {
 																																																																																																																																					break;
 																																																																																																																																				} else {
 																																																																																																																																					if (la.kind == 184) {
-																																																																																																																																						goto case 90;
+																																																																																																																																						goto case 91;
 																																																																																																																																					} else {
 																																																																																																																																						if (la.kind == 185) {
 																																																																																																																																							currentState = stateStack.Pop();
 																																																																																																																																							break;
 																																																																																																																																						} else {
 																																																																																																																																							if (la.kind == 186) {
-																																																																																																																																								goto case 89;
+																																																																																																																																								goto case 90;
 																																																																																																																																							} else {
 																																																																																																																																								if (la.kind == 187) {
 																																																																																																																																									currentState = stateStack.Pop();
@@ -2565,7 +2570,7 @@ partial class ExpressionFinder {
 																																																																																																																																																		break;
 																																																																																																																																																	} else {
 																																																																																																																																																		if (la.kind == 197) {
-																																																																																																																																																			goto case 88;
+																																																																																																																																																			goto case 89;
 																																																																																																																																																		} else {
 																																																																																																																																																			if (la.kind == 198) {
 																																																																																																																																																				currentState = stateStack.Pop();
@@ -2588,7 +2593,7 @@ partial class ExpressionFinder {
 																																																																																																																																																								break;
 																																																																																																																																																							} else {
 																																																																																																																																																								if (la.kind == 203) {
-																																																																																																																																																									goto case 87;
+																																																																																																																																																									goto case 88;
 																																																																																																																																																								} else {
 																																																																																																																																																									if (la.kind == 204) {
 																																																																																																																																																										currentState = stateStack.Pop();
@@ -2599,7 +2604,7 @@ partial class ExpressionFinder {
 																																																																																																																																																											break;
 																																																																																																																																																										} else {
 																																																																																																																																																											if (la.kind == 206) {
-																																																																																																																																																												goto case 86;
+																																																																																																																																																												goto case 87;
 																																																																																																																																																											} else {
 																																																																																																																																																												if (la.kind == 207) {
 																																																																																																																																																													currentState = stateStack.Pop();
@@ -2610,19 +2615,19 @@ partial class ExpressionFinder {
 																																																																																																																																																														break;
 																																																																																																																																																													} else {
 																																																																																																																																																														if (la.kind == 209) {
-																																																																																																																																																															goto case 85;
+																																																																																																																																																															goto case 86;
 																																																																																																																																																														} else {
 																																																																																																																																																															if (la.kind == 210) {
-																																																																																																																																																																goto case 84;
+																																																																																																																																																																goto case 85;
 																																																																																																																																																															} else {
 																																																																																																																																																																if (la.kind == 211) {
-																																																																																																																																																																	goto case 83;
+																																																																																																																																																																	goto case 84;
 																																																																																																																																																																} else {
 																																																																																																																																																																	if (la.kind == 212) {
-																																																																																																																																																																		goto case 82;
+																																																																																																																																																																		goto case 83;
 																																																																																																																																																																	} else {
 																																																																																																																																																																		if (la.kind == 213) {
-																																																																																																																																																																			goto case 81;
+																																																																																																																																																																			goto case 82;
 																																																																																																																																																																		} else {
 																																																																																																																																																																			if (la.kind == 214) {
 																																																																																																																																																																				currentState = stateStack.Pop();
@@ -2641,7 +2646,7 @@ partial class ExpressionFinder {
 																																																																																																																																																																							break;
 																																																																																																																																																																						} else {
 																																																																																																																																																																							if (la.kind == 218) {
-																																																																																																																																																																								goto case 80;
+																																																																																																																																																																								goto case 81;
 																																																																																																																																																																							} else {
 																																																																																																																																																																								if (la.kind == 219) {
 																																																																																																																																																																									currentState = stateStack.Pop();
@@ -2660,10 +2665,10 @@ partial class ExpressionFinder {
 																																																																																																																																																																												break;
 																																																																																																																																																																											} else {
 																																																																																																																																																																												if (la.kind == 223) {
-																																																																																																																																																																													goto case 79;
+																																																																																																																																																																													goto case 80;
 																																																																																																																																																																												} else {
 																																																																																																																																																																													if (la.kind == 224) {
-																																																																																																																																																																														goto case 78;
+																																																																																																																																																																														goto case 79;
 																																																																																																																																																																													} else {
 																																																																																																																																																																														if (la.kind == 225) {
 																																																																																																																																																																															currentState = stateStack.Pop();
@@ -2686,17 +2691,17 @@ partial class ExpressionFinder {
 																																																																																																																																																																																			break;
 																																																																																																																																																																																		} else {
 																																																																																																																																																																																			if (la.kind == 230) {
-																																																																																																																																																																																				goto case 77;
+																																																																																																																																																																																				goto case 78;
 																																																																																																																																																																																			} else {
 																																																																																																																																																																																				if (la.kind == 231) {
-																																																																																																																																																																																					goto case 76;
+																																																																																																																																																																																					goto case 77;
 																																																																																																																																																																																				} else {
 																																																																																																																																																																																					if (la.kind == 232) {
 																																																																																																																																																																																						currentState = stateStack.Pop();
 																																																																																																																																																																																						break;
 																																																																																																																																																																																					} else {
 																																																																																																																																																																																						if (la.kind == 233) {
-																																																																																																																																																																																							goto case 75;
+																																																																																																																																																																																							goto case 76;
 																																																																																																																																																																																						} else {
 																																																																																																																																																																																							if (la.kind == 234) {
 																																																																																																																																																																																								currentState = stateStack.Pop();
@@ -2898,11 +2903,6 @@ partial class ExpressionFinder {
 						}
 					}
 				}
-			}
-			case 75: {
-				if (la == null) { currentState = 75; break; }
-				currentState = stateStack.Pop();
-				break;
 			}
 			case 76: {
 				if (la == null) { currentState = 76; break; }
@@ -3121,22 +3121,27 @@ partial class ExpressionFinder {
 			}
 			case 119: {
 				if (la == null) { currentState = 119; break; }
-				if (la.kind == 126 || la.kind == 233) {
-					if (la.kind == 126) {
-						currentState = 120;
-						break;
-					} else {
-						goto case 63;
-					}
-				} else {
-					goto case 65;
-				}
+				currentState = stateStack.Pop();
+				break;
 			}
 			case 120: {
 				if (la == null) { currentState = 120; break; }
+				if (la.kind == 126 || la.kind == 233) {
+					if (la.kind == 126) {
+						currentState = 121;
+						break;
+					} else {
+						goto case 64;
+					}
+				} else {
+					goto case 66;
+				}
+			}
+			case 121: {
+				if (la == null) { currentState = 121; break; }
 				if (la.kind == 35) {
-					stateStack.Push(65);
-					goto case 56;
+					stateStack.Push(66);
+					goto case 57;
 				} else {
 					if (set[26].Get(la.kind)) {
 						currentState = endOfStatementTerminatorAndBlock; /* leave this block */
@@ -3145,71 +3150,71 @@ partial class ExpressionFinder {
 							goto switchlbl;
 
 					} else {
-						goto case 64;
+						goto case 65;
 					}
 				}
 			}
-			case 121: {
-				if (la == null) { currentState = 121; break; }
-				currentState = 65;
-				break;
-			}
 			case 122: {
-				stateStack.Push(123);
-				goto case 52;
+				if (la == null) { currentState = 122; break; }
+				currentState = 66;
+				break;
 			}
 			case 123: {
-				if (la == null) { currentState = 123; break; }
-				Expect(144, la); // "Is"
-				currentState = 124;
-				break;
+				stateStack.Push(124);
+				goto case 53;
 			}
 			case 124: {
-				stateStack.Push(55);
-				goto case 33;
+				if (la == null) { currentState = 124; break; }
+				Expect(144, la); // "Is"
+				currentState = 125;
+				break;
 			}
 			case 125: {
-				if (la == null) { currentState = 125; break; }
-				if (set[28].Get(la.kind)) {
-					stateStack.Push(125);
-					goto case 126;
-				} else {
-					goto case 55;
-				}
+				stateStack.Push(56);
+				goto case 33;
 			}
 			case 126: {
 				if (la == null) { currentState = 126; break; }
+				if (set[28].Get(la.kind)) {
+					stateStack.Push(126);
+					goto case 127;
+				} else {
+					goto case 56;
+				}
+			}
+			case 127: {
+				if (la == null) { currentState = 127; break; }
 				if (la.kind == 37) {
-					currentState = 131;
+					currentState = 132;
 					break;
 				} else {
 					if (set[114].Get(la.kind)) {
-						currentState = 127;
+						currentState = 128;
 						break;
 					} else {
 						goto case 6;
 					}
 				}
 			}
-			case 127: {
-				nextTokenIsStartOfImportsOrAccessExpression = true;
-				goto case 128;
-			}
 			case 128: {
-				if (la == null) { currentState = 128; break; }
-				if (la.kind == 10) {
-					currentState = 129;
-					break;
-				} else {
-					goto case 129;
-				}
+				nextTokenIsStartOfImportsOrAccessExpression = true;
+				goto case 129;
 			}
 			case 129: {
-				stateStack.Push(130);
-				goto case 74;
+				if (la == null) { currentState = 129; break; }
+				if (la.kind == 10) {
+					currentState = 130;
+					break;
+				} else {
+					goto case 130;
+				}
 			}
 			case 130: {
-				if (la == null) { currentState = 130; break; }
+				stateStack.Push(131);
+				goto case 75;
+			}
+			case 131: {
+				if (la == null) { currentState = 131; break; }
 				if (la.kind == 11) {
 					currentState = stateStack.Pop();
 					break;
@@ -3218,92 +3223,102 @@ partial class ExpressionFinder {
 					goto switchlbl;
 				}
 			}
-			case 131: {
-				nextTokenIsPotentialStartOfExpression = true;
-				goto case 132;
-			}
 			case 132: {
-				if (la == null) { currentState = 132; break; }
+				PushContext(Context.Expression, la, t);
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 133;
+			}
+			case 133: {
+				if (la == null) { currentState = 133; break; }
 				if (la.kind == 169) {
-					currentState = 133;
+					currentState = 135;
 					break;
 				} else {
 					if (set[20].Get(la.kind)) {
-						goto case 42;
+						if (set[21].Get(la.kind)) {
+							stateStack.Push(134);
+							goto case 44;
+						} else {
+							goto case 134;
+						}
 					} else {
 						goto case 6;
 					}
 				}
 			}
-			case 133: {
-				stateStack.Push(134);
+			case 134: {
+				PopContext();
+				goto case 41;
+			}
+			case 135: {
+				stateStack.Push(136);
 				goto case 33;
 			}
-			case 134: {
-				if (la == null) { currentState = 134; break; }
+			case 136: {
+				if (la == null) { currentState = 136; break; }
 				if (la.kind == 22) {
-					currentState = 133;
+					currentState = 135;
 					break;
 				} else {
 					goto case 41;
 				}
 			}
-			case 135: {
+			case 137: {
 				PushContext(Context.Expression, la, t);
 				nextTokenIsPotentialStartOfExpression = true;
-				goto case 136;
+				goto case 138;
 			}
-			case 136: {
-				if (la == null) { currentState = 136; break; }
+			case 138: {
+				if (la == null) { currentState = 138; break; }
 				if (set[115].Get(la.kind)) {
-					currentState = 137;
+					currentState = 139;
 					break;
 				} else {
 					if (la.kind == 37) {
-						currentState = 420;
+						currentState = 422;
 						break;
 					} else {
 						if (set[116].Get(la.kind)) {
-							currentState = 137;
+							currentState = 139;
 							break;
 						} else {
 							if (set[114].Get(la.kind)) {
-								currentState = 416;
+								currentState = 418;
 								break;
 							} else {
 								if (la.kind == 129) {
-									currentState = 414;
+									currentState = 416;
 									break;
 								} else {
 									if (la.kind == 237) {
-										currentState = 411;
+										currentState = 413;
 										break;
 									} else {
 										if (la.kind == 10 || la.kind == 17 || la.kind == 19) {
-											stateStack.Push(137);
+											stateStack.Push(139);
 											nextTokenIsPotentialStartOfExpression = true;
 											PushContext(Context.Xml, la, t);
-											goto case 400;
+											goto case 402;
 										} else {
 											if (la.kind == 127 || la.kind == 210) {
-												stateStack.Push(137);
-												goto case 213;
+												stateStack.Push(139);
+												goto case 215;
 											} else {
 												if (la.kind == 58 || la.kind == 126) {
-													stateStack.Push(137);
+													stateStack.Push(139);
 													PushContext(Context.Query, la, t);
-													goto case 151;
+													goto case 153;
 												} else {
 													if (set[33].Get(la.kind)) {
-														stateStack.Push(137);
-														goto case 145;
+														stateStack.Push(139);
+														goto case 147;
 													} else {
 														if (la.kind == 135) {
-															stateStack.Push(137);
-															goto case 138;
+															stateStack.Push(139);
+															goto case 140;
 														} else {
 															Error(la);
-															goto case 137;
+															goto case 139;
 														}
 													}
 												}
@@ -3316,155 +3331,155 @@ partial class ExpressionFinder {
 					}
 				}
 			}
-			case 137: {
+			case 139: {
 				PopContext();
 				currentState = stateStack.Pop();
 				goto switchlbl;
 			}
-			case 138: {
-				if (la == null) { currentState = 138; break; }
-				Expect(135, la); // "If"
-				currentState = 139;
-				break;
-			}
-			case 139: {
-				if (la == null) { currentState = 139; break; }
-				Expect(37, la); // "("
-				currentState = 140;
-				break;
-			}
 			case 140: {
-				stateStack.Push(141);
-				goto case 49;
+				if (la == null) { currentState = 140; break; }
+				Expect(135, la); // "If"
+				currentState = 141;
+				break;
 			}
 			case 141: {
 				if (la == null) { currentState = 141; break; }
-				Expect(22, la); // ","
+				Expect(37, la); // "("
 				currentState = 142;
 				break;
 			}
 			case 142: {
 				stateStack.Push(143);
-				goto case 49;
+				goto case 50;
 			}
 			case 143: {
 				if (la == null) { currentState = 143; break; }
+				Expect(22, la); // ","
+				currentState = 144;
+				break;
+			}
+			case 144: {
+				stateStack.Push(145);
+				goto case 50;
+			}
+			case 145: {
+				if (la == null) { currentState = 145; break; }
 				if (la.kind == 22) {
-					currentState = 144;
+					currentState = 146;
 					break;
 				} else {
 					goto case 41;
 				}
 			}
-			case 144: {
+			case 146: {
 				stateStack.Push(41);
-				goto case 49;
+				goto case 50;
 			}
-			case 145: {
-				if (la == null) { currentState = 145; break; }
+			case 147: {
+				if (la == null) { currentState = 147; break; }
 				if (set[117].Get(la.kind)) {
-					currentState = 150;
+					currentState = 152;
 					break;
 				} else {
 					if (la.kind == 94 || la.kind == 106 || la.kind == 219) {
-						currentState = 146;
+						currentState = 148;
 						break;
 					} else {
 						goto case 6;
 					}
 				}
 			}
-			case 146: {
-				if (la == null) { currentState = 146; break; }
-				Expect(37, la); // "("
-				currentState = 147;
-				break;
-			}
-			case 147: {
-				stateStack.Push(148);
-				goto case 49;
-			}
 			case 148: {
 				if (la == null) { currentState = 148; break; }
-				Expect(22, la); // ","
+				Expect(37, la); // "("
 				currentState = 149;
 				break;
 			}
 			case 149: {
-				stateStack.Push(41);
-				goto case 33;
+				stateStack.Push(150);
+				goto case 50;
 			}
 			case 150: {
 				if (la == null) { currentState = 150; break; }
-				Expect(37, la); // "("
-				currentState = 144;
+				Expect(22, la); // ","
+				currentState = 151;
 				break;
 			}
 			case 151: {
-				if (la == null) { currentState = 151; break; }
-				if (la.kind == 126) {
-					stateStack.Push(152);
-					goto case 212;
-				} else {
-					if (la.kind == 58) {
-						stateStack.Push(152);
-						goto case 211;
-					} else {
-						Error(la);
-						goto case 152;
-					}
-				}
+				stateStack.Push(41);
+				goto case 33;
 			}
 			case 152: {
 				if (la == null) { currentState = 152; break; }
+				Expect(37, la); // "("
+				currentState = 146;
+				break;
+			}
+			case 153: {
+				if (la == null) { currentState = 153; break; }
+				if (la.kind == 126) {
+					stateStack.Push(154);
+					goto case 214;
+				} else {
+					if (la.kind == 58) {
+						stateStack.Push(154);
+						goto case 213;
+					} else {
+						Error(la);
+						goto case 154;
+					}
+				}
+			}
+			case 154: {
+				if (la == null) { currentState = 154; break; }
 				if (set[34].Get(la.kind)) {
-					stateStack.Push(152);
-					goto case 153;
+					stateStack.Push(154);
+					goto case 155;
 				} else {
 					PopContext();
 					currentState = stateStack.Pop();
 					goto switchlbl;
 				}
 			}
-			case 153: {
-				if (la == null) { currentState = 153; break; }
+			case 155: {
+				if (la == null) { currentState = 155; break; }
 				if (la.kind == 126) {
-					currentState = 209;
+					currentState = 211;
 					break;
 				} else {
 					if (la.kind == 58) {
-						currentState = 205;
+						currentState = 207;
 						break;
 					} else {
 						if (la.kind == 197) {
-							currentState = 203;
+							currentState = 205;
 							break;
 						} else {
 							if (la.kind == 107) {
-								goto case 106;
+								goto case 107;
 							} else {
 								if (la.kind == 230) {
-									currentState = 49;
+									currentState = 50;
 									break;
 								} else {
 									if (la.kind == 176) {
-										currentState = 199;
+										currentState = 201;
 										break;
 									} else {
 										if (la.kind == 203 || la.kind == 212) {
-											currentState = 197;
+											currentState = 199;
 											break;
 										} else {
 											if (la.kind == 148) {
-												currentState = 195;
+												currentState = 197;
 												break;
 											} else {
 												if (la.kind == 133) {
-													currentState = 168;
+													currentState = 170;
 													break;
 												} else {
 													if (la.kind == 146) {
-														currentState = 154;
+														currentState = 156;
 														break;
 													} else {
 														goto case 6;
@@ -3479,112 +3494,112 @@ partial class ExpressionFinder {
 					}
 				}
 			}
-			case 154: {
-				stateStack.Push(155);
-				goto case 160;
-			}
-			case 155: {
-				if (la == null) { currentState = 155; break; }
-				Expect(171, la); // "On"
-				currentState = 156;
-				break;
-			}
 			case 156: {
 				stateStack.Push(157);
-				goto case 49;
+				goto case 162;
 			}
 			case 157: {
 				if (la == null) { currentState = 157; break; }
-				Expect(116, la); // "Equals"
+				Expect(171, la); // "On"
 				currentState = 158;
 				break;
 			}
 			case 158: {
 				stateStack.Push(159);
-				goto case 49;
+				goto case 50;
 			}
 			case 159: {
 				if (la == null) { currentState = 159; break; }
+				Expect(116, la); // "Equals"
+				currentState = 160;
+				break;
+			}
+			case 160: {
+				stateStack.Push(161);
+				goto case 50;
+			}
+			case 161: {
+				if (la == null) { currentState = 161; break; }
 				if (la.kind == 22) {
-					currentState = 156;
+					currentState = 158;
 					break;
 				} else {
 					currentState = stateStack.Pop();
 					goto switchlbl;
 				}
 			}
-			case 160: {
+			case 162: {
 				PushContext(Context.Identifier, la, t);
 				SetIdentifierExpected(la);
-				stateStack.Push(161);
-				goto case 167;
-			}
-			case 161: {
-				PopContext();
-				goto case 162;
-			}
-			case 162: {
-				if (la == null) { currentState = 162; break; }
-				if (la.kind == 63) {
-					PushContext(Context.Type, la, t);
-					goto case 164;
-				} else {
-					goto case 163;
-				}
+				stateStack.Push(163);
+				goto case 169;
 			}
 			case 163: {
-				if (la == null) { currentState = 163; break; }
-				Expect(138, la); // "In"
-				currentState = 49;
-				break;
+				PopContext();
+				goto case 164;
 			}
 			case 164: {
 				if (la == null) { currentState = 164; break; }
-				Expect(63, la); // "As"
-				currentState = 165;
-				break;
+				if (la.kind == 63) {
+					PushContext(Context.Type, la, t);
+					goto case 166;
+				} else {
+					goto case 165;
+				}
 			}
 			case 165: {
-				stateStack.Push(166);
-				goto case 33;
+				if (la == null) { currentState = 165; break; }
+				Expect(138, la); // "In"
+				currentState = 50;
+				break;
 			}
 			case 166: {
-				PopContext();
-				goto case 163;
+				if (la == null) { currentState = 166; break; }
+				Expect(63, la); // "As"
+				currentState = 167;
+				break;
 			}
 			case 167: {
-				if (la == null) { currentState = 167; break; }
+				stateStack.Push(168);
+				goto case 33;
+			}
+			case 168: {
+				PopContext();
+				goto case 165;
+			}
+			case 169: {
+				if (la == null) { currentState = 169; break; }
 				if (set[102].Get(la.kind)) {
 					currentState = stateStack.Pop();
 					break;
 				} else {
 					if (la.kind == 98) {
-						goto case 108;
+						goto case 109;
 					} else {
 						goto case 6;
 					}
 				}
 			}
-			case 168: {
+			case 170: {
 				SetIdentifierExpected(la);
 				nextTokenIsPotentialStartOfExpression = true;
-				goto case 169;
+				goto case 171;
 			}
-			case 169: {
-				if (la == null) { currentState = 169; break; }
+			case 171: {
+				if (la == null) { currentState = 171; break; }
 				if (la.kind == 146) {
-					goto case 187;
+					goto case 189;
 				} else {
 					if (set[36].Get(la.kind)) {
 						if (la.kind == 70) {
-							currentState = 171;
+							currentState = 173;
 							break;
 						} else {
 							if (set[36].Get(la.kind)) {
-								goto case 185;
+								goto case 187;
 							} else {
 								Error(la);
-								goto case 170;
+								goto case 172;
 							}
 						}
 					} else {
@@ -3592,30 +3607,15 @@ partial class ExpressionFinder {
 					}
 				}
 			}
-			case 170: {
-				if (la == null) { currentState = 170; break; }
-				Expect(70, la); // "By"
-				currentState = 171;
-				break;
-			}
-			case 171: {
-				stateStack.Push(172);
-				goto case 175;
-			}
 			case 172: {
 				if (la == null) { currentState = 172; break; }
-				if (la.kind == 22) {
-					currentState = 171;
-					break;
-				} else {
-					Expect(143, la); // "Into"
-					currentState = 173;
-					break;
-				}
+				Expect(70, la); // "By"
+				currentState = 173;
+				break;
 			}
 			case 173: {
 				stateStack.Push(174);
-				goto case 175;
+				goto case 177;
 			}
 			case 174: {
 				if (la == null) { currentState = 174; break; }
@@ -3623,38 +3623,53 @@ partial class ExpressionFinder {
 					currentState = 173;
 					break;
 				} else {
+					Expect(143, la); // "Into"
+					currentState = 175;
+					break;
+				}
+			}
+			case 175: {
+				stateStack.Push(176);
+				goto case 177;
+			}
+			case 176: {
+				if (la == null) { currentState = 176; break; }
+				if (la.kind == 22) {
+					currentState = 175;
+					break;
+				} else {
 					currentState = stateStack.Pop();
 					goto switchlbl;
 				}
 			}
-			case 175: {
+			case 177: {
 				SetIdentifierExpected(la);
 				nextTokenIsPotentialStartOfExpression = true;
-				goto case 176;
-			}
-			case 176: {
-				if (la == null) { currentState = 176; break; }
-				if (set[6].Get(la.kind)) {
-					PushContext(Context.Identifier, la, t);
-					SetIdentifierExpected(la);
-					stateStack.Push(177);
-					goto case 167;
-				} else {
-					goto case 49;
-				}
-			}
-			case 177: {
-				PopContext();
 				goto case 178;
 			}
 			case 178: {
 				if (la == null) { currentState = 178; break; }
+				if (set[6].Get(la.kind)) {
+					PushContext(Context.Identifier, la, t);
+					SetIdentifierExpected(la);
+					stateStack.Push(179);
+					goto case 169;
+				} else {
+					goto case 50;
+				}
+			}
+			case 179: {
+				PopContext();
+				goto case 180;
+			}
+			case 180: {
+				if (la == null) { currentState = 180; break; }
 				if (la.kind == 63) {
 					PushContext(Context.Type, la, t);
-					goto case 181;
+					goto case 183;
 				} else {
 					if (la.kind == 20) {
-						goto case 180;
+						goto case 182;
 					} else {
 						if (set[37].Get(la.kind)) {
 							currentState = endOfStatementTerminatorAndBlock; /* leave this block */
@@ -3664,180 +3679,166 @@ partial class ExpressionFinder {
 
 						} else {
 							Error(la);
-							goto case 49;
+							goto case 50;
 						}
 					}
 				}
-			}
-			case 179: {
-				if (la == null) { currentState = 179; break; }
-				currentState = 49;
-				break;
-			}
-			case 180: {
-				if (la == null) { currentState = 180; break; }
-				currentState = 49;
-				break;
 			}
 			case 181: {
 				if (la == null) { currentState = 181; break; }
-				Expect(63, la); // "As"
-				currentState = 182;
+				currentState = 50;
 				break;
 			}
 			case 182: {
-				stateStack.Push(183);
-				goto case 33;
-			}
-			case 183: {
-				PopContext();
-				goto case 184;
-			}
-			case 184: {
-				if (la == null) { currentState = 184; break; }
-				Expect(20, la); // "="
-				currentState = 49;
+				if (la == null) { currentState = 182; break; }
+				currentState = 50;
 				break;
 			}
+			case 183: {
+				if (la == null) { currentState = 183; break; }
+				Expect(63, la); // "As"
+				currentState = 184;
+				break;
+			}
+			case 184: {
+				stateStack.Push(185);
+				goto case 33;
+			}
 			case 185: {
-				stateStack.Push(186);
-				goto case 175;
+				PopContext();
+				goto case 186;
 			}
 			case 186: {
 				if (la == null) { currentState = 186; break; }
-				if (la.kind == 22) {
-					currentState = 185;
-					break;
-				} else {
-					goto case 170;
-				}
+				Expect(20, la); // "="
+				currentState = 50;
+				break;
 			}
 			case 187: {
 				stateStack.Push(188);
-				goto case 194;
+				goto case 177;
 			}
 			case 188: {
 				if (la == null) { currentState = 188; break; }
-				if (la.kind == 133 || la.kind == 146) {
-					if (la.kind == 133) {
-						currentState = 192;
-						break;
-					} else {
-						if (la.kind == 146) {
-							goto case 187;
-						} else {
-							Error(la);
-							goto case 188;
-						}
-					}
+				if (la.kind == 22) {
+					currentState = 187;
+					break;
 				} else {
-					goto case 189;
+					goto case 172;
 				}
 			}
 			case 189: {
-				if (la == null) { currentState = 189; break; }
-				Expect(143, la); // "Into"
-				currentState = 190;
-				break;
+				stateStack.Push(190);
+				goto case 196;
 			}
 			case 190: {
-				stateStack.Push(191);
-				goto case 175;
+				if (la == null) { currentState = 190; break; }
+				if (la.kind == 133 || la.kind == 146) {
+					if (la.kind == 133) {
+						currentState = 194;
+						break;
+					} else {
+						if (la.kind == 146) {
+							goto case 189;
+						} else {
+							Error(la);
+							goto case 190;
+						}
+					}
+				} else {
+					goto case 191;
+				}
 			}
 			case 191: {
 				if (la == null) { currentState = 191; break; }
-				if (la.kind == 22) {
-					currentState = 190;
-					break;
-				} else {
-					currentState = stateStack.Pop();
-					goto switchlbl;
-				}
+				Expect(143, la); // "Into"
+				currentState = 192;
+				break;
 			}
 			case 192: {
 				stateStack.Push(193);
-				goto case 194;
+				goto case 177;
 			}
 			case 193: {
-				stateStack.Push(188);
-				goto case 189;
+				if (la == null) { currentState = 193; break; }
+				if (la.kind == 22) {
+					currentState = 192;
+					break;
+				} else {
+					currentState = stateStack.Pop();
+					goto switchlbl;
+				}
 			}
 			case 194: {
-				if (la == null) { currentState = 194; break; }
-				Expect(146, la); // "Join"
-				currentState = 154;
-				break;
+				stateStack.Push(195);
+				goto case 196;
 			}
 			case 195: {
-				stateStack.Push(196);
-				goto case 175;
+				stateStack.Push(190);
+				goto case 191;
 			}
 			case 196: {
 				if (la == null) { currentState = 196; break; }
-				if (la.kind == 22) {
-					currentState = 195;
-					break;
-				} else {
-					currentState = stateStack.Pop();
-					goto switchlbl;
-				}
+				Expect(146, la); // "Join"
+				currentState = 156;
+				break;
 			}
 			case 197: {
-				nextTokenIsPotentialStartOfExpression = true;
-				goto case 198;
+				stateStack.Push(198);
+				goto case 177;
 			}
 			case 198: {
 				if (la == null) { currentState = 198; break; }
-				if (la.kind == 231) {
-					currentState = 49;
-					break;
-				} else {
-					goto case 49;
-				}
-			}
-			case 199: {
-				if (la == null) { currentState = 199; break; }
-				Expect(70, la); // "By"
-				currentState = 200;
-				break;
-			}
-			case 200: {
-				stateStack.Push(201);
-				goto case 49;
-			}
-			case 201: {
-				if (la == null) { currentState = 201; break; }
-				if (la.kind == 64) {
-					currentState = 202;
-					break;
-				} else {
-					if (la.kind == 104) {
-						currentState = 202;
-						break;
-					} else {
-						Error(la);
-						goto case 202;
-					}
-				}
-			}
-			case 202: {
-				if (la == null) { currentState = 202; break; }
 				if (la.kind == 22) {
-					currentState = 200;
+					currentState = 197;
 					break;
 				} else {
 					currentState = stateStack.Pop();
 					goto switchlbl;
 				}
 			}
+			case 199: {
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 200;
+			}
+			case 200: {
+				if (la == null) { currentState = 200; break; }
+				if (la.kind == 231) {
+					currentState = 50;
+					break;
+				} else {
+					goto case 50;
+				}
+			}
+			case 201: {
+				if (la == null) { currentState = 201; break; }
+				Expect(70, la); // "By"
+				currentState = 202;
+				break;
+			}
+			case 202: {
+				stateStack.Push(203);
+				goto case 50;
+			}
 			case 203: {
-				stateStack.Push(204);
-				goto case 175;
+				if (la == null) { currentState = 203; break; }
+				if (la.kind == 64) {
+					currentState = 204;
+					break;
+				} else {
+					if (la.kind == 104) {
+						currentState = 204;
+						break;
+					} else {
+						Error(la);
+						goto case 204;
+					}
+				}
 			}
 			case 204: {
 				if (la == null) { currentState = 204; break; }
 				if (la.kind == 22) {
-					currentState = 203;
+					currentState = 202;
 					break;
 				} else {
 					currentState = stateStack.Pop();
@@ -3846,36 +3847,36 @@ partial class ExpressionFinder {
 			}
 			case 205: {
 				stateStack.Push(206);
-				goto case 160;
+				goto case 177;
 			}
 			case 206: {
 				if (la == null) { currentState = 206; break; }
-				if (set[34].Get(la.kind)) {
-					stateStack.Push(206);
-					goto case 153;
-				} else {
-					Expect(143, la); // "Into"
-					currentState = 207;
-					break;
-				}
-			}
-			case 207: {
-				stateStack.Push(208);
-				goto case 175;
-			}
-			case 208: {
-				if (la == null) { currentState = 208; break; }
 				if (la.kind == 22) {
-					currentState = 207;
+					currentState = 205;
 					break;
 				} else {
 					currentState = stateStack.Pop();
 					goto switchlbl;
 				}
 			}
+			case 207: {
+				stateStack.Push(208);
+				goto case 162;
+			}
+			case 208: {
+				if (la == null) { currentState = 208; break; }
+				if (set[34].Get(la.kind)) {
+					stateStack.Push(208);
+					goto case 155;
+				} else {
+					Expect(143, la); // "Into"
+					currentState = 209;
+					break;
+				}
+			}
 			case 209: {
 				stateStack.Push(210);
-				goto case 160;
+				goto case 177;
 			}
 			case 210: {
 				if (la == null) { currentState = 210; break; }
@@ -3888,140 +3889,154 @@ partial class ExpressionFinder {
 				}
 			}
 			case 211: {
-				if (la == null) { currentState = 211; break; }
-				Expect(58, la); // "Aggregate"
-				currentState = 205;
-				break;
+				stateStack.Push(212);
+				goto case 162;
 			}
 			case 212: {
 				if (la == null) { currentState = 212; break; }
-				Expect(126, la); // "From"
-				currentState = 209;
-				break;
+				if (la.kind == 22) {
+					currentState = 211;
+					break;
+				} else {
+					currentState = stateStack.Pop();
+					goto switchlbl;
+				}
 			}
 			case 213: {
 				if (la == null) { currentState = 213; break; }
+				Expect(58, la); // "Aggregate"
+				currentState = 207;
+				break;
+			}
+			case 214: {
+				if (la == null) { currentState = 214; break; }
+				Expect(126, la); // "From"
+				currentState = 211;
+				break;
+			}
+			case 215: {
+				if (la == null) { currentState = 215; break; }
 				if (la.kind == 210) {
-					currentState = 392;
+					currentState = 394;
 					break;
 				} else {
 					if (la.kind == 127) {
-						currentState = 214;
+						currentState = 216;
 						break;
 					} else {
 						goto case 6;
 					}
 				}
 			}
-			case 214: {
-				if (la == null) { currentState = 214; break; }
-				Expect(37, la); // "("
-				currentState = 215;
-				break;
-			}
-			case 215: {
-				SetIdentifierExpected(la);
-				goto case 216;
-			}
 			case 216: {
 				if (la == null) { currentState = 216; break; }
-				if (set[71].Get(la.kind)) {
-					stateStack.Push(217);
-					goto case 373;
-				} else {
-					goto case 217;
-				}
-			}
-			case 217: {
-				if (la == null) { currentState = 217; break; }
-				Expect(38, la); // ")"
-				currentState = 218;
+				Expect(37, la); // "("
+				currentState = 217;
 				break;
 			}
+			case 217: {
+				SetIdentifierExpected(la);
+				goto case 218;
+			}
 			case 218: {
-				nextTokenIsPotentialStartOfExpression = true;
-				goto case 219;
+				if (la == null) { currentState = 218; break; }
+				if (set[71].Get(la.kind)) {
+					stateStack.Push(219);
+					goto case 375;
+				} else {
+					goto case 219;
+				}
 			}
 			case 219: {
 				if (la == null) { currentState = 219; break; }
+				Expect(38, la); // ")"
+				currentState = 220;
+				break;
+			}
+			case 220: {
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 221;
+			}
+			case 221: {
+				if (la == null) { currentState = 221; break; }
 				if (set[22].Get(la.kind)) {
-					goto case 49;
+					goto case 50;
 				} else {
 					if (la.kind == 1 || la.kind == 21 || la.kind == 63) {
 						if (la.kind == 63) {
 							PushContext(Context.Type, la, t);
-							goto case 370;
+							goto case 372;
 						} else {
-							goto case 220;
+							goto case 222;
 						}
 					} else {
 						goto case 6;
 					}
 				}
 			}
-			case 220: {
-				stateStack.Push(221);
-				goto case 223;
+			case 222: {
+				stateStack.Push(223);
+				goto case 225;
 			}
-			case 221: {
-				if (la == null) { currentState = 221; break; }
+			case 223: {
+				if (la == null) { currentState = 223; break; }
 				Expect(113, la); // "End"
-				currentState = 222;
+				currentState = 224;
 				break;
 			}
-			case 222: {
-				if (la == null) { currentState = 222; break; }
+			case 224: {
+				if (la == null) { currentState = 224; break; }
 				Expect(127, la); // "Function"
 				currentState = stateStack.Pop();
 				break;
 			}
-			case 223: {
-				PushContext(Context.Body, la, t);
-				goto case 224;
-			}
-			case 224: {
-				stateStack.Push(225);
-				goto case 18;
-			}
 			case 225: {
-				nextTokenIsPotentialStartOfExpression = true;
+				PushContext(Context.Body, la, t);
 				goto case 226;
 			}
 			case 226: {
-				if (la == null) { currentState = 226; break; }
+				stateStack.Push(227);
+				goto case 18;
+			}
+			case 227: {
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 228;
+			}
+			case 228: {
+				if (la == null) { currentState = 228; break; }
 				if (set[118].Get(la.kind)) {
 					if (set[63].Get(la.kind)) {
 						if (set[45].Get(la.kind)) {
-							stateStack.Push(224);
-							goto case 231;
+							stateStack.Push(226);
+							goto case 233;
 						} else {
-							goto case 224;
+							goto case 226;
 						}
 					} else {
 						if (la.kind == 113) {
-							currentState = 229;
+							currentState = 231;
 							break;
 						} else {
-							goto case 228;
+							goto case 230;
 						}
 					}
 				} else {
-					goto case 227;
+					goto case 229;
 				}
 			}
-			case 227: {
+			case 229: {
 				PopContext();
 				currentState = stateStack.Pop();
 				goto switchlbl;
 			}
-			case 228: {
+			case 230: {
 				Error(la);
-				goto case 225;
+				goto case 227;
 			}
-			case 229: {
-				if (la == null) { currentState = 229; break; }
+			case 231: {
+				if (la == null) { currentState = 231; break; }
 				if (la.kind == 1 || la.kind == 21) {
-					goto case 224;
+					goto case 226;
 				} else {
 					if (set[44].Get(la.kind)) {
 						currentState = endOfStatementTerminatorAndBlock; /* leave this block */
@@ -4030,68 +4045,68 @@ partial class ExpressionFinder {
 						goto switchlbl;
 
 					} else {
-						goto case 228;
+						goto case 230;
 					}
 				}
 			}
-			case 230: {
-				if (la == null) { currentState = 230; break; }
-				currentState = 225;
-				break;
-			}
-			case 231: {
-				nextTokenIsPotentialStartOfExpression = true;
-				goto case 232;
-			}
 			case 232: {
 				if (la == null) { currentState = 232; break; }
+				currentState = 227;
+				break;
+			}
+			case 233: {
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 234;
+			}
+			case 234: {
+				if (la == null) { currentState = 234; break; }
 				if (la.kind == 88 || la.kind == 105 || la.kind == 204) {
-					currentState = 351;
+					currentState = 353;
 					break;
 				} else {
 					if (la.kind == 211 || la.kind == 233) {
-						currentState = 347;
+						currentState = 349;
 						break;
 					} else {
 						if (la.kind == 56 || la.kind == 193) {
-							currentState = 345;
+							currentState = 347;
 							break;
 						} else {
 							if (la.kind == 189) {
-								currentState = 343;
+								currentState = 345;
 								break;
 							} else {
 								if (la.kind == 135) {
-									currentState = 324;
+									currentState = 326;
 									break;
 								} else {
 									if (la.kind == 197) {
-										currentState = 309;
+										currentState = 311;
 										break;
 									} else {
 										if (la.kind == 231) {
-											currentState = 305;
+											currentState = 307;
 											break;
 										} else {
 											if (la.kind == 108) {
-												currentState = 299;
+												currentState = 301;
 												break;
 											} else {
 												if (la.kind == 124) {
-													currentState = 271;
+													currentState = 273;
 													break;
 												} else {
 													if (la.kind == 118 || la.kind == 171 || la.kind == 194) {
 														if (la.kind == 118 || la.kind == 171) {
 															if (la.kind == 171) {
-																currentState = 267;
+																currentState = 269;
 																break;
 															} else {
-																goto case 267;
+																goto case 269;
 															}
 														} else {
 															if (la.kind == 194) {
-																currentState = 265;
+																currentState = 267;
 																break;
 															} else {
 																goto case 6;
@@ -4099,31 +4114,31 @@ partial class ExpressionFinder {
 														}
 													} else {
 														if (la.kind == 215) {
-															currentState = 263;
+															currentState = 265;
 															break;
 														} else {
 															if (la.kind == 218) {
-																currentState = 249;
+																currentState = 251;
 																break;
 															} else {
 																if (set[119].Get(la.kind)) {
 																	if (la.kind == 132) {
-																		currentState = 246;
+																		currentState = 248;
 																		break;
 																	} else {
 																		if (la.kind == 120) {
-																			currentState = 245;
+																			currentState = 247;
 																			break;
 																		} else {
 																			if (la.kind == 89) {
-																				currentState = 244;
+																				currentState = 246;
 																				break;
 																			} else {
 																				if (la.kind == 206) {
-																					goto case 86;
+																					goto case 87;
 																				} else {
 																					if (la.kind == 195) {
-																						currentState = 241;
+																						currentState = 243;
 																						break;
 																					} else {
 																						goto case 6;
@@ -4134,23 +4149,23 @@ partial class ExpressionFinder {
 																	}
 																} else {
 																	if (la.kind == 191) {
-																		currentState = 239;
+																		currentState = 241;
 																		break;
 																	} else {
 																		if (la.kind == 117) {
-																			currentState = 237;
+																			currentState = 239;
 																			break;
 																		} else {
 																			if (la.kind == 226) {
-																				currentState = 233;
+																				currentState = 235;
 																				break;
 																			} else {
 																				if (set[120].Get(la.kind)) {
 																					if (la.kind == 73) {
-																						currentState = 49;
+																						currentState = 50;
 																						break;
 																					} else {
-																						goto case 49;
+																						goto case 50;
 																					}
 																				} else {
 																					goto case 6;
@@ -4172,113 +4187,113 @@ partial class ExpressionFinder {
 					}
 				}
 			}
-			case 233: {
-				stateStack.Push(234);
-				goto case 49;
-			}
-			case 234: {
-				stateStack.Push(235);
-				goto case 223;
-			}
 			case 235: {
-				if (la == null) { currentState = 235; break; }
-				Expect(113, la); // "End"
-				currentState = 236;
-				break;
+				stateStack.Push(236);
+				goto case 50;
 			}
 			case 236: {
-				if (la == null) { currentState = 236; break; }
+				stateStack.Push(237);
+				goto case 225;
+			}
+			case 237: {
+				if (la == null) { currentState = 237; break; }
+				Expect(113, la); // "End"
+				currentState = 238;
+				break;
+			}
+			case 238: {
+				if (la == null) { currentState = 238; break; }
 				Expect(226, la); // "Using"
 				currentState = stateStack.Pop();
 				break;
 			}
-			case 237: {
-				stateStack.Push(238);
-				goto case 49;
+			case 239: {
+				stateStack.Push(240);
+				goto case 50;
 			}
-			case 238: {
-				if (la == null) { currentState = 238; break; }
+			case 240: {
+				if (la == null) { currentState = 240; break; }
 				if (la.kind == 22) {
-					currentState = 237;
+					currentState = 239;
 					break;
 				} else {
 					currentState = stateStack.Pop();
 					goto switchlbl;
 				}
 			}
-			case 239: {
-				nextTokenIsPotentialStartOfExpression = true;
-				goto case 240;
-			}
-			case 240: {
-				if (la == null) { currentState = 240; break; }
-				if (la.kind == 184) {
-					currentState = 49;
-					break;
-				} else {
-					goto case 49;
-				}
-			}
 			case 241: {
-				PushContext(Context.Expression, la, t);
 				nextTokenIsPotentialStartOfExpression = true;
 				goto case 242;
 			}
 			case 242: {
 				if (la == null) { currentState = 242; break; }
-				if (set[22].Get(la.kind)) {
-					stateStack.Push(243);
-					goto case 49;
+				if (la.kind == 184) {
+					currentState = 50;
+					break;
 				} else {
-					goto case 243;
+					goto case 50;
 				}
 			}
 			case 243: {
+				PushContext(Context.Expression, la, t);
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 244;
+			}
+			case 244: {
+				if (la == null) { currentState = 244; break; }
+				if (set[22].Get(la.kind)) {
+					stateStack.Push(245);
+					goto case 50;
+				} else {
+					goto case 245;
+				}
+			}
+			case 245: {
 				PopContext();
 				currentState = stateStack.Pop();
 				goto switchlbl;
 			}
-			case 244: {
-				if (la == null) { currentState = 244; break; }
+			case 246: {
+				if (la == null) { currentState = 246; break; }
 				if (la.kind == 108) {
-					goto case 105;
+					goto case 106;
 				} else {
 					if (la.kind == 124) {
-						goto case 102;
+						goto case 103;
 					} else {
 						if (la.kind == 231) {
-							goto case 76;
+							goto case 77;
 						} else {
 							goto case 6;
 						}
 					}
 				}
 			}
-			case 245: {
-				if (la == null) { currentState = 245; break; }
+			case 247: {
+				if (la == null) { currentState = 247; break; }
 				if (la.kind == 108) {
-					goto case 105;
+					goto case 106;
 				} else {
 					if (la.kind == 124) {
-						goto case 102;
+						goto case 103;
 					} else {
 						if (la.kind == 231) {
-							goto case 76;
+							goto case 77;
 						} else {
 							if (la.kind == 197) {
-								goto case 88;
+								goto case 89;
 							} else {
 								if (la.kind == 210) {
-									goto case 84;
+									goto case 85;
 								} else {
 									if (la.kind == 127) {
-										goto case 100;
+										goto case 101;
 									} else {
 										if (la.kind == 186) {
-											goto case 89;
+											goto case 90;
 										} else {
 											if (la.kind == 218) {
-												goto case 80;
+												goto case 81;
 											} else {
 												goto case 6;
 											}
@@ -4290,171 +4305,171 @@ partial class ExpressionFinder {
 					}
 				}
 			}
-			case 246: {
-				if (la == null) { currentState = 246; break; }
+			case 248: {
+				if (la == null) { currentState = 248; break; }
 				if (set[6].Get(la.kind)) {
-					goto case 248;
+					goto case 250;
 				} else {
 					if (la.kind == 5) {
-						goto case 247;
+						goto case 249;
 					} else {
 						goto case 6;
 					}
 				}
 			}
-			case 247: {
-				if (la == null) { currentState = 247; break; }
-				currentState = stateStack.Pop();
-				break;
-			}
-			case 248: {
-				if (la == null) { currentState = 248; break; }
-				currentState = stateStack.Pop();
-				break;
-			}
 			case 249: {
-				stateStack.Push(250);
-				goto case 223;
+				if (la == null) { currentState = 249; break; }
+				currentState = stateStack.Pop();
+				break;
 			}
 			case 250: {
 				if (la == null) { currentState = 250; break; }
-				if (la.kind == 75) {
-					currentState = 254;
-					break;
-				} else {
-					if (la.kind == 123) {
-						currentState = 253;
-						break;
-					} else {
-						goto case 251;
-					}
-				}
+				currentState = stateStack.Pop();
+				break;
 			}
 			case 251: {
-				if (la == null) { currentState = 251; break; }
-				Expect(113, la); // "End"
-				currentState = 252;
-				break;
+				stateStack.Push(252);
+				goto case 225;
 			}
 			case 252: {
 				if (la == null) { currentState = 252; break; }
+				if (la.kind == 75) {
+					currentState = 256;
+					break;
+				} else {
+					if (la.kind == 123) {
+						currentState = 255;
+						break;
+					} else {
+						goto case 253;
+					}
+				}
+			}
+			case 253: {
+				if (la == null) { currentState = 253; break; }
+				Expect(113, la); // "End"
+				currentState = 254;
+				break;
+			}
+			case 254: {
+				if (la == null) { currentState = 254; break; }
 				Expect(218, la); // "Try"
 				currentState = stateStack.Pop();
 				break;
 			}
-			case 253: {
-				stateStack.Push(251);
-				goto case 223;
-			}
-			case 254: {
-				SetIdentifierExpected(la);
-				goto case 255;
-			}
 			case 255: {
-				if (la == null) { currentState = 255; break; }
+				stateStack.Push(253);
+				goto case 225;
+			}
+			case 256: {
+				SetIdentifierExpected(la);
+				goto case 257;
+			}
+			case 257: {
+				if (la == null) { currentState = 257; break; }
 				if (set[6].Get(la.kind)) {
 					PushContext(Context.Identifier, la, t);
 					SetIdentifierExpected(la);
-					stateStack.Push(258);
-					goto case 167;
+					stateStack.Push(260);
+					goto case 169;
 				} else {
-					goto case 256;
+					goto case 258;
 				}
-			}
-			case 256: {
-				if (la == null) { currentState = 256; break; }
-				if (la.kind == 229) {
-					currentState = 257;
-					break;
-				} else {
-					goto case 249;
-				}
-			}
-			case 257: {
-				stateStack.Push(249);
-				goto case 49;
 			}
 			case 258: {
-				PopContext();
-				goto case 259;
-			}
-			case 259: {
-				if (la == null) { currentState = 259; break; }
-				if (la.kind == 63) {
-					PushContext(Context.Type, la, t);
-					goto case 260;
+				if (la == null) { currentState = 258; break; }
+				if (la.kind == 229) {
+					currentState = 259;
+					break;
 				} else {
-					goto case 256;
+					goto case 251;
 				}
 			}
+			case 259: {
+				stateStack.Push(251);
+				goto case 50;
+			}
 			case 260: {
-				if (la == null) { currentState = 260; break; }
-				Expect(63, la); // "As"
-				currentState = 261;
-				break;
+				PopContext();
+				goto case 261;
 			}
 			case 261: {
-				stateStack.Push(262);
-				goto case 33;
+				if (la == null) { currentState = 261; break; }
+				if (la.kind == 63) {
+					PushContext(Context.Type, la, t);
+					goto case 262;
+				} else {
+					goto case 258;
+				}
 			}
 			case 262: {
-				PopContext();
-				goto case 256;
+				if (la == null) { currentState = 262; break; }
+				Expect(63, la); // "As"
+				currentState = 263;
+				break;
 			}
 			case 263: {
-				nextTokenIsPotentialStartOfExpression = true;
-				goto case 264;
+				stateStack.Push(264);
+				goto case 33;
 			}
 			case 264: {
-				if (la == null) { currentState = 264; break; }
+				PopContext();
+				goto case 258;
+			}
+			case 265: {
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 266;
+			}
+			case 266: {
+				if (la == null) { currentState = 266; break; }
 				if (set[22].Get(la.kind)) {
-					goto case 49;
+					goto case 50;
 				} else {
 					currentState = stateStack.Pop();
 					goto switchlbl;
 				}
 			}
-			case 265: {
-				if (la == null) { currentState = 265; break; }
+			case 267: {
+				if (la == null) { currentState = 267; break; }
 				if (la.kind == 163) {
-					goto case 93;
+					goto case 94;
 				} else {
-					goto case 266;
+					goto case 268;
 				}
 			}
-			case 266: {
-				if (la == null) { currentState = 266; break; }
+			case 268: {
+				if (la == null) { currentState = 268; break; }
 				if (la.kind == 5) {
-					goto case 247;
+					goto case 249;
 				} else {
 					if (set[6].Get(la.kind)) {
-						goto case 248;
+						goto case 250;
 					} else {
 						goto case 6;
 					}
 				}
 			}
-			case 267: {
-				if (la == null) { currentState = 267; break; }
-				Expect(118, la); // "Error"
-				currentState = 268;
-				break;
-			}
-			case 268: {
-				nextTokenIsPotentialStartOfExpression = true;
-				goto case 269;
-			}
 			case 269: {
 				if (la == null) { currentState = 269; break; }
+				Expect(118, la); // "Error"
+				currentState = 270;
+				break;
+			}
+			case 270: {
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 271;
+			}
+			case 271: {
+				if (la == null) { currentState = 271; break; }
 				if (set[22].Get(la.kind)) {
-					goto case 49;
+					goto case 50;
 				} else {
 					if (la.kind == 132) {
-						currentState = 266;
+						currentState = 268;
 						break;
 					} else {
 						if (la.kind == 194) {
-							currentState = 270;
+							currentState = 272;
 							break;
 						} else {
 							goto case 6;
@@ -4462,357 +4477,357 @@ partial class ExpressionFinder {
 					}
 				}
 			}
-			case 270: {
-				if (la == null) { currentState = 270; break; }
+			case 272: {
+				if (la == null) { currentState = 272; break; }
 				Expect(163, la); // "Next"
 				currentState = stateStack.Pop();
 				break;
 			}
-			case 271: {
+			case 273: {
 				nextTokenIsPotentialStartOfExpression = true;
 				SetIdentifierExpected(la);
-				goto case 272;
+				goto case 274;
 			}
-			case 272: {
-				if (la == null) { currentState = 272; break; }
+			case 274: {
+				if (la == null) { currentState = 274; break; }
 				if (set[31].Get(la.kind)) {
-					stateStack.Push(289);
-					goto case 282;
+					stateStack.Push(291);
+					goto case 284;
 				} else {
 					if (la.kind == 110) {
-						currentState = 273;
+						currentState = 275;
 						break;
 					} else {
 						goto case 6;
 					}
 				}
 			}
-			case 273: {
-				stateStack.Push(274);
-				goto case 282;
-			}
-			case 274: {
-				if (la == null) { currentState = 274; break; }
-				Expect(138, la); // "In"
-				currentState = 275;
-				break;
-			}
 			case 275: {
 				stateStack.Push(276);
-				goto case 49;
+				goto case 284;
 			}
 			case 276: {
-				stateStack.Push(277);
-				goto case 223;
-			}
-			case 277: {
-				if (la == null) { currentState = 277; break; }
-				Expect(163, la); // "Next"
-				currentState = 278;
+				if (la == null) { currentState = 276; break; }
+				Expect(138, la); // "In"
+				currentState = 277;
 				break;
 			}
+			case 277: {
+				stateStack.Push(278);
+				goto case 50;
+			}
 			case 278: {
-				nextTokenIsPotentialStartOfExpression = true;
-				goto case 279;
+				stateStack.Push(279);
+				goto case 225;
 			}
 			case 279: {
 				if (la == null) { currentState = 279; break; }
-				if (set[22].Get(la.kind)) {
-					goto case 280;
-				} else {
-					currentState = stateStack.Pop();
-					goto switchlbl;
-				}
+				Expect(163, la); // "Next"
+				currentState = 280;
+				break;
 			}
 			case 280: {
-				stateStack.Push(281);
-				goto case 49;
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 281;
 			}
 			case 281: {
 				if (la == null) { currentState = 281; break; }
-				if (la.kind == 22) {
-					currentState = 280;
-					break;
+				if (set[22].Get(la.kind)) {
+					goto case 282;
 				} else {
 					currentState = stateStack.Pop();
 					goto switchlbl;
 				}
 			}
 			case 282: {
-				PushContext(Context.Identifier, la, t);
-				SetIdentifierExpected(la);
 				stateStack.Push(283);
-				goto case 135;
+				goto case 50;
 			}
 			case 283: {
-				PopContext();
-				goto case 284;
-			}
-			case 284: {
-				if (la == null) { currentState = 284; break; }
-				if (la.kind == 33) {
-					currentState = 285;
+				if (la == null) { currentState = 283; break; }
+				if (la.kind == 22) {
+					currentState = 282;
 					break;
 				} else {
-					goto case 285;
+					currentState = stateStack.Pop();
+					goto switchlbl;
 				}
 			}
+			case 284: {
+				PushContext(Context.Identifier, la, t);
+				SetIdentifierExpected(la);
+				stateStack.Push(285);
+				goto case 137;
+			}
 			case 285: {
-				if (la == null) { currentState = 285; break; }
+				PopContext();
+				goto case 286;
+			}
+			case 286: {
+				if (la == null) { currentState = 286; break; }
+				if (la.kind == 33) {
+					currentState = 287;
+					break;
+				} else {
+					goto case 287;
+				}
+			}
+			case 287: {
+				if (la == null) { currentState = 287; break; }
 				if (set[28].Get(la.kind)) {
-					stateStack.Push(285);
-					goto case 126;
+					stateStack.Push(287);
+					goto case 127;
 				} else {
 					if (la.kind == 63) {
 						PushContext(Context.Type, la, t);
-						goto case 286;
+						goto case 288;
 					} else {
 						currentState = stateStack.Pop();
 						goto switchlbl;
 					}
 				}
 			}
-			case 286: {
-				if (la == null) { currentState = 286; break; }
+			case 288: {
+				if (la == null) { currentState = 288; break; }
 				Expect(63, la); // "As"
-				currentState = 287;
+				currentState = 289;
 				break;
 			}
-			case 287: {
-				stateStack.Push(288);
+			case 289: {
+				stateStack.Push(290);
 				goto case 33;
 			}
-			case 288: {
+			case 290: {
 				PopContext();
 				currentState = stateStack.Pop();
 				goto switchlbl;
 			}
-			case 289: {
-				if (la == null) { currentState = 289; break; }
-				Expect(20, la); // "="
-				currentState = 290;
-				break;
-			}
-			case 290: {
-				stateStack.Push(291);
-				goto case 49;
-			}
 			case 291: {
 				if (la == null) { currentState = 291; break; }
-				if (la.kind == 205) {
-					currentState = 298;
-					break;
-				} else {
-					goto case 292;
-				}
+				Expect(20, la); // "="
+				currentState = 292;
+				break;
 			}
 			case 292: {
 				stateStack.Push(293);
-				goto case 223;
+				goto case 50;
 			}
 			case 293: {
 				if (la == null) { currentState = 293; break; }
-				Expect(163, la); // "Next"
-				currentState = 294;
-				break;
+				if (la.kind == 205) {
+					currentState = 300;
+					break;
+				} else {
+					goto case 294;
+				}
 			}
 			case 294: {
-				nextTokenIsPotentialStartOfExpression = true;
-				goto case 295;
+				stateStack.Push(295);
+				goto case 225;
 			}
 			case 295: {
 				if (la == null) { currentState = 295; break; }
-				if (set[22].Get(la.kind)) {
-					goto case 296;
-				} else {
-					currentState = stateStack.Pop();
-					goto switchlbl;
-				}
+				Expect(163, la); // "Next"
+				currentState = 296;
+				break;
 			}
 			case 296: {
-				stateStack.Push(297);
-				goto case 49;
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 297;
 			}
 			case 297: {
 				if (la == null) { currentState = 297; break; }
-				if (la.kind == 22) {
-					currentState = 296;
-					break;
+				if (set[22].Get(la.kind)) {
+					goto case 298;
 				} else {
 					currentState = stateStack.Pop();
 					goto switchlbl;
 				}
 			}
 			case 298: {
-				stateStack.Push(292);
-				goto case 49;
+				stateStack.Push(299);
+				goto case 50;
 			}
 			case 299: {
 				if (la == null) { currentState = 299; break; }
-				if (la.kind == 224 || la.kind == 231) {
-					currentState = 302;
-					break;
-				} else {
-					if (la.kind == 1 || la.kind == 21) {
-						stateStack.Push(300);
-						goto case 223;
-					} else {
-						goto case 6;
-					}
-				}
-			}
-			case 300: {
-				if (la == null) { currentState = 300; break; }
-				Expect(152, la); // "Loop"
-				currentState = 301;
-				break;
-			}
-			case 301: {
-				if (la == null) { currentState = 301; break; }
-				if (la.kind == 224 || la.kind == 231) {
-					currentState = 49;
+				if (la.kind == 22) {
+					currentState = 298;
 					break;
 				} else {
 					currentState = stateStack.Pop();
 					goto switchlbl;
 				}
 			}
+			case 300: {
+				stateStack.Push(294);
+				goto case 50;
+			}
+			case 301: {
+				if (la == null) { currentState = 301; break; }
+				if (la.kind == 224 || la.kind == 231) {
+					currentState = 304;
+					break;
+				} else {
+					if (la.kind == 1 || la.kind == 21) {
+						stateStack.Push(302);
+						goto case 225;
+					} else {
+						goto case 6;
+					}
+				}
+			}
 			case 302: {
-				stateStack.Push(303);
-				goto case 49;
+				if (la == null) { currentState = 302; break; }
+				Expect(152, la); // "Loop"
+				currentState = 303;
+				break;
 			}
 			case 303: {
-				stateStack.Push(304);
-				goto case 223;
+				if (la == null) { currentState = 303; break; }
+				if (la.kind == 224 || la.kind == 231) {
+					currentState = 50;
+					break;
+				} else {
+					currentState = stateStack.Pop();
+					goto switchlbl;
+				}
 			}
 			case 304: {
-				if (la == null) { currentState = 304; break; }
+				stateStack.Push(305);
+				goto case 50;
+			}
+			case 305: {
+				stateStack.Push(306);
+				goto case 225;
+			}
+			case 306: {
+				if (la == null) { currentState = 306; break; }
 				Expect(152, la); // "Loop"
 				currentState = stateStack.Pop();
 				break;
 			}
-			case 305: {
-				stateStack.Push(306);
-				goto case 49;
-			}
-			case 306: {
-				stateStack.Push(307);
-				goto case 223;
-			}
 			case 307: {
-				if (la == null) { currentState = 307; break; }
-				Expect(113, la); // "End"
-				currentState = 308;
-				break;
+				stateStack.Push(308);
+				goto case 50;
 			}
 			case 308: {
-				if (la == null) { currentState = 308; break; }
+				stateStack.Push(309);
+				goto case 225;
+			}
+			case 309: {
+				if (la == null) { currentState = 309; break; }
+				Expect(113, la); // "End"
+				currentState = 310;
+				break;
+			}
+			case 310: {
+				if (la == null) { currentState = 310; break; }
 				Expect(231, la); // "While"
 				currentState = stateStack.Pop();
 				break;
 			}
-			case 309: {
-				nextTokenIsPotentialStartOfExpression = true;
-				goto case 310;
-			}
-			case 310: {
-				if (la == null) { currentState = 310; break; }
-				if (la.kind == 74) {
-					currentState = 311;
-					break;
-				} else {
-					goto case 311;
-				}
-			}
 			case 311: {
-				stateStack.Push(312);
-				goto case 49;
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 312;
 			}
 			case 312: {
-				stateStack.Push(313);
-				goto case 18;
+				if (la == null) { currentState = 312; break; }
+				if (la.kind == 74) {
+					currentState = 313;
+					break;
+				} else {
+					goto case 313;
+				}
 			}
 			case 313: {
-				if (la == null) { currentState = 313; break; }
+				stateStack.Push(314);
+				goto case 50;
+			}
+			case 314: {
+				stateStack.Push(315);
+				goto case 18;
+			}
+			case 315: {
+				if (la == null) { currentState = 315; break; }
 				if (la.kind == 74) {
-					currentState = 315;
+					currentState = 317;
 					break;
 				} else {
 					Expect(113, la); // "End"
-					currentState = 314;
+					currentState = 316;
 					break;
 				}
 			}
-			case 314: {
-				if (la == null) { currentState = 314; break; }
+			case 316: {
+				if (la == null) { currentState = 316; break; }
 				Expect(197, la); // "Select"
 				currentState = stateStack.Pop();
 				break;
 			}
-			case 315: {
+			case 317: {
 				nextTokenIsPotentialStartOfExpression = true;
-				goto case 316;
+				goto case 318;
 			}
-			case 316: {
-				if (la == null) { currentState = 316; break; }
+			case 318: {
+				if (la == null) { currentState = 318; break; }
 				if (la.kind == 111) {
-					currentState = 317;
+					currentState = 319;
 					break;
 				} else {
 					if (set[61].Get(la.kind)) {
-						goto case 318;
+						goto case 320;
 					} else {
 						Error(la);
-						goto case 317;
+						goto case 319;
 					}
 				}
 			}
-			case 317: {
-				stateStack.Push(313);
-				goto case 223;
-			}
-			case 318: {
-				nextTokenIsPotentialStartOfExpression = true;
-				goto case 319;
-			}
 			case 319: {
-				if (la == null) { currentState = 319; break; }
+				stateStack.Push(315);
+				goto case 225;
+			}
+			case 320: {
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 321;
+			}
+			case 321: {
+				if (la == null) { currentState = 321; break; }
 				if (set[121].Get(la.kind)) {
 					if (la.kind == 144) {
-						currentState = 321;
+						currentState = 323;
 						break;
 					} else {
-						goto case 321;
+						goto case 323;
 					}
 				} else {
 					if (set[22].Get(la.kind)) {
-						stateStack.Push(320);
-						goto case 49;
+						stateStack.Push(322);
+						goto case 50;
 					} else {
 						Error(la);
-						goto case 320;
+						goto case 322;
 					}
 				}
 			}
-			case 320: {
-				if (la == null) { currentState = 320; break; }
+			case 322: {
+				if (la == null) { currentState = 322; break; }
 				if (la.kind == 22) {
-					currentState = 318;
+					currentState = 320;
 					break;
 				} else {
-					goto case 317;
+					goto case 319;
 				}
 			}
-			case 321: {
-				stateStack.Push(322);
-				goto case 323;
-			}
-			case 322: {
-				stateStack.Push(320);
-				goto case 52;
-			}
 			case 323: {
-				if (la == null) { currentState = 323; break; }
+				stateStack.Push(324);
+				goto case 325;
+			}
+			case 324: {
+				stateStack.Push(322);
+				goto case 53;
+			}
+			case 325: {
+				if (la == null) { currentState = 325; break; }
 				if (la.kind == 20) {
 					currentState = stateStack.Pop();
 					break;
@@ -4845,156 +4860,156 @@ partial class ExpressionFinder {
 					}
 				}
 			}
-			case 324: {
-				stateStack.Push(325);
-				goto case 49;
+			case 326: {
+				stateStack.Push(327);
+				goto case 50;
 			}
-			case 325: {
-				if (la == null) { currentState = 325; break; }
+			case 327: {
+				if (la == null) { currentState = 327; break; }
 				if (la.kind == 214) {
-					currentState = 333;
+					currentState = 335;
 					break;
 				} else {
-					goto case 326;
+					goto case 328;
 				}
 			}
-			case 326: {
-				if (la == null) { currentState = 326; break; }
+			case 328: {
+				if (la == null) { currentState = 328; break; }
 				if (la.kind == 1 || la.kind == 21) {
-					goto case 327;
+					goto case 329;
 				} else {
 					goto case 6;
 				}
 			}
-			case 327: {
-				stateStack.Push(328);
-				goto case 223;
+			case 329: {
+				stateStack.Push(330);
+				goto case 225;
 			}
-			case 328: {
-				if (la == null) { currentState = 328; break; }
+			case 330: {
+				if (la == null) { currentState = 330; break; }
 				if (la.kind == 111 || la.kind == 112) {
 					if (la.kind == 111) {
-						currentState = 332;
+						currentState = 334;
 						break;
 					} else {
 						if (la.kind == 112) {
-							currentState = 330;
+							currentState = 332;
 							break;
 						} else {
 							Error(la);
-							goto case 327;
+							goto case 329;
 						}
 					}
 				} else {
 					Expect(113, la); // "End"
-					currentState = 329;
+					currentState = 331;
 					break;
 				}
 			}
-			case 329: {
-				if (la == null) { currentState = 329; break; }
+			case 331: {
+				if (la == null) { currentState = 331; break; }
 				Expect(135, la); // "If"
 				currentState = stateStack.Pop();
 				break;
 			}
-			case 330: {
-				stateStack.Push(331);
-				goto case 49;
-			}
-			case 331: {
-				if (la == null) { currentState = 331; break; }
-				if (la.kind == 214) {
-					currentState = 327;
-					break;
-				} else {
-					goto case 327;
-				}
-			}
 			case 332: {
-				if (la == null) { currentState = 332; break; }
-				if (la.kind == 135) {
-					currentState = 330;
-					break;
-				} else {
-					goto case 327;
-				}
+				stateStack.Push(333);
+				goto case 50;
 			}
 			case 333: {
-				nextTokenIsPotentialStartOfExpression = true;
-				goto case 334;
+				if (la == null) { currentState = 333; break; }
+				if (la.kind == 214) {
+					currentState = 329;
+					break;
+				} else {
+					goto case 329;
+				}
 			}
 			case 334: {
 				if (la == null) { currentState = 334; break; }
-				if (set[45].Get(la.kind)) {
-					goto case 335;
+				if (la.kind == 135) {
+					currentState = 332;
+					break;
 				} else {
-					goto case 326;
+					goto case 329;
 				}
 			}
 			case 335: {
-				stateStack.Push(336);
-				goto case 231;
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 336;
 			}
 			case 336: {
 				if (la == null) { currentState = 336; break; }
-				if (la.kind == 21) {
-					currentState = 341;
-					break;
+				if (set[45].Get(la.kind)) {
+					goto case 337;
 				} else {
-					if (la.kind == 111) {
-						currentState = 338;
-						break;
-					} else {
-						goto case 337;
-					}
+					goto case 328;
 				}
 			}
 			case 337: {
-				if (la == null) { currentState = 337; break; }
+				stateStack.Push(338);
+				goto case 233;
+			}
+			case 338: {
+				if (la == null) { currentState = 338; break; }
+				if (la.kind == 21) {
+					currentState = 343;
+					break;
+				} else {
+					if (la.kind == 111) {
+						currentState = 340;
+						break;
+					} else {
+						goto case 339;
+					}
+				}
+			}
+			case 339: {
+				if (la == null) { currentState = 339; break; }
 				Expect(1, la); // EOL
 				currentState = stateStack.Pop();
 				break;
 			}
-			case 338: {
-				nextTokenIsPotentialStartOfExpression = true;
-				goto case 339;
-			}
-			case 339: {
-				if (la == null) { currentState = 339; break; }
-				if (set[45].Get(la.kind)) {
-					stateStack.Push(340);
-					goto case 231;
-				} else {
-					goto case 340;
-				}
-			}
 			case 340: {
-				if (la == null) { currentState = 340; break; }
-				if (la.kind == 21) {
-					currentState = 338;
-					break;
-				} else {
-					goto case 337;
-				}
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 341;
 			}
 			case 341: {
-				nextTokenIsPotentialStartOfExpression = true;
-				goto case 342;
+				if (la == null) { currentState = 341; break; }
+				if (set[45].Get(la.kind)) {
+					stateStack.Push(342);
+					goto case 233;
+				} else {
+					goto case 342;
+				}
 			}
 			case 342: {
 				if (la == null) { currentState = 342; break; }
-				if (set[45].Get(la.kind)) {
-					goto case 335;
+				if (la.kind == 21) {
+					currentState = 340;
+					break;
 				} else {
-					goto case 336;
+					goto case 339;
 				}
 			}
 			case 343: {
-				stateStack.Push(344);
-				goto case 74;
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 344;
 			}
 			case 344: {
 				if (la == null) { currentState = 344; break; }
+				if (set[45].Get(la.kind)) {
+					goto case 337;
+				} else {
+					goto case 338;
+				}
+			}
+			case 345: {
+				stateStack.Push(346);
+				goto case 75;
+			}
+			case 346: {
+				if (la == null) { currentState = 346; break; }
 				if (la.kind == 37) {
 					currentState = 42;
 					break;
@@ -5003,159 +5018,141 @@ partial class ExpressionFinder {
 					goto switchlbl;
 				}
 			}
-			case 345: {
-				stateStack.Push(346);
-				goto case 49;
-			}
-			case 346: {
-				if (la == null) { currentState = 346; break; }
-				Expect(22, la); // ","
-				currentState = 49;
-				break;
-			}
 			case 347: {
 				stateStack.Push(348);
-				goto case 49;
+				goto case 50;
 			}
 			case 348: {
-				stateStack.Push(349);
-				goto case 223;
-			}
-			case 349: {
-				if (la == null) { currentState = 349; break; }
-				Expect(113, la); // "End"
-				currentState = 350;
+				if (la == null) { currentState = 348; break; }
+				Expect(22, la); // ","
+				currentState = 50;
 				break;
 			}
+			case 349: {
+				stateStack.Push(350);
+				goto case 50;
+			}
 			case 350: {
-				if (la == null) { currentState = 350; break; }
+				stateStack.Push(351);
+				goto case 225;
+			}
+			case 351: {
+				if (la == null) { currentState = 351; break; }
+				Expect(113, la); // "End"
+				currentState = 352;
+				break;
+			}
+			case 352: {
+				if (la == null) { currentState = 352; break; }
 				if (la.kind == 233) {
-					goto case 75;
+					goto case 76;
 				} else {
 					if (la.kind == 211) {
-						goto case 83;
+						goto case 84;
 					} else {
 						goto case 6;
 					}
 				}
 			}
-			case 351: {
+			case 353: {
 				PushContext(Context.Identifier, la, t);
 				SetIdentifierExpected(la);
-				stateStack.Push(352);
-				goto case 167;
-			}
-			case 352: {
-				PopContext();
-				goto case 353;
-			}
-			case 353: {
-				if (la == null) { currentState = 353; break; }
-				if (la.kind == 33) {
-					currentState = 354;
-					break;
-				} else {
-					goto case 354;
-				}
+				stateStack.Push(354);
+				goto case 169;
 			}
 			case 354: {
-				if (la == null) { currentState = 354; break; }
-				if (la.kind == 37) {
-					currentState = 369;
-					break;
-				} else {
-					goto case 355;
-				}
+				PopContext();
+				goto case 355;
 			}
 			case 355: {
 				if (la == null) { currentState = 355; break; }
-				if (la.kind == 22) {
-					currentState = 363;
+				if (la.kind == 33) {
+					currentState = 356;
 					break;
 				} else {
-					if (la.kind == 63) {
-						PushContext(Context.Type, la, t);
-						goto case 357;
-					} else {
-						goto case 356;
-					}
+					goto case 356;
 				}
 			}
 			case 356: {
 				if (la == null) { currentState = 356; break; }
+				if (la.kind == 37) {
+					currentState = 371;
+					break;
+				} else {
+					goto case 357;
+				}
+			}
+			case 357: {
+				if (la == null) { currentState = 357; break; }
+				if (la.kind == 22) {
+					currentState = 365;
+					break;
+				} else {
+					if (la.kind == 63) {
+						PushContext(Context.Type, la, t);
+						goto case 359;
+					} else {
+						goto case 358;
+					}
+				}
+			}
+			case 358: {
+				if (la == null) { currentState = 358; break; }
 				if (la.kind == 20) {
-					goto case 180;
+					goto case 182;
 				} else {
 					currentState = stateStack.Pop();
 					goto switchlbl;
 				}
 			}
-			case 357: {
-				if (la == null) { currentState = 357; break; }
-				Expect(63, la); // "As"
-				currentState = 358;
-				break;
-			}
-			case 358: {
-				stateStack.Push(359);
-				goto case 33;
-			}
 			case 359: {
 				if (la == null) { currentState = 359; break; }
-				if (la.kind == 162) {
-					currentState = 362;
-					break;
-				} else {
-					goto case 360;
-				}
+				Expect(63, la); // "As"
+				currentState = 360;
+				break;
 			}
 			case 360: {
 				stateStack.Push(361);
 				goto case 33;
 			}
 			case 361: {
+				if (la == null) { currentState = 361; break; }
+				if (la.kind == 162) {
+					currentState = 364;
+					break;
+				} else {
+					goto case 362;
+				}
+			}
+			case 362: {
+				stateStack.Push(363);
+				goto case 33;
+			}
+			case 363: {
 				if (CurrentBlock.context == Context.ObjectCreation)
 					PopContext();
 				PopContext();
 
-				goto case 356;
-			}
-			case 362: {
-				PushContext(Context.ObjectCreation, la, t);
-				goto case 360;
-			}
-			case 363: {
-				PushContext(Context.Identifier, la, t);
-				SetIdentifierExpected(la);
-				stateStack.Push(364);
-				goto case 167;
+				goto case 358;
 			}
 			case 364: {
-				PopContext();
-				goto case 365;
+				PushContext(Context.ObjectCreation, la, t);
+				goto case 362;
 			}
 			case 365: {
-				if (la == null) { currentState = 365; break; }
-				if (la.kind == 33) {
-					currentState = 366;
-					break;
-				} else {
-					goto case 366;
-				}
+				PushContext(Context.Identifier, la, t);
+				SetIdentifierExpected(la);
+				stateStack.Push(366);
+				goto case 169;
 			}
 			case 366: {
-				if (la == null) { currentState = 366; break; }
-				if (la.kind == 37) {
-					currentState = 367;
-					break;
-				} else {
-					goto case 355;
-				}
+				PopContext();
+				goto case 367;
 			}
 			case 367: {
 				if (la == null) { currentState = 367; break; }
-				if (la.kind == 22) {
-					currentState = 367;
+				if (la.kind == 33) {
+					currentState = 368;
 					break;
 				} else {
 					goto case 368;
@@ -5163,9 +5160,12 @@ partial class ExpressionFinder {
 			}
 			case 368: {
 				if (la == null) { currentState = 368; break; }
-				Expect(38, la); // ")"
-				currentState = 355;
-				break;
+				if (la.kind == 37) {
+					currentState = 369;
+					break;
+				} else {
+					goto case 357;
+				}
 			}
 			case 369: {
 				if (la == null) { currentState = 369; break; }
@@ -5173,49 +5173,51 @@ partial class ExpressionFinder {
 					currentState = 369;
 					break;
 				} else {
-					goto case 368;
+					goto case 370;
 				}
 			}
 			case 370: {
 				if (la == null) { currentState = 370; break; }
-				Expect(63, la); // "As"
-				currentState = 371;
+				Expect(38, la); // ")"
+				currentState = 357;
 				break;
 			}
 			case 371: {
-				stateStack.Push(372);
-				goto case 33;
+				if (la == null) { currentState = 371; break; }
+				if (la.kind == 22) {
+					currentState = 371;
+					break;
+				} else {
+					goto case 370;
+				}
 			}
 			case 372: {
-				PopContext();
-				goto case 220;
+				if (la == null) { currentState = 372; break; }
+				Expect(63, la); // "As"
+				currentState = 373;
+				break;
 			}
 			case 373: {
 				stateStack.Push(374);
-				PushContext(Context.Parameter, la, t);
-				goto case 375;
+				goto case 33;
 			}
 			case 374: {
-				if (la == null) { currentState = 374; break; }
+				PopContext();
+				goto case 222;
+			}
+			case 375: {
+				stateStack.Push(376);
+				PushContext(Context.Parameter, la, t);
+				goto case 377;
+			}
+			case 376: {
+				if (la == null) { currentState = 376; break; }
 				if (la.kind == 22) {
-					currentState = 373;
+					currentState = 375;
 					break;
 				} else {
 					currentState = stateStack.Pop();
 					goto switchlbl;
-				}
-			}
-			case 375: {
-				SetIdentifierExpected(la);
-				goto case 376;
-			}
-			case 376: {
-				if (la == null) { currentState = 376; break; }
-				if (la.kind == 40) {
-					stateStack.Push(375);
-					goto case 387;
-				} else {
-					goto case 377;
 				}
 			}
 			case 377: {
@@ -5224,88 +5226,101 @@ partial class ExpressionFinder {
 			}
 			case 378: {
 				if (la == null) { currentState = 378; break; }
-				if (set[122].Get(la.kind)) {
-					currentState = 377;
-					break;
+				if (la.kind == 40) {
+					stateStack.Push(377);
+					goto case 389;
 				} else {
-					PushContext(Context.Identifier, la, t);
-					SetIdentifierExpected(la);
-					stateStack.Push(379);
-					goto case 167;
+					goto case 379;
 				}
 			}
 			case 379: {
-				PopContext();
+				SetIdentifierExpected(la);
 				goto case 380;
 			}
 			case 380: {
 				if (la == null) { currentState = 380; break; }
-				if (la.kind == 63) {
-					PushContext(Context.Type, la, t);
-					goto case 384;
+				if (set[122].Get(la.kind)) {
+					currentState = 379;
+					break;
 				} else {
-					goto case 381;
+					PushContext(Context.Identifier, la, t);
+					SetIdentifierExpected(la);
+					stateStack.Push(381);
+					goto case 169;
 				}
 			}
 			case 381: {
-				if (la == null) { currentState = 381; break; }
-				if (la.kind == 20) {
-					currentState = 383;
-					break;
-				} else {
-					goto case 382;
-				}
+				PopContext();
+				goto case 382;
 			}
 			case 382: {
+				if (la == null) { currentState = 382; break; }
+				if (la.kind == 63) {
+					PushContext(Context.Type, la, t);
+					goto case 386;
+				} else {
+					goto case 383;
+				}
+			}
+			case 383: {
+				if (la == null) { currentState = 383; break; }
+				if (la.kind == 20) {
+					currentState = 385;
+					break;
+				} else {
+					goto case 384;
+				}
+			}
+			case 384: {
 				PopContext();
 				currentState = stateStack.Pop();
 				goto switchlbl;
 			}
-			case 383: {
-				stateStack.Push(382);
-				goto case 49;
-			}
-			case 384: {
-				if (la == null) { currentState = 384; break; }
-				Expect(63, la); // "As"
-				currentState = 385;
-				break;
-			}
 			case 385: {
-				stateStack.Push(386);
-				goto case 33;
+				stateStack.Push(384);
+				goto case 50;
 			}
 			case 386: {
-				PopContext();
-				goto case 381;
-			}
-			case 387: {
-				if (la == null) { currentState = 387; break; }
-				Expect(40, la); // "<"
-				currentState = 388;
+				if (la == null) { currentState = 386; break; }
+				Expect(63, la); // "As"
+				currentState = 387;
 				break;
 			}
+			case 387: {
+				stateStack.Push(388);
+				goto case 33;
+			}
 			case 388: {
-				PushContext(Context.Attribute, la, t);
-				goto case 389;
+				PopContext();
+				goto case 383;
 			}
 			case 389: {
 				if (la == null) { currentState = 389; break; }
-				if (set[123].Get(la.kind)) {
-					currentState = 389;
-					break;
-				} else {
-					Expect(39, la); // ">"
-					currentState = 390;
-					break;
-				}
+				Expect(40, la); // "<"
+				currentState = 390;
+				break;
 			}
 			case 390: {
-				PopContext();
+				PushContext(Context.Attribute, la, t);
 				goto case 391;
 			}
 			case 391: {
 				if (la == null) { currentState = 391; break; }
+				if (set[123].Get(la.kind)) {
+					currentState = 391;
+					break;
+				} else {
+					Expect(39, la); // ">"
+					currentState = 392;
+					break;
+				}
+			}
+			case 392: {
+				PopContext();
+				goto case 393;
+			}
+			case 393: {
+				if (la == null) { currentState = 393; break; }
 				if (la.kind == 1) {
 					goto case 20;
 				} else {
@@ -5313,74 +5328,74 @@ partial class ExpressionFinder {
 					goto switchlbl;
 				}
 			}
-			case 392: {
-				if (la == null) { currentState = 392; break; }
-				Expect(37, la); // "("
-				currentState = 393;
-				break;
-			}
-			case 393: {
-				SetIdentifierExpected(la);
-				goto case 394;
-			}
 			case 394: {
 				if (la == null) { currentState = 394; break; }
-				if (set[71].Get(la.kind)) {
-					stateStack.Push(395);
-					goto case 373;
-				} else {
-					goto case 395;
-				}
-			}
-			case 395: {
-				if (la == null) { currentState = 395; break; }
-				Expect(38, la); // ")"
-				currentState = 396;
+				Expect(37, la); // "("
+				currentState = 395;
 				break;
 			}
+			case 395: {
+				SetIdentifierExpected(la);
+				goto case 396;
+			}
 			case 396: {
-				nextTokenIsPotentialStartOfExpression = true;
-				goto case 397;
+				if (la == null) { currentState = 396; break; }
+				if (set[71].Get(la.kind)) {
+					stateStack.Push(397);
+					goto case 375;
+				} else {
+					goto case 397;
+				}
 			}
 			case 397: {
 				if (la == null) { currentState = 397; break; }
+				Expect(38, la); // ")"
+				currentState = 398;
+				break;
+			}
+			case 398: {
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 399;
+			}
+			case 399: {
+				if (la == null) { currentState = 399; break; }
 				if (set[45].Get(la.kind)) {
-					goto case 231;
+					goto case 233;
 				} else {
 					if (la.kind == 1 || la.kind == 21) {
-						stateStack.Push(398);
-						goto case 223;
+						stateStack.Push(400);
+						goto case 225;
 					} else {
 						goto case 6;
 					}
 				}
 			}
-			case 398: {
-				if (la == null) { currentState = 398; break; }
+			case 400: {
+				if (la == null) { currentState = 400; break; }
 				Expect(113, la); // "End"
-				currentState = 399;
+				currentState = 401;
 				break;
 			}
-			case 399: {
-				if (la == null) { currentState = 399; break; }
+			case 401: {
+				if (la == null) { currentState = 401; break; }
 				Expect(210, la); // "Sub"
 				currentState = stateStack.Pop();
 				break;
 			}
-			case 400: {
-				if (la == null) { currentState = 400; break; }
+			case 402: {
+				if (la == null) { currentState = 402; break; }
 				if (la.kind == 17 || la.kind == 19) {
-					currentState = 410;
+					currentState = 412;
 					break;
 				} else {
-					stateStack.Push(401);
-					goto case 403;
+					stateStack.Push(403);
+					goto case 405;
 				}
 			}
-			case 401: {
-				if (la == null) { currentState = 401; break; }
+			case 403: {
+				if (la == null) { currentState = 403; break; }
 				if (la.kind == 17) {
-					currentState = 402;
+					currentState = 404;
 					break;
 				} else {
 					PopContext();
@@ -5388,34 +5403,34 @@ partial class ExpressionFinder {
 					goto switchlbl;
 				}
 			}
-			case 402: {
-				if (la == null) { currentState = 402; break; }
-				if (la.kind == 16) {
-					currentState = 401;
-					break;
-				} else {
-					goto case 401;
-				}
-			}
-			case 403: {
-				if (la == null) { currentState = 403; break; }
-				Expect(10, la); // XmlOpenTag
-				currentState = 404;
-				break;
-			}
 			case 404: {
 				if (la == null) { currentState = 404; break; }
+				if (la.kind == 16) {
+					currentState = 403;
+					break;
+				} else {
+					goto case 403;
+				}
+			}
+			case 405: {
+				if (la == null) { currentState = 405; break; }
+				Expect(10, la); // XmlOpenTag
+				currentState = 406;
+				break;
+			}
+			case 406: {
+				if (la == null) { currentState = 406; break; }
 				if (set[124].Get(la.kind)) {
 					if (set[125].Get(la.kind)) {
-						currentState = 404;
+						currentState = 406;
 						break;
 					} else {
 						if (la.kind == 12) {
-							stateStack.Push(404);
-							goto case 407;
+							stateStack.Push(406);
+							goto case 409;
 						} else {
 							Error(la);
-							goto case 404;
+							goto case 406;
 						}
 					}
 				} else {
@@ -5424,7 +5439,7 @@ partial class ExpressionFinder {
 						break;
 					} else {
 						if (la.kind == 11) {
-							currentState = 405;
+							currentState = 407;
 							break;
 						} else {
 							goto case 6;
@@ -5432,45 +5447,45 @@ partial class ExpressionFinder {
 					}
 				}
 			}
-			case 405: {
-				if (la == null) { currentState = 405; break; }
+			case 407: {
+				if (la == null) { currentState = 407; break; }
 				if (set[126].Get(la.kind)) {
 					if (set[127].Get(la.kind)) {
-						currentState = 405;
+						currentState = 407;
 						break;
 					} else {
 						if (la.kind == 12) {
-							stateStack.Push(405);
-							goto case 407;
+							stateStack.Push(407);
+							goto case 409;
 						} else {
 							if (la.kind == 10) {
-								stateStack.Push(405);
-								goto case 403;
+								stateStack.Push(407);
+								goto case 405;
 							} else {
 								Error(la);
-								goto case 405;
+								goto case 407;
 							}
 						}
 					}
 				} else {
 					Expect(15, la); // XmlOpenEndTag
-					currentState = 406;
+					currentState = 408;
 					break;
 				}
 			}
-			case 406: {
-				if (la == null) { currentState = 406; break; }
+			case 408: {
+				if (la == null) { currentState = 408; break; }
 				if (set[128].Get(la.kind)) {
 					if (set[129].Get(la.kind)) {
-						currentState = 406;
+						currentState = 408;
 						break;
 					} else {
 						if (la.kind == 12) {
-							stateStack.Push(406);
-							goto case 407;
+							stateStack.Push(408);
+							goto case 409;
 						} else {
 							Error(la);
-							goto case 406;
+							goto case 408;
 						}
 					}
 				} else {
@@ -5479,293 +5494,293 @@ partial class ExpressionFinder {
 					break;
 				}
 			}
-			case 407: {
-				if (la == null) { currentState = 407; break; }
-				Expect(12, la); // XmlStartInlineVB
-				currentState = 408;
-				break;
-			}
-			case 408: {
-				stateStack.Push(409);
-				goto case 49;
-			}
 			case 409: {
 				if (la == null) { currentState = 409; break; }
+				Expect(12, la); // XmlStartInlineVB
+				currentState = 410;
+				break;
+			}
+			case 410: {
+				stateStack.Push(411);
+				goto case 50;
+			}
+			case 411: {
+				if (la == null) { currentState = 411; break; }
 				Expect(13, la); // XmlEndInlineVB
 				currentState = stateStack.Pop();
 				break;
 			}
-			case 410: {
-				if (la == null) { currentState = 410; break; }
+			case 412: {
+				if (la == null) { currentState = 412; break; }
 				if (la.kind == 16) {
-					currentState = 400;
+					currentState = 402;
 					break;
 				} else {
-					goto case 400;
+					goto case 402;
 				}
-			}
-			case 411: {
-				if (la == null) { currentState = 411; break; }
-				Expect(37, la); // "("
-				currentState = 412;
-				break;
-			}
-			case 412: {
-				readXmlIdentifier = true;
-				stateStack.Push(413);
-				goto case 167;
 			}
 			case 413: {
 				if (la == null) { currentState = 413; break; }
-				Expect(38, la); // ")"
-				currentState = 137;
+				Expect(37, la); // "("
+				currentState = 414;
 				break;
 			}
 			case 414: {
-				if (la == null) { currentState = 414; break; }
-				Expect(37, la); // "("
-				currentState = 415;
-				break;
+				readXmlIdentifier = true;
+				stateStack.Push(415);
+				goto case 169;
 			}
 			case 415: {
-				stateStack.Push(413);
-				goto case 33;
+				if (la == null) { currentState = 415; break; }
+				Expect(38, la); // ")"
+				currentState = 139;
+				break;
 			}
 			case 416: {
-				nextTokenIsStartOfImportsOrAccessExpression = true; wasQualifierTokenAtStart = true;
-				goto case 417;
+				if (la == null) { currentState = 416; break; }
+				Expect(37, la); // "("
+				currentState = 417;
+				break;
 			}
 			case 417: {
-				if (la == null) { currentState = 417; break; }
-				if (la.kind == 10) {
-					currentState = 418;
-					break;
-				} else {
-					goto case 418;
-				}
+				stateStack.Push(415);
+				goto case 33;
 			}
 			case 418: {
-				stateStack.Push(419);
-				goto case 74;
+				nextTokenIsStartOfImportsOrAccessExpression = true; wasQualifierTokenAtStart = true;
+				goto case 419;
 			}
 			case 419: {
 				if (la == null) { currentState = 419; break; }
-				if (la.kind == 11) {
-					currentState = 137;
+				if (la.kind == 10) {
+					currentState = 420;
 					break;
 				} else {
-					goto case 137;
+					goto case 420;
 				}
 			}
 			case 420: {
-				stateStack.Push(413);
-				goto case 49;
+				stateStack.Push(421);
+				goto case 75;
 			}
 			case 421: {
-				stateStack.Push(422);
-				goto case 49;
+				if (la == null) { currentState = 421; break; }
+				if (la.kind == 11) {
+					currentState = 139;
+					break;
+				} else {
+					goto case 139;
+				}
 			}
 			case 422: {
-				if (la == null) { currentState = 422; break; }
+				stateStack.Push(415);
+				goto case 50;
+			}
+			case 423: {
+				stateStack.Push(424);
+				goto case 50;
+			}
+			case 424: {
+				if (la == null) { currentState = 424; break; }
 				if (la.kind == 22) {
-					currentState = 423;
+					currentState = 425;
 					break;
 				} else {
 					currentState = stateStack.Pop();
 					goto switchlbl;
 				}
 			}
-			case 423: {
-				nextTokenIsPotentialStartOfExpression = true;
-				goto case 424;
-			}
-			case 424: {
-				if (la == null) { currentState = 424; break; }
-				if (set[22].Get(la.kind)) {
-					goto case 421;
-				} else {
-					goto case 422;
-				}
-			}
 			case 425: {
-				if (la == null) { currentState = 425; break; }
-				if (set[15].Get(la.kind)) {
-					stateStack.Push(426);
-					goto case 33;
-				} else {
-					goto case 426;
-				}
+				nextTokenIsPotentialStartOfExpression = true;
+				goto case 426;
 			}
 			case 426: {
 				if (la == null) { currentState = 426; break; }
+				if (set[22].Get(la.kind)) {
+					goto case 423;
+				} else {
+					goto case 424;
+				}
+			}
+			case 427: {
+				if (la == null) { currentState = 427; break; }
+				if (set[15].Get(la.kind)) {
+					stateStack.Push(428);
+					goto case 33;
+				} else {
+					goto case 428;
+				}
+			}
+			case 428: {
+				if (la == null) { currentState = 428; break; }
 				if (la.kind == 22) {
-					currentState = 425;
+					currentState = 427;
 					break;
 				} else {
 					goto case 41;
 				}
 			}
-			case 427: {
+			case 429: {
 				SetIdentifierExpected(la);
-				goto case 428;
+				goto case 430;
 			}
-			case 428: {
-				if (la == null) { currentState = 428; break; }
+			case 430: {
+				if (la == null) { currentState = 430; break; }
 				if (set[130].Get(la.kind)) {
 					if (la.kind == 169) {
-						currentState = 430;
+						currentState = 432;
 						break;
 					} else {
 						if (set[71].Get(la.kind)) {
-							stateStack.Push(429);
-							goto case 373;
+							stateStack.Push(431);
+							goto case 375;
 						} else {
 							Error(la);
-							goto case 429;
+							goto case 431;
 						}
 					}
 				} else {
-					goto case 429;
+					goto case 431;
 				}
 			}
-			case 429: {
-				if (la == null) { currentState = 429; break; }
+			case 431: {
+				if (la == null) { currentState = 431; break; }
 				Expect(38, la); // ")"
 				currentState = 29;
 				break;
 			}
-			case 430: {
-				stateStack.Push(429);
-				goto case 431;
-			}
-			case 431: {
-				SetIdentifierExpected(la);
-				goto case 432;
-			}
 			case 432: {
-				if (la == null) { currentState = 432; break; }
-				if (la.kind == 138 || la.kind == 178) {
-					currentState = 433;
-					break;
-				} else {
-					goto case 433;
-				}
+				stateStack.Push(431);
+				goto case 433;
 			}
 			case 433: {
-				PushContext(Context.Identifier, la, t);
 				SetIdentifierExpected(la);
-				stateStack.Push(434);
-				goto case 449;
+				goto case 434;
 			}
 			case 434: {
-				PopContext();
-				goto case 435;
-			}
-			case 435: {
-				if (la == null) { currentState = 435; break; }
-				if (la.kind == 63) {
-					PushContext(Context.Type, la, t);
-					goto case 450;
+				if (la == null) { currentState = 434; break; }
+				if (la.kind == 138 || la.kind == 178) {
+					currentState = 435;
+					break;
 				} else {
-					goto case 436;
+					goto case 435;
 				}
 			}
+			case 435: {
+				PushContext(Context.Identifier, la, t);
+				SetIdentifierExpected(la);
+				stateStack.Push(436);
+				goto case 451;
+			}
 			case 436: {
-				if (la == null) { currentState = 436; break; }
+				PopContext();
+				goto case 437;
+			}
+			case 437: {
+				if (la == null) { currentState = 437; break; }
+				if (la.kind == 63) {
+					PushContext(Context.Type, la, t);
+					goto case 452;
+				} else {
+					goto case 438;
+				}
+			}
+			case 438: {
+				if (la == null) { currentState = 438; break; }
 				if (la.kind == 22) {
-					currentState = 437;
+					currentState = 439;
 					break;
 				} else {
 					currentState = stateStack.Pop();
 					goto switchlbl;
 				}
 			}
-			case 437: {
-				SetIdentifierExpected(la);
-				goto case 438;
-			}
-			case 438: {
-				if (la == null) { currentState = 438; break; }
-				if (la.kind == 138 || la.kind == 178) {
-					currentState = 439;
-					break;
-				} else {
-					goto case 439;
-				}
-			}
 			case 439: {
-				PushContext(Context.Identifier, la, t);
 				SetIdentifierExpected(la);
-				stateStack.Push(440);
-				goto case 449;
+				goto case 440;
 			}
 			case 440: {
-				PopContext();
-				goto case 441;
-			}
-			case 441: {
-				if (la == null) { currentState = 441; break; }
-				if (la.kind == 63) {
-					PushContext(Context.Type, la, t);
-					goto case 442;
+				if (la == null) { currentState = 440; break; }
+				if (la.kind == 138 || la.kind == 178) {
+					currentState = 441;
+					break;
 				} else {
-					goto case 436;
+					goto case 441;
 				}
 			}
+			case 441: {
+				PushContext(Context.Identifier, la, t);
+				SetIdentifierExpected(la);
+				stateStack.Push(442);
+				goto case 451;
+			}
 			case 442: {
-				if (la == null) { currentState = 442; break; }
-				Expect(63, la); // "As"
-				currentState = 443;
-				break;
+				PopContext();
+				goto case 443;
 			}
 			case 443: {
-				stateStack.Push(444);
-				goto case 445;
+				if (la == null) { currentState = 443; break; }
+				if (la.kind == 63) {
+					PushContext(Context.Type, la, t);
+					goto case 444;
+				} else {
+					goto case 438;
+				}
 			}
 			case 444: {
-				PopContext();
-				goto case 436;
+				if (la == null) { currentState = 444; break; }
+				Expect(63, la); // "As"
+				currentState = 445;
+				break;
 			}
 			case 445: {
-				if (la == null) { currentState = 445; break; }
+				stateStack.Push(446);
+				goto case 447;
+			}
+			case 446: {
+				PopContext();
+				goto case 438;
+			}
+			case 447: {
+				if (la == null) { currentState = 447; break; }
 				if (set[84].Get(la.kind)) {
-					goto case 448;
+					goto case 450;
 				} else {
 					if (la.kind == 35) {
-						currentState = 446;
+						currentState = 448;
 						break;
 					} else {
 						goto case 6;
 					}
 				}
 			}
-			case 446: {
-				stateStack.Push(447);
-				goto case 448;
+			case 448: {
+				stateStack.Push(449);
+				goto case 450;
 			}
-			case 447: {
-				if (la == null) { currentState = 447; break; }
+			case 449: {
+				if (la == null) { currentState = 449; break; }
 				if (la.kind == 22) {
-					currentState = 446;
+					currentState = 448;
 					break;
 				} else {
-					goto case 59;
+					goto case 60;
 				}
 			}
-			case 448: {
-				if (la == null) { currentState = 448; break; }
+			case 450: {
+				if (la == null) { currentState = 450; break; }
 				if (set[15].Get(la.kind)) {
 					currentState = 34;
 					break;
 				} else {
 					if (la.kind == 162) {
-						goto case 94;
+						goto case 95;
 					} else {
 						if (la.kind == 84) {
-							goto case 110;
+							goto case 111;
 						} else {
 							if (la.kind == 209) {
-								goto case 85;
+								goto case 86;
 							} else {
 								goto case 6;
 							}
@@ -5773,85 +5788,85 @@ partial class ExpressionFinder {
 					}
 				}
 			}
-			case 449: {
-				if (la == null) { currentState = 449; break; }
+			case 451: {
+				if (la == null) { currentState = 451; break; }
 				if (la.kind == 2) {
-					goto case 118;
+					goto case 119;
 				} else {
 					if (la.kind == 62) {
-						goto case 116;
+						goto case 117;
 					} else {
 						if (la.kind == 64) {
-							goto case 115;
+							goto case 116;
 						} else {
 							if (la.kind == 65) {
-								goto case 114;
+								goto case 115;
 							} else {
 								if (la.kind == 66) {
-									goto case 113;
+									goto case 114;
 								} else {
 									if (la.kind == 67) {
-										goto case 112;
+										goto case 113;
 									} else {
 										if (la.kind == 70) {
-											goto case 111;
+											goto case 112;
 										} else {
 											if (la.kind == 87) {
-												goto case 109;
+												goto case 110;
 											} else {
 												if (la.kind == 104) {
-													goto case 107;
+													goto case 108;
 												} else {
 													if (la.kind == 107) {
-														goto case 106;
+														goto case 107;
 													} else {
 														if (la.kind == 116) {
-															goto case 104;
+															goto case 105;
 														} else {
 															if (la.kind == 121) {
-																goto case 103;
+																goto case 104;
 															} else {
 																if (la.kind == 133) {
-																	goto case 99;
+																	goto case 100;
 																} else {
 																	if (la.kind == 139) {
-																		goto case 98;
+																		goto case 99;
 																	} else {
 																		if (la.kind == 143) {
-																			goto case 97;
+																			goto case 98;
 																		} else {
 																			if (la.kind == 146) {
-																				goto case 96;
+																				goto case 97;
 																			} else {
 																				if (la.kind == 147) {
-																					goto case 95;
+																					goto case 96;
 																				} else {
 																					if (la.kind == 170) {
-																						goto case 92;
+																						goto case 93;
 																					} else {
 																						if (la.kind == 176) {
-																							goto case 91;
+																							goto case 92;
 																						} else {
 																							if (la.kind == 184) {
-																								goto case 90;
+																								goto case 91;
 																							} else {
 																								if (la.kind == 203) {
-																									goto case 87;
+																									goto case 88;
 																								} else {
 																									if (la.kind == 212) {
-																										goto case 82;
+																										goto case 83;
 																									} else {
 																										if (la.kind == 213) {
-																											goto case 81;
+																											goto case 82;
 																										} else {
 																											if (la.kind == 223) {
-																												goto case 79;
+																												goto case 80;
 																											} else {
 																												if (la.kind == 224) {
-																													goto case 78;
+																													goto case 79;
 																												} else {
 																													if (la.kind == 230) {
-																														goto case 77;
+																														goto case 78;
 																													} else {
 																														goto case 6;
 																													}
@@ -5881,338 +5896,323 @@ partial class ExpressionFinder {
 					}
 				}
 			}
-			case 450: {
-				if (la == null) { currentState = 450; break; }
-				Expect(63, la); // "As"
-				currentState = 451;
-				break;
-			}
-			case 451: {
-				stateStack.Push(452);
-				goto case 445;
-			}
 			case 452: {
-				PopContext();
-				goto case 436;
+				if (la == null) { currentState = 452; break; }
+				Expect(63, la); // "As"
+				currentState = 453;
+				break;
 			}
 			case 453: {
 				stateStack.Push(454);
-				goto case 167;
+				goto case 447;
 			}
 			case 454: {
-				if (la == null) { currentState = 454; break; }
-				if (la.kind == 37) {
-					currentState = 458;
-					break;
-				} else {
-					goto case 455;
-				}
+				PopContext();
+				goto case 438;
 			}
 			case 455: {
-				if (la == null) { currentState = 455; break; }
-				if (la.kind == 63) {
-					currentState = 456;
-					break;
-				} else {
-					goto case 18;
-				}
+				stateStack.Push(456);
+				goto case 169;
 			}
 			case 456: {
 				if (la == null) { currentState = 456; break; }
-				if (la.kind == 40) {
-					stateStack.Push(456);
-					goto case 387;
+				if (la.kind == 37) {
+					currentState = 460;
+					break;
 				} else {
 					goto case 457;
 				}
 			}
 			case 457: {
+				if (la == null) { currentState = 457; break; }
+				if (la.kind == 63) {
+					currentState = 458;
+					break;
+				} else {
+					goto case 18;
+				}
+			}
+			case 458: {
+				if (la == null) { currentState = 458; break; }
+				if (la.kind == 40) {
+					stateStack.Push(458);
+					goto case 389;
+				} else {
+					goto case 459;
+				}
+			}
+			case 459: {
 				stateStack.Push(18);
 				goto case 33;
 			}
-			case 458: {
-				SetIdentifierExpected(la);
-				goto case 459;
-			}
-			case 459: {
-				if (la == null) { currentState = 459; break; }
-				if (set[71].Get(la.kind)) {
-					stateStack.Push(460);
-					goto case 373;
-				} else {
-					goto case 460;
-				}
-			}
 			case 460: {
-				if (la == null) { currentState = 460; break; }
-				Expect(38, la); // ")"
-				currentState = 455;
-				break;
+				SetIdentifierExpected(la);
+				goto case 461;
 			}
 			case 461: {
-				stateStack.Push(462);
-				goto case 167;
+				if (la == null) { currentState = 461; break; }
+				if (set[71].Get(la.kind)) {
+					stateStack.Push(462);
+					goto case 375;
+				} else {
+					goto case 462;
+				}
 			}
 			case 462: {
 				if (la == null) { currentState = 462; break; }
+				Expect(38, la); // ")"
+				currentState = 457;
+				break;
+			}
+			case 463: {
+				stateStack.Push(464);
+				goto case 169;
+			}
+			case 464: {
+				if (la == null) { currentState = 464; break; }
 				if (la.kind == 37 || la.kind == 63) {
 					if (la.kind == 63) {
-						currentState = 457;
+						currentState = 459;
 						break;
 					} else {
 						if (la.kind == 37) {
-							currentState = 464;
+							currentState = 466;
 							break;
 						} else {
-							goto case 463;
+							goto case 465;
 						}
 					}
 				} else {
 					goto case 18;
 				}
 			}
-			case 463: {
+			case 465: {
 				Error(la);
 				goto case 18;
 			}
-			case 464: {
+			case 466: {
 				SetIdentifierExpected(la);
-				goto case 465;
+				goto case 467;
 			}
-			case 465: {
-				if (la == null) { currentState = 465; break; }
+			case 467: {
+				if (la == null) { currentState = 467; break; }
 				if (set[71].Get(la.kind)) {
-					stateStack.Push(466);
-					goto case 373;
+					stateStack.Push(468);
+					goto case 375;
 				} else {
-					goto case 466;
+					goto case 468;
 				}
 			}
-			case 466: {
-				if (la == null) { currentState = 466; break; }
+			case 468: {
+				if (la == null) { currentState = 468; break; }
 				Expect(38, la); // ")"
 				currentState = 18;
 				break;
 			}
-			case 467: {
-				if (la == null) { currentState = 467; break; }
+			case 469: {
+				if (la == null) { currentState = 469; break; }
 				Expect(142, la); // "Interface"
 				currentState = 9;
 				break;
 			}
-			case 468: {
-				if (la == null) { currentState = 468; break; }
-				Expect(115, la); // "Enum"
-				currentState = 469;
-				break;
-			}
-			case 469: {
-				stateStack.Push(470);
-				goto case 167;
-			}
 			case 470: {
 				if (la == null) { currentState = 470; break; }
-				if (la.kind == 63) {
-					currentState = 477;
-					break;
-				} else {
-					goto case 471;
-				}
+				Expect(115, la); // "Enum"
+				currentState = 471;
+				break;
 			}
 			case 471: {
 				stateStack.Push(472);
-				goto case 18;
+				goto case 169;
 			}
 			case 472: {
 				if (la == null) { currentState = 472; break; }
-				if (set[87].Get(la.kind)) {
-					goto case 474;
-				} else {
-					Expect(113, la); // "End"
-					currentState = 473;
+				if (la.kind == 63) {
+					currentState = 479;
 					break;
+				} else {
+					goto case 473;
 				}
 			}
 			case 473: {
-				if (la == null) { currentState = 473; break; }
-				Expect(115, la); // "Enum"
-				currentState = 18;
-				break;
+				stateStack.Push(474);
+				goto case 18;
 			}
 			case 474: {
 				if (la == null) { currentState = 474; break; }
-				if (la.kind == 40) {
-					stateStack.Push(474);
-					goto case 387;
+				if (set[87].Get(la.kind)) {
+					goto case 476;
 				} else {
-					stateStack.Push(475);
-					goto case 167;
+					Expect(113, la); // "End"
+					currentState = 475;
+					break;
 				}
 			}
 			case 475: {
 				if (la == null) { currentState = 475; break; }
-				if (la.kind == 20) {
-					currentState = 476;
-					break;
-				} else {
-					goto case 471;
-				}
-			}
-			case 476: {
-				stateStack.Push(471);
-				goto case 49;
-			}
-			case 477: {
-				stateStack.Push(471);
-				goto case 33;
-			}
-			case 478: {
-				if (la == null) { currentState = 478; break; }
-				Expect(103, la); // "Delegate"
-				currentState = 479;
+				Expect(115, la); // "Enum"
+				currentState = 18;
 				break;
 			}
-			case 479: {
-				if (la == null) { currentState = 479; break; }
-				if (la.kind == 210) {
-					currentState = 480;
-					break;
+			case 476: {
+				if (la == null) { currentState = 476; break; }
+				if (la.kind == 40) {
+					stateStack.Push(476);
+					goto case 389;
 				} else {
-					if (la.kind == 127) {
-						currentState = 480;
-						break;
-					} else {
-						Error(la);
-						goto case 480;
-					}
+					stateStack.Push(477);
+					goto case 169;
 				}
 			}
+			case 477: {
+				if (la == null) { currentState = 477; break; }
+				if (la.kind == 20) {
+					currentState = 478;
+					break;
+				} else {
+					goto case 473;
+				}
+			}
+			case 478: {
+				stateStack.Push(473);
+				goto case 50;
+			}
+			case 479: {
+				stateStack.Push(473);
+				goto case 33;
+			}
 			case 480: {
-				PushContext(Context.Identifier, la, t);
-				SetIdentifierExpected(la);
-				goto case 481;
+				if (la == null) { currentState = 480; break; }
+				Expect(103, la); // "Delegate"
+				currentState = 481;
+				break;
 			}
 			case 481: {
 				if (la == null) { currentState = 481; break; }
-				currentState = 482;
-				break;
+				if (la.kind == 210) {
+					currentState = 482;
+					break;
+				} else {
+					if (la.kind == 127) {
+						currentState = 482;
+						break;
+					} else {
+						Error(la);
+						goto case 482;
+					}
+				}
 			}
 			case 482: {
-				PopContext();
+				PushContext(Context.Identifier, la, t);
+				SetIdentifierExpected(la);
 				goto case 483;
 			}
 			case 483: {
 				if (la == null) { currentState = 483; break; }
-				if (la.kind == 37) {
-					currentState = 488;
-					break;
-				} else {
-					goto case 484;
-				}
+				currentState = 484;
+				break;
 			}
 			case 484: {
-				if (la == null) { currentState = 484; break; }
+				PopContext();
+				goto case 485;
+			}
+			case 485: {
+				if (la == null) { currentState = 485; break; }
+				if (la.kind == 37) {
+					currentState = 490;
+					break;
+				} else {
+					goto case 486;
+				}
+			}
+			case 486: {
+				if (la == null) { currentState = 486; break; }
 				if (la.kind == 63) {
 					PushContext(Context.Type, la, t);
-					goto case 485;
+					goto case 487;
 				} else {
 					goto case 18;
 				}
 			}
-			case 485: {
-				if (la == null) { currentState = 485; break; }
+			case 487: {
+				if (la == null) { currentState = 487; break; }
 				Expect(63, la); // "As"
-				currentState = 486;
+				currentState = 488;
 				break;
 			}
-			case 486: {
-				stateStack.Push(487);
+			case 488: {
+				stateStack.Push(489);
 				goto case 33;
 			}
-			case 487: {
+			case 489: {
 				PopContext();
 				goto case 18;
 			}
-			case 488: {
-				SetIdentifierExpected(la);
-				goto case 489;
-			}
-			case 489: {
-				if (la == null) { currentState = 489; break; }
-				if (set[71].Get(la.kind)) {
-					stateStack.Push(490);
-					goto case 373;
-				} else {
-					goto case 490;
-				}
-			}
 			case 490: {
-				if (la == null) { currentState = 490; break; }
-				Expect(38, la); // ")"
-				currentState = 484;
-				break;
+				SetIdentifierExpected(la);
+				goto case 491;
 			}
 			case 491: {
-				PushContext(Context.TypeDeclaration, la, t);
-				goto case 492;
+				if (la == null) { currentState = 491; break; }
+				if (set[71].Get(la.kind)) {
+					stateStack.Push(492);
+					goto case 375;
+				} else {
+					goto case 492;
+				}
 			}
 			case 492: {
 				if (la == null) { currentState = 492; break; }
+				Expect(38, la); // ")"
+				currentState = 486;
+				break;
+			}
+			case 493: {
+				PushContext(Context.TypeDeclaration, la, t);
+				goto case 494;
+			}
+			case 494: {
+				if (la == null) { currentState = 494; break; }
 				if (la.kind == 155) {
-					currentState = 493;
+					currentState = 495;
 					break;
 				} else {
 					if (la.kind == 84) {
-						currentState = 493;
+						currentState = 495;
 						break;
 					} else {
 						if (la.kind == 209) {
-							currentState = 493;
+							currentState = 495;
 							break;
 						} else {
 							Error(la);
-							goto case 493;
+							goto case 495;
 						}
 					}
 				}
 			}
-			case 493: {
+			case 495: {
 				PushContext(Context.Identifier, la, t);
 				SetIdentifierExpected(la);
-				stateStack.Push(494);
-				goto case 167;
-			}
-			case 494: {
-				PopContext();
-				goto case 495;
-			}
-			case 495: {
-				if (la == null) { currentState = 495; break; }
-				if (la.kind == 37) {
-					currentState = 604;
-					break;
-				} else {
-					goto case 496;
-				}
+				stateStack.Push(496);
+				goto case 169;
 			}
 			case 496: {
-				stateStack.Push(497);
-				goto case 18;
+				PopContext();
+				goto case 497;
 			}
 			case 497: {
-				SetIdentifierExpected(la);
-				isMissingModifier = true;
-				goto case 498;
+				if (la == null) { currentState = 497; break; }
+				if (la.kind == 37) {
+					currentState = 606;
+					break;
+				} else {
+					goto case 498;
+				}
 			}
 			case 498: {
-				if (la == null) { currentState = 498; break; }
-				if (la.kind == 140) {
-					isMissingModifier = false;
-					PushContext(Context.Type, la, t);
-					goto case 601;
-				} else {
-					goto case 499;
-				}
+				stateStack.Push(499);
+				goto case 18;
 			}
 			case 499: {
 				SetIdentifierExpected(la);
@@ -6221,10 +6221,10 @@ partial class ExpressionFinder {
 			}
 			case 500: {
 				if (la == null) { currentState = 500; break; }
-				if (la.kind == 136) {
+				if (la.kind == 140) {
 					isMissingModifier = false;
 					PushContext(Context.Type, la, t);
-					goto case 595;
+					goto case 603;
 				} else {
 					goto case 501;
 				}
@@ -6236,139 +6236,154 @@ partial class ExpressionFinder {
 			}
 			case 502: {
 				if (la == null) { currentState = 502; break; }
-				if (set[92].Get(la.kind)) {
-					goto case 507;
-				} else {
+				if (la.kind == 136) {
 					isMissingModifier = false;
+					PushContext(Context.Type, la, t);
+					goto case 597;
+				} else {
 					goto case 503;
 				}
 			}
 			case 503: {
-				if (la == null) { currentState = 503; break; }
-				Expect(113, la); // "End"
-				currentState = 504;
-				break;
+				SetIdentifierExpected(la);
+				isMissingModifier = true;
+				goto case 504;
 			}
 			case 504: {
 				if (la == null) { currentState = 504; break; }
+				if (set[92].Get(la.kind)) {
+					goto case 509;
+				} else {
+					isMissingModifier = false;
+					goto case 505;
+				}
+			}
+			case 505: {
+				if (la == null) { currentState = 505; break; }
+				Expect(113, la); // "End"
+				currentState = 506;
+				break;
+			}
+			case 506: {
+				if (la == null) { currentState = 506; break; }
 				if (la.kind == 155) {
-					currentState = 505;
+					currentState = 507;
 					break;
 				} else {
 					if (la.kind == 84) {
-						currentState = 505;
+						currentState = 507;
 						break;
 					} else {
 						if (la.kind == 209) {
-							currentState = 505;
+							currentState = 507;
 							break;
 						} else {
 							Error(la);
-							goto case 505;
+							goto case 507;
 						}
 					}
 				}
 			}
-			case 505: {
-				stateStack.Push(506);
+			case 507: {
+				stateStack.Push(508);
 				goto case 18;
 			}
-			case 506: {
+			case 508: {
 				PopContext();
 				currentState = stateStack.Pop();
 				goto switchlbl;
 			}
-			case 507: {
-				SetIdentifierExpected(la);
-				isMissingModifier = true;
-				goto case 508;
-			}
-			case 508: {
-				if (la == null) { currentState = 508; break; }
-				if (la.kind == 40) {
-					stateStack.Push(507);
-					goto case 387;
-				} else {
-					isMissingModifier = true;
-					goto case 509;
-				}
-			}
 			case 509: {
 				SetIdentifierExpected(la);
+				isMissingModifier = true;
 				goto case 510;
 			}
 			case 510: {
 				if (la == null) { currentState = 510; break; }
-				if (set[110].Get(la.kind)) {
-					currentState = 594;
-					break;
+				if (la.kind == 40) {
+					stateStack.Push(509);
+					goto case 389;
 				} else {
-					isMissingModifier = false;
-					SetIdentifierExpected(la);
+					isMissingModifier = true;
 					goto case 511;
 				}
 			}
 			case 511: {
-				if (la == null) { currentState = 511; break; }
+				SetIdentifierExpected(la);
+				goto case 512;
+			}
+			case 512: {
+				if (la == null) { currentState = 512; break; }
+				if (set[110].Get(la.kind)) {
+					currentState = 596;
+					break;
+				} else {
+					isMissingModifier = false;
+					SetIdentifierExpected(la);
+					goto case 513;
+				}
+			}
+			case 513: {
+				if (la == null) { currentState = 513; break; }
 				if (la.kind == 84 || la.kind == 155 || la.kind == 209) {
-					stateStack.Push(501);
-					goto case 491;
+					stateStack.Push(503);
+					goto case 493;
 				} else {
 					if (la.kind == 103) {
-						stateStack.Push(501);
-						goto case 478;
+						stateStack.Push(503);
+						goto case 480;
 					} else {
 						if (la.kind == 115) {
-							stateStack.Push(501);
-							goto case 468;
+							stateStack.Push(503);
+							goto case 470;
 						} else {
 							if (la.kind == 142) {
-								stateStack.Push(501);
-								goto case 467;
+								stateStack.Push(503);
+								goto case 469;
 							} else {
 								if (set[95].Get(la.kind)) {
-									stateStack.Push(501);
+									stateStack.Push(503);
 									PushContext(Context.Member, la, t);
 									SetIdentifierExpected(la);
-									goto case 512;
+									goto case 514;
 								} else {
 									Error(la);
-									goto case 501;
+									goto case 503;
 								}
 							}
 						}
 					}
 				}
 			}
-			case 512: {
-				if (la == null) { currentState = 512; break; }
+			case 514: {
+				if (la == null) { currentState = 514; break; }
 				if (set[101].Get(la.kind)) {
-					stateStack.Push(513);
+					stateStack.Push(515);
 					SetIdentifierExpected(la);
-					goto case 584;
+					goto case 586;
 				} else {
 					if (la.kind == 127 || la.kind == 210) {
-						stateStack.Push(513);
-						goto case 569;
+						stateStack.Push(515);
+						goto case 571;
 					} else {
 						if (la.kind == 101) {
-							stateStack.Push(513);
-							goto case 552;
+							stateStack.Push(515);
+							goto case 554;
 						} else {
 							if (la.kind == 119) {
-								stateStack.Push(513);
-								goto case 539;
+								stateStack.Push(515);
+								goto case 541;
 							} else {
 								if (la.kind == 98) {
-									stateStack.Push(513);
-									goto case 527;
+									stateStack.Push(515);
+									goto case 529;
 								} else {
 									if (la.kind == 172) {
-										stateStack.Push(513);
-										goto case 514;
+										stateStack.Push(515);
+										goto case 516;
 									} else {
 										Error(la);
-										goto case 513;
+										goto case 515;
 									}
 								}
 							}
@@ -6376,451 +6391,451 @@ partial class ExpressionFinder {
 					}
 				}
 			}
-			case 513: {
+			case 515: {
 				PopContext();
 				currentState = stateStack.Pop();
 				goto switchlbl;
 			}
-			case 514: {
-				if (la == null) { currentState = 514; break; }
-				Expect(172, la); // "Operator"
-				currentState = 515;
-				break;
-			}
-			case 515: {
-				PushContext(Context.Identifier, la, t);
-				SetIdentifierExpected(la);
-				goto case 516;
-			}
 			case 516: {
 				if (la == null) { currentState = 516; break; }
+				Expect(172, la); // "Operator"
 				currentState = 517;
 				break;
 			}
 			case 517: {
-				PopContext();
+				PushContext(Context.Identifier, la, t);
+				SetIdentifierExpected(la);
 				goto case 518;
 			}
 			case 518: {
 				if (la == null) { currentState = 518; break; }
-				Expect(37, la); // "("
 				currentState = 519;
 				break;
 			}
 			case 519: {
-				stateStack.Push(520);
-				goto case 373;
+				PopContext();
+				goto case 520;
 			}
 			case 520: {
 				if (la == null) { currentState = 520; break; }
-				Expect(38, la); // ")"
+				Expect(37, la); // "("
 				currentState = 521;
 				break;
 			}
 			case 521: {
-				if (la == null) { currentState = 521; break; }
-				if (la.kind == 63) {
-					currentState = 525;
-					break;
-				} else {
-					goto case 522;
-				}
+				stateStack.Push(522);
+				goto case 375;
 			}
 			case 522: {
-				stateStack.Push(523);
-				goto case 223;
+				if (la == null) { currentState = 522; break; }
+				Expect(38, la); // ")"
+				currentState = 523;
+				break;
 			}
 			case 523: {
 				if (la == null) { currentState = 523; break; }
-				Expect(113, la); // "End"
-				currentState = 524;
-				break;
+				if (la.kind == 63) {
+					currentState = 527;
+					break;
+				} else {
+					goto case 524;
+				}
 			}
 			case 524: {
-				if (la == null) { currentState = 524; break; }
+				stateStack.Push(525);
+				goto case 225;
+			}
+			case 525: {
+				if (la == null) { currentState = 525; break; }
+				Expect(113, la); // "End"
+				currentState = 526;
+				break;
+			}
+			case 526: {
+				if (la == null) { currentState = 526; break; }
 				Expect(172, la); // "Operator"
 				currentState = 18;
 				break;
 			}
-			case 525: {
-				if (la == null) { currentState = 525; break; }
+			case 527: {
+				if (la == null) { currentState = 527; break; }
 				if (la.kind == 40) {
-					stateStack.Push(525);
-					goto case 387;
+					stateStack.Push(527);
+					goto case 389;
 				} else {
 					PushContext(Context.Type, la, t);
-					stateStack.Push(526);
+					stateStack.Push(528);
 					goto case 33;
 				}
 			}
-			case 526: {
-				PopContext();
-				goto case 522;
-			}
-			case 527: {
-				if (la == null) { currentState = 527; break; }
-				Expect(98, la); // "Custom"
-				currentState = 528;
-				break;
-			}
 			case 528: {
-				stateStack.Push(529);
-				goto case 539;
+				PopContext();
+				goto case 524;
 			}
 			case 529: {
 				if (la == null) { currentState = 529; break; }
+				Expect(98, la); // "Custom"
+				currentState = 530;
+				break;
+			}
+			case 530: {
+				stateStack.Push(531);
+				goto case 541;
+			}
+			case 531: {
+				if (la == null) { currentState = 531; break; }
 				if (set[97].Get(la.kind)) {
-					goto case 531;
+					goto case 533;
 				} else {
 					Expect(113, la); // "End"
-					currentState = 530;
+					currentState = 532;
 					break;
 				}
 			}
-			case 530: {
-				if (la == null) { currentState = 530; break; }
+			case 532: {
+				if (la == null) { currentState = 532; break; }
 				Expect(119, la); // "Event"
 				currentState = 18;
 				break;
 			}
-			case 531: {
-				if (la == null) { currentState = 531; break; }
+			case 533: {
+				if (la == null) { currentState = 533; break; }
 				if (la.kind == 40) {
-					stateStack.Push(531);
-					goto case 387;
+					stateStack.Push(533);
+					goto case 389;
 				} else {
 					if (la.kind == 56) {
-						currentState = 532;
+						currentState = 534;
 						break;
 					} else {
 						if (la.kind == 193) {
-							currentState = 532;
+							currentState = 534;
 							break;
 						} else {
 							if (la.kind == 189) {
-								currentState = 532;
+								currentState = 534;
 								break;
 							} else {
 								Error(la);
-								goto case 532;
+								goto case 534;
 							}
 						}
 					}
 				}
 			}
-			case 532: {
-				if (la == null) { currentState = 532; break; }
-				Expect(37, la); // "("
-				currentState = 533;
-				break;
-			}
-			case 533: {
-				stateStack.Push(534);
-				goto case 373;
-			}
 			case 534: {
 				if (la == null) { currentState = 534; break; }
-				Expect(38, la); // ")"
+				Expect(37, la); // "("
 				currentState = 535;
 				break;
 			}
 			case 535: {
 				stateStack.Push(536);
-				goto case 223;
+				goto case 375;
 			}
 			case 536: {
 				if (la == null) { currentState = 536; break; }
-				Expect(113, la); // "End"
+				Expect(38, la); // ")"
 				currentState = 537;
 				break;
 			}
 			case 537: {
-				if (la == null) { currentState = 537; break; }
-				if (la.kind == 56) {
-					currentState = 538;
-					break;
-				} else {
-					if (la.kind == 193) {
-						currentState = 538;
-						break;
-					} else {
-						if (la.kind == 189) {
-							currentState = 538;
-							break;
-						} else {
-							Error(la);
-							goto case 538;
-						}
-					}
-				}
+				stateStack.Push(538);
+				goto case 225;
 			}
 			case 538: {
-				stateStack.Push(529);
-				goto case 18;
+				if (la == null) { currentState = 538; break; }
+				Expect(113, la); // "End"
+				currentState = 539;
+				break;
 			}
 			case 539: {
 				if (la == null) { currentState = 539; break; }
-				Expect(119, la); // "Event"
-				currentState = 540;
-				break;
-			}
-			case 540: {
-				PushContext(Context.Identifier, la, t);
-				SetIdentifierExpected(la);
-				stateStack.Push(541);
-				goto case 167;
-			}
-			case 541: {
-				PopContext();
-				goto case 542;
-			}
-			case 542: {
-				if (la == null) { currentState = 542; break; }
-				if (la.kind == 63) {
-					PushContext(Context.Type, la, t);
-					goto case 549;
+				if (la.kind == 56) {
+					currentState = 540;
+					break;
 				} else {
-					if (set[131].Get(la.kind)) {
-						if (la.kind == 37) {
-							currentState = 546;
+					if (la.kind == 193) {
+						currentState = 540;
+						break;
+					} else {
+						if (la.kind == 189) {
+							currentState = 540;
 							break;
 						} else {
-							goto case 543;
+							Error(la);
+							goto case 540;
 						}
-					} else {
-						Error(la);
-						goto case 543;
 					}
 				}
 			}
+			case 540: {
+				stateStack.Push(531);
+				goto case 18;
+			}
+			case 541: {
+				if (la == null) { currentState = 541; break; }
+				Expect(119, la); // "Event"
+				currentState = 542;
+				break;
+			}
+			case 542: {
+				PushContext(Context.Identifier, la, t);
+				SetIdentifierExpected(la);
+				stateStack.Push(543);
+				goto case 169;
+			}
 			case 543: {
-				if (la == null) { currentState = 543; break; }
-				if (la.kind == 136) {
-					currentState = 544;
-					break;
-				} else {
-					goto case 18;
-				}
+				PopContext();
+				goto case 544;
 			}
 			case 544: {
-				stateStack.Push(545);
-				goto case 33;
+				if (la == null) { currentState = 544; break; }
+				if (la.kind == 63) {
+					PushContext(Context.Type, la, t);
+					goto case 551;
+				} else {
+					if (set[131].Get(la.kind)) {
+						if (la.kind == 37) {
+							currentState = 548;
+							break;
+						} else {
+							goto case 545;
+						}
+					} else {
+						Error(la);
+						goto case 545;
+					}
+				}
 			}
 			case 545: {
 				if (la == null) { currentState = 545; break; }
-				if (la.kind == 22) {
-					currentState = 544;
+				if (la.kind == 136) {
+					currentState = 546;
 					break;
 				} else {
 					goto case 18;
 				}
 			}
 			case 546: {
-				SetIdentifierExpected(la);
-				goto case 547;
+				stateStack.Push(547);
+				goto case 33;
 			}
 			case 547: {
 				if (la == null) { currentState = 547; break; }
-				if (set[71].Get(la.kind)) {
-					stateStack.Push(548);
-					goto case 373;
-				} else {
-					goto case 548;
-				}
-			}
-			case 548: {
-				if (la == null) { currentState = 548; break; }
-				Expect(38, la); // ")"
-				currentState = 543;
-				break;
-			}
-			case 549: {
-				if (la == null) { currentState = 549; break; }
-				Expect(63, la); // "As"
-				currentState = 550;
-				break;
-			}
-			case 550: {
-				stateStack.Push(551);
-				goto case 33;
-			}
-			case 551: {
-				PopContext();
-				goto case 543;
-			}
-			case 552: {
-				if (la == null) { currentState = 552; break; }
-				Expect(101, la); // "Declare"
-				currentState = 553;
-				break;
-			}
-			case 553: {
-				if (la == null) { currentState = 553; break; }
-				if (la.kind == 62 || la.kind == 66 || la.kind == 223) {
-					currentState = 554;
+				if (la.kind == 22) {
+					currentState = 546;
 					break;
-				} else {
-					goto case 554;
-				}
-			}
-			case 554: {
-				if (la == null) { currentState = 554; break; }
-				if (la.kind == 210) {
-					currentState = 555;
-					break;
-				} else {
-					if (la.kind == 127) {
-						currentState = 555;
-						break;
-					} else {
-						Error(la);
-						goto case 555;
-					}
-				}
-			}
-			case 555: {
-				PushContext(Context.Identifier, la, t);
-				SetIdentifierExpected(la);
-				stateStack.Push(556);
-				goto case 167;
-			}
-			case 556: {
-				PopContext();
-				goto case 557;
-			}
-			case 557: {
-				if (la == null) { currentState = 557; break; }
-				Expect(149, la); // "Lib"
-				currentState = 558;
-				break;
-			}
-			case 558: {
-				if (la == null) { currentState = 558; break; }
-				Expect(3, la); // LiteralString
-				currentState = 559;
-				break;
-			}
-			case 559: {
-				if (la == null) { currentState = 559; break; }
-				if (la.kind == 59) {
-					currentState = 568;
-					break;
-				} else {
-					goto case 560;
-				}
-			}
-			case 560: {
-				if (la == null) { currentState = 560; break; }
-				if (la.kind == 37) {
-					currentState = 565;
-					break;
-				} else {
-					goto case 561;
-				}
-			}
-			case 561: {
-				if (la == null) { currentState = 561; break; }
-				if (la.kind == 63) {
-					PushContext(Context.Type, la, t);
-					goto case 562;
 				} else {
 					goto case 18;
 				}
 			}
-			case 562: {
-				if (la == null) { currentState = 562; break; }
-				Expect(63, la); // "As"
-				currentState = 563;
-				break;
-			}
-			case 563: {
-				stateStack.Push(564);
-				goto case 33;
-			}
-			case 564: {
-				PopContext();
-				goto case 18;
-			}
-			case 565: {
+			case 548: {
 				SetIdentifierExpected(la);
-				goto case 566;
+				goto case 549;
 			}
-			case 566: {
-				if (la == null) { currentState = 566; break; }
+			case 549: {
+				if (la == null) { currentState = 549; break; }
 				if (set[71].Get(la.kind)) {
-					stateStack.Push(567);
-					goto case 373;
+					stateStack.Push(550);
+					goto case 375;
 				} else {
-					goto case 567;
+					goto case 550;
 				}
 			}
-			case 567: {
-				if (la == null) { currentState = 567; break; }
+			case 550: {
+				if (la == null) { currentState = 550; break; }
 				Expect(38, la); // ")"
-				currentState = 561;
+				currentState = 545;
 				break;
 			}
-			case 568: {
-				if (la == null) { currentState = 568; break; }
-				Expect(3, la); // LiteralString
-				currentState = 560;
+			case 551: {
+				if (la == null) { currentState = 551; break; }
+				Expect(63, la); // "As"
+				currentState = 552;
 				break;
 			}
-			case 569: {
-				if (la == null) { currentState = 569; break; }
+			case 552: {
+				stateStack.Push(553);
+				goto case 33;
+			}
+			case 553: {
+				PopContext();
+				goto case 545;
+			}
+			case 554: {
+				if (la == null) { currentState = 554; break; }
+				Expect(101, la); // "Declare"
+				currentState = 555;
+				break;
+			}
+			case 555: {
+				if (la == null) { currentState = 555; break; }
+				if (la.kind == 62 || la.kind == 66 || la.kind == 223) {
+					currentState = 556;
+					break;
+				} else {
+					goto case 556;
+				}
+			}
+			case 556: {
+				if (la == null) { currentState = 556; break; }
 				if (la.kind == 210) {
-					currentState = 570;
+					currentState = 557;
 					break;
 				} else {
 					if (la.kind == 127) {
-						currentState = 570;
+						currentState = 557;
 						break;
 					} else {
 						Error(la);
-						goto case 570;
+						goto case 557;
 					}
 				}
 			}
-			case 570: {
+			case 557: {
 				PushContext(Context.Identifier, la, t);
 				SetIdentifierExpected(la);
-				goto case 571;
+				stateStack.Push(558);
+				goto case 169;
+			}
+			case 558: {
+				PopContext();
+				goto case 559;
+			}
+			case 559: {
+				if (la == null) { currentState = 559; break; }
+				Expect(149, la); // "Lib"
+				currentState = 560;
+				break;
+			}
+			case 560: {
+				if (la == null) { currentState = 560; break; }
+				Expect(3, la); // LiteralString
+				currentState = 561;
+				break;
+			}
+			case 561: {
+				if (la == null) { currentState = 561; break; }
+				if (la.kind == 59) {
+					currentState = 570;
+					break;
+				} else {
+					goto case 562;
+				}
+			}
+			case 562: {
+				if (la == null) { currentState = 562; break; }
+				if (la.kind == 37) {
+					currentState = 567;
+					break;
+				} else {
+					goto case 563;
+				}
+			}
+			case 563: {
+				if (la == null) { currentState = 563; break; }
+				if (la.kind == 63) {
+					PushContext(Context.Type, la, t);
+					goto case 564;
+				} else {
+					goto case 18;
+				}
+			}
+			case 564: {
+				if (la == null) { currentState = 564; break; }
+				Expect(63, la); // "As"
+				currentState = 565;
+				break;
+			}
+			case 565: {
+				stateStack.Push(566);
+				goto case 33;
+			}
+			case 566: {
+				PopContext();
+				goto case 18;
+			}
+			case 567: {
+				SetIdentifierExpected(la);
+				goto case 568;
+			}
+			case 568: {
+				if (la == null) { currentState = 568; break; }
+				if (set[71].Get(la.kind)) {
+					stateStack.Push(569);
+					goto case 375;
+				} else {
+					goto case 569;
+				}
+			}
+			case 569: {
+				if (la == null) { currentState = 569; break; }
+				Expect(38, la); // ")"
+				currentState = 563;
+				break;
+			}
+			case 570: {
+				if (la == null) { currentState = 570; break; }
+				Expect(3, la); // LiteralString
+				currentState = 562;
+				break;
 			}
 			case 571: {
 				if (la == null) { currentState = 571; break; }
-				currentState = 572;
-				break;
+				if (la.kind == 210) {
+					currentState = 572;
+					break;
+				} else {
+					if (la.kind == 127) {
+						currentState = 572;
+						break;
+					} else {
+						Error(la);
+						goto case 572;
+					}
+				}
 			}
 			case 572: {
-				PopContext();
+				PushContext(Context.Identifier, la, t);
+				SetIdentifierExpected(la);
 				goto case 573;
 			}
 			case 573: {
 				if (la == null) { currentState = 573; break; }
+				currentState = 574;
+				break;
+			}
+			case 574: {
+				PopContext();
+				goto case 575;
+			}
+			case 575: {
+				if (la == null) { currentState = 575; break; }
 				if (la.kind == 37) {
-					currentState = 580;
+					currentState = 582;
 					break;
 				} else {
 					if (la.kind == 63) {
 						PushContext(Context.Type, la, t);
-						goto case 577;
+						goto case 579;
 					} else {
-						goto case 574;
+						goto case 576;
 					}
 				}
 			}
-			case 574: {
-				stateStack.Push(575);
-				goto case 223;
+			case 576: {
+				stateStack.Push(577);
+				goto case 225;
 			}
-			case 575: {
-				if (la == null) { currentState = 575; break; }
+			case 577: {
+				if (la == null) { currentState = 577; break; }
 				Expect(113, la); // "End"
-				currentState = 576;
+				currentState = 578;
 				break;
 			}
-			case 576: {
-				if (la == null) { currentState = 576; break; }
+			case 578: {
+				if (la == null) { currentState = 578; break; }
 				if (la.kind == 210) {
 					currentState = 18;
 					break;
@@ -6829,375 +6844,375 @@ partial class ExpressionFinder {
 						currentState = 18;
 						break;
 					} else {
-						goto case 463;
+						goto case 465;
 					}
 				}
 			}
-			case 577: {
-				if (la == null) { currentState = 577; break; }
+			case 579: {
+				if (la == null) { currentState = 579; break; }
 				Expect(63, la); // "As"
-				currentState = 578;
+				currentState = 580;
 				break;
 			}
-			case 578: {
-				stateStack.Push(579);
+			case 580: {
+				stateStack.Push(581);
 				goto case 33;
 			}
-			case 579: {
-				PopContext();
-				goto case 574;
-			}
-			case 580: {
-				SetIdentifierExpected(la);
-				goto case 581;
-			}
 			case 581: {
-				if (la == null) { currentState = 581; break; }
+				PopContext();
+				goto case 576;
+			}
+			case 582: {
+				SetIdentifierExpected(la);
+				goto case 583;
+			}
+			case 583: {
+				if (la == null) { currentState = 583; break; }
 				if (set[130].Get(la.kind)) {
 					if (la.kind == 169) {
-						currentState = 583;
+						currentState = 585;
 						break;
 					} else {
 						if (set[71].Get(la.kind)) {
-							stateStack.Push(582);
-							goto case 373;
+							stateStack.Push(584);
+							goto case 375;
 						} else {
 							Error(la);
-							goto case 582;
+							goto case 584;
 						}
 					}
 				} else {
-					goto case 582;
+					goto case 584;
 				}
-			}
-			case 582: {
-				if (la == null) { currentState = 582; break; }
-				Expect(38, la); // ")"
-				currentState = 573;
-				break;
-			}
-			case 583: {
-				stateStack.Push(582);
-				goto case 431;
 			}
 			case 584: {
 				if (la == null) { currentState = 584; break; }
-				if (la.kind == 88) {
-					currentState = 585;
-					break;
-				} else {
-					goto case 585;
-				}
+				Expect(38, la); // ")"
+				currentState = 575;
+				break;
 			}
 			case 585: {
-				PushContext(Context.Identifier, la, t);
-				SetIdentifierExpected(la);
-				stateStack.Push(586);
-				goto case 593;
+				stateStack.Push(584);
+				goto case 433;
 			}
 			case 586: {
-				PopContext();
-				goto case 587;
-			}
-			case 587: {
-				if (la == null) { currentState = 587; break; }
-				if (la.kind == 63) {
-					PushContext(Context.Type, la, t);
-					goto case 590;
+				if (la == null) { currentState = 586; break; }
+				if (la.kind == 88) {
+					currentState = 587;
+					break;
 				} else {
-					goto case 588;
+					goto case 587;
 				}
 			}
+			case 587: {
+				PushContext(Context.Identifier, la, t);
+				SetIdentifierExpected(la);
+				stateStack.Push(588);
+				goto case 595;
+			}
 			case 588: {
-				if (la == null) { currentState = 588; break; }
+				PopContext();
+				goto case 589;
+			}
+			case 589: {
+				if (la == null) { currentState = 589; break; }
+				if (la.kind == 63) {
+					PushContext(Context.Type, la, t);
+					goto case 592;
+				} else {
+					goto case 590;
+				}
+			}
+			case 590: {
+				if (la == null) { currentState = 590; break; }
 				if (la.kind == 20) {
-					currentState = 589;
+					currentState = 591;
 					break;
 				} else {
 					goto case 18;
 				}
 			}
-			case 589: {
-				stateStack.Push(18);
-				goto case 49;
-			}
-			case 590: {
-				if (la == null) { currentState = 590; break; }
-				Expect(63, la); // "As"
-				currentState = 591;
-				break;
-			}
 			case 591: {
-				stateStack.Push(592);
-				goto case 33;
+				stateStack.Push(18);
+				goto case 50;
 			}
 			case 592: {
-				PopContext();
-				goto case 588;
+				if (la == null) { currentState = 592; break; }
+				Expect(63, la); // "As"
+				currentState = 593;
+				break;
 			}
 			case 593: {
-				if (la == null) { currentState = 593; break; }
+				stateStack.Push(594);
+				goto case 33;
+			}
+			case 594: {
+				PopContext();
+				goto case 590;
+			}
+			case 595: {
+				if (la == null) { currentState = 595; break; }
 				if (set[116].Get(la.kind)) {
 					currentState = stateStack.Pop();
 					break;
 				} else {
 					if (la.kind == 58) {
-						goto case 117;
+						goto case 118;
 					} else {
 						if (la.kind == 126) {
-							goto case 101;
+							goto case 102;
 						} else {
 							goto case 6;
 						}
 					}
 				}
 			}
-			case 594: {
-				isMissingModifier = false;
-				goto case 509;
-			}
-			case 595: {
-				if (la == null) { currentState = 595; break; }
-				Expect(136, la); // "Implements"
-				currentState = 596;
-				break;
-			}
 			case 596: {
-				stateStack.Push(597);
-				goto case 33;
+				isMissingModifier = false;
+				goto case 511;
 			}
 			case 597: {
-				PopContext();
-				goto case 598;
+				if (la == null) { currentState = 597; break; }
+				Expect(136, la); // "Implements"
+				currentState = 598;
+				break;
 			}
 			case 598: {
-				if (la == null) { currentState = 598; break; }
+				stateStack.Push(599);
+				goto case 33;
+			}
+			case 599: {
+				PopContext();
+				goto case 600;
+			}
+			case 600: {
+				if (la == null) { currentState = 600; break; }
 				if (la.kind == 22) {
-					currentState = 599;
+					currentState = 601;
 					break;
 				} else {
-					stateStack.Push(501);
+					stateStack.Push(503);
 					goto case 18;
 				}
 			}
-			case 599: {
-				PushContext(Context.Type, la, t);
-				stateStack.Push(600);
-				goto case 33;
-			}
-			case 600: {
-				PopContext();
-				goto case 598;
-			}
 			case 601: {
-				if (la == null) { currentState = 601; break; }
-				Expect(140, la); // "Inherits"
-				currentState = 602;
-				break;
+				PushContext(Context.Type, la, t);
+				stateStack.Push(602);
+				goto case 33;
 			}
 			case 602: {
-				stateStack.Push(603);
-				goto case 33;
+				PopContext();
+				goto case 600;
 			}
 			case 603: {
-				PopContext();
-				stateStack.Push(499);
-				goto case 18;
-			}
-			case 604: {
-				if (la == null) { currentState = 604; break; }
-				Expect(169, la); // "Of"
-				currentState = 605;
+				if (la == null) { currentState = 603; break; }
+				Expect(140, la); // "Inherits"
+				currentState = 604;
 				break;
 			}
+			case 604: {
+				stateStack.Push(605);
+				goto case 33;
+			}
 			case 605: {
-				stateStack.Push(606);
-				goto case 431;
+				PopContext();
+				stateStack.Push(501);
+				goto case 18;
 			}
 			case 606: {
 				if (la == null) { currentState = 606; break; }
-				Expect(38, la); // ")"
-				currentState = 496;
+				Expect(169, la); // "Of"
+				currentState = 607;
 				break;
 			}
 			case 607: {
-				isMissingModifier = false;
-				goto case 23;
+				stateStack.Push(608);
+				goto case 433;
 			}
 			case 608: {
 				if (la == null) { currentState = 608; break; }
-				Expect(140, la); // "Inherits"
-				currentState = 609;
+				Expect(38, la); // ")"
+				currentState = 498;
 				break;
 			}
 			case 609: {
-				stateStack.Push(610);
-				goto case 33;
+				isMissingModifier = false;
+				goto case 23;
 			}
 			case 610: {
-				PopContext();
-				goto case 611;
+				if (la == null) { currentState = 610; break; }
+				Expect(140, la); // "Inherits"
+				currentState = 611;
+				break;
 			}
 			case 611: {
-				if (la == null) { currentState = 611; break; }
+				stateStack.Push(612);
+				goto case 33;
+			}
+			case 612: {
+				PopContext();
+				goto case 613;
+			}
+			case 613: {
+				if (la == null) { currentState = 613; break; }
 				if (la.kind == 22) {
-					currentState = 612;
+					currentState = 614;
 					break;
 				} else {
 					stateStack.Push(14);
 					goto case 18;
 				}
 			}
-			case 612: {
+			case 614: {
 				PushContext(Context.Type, la, t);
-				stateStack.Push(613);
+				stateStack.Push(615);
 				goto case 33;
 			}
-			case 613: {
-				PopContext();
-				goto case 611;
-			}
-			case 614: {
-				if (la == null) { currentState = 614; break; }
-				Expect(169, la); // "Of"
-				currentState = 615;
-				break;
-			}
 			case 615: {
-				stateStack.Push(616);
-				goto case 431;
+				PopContext();
+				goto case 613;
 			}
 			case 616: {
 				if (la == null) { currentState = 616; break; }
+				Expect(169, la); // "Of"
+				currentState = 617;
+				break;
+			}
+			case 617: {
+				stateStack.Push(618);
+				goto case 433;
+			}
+			case 618: {
+				if (la == null) { currentState = 618; break; }
 				Expect(38, la); // ")"
 				currentState = 11;
 				break;
 			}
-			case 617: {
+			case 619: {
 				PushContext(Context.Identifier, la, t);
 				SetIdentifierExpected(la);
-				goto case 618;
-			}
-			case 618: {
-				if (la == null) { currentState = 618; break; }
-				if (set[44].Get(la.kind)) {
-					currentState = 618;
-					break;
-				} else {
-					PopContext();
-					stateStack.Push(619);
-					goto case 18;
-				}
-			}
-			case 619: {
-				if (la == null) { currentState = 619; break; }
-				if (set[3].Get(la.kind)) {
-					stateStack.Push(619);
-					goto case 5;
-				} else {
-					Expect(113, la); // "End"
-					currentState = 620;
-					break;
-				}
+				goto case 620;
 			}
 			case 620: {
 				if (la == null) { currentState = 620; break; }
+				if (set[44].Get(la.kind)) {
+					currentState = 620;
+					break;
+				} else {
+					PopContext();
+					stateStack.Push(621);
+					goto case 18;
+				}
+			}
+			case 621: {
+				if (la == null) { currentState = 621; break; }
+				if (set[3].Get(la.kind)) {
+					stateStack.Push(621);
+					goto case 5;
+				} else {
+					Expect(113, la); // "End"
+					currentState = 622;
+					break;
+				}
+			}
+			case 622: {
+				if (la == null) { currentState = 622; break; }
 				Expect(160, la); // "Namespace"
 				currentState = 18;
 				break;
 			}
-			case 621: {
-				if (la == null) { currentState = 621; break; }
-				Expect(137, la); // "Imports"
-				currentState = 622;
-				break;
-			}
-			case 622: {
-				PushContext(Context.Importable, la, t);
-				nextTokenIsStartOfImportsOrAccessExpression = true;	
-				goto case 623;
-			}
 			case 623: {
 				if (la == null) { currentState = 623; break; }
+				Expect(137, la); // "Imports"
+				currentState = 624;
+				break;
+			}
+			case 624: {
+				PushContext(Context.Importable, la, t);
+				nextTokenIsStartOfImportsOrAccessExpression = true;	
+				goto case 625;
+			}
+			case 625: {
+				if (la == null) { currentState = 625; break; }
 				if (set[15].Get(la.kind)) {
-					currentState = 629;
+					currentState = 631;
 					break;
 				} else {
 					if (la.kind == 10) {
-						currentState = 625;
+						currentState = 627;
 						break;
 					} else {
 						Error(la);
-						goto case 624;
+						goto case 626;
 					}
 				}
 			}
-			case 624: {
+			case 626: {
 				PopContext();
 				goto case 18;
 			}
-			case 625: {
-				stateStack.Push(626);
-				goto case 167;
-			}
-			case 626: {
-				if (la == null) { currentState = 626; break; }
-				Expect(20, la); // "="
-				currentState = 627;
-				break;
-			}
 			case 627: {
-				if (la == null) { currentState = 627; break; }
-				Expect(3, la); // LiteralString
-				currentState = 628;
-				break;
+				stateStack.Push(628);
+				goto case 169;
 			}
 			case 628: {
 				if (la == null) { currentState = 628; break; }
-				Expect(11, la); // XmlCloseTag
-				currentState = 624;
+				Expect(20, la); // "="
+				currentState = 629;
 				break;
 			}
 			case 629: {
 				if (la == null) { currentState = 629; break; }
-				if (la.kind == 37) {
-					stateStack.Push(629);
-					goto case 38;
-				} else {
-					if (la.kind == 20 || la.kind == 26) {
-						currentState = 630;
-						break;
-					} else {
-						goto case 624;
-					}
-				}
+				Expect(3, la); // LiteralString
+				currentState = 630;
+				break;
 			}
 			case 630: {
-				stateStack.Push(624);
-				goto case 33;
+				if (la == null) { currentState = 630; break; }
+				Expect(11, la); // XmlCloseTag
+				currentState = 626;
+				break;
 			}
 			case 631: {
 				if (la == null) { currentState = 631; break; }
-				Expect(173, la); // "Option"
-				currentState = 632;
-				break;
-			}
-			case 632: {
-				if (la == null) { currentState = 632; break; }
-				if (la.kind == 121 || la.kind == 139 || la.kind == 207) {
-					currentState = 634;
-					break;
+				if (la.kind == 37) {
+					stateStack.Push(631);
+					goto case 38;
 				} else {
-					if (la.kind == 87) {
-						currentState = 633;
+					if (la.kind == 20 || la.kind == 26) {
+						currentState = 632;
 						break;
 					} else {
-						goto case 463;
+						goto case 626;
 					}
 				}
 			}
+			case 632: {
+				stateStack.Push(626);
+				goto case 33;
+			}
 			case 633: {
 				if (la == null) { currentState = 633; break; }
+				Expect(173, la); // "Option"
+				currentState = 634;
+				break;
+			}
+			case 634: {
+				if (la == null) { currentState = 634; break; }
+				if (la.kind == 121 || la.kind == 139 || la.kind == 207) {
+					currentState = 636;
+					break;
+				} else {
+					if (la.kind == 87) {
+						currentState = 635;
+						break;
+					} else {
+						goto case 465;
+					}
+				}
+			}
+			case 635: {
+				if (la == null) { currentState = 635; break; }
 				if (la.kind == 213) {
 					currentState = 18;
 					break;
@@ -7206,12 +7221,12 @@ partial class ExpressionFinder {
 						currentState = 18;
 						break;
 					} else {
-						goto case 463;
+						goto case 465;
 					}
 				}
 			}
-			case 634: {
-				if (la == null) { currentState = 634; break; }
+			case 636: {
+				if (la == null) { currentState = 636; break; }
 				if (la.kind == 170 || la.kind == 171) {
 					currentState = 18;
 					break;

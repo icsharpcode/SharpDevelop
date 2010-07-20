@@ -124,18 +124,38 @@ End Class
 			Find(program1, "		", 1, "", ExpressionContext.Global);
 		}
 		
-		[Test, Ignore]
+		[Test]
 		public void FindParameterStart()
 		{
 			Find(@"Module Program
 	Private Function CreateFolder(
-End Module", "(", 1, "", ExpressionContext.Parameter);
+End Module", "(", 1, "", ExpressionContext.IdentifierExpected);
 		}
 		
 		[Test]
 		public void FindAfterNewLineImport()
 		{
 			Find("Imports System\n", "\n", 1, "", ExpressionContext.Global);
+		}
+		
+		[Test]
+		public void FindInArgumentList()
+		{
+			Find(@"Class MainClass
+	Sub Main()
+		Test(Test2(1) + Test2(2))
+	End Sub
+End Class", "Test2", 2, "Te", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void FindExpressionBeforeBrace()
+		{
+			Find(@"Class MainClass
+	Sub Main()
+		Test(Test2(1) + Test2(2))
+	End Sub
+End Class", "Test2", 5, "Test2", ExpressionContext.Default);
 		}
 		#endregion
 		

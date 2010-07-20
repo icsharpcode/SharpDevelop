@@ -570,7 +570,7 @@ CollectionInitializer =
 .
 
 ExpressionSuffix =
-    "(" ( "Of" TypeName { "," TypeName } ")" |  [ ArgumentList ] ")" )
+    "(" (. PushContext(Context.Expression, la, t); .) ( "Of" TypeName { "," TypeName } ")" |  [ ArgumentList ] (. PopContext(); .) ")" )
 |    ( "." | "!" | ".@" | "..." ) (. nextTokenIsStartOfImportsOrAccessExpression = true; .) [ XmlOpenTag ] IdentifierOrKeyword [ XmlCloseTag ]
 .
 
