@@ -226,7 +226,7 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
-		public GetService(Type serviceType)
+		public object GetService(Type serviceType)
 		{
 			return null;
 		}
