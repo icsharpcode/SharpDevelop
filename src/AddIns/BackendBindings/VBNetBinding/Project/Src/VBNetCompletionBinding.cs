@@ -69,7 +69,9 @@ namespace ICSharpCode.VBNetBinding
 				case ' ':
 					editor.Document.Insert(editor.Caret.Offset, " ");
 					result = ef.FindExpression(editor.Document.Text, editor.Caret.Offset);
-					if (editor.GetWordBeforeCaret().Trim().Equals("return", StringComparison.InvariantCultureIgnoreCase) || !LiteralMayFollow((BitArray)result.Tag) && !OperatorMayFollow((BitArray)result.Tag) && ExpressionContext.IdentifierExpected != result.Context) {
+					
+					string word = editor.GetWordBeforeCaret().Trim();
+					if (word.Equals("overrides", StringComparison.InvariantCultureIgnoreCase) || word.Equals("return", StringComparison.InvariantCultureIgnoreCase) || !LiteralMayFollow((BitArray)result.Tag) && !OperatorMayFollow((BitArray)result.Tag) && ExpressionContext.IdentifierExpected != result.Context) {
 						LoggingService.Debug("CC: After space, result=" + result + ", context=" + result.Context);
 						editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor, ch));
 					}

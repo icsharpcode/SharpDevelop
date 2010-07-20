@@ -82,6 +82,11 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				p.Advance();
 			}
 			
+			if (p.Errors.Any()) {
+				foreach (var e in p.Errors)
+					LoggingService.Warn("not expected: " + e);
+			}
+			
 			BitArray expectedSet;
 			
 			try {
@@ -202,6 +207,11 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 					block = p.CurrentBlock;
 				if (block != null && (block.isClosed || expressionDelimiters.Contains(t.Kind) && block == p.CurrentBlock))
 					break;
+			}
+			
+			if (p.Errors.Any()) {
+				foreach (var e in p.Errors)
+					LoggingService.Warn("not expected: " + e);
 			}
 			
 			BitArray expectedSet;

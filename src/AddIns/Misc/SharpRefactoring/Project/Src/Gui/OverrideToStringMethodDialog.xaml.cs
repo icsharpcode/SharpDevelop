@@ -55,7 +55,7 @@ namespace SharpRefactoring.Gui
 			var param = new List<Ast.Expression>() { formatString };
 			
 			Ast.ReturnStatement ret = new Ast.ReturnStatement(new Ast.InvocationExpression(
-				new Ast.MemberReferenceExpression(new Ast.TypeReferenceExpression(new Ast.TypeReference("string", true)), "Format"),
+				new Ast.MemberReferenceExpression(new Ast.TypeReferenceExpression(new Ast.TypeReference("System.String", true)), "Format"),
 				param.Concat(fields.Select(f => new Ast.IdentifierExpression(f))).ToList()
 			));
 			

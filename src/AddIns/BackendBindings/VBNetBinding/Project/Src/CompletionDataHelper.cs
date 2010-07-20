@@ -37,7 +37,8 @@ namespace ICSharpCode.VBNetBinding
 			bool completingDotExpression = false;
 			
 			if (expressionResult.Context != ExpressionContext.Global && expressionResult.Context != ExpressionContext.TypeDeclaration) {
-				if (expressionResult.Context == ExpressionContext.Importable && string.IsNullOrWhiteSpace(expressionResult.Expression)) {
+				if (expressionResult.Context == ExpressionContext.Importable
+				    && string.IsNullOrWhiteSpace(expressionResult.Expression)) {
 					expressionResult.Expression = "Global";
 				} else if (pressedKey != '.') {
 					int idx = string.IsNullOrWhiteSpace(expressionResult.Expression)
@@ -79,11 +80,14 @@ namespace ICSharpCode.VBNetBinding
 			if (addedKeywords)
 				AddTemplates(editor, result);
 			
-			if (contextCompletion) {
+			string word = editor.GetWordBeforeCaret().Trim();
+			IClass c;
+			
+			if (contextCompletion && pressedKey == ' ') {
 				IMember m = GetCurrentMember(editor);
 				
-				if (editor.GetWordBeforeCaret().Trim().Equals("return", StringComparison.InvariantCultureIgnoreCase) && m != null) {
-					IClass c = m.ReturnType != null ? m.ReturnType.GetUnderlyingClass() : null;
+				if (word.Equals("return", StringComparison.InvariantCultureIgnoreCase) && m != null) {
+					c = m.ReturnType != null ? m.ReturnType.GetUnderlyingClass() : null;
 					if (c != null) {
 						foreach (CodeCompletionItem item in result.Items.OfType<CodeCompletionItem>()) {
 							IClass itemClass = item.Entity as IClass;
@@ -96,22 +100,21 @@ namespace ICSharpCode.VBNetBinding
 				}
 			}
 			
+			c = GetCurrentClass(editor);
+			
+			if (word.Equals("overrides", StringComparison.InvariantCultureIgnoreCase) && pressedKey == ' ' && c != null) {
+				return new OverrideCompletionItemProvider().GenerateCompletionList(editor);
+			}
+			
 			if (pressedKey == '\0') { // ctrl+space
 				char prevChar =  editor.Caret.Offset > 0 ? editor.Document.GetCharAt(editor.Caret.Offset - 1) : '\0';
-				string word = char.IsLetterOrDigit(prevChar) || prevChar == '_' ? editor.GetWordBeforeCaret() : "";
+				word = char.IsLetterOrDigit(prevChar) || prevChar == '_' ? editor.GetWordBeforeCaret() : "";
 				
 				if (!string.IsNullOrWhiteSpace(word))
 					result.PreselectionLength = word.Length;
 			}
 			
 			return result;
-		}
-		
-		static bool IdentifierExpected(object tag)
-		{
-			if (tag is BitArray)
-				return (tag as BitArray)[Tokens.Identifier];
-			return false;
 		}
 		
 		static void AddVBNetKeywords(List<ICompletionEntry> ar, BitArray keywords)
@@ -139,6 +142,17 @@ namespace ICSharpCode.VBNetBinding
 			NRefactoryResolver r = new NRefactoryResolver(LanguageProperties.VBNet);
 			if (r.Initialize(ParserService.GetParseInformation(editor.FileName), caret.Line, caret.Column)) {
 				return r.CallingMember;
+			} else {
+				return null;
+			}
+		}
+		
+		static IClass GetCurrentClass(ITextEditor editor)
+		{
+			var caret = editor.Caret;
+			NRefactoryResolver r = new NRefactoryResolver(LanguageProperties.VBNet);
+			if (r.Initialize(ParserService.GetParseInformation(editor.FileName), caret.Line, caret.Column)) {
+				return r.CallingClass;
 			} else {
 				return null;
 			}
