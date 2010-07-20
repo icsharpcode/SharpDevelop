@@ -224,6 +224,11 @@ namespace PythonBinding.Tests.Utils
 			if (IsDirtyChanged != null) {
 				IsDirtyChanged(this, e);
 			}
-		}		
+		}
+		
+		public GetService(Type serviceType)
+		{
+			return null;
+		}
 	}
 }
