@@ -243,22 +243,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			}
 			
 			if (methodDeclaration.TypeReference.Type != "System.Void" && methodDeclaration.Body.Children.Count > 0) {
-				if (IsAssignmentTo(methodDeclaration.Body.Children[methodDeclaration.Body.Children.Count - 1], methodDeclaration.Name))
-				{
-					Expression returnValue = GetAssignmentFromStatement(methodDeclaration.Body.Children[methodDeclaration.Body.Children.Count - 1]).Right;
-					methodDeclaration.Body.Children.RemoveAt(methodDeclaration.Body.Children.Count - 1);
-					methodDeclaration.Body.Return(returnValue);
-				} else {
-					ReturnStatementForFunctionAssignment visitor = new ReturnStatementForFunctionAssignment(methodDeclaration.Name);
-					methodDeclaration.Body.AcceptVisitor(visitor, null);
-					if (visitor.replacementCount > 0) {
-						Expression init;
-						init = ExpressionBuilder.CreateDefaultValueForType(methodDeclaration.TypeReference);
-						methodDeclaration.Body.Children.Insert(0, new LocalVariableDeclaration(new VariableDeclaration(FunctionReturnValueName, init, methodDeclaration.TypeReference)));
-						methodDeclaration.Body.Children[0].Parent = methodDeclaration.Body;
-						methodDeclaration.Body.Return(new IdentifierExpression(FunctionReturnValueName));
-					}
-				}
+				ReplaceAllFunctionAssignments(methodDeclaration.Body, methodDeclaration.Name, methodDeclaration.TypeReference);
 			}
 			
 			return base.VisitMethodDeclaration(methodDeclaration, data);
@@ -286,7 +271,8 @@ namespace ICSharpCode.NRefactory.Visitors
 		class ReturnStatementForFunctionAssignment : AbstractAstTransformer
 		{
 			string functionName;
-			internal int replacementCount = 0;
+			internal List<IdentifierExpression> expressionsToReplace = new List<IdentifierExpression>();
+			internal bool hasExit = false;
 			
 			public ReturnStatementForFunctionAssignment(string functionName)
 			{
@@ -297,11 +283,23 @@ namespace ICSharpCode.NRefactory.Visitors
 			{
 				if (identifierExpression.Identifier.Equals(functionName, StringComparison.InvariantCultureIgnoreCase)) {
 					if (!(identifierExpression.Parent is AddressOfExpression) && !(identifierExpression.Parent is InvocationExpression)) {
-						identifierExpression.Identifier = FunctionReturnValueName;
-						replacementCount++;
+						expressionsToReplace.Add(identifierExpression);
 					}
 				}
 				return base.VisitIdentifierExpression(identifierExpression, data);
+			}
+			
+			public override object VisitExitStatement(ExitStatement exitStatement, object data)
+			{
+				if (exitStatement.ExitType == ExitType.Function || exitStatement.ExitType == ExitType.Property) {
+					hasExit = true;
+					IdentifierExpression expr = new IdentifierExpression("tmp");
+					expressionsToReplace.Add(expr);
+					var newNode = new ReturnStatement(expr);
+					ReplaceCurrentNode(newNode);
+					return base.VisitReturnStatement(newNode, data);
+				}
+				return base.VisitExitStatement(exitStatement, data);
 			}
 		}
 		#endregion
@@ -339,7 +337,34 @@ namespace ICSharpCode.NRefactory.Visitors
 				propertyDeclaration.SetRegion.AcceptVisitor(new RenameIdentifierVisitor(from, "value", StringComparer.InvariantCultureIgnoreCase), null);
 			}
 			
+			if (propertyDeclaration.HasGetRegion && propertyDeclaration.GetRegion.Block.Children.Count > 0) {
+				BlockStatement block = propertyDeclaration.GetRegion.Block;
+				ReplaceAllFunctionAssignments(block, propertyDeclaration.Name, propertyDeclaration.TypeReference);
+			}
+			
 			return base.VisitPropertyDeclaration(propertyDeclaration, data);
+		}
+		
+		void ReplaceAllFunctionAssignments(BlockStatement block, string functionName, TypeReference typeReference)
+		{
+			ReturnStatementForFunctionAssignment visitor = new ReturnStatementForFunctionAssignment(functionName);
+			block.AcceptVisitor(visitor, null);
+			if (visitor.expressionsToReplace.Count == 1 && !visitor.hasExit && IsAssignmentTo(block.Children.Last(), functionName)) {
+				Expression returnValue = GetAssignmentFromStatement(block.Children.Last()).Right;
+				block.Children.RemoveAt(block.Children.Count - 1);
+				block.Return(returnValue);
+			} else {
+				if (visitor.expressionsToReplace.Count > 0) {
+					foreach (var expr in visitor.expressionsToReplace) {
+						expr.Identifier = FunctionReturnValueName;
+					}
+					Expression init;
+					init = ExpressionBuilder.CreateDefaultValueForType(typeReference);
+					block.Children.Insert(0, new LocalVariableDeclaration(new VariableDeclaration(FunctionReturnValueName, init, typeReference)));
+					block.Children[0].Parent = block;
+					block.Return(new IdentifierExpression(FunctionReturnValueName));
+				}
+			}
 		}
 		
 		static volatile Dictionary<string, Expression> constantTable;

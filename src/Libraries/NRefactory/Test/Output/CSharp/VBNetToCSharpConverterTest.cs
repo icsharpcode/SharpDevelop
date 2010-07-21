@@ -905,5 +905,89 @@ static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.Stat
 			TestStatement(@"Dim xml = <A>&quot;</A>",
 			              @"var xml = new XElement(""A"", ""\"""");");
 		}
+		
+		[Test]
+		public void SD2_1500a()
+		{
+			TestProgram(
+				@"Public Class Class1
+    Private PFoo As String
+    Public Property Foo() As String
+        Get
+            Foo = PFoo
+        End Get
+        Set(ByVal Value As String)
+            PFoo = Value
+        End Set
+    End Property
+End Class",
+				@"public class Class1
+{
+  private string PFoo;
+  public string Foo {
+    get { return PFoo; }
+    set { PFoo = value; }
+  }
+}
+"
+			);
+		}
+		
+		[Test]
+		public void SD2_1500b()
+		{
+			TestMember(
+				@"Function Test As Integer
+	Test = 5
+End Function",
+				@"public int Test()
+{
+  return 5;
+}"
+			);
+		}
+		
+		[Test]
+		public void SD2_1500c()
+		{
+			TestMember(
+				@"Function Test As Integer
+	If True Then Test = 3
+	Test = 5
+End Function",
+				@"public int Test()
+{
+  int functionReturnValue = 0;
+  if (true)
+    functionReturnValue = 3;
+  functionReturnValue = 5;
+  return functionReturnValue;
+}"
+			);
+		}
+		
+		[Test]
+		public void SD2_1500d()
+		{
+			TestMember(
+				@"Function Test As Integer
+	If True Then
+		Test = 3
+		Exit Function
+	End If
+	Test = 5
+End Function",
+				@"public int Test()
+{
+  int functionReturnValue = 0;
+  if (true) {
+    functionReturnValue = 3;
+    return functionReturnValue;
+  }
+  functionReturnValue = 5;
+  return functionReturnValue;
+}"
+			);
+		}
 	}
 }
