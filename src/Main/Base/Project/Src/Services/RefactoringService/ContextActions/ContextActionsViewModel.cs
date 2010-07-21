@@ -18,8 +18,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		public ImageSource Image { get; set; }
 		
-		public ObservableCollection<ContextActionViewModel> Actions { get; set; }
-		
 		public string Title { get; set; }
+		
+		public ObservableCollection<ContextActionViewModel> Actions { get; set; }
 	}
 }

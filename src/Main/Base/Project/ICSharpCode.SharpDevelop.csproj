@@ -330,6 +330,10 @@
     <Compile Include="Src\Services\ParserService\ParserService.cs" />
     <Compile Include="Src\Services\ProjectService\CompileModifiedProjectsOnly.cs" />
     <Compile Include="Src\Services\ProjectService\SolutionConfigurationEventHandler.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsHeaderedControl.xaml.cs">
+      <DependentUpon>ContextActionsHeaderedControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\Services\RefactoringService\ContextActions\IContextAction.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionCommand.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsControl.xaml.cs">
@@ -786,6 +790,7 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsControl.xaml" />
+    <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsHeaderedControl.xaml" />
     <ProjectReference Include="..\..\..\Libraries\AvalonDock\AvalonDock\AvalonDock.csproj">
       <Project>{2FF700C2-A38A-48BD-A637-8CAFD4FE6237}</Project>
       <Name>AvalonDock</Name>

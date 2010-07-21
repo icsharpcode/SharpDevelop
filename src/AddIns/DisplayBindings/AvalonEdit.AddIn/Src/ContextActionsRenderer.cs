@@ -62,7 +62,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return;
 			
 			this.popup.Actions = new ContextActionsViewModel {
-				Title = "Actions",
+				Title = "A",
 				Actions = availableActionsVM
 			};
 			this.popup.OpenAtLineStart(this.Editor);
@@ -70,8 +70,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 
 		void CaretPositionChanged(object sender, EventArgs e)
 		{
-			this.popup.Close();
-			this.popup.Actions = null;
+			if (this.popup.IsOpen)
+			{
+				this.popup.Close();
+				this.popup.Actions = null;
+			}
 			this.delayMoveTimer.Stop();
 			this.delayMoveTimer.Start();
 		}

@@ -17,7 +17,7 @@ using System.Windows.Media;
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
-	/// Interaction logic for ContextActionsControl.xaml
+	/// ContextActionsControl accepts IEnumerable&lt;ContextActionViewModel&gt; as its DataContext.
 	/// </summary>
 	public partial class ContextActionsControl : UserControl
 	{

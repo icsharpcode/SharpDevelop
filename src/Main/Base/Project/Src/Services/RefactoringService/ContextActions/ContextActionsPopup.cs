@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.StaysOpen = false;
 			// Close on lost focus
 			this.AllowsTransparency = true;
-			this.ActionsControl = new ContextActionsControl();
+			this.ActionsControl = new ContextActionsHeaderedControl();
 			// Close when any action excecuted
 			this.ActionsControl.ActionExecuted += delegate { this.Close(); };
 			this.KeyDown += new KeyEventHandler(ContextActionsPopup_KeyDown);
@@ -35,16 +35,18 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				Close();
 		}
 		
-		private ContextActionsControl ActionsControl
+		ContextActionsHeaderedControl ActionsControl
 		{
-			get { return (ContextActionsControl)this.Child; }
+			get { return (ContextActionsHeaderedControl)this.Child; }
 			set { this.Child = value; }
 		}
 		
 		public ContextActionsViewModel Actions
 		{
 			get { return (ContextActionsViewModel)ActionsControl.DataContext; }
-			set { ActionsControl.DataContext = value; }
+			set { 
+				ActionsControl.DataContext = value; 
+			}
 		}
 		
 		public new void Focus()
