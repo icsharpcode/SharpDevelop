@@ -19,13 +19,42 @@ namespace ICSharpCode.AvalonEdit.Rendering
 	/// </summary>
 	public class FormattedTextElement : VisualLineElement
 	{
-		readonly FormattedText text;
+		internal readonly FormattedText formattedText;
+		internal string text;
+		internal TextLine textLine;
 		
 		/// <summary>
 		/// Gets the formatted text.
 		/// </summary>
+		[Obsolete("For improved performance, FormattedTextElement should be used with TextLine instead of FormattedText.")]
 		public FormattedText Text {
-			get { return text; }
+			get { return formattedText; }
+		}
+		
+		/// <summary>
+		/// Creates a new FormattedTextElement that displays the specified text
+		/// and occupies the specified length in the document.
+		/// </summary>
+		public FormattedTextElement(string text, int documentLength) : base(1, documentLength)
+		{
+			if (text == null)
+				throw new ArgumentNullException("text");
+			this.text = text;
+			this.BreakBefore = LineBreakCondition.BreakPossible;
+			this.BreakAfter = LineBreakCondition.BreakPossible;
+		}
+		
+		/// <summary>
+		/// Creates a new FormattedTextElement that displays the specified text
+		/// and occupies the specified length in the document.
+		/// </summary>
+		public FormattedTextElement(TextLine text, int documentLength) : base(1, documentLength)
+		{
+			if (text == null)
+				throw new ArgumentNullException("text");
+			this.textLine = text;
+			this.BreakBefore = LineBreakCondition.BreakPossible;
+			this.BreakAfter = LineBreakCondition.BreakPossible;
 		}
 		
 		/// <summary>
@@ -36,7 +65,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			if (text == null)
 				throw new ArgumentNullException("text");
-			this.text = text;
+			this.formattedText = text;
 			this.BreakBefore = LineBreakCondition.BreakPossible;
 			this.BreakAfter = LineBreakCondition.BreakPossible;
 		}
@@ -56,7 +85,34 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <inheritdoc/>
 		public override TextRun CreateTextRun(int startVisualColumn, ITextRunConstructionContext context)
 		{
+			if (textLine == null) {
+				textLine = PrepareText(context.TextView.TextFormatter, this.text, this.TextRunProperties);
+				this.text = null;
+			}
 			return new FormattedTextRun(this, this.TextRunProperties);
+		}
+		
+		/// <summary>
+		/// Constructs a TextLine from a simple text.
+		/// </summary>
+		public static TextLine PrepareText(TextFormatter formatter, string text, TextRunProperties properties)
+		{
+			if (formatter == null)
+				throw new ArgumentNullException("formatter");
+			if (text == null)
+				throw new ArgumentNullException("text");
+			if (properties == null)
+				throw new ArgumentNullException("properties");
+			return formatter.FormatLine(
+				new SimpleTextSource(text, properties),
+				0,
+				32000,
+				new VisualLineTextParagraphProperties {
+					defaultTextRunProperties = properties,
+					textWrapping = TextWrapping.NoWrap,
+					tabSize = 40
+				},
+				null);
 		}
 	}
 	
@@ -121,22 +177,41 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <inheritdoc/>
 		public override TextEmbeddedObjectMetrics Format(double remainingParagraphWidth)
 		{
-			return new TextEmbeddedObjectMetrics(element.Text.WidthIncludingTrailingWhitespace,
-			                                     element.Text.Height,
-			                                     element.Text.Baseline);
+			var formattedText = element.formattedText;
+			if (formattedText != null) {
+				return new TextEmbeddedObjectMetrics(formattedText.WidthIncludingTrailingWhitespace,
+				                                     formattedText.Height,
+				                                     formattedText.Baseline);
+			} else {
+				var text = element.textLine;
+				return new TextEmbeddedObjectMetrics(text.WidthIncludingTrailingWhitespace,
+				                                     text.Height,
+				                                     text.Baseline);
+			}
 		}
 		
 		/// <inheritdoc/>
 		public override Rect ComputeBoundingBox(bool rightToLeft, bool sideways)
 		{
-			return new Rect(0, 0, element.Text.WidthIncludingTrailingWhitespace, element.Text.Height);
+			var formattedText = element.formattedText;
+			if (formattedText != null) {
+				return new Rect(0, 0, formattedText.WidthIncludingTrailingWhitespace, formattedText.Height);
+			} else {
+				var text = element.textLine;
+				return new Rect(0, 0, text.WidthIncludingTrailingWhitespace, text.Height);
+			}
 		}
 		
 		/// <inheritdoc/>
 		public override void Draw(DrawingContext drawingContext, Point origin, bool rightToLeft, bool sideways)
 		{
-			origin.Y -= element.Text.Baseline;
-			drawingContext.DrawText(element.Text, origin);
+			if (element.formattedText != null) {
+				origin.Y -= element.formattedText.Baseline;
+				drawingContext.DrawText(element.formattedText, origin);
+			} else {
+				origin.Y -= element.textLine.Baseline;
+				element.textLine.Draw(drawingContext, origin, InvertAxes.None);
+			}
 		}
 	}
 }

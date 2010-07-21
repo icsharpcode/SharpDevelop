@@ -9,7 +9,7 @@ using System;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
-
+using System.Windows.Media.TextFormatting;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
 
@@ -58,19 +58,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			} else {
 				return null;
 			}
-			FormattedText text = TextFormatterFactory.CreateFormattedText(
-				CurrentContext.TextView,
-				newlineText,
-				CurrentContext.GlobalTextRunProperties.Typeface,
-				CurrentContext.GlobalTextRunProperties.FontRenderingEmSize,
-				Brushes.LightGray
-			);
-			return new NewLineTextElement(text);
+			return new NewLineTextElement(CurrentContext.TextView.cachedElements.GetSimpleLightGrayText(newlineText, CurrentContext));
 		}
 		
 		sealed class NewLineTextElement : FormattedTextElement
 		{
-			public NewLineTextElement(FormattedText text) : base(text, 0)
+			public NewLineTextElement(TextLine text) : base(text, 0)
 			{
 				BreakBefore = LineBreakCondition.BreakPossible;
 				BreakAfter = LineBreakCondition.BreakRestrained;

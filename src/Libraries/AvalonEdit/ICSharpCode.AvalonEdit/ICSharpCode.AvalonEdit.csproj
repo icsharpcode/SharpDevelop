@@ -253,11 +253,15 @@
     </Compile>
     <Compile Include="Rendering\LinkElementGenerator.cs" />
     <Compile Include="Rendering\NewLineElementGenerator.cs" />
+    <Compile Include="Rendering\SimpleTextSource.cs">
+      <DependentUpon>FormattedTextElement.cs</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\SingleCharacterElementGenerator.cs" />
     <Compile Include="Rendering\TextLayer.cs">
       <DependentUpon>TextView.cs</DependentUpon>
     </Compile>
     <Compile Include="Rendering\TextView.cs" />
+    <Compile Include="Rendering\TextViewCachedElements.cs" />
     <Compile Include="Rendering\TextViewWeakEventManager.cs">
       <DependentUpon>TextView.cs</DependentUpon>
     </Compile>

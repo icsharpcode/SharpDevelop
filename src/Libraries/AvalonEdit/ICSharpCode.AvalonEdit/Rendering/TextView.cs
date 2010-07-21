@@ -104,6 +104,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				heightTree = null;
 				formatter.Dispose();
 				formatter = null;
+				cachedElements.Dispose();
+				cachedElements = null;
 				TextDocumentWeakEventManager.Changing.RemoveListener(oldValue, this);
 			}
 			this.document = newValue;
@@ -113,6 +115,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				TextDocumentWeakEventManager.Changing.AddListener(newValue, this);
 				heightTree = new HeightTree(newValue, FontSize + 3);
 				formatter = TextFormatterFactory.Create(this);
+				cachedElements = new TextViewCachedElements();
 			}
 			InvalidateMeasure(DispatcherPriority.Normal);
 			if (DocumentChanged != null)
@@ -129,6 +132,14 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				formatter.Dispose();
 				formatter = TextFormatterFactory.Create(this);
 				Redraw();
+			}
+		}
+		
+		void RecreateCachedElements()
+		{
+			if (cachedElements != null) {
+				cachedElements.Dispose();
+				cachedElements = new TextViewCachedElements();
 			}
 		}
 		
@@ -764,6 +775,15 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		#region BuildVisualLine
 		TextFormatter formatter;
+		internal TextViewCachedElements cachedElements;
+		
+		/// <summary>
+		/// Gets the TextFormatter used by the text view.
+		/// Returns null if no document is assigned to the text view.
+		/// </summary>
+		public TextFormatter TextFormatter {
+			get { return formatter; }
+		}
 		
 		TextRunProperties CreateGlobalTextRunProperties()
 		{
@@ -1557,6 +1577,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			base.OnPropertyChanged(e);
 			if (TextFormatterFactory.PropertyChangeAffectsTextFormatter(e.Property)) {
+				RecreateCachedElements();
 				RecreateTextFormatter();
 			}
 			if (e.Property == Control.ForegroundProperty
@@ -1566,6 +1587,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			    || e.Property == Control.FontStyleProperty
 			    || e.Property == Control.FontWeightProperty)
 			{
+				RecreateCachedElements();
 				Redraw();
 			}
 		}

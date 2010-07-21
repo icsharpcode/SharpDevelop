@@ -16,7 +16,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 	/// <summary>
 	/// WPF TextSource implementation that creates TextRuns for a VisualLine.
 	/// </summary>
-	class VisualLineTextSource : TextSource, ITextRunConstructionContext
+	sealed class VisualLineTextSource : TextSource, ITextRunConstructionContext
 	{
 		public VisualLineTextSource(VisualLine visualLine)
 		{

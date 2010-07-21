@@ -64,13 +64,9 @@ namespace ICSharpCode.AvalonEdit.Folding
 			if (foldedUntil > offset) {
 				if (string.IsNullOrEmpty(title))
 					title = "...";
-				FormattedText text = TextFormatterFactory.CreateFormattedText(
-					CurrentContext.TextView,
-					title,
-					CurrentContext.GlobalTextRunProperties.Typeface,
-					CurrentContext.GlobalTextRunProperties.FontRenderingEmSize,
-					Brushes.Gray
-				);
+				var p = new VisualLineElementTextRunProperties(CurrentContext.GlobalTextRunProperties);
+				p.SetForegroundBrush(Brushes.Gray);
+				var text = FormattedTextElement.PrepareText(CurrentContext.TextView.TextFormatter, title, p);
 				return new FoldingLineElement(text, foldedUntil - offset);
 			} else {
 				return null;
@@ -79,7 +75,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 		
 		sealed class FoldingLineElement : FormattedTextElement
 		{
-			public FoldingLineElement(FormattedText text, int documentLength) : base(text, documentLength)
+			public FoldingLineElement(TextLine text, int documentLength) : base(text, documentLength)
 			{
 			}
 			
