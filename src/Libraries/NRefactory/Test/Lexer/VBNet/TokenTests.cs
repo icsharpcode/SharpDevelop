@@ -16,12 +16,11 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 	public class TokenTests
 	{
 		[Test]
-		public void TestMethod()
+		public void TokenToStringDoesNotThrowException()
 		{
 			Assert.DoesNotThrow(
 				() => {
 					string text = new Token(71, 1, 1).ToString();
-					Console.WriteLine(text);
 				}
 			);
 		}

@@ -1761,7 +1761,8 @@ SimpleNonInvocationExpression<out Expression pexpr>
 				| IdentifierOrKeyword<out name>
 				(. pexpr = new MemberReferenceExpression(null, name); .)
 			) |
-			(. XmlAxisType axisType = XmlAxisType.Element; bool isXmlIdentifier = false; .)
+			"!" IdentifierOrKeyword<out name> (. pexpr = new BinaryOperatorExpression(null, BinaryOperatorType.DictionaryAccess, new PrimitiveExpression(name, name)); .)
+			| (. XmlAxisType axisType = XmlAxisType.Element; bool isXmlIdentifier = false; .)
 			( "..." (. axisType = XmlAxisType.Descendents; .) | ".@" (. axisType = XmlAxisType.Attribute; .) ) (
 				[ XmlOpenTag (. isXmlIdentifier = true; .) ] IdentifierOrKeyword<out name> [ XmlCloseTag ]
 				(. pexpr = new XmlMemberAccessExpression(null, axisType, name, isXmlIdentifier); .)

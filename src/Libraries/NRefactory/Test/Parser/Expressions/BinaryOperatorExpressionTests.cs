@@ -253,7 +253,6 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			
 			Assert.IsTrue(boe.Left is IdentifierExpression);
 			Assert.IsTrue(boe.Right is IdentifierExpression);
-			
 		}
 		
 		[Test]
@@ -439,7 +438,24 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			VBNetTestBinaryOperatorExpressionTest("If(a, b)", BinaryOperatorType.NullCoalescing);
 		}
 		
-		#endregion		
+		[Test]
+		public void VBNetDictionaryAccess()
+		{
+			BinaryOperatorExpression boe = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>("a!b");
+			Assert.AreEqual(BinaryOperatorType.DictionaryAccess, boe.Op);
+			Assert.IsTrue(boe.Left is IdentifierExpression);
+			Assert.IsTrue(boe.Right is PrimitiveExpression);
+		}
+		
+		[Test]
+		public void VBNetWithDictionaryAccess()
+		{
+			BinaryOperatorExpression boe = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>("!b");
+			Assert.AreEqual(BinaryOperatorType.DictionaryAccess, boe.Op);
+			Assert.IsTrue(boe.Left.IsNull);
+			Assert.IsTrue(boe.Right is PrimitiveExpression);
+		}
+		#endregion
 		
 		#region AddIntegerTests
 		string AddIntegerToBoe(string input, int number)
