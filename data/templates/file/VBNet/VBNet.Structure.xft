@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<Template author="Siegfried Pammer" version="1.0">
+	
+	<Config
+		  name        = "${res:Templates.File.Structure.Name}"
+		  icon        = "VBNet.File.NewClass"
+		  category    = "VB"
+		  defaultname = "Structure${Number}.vb"
+		  language    = "VBNET"/>
+	
+	<Description>${res:Templates.File.Structure.Description}</Description>
+	
+	<!--
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".vb"
+		${Path}                     -> Full path of the file
+		${ClassName}               -> Structure name (generally FileNameWithoutExtension w/o 'bad' characters)
+	 -->
+	<Files>
+		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
+Imports System
+	
+''' <summary>
+''' Description of ${ClassName}.
+''' </summary>
+Public Structure ${ClassName}
+	Implements IEquatable(Of ${ClassName})
+	Private member As Integer
+	' this is just an example member, replace it with your own struct members!
+	#Region "Equals and GetHashCode implementation"
+	' The code in this region is useful if you want to use this structure in collections.
+	' If you don't need it, you can just remove the region and the "Implements IEquatable(Of ${ClassName})" declaration.
+
+	Public Overrides Function Equals(obj As Object) As Boolean
+		If TypeOf obj Is ${ClassName} Then
+			Return Equals(CType(obj, ${ClassName}))
+		Else
+			' use Equals method below
+			Return False
+		End If
+	End Function
+
+	Public Overloads Function Equals(other As ${ClassName}) As Boolean
+		' add comparisions for all members here
+		Return Me.member = other.member
+	End Function
+
+	Public Overrides Function GetHashCode() As Integer
+		' combine the hash codes of all members here (e.g. with XOr operator)
+		Return member.GetHashCode()
+	End Function
+
+	Public Shared Operator =(left As ${ClassName}, right As ${ClassName}) As Boolean
+		Return left.Equals(right)
+	End Operator
+
+	Public Shared Operator <>(left As ${ClassName}, right As ${ClassName}) As Boolean
+		Return Not left.Equals(right)
+	End Operator
+	#End Region
+End Structure
+]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>

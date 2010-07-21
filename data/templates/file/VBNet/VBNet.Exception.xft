@@ -6,7 +6,7 @@
 		  icon        = "VBNet.File.NewClass"
 		  category    = "VB"
 		  defaultname = "Exception.vb"
-		  language    = "VBNET"/>
+		  language    = "VBNet"/>
 	 
 	<Description>${res:Templates.File.Exception.Description}</Description>
 	
@@ -16,9 +16,19 @@
 		${FullName}                 -> Full generated path name
 		${FileName}                 -> File name with extension
 		${FileNameWithoutExtension} -> File name without extension
-		${Extension}                -> Extension in the form ".cs"
+		${Extension}                -> Extension in the form ".vb"
 		${Path}                     -> Full path of the file
 	 -->
+	<!--<Properties>
+		<Property
+			name          = "IsSealed"
+			localizedName = "${res:Templates.File.Properties.IsSealed}"
+			type          = "System.Boolean"
+			defaultValue  = "False"
+			category      = "${res:Templates.File.Properties.ContextCategory}"
+			description   = "${res:Templates.File.Properties.IsSealed.Description}"
+		/>
+	</Properties>-->
 	
 	<Files>
 		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
