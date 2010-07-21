@@ -1024,15 +1024,7 @@ VariableDeclarationStatement =
 		(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .)
 		Identifier (. PopContext(); .) [ "?" ] [ ( "(" { "," } ")" ) ]
 	}
-	[ (. PushContext(Context.Type, la, t); .)
-		"As" TypeName
-		[ "New" (. PushContext(Context.ObjectCreation, la, t); .) ]
-		TypeName
-		(.
-		if (CurrentBlock.context == Context.ObjectCreation)
-			PopContext();
-		PopContext();
-		.) ]
+	[ "As" ( NewExpression | (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ) ]
 	[ "=" Expression ]
 .
 
