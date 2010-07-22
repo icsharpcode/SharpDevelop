@@ -477,13 +477,15 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// <summary>
 		/// Gets actions which can add implementation of interface to this class.
 		/// </summary>
-		public static IEnumerable<ImplementInterfaceAction> GetImplementInterfaceActions(IClass c, bool isExplicitImpl)
+		public static IEnumerable<ImplementInterfaceAction> GetImplementInterfaceActions(IClass c, bool isExplicitImpl, bool returnMissingInterfacesOnly = true)
 		{
-			IAmbience ambience = c.ProjectContent.Language.GetAmbience();
-			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
 			foreach (IReturnType rt in c.BaseTypes) {
 				IClass interf = rt.GetUnderlyingClass();
 				if (interf != null && interf.ClassType == ClassType.Interface) {
+					if (returnMissingInterfacesOnly && c.ImplementsInterface(interf)) {
+						// this interface is already implemented
+						continue;
+					}
 					IReturnType rtCopy = rt;
 					yield return new ImplementInterfaceAction(rtCopy, c, isExplicitImpl);
 				}
@@ -492,13 +494,15 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// <summary>
 		/// Gets actions which can add implementation of abstract classes to this class.
 		/// </summary>
-		public static IEnumerable<ImplementAbstractClassAction> GetImplementAbstractClassActions(IClass c)
+		public static IEnumerable<ImplementAbstractClassAction> GetImplementAbstractClassActions(IClass c, bool returnMissingClassesOnly = true)
 		{
-			IAmbience ambience = c.ProjectContent.Language.GetAmbience();
-			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
 			foreach (IReturnType rt in c.BaseTypes) {
 				IClass abstractClass = rt.GetUnderlyingClass();
 				if (abstractClass != null && abstractClass.ClassType == ClassType.Class && abstractClass.IsAbstract) {
+					if (returnMissingClassesOnly && c.ImplementsAbstractClass(abstractClass)) {
+						// this interface is already implemented
+						continue;
+					}
 					IReturnType rtCopy = rt;
 					yield return new ImplementAbstractClassAction(rtCopy, c);
 				}

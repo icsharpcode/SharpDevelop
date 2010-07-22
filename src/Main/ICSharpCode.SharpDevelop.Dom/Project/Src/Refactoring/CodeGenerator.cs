@@ -608,6 +608,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			return copy;
 		}
 		
+		// FIXME this whole method could be probably replaced by DOM.ExtensionMethodsPublic.HasMember
 		public static bool InterfaceMemberAlreadyImplemented<T>(IEnumerable<T> existingMembers, T interfaceMember,
 		                                                 out bool requireAlternativeImplementation)
 			where T : class, IMember
@@ -728,22 +729,11 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			CodeGenerator generator = target.ProjectContent.Language.CodeGenerator;
 			var pos = doc.OffsetToPosition(doc.PositionToOffset(target.BodyRegion.EndLine, target.BodyRegion.EndColumn) - 1);
 			ClassFinder context = new ClassFinder(target, pos.Line, pos.Column);
-			var memberComparer = new SignatureComparer();
 			
 			foreach (IMember member in MemberLookupHelper.GetAccessibleMembers(abstractClass, target, LanguageProperties.CSharp, true)
-			         .Where(m => m.IsAbstract && !HasMember(m, target, memberComparer))) {
+			         .Where(m => m.IsAbstract && !target.HasMember(m))) {
 				generator.InsertCodeAtEnd(target.BodyRegion, doc, generator.GetOverridingMethod(member, context));
 			}
-		}
-		
-		static bool HasMember(IMember member, IClass containingClass, SignatureComparer comparer)
-		{
-			foreach (IMember m in containingClass.AllMembers) {
-				if (comparer.Equals(member, m))
-					return true;
-			}
-			
-			return false;
 		}
 		#endregion
 		

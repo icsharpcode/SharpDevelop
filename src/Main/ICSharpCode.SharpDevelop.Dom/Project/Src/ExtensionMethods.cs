@@ -12,9 +12,6 @@ using System.Linq;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	/// <summary>
-	/// Description of ExtensionMethods.
-	/// </summary>
 	static class ExtensionMethods
 	{
 		public static void AddRange(this ArrayList arrayList, IEnumerable elements)
@@ -61,6 +58,51 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public static IEnumerable<IUsing> GetAllUsings(this ICompilationUnit cu)
 		{
 			return (new[]{cu.UsingScope}).Flatten(s=>s.ChildScopes).SelectMany(s=>s.Usings);
+		}
+	}
+	
+	/// <summary>
+	/// Publicly visible helper methods.
+	/// </summary>
+	public static class ExtensionMethodsPublic
+	{
+		// the difference between IClass and IReturnType is that IClass only contains the members
+		// that are declared in this very class,
+		// and IReturnType contains also members from base classes (including System.Object) and default (undeclared) constructors
+		
+		static SignatureComparer memberSignatureComparer = new SignatureComparer();
+		
+		public static bool HasMember(this IClass containingClass, IMember member)
+		{
+			return containingClass.AllMembers.Any(m => memberSignatureComparer.Equals(member, m));
+		}
+		
+		public static bool HasMember(this IReturnType containingClass, IMember member)
+		{
+			return containingClass.GetMembers().Any(m => memberSignatureComparer.Equals(member, m));
+		}
+		
+		public static bool ImplementsInterface(this IClass targetClass, IClass requiredInterface)
+		{
+			var targetClassType = targetClass.GetCompoundClass().DefaultReturnType;
+			var requiredInterfaceType = requiredInterface.GetCompoundClass().DefaultReturnType;
+			// class.DefaultReturnType.GetMethods() returns also methods from base classes, default ctor, ToString() etc. etc.
+			return !requiredInterfaceType.GetMembers().Any(missingMember => !targetClassType.HasMember(missingMember));
+		}
+		
+		public static bool ImplementsAbstractClass(this IClass targetClass, IClass abstractClass)
+		{
+			var requiredAbstractMembers = MemberLookupHelper.GetAccessibleMembers(abstractClass.DefaultReturnType, targetClass, LanguageProperties.CSharp, true).Where(m => m.IsAbstract);
+			return !requiredAbstractMembers.Any(missingMember => !targetClass.HasMember(missingMember));
+		}
+		
+		public static IEnumerable<IMember> GetMembers(this IReturnType typeReference)
+		{
+			var properties = typeReference.GetProperties().Cast<IMember>();
+			var methods = typeReference.GetMethods().Cast<IMember>();
+			var fields = typeReference.GetFields().Cast<IMember>();
+			var events = typeReference.GetEvents().Cast<IMember>();
+			return properties.Concat(methods).Concat(fields).Concat(events);
 		}
 	}
 }
