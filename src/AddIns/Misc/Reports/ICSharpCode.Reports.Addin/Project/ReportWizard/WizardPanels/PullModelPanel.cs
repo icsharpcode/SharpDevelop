@@ -264,7 +264,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 
                 if (this.currentNode is IDatabase)
                 {
-                    this.connectionString = (this.currentNode as IDatabase).ConnectionString;
+                    this.connectionString = "Provider=" + parentDatabase.Datasource.DatabaseDriver.ODBCProviderName + ";" + parentDatabase.ConnectionString;
                     this.txtSqlString.Enabled = true;
 
                     if (this.firstDrag)
