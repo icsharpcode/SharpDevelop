@@ -597,9 +597,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                 "  class Test {}" +
 			                 "}\n",
 			                 "' comment 1\n" +
-			                 "' comment 2\n" +
 			                 "Imports System\n" +
 			                 "Namespace Test\n" +
+			                 "  ' comment 2\n" +
 			                 "  ' comment 3\n" +
 			                 "  Class Test\n" +
 			                 "  End Class\n" +
