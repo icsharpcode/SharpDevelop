@@ -231,9 +231,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			public override void Draw(DrawingContext drawingContext, Point origin, bool rightToLeft, bool sideways)
 			{
 				Point newOrigin = new Point(origin.X + 1, origin.Y);
-				Rect r = base.ComputeBoundingBox(rightToLeft, sideways);
-				r.Offset(newOrigin.X, newOrigin.Y - this.Element.Text.Baseline);
-				r.Width += 1;
+				var metrics = Format(double.PositiveInfinity);
+				Rect r = new Rect(newOrigin.X + 1, newOrigin.Y - metrics.Baseline, metrics.Width + 1, metrics.Height);
 				drawingContext.DrawRoundedRectangle(Brushes.DarkGray, null, r, 2.5, 2.5);
 				base.Draw(drawingContext, newOrigin, rightToLeft, sideways);
 			}

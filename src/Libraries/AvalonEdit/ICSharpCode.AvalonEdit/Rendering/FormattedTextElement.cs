@@ -24,14 +24,6 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		internal TextLine textLine;
 		
 		/// <summary>
-		/// Gets the formatted text.
-		/// </summary>
-		[Obsolete("For improved performance, FormattedTextElement should be used with TextLine instead of FormattedText.")]
-		public FormattedText Text {
-			get { return formattedText; }
-		}
-		
-		/// <summary>
 		/// Creates a new FormattedTextElement that displays the specified text
 		/// and occupies the specified length in the document.
 		/// </summary>
