@@ -48,11 +48,13 @@ namespace ICSharpCode.NRefactory.Visitors
 		Dictionary<string, string> usings;
 		List<UsingDeclaration> addedUsings;
 		TypeDeclaration currentTypeDeclaration;
+		int withStatementCount;
 		
 		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
 			usings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 			addedUsings = new List<UsingDeclaration>();
+			withStatementCount = 0;
 			base.VisitCompilationUnit(compilationUnit, data);
 			int i;
 			for (i = 0; i < compilationUnit.Children.Count; i++) {
@@ -679,6 +681,88 @@ namespace ICSharpCode.NRefactory.Visitors
 		List<Expression> Expressions(params string[] exprs)
 		{
 			return new List<Expression>(exprs.Select(expr => new PrimitiveExpression(expr)));
+		}
+		
+		public override object VisitWithStatement(WithStatement withStatement, object data)
+		{
+			withStatementCount++;
+			string varName = "_with" + withStatementCount;
+			WithConvertVisitor converter = new WithConvertVisitor(varName);
+			
+			LocalVariableDeclaration withVariable = new LocalVariableDeclaration(new VariableDeclaration(varName, withStatement.Expression, new TypeReference("var", true)));
+			
+			withStatement.Body.AcceptVisitor(converter, null);
+			
+			base.VisitWithStatement(withStatement, data);
+			
+			var statements = withStatement.Body.Children;
+			
+			statements.Insert(0, withVariable);
+			
+			withVariable.Parent = withStatement.Body;
+			
+			statements.Reverse();
+			
+			foreach (var stmt in statements) {
+				InsertAfterSibling(withStatement, stmt);
+			}
+			
+			RemoveCurrentNode();
+			
+			return null;
+		}
+		
+		class WithConvertVisitor : AbstractAstTransformer
+		{
+			string withAccessor;
+			
+			public WithConvertVisitor(string withAccessor)
+			{
+				this.withAccessor = withAccessor;
+			}
+			
+			public override object VisitWithStatement(WithStatement withStatement, object data)
+			{
+				// skip any nested with statement
+				var block = withStatement.Body;
+				withStatement.Body = BlockStatement.Null;
+				base.VisitWithStatement(withStatement, data);
+				withStatement.Body = block;
+				return null;
+			}
+			
+			public override object VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
+			{
+				if (memberReferenceExpression.TargetObject.IsNull) {
+					IdentifierExpression id = new IdentifierExpression(withAccessor);
+					memberReferenceExpression.TargetObject = id;
+					id.Parent = memberReferenceExpression;
+				}
+				
+				return base.VisitMemberReferenceExpression(memberReferenceExpression, data);
+			}
+			
+			public override object VisitBinaryOperatorExpression(BinaryOperatorExpression binaryOperatorExpression, object data)
+			{
+				if (binaryOperatorExpression.Left.IsNull && binaryOperatorExpression.Op == BinaryOperatorType.DictionaryAccess) {
+					IdentifierExpression id = new IdentifierExpression(withAccessor);
+					binaryOperatorExpression.Left = id;
+					id.Parent = binaryOperatorExpression;
+				}
+				
+				return base.VisitBinaryOperatorExpression(binaryOperatorExpression, data);
+			}
+			
+			public override object VisitXmlMemberAccessExpression(XmlMemberAccessExpression xmlMemberAccessExpression, object data)
+			{
+				if (xmlMemberAccessExpression.TargetObject.IsNull) {
+					IdentifierExpression id = new IdentifierExpression(withAccessor);
+					xmlMemberAccessExpression.TargetObject = id;
+					id.Parent = xmlMemberAccessExpression;
+				}
+				
+				return base.VisitXmlMemberAccessExpression(xmlMemberAccessExpression, data);
+			}
 		}
 	}
 }

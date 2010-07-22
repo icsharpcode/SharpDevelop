@@ -628,7 +628,7 @@ static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.Stat
 			TestStatement("With Ejes\n" +
 			              "  .AddLine(p1, p2)\n" +
 			              "End With",
-			              "{\n  Ejes.AddLine(p1, p2);\n}");
+			              "var _with1 = Ejes;\n_with1.AddLine(p1, p2);");
 		}
 		
 		[Test]
@@ -641,7 +641,7 @@ static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.Stat
 				"  End With\n" +
 				"End With",
 				
-				"{\n  {\n    tb1.Font.Italic = true;\n  }\n}");
+				"var _with1 = tb1;\nvar _with2 = _with1.Font;\n_with2.Italic = true;");
 		}
 		
 		[Test]
@@ -654,7 +654,7 @@ static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.Stat
 				"  End With\n" +
 				"End With",
 				
-				"{\n  {\n    tb1.Something.Font.Italic = true;\n  }\n}");
+				"var _with1 = tb1;\nvar _with2 = _with1.Something.Font;\n_with2.Italic = true;");
 		}
 		
 		[Test]
@@ -987,6 +987,32 @@ End Function",
   functionReturnValue = 5;
   return functionReturnValue;
 }"
+			);
+		}
+		
+		[Test]
+		public void SD2_1497()
+		{
+			TestMember(
+				@"Public Function Bug() As String
+  With New System.Text.StringBuilder(""Hi! "")
+     .Append(""you "")
+     .Append(""folks "")
+     .Append(""from "")
+     .Append(""sharpdevelop!"")
+     Return .ToString()
+  End With
+End Function",
+				@"public string Bug()
+{
+  var _with1 = new System.Text.StringBuilder(""Hi! "");
+  _with1.Append(""you "");
+  _with1.Append(""folks "");
+  _with1.Append(""from "");
+  _with1.Append(""sharpdevelop!"");
+  return _with1.ToString();
+}
+"
 			);
 		}
 	}
