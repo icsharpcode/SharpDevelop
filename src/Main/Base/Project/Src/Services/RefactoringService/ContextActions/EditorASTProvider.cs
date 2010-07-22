@@ -84,7 +84,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (editor == null || editor.Language == null)
 				return null;
-			return new NRefactoryResolver(editor.Language.Properties);
+			try
+			{
+				return new NRefactoryResolver(editor.Language.Properties);
+			}
+			catch(NotSupportedException)
+			{
+				return null;
+			}
 		}
 		
 		SupportedLanguage? GetEditorLanguage(ITextEditor editor)
