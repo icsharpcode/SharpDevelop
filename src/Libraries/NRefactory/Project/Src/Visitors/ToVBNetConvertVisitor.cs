@@ -49,6 +49,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			base.VisitUsingDeclaration(usingDeclaration, data);
 			if (usingDeclaration.Parent is NamespaceDeclaration) {
 				nodesToMoveToCompilationUnit.Add(usingDeclaration);
+				usingDeclaration.StartLocation = usingDeclaration.EndLocation = Location.Empty;
 				RemoveCurrentNode();
 			}
 			return null;

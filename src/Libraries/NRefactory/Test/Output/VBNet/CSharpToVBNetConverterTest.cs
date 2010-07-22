@@ -24,13 +24,17 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(input));
 			parser.Parse();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
+			var specials = parser.Lexer.SpecialTracker.RetrieveSpecials();
+			PreprocessingDirective.CSharpToVB(specials);
 			parser.CompilationUnit.AcceptVisitor(new CSharpConstructsConvertVisitor(), null);
 			parser.CompilationUnit.AcceptVisitor(new ToVBNetConvertVisitor(), null);
 			VBNetOutputVisitor outputVisitor = new VBNetOutputVisitor();
 			outputVisitor.Options.IndentationChar = ' ';
 			outputVisitor.Options.IndentSize = 2;
 			outputVisitor.Options.OutputByValModifier = true;
-			outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
+			using (SpecialNodesInserter.Install(specials, outputVisitor)) {
+				outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
+			}
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
 			Assert.AreEqual(expectedOutput, outputVisitor.Text);
 		}
@@ -624,6 +628,32 @@ Private m_Name As String");
 			              "    Key .A = 2 _\n" +
 			              "  } _\n" +
 			              "}");
+		}
+		
+		[Test]
+		public void SD2_970()
+		{
+			TestProgram(
+				@"namespace MyNamespace
+{
+      #region ""Test""
+            using System;
+            public partial class MainForm
+            {
+                  object x;
+            }
+      #endregion
+}",
+				@"Imports System
+Namespace MyNamespace
+  #Region ""Test""
+  Public Partial Class MainForm
+    Private x As Object
+  End Class
+  #End Region
+End Namespace
+"
+			);
 		}
 	}
 }
