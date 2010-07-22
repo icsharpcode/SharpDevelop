@@ -17,6 +17,7 @@ using ICSharpCode.Data.Core.Interfaces;
 using ICSharpCode.Data.Core.UI.UserControls;
 using ICSharpCode.SharpDevelop;
 using SharpQuery.Gui.TreeView;
+using SharpQuery.SchemaClass;
 
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
@@ -211,16 +212,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
                     this.txtSqlString.Clear();
 
                     // we can't use the dragobject because it returns an string like 'EXECUTE ProcName'
-                    this.txtSqlString.Text = (draggedObject as IProcedure).Name;
+                    IProcedure procedure = draggedObject as IProcedure;
+                    this.txtSqlString.Text = "EXECUTE " + procedure.Name;
 
-                    //if (this.currentNode.SchemaClass is SharpQueryProcedure)
-                    //{
-                    //    reportStructure.SharpQueryProcedure = (SharpQueryProcedure)this.currentNode.SchemaClass;
-                    //}
-                    //else
-                    //{
-                    //    throw new ArgumentException("PullModelPanel:TxtSqlStringDragDrop : currentNode is not a SharpQueryProcedure");
-                    //}
+                    reportStructure.SharpQueryProcedure = new SharpQueryProcedure(new SharpQuery.Connection.OLEDBConnectionWrapper(this.connectionString), procedure.Parent.Name, procedure.SchemaName, string.Empty, procedure.Name);
                     break;
 
                 case NodeType.ViewImage:
