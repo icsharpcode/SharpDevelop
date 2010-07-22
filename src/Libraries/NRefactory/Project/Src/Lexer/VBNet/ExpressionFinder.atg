@@ -470,7 +470,7 @@ MemberVariableOrConstantDeclaration =
 MemberVariableOrConstantDeclarator =
 	[ "Const" ]
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) IdentifierForFieldDeclaration (. PopContext(); .)
-	[ "As" ( NewExpression | (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ) ]
+	[ "As" (. PushContext(Context.Type, la, t); .) ( NewExpression | TypeName ) (. PopContext(); .) ]
 	[ "=" Expression ]
 .
 
@@ -751,7 +751,9 @@ ExpressionRangeVariable =
 .
 
 CollectionRangeVariable =
-	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .) [ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] "In" Expression
+	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
+	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
+	"In" Expression
 .
 
 /* semantic action will be inserted on all paths that possibly lead to XmlLiteral */
@@ -790,7 +792,7 @@ PrimitiveTypeName =
 	"Object"
 .
 	
-TypeName = ( "Global" | Identifier | PrimitiveTypeName ) { TypeSuffix } { "." IdentifierOrKeyword { TypeSuffix } } .
+TypeName = ( "Global" | Identifier | PrimitiveTypeName | "?" /* used for ? = completion */ ) { TypeSuffix } { "." IdentifierOrKeyword { TypeSuffix } } .
 
 TypeSuffix = "(" ( "Of" [ TypeName ] { "," [ TypeName ] } | [ ArgumentList ] ) ")" .
 
@@ -1024,7 +1026,7 @@ VariableDeclarationStatement =
 		(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .)
 		Identifier (. PopContext(); .) [ "?" ] [ ( "(" { "," } ")" ) ]
 	}
-	[ "As" ( NewExpression | (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ) ]
+	[ "As" (. PushContext(Context.Type, la, t); .) ( NewExpression | TypeName ) (. PopContext(); .) ]
 	[ "=" Expression ]
 .
 
@@ -1114,7 +1116,9 @@ ForEachLoopStatement =
 .
 
 ForLoopVariable =
-	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) SimpleExpression (. PopContext(); .) [ "?" ] { ExpressionSuffix } [ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
+	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) SimpleExpression (. PopContext(); .)
+	[ "?" ] { ExpressionSuffix }
+	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
 .
 
 ErrorHandlingStatement =

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
 namespace ICSharpCode.VBNetBinding
 {
@@ -26,6 +27,18 @@ namespace ICSharpCode.VBNetBinding
 				return stack.Pop();
 			
 			return default(T);
+		}
+		
+		internal static VBNetCompletionItemList ToVBCCList(this ICompletionItemList list)
+		{
+			var result = new VBNetCompletionItemList() {
+				SuggestedItem = list.SuggestedItem,
+				PreselectionLength = list.PreselectionLength
+			};
+			
+			result.Items.AddRange(list.Items);
+			
+			return result;
 		}
 	}
 }

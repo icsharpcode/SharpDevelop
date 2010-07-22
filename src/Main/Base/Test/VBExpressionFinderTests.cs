@@ -49,14 +49,6 @@ Class MainClass
 End Class
 		";
 		
-		const string program4 = @"
-Class MainClass
-	Sub A
-		Dim a " + @"
-	End Sub
-End Class
-		";
-		
 		VBNetExpressionFinder ef;
 		
 		[SetUp]
@@ -160,34 +152,61 @@ End Class", "Test2", 5, "Test2", ExpressionContext.Default);
 		#endregion
 		
 		#region Context Tests
-		void ContextTest(string program, string location, int offset, ExpressionContext context)
+		void ContextTest(string program, ExpressionContext context)
 		{
-			int pos = program.IndexOf(location);
+			int pos = program.IndexOf("|");
 			if (pos < 0) Assert.Fail("location not found in program");
-			ExpressionResult er = ef.FindExpression(program, pos + offset);
+			program = program.Remove(pos, 1);
+			ExpressionResult er = ef.FindExpression(program, pos);
 			Assert.AreEqual(context.ToString(), er.Context.ToString());
 		}
 		
 		[Test]
 		public void ContextAfterDimIdentifierSpace()
 		{
-			ContextTest(program4, " a ", 3, ExpressionContext.MethodBody);
+			string program4 = @"
+Class MainClass
+	Sub A
+		Dim a |
+	End Sub
+End Class
+		";
+			
+			ContextTest(program4, ExpressionContext.MethodBody);
+		}
+		
+		[Test]
+		public void ContextAfterDimIdentifierAs()
+		{
+			string prg = @"Module Test
+	Sub Test()
+		Dim x As |
+	End Sub
+End Module";
+			ContextTest(prg, ExpressionContext.Type);
 		}
 		
 		[Test]
 		public void ContextAfterDim()
 		{
-			ContextTest(program4, "Dim ", "Dim".Length, ExpressionContext.MethodBody);
+			string program4 = @"
+Class MainClass
+	Sub A
+		Dim |
+	End Sub
+End Class
+		";
+			ContextTest(program4, ExpressionContext.IdentifierExpected);
 		}
 		
 		[Test]
 		public void ContextInModule()
 		{
-			ContextTest(@"Module Test
-	
-End Module", @"Module Test
-	", @"Module Test
-	".Length, ExpressionContext.TypeDeclaration);	
+			string prg = @"Module Test
+	|
+End Module";
+			
+			ContextTest(prg, ExpressionContext.TypeDeclaration);
 		}
 		#endregion
 		

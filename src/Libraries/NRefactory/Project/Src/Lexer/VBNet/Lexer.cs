@@ -761,6 +761,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		{
 			Location start = new Location(Col - 1, Line);
 			string directive = ReadIdent('#');
+			// TODO : expression parser for PP directives
+			// needed for proper conversion to e. g. C#
 			string argument  = ReadToEndOfLine();
 			this.specialTracker.AddPreprocessingDirective(new PreprocessingDirective(directive, argument.Trim(), start, new Location(start.Column + directive.Length + argument.Length, start.Line)));
 		}

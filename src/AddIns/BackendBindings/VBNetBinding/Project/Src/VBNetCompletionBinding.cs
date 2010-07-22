@@ -15,6 +15,7 @@ using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Dom.VBNet;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
@@ -51,6 +52,7 @@ namespace ICSharpCode.VBNetBinding
 			VBNetExpressionFinder ef = new VBNetExpressionFinder(ParserService.GetParseInformation(editor.FileName));
 			
 			ExpressionResult result;
+			VBNetCompletionItemList list;
 			
 			switch (ch) {
 				case '(':
@@ -61,10 +63,15 @@ namespace ICSharpCode.VBNetBinding
 						return CodeCompletionKeyPressResult.Completed;
 					}
 					break;
+				case '\n':
+					TryDeclarationTypeInference(editor, editor.Document.GetLineForOffset(editor.Caret.Offset));
+					break;
 				case '.':
 					result = ef.FindExpression(editor.Document.Text, editor.Caret.Offset);
 					LoggingService.Debug("CC: After dot, result=" + result + ", context=" + result.Context);
-					editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor, ch));
+					list = CompletionDataHelper.GenerateCompletionData(result, editor, ch);
+					list.Editor = editor;
+					list.Window = editor.ShowCompletionWindow(list);
 					return CodeCompletionKeyPressResult.Completed;
 				case ' ':
 					editor.Document.Insert(editor.Caret.Offset, " ");
@@ -73,7 +80,9 @@ namespace ICSharpCode.VBNetBinding
 					string word = editor.GetWordBeforeCaret().Trim();
 					if (word.Equals("overrides", StringComparison.InvariantCultureIgnoreCase) || word.Equals("return", StringComparison.InvariantCultureIgnoreCase) || !LiteralMayFollow((BitArray)result.Tag) && !OperatorMayFollow((BitArray)result.Tag) && ExpressionContext.IdentifierExpected != result.Context) {
 						LoggingService.Debug("CC: After space, result=" + result + ", context=" + result.Context);
-						editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor, ch));
+						list = CompletionDataHelper.GenerateCompletionData(result, editor, ch);
+						list.Editor = editor;
+						list.Window = editor.ShowCompletionWindow(list);
 					}
 					return CodeCompletionKeyPressResult.EatKey;
 				default:
@@ -91,7 +100,9 @@ namespace ICSharpCode.VBNetBinding
 						if ((result.Context != ExpressionContext.IdentifierExpected && char.IsLetter(ch)) &&
 						    (!char.IsLetterOrDigit(prevChar) && prevChar != '.')) {
 							LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
-							editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor, ch));
+							list = CompletionDataHelper.GenerateCompletionData(result, editor, ch);
+							list.Editor = editor;
+							list.Window = editor.ShowCompletionWindow(list);
 							return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
 						}
 					}
@@ -101,6 +112,7 @@ namespace ICSharpCode.VBNetBinding
 			return CodeCompletionKeyPressResult.None;
 		}
 		
+		#region Helpers
 		bool OperatorMayFollow(BitArray array)
 		{
 			if (array == null)
@@ -186,6 +198,7 @@ namespace ICSharpCode.VBNetBinding
 			GetCommentOrStringState(editor, out inString, out inComment);
 			return inComment;
 		}
+		#endregion
 		
 		public bool CtrlSpace(ITextEditor editor)
 		{
@@ -214,8 +227,51 @@ namespace ICSharpCode.VBNetBinding
 			VBNetExpressionFinder ef = new VBNetExpressionFinder(ParserService.GetParseInformation(editor.FileName));
 			ExpressionResult result = ef.FindExpression(editor.Document.Text, cursor);
 			LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
-			editor.ShowCompletionWindow(CompletionDataHelper.GenerateCompletionData(result, editor, '\0'));
+			var list = CompletionDataHelper.GenerateCompletionData(result, editor, '\0');
+			list.Editor = editor;
+			list.Window = editor.ShowCompletionWindow(list);
 			return true;
+		}
+		
+		bool TryDeclarationTypeInference(ITextEditor editor, IDocumentLine curLine)
+		{
+			string lineText = editor.Document.GetText(curLine.Offset, curLine.Length);
+			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new System.IO.StringReader(lineText));
+			if (lexer.NextToken().Kind != Tokens.Dim)
+				return false;
+			if (lexer.NextToken().Kind != Tokens.Identifier)
+				return false;
+			if (lexer.NextToken().Kind != Tokens.As)
+				return false;
+			Token t1 = lexer.NextToken();
+			if (t1.Kind != Tokens.QuestionMark)
+				return false;
+			Token t2 = lexer.NextToken();
+			if (t2.Kind != Tokens.Assign)
+				return false;
+			string expr = lineText.Substring(t2.Location.Column);
+			LoggingService.Debug("DeclarationTypeInference: >" + expr + "<");
+			ResolveResult rr = ParserService.Resolve(new ExpressionResult(expr),
+			                                         editor.Caret.Line,
+			                                         t2.Location.Column, editor.FileName,
+			                                         editor.Document.Text);
+			if (rr != null && rr.ResolvedType != null) {
+				ClassFinder context = new ClassFinder(ParserService.GetParseInformation(editor.FileName), editor.Caret.Line, t1.Location.Column);
+				VBNetAmbience ambience = new VBNetAmbience();
+				if (CodeGenerator.CanUseShortTypeName(rr.ResolvedType, context))
+					ambience.ConversionFlags = ConversionFlags.None;
+				else
+					ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedTypeNames;
+				string typeName = ambience.Convert(rr.ResolvedType);
+				using (editor.Document.OpenUndoGroup()) {
+					int offset = curLine.Offset + t1.Location.Column - 1;
+					editor.Document.Remove(offset, 1);
+					editor.Document.Insert(offset, typeName);
+				}
+				editor.Caret.Column += typeName.Length - 1;
+				return true;
+			}
+			return false;
 		}
 	}
 }

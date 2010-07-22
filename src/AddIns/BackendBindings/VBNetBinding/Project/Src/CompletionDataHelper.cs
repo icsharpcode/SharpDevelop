@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Parser.VB;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -21,9 +22,9 @@ namespace ICSharpCode.VBNetBinding
 {
 	public static class CompletionDataHelper
 	{
-		public static ICompletionItemList GenerateCompletionData(this ExpressionResult expressionResult, ITextEditor editor, char pressedKey)
+		public static VBNetCompletionItemList GenerateCompletionData(this ExpressionResult expressionResult, ITextEditor editor, char pressedKey)
 		{
-			DefaultCompletionItemList result = new NRefactoryCompletionItemList();
+			VBNetCompletionItemList result = new VBNetCompletionItemList();
 			
 			IResolver resolver = ParserService.CreateResolver(editor.FileName);
 			ParseInformation info = ParserService.GetParseInformation(editor.FileName);
@@ -75,17 +76,16 @@ namespace ICSharpCode.VBNetBinding
 				addedKeywords = true;
 			}
 			
-			result = CodeCompletionItemProvider.ConvertCompletionData(result, data, expressionResult.Context);
+			CodeCompletionItemProvider.ConvertCompletionData(result, data, expressionResult.Context);
 			
 			if (addedKeywords)
 				AddTemplates(editor, result);
 			
 			string word = editor.GetWordBeforeCaret().Trim();
 			IClass c;
+			IMember m = GetCurrentMember(editor);
 			
 			if (contextCompletion && pressedKey == ' ') {
-				IMember m = GetCurrentMember(editor);
-				
 				if (word.Equals("return", StringComparison.InvariantCultureIgnoreCase) && m != null) {
 					c = m.ReturnType != null ? m.ReturnType.GetUnderlyingClass() : null;
 					if (c != null) {
@@ -103,7 +103,16 @@ namespace ICSharpCode.VBNetBinding
 			c = GetCurrentClass(editor);
 			
 			if (word.Equals("overrides", StringComparison.InvariantCultureIgnoreCase) && pressedKey == ' ' && c != null) {
-				return new OverrideCompletionItemProvider().GenerateCompletionList(editor);
+				return new OverrideCompletionItemProvider().GenerateCompletionList(editor).ToVBCCList();;
+			}
+			
+			if (expressionResult.Context == ExpressionContext.Type && m != null && m.BodyRegion.IsInside(editor.Caret.Line, editor.Caret.Column)) {
+				result.Items.Add(
+					new DefaultCompletionItem("? =") {
+						Image = ClassBrowserIconService.GotoArrow,
+						Description = StringParser.Parse("${res:AddIns.VBNetBinding.CodeCompletion.QuestionmarkEqualsItem.Description}")
+					}
+				);
 			}
 			
 			if (pressedKey == '\0') { // ctrl+space
@@ -113,6 +122,9 @@ namespace ICSharpCode.VBNetBinding
 				if (!string.IsNullOrWhiteSpace(word))
 					result.PreselectionLength = word.Length;
 			}
+			
+			result.SortItems();
+			
 			
 			return result;
 		}
@@ -156,6 +168,21 @@ namespace ICSharpCode.VBNetBinding
 			} else {
 				return null;
 			}
+		}
+	}
+	
+	public class VBNetCompletionItemList : NRefactoryCompletionItemList
+	{
+		public ITextEditor Editor { get; set; }
+		
+		public ICompletionListWindow Window { get; set; }
+		
+		public override CompletionItemListKeyResult ProcessInput(char key)
+		{
+			if (key == '?' && string.IsNullOrWhiteSpace(Editor.Document.GetText(Window.StartOffset, Window.EndOffset - Window.StartOffset)))
+				return CompletionItemListKeyResult.NormalKey;
+			
+			return base.ProcessInput(key);
 		}
 	}
 }
