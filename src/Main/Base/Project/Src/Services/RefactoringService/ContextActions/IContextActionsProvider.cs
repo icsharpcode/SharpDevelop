@@ -6,9 +6,10 @@
 // </file>
 using System;
 using System.Collections.Generic;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
 
-namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
+namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
 	/// Provides <see cref="ContextAction" />s to appear in a popup on the left side of the editor.
@@ -18,6 +19,6 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		/// <summary>
 		/// Gets actions available for current line of the editor.
 		/// </summary>
-		IEnumerable<IContextAction> GetAvailableActions(ITextEditor editor);
+		IEnumerable<IContextAction> GetAvailableActions(EditorASTProvider editorAST);
 	}
 }

@@ -17,7 +17,7 @@ namespace SharpRefactoring.ContextActions
 	/// </summary>
 	public class GenerateMemberProvider : IContextActionsProvider
 	{
-		public IEnumerable<IContextAction> GetAvailableActions(ITextEditor editor)
+		public IEnumerable<IContextAction> GetAvailableActions(EditorASTProvider editorAST)
 		{
 			yield break;
 		}

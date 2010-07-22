@@ -89,8 +89,6 @@
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditSyntaxHighlighterAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditTextEditorAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditTextSourceAdapter.cs" />
-    <Compile Include="Src\Editor\AvalonEdit\ContextActionsService.cs" />
-    <Compile Include="Src\Editor\AvalonEdit\IContextActionsProvider.cs" />
     <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\ISnippetElementProvider.cs" />
     <Compile Include="Src\Editor\AvalonEdit\TextContentCondition.cs" />
@@ -334,6 +332,8 @@
       <DependentUpon>ContextActionsHeaderedControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsService.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\EditorASTProvider.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\IContextAction.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionCommand.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsControl.xaml.cs">
@@ -343,6 +343,7 @@
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsViewModel.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionViewModel.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActionsHelper.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\IContextActionsProvider.cs" />
     <Compile Include="Src\Services\RefactoringService\ExtractInterfaceOptions.cs" />
     <Compile Include="Src\Services\RefactoringService\GoToClassAction.cs" />
     <Compile Include="Src\Services\RefactoringService\GoToMemberAction.cs" />

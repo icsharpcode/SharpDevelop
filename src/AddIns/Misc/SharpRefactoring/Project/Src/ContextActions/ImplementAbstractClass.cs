@@ -18,9 +18,8 @@ namespace SharpRefactoring.ContextActions
 	/// </summary>
 	public class ImplementAbstractClassProvider : IContextActionsProvider
 	{
-		public IEnumerable<IContextAction> GetAvailableActions(ITextEditor editor)
+		public IEnumerable<IContextAction> GetAvailableActions(EditorASTProvider editorAST)
 		{
-			var currentLine = editor.Document.GetLine(editor.Caret.Line);
 			yield break;
 		}
 	}

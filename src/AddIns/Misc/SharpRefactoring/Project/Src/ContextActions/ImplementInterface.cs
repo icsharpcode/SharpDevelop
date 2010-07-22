@@ -7,6 +7,11 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using ICSharpCode.NRefactory;
+using Ast = ICSharpCode.NRefactory.Ast;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -18,10 +23,22 @@ namespace SharpRefactoring.ContextActions
 	/// </summary>
 	public class ImplementInterfaceProvider : IContextActionsProvider
 	{
-		public IEnumerable<IContextAction> GetAvailableActions(ITextEditor editor)
+		public IEnumerable<IContextAction> GetAvailableActions(EditorASTProvider editorAST)
 		{
-			var currentLine = editor.Document.GetLine(editor.Caret.Line);
-			yield break;
+			// Using CurrentLineAST is basically OK, but when the "class" keyword is on different line than class name,
+			// parsing only one line never tells us that we are looking at TypeDeclaration
+			
+			// Alternative solution could be to try to resolve also IdentifierExpression to see if it is class declaration.
+			var currentLineAST = editorAST.CurrentLineAST;
+			if (currentLineAST == null)
+				yield break;
+			var editor = editorAST.Editor;
+			foreach (var declaration in currentLineAST.FindTypeDeclarations()) {
+				if (declaration.Type == Ast.ClassType.Class || declaration.Type == Ast.ClassType.Struct) {
+					var rr = ParserService.Resolve(new ExpressionResult(declaration.Name), editor.Caret.Line, editor.Caret.Column, editor.FileName, editor.Document.Text);
+					
+				}
+			} 
 		}
 	}
 	

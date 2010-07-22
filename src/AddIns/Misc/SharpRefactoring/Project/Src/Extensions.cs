@@ -6,14 +6,13 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 
 namespace SharpRefactoring
 {
-	/// <summary>
-	/// Description of Extensions.
-	/// </summary>
 	public static class Extensions
 	{
 		public static IMember GetInnermostMember(this ICompilationUnit unit, int caretLine, int caretColumn)
@@ -36,6 +35,41 @@ namespace SharpRefactoring
 			
 			return instance.AllMembers
 				.SingleOrDefault(m => m.BodyRegion.IsInside(caretLine, caretColumn));
+		}
+		
+		/// <summary>
+		/// Gets all interfaces that this class declares to implement, but its implementations are missing in the class body.
+		/// </summary>
+		public static List<IClass> GetInterfacesMissingImplementation(this IClass @class)
+		{
+			return null;
+		}
+		
+		public static bool ClassImplementsClass(IClass targetClass, IClass baseClass)
+		{
+			bool requireAlternativeImplementation;
+			var targetClassType = targetClass.DefaultReturnType;
+			var baseClassType = baseClass.DefaultReturnType;
+			
+			var targetClassMethods = targetClassType.GetMethods();
+			foreach (var m in baseClassType.GetMethods()) {
+				if (!CodeGenerator.InterfaceMemberAlreadyImplemented(targetClassMethods, m, out requireAlternativeImplementation)) {
+					return false;
+				}
+			}
+			var targetClassProperties = targetClassType.GetProperties();
+			foreach (var p in baseClassType.GetProperties()) {
+				if (!CodeGenerator.InterfaceMemberAlreadyImplemented(targetClassProperties, p, out requireAlternativeImplementation)) {
+					return false;
+				}
+			}
+			var targetClassEvents = targetClassType.GetEvents();
+			foreach (var e in baseClassType.GetEvents()) {
+				if (!CodeGenerator.InterfaceMemberAlreadyImplemented(targetClassEvents, e, out requireAlternativeImplementation)) {
+					return false;
+				}
+			}
+			return true;
 		}
 	}
 }

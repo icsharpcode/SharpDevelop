@@ -7,10 +7,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
 
-namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
+namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
 	/// Provides context actions available for current line of the editor.
@@ -37,9 +39,10 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		/// </summary>
 		public IEnumerable<IContextAction> GetAvailableActions(ITextEditor editor)
 		{
+			var editorAST = new EditorASTProvider(editor);
 			// could run providers in parallel
 			foreach (var provider in this.providers) {
-				foreach (var action in provider.GetAvailableActions(editor)) {
+				foreach (var action in provider.GetAvailableActions(editorAST)) {
 					yield return action;
 				}
 			}

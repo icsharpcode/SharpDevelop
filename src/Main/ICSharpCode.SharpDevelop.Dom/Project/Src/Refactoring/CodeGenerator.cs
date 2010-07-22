@@ -608,7 +608,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			return copy;
 		}
 		
-		static bool InterfaceMemberAlreadyImplemented<T>(IEnumerable<T> existingMembers, T interfaceMember,
+		public static bool InterfaceMemberAlreadyImplemented<T>(IEnumerable<T> existingMembers, T interfaceMember,
 		                                                 out bool requireAlternativeImplementation)
 			where T : class, IMember
 		{
