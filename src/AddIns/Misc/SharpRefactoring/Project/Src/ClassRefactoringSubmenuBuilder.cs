@@ -161,19 +161,13 @@ namespace SharpRefactoring
 		{
 			IAmbience ambience = AmbienceService.GetCurrentAmbience();
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
-			foreach (var implementInterfaceAction in RefactoringService.GetImplementInterfaceActions(c, explicitImpl)) {
-				var implementInterfaceA = implementInterfaceAction;
-				subItems.Add(new MenuCommand(
-					ambience.Convert(implementInterfaceAction.Interface), 
-					delegate { implementInterfaceA.Execute(); }));
-			}
+			MakeMenuItemsFromActions(subItems, RefactoringService.GetImplementInterfaceActions(c, explicitImpl), ambience);
 		}
 		
 		void AddImplementAbstractClassCommands(IClass c, List<ToolStripItem> list)
 		{
 			List<ToolStripItem> subItems = new List<ToolStripItem>();
 			AddImplementAbstractClassCommandItems(subItems, c);
-			
 			if (subItems.Count > 0) {
 				list.Add(new ICSharpCode.Core.WinForms.Menu("${res:SharpDevelop.Refactoring.ImplementAbstractClass}", subItems.ToArray()));
 			}
@@ -181,37 +175,22 @@ namespace SharpRefactoring
 		
 		void AddImplementAbstractClassCommandItems(List<ToolStripItem> subItems, IClass c)
 		{
-			IAmbience ambience = AmbienceService.GetCurrentAmbience();
+			IAmbience ambience = c.ProjectContent.Language.GetAmbience();
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
-			foreach (IReturnType rt in c.BaseTypes) {
-				IClass abstractClass = rt.GetUnderlyingClass();
-				if (abstractClass != null && abstractClass.ClassType == ClassType.Class && abstractClass.IsAbstract) {
-					IReturnType rtCopy = rt; // copy for access by anonymous method
-					EventHandler eh = delegate {
-						var d = FindReferencesAndRenameHelper.GetDocument(c);
-						if (d != null)
-							ImplementAbstractClass(d, c, rtCopy);
-						ParserService.ParseCurrentViewContent();
-					};
-					subItems.Add(new MenuCommand(ambience.Convert(abstractClass), eh));
-				}
+			MakeMenuItemsFromActions(subItems, RefactoringService.GetImplementAbstractClassActions(c), ambience);
+		}
+		
+		void MakeMenuItemsFromActions(List<ToolStripItem> subItems, IEnumerable<RefactoringService.ImplementAbstractClassAction> actions, IAmbience labelAmbience)
+		{
+			foreach (var action in actions) {
+				var actionCopy = action;
+				subItems.Add(new MenuCommand(
+					labelAmbience.Convert(actionCopy.ClassToImplement), 
+					delegate { actionCopy.Execute(); }));
 			}
 		}
 		
 		#region Implementation
-		void ImplementAbstractClass(IDocument document, IClass target, IReturnType abstractClass)
-		{
-			CodeGenerator generator = target.ProjectContent.Language.CodeGenerator;
-			RefactoringDocumentAdapter doc = new RefactoringDocumentAdapter(document);
-			var pos = doc.OffsetToPosition(doc.PositionToOffset(target.BodyRegion.EndLine, target.BodyRegion.EndColumn) - 1);
-			ClassFinder context = new ClassFinder(target, pos.Line, pos.Column);
-			
-			foreach (IMember member in MemberLookupHelper.GetAccessibleMembers(abstractClass, target, LanguageProperties.CSharp, true)
-			         .Where(m => m.IsAbstract && !HasMember(m, target))) {
-				generator.InsertCodeAtEnd(target.BodyRegion, doc, generator.GetOverridingMethod(member, context));
-			}
-		}
-		
 		void Rename(object sender, EventArgs e)
 		{
 			MenuCommand item = (MenuCommand)sender;
@@ -222,20 +201,6 @@ namespace SharpRefactoring
 		{
 			MenuCommand item = (MenuCommand)sender;
 			FindReferencesAndRenameHelper.ExtractInterface((IClass)item.Tag);
-		}
-		#endregion
-		
-		#region Helpers
-		SignatureComparer comparer = new SignatureComparer();
-		
-		bool HasMember(IMember member, IClass containingClass)
-		{
-			foreach (IMember m in containingClass.AllMembers) {
-				if (comparer.Equals(member, m))
-					return true;
-			}
-			
-			return false;
 		}
 		#endregion
 	}

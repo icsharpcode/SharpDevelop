@@ -489,35 +489,73 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 			}
 		}
-		#endregion
-	}
-	
-	/// <summary>
-	/// Action describing how to add implementation of an interface to a class.
-	/// </summary>
-	public class ImplementInterfaceAction
-	{
-		public IReturnType Interface { get; private set; }
-		public IClass TargetClass { get; private set; }
-		public bool IsExplicitImpl { get; private set; }
+		/// <summary>
+		/// Gets actions which can add implementation of abstract classes to this class.
+		/// </summary>
+		public static IEnumerable<ImplementAbstractClassAction> GetImplementAbstractClassActions(IClass c)
+		{
+			IAmbience ambience = c.ProjectContent.Language.GetAmbience();
+			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
+			foreach (IReturnType rt in c.BaseTypes) {
+				IClass abstractClass = rt.GetUnderlyingClass();
+				if (abstractClass != null && abstractClass.ClassType == ClassType.Class && abstractClass.IsAbstract) {
+					IReturnType rtCopy = rt;
+					yield return new ImplementAbstractClassAction(rtCopy, c);
+				}
+			}
+		}
 		
-		public void Execute()
+		/// <summary>
+		/// Action describing how to add implementation of an abstract class to a class.
+		/// </summary>
+		public class ImplementAbstractClassAction
 		{
-			var codeGen = TargetClass.ProjectContent.Language.CodeGenerator;
-			var d = FindReferencesAndRenameHelper.GetDocument(TargetClass);
-			if (d != null)
-				codeGen.ImplementInterface(this.Interface, new RefactoringDocumentAdapter(d), this.IsExplicitImpl, this.TargetClass);
-			ParserService.ParseCurrentViewContent();
+			public IReturnType ClassToImplement { get; private set; }
+			public IClass TargetClass { get; private set; }
+			
+			public virtual void Execute()
+			{
+				var d = FindReferencesAndRenameHelper.GetDocument(TargetClass);
+				if (d == null)
+					return;
+				CodeGenerator.ImplementAbstractClass(new RefactoringDocumentAdapter(d), TargetClass, ClassToImplement);
+				ParserService.ParseCurrentViewContent();
+			}
+			
+			public ImplementAbstractClassAction(IReturnType classToImplement, IClass targetClass)
+			{
+				if (targetClass == null)
+					throw new ArgumentNullException("targetClass");
+				if (classToImplement == null)
+					throw new ArgumentNullException("interfaceToImplement");
+				this.ClassToImplement = classToImplement;
+				this.TargetClass = targetClass;
+			}
 		}
-		public ImplementInterfaceAction(IReturnType interfaceType, IClass targetClass, bool isExplicitImpl)
+		
+		/// <summary>
+		/// Action describing how to add implementation of an interface to a class.
+		/// </summary>
+		public class ImplementInterfaceAction : ImplementAbstractClassAction
 		{
-			if (interfaceType == null)
-				throw new ArgumentNullException("interfaceType");
-			if (targetClass == null)
-				throw new ArgumentNullException("targetClass");
-			this.Interface = interfaceType;
-			this.TargetClass = targetClass;
-			this.IsExplicitImpl = isExplicitImpl;
+			public bool IsExplicitImpl { get; private set; }
+			
+			public override void Execute()
+			{
+				var codeGen = TargetClass.ProjectContent.Language.CodeGenerator;
+				var d = FindReferencesAndRenameHelper.GetDocument(TargetClass);
+				if (d == null)
+					return;
+				codeGen.ImplementInterface(this.ClassToImplement, new RefactoringDocumentAdapter(d), this.IsExplicitImpl, this.TargetClass);
+				ParserService.ParseCurrentViewContent();
+			}
+			
+			public ImplementInterfaceAction(IReturnType interfaceToImplement, IClass targetClass, bool isExplicitImpl)
+				:base(interfaceToImplement, targetClass)
+			{
+				this.IsExplicitImpl = isExplicitImpl;
+			}
 		}
+		#endregion
 	}
 }
