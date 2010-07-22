@@ -310,6 +310,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			if (!IsClassType(ClassType.Interface) && (propertyDeclaration.Modifier & Modifiers.Visibility) == 0)
 				propertyDeclaration.Modifier |= Modifiers.Private;
+			
 			base.VisitPropertyDeclaration(propertyDeclaration, data);
 			
 			ToVBNetRenameConflictingVariablesVisitor.RenameConflicting(propertyDeclaration);

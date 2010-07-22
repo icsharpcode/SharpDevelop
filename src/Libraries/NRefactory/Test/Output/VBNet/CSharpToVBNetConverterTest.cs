@@ -655,5 +655,21 @@ End Namespace
 "
 			);
 		}
+		
+		[Test]
+		public void SD2_1424()
+		{
+			TestMember(
+				@"public int Min()
+{
+  int min = 5;
+  return min;
+}",
+				@"Public Function Min() As Integer
+  Dim min__1 As Integer = 5
+  Return min__1
+End Function"
+			);
+		}
 	}
 }
