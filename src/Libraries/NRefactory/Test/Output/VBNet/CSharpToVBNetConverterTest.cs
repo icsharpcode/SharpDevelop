@@ -613,16 +613,15 @@ Private m_Name As String");
 		}
 		
 		[Test]
-		[Ignore]
 		public void CollectionAndObjectInitializer()
 		{
 			TestStatement("List<X> l = new List<X> { new X { A = 1 }, new X { A = 2 } };",
 			              "Dim l As New List(Of X)() From { _\n" +
 			              "  New X() With { _\n" +
-			              "    .A = 1 _\n" +
+			              "    Key .A = 1 _\n" +
 			              "  }, _\n" +
 			              "  New X() With { _\n" +
-			              "    .A = 2 _\n" +
+			              "    Key .A = 2 _\n" +
 			              "  } _\n" +
 			              "}");
 		}
