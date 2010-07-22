@@ -6,14 +6,15 @@
 // </file>
 
 using System;
-using System.Linq;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -471,5 +472,52 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		#endregion
+		
+		#region Interface / abstract class implementation
+		/// <summary>
+		/// Gets actions which can add implementation of interface to this class.
+		/// </summary>
+		public static IEnumerable<ImplementInterfaceAction> GetImplementInterfaceActions(IClass c, bool isExplicitImpl)
+		{
+			IAmbience ambience = c.ProjectContent.Language.GetAmbience();
+			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
+			foreach (IReturnType rt in c.BaseTypes) {
+				IClass interf = rt.GetUnderlyingClass();
+				if (interf != null && interf.ClassType == ClassType.Interface) {
+					IReturnType rtCopy = rt;
+					yield return new ImplementInterfaceAction(rtCopy, c, isExplicitImpl);
+				}
+			}
+		}
+		#endregion
+	}
+	
+	/// <summary>
+	/// Action describing how to add implementation of an interface to a class.
+	/// </summary>
+	public class ImplementInterfaceAction
+	{
+		public IReturnType Interface { get; private set; }
+		public IClass TargetClass { get; private set; }
+		public bool IsExplicitImpl { get; private set; }
+		
+		public void Execute()
+		{
+			var codeGen = TargetClass.ProjectContent.Language.CodeGenerator;
+			var d = FindReferencesAndRenameHelper.GetDocument(TargetClass);
+			if (d != null)
+				codeGen.ImplementInterface(this.Interface, new RefactoringDocumentAdapter(d), this.IsExplicitImpl, this.TargetClass);
+			ParserService.ParseCurrentViewContent();
+		}
+		public ImplementInterfaceAction(IReturnType interfaceType, IClass targetClass, bool isExplicitImpl)
+		{
+			if (interfaceType == null)
+				throw new ArgumentNullException("interfaceType");
+			if (targetClass == null)
+				throw new ArgumentNullException("targetClass");
+			this.Interface = interfaceType;
+			this.TargetClass = targetClass;
+			this.IsExplicitImpl = isExplicitImpl;
+		}
 	}
 }

@@ -137,41 +137,35 @@ namespace SharpRefactoring
 			CodeGenerator codeGen = c.ProjectContent.Language.CodeGenerator;
 			if (codeGen == null) return;
 			List<ToolStripItem> subItems = new List<ToolStripItem>();
+			
 			if (c.ProjectContent.Language.SupportsImplicitInterfaceImplementation) {
+				// 'Implement interface (implicit)' menu item with subitems
 				AddImplementInterfaceCommandItems(subItems, c, false);
 				if (subItems.Count > 0) {
 					list.Add(new ICSharpCode.Core.WinForms.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceImplicit}", subItems.ToArray()));
 					subItems = new List<ToolStripItem>();
 				}
 			}
-			AddImplementInterfaceCommandItems(subItems, c, true);
 			
+			// 'Implement interface (explicit)' menu item with subitems
+			AddImplementInterfaceCommandItems(subItems, c, true);
 			if (subItems.Count > 0) {
-				if (c.ProjectContent.Language.SupportsImplicitInterfaceImplementation) {
-					list.Add(new ICSharpCode.Core.WinForms.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceExplicit}", subItems.ToArray()));
-				} else {
-					list.Add(new ICSharpCode.Core.WinForms.Menu("${res:SharpDevelop.Refactoring.ImplementInterface}", subItems.ToArray()));
-				}
+				string explicitMenuItemLabel = StringParser.Parse(c.ProjectContent.Language.SupportsImplicitInterfaceImplementation
+				                                                  ? "${res:SharpDevelop.Refactoring.ImplementInterfaceExplicit}"
+				                                                  : "${res:SharpDevelop.Refactoring.ImplementInterface}");
+				list.Add(new ICSharpCode.Core.WinForms.Menu(explicitMenuItemLabel, subItems.ToArray()));
 			}
 		}
 		
 		void AddImplementInterfaceCommandItems(List<ToolStripItem> subItems, IClass c, bool explicitImpl)
 		{
-			CodeGenerator codeGen = c.ProjectContent.Language.CodeGenerator;
 			IAmbience ambience = AmbienceService.GetCurrentAmbience();
 			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
-			foreach (IReturnType rt in c.BaseTypes) {
-				IClass interf = rt.GetUnderlyingClass();
-				if (interf != null && interf.ClassType == ClassType.Interface) {
-					IReturnType rtCopy = rt; // copy for access by anonymous method
-					EventHandler eh = delegate {
-						var d = FindReferencesAndRenameHelper.GetDocument(c);
-						if (d != null)
-							codeGen.ImplementInterface(rtCopy, new RefactoringDocumentAdapter(d), explicitImpl, c);
-						ParserService.ParseCurrentViewContent();
-					};
-					subItems.Add(new MenuCommand(ambience.Convert(interf), eh));
-				}
+			foreach (var implementInterfaceAction in RefactoringService.GetImplementInterfaceActions(c, explicitImpl)) {
+				var implementInterfaceA = implementInterfaceAction;
+				subItems.Add(new MenuCommand(
+					ambience.Convert(implementInterfaceAction.Interface), 
+					delegate { implementInterfaceA.Execute(); }));
 			}
 		}
 		
