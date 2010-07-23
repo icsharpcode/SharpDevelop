@@ -50,11 +50,12 @@ namespace ICSharpCode.Reports.Core
 			this.NotifyPrinting();
 			base.Render(rpea);
 			
-			if (this.DrawBorder == true) {
-				Border b = new Border(new BaseLine (this.FrameColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
-				Rectangle r = new Rectangle (this.Location,this.Size);
-				b.DrawBorder(rpea.PrintPageEventArgs.Graphics,r);
-			}
+//			if (this.DrawBorder == true) {
+//				Border b = new Border(new BaseLine (this.FrameColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
+////				Rectangle r = new Rectangle (this.Location,this.Size);
+////				b.DrawBorder(rpea.PrintPageEventArgs.Graphics,r);
+//			}
+
 			this.NotifyPrinted();
 		}
 		

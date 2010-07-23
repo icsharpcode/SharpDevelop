@@ -212,7 +212,9 @@ namespace ICSharpCode.Reports.Core
 			Point currentPosition	= Point.Empty;
 			
 			if (this.CurrentSection.Visible){
+				
 				this.CurrentSection.Render (rpea);
+				
 				Evaluator.SinglePage = this.reportDocument.SinglePage;
 				
 				if (this.CurrentSection.Items.Count > 0) {
@@ -223,9 +225,16 @@ namespace ICSharpCode.Reports.Core
 					                                           this.CurrentSection.Location.Y,
 					                                           this.CurrentSection.Size.Width,
 					                                           this.CurrentSection.Size.Height);
+					
 					if (desiredRectangle.Height >= sectionRectangle.Height) {
 						this.CurrentSection.Size = new Size(this.CurrentSection.Size.Width,desiredRectangle.Height + 10);
 					}
+					
+					
+					if (this.CurrentSection.DrawBorder) {
+						StandardPrinter.DrawBorder(rpea.PrintPageEventArgs.Graphics,this.CurrentSection.BaseStyleDecorator);
+					}
+					
 					
 //					PrintHelper.DebugRectangle(rpea.PrintPageEventArgs.Graphics,Pens.Blue,new Rectangle(CurrentSection.Location,CurrentSection.Size));
 				}
@@ -235,6 +244,7 @@ namespace ICSharpCode.Reports.Core
 				                                                                               this.CurrentSection.SectionOffset),rpea);
 				
 				currentPosition = PrintHelper.ConvertRectangleToCurentPosition(r);
+			
 				
 				if ((this.CurrentSection.CanGrow == false)&& (this.CurrentSection.CanShrink == false)) {
 //					return new Point(this.CurrentSection.Location.X,

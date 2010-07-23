@@ -147,14 +147,8 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 					child.Parent = parent;
 					 StandardPrinter.RenderLineItem (child,offset,evaluator,rpea);
 				}
-				
-				retVal = new Rectangle(offset,size);
-				return retVal;
-				
-			} else {
-				retVal = new Rectangle(offset.X,offset.Y,0,0);
-				return retVal;
 			}
+			return new Rectangle(offset,parent.Size);
 		}
 		
 		

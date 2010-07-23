@@ -32,28 +32,48 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				throw new ArgumentNullException("container");
 			}
 			
+			
+			if (container.Items == null)
+			{
+				return Rectangle.Empty;
+			}
+			
 			BaseReportItem containerItem = container as BaseReportItem;
+			
 			Rectangle desiredContainerRectangle = new Rectangle (containerItem.Location,containerItem.Size);
 			
 			System.Collections.Generic.IEnumerable<BaseReportItem> canGrowShrinkCollection = from bt in container.Items where bt.CanGrow == true select bt;
 			
 			if (canGrowShrinkCollection.Count() > 0 ) {
-				int extend = containerItem.Size.Height - canGrowShrinkCollection.First().Size.Height;
-				Rectangle surroundingRec = FindSurroundingRectangle(graphics,canGrowShrinkCollection);
 				
-				if (surroundingRec.Height > desiredContainerRectangle.Height)
-				{
-					desiredContainerRectangle = new Rectangle(containerItem.Location.X,
-					                                          containerItem  .Location.Y,
-					                                          containerItem .Size.Width,
-					                                          surroundingRec.Size.Height + extend);
+				int bottomPadding = containerItem.Size.Height - (container.Items[0].Location.Y + container.Items[0].Size.Height);
+				
+				if (bottomPadding < 0) {
+					
+					Console.WriteLine(bottomPadding);
 				}
+				Rectangle surroundingRec = FindSurroundingRectangle(graphics,canGrowShrinkCollection);
+				/*
+				Console.WriteLine ("surrounding  {0} - desired {1} - bottom {2}",
+				                   surroundingRec.Height + bottomPadding,
+				                   desiredContainerRectangle.Height -1,
+				                   bottomPadding);
+				
+				Console.WriteLine ("extend");
+				*/
+				
+				desiredContainerRectangle = new Rectangle(containerItem.Location.X,
+				                                          containerItem  .Location.Y,
+				                                          containerItem .Size.Width,
+				                                          surroundingRec.Size.Height + bottomPadding );
+//				Console.WriteLine ("extend to {0}",desiredContainerRectangle);
+				
 			}
 			
 			return desiredContainerRectangle;
 		}
 		
-		
+	
 		public Rectangle Layout(Graphics graphics,BaseSection section)
 		{
 			if (graphics == null) {
@@ -63,6 +83,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				throw new ArgumentNullException("section");
 			}
 		
+			
 			IEnumerable<BaseReportItem> canGrowShrinkCollection = from bt in section.Items where bt.CanGrow == true select bt;
 			
 			Rectangle desiredSectionRectangle = new Rectangle(section.Location.X,
@@ -71,14 +92,26 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			                                                  section.Size.Height);
 			
 			if (canGrowShrinkCollection.Count() > 0) {
-				int extend = section.Size.Height - canGrowShrinkCollection.First().Size.Height;
+				
+				//Console.WriteLine ("xx layout section");
+				
+				int bottomPadding = section.Size.Height - (section.Items[0].Size.Height + section.Items[0].Location.Y);
+				
 				Rectangle surroundingRec = FindSurroundingRectangle(graphics,canGrowShrinkCollection);
+				
+				/*
+				Console.WriteLine ("xx surrounding  {0} - desired {1} - bottom {2}",
+				                   surroundingRec.Height + bottomPadding,
+				                   desiredSectionRectangle.Height -1,
+				                  bottomPadding);
+				*/
 				if (surroundingRec.Height > desiredSectionRectangle .Height) {
 					desiredSectionRectangle = new Rectangle(section.Location.X,
 					                                        section .Location.Y,
 					                                        section .Size.Width,
-					                                        surroundingRec.Size.Height + extend);
+					                                        surroundingRec.Size.Height + bottomPadding);
 				}
+				//Console.WriteLine ("xx extend to {0}",desiredSectionRectangle);
 			}
 			return desiredSectionRectangle;
 		}

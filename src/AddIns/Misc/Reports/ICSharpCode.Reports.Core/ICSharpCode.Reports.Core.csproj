@@ -352,7 +352,6 @@
     <Folder Include="Project\Dialogs" />
     <Folder Include="Project\Events" />
     <Folder Include="Project\Exceptions" />
-    <Folder Include="Project\Converter" />
     <Folder Include="Project\Exporter\Converters" />
     <Folder Include="Project\Expressions\SimpleExpressionEvaluator" />
     <Folder Include="Project\Expressions\ReportingLanguage" />

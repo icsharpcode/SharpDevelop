@@ -200,7 +200,7 @@ namespace ICSharpCode.Reports.Core {
 						return;
 					}
 					
-					base.RenderItems(rpea);
+					Point currentPosition = base.RenderItems(rpea);
 					
 					
 					if (nav.CurrentRow < nav.Count -1) {
@@ -212,22 +212,17 @@ namespace ICSharpCode.Reports.Core {
 						}
 					}
 
-					Rectangle r = new Rectangle (rpea.PrintPageEventArgs.MarginBounds.Left,
-					                             base.CurrentSection.SectionOffset,
-					                             rpea.PrintPageEventArgs.MarginBounds.Width,
-					                             base.CurrentSection.Size.Height);
 					
 					
 //					if (this.dataNavigator.CurrentRow % 2 == 0) {
 //					PrintHelper.DebugRectangle(rpea.PrintPageEventArgs.Graphics,r);
 //					}
 					
-					base.CurrentSection.SectionOffset = r.Bottom;
-					rpea.LocationAfterDraw = new Point (rpea.LocationAfterDraw.X,
-					                                    sectionRect.Bottom);
+
+					base.CurrentSection.SectionOffset = currentPosition.Y;
 					
 					rpea.LocationAfterDraw = new Point (rpea.LocationAfterDraw.X,
-					                                    r.Bottom);
+					                                    currentPosition.Y);
 				}
 				
 				while (nav.MoveNext());
