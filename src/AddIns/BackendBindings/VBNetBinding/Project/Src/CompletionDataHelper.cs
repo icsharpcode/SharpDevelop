@@ -36,6 +36,7 @@ namespace ICSharpCode.VBNetBinding
 			
 			bool contextCompletion = false;
 			bool completingDotExpression = false;
+			IReturnType resolvedType = null;
 			
 			if (expressionResult.Context != ExpressionContext.Global && expressionResult.Context != ExpressionContext.TypeDeclaration) {
 				if (expressionResult.Context == ExpressionContext.Importable
@@ -64,6 +65,8 @@ namespace ICSharpCode.VBNetBinding
 					contextCompletion = true;
 				} else {
 					data = rr.GetCompletionData(info.CompilationUnit.ProjectContent, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces) ?? data;
+					
+					resolvedType = rr.ResolvedType;
 				}
 			}
 			
@@ -115,6 +118,12 @@ namespace ICSharpCode.VBNetBinding
 				);
 			}
 			
+			if (resolvedType != null && AllowsDescendentAccess(resolvedType, info.CompilationUnit.ProjectContent))
+				result.Items.Add(new DefaultCompletionItem("..") { Image = ClassBrowserIconService.GotoArrow });
+			
+			if (resolvedType != null && AllowsAttributeValueAccess(resolvedType, info.CompilationUnit.ProjectContent))
+				result.Items.Add(new DefaultCompletionItem("@") { Image = ClassBrowserIconService.GotoArrow });
+			
 			if (pressedKey == '\0') { // ctrl+space
 				char prevChar =  editor.Caret.Offset > 0 ? editor.Document.GetCharAt(editor.Caret.Offset - 1) : '\0';
 				word = char.IsLetterOrDigit(prevChar) || prevChar == '_' ? editor.GetWordBeforeCaret() : "";
@@ -125,8 +134,53 @@ namespace ICSharpCode.VBNetBinding
 			
 			result.SortItems();
 			
-			
 			return result;
+		}
+		
+		static bool AllowsAttributeValueAccess(IReturnType resolvedType, IProjectContent content)
+		{
+			/* See VB 10 Spec, pg. 282:
+			 * If an attribute access, System.Xml.Linq.XElement or a derived type, or
+			 * System.Collections.Generic.IEnumerable(Of T) or a derived type, where T is
+			 * System.Xml.Linq.XElement or a derived type.
+			 **/
+			
+			string baseClass = "System.Xml.Linq.XElement";
+			string methodName = "Attributes";
+			
+			return AllowsHelper(baseClass, methodName, resolvedType, content);
+		}
+		
+		static bool AllowsDescendentAccess(IReturnType resolvedType, IProjectContent content)
+		{
+			/* See VB 10 Spec, pg. 282:
+			 * If an element or descendents access, System.Xml.Linq.XContainer or a
+			 * derived type, or System.Collections.Generic.IEnumerable(Of T) or a derived
+			 * type, where T is System.Xml.Linq.XContainer or a derived type.
+			 **/
+			
+			string baseClass = "System.Xml.Linq.XContainer";
+			string methodName = "Descendants";
+			
+			return AllowsHelper(baseClass, methodName, resolvedType, content);
+		}
+		
+		static bool AllowsHelper(string baseClass, string methodName, IReturnType resolvedType, IProjectContent content)
+		{
+			IClass extensions = content.GetClass("System.Xml.Linq.Extensions", 0);
+			if (extensions == null)
+				return false;
+			IMethod descendents = extensions.Methods.FirstOrDefault(m => m.Name == methodName);
+			if (descendents == null)
+				return false;
+			IParameter param = descendents.Parameters.FirstOrDefault();
+			if (param == null)
+				return false;
+			IClass resolvedTypeClass = resolvedType.GetUnderlyingClass();
+			if (resolvedTypeClass == null)
+				return false;
+			return MemberLookupHelper.IsApplicable(resolvedType, param, descendents)
+				|| resolvedTypeClass.IsTypeInInheritanceTree(content.GetClass(baseClass, 0));
 		}
 		
 		static void AddVBNetKeywords(List<ICompletionEntry> ar, BitArray keywords)

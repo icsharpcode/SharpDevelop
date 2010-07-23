@@ -7,9 +7,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Linq;
-
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
@@ -695,6 +695,23 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object VisitXmlElementExpression(XmlElementExpression xmlElementExpression, object data)
 		{
 			return CreateResolveResult(new TypeReference("System.Xml.Linq.XElement"));
+		}
+		
+		public override object VisitXmlMemberAccessExpression(XmlMemberAccessExpression xmlMemberAccessExpression, object data)
+		{
+			switch (xmlMemberAccessExpression.AxisType) {
+				case XmlAxisType.Element:
+				case XmlAxisType.Descendents:
+					return CreateResolveResult(
+						new TypeReference("System.Collections.Generic.IEnumerable",
+						                  new List<TypeReference> { new TypeReference("System.Xml.Linq.XElement") { IsGlobal = true } }
+						                 ) { IsGlobal = true }
+					);
+				case XmlAxisType.Attribute:
+					return CreateResolveResult(new TypeReference("System.String", true) { IsGlobal = true });
+				default:
+					throw new Exception("Invalid value for XmlAxisType");
+			}
 		}
 		#endregion
 	}
