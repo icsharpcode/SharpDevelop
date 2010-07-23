@@ -28,7 +28,7 @@ namespace ICSharpCode.Profiler.Controller
 		/// Defines a list of default performance counters.
 		/// </summary>
 		public static readonly PerformanceCounterDescriptor[] DefaultCounters = new[] {
-			new PerformanceCounterDescriptor("Process", "% Processor Time", "_Total", ".", 0, 0, 100, "%", "0.00"),
+			new PerformanceCounterDescriptor("Process", "% Processor Time", "_Total", ".", 0, 0, null, "%", "0.00"),
 			new PerformanceCounterDescriptor("Process", "IO Data Bytes/sec", "_Total", ".", 0, null, null, "bytes/sec", "#,##0")
 		};
 		

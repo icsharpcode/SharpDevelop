@@ -82,6 +82,7 @@ namespace SharpRefactoring
 		{
 			if (rr.Target == null || rr.Target.GetUnderlyingClass() == null)
 				return null;
+			
 			NRefactoryResolver resolver = CreateResolverForContext(rr.CallingClass.ProjectContent.Language, editor);
 			Ast.INode node = resolver.ParseCurrentMember(editor.Document.Text);
 			resolver.RunLookupTableVisitor(node);

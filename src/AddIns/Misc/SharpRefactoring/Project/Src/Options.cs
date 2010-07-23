@@ -19,7 +19,7 @@ namespace SharpRefactoring
 		static Properties properties;
 		
 		public static Properties Properties {
-			get { 				
+			get {
 				Debug.Assert(properties != null);
 				return properties;
 			}

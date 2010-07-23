@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
@@ -73,10 +72,14 @@ namespace SharpRefactoring
 			
 			this.parentNode = GetParentMember(start, end);
 			
-			if (parentNode == null) {
+			Dom.IMember member = GetParentMember(textEditor, textEditor.Caret.Line, textEditor.Caret.Column);
+			
+			if (parentNode == null || member == null) {
 				MessageService.ShowError("${res:AddIns.SharpRefactoring.ExtractMethod.InvalidSelection}");
 				return false;
 			}
+			
+			this.currentClass = member.DeclaringType;
 			
 			ErrorKind kind = CheckForJumpInstructions(newMethod);
 			if (kind != ErrorKind.None) {
