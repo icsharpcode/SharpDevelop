@@ -222,6 +222,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return data;
 		}
 		
+		public override object VisitOptionDeclaration(ICSharpCode.NRefactory.Ast.OptionDeclaration optionDeclaration, object data)
+		{
+			cu.Options.Add(
+				new DefaultOption((OptionType)optionDeclaration.OptionType, optionDeclaration.OptionValue,
+				                  new DomRegion(optionDeclaration.StartLocation.Line, optionDeclaration.StartLocation.Column,
+				                                optionDeclaration.EndLocation.Line, optionDeclaration.EndLocation.Column)
+				                 )
+			);
+			
+			return null;
+		}
+		
 		void ConvertAttributes(AST.AttributedNode from, AbstractEntity to)
 		{
 			if (from.Attributes.Count == 0) {

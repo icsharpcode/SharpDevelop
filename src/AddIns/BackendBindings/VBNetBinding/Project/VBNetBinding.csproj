@@ -50,12 +50,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
+    <EmbeddedResource Include="Resources\BuildOptions.xfrm">
+      <LogicalName>Resources.BuildOptions.xfrm</LogicalName>
+    </EmbeddedResource>
     <Compile Include="Src\Extensions.cs" />
     <Compile Include="Src\FormattingStrategy\VBStatement.cs" />
     <Compile Include="Src\VBNetBracketSearcher.cs" />
     <Compile Include="Src\CompletionDataHelper.cs" />
     <Compile Include="Src\VBNetCompletionBindingOld.cs" />
+    <Compile Include="Src\VBNetCompletionItemList.cs" />
     <Compile Include="Src\VBNetLanguageBinding.cs" />
     <Compile Include="Src\VBNetProjectBinding.cs" />
     <Compile Include="Src\FormattingStrategy\VBNetFormattingStrategy.cs" />
@@ -72,9 +75,13 @@
     <Compile Include="Src\OptionPanels\ProjectImports.cs">
       <SubType>Form</SubType>
     </Compile>
-    <EmbeddedResource Include="Resources\ProjectImports.xfrm" />
+    <EmbeddedResource Include="Resources\ProjectImports.xfrm">
+      <LogicalName>Resources.ProjectImports.xfrm</LogicalName>
+    </EmbeddedResource>
     <Compile Include="Src\OptionPanels\TextEditorOptions.cs" />
-    <EmbeddedResource Include="Resources\VBNetTextEditorOptions.xfrm" />
+    <EmbeddedResource Include="Resources\VBNetTextEditorOptions.xfrm">
+      <LogicalName>Resources.VBNetTextEditorOptions.xfrm</LogicalName>
+    </EmbeddedResource>
     <Compile Include="Src\Project\CSharpToVBNetConverter.cs" />
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>

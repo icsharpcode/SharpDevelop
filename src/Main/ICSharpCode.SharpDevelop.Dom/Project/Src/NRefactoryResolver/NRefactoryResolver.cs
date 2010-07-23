@@ -44,6 +44,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		int caretLine;
 		int caretColumn;
 		
+		bool inferAllowed;
+		
 		public NR.SupportedLanguage Language {
 			get {
 				return language;
@@ -106,8 +108,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			this.languageProperties = languageProperties;
 			if (languageProperties is LanguageProperties.CSharpProperties) {
 				language = NR.SupportedLanguage.CSharp;
+				inferAllowed = true;
 			} else if (languageProperties is LanguageProperties.VBNetProperties) {
 				language = NR.SupportedLanguage.VBNet;
+				inferAllowed = false;
 			} else {
 				throw new NotSupportedException("The language " + languageProperties.ToString() + " is not supported in the resolver");
 			}
@@ -156,6 +160,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return false;
 			}
 			this.ProjectContent = cu.ProjectContent;
+			
+			if (cu.Language == LanguageProperties.VBNet) {
+				// TODO : get options from project
+				
+				if (cu.Options.Any(o => o.Type == OptionType.Infer))
+					inferAllowed = cu.Options.First(o => o.Type == OptionType.Infer).Value;
+			}
 			
 			callingClass = cu.GetInnermostClass(caretLine, caretColumn);
 			callingMember = GetCallingMember();
@@ -1043,13 +1054,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return rt;
 			
 			if (v.TypeRef == null || v.TypeRef.IsNull || v.TypeRef.Type == "var") {
-				if (v.ParentLambdaExpression != null) {
-					rt = new LambdaParameterReturnType(v.ParentLambdaExpression, v.Name, this);
-				} else {
-					rt = new InferredReturnType(v.Initializer, this);
-					if (v.IsLoopVariable) {
-						rt = new ElementReturnType(this.projectContent, rt);
+				if (inferAllowed) {
+					if (v.ParentLambdaExpression != null) {
+						rt = new LambdaParameterReturnType(v.ParentLambdaExpression, v.Name, this);
+					} else {
+						rt = new InferredReturnType(v.Initializer, this);
+						if (v.IsLoopVariable) {
+							rt = new ElementReturnType(this.projectContent, rt);
+						}
 					}
+				} else {
+					rt = this.projectContent.SystemTypes.Object;
 				}
 			} else {
 				rt = TypeVisitor.CreateReturnType(v.TypeRef, this);

@@ -87,6 +87,7 @@
     <Compile Include="Src\Implementations\DefaultEvent.cs" />
     <Compile Include="Src\Implementations\DefaultField.cs" />
     <Compile Include="Src\Implementations\DefaultMethod.cs" />
+    <Compile Include="Src\Implementations\DefaultOption.cs" />
     <Compile Include="Src\Implementations\DefaultParameter.cs" />
     <Compile Include="Src\Implementations\DefaultProperty.cs" />
     <Compile Include="Src\Implementations\DefaultReturnType.cs" />
@@ -109,7 +110,9 @@
     <Compile Include="Src\Interfaces\ICompletionEntry.cs" />
     <Compile Include="Src\Interfaces\IDomProgressMonitor.cs" />
     <Compile Include="Src\Interfaces\IFreezable.cs" />
+    <Compile Include="Src\Interfaces\IOption.cs" />
     <Compile Include="Src\Interfaces\IUsingScope.cs" />
+    <Compile Include="Src\Interfaces\OptionType.cs" />
     <Compile Include="Src\LazyList.cs" />
     <Compile Include="Src\NRefactoryResolver\CodeSnippetConverter.cs" />
     <Compile Include="Src\NRefactoryResolver\CSharpToVBNetConvertVisitor.cs" />

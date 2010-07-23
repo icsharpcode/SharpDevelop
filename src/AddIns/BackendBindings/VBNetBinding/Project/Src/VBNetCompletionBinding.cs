@@ -52,7 +52,6 @@ namespace ICSharpCode.VBNetBinding
 			VBNetExpressionFinder ef = new VBNetExpressionFinder(ParserService.GetParseInformation(editor.FileName));
 			
 			ExpressionResult result;
-			VBNetCompletionItemList list;
 			
 			switch (ch) {
 				case '(':
@@ -69,9 +68,7 @@ namespace ICSharpCode.VBNetBinding
 				case '.':
 					result = ef.FindExpression(editor.Document.Text, editor.Caret.Offset);
 					LoggingService.Debug("CC: After dot, result=" + result + ", context=" + result.Context);
-					list = CompletionDataHelper.GenerateCompletionData(result, editor, ch);
-					list.Editor = editor;
-					list.Window = editor.ShowCompletionWindow(list);
+					ShowCompletion(result, editor, ch);
 					return CodeCompletionKeyPressResult.Completed;
 				case ' ':
 					editor.Document.Insert(editor.Caret.Offset, " ");
@@ -80,9 +77,7 @@ namespace ICSharpCode.VBNetBinding
 					string word = editor.GetWordBeforeCaret().Trim();
 					if (word.Equals("overrides", StringComparison.InvariantCultureIgnoreCase) || word.Equals("return", StringComparison.InvariantCultureIgnoreCase) || !LiteralMayFollow((BitArray)result.Tag) && !OperatorMayFollow((BitArray)result.Tag) && ExpressionContext.IdentifierExpected != result.Context) {
 						LoggingService.Debug("CC: After space, result=" + result + ", context=" + result.Context);
-						list = CompletionDataHelper.GenerateCompletionData(result, editor, ch);
-						list.Editor = editor;
-						list.Window = editor.ShowCompletionWindow(list);
+						ShowCompletion(result, editor, ch);
 					}
 					return CodeCompletionKeyPressResult.EatKey;
 				default:
@@ -100,9 +95,7 @@ namespace ICSharpCode.VBNetBinding
 						if ((result.Context != ExpressionContext.IdentifierExpected && char.IsLetter(ch)) &&
 						    (!char.IsLetterOrDigit(prevChar) && prevChar != '.')) {
 							LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
-							list = CompletionDataHelper.GenerateCompletionData(result, editor, ch);
-							list.Editor = editor;
-							list.Window = editor.ShowCompletionWindow(list);
+							ShowCompletion(result, editor, ch);
 							return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
 						}
 					}
@@ -110,6 +103,13 @@ namespace ICSharpCode.VBNetBinding
 			}
 			
 			return CodeCompletionKeyPressResult.None;
+		}
+
+		void ShowCompletion(ExpressionResult result, ITextEditor editor, char ch)
+		{
+			VBNetCompletionItemList list = CompletionDataHelper.GenerateCompletionData(result, editor, ch);
+			list.Editor = editor;
+			list.Window = editor.ShowCompletionWindow(list);
 		}
 		
 		#region Helpers
@@ -227,9 +227,7 @@ namespace ICSharpCode.VBNetBinding
 			VBNetExpressionFinder ef = new VBNetExpressionFinder(ParserService.GetParseInformation(editor.FileName));
 			ExpressionResult result = ef.FindExpression(editor.Document.Text, cursor);
 			LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
-			var list = CompletionDataHelper.GenerateCompletionData(result, editor, '\0');
-			list.Editor = editor;
-			list.Window = editor.ShowCompletionWindow(list);
+			ShowCompletion(result, editor, '\0');
 			return true;
 		}
 		

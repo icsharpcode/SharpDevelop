@@ -170,19 +170,4 @@ namespace ICSharpCode.VBNetBinding
 			}
 		}
 	}
-	
-	public class VBNetCompletionItemList : NRefactoryCompletionItemList
-	{
-		public ITextEditor Editor { get; set; }
-		
-		public ICompletionListWindow Window { get; set; }
-		
-		public override CompletionItemListKeyResult ProcessInput(char key)
-		{
-			if (key == '?' && string.IsNullOrWhiteSpace(Editor.Document.GetText(Window.StartOffset, Window.EndOffset - Window.StartOffset)))
-				return CompletionItemListKeyResult.NormalKey;
-			
-			return base.ProcessInput(key);
-		}
-	}
 }
