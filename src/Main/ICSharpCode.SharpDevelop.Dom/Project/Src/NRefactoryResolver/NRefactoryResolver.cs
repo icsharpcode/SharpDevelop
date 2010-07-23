@@ -16,6 +16,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Dom.CSharp;
+using ICSharpCode.SharpDevelop.Dom.VBNet;
 using NR = ICSharpCode.NRefactory;
 
 namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
@@ -161,11 +162,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			this.ProjectContent = cu.ProjectContent;
 			
-			if (cu.Language == LanguageProperties.VBNet) {
-				// TODO : get options from project
+			if (language == SupportedLanguage.VBNet) {
+				IVBNetOptionProvider provider = cu as IVBNetOptionProvider;
 				
-				if (cu.Options.Any(o => o.Type == OptionType.Infer))
-					inferAllowed = cu.Options.First(o => o.Type == OptionType.Infer).Value;
+				inferAllowed = provider.OptionInfer ?? false;
 			}
 			
 			callingClass = cu.GetInnermostClass(caretLine, caretColumn);

@@ -70,13 +70,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		/// <summary>
-		/// gets the Options defined in this cu (VB only!)
-		/// </summary>
-		IList<IOption> Options {
-			get;
-		}
-		
-		/// <summary>
 		/// Returns the innerst class in which the carret currently is, returns null
 		/// if the carret is outside any class boundaries.
 		/// </summary>

@@ -36,6 +36,7 @@ namespace ICSharpCode.VBNetBinding.Tests
 		{
 			PropertyService.InitializeServiceForUnitTests();
 			pc = new DefaultProjectContent();
+			pc.Language = LanguageProperties.VBNet;
 			pc.ReferencedContents.Add(AssemblyParserService.DefaultProjectContentRegistry.Mscorlib);
 			
 			Dictionary<string, string> referencedAssemblies = new Dictionary<string, string>() {

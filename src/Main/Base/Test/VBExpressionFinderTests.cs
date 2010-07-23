@@ -33,22 +33,6 @@ Class MainClass ' a comment
 End Class
 ";
 		
-		const string program2 = @"
-Class MainClass
-	Sub A
-		Console.WriteLine(""Hello World!"")
-	End Sub
-End Class
-		";
-		
-		const string program3 = @"
-Class MainClass
-	Sub A
-		Console.WriteLine
-	End Sub
-End Class
-		";
-		
 		VBNetExpressionFinder ef;
 		
 		[SetUp]
@@ -61,20 +45,22 @@ End Class
 			ef = new VBNetExpressionFinder(null);
 		}
 		
-		void FindFull(string program, string location, string expectedExpression, ExpressionContext expectedContext)
+		void FindFull(string program, string expectedExpression, ExpressionContext expectedContext)
 		{
-			int pos = program.IndexOf(location);
+			int pos = program.IndexOf("|");
 			if (pos < 0) Assert.Fail("location not found in program");
+			program = program.Remove(pos, 1);
 			ExpressionResult er = ef.FindFullExpression(program, pos);
 			Assert.AreEqual(expectedExpression, er.Expression);
 			Assert.AreEqual(expectedContext.ToString(), er.Context.ToString());
 		}
 		
-		void Find(string program, string location, int offset, string expectedExpression, ExpressionContext expectedContext)
+		void Find(string program, string expectedExpression, ExpressionContext expectedContext)
 		{
-			int pos = program.IndexOf(location);
+			int pos = program.IndexOf("|");
 			if (pos < 0) Assert.Fail("location not found in program");
-			ExpressionResult er = ef.FindExpression(program, pos + offset);
+			program = program.Remove(pos, 1);
+			ExpressionResult er = ef.FindExpression(program, pos);
 			Assert.AreEqual(expectedExpression, er.Expression);
 			Assert.AreEqual(expectedContext.ToString(), er.Context.ToString());
 		}
@@ -83,51 +69,112 @@ End Class
 		[Test]
 		public void FindSimple()
 		{
-			Find(program2, "sole", 0, "Con", ExpressionContext.MethodBody);
+			string program2 = @"
+Class MainClass
+	Sub A
+		Con|sole.WriteLine(""Hello World!"")
+	End Sub
+End Class
+		";
+			
+			Find(program2, "Con", ExpressionContext.MethodBody);
 		}
 		
 		[Test]
 		public void FindSimple2()
 		{
-			Find(program2, "Wri", 0, "Console.", ExpressionContext.Default);
+			string program2 = @"
+Class MainClass
+	Sub A
+		Console.|WriteLine(""Hello World!"")
+	End Sub
+End Class
+		";
+			
+			Find(program2, "Console.", ExpressionContext.Default);
 		}
 		
 		[Test]
 		public void FindSimple3()
 		{
-			Find(program3, "WriteLine", "WriteLine".Length, "Console.WriteLine", ExpressionContext.Default);
+			string program3 = @"
+Class MainClass
+	Sub A
+		Console.WriteLine|
+	End Sub
+End Class
+		";
+			
+			Find(program3, "Console.WriteLine", ExpressionContext.Default);
 		}
 		
 		[Test]
 		public void FindAfterBrace()
 		{
-			Find(program2, "WriteLine", "WriteLine(".Length, "", ExpressionContext.Default);
+			string program2 = @"
+Class MainClass
+	Sub A
+		Console.WriteLine(|""Hello World!"")
+	End Sub
+End Class
+		";
+			
+			Find(program2, "", ExpressionContext.Default);
 		}
 		
 		[Test]
 		public void ForEachLoop()
 		{
-			Find(program1, "loopVarName", 4, "loop", ExpressionContext.IdentifierExpected);
+			string program1 = @"
+Imports System
+Imports System.Linq
+		
+Class MainClass ' a comment
+	Dim under_score_field As Integer
+	Sub SomeMethod()
+		simple += 1
+		Dim text = ""Text""
+		For Each loop|VarName In collection
+		Next
+	End Sub
+End Class
+";
+			
+			Find(program1, "loop", ExpressionContext.IdentifierExpected);
 		}
 		
 		[Test]
 		public void FindEmptyAfterImports()
 		{
-			Find(program1, "		", 1, "", ExpressionContext.Global);
+			string program1 = @"
+Imports System
+Imports System.Linq
+	|	
+Class MainClass ' a comment
+	Dim under_score_field As Integer
+	Sub SomeMethod()
+		simple += 1
+		Dim text = ""Text""
+		For Each loopVarName In collection
+		Next
+	End Sub
+End Class
+";
+			Find(program1, "", ExpressionContext.Global);
 		}
 		
 		[Test]
 		public void FindParameterStart()
 		{
 			Find(@"Module Program
-	Private Function CreateFolder(
-End Module", "(", 1, "", ExpressionContext.IdentifierExpected);
+	Private Function CreateFolder(|
+End Module", "", ExpressionContext.IdentifierExpected);
 		}
 		
 		[Test]
 		public void FindAfterNewLineImport()
 		{
-			Find("Imports System\n", "\n", 1, "", ExpressionContext.Global);
+			Find("Imports System\n|", "", ExpressionContext.Global);
 		}
 		
 		[Test]
@@ -135,9 +182,9 @@ End Module", "(", 1, "", ExpressionContext.IdentifierExpected);
 		{
 			Find(@"Class MainClass
 	Sub Main()
-		Test(Test2(1) + Test2(2))
+		Test(Te|st2(1) + Test2(2))
 	End Sub
-End Class", "Test2", 2, "Te", ExpressionContext.Default);
+End Class", "Te", ExpressionContext.Default);
 		}
 		
 		[Test]
@@ -145,9 +192,9 @@ End Class", "Test2", 2, "Te", ExpressionContext.Default);
 		{
 			Find(@"Class MainClass
 	Sub Main()
-		Test(Test2(1) + Test2(2))
+		Test(Test2|(1) + Test2(2))
 	End Sub
-End Class", "Test2", 5, "Test2", ExpressionContext.Default);
+End Class", "Test2", ExpressionContext.Default);
 		}
 		#endregion
 		
@@ -214,65 +261,197 @@ End Module";
 		[Test]
 		public void Simple()
 		{
-			FindFull(program1, "mple += 1", "simple", ExpressionContext.Default);
+			string program1 = @"
+Imports System
+Imports System.Linq
+		
+Class MainClass ' a comment
+	Dim under_score_field As Integer
+	Sub SomeMethod()
+		si|mple += 1
+		Dim text = ""Text""
+		For Each loopVarName In collection
+		Next
+	End Sub
+End Class
+";
+			FindFull(program1, "simple", ExpressionContext.Default);
 		}
 		
 		[Test]
 		public void SimpleBeginningOfExpression()
 		{
-			FindFull(program1, "simple += 1", "simple", ExpressionContext.Default);
+			string program1 = @"
+Imports System
+Imports System.Linq
+		
+Class MainClass ' a comment
+	Dim under_score_field As Integer
+	Sub SomeMethod()
+		|simple += 1
+		Dim text = ""Text""
+		For Each loopVarName In collection
+		Next
+	End Sub
+End Class
+";
+			FindFull(program1, "simple", ExpressionContext.Default);
 		}
 		
 		[Test]
 		public void Underscore()
 		{
-			FindFull(program1, "der_score_field", "under_score_field", ExpressionContext.Default);
+			string program1 = @"
+Imports System
+Imports System.Linq
+		
+Class MainClass ' a comment
+	Dim un|der_score_field As Integer
+	Sub SomeMethod()
+		simple += 1
+		Dim text = ""Text""
+		For Each loopVarName In collection
+		Next
+	End Sub
+End Class
+";
+			
+			FindFull(program1, "under_score_field", ExpressionContext.Default);
 		}
 		
 		[Test]
 		public void IdentifierBeforeKeyword()
 		{
-			FindFull(program1, "arName", "loopVarName", ExpressionContext.Default);
+			string program1 = @"
+Imports System
+Imports System.Linq
+		
+Class MainClass ' a comment
+	Dim under_score_field As Integer
+	Sub SomeMethod()
+		simple += 1
+		Dim text = ""Text""
+		For Each loopV|arName In collection
+		Next
+	End Sub
+End Class
+";
+			
+			FindFull(program1, "loopVarName", ExpressionContext.Default);
 		}
 		
 		[Test]
 		public void LocalVariableDecl()
 		{
-			FindFull(program1, "ext", "text", ExpressionContext.Default);
+			string program1 = @"
+Imports System
+Imports System.Linq
+		
+Class MainClass ' a comment
+	Dim under_score_field As Integer
+	Sub SomeMethod()
+		simple += 1
+		Dim t|ext = ""Text""
+		For Each loopVarName In collection
+		Next
+	End Sub
+End Class
+";
+			
+			FindFull(program1, "text", ExpressionContext.Default);
 		}
 		
 		[Test]
 		public void Imports1()
 		{
-			FindFull(program1, "ystem", "System", ExpressionContext.Importable);
+			string program1 = @"
+Imports S|ystem
+Imports System.Linq
+		
+Class MainClass ' a comment
+	Dim under_score_field As Integer
+	Sub SomeMethod()
+		simple += 1
+		Dim text = ""Text""
+		For Each loopVarName In collection
+		Next
+	End Sub
+End Class
+";
+			
+			FindFull(program1, "System", ExpressionContext.Importable);
 		}
 		
 		[Test]
 		public void Imports2()
 		{
-			FindFull(program1, "inq", "System.Linq", ExpressionContext.Importable);
+			string program1 = @"
+Imports System
+Imports System.L|inq
+		
+Class MainClass ' a comment
+	Dim under_score_field As Integer
+	Sub SomeMethod()
+		simple += 1
+		Dim text = ""Text""
+		For Each loopVarName In collection
+		Next
+	End Sub
+End Class
+";
+			FindFull(program1, "System.Linq", ExpressionContext.Importable);
 		}
 		
 		[Test]
 		public void ClassName()
 		{
-			FindFull(program1, "ainClas", "MainClass", ExpressionContext.Default);
+			string program1 = @"
+Imports System
+Imports System.Linq
+		
+Class M|ainClass ' a comment
+	Dim under_score_field As Integer
+	Sub SomeMethod()
+		simple += 1
+		Dim text = ""Text""
+		For Each loopVarName In collection
+		Next
+	End Sub
+End Class
+";
+			
+			FindFull(program1, "MainClass", ExpressionContext.Default);
 		}
 		
 		[Test]
 		public void SubName()
 		{
-			FindFull(program1, "omeMe", "SomeMethod", ExpressionContext.Default);
+			string program1 = @"
+Imports System
+Imports System.Linq
+		
+Class MainClass ' a comment
+	Dim under_score_field As Integer
+	Sub S|omeMethod()
+		simple += 1
+		Dim text = ""Text""
+		For Each loopVarName In collection
+		Next
+	End Sub
+End Class
+";
+			
+			FindFull(program1, "SomeMethod", ExpressionContext.Default);
 		}
 		
 		[Test]
 		public void ParameterName()
 		{
 			FindFull(@"Module Test
-	Function Fibo(x As Integer) As Integer
+	Function Fibo(|x As Integer) As Integer
 	
 	End Function
-End Module", "x", "x", ExpressionContext.Default);
+End Module", "x", ExpressionContext.Default);
 		}
 		
 		[Test]
@@ -280,9 +459,45 @@ End Module", "x", "x", ExpressionContext.Default);
 		{
 			FindFull(@"Module Test
 	Sub Main()
-		String.Format(""{0}"", ""Test"")
+		String.For|mat(""{0}"", ""Test"")
 	End Sub
-End Module", "mat", "String.Format(\"{0}\", \"Test\")", ExpressionContext.Default);
+End Module", "String.Format(\"{0}\", \"Test\")", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void SimpleXml()
+		{
+			FindFull(@"Module Test
+	Sub Main()
+		Dim xml = <!-- te|st -->
+		
+		Dim x = 5
+	End Sub
+End Module", "<!-- test -->", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void SimpleXml2()
+		{
+			FindFull(@"Module Test
+	Sub Main()
+		Dim xml = <!-- test -->
+		
+		Dim xml2 = <![CDATA[some| text]]>
+	End Sub
+End Module", "<![CDATA[some text]]>", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void SimpleXml3()
+		{
+			FindFull(@"Module Test
+	Sub Main()
+		Dim xml = <!-- test -->
+		
+		Dim x = |5
+	End Sub
+End Module", "5", ExpressionContext.Default);
 		}
 		
 		#region Old Tests

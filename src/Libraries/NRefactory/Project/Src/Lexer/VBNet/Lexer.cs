@@ -1059,7 +1059,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 			}
 			
-			return null;
+			return new Token(Tokens.XmlComment, new Location(x, y), new Location(Col, Line), sb.ToString(), null, LiteralFormat.None);
 		}
 		
 		string ReadXmlContent(char ch)

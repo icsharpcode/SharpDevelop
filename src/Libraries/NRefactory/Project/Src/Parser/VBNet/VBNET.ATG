@@ -1652,7 +1652,6 @@ Expr<out Expression expr>
 	  QueryExpr<out expr>
 	| LambdaExpr<out expr>
 	| DisjunctionExpr<out expr>
-	| XmlLiteralExpression<out expr>
 .
 
 AssignmentOperator<out AssignmentOperatorType op>
@@ -1751,6 +1750,7 @@ SimpleNonInvocationExpression<out Expression pexpr>
 		|	/* 11.5.1 */ "GetType" "(" GetTypeTypeName<out type> ")"	(. pexpr = new TypeOfExpression(type); .)
 		|	/* 11.5.2 */ "TypeOf" SimpleExpr<out expr> "Is" TypeName<out type> (. pexpr = new TypeOfIsExpression(expr, type); .)
 		|   /* 11.22 */ ConditionalExpression<out pexpr>
+		| XmlLiteralExpression<out pexpr>
 		)
 	|
 		(

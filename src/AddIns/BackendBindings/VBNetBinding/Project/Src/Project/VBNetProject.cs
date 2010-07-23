@@ -18,7 +18,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.VBNetBinding
 {
-	public class VBNetProject : CompilableProject
+	public class VBNetProject : CompilableProject, IVBNetOptionProvider
 	{
 		protected override void OnPropertyChanged(ProjectPropertyChangedEventArgs e)
 		{
@@ -150,5 +150,38 @@ namespace ICSharpCode.VBNetBinding
 				}
 			}
 		}*/
+		
+		public Nullable<bool> OptionInfer {
+			get { return GetValue("OptionInfer", false); }
+		}
+		
+		public Nullable<bool> OptionStrict {
+			get { return GetValue("OptionStrict", false); }
+		}
+		
+		public Nullable<bool> OptionExplicit {
+			get { return GetValue("OptionExplicit", true); }
+		}
+		
+		public Nullable<CompareKind> OptionCompare {
+			get {
+				string val = GetEvaluatedProperty("OptionCompare");
+				
+				if ("Text".Equals(val, StringComparison.OrdinalIgnoreCase))
+					return CompareKind.Text;
+				
+				return CompareKind.Binary;
+			}
+		}
+		
+		bool? GetValue(string name, bool defaultVal)
+		{
+			string val = GetEvaluatedProperty("OptionInfer");
+			
+			if (val == null)
+				return defaultVal;
+			
+			return "On".Equals(val, StringComparison.OrdinalIgnoreCase);
+		}
 	}
 }

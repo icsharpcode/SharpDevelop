@@ -667,5 +667,35 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			return CreateResolveResult(uncheckedExpression.Expression);
 		}
+		
+		#region XML Literal resolver
+		public override object VisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data)
+		{
+			switch (xmlContentExpression.Type) {
+				case XmlContentType.Comment:
+					return CreateResolveResult(new TypeReference("System.Xml.Linq.XComment"));
+				case XmlContentType.Text:
+					return CreateResolveResult(new TypeReference("System.Xml.Linq.XText"));
+				case XmlContentType.CData:
+					return CreateResolveResult(new TypeReference("System.Xml.Linq.XCData"));
+				case XmlContentType.ProcessingInstruction:
+					if (xmlContentExpression.Content.StartsWith("xml ", StringComparison.OrdinalIgnoreCase))
+						return CreateResolveResult(new TypeReference("System.Xml.Linq.XDocumentType"));
+					return CreateResolveResult(new TypeReference("System.Xml.Linq.XProcessingInstruction"));
+				default:
+					throw new Exception("Invalid value for XmlContentType");
+			}
+		}
+		
+		public override object VisitXmlDocumentExpression(XmlDocumentExpression xmlDocumentExpression, object data)
+		{
+			return CreateResolveResult(new TypeReference("System.Xml.Linq.XDocument"));
+		}
+		
+		public override object VisitXmlElementExpression(XmlElementExpression xmlElementExpression, object data)
+		{
+			return CreateResolveResult(new TypeReference("System.Xml.Linq.XElement"));
+		}
+		#endregion
 	}
 }

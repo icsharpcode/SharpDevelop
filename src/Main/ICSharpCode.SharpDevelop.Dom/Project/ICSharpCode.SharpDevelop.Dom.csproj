@@ -87,7 +87,6 @@
     <Compile Include="Src\Implementations\DefaultEvent.cs" />
     <Compile Include="Src\Implementations\DefaultField.cs" />
     <Compile Include="Src\Implementations\DefaultMethod.cs" />
-    <Compile Include="Src\Implementations\DefaultOption.cs" />
     <Compile Include="Src\Implementations\DefaultParameter.cs" />
     <Compile Include="Src\Implementations\DefaultProperty.cs" />
     <Compile Include="Src\Implementations\DefaultReturnType.cs" />
@@ -110,9 +109,7 @@
     <Compile Include="Src\Interfaces\ICompletionEntry.cs" />
     <Compile Include="Src\Interfaces\IDomProgressMonitor.cs" />
     <Compile Include="Src\Interfaces\IFreezable.cs" />
-    <Compile Include="Src\Interfaces\IOption.cs" />
     <Compile Include="Src\Interfaces\IUsingScope.cs" />
-    <Compile Include="Src\Interfaces\OptionType.cs" />
     <Compile Include="Src\LazyList.cs" />
     <Compile Include="Src\NRefactoryResolver\CodeSnippetConverter.cs" />
     <Compile Include="Src\NRefactoryResolver\CSharpToVBNetConvertVisitor.cs" />
@@ -148,6 +145,8 @@
     <Compile Include="Src\IComment.cs" />
     <Compile Include="Src\ReflectionLayer\ReflectionTypeNameSyntaxError.cs" />
     <Compile Include="Src\SignatureComparer.cs" />
+    <Compile Include="Src\VBNet\IVBNetOptionProvider.cs" />
+    <Compile Include="Src\VBNet\VBNetCompilationUnit.cs" />
     <Compile Include="Src\VBNet\VBNetExpressionFinder.cs" />
     <Compile Include="Src\XmlDoc.cs" />
     <Compile Include="Src\Tag.cs" />

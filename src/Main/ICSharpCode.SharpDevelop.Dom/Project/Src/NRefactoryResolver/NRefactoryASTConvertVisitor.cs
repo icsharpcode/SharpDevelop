@@ -11,8 +11,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Linq;
-
 using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.SharpDevelop.Dom.VBNet;
 using AST = ICSharpCode.NRefactory.Ast;
 using RefParser = ICSharpCode.NRefactory;
 
@@ -33,7 +33,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public NRefactoryASTConvertVisitor(IProjectContent projectContent)
 		{
-			cu = new DefaultCompilationUnit(projectContent);
+			if (projectContent.Language == LanguageProperties.VBNet)
+				cu = new VBNetCompilationUnit(projectContent);
+			else
+				cu = new DefaultCompilationUnit(projectContent);
 		}
 		
 		DefaultClass GetCurrentClass()
@@ -224,14 +227,31 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object VisitOptionDeclaration(ICSharpCode.NRefactory.Ast.OptionDeclaration optionDeclaration, object data)
 		{
-			cu.Options.Add(
-				new DefaultOption((OptionType)optionDeclaration.OptionType, optionDeclaration.OptionValue,
-				                  new DomRegion(optionDeclaration.StartLocation.Line, optionDeclaration.StartLocation.Column,
-				                                optionDeclaration.EndLocation.Line, optionDeclaration.EndLocation.Column)
-				                 )
-			);
+			if (cu is VBNetCompilationUnit) {
+				VBNetCompilationUnit provider = cu as VBNetCompilationUnit;
+				
+				switch (optionDeclaration.OptionType) {
+					case ICSharpCode.NRefactory.Ast.OptionType.Explicit:
+						provider.OptionExplicit = optionDeclaration.OptionValue;
+						break;
+					case ICSharpCode.NRefactory.Ast.OptionType.Strict:
+						provider.OptionStrict = optionDeclaration.OptionValue;
+						break;
+					case ICSharpCode.NRefactory.Ast.OptionType.CompareBinary:
+						provider.OptionCompare = CompareKind.Binary;
+						break;
+					case ICSharpCode.NRefactory.Ast.OptionType.CompareText:
+						provider.OptionCompare = CompareKind.Text;
+						break;
+					case ICSharpCode.NRefactory.Ast.OptionType.Infer:
+						provider.OptionInfer = optionDeclaration.OptionValue;
+						break;
+				}
+				
+				return null;
+			}
 			
-			return null;
+			return base.VisitOptionDeclaration(optionDeclaration, data);
 		}
 		
 		void ConvertAttributes(AST.AttributedNode from, AbstractEntity to)

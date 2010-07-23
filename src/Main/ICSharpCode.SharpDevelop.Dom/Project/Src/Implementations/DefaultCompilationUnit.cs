@@ -26,7 +26,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IList<IAttribute> attributes = new List<IAttribute>();
 		IList<FoldingRegion> foldingRegions = new List<FoldingRegion>();
 		IList<TagComment> tagComments = new List<TagComment>();
-		IList<IOption> options = new List<IOption>();
 		
 		protected override void FreezeInternal()
 		{
@@ -35,7 +34,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			attributes = FreezeList(attributes);
 			foldingRegions = FreezeList(foldingRegions);
 			tagComments = FreezeList(tagComments);
-			options = FreezeList(options);
 			usingScope.Freeze();
 			
 			base.FreezeInternal();
@@ -160,12 +158,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public LanguageProperties Language {
 			get {
 				return projectContent.Language;
-			}
-		}
-		
-		public IList<IOption> Options {
-			get {
-				return options;
 			}
 		}
 	}

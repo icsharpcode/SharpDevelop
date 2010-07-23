@@ -761,12 +761,18 @@ XmlLiteral
     (.OnEachPossiblePath: nextTokenIsPotentialStartOfExpression = true; .)
 =
     (. PushContext(Context.Xml, la, t); .)
-    { ( XmlComment | XmlProcessingInstruction ) [ XmlContent ] } XmlElement { XmlComment [ XmlContent ] }
+    (
+    	( XmlComment | XmlProcessingInstruction | XmlCData ) [ XmlContent ] { ( XmlComment | XmlProcessingInstruction ) [ XmlContent ] } [ XmlElement { XmlComment [ XmlContent ] } ]
+    |
+    	XmlElement { XmlComment [ XmlContent ] }
+    )
     (. PopContext(); .)
 .
 
 XmlElement =
+	(. PushContext(Context.Xml, la, t); .)
 	XmlOpenTag { ANY | XmlEmbeddedExpression } ( XmlCloseTagEmptyElement | XmlCloseTag { ANY | XmlEmbeddedExpression | XmlElement } XmlOpenEndTag { ANY | XmlEmbeddedExpression } XmlCloseTag )
+	(. PopContext(); .)
 .
 
 XmlEmbeddedExpression =
