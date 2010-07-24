@@ -18,7 +18,7 @@ namespace SharpRefactoring.ContextActions
 	/// </summary>
 	public class AddUsingProvider : IContextActionsProvider
 	{
-		public IEnumerable<IContextAction> GetAvailableActions(EditorASTProvider editorAST)
+		public IEnumerable<IContextAction> GetAvailableActions(EditorContext editorAST)
 		{
 			var currentLineAST = editorAST.CurrentLineAST;
 			if (currentLineAST == null)

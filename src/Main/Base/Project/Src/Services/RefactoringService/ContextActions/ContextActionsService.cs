@@ -40,10 +40,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public IEnumerable<IContextAction> GetAvailableActions(ITextEditor editor)
 		{
 			yield break;
-			var editorAST = new EditorASTProvider(editor);
+			var editorContext = new EditorContext(editor);
 			// could run providers in parallel
 			foreach (var provider in this.providers) {
-				foreach (var action in provider.GetAvailableActions(editorAST)) {
+				foreach (var action in provider.GetAvailableActions(editorContext)) {
 					yield return action;
 				}
 			}

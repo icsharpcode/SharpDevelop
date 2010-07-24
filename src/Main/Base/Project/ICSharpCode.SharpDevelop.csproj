@@ -333,7 +333,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsService.cs" />
-    <Compile Include="Src\Services\RefactoringService\ContextActions\EditorASTProvider.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\EditorContext.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\IContextAction.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionCommand.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsControl.xaml.cs">

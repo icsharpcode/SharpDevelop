@@ -18,13 +18,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// Never keep long-lived references to this class
 	/// - the AST serves as one-time cache and does not get updated when editor text changes.
 	/// </summary>
-	public class EditorASTProvider
+	public class EditorContext
 	{
 		public ITextEditor Editor { get; private set; }
 		public SnippetParser snippetParser { get; private set; }
 		public NRefactoryResolver resolver { get; private set; }
 		
-		public EditorASTProvider(ITextEditor editor)
+		public EditorContext(ITextEditor editor)
 		{
 			if (editor == null)
 				throw new ArgumentNullException("editor");
@@ -49,21 +49,20 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
-		string currentLineText;
-		public string CurrentLineText
+		IDocumentLine currentLine;
+		public IDocumentLine CurrentLine
 		{
 			get
 			{
-				if (currentLineText != null)
-					return currentLineText;
+				if (currentLine != null)
+					return currentLine;
 				try
 				{
-					var currentLine = Editor.Document.GetLine(Editor.Caret.Line);
-					return (currentLineText = currentLine.Text);
+					return (currentLine = Editor.Document.GetLine(Editor.Caret.Line));
 				}
 				catch
 				{
-					return string.Empty;
+					return null;
 				}
 			}
 		}
@@ -75,10 +74,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			{
 				if (currentLineAST != null)
 					return currentLineAST;
-				if (snippetParser == null)
+				if (this.snippetParser == null || this.CurrentLine == null)
 					return null;
 				try {
-					return (currentLineAST = snippetParser.Parse(this.CurrentLineText));
+					return (currentLineAST = snippetParser.Parse(this.CurrentLine.Text));
 				}
 				catch {
 					return null;

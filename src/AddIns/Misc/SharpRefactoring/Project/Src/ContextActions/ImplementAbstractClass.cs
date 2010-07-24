@@ -21,11 +21,11 @@ namespace SharpRefactoring.ContextActions
 	/// </summary>
 	public class ImplementAbstractClassProvider : IContextActionsProvider
 	{
-		public IEnumerable<IContextAction> GetAvailableActions(EditorASTProvider editorAST)
+		public IEnumerable<IContextAction> GetAvailableActions(EditorContext editorContext)
 		{
 			var ambience = AmbienceService.GetCurrentAmbience();
 			
-			foreach (var targetClass in editorAST.GetClassesOnCurrentLine().Where(c => c.ClassType == ClassType.Class)) {
+			foreach (var targetClass in editorContext.GetClassDeclarationsOnCurrentLine().Where(c => c.ClassType == ClassType.Class)) {
 				
 				foreach (var implementAction in RefactoringService.GetImplementAbstractClassActions(targetClass)) {
 					var implementActionCopy = implementAction;

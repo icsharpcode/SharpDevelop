@@ -27,15 +27,18 @@ namespace SharpRefactoring.ContextActions
 			return findVisitor.Declarations;
 		}
 		
-		public static IEnumerable<IClass> GetClassesOnCurrentLine(this EditorASTProvider editorAST)
+		public static IEnumerable<IClass> GetClassDeclarationsOnCurrentLine(this EditorContext editorContext)
 		{
-			var currentLineAST = editorAST.CurrentLineAST;
+			var currentLineAST = editorContext.CurrentLineAST;
 			if (currentLineAST == null)
 				yield break;
-			var editor = editorAST.Editor;
+			var editor = editorContext.Editor;
 			foreach (var declaration in currentLineAST.FindTypeDeclarations()) {
-				
-				var rr = ParserService.Resolve(new ExpressionResult(declaration.Name), editor.Caret.Line, editor.Caret.Column, editor.FileName, editor.Document.Text);
+				int indexOfClassNameOnTheLine = editorContext.CurrentLine.Text.IndexOf(declaration.Name, declaration.StartLocation.Column/*, declaration.EndLocation.Column + 1 - declaration.StartLocation.Column*/);
+				if (indexOfClassNameOnTheLine == -1)
+					continue;
+				int declarationOffset = editorContext.CurrentLine.Offset + indexOfClassNameOnTheLine;
+				var rr = ParserService.Resolve(declarationOffset + 1, editor.Document, editor.FileName);
 				if (rr != null && rr.ResolvedType != null) {
 					var foundClass = rr.ResolvedType.GetUnderlyingClass();
 					if (foundClass != null) {
