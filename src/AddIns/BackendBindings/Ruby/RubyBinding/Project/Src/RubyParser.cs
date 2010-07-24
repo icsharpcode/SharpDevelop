@@ -26,6 +26,7 @@ namespace ICSharpCode.RubyBinding
 	{
 		string[] lexerTags = new string[0];
 		ScriptEngine scriptEngine;
+		SourceUnit sourceUnit;
 
 		public RubyParser()
 		{
@@ -75,7 +76,7 @@ namespace ICSharpCode.RubyBinding
 			}
 			
 			RubyContext rubyContext = HostingHelpers.GetLanguageContext(scriptEngine) as RubyContext;
-			SourceUnit sourceUnit = rubyContext.CreateFileUnit(fileName, fileContent);
+			sourceUnit = rubyContext.CreateFileUnit(fileName, fileContent);
 			RubyCompilerSink sink = new RubyCompilerSink();
 			RubyCompilerOptions compilerOptions = new RubyCompilerOptions((RubyOptions)rubyContext.Options);
 			Parser parser = new Parser();
@@ -87,7 +88,7 @@ namespace ICSharpCode.RubyBinding
 			if (fileContent != null) { 
 				try {
 					SourceUnitTree ast = CreateAst(fileName, fileContent);
-					RubyAstWalker walker = new RubyAstWalker(projectContent, fileName);
+					RubyAstWalker walker = new RubyAstWalker(projectContent, fileName, sourceUnit);
 					walker.Walk(ast);
 					return walker.CompilationUnit;
 				} catch (SyntaxErrorException) {

@@ -1146,14 +1146,14 @@
 										<Component Guid="3E1BAAE7-D366-43B4-88CE-8D2ED5731CC6" Id="RubyMicrosoftScriptingDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.dll" Name="Microsoft.Scripting.dll" Id="RubyBinding.Microsoft.Scripting.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Scripting.dll" AssemblyManifest="RubyBinding.Microsoft.Scripting.dll" />
 										</Component>
-										<Component Guid="5A1F81D4-8F6C-41E0-8FFE-B6BBFB2F3804" Id="RubyMicrosoftScriptingExtensionAttributeDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.ExtensionAttribute.dll" Name="Microsoft.Scripting.ExtensionAttribute.dll" Id="RubyBinding.Microsoft.Scripting.ExtensionAttribute.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Scripting.ExtensionAttribute.dll" AssemblyManifest="RubyBinding.Microsoft.Scripting.ExtensionAttribute.dll" />
-										</Component>
 										<Component Guid="6877EFD9-7005-4BDD-80E6-FB4790436E23" Id="RubyBindingAddin" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\RubyBinding.addin" Name="RubyBinding.addin" Id="RubyBinding.addin" KeyPath="yes" />
 										</Component>
 										<Component Guid="C1185288-280B-4006-8592-6F4FAD69498D" Id="RubyBindingDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\RubyBinding.dll" Name="RubyBinding.dll" Id="RubyBinding.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.dll" AssemblyManifest="RubyBinding.dll" />
+										</Component>
+										<Component Guid="BAE35EAE-C028-4008-BD4F-32756766E816" Id="RubyMicrosoftScriptingMetadataDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.Metadata.dll" Name="Microsoft.Scripting.Metadata.dll" Id="RubyBinding.Microsoft.Scripting.Metadata.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Scripting.Metadata.dll" AssemblyManifest="RubyBinding.Microsoft.Scripting.Metadata.dll" />
 										</Component>
 										<Directory Id="RubyTemplates" Name="Templates">
 											<Component Guid="6BF44E09-3910-444C-9A49-C6C811B41CFE" Id="RubyConsoleProjectTemplate" DiskId="1">

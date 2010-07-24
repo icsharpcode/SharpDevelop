@@ -32,11 +32,12 @@ namespace RubyBinding.Tests.Parsing
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			string Ruby = "def foo\r\n" +
-							"end\r\n" +
-							"\r\n" +
-							"def bar(i)\r\n" +
-							"end";
+			string Ruby =
+				"def foo\r\n" +
+				"end\r\n" +
+				"\r\n" +
+				"def bar(i)\r\n" +
+				"end";
 			
 			DefaultProjectContent projectContent = new DefaultProjectContent();
 			RubyParser parser = new RubyParser();
