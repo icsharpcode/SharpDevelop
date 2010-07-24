@@ -54,6 +54,12 @@ W3C Xml Schema.
 http://www.w3.org/2001/XMLSchema.xsd
 W3C Software License (http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231) - A copy of this license can be found in W3C-License.html
 
+xml.xsd
+-------
+
+W3C Xml Schema
+http://www.w3.org/2001/xml.xsd
+
 xslt.xsd
 --------
 

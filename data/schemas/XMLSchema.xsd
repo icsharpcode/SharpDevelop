@@ -88,7 +88,7 @@
       towards the end of this schema document</xs:documentation>
  </xs:annotation>
 
- <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/xml.xsd">
+ <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd">
    <xs:annotation>
      <xs:documentation>
        Get access to the xml: attribute groups for xml:lang

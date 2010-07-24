@@ -646,6 +646,9 @@
 								<Component Guid="CA5C2E97-D332-4FA3-8782-50A3FC09FAC7" Id="WixGamingSchema" DiskId="1">
 									<File Source="..\..\data\schemas\gaming.xsd" Name="gaming.xsd" Id="schemas.wix.gaming.xsd" KeyPath="yes" />
 								</Component>
+								<Component Id="XmlXsd" Guid="2FB03BBC-9874-4D5B-B778-84D2F24CE688" DiskId="1">
+									<File Id="xml.xsd" Name="xml.xsd" Source="..\..\data\schemas\xml.xsd" KeyPath="yes" />
+								</Component>
 							</Directory>
 							<Directory Id="TemplatesFolder" Name="templates">
 								<Directory Id="FileTemplatesFolder" Name="file">
