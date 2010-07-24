@@ -54,6 +54,8 @@ namespace ICSharpCode.CodeQualityAnalysis
             _metricsReader = new MetricsReader(fileDialog.FileName);
 
             FillTree();
+
+            FillMatrix();
         }
         
         private void btnRelayout_Click(object sender, RoutedEventArgs e)
@@ -127,6 +129,20 @@ namespace ICSharpCode.CodeQualityAnalysis
                     }
                 }
             }
+        }
+
+        private void FillMatrix()
+        {
+            var matrix = new DependencyMatrix();
+
+            foreach (var ns in _metricsReader.MainModule.Namespaces)
+            {
+                matrix.HeaderRows.Add(new MatrixCell<INode>(ns));
+                matrix.HeaderColumns.Add(new MatrixCell<INode>(ns));
+            }
+
+            matrixControl.Matrix = matrix;
+            matrixControl.DrawMatrix();
         }
 
         private void definitionTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)

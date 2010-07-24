@@ -96,7 +96,11 @@
     <Compile Include="Src\Controls\DependencyEdge.cs" />
     <Compile Include="Src\Controls\DependencyGraph.cs" />
     <Compile Include="Src\Controls\DependencyGraphLayout.cs" />
+    <Compile Include="Src\Controls\DependencyMatrixControl.cs" />
+    <Compile Include="Src\Controls\DependencyMatrix.cs" />
     <Compile Include="Src\Controls\DependencyVertex.cs" />
+    <Compile Include="Src\Controls\Matrix.cs" />
+    <Compile Include="Src\Controls\MatrixControl.cs" />
     <Compile Include="Src\DependencyGraphCommand.cs" />
     <Compile Include="Src\Event.cs" />
     <Compile Include="Src\Field.cs" />
