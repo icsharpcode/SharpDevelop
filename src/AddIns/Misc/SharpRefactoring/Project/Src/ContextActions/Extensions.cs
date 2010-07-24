@@ -7,10 +7,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace SharpRefactoring.ContextActions
@@ -34,6 +34,7 @@ namespace SharpRefactoring.ContextActions
 				yield break;
 			var editor = editorAST.Editor;
 			foreach (var declaration in currentLineAST.FindTypeDeclarations()) {
+				
 				var rr = ParserService.Resolve(new ExpressionResult(declaration.Name), editor.Caret.Line, editor.Caret.Column, editor.FileName, editor.Document.Text);
 				if (rr != null && rr.ResolvedType != null) {
 					var foundClass = rr.ResolvedType.GetUnderlyingClass();

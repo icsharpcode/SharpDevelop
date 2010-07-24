@@ -33,6 +33,41 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.resolver = GetResolver(editor);
 		}
 		
+		// TODO make all reference types cached ResolveResult? - implement own Nullable<T>
+		ResolveResult symbolUnderCaret;
+		public ResolveResult SymbolUnderCaret
+		{
+			get
+			{
+				if (symbolUnderCaret != null)
+					return symbolUnderCaret;
+				// workaround so that Resolve works when the caret is placed also at the end of the word
+				symbolUnderCaret = ParserService.Resolve(Editor.Caret.Line, Editor.Caret.Column - 1, Editor.Document, Editor.FileName);
+				if (symbolUnderCaret == null)
+					symbolUnderCaret = ParserService.Resolve(Editor.Caret.Line, Editor.Caret.Column, Editor.Document, Editor.FileName);
+				return symbolUnderCaret;
+			}
+		}
+		
+		string currentLineText;
+		public string CurrentLineText
+		{
+			get
+			{
+				if (currentLineText != null)
+					return currentLineText;
+				try
+				{
+					var currentLine = Editor.Document.GetLine(Editor.Caret.Line);
+					return (currentLineText = currentLine.Text);
+				}
+				catch
+				{
+					return string.Empty;
+				}
+			}
+		}
+		
 		INode currentLineAST;
 		public INode CurrentLineAST
 		{
@@ -43,8 +78,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				if (snippetParser == null)
 					return null;
 				try {
-					var currentLine = Editor.Document.GetLine(Editor.Caret.Line);
-					return (currentLineAST = snippetParser.Parse(currentLine.Text));
+					return (currentLineAST = snippetParser.Parse(this.CurrentLineText));
 				}
 				catch {
 					return null;
