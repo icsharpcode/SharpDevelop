@@ -7,7 +7,7 @@ Authors:
   Dino Viehland, and everyone else from the community who reports bugs, 
   builds libraries, and helps enrich IronRuby.
 
-Project Contact: Jimmy Schementi <jimmysch@microsoft.com>
+Project Contact: Jimmy Schementi <jimmy@schementi.com>
 
 == About
 
@@ -32,14 +32,15 @@ Will run rubyfile.rb with the IronRuby compiler.
 
 == Package
 
-  /bin              IronRuby binaries, ir.exe, iirb, irake, igem, iri, irdoc, etc.
-  /lib              Ruby standard library, including RubyGems
-  CHANGELOG.txt     Changes for each release
-  RELEASE.txt       Release notes
-  LICENSE.Ruby.txt  Ruby license
-  LICENSE.CPL.txt   Common Public License
-  LICENSE.MSPL.html Microsoft Public License
-  README.txt        This file
+  /bin                IronRuby binaries, ir.exe, iirb, irake, igem, iri, irdoc, etc.
+  /lib                Ruby standard library, including RubyGems
+  /silverlight        Silverlight binaries and scripts
+  CHANGELOG.txt       Changes for each release
+  RELEASE.txt         Release notes
+  LICENSE.Ruby.txt    Ruby license
+  LICENSE.CPL.txt     Common Public License
+  LICENSE.APACHE.html Apache License, Version 2.0
+  README.txt          This file
 
 == License
 

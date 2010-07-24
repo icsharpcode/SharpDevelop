@@ -56,6 +56,9 @@
     <Reference Include="Microsoft.Scripting">
       <HintPath>..\..\IronRuby\bin\Microsoft.Scripting.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Scripting.Metadata">
+      <HintPath>..\..\IronRuby\bin\Microsoft.Scripting.Metadata.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>

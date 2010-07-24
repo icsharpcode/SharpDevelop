@@ -415,6 +415,7 @@
 				<ComponentRef Id="RubyBindingDll"/>
 				<ComponentRef Id="RubyMicrosoftDynamicDll"/>
 				<ComponentRef Id="RubyMicrosoftScriptingDll"/>
+				<ComponentRef Id="RubyMicrosoftScriptingMetadataDll"/>
 				<ComponentRef Id="RubyEmptyClassFileTemplate"/>
 				<ComponentRef Id="RubyConsoleProjectTemplate"/>
 				<ComponentRef Id="RubyEmptyFormFileTemplate"/>

@@ -1080,6 +1080,9 @@
 										<Component Guid="C1185288-280B-4006-8592-6F4FAD69498D" Id="RubyBindingDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\RubyBinding.dll" Name="RubyBinding.dll" Id="RubyBinding.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.dll" AssemblyManifest="RubyBinding.dll" />
 										</Component>
+										<Component Id="RubyMicrosoftScriptingMetadataDll" Guid="43F7B715-2726-4E35-B9AC-28D5B4C33180" DiskId="1">
+											<File Id="RubyBinding.Microsoft.Scripting.Metadata.dll" Name="Microsoft.Scripting.Metadata.dll" Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.Metadata.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Scripting.Metadata.dll" AssemblyManifest="RubyBinding.Microsoft.Scripting.Metadata.dll" />
+										</Component>
 										<Directory Id="RubyTemplates" Name="Templates">
 											<Component Guid="6BF44E09-3910-444C-9A49-C6C811B41CFE" Id="RubyConsoleProjectTemplate" DiskId="1">
 												<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Templates\ConsoleProject.xpt" Name="ConsoleProject.xpt" Id="RubyConsoleProject.xpt" KeyPath="yes" />

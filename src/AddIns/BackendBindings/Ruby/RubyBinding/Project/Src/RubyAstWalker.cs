@@ -24,14 +24,16 @@ namespace ICSharpCode.RubyBinding
 		DefaultCompilationUnit compilationUnit;
 		DefaultClass currentClass;
 		DefaultClass globalClass;
+		SourceUnit sourceUnit;
 		
 		/// <summary>
 		/// All classes in a file take the namespace of the filename. 
 		/// </summary>
-		public RubyAstWalker(IProjectContent projectContent, string fileName)
+		public RubyAstWalker(IProjectContent projectContent, string fileName, SourceUnit sourceUnit)
 		{
 			compilationUnit = new DefaultCompilationUnit(projectContent);
 			compilationUnit.FileName = fileName;
+			this.sourceUnit = sourceUnit;
 		}
 		
 		/// <summary>
@@ -109,7 +111,7 @@ namespace ICSharpCode.RubyBinding
 			currentClass = null;	
 		}
 		
-		protected override void Walk(MethodDefinition node)
+		protected override void Walk(MethodDefinition methodDef)
 		{
 			IClass c = currentClass;
 			if (currentClass == null) {
@@ -117,11 +119,11 @@ namespace ICSharpCode.RubyBinding
 				CreateGlobalClass();
 				c = globalClass;
 			}
-
+			
 			// Create method.
-			string methodName = node.Name;
-			DomRegion region = GetMethodRegion(node);
-			DomRegion bodyRegion = GetMethodBodyRegion(node.Body.Location, node.Parameters.Location.End);
+			string methodName = methodDef.Name;
+			DomRegion region = GetMethodRegion(methodDef);
+			DomRegion bodyRegion = GetMethodBodyRegion(methodDef.Body.Location, region);
 			
 			DefaultMethod method;
 			if (methodName == "initialize") {
@@ -129,7 +131,7 @@ namespace ICSharpCode.RubyBinding
 			} else {
 				method = new DefaultMethod(methodName, new DefaultReturnType(c), ModifierEnum.Public, region, bodyRegion, c);
 			}
-			foreach (IParameter parameter in ConvertParameters(node.Parameters)) {
+			foreach (IParameter parameter in ConvertParameters(methodDef.Parameters)) {
 				method.Parameters.Add(parameter);
 			}
 			c.Methods.Add(method);
@@ -140,15 +142,48 @@ namespace ICSharpCode.RubyBinding
 		/// </summary>
 		DomRegion GetRegion(SourceSpan location)
 		{
-			return new DomRegion(location.Start.Line, location.Start.Column, location.End.Line, location.End.Column);;
+			return new DomRegion(location.Start.Line, location.Start.Column, location.End.Line, location.End.Column);
 		}
 		
 		/// <summary>
 		/// Gets the region of a method. This does not include the body.
 		/// </summary>
-		DomRegion GetMethodRegion(MethodDefinition node)
+		DomRegion GetMethodRegion(MethodDefinition methodDef)
 		{
-			return new DomRegion(node.Location.Start.Line, node.Location.Start.Column, node.Parameters.Location.End.Line, node.Parameters.Location.End.Column);
+			SourceLocation parametersEndLocation = methodDef.Parameters.Location.End;
+			if (ParametersEndLocationNeedsCorrecting(parametersEndLocation)) {
+				parametersEndLocation = CorrectParametersEndLocation(parametersEndLocation);
+			}
+			return CreateRegion(methodDef.Location.Start, parametersEndLocation);
+		}
+		
+		/// <summary>
+		/// Returns true if the IronRuby parser has not found the closing bracket for a method
+		/// and moved to the next line.
+		/// </summary>
+		bool ParametersEndLocationNeedsCorrecting(SourceLocation parametersEndLocation)
+		{
+			return parametersEndLocation.Column == 1;
+		}
+		
+		SourceLocation CorrectParametersEndLocation(SourceLocation parametersEndLocation)
+		{
+			int endLine = parametersEndLocation.Line - 1;
+			
+			string lastLineOfCodeForMethodDef = sourceUnit.GetCodeLine(endLine);
+			int LengthOfNewLineCharacters = 2;
+			int endColumn = lastLineOfCodeForMethodDef.Length + LengthOfNewLineCharacters + 1;
+			
+			return new SourceLocation(0, endLine, endColumn);
+		}
+		
+		DomRegion CreateRegion(SourceLocation start, SourceLocation end)
+		{
+			int startLine = start.Line;
+			int startColumn = start.Column;
+			int endLine = end.Line;
+			int endColumn = end.Column;
+			return new DomRegion(startLine, startColumn, endLine, endColumn);
 		}
 		
 		/// <summary>
@@ -163,10 +198,13 @@ namespace ICSharpCode.RubyBinding
 		/// <summary>
 		/// The method body region starts from the end of method parameters.
 		/// </summary>
-		/// <param name="parametersEnd">Location of the end of the parameters.</param>
-		DomRegion GetMethodBodyRegion(SourceSpan bodyLocation, SourceLocation parametersEnd)
+		DomRegion GetMethodBodyRegion(SourceSpan bodyLocation, DomRegion methodDefinitionRegion)
 		{
-			return new DomRegion(parametersEnd.Line, parametersEnd.Column, bodyLocation.End.Line, bodyLocation.End.Column);
+			int startLine = methodDefinitionRegion.EndLine;
+			int startColumn = methodDefinitionRegion.EndColumn;
+			int endLine = bodyLocation.End.Line;
+			int endColumn = bodyLocation.End.Column;
+			return new DomRegion(startLine, startColumn, endLine, endColumn);
 		}
 	
 		/// <summary>
