@@ -39,6 +39,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		public IEnumerable<IContextAction> GetAvailableActions(ITextEditor editor)
 		{
+			yield break;
 			var editorAST = new EditorASTProvider(editor);
 			// could run providers in parallel
 			foreach (var provider in this.providers) {

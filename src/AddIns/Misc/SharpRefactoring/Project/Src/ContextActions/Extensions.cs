@@ -5,8 +5,13 @@
 //     <version>$Revision: $</version>
 // </file>
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace SharpRefactoring.ContextActions
 {
@@ -20,6 +25,20 @@ namespace SharpRefactoring.ContextActions
 			var findVisitor = new FindTypeDeclarationsVisitor();
 			astTree.AcceptVisitor(findVisitor, null);
 			return findVisitor.Declarations;
+		}
+		
+		public static IEnumerable<IClass> GetClassesOnCurrentLine(this EditorASTProvider editorAST)
+		{
+			var currentLineAST = editorAST.CurrentLineAST;
+			if (currentLineAST == null)
+				yield break;
+			var editor = editorAST.Editor;
+			foreach (var declaration in currentLineAST.FindTypeDeclarations()) {
+				var rr = ParserService.Resolve(new ExpressionResult(declaration.Name), editor.Caret.Line, editor.Caret.Column, editor.FileName, editor.Document.Text);
+				if (rr != null && rr.ResolvedType != null) {
+					yield return rr.ResolvedType.GetUnderlyingClass();
+				}
+			}
 		}
 	}
 }

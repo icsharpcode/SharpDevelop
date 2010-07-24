@@ -6,7 +6,10 @@
 // </file>
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -20,19 +23,18 @@ namespace SharpRefactoring.ContextActions
 	{
 		public IEnumerable<IContextAction> GetAvailableActions(EditorASTProvider editorAST)
 		{
-			yield break;
-		}
-	}
-	
-	public class ImplementAbstractClassAction : IContextAction
-	{
-		public string Title {
-			get { return "Dummy implement abstract class"; }
-		}
-		
-		public void Execute()
-		{
-			MessageBox.Show("Dummy implement abstract class");
+			var ambience = AmbienceService.GetCurrentAmbience();
+			
+			foreach (var targetClass in editorAST.GetClassesOnCurrentLine().Where(c => c.ClassType == ClassType.Class)) {
+				
+				foreach (var implementAction in RefactoringService.GetImplementAbstractClassActions(targetClass)) {
+					var implementActionCopy = implementAction;
+					yield return new DelegateAction {
+						Title = string.Format("Implement abstract class {0}", ambience.Convert(implementActionCopy.ClassToImplement)),
+						ExecuteAction = implementActionCopy.Execute
+					};
+				}
+			}
 		}
 	}
 }
