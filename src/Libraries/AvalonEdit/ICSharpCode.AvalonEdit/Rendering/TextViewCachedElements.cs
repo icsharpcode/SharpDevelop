@@ -9,11 +9,13 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Rendering
 {
 	sealed class TextViewCachedElements : IDisposable
 	{
+		TextFormatter formatter;
 		Dictionary<string, TextLine> simpleLightGrayTexts;
 		
 		public TextLine GetSimpleLightGrayText(string text, ITextRunConstructionContext context)
@@ -24,7 +26,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (!simpleLightGrayTexts.TryGetValue(text, out textLine)) {
 				var p = new VisualLineElementTextRunProperties(context.GlobalTextRunProperties);
 				p.SetForegroundBrush(Brushes.LightGray);
-				textLine = FormattedTextElement.PrepareText(context.TextView.TextFormatter, text, p);
+				if (formatter == null)
+					formatter = TextFormatterFactory.Create(context.TextView);
+				textLine = FormattedTextElement.PrepareText(formatter, text, p);
 				simpleLightGrayTexts[text] = textLine;
 			}
 			return textLine;
@@ -36,6 +40,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				foreach (TextLine line in simpleLightGrayTexts.Values)
 					line.Dispose();
 			}
+			if (formatter != null)
+				formatter.Dispose();
 		}
 	}
 }

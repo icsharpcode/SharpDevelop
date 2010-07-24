@@ -9,6 +9,7 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
+using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Rendering
 {
@@ -78,7 +79,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		public override TextRun CreateTextRun(int startVisualColumn, ITextRunConstructionContext context)
 		{
 			if (textLine == null) {
-				textLine = PrepareText(context.TextView.TextFormatter, this.text, this.TextRunProperties);
+				var formatter = TextFormatterFactory.Create(context.TextView);
+				textLine = PrepareText(formatter, this.text, this.TextRunProperties);
 				this.text = null;
 			}
 			return new FormattedTextRun(this, this.TextRunProperties);

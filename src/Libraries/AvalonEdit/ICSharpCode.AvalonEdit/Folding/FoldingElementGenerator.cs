@@ -66,7 +66,8 @@ namespace ICSharpCode.AvalonEdit.Folding
 					title = "...";
 				var p = new VisualLineElementTextRunProperties(CurrentContext.GlobalTextRunProperties);
 				p.SetForegroundBrush(Brushes.Gray);
-				var text = FormattedTextElement.PrepareText(CurrentContext.TextView.TextFormatter, title, p);
+				var textFormatter = TextFormatterFactory.Create(CurrentContext.TextView);
+				var text = FormattedTextElement.PrepareText(textFormatter, title, p);
 				return new FoldingLineElement(text, foldedUntil - offset);
 			} else {
 				return null;

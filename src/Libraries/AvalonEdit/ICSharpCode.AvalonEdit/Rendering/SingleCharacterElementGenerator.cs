@@ -98,7 +98,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			} else if (ShowBoxForControlCharacters && char.IsControl(c)) {
 				var p = new VisualLineElementTextRunProperties(CurrentContext.GlobalTextRunProperties);
 				p.SetForegroundBrush(Brushes.White);
-				var text = FormattedTextElement.PrepareText(CurrentContext.TextView.TextFormatter,
+				var textFormatter = TextFormatterFactory.Create(CurrentContext.TextView);
+				var text = FormattedTextElement.PrepareText(textFormatter,
 				                                            TextUtilities.GetControlCharacterName(c), p);
 				return new SpecialCharacterBoxElement(text);
 			} else {

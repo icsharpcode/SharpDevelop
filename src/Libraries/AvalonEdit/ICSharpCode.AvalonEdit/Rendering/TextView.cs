@@ -777,14 +777,6 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		TextFormatter formatter;
 		internal TextViewCachedElements cachedElements;
 		
-		/// <summary>
-		/// Gets the TextFormatter used by the text view.
-		/// Returns null if no document is assigned to the text view.
-		/// </summary>
-		public TextFormatter TextFormatter {
-			get { return formatter; }
-		}
-		
 		TextRunProperties CreateGlobalTextRunProperties()
 		{
 			return new GlobalTextRunProperties {
