@@ -475,7 +475,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		#region Interface / abstract class implementation
 		/// <summary>
-		/// Gets actions which can add implementation of interface to this class.
+		/// Gets actions which can add implementation of interface to given class.
 		/// </summary>
 		public static IEnumerable<ImplementInterfaceAction> GetImplementInterfaceActions(IClass c, bool isExplicitImpl, bool returnMissingInterfacesOnly = true)
 		{
@@ -492,7 +492,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		/// <summary>
-		/// Gets actions which can add implementation of abstract classes to this class.
+		/// Gets actions which can add implementation of abstract class to given class.
 		/// </summary>
 		public static IEnumerable<ImplementAbstractClassAction> GetImplementAbstractClassActions(IClass c, bool returnMissingClassesOnly = true)
 		{
@@ -558,6 +558,71 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				:base(interfaceToImplement, targetClass)
 			{
 				this.IsExplicitImpl = isExplicitImpl;
+			}
+		}
+		#endregion
+		
+		#region Add using
+		public static IEnumerable<AddUsingAction> GetAddUsingActions(UnknownIdentifierResolveResult rr, ITextEditor textArea)
+		{
+			return GetAddUsingActionsForUnknownClass(rr.CallingClass, rr.Identifier, textArea);
+		}
+		
+		public static IEnumerable<AddUsingAction> GetAddUsingActions(UnknownConstructorCallResolveResult rr, ITextEditor textArea)
+		{
+			return GetAddUsingActionsForUnknownClass(rr.CallingClass, rr.TypeName, textArea);
+		}
+		
+		static IEnumerable<AddUsingAction> GetAddUsingActionsForUnknownClass(IClass callingClass, string unknownClassName, ITextEditor editor)
+		{
+			if (callingClass == null)
+				yield break;
+			IProjectContent pc = callingClass.ProjectContent;
+			if (!pc.Language.RefactoringProvider.IsEnabledForFile(callingClass.CompilationUnit.FileName))
+				yield break;
+			List<IClass> searchResults = new List<IClass>();
+			SearchAllClassesWithName(searchResults, pc, unknownClassName, pc.Language);
+			foreach (IProjectContent rpc in pc.ReferencedContents) {
+				SearchAllClassesWithName(searchResults, rpc, unknownClassName, pc.Language);
+			}
+			foreach (IClass c in searchResults) {
+				string newNamespace = c.Namespace;
+				yield return new AddUsingAction(callingClass.CompilationUnit, editor, newNamespace);
+			}
+		}
+		
+		static void SearchAllClassesWithName(List<IClass> searchResults, IProjectContent pc, string name, LanguageProperties language)
+		{
+			foreach (string ns in pc.NamespaceNames) {
+				IClass c = pc.GetClass(ns + "." + name, 0, language, GetClassOptions.None);
+				if (c != null)
+					searchResults.Add(c);
+			}
+		}
+		
+		public class AddUsingAction
+		{
+			public ICompilationUnit CompilationUnit { get; private set; }
+			public ITextEditor Editor { get; private set; }
+			public string NewNamespace { get; private set; }
+			
+			public AddUsingAction(ICompilationUnit compilationUnit, ITextEditor editor, string newNamespace)
+			{
+				if (compilationUnit == null)
+					throw new ArgumentNullException("compilationUnit");
+				if (editor == null)
+					throw new ArgumentNullException("editor");
+				if (newNamespace == null)
+					throw new ArgumentNullException("newNamespace");
+				this.CompilationUnit = compilationUnit;
+				this.Editor = editor;
+				this.NewNamespace = newNamespace;
+			}
+			
+			public void Execute()
+			{
+				NamespaceRefactoringService.AddUsingDeclaration(CompilationUnit, Editor.Document, NewNamespace, true);
+				ParserService.BeginParse(Editor.FileName, Editor.Document);
 			}
 		}
 		#endregion

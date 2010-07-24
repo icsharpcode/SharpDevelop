@@ -36,7 +36,10 @@ namespace SharpRefactoring.ContextActions
 			foreach (var declaration in currentLineAST.FindTypeDeclarations()) {
 				var rr = ParserService.Resolve(new ExpressionResult(declaration.Name), editor.Caret.Line, editor.Caret.Column, editor.FileName, editor.Document.Text);
 				if (rr != null && rr.ResolvedType != null) {
-					yield return rr.ResolvedType.GetUnderlyingClass();
+					var foundClass = rr.ResolvedType.GetUnderlyingClass();
+					if (foundClass != null) {
+						yield return foundClass;
+					}
 				}
 			}
 		}

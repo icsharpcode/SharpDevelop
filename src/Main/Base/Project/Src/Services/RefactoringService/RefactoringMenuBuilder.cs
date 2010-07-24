@@ -194,7 +194,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			var item = new MenuItem { Header = MenuService.ConvertLabel(StringParser.Parse("${res:SharpDevelop.Refactoring.FindDerivedClassesCommand}")) };
 			item.Icon = ClassBrowserIconService.Class.CreateImage();
 			item.InputGestureText = new KeyGesture(Key.F9).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
-			item.Click += delegate { 
+			item.Click += delegate {
 				ContextActionsHelper.MakePopupWithDerivedClasses(baseClass).OpenAtCaretAndFocus(context.Editor);
 			};
 			return item;
@@ -225,55 +225,35 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			};
 			return item;
 		}
-				
+		
 		#endregion
 		
-		MenuItem MakeItemForResolveError(UnknownIdentifierResolveResult rr, ExpressionContext context, ITextEditor textArea)
+		MenuItem MakeItemForResolveError(UnknownIdentifierResolveResult unknownIdent, ExpressionContext context, ITextEditor textArea)
 		{
-			return MakeItemForUnknownClass(rr.CallingClass, rr.Identifier, textArea);
+			return MakeItemForActions(RefactoringService.GetAddUsingActions(unknownIdent, textArea), unknownIdent.Identifier, unknownIdent.CallingClass);
 		}
 		
-		MenuItem MakeItemForResolveError(UnknownConstructorCallResolveResult rr, ExpressionContext context, ITextEditor textArea)
+		MenuItem MakeItemForResolveError(UnknownConstructorCallResolveResult unknownConstructor, ExpressionContext context, ITextEditor textArea)
 		{
-			return MakeItemForUnknownClass(rr.CallingClass, rr.TypeName, textArea);
+			return MakeItemForActions(RefactoringService.GetAddUsingActions(unknownConstructor, textArea), unknownConstructor.TypeName, unknownConstructor.CallingClass);
 		}
 		
-		MenuItem MakeItemForUnknownClass(IClass callingClass, string unknownClassName, ITextEditor textArea)
+		MenuItem MakeItemForActions(IEnumerable<RefactoringService.AddUsingAction> menuActions, string unknownClassName, IClass callingClass)
 		{
-			if (callingClass == null)
-				return null;
-			IProjectContent pc = callingClass.ProjectContent;
-			if (!pc.Language.RefactoringProvider.IsEnabledForFile(callingClass.CompilationUnit.FileName))
+			var actions = menuActions.ToList();
+			if (actions.Count == 0)
 				return null;
 			MenuItem item = MakeItemInternal(unknownClassName, ClassBrowserIconService.GotoArrow, callingClass.CompilationUnit, DomRegion.Empty);
-			List<IClass> searchResults = new List<IClass>();
-			SearchAllClassesWithName(searchResults, pc, unknownClassName, pc.Language);
-			foreach (IProjectContent rpc in pc.ReferencedContents) {
-				SearchAllClassesWithName(searchResults, rpc, unknownClassName, pc.Language);
-			}
-			if (searchResults.Count == 0)
-				return null;
-			foreach (IClass c in searchResults) {
-				string newNamespace = c.Namespace;
+			foreach (var action in actions) {
 				MenuItem subItem = new MenuItem();
-				subItem.Header = "using " + newNamespace;
+				subItem.Header = "using " + action.NewNamespace;
 				subItem.Icon = ClassBrowserIconService.Namespace.CreateImage();
 				item.Items.Add(subItem);
 				subItem.Click += delegate {
-					NamespaceRefactoringService.AddUsingDeclaration(callingClass.CompilationUnit, textArea.Document, newNamespace, true);
-					ParserService.BeginParse(textArea.FileName, textArea.Document);
+					action.Execute();
 				};
 			}
 			return item;
-		}
-		
-		void SearchAllClassesWithName(List<IClass> searchResults, IProjectContent pc, string name, LanguageProperties language)
-		{
-			foreach (string ns in pc.NamespaceNames) {
-				IClass c = pc.GetClass(ns + "." + name, 0, language, GetClassOptions.None);
-				if (c != null)
-					searchResults.Add(c);
-			}
 		}
 		
 		IMember GetCallingMember(IClass callingClass, int caretLine, int caretColumn)
