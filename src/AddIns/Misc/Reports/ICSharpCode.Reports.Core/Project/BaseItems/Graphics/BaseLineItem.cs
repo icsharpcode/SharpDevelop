@@ -78,10 +78,10 @@ namespace ICSharpCode.Reports.Core {
 			                               this.startLineCap,
 			                               this.endLineCap,
 			                               this.dashLineCap),
-			                 new Point(base.DrawingRectangle.Left + this.fromPoint.X,
-			                           this.FromPoint.Y + base.DrawingRectangle.Top),
-			                 new Point (base.DrawingRectangle.Left + this.ToPoint.X,
-			                            this.ToPoint.Y + base.DrawingRectangle.Top));
+			                 new Point(base.DisplayRectangle.Left + this.fromPoint.X,
+			                           this.FromPoint.Y + base.DisplayRectangle.Top),
+			                 new Point (base.DisplayRectangle.Left + this.ToPoint.X,
+			                            this.ToPoint.Y + base.DisplayRectangle.Top));
 			
 		}
 		

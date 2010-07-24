@@ -48,7 +48,7 @@ namespace ICSharpCode.Reports.Core {
 			BaseStyleDecorator style = new BaseStyleDecorator();
 			style.BackColor = this.BackColor;
 			style.ForeColor = this.ForeColor;
-			Rectangle rect = base.DrawingRectangle;
+			Rectangle rect = base.DisplayRectangle;
 			style.Location = new Point(rect.Left,this.Location.Y);
 			style.Size = this.Size;
 			style.DrawBorder = this.DrawBorder;

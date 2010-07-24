@@ -125,8 +125,8 @@ namespace ICSharpCode.Reports.Core {
 			Graphics g = rpea.PrintPageEventArgs.Graphics;
 			
 			if (this.Image == null){
-				this.Image = ErrorBitmap(new Size (base.DrawingRectangle.Width,
-				                                   base.DrawingRectangle.Height) );
+				this.Image = ErrorBitmap(new Size (base.DisplayRectangle.Width,
+				                                   base.DisplayRectangle.Height) );
 			}
 			
 			if (this.scaleImageToSize) {
@@ -135,7 +135,7 @@ namespace ICSharpCode.Reports.Core {
 				                                    this.Location.Y + this.Image.Height);
 				
 			} else {
-				RectangleF rect =  base.DrawingRectangle;
+				RectangleF rect =  base.DisplayRectangle;
 				g.DrawImage(this.Image,rect);
 				rpea.LocationAfterDraw = new Point (this.Location.X + (int)rect.Width,
 				                                    this.Location.Y + (int)rect.Height);

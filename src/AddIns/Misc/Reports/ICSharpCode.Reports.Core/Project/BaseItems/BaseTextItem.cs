@@ -62,7 +62,7 @@ namespace ICSharpCode.Reports.Core
 			style.Location = this.Location;
 			style.Size = this.Size;
 			style.DrawBorder = this.DrawBorder;
-			style.DisplayRectangle = this.DrawingRectangle;
+			style.DisplayRectangle = this.DisplayRectangle;
 			
 			style.StringFormat = this.stringFormat;
 			style.StringTrimming = this.stringTrimming;
@@ -90,7 +90,7 @@ namespace ICSharpCode.Reports.Core
 			
 			string formated = StandardFormatter.FormatOutput(this.text,this.FormatString,this.DataType,String.Empty);
 		
-			Print (rpea,formated,base.DrawingRectangle);
+			Print (rpea,formated,base.DisplayRectangle);
 		
 			base.NotifyAfterPrint (rpea.LocationAfterDraw);
 		}

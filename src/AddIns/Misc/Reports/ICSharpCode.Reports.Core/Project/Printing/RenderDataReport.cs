@@ -31,7 +31,7 @@ namespace ICSharpCode.Reports.Core {
 		public RenderDataReport(IReportModel model,
 		                        IDataManager dataManager,
 		                        ReportDocument reportDocument,
-		                       ILayouter layout):base (model,dataManager,reportDocument,layout)
+		                        ILayouter layout):base (model,dataManager,reportDocument,layout)
 		{
 		}
 		

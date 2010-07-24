@@ -84,7 +84,7 @@ namespace ICSharpCode.Reports.Core {
 			bsd.FrameColor = this.FrameColor;
 			bsd.Location = this.Location;
 			bsd.Size = this.Size;
-			bsd.DisplayRectangle = this.DrawingRectangle;
+			bsd.DisplayRectangle = this.DisplayRectangle;
 			
 			return bsd;
 		}
@@ -98,12 +98,12 @@ namespace ICSharpCode.Reports.Core {
 		
 		protected void DrawFrame (Graphics graphics,Border border) {
 			if (this.DrawBorder == true) {
-				border.DrawBorder(graphics,this.DrawingRectangle);
+				border.DrawBorder(graphics,this.DisplayRectangle);
 			}
 		}
 		
 		
-		protected Rectangle DrawingRectangle
+		protected virtual Rectangle DisplayRectangle
 		{
 			get {
 				if (Parent != null) {

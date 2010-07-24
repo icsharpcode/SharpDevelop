@@ -50,7 +50,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 		
-		
 		public static void DrawBorder (Graphics graphics,BaseStyleDecorator decorator)
 		{
 			if (decorator.DrawBorder)
@@ -60,7 +59,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 					decorator.FrameColor = decorator.ForeColor;
 				}
 				Border border = new Border(new BaseLine (decorator.FrameColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
-
 				border.DrawBorder(graphics,decorator.DisplayRectangle);
 			}
 		}
@@ -105,10 +103,12 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			
 			Point saveLocation = new Point (item.Location.X,item.Location.Y);
 			
-			
-			item.Location = new Point(offset.X + item.Location.X,
+			item.Location = new Point(item.Location.X,
 			                           offset.Y + item.Location.Y);
 			
+//			item.Location = new Point(offset.X + item.Location.X,
+//			                           offset.Y + item.Location.Y);
+//			
 			var ss = MeasurementService.MeasureReportItem(rpea.PrintPageEventArgs.Graphics,item);
 			
 			BaseTextItem textItem = item as BaseTextItem;
@@ -137,10 +137,12 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		#region Render Collection
 		
-		public static Rectangle RenderPlainCollection (BaseReportItem parent,ReportItemCollection items,IExpressionEvaluatorFacade evaluator, Point offset,ReportPageEventArgs rpea)
+		public static Rectangle RenderPlainCollection (BaseReportItem parent,
+		                                               ReportItemCollection items,
+		                                               IExpressionEvaluatorFacade evaluator,
+		                                               Point offset,
+		                                               ReportPageEventArgs rpea)
 		{
-			Rectangle retVal = Rectangle.Empty;
-			Size size = Size.Empty;
 			
 			if (items.Count > 0) {
 				foreach (BaseReportItem child in items) {
@@ -178,8 +180,8 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			BaseReportItem item = simpleContainer as BaseReportItem;
 			Rectangle retVal = new Rectangle(offset,item.Size);
 			Point loc = item.Location;
-			item.Location = new Point (offset.X + item.Location.X,offset.Y + item.Location.Y);
-			
+//			item.Location = new Point (offset.X + item.Location.X,offset.Y + item.Location.Y);
+			item.Location = new Point (item.Location.X,offset.Y + item.Location.Y);
 			item.Render(rpea);
 			
 			if (simpleContainer.Items != null)  {

@@ -47,7 +47,7 @@ namespace ICSharpCode.Reports.Core {
 				throw new ArgumentNullException("rpea");
 			}
 			base.Render (rpea);
-			Rectangle rect = base.DrawingRectangle;
+			Rectangle rect = base.DisplayRectangle;
 			
 			shape.FillShape(rpea.PrintPageEventArgs.Graphics,
 			                new SolidFillPattern(this.BackColor),

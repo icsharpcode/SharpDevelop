@@ -42,7 +42,7 @@ namespace ICSharpCode.Reports.Core
 			this.SetErrorLayout();
 			Border b = new Border(new BaseLine (this.ForeColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
 			base.DrawFrame(rpea.PrintPageEventArgs.Graphics,b);
-			Print (rpea,this.errMess,base.DrawingRectangle);
+			Print (rpea,this.errMess,base.DisplayRectangle);
 		}
 		
 		#region IExportColumnBuilder  implementation

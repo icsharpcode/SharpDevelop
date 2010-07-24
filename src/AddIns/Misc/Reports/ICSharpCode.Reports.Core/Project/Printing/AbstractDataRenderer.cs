@@ -130,7 +130,7 @@ namespace ICSharpCode.Reports.Core
 				row.Size = rs;
 			}
 		
-			rpea.LocationAfterDraw = new Point(rpea.LocationAfterDraw.X,rpea.LocationAfterDraw.Y + 20);
+//			rpea.LocationAfterDraw = new Point(rpea.LocationAfterDraw.X,rpea.LocationAfterDraw.Y + 5);
 //			base.NotifyAfterPrint (rpea.LocationAfterDraw);
 		}
 		
@@ -156,8 +156,6 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 
-		
-		
 		private  Point RenderSectionWithSimpleContainer (BaseSection section,
 		                                                 ISimpleContainer container,
 		                                                 Point offset,

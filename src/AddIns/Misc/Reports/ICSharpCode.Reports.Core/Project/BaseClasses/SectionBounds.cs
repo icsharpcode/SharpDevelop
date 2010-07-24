@@ -103,7 +103,7 @@ namespace ICSharpCode.Reports.Core{
 			this.pageHeaderRectangle =  new Rectangle (this.reportHeaderRectangle.Left,
 			                                           section.SectionOffset,
 			                                           this.marginBounds.Width,
-			                                           section.Size.Height + this.gap);
+			                                           section.Size.Height + 3 * GlobalValues.GapBetweenContainer);
 		}
 		
 		

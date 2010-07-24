@@ -211,49 +211,40 @@ namespace ICSharpCode.Reports.Core
 		{
 			Point currentPosition	= Point.Empty;
 			
-			if (this.CurrentSection.Visible){
-				
-				this.CurrentSection.Render (rpea);
-				
-				Evaluator.SinglePage = this.reportDocument.SinglePage;
-				
-				if (this.CurrentSection.Items.Count > 0) {
-
-					Rectangle desiredRectangle = Layout.Layout(rpea.PrintPageEventArgs.Graphics,this.CurrentSection);
-					
-					Rectangle sectionRectangle = new Rectangle(this.CurrentSection.Location.X,
-					                                           this.CurrentSection.Location.Y,
-					                                           this.CurrentSection.Size.Width,
-					                                           this.CurrentSection.Size.Height);
-					
-					if (desiredRectangle.Height >= sectionRectangle.Height) {
-						this.CurrentSection.Size = new Size(this.CurrentSection.Size.Width,desiredRectangle.Height + 10);
-					}
-					
-					
-					if (this.CurrentSection.DrawBorder) {
-						StandardPrinter.DrawBorder(rpea.PrintPageEventArgs.Graphics,this.CurrentSection.BaseStyleDecorator);
-					}
-					
-					
-//					PrintHelper.DebugRectangle(rpea.PrintPageEventArgs.Graphics,Pens.Blue,new Rectangle(CurrentSection.Location,CurrentSection.Size));
-				}
-				
-				
-				Rectangle r = StandardPrinter.RenderPlainCollection (this.CurrentSection,this.CurrentSection.Items,Evaluator,new Point(this.CurrentSection.Location.X,
-				                                                                               this.CurrentSection.SectionOffset),rpea);
-				
-				currentPosition = PrintHelper.ConvertRectangleToCurentPosition(r);
+			this.CurrentSection.Render (rpea);
 			
+			Evaluator.SinglePage = this.reportDocument.SinglePage;
+			
+			if (this.CurrentSection.Items.Count > 0) {
+
 				
-				if ((this.CurrentSection.CanGrow == false)&& (this.CurrentSection.CanShrink == false)) {
-//					return new Point(this.CurrentSection.Location.X,
-//					                 this.CurrentSection.Size.Height);
-					return currentPosition;
+				Rectangle desiredRectangle = Layout.Layout(rpea.PrintPageEventArgs.Graphics,this.CurrentSection);
+				
+				Rectangle sectionRectangle = new Rectangle(this.CurrentSection.Location.X,
+				                                           this.CurrentSection.Location.Y,
+				                                           this.CurrentSection.Size.Width,
+				                                           this.CurrentSection.Size.Height);
+
+				
+				if (desiredRectangle.Height >= sectionRectangle.Height) {
+					this.CurrentSection.Size = new Size(this.CurrentSection.Size.Width,desiredRectangle.Height + 10);
 				}
-				return currentPosition;
+				
+				if (this.CurrentSection.DrawBorder) {
+					StandardPrinter.DrawBorder(rpea.PrintPageEventArgs.Graphics,this.CurrentSection.BaseStyleDecorator);
+				}
+				
+				
+//					PrintHelper.DebugRectangle(rpea.PrintPageEventArgs.Graphics,Pens.Blue,new Rectangle(CurrentSection.Location,CurrentSection.Size));
 			}
-			return currentPosition;
+
+				Rectangle r = StandardPrinter.RenderPlainCollection (this.CurrentSection,
+			                                                     this.CurrentSection.Items,
+			                                                     Evaluator,
+			                                                     new Point(this.CurrentSection.Location.X,this.CurrentSection.SectionOffset),
+			                                                     rpea);
+
+			return PrintHelper.ConvertRectangleToCurentPosition(r);
 		}
 		
 		
