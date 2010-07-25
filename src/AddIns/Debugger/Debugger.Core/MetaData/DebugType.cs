@@ -291,6 +291,10 @@ namespace Debugger.MetaData
 			}
 		}
 		
+		/// <remarks>
+		/// Note that at the moment the function will return two methods for interface implementations:
+		/// the acutual implementation and the method in the interface
+		/// </remarks>
 		public T[] GetMembers<T>(string name, BindingFlags bindingFlags, Predicate<T> filter) where T:MemberInfo
 		{
 			BindingFlags unsupported = bindingFlags & ~SupportedFlags;
@@ -342,16 +346,27 @@ namespace Debugger.MetaData
 				}
 			}
 			
-			// Query supertype
-			if ((bindingFlags & BindingFlags.DeclaredOnly) == 0 && this.BaseType != null) {
-				if ((bindingFlags & BindingFlags.FlattenHierarchy) == 0) {
-					// Do not include static types
-					bindingFlags = bindingFlags & ~BindingFlags.Static;
+			if ((bindingFlags & BindingFlags.DeclaredOnly) == 0) {
+				// Query supertype
+				if (this.BaseType != null) {				
+					if ((bindingFlags & BindingFlags.FlattenHierarchy) == 0) {
+						// Do not include static types
+						bindingFlags = bindingFlags & ~BindingFlags.Static;
+					}
+					// Any flags left?
+					if ((bindingFlags & (BindingFlags.Instance | BindingFlags.Static)) != 0) {
+						T[] superResults = ((DebugType)this.BaseType).GetMembers<T>(name, bindingFlags, filter);
+						results.AddRange(superResults);
+					}
 				}
-				// Any flags left?
-				if ((bindingFlags & (BindingFlags.Instance | BindingFlags.Static)) != 0) {
-					T[] superResults = ((DebugType)this.BaseType).GetMembers<T>(name, bindingFlags, filter);
-					results.AddRange(superResults);
+				// Query interfaces
+				//  - needed to obtain explicitly defined methods of a type
+				//  - needed to get inherited methods of an interface
+				foreach (DebugType inter in this.GetInterfaces()) {
+					// GetInterfaces will return all interfaces - no need to recurse
+					bindingFlags |= BindingFlags.DeclaredOnly;
+					T[] interResults = inter.GetMembers<T>(name, bindingFlags, filter);
+					results.AddRange(interResults);
 				}
 			}
 			
@@ -538,6 +553,7 @@ namespace Debugger.MetaData
 		//		public virtual InterfaceMapping GetInterfaceMap(Type interfaceType);
 		
 		/// <inheritdoc/>
+		/// <returns> All interfaces implemented by the type </returns>
 		public override Type[] GetInterfaces()
 		{
 			return this.interfaces.ToArray();
