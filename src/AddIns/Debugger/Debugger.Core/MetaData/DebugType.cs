@@ -348,7 +348,7 @@ namespace Debugger.MetaData
 			
 			if ((bindingFlags & BindingFlags.DeclaredOnly) == 0) {
 				// Query supertype
-				if (this.BaseType != null) {				
+				if (this.BaseType != null) {
 					if ((bindingFlags & BindingFlags.FlattenHierarchy) == 0) {
 						// Do not include static types
 						bindingFlags = bindingFlags & ~BindingFlags.Static;
@@ -1296,6 +1296,18 @@ namespace Debugger.MetaData
 			
 			if (this.Process.Options.Verbose)
 				this.Process.TraceMessage("Loaded {0} ({1} ms)", this.FullName, stopwatch.ElapsedMilliseconds);
+			
+			// Load base type
+			Type baseType = this.BaseType;
+			
+			// Add base type's inerfaces
+			if (baseType != null) {
+				foreach (DebugType debugType in baseType.GetInterfaces()) {
+					if (!this.interfaces.Contains(debugType)) {
+						this.interfaces.Add(debugType);
+					}
+				}
+			}
 		}
 		
 		void AddMember(MemberInfo member)
