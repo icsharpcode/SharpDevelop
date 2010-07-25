@@ -13,8 +13,11 @@ using System.Reflection;
 // change them to the information which is associated with the assembly
 // you compile.
 
-[assembly: AssemblyTitle("Component Inspector Library")]
-[assembly: AssemblyDescription("Component Inspector Library")]
+[assembly: AssemblyTitle("Component Inspector AddIn")]
+[assembly: AssemblyDescription("Component Inspector AddIn for SharpDevelop 2.0")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
+[assembly: AssemblyProduct("SharpDevelop")]
+[assembly: AssemblyCopyright("")]
+[assembly: AssemblyVersion("1.0.*")]

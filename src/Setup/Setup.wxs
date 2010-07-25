@@ -193,9 +193,6 @@
 				<ComponentRef Id="AvalonDockDll"/>
 				<ComponentRef Id="ICSharpCodeCorePresentationDll"/>
 				<ComponentRef Id="SharpDevelopTechNoteFiles"/>
-				<ComponentRef Id="ComponentInspectorExe"/>
-				<ComponentRef Id="ComponentInspectorCoreDll"/>
-				<ComponentRef Id="ComponentInspectorICSharpCodeCoreDll"/>
 				<ComponentRef Id="SharpDevelopProgramMenuItems"/>
 				<ComponentRef Id="DesktopFolderItems"/>
 				
@@ -349,8 +346,6 @@
 				<ComponentRef Id="AddInScoutFiles"/>
 				<ComponentRef Id="CodeAnalysisFiles"/>
 				<ComponentRef Id="CodeCoverageFiles"/>
-				<ComponentRef Id="ComponentInspectorAddInDll"/>
-				<ComponentRef Id="ComponentInspectorAddInCoreDll"/>
 				<ComponentRef Id="DebuggerAddInFiles"/>
 				<ComponentRef Id="FiletypeIcons"/>
 				<ComponentRef Id="FiletypeRegistererFiles"/>

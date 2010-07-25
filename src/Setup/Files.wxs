@@ -189,18 +189,6 @@
 								<File Source="..\..\bin\Mono.Cecil.dll" Id="Mono.Cecil.dll" Name="Mono.Cecil.dll" Assembly=".net" AssemblyApplication="Mono.Cecil.dll" AssemblyManifest="Mono.Cecil.dll" KeyPath="yes" />
 							</Component>
 							<Directory Id="ToolsFolder" Name="Tools">
-								<Directory Id="ComponentInspectorFolder" Name="ComponentInspector">
-									<Component Guid="E4175768-82FD-45F4-8E7D-BB4031E97454" Id="ComponentInspectorCoreDll" DiskId="1">
-										<File Source="..\..\bin\Tools\ComponentInspector\ComponentInspector.Core.dll" Id="Tools.ComponentInspector.Core.dll" Name="ComponentInspector.Core.dll" Assembly=".net" AssemblyApplication="Tools.ComponentInspector.Core.dll" AssemblyManifest="Tools.ComponentInspector.Core.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="59BEBE19-6AF1-4557-88C5-ED0B935EAE1C" Id="ComponentInspectorExe" DiskId="1">
-										<File Source="..\..\bin\Tools\ComponentInspector\ComponentInspector.exe" Id="ComponentInspector.exe" Name="ComponentInspector.exe" Assembly=".net" AssemblyApplication="ComponentInspector.exe" AssemblyManifest="ComponentInspector.exe" KeyPath="yes" />
-										<File Source="..\..\bin\Tools\ComponentInspector\ComponentInspector.exe.config" Id="ComponentInspector.exe.config" Name="ComponentInspector.exe.config" />
-									</Component>
-									<Component Guid="F2643529-834A-4EDE-B0C2-36E0A031E997" Id="ComponentInspectorICSharpCodeCoreDll" DiskId="1">
-										<File Source="..\..\bin\Tools\ComponentInspector\ICSharpCode.Core.dll" Id="ComponentInspector.ICSharpCode.Core.dll" Name="ICSharpCode.Core.dll" Assembly=".net" AssemblyApplication="ComponentInspector.ICSharpCode.Core.dll" AssemblyManifest="ComponentInspector.ICSharpCode.Core.dll" KeyPath="yes" />
-									</Component>
-								</Directory>
 								<Directory Id="WixFolder" Name="Wix">
 									<Component Guid="78F8DB04-62B1-4A2F-A0D5-D8D890FE5D02" Id="WixVSExtension" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\WixVSExtension.dll" Id="WixVSExtension.dll" Name="WixVSExtension.dll" Assembly=".net" AssemblyApplication="WixVSExtension.dll" AssemblyManifest="WixVSExtension.dll" KeyPath="yes" />
@@ -1296,15 +1284,6 @@
 										<Component Guid="6CF33D51-953D-4E5F-840C-7FDCFD757520" Id="CodeAnalysisFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\CodeAnalysis\CodeAnalysis.dll" Id="CodeAnalysis.dll" Name="CodeAnalysis.dll" Assembly=".net" AssemblyApplication="CodeAnalysis.dll" AssemblyManifest="CodeAnalysis.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\Misc\CodeAnalysis\CodeAnalysis.addin" Id="CodeAnalysis.addin" Name="CodeAnalysis.addin" />
-										</Component>
-									</Directory>
-									<Directory Id="ComponentInspectorAddInFolder" Name="ComponentInspector">
-										<Component Guid="2056340F-5471-422D-8901-9DC385D145AA" Id="ComponentInspectorAddInCoreDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\ComponentInspector\ComponentInspector.Core.dll" Id="ComponentInspector.Core.dll" Name="ComponentInspector.Core.dll" Assembly=".net" AssemblyApplication="ComponentInspector.Core.dll" AssemblyManifest="ComponentInspector.Core.dll" KeyPath="yes" />
-										</Component>
-										<Component Guid="C3CBE9CD-ED60-4B07-9082-D5D31755C388" Id="ComponentInspectorAddInDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\ComponentInspector\ComponentInspector.addin" Id="ComponentInspector.addin" Name="ComponentInspector.addin" />
-											<File Source="..\..\AddIns\AddIns\Misc\ComponentInspector\ComponentInspector.AddIn.dll" Id="ComponentInspector.AddIn.dll" Name="ComponentInspector.AddIn.dll" Assembly=".net" AssemblyApplication="ComponentInspector.AddIn.dll" AssemblyManifest="ComponentInspector.AddIn.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
 									<Directory Id="FiletypeRegistererFolder" Name="FiletypeRegisterer">
