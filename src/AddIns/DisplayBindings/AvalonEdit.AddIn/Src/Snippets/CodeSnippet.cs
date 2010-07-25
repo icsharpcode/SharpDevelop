@@ -14,7 +14,6 @@ using System.Text.RegularExpressions;
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
@@ -132,7 +131,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 					snippet.Elements.Add(new SnippetTextElement { Text = snippetText.Substring(pos, m.Index - pos) });
 					pos = m.Index;
 				}
-				snippet.Elements.Add(CreateElementForValue(context, replaceableElements, m.Groups[1].Value));
+				snippet.Elements.Add(CreateElementForValue(context, replaceableElements, m.Groups[1].Value, m.Index, snippetText));
 				pos = m.Index + m.Length;
 			}
 			if (pos < snippetText.Length) {
@@ -148,7 +147,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		
 		readonly static Regex functionPattern = new Regex(@"^([a-zA-Z]+)\(([^\)]*)\)$", RegexOptions.CultureInvariant);
 		
-		static SnippetElement CreateElementForValue(ITextEditor context, Dictionary<string, SnippetReplaceableTextElement> replaceableElements, string val)
+		static SnippetElement CreateElementForValue(ITextEditor context, Dictionary<string, SnippetReplaceableTextElement> replaceableElements, string val, int offset, string snippetText)
 		{
 			SnippetReplaceableTextElement srte;
 			int equalsSign = val.IndexOf('=');
@@ -161,7 +160,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 				}
 			}
 			if ("Selection".Equals(val, StringComparison.OrdinalIgnoreCase))
-				return new SnippetSelectionElement();
+				return new SnippetSelectionElement() { Indentation = GetWhitespaceBefore(snippetText, offset).Length };
 			if ("Caret".Equals(val, StringComparison.OrdinalIgnoreCase))
 				return new SnippetCaretElement();
 			foreach (ISnippetElementProvider provider in SnippetManager.Instance.SnippetElementProviders) {
@@ -190,6 +189,12 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 				return new SnippetTextElement { Text = result };
 			else
 				return new SnippetReplaceableTextElement { Text = val }; // ${unknown} -> replaceable element
+		}
+		
+		static string GetWhitespaceBefore(string snippetText, int offset)
+		{
+			int start = snippetText.LastIndexOfAny(new[] { '\r', '\n' }, offset) + 1;
+			return snippetText.Substring(start, offset - start);
 		}
 		
 		static string GetValue(ITextEditor editor, string propertyName)

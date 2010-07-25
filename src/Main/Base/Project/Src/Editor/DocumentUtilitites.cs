@@ -136,6 +136,18 @@ namespace ICSharpCode.SharpDevelop.Editor
 		}
 		
 		/// <summary>
+		/// Gets all indentation before the offset.
+		/// </summary>
+		/// <param name="document">The document.</param>
+		/// <param name="offset">The offset where the indentation ends.</param>
+		/// <returns>The indentation text.</returns>
+		public static string GetWhitespaceBefore(ITextBuffer textBuffer, int offset)
+		{
+			ISegment segment = TextUtilities.GetWhitespaceBefore(GetTextSource(textBuffer), offset);
+			return textBuffer.GetText(segment.Offset, segment.Length);
+		}
+		
+		/// <summary>
 		/// Gets the line terminator for the document around the specified line number.
 		/// </summary>
 		public static string GetLineTerminator(IDocument document, int lineNumber)
