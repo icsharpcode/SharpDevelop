@@ -55,6 +55,7 @@
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Designer\MarginHandleTests.cs" />
     <Compile Include="Designer\ModelTestHelper.cs" />
     <Compile Include="Designer\ModelTests.cs" />
     <Compile Include="Designer\PlacementTests.cs" />

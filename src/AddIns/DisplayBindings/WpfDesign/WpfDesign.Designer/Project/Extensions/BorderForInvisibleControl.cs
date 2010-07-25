@@ -28,7 +28,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			var adornerPanel = new AdornerPanel();
 			var border = new Border();
 			border.BorderThickness = new Thickness(1);
-			border.BorderBrush = Brushes.DimGray;
+			border.BorderBrush = new SolidColorBrush(Color.FromRgb(0xCC, 0xCC, 0xCC));
 			border.IsHitTestVisible = false;
 			AdornerPanel.SetPlacement(border, AdornerPlacement.FillContent);
 			adornerPanel.Children.Add(border);

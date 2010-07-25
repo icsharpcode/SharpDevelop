@@ -77,6 +77,15 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			Assert.AreEqual(expectedXaml, actualXaml);
 		}
 		
+		protected DesignItem CreateGridContext(string xaml)
+        {
+            XamlDesignContext context = CreateContext(@"<Grid xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" >
+            " + xaml + "</Grid>");
+            var grid = (Grid)context.RootItem.Component;
+            var gridChild = context.Services.Component.GetDesignItem(grid.Children[0]);
+            return gridChild;
+        }
+		
 		static string ItemIdentity(DesignItem item)
 		{
 			return item.ComponentType.Name + " (" + item.GetHashCode() + ")";

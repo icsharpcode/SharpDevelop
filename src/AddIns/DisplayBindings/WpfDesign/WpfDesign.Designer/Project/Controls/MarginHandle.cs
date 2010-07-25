@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Globalization;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Collections.Generic;
@@ -23,12 +24,17 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
     /// <summary>
     /// Adorner that displays the margin of a control in a Grid.
     /// </summary>
-    class MarginHandle : Control
+    public class MarginHandle : Control
     {
-       
-        static MarginHandle()
+    	/// <summary>
+    	/// Places the Handle with a certain offset so the Handle does not interfere with selection outline.
+    	/// </summary>
+    	public static double HandleLengthOffset;
+    	
+		static MarginHandle()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(MarginHandle), new FrameworkPropertyMetadata(typeof(MarginHandle)));
+            HandleLengthOffset=2;
         }
 
         /// <summary>
@@ -53,7 +59,11 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 
         /// <summary> This grid contains the handle line and the endarrow.</summary>  
         Grid lineArrow;
-        MarginStub marginStub;
+        
+        /// <summary>
+        /// Gets the Stub for this handle
+        /// </summary>
+        public MarginStub Stub {get; private set;}
                 
         /// <summary>
         /// Gets/Sets the angle by which handle rotates.
@@ -104,8 +114,13 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
             Angle = (double)orientation;
             grid=(Grid)adornedControlItem.Parent.Component;
             adornedControl=(FrameworkElement)adornedControlItem.Component;
-            marginStub = new MarginStub(this);
+            Stub = new MarginStub(this);
+            ShouldBeVisible=true;
             BindAndPlaceHandle();
+            
+            adornedControlItem.PropertyChanged += OnPropertyChanged;
+            OnPropertyChanged(this.adornedControlItem, new PropertyChangedEventArgs("HorizontalAlignment"));
+            OnPropertyChanged(this.adornedControlItem, new PropertyChangedEventArgs("VerticalAlignment"));
         }
 
         /// <summary>
@@ -115,8 +130,8 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
         {
             if (!adornerPanel.Children.Contains(this))
                 adornerPanel.Children.Add(this);
-            if (!adornerPanel.Children.Contains(marginStub))
-                adornerPanel.Children.Add(marginStub);
+            if (!adornerPanel.Children.Contains(Stub))
+                adornerPanel.Children.Add(Stub);
             RelativePlacement placement=new RelativePlacement();
             Binding binding = new Binding();
             binding.Source = adornedControl;
@@ -125,18 +140,22 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
                 case HandleOrientation.Left:
                     binding.Path = new PropertyPath("Margin.Left"); 
                     placement = new RelativePlacement(HorizontalAlignment.Left, VerticalAlignment.Center);
+                    placement.XOffset=-HandleLengthOffset;
                     break;
                 case HandleOrientation.Top:
                     binding.Path = new PropertyPath("Margin.Top");
                     placement = new RelativePlacement(HorizontalAlignment.Center, VerticalAlignment.Top);
+                    placement.YOffset=-HandleLengthOffset;
                     break;
                 case HandleOrientation.Right:
                     binding.Path = new PropertyPath("Margin.Right");
                     placement = new RelativePlacement(HorizontalAlignment.Right, VerticalAlignment.Center);
+                    placement.XOffset=HandleLengthOffset;
                     break;
                 case HandleOrientation.Bottom:
                     binding.Path = new PropertyPath("Margin.Bottom");
                     placement = new RelativePlacement(HorizontalAlignment.Center, VerticalAlignment.Bottom);
+                    placement.YOffset=HandleLengthOffset;
                     break;
             }
 
@@ -144,7 +163,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
             SetBinding(HandleLengthProperty, binding);
 
             AdornerPanel.SetPlacement(this, placement);
-            AdornerPanel.SetPlacement(marginStub, placement);
+            AdornerPanel.SetPlacement(Stub, placement);
            
             DecideVisiblity(this.HandleLength);
         }
@@ -155,20 +174,53 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
         /// <param name="handleLength"></param>
         public void DecideVisiblity(double handleLength)
         {   
-        	if(!DisplayOnlyStub){
-        	 	if(ShouldBeVisible){
-            		marginStub.Visibility = handleLength == 0.0 ? Visibility.Visible : Visibility.Hidden;
-            		this.Visibility = handleLength != 0.0 ? Visibility.Visible : Visibility.Hidden;
-            		if (this.lineArrow != null){            
-                		lineArrow.Visibility = handleLength < 23 ? Visibility.Hidden : Visibility.Visible;
-            		}
-        		}
-        	}
-        	else {
-        		DisplayOnlyStub=false;
-        		DecideVisiblity(this.HandleLength);        		
-        	}        	
-        }        
+        	if (ShouldBeVisible)
+            {
+                if (!DisplayOnlyStub)
+                {
+                    this.Visibility = handleLength != 0.0 ? Visibility.Visible : Visibility.Hidden;
+                    if (this.lineArrow != null)
+                    {
+                        lineArrow.Visibility = handleLength < 23 ? Visibility.Hidden : Visibility.Visible;
+                    }
+                    Stub.Visibility = this.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
+                }
+                else
+                {
+                    this.Visibility = Visibility.Hidden;
+                    Stub.Visibility = Visibility.Visible;
+                }
+            }
+            else {
+                this.Visibility = Visibility.Hidden;
+                Stub.Visibility = Visibility.Hidden;
+            }      	
+        }
+        
+        void OnPropertyChanged(object sender,PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName=="HorizontalAlignment" && (orientation==HandleOrientation.Left || orientation==HandleOrientation.Right)) {
+                var ha = (HorizontalAlignment) adornedControlItem.Properties[FrameworkElement.HorizontalAlignmentProperty].ValueOnInstance;
+                if(ha==HorizontalAlignment.Stretch) {
+                    DisplayOnlyStub = false;
+                }else if(ha==HorizontalAlignment.Center) {
+                    DisplayOnlyStub = true;
+                } else
+                    DisplayOnlyStub = ha.ToString() != orientation.ToString();
+            }
+
+            if(e.PropertyName=="VerticalAlignment" && (orientation==HandleOrientation.Top || orientation==HandleOrientation.Bottom)) {
+                var va = (VerticalAlignment)adornedControlItem.Properties[FrameworkElement.VerticalAlignmentProperty].ValueOnInstance;
+
+                if(va==VerticalAlignment.Stretch) {
+                    DisplayOnlyStub = false;
+                } else if(va==VerticalAlignment.Center) {
+                    DisplayOnlyStub = true;
+                } else 
+                    DisplayOnlyStub = va.ToString() != orientation.ToString();
+            }
+            DecideVisiblity(this.HandleLength);
+        } 
         
         public override void OnApplyTemplate()
         {
@@ -183,7 +235,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
     /// <summary>
     /// Display a stub indicating that the margin is not set.
     /// </summary>
-    class MarginStub : Control
+    public class MarginStub : Control
     {
         MarginHandle marginHandle;
         static MarginStub()
@@ -227,6 +279,30 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
         /// Indicates that the margin handle is left-oriented and rotated 180 degrees with respect to <see cref="Right"/>.
         /// </summary>
         Bottom = 90
+    }
+}
+
+namespace ICSharpCode.WpfDesign.Designer.Controls.Converters
+{
+	/// <summary>
+	/// Offset the Handle Length with MarginHandle.HandleLengthOffset
+	/// </summary>
+	public class HandleLengthWithOffset : IValueConverter
+    {
+        public static HandleLengthWithOffset Instance = new HandleLengthWithOffset();
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if(value is double) {
+                return Math.Max((double)value - MarginHandle.HandleLengthOffset,0);
+            }
+            return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
+        }
     }
 }
 

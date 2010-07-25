@@ -28,7 +28,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		{
 			Rectangle selectionRect = new Rectangle();
             selectionRect.SnapsToDevicePixels = true;
-            selectionRect.Stroke = new SolidColorBrush(Color.FromRgb(51, 51, 51));
+            selectionRect.Stroke = new SolidColorBrush(Color.FromRgb(0x47, 0x47, 0x47));
             selectionRect.StrokeThickness = 1.5;
             selectionRect.IsHitTestVisible = false;
 
