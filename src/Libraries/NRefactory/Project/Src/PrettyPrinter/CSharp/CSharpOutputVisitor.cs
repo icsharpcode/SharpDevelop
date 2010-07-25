@@ -537,8 +537,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitOptionDeclaration(OptionDeclaration optionDeclaration, object data)
 		{
-			if ((optionDeclaration.OptionType == OptionType.Explicit || optionDeclaration.OptionType == OptionType.Strict)
-			    && optionDeclaration.OptionValue == true)
+			if (((optionDeclaration.OptionType == OptionType.Explicit || optionDeclaration.OptionType == OptionType.Strict)
+			     && optionDeclaration.OptionValue == true) || optionDeclaration.OptionType == OptionType.Infer)
 			{
 				// Explicit On/Strict On is what C# does, do not report an error
 			} else {
@@ -2638,8 +2638,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				TrackVisit(lambdaExpression.ExpressionBody, null);
 			}
-			if (!lambdaExpression.StatementBody.IsNull) {
-				OutputBlockAllowInline(lambdaExpression.StatementBody, this.prettyPrintOptions.MethodBraceStyle, false);
+			if (!lambdaExpression.StatementBody.IsNull && lambdaExpression.StatementBody is BlockStatement) {
+				OutputBlockAllowInline(lambdaExpression.StatementBody as BlockStatement, this.prettyPrintOptions.MethodBraceStyle, false);
 			}
 			return null;
 		}
@@ -2830,6 +2830,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				TrackVisit(arrayCreateExpression.ArrayInitializer, data);
 			}
+			return null;
+		}
+		
+		public override object TrackedVisitMemberInitializerExpression(MemberInitializerExpression memberInitializerExpression, object data)
+		{
+			outputFormatter.PrintIdentifier(memberInitializerExpression.Name);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Assign);
+			outputFormatter.Space();
+			TrackVisit(memberInitializerExpression.Expression, data);
 			return null;
 		}
 		

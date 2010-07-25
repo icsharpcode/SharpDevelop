@@ -222,7 +222,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						SetContext(ExpressionContext.InheritableType);
 					}
 				} else if (state == FrameState.Constraints) {
-					SetContext(ExpressionContext.Constraints);
+					SetContext(CSharpExpressionContext.Constraints);
 				} else if (state == FrameState.UsingNamespace) {
 					SetContext(ExpressionContext.Namespace);
 				} else {
@@ -238,29 +238,29 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 							SetContext(ExpressionContext.IdentifierExpected);
 							break;
 						case FrameType.Interface:
-							SetContext(ExpressionContext.InterfaceDeclaration);
+							SetContext(CSharpExpressionContext.InterfaceDeclaration);
 							break;
 						case FrameType.Event:
-							SetContext(ExpressionContext.EventDeclaration);
+							SetContext(CSharpExpressionContext.EventDeclaration);
 							break;
 						case FrameType.Property:
 							if (parent != null && parent.type == FrameType.Interface) {
-								SetContext(ExpressionContext.InterfacePropertyDeclaration);
+								SetContext(CSharpExpressionContext.InterfacePropertyDeclaration);
 							} else {
-								SetContext(ExpressionContext.PropertyDeclaration);
+								SetContext(CSharpExpressionContext.PropertyDeclaration);
 							}
 							break;
 						case FrameType.Statements:
 							SetContext(ExpressionContext.MethodBody);
 							break;
 						case FrameType.ParameterList:
-							SetContext(ExpressionContext.ParameterType);
+							SetContext(CSharpExpressionContext.ParameterType);
 							break;
 						case FrameType.ObjectInitializer:
 							if (state == FrameState.ObjectInitializerValue) {
 								SetContext(ExpressionContext.Default);
 							} else {
-								SetContext(ExpressionContext.ObjectInitializer);
+								SetContext(CSharpExpressionContext.ObjectInitializer);
 							}
 							break;
 						case FrameType.AttributeSection:
@@ -479,7 +479,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 						{
 							frame.type = FrameType.TypeParameterDecl;
 							frame.SetContext(ExpressionContext.IdentifierExpected);
-							frame.parent.SetContext(ExpressionContext.ConstraintsStart);
+							frame.parent.SetContext(CSharpExpressionContext.ConstraintsStart);
 						} else {
 							frame.SetContext(ExpressionContext.Type);
 						}
@@ -588,7 +588,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					break;
 				case Tokens.Assign:
 					if (frame.type == FrameType.Global) {
-						frame.SetContext(ExpressionContext.FullyQualifiedType);
+						frame.SetContext(CSharpExpressionContext.FullyQualifiedType);
 						break;
 					} else if (frame.type == FrameType.Enum) {
 						frame.SetContext(ExpressionContext.Default);
@@ -609,7 +609,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					}
 				case Tokens.Colon:
 					if (frame.state == FrameState.MethodDecl && lastToken == Tokens.CloseParenthesis) {
-						frame.SetContext(ExpressionContext.BaseConstructorCall);
+						frame.SetContext(CSharpExpressionContext.BaseConstructorCall);
 						frame.parenthesisChildType = FrameType.Expression;
 					} else {
 						if (frame.curlyChildType == FrameType.TypeDecl || frame.curlyChildType == FrameType.Interface || frame.curlyChildType == FrameType.Enum) {
@@ -692,7 +692,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					                             || frame.parent.state == FrameState.FieldDecl))
 					{
 						frame.type = FrameType.ParameterList;
-						frame.SetContext(ExpressionContext.FirstParameterType);
+						frame.SetContext(CSharpExpressionContext.FirstParameterType);
 						frame.parent.state = FrameState.MethodDecl;
 						frame.parent.curlyChildType = FrameType.Statements;
 					}

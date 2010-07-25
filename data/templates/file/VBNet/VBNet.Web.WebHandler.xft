@@ -1,0 +1,63 @@
+﻿<?xml version="1.0"?>
+<Template author="Siegfried Pammer" version="1.0">
+
+	<Config
+		name        = "${res:Templates.File.WebHandler.Name}"
+		icon        = "VBNet.File.NewClass"
+		category    = "VB"
+		subcategory = "ASP.NET"
+		defaultname = "WebHandler${Number}.ashx"
+		language    = "VBNET"
+	/>
+
+	<Description>${res:Templates.File.WebHandler.Description}</Description>
+	<!--
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".vb"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${Path}/${FileName}.vb" DependentUpon="${FileName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
+Imports System
+Imports System.Web
+
+Namespace ${StandardNamespace}
+	''' <summary>
+	''' Description of ${ClassName}
+	''' </summary>
+	Public Class ${ClassName}
+		Implements IHttpHandler
+
+		'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#Region "Process Request"
+		Public Sub ProcessRequest(context As HttpContext)
+			context.Response.ContentType = "text/plain"
+			context.Response.Write("Hello #Develop.")
+			context.Response.Flush()
+			context.Response.Close()
+		End Sub
+		#End Region
+		'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+		Public ReadOnly Property IsReusable() As Boolean
+			Get
+				Return True
+			End Get
+		End Property
+
+	End Class
+End Namespace]]></File>
+		<File name="${FullName}" language="HTML"><![CDATA[<%@ WebHandler
+	Language           = "VB"
+	Class           = "${StandardNamespace}.${ClassName}"
+%>
+]]>		</File>
+
+	</Files>
+
+	<AdditionalOptions/>
+</Template>

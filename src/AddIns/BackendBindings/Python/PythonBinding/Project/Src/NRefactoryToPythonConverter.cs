@@ -788,6 +788,14 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
+		public override object TrackedVisitMemberInitializerExpression(MemberInitializerExpression memberInitializerExpression, object data)
+		{
+			Append(memberInitializerExpression.Name);
+			Append(" = ");
+			memberInitializerExpression.Expression.AcceptVisitor(this, data);
+			return null;
+		}
+		
 		/// <summary>
 		/// Adds a CodeMemberMethod to the current class being visited.
 		/// </summary>
@@ -1409,7 +1417,7 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 		}
-				
+		
 		void IOutputFormatter.PrintPreprocessingDirective(PreprocessingDirective directive, bool forceWriteInPreviousBlock)
 		{
 		}
@@ -1915,7 +1923,7 @@ namespace ICSharpCode.PythonBinding
 				codeBuilder.AppendIndentedLine("#" + comment.CommentText);
 			} else {
 				codeBuilder.AppendToPreviousLine(" #" + comment.CommentText);
-			}			
+			}
 		}
 		
 		void AppendDocstring(List<Comment> xmlDocComments)
@@ -1940,7 +1948,7 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
-		/// Returns true if the node is a type declaration or a method since these can have 
+		/// Returns true if the node is a type declaration or a method since these can have
 		/// python docstrings.
 		/// </summary>
 		bool SupportsDocstring(INode node)
@@ -1953,7 +1961,7 @@ namespace ICSharpCode.PythonBinding
 			string propertyName = propertyDeclaration.Name;
 			AppendIndented(propertyName);
 			Append(" = property(");
-		
+			
 			bool addedParameter = false;
 			if (propertyDeclaration.HasGetRegion) {
 				Append("fget=get_" + propertyName);

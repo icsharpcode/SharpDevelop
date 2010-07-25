@@ -907,7 +907,7 @@
 									</Directory>
 									<Directory Id="VBNetBindingFolder" Name="VBNetBinding">
 										<Component Guid="0F51B5A5-517F-40B3-932A-A0A693926E67" Id="VBNetBindingFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\VBNetBinding\VBNetBinding.dll" Id="VBNetBinding.dll" Name="VBNetBinding.dll" Assembly=".net" AssemblyApplication="VBNetBinding.dll" AssemblyManifest="VBNetBinding.dll" KeyPath="yes" />
+											<File Source="..\..\AddIns\AddIns\BackendBindings\VBNetBinding\ICSharpCode.VBNetBinding.dll" Id="ICSharpCode.VBNetBinding.dll" Name="ICSharpCode.VBNetBinding.dll" Assembly=".net" AssemblyApplication="ICSharpCode.VBNetBinding.dll" AssemblyManifest="ICSharpCode.VBNetBinding.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\BackendBindings\VBNetBinding\VBNetBinding.addin" Id="VBNetBinding.addin" Name="VBNetBinding.addin" />
 										</Component>
 									</Directory>

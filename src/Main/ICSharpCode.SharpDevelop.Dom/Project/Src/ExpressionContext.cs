@@ -59,65 +59,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		#endregion
 		
-		#region C# specific contexts (public static fields) * MOVE TO ANOTHER CLASS *
-		/// <summary>The context expects a new identifier</summary>
-		/// <example>class *expr* {}; string *expr*;</example>
-		public readonly static ExpressionContext IdentifierExpected = new DefaultExpressionContext("IdentifierExpected");
-		
-		/// <summary>The context is outside of any type declaration, expecting a global-level keyword.</summary>
-		public readonly static ExpressionContext Global = new DefaultExpressionContext("Global");
-		
-		/// <summary>The context is the body of a property declaration.</summary>
-		/// <example>string Name { *expr* }</example>
-		public readonly static ExpressionContext PropertyDeclaration = new DefaultExpressionContext("PropertyDeclaration");
-		
-		/// <summary>The context is the body of a property declaration inside an interface.</summary>
-		/// <example>string Name { *expr* }</example>
-		public readonly static ExpressionContext InterfacePropertyDeclaration = new DefaultExpressionContext("InterfacePropertyDeclaration");
-		
-		/// <summary>The context is the body of a event declaration.</summary>
-		/// <example>event EventHandler NameChanged { *expr* }</example>
-		public readonly static ExpressionContext EventDeclaration = new DefaultExpressionContext("EventDeclaration");
-		
-		/// <summary>The context is the body of a method.</summary>
-		/// <example>void Main () { *expr* }</example>
-		public readonly static ExpressionContext MethodBody = new DefaultExpressionContext("MethodBody");
-		
-		/// <summary>The context is after the type parameters of a type/method declaration.
-		/// The only valid keyword is "where"</summary>
-		/// <example>class &lt;T&gt; *expr*</example>
-		public readonly static ExpressionContext ConstraintsStart = new DefaultExpressionContext("ConstraintsStart");
-		
-		/// <summary>The context is after the 'where' of a constraints list.</summary>
-		/// <example>class &lt;T&gt; where *expr*</example>
-		public readonly static ExpressionContext Constraints = new NonStaticTypeExpressionContext("Constraints", false);
-		
-		
-		/// <summary>The context is the body of a type declaration.</summary>
-		public readonly static ExpressionContext TypeDeclaration = new NonStaticTypeExpressionContext("TypeDeclaration", true);
-		
-		/// <summary>The context is the body of an interface declaration.</summary>
-		public readonly static ExpressionContext InterfaceDeclaration = new NonStaticTypeExpressionContext("InterfaceDeclaration", true);
-		
-		/// <summary>Context expects "base" or "this".</summary>
-		/// <example>public ClassName() : *expr*</example>
-		public readonly static ExpressionContext BaseConstructorCall = new DefaultExpressionContext("BaseConstructorCall");
-		
-		/// <summary>The first parameter</summary>
-		/// <example>void MethodName(*expr*)</example>
-		public readonly static ExpressionContext FirstParameterType = new NonStaticTypeExpressionContext("FirstParameterType", false);
-		
-		/// <summary>Another parameter</summary>
-		/// <example>void MethodName(..., *expr*)</example>
-		public readonly static ExpressionContext ParameterType = new NonStaticTypeExpressionContext("ParameterType", false);
-		
-		/// <summary>Context expects a fully qualified type name.</summary>
-		/// <example>using Alias = *expr*;</example>
-		public readonly static ExpressionContext FullyQualifiedType = new DefaultExpressionContext("FullyQualifiedType");
-		
-		/// <summary>Context expects is a property name in an object initializer.</summary>
-		/// <example>new *type* [(args)] { *expr* = ... }</example>
-		public readonly static ExpressionContext ObjectInitializer = new DefaultExpressionContext("ObjectInitializer");
+		#region VB specific contexts (public static fields) * MOVE TO ANOTHER CLASS *
+		/// <summary>The context expects a new parameter declaration</summary>
+		/// <example>Function Test(*expr*, *expr*, ...)</example>
+		public static readonly ExpressionContext Parameter = new DefaultExpressionContext("Parameter");
 		#endregion
 		
 		#region Default contexts (public static fields)
@@ -179,10 +124,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <example>public event *expr*</example>
 		public readonly static ExpressionContext DelegateType = new ClassTypeExpressionContext(ClassType.Delegate);
 		
+		/// <summary>The context expects a new identifier</summary>
+		/// <example>class *expr* {}; string *expr*;</example>
+		public readonly static ExpressionContext IdentifierExpected = new DefaultExpressionContext("IdentifierExpected");
+		
+		/// <summary>The context is outside of any type declaration, expecting a global-level keyword.</summary>
+		public readonly static ExpressionContext Global = new DefaultExpressionContext("Global");
+		
+		/// <summary>The context is the body of a type declaration.</summary>
+		public readonly static ExpressionContext TypeDeclaration = new ExpressionContext.NonStaticTypeExpressionContext("TypeDeclaration", true);
+		
+		/// <summary>The context is the body of a method.</summary>
+		/// <example>void Main () { *expr* }</example>
+		public readonly static ExpressionContext MethodBody = new ExpressionContext.DefaultExpressionContext("MethodBody");
 		#endregion
 		
 		#region DefaultExpressionContext
-		sealed class DefaultExpressionContext : ExpressionContext
+		internal sealed class DefaultExpressionContext : ExpressionContext
 		{
 			string name;
 			
@@ -494,7 +452,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#endregion
 		
 		#region NonStaticTypeExpressionContext
-		sealed class NonStaticTypeExpressionContext : ExpressionContext
+		internal sealed class NonStaticTypeExpressionContext : ExpressionContext
 		{
 			string name;
 			bool allowVoid;

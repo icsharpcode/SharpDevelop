@@ -631,6 +631,14 @@ namespace ICSharpCode.RubyBinding
 			return null;
 		}
 		
+		public override object TrackedVisitMemberInitializerExpression(MemberInitializerExpression memberInitializerExpression, object data)
+		{
+			Append(memberInitializerExpression.Name);
+			Append(" = ");
+			memberInitializerExpression.Expression.AcceptVisitor(this, data);
+			return null;
+		}
+		
 		public override object TrackedVisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
 		{
 			currentNamespaceDeclaration = namespaceDeclaration;

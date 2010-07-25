@@ -404,6 +404,23 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitTemplateDefinition(TemplateDefinition templateDefinition, object data)
 		{
 			VisitAttributes(templateDefinition.Attributes, data);
+			switch (templateDefinition.VarianceModifier) {
+				case VarianceModifier.Invariant:
+					// nothing
+					break;
+				case VarianceModifier.Covariant:
+					outputFormatter.Space();
+					outputFormatter.PrintToken(Tokens.Out);
+					outputFormatter.Space();
+					break;
+				case VarianceModifier.Contravariant:
+					outputFormatter.Space();
+					outputFormatter.PrintToken(Tokens.In);
+					outputFormatter.Space();
+					break;
+				default:
+					throw new Exception("Invalid value for VarianceModifier");
+			}
 			outputFormatter.PrintIdentifier(templateDefinition.Name);
 			if (templateDefinition.Bases.Count > 0) {
 				outputFormatter.PrintText(" As ");
@@ -568,17 +585,34 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			AppendCommaSeparatedList(propertyDeclaration.Parameters);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.As);
-			outputFormatter.Space();
-			VisitReturnTypeAttributes(propertyDeclaration.Attributes, data);
-			TrackedVisit(propertyDeclaration.TypeReference, data);
+			
+			if (!propertyDeclaration.TypeReference.IsNull) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.As);
+				outputFormatter.Space();
+				
+				VisitReturnTypeAttributes(propertyDeclaration.Attributes, data);
+				
+				ObjectCreateExpression init = propertyDeclaration.Initializer as ObjectCreateExpression;
+				if (init != null && TypeReference.AreEqualReferences(init.CreateType, propertyDeclaration.TypeReference)) {
+					TrackedVisit(propertyDeclaration.Initializer, data);
+				} else {
+					TrackedVisit(propertyDeclaration.TypeReference, data);
+				}
+			}
 			
 			PrintInterfaceImplementations(propertyDeclaration.InterfaceImplementations);
 			
+			if (!propertyDeclaration.Initializer.IsNull && !(propertyDeclaration.Initializer is ObjectCreateExpression)) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.Assign);
+				outputFormatter.Space();
+				TrackedVisit(propertyDeclaration.Initializer, data);
+			}
+			
 			outputFormatter.NewLine();
 			
-			if (!IsAbstract(propertyDeclaration)) {
+			if (!IsAbstract(propertyDeclaration) && (propertyDeclaration.GetRegion.Block != NullBlockStatement.Instance  || propertyDeclaration.SetRegion.Block != NullBlockStatement.Instance)) {
 				outputFormatter.IsInMemberBody = true;
 				++outputFormatter.IndentationLevel;
 				exitTokenStack.Push(Tokens.Property);
@@ -2627,7 +2661,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			CollectionInitializerExpression initializer = objectCreateExpression.ObjectInitializer;
 			if (!initializer.IsNull) {
 				outputFormatter.Space();
-				outputFormatter.PrintToken(Tokens.With);
+				if (initializer.CreateExpressions.Any(ce => ce is MemberInitializerExpression))
+					outputFormatter.PrintToken(Tokens.With);
+				else
+					outputFormatter.PrintToken(Tokens.From);
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
 				outputFormatter.IndentationLevel++;
@@ -2637,18 +2674,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.PrintToken(Tokens.Comma);
 					outputFormatter.PrintLineContinuation();
 					outputFormatter.Indent();
-					//outputFormatter.PrintText("Key "); TODO "Key" cannot be represented in AST
-					NamedArgumentExpression nae = expr as NamedArgumentExpression;
-					if (nae != null) {
-						outputFormatter.PrintToken(Tokens.Dot);
-						outputFormatter.PrintIdentifier(nae.Name);
-						outputFormatter.Space();
-						outputFormatter.PrintToken(Tokens.Assign);
-						outputFormatter.Space();
-						TrackedVisit(nae.Expression, data);
-					} else {
-						TrackedVisit(expr, data);
-					}
+					TrackedVisit(expr, data);
 				}
 				outputFormatter.IndentationLevel--;
 				outputFormatter.PrintLineContinuation();
@@ -2689,6 +2715,21 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
 			this.AppendCommaSeparatedList(arrayInitializerExpression.CreateExpressions);
 			outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
+			return null;
+		}
+		
+		public override object TrackedVisitMemberInitializerExpression(MemberInitializerExpression memberInitializerExpression, object data)
+		{
+			if (memberInitializerExpression.IsKey) {
+				outputFormatter.PrintToken(Tokens.Key);
+				outputFormatter.Space();
+			}
+			outputFormatter.PrintToken(Tokens.Dot);
+			outputFormatter.PrintIdentifier(memberInitializerExpression.Name);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Assign);
+			outputFormatter.Space();
+			TrackedVisit(memberInitializerExpression.Expression, data);
 			return null;
 		}
 		
@@ -2799,6 +2840,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.PrintToken(Tokens.MustOverride);
 				outputFormatter.Space();
 			}
+			if ((modifier & Modifiers.Dim) == Modifiers.Dim) {
+				outputFormatter.PrintToken(Tokens.Dim);
+				outputFormatter.Space();
+			}
 			if ((modifier & Modifiers.Overloads) == Modifiers.Overloads) {
 				outputFormatter.PrintToken(Tokens.Overloads);
 				outputFormatter.Space();
@@ -2904,20 +2949,49 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitLambdaExpression(LambdaExpression lambdaExpression, object data)
 		{
-			if (!lambdaExpression.ExpressionBody.IsNull) {
+			bool isSub = !lambdaExpression.ReturnType.IsNull &&
+				lambdaExpression.ReturnType.Type == "System.Void" && lambdaExpression.ReturnType.IsKeyword;
+			
+			if (isSub)
+				outputFormatter.PrintToken(Tokens.Sub);
+			else
 				outputFormatter.PrintToken(Tokens.Function);
-				outputFormatter.PrintToken(Tokens.OpenParenthesis);
-				AppendCommaSeparatedList(lambdaExpression.Parameters);
-				outputFormatter.PrintToken(Tokens.CloseParenthesis);
-				outputFormatter.Space();
+			
+			outputFormatter.PrintToken(Tokens.OpenParenthesis);
+			AppendCommaSeparatedList(lambdaExpression.Parameters);
+			outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			
+			outputFormatter.Space();
+			
+			if (!lambdaExpression.ExpressionBody.IsNull) {
 				return lambdaExpression.ExpressionBody.AcceptVisitor(this, data);
 			} else {
-				OutputAnonymousMethodWithStatementBody(lambdaExpression.Parameters, lambdaExpression.StatementBody);
+				if (!isSub && !lambdaExpression.ReturnType.IsNull) {
+					outputFormatter.PrintToken(Tokens.As);
+					outputFormatter.Space();
+					TrackedVisit(lambdaExpression.ReturnType, data);
+				}
+				
+				if (lambdaExpression.StatementBody is BlockStatement)
+					outputFormatter.NewLine();
+				
+				TrackedVisit(lambdaExpression.StatementBody, data);
+				
+				if (lambdaExpression.StatementBody is BlockStatement) {
+					outputFormatter.NewLine();
+					outputFormatter.PrintToken(Tokens.End);
+					outputFormatter.Space();
+					if (isSub)
+						outputFormatter.PrintToken(Tokens.Sub);
+					else
+						outputFormatter.PrintToken(Tokens.Function);
+				}
+				
 				return null;
 			}
 		}
 		
-		void OutputAnonymousMethodWithStatementBody(List<ParameterDeclarationExpression> parameters, BlockStatement body)
+		void OutputAnonymousMethodWithStatementBody(List<ParameterDeclarationExpression> parameters, Statement body)
 		{
 			Error("VB does not support anonymous methods/lambda expressions with a statement body", body.StartLocation);
 			
@@ -2941,21 +3015,26 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.Function);
 		}
 		
-		public override object TrackedVisitQueryExpression(QueryExpression queryExpression, object data)
+		public override object TrackedVisitQueryExpressionVB(QueryExpressionVB queryExpression, object data)
 		{
 			outputFormatter.IndentationLevel++;
-			queryExpression.MiddleClauses.ForEach(PrintClause);
+			for (int i = 0; i < queryExpression.Clauses.Count; i++) {
+				QueryExpressionClause clause = queryExpression.Clauses[i];
+				if (!clause.IsNull) {
+					if (i != 0) {
+						outputFormatter.PrintLineContinuation();
+						outputFormatter.Indent();
+					}
+					clause.AcceptVisitor(this, null);
+				}
+			}
 			outputFormatter.IndentationLevel--;
 			return null;
 		}
 		
 		void PrintClause(QueryExpressionClause clause)
 		{
-			if (!clause.IsNull) {
-				outputFormatter.PrintLineContinuation();
-				outputFormatter.Indent();
-				clause.AcceptVisitor(this, null);
-			}
+
 		}
 		
 		public override object TrackedVisitQueryExpressionFromClause(QueryExpressionFromClause fromClause, object data)
@@ -3054,15 +3133,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public override object TrackedVisitQueryExpressionSelectClause(QueryExpressionSelectClause selectClause, object data)
+		public override object TrackedVisitQueryExpressionSelectVBClause(QueryExpressionSelectVBClause selectClause, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Select);
 			outputFormatter.Space();
-			return selectClause.Projection.AcceptVisitor(this, data);
+			foreach (ExpressionRangeVariable var in selectClause.Variables) {
+				var.AcceptVisitor(this, data);
+			}
+			return null;
 		}
 		
 		public override object TrackedVisitQueryExpressionWhereClause(QueryExpressionWhereClause whereClause, object data)
 		{
+			outputFormatter.Space();
 			outputFormatter.PrintText("Where");
 			outputFormatter.Space();
 			return whereClause.Condition.AcceptVisitor(this, data);
@@ -3071,6 +3154,111 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public override object TrackedVisitExternAliasDirective(ExternAliasDirective externAliasDirective, object data)
 		{
 			UnsupportedNode(externAliasDirective);
+			return null;
+		}
+		
+		public override object TrackedVisitXmlContentExpression(XmlContentExpression xmlContentExpression, object data)
+		{
+			switch (xmlContentExpression.Type) {
+				case XmlContentType.Comment:
+					outputFormatter.PrintText("<!--" + xmlContentExpression.Content + "-->");
+					break;
+				case XmlContentType.Text:
+					outputFormatter.PrintText(xmlContentExpression.Content);
+					break;
+				case XmlContentType.CData:
+					outputFormatter.PrintText("<![CDATA[" + xmlContentExpression.Content + "]]>");
+					break;
+				case XmlContentType.ProcessingInstruction:
+					outputFormatter.PrintText("<?" + xmlContentExpression.Content + "?>");
+					break;
+				default:
+					throw new Exception("Invalid value for XmlContentType");
+			}
+			return null;
+		}
+		
+		public override object TrackedVisitXmlEmbeddedExpression(XmlEmbeddedExpression xmlEmbeddedExpression, object data)
+		{
+			outputFormatter.PrintText("<%=");
+			outputFormatter.Space();
+			xmlEmbeddedExpression.InlineVBExpression.AcceptVisitor(this, data);
+			outputFormatter.Space();
+			outputFormatter.PrintText("%>");
+			return null;
+		}
+		
+		public override object TrackedVisitXmlAttributeExpression(XmlAttributeExpression xmlAttributeExpression, object data)
+		{
+			outputFormatter.PrintText(xmlAttributeExpression.Name);
+			outputFormatter.PrintToken(Tokens.Assign);
+			if (xmlAttributeExpression.IsLiteralValue) {
+				if (xmlAttributeExpression.UseDoubleQuotes)
+					outputFormatter.PrintText("\"");
+				else
+					outputFormatter.PrintText("'");
+				outputFormatter.PrintText(xmlAttributeExpression.LiteralValue);
+				if (xmlAttributeExpression.UseDoubleQuotes)
+					outputFormatter.PrintText("\"");
+				else
+					outputFormatter.PrintText("'");
+			} else
+				xmlAttributeExpression.ExpressionValue.AcceptVisitor(this, data);
+			return null;
+		}
+		
+		public override object TrackedVisitXmlElementExpression(XmlElementExpression xmlElementExpression, object data)
+		{
+			outputFormatter.PrintText("<");
+			if (xmlElementExpression.NameIsExpression) {
+				outputFormatter.PrintToken(Tokens.XmlStartInlineVB);
+				outputFormatter.Space();
+				xmlElementExpression.NameExpression.AcceptVisitor(this, data);
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.XmlEndInlineVB);
+			} else {
+				outputFormatter.PrintText(xmlElementExpression.XmlName);
+			}
+			foreach (XmlExpression attribute in xmlElementExpression.Attributes) {
+				outputFormatter.Space();
+				attribute.AcceptVisitor(this, data);
+			}
+			if (xmlElementExpression.Children.Any()) {
+				outputFormatter.PrintText(">");
+				foreach (INode node in xmlElementExpression.Children) {
+					node.AcceptVisitor(this, data);
+				}
+				outputFormatter.PrintText("</");
+				if (!xmlElementExpression.NameIsExpression)
+					outputFormatter.PrintText(xmlElementExpression.XmlName);
+				outputFormatter.PrintText(">");
+			} else {
+				outputFormatter.Space();
+				outputFormatter.PrintText("/>");
+			}
+			return null;
+		}
+		
+		public override object TrackedVisitXmlMemberAccessExpression(XmlMemberAccessExpression xmlMemberAccessExpression, object data)
+		{
+			xmlMemberAccessExpression.TargetObject.AcceptVisitor(this, data);
+			switch (xmlMemberAccessExpression.AxisType) {
+				case XmlAxisType.Element:
+					outputFormatter.PrintToken(Tokens.Dot);
+					break;
+				case XmlAxisType.Attribute:
+					outputFormatter.PrintToken(Tokens.DotAt);
+					break;
+				case XmlAxisType.Descendents:
+					outputFormatter.PrintToken(Tokens.TripleDot);
+					break;
+				default:
+					throw new Exception("Invalid value for XmlAxisType");
+			}
+			if (xmlMemberAccessExpression.IsXmlIdentifier)
+				outputFormatter.PrintText("<" + xmlMemberAccessExpression.Identifier + ">");
+			else
+				outputFormatter.PrintIdentifier(xmlMemberAccessExpression.Identifier);
 			return null;
 		}
 	}

@@ -49,6 +49,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			base.VisitUsingDeclaration(usingDeclaration, data);
 			if (usingDeclaration.Parent is NamespaceDeclaration) {
 				nodesToMoveToCompilationUnit.Add(usingDeclaration);
+				usingDeclaration.StartLocation = usingDeclaration.EndLocation = usingDeclaration.Parent.StartLocation;
 				RemoveCurrentNode();
 			}
 			return null;
@@ -309,6 +310,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		{
 			if (!IsClassType(ClassType.Interface) && (propertyDeclaration.Modifier & Modifiers.Visibility) == 0)
 				propertyDeclaration.Modifier |= Modifiers.Private;
+			
 			base.VisitPropertyDeclaration(propertyDeclaration, data);
 			
 			ToVBNetRenameConflictingVariablesVisitor.RenameConflicting(propertyDeclaration);

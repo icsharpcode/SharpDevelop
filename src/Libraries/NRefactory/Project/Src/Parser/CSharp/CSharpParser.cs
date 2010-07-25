@@ -17,13 +17,31 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 	internal sealed partial class Parser : AbstractParser
 	{
 		Lexer lexer;
+		Stack<INode> blockStack;
 		
 		public Parser(ILexer lexer) : base(lexer)
 		{
 			this.lexer = (Lexer)lexer;
-			// due to anonymous methods, we always need a compilation unit, so
-			// create it in the constructor
-			compilationUnit = new CompilationUnit();
+			this.blockStack = new Stack<INode>();
+		}
+		
+		void BlockStart(INode block)
+		{
+			blockStack.Push(block);
+		}
+		
+		void BlockEnd()
+		{
+			blockStack.Pop();
+		}
+		
+		void AddChild(INode childNode)
+		{
+			if (childNode != null) {
+				INode parent = (INode)blockStack.Peek();
+				parent.Children.Add(childNode);
+				childNode.Parent = parent;
+			}
 		}
 		
 		StringBuilder qualidentBuilder = new StringBuilder();
@@ -90,7 +108,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			
 			BlockStatement blockStmt = new BlockStatement();
 			blockStmt.StartLocation = la.Location;
-			compilationUnit.BlockStart(blockStmt);
+			BlockStart(blockStmt);
 			
 			while (la.kind != Tokens.EOF) {
 				Token oldLa = la;
@@ -101,7 +119,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				}
 			}
 			
-			compilationUnit.BlockEnd();
+			BlockEnd();
 			blockStmt.EndLocation = t.EndLocation;
 			Expect(Tokens.EOF);
 			blockStmt.AcceptVisitor(new SetParentVisitor(), null);
@@ -114,9 +132,9 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			compilationUnit = new CompilationUnit();
 			
 			TypeDeclaration newType = new TypeDeclaration(Modifiers.None, null);
-			compilationUnit.BlockStart(newType);
+			BlockStart(newType);
 			ClassBody();
-			compilationUnit.BlockEnd();
+			BlockEnd();
 			Expect(Tokens.EOF);
 			newType.AcceptVisitor(new SetParentVisitor(), null);
 			return newType.Children;

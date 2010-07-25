@@ -11,7 +11,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace VBNetBinding.OptionPanels
+namespace ICSharpCode.VBNetBinding.OptionPanels
 {
 	public class VBNetTextEditorPanel : XmlFormsOptionPanel
 	{

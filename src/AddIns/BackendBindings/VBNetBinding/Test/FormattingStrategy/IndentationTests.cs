@@ -11,7 +11,7 @@ using ICSharpCode.AvalonEdit;
 using ICSharpCode.Core;
 using NUnit.Framework;
 
-namespace VBNetBinding.Tests
+namespace ICSharpCode.VBNetBinding.Tests
 {
 	[TestFixture]
 	public class IndentationTests

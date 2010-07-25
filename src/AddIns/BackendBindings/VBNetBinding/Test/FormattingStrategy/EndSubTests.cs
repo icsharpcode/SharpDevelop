@@ -11,7 +11,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using NUnit.Framework;
 
-namespace VBNetBinding.Tests
+namespace ICSharpCode.VBNetBinding.Tests
 {
 	/// <summary>
 	/// Tests that Operator overrides have "End Operator" added after the user presses the return key.

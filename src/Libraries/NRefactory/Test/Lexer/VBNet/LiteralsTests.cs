@@ -61,6 +61,14 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		}
 		
 		[Test]
+		public void InvalidTypeCharacter()
+		{
+			// just check that we don't get exceptions:
+			GenerateLexer(new StringReader(".5s")).NextToken();
+			GenerateLexer(new StringReader(".5ul")).NextToken();
+		}
+		
+		[Test]
 		public void TestHexadecimalInteger()
 		{
 			CheckToken("&H10", Tokens.LiteralInteger, 0x10);

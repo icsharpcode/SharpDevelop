@@ -159,6 +159,12 @@ namespace NRefactoryASTGenerator
 				File.WriteAllText(visitorsDir + "NotImplementedAstVisitor.cs", NormalizeNewLines(writer));
 			}
 			Debug.WriteLine("AST Generator done!");
+			
+			Debug.WriteLine("start keyword list generation...");
+			
+			KeywordGenerator.Generate();
+			
+			Debug.WriteLine("keyword list generation done!");
 		}
 		
 		static string NormalizeNewLines(StringWriter writer)

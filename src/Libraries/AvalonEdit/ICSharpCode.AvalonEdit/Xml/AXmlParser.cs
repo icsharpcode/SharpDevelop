@@ -132,7 +132,7 @@ namespace ICSharpCode.AvalonEdit.Xml
 		[Conditional("DEBUG")]
 		internal static void Log(string text, params object[] pars)
 		{
-			System.Diagnostics.Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "XML: " + text, pars));
+			//System.Diagnostics.Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "XML: " + text, pars));
 		}
 		
 		/// <summary>

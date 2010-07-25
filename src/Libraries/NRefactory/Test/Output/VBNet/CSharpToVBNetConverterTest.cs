@@ -24,15 +24,19 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(input));
 			parser.Parse();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
+			var specials = parser.Lexer.SpecialTracker.RetrieveSpecials();
+			PreprocessingDirective.CSharpToVB(specials);
 			parser.CompilationUnit.AcceptVisitor(new CSharpConstructsConvertVisitor(), null);
 			parser.CompilationUnit.AcceptVisitor(new ToVBNetConvertVisitor(), null);
 			VBNetOutputVisitor outputVisitor = new VBNetOutputVisitor();
 			outputVisitor.Options.IndentationChar = ' ';
 			outputVisitor.Options.IndentSize = 2;
 			outputVisitor.Options.OutputByValModifier = true;
-			outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
+			using (SpecialNodesInserter.Install(specials, outputVisitor)) {
+				outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
+			}
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
-			Assert.AreEqual(expectedOutput, outputVisitor.Text);
+			Assert.AreEqual(expectedOutput.Replace("\r", ""), outputVisitor.Text.Replace("\r", ""));
 		}
 		
 		public void TestMember(string input, string expectedOutput)
@@ -604,28 +608,68 @@ Private m_Name As String");
 		[Test]
 		public void TestAnonymousType()
 		{
-			// TODO test is strictly incorrect, the converter should add "Key"
 			TestStatement("var x = new { i = 0, abc, abc.Test };",
 			              "Dim x = New With { _\n" +
-			              "  .i = 0, _\n" +
+			              "  Key .i = 0, _\n" +
 			              "  abc, _\n" +
 			              "  abc.Test _\n" +
 			              "}");
 		}
 		
 		[Test]
-		[Ignore]
 		public void CollectionAndObjectInitializer()
 		{
 			TestStatement("List<X> l = new List<X> { new X { A = 1 }, new X { A = 2 } };",
 			              "Dim l As New List(Of X)() From { _\n" +
 			              "  New X() With { _\n" +
-			              "    .A = 1 _\n" +
+			              "    Key .A = 1 _\n" +
 			              "  }, _\n" +
 			              "  New X() With { _\n" +
-			              "    .A = 2 _\n" +
+			              "    Key .A = 2 _\n" +
 			              "  } _\n" +
 			              "}");
+		}
+		
+		[Test]
+		public void SD2_970()
+		{
+			TestProgram(
+				@"namespace MyNamespace
+{
+      #region ""Test""
+            using System;
+            public partial class MainForm
+            {
+                  object x;
+            }
+      #endregion
+}",
+				@"Imports System
+Namespace MyNamespace
+  #Region ""Test""
+  Public Partial Class MainForm
+    Private x As Object
+  End Class
+  #End Region
+End Namespace
+"
+			);
+		}
+		
+		[Test]
+		public void SD2_1424()
+		{
+			TestMember(
+				@"public int Min()
+{
+  int min = 5;
+  return min;
+}",
+				@"Public Function Min() As Integer
+  Dim min__1 As Integer = 5
+  Return min__1
+End Function"
+			);
 		}
 	}
 }

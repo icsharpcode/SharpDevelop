@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			outputVisitor.Options.IndentSize = 2;
 			outputVisitor.VisitCompilationUnit(parser.CompilationUnit, null);
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
-			Assert.AreEqual(expectedOutput, outputVisitor.Text);
+			Assert.AreEqual(expectedOutput.Replace("\r", ""), outputVisitor.Text.Replace("\r", ""));
 		}
 		
 		public void TestMember(string input, string expectedOutput)
@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 				}
 			}
 			b.AppendLine("}");
-			TestProgram("Class tmp1 \n" + input + "\nEnd Class", b.ToString());
+			TestProgram("Option Strict On \n Class tmp1 \n" + input + "\nEnd Class", b.ToString());
 		}
 		
 		public void TestStatement(string input, string expectedOutput)
@@ -76,7 +76,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			}
 			b.AppendLine("  }");
 			b.AppendLine("}");
-			TestProgram("Class tmp1 \n Sub tmp2() \n" + input + "\n End Sub \n End Class", b.ToString());
+			TestProgram("Option Strict On \n Option Infer On \n Class tmp1 \n Sub tmp2() \n" + input + "\n End Sub \n End Class", b.ToString());
 		}
 		
 		[Test]
@@ -628,7 +628,7 @@ static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.Stat
 			TestStatement("With Ejes\n" +
 			              "  .AddLine(p1, p2)\n" +
 			              "End With",
-			              "{\n  Ejes.AddLine(p1, p2);\n}");
+			              "var _with1 = Ejes;\n_with1.AddLine(p1, p2);");
 		}
 		
 		[Test]
@@ -641,7 +641,7 @@ static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.Stat
 				"  End With\n" +
 				"End With",
 				
-				"{\n  {\n    tb1.Font.Italic = true;\n  }\n}");
+				"var _with1 = tb1;\nvar _with2 = _with1.Font;\n_with2.Italic = true;");
 		}
 		
 		[Test]
@@ -654,7 +654,7 @@ static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.Stat
 				"  End With\n" +
 				"End With",
 				
-				"{\n  {\n    tb1.Something.Font.Italic = true;\n  }\n}");
+				"var _with1 = tb1;\nvar _with2 = _with1.Something.Font;\n_with2.Italic = true;");
 		}
 		
 		[Test]
@@ -777,6 +777,243 @@ static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.Stat
 		public void CastToInteger()
 		{
 			TestStatement("Dim x As Integer = CInt(obj)", "int x = Convert.ToInt32(obj);");
+		}
+		
+		[Test]
+		public void XmlElement()
+		{
+			TestStatement("Dim xml = <Test />",
+			              @"var xml = new XElement(""Test"");");
+		}
+		
+		[Test]
+		public void XmlElement2()
+		{
+			TestStatement(@"Dim xml = <Test name=""test"" name2=<%= testVal %> />",
+			              @"var xml = new XElement(""Test"", new XAttribute(""name"", ""test""), new XAttribute(""name2"", testVal));");
+		}
+		
+		[Test]
+		public void XmlElement3()
+		{
+			TestStatement(@"Dim xml = <Test name=""test"" name2=<%= testVal %> <%= testVal2 %> />",
+			              @"var xml = new XElement(""Test"", new XAttribute(""name"", ""test""), new XAttribute(""name2"", testVal), testVal2);");
+		}
+		
+		[Test]
+		public void XmlNestedElement()
+		{
+			TestStatement("Dim xml = <Test>      <Test2 />        </Test>",
+			              @"var xml = new XElement(""Test"", new XElement(""Test2""));");
+		}
+		
+		[Test]
+		public void XmlNestedElement2()
+		{
+			TestStatement("Dim xml = <Test>      <Test2 />    hello    </Test>",
+			              @"var xml = new XElement(""Test"", new XElement(""Test2""), ""    hello    "");");
+		}
+		
+		[Test]
+		public void XmlNestedElement3()
+		{
+			TestStatement("Dim xml = <Test>      <Test2 a='b' />    hello    </Test>",
+			              @"var xml = new XElement(""Test"", new XElement(""Test2"", new XAttribute(""a"", ""b"")), ""    hello    "");");
+		}
+		
+		[Test]
+		public void XmlNestedElement4()
+		{
+			TestStatement("Dim xml = <Test>      <Test2 a='b' />    hello    \t<![CDATA[any & <>]]></Test>",
+			              @"var xml = new XElement(""Test"", new XElement(""Test2"", new XAttribute(""a"", ""b"")), ""    hello    \t"", new XCData(""any & <>""));");
+		}
+		
+		[Test]
+		public void XmlComment()
+		{
+			TestStatement("Dim xml = <!-- test -->",
+			              @"var xml = new XComment("" test "");");
+		}
+		
+		[Test]
+		public void XmlCData()
+		{
+			TestStatement("Dim xml = <![CDATA[any & <> char]]>",
+			              @"var xml = new XCData(""any & <> char"");");
+		}
+		
+		[Test]
+		public void XmlProcessingInstruction()
+		{
+			TestStatement("Dim xml = <?target testcontent?>",
+			              @"var xml = new XProcessingInstruction(""target"", "" testcontent"");");
+		}
+		
+		[Test]
+		public void XmlDocumentTest()
+		{
+			TestStatement(@"Dim xml = <?xml version=""1.0""?><!-- test --><Data a='true'><A/></Data><!-- test -->",
+			              @"var xml = new XDocument(new XDeclaration(""1.0"", null, null), new XComment("" test ""), new XElement(""Data"", new XAttribute(""a"", ""true""), new XElement(""A"")), new XComment("" test ""));");
+		}
+		
+		
+		[Test]
+		public void XmlDocumentTest2()
+		{
+			TestStatement(@"Dim xml = <?xml?><!-- test --><Data a='true'><A/></Data><!-- test -->",
+			              @"var xml = new XDocument(new XDeclaration(null, null, null), new XComment("" test ""), new XElement(""Data"", new XAttribute(""a"", ""true""), new XElement(""A"")), new XComment("" test ""));");
+		}
+		
+		[Test]
+		public void XmlDocumentTest3()
+		{
+			TestStatement(@"Dim xml = <?xml version=""1.0"" encoding=""utf-8""?><!-- test --><Data a='true'><A/></Data><!-- test -->",
+			              @"var xml = new XDocument(new XDeclaration(""1.0"", ""utf-8"", null), new XComment("" test ""), new XElement(""Data"", new XAttribute(""a"", ""true""), new XElement(""A"")), new XComment("" test ""));");
+		}
+		
+		[Test]
+		public void XmlDocumentTest4()
+		{
+			TestStatement(@"Dim xml = <?xml version=""1.0"" encoding=""utf-8"" standalone=""yes""?><!-- test --><Data a='true'><A <%= content %> /></Data><!-- test -->",
+			              @"var xml = new XDocument(new XDeclaration(""1.0"", ""utf-8"", ""yes""), new XComment("" test ""), new XElement(""Data"", new XAttribute(""a"", ""true""), new XElement(""A"", content)), new XComment("" test ""));");
+		}
+		
+		[Test]
+		public void XmlEmbeddedExpression()
+		{
+			TestStatement(@"Dim xml = <<%= name %>>Test</>",
+			              @"var xml = new XElement(name, ""Test"");");
+		}
+		
+		[Test]
+		public void XmlEmbeddedExpression2()
+		{
+			TestStatement(@"Dim xml = <<%= name %>><%= content %></>",
+			              @"var xml = new XElement(name, content);");
+		}
+		
+		[Test]
+		public void XmlEntityReference()
+		{
+			TestStatement(@"Dim xml = <A b=""&quot;""/>",
+			              @"var xml = new XElement(""A"", new XAttribute(""b"", ""\""""));");
+		}
+		
+		[Test]
+		public void XmlEntityReference2()
+		{
+			TestStatement(@"Dim xml = <A>&quot;</A>",
+			              @"var xml = new XElement(""A"", ""\"""");");
+		}
+		
+		[Test]
+		public void SD2_1500a()
+		{
+			TestProgram(
+				@"Public Class Class1
+    Private PFoo As String
+    Public Property Foo() As String
+        Get
+            Foo = PFoo
+        End Get
+        Set(ByVal Value As String)
+            PFoo = Value
+        End Set
+    End Property
+End Class",
+				@"public class Class1
+{
+  private string PFoo;
+  public string Foo {
+    get { return PFoo; }
+    set { PFoo = value; }
+  }
+}
+"
+			);
+		}
+		
+		[Test]
+		public void SD2_1500b()
+		{
+			TestMember(
+				@"Function Test As Integer
+	Test = 5
+End Function",
+				@"public int Test()
+{
+  return 5;
+}"
+			);
+		}
+		
+		[Test]
+		public void SD2_1500c()
+		{
+			TestMember(
+				@"Function Test As Integer
+	If True Then Test = 3
+	Test = 5
+End Function",
+				@"public int Test()
+{
+  int functionReturnValue = 0;
+  if (true)
+    functionReturnValue = 3;
+  functionReturnValue = 5;
+  return functionReturnValue;
+}"
+			);
+		}
+		
+		[Test]
+		public void SD2_1500d()
+		{
+			TestMember(
+				@"Function Test As Integer
+	If True Then
+		Test = 3
+		Exit Function
+	End If
+	Test = 5
+End Function",
+				@"public int Test()
+{
+  int functionReturnValue = 0;
+  if (true) {
+    functionReturnValue = 3;
+    return functionReturnValue;
+  }
+  functionReturnValue = 5;
+  return functionReturnValue;
+}"
+			);
+		}
+		
+		[Test]
+		public void SD2_1497()
+		{
+			TestMember(
+				@"Public Function Bug() As String
+  With New System.Text.StringBuilder(""Hi! "")
+     .Append(""you "")
+     .Append(""folks "")
+     .Append(""from "")
+     .Append(""sharpdevelop!"")
+     Return .ToString()
+  End With
+End Function",
+				@"public string Bug()
+{
+  var _with1 = new System.Text.StringBuilder(""Hi! "");
+  _with1.Append(""you "");
+  _with1.Append(""folks "");
+  _with1.Append(""from "");
+  _with1.Append(""sharpdevelop!"");
+  return _with1.ToString();
+}
+"
+			);
 		}
 	}
 }

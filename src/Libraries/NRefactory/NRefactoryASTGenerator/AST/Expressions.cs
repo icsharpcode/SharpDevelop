@@ -40,6 +40,15 @@ namespace NRefactoryASTGenerator.Ast
 		public NamedArgumentExpression(string name, Expression expression) {}
 	}
 	
+	class MemberInitializerExpression : Expression {
+		string     name;
+		bool       isKey;
+		Expression expression;
+		
+		public MemberInitializerExpression() { }
+		public MemberInitializerExpression(string name, Expression expression) {}
+	}
+	
 	[IncludeBoolProperty("IsAnonymousType", "return createType.IsNull || string.IsNullOrEmpty(createType.Type);")]
 	class ObjectCreateExpression : Expression {
 		TypeReference    createType;
@@ -175,8 +184,9 @@ namespace NRefactoryASTGenerator.Ast
 	[IncludeMember("public Location ExtendedEndLocation { get; set; }")]
 	class LambdaExpression : Expression {
 		List<ParameterDeclarationExpression> parameters;
-		BlockStatement statementBody;
+		Statement statementBody;
 		Expression expressionBody;
+		TypeReference returnType;
 	}
 	
 	class CheckedExpression : Expression {
@@ -378,5 +388,53 @@ namespace NRefactoryASTGenerator.Ast
 	class QueryExpressionGroupJoinVBClause : QueryExpressionClause {
 		QueryExpressionJoinVBClause joinClause;
 		List<ExpressionRangeVariable> intoVariables;
+	}
+	
+	enum XmlAxisType { }
+	
+	class XmlMemberAccessExpression : Expression {
+		Expression targetObject;
+		XmlAxisType axisType;
+		bool isXmlIdentifier;
+		string identifier;
+		
+		public XmlMemberAccessExpression(Expression targetObject, XmlAxisType axisType, string identifier, bool isXmlIdentifier) {}
+	}
+
+	abstract class XmlExpression : Expression { }
+
+	class XmlDocumentExpression : XmlExpression {
+		List<XmlExpression> expressions;
+	}
+	
+	enum XmlContentType { }
+	
+	class XmlContentExpression : XmlExpression {
+		string content;
+		XmlContentType type;
+		
+		public XmlContentExpression(string content, XmlContentType type) {}
+	}
+	
+	class XmlEmbeddedExpression : XmlExpression {
+		Expression inlineVBExpression;
+	}
+
+	[IncludeBoolProperty("IsExpression", "return !content.IsNull;")]
+	[IncludeBoolProperty("NameIsExpression", "return !nameExpression.IsNull;")]
+	[HasChildren]
+	class XmlElementExpression : XmlExpression {
+		Expression content;
+		Expression nameExpression;
+		string xmlName;
+		List<XmlExpression> attributes;
+	}
+	
+	[IncludeBoolProperty("IsLiteralValue", "return expressionValue.IsNull;")]
+	class XmlAttributeExpression : XmlExpression {
+		string name;
+		string literalValue;
+		bool useDoubleQuotes;
+		Expression expressionValue;
 	}
 }

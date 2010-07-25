@@ -31,7 +31,11 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		
 		string StripWhitespace(string text)
 		{
-			return text.Trim().Replace("\t", "").Replace("\r", "").Replace("\n", " ").Replace("  ", " ");
+			text = text.Trim().Replace("\t", "").Replace("\r", "").Replace("\n", " ").Replace("  ", " ");
+			while (text.Contains("  ")) {
+				text = text.Replace("  ", " ");
+			}
+			return text;
 		}
 		
 		void TestTypeMember(string program)
@@ -287,6 +291,15 @@ End Using");
 		}
 		
 		[Test]
+		public void AutoProperty()
+		{
+			TestTypeMember("Public Property Value()");
+			TestTypeMember("Public Property Value() As Integer");
+			TestTypeMember("Public Property Value() As Integer = 5");
+			TestTypeMember("Public Property Value() As New List()");
+		}
+		
+		[Test]
 		public void AbstractProperty()
 		{
 			TestTypeMember("Public MustOverride Property ExpectsValue() As Boolean");
@@ -537,6 +550,123 @@ End Using");
 		public void WithEvents()
 		{
 			TestTypeMember("Dim WithEvents a As Button");
+		}
+				
+		[Test]
+		public void FriendWithEventsField()
+		{
+			TestTypeMember("Friend WithEvents Button1 As System.Windows.Forms.Button");
+		}
+		
+		[Test]
+		public void SimpleFunctionLambda()
+		{
+			TestExpression("Function(x) x * x");
+		}
+		
+		[Test]
+		public void SimpleFunctionLambdaWithType()
+		{
+			TestExpression("Function(x As Integer) x * x");
+		}
+		
+		[Test]
+		public void SimpleSubLambdaWithType()
+		{
+			TestExpression("Sub(x As Integer) Console.WriteLine(x)");
+		}
+		
+		[Test]
+		public void BlockSubLambdaWithType()
+		{
+			TestExpression("Sub(x As Integer)\n" +
+			               "	Console.WriteLine(x)\n" +
+			               "End Sub");
+		}
+		
+		[Test]
+		public void BlockFunctionLambdaWithType()
+		{
+			TestExpression("Function(x As Integer) As Integer\n" +
+			               "	If x < 2 Then\n" +
+			               "		Return x\n" +
+			               "	End If\n" +
+			               "	Return x * x\n" +
+			               "End Function");
+		}
+		
+		[Test]
+		public void XmlSimple()
+		{
+			TestExpression("<?xml?>\n" +
+			               "<!-- test -->\n" +
+			               "<Test>\n" +
+			               "	<A />\n" +
+			               "	<B test='a' <%= test %> />\n" +
+			               "</Test>");
+		}
+		
+		[Test]
+		public void XmlNested()
+		{
+			TestExpression(@"<menu>
+              <course name=""appetizer"">
+                  <dish>Shrimp Cocktail</dish>
+                  <dish>Escargot</dish>
+              </course>
+              <course name=""main"">
+                  <dish>Filet Mignon</dish>
+                  <dish>Garlic Potatoes</dish>
+                  <dish>Broccoli</dish>
+              </course>
+              <course name=""dessert"">
+                  <dish>Chocolate Cheesecake</dish>
+              </course>
+          </menu>");
+		}
+		
+		[Test]
+		public void XmlDocument()
+		{
+			TestExpression(@"<?xml version=""1.0""?>
+                  <menu>
+                      <course name=""appetizer"">
+                          <dish>Shrimp Cocktail</dish>
+                          <dish>Escargot</dish>
+                      </course>
+                  </menu>");
+		}
+		
+		[Test]
+		public void XmlNestedWithExpressions()
+		{
+			TestExpression(@"<?xml version=""1.0""?>
+          <menu>
+              <course name=""appetizer"">
+                  <%= From m In menu _
+                      Where m.Course = ""appetizer"" _
+                      Select <dish><%= m.Food %></dish> %>
+              </course>
+              <course name=""main"">
+                  <%= From m In menu _
+                      Where m.Course = ""main"" _
+                      Select <dish><%= m.Food %></dish> %>
+              </course>
+              <course name=""dessert"">
+                  <%= From m In menu _
+                      Where m.Course = ""dessert"" _
+                      Select <dish><%= m.Food %></dish> %>
+              </course>
+          </menu>");
+		}
+		
+		[Test]
+		public void XmlAccessExpressions()
+		{
+			TestExpression("xml.<menu>.<course>");
+			TestExpression("xml...<course>");
+			TestExpression("xml...<course>(2)");
+			TestExpression("item.@name");
 		}
 	}
 }

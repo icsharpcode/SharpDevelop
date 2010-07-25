@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<Template author="Siegfried Pammer" version="1.0">
+
+	<Config
+		name        = "${res:Templates.File.WebControl.Name}"
+		icon        = "VBNet.File.NewClass"
+		category    = "VB"
+		subcategory = "ASP.NET"
+		defaultname = "WebControl${Number}"
+		language    = "VBNET"
+	/>
+
+	<Description>${res:Templates.File.WebControl.Description}</Description>
+	<!--
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".vb"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${Path}/${FileNameWithoutExtension}.vb" DependentUpon="${FileName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
+Imports System.Web
+Imports System.Web.SessionState
+Imports System.Web.UI
+Imports System.Web.UI.WebControls
+Imports System.Web.UI.HtmlControls
+
+Namespace ${StandardNamespace}
+	''' <summary>
+	''' Description of ${ClassName}
+	''' </summary>
+	Public Class ${ClassName}
+		Inherits Control
+		'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#Region "Data"
+		#End Region
+		'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#Region "Constructor"
+
+		Public Sub New()
+			AddHandler Init, New EventHandler(AddressOf OnInit)
+			AddHandler Load, New EventHandler(AddressOf OnLoad)
+		End Sub
+
+		#End Region
+		'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#Region "OnInit"
+
+		Private Overloads Sub OnInit(sender As Object, e As EventArgs)
+		End Sub
+
+		#End Region
+		'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#Region "OnLoad"
+
+		Private Overloads Sub OnLoad(sender As Object, e As EventArgs)
+		End Sub
+
+		#End Region
+		'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#Region "Properties"
+		#End Region
+		'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		#Region "Render"
+
+		Protected Overrides Sub Render(Writer As HtmlTextWriter)
+			Writer.Write("${ClassName} Control")
+		End Sub
+		#End Region
+	End Class
+End Namespace]]></File>
+
+	</Files>
+
+	<AdditionalOptions/>
+</Template>

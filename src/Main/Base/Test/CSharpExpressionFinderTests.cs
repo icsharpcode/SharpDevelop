@@ -208,7 +208,7 @@ class Main {
 		public void GlobalNamespace()
 		{
 			// context = context after the found word
-			FindFull(program3, "global", "global", ExpressionContext.FirstParameterType);
+			FindFull(program3, "global", "global", CSharpExpressionContext.FirstParameterType);
 			FindFull(program3, "System.Ex", "global::System", ExpressionContext.IdentifierExpected);
 			FindFull(program3, "Excep", "global::System.Exception", ExpressionContext.Type);
 		}
@@ -229,8 +229,8 @@ class Main {
 		[Test]
 		public void ConstructorCall()
 		{
-			FindFull(program3, "this(", "this()", ExpressionContext.BaseConstructorCall);
-			FindFull(program3, "base(", "base(arg + 3)", ExpressionContext.BaseConstructorCall);
+			FindFull(program3, "this(", "this()", CSharpExpressionContext.BaseConstructorCall);
+			FindFull(program3, "base(", "base(arg + 3)", CSharpExpressionContext.BaseConstructorCall);
 		}
 		
 		[Test]
@@ -308,10 +308,10 @@ class Main {
 	}
 }";
 			
-			FindExpr(propertyProgram, "\t/* in prop", null, ExpressionContext.PropertyDeclaration);
+			FindExpr(propertyProgram, "\t/* in prop", null, CSharpExpressionContext.PropertyDeclaration);
 			FindExpr(propertyProgram, "\t/* in getter ", null, ExpressionContext.MethodBody);
 			FindExpr(propertyProgram, "\t/* in setter", null, ExpressionContext.MethodBody);
-			FindExpr(propertyProgram, "\t/* still in prop", null, ExpressionContext.PropertyDeclaration);
+			FindExpr(propertyProgram, "\t/* still in prop", null, CSharpExpressionContext.PropertyDeclaration);
 		}
 		
 		[Test]
@@ -440,7 +440,7 @@ class Main {
 		body;
 } }";
 			
-			FindFull(program, "base", "base(arg)", ExpressionContext.BaseConstructorCall);
+			FindFull(program, "base", "base(arg)", CSharpExpressionContext.BaseConstructorCall);
 			FindFull(program, "body", "body", ExpressionContext.MethodBody);
 			FindFull(program, "arg", "arg", ExpressionContext.Default);
 		}
@@ -549,7 +549,7 @@ class Dictionary<K, ";
 class List<T> ";
 			ExpressionResult result = ef.FindExpression(program, program.Length);
 			Assert.AreEqual("List<T> ", result.Expression);
-			Assert.AreEqual(ExpressionContext.ConstraintsStart, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.ConstraintsStart, result.Context);
 		}
 		
 		[Test]
@@ -559,7 +559,7 @@ class List<T> ";
 class List<T> where ";
 			ExpressionResult result = ef.FindExpression(program, program.Length);
 			Assert.AreEqual("where ", result.Expression);
-			Assert.AreEqual(ExpressionContext.Constraints, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.Constraints, result.Context);
 		}
 		
 		[Test]
@@ -569,7 +569,7 @@ class List<T> where ";
 class List<T> where T : ";
 			ExpressionResult result = ef.FindExpression(program, program.Length);
 			Assert.AreEqual(null, result.Expression);
-			Assert.AreEqual(ExpressionContext.Constraints, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.Constraints, result.Context);
 		}
 		
 		[Test]
@@ -579,7 +579,7 @@ class List<T> where T : ";
 class List<T> where T : class, ";
 			ExpressionResult result = ef.FindExpression(program, program.Length);
 			Assert.AreEqual(null, result.Expression);
-			Assert.AreEqual(ExpressionContext.Constraints, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.Constraints, result.Context);
 		}
 		
 		[Test]
@@ -591,7 +591,7 @@ class Main {
 		a = new MyType { ";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
-			Assert.AreEqual(ExpressionContext.ObjectInitializer, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.ObjectInitializer, result.Context);
 		}
 		
 		[Test]
@@ -603,7 +603,7 @@ class Main {
 		a = new MyType<TypeArgument[], int?> { ";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
-			Assert.AreEqual(ExpressionContext.ObjectInitializer, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.ObjectInitializer, result.Context);
 		}
 		
 		[Test]
@@ -615,7 +615,7 @@ class Main {
 		a = new global::MyNamespace.MyType { ";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
-			Assert.AreEqual(ExpressionContext.ObjectInitializer, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.ObjectInitializer, result.Context);
 		}
 		
 		[Test]
@@ -627,7 +627,7 @@ class Main {
 		a = new MyType(){ ";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
-			Assert.AreEqual(ExpressionContext.ObjectInitializer, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.ObjectInitializer, result.Context);
 		}
 		
 		[Test]
@@ -639,7 +639,7 @@ class Main {
 		a = new MyType<TypeArgument[], int?> (){ ";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
-			Assert.AreEqual(ExpressionContext.ObjectInitializer, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.ObjectInitializer, result.Context);
 		}
 		
 		[Test]
@@ -651,7 +651,7 @@ class Main {
 		a = new MyType(arg1, ')', arg3) { ";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
-			Assert.AreEqual(ExpressionContext.ObjectInitializer, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.ObjectInitializer, result.Context);
 		}
 		
 		[Test]
@@ -663,7 +663,7 @@ class Main {
 		a = new MyType { P1 = expr, ";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
-			Assert.AreEqual(ExpressionContext.ObjectInitializer, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.ObjectInitializer, result.Context);
 		}
 		
 		[Test]
@@ -699,7 +699,7 @@ class Main {
 		a = new { ";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
-			Assert.AreEqual(ExpressionContext.ObjectInitializer, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.ObjectInitializer, result.Context);
 		}
 		
 		[Test]
@@ -711,7 +711,7 @@ class Main {
 		a = new { a.B, ";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
-			Assert.AreEqual(ExpressionContext.ObjectInitializer, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.ObjectInitializer, result.Context);
 		}
 		
 		[Test]
@@ -723,7 +723,7 @@ class Main {
 		a = new SomeType { SomeProperty = { ";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
-			Assert.AreEqual(ExpressionContext.ObjectInitializer, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.ObjectInitializer, result.Context);
 		}
 		
 		[Test]
@@ -735,7 +735,7 @@ class Main {
 		a = new SomeType { SomeProperty = new SomeOtherType { ";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
-			Assert.AreEqual(ExpressionContext.ObjectInitializer, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.ObjectInitializer, result.Context);
 		}
 		
 		[Test]
@@ -801,7 +801,7 @@ class Main {
 	public int this[";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
-			Assert.AreEqual(ExpressionContext.ParameterType, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.ParameterType, result.Context);
 		}
 		
 		[Test]
@@ -812,7 +812,7 @@ class Main {
 	public int this[int index] { ";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
-			Assert.AreEqual(ExpressionContext.PropertyDeclaration, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.PropertyDeclaration, result.Context);
 		}
 		
 		[Test]
@@ -979,7 +979,7 @@ delegate void Test<T>(";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
 			Assert.IsNull(result.Expression);
-			Assert.AreEqual(ExpressionContext.ParameterType, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.ParameterType, result.Context);
 		}
 		
 		[Test]
@@ -990,7 +990,7 @@ delegate void Test<T>(ref ";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
 			Assert.IsNull(result.Expression);
-			Assert.AreEqual(ExpressionContext.ParameterType, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.ParameterType, result.Context);
 		}
 		
 		[Test]
@@ -1012,7 +1012,7 @@ delegate void Test<T>(ref T name) ";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
 			Assert.AreEqual("Test<T>(ref T name) ", result.Expression);
-			Assert.AreEqual(ExpressionContext.ConstraintsStart, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.ConstraintsStart, result.Context);
 		}
 		
 		[Test]
@@ -1023,7 +1023,7 @@ delegate void Test<T>(ref T name) where ";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
 			Assert.AreEqual("where ", result.Expression);
-			Assert.AreEqual(ExpressionContext.Constraints, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.Constraints, result.Context);
 		}
 		
 		[Test]
@@ -1045,7 +1045,7 @@ void Test<T>(";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
 			Assert.IsNull(result.Expression);
-			Assert.AreEqual(ExpressionContext.FirstParameterType, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.FirstParameterType, result.Context);
 		}
 		
 		[Test]
@@ -1056,7 +1056,7 @@ void Test<T>(ref ";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
 			Assert.IsNull(result.Expression);
-			Assert.AreEqual(ExpressionContext.ParameterType, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.ParameterType, result.Context);
 		}
 		
 		[Test]
@@ -1078,7 +1078,7 @@ void Test<T>(ref T name) ";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
 			Assert.AreEqual("Test<T>(ref T name) ", result.Expression);
-			Assert.AreEqual(ExpressionContext.ConstraintsStart, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.ConstraintsStart, result.Context);
 		}
 		
 		[Test]
@@ -1089,7 +1089,7 @@ void Test<T>(ref T name) where ";
 			
 			ExpressionResult result = ef.FindExpression(program, program.Length);
 			Assert.AreEqual("where ", result.Expression);
-			Assert.AreEqual(ExpressionContext.Constraints, result.Context);
+			Assert.AreEqual(CSharpExpressionContext.Constraints, result.Context);
 		}
 		
 		[Test]

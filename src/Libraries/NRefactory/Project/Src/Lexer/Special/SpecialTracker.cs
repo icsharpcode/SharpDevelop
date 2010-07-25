@@ -26,11 +26,6 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		public void InformToken(int kind)
-		{
-			
-		}
-		
 		/// <summary>
 		/// Gets the specials from the SpecialTracker and resets the lists.
 		/// </summary>

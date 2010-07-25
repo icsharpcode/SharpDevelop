@@ -6,7 +6,7 @@
     <ProductVersion>8.0.50630</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BF38FB72-B380-4196-AF8C-95749D726C61}</ProjectGuid>
-    <AssemblyName>VBNetBinding</AssemblyName>
+    <AssemblyName>ICSharpCode.VBNetBinding</AssemblyName>
     <OutputTarget>Library</OutputTarget>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>False</NoStdLib>
@@ -21,6 +21,7 @@
     <BaseAddress>104857600</BaseAddress>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <FileAlignment>4096</FileAlignment>
+    <RootNamespace>ICSharpCode.VBNetBinding</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,9 +50,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
+    <EmbeddedResource Include="Resources\BuildOptions.xfrm">
+      <LogicalName>Resources.BuildOptions.xfrm</LogicalName>
+    </EmbeddedResource>
     <Compile Include="Src\Extensions.cs" />
     <Compile Include="Src\FormattingStrategy\VBStatement.cs" />
+    <Compile Include="Src\VBNetBracketSearcher.cs" />
+    <Compile Include="Src\CompletionDataHelper.cs" />
+    <Compile Include="Src\VBNetCompletionItemList.cs" />
     <Compile Include="Src\VBNetLanguageBinding.cs" />
     <Compile Include="Src\VBNetProjectBinding.cs" />
     <Compile Include="Src\FormattingStrategy\VBNetFormattingStrategy.cs" />
@@ -68,9 +74,13 @@
     <Compile Include="Src\OptionPanels\ProjectImports.cs">
       <SubType>Form</SubType>
     </Compile>
-    <EmbeddedResource Include="Resources\ProjectImports.xfrm" />
+    <EmbeddedResource Include="Resources\ProjectImports.xfrm">
+      <LogicalName>Resources.ProjectImports.xfrm</LogicalName>
+    </EmbeddedResource>
     <Compile Include="Src\OptionPanels\TextEditorOptions.cs" />
-    <EmbeddedResource Include="Resources\VBNetTextEditorOptions.xfrm" />
+    <EmbeddedResource Include="Resources\VBNetTextEditorOptions.xfrm">
+      <LogicalName>Resources.VBNetTextEditorOptions.xfrm</LogicalName>
+    </EmbeddedResource>
     <Compile Include="Src\Project\CSharpToVBNetConverter.cs" />
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>

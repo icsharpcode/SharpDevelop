@@ -301,7 +301,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#endregion
 		
 		#region IsApplicable
-		internal static bool IsApplicable(IReturnType argument, IParameter expected, IMethod targetMethod)
+		public static bool IsApplicable(IReturnType argument, IParameter expected, IMethod targetMethod)
 		{
 			bool parameterIsRefOrOut = expected.IsRef || expected.IsOut;
 			bool argumentIsRefOrOut = argument != null && argument.IsDecoratingReturnType<ReferenceReturnType>();

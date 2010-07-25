@@ -64,6 +64,7 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Src\BusyManager.cs" />
+    <Compile Include="Src\CSharp\CSharpExpressionContext.cs" />
     <Compile Include="Src\CSharp\OverloadResolution.cs" />
     <Compile Include="Src\CSharp\TypeInference.cs" />
     <Compile Include="Src\DomCache.cs" />
@@ -143,6 +144,9 @@
     <Compile Include="Src\IComment.cs" />
     <Compile Include="Src\ReflectionLayer\ReflectionTypeNameSyntaxError.cs" />
     <Compile Include="Src\SignatureComparer.cs" />
+    <Compile Include="Src\VBNet\IVBNetOptionProvider.cs" />
+    <Compile Include="Src\VBNet\VBNetCompilationUnit.cs" />
+    <Compile Include="Src\VBNet\VBNetExpressionFinder.cs" />
     <Compile Include="Src\XmlDoc.cs" />
     <Compile Include="Src\Tag.cs" />
     <Compile Include="Src\ResolveResult.cs" />
@@ -188,7 +192,6 @@
     <Compile Include="Src\Ambience.cs" />
     <Compile Include="Src\CSharp\ExpressionFinder.cs" />
     <Compile Include="Src\VBNet\VBNetAmbience.cs" />
-    <Compile Include="Src\VBNet\ExpressionFinder.cs" />
     <Compile Include="Src\EasyCodeDom.cs" />
   </ItemGroup>
   <ItemGroup>

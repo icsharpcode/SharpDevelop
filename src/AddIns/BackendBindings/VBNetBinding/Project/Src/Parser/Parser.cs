@@ -13,7 +13,7 @@ using ICSharpCode.SharpDevelop.Dom.VBNet;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace VBNetBinding.Parser
+namespace ICSharpCode.VBNetBinding.Parser
 {
 	public class TParser : IParser
 	{
@@ -37,7 +37,7 @@ namespace VBNetBinding.Parser
 		
 		public IExpressionFinder CreateExpressionFinder(string fileName)
 		{
-			return new VBExpressionFinder();
+			return new VBNetExpressionFinder(ParserService.GetParseInformation(fileName));
 		}
 		
 		public bool CanParse(string fileName)

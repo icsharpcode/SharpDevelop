@@ -97,6 +97,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"IS",
 			"ISNOT",
 			"JOIN",
+			"KEY",
 			"LET",
 			"LIB",
 			"LIKE",
@@ -127,6 +128,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"OR",
 			"ORDER",
 			"ORELSE",
+			"OUT",
 			"OVERLOADS",
 			"OVERRIDABLE",
 			"OVERRIDES",
@@ -184,7 +186,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"WITH",
 			"WITHEVENTS",
 			"WRITEONLY",
-			"XOR"
+			"XOR",
+			"GETXMLNAMESPACE"
 		};
 		
 		static LookupTable keywords = new LookupTable(false);

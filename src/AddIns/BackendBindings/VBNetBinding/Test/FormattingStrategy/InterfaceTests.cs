@@ -11,7 +11,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using NUnit.Framework;
 
-namespace VBNetBinding.Tests
+namespace ICSharpCode.VBNetBinding.Tests
 {
 	/// <summary>
 	/// Tests the special case of an interface. for ex. no insertion of End-Tags etc.

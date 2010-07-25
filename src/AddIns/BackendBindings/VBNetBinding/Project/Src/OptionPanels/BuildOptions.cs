@@ -10,7 +10,7 @@ using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
 using StringPair = System.Collections.Generic.KeyValuePair<System.String, System.String>;
 
-namespace VBNetBinding.OptionPanels
+namespace ICSharpCode.VBNetBinding.OptionPanels
 {
 	public class BuildOptions : AbstractBuildOptions
 	{

@@ -2,8 +2,8 @@
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <RootNamespace>VBNetBinding.Tests</RootNamespace>
-    <AssemblyName>VBNetBinding.Tests</AssemblyName>
+    <RootNamespace>ICSharpCode.VBNetBinding.Tests</RootNamespace>
+    <AssemblyName>ICSharpCode.VBNetBinding.Tests</AssemblyName>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{50A89267-A28B-4DF3-8E62-912E005143B8}</ProjectGuid>
@@ -39,6 +39,9 @@
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
@@ -53,6 +56,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MockTextEditor.cs" />
+    <Compile Include="TextEditorBasedTests.cs" />
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>
@@ -74,6 +79,7 @@
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
     </ProjectReference>
     <Folder Include="FormattingStrategy" />
+    <Compile Include="CodeCompletionTests.cs" />
     <Compile Include="FormattingStrategy\EndOperatorTests.cs" />
     <Compile Include="FormattingStrategy\EndSubTests.cs" />
     <Compile Include="FormattingStrategy\IndentationTests.cs" />

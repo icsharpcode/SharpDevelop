@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<Template author="Siegfried Pammer" version="1.0">
+	
+	<Config
+		  name        = "${res:Templates.File.WinFXResourceDictionary.Name}"
+		  icon        = "Icons.32x32.XMLFileIcon"
+		  subcategory = "WPF"
+		  category    = "VB"
+		  defaultname = "Dictionary${Number}.xaml"
+		  language    = "XML"/>
+	 
+	<Description>${res:Templates.File.WinFXResourceDictionary.Name}</Description>
+	
+	<References>
+		<Reference include="PresentationCore">
+			<RequiredTargetFramework>3.0</RequiredTargetFramework>
+		</Reference>
+		<Reference include="PresentationFramework">
+			<RequiredTargetFramework>3.0</RequiredTargetFramework>
+		</Reference>
+		<Reference include="WindowsBase">
+			<RequiredTargetFramework>3.0</RequiredTargetFramework>
+		</Reference>
+	</References>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".vb"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="XML" buildAction="Page"><![CDATA[<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+>
+	
+</ResourceDictionary>]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+
+

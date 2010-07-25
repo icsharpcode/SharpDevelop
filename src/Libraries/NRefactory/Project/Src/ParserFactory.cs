@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Text;
+using ICSharpCode.NRefactory.Parser;
 
 namespace ICSharpCode.NRefactory
 {
@@ -28,6 +29,18 @@ namespace ICSharpCode.NRefactory
 					return new ICSharpCode.NRefactory.Parser.CSharp.Lexer(textReader);
 				case SupportedLanguage.VBNet:
 					return new ICSharpCode.NRefactory.Parser.VB.Lexer(textReader);
+			}
+			throw new System.NotSupportedException(language + " not supported.");
+		}
+		
+		public static Parser.ILexer CreateLexer(SupportedLanguage language, TextReader textReader, LexerMemento state)
+		{
+			switch (language) {
+				case SupportedLanguage.CSharp:
+					//return new ICSharpCode.NRefactory.Parser.CSharp.Lexer(textReader, state);
+					throw new System.NotSupportedException("C# Lexer does not support loading a previous state.");
+				case SupportedLanguage.VBNet:
+					return new ICSharpCode.NRefactory.Parser.VB.Lexer(textReader, state);
 			}
 			throw new System.NotSupportedException(language + " not supported.");
 		}

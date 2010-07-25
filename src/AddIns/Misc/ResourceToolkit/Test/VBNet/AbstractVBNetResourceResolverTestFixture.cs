@@ -13,7 +13,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
-using VBNetBinding;
+using ICSharpCode.VBNetBinding;
 
 namespace ResourceToolkit.Tests.VBNet
 {

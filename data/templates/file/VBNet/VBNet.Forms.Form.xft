@@ -12,7 +12,7 @@
 	
 	<Description>${res:Templates.File.WindowsForm.Description}</Description>
 	
-		<References>
+	<References>
 		<Reference include="System.Drawing" />
 		<Reference include="System.Windows.Forms" />
 	</References>

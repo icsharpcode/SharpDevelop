@@ -76,6 +76,13 @@ namespace CSharpBinding
 			
 			IProjectContent pc = ParserService.GetProjectContent(sourceItem.Project) ?? ParserService.CurrentProjectContent;
 			VBNetToCSharpConvertVisitor visitor = new VBNetToCSharpConvertVisitorWithMyFormsSupport(pc, ParserService.GetParseInformation(sourceItem.FileName), sourceItem.Project.RootNamespace);
+						
+			// set project options
+			visitor.OptionInfer = (project.GetEvaluatedProperty("OptionInfer") ?? "Off")
+				.Equals("On", StringComparison.OrdinalIgnoreCase);
+			visitor.OptionStrict = (project.GetEvaluatedProperty("OptionStrict") ?? "Off")
+				.Equals("On", StringComparison.OrdinalIgnoreCase);
+			
 			compilationUnit.AcceptVisitor(visitor, null);
 		}
 		

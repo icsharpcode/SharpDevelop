@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<Template author="Siegfried Pammer" version="1.0.0">
+	
+	<Config
+		  name        = "${res:Templates.File.Exception.Name}"
+		  icon        = "VBNet.File.NewClass"
+		  category    = "VB"
+		  defaultname = "Exception.vb"
+		  language    = "VBNet"/>
+	 
+	<Description>${res:Templates.File.Exception.Description}</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".vb"
+		${Path}                     -> Full path of the file
+	 -->
+	<!--<Properties>
+		<Property
+			name          = "IsSealed"
+			localizedName = "${res:Templates.File.Properties.IsSealed}"
+			type          = "System.Boolean"
+			defaultValue  = "False"
+			category      = "${res:Templates.File.Properties.ContextCategory}"
+			description   = "${res:Templates.File.Properties.IsSealed.Description}"
+		/>
+	</Properties>-->
+	
+	<Files>
+		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
+Imports System
+Imports System.Runtime.Serialization
+
+Namespace ${StandardNamespace}
+	''' <summary>
+	''' Desctiption of ${ClassName}.
+	''' </summary>
+	Public Class ${ClassName}
+		Inherits Exception
+		Implements ISerializable
+
+		Public Sub New()
+		End Sub
+
+		Public Sub New(message As String)
+			MyBase.New(message)
+		End Sub
+
+		Public Sub New(message As String, innerException As Exception)
+			MyBase.New(message, innerException)
+		End Sub
+
+		' This constructor is needed for serialization.
+		Protected Sub New(info As SerializationInfo, context As StreamingContext)
+			MyBase.New(info, context)
+		End Sub
+	End Class
+End Namespace]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>

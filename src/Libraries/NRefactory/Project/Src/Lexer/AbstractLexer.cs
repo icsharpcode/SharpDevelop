@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.Parser
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1708:IdentifiersShouldDifferByMoreThanCase")]
 	internal abstract class AbstractLexer : ILexer
 	{
-		TextReader reader;
+		LATextReader reader;
 		int col  = 1;
 		int line = 1;
 		
@@ -83,15 +83,41 @@ namespace ICSharpCode.NRefactory.Parser
 			if ((val == '\r' && reader.Peek() != '\n') || val == '\n') {
 				++line;
 				col = 1;
-				LineBreak ();
+				LineBreak();
 			} else if (val >= 0) {
 				col++;
 			}
 			return val;
 		}
+		
 		protected int ReaderPeek()
 		{
 			return reader.Peek();
+		}
+		
+		protected int ReaderPeek(int step)
+		{
+			return reader.Peek(step);
+		}
+		
+		protected void ReaderSkip(int steps)
+		{
+			for (int i = 0; i < steps; i++) {
+				ReaderRead();
+			}
+		}
+		
+		protected string ReaderPeekString(int length)
+		{
+			StringBuilder builder = new StringBuilder();
+			
+			for (int i = 0; i < length; i++) {
+				int peek = ReaderPeek(i);
+				if (peek != -1)
+					builder.Append((char)peek);
+			}
+			
+			return builder.ToString();
 		}
 		
 		public void SetInitialLocation(Location location)
@@ -167,7 +193,14 @@ namespace ICSharpCode.NRefactory.Parser
 		/// </summary>
 		protected AbstractLexer(TextReader reader)
 		{
-			this.reader = reader;
+			this.reader = new LATextReader(reader);
+		}
+		
+		protected AbstractLexer(TextReader reader, LexerMemento state)
+			: this(reader)
+		{
+			SetInitialLocation(new Location(state.Column, state.Line));
+			lastToken = new Token(state.PrevTokenKind, 0, 0);
 		}
 		
 		#region System.IDisposable interface implementation
@@ -200,7 +233,6 @@ namespace ICSharpCode.NRefactory.Parser
 //			Console.WriteLine("Call to Peek");
 			if (peekToken.next == null) {
 				peekToken.next = Next();
-				specialTracker.InformToken(peekToken.next.kind);
 			}
 			peekToken = peekToken.next;
 			return peekToken;
@@ -214,7 +246,6 @@ namespace ICSharpCode.NRefactory.Parser
 		{
 			if (curToken == null) {
 				curToken = Next();
-				specialTracker.InformToken(curToken.kind);
 				//Console.WriteLine(ICSharpCode.NRefactory.Parser.CSharp.Tokens.GetTokenString(curToken.kind) + " -- " + curToken.val + "(" + curToken.kind + ")");
 				return curToken;
 			}
@@ -223,9 +254,6 @@ namespace ICSharpCode.NRefactory.Parser
 			
 			if (curToken.next == null) {
 				curToken.next = Next();
-				if (curToken.next != null) {
-					specialTracker.InformToken(curToken.next.kind);
-				}
 			}
 			
 			curToken  = curToken.next;
@@ -339,5 +367,19 @@ namespace ICSharpCode.NRefactory.Parser
 		/// After the call, Lexer.LookAhead will be the block-closing token.
 		/// </summary>
 		public abstract void SkipCurrentBlock(int targetToken);
+		
+		public event EventHandler<SavepointEventArgs> SavepointReached;
+		
+		protected virtual void OnSavepointReached(SavepointEventArgs e)
+		{
+			if (SavepointReached != null) {
+				SavepointReached(this, e);
+			}
+		}
+		
+		public virtual LexerMemento Export()
+		{
+			throw new NotSupportedException();
+		}
 	}
 }

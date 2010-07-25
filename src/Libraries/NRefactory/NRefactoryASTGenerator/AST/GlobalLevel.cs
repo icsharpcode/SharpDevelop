@@ -65,20 +65,27 @@ namespace NRefactoryASTGenerator.Ast
 	}
 	
 	[IncludeBoolProperty("IsAlias", "return !alias.IsNull;")]
+	[IncludeBoolProperty("IsXml", "return xmlPrefix != null;")]
 	class Using : AbstractNode
 	{
 		[QuestionMarkDefault]
 		string name;
 		TypeReference alias;
+		string xmlPrefix;
 		
 		public Using(string name) {}
 		public Using(string name, TypeReference alias) {}
+		public Using(string name, string xmlPrefix) {}
 	}
 	
-	[IncludeMember("public UsingDeclaration(string @namespace) : this(@namespace, null) {}")]
+	[IncludeMember("public UsingDeclaration(string @namespace) : this(@namespace, TypeReference.Null) {}")]
 	[IncludeMember("public UsingDeclaration(string @namespace, TypeReference alias) {" +
 	               " usings = new List<Using>(1);" +
 	               " usings.Add(new Using(@namespace, alias)); " +
+	               "}")]
+	[IncludeMember("public UsingDeclaration(string xmlNamespace, string prefix) {" +
+	               " usings = new List<Using>(1);" +
+	               " usings.Add(new Using(xmlNamespace, prefix)); " +
 	               "}")]
 	class UsingDeclaration : AbstractNode
 	{

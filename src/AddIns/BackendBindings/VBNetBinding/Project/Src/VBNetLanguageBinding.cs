@@ -5,11 +5,11 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
 
-namespace VBNetBinding
+namespace ICSharpCode.VBNetBinding
 {
 	/// <summary>
 	/// Description of VBNetLanguageBinding.
@@ -18,6 +18,10 @@ namespace VBNetBinding
 	{
 		public override IFormattingStrategy FormattingStrategy {
 			get { return new VBNetFormattingStrategy(); }
+		}
+		
+		public override IBracketSearcher BracketSearcher {
+			get { return new VBNetBracketSearcher(); }
 		}
 	}
 }

@@ -176,7 +176,11 @@ PRODUCTIONS
 
 /*--- compilation unit: */
 CS
-(. lexer.NextToken(); /* get the first token */ .)
+	(.
+		lexer.NextToken(); // get the first token
+		compilationUnit = new CompilationUnit();
+		BlockStart(compilationUnit);
+	.)
 =
 	{ ExternAliasDirective }
 	{ UsingDirective }
@@ -203,7 +207,7 @@ UsingDirective
 	                                 }
 	                                 node.StartLocation = startPos;
 	                                 node.EndLocation   = t.EndLocation;
-	                                 compilationUnit.AddChild(node);
+	                                 AddChild(node);
 	                               }
 	                            .)
 .
@@ -225,7 +229,7 @@ GlobalAttributeSection
 	                                   StartLocation = startPos,
 	                                   EndLocation = t.EndLocation
 	                               };
-	                               compilationUnit.AddChild(section);
+	                               AddChild(section);
 	                            .)
 .
 
@@ -332,8 +336,8 @@ NamespaceMemberDecl
 	"namespace"                  (. Location startPos = t.Location; .)
 	Qualident<out qualident>     (. INode node =  new NamespaceDeclaration(qualident);
 	                                node.StartLocation = startPos;
-	                                compilationUnit.AddChild(node);
-	                                compilationUnit.BlockStart(node);
+	                                AddChild(node);
+	                                BlockStart(node);
 	                              .)
 	"{"
 	{ ExternAliasDirective }
@@ -341,7 +345,7 @@ NamespaceMemberDecl
 	{ NamespaceMemberDecl }
 	"}"
 	[ ";" ]                       (. node.EndLocation   = t.EndLocation;
-	                                 compilationUnit.BlockEnd();
+	                                 BlockEnd();
 	                              .)
 	/*--- type declaration: */
 |	{ AttributeSection<out section> (. attributes.Add(section); .) }
@@ -356,7 +360,7 @@ ExternAliasDirective
 	Identifier (. if (t.val != "alias") Error("Expected 'extern alias'."); .)
 	Identifier (.  ead.Name = t.val; .)
 	";" (. ead.EndLocation = t.EndLocation; .)
-	(. compilationUnit.AddChild(ead); .)
+	(. AddChild(ead); .)
 .
 
 TypeDecl<ModifierList m, List<AttributeSection> attributes>
@@ -370,8 +374,8 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 = /*--- class declaration: */      (. m.Check(Modifiers.Classes); .)
 	"class"                        (. TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 	                                  templates = newType.Templates;
-	                                  compilationUnit.AddChild(newType);
-	                                  compilationUnit.BlockStart(newType);
+	                                  AddChild(newType);
+	                                  BlockStart(newType);
 	                                  newType.StartLocation = m.GetDeclarationLocation(t.Location);
 	                                  
 	                                  newType.Type = Types.Class;
@@ -391,14 +395,14 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	ClassBody
 	"}"
 	[ ";" ]                         (. newType.EndLocation = t.EndLocation; 
-	                                   compilationUnit.BlockEnd();
+	                                   BlockEnd();
 	                                .)
 | /*--- struct declaration: */  (. m.Check(Modifiers.StructsInterfacesEnumsDelegates); .)
 	( "struct"                      (. TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 	                                   templates = newType.Templates;
 	                                   newType.StartLocation = m.GetDeclarationLocation(t.Location);
-	                                   compilationUnit.AddChild(newType);
-	                                   compilationUnit.BlockStart(newType);
+	                                   AddChild(newType);
+	                                   BlockStart(newType);
 	                                   newType.Type = Types.Struct; 
 	                                 .)
 	Identifier                       (. newType.Name = t.val; .)
@@ -415,13 +419,13 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	(. newType.BodyStartLocation = t.EndLocation; .)
 	StructBody
 	[ ";" ]                          (. newType.EndLocation = t.EndLocation; 
-	                                    compilationUnit.BlockEnd();
+	                                    BlockEnd();
 	                                 .)
 | /*--- interface declaration: */ 
 	"interface"                      (. TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 	                                    templates = newType.Templates;
-	                                    compilationUnit.AddChild(newType);
-	                                    compilationUnit.BlockStart(newType);
+	                                    AddChild(newType);
+	                                    BlockStart(newType);
 	                                    newType.StartLocation = m.GetDeclarationLocation(t.Location);
 	                                    newType.Type = Types.Interface;
 	                                  .)
@@ -438,12 +442,12 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	(. newType.BodyStartLocation = t.EndLocation; .)
 	InterfaceBody
 	[ ";" ]                          (. newType.EndLocation = t.EndLocation; 
-	                                    compilationUnit.BlockEnd();
+	                                    BlockEnd();
 	                                 .)
 | /*--- enumeration declaration: */
 	"enum"                           (. TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
-	                                    compilationUnit.AddChild(newType);
-	                                    compilationUnit.BlockStart(newType);
+	                                    AddChild(newType);
+	                                    BlockStart(newType);
 	                                    newType.StartLocation = m.GetDeclarationLocation(t.Location);
 	                                    newType.Type = Types.Enum;
 	                                  .)
@@ -453,7 +457,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	(. newType.BodyStartLocation = t.EndLocation; .)
 	EnumBody 
 	[ ";" ]                          (. newType.EndLocation = t.EndLocation; 
-	                                    compilationUnit.BlockEnd();
+	                                    BlockEnd();
 	                                 .)
 | /*--- delegate declaration: */
 	"delegate"                       (. DelegateDeclaration delegateDeclr = new DelegateDeclaration(m.Modifier, attributes);
@@ -475,7 +479,7 @@ TypeDecl<ModifierList m, List<AttributeSection> attributes>
 	{ TypeParameterConstraintsClause<templates> }
 	
 	";"                              (. delegateDeclr.EndLocation = t.EndLocation;
-	                                    compilationUnit.AddChild(delegateDeclr);
+	                                    AddChild(delegateDeclr);
 	                                 .)
 	)
 .
@@ -555,9 +559,9 @@ InterfaceBody
 EnumBody                                 (. FieldDeclaration f; .)
 =
 	"{"
-	[ EnumMemberDecl<out f>          (. compilationUnit.AddChild(f); .)
+	[ EnumMemberDecl<out f>          (. AddChild(f); .)
 	{ IF (NotFinalComma()) ","
-		EnumMemberDecl<out f> (. compilationUnit.AddChild(f); .)
+		EnumMemberDecl<out f> (. AddChild(f); .)
 	}
 	[","] ]
 	"}"
@@ -746,7 +750,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	TypeReference type;
 	Expression expr;
 	List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
-	Statement stmt = null;
+	BlockStatement stmt = null;
 	List<TemplateDefinition> templates = new List<TemplateDefinition>();
 	TypeReference explicitInterface = null;
 	bool isExtensionMethod = false;
@@ -768,7 +772,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	                                          SafeAdd(fd, fd.Fields, f);
 	                                       .)
 		"=" Expr<out expr>                 (. f.EndLocation = t.EndLocation; f.Initializer = expr; .)
-	} ";"                                  (. fd.EndLocation = t.EndLocation; compilationUnit.AddChild(fd); .)
+	} ";"                                  (. fd.EndLocation = t.EndLocation; AddChild(fd); .)
 	
 	
 |   /*--- void method (procedure) declaration: */
@@ -800,14 +804,14 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		};
 		if (explicitInterface != null)
 			SafeAdd(methodDeclaration, methodDeclaration.InterfaceImplementations, new InterfaceImplementation(explicitInterface, qualident));
-		compilationUnit.AddChild(methodDeclaration);
-		compilationUnit.BlockStart(methodDeclaration);
+		AddChild(methodDeclaration);
+		BlockStart(methodDeclaration);
 	.)
 		
 	/* .NET 2.0 */
 	{ TypeParameterConstraintsClause<templates> }
 	
-	( Block<out stmt> | ";" )              (. compilationUnit.BlockEnd();
+	( Block<out stmt> | ";" )              (. BlockEnd();
 	                                          methodDeclaration.Body  = (BlockStatement)stmt;
 	                                       .)
 	
@@ -818,8 +822,8 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 				Attributes = attributes,
 				StartLocation = t.Location
 			};
-			compilationUnit.AddChild(eventDecl);
-			compilationUnit.BlockStart(eventDecl);
+			AddChild(eventDecl);
+			BlockStart(eventDecl);
 			EventAddRegion addBlock = null;
 			EventRemoveRegion removeBlock = null;
 		.)
@@ -838,7 +842,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			"}" (. eventDecl.BodyEnd   = t.EndLocation; .)
 		]
 		[ ";" ]
-		(. compilationUnit.BlockEnd();
+		(. BlockEnd();
 		   eventDecl.AddRegion = addBlock;
 		   eventDecl.RemoveRegion = removeBlock;
 		.)
@@ -857,7 +861,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	     cd.EndLocation   = t.EndLocation;
 	  .)
 	
-	( Block<out stmt> | ";" ) (. cd.Body = (BlockStatement)stmt; compilationUnit.AddChild(cd); .)
+	( Block<out stmt> | ";" ) (. cd.Body = (BlockStatement)stmt; AddChild(cd); .)
 	
 	
 |   /*--- conversion operator declaration: */   (. m.Check(Modifiers.Operators);
@@ -885,7 +889,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			StartLocation = m.GetDeclarationLocation(startPos),
 			EndLocation = endPos
 		};
-		compilationUnit.AddChild(operatorDeclaration);
+		AddChild(operatorDeclaration);
 	.)
 	
 	
@@ -929,7 +933,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			if (secondType != null) {
 				SafeAdd(operatorDeclaration, operatorDeclaration.Parameters, new ParameterDeclarationExpression(secondType, secondName));
 			}
-			compilationUnit.AddChild(operatorDeclaration);
+			AddChild(operatorDeclaration);
 		.)
 		
 		/*--- field declaration: */
@@ -955,7 +959,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			VariableDeclarator<fd>
 			{ "," VariableDeclarator<fd> }
 		)
-		";" (. fd.EndLocation = t.EndLocation; compilationUnit.AddChild(fd); .)
+		";" (. fd.EndLocation = t.EndLocation; AddChild(fd); .)
 		
 		/*--- unqualified indexer declaration (without interface name): */
 		|                                  (. m.Check(Modifiers.Indexers); .)
@@ -972,7 +976,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			          indexer.BodyEnd    = t.EndLocation;
 			          indexer.GetRegion = getRegion;
 			          indexer.SetRegion = setRegion;
-			          compilationUnit.AddChild(indexer);
+			          AddChild(indexer);
 			       .)
 	|  IF (IsIdentifierToken(la))
 		( IF (IsExplicitInterfaceImplementation())
@@ -1006,7 +1010,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 					methodDeclaration.EndLocation   = t.EndLocation;
 					methodDeclaration.IsExtensionMethod = isExtensionMethod;
 					methodDeclaration.Templates = templates;
-					compilationUnit.AddChild(methodDeclaration);
+					AddChild(methodDeclaration);
 				                                       .)
 				{ TypeParameterConstraintsClause<templates> }
 				( Block<out stmt> | ";" ) (. methodDeclaration.Body  = (BlockStatement)stmt; .)
@@ -1026,7 +1030,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			          pDecl.GetRegion = getRegion;
 			          pDecl.SetRegion = setRegion;
 			          pDecl.BodyEnd = t.EndLocation;
-			          compilationUnit.AddChild(pDecl);
+			          AddChild(pDecl);
 			       .)
 			)
 			
@@ -1048,14 +1052,14 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			          indexer.BodyEnd   = t.EndLocation;
 			          indexer.GetRegion = getRegion;
 			          indexer.SetRegion = setRegion;
-			          compilationUnit.AddChild(indexer);
+			          AddChild(indexer);
 			       .)
 		)
 	)
 .
 
 ClassMemberDecl<ModifierList m, List<AttributeSection> attributes>
-(. Statement stmt = null; .)
+(. BlockStatement stmt = null; .)
 =
 	StructMemberDecl<m, attributes>
 	| /*--- destructor declaration: */ (. m.Check(Modifiers.Destructors); Location startPos = la.Location; .)
@@ -1064,8 +1068,8 @@ ClassMemberDecl<ModifierList m, List<AttributeSection> attributes>
 	                                      d.StartLocation = m.GetDeclarationLocation(startPos);
 	                                   .)
 	"(" ")" (. d.EndLocation = t.EndLocation; .) ( Block<out stmt> | ";" )  (. 
-	                                      d.Body = (BlockStatement)stmt;
-	                                      compilationUnit.AddChild(d);
+	                                      d.Body = stmt;
+	                                      AddChild(d);
 	                                   .)
 .
 
@@ -1099,7 +1103,7 @@ InterfaceMemberDecl
 				Parameters = parameters, Attributes = attributes, Templates = templates,
 				StartLocation = startLocation, EndLocation = t.EndLocation
 			};
-			compilationUnit.AddChild(md);
+			AddChild(md);
 		.)
 		| (
 			Type<out type> (. if (startLocation.IsEmpty) startLocation = t.Location; .)
@@ -1117,12 +1121,12 @@ InterfaceMemberDecl
 								Parameters = parameters, Attributes = attributes, Templates = templates,
 								StartLocation = startLocation, EndLocation = t.EndLocation
 							};
-							compilationUnit.AddChild(md);
+							AddChild(md);
 						.)
 					/*--- interface property declaration: */
 					|
 						(. PropertyDeclaration pd = new PropertyDeclaration(name, type, mod, attributes);
-						   compilationUnit.AddChild(pd); .)
+						   AddChild(pd); .)
 						"{"
 							(. Location bodyStart = t.Location;.)
 							InterfaceAccessors<out getBlock, out setBlock>
@@ -1133,7 +1137,7 @@ InterfaceMemberDecl
 				(. Location bracketEndLocation = t.EndLocation; .)
 				(. PropertyDeclaration id = new PropertyDeclaration(mod | Modifiers.Default, attributes, "Item", parameters);
 					id.TypeReference = type;
-				   compilationUnit.AddChild(id); .)
+				   AddChild(id); .)
 				"{" (. Location bodyStart = t.Location;.)
 				InterfaceAccessors<out getBlock, out setBlock>
 				"}"
@@ -1145,7 +1149,7 @@ InterfaceMemberDecl
 				(.	EventDeclaration ed = new EventDeclaration {
 						TypeReference = type, Name = t.val, Modifier = mod, Attributes = attributes
 					};
-					compilationUnit.AddChild(ed);
+					AddChild(ed);
 				.)
 			";"
 			(. ed.StartLocation = startLocation; ed.EndLocation = t.EndLocation; .)
@@ -1206,29 +1210,29 @@ AccessorDecls<out PropertyGetRegion getBlock, out PropertySetRegion setBlock>
 .
 
 GetAccessorDecl<out PropertyGetRegion getBlock, List<AttributeSection> attributes>
-(. Statement stmt = null; .)
+(. BlockStatement stmt = null; .)
 =
 	"get"
 	(. Location startLocation = t.Location; .)
 	( Block<out stmt> | ";" )
-	(. getBlock = new PropertyGetRegion((BlockStatement)stmt, attributes); .)
+	(. getBlock = new PropertyGetRegion(stmt, attributes); .)
 	(. getBlock.StartLocation = startLocation; getBlock.EndLocation = t.EndLocation; .)
 .
 
 SetAccessorDecl<out PropertySetRegion setBlock, List<AttributeSection> attributes>
-(. Statement stmt = null; .)
+(. BlockStatement stmt = null; .)
 =
 	"set"
 	(. Location startLocation = t.Location; .)
 	( Block<out stmt> | ";" )
-	(. setBlock = new PropertySetRegion((BlockStatement)stmt, attributes); .)
+	(. setBlock = new PropertySetRegion(stmt, attributes); .)
 	(. setBlock.StartLocation = startLocation; setBlock.EndLocation = t.EndLocation; .)
 .
 
 EventAccessorDecls<out EventAddRegion addBlock, out EventRemoveRegion removeBlock>
 (. AttributeSection section;
    List<AttributeSection> attributes = new List<AttributeSection>();
-   Statement stmt;
+   BlockStatement stmt;
    addBlock = null;
    removeBlock = null;
 .)
@@ -1236,13 +1240,13 @@ EventAccessorDecls<out EventAddRegion addBlock, out EventRemoveRegion removeBloc
 	{ AttributeSection<out section> (. attributes.Add(section); .) }
 	(
 		                                    (. addBlock = new EventAddRegion(attributes); .)
-			AddAccessorDecl<out stmt>       (. attributes = new List<AttributeSection>(); addBlock.Block = (BlockStatement)stmt; .)
+			AddAccessorDecl<out stmt>       (. attributes = new List<AttributeSection>(); addBlock.Block = stmt; .)
 			{ AttributeSection<out section> (. attributes.Add(section); .)}
-			RemoveAccessorDecl<out stmt>    (. removeBlock = new EventRemoveRegion(attributes); removeBlock.Block = (BlockStatement)stmt; .)
+			RemoveAccessorDecl<out stmt>    (. removeBlock = new EventRemoveRegion(attributes); removeBlock.Block = stmt; .)
 		|
-			RemoveAccessorDecl <out stmt>    (. removeBlock = new EventRemoveRegion(attributes); removeBlock.Block = (BlockStatement)stmt; attributes = new List<AttributeSection>(); .)
+			RemoveAccessorDecl <out stmt>    (. removeBlock = new EventRemoveRegion(attributes); removeBlock.Block = stmt; attributes = new List<AttributeSection>(); .)
 			{ AttributeSection<out section>  (. attributes.Add(section); .) }
-			AddAccessorDecl<out stmt>        (. addBlock = new EventAddRegion(attributes); addBlock.Block = (BlockStatement)stmt; .)
+			AddAccessorDecl<out stmt>        (. addBlock = new EventAddRegion(attributes); addBlock.Block = stmt; .)
 	)
 .
 
@@ -1288,11 +1292,11 @@ VariableDeclarator<FieldDeclaration parentFieldDeclaration>
 	(. f.EndLocation = t.EndLocation; SafeAdd(parentFieldDeclaration, parentFieldDeclaration.Fields, f); .)
 .
 
-Block<out Statement stmt> /* not BlockStatement because of EmbeddedStatement */
+Block<out BlockStatement stmt>
 =
 	"{" (. BlockStatement blockStmt = new BlockStatement();
 	       blockStmt.StartLocation = t.Location;
-	       compilationUnit.BlockStart(blockStmt);
+	       BlockStart(blockStmt);
 	       if (!ParseMethodBodies) lexer.SkipCurrentBlock(0);
 	    .)
 	{ Statement }
@@ -1300,18 +1304,18 @@ Block<out Statement stmt> /* not BlockStatement because of EmbeddedStatement */
 	    (.
 	       stmt = blockStmt;
 	       blockStmt.EndLocation = t.EndLocation;
-	       compilationUnit.BlockEnd();
+	       BlockEnd();
 	    .)
 .
 
-AddAccessorDecl<out Statement stmt>
+AddAccessorDecl<out BlockStatement stmt>
 (.stmt = null;.) 
 =
 	"add"
 	Block<out stmt>
 .
 
-RemoveAccessorDecl<out Statement stmt>
+RemoveAccessorDecl<out BlockStatement stmt>
 (.stmt = null;.) 
 =
 	"remove"
@@ -1458,13 +1462,14 @@ ObjectPropertyInitializerOrVariableInitializer<out Expression expr>
 =
 ( IF (IdentAndAsgn())
 	Identifier
-	(. NamedArgumentExpression nae = new NamedArgumentExpression(t.val, null);
-	   nae.StartLocation = t.Location;
+	(. MemberInitializerExpression mie = new MemberInitializerExpression(t.val, null);
+	   mie.StartLocation = t.Location;
+	   mie.IsKey = true;
 	   Expression r = null; .)
 	"=" 
 	( CollectionOrObjectInitializer<out r>
-	| VariableInitializer <out r> )
-	(. nae.Expression = r; nae.EndLocation = t.EndLocation; expr = nae; .)
+	| VariableInitializer<out r> )
+	(. mie.Expression = r; mie.EndLocation = t.EndLocation; expr = mie; .)
 	
 |	VariableInitializer <out expr>
 )
@@ -1501,17 +1506,17 @@ Statement
 	SYNC
 	(
 		/*--- labeled statement: */
-		IF (IsLabel()) Identifier (. compilationUnit.AddChild(new LabelStatement(t.val)); .)
+		IF (IsLabel()) Identifier (. AddChild(new LabelStatement(t.val)); .)
 		":" Statement
 		/*--- local constant declaration: */
 	|	"const"
 		LocalVariableDecl<out stmt>
 		(. if (stmt != null) { ((LocalVariableDeclaration)stmt).Modifier |= Modifiers.Const; } .)
-		";" (. compilationUnit.AddChild(stmt); .)
+		";" (. AddChild(stmt); .)
 		/*--- local variable declaration: */
-	|	IF (IsLocalVarDecl()) LocalVariableDecl<out stmt> ";" (. compilationUnit.AddChild(stmt); .)
+	|	IF (IsLocalVarDecl()) LocalVariableDecl<out stmt> ";" (. AddChild(stmt); .)
 	
-	|	EmbeddedStatement<out stmt> (. compilationUnit.AddChild(stmt); .)
+	|	EmbeddedStatement<out stmt> (. AddChild(stmt); .)
 		/* LL(1) confict: LocalVariableDecl *
 		 *            <-> StatementExpr     *
 		 * ident {"." ident} { "[" Expr ... */
@@ -1529,18 +1534,19 @@ EmbeddedStatement<out Statement statement>
 	TypeReference type = null;
 	Expression expr = null;
 	Statement embeddedStatement = null;
+	BlockStatement block = null;
 	statement = null;
 .)
 =
 	(. Location startLocation = la.Location; .)
 	(
-		Block<out statement>
+		Block<out block> (. statement = block; .)
 	
 		/*--- empty statement: */
 	|	";"                       (. statement = new EmptyStatement(); .)
 	
 		/*--- checked / unchecked statement: */
-	|	IF (UnCheckedAndLBrace()) (. Statement block; bool isChecked = true; .)
+	|	IF (UnCheckedAndLBrace()) (. bool isChecked = true; .)
 		("checked" | "unchecked"    (. isChecked = false;.) )
 		Block<out block>            (. statement = isChecked ? (Statement)new CheckedStatement(block) : (Statement)new UncheckedStatement(block); .)
 	
@@ -1604,7 +1610,7 @@ EmbeddedStatement<out Statement statement>
 		EmbeddedStatement<out embeddedStatement> (. statement = new UsingStatement(resourceAcquisitionStmt, embeddedStatement); .)
 	
 		/*--- unsafe statement: */
-	|	"unsafe" Block<out embeddedStatement>  (. statement = new UnsafeStatement(embeddedStatement); .)
+	|	"unsafe" Block<out block>  (. statement = new UnsafeStatement(block); .)
 		/*--- fixed statement: */
 	|	(. Statement pointerDeclarationStmt = null; .)
 		"fixed" "("  
@@ -1668,22 +1674,22 @@ SwitchSections<List<SwitchSection> switchSections>
 .)
 =
 	SwitchLabel<out label> (. SafeAdd(switchSection, switchSection.SwitchLabels, label); .) 
-	(. compilationUnit.BlockStart(switchSection); .)
+	(. BlockStart(switchSection); .)
 	{
 		( SwitchLabel<out label>
 		  (. if (label != null) {
 		  		if (switchSection.Children.Count > 0) {
 		  			// open new section
-		  			compilationUnit.BlockEnd(); switchSections.Add(switchSection);
+		  			BlockEnd(); switchSections.Add(switchSection);
 		  			switchSection = new SwitchSection();
-		  			compilationUnit.BlockStart(switchSection);
+		  			BlockStart(switchSection);
 		  		}
 		  		SafeAdd(switchSection, switchSection.SwitchLabels, label);
 		  	 }
 		  .)
 		| Statement)
 	}
-	(. compilationUnit.BlockEnd(); switchSections.Add(switchSection); .)
+	(. BlockEnd(); switchSections.Add(switchSection); .)
 .
 
 SwitchLabel<out CaseLabel label>
@@ -1695,7 +1701,7 @@ SwitchLabel<out CaseLabel label>
 
 TryStatement<out Statement tryStatement>
 (.
-	Statement blockStmt = null, finallyStmt = null;
+	BlockStatement blockStmt = null, finallyStmt = null;
 	CatchClause catchClause = null;
 	List<CatchClause> catchClauses = new List<CatchClause>();
 .)
@@ -1717,7 +1723,7 @@ TryStatement<out Statement tryStatement>
 CatchClause<out CatchClause catchClause>
 =
 	"catch" (. string identifier;
-	           Statement stmt;
+	           BlockStatement stmt;
 	           TypeReference typeRef;
 	           Location startPos = t.Location;
 	           catchClause = null;
@@ -2129,7 +2135,7 @@ LambdaExpressionBody<LambdaExpression lambda>
 (. Expression expr; BlockStatement stmt; .)
 =
 	(
-		BlockInsideExpression<out stmt> (. lambda.StatementBody = stmt; .)
+		Block<out stmt> (. lambda.StatementBody = stmt; .)
 	|	Expr<out expr> (. lambda.ExpressionBody = expr; .)
 	)
 	(. lambda.EndLocation = t.EndLocation; .)
@@ -2151,22 +2157,8 @@ AnonymousMethodExpr<out Expression outExpr>
 		")"
 		(. expr.HasParameterList = true; .)
 	]
-	BlockInsideExpression<out stmt> (. expr.Body  = stmt; .)
+	Block<out stmt> (. expr.Body = stmt; .)
 	(. expr.EndLocation = t.Location; .)
-.
-
-BlockInsideExpression<out BlockStatement outStmt>
-(. Statement stmt = null; outStmt = null; .)
-=
-	/*--- ParseExpression doesn't set a compilation unit, */
-	/*--- so we can't use block then -> skip body of anonymous method */
-	(. if (compilationUnit != null) { .)
-		Block<out stmt> (. outStmt = (BlockStatement)stmt; .)
-	(. } else { .)
-		"{"
-		(. lexer.SkipCurrentBlock(0); .)
-		"}"
-	(. } .)
 .
 
 ConditionalOrExpr<ref Expression outExpr>

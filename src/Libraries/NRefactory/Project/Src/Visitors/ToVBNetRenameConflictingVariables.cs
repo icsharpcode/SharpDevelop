@@ -25,6 +25,9 @@ namespace ICSharpCode.NRefactory.Visitors
 			LookupTableVisitor ltv = new LookupTableVisitor(SupportedLanguage.CSharp);
 			method.AcceptVisitor(ltv, null);
 			
+			// add method name to caseInsensitive
+			AddVariableToDict(caseInsensitive, method.Name, true);
+			
 			// add method parameters to caseInsensitive
 			foreach (ParameterDeclarationExpression pde in method.Parameters) {
 				AddVariableToDict(caseInsensitive, pde.ParameterName, true);

@@ -8,7 +8,6 @@
 using System;
 using System.Diagnostics;
 using System.Windows.Media;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop.Editor;
@@ -35,10 +34,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (textView == null)
 				throw new ArgumentNullException("textView");
 			
-			this.borderPen = new Pen(Brushes.Blue, 1);
+			this.borderPen = new Pen(new SolidColorBrush(Color.FromArgb(52, 0, 0, 255)), 1);
 			this.borderPen.Freeze();
 			
-			this.backgroundBrush = new SolidColorBrush(Color.FromArgb(50, 0, 0, 255));
+			this.backgroundBrush = new SolidColorBrush(Color.FromArgb(22, 0, 0, 255));
 			this.backgroundBrush.Freeze();
 			
 			this.textView = textView;
