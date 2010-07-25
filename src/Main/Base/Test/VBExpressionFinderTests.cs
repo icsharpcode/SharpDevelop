@@ -196,6 +196,16 @@ End Class", "Te", ExpressionContext.Default);
 	End Sub
 End Class", "Test2", ExpressionContext.Default);
 		}
+		
+		[Test]
+		public void FindExpressionAfterThen()
+		{
+			Find(@"Class MainClass
+	Sub Main()
+		If True Then Double|
+	End Sub
+End Class", "Double", ExpressionContext.MethodBody);
+		}
 		#endregion
 		
 		#region Context Tests

@@ -538,11 +538,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				digit += ch;
 			}
 			
-			bool ishex      = false;
-			bool isokt      = false;
-			bool issingle   = false;
-			bool isdouble   = false;
-			bool isdecimal  = false;
+			bool isHex      = false;
+			bool isOct      = false;
+			bool isSingle   = false;
+			bool isDouble   = false;
+			bool isDecimal  = false;
 			
 			if (ReaderPeek() == -1) {
 				if (ch == '&') {
@@ -552,8 +552,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			}
 			if (ch == '.') {
 				if (Char.IsDigit((char)ReaderPeek())) {
-					isdouble = true; // double is default
-					if (ishex || isokt) {
+					isDouble = true; // double is default
+					if (isHex || isOct) {
 						errors.Error(Line, Col, String.Format("No hexadecimal or oktadecimal floating point values allowed"));
 					}
 					while (ReaderPeek() != -1 && Char.IsDigit((char)ReaderPeek())){ // read decimal digits beyond the dot
@@ -568,7 +568,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					sb.Append(ch);
 					digit += Char.ToUpper(ch, CultureInfo.InvariantCulture);
 				}
-				ishex = true;
+				isHex = true;
 			} else if (ReaderPeek() != -1 && ch == '&' && PeekUpperChar() == 'O') {
 				const string okt = "01234567";
 				sb.Append((char)ReaderRead()); // skip 'O'
@@ -577,7 +577,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					sb.Append(ch);
 					digit += Char.ToUpper(ch, CultureInfo.InvariantCulture);
 				}
-				isokt = true;
+				isOct = true;
 			} else {
 				while (ReaderPeek() != -1 && Char.IsDigit((char)ReaderPeek())) {
 					ch = (char)ReaderRead();;
@@ -591,7 +591,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), 0, LiteralFormat.DecimalNumber);
 			}
 			
-			if (ReaderPeek() != -1 && "%&SILU".IndexOf(PeekUpperChar()) != -1 || ishex || isokt) {
+			if (ReaderPeek() != -1 && "%&SILU".IndexOf(PeekUpperChar()) != -1 || isHex || isOct) {
 				bool unsigned = false;
 				if (ReaderPeek() != -1) {
 					ch = (char)ReaderPeek();
@@ -609,7 +609,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					}
 				}
 				try {
-					if (isokt) {
+					if (isOct) {
 						ReaderRead();
 						ulong number = 0L;
 						for (int i = 0; i < digit.Length; ++i) {
@@ -638,26 +638,26 @@ namespace ICSharpCode.NRefactory.Parser.VB
 							}
 						}
 					}
-					LiteralFormat literalFormat = ishex ? LiteralFormat.HexadecimalNumber : LiteralFormat.DecimalNumber;
+					LiteralFormat literalFormat = isHex ? LiteralFormat.HexadecimalNumber : LiteralFormat.DecimalNumber;
 					if (ch == 'S') {
 						ReaderRead();
 						if (unsigned)
-							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), UInt16.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number), literalFormat);
+							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), UInt16.Parse(digit, isHex ? NumberStyles.HexNumber : NumberStyles.Number), literalFormat);
 						else
-							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int16.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number), literalFormat);
+							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int16.Parse(digit, isHex ? NumberStyles.HexNumber : NumberStyles.Number), literalFormat);
 					} else if (ch == '%' || ch == 'I') {
 						ReaderRead();
 						if (unsigned)
-							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), UInt32.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number), literalFormat);
+							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), UInt32.Parse(digit, isHex ? NumberStyles.HexNumber : NumberStyles.Number), literalFormat);
 						else
-							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int32.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number), literalFormat);
+							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int32.Parse(digit, isHex ? NumberStyles.HexNumber : NumberStyles.Number), literalFormat);
 					} else if (ch == '&' || ch == 'L') {
 						ReaderRead();
 						if (unsigned)
-							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), UInt64.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number), literalFormat);
+							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), UInt64.Parse(digit, isHex ? NumberStyles.HexNumber : NumberStyles.Number), literalFormat);
 						else
-							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int64.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number), literalFormat);
-					} else if (ishex) {
+							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int64.Parse(digit, isHex ? NumberStyles.HexNumber : NumberStyles.Number), literalFormat);
+					} else if (isHex) {
 						ulong number = UInt64.Parse(digit, NumberStyles.HexNumber);
 						if (number > uint.MaxValue) {
 							return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), unchecked((long)number), literalFormat);
@@ -668,14 +668,17 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				} catch (OverflowException ex) {
 					errors.Error(Line, Col, ex.Message);
 					return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), 0, LiteralFormat.None);
+				} catch (FormatException ex2) {
+					errors.Error(Line, Col, String.Format("{0} is not a parseable number", digit));
+					return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), 0, LiteralFormat.None);
 				}
 			}
-			Token nextToken = null; // if we accedently read a 'dot'
-			if (!isdouble && ReaderPeek() == '.') { // read floating point number
+			Token nextToken = null; // if we accidently read a 'dot'
+			if (!isDouble && ReaderPeek() == '.') { // read floating point number
 				ReaderRead();
 				if (ReaderPeek() != -1 && Char.IsDigit((char)ReaderPeek())) {
-					isdouble = true; // double is default
-					if (ishex || isokt) {
+					isDouble = true; // double is default
+					if (isHex || isOct) {
 						errors.Error(Line, Col, String.Format("No hexadecimal or oktadecimal floating point values allowed"));
 					}
 					digit += '.';
@@ -688,7 +691,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			}
 			
 			if (ReaderPeek() != -1 && PeekUpperChar() == 'E') { // read exponent
-				isdouble = true;
+				isDouble = true;
 				digit +=  (char)ReaderRead();
 				if (ReaderPeek() != -1 && (ReaderPeek() == '-' || ReaderPeek() == '+')) {
 					digit += (char)ReaderRead();
@@ -703,46 +706,46 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					case 'R':
 					case '#':
 						ReaderRead();
-						isdouble = true;
+						isDouble = true;
 						break;
 					case 'D':
 					case '@':
 						ReaderRead();
-						isdecimal = true;
+						isDecimal = true;
 						break;
 					case 'F':
 					case '!':
 						ReaderRead();
-						issingle = true;
+						isSingle = true;
 						break;
 				}
 			}
 			
 			try {
-				if (issingle) {
+				if (isSingle) {
 					return new Token(Tokens.LiteralSingle, x, y, sb.ToString(), Single.Parse(digit, CultureInfo.InvariantCulture), LiteralFormat.DecimalNumber);
 				}
-				if (isdecimal) {
+				if (isDecimal) {
 					return new Token(Tokens.LiteralDecimal, x, y, sb.ToString(), Decimal.Parse(digit, NumberStyles.Currency | NumberStyles.AllowExponent, CultureInfo.InvariantCulture), LiteralFormat.DecimalNumber);
 				}
-				if (isdouble) {
+				if (isDouble) {
 					return new Token(Tokens.LiteralDouble, x, y, sb.ToString(), Double.Parse(digit, CultureInfo.InvariantCulture), LiteralFormat.DecimalNumber);
 				}
 			} catch (FormatException) {
 				errors.Error(Line, Col, String.Format("{0} is not a parseable number", digit));
-				if (issingle)
+				if (isSingle)
 					return new Token(Tokens.LiteralSingle, x, y, sb.ToString(), 0f, LiteralFormat.DecimalNumber);
-				if (isdecimal)
+				if (isDecimal)
 					return new Token(Tokens.LiteralDecimal, x, y, sb.ToString(), 0m, LiteralFormat.DecimalNumber);
-				if (isdouble)
+				if (isDouble)
 					return new Token(Tokens.LiteralDouble, x, y, sb.ToString(), 0.0, LiteralFormat.DecimalNumber);
 			}
 			Token token;
 			try {
-				token = new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int32.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number), ishex ? LiteralFormat.HexadecimalNumber : LiteralFormat.DecimalNumber);
+				token = new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int32.Parse(digit, isHex ? NumberStyles.HexNumber : NumberStyles.Number), isHex ? LiteralFormat.HexadecimalNumber : LiteralFormat.DecimalNumber);
 			} catch (Exception) {
 				try {
-					token = new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int64.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number), ishex ? LiteralFormat.HexadecimalNumber : LiteralFormat.DecimalNumber);
+					token = new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int64.Parse(digit, isHex ? NumberStyles.HexNumber : NumberStyles.Number), isHex ? LiteralFormat.HexadecimalNumber : LiteralFormat.DecimalNumber);
 				} catch (FormatException) {
 					errors.Error(Line, Col, String.Format("{0} is not a parseable number", digit));
 					// fallback, when nothing helps :)

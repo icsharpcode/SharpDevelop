@@ -61,31 +61,25 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(text));
 			Token t = lexer.NextToken();
 			
+			// put all tokens in front of targetPosition into the EF-Parser
 			while (t.EndLocation < targetPosition) {
 				p.InformToken(t);
 				t = lexer.NextToken();
 			}
 			
+			// put current token into EF-Parser if it cannot be continued (is simple operator)
 			if (t.EndLocation == targetPosition && ((t.Kind <= Tokens.ColonAssign && t.Kind > Tokens.Identifier) || t.Kind == Tokens.EOL)) {
 				p.InformToken(t);
 				t = lexer.NextToken();
 			}
 			
+			// make sure semantic actions are executed
 			p.Advance();
 			
+			// remember current state, we'll use it to determine the context
 			var block = p.CurrentBlock;
 			
 			ExpressionContext context = p.IsIdentifierExpected && !p.IsMissingModifier ? ExpressionContext.IdentifierExpected : GetContext(block);
-			
-			if (t.Location < targetPosition) {
-				p.InformToken(t);
-				p.Advance();
-			}
-			
-			if (p.Errors.Any()) {
-				foreach (var e in p.Errors)
-					LoggingService.Warn("not expected: " + e);
-			}
 			
 			BitArray expectedSet;
 			
@@ -95,10 +89,20 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				expectedSet = null;
 			}
 			
+			// put current token into EF-Parser
+			if (t.Location < targetPosition) {
+				p.InformToken(t);
+			}
+			
+			if (p.Errors.Any()) {
+				foreach (var e in p.Errors)
+					LoggingService.Warn("not expected: " + e);
+			}
+			
 			if (p.NextTokenIsPotentialStartOfExpression)
 				return new ExpressionResult("", new DomRegion(targetPosition.Line, targetPosition.Column), context, expectedSet);
 			
-			int lastExpressionStartOffset = LocationToOffset(block.lastExpressionStart);
+			int lastExpressionStartOffset = LocationToOffset(p.CurrentBlock.lastExpressionStart);
 			
 			if (lastExpressionStartOffset < 0)
 				return new ExpressionResult("", new DomRegion(targetPosition.Line, targetPosition.Column), context, expectedSet);

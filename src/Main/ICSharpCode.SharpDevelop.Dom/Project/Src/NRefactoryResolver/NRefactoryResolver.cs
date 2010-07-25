@@ -184,7 +184,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			Expression expr = null;
 			if (language == NR.SupportedLanguage.VBNet) {
-				if (expression.Length == 0 || expression[0] == '.') {
+				if (expression.Length == 0 || expression[0] == '.' && (expression.Length > 1 && !char.IsDigit(expression[1]))) {
 					return WithResolve(expression, fileContent);
 				} else if ("global".Equals(expression, StringComparison.InvariantCultureIgnoreCase)) {
 					return new NamespaceResolveResult(null, null, "");

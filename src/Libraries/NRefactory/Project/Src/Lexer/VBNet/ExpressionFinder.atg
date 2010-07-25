@@ -1051,7 +1051,7 @@ RaiseEventStatement =
 IfStatement =
     "If" Expression
     (    "Then"
-        ( Statement { ":" [Statement] } [ "Else" [Statement] { ":" [Statement] } ] EOL
+        ( Statement { EXPECTEDCONFLICT(":") ":" [Statement] } [ EXPECTEDCONFLICT("Else") "Else" [Statement] { EXPECTEDCONFLICT(":") ":" [Statement] } ]
         | MultilineIfRemainder
         )
     |    MultilineIfRemainder

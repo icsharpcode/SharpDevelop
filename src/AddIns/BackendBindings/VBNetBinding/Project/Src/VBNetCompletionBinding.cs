@@ -66,10 +66,21 @@ namespace ICSharpCode.VBNetBinding
 					TryDeclarationTypeInference(editor, editor.Document.GetLineForOffset(editor.Caret.Offset));
 					break;
 				case '.':
-					result = ef.FindExpression(editor.Document.Text, editor.Caret.Offset);
+					string w = editor.GetWordBeforeCaret(); int index = w.IndexOf('.');
+					
+					if (index > -1 && w.Length - index == 2)
+						index = editor.Caret.Offset - 2;
+					else
+						index = editor.Caret.Offset;
+					
+					result = ef.FindExpression(editor.Document.Text, index);
 					LoggingService.Debug("CC: After dot, result=" + result + ", context=" + result.Context);
 					ShowCompletion(result, editor, ch);
 					return CodeCompletionKeyPressResult.Completed;
+				case '@':
+					if (editor.Caret.Offset > 0 && editor.Document.GetCharAt(editor.Caret.Offset - 1) == '.')
+						return CodeCompletionKeyPressResult.None;
+					goto default;
 				case ' ':
 					editor.Document.Insert(editor.Caret.Offset, " ");
 					result = ef.FindExpression(editor.Document.Text, editor.Caret.Offset);
@@ -84,16 +95,16 @@ namespace ICSharpCode.VBNetBinding
 					if (CodeCompletionOptions.CompleteWhenTyping) {
 						int cursor = editor.Caret.Offset;
 						char prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
-						bool afterUnderscore = prevChar == '_';
-						if (afterUnderscore) {
-							cursor--;
-							prevChar = cursor > 1 ? editor.Document.GetCharAt(cursor - 1) : ' ';
-						}
+						char ppChar = cursor > 2 ? editor.Document.GetCharAt(cursor - 2) : ' ';
 						
 						result = ef.FindExpression(editor.Document.Text, cursor);
 						
 						if ((result.Context != ExpressionContext.IdentifierExpected && char.IsLetter(ch)) &&
 						    (!char.IsLetterOrDigit(prevChar) && prevChar != '.')) {
+							if (prevChar == '@' && ppChar == '.')
+								return CodeCompletionKeyPressResult.None;
+							if (IsTypeCharacter(ch, prevChar))
+								return CodeCompletionKeyPressResult.None;
 							LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
 							ShowCompletion(result, editor, ch);
 							return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;
@@ -103,6 +114,24 @@ namespace ICSharpCode.VBNetBinding
 			}
 			
 			return CodeCompletionKeyPressResult.None;
+		}
+		
+		bool IsTypeCharacter(char ch, char prevChar)
+		{
+			ch = char.ToUpperInvariant(ch);
+			
+			// char type character
+			if (ch == 'C' && prevChar == '"')
+				return true;
+			
+			// start of hex or octal literal
+			if (prevChar == '&' && (ch == 'H' || ch == 'O'))
+				return true;
+			
+			if (char.IsDigit(prevChar))
+				return true;
+			
+			return false;
 		}
 
 		void ShowCompletion(ExpressionResult result, ITextEditor editor, char ch)

@@ -31,7 +31,19 @@ namespace ICSharpCode.VBNetBinding
 			if (key == '?' && string.IsNullOrWhiteSpace(Editor.Document.GetText(Window.StartOffset, Window.EndOffset - Window.StartOffset)))
 				return CompletionItemListKeyResult.NormalKey;
 			
+			if (key == '@' && Window.StartOffset > 0 && Editor.Document.GetCharAt(Window.StartOffset - 1) == '.')
+				return CompletionItemListKeyResult.NormalKey;
+			
 			return base.ProcessInput(key);
+		}
+		
+		public override void Complete(CompletionContext context, ICompletionItem item)
+		{
+			base.Complete(context, item);
+			
+			if (item.Text == "..") {
+				VBNetCompletionBinding.Instance.CtrlSpace(context.Editor);
+			}
 		}
 	}
 }
