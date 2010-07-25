@@ -102,10 +102,10 @@ namespace ICSharpCode.Reports.Core
 						int adjust = row.Location.Y - saveLocation.Y;
 						row.Location = new Point(row.Location.X,row.Location.Y - adjust - 3 * GlobalValues.GapBetweenContainer);
 						rs = row.Size;
+						
 						do {
 							if (PrintHelper.IsPageFull(new Rectangle(currentPosition,row.Size),this.SectionBounds)) {
 								tableContainer.Location = saveLocation;
-							
 								rpea.SinglePage.EndRow = this.dataNavigator.CurrentRow;
 								AbstractRenderer.PageBreak(rpea);
 								return;
@@ -120,14 +120,14 @@ namespace ICSharpCode.Reports.Core
 							currentPosition = PrintHelper.ConvertRectangleToCurentPosition (r);
 
 							row.Size = rs;
+							Console.WriteLine("movenext");
 						}
 						while (this.dataNavigator.MoveNext());
+						
 					}
 				}
 				row.Size = rs;
 			}
-		
-//			rpea.LocationAfterDraw = new Point(rpea.LocationAfterDraw.X,rpea.LocationAfterDraw.Y + 5);
 //			base.NotifyAfterPrint (rpea.LocationAfterDraw);
 		}
 		

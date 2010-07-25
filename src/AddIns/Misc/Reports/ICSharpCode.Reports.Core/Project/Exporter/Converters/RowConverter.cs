@@ -85,7 +85,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				StandardPrinter.EvaluateRow(base.Evaluator,mylist);
 				
 				section.Items[0].Size = base.RestoreSize;
-				section.SectionOffset += section.Size.Height + 2 * base.SinglePage.SectionBounds.Gap;
+				section.SectionOffset += section.Size.Height + 3 * GlobalValues.GapBetweenContainer;
 
 				
 				if (PrintHelper.IsPageFull(new Rectangle(new Point (simpleContainer.Location.X,currentPosition.Y), section.Size),base.SectionBounds)) {

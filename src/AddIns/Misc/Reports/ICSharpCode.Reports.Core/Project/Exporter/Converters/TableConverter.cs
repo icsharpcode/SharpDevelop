@@ -102,8 +102,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 							
 							currentPosition = base.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
 							
-//							EvaluateRow(mylist);
-							
 							simpleContainer.Size = base.RestoreSize;
 						}
 						while (base.DataNavigator.MoveNext());

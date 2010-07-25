@@ -203,8 +203,7 @@ namespace ICSharpCode.Reports.Core {
 
 					
 					if (PrintHelper.IsPageFull(sectionRect,base.SectionBounds)) {
-						AbstractRenderer.PageBreak(rpea);
-						this.RemoveSectionEvents();
+						PerformPageBreak(rpea);
 						return;
 					}
 					
@@ -213,9 +212,7 @@ namespace ICSharpCode.Reports.Core {
 					
 					if (nav.CurrentRow < nav.Count -1) {
 						if (base.CurrentSection.PageBreakAfter) {
-							AbstractRenderer.PageBreak(rpea);
-							this.RemoveSectionEvents();
-							
+							PerformPageBreak(rpea);
 							return;
 						}
 					}
@@ -243,6 +240,12 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 		
+		
+		private void PerformPageBreak (ReportPageEventArgs rpea)
+		{
+			AbstractRenderer.PageBreak(rpea);
+						this.RemoveSectionEvents();
+		}
 		
 		internal override void BodyEnd(object sender, ReportPageEventArgs rpea) 
 		{
