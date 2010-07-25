@@ -76,7 +76,7 @@ namespace NUnit.ConsoleRunner
                     ? package.Settings["RuntimeFramework"]
                     : "Default");
 
-            TestRunner testRunner = new TestRunnerFactory().MakeTestRunner(package);
+            TestRunner testRunner = new DefaultTestRunnerFactory().MakeTestRunner(package);
             testRunner.Load(package);
 
             try
@@ -93,7 +93,7 @@ namespace NUnit.ConsoleRunner
 				TestFilter testFilter = TestFilter.Empty;
 				if ( options.run != null && options.run != string.Empty )
 				{
-					Console.WriteLine( "Selected test: " + options.run );
+					Console.WriteLine( "Selected test(s): " + options.run );
 					testFilter = new SimpleNameFilter( options.run );
 				}
 
@@ -119,6 +119,9 @@ namespace NUnit.ConsoleRunner
 						testFilter = new AndFilter( testFilter, excludeFilter );
 				}
 
+        if (testFilter is NotFilter)
+          ((NotFilter)testFilter).TopLevel = true;
+        
 				TestResult result = null;
 				string savedDirectory = Environment.CurrentDirectory;
 				TextWriter savedOut = Console.Out;
@@ -196,12 +199,13 @@ namespace NUnit.ConsoleRunner
 		}
 
 		#region Helper Methods
-        private static TestPackage MakeTestPackage( ConsoleOptions options )
-        {
+    // TODO: See if this can be unified with the Gui's MakeTestPackage
+    private static TestPackage MakeTestPackage( ConsoleOptions options )
+    {
 			TestPackage package;
 			DomainUsage domainUsage = DomainUsage.Default;
             ProcessModel processModel = ProcessModel.Default;
-            RuntimeFramework framework = RuntimeFramework.CurrentFramework;
+            RuntimeFramework framework = null;
 
 			if (options.IsTestProject)
 			{
