@@ -81,7 +81,7 @@
 	</Target>
 	
 	<Target Name="rununittests">
-		<CreateItem Include="$(SharpDevelopBin)\UnitTests\*.Tests.dll">
+		<CreateItem Include="$(SharpDevelopBin)\UnitTests\**\*.Tests.dll">
 			<Output TaskParameter="Include" ItemName="UnitTestAssemblies"/>
 		</CreateItem>
 		
