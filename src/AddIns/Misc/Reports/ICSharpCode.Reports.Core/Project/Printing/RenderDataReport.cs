@@ -51,7 +51,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		
 		
-		private void PageEnd (ReportPageEventArgs rpea)
+		private void PageFooter (ReportPageEventArgs rpea)
 		{
 			this.CurrentSection.SectionOffset = base.SectionBounds.PageFooterRectangle.Location.Y;
 			base.RenderSection (rpea);
@@ -89,10 +89,10 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		internal override void PrintPageEnd(object sender, ReportPageEventArgs rpea) 
+		internal override void PrintPageFooter(object sender, ReportPageEventArgs rpea) 
 		{
-			base.PrintPageEnd(sender,rpea);
-			this.PageEnd (rpea);
+			base.PrintPageFooter(sender,rpea);
+			this.PageFooter (rpea);
 			base.RemoveSectionEvents();
 		}
 		
@@ -137,6 +137,14 @@ namespace ICSharpCode.Reports.Core {
 				PrintNoDataMessage(rpea.PrintPageEventArgs);
 			}	
 			base.CurrentSection.SectionOffset = (int)base.SectionBounds.DetailStart.Y + GlobalValues.GapBetweenContainer;
+		}
+		
+		
+		
+		internal override void PrintDetail(object sender, ReportPageEventArgs rpea)
+		{
+			base.PrintDetail(sender,rpea);
+			this.PrintDetailInternal (rpea,base.DataNavigator);
 		}
 		
 		
@@ -233,12 +241,6 @@ namespace ICSharpCode.Reports.Core {
 			if (!PrintHelper.IsRoomForFooter (base.SectionBounds,rpea.LocationAfterDraw)) {
 				AbstractRenderer.PageBreak(rpea);
 			}
-		}
-		
-		
-		internal override void PrintDetail(object sender, ReportPageEventArgs rpea)
-		{
-			this.PrintDetailInternal (rpea,base.DataNavigator);
 		}
 		
 		

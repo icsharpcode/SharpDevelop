@@ -86,7 +86,7 @@ namespace ICSharpCode.Reports.Core
 			this.reportDocument.RenderReportHeader += new EventHandler<ReportPageEventArgs> (PrintReportHeader);
 			this.reportDocument.RenderPageHeader += new EventHandler<ReportPageEventArgs> (PrintPageHeader);
 			this.reportDocument.RenderDetails += new EventHandler<ReportPageEventArgs> (PrintDetail);
-			this.reportDocument.RenderPageEnd += new EventHandler<ReportPageEventArgs> (PrintPageEnd);
+			this.reportDocument.RenderPageEnd += new EventHandler<ReportPageEventArgs> (PrintPageFooter);
 			this.reportDocument.RenderReportEnd += new EventHandler<ReportPageEventArgs> (PrintReportFooter);
 			
 			this.Evaluator = PrintHelper.SetupEvaluator();
@@ -169,9 +169,9 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		internal virtual void  PrintPageEnd (object sender,ReportPageEventArgs rpea) 
+		internal virtual void  PrintPageFooter (object sender,ReportPageEventArgs rpea) 
 		{
-			this.CurrentSection = this.reportModel.ReportFooter;
+			this.CurrentSection = this.reportModel.PageFooter;
 			this.AddSectionEvents();
 		}
 		
@@ -214,7 +214,7 @@ namespace ICSharpCode.Reports.Core
 			this.CurrentSection.Render (rpea);
 			
 			Evaluator.SinglePage = this.reportDocument.SinglePage;
-			
+			 
 			if (this.CurrentSection.Items.Count > 0) {
 
 				

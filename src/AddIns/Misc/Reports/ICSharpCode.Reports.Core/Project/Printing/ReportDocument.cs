@@ -27,11 +27,9 @@ namespace ICSharpCode.Reports.Core {
 		/// </summary>
 		/// 
 		public event EventHandler<ReportPageEventArgs> BodyStart;
-		
-		/// <summary>
-		/// Fired if all Details 8data) are printed
-		/// </summary>
 		public event EventHandler<ReportPageEventArgs> BodyEnd;
+		
+		
 		public event EventHandler<ReportPageEventArgs> RenderReportHeader;
 		public event EventHandler<ReportPageEventArgs> RenderPageHeader;
 		public event EventHandler<ReportPageEventArgs> RenderDetails;

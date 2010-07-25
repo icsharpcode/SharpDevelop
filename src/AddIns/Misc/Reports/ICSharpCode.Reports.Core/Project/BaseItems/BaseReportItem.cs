@@ -106,21 +106,13 @@ namespace ICSharpCode.Reports.Core {
 		protected virtual Rectangle DisplayRectangle
 		{
 			get {
-				if (Parent != null) {
-					
-					return new Rectangle(this.Parent.Location.X + this.Location.X ,
-					                     
-					                     this.Location.Y + this.SectionOffset,
-					                     this.Size.Width,this.Size.Height);
-				} else {
-					return new Rectangle(this.Location.X ,					                     					                     
-					                     this.Location.Y + this.SectionOffset,
-					                     this.Size.Width,this.Size.Height);
-				}
+				return new Rectangle( this.Location.X ,
+				                     this.Location.Y + this.SectionOffset,
+				                     this.Size.Width,this.Size.Height);
 			}
 		}
 		
-	
+		
 		#region Properties
 		
 		public virtual bool Visible {get;set;}

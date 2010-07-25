@@ -17,6 +17,8 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 	/// <summary>
 	/// Description of StandardPrinter.
 	/// </summary>
+	
+	
 	internal sealed class StandardPrinter
 	{
 		public StandardPrinter()
@@ -98,31 +100,19 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 		
+		
 		private static void RenderLineItem (BaseReportItem item, Point offset,IExpressionEvaluatorFacade evaluator,ReportPageEventArgs rpea)
 		{
 			
 			Point saveLocation = new Point (item.Location.X,item.Location.Y);
 			
-			item.Location = new Point(item.Location.X,
-			                           offset.Y + item.Location.Y);
-			
-//			item.Location = new Point(offset.X + item.Location.X,
-//			                           offset.Y + item.Location.Y);
-//			
-			var ss = MeasurementService.MeasureReportItem(rpea.PrintPageEventArgs.Graphics,item);
+			PrintHelper.AdjustChildLocation(item,offset);
 			
 			BaseTextItem textItem = item as BaseTextItem;
 			
 			if (textItem != null) {
-				
 				string str = textItem.Text;
 				textItem.Text = evaluator.Evaluate(textItem.Text);
-				
-				if (str != textItem.Text) {
-					
-					var ss1 = MeasurementService.MeasureReportItem(rpea.PrintPageEventArgs.Graphics,item);
-				}
-				
 				textItem.Render(rpea);
 				textItem.Text = str;
 			} else {
@@ -177,12 +167,14 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		public static Rectangle RenderContainer (ISimpleContainer simpleContainer,IExpressionEvaluatorFacade evaluator,Point offset,ReportPageEventArgs rpea)
 		{
+			
 			BaseReportItem item = simpleContainer as BaseReportItem;
 			Rectangle retVal = new Rectangle(offset,item.Size);
-			Point loc = item.Location;
-//			item.Location = new Point (offset.X + item.Location.X,offset.Y + item.Location.Y);
-			item.Location = new Point (item.Location.X,offset.Y + item.Location.Y);
+			Point saveLocation = item.Location;
+			PrintHelper.AdjustChildLocation(item,offset);
+			
 			item.Render(rpea);
+			
 			
 			if (simpleContainer.Items != null)  {
 				retVal = StandardPrinter.RenderPlainCollection(item,simpleContainer.Items,evaluator,offset,rpea);
@@ -191,7 +183,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			retVal = new Rectangle (retVal.X,retVal.Y,
 		                        retVal.X + item.Size.Width,
 		                        item.Size.Height + 3 * GlobalValues.GapBetweenContainer);
-			item.Location = loc;
+			item.Location = saveLocation;
 			return retVal;
 		}
 		

@@ -113,11 +113,8 @@ namespace ICSharpCode.Reports.Core
 							
 							this.dataNavigator.Fill(row.Items);
 							
-							Console.WriteLine("org row size {0}",row.Size);
 							PrintHelper.SetLayoutForRow(rpea.PrintPageEventArgs.Graphics,base.Layout,row);
 							
-							Console.WriteLine("new row size {0}",row.Size);
-							Console.WriteLine("");
 							Rectangle r =  StandardPrinter.RenderContainer(row,Evaluator,currentPosition,rpea);
 							
 							currentPosition = PrintHelper.ConvertRectangleToCurentPosition (r);
@@ -164,7 +161,6 @@ namespace ICSharpCode.Reports.Core
 		{
 			
 			Point currentPosition	= new Point(section.Location.X + container.Location.X,offset.Y);
-			Console.WriteLine("start {0}",currentPosition);
 			
 			if (section.Visible){
 				
@@ -186,7 +182,6 @@ namespace ICSharpCode.Reports.Core
 					if (con != null) {
 						Rectangle r = StandardPrinter.RenderContainer(container,Evaluator,offset,rpea);
 						currentPosition = PrintHelper.ConvertRectangleToCurentPosition(r);
-						Console.WriteLine("layoutrec {0} - currpos {1} ",r,currentPosition);
 					}
 					
 					else
@@ -207,12 +202,9 @@ namespace ICSharpCode.Reports.Core
 						
 						rpea.LocationAfterDraw = new Point (rpea.LocationAfterDraw.X,section.SectionOffset + section.Size.Height);
 						
-						Console.WriteLine ("locafter {0}",rpea.LocationAfterDraw);
 					}
 				
 					section.Items[0].Size = containerSize;
-					Console.WriteLine("ret val {0}",currentPosition);
-					Console.WriteLine("--");
 					return currentPosition;
 				}
 				

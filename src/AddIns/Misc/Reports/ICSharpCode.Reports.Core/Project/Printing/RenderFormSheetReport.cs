@@ -84,8 +84,8 @@ namespace ICSharpCode.Reports.Core {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		
-		internal override void PrintPageEnd(object sender, ReportPageEventArgs rpea) {
-			base.PrintPageEnd(this,rpea);
+		internal override void PrintPageFooter(object sender, ReportPageEventArgs rpea) {
+			base.PrintPageFooter(this,rpea);
 			this.CurrentSection.SectionOffset = base.SectionBounds.PageFooterRectangle.Location.Y;
 			base.RenderSection (rpea);
 		}

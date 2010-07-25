@@ -55,7 +55,7 @@ namespace ICSharpCode.Reports.Core
 		
 		protected override Rectangle DisplayRectangle {
 			get { 
-					return new Rectangle(Location.X + this.Location.X, this.Location.Y ,
+					return new Rectangle(Location.X , this.Location.Y ,
 					                     this.Size.Width,this.Size.Height);
 			}
 		}

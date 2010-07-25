@@ -64,6 +64,13 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		#endregion
 		
 		
+		public static void AdjustChildLocation (BaseReportItem item,Point offset)
+		{
+			item.Location = new Point(item.Location.X + offset.X,
+			                          offset.Y + item.Location.Y);
+		}
+		
+		
 		public static Rectangle DrawingAreaRelativeToParent (BaseReportItem parent,ISimpleContainer item)
 		{
 			if ( parent == null) {
