@@ -60,10 +60,21 @@ namespace Debugger.MetaData
 			get { throw new NotSupportedException(); }
 		}
 		
-		/// <summary> Name including the declaring type and parameters </summary>
+		/// <summary> Name including the declaring type, return type and parameters </summary>
 		public string FullName {
 			get {
 				StringBuilder sb = new StringBuilder();
+				
+				if (this.IsStatic) {
+					sb.Append("static ");
+				}
+				if (this.ReturnType != null) {
+					sb.Append(this.ReturnType.Name);
+					sb.Append(" ");
+				} else {
+					sb.Append("void ");
+				}
+				
 				sb.Append(this.DeclaringType.FullName);
 				sb.Append(".");
 				sb.Append(this.Name);
@@ -628,16 +639,7 @@ namespace Debugger.MetaData
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			string txt = string.Empty;
-			if (this.IsStatic)
-				txt += "static ";
-			if (this.ReturnType != null) {
-				txt += this.ReturnType.FullName + " ";
-			} else {
-				txt += "void ";
-			}
-			txt += this.FullName;
-			return txt;
+			return this.FullName;
 		}
 		
 		IntPtr IOverloadable.GetSignarture()

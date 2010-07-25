@@ -441,8 +441,8 @@ namespace Debugger.Tests {
     <Eval> myClass.Foo(1) = "derived Foo - int" </Eval>
     <Eval> myClass.Foo("abc") = "derived Foo - string" </Eval>
     <Eval> myClass[1] = More then one applicable overload found:
-  System.String Item[Double d]
-  System.String Item[Int64 i] </Eval>
+  String Debugger.Tests.ExpressionEvaluator_Tests+DerivedClass.Item[Double d]
+  String Debugger.Tests.ExpressionEvaluator_Tests+BaseClass.Item[Int64 i] </Eval>
     <Eval> myClass[(long)1] = "base indexer - long" </Eval>
     <Eval> myClass[1.0] = "derived indexer - double" </Eval>
     <Eval> myClass["abc"] = "derived indexer - string" </Eval>

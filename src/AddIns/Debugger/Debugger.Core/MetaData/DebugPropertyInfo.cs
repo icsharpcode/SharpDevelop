@@ -65,6 +65,38 @@ namespace Debugger.MetaData
 			}
 		}
 		
+		/// <summary> Name including the declaring type, return type and parameters </summary>
+		public string FullName {
+			get {
+				StringBuilder sb = new StringBuilder();
+				
+				if (this.IsStatic) {
+					sb.Append("static ");
+				}
+				sb.Append(this.PropertyType.Name);
+				sb.Append(" ");
+				
+				sb.Append(this.DeclaringType.FullName);
+				sb.Append(".");
+				sb.Append(this.Name);
+				
+				if (GetIndexParameters().Length > 0) {
+					sb.Append("[");
+					bool first = true;
+					foreach(DebugParameterInfo p in GetIndexParameters()) {
+						if (!first)
+							sb.Append(", ");
+						first = false;
+						sb.Append(p.ParameterType.Name);
+						sb.Append(" ");
+						sb.Append(p.Name);
+					}
+					sb.Append("]");
+				}
+				return sb.ToString();
+			}
+		}
+		
 		/// <inheritdoc/>
 		public override Type ReflectedType {
 			get { throw new NotSupportedException(); }
@@ -210,24 +242,7 @@ namespace Debugger.MetaData
 		/// <inheritdoc/>
 		public override string ToString()
 		{
-			StringBuilder sb = new StringBuilder();
-			sb.Append(this.PropertyType);
-			sb.Append(" ");
-			sb.Append(this.Name);
-			if (GetIndexParameters().Length > 0) {
-				sb.Append("[");
-				bool first = true;
-				foreach(DebugParameterInfo p in GetIndexParameters()) {
-					if (!first)
-						sb.Append(", ");
-					first = false;
-					sb.Append(p.ParameterType.Name);
-					sb.Append(" ");
-					sb.Append(p.Name);
-				}
-				sb.Append("]");
-			}
-			return sb.ToString();
+			return this.FullName;
 		}
 	}
 }
