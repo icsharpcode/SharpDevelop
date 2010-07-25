@@ -63,10 +63,7 @@ namespace NUnit.ConsoleRunner
 			//ServiceManager.Services.AddService( new TestLoader() );
 			ServiceManager.Services.AddService( new AddinRegistry() );
 			ServiceManager.Services.AddService( new AddinManager() );
-			// Hack: Resolves conflict with gui testagency when running
-			// console tests under the gui.
-            if ( !AppDomain.CurrentDomain.FriendlyName.StartsWith("test-domain-") )
-                ServiceManager.Services.AddService( new TestAgency() );
+      ServiceManager.Services.AddService( new TestAgency() );
 
 			// Initialize Services
 			ServiceManager.Services.InitializeServices();
