@@ -1178,6 +1178,9 @@
 												<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Templates\LibraryProject.xpt" Name="LibraryProject.xpt" Id="LibraryProject.xpt" KeyPath="yes" />
 											</Component>
 										</Directory>
+										<Component Guid="626C0C34-EF24-443F-8A0E-6CBF0047A50A" Id="IronRubyLicenseApacheHtml" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\LICENSE.APACHE.html" Name="LICENSE.APACHE.html" Id="IronRuby.License.Apache.html" KeyPath="yes" />
+										</Component>
 									</Directory>
 								</Directory>
 								<Directory Id="DisplayBindingsFolder" Name="DisplayBindings">
