@@ -143,6 +143,10 @@
       <Link>ir.exe.config</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="..\..\IronRuby\LICENSE.APACHE.html">
+      <Link>LICENSE.APACHE.html</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="RubyBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

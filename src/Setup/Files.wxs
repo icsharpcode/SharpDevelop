@@ -1068,6 +1068,9 @@
 										<Component Guid="2B7F1625-2BAA-4A55-B186-75F7ADCF3BA8" Id="IronRubyLibrariesDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\IronRuby.Libraries.dll" Name="IronRuby.Libraries.dll" Id="IronRuby.Libraries.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronRuby.Libraries.dll" AssemblyManifest="IronRuby.Libraries.dll" />
 										</Component>
+										<Component Guid="626C0C34-EF24-443F-8A0E-6CBF0047A50A" Id="IronRubyLicenseApacheHtml" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\LICENSE.APACHE.html" Name="LICENSE.APACHE.html" Id="IronRuby.License.Apache.html" KeyPath="yes" />
+										</Component>
 										<Component Guid="09FCB2E9-FA7E-40B2-8FCF-182C7DF2F5EC" Id="RubyMicrosoftDynamicDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Dynamic.dll" Name="Microsoft.Dynamic.dll" Id="RubyBinding.Microsoft.Dynamic.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Dynamic.dll" AssemblyManifest="RubyBinding.Microsoft.Dynamic.dll" />
 										</Component>
