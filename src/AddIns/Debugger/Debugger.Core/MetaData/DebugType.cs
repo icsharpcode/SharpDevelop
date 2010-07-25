@@ -359,14 +359,14 @@ namespace Debugger.MetaData
 						results.AddRange(superResults);
 					}
 				}
-				// Query interfaces
-				//  - needed to obtain explicitly defined methods of a type
-				//  - needed to get inherited methods of an interface
-				foreach (DebugType inter in this.GetInterfaces()) {
-					// GetInterfaces will return all interfaces - no need to recurse
-					bindingFlags |= BindingFlags.DeclaredOnly;
-					T[] interResults = inter.GetMembers<T>(name, bindingFlags, filter);
-					results.AddRange(interResults);
+				// Query interfaces - needed to get inherited methods of an interface
+				if (this.IsInterface) {
+					foreach (DebugType inter in this.GetInterfaces()) {
+						// GetInterfaces will return all interfaces - no need to recurse
+						bindingFlags |= BindingFlags.DeclaredOnly;
+						T[] interResults = inter.GetMembers<T>(name, bindingFlags, filter);
+						results.AddRange(interResults);
+					}
 				}
 			}
 			
