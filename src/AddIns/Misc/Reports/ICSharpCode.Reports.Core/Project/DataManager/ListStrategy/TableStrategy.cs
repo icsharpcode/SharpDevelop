@@ -176,16 +176,11 @@ namespace ICSharpCode.Reports.Core
 				}
 				compVal = v;
 			}
-			Console.WriteLine("-------------------------");
 			ShowIndexList(base.IndexList);
 		}
 		
 		private GroupComparer GHeader (BaseComparer sc)
 		{
-			string v = sc.ObjectArray[0].ToString();
-//			Console.WriteLine("");
-//			Console.WriteLine("Header {0}",v);
-//			Console.WriteLine("-----");
 			GroupComparer gc = new GroupComparer(sc.ColumnCollection,sc.ListIndex,sc.ObjectArray);
 			base.IndexList.Add(gc);
 			return gc;

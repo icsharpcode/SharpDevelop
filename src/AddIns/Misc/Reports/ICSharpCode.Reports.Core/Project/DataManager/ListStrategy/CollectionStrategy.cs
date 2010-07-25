@@ -47,46 +47,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		
 		#region build grouping
-		/*
-		private void BuildGroup()
-		{
-			try {
-				IndexList groupedArray = new IndexList();
-				
-				if (base.ReportSettings.GroupColumnsCollection != null) {
-					if (base.ReportSettings.GroupColumnsCollection.Count > 0) {
-						groupedArray = this.BuildSortIndex (base.ReportSettings.GroupColumnsCollection);
-					}
-				}
-
-				base.CreateGroupedIndexList (groupedArray);
-
-
-				foreach (BaseComparer bc in this.IndexList) {
-					GroupSeparator gs = bc as GroupSeparator;
-					
-					if (gs != null) {
-						System.Console.WriteLine("Group Header <{0}> with <{1}> Childs ",gs.ObjectArray[0].ToString(),gs.GetChildren.Count);
-						if (gs.HasChildren) {
-							foreach (SortComparer sc in gs.GetChildren) {
-								
-								System.Console.WriteLine("\t {0}   {1}",sc.ListIndex,sc.ObjectArray[0].ToString());										}
-						}
-					} else {
-						SortComparer sc = bc as SortComparer;
-						
-						if (sc != null) {
-							System.Console.WriteLine("\t Child {0}",sc.ObjectArray[0].ToString());
-						}
-					}
-					
-				}
-			} catch (Exception e) {
-				System.Console.WriteLine("BuildGroup {0}",e.Message);
-				throw;
-			}
-		}
-		*/
+	
 		#endregion
 		
 		

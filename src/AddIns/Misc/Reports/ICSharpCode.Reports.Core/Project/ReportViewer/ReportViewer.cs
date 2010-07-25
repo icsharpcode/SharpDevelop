@@ -193,33 +193,6 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		private void PushPrinting (object sender, SectionRenderEventArgs e ) {
 			EventHelper.Raise<SectionRenderEventArgs>(SectionRendering,this,e);
-			/*
-			string sectionName = e.Section.Name;
-			
-			if (sectionName == ReportSectionNames.ReportHeader) {
-				Console.WriteLine("xx  " + ReportSectionNames.ReportHeader);
-			} 
-			
-			else if (sectionName == ReportSectionNames.ReportPageHeader) {
-				Console.WriteLine("xx " +ReportSectionNames .ReportPageHeader);
-			} 
-			
-			else if (sectionName == ReportSectionNames.ReportDetail){
-				Console.WriteLine("xx " + ReportSectionNames.ReportDetail);
-			}
-			
-			else if (sectionName == ReportSectionNames.ReportPageFooter){
-				Console.WriteLine("xx " + ReportSectionNames.ReportPageFooter);
-			}
-			
-			else if (sectionName == ReportSectionNames.ReportFooter){
-				Console.WriteLine("xx " + ReportSectionNames.ReportFooter);
-			}
-			
-			else{
-				throw new WrongSectionException(sectionName);
-			}
-			*/
 		}
 		
 		//testcode to handle sectionrenderevent

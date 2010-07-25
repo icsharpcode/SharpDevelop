@@ -105,7 +105,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		Button nextButton   = new Button();
 		Button finishButton = new Button();
 		Button cancelButton = new Button();
-		Button helpButton   = new Button();
+	//	Button helpButton   = new Button();
 		
 		void CheckFinishedState(object sender, EventArgs e)
 		{
@@ -254,11 +254,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				}
 			}
 			DialogResult = DialogResult.Cancel;
-		}
-		
-		void HelpEvent(object sender, EventArgs e)
-		{
-			CurrentWizardPane.ReceiveDialogMessage(DialogMessage.Help);
 		}
 		
 		

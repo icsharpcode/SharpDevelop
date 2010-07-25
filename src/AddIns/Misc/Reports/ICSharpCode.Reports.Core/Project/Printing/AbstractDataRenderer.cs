@@ -120,7 +120,6 @@ namespace ICSharpCode.Reports.Core
 							currentPosition = PrintHelper.ConvertRectangleToCurentPosition (r);
 
 							row.Size = rs;
-							Console.WriteLine("movenext");
 						}
 						while (this.dataNavigator.MoveNext());
 						

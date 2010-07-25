@@ -28,16 +28,23 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.ReportingService
 		
 		public override string Evaluate(SimpleExpressionEvaluator.Evaluation.IExpressionContext context)
 		{
-			ISinglePage p = context.ContextObject as SinglePage;
-			Variable v = Arguments[0] as Variable;
-			if (p.IDataNavigator.CurrentRow > -1) {
-				AvailableFieldsCollection avc = p.IDataNavigator.AvailableFields;
-				CurrentItemsCollection cic = p.IDataNavigator.GetDataRow();
-				CurrentItem c = cic.Find(v.VariableName);
-				return c.Value.ToString();
-			}
+			ISinglePage singlePage = context.ContextObject as SinglePage;
+			Variable variable = Arguments[0] as Variable;
 			
-			return v.VariableName ;
+			if (singlePage.IDataNavigator.CurrentRow > -1) {
+				var avc = singlePage.IDataNavigator.AvailableFields;
+				var dataRow = singlePage.IDataNavigator.GetDataRow();
+				var item = dataRow.Find(variable.VariableName);
+				
+				string retval;
+				if (item != null) {
+					retval = item.Value.ToString();
+				} else {
+					retval= String.Format("!! Can't find <{0}>  !! ",variable.VariableName);
+				}
+				return retval;
+			}
+			return variable.VariableName ;
 		}
 		
 		

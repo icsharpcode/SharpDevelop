@@ -24,8 +24,8 @@ namespace ICSharpCode.Reports.Addin
 	public abstract class AbstractItem:System.Windows.Forms.Control
 	{
 		private Color frameColor = Color.Black;
-		private bool drawBorder;
-		private Size defaultSize;
+		//private bool drawBorder;
+		//private Size defaultSize;
 
 		protected AbstractItem()
 		{
@@ -36,7 +36,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		protected void DrawControl (Graphics graphics,Rectangle borderRectangle)
 		{
-			if (this.drawBorder == true) {
+			if (this.DrawBorder == true) {
 				graphics.DrawRectangle(new Pen(this.frameColor),borderRectangle);
 			} 
 			System.Windows.Forms.ControlPaint.DrawBorder3D(graphics, this.ClientRectangle,
@@ -69,19 +69,11 @@ namespace ICSharpCode.Reports.Addin
 		
 		[Category("Border"),
 		Description("Draw a Border around the Item")]
-		public bool DrawBorder {
-			get { return drawBorder; }
-			set {
-				drawBorder = value;
-				this.Invalidate();
-			}
-		}
+		public bool DrawBorder {get;set;}
 		
 		
-		protected new Size DefaultSize {
-			get { return defaultSize; }
-			set { defaultSize = value; }
-		}
+		protected new Size DefaultSize {get;set;}
+			
 		
 		#endregion
 		

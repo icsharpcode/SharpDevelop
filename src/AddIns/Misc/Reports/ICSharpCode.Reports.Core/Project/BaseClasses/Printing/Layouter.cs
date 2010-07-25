@@ -48,26 +48,12 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				
 				int bottomPadding = containerItem.Size.Height - (container.Items[0].Location.Y + container.Items[0].Size.Height);
 				
-				if (bottomPadding < 0) {
-					
-					Console.WriteLine(bottomPadding);
-				}
 				Rectangle surroundingRec = FindSurroundingRectangle(graphics,canGrowShrinkCollection);
-				/*
-				Console.WriteLine ("surrounding  {0} - desired {1} - bottom {2}",
-				                   surroundingRec.Height + bottomPadding,
-				                   desiredContainerRectangle.Height -1,
-				                   bottomPadding);
-				
-				Console.WriteLine ("extend");
-				*/
 				
 				desiredContainerRectangle = new Rectangle(containerItem.Location.X,
 				                                          containerItem  .Location.Y,
 				                                          containerItem .Size.Width,
 				                                          surroundingRec.Size.Height + bottomPadding );
-//				Console.WriteLine ("extend to {0}",desiredContainerRectangle);
-				
 			}
 			
 			return desiredContainerRectangle;
@@ -99,19 +85,12 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				
 				Rectangle surroundingRec = FindSurroundingRectangle(graphics,canGrowShrinkCollection);
 				
-				/*
-				Console.WriteLine ("xx surrounding  {0} - desired {1} - bottom {2}",
-				                   surroundingRec.Height + bottomPadding,
-				                   desiredSectionRectangle.Height -1,
-				                  bottomPadding);
-				*/
 				if (surroundingRec.Height > desiredSectionRectangle .Height) {
 					desiredSectionRectangle = new Rectangle(section.Location.X,
 					                                        section .Location.Y,
 					                                        section .Size.Width,
 					                                        surroundingRec.Size.Height + bottomPadding);
 				}
-				//Console.WriteLine ("xx extend to {0}",desiredSectionRectangle);
 			}
 			return desiredSectionRectangle;
 		}

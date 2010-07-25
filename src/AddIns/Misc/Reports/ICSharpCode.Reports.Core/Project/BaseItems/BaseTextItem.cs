@@ -18,7 +18,7 @@ using ICSharpCode.Reports.Core.Exporter;
 
 namespace ICSharpCode.Reports.Core
 {
-	public class BaseTextItem : BaseReportItem,IExportColumnBuilder {
+	public class BaseTextItem : BaseReportItem,IExportColumnBuilder,IReportExpression {
 
 		private string text;
 		private string dataType;
@@ -196,6 +196,12 @@ namespace ICSharpCode.Reports.Core
 				return TextDrawer.BuildStringFormat (this.StringTrimming,this.ContentAlignment);                                       
 			}
 		}
+		
+		#region IExpression
+		
+		public string Expression {get;set;}
+		
+		#endregion
 		
 	}
 }

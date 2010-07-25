@@ -25,13 +25,11 @@ namespace ICSharpCode.Reports.Addin
 	public class BaseTextItem:AbstractItem
 	{
 		
-		private string formatString = String.Empty;
+		private string formatString;
 		private StringFormat stringFormat;
 		private StringTrimming stringTrimming;
-		private string dataType;
 		private ContentAlignment contentAlignment;
-		bool canGrow;
-		bool canShrink;
+		
 		
 		public BaseTextItem():base()
 		{
@@ -85,6 +83,9 @@ namespace ICSharpCode.Reports.Addin
 			}
 		}
 		
+		
+		#region Format and alignment
+		
 		[Browsable(true),
 		 Category("Appearance"),
 		 Description("String to format Number's Date's etc")]
@@ -127,29 +128,37 @@ namespace ICSharpCode.Reports.Addin
 			}
 		}
 		
+		#endregion
 		
 				
 		[Browsable(true),
 		 Category("Databinding"),
 		 Description("Datatype of the underlying Column")]
-		public string DataType {
-			get { return dataType; }
-			set { dataType = value; }
-		}
 		
-		public bool CanGrow {
-			get { return canGrow; }
-			set { canGrow = value; }
-		}
+		public string DataType {get;set;}
 		
 		
-		public bool CanShrink {
-			get { return canShrink; }
-			set { canShrink = value; }
-		}
+		#region Expression
+		
+		[Browsable(true),
+		 Category("Expression"),
+		 Description("Enter a valid Expression")]
+		
+		public string Expression {get;set;}
+		
+		#endregion
+		
+		#region CanGrow/CanShrink
+		
+		public bool CanGrow {get;set;}
+			
+		public bool CanShrink {get;set;}
+			
+		#endregion
 	}
 	
-
+	#region TypeProvider
+	
 	internal class TextItemTypeProvider : TypeDescriptionProvider
 	{
 		public TextItemTypeProvider() :  base(TypeDescriptor.GetProvider(typeof(AbstractItem)))
@@ -206,7 +215,12 @@ namespace ICSharpCode.Reports.Addin
 			prop = props.Find("Visible",true);
 			allProperties.Add(prop);
 			
+			prop = props.Find("Expression",true);
+			allProperties.Add(prop);
+			
 			return new PropertyDescriptorCollection(allProperties.ToArray());
 		}
 	}
+	#endregion
+	
 }

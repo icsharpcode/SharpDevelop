@@ -222,8 +222,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		public static void Displaychain (ReportItemCollection items)
 		{
-			Console.WriteLine();
-			Console.WriteLine("BasePager:Displaychain");
 			foreach(BaseReportItem i in items)
 			{
 				ISimpleContainer ic = i as ISimpleContainer;
@@ -239,8 +237,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		public static void ShowLocations (ExporterCollection items)
 		{
-			Console.WriteLine("");
-			
 			foreach (BaseExportColumn element in items) {
 				ExportContainer cont = element as ExportContainer;
 				if (cont != null) {

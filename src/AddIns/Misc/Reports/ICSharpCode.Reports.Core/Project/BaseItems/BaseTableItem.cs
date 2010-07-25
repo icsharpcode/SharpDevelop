@@ -19,11 +19,10 @@ namespace ICSharpCode.Reports.Core {
 	{
 		
 		private ReportItemCollection items;
-		private SectionBounds sectionBounds;
 		private IDataNavigator dataNavigator;
 		private IExpressionEvaluatorFacade expressionEvaluatorFacade;
 		private BaseSection startSection;
-		private ILayouter layouter;
+
 		
 		
 		#region Constructor
@@ -160,10 +159,6 @@ namespace ICSharpCode.Reports.Core {
 		
 		#endregion
 		
-		public SectionBounds SectionBounds{
-			get {return this.sectionBounds;}
-		}
-		
 		
 		#region Interface implementation of 'ITableContainer'
 		
@@ -175,17 +170,7 @@ namespace ICSharpCode.Reports.Core {
 			this.startSection = section;
 		}
 		
-		
-		
-		public void RenderTable (BaseReportItem parent,SectionBounds sectionBounds,ReportPageEventArgs rpea,ILayouter layouter)
-		{
-			
-			this.sectionBounds = sectionBounds;
-			this.Parent = parent;
-			this.layouter = layouter;
-			this.Render (rpea);
-		}
-		
+
 		
 		public ReportItemCollection Items {
 			get {

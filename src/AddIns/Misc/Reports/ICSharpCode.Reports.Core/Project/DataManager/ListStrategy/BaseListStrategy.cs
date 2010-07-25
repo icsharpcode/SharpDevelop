@@ -133,7 +133,6 @@ namespace ICSharpCode.Reports.Core {
 		
 		protected  void ShowIndexList (IndexList list)
 		{
-			System.Diagnostics.Trace.WriteLine("CheckIndexList ");
 			foreach (BaseComparer element in list) {
 				string s = String.Format("{0} ",element.ObjectArray[0]);
 				GroupComparer gc = element as GroupComparer;

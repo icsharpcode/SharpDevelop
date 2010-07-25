@@ -110,6 +110,17 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			
 			BaseTextItem textItem = item as BaseTextItem;
 			
+			
+			IReportExpression epr = item as IReportExpression;
+			
+			if (epr != null) {
+				string sss =  evaluator.Evaluate(epr.Expression);
+				if (!String.IsNullOrEmpty(sss)) {
+					textItem.Text = sss;
+				}
+			}
+			
+			
 			if (textItem != null) {
 				string str = textItem.Text;
 				textItem.Text = evaluator.Evaluate(textItem.Text);

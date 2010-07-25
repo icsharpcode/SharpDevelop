@@ -228,8 +228,6 @@ namespace ICSharpCode.Reports.Core {
 			get { return reportFileName; }
 			set { 
 				reportFileName = value; 
-				System.Diagnostics.Trace.WriteLine("");
-				System.Diagnostics.Trace.WriteLine(String.Format("<CORE.BaseImage> ReportFilename {0}",Path.GetFullPath(this.reportFileName)));
 			}
 		}
 		
