@@ -195,7 +195,13 @@ namespace ICSharpCode.SharpDevelop.Services
 					// UnauthorizedAccessException: Отказано в доступе. (Исключение из HRESULT: 0x80070005 (E_ACCESSDENIED))
 					if (e is COMException || e is BadImageFormatException || e is UnauthorizedAccessException) {
 						string msg = StringParser.Parse("${res:XML.MainMenu.DebugMenu.Error.CannotStartProcess}");
-						MessageService.ShowMessage(msg + " " + e.Message);
+						msg += " " + e.Message;
+						// TODO: Remove
+						if (e is COMException && ((uint)((COMException)e).ErrorCode == 0x80070032)) {
+							msg += Environment.NewLine + Environment.NewLine;
+							msg += "64-bit debugging is not supported.  Please set Project -> Project Options... -> Compiling -> Target CPU to 32bit.";
+						}
+						MessageService.ShowMessage(msg);
 						
 						if (DebugStopped != null)
 							DebugStopped(this, EventArgs.Empty);
