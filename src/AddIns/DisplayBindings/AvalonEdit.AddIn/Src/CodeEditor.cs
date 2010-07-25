@@ -368,10 +368,24 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
+		SharpDevelopCompletionWindow CompletionWindow {
+			get {
+				return primaryTextEditor.ActiveCompletionWindow
+					?? (secondaryTextEditor == null ? null : secondaryTextEditor.ActiveCompletionWindow);
+			}
+		}
+		
+		SharpDevelopInsightWindow InsightWindow {
+			get {
+				return primaryTextEditor.ActiveInsightWindow
+					?? (secondaryTextEditor == null ? null : secondaryTextEditor.ActiveInsightWindow);
+			}
+		}
+		
 		void TextAreaTextEntering(object sender, TextCompositionEventArgs e)
 		{
 			// don't start new code completion if there is still a completion window open
-			if (completionWindow != null)
+			if (CompletionWindow != null)
 				return;
 			
 			if (e.Handled)
@@ -383,19 +397,19 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
 					CodeCompletionKeyPressResult result = cc.HandleKeyPress(adapter, c);
 					if (result == CodeCompletionKeyPressResult.Completed) {
-						if (completionWindow != null) {
+						if (CompletionWindow != null) {
 							// a new CompletionWindow was shown, but does not eat the input
 							// tell it to expect the text insertion
-							completionWindow.ExpectInsertionBeforeStart = true;
+							CompletionWindow.ExpectInsertionBeforeStart = true;
 						}
-						if (insightWindow != null) {
-							insightWindow.ExpectInsertionBeforeStart = true;
+						if (InsightWindow != null) {
+							InsightWindow.ExpectInsertionBeforeStart = true;
 						}
 						return;
 					} else if (result == CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion) {
-						if (completionWindow != null) {
-							if (completionWindow.StartOffset == completionWindow.EndOffset) {
-								completionWindow.CloseWhenCaretAtBeginning = true;
+						if (CompletionWindow != null) {
+							if (CompletionWindow.StartOffset == CompletionWindow.EndOffset) {
+								CompletionWindow.CloseWhenCaretAtBeginning = true;
 							}
 						}
 						return;
@@ -450,7 +464,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void OnCodeCompletion(object sender, ExecutedRoutedEventArgs e)
 		{
-			CloseExistingCompletionWindow();
+			if (CompletionWindow != null)
+				CompletionWindow.Close();
 			CodeEditorView textEditor = GetTextEditorFromSender(sender);
 			foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
 				if (cc.CtrlSpace(textEditor.Adapter)) {
@@ -458,63 +473,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					break;
 				}
 			}
-		}
-		
-		SharpDevelopCompletionWindow completionWindow;
-		SharpDevelopInsightWindow insightWindow;
-		
-		void CloseExistingCompletionWindow()
-		{
-			if (completionWindow != null) {
-				completionWindow.Close();
-			}
-		}
-		
-		void CloseExistingInsightWindow()
-		{
-			if (insightWindow != null) {
-				insightWindow.Close();
-			}
-		}
-		
-		public SharpDevelopCompletionWindow ActiveCompletionWindow {
-			get { return completionWindow; }
-		}
-		
-		public SharpDevelopInsightWindow ActiveInsightWindow {
-			get { return insightWindow; }
-		}
-		
-		internal void ShowCompletionWindow(SharpDevelopCompletionWindow window)
-		{
-			CloseExistingCompletionWindow();
-			completionWindow = window;
-			window.Closed += delegate {
-				completionWindow = null;
-			};
-			Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(
-				delegate {
-					if (completionWindow == window) {
-						window.Show();
-					}
-				}
-			));
-		}
-		
-		internal void ShowInsightWindow(SharpDevelopInsightWindow window)
-		{
-			CloseExistingInsightWindow();
-			insightWindow = window;
-			window.Closed += delegate {
-				insightWindow = null;
-			};
-			Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(
-				delegate {
-					if (insightWindow == window) {
-						window.Show();
-					}
-				}
-			));
 		}
 		
 		public IHighlightingDefinition SyntaxHighlighting {

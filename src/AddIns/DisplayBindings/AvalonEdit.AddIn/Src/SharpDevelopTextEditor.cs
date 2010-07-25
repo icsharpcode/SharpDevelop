@@ -19,6 +19,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.AddIn.Snippets;
@@ -62,6 +63,63 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		protected virtual string FileName {
 			get { return "untitled"; }
+		}
+		
+		SharpDevelopCompletionWindow completionWindow;
+		SharpDevelopInsightWindow insightWindow;
+		
+		void CloseExistingCompletionWindow()
+		{
+			if (completionWindow != null) {
+				completionWindow.Close();
+			}
+		}
+		
+		void CloseExistingInsightWindow()
+		{
+			if (insightWindow != null) {
+				insightWindow.Close();
+			}
+		}
+		
+		public SharpDevelopCompletionWindow ActiveCompletionWindow {
+			get { return completionWindow; }
+		}
+		
+		public SharpDevelopInsightWindow ActiveInsightWindow {
+			get { return insightWindow; }
+		}
+		
+		internal void ShowCompletionWindow(SharpDevelopCompletionWindow window)
+		{
+			CloseExistingCompletionWindow();
+			completionWindow = window;
+			window.Closed += delegate {
+				completionWindow = null;
+			};
+			Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(
+				delegate {
+					if (completionWindow == window) {
+						window.Show();
+					}
+				}
+			));
+		}
+		
+		internal void ShowInsightWindow(SharpDevelopInsightWindow window)
+		{
+			CloseExistingInsightWindow();
+			insightWindow = window;
+			window.Closed += delegate {
+				insightWindow = null;
+			};
+			Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(
+				delegate {
+					if (insightWindow == window) {
+						window.Show();
+					}
+				}
+			));
 		}
 		
 		#region Printing

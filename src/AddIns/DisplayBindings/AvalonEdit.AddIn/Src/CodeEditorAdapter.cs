@@ -24,7 +24,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// <summary>
 	/// Wraps the CodeEditor class to provide the ITextEditor interface.
 	/// </summary>
-	sealed class CodeEditorAdapter : AvalonEditTextEditorAdapter
+	sealed class CodeEditorAdapter : CodeCompletionEditorAdapter
 	{
 		readonly CodeEditor codeEditor;
 		
@@ -39,18 +39,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			get { return codeEditor.FileName; }
 		}
 		
-		public override ICompletionListWindow ActiveCompletionWindow {
-			get { return codeEditor.ActiveCompletionWindow; }
-		}
-		
 		ILanguageBinding languageBinding;
 		
 		public override ILanguageBinding Language {
 			get { return languageBinding; }
 		}
 		
-		public override ITextEditorOptions Options {
-			get { return CodeEditorOptions.Instance; }
+		public override ITextEditor PrimaryView {
+			get { return codeEditor.PrimaryTextEditorAdapter; }
 		}
 		
 		internal void FileNameChanged()
@@ -82,39 +78,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			// Do not override IndentLines: it is called only when smart indentation is explicitly requested by the user (Ctrl+I),
 			// so we keep it enabled even when the option is set to false.
-		}
-		
-		public override ICompletionListWindow ShowCompletionWindow(ICompletionItemList data)
-		{
-			if (data == null || !data.Items.Any())
-				return null;
-			SharpDevelopCompletionWindow window = new SharpDevelopCompletionWindow(this, this.TextEditor.TextArea, data);
-			codeEditor.ShowCompletionWindow(window);
-			return window;
-		}
-		
-		public override IInsightWindow ShowInsightWindow(IEnumerable<IInsightItem> items)
-		{
-			if (items == null)
-				return null;
-			var insightWindow = new SharpDevelopInsightWindow(this.TextEditor.TextArea);
-			insightWindow.Items.AddRange(items);
-			if (insightWindow.Items.Count > 0) {
-				insightWindow.SelectedItem = insightWindow.Items[0];
-			} else {
-				// don't open insight window when there are no items
-				return null;
-			}
-			codeEditor.ShowInsightWindow(insightWindow);
-			return insightWindow;
-		}
-		
-		public override IInsightWindow ActiveInsightWindow {
-			get { return codeEditor.ActiveInsightWindow; }
-		}
-		
-		public override ITextEditor PrimaryView {
-			get { return codeEditor.PrimaryTextEditorAdapter; }
 		}
 		
 		public override IEnumerable<ICompletionItem> GetSnippets()

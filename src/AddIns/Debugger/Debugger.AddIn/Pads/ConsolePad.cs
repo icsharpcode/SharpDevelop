@@ -5,17 +5,21 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.NRefactory.Visitors;
 using System;
 using System.Collections;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Debugger;
 using Debugger.AddIn;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
+using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
+using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 using ICSharpCode.SharpDevelop.Services;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
@@ -23,6 +27,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	public class ConsolePad : AbstractConsolePad
 	{
 		SupportedLanguage language;
+		NRefactoryResolver resolver;
 		
 		const string debuggerConsoleToolBarTreePath = "/SharpDevelop/Pads/ConsolePad/ToolBar";
 		
@@ -77,36 +82,68 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		protected override void InitializeConsole()
 		{
 			base.InitializeConsole();
-			switch (SelectedLanguage) {
-				case SupportedLanguage.CSharp:
-					SetHighlighting("C#");
-					break;
-				case SupportedLanguage.VBNet:
-					SetHighlighting("VBNET");
-					break;
-			}
+			OnLanguageChanged();
 		}
 		
 		void OnLanguageChanged()
 		{
 			switch (SelectedLanguage) {
 				case SupportedLanguage.CSharp:
+					resolver = new NRefactoryResolver(LanguageProperties.CSharp);
 					SetHighlighting("C#");
 					break;
 				case SupportedLanguage.VBNet:
+					resolver = new NRefactoryResolver(LanguageProperties.VBNet);
 					SetHighlighting("VBNET");
 					break;
 			}
 		}
 		
 		public ConsolePad()
-		{			
+		{
 			WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
 			
 			debugger.ProcessSelected += delegate(object sender, ProcessEventArgs e) {
 				this.Process = e.Process;
 			};
 			this.Process = debugger.DebuggedProcess;
+		}
+		
+		protected override void AbstractConsolePadTextEntered(object sender, TextCompositionEventArgs e)
+		{
+			if (this.process == null || this.process.IsRunning)
+				return;
+			
+			if (this.process.SelectedStackFrame == null || this.process.SelectedStackFrame.NextStatement == null)
+				return;
+			
+			foreach (char ch in e.Text) {
+				if (ch == '.') {
+					ShowDotCompletion(console.CommandText);
+				}
+			}
+		}
+		
+		void ShowDotCompletion(string currentText)
+		{
+			var seg = process.SelectedStackFrame.NextStatement;
+			
+			var expressionFinder = ParserService.GetExpressionFinder(seg.Filename);
+			var info = ParserService.GetParseInformation(seg.Filename);
+			
+			string text = ParserService.GetParseableFileContent(seg.Filename).Text;
+			
+			int currentOffset = TextEditor.Caret.Offset - console.CommandOffset - 1;
+			
+			var expr = expressionFinder.FindExpression(currentText, currentOffset);
+			
+			expr.Region = new DomRegion(seg.StartLine, seg.StartColumn, seg.EndLine, seg.EndColumn);
+			
+			var rr = resolver.Resolve(expr, info, text);
+			
+			if (rr != null) {
+				TextEditor.ShowCompletionWindow(new DotCodeCompletionItemProvider().GenerateCompletionListForResolveResult(rr, expr.Context));
+			}
 		}
 		
 		protected override ToolBar BuildToolBar()

@@ -26,18 +26,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			SharpDevelopTextEditor editor = new SharpDevelopTextEditor();
 			control = editor;
-			return new EditorAdapter(editor);
-		}
-		
-		sealed class EditorAdapter : AvalonEditTextEditorAdapter
-		{
-			public EditorAdapter(SharpDevelopTextEditor editor) : base(editor)
-			{
-			}
-
-			public override ITextEditorOptions Options {
-				get { return CodeEditorOptions.Instance; }
-			}
+			return new CodeCompletionEditorAdapter(editor);
 		}
 	}
 }

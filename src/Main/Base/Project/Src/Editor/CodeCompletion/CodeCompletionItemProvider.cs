@@ -356,6 +356,9 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		
 		ResolveResult ResolveAtCurrentOffset(string className, CompletionContext context)
 		{
+			if (context.Editor.FileName == null)
+				return null;
+			
 			var document = context.Editor.Document;
 			var position = document.OffsetToPosition(context.StartOffset);
 			return ParserService.Resolve(new ExpressionResult(className), position.Line, position.Column, context.Editor.FileName, document.Text);

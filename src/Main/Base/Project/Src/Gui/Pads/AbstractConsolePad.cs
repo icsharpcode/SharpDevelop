@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		const string toolBarTreePath = "/SharpDevelop/Pads/CommonConsole/ToolBar";
 		
 		DockPanel panel;
-		ConsoleControl console;
+		protected ConsoleControl console;
 		ToolBar toolbar;
 		
 		bool cleared;
@@ -53,7 +53,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 				e.Handled = HandleInput(e.Key);
 			};
 			
+			this.console.editor.TextArea.TextEntered += new TextCompositionEventHandler(AbstractConsolePadTextEntered);
+			
 			this.InitializeConsole();
+		}
+
+		protected virtual void AbstractConsolePadTextEntered(object sender, TextCompositionEventArgs e)
+		{
 		}
 		
 		protected virtual ToolBar BuildToolBar()
@@ -151,31 +157,31 @@ namespace ICSharpCode.SharpDevelop.Gui
 						console.CommandText = "";
 					else
 						console.CommandText = this.history[this.historyPointer];
-					console.editor.ScrollToEnd();
-					return true;
-				case Key.Return:
-					if (Keyboard.Modifiers == ModifierKeys.Shift)
-						return false;
-					int caretOffset = this.console.TextEditor.Caret.Offset;
-					string commandText = console.CommandText;
-					cleared = false;
-					if (AcceptCommand(commandText)) {
-						IDocument document = console.TextEditor.Document;
-						if (!cleared) {
-							if (document.GetCharAt(document.TextLength - 1) != '\n')
-								document.Insert(document.TextLength, Environment.NewLine);
-							AppendPrompt();
-							console.TextEditor.Select(document.TextLength, 0);
-						} else {
-							console.CommandText = "";
-						}
-						cleared = false;
-						this.history.Add(commandText);
-						this.historyPointer = this.history.Count;
 						console.editor.ScrollToEnd();
 						return true;
-					}
-					return false;
+					case Key.Return:
+						if (Keyboard.Modifiers == ModifierKeys.Shift)
+							return false;
+						int caretOffset = this.console.TextEditor.Caret.Offset;
+						string commandText = console.CommandText;
+						cleared = false;
+						if (AcceptCommand(commandText)) {
+							IDocument document = console.TextEditor.Document;
+							if (!cleared) {
+								if (document.GetCharAt(document.TextLength - 1) != '\n')
+									document.Insert(document.TextLength, Environment.NewLine);
+								AppendPrompt();
+								console.TextEditor.Select(document.TextLength, 0);
+							} else {
+								console.CommandText = "";
+							}
+							cleared = false;
+							this.history.Add(commandText);
+							this.historyPointer = this.history.Count;
+							console.editor.ScrollToEnd();
+							return true;
+						}
+						return false;
 				default:
 					return false;
 			}
@@ -254,9 +260,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 	}
 	
-	class ConsoleControl : Grid
+	public class ConsoleControl : Grid
 	{
 		internal AvalonEdit.TextEditor editor;
+		internal ITextEditor editorAdapter;
 		internal BeginReadOnlySectionProvider readOnlyRegion;
 		
 		public ConsoleControl()
@@ -264,9 +271,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
 			this.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
 			
-			this.editor = Editor.AvalonEdit.AvalonEditTextEditorAdapter.CreateAvalonEditInstance();
+			object tmp;
+			
+			this.editorAdapter = EditorControlService.CreateEditor(out tmp);
+			
+			this.editor = (AvalonEdit.TextEditor)tmp;
 			this.editor.SetValue(Grid.ColumnProperty, 0);
 			this.editor.SetValue(Grid.RowProperty, 0);
+			this.editor.ShowLineNumbers = false;
 			
 			this.Children.Add(editor);
 			
@@ -275,7 +287,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public ITextEditor TextEditor {
 			get {
-				return new AvalonEditTextEditorAdapter(editor);
+				return editorAdapter;
 			}
 		}
 		
@@ -303,6 +315,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void SetReadonly()
 		{
 			readOnlyRegion.EndOffset = editor.Document.TextLength;
+		}
+		
+		public int CommandOffset {
+			get { return readOnlyRegion.EndOffset; }
 		}
 		
 		/// <summary>
