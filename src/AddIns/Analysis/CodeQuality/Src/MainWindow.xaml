@@ -46,13 +46,15 @@
                                                 HighlightAlgorithmType="Simple"
                                                 VertexClick="graphLayout_VertexClick"
                                                 />
-                </Controls:ZoomControl>
+          		 </Controls:ZoomControl>
         
                 <TextBlock Name="txbTypeInfo" Grid.Column="3" Grid.Row="1"/>
             </Grid>
         </TabItem>
         <TabItem Header="Dependency Matrix">
-            <Graph:DependencyMatrixControl x:Name="matrixControl"></Graph:DependencyMatrixControl>
+        	<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" CanContentScroll="True">
+           		<Graph:DependencyMatrixControl x:Name="matrixControl"></Graph:DependencyMatrixControl>
+			</ScrollViewer>
         </TabItem>
     </TabControl>
 </Window>

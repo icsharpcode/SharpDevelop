@@ -10,5 +10,6 @@ namespace ICSharpCode.CodeQualityAnalysis
         string Name { set; get; }
         IDependency Dependency { set; get; }
         string GetInfo();
+        Relationship GetRelationship(INode node);
     }
 }

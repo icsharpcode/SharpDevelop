@@ -242,6 +242,17 @@ namespace ICSharpCode.CodeQualityAnalysis
             _graphCache = g;
             return g;
         }
+        
+        public Relationship GetRelationship(INode node)
+        {
+//        	if (node is Namespace) {
+//        		Namespace ns = (Namespace)node;
+//        		if (ns.Types.Contains(this)
+//        		    return RelationshipType.Contains;
+//        	}
+
+			return new Relationship();
+        }
 
         public override string ToString()
         {

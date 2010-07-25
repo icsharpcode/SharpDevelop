@@ -119,6 +119,12 @@ namespace ICSharpCode.CodeQualityAnalysis
 
             Dependency = null;
         }
+        
+        public Relationship GetRelationship(INode node)
+        {
+        	Relationship relationship = new Relationship();
+        	return relationship;
+        }
 
         public override string ToString()
         {

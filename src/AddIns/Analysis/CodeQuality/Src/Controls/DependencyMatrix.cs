@@ -9,7 +9,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
     {
         public override object EvaluateCell(MatrixCell<INode> rowHeader, MatrixCell<INode> columnHeader)
         {
-            return rowHeader.Value == columnHeader.Value; // TODO: Add a new method to INode Uses(INode -> Boolean) or maybe Relatioship(INode -> Relatioship)
+        	return rowHeader.Value.GetRelationship(columnHeader.Value);
         }
     }
 }

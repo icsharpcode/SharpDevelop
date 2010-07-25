@@ -95,13 +95,8 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
                 });
 
                 label.Style = style;
-                /*label.RenderTransform = new RotateTransform() // need some tweaking
-                                            {
-                                                Angle = -90,
-                                                CenterX = -10,
-                                                CenterY = 40
-                                            };*/ 
-
+                label.LayoutTransform = new RotateTransform { Angle = -90 };
+				 
                 Children.Add(label);
             }
         }

@@ -30,7 +30,6 @@ namespace ICSharpCode.CodeQualityAnalysis
     public partial class MainWindow : Window
     {
         private MetricsReader _metricsReader;
-        private VertexControl _selectedVertexControl;
 
         public MainWindow()
         {
@@ -135,10 +134,15 @@ namespace ICSharpCode.CodeQualityAnalysis
         {
             var matrix = new DependencyMatrix();
 
-            foreach (var ns in _metricsReader.MainModule.Namespaces)
-            {
+            foreach (var ns in _metricsReader.MainModule.Namespaces) {
                 matrix.HeaderRows.Add(new MatrixCell<INode>(ns));
+                foreach (var type in ns.Types) {
+                	matrix.HeaderRows.Add(new MatrixCell<INode>(type));
+                }
                 matrix.HeaderColumns.Add(new MatrixCell<INode>(ns));
+                foreach (var type in ns.Types) {
+                	matrix.HeaderColumns.Add(new MatrixCell<INode>(type));
+                }
             }
 
             matrixControl.Matrix = matrix;

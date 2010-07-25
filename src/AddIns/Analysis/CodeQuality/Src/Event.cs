@@ -32,6 +32,12 @@ namespace ICSharpCode.CodeQualityAnalysis
         {
             return Name;
         }
+        
+        public Relationship GetRelationship(INode node)
+        {
+        	Relationship relationship = new Relationship();
+        	return relationship;
+        }
 
         public IDependency Dependency { get; set; }
 

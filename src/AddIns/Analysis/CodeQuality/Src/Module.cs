@@ -58,6 +58,12 @@ namespace ICSharpCode.CodeQualityAnalysis
             _graphCache = g;
             return g;
         }
+        
+        public Relationship GetRelationship(INode node)
+        {
+        	Relationship relationship = new Relationship();
+        	return relationship;
+        }
 
         public override string ToString()
         {
