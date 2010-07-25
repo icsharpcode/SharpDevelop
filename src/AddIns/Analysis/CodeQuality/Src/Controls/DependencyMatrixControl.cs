@@ -10,11 +10,5 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 {
     public class DependencyMatrixControl : MatrixControl<INode>
     {
-    	static DependencyMatrixControl()
-    	{
-    		DefaultStyleKeyProperty.OverrideMetadata(
-    			typeof(DependencyMatrixControl),
-    			new FrameworkPropertyMetadata(typeof(DependencyMatrixControl)));
-    	}
     }
 }

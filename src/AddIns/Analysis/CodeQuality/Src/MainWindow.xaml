@@ -52,9 +52,9 @@
             </Grid>
         </TabItem>
         <TabItem Header="Dependency Matrix">
-        	<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" CanContentScroll="True">
-           		<Graph:DependencyMatrixControl x:Name="matrixControl"></Graph:DependencyMatrixControl>
-			</ScrollViewer>
+        	<WindowsFormsHost>
+				<Graph:DependencyMatrixControl x:Name="matrixControl"></Graph:DependencyMatrixControl>
+			</WindowsFormsHost>
         </TabItem>
     </TabControl>
 </Window>

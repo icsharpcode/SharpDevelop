@@ -2,7 +2,5 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Controls="clr-namespace:ICSharpCode.CodeQualityAnalysis.Controls"
 >
-	<Style TargetType="{x:Type Controls:DependencyMatrixControl}">
-		<Setter Property="ShowGridLines" Value="True" />
-	</Style>
+	
 </ResourceDictionary>
