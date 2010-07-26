@@ -17,8 +17,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-using SharpQuery.Collections;
-using SharpQuery.SchemaClass;
+
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
 {
@@ -39,7 +38,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		private ReportModel model;
 		private ConnectionObject connectionObject;
 		private DataSet resultDataSet;
-		private ParameterCollection sqlParamsCollection;
+		//private ParameterCollection sqlParamsCollection;
 		
 		
 		#region Constructor
@@ -70,7 +69,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 			this.txtSqlString.Text = model.ReportSettings.CommandText;
 			if (model.ReportSettings.CommandType == CommandType.StoredProcedure){
-				
+				/*
 				if (reportStructure.SharpQueryProcedure == null) {
 					throw new IllegalQueryException();
 				}
@@ -83,6 +82,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				}else {
 					dataSet = ExecuteStoredProc ();
 				}
+				*/
 			}
 			
 			// from here we create from an SqlString like "Select...."
@@ -137,7 +137,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			}
 		}
 		
-		
+		/*
 		private DataSet ExecuteStoredProc (SharpQueryProcedure procedure)
 		{
 			
@@ -183,7 +183,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			return null;
 		}
 		
-
+*/
 		private DataSet BuildFromSqlString () 
 		{
 			DbDataAdapter adapter = null;
@@ -302,10 +302,11 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 						}
 					}
 					reportStructure.ReportItemCollection.AddRange(destItems);
+					/*
 					if ((this.sqlParamsCollection != null) && (this.sqlParamsCollection.Count > 0)) {
 						reportStructure.SqlQueryParameters.AddRange(sqlParamsCollection);
 					}
-					
+					*/
 					if (abstractColumns != null) {
 						reportStructure.AvailableFieldsCollection.AddRange(abstractColumns);
 					}

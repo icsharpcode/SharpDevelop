@@ -19,6 +19,21 @@
     <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SharpDevelopReports\</OutputPath>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SourceAnalysisOverrideSettingsFile>"C:\Program Files\SharpDevelop\bin\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis"</SourceAnalysisOverrideSettingsFile>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>False</Optimize>
@@ -28,6 +43,7 @@
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <StartAction>Project</StartAction>
     <StartProgram>..\..\..\..\..\bin\SharpDevelop.exe</StartProgram>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <Optimize>True</Optimize>
@@ -35,17 +51,21 @@
     <DebugSymbols>False</DebugSymbols>
     <DebugType>None</DebugType>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="itextsharp">
       <HintPath>..\Libraries\itextsharp.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -53,6 +73,8 @@
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
@@ -71,7 +93,9 @@
     <Compile Include="Project\Designer\ImageDesigner.cs" />
     <Compile Include="Project\Designer\LineDesigner.cs" />
     <Compile Include="Project\Designer\RowItemDesigner.cs" />
-    <Compile Include="Project\Designer\Ruler.cs" />
+    <Compile Include="Project\Designer\Ruler.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Project\Designer\SectionDesigner.cs" />
     <Compile Include="Project\Commands\FormsCommand.cs" />
     <Compile Include="Project\Commands\ViewCommands.cs" />
@@ -85,11 +109,15 @@
     <Compile Include="Project\Designer\SmartTagTransactions.cs" />
     <Compile Include="Project\Designer\TextBasedDesignerActionList.cs" />
     <Compile Include="Project\Designer\TextItemDesigner.cs" />
-    <Compile Include="Project\Designer\RootDesigner\ReportItemsContainer.cs" />
+    <Compile Include="Project\Designer\RootDesigner\ReportItemsContainer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Project\Designer\RootDesigner\ReportRootDesigner.cs" />
     <Compile Include="Project\Designer\ShapeDesigner.cs" />
     <Compile Include="Project\Designer\TableDesigner.cs" />
-    <Compile Include="Project\Dialogs\ExpressionEditor.cs" />
+    <Compile Include="Project\Dialogs\ExpressionEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Project\Dialogs\ExpressionEditor.Designer.cs">
       <DependentUpon>ExpressionEditor.cs</DependentUpon>
     </Compile>
@@ -98,19 +126,43 @@
     <Compile Include="Project\Globals\StringWriterWithEncoding.cs" />
     <Compile Include="Project\ReportDesignerView.cs" />
     <Compile Include="Project\ReportExplorer\ExplorerNodes.cs" />
-    <Compile Include="Project\ReportExplorer\ExplorerTree.cs" />
+    <Compile Include="Project\ReportExplorer\ExplorerTree.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Project\ReportExplorer\ReportExplorerPad.cs" />
-    <Compile Include="Project\ReportItems\AbstractItem.cs" />
-    <Compile Include="Project\ReportItems\BaseCircleItem.cs" />
-    <Compile Include="Project\ReportItems\BaseDataItem.cs" />
-    <Compile Include="Project\ReportItems\BaseImageItem.cs" />
-    <Compile Include="Project\ReportItems\BaseLine.cs" />
-    <Compile Include="Project\ReportItems\BaseRectangleItem.cs" />
-    <Compile Include="Project\ReportItems\BaseRowItem.cs" />
-    <Compile Include="Project\ReportItems\BaseTableItem.cs" />
-    <Compile Include="Project\ReportItems\BaseTextItem.cs" />
-    <Compile Include="Project\ReportItems\BaseSection.cs" />
-    <Compile Include="Project\ReportItems\ErrorItem.cs" />
+    <Compile Include="Project\ReportItems\AbstractItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Project\ReportItems\BaseCircleItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Project\ReportItems\BaseDataItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Project\ReportItems\BaseImageItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Project\ReportItems\BaseLine.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Project\ReportItems\BaseRectangleItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Project\ReportItems\BaseRowItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Project\ReportItems\BaseTableItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Project\ReportItems\BaseTextItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Project\ReportItems\BaseSection.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Project\ReportItems\ErrorItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Project\ReportItems\RectangleItemTypeProvider.cs" />
     <Compile Include="Project\ReportManagers\BaseManager.cs" />
     <Compile Include="Project\ReportManagers\StandartPreviewManager.cs" />
@@ -126,28 +178,49 @@
     <Compile Include="Project\ReportWizard\ReportLayout\TableLayout.cs" />
     <Compile Include="Project\ReportWizard\ReportStructure.cs" />
     <Compile Include="Project\ReportWizard\ReportWizardCommand.cs" />
-    <Compile Include="Project\ReportWizard\SqlParameterConverter.cs" />
     <Compile Include="Project\ReportWizard\WizardCommands.cs" />
-    <Compile Include="Project\ReportWizard\WizardPanels\BaseSettingsPanel.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\BaseSettingsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Project\ReportWizard\WizardPanels\DataGridViewColumnHeaderCheckBoxCell.cs" />
-    <Compile Include="Project\ReportWizard\WizardPanels\LayoutPanel.cs" />
-    <Compile Include="Project\ReportWizard\WizardPanels\PullModelPanel.cs" />
-    <Compile Include="Project\ReportWizard\WizardPanels\PushModelPanel.cs" />
-    <Compile Include="Project\ReportWizard\WizardPanels\ResultPanel.cs" />
-    <Compile Include="Project\ReportWizard\WizardPanels\LayoutPanelControl.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\LayoutPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Project\ReportWizard\WizardPanels\PullModelPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Project\ReportWizard\WizardPanels\PushModelPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Project\ReportWizard\WizardPanels\ResultPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Project\ReportWizard\WizardPanels\LayoutPanelControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Project\ReportWizard\WizardPanels\LayoutPanelControl.Designer.cs">
       <DependentUpon>LayoutPanelControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\AbstractOptionPanel.cs" />
-    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\AbstractWizardPanel.cs" />
-    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\CurrentPanelPanel.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\AbstractOptionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\AbstractWizardPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\CurrentPanelPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Project\ReportWizard\WizardPanels\Wizard\DefaultDialogPanelDescriptor.cs" />
     <Compile Include="Project\ReportWizard\WizardPanels\Wizard\DialogPanelDoozer.cs" />
     <Compile Include="Project\ReportWizard\WizardPanels\Wizard\IDialogPanel.cs" />
     <Compile Include="Project\ReportWizard\WizardPanels\Wizard\IDialogPanelDescriptor.cs" />
     <Compile Include="Project\ReportWizard\WizardPanels\Wizard\IWizardPanel.cs" />
-    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\StatusPanel.cs" />
-    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\WizardDialog.cs" />
+    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\StatusPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Project\ReportWizard\WizardPanels\Wizard\WizardDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Project\SecondaryViews\ReportPreview.cs" />
     <Compile Include="Project\SecondaryViews\ReportViewerMessages.cs" />
     <Compile Include="Project\SecondaryViews\ReportViewerSecondaryView.cs" />
@@ -162,29 +235,6 @@
     <Compile Include="Project\Services\TypeDiscoveryService.cs" />
     <Compile Include="Project\Services\TypeResolutionService.cs" />
     <Compile Include="Project\Services\UIService.cs" />
-    <Compile Include="Project\SharpQuery\AbstractSharpQueryCommand.cs" />
-    <Compile Include="Project\SharpQuery\AbstractSharpQuerySchemaClass.cs" />
-    <Compile Include="Project\SharpQuery\Collections.cs" />
-    <Compile Include="Project\SharpQuery\Connection\AbstractSharpQueryConnectionWrapper.cs" />
-    <Compile Include="Project\SharpQuery\Connection\ADOConnectionWrapper.cs" />
-    <Compile Include="Project\SharpQuery\Connection\IConnection.cs" />
-    <Compile Include="Project\SharpQuery\Connection\OLEDBConnectionWrapper.cs" />
-    <Compile Include="Project\SharpQuery\Exceptions\ConnectionStringException.cs" />
-    <Compile Include="Project\SharpQuery\Exceptions\ExecuteProcedureException.cs" />
-    <Compile Include="Project\SharpQuery\Exceptions\ExecuteSQLException.cs" />
-    <Compile Include="Project\SharpQuery\Exceptions\OpenConnectionException.cs" />
-    <Compile Include="Project\SharpQuery\Exceptions\SharpQueryAbstractException.cs" />
-    <Compile Include="Project\SharpQuery\GUI\AbstractSharpQueryNode.cs" />
-    <Compile Include="Project\SharpQuery\GUI\ISharpQueryNode.cs" />
-    <Compile Include="Project\SharpQuery\GUI\SharpQueryDataView.cs" />
-    <Compile Include="Project\SharpQuery\GUI\SharpQueryPad.cs" />
-    <Compile Include="Project\SharpQuery\GUI\SharpQueryTree\SharpQueryDataNodes.cs" />
-    <Compile Include="Project\SharpQuery\GUI\SharpQueryTree\SharpQueryNodesRoot.cs" />
-    <Compile Include="Project\SharpQuery\GUI\SharpQueryTree\SharpQueryTree.cs" />
-    <Compile Include="Project\SharpQuery\GUI\SQLParameterInput.cs" />
-    <Compile Include="Project\SharpQuery\ISchemaClass.cs" />
-    <Compile Include="Project\SharpQuery\SharpQueryCommands.cs" />
-    <Compile Include="Project\SharpQuery\SharpQuerySchemaClass.cs" />
     <Compile Include="Project\Toolbox\SideTabItemDesigner.cs" />
     <Compile Include="Project\Toolbox\ToolboxProvider.cs" />
     <Compile Include="Project\UndoRedo\UndoEngine.cs" />
@@ -212,32 +262,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Project\Configuration" />
-    <Folder Include="Project\Commands" />
-    <Folder Include="Project\Designer" />
-    <Folder Include="Project\Designer\RootDesigner" />
-    <Folder Include="Project\DesignerBinding" />
-    <Folder Include="Project\Dialogs" />
-    <Folder Include="Project\Globals" />
-    <Folder Include="Project\ReportWizard\WizardPanels\Wizard" />
-    <Folder Include="Project\SharpQuery" />
-    <Folder Include="Project\ReportExplorer" />
-    <Folder Include="Project\ReportWizard" />
-    <Folder Include="Project\ReportWizard\Generators" />
-    <Folder Include="Project\ReportWizard\ReportLayout" />
-    <Folder Include="Project\ReportWizard\Templates" />
-    <Folder Include="Project\ReportWizard\WizardPanels" />
-    <Folder Include="Project\SecondaryViews" />
-    <Folder Include="Project\ReportManagers" />
-    <Folder Include="Project\SharpQuery\Connection" />
-    <Folder Include="Project\SharpQuery\Exceptions" />
-    <Folder Include="Project\SharpQuery\GUI" />
-    <Folder Include="Project\SharpQuery\GUI\SharpQueryTree" />
-    <Folder Include="Project\Xml" />
-    <Folder Include="Project\UndoRedo" />
-    <Folder Include="Project\ReportItems" />
-    <Folder Include="Project\Toolbox" />
-    <Folder Include="Project\Services" />
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -263,26 +287,47 @@
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\DisplayBindings\Data\ICSharpCode.Data.Core.UI\ICSharpCode.Data.Core.UI.csproj">
+      <Project>{BAD94D6E-4159-4CB6-B991-486F412D9BB6}</Project>
+      <Name>ICSharpCode.Data.Core.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DisplayBindings\Data\ICSharpCode.Data.Core\ICSharpCode.Data.Core.csproj">
+      <Project>{B7823AE9-4B43-4859-8796-2EBDC116FBB8}</Project>
+      <Name>ICSharpCode.Data.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DisplayBindings\Data\ICSharpCode.Data.SQLServer\ICSharpCode.Data.SQLServer.csproj">
+      <Project>{AFE34868-AFA1-4E1C-9450-47AB4BE329D5}</Project>
+      <Name>ICSharpCode.Data.SQLServer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ICSharpCode.Reports.Core\ICSharpCode.Reports.Core.csproj">
       <Project>{4B2239FF-8FD6-431D-9D22-1B8049BA6917}</Project>
       <Name>ICSharpCode.Reports.Core</Name>
     </ProjectReference>
-    <COMReference Include="ADODB">
-      <Guid>{2A75196C-D9EB-4129-B803-931327F72D5C}</Guid>
-      <VersionMajor>2</VersionMajor>
-      <VersionMinor>8</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-    </COMReference>
-    <COMReference Include="MSDASC">
-      <Guid>{2206CEB0-19C1-11D1-89E0-00C04FD7A829}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Project\ReportWizard\Templates\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 und x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

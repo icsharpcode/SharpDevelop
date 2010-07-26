@@ -18,8 +18,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
-using SharpQuery.Collections;
-using SharpQuery.SchemaClass;
+
 
 
 namespace ICSharpCode.Reports.Addin.ReportWizard

@@ -10,7 +10,7 @@ using System.Data;
 using System.Drawing;
 
 using ICSharpCode.Reports.Core;
-using SharpQuery.SchemaClass;
+
 /// <summary>
 /// This class creates settings for a report
 /// </summary>
@@ -112,10 +112,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			}
 		}
 		
-		/// <summary>
-		/// This Property is only usefull for ResultPanel
-		/// </summary>
-		public SharpQueryProcedure SharpQueryProcedure {get;set;}
 		
 		#endregion
 		
@@ -168,9 +164,9 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 					
 				}
 				
-				if (this.SharpQueryProcedure != null) {
-					this.SharpQueryProcedure = null;
-				}
+//				if (this.SharpQueryProcedure != null) {
+//					this.SharpQueryProcedure = null;
+//				}
 				
 			}
 		
