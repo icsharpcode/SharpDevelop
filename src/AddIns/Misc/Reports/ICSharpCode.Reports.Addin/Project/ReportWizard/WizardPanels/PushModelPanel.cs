@@ -62,10 +62,12 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 					FillDataGrid(fileName);
 				}
 			}
+			base.EnableNext = true;
+			base.EnableFinish= true;
 		}
 		
-		/*
-		private AvailableFieldsCollection ColumnsFromTable (DataTable table) 
+		
+		private AvailableFieldsCollection AvailableFieldsCollectionFromTable (DataTable table) 
 		{
 			AvailableFieldsCollection av = new AvailableFieldsCollection();
 			AbstractColumn ac = null;
@@ -76,7 +78,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			}
 			return av;
 		}
-		*/
+		
 		
 		#region  DataGridView
 		
@@ -87,7 +89,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 			resultDataSet.ReadXml (fileName);
 			this.grdQuery.DataSource = resultDataSet.Tables[0];
-			this.abstractColumns = WizardHelper.AbstractColumnsFromDataSet(this.resultDataSet);
+			this.abstractColumns = WizardHelper.AvailableFieldsCollection(this.resultDataSet);
 			foreach (DataGridViewColumn dd in this.grdQuery.Columns) {
 				DataGridViewColumnHeaderCheckBoxCell cb = new DataGridViewColumnHeaderCheckBoxCell();
 				cb.CheckBoxAlignment = HorizontalAlignment.Left;
@@ -127,40 +129,52 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			if (customizer == null) {
 				customizer = (Properties)base.CustomizationObject;
 				reportStructure = (ReportStructure)customizer.Get("Generator");
-			}
-			
-			if (message == DialogMessage.Activated) {
-				base.EnableNext = true;
-//				base.IsLastPanel = true;
 				base.NextWizardPanelID = "Layout";
 			}
 			
+			else if (message == DialogMessage.Activated) {
+				WriteResult();
+				base.EnableNext = true;
+			}
+			
+			else if (message == DialogMessage.Next)
+			{
+				WriteResult();
+				base.EnableNext = true;
+			}
 			else if (message == DialogMessage.Finish) {
-				if (this.resultDataSet != null) {
-					// check reordering of columns
-					DataGridViewColumn[] displayCols;
-					DataGridViewColumnCollection dc = this.grdQuery.Columns;
-					
-					displayCols = new DataGridViewColumn[dc.Count];
-					
-					for (int i = 0; i < dc.Count; i++){
-						if (dc[i].Visible) {
-							displayCols[dc[i].DisplayIndex] = dc[i];
-						}
-					}
-
-					reportStructure.ReportItemCollection.AddRange(CreateItemsCollection (displayCols));
-					if (this.abstractColumns != null) {
-						reportStructure.AvailableFieldsCollection.AddRange(abstractColumns);
-					}
-				}
+				WriteResult();
 				base.EnableNext = true;
 				base.EnableFinish = true;
-				base.IsLastPanel = true;
 			}
 			return true;
 		}
 		
+		
+		private void WriteResult ()
+		{
+			if (this.resultDataSet != null) {
+				// check reordering of columns
+				DataGridViewColumn[] displayCols;
+				DataGridViewColumnCollection dc = this.grdQuery.Columns;
+				
+				displayCols = new DataGridViewColumn[dc.Count];
+				
+				for (int i = 0; i < dc.Count; i++){
+					if (dc[i].Visible) {
+						displayCols[dc[i].DisplayIndex] = dc[i];
+					}
+				}
+				
+				reportStructure.ReportItemCollection.Clear();
+				reportStructure.ReportItemCollection.AddRange(CreateItemsCollection (displayCols));
+				if (this.abstractColumns != null) {
+					reportStructure.AvailableFieldsCollection.Clear();
+					reportStructure.AvailableFieldsCollection.AddRange(abstractColumns);
+				}
+			}
+		}
+			
 		#endregion
 		
 		#region Windows Forms Designer generated code

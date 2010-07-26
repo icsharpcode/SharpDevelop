@@ -24,17 +24,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	public class ReportStructure : IDisposable
 	{
 		
-//		private GlobalEnums.ReportType reportType;
-//		private GraphicsUnit graphicsUnit;
-		
-		//Database
-//		private GlobalEnums.PushPullModel dataModel;
-
-//		private string connectionString;
-//		private string sqlString;
-//		
-//		private CommandType commandType;
-//		private SharpQueryProcedure sharpQueryProcedure;
 		private ReportItemCollection reportItemCollection;
 		private AvailableFieldsCollection availableFieldsCollection;
 		
@@ -67,8 +56,18 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			} else {
 				model.ReportSettings.PageSize = GlobalValues.DefaultPageSize;
 			}
+			CheckGrouping(model.ReportSettings);
 			
 			return model;
+		}
+		
+		private void CheckGrouping(ReportSettings settings)
+		{
+			if (!String.IsNullOrEmpty(this.Grouping)){
+				GroupColumn g = new GroupColumn(Grouping,1,System.ComponentModel.ListSortDirection.Ascending);
+				
+				settings.GroupColumnsCollection.Add(g);
+			}
 		}
 		
 		#region BaseSettingsPanel property's
@@ -135,6 +134,12 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				return reportItemCollection;
 			}
 		}
+		
+		#endregion
+		
+		#region Grouping
+		
+		public string Grouping {get;set;}
 		
 		#endregion
 		

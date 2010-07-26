@@ -37,6 +37,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		private void InitializeComponent()
 		{
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.comboBox1 = new System.Windows.Forms.ComboBox();
+			this.checkBox1 = new System.Windows.Forms.CheckBox();
 			this.radioTableLayout = new System.Windows.Forms.RadioButton();
 			this.radioListLayout = new System.Windows.Forms.RadioButton();
 			this.groupBox1.SuspendLayout();
@@ -44,14 +46,35 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			// 
 			// groupBox1
 			// 
+			this.groupBox1.Controls.Add(this.comboBox1);
+			this.groupBox1.Controls.Add(this.checkBox1);
 			this.groupBox1.Controls.Add(this.radioTableLayout);
 			this.groupBox1.Controls.Add(this.radioListLayout);
 			this.groupBox1.Location = new System.Drawing.Point(17, 18);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(232, 103);
+			this.groupBox1.Size = new System.Drawing.Size(232, 205);
 			this.groupBox1.TabIndex = 2;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Report Layout";
+			// 
+			// comboBox1
+			// 
+			this.comboBox1.FormattingEnabled = true;
+			this.comboBox1.Location = new System.Drawing.Point(64, 160);
+			this.comboBox1.Name = "comboBox1";
+			this.comboBox1.Size = new System.Drawing.Size(121, 21);
+			this.comboBox1.TabIndex = 5;
+			this.comboBox1.Visible = false;
+			// 
+			// checkBox1
+			// 
+			this.checkBox1.Location = new System.Drawing.Point(64, 116);
+			this.checkBox1.Name = "checkBox1";
+			this.checkBox1.Size = new System.Drawing.Size(104, 24);
+			this.checkBox1.TabIndex = 4;
+			this.checkBox1.Text = "Grouping";
+			this.checkBox1.UseVisualStyleBackColor = true;
+			this.checkBox1.CheckedChanged += new System.EventHandler(this.CheckBox1CheckedChanged);
 			// 
 			// radioTableLayout
 			// 
@@ -79,12 +102,15 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Controls.Add(this.groupBox1);
 			this.Name = "LayoutPanelControl";
-			this.Size = new System.Drawing.Size(270, 144);
+			this.Size = new System.Drawing.Size(270, 252);
 			this.groupBox1.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
+		private System.Windows.Forms.CheckBox checkBox1;
+		private System.Windows.Forms.ComboBox comboBox1;
 		private System.Windows.Forms.RadioButton radioTableLayout;
 		private System.Windows.Forms.RadioButton radioListLayout;
 		private System.Windows.Forms.GroupBox groupBox1;
+		
 	}
 }

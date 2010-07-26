@@ -20,7 +20,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	/// </summary>
 	public class AbstractLayout
 	{
-		ReportModel reportModel;
+//		ReportModel reportModel;
 		ISimpleContainer parentItem;
 		
 		public AbstractLayout(ReportModel reportModel)
@@ -28,17 +28,17 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
 			}
-			this.reportModel = reportModel;
+			this.ReportModel = reportModel;
 		}
+		
 		
 		public virtual void CreateReportHeader ()
 		{
-			ICSharpCode.Reports.Core.BaseTextItem a;
-			string header = this.reportModel.ReportSettings.ReportName;
-			a = WizardHelper.CreateTextItem(header);
-			a.Name = header;
-			this.FixLayout(this.reportModel.ReportHeader,a,GlobalEnums.ItemsLayout.Center);
-			this.reportModel.ReportHeader.Items.Add(a);
+			string header = this.ReportModel.ReportSettings.ReportName;
+			var textItem = WizardHelper.CreateTextItem(header);
+			textItem.Name = header;
+			this.FixLayout(this.ReportModel.ReportHeader,textItem,GlobalEnums.ItemsLayout.Center);
+			this.ReportModel.ReportHeader.Items.Add(textItem);
 		}
 		
 		public virtual void SetParent (ISimpleContainer parentItem)
@@ -57,11 +57,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		public virtual void CreatePageFooter ()
 		{
-//			ICSharpCode.Reports.Core.BaseTextItem a = WizardHelper.CreateTextItem(GlobalValues.FunctionStartTag + "=Globals!PageNumber" + GlobalValues.FunctionEndTag);
-			ICSharpCode.Reports.Core.BaseTextItem a = WizardHelper.CreateTextItem("=Globals!PageNumber");
-			a.Name = "PageNumber1";
-			this.FixLayout(this.reportModel.PageFooter,a,GlobalEnums.ItemsLayout.Right);
-			this.reportModel.PageFooter.Items.Add(a);
+			var textItem = WizardHelper.CreateTextItem("=Globals!PageNumber");
+			textItem.Name = "PageNumber1";
+			this.FixLayout(this.ReportModel.PageFooter,textItem,GlobalEnums.ItemsLayout.Right);
+			this.ReportModel.PageFooter.Items.Add(textItem);
 		}
 		
 		
@@ -73,7 +72,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 			switch (layout) {
 				case GlobalEnums.ItemsLayout.Left:
-					p = new Point (this.reportModel.ReportSettings.LeftMargin,
+					p = new Point (this.ReportModel.ReportSettings.LeftMargin,
 					               GlobalValues.ControlMargins.Top);
 					break;
 				case GlobalEnums.ItemsLayout.Center:
@@ -151,6 +150,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			int defY = section.Location.Y + GlobalValues.ControlMargins.Top;
 			int defX = section.Size.Width / items.Count;
 			int startX = section.Location.X + GlobalValues.ControlMargins.Left;
+			
 			foreach (var ir in items) {
 				Point np = new Point(startX,defY);
 				startX += defX;
@@ -164,9 +164,11 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		{
 			section.Items.Add(this.parentItem as BaseReportItem);
 			ICSharpCode.Reports.Core.BaseReportItem bri = this.parentItem as ICSharpCode.Reports.Core.BaseReportItem;
+			
 			int defY = bri.Location.Y + GlobalValues.ControlMargins.Top;
 			int defX = bri.Size.Width / items.Count;
 			int startX = bri.Location.X + GlobalValues.ControlMargins.Left;
+			
 			foreach (var ir in items) {
 				Point np = new Point(startX,defY);
 				startX += defX;
@@ -176,18 +178,9 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 		
-		protected ReportModel ReportModel {
-			get { return reportModel; }
-		}
+		protected ReportModel ReportModel {get; private set;}
+	
 		
-		/*
-		protected PageSettings PageSettings
-		{
-			get {
-				return reportModel.ReportSettings.PageSettings;
-			}
-		}
-		*/
 		protected ISimpleContainer ParentItem {
 			get { return parentItem; }
 		}

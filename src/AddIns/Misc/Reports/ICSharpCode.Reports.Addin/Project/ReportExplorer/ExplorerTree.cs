@@ -276,13 +276,28 @@ namespace ICSharpCode.Reports.Addin
 				if (sc.SortDirection == ListSortDirection.Ascending) {
 					scn  = new SortColumnNode (sc.ColumnName,ascendingIcon,"/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnTreeNode");
 				} else {
-					scn = new SortColumnNode (sc.ColumnName,ascendingIcon,"/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnTreeNode");
+					scn = new SortColumnNode (sc.ColumnName,descendingIcon,"/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnTreeNode");
 				}
 				this.nodeSorting.Nodes.Add(scn);
 			}
 		}
 		
-		
+		private void SetGroupColumns()
+		{
+			this.nodeGrouping.Nodes.Clear();
+			GroupColumnNode groupNode = null;
+			foreach (GroupColumn groupColumn in this.reportModel.ReportSettings.GroupColumnsCollection)
+			{
+				if (groupColumn.SortDirection  == ListSortDirection.Ascending) {
+					groupNode  = new GroupColumnNode (groupColumn.ColumnName,ascendingIcon,"/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnTreeNode");
+				} else {
+					groupNode  = new GroupColumnNode (groupColumn.ColumnName,descendingIcon,"/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnTreeNode");
+				}
+				this.nodeGrouping.Nodes.Add(groupNode);
+			}
+					
+		}
+			
 		private void SetAvailableFields (AbstractColumn af)
 		{
 			ColumnNode node = new ColumnNode(af.ColumnName,columnIcon);
@@ -305,32 +320,13 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
-		private void SetFunctions ()
-		{
-			//ReportStringTagProvider prov = new ReportStringTagProvider();
-			//ICSharpCode.Reports.Core.StringParser.RegisterStringTagProvider(prov);
-			/*
-			foreach (ICSharpCode.Reports.Core.BaseSection baseSection in this.reportModel.SectionCollection) {
-				foreach (ICSharpCode.Reports.Core.BaseReportItem item in baseSection.Items) {
-					if (item != null) {
-						if (ICSharpCode.Reports.Core.StringParser.IsFunction(item)) {
-							ICSharpCode.Reports.Core.BaseTextItem t = item as ICSharpCode.Reports.Core.BaseTextItem;
-							FunctionNode fn = new FunctionNode(t.Text,functionIcon);
-							this.nodeFunction.Nodes.Add(fn);
-						}
-					}
-				}
-			}
-			*/
-		}
-		
 		
 		public  void BuildTree () 
 		{
 			this.BeginUpdate();
 			this.reportModel.ReportSettings.AvailableFieldsCollection.ForEach(SetAvailableFields);
 			SetSortColumns();
-			SetFunctions();
+			SetGroupColumns();
 			SetParameters();
 			this.EndUpdate();
 		}

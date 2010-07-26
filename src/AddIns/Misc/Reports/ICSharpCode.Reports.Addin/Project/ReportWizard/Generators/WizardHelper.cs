@@ -27,7 +27,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		/// comming from the DataSource
 		///</summary>
 	
-		internal static AvailableFieldsCollection AbstractColumnsFromDataSet(DataSet dataSet)
+		internal static AvailableFieldsCollection AvailableFieldsCollection(DataSet dataSet)
 		{
 			if (dataSet == null) {
 				throw new ArgumentNullException("dataSet");
@@ -43,7 +43,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 		
-		internal static ReportItemCollection DataItemsFromDataSet (DataSet dataSet)
+		internal static ReportItemCollection ReportItemCollection (DataSet dataSet)
 		{
 			if (dataSet == null) {
 				throw new ArgumentNullException("dataSet");

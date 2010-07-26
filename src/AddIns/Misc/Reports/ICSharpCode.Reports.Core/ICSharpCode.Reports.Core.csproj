@@ -76,6 +76,7 @@
       <Link>Project\Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Project\BaseClasses\CurrentItem.cs" />
+    <Compile Include="Project\BaseClasses\GroupColumn.cs" />
     <Compile Include="Project\BaseClasses\Printing\Layouter.cs" />
     <Compile Include="Project\BaseClasses\Printing\MeasurementService.cs" />
     <Compile Include="Project\BaseClasses\Printing\PrintHelper.cs" />
@@ -93,7 +94,6 @@
     <Compile Include="Project\BaseItems\ErrorItem.cs" />
     <Compile Include="Project\BaseItems\Graphics\BaseLineItem.cs" />
     <Compile Include="Project\BaseItems\IExpression.cs" />
-    <Compile Include="Project\Collections\GroupColumn.cs" />
     <Compile Include="Project\DataManager\Comparer\BaseComparer.cs" />
     <Compile Include="Project\DataManager\Comparer\GroupSeparator.cs" />
     <Compile Include="Project\DataManager\Comparer\SortComparer.cs" />

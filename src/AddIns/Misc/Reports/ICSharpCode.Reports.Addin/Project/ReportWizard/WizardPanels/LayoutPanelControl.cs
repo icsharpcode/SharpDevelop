@@ -20,6 +20,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	public partial class LayoutPanelControl : UserControl
 	{
 		GlobalEnums.ReportLayout reportLayout;
+		AvailableFieldsCollection availableFieldsCollection ;
+		
 		
 		
 		public LayoutPanelControl()
@@ -62,5 +64,33 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			}
 		}
 		
+		void CheckBox1CheckedChanged(object sender, System.EventArgs e)
+		{
+			comboBox1.Visible = checkBox1.Checked;
+		}
+		
+		
+		public AvailableFieldsCollection AvailableFieldsCollection {
+			get { return availableFieldsCollection; }
+			set {
+				availableFieldsCollection = value;
+				comboBox1.Items.Clear();
+				foreach (AbstractColumn ac in this.availableFieldsCollection)
+				{
+					this.comboBox1.Items.Add(ac.ColumnName);
+				}
+				
+				if (comboBox1.Items.Count > 0) {
+					comboBox1.SelectedIndex = 0;
+				}
+			}
+		}
+		
+		public string GroupName
+		{
+			get {
+				return comboBox1.SelectedItem.ToString();
+			}
+		}
 	}
 }

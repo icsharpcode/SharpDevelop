@@ -58,15 +58,6 @@ namespace ICSharpCode.Reports.Addin
 				contextMenuAddinTreePath = value;
 			}
 		}
-//		public Image a_IconImage {
-//			get {
-//				return iconImage;
-//			}
-//			set {
-//				iconImage = value;
-//			}
-//		}
-		
 	}
 	
 	
@@ -127,5 +118,13 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		public string FieldName {get;set;}
+	}
+	
+	internal class GroupColumnNode:SortColumnNode
+	{
+		public GroupColumnNode (string nodeName,int imageIndex,string contextMenuPath):base(nodeName,imageIndex,contextMenuPath)
+		{
+			
+		}
 	}
 }

@@ -21,6 +21,10 @@ namespace ICSharpCode.Reports.Core
 	{
 		int groupLevel;
 		
+		public GroupColumn():this("",0,ListSortDirection.Ascending)
+		{
+		}
+		
 		public GroupColumn(string columnName,int groupLevel, ListSortDirection sortDirection):base(columnName,sortDirection)
 		{
 			this.groupLevel = groupLevel;
