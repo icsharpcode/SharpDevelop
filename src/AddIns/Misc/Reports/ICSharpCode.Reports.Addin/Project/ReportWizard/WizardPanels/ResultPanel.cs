@@ -38,7 +38,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		private ReportModel model;
 		private ConnectionObject connectionObject;
 		private DataSet resultDataSet;
-		private ParameterCollection sqlParamsCollection;
+		//private ParameterCollection sqlParamsCollection;
 		
 		
 		#region Constructor
@@ -302,10 +302,11 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 						}
 					}
 					reportStructure.ReportItemCollection.AddRange(destItems);
+					/*
 					if ((this.sqlParamsCollection != null) && (this.sqlParamsCollection.Count > 0)) {
 						reportStructure.SqlQueryParameters.AddRange(sqlParamsCollection);
 					}
-					
+					*/
 					if (abstractColumns != null) {
 						reportStructure.AvailableFieldsCollection.AddRange(abstractColumns);
 					}
