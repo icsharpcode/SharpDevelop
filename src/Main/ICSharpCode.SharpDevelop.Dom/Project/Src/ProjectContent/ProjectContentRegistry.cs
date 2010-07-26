@@ -197,6 +197,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 				
 				try {
 					pc = LoadProjectContent(itemInclude, itemFileName);
+				} catch (BadImageFormatException ex) {
+					HostCallback.ShowAssemblyLoadErrorInternal(itemFileName, itemInclude, ex.Message);
 				} catch (Exception ex) {
 					HostCallback.ShowError("Error loading assembly " + itemFileName, ex);
 				} finally {
