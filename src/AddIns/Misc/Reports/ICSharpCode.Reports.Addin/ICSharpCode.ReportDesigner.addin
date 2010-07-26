@@ -8,6 +8,7 @@
 		<Identity name="ICSharpCode.Reports.Addin" version="@ICSharpCode.Reports.Addin.dll"/>
 		
 		<Dependency addin="SharpDevelop" version="4.0"/>
+		<Dependency addin="ICSharpCode.Data.Addin" requirePreload="true"/>
 	</Manifest>
 	
 	<Runtime>
