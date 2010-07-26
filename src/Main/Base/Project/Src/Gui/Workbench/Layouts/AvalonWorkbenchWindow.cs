@@ -123,6 +123,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		SDWindowsFormsHost GetActiveWinFormsHost()
+		{
+			if (viewTabControl != null && viewTabControl.SelectedIndex >= 0 && viewTabControl.SelectedIndex < ViewContents.Count) {
+				TabItem page = (TabItem)viewTabControl.Items[viewTabControl.SelectedIndex];
+				return page.Content as SDWindowsFormsHost;
+			} else {
+				return this.Content as SDWindowsFormsHost;
+			}
+		}
+		
 		public event EventHandler ActiveViewContentChanged;
 		
 		IViewContent oldActiveViewContent;
@@ -442,6 +452,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public override string ToString()
 		{
 			return "[AvalonWorkbenchWindow: " + this.Title + "]";
+		}
+		
+		/// <summary>
+		/// Gets the target for re-routing commands to this window.
+		/// </summary>
+		internal IInputElement GetCommandTarget()
+		{
+			return CustomFocusManager.GetFocusedChild(this) ?? GetActiveWinFormsHost();
 		}
 	}
 }

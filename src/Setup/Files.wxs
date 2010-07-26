@@ -1,4 +1,4 @@
-﻿<!-- Defines all the directories, files and components to be installed -->
+<!-- Defines all the directories, files and components to be installed -->
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
 	<Fragment>
 		<DirectoryRef Id="TARGETDIR">
@@ -1025,7 +1025,7 @@
 											<Component Id="PythonBindingSdTestRunnerPy" Guid="E15A20D3-BAA0-476F-9380-0B662D5C8D1E" DiskId="1">
 												<File Id="sdtestrunner.py" Name="sdtestrunner.py" Source="..\..\AddIns\AddIns\BackendBindings\PythonBinding\TestRunner\sdtestrunner.py" KeyPath="yes" />
 											</Component>
-										</Directory>
+									</Directory>
 									</Directory>
 									<Directory Id="FSharpBinding" Name="FSharpBinding">
 										<Component Guid="6B4F28AF-133C-4FEB-98DB-67A5405AEB12" Id="FSharpBindingAddin" DiskId="1">
@@ -1427,6 +1427,26 @@
 										<Component Guid="BDFB1DDB-E4AD-4D20-B7C1-21EDDEF33943" Id="UsageDataCollectorDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\UsageDataCollector\UsageDataCollector.dll" Name="UsageDataCollector.dll" Id="UsageDataCollector.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\Misc\UsageDataCollector\UsageDataCollector.xml" Name="UsageDataCollector.xml" Id="UsageDataCollector.xml" />
+										</Component>
+									</Directory>
+									<Directory Id="SharpDevelopReports" Name="SharpDevelopReports">
+										<Component Guid="9D0B24E0-6BE3-4E0A-AE50-DFF55BAE388F" Id="SharpDevelopReportsEmptyReportFileTemplate" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpDevelopReports\EmptyReport.xft" Name="EmptyReport.xft" Id="SharpDevelopReportsEmptyReport.xft" KeyPath="yes" />
+										</Component>
+										<Component Guid="70F6CB6E-5776-4157-BABB-1D01960CFD42" Id="ICSharpCodeReportDesignerAddin" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpDevelopReports\ICSharpCode.ReportDesigner.addin" Name="ICSharpCode.ReportDesigner.addin" Id="ICSharpCode.ReportDesigner.addin" KeyPath="yes" />
+										</Component>
+										<Component Guid="368CD4A5-70EA-4374-AF4E-A4328DE66680" Id="ICSharpCodeReportsAddinDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpDevelopReports\ICSharpCode.Reports.Addin.dll" Name="ICSharpCode.Reports.Addin.dll" Id="ICSharpCode.Reports.Addin.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.Reports.Addin.dll" AssemblyManifest="ICSharpCode.Reports.Addin.dll" />
+										</Component>
+										<Component Guid="0836040D-7E4A-42CA-A291-BE8AAB207D29" Id="ICSharpCodeReportsCoreDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpDevelopReports\ICSharpCode.Reports.Core.dll" Name="ICSharpCode.Reports.Core.dll" Id="ICSharpCode.Reports.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.Reports.Core.dll" AssemblyManifest="ICSharpCode.Reports.Core.dll" />
+										</Component>
+										<Component Guid="DBF1DA4F-19BA-46AF-86A4-B3228424F219" Id="IronyDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpDevelopReports\Irony.dll" Name="Irony.dll" Id="Irony.dll" KeyPath="yes" />
+										</Component>
+										<Component Guid="A105D4E4-2AF4-43BE-AA71-15F14DA4163B" Id="ITextSharpDll" DiskId="1">
+											<File Source="..\..\AddIns\AddIns\Misc\SharpDevelopReports\itextsharp.dll" Name="itextsharp.dll" Id="itextsharp.dll" KeyPath="yes" />
 										</Component>
 									</Directory>
 								</Directory>
