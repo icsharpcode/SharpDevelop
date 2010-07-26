@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -13,10 +13,10 @@ namespace Debugger.Interop.CorSym
 {
 	public static partial class CorSymExtensionMethods
 	{
-		public static ISymUnmanagedReader GetReaderForFile(this CorSymBinder_SxSClass instance, object importer, IntPtr filename, IntPtr searchPath)
+		public static int GetReaderForFile(this CorSymBinder_SxSClass instance, object importer, IntPtr filename, IntPtr searchPath, ref object retVal)
 		{
-			ISymUnmanagedReader returnValue = instance.__GetReaderForFile(importer, filename, searchPath);
-			ProcessOutParameter(returnValue);
+			int returnValue = instance.__GetReaderForFile(importer, filename, searchPath, ref retVal);
+			ProcessOutParameter(retVal);
 			return returnValue;
 		}
 		
@@ -86,6 +86,7 @@ namespace Debugger.Interop.CorSym
 		public static void GetNamespaces(this CorSymReader_SxSClass instance, uint cNameSpaces, out uint pcNameSpaces, ISymUnmanagedNamespace[] namespaces)
 		{
 			instance.__GetNamespaces(cNameSpaces, out pcNameSpaces, namespaces);
+			ProcessOutParameter(namespaces);
 		}
 		
 		public static void GetSymAttribute(this CorSymReader_SxSClass instance, uint parent, IntPtr name, uint cBuffer, out uint pcBuffer, IntPtr buffer)
@@ -251,10 +252,10 @@ namespace Debugger.Interop.CorSym
 			instance.__UsingNamespace(fullName);
 		}
 		
-		public static ISymUnmanagedReader GetReaderForFile(this ISymUnmanagedBinder instance, object importer, IntPtr filename, IntPtr searchPath)
+		public static int GetReaderForFile(this ISymUnmanagedBinder instance, object importer, IntPtr filename, IntPtr searchPath, ref object retVal)
 		{
-			ISymUnmanagedReader returnValue = instance.__GetReaderForFile(importer, filename, searchPath);
-			ProcessOutParameter(returnValue);
+			int returnValue = instance.__GetReaderForFile(importer, filename, searchPath, ref retVal);
+			ProcessOutParameter(retVal);
 			return returnValue;
 		}
 		
@@ -465,6 +466,7 @@ namespace Debugger.Interop.CorSym
 		public static void GetNamespaces(this ISymUnmanagedReader instance, uint cNameSpaces, out uint pcNameSpaces, ISymUnmanagedNamespace[] namespaces)
 		{
 			instance.__GetNamespaces(cNameSpaces, out pcNameSpaces, namespaces);
+			ProcessOutParameter(namespaces);
 		}
 		
 		public static void Initialize(this ISymUnmanagedReader instance, object importer, IntPtr filename, IntPtr searchPath, IStream pIStream)

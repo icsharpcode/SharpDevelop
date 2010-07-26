@@ -135,6 +135,7 @@ namespace ComExtensionMethodGenerator
 							new MemberReferenceExpression(new IdentifierExpression(ThisParameterName), method.Name)
 						);
 						// Generate arguments
+						bool hasProcessOuts = false;
 						foreach(ParameterDeclarationExpression param in method.Parameters) {
 							// Add argument to invocation
 							if (param.ParamModifier == ParameterModifiers.Ref) {
@@ -159,6 +160,7 @@ namespace ComExtensionMethodGenerator
 												)
 											)
 										);
+										hasProcessOuts = true;
 									}
 								}
 							}
@@ -167,9 +169,9 @@ namespace ComExtensionMethodGenerator
 						if (method.TypeReference.Type == typeof(void).FullName) {
 							extensionMethod.Body.Children.Insert(0, new ExpressionStatement(invoc));
 						} else {
-							if (!ProcessOutParameter ||
-							    ProcessOutParameterIgnores.Contains(method.TypeReference.Type))
+							if ((!ProcessOutParameter || ProcessOutParameterIgnores.Contains(method.TypeReference.Type)) && !hasProcessOuts)
 							{
+								// Short version
 								extensionMethod.Body.Children.Insert(0, new ReturnStatement(invoc));
 							} else {
 								// Declare and get return value
@@ -179,14 +181,16 @@ namespace ComExtensionMethodGenerator
 									)
 								);
 								// Call ProcessOutParameter
-								extensionMethod.Body.AddChild(
-									new ExpressionStatement(
-										new InvocationExpression(
-											new IdentifierExpression(ProcessOutParameterMethodName),
-											new IdentifierExpression(ReturnValueName).ToList<Expression>()
+								if (method.TypeReference.Type != typeof(void).FullName && !ProcessOutParameterIgnores.Contains(method.TypeReference.Type)) {
+									extensionMethod.Body.AddChild(
+										new ExpressionStatement(
+											new InvocationExpression(
+												new IdentifierExpression(ProcessOutParameterMethodName),
+												new IdentifierExpression(ReturnValueName).ToList<Expression>()
+											)
 										)
-									)
-								);
+									);
+								}
 								// Return it
 								extensionMethod.Body.AddChild(
 									new ReturnStatement(new IdentifierExpression(ReturnValueName))

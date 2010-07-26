@@ -37,9 +37,8 @@ namespace Debugger.Interop.CorSym
     public class CorSymBinder_SxSClass : ISymUnmanagedBinder, CorSymBinder_SxS
     {
         // Methods
-        [return: MarshalAs(UnmanagedType.Interface)]
-        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        public virtual extern ISymUnmanagedReader __GetReaderForFile([In, MarshalAs(UnmanagedType.IUnknown)] object importer, [In] IntPtr filename, [In] IntPtr searchPath);
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime), PreserveSig]
+        public virtual extern int __GetReaderForFile([In, MarshalAs(UnmanagedType.IUnknown)] object importer, [In] IntPtr filename, [In] IntPtr searchPath, [Out, In, MarshalAs(UnmanagedType.IUnknown)] ref object retVal);
 
         [return: MarshalAs(UnmanagedType.Interface)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
@@ -215,9 +214,8 @@ namespace Debugger.Interop.CorSym
     [ComImport, InterfaceType((short) 1), Guid("AA544D42-28CB-11D3-BD22-0000F80849BD")]
     public interface ISymUnmanagedBinder
     {
-        [return: MarshalAs(UnmanagedType.Interface)]
-        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        ISymUnmanagedReader __GetReaderForFile([In, MarshalAs(UnmanagedType.IUnknown)] object importer, [In] IntPtr filename, [In] IntPtr searchPath);
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime), PreserveSig]
+        int __GetReaderForFile([In, MarshalAs(UnmanagedType.IUnknown)] object importer, [In] IntPtr filename, [In] IntPtr searchPath, [Out, In, MarshalAs(UnmanagedType.IUnknown)] ref object retVal);
         [return: MarshalAs(UnmanagedType.Interface)]
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         ISymUnmanagedReader __GetReaderFromStream([In, MarshalAs(UnmanagedType.IUnknown)] object importer, [In, MarshalAs(UnmanagedType.Interface)] IStream pstream);
