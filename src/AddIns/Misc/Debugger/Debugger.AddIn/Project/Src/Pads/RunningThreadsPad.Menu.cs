@@ -57,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			ListView.SelectedListViewItemCollection items = runningThreadsList.SelectedItems;
 			
-			if (items.Count == 0) {
+			if (items.Count == 0 || debuggedProcess.IsRunning) {
 				e.Cancel = true;
 				return;
 			}
