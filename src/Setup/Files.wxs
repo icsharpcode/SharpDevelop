@@ -1479,12 +1479,6 @@
 										<Component Guid="0836040D-7E4A-42CA-A291-BE8AAB207D29" Id="ICSharpCodeReportsCoreDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SharpDevelopReports\ICSharpCode.Reports.Core.dll" Name="ICSharpCode.Reports.Core.dll" Id="ICSharpCode.Reports.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.Reports.Core.dll" AssemblyManifest="ICSharpCode.Reports.Core.dll" />
 										</Component>
-										<Component Guid="B897FC22-C1B1-4072-8617-D19FBEC8C38A" Id="InteropAdodbDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SharpDevelopReports\Interop.ADODB.dll" Name="Interop.ADODB.dll" Id="Interop.ADODB.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Interop.ADODB.dll" AssemblyManifest="Interop.ADODB.dll" />
-										</Component>
-										<Component Guid="557F8F25-D35A-4F07-9F81-5F555766147C" Id="InteropMsdascDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\Misc\SharpDevelopReports\Interop.MSDASC.dll" Name="Interop.MSDASC.dll" Id="Interop.MSDASC.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="Interop.MSDASC.dll" AssemblyManifest="Interop.MSDASC.dll" />
-										</Component>
 										<Component Guid="DBF1DA4F-19BA-46AF-86A4-B3228424F219" Id="IronyDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\Misc\SharpDevelopReports\Irony.dll" Name="Irony.dll" Id="Irony.dll" KeyPath="yes" />
 										</Component>
