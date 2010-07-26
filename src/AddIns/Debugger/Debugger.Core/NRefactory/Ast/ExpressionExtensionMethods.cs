@@ -307,7 +307,7 @@ namespace ICSharpCode.NRefactory.Ast
 			// If there are generic types up in the tree, it must be nested type
 			if (genArgs.Length == typeRef.GenericTypes.Count) {
 				string name = GetNameWithArgCounts(typeRef);
-				type = DebugType.CreateFromName(appDomain, name, null, genArgs);
+				type = DebugType.CreateFromNameOrNull(appDomain, name, null, genArgs);
 			}
 			
 			// Try to construct nested type
@@ -318,7 +318,7 @@ namespace ICSharpCode.NRefactory.Ast
 				
 				DebugType outter = ResolveTypeInternal(((InnerClassTypeReference)typeRef).BaseType, outterGenArgs, appDomain);
 				string nestedName = typeRef.GenericTypes.Count == 0 ? typeRef.Type : typeRef.Type + "`" + typeRef.GenericTypes.Count;
-				type = DebugType.CreateFromName(appDomain, nestedName, outter, genArgs);
+				type = DebugType.CreateFromNameOrNull(appDomain, nestedName, outter, genArgs);
 			}
 			
 			if (type == null)
