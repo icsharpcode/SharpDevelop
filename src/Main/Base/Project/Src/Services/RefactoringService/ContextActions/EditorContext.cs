@@ -21,16 +21,16 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	public class EditorContext
 	{
 		public ITextEditor Editor { get; private set; }
-		public SnippetParser snippetParser { get; private set; }
-		public NRefactoryResolver resolver { get; private set; }
+		SnippetParser SnippetParser { get; set; }
+		NRefactoryResolver Resolver { get; set; }
 		
 		public EditorContext(ITextEditor editor)
 		{
 			if (editor == null)
 				throw new ArgumentNullException("editor");
 			this.Editor = editor;
-			this.snippetParser = GetSnippetParser(editor);
-			this.resolver = GetResolver(editor);
+			this.SnippetParser = GetSnippetParser(editor);
+			this.Resolver = GetResolver(editor);
 		}
 		
 		// TODO make all reference types cached ResolveResult? - implement own Nullable<T>
@@ -74,10 +74,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			{
 				if (currentLineAST != null)
 					return currentLineAST;
-				if (this.snippetParser == null || this.CurrentLine == null)
+				if (this.SnippetParser == null || this.CurrentLine == null)
 					return null;
 				try {
-					return (currentLineAST = snippetParser.Parse(this.CurrentLine.Text));
+					return (currentLineAST = SnippetParser.Parse(this.CurrentLine.Text));
 				}
 				catch {
 					return null;
@@ -90,13 +90,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			get
 			{
-				if (resolver == null)
+				if (Resolver == null)
 					return null;
 				if (currentMemberAST != null)
 					return currentMemberAST;
 				try {
-					resolver.Initialize(ParserService.GetParseInformation(Editor.FileName), Editor.Caret.Line, Editor.Caret.Column);
-					return (currentMemberAST = resolver.ParseCurrentMember(Editor.Document.Text));
+					Resolver.Initialize(ParserService.GetParseInformation(Editor.FileName), Editor.Caret.Line, Editor.Caret.Column);
+					return (currentMemberAST = Resolver.ParseCurrentMember(Editor.Document.Text));
 				}
 				catch {
 					return null;

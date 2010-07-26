@@ -17,13 +17,11 @@ namespace SharpRefactoring.ContextActions
 	/// </summary>
 	public class GenerateMemberProvider : IContextActionsProvider
 	{
-		public IEnumerable<IContextAction> GetAvailableActions(EditorContext editorAST)
+		public IEnumerable<IContextAction> GetAvailableActions(EditorContext editorContext)
 		{
-			yield break;
+			var generateCodeAction = GenerateCode.GetContextAction(editorContext.SymbolUnderCaret, editorContext.Editor);
+			if (generateCodeAction != null)
+				yield return generateCodeAction;
 		}
-	}
-	
-	public class GenerateMemberAction
-	{
 	}
 }

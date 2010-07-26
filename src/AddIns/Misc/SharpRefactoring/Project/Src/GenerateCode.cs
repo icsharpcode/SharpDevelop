@@ -34,13 +34,13 @@ namespace SharpRefactoring
 		{
 			if (symbol is UnknownMethodResolveResult) {
 				
-				UnknownMethodResolveResult rr = symbol as UnknownMethodResolveResult;
-				Ast.Expression ex = GetExpressionInContext(rr, editor);
-				if (ex == null)
+				UnknownMethodResolveResult unknownMethodCall = symbol as UnknownMethodResolveResult;
+				Ast.Expression expression = GetExpressionInContext(unknownMethodCall, editor);
+				if (expression == null)
 					return null;
 				
-				return new IntroduceMethodContextAction(rr, ex, editor) {
-					Title = string.Format(StringParser.Parse("${res:AddIns.SharpRefactoring.IntroduceMethod}"), rr.CallName, rr.Target.FullyQualifiedName)
+				return new IntroduceMethodContextAction(unknownMethodCall, expression, editor) {
+					Title = string.Format(StringParser.Parse("${res:AddIns.SharpRefactoring.IntroduceMethod}"), unknownMethodCall.CallName, unknownMethodCall.Target.FullyQualifiedName)
 				};
 			}
 			return null;
@@ -53,6 +53,8 @@ namespace SharpRefactoring
 			
 			NRefactoryResolver resolver = Extensions.CreateResolverForContext(rr.CallingClass.ProjectContent.Language, editor);
 			Ast.INode node = resolver.ParseCurrentMember(editor.Document.Text);
+			if (node == null)
+				return null;
 			resolver.RunLookupTableVisitor(node);
 
 			InvocationExpressionLookupVisitor visitor = new InvocationExpressionLookupVisitor(editor);
@@ -100,9 +102,9 @@ namespace SharpRefactoring
 	#region Introduce method
 	public class IntroduceMethodContextAction : GenerateCodeContextAction
 	{
-		public UnknownMethodResolveResult rr { get; private set; }
-		public Ast.Expression ex { get; private set; }
-		public ITextEditor editor { get; private set; }
+		public UnknownMethodResolveResult UnknownMethodCall { get; private set; }
+		public Ast.Expression Expression { get; private set; }
+		public ITextEditor Editor { get; private set; }
 		
 		public IntroduceMethodContextAction(UnknownMethodResolveResult symbol, Ast.Expression expression, ITextEditor editor)
 		{
@@ -112,19 +114,19 @@ namespace SharpRefactoring
 				throw new ArgumentNullException("ex");
 			if (editor == null)
 				throw new ArgumentNullException("editor");
-			this.rr = symbol;
-			this.ex = expression;
-			this.editor = editor;
+			this.UnknownMethodCall = symbol;
+			this.Expression = expression;
+			this.Editor = editor;
 		}
 		
 		public override void Execute()
 		{
-			IClass targetClass = rr.Target.GetUnderlyingClass();
+			IClass targetClass = UnknownMethodCall.Target.GetUnderlyingClass();
 			bool isNew = false;
 			object result = null;
 			
 			if (targetClass.BodyRegion.IsEmpty) {
-				IntroduceMethodDialog dialog = new IntroduceMethodDialog(rr.CallingClass);
+				IntroduceMethodDialog dialog = new IntroduceMethodDialog(UnknownMethodCall.CallingClass);
 				dialog.Owner = WorkbenchSingleton.MainWindow;
 				
 				if (dialog.ShowDialog() != true)
@@ -134,7 +136,7 @@ namespace SharpRefactoring
 				result = dialog.Result;
 			}
 			
-			ExecuteIntroduceMethod(rr, ex, editor, isNew, result);
+			ExecuteIntroduceMethod(UnknownMethodCall, Expression, Editor, isNew, result);
 		}
 		
 		internal void ExecuteIntroduceMethod(UnknownMethodResolveResult rr, Ast.Expression expression, ITextEditor editor, bool isNew, object result)
