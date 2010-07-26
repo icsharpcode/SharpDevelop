@@ -112,7 +112,7 @@ namespace ICSharpCode.Reports.Core
 			base.Group();
 			IndexList gl = new IndexList("group");
 			gl = this.BuildSortIndex (BaseListStrategy.CreateSortCollection(ReportSettings.GroupColumnsCollection));
-			base.ShowIndexList(gl);
+			ShowIndexList(gl);
 			BuildGroup(gl);
 			
 		}

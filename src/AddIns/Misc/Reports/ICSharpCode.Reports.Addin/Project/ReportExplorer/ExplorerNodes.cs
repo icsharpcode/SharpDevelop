@@ -81,16 +81,6 @@ namespace ICSharpCode.Reports.Addin
 	}
 	
 	
-	internal class FunctionNode:AbstractFieldsNode
-	{
-		public FunctionNode(string nodeName,int imageIndex):base(nodeName)
-		{
-			this.ImageIndex = imageIndex;
-			this.SelectedImageIndex = imageIndex;
-		}
-	}
-	
-	
 	internal class ParameterNode:AbstractFieldsNode
 	{
 		public ParameterNode(string nodeName,int imageIndex):base(nodeName)

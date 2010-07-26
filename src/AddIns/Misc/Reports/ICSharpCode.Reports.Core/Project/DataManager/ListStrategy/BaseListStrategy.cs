@@ -131,7 +131,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		#endregion
 		
-		protected  void ShowIndexList (IndexList list)
+		protected  static void ShowIndexList (IndexList list)
 		{
 			foreach (BaseComparer element in list) {
 				string s = String.Format("{0} ",element.ObjectArray[0]);

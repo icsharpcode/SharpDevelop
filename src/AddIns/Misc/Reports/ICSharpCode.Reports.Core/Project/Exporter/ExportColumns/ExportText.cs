@@ -123,7 +123,6 @@ namespace ICSharpCode.Reports.Core.Exporter {
 	
 	internal class CalculatePdfFormat {
 		
-		iTextSharp.text.Font font;
 		TextStyleDecorator textDecorator;
 		
 		public CalculatePdfFormat (TextStyleDecorator textDecorator,iTextSharp.text.Font font)
@@ -134,9 +133,7 @@ namespace ICSharpCode.Reports.Core.Exporter {
 			if (font == null) {
 				throw new ArgumentNullException("font");
 			}
-			this.font = font;
 			this.textDecorator = textDecorator;
-//			this.leading = UnitConverter.FromPixel(textDecorator.Font.GetHeight()).Point;
 			this.Leading = font.Size;
 			this.CalculateFormat();
 		}

@@ -25,7 +25,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	/// </summary>
 	public class PullModelPanel : AbstractWizardPanel
 	{
-		private System.ComponentModel.IContainer components;
+	private System.ComponentModel.IContainer components;
 		private System.Windows.Forms.ToolTip toolTip1;
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox txtSqlString;
@@ -39,7 +39,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
         private ElementHost databasesTreeHost;
         private DatabasesTreeView databasesTree;
 		
-		public enum NodeType {
+		private enum NodeType {
 			
 //			DataBaseRoot,
 //			dataBaseConnctionClose,
@@ -58,11 +58,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		public PullModelPanel()
 		{
 			InitializeComponent();
-            //sharpQueryTree = new SharpQueryTree();
-            //sharpQueryTree.Dock = DockStyle.Fill;
-            //this.sharpQueryTree.AfterSelect += SharpQueryTreeAfterSelect;
-            //this.label2.Controls.Add(this.sharpQueryTree);
-
+          
 			base.EnableFinish = false;
 			base.EnableNext = false;
 			base.EnableCancel = true;
@@ -70,6 +66,13 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			base.IsLastPanel = false;
 			commandType = CommandType.Text;
 			this.txtSqlString.Enabled = false;
+
+            this.databasesTreeHost = new ElementHost() { Dock = DockStyle.Fill };
+            this.databasesTree = new DatabasesTreeView();
+            this.databasesTree.SelectedItemChanged += new System.Windows.RoutedPropertyChangedEventHandler<object>(databasesTree_SelectedItemChanged);
+            this.databasesTreeHost.Child = this.databasesTree;
+            this.label2.Controls.Add(databasesTreeHost);
+
 			Localize();
 		}	
 	
@@ -100,27 +103,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				reportStructure.SqlString = this.txtSqlString.Text.Trim();
 				reportStructure.ConnectionString = connectionString;
 				base.EnableFinish = true;
-				WriteResult();
-			}
-			else if (message == DialogMessage.Next) {
-				WriteResult();
-				base.EnableNext = true;
-				base.EnableFinish = true;
 			}
 			return true;
-		}
-		
-		private void WriteResult ()
-		{
-//			if (currentNode is SharpQueryNodeProcedure) {
-//				commandType = CommandType.StoredProcedure;
-//			} else {
-//				commandType = CommandType.Text;
-//			}
-			customizer.Set("SqlString", this.txtSqlString.Text.Trim());
-			reportStructure.CommandType = commandType;
-			reportStructure.SqlString = this.txtSqlString.Text.Trim();
-			reportStructure.ConnectionString = connectionString;
 		}
 		
 		#endregion
@@ -164,7 +148,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
             e.Effect = DragDropEffects.None;
 		}
 		
-		/*
+		
 		private void TxtSqlStringDragDrop(object sender, System.Windows.Forms.DragEventArgs e){
 			if (firstDrag == true) {
 				this.txtSqlString.Clear();
@@ -206,7 +190,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
                         this.txtSqlString.AppendText(colName);
 
                     }
-                    else if (this.txtSqlString.Text.ToLower(CultureInfo.InvariantCulture).IndexOf("where", StringComparison.OrdinalIgnoreCase) > 0)
+                    //FxCop : http://msdn.microsoft.com/library/bb386042(VS.100).aspx
+                    else if (this.txtSqlString.Text.ToUpper(CultureInfo.InvariantCulture).IndexOf("where", StringComparison.OrdinalIgnoreCase) > 0)
                     {
                         this.txtSqlString.AppendText(colName + " = ?");
                     }
@@ -236,7 +221,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
             }
             base.EnableNext = true;
 		}
-*/
+
 
         private void databasesTree_SelectedItemChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<object> e)
         {
@@ -286,7 +271,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		/// if so, suround it with []</summary>
 		///<param name="SharpQueryNodeColumn">a ColumnNode</param>
 		/// <returns>a valid ColumnName</returns>
-		/// 
+	/*
 		private static string InferColumnName(string node) {
 			string colName;
 			if (node != null) {
@@ -301,11 +286,11 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			}
 			return colName;
 		}
+		*/
 		
 		
-		/*
 		// check witch type of node we dragg
-		private static NodeType CheckCurrentNode (ISharpQueryNode node) {
+		private static NodeType CheckCurrentNode (IDatabaseObjectBase node) {
 			NodeType enm;
 			if (node is IColumn) {
 				enm = NodeType.ColumnImage;
@@ -321,7 +306,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			}
 			return enm;
 		}
-		*/
+		
 		#endregion
 		
 		
@@ -359,7 +344,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			this.txtSqlString.Size = new System.Drawing.Size(264, 144);
 			this.txtSqlString.TabIndex = 8;
 			this.txtSqlString.TextChanged += new System.EventHandler(this.TxtSqlStringChanged);
-			//this.txtSqlString.DragDrop += new System.Windows.Forms.DragEventHandler(this.TxtSqlStringDragDrop);
+			this.txtSqlString.DragDrop += new System.Windows.Forms.DragEventHandler(this.TxtSqlStringDragDrop);
 			this.txtSqlString.DragEnter += new System.Windows.Forms.DragEventHandler(this.TxtSqlStringDragEnter);
 			// 
 			// label1

@@ -118,7 +118,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			throw new MissingDataSourceException();
 		}
 	
-		
+		/*
 		private DataSet ExecuteStoredProc ()
 		{
 			
@@ -135,7 +135,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				}
 			}
 		}
-		
+		*/
 		/*
 		private DataSet ExecuteStoredProc (SharpQueryProcedure procedure)
 		{

@@ -367,7 +367,6 @@
     <Folder Include="Project\Factories" />
     <Folder Include="Project\Globals" />
     <Folder Include="Project\Interfaces" />
-    <Folder Include="Project\DataSource" />
     <Folder Include="Project\Expressions" />
     <Folder Include="Project\ReportViewer\Resources\Icons" />
     <Folder Include="Project\Resources" />

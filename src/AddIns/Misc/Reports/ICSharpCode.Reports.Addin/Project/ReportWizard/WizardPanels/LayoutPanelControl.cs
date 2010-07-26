@@ -72,6 +72,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		public AvailableFieldsCollection AvailableFieldsCollection {
 			get { return availableFieldsCollection; }
+			
 			set {
 				availableFieldsCollection = value;
 				comboBox1.Items.Clear();
