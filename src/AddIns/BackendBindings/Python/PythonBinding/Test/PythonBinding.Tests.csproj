@@ -231,6 +231,7 @@
     <Compile Include="Designer\GenerateDoubleBufferedFormTestFixture.cs" />
     <Compile Include="Designer\GenerateEventHandlerFormTestFixture.cs" />
     <Compile Include="Designer\GenerateEventLogTestFixture.cs" />
+    <Compile Include="Designer\GenerateFolderBrowserDialogRootFolderTestFixture.cs" />
     <Compile Include="Designer\GenerateFormColorTestFixture.cs" />
     <Compile Include="Designer\GenerateFormLocationTestFixture.cs" />
     <Compile Include="Designer\GenerateFormPaddingTestFixture.cs" />

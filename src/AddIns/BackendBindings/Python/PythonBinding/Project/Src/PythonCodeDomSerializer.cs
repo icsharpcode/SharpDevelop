@@ -229,7 +229,8 @@ namespace ICSharpCode.PythonBinding
 		
 		void AppendTypeReference(CodeTypeReference typeRef)
 		{
-			codeBuilder.Append(typeRef.BaseType);
+			string typeRefText = typeRef.BaseType.Replace('+', '.');
+			codeBuilder.Append(typeRefText);
 		}
 		
 		/// <summary>
