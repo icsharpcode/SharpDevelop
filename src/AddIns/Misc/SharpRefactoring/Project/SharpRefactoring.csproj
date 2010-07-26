@@ -86,6 +86,7 @@
     <Compile Include="Src\Forms\ExtractMethodForm.Designer.cs">
       <DependentUpon>ExtractMethodForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\GenerateCode.cs" />
     <Compile Include="Src\Gui\AbstractInlineRefactorDialog.cs" />
     <Compile Include="Src\Gui\CtorParamWrapper.cs" />
     <Compile Include="Src\Gui\InlineRefactorSnippetElement.cs" />
