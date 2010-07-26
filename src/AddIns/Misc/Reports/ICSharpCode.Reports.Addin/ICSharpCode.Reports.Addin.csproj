@@ -178,7 +178,6 @@
     <Compile Include="Project\ReportWizard\ReportLayout\TableLayout.cs" />
     <Compile Include="Project\ReportWizard\ReportStructure.cs" />
     <Compile Include="Project\ReportWizard\ReportWizardCommand.cs" />
-    <Compile Include="Project\ReportWizard\SqlParameterConverter.cs" />
     <Compile Include="Project\ReportWizard\WizardCommands.cs" />
     <Compile Include="Project\ReportWizard\WizardPanels\BaseSettingsPanel.cs">
       <SubType>UserControl</SubType>
@@ -236,33 +235,6 @@
     <Compile Include="Project\Services\TypeDiscoveryService.cs" />
     <Compile Include="Project\Services\TypeResolutionService.cs" />
     <Compile Include="Project\Services\UIService.cs" />
-    <Compile Include="Project\SharpQuery\AbstractSharpQueryCommand.cs" />
-    <Compile Include="Project\SharpQuery\AbstractSharpQuerySchemaClass.cs" />
-    <Compile Include="Project\SharpQuery\Collections.cs" />
-    <Compile Include="Project\SharpQuery\Connection\AbstractSharpQueryConnectionWrapper.cs" />
-    <Compile Include="Project\SharpQuery\Connection\ADOConnectionWrapper.cs" />
-    <Compile Include="Project\SharpQuery\Connection\IConnection.cs" />
-    <Compile Include="Project\SharpQuery\Connection\OLEDBConnectionWrapper.cs" />
-    <Compile Include="Project\SharpQuery\Exceptions\ConnectionStringException.cs" />
-    <Compile Include="Project\SharpQuery\Exceptions\ExecuteProcedureException.cs" />
-    <Compile Include="Project\SharpQuery\Exceptions\ExecuteSQLException.cs" />
-    <Compile Include="Project\SharpQuery\Exceptions\OpenConnectionException.cs" />
-    <Compile Include="Project\SharpQuery\Exceptions\SharpQueryAbstractException.cs" />
-    <Compile Include="Project\SharpQuery\GUI\AbstractSharpQueryNode.cs" />
-    <Compile Include="Project\SharpQuery\GUI\ISharpQueryNode.cs" />
-    <Compile Include="Project\SharpQuery\GUI\SharpQueryDataView.cs" />
-    <Compile Include="Project\SharpQuery\GUI\SharpQueryPad.cs" />
-    <Compile Include="Project\SharpQuery\GUI\SharpQueryTree\SharpQueryDataNodes.cs" />
-    <Compile Include="Project\SharpQuery\GUI\SharpQueryTree\SharpQueryNodesRoot.cs" />
-    <Compile Include="Project\SharpQuery\GUI\SharpQueryTree\SharpQueryTree.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Project\SharpQuery\GUI\SQLParameterInput.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Project\SharpQuery\ISchemaClass.cs" />
-    <Compile Include="Project\SharpQuery\SharpQueryCommands.cs" />
-    <Compile Include="Project\SharpQuery\SharpQuerySchemaClass.cs" />
     <Compile Include="Project\Toolbox\SideTabItemDesigner.cs" />
     <Compile Include="Project\Toolbox\ToolboxProvider.cs" />
     <Compile Include="Project\UndoRedo\UndoEngine.cs" />

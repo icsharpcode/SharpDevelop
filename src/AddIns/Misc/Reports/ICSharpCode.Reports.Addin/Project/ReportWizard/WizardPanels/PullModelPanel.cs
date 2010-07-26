@@ -16,8 +16,6 @@ using ICSharpCode.Core;
 using ICSharpCode.Data.Core.Interfaces;
 using ICSharpCode.Data.Core.UI.UserControls;
 using ICSharpCode.SharpDevelop;
-using SharpQuery.Gui.TreeView;
-using SharpQuery.SchemaClass;
 
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
@@ -100,11 +98,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			}
 			
 			if (message == DialogMessage.Next) {
-				if (currentNode is SharpQueryNodeProcedure) {
-					commandType = CommandType.StoredProcedure;
-				} else {
-					commandType = CommandType.Text;
-				}
+				
+				
+				commandType = CommandType.Text;
+				
 				customizer.Set("SqlString", this.txtSqlString.Text.Trim());
 				reportStructure.CommandType = commandType;
 				reportStructure.SqlString = this.txtSqlString.Text.Trim();
@@ -215,7 +212,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
                     IProcedure procedure = draggedObject as IProcedure;
                     this.txtSqlString.Text = "EXECUTE " + procedure.Name;
 
-                    reportStructure.SharpQueryProcedure = new SharpQueryProcedure(new SharpQuery.Connection.OLEDBConnectionWrapper(this.connectionString), procedure.Parent.Name, procedure.SchemaName, string.Empty, procedure.Name);
+//                    reportStructure.SharpQueryProcedure = new SharpQueryProcedure(new SharpQuery.Connection.OLEDBConnectionWrapper(this.connectionString), procedure.Parent.Name, procedure.SchemaName, string.Empty, procedure.Name);
                     break;
 
                 case NodeType.ViewImage:
