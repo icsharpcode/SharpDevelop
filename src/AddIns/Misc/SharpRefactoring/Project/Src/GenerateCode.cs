@@ -128,8 +128,8 @@ namespace SharpRefactoring
 			
 			if (targetClass is CompoundClass) {
 				var cc = targetClass as CompoundClass;
-				if (cc.Parts.Any(c => rr.CallingClass.DotNetName == c.DotNetName))
-					targetClass = rr.CallingClass;
+				if (cc.Parts.Any(c => UnknownMethodCall.CallingClass.DotNetName == c.DotNetName))
+					targetClass = UnknownMethodCall.CallingClass;
 				else
 					targetClass = cc.Parts.FirstOrDefault(c => !c.BodyRegion.IsEmpty)
 						?? targetClass;
