@@ -2,15 +2,17 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 
-namespace ICSharpCode.NRefactory
+namespace ICSharpCode.NRefactory.TypeSystem
 {
 	/// <summary>
-	/// Description of MyClass.
+	/// Represents a property or indexer.
 	/// </summary>
-	public class MyClass
+	public interface IProperty : IParameterizedMember
 	{
+		IMethod GetMethod { get; }
+		IMethod SetMethod { get; }
 		
+		bool IsIndexer { get; }
 	}
 }

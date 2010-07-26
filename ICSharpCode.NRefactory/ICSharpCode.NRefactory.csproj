@@ -40,8 +40,47 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MyClass.cs" />
+    <Compile Include="Accessibility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TypeSystem\ClassType.cs" />
+    <Compile Include="TypeSystem\DomRegion.cs" />
+    <Compile Include="TypeSystem\EntityType.cs" />
+    <Compile Include="TypeSystem\IAttribute.cs" />
+    <Compile Include="TypeSystem\IConstantValue.cs" />
+    <Compile Include="TypeSystem\IEntity.cs" />
+    <Compile Include="TypeSystem\IEvent.cs" />
+    <Compile Include="TypeSystem\IExplicitInterfaceImplementation.cs" />
+    <Compile Include="TypeSystem\IField.cs" />
+    <Compile Include="TypeSystem\IFreezable.cs" />
+    <Compile Include="TypeSystem\IInterningProvider.cs" />
+    <Compile Include="TypeSystem\IMember.cs" />
+    <Compile Include="TypeSystem\IMethod.cs" />
+    <Compile Include="TypeSystem\Implementation\AbstractFreezable.cs" />
+    <Compile Include="TypeSystem\Implementation\AbstractType.cs" />
+    <Compile Include="TypeSystem\Implementation\AbstractTypeReference.cs" />
+    <Compile Include="TypeSystem\Implementation\DefaultExplicitInterfaceImplementation.cs" />
+    <Compile Include="TypeSystem\Implementation\DefaultParameter.cs" />
+    <Compile Include="TypeSystem\Implementation\DefaultTypeDefinition.cs" />
+    <Compile Include="TypeSystem\Implementation\NullType.cs" />
+    <Compile Include="TypeSystem\Implementation\UnknownType.cs" />
+    <Compile Include="TypeSystem\INamedElement.cs" />
+    <Compile Include="TypeSystem\IParameter.cs" />
+    <Compile Include="TypeSystem\IParameterizedMember.cs" />
+    <Compile Include="TypeSystem\IProjectContent.cs" />
+    <Compile Include="TypeSystem\IProperty.cs" />
+    <Compile Include="TypeSystem\ISupportsInterning.cs" />
+    <Compile Include="TypeSystem\IType.cs" />
+    <Compile Include="TypeSystem\ITypeDefinition.cs" />
+    <Compile Include="TypeSystem\ITypeParameter.cs" />
+    <Compile Include="TypeSystem\ITypeReference.cs" />
+    <Compile Include="TypeSystem\ITypeResolveContext.cs" />
+    <Compile Include="TypeSystem\IVariable.cs" />
+    <Compile Include="TypeSystem\LanguageProperties.cs" />
+    <Compile Include="TypeSystem\SharedTypes.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="TypeSystem" />
+    <Folder Include="TypeSystem\Implementation" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>
