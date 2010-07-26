@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core.WinForms;
 using System;
 using System.Data;
 using System.Data.Common;
@@ -13,10 +12,11 @@ using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 using System.Xml;
+
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
@@ -38,7 +38,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		private ReportModel model;
 		private ConnectionObject connectionObject;
 		private DataSet resultDataSet;
-		//private ParameterCollection sqlParamsCollection;
 		
 		
 		#region Constructor
@@ -260,7 +259,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				customizer = (Properties)base.CustomizationObject;
 				reportStructure = (ReportStructure)customizer.Get("Generator");
 			}
-			if (message == DialogMessage.Activated) {
+			if (message == DialogMessage.Activated) 
+			{
 				this.model = reportStructure.CreateAndFillReportModel();
 				this.resultDataSet =  FillGrid();
 				
@@ -277,11 +277,31 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				}
 				base.EnableNext = true;
 				base.EnableFinish = true;
-			} else if (message == DialogMessage.Finish) {
+				
+			} 
+			else if (message == DialogMessage.Next)
+			{
+				base.EnableNext = true;
+				base.EnableFinish = true;
+				WriteResult();
+			}
+			else if (message == DialogMessage.Finish)
+			{
+				WriteResult();
+				
+				base.EnableNext = true;
+				base.EnableFinish = true;
+			}
+			return true;
+		}
+		
+		private void WriteResult ()
+		{
 				if (this.resultDataSet != null) {
 					// check reordering of columns
 					DataGridViewColumn[] displayCols;
 					DataGridViewColumnCollection dc = this.grdQuery.Columns;
+					
 					displayCols = new DataGridViewColumn[dc.Count];
 					for (int i = 0; i < dc.Count; i++){
 						if (dc[i].Visible) {
@@ -289,11 +309,14 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 						}
 					}
 					
-					// only checked columns are used in the report
-					ReportItemCollection sourceItems = WizardHelper.DataItemsFromDataSet(this.resultDataSet);
-					AvailableFieldsCollection abstractColumns = WizardHelper.AbstractColumnsFromDataSet(this.resultDataSet);
+					
+					ReportItemCollection sourceItems = WizardHelper.ReportItemCollection(this.resultDataSet);
+					
+					AvailableFieldsCollection abstractColumns = WizardHelper.AvailableFieldsCollection(this.resultDataSet);
+					
 					ReportItemCollection destItems = new ReportItemCollection();
 					
+					// only checked columns are used in the report
 					foreach (DataGridViewColumn cc in displayCols) {
 						DataGridViewColumnHeaderCheckBoxCell hc= (DataGridViewColumnHeaderCheckBoxCell)cc.HeaderCell;
 						if (hc.Checked) {
@@ -301,6 +324,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 							destItems.Add(br);
 						}
 					}
+					
+					reportStructure.ReportItemCollection.Clear();
 					reportStructure.ReportItemCollection.AddRange(destItems);
 					/*
 					if ((this.sqlParamsCollection != null) && (this.sqlParamsCollection.Count > 0)) {
@@ -308,15 +333,18 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 					}
 					*/
 					if (abstractColumns != null) {
+						reportStructure.AvailableFieldsCollection.Clear();
 						reportStructure.AvailableFieldsCollection.AddRange(abstractColumns);
+					}
+					
+					if ((this.sqlParamsCollection != null) && (this.sqlParamsCollection.Count > 0)) {
+						reportStructure.SqlQueryParameters.Clear();
+						reportStructure.SqlQueryParameters.AddRange(sqlParamsCollection);
 					}
 				}
 				base.EnableNext = true;
 				base.EnableFinish = true;
-			}
-			return true;
 		}
-		
 		#endregion
 		
 		protected override void Dispose(bool disposing)

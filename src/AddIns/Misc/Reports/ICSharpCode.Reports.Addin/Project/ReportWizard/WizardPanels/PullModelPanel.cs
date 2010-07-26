@@ -70,13 +70,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			base.IsLastPanel = false;
 			commandType = CommandType.Text;
 			this.txtSqlString.Enabled = false;
-
-            this.databasesTreeHost = new ElementHost() { Dock = DockStyle.Fill };
-            this.databasesTree = new DatabasesTreeView();
-            this.databasesTree.SelectedItemChanged += new System.Windows.RoutedPropertyChangedEventHandler<object>(databasesTree_SelectedItemChanged);
-            this.databasesTreeHost.Child = this.databasesTree;
-            this.label2.Controls.Add(databasesTreeHost);
-
 			Localize();
 		}	
 	
@@ -107,10 +100,29 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				reportStructure.SqlString = this.txtSqlString.Text.Trim();
 				reportStructure.ConnectionString = connectionString;
 				base.EnableFinish = true;
+				WriteResult();
+			}
+			else if (message == DialogMessage.Next) {
+				WriteResult();
+				base.EnableNext = true;
+				base.EnableFinish = true;
 			}
 			return true;
 		}
 		
+		private void WriteResult ()
+		{
+			if (currentNode is SharpQueryNodeProcedure) {
+				commandType = CommandType.StoredProcedure;
+			} else {
+				commandType = CommandType.Text;
+			}
+			customizer.Set("SqlString", this.txtSqlString.Text.Trim());
+			reportStructure.CommandType = commandType;
+			reportStructure.SqlString = this.txtSqlString.Text.Trim();
+			reportStructure.ConnectionString = connectionString;
+		}
+			
 		#endregion
 		
 		#region events
@@ -293,7 +305,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		
 		// check witch type of node we dragg
-		private static NodeType CheckCurrentNode (IDatabaseObjectBase node) {
+		private static NodeType CheckCurrentNode (ISharpQueryNode node) {
 			NodeType enm;
 			if (node is IColumn) {
 				enm = NodeType.ColumnImage;
