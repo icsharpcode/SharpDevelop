@@ -53,10 +53,11 @@ namespace SharpRefactoring
 			
 			NRefactoryResolver resolver = Extensions.CreateResolverForContext(rr.CallingClass.ProjectContent.Language, editor);
 			Ast.INode node = resolver.ParseCurrentMember(editor.Document.Text);
+			
 			if (node == null)
 				return null;
+			
 			resolver.RunLookupTableVisitor(node);
-
 			InvocationExpressionLookupVisitor visitor = new InvocationExpressionLookupVisitor(editor);
 			node.AcceptVisitor(visitor, null);
 			return visitor.Expression;
@@ -125,6 +126,15 @@ namespace SharpRefactoring
 			bool isNew = false;
 			object result = null;
 			
+			if (targetClass is CompoundClass) {
+				var cc = targetClass as CompoundClass;
+				if (cc.Parts.Any(c => rr.CallingClass.DotNetName == c.DotNetName))
+					targetClass = rr.CallingClass;
+				else
+					targetClass = cc.Parts.FirstOrDefault(c => !c.BodyRegion.IsEmpty)
+						?? targetClass;
+			}
+			
 			if (targetClass.BodyRegion.IsEmpty) {
 				IntroduceMethodDialog dialog = new IntroduceMethodDialog(UnknownMethodCall.CallingClass);
 				dialog.Owner = WorkbenchSingleton.MainWindow;
@@ -141,7 +151,8 @@ namespace SharpRefactoring
 		
 		internal void ExecuteIntroduceMethod(UnknownMethodResolveResult rr, Ast.Expression expression, ITextEditor editor, bool isNew, object result)
 		{
-			IClass targetClass = rr.Target.GetUnderlyingClass();
+			IClass targetClass = IsEqualClass(rr.CallingClass, rr.Target.GetUnderlyingClass()) ? rr.CallingClass
+				: rr.Target.GetUnderlyingClass();
 			
 			CodeGenerator gen = targetClass.ProjectContent.Language.CodeGenerator;
 			IAmbience ambience = targetClass.ProjectContent.Language.GetAmbience();
@@ -152,7 +163,7 @@ namespace SharpRefactoring
 			
 			bool isExtension = targetClass.BodyRegion.IsEmpty;
 			
-			if (rr.CallingClass == targetClass) {
+			if (IsEqualClass(rr.CallingClass, targetClass)) {
 				if (rr.CallingMember != null)
 					modifiers |= (rr.CallingMember.Modifiers & ModifierEnum.Static);
 			} else {
@@ -207,7 +218,7 @@ namespace SharpRefactoring
 				newType.AddChild(method);
 				gen.InsertCodeAfter(targetClass, documentWrapper, newType);
 			} else {
-				if (rr.CallingClass == targetClass)
+				if (IsEqualClass(rr.CallingClass, targetClass))
 					gen.InsertCodeAfter(rr.CallingMember, documentWrapper, method);
 				else
 					gen.InsertCodeAtEnd(targetClass.BodyRegion, documentWrapper, method);
@@ -225,7 +236,7 @@ namespace SharpRefactoring
 				else
 					targetClass = info.CompilationUnit.Classes.FirstOrDefault(c => c.DotNetName == targetClass.DotNetName);
 				
-				if (rr.CallingClass.DotNetName == targetClass.DotNetName) {
+				if (IsEqualClass(rr.CallingClass, targetClass)) {
 					newMember = targetClass.GetInnermostMember(editor.Caret.Line, editor.Caret.Column);
 					newMember = targetClass.AllMembers
 						.OrderBy(m => m.BodyRegion.BeginLine)
@@ -239,6 +250,11 @@ namespace SharpRefactoring
 				int indentLength = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset).Length;
 				editor.Select(line.Offset + indentLength, "throw new NotImplementedException();".Length);
 			}
+		}
+		
+		bool IsEqualClass(IClass a, IClass b)
+		{
+			return a.DotNetName == b.DotNetName;
 		}
 		
 		IEnumerable<Ast.ParameterDeclarationExpression> CreateParameters(UnknownMethodResolveResult rr, ClassFinder context, Ast.InvocationExpression invocation)
