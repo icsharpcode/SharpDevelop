@@ -107,16 +107,16 @@
     </Compile>
     <Compile Include="Src\Gui\Wrapper.cs" />
     <Compile Include="Src\InsertCtorSnippetRefactoring.cs" />
-    <Compile Include="Src\IntroduceMethod.cs" />
+    <Compile Include="Src\MenuItemFactories\IntroduceMethod.cs" />
+    <Compile Include="Src\MenuItemFactories\ParameterCheckRefactoringMenuBuilder.cs" />
+    <Compile Include="Src\MenuItemFactories\ResolveAttribute.cs" />
+    <Compile Include="Src\MenuItemFactories\ResolveExtensionMethod.cs" />
     <Compile Include="Src\MethodExtractorBase.cs" />
     <Compile Include="Src\OverrideEqualsGetHashCodeMethodsRefactoring.cs" />
     <Compile Include="Src\OverrideToStringMethodRefactoring.cs" />
-    <Compile Include="Src\ParameterCheckRefactoringMenuBuilder.cs" />
     <Compile Include="Src\Options.cs" />
     <Compile Include="Src\RefactoringHelpers.cs" />
     <Compile Include="Src\PropertyRefactoringMenuBuilder.cs" />
-    <Compile Include="Src\ResolveAttribute.cs" />
-    <Compile Include="Src\ResolveExtensionMethod.cs" />
     <Compile Include="Src\SwitchBodySnippetElement.cs" />
     <Compile Include="Src\SwitchSnippetProvider.cs" />
     <Compile Include="Src\Visitors\FindJumpInstructionsVisitor.cs" />
@@ -131,6 +131,7 @@
   <ItemGroup>
     <Folder Include="Src\Gui" />
     <Folder Include="Src\ContextActions" />
+    <Folder Include="Src\MenuItemFactories" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\Gui\InsertCtorDialog.xaml" />
