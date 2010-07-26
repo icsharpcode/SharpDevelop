@@ -337,10 +337,9 @@ namespace Debugger.MetaData
 		
 			if (!success) return null;
 			
-			MemberInfo member = declaringType.GetMember(token);
-			
-			if (member == null) return null;
-			if (!(member is DebugFieldInfo)) return null;
+			// The token can be a field in different class (static or instance in base class) - so it might not be found in the next call
+			MemberInfo member;
+			if (!declaringType.TryGetMember(token, out member)) return null;
 			
 			if (this.Process.Options.Verbose) {
 				this.Process.TraceMessage(string.Format("Found backing field for {0}: {1}", this.FullName, member.Name));

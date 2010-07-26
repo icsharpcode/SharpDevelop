@@ -281,6 +281,12 @@ namespace Debugger.MetaData
 			return membersByToken[(int)token];
 		}
 		
+		/// <summary> Return member with the given token</summary>
+		public bool TryGetMember(uint token, out MemberInfo memberInfo)
+		{
+			return membersByToken.TryGetValue((int)token, out memberInfo);
+		}
+		
 		public T GetMember<T>(string name, BindingFlags bindingFlags, Predicate<T> filter) where T:MemberInfo
 		{
 			T[] res = GetMembers<T>(name, bindingFlags, filter);
