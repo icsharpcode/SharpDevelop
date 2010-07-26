@@ -223,6 +223,10 @@ namespace Debugger
 				// 0x80131C33: Interception of the current exception is not legal
 				if ((uint)e.ErrorCode == 0x80131C33)
 					return false;
+				// 0x80004005: Error HRESULT E_FAIL has been returned from a call to a COM component.
+				// Use this to reproduce: new FileIOPermission(PermissionState.Unrestricted).Deny();
+				if ((uint)e.ErrorCode == 0x80004005)
+					return false;
 				throw;
 			} catch (ArgumentException) {
 				// May happen in release code with does not have any symbols
