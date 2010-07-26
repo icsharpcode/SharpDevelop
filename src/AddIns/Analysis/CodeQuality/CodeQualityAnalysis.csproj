@@ -238,7 +238,6 @@
     <Content Include="CodeQualityAnalysis.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="ProfilingSessions\Session20100726_004238.sdps" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Themes" />
