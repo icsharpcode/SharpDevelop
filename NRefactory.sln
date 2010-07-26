@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+# SharpDevelop 4.0.0.6197
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory", "ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj", "{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory.Tests", "ICSharpCode.NRefactory.Tests\ICSharpCode.NRefactory.Tests.csproj", "{63D3B27A-D966-4902-90B3-30290E1692F1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63D3B27A-D966-4902-90B3-30290E1692F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63D3B27A-D966-4902-90B3-30290E1692F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63D3B27A-D966-4902-90B3-30290E1692F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63D3B27A-D966-4902-90B3-30290E1692F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+EndGlobal
