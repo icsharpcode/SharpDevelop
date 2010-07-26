@@ -152,10 +152,11 @@ interface ITest {
 			ExpressionResult expression = FindFullExpressionAtCaret(editor, expressionFinder);
 			ResolveResult rr = ResolveExpressionAtCaret(editor, expression);
 			
-			Ast.Expression ex = IntroduceMethod.GetExpressionInContext(rr as UnknownMethodResolveResult, editor);
+			//Ast.Expression ex = GenerateCode.GetExpressionInContext(rr as UnknownMethodResolveResult, editor);
 			
-			IntroduceMethod method = new IntroduceMethod();
-			method.ExecuteIntroduceMethod(rr as UnknownMethodResolveResult, ex, editor, false, null);
+			var introduceMethodAction = GenerateCode.GetContextAction(rr, editor);
+			Assert.IsNotNull(introduceMethodAction);
+			introduceMethodAction.Execute();// .ExecuteIntroduceMethod(rr as UnknownMethodResolveResult, ex, editor, false, null);
 			
 			Assert.AreEqual(simpleStart + definitions + call + expected + simpleEnd, editor.Document.Text);
 		}
@@ -176,10 +177,9 @@ interface ITest {
 			ExpressionResult expression = FindFullExpressionAtCaret(editor, expressionFinder);
 			ResolveResult rr = ResolveExpressionAtCaret(editor, expression);
 			
-			Ast.Expression ex = IntroduceMethod.GetExpressionInContext(rr as UnknownMethodResolveResult, editor);
-			
-			IntroduceMethod method = new IntroduceMethod();
-			method.ExecuteIntroduceMethod(rr as UnknownMethodResolveResult, ex, editor, false, null);
+			var introduceMethodAction = GenerateCode.GetContextAction(rr, editor);
+			Assert.IsNotNull(introduceMethodAction);
+			introduceMethodAction.Execute(); //ExecuteIntroduceMethod(rr as UnknownMethodResolveResult, ex, editor, false, null);
 			
 			Assert.AreEqual(otherClassStart + existingDefinitions + expected + otherClassEnd + simpleStart + definitions + call + simpleEnd, editor.Document.Text);
 		}
@@ -200,10 +200,9 @@ interface ITest {
 			ExpressionResult expression = FindFullExpressionAtCaret(editor, expressionFinder);
 			ResolveResult rr = ResolveExpressionAtCaret(editor, expression);
 			
-			Ast.Expression ex = IntroduceMethod.GetExpressionInContext(rr as UnknownMethodResolveResult, editor);
-			
-			IntroduceMethod method = new IntroduceMethod();
-			method.ExecuteIntroduceMethod(rr as UnknownMethodResolveResult, ex, editor, false, null);
+			var introduceMethodAction = GenerateCode.GetContextAction(rr, editor);
+			Assert.IsNotNull(introduceMethodAction);
+			introduceMethodAction.Execute(); //ExecuteIntroduceMethod(rr as UnknownMethodResolveResult, ex, editor, false, null);
 			
 			Assert.AreEqual(interfaceStart + existingDefinitions + expected + interfaceEnd + simpleStart + definitions + call + simpleEnd, editor.Document.Text);
 		}
