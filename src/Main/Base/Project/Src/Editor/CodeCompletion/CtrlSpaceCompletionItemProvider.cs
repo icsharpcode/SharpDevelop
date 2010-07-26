@@ -44,11 +44,24 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			if (list == null)
 				return;
 			List<ICompletionItem> snippets = editor.GetSnippets().ToList();
-			snippets.RemoveAll(item => item is ISnippetCompletionItem
-			                   && !list.Items.Any(item2 => item2.Text == (item as ISnippetCompletionItem).Keyword));
+			snippets.RemoveAll(item => !FitsToContext(item, list.Items));
 			list.Items.RemoveAll(item => item.Image == ClassBrowserIconService.Keyword && snippets.Exists(i => i.Text == item.Text));
 			list.Items.AddRange(snippets);
 			list.SortItems();
+		}
+		
+		bool FitsToContext(ICompletionItem item, List<ICompletionItem> list)
+		{
+			if (!(item is ISnippetCompletionItem))
+				return false;
+			
+			var snippetItem = item as ISnippetCompletionItem;
+			
+			if (string.IsNullOrEmpty(snippetItem.Keyword))
+				return true;
+			
+			return list.Any(x => x.Image == ClassBrowserIconService.Keyword
+			                && x.Text == snippetItem.Keyword);
 		}
 		
 		int preselectionLength;
