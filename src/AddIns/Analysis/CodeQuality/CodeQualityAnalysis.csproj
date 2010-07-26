@@ -113,6 +113,7 @@
     <Compile Include="Src\Controls\DependencyMatrixControl.cs" />
     <Compile Include="Src\Controls\DependencyMatrix.cs" />
     <Compile Include="Src\Controls\DependencyVertex.cs" />
+    <Compile Include="Src\Controls\DependencyIconVertexConverter.cs" />
     <Compile Include="Src\Controls\Matrix.cs" />
     <Compile Include="Src\Controls\MatrixControl.cs" />
     <Compile Include="Src\Controls\TreeMatrixControl.xaml.cs">
