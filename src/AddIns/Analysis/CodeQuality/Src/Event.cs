@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Media.Imaging;
+
 using QuickGraph;
 
 namespace ICSharpCode.CodeQualityAnalysis
@@ -46,5 +48,7 @@ namespace ICSharpCode.CodeQualityAnalysis
             // Events aren't visible. They are showed like fields instead.
             return this.ToString();
         }
+        
+        public BitmapSource Icon { get { return null; } }
     }
 }

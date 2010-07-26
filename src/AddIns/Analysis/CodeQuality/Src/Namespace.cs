@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Media.Imaging;
+
 using ICSharpCode.CodeQualityAnalysis.Controls;
 using QuickGraph;
 
@@ -14,7 +16,7 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <summary>
         /// Types within namespace
         /// </summary>
-        public ISet<Type> Types { get; set; }
+        public ISet<Type> Types { get; private set; }
 
         /// <summary>
         /// Name of namespace
@@ -224,5 +226,7 @@ namespace ICSharpCode.CodeQualityAnalysis
             
             return builder.ToString();
         }
+        
+        public BitmapSource Icon { get { return NodeIconService.GetIcon(this); } }
     }
 }

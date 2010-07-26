@@ -38,19 +38,6 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <OutputPath>bin\Debug\</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release' ">
-    <DebugType>pdbonly</DebugType>
-    <OutputPath>bin\Release\</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <Optimize>true</Optimize>
     <DefineConstants>TRACE</DefineConstants>
@@ -128,6 +115,10 @@
     <Compile Include="Src\Controls\DependencyVertex.cs" />
     <Compile Include="Src\Controls\Matrix.cs" />
     <Compile Include="Src\Controls\MatrixControl.cs" />
+    <Compile Include="Src\Controls\TreeMatrixControl.xaml.cs">
+      <DependentUpon>TreeMatrixControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\DependencyGraphCommand.cs" />
     <Compile Include="Src\Event.cs" />
     <Compile Include="Src\Field.cs" />
@@ -144,6 +135,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Src\Controls\TreeMatrixControl.xaml" />
     <Page Include="Src\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

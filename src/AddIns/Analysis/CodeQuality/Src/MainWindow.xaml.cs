@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+
 using GraphSharp.Controls;
 using ICSharpCode.CodeQualityAnalysis.Controls;
 using ICSharpCode.Core.Presentation;
@@ -24,271 +26,167 @@ using QuickGraph.Collections;
 
 namespace ICSharpCode.CodeQualityAnalysis
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
-    {
-        private MetricsReader _metricsReader;
+	/// <summary>
+	/// Interaction logic for MainWindow.xaml
+	/// </summary>
+	public partial class MainWindow : Window, INotifyPropertyChanged
+	{
+		private MetricsReader metricsReader;
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		public MetricsReader MetricsReader 
+		{ 
+			get
+			{ 
+				return metricsReader;
+			}
+			
+			set
+			{
+				metricsReader = value;
+				NotifyPropertyChanged("MetricsReader");
+			}
+		}
 
-        public MainWindow()
+		public MainWindow()
+		{
+			InitializeComponent();
+		}
+		
+		private void NotifyPropertyChanged(string propertyName)
         {
-            InitializeComponent();
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        private void btnOpenAssembly_Click(object sender, RoutedEventArgs e)
-        {
-            var fileDialog = new OpenFileDialog
-                                 {
-                                     Filter = "Component Files (*.dll, *.exe)|*.dll;*.exe"
-                                 };
+		private void btnOpenAssembly_Click(object sender, RoutedEventArgs e)
+		{
+			var fileDialog = new OpenFileDialog
+			{
+				Filter = "Component Files (*.dll, *.exe)|*.dll;*.exe"
+			};
 
-            fileDialog.ShowDialog();
+			fileDialog.ShowDialog();
 
-            if (String.IsNullOrEmpty(fileDialog.FileName))
-                return;
+			if (String.IsNullOrEmpty(fileDialog.FileName))
+				return;
 
-            definitionTree.Items.Clear();
-        
-            _metricsReader = new MetricsReader(fileDialog.FileName);
+			definitionTree.Items.Clear();
+			
+			MetricsReader = new MetricsReader(fileDialog.FileName);
+			definitionTree.ItemsSource = metricsReader.Modules;
 
-            FillTree();
+			FillMatrix();
+		}
+		
+		private void btnRelayout_Click(object sender, RoutedEventArgs e)
+		{
+			graphLayout.Relayout();
+		}
 
-            FillMatrix();
-        }
-        
-        private void btnRelayout_Click(object sender, RoutedEventArgs e)
-        {
-            graphLayout.Relayout();
-        }
+		private void btnContinueLayout_Click(object sender, RoutedEventArgs e)
+		{
+			graphLayout.ContinueLayout();
+		}
 
-        private void btnContinueLayout_Click(object sender, RoutedEventArgs e)
-        {
-            graphLayout.ContinueLayout();
-        }
+		private void FillMatrix()
+		{
+			var matrix = new DependencyMatrix();
 
-        /// <summary>
-        /// Fill tree with module, types and methods and fields
-        /// </summary>
-        private void FillTree()
-        {
-            var itemModule = new MetricTreeViewItem
-                                 {
-                                     Text = _metricsReader.MainModule.Name,
-                                     Dependency = _metricsReader.MainModule,
-                                     Icon = NodeIconService.GetIcon(_metricsReader.MainModule)
-                                 };
+			foreach (var ns in metricsReader.MainModule.Namespaces) {
+				matrix.HeaderRows.Add(new MatrixCell<INode>(ns));
+				foreach (var type in ns.Types) {
+					matrix.HeaderRows.Add(new MatrixCell<INode>(type));
+				}
+				matrix.HeaderColumns.Add(new MatrixCell<INode>(ns));
+				foreach (var type in ns.Types) {
+					matrix.HeaderColumns.Add(new MatrixCell<INode>(type));
+				}
+			}
 
-            definitionTree.Items.Add(itemModule);
-            
-            foreach (var ns in _metricsReader.MainModule.Namespaces)
-            {
-                var nsType = new MetricTreeViewItem
-                                 {
-                                     Text = ns.Name, 
-                                     Dependency = ns, 
-                                     Icon = NodeIconService.GetIcon(ns)
-                                 };
+			matrixControl.Matrix = matrix;
+			matrixControl.DrawMatrix();
+			matrixControl.DrawTree(metricsReader.MainModule);
+		}
 
-                itemModule.Items.Add(nsType);
+		private void definitionTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+		{
+			var item = definitionTree.SelectedItem as INode;
 
-                foreach (var type in ns.Types)
-                {
-                    var itemType = new MetricTreeViewItem
-                                       {
-                                           Text = type.Name, 
-                                           Dependency = type, 
-                                           Icon = NodeIconService.GetIcon(type)
-                                       };
+			if (item != null && item.Dependency != null)
+			{
+				var graph = item.Dependency.BuildDependencyGraph();
+				graphLayout.ChangeGraph(graph);
+			}
+		}
 
-                    nsType.Items.Add(itemType);
+		private void graphLayout_VertexClick(object sender, MouseButtonEventArgs e)
+		{
+			var vertexControl = sender as VertexControl;
+			if (vertexControl != null)
+			{
+				var vertex = vertexControl.Vertex as DependencyVertex;
+				if (vertex != null)
+				{
+					txbTypeInfo.Text = vertex.Node.GetInfo();
+				}
+			}
+		}
 
-                    foreach (var method in type.Methods)
-                    {
-                        var itemMethod = new MetricTreeViewItem
-                                             {
-                                                 Text = method.Name,
-                                                 Dependency = null,
-                                                 Icon = NodeIconService.GetIcon(method)
-                                             };
+		private void btnResetGraph_Click(object sender, RoutedEventArgs e)
+		{
+			graphLayout.ResetGraph();
+		}
 
-                        itemType.Items.Add(itemMethod);
-                    }
+		private void btnSaveImageGraph_Click(object sender, RoutedEventArgs e)
+		{
+			var fileDialog = new SaveFileDialog()
+			{
+				Filter = "PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|GIF (*.gif)|*.gif|BMP (*.bmp)|*.bmp|TIFF (.tiff)|*.tiff"
+			};
 
-                    foreach (var field in type.Fields)
-                    {
-                        var itemField = new MetricTreeViewItem
-                                            {
-                                                Text = field.Name,
-                                                Dependency = null,
-                                                Icon = NodeIconService.GetIcon(field)
-                                            };
+			fileDialog.ShowDialog();
 
-                        itemType.Items.Add(itemField);
-                    }
-                }
-            }
-        }
+			if (String.IsNullOrEmpty(fileDialog.FileName))
+				return;
 
-        private void FillMatrix()
-        {
-            var matrix = new DependencyMatrix();
+			// render it
+			var renderBitmap = new RenderTargetBitmap((int)graphLayout.ActualWidth,
+			                                          (int)graphLayout.ActualHeight,
+			                                          96d,
+			                                          96d,
+			                                          PixelFormats.Default);
+			renderBitmap.Render(graphLayout);
 
-            foreach (var ns in _metricsReader.MainModule.Namespaces) {
-                matrix.HeaderRows.Add(new MatrixCell<INode>(ns));
-                foreach (var type in ns.Types) {
-                	matrix.HeaderRows.Add(new MatrixCell<INode>(type));
-                }
-                matrix.HeaderColumns.Add(new MatrixCell<INode>(ns));
-                foreach (var type in ns.Types) {
-                	matrix.HeaderColumns.Add(new MatrixCell<INode>(type));
-                }
-            }
+			using (var outStream = new FileStream(fileDialog.FileName, FileMode.Create))
+			{
+				BitmapEncoder encoder;
 
-            matrixControl.Matrix = matrix;
-            matrixControl.DrawMatrix();
-        }
-
-        private void definitionTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            var item = definitionTree.SelectedItem as MetricTreeViewItem;
-
-            if (item != null && item.Dependency != null)
-            {
-                var graph = item.Dependency.BuildDependencyGraph();
-                graphLayout.ChangeGraph(graph);
-            }
-        }
-
-        private void graphLayout_VertexClick(object sender, MouseButtonEventArgs e)
-        {
-            var vertexControl = sender as VertexControl;
-            if (vertexControl != null)
-            {
-                var vertex = vertexControl.Vertex as DependencyVertex;
-                if (vertex != null)
-                {
-                    txbTypeInfo.Text = vertex.Node.GetInfo();
-                }
-            }
-        }
-
-        private void btnResetGraph_Click(object sender, RoutedEventArgs e)
-        {
-            graphLayout.ResetGraph();
-        }
-
-        private void btnSaveImageGraph_Click(object sender, RoutedEventArgs e)
-        {
-            var fileDialog = new SaveFileDialog()
-            {
-                Filter = "PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|GIF (*.gif)|*.gif|BMP (*.bmp)|*.bmp|TIFF (.tiff)|*.tiff"
-            };
-
-            fileDialog.ShowDialog();
-
-            if (String.IsNullOrEmpty(fileDialog.FileName))
-                return;
-
-            // render it
-            var renderBitmap = new RenderTargetBitmap((int)graphLayout.ActualWidth,
-                                                      (int)graphLayout.ActualHeight,
-                                                      96d,
-                                                      96d,
-                                                      PixelFormats.Default);
-            renderBitmap.Render(graphLayout);
-
-            using (var outStream = new FileStream(fileDialog.FileName, FileMode.Create))
-            {
-                BitmapEncoder encoder;
-
-                switch (fileDialog.FilterIndex)
-                {
-                    case 1:
-                        encoder = new PngBitmapEncoder();
-                        break;
-                    case 2:
-                        encoder = new JpegBitmapEncoder();
-                        break;
-                    case 3:
-                        encoder = new GifBitmapEncoder();
-                        break;
-                    case 4:
-                        encoder = new BmpBitmapEncoder();
-                        break;
-                    case 5:
-                        encoder = new TiffBitmapEncoder();
-                        break;
-                    default:
-                        encoder = new PngBitmapEncoder();
-                        break;
-                }
-                    
-                encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
-                encoder.Save(outStream);
-            }
-        }
-
-        private class MetricTreeViewItem : TreeViewItem
-        {
-            private readonly Image _iconControl;
-            private readonly TextBlock _textControl;
-            private BitmapSource _bitmap;
-
-            public IDependency Dependency { get; set; }
-
-            /// <summary>
-            /// Gets or sets the text content for the item
-            /// </summary>
-            public string Text
-            {
-                get
-                {
-                    return _textControl.Text;
-                }
-                set
-                {
-                    _textControl.Text = value;
-                }
-            }
-
-            /// <summary>
-            /// Gets or sets the icon for the item
-            /// </summary>
-            public BitmapSource Icon
-            {
-                get
-                {
-                    return _bitmap;
-                }
-                set
-                {
-                    _iconControl.Source = _bitmap = value;
-                }
-            }
-
-            public MetricTreeViewItem()
-            {
-                var stack = new StackPanel
-                {
-                    Orientation = Orientation.Horizontal
-                };
-
-                Header = stack;
-
-                _iconControl = new Image
-                {
-                    Margin = new Thickness(0, 0, 5, 0)
-                };
-
-                _textControl = new TextBlock()
-                {
-                    VerticalAlignment = VerticalAlignment.Center
-                };
-
-                stack.Children.Add(_iconControl);
-                stack.Children.Add(_textControl);
-            }
-        }
-    }
+				switch (fileDialog.FilterIndex)
+				{
+					case 1:
+						encoder = new PngBitmapEncoder();
+						break;
+					case 2:
+						encoder = new JpegBitmapEncoder();
+						break;
+					case 3:
+						encoder = new GifBitmapEncoder();
+						break;
+					case 4:
+						encoder = new BmpBitmapEncoder();
+						break;
+					case 5:
+						encoder = new TiffBitmapEncoder();
+						break;
+					default:
+						encoder = new PngBitmapEncoder();
+						break;
+				}
+				
+				encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+				encoder.Save(outStream);
+			}
+		}
+	}
 }

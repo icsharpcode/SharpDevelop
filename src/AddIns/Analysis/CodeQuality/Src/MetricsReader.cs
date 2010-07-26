@@ -16,10 +16,12 @@ namespace ICSharpCode.CodeQualityAnalysis
 		IDictionary<MemberReference, string> nameCache;
 		
 		public Module MainModule { get; private set; }
+		public ISet<Module> Modules { get; private set; }
 
 		public MetricsReader(string file)
 		{
 			nameCache = new Dictionary<MemberReference, string>();
+			Modules = new HashSet<Module>();
 			ReadAssembly(file);
 		}
 
@@ -31,6 +33,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		{
 			var assembly = AssemblyDefinition.ReadAssembly(file);
 			ReadModule(assembly.MainModule);
+			// support for additional modules but never seen assembly with more than one
 		}
 
 		/// <summary>
@@ -39,10 +42,12 @@ namespace ICSharpCode.CodeQualityAnalysis
 		/// <param name="moduleDefinition">A module which contains information</param>
 		private void ReadModule(ModuleDefinition moduleDefinition)
 		{
-			this.MainModule = new Module()
+			MainModule = new Module()
 			{
 				Name = moduleDefinition.Name
 			};
+			
+			Modules.Add(MainModule);
 
 			if (moduleDefinition.HasTypes)
 				ReadTypes(MainModule, moduleDefinition.Types);
@@ -183,8 +188,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 						if (typeDefinition.BaseType.IsGenericInstance)
 						{
 							type.IsBaseTypeGenericInstance = true;
-							type.GenericBaseTypes = ReadGenericArguments(type.Namespace.Module,
-							                                             (GenericInstanceType)typeDefinition.BaseType);
+							type.GenericBaseTypes.UnionWith(ReadGenericArguments(type.Namespace.Module,
+							                                                     (GenericInstanceType)typeDefinition.BaseType));
 						}
 					}
 
@@ -298,8 +303,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 				if (fieldDefinition.FieldType.IsGenericInstance)
 				{
 					field.IsGenericInstance = true;
-					field.GenericTypes = ReadGenericArguments(type.Namespace.Module,
-					                                          (GenericInstanceType)fieldDefinition.FieldType);
+					field.GenericTypes.UnionWith(ReadGenericArguments(type.Namespace.Module,
+					                                                  (GenericInstanceType)fieldDefinition.FieldType));
 				}
 
 				field.FieldType = fieldType;
@@ -342,8 +347,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 				if (methodDefinition.ReturnType.IsGenericInstance)
 				{
 					method.IsReturnTypeGenericInstance = true;
-					method.GenericReturnTypes = ReadGenericArguments(type.Namespace.Module,
-					                                                 (GenericInstanceType) methodDefinition.ReturnType);
+					method.GenericReturnTypes.UnionWith(ReadGenericArguments(type.Namespace.Module,
+					                                                         (GenericInstanceType) methodDefinition.ReturnType));
 				}
 
 				// reading types from parameters

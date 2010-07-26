@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Windows.Media.Imaging;
+
 using QuickGraph;
 
 namespace ICSharpCode.CodeQualityAnalysis
@@ -11,22 +14,22 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <summary>
         /// Parameters which are used by method
         /// </summary>
-        public ISet<MethodParameter> Parameters { get; set; }
+        public ISet<MethodParameter> Parameters { get; private set; }
 
         /// <summary>
         /// Types which are used in body of method
         /// </summary>
-        public ISet<Type> TypeUses { get; set; }
+        public ISet<Type> TypeUses { get; private set; }
 
         /// <summary>
         /// Methods which are called in body of method
         /// </summary>
-        public ISet<Method> MethodUses { get; set; }
+        public ISet<Method> MethodUses { get; private set; }
 
         /// <summary>
         /// Fields which are accesed in body of method
         /// </summary>
-        public ISet<Field> FieldUses { get; set; }
+        public ISet<Field> FieldUses { get; private set; }
         
         /// <summary>
         /// A name of method
@@ -96,7 +99,7 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <summary>
         /// If the return type is generic instance so all types used in generic are presented in this set.
         /// </summary>
-        public ISet<Type> GenericReturnTypes { get; set; }
+        public ISet<Type> GenericReturnTypes { get; private set; }
 
         /// <summary>
         /// Whether the return type is generic instance
@@ -167,6 +170,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 
             return builder.ToString();
         }
+        
+        public BitmapSource Icon { get { return NodeIconService.GetIcon(this); } }
     }
 
     public class MethodParameter
