@@ -668,7 +668,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				} catch (OverflowException ex) {
 					errors.Error(Line, Col, ex.Message);
 					return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), 0, LiteralFormat.None);
-				} catch (FormatException ex2) {
+				} catch (FormatException) {
 					errors.Error(Line, Col, String.Format("{0} is not a parseable number", digit));
 					return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), 0, LiteralFormat.None);
 				}

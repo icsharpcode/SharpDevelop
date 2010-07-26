@@ -49,7 +49,7 @@ namespace ICSharpCode.Profiler.AddIn.OptionPanels
 				properties.Get("DoNotProfileNetInternals", false),
 				properties.Get("CombineRecursiveFunction", false),
 				properties.Get("EnableDCAtStart", true),
-				properties.Get("PerformanceCounters", ProfilerOptions.DefaultCounters)
+				ProfilerOptions.DefaultCounters
 			);
 		}
 	}
