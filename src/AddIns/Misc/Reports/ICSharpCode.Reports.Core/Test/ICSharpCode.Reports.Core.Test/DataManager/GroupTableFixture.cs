@@ -35,31 +35,106 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		[Test]
 		public void GroupingCollection_Contains_IsGrouped_False()
 		{
-			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
-			ReportSettings rs = new ReportSettings();
-			rs.GroupColumnsCollection.Add(gc);
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
-			DataNavigator dataNav = dm.GetNavigator;
+			var dataNav = PrepareStandardGrouping();
 			Assert.That(dataNav.IsGrouped == true);
 		}
 		
 		
 		[Test]
+		public void Has_Children()
+		{
+			var dataNav = PrepareStandardGrouping();
+			while (dataNav.MoveNext()) {
+				Assert.That(dataNav.HasChildren,Is.True);
+			}
+		}
+		
+		
+		[Test]
+		public void Read_Children()
+		{
+			var dataNav = PrepareStandardGrouping();
+			while (dataNav.MoveNext()) {
+				if (dataNav.HasChildren) {
+					DataRow r = dataNav.Current as DataRow;
+					string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString();
+					Console.WriteLine(v2);
+					ReadFromChilds(dataNav);
+				}
+				
+			}
+		}
+		
+		
+		void ReadFromChilds (IDataNavigator nav)
+		{
+			nav.MoveToChilds();
+			do {
+				var o = nav.ReadChild() as DataRow;
+				string v = o.ItemArray[3].ToString();
+				Console.WriteLine("\t {0}",v);
+			}
+			while ( nav.ChildMoveNext());
+		}
+		
+		
+		
+		/*
+		[Test]
 		public void aaa()
 		{
-			
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,new ReportSettings());
 			DataNavigator dataNav = dm.GetNavigator;
 
 			while (dataNav.MoveNext()) {
 				DataRow r = dataNav.Current as DataRow;
 				string v2 = r["Groupitem"].ToString();
+				Console.WriteLine(v2);
 			}
 		}
 		
 		
+		[Test]
+		public void ChildNavigator_Can_Init()
+		{
+			var dataNav = PrepareStandardGrouping();
+			Console.WriteLine("start list");
+			while (dataNav.MoveNext())
+			{
+				DataRow r = dataNav.Current as DataRow;
+				string v2 = r["Groupitem"].ToString();
+				Console.WriteLine(" - {0}  ",v2);
+				ChildNavigator childNav = dataNav.GetChildNavigator();
+				Assert.That(childNav != null);
+			}
+		}
 		
-			                
+		*/
+		
+		
+		/*
+		
+		[Test]
+		public void ChildNavigator_All_Childs_Contains_Elements()
+		{
+			var dataNav = PrepareStandardGrouping();
+			Console.WriteLine("start list");
+			while (dataNav.MoveNext())
+			{
+				ChildNavigator childNav = dataNav.GetChildNavigator();
+				Assert.That(childNav.IndexList.Count > 0);
+			}
+		}
+		*/
+				
+		private IDataNavigator PrepareStandardGrouping ()
+		{
+			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
+			ReportSettings rs = new ReportSettings();
+			rs.GroupColumnsCollection.Add(gc);
+			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
+			return dm.GetNavigator;
+		}
 		[TestFixtureSetUp]
 		public void Init()
 		{

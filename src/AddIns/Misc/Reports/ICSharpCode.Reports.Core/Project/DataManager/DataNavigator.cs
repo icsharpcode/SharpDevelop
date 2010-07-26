@@ -7,16 +7,14 @@
 
 using System;
 using System.Collections;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 
 namespace ICSharpCode.Reports.Core
 {
 	/// <summary>
 	/// Description of DataNavigator.
 	/// </summary>
-	
-	public class DataNavigator :IDataNavigator,IEnumerable
+	public class DataNavigator :IDataNavigator
+//	public class DataNavigator :IDataNavigator,IEnumerable
 	{
 		private IDataViewStrategy store;
 		
@@ -54,6 +52,9 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
+	
+		
+		
 		public AvailableFieldsCollection AvailableFields{
 			get
 			{
@@ -70,7 +71,7 @@ namespace ICSharpCode.Reports.Core
 		public int CurrentRow  {
 			get {return this.store.CurrentPosition;}
 		}
-		
+	
 		
 		public int Count  {
 			get {return this.store.Count;}
@@ -97,7 +98,7 @@ namespace ICSharpCode.Reports.Core
 		
 		
 		#region IEnumarable
-		
+		/*
 		public IEnumerator RangeEnumerator(int start, int end)
         {
 			if (start > end) {
@@ -119,7 +120,62 @@ namespace ICSharpCode.Reports.Core
 				yield return this.Current;
 			}
 		}
-		
+		*/
 		#endregion
+		
+		
+		#region aaaaaa
+		
+		public bool HasChildren
+		{
+			get{
+				TableStrategy t = store as TableStrategy;
+				IndexList i = t.IndexList;
+				GroupComparer gc = i[t.CurrentPosition] as GroupComparer;
+				return gc.IndexList.Count > 0;
+			}
+		}
+		
+		IndexList childList;
+		private System.Collections.Generic.List<BaseComparer>.Enumerator ce;
+		
+		public void MoveToChilds()
+		{
+			childList = new IndexList();
+			TableStrategy t = store as TableStrategy;
+			IndexList i = t.IndexList;
+			GroupComparer gc = i[t.CurrentPosition] as GroupComparer;
+			childList = gc.IndexList;
+			ce = childList.GetEnumerator();
+			ce.MoveNext();
+		}
+		
+		public object ReadChild()
+		{
+			
+			var i = ce.Current.ListIndex;
+			TableStrategy t = store as TableStrategy;
+			return t.Readrandowm (i);
+		}
+		
+		public bool ChildMoveNext()
+		{
+			return ce.MoveNext();
+		}
+		#endregion
+	
+		
 	}
+	
+	
+	public class ChildNavigator
+	{
+		public ChildNavigator (IndexList list)
+		{
+			IndexList = list;
+		}
+		
+		public IndexList IndexList {get; private set;}
+	}
+		
 }

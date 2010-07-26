@@ -11,7 +11,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Linq;
 
 namespace ICSharpCode.Reports.Core
 {
@@ -37,9 +36,7 @@ namespace ICSharpCode.Reports.Core
 			base.Bind();
 			
 			if (base.ReportSettings.GroupColumnsCollection.Count > 0) {
-				
 				this.Group();
-				
 			} else {
 				this.Sort ();
 			}
@@ -190,7 +187,6 @@ namespace ICSharpCode.Reports.Core
 		private void GChild(IndexList list,BaseComparer sc)
 		{
 			string v = sc.ObjectArray[0].ToString();
-//			Console.WriteLine("child {0}",v);
 			list.Add(sc);
 		}
 		
@@ -277,9 +273,9 @@ namespace ICSharpCode.Reports.Core
 				int cr = base.CurrentPosition;
 				int li = (base.IndexList[cr] ).ListIndex;
 				return this.table.Rows[li];
-//				return this.view[((BaseComparer)base.IndexList[base.CurrentRow]).ListIndex];
 			}
 		}
+		
 		
 		public override int CurrentPosition {
 			get { return base.CurrentPosition; }
@@ -292,5 +288,11 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		#endregion
+		
+		
+		public DataRow Readrandowm (int pos)
+		{
+			return this.table.Rows[pos];
+		}
 	}
 }

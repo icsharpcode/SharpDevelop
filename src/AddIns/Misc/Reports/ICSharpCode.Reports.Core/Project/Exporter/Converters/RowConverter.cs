@@ -68,13 +68,16 @@ namespace ICSharpCode.Reports.Core.Exporter
 			int defaultLeftPos = parent.Location.X;
 			
 			do {
+				Console.WriteLine ("haschild {0}",base.DataNavigator.HasChildren);
+				if (base.DataNavigator.HasChildren) {
+					ReadFromChilds(base.DataNavigator);
+				}
+				
 				section.Location = new Point(section.Location.X,section.SectionOffset );
 				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
 				base.SaveSize(section.Items[0].Size);
 				
-				
 				base.FillRow(simpleContainer);
-				
 				
 				base.LayoutRow(simpleContainer);
 				
@@ -111,5 +114,16 @@ namespace ICSharpCode.Reports.Core.Exporter
 			return mylist;
 		}
 		
+		
+		void ReadFromChilds (IDataNavigator nav)
+		{
+			nav.MoveToChilds();
+			do {
+				var o = nav.ReadChild() as System.Data.DataRow;
+				string v = o.ItemArray[3].ToString();
+					Console.WriteLine("\t {0}",v);
+			}
+			while ( nav.ChildMoveNext());
+		}
 	}
 }

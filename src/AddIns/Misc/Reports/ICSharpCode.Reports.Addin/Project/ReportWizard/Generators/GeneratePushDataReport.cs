@@ -23,25 +23,16 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 {
 	public class GeneratePushDataReport : AbstractReportGenerator
 	{
-		private ReportStructure reportStructure;
+//		private ReportStructure reportStructure;
 		/// <summary>
 		/// Default constructor - initializes all fields to default values
 		/// </summary>
 		public GeneratePushDataReport(ReportModel reportModel,		                              
 		                              Properties properties):base(reportModel,properties)
 		{
-			if (reportModel == null) {
-				throw new ArgumentNullException("reportModel");
-			}
-
-			if (base.ReportModel.ReportSettings.DataModel != GlobalEnums.PushPullModel.PushData) {
-				throw new ArgumentException ("Wrong DataModel in GeneratePushReport");
-			}
 			
-			reportStructure = (ReportStructure)properties.Get("Generator");
-
-			base.AvailableFieldsCollection.AddRange(reportStructure.AvailableFieldsCollection);
-			base.ReportItemCollection.AddRange(reportStructure.ReportItemCollection);
+			base.UpdateGenerator();
+			base.UpdateModel();
 		}
 		
 		
@@ -49,10 +40,12 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		{
 			base.ReportModel.ReportSettings.ReportType = GlobalEnums.ReportType.DataReport;
 			base.ReportModel.ReportSettings.DataModel = GlobalEnums.PushPullModel.PushData;
-			base.ReportModel.ReportSettings.AvailableFieldsCollection.AddRange(reportStructure.AvailableFieldsCollection);
+		//	base.ReportModel.ReportSettings.AvailableFieldsCollection.AddRange(base.ReportStructure.AvailableFieldsCollection);
 			base.GenerateReport();
 			GlobalEnums.ReportLayout reportLayout = (GlobalEnums.ReportLayout)base.Properties.Get("ReportLayout");
+			
 			AbstractLayout layout = LayoutFactory.CreateGenerator(reportLayout,base.ReportModel,base.ReportItemCollection);
+			
 			layout.CreateReportHeader();
 			layout.CreatePageHeader();
 			layout.CreateDataSection(base.ReportModel.DetailSection);

@@ -21,32 +21,27 @@ using System.ComponentModel;
  		bool HasMoreData {
  			get;
  		}
+ 		//Test
+// 		ChildNavigator GetChildNavigator();
+ 		bool HasChildren {get;}
  		
- 		/*
- 		bool HasChildren {
-			get;
- 		}
- 		*/
- 		
+ 		void MoveToChilds();
+ 		object ReadChild ();
+ 		bool ChildMoveNext();
+ 		//endtest
  		bool IsSorted {get;}
  		
  		bool IsGrouped {get;}
  		
- 		int CurrentRow  {
- 			get;
- 		}
- 		
- 		int Count  {
-			get;
-		}
- 		
- 		object Current {
- 			get;
- 		}
+ 		int CurrentRow  {get;}
+ 			
+ 		int Count  {get;}
+	
+ 		object Current {get;}
  		
  		AvailableFieldsCollection AvailableFields{get;}
  		 
- 		System.Collections.IEnumerator RangeEnumerator(int start, int end);
+// 		System.Collections.IEnumerator RangeEnumerator(int start, int end);
  			
  	}
  }

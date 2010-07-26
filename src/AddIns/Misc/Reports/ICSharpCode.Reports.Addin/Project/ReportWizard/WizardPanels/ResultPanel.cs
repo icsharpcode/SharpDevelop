@@ -263,18 +263,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			{
 				this.model = reportStructure.CreateAndFillReportModel();
 				this.resultDataSet =  FillGrid();
-				
-				if (this.resultDataSet != null) {
-					this.grdQuery.DataSource = this.resultDataSet.Tables[0];
-					foreach (DataGridViewColumn dd in this.grdQuery.Columns) {
-						DataGridViewColumnHeaderCheckBoxCell cb = new DataGridViewColumnHeaderCheckBoxCell();
-						cb.CheckBoxAlignment = HorizontalAlignment.Right;
-						cb.Checked = true;
-						dd.HeaderCell = cb;
-						dd.SortMode = DataGridViewColumnSortMode.NotSortable;
-					}
-					this.grdQuery.AllowUserToOrderColumns = true;
-				}
+				SetupGrid ();
 				base.EnableNext = true;
 				base.EnableFinish = true;
 				
@@ -294,6 +283,23 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			}
 			return true;
 		}
+		
+		
+		private void SetupGrid()
+		{
+			if (this.resultDataSet != null) {
+				this.grdQuery.DataSource = this.resultDataSet.Tables[0];
+				foreach (DataGridViewColumn dd in this.grdQuery.Columns) {
+					DataGridViewColumnHeaderCheckBoxCell cb = new DataGridViewColumnHeaderCheckBoxCell();
+					cb.CheckBoxAlignment = HorizontalAlignment.Right;
+					cb.Checked = true;
+					dd.HeaderCell = cb;
+					dd.SortMode = DataGridViewColumnSortMode.NotSortable;
+				}
+				this.grdQuery.AllowUserToOrderColumns = true;
+			}
+		}
+		
 		
 		private void WriteResult ()
 		{

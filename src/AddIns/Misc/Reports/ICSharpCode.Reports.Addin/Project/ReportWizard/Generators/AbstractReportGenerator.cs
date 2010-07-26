@@ -35,31 +35,64 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	
 	public abstract class AbstractReportGenerator : IReportGenerator
 	{
-		private ReportModel reportModel;
 		private StringWriter stringWriter;
-		private Properties properties;
+		
 		private ReportItemCollection reportItemCollection;
 		private AvailableFieldsCollection availableFieldsCollection;
 		private ParameterCollection parameterCollection;
 		
-		protected AbstractReportGenerator(ReportModel reportModel,Properties customizer)
+		
+		private ColumnCollection groupColumnCollection;
+		
+		protected AbstractReportGenerator(ReportModel reportModel,Properties properties)
 		{
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
 			}
 
-			if (customizer == null) {
+			if (properties == null) {
 				throw new ArgumentNullException("customizer");
 			}
-			this.properties = customizer;
-			this.reportModel = reportModel;
+			this.ReportModel = reportModel;
+			this.Properties = properties;
+			ReportStructure = (ReportStructure)properties.Get("Generator");
+			
+			this.AvailableFieldsCollection.Clear();
+			this.ReportItemCollection.Clear();
+			this.GroupColumnCollection.Clear();
+			this.ParameterCollection.Clear();
 		}
 		
 		
+		protected void UpdateGenerator ()
+		{
+			this.AvailableFieldsCollection.AddRange(ReportStructure.AvailableFieldsCollection);
+			this.ReportItemCollection.AddRange(ReportStructure.ReportItemCollection);
+			
+			if (ReportModel.ReportSettings.GroupColumnsCollection.Count > 0) {
+				this.GroupColumnCollection.AddRange(ReportModel.ReportSettings.GroupColumnsCollection);
+			}
+			if (ReportStructure.SqlQueryParameters.Count > 0) {
+				ReportModel.ReportSettings.ParameterCollection.AddRange(ReportStructure.SqlQueryParameters);
+			}
+		}
+		
+		protected void UpdateModel ()
+		{
+			var settings = this.ReportModel.ReportSettings;
+			settings.AvailableFieldsCollection.Clear();
+			settings.AvailableFieldsCollection.AddRange(this.availableFieldsCollection);
+			
+			settings.GroupColumnsCollection.Clear();
+			settings.GroupColumnsCollection.AddRange(this.groupColumnCollection);
+//			settings.ParameterCollection.Clear();
+//			settings.ParameterCollection.AddRange(this.SqlQueryParameters);
+		}
+		
 		private void AdjustSectionToDefault () {
 			
-			ReportSettings settings = reportModel.ReportSettings;
-			foreach (ICSharpCode.Reports.Core.BaseSection s in reportModel.SectionCollection) {
+			ReportSettings settings = ReportModel.ReportSettings;
+			foreach (ICSharpCode.Reports.Core.BaseSection s in ReportModel.SectionCollection) {
 				s.Size = new Size(settings.PageSize.Width - settings.LeftMargin - settings.RightMargin,
 			                        GlobalValues.DefaultSectionHeight);
 				Console.WriteLine("AdjustSectionToDefaul Size : {0}",s.Size);
@@ -69,18 +102,19 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		protected void  WriteToXml ()
 		{
-			Console.WriteLine(" WriteToXml ()");
+			
+			LoggingService.Debug("AbstractreportGenerator - Generate Xml friom RepotModel");
 			
 			ReportDesignerWriter rpd = new ReportDesignerWriter();
 			StringWriterWithEncoding writer = new StringWriterWithEncoding(System.Text.Encoding.UTF8);
 			XmlTextWriter xml =XmlHelper.CreatePropperWriter(writer);
 			XmlHelper.CreatePropperDocument(xml);
 			
-			rpd.Save(this.reportModel.ReportSettings,xml);
+			rpd.Save(this.ReportModel.ReportSettings,xml);
 			xml.WriteEndElement();
 			xml.WriteStartElement("SectionCollection");
 			
-			foreach (ICSharpCode.Reports.Core.BaseSection s in this.reportModel.SectionCollection) {
+			foreach (ICSharpCode.Reports.Core.BaseSection s in this.ReportModel.SectionCollection) {
 				rpd.Save(s,xml);
 			}
 
@@ -125,16 +159,13 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		#endregion
 		
+		protected ReportStructure ReportStructure {get;private set;}
 		
+		public ReportModel ReportModel {get;private set;}
+	
 		
-		public ReportModel ReportModel {
-			get { return reportModel; }
-		}
-		
-		public Properties Properties {
-			get { return properties; }
-		}
-		
+		public Properties Properties {get; private set;}
+			
 		
 		protected ReportItemCollection ReportItemCollection {
 			get { if (this.reportItemCollection == null) {
@@ -157,6 +188,25 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		
 		public ParameterCollection SqlQueryParameters {
+			get {
+				if (this.parameterCollection == null) {
+					this.parameterCollection = new ParameterCollection();
+				}
+				return this.parameterCollection;
+			}
+		}
+		
+		public ColumnCollection GroupColumnCollection {
+			get{
+				if (this.groupColumnCollection == null) {
+					this.groupColumnCollection = new ColumnCollection();
+				}
+				return this.groupColumnCollection;
+			}
+			set { this.groupColumnCollection = value;}
+		}
+		
+		public ParameterCollection ParameterCollection {
 			get {
 				if (this.parameterCollection == null) {
 					this.parameterCollection = new ParameterCollection();
