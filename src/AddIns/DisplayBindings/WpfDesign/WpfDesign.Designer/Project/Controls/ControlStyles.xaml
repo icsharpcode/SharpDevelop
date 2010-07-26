@@ -353,6 +353,7 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="8" />
                             </Grid.ColumnDefinitions>
+                    		  <Rectangle Fill="Transparent" Height="10" Grid.Column="0" Grid.ColumnSpan="4"/>
                             <Path Name="line1"
 			     		  			 Stretch="Fill"
 						      Stroke="{StaticResource HandleBrush}"
@@ -398,7 +399,8 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Controls:MarginStub}">
-                    <Grid SnapsToDevicePixels="True">
+                    <Grid SnapsToDevicePixels="True" Height="10" Width="10">
+                	  <Rectangle Fill="Transparent"/>
                     <Ellipse
                       Fill="{TemplateBinding Panel.Background}"
                       Height="7"

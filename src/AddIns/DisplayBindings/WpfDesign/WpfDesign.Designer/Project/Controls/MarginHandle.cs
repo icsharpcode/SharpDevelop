@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Windows.Input;
 using System.Globalization;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -104,6 +105,13 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
         /// Decides whether stub has to be only displayed.
         /// </summary>
         public bool DisplayOnlyStub { get; set; }
+        
+        /// <summary>
+        /// Gets the orientation of the handle.
+        /// </summary>
+        public HandleOrientation Orientation {
+        	get { return orientation; }
+        }
 
         public MarginHandle(DesignItem adornedControlItem, AdornerPanel adornerPanel, HandleOrientation orientation)
         {
@@ -220,7 +228,19 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
                     DisplayOnlyStub = va.ToString() != orientation.ToString();
             }
             DecideVisiblity(this.HandleLength);
-        } 
+        }
+        
+        protected override void OnMouseEnter(System.Windows.Input.MouseEventArgs e)
+        {
+            base.OnMouseEnter(e);
+            this.Cursor = Cursors.Hand;
+        }
+
+        protected override void OnMouseLeave(MouseEventArgs e)
+        {
+            base.OnMouseLeave(e);
+            this.Cursor = Cursors.Arrow;
+        }
         
         public override void OnApplyTemplate()
         {
@@ -238,6 +258,14 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
     public class MarginStub : Control
     {
         MarginHandle marginHandle;
+        
+        /// <summary>
+        /// Gets the margin handle using this stub.
+        /// </summary>
+        public MarginHandle Handle{
+        	get { return marginHandle; }
+        }
+        
         static MarginStub()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(MarginStub), new FrameworkPropertyMetadata(typeof(MarginStub)));
@@ -254,6 +282,17 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
             marginHandle.DecideVisiblity(marginHandle.HandleLength);
         }
         
+        protected override void OnMouseEnter(System.Windows.Input.MouseEventArgs e)
+        {
+            base.OnMouseEnter(e);
+            this.Cursor = Cursors.Hand;
+        }
+        
+        protected override void OnMouseLeave(MouseEventArgs e)
+        {
+            base.OnMouseLeave(e);
+            this.Cursor = Cursors.Arrow;
+        }
     }
 
     /// <summary>
