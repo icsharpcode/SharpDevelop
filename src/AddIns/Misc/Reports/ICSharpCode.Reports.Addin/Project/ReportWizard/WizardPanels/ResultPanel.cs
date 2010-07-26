@@ -336,11 +336,12 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 						reportStructure.AvailableFieldsCollection.Clear();
 						reportStructure.AvailableFieldsCollection.AddRange(abstractColumns);
 					}
-					
+					/*
 					if ((this.sqlParamsCollection != null) && (this.sqlParamsCollection.Count > 0)) {
 						reportStructure.SqlQueryParameters.Clear();
 						reportStructure.SqlQueryParameters.AddRange(sqlParamsCollection);
 					}
+					*/
 				}
 				base.EnableNext = true;
 				base.EnableFinish = true;

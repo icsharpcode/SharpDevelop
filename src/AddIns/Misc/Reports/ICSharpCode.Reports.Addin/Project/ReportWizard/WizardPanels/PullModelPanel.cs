@@ -112,17 +112,17 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		private void WriteResult ()
 		{
-			if (currentNode is SharpQueryNodeProcedure) {
-				commandType = CommandType.StoredProcedure;
-			} else {
-				commandType = CommandType.Text;
-			}
+//			if (currentNode is SharpQueryNodeProcedure) {
+//				commandType = CommandType.StoredProcedure;
+//			} else {
+//				commandType = CommandType.Text;
+//			}
 			customizer.Set("SqlString", this.txtSqlString.Text.Trim());
 			reportStructure.CommandType = commandType;
 			reportStructure.SqlString = this.txtSqlString.Text.Trim();
 			reportStructure.ConnectionString = connectionString;
 		}
-			
+		
 		#endregion
 		
 		#region events
@@ -164,7 +164,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
             e.Effect = DragDropEffects.None;
 		}
 		
-		
+		/*
 		private void TxtSqlStringDragDrop(object sender, System.Windows.Forms.DragEventArgs e){
 			if (firstDrag == true) {
 				this.txtSqlString.Clear();
@@ -236,7 +236,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
             }
             base.EnableNext = true;
 		}
-
+*/
 
         private void databasesTree_SelectedItemChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<object> e)
         {
@@ -303,7 +303,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 		
-		
+		/*
 		// check witch type of node we dragg
 		private static NodeType CheckCurrentNode (ISharpQueryNode node) {
 			NodeType enm;
@@ -321,7 +321,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			}
 			return enm;
 		}
-		
+		*/
 		#endregion
 		
 		
@@ -359,7 +359,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			this.txtSqlString.Size = new System.Drawing.Size(264, 144);
 			this.txtSqlString.TabIndex = 8;
 			this.txtSqlString.TextChanged += new System.EventHandler(this.TxtSqlStringChanged);
-			this.txtSqlString.DragDrop += new System.Windows.Forms.DragEventHandler(this.TxtSqlStringDragDrop);
+			//this.txtSqlString.DragDrop += new System.Windows.Forms.DragEventHandler(this.TxtSqlStringDragDrop);
 			this.txtSqlString.DragEnter += new System.Windows.Forms.DragEventHandler(this.TxtSqlStringDragEnter);
 			// 
 			// label1
