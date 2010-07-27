@@ -9,7 +9,7 @@
 		<Category>VBNet</Category>
 		<Icon>VBNet.Project.Library</Icon>
 		<Description>${res:Templates.Project.ClassLibrary.Description}</Description>
-		<SupportedTargetFrameworks>v2.0;CF 2.0</SupportedTargetFrameworks>
+		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
