@@ -75,6 +75,7 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
+		
 		public override bool MoveNext()
 		{
 			return base.MoveNext();

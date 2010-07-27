@@ -20,12 +20,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 	/// </summary>
 	/// 
 	
-	public class RowConverter:BaseConverter
+	public class old_RowConverter:BaseConverter
 	{
 
 		private BaseReportItem parent;
 		
-		public RowConverter(IDataNavigator dataNavigator,
+		public old_RowConverter(IDataNavigator dataNavigator,
 		                    ExporterPage singlePage,
 		                   
 		                    ILayouter layouter):base(dataNavigator,singlePage,layouter)

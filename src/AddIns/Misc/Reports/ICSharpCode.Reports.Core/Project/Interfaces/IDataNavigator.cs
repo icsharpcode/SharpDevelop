@@ -22,7 +22,11 @@ using System.ComponentModel;
  			get;
  		}
  		
- 		// childList
+ 		#region Try make recursive
+ 		
+ 		#endregion
+ 		
+ 		// childList -----------------
  		
  		bool HasChildren {get;}
  		
@@ -34,7 +38,7 @@ using System.ComponentModel;
  		
  		void FillChild (ReportItemCollection collection);
  		
- 		// end child list
+ 		// end child list --------------------
  		
  		bool IsSorted {get;}
  		

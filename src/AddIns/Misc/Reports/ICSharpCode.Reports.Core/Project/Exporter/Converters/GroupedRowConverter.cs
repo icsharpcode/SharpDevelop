@@ -20,12 +20,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 	/// </summary>
 	/// 
 	
-	public class old_RowConverter:BaseConverter
+	public class RowConverter:BaseConverter
 	{
 
 		private BaseReportItem parent;
 		
-		public old_RowConverter(IDataNavigator dataNavigator,
+		public RowConverter(IDataNavigator dataNavigator,
 		                    ExporterPage singlePage,
 		                    
 		                    ILayouter layouter):base(dataNavigator,singlePage,layouter)
@@ -51,7 +51,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 				base.BaseConvert (myList,simpleContainer,parent.Location.X,
 				                  new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y));
-				
 				
 				return myList;
 			} else {
@@ -80,36 +79,38 @@ namespace ICSharpCode.Reports.Core.Exporter
 			
 				base.FillRow(simpleContainer);
 				
-				TestPrepareContainerForConverting(simpleContainer);
+				PrepareContainerForConverting(simpleContainer);
 
 				base.FireSectionRendering(section);
 
 				currentPosition = base.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
 				
-				TestAfterConverting (mylist,section);
-			// Grouping starts
+				AfterConverting (mylist,section);
+				
+			// Grouping starts  ------------------------
+			
 				if (base.DataNavigator.HasChildren) {
 					
-					((BaseReportItem)simpleContainer).BackColor = color;
+					//((BaseReportItem)simpleContainer).BackColor = color;
+					StandardPrinter.AdjustBackColor(simpleContainer,GlobalValues.DefaultBackColor);
 					base.DataNavigator.SwitchGroup();
 					do {
 						((BaseReportItem)simpleContainer).BackColor = color;
 
 						base.DataNavigator.FillChild(simpleContainer.Items);
-						TestPrepareContainerForConverting(simpleContainer);
+						PrepareContainerForConverting(simpleContainer);
 
 						base.FireSectionRendering(section);
 
 						currentPosition = base.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
 
-						TestAfterConverting (mylist,section);
+						AfterConverting (mylist,section);
 					}
 					while ( base.DataNavigator.ChildMoveNext());
-
 				}
 			
-				// end grouping
-		
+				// end grouping -----------------
+				
 				if (PrintHelper.IsPageFull(new Rectangle(new Point (simpleContainer.Location.X,currentPosition.Y), section.Size),base.SectionBounds)) {
 					base.FirePageFull(mylist);
 					section.SectionOffset = base.SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;
@@ -130,13 +131,13 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		void TestPrepareContainerForConverting(ISimpleContainer simpleContainer)
+		void PrepareContainerForConverting(ISimpleContainer simpleContainer)
 		{
 			base.LayoutRow(simpleContainer);
 		}
 		
 		
-		void TestAfterConverting (ExporterCollection mylist,BaseSection section)
+		void AfterConverting (ExporterCollection mylist,BaseSection section)
 		{
 			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
 			section.Items[0].Size = base.RestoreSize;
