@@ -25,6 +25,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	public sealed class GridPlacementSupport : SnaplinePlacementBehavior
 	{
 		Grid grid;
+		private bool enteredIntoNewContainer;
 		
 		protected override void OnInitialized()
 		{
@@ -145,12 +146,19 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				return VerticalAlignment.Top;
 		}
 		
+		public override void EnterContainer(PlacementOperation operation)
+		{
+			enteredIntoNewContainer=true;
+			base.EnterContainer(operation);
+		}
+		
 		GrayOutDesignerExceptActiveArea grayOut;
 		
 		public override void EndPlacement(PlacementOperation operation)
 		{
 			GrayOutDesignerExceptActiveArea.Stop(ref grayOut);
-			base.EndPlacement(operation);
+			enteredIntoNewContainer=false;
+			base.EndPlacement(operation);			
 		}
 		
 		public override void SetPosition(PlacementInformation info)
@@ -180,9 +188,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			
 			HorizontalAlignment ha = (HorizontalAlignment)info.Item.Properties[FrameworkElement.HorizontalAlignmentProperty].ValueOnInstance;
 			VerticalAlignment va = (VerticalAlignment)info.Item.Properties[FrameworkElement.VerticalAlignmentProperty].ValueOnInstance;
-			ha = SuggestHorizontalAlignment(info.Bounds, availableSpaceRect);
-			va = SuggestVerticalAlignment(info.Bounds, availableSpaceRect);
-			
+			if(enteredIntoNewContainer){
+				ha = SuggestHorizontalAlignment(info.Bounds, availableSpaceRect);
+				va = SuggestVerticalAlignment(info.Bounds, availableSpaceRect);
+			}
 			info.Item.Properties[FrameworkElement.HorizontalAlignmentProperty].SetValue(ha);
 			info.Item.Properties[FrameworkElement.VerticalAlignmentProperty].SetValue(va);
 			
