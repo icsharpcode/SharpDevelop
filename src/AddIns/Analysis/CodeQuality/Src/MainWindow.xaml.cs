@@ -70,12 +70,18 @@ namespace ICSharpCode.CodeQualityAnalysis
 
 			if (String.IsNullOrEmpty(fileDialog.FileName))
 				return;
-
-			definitionTree.Items.Clear();
 			
-			MetricsReader = new MetricsReader(fileDialog.FileName);
-
-			FillMatrix();
+			progressBar.Visibility = Visibility.Visible;
+			fileAssemblyLoading.Text = System.IO.Path.GetFileName(fileDialog.FileName);
+			
+			var worker = new BackgroundWorker();
+			worker.DoWork += (source, args) => MetricsReader = new MetricsReader(fileDialog.FileName);			
+			worker.RunWorkerCompleted += (source, args) => { 
+				progressBar.Visibility = Visibility.Hidden;
+				FillMatrix();
+			};
+			
+			worker.RunWorkerAsync();
 		}
 		
 		private void btnRelayout_Click(object sender, RoutedEventArgs e)
