@@ -82,8 +82,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 						do {
 							//
 							BaseSection section = this.baseTable.Parent as BaseSection;
-							section.Location = new Point(section.Location.X,section.SectionOffset );
-							
+							PrintHelper.AdjustSectionLocation(section);
 							base.FillRow(simpleContainer);
 							
 							StandardPrinter.EvaluateRow(base.Evaluator,mylist);

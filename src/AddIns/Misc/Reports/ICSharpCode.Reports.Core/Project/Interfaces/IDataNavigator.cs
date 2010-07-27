@@ -31,7 +31,7 @@ using System.ComponentModel;
  		
  		bool ChildMoveNext();
  		int ChildListCount {get;}
- 		
+ 		void FillChild (ReportItemCollection collection);
  		//endtest
  		
  		bool IsSorted {get;}

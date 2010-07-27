@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Linq;
 
 namespace ICSharpCode.Reports.Core
 {
@@ -50,9 +51,6 @@ namespace ICSharpCode.Reports.Core
 				}
 			}
 		}
-		
-		
-	
 		
 		
 		public AvailableFieldsCollection AvailableFields{
@@ -131,9 +129,9 @@ namespace ICSharpCode.Reports.Core
 			get{
 				IndexList ind = BuildChildList();
 				return ((ind != null) && (ind.Count > 0));
-//				return BuildChildList().Count > 0;
 			}
 		}
+		
 		
 		IndexList childList;
 		private System.Collections.Generic.List<BaseComparer>.Enumerator ce;
@@ -160,9 +158,24 @@ namespace ICSharpCode.Reports.Core
 				return BuildChildList().Count;
 			}
 		}
+		
+		
 		public bool ChildMoveNext()
 		{
 			return ce.MoveNext();
+		}
+		
+		public void FillChild (ReportItemCollection collection)
+		{
+			TableStrategy t = store as TableStrategy;
+			
+			foreach (BaseDataItem item in collection) {
+				CurrentItemsCollection ci = t.FillDataRow(ce.Current.ListIndex);
+				CurrentItem s = ci.FirstOrDefault(x => x.ColumnName == ((BaseDataItem)item).ColumnName);
+				item.DBValue = s.Value.ToString();
+				
+			}
+			
 		}
 		
 		

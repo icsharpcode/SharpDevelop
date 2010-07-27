@@ -234,7 +234,24 @@ namespace ICSharpCode.Reports.Core
 			return ci;
 		}
 		
-		
+		public  CurrentItemsCollection FillDataRow(int pos)
+		{
+			CurrentItemsCollection ci = new CurrentItemsCollection();
+			DataRow row = this.table.Rows[pos] as DataRow;
+			
+			if (row != null) {
+				CurrentItem c = null;
+				foreach (DataColumn dc in table.Columns)
+				{
+					c = new CurrentItem();
+					c.ColumnName = dc.ColumnName;
+					c.DataType = dc.DataType;
+					c.Value = row[dc.ColumnName];
+					ci.Add(c);
+				}
+			}
+			return ci;
+		}
 		#endregion
 		
 		
