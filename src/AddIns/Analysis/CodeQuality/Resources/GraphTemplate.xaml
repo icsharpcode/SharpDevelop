@@ -45,6 +45,7 @@
 		<Setter Property="BorderThickness" Value="5,3,5,3"/>
 		<Setter Property="Padding" Value="10,5,10,5"/>
 		<Setter Property="BorderBrush" Value="#FF393939"/>
+		<Setter Property="Controls:DependencyGraphLayout.IsSelectingEnabled" Value="True" />
 		<Style.Triggers>
 			<Trigger Property="GraphSharp_Controls:GraphElementBehaviour.IsHighlighted" Value="True">
 				<Setter Property="BorderBrush" Value="{StaticResource HighlightedVertexBorderBrush}"/>
@@ -55,6 +56,13 @@
 				<Setter Property="BorderBrush" Value="{StaticResource HighlightedVertexBorderBrush}"/>
 				<Setter Property="Background" Value="{StaticResource HighlightedVertexBackgroundBrush}"/>
 				<Setter Property="Foreground" Value="{StaticResource HighlightedVertexForegroundBrush}"/>
+			</Trigger>
+			<Trigger Property="Controls:DependencyGraphLayout.IsSelected" Value="True">
+				<Setter Property="Background">
+					<Setter.Value>
+						<SolidColorBrush Color="#FFFFA500" />
+					</Setter.Value>
+				</Setter>
 			</Trigger>
 			<MultiTrigger>
 				<MultiTrigger.Conditions>

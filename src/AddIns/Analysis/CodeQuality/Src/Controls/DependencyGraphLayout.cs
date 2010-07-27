@@ -13,13 +13,85 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 {
 	public class DependencyGraphLayout : GraphLayout<DependencyVertex, DependencyEdge, DependencyGraph>
 	{
-		private Style _defaultVertexControlStyle;
-
 		public event MouseButtonEventHandler VertexClick;
 		public event MouseButtonEventHandler VertexRightClick;
-
+		public event EventHandler<SelectedVertexEventArgs> SelectedVertexChanged;
+		
 		public VertexControl SelectedVertexControl { get; set; }
+		
+		#region DependencyProperty for VertexControl.IsSelected
+		
+		public static readonly DependencyProperty IsSelectingEnabledProperty = 
+			DependencyProperty.RegisterAttached("IsSelectingEnabled", 
+			                                    typeof(bool), 
+			                                    typeof(DependencyGraphLayout), 
+			                                    new UIPropertyMetadata(false, OnIsSelectingEnabledPropertyChanged));
+		
+		public static readonly DependencyProperty IsSelectedProperty = 
+			DependencyProperty.RegisterAttached("IsSelected", 
+			                                    typeof(bool), 
+			                                    typeof(DependencyGraphLayout), 
+			                                    new UIPropertyMetadata(false));
+		
+		public static bool GetIsSelectingEnabled(DependencyObject obj)
+		{
+			return (bool)obj.GetValue(IsSelectingEnabledProperty);
+		}
 
+		public static void SetIsSelectingEnabled(DependencyObject obj, bool value)
+		{
+			obj.SetValue(IsSelectingEnabledProperty, value);
+		}
+		
+		public static bool GetIsSelected(DependencyObject obj)
+		{
+			return (bool)obj.GetValue(IsSelectedProperty);
+		}
+
+		public static void SetIsSelected(DependencyObject obj, bool value)
+		{
+			if (obj != null)
+				obj.SetValue(IsSelectedProperty, value);
+		}
+		
+		private static void OnIsSelectingEnabledPropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+		{
+			if (e.NewValue is bool == false)
+				return;
+			
+			var vertex = obj as VertexControl;
+			
+			if (obj == null)
+				return;
+			
+			var graphLayout = vertex.RootCanvas as DependencyGraphLayout;
+			
+			if (graphLayout == null)
+				return;
+			
+			if ((bool)e.NewValue)
+				graphLayout.SelectedVertexChanged += OnSelectedVertexChanged;
+			else
+				graphLayout.SelectedVertexChanged -= OnSelectedVertexChanged;
+		}
+		
+		public static void OnSelectedVertexChanged(object sender, SelectedVertexEventArgs e)
+		{
+			var vertex = sender as VertexControl;
+			
+			if (vertex == null)
+				return;
+			
+			if (e.New == vertex) {
+				SetIsSelected(e.New as DependencyObject, true);
+				SetIsSelected(e.Old as DependencyObject, false);
+			}
+			else
+				SetIsSelected(e.Old as DependencyObject, false);
+		}
+		
+		#endregion
+		
 		public void ChangeGraph(DependencyGraph graph)
 		{
 			try {
@@ -246,46 +318,19 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 			if (VertexClick != null)
 				VertexClick(sender, e);
 			
+			// selection for nodes
 			var vertex = sender as VertexControl;
-			if (vertex != null)
-			{
-				if (SelectedVertexControl == vertex)
-				{
-					SelectedVertexControl.Style = _defaultVertexControlStyle;
+			if (vertex != null) {
+				if (SelectedVertexControl == vertex) {
 					SelectedVertexControl = null;
+					SelectedVertexChanged(sender, new SelectedVertexEventArgs(null, vertex));
 					return;
 				}
-
-				if (SelectedVertexControl != null)
-				{
-					SelectedVertexControl.Style = vertex.Style;
-				}
-
+				
+				if (SelectedVertexChanged != null)
+					SelectedVertexChanged(sender, new SelectedVertexEventArgs(vertex, SelectedVertexControl));
+				
 				SelectedVertexControl = vertex;
-
-				_defaultVertexControlStyle = vertex.Style;
-
-				// workaround which doesnt brake triggers of highlighting
-				var style = new Style();
-
-				foreach (Setter setter in vertex.Style.Setters)
-				{
-					style.Setters.Add(setter);
-				}
-
-				foreach (var trigger in vertex.Style.Triggers)
-				{
-					style.Triggers.Add(trigger);
-				}
-
-				style.Setters.Add(new Setter
-				                  {
-				                  	Property = Control.BackgroundProperty,
-				                  	Value = new SolidColorBrush(Color.FromRgb(255, 165, 0)) // orange
-				                  });
-
-
-				SelectedVertexControl.Style = style;
 			}
 		}
 
@@ -306,6 +351,19 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		{
 			if (_vertexControls.Count > 0)
 				base.ContinueLayout();
+		}
+		
+		public class SelectedVertexEventArgs : EventArgs
+		{
+			public VertexControl New { get; set; }
+			public VertexControl Old { get; set; }
+			
+			public SelectedVertexEventArgs(VertexControl @new, VertexControl old)
+			{
+				New = @new;
+				Old = old;
+			}
+
 		}
 	}
 }
