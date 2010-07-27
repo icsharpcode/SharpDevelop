@@ -164,19 +164,25 @@ namespace ICSharpCode.SharpDevelop
 			AddImage("Icons.16x16.Indexer"),
 			AddImage("Icons.16x16.InternalIndexer"),
 			AddImage("Icons.16x16.ProtectedIndexer"),
-			AddImage("Icons.16x16.PrivateIndexer")
+			AddImage("Icons.16x16.PrivateIndexer"),
+			
+			AddImage("Icons.16x16.ExtensionMethod"),
+			AddImage("Icons.16x16.InternalExtensionMethod"),
+			AddImage("Icons.16x16.ProtectedExtensionMethod"),
+			AddImage("Icons.16x16.PrivateExtensionMethod")
 		};
 		
-		const int ClassIndex     = 0;
-		const int StructIndex    = ClassIndex + 1 * 4;
-		const int InterfaceIndex = ClassIndex + 2 * 4;
-		const int EnumIndex      = ClassIndex + 3 * 4;
-		const int MethodIndex    = ClassIndex + 4 * 4;
-		const int PropertyIndex  = ClassIndex + 5 * 4;
-		const int FieldIndex     = ClassIndex + 6 * 4;
-		const int DelegateIndex  = ClassIndex + 7 * 4;
-		const int EventIndex     = ClassIndex + 8 * 4;
-		const int IndexerIndex   = ClassIndex + 9 * 4;
+		const int ClassIndex           = 0;
+		const int StructIndex          = ClassIndex + 1 * 4;
+		const int InterfaceIndex       = ClassIndex + 2 * 4;
+		const int EnumIndex            = ClassIndex + 3 * 4;
+		const int MethodIndex          = ClassIndex + 4 * 4;
+		const int PropertyIndex        = ClassIndex + 5 * 4;
+		const int FieldIndex           = ClassIndex + 6 * 4;
+		const int DelegateIndex        = ClassIndex + 7 * 4;
+		const int EventIndex           = ClassIndex + 8 * 4;
+		const int IndexerIndex         = ClassIndex + 9 * 4;
+		const int ExtensionMethodIndex = ClassIndex + 10 * 4;
 		
 		const int internalModifierOffset  = 1;
 		const int protectedModifierOffset = 2;
@@ -230,6 +236,8 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (method.IsOperator)
 				return Operator;
+			else if (method.IsExtensionMethod)
+				return entityImages[ExtensionMethodIndex + GetModifierOffset(method.Modifiers)];
 			else
 				return entityImages[MethodIndex + GetModifierOffset(method.Modifiers)];
 		}
