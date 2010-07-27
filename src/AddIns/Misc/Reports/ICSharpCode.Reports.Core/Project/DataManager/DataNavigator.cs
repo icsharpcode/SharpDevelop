@@ -174,7 +174,7 @@ namespace ICSharpCode.Reports.Core
 		
 		private IndexList BuildChildList()
 		{
-			TableStrategy t = store as TableStrategy;
+			var t = store as TableStrategy;
 			IndexList i = t.IndexList;
 			GroupComparer gc = i[t.CurrentPosition] as GroupComparer;
 			if (gc == null) {
@@ -185,5 +185,17 @@ namespace ICSharpCode.Reports.Core
 		
 		#endregion
 	
+		#region Try make recursive with ChildNavigavtor
+		
+		public IDataNavigator GetChildNavigator()
+		{
+			var i = BuildChildList();
+			if ((i == null) || (i.Count == 0)) {
+				return null;
+			} 
+			return new ChildNavigator(this.store,i);
+		}
+		
+		#endregion
 	}
 }

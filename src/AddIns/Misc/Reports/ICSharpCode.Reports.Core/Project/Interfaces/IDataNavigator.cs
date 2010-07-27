@@ -22,7 +22,9 @@ using System.ComponentModel;
  			get;
  		}
  		
- 		#region Try make recursive
+ 		#region Try make recursive with ChildNavigator
+ 		
+ 		IDataNavigator GetChildNavigator();
  		
  		#endregion
  		

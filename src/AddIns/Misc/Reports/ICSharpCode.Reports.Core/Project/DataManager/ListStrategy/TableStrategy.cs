@@ -165,7 +165,7 @@ namespace ICSharpCode.Reports.Core
 				string v = element.ObjectArray[0].ToString();
 				if (compVal != v) {
 					childList = new IndexList();
-					GroupComparer gc = GHeader(element);
+					GroupComparer gc = BuildGroupHeader(element);
 					gc.IndexList = childList;
 					
 					GChild(childList,element);
@@ -177,7 +177,7 @@ namespace ICSharpCode.Reports.Core
 			ShowIndexList(base.IndexList);
 		}
 		
-		private GroupComparer GHeader (BaseComparer sc)
+		private GroupComparer BuildGroupHeader (BaseComparer sc)
 		{
 			GroupComparer gc = new GroupComparer(sc.ColumnCollection,sc.ListIndex,sc.ObjectArray);
 			base.IndexList.Add(gc);
@@ -234,6 +234,13 @@ namespace ICSharpCode.Reports.Core
 			}
 			return ci;
 		}
+		
+		
+		public object myCurrent (int pos)
+		{
+			return this.table.Rows[pos];
+		}
+		
 		
 		public  CurrentItemsCollection FillDataRow(int pos)
 		{

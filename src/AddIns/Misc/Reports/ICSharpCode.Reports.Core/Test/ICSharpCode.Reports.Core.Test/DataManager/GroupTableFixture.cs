@@ -99,6 +99,76 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		
 		#endregion
 		
+		
+		#region Try make recursive with ChildNavigator
+		
+		[Test]
+		public void Can_Get_ChildNavigator ()
+		{
+			var dataNav = PrepareStandardGrouping();
+			while (dataNav.MoveNext()) {
+				if (dataNav.HasChildren) {
+					IDataNavigator child = dataNav.GetChildNavigator();
+					Assert.That (child,Is.Not.Null);
+				}
+			}
+		}
+		
+		
+		[Test]
+		public void RecursiveCall_Childs ()
+		{
+				var dataNav = PrepareStandardGrouping();
+				dataNav.MoveNext();
+				Console.WriteLine("--------------start rec ------------");
+				reccall (dataNav);
+			Console.WriteLine("--------------end rec ------------");
+		}
+		
+		private void reccall (IDataNavigator startNavigator)
+		{
+			do
+			{
+				DataRow r = startNavigator.Current as DataRow;
+				string v1 = r["last"].ToString() + " :" +  r[3].ToString();
+				Console.WriteLine("\t {0}",v1);
+				if (startNavigator.HasChildren) {
+					IDataNavigator child = startNavigator.GetChildNavigator();
+					Console.WriteLine("header {0} - Child_Count:{1}",v1,child.Count);
+					reccall (child);
+				}
+				
+			} while (startNavigator.MoveNext());
+		}
+	
+		
+		
+		private void reccall_1 (IDataNavigator startNavigator)
+		{
+			Console.WriteLine("start rec ");
+			do
+			{
+				DataRow r = startNavigator.Current as DataRow;
+				string v1 = r["last"].ToString() + " :" +  r[3].ToString();
+				Console.WriteLine(v1);
+				if (startNavigator.HasChildren) {
+					IDataNavigator child = startNavigator.GetChildNavigator();
+					
+					if (child.HasChildren) {
+						do {
+							Console.WriteLine ("children");
+							//reccall (child);
+						}
+						while (child.MoveNext()) ;
+					}
+				}
+			} while (startNavigator.MoveNext());
+			
+		}
+		
+		
+		#endregion
+		
 		private IDataNavigator PrepareStandardGrouping ()
 		{
 			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
