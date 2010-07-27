@@ -365,7 +365,6 @@
 				<ComponentRef Id="AddInWritingHelp"/>
 				<ComponentRef Id="CSharpProjectSharpDevelopCustomToolTemplates"/>
 				<ComponentRef Id="StringResources.pt.resources"/>
-				<ComponentRef Id="VBNetProjectCompactFormsProjectTemplate"/>
 				<ComponentRef Id="StringResources.cngb.resources"/>
 				<ComponentRef Id="AddInWritingHelpWebsiteShortcut"/>
 				<ComponentRef Id="AppConfigFileTemplate"/>

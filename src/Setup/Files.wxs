@@ -155,9 +155,7 @@
 							</Component>
 							<Component Id="BuildTasksTargetFiles" DiskId="1" Guid="55F82461-DEED-43BB-8A79-7243B762EA60">
 								<File Source="..\..\bin\SharpDevelop.Build.Common.targets" Id="SharpDevelop.Build.Common.targets" Name="SharpDevelop.Build.Common.targets" />
-								<File Source="..\..\bin\SharpDevelop.Build.CSharp.targets" Id="SharpDevelop.Build.CSharp.targets" Name="SharpDevelop.Build.CSharp.targets" />
 								<File Source="..\..\bin\SharpDevelop.Build.MSIL.targets" Id="SharpDevelop.Build.MSIL.targets" Name="SharpDevelop.Build.MSIL.targets" />
-								<File Source="..\..\bin\SharpDevelop.Build.VisualBasic.targets" Id="SharpDevelop.Build.VisualBasic.targets" Name="SharpDevelop.Build.VisualBasic.targets" />
 								<File Source="..\..\bin\SharpDevelop.CodeAnalysis.targets" Id="SharpDevelop.CodeAnalysis.targets" Name="SharpDevelop.CodeAnalysis.targets" />
 								<File Source="..\..\bin\SharpDevelop.CheckMSBuild35Features.targets" Id="SharpDevelop.CheckMSBuild35Features.targets" Name="SharpDevelop.CheckMSBuild35Features.targets" />
 								<File Source="..\..\bin\SharpDevelop.TargetingPack.targets" Id="SharpDevelop.TargetingPack.targets" Name="SharpDevelop.TargetingPack.targets" />
@@ -732,7 +730,6 @@
 									<Directory Id="CSharpProjectTemplatesFolder" Name="CSharp">
 										<Component Guid="888085CF-91C6-4669-97AF-BA99B3D9D38B" Id="CSharpProjectTemplates" DiskId="1">
 											<File Source="..\..\data\templates\project\CSharp\WPFNavigationApplication.xpt" Id="CSharpWPFNavigationApplication.xpt" Name="WPFNavigationApplication.xpt" />
-											<File Source="..\..\data\templates\project\CSharp\CompactFormsProject.xpt" Id="CSharpCompactFormsProject.xpt" Name="CompactFormsProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\ConsoleProject.xpt" Id="CSharpConsoleProject.xpt" Name="ConsoleProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\ControlLibrary.xpt" Id="CSharpControlLibrary.xpt" Name="ControlLibrary.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\DefaultAssemblyInfo.cs" Id="CSharpDefaultAssemblyInfo.cs" Name="DefaultAssemblyInfo.cs" />
@@ -783,9 +780,6 @@
 											<File Source="..\..\data\templates\project\VBNet\Service.xpt" Name="Service.xpt" Id="VBNetService.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\SharedAddin.xpt" Id="VBNetSharedAddin.xpt" Name="SharedAddin.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\SharpDevelopAddin.xpt" Id="VBNetSharpDevelopAddin.xpt" Name="SharpDevelopAddin.xpt" />
-										</Component>
-										<Component Guid="5B2ED689-37E3-4C9C-A21B-A5315943792E" Id="VBNetProjectCompactFormsProjectTemplate" DiskId="1">
-											<File Source="..\..\data\templates\project\VBNet\CompactFormsProject.xpt" Id="CompactFormsProject.xpt" Name="CompactFormsProject.xpt" />
 										</Component>
 									</Directory>
 									<Component Guid="73EAC135-57B6-46C0-9F24-70A347B9AAC8" Id="ExampleProjectTemplate" DiskId="1">
