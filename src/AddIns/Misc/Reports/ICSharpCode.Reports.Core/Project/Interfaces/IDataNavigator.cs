@@ -22,13 +22,18 @@ using System.ComponentModel;
  			get;
  		}
  		//Test
-// 		ChildNavigator GetChildNavigator();
+ 		
  		bool HasChildren {get;}
  		
- 		void MoveToChilds();
+ 		void SwitchGroup();
+ 		
  		object ReadChild ();
+ 		
  		bool ChildMoveNext();
+ 		int ChildListCount {get;}
+ 		
  		//endtest
+ 		
  		bool IsSorted {get;}
  		
  		bool IsGrouped {get;}

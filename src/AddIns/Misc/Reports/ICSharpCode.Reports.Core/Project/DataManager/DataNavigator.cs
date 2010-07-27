@@ -124,58 +124,60 @@ namespace ICSharpCode.Reports.Core
 		#endregion
 		
 		
-		#region aaaaaa
+		#region GroupedList
 		
 		public bool HasChildren
 		{
 			get{
-				TableStrategy t = store as TableStrategy;
-				IndexList i = t.IndexList;
-				GroupComparer gc = i[t.CurrentPosition] as GroupComparer;
-				return gc.IndexList.Count > 0;
+				IndexList ind = BuildChildList();
+				return ((ind != null) && (ind.Count > 0));
+//				return BuildChildList().Count > 0;
 			}
 		}
 		
 		IndexList childList;
 		private System.Collections.Generic.List<BaseComparer>.Enumerator ce;
 		
-		public void MoveToChilds()
+		public void SwitchGroup()
 		{
-			childList = new IndexList();
-			TableStrategy t = store as TableStrategy;
-			IndexList i = t.IndexList;
-			GroupComparer gc = i[t.CurrentPosition] as GroupComparer;
-			childList = gc.IndexList;
+			this.childList = BuildChildList();
 			ce = childList.GetEnumerator();
 			ce.MoveNext();
 		}
 		
+		
 		public object ReadChild()
 		{
-			
 			var i = ce.Current.ListIndex;
 			TableStrategy t = store as TableStrategy;
 			return t.Readrandowm (i);
 		}
 		
+		
+		public int ChildListCount
+		{
+			get {
+				return BuildChildList().Count;
+			}
+		}
 		public bool ChildMoveNext()
 		{
 			return ce.MoveNext();
 		}
-		#endregion
-	
 		
-	}
-	
-	
-	public class ChildNavigator
-	{
-		public ChildNavigator (IndexList list)
+		
+		private IndexList BuildChildList()
 		{
-			IndexList = list;
+			TableStrategy t = store as TableStrategy;
+			IndexList i = t.IndexList;
+			GroupComparer gc = i[t.CurrentPosition] as GroupComparer;
+			if (gc == null) {
+				return null;
+			}
+			return gc.IndexList;
 		}
 		
-		public IndexList IndexList {get; private set;}
+		#endregion
+	
 	}
-		
 }

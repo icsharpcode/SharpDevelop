@@ -117,7 +117,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		void ReadFromChilds (IDataNavigator nav)
 		{
-			nav.MoveToChilds();
+			nav.SwitchGroup();
 			do {
 				var o = nav.ReadChild() as System.Data.DataRow;
 				string v = o.ItemArray[3].ToString();

@@ -49,26 +49,36 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			}
 		}
 		
+		[Test]
+		public void Can_Read_Child_Count ()
+		{
+			var dataNav = PrepareStandardGrouping();
+			while (dataNav.MoveNext()) 
+			{
+				Assert.That(dataNav.ChildListCount,Is.GreaterThan(0));
+			}
+		}
 		
 		[Test]
-		public void Read_Children()
+		public void Can_Read_Grouped_List()
 		{
 			var dataNav = PrepareStandardGrouping();
 			while (dataNav.MoveNext()) {
 				if (dataNav.HasChildren) {
+					Assert.That(dataNav.HasChildren,Is.True);
 					DataRow r = dataNav.Current as DataRow;
 					string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString();
 					Console.WriteLine(v2);
-					ReadFromChilds(dataNav);
+					ReadChildList(dataNav);
 				}
 				
 			}
 		}
 		
 		
-		void ReadFromChilds (IDataNavigator nav)
+		void ReadChildList (IDataNavigator nav)
 		{
-			nav.MoveToChilds();
+			nav.SwitchGroup();
 			do {
 				var o = nav.ReadChild() as DataRow;
 				string v = o.ItemArray[3].ToString();
@@ -80,20 +90,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		
 		
 		/*
-		[Test]
-		public void aaa()
-		{
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,new ReportSettings());
-			DataNavigator dataNav = dm.GetNavigator;
-
-			while (dataNav.MoveNext()) {
-				DataRow r = dataNav.Current as DataRow;
-				string v2 = r["Groupitem"].ToString();
-				Console.WriteLine(v2);
-			}
-		}
-		
-		
+	
 		[Test]
 		public void ChildNavigator_Can_Init()
 		{
