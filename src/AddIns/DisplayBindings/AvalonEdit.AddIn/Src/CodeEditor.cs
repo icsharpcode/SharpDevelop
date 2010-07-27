@@ -285,13 +285,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					this.Encoding = reader.CurrentEncoding;
 				}
 			}
-			primaryTextEditor.IsModified = false;
 			NewLineConsistencyCheck.StartConsistencyCheck(this);
 		}
 		
 		public void Save(Stream stream)
 		{
-			primaryTextEditor.Save(stream);
+			// don't use TextEditor.Save here because that would touch the Modified flag,
+			// but OpenedFile is already managing IsDirty
+			using (StreamWriter writer = new StreamWriter(stream, primaryTextEditor.Encoding ?? Encoding.UTF8)) {
+				writer.Write(primaryTextEditor.Text);
+			}
 		}
 		
 		void OnSplitView(object sender, ExecutedRoutedEventArgs e)
