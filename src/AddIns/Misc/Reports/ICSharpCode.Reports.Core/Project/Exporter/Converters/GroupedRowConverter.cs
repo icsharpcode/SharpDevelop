@@ -20,12 +20,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 	/// </summary>
 	/// 
 	
-	public class GroupedRowConverter:BaseConverter
+	public class old_RowConverter:BaseConverter
 	{
 
 		private BaseReportItem parent;
 		
-		public GroupedRowConverter(IDataNavigator dataNavigator,
+		public old_RowConverter(IDataNavigator dataNavigator,
 		                    ExporterPage singlePage,
 		                    
 		                    ILayouter layouter):base(dataNavigator,singlePage,layouter)
@@ -73,7 +73,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
 				base.SaveSize(section.Items[0].Size);
 				Color color = ((BaseReportItem)simpleContainer).BackColor;
-				
 				if (base.DataNavigator.HasChildren)
 				{
 					TestDecorateElement(simpleContainer);
@@ -88,7 +87,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				currentPosition = base.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
 				
 				TestAfterConverting (mylist,section);
-	
+			// Grouping starts
 				if (base.DataNavigator.HasChildren) {
 					
 					((BaseReportItem)simpleContainer).BackColor = color;
@@ -108,7 +107,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 					while ( base.DataNavigator.ChildMoveNext());
 
 				}
-	
+			
+				// end grouping
+		
 				if (PrintHelper.IsPageFull(new Rectangle(new Point (simpleContainer.Location.X,currentPosition.Y), section.Size),base.SectionBounds)) {
 					base.FirePageFull(mylist);
 					section.SectionOffset = base.SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;

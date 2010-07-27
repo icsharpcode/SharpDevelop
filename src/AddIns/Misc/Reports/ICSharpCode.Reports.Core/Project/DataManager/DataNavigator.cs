@@ -143,14 +143,7 @@ namespace ICSharpCode.Reports.Core
 			ce.MoveNext();
 		}
 		
-		
-		public object ReadChild()
-		{
-			var i = ce.Current.ListIndex;
-			TableStrategy t = store as TableStrategy;
-			return t.Readrandowm (i);
-		}
-		
+	
 		
 		public int ChildListCount
 		{

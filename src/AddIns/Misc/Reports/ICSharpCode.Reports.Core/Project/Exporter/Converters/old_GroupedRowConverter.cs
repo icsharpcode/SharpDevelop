@@ -27,7 +27,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		public RowConverter(IDataNavigator dataNavigator,
 		                    ExporterPage singlePage,
-		                    
+		                   
 		                    ILayouter layouter):base(dataNavigator,singlePage,layouter)
 		{
 		}
@@ -66,50 +66,31 @@ namespace ICSharpCode.Reports.Core.Exporter
 			BaseSection section = parent as BaseSection;
 			
 			int defaultLeftPos = parent.Location.X;
-
+			
 			do {
+				Console.WriteLine ("haschild {0}",base.DataNavigator.HasChildren);
+				if (base.DataNavigator.HasChildren) {
+					ReadFromChilds(base.DataNavigator);
+				}
 				
-				PrintHelper.AdjustSectionLocation (section);
+				section.Location = new Point(section.Location.X,section.SectionOffset );
 				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
 				base.SaveSize(section.Items[0].Size);
-				Color color = ((BaseReportItem)simpleContainer).BackColor;
-				if (base.DataNavigator.HasChildren)
-				{
-					TestDecorateElement(simpleContainer);
-				}
-			
+				
 				base.FillRow(simpleContainer);
 				
-				TestPrepareContainerForConverting(simpleContainer);
-
+				base.LayoutRow(simpleContainer);
+				
 				base.FireSectionRendering(section);
-
+				
 				currentPosition = base.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
 				
-				TestAfterConverting (mylist,section);
-			// Grouping starts
-				if (base.DataNavigator.HasChildren) {
-					
-					((BaseReportItem)simpleContainer).BackColor = color;
-					base.DataNavigator.SwitchGroup();
-					do {
-						((BaseReportItem)simpleContainer).BackColor = color;
+				StandardPrinter.EvaluateRow(base.Evaluator,mylist);
+				
+				section.Items[0].Size = base.RestoreSize;
+				section.SectionOffset += section.Size.Height + 3 * GlobalValues.GapBetweenContainer;
 
-						base.DataNavigator.FillChild(simpleContainer.Items);
-						TestPrepareContainerForConverting(simpleContainer);
-
-						base.FireSectionRendering(section);
-
-						currentPosition = base.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
-
-						TestAfterConverting (mylist,section);
-					}
-					while ( base.DataNavigator.ChildMoveNext());
-
-				}
-			
-				// end grouping
-		
+				
 				if (PrintHelper.IsPageFull(new Rectangle(new Point (simpleContainer.Location.X,currentPosition.Y), section.Size),base.SectionBounds)) {
 					base.FirePageFull(mylist);
 					section.SectionOffset = base.SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;
@@ -117,8 +98,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 					mylist.Clear();
 				}
 				
-				ShouldDrawBorder (section,mylist);
-				
+				if (section.DrawBorder == true) {
+					BaseRectangleItem br = BasePager.CreateDebugItem (section);
+					BaseExportColumn bec = br.CreateExportColumn();
+					bec.StyleDecorator.Location = section.Location;
+					mylist.Insert(0,bec);
+				}
 			}
 			while (base.DataNavigator.MoveNext());
 			
@@ -130,36 +115,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		void TestPrepareContainerForConverting(ISimpleContainer simpleContainer)
+		void ReadFromChilds (IDataNavigator nav)
 		{
-			base.LayoutRow(simpleContainer);
-		}
-		
-		
-		void TestAfterConverting (ExporterCollection mylist,BaseSection section)
-		{
-			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
-			section.Items[0].Size = base.RestoreSize;
-			section.SectionOffset += section.Size.Height + 3 * GlobalValues.GapBetweenContainer;
-		}
-		
-		
-		Color TestDecorateElement(ISimpleContainer simpleContainer)
-		{
-			BaseReportItem i = simpleContainer as BaseReportItem;
-			var retval = i.BackColor;
-			i.BackColor = System.Drawing.Color.LightGray;
-			return retval;
-		}
-		
-		void ShouldDrawBorder (BaseSection section,ExporterCollection list)
-		{
-			if (section.DrawBorder == true) {
-				BaseRectangleItem br = BasePager.CreateDebugItem (section);
-				BaseExportColumn bec = br.CreateExportColumn();
-				bec.StyleDecorator.Location = section.Location;
-				list.Insert(0,bec);
-			}
+//			nav.SwitchGroup();
+//			do {
+//				var o = nav.ReadChild() as System.Data.DataRow;
+//				string v = o.ItemArray[3].ToString();
+//					Console.WriteLine("\t {0}",v);
+//			}
+//			while ( nav.ChildMoveNext());
 		}
 	}
 }

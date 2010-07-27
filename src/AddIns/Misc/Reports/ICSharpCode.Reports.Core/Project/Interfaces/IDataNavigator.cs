@@ -21,18 +21,20 @@ using System.ComponentModel;
  		bool HasMoreData {
  			get;
  		}
- 		//Test
+ 		
+ 		// childList
  		
  		bool HasChildren {get;}
  		
  		void SwitchGroup();
  		
- 		object ReadChild ();
- 		
  		bool ChildMoveNext();
+ 		
  		int ChildListCount {get;}
+ 		
  		void FillChild (ReportItemCollection collection);
- 		//endtest
+ 		
+ 		// end child list
  		
  		bool IsSorted {get;}
  		

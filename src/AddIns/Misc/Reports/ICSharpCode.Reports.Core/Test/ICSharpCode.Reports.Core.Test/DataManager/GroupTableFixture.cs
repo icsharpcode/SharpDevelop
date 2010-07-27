@@ -59,6 +59,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			}
 		}
 		
+		#region Read-Fill Child List
 		
 		[Test]
 		public void Can_FillChild()
@@ -96,72 +97,8 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			while ( nav.ChildMoveNext());
 		}
 		
+		#endregion
 		
-		[Test]
-		public void Can_Read_Grouped_List()
-		{
-			var dataNav = PrepareStandardGrouping();
-			while (dataNav.MoveNext()) {
-				if (dataNav.HasChildren) {
-					Assert.That(dataNav.HasChildren,Is.True);
-					DataRow r = dataNav.Current as DataRow;
-					string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString();
-					Console.WriteLine(v2);
-					ReadChildList(dataNav);
-				}
-				
-			}
-		}
-		
-		
-		void ReadChildList (IDataNavigator nav)
-		{
-			nav.SwitchGroup();
-			do {
-				var o = nav.ReadChild() as DataRow;
-				string v = o.ItemArray[3].ToString();
-				Console.WriteLine("\t {0}",v);
-			}
-			while ( nav.ChildMoveNext());
-		}
-		
-		
-		
-		/*
-	
-		[Test]
-		public void ChildNavigator_Can_Init()
-		{
-			var dataNav = PrepareStandardGrouping();
-			Console.WriteLine("start list");
-			while (dataNav.MoveNext())
-			{
-				DataRow r = dataNav.Current as DataRow;
-				string v2 = r["Groupitem"].ToString();
-				Console.WriteLine(" - {0}  ",v2);
-				ChildNavigator childNav = dataNav.GetChildNavigator();
-				Assert.That(childNav != null);
-			}
-		}
-		
-		*/
-		
-		
-		/*
-		
-		[Test]
-		public void ChildNavigator_All_Childs_Contains_Elements()
-		{
-			var dataNav = PrepareStandardGrouping();
-			Console.WriteLine("start list");
-			while (dataNav.MoveNext())
-			{
-				ChildNavigator childNav = dataNav.GetChildNavigator();
-				Assert.That(childNav.IndexList.Count > 0);
-			}
-		}
-		*/
-				
 		private IDataNavigator PrepareStandardGrouping ()
 		{
 			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
