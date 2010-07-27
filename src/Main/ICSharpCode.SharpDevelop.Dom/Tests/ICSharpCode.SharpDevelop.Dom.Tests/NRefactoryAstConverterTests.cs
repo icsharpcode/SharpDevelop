@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Tests
 			foreach (var reference in references) {
 				pc.AddReferencedContent(reference);
 			}
-			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
+			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc, language);
 			using (IParser p = ParserFactory.CreateParser(language, new StringReader(code))) {
 				p.ParseMethodBodies = false;
 				p.Parse();

@@ -57,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			parser.Parse();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			
-			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
+			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc, sourceLanguage);
 			visitor.VisitCompilationUnit(parser.CompilationUnit, null);
 			visitor.Cu.FileName = sourceLanguage == SupportedLanguage.CSharp ? "a.cs" : "a.vb";
 			foreach (IClass c in visitor.Cu.Classes) {
