@@ -21,7 +21,7 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <summary>
         /// Type which owns this type. If this isn't nested type so Owner is null.
         /// </summary>
-        public Type Owner { get; set; }
+        public Type DeclaringType { get; set; }
 
         /// <summary>
         /// Inherited type. If there is no inheritance so it is null.
@@ -62,13 +62,7 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <summary>
         /// Name of type with a name of namespace.
         /// </summary>
-        public string FullName
-        {
-            get
-            {
-                return Namespace.Name + "." + Name;
-            }
-        }
+        public string FullName { get; set; }
 
         /// <summary>
         /// Name of type
@@ -165,7 +159,7 @@ namespace ICSharpCode.CodeQualityAnalysis
             GenericBaseTypes = new HashSet<Type>();
             GenericImplementedInterfacesTypes = new HashSet<Type>();
 
-            Owner = null;
+            DeclaringType = null;
             BaseType = null;
 
             IsBaseTypeGenericInstance = false;

@@ -14,6 +14,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 	public class MetricsReader
 	{
 		IDictionary<MemberReference, string> nameCache;
+		IDictionary<MemberReference, string> fullNameCache;
 		
 		public Module MainModule { get; private set; }
 		public ISet<Module> Modules { get; private set; }
@@ -21,6 +22,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		public MetricsReader(string file)
 		{
 			nameCache = new Dictionary<MemberReference, string>();
+			fullNameCache = new Dictionary<MemberReference, string>();
 			Modules = new HashSet<Module>();
 			ReadAssembly(file);
 		}
@@ -100,7 +102,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 					var type = CreateType(parentType.Namespace.Module, typeDefinition);
 
 					parentType.NestedTypes.Add(type);
-					type.Owner = parentType;
+					type.DeclaringType = parentType;
 
 					if (typeDefinition.HasNestedTypes)
 						AddNestedTypes(type, typeDefinition.NestedTypes);
@@ -119,6 +121,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 			var type = new Type
 			{
 				Name = FormatTypeName(typeDefinition),
+				FullName = FormatTypeName(typeDefinition, true),
 				IsInterface = typeDefinition.IsInterface,
 				IsEnum = typeDefinition.IsEnum,
 				IsClass = typeDefinition.IsClass,
@@ -173,14 +176,14 @@ namespace ICSharpCode.CodeQualityAnalysis
 					var type =
 						(from n in module.Namespaces
 						 from t in n.Types
-						 where (t.Name == FormatTypeName(typeDefinition))
+						 where t.FullName == FormatTypeName(typeDefinition, true)
 						 select t).SingleOrDefault();
-
+					
 					if (typeDefinition.BaseType != null)
 					{
 						var baseType = (from n in module.Namespaces
 						                from t in n.Types
-						                where (t.Name == FormatTypeName(typeDefinition.BaseType))
+						                where (t.FullName == FormatTypeName(typeDefinition.BaseType, true))
 						                select t).SingleOrDefault();
 
 						type.BaseType = baseType; // if baseType is null so propably inherits from another assembly
@@ -200,7 +203,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 						{
 							var implementedIc = (from n in module.Namespaces
 							                     from t in n.Types
-							                     where (t.Name == FormatTypeName(ic))
+							                     where (t.FullName == FormatTypeName(ic, true))
 							                     select t).SingleOrDefault();
 
 							if (implementedIc != null)
@@ -249,7 +252,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				var declaringType =
 					(from n in type.Namespace.Module.Namespaces
 					 from t in n.Types
-					 where t.Name == FormatTypeName(eventDefinition.EventType)
+					 where t.FullName == FormatTypeName(eventDefinition.EventType, true)
 					 select t).SingleOrDefault();
 
 				e.EventType = declaringType;
@@ -297,7 +300,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				var fieldType =
 					(from n in type.Namespace.Module.Namespaces
 					 from t in n.Types
-					 where t.Name == FormatTypeName(fieldDefinition.FieldType)
+					 where t.FullName == FormatTypeName(fieldDefinition.FieldType, true)
 					 select t).SingleOrDefault();
 
 				if (fieldDefinition.FieldType.IsGenericInstance)
@@ -339,7 +342,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				var returnType =
 					(from n in type.Namespace.Module.Namespaces
 					 from t in n.Types
-					 where t.Name == FormatTypeName(methodDefinition.ReturnType)
+					 where t.FullName == FormatTypeName(methodDefinition.ReturnType, true)
 					 select t).SingleOrDefault();
 
 				method.ReturnType = returnType; // if null so return type is outside of assembly
@@ -357,7 +360,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 					var parameterType =
 						(from n in type.Namespace.Module.Namespaces
 						 from t in n.Types
-						 where t.Name == FormatTypeName(parameter.ParameterType)
+						 where t.FullName == FormatTypeName(parameter.ParameterType, true)
 						 select t).SingleOrDefault();
 
 					if (parameterType != null)
@@ -414,11 +417,10 @@ namespace ICSharpCode.CodeQualityAnalysis
 				if (instr is MethodDefinition)
 				{
 					var md = instr as MethodDefinition;
-					var type = (from n in method.Owner.Namespace.Module.Namespaces
-					            from t in n.Types
-					            where t.Name == FormatTypeName(md.DeclaringType) &&
-					            n.Name == t.Namespace.Name
-					            select t).SingleOrDefault();
+                   var type = (from n in method.Owner.Namespace.Module.Namespaces
+                             from t in n.Types
+                             where t.FullName == FormatTypeName(md.DeclaringType, true)
+                             select t).SingleOrDefault();
 
 					method.TypeUses.Add(type);
 
@@ -458,7 +460,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				var type =
 					(from n in module.Namespaces
 					 from t in n.Types
-					 where t.Name == FormatTypeName(parameter)
+					 where t.FullName == FormatTypeName(parameter, true)
 					 select t).SingleOrDefault();
 
 				if (type != null) //
@@ -527,17 +529,21 @@ namespace ICSharpCode.CodeQualityAnalysis
 		/// </summary>
 		/// <param name="type">A type definition with declaring type and name</param>
 		/// <returns>A type name</returns>
-		public string FormatTypeName(TypeReference type)
+		public string FormatTypeName(TypeReference type, bool useFullName = false)
 		{
 			type = type.GetElementType();
 			
-			if (nameCache.ContainsKey(type))
-				return nameCache[type];
+			var cache = useFullName ? fullNameCache : nameCache;
+			
+			if (cache.ContainsKey(type))
+				return cache[type];
+			
+			var name = useFullName ? type.FullName : type.Name;
 
 			if (type.IsNested && type.DeclaringType != null)
 			{
-				nameCache[type] = FormatTypeName(type.DeclaringType) + "+" + type.Name;
-				return nameCache[type];
+				cache[type] = FormatTypeName(type.DeclaringType, useFullName) + "+" + name;
+				return cache[type];
 			}
 
 			if (type.HasGenericParameters)
@@ -553,11 +559,11 @@ namespace ICSharpCode.CodeQualityAnalysis
 						builder.Append(",");
 				}
 
-				nameCache[type] = StripGenericName(type.Name) + "<" + builder + ">";
-				return nameCache[type];
+				cache[type] = StripGenericName(name) + "<" + builder + ">";
+				return cache[type];
 			}
 			
-			return type.Name; // not neeeded to be cached
+			return name; // not neeeded to be cached
 		}
 
 		/// <summary>
@@ -575,7 +581,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		/// </summary>
 		/// <param name="type">A type definition with namespace</param>
 		/// <returns>A namespace</returns>
-		private string GetNamespaceName(TypeDefinition type)
+		private string GetNamespaceName(TypeReference type)
 		{
 			if (type.IsNested && type.DeclaringType != null)
 				return GetNamespaceName(type.DeclaringType);
