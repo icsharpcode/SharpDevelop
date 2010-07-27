@@ -88,15 +88,16 @@ namespace ICSharpCode.WpfDesign.AddIn
 			object[] attributes = item.ComponentType.GetCustomAttributes(typeof(DefaultEventAttribute), true);
 			if (attributes.Length == 1) {
 				DefaultEventAttribute dae = (DefaultEventAttribute)attributes[0];
-                // To filter controls derived from ItemsControl
-                if (dae.Name != "OnItemsChanged")
-                {
-                    DesignItemProperty property = item.Properties.GetProperty(dae.Name);
-                    if (property != null && property.IsEvent)
-                    {
-                        return property;
-                    }
-                }
+				var events = TypeDescriptor.GetEvents(item.Component);
+               var eventInfo = events[dae.Name];
+               if(eventInfo != null)
+               {
+                   DesignItemProperty property = item.Properties.GetProperty(dae.Name);
+                   if (property != null && property.IsEvent)
+                   {
+                       return property;
+                   }
+               }
 			}
 			return null;
 		}
