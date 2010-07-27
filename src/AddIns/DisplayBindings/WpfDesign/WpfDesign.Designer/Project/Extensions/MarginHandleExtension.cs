@@ -91,7 +91,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
                             } else {
                                 var leftMargin = position.Left - GetColumnOffset(column);
                                 margin.Left = leftMargin;
-                                this.ExtendedItem.Properties[FrameworkElement.HorizontalAlignmentProperty].SetValue(HorizontalAlignment.Stretch);                                
+                                this.ExtendedItem.Properties[FrameworkElement.HorizontalAlignmentProperty].Reset();
                             }
                         } else {
                             if (_leftHandle.Visibility == Visibility.Visible) {
@@ -117,7 +117,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
                             } else {
                                 var topMargin = position.Top - GetRowOffset(row);
                                 margin.Top = topMargin;
-                                this.ExtendedItem.Properties[FrameworkElement.VerticalAlignmentProperty].SetValue(VerticalAlignment.Stretch);
+                                this.ExtendedItem.Properties[FrameworkElement.VerticalAlignmentProperty].Reset();
                             }
                         } else {
                             if (_topHandle.Visibility == Visibility.Visible) {
@@ -143,7 +143,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
                             } else {
                                 var rightMargin = GetColumnOffset(column + columnSpan) - position.Right;
                                 margin.Right = rightMargin;
-                                this.ExtendedItem.Properties[FrameworkElement.HorizontalAlignmentProperty].SetValue(HorizontalAlignment.Stretch);                                
+                                this.ExtendedItem.Properties[FrameworkElement.HorizontalAlignmentProperty].Reset();
                             }
                         } else {
                             if (_rightHandle.Visibility == Visibility.Visible) {
@@ -169,7 +169,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
                             } else {
                                 var bottomMargin = GetRowOffset(row + rowSpan) - position.Bottom;
                                 margin.Bottom = bottomMargin;
-                                this.ExtendedItem.Properties[FrameworkElement.VerticalAlignmentProperty].SetValue(VerticalAlignment.Stretch);
+                                this.ExtendedItem.Properties[FrameworkElement.VerticalAlignmentProperty].Reset();
                             }
                         } else {
                             if (_bottomHandle.Visibility == Visibility.Visible) {
