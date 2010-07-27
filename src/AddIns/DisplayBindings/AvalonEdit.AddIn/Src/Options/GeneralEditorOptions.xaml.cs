@@ -41,8 +41,11 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 		public override bool SaveOptions()
 		{
 			CodeEditorOptions options = CodeEditorOptions.Instance;
-			options.FontFamily = fontSelectionPanel.CurrentFont.Name;
-			options.FontSize = Math.Round(fontSelectionPanel.CurrentFont.Size * 96.0 / 72.0);
+			var font = fontSelectionPanel.CurrentFont;
+			if (font != null) {
+				options.FontFamily = font.Name;
+				options.FontSize = Math.Round(font.Size * 96.0 / 72.0);
+			}
 			return base.SaveOptions();
 		}
 	}
