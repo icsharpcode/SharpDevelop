@@ -39,8 +39,15 @@ namespace SharpRefactoring
 				if (expression == null)
 					return null;
 				
+				string title = "${res:AddIns.SharpRefactoring.IntroduceMethod}";
+				
+				try {
+					title = string.Format(StringParser.Parse("${res:AddIns.SharpRefactoring.IntroduceMethod}"), unknownMethodCall.CallName, unknownMethodCall.Target.FullyQualifiedName);
+				} catch (FormatException) {
+				}
+				
 				return new IntroduceMethodContextAction(unknownMethodCall, expression, editor) {
-					Title = string.Format(StringParser.Parse("${res:AddIns.SharpRefactoring.IntroduceMethod}"), unknownMethodCall.CallName, unknownMethodCall.Target.FullyQualifiedName)
+					Title = title
 				};
 			}
 			return null;
