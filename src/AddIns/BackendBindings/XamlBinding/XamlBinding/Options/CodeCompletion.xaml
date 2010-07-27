@@ -23,20 +23,22 @@
           <RowDefinition Height="*" />
           <RowDefinition Height="*" />
           <RowDefinition Height="*" />
+          <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.ColumnSpan="2" Margin="3" Text="{sd:Localize AddIns.XamlBinding.Options.HighlightingDescription}" TextWrapping="WrapWithOverflow" />
-        <Label Grid.Row="1" Content="{sd:Localize AddIns.XamlBinding.Options.PropertyColor}" />
-        <Label Grid.Row="2" Content="{sd:Localize AddIns.XamlBinding.Options.EventColor}" />
-        <Label Grid.Row="3" Content="{sd:Localize AddIns.XamlBinding.Options.NamespaceDeclarationColor}" />
-        <Label Grid.Row="4" Content="{sd:Localize AddIns.XamlBinding.Options.IgnoredElementColor}" />
-        <gui:ColorPicker Grid.Row="1" Grid.Column="1" Value="{sd:OptionBinding addin:XamlBindingOptions.PropertyForegroundColor}" />
-        <gui:ColorPicker Grid.Row="2" Grid.Column="1" Value="{sd:OptionBinding addin:XamlBindingOptions.EventForegroundColor}" />
-        <gui:ColorPicker Grid.Row="3" Grid.Column="1" Value="{sd:OptionBinding addin:XamlBindingOptions.NamespaceDeclarationForegroundColor}" />
-        <gui:ColorPicker Grid.Row="4" Grid.Column="1" Value="{sd:OptionBinding addin:XamlBindingOptions.IgnoredForegroundColor}" />
+        <CheckBox Grid.ColumnSpan="2" Margin="3" Content="{sd:Localize AddIns.XamlBinding.Options.UseHighlighting}" IsChecked="{sd:OptionBinding addin:XamlBindingOptions.UseAdvancedHighlighting}" />
+        <TextBlock Grid.ColumnSpan="2" Grid.Row="1" Margin="3" Text="{sd:Localize AddIns.XamlBinding.Options.HighlightingDescription}" TextWrapping="WrapWithOverflow" />
+        <Label Grid.Row="2" Content="{sd:Localize AddIns.XamlBinding.Options.PropertyColor}" />
+        <Label Grid.Row="3" Content="{sd:Localize AddIns.XamlBinding.Options.EventColor}" />
+        <Label Grid.Row="4" Content="{sd:Localize AddIns.XamlBinding.Options.NamespaceDeclarationColor}" />
+        <Label Grid.Row="5" Content="{sd:Localize AddIns.XamlBinding.Options.IgnoredElementColor}" />
+        <gui:ColorPicker Grid.Row="2" Grid.Column="1" Value="{sd:OptionBinding addin:XamlBindingOptions.PropertyForegroundColor}" />
+        <gui:ColorPicker Grid.Row="3" Grid.Column="1" Value="{sd:OptionBinding addin:XamlBindingOptions.EventForegroundColor}" />
+        <gui:ColorPicker Grid.Row="4" Grid.Column="1" Value="{sd:OptionBinding addin:XamlBindingOptions.NamespaceDeclarationForegroundColor}" />
+        <gui:ColorPicker Grid.Row="5" Grid.Column="1" Value="{sd:OptionBinding addin:XamlBindingOptions.IgnoredForegroundColor}" />
       </Grid>
     </GroupBox>
   </StackPanel>
