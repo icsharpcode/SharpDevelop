@@ -9,8 +9,8 @@ using System;
 using System.IO;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.VBNet;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
+using ICSharpCode.SharpDevelop.Dom.VBNet;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.VBNetBinding.Parser
@@ -101,7 +101,7 @@ namespace ICSharpCode.VBNetBinding.Parser
 			p.ParseMethodBodies = false;
 			p.Parse();
 			
-			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent);
+			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent, ICSharpCode.NRefactory.SupportedLanguage.VBNet);
 			if (projectContent.Project != null) {
 				visitor.VBRootNamespace = ((IProject)projectContent.Project).RootNamespace;
 			}

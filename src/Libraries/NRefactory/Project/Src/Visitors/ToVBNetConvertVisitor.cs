@@ -395,7 +395,7 @@ namespace ICSharpCode.NRefactory.Visitors
 		public override object VisitLocalVariableDeclaration(LocalVariableDeclaration localVariableDeclaration, object data)
 		{
 			if (localVariableDeclaration.TypeReference.Type == "var")
-				localVariableDeclaration.TypeReference = TypeReference.Null;;
+				localVariableDeclaration.TypeReference = TypeReference.Null;
 			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
 		}
 	}

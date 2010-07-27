@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Linq;
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Dom.VBNet;
 using AST = ICSharpCode.NRefactory.Ast;
@@ -31,9 +32,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		public NRefactoryASTConvertVisitor(IProjectContent projectContent)
+		public NRefactoryASTConvertVisitor(IProjectContent projectContent, SupportedLanguage language)
 		{
-			if (projectContent.Language == LanguageProperties.VBNet)
+			if (language == SupportedLanguage.VBNet)
 				cu = new VBNetCompilationUnit(projectContent);
 			else
 				cu = new DefaultCompilationUnit(projectContent);

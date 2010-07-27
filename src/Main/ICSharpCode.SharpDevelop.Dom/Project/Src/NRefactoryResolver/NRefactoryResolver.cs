@@ -163,7 +163,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			this.ProjectContent = cu.ProjectContent;
 			
 			if (language == SupportedLanguage.VBNet) {
-				IVBNetOptionProvider provider = cu as IVBNetOptionProvider;
+				IVBNetOptionProvider provider = (IVBNetOptionProvider)cu;
 				
 				inferAllowed = provider.OptionInfer ?? false;
 			}
