@@ -19,6 +19,7 @@ using System.Xml;
 namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 {
 	[TestFixture]
+	[Ignore]
 	[SetCulture("de-DE")]
 	public class AggregateFunctionsFromTableFixture
 	{

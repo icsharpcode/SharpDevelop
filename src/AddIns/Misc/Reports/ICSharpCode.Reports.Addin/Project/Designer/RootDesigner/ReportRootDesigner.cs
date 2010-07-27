@@ -19,7 +19,8 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
 using ICSharpCode.Reports.Core;
-
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.Core;
 namespace ICSharpCode.Reports.Addin
 {
 	/// <summary>
@@ -261,13 +262,12 @@ namespace ICSharpCode.Reports.Addin
 		{
 			System.Console.WriteLine("RootDesigner:OnComponentChanged {0} from {1} to {2}",ce.Component.ToString(),ce.OldValue,ce.NewValue);
 			
-//			MemberDescriptor m = ce.Member;
-			if (ce.Member.Name == "Name") {
-				AbstractItem item = ce.Component as AbstractItem;
-				if (item != null) {
-					item.Name = ce.NewValue.ToString();
-				}
+			LoggingService.Debug("RootDesigner:OnComponentChanged");
+			AbstractItem item = ce.Component as AbstractItem;
+			if (item != null) {
+				item.Name = ce.NewValue.ToString();
 			}
+
 			
 			BaseSection section = ce.Component as BaseSection;
 			if (section != null) {

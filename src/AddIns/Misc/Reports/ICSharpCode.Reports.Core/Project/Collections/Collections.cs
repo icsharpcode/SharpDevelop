@@ -81,16 +81,6 @@ namespace ICSharpCode.Reports.Core{
 		}
 		
 		
-		/*
-		public ExporterCollection ConvertAll<BaseExportColumn>(Converter<BaseReportItem, ICSharpCode.Reports.Core.Exporter.BaseExportColumn> converter)
-		{
-			List<ICSharpCode.Reports.Core.Exporter.BaseExportColumn> l  = InnerList.ConvertAll(converter);
-			ExporterCollection e = new ExporterCollection();
-			e.AddRange(l);
-			return e;
-		}
-		*/
-		
 		public void AddRange(IEnumerable<BaseReportItem> items)
 		{
 			foreach (BaseReportItem item in items) Add(item);
@@ -121,12 +111,7 @@ namespace ICSharpCode.Reports.Core{
 	
 		private BaseReportItem InnerFind (string name)
 		{
-			var query = from bt in base.Items where bt.Name == name select bt;
-			if (query.Count() >0) {
-				return query.FirstOrDefault();
-			} else {
-				return null;
-			}
+			return this.FirstOrDefault(x => x.Name == name);
 		}
 		
 		
@@ -203,12 +188,7 @@ namespace ICSharpCode.Reports.Core{
 			if (String.IsNullOrEmpty(columnName)) {
 				throw new ArgumentNullException("columnName");
 			}
-			var query = from bt in this where bt.ColumnName == columnName select bt;
-			if (query.Count() >0) {
-				return query.FirstOrDefault();
-			} else {
-				return null;
-			}
+			return this.FirstOrDefault(x => x.ColumnName == columnName);
 		}
 	}
 	[Serializable()]
@@ -223,12 +203,7 @@ namespace ICSharpCode.Reports.Core{
 			if (String.IsNullOrEmpty(columnName)) {
 				throw new ArgumentNullException("columnName");
 			}
-			var query = from bt in this where bt.ColumnName == columnName select bt;
-			if (query.Count() >0) {
-				return query.FirstOrDefault();
-			} else {
-				return null;
-			}
+			return this.FirstOrDefault(x => x.ColumnName == columnName);
 		}
 	
 		
@@ -264,12 +239,7 @@ namespace ICSharpCode.Reports.Core{
 			if (String.IsNullOrEmpty(columnName)) {
 				throw new ArgumentNullException("columnName");
 			}
-			var query = from bt in this where bt.ColumnName == columnName select bt;
-			if (query.Count() >0) {
-				return query.FirstOrDefault();
-			} else {
-				return null;
-			}
+			return this.FirstOrDefault(x => x.ColumnName == columnName);
 		}
 	
 		
@@ -305,12 +275,7 @@ namespace ICSharpCode.Reports.Core{
 			if (String.IsNullOrEmpty(parameterName)) {
 				throw new ArgumentNullException("parameterName");
 			}
-			var query = from bt in this where bt.ParameterName == parameterName select bt;
-			if (query.Count() >0) {
-				return query.FirstOrDefault();
-			} else {
-				return null;
-			}
+			return this.FirstOrDefault(x => x.ParameterName == parameterName);
 		}
 		
 		
@@ -377,12 +342,7 @@ namespace ICSharpCode.Reports.Core{
 			if (String.IsNullOrEmpty(columnName)) {
 				throw new ArgumentNullException("columnName");
 			}
-			var query = from bt in this where bt.ColumnName.ToLower() == columnName.ToLower(CultureInfo.InvariantCulture) select bt;
-			if (query.Count() >0) {
-				return query.FirstOrDefault();
-			} else {
-				return null;
-			}
+			return this.FirstOrDefault(x => x.ColumnName == columnName);
 		}
 	}
 }

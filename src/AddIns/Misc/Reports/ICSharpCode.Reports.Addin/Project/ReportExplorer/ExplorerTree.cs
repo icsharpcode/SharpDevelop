@@ -22,7 +22,7 @@ namespace ICSharpCode.Reports.Addin
 	/// </summary>
 	internal class ExplorerTree:TreeView,INotifyPropertyChanged
 	{
-		private const string sortColumnMenu = "/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnTreeNode";
+		private const string sortColumnMenu = "/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnSortTreeNode";
 		private const string sectionContextMenu = "/SharpDevelopReports/ContextMenu/FieldsExplorer/SectionTreeNode";
 		private const string parameterEditorMenu = "/SharpDevelopReports/ContextMenu/FieldsExplorer/ParameterNode";
 		private SectionNode nodeRoot;
@@ -43,7 +43,6 @@ namespace ICSharpCode.Reports.Addin
 //		private static int storedprocIcon = 7;
 
 		private static int columnIcon = 8;
-	//	private static int functionIcon = 9;
 		
 		private ReportModel reportModel;
 	
@@ -208,7 +207,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		#region Treehandling
 		
-		public void RemoveNode()
+		public void RemoveSortNode()
 		{
 			if (this.SelectedNode != null) {
 				AbstractColumn abstr = this.reportModel.ReportSettings.SortColumnsCollection.Find(this.SelectedNode.Text);
@@ -218,7 +217,21 @@ namespace ICSharpCode.Reports.Addin
 				TreeNode parent = this.SelectedNode.Parent;
 				this.SelectedNode.Remove();
 				this.SelectedNode = parent;
-				this.OnPropertyChanged ("RemoveNode");
+				this.OnPropertyChanged ("RemoveSortNode");
+			}
+		}
+			
+		public void RemoveGroupNode ()
+		{
+			if (this.SelectedNode != null) {
+				AbstractColumn abstr = this.reportModel.ReportSettings.GroupColumnsCollection.Find(this.SelectedNode.Text);
+				if (abstr != null) {
+					this.reportModel.ReportSettings.GroupColumnsCollection.Remove(abstr as GroupColumn);
+					TreeNode parent = this.SelectedNode.Parent;
+					this.SelectedNode.Remove();
+					this.SelectedNode = parent;
+					this.OnPropertyChanged ("RemoveGroupNode");
+				}
 			}
 		}
 			
@@ -228,6 +241,7 @@ namespace ICSharpCode.Reports.Addin
 			this.reportModel.ReportSettings.SortColumnsCollection.Clear();
 			this.OnPropertyChanged ("ClearSection");
 		}
+		
 		
 		public void ToggleSortOrder() 
 		{
@@ -274,9 +288,9 @@ namespace ICSharpCode.Reports.Addin
 			SortColumnNode scn = null;
 			foreach (SortColumn sc in this.reportModel.ReportSettings.SortColumnsCollection){
 				if (sc.SortDirection == ListSortDirection.Ascending) {
-					scn  = new SortColumnNode (sc.ColumnName,ascendingIcon,"/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnTreeNode");
+					scn  = new SortColumnNode (sc.ColumnName,ascendingIcon,"/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnSortTreeNode");
 				} else {
-					scn = new SortColumnNode (sc.ColumnName,descendingIcon,"/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnTreeNode");
+					scn = new SortColumnNode (sc.ColumnName,descendingIcon,"/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnSortTreeNode");
 				}
 				this.nodeSorting.Nodes.Add(scn);
 			}
@@ -289,9 +303,9 @@ namespace ICSharpCode.Reports.Addin
 			foreach (GroupColumn groupColumn in this.reportModel.ReportSettings.GroupColumnsCollection)
 			{
 				if (groupColumn.SortDirection  == ListSortDirection.Ascending) {
-					groupNode  = new GroupColumnNode (groupColumn.ColumnName,ascendingIcon,"/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnTreeNode");
+					groupNode  = new GroupColumnNode (groupColumn.ColumnName,ascendingIcon,"/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnGroupTreeNode");
 				} else {
-					groupNode  = new GroupColumnNode (groupColumn.ColumnName,descendingIcon,"/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnTreeNode");
+					groupNode  = new GroupColumnNode (groupColumn.ColumnName,descendingIcon,"/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnGroupTreeNode");
 				}
 				this.nodeGrouping.Nodes.Add(groupNode);
 			}

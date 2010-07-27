@@ -17,6 +17,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 {
 	[TestFixture]
 	[SetCulture("de-DE")]
+	[Ignore]
 	public class AggregateFunctionsFromIListFixture
 	{
 		private IExpressionEvaluatorFacade evaluator;
