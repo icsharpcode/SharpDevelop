@@ -35,6 +35,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				Close();
 		}
 		
+		public bool IsDropdownOpen { get { return ActionsControl.IsOpen; } set {ActionsControl.IsOpen = value; } }
+		public bool IsDropdownAlwaysOpen { get { return ActionsControl.IsAlwaysOpen; } set {ActionsControl.IsAlwaysOpen = value; } }
+		
 		ContextActionsHeaderedControl ActionsControl
 		{
 			get { return (ContextActionsHeaderedControl)this.Child; }
@@ -73,6 +76,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public void OpenAtLineStart(ITextEditor editor)
 		{
 			OpenAtPosition(editor, editor.Caret.Line, 1, false);
+			this.VerticalOffset -= 16;
 		}
 		
 		void OpenAtPosition(ITextEditor editor, int line, int column, bool openAtWordStart)

@@ -24,6 +24,31 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public ContextActionsHeaderedControl()
 		{
 			InitializeComponent();
+			this.IsAlwaysOpen = false;
+			this.IsOpen = false;
+		}
+		
+		bool isAlwaysOpen;
+		public bool IsAlwaysOpen {
+			get { return isAlwaysOpen; }
+			set { 
+				isAlwaysOpen = value; 
+				if (value)
+					IsOpen = true;
+			}
+		}
+		
+		bool isOpen;
+		public bool IsOpen {
+			get { return isOpen; }
+			set { 
+				if (IsAlwaysOpen && !value)
+					throw new InvalidOperationException("Cannot set IsOpen to false when IsAlwaysOpen is true");
+				isOpen = value;
+				this.Header.Opacity = isOpen ? 1.0 : 0.5;
+				this.Header.BorderThickness = isOpen ? new Thickness(1, 1, 1, 0) : new Thickness(1);
+				this.ActionsTreeView.Visibility = isOpen ? Visibility.Visible : Visibility.Collapsed;
+			}
 		}
 		
 		public event EventHandler ActionExecuted
@@ -36,6 +61,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (this.ActionsTreeView != null)
 				this.ActionsTreeView.Focus();
+		}
+		
+		void Header_MouseUp(object sender, MouseButtonEventArgs e)
+		{
+			if (!this.IsAlwaysOpen)
+			{
+				this.IsOpen = !this.IsOpen;
+			}
 		}
 	}
 }

@@ -8,8 +8,10 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Threading;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -44,11 +46,34 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.delayMoveTimer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(delayMoveMilliseconds) };
 			this.delayMoveTimer.Stop();
 			this.delayMoveTimer.Tick += TimerMoveTick;
+			WorkbenchSingleton.Workbench.ViewClosed += WorkbenchSingleton_Workbench_ViewClosed;
+			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchSingleton_Workbench_ActiveViewContentChanged;
+		}
+
+		void WorkbenchSingleton_Workbench_ViewClosed(object sender, ViewContentEventArgs e)
+		{
+			try {
+				// prevent memory leaks
+				if (e.Content.PrimaryFileName == this.Editor.FileName) {
+					WorkbenchSingleton.Workbench.ViewClosed -= WorkbenchSingleton_Workbench_ViewClosed;
+					WorkbenchSingleton.Workbench.ActiveViewContentChanged -= WorkbenchSingleton_Workbench_ActiveViewContentChanged;
+				}
+			} catch {}
+		}
+
+		void WorkbenchSingleton_Workbench_ActiveViewContentChanged(object sender, EventArgs e)
+		{
+			ClosePopup();
+			try {
+				// open the popup again if in current file
+				if (((IViewContent)WorkbenchSingleton.Workbench.ActiveContent).PrimaryFileName == this.Editor.FileName)
+					CaretPositionChanged(this, EventArgs.Empty);
+			} catch {}
 		}
 
 		void ScrollChanged(object sender, EventArgs e)
 		{
-			this.popup.Close();
+			ClosePopup();
 		}
 
 		void TimerMoveTick(object sender, EventArgs e)
@@ -62,7 +87,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return;
 			
 			this.popup.Actions = new ContextActionsViewModel {
-				Title = "A",
+				Title = "#",
+				//Image = ClassBrowserIconService.Class.ImageSource,
 				Actions = availableActionsVM
 			};
 			this.popup.OpenAtLineStart(this.Editor);
@@ -72,11 +98,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (this.popup.IsOpen)
 			{
-				this.popup.Close();
-				this.popup.Actions = null;
+				ClosePopup();
 			}
 			this.delayMoveTimer.Stop();
 			this.delayMoveTimer.Start();
+		}
+		
+		void ClosePopup()
+		{
+			this.popup.Close();
+			this.popup.IsDropdownOpen = false;
+			this.popup.Actions = null;
 		}
 	}
 }

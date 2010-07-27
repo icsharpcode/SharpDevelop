@@ -18,8 +18,8 @@
 		</Grid.ColumnDefinitions>
 		
 		<!-- Header -->
-		<Border Grid.Row="0" Grid.Column="0" Padding="4" BorderThickness="1 1 1 0" 
-		        BorderBrush="{StaticResource OuterBorderBrush}" HorizontalAlignment="Left">
+		<Border x:Name="Header" Grid.Row="0" Grid.Column="0" Padding="4" BorderThickness="1" 
+		        BorderBrush="{StaticResource OuterBorderBrush}" HorizontalAlignment="Left" MouseUp="Header_MouseUp">
 			<Border.Background>
 				<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
 					<GradientStop Color="#D6E9FF" Offset="0"/>
