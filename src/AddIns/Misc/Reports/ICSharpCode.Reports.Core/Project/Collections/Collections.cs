@@ -111,7 +111,7 @@ namespace ICSharpCode.Reports.Core{
 	
 		private BaseReportItem InnerFind (string name)
 		{
-			return this.FirstOrDefault(x => x.Name == name);
+			return this.FirstOrDefault(x => 0 == String.Compare(x.Name, name,true));
 		}
 		
 		
@@ -188,7 +188,8 @@ namespace ICSharpCode.Reports.Core{
 			if (String.IsNullOrEmpty(columnName)) {
 				throw new ArgumentNullException("columnName");
 			}
-			return this.FirstOrDefault(x => x.ColumnName == columnName);
+			
+			 return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true));
 		}
 	}
 	[Serializable()]
@@ -203,7 +204,8 @@ namespace ICSharpCode.Reports.Core{
 			if (String.IsNullOrEmpty(columnName)) {
 				throw new ArgumentNullException("columnName");
 			}
-			return this.FirstOrDefault(x => x.ColumnName == columnName);
+			
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true));
 		}
 	
 		
@@ -239,7 +241,8 @@ namespace ICSharpCode.Reports.Core{
 			if (String.IsNullOrEmpty(columnName)) {
 				throw new ArgumentNullException("columnName");
 			}
-			return this.FirstOrDefault(x => x.ColumnName == columnName);
+			
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true));
 		}
 	
 		
@@ -275,7 +278,8 @@ namespace ICSharpCode.Reports.Core{
 			if (String.IsNullOrEmpty(parameterName)) {
 				throw new ArgumentNullException("parameterName");
 			}
-			return this.FirstOrDefault(x => x.ParameterName == parameterName);
+			
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ParameterName,parameterName,true));
 		}
 		
 		
@@ -342,7 +346,8 @@ namespace ICSharpCode.Reports.Core{
 			if (String.IsNullOrEmpty(columnName)) {
 				throw new ArgumentNullException("columnName");
 			}
-			return this.FirstOrDefault(x => x.ColumnName == columnName);
+			
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true));
 		}
 	}
 }
