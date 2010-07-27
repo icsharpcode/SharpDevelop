@@ -5,7 +5,9 @@
         xmlns:GraphSharp="clr-namespace:GraphSharp.Controls;assembly=GraphSharp.Controls"
         xmlns:Graph="clr-namespace:ICSharpCode.CodeQualityAnalysis.Controls"
         xmlns:src="clr-namespace:ICSharpCode.CodeQualityAnalysis"
+        xmlns:debug="clr-namespace:System.Diagnostics;assembly=System"
         Title="Code Quality Analysis"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
         x:Name="root">
 	<Window.Resources>
 		<ResourceDictionary>
@@ -49,50 +51,94 @@
 		</ResourceDictionary>
 	</Window.Resources>
 	
-	<TabControl>
-		<TabItem Header="Dependency Graph">
-			<Grid>
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto" />
-					<RowDefinition />
-				</Grid.RowDefinitions>
-				
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="250px" />
-					<ColumnDefinition />
-					<ColumnDefinition Width="200px" />
-				</Grid.ColumnDefinitions>
-				
-				<ToolBarTray Background="White" Grid.Row="0" Grid.ColumnSpan="2">
-					<ToolBar>
-						<Button Name="btnOpenAssembly" Click="btnOpenAssembly_Click" Margin="0 0 5 0">Open Assembly</Button>
-						<Button Name="btnRelayout" Click="btnRelayout_Click" Margin="0 0 5 0">Relayout</Button>
-						<Button Name="btnContinueLayout" Click="btnContinueLayout_Click" Margin="0 0 5 0">Continue Layout</Button>
-						<Button Name="btnResetGraph" Click="btnResetGraph_Click" Margin="0 0 5 0">Reset Graph</Button>
-						<Button Name="btnSaveImageGraph" Click="btnSaveImageGraph_Click">Save an Image of Graph</Button>
-					</ToolBar>
-				</ToolBarTray>
-				
-				<TreeView Name="definitionTree" Grid.Row="1" Grid.Column="0"
-				          SelectedItemChanged="definitionTree_SelectedItemChanged"
-				          ItemsSource="{Binding}"
-				          ItemTemplate="{StaticResource ModuleTemplate}">
-				</TreeView>
-				
-				<Controls:ZoomControl Grid.Row="1" Grid.Column="1" Name="zoom" AlwaysShowZoomButtons="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
-					<Graph:DependencyGraphLayout x:Name="graphLayout"
-						LayoutAlgorithmType="LinLog"
-						OverlapRemovalAlgorithmType="FSA"
-						HighlightAlgorithmType="Simple"
-						VertexClick="graphLayout_VertexClick"
-					/>
-				</Controls:ZoomControl>
-				
-				<TextBlock Name="txbTypeInfo" Grid.Column="3" Grid.Row="1"/>
-			</Grid>
-		</TabItem>
-		<TabItem Header="Dependency Matrix">
-			<Graph:TreeMatrixControl x:Name="matrixControl"></Graph:TreeMatrixControl>
-		</TabItem>
-	</TabControl>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		
+		<TabControl Grid.Row="0">
+			<TabItem Header="Dependency Graph">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition />
+					</Grid.RowDefinitions>
+					
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="250px" />
+						<ColumnDefinition />
+						<ColumnDefinition Width="200px" />
+					</Grid.ColumnDefinitions>
+					
+					<ToolBarTray Background="White" Grid.Row="0" Grid.ColumnSpan="2">
+						<ToolBar>
+							<Button Name="btnOpenAssembly" Click="btnOpenAssembly_Click" Margin="0 0 5 0">Open Assembly</Button>
+							<Button Name="btnRelayout" Click="btnRelayout_Click" Margin="0 0 5 0">Relayout</Button>
+							<Button Name="btnContinueLayout" Click="btnContinueLayout_Click" Margin="0 0 5 0">Continue Layout</Button>
+							<Button Name="btnResetGraph" Click="btnResetGraph_Click" Margin="0 0 5 0">Reset Graph</Button>
+							<Button Name="btnSaveImageGraph" Click="btnSaveImageGraph_Click">Save an Image of Graph</Button>
+						</ToolBar>
+					</ToolBarTray>
+					
+					<TreeView Name="definitionTree" Grid.Row="1" Grid.Column="0"
+					          SelectedItemChanged="definitionTree_SelectedItemChanged"
+					          ItemsSource="{Binding}"
+					          DataContext="{Binding Path=MetricsReader.Modules}"
+					          ItemTemplate="{StaticResource ModuleTemplate}">
+					</TreeView>
+					
+					<Controls:ZoomControl Grid.Row="1" Grid.Column="1" Name="zoom" AlwaysShowZoomButtons="True" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
+						<Graph:DependencyGraphLayout x:Name="graphLayout"
+							LayoutAlgorithmType="LinLog"
+							OverlapRemovalAlgorithmType="FSA"
+							HighlightAlgorithmType="Simple"
+							VertexClick="graphLayout_VertexClick"
+						/>
+					</Controls:ZoomControl>
+					
+					<TextBlock Name="txbTypeInfo" Grid.Column="3" Grid.Row="1"/>
+				</Grid>
+			</TabItem>
+			<TabItem Header="Dependency Matrix">
+				<Graph:TreeMatrixControl x:Name="matrixControl"></Graph:TreeMatrixControl>
+			</TabItem>
+		</TabControl>
+		<StatusBar Grid.Row="1">
+			<StatusBarItem HorizontalAlignment="Right">
+				<StackPanel Orientation="Horizontal">
+					<StatusBarItem>
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="Namespaces: " />
+							<TextBlock Text="{Binding Path=MetricsReader.MainModule.Namespaces.Count}" />
+						</StackPanel>
+					</StatusBarItem>
+					<StatusBarItem>
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="Types: " />
+							<TextBlock Text="{Binding Path=MetricsReader.MainModule.TypesCount}" />
+						</StackPanel>
+					</StatusBarItem>
+					<StatusBarItem>
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="Methods: " />
+							<TextBlock Text="{Binding Path=MetricsReader.MainModule.MethodsCount}" />
+						</StackPanel>
+					</StatusBarItem>
+					<StatusBarItem>
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="Fields: " />
+							<TextBlock Text="{Binding Path=MetricsReader.MainModule.FieldsCount}" />
+						</StackPanel>
+					</StatusBarItem>
+					<StatusBarItem>
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Text="IL instructions: " />
+							<TextBlock Text="TBD" />
+						</StackPanel>
+					</StatusBarItem>
+				</StackPanel>
+			</StatusBarItem>
+		</StatusBar>
+	</Grid>
 </Window>

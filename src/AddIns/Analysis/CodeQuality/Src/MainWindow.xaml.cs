@@ -74,7 +74,6 @@ namespace ICSharpCode.CodeQualityAnalysis
 			definitionTree.Items.Clear();
 			
 			MetricsReader = new MetricsReader(fileDialog.FileName);
-			definitionTree.ItemsSource = metricsReader.Modules;
 
 			FillMatrix();
 		}
