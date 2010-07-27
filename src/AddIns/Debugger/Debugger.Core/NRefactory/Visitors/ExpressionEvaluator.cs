@@ -524,10 +524,14 @@ namespace ICSharpCode.NRefactory.Visitors
 				// Instance
 				target = Evaluate(memberReferenceExpression.TargetObject);
 				targetType = target.Type;
-			} catch (GetValueException) {
+			} catch (GetValueException e) {
 				// Static
 				target = null;
-				targetType = memberReferenceExpression.TargetObject.ResolveType(context.AppDomain);
+				try {
+					targetType = memberReferenceExpression.TargetObject.ResolveType(context.AppDomain);
+				} catch (GetValueException) {
+					throw e;  // Use the other, nicer message
+				}
 			}
 			MemberInfo[] memberInfos = targetType.GetMember(memberReferenceExpression.MemberName, DebugType.BindingFlagsAllInScope);
 			if (memberInfos.Length == 0)
