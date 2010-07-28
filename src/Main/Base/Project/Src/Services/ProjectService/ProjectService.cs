@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -430,17 +431,25 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		/// <summary>
+		/// Gets the list of file filters.
+		/// </summary>
+		public static IList<FileFilterDescriptor> GetFileFilters()
+		{
+			return AddInTree.BuildItems<FileFilterDescriptor>("/SharpDevelop/Workbench/FileFilter", null);
+		}
+		
+		/// <summary>
 		/// Returns a File Dialog filter that can be used to filter on all registered project formats
 		/// </summary>
 		public static string GetAllProjectsFilter(object caller, bool includeSolutions)
 		{
-			AddInTreeNode addinTreeNode = AddInTree.GetTreeNode("/SharpDevelop/Workbench/Combine/FileFilter");
+			var filters = AddInTree.BuildItems<FileFilterDescriptor>("/SharpDevelop/Workbench/Combine/FileFilter", null);
+			if (!includeSolutions)
+				filters.RemoveAll(f => f.ContainsExtension(".sln"));
 			StringBuilder b = new StringBuilder(StringParser.Parse("${res:SharpDevelop.Solution.AllKnownProjectFormats}|"));
 			bool first = true;
-			foreach (Codon c in addinTreeNode.Codons) {
-				string ext = c.Properties.Get("extensions", "");
-				if (!includeSolutions && ext == "*.sln")
-					continue;
+			foreach (var filter in filters) {
+				string ext = filter.Extensions;
 				if (ext != "*.*" && ext.Length > 0) {
 					if (!first) {
 						b.Append(';');
@@ -450,11 +459,9 @@ namespace ICSharpCode.SharpDevelop.Project
 					b.Append(ext);
 				}
 			}
-			foreach (string entry in addinTreeNode.BuildChildItems(caller)) {
-				if (!includeSolutions && entry.EndsWith("*.sln"))
-					continue;
+			foreach (var filter in filters) {
 				b.Append('|');
-				b.Append(entry);
+				b.Append(filter.ToString());
 			}
 			return b.ToString();
 		}
