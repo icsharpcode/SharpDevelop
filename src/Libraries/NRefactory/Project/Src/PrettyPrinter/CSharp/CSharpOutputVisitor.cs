@@ -1964,8 +1964,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if ((pe == null || !(pe.Value is int) || ((int)pe.Value) >= 0)
 			    && !(forNextStatement.Step is UnaryOperatorExpression))
 				outputFormatter.PrintToken(Tokens.LessEqual);
-			else
-				outputFormatter.PrintToken(Tokens.GreaterEqual);
+			else {
+				if (forNextStatement.Step is UnaryOperatorExpression && ((UnaryOperatorExpression)forNextStatement.Step).Op == UnaryOperatorType.Plus)
+					outputFormatter.PrintToken(Tokens.LessEqual);
+				else
+					outputFormatter.PrintToken(Tokens.GreaterEqual);
+			}
 			outputFormatter.Space();
 			TrackVisit(forNextStatement.End, data);
 			outputFormatter.PrintToken(Tokens.Semicolon);

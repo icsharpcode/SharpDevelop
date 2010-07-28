@@ -671,5 +671,32 @@ End Namespace
 End Function"
 			);
 		}
+		
+		[Test]
+		public void GenericConstraint()
+		{
+			TestProgram(
+				@"using System;
+using System.Collections;
+using System.Text;
+
+namespace Generics
+{
+	public class List<T> : CollectionBase where T : IDisposable
+	{
+	}
+}",
+				@"Imports System
+Imports System.Collections
+Imports System.Text
+
+Namespace Generics
+  Public Class List(Of T As IDisposable)
+    Inherits CollectionBase
+  End Class
+End Namespace
+"
+			);
+		}
 	}
 }

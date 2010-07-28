@@ -351,6 +351,10 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			              "Next",
 			              "for (long l = 10; l >= 0; l += -1) {\n" +
 			              "}");
+			TestStatement("For i As Integer = 0 To 10 Step +2\n" +
+			              "Next",
+			              "for (int i = 0; i <= 10; i += +2) {\n" +
+			              "}");
 		}
 		
 		[Test]
