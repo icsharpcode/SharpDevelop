@@ -134,7 +134,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 						Description = "If statement",
 						Text = "If ${condition} Then\n" +
 							"\t${Selection}\n" +
-							"End If"
+							"End If",
+						Keyword = "If"
 					},
 					new CodeSnippet {
 						Name = "IfElse",
@@ -143,56 +144,64 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 							"\t${Selection}\n" +
 							"Else\n" +
 							"\t${Caret}\n" +
-							"End If"
+							"End If",
+						Keyword = "If"
 					},
 					new CodeSnippet {
 						Name = "For",
 						Description = "For loop",
 						Text = "For ${counter=i} As ${type=Integer} = ${start=0} To ${end}\n" +
 							"\t${Selection}\n" +
-							"Next ${counter}"
+							"Next ${counter}",
+						Keyword = "For"
 					},
 					new CodeSnippet {
 						Name = "ForStep",
 						Description = "For loop with Step",
 						Text = "For ${counter=i} As ${type=Integer} = ${start=0} To ${end} Step ${step=1}\n" +
 							"\t${Selection}\n" +
-							"Next ${counter}"
+							"Next ${counter}",
+						Keyword = "For"
 					},
 					new CodeSnippet {
 						Name = "DoLoopUn",
 						Description = "Do ... Loop Until statement",
 						Text = "Do\n" +
 							"\t${Selection}\n" +
-							"Loop Until ${expression}"
+							"Loop Until ${expression}",
+						Keyword = "Do"
 					},
 					new CodeSnippet {
 						Name = "DoLoopWh",
 						Description = "Do ... Loop While statement",
 						Text = "Do\n" +
 							"\t${Selection}\n" +
-							"Loop While ${expression}"
+							"Loop While ${expression}",
+						Keyword = "Do"
 					},
 					new CodeSnippet {
 						Name = "DoWhile",
 						Description = "Do While ... Loop statement",
 						Text = "Do While ${expression}\n" +
 							"\t${Selection}\n" +
-							"Loop"
+							"Loop",
+						Keyword = "Do"
 					},
 					new CodeSnippet {
 						Name = "DoUntil",
 						Description = "Do Until ... Loop statement",
 						Text = "Do Until ${expression}\n" +
 							"\t${Selection}\n" +
-							"Loop"
+							"Loop",
+						Keyword = "Do"
 					},
 					new CodeSnippet {
 						Name = "ForEach",
 						Description = "For Each statement",
 						Text = "For Each ${item} As ${type} In ${collection}\n" +
 							"\t${Selection}\n" +
-							"Next"
+							"Next",
+						Keyword = "For"
 					},
 					new CodeSnippet {
 						Name = "IfElseIf",
@@ -203,14 +212,16 @@ ElseIf ${condition2} Then
 	${Caret}
 Else
 
-End If"
+End If",
+						Keyword = "If"
 					},
 					new CodeSnippet {
 						Name = "While",
 						Description = "While statement",
 						Text = @"While ${condition}
 	${Selection}
-End While"
+End While",
+						Keyword = "While"
 					},
 					new CodeSnippet {
 						Name = "Select",
@@ -220,29 +231,34 @@ End While"
 		${Selection}
     Case Else
 		${Caret}
-End Select"
+End Select",
+						Keyword = "Select"
 					},
 					new CodeSnippet {
 						Name = "Try",
 						Description = "Try-catch statement",
-						Text = "Try\n\t${Selection}\nCatch ${var=ex} As ${Exception=Exception}\n\t${Caret}\n\tThrow\nEnd Try"
+						Text = "Try\n\t${Selection}\nCatch ${var=ex} As ${Exception=Exception}\n\t${Caret}\n\tThrow\nEnd Try",
+						Keyword = "Try"
 					},
 					new CodeSnippet {
 						Name = "TryCF",
 						Description = "Try-catch-finally statement",
-						Text = "Try\n\t${Selection}\nCatch ${var=ex} As ${Exception=Exception}\n\t${Caret}\n\tThrow\nFinally\n\t\nEnd Try"
+						Text = "Try\n\t${Selection}\nCatch ${var=ex} As ${Exception=Exception}\n\t${Caret}\n\tThrow\nFinally\n\t\nEnd Try",
+						Keyword = "Try"
 					},
 					new CodeSnippet {
 						Name = "TryF",
 						Description = "Try-finally statement",
-						Text = "Try\n\t${Selection}\nFinally\n\t${Caret}\nEnd Try"
+						Text = "Try\n\t${Selection}\nFinally\n\t${Caret}\nEnd Try",
+						Keyword = "Try"
 					},
 					new CodeSnippet {
 						Name = "Using",
 						Description = "Using statement",
 						Text = @"Using ${var=obj} As ${type}
 	${Selection}
-End Using"
+End Using",
+						Keyword = "Using"
 					},
 					new CodeSnippet {
 						Name = "propfull",
@@ -255,7 +271,8 @@ Public Property ${name=Property} As ${type=Integer}
 	Set(${value=value} As ${type})
 		${toFieldName(name)} = ${value}
 	End Set
-End Property${Caret}"
+End Property${Caret}",
+						Keyword = "Property"
 					},
 				}
 			}
