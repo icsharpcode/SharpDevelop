@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
@@ -134,9 +135,25 @@ namespace ICSharpCode.Core.Presentation
 				if (inputBindingOwner != null) {
 					var shortcutCommand = this.Command;
 					string featureName = GetFeatureName();
+					// wrap the shortcut command so that it can report to UDC with
+					// different activation method
 					if (shortcutCommand != null && !string.IsNullOrEmpty(featureName))
 						shortcutCommand = new ShortcutCommandWrapper(shortcutCommand, featureName);
-					inputBindingOwner.InputBindings.Add(new InputBinding(shortcutCommand, kg));
+					// try to find an existing input binding which conflicts with this shortcut
+					var existingInputBinding =
+						(from InputBinding b in inputBindingOwner.InputBindings
+						 let gesture = b.Gesture as KeyGesture
+						 where gesture != null
+						 && gesture.Key == kg.Key
+						 && gesture.Modifiers == kg.Modifiers
+						 select b
+						).FirstOrDefault();
+					if (existingInputBinding != null) {
+						// modify the existing input binding to allow calling both commands
+						existingInputBinding.Command = new AmbiguousCommandWrapper(existingInputBinding.Command, shortcutCommand);
+					} else {
+						inputBindingOwner.InputBindings.Add(new InputBinding(shortcutCommand, kg));
+					}
 				}
 				this.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			}
@@ -188,6 +205,42 @@ namespace ICSharpCode.Core.Presentation
 			public bool CanExecute(object parameter)
 			{
 				return baseCommand.CanExecute(parameter);
+			}
+		}
+		
+		sealed class AmbiguousCommandWrapper : System.Windows.Input.ICommand
+		{
+			System.Windows.Input.ICommand first;
+			System.Windows.Input.ICommand second;
+			
+			public AmbiguousCommandWrapper(System.Windows.Input.ICommand first, System.Windows.Input.ICommand second)
+			{
+				this.first = first;
+				this.second = second;
+			}
+			
+			public event EventHandler CanExecuteChanged {
+				add {
+					first.CanExecuteChanged += value;
+					second.CanExecuteChanged += value;
+				}
+				remove {
+					first.CanExecuteChanged -= value;
+					second.CanExecuteChanged -= value;
+				}
+			}
+			
+			public void Execute(object parameter)
+			{
+				if (first.CanExecute(parameter))
+					first.Execute(parameter);
+				else
+					second.Execute(parameter);
+			}
+			
+			public bool CanExecute(object parameter)
+			{
+				return first.CanExecute(parameter) || second.CanExecute(parameter);
 			}
 		}
 	}
