@@ -47,8 +47,13 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			LoggingService.Info("Debugger Command: Continue");
-			DebuggerService.CurrentDebugger.Continue();
+			if (DebuggerService.CurrentDebugger.IsDebugging) {
+				LoggingService.Info("Debugger Command: Continue");
+				DebuggerService.CurrentDebugger.Continue();
+			} else {
+				LoggingService.Info("Debugger Command: Run");
+				new Execute().Run();
+			}
 		}
 	}
 	
@@ -118,7 +123,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			DebuggerService.CurrentDebugger.ShowAttachDialog();
 		}
-	}	
+	}
 	
 	public class DetachFromProcessCommand : AbstractMenuCommand
 	{
@@ -126,5 +131,5 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			DebuggerService.CurrentDebugger.Detach();
 		}
-	}	
+	}
 }

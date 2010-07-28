@@ -193,7 +193,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return null;
 			var item = new MenuItem { Header = MenuService.ConvertLabel(StringParser.Parse("${res:SharpDevelop.Refactoring.FindDerivedClassesCommand}")) };
 			item.Icon = ClassBrowserIconService.Class.CreateImage();
-			item.InputGestureText = new KeyGesture(Key.F9).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+			item.InputGestureText = new KeyGesture(Key.F6).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			item.Click += delegate {
 				ContextActionsHelper.MakePopupWithDerivedClasses(baseClass).OpenAtCaretAndFocus(context.Editor);
 			};
@@ -219,7 +219,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return null;
 			var item = new MenuItem { Header = MenuService.ConvertLabel(StringParser.Parse("${res:SharpDevelop.Refactoring.FindOverridesCommand}")) };
 			item.Icon = ClassBrowserIconService.Method.CreateImage();
-			item.InputGestureText = new KeyGesture(Key.F9).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+			item.InputGestureText = new KeyGesture(Key.F6).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			item.Click += delegate {
 				ContextActionsHelper.MakePopupWithOverrides(member).OpenAtCaretAndFocus(context.Editor);
 			};
