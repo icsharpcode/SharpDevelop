@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				if (symbolUnderCaret != null)
 					return symbolUnderCaret;
 				// workaround so that Resolve works when the caret is placed also at the end of the word
-				symbolUnderCaret = ParserService.Resolve(Editor.Caret.Line, Editor.Caret.Column - 1, Editor.Document, Editor.FileName);
+				symbolUnderCaret = ParserService.Resolve(Editor.Caret.Line, Editor.Caret.Column > 1 ? Editor.Caret.Column - 1 : 1, Editor.Document, Editor.FileName);
 				if (symbolUnderCaret == null)
 					symbolUnderCaret = ParserService.Resolve(Editor.Caret.Line, Editor.Caret.Column, Editor.Document, Editor.FileName);
 				return symbolUnderCaret;
