@@ -68,12 +68,12 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Pads">
-		<Pad id    = "BreakPointsPad"
+		<!--<Pad id    = "BreakPointsPad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Breakpoints}"
 		     icon     = "PadIcons.BreakPoints"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.BreakPointsPad"
-		     defaultPosition = "Bottom, Hidden" />
+		     defaultPosition = "Bottom, Hidden" />-->
 		
 		<Pad id    = "CallStackPad"
 		     category = "Debugger"

@@ -139,12 +139,12 @@
 		     class    = "ICSharpCode.SharpDevelop.Editor.Search.SearchResultsPad"
 		     defaultPosition = "Bottom, Hidden" />
 		
-		<Pad id       = "Bookmarks"
+		<!--<Pad id       = "Bookmarks"
 		     category = "Tools"
 		     title    = "${res:MainWindow.Windows.BookmarksLabel}"
 		     icon     = "PadIcons.Bookmarks"
 		     class    = "ICSharpCode.SharpDevelop.Bookmarks.BookmarkPad"
-		     defaultPosition = "Bottom, Hidden" />
+		     defaultPosition = "Bottom, Hidden" />-->
 		
 		<Pad id       = "DefinitionView"
 		     category = "Tools"
