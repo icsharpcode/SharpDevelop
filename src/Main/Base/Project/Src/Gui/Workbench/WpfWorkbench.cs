@@ -95,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			
-			mainMenu.ItemsSource = MenuService.CreateMenuItems(this, this, mainMenuPath);
+			mainMenu.ItemsSource = MenuService.CreateMenuItems(this, this, mainMenuPath, "MainMenu");
 			
 			toolBars = ToolBarService.CreateToolBars(this, "/SharpDevelop/Workbench/ToolBar");
 			foreach (ToolBar tb in toolBars) {

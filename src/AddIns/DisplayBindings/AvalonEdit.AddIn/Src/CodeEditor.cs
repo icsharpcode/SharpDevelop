@@ -285,8 +285,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					this.Encoding = reader.CurrentEncoding;
 				}
 			}
+			// raise event which allows removing existing NewLineConsistencyCheck overlays
+			if (LoadedFileContent != null)
+				LoadedFileContent(this, EventArgs.Empty);
 			NewLineConsistencyCheck.StartConsistencyCheck(this);
 		}
+		
+		public event EventHandler LoadedFileContent;
 		
 		public void Save(Stream stream)
 		{

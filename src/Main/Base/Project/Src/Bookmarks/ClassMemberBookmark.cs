@@ -8,7 +8,7 @@
 using System;
 using System.Windows;
 using System.Windows.Input;
-
+using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Dom;
 
@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public const string ContextMenuPath = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu";
 		
-		public virtual IImage Image { 
+		public virtual IImage Image {
 			get { return ClassBrowserIconService.GetIcon(member); }
 		}
 		
@@ -47,7 +47,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		public virtual void MouseDown(MouseButtonEventArgs e)
 		{
 			if (e.ChangedButton == MouseButton.Left) {
-				MenuService.ShowContextMenu(e.Source as UIElement, this, ContextMenuPath);
+				var f = AnalyticsMonitorService.TrackFeature("ICSharpCode.SharpDevelop.Bookmarks.ClassMemberBookmark.ShowContextMenu");
+				var ctx = MenuService.ShowContextMenu(e.Source as UIElement, this, ContextMenuPath);
+				ctx.Closed += delegate { f.EndTracking(); };
 				e.Handled = true;
 			}
 		}
@@ -73,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public const string ContextMenuPath = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu";
 		
-		public virtual IImage Image { 
+		public virtual IImage Image {
 			get {
 				return ClassBrowserIconService.GetIcon(@class);
 			}
@@ -86,7 +88,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		public virtual void MouseDown(MouseButtonEventArgs e)
 		{
 			if (e.ChangedButton == MouseButton.Left) {
-				MenuService.ShowContextMenu(e.Source as UIElement, this, ContextMenuPath);
+				var f = AnalyticsMonitorService.TrackFeature("ICSharpCode.SharpDevelop.Bookmarks.ClassBookmark.ShowContextMenu");
+				var ctx = MenuService.ShowContextMenu(e.Source as UIElement, this, ContextMenuPath);
+				ctx.Closed += delegate { f.EndTracking(); };
 				e.Handled = true;
 			}
 		}

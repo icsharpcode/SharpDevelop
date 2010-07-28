@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Media;
-
+using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -242,6 +242,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 				memberItems.Sort();
 				if (jumpOnSelectionChange) {
+					AnalyticsMonitorService.TrackFeature(GetType(), "JumpToClass");
 					JumpTo(item, selectedClass.Region);
 				}
 			}
@@ -260,6 +261,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (item != null) {
 				IMember member = item.Entity as IMember;
 				if (member != null && jumpOnSelectionChange) {
+					AnalyticsMonitorService.TrackFeature(GetType(), "JumpToMember");
 					JumpTo(item, member.Region);
 				}
 			}

@@ -106,14 +106,14 @@ namespace ICSharpCode.Core.Presentation
 		
 		public static ContextMenu CreateContextMenu(object owner, string addInTreePath)
 		{
-			IList items = CreateUnexpandedMenuItems(null, AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false));
+			IList items = CreateUnexpandedMenuItems(null, AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false), "ContextMenu");
 			return CreateContextMenu(items);
 		}
 		
 		public static ContextMenu ShowContextMenu(UIElement parent, object owner, string addInTreePath)
 		{
 			ContextMenu menu = new ContextMenu();
-			menu.ItemsSource = CreateMenuItems(menu, owner, addInTreePath);
+			menu.ItemsSource = CreateMenuItems(menu, owner, addInTreePath, "ContextMenu");
 			menu.PlacementTarget = parent;
 			menu.IsOpen = true;
 			return menu;
@@ -131,9 +131,9 @@ namespace ICSharpCode.Core.Presentation
 			return contextMenu;
 		}
 		
-		public static IList CreateMenuItems(UIElement inputBindingOwner, object owner, string addInTreePath)
+		public static IList CreateMenuItems(UIElement inputBindingOwner, object owner, string addInTreePath, string activationMethod = null)
 		{
-			IList items = CreateUnexpandedMenuItems(inputBindingOwner, AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false));
+			IList items = CreateUnexpandedMenuItems(inputBindingOwner, AddInTree.BuildItems<MenuItemDescriptor>(addInTreePath, owner, false), activationMethod);
 			return ExpandMenuBuilders(items, false);
 		}
 		
@@ -156,12 +156,12 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		internal static IList CreateUnexpandedMenuItems(UIElement inputBindingOwner, IEnumerable descriptors)
+		internal static IList CreateUnexpandedMenuItems(UIElement inputBindingOwner, IEnumerable descriptors, string activationMethod)
 		{
 			ArrayList result = new ArrayList();
 			if (descriptors != null) {
 				foreach (MenuItemDescriptor descriptor in descriptors) {
-					result.Add(CreateMenuItemFromDescriptor(inputBindingOwner, descriptor));
+					result.Add(CreateMenuItemFromDescriptor(inputBindingOwner, descriptor, activationMethod));
 				}
 			}
 			return result;
@@ -191,7 +191,7 @@ namespace ICSharpCode.Core.Presentation
 			return result;
 		}
 		
-		static object CreateMenuItemFromDescriptor(UIElement inputBindingOwner, MenuItemDescriptor descriptor)
+		static object CreateMenuItemFromDescriptor(UIElement inputBindingOwner, MenuItemDescriptor descriptor, string activationMethod)
 		{
 			Codon codon = descriptor.Codon;
 			string type = codon.Properties.Contains("type") ? codon.Properties["type"] : "Command";
@@ -205,13 +205,13 @@ namespace ICSharpCode.Core.Presentation
 					//return new MenuCheckBox(codon, descriptor.Caller);
 				case "Item":
 				case "Command":
-					return new MenuCommand(inputBindingOwner, codon, descriptor.Caller, createCommand);
+					return new MenuCommand(inputBindingOwner, codon, descriptor.Caller, createCommand, activationMethod);
 				case "Menu":
 					var item = new CoreMenuItem(codon, descriptor.Caller) {
 						ItemsSource = new object[1],
 						SetEnabled = true
 					};
-					var subItems = CreateUnexpandedMenuItems(inputBindingOwner, descriptor.SubItems);
+					var subItems = CreateUnexpandedMenuItems(inputBindingOwner, descriptor.SubItems, activationMethod);
 					item.SubmenuOpened += (sender, args) => {
 						item.ItemsSource = ExpandMenuBuilders(subItems, true);
 						args.Handled = true;

@@ -74,6 +74,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			
 			using (context.Editor.Document.OpenUndoGroup()) {
 				if (context.CompletionChar == '\t' || AlwaysInsertSnippet) {
+					codeSnippet.TrackUsage("SnippetCompletionItem");
+					
 					context.Editor.Document.Remove(context.StartOffset, context.Length);
 					CreateSnippet().Insert(textArea);
 				} else {

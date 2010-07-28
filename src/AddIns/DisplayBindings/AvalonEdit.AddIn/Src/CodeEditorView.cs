@@ -141,6 +141,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						CodeSnippet snippet = SnippetManager.Instance.FindSnippet(Path.GetExtension(editor.Adapter.FileName),
 						                                                          word);
 						if (snippet != null) {
+							snippet.TrackUsage("CustomTabCommand");
+							
 							editor.Adapter.Document.Remove(wordStart, editor.CaretOffset - wordStart);
 							snippet.CreateAvalonEditSnippet(editor.Adapter).Insert(editor.TextArea);
 							return;

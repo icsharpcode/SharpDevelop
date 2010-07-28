@@ -240,5 +240,13 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 				return function(input);
 			}
 		}
+		
+		/// <summary>
+		/// Reports the snippet usage to UDC
+		/// </summary>
+		internal void TrackUsage(string activationMethod)
+		{
+			Core.AnalyticsMonitorService.TrackFeature(typeof(CodeSnippet), IsUserModified ? "usersnippet" : Name, activationMethod);
+		}
 	}
 }

@@ -115,13 +115,25 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			};
 			editor.Children.Add(groupBox);
 			
-			cancelButton.Click += delegate {
+			var featureUse = AnalyticsMonitorService.TrackFeature(typeof(NewLineConsistencyCheck));
+			
+			EventHandler removeWarning = null;
+			removeWarning = delegate {
 				editor.Children.Remove(groupBox);
 				editor.PrimaryTextEditor.TextArea.Focus();
+				editor.LoadedFileContent -= removeWarning;
+				
+				featureUse.EndTracking();
+			};
+			
+			editor.LoadedFileContent += removeWarning;
+			cancelButton.Click += delegate {
+				AnalyticsMonitorService.TrackFeature(typeof(NewLineConsistencyCheck), "cancelButton");
+				removeWarning(null, null);
 			};
 			normalizeButton.Click += delegate {
-				editor.Children.Remove(groupBox);
-				editor.PrimaryTextEditor.TextArea.Focus();
+				AnalyticsMonitorService.TrackFeature(typeof(NewLineConsistencyCheck), "normalizeButton");
+				removeWarning(null, null);
 				
 				TextDocument document = editor.Document;
 				string newNewLine = (unix.IsChecked == true) ? "\n" : "\r\n";

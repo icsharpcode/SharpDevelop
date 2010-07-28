@@ -123,8 +123,11 @@ namespace ICSharpCode.Core.Presentation
 	
 	class MenuCommand : CoreMenuItem
 	{
-		public MenuCommand(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand) : base(codon, caller)
+		readonly string ActivationMethod;
+		
+		public MenuCommand(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand, string activationMethod) : base(codon, caller)
 		{
+			this.ActivationMethod = activationMethod;
 			this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
 			if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
 				KeyGesture kg = MenuService.ParseShortcut(codon.Properties["shortcut"]);
@@ -154,7 +157,7 @@ namespace ICSharpCode.Core.Presentation
 			base.OnClick();
 			string feature = GetFeatureName();
 			if (!string.IsNullOrEmpty(feature)) {
-				AnalyticsMonitorService.TrackFeature(feature, "Menu");
+				AnalyticsMonitorService.TrackFeature(feature, ActivationMethod);
 			}
 		}
 		
