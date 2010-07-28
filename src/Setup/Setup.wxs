@@ -265,7 +265,6 @@
 				<ComponentRef Id="ConversionStyleSheetFiles"/>
 				<ComponentRef Id="TextLibOptionsFiles"/>
 				<ComponentRef Id="OptionsFiles"/>
-				<ComponentRef Id="CssFiles"/>
 				<ComponentRef Id="InstallerBitmapFiles"/>
 				<ComponentRef Id="LanguageBitmapFiles"/>
 				<ComponentRef Id="LayoutFiles"/>
@@ -328,7 +327,6 @@
 				<ComponentRef Id="IconEditorAddInFiles"/>
 				<ComponentRef Id="IconEditorExe"/>
 				<ComponentRef Id="ResourceEditorFiles"/>
-				<ComponentRef Id="SettingsEditorFiles"/>
 				<ComponentRef Id="ClassDiagramResources"/>
 				<ComponentRef Id="ClassDiagramAddInFiles"/>
 				<ComponentRef Id="ClassCanvasDll"/>

@@ -511,12 +511,6 @@
 								</Component>
 							</Directory>
 							<Directory Id="ResourcesFolder" Name="resources">
-								<Directory Id="CssFolder" Name="css">
-									<Component Guid="458B2D53-EE43-4586-BDEB-E9AFF37F720B" Id="CssFiles" DiskId="1">
-										<File Source="..\..\data\resources\css\MsdnHelp.css" Name="MsdnHelp.css" Id="MsdnHelp.css" />
-										<File Source="..\..\data\resources\css\SharpDevelopStandard.css" Id="SharpDevelopStandard.css" Name="SharpDevelopStandard.css" />
-									</Component>
-								</Directory>
 								<Directory Id="InstallerBitmapsFolder" Name="InstallerBitmaps">
 									<Component Guid="9FA2E783-96A7-4D61-BF60-4D923AD34923" Id="InstallerBitmapFiles" DiskId="1">
 										<File Source="..\..\data\resources\InstallerBitmaps\up.bmp" Name="up.bmp" Id="up.bmp" />
@@ -1156,12 +1150,6 @@
 										<Component Guid="010A8620-382C-477B-9330-51A8B6C48A7A" Id="ResourceEditorFiles" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\ResourceEditor\ResourceEditor.dll" Id="ResourceEditor.dll" Name="ResourceEditor.dll" Assembly=".net" AssemblyApplication="ResourceEditor.dll" AssemblyManifest="ResourceEditor.dll" KeyPath="yes" />
 											<File Source="..\..\AddIns\AddIns\DisplayBindings\ResourceEditor\ResourceEditor.addin" Id="ResourceEditor.addin" Name="ResourceEditor.addin" />
-										</Component>
-									</Directory>
-									<Directory Id="SettingsEditorFolder" Name="SettingsEditor">
-										<Component Guid="76B108DB-2F39-42C8-9EAC-8F8C0C27D6C7" Id="SettingsEditorFiles" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\SettingsEditor\SettingsEditor.dll" Id="SettingsEditor.dll" Name="SettingsEditor.dll" Assembly=".net" AssemblyApplication="SettingsEditor.dll" AssemblyManifest="SettingsEditor.dll" KeyPath="yes" />
-											<File Source="..\..\AddIns\AddIns\DisplayBindings\SettingsEditor\SettingsEditor.addin" Id="SettingsEditor.addin" Name="SettingsEditor.addin" />
 										</Component>
 									</Directory>
 									<Directory Id="XmlEditorFolder" Name="XmlEditor">
