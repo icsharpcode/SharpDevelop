@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.WpfDesign.AddIn</RootNamespace>
     <AssemblyName>ICSharpCode.WpfDesign.AddIn</AssemblyName>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\DisplayBindings\WpfDesign\</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>

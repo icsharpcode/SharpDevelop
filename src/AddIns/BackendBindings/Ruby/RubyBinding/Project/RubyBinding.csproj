@@ -15,7 +15,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\BackendBindings\RubyBinding\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\AddIns\BackendBindings\RubyBinding\</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
@@ -23,7 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\BackendBindings\RubyBinding\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\AddIns\BackendBindings\RubyBinding\</OutputPath>
     <DebugSymbols>false</DebugSymbols>
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>

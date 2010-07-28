@@ -35,7 +35,7 @@
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\Data\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\DisplayBindings\Data\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

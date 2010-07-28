@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.XamlBinding</RootNamespace>
     <AssemblyName>ICSharpCode.XamlBinding</AssemblyName>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\BackendBindings\XamlBinding</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\BackendBindings\XamlBinding</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>

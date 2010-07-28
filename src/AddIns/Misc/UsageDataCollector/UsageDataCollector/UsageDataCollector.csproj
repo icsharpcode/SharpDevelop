@@ -8,12 +8,12 @@
     <RootNamespace>ICSharpCode.UsageDataCollector</RootNamespace>
     <AssemblyName>UsageDataCollector</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\UsageDataCollector\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\Misc\UsageDataCollector\</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <DocumentationFile>..\..\..\..\..\AddIns\AddIns\Misc\UsageDataCollector\UsageDataCollector.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\..\..\AddIns\Misc\UsageDataCollector\UsageDataCollector.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">

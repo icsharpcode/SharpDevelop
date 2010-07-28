@@ -27,16 +27,17 @@
     <Optimize>False</Optimize>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\StartPage\</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
+    <OutputPath>..\..\..\..\..\AddIns\Misc\StartPage\</OutputPath>
     <DebugType>Full</DebugType>
+    <DefineConstants>DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugSymbols>False</DebugSymbols>
+    <DebugSymbols>false</DebugSymbols>
     <Optimize>True</Optimize>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\StartPage\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\Misc\StartPage\</OutputPath>
+    <DebugType>None</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore">

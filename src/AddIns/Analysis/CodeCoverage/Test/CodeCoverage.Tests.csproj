@@ -142,7 +142,7 @@
     <Folder Include="Gui" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\..\..\AddIns\AddIns\Misc\UnitTesting\UnitTesting.dll">
+    <None Include="..\..\..\..\..\AddIns\Analysis\UnitTesting\UnitTesting.dll">
       <Link>UnitTesting.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

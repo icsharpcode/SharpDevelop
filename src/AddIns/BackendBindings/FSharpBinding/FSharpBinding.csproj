@@ -14,7 +14,7 @@
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <OutputPath>..\..\..\..\AddIns\AddIns\BackendBindings\FSharpBinding\</OutputPath>
+    <OutputPath>..\..\..\..\AddIns\BackendBindings\FSharpBinding\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>

@@ -19,7 +19,7 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SourceAnalysisOverrideSettingsFile>"C:\Program Files\SharpDevelop\bin\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis"</SourceAnalysisOverrideSettingsFile>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SharpDevelopReports\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\Misc\SharpDevelopReports\</OutputPath>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>

@@ -15,7 +15,7 @@
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SubversionAddIn\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\Misc\SubversionAddIn\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

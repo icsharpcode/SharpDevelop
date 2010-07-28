@@ -27,14 +27,15 @@
     <DebugSymbols>true</DebugSymbols>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\BackendBindings\WixBinding\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\BackendBindings\WixBinding\</OutputPath>
     <DebugType>Full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugSymbols>False</DebugSymbols>
+    <DebugSymbols>false</DebugSymbols>
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\BackendBindings\WixBinding\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\BackendBindings\WixBinding\</OutputPath>
+    <DebugType>None</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore">

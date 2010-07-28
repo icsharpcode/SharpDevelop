@@ -16,7 +16,7 @@
     <FileAlignment>4096</FileAlignment>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SharpDevelopReports\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\Misc\SharpDevelopReports\</OutputPath>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SourceAnalysisOverrideSettingsFile>"C:\Program Files\SharpDevelop\bin\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis"</SourceAnalysisOverrideSettingsFile>
     <PublishUrl>publish\</PublishUrl>

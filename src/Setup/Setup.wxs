@@ -180,7 +180,7 @@
 				<ComponentRef Id="ICSharpCodeCoreWinFormsDll"/>
 				<ComponentRef Id="ICSharpCodeNRefactoryDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopDll"/>
-				<ComponentRef Id="ICSharpCodeSharpDevelopDomdll"/>
+				<ComponentRef Id="ICSharpCodeSharpDevelopDomDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopWidgets"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopSdaFiles"/>
 				<ComponentRef Id="ICSharpCodeAvalonEditDll"/>
@@ -275,7 +275,16 @@
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplate"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFileElementClass"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFilesCollectionClass"/>				
-				<ComponentRef Id="VBNetFileTemplates"/>
+				<ComponentRef Id="VBNetTemplatesFileCategorySortOrderXml"/>
+				<ComponentRef Id="VBNetEmptyFileTemplate"/>
+				<ComponentRef Id="VBNetEmptyClassFileTemplate"/>
+				<ComponentRef Id="VBNetFormFileTemplate"/>
+				<ComponentRef Id="VBNetUserControlFileTemplate"/>
+				<ComponentRef Id="VBNetInterfaceFileTemplate"/>
+				<ComponentRef Id="VBNetModuleFileTemplate"/>
+				<ComponentRef Id="VBNetMyExtensionClassFileTemplate"/>
+				<ComponentRef Id="VBNetPatternsSingletonFileTemplate"/>
+				<ComponentRef Id="VBNetUnitTestFileTemplate"/>				
 				<ComponentRef Id="EmptyHTMLFileTemplate"/>
 				<ComponentRef Id="EmptyMsBuildFileTemplate"/>
 				<ComponentRef Id="EmptyResourceFileTemplate"/>

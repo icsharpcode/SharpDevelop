@@ -326,7 +326,7 @@
       <Name>ICSharpCode.SharpDevelop</Name>
       <Private>True</Private>
     </ProjectReference>
-    <Content Include="..\..\..\..\..\AddIns\AddIns\DisplayBindings\FormsDesigner\FormsDesigner.dll">
+    <Content Include="..\..\..\..\..\AddIns\DisplayBindings\FormsDesigner\FormsDesigner.dll">
       <Link>FormsDesigner.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

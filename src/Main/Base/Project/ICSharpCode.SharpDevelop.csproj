@@ -194,6 +194,7 @@
       <DependentUpon>AbstractAttachToProcessForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.cs" />
+    <None Include="ICSharpCode.SharpDevelop.addin" />
     <None Include="Src\Gui\Dialogs\ExtractInterfaceDialog.cs">
       <Link>Src\Services\RefactoringService\ExtractInterfaceDialog.cs</Link>
     </None>
@@ -817,9 +818,6 @@
     <Folder Include="Src\Editor\Commands" />
     <Folder Include="Src\Editor\Search" />
     <Folder Include="Src\Gui\Pads\TaskList" />
-    <Content Include="..\..\..\..\AddIns\ICSharpCode.SharpDevelop.addin">
-      <Link>ICSharpCode.SharpDevelop.addin</Link>
-    </Content>
     <Folder Include="Src\Services\RefactoringService\ContextActions" />
     <Folder Include="Src\Util" />
     <Folder Include="Src\Gui\Pads\ClassBrowser\NodeBuilder" />
@@ -861,4 +859,5 @@
     <Page Include="Src\Services\Debugger\Tooltips\VisualizerPicker.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="PostBuildEvent.proj" />
 </Project>

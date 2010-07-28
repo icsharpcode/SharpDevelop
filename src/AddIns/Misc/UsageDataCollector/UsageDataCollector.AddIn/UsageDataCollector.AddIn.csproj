@@ -8,7 +8,7 @@
     <RootNamespace>UsageDataCollector.AddIn</RootNamespace>
     <AssemblyName>UsageDataCollector.AddIn</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\UsageDataCollector\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\Misc\UsageDataCollector\</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>

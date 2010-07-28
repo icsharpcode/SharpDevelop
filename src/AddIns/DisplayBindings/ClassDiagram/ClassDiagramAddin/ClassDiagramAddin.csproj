@@ -7,7 +7,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{5A1354DF-4989-4BB4-BC6B-D627C2E9FA13}</ProjectGuid>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\ClassDiagram\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\DisplayBindings\ClassDiagram\</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>

@@ -11,8 +11,8 @@
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\</OutputPath>
-    <DocumentationFile>..\..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.xml</DocumentationFile>
+    <OutputPath>..\..\..\..\..\..\AddIns\DisplayBindings\WpfDesign\</OutputPath>
+    <DocumentationFile>..\..\..\..\..\..\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.Designer.xml</DocumentationFile>
     <NoWarn>1591</NoWarn>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SignAssembly>True</SignAssembly>

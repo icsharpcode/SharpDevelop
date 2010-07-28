@@ -7,7 +7,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{1F261725-6318-4434-A1B1-6C70CE4CD324}</ProjectGuid>
-    <OutputPath>..\..\..\..\AddIns\AddIns\Misc\UnitTesting\</OutputPath>
+    <OutputPath>..\..\..\..\AddIns\Analysis\UnitTesting\</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <RegisterForComInterop>False</RegisterForComInterop>
