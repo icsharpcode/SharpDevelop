@@ -34,7 +34,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>False</DebugSymbols>
     <Optimize>True</Optimize>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\AddinScout\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\Misc\AddinScout\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

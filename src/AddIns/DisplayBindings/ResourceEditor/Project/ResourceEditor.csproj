@@ -35,7 +35,7 @@
     <DebugSymbols>False</DebugSymbols>
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\ResourceEditor\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\DisplayBindings\ResourceEditor\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

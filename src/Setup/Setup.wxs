@@ -276,6 +276,7 @@
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFileElementClass"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFilesCollectionClass"/>				
 				<ComponentRef Id="VBNetTemplatesFileCategorySortOrderXml"/>
+				<ComponentRef Id="VBNetExceptionFileTemplate"/>
 				<ComponentRef Id="VBNetEmptyFileTemplate"/>
 				<ComponentRef Id="VBNetEmptyClassFileTemplate"/>
 				<ComponentRef Id="VBNetFormFileTemplate"/>
@@ -285,6 +286,17 @@
 				<ComponentRef Id="VBNetMyExtensionClassFileTemplate"/>
 				<ComponentRef Id="VBNetPatternsSingletonFileTemplate"/>
 				<ComponentRef Id="VBNetUnitTestFileTemplate"/>				
+				<ComponentRef Id="VBNetStructureFileTemplate"/>
+				<ComponentRef Id="VBNetWebControlFileTemplate"/>
+				<ComponentRef Id="VBNetWebFormFileTemplate"/>
+				<ComponentRef Id="VBNetWebHandlerFileTemplate"/>
+				<ComponentRef Id="VBNetWebServiceFileTemplate"/>
+				<ComponentRef Id="VBNetWPFFlowDocumentFileTemplate"/>
+				<ComponentRef Id="VBNetWPFPageFileTemplate"/>
+				<ComponentRef Id="VBNetWPFPageFunctionFileTemplate"/>
+				<ComponentRef Id="VBNetWPFResourceDictionaryFileTemplate"/>
+				<ComponentRef Id="VBNetWPFUserControlFileTemplate"/>
+				<ComponentRef Id="VBNetWPFWindowFileTemplate"/>
 				<ComponentRef Id="EmptyHTMLFileTemplate"/>
 				<ComponentRef Id="EmptyMsBuildFileTemplate"/>
 				<ComponentRef Id="EmptyResourceFileTemplate"/>

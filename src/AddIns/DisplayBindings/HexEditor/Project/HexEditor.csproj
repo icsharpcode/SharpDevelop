@@ -28,7 +28,7 @@
     <StartProgram>..\..\..\..\..\bin\SharpDevelop.exe</StartProgram>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\HexEditor</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\DisplayBindings\HexEditor</OutputPath>
     <DebugSymbols>false</DebugSymbols>
     <DebugType>None</DebugType>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
