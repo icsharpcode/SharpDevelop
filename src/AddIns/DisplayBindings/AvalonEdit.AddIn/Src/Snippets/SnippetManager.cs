@@ -22,7 +22,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 	public sealed class SnippetManager
 	{
 		readonly object lockObj = new object();
-		static readonly List<CodeSnippetGroup> defaultSnippets = new List<CodeSnippetGroup> {
+		internal static readonly List<CodeSnippetGroup> defaultSnippets = new List<CodeSnippetGroup> {
 			new CodeSnippetGroup {
 				Extensions = ".cs",
 				Snippets = {
@@ -272,7 +272,6 @@ End Property${Caret}"
 		private SnippetManager()
 		{
 			snippetElementProviders = AddInTree.BuildItems<ISnippetElementProvider>("/SharpDevelop/ViewContent/AvalonEdit/SnippetElementProviders", null, false);
-			defaultSnippets.ForEach(x => x.Snippets.ForEach(s => s.IsUserModified = false));
 		}
 		
 		/// <summary>
@@ -289,7 +288,7 @@ End Property${Caret}"
 						defaultGroup.Snippets.Except(
 							group.Snippets,
 							new PredicateComparer<CodeSnippet>((x, y) => x.Name == y.Name, x => x.Name.GetHashCode())
-						)
+						).Select(s => new CodeSnippet(s))
 					).OrderBy(s => s.Name).ToList();
 					group.Snippets.Clear();
 					group.Snippets.AddRange(merged);
@@ -338,11 +337,19 @@ End Property${Caret}"
 				List<CodeSnippetGroup> modifiedGroups = new List<CodeSnippetGroup>();
 				
 				foreach (var group in groups) {
+					var defaultGroup = defaultSnippets.FirstOrDefault(i => i.Extensions == group.Extensions);
+					
+					IEnumerable<CodeSnippet> saveSnippets = group.Snippets;
+					
+					if (defaultGroup != null) {
+						saveSnippets = group.Snippets.Except(defaultGroup.Snippets);
+					}
+					
 					// save all groups, even if they're empty
 					var copy = new CodeSnippetGroup() {
 						Extensions = group.Extensions
 					};
-					copy.Snippets.AddRange(group.Snippets.Where(s => s.IsUserModified));
+					copy.Snippets.AddRange(saveSnippets);
 					modifiedGroups.Add(copy);
 				}
 				
