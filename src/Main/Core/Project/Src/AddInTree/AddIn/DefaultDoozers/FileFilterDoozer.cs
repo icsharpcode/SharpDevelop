@@ -58,7 +58,7 @@ namespace ICSharpCode.Core
 			if (string.IsNullOrEmpty(extension))
 				return false;
 			int index = this.Extensions.IndexOf("*" + extension, StringComparison.OrdinalIgnoreCase);
-			if (index < 0 || index + extension.Length < this.Extensions.Length)
+			if (index < 0 || index + extension.Length > this.Extensions.Length)
 				return false;
 			return index + extension.Length < this.Extensions.Length
 				|| this.Extensions[index + extension.Length] == ';';
