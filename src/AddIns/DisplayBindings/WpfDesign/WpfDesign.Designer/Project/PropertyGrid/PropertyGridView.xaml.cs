@@ -64,7 +64,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid
 			}
 		}
 
-		protected override void OnMouseRightButtonDown(MouseButtonEventArgs e)
+		protected override void OnMouseRightButtonUp(MouseButtonEventArgs e)
 		{
 			var ancestors = (e.OriginalSource as DependencyObject).GetVisualAncestors();
 			Border row = ancestors.OfType<Border>().Where(b => b.Name == "uxPropertyNodeRow").FirstOrDefault();

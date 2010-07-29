@@ -17,7 +17,7 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 	[TestFixture]
 	public class PlacementTests : ModelTestHelper
 	{
-		void Move(Vector v, params DesignItem[] items)
+		internal static void Move(Vector v, params DesignItem[] items)
 		{
 			PlacementOperation operation = PlacementOperation.Start(items, PlacementType.Move);
 			foreach (PlacementInformation info in operation.PlacedItems) {
@@ -29,6 +29,16 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 			}
 			operation.Commit();
 		}
+		
+		internal static void Resize(Rect rect,params DesignItem[] items)
+        {
+            PlacementOperation operation = PlacementOperation.Start(items, PlacementType.Resize);
+            foreach(var info in operation.PlacedItems) {
+                info.Bounds = rect;
+                operation.CurrentContainerBehavior.SetPosition(info);
+            }
+            operation.Commit();
+        }
 		
 		[Test]
 		[Ignore] //Currently bounds calculated using visuals

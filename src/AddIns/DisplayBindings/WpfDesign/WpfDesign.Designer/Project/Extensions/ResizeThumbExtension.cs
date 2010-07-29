@@ -30,7 +30,16 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		readonly DesignItem[] extendedItemArray = new DesignItem[1];
 		IPlacementBehavior resizeBehavior;
 		PlacementOperation operation;
-		ChangeGroup changeGroup;
+		ChangeGroup changeGroup;		
+				
+		bool _isResizing;
+		
+		/// <summary>
+		/// Gets whether this extension is resizing any element.
+		/// </summary>
+		public bool IsResizing{
+			get { return _isResizing; }
+		}
 		
 		public ResizeThumbExtension()
 		{
@@ -55,7 +64,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			ResizeThumb resizeThumb = new ResizeThumbImpl( cursor == Cursors.SizeNS, cursor == Cursors.SizeWE );
 			resizeThumb.Cursor = cursor;
 			resizeThumb.Alignment = alignment;
-			AdornerPanel.SetPlacement(resizeThumb, new RelativePlacement(alignment.Horizontal, alignment.Vertical));
+			AdornerPanel.SetPlacement(resizeThumb, Place(ref resizeThumb, alignment));
 			adornerPanel.Children.Add(resizeThumb);
 			
 			DragListener drag = new DragListener(resizeThumb);
@@ -64,6 +73,37 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			drag.Completed += new DragHandler(drag_Completed);
 			return resizeThumb;
 		}
+		
+		/// <summary>
+		/// Places resize thumbs at their respective positions
+		/// and streches out thumbs which are at the center of outline to extend resizability across the whole outline
+		/// </summary>
+		/// <param name="resizeThumb"></param>
+		/// <param name="alignment"></param>
+		/// <returns></returns>
+		private RelativePlacement Place(ref ResizeThumb resizeThumb,PlacementAlignment alignment)
+        {
+            RelativePlacement placement = new RelativePlacement(alignment.Horizontal,alignment.Vertical);
+            
+            if (alignment.Horizontal == HorizontalAlignment.Center)
+            {
+                placement.WidthRelativeToContentWidth = 1;
+                placement.HeightOffset = 6;
+                resizeThumb.Opacity = 0;
+                return placement;
+            }
+            if (alignment.Vertical == VerticalAlignment.Center)
+            {
+                placement.HeightRelativeToContentHeight = 1;
+                placement.WidthOffset = 6;
+                resizeThumb.Opacity = 0;
+                return placement;
+            }
+            
+            placement.WidthOffset = 6;
+            placement.HeightOffset = 6;
+            return placement;
+        }
 
 		Size oldSize;
 
@@ -75,6 +115,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			else {
 				changeGroup = this.ExtendedItem.Context.OpenGroup("Resize", extendedItemArray);
 			}
+			_isResizing=true;
+			ShowSizeAndHideHandles();
 		}
 
 		void drag_Changed(DragListener drag)
@@ -122,6 +164,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				else changeGroup.Commit();
 				changeGroup = null;
 			}
+			_isResizing=false;
+			HideSizeAndShowHandles();
 		}
 		
 		protected override void OnInitialized()
@@ -163,5 +207,44 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				r.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
 			}
 		}
+		void ShowSizeAndHideHandles()
+    	{
+            SizeDisplayExtension sizeDisplay=null;
+            MarginHandleExtension marginDisplay=null;
+            foreach(var extension in ExtendedItem.Extensions) {
+                if (extension is SizeDisplayExtension)
+                    sizeDisplay = extension as SizeDisplayExtension;
+                if (extension is MarginHandleExtension)
+            		 marginDisplay = extension as MarginHandleExtension;
+            }
+
+            if(sizeDisplay!=null) {
+                sizeDisplay.HeightDisplay.Visibility = Visibility.Visible;
+                sizeDisplay.WidthDisplay.Visibility = Visibility.Visible;
+            }
+            
+            if(marginDisplay!=null)
+            	marginDisplay.HideHandles();
+        }
+
+        void HideSizeAndShowHandles()
+        {
+            SizeDisplayExtension sizeDisplay = null;
+            MarginHandleExtension marginDisplay=null;
+            foreach (var extension in ExtendedItem.Extensions){
+                if (extension is SizeDisplayExtension)
+                    sizeDisplay = extension as SizeDisplayExtension;
+                if (extension is MarginHandleExtension)
+            		 marginDisplay = extension as MarginHandleExtension;
+            }
+
+            if (sizeDisplay != null) {
+                sizeDisplay.HeightDisplay.Visibility = Visibility.Hidden;
+                sizeDisplay.WidthDisplay.Visibility = Visibility.Hidden;
+            }
+            if (marginDisplay !=null ) {
+            	marginDisplay.ShowHandles();
+            }
+        }		
 	}
 }

@@ -1,30 +1,28 @@
-﻿<AddIn name        = "WPF Designer AddIn"
-       author      = "Daniel Grunwald"
-       copyright   = "prj:///doc/copyright.txt"
-       description = "WPF Designer"
-       addInManagerHidden="preinstalled">
-	
+﻿<AddIn name="WPF Designer AddIn" author="Daniel Grunwald" copyright="prj:///doc/copyright.txt" description="WPF Designer" addInManagerHidden="preinstalled">
 	<Manifest>
-		<Identity name="ICSharpCode.WpfDesigner"/>
-		<Dependency addin = "ICSharpCode.FormsDesigner" requirePreload = "true"/>
+		<Identity name="ICSharpCode.WpfDesigner" />
+		<Dependency addin="ICSharpCode.FormsDesigner" requirePreload="true" />
 	</Manifest>
-	
 	<Runtime>
-		<Import assembly = "ICSharpCode.WpfDesign.AddIn.dll"/>
+		<Import assembly="ICSharpCode.WpfDesign.AddIn.dll">
+			<ConditionEvaluator name="IsCutCopyEnabled" class="ICSharpCode.WpfDesign.AddIn.Commands.IsCutCopyEnabled" />
+			<ConditionEvaluator name="IsPasteEnabled" class="ICSharpCode.WpfDesign.AddIn.Commands.IsPasteEnabled" />
+			<ConditionEvaluator name="IsRemoveEnabled" class="ICSharpCode.WpfDesign.AddIn.Commands.IsRemoveEnabled" />
+			<ConditionEvaluator name="IsUndoEnabled" class="ICSharpCode.WpfDesign.AddIn.Commands.IsUndoEnabled" />
+			<ConditionEvaluator name="IsRedoEnabled" class="ICSharpCode.WpfDesign.AddIn.Commands.IsRedoEnabled" />
+			<ConditionEvaluator name="IsToolsOpen" class="ICSharpCode.WpfDesign.AddIn.Commands.IsToolsOpen" />
+			<ConditionEvaluator name="IsPropertiesOpen" class="ICSharpCode.WpfDesign.AddIn.Commands.IsPropertiesOpen" />
+			<ConditionEvaluator name="IsOutlineOpen" class="ICSharpCode.WpfDesign.AddIn.Commands.IsOutlineOpen" />
+		</Import>
 	</Runtime>
-	
-	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+	<Path name="/SharpDevelop/Workbench/DisplayBindings">
 		<!--<DisplayBinding id    = "WPFDesigner"
 		                class = "ICSharpCode.WpfDesign.AddIn.WpfPrimaryDisplayBinding"
 		                insertbefore    = "Text"
 		                fileNamePattern = "\.xaml$"
 		                title = "WPF designer"/>-->
-		<DisplayBinding id    = "WPFDesigner"
-		                type  = "Secondary"
-		                class = "ICSharpCode.WpfDesign.AddIn.WpfSecondaryDisplayBinding"
-		                fileNamePattern = "\.xaml$"/>
+		<DisplayBinding id="WPFDesigner" type="Secondary" class="ICSharpCode.WpfDesign.AddIn.WpfSecondaryDisplayBinding" fileNamePattern="\.xaml$" />
 	</Path>
-	
 	<!--
 	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id    = "OutlineViewPad"
@@ -35,4 +33,29 @@
 		     class = "ICSharpCode.WpfDesign.AddIn.OutlineViewPad"/>
 	</Path>
 	-->
+	<Path name="/Addins/WpfDesign/Designer/ContextMenu">
+		<MenuItem label="${res:ICSharpCode.WPFDesigner.ContextMenu.ViewXAML}" id="viewXaml" icon="Icons.16x16.XMLFileIcon" class="ICSharpCode.WpfDesign.AddIn.Commands.ViewXaml" />
+		<MenuItem label="seperator1" type="Separator" />
+		<Condition name="IsCutCopyEnabled" action="Disable">
+			<MenuItem id="cut" label="${res:ICSharpCode.WPFDesigner.ContextMenu.Cut}" icon="Icons.16x16.CutIcon" shortcut="Control|X" class="ICSharpCode.WpfDesign.AddIn.Commands.Cut" />
+			<MenuItem id="copy" label="${res:ICSharpCode.WPFDesigner.ContextMenu.Copy}" icon="Icons.16x16.CopyIcon" shortcut="Control|C" class="ICSharpCode.WpfDesign.AddIn.Commands.Copy" />
+		</Condition>
+		<Condition name="IsPasteEnabled" action="Disable">
+			<MenuItem id="paste" label="${res:ICSharpCode.WPFDesigner.ContextMenu.Paste}" icon="Icons.16x16.PasteIcon" shortcut="Control|V" class="ICSharpCode.WpfDesign.AddIn.Commands.Paste" />
+		</Condition>
+		<Condition name="IsRemoveEnabled" action="Disable">
+			<MenuItem id="remove" label="${res:ICSharpCode.WPFDesigner.ContextMenu.Remove}" icon="Icons.16x16.DeleteIcon" shortcut="Del" class="ICSharpCode.WpfDesign.AddIn.Commands.Remove" />
+		</Condition>
+		<MenuItem label="seperator2" type="Separator" />
+		<Condition name="IsUndoEnabled" action="Disable">
+			<MenuItem id="undo" label="${res:ICSharpCode.WPFDesigner.ContextMenu.Undo}" icon="Icons.16x16.UndoIcon" shortcut="Control|Z" class="ICSharpCode.WpfDesign.AddIn.Commands.Undo" />
+		</Condition>
+		<Condition name="IsRedoEnabled" action="Disable">
+			<MenuItem id="redo" label="${res:ICSharpCode.WPFDesigner.ContextMenu.Redo}" icon="Icons.16x16.RedoIcon" shortcut="Control|R" class="ICSharpCode.WpfDesign.AddIn.Commands.Redo" />
+		</Condition>
+		<MenuItem label="seperator3" type="Separator" />
+		<MenuItem id="tools" label="${res:ICSharpCode.WPFDesigner.ContextMenu.Tools}" icon="PadIcons.Toolbar" shortcut="Control|Alt|X" class="ICSharpCode.WpfDesign.AddIn.Commands.Tools" />
+		<MenuItem id="properties" label="${res:ICSharpCode.WPFDesigner.ContextMenu.Properties}" icon="Icons.16x16.PropertiesIcon" shortcut="F4" class="ICSharpCode.WpfDesign.AddIn.Commands.Properties" />
+		<MenuItem id="outline" label="${res:ICSharpCode.WPFDesigner.ContextMenu.Outline}" icon="PadIcons.Toolbar" class="ICSharpCode.WpfDesign.AddIn.Commands.Outline" />
+	</Path>
 </AddIn>

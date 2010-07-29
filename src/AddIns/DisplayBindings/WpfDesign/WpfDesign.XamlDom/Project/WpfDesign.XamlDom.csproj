@@ -82,6 +82,7 @@
     <Compile Include="XamlProperty.cs" />
     <Compile Include="XamlPropertyInfo.cs" />
     <Compile Include="XamlPropertyValue.cs" />
+    <Compile Include="XamlStaticTools.cs" />
     <Compile Include="XamlTextValue.cs" />
     <Compile Include="XamlTypeFinder.cs" />
     <Compile Include="XamlTypeResolverProvider.cs" />

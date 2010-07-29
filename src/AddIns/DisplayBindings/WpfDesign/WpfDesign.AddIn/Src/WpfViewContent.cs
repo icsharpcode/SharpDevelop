@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Windows;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -21,6 +22,8 @@ using ICSharpCode.WpfDesign.Designer.OutlineView;
 using ICSharpCode.WpfDesign.Designer.PropertyGrid;
 using ICSharpCode.WpfDesign.Designer.Services;
 using ICSharpCode.WpfDesign.Designer.Xaml;
+
+using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.WpfDesign.AddIn
 {
@@ -83,11 +86,17 @@ namespace ICSharpCode.WpfDesign.AddIn
 				
 				designer.LoadDesigner(r, settings);
 				
+				designer.ContextMenuOpening += (sender, e) => MenuService.ShowContextMenu(e.OriginalSource as UIElement, designer, "/Addins/WpfDesign/Designer/ContextMenu");
+				
 				UpdateTasks();
 				
 				if (outline != null && designer.DesignContext != null && designer.DesignContext.RootItem != null) {
 					outline.Root = OutlineNode.Create(designer.DesignContext.RootItem);
 				}
+				
+				var outlineContent = GetService(typeof(IOutlineContentHost));
+				if(outlineContent==null)
+					this.Services.AddService(typeof(IOutlineContentHost),Outline);
 				
 				propertyGridView.PropertyGrid.SelectedItems = null;
 				designer.DesignContext.Services.Selection.SelectionChanged += OnSelectionChanged;

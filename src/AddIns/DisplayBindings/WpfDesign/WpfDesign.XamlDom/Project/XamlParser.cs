@@ -577,5 +577,36 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			return converter.ConvertFromInvariantString(
 				scope.OwnerDocument.GetTypeDescriptorContext(scope), valueText);
 		}
+		
+		/// <summary>
+		/// Method use to parse a piece of Xaml.
+		/// </summary>
+		/// <param name="root">The Root XamlObject of the current document.</param>
+		/// <param name="xaml">The Xaml being parsed.</param>
+		/// <param name="settings">Parser settings used by <see cref="XamlParser"/>.</param>
+		/// <returns>Returns the XamlObject of the parsed <paramref name="xaml"/>.</returns>
+		public static XamlObject ParseSnippet(XamlObject root, string xaml, XamlParserSettings settings)
+        {
+            XmlTextReader reader = new XmlTextReader(new StringReader(xaml));
+            var element = root.OwnerDocument.XmlDocument.ReadNode(reader);
+            
+            if (element != null) {
+                XmlAttribute xmlnsAttribute=null;
+                foreach (XmlAttribute attrib in element.Attributes) {
+                    if (attrib.Name == "xmlns")
+                        xmlnsAttribute = attrib;
+                }
+                if(xmlnsAttribute!=null)
+                    element.Attributes.Remove(xmlnsAttribute);
+
+                XamlParser parser = new XamlParser();
+                parser.settings = settings;
+                parser.document = root.OwnerDocument;
+                var xamlObject = parser.ParseObject(element as XmlElement);
+                if (xamlObject != null)
+                    return xamlObject;
+            }
+            return null;
+        }
 	}
 }

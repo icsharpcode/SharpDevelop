@@ -60,14 +60,28 @@
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AbstractEventHandlerService.cs" />
+    <Compile Include="Src\Commands\CutCopyPaste.cs" />
+    <Compile Include="Src\Commands\Pads.cs" />
+    <Compile Include="Src\Commands\Remove.cs" />
+    <Compile Include="Src\Commands\UndoRedo.cs" />
+    <Compile Include="Src\Commands\ViewXaml.cs" />
     <Compile Include="Src\CSharpEventHandlerService.cs" />
     <Compile Include="Src\FileUriContext.cs" />
     <Compile Include="Src\IdeChooseClassService.cs" />
+    <Compile Include="Src\ImageSourceEditor\ChooseImageDialog.xaml.cs">
+      <DependentUpon>ChooseImageDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\ImageSourceEditor\ImageSourceEditor.xaml.cs">
+      <DependentUpon>ImageSourceEditor.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\MyTypeFinder.cs" />
     <Compile Include="Src\ObjectEditor.xaml.cs">
       <DependentUpon>ObjectEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Src\OutlineViewPad.cs" />
+    <Compile Include="Src\ProjectTools.cs" />
     <Compile Include="Src\PropertyDescriptionService.cs" />
     <Compile Include="Src\WpfAndWinFormsTopLevelWindowService.cs" />
     <Compile Include="Src\WpfDisplayBinding.cs" />
@@ -126,6 +140,12 @@
       <Name>WpfDesign</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Page Include="Src\ImageSourceEditor\ChooseImageDialog.xaml" />
+    <Page Include="Src\ImageSourceEditor\ImageSourceEditor.xaml" />
     <Page Include="Src\ObjectEditor.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src\ImageSourceEditor" />
+    <Folder Include="Src\Commands" />
   </ItemGroup>
 </Project>

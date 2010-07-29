@@ -1,10 +1,15 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:Controls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls">
+	xmlns:Controls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls"
+	xmlns:ControlConvertors="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls.Converters"
+	xmlns:Converters="clr-namespace:ICSharpCode.WpfDesign.Designer.Converters">
 	<!--
 		This file contains the default styles used by the Controls in ICSharpCode.WpfDesign.Designer.Controls
 	-->
+    <Converters:LevelConverter x:Key="FormatDoubleConverter" />
+	<ControlConvertors:HandleLengthWithOffset x:Key="HandleLengthWithOffset"/>
 	
+	<SolidColorBrush Color="#FF474747" x:Key="HandleBrush"/>
 	<Style TargetType="{x:Type Controls:PanelMoveAdorner}">
 		<Setter Property="Template">
 			<Setter.Value>
@@ -30,9 +35,7 @@
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type Controls:ResizeThumb}">
-					<Rectangle Name="thumbRectangle"
-					           Width="7"
-					           Height="7"
+					<Rectangle Name="thumbRectangle"					           	    
 					           SnapsToDevicePixels="True"
 					           Stroke="Black"
 					           Fill="White"
@@ -325,4 +328,193 @@
 			</Setter.Value>
 		</Setter>
 	</Style>
+	
+	<Style TargetType="{x:Type Controls:MarginHandle}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Controls:MarginHandle}">
+                    <Grid Height="10" Width="{Binding Path=HandleLength, Converter={x:Static ControlConvertors:HandleLengthWithOffset.Instance}, RelativeSource={RelativeSource Mode=TemplatedParent}}" SnapsToDevicePixels="True">
+                        <Grid.ColumnDefinitions>
+                             <ColumnDefinition Width="8" />
+                             <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Path Name="startArrow"
+						      	Fill="{StaticResource HandleBrush}"
+					    	    Stretch="Fill"
+						        Stroke="{TemplateBinding Panel.Background}"
+                              StrokeThickness="0.5"
+                              Margin="0,1,0,1"
+						      Data="M0,0 L0,1 1,0.5 z" Grid.Column="0" />
+                    	  <!-- Wrap the handle-line and endArrow in this grid. It's visiblity is subjected to HandleLength  -->	
+                        <Grid Height="10" Grid.Column="1" Name="lineArrow">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition MaxWidth="20" MinWidth="10" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="8" />
+                            </Grid.ColumnDefinitions>
+                    		  <Rectangle Fill="Transparent" Height="10" Grid.Column="0" Grid.ColumnSpan="4"/>
+                            <Path Name="line1"
+			     		  			 Stretch="Fill"
+						      Stroke="{StaticResource HandleBrush}"
+                            StrokeThickness="1.5"
+						      Margin="0 0 0 0"
+						      Data="M0,-0.75 L1,-0.75" Grid.Column="0"/>
+                            <TextBlock Grid.Column="1" 
+								Text="{Binding Path=HandleLength, Mode=OneWay, Converter={x:Static Converters:FormatDoubleConverter.Instance }, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+								FontSize="9" 
+								VerticalAlignment="Center"
+								HorizontalAlignment="Center"
+                          	Padding="1,1,1,1">
+                                <TextBlock.LayoutTransform>
+                                    <RotateTransform Angle="{Binding Path=TextTransform, RelativeSource={RelativeSource Mode=TemplatedParent}}" CenterX="0.5" CenterY="0.5">
+                                    </RotateTransform>
+                                </TextBlock.LayoutTransform>
+                            </TextBlock>
+                            <Path Name="line2"
+						      Stretch="Fill"
+						      Stroke="{StaticResource HandleBrush}"
+                            StrokeThickness="1.5"
+						      Margin="0 0 0 0"
+						      Data="M0,-0.75 L1,-0.75" Grid.Column="2"/>
+                            <Path Name="arrow2"
+                                  Margin="0,1,0,1"
+						      Fill="{StaticResource HandleBrush}"
+						      Stretch="Fill"
+						      Stroke="{TemplateBinding Panel.Background}"
+                              StrokeThickness="0.5"    
+						      Data="M0,0 L0,1 1,0.5 z" Grid.Column="3" />
+                        </Grid>
+                    	  <!--  Rotate the handle and angle of rotation being set by the Margin type. See enum HandleOrientation  -->
+                        <Grid.LayoutTransform>
+                            <RotateTransform Angle="{Binding Path=Angle, RelativeSource={RelativeSource Mode=TemplatedParent}}"></RotateTransform>
+                        </Grid.LayoutTransform>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+	
+    <Style TargetType="{x:Type Controls:MarginStub}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Controls:MarginStub}">
+                    <Grid SnapsToDevicePixels="True" Height="10" Width="10">
+                	  <Rectangle Fill="Transparent"/>
+                    <Ellipse
+                      Fill="{TemplateBinding Panel.Background}"
+                      Height="7"
+                      Width="7"
+                      StrokeThickness="1"
+                      Stroke="{StaticResource HandleBrush}"/>                        
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+	<Style TargetType="{x:Type Controls:HeightDisplay}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Controls:HeightDisplay}">
+                    <Grid Width="22" >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition MaxHeight="20" MinHeight="5" />
+                            <RowDefinition Height="5" />                            
+                        </Grid.RowDefinitions>
+                        <Path SnapsToDevicePixels="True"
+                                Grid.Row="0"
+                              Stroke="#AC0000"
+                              StrokeThickness="1.0"
+                              Data="M0,0 L1,0 M0.75,0 L0.75,1"
+                              Stretch="Fill" />
+                        <TextBlock Text="{Binding Path=ActualHeight, Converter={x:Static Converters:FormatDoubleConverter.Instance}}"
+                                   HorizontalAlignment="Center"
+                                   Margin="8,0,0,1"
+                                   Padding="1,1,1,1"
+                                   FontSize="10"
+                                   Grid.Row="1">
+                    				  <TextBlock.LayoutTransform>
+                                       <RotateTransform Angle="270" CenterX="0.5" CenterY="0.5"/>
+                                   </TextBlock.LayoutTransform></TextBlock>
+                        <Path SnapsToDevicePixels="True"
+                            Grid.Row="2"
+                              Stroke="#AC0000"
+                              StrokeThickness="1.0"
+                              Data="M0.75,0 L0.75,3 M0,3 L1,3 "
+                              Stretch="Fill" />                        
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+		</Setter>
+    </Style>
+    <Style TargetType="{x:Type Controls:WidthDisplay}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Controls:WidthDisplay}">
+                    <Grid Height="22" SnapsToDevicePixels="True">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition MaxWidth="20" MinWidth="5" />
+                            <ColumnDefinition Width="5" />
+                        </Grid.ColumnDefinitions>
+                        <Path Grid.Column="0"
+                              Stroke="#AC0000"
+                              StrokeThickness="1"
+                              Data="M0,0 L0,1 M0,0.75 L1,0.75"
+                              Stretch="Fill" 
+                              SnapsToDevicePixels="True"/>
+                        <TextBlock Text="{Binding Path=ActualWidth,  Converter={x:Static Converters:FormatDoubleConverter.Instance}}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,8,0,0"
+                                   Padding="1,1,1,1"
+                                   FontSize="10"
+                                   Grid.Column="1"/>
+                        <Path Grid.Column="2"
+                              Stroke="#AC0000"
+                              StrokeThickness="1"
+                              Data="M0,0.75 L3,0.75 M3,0 L3,1 "
+                              Stretch="Fill" 
+                              SnapsToDevicePixels="True"/>
+                      </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+	<Style TargetType="{x:Type Controls:InPlaceEditor}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Controls:InPlaceEditor}">
+                    <TextBox Name="editor"
+                             ToolTip="Edit the Text. Press ESC key to make changes."
+                             SnapsToDevicePixels="True"
+                             Padding="{Binding Path=Padding}"    
+                             FontSize="{Binding Path=FontSize}"
+                             FontFamily="{Binding Path=FontFamily}"
+                             FontStyle="{Binding Path=FontStyle}"
+                             FontStretch="{Binding Path=FontStretch}"
+                             FontWeight="{Binding Path=FontWight}"  
+                             Text="{Binding Path=Bind, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                             AcceptsReturn="True"
+                             MaxHeight="{Binding Path=Height, UpdateSourceTrigger=PropertyChanged}"
+                             MaxWidth="{Binding Path=Width, UpdateSourceTrigger=PropertyChanged}"/>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+	<Style TargetType="{x:Type Controls:QuickOperationMenu}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Controls:QuickOperationMenu}">
+                    <Menu Height="15" HorizontalAlignment="Left" Name="menu1" VerticalAlignment="Top" Width="15" BorderThickness="0" Background="Transparent">
+                        <MenuItem Height="15" Width="15"  Padding="0" Background="LightGray" BorderThickness="1" Name="MainHeader">
+                        <MenuItem.Header>
+                            <Path Data="M3,5.5 L12,5.5 L7.5,11 z" Fill="Gray" />
+                        </MenuItem.Header>
+                        </MenuItem>
+                    </Menu>                    
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

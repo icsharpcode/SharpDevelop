@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Grid
+	x:Class="ICSharpCode.WpfDesign.AddIn.ImageSourceEditor.ImageSourceEditor" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Grid.ColumnDefinitions>
+		<ColumnDefinition />
+		<ColumnDefinition
+			Width="20" />
+	</Grid.ColumnDefinitions>
+	<TextBox
+		Text="{Binding Value}"
+		Background="{x:Null}"
+		Grid.Column="0"
+		BorderThickness="0" />
+	<Button
+		Content="..."
+		Name="ChooseImage"
+		Grid.Column="1"
+		Click="ChooseImageClick" />
+</Grid>

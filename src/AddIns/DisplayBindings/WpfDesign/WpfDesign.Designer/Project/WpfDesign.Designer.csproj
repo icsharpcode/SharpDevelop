@@ -92,15 +92,20 @@
       <DependentUpon>GridUnitSelector.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Controls\InPlaceEditor.cs" />
+    <Compile Include="Controls\MarginHandle.cs" />
     <Compile Include="Controls\PanelMoveAdorner.cs" />
+    <Compile Include="Controls\QuickOperationMenu.cs" />
     <Compile Include="Controls\SelectionFrame.cs" />
     <Compile Include="Controls\ErrorBalloon.cs" />
     <Compile Include="Controls\ResizeThumb.cs" />
     <Compile Include="CallExtension.cs" />
     <Compile Include="Controls\DragListener.cs" />
+    <Compile Include="Controls\SizeDisplay.cs" />
     <Compile Include="Controls\WindowClone.cs" />
     <Compile Include="Controls\ZoomControl.cs" />
     <Compile Include="Converters.cs" />
+    <Compile Include="DesignCommand.cs" />
     <Compile Include="DesignPanel.cs" />
     <Compile Include="DesignSurface.xaml.cs">
       <DependentUpon>DesignSurface.xaml</DependentUpon>
@@ -117,10 +122,15 @@
     </Compile>
     <Compile Include="Extensions\GridAdornerProvider.cs" />
     <Compile Include="Extensions\GridPlacementSupport.cs" />
+    <Compile Include="Extensions\InPlaceEditorExtension.cs" />
+    <Compile Include="Extensions\MarginHandleExtension.cs" />
+    <Compile Include="Extensions\QuickOperationMenuExtension.cs" />
+    <Compile Include="Extensions\SizeDisplayExtension.cs" />
     <Compile Include="Extensions\SnaplinePlacementBehavior.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Extensions\PanelMove.cs" />
+    <Compile Include="FocusNavigator.cs" />
     <Compile Include="ModelTools.cs" />
     <Compile Include="Extensions\PanelInstanceFactory.cs" />
     <Compile Include="Extensions\PanelSelectionHandler.cs" />
@@ -189,6 +199,7 @@
     <Compile Include="Services\ChooseClassServiceBase.cs" />
     <Compile Include="Services\ClickOrDragMouseGesture.cs" />
     <Compile Include="Services\CreateComponentTool.cs" />
+    <Compile Include="Services\DesignerKeyBindings.cs" />
     <Compile Include="Services\DragMoveMouseGesture.cs" />
     <Compile Include="Services\ErrorService.cs" />
     <Compile Include="Services\MouseGestureBase.cs" />
@@ -204,6 +215,7 @@
     <Compile Include="Services\WpfTopLevelWindowService.cs" />
     <Compile Include="Services\XamlErrorService.cs" />
     <Compile Include="SharedInstances.cs" />
+    <Compile Include="Xaml\XamlEditOperations.cs" />
     <Compile Include="Xaml\XamlLoadSettings.cs" />
     <Compile Include="Xaml\XamlModelCollectionElementsCollection.cs" />
     <Compile Include="Xaml\XamlComponentService.cs" />
@@ -214,6 +226,10 @@
     <Resource Include="Images\Tag.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
