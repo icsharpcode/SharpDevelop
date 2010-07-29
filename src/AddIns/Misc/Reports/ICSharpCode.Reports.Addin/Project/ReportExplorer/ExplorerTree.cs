@@ -342,6 +342,7 @@ namespace ICSharpCode.Reports.Addin
 			SetSortColumns();
 			SetGroupColumns();
 			SetParameters();
+			this.ExpandAll();
 			this.EndUpdate();
 		}
 		
