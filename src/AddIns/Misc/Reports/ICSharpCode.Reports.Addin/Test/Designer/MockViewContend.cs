@@ -225,5 +225,10 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 				throw new NotImplementedException();
 			}
 		}
+		
+		public object GetService(Type serviceType)
+		{
+			return null;
+		}
 	}
 }
