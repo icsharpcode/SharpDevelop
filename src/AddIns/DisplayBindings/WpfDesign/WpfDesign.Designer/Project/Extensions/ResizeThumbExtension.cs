@@ -30,7 +30,16 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		readonly DesignItem[] extendedItemArray = new DesignItem[1];
 		IPlacementBehavior resizeBehavior;
 		PlacementOperation operation;
-		ChangeGroup changeGroup;
+		ChangeGroup changeGroup;		
+				
+		bool _isResizing;
+		
+		/// <summary>
+		/// Gets whether this extension is resizing any element.
+		/// </summary>
+		public bool IsResizing{
+			get { return _isResizing; }
+		}
 		
 		public ResizeThumbExtension()
 		{
@@ -106,6 +115,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			else {
 				changeGroup = this.ExtendedItem.Context.OpenGroup("Resize", extendedItemArray);
 			}
+			_isResizing=true;
 			ShowSizeAndHideHandles();
 		}
 
@@ -154,6 +164,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				else changeGroup.Commit();
 				changeGroup = null;
 			}
+			_isResizing=false;
 			HideSizeAndShowHandles();
 		}
 		

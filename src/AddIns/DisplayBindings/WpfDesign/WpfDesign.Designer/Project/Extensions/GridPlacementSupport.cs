@@ -149,6 +149,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		public override void EnterContainer(PlacementOperation operation)
 		{
 			enteredIntoNewContainer=true;
+			grid.UpdateLayout();
 			base.EnterContainer(operation);
 		}
 		
