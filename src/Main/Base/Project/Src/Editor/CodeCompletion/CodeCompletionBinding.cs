@@ -131,7 +131,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		bool enableIndexerInsight = true;
 		bool enableXmlCommentCompletion = true;
 		bool enableDotCompletion = true;
-		protected InsightWindowHandler insightHandler;
+		protected IInsightWindowHandler insightHandler;
 		
 		public bool EnableMethodInsight {
 			get {

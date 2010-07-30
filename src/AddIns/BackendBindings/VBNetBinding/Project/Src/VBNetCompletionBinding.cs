@@ -38,7 +38,7 @@ namespace ICSharpCode.VBNetBinding
 			}
 		}
 		
-		InsightWindowHandler insightHandler = new InsightWindowHandler(SupportedLanguage.VBNet);
+		NRefactoryInsightWindowHandler insightHandler = new NRefactoryInsightWindowHandler(SupportedLanguage.VBNet);
 		
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{

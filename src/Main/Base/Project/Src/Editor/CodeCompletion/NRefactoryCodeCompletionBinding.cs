@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				languageProperties = LanguageProperties.VBNet;
 			}
 			
-			insightHandler = new InsightWindowHandler(language);
+			insightHandler = new NRefactoryInsightWindowHandler(language);
 		}
 		
 		public override bool CtrlSpace(ITextEditor editor)

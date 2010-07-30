@@ -19,13 +19,13 @@ using VBTokens = ICSharpCode.NRefactory.Parser.VB.Tokens;
 
 namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
-	public class InsightWindowHandler
+	public class NRefactoryInsightWindowHandler : IInsightWindowHandler
 	{
 		readonly SupportedLanguage language;
 		readonly int eofToken, commaToken, openParensToken, closeParensToken, openBracketToken, closeBracketToken, openBracesToken, closeBracesToken, statementEndToken;
 		readonly LanguageProperties languageProperties;
-		
-		public InsightWindowHandler(SupportedLanguage language)
+
+		public NRefactoryInsightWindowHandler(SupportedLanguage language)
 		{
 			this.language = language;
 			if (language == SupportedLanguage.CSharp) {
@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				openBracesToken = CSTokens.OpenCurlyBrace;
 				closeBracesToken = CSTokens.CloseCurlyBrace;
 				statementEndToken = CSTokens.Semicolon;
-				
+
 				languageProperties = LanguageProperties.CSharp;
 			} else {
 				eofToken = VBTokens.EOF;
@@ -50,11 +50,11 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				openBracesToken = VBTokens.OpenCurlyBrace;
 				closeBracesToken = VBTokens.CloseCurlyBrace;
 				statementEndToken = VBTokens.EOL;
-				
+
 				languageProperties = LanguageProperties.VBNet;
 			}
 		}
-		
+
 		public void InitializeOpenedInsightWindow(ITextEditor editor, IInsightWindow insightWindow)
 		{
 			EventHandler<TextChangeEventArgs> onDocumentChanged = delegate {
@@ -83,14 +83,14 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			insightWindow.DocumentChanged += onDocumentChanged;
 			onDocumentChanged(null, null);
 		}
-		
+
 		void MarkInsightWindowEndOffset(IInsightWindow insightWindow, ITextEditor editor, Location endLocation)
 		{
 			insightWindow.EndOffset = editor.Document.PositionToOffset(endLocation.Line, endLocation.Column);
 			if (editor.Caret.Offset > insightWindow.EndOffset)
 				insightWindow.Close();
 		}
-		
+
 		class InspectedCall
 		{
 			/// <summary>
@@ -105,14 +105,14 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			/// reference back to parent call - used to create a stack of inspected calls
 			/// </summary>
 			internal InspectedCall parent;
-			
+
 			public InspectedCall(Location start, InspectedCall parent)
 			{
 				this.start = start;
 				this.parent = parent;
 			}
 		}
-		
+
 		int LocationToOffset(ITextEditor editor, Location loc)
 		{
 			if (loc.IsEmpty || loc.Line > editor.Document.TotalNumberOfLines)
@@ -120,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			IDocumentLine seg = editor.Document.GetLine(loc.Line);
 			return seg.Offset + Math.Min(loc.Column, seg.Length) - 1;
 		}
-		
+
 		IList<ResolveResult> ResolveCallParameters(ITextEditor editor, InspectedCall call)
 		{
 			List<ResolveResult> rr = new List<ResolveResult>();
@@ -129,22 +129,20 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			int newOffset;
 			foreach (Location loc in call.commas) {
 				newOffset = LocationToOffset(editor, loc);
-				if (newOffset < 0) break;
-				string text = editor.Document.GetText(offset+1,newOffset-(offset+1));
+				if (newOffset < 0)
+					break;
+				string text = editor.Document.GetText(offset + 1, newOffset - (offset + 1));
 				rr.Add(ParserService.Resolve(new ExpressionResult(text), loc.Line, loc.Column, editor.FileName, documentText));
 			}
 			// the last argument is between the last comma and the caret position
 			newOffset = editor.Caret.Offset;
 			if (offset < newOffset) {
-				string text = editor.Document.GetText(offset+1,newOffset-(offset+1));
-				rr.Add(ParserService.Resolve(new ExpressionResult(text),
-				                             editor.Caret.Line,
-				                             editor.Caret.Column,
-				                             editor.FileName, documentText));
+				string text = editor.Document.GetText(offset + 1, newOffset - (offset + 1));
+				rr.Add(ParserService.Resolve(new ExpressionResult(text), editor.Caret.Line, editor.Caret.Column, editor.FileName, documentText));
 			}
 			return rr;
 		}
-		
+
 		public bool InsightRefreshOnComma(ITextEditor editor, char ch)
 		{
 			// Show MethodInsightWindow or IndexerInsightWindow
@@ -157,10 +155,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					Token token;
 					InspectedCall call = new InspectedCall(Location.Empty, null);
 					call.parent = call;
-					while ((token = lexer.NextToken()) != null
-					       && token.Kind != eofToken
-					       && token.Location < cursorLocation)
-					{
+					while ((token = lexer.NextToken()) != null && token.Kind != eofToken && token.Location < cursorLocation) {
 						if (token.Kind == commaToken) {
 							call.commas.Add(token.Location);
 						} else if (token.Kind == openParensToken || token.Kind == openBracketToken || token.Kind == openBracesToken) {
@@ -175,10 +170,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 						if (c == '(' || c == '[') {
 							var insightProvider = new MethodInsightProvider { LookupOffset = offset };
 							var insightItems = insightProvider.ProvideInsight(editor);
-							ShowInsight(editor,
-							            insightItems,
-							            ResolveCallParameters(editor, call),
-							            ch);
+							ShowInsight(editor, insightItems, ResolveCallParameters(editor, call), ch);
 							return true;
 						} else {
 							Core.LoggingService.Warn("Expected '(' or '[' at start position");
@@ -188,7 +180,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			}
 			return false;
 		}
-		
+
 		IMethodOrProperty GetMethodFromInsightItem(IInsightItem item)
 		{
 			MethodInsightItem mii = item as MethodInsightItem;
@@ -198,7 +190,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				return null;
 			}
 		}
-		
+
 		void ShowInsight(ITextEditor editor, IList<IInsightItem> insightItems, ICollection<ResolveResult> parameters, char charTyped)
 		{
 			int paramCount = parameters.Count;
@@ -219,8 +211,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					}
 					i++;
 				}
-				IMethodOrProperty result = Dom.CSharp.OverloadResolution.FindOverload(
-					methods.Where(m => m != null), argumentTypes, true, false, out overloadIsSure);
+				IMethodOrProperty result = Dom.CSharp.OverloadResolution.FindOverload(methods.Where(m => m != null), argumentTypes, true, false, out overloadIsSure);
 				defaultIndex = methods.IndexOf(result);
 			}
 			IInsightWindow insightWindow = editor.ShowInsightWindow(insightItems);
@@ -236,16 +227,21 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				}
 			}
 		}
-		
+
+		// TODO : remove this code duplication!
+		// see NRefactoryCodeCompletionBinding
 		bool ProvideContextCompletion(ITextEditor editor, IReturnType expected, char charTyped)
 		{
-			if (expected == null) return false;
+			if (expected == null)
+				return false;
 			IClass c = expected.GetUnderlyingClass();
-			if (c == null) return false;
+			if (c == null)
+				return false;
 			if (c.ClassType == ClassType.Enum) {
 				CtrlSpaceCompletionItemProvider cdp = new NRefactoryCtrlSpaceCompletionItemProvider(languageProperties);
 				var ctrlSpaceList = cdp.GenerateCompletionList(editor);
-				if (ctrlSpaceList == null) return false;
+				if (ctrlSpaceList == null)
+					return false;
 				ContextCompletionItemList contextList = new ContextCompletionItemList();
 				contextList.Items.AddRange(ctrlSpaceList.Items);
 				contextList.activationKey = charTyped;
@@ -257,18 +253,19 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					}
 				}
 				if (contextList.SuggestedItem != null) {
-					if (charTyped != ' ') contextList.InsertSpace = true;
+					if (charTyped != ' ')
+						contextList.InsertSpace = true;
 					editor.ShowCompletionWindow(contextList);
 					return true;
 				}
 			}
 			return false;
 		}
-		
+
 		class ContextCompletionItemList : DefaultCompletionItemList
 		{
 			internal char activationKey;
-			
+
 			public override CompletionItemListKeyResult ProcessInput(char key)
 			{
 				if (key == '=' && activationKey == '=')
