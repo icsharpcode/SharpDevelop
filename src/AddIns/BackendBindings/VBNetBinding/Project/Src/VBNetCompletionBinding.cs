@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using ICSharpCode.Core;
@@ -15,6 +17,8 @@ using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using Dom = ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Dom.VBNet;
 using ICSharpCode.SharpDevelop.Editor;
@@ -33,6 +37,8 @@ namespace ICSharpCode.VBNetBinding
 				return instance;
 			}
 		}
+		
+		InsightWindowHandler insightHandler = new InsightWindowHandler(SupportedLanguage.VBNet);
 		
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
@@ -57,10 +63,14 @@ namespace ICSharpCode.VBNetBinding
 				case '(':
 					if (CodeCompletionOptions.InsightEnabled) {
 						IInsightWindow insightWindow = editor.ShowInsightWindow(new MethodInsightProvider().ProvideInsight(editor));
-//						if (insightWindow != null)
-//							InitializeOpenedInsightWindow(editor, insightWindow);
+						if (insightWindow != null)
+							insightHandler.InitializeOpenedInsightWindow(editor, insightWindow);
 						return CodeCompletionKeyPressResult.Completed;
 					}
+					break;
+				case ',':
+					if (CodeCompletionOptions.InsightRefreshOnComma && CodeCompletionOptions.InsightEnabled && insightHandler.InsightRefreshOnComma(editor, ch))
+						return CodeCompletionKeyPressResult.Completed;
 					break;
 				case '\n':
 					TryDeclarationTypeInference(editor, editor.Document.GetLineForOffset(editor.Caret.Offset));

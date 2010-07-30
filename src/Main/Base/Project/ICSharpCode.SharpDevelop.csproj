@@ -96,6 +96,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Editor\CodeCompletion\ICompletionItemHandler.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\InsightWindowHandler.cs" />
     <Compile Include="Src\Editor\CodeCompletion\NRefactoryCompletionItemList.cs" />
     <Compile Include="Src\Editor\Commands\ClassBookmarkSubmenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\ClassMemberMenuBuilder.cs" />

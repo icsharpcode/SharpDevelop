@@ -211,6 +211,8 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 					block = p.CurrentBlock;
 				if (block != null && (block.isClosed || expressionDelimiters.Contains(t.Kind) && block == p.CurrentBlock))
 					break;
+				if (t.Kind == Tokens.EOF)
+					break;
 			}
 			
 			if (p.Errors.Any()) {

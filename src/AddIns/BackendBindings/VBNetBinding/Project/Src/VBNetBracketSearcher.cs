@@ -183,7 +183,7 @@ namespace ICSharpCode.VBNetBinding
 			}
 			
 			Token result = null;
-			Token firstModifier = null;
+//			Token firstModifier = null;
 			
 			while ((currentToken = lexer.NextToken()).Kind != Tokens.EOF) {
 				if (prevToken == null)

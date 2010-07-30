@@ -6256,7 +6256,6 @@ partial class ExpressionFinder {
 				if (la == null) { currentState = 492; break; }
 				if (la.kind == 140) {
 					isMissingModifier = false;
-					PushContext(Context.Type, la, t);
 					goto case 635;
 				} else {
 					goto case 493;
@@ -6271,7 +6270,6 @@ partial class ExpressionFinder {
 				if (la == null) { currentState = 494; break; }
 				if (la.kind == 136) {
 					isMissingModifier = false;
-					PushContext(Context.Type, la, t);
 					goto case 629;
 				} else {
 					goto case 495;
@@ -7346,6 +7344,7 @@ partial class ExpressionFinder {
 				break;
 			}
 			case 630: {
+				PushContext(Context.Type, la, t);
 				stateStack.Push(631);
 				goto case 32;
 			}
@@ -7379,6 +7378,7 @@ partial class ExpressionFinder {
 				break;
 			}
 			case 636: {
+				PushContext(Context.Type, la, t);
 				stateStack.Push(637);
 				goto case 32;
 			}

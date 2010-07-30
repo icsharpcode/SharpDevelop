@@ -656,12 +656,7 @@ namespace ICSharpCode.VBNetBinding
 
 		void Indent(ITextEditor editor, Stack<string> indentation)
 		{
-			bool useSpaces = editor.Options.ConvertTabsToSpaces;
-			int indentationSize = editor.Options.IndentationSize;
-			
-			string addIndent = (useSpaces) ? new string(' ', indentationSize) : "\t";
-			
-			indentation.Push((indentation.PeekOrDefault() ?? string.Empty) + addIndent);
+			indentation.Push((indentation.PeekOrDefault() ?? string.Empty) + editor.Options.IndentationString);
 		}
 		
 		internal static bool IsBlockStart(ILexer lexer, Token current, Token prev)

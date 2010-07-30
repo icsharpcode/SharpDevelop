@@ -314,8 +314,8 @@ ClassOrModuleOrStructureTypeDeclaration =
 	(. PushContext(Context.TypeDeclaration, la, t); .)
 	( "Module" | "Class" | "Structure" ) (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
 	[ "(" "Of" GenericTypeParameterDeclaration ")" ] StatementTerminator
-	[ (. isMissingModifier = false; .) (. PushContext(Context.Type, la, t); .) "Inherits" TypeName (. PopContext(); .) StatementTerminator ]
-	[ (. isMissingModifier = false; .) (. PushContext(Context.Type, la, t); .) "Implements" TypeName (. PopContext(); .) { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) } StatementTerminator ]
+	[ (. isMissingModifier = false; .) "Inherits" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) StatementTerminator ]
+	[ (. isMissingModifier = false; .) "Implements" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) } StatementTerminator ]
 	{
 		{ AttributeBlock } (.OnEachPossiblePath: isMissingModifier = true; .)
 		{ TypeOrMemberModifier (. isMissingModifier = false; .) } (. isMissingModifier = false; .)
