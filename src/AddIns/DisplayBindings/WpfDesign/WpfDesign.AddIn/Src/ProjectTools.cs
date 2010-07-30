@@ -17,28 +17,26 @@ namespace ICSharpCode.WpfDesign.AddIn
 	/// <summary>
 	/// Static helper methods to interact with the project
 	/// </summary>
-	public class ProjectTools
+	internal class ProjectTools
 	{
 		/// <summary>
 		/// Add files to the current project at the project node.
 		/// </summary>
-		/// <param name="fileNames"></param>
+		/// <param name="fileNames">list of files that have to be added.</param>
 		internal static void AddFiles(string []fileNames)
 		{
-			IProject project=ProjectService.CurrentProject;			
-			ProjectNode projectNode=ProjectBrowserPad.Instance.CurrentProject;
-			Debug.Assert(project!=null);
-			Debug.Assert(projectNode!=null);
+			IProject project=ProjectService.CurrentProject;	
+			Debug.Assert(project!=null);				
 			
 			foreach(var file in fileNames){
 				string relFileName=FileUtility.GetRelativePath(project.Directory,file);
 				FileProjectItem fileProjectItem=new FileProjectItem(project,project.GetDefaultItemType(file),relFileName);
 				FileNode fileNode=new FileNode(file,FileNodeStatus.InProject);
-				fileNode.ProjectItem=fileProjectItem;
-				fileNode.InsertSorted(projectNode);
+				fileNode.ProjectItem=fileProjectItem;				
 				ProjectService.AddProjectItem(project,fileProjectItem);
 			}
 			project.Save();
+			ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
 		}
 		
 		/// <summary>

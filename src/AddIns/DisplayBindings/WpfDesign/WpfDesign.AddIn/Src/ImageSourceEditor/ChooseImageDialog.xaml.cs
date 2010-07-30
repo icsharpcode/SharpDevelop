@@ -38,10 +38,10 @@ namespace ICSharpCode.WpfDesign.AddIn.ImageSourceEditor
 		private static string[] Extension;
 		
 		private PropertyNode _node;
-		private List<ImageData> _data;		
+		private List<ImageData> _data;
 		
 		static ChooseImageDialog()
-		{			
+		{
 			Extension = new String[]{".jpg", ".bmp", ".png", ".gif", ".ico", ".dib", ".jpe", ".jpeg", ".tif", ".tiff"};
 		}
 		
@@ -71,6 +71,7 @@ namespace ICSharpCode.WpfDesign.AddIn.ImageSourceEditor
 			}
 			
 			Display.ItemsSource=_data;
+			Display.SelectionChanged+=delegate { Display.SelectedItem=null; };
 		}
 		
 		#region Event Handlers
@@ -91,8 +92,10 @@ namespace ICSharpCode.WpfDesign.AddIn.ImageSourceEditor
 				List<string> temp=new List<string>();
 				foreach(var file in fileNames){
 					temp.Add(Path.GetFileName(file));
-					}
-				 _data.OrderBy(image => image.Header).ElementAt(0).Images.AddRange(fileNames);
+				}
+				if(fileNames.Length!=0)
+					txURL.Text = fileNames.Last();
+				_data.OrderBy(image => image.Header).ElementAt(0).Images.AddRange(fileNames);
 			}
 		}
 		
@@ -121,7 +124,7 @@ namespace ICSharpCode.WpfDesign.AddIn.ImageSourceEditor
 				_node.Value=_imgDisplay.SelectedItem;
 				Close();
 			}
-				
+			
 		}
 		
 		protected override void OnPreviewKeyUp(KeyEventArgs e)
@@ -144,7 +147,7 @@ namespace ICSharpCode.WpfDesign.AddIn.ImageSourceEditor
 					else
 						MessageBox.Show(this, "The specified file is not a valid image file", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 					
-					Close();				
+					Close();
 				}
 				else{
 					MessageBox.Show(this, "The specified file does not exist on the disk", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -156,13 +159,7 @@ namespace ICSharpCode.WpfDesign.AddIn.ImageSourceEditor
 		{
 			Close();
 		}
-		
-		void DisplaySelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			Display.SelectedItem=null;
-		}
-		
-		#endregion	
+		#endregion
 	}
 	
 	public class ImageData
@@ -181,6 +178,6 @@ namespace ICSharpCode.WpfDesign.AddIn.ImageSourceEditor
 		{
 			this.Header=header;
 			this.Images=images;
-		}		
+		}
 	}
 }
