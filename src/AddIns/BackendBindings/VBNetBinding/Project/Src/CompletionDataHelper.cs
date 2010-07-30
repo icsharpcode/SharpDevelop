@@ -89,7 +89,7 @@ namespace ICSharpCode.VBNetBinding
 			IClass c = GetCurrentClass(editor);
 			IMember m = GetCurrentMember(editor);
 			
-			HandleKeyword(ref result, info, resolvedType, word, c, m, editor, pressedKey);
+			HandleKeyword(ref result,  resolvedType, word, c, m, editor, pressedKey);
 			
 			AddSpecialItems(ref result, info, resolvedType, word, m, expressionResult, editor);
 			
@@ -106,7 +106,7 @@ namespace ICSharpCode.VBNetBinding
 			return result;
 		}
 
-		static void HandleKeyword(ref VBNetCompletionItemList result, ParseInformation info, IReturnType resolvedType, string word, IClass c, IMember m, ITextEditor editor, char pressedKey)
+		static void HandleKeyword(ref VBNetCompletionItemList result, IReturnType resolvedType, string word, IClass c, IMember m, ITextEditor editor, char pressedKey)
 		{
 			if (pressedKey == ' ') {
 				if (word.Equals("return", StringComparison.InvariantCultureIgnoreCase) && m != null) {

@@ -176,7 +176,7 @@ namespace ICSharpCode.VBNetBinding
 		
 		bool? GetValue(string name, bool defaultVal)
 		{
-			string val = GetEvaluatedProperty("OptionInfer");
+			string val = GetEvaluatedProperty(name);
 			
 			if (val == null)
 				return defaultVal;

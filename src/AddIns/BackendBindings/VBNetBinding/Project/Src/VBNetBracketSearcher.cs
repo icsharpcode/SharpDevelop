@@ -138,14 +138,14 @@ namespace ICSharpCode.VBNetBinding
 		#endregion
 		
 		#region statement search
-		int FindBeginStatementAroundOffset(IDocument document, int offset, out VBStatement statement, out int length)
+		static int FindBeginStatementAroundOffset(IDocument document, int offset, out VBStatement statement, out int length)
 		{
 			length = 0;
 			statement = null;
 			return -1;
 		}
 		
-		int FindEndStatementAroundOffset(IDocument document, int offset, out VBStatement statement)
+		static int FindEndStatementAroundOffset(IDocument document, int offset, out VBStatement statement)
 		{
 			IDocumentLine line = document.GetLineForOffset(offset);
 			
@@ -168,7 +168,7 @@ namespace ICSharpCode.VBNetBinding
 			return -1;
 		}
 		
-		int FindBeginStatement(IDocument document, VBStatement statement, Location endLocation, out int length)
+		static int FindBeginStatement(IDocument document, VBStatement statement, Location endLocation, out int length)
 		{
 			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, document.CreateReader());
 			
@@ -226,13 +226,13 @@ namespace ICSharpCode.VBNetBinding
 			return -1;
 		}
 		
-		int FindEndStatement(IDocument document, VBStatement statement)
+		static int FindEndStatement(IDocument document, VBStatement statement)
 		{
 			return -1;
 		}
 		#endregion
 		
-		bool IsDeclaration(int kind)
+		static bool IsDeclaration(int kind)
 		{
 			return kind == Tokens.Sub || kind == Tokens.Function || kind == Tokens.Operator || VBNetFormattingStrategy.IsDeclaration(kind);
 		}
