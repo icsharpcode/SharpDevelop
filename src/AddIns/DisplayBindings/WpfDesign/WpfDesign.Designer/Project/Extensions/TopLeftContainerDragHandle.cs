@@ -25,6 +25,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	/// </summary>
 	[ExtensionServer(typeof(PrimarySelectionExtensionServer))]
 	[ExtensionFor(typeof(Panel))]
+	[ExtensionFor(typeof(Image))]
+	[ExtensionFor(typeof(MediaElement))]
 	public class TopLeftContainerDragHandle : AdornerProvider
 	{
 		/// <summary/>
