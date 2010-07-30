@@ -45,7 +45,7 @@ namespace CSharpBinding
 					return true;
 				}*/
 			} else if (ch == ',' && CodeCompletionOptions.InsightRefreshOnComma && CodeCompletionOptions.InsightEnabled) {
-				if (InsightRefreshOnComma(editor, ch))
+				if (insightHandler.InsightRefreshOnComma(editor, ch))
 					return CodeCompletionKeyPressResult.Completed;
 			} else if(ch == '=') {
 				var curLine = editor.Document.GetLineForOffset(cursor);
