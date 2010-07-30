@@ -90,8 +90,13 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		public string GroupName
 		{
 			get {
-				return comboBox1.SelectedItem.ToString();
-			}
+				string ret = String.Empty;
+				if (!String.IsNullOrEmpty(comboBox1.SelectedItem.ToString()))
+				    {
+				    	ret =  comboBox1.SelectedItem.ToString();
+				    }
+				    return ret;
+				}
 		}
 	}
 }

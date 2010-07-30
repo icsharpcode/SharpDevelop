@@ -25,14 +25,6 @@ namespace ICSharpCode.Reports.Core {
 	
 	public static class SortExtension
 	{
-		// template
-		/*
-		public static IOrderedQueryable<User> MyOrder(this IQueryable<User> source )
-		 {      
-		 	
-		 	return source.OrderBy(x => x.LastName).ThenBy(x => x.FirstName).ThenBy(x => x.Email);
-		 }
-		*/
 		
 		public static IOrderedQueryable<BaseComparer> AscendingOrder(this IQueryable<BaseComparer> source )
 		{  
@@ -69,20 +61,6 @@ namespace ICSharpCode.Reports.Core {
 		
 		#endregion
 		
-		#region Event's
-		
-	
-		
-		/*
-		protected void NotifyGroupChanging (object source,GroupSeparator groupSeperator)
-		{
-			if (this.GroupChanged != null) {
-				this.GroupChanged (source,new GroupChangedEventArgs(groupSeperator));
-			}
-		}
-		*/
-		
-		#endregion
 		
 		
 		protected static Collection<AbstractColumn> CreateSortCollection (ColumnCollection items)
@@ -152,30 +130,6 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 		
-
-		/*
-		protected static void CheckSortArray (ExtendedIndexCollection arr,string text)
-		{
-			if (arr != null) {
-				int row = 0;
-				foreach (BaseComparer bc in arr) {
-					GroupSeparator sep = bc as GroupSeparator;
-					if (sep != null) {
-
-						
-					} else {
-						object [] oarr = bc.ObjectArray;
-						for (int i = 0;i < oarr.Length ;i++ ) {
-							string str = oarr[i].ToString();
-						}
-						row ++;
-					}
-					
-				}
-			}
-			System.Console.WriteLine("-----End of <CheckSortArray>-----------");
-		}
-		*/
 		
 		public  virtual void Reset()
 		{
@@ -304,24 +258,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		}
 		
-		/*
-		public  bool HasChildren 
-		{
-			get {
-				if (this.IsGrouped == true) {
-					GroupSeparator gs = (GroupSeparator)this.indexList[this.CurrentRow] as GroupSeparator;
-					if (gs != null) {
-						return (gs.GetChildren.Count > 0);
-					} else {
-						return false;
-					}
-				} else {
-					return false;
-				}
-			}
-		}
 		
-		*/
 		/*
 		public IndexList ChildRows 
 		{

@@ -30,18 +30,27 @@ namespace ICSharpCode.Reports.Addin.Commands
 	}
 	
 	
-	public class RemoveNodeCommand : AbstractCommand
+	public class RemoveSortNodeCommand : AbstractCommand
 	{
 		public override void Run()
 		{
 			ReportExplorerPad r = this.Owner as ReportExplorerPad;
 			if (r != null) {
-				r.RemoveNode();
+				r.RemoveSortNode();
 			}
 		}
 	}
 	
-	
+	public class RemoveGroupNodeCommand : AbstractCommand
+	{
+		public override void Run()
+		{
+			ReportExplorerPad r = this.Owner as ReportExplorerPad;
+			if (r != null) {
+				r.RemoveGroupNode();
+			}
+		}
+	}
 	
 	public class ClearSelectedNodeCommand : AbstractCommand
 	{

@@ -172,9 +172,15 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
-		public void RemoveNode()
+		public void RemoveSortNode()
 		{
-			this.explorerTree.RemoveNode();
+			this.explorerTree.RemoveSortNode();
+		}
+		
+		
+		public void RemoveGroupNode()
+		{
+			this.explorerTree.RemoveGroupNode();
 		}
 		
 		public void RefreshParameters()

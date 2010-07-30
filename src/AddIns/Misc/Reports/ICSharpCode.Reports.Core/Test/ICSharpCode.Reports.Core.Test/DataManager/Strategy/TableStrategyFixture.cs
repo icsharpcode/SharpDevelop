@@ -48,7 +48,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.Strategy
 		public void CanGroup_All_Elements_are_GroupComparer ()
 		{
 			GroupColumn groupComparer = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
-			TableStrategy tableStrategy =GroupTableStrategyFactory (groupComparer);
+			TableStrategy tableStrategy = GroupTableStrategyFactory (groupComparer);
 			tableStrategy.Bind();
 			foreach (BaseComparer element in tableStrategy.IndexList) 
 			{

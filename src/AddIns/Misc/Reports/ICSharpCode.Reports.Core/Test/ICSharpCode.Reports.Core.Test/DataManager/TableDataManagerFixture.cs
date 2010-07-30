@@ -181,7 +181,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		
 		
 		#region Standart Enumerator
-		
+		/*
 		[Test]
 		public void IEnumerableStartFromBegin ()
 		{
@@ -200,7 +200,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			Assert.AreEqual(this.table.Rows.Count,start);
 			Assert.IsFalse(dn.HasMoreData);
 		}
-		
+		*/
 		
 		[Test]
 		public void EnumeratorStartFromBegin ()
@@ -222,7 +222,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		#endregion
 		
 		#region RangeEnumerator
-		
+		/*
 		[Test]
 		public void RangeEnumeratorStartFromBegin ()
 		{
@@ -278,6 +278,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			}
 			Assert.AreEqual(start -1,dn.CurrentRow);
 		}
+		*/
 		#endregion	
 		
 		

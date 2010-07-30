@@ -38,7 +38,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		#endregion
 		
 		
-		#region AdjustParentInSection
+		#region Section's
 		
 		public  static void AdjustParent (BaseReportItem parent,ReportItemCollection items)
 		{
@@ -60,6 +60,13 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				item.Parent = parent;
 			}
 		}
+		
+		
+		public static void AdjustSectionLocation (BaseSection section)
+		{
+			section.Location = new Point(section.Location.X,section.SectionOffset );
+		}
+		
 		
 		#endregion
 		

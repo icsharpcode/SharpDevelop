@@ -13,6 +13,8 @@ using ICSharpCode.Data.Core.DatabaseObjects;
 using System.Data.SqlClient;
 using System.Collections.Specialized;
 using ICSharpCode.Data.Core.Enums;
+using System.Windows;
+using System.Windows.Threading;
 
 #endregion
 
@@ -171,7 +173,29 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
             SqlConnection sqlConnection = null;
             sqlConnection = new SqlConnection();
             sqlConnection.ConnectionString = datasource.ConnectionString;
-            sqlConnection.Open();
+
+            try
+            {
+                sqlConnection.Open();
+            }
+            catch (SqlException ex)
+            {
+                switch (ex.Number)
+                { 
+                    case 2:
+                    case 3:
+                    case 53:
+                        Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                        {
+                            Datasources.Remove(datasource as SQLServerDatasource);
+                        }));
+                        break;
+                    default:
+                        break;
+                }
+
+                throw ex;
+            }
 
             string sqlversion = sqlConnection.ServerVersion;
             sqlversion = sqlversion.Split('.').FirstOrDefault(); //major version

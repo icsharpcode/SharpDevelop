@@ -295,7 +295,8 @@ namespace ICSharpCode.Reports.Addin
 			this.MakeDirty();
 			ReportExplorerPad explorerPad = CheckReportExplorer();
 			IComponentChangeService change = Host.GetService(typeof(IComponentChangeService)) as IComponentChangeService;
-			change.OnComponentChanged(explorerPad.ReportModel.ReportSettings.SortColumnsCollection, null, null, null);
+//			change.OnComponentChanged(explorerPad.ReportModel.ReportSettings.SortColumnsCollection, null, null, null);
+			change.OnComponentChanged(explorerPad, null, null, null);
 		}
 		
 		
@@ -353,8 +354,6 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void OnComponentChanged (object sender, ComponentChangedEventArgs e)
 		{
-			// More customization of items can be found in 
-			//ICSharpCode.Reports.Addin.ReportRootDesigner
 			BaseImageItem item = e.Component as BaseImageItem;
 			
 			if (item != null) {
@@ -366,6 +365,7 @@ namespace ICSharpCode.Reports.Addin
 			if (!loading && !unloading) {
 				this.MakeDirty();
 			}
+			MergeFormChanges();
 		}
 		
 		

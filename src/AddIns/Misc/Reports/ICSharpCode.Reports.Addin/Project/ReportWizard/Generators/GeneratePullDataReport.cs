@@ -18,7 +18,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	/// </summary>
 	internal class GeneratePullDataReport: AbstractReportGenerator
 	{
-		private ReportStructure reportStructure;
+		
 		
 		public GeneratePullDataReport(ReportModel reportModel,	                             
 		                              Properties properties):base(reportModel,properties)
@@ -28,15 +28,9 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				throw new ArgumentNullException("reportModel");
 			}
 
-			
-			if (base.ReportModel.ReportSettings.DataModel != GlobalEnums.PushPullModel.PullData) {
-				throw new ArgumentException ("Wrong DataModel in GeneratePullReport");
-			}
-			reportStructure = (ReportStructure)properties.Get("Generator");
-
-			base.AvailableFieldsCollection.AddRange(reportStructure.AvailableFieldsCollection);
-			base.ReportItemCollection.AddRange(reportStructure.ReportItemCollection);
-			base.SqlQueryParameters.AddRange(reportStructure.SqlQueryParameters);
+			base.UpdateGenerator();
+			base.UpdateModel();
+			base.SqlQueryParameters.AddRange(base.ReportStructure.SqlQueryParameters);
 		}
 		
 		
@@ -45,10 +39,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		{
 			base.ReportModel.ReportSettings.ReportType = GlobalEnums.ReportType.DataReport;
 			base.ReportModel.ReportSettings.DataModel = GlobalEnums.PushPullModel.PullData;
-			base.ReportModel.ReportSettings.AvailableFieldsCollection.AddRange(reportStructure.AvailableFieldsCollection);
-			base.ReportModel.ReportSettings.ParameterCollection.AddRange(reportStructure.SqlQueryParameters);
+//			base.ReportModel.ReportSettings.AvailableFieldsCollection.AddRange(base.ReportStructure.AvailableFieldsCollection);
+//			base.ReportModel.ReportSettings.ParameterCollection.AddRange(base.ReportStructure.SqlQueryParameters);
 			base.GenerateReport();
-			
+		
 			GlobalEnums.ReportLayout reportLayout = (GlobalEnums.ReportLayout)base.Properties.Get("ReportLayout");
 			AbstractLayout layout = LayoutFactory.CreateGenerator(reportLayout,base.ReportModel,base.ReportItemCollection);
 			layout.CreateReportHeader();

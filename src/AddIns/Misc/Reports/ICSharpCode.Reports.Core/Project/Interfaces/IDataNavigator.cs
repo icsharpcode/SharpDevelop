@@ -22,31 +22,39 @@ using System.ComponentModel;
  			get;
  		}
  		
- 		/*
- 		bool HasChildren {
-			get;
- 		}
- 		*/
+ 		#region Try make recursive with ChildNavigator
+ 		
+ 		IDataNavigator GetChildNavigator();
+ 		
+ 		#endregion
+ 		
+ 		// childList -----------------
+ 		
+ 		bool HasChildren {get;}
+ 		
+ 		void SwitchGroup();
+ 		
+ 		bool ChildMoveNext();
+ 		
+ 		int ChildListCount {get;}
+ 		
+ 		void FillChild (ReportItemCollection collection);
+ 		
+ 		// end child list --------------------
  		
  		bool IsSorted {get;}
  		
  		bool IsGrouped {get;}
  		
- 		int CurrentRow  {
- 			get;
- 		}
- 		
- 		int Count  {
-			get;
-		}
- 		
- 		object Current {
- 			get;
- 		}
+ 		int CurrentRow  {get;}
+ 			
+ 		int Count  {get;}
+	
+ 		object Current {get;}
  		
  		AvailableFieldsCollection AvailableFields{get;}
  		 
- 		System.Collections.IEnumerator RangeEnumerator(int start, int end);
+// 		System.Collections.IEnumerator RangeEnumerator(int start, int end);
  			
  	}
  }

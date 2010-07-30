@@ -8,10 +8,10 @@
  */
 
 using System;
+using System.ComponentModel;
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Addin.ReportWizard;
 using ICSharpCode.Reports.Core;
-
 using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
@@ -29,22 +29,81 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 			Assert.AreEqual(reportName,m.ReportSettings.ReportName);
 			Assert.AreEqual(1,m.ReportSettings.AvailableFieldsCollection.Count);
 			Assert.AreEqual(GlobalEnums.ReportType.DataReport,m.ReportSettings.ReportType);
+			
+		}
+		
+		#region General generated Properties
+		
+		[Test]
+		public void Datamodel_Should_PushModel()
+		{
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
 			Assert.AreEqual(GlobalEnums.PushPullModel.PushData,m.ReportSettings.DataModel);
 		}
 		
 		[Test]
-		public void ReportHeaderShouldContainOneItem ()
+		public void GroupColumCollection_Should_Empty ()
+		{
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			Assert.That(m.ReportSettings.GroupColumnsCollection,Is.Empty);
+		}
+		
+			
+		[Test]
+		public void SortColumnCollection_Should_Empty ()
+		{
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			Assert.That(m.ReportSettings.SortColumnsCollection,Is.Empty);
+		}
+		
+		#endregion
+		
+		#region Sort_Group
+		
+		[Test]
+		public void GroupColumCollection_Grouping_Should_Set()
+		{
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			var rs = m.ReportSettings;
+			
+			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
+			rs.GroupColumnsCollection.Add(gc);
+			
+			Assert.AreEqual(rs.GroupColumnsCollection.Count,1);
+		}
+		
+
+		[Test]
+		public void SortColumCollection_Sorting_Should_Set()
+		{
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			var rs = m.ReportSettings;
+			
+			SortColumn gc = new SortColumn("GroupItem",ListSortDirection.Ascending);
+			rs.SortColumnsCollection.Add(gc);
+			
+			Assert.AreEqual(rs.SortColumnsCollection.Count,1);
+		}
+		#endregion
+		
+		
+		#region ReportHeader
+	
+		[Test]
+		public void ReportHeader_ShouldContain_OneItem ()
 		{
 			ICSharpCode.Reports.Core.BaseSection s = this.reportModel.ReportHeader;
 			Assert.AreEqual(1,s.Items.Count);
 			ICSharpCode.Reports.Core.BaseTextItem item = (ICSharpCode.Reports.Core.BaseTextItem)s.Items[0];
 			Assert.IsNotNull(item);
 		}
+		#endregion
+		
 		
 		#region PageHeader
 		
 		[Test]
-		public void PageHeaderShouldContainRowItem()
+		public void PageHeader_Should_Contain_RowItem()
 		{
 			ICSharpCode.Reports.Core.BaseSection s = this.reportModel.PageHeader;
 			BaseReportItem item = s.Items[0];
@@ -54,7 +113,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		
 		
 		[Test]
-		public void PageHeaderRowShouldContainTextItems()
+		public void PageHeader_Row_Should_Contain_TextItems()
 		{
 			ICSharpCode.Reports.Core.BaseSection section = this.reportModel.PageHeader;
 			BaseReportItem item = section.Items[0];
@@ -64,10 +123,11 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		
 		#endregion
 		
+		
 		#region Detail
 		
 		[Test]
-		public void PageDetailShouldContainRowItem()
+		public void PageDetail_Should_Contain_RowItem()
 		{
 			ICSharpCode.Reports.Core.BaseSection s = this.reportModel.DetailSection;
 			BaseReportItem item = s.Items[0];
@@ -76,7 +136,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		
 		
 		[Test]
-		public void PageDetailShouldContainDataItems()
+		public void PageDetail_Row_Should_Contain_DataItems()
 		{
 			ICSharpCode.Reports.Core.BaseSection s = this.reportModel.DetailSection;
 			ICSharpCode.Reports.Core.BaseRowItem rowItem = (ICSharpCode.Reports.Core.BaseRowItem)s.Items[0];
@@ -91,7 +151,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		#region PageFooter
 		
 		[Test]
-		public void PageFooterShouldContainOneItem ()
+		public void PageFooter_Should_Contain_OneItem ()
 		{
 			ICSharpCode.Reports.Core.BaseSection s = this.reportModel.PageFooter;
 			Assert.AreEqual(1,s.Items.Count);
@@ -101,7 +161,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		
 		
 		[Test]
-		public void PageFooterContainsPageNumberFunction()
+		public void PageFooter_Should_Contain_PageNumberFunction()
 		{
 			ICSharpCode.Reports.Core.BaseSection s = this.reportModel.PageFooter;
 			ICSharpCode.Reports.Core.BaseTextItem item = (ICSharpCode.Reports.Core.BaseTextItem)s.Items[0];
@@ -110,6 +170,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		}
 		
 		#endregion
+		
 		
 		#region Setup/Teardown
 		

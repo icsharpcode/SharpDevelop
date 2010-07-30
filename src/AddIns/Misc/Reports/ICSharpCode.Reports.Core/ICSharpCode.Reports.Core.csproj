@@ -94,6 +94,7 @@
     <Compile Include="Project\BaseItems\ErrorItem.cs" />
     <Compile Include="Project\BaseItems\Graphics\BaseLineItem.cs" />
     <Compile Include="Project\BaseItems\IExpression.cs" />
+    <Compile Include="Project\DataManager\ChildNavigator.cs" />
     <Compile Include="Project\DataManager\Comparer\BaseComparer.cs" />
     <Compile Include="Project\DataManager\Comparer\GroupSeparator.cs" />
     <Compile Include="Project\DataManager\Comparer\SortComparer.cs" />
@@ -129,11 +130,12 @@
     <Compile Include="Project\Exceptions\UnknownItemException.cs" />
     <Compile Include="Project\Exceptions\WrongColumnException.cs" />
     <Compile Include="Project\Exceptions\WrongSectionException.cs" />
+    <Compile Include="Project\Exporter\Converters\old_GroupedRowConverter.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService\FieldReference.cs" />
     <Compile Include="Project\Exporter\BasePager.cs" />
     <Compile Include="Project\Exporter\Converters\BaseConverter.cs" />
     <Compile Include="Project\Exporter\Converters\ConverterFactory.cs" />
-    <Compile Include="Project\Exporter\Converters\RowConverter.cs" />
+    <Compile Include="Project\Exporter\Converters\GroupedRowConverter.cs" />
     <Compile Include="Project\Exporter\Converters\TableConverter.cs" />
     <Compile Include="Project\Exporter\Decorators\IBaseStyleDecorator.cs" />
     <Compile Include="Project\Exporter\Decorators\ILineDecorator.cs" />

@@ -8,11 +8,10 @@
  */
 
 using System;
-
+using System.ComponentModel;
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Addin.ReportWizard;
 using ICSharpCode.Reports.Core;
-
 using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
@@ -23,6 +22,8 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		private const string reportName = "TableBasedReport";
 		ReportModel reportModel;
 		
+		#region General generated Properties
+		
 		[Test]
 		public void InitModel()
 		{
@@ -30,9 +31,61 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 			Assert.AreEqual(reportName,m.ReportSettings.ReportName);
 			Assert.AreEqual(1,m.ReportSettings.AvailableFieldsCollection.Count);
 			Assert.AreEqual(GlobalEnums.ReportType.DataReport,m.ReportSettings.ReportType);
+		}
+		
+		
+		[Test]
+		public void Datamodel_Should_PushModel()
+		{
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
 			Assert.AreEqual(GlobalEnums.PushPullModel.PushData,m.ReportSettings.DataModel);
 		}
 		
+		
+		[Test]
+		public void GroupColumCollection_Should_Empty ()
+		{
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			Assert.That(m.ReportSettings.GroupColumnsCollection,Is.Empty);
+		}
+		
+		
+		[Test]
+		public void SortColumnCollection_Should_Empty ()
+		{
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			Assert.That(m.ReportSettings.SortColumnsCollection,Is.Empty);
+		}
+		
+		#endregion
+		
+		#region Sort/Group
+		
+		[Test]
+		public void GroupColumCollection_Grouping_Should_Set()
+		{
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			var rs = m.ReportSettings;
+			
+			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
+			rs.GroupColumnsCollection.Add(gc);
+			
+			Assert.AreEqual(rs.GroupColumnsCollection.Count,1);
+		}
+		
+		
+		[Test]
+		public void SortColumCollection_Sorting_Should_Set()
+		{
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			var rs = m.ReportSettings;
+			
+			SortColumn gc = new SortColumn("GroupItem",ListSortDirection.Ascending);
+			rs.SortColumnsCollection.Add(gc);
+			
+			Assert.AreEqual(rs.SortColumnsCollection.Count,1);
+		}
+		#endregion
 		
 		
 		#region PageHeader

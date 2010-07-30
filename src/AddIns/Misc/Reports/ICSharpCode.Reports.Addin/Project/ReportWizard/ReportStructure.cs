@@ -92,13 +92,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		public string ConnectionString {get;set;}
 		
-		
 		public string SqlString {get;set;}
-		
 		
 		public CommandType CommandType {get;set;}
 	
-		
 		public ICSharpCode.Reports.Core.GlobalEnums.PushPullModel DataModel {get;set;}
 			
 

@@ -54,7 +54,12 @@ namespace ICSharpCode.Data.Core.UI.Windows
             get { return _selectedDatasource; }
             set 
             {
-                _selectedDatasource = value;
+                if (value != null)
+                    btnConnect.IsEnabled = true;
+                else
+                    btnConnect.IsEnabled = false;
+
+               _selectedDatasource = value;
                OnPropertyChanged("SelectedDatasource");
             }
         }
@@ -133,7 +138,6 @@ namespace ICSharpCode.Data.Core.UI.Windows
             thread.SetApartmentState(ApartmentState.STA);
             thread.IsBackground = true;
             thread.Start();
-
         }
 
         private void PopulateDatabases()
@@ -152,7 +156,10 @@ namespace ICSharpCode.Data.Core.UI.Windows
                     }
                     catch (Exception ex)
                     {
-                        SetException(ex);
+                        Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+                        {
+                            MessageBox.Show(this, ex.Message, this.Title, MessageBoxButton.OK, MessageBoxImage.Error);
+                        }));
                     }
 
                     SetIsLoading(false);
@@ -168,17 +175,12 @@ namespace ICSharpCode.Data.Core.UI.Windows
 
         #region Event handlers
 
-        private void cboDatabaseDriver_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void btnAutoDiscover_Click(object sender, RoutedEventArgs e)
         {
             PopulateDatasources();
         }
 
-        private void cboDatasources_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            PopulateDatabases();
-        }
-
-        private void erbDatasources_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
             PopulateDatabases();
         }
@@ -189,18 +191,7 @@ namespace ICSharpCode.Data.Core.UI.Windows
             {
                 if (SelectedDatabaseDriver != null)
                 {
-                    IDatasource newDatasource = SelectedDatabaseDriver.AddNewDatasource(cboDatasources.Text);
-
-                    try
-                    {
-                        if (newDatasource.PopulateDatabases())
-                            SetSelectedDatasource(newDatasource);
-                    }
-                    catch (Exception ex)
-                    {
-                        SetException(ex);
-                        SetSelectedDatasource(newDatasource);
-                    }
+                    SelectedDatasource = SelectedDatabaseDriver.AddNewDatasource(cboDatasources.Text);
                 }
             }
         }

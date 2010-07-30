@@ -21,6 +21,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -43,7 +44,7 @@
 
         <TextBlock Grid.Row="1" Margin="3">Database driver:</TextBlock>
         <ComboBox x:Name="cboDatabaseDriver" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="3" SelectedItem="{Binding SelectedDatabaseDriver, ElementName=This}" 
-            ItemsSource="{x:Static data:DatabaseDriver.DatabaseDrivers}" SelectionChanged="cboDatabaseDriver_SelectionChanged">
+            ItemsSource="{x:Static data:DatabaseDriver.DatabaseDrivers}">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
                     <TextBlock Text="{Binding Name}" />
@@ -58,7 +59,7 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             
-            <ComboBox x:Name="cboDatasources" Margin="3" IsEditable="True" KeyDown="cboDatasources_KeyDown" SelectionChanged="cboDatasources_SelectionChanged"
+            <ComboBox x:Name="cboDatasources" Margin="3" IsEditable="True" KeyDown="cboDatasources_KeyDown" 
                 SelectedItem="{Binding SelectedDatasource, ElementName=This}" ItemsSource="{Binding SelectedDatabaseDriver.Datasources, ElementName=This}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
@@ -66,14 +67,16 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <userControls:ErrorRetryButton x:Name="erbDatasources" Grid.Column="1" UseExclamationMark="True" Exception="{Binding DatasourceException, ElementName=This}" MouseLeftButtonUp="erbDatasources_MouseLeftButtonUp"  />
+            <Button Grid.Column="1" Margin="3" Content="Auto Discover" Click="btnAutoDiscover_Click" />
         </Grid>
         
         <ContentControl Grid.Row="3" Grid.Column="1" Margin="3" Content="{Binding SelectedDatasource.ControlPanel, ElementName=This}" />
+        
+        <Button x:Name="btnConnect" Grid.Row="4" Grid.Column="1" Margin="3" Content="Connect" HorizontalAlignment="Right" Click="btnConnect_Click" />
+        
+        <TextBlock Grid.Row="5" Margin="3">Database:</TextBlock>
 
-        <TextBlock Grid.Row="4" Margin="3">Database:</TextBlock>
-
-        <ComboBox x:Name="cboDatabases" Grid.Row="4" Grid.Column="1" Margin="3" SelectedItem="{Binding SelectedDatabase, ElementName=This}" 
+        <ComboBox x:Name="cboDatabases" Grid.Row="5" Grid.Column="1" Margin="3" SelectedItem="{Binding SelectedDatabase, ElementName=This}" 
             ItemsSource="{Binding SelectedDatasource.Databases, ElementName=This}" SelectionChanged="cboDatabases_SelectionChanged">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
@@ -82,13 +85,13 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
         
-        <Expander Grid.Row="5" Grid.Column="1" Margin="2" Header="Connection String" VerticalAlignment="Top"
+        <Expander Grid.Row="6" Grid.Column="1" Margin="2" Header="Connection String" VerticalAlignment="Top"
             IsExpanded="{Binding SelectedDatasource.UseUserDefinedConnectionString, ElementName=This}">
             <TextBox Text="{Binding SelectedDatasource.UserDefinedConnectionString, ElementName=This}" MinLines="5" />
         </Expander>
         
-        <userControls:LoadingCircle Grid.Row="6" Margin="3" IsActivated="{Binding IsLoading, ElementName=This}" />
-        <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+        <userControls:LoadingCircle Grid.Row="7" Margin="3" IsActivated="{Binding IsLoading, ElementName=This}" />
+        <StackPanel Grid.Row="7" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="btnAdd" Margin="3" Padding="3" Click="btnAdd_Click" IsEnabled="False">Add</Button>
             <Button Margin="3" IsCancel="True" Padding="3" Click="btnCancel_Click">Cancel</Button>
         </StackPanel>

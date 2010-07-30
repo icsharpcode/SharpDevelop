@@ -149,15 +149,28 @@
 		          class="ICSharpCode.Reports.Addin.Commands.ClearSelectedNodeCommand"/>
 	</Path>
 
-	<!-- Toggle Sortorder -->
-	<Path name = "/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnTreeNode">
+	<!-- Sorting -->
+	
+	<Path name = "/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnSortTreeNode">
+		<MenuItem id="toggle"
+		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Columns.ToggleSort}"
+		          class="ICSharpCode.Reports.Addin.Commands.ToggleOrderCommand"/>
+		plorer
+		<MenuItem id="removesortnode"
+		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Columns.Remove}"
+		          class="ICSharpCode.Reports.Addin.Commands.RemoveSortNodeCommand"/>
+	
+	</Path>
+	
+	<!-- Grouping -->
+	<Path name = "/SharpDevelopReports/ContextMenu/FieldsExplorer/ColumnGroupTreeNode">
 		<MenuItem id="toggle"
 		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Columns.ToggleSort}"
 		          class="ICSharpCode.Reports.Addin.Commands.ToggleOrderCommand"/>
 		
-		<MenuItem id="removenode"
+		<MenuItem id="removegroupnode"
 		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Columns.Remove}"
-		          class="ICSharpCode.Reports.Addin.Commands.RemoveNodeCommand"/>
+		          class="ICSharpCode.Reports.Addin.Commands.RemoveGroupNodeCommand"/>
 	</Path>
 	
 	

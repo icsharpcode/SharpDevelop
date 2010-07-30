@@ -301,7 +301,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		#endregion
 		
 		#region RangeEnumerator
-		
+		/*
 		[Test]
 		public void RangeEnumeratorFromBeginToEnd()
 		{
@@ -355,7 +355,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			}
 			Assert.AreEqual(start -1,dn.CurrentRow);
 		}
-		
+		*/
 		#endregion
 		
 		#region Setup/TearDown
