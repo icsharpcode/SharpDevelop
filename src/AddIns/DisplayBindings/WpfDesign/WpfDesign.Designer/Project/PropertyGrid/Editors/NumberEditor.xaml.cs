@@ -130,7 +130,7 @@ namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors
 			double val;
 			if(double.TryParse(textBox.Text, out val)){
 				if(PropertyNode.FirstProperty.TypeConverter.IsValid(textBox.Text)){
-			   	   	if(val >= Minimum && val <= Maximum){
+			   	   	if(val >= Minimum && val <= Maximum || double.IsNaN(val)){
 			   	   		textBox.Foreground=Brushes.Black;
 			   	   		textBox.ToolTip=textBox.Text;
 			   	   	}else{

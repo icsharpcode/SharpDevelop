@@ -237,19 +237,27 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddPopularControl(typeof(WrapPanel));
 
             Metadata.AddDefaultSize(typeof(UIElement), new Size(120, 100));
-            Metadata.AddDefaultSize(typeof(ContentControl), new Size(double.NaN, double.NaN));
+            Metadata.AddDefaultSize(typeof(ContentControl), new Size(120, 20));
             Metadata.AddDefaultSize(typeof(Button), new Size(75, 23));
 
-            var s1 = new Size(120, double.NaN);
+            var s1 = new Size(120, 20);
             Metadata.AddDefaultSize(typeof(Slider), s1);
             Metadata.AddDefaultSize(typeof(TextBox), s1);
             Metadata.AddDefaultSize(typeof(PasswordBox), s1);
             Metadata.AddDefaultSize(typeof(ComboBox), s1);
             Metadata.AddDefaultSize(typeof(ProgressBar), s1);
 
-            var s2 = new Size(120, 20);
-            Metadata.AddDefaultSize(typeof(ToolBar), s2);
-            Metadata.AddDefaultSize(typeof(Menu), s2);
+            Metadata.AddDefaultSize(typeof(ToolBar), s1);
+            Metadata.AddDefaultSize(typeof(Menu), s1);
+            
+            var s2=new Size(120,120);
+            Metadata.AddDefaultSize(typeof(InkCanvas),s2);
+            Metadata.AddDefaultSize(typeof(Image),s2);
+            Metadata.AddDefaultSize(typeof(TreeView),s2);
+            
+            var s3=new Size(130,120);
+            Metadata.AddDefaultSize(typeof(Label),s3);
+            Metadata.AddDefaultSize(typeof(Expander),s3);
 		}
 	}
 }
