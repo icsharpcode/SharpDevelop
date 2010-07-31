@@ -130,6 +130,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Extensions\PanelMove.cs" />
+    <Compile Include="Extensions\StackPanelPlacementSupport.cs" />
     <Compile Include="FocusNavigator.cs" />
     <Compile Include="ModelTools.cs" />
     <Compile Include="Extensions\PanelInstanceFactory.cs" />
