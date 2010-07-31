@@ -93,7 +93,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		
 		protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
 		{
-			base.OnGotKeyboardFocus(e);			
+			base.OnGotKeyboardFocus(e);
 			StartEditing();
 		}
 		
@@ -144,20 +144,22 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		{
 			if(changeGroup!=null && _isChangeGroupOpen){
 				changeGroup.Abort();
-				_isChangeGroupOpen=false;			
+				_isChangeGroupOpen=false;
 			}
 			this.Visibility= Visibility.Hidden;
-			textBlock.Visibility=Visibility.Visible;
+			if(textBlock!=null)
+				textBlock.Visibility=Visibility.Visible;
 		}
 		
 		public void StartEditing()
-		{			
+		{
 			if(changeGroup==null){
 				changeGroup = designItem.OpenGroup("Change Text");
 				_isChangeGroupOpen=true;
 			}
 			this.Visibility=Visibility.Visible;
-			textBlock.Visibility=Visibility.Hidden;			
+			if(textBlock!=null)
+				textBlock.Visibility=Visibility.Hidden;
 		}
 	}
 }
