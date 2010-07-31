@@ -14,6 +14,8 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
+using WinForms = System.Windows.Forms;
+
 namespace ICSharpCode.Core.Presentation
 {
 	/// <summary>
@@ -262,6 +264,17 @@ namespace ICSharpCode.Core.Presentation
 		public static KeyGesture ParseShortcut(string text)
 		{
 			return (KeyGesture)new KeyGestureConverter().ConvertFromInvariantString(text.Replace(',', '+').Replace('|', '+'));
+		}
+		
+		static WinForms.KeysConverter shortcutKeysConverter = new WinForms.KeysConverter();
+		/// <summary>
+		/// Converts Windows-Forms Keys enum to WPF string representation, suitable e.g. for MenuItem.InputGestureText.
+		/// </summary>
+		public static string ConvertKeys(System.Windows.Forms.Keys shortcutKeys)
+		{
+			if (shortcutKeys == WinForms.Keys.None || shortcutKeys == WinForms.Keys.NoName || shortcutKeys == WinForms.Keys.IMENonconvert)
+				return string.Empty;
+			return shortcutKeysConverter.ConvertToString(shortcutKeys);
 		}
 	}
 }

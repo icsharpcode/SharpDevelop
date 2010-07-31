@@ -421,6 +421,8 @@ namespace ICSharpCode.SharpDevelop
 		{
 			var r = new System.Windows.Controls.MenuItem();
 			r.Header = MenuService.ConvertLabel(item.Text);
+			r.InputGestureText = MenuService.ConvertKeys(item.ShortcutKeys);
+			//r.InputGestureText = new KeyGesture(Key.F6).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			if (item.ImageIndex >= 0)
 				r.Icon = ClassBrowserIconService.GetImageByIndex(item.ImageIndex).CreateImage();
 			if (item.DropDownItems.Count > 0) {
