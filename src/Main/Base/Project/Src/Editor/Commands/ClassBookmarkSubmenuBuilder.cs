@@ -60,29 +60,41 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			
 			List<ToolStripItem> list = new List<ToolStripItem>();
 			
-			// navigation actions
-			if (c.BaseTypes.Count > 0) {
-				list.Add(new MenuSeparator());
-				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.GoToBaseCommand}", GoToBase);
-				cmd.Tag = c;
-				list.Add(cmd);
-			}
+			// "Go to base" for classes is not that useful as it is faster to click the base class in the editor.
+			// Also, we have "Find base classes" which shows all base classes.
+//			if (c.BaseTypes.Count > 0) {
+//				list.Add(new MenuSeparator());
+//				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.GoToBaseCommand}", GoToBase);
+//				cmd.Tag = c;
+//				list.Add(cmd);
+//			}
+			
+			cmd = FindReferencesAndRenameHelper.MakeFindReferencesMenuCommand(FindReferences);
+			cmd.Tag = c;
+			list.Add(cmd);
 			
 			return list.ToArray();
 		}
 		
-		void GoToBase(object sender, EventArgs e)
+		void FindReferences(object sender, EventArgs e)
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IClass c = (IClass)item.Tag;
-			IClass baseClass = c.BaseClass;
-			if (baseClass != null) {
-				string fileName = baseClass.CompilationUnit.FileName;
-				if (fileName != null) {
-					FileService.JumpToFilePosition(fileName, baseClass.Region.BeginLine, baseClass.Region.BeginColumn);
-				}
-			}
+			FindReferencesAndRenameHelper.RunFindReferences(c);
 		}
+		
+//		void GoToBase(object sender, EventArgs e)
+//		{
+//			MenuCommand item = (MenuCommand)sender;
+//			IClass c = (IClass)item.Tag;
+//			IClass baseClass = c.BaseClass;
+//			if (baseClass != null) {
+//				string fileName = baseClass.CompilationUnit.FileName;
+//				if (fileName != null) {
+//					FileService.JumpToFilePosition(fileName, baseClass.Region.BeginLine, baseClass.Region.BeginColumn);
+//				}
+//			}
+//		}
 		
 		public static IClass GetClass(object menuOwner)
 		{

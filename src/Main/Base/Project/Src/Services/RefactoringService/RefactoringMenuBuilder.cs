@@ -55,57 +55,42 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		public ICollection BuildItems(Codon codon, object owner)
 		{
-			MenuItem item;
-			
 			ITextEditor textEditor = (ITextEditor)owner;
 			if (string.IsNullOrEmpty(textEditor.FileName))
 				return new object[0];
 			List<object> resultItems = new List<object>();
-			IDocument doc = textEditor.Document;
-			int caretLine = textEditor.Caret.Line;
-			
 			// list of dotnet names that have definitions in this line
 			List<string> definitions = new List<string>();
 			
 			// Include menu for member that has been clicked on
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(textEditor.FileName);
-			ExpressionResult expressionResult;
-			ResolveResult rr;
-			int insertIndex = resultItems.Count;	// Insert items at this position to get the outermost expression first, followed by the inner expressions (if any).
-			expressionResult = FindFullExpressionAtCaret(textEditor, expressionFinder);
-		repeatResolve:
-			rr = ResolveExpressionAtCaret(textEditor, expressionResult);
+			ExpressionResult expressionResult = FindFullExpressionAtCaret(textEditor, expressionFinder);
+			
+			AddTopLevelItems(resultItems, textEditor, expressionResult, definitions, false);
+			
+			AddItemForCurrentClassAndMethod(resultItems, textEditor, expressionResult, definitions);
+			
+			if (resultItems.Count > 0) {
+				resultItems.Add(new Separator());
+			}
+			
+			// TODO move to ClassBookmark
 			RefactoringMenuContext context = new RefactoringMenuContext {
 				Editor = textEditor,
-				ResolveResult = rr,
+				ResolveResult = ResolveExpressionAtCaret(textEditor, expressionResult),
 				ExpressionResult = expressionResult
 			};
-			item = null;
+			AddContextItems(resultItems, context);
+			// end TODO move
 			
-			if (rr is MethodGroupResolveResult) {
-				item = MakeItem(definitions, ((MethodGroupResolveResult)rr).GetMethodIfSingleOverload());
-			} else if (rr is MemberResolveResult) {
-				MemberResolveResult mrr = (MemberResolveResult)rr;
-				item = MakeItem(definitions, mrr.ResolvedMember);
-				if (RefactoringService.FixIndexerExpression(expressionFinder, ref expressionResult, mrr)) {
-					if (item != null) {
-						resultItems.Insert(insertIndex, item);
-					}
-					// Include menu for the underlying expression of the
-					// indexer expression as well.
-					goto repeatResolve;
-				}
-			} else if (rr is TypeResolveResult) {
-				item = MakeItem(definitions, ((TypeResolveResult)rr).ResolvedClass);
-			} else if (rr is LocalResolveResult) {
-				context.IsDefinition = caretLine == ((LocalResolveResult)rr).VariableDefinitionRegion.BeginLine;
-				item = MakeItem((LocalResolveResult)rr, context);
-				insertIndex = 0;	// Insert local variable menu item at the topmost position.
-			}
-			if (item != null) {
-				resultItems.Insert(insertIndex, item);
-			}
-			
+			return resultItems;
+		}
+		
+		void AddItemForCurrentClassAndMethod(List<object> resultItems, ITextEditor textEditor, ExpressionResult expressionResult, List<string> definitions)
+		{
+			ResolveResult rr = ResolveExpressionAtCaret(textEditor, expressionResult);
+			MenuItem item = null;
+			int caretLine = textEditor.Caret.Line;
 			// Include menu for current class and method
 			ICompilationUnit cu = null;
 			IMember callingMember = null;
@@ -128,14 +113,52 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					resultItems.Add(item);
 				}
 			}
+		}
+		
+		void AddTopLevelItems(List<object> resultItems, ITextEditor textEditor, ExpressionResult expressionResult, List<string> definitions, bool addAsSubmenu)
+		{
+			// Insert items at this position to get the outermost expression first, followed by the inner expressions (if any).
+			int insertIndex = resultItems.Count;	
+			ResolveResult rr = ResolveExpressionAtCaret(textEditor, expressionResult);
+			RefactoringMenuContext context = new RefactoringMenuContext {
+				Editor = textEditor,
+				ResolveResult = rr,
+				ExpressionResult = expressionResult
+			};
+			MenuItem item = null;
 			
-			if (resultItems.Count > 0) {
-				resultItems.Add(new Separator());
+			if (rr is MethodGroupResolveResult) {
+				item = MakeItem(definitions, ((MethodGroupResolveResult)rr).GetMethodIfSingleOverload());
+			} else if (rr is MemberResolveResult) {
+				MemberResolveResult mrr = (MemberResolveResult)rr;
+				item = MakeItem(definitions, mrr.ResolvedMember);
+				// Seems not to be needed, as AddItemForCurrentClassAndMethod works for indexer as well (martin.konicek)
+				/*if (RefactoringService.FixIndexerExpression(expressionFinder, ref expressionResult, mrr)) {
+					if (item != null) {
+						// Insert this member
+						resultItems.Insert(insertIndex, item);
+					}
+					// Include menu for the underlying expression of the
+					// indexer expression as well.
+					AddTopLevelItems(textEditor, expressionResult, true);
+				}*/
+			} else if (rr is TypeResolveResult) {
+				item = MakeItem(definitions, ((TypeResolveResult)rr).ResolvedClass);
+			} else if (rr is LocalResolveResult) {
+				int caretLine = textEditor.Caret.Line;
+				context.IsDefinition = caretLine == ((LocalResolveResult)rr).VariableDefinitionRegion.BeginLine;
+				item = MakeItem((LocalResolveResult)rr, context);
+				insertIndex = 0;	// Insert local variable menu item at the topmost position.
 			}
-			
-			AddContextItems(resultItems, context);
-			
-			return resultItems;
+			if (item != null) {
+				if (addAsSubmenu) {
+					resultItems.Insert(insertIndex, item);
+				} else {
+					foreach (object subItem in item.Items) {
+						resultItems.Add(subItem);
+					}
+				}
+			}
 		}
 		
 		#region AddTopLevelContextItems
@@ -228,7 +251,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		MenuItem MakeItem(LocalResolveResult local, RefactoringMenuContext context)
 		{
 			Debug.Assert(local == context.ResolveResult);
-			MenuItem item = MakeItemInternal(local.VariableName,
+			MenuItem item = MakeItemWithGoToDefinition(local.VariableName,
 			                                 local.IsParameter ? ClassBrowserIconService.Parameter : ClassBrowserIconService.LocalVariable,
 			                                 local.CallingClass.CompilationUnit,
 			                                 context.IsDefinition ? DomRegion.Empty : local.VariableDefinitionRegion);
@@ -248,7 +271,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			MenuItem item = MakeItem(MemberNode.Create(member), member.DeclaringType.CompilationUnit, member.Region);
 			MenuItem declaringType = MakeItem(null, member.DeclaringType);
 			if (declaringType != null) {
-				item.Items.Add(new Separator());
 				declaringType.Header = StringParser.Parse("${res:SharpDevelop.Refactoring.DeclaringType}: ") + declaringType.Header;
 				item.Items.Add(declaringType);
 			}
@@ -265,17 +287,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return MakeItem(new ClassNode((IProject)c.ProjectContent.Project, c), c.CompilationUnit, c.Region);
 		}
 		
-		MenuItem MakeItemInternal(string title, IImage image, ICompilationUnit cu, DomRegion region)
+		MenuItem MakeItemWithGoToDefinition(string title, IImage image, ICompilationUnit cu, DomRegion region)
 		{
 			MenuItem item = new MenuItem();
 			item.Header = title;
 			item.Icon = image.CreateImage();
-			
-			//ToolStripMenuItem titleItem = new ToolStripMenuItem(title);
-			//titleItem.Enabled = false;
-			//item.DropDown.Items.Add(titleItem);
-			//item.DropDown.Items.Add(new ToolStripSeparator());
-			
 			if (cu != null && cu.FileName != null && !region.IsEmpty) {
 				MenuItem gotoDefinitionItem = new MenuItem();
 				gotoDefinitionItem.Header = MenuService.ConvertLabel(StringParser.Parse("${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"));
@@ -285,14 +301,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					FileService.JumpToFilePosition(cu.FileName, region.BeginLine, region.BeginColumn);
 				};
 				item.Items.Add(gotoDefinitionItem);
-				item.Items.Add(new Separator());
 			}
 			return item;
 		}
 		
 		MenuItem MakeItem(ExtTreeNode classBrowserTreeNode, ICompilationUnit cu, DomRegion region)
 		{
-			MenuItem item = MakeItemInternal(classBrowserTreeNode.Text, ClassBrowserIconService.GetImageByIndex(classBrowserTreeNode.ImageIndex), cu, region);
+			MenuItem item = MakeItemWithGoToDefinition(classBrowserTreeNode.Text, ClassBrowserIconService.GetImageByIndex(classBrowserTreeNode.ImageIndex), cu, region);
 			foreach (object obj in MenuService.CreateMenuItems(null, classBrowserTreeNode, classBrowserTreeNode.ContextmenuAddinTreePath))
 				item.Items.Add(obj);
 			return item;
