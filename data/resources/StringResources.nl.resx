@@ -879,11 +879,29 @@ De geselecteerde code bevat een break commando zonder de insluitende lus. Wijzig
   <data name="AddIns.UsageDataCollector.Title" xml:space="preserve">
     <value>Gebruiksgegevens verzamelaar</value>
   </data>
+  <data name="AddIns.VBNetBinding.CodeCompletion.QuestionmarkEqualsItem.Description" xml:space="preserve">
+    <value>Laat SharpDevelop het type uitzoeken, gebaseerd op de initialisatiefunctie.</value>
+  </data>
   <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
     <value>Matrix kolommen en rijen bewerken</value>
   </data>
   <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle" xml:space="preserve">
     <value>Eigenschappen onttrekken als stijl</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ErrorNoSelection" xml:space="preserve">
+    <value>Geen geldig element geselecteerd!</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.PropertyColumn" xml:space="preserve">
+    <value>Naam van Eigenschap/Gebeurtenis</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ReplaceQuestion" xml:space="preserve">
+    <value>Met de geselecteerde control is al een stijl verbonden. Wilt u deze stijl vervangen door de nieuw gemaakte stijl?</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.StyleName" xml:space="preserve">
+    <value>Stijl naam:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ValueColumn" xml:space="preserve">
+    <value>Waarde van de eigenschap</value>
   </data>
   <data name="AddIns.XamlBinding.Menu.GroupInto" xml:space="preserve">
     <value>Groeperen</value>
@@ -929,6 +947,9 @@ De geselecteerde code bevat een break commando zonder de insluitende lus. Wijzig
   </data>
   <data name="AddIns.XamlBinding.Options.UseExtensionCompletion" xml:space="preserve">
     <value>Gebruik markup extentie completeren</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.UseHighlighting" xml:space="preserve">
+    <value>Geavanceerd markeren gebruiken</value>
   </data>
   <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss" xml:space="preserve">
     <value>Het bestand kan niet zonder gegevens verlies met de momentele encodering ${encoding} worden opgeslagen.</value>
@@ -2127,6 +2148,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.CodeTemplate.ExtensionsLabel" xml:space="preserve">
     <value>&amp;Uitbreidingen</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.Keyword" xml:space="preserve">
+    <value>Sleutelwoord toewijzing</value>
   </data>
   <data name="Dialog.Options.CodeTemplate.PressTabToInsertTemplate" xml:space="preserve">
     <value>Druk Tab om dit sjabloon in te voegen.</value>
@@ -6987,6 +7011,12 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   </data>
   <data name="Templates.File.Struct.Name" xml:space="preserve">
     <value>Struct</value>
+  </data>
+  <data name="Templates.File.Structure.Description" xml:space="preserve">
+    <value>Een structuur declaratie, inclusief Equals() en GetHashCode() implementatie.</value>
+  </data>
+  <data name="Templates.File.Structure.Name" xml:space="preserve">
+    <value>Structuur</value>
   </data>
   <data name="Templates.File.Text.EmptyText.Name" xml:space="preserve">
     <value>Leeg tekstbestand</value>
