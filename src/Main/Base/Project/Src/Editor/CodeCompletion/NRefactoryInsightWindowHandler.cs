@@ -81,6 +81,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				}
 			};
 			insightWindow.DocumentChanged += onDocumentChanged;
+			insightWindow.SelectedItemChanged += delegate { HighlightParameter(insightWindow, HighlightedParameter); };
 			onDocumentChanged(null, null);
 		}
 
@@ -277,12 +278,15 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			}
 		}
 		
+		public int HighlightedParameter { get; set; }
+		
 		public void HighlightParameter(IInsightWindow window, int index)
 		{
 			var item = window.SelectedItem as MethodInsightItem;
 			
 			if (item != null)
 				item.HighlightParameter = index;
+			HighlightedParameter = index;
 		}
 	}
 }

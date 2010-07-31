@@ -307,9 +307,7 @@ OptionValue<ref bool val> =
 	.
 
 EndOfStmt =
-	EOL
-|
-	":"
+	SYNC ( EOL | ":" )
 .
 
 ImportsStmt

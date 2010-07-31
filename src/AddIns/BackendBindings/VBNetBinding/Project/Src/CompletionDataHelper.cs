@@ -130,12 +130,12 @@ namespace ICSharpCode.VBNetBinding
 
 		static void AddSpecialItems(ref VBNetCompletionItemList result, ParseInformation info, IReturnType resolvedType, string word, IMember m, ExpressionResult expressionResult, ITextEditor editor)
 		{
-//			if (expressionResult.Context == ExpressionContext.Type && m != null && m.BodyRegion.IsInside(editor.Caret.Line, editor.Caret.Column)) {
-//				result.Items.Add(new DefaultCompletionItem("? =") {
-//				                 	Image = ClassBrowserIconService.GotoArrow,
-//				                 	Description = StringParser.Parse("${res:AddIns.VBNetBinding.CodeCompletion.QuestionmarkEqualsItem.Description}")
-//				                 });
-//			}
+			if (expressionResult.Context == ExpressionContext.Type && m != null && m.BodyRegion.IsInside(editor.Caret.Line, editor.Caret.Column)) {
+				result.Items.Add(new DefaultCompletionItem("? =") {
+				                 	Image = ClassBrowserIconService.GotoArrow,
+				                 	Description = StringParser.Parse("${res:AddIns.VBNetBinding.CodeCompletion.QuestionmarkEqualsItem.Description}")
+				                 });
+			}
 			if (resolvedType != null && AllowsDescendentAccess(resolvedType, info.CompilationUnit.ProjectContent))
 				result.Items.Add(new DefaultCompletionItem("..") { Image = ClassBrowserIconService.GotoArrow });
 			if (resolvedType != null && AllowsAttributeValueAccess(resolvedType, info.CompilationUnit.ProjectContent))

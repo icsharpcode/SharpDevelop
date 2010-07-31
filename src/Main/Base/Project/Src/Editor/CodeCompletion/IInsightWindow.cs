@@ -34,5 +34,9 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		/// when the insight window is closed. This makes it easier to avoid memory leaks.
 		/// </remarks>
 		event EventHandler<TextChangeEventArgs> DocumentChanged;
+		
+		event EventHandler SelectedItemChanged;
+		
+		event EventHandler CaretPositionChanged;
 	}
 }

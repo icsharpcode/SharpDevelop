@@ -1183,7 +1183,7 @@ InvocationStatement =
 
 ArgumentList =
   (. activeArgument = 0; .) Expression { "," (. activeArgument++; .) [ Expression ] }
-|   "," [ Expression ]  { "," [ Expression ] }
+| (. activeArgument = 0; .)  "," (. activeArgument++; .) [ Expression ]  { "," (. activeArgument++; .) [ Expression ] }
 .
 
 /* This production handles pseudo keywords that are needed in the grammar */

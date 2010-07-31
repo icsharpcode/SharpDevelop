@@ -66,6 +66,7 @@ namespace ICSharpCode.VBNetBinding
 						if (insightWindow != null) {
 							insightHandler.InitializeOpenedInsightWindow(editor, insightWindow);
 							insightHandler.HighlightParameter(insightWindow, 0);
+							insightWindow.CaretPositionChanged += delegate { Run(insightWindow, editor); };;
 						}
 						return CodeCompletionKeyPressResult.Completed;
 					}
@@ -77,6 +78,7 @@ namespace ICSharpCode.VBNetBinding
 						if (insightHandler.InsightRefreshOnComma(editor, ch, out insightWindow)) {
 							if (insightWindow != null) {
 								insightHandler.HighlightParameter(insightWindow, GetArgumentIndex(editor) + 1);
+								insightWindow.CaretPositionChanged += delegate { Run(insightWindow, editor); };;
 							}
 							return CodeCompletionKeyPressResult.EatKey;
 						}
@@ -136,6 +138,11 @@ namespace ICSharpCode.VBNetBinding
 			return CodeCompletionKeyPressResult.None;
 		}
 		
+		void Run(IInsightWindow insightWindow, ITextEditor editor)
+		{
+			insightHandler.HighlightParameter(insightWindow, GetArgumentIndex(editor));
+		}
+		
 		static int GetArgumentIndex(ITextEditor editor)
 		{
 			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, editor.Document.CreateReader());
@@ -143,7 +150,7 @@ namespace ICSharpCode.VBNetBinding
 			
 			Token t = lexer.NextToken();
 			
-			while (t.Kind != Tokens.EOF && t.EndLocation < editor.Caret.Position) {
+			while (t.Kind != Tokens.EOF && t.Location < editor.Caret.Position) {
 				ef.InformToken(t);
 				t = lexer.NextToken();
 			}
