@@ -63,14 +63,24 @@ namespace ICSharpCode.VBNetBinding
 				case '(':
 					if (CodeCompletionOptions.InsightEnabled) {
 						IInsightWindow insightWindow = editor.ShowInsightWindow(new MethodInsightProvider().ProvideInsight(editor));
-						if (insightWindow != null)
+						if (insightWindow != null) {
 							insightHandler.InitializeOpenedInsightWindow(editor, insightWindow);
+							insightHandler.HighlightParameter(insightWindow, 0);
+						}
 						return CodeCompletionKeyPressResult.Completed;
 					}
 					break;
 				case ',':
-					if (CodeCompletionOptions.InsightRefreshOnComma && CodeCompletionOptions.InsightEnabled && insightHandler.InsightRefreshOnComma(editor, ch))
-						return CodeCompletionKeyPressResult.Completed;
+					if (CodeCompletionOptions.InsightRefreshOnComma && CodeCompletionOptions.InsightEnabled) {
+						IInsightWindow insightWindow;
+						editor.Document.Insert(editor.Caret.Offset, ",");
+						if (insightHandler.InsightRefreshOnComma(editor, ch, out insightWindow)) {
+							if (insightWindow != null) {
+								insightHandler.HighlightParameter(insightWindow, GetArgumentIndex(editor) + 1);
+							}
+							return CodeCompletionKeyPressResult.EatKey;
+						}
+					}
 					break;
 				case '\n':
 					TryDeclarationTypeInference(editor, editor.Document.GetLineForOffset(editor.Caret.Offset));
@@ -124,6 +134,21 @@ namespace ICSharpCode.VBNetBinding
 			}
 			
 			return CodeCompletionKeyPressResult.None;
+		}
+		
+		static int GetArgumentIndex(ITextEditor editor)
+		{
+			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, editor.Document.CreateReader());
+			ExpressionFinder ef = new ExpressionFinder();
+			
+			Token t = lexer.NextToken();
+			
+			while (t.Kind != Tokens.EOF && t.EndLocation < editor.Caret.Position) {
+				ef.InformToken(t);
+				t = lexer.NextToken();
+			}
+			
+			return ef.ActiveArgument;
 		}
 		
 		bool IsTypeCharacter(char ch, char prevChar)

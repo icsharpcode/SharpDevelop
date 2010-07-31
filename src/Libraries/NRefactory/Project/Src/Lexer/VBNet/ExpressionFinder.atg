@@ -1182,7 +1182,7 @@ InvocationStatement =
 .
 
 ArgumentList =
-   Expression { "," [ Expression ] }
+  (. activeArgument = 0; .) Expression { "," (. activeArgument++; .) [ Expression ] }
 |   "," [ Expression ]  { "," [ Expression ] }
 .
 

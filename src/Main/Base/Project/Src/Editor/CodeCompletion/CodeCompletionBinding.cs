@@ -175,8 +175,10 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				case '(':
 					if (enableMethodInsight && CodeCompletionOptions.InsightEnabled) {
 						IInsightWindow insightWindow = editor.ShowInsightWindow(new MethodInsightProvider().ProvideInsight(editor));
-						if (insightWindow != null)
+						if (insightWindow != null) {
 							insightHandler.InitializeOpenedInsightWindow(editor, insightWindow);
+							insightHandler.HighlightParameter(insightWindow, -1); // disable highlighting
+						}
 						return CodeCompletionKeyPressResult.Completed;
 					}
 					break;

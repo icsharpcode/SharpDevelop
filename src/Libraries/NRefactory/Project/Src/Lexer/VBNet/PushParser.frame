@@ -40,6 +40,7 @@ partial class ExpressionFinder {
 	bool identifierExpected = false;
 	bool nextTokenIsStartOfImportsOrAccessExpression = false;
 	bool isMissingModifier = false;
+	int activeArgument = 0;
 	List<Token> errors = new List<Token>();
 	
 	public ExpressionFinder()

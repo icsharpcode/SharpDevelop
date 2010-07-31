@@ -129,6 +129,10 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			get { return isMissingModifier; }
 		}
 		
+		public int ActiveArgument {
+			get { return activeArgument; }
+		}
+		
 		public List<Token> Errors {
 			get { return errors; }
 		}

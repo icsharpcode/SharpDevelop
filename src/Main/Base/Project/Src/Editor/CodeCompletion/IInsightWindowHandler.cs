@@ -6,22 +6,13 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
-using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
-using CSTokens = ICSharpCode.NRefactory.Parser.CSharp.Tokens;
-using VBTokens = ICSharpCode.NRefactory.Parser.VB.Tokens;
 
 namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	public interface IInsightWindowHandler
 	{
 		void InitializeOpenedInsightWindow(ITextEditor editor, IInsightWindow insightWindow);
-		bool InsightRefreshOnComma(ITextEditor editor, char ch);
+		bool InsightRefreshOnComma(ITextEditor editor, char ch, out IInsightWindow insightWindow);
+		void HighlightParameter(IInsightWindow window, int index);
 	}
 }

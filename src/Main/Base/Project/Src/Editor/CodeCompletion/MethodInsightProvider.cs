@@ -124,6 +124,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 							// method as normal - this is required to show the list of
 							// parameters the method expects.
 							m.IsExtensionMethod = false;
+							m.Modifiers ^= ModifierEnum.Static;
 							m.Parameters.RemoveAt(0);
 							methods.Add(m);
 						}

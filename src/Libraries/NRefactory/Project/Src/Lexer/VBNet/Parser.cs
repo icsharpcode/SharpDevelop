@@ -1440,6 +1440,7 @@ partial class ExpressionFinder {
 	bool identifierExpected = false;
 	bool nextTokenIsStartOfImportsOrAccessExpression = false;
 	bool isMissingModifier = false;
+	int activeArgument = 0;
 	List<Token> errors = new List<Token>();
 	
 	public ExpressionFinder()
@@ -1859,6 +1860,7 @@ partial class ExpressionFinder {
 			case 44: {
 				if (la == null) { currentState = 44; break; }
 				if (set[22].Get(la.kind)) {
+					activeArgument = 0;
 					goto case 418;
 				} else {
 					if (la.kind == 22) {
@@ -5639,6 +5641,7 @@ partial class ExpressionFinder {
 				}
 			}
 			case 420: {
+				activeArgument++;
 				nextTokenIsPotentialStartOfExpression = true;
 				goto case 421;
 			}

@@ -143,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			return rr;
 		}
 
-		public bool InsightRefreshOnComma(ITextEditor editor, char ch)
+		public bool InsightRefreshOnComma(ITextEditor editor, char ch, out IInsightWindow insightWindow)
 		{
 			// Show MethodInsightWindow or IndexerInsightWindow
 			NRefactoryResolver r = new NRefactoryResolver(languageProperties);
@@ -170,7 +170,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 						if (c == '(' || c == '[') {
 							var insightProvider = new MethodInsightProvider { LookupOffset = offset };
 							var insightItems = insightProvider.ProvideInsight(editor);
-							ShowInsight(editor, insightItems, ResolveCallParameters(editor, call), ch);
+							insightWindow = ShowInsight(editor, insightItems, ResolveCallParameters(editor, call), ch);
 							return true;
 						} else {
 							Core.LoggingService.Warn("Expected '(' or '[' at start position");
@@ -178,6 +178,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					}
 				}
 			}
+			insightWindow = null;
 			return false;
 		}
 
@@ -191,11 +192,11 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			}
 		}
 
-		void ShowInsight(ITextEditor editor, IList<IInsightItem> insightItems, ICollection<ResolveResult> parameters, char charTyped)
+		IInsightWindow ShowInsight(ITextEditor editor, IList<IInsightItem> insightItems, ICollection<ResolveResult> parameters, char charTyped)
 		{
 			int paramCount = parameters.Count;
 			if (insightItems == null || insightItems.Count == 0)
-				return;
+				return null;
 			bool overloadIsSure;
 			int defaultIndex;
 			if (insightItems.Count == 1) {
@@ -226,6 +227,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					ProvideContextCompletion(editor, param.ReturnType, charTyped);
 				}
 			}
+			return insightWindow;
 		}
 
 		// TODO : remove this code duplication!
@@ -273,6 +275,14 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				activationKey = '\0';
 				return base.ProcessInput(key);
 			}
+		}
+		
+		public void HighlightParameter(IInsightWindow window, int index)
+		{
+			var item = window.SelectedItem as MethodInsightItem;
+			
+			if (item != null)
+				item.HighlightParameter = index;
 		}
 	}
 }
