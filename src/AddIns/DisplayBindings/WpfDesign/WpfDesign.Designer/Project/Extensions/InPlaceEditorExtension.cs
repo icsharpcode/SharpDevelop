@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Input;
 using System.Windows.Controls;
 
@@ -36,8 +37,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		bool isGettingDragged;   // Flag to get/set whether the extended element is dragged.
 		bool isMouseDown;        // Flag to get/set whether left-button is down on the element.
 		int numClicks;           // No of left-button clicks on the element.
-			
-			public InPlaceEditorExtension()
+		
+		public InPlaceEditorExtension()
 		{
 			adornerPanel=new AdornerPanel();
 			isGettingDragged=false;
@@ -77,10 +78,14 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		void PropertyChanged(object sender,PropertyChangedEventArgs e)
 		{
 			if (textBlock != null) {
-				if (e.PropertyName == "Width")
-					placement.XOffset = Mouse.GetPosition((IInputElement) element).X - Mouse.GetPosition(textBlock).X;
-				if (e.PropertyName == "Height")
-					placement.YOffset = Mouse.GetPosition((IInputElement) element).Y - Mouse.GetPosition(textBlock).Y;
+				if (e.PropertyName == "Width"){					
+					placement.XOffset = Mouse.GetPosition((IInputElement) element).X - Mouse.GetPosition(textBlock).X-2.8;
+					editor.MaxWidth = Math.Max((ModelTools.GetWidth(element) - placement.XOffset), 0);
+				}
+				if (e.PropertyName == "Height"){					
+					placement.YOffset = Mouse.GetPosition((IInputElement) element).Y - Mouse.GetPosition(textBlock).Y-1;
+					editor.MaxHeight = Math.Max((ModelTools.GetHeight(element) - placement.YOffset), 0);
+				}
 				AdornerPanel.SetPlacement(editor, placement);
 			}
 		}
@@ -96,8 +101,8 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			Debug.Assert(textBlock!=null);
 			
 			/* Gets the offset between the top-left corners of the element and the editor*/
-			placement.XOffset = e.GetPosition(element).X - e.GetPosition(textBlock).X;
-			placement.YOffset = e.GetPosition(element).Y - e.GetPosition(textBlock).Y;
+			placement.XOffset = e.GetPosition(element).X - e.GetPosition(textBlock).X -2.8;
+			placement.YOffset = e.GetPosition(element).Y - e.GetPosition(textBlock).Y -1;
 			placement.XRelativeToAdornerWidth = 0;
 			placement.XRelativeToContentWidth = 0;
 			placement.YRelativeToAdornerHeight = 0;
@@ -107,9 +112,33 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			/* Change data context of the editor to the TextBlock */
 			editor.DataContext=textBlock;
 			
+			/* Set MaxHeight and MaxWidth so that editor doesn't cross the boundaries of the control */
+			var height = ModelTools.GetHeight(element);
+			var width = ModelTools.GetWidth(element);
+			editor.MaxHeight = Math.Max((height - placement.YOffset), 0);
+			editor.MaxWidth = Math.Max((width - placement.XOffset), 0);
+			
 			/* Hides the TextBlock in control because of some minor offset in placement, overlaping makes text look fuzzy */
 			textBlock.Visibility = Visibility.Hidden; // 
-			AdornerPanel.SetPlacement(editor, placement);
+			AdornerPanel.SetPlacement(editor, placement);			
+			
+			RemoveBorder(); // Remove the highlight border.
+		}
+		
+		/// <summary>
+		/// Aborts the editing. This aborts the underlying change group of the editor
+		/// </summary>
+		public void AbortEdit()
+		{
+			editor.AbortEditing();
+		}
+		
+		/// <summary>
+		/// Starts editing once again. This aborts the underlying change group of the editor
+		/// </summary>
+		public void StartEdit()
+		{
+			editor.StartEditing();
 		}
 		
 		#region MouseEvents
@@ -142,6 +171,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 						editor.Focus();
 					}
 				}
+				DrawBorder((FrameworkElement) result.VisualHit);
+			}else{
+				RemoveBorder();
 			}
 		}
 		
@@ -162,6 +194,47 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			isGettingDragged = false;
 		}
 		
+		#endregion
+		
+		#region HighlightBorder
+		private Border _border;
+		private sealed class BorderPlacement : AdornerPlacement
+        {
+            private readonly FrameworkElement _element;
+
+            public BorderPlacement(FrameworkElement element)
+            {
+                _element = element;
+            }
+
+            public override void Arrange(AdornerPanel panel, UIElement adorner, Size adornedElementSize)
+            {
+                Point p = _element.TranslatePoint(new Point(), panel.AdornedElement);
+                var rect = new Rect(p, _element.RenderSize);
+                rect.Inflate(3, 1);
+                adorner.Arrange(rect);
+            }
+        }
+		
+		private void DrawBorder(FrameworkElement item)
+        {
+            if (editor != null && editor.Visibility != Visibility.Visible) {
+                if (adornerPanel.Children.Contains(_border))
+                    adornerPanel.Children.Remove(_border);
+                _border = new Border {BorderBrush = Brushes.Gray, BorderThickness = new Thickness(1.4), ToolTip = "Edit this Text", SnapsToDevicePixels = true};
+                var shadow = new DropShadowEffect {Color = Colors.LightGray, ShadowDepth = 3};
+                _border.Effect = shadow;
+                var bp = new BorderPlacement(item);
+                AdornerPanel.SetPlacement(_border, bp);
+                adornerPanel.Children.Add(_border);
+            }
+        }
+
+        private void RemoveBorder()
+        {
+            if (adornerPanel.Children.Contains(_border))
+                adornerPanel.Children.Remove(_border);
+        }
 		#endregion
 		
 		protected override void OnRemove()

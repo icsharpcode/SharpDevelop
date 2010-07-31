@@ -106,9 +106,17 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
         }
 
 		Size oldSize;
-
+		
+		// TODO : Remove all hide/show extensions from here.
 		void drag_Started(DragListener drag)
 		{
+			/* Abort editing Text if it was editing, because it interferes with the undo stack. */
+			foreach(var extension in this.ExtendedItem.Extensions){
+				if(extension is InPlaceEditorExtension){
+					((InPlaceEditorExtension)extension).AbortEdit();
+				}
+			}
+				
 			oldSize = new Size(ModelTools.GetWidth(ExtendedItem.View), ModelTools.GetHeight(ExtendedItem.View));
 			if (resizeBehavior != null)
 				operation = PlacementOperation.Start(extendedItemArray, PlacementType.Resize);
@@ -163,7 +171,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				if (drag.IsCanceled) changeGroup.Abort();
 				else changeGroup.Commit();
 				changeGroup = null;
-			}
+			}			
 			_isResizing=false;
 			HideSizeAndShowHandles();
 		}
@@ -207,6 +215,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				r.Visibility = isVisible ? Visibility.Visible : Visibility.Hidden;
 			}
 		}
+		
 		void ShowSizeAndHideHandles()
     	{
             SizeDisplayExtension sizeDisplay=null;
