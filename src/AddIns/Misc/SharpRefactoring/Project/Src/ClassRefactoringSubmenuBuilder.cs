@@ -52,14 +52,6 @@ namespace SharpRefactoring
 			}
 			LanguageProperties language = c.ProjectContent.Language;
 			
-			if (language == LanguageProperties.CSharp) {
-				AddImplementAbstractClassCommands(c, resultItems);
-			}
-			
-			if (c.BaseTypes.Count > 0 && c.ClassType != ClassType.Interface && !FindReferencesAndRenameHelper.IsReadOnly(c)) {
-				AddImplementInterfaceCommands(c, resultItems);
-			}
-			
 			if (!FindReferencesAndRenameHelper.IsReadOnly(c)) {
 				AddCorrectClassFileNameCommands(c, resultItems);
 				
@@ -129,64 +121,6 @@ namespace SharpRefactoring
 						}
 					}
 				}
-			}
-		}
-		
-		void AddImplementInterfaceCommands(IClass c, List<ToolStripItem> list)
-		{
-			CodeGenerator codeGen = c.ProjectContent.Language.CodeGenerator;
-			if (codeGen == null) return;
-			List<ToolStripItem> subItems = new List<ToolStripItem>();
-			
-			if (c.ProjectContent.Language.SupportsImplicitInterfaceImplementation) {
-				// 'Implement interface (implicit)' menu item with subitems
-				AddImplementInterfaceCommandItems(subItems, c, false);
-				if (subItems.Count > 0) {
-					list.Add(new ICSharpCode.Core.WinForms.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceImplicit}", subItems.ToArray()));
-					subItems = new List<ToolStripItem>();
-				}
-			}
-			
-			// 'Implement interface (explicit)' menu item with subitems
-			AddImplementInterfaceCommandItems(subItems, c, true);
-			if (subItems.Count > 0) {
-				string explicitMenuItemLabel = StringParser.Parse(c.ProjectContent.Language.SupportsImplicitInterfaceImplementation
-				                                                  ? "${res:SharpDevelop.Refactoring.ImplementInterfaceExplicit}"
-				                                                  : "${res:SharpDevelop.Refactoring.ImplementInterface}");
-				list.Add(new ICSharpCode.Core.WinForms.Menu(explicitMenuItemLabel, subItems.ToArray()));
-			}
-		}
-		
-		void AddImplementInterfaceCommandItems(List<ToolStripItem> subItems, IClass c, bool explicitImpl)
-		{
-			IAmbience ambience = AmbienceService.GetCurrentAmbience();
-			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
-			MakeMenuItemsFromActions(subItems, RefactoringService.GetImplementInterfaceActions(c, explicitImpl), ambience);
-		}
-		
-		void AddImplementAbstractClassCommands(IClass c, List<ToolStripItem> list)
-		{
-			List<ToolStripItem> subItems = new List<ToolStripItem>();
-			AddImplementAbstractClassCommandItems(subItems, c);
-			if (subItems.Count > 0) {
-				list.Add(new ICSharpCode.Core.WinForms.Menu("${res:SharpDevelop.Refactoring.ImplementAbstractClass}", subItems.ToArray()));
-			}
-		}
-		
-		void AddImplementAbstractClassCommandItems(List<ToolStripItem> subItems, IClass c)
-		{
-			IAmbience ambience = c.ProjectContent.Language.GetAmbience();
-			ambience.ConversionFlags = ConversionFlags.ShowTypeParameterList;
-			MakeMenuItemsFromActions(subItems, RefactoringService.GetImplementAbstractClassActions(c), ambience);
-		}
-		
-		void MakeMenuItemsFromActions(List<ToolStripItem> subItems, IEnumerable<RefactoringService.ImplementAbstractClassAction> actions, IAmbience labelAmbience)
-		{
-			foreach (var action in actions) {
-				var actionCopy = action;
-				subItems.Add(new MenuCommand(
-					labelAmbience.Convert(actionCopy.ClassToImplement), 
-					delegate { actionCopy.Execute(); }));
 			}
 		}
 		

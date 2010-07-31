@@ -29,17 +29,6 @@
 		          insertbefore="MenuBuilder" />
 	</Path>
 	
-	<Path name="/SharpDevelop/ViewContent/TextEditor/ContextMenu/Refactorings">
-		<Condition name="ActiveContentExtension" activeextension=".cs" action="Exclude">
-			<Class id="IntroduceMethod"
-			       class="SharpRefactoring.IntroduceMethod" />
-			<Class id="ResolveExtensionMethod"
-			       class="SharpRefactoring.ResolveExtensionMethod" />
-			<Class id="ResolveAttribute"
-					class="SharpRefactoring.ResolveAttribute" />
-		</Condition>
-	</Path>
-	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Refactor">
 		<MenuItem id = "ExtractMethod"
 		          label = "${res:AddIns.SharpRefactoring.ExtractMethod}"

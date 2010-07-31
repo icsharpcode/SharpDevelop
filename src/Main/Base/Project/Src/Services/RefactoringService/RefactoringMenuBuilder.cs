@@ -101,18 +101,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				context.IsDefinition = caretLine == ((LocalResolveResult)rr).VariableDefinitionRegion.BeginLine;
 				item = MakeItem((LocalResolveResult)rr, context);
 				insertIndex = 0;	// Insert local variable menu item at the topmost position.
-			} else if (rr is UnknownIdentifierResolveResult) {
-				item = MakeItemForResolveError((UnknownIdentifierResolveResult)rr, expressionResult.Context, textEditor);
-				insertIndex = 0;	// Insert menu item at the topmost position.
-			} else if (rr is UnknownConstructorCallResolveResult) {
-				item = MakeItemForResolveError((UnknownConstructorCallResolveResult)rr, expressionResult.Context, textEditor);
-				insertIndex = 0;	// Insert menu item at the topmost position.
 			}
 			if (item != null) {
 				resultItems.Insert(insertIndex, item);
 			}
-			
-			AddRefactoringItemsToTheBeginning(resultItems, context);
 			
 			// Include menu for current class and method
 			ICompilationUnit cu = null;
@@ -146,17 +138,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return resultItems;
 		}
 		
-		void AddRefactoringItemsToTheBeginning(List<object> resultItems, RefactoringMenuContext refactoringContext)
-		{
-			List<IRefactoringMenuItemFactory> refactorings = AddInTree.BuildItems<IRefactoringMenuItemFactory>("/SharpDevelop/ViewContent/TextEditor/ContextMenu/Refactorings", null, false);
-			
-			foreach (IRefactoringMenuItemFactory r in refactorings) {
-				MenuItem refactoringItem = r.Create(refactoringContext);
-				if (refactoringItem != null)
-					resultItems.Insert(0, refactoringItem);
-			}
-		}
-		
 		#region AddTopLevelContextItems
 		
 		/// <summary>
@@ -180,16 +161,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 			if (context.ResolveResult is MemberResolveResult) {
 				IMember member = ((MemberResolveResult)context.ResolveResult).ResolvedMember as IMember;
-				if (member != null && member.IsOverridable) {
-					contextItems.AddIfNotNull(MakeFindOverridesItem(member, context));
-				}
+				contextItems.AddIfNotNull(MakeFindOverridesItem(member, context));
 			}
 			return contextItems;
 		}
 		
 		MenuItem MakeFindDerivedClassesItem(IClass baseClass, RefactoringMenuContext context)
 		{
-			if (baseClass == null)
+			if (baseClass == null || baseClass.IsStatic || baseClass.IsSealed)
 				return null;
 			var item = new MenuItem { Header = MenuService.ConvertLabel(StringParser.Parse("${res:SharpDevelop.Refactoring.FindDerivedClassesCommand}")) };
 			item.Icon = ClassBrowserIconService.Class.CreateImage();
@@ -202,7 +181,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		MenuItem MakeFindBaseClassesItem(IClass @class, RefactoringMenuContext context)
 		{
-			if (@class == null)
+			if (@class == null || @class.BaseTypes == null || @class.BaseTypes.Count == 0)
 				return null;
 			var item = new MenuItem { Header = MenuService.ConvertLabel("${res:SharpDevelop.Refactoring.FindBaseClassesCommand}") };
 			item.Icon = ClassBrowserIconService.Interface.CreateImage();
@@ -215,7 +194,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		MenuItem MakeFindOverridesItem(IMember member, RefactoringMenuContext context)
 		{
-			if (member == null)
+			if (member == null || !member.IsOverridable)
 				return null;
 			var item = new MenuItem { Header = MenuService.ConvertLabel(StringParser.Parse("${res:SharpDevelop.Refactoring.FindOverridesCommand}")) };
 			item.Icon = ClassBrowserIconService.Method.CreateImage();
@@ -227,34 +206,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 		
 		#endregion
-		
-		MenuItem MakeItemForResolveError(UnknownIdentifierResolveResult unknownIdent, ExpressionContext context, ITextEditor textArea)
-		{
-			return MakeItemForActions(RefactoringService.GetAddUsingActions(unknownIdent, textArea), unknownIdent.Identifier, unknownIdent.CallingClass);
-		}
-		
-		MenuItem MakeItemForResolveError(UnknownConstructorCallResolveResult unknownConstructor, ExpressionContext context, ITextEditor textArea)
-		{
-			return MakeItemForActions(RefactoringService.GetAddUsingActions(unknownConstructor, textArea), unknownConstructor.TypeName, unknownConstructor.CallingClass);
-		}
-		
-		MenuItem MakeItemForActions(IEnumerable<RefactoringService.AddUsingAction> menuActions, string unknownClassName, IClass callingClass)
-		{
-			var actions = menuActions.ToList();
-			if (actions.Count == 0)
-				return null;
-			MenuItem item = MakeItemInternal(unknownClassName, ClassBrowserIconService.GotoArrow, callingClass.CompilationUnit, DomRegion.Empty);
-			foreach (var action in actions) {
-				MenuItem subItem = new MenuItem();
-				subItem.Header = "using " + action.NewNamespace;
-				subItem.Icon = ClassBrowserIconService.Namespace.CreateImage();
-				item.Items.Add(subItem);
-				subItem.Click += delegate {
-					action.Execute();
-				};
-			}
-			return item;
-		}
 		
 		IMember GetCallingMember(IClass callingClass, int caretLine, int caretColumn)
 		{
