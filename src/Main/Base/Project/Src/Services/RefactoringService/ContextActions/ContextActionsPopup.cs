@@ -67,9 +67,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.IsOpen = false;
 		}
 		
-		public void OpenAtCaretAndFocus(ITextEditor editor)
+		public void OpenAtCaretAndFocus()
 		{
-			OpenAtPosition(editor, editor.Caret.Line, editor.Caret.Column, true);
+			OpenAtMousePosition();
+			//OpenAtPosition(editor, editor.Caret.Line, editor.Caret.Column, true);
 			this.Focus();
 		}
 		
@@ -79,9 +80,15 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.VerticalOffset -= 16;
 		}
 		
+		void OpenAtMousePosition()
+		{
+			this.Placement = PlacementMode.MousePoint;
+			this.Open();
+		}
+		
 		void OpenAtPosition(ITextEditor editor, int line, int column, bool openAtWordStart)
 		{
-			var editorUIService = editor.GetService(typeof(IEditorUIService)) as IEditorUIService;
+			var editorUIService = editor == null ? null : editor.GetService(typeof(IEditorUIService)) as IEditorUIService;
 			if (editorUIService != null) {
 				var document = editor.Document;
 				int offset = document.PositionToOffset(line, column);
@@ -102,13 +109,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 				catch
 				{
-					this.HorizontalOffset = 200;
-					this.VerticalOffset = 200;
+					this.Placement = PlacementMode.MousePoint;
 				}
 				
 			} else {
-				this.HorizontalOffset = 200;
-				this.VerticalOffset = 200;
+				// if no editor information, open at mouse positions
+				this.Placement = PlacementMode.MousePoint;
 			}
 			this.Open();
 		}

@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			var classUnderCaret = GetClass(symbol);
 			if (classUnderCaret != null)
 			{
-				ContextActionsHelper.MakePopupWithBaseClasses(classUnderCaret).OpenAtCaretAndFocus(editor);
+				ContextActionsHelper.MakePopupWithBaseClasses(classUnderCaret).OpenAtCaretAndFocus();
 				return;
 			}
 			MessageService.ShowError("${res:ICSharpCode.Refactoring.NoClassUnderCursorError}");

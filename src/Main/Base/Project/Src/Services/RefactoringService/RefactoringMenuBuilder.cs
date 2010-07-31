@@ -73,17 +73,53 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (resultItems.Count > 0) {
 				resultItems.Add(new Separator());
 			}
-			
-			// TODO move to ClassBookmark
+			return resultItems;
+		}
+		
+		void AddTopLevelItems(List<object> resultItems, ITextEditor textEditor, ExpressionResult expressionResult, List<string> definitions, bool addAsSubmenu)
+		{
+			// Insert items at this position to get the outermost expression first, followed by the inner expressions (if any).
+			int insertIndex = resultItems.Count;	
+			ResolveResult rr = ResolveExpressionAtCaret(textEditor, expressionResult);
 			RefactoringMenuContext context = new RefactoringMenuContext {
 				Editor = textEditor,
-				ResolveResult = ResolveExpressionAtCaret(textEditor, expressionResult),
+				ResolveResult = rr,
 				ExpressionResult = expressionResult
 			};
-			AddContextItems(resultItems, context);
-			// end TODO move
+			MenuItem item = null;
 			
-			return resultItems;
+			if (rr is MethodGroupResolveResult) {
+				item = MakeItem(definitions, ((MethodGroupResolveResult)rr).GetMethodIfSingleOverload());
+			} else if (rr is MemberResolveResult) {
+				MemberResolveResult mrr = (MemberResolveResult)rr;
+				item = MakeItem(definitions, mrr.ResolvedMember);
+				// Seems not to be needed, as AddItemForCurrentClassAndMethod works for indexer as well (martinkonicek)
+				/*if (RefactoringService.FixIndexerExpression(expressionFinder, ref expressionResult, mrr)) {
+					if (item != null) {
+						// Insert this member
+						resultItems.Insert(insertIndex, item);
+					}
+					// Include menu for the underlying expression of the
+					// indexer expression as well.
+					AddTopLevelItems(textEditor, expressionResult, true);
+				}*/
+			} else if (rr is TypeResolveResult) {
+				item = MakeItem(definitions, ((TypeResolveResult)rr).ResolvedClass);
+			} else if (rr is LocalResolveResult) {
+				int caretLine = textEditor.Caret.Line;
+				context.IsDefinition = caretLine == ((LocalResolveResult)rr).VariableDefinitionRegion.BeginLine;
+				item = MakeItem((LocalResolveResult)rr, context);
+				insertIndex = 0;	// Insert local variable menu item at the topmost position.
+			}
+			if (item != null) {
+				if (addAsSubmenu) {
+					resultItems.Insert(insertIndex, item);
+				} else {
+					foreach (object subItem in item.Items) {
+						resultItems.Add(subItem);
+					}
+				}
+			}
 		}
 		
 		void AddItemForCurrentClassAndMethod(List<object> resultItems, ITextEditor textEditor, ExpressionResult expressionResult, List<string> definitions)
@@ -114,121 +150,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 			}
 		}
-		
-		void AddTopLevelItems(List<object> resultItems, ITextEditor textEditor, ExpressionResult expressionResult, List<string> definitions, bool addAsSubmenu)
-		{
-			// Insert items at this position to get the outermost expression first, followed by the inner expressions (if any).
-			int insertIndex = resultItems.Count;	
-			ResolveResult rr = ResolveExpressionAtCaret(textEditor, expressionResult);
-			RefactoringMenuContext context = new RefactoringMenuContext {
-				Editor = textEditor,
-				ResolveResult = rr,
-				ExpressionResult = expressionResult
-			};
-			MenuItem item = null;
-			
-			if (rr is MethodGroupResolveResult) {
-				item = MakeItem(definitions, ((MethodGroupResolveResult)rr).GetMethodIfSingleOverload());
-			} else if (rr is MemberResolveResult) {
-				MemberResolveResult mrr = (MemberResolveResult)rr;
-				item = MakeItem(definitions, mrr.ResolvedMember);
-				// Seems not to be needed, as AddItemForCurrentClassAndMethod works for indexer as well (martin.konicek)
-				/*if (RefactoringService.FixIndexerExpression(expressionFinder, ref expressionResult, mrr)) {
-					if (item != null) {
-						// Insert this member
-						resultItems.Insert(insertIndex, item);
-					}
-					// Include menu for the underlying expression of the
-					// indexer expression as well.
-					AddTopLevelItems(textEditor, expressionResult, true);
-				}*/
-			} else if (rr is TypeResolveResult) {
-				item = MakeItem(definitions, ((TypeResolveResult)rr).ResolvedClass);
-			} else if (rr is LocalResolveResult) {
-				int caretLine = textEditor.Caret.Line;
-				context.IsDefinition = caretLine == ((LocalResolveResult)rr).VariableDefinitionRegion.BeginLine;
-				item = MakeItem((LocalResolveResult)rr, context);
-				insertIndex = 0;	// Insert local variable menu item at the topmost position.
-			}
-			if (item != null) {
-				if (addAsSubmenu) {
-					resultItems.Insert(insertIndex, item);
-				} else {
-					foreach (object subItem in item.Items) {
-						resultItems.Add(subItem);
-					}
-				}
-			}
-		}
-		
-		#region AddTopLevelContextItems
-		
-		/// <summary>
-		/// Adds top-level context items like "Go to definition", "Find references", "Find derived classes", "Find overrides"
-		/// </summary>
-		void AddContextItems(List<object> resultItems, RefactoringMenuContext context)
-		{
-			var contextItems = MakeContextItems(context);
-			resultItems.AddRange(contextItems);
-			if (contextItems.Count > 0)
-				resultItems.Add(new Separator());
-		}
-		
-		List<object> MakeContextItems(RefactoringMenuContext context)
-		{
-			var contextItems = new List<object>();
-			if (context.ResolveResult is TypeResolveResult) {
-				var clickedClass = ((TypeResolveResult)context.ResolveResult).ResolvedClass;
-				contextItems.AddIfNotNull(MakeFindDerivedClassesItem(clickedClass, context));
-				contextItems.AddIfNotNull(MakeFindBaseClassesItem(clickedClass, context));
-			}
-			if (context.ResolveResult is MemberResolveResult) {
-				IMember member = ((MemberResolveResult)context.ResolveResult).ResolvedMember as IMember;
-				contextItems.AddIfNotNull(MakeFindOverridesItem(member, context));
-			}
-			return contextItems;
-		}
-		
-		MenuItem MakeFindDerivedClassesItem(IClass baseClass, RefactoringMenuContext context)
-		{
-			if (baseClass == null || baseClass.IsStatic || baseClass.IsSealed)
-				return null;
-			var item = new MenuItem { Header = MenuService.ConvertLabel(StringParser.Parse("${res:SharpDevelop.Refactoring.FindDerivedClassesCommand}")) };
-			item.Icon = ClassBrowserIconService.Class.CreateImage();
-			item.InputGestureText = new KeyGesture(Key.F6).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
-			item.Click += delegate {
-				ContextActionsHelper.MakePopupWithDerivedClasses(baseClass).OpenAtCaretAndFocus(context.Editor);
-			};
-			return item;
-		}
-		
-		MenuItem MakeFindBaseClassesItem(IClass @class, RefactoringMenuContext context)
-		{
-			if (@class == null || @class.BaseTypes == null || @class.BaseTypes.Count == 0)
-				return null;
-			var item = new MenuItem { Header = MenuService.ConvertLabel("${res:SharpDevelop.Refactoring.FindBaseClassesCommand}") };
-			item.Icon = ClassBrowserIconService.Interface.CreateImage();
-			//item.InputGestureText = new KeyGesture(Key.F10).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
-			item.Click += delegate {
-				ContextActionsHelper.MakePopupWithBaseClasses(@class).OpenAtCaretAndFocus(context.Editor);
-			};
-			return item;
-		}
-		
-		MenuItem MakeFindOverridesItem(IMember member, RefactoringMenuContext context)
-		{
-			if (member == null || !member.IsOverridable)
-				return null;
-			var item = new MenuItem { Header = MenuService.ConvertLabel(StringParser.Parse("${res:SharpDevelop.Refactoring.FindOverridesCommand}")) };
-			item.Icon = ClassBrowserIconService.Method.CreateImage();
-			item.InputGestureText = new KeyGesture(Key.F6).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
-			item.Click += delegate {
-				ContextActionsHelper.MakePopupWithOverrides(member).OpenAtCaretAndFocus(context.Editor);
-			};
-			return item;
-		}
-		
-		#endregion
 		
 		IMember GetCallingMember(IClass callingClass, int caretLine, int caretColumn)
 		{

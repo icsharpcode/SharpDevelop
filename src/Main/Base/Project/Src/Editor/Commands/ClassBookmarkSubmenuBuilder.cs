@@ -72,6 +72,8 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			cmd = FindReferencesAndRenameHelper.MakeFindReferencesMenuCommand(FindReferences);
 			cmd.Tag = c;
 			list.Add(cmd);
+			list.AddIfNotNull(MakeFindBaseClassesItem(c));
+			list.AddIfNotNull(MakeFindDerivedClassesItem(c));
 			
 			return list.ToArray();
 		}
@@ -81,6 +83,31 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			MenuCommand item = (MenuCommand)sender;
 			IClass c = (IClass)item.Tag;
 			FindReferencesAndRenameHelper.RunFindReferences(c);
+		}
+		
+		MenuCommand MakeFindDerivedClassesItem(IClass baseClass)
+		{
+			if (baseClass == null || baseClass.IsStatic || baseClass.IsSealed)
+				return null;
+			var item = new MenuCommand(StringParser.Parse("${res:SharpDevelop.Refactoring.FindDerivedClassesCommand}"));
+			item.ShortcutKeys = System.Windows.Forms.Keys.F6;
+			//item.Image = ClassBrowserIconService.Class.Bitmap;
+			item.Click += delegate {
+				ContextActionsHelper.MakePopupWithDerivedClasses(baseClass).OpenAtCaretAndFocus();
+			};
+			return item;
+		}
+		
+		MenuCommand MakeFindBaseClassesItem(IClass @class)
+		{
+			if (@class == null || @class.BaseTypes == null || @class.BaseTypes.Count == 0)
+				return null;
+			var item = new MenuCommand(StringParser.Parse("${res:SharpDevelop.Refactoring.FindBaseClassesCommand}"));
+			//item.Image = ClassBrowserIconService.Class.Bitmap;
+			item.Click += delegate {
+				ContextActionsHelper.MakePopupWithBaseClasses(@class).OpenAtCaretAndFocus();
+			};
+			return item;
 		}
 		
 //		void GoToBase(object sender, EventArgs e)

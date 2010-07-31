@@ -71,6 +71,8 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			cmd.Tag = member;
 			list.Add(cmd);
 			
+			list.AddIfNotNull(MakeFindOverridesItem(member));
+			
 			if (member is IField && member.DeclaringType.ClassType != ClassType.Enum) {
 				IProperty foundProperty = FindReferencesAndRenameHelper.FindProperty(member as IField);
 				if (foundProperty != null) {
@@ -111,6 +113,19 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			}
 			
 			return list.ToArray();
+		}
+		
+		MenuCommand MakeFindOverridesItem(IMember member)
+		{
+			if (member == null || !member.IsOverridable)
+				return null;
+			var item = new MenuCommand(StringParser.Parse("${res:SharpDevelop.Refactoring.FindOverridesCommand}"));
+			//item.Image = ClassBrowserIconService.Method.Bitmap;
+			item.ShortcutKeys = Keys.F6;
+			item.Click += delegate {
+				ContextActionsHelper.MakePopupWithOverrides(member).OpenAtCaretAndFocus();
+			};
+			return item;
 		}
 		
 		void CreateProperty(object sender, EventArgs e)
