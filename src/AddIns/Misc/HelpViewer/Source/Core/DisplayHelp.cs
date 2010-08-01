@@ -54,21 +54,22 @@ namespace MSHelpSystem.Core
 			DisplayLocalHelp(helpPageUrl);
 		}
 
-		public static void ContextualHelp(string contextual)
+		public static bool ContextualHelp(string contextual)
 		{
 			if (string.IsNullOrEmpty(contextual)) {
 				throw new ArgumentNullException("contextual");
 			}
 			if (!Help3Environment.IsLocalHelp) {
 				DisplayHelpOnMSDN(contextual);
-				return;
+				return true;
 			}
 			if (Help3Service.ActiveCatalog == null) {
-				throw new ArgumentNullException("Help3Service.ActiveCatalog");
+				return false;
 			}
 			string helpContextualUrl = string.Format(@"ms-xhelp://?method=f1&query={1}&{0}", Help3Service.ActiveCatalog.AsMsXHelpParam, contextual);
 			LoggingService.Debug(string.Format("Help 3.0: {0}", helpContextualUrl));
 			DisplayLocalHelp(helpContextualUrl);
+			return true;
 		}
 
 		public static void Search(string searchWords)
@@ -136,7 +137,7 @@ namespace MSHelpSystem.Core
 				LoggingService.Info(string.Format("Help 3.0: Navigating to {0}", helpUrl));
 				browser.Navigate(Help3Environment.GetHttpFromMsXHelp(helpUrl));
 				browser.WorkbenchWindow.SelectWindow();
-			}			
+			}
 		}
 
 		static void DisplayHelpWithShellExecute(string arguments)
@@ -206,6 +207,6 @@ namespace MSHelpSystem.Core
 			BrowserPane tmp = new BrowserPane();
 			WorkbenchSingleton.Workbench.ShowView(tmp);
 			return tmp;
-		}		
+		}
 	}
 }
