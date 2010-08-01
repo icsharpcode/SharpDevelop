@@ -47,7 +47,9 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 		private void OnMenuLoaded(object sender, EventArgs e)
 		{
-			_menu.MainHeader.Click += MainHeaderClick;
+			if(_menu.MainHeader!=null)
+				_menu.MainHeader.Click += MainHeaderClick;
+			
 			int menuItemsAdded = 0;
 			var view = this.ExtendedItem.View;
 
