@@ -64,7 +64,7 @@
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
 		<OptionPanel id = "VBSpecificOptions"
 			             label = "${res:Dialog.Options.IDEOptions.TextEditor.VB.PanelName}"
-			             class = "ICSharpCode.VBNetBinding.OptionPanels.VBNetTextEditorPanel"/>
+			             class = "ICSharpCode.VBNetBinding.OptionPanels.TextEditorOptions"/>
 	</Path>
 	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/VBNet">

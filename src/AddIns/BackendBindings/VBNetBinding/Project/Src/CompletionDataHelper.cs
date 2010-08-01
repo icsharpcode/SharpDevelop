@@ -202,9 +202,24 @@ namespace ICSharpCode.VBNetBinding
 			if (list == null)
 				return;
 			List<ICompletionItem> snippets = editor.GetSnippets().ToList();
+			snippets.RemoveAll(item => !FitsToContext(item, list.Items));
 			list.Items.RemoveAll(item => item.Image == ClassBrowserIconService.Keyword && snippets.Exists(i => i.Text == item.Text));
 			list.Items.AddRange(snippets);
 			list.SortItems();
+		}
+		
+		static bool FitsToContext(ICompletionItem item, List<ICompletionItem> list)
+		{
+			if (!(item is ISnippetCompletionItem))
+				return false;
+			
+			var snippetItem = item as ISnippetCompletionItem;
+			
+			if (string.IsNullOrEmpty(snippetItem.Keyword))
+				return true;
+			
+			return list.Any(x => x.Image == ClassBrowserIconService.Keyword
+			                && x.Text == snippetItem.Keyword);
 		}
 		
 		static IMember GetCurrentMember(ITextEditor editor)
