@@ -93,7 +93,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.delayMoveTimer.Stop();
 			if (!IsEnabled)
 				return;
-			
+			ClosePopup();
 			var availableActions = ContextActionsService.Instance.GetAvailableActions(this.Editor);
 			var availableActionsVM = new ObservableCollection<ContextActionViewModel>(
 				availableActions.Select(a => new ContextActionViewModel(a)));
