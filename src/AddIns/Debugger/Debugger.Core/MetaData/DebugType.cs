@@ -1276,7 +1276,11 @@ namespace Debugger.MetaData
 				foreach(InterfaceImplProps implProps in module.MetaData.EnumInterfaceImplProps((uint)this.MetadataToken)) {
 					CorTokenType tkType = (CorTokenType)(implProps.Interface & 0xFF000000);
 					if (tkType == CorTokenType.TypeDef || tkType == CorTokenType.TypeRef) {
-						this.interfaces.Add(DebugType.CreateFromTypeDefOrRef(module, false, implProps.Interface, null));
+						// TODO: Fix properly
+						try {
+							this.interfaces.Add(DebugType.CreateFromTypeDefOrRef(module, false, implProps.Interface, null));
+						} catch (DebuggerException) {
+						}
 					} else if (tkType == CorTokenType.TypeSpec) {
 						this.interfaces.Add(DebugType.CreateFromTypeSpec(module, implProps.Interface, this));
 					} else {
