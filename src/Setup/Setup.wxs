@@ -336,8 +336,6 @@
 				<ComponentRef Id="BooConsoleProjectTemplate"/>
 				<ComponentRef Id="DefaultAssemblyInfoBooTemplate"/>
 				<ComponentRef Id="CSharpBindingFiles"/>
-				<ComponentRef Id="ILAsmTemplates"/>
-				<ComponentRef Id="ILAsmBindingFiles"/>
 				<ComponentRef Id="VBNetBindingFiles"/>
 				<ComponentRef Id="WixBindingFiles"/>
 				<ComponentRef Id="WixUIMondoProjectTemplate"/>
