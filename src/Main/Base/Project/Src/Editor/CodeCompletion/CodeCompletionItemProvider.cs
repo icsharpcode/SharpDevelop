@@ -285,12 +285,12 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 						nameResult = ResolveAtCurrentOffset(insertedText, context);
 						addUsing = (!IsKnownName(nameResult));
 						
-						if (IsKnownName(nameResult) && (!IsReferenceTo(nameResult, selectedClass))) {
+						/*if (IsKnownName(nameResult) && (!IsReferenceTo(nameResult, selectedClass))) {
 							// Selected name is known but resolves to something else than the user wants to insert
 							// (i.e. some other class with the same name closer to current context according to language rules)
 							// - the only solution is to insert user's choice fully qualified
 							insertedText = selectedClass.FullyQualifiedName;
-						}
+						}*/
 					}
 					// Special case for Attributes
 					if (insertedText.EndsWith("Attribute") && IsInAttributeContext(editor, context.StartOffset)) {
