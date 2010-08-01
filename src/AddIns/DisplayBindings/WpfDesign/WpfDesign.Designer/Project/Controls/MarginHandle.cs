@@ -189,7 +189,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
                     this.Visibility = handleLength != 0.0 ? Visibility.Visible : Visibility.Hidden;
                     if (this.lineArrow != null)
                     {
-                        lineArrow.Visibility = handleLength < 23 ? Visibility.Hidden : Visibility.Visible;
+                        lineArrow.Visibility = handleLength < 25 ? Visibility.Hidden : Visibility.Visible;
                     }
                     Stub.Visibility = this.Visibility == Visibility.Visible ? Visibility.Hidden : Visibility.Visible;
                 }

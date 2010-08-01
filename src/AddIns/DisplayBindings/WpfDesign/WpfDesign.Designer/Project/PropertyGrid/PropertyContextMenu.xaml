@@ -6,7 +6,7 @@
     <MenuItem Header="Reset"
               Click="Click_Reset" />    
     <MenuItem Header="Binding" 
-              Click="Click_Binding" />
+              Click="Click_Binding" /><!-- 
     <MenuItem Header="TODO:"
               IsEnabled="False" />
     <MenuItem x:Name="uxStaticResource" 
@@ -20,6 +20,6 @@
     <MenuItem Header="Convert To Local Value"
               Click="Click_ConvertToLocalValue"/>
     <MenuItem Header="Save As Resource..."
-              Click="Click_SaveAsResource"/>
+              Click="Click_SaveAsResource"/>-->
     
 </ContextMenu>

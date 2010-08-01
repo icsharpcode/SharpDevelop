@@ -25,7 +25,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 	{
 		static GridRailAdorner()
 		{
-			bgBrush = new SolidColorBrush(Color.FromArgb(0x30, 0x20, 0x20, 0xff));
+			bgBrush = new SolidColorBrush(Color.FromArgb(0x35, 0x1E, 0x90, 0xff));
 			bgBrush.Freeze();
 			
 			//selBrush = new SolidColorBrush(Color.FromArgb(0xC0, 0xff, 0xb7, 0x4f));
