@@ -5,32 +5,27 @@
 //     <version>$Revision: $</version>
 // </file>
 using System;
-using System.Windows;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
-	/// Description of ContextActionsPopup.
+	/// Description of ContextActionsBulbPopup.
 	/// </summary>
-	public class ContextActionsPopup : ContextActionsPopupBase
+	public class ContextActionsBulbPopup : ContextActionsPopupBase
 	{
-		public ContextActionsPopup()
+		public ContextActionsBulbPopup()
 		{
-			// Close on lost focus
-			this.StaysOpen = false;
+			this.StaysOpen = true;
 			this.AllowsTransparency = true;
-			this.ActionsControl = new ContextActionsHeaderedControl();
+			this.ActionsControl = new ContextActionsBulbControl();
 			// Close when any action excecuted
 			this.ActionsControl.ActionExecuted += delegate { this.Close(); };
 		}
 		
-		public ContextActionsHeaderedControl ActionsControl
+		public ContextActionsBulbControl ActionsControl
 		{
-			get { return (ContextActionsHeaderedControl)this.Child; }
+			get { return (ContextActionsBulbControl)this.Child; }
 			set { this.Child = value; }
 		}
 		
@@ -42,22 +37,17 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
+		public bool IsDropdownOpen { get { return ActionsControl.IsOpen; } set {ActionsControl.IsOpen = value; } }
+		
 		public new void Focus()
 		{
 			this.ActionsControl.Focus();
 		}
 		
-		public void OpenAtCaretAndFocus()
+		public void OpenAtLineStart(ITextEditor editor)
 		{
-			OpenAtMousePosition();
-			//OpenAtPosition(editor, editor.Caret.Line, editor.Caret.Column, true);
-			this.Focus();
-		}
-		
-		void OpenAtMousePosition()
-		{
-			this.Placement = PlacementMode.MousePoint;
-			this.Open();
+			OpenAtPosition(editor, editor.Caret.Line, 1, false);
+			this.VerticalOffset -= 16;
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="ICSharpCode.SharpDevelop.Refactoring.ContextActionsHeaderedControl"
+﻿<UserControl x:Class="ICSharpCode.SharpDevelop.Refactoring.ContextActionsBulbControl"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Refactoring"
@@ -18,8 +18,8 @@
 		</Grid.ColumnDefinitions>
 		
 		<!-- Header -->
-		<Border x:Name="Header" Grid.Row="0" Grid.Column="0" Padding="4" BorderThickness="1 1 1 0" 
-		        BorderBrush="{StaticResource OuterBorderBrush}" HorizontalAlignment="Left">
+		<Border x:Name="Header" Grid.Row="0" Grid.Column="0" Padding="4" BorderThickness="1" 
+		        BorderBrush="{StaticResource OuterBorderBrush}" HorizontalAlignment="Left" MouseUp="Header_MouseUp">
 			<Border.Background>
 				<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
 					<GradientStop Color="#D6E9FF" Offset="0"/>
@@ -27,8 +27,7 @@
 				</LinearGradientBrush>
 			</Border.Background>
 			<StackPanel Orientation="Horizontal">
-				<Image Source="{Binding Image}"></Image>
-				<TextBlock Text="{Binding Title}"></TextBlock>
+				<TextBlock Text="###"></TextBlock>
 			</StackPanel>
 		</Border>
 		

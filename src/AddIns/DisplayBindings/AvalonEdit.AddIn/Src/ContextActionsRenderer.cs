@@ -26,7 +26,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// <summary>
 		/// This popup is reused (closed and opened again).
 		/// </summary>
-		ContextActionsPopup popup = new ContextActionsPopup() { StaysOpen = true };
+		ContextActionsBulbPopup popup = new ContextActionsBulbPopup();
 		
 		/// <summary>
 		/// Delays the available actions resolution so that it does not get called too often when user holds an arrow.
@@ -87,7 +87,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return;
 			
 			this.popup.Actions = new ContextActionsViewModel {
-				Title = "#",
 				//Image = ClassBrowserIconService.Class.ImageSource,
 				Actions = availableActionsVM
 			};
