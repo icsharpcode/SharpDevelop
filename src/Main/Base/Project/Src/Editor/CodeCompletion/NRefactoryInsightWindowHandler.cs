@@ -172,7 +172,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 							var insightProvider = new MethodInsightProvider { LookupOffset = offset };
 							var insightItems = insightProvider.ProvideInsight(editor);
 							insightWindow = ShowInsight(editor, insightItems, ResolveCallParameters(editor, call), ch);
-							return true;
+							return insightWindow != null;
 						} else {
 							Core.LoggingService.Warn("Expected '(' or '[' at start position");
 						}
