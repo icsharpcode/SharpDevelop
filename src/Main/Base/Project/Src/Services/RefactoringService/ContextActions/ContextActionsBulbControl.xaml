@@ -21,7 +21,10 @@
 		
 		<!-- Header -->
 		<Border x:Name="Header" Grid.Row="0" Grid.Column="0" Padding="2" BorderThickness="1" CornerRadius="2"
-		        BorderBrush="#485763" HorizontalAlignment="Left" MouseUp="Header_MouseUp">
+		        BorderBrush="#485763" HorizontalAlignment="Left" MouseUp="Header_MouseUp" ToolTipService.ShowDuration="3000">
+			<Border.ToolTip>
+				<ToolTip Placement="Top"><TextBlock>Available actions (Ctrl+T)</TextBlock></ToolTip>
+			</Border.ToolTip>
 			<Border.Background>
 				<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
 					<GradientStop Color="#F2F2F2" Offset="0"/>

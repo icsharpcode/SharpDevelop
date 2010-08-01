@@ -7,7 +7,9 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Input;
 using System.Windows.Threading;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
@@ -54,12 +56,25 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			this.editorView.TextArea.Caret.PositionChanged += CaretPositionChanged;
 			
+			this.editorView.KeyDown += new KeyEventHandler(ContextActionsRenderer_KeyDown);
+			
 			editor.TextArea.TextView.ScrollOffsetChanged += ScrollChanged;
 			this.delayMoveTimer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(delayMoveMilliseconds) };
 			this.delayMoveTimer.Stop();
 			this.delayMoveTimer.Tick += TimerMoveTick;
 			WorkbenchSingleton.Workbench.ViewClosed += WorkbenchSingleton_Workbench_ViewClosed;
 			WorkbenchSingleton.Workbench.ActiveViewContentChanged += WorkbenchSingleton_Workbench_ActiveViewContentChanged;
+		}
+
+		void ContextActionsRenderer_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.T && Keyboard.Modifiers == ModifierKeys.Control)
+			{
+				if (popup != null && popup.Actions != null && popup.Actions.Actions != null && popup.Actions.Actions.Count > 0) {
+					popup.IsDropdownOpen = true;
+					popup.Focus();
+				}
+			}
 		}
 
 		void WorkbenchSingleton_Workbench_ViewClosed(object sender, ViewContentEventArgs e)

@@ -39,6 +39,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		public IEnumerable<IContextAction> GetAvailableActions(ITextEditor editor)
 		{
+			if (ParserService.LoadSolutionProjectsThreadRunning)
+				yield break;
 			var parseTask = ParserService.BeginParseCurrentViewContent();
 			parseTask.Wait();
 			var editorContext = new EditorContext(editor);
