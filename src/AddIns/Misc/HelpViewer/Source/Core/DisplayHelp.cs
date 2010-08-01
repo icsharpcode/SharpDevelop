@@ -17,53 +17,55 @@ namespace MSHelpSystem.Core
 		{
 		}
 
-		public static void Catalog()
+		public static bool Catalog()
 		{
 			if (!Help3Environment.IsLocalHelp) {
 				MessageBox.Show(StringParser.Parse("${res:AddIns.HelpViewer.OfflineFeatureRequestMsg}"),
 				                StringParser.Parse("${res:AddIns.HelpViewer.MicrosoftHelpViewerTitle}"),
 				                MessageBoxButtons.OK,
 				                MessageBoxIcon.Error);
-				return;
+				return false;
 			}
 			if (Help3Service.ActiveCatalog == null) {
-				throw new ArgumentNullException("Help3Service.ActiveCatalog");
+				return false;
 			}
 			string helpCatalogUrl = string.Format(@"ms-xhelp://?method=page&id=-1&{0}", Help3Service.ActiveCatalog.AsMsXHelpParam);
 			LoggingService.Debug(string.Format("Help 3.0: {0}", helpCatalogUrl));
 			DisplayLocalHelp(helpCatalogUrl);
+			return true;
 		}
 
-		public static void Page(string pageId)
+		public static bool Page(string pageId)
 		{
 			if (string.IsNullOrEmpty(pageId)) {
-				throw new ArgumentNullException("pageId");
+				return false;
 			}
 			if (!Help3Environment.IsLocalHelp) {
 				MessageBox.Show(StringParser.Parse("${res:AddIns.HelpViewer.OfflineFeatureRequestMsg}"),
 				                StringParser.Parse("${res:AddIns.HelpViewer.MicrosoftHelpViewerTitle}"),
 				                MessageBoxButtons.OK,
 				                MessageBoxIcon.Error);
-				return;
+				return false;
 			}
 			if (Help3Service.ActiveCatalog == null) {
-				throw new ArgumentNullException("Help3Service.ActiveCatalog");
+				return false;
 			}
 			string helpPageUrl = string.Format(@"ms-xhelp://?method=page&id={1}&{0}", Help3Service.ActiveCatalog.AsMsXHelpParam, pageId);
 			LoggingService.Debug(string.Format("Help 3.0: {0}", helpPageUrl));
 			DisplayLocalHelp(helpPageUrl);
+			return true;
 		}
 
 		public static bool ContextualHelp(string contextual)
 		{
 			if (string.IsNullOrEmpty(contextual)) {
-				throw new ArgumentNullException("contextual");
+				return false;
 			}
 			if (!Help3Environment.IsLocalHelp) {
 				DisplayHelpOnMSDN(contextual);
 				return true;
 			}
-			if (Help3Service.ActiveCatalog == null) {
+			if (Help3Service.ActiveCatalog == null) {				
 				return false;
 			}
 			string helpContextualUrl = string.Format(@"ms-xhelp://?method=f1&query={1}&{0}", Help3Service.ActiveCatalog.AsMsXHelpParam, contextual);
@@ -72,41 +74,43 @@ namespace MSHelpSystem.Core
 			return true;
 		}
 
-		public static void Search(string searchWords)
+		public static bool Search(string searchWords)
 		{
 			if (string.IsNullOrEmpty(searchWords)) {
-				throw new ArgumentNullException("searchWords");
+				return false;
 			}
 			if (!Help3Environment.IsLocalHelp) {
 				DisplaySearchOnMSDN(searchWords);
-				return;
+				return true;
 			}
 			if (Help3Service.ActiveCatalog == null) {
-				throw new ArgumentNullException("Help3Service.ActiveCatalog");
+				return false;
 			}
 			string helpSearchUrl = string.Format(@"ms-xhelp://?method=search&query={1}&{0}", Help3Service.ActiveCatalog.AsMsXHelpParam, searchWords.Replace(" ", "+"));
 			LoggingService.Debug(string.Format("Help 3.0: {0}", helpSearchUrl));
 			DisplayLocalHelp(helpSearchUrl);
+			return true;
 		}
 
-		public static void Keywords(string keywords)
+		public static bool Keywords(string keywords)
 		{
 			if (string.IsNullOrEmpty(keywords)) {
-				throw new ArgumentNullException("keywords");
+				return false;
 			}
 			if (!Help3Environment.IsLocalHelp) {
 				MessageBox.Show(StringParser.Parse("${res:AddIns.HelpViewer.OfflineFeatureRequestMsg}"),
 				                StringParser.Parse("${res:AddIns.HelpViewer.MicrosoftHelpViewerTitle}"),
 				                MessageBoxButtons.OK,
 				                MessageBoxIcon.Error);
-				return;
+				return false;
 			}
 			if (Help3Service.ActiveCatalog == null) {
-				throw new ArgumentNullException("Help3Service.ActiveCatalog");
+				return false;
 			}
 			string helpKeywordsUrl = string.Format(@"ms-xhelp://?method=keywords&query={1}&{0}", Help3Service.ActiveCatalog.AsMsXHelpParam, keywords.Replace(" ", "+"));
 			LoggingService.Debug(string.Format("Help 3.0: {0}", helpKeywordsUrl));
 			DisplayLocalHelp(helpKeywordsUrl);
+			return true;
 		}
 
 
