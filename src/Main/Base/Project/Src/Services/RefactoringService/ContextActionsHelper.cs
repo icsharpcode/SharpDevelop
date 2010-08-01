@@ -34,9 +34,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			var baseClassList = @class.ClassInheritanceTree.Where(
 				baseClass => (baseClass != @class) && (baseClass.CompilationUnit != null) && (baseClass.CompilationUnit.FileName != null));
-			// Reverse to show the base classes from the most general to the most derived one
-			//.Reverse();
-			//baseClassList.Sort(new BaseClassComparer());
 			var popupViewModel = new ContextActionsViewModel { Title = MenuService.ConvertLabel(StringParser.Parse(
 				"${res:SharpDevelop.Refactoring.BaseClassesOf}", new StringTagPair("Name", @class.Name)))};
 			popupViewModel.Actions = new PopupListViewModelBuilder().BuildListViewModel(baseClassList);

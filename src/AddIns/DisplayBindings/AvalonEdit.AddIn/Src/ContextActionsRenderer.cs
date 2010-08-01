@@ -34,6 +34,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		DispatcherTimer delayMoveTimer;
 		const int delayMoveMilliseconds = 100;
 		
+		public bool IsEnabled
+		{
+			get {
+				try {
+					string fileName = this.Editor.FileName;
+					return fileName.EndsWith(".cs") || fileName.EndsWith(".vb");
+				} catch {
+					return false;
+				}
+			}
+		}
+		
 		public ContextActionsRenderer(CodeEditorView editor)
 		{
 			if (editor == null)
@@ -79,6 +91,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void TimerMoveTick(object sender, EventArgs e)
 		{
 			this.delayMoveTimer.Stop();
+			if (!IsEnabled)
+				return;
 			
 			var availableActions = ContextActionsService.Instance.GetAvailableActions(this.Editor);
 			var availableActionsVM = new ObservableCollection<ContextActionViewModel>(

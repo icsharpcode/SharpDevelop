@@ -39,8 +39,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		public IEnumerable<IContextAction> GetAvailableActions(ITextEditor editor)
 		{
-			//var parseTask = ParserService.BeginParseCurrentViewContent();
-			//parseTask.Wait();
+			var parseTask = ParserService.BeginParseCurrentViewContent();
+			parseTask.Wait();
 			var editorContext = new EditorContext(editor);
 			// could run providers in parallel
 			foreach (var provider in this.providers) {

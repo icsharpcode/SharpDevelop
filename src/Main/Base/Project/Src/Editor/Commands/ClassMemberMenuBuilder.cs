@@ -57,6 +57,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 				if (!FindReferencesAndRenameHelper.IsReadOnly(member.DeclaringType) &&
 				    !(member is IProperty && ((IProperty)member).IsIndexer)) {
 					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.RenameCommand}", Rename);
+					cmd.ShortcutKeys = Keys.Control | Keys.R;
 					cmd.Tag = member;
 					list.Add(cmd);
 				}
@@ -68,6 +69,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			}
 			
 			cmd = new MenuCommand("${res:SharpDevelop.Refactoring.FindReferencesCommand}", FindReferences);
+			cmd.ShortcutKeys = Keys.F12;
 			cmd.Tag = member;
 			list.Add(cmd);
 			

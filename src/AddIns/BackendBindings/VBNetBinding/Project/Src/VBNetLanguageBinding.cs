@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.VBNetBinding
@@ -22,6 +23,10 @@ namespace ICSharpCode.VBNetBinding
 		
 		public override IBracketSearcher BracketSearcher {
 			get { return new VBNetBracketSearcher(); }
+		}
+		
+		public override LanguageProperties Properties {
+			get { return LanguageProperties.VBNet; }
 		}
 	}
 }

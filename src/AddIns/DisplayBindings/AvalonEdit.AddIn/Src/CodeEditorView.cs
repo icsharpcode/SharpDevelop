@@ -60,7 +60,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.TextArea.TextView.MouseDown += TextViewMouseDown;
 			this.TextArea.Caret.PositionChanged += HighlightBrackets;
 			
-			SetUpTabSnippetHandler();
+			SetupTabSnippetHandler();
 		}
 		
 		protected override string FileName {
@@ -74,8 +74,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				HighlightBrackets(null, e);
 			else if (e.PropertyName == "EnableFolding")
 				UpdateParseInformation();
-			else if (e.PropertyName == "HighlightSymbol")
-				this.caretReferencesRenderer.ClearHighlight();
+			else if (e.PropertyName == "HighlightSymbol") {
+				if (this.caretReferencesRenderer != null)
+					this.caretReferencesRenderer.ClearHighlight();
+			}
 		}
 		
 		#region CaretPositionChanged - Bracket Highlighting
@@ -102,7 +104,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		#endregion
 		
 		#region Custom Tab command (code snippet expansion)
-		void SetUpTabSnippetHandler()
+		void SetupTabSnippetHandler()
 		{
 			var editingKeyBindings = this.TextArea.DefaultInputHandler.Editing.InputBindings.OfType<KeyBinding>();
 			var tabBinding = editingKeyBindings.Single(b => b.Key == Key.Tab && b.Modifiers == ModifierKeys.None);
@@ -346,7 +348,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		#region Ctrl+Click Go To Definition
 		GoToDefinition goToDefinitionCommand;
-		protected GoToDefinition GotoDefinitionCommand { 
+		protected GoToDefinition GotoDefinitionCommand {
 			get
 			{
 				if (goToDefinitionCommand == null)

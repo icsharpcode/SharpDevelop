@@ -38,7 +38,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		ExpressionHighlightRenderer highlightRenderer;
 		ResolveResult lastResolveResult;
-			
+		
+		public bool IsEnabled
+		{
+			get {
+				string fileName = this.Editor.FileName;
+				return CodeEditorOptions.Instance.HighlightSymbol && (fileName.EndsWith(".cs") || fileName.EndsWith(".vb"));
+			}
+		}
+		
 		/// <summary>
 		/// In the code editor, highlights all references to the expression under the caret (for better code readability).
 		/// </summary>
@@ -62,22 +70,22 @@ namespace ICSharpCode.AvalonEdit.AddIn
 
 		void TimerTick(object sender, EventArgs e)
 		{
-			if (!CodeEditorOptions.Instance.HighlightSymbol)
-				return;
-			
 			this.delayTimer.Stop();
-			// almost the same as DebuggerService.HandleToolTipRequest
+			
+			if (!IsEnabled)
+				return;
 			var referencesToBeHighlighted = GetReferencesInCurrentFile(this.lastResolveResult);
 			this.highlightRenderer.SetHighlight(referencesToBeHighlighted);
 		}
 		
 		void TimerMoveTick(object sender, EventArgs e)
 		{
-			if (!CodeEditorOptions.Instance.HighlightSymbol)
-				return;
-			
 			this.delayMoveTimer.Stop();
 			this.delayTimer.Stop();
+			
+			if (!IsEnabled)
+				return;
+			
 			var resolveResult = GetExpressionUnderCaret();
 			if (resolveResult == null) {
 				this.lastResolveResult = resolveResult;
