@@ -80,8 +80,8 @@ namespace ICSharpCode.VBNetBinding
 								insightHandler.HighlightParameter(insightWindow, GetArgumentIndex(editor) + 1);
 								insightWindow.CaretPositionChanged += delegate { Run(insightWindow, editor); };;
 							}
-							return CodeCompletionKeyPressResult.EatKey;
 						}
+						return CodeCompletionKeyPressResult.EatKey;
 					}
 					break;
 				case '\n':

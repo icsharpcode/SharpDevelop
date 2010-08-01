@@ -44,7 +44,7 @@ namespace ICSharpCode.VBNetBinding
 		static List<int> blockTokens = new List<int>(
 			new int[] {
 				Tokens.Class, Tokens.Module, Tokens.Namespace, Tokens.Interface, Tokens.Structure,
-				Tokens.Sub, Tokens.Function, Tokens.Operator,
+				Tokens.Sub, Tokens.Function, Tokens.Operator, Tokens.Enum,
 				Tokens.If, Tokens.For, Tokens.Do, Tokens.While, Tokens.With, Tokens.Select, Tokens.Try,
 				Tokens.Property, Tokens.Get, Tokens.Set
 			});
@@ -421,6 +421,7 @@ namespace ICSharpCode.VBNetBinding
 			return (type == Tokens.Class) ||
 				(type == Tokens.Module) ||
 				(type == Tokens.Structure) ||
+				(type == Tokens.Enum) ||
 				(type == Tokens.Interface);
 		}
 		

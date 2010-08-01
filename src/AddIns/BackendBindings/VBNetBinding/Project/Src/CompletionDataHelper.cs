@@ -81,7 +81,7 @@ namespace ICSharpCode.VBNetBinding
 			
 			CodeCompletionItemProvider.ConvertCompletionData(result, data, expressionResult.Context);
 			
-			if (addedKeywords)
+			if (addedKeywords && result.Items.Any())
 				AddTemplates(editor, result);
 			
 			string word = editor.GetWordBeforeCaret().Trim();
