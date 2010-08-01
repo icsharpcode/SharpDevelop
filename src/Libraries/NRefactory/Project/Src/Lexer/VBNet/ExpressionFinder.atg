@@ -637,7 +637,7 @@ ExpressionSuffix =
 .
 
 CastExpression =
-	SimpleCastExpression | ("DirectCast" | "TryCast" | "CType") "(" Expression "," TypeName ")"
+	SimpleCastExpression | ("DirectCast" | "TryCast" | "CType") "(" Expression "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ")"
 .
 
 SimpleCastExpression =
