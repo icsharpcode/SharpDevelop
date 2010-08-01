@@ -24,6 +24,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public ContextActionsBulbControl()
 		{
 			InitializeComponent();
+			this.IsOpen = false;
 		}
 		
 		public event EventHandler ActionExecuted
@@ -37,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			get { return isOpen; }
 			set {
 				isOpen = value;
-				this.Header.Opacity = isOpen ? 1.0 : 0.5;
+				this.Header.Opacity = isOpen ? 1.0 : 1.0;
 				this.Header.BorderThickness = isOpen ? new Thickness(1, 1, 1, 0) : new Thickness(1);
 				this.ActionsTreeView.Visibility = isOpen ? Visibility.Visible : Visibility.Collapsed;
 			}
