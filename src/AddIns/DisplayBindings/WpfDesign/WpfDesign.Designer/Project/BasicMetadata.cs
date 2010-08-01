@@ -234,14 +234,14 @@ namespace ICSharpCode.WpfDesign.Designer
 			Metadata.AddPopularControl(typeof(ProgressBar));
 			Metadata.AddPopularControl(typeof(RadioButton));
 			Metadata.AddPopularControl(typeof(RichTextBox));
-			Metadata.AddPopularControl(typeof(ScrollViewer));
-			Metadata.AddPopularControl(typeof(Slider));
 			Metadata.AddPopularControl(typeof(StackPanel));
+			Metadata.AddPopularControl(typeof(ScrollViewer));
+			Metadata.AddPopularControl(typeof(Slider));			
 			Metadata.AddPopularControl(typeof(TabControl));
-			Metadata.AddPopularControl(typeof(TextBox));
 			Metadata.AddPopularControl(typeof(TextBlock));
+			Metadata.AddPopularControl(typeof(TextBox));
+			Metadata.AddPopularControl(typeof(TreeView));
 			Metadata.AddPopularControl(typeof(ToolBar));
-			Metadata.AddPopularControl(typeof(TreeView));			
 			Metadata.AddPopularControl(typeof(Viewbox));
 			Metadata.AddPopularControl(typeof(Viewport3D));
 			Metadata.AddPopularControl(typeof(WrapPanel));
