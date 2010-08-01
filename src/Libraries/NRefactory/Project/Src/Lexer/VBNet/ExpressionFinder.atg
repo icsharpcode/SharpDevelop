@@ -278,7 +278,7 @@ ImportsStatement =
 	"Imports" (. PushContext(Context.Importable, la, t); .)
 	(. nextTokenIsStartOfImportsOrAccessExpression = true;	.)
 	(
-		( "Global" | Identifier | PrimitiveTypeName ) { TypeSuffix } [ ( "." | "=" ) (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
+		( "Global" | Identifier | PrimitiveTypeName ) { TypeSuffix } [ ( "." | "=" ) TypeName ]
 		| XmlOpenTag Identifier "=" LiteralString XmlCloseTag
 	)
 	(. PopContext(); .)
@@ -401,7 +401,9 @@ GenericTypeParameterDeclaration =
 DelegateTypeDeclaration =
 	"Delegate" ("Sub" | "Function")
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) ANY (. PopContext(); .)
-	{ "(" [ "Of" GenericTypeParameterDeclaration | ParameterList ] ")" } [ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] StatementTerminator
+	{ "(" [ "Of" GenericTypeParameterDeclaration | ParameterList ] ")" }
+	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
+	StatementTerminator
 .
 
 MemberDeclaration =
@@ -428,13 +430,21 @@ SubOrFunctionDeclaration =
 .
 
 ExternalMemberDeclaration =
-	"Declare" [ "Ansi" | "Unicode" | "Auto" ] ( "Sub" | "Function" ) (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
-	"Lib" LiteralString [ "Alias" LiteralString ] [ "(" [ ParameterList ] ")" ] [ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] StatementTerminator
+	"Declare" [ "Ansi" | "Unicode" | "Auto" ] ( "Sub" | "Function" )
+	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
+	"Lib" LiteralString
+	[ "Alias" LiteralString ]
+	[ "(" [ ParameterList ] ")" ]
+	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
+	StatementTerminator
 .
 
 EventMemberDeclaration =
-	"Event" (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .) ( "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) | [ "(" [ ParameterList ] ")" ] )
-	[ "Implements" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/ { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/ } ]
+	"Event"
+	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
+	( "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) | [ "(" [ ParameterList ] ")" ] )
+	[ "Implements" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/
+	  { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/ } ]
 	/* the TypeName production already allows the "." IdentifierOrKeyword syntax, so to avoid an ambiguous grammer we just leave that out */
 	StatementTerminator
 .
@@ -454,7 +464,8 @@ PropertyDeclaration =
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
 	[ "(" [ ParameterList ] ")" ]
 	[ "As"  { AttributeBlock } ( NewExpression | (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ) ]
-	[ "Implements" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/ { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/ } ]
+	[ "Implements" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/
+	    { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/ } ]
 	[ "=" Expression ] StatementTerminator
 	(. PopContext(); .) { EXPECTEDCONFLICT("<") AttributeBlock }
 	{ EXPECTEDCONFLICT("Public", "Protected", "Private", "Friend") AccessModifier
@@ -473,7 +484,9 @@ PropertyDeclaration =
 .
 
 OperatorDeclaration =
-	"Operator" (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) ANY (. PopContext(); .) "(" ParameterList ")" [ "As" { AttributeBlock } (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
+	"Operator" (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) ANY (. PopContext(); .)
+	"(" ParameterList ")"
+	[ "As" (. PushContext(Context.Type, la, t); .) { AttributeBlock } TypeName (. PopContext(); .) ]
 	StatementTerminatorAndBlock
 	"End" "Operator" StatementTerminator
 .
@@ -485,7 +498,7 @@ MemberVariableOrConstantDeclaration =
 MemberVariableOrConstantDeclarator =
 	[ "Const" ]
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) IdentifierForFieldDeclaration (. PopContext(); .)
-	[ "As" (. PushContext(Context.Type, la, t); .) ( NewExpression | (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ) (. PopContext(); .) ]
+	[ "As" (. PushContext(Context.Type, la, t); .) ( NewExpression | TypeName ) (. PopContext(); .) ]
 	[ "=" Expression ]
 .
 
@@ -551,7 +564,7 @@ SimpleExpressionWithSuffix =
 	{ UnaryOperator }
 	(
 		SimpleExpression { ExpressionSuffix }
-		| "TypeOf" SimpleExpressionWithSuffix "Is" TypeName
+		| "TypeOf" SimpleExpressionWithSuffix "Is" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .)
 		| NewExpression
 		| CollectionInitializer
 	)
@@ -565,7 +578,7 @@ SimpleExpression =
     |    IdentifierForExpressionStart
     |    PrimitiveTypeName
     |    ( "." | "!" | ".@" | "..." ) (. nextTokenIsStartOfImportsOrAccessExpression = true; wasQualifierTokenAtStart = true; .) [ XmlOpenTag ] IdentifierOrKeyword [ XmlCloseTag ]
-    |    "GetType" "(" TypeName ")"
+    |    "GetType" "(" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ")"
     |    "GetXmlNamespace" "(" (. readXmlIdentifier = true; .) Identifier ")"
     |    XmlLiteral
     |    LambdaExpression
@@ -616,7 +629,10 @@ CollectionInitializer =
 .
 
 ExpressionSuffix =
-    "(" (. PushContext(Context.Expression, la, t); .) ( "Of" TypeName { "," TypeName } ")" |  [ ArgumentList ] (. PopContext(); .) ")" )
+    "(" (. PushContext(Context.Expression, la, t); .)
+        ( "Of" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .)
+            { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) }
+    |  [ ArgumentList ] ) (. PopContext(); .) ")"
 |    ( "." | "!" | ".@" | "..." ) (. nextTokenIsStartOfImportsOrAccessExpression = true; .) [ XmlOpenTag ] IdentifierOrKeyword [ XmlCloseTag ]
 .
 
@@ -815,7 +831,7 @@ PrimitiveTypeName =
 	
 TypeName = ( "Global" | Identifier | PrimitiveTypeName | "?" /* used for ? = completion */ ) { TypeSuffix } { "." IdentifierOrKeyword { TypeSuffix } } .
 
-TypeSuffix = "(" ( "Of" [ (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] { "," [ (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] } | [ ArgumentList ] ) ")" .
+TypeSuffix = "(" ( "Of" [ TypeName ] { "," [ TypeName ] } | [ ArgumentList ] ) ")" .
 
 IdentifierOrKeyword = ident
 | "AddHandler"
