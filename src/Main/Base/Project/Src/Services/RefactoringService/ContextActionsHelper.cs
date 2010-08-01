@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			var popupViewModel = new ContextActionsViewModel { Title = MenuService.ConvertLabel(StringParser.Parse(
 				"${res:SharpDevelop.Refactoring.ClassesDerivingFrom}", new StringTagPair("Name", baseClass.Name)))};
 			popupViewModel.Actions = new PopupTreeViewModelBuilder().BuildTreeViewModel(derivedClassesTree);
-			return new ContextActionsPopup { Actions = popupViewModel };
+			return new ContextActionsPopup { Actions = popupViewModel, Symbol = baseClass };
 		}
 		
 		public static ContextActionsPopup MakePopupWithBaseClasses(IClass @class)
@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			var popupViewModel = new ContextActionsViewModel { Title = MenuService.ConvertLabel(StringParser.Parse(
 				"${res:SharpDevelop.Refactoring.BaseClassesOf}", new StringTagPair("Name", @class.Name)))};
 			popupViewModel.Actions = new PopupListViewModelBuilder().BuildListViewModel(baseClassList);
-			return new ContextActionsPopup { Actions = popupViewModel };
+			return new ContextActionsPopup { Actions = popupViewModel, Symbol = @class };
 		}
 		
 		public static ContextActionsPopup MakePopupWithOverrides(IMember member)
@@ -46,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			var popupViewModel = new ContextActionsViewModel { Title = MenuService.ConvertLabel(StringParser.Parse(
 				"${res:SharpDevelop.Refactoring.OverridesOf}", new string[,] {{ "Name", member.FullyQualifiedName }}))};
 			popupViewModel.Actions = new OverridesPopupTreeViewModelBuilder(member).BuildTreeViewModel(derivedClassesTree);
-			return new ContextActionsPopup { Actions = popupViewModel };
+			return new ContextActionsPopup { Actions = popupViewModel, Symbol = member };
 		}
 		
 		class PopupViewModelBuilder

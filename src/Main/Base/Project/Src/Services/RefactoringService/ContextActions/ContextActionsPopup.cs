@@ -8,8 +8,9 @@ using System;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
@@ -18,6 +19,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// </summary>
 	public class ContextActionsPopup : ContextActionsPopupBase
 	{
+		/// <summary>
+		/// DOM Entity (IClass, IMember etc.) for which this popup is displayed.
+		/// </summary>
+		public IEntity Symbol { get; set; }
+		
 		public ContextActionsPopup()
 		{
 			// Close on lost focus
@@ -37,8 +43,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public ContextActionsViewModel Actions
 		{
 			get { return (ContextActionsViewModel)ActionsControl.DataContext; }
-			set { 
-				ActionsControl.DataContext = value; 
+			set {
+				ActionsControl.DataContext = value;
 			}
 		}
 		
@@ -49,9 +55,25 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public void OpenAtCaretAndFocus()
 		{
-			OpenAtMousePosition();
-			//OpenAtPosition(editor, editor.Caret.Line, editor.Caret.Column, true);
+			ITextEditor currentEditor = GetCurrentEditor();
+			if (currentEditor == null) {
+				OpenAtMousePosition();
+				return;
+			}
+			// Should look if symbol under caret is the same as this.Symbol, so that when opened from class browser, popup opens at mouse pos
+			//var rr = ParserService.Resolve(currentEditor.Caret.Offset, currentEditor.Document, currentEditor.FileName);
+			OpenAtPosition(currentEditor, currentEditor.Caret.Line, currentEditor.Caret.Column, true);
 			this.Focus();
+		}
+
+		ITextEditor GetCurrentEditor()
+		{
+			if (WorkbenchSingleton.Workbench == null)
+				return null;
+			var activeViewContent = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+			if (activeViewContent == null)
+				return null;
+			return activeViewContent.TextEditor;
 		}
 		
 		void OpenAtMousePosition()
