@@ -13,12 +13,35 @@ namespace ICSharpCode.VBNetBinding
 {
 	public class VBStatement
 	{
-		public string StartRegex   = "";
-		public string EndRegex     = "";
-		public string EndStatement = "";
+		string startRegex = "";
 		
-		public int StatementToken = 0;
-		public int IndentPlus = 0;
+		public string StartRegex {
+			get { return startRegex; }
+		}
+		
+		string endRegex     = "";
+		
+		public string EndRegex {
+			get { return endRegex; }
+		}
+		
+		string endStatement = "";
+		
+		public string EndStatement {
+			get { return endStatement; }
+		}
+		
+		int statementToken = 0;
+		
+		public int StatementToken {
+			get { return statementToken; }
+		}
+		
+		int indentPlus = 0;
+		
+		public int IndentPlus {
+			get { return indentPlus; }
+		}
 		
 		public VBStatement()
 		{
@@ -26,11 +49,11 @@ namespace ICSharpCode.VBNetBinding
 		
 		public VBStatement(string startRegex, string endRegex, string endStatement, int indentPlus, int statementToken)
 		{
-			StartRegex = startRegex;
-			EndRegex   = endRegex;
-			EndStatement = endStatement;
-			IndentPlus   = indentPlus;
-			StatementToken = statementToken;
+			this.startRegex = startRegex;
+			this.endRegex   = endRegex;
+			this.endStatement = endStatement;
+			this.indentPlus   = indentPlus;
+			this.statementToken = statementToken;
 		}
 	}
 }

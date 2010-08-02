@@ -33,7 +33,48 @@ namespace ICSharpCode.VBNetBinding
 			get { return statements; }
 		}
 		
-		static readonly IList<string> keywords;
+		static readonly string[] keywords = new string[] {
+			"AddHandler", "AddressOf", "Alias", "And",
+			"AndAlso", "As", "Boolean", "ByRef",
+			"Byte", "ByVal", "Call", "Case",
+			"Catch", "CBool", "CByte", "CChar",
+			"CDate", "CDbl", "CDec", "Char",
+			"CInt", "Class", "CLng", "CObj",
+			"Const", "Continue", "CSByte", "CShort",
+			"CSng", "CStr", "CType", "CUInt",
+			"CULng", "CUShort", "Date", "Decimal",
+			"Declare", "Default", "Delegate", "Dim",
+			"DirectCast", "Do", "Double", "Each",
+			"Else", "ElseIf", "End", "EndIf", // EndIf special case: converted to "End If"
+			"Enum", "Erase", "Error", "Event",
+			"Exit", "False", "Finally", "For",
+			"Friend", "Function", "Get", "GetType",
+			"Global", "GoSub", "GoTo", "Handles",
+			"If", "Implements", "Imports", "In",
+			"Inherits", "Integer", "Interface", "Is",
+			"IsNot", "Let", "Lib", "Like",
+			"Long", "Loop", "Me", "Mod",
+			"Module", "MustInherit", "MustOverride", "MyBase",
+			"MyClass", "Namespace", "Narrowing", "New",
+			"Next", "Not", "Nothing", "NotInheritable",
+			"NotOverridable", "Object", "Of", "On",
+			"Operator", "Option", "Optional", "Or",
+			"OrElse", "Overloads", "Overridable", "Overrides",
+			"ParamArray", "Partial", "Private", "Property",
+			"Protected", "Public", "RaiseEvent", "ReadOnly",
+			"ReDim", "REM", "RemoveHandler", "Resume",
+			"Return", "SByte", "Select", "Set",
+			"Shadows", "Shared", "Short", "Single",
+			"Static", "Step", "Stop", "String",
+			"Structure", "Sub", "SyncLock", "Then",
+			"Throw", "To", "True", "Try",
+			"TryCast", "TypeOf", "UInteger", "ULong",
+			"UShort", "Using", "Variant", "Wend",
+			"When", "While", "Widening", "With",
+			"WithEvents", "WriteOnly", "Xor",
+			// these are not keywords, but context dependend
+			"Until", "Ansi", "Unicode", "Region", "Preserve"
+		};
 		
 		internal static IList<string> Keywords {
 			get { return keywords; }
@@ -79,49 +120,6 @@ namespace ICSharpCode.VBNetBinding
 			statements.Add(interfaceStatement);
 			statements.Add(new VBStatement(@"\busing\s+", "^end using$", "End Using", 1, Tokens.Using));
 			statements.Add(new VBStatement(@"^#region\s+", "^#end region$", "#End Region", 0, -1));
-			
-			keywords = new string[] {
-				"AddHandler", "AddressOf", "Alias", "And",
-				"AndAlso", "As", "Boolean", "ByRef",
-				"Byte", "ByVal", "Call", "Case",
-				"Catch", "CBool", "CByte", "CChar",
-				"CDate", "CDbl", "CDec", "Char",
-				"CInt", "Class", "CLng", "CObj",
-				"Const", "Continue", "CSByte", "CShort",
-				"CSng", "CStr", "CType", "CUInt",
-				"CULng", "CUShort", "Date", "Decimal",
-				"Declare", "Default", "Delegate", "Dim",
-				"DirectCast", "Do", "Double", "Each",
-				"Else", "ElseIf", "End", "EndIf", // EndIf special case: converted to "End If"
-				"Enum", "Erase", "Error", "Event",
-				"Exit", "False", "Finally", "For",
-				"Friend", "Function", "Get", "GetType",
-				"Global", "GoSub", "GoTo", "Handles",
-				"If", "Implements", "Imports", "In",
-				"Inherits", "Integer", "Interface", "Is",
-				"IsNot", "Let", "Lib", "Like",
-				"Long", "Loop", "Me", "Mod",
-				"Module", "MustInherit", "MustOverride", "MyBase",
-				"MyClass", "Namespace", "Narrowing", "New",
-				"Next", "Not", "Nothing", "NotInheritable",
-				"NotOverridable", "Object", "Of", "On",
-				"Operator", "Option", "Optional", "Or",
-				"OrElse", "Overloads", "Overridable", "Overrides",
-				"ParamArray", "Partial", "Private", "Property",
-				"Protected", "Public", "RaiseEvent", "ReadOnly",
-				"ReDim", "REM", "RemoveHandler", "Resume",
-				"Return", "SByte", "Select", "Set",
-				"Shadows", "Shared", "Short", "Single",
-				"Static", "Step", "Stop", "String",
-				"Structure", "Sub", "SyncLock", "Then",
-				"Throw", "To", "True", "Try",
-				"TryCast", "TypeOf", "UInteger", "ULong",
-				"UShort", "Using", "Variant", "Wend",
-				"When", "While", "Widening", "With",
-				"WithEvents", "WriteOnly", "Xor",
-				// these are not keywords, but context dependend
-				"Until", "Ansi", "Unicode", "Region", "Preserve"
-			};
 		}
 		
 		public override void FormatLine(ITextEditor editor, char charTyped)
@@ -144,7 +142,7 @@ namespace ICSharpCode.VBNetBinding
 			string lineAboveText = lineAbove == null ? "" : lineAbove.Text;
 			
 			if (ch == '\'') {
-				InsertDocumentationComments(editor, lineNr, cursorOffset, ch);
+				InsertDocumentationComments(editor, lineNr, cursorOffset);
 			}
 			
 			if (ch == '\n' && lineAboveText != null)
@@ -196,10 +194,10 @@ namespace ICSharpCode.VBNetBinding
 							commentBuilder.Append(curLineText[ i]);
 						}
 						string tag = commentBuilder.ToString().Trim();
-						if (!tag.EndsWith(">")) {
+						if (!tag.EndsWith(">", StringComparison.OrdinalIgnoreCase)) {
 							tag += ">";
 						}
-						if (!tag.StartsWith("/")) {
+						if (!tag.StartsWith("/", StringComparison.OrdinalIgnoreCase)) {
 							editor.Document.Insert(editor.Caret.Offset, "</" + tag.Substring(1));
 						}
 					}
@@ -262,7 +260,7 @@ namespace ICSharpCode.VBNetBinding
 			}
 		}
 		
-		void DoCasingOnLine(IDocumentLine lineAbove, string textToReplace, ITextEditor editor)
+		static void DoCasingOnLine(IDocumentLine lineAbove, string textToReplace, ITextEditor editor)
 		{
 			foreach (string keyword in keywords) {
 				string regex = "\\b" + keyword + "\\b"; // \b = word border
@@ -276,7 +274,7 @@ namespace ICSharpCode.VBNetBinding
 			}
 		}
 
-		void InsertDocumentationComments(ITextEditor editor, int lineNr, int cursorOffset, char ch)
+		static void InsertDocumentationComments(ITextEditor editor, int lineNr, int cursorOffset)
 		{
 			string terminator = DocumentUtilitites.GetLineTerminator(editor.Document, lineNr);
 			
@@ -286,7 +284,7 @@ namespace ICSharpCode.VBNetBinding
 			string curLineText = currentLine.Text;
 			string lineAboveText = previousLine == null ? null : previousLine.Text;
 			
-			if (curLineText != null && curLineText.EndsWith("'''") && (lineAboveText == null || !lineAboveText.Trim().StartsWith("'''"))) {
+			if (curLineText != null && curLineText.EndsWith("'''", StringComparison.OrdinalIgnoreCase) && (lineAboveText == null || !lineAboveText.Trim().StartsWith("'''", StringComparison.OrdinalIgnoreCase))) {
 				string indentation = DocumentUtilitites.GetWhitespaceAfter(editor.Document, currentLine.Offset);
 				object member = GetMemberAfter(editor, lineNr);
 				if (member != null) {
@@ -321,7 +319,7 @@ namespace ICSharpCode.VBNetBinding
 			}
 		}
 		
-		bool LookForEndRegion(ITextEditor editor)
+		static bool LookForEndRegion(ITextEditor editor)
 		{
 			string lineText = editor.Document.GetLine(1).Text;
 			int count = 0;
@@ -339,7 +337,7 @@ namespace ICSharpCode.VBNetBinding
 			return (count > 0);
 		}
 		
-		bool IsInsideInterface(ITextEditor editor, int lineNr)
+		static bool IsInsideInterface(ITextEditor editor, int lineNr)
 		{
 			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(editor.Document.Text));
 			
@@ -379,20 +377,7 @@ namespace ICSharpCode.VBNetBinding
 			return false;
 		}
 		
-		bool IsElseConstruct(string line)
-		{
-			string t = StripComment(line);
-			if (t.StartsWith("case ", StringComparison.OrdinalIgnoreCase)) return true;
-			if (string.Compare(t, "else", true) == 0 ||
-			    t.StartsWith("elseif ", StringComparison.OrdinalIgnoreCase)) return true;
-			if (string.Compare(t, "catch", true) == 0 ||
-			    t.StartsWith("catch ", StringComparison.OrdinalIgnoreCase)) return true;
-			if (string.Compare(t, "finally", true) == 0) return true;
-			
-			return false;
-		}
-		
-		bool IsInString(string start)
+		static bool IsInString(string start)
 		{
 			bool inString = false;
 			for (int i = 0; i < start.Length; i++) {
@@ -404,7 +389,7 @@ namespace ICSharpCode.VBNetBinding
 			return inString;
 		}
 		
-		bool IsFinishedString(string end)
+		static bool IsFinishedString(string end)
 		{
 			bool inString = true;
 			for (int i = 0; i < end.Length; i++) {
@@ -467,7 +452,7 @@ namespace ICSharpCode.VBNetBinding
 				return false;
 		}
 		
-		Token GetClosestMissing(List<Token> missingEnds, VBStatement statement, ITextEditor editor, int lineNr)
+		static Token GetClosestMissing(List<Token> missingEnds, VBStatement statement, ITextEditor editor, int lineNr)
 		{
 			Token closest = null;
 			int diff = 0;
@@ -488,7 +473,7 @@ namespace ICSharpCode.VBNetBinding
 			return closest;
 		}
 		
-		bool IsSingleLine(int line, ITextEditor editor)
+		static bool IsSingleLine(int line, ITextEditor editor)
 		{
 			if (line < 1)
 				return false;
@@ -500,7 +485,7 @@ namespace ICSharpCode.VBNetBinding
 			
 			string text = lineSeg.Text;
 			
-			if (StripComment(text).Trim(' ', '\t', '\r', '\n').EndsWith("_"))
+			if (StripComment(text).Trim(' ', '\t', '\r', '\n').EndsWith("_", StringComparison.OrdinalIgnoreCase))
 				return true;
 			else
 				return false;
@@ -520,26 +505,26 @@ namespace ICSharpCode.VBNetBinding
 			return false;
 		}
 		
-		bool IsMatchingStatement(Token token, VBStatement statement)
+		static bool IsMatchingStatement(Token token, VBStatement statement)
 		{
 			if (token.Kind == Tokens.For && statement.EndStatement == "Next")
 				return true;
 			
-			if (token.Kind == Tokens.Do && statement.EndStatement.StartsWith("Loop"))
+			if (token.Kind == Tokens.Do && statement.EndStatement.StartsWith("Loop", StringComparison.OrdinalIgnoreCase))
 				return true;
 			
 			bool empty = !string.IsNullOrEmpty(token.Value);
-			bool match = statement.EndStatement.IndexOf(token.Value, StringComparison.InvariantCultureIgnoreCase) != -1;
+			bool match = statement.EndStatement.IndexOf(token.Value, StringComparison.OrdinalIgnoreCase) != -1;
 			
 			return empty && match;
 		}
 		
-		string StripComment(string text)
+		static string StripComment(string text)
 		{
 			return Regex.Replace(text, "'.*$", "", RegexOptions.Singleline).Trim();
 		}
 		
-		bool IsInsideDocumentationComment(ITextEditor editor, IDocumentLine curLine, int cursorOffset)
+		static bool IsInsideDocumentationComment(ITextEditor editor, IDocumentLine curLine, int cursorOffset)
 		{
 			for (int i = curLine.Offset; i < cursorOffset; ++i) {
 				char ch = editor.Document.GetCharAt(i);
@@ -559,7 +544,7 @@ namespace ICSharpCode.VBNetBinding
 			SmartIndentInternal(editor, begin, end);
 		}
 		
-		int SmartIndentInternal(ITextEditor editor, int begin, int end)
+		static int SmartIndentInternal(ITextEditor editor, int begin, int end)
 		{
 			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(editor.Document.Text));
 			
@@ -640,7 +625,7 @@ namespace ICSharpCode.VBNetBinding
 			return (indentation.PeekOrDefault() ?? string.Empty).Length;
 		}
 		
-		int GetLastVisualLine(int line, ITextEditor area)
+		static int GetLastVisualLine(int line, ITextEditor area)
 		{
 			string text = StripComment(area.Document.GetLine(line).Text);
 			while (text.EndsWith("_", StringComparison.Ordinal)) {
@@ -650,12 +635,12 @@ namespace ICSharpCode.VBNetBinding
 			return line;
 		}
 
-		void Unindent(Stack<string> indentation)
+		static void Unindent(Stack<string> indentation)
 		{
 			indentation.PopOrDefault();
 		}
 
-		void Indent(ITextEditor editor, Stack<string> indentation)
+		static void Indent(ITextEditor editor, Stack<string> indentation)
 		{
 			indentation.Push((indentation.PeekOrDefault() ?? string.Empty) + editor.Options.IndentationString);
 		}
@@ -766,7 +751,7 @@ namespace ICSharpCode.VBNetBinding
 			return false;
 		}
 		
-		void ApplyToRange(ITextEditor editor, Stack<string> indentation, int begin, int end, int selBegin, int selEnd)
+		static void ApplyToRange(ITextEditor editor, Stack<string> indentation, int begin, int end, int selBegin, int selEnd)
 		{
 			bool multiLine = false;
 			
@@ -781,7 +766,7 @@ namespace ICSharpCode.VBNetBinding
 				}
 				
 				// change indentation before (indent this line)
-				if (multiLine && noComments.EndsWith("}")) {
+				if (multiLine && noComments.EndsWith("}", StringComparison.OrdinalIgnoreCase)) {
 					Unindent(indentation);
 					multiLine = false;
 				}
@@ -789,32 +774,22 @@ namespace ICSharpCode.VBNetBinding
 				editor.Document.SmartReplaceLine(curLine, (indentation.PeekOrDefault() ?? string.Empty) + lineText);
 				
 				// change indentation afterwards (indent next line)
-				if (!multiLine && noComments.EndsWith("_")) {
+				if (!multiLine && noComments.EndsWith("_", StringComparison.OrdinalIgnoreCase)) {
 					Indent(editor, indentation);
 					multiLine = true;
 				}
 
-				if (multiLine && !noComments.EndsWith("_")) {
+				if (multiLine && !noComments.EndsWith("_", StringComparison.OrdinalIgnoreCase)) {
 					multiLine = false;
 					Unindent(indentation);
 				}
 			}
 		}
 		
-		static bool IsStatement(string text)
-		{
-			foreach (VBStatement s in statements) {
-				if (Regex.IsMatch(text, s.StartRegex, RegexOptions.IgnoreCase))
-					return true;
-			}
-			
-			return false;
-		}
-		
 		/// <summary>
 		/// Gets the next member after the specified caret position.
 		/// </summary>
-		object GetMemberAfter(ITextEditor editor, int caretLine)
+		static object GetMemberAfter(ITextEditor editor, int caretLine)
 		{
 			string fileName = editor.FileName;
 			object nextElement = null;

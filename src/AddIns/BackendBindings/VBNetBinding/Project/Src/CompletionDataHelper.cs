@@ -91,7 +91,7 @@ namespace ICSharpCode.VBNetBinding
 			
 			HandleKeyword(ref result,  resolvedType, word, c, m, editor, pressedKey);
 			
-			AddSpecialItems(ref result, info, resolvedType, word, m, expressionResult, editor);
+			AddSpecialItems(ref result, info, resolvedType, m, expressionResult, editor);
 			
 			if (pressedKey == '\0') { // ctrl+space
 				char prevChar =  editor.Caret.Offset > 0 ? editor.Document.GetCharAt(editor.Caret.Offset - 1) : '\0';
@@ -109,7 +109,7 @@ namespace ICSharpCode.VBNetBinding
 		static void HandleKeyword(ref VBNetCompletionItemList result, IReturnType resolvedType, string word, IClass c, IMember m, ITextEditor editor, char pressedKey)
 		{
 			if (pressedKey == ' ') {
-				if (word.Equals("return", StringComparison.InvariantCultureIgnoreCase) && m != null) {
+				if (word.Equals("return", StringComparison.OrdinalIgnoreCase) && m != null) {
 					c = m.ReturnType != null ? m.ReturnType.GetUnderlyingClass() : null;
 					if (c != null) {
 						foreach (CodeCompletionItem item in result.Items.OfType<CodeCompletionItem>()) {
@@ -122,13 +122,13 @@ namespace ICSharpCode.VBNetBinding
 					}
 				}
 				
-				if (word.Equals("overrides", StringComparison.InvariantCultureIgnoreCase) && c != null) {
+				if (word.Equals("overrides", StringComparison.OrdinalIgnoreCase) && c != null) {
 					result = new OverrideCompletionItemProvider().GenerateCompletionList(editor).ToVBCCList();
 				}
 			}
 		}
 
-		static void AddSpecialItems(ref VBNetCompletionItemList result, ParseInformation info, IReturnType resolvedType, string word, IMember m, ExpressionResult expressionResult, ITextEditor editor)
+		static void AddSpecialItems(ref VBNetCompletionItemList result, ParseInformation info, IReturnType resolvedType, IMember m, ExpressionResult expressionResult, ITextEditor editor)
 		{
 			if (expressionResult.Context == ExpressionContext.Type && m != null && m.BodyRegion.IsInside(editor.Caret.Line, editor.Caret.Column)) {
 				result.Items.Add(new DefaultCompletionItem("? =") {
@@ -210,10 +210,10 @@ namespace ICSharpCode.VBNetBinding
 		
 		static bool FitsToContext(ICompletionItem item, List<ICompletionItem> list)
 		{
-			if (!(item is ISnippetCompletionItem))
-				return false;
-			
 			var snippetItem = item as ISnippetCompletionItem;
+			
+			if (snippetItem == null)
+				return false;
 			
 			if (string.IsNullOrEmpty(snippetItem.Keyword))
 				return true;

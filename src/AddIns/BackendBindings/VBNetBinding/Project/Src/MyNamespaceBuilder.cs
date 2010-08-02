@@ -27,14 +27,14 @@ namespace ICSharpCode.VBNetBinding
 			else
 				ns = project.RootNamespace + ".My";
 			IClass myApp = CreateMyApplication(cu, project, ns);
-			IClass myComp = CreateMyComputer(cu, project, ns);
+			IClass myComp = CreateMyComputer(cu, ns);
 			
 			cu.Classes.Add(myApp);
 			cu.Classes.Add(myComp);
 			
 			IClass myForms = null;
 			if (project.OutputType == OutputType.WinExe) {
-				myForms = CreateMyForms(cu, project, ns);
+				myForms = CreateMyForms(cu, ns);
 				cu.Classes.Add(myForms);
 			}
 			DefaultClass c = new DefaultClass(cu, ns + ".MyProject");
@@ -105,7 +105,7 @@ namespace ICSharpCode.VBNetBinding
 			return new GetClassReturnType(cu.ProjectContent, fullName, 0);
 		}
 		
-		static IClass CreateMyComputer(ICompilationUnit cu, IProject project, string ns)
+		static IClass CreateMyComputer(ICompilationUnit cu, string ns)
 		{
 			DefaultClass c = new DefaultClass(cu, ns + ".MyComputer");
 			c.ClassType = ClassType.Class;
@@ -115,7 +115,7 @@ namespace ICSharpCode.VBNetBinding
 			return c;
 		}
 		
-		static IClass CreateMyForms(ICompilationUnit cu, IProject project, string ns)
+		static IClass CreateMyForms(ICompilationUnit cu, string ns)
 		{
 			DefaultClass c = new MyFormsClass(cu, ns + ".MyForms");
 			c.ClassType = ClassType.Class;

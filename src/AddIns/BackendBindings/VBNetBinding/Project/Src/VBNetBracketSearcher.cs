@@ -60,7 +60,7 @@ namespace ICSharpCode.VBNetBinding
 		}
 		
 		#region bracket search
-		int SearchBracketBackward(IDocument document, int offset, char openBracket, char closingBracket)
+		static int SearchBracketBackward(IDocument document, int offset, char openBracket, char closingBracket)
 		{
 			bool inString  = false;
 			char ch;
@@ -110,7 +110,7 @@ namespace ICSharpCode.VBNetBinding
 			return 0;
 		}
 		
-		int SearchBracketForward(IDocument document, int offset, char openBracket, char closingBracket)
+		static int SearchBracketForward(IDocument document, int offset, char openBracket, char closingBracket)
 		{
 			bool inString  = false;
 			bool inComment = false;
@@ -231,10 +231,5 @@ namespace ICSharpCode.VBNetBinding
 			return -1;
 		}
 		#endregion
-		
-		static bool IsDeclaration(int kind)
-		{
-			return kind == Tokens.Sub || kind == Tokens.Function || kind == Tokens.Operator || VBNetFormattingStrategy.IsDeclaration(kind);
-		}
 	}
 }

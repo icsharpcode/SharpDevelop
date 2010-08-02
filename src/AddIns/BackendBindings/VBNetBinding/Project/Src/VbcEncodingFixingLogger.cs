@@ -16,21 +16,20 @@ namespace ICSharpCode.VBNetBinding
 	/// <summary>
 	/// Fixes SD2-995 : Special characters not correctly encoded for languages others than English
 	/// </summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Vbc")]
 	public sealed class VbcEncodingFixingLogger : IMSBuildLoggerFilter
 	{
 		public IMSBuildChainedLoggerFilter CreateFilter(MSBuildEngine engine, IMSBuildChainedLoggerFilter nextFilter)
 		{
-			return new VbcLoggerImpl(engine, nextFilter);
+			return new VbcLoggerImpl(nextFilter);
 		}
 		
 		sealed class VbcLoggerImpl : IMSBuildChainedLoggerFilter
 		{
-			readonly MSBuildEngine engineWorker;
 			readonly IMSBuildChainedLoggerFilter nextFilter;
 			
-			public VbcLoggerImpl(MSBuildEngine engineWorker, IMSBuildChainedLoggerFilter nextFilter)
+			public VbcLoggerImpl(IMSBuildChainedLoggerFilter nextFilter)
 			{
-				this.engineWorker = engineWorker;
 				this.nextFilter = nextFilter;
 			}
 			

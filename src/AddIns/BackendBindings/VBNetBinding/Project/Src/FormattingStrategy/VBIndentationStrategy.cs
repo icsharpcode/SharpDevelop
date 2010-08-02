@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.SharpDevelop.Editor;
 
-namespace ICSharpCode.VBNetBinding.FormattingStrategy
+namespace ICSharpCode.VBNetBinding
 {
 	/// <summary>
 	/// Description of VBIndentationStrategy.

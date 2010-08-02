@@ -50,7 +50,7 @@
 		<Parser id    = "VBNet" 
 			supportedextensions  = ".vb"
 			projectfileextension = ".vbproj"
-			class = "ICSharpCode.VBNetBinding.Parser.TParser"/>
+			class = "ICSharpCode.VBNetBinding.TParser"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions/Convert">

@@ -108,7 +108,7 @@ namespace ICSharpCode.VBNetBinding
 					result = ef.FindExpression(editor.Document.Text, editor.Caret.Offset);
 					
 					string word = editor.GetWordBeforeCaret().Trim();
-					if (word.Equals("overrides", StringComparison.InvariantCultureIgnoreCase) || word.Equals("return", StringComparison.InvariantCultureIgnoreCase) || !LiteralMayFollow((BitArray)result.Tag) && !OperatorMayFollow((BitArray)result.Tag) && ExpressionContext.IdentifierExpected != result.Context) {
+					if (word.Equals("overrides", StringComparison.OrdinalIgnoreCase) || word.Equals("return", StringComparison.OrdinalIgnoreCase) || !LiteralMayFollow((BitArray)result.Tag) && !OperatorMayFollow((BitArray)result.Tag) && ExpressionContext.IdentifierExpected != result.Context) {
 						LoggingService.Debug("CC: After space, result=" + result + ", context=" + result.Context);
 						ShowCompletion(result, editor, ch);
 					}
@@ -158,7 +158,7 @@ namespace ICSharpCode.VBNetBinding
 			return ef.ActiveArgument;
 		}
 		
-		bool IsTypeCharacter(char ch, char prevChar)
+		static bool IsTypeCharacter(char ch, char prevChar)
 		{
 			ch = char.ToUpperInvariant(ch);
 			
@@ -176,7 +176,7 @@ namespace ICSharpCode.VBNetBinding
 			return false;
 		}
 
-		void ShowCompletion(ExpressionResult result, ITextEditor editor, char ch)
+		static void ShowCompletion(ExpressionResult result, ITextEditor editor, char ch)
 		{
 			VBNetCompletionItemList list = CompletionDataHelper.GenerateCompletionData(result, editor, ch);
 			list.Editor = editor;
@@ -184,7 +184,7 @@ namespace ICSharpCode.VBNetBinding
 		}
 		
 		#region Helpers
-		bool OperatorMayFollow(BitArray array)
+		static bool OperatorMayFollow(BitArray array)
 		{
 			if (array == null)
 				return false;
@@ -192,7 +192,7 @@ namespace ICSharpCode.VBNetBinding
 			return array[Tokens.Xor];
 		}
 		
-		bool LiteralMayFollow(BitArray array)
+		static bool LiteralMayFollow(BitArray array)
 		{
 			if (array == null)
 				return false;
@@ -205,20 +205,7 @@ namespace ICSharpCode.VBNetBinding
 			return false;
 		}
 		
-		bool HasKeywordsOnly(BitArray array)
-		{
-			if (array == null)
-				return false;
-			
-			for (int i = 0; i < array.Length; i++) {
-				if (array[i] && i < Tokens.AddHandler)
-					return false;
-			}
-			
-			return true;
-		}
-		
-		void GetCommentOrStringState(ITextEditor editor, out bool inString, out bool inComment)
+		static void GetCommentOrStringState(ITextEditor editor, out bool inString, out bool inComment)
 		{
 			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, editor.Document.CreateReader());
 			
@@ -256,14 +243,14 @@ namespace ICSharpCode.VBNetBinding
 			}
 		}
 		
-		bool IsInString(ITextEditor editor)
+		static bool IsInString(ITextEditor editor)
 		{
 			bool inString, inComment;
 			GetCommentOrStringState(editor, out inString, out inComment);
 			return inString;
 		}
 		
-		bool IsInComment(ITextEditor editor)
+		static bool IsInComment(ITextEditor editor)
 		{
 			bool inString, inComment;
 			GetCommentOrStringState(editor, out inString, out inComment);
@@ -302,7 +289,7 @@ namespace ICSharpCode.VBNetBinding
 			return true;
 		}
 		
-		bool TryDeclarationTypeInference(ITextEditor editor, IDocumentLine curLine)
+		static bool TryDeclarationTypeInference(ITextEditor editor, IDocumentLine curLine)
 		{
 			string lineText = editor.Document.GetText(curLine.Offset, curLine.Length);
 			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new System.IO.StringReader(lineText));
