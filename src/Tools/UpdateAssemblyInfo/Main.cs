@@ -21,15 +21,33 @@ namespace UpdateAssemblyInfo
 	// Updates the version numbers in the assembly information.
 	class MainClass
 	{
-		const string templateFile       = "Main/GlobalAssemblyInfo.template";
-		const string globalAssemblyInfo = "Main/GlobalAssemblyInfo.cs";
-		const string configTemplateFile = "Main/StartUp/Project/app.template.config";
-		const string configFile         = "Main/StartUp/Project/SharpDevelop.exe.config";
-		const string configFile2        = "Main/ICSharpCode.SharpDevelop.Sda/ICSharpCode.SharpDevelop.Sda.dll.config";
-		const string subversionLibraryDir = "Libraries/SharpSvn";
-		
 		const string BaseCommit = "69a9221f57e6b184010f5bad16aa181ced91a0df";
 		const int BaseCommitRev = 6351;
+		
+		const string globalAssemblyInfoTemplateFile = "Main/GlobalAssemblyInfo.template";
+		static readonly TemplateFile[] templateFiles = {
+			new TemplateFile {
+				Input = globalAssemblyInfoTemplateFile,
+				Output = "Main/GlobalAssemblyInfo.cs"
+			},
+			new TemplateFile {
+				Input = "Main/StartUp/Project/app.template.config",
+				Output = "Main/StartUp/Project/SharpDevelop.exe.config"
+			},
+			new TemplateFile {
+				Input = "Main/StartUp/Project/app.template.config",
+				Output = "Main/ICSharpCode.SharpDevelop.Sda/ICSharpCode.SharpDevelop.Sda.dll.config"
+			},
+			new TemplateFile {
+				Input = "Setup/SharpDevelop.Setup.wixproj.user.template",
+				Output = "Setup/SharpDevelop.Setup.wixproj.user"
+			},
+		};
+		
+		class TemplateFile
+		{
+			public string Input, Output;
+		}
 		
 		public static int Main(string[] args)
 		{
@@ -57,9 +75,7 @@ namespace UpdateAssemblyInfo
 						return 2;
 					}
 					RetrieveRevisionNumber();
-					string versionNumber = GetMajorVersion() + "." + revisionNumber;
-					UpdateStartup();
-					UpdateRedirectionConfig(versionNumber);
+					UpdateFiles();
 					return 0;
 				}
 			} catch (Exception ex) {
@@ -68,50 +84,29 @@ namespace UpdateAssemblyInfo
 			}
 		}
 		
-		static void UpdateStartup()
+		static void UpdateFiles()
 		{
-			string content;
-			using (StreamReader r = new StreamReader(templateFile)) {
-				content = r.ReadToEnd();
-			}
-			content = content.Replace("-INSERTREVISION-", revisionNumber);
-			content = content.Replace("-INSERTCOMMITHASH-", gitCommitHash);
-			if (File.Exists(globalAssemblyInfo)) {
-				using (StreamReader r = new StreamReader(globalAssemblyInfo)) {
-					if (r.ReadToEnd() == content) {
-						// nothing changed, do not overwrite file to prevent recompilation
-						// every time.
-						return;
+			string fullVersionNumber = GetMajorVersion() + "." + revisionNumber;
+			foreach (var file in templateFiles) {
+				string content;
+				using (StreamReader r = new StreamReader(file.Input)) {
+					content = r.ReadToEnd();
+				}
+				content = content.Replace("$INSERTVERSION$", fullVersionNumber);
+				content = content.Replace("$INSERTREVISION$", revisionNumber);
+				content = content.Replace("$INSERTCOMMITHASH$", gitCommitHash);
+				if (File.Exists(file.Output)) {
+					using (StreamReader r = new StreamReader(file.Output)) {
+						if (r.ReadToEnd() == content) {
+							// nothing changed, do not overwrite file to prevent recompilation
+							// every time.
+							continue;
+						}
 					}
 				}
-			}
-			using (StreamWriter w = new StreamWriter(globalAssemblyInfo, false, Encoding.UTF8)) {
-				w.Write(content);
-			}
-		}
-		
-		static void UpdateRedirectionConfig(string fullVersionNumber)
-		{
-			string content;
-			using (StreamReader r = new StreamReader(configTemplateFile)) {
-				content = r.ReadToEnd();
-			}
-			content = content.Replace("$INSERTVERSION$", fullVersionNumber);
-			content = content.Replace("$INSERTCOMMITHASH$", gitCommitHash);
-			if (File.Exists(configFile) && File.Exists(configFile2)) {
-				using (StreamReader r = new StreamReader(configFile)) {
-					if (r.ReadToEnd() == content) {
-						// nothing changed, do not overwrite file to prevent recompilation
-						// every time.
-						return;
-					}
+				using (StreamWriter w = new StreamWriter(file.Output, false, Encoding.UTF8)) {
+					w.Write(content);
 				}
-			}
-			using (StreamWriter w = new StreamWriter(configFile, false, Encoding.UTF8)) {
-				w.Write(content);
-			}
-			using (StreamWriter w = new StreamWriter(configFile2, false, Encoding.UTF8)) {
-				w.Write(content);
 			}
 		}
 		
@@ -119,7 +114,7 @@ namespace UpdateAssemblyInfo
 		{
 			string version = "?";
 			// Get main version from startup
-			using (StreamReader r = new StreamReader(templateFile)) {
+			using (StreamReader r = new StreamReader(globalAssemblyInfoTemplateFile)) {
 				string line;
 				while ((line = r.ReadLine()) != null) {
 					string search = "string Major = \"";
