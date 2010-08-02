@@ -14,7 +14,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
-using SharpSvn;
 using System.Threading;
 
 namespace UpdateAssemblyInfo
@@ -28,6 +27,9 @@ namespace UpdateAssemblyInfo
 		const string configFile         = "Main/StartUp/Project/SharpDevelop.exe.config";
 		const string configFile2        = "Main/ICSharpCode.SharpDevelop.Sda/ICSharpCode.SharpDevelop.Sda.dll.config";
 		const string subversionLibraryDir = "Libraries/SharpSvn";
+		
+		const string BaseCommit = "69a9221f57e6b184010f5bad16aa181ced91a0df";
+		const int BaseCommitRev = 6351;
 		
 		public static int Main(string[] args)
 		{
@@ -54,8 +56,6 @@ namespace UpdateAssemblyInfo
 						Console.WriteLine("Working directory must be SharpDevelop\\src!");
 						return 2;
 					}
-					FileCopy(Path.Combine(subversionLibraryDir, "SharpSvn.dll"),
-					         Path.Combine(exeDir, "SharpSvn.dll"));
 					RetrieveRevisionNumber();
 					string versionNumber = GetMajorVersion() + "." + revisionNumber;
 					UpdateStartup();
@@ -68,16 +68,6 @@ namespace UpdateAssemblyInfo
 			}
 		}
 		
-		static void FileCopy(string source, string target)
-		{
-			if (File.Exists(target)) {
-				// don't copy file if it is up-to-date: repeatedly copying a 3 MB file slows down the build
-				if (File.GetLastWriteTimeUtc(source) == File.GetLastWriteTimeUtc(target))
-					return;
-			}
-			File.Copy(source, target, true);
-		}
-		
 		static void UpdateStartup()
 		{
 			string content;
@@ -85,6 +75,7 @@ namespace UpdateAssemblyInfo
 				content = r.ReadToEnd();
 			}
 			content = content.Replace("-INSERTREVISION-", revisionNumber);
+			content = content.Replace("-INSERTCOMMITHASH-", gitCommitHash);
 			if (File.Exists(globalAssemblyInfo)) {
 				using (StreamReader r = new StreamReader(globalAssemblyInfo)) {
 					if (r.ReadToEnd() == content) {
@@ -106,6 +97,7 @@ namespace UpdateAssemblyInfo
 				content = r.ReadToEnd();
 			}
 			content = content.Replace("$INSERTVERSION$", fullVersionNumber);
+			content = content.Replace("$INSERTCOMMITHASH$", gitCommitHash);
 			if (File.Exists(configFile) && File.Exists(configFile2)) {
 				using (StreamReader r = new StreamReader(configFile)) {
 					if (r.ReadToEnd() == content) {
@@ -168,12 +160,50 @@ namespace UpdateAssemblyInfo
 		}
 		
 		#region Retrieve Revision Number
-		static string revisionNumber = "0";
-		static string ReadRevisionFromFile()
+		static string revisionNumber;
+		static string gitCommitHash;
+		
+		static void RetrieveRevisionNumber()
+		{
+			if (revisionNumber == null) {
+				if (Directory.Exists("..\\..\\.git")) {
+					ReadRevisionNumberFromGit();
+				}
+			}
+			
+			if (revisionNumber == null) {
+				ReadRevisionFromFile();
+			}
+		}
+		
+		static void ReadRevisionNumberFromGit()
+		{
+			ProcessStartInfo info = new ProcessStartInfo("cmd", "/c git rev-list " + BaseCommit + "..HEAD");
+			info.RedirectStandardOutput = true;
+			info.UseShellExecute = false;
+			using (Process p = Process.Start(info)) {
+				string line;
+				int revNum = BaseCommitRev;
+				while ((line = p.StandardOutput.ReadLine()) != null) {
+					if (gitCommitHash == null) {
+						// first entry is HEAD
+						gitCommitHash = line;
+					}
+					revNum++;
+				}
+				revisionNumber = revNum.ToString();
+				p.WaitForExit();
+				if (p.ExitCode != 0)
+					throw new Exception("git-rev-list exit code was " + p.ExitCode);
+			}
+		}
+		
+		static void ReadRevisionFromFile()
 		{
 			try {
 				using (StreamReader reader = new StreamReader(@"..\REVISION")) {
-					return reader.ReadLine();
+					revisionNumber = reader.ReadLine();
+					gitCommitHash = reader.ReadLine();
 				}
 			} catch (Exception e) {
 				Console.WriteLine(e.Message);
@@ -181,40 +211,9 @@ namespace UpdateAssemblyInfo
 				Console.WriteLine("The revision number of the SharpDevelop version being compiled could not be retrieved.");
 				Console.WriteLine();
 				Console.WriteLine("Build continues with revision number '0'...");
-				try {
-					Process[] p = Process.GetProcessesByName("msbuild");
-					if (p != null && p.Length > 0) {
-						System.Threading.Thread.Sleep(3000);
-					}
-				} catch {}
-				return "0";
-			}
-		}
-		static void RetrieveRevisionNumber()
-		{
-			
-			string oldWorkingDir = Environment.CurrentDirectory;
-			try {
-				// Change working dir so that the subversion libraries can be found
-				Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, subversionLibraryDir);
 				
-				using (SvnClient client = new SvnClient()) {
-					client.Info(
-						oldWorkingDir,
-						(sender, info) => {
-							revisionNumber = info.Revision.ToString(CultureInfo.InvariantCulture);
-						});
-				}
-			} catch (Exception e) {
-				Console.WriteLine("Reading revision number with SharpSvn failed: " + e.ToString());
-			} finally {
-				Environment.CurrentDirectory = oldWorkingDir;
-			}
-			if (revisionNumber == null || revisionNumber.Length == 0 || revisionNumber == "0") {
-				revisionNumber = ReadRevisionFromFile();
-			}
-			if (revisionNumber == null || revisionNumber.Length == 0 || revisionNumber == "0") {
-				throw new ApplicationException("Error reading revision number");
+				revisionNumber = "0";
+				gitCommitHash = null;
 			}
 		}
 		#endregion
