@@ -63,7 +63,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		
 		
-		protected static Collection<AbstractColumn> CreateSortCollection (ColumnCollection items)
+		protected static Collection<AbstractColumn> CreateSortCollection (SortColumnCollection items)
 		{
 			
 				Collection<AbstractColumn> abstrCol = new Collection<AbstractColumn>();
@@ -75,6 +75,8 @@ namespace ICSharpCode.Reports.Core {
 		
 		}
 
+		
+		
 		public IndexList IndexList
 		{
 			get {

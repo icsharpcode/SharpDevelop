@@ -1,42 +1,34 @@
-/*
- * Erstellt mit SharpDevelop.
- * Benutzer: Peter Forstmeier
- * Datum: 28.01.2008
- * Zeit: 16:41
+ï»¿/*
+ * Created by SharpDevelop.
+ * User: Peter Forstmeier
+ * Date: 30.07.2010
+ * Time: 19:19
  * 
- * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
+ * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 
 using ICSharpCode.Reports.Addin.Designer;
-using ICSharpCode.Reports.Core;
 
 namespace ICSharpCode.Reports.Addin
 {
 	/// <summary>
-	/// Description of BaseRowItem.
+	/// Description of BaseGroupHeader.
 	/// </summary>
-	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.RowItemDesigner))]
-	public class BaseRowItem:AbstractItem
+	/// 
+	
+	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.GroupHeaderDesigner))]
+	
+	public class BaseGroupHeader:AbstractItem
 	{
-
-		private Color alternateBackColor;
-		private int changeBackColorEveryNRow;
-		private RectangleShape backgroundShape = new RectangleShape();
-		
-		public BaseRowItem():base()
+		public BaseGroupHeader():base()
 		{
-			Size s = new Size((GlobalValues.PreferedSize.Width * 3) + 10,
-			                     GlobalValues.PreferedSize.Height + 10);
-			base.DefaultSize = s;
-			base.Size = s;
-			base.BackColor = Color.White;
-			TypeDescriptor.AddProvider(new RowItemTypeProvider(), typeof(BaseRowItem));
+			TypeDescriptor.AddProvider(new GroupItemTypeProvider(), typeof(BaseGroupHeader));
 		}
+		
 		
 		[System.ComponentModel.EditorBrowsableAttribute()]
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
@@ -45,7 +37,10 @@ namespace ICSharpCode.Reports.Addin
 			this.Draw (e.Graphics);
 		}
 		
-		public override void Draw(Graphics graphics)
+		
+		
+		
+		public override void Draw(System.Drawing.Graphics graphics)
 		{
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");
@@ -55,35 +50,12 @@ namespace ICSharpCode.Reports.Addin
 			}
 			
 			base.DrawControl(graphics,base.DrawingRectangle);
-			
 		}
-		
-		#region Properties
-		
-		public Color AlternateBackColor {
-			get { return alternateBackColor; }
-			set { alternateBackColor = value; }
-		}
-	
-		
-		public int ChangeBackColorEveryNRow {
-			get { return changeBackColorEveryNRow; }
-			set { changeBackColorEveryNRow = value; }
-		}
-		
-		public RectangleShape BackgroundShape {
-			get { return backgroundShape; }
-			set { backgroundShape = value; }
-		}
-		
-	
-		#endregion
-		
 	}
 	
-	internal class RowItemTypeProvider : TypeDescriptionProvider
+		internal class GroupItemTypeProvider : TypeDescriptionProvider
 	{
-		public RowItemTypeProvider() :  base(TypeDescriptor.GetProvider(typeof(AbstractItem)))
+		public GroupItemTypeProvider() :  base(TypeDescriptor.GetProvider(typeof(AbstractItem)))
 		{
 		}
 		
@@ -96,14 +68,14 @@ namespace ICSharpCode.Reports.Addin
 		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
 		{
 			ICustomTypeDescriptor td = base.GetTypeDescriptor(objectType,instance);
-			return new RowItemTypeDescriptor(td, instance);
+			return new GroupItemTypeDescriptor(td, instance);
 		}
 	}
 	
 	
-	internal class RowItemTypeDescriptor : CustomTypeDescriptor
+	internal class GroupItemTypeDescriptor : CustomTypeDescriptor
 	{
-		public RowItemTypeDescriptor(ICustomTypeDescriptor parent, object instance)
+		public GroupItemTypeDescriptor(ICustomTypeDescriptor parent, object instance)
 			: base(parent)
 		{
 		}
@@ -117,11 +89,12 @@ namespace ICSharpCode.Reports.Addin
 		
 		public override PropertyDescriptorCollection GetProperties(Attribute[] attributes)
 		{
+			
 			PropertyDescriptorCollection props = base.GetProperties(attributes);
 			List<PropertyDescriptor> allProperties = new List<PropertyDescriptor>();
 
 			DesignerHelper.AddDefaultProperties(allProperties,props);
-			
+			/*
 			PropertyDescriptor prop = null;
 			
 			prop = props.Find("DrawBorder",true);
@@ -138,16 +111,13 @@ namespace ICSharpCode.Reports.Addin
 			
 			prop = props.Find("Controls",true);
 			allProperties.Add(prop);
-			/*
-			prop = props.Find("Padding",true);
-			allProperties.Add(prop);
-			*/
+			
 			prop = props.Find("AlternateBackColor",true);
 			allProperties.Add(prop);
 			
 			prop = props.Find("ChangeBackColorEveryNRow",true);
 			allProperties.Add(prop);
-			
+			*/
 			return new PropertyDescriptorCollection(allProperties.ToArray());
 		}
 	}

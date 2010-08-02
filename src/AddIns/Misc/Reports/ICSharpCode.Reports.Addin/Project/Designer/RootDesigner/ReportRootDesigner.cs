@@ -21,7 +21,7 @@ using System.Windows.Forms.Design;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
-namespace ICSharpCode.Reports.Addin
+namespace ICSharpCode.Reports.Addin.Designer
 {
 	/// <summary>
 	/// Description of ReportRootDesigner.

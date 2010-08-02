@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 
+using ICSharpCode.Reports.Addin.Designer;
 using ICSharpCode.Reports.Core;
 
 namespace ICSharpCode.Reports.Addin
@@ -20,7 +21,7 @@ namespace ICSharpCode.Reports.Addin
 	/// <summary>
 	/// Description of BaseDataItem.
 	/// </summary>
-	[Designer(typeof(ICSharpCode.Reports.Addin.DataItemDesigner))]
+	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.DataItemDesigner))]
 	public class BaseDataItem:BaseTextItem
 	{
 		private string columnName;

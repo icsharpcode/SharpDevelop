@@ -9,9 +9,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.ComponentModel;
+using System.Drawing;
 
+using ICSharpCode.Reports.Addin.Designer;
 using ICSharpCode.Reports.Core;
 
 namespace ICSharpCode.Reports.Addin
@@ -21,7 +22,7 @@ namespace ICSharpCode.Reports.Addin
 	/// </summary>
 	/// 
 	[TypeDescriptionProvider(typeof(SectionItemTypeProvider))]
-	[Designer(typeof(ICSharpCode.Reports.Addin.SectionDesigner))]
+	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.SectionDesigner))]
 	public class BaseSection:AbstractItem
 	{
 		private int  sectionOffset;

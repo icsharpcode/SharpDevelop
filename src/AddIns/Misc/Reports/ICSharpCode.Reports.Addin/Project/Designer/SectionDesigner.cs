@@ -18,7 +18,7 @@ using System.Windows.Forms.Design;
 
 using ICSharpCode.Reports.Core;
 
-namespace ICSharpCode.Reports.Addin
+namespace ICSharpCode.Reports.Addin.Designer
 {
 	/// <summary>
 	/// Description of SectionDesigner.

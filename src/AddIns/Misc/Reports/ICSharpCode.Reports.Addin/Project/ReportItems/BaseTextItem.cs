@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 
+using ICSharpCode.Reports.Addin.Designer;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 
@@ -21,7 +22,7 @@ namespace ICSharpCode.Reports.Addin
 	/// Description of ReportTextItem.
 	/// </summary>
 
-	[Designer(typeof(ICSharpCode.Reports.Addin.TextItemDesigner))]
+	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.TextItemDesigner))]
 	public class BaseTextItem:AbstractItem
 	{
 		

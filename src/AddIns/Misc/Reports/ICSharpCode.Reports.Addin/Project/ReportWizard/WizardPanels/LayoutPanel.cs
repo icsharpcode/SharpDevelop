@@ -51,12 +51,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				this.layoutControl.ReportLayout = (GlobalEnums.ReportLayout)customizer.Get("ReportLayout");
 				reportStructure = (ReportStructure)customizer.Get("Generator");
 				layoutControl.AvailableFieldsCollection = reportStructure.AvailableFieldsCollection;
-				
 			}
-			else if (message == DialogMessage.Next)
-			{
-				Console.WriteLine("aa");
-			}
+			
 			else if (message == DialogMessage.Finish)
 			{
 				customizer.Set ("ReportLayout",this.layoutControl.ReportLayout);

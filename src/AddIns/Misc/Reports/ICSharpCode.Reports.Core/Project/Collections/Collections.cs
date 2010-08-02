@@ -192,9 +192,14 @@ namespace ICSharpCode.Reports.Core{
 			 return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true));
 		}
 	}
+	
+	
+	
+	
 	[Serializable()]
-	public class SortColumnCollection: Collection<SortColumn>{
-		
+//	public class SortColumnCollection: Collection<SortColumn>{
+	public class SortColumnCollection: ColumnCollection
+		{
 		public SortColumnCollection()
 		{
 		}
@@ -225,6 +230,17 @@ namespace ICSharpCode.Reports.Core{
 		{
 			get { return CultureInfo.CurrentCulture;}
 		}
+	}
+	
+	
+	[Serializable()]
+
+	public class GroupColumnCollection: SortColumnCollection
+	{
+		public GroupColumnCollection()
+		{
+		}
+		
 	}
 	
 	

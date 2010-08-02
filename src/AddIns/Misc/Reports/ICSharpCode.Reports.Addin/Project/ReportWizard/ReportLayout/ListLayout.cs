@@ -47,12 +47,15 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			if (section == null) {
 				throw new ArgumentNullException("section");
 			}
-			
-			if (base.ParentItem != null) {
-				base.AddItemsToContainer(base.ReportModel.DetailSection,this.reportItems);
-			}
-			else{
-				AddItemsToSection (base.ReportModel.DetailSection,this.reportItems);
+			if (base.ReportModel.ReportSettings.GroupColumnsCollection.Count > 0) {
+				Console.WriteLine  ("build with group");
+			} else {
+				if (base.ParentItem != null) {
+					base.AddItemsToContainer(base.ReportModel.DetailSection,this.reportItems);
+				}
+				else{
+					AddItemsToSection (base.ReportModel.DetailSection,this.reportItems);
+				}
 			}
 		}
 		

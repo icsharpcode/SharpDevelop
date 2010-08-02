@@ -50,7 +50,7 @@ namespace ICSharpCode.Reports.Core{
 		private ParameterCollection parameterCollection;
 		private AvailableFieldsCollection availableFields;
 		private ColumnCollection groupingsCollection;
-		private ColumnCollection sortingCollection;
+		private SortColumnCollection sortingCollection;
 
 		
 		#region Constructor
@@ -105,7 +105,7 @@ namespace ICSharpCode.Reports.Core{
 			
 			this.availableFields = new AvailableFieldsCollection();
 			this.groupingsCollection = new ColumnCollection();
-			this.sortingCollection = new ColumnCollection();
+			this.sortingCollection = new SortColumnCollection();
 			this.parameterCollection = new ParameterCollection();
 			this.NoDataMessage = "No Data for this Report";
 		}
@@ -224,7 +224,7 @@ namespace ICSharpCode.Reports.Core{
 		/// </summary>
 		
 		[Category("Sorting/Grouping")]
-		public ColumnCollection SortColumnsCollection {
+		public SortColumnCollection SortColumnsCollection {
 			get {return sortingCollection;}
 		}
 		

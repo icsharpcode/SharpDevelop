@@ -14,7 +14,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
-namespace ICSharpCode.Reports.Addin
+namespace ICSharpCode.Reports.Addin.Designer
 	
 {
 	/// <summary>

@@ -22,7 +22,7 @@ namespace ICSharpCode.Reports.Addin
 	/// Description of BaseCircleItem.
 	/// </summary>
 	
-	[Designer(typeof(ICSharpCode.Reports.Addin.ShapeDesigner))]
+	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.ShapeDesigner))]
 	public class BaseCircleItem:AbstractItem
 	{
 		

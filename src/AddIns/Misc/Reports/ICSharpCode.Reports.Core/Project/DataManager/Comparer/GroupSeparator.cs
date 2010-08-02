@@ -21,7 +21,7 @@ namespace ICSharpCode.Reports.Core
 	public  class GroupComparer :SortComparer
 	{
 		
-		public GroupComparer (Collection<AbstractColumn> owner, int listIndex, object[] values):base(owner,listIndex,values)
+		public GroupComparer (ColumnCollection owner, int listIndex, object[] values):base(owner,listIndex,values)
 		{
 			IndexList = new IndexList();
 		}

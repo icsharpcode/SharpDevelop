@@ -13,7 +13,7 @@ using System.ComponentModel.Design;
 using System.Drawing;
 using System.Drawing.Printing;
 
-namespace ICSharpCode.Reports.Addin
+namespace ICSharpCode.Reports.Addin.Designer
 {
 	/// <summary>
 	/// Description of ReportItemsContainer.
@@ -78,7 +78,7 @@ namespace ICSharpCode.Reports.Addin
 	}
 	
 		
-	[Designer(typeof(ICSharpCode.Reports.Addin.ReportRootDesigner), typeof(IRootDesigner))]
+	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.ReportRootDesigner), typeof(IRootDesigner))]
 	public class RootDesignedComponent : System.Windows.Forms.UserControl
 	{
 		public RootDesignedComponent()

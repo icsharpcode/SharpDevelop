@@ -56,19 +56,20 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			} else {
 				model.ReportSettings.PageSize = GlobalValues.DefaultPageSize;
 			}
-			CheckGrouping(model.ReportSettings);
+			
+			CreateGrouping(model.ReportSettings);
 			
 			return model;
 		}
 		
-		private void CheckGrouping(ReportSettings settings)
+		private void CreateGrouping(ReportSettings settings)
 		{
 			if (!String.IsNullOrEmpty(this.Grouping)){
 				GroupColumn g = new GroupColumn(Grouping,1,System.ComponentModel.ListSortDirection.Ascending);
-				
 				settings.GroupColumnsCollection.Add(g);
 			}
 		}
+		
 		
 		#region BaseSettingsPanel property's
 		

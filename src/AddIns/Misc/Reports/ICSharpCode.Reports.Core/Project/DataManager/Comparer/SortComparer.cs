@@ -15,7 +15,7 @@ namespace ICSharpCode.Reports.Core {
 	
 	public class SortComparer : BaseComparer {
 		
-		public SortComparer(Collection<AbstractColumn> owner, int listIndex, object[] values):base(owner,listIndex,values)
+		public SortComparer(ColumnCollection owner, int listIndex, object[] values):base(owner,listIndex,values)
 		{
 		}
 		

@@ -53,7 +53,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		#region build sorting
 		
-		private PropertyDescriptor[] BuildSortProperties (Collection<AbstractColumn> col)
+		private PropertyDescriptor[] BuildSortProperties (SortColumnCollection col)
 		{
 			PropertyDescriptor[] sortProperties = new PropertyDescriptor[col.Count];
 			PropertyDescriptorCollection c = this.baseList.GetItemProperties(null);
@@ -72,7 +72,7 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		private  IndexList BuildSortIndex(Collection<AbstractColumn> col) 
+		private  IndexList BuildSortIndex(SortColumnCollection col) 
 		{
 			IndexList arrayList = new IndexList();
 			PropertyDescriptor[] sortProperties = BuildSortProperties (col);
@@ -112,7 +112,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		
 		// if we have no sorting, we build the indexlist as well, so we don't need to
-		private IndexList IndexBuilder(Collection <AbstractColumn>col)
+		private IndexList IndexBuilder(SortColumnCollection col)
 		{
 			IndexList arrayList = new IndexList();
 			for (int rowIndex = 0; rowIndex < this.baseList.Count; rowIndex++){
@@ -174,11 +174,11 @@ namespace ICSharpCode.Reports.Core {
 			base.Sort();		
 			if ((base.ReportSettings.SortColumnsCollection != null)) {
 				if (base.ReportSettings.SortColumnsCollection.Count > 0) {
-					
-					base.IndexList = this.BuildSortIndex (BaseListStrategy.CreateSortCollection(ReportSettings.SortColumnsCollection));
+
+					base.IndexList = this.BuildSortIndex (ReportSettings.SortColumnsCollection);
 					base.IsSorted = true;
 				} else {
-					base.IndexList = this.IndexBuilder(BaseListStrategy.CreateSortCollection(ReportSettings.SortColumnsCollection));
+					base.IndexList = this.IndexBuilder(ReportSettings.SortColumnsCollection);
 					base.IsSorted = false;
 				}
 			}

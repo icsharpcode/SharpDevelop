@@ -7,11 +7,12 @@
  * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
  */
 using System;
-using System.Windows.Forms;
 using System.Collections.Generic;
-using System.Drawing;
 using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
 
+using ICSharpCode.Reports.Addin.Designer;
 using ICSharpCode.Reports.Core;
 
 namespace ICSharpCode.Reports.Addin
@@ -19,7 +20,7 @@ namespace ICSharpCode.Reports.Addin
 	/// <summary>
 	/// Description of BaseTableItem.
 	/// </summary>
-	[Designer(typeof(ICSharpCode.Reports.Addin.TableDesigner))]
+	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.TableDesigner))]
 	public class BaseTableItem:AbstractItem
 	{
 		
