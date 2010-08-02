@@ -91,5 +91,14 @@ namespace PythonBinding.Tests.Testing
 			ProcessStartInfo startInfo = app.GetProcessStartInfo();
 			Assert.AreEqual(@"d:\temp", startInfo.WorkingDirectory);
 		}
+		
+		[Test]
+		public void ChangingOptionsPythonFileNameChangesProcessStartInfoFileName()
+		{
+			options.PythonFileName = @"d:\temp\test\ipy.exe";
+			ProcessStartInfo startInfo = app.GetProcessStartInfo();
+			
+			Assert.AreEqual(@"d:\temp\test\ipy.exe", startInfo.FileName);
+		}
 	}
 }

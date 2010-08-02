@@ -14,7 +14,7 @@ namespace ICSharpCode.RubyBinding
 {
 	public class RubyConsoleApplication
 	{
-		string fileName;
+		RubyAddInOptions options;
 		bool debug;
 		List<string> loadPaths = new List<string>();
 		string rubyScriptFileName = String.Empty;
@@ -25,11 +25,11 @@ namespace ICSharpCode.RubyBinding
 		
 		public RubyConsoleApplication(RubyAddInOptions options)
 		{
-			this.fileName = options.RubyFileName;
+			this.options = options;
 		}
 		
 		public string FileName {
-			get { return fileName; }
+			get { return options.RubyFileName; }
 		}
 		
 		public bool Debug {
@@ -60,7 +60,7 @@ namespace ICSharpCode.RubyBinding
 		public ProcessStartInfo GetProcessStartInfo()
 		{
 			ProcessStartInfo processStartInfo = new ProcessStartInfo();
-			processStartInfo.FileName = fileName;
+			processStartInfo.FileName = FileName;
 			processStartInfo.Arguments = GetArguments();
 			processStartInfo.WorkingDirectory = workingDirectory;
 			return processStartInfo;
