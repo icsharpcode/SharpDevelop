@@ -11,7 +11,7 @@
 		<SharpDevelopSrc>$(ProjectDir)\src</SharpDevelopSrc>
 		<SharpDevelopBin>$(ProjectDir)\bin</SharpDevelopBin>
 		<MSBuildCommunityTasksPath>$(MSBuildProjectDirectory)\Tools\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
-		<ArtefactPrefix>SharpDevelop_3.2.0.</ArtefactPrefix>
+		<ArtefactPrefix>SharpDevelop_</ArtefactPrefix>
 		<NUnitToolPath>$(MSBuildProjectDirectory)\Tools\NUnit</NUnitToolPath>
 		<NUnitTempToolPath>$(SharpDevelopBin)\Tools\x86NUnit</NUnitTempToolPath>
 		<ProfilerSrc>$(SharpDevelopSrc)\AddIns\Misc\Profiler</ProfilerSrc>
@@ -56,13 +56,11 @@
 		         Targets="PrepareRelease"
 		         Properties="Configuration=Release"/>
 		
-		<!-- read content of REVISION into $(BuildNumer) -->
-		<ReadLinesFromFile File="$(ProjectDir)\REVISION">
-			<Output TaskParameter="Lines" ItemName="REVISIONLines"/>
-		</ReadLinesFromFile>
-		<CreateProperty Value="@(REVISIONLines)">
-			<Output TaskParameter="Value" PropertyName="BuildNumber"/>
-		</CreateProperty>
+		<!-- read content of REVISION into $(BuildNumber) -->
+		<XmlRead XPath="/versionInfo/version"
+		         XmlFileName="$(ProjectDir)\REVISION">
+			<Output TaskParameter="Value" PropertyName="BuildNumber" />
+		</XmlRead>
 		<Message Importance="high" Text="BuildNumber=$(BuildNumber)"/>
 		
 		<Copy SourceFiles="$(ProjectDir)\REVISION"
@@ -121,9 +119,6 @@
 	</Target>
 	
 	<Target Name="createsetup">
-		<Exec WorkingDirectory="$(SharpDevelopSrc)\Tools\UpdateSetupInfo\bin\"
-		      Command="UpdateSetupInfo.exe"/>
-		
 		<Exec WorkingDirectory="$(SharpDevelopSrc)\Setup"
 		      Command="$(MSBuildExecutable) SharpDevelop.Setup.sln $(BuildProperties)"/>
 		

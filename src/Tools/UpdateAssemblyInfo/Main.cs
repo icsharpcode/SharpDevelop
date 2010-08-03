@@ -9,12 +9,13 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
-
 using System.Threading;
+using System.Xml.Linq;
 
 namespace UpdateAssemblyInfo
 {
@@ -80,6 +81,15 @@ namespace UpdateAssemblyInfo
 					}
 					RetrieveRevisionNumber();
 					UpdateFiles();
+					if (args.Contains("--REVISION")) {
+						var doc = new XDocument(new XElement(
+							"versionInfo",
+							new XElement("version", fullVersionNumber),
+							new XElement("revision", revisionNumber),
+							new XElement("commitHash", gitCommitHash)
+						));
+						doc.Save("../REVISION");
+					}
 					return 0;
 				}
 			} catch (Exception ex) {
@@ -90,7 +100,6 @@ namespace UpdateAssemblyInfo
 		
 		static void UpdateFiles()
 		{
-			string fullVersionNumber = GetMajorVersion() + "." + revisionNumber;
 			foreach (var file in templateFiles) {
 				string content;
 				using (StreamReader r = new StreamReader(file.Input)) {
@@ -161,6 +170,7 @@ namespace UpdateAssemblyInfo
 		
 		#region Retrieve Revision Number
 		static string revisionNumber;
+		static string fullVersionNumber;
 		static string gitCommitHash;
 		
 		static void RetrieveRevisionNumber()
@@ -174,6 +184,7 @@ namespace UpdateAssemblyInfo
 			if (revisionNumber == null) {
 				ReadRevisionFromFile();
 			}
+			fullVersionNumber = GetMajorVersion() + "." + revisionNumber;
 		}
 		
 		static void ReadRevisionNumberFromGit()
@@ -201,10 +212,9 @@ namespace UpdateAssemblyInfo
 		static void ReadRevisionFromFile()
 		{
 			try {
-				using (StreamReader reader = new StreamReader(@"..\REVISION")) {
-					revisionNumber = reader.ReadLine();
-					gitCommitHash = reader.ReadLine();
-				}
+				XDocument doc = XDocument.Load("../REVISION");
+				revisionNumber = (string)doc.Root.Element("revision");
+				gitCommitHash = (string)doc.Root.Element("commitHash");
 			} catch (Exception e) {
 				Console.WriteLine(e.Message);
 				Console.WriteLine();
