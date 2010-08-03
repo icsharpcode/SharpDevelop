@@ -7,8 +7,9 @@
 
 using System;
 using System.Drawing;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
-
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
@@ -132,6 +133,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public CommonAboutDialog()
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.CommonAboutDialog.xfrm"));
+			var aca = (AssemblyCopyrightAttribute)typeof(CommonAboutDialog).Assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false)[0];
+			ControlDictionary["copyrightLabel"].Text = "Copyright " + aca.Copyright;
 		}
 		
 		protected override void SetupXmlLoader()

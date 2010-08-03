@@ -74,9 +74,7 @@
 				Grid.Row="2"
 				Padding="4,0,4,0"
 				TextWrapping="WrapWithOverflow">
-				Copyright ©<Run Name="copyrightYearRange"/>
-				<Hyperlink
-					NavigateUri="mailto:webmaster@icsharpcode.net">IC#SharpCode</Hyperlink>
+				Copyright ©<Run Name="copyrightText"/>
 				<Run Text="  "/>
 				<Run
 					Text="{x:Static gui:AboutSharpDevelopTabPage.LicenseSentence}" />

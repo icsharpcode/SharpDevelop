@@ -189,7 +189,7 @@ namespace UpdateAssemblyInfo
 		
 		static void ReadRevisionNumberFromGit()
 		{
-			ProcessStartInfo info = new ProcessStartInfo("cmd", "/c git rev-list " + BaseCommit + "..HEAD");
+			ProcessStartInfo info = new ProcessStartInfo("cmd", "/c git rev-list --first-parent " + BaseCommit + "..HEAD");
 			info.RedirectStandardOutput = true;
 			info.UseShellExecute = false;
 			using (Process p = Process.Start(info)) {
