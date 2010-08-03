@@ -42,6 +42,10 @@ namespace UpdateAssemblyInfo
 				Input = "Setup/SharpDevelop.Setup.wixproj.user.template",
 				Output = "Setup/SharpDevelop.Setup.wixproj.user"
 			},
+			new TemplateFile {
+				Input = "../doc/ChangeLog.template.html",
+				Output = "../doc/ChangeLog.html"
+			},
 		};
 		
 		class TemplateFile
@@ -95,6 +99,7 @@ namespace UpdateAssemblyInfo
 				content = content.Replace("$INSERTVERSION$", fullVersionNumber);
 				content = content.Replace("$INSERTREVISION$", revisionNumber);
 				content = content.Replace("$INSERTCOMMITHASH$", gitCommitHash);
+				content = content.Replace("$INSERTDATE$", DateTime.Now.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture));
 				if (File.Exists(file.Output)) {
 					using (StreamReader r = new StreamReader(file.Output)) {
 						if (r.ReadToEnd() == content) {
