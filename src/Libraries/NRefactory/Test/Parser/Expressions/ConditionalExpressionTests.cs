@@ -88,6 +88,26 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.IsTrue(ce.TrueExpression is UnaryOperatorExpression);
 			Assert.IsTrue(ce.FalseExpression is PrimitiveExpression);
 		}
+		
+		[Test]
+		public void CSharpRepeatedConditionalExpr()
+		{
+			ConditionalExpression ce = ParseUtilCSharp.ParseExpression<ConditionalExpression>("a ? b : c ? d : e");
+			
+			Assert.AreEqual("a", ((IdentifierExpression)ce.Condition).Identifier);
+			Assert.AreEqual("b", ((IdentifierExpression)ce.TrueExpression).Identifier);
+			Assert.IsTrue(ce.FalseExpression is ConditionalExpression);
+		}
+		
+		[Test]
+		public void CSharpNestedConditionalExpr()
+		{
+			ConditionalExpression ce = ParseUtilCSharp.ParseExpression<ConditionalExpression>("a ? b ? c : d : e");
+			
+			Assert.AreEqual("a", ((IdentifierExpression)ce.Condition).Identifier);
+			Assert.AreEqual("e", ((IdentifierExpression)ce.FalseExpression).Identifier);
+			Assert.IsTrue(ce.TrueExpression is ConditionalExpression);
+		}
 		#endregion
 		
 		#region VB.NET

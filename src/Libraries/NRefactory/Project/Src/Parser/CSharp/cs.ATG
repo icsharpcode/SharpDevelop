@@ -192,18 +192,21 @@ CS
 UsingDirective
 (.
 	string qualident = null; TypeReference aliasedType = null;
+	string alias = null;
 .)
 =
 	"using"                     (. Location startPos = t.Location; .)
+	[ IF (IdentAndDoubleColon()) Identifier (. alias = t.val; .) "::" ]
 	Qualident<out qualident>
 	[ "=" NonArrayType<out aliasedType> ]
 	";"                         (. 
 	                               if (qualident != null && qualident.Length > 0) {
+	                                 string name = (alias != null && alias != "global") ? alias + "." + qualident : qualident;
 	                                 INode node;
 	                                 if (aliasedType != null) {
-	                                     node = new UsingDeclaration(qualident, aliasedType);
+	                                     node = new UsingDeclaration(name, aliasedType);
 	                                 } else {
-	                                     node = new UsingDeclaration(qualident);
+	                                     node = new UsingDeclaration(name);
 	                                 }
 	                                 node.StartLocation = startPos;
 	                                 node.EndLocation   = t.EndLocation;

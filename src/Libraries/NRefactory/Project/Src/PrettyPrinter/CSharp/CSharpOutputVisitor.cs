@@ -2927,7 +2927,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override object TrackedVisitConditionalExpression(ConditionalExpression conditionalExpression, object data)
 		{
-			TrackVisit(conditionalExpression.Condition, data);
+			if (conditionalExpression.Condition is ConditionalExpression) {
+				TrackedVisitParenthesizedExpression(new ParenthesizedExpression(conditionalExpression.Condition), data);
+			} else {
+				TrackVisit(conditionalExpression.Condition, data);
+			}
 			if (this.prettyPrintOptions.ConditionalOperatorBeforeConditionSpace) {
 				outputFormatter.Space();
 			}
