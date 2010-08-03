@@ -62,21 +62,6 @@ namespace ICSharpCode.Reports.Core {
 		#endregion
 		
 		
-		
-		protected static Collection<AbstractColumn> CreateSortCollection (SortColumnCollection items)
-		{
-			
-				Collection<AbstractColumn> abstrCol = new Collection<AbstractColumn>();
-				foreach(SortColumn sc in items)
-				{
-					abstrCol.Add(sc);
-				}
-				return abstrCol;
-		
-		}
-
-		
-		
 		public IndexList IndexList
 		{
 			get {

@@ -49,7 +49,7 @@ namespace ICSharpCode.Reports.Core{
 	
 		private ParameterCollection parameterCollection;
 		private AvailableFieldsCollection availableFields;
-		private ColumnCollection groupingsCollection;
+		private GroupColumnCollection groupingsCollection;
 		private SortColumnCollection sortingCollection;
 
 		
@@ -104,7 +104,7 @@ namespace ICSharpCode.Reports.Core{
 			this.RightMargin = GlobalValues.DefaultPageMargin.Right;
 			
 			this.availableFields = new AvailableFieldsCollection();
-			this.groupingsCollection = new ColumnCollection();
+			this.groupingsCollection = new GroupColumnCollection();
 			this.sortingCollection = new SortColumnCollection();
 			this.parameterCollection = new ParameterCollection();
 			this.NoDataMessage = "No Data for this Report";
@@ -230,7 +230,7 @@ namespace ICSharpCode.Reports.Core{
 		
 		
 		[Category("Sorting/Grouping")]
-		public ColumnCollection GroupColumnsCollection {
+		public GroupColumnCollection GroupColumnsCollection {
 			get {
 				return groupingsCollection;
 			}

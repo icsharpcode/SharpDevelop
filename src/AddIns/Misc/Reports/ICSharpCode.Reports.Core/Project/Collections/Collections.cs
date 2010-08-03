@@ -197,9 +197,8 @@ namespace ICSharpCode.Reports.Core{
 	
 	
 	[Serializable()]
-//	public class SortColumnCollection: Collection<SortColumn>{
 	public class SortColumnCollection: ColumnCollection
-		{
+	{
 		public SortColumnCollection()
 		{
 		}
@@ -234,13 +233,20 @@ namespace ICSharpCode.Reports.Core{
 	
 	
 	[Serializable()]
-
 	public class GroupColumnCollection: SortColumnCollection
 	{
 		public GroupColumnCollection()
 		{
 		}
 		
+		public AbstractColumn Find (string columnName)
+		{
+			if (String.IsNullOrEmpty(columnName)) {
+				throw new ArgumentNullException("columnName");
+			}
+			
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true));
+		}
 	}
 	
 	

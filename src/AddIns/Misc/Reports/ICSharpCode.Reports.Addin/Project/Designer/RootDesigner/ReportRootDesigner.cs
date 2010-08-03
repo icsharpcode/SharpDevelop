@@ -260,15 +260,15 @@ namespace ICSharpCode.Reports.Addin.Designer
 		
 		private void OnComponentChanged(object sender, ComponentChangedEventArgs ce)
 		{
-			System.Console.WriteLine("RootDesigner:OnComponentChanged {0} from {1} to {2}",ce.Component.ToString(),ce.OldValue,ce.NewValue);
+			LoggingService.InfoFormatted("RootDesigner:OnComponentChanged");
+			String str = String.Format("RootDesigner:OnComponentChanged <{0}> from <{1}> to <{2}>",ce.Component.ToString(),ce.OldValue,ce.NewValue);
+			LoggingService.InfoFormatted(str);
 			
-			LoggingService.Debug("RootDesigner:OnComponentChanged");
 			AbstractItem item = ce.Component as AbstractItem;
-			if (item != null) {
-				item.Name = ce.NewValue.ToString();
+			if ((item != null) && (ce.NewValue != null)) {
+					item.Name = ce.NewValue.ToString();		
 			}
 
-			
 			BaseSection section = ce.Component as BaseSection;
 			if (section != null) {
 				foreach (BaseSection s in sections)
