@@ -450,6 +450,7 @@
 						<Directory Id="DocFolder" Name="doc">
 							<Component Guid="9DCED5AC-B771-4A4F-B4FE-69867BF2EBDE" Id="SharpDevelopDocFiles" DiskId="1">
 								<File Source="..\..\doc\BuiltWithSharpDevelop.png" Id="BuiltWithSharpDevelop.png" Name="BuiltWithSharpDevelop.png" />
+								<File Source="..\..\doc\ChangeLog.html" Id="ChangeLog.html" Name="ChangeLog.html" />
 								<File Source="..\..\doc\copyright.txt" Id="copyright.txt" Name="copyright.txt" />
 								<File Source="..\..\doc\license.txt" Name="license.txt" Id="DocFolderLicense.txt" />
 								<File Source="..\..\doc\readme.rtf" Name="readme.rtf" Id="readme.rtf" />
