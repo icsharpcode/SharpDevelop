@@ -20,6 +20,11 @@ namespace ICSharpCode.NRefactory.Parser
 		/// </summary>
 		void SetInitialLocation(Location location);
 		
+		/// <summary>
+		/// Sets the context of the lexer.
+		/// </summary>
+		void SetInitialContext(SnippetType context);
+		
 		Errors Errors {
 			get;
 		}

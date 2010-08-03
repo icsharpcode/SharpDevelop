@@ -64,6 +64,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						return new Token(Tokens.EOF, Col, Line, string.Empty);
 					char ch = (char)nextChar;
 					#region XML mode
+					CheckXMLState(startLocation);
 					if (inXmlMode && xmlModeStack.Peek().level <= 0 && !xmlModeStack.Peek().isDocumentStart && !xmlModeStack.Peek().inXmlTag) {
 						XmlModeInfo info = xmlModeStack.Peek();
 						int peek = nextChar;
@@ -195,7 +196,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 								}
 							}
 							if (!lineEnd) {
-								errors.Error(Line, Col, String.Format("Return expected"));
+								errors.Error(Line, Col, String.Format("NewLine expected"));
 							}
 							lineEnd = oldLineEnd;
 							continue;
@@ -363,6 +364,12 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 			}
 		}
+
+		void CheckXMLState(Location startLocation)
+		{
+			if (inXmlMode && !xmlModeStack.Any())
+				throw new InvalidOperationException("invalid XML stack state at " + startLocation);
+		}
 		
 		Token prevToken;
 		
@@ -376,7 +383,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				if (SkipEOL(prevToken.kind, t.next.kind)) {
 					t = t.next;
 				}
-			}
+			} else
+				encounteredLineContinuation = false;
 			// inform EF only once we're sure it's really a token
 			// this means we inform it about EOL tokens "1 token too late", but that's not a problem because
 			// XML literals cannot start immediately after an EOL token
@@ -1134,7 +1142,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			}
 		}
 		
-		public void SetInitialContext(SnippetType type)
+		public override void SetInitialContext(SnippetType type)
 		{
 			ef.SetContext(type);
 		}

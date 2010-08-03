@@ -66,6 +66,10 @@
     </Compile>
     <Compile Include="Src\FormattingStrategy\VBIndentationStrategy.cs" />
     <Compile Include="Src\FormattingStrategy\VBStatement.cs" />
+    <Compile Include="Src\OptionPanels\ProjectImportsOptions.xaml.cs">
+      <DependentUpon>ProjectImportsOptions.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\OptionPanels\TextEditorOptions.xaml.cs">
       <DependentUpon>TextEditorOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -86,6 +90,7 @@
     </None>
     <None Include="Src\FormattingStrategy\VBIndentationStrategy.atg">
       <Generator>CocoParserGenerator</Generator>
+      <CustomToolNamespace>ICSharpCode.VBNetBinding</CustomToolNamespace>
     </None>
     <None Include="VBNetBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -135,6 +140,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\OptionPanels\ProjectImportsOptions.xaml" />
     <Page Include="Src\OptionPanels\TextEditorOptions.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

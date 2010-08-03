@@ -381,5 +381,10 @@ namespace ICSharpCode.NRefactory.Parser
 		{
 			throw new NotSupportedException();
 		}
+		
+		public virtual void SetInitialContext(SnippetType context)
+		{
+			throw new NotSupportedException();
+		}
 	}
 }

@@ -424,6 +424,7 @@ SubOrFunctionDeclaration =
 	("Sub" | "Function")
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) ANY (. PopContext(); .)
 	{ "(" [ ( "Of" GenericTypeParameterDeclaration | ParameterList ) ] ")" }
+	[ ( "Implements" | "Handles" ) [ ( "Me" | "MyClass" | "MyBase" ) "." ] TypeName ]
 	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
 	StatementTerminatorAndBlock
 	"End" ("Sub" | "Function") StatementTerminator
@@ -597,6 +598,7 @@ NewExpression =
 		[
 			EXPECTEDCONFLICT("From")
 			(
+				(. PushContext(Context.CollectionInitializer, la, t); .)
 				"From"
 				(
 					CollectionInitializer /* From + CollectionInitializer is a NewExpression */
@@ -610,12 +612,17 @@ NewExpression =
 					ANY /* never reached due to goto above: */
 					/* this ANY is just so that Coco knows this branch isn't empty */
 				)
+				(. PopContext(); .)
 			|
+				(. PushContext(Context.ObjectInitializer, la, t); .)
 				"With" ObjectInitializer
+				(. PopContext(); .)
 			)
 		]
 	|
+		(. PushContext(Context.ObjectInitializer, la, t); .)
 		"With" ObjectInitializer
+		(. PopContext(); .)
 	)
 	(. PopContext(); .)
 .
@@ -764,7 +771,8 @@ ExpressionRangeVariable =
 						  "Binary", "Auto", "Assembly", "Ascending", "Ansi", "Aggregate", ident)
 		(
 			(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .) 
-			(
+			// HACK: needs to be optional because Expression can start with Identifier too
+			[
 				"As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) "="
 				| "="
 				| (.
@@ -775,7 +783,7 @@ ExpressionRangeVariable =
 				.)
 				ANY /* never reached due to goto above: */
 				/* this ANY is just so that Coco knows this branch isn't empty */
-			)
+			]
 		)
 	]
 	Expression

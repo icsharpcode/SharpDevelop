@@ -902,12 +902,40 @@ End Using";
 			
 			CheckFoot(lexer);
 		}
+		
+		[Test]
+		public void NewExpressionWithObjectInitializer()
+		{
+			string code = @"New Common.ComboBoxItem With {.Item = _
+                            Localizer.GetString(""Month"" & initParameters.SelectedDate.FirstDayOfPreviousMonth.Month) & "" "" & 
+                            initParameters.SelectedDate.FirstDayOfPreviousMonth.Year, .Value = New Date(2010, initParameters.SelectedDate.FirstDayOfPreviousMonth.Month, 1)}";
+			
+			ILexer lexer = GenerateLexerForSnippet(new StringReader(code), SnippetType.Expression);
+			
+			CheckTokens(lexer, Tokens.New, Tokens.Identifier, Tokens.Dot, Tokens.Identifier,
+			            Tokens.With, Tokens.OpenCurlyBrace, Tokens.Dot, Tokens.Identifier, Tokens.Assign,
+			            Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.OpenParenthesis, Tokens.LiteralString,
+			           Tokens.ConcatString, Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.Dot,
+			           Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.CloseParenthesis, Tokens.ConcatString,
+			           Tokens.LiteralString, Tokens.ConcatString, Tokens.Identifier, Tokens.Dot, Tokens.Identifier,
+			           Tokens.Dot, Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.Comma, Tokens.Dot,
+			           Tokens.Identifier, Tokens.Assign, Tokens.New, Tokens.Date, Tokens.OpenParenthesis, Tokens.LiteralInteger,
+			           Tokens.Comma, Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.Dot,
+			           Tokens.Identifier, Tokens.Comma, Tokens.LiteralInteger, Tokens.CloseParenthesis, Tokens.CloseCurlyBrace);
+		}
 		#endregion
 		
 		#region Helpers
 		ILexer GenerateLexer(StringReader sr)
 		{
 			return ParserFactory.CreateLexer(SupportedLanguage.VBNet, sr);
+		}
+		
+		ILexer GenerateLexerForSnippet(StringReader sr, SnippetType type)
+		{
+			var lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, sr);
+			lexer.SetInitialContext(type);
+			return lexer;
 		}
 		
 		string TestStatement(string stmt)
@@ -936,7 +964,8 @@ End Using";
 				int token = tokens[i];
 				Token t = lexer.NextToken();
 				int next = t.Kind;
-				Assert.AreEqual(token, next, "{2} of {3}: {0} != {1}; at {4}", Tokens.GetTokenString(token), Tokens.GetTokenString(next), i + 1, tokens.Length, t.Location);
+				Assert.IsEmpty(lexer.Errors.ErrorOutput);
+				Assert.AreEqual(token, next, "{2} of {3}: expected: \"{0}\", was: \"{1}\"; at {4}", Tokens.GetTokenString(token), Tokens.GetTokenString(next), i + 1, tokens.Length, t.Location);
 			}
 		}
 		#endregion
