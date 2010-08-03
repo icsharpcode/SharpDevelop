@@ -109,6 +109,7 @@ namespace UpdateAssemblyInfo
 				content = content.Replace("$INSERTREVISION$", revisionNumber);
 				content = content.Replace("$INSERTCOMMITHASH$", gitCommitHash);
 				content = content.Replace("$INSERTDATE$", DateTime.Now.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture));
+				content = content.Replace("$INSERTYEAR$", DateTime.Now.Year.ToString());
 				if (File.Exists(file.Output)) {
 					using (StreamReader r = new StreamReader(file.Output)) {
 						if (r.ReadToEnd() == content) {
