@@ -23,6 +23,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets the element type of array or pointer types.
 		/// </summary>
+		/// <exception cref="InvalidOperationException">
+		/// This type is not an array or pointer type.
+		/// </exception>
 		IType GetElementType();
 		
 		/// <summary>

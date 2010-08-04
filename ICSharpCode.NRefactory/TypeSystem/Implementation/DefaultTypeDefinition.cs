@@ -386,10 +386,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (other == null)
 				return false;
 			if (declaringTypeDefinition != null) {
-				return declaringTypeDefinition.Equals(other.DeclaringTypeDefinition) && this.Name == other.Name && this.TypeParameterCount == other.TypeParameterCount;
+				return declaringTypeDefinition.Equals(other.DeclaringTypeDefinition)
+					&& this.Name == other.Name
+					&& this.TypeParameterCount == other.TypeParameterCount;
 			} else {
-				return other.DeclaringTypeDefinition == null && this.ProjectContent == other.ProjectContent
-					&& this.Namespace == other.Namespace && this.Name == other.Name && this.TypeParameterCount == other.TypeParameterCount;
+				return other.DeclaringTypeDefinition == null 
+					&& this.ProjectContent == other.ProjectContent
+					&& this.Namespace == other.Namespace 
+					&& this.Name == other.Name 
+					&& this.TypeParameterCount == other.TypeParameterCount;
 			}
 		}
 		

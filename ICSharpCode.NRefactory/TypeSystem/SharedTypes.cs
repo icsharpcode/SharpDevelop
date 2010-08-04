@@ -22,5 +22,23 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "It's immutable")]
 		public readonly static IType Null = new NullType();
+		
+		/*
+		 * I'd like to define static instances for common types like
+		 * void, int, etc.; but there are two problems with this:
+		 * 
+		 * SharedTypes.Void.GetDefinition().ProjectContent should return mscorlib, but
+		 * we can't do that without providing a context.
+		 * Assuming we add a context parameter to GetDefinition():
+		 * 
+		 * SharedType.Void.Equals(SharedType.Void.GetDefinition(x))
+		 * SharedType.Void.GetDefinition(y).Equals(SharedType.Void)
+		 * should both return true.
+		 * But if the type can have multiple definitions (multiple mscorlib versions loaded),
+		 * then this is not possible without violating transitivity of Equals():
+		 * 
+		 * SharedType.Void.GetDefinition(x).Equals(SharedType.Void.GetDefinition(y))
+		 * would have to return true even though these are two distinct definitions.
+		 */
 	}
 }
