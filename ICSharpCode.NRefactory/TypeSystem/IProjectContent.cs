@@ -2,6 +2,7 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 namespace ICSharpCode.NRefactory.TypeSystem
@@ -12,15 +13,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	[ContractClass(typeof(IProjectContentContract))]
 	public interface IProjectContent : ITypeResolveContext
 	{
-		LanguageProperties Language { get; }
+		IList<IAttribute> AssemblyAttributes { get; }
 	}
 	
 	[ContractClassFor(typeof(IProjectContent))]
 	abstract class IProjectContentContract : ITypeResolveContextContract, IProjectContent
 	{
-		LanguageProperties IProjectContent.Language {
+		IList<IAttribute> IProjectContent.AssemblyAttributes {
 			get {
-				Contract.Ensures(Contract.Result<LanguageProperties>() != null);
+				Contract.Ensures(Contract.Result<IList<IAttribute>>() != null);
 				return null;
 			}
 		}

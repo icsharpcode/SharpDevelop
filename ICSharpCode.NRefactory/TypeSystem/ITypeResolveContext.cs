@@ -14,6 +14,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	public interface ITypeResolveContext
 	{
 		ITypeDefinition GetClass(string fullTypeName, int typeParameterCount, StringComparer nameComparer);
+		
+		/// <summary>
+		/// Returns a <see cref="ISynchronizedTypeResolveContext"/> that
+		/// represents the same context as this instance, but cannot be modified
+		/// by other threads.
+		/// The ISynchronizedTypeResolveContext must be disposed from the same thread
+		/// that called this method when it is no longer used.
+		/// </summary>
+		ISynchronizedTypeResolveContext Synchronize();
 	}
 	
 	[ContractClassFor(typeof(ITypeResolveContext))]
@@ -24,6 +33,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Contract.Requires(fullTypeName != null);
 			Contract.Requires(typeParameterCount >= 0);
 			Contract.Requires(nameComparer != null);
+			return null;
+		}
+		
+		ISynchronizedTypeResolveContext ITypeResolveContext.Synchronize()
+		{
+			Contract.Ensures(Contract.Result<ISynchronizedTypeResolveContext>() != null);
 			return null;
 		}
 	}

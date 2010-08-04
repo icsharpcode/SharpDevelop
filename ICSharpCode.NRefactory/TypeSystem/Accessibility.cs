@@ -3,7 +3,7 @@
 
 using System;
 
-namespace ICSharpCode.NRefactory
+namespace ICSharpCode.NRefactory.TypeSystem
 {
 	/// <summary>
 	/// Enum that describes the accessibility of an entity.

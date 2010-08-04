@@ -1,0 +1,7 @@
+﻿Overview of the NRefactory library:
+
+ICSharpCode.NRefactory.TypeSystem:
+	Contains a language-independent representation of the .NET type system.
+
+ICSharpCode.NRefactory.TypeSystem.Implementation:
+	Contains base classes that help implementing the type system interfaces.

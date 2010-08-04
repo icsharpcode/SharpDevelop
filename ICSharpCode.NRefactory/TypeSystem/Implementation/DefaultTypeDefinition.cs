@@ -321,13 +321,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			throw new NotImplementedException();
 		}
 		
-		public ITypeDefinition GetCompoundClass()
+		public virtual ITypeDefinition GetCompoundClass()
 		{
-			if (declaringTypeDefinition != null) {
-				return declaringTypeDefinition.GetCompoundClass().InnerClasses.FirstOrDefault(c => projectContent.Language.NameComparer.Equals(c.Name, this.Name)) ?? this;
-			} else {
-				return projectContent.GetClass(this.FullName, this.TypeParameterCount, projectContent.Language.NameComparer) ?? this;
-			}
+			return this;
 		}
 		
 		public virtual IList<ITypeDefinition> GetParts()
@@ -349,12 +345,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			return this;
 		}
-
+		
 		public IList<IType> GetNestedTypes(ITypeResolveContext context)
 		{
 			throw new NotImplementedException();
 		}
-
+		
 		public IList<IMethod> GetMethods(ITypeResolveContext context)
 		{
 			throw new NotImplementedException();

@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		/// <summary>
-		/// The project content in which this entity is defined.
+		/// The assembly in which this entity is defined.
 		/// This property never returns null.
 		/// </summary>
 		IProjectContent ProjectContent {
