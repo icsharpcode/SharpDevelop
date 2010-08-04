@@ -114,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				language = NR.SupportedLanguage.VBNet;
 				inferAllowed = false;
 			} else {
-				throw new NotSupportedException("The language " + languageProperties.ToString() + " is not supported in the resolver");
+				throw new NotSupportedException("The language " + languageProperties.ToString() + " is not supported in the NRefactoryResolver");
 			}
 		}
 		

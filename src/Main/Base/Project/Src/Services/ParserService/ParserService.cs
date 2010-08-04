@@ -263,18 +263,22 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		public static ResolveResult Resolve(int caretLine, int caretColumn, IDocument document, string fileName)
 		{
-			IExpressionFinder expressionFinder = GetExpressionFinder(fileName);
-			if (expressionFinder == null)
-				return null;
-			if (caretColumn > document.GetLine(caretLine).Length)
-				return null;
-			string documentText = document.Text;
-			var expressionResult = expressionFinder.FindFullExpression(documentText, document.PositionToOffset(caretLine, caretColumn));
+			var expressionResult = FindFullExpression(caretLine, caretColumn, document, fileName);
 			string expression = (expressionResult.Expression ?? "").Trim();
 			if (expression.Length > 0) {
-				return Resolve(expressionResult, caretLine, caretColumn, fileName, documentText);
+				return Resolve(expressionResult, caretLine, caretColumn, fileName, document.Text);
 			} else
 				return null;
+		}
+
+		public static ExpressionResult FindFullExpression(int caretLine, int caretColumn, IDocument document, string fileName)
+		{
+			IExpressionFinder expressionFinder = GetExpressionFinder(fileName);
+			if (expressionFinder == null)
+				return ExpressionResult.Empty;
+			if (caretColumn > document.GetLine(caretLine).Length)
+				return ExpressionResult.Empty;
+			return expressionFinder.FindFullExpression(document.Text, document.PositionToOffset(caretLine, caretColumn));
 		}
 		
 		public static ResolveResult Resolve(int offset, IDocument document, string fileName)

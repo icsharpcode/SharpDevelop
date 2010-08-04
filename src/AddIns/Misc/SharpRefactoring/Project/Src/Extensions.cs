@@ -47,5 +47,17 @@ namespace SharpRefactoring
 			resolver.Initialize(ParserService.GetParseInformation(context.FileName), context.Caret.Line, context.Caret.Column);
 			return resolver;
 		}
+		
+		public static bool IsUserCode(this IReturnType rt)
+		{
+			if (rt == null)
+				return false;
+			return IsUserCode(rt.GetUnderlyingClass());
+		}
+		
+		public static bool IsUserCode(this IClass c)
+		{
+			return (c != null && !c.BodyRegion.IsEmpty);
+		}
 	}
 }

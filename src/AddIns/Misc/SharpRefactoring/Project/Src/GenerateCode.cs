@@ -30,12 +30,11 @@ namespace SharpRefactoring
 		/// <summary>
 		/// If given symbol is Unknown ResolveResult, returns action that can generate code for this missing symbol.
 		/// </summary>
-		public static GenerateCodeContextAction GetContextAction(ResolveResult symbol, ITextEditor editor)
+		public static GenerateCodeContextAction GetContextAction(ResolveResult symbol, EditorContext context)
 		{
 			if (symbol is UnknownMethodResolveResult) {
-				
-				UnknownMethodResolveResult unknownMethodCall = symbol as UnknownMethodResolveResult;
-				Ast.Expression expression = GetExpressionInContext(unknownMethodCall, editor);
+				UnknownMethodResolveResult unknownMethodCall = (UnknownMethodResolveResult)symbol;
+				Ast.Expression expression = context.GetContainingElement<Ast.InvocationExpression>();
 				if (expression == null)
 					return null;
 				
@@ -45,57 +44,14 @@ namespace SharpRefactoring
 				} catch (FormatException) {
 				}
 				
-				return new IntroduceMethodContextAction(unknownMethodCall, expression, editor) {
-					Title = title
-				};
+				if (unknownMethodCall.Target.IsUserCode()) {
+					// Don't introduce method on non-modyfiable types
+					return new IntroduceMethodContextAction(unknownMethodCall, expression, context.Editor) {
+						Title = title
+					};
+				}
 			}
 			return null;
-		}
-
-		internal static Ast.Expression GetExpressionInContext(UnknownMethodResolveResult rr, ITextEditor editor)
-		{
-			if (rr.Target == null || rr.Target.GetUnderlyingClass() == null)
-				return null;
-			
-			NRefactoryResolver resolver = Extensions.CreateResolverForContext(rr.CallingClass.ProjectContent.Language, editor);
-			Ast.INode node = resolver.ParseCurrentMember(editor.Document.Text);
-			
-			if (node == null)
-				return null;
-			
-			resolver.RunLookupTableVisitor(node);
-			InvocationExpressionLookupVisitor visitor = new InvocationExpressionLookupVisitor(editor);
-			node.AcceptVisitor(visitor, null);
-			return visitor.Expression;
-		}
-		
-		internal class InvocationExpressionLookupVisitor : AbstractAstVisitor
-		{
-			ITextEditor editor;
-			Ast.InvocationExpression expression;
-			
-			public Ast.InvocationExpression Expression {
-				get { return expression; }
-			}
-			
-			public InvocationExpressionLookupVisitor(ITextEditor editor)
-			{
-				this.editor = editor;
-				this.expression = null;
-			}
-			
-			public override object VisitInvocationExpression(Ast.InvocationExpression invocationExpression, object data)
-			{
-				int startOffset = editor.Document.PositionToOffset(invocationExpression.TargetObject.StartLocation.Line, invocationExpression.TargetObject.StartLocation.Column);
-				int endOffset = editor.Document.PositionToOffset(invocationExpression.EndLocation.Line, invocationExpression.EndLocation.Column);
-				
-				int offset = editor.Caret.Offset;
-				
-				if (offset >= startOffset && offset <= endOffset)
-					expression = invocationExpression;
-				
-				return base.VisitInvocationExpression(invocationExpression, data);
-			}
 		}
 	}
 	
@@ -110,25 +66,27 @@ namespace SharpRefactoring
 	public class IntroduceMethodContextAction : GenerateCodeContextAction
 	{
 		public UnknownMethodResolveResult UnknownMethodCall { get; private set; }
-		public Ast.Expression Expression { get; private set; }
+		public Ast.Expression InvocationExpr { get; private set; }
 		public ITextEditor Editor { get; private set; }
 		
-		public IntroduceMethodContextAction(UnknownMethodResolveResult symbol, Ast.Expression expression, ITextEditor editor)
+		public IntroduceMethodContextAction(UnknownMethodResolveResult symbol, Ast.Expression invocationExpr, ITextEditor editor)
 		{
 			if (symbol == null)
 				throw new ArgumentNullException("rr");
-			if (expression == null)
+			if (invocationExpr == null)
 				throw new ArgumentNullException("ex");
 			if (editor == null)
 				throw new ArgumentNullException("editor");
 			this.UnknownMethodCall = symbol;
-			this.Expression = expression;
+			this.InvocationExpr = invocationExpr;
 			this.Editor = editor;
 		}
 		
 		public override void Execute()
 		{
 			IClass targetClass = UnknownMethodCall.Target.GetUnderlyingClass();
+			if (targetClass == null)
+				return;
 			bool isNew = false;
 			object result = null;
 			
@@ -141,7 +99,7 @@ namespace SharpRefactoring
 						?? targetClass;
 			}
 			
-			if (targetClass.BodyRegion.IsEmpty) {
+			if (!targetClass.IsUserCode()) {
 				IntroduceMethodDialog dialog = new IntroduceMethodDialog(UnknownMethodCall.CallingClass);
 				dialog.Owner = WorkbenchSingleton.MainWindow;
 				
@@ -152,10 +110,10 @@ namespace SharpRefactoring
 				result = dialog.Result;
 			}
 			
-			ExecuteIntroduceMethod(UnknownMethodCall, Expression, Editor, isNew, result);
+			ExecuteIntroduceMethod(UnknownMethodCall, InvocationExpr, Editor, isNew, result);
 		}
 		
-		internal void ExecuteIntroduceMethod(UnknownMethodResolveResult rr, Ast.Expression expression, ITextEditor editor, bool isNew, object result)
+		internal void ExecuteIntroduceMethod(UnknownMethodResolveResult rr, Ast.Expression invocationExpr, ITextEditor editor, bool isNew, object result)
 		{
 			IClass targetClass = IsEqualClass(rr.CallingClass, rr.Target.GetUnderlyingClass()) ? rr.CallingClass
 				: rr.Target.GetUnderlyingClass();
@@ -167,7 +125,7 @@ namespace SharpRefactoring
 			
 			ModifierEnum modifiers = ModifierEnum.None;
 			
-			bool isExtension = targetClass.BodyRegion.IsEmpty;
+			bool isExtension = !targetClass.IsUserCode();
 			
 			if (IsEqualClass(rr.CallingClass, targetClass)) {
 				if (rr.CallingMember != null)
@@ -190,11 +148,11 @@ namespace SharpRefactoring
 			
 			NRefactoryResolver resolver = Extensions.CreateResolverForContext(targetClass.ProjectContent.Language, editor);
 			
-			IReturnType type = resolver.GetExpectedTypeFromContext(expression);
+			IReturnType type = resolver.GetExpectedTypeFromContext(invocationExpr);
 			Ast.TypeReference typeRef = CodeGenerator.ConvertType(type, finder);
 			
 			if (typeRef.IsNull) {
-				if (expression.Parent is Ast.ExpressionStatement)
+				if (invocationExpr.Parent is Ast.ExpressionStatement)
 					typeRef = new Ast.TypeReference("void", true);
 				else
 					typeRef = new Ast.TypeReference("object", true);
@@ -204,7 +162,7 @@ namespace SharpRefactoring
 				Name = rr.CallName,
 				Modifier = CodeGenerator.ConvertModifier(modifiers, finder),
 				TypeReference = typeRef,
-				Parameters = CreateParameters(rr, finder, expression as Ast.InvocationExpression).ToList(),
+				Parameters = CreateParameters(rr, finder, invocationExpr as Ast.InvocationExpression).ToList(),
 			};
 			
 			if (targetClass.ClassType != ClassType.Interface)

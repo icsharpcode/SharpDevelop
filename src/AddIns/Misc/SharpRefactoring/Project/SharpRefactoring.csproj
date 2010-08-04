@@ -73,7 +73,7 @@
     <Compile Include="Src\ContextActions\AddUsing.cs" />
     <Compile Include="Src\ContextActions\DelegateAction.cs" />
     <Compile Include="Src\ContextActions\Extensions.cs" />
-    <Compile Include="Src\ContextActions\FindNodesVisitor.cs" />
+    <Compile Include="Src\ContextActions\FindTypeDeclarationsVisitor.cs" />
     <Compile Include="Src\ContextActions\GenerateMember.cs" />
     <Compile Include="Src\ContextActions\ImplementAbstractClass.cs" />
     <Compile Include="Src\ContextActions\ImplementInterface.cs" />
@@ -108,7 +108,6 @@
     </Compile>
     <Compile Include="Src\Gui\Wrapper.cs" />
     <Compile Include="Src\InsertCtorSnippetRefactoring.cs" />
-    <Compile Include="Src\MenuItemFactories\IntroduceMethod.cs" />
     <Compile Include="Src\MenuItemFactories\ParameterCheckRefactoringMenuBuilder.cs" />
     <Compile Include="Src\MenuItemFactories\ResolveAttribute.cs" />
     <Compile Include="Src\MenuItemFactories\ResolveExtensionMethod.cs" />

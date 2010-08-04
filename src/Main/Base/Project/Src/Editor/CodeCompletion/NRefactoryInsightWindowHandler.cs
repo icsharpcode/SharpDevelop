@@ -282,6 +282,8 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		
 		public void HighlightParameter(IInsightWindow window, int index)
 		{
+			if (window == null)
+				return;
 			var item = window.SelectedItem as MethodInsightItem;
 			
 			if (item != null)

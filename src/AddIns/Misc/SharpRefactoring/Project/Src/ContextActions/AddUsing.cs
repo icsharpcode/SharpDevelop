@@ -18,13 +18,13 @@ namespace SharpRefactoring.ContextActions
 	/// </summary>
 	public class AddUsingProvider : IContextActionsProvider
 	{
-		public IEnumerable<IContextAction> GetAvailableActions(EditorContext editorAST)
+		public IEnumerable<IContextAction> GetAvailableActions(EditorContext context)
 		{
-			var currentLineAST = editorAST.CurrentLineAST;
+			var currentLineAST = context.CurrentLineAST;
 			if (currentLineAST == null)
 				yield break;
-			var symbol = editorAST.SymbolUnderCaret;
-			foreach (var contextAction in GetAddUsingContextActions(symbol, editorAST.Editor)) {
+			var symbol = context.CurrentSymbol;
+			foreach (var contextAction in GetAddUsingContextActions(symbol, context.Editor)) {
 				yield return contextAction;
 			}
 		}

@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 		
 		/// <summary>
-		/// Gets actions available for current line of the editor.
+		/// Gets actions available for current caret position in the editor.
 		/// </summary>
 		public IEnumerable<IContextAction> GetAvailableActions(ITextEditor editor)
 		{
