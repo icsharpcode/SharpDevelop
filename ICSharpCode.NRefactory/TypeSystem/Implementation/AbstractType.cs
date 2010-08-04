@@ -110,5 +110,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public abstract override int GetHashCode();
 		public abstract bool Equals(IType other);
+		
+		public override string ToString()
+		{
+			return this.DotNetName;
+		}
 	}
 }

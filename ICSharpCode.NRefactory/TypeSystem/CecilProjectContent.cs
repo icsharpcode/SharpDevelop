@@ -77,9 +77,58 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Type Reference
-		public static ITypeReference ReadTypeReference(TypeReference attributeType, ITypeResolveContext earlyBindContext)
+		/// <summary>
+		/// Reads a type reference.
+		/// </summary>
+		/// <param name="type">The Cecil type reference that should be converted into
+		/// a type system type reference.</param>
+		/// <param name="typeAttributes">Attributes associated with the Cecil type reference.
+		/// This is used to support the 'dynamic' type.</param>
+		/// <param name="earlyBindContext">Early binding context - used to pre-resolve
+		/// type references where possible.</param>
+		/// <param name="entity">The entity that owns this type reference.
+		/// Used for generic type references.</param>
+		public static ITypeReference ReadTypeReference(
+			TypeReference type,
+			ICustomAttributeProvider typeAttributes = null,
+			IEntity entity = null,
+			ITypeResolveContext earlyBindContext = null)
 		{
+			int typeIndex = 0;
+			return ReadTypeReference(type, typeAttributes, entity, earlyBindContext, ref typeIndex);
+		}
+		
+		static ITypeReference ReadTypeReference(
+			TypeReference type,
+			ICustomAttributeProvider typeAttributes,
+			IEntity entity ,
+			ITypeResolveContext earlyBindContext,
+			ref int typeIndex)
+		{
+			while (type is OptionalModifierType || type is RequiredModifierType) {
+				type = ((TypeSpecification)type).ElementType;
+			}
+			if (type == null) {
+				return SharedTypes.UnknownType;
+			}
 			throw new NotImplementedException();
+		}
+		
+		static bool HasDynamicAttribute(ICustomAttributeProvider attributeProvider, int typeIndex)
+		{
+			if (attributeProvider == null || !attributeProvider.HasCustomAttributes)
+				return false;
+			foreach (CustomAttribute a in attributeProvider.CustomAttributes) {
+				if (a.Constructor.DeclaringType.FullName == "System.Runtime.CompilerServices.DynamicAttribute") {
+					if (a.ConstructorArguments.Count == 1) {
+						CustomAttributeArgument[] values = a.ConstructorArguments[0].Value as CustomAttributeArgument[];
+						if (values != null && typeIndex < values.Length && values[typeIndex].Value is bool)
+							return (bool)values[typeIndex].Value;
+					}
+					return true;
+				}
+			}
+			return false;
 		}
 		#endregion
 		
@@ -107,7 +156,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			public CecilAttribute(CustomAttribute ca, ITypeResolveContext earlyBindContext)
 			{
-				this.attributeType = ReadTypeReference(ca.AttributeType, earlyBindContext);
+				this.attributeType = ReadTypeReference(ca.AttributeType, earlyBindContext: earlyBindContext);
 				this.ca = ca;
 				this.earlyBindContext = earlyBindContext;
 			}
@@ -176,7 +225,33 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#region Read Constant Value
 		public static IConstantValue ReadConstantValue(CustomAttributeArgument arg, ITypeResolveContext earlyBindContext)
 		{
-			throw new NotImplementedException();
+			return new CecilConstantValue(arg.Type, arg.Value, earlyBindContext);
+		}
+		
+		sealed class CecilConstantValue : Immutable, IConstantValue
+		{
+			ITypeReference type;
+			object value;
+			
+			public CecilConstantValue(TypeReference type, object value, ITypeResolveContext earlyBindContext)
+			{
+				this.type = ReadTypeReference(type, earlyBindContext: earlyBindContext);
+				TypeReference valueType = value as TypeReference;
+				if (valueType != null)
+					this.value = ReadTypeReference(valueType, earlyBindContext: earlyBindContext);
+				else
+					this.value = value;
+			}
+			
+			public IType GetValueType(ITypeResolveContext context)
+			{
+				return type.Resolve(context);
+			}
+			
+			public object GetValue(ITypeResolveContext context)
+			{
+				return value;
+			}
 		}
 		#endregion
 	}

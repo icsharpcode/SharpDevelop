@@ -5,3 +5,6 @@ ICSharpCode.NRefactory.TypeSystem:
 
 ICSharpCode.NRefactory.TypeSystem.Implementation:
 	Contains base classes that help implementing the type system interfaces.
+
+ICSharpCode.NRefactory.CSharp.Dom:
+	Abstract Syntax Tree for C#
