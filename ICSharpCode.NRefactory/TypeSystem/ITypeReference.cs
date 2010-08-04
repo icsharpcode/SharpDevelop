@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets inner classes (including inherited inner classes).
 		/// </summary>
 		IList<IType> GetNestedTypes(ITypeResolveContext context);
-
+		
 		/// <summary>
 		/// Gets all methods that can be called on this return type.
 		/// </summary>

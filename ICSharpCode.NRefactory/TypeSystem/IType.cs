@@ -41,16 +41,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IType DeclaringType { get; }
 		
 		/// <summary>
-		/// Gets whether this type is an array type.
-		/// </summary>
-		bool IsArrayType { get; }
-		
-		/// <summary>
-		/// Gets whether this type is a pointer type.
-		/// </summary>
-		bool IsPointerType { get; }
-		
-		/// <summary>
 		/// Gets the number of type parameters.
 		/// </summary>
 		int TypeParameterCount { get; }
@@ -61,14 +51,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	{
 		Nullable<bool> IType.IsReferenceType {
 			get { return null; }
-		}
-		
-		bool IType.IsArrayType {
-			get { return false; }
-		}
-		
-		bool IType.IsPointerType {
-			get { return false; }
 		}
 		
 		int IType.TypeParameterCount {

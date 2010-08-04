@@ -13,9 +13,17 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// </summary>
 	public class NestedTypeReference : AbstractTypeReference
 	{
-		ITypeReference baseTypeRef; string name; int typeParameterCount;
+		ITypeReference baseTypeRef;
+		string name;
+		int additionalTypeParameterCount;
 		
-		public NestedTypeReference(ITypeReference baseTypeRef, string name, int typeParameterCount)
+		/// <summary>
+		/// Creates a new NestedTypeReference.
+		/// </summary>
+		/// <param name="baseTypeRef">Reference to the base type.</param>
+		/// <param name="name"></param>
+		/// <param name="additionalTypeParameterCount"></param>
+		public NestedTypeReference(ITypeReference baseTypeRef, string name, int additionalTypeParameterCount)
 		{
 			if (baseTypeRef == null)
 				throw new ArgumentNullException("baseTypeRef");
@@ -23,13 +31,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				throw new ArgumentNullException("name");
 			this.baseTypeRef = baseTypeRef;
 			this.name = name;
-			this.typeParameterCount = typeParameterCount;
+			this.additionalTypeParameterCount = additionalTypeParameterCount;
 		}
 		
 		public override IType Resolve(ITypeResolveContext context)
 		{
-			foreach (IType type in baseTypeRef.GetNestedTypes(context)) {
-				if (type.Name == name && type.TypeParameterCount == typeParameterCount)
+			IType baseType = baseTypeRef.Resolve(context);
+			int tpc = baseType.TypeParameterCount;
+			foreach (IType type in baseType.GetNestedTypes(context)) {
+				if (type.Name == name && type.TypeParameterCount == tpc + additionalTypeParameterCount)
 					return type;
 			}
 			return SharedTypes.UnknownType;
@@ -37,10 +47,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public override string ToString()
 		{
-			if (typeParameterCount == 0)
+			if (additionalTypeParameterCount == 0)
 				return baseTypeRef + "+" + name;
 			else
-				return baseTypeRef + "+" + name + "`" + typeParameterCount;
+				return baseTypeRef + "+" + name + "`" + additionalTypeParameterCount;
 		}
 	}
 }

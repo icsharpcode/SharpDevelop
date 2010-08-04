@@ -157,14 +157,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		bool IType.IsArrayType {
-			get { return false; }
-		}
-		
-		bool IType.IsPointerType {
-			get { return false; }
-		}
-		
 		public string FullName {
 			get {
 				if (declaringTypeDefinition != null) {
@@ -390,8 +382,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					&& this.Name == other.Name
 					&& this.TypeParameterCount == other.TypeParameterCount;
 			} else {
+				// We do not check the project content because assemblies might or might not
+				// be equivalent depending on compiler settings and runtime assembly
+				// redirection.
 				return other.DeclaringTypeDefinition == null 
-					&& this.ProjectContent == other.ProjectContent
 					&& this.Namespace == other.Namespace 
 					&& this.Name == other.Name 
 					&& this.TypeParameterCount == other.TypeParameterCount;
@@ -403,7 +397,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (declaringTypeDefinition != null) {
 				return declaringTypeDefinition.GetHashCode() ^ name.GetHashCode();
 			} else {
-				return ns.GetHashCode() ^ name.GetHashCode() ^ projectContent.GetHashCode();
+				return ns.GetHashCode() ^ name.GetHashCode() ^ this.TypeParameterCount;
 			}
 		}
 	}

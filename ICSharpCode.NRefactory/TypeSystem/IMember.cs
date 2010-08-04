@@ -13,6 +13,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	[ContractClass(typeof(IMemberContract))]
 	public interface IMember : IEntity
 	{
+		// redeclare IEntity.DeclaringTypeDefinition to clarify the documentation:
 		/// <summary>
 		/// Gets the type definition that contains the member. This property never returns null.
 		/// </summary>

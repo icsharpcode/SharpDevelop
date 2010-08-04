@@ -23,6 +23,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "It's immutable")]
 		public readonly static IType Null = new NullType();
 		
+		// TODO: implement DynamicType
+		public readonly static IType Dynamic = new UnknownType();
+		
 		/*
 		 * I'd like to define static instances for common types like
 		 * void, int, etc.; but there are two problems with this:

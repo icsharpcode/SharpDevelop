@@ -42,14 +42,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public abstract bool? IsReferenceType { get; }
 		
-		public virtual bool IsArrayType {
-			get { return false; }
-		}
-		
-		public virtual bool IsPointerType {
-			get { return false; }
-		}
-		
 		public virtual int TypeParameterCount {
 			get { return 0; }
 		}

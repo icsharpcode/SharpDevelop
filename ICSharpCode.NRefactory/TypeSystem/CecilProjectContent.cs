@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Text;
 
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using Mono.Cecil;
@@ -95,15 +96,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeResolveContext earlyBindContext = null)
 		{
 			int typeIndex = 0;
-			return ReadTypeReference(type, typeAttributes, entity, earlyBindContext, ref typeIndex);
+			return CreateType(type, entity, earlyBindContext, typeAttributes, ref typeIndex);
 		}
 		
-		static ITypeReference ReadTypeReference(
+		static ITypeReference CreateType(
 			TypeReference type,
-			ICustomAttributeProvider typeAttributes,
 			IEntity entity ,
 			ITypeResolveContext earlyBindContext,
-			ref int typeIndex)
+			ICustomAttributeProvider typeAttributes, ref int typeIndex)
 		{
 			while (type is OptionalModifierType || type is RequiredModifierType) {
 				type = ((TypeSpecification)type).ElementType;
@@ -111,7 +111,103 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (type == null) {
 				return SharedTypes.UnknownType;
 			}
-			throw new NotImplementedException();
+			
+			if (type is ByReferenceType) {
+				throw new NotImplementedException();
+			} else if (type is Mono.Cecil.PointerType) {
+				typeIndex++;
+				return PointerTypeReference.Create(
+					CreateType(
+						(type as Mono.Cecil.PointerType).ElementType,
+						entity,
+						earlyBindContext,
+						typeAttributes, ref typeIndex));
+			} else if (type is Mono.Cecil.ArrayType) {
+				typeIndex++;
+				return ArrayTypeReference.Create(
+					CreateType(
+						(type as Mono.Cecil.ArrayType).ElementType,
+						entity,
+						earlyBindContext,
+						typeAttributes, ref typeIndex),
+					(type as Mono.Cecil.ArrayType).Rank);
+			} else if (type is GenericInstanceType) {
+				GenericInstanceType gType = (GenericInstanceType)type;
+				/*IReturnType baseType = CreateType(pc, member, gType.ElementType, attributeProvider, ref typeIndex);
+				IReturnType[] para = new IReturnType[gType.GenericArguments.Count];
+				for (int i = 0; i < para.Length; ++i) {
+					typeIndex++;
+					para[i] = CreateType(pc, member, gType.GenericArguments[i], attributeProvider, ref typeIndex);
+				}
+				return new ConstructedReturnType(baseType, para);*/
+				throw new NotImplementedException();
+			} else if (type is GenericParameter) {
+				throw new NotImplementedException();
+				/*GenericParameter typeGP = type as GenericParameter;
+				if (typeGP.Owner is MethodDefinition) {
+					IMethod method = entity as IMethod;
+					if (method != null) {
+						if (typeGP.Position < method.TypeParameters.Count) {
+							return method.TypeParameters[typeGP.Position];
+						}
+					}
+					return SharedTypes.UnknownType;
+				} else {
+					ITypeDefinition c = (entity as ITypeDefinition) ?? (entity is IMember ? ((IMember)entity).DeclaringTypeDefinition : null);
+					if (c != null && typeGP.Position < c.TypeParameters.Count) {
+						if (c.TypeParameters[typeGP.Position].Name == type.Name) {
+							return c.TypeParameters[typeGP.Position];
+						}
+					}
+					return SharedTypes.UnknownType;
+				}*/
+			} else {
+				string name = type.FullName;
+				if (name == null)
+					throw new ApplicationException("type.FullName returned null. Type: " + type.ToString());
+				
+				if (name.IndexOf('/') > 0) {
+					string[] nameparts = name.Split('/');
+					ITypeReference typeRef = GetSimpleType(nameparts[0], earlyBindContext);
+					for (int i = 1; i < nameparts.Length; i++) {
+						int partTypeParameterCount;
+						string namepart = SplitTypeParameterCountFromReflectionName(nameparts[i], out partTypeParameterCount);
+						typeRef = new NestedTypeReference(typeRef, namepart, partTypeParameterCount);
+					}
+					return typeRef;
+				} else if (name == "System.Object" && HasDynamicAttribute(typeAttributes, typeIndex)) {
+					return SharedTypes.Dynamic;
+				} else {
+					return GetSimpleType(name, earlyBindContext);
+				}
+			}
+		}
+		
+		static ITypeReference GetSimpleType(string reflectionName, ITypeResolveContext earlyBindContext)
+		{
+			int typeParameterCount;
+			string name = SplitTypeParameterCountFromReflectionName(reflectionName, out typeParameterCount);
+			if (earlyBindContext != null) {
+				IType c = earlyBindContext.GetClass(name, typeParameterCount, StringComparer.Ordinal);
+				if (c != null)
+					return c;
+			}
+			return new GetClassTypeReference(name, typeParameterCount);
+		}
+		
+		static string SplitTypeParameterCountFromReflectionName(string reflectionName, out int typeParameterCount)
+		{
+			int pos = reflectionName.LastIndexOf('`');
+			if (pos < 0) {
+				typeParameterCount = 0;
+				return reflectionName;
+			} else {
+				string typeCount = reflectionName.Substring(pos + 1);
+				if (int.TryParse(typeCount, out typeParameterCount))
+					return reflectionName.Substring(0, pos);
+				else
+					return reflectionName;
+			}
 		}
 		
 		static bool HasDynamicAttribute(ICustomAttributeProvider attributeProvider, int typeIndex)
