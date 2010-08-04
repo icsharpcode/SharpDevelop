@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
 using System.Diagnostics.Contracts;
@@ -21,7 +22,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		readonly string ns;
 		readonly string name;
 		
-		ClassType classType;
 		IList<ITypeReference> baseTypes;
 		IList<ITypeParameter> typeParameters;
 		IList<ITypeDefinition> innerClasses;
@@ -33,7 +33,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		DomRegion region;
 		DomRegion bodyRegion;
+		
+		// 1 byte per enum + 2 bytes for flags
+		ClassType classType;
 		Accessibility accessibility;
+		BitVector16 flags;
+		const ushort FlagSealed    = 0x0001;
+		const ushort FlagAbstract  = 0x0002;
+		const ushort FlagShadowing = 0x0004;
+		const ushort FlagSynthetic = 0x0008;
 		
 		protected override void FreezeInternal()
 		{
@@ -209,7 +217,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public EntityType EntityType {
-			get { return EntityType.Class; }
+			get { return EntityType.TypeDefinition; }
 		}
 		
 		public DomRegion Region {
@@ -248,12 +256,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return null; }
 		}
 		
-		public bool IsStatic {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
 		public Accessibility Accessibility {
 			get { return accessibility; }
 			set {
@@ -262,45 +264,39 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
+		public bool IsStatic {
+			get { return IsAbstract && IsSealed; }
+		}
+		
 		public bool IsAbstract {
-			get {
-				throw new NotImplementedException();
+			get { return flags[FlagAbstract]; }
+			set {
+				CheckBeforeMutation();
+				flags[FlagAbstract] = value;
 			}
 		}
 		
 		public bool IsSealed {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public bool IsVirtual {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public bool IsOverride {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		
-		public bool IsOverridable {
-			get {
-				throw new NotImplementedException();
+			get { return flags[FlagSealed]; }
+			set {
+				CheckBeforeMutation();
+				flags[FlagSealed] = value;
 			}
 		}
 		
 		public bool IsShadowing {
-			get {
-				throw new NotImplementedException();
+			get { return flags[FlagShadowing]; }
+			set {
+				CheckBeforeMutation();
+				flags[FlagShadowing] = value;
 			}
 		}
 		
 		public bool IsSynthetic {
-			get {
-				throw new NotImplementedException();
+			get { return flags[FlagSynthetic]; }
+			set {
+				CheckBeforeMutation();
+				flags[FlagSynthetic] = value;
 			}
 		}
 		
@@ -385,9 +381,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				// We do not check the project content because assemblies might or might not
 				// be equivalent depending on compiler settings and runtime assembly
 				// redirection.
-				return other.DeclaringTypeDefinition == null 
-					&& this.Namespace == other.Namespace 
-					&& this.Name == other.Name 
+				return other.DeclaringTypeDefinition == null
+					&& this.Namespace == other.Namespace
+					&& this.Name == other.Name
 					&& this.TypeParameterCount == other.TypeParameterCount;
 			}
 		}

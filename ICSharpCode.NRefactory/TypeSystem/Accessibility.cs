@@ -8,8 +8,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Enum that describes the accessibility of an entity.
 	/// </summary>
-	public enum Accessibility
+	public enum Accessibility : byte
 	{
+		// note: some code depends on the fact that these values are within the range 0-7
+		
 		/// <summary>
 		/// The entity is completely inaccessible. This is used for C# explicit interface implementations.
 		/// </summary>
@@ -37,6 +39,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// The entity is accessible in derived classes within the same project content.
 		/// </summary>
-		ProtectedAndInternal
+		ProtectedAndInternal,
 	}
 }

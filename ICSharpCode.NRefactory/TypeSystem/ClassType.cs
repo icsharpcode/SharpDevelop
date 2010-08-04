@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
-	public enum ClassType
+	public enum ClassType : byte
 	{
 		Class,
 		Enum,

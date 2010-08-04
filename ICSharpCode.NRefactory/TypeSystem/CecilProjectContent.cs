@@ -3,9 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Text;
-
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using Mono.Cecil;
 
@@ -21,7 +21,31 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#region Constructor
 		public CecilProjectContent(AssemblyDefinition assemblyDefinition)
 		{
-			this.assemblyAttributes = ReadAttributes(assemblyDefinition, this);
+			this.assemblyAttributes = new List<IAttribute>();
+			ReadAttributes(assemblyDefinition, this.assemblyAttributes);
+			this.assemblyAttributes = new ReadOnlyCollection<IAttribute>(this.assemblyAttributes);
+			List<CecilTypeDefinition> types = new List<CecilTypeDefinition>();
+			foreach (ModuleDefinition module in assemblyDefinition.Modules) {
+				foreach (TypeDefinition td in module.Types) {
+					if ((td.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.Public) {
+						string name = td.FullName;
+						if (name.Length == 0 || name[0] == '<')
+							continue;
+						types.Add(new CecilTypeDefinition(this, td));
+					}
+				}
+			}
+			foreach (CecilTypeDefinition c in types) {
+				c.Init(this);
+			}
+		}
+		
+		public CecilProjectContent(TypeDefinition typeDefinition)
+		{
+			this.assemblyAttributes = EmptyList<IAttribute>.Instance;
+			List<CecilTypeDefinition> types = new List<CecilTypeDefinition>();
+			types.Add(new CecilTypeDefinition(this, typeDefinition));
+			types[0].Init(this);
 		}
 		#endregion
 		
@@ -195,6 +219,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return new GetClassTypeReference(name, typeParameterCount);
 		}
 		
+		static string SplitTypeParameterCountFromReflectionName(string reflectionName)
+		{
+			int pos = reflectionName.LastIndexOf('`');
+			if (pos < 0) {
+				return reflectionName;
+			} else {
+				return reflectionName.Substring(0, pos);
+			}
+		}
+		
 		static string SplitTypeParameterCountFromReflectionName(string reflectionName, out int typeParameterCount)
 		{
 			int pos = reflectionName.LastIndexOf('`');
@@ -229,32 +263,51 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Attributes
-		public static IList<IAttribute> ReadAttributes(ICustomAttributeProvider attributeProvider, ITypeResolveContext earlyBindContext)
+		void ReadAttributes(ICustomAttributeProvider attributeProvider, IList<IAttribute> outputList)
 		{
-			Contract.Ensures(Contract.Result<IList<IAttribute>>() != null);
-			if (attributeProvider == null || !attributeProvider.HasCustomAttributes)
-				return EmptyList<IAttribute>.Instance;
-			var cecilAttributes = attributeProvider.CustomAttributes;
-			IAttribute[] attributes = new IAttribute[cecilAttributes.Count];
-			for (int i = 0; i < attributes.Length; i++) {
-				attributes[i] = new CecilAttribute(cecilAttributes[i], earlyBindContext);
+			foreach (var cecilAttribute in attributeProvider.CustomAttributes) {
+				outputList.Add(new CecilAttribute(cecilAttribute, this));
 			}
-			return Array.AsReadOnly(attributes);
 		}
 		
 		sealed class CecilAttribute : Immutable, IAttribute
 		{
-			ITypeReference attributeType;
-			volatile CustomAttribute ca;
-			ITypeResolveContext earlyBindContext;
-			IList<IConstantValue> positionalArguments;
-			IList<KeyValuePair<string, IConstantValue>> namedArguments;
+			readonly ITypeReference attributeType;
+			readonly IList<IConstantValue> positionalArguments;
+			readonly IList<KeyValuePair<string, IConstantValue>> namedArguments;
 			
 			public CecilAttribute(CustomAttribute ca, ITypeResolveContext earlyBindContext)
 			{
 				this.attributeType = ReadTypeReference(ca.AttributeType, earlyBindContext: earlyBindContext);
-				this.ca = ca;
-				this.earlyBindContext = earlyBindContext;
+				try {
+					if (ca.HasConstructorArguments) {
+						var posArgs = new List<IConstantValue>();
+						foreach (var arg in ca.ConstructorArguments) {
+							posArgs.Add(ReadConstantValue(arg, earlyBindContext));
+						}
+						this.positionalArguments = posArgs.AsReadOnly();
+					} else {
+						this.positionalArguments = EmptyList<IConstantValue>.Instance;
+					}
+				} catch (InvalidOperationException) {
+					this.positionalArguments = EmptyList<IConstantValue>.Instance;
+				}
+				try {
+					if (ca.HasFields || ca.HasProperties) {
+						var namedArgs = new List<KeyValuePair<string, IConstantValue>>();
+						foreach (var arg in ca.Fields) {
+							namedArgs.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument, earlyBindContext)));
+						}
+						foreach (var arg in ca.Properties) {
+							namedArgs.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument, earlyBindContext)));
+						}
+						this.namedArguments = namedArgs.AsReadOnly();
+					} else {
+						this.namedArguments = EmptyList<KeyValuePair<string, IConstantValue>>.Instance;
+					}
+				} catch (InvalidOperationException) {
+					this.namedArguments = EmptyList<KeyValuePair<string, IConstantValue>>.Instance;
+				}
 			}
 			
 			public DomRegion Region {
@@ -266,68 +319,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			
 			public IList<IConstantValue> PositionalArguments {
-				get {
-					EnsureArguments();
-					return positionalArguments;
-				}
+				get { return positionalArguments; }
 			}
 			
 			public IList<KeyValuePair<string, IConstantValue>> NamedArguments {
-				get {
-					EnsureArguments();
-					return namedArguments;
-				}
-			}
-			
-			void EnsureArguments()
-			{
-				CustomAttribute ca = this.ca;
-				if (ca != null) {
-					try {
-						if (ca.HasConstructorArguments) {
-							var posArgs = new List<IConstantValue>();
-							foreach (var arg in ca.ConstructorArguments) {
-								posArgs.Add(ReadConstantValue(arg, earlyBindContext));
-							}
-							this.positionalArguments = posArgs.AsReadOnly();
-						} else {
-							this.positionalArguments = EmptyList<IConstantValue>.Instance;
-						}
-					} catch (InvalidOperationException) {
-						this.positionalArguments = EmptyList<IConstantValue>.Instance;
-					}
-					try {
-						if (ca.HasFields || ca.HasProperties) {
-							var namedArgs = new List<KeyValuePair<string, IConstantValue>>();
-							foreach (var arg in ca.Fields) {
-								namedArgs.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument, earlyBindContext)));
-							}
-							foreach (var arg in ca.Properties) {
-								namedArgs.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument, earlyBindContext)));
-							}
-							this.namedArguments = namedArgs.AsReadOnly();
-						} else {
-							this.namedArguments = EmptyList<KeyValuePair<string, IConstantValue>>.Instance;
-						}
-					} catch (InvalidOperationException) {
-						this.namedArguments = EmptyList<KeyValuePair<string, IConstantValue>>.Instance;
-					}
-					this.ca = null;
-				}
+				get { return namedArguments; }
 			}
 		}
 		#endregion
 		
 		#region Read Constant Value
-		public static IConstantValue ReadConstantValue(CustomAttributeArgument arg, ITypeResolveContext earlyBindContext)
+		static IConstantValue ReadConstantValue(CustomAttributeArgument arg, ITypeResolveContext earlyBindContext)
 		{
 			return new CecilConstantValue(arg.Type, arg.Value, earlyBindContext);
 		}
 		
 		sealed class CecilConstantValue : Immutable, IConstantValue
 		{
-			ITypeReference type;
-			object value;
+			readonly ITypeReference type;
+			readonly object value;
 			
 			public CecilConstantValue(TypeReference type, object value, ITypeResolveContext earlyBindContext)
 			{
@@ -347,6 +357,145 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			public object GetValue(ITypeResolveContext context)
 			{
 				return value;
+			}
+		}
+		#endregion
+		
+		#region Read Type Definition
+		class CecilTypeDefinition : DefaultTypeDefinition
+		{
+			TypeDefinition typeDefinition;
+			
+			public CecilTypeDefinition(IProjectContent pc, TypeDefinition typeDefinition)
+				: base(pc, typeDefinition.Namespace, SplitTypeParameterCountFromReflectionName(typeDefinition.Name))
+			{
+				this.typeDefinition = typeDefinition;
+			}
+			
+			public CecilTypeDefinition(CecilTypeDefinition parentType, string name, TypeDefinition typeDefinition)
+				: base(parentType, name)
+			{
+				this.typeDefinition = typeDefinition;
+			}
+			
+			public void Init(CecilProjectContent pc)
+			{
+				InitNestedTypes(pc);
+				InitModifiers();
+				
+				if (typeDefinition.HasGenericParameters) {
+					throw new NotImplementedException();
+					/*foreach (GenericParameter g in td.GenericParameters) {
+						this.TypeParameters.Add(new DefaultTypeParameter(this, g.Name, g.Position));
+					}
+					int i = 0;
+					foreach (GenericParameter g in td.GenericParameters) {
+						AddConstraintsFromType(this.TypeParameters[i++], g);
+					}*/
+				}
+				
+				if (typeDefinition.HasCustomAttributes) {
+					pc.ReadAttributes(typeDefinition, this.Attributes);
+				}
+				
+				// set base classes
+				if (typeDefinition.BaseType != null) {
+					BaseTypes.Add(ReadTypeReference(typeDefinition.BaseType, entity: this, earlyBindContext: pc));
+				}
+				if (typeDefinition.HasInterfaces) {
+					foreach (TypeReference iface in typeDefinition.Interfaces) {
+						BaseTypes.Add(ReadTypeReference(iface, entity: this, earlyBindContext: pc));
+					}
+				}
+				
+				InitMembers(pc);
+				
+				this.typeDefinition = null;
+				Freeze(); // freeze after initialization
+			}
+			
+			void InitNestedTypes(CecilProjectContent pc)
+			{
+				if (!typeDefinition.HasNestedTypes)
+					return;
+				foreach (TypeDefinition nestedType in typeDefinition.NestedTypes) {
+					TypeAttributes visibility = nestedType.Attributes & TypeAttributes.VisibilityMask;
+					if (visibility == TypeAttributes.NestedPublic
+					    || visibility == TypeAttributes.NestedFamily
+					    || visibility == TypeAttributes.NestedFamORAssem)
+					{
+						string name = nestedType.Name;
+						int pos = name.LastIndexOf('/');
+						if (pos > 0)
+							name = name.Substring(pos + 1);
+						if (name.Length == 0 || name[0] == '<')
+							continue;
+						name = SplitTypeParameterCountFromReflectionName(name);
+						InnerClasses.Add(new CecilTypeDefinition(this, name, nestedType));
+					}
+				}
+				foreach (CecilTypeDefinition innerClass in this.InnerClasses) {
+					innerClass.Init(pc);
+				}
+			}
+			
+			void InitModifiers()
+			{
+				TypeDefinition td = this.typeDefinition;
+				// set classtype
+				if (td.IsInterface) {
+					this.ClassType = ClassType.Interface;
+				} else if (td.IsEnum) {
+					this.ClassType = ClassType.Enum;
+				} else if (td.IsValueType) {
+					this.ClassType = ClassType.Struct;
+				} else if (IsDelegate(td)) {
+					this.ClassType = ClassType.Delegate;
+				} else if (IsModule(td)) {
+					this.ClassType = ClassType.Module;
+				} else {
+					this.ClassType = ClassType.Class;
+				}
+				this.IsSealed = td.IsSealed;
+				this.IsAbstract = td.IsAbstract;
+				if ((td.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedPublic) {
+					this.Accessibility = Accessibility.Public;
+				} else if ((td.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedFamily) {
+					this.Accessibility = Accessibility.Protected;
+				} else if ((td.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedFamORAssem) {
+					// we don't care about the 'OrAssem' part because it's an external assembly
+					this.Accessibility = Accessibility.Protected;
+				} else {
+					this.Accessibility = Accessibility.Public;
+				}
+			}
+			
+			static bool IsDelegate(TypeDefinition type)
+			{
+				if (type.BaseType == null)
+					return false;
+				else
+					return type.BaseType.FullName == "System.Delegate"
+						|| type.BaseType.FullName == "System.MulticastDelegate";
+			}
+			
+			static bool IsModule(TypeDefinition type)
+			{
+				if (!type.HasCustomAttributes)
+					return false;
+				foreach (var att in type.CustomAttributes) {
+					if (att.AttributeType.FullName == "Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute"
+					    || att.AttributeType.FullName == "System.Runtime.CompilerServices.CompilerGlobalScopeAttribute")
+					{
+						return true;
+					}
+				}
+				return false;
+			}
+			
+			void InitMembers(CecilProjectContent pc)
+			{
+				throw new NotImplementedException();
 			}
 		}
 		#endregion

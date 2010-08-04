@@ -148,6 +148,7 @@
     <Compile Include="TypeSystem\Implementation\AbstractType.cs" />
     <Compile Include="TypeSystem\Implementation\AbstractTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\ArrayType.cs" />
+    <Compile Include="TypeSystem\Implementation\BitVector16.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultExplicitInterfaceImplementation.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultParameter.cs" />
     <Compile Include="TypeSystem\Implementation\GetClassTypeReference.cs" />

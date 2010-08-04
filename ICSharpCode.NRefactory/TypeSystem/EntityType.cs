@@ -8,7 +8,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 {
 	public enum EntityType
 	{
-		Class,
+		TypeDefinition,
 		Field,
 		Property,
 		Indexer,
