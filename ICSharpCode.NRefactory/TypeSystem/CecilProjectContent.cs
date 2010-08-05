@@ -166,8 +166,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return new ConstructedReturnType(baseType, para);*/
 				throw new NotImplementedException();
 			} else if (type is GenericParameter) {
-				throw new NotImplementedException();
-				/*GenericParameter typeGP = type as GenericParameter;
+				GenericParameter typeGP = type as GenericParameter;
 				if (typeGP.Owner is MethodDefinition) {
 					IMethod method = entity as IMethod;
 					if (method != null) {
@@ -184,7 +183,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 						}
 					}
 					return SharedTypes.UnknownType;
-				}*/
+				}
 			} else {
 				string name = type.FullName;
 				if (name == null)
@@ -331,33 +330,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#region Read Constant Value
 		static IConstantValue ReadConstantValue(CustomAttributeArgument arg, ITypeResolveContext earlyBindContext)
 		{
-			return new CecilConstantValue(arg.Type, arg.Value, earlyBindContext);
-		}
-		
-		sealed class CecilConstantValue : Immutable, IConstantValue
-		{
-			readonly ITypeReference type;
-			readonly object value;
-			
-			public CecilConstantValue(TypeReference type, object value, ITypeResolveContext earlyBindContext)
-			{
-				this.type = ReadTypeReference(type, earlyBindContext: earlyBindContext);
-				TypeReference valueType = value as TypeReference;
-				if (valueType != null)
-					this.value = ReadTypeReference(valueType, earlyBindContext: earlyBindContext);
-				else
-					this.value = value;
-			}
-			
-			public IType GetValueType(ITypeResolveContext context)
-			{
-				return type.Resolve(context);
-			}
-			
-			public object GetValue(ITypeResolveContext context)
-			{
-				return value;
-			}
+			ITypeReference type = ReadTypeReference(arg.Type, earlyBindContext: earlyBindContext);
+			object value = arg.Value;
+			TypeReference valueType = value as TypeReference;
+			if (valueType != null)
+				value = ReadTypeReference(valueType, earlyBindContext: earlyBindContext);
+			return new SimpleConstantValue(type, value);
 		}
 		#endregion
 		

@@ -6,26 +6,26 @@ using System;
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	/// <summary>
-	/// Type representing resolve errors.
+	/// Type representing the C# 'dynamic' type.
 	/// </summary>
-	sealed class UnknownType : AbstractType
+	sealed class DynamicType : AbstractType
 	{
 		public override string Name {
-			get { return "?"; }
+			get { return "dynamic"; }
 		}
 		
 		public override bool? IsReferenceType {
-			get { return null; }
+			get { return true; }
 		}
 		
 		public override bool Equals(IType other)
 		{
-			return other is UnknownType;
+			return other is DynamicType;
 		}
 		
 		public override int GetHashCode()
 		{
-			return 950772036;
+			return 31986112;
 		}
 	}
 }

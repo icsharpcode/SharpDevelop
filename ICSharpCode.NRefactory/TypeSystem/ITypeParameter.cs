@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
@@ -11,13 +12,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// Type parameter of a generic class/method.
 	/// </summary>
 	[ContractClass(typeof(ITypeParameterContract))]
-	public interface ITypeParameter : IFreezable
+	public interface ITypeParameter : IType, IFreezable
 	{
-		/// <summary>
-		/// The name of the type parameter (for example "T")
-		/// </summary>
-		string Name { get; }
-		
 		/// <summary>
 		/// Gets the index of the type parameter in the type parameter list of the owning method/class.
 		/// </summary>
@@ -30,14 +26,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		/// <summary>
 		/// The method this type parameter is defined for.
-		/// This property is null when the type parameter is for a class.
+		/// This property returns null if the type parameter belong to a class.
 		/// </summary>
 		IMethod ParentMethod { get; }
 		
 		/// <summary>
 		/// The class this type parameter is defined for.
-		/// When the type parameter is defined for a method, this is the class containing
-		/// that method.
+		/// This property returns null if the type parameter belong to a method.
 		/// </summary>
 		ITypeDefinition ParentClass { get; }
 		
@@ -62,6 +57,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		bool HasValueTypeConstraint { get; }
 		
 		/// <summary>
+		/// Gets the variance of this type parameter.
+		/// </summary>
+		VarianceModifier Variance { get; }
+		
+		/// <summary>
 		/// Gets the type that was used to bind this type parameter.
 		/// This property returns null for generic methods/classes, it
 		/// is non-null only for constructed versions of generic methods.
@@ -74,17 +74,28 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		ITypeParameter UnboundTypeParameter { get; }
 	}
 	
+	/// <summary>
+	/// Represents the variance of a type parameter.
+	/// </summary>
+	public enum VarianceModifier
+	{
+		/// <summary>
+		/// The type parameter is not variant.
+		/// </summary>
+		Invariant,
+		/// <summary>
+		/// The type parameter is covariant (used in output position).
+		/// </summary>
+		Covariant,
+		/// <summary>
+		/// The type parameter is contravariant (used in input position).
+		/// </summary>
+		Contravariant
+	};
 	
 	[ContractClassFor(typeof(ITypeParameter))]
-	abstract class ITypeParameterContract : IFreezableContract, ITypeParameter
+	abstract class ITypeParameterContract : ITypeContract, ITypeParameter
 	{
-		string ITypeParameter.Name {
-			get {
-				Contract.Ensures(Contract.Result<string>() != null);
-				return null;
-			}
-		}
-		
 		int ITypeParameter.Index {
 			get {
 				Contract.Ensures(Contract.Result<int>() >= 0);
@@ -107,7 +118,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		ITypeDefinition ITypeParameter.ParentClass {
 			get {
-				Contract.Ensures(Contract.Result<ITypeDefinition>() != null);
 				return null;
 			}
 		}
@@ -141,6 +151,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				Contract.Ensures((Contract.Result<ITypeParameter>() != null) == (@this.BoundTo != null));
 				return null;
 			}
+		}
+		
+		VarianceModifier ITypeParameter.Variance {
+			get { return VarianceModifier.Invariant; }
 		}
 	}
 }
