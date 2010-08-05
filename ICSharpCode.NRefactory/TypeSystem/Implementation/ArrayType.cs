@@ -57,8 +57,18 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			if (elementType == null)
 				throw new ArgumentNullException("elementType");
+			if (dimensions <= 0)
+				throw new ArgumentOutOfRangeException("dimensions", dimensions, "dimensions must be positive");
 			this.elementType = elementType;
 			this.dimensions = dimensions;
+		}
+		
+		public ITypeReference ElementType {
+			get { return elementType; }
+		}
+		
+		public int Dimensions {
+			get { return dimensions; }
 		}
 		
 		public override IType Resolve(ITypeResolveContext context)

@@ -13,7 +13,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the fully qualified name of the class the return type is pointing to.
 		/// </summary>
 		/// <returns>
-		/// "System.Int32" for int[]<br/>
+		/// "System.Int32[]" for int[]<br/>
 		/// "System.Collections.Generic.List" for List&lt;string&gt;
 		/// </returns>
 		string FullName {
@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the short name of the class the return type is pointing to.
 		/// </summary>
 		/// <returns>
-		/// "Int32" or "int" (depending how the return type was created) for int[]<br/>
+		/// "Int32[]" for int[]<br/>
 		/// "List" for List&lt;string&gt;
 		/// </returns>
 		string Name {
@@ -43,12 +43,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		/// <summary>
-		/// Gets the full dotnet name of the return type. The DotnetName is used for the
-		/// documentation tags.
+		/// Gets the full reflection name of the element.
 		/// </summary>
 		/// <returns>
-		/// "System.Int[]" for int[]<br/>
-		/// "System.Collections.Generic.List{System.String}" for List&lt;string&gt;
+		/// "System.Int32[]" for int[]<br/>
+		/// "System.Int32[][,]" for C# int[,][]<br/>
+		/// "System.Collections.Generic.List`1[[System.String]]" for List&lt;string&gt;
 		/// </returns>
 		string DotNetName {
 			get;

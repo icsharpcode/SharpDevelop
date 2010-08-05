@@ -35,13 +35,17 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	
 	public class PointerTypeReference : AbstractTypeReference
 	{
-		ITypeReference elementType;
+		readonly ITypeReference elementType;
 		
 		public PointerTypeReference(ITypeReference elementType)
 		{
 			if (elementType == null)
 				throw new ArgumentNullException("elementType");
 			this.elementType = elementType;
+		}
+		
+		public ITypeReference ElementType {
+			get { return elementType; }
 		}
 		
 		public override IType Resolve(ITypeResolveContext context)

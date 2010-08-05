@@ -1,0 +1,13 @@
+﻿TypeSystem API:
+* ITypeReference extends IFreezable?
+	either:
+	- make sure all ITypeReference implementations correctly freeze their contained types
+	or:
+	- remove IFreezable from type references
+
+* For clarity: move all ITypeReference members except for Resolve() to IType?
+
+* Decide on the fate of ISupportsInterning
+
+* Try to build SharedTypes for void, int, etc.
+	Take care of equality with the real System.Void, System.Int32 etc.
