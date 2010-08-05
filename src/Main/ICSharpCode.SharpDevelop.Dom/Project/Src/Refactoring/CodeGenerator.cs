@@ -234,7 +234,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 					Parameters = ConvertParameters(m.Parameters, targetContext),
 					Attributes = ConvertAttributes(m.Attributes, targetContext),
 					Templates = ConvertTemplates(m.TypeParameters, targetContext),
-					Body = (m.Modifiers.HasFlag(ModifierEnum.Abstract) || m.Modifiers.HasFlag(ModifierEnum.Extern)) ? null : CreateNotImplementedBlock(),
+					Body = m.Modifiers.HasFlag(ModifierEnum.Extern) ? null : CreateNotImplementedBlock(),
 					IsExtensionMethod = m.IsExtensionMethod,
 					InterfaceImplementations = ConvertInterfaceImplementations(m.InterfaceImplementations, targetContext)
 				};
@@ -273,11 +273,11 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 			md.TypeReference = ConvertType(p.ReturnType, targetContext);
 			md.InterfaceImplementations = ConvertInterfaceImplementations(p.InterfaceImplementations, targetContext);
 			if (p.CanGet) {
-				md.GetRegion = new PropertyGetRegion((p.Modifiers.HasFlag(ModifierEnum.Abstract) || p.Modifiers.HasFlag(ModifierEnum.Extern)) ? null : CreateNotImplementedBlock(), null);
+				md.GetRegion = new PropertyGetRegion(p.Modifiers.HasFlag(ModifierEnum.Extern) ? null : CreateNotImplementedBlock(), null);
 				md.GetRegion.Modifier = ConvertModifier(p.GetterModifiers, null);
 			}
 			if (p.CanSet) {
-				md.SetRegion = new PropertySetRegion((p.Modifiers.HasFlag(ModifierEnum.Abstract) || p.Modifiers.HasFlag(ModifierEnum.Extern)) ? null : CreateNotImplementedBlock(), null);
+				md.SetRegion = new PropertySetRegion(p.Modifiers.HasFlag(ModifierEnum.Extern) ? null : CreateNotImplementedBlock(), null);
 				md.SetRegion.Modifier = ConvertModifier(p.SetterModifiers, null);
 			}
 			return md;
