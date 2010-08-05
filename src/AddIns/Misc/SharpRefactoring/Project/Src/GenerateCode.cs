@@ -30,10 +30,10 @@ namespace SharpRefactoring
 		/// <summary>
 		/// If given symbol is Unknown ResolveResult, returns action that can generate code for this missing symbol.
 		/// </summary>
-		public static GenerateCodeContextAction GetContextAction(ResolveResult symbol, EditorContext context)
+		public static GenerateCodeContextAction GetContextAction(EditorContext context)
 		{
-			if (symbol is UnknownMethodResolveResult) {
-				UnknownMethodResolveResult unknownMethodCall = (UnknownMethodResolveResult)symbol;
+			if (context.CurrentSymbol is UnknownMethodResolveResult) {
+				UnknownMethodResolveResult unknownMethodCall = (UnknownMethodResolveResult)context.CurrentSymbol;
 				Ast.Expression expression = context.GetContainingElement<Ast.InvocationExpression>();
 				if (expression == null)
 					return null;

@@ -7,10 +7,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+
+using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace SharpRefactoring.ContextActions
@@ -46,6 +49,42 @@ namespace SharpRefactoring.ContextActions
 					}
 				}
 			}
+		}
+		
+		public static Location GetStart(this DomRegion region)
+		{
+			return new Location(region.BeginColumn, region.BeginLine);
+		}
+		
+		public static Location GetEnd(this DomRegion region)
+		{
+			return new Location(region.EndColumn, region.EndLine);
+		}
+		
+		public static int PositionToOffset(this IDocument document, Location location)
+		{
+			return document.PositionToOffset(location.Line, location.Column);
+		}
+		
+		/// <summary>
+		/// Gets offset for the start of line at which given location is.
+		/// </summary>
+		public static int GetLineStartOffset(this IDocument document, Location location)
+		{
+			return document.GetLineForOffset(document.PositionToOffset(location)).Offset;
+		}
+		
+		public static int GetLineEndOffset(this IDocument document, Location location)
+		{
+			var line = document.GetLineForOffset(document.PositionToOffset(location));
+			return line.Offset + line.TotalLength;
+		}
+		
+		public static void RemoveRestOfLine(this IDocument document, int offset)
+		{
+			var line = document.GetLineForOffset(offset);
+			int lineEndOffset = line.Offset + line.Length;
+			document.Remove(offset, lineEndOffset - offset);
 		}
 	}
 }

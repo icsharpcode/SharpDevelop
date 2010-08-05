@@ -331,6 +331,7 @@
     <Compile Include="Src\Services\ParserService\ParserService.cs" />
     <Compile Include="Src\Services\ProjectService\CompileModifiedProjectsOnly.cs" />
     <Compile Include="Src\Services\ProjectService\SolutionConfigurationEventHandler.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextAction.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsBulbControl.xaml.cs">
       <DependentUpon>ContextActionsBulbControl.xaml</DependentUpon>
       <SubType>Code</SubType>

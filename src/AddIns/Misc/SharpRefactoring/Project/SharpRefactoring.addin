@@ -40,11 +40,13 @@
 		<Class id="switch" class="SharpRefactoring.SwitchSnippetProvider" />
 	</Path>
 	
-	<Path name="/SharpDevelop/ViewContent/AvalonEdit/ContextActionProviders">
-		<Class id="addUsing" class="SharpRefactoring.ContextActions.AddUsingProvider" />
-		<Class id="implementInterface" class="SharpRefactoring.ContextActions.ImplementInterfaceProvider" />
-		<Class id="implementAbstractClass" class="SharpRefactoring.ContextActions.ImplementAbstractClassProvider" />
-		<Class id="generateMember" class="SharpRefactoring.ContextActions.GenerateMemberProvider" />	
+	<Path name="/SharpDevelop/ViewContent/AvalonEdit/ContextActions">
+		<Class class="SharpRefactoring.ContextActions.AddUsingProvider" />
+		<Class class="SharpRefactoring.ContextActions.ImplementInterfaceProvider" />
+		<Class class="SharpRefactoring.ContextActions.ImplementAbstractClassProvider" />
+		<Class class="SharpRefactoring.ContextActions.GenerateMemberProvider" />	
+		<Class class="SharpRefactoring.ContextActions.CheckAssignmentNull" />	
+		<Class class="SharpRefactoring.ContextActions.CheckAssignmentNotNull" />
 	</Path>
 
 	<Path name="/SharpDevelop/ViewContent/TextEditor/OverrideCompletionHandler">

@@ -19,6 +19,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// <summary>
 		/// Gets actions available for current line of the editor.
 		/// </summary>
-		IEnumerable<IContextAction> GetAvailableActions(EditorContext editorAST);
+		IEnumerable<IContextAction> GetAvailableActions(EditorContext context);
 	}
 }

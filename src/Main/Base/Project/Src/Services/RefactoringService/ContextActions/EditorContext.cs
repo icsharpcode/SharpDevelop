@@ -66,12 +66,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				CaretColumn -= 1;
 			}
 			
-			Stopwatch sw = new Stopwatch();
-			sw.Start();
-			
 			this.CurrentExpression = GetExpressionAtCaret(editor);
 			this.CurrentSymbol = ResolveExpression(editor);
-			long elapsedResolveMs = sw.ElapsedMilliseconds;
 			
 			this.CurrentLine = editor.Document.GetLine(CaretLine);
 			this.CurrentLineAST = GetCurrentLineAst(this.CurrentLine, editor);
@@ -80,21 +76,28 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			
 			this.CurrentElement = FindInnermostNodeAtLocation(this.CurrentMemberAST, new Location(CaretColumn, CaretLine));
 			
-//			ICSharpCode.Core.LoggingService.Debug(string.Format(
-//	@"
-//	Context actions (elapsed {5} ms ({6} ms in Resolver)):
-//	ExprAtCaret: {0}
-//	----------------------
-//	SymbolAtCaret: {1}
-//	----------------------
-//	CurrentLineAST: {2}
-//	----------------------
-//	AstNodeAtCaret: {3}
-//	----------------------
-//	CurrentMemberAST: {4}
-//	----------------------", 
-//				CurrentExpression, CurrentSymbol, CurrentLineAST, CurrentElement, CurrentMemberAST == null ? "" : CurrentMemberAST.ToString().TakeStartEllipsis(100),
-//				sw.ElapsedMilliseconds, elapsedResolveMs));
+			//DebugLog();
+		}
+		
+		void DebugLog()
+		{
+			ICSharpCode.Core.LoggingService.Debug(string.Format(
+				@"
+	
+	Context actions :
+	ExprAtCaret: {0}
+	----------------------
+	SymbolAtCaret: {1}
+	----------------------
+	CurrentLineAST: {2}
+	----------------------
+	AstNodeAtCaret: {3}
+	----------------------
+	CurrentMemberAST: {4}
+	----------------------",
+				CurrentExpression, CurrentSymbol, CurrentLineAST,
+				CurrentElement == null ? "" : CurrentElement.ToString().TakeStartEllipsis(400),
+				CurrentMemberAST == null ? "" : CurrentMemberAST.ToString().TakeStartEllipsis(400)));
 		}
 		
 		public TNode GetCurrentElement<TNode>() where TNode : class, INode
@@ -173,7 +176,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 //		class FindOutermostNodeVisitor<TNode> : NodeTrackingAstVisitor where TNode : class, INode
 //		{
 //			public TNode FoundNode { get; private set; }
-//			
+//
 //			protected override void BeginVisit(INode node)
 //			{
 //				if (node is TNode && FoundNode == null) {

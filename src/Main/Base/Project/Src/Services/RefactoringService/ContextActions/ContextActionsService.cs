@@ -6,8 +6,8 @@
 // </file>
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Refactoring;
@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		private ContextActionsService()
 		{
-			this.providers = AddInTree.BuildItems<IContextActionsProvider>("/SharpDevelop/ViewContent/AvalonEdit/ContextActionProviders", null, false);
+			this.providers = AddInTree.BuildItems<IContextActionsProvider>("/SharpDevelop/ViewContent/AvalonEdit/ContextActions", null, false);
 		}
 		
 		/// <summary>
@@ -43,13 +43,19 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				yield break;
 			var parseTask = ParserService.BeginParseCurrentViewContent();
 			parseTask.Wait();
+			
+			var sw = new Stopwatch(); sw.Start();
 			var editorContext = new EditorContext(editor);
+			long elapsedEditorContextMs = sw.ElapsedMilliseconds;
+			
 			// could run providers in parallel
 			foreach (var provider in this.providers) {
 				foreach (var action in provider.GetAvailableActions(editorContext)) {
 					yield return action;
 				}
 			}
+			ICSharpCode.Core.LoggingService.Debug(string.Format("Context actions elapsed {0}ms ({1}ms in EditorContext)",
+			                                                   sw.ElapsedMilliseconds, elapsedEditorContextMs));
 		}
 	}
 }

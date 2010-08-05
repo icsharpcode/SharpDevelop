@@ -71,6 +71,9 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\ClassRefactoringSubmenuBuilder.cs" />
     <Compile Include="Src\ContextActions\AddUsing.cs" />
+    <Compile Include="Src\ContextActions\CheckAssignmentAction.cs" />
+    <Compile Include="Src\ContextActions\CheckAssignmentNull.cs" />
+    <Compile Include="Src\ContextActions\CheckAssignmentNotNull.cs" />
     <Compile Include="Src\ContextActions\DelegateAction.cs" />
     <Compile Include="Src\ContextActions\Extensions.cs" />
     <Compile Include="Src\ContextActions\FindTypeDeclarationsVisitor.cs" />

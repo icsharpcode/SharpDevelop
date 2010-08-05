@@ -18,13 +18,13 @@ namespace SharpRefactoring.ContextActions
 	/// </summary>
 	public class GenerateMemberProvider : IContextActionsProvider
 	{
-		public IEnumerable<IContextAction> GetAvailableActions(EditorContext editorContext)
+		public IEnumerable<IContextAction> GetAvailableActions(EditorContext context)
 		{
-			if (string.IsNullOrEmpty(editorContext.CurrentExpression.Expression)) {
+			if (string.IsNullOrEmpty(context.CurrentExpression.Expression)) {
 				yield break;
 			}
-			if (editorContext.CurrentExpression.Region != null && 
-			    editorContext.CurrentExpression.Region.EndLine > editorContext.CurrentExpression.Region.BeginLine) {
+			if (context.CurrentExpression.Region != null && 
+			    context.CurrentExpression.Region.EndLine > context.CurrentExpression.Region.BeginLine) {
 				// do not yield the action for 2-line expressions like this, which are actually 2 different expressions
 				//   variable.(*caret*)
 				//   CallFooMethod();
@@ -33,7 +33,7 @@ namespace SharpRefactoring.ContextActions
 				//                123);
 				yield break;
 			}
-			var generateCodeAction = GenerateCode.GetContextAction(editorContext.CurrentSymbol, editorContext);
+			var generateCodeAction = GenerateCode.GetContextAction(context);
 			if (generateCodeAction != null)
 				yield return generateCodeAction;
 		}
