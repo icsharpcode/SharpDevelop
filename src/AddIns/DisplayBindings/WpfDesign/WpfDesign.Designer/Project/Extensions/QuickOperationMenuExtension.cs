@@ -11,6 +11,7 @@ using System.Windows.Input;
 using ICSharpCode.WpfDesign.Designer.Controls;
 using ICSharpCode.WpfDesign.Extensions;
 using ICSharpCode.WpfDesign.Adorners;
+using ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
@@ -33,13 +34,13 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			
 			var kbs = this.ExtendedItem.Services.GetService(typeof (IKeyBindingService)) as IKeyBindingService;
 			var command = new DesignCommand(delegate
-			                            {
-			                            	_menu.MainHeader.IsSubmenuOpen = true;
-			                            	_menu.MainHeader.Focus();
-			                            }, delegate
-			                            {
-			                            	return true;
-			                            });
+			                                {
+			                                	_menu.MainHeader.IsSubmenuOpen = true;
+			                                	_menu.MainHeader.Focus();
+			                                }, delegate
+			                                {
+			                                	return true;
+			                                });
 			_keyBinding=new KeyBinding(command, Key.Enter, ModifierKeys.Alt);
 			if (kbs != null)
 				kbs.RegisterBinding(_keyBinding);
@@ -55,6 +56,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 
 			if (view != null) {
 				string setValue;
+				if(view is ItemsControl) {
+					_menu.AddSubMenuInTheHeader(new MenuItem() {Header = "Edit Items"});
+				}
+				
 				if (view is StackPanel) {
 					var ch = new MenuItem() {Header = "Change Orientation"};
 					_menu.AddSubMenuInTheHeader(ch);
@@ -97,7 +102,16 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (clickedOn != null) {
 				var parent = clickedOn.Parent as MenuItem;
 				if (parent != null) {
-					if ((string) parent.Header == "Change Orientation") {
+					
+					if((string)clickedOn.Header=="Edit Items") {
+						var editor = new CollectionEditor();
+						var itemsControl=this.ExtendedItem.View as ItemsControl;
+						if (itemsControl != null)
+							editor.LoadItemsCollection(this.ExtendedItem);
+						editor.Show();
+					}
+					
+					if (parent.Header is string && (string) parent.Header == "Change Orientation") {
 						var value = _menu.UncheckChildrenAndSelectClicked(parent, clickedOn);
 						if (value != null) {
 							var orientation = Enum.Parse(typeof (Orientation), value);
@@ -105,7 +119,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 								this.ExtendedItem.Properties[StackPanel.OrientationProperty].SetValue(orientation);
 						}
 					}
-					if ((string)parent.Header == "Set Dock to") {
+					if (parent.Header is string && (string)parent.Header == "Set Dock to") {
 						var value = _menu.UncheckChildrenAndSelectClicked(parent, clickedOn);
 						if(value!=null) {
 							var dock = Enum.Parse(typeof (Dock), value);
@@ -115,7 +129,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 					}
 					
 
-					if ((string) parent.Header == "Horizontal Alignment") {
+					if (parent.Header is string && (string) parent.Header == "Horizontal Alignment") {
 						var value = _menu.UncheckChildrenAndSelectClicked(parent, clickedOn);
 						if (value != null) {
 							var ha = Enum.Parse(typeof (HorizontalAlignment), value);
@@ -124,7 +138,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 						}
 					}
 
-					if ((string) parent.Header == "Vertical Alignment") {
+					if (parent.Header is string && (string) parent.Header == "Vertical Alignment") {
 						var value = _menu.UncheckChildrenAndSelectClicked(parent, clickedOn);
 						if (value != null) {
 							var va = Enum.Parse(typeof (VerticalAlignment), value);

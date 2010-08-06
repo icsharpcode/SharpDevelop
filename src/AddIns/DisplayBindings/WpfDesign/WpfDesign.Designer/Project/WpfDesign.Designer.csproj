@@ -180,6 +180,10 @@
     <Compile Include="PropertyGrid\Editors\BrushEditor\SolidBrushEditor.xaml.cs">
       <DependentUpon>SolidBrushEditor.xaml</DependentUpon>
     </Compile>
+    <Compile Include="PropertyGrid\Editors\CollectionEditor.xaml.cs">
+      <DependentUpon>CollectionEditor.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="PropertyGrid\Editors\EventEditor.xaml.cs">
       <DependentUpon>EventEditor.xaml</DependentUpon>
     </Compile>
@@ -294,6 +298,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="PropertyGrid\Editors\CollectionEditor.xaml" />
     <Page Include="PropertyGrid\Editors\EventEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
