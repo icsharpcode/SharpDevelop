@@ -62,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (CaretColumn > 1 && editor.Document.GetText(editor.Document.PositionToOffset(CaretLine, CaretColumn - 1), 1) == ";") {
 				// If caret is just after ';', pretend that caret is before ';'
 				// (works well e.g. for this.Foo();(*caret*) - we want to get "this.Foo()")
-				// This is equivalent to pretending that ; don't exist, and actually is not such a bad idea.
+				// This is equivalent to pretending that ; don't exist, and actually it's not such a bad idea.
 				CaretColumn -= 1;
 			}
 			
@@ -76,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			
 			this.CurrentElement = FindInnermostNodeAtLocation(this.CurrentMemberAST, new Location(CaretColumn, CaretLine));
 			
-			//DebugLog();
+//			DebugLog();
 		}
 		
 		void DebugLog()
@@ -131,41 +131,56 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (memberDecl == null)
 				return null;
 			if (memberDecl is MethodDeclaration) {
-				return FindInnermostNodeInBlock(((MethodDeclaration)memberDecl).Body, position);
+				return FindInnermostNode(((MethodDeclaration)memberDecl).Body, position);
 			} else if (memberDecl is PropertyDeclaration) {
 				var propertyDecl = (PropertyDeclaration)memberDecl;
 				if (propertyDecl.HasGetRegion && position >= propertyDecl.GetRegion.StartLocation && position <= propertyDecl.GetRegion.EndLocation) {
-					return FindInnermostNodeInBlock(propertyDecl.GetRegion.Block, position);
+					return FindInnermostNode(propertyDecl.GetRegion.Block, position);
 				}
 				if (propertyDecl.HasSetRegion && position >= propertyDecl.SetRegion.StartLocation && position <= propertyDecl.SetRegion.EndLocation) {
-					return FindInnermostNodeInBlock(propertyDecl.SetRegion.Block, position);
+					return FindInnermostNode(propertyDecl.SetRegion.Block, position);
 				}
 			}
 			return null;
 		}
 		
-		INode FindInnermostNodeInBlock(BlockStatement node, Location position)
+		public static INode FindInnermostNode(INode node, Location position)
 		{
 			if (node == null)
 				return null;
-			var findInnermostVisitor = new FindInnermostNodeVisitor(position);
+			var findInnermostVisitor = new FindInnermostNodeByRangeVisitor(position);
 			node.AcceptVisitor(findInnermostVisitor, null);
 			return findInnermostVisitor.InnermostNode;
 		}
 		
-		class FindInnermostNodeVisitor : NodeTrackingAstVisitor
+		public static INode FindInnermostNodeContainingSelection(INode node, Location start, Location end)
 		{
-			public Location CaretLocation { get; private set; }
+			if (node == null)
+				return null;
+			var findInnermostVisitor = new FindInnermostNodeByRangeVisitor(start, end);
+			node.AcceptVisitor(findInnermostVisitor, null);
+			return findInnermostVisitor.InnermostNode;
+		}
+		
+		class FindInnermostNodeByRangeVisitor : NodeTrackingAstVisitor
+		{
+			public Location RangeStart { get; private set; }
+			public Location RangeEnd { get; private set; }
 			public INode InnermostNode { get; private set; }
 			
-			public FindInnermostNodeVisitor(Location caretLocation)
+			public FindInnermostNodeByRangeVisitor(Location caretPosition) : this(caretPosition, caretPosition)
 			{
-				this.CaretLocation = caretLocation;
+			}
+			
+			public FindInnermostNodeByRangeVisitor(Location selectionStart, Location selectionEnd)
+			{
+				this.RangeStart = selectionStart;
+				this.RangeEnd = selectionEnd;
 			}
 			
 			protected override void BeginVisit(INode node)
 			{
-				if (node.StartLocation <= CaretLocation && node.EndLocation >= CaretLocation) {
+				if (node.StartLocation <= RangeStart && node.EndLocation >= RangeEnd) {
 					// the node visited last will be the innermost
 					this.InnermostNode = node;
 				}
@@ -218,7 +233,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return null;
 		}
 		
-		SupportedLanguage? GetEditorLanguage(ITextEditor editor)
+		public static SupportedLanguage? GetEditorLanguage(ITextEditor editor)
 		{
 			if (editor == null || editor.Language == null)
 				return null;
@@ -233,8 +248,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		INode GetCurrentMemberAST(ITextEditor editor)
 		{
 			try {
-				var resolver = GetNRefactoryResolver(editor);
-				resolver.Initialize(ParserService.GetParseInformation(editor.FileName), CaretLine, CaretColumn);
+				var resolver = GetInitializedNRefactoryResolver(editor, this.CaretLine, this.CaretColumn);
 				return resolver.ParseCurrentMember(editor.Document.Text);
 			}
 			catch {
@@ -242,13 +256,15 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
-		NRefactoryResolver GetNRefactoryResolver(ITextEditor editor)
+		NRefactoryResolver GetInitializedNRefactoryResolver(ITextEditor editor, int caretLine, int caretColumn)
 		{
 			if (editor == null || editor.Language == null)
 				return null;
 			try
 			{
-				return new NRefactoryResolver(editor.Language.Properties);
+				var resolver = new NRefactoryResolver(editor.Language.Properties);
+				resolver.Initialize(ParserService.GetParseInformation(editor.FileName), caretLine, caretColumn);
+				return resolver;
 			}
 			catch(NotSupportedException)
 			{

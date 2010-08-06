@@ -17,17 +17,19 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
-
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.AddIn.Snippets;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.Commands;
+using ICSharpCode.SharpDevelop.Refactoring;
+using Ast = ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -359,9 +361,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void TextViewMouseDown(object sender, MouseButtonEventArgs e)
 		{
-			// close existing popup immediately on text editor mouse down
+			// close existing debugger popup immediately on text editor mouse down
 			TryCloseExistingPopup(false);
+			
 			if (options.CtrlClickGoToDefinition && e.ChangedButton == MouseButton.Left && Keyboard.Modifiers == ModifierKeys.Control) {
+				// Ctrl+Click Go to definition
 				var position = GetPositionFromPoint(e.GetPosition(this));
 				if (position == null)
 					return;
@@ -371,6 +375,45 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		#endregion
+		
+		protected override void OnKeyUp(KeyEventArgs e)
+		{
+			base.OnKeyUp(e);
+			if (e.Handled) return;
+			if (e.Key == Key.W && Keyboard.Modifiers.HasFlag(ModifierKeys.Control)) {
+				// Select AST Node
+				var editorLang = EditorContext.GetEditorLanguage(this.Adapter); if (editorLang == null) return;
+				var parser = ParserFactory.CreateParser(editorLang.Value, new StringReader(this.Text));
+				parser.ParseMethodBodies = true;
+				parser.Parse();
+				var parsedCU = parser.CompilationUnit; if (parsedCU == null) return;
+				//var caretLocation = new Location(this.Adapter.Caret.Column, this.Adapter.Caret.Line);
+				var selectionStart = this.Adapter.Document.OffsetToPosition(this.SelectionStart);
+				var selectionEnd = this.Adapter.Document.OffsetToPosition(this.SelectionStart + this.SelectionLength);
+				foreach (var node in parsedCU.Children) {
+					// fix StartLocation / EndLocation
+					node.AcceptVisitor(new ICSharpCode.NRefactory.Visitors.SetRegionInclusionVisitor(), null);
+				}
+				Ast.INode currentNode = parsedCU.Children.Select(
+					n => EditorContext.FindInnermostNodeContainingSelection(n, selectionStart, selectionEnd)).Where(n => n != null).FirstOrDefault();
+				if (currentNode == null) return;
+				
+				if (currentNode.StartLocation == selectionStart && currentNode.EndLocation == selectionEnd) {
+					// if whole node already selected, expand selection to parent
+					currentNode = currentNode.Parent;
+					if (currentNode == null)
+						return;
+				}
+				int startOffset, endOffset;
+				try {
+					startOffset = this.Adapter.Document.PositionToOffset(currentNode.StartLocation.Line, currentNode.StartLocation.Column);
+					endOffset = this.Adapter.Document.PositionToOffset(currentNode.EndLocation.Line, currentNode.EndLocation.Column);
+				} catch(ArgumentOutOfRangeException) {
+					return;
+				}
+				this.Select(startOffset, endOffset - startOffset);
+			}
+		}
 		
 		public void JumpTo(int line, int column)
 		{
