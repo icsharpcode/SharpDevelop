@@ -18,13 +18,13 @@ namespace ICSharpCode.Reports.Addin.Designer
 	/// <summary>
 	/// Description of BaseGroupHeaderDesigner.
 	/// </summary>
-	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.GroupHeaderDesigner))]
-	public class GroupHeaderDesigner:ParentControlDesigner
+	
+	public class GroupedRowDesigner:ParentControlDesigner
 	{
 		
 		private ISelectionService selectionService;
 		
-		public GroupHeaderDesigner()
+		public GroupedRowDesigner()
 		{
 			
 		}

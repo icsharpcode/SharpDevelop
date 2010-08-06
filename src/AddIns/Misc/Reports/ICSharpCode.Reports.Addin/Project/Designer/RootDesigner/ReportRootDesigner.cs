@@ -100,7 +100,7 @@ namespace ICSharpCode.Reports.Addin.Designer
 //				this.componentChangeService.ComponentRemoving += new ComponentEventHandler(OnComponentRemoving);
 //				this.componentChangeService.ComponentRemoved += new ComponentEventHandler(OnComponentRemoved);
 				this.componentChangeService.ComponentChanged += new ComponentChangedEventHandler(OnComponentChanged);
-//				this.componentChangeService.ComponentChanging += new ComponentChangingEventHandler(OnComponentChanging);
+				this.componentChangeService.ComponentChanging += new ComponentChangingEventHandler(OnComponentChanging);
 			}
 	
 	
@@ -258,6 +258,7 @@ namespace ICSharpCode.Reports.Addin.Designer
 		}
 		*/
 		
+		
 		private void OnComponentChanged(object sender, ComponentChangedEventArgs ce)
 		{
 			LoggingService.InfoFormatted("RootDesigner:OnComponentChanged");
@@ -265,8 +266,9 @@ namespace ICSharpCode.Reports.Addin.Designer
 			LoggingService.InfoFormatted(str);
 			
 			AbstractItem item = ce.Component as AbstractItem;
-			if ((item != null) && (ce.NewValue != null)) {
-					item.Name = ce.NewValue.ToString();		
+			var member = ce.Member;
+			if (member.Name == "Name") {
+				item.Name = ce.NewValue.ToString();
 			}
 
 			BaseSection section = ce.Component as BaseSection;
@@ -279,12 +281,15 @@ namespace ICSharpCode.Reports.Addin.Designer
 				}
 				RecalculateSections();
 			}
+			
 		}
+		
 		
 		
 		private void OnComponentChanging(object sender, ComponentChangingEventArgs ce)
 		{
-//			System.Console.WriteLine("RootDesigner:OnComponentChanging");
+			System.Console.WriteLine("RootDesigner:OnComponentChanging");
+//			Host.CreateTransaction();
 		}
 		
 		

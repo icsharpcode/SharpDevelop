@@ -88,8 +88,7 @@
     <Compile Include="Project\DesignerBinding\ReportDesignerGenerator.cs" />
     <Compile Include="Project\DesignerBinding\ReportDesignerLoader.cs" />
     <Compile Include="Project\DesignerBinding\InternalReportLoader.cs" />
-    <Compile Include="Project\Designer\BaseGroupHeaderDesigner.cs" />
-    <Compile Include="Project\Designer\Class1.cs" />
+    <Compile Include="Project\Designer\GroupedRowDesigner.cs" />
     <Compile Include="Project\Designer\DataItemDesigner.cs" />
     <Compile Include="Project\Designer\DesignerHelper.cs" />
     <Compile Include="Project\Designer\ImageDesigner.cs" />
@@ -141,7 +140,7 @@
     <Compile Include="Project\ReportItems\BaseDataItem.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Project\ReportItems\BaseGroupHeader.cs" />
+    <Compile Include="Project\ReportItems\BaseGroupedRow.cs" />
     <Compile Include="Project\ReportItems\BaseImageItem.cs">
       <SubType>Component</SubType>
     </Compile>

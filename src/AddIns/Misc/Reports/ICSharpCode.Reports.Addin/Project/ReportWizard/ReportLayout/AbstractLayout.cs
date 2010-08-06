@@ -20,7 +20,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	/// </summary>
 	public class AbstractLayout
 	{
-//		ReportModel reportModel;
+
 		ISimpleContainer parentItem;
 		
 		public AbstractLayout(ReportModel reportModel)
