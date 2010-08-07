@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 			
 			this.CurrentExpression = GetExpressionAtCaret(editor);
-			this.CurrentSymbol = ResolveExpression(editor);
+			this.CurrentSymbol = ResolveExpression(CurrentExpression, editor, CaretLine, CaretColumn);
 			
 			this.CurrentLine = editor.Document.GetLine(CaretLine);
 			this.CurrentLineAST = GetCurrentLineAst(this.CurrentLine, editor);
@@ -201,9 +201,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 //			}
 //		}
 
-		ResolveResult ResolveExpression(ITextEditor editor)
+		ResolveResult ResolveExpression(ExpressionResult expression, ITextEditor editor, int caretLine, int caretColumn)
 		{
-			return ParserService.Resolve(this.CurrentExpression, CaretLine, CaretColumn, editor.FileName, editor.Document.Text);
+			return ParserService.Resolve(expression, caretLine, caretColumn, editor.FileName, editor.Document.Text);
 		}
 
 		ExpressionResult GetExpressionAtCaret(ITextEditor editor)

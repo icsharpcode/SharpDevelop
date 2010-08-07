@@ -28,11 +28,7 @@ namespace SharpRefactoring.ContextActions
 			foreach (var targetClass in editorContext.GetClassDeclarationsOnCurrentLine().Where(c => c.ClassType == ClassType.Class)) {
 				
 				foreach (var implementAction in RefactoringService.GetImplementAbstractClassActions(targetClass)) {
-					var implementActionCopy = implementAction;
-					yield return new DelegateAction {
-						Title = string.Format("Implement abstract class {0}", ambience.Convert(implementActionCopy.ClassToImplement)),
-						ExecuteAction = implementActionCopy.Execute
-					};
+					yield return implementAction;
 				}
 			}
 		}

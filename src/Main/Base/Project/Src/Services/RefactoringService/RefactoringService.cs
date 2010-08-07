@@ -477,7 +477,29 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// <summary>
 		/// Gets actions which can add implementation of interface to given class.
 		/// </summary>
-		public static IEnumerable<ImplementInterfaceAction> GetImplementInterfaceActions(IClass c, bool isExplicitImpl, bool returnMissingInterfacesOnly = true)
+		public static IEnumerable<ImplementInterfaceAction> GetImplementInterfaceActions(IClass c, bool returnMissingInterfacesOnly = true)
+		{
+			var interfacesToImplement = GetInterfacesToImplement(c, returnMissingInterfacesOnly).ToList();
+			
+			if (c.ProjectContent.Language.SupportsImplicitInterfaceImplementation) {
+				return MakeImplementActions(c, interfacesToImplement, false, "Implement interface {0}").Concat(
+					MakeImplementActions(c, interfacesToImplement, true, "Implement interface {0} (explicit)"));
+			} else {
+				return MakeImplementActions(c, interfacesToImplement, true, "Implement interface {0}");
+			}
+		}
+		
+		static IEnumerable<ImplementInterfaceAction> MakeImplementActions(IClass c, IEnumerable<IReturnType> interfaces, bool isExplit, string format)
+		{
+			var ambience = AmbienceService.GetCurrentAmbience();
+			foreach (var iface in interfaces) {
+				yield return new ImplementInterfaceAction(iface, c, isExplit) {
+					Title = string.Format(format, ambience.Convert(iface))
+				};
+			}
+		}
+		
+		static IEnumerable<IReturnType> GetInterfacesToImplement(IClass c, bool returnMissingInterfacesOnly = true)
 		{
 			foreach (IReturnType rt in c.BaseTypes) {
 				IClass interf = rt.GetUnderlyingClass();
@@ -486,16 +508,17 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 						// this interface is already implemented
 						continue;
 					}
-					IReturnType rtCopy = rt;
-					yield return new ImplementInterfaceAction(rtCopy, c, isExplicitImpl);
+					yield return rt;
 				}
 			}
 		}
+		
 		/// <summary>
 		/// Gets actions which can add implementation of abstract class to given class.
 		/// </summary>
 		public static IEnumerable<ImplementAbstractClassAction> GetImplementAbstractClassActions(IClass c, bool returnMissingClassesOnly = true)
 		{
+			var ambience = AmbienceService.GetCurrentAmbience();
 			foreach (IReturnType rt in c.BaseTypes) {
 				IClass abstractClass = rt.GetUnderlyingClass();
 				if (abstractClass != null && abstractClass.ClassType == ClassType.Class && abstractClass.IsAbstract) {
@@ -504,7 +527,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 						continue;
 					}
 					IReturnType rtCopy = rt;
-					yield return new ImplementAbstractClassAction(rtCopy, c);
+					yield return new ImplementAbstractClassAction(rtCopy, c) { 
+						Title = string.Format("Implement abstract class {0}", ambience.Convert(rtCopy)) };
 				}
 			}
 		}
@@ -512,10 +536,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// <summary>
 		/// Action describing how to add implementation of an abstract class to a class.
 		/// </summary>
-		public class ImplementAbstractClassAction
+		public class ImplementAbstractClassAction : IContextAction
 		{
 			public IReturnType ClassToImplement { get; private set; }
 			public IClass TargetClass { get; private set; }
+			
+			public string Title { get; set; }
 			
 			public virtual void Execute()
 			{

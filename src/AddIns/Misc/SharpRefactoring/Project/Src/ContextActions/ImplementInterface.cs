@@ -34,12 +34,8 @@ namespace SharpRefactoring.ContextActions
 			foreach (var targetClass in editorContext.GetClassDeclarationsOnCurrentLine().
 			         Where(c => c.ClassType == ClassType.Class || c.ClassType == ClassType.Interface)) {
 				
-				foreach (var implementAction in RefactoringService.GetImplementInterfaceActions(targetClass, false)) {
-					var implementActionCopy = implementAction;
-					yield return new DelegateAction {
-						Title = string.Format("Implement interface {0}", ambience.Convert(implementActionCopy.ClassToImplement)),
-						ExecuteAction = implementActionCopy.Execute
-					};
+				foreach (var implementAction in RefactoringService.GetImplementInterfaceActions(targetClass)) {
+					yield return implementAction;
 				}
 			}
 		}
