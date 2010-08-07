@@ -63,6 +63,12 @@ namespace ICSharpCode.VBNetBinding
 							.CtrlSpace(editor.Caret.Line, editor.Caret.Column, info, editor.Document.Text, expressionResult.Context,
 							           ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces);
 				} else {
+					if (rr is MethodGroupResolveResult) {
+						IMethod singleMethod = ((MethodGroupResolveResult)rr).GetMethodWithEmptyParameterList();
+						if (singleMethod != null)
+							rr = new MemberResolveResult(rr.CallingClass, rr.CallingMember, singleMethod);
+					}
+					
 					data = rr.GetCompletionData(info.CompilationUnit.ProjectContent, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces)
 						?? new NRefactoryResolver(LanguageProperties.VBNet)
 						.CtrlSpace(editor.Caret.Line, editor.Caret.Column, info, editor.Document.Text,

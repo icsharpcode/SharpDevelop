@@ -91,6 +91,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 		}
 		
+		public override object VisitAddressOfExpression(AddressOfExpression addressOfExpression, object data)
+		{
+			bool oldValue = resolver.allowMethodGroupResolveResult;
+			resolver.allowMethodGroupResolveResult = true;
+			object result = base.VisitAddressOfExpression(addressOfExpression, data);
+			resolver.allowMethodGroupResolveResult = oldValue;
+			return result;
+		}
+		
 		public override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
 			return CreateResolveResult(new LambdaReturnType(anonymousMethodExpression, resolver));
@@ -277,8 +286,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			MethodGroupResolveResult mgrr = rr as MethodGroupResolveResult;
 			if (mgrr != null) {
-				if (resolver.Language == SupportedLanguage.VBNet && mgrr.Methods.All(mg => mg.Count == 0))
-					return CreateMemberResolveResult(GetVisualBasicIndexer(invocationExpression));
+				if (resolver.Language == SupportedLanguage.VBNet) {
+					if (mgrr.Methods.All(mg => mg.Count == 0))
+						return CreateMemberResolveResult(GetVisualBasicIndexer(invocationExpression));
+//					IMethod empty = mgrr.GetMethodWithEmptyParameterList();
+//					if (empty != null)
+//						return CreateMemberResolveResult(empty);
+				}
 				
 				IReturnType[] argumentTypes = invocationExpression.Arguments.Select<Expression, IReturnType>(ResolveType).ToArray();
 				
@@ -381,12 +395,23 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						}
 					}
 				}
-				return resolver.ResolveMember(type, memberReferenceExpression.MemberName,
+				
+				var memberRR = resolver.ResolveMember(type, memberReferenceExpression.MemberName,
 				                              memberReferenceExpression.TypeArguments,
 				                              NRefactoryResolver.IsInvoked(memberReferenceExpression),
 				                              typeRR == null, // allow extension methods only for non-static method calls
 				                              targetRR is BaseResolveResult ? (bool?)true : null // allow calling protected members using "base."
 				                             );
+				
+//				MethodGroupResolveResult mgRR = memberRR as MethodGroupResolveResult;
+//				
+//				if (mgRR == null)
+//					mgRR = targetRR as MethodGroupResolveResult;
+//				
+//				if (mgRR != null && !resolver.allowMethodGroupResolveResult)
+//					return CreateMemberResolveResult(mgRR.GetMethodWithEmptyParameterList());
+				
+				return memberRR;
 			}
 			return null;
 		}

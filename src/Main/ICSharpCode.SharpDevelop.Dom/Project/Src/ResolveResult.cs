@@ -8,7 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using System.Linq;
 using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.SharpDevelop.Dom
@@ -710,6 +710,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IReturnType containingType;
 		IList<MethodGroup> possibleMethods;
 		
+		public bool IsVBNetAddressOf { get; set; }
+		
 		public MethodGroupResolveResult(IClass callingClass, IMember callingMember, IReturnType containingType, string name)
 			: base(callingClass, callingMember, null)
 		{
@@ -736,6 +738,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.name = name;
 			this.possibleMethods = possibleMethods;
 			this.ResolvedType = new MethodGroupReturnType();
+		}
+		
+		public MethodGroupResolveResult(IClass callingClass, IMember callingMember, IReturnType containingType, string name,
+		                                IList<MethodGroup> possibleMethods, bool isVBNet, bool isAddressOf)
+			: this(callingClass, callingMember, containingType, name, possibleMethods)
+		{
+			IMethod parameterlessMethod = possibleMethods.SelectMany(list => list).FirstOrDefault(m => !m.Parameters.Any());;
+			if (isVBNet && !isAddressOf && parameterlessMethod != null)
+				this.ResolvedType = parameterlessMethod.ReturnType;
 		}
 		
 		public override ResolveResult Clone()
@@ -791,11 +802,25 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return null;
 		}
 		
+		public IMethod GetMethodWithEmptyParameterList()
+		{
+			if (this.Methods.Count > 0 && !IsVBNetAddressOf) {
+				return this.Methods
+					.SelectMany(group => group.Select(item => item))
+					.FirstOrDefault(i => i.Parameters.Count == 0);
+			}
+			
+			return null;
+		}
+		
 		public override FilePosition GetDefinitionPosition()
 		{
 			IMethod m = GetMethodIfSingleOverload();
+			IMethod m2 = GetMethodWithEmptyParameterList();
 			if (m != null)
 				return MemberResolveResult.GetDefinitionPosition(m);
+			else if (m2 != null)
+				return MemberResolveResult.GetDefinitionPosition(m2);
 			else
 				return base.GetDefinitionPosition();
 		}

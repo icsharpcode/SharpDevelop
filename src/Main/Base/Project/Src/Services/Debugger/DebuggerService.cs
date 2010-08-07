@@ -9,11 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.VBNet;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
@@ -129,7 +129,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			if (DebugStopped != null)
 				DebugStopped(null, e);
 		}
-
 		
 		static MessageViewCategory debugCategory = null;
 		
@@ -338,8 +337,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			} else if (result is MethodGroupResolveResult) {
 				MethodGroupResolveResult mrr = result as MethodGroupResolveResult;
 				IMethod m = mrr.GetMethodIfSingleOverload();
+				IMethod m2 = mrr.GetMethodWithEmptyParameterList();
 				if (m != null)
 					return GetMemberText(ambience, m, expression, out debuggerCanShowValue);
+				else if (ambience is VBNetAmbience && m2 != null)
+					return GetMemberText(ambience, m2, expression, out debuggerCanShowValue);
 				else
 					return "Overload of " + ambience.Convert(mrr.ContainingType) + "." + mrr.Name;
 			} else {

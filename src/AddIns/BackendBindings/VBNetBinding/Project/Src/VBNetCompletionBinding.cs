@@ -66,7 +66,7 @@ namespace ICSharpCode.VBNetBinding
 						if (insightWindow != null) {
 							insightHandler.InitializeOpenedInsightWindow(editor, insightWindow);
 							insightHandler.HighlightParameter(insightWindow, 0);
-							insightWindow.CaretPositionChanged += delegate { Run(insightWindow, editor); };;
+							insightWindow.CaretPositionChanged += delegate { Run(insightWindow, editor); };
 						}
 						return CodeCompletionKeyPressResult.Completed;
 					}
