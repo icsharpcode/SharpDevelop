@@ -175,7 +175,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				case '(':
 					if (enableMethodInsight && CodeCompletionOptions.InsightEnabled) {
 						IInsightWindow insightWindow = editor.ShowInsightWindow(new MethodInsightProvider().ProvideInsight(editor));
-						if (insightWindow != null) {
+						if (insightWindow != null && insightHandler != null) {
 							insightHandler.InitializeOpenedInsightWindow(editor, insightWindow);
 							insightHandler.HighlightParameter(insightWindow, -1); // disable highlighting
 						}
@@ -185,7 +185,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				case '[':
 					if (enableIndexerInsight && CodeCompletionOptions.InsightEnabled) {
 						IInsightWindow insightWindow = editor.ShowInsightWindow(new IndexerInsightProvider().ProvideInsight(editor));
-						if (insightWindow != null)
+						if (insightWindow != null && insightHandler != null)
 							insightHandler.InitializeOpenedInsightWindow(editor, insightWindow);
 						return CodeCompletionKeyPressResult.Completed;
 					}
