@@ -14,10 +14,23 @@
 	
 	<!-- Template Content -->
 	<Project language="Python">
-		<PropertyGroup>
+		<PropertyGroup configuration="Debug" escapeValue="false">
 			<OutputType>WinExe</OutputType>
-			<MainFile>Program.py</MainFile>		
+			<MainFile>Program.py</MainFile>
 			<DebugInfo>True</DebugInfo>
+			<StartArguments>-X:Debug Program.py</StartArguments>
+			<StartWorkingDirectory>.\</StartWorkingDirectory>
+			<StartAction>Program</StartAction>
+			<StartProgram>${addinpath:ICSharpCode.PythonBinding}\ipy.exe</StartProgram>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Release" escapeValue="false">
+			<OutputType>WinExe</OutputType>
+			<MainFile>Program.py</MainFile>
+			<StartArguments>Program.py</StartArguments>
+			<StartWorkingDirectory>.\</StartWorkingDirectory>
+			<StartAction>Program</StartAction>
+			<StartProgram>${addinpath:ICSharpCode.PythonBinding}\ipy.exe</StartProgram>
 		</PropertyGroup>
 		
 		<ProjectItems>
