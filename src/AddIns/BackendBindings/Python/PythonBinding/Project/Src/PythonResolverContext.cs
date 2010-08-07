@@ -14,8 +14,7 @@ namespace ICSharpCode.PythonBinding
 {
 	public class PythonResolverContext
 	{
-		ICompilationUnit mostRecentCompilationUnit;
-		ICompilationUnit bestCompilationUnit;
+		ICompilationUnit compilationUnit;
 		IProjectContent projectContent;
 		IClass callingClass;
 		
@@ -27,19 +26,22 @@ namespace ICSharpCode.PythonBinding
 		
 		void GetCompilationUnits(ParseInformation parseInfo)
 		{
-			mostRecentCompilationUnit = GetCompilationUnit(parseInfo, true);
-			bestCompilationUnit = GetCompilationUnit(parseInfo, false);
+			compilationUnit = GetCompilationUnit(parseInfo);
+		}
+		
+		ICompilationUnit GetCompilationUnit(ParseInformation parseInfo)
+		{
+			if (parseInfo != null) {
+				return parseInfo.CompilationUnit;
+			}
+			return null;
 		}
 		
 		void GetProjectContent()
 		{
-			if (mostRecentCompilationUnit != null) {
-				projectContent = mostRecentCompilationUnit.ProjectContent;
+			if (compilationUnit != null) {
+				projectContent = compilationUnit.ProjectContent;
 			}
-		}
-		
-		public ICompilationUnit MostRecentCompilationUnit {
-			get { return mostRecentCompilationUnit; }
 		}
 		
 		public IProjectContent ProjectContent {
@@ -85,56 +87,21 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public bool GetCallingMember(DomRegion region)
 		{
-			if (mostRecentCompilationUnit == null) {
+			if (compilationUnit == null) {
 				return false;
 			}
 			
 			if (projectContent != null) {
-				callingClass = GetCallingClass(mostRecentCompilationUnit, bestCompilationUnit, region);
+				callingClass = GetCallingClass(region);
 				return true;
 			}
 			return false;
 		}
-		
-		/// <summary>
-		/// Gets the compilation unit for the specified parse information.
-		/// </summary>
-		public ICompilationUnit GetCompilationUnit(ParseInformation parseInfo, bool mostRecent)
-		{
-			if (parseInfo != null) {
-				if (mostRecent) {
-					return parseInfo.MostRecentCompilationUnit;
-				}
-				return parseInfo.BestCompilationUnit;
-			}
-			return null;
-		}
-		
-		/// <summary>
-		/// Gets the calling class at the specified.
-		/// </summary>
-		IClass GetCallingClass(ICompilationUnit mostRecentCompilationUnit, ICompilationUnit bestCompilationUnit, DomRegion region)
-		{
-			// Try the most recent compilation unit first
-			IClass c = GetCallingClass(mostRecentCompilationUnit, region);
-			if (c != null) {
-				return c;
-			}
-			
-			// Try the best compilation unit.
-			if (bestCompilationUnit != null && bestCompilationUnit.ProjectContent != null) {
-				IClass oldClass = GetCallingClass(bestCompilationUnit, region);
-				if (oldClass != null) {
-					return oldClass;
-				}
-			}
-			return null;
-		}
-		
+				
 		/// <summary>
 		/// Gets the calling class at the specified line and column.
 		/// </summary>
-		IClass GetCallingClass(ICompilationUnit compilationUnit, DomRegion region)
+		IClass GetCallingClass(DomRegion region)
 		{
 			if (compilationUnit.Classes.Count > 0) {
 				return compilationUnit.Classes[0];
@@ -154,13 +121,13 @@ namespace ICSharpCode.PythonBinding
 		public List<ICompletionEntry> GetImportedTypes()
 		{
 			List<ICompletionEntry> types = new List<ICompletionEntry>();
-			CtrlSpaceResolveHelper.AddImportedNamespaceContents(types, mostRecentCompilationUnit, callingClass);
+			CtrlSpaceResolveHelper.AddImportedNamespaceContents(types, compilationUnit, callingClass);
 			return types;
 		}
 		
 		public bool HasImport(string name)
 		{
-			foreach (IUsing u in mostRecentCompilationUnit.UsingScope.Usings) {
+			foreach (IUsing u in compilationUnit.UsingScope.Usings) {
 				foreach (string ns in u.Usings) {
 					if (name == ns) {
 						return true;
@@ -180,8 +147,10 @@ namespace ICSharpCode.PythonBinding
 		{
 			foreach (object obj in GetImportedTypes()) {
 				IClass c = obj as IClass;
-				if ((c != null) && IsSameClassName(name, c.Name)) {
-					return c;
+				if (c != null) {
+					if (IsSameClassName(name, c.Name)) {
+						return c;
+					}
 				}
 			}
 			return null;
@@ -200,7 +169,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public string GetModuleForImportedName(string name)
 		{
-			foreach (IUsing u in mostRecentCompilationUnit.UsingScope.Usings) {
+			foreach (IUsing u in compilationUnit.UsingScope.Usings) {
 				PythonFromImport pythonFromImport = u as PythonFromImport;
 				if (pythonFromImport != null) {
 					if (pythonFromImport.IsImportedName(name)) {
@@ -216,7 +185,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public string UnaliasImportedName(string name)
 		{
-			foreach (IUsing u in mostRecentCompilationUnit.UsingScope.Usings) {
+			foreach (IUsing u in compilationUnit.UsingScope.Usings) {
 				PythonFromImport pythonFromImport = u as PythonFromImport;
 				if (pythonFromImport != null) {
 					string actualName = pythonFromImport.GetOriginalNameForAlias(name);
@@ -233,7 +202,7 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public string UnaliasImportedModuleName(string  name)
 		{
-			foreach (IUsing u in mostRecentCompilationUnit.UsingScope.Usings) {
+			foreach (IUsing u in compilationUnit.UsingScope.Usings) {
 				PythonImport pythonImport = u as PythonImport;
 				if (pythonImport != null) {
 					string actualName = pythonImport.GetOriginalNameForAlias(name);
@@ -248,7 +217,7 @@ namespace ICSharpCode.PythonBinding
 		public string[] GetModulesThatImportEverything()
 		{
 			List<string> modules = new List<string>();
-			foreach (IUsing u in mostRecentCompilationUnit.UsingScope.Usings) {
+			foreach (IUsing u in compilationUnit.UsingScope.Usings) {
 				PythonFromImport pythonFromImport = u as PythonFromImport;
 				if (pythonFromImport != null) {
 					if (pythonFromImport.ImportsEverything) {
@@ -295,7 +264,7 @@ namespace ICSharpCode.PythonBinding
 		public bool HasDottedImportNameThatStartsWith(string importName)
 		{
 			string dottedImportNameStartsWith = importName + ".";
-			foreach (IUsing u in mostRecentCompilationUnit.UsingScope.Usings) {
+			foreach (IUsing u in compilationUnit.UsingScope.Usings) {
 				foreach (string ns in u.Usings) {
 					if (ns.StartsWith(dottedImportNameStartsWith)) {
 						return true;
