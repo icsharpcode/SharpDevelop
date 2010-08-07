@@ -437,6 +437,8 @@
 				<ComponentRef Id="RubyEmptyUserControlFileTemplate"/>
 				<ComponentRef Id="RubyFormsProjectTemplate"/>
 				<ComponentRef Id="RubyLibraryProjectTemplate"/>
+				<ComponentRef Id="RubyWPFApplicationProjectTemplate"/>
+				<ComponentRef Id="RubyWPFWindowFileTemplate"/>
 				<ComponentRef Id="RubyBindingSdSelectedTestsFileRb"/>
 				<ComponentRef Id="RubyBindingSdTestRb"/>
 				<ComponentRef Id="RubyBindingSdTestResultRb"/>

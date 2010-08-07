@@ -171,6 +171,12 @@
     <None Include="Templates\LibraryProject.xpt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Templates\WPFApplication.xpt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WPFWindow.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestRunner\sdselectedtestsfile.rb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

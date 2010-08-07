@@ -1163,6 +1163,12 @@
 										<Component Guid="BDB0208E-B04F-42F5-B3FB-97F77D6C4C7B" Id="RubyLibraryProjectTemplate" DiskId="1">
 											<File Source="..\..\AddIns\BackendBindings\RubyBinding\Templates\LibraryProject.xpt" Name="LibraryProject.xpt" Id="LibraryProject.xpt" KeyPath="yes" />
 										</Component>
+										<Component Id="RubyWPFApplicationProjectTemplate" Guid="758A30A3-10EF-44A8-BD05-F55043D8CCC5" DiskId="1">
+											<File Id="Ruby.WPFApplication.xpt" Name="WPFApplication.xpt" Source="..\..\AddIns\BackendBindings\RubyBinding\Templates\WPFApplication.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="RubyWPFWindowFileTemplate" Guid="F2CD996D-B165-4F30-B70F-33DC1841610D" DiskId="1">
+											<File Id="Ruby.WPFWindow.xft" Name="WPFWindow.xft" Source="..\..\AddIns\BackendBindings\RubyBinding\Templates\WPFWindow.xft" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Directory Id="RubyBindingTestRunner" Name="TestRunner">
 										<Component Id="RubyBindingSdSelectedTestsFileRb" Guid="8F37FDB9-ED10-4A13-857A-FD0BD7231D13" DiskId="1">
