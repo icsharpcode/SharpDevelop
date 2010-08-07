@@ -1041,6 +1041,12 @@
 										<Component Guid="6AE9C385-3B6A-4DD6-9CB9-92EDEEEF3FCF" Id="PythonLibraryProjectTemplate" DiskId="1">
 											<File Source="..\..\AddIns\BackendBindings\PythonBinding\Templates\LibraryProject.xpt" Id="Templates.LibraryProject.xpt" Name="LibraryProject.xpt" KeyPath="yes" />
 										</Component>
+										<Component Id="PythonWPFApplicationProjectTemplate" Guid="5453F13D-AF45-464D-859E-A4DD8A66557C" DiskId="1">
+											<File Id="Python.WPFApplication.xpt" Name="WPFApplication.xpt" Source="..\..\AddIns\BackendBindings\PythonBinding\Templates\WPFApplication.xpt" KeyPath="yes" />
+										</Component>
+										<Component Id="PythonWPFWindowFileTemplate" Guid="BCCF7EE5-9A2F-42D2-B1B5-D885D6B51BDF" DiskId="1">
+											<File Id="Python.WPFWindow.xft" Name="WPFWindow.xft" Source="..\..\AddIns\BackendBindings\PythonBinding\Templates\WPFWindow.xft" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Component Guid="DE04B306-0C6D-434C-A6DC-6F450AAFB108" Id="IronPythonModulesDll" DiskId="1">
 										<File Source="..\..\AddIns\BackendBindings\PythonBinding\IronPython.Modules.dll" Name="IronPython.Modules.dll" Id="IronPython.Modules.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronPython.Modules.dll" AssemblyManifest="IronPython.Modules.dll">

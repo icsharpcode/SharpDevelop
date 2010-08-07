@@ -208,6 +208,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <EmbeddedResource Include="Resources\Python.xshd" />
+    <None Include="Templates\WPFApplication.xpt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WPFWindow.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestRunner\sdtest.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
