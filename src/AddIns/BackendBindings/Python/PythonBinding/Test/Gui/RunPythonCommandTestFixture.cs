@@ -69,5 +69,13 @@ namespace PythonBinding.Tests.Gui
 		{
 			Assert.AreEqual("\"C:\\Projects\\test.py\"", debugger.ProcessStartInfo.Arguments);
 		}
+		
+		[Test]
+		public void WorkingDirectoryIsPathToPythonScriptFileBeingRun()
+		{
+			string workingDirectory = debugger.ProcessStartInfo.WorkingDirectory;
+			string expectedWorkingDirectory = @"C:\Projects";
+			Assert.AreEqual(expectedWorkingDirectory, workingDirectory);
+		}
 	}
 }
