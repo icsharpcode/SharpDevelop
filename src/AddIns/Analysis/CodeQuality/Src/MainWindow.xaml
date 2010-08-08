@@ -113,7 +113,7 @@
 					<ProgressBar IsIndeterminate="True" Width="95" Height="15" />
 				</StackPanel>
 			</StatusBarItem>
-			<StatusBarItem HorizontalAlignment="Right">
+			<StatusBarItem HorizontalAlignment="Right" x:Name="assemblyStats" Visibility="Hidden">
 				<StackPanel Orientation="Horizontal">
 					<StatusBarItem>
 						<StackPanel Orientation="Horizontal">
@@ -142,7 +142,7 @@
 					<StatusBarItem>
 						<StackPanel Orientation="Horizontal">
 							<TextBlock Text="IL instructions: " />
-							<TextBlock Text="TBD" />
+							<TextBlock Text="{Binding Path=MetricsReader.MainModule.InstructionsCount}" />
 						</StackPanel>
 					</StatusBarItem>
 				</StackPanel>

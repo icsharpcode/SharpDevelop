@@ -131,19 +131,19 @@ namespace ICSharpCode.CodeQualityAnalysis
 				IsStruct = typeDefinition.IsValueType && !typeDefinition.IsEnum && typeDefinition.IsSealed,
 				IsInternal = typeDefinition.IsNotPublic,
 				IsDelegate = (typeDefinition.BaseType != null ?
-				              typeDefinition.BaseType.FullName == "System.MulticastDelegate" : false),
+							  typeDefinition.BaseType.FullName == "System.MulticastDelegate" : false),
 				IsNestedPrivate = typeDefinition.IsNestedPrivate,
 				IsNestedPublic = typeDefinition.IsNestedPublic,
 				IsNestedProtected = (!typeDefinition.IsNestedPrivate && !typeDefinition.IsNestedPublic &&
-				                     typeDefinition.IsNestedFamily)
+									 typeDefinition.IsNestedFamily)
 			};
 
 			// try find namespace
 			var nsName = GetNamespaceName(typeDefinition);
 
 			var ns = (from n in module.Namespaces
-			          where n.Name == nsName
-			          select n).SingleOrDefault();
+					  where n.Name == nsName
+					  select n).SingleOrDefault();
 
 			if (ns == null)
 			{
@@ -182,9 +182,9 @@ namespace ICSharpCode.CodeQualityAnalysis
 					if (typeDefinition.BaseType != null)
 					{
 						var baseType = (from n in module.Namespaces
-						                from t in n.Types
-						                where (t.FullName == FormatTypeName(typeDefinition.BaseType, true))
-						                select t).SingleOrDefault();
+										from t in n.Types
+										where (t.FullName == FormatTypeName(typeDefinition.BaseType, true))
+										select t).SingleOrDefault();
 
 						type.BaseType = baseType; // if baseType is null so propably inherits from another assembly
 
@@ -192,7 +192,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 						{
 							type.IsBaseTypeGenericInstance = true;
 							type.GenericBaseTypes.UnionWith(ReadGenericArguments(type.Namespace.Module,
-							                                                     (GenericInstanceType)typeDefinition.BaseType));
+																				 (GenericInstanceType)typeDefinition.BaseType));
 						}
 					}
 
@@ -202,9 +202,9 @@ namespace ICSharpCode.CodeQualityAnalysis
 						foreach (var ic in typeDefinition.Interfaces)
 						{
 							var implementedIc = (from n in module.Namespaces
-							                     from t in n.Types
-							                     where (t.FullName == FormatTypeName(ic, true))
-							                     select t).SingleOrDefault();
+												 from t in n.Types
+												 where (t.FullName == FormatTypeName(ic, true))
+												 select t).SingleOrDefault();
 
 							if (implementedIc != null)
 								type.ImplementedInterfaces.Add(implementedIc);
@@ -212,7 +212,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 							if (ic.IsGenericInstance)
 							{
 								type.GenericBaseTypes.UnionWith(ReadGenericArguments(type.Namespace.Module,
-								                                                     (GenericInstanceType)ic));
+																					 (GenericInstanceType)ic));
 							}
 						}
 					}
@@ -307,7 +307,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				{
 					field.IsGenericInstance = true;
 					field.GenericTypes.UnionWith(ReadGenericArguments(type.Namespace.Module,
-					                                                  (GenericInstanceType)fieldDefinition.FieldType));
+																	  (GenericInstanceType)fieldDefinition.FieldType));
 				}
 
 				field.FieldType = fieldType;
@@ -351,7 +351,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				{
 					method.IsReturnTypeGenericInstance = true;
 					method.GenericReturnTypes.UnionWith(ReadGenericArguments(type.Namespace.Module,
-					                                                         (GenericInstanceType) methodDefinition.ReturnType));
+																			 (GenericInstanceType) methodDefinition.ReturnType));
 				}
 
 				// reading types from parameters
@@ -378,7 +378,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 						{
 							param.IsGenericInstance = true;
 							param.GenericTypes = ReadGenericArguments(type.Namespace.Module,
-							                                          (GenericInstanceType) parameter.ParameterType);
+																	  (GenericInstanceType) parameter.ParameterType);
 						}
 
 						method.Parameters.Add(param);
@@ -391,8 +391,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 			foreach (MethodDefinition methodDefinition in methods)
 			{
 				var method = (from m in type.Methods
-				              where m.Name == FormatMethodName(methodDefinition)
-				              select m).SingleOrDefault();
+							  where m.Name == FormatMethodName(methodDefinition)
+							  select m).SingleOrDefault();
 
 				if (methodDefinition.Body != null)
 				{
@@ -408,41 +408,66 @@ namespace ICSharpCode.CodeQualityAnalysis
 		/// <param name="methodDefinition">A method definition with instructions</param>
 		/// <param name="instructions">A collection of instructions</param>
 		public void ReadInstructions(Method method, MethodDefinition methodDefinition,
-		                             Collection<Instruction> instructions)
+									 Collection<Mono.Cecil.Cil.Instruction> instructions)
 		{
-			foreach (Instruction instruction in instructions)
+			foreach (var instruction in instructions)
 			{
-				var instr = ReadInstruction(instruction);
+				method.Instructions.Add(new Instruction
+				                        	{
+				                        		DeclaringMethod = method,
+												// Operand = instruction.Operand.ToString() // for now operand as string should be enough
+				                        	});
 
-				if (instr is MethodDefinition)
+				var operand = ReadOperand(instruction);
+
+				if (operand is MethodDefinition)
 				{
-					var md = instr as MethodDefinition;
-                   var type = (from n in method.Owner.Namespace.Module.Namespaces
-                             from t in n.Types
-                             where t.FullName == FormatTypeName(md.DeclaringType, true)
-                             select t).SingleOrDefault();
+					var md = operand as MethodDefinition;
+					var type = (from n in method.Owner.Namespace.Module.Namespaces
+							 from t in n.Types
+							 where t.FullName == FormatTypeName(md.DeclaringType, true)
+							 select t).SingleOrDefault();
 
 					method.TypeUses.Add(type);
 
 					var findTargetMethod = (from m in type.Methods
-					                        where m.Name == FormatMethodName(md)
-					                        select m).SingleOrDefault();
+											where m.Name == FormatMethodName(md)
+											select m).SingleOrDefault();
 
 					if (findTargetMethod != null && type == method.Owner)
 						method.MethodUses.Add(findTargetMethod);
 				}
 
-				if (instr is FieldDefinition)
+				if (operand is FieldDefinition)
 				{
-					var fd = instr as FieldDefinition;
+					var fd = operand as FieldDefinition;
 					var field = (from f in method.Owner.Fields
-					             where f.Name == fd.Name
-					             select f).SingleOrDefault();
+								 where f.Name == fd.Name
+								 select f).SingleOrDefault();
 
 					if (field != null)
 						method.FieldUses.Add(field);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Reads an instruction operand by recursive calling until non-instruction
+		/// operand is found
+		/// </summary>
+		/// <param name="instruction">An instruction with operand</param>
+		/// <returns>An instruction operand</returns>
+		public object ReadOperand(Mono.Cecil.Cil.Instruction instruction)
+		{
+			if (instruction.Operand == null)
+				return null;
+
+			var nextInstruction = instruction.Operand as Mono.Cecil.Cil.Instruction;
+
+			if (nextInstruction != null)
+				return ReadOperand(nextInstruction);
+
+			return instruction.Operand;
 		}
 
 		/// <summary>
@@ -471,25 +496,6 @@ namespace ICSharpCode.CodeQualityAnalysis
 			}
 
 			return types;
-		}
-
-		/// <summary>
-		/// Reads instruction operand by recursive calling until non-instruction
-		/// operand is found
-		/// </summary>
-		/// <param name="instruction">An instruction with operand</param>
-		/// <returns>An instruction operand</returns>
-		public object ReadInstruction(Instruction instruction)
-		{
-			if (instruction.Operand == null)
-				return null;
-			
-			var nextInstruction = instruction.Operand as Instruction;
-
-			if (nextInstruction != null)
-				return ReadInstruction(nextInstruction);
-			
-			return instruction.Operand;
 		}
 
 		/// <summary>

@@ -34,10 +34,10 @@ namespace ICSharpCode.CodeQualityAnalysis
 		private MetricsReader metricsReader;
 		public event PropertyChangedEventHandler PropertyChanged;
 		
-		public MetricsReader MetricsReader 
-		{ 
+		public MetricsReader MetricsReader
+		{
 			get
-			{ 
+			{
 				return metricsReader;
 			}
 			
@@ -54,10 +54,10 @@ namespace ICSharpCode.CodeQualityAnalysis
 		}
 		
 		private void NotifyPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        }
+		{
+			if (PropertyChanged != null)
+				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+		}
 
 		private void btnOpenAssembly_Click(object sender, RoutedEventArgs e)
 		{
@@ -72,12 +72,14 @@ namespace ICSharpCode.CodeQualityAnalysis
 				return;
 			
 			progressBar.Visibility = Visibility.Visible;
+			assemblyStats.Visibility = Visibility.Hidden;
 			fileAssemblyLoading.Text = System.IO.Path.GetFileName(fileDialog.FileName);
 			
 			var worker = new BackgroundWorker();
-			worker.DoWork += (source, args) => MetricsReader = new MetricsReader(fileDialog.FileName);			
-			worker.RunWorkerCompleted += (source, args) => { 
+			worker.DoWork += (source, args) => MetricsReader = new MetricsReader(fileDialog.FileName);
+			worker.RunWorkerCompleted += (source, args) => {
 				progressBar.Visibility = Visibility.Hidden;
+				assemblyStats.Visibility = Visibility.Visible;
 				FillMatrix();
 			};
 			

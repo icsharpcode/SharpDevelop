@@ -95,6 +95,13 @@ namespace ICSharpCode.CodeQualityAnalysis
 			}
 		}
 
+		public int InstructionsCount
+		{
+			get {
+				return Namespaces.Sum(ns => ns.Types.Sum(type => type.Methods.Sum(method => method.Instructions.Count)));
+			}
+		}
+
 		public string GetInfo()
 		{
 			var builder = new StringBuilder();
