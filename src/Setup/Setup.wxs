@@ -400,6 +400,7 @@
 				<ComponentRef Id="PythonEmptyFileTemplate"/>	
 				<ComponentRef Id="PythonFormsProjectTemplate"/>	
 				<ComponentRef Id="PythonLibraryProjectTemplate"/>
+				<ComponentRef Id="PythonSilverlightApplicationProjectTemplate"/>
 				<ComponentRef Id="PythonWPFApplicationProjectTemplate"/>
 				<ComponentRef Id="PythonWPFWindowFileTemplate"/>
 				<ComponentRef Id="IpyExe"/>	
@@ -407,6 +408,8 @@
 				<ComponentRef Id="IronPythonModulesXml"/>	
 				<ComponentRef Id="IronPythonDll"/>	
 				<ComponentRef Id="IronPythonXml"/>	
+				<ComponentRef Id="PythonChironExe"/>
+				<ComponentRef Id="PythonChironExeConfig"/>
 				<ComponentRef Id="MicrosoftDynamicDll"/>
 				<ComponentRef Id="MicrosoftScriptingDll"/>	
 				<ComponentRef Id="MicrosoftScriptingDebuggingDll"/>	
@@ -427,6 +430,8 @@
 				<ComponentRef Id="IronRubyLicenseApacheHtml"/>
 				<ComponentRef Id="RubyBindingAddin"/>
 				<ComponentRef Id="RubyBindingDll"/>
+				<ComponentRef Id="RubyChironExe"/>
+				<ComponentRef Id="RubyChironExeConfig"/>
 				<ComponentRef Id="RubyMicrosoftDynamicDll"/>
 				<ComponentRef Id="RubyMicrosoftScriptingDll"/>
 				<ComponentRef Id="RubyMicrosoftScriptingMetadataDll"/>
@@ -437,6 +442,7 @@
 				<ComponentRef Id="RubyEmptyUserControlFileTemplate"/>
 				<ComponentRef Id="RubyFormsProjectTemplate"/>
 				<ComponentRef Id="RubyLibraryProjectTemplate"/>
+				<ComponentRef Id="RubySilverlightApplicationProjectTemplate"/>
 				<ComponentRef Id="RubyWPFApplicationProjectTemplate"/>
 				<ComponentRef Id="RubyWPFWindowFileTemplate"/>
 				<ComponentRef Id="RubyBindingSdSelectedTestsFileRb"/>

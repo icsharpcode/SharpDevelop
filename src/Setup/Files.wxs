@@ -1047,6 +1047,9 @@
 										<Component Id="PythonWPFWindowFileTemplate" Guid="BCCF7EE5-9A2F-42D2-B1B5-D885D6B51BDF" DiskId="1">
 											<File Id="Python.WPFWindow.xft" Name="WPFWindow.xft" Source="..\..\AddIns\BackendBindings\PythonBinding\Templates\WPFWindow.xft" KeyPath="yes" />
 										</Component>
+										<Component Id="PythonSilverlightApplicationProjectTemplate" Guid="B0A5F30B-ABA7-4482-A928-1A02F8C83FD8" DiskId="1">
+											<File Id="Python.SilverlightApplication.xpt" Name="SilverlightApplication.xpt" Source="..\..\AddIns\BackendBindings\PythonBinding\Templates\SilverlightApplication.xpt" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Component Guid="DE04B306-0C6D-434C-A6DC-6F450AAFB108" Id="IronPythonModulesDll" DiskId="1">
 										<File Source="..\..\AddIns\BackendBindings\PythonBinding\IronPython.Modules.dll" Name="IronPython.Modules.dll" Id="IronPython.Modules.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronPython.Modules.dll" AssemblyManifest="IronPython.Modules.dll">
@@ -1093,6 +1096,12 @@
 											<File Id="sdtestrunner.py" Name="sdtestrunner.py" Source="..\..\AddIns\BackendBindings\PythonBinding\TestRunner\sdtestrunner.py" KeyPath="yes" />
 										</Component>
 									</Directory>
+									<Component Id="PythonChironExe" Guid="3BF49CCE-0152-41E6-A693-07EF0F9BEBCF" DiskId="1">
+										<File Id="Python.Chiron.exe" Name="Chiron.exe" Source="..\..\AddIns\BackendBindings\PythonBinding\Chiron.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="Python.Chiron.exe" AssemblyManifest="Python.Chiron.exe" />
+									</Component>
+									<Component Id="PythonChironExeConfig" Guid="1078B0F8-3984-45A8-846C-68479D717C03" DiskId="1">
+										<File Id="Python.Chiron.exe.Config" Name="Chiron.exe.Config" Source="..\..\AddIns\BackendBindings\PythonBinding\Chiron.exe.Config" KeyPath="yes" />
+									</Component>
 								</Directory>
 								<Directory Id="FSharpBinding" Name="FSharpBinding">
 									<Component Guid="6B4F28AF-133C-4FEB-98DB-67A5405AEB12" Id="FSharpBindingAddin" DiskId="1">
@@ -1169,6 +1178,9 @@
 										<Component Id="RubyWPFWindowFileTemplate" Guid="F2CD996D-B165-4F30-B70F-33DC1841610D" DiskId="1">
 											<File Id="Ruby.WPFWindow.xft" Name="WPFWindow.xft" Source="..\..\AddIns\BackendBindings\RubyBinding\Templates\WPFWindow.xft" KeyPath="yes" />
 										</Component>
+										<Component Id="RubySilverlightApplicationProjectTemplate" Guid="8FB9E6F2-4096-4593-9B57-D18D29B1AE1E" DiskId="1">
+											<File Id="Ruby.SilverlightApplication.xpt" Name="SilverlightApplication.xpt" Source="..\..\AddIns\BackendBindings\RubyBinding\Templates\SilverlightApplication.xpt" KeyPath="yes" />
+										</Component>
 									</Directory>
 									<Directory Id="RubyBindingTestRunner" Name="TestRunner">
 										<Component Id="RubyBindingSdSelectedTestsFileRb" Guid="8F37FDB9-ED10-4A13-857A-FD0BD7231D13" DiskId="1">
@@ -1187,6 +1199,12 @@
 											<File Id="RubyBinding.sdtestrunner.rb" Name="sdtestrunner.rb" Source="..\..\AddIns\BackendBindings\RubyBinding\TestRunner\sdtestrunner.rb" KeyPath="yes" />
 										</Component>
 									</Directory>
+									<Component Id="RubyChironExe" Guid="2ACC66D7-B47B-4F14-A0D6-7C3737E781C8" DiskId="1">
+										<File Id="Ruby.Chiron.exe" Name="Chiron.exe" Source="..\..\AddIns\BackendBindings\RubyBinding\Chiron.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="Ruby.Chiron.exe" AssemblyManifest="Ruby.Chiron.exe" />
+									</Component>
+									<Component Id="RubyChironExeConfig" Guid="6D992ECC-18C1-492B-BCF7-E61913E1C947" DiskId="1">
+										<File Id="Ruby.Chiron.exe.config" Name="Chiron.exe.config" Source="..\..\AddIns\BackendBindings\RubyBinding\Chiron.exe.config" KeyPath="yes" />
+									</Component>
 								</Directory>
 								<Directory Id="XamlBinding" Name="XamlBinding">
 									<Component Guid="34D119F8-F7C8-40DD-B354-FA50A3349033" Id="ICSharpCodeXamlBindingDll" DiskId="1">

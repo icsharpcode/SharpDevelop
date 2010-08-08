@@ -7266,6 +7266,12 @@ The resources files have been renamed/moved accordingly.</value>
   <data name="Templates.Project.SharpDevelopMacro.Name" xml:space="preserve">
     <value>Tools menu entry</value>
   </data>
+  <data name="Templates.Project.SilverlightApplication.Description" xml:space="preserve">
+    <value>A project that creates a Silverlight application.</value>
+  </data>
+  <data name="Templates.Project.SilverlightApplication.Name" xml:space="preserve">
+    <value>Silverlight Application</value>
+  </data>
   <data name="Templates.Project.SysTrayIcon.Description" xml:space="preserve">
     <value>A project that creates an application with a icon in the notification area on the taskbar.</value>
   </data>

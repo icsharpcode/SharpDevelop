@@ -1,0 +1,73 @@
+﻿<?xml version="1.0"?>
+<Template originator="Matt Ward">
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.SilverlightApplication.Name}</Name>
+		<Category>Python</Category>
+		<Icon>Python.Template.WinFormsProject</Icon>
+		<Description>${res:Templates.Project.SilverlightApplication.Description}</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename="index.html"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Project language="Python">
+		<PropertyGroup>
+			<OutputType>Exe</OutputType>
+			<MainFile>Application.py</MainFile>
+		</PropertyGroup>
+
+		<PropertyGroup>
+			<DebugInfo>True</DebugInfo>
+			<StartArguments>-w -notification</StartArguments>
+			<StartWorkingDirectory>.\</StartWorkingDirectory>
+			<StartAction>Program</StartAction>
+			<StartProgram>${addinpath:ICSharpCode.PythonBinding}\Chiron.exe</StartProgram>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Release" escapeValue="false">
+			<StartArguments>-w -notification</StartArguments>
+			<StartWorkingDirectory>.\</StartWorkingDirectory>
+			<StartAction>Program</StartAction>
+			<StartProgram>${addinpath:ICSharpCode.PythonBinding}\Chiron.exe</StartProgram>
+		</PropertyGroup>
+		
+		<ProjectItems>
+			<Reference Include="mscorlib"/>
+			<Reference Include="System"/>
+			<Reference Include="System.Data" />
+			<Reference Include="System.Xml" />
+			<Reference Include="IronPython">
+				<HintPath>${addinpath:ICSharpCode.PythonBinding}\IronPython.dll</HintPath>
+			</Reference>
+
+		</ProjectItems>		
+		<Files>
+			<File 
+				name="Application.py"
+				SubType="Code">
+<![CDATA[document.message.innerHTML = "IronPython loaded"
+]]></File>
+			<File 
+				name="index.html" 
+				buildAction="None"
+				language="XML">
+<![CDATA[<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+    	<script type="text/javascript">
+			window.DLR = {}
+			DLR.settings = {console: true}
+    	</script>
+    	<script src="http://gestalt.ironpython.net/dlr-latest.js" type="text/javascript"></script>
+    	<title>Silverlight Application</title>
+	</head>
+	<body>
+		<div id="message">Loading...</div>
+		<script type="application/python" src="Application.py"></script>
+	</body>
+</html>]]></File>
+		</Files>
+	</Project>
+</Template>
