@@ -86,5 +86,42 @@ namespace SharpRefactoring.ContextActions
 			int lineEndOffset = line.Offset + line.Length;
 			document.Remove(offset, lineEndOffset - offset);
 		}
+		
+		/// <summary>
+		/// C# only.
+		/// </summary>
+		public static void AddCodeToMethodStart(IMember m, ITextEditor textArea, string newCode)
+		{
+			int methodStart = FindMethodStartOffset(textArea.Document, m.BodyRegion);
+			if (methodStart < 0)
+				return;
+			textArea.Select(methodStart, 0);
+			using (textArea.Document.OpenUndoGroup()) {
+				int startLine = textArea.Caret.Line;
+				foreach (string newCodeLine in newCode.Split('\n')) {
+					textArea.Document.Insert(textArea.Caret.Offset,
+					                         DocumentUtilitites.GetLineTerminator(textArea.Document, textArea.Caret.Line) + newCodeLine);
+				}
+				int endLine = textArea.Caret.Line;
+				textArea.Language.FormattingStrategy.IndentLines(textArea, startLine, endLine);
+			}
+		}
+		
+		/// <summary>
+		/// C# only.
+		/// </summary>
+		public static int FindMethodStartOffset(IDocument document, DomRegion bodyRegion)
+		{
+			if (bodyRegion.IsEmpty)
+				return -1;
+			int offset = document.PositionToOffset(bodyRegion.BeginLine, bodyRegion.BeginColumn);
+			while (offset < document.TextLength) {
+				if (document.GetCharAt(offset) == '{') {
+					return offset + 1;
+				}
+				offset++;
+			}
+			return -1;
+		}
 	}
 }

@@ -11,10 +11,6 @@
 		<Import assembly = "SharpRefactoring.dll"/>
 	</Runtime>
 	
-	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/ParameterDefinition">
-		<MenuItem id="parameterCheckRefactorings" type="Builder" class="SharpRefactoring.ParameterCheckRefactoringMenuBuilder"/>
-	</Path>
-	
 	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu">
 		<MenuItem id="classCodeGenerators"
 		          type="Builder"
@@ -47,6 +43,8 @@
 		<Class class="SharpRefactoring.ContextActions.GenerateMemberProvider" />	
 		<Class class="SharpRefactoring.ContextActions.CheckAssignmentNull" />	
 		<Class class="SharpRefactoring.ContextActions.CheckAssignmentNotNull" />
+		<Class class="SharpRefactoring.ContextActions.ParamCheckForNull" />
+		<Class class="SharpRefactoring.ContextActions.ParamRangeCheck" />
 	</Path>
 
 	<Path name="/SharpDevelop/ViewContent/TextEditor/OverrideCompletionHandler">
