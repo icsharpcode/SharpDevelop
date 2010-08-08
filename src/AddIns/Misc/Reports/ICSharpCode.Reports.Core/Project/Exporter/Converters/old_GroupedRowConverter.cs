@@ -49,7 +49,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (PrintHelper.IsTextOnlyRow(simpleContainer)) {
 				ExporterCollection myList = new ExporterCollection();
 
-				base.BaseConvert (myList,simpleContainer,parent.Location.X,
+				BaseConverter.BaseConvert (myList,simpleContainer,parent.Location.X,
 				                  new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y));
 				
 				
@@ -83,7 +83,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				
 				base.FireSectionRendering(section);
 				
-				currentPosition = base.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+				currentPosition = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
 				
 				StandardPrinter.EvaluateRow(base.Evaluator,mylist);
 				

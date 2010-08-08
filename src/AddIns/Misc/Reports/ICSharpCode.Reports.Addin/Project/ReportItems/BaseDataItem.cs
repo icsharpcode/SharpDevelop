@@ -35,19 +35,6 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
-		private string CheckForNullValue() 
-		{
-			if (String.IsNullOrEmpty(this.dbValue)) {
-				if (String.IsNullOrEmpty(this.nullValue)) {
-					return GlobalValues.UnboundName;
-					
-				} else
-					return this.nullValue;
-			}
-			return this.dbValue;
-		}
-		
-		
 		
 		[System.ComponentModel.EditorBrowsableAttribute()]
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)

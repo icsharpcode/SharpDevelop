@@ -86,7 +86,7 @@
     <Compile Include="Project\BaseClasses\SinglePage.cs" />
     <Compile Include="Project\BaseClasses\SectionBounds.cs" />
     <Compile Include="Project\BaseClasses\SortColumn.cs" />
-    <Compile Include="Project\BaseItems\BaseGroupeItem.cs" />
+    <Compile Include="Project\BaseItems\BaseGroupItem.cs" />
     <Compile Include="Project\BaseItems\BaseTextItem.cs" />
     <Compile Include="Project\BaseItems\BaseGraphicItem.cs" />
     <Compile Include="Project\BaseItems\BaseReportItem.cs" />

@@ -8,7 +8,9 @@
  */
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Linq;
 
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Interfaces;
@@ -49,7 +51,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (PrintHelper.IsTextOnlyRow(simpleContainer)) {
 				ExporterCollection myList = new ExporterCollection();
 
-				base.BaseConvert (myList,simpleContainer,parent.Location.X,
+				BaseConverter.BaseConvert (myList,simpleContainer,parent.Location.X,
 				                  new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y));
 				
 				return myList;
@@ -74,24 +76,26 @@ namespace ICSharpCode.Reports.Core.Exporter
 				
 				Color color = ((BaseReportItem)simpleContainer).BackColor;
 				
-				// GroupeHeader
+				// Grouping Header
 				
 				if (base.DataNavigator.HasChildren)
 				{
 					TestDecorateElement(simpleContainer);
 				}
 			
+//				Collection<BaseGroupItem> inheritedReportItems = new Collection<BaseGroupItem>(simpleContainer.Items.OfType<BaseGroupItem>().ToList());
+				
 				base.FillRow(simpleContainer);
 				
 				PrepareContainerForConverting(simpleContainer);
 
 				base.FireSectionRendering(section);
 				StandardPrinter.EvaluateRow(base.Evaluator,mylist);
-				currentPosition = base.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+				currentPosition = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
 				
-				AfterConverting (mylist,section);
+				AfterConverting (section);
 				
-			// Grouping items ----------------------
+			// Grouping Items ----------------------
 			
 				if (base.DataNavigator.HasChildren) {
 					
@@ -107,9 +111,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 						
 						StandardPrinter.EvaluateRow(base.Evaluator,mylist);
 						
-						currentPosition = base.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+						currentPosition = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
 
-						AfterConverting (mylist,section);
+						AfterConverting (section);
 					}
 					while ( base.DataNavigator.ChildMoveNext());
 				}
@@ -139,7 +143,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 	
 		
 		
-		private void AfterConverting (ExporterCollection mylist,BaseSection section)
+		private void AfterConverting (BaseSection section)
 		{
 			section.Items[0].Size = base.RestoreSize;
 			section.SectionOffset += section.Size.Height + 3 * GlobalValues.GapBetweenContainer;
@@ -154,7 +158,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			return retval;
 		}
 		
-		private void ShouldDrawBorder (BaseSection section,ExporterCollection list)
+		private static void ShouldDrawBorder (BaseSection section,ExporterCollection list)
 		{
 			if (section.DrawBorder == true) {
 				BaseRectangleItem br = BasePager.CreateDebugItem (section);

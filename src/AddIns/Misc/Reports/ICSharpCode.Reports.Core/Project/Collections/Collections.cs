@@ -189,7 +189,7 @@ namespace ICSharpCode.Reports.Core{
 				throw new ArgumentNullException("columnName");
 			}
 			
-			 return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true));
+			 return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
 		}
 	}
 	
@@ -209,7 +209,7 @@ namespace ICSharpCode.Reports.Core{
 				throw new ArgumentNullException("columnName");
 			}
 			
-			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true));
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
 		}
 	
 		
@@ -245,7 +245,7 @@ namespace ICSharpCode.Reports.Core{
 				throw new ArgumentNullException("columnName");
 			}
 			
-			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true));
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
 		}
 	}
 	
@@ -264,7 +264,7 @@ namespace ICSharpCode.Reports.Core{
 				throw new ArgumentNullException("columnName");
 			}
 			
-			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true));
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
 		}
 	
 		
@@ -301,7 +301,7 @@ namespace ICSharpCode.Reports.Core{
 				throw new ArgumentNullException("parameterName");
 			}
 			
-			return this.FirstOrDefault(x => 0 == String.Compare(x.ParameterName,parameterName,true));
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ParameterName,parameterName,true,CultureInfo.InvariantCulture));
 		}
 		
 		
@@ -369,7 +369,7 @@ namespace ICSharpCode.Reports.Core{
 				throw new ArgumentNullException("columnName");
 			}
 			
-			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true));
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
 		}
 	}
 }

@@ -58,6 +58,7 @@ namespace ICSharpCode.Reports.Addin.Designer
 			}
 		}
 		
+		
 		#region Dispose
 		
 		protected override void Dispose(bool disposing)

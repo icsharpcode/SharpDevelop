@@ -90,6 +90,7 @@
     <Compile Include="Project\DesignerBinding\InternalReportLoader.cs" />
     <Compile Include="Project\Designer\DataItemDesigner.cs" />
     <Compile Include="Project\Designer\DesignerHelper.cs" />
+    <Compile Include="Project\Designer\GroupeHeaderDesigner.cs" />
     <Compile Include="Project\Designer\ImageDesigner.cs" />
     <Compile Include="Project\Designer\LineDesigner.cs" />
     <Compile Include="Project\Designer\RowItemDesigner.cs" />

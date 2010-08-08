@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace ICSharpCode.Reports.Core
@@ -15,7 +16,6 @@ namespace ICSharpCode.Reports.Core
 	/// Description of DataNavigator.
 	/// </summary>
 	public class DataNavigator :IDataNavigator
-//	public class DataNavigator :IDataNavigator,IEnumerable
 	{
 		private IDataViewStrategy store;
 		
@@ -33,23 +33,21 @@ namespace ICSharpCode.Reports.Core
 		
 		#endregion
 		
-		private bool IsDataItem (BaseReportItem itm)
-		{
-			var d = itm as BaseDataItem;
-			return d != null;
-		}
 		
+		private static Collection<BaseDataItem> ExtraxtDataItems (ReportItemCollection items)
+		{
+			Collection<BaseDataItem> inheritedReportItems = new Collection<BaseDataItem>(items.OfType<BaseDataItem>().ToList());
+			return inheritedReportItems;
+		}
 		
 		#region IDataNavigator implementation
 		
 		public void Fill (ReportItemCollection collection) {
 
-			foreach (BaseReportItem item in collection) {
+			Collection<BaseDataItem> filteredCollection  = ExtraxtDataItems(collection);
 			
-				if (IsDataItem (item)) {
-					this.store.Fill(item);
-				}
-				
+			foreach (BaseReportItem item in filteredCollection) {
+				this.store.Fill(item);
 			}
 		}
 		
@@ -107,33 +105,6 @@ namespace ICSharpCode.Reports.Core
 		#endregion
 		
 		
-		#region IEnumarable
-		/*
-		public IEnumerator RangeEnumerator(int start, int end)
-        {
-			if (start > end) {
-				throw new ArgumentException("start-end");
-			}
-			for (int i = start; i <= end; i++)
-            {
-            	IDataViewStrategy d = this.store as IDataViewStrategy;
-            	d.CurrentPosition = i;
-            	yield return this.Current;
-            }
-        }
-
-		
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			for (int i =0;i < this.Count;i++){
-				this.store.MoveNext();
-				yield return this.Current;
-			}
-		}
-		*/
-		#endregion
-		
-		
 		#region GroupedList
 		
 		public bool HasChildren
@@ -170,17 +141,16 @@ namespace ICSharpCode.Reports.Core
 			return ce.MoveNext();
 		}
 		
+		
 		public void FillChild (ReportItemCollection collection)
 		{
 			TableStrategy tableStrategy = store as TableStrategy;
+			var filteredCollection = ExtraxtDataItems(collection);
 			
-			foreach (BaseReportItem item in collection) {
-				if (IsDataItem(item)) {
-					BaseDataItem di = item as BaseDataItem;
-					CurrentItemsCollection currentItemsCollection = tableStrategy.FillDataRow(ce.Current.ListIndex);
-					CurrentItem s = currentItemsCollection.FirstOrDefault(x => x.ColumnName == ((BaseDataItem)item).ColumnName);
-					di.DBValue = s.Value.ToString();
-				}
+			foreach (BaseDataItem item in filteredCollection) {
+				CurrentItemsCollection currentItemsCollection = tableStrategy.FillDataRow(ce.Current.ListIndex);
+				CurrentItem s = currentItemsCollection.FirstOrDefault(x => x.ColumnName == ((BaseDataItem)item).ColumnName);
+				item.DBValue = s.Value.ToString();
 			}
 		}
 		

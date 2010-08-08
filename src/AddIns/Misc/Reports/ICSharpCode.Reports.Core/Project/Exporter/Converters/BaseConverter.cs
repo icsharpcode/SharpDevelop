@@ -82,12 +82,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 			if (exportLineBuilder != null) {
 
-				ExportContainer lineItem = StandardPrinter.ConvertToContainer(row.Parent,row,offset);
-				
-				BaseReportItem baseReportItem = row as BaseReportItem;
+				ExportContainer lineItem = StandardPrinter.ConvertToContainer(row,offset);
 				
 				StandardPrinter.AdjustBackColor(row);
-				ExporterCollection list = StandardPrinter.ConvertPlainCollection(row as BaseReportItem,row.Items,offset);
+				ExporterCollection list = StandardPrinter.ConvertPlainCollection(row.Items,offset);
 					
 				lineItem.Items.AddRange(list);
 				
@@ -170,7 +168,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		
 	
-		protected Point BaseConvert(ExporterCollection myList,ISimpleContainer container,int leftPos,Point curPos)
+		protected static Point BaseConvert(ExporterCollection myList,ISimpleContainer container,int leftPos,Point curPos)
 		{
 			ExporterCollection ml = BaseConverter.ConvertItems (container, curPos);		
 			myList.AddRange(ml);

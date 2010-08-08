@@ -13,9 +13,9 @@ namespace ICSharpCode.Reports.Core
 	/// <summary>
 	/// Description of BaseGroupeItem.
 	/// </summary>
-	public class BaseGroupeItem:BaseDataItem
+	public class BaseGroupItem:BaseDataItem
 	{
-		public BaseGroupeItem():base()
+		public BaseGroupItem():base()
 		{
 		}
 	}

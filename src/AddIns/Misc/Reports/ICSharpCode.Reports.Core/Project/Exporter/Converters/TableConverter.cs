@@ -72,7 +72,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				
 					if (PrintHelper.IsTextOnlyRow(simpleContainer) ) {
 						headerContainer = simpleContainer;
-						currentPosition = base.BaseConvert(mylist,headerContainer,defaultLeftPos,currentPosition);
+						currentPosition = BaseConverter.BaseConvert(mylist,headerContainer,defaultLeftPos,currentPosition);
 					}
 					
 					else 
@@ -94,12 +94,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 								base.FirePageFull(mylist);
 								mylist.Clear();
 
-								currentPosition = base.BaseConvert(mylist,headerContainer,
+								currentPosition = BaseConverter.BaseConvert(mylist,headerContainer,
 								                                     defaultLeftPos,
 								                                     base.SectionBounds.ReportHeaderRectangle.Location);
 							}
 							
-							currentPosition = base.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+							currentPosition = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
 							
 							simpleContainer.Size = base.RestoreSize;
 						}

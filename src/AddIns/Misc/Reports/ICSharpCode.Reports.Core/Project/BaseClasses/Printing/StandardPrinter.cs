@@ -8,8 +8,8 @@
  */
 using System;
 using System.Drawing;
-using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core.BaseClasses.Printing
@@ -166,7 +166,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 		
-		public static  ExporterCollection ConvertPlainCollection (BaseReportItem parent,ReportItemCollection items,Point offset)
+		public static  ExporterCollection ConvertPlainCollection (ReportItemCollection items,Point offset)
 		{
 			if (items == null) {
 				throw new ArgumentNullException("items");
@@ -210,7 +210,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 		
-		public static ExportContainer ConvertToContainer (BaseReportItem parent,ISimpleContainer item,Point offset) 
+		public static ExportContainer ConvertToContainer (ISimpleContainer item,Point offset) 
 		{
 			if (item == null) {
 				throw new ArgumentNullException("item");

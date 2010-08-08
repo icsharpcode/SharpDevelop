@@ -7,16 +7,44 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.ComponentModel;
+using System.ComponentModel.Design;
+using System.Drawing;
+using System.Windows.Forms;
+using System.Windows.Forms.Design;
+
+using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
 
 namespace ICSharpCode.Reports.Addin
 {
 	/// <summary>
 	/// Description of BaseGroupItem.
 	/// </summary>
-	public class BaseGroupeItem:BaseDataItem
+	/// 
+	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.GroupHeaderDesigner))]
+	public class BaseGroupItem:BaseDataItem
 	{
-		public BaseGroupeItem()
+		public BaseGroupItem()
 		{
+		}
+		
+		
+		[System.ComponentModel.EditorBrowsableAttribute()]
+		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
+		{
+			if (String.IsNullOrEmpty(Text)) {
+				Text = ColumnName;
+			}
+			base.OnPaint(e);
+			this.Draw(e.Graphics);
+		}
+		
+		
+		
+		public override void Draw(Graphics graphics)
+		{
+			base.Draw (graphics);
 		}
 	}
 }
