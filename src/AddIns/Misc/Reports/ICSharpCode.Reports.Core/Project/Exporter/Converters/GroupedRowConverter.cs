@@ -71,7 +71,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 				PrintHelper.AdjustSectionLocation (section);
 				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
 				base.SaveSize(section.Items[0].Size);
+				
 				Color color = ((BaseReportItem)simpleContainer).BackColor;
+				
+				// GroupeHeader
+				
 				if (base.DataNavigator.HasChildren)
 				{
 					TestDecorateElement(simpleContainer);
@@ -82,16 +86,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 				PrepareContainerForConverting(simpleContainer);
 
 				base.FireSectionRendering(section);
-
+				StandardPrinter.EvaluateRow(base.Evaluator,mylist);
 				currentPosition = base.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
 				
 				AfterConverting (mylist,section);
 				
-			// Grouping starts  ------------------------
+			// Grouping items ----------------------
 			
 				if (base.DataNavigator.HasChildren) {
 					
-					//((BaseReportItem)simpleContainer).BackColor = color;
 					StandardPrinter.AdjustBackColor(simpleContainer,GlobalValues.DefaultBackColor);
 					base.DataNavigator.SwitchGroup();
 					do {
@@ -101,7 +104,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 						PrepareContainerForConverting(simpleContainer);
 
 						base.FireSectionRendering(section);
-
+						
+						StandardPrinter.EvaluateRow(base.Evaluator,mylist);
+						
 						currentPosition = base.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
 
 						AfterConverting (mylist,section);
@@ -131,21 +136,17 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		void PrepareContainerForConverting(ISimpleContainer simpleContainer)
-		{
-			base.LayoutRow(simpleContainer);
-		}
+	
 		
 		
-		void AfterConverting (ExporterCollection mylist,BaseSection section)
+		private void AfterConverting (ExporterCollection mylist,BaseSection section)
 		{
-			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
 			section.Items[0].Size = base.RestoreSize;
 			section.SectionOffset += section.Size.Height + 3 * GlobalValues.GapBetweenContainer;
 		}
 		
 		
-		Color TestDecorateElement(ISimpleContainer simpleContainer)
+		private Color TestDecorateElement(ISimpleContainer simpleContainer)
 		{
 			BaseReportItem i = simpleContainer as BaseReportItem;
 			var retval = i.BackColor;
@@ -153,7 +154,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			return retval;
 		}
 		
-		void ShouldDrawBorder (BaseSection section,ExporterCollection list)
+		private void ShouldDrawBorder (BaseSection section,ExporterCollection list)
 		{
 			if (section.DrawBorder == true) {
 				BaseRectangleItem br = BasePager.CreateDebugItem (section);

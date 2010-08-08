@@ -8,6 +8,7 @@
  */
 using System;
 using System.Drawing;
+using System.Linq;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Events;
 using ICSharpCode.Reports.Core.Interfaces;
@@ -156,7 +157,13 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		
 		
-		protected void LayoutRow (ISimpleContainer row)
+		protected	void PrepareContainerForConverting(ISimpleContainer simpleContainer)
+		{
+			LayoutRow(simpleContainer);
+		}
+		
+		
+		private void LayoutRow (ISimpleContainer row)
 		{
 			PrintHelper.SetLayoutForRow(Graphics,Layouter,row);
 		}

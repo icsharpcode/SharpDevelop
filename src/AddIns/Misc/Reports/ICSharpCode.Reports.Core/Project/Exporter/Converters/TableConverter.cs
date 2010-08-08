@@ -83,12 +83,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 							//
 							BaseSection section = this.baseTable.Parent as BaseSection;
 							PrintHelper.AdjustSectionLocation(section);
+							
 							base.FillRow(simpleContainer);
 							
 							StandardPrinter.EvaluateRow(base.Evaluator,mylist);
 							
-							base.LayoutRow(simpleContainer);
-
+							base.PrepareContainerForConverting(simpleContainer);
 							
 							if (PrintHelper.IsPageFull(new Rectangle(new Point (simpleContainer.Location.X,currentPosition.Y),simpleContainer.Size),base.SectionBounds)) {
 								base.FirePageFull(mylist);

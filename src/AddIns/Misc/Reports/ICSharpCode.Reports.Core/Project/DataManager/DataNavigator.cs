@@ -33,11 +33,23 @@ namespace ICSharpCode.Reports.Core
 		
 		#endregion
 		
+		private bool IsDataItem (BaseReportItem itm)
+		{
+			var d = itm as BaseDataItem;
+			return d != null;
+		}
+		
+		
 		#region IDataNavigator implementation
 		
 		public void Fill (ReportItemCollection collection) {
-			foreach (IReportItem item in collection) {
-				this.store.Fill(item);
+
+			foreach (BaseReportItem item in collection) {
+			
+				if (IsDataItem (item)) {
+					this.store.Fill(item);
+				}
+				
 			}
 		}
 		
@@ -160,15 +172,16 @@ namespace ICSharpCode.Reports.Core
 		
 		public void FillChild (ReportItemCollection collection)
 		{
-			TableStrategy t = store as TableStrategy;
+			TableStrategy tableStrategy = store as TableStrategy;
 			
-			foreach (BaseDataItem item in collection) {
-				CurrentItemsCollection ci = t.FillDataRow(ce.Current.ListIndex);
-				CurrentItem s = ci.FirstOrDefault(x => x.ColumnName == ((BaseDataItem)item).ColumnName);
-				item.DBValue = s.Value.ToString();
-				
+			foreach (BaseReportItem item in collection) {
+				if (IsDataItem(item)) {
+					BaseDataItem di = item as BaseDataItem;
+					CurrentItemsCollection currentItemsCollection = tableStrategy.FillDataRow(ce.Current.ListIndex);
+					CurrentItem s = currentItemsCollection.FirstOrDefault(x => x.ColumnName == ((BaseDataItem)item).ColumnName);
+					di.DBValue = s.Value.ToString();
+				}
 			}
-			
 		}
 		
 		

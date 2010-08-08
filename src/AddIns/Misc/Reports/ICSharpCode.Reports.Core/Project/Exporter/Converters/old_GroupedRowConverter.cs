@@ -79,7 +79,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				
 				base.FillRow(simpleContainer);
 				
-				base.LayoutRow(simpleContainer);
+				base.PrepareContainerForConverting(simpleContainer);
 				
 				base.FireSectionRendering(section);
 				

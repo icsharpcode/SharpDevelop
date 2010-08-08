@@ -75,7 +75,7 @@ namespace ICSharpCode.Reports.Addin
 			
 			
 			//Group
-			tb = new ToolboxItem(typeof(ICSharpCode.Reports.Addin.BaseGroupedRow));
+			tb = new ToolboxItem(typeof(ICSharpCode.Reports.Addin.BaseGroupeItem));
 			tb.Bitmap = WinFormsResourceService.GetBitmap("Icons.16x16.SharpQuery.Table");
 //			tb.DisplayName = ResourceService.GetString("SharpReport.Toolbar.DataRow");
 			tb.DisplayName = "GroupHeader";
