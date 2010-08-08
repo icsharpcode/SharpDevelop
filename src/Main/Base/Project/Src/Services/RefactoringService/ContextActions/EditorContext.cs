@@ -5,8 +5,10 @@
 //     <version>$Revision: $</version>
 // </file>
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
@@ -74,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			
 			this.CurrentMemberAST = GetCurrentMemberAST(editor);
 			
-			this.CurrentElement = FindInnermostNodeAtLocation(this.CurrentMemberAST, new Location(CaretColumn, CaretLine));
+			this.CurrentElement = FindInnermostNode(this.CurrentMemberAST, new Location(CaretColumn, CaretLine));
 			
 //			DebugLog();
 		}
@@ -119,29 +121,19 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return null;
 		}
 		
-//		public TNode GetInnerElement<TNode>() where TNode : class, INode
-//		{
-//			var findChildVisitor = new FindOutermostNodeVisitor<TNode>();
-//			this.CurrentElement.AcceptVisitor(findChildVisitor, null);
-//			return findChildVisitor.FoundNode;
-//		}
+		Dictionary<Type, object> cachedValues = new Dictionary<Type, object>();
 		
-		INode FindInnermostNodeAtLocation(INode memberDecl, Location position)
+		public T GetCached<T>() where T : IContextActionCache, new()
 		{
-			if (memberDecl == null)
-				return null;
-			if (memberDecl is MethodDeclaration) {
-				return FindInnermostNode(((MethodDeclaration)memberDecl).Body, position);
-			} else if (memberDecl is PropertyDeclaration) {
-				var propertyDecl = (PropertyDeclaration)memberDecl;
-				if (propertyDecl.HasGetRegion && position >= propertyDecl.GetRegion.StartLocation && position <= propertyDecl.GetRegion.EndLocation) {
-					return FindInnermostNode(propertyDecl.GetRegion.Block, position);
-				}
-				if (propertyDecl.HasSetRegion && position >= propertyDecl.SetRegion.StartLocation && position <= propertyDecl.SetRegion.EndLocation) {
-					return FindInnermostNode(propertyDecl.SetRegion.Block, position);
-				}
+			Type t = typeof(T);
+			if (cachedValues.ContainsKey(t)) {
+				return (T)cachedValues[t];
+			} else {
+				T cached = new T();
+				cached.Initialize(this);
+				cachedValues[t] = cached;
+				return cached;
 			}
-			return null;
 		}
 		
 		public static INode FindInnermostNode(INode node, Location position)
@@ -187,19 +179,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				base.BeginVisit(node);
 			}
 		}
-		
-//		class FindOutermostNodeVisitor<TNode> : NodeTrackingAstVisitor where TNode : class, INode
-//		{
-//			public TNode FoundNode { get; private set; }
-//
-//			protected override void BeginVisit(INode node)
-//			{
-//				if (node is TNode && FoundNode == null) {
-//					FoundNode = (TNode)node;
-//				}
-//				base.BeginVisit(node);
-//			}
-//		}
 
 		ResolveResult ResolveExpression(ExpressionResult expression, ITextEditor editor, int caretLine, int caretColumn)
 		{

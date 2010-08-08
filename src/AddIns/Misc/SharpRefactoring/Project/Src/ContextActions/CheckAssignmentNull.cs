@@ -15,20 +15,28 @@ namespace SharpRefactoring.ContextActions
 	/// <summary>
 	/// Offers inserting "if (a == null) return;" after "var a = *expr*"
 	/// </summary>
-	public class CheckAssignmentNull : CheckAssignmentAction
+	public class CheckAssignmentNull : ContextAction
 	{
 		public override string Title {
 			get { return "Check for null"; }
 		}
 		
+		public override bool IsAvailable(EditorContext context)
+		{
+			var cache = context.GetCached<CheckAssignmentCache>();
+			return cache.IsActionAvailable;
+		}
+		
 		public override void Execute(EditorContext context)
 		{
-			var ifStatement = GenerateAstToInsert(this.VariableName);
+			var cache = context.GetCached<CheckAssignmentCache>();
+			
+			var ifStatement = GenerateAstToInsert(cache.VariableName);
 
 			var editor = context.Editor;
-			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, editor.Document.GetLineStartOffset(this.ElementRegion.GetStart()));
-			string code = this.CodeGenerator.GenerateCode(ifStatement, indent);
-			int insertOffset = editor.Document.GetLineEndOffset(this.ElementRegion.GetEnd());
+			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, editor.Document.GetLineStartOffset(cache.ElementRegion.GetStart()));
+			string code = cache.CodeGenerator.GenerateCode(ifStatement, indent);
+			int insertOffset = editor.Document.GetLineEndOffset(cache.ElementRegion.GetEnd());
 			editor.Document.Insert(insertOffset, code);
 			editor.Caret.Offset = insertOffset + code.Length - 1;
 		}

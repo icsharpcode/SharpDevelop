@@ -16,14 +16,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		public abstract string Title { get; }
 		
-		public abstract bool IsEnabled(EditorContext context);
+		public abstract bool IsAvailable(EditorContext context);
 		
 		public abstract void Execute(EditorContext context);
 		
 		public IEnumerable<IContextAction> GetAvailableActions(EditorContext context)
 		{
 			this.context = context;
-			if (this.IsEnabled(context))
+			if (this.IsAvailable(context))
 				yield return this;
 		}
 		

@@ -14,15 +14,29 @@ using ICSharpCode.SharpDevelop.Refactoring;
 namespace SharpRefactoring.ContextActions
 {
 	/// <summary>
-	/// Description of CheckAssignmentAction.
+	/// Caches common data for CheckAssignmentNull and CheckAssignmentNotNull.
 	/// </summary>
-	public abstract class CheckAssignmentAction : ContextAction
+	public class CheckAssignmentCache : IContextActionCache
 	{
-		protected string VariableName { get; private set; }
+		public void Initialize(EditorContext context)
+		{
+			this.VariableName = GetVariableName(context);
+			this.CodeGenerator = GetCodeGenerator(context);
+			this.ElementRegion = GetStatementRegion(context);
+		}
 		
-		protected CodeGenerator CodeGenerator { get; private set; }
+		public bool IsActionAvailable
+		{
+			get {
+				return !string.IsNullOrEmpty(this.VariableName) && (this.CodeGenerator != null);
+			}
+		}
 		
-		protected DomRegion ElementRegion { get; private set; }
+		public string VariableName { get; private set; }
+		
+		public CodeGenerator CodeGenerator { get; private set; }
+		
+		public DomRegion ElementRegion { get; private set; }
 		
 		protected string GetVariableName(EditorContext context)
 		{
@@ -74,7 +88,7 @@ namespace SharpRefactoring.ContextActions
 			if (declaration.Variables.Count != 1)
 				return null;
 			VariableDeclaration varDecl = declaration.Variables[0];
-			if (!varDecl.Initializer.IsNull && 
+			if (!varDecl.Initializer.IsNull &&
 			    // don't offer action for "var a = new Foo()"
 			    !(varDecl.Initializer is ObjectCreateExpression))
 				return varDecl.Name;
@@ -94,14 +108,6 @@ namespace SharpRefactoring.ContextActions
 			if (symbol != null)
 				return symbol.ResolvedType;
 			return null;
-		}
-		
-		public override bool IsEnabled(EditorContext context)
-		{
-			this.VariableName = GetVariableName(context);
-			this.CodeGenerator = GetCodeGenerator(context);
-			this.ElementRegion = GetStatementRegion(context);
-			return !string.IsNullOrEmpty(this.VariableName) && (this.CodeGenerator != null);
 		}
 	}
 }

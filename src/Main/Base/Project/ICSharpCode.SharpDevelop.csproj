@@ -332,6 +332,7 @@
     <Compile Include="Src\Services\ProjectService\CompileModifiedProjectsOnly.cs" />
     <Compile Include="Src\Services\ProjectService\SolutionConfigurationEventHandler.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextAction.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionCache.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsBulbControl.xaml.cs">
       <DependentUpon>ContextActionsBulbControl.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -353,6 +354,7 @@
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsViewModel.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionViewModel.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActionsHelper.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\IContextActionCache.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\IContextActionsProvider.cs" />
     <Compile Include="Src\Services\RefactoringService\ExtractInterfaceOptions.cs" />
     <Compile Include="Src\Services\RefactoringService\GoToClassAction.cs" />

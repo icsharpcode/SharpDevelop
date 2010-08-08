@@ -14,7 +14,7 @@ namespace SharpRefactoring.ContextActions
 	/// <summary>
 	/// Description of CheckAssignmentNotNull.
 	/// </summary>
-	public class CheckAssignmentNotNull : CheckAssignmentAction
+	public class CheckAssignmentNotNull : ContextAction
 	{
 		public override string Title {
 			get { return "Check for not null"; }
@@ -22,14 +22,22 @@ namespace SharpRefactoring.ContextActions
 		
 		string caretMarker = "<<>>";
 		
+		public override bool IsAvailable(EditorContext context)
+		{
+			var cache = context.GetCached<CheckAssignmentCache>();
+			return cache.IsActionAvailable;
+		}
+		
 		public override void Execute(EditorContext context)
 		{
-			var ifStatement = GenerateAstToInsert(this.VariableName);
+			var cache = context.GetCached<CheckAssignmentCache>();
+			
+			var ifStatement = GenerateAstToInsert(cache.VariableName);
 			
 			var editor = context.Editor;
-			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, editor.Document.GetLineStartOffset(this.ElementRegion.GetStart()));
-			string code = this.CodeGenerator.GenerateCode(ifStatement, indent);
-			int insertOffset = editor.Document.GetLineEndOffset(this.ElementRegion.GetEnd());
+			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, editor.Document.GetLineStartOffset(cache.ElementRegion.GetStart()));
+			string code = cache.CodeGenerator.GenerateCode(ifStatement, indent);
+			int insertOffset = editor.Document.GetLineEndOffset(cache.ElementRegion.GetEnd());
 			using (var undoGroup = editor.Document.OpenUndoGroup()) {
 				editor.Document.Insert(insertOffset, code);
 				var caretPos = editor.Document.Text.IndexOf(caretMarker, insertOffset);
