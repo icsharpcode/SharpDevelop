@@ -60,6 +60,12 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			editor = new TextBox();
 			editor = Template.FindName("editor", this) as TextBox; // Gets the TextBox-editor from the Template
 			Debug.Assert(editor != null);
+			editor.PreviewKeyDown+= delegate(object sender, KeyEventArgs e) {
+				if (e.Key == Key.Enter && (e.KeyboardDevice.Modifiers & ModifierKeys.Shift) != ModifierKeys.Shift)
+				{
+					e.Handled = true;
+				} };
+			ToolTip = "Edit the Text. Press"+Environment.NewLine+"Enter to make changes."+Environment.NewLine+"Shift+Enter to insert a newline."+Environment.NewLine+"Esc to cancel editing.";
 		}
 		
 		/// <summary>
@@ -102,9 +108,10 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			if (changeGroup != null && _isChangeGroupOpen){
 				changeGroup.Abort();
 				_isChangeGroupOpen=false;
-			}
+			}			
 			if (textBlock != null)
 				textBlock.Visibility = Visibility.Visible;
+			Reset();
 			base.OnLostKeyboardFocus(e);
 		}
 		
@@ -115,40 +122,64 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		protected override void OnKeyUp(KeyEventArgs e)
 		{
 			base.OnKeyUp(e);
-			if (e.Key == Key.Escape) {
-				// Commit the changes to the DOM
-				if(property!=null)
-					designItem.Properties[property].SetValue(Bind);
-				if(designItem.Properties[Control.FontFamilyProperty].ValueOnInstance!=editor.FontFamily)
-					designItem.Properties[Control.FontFamilyProperty].SetValue(editor.FontFamily);
-				if((double)designItem.Properties[Control.FontSizeProperty].ValueOnInstance!=editor.FontSize)
-					designItem.Properties[Control.FontSizeProperty].SetValue(editor.FontSize);
-				if((FontStretch)designItem.Properties[Control.FontStretchProperty].ValueOnInstance!=editor.FontStretch)
-					designItem.Properties[Control.FontStretchProperty].SetValue(editor.FontStretch);
-				if((FontStyle)designItem.Properties[Control.FontStyleProperty].ValueOnInstance!=editor.FontStyle)
-					designItem.Properties[Control.FontStyleProperty].SetValue(editor.FontStyle);
-				if((FontWeight)designItem.Properties[Control.FontWeightProperty].ValueOnInstance!=editor.FontWeight)
-					designItem.Properties[Control.FontWeightProperty].SetValue(editor.FontWeight);
-				
-				if (changeGroup != null && _isChangeGroupOpen){
-					changeGroup.Commit();
-					_isChangeGroupOpen=false;
+			if(e.KeyboardDevice.Modifiers != ModifierKeys.Shift) {
+				switch(e.Key) {						
+					case Key.Enter:
+						// Commit the changes to DOM.
+						if(property!=null)
+							designItem.Properties[property].SetValue(Bind);
+						if(designItem.Properties[Control.FontFamilyProperty].ValueOnInstance!=editor.FontFamily)
+							designItem.Properties[Control.FontFamilyProperty].SetValue(editor.FontFamily);
+						if((double)designItem.Properties[Control.FontSizeProperty].ValueOnInstance!=editor.FontSize)
+							designItem.Properties[Control.FontSizeProperty].SetValue(editor.FontSize);
+						if((FontStretch)designItem.Properties[Control.FontStretchProperty].ValueOnInstance!=editor.FontStretch)
+							designItem.Properties[Control.FontStretchProperty].SetValue(editor.FontStretch);
+						if((FontStyle)designItem.Properties[Control.FontStyleProperty].ValueOnInstance!=editor.FontStyle)
+							designItem.Properties[Control.FontStyleProperty].SetValue(editor.FontStyle);
+						if((FontWeight)designItem.Properties[Control.FontWeightProperty].ValueOnInstance!=editor.FontWeight)
+							designItem.Properties[Control.FontWeightProperty].SetValue(editor.FontWeight);
+						
+						if (changeGroup != null && _isChangeGroupOpen){
+							changeGroup.Commit();
+							_isChangeGroupOpen=false;
+						}
+						changeGroup = null;
+						this.Visibility = Visibility.Hidden;
+						textBlock.Visibility = Visibility.Visible;
+						break;
+					case Key.Escape:
+						AbortEditing();
+						break;
 				}
-				changeGroup = null;
-				this.Visibility = Visibility.Hidden;
-				textBlock.Visibility = Visibility.Visible;
+			}else if(e.Key == Key.Enter){
+				editor.Text.Insert(editor.CaretIndex, Environment.NewLine);
+			}
+		}
+		
+		private void Reset()
+		{
+			if (textBlock != null) {
+				if (property != null)
+					textBlock.Text = (string) designItem.Properties[property].ValueOnInstance;
+				textBlock.FontFamily = (System.Windows.Media.FontFamily)designItem.Properties[Control.FontFamilyProperty].ValueOnInstance;
+				textBlock.FontSize = (double) designItem.Properties[Control.FontSizeProperty].ValueOnInstance;
+				textBlock.FontStretch = (FontStretch) designItem.Properties[Control.FontStretchProperty].ValueOnInstance;
+				textBlock.FontStretch = (FontStretch) designItem.Properties[Control.FontStretchProperty].ValueOnInstance;
+				textBlock.FontWeight = (FontWeight) designItem.Properties[Control.FontWeightProperty].ValueOnInstance;
 			}
 		}
 		
 		public void AbortEditing()
 		{
 			if(changeGroup!=null && _isChangeGroupOpen){
+				Reset();
 				changeGroup.Abort();
 				_isChangeGroupOpen=false;
-			}
+			}			
 			this.Visibility= Visibility.Hidden;
 			if(textBlock!=null)
 				textBlock.Visibility=Visibility.Visible;
+			Reset();
 		}
 		
 		public void StartEditing()

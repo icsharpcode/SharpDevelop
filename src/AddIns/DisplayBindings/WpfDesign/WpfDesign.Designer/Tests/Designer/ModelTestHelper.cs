@@ -78,13 +78,23 @@ namespace ICSharpCode.WpfDesign.Tests.Designer
 		}
 		
 		protected DesignItem CreateGridContext(string xaml)
-        {
-            XamlDesignContext context = CreateContext(@"<Grid xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" >
+		{
+			XamlDesignContext context = CreateContext(@"<Grid xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" >
             " + xaml + "</Grid>");
-            var grid = (Grid)context.RootItem.Component;
-            var gridChild = context.Services.Component.GetDesignItem(grid.Children[0]);
-            return gridChild;
-        }
+			var grid = (Grid)context.RootItem.Component;
+			var gridChild = context.Services.Component.GetDesignItem(grid.Children[0]);
+			return gridChild;
+		}
+		
+		protected DesignItem CreateGridContextWithDesignSurface(string xaml)
+		{
+			var surface = new DesignSurface();
+			var xamlWithGrid=@"<Grid xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation"" xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"" >
+            " + xaml + "</Grid>";
+			surface.LoadDesigner(new XmlTextReader(new StringReader(xamlWithGrid)), new XamlLoadSettings());
+			Assert.IsNotNull(surface.DesignContext.RootItem);
+			return surface.DesignContext.RootItem;
+		}
 		
 		static string ItemIdentity(DesignItem item)
 		{

@@ -28,8 +28,6 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 			bgBrush = new SolidColorBrush(Color.FromArgb(0x35, 0x1E, 0x90, 0xff));
 			bgBrush.Freeze();
 			
-			//selBrush = new SolidColorBrush(Color.FromArgb(0xC0, 0xff, 0xb7, 0x4f));
-			//selBrush.Freeze();
 		}
 		
 		readonly DesignItem gridItem;
@@ -408,13 +406,6 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 						child.Properties.GetAttachedProperty(idxProperty).SetValue(start + 1);
 					}
 				}
-			}
-			if (gridItem.Properties["Children"].CollectionElements.Count > 0) {
-				var operation = PlacementOperation.Start(gridItem.Properties["Children"].CollectionElements, PlacementType.Move);
-				foreach (var info in operation.PlacedItems) {
-					operation.CurrentContainerBehavior.SetPosition(info);
-				}
-				operation.Commit();
 			}
 		}
 		
