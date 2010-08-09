@@ -22,19 +22,16 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public IEnumerable<IContextAction> GetAvailableActions(EditorContext context)
 		{
-			this.context = context;
+			this.Context = context;
 			if (this.IsAvailable(context))
 				yield return this;
 		}
 		
-		EditorContext context;		
+		public EditorContext Context { get; private set; }
+		
 		public void Execute()
 		{
-			Execute(this.context);
-		}
-		
-		public virtual string Id {
-			get { return this.GetType().FullName; }
+			Execute(this.Context);
 		}
 	}
 }

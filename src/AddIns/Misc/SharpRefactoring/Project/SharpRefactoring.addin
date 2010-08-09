@@ -38,6 +38,8 @@
 	
 	<Path name="/SharpDevelop/ViewContent/AvalonEdit/ContextActions">
 		<Class class="SharpRefactoring.ContextActions.AddUsingProvider" />
+		<Class class="SharpRefactoring.ContextActions.RenameFileToMatchClassName" />
+		<Class class="SharpRefactoring.ContextActions.MoveClassToFile" />
 		<Class class="SharpRefactoring.ContextActions.ImplementInterfaceProvider" />
 		<Class class="SharpRefactoring.ContextActions.ImplementAbstractClassProvider" />
 		<Class class="SharpRefactoring.ContextActions.GenerateMemberProvider" />	

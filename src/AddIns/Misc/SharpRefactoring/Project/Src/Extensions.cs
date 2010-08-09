@@ -57,7 +57,16 @@ namespace SharpRefactoring
 		
 		public static bool IsUserCode(this IClass c)
 		{
-			return (c != null && !c.BodyRegion.IsEmpty);
+			if (c == null)
+				throw new ArgumentNullException("c");
+			return !c.BodyRegion.IsEmpty;
+		}
+		
+		public static bool IsInnerClass(this IClass c)
+		{
+			if (c == null)
+				throw new ArgumentNullException("c");
+			 return c.DeclaringType != null;
 		}
 	}
 }

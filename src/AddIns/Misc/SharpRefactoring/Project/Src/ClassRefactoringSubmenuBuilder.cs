@@ -53,8 +53,6 @@ namespace SharpRefactoring
 			LanguageProperties language = c.ProjectContent.Language;
 			
 			if (!FindReferencesAndRenameHelper.IsReadOnly(c)) {
-				AddCorrectClassFileNameCommands(c, resultItems);
-				
 				AddRenameCommand(c, resultItems);
 				
 				if (language.RefactoringProvider.SupportsExtractInterface) {
@@ -78,50 +76,6 @@ namespace SharpRefactoring
 			var cmd = new MenuCommand("${res:SharpDevelop.Refactoring.ExtractInterfaceCommand}", ExtractInterface);
 			cmd.Tag = c;
 			resultItems.Add(cmd);
-		}
-		
-		void AddCorrectClassFileNameCommands(IClass c, List<ToolStripItem> resultItems)
-		{
-			if (c.DeclaringType == null &&
-			    !c.BodyRegion.IsEmpty &&
-			    !c.Name.Equals(Path.GetFileNameWithoutExtension(c.CompilationUnit.FileName),
-			                   StringComparison.OrdinalIgnoreCase))
-			{
-				// File name does not match class name
-				string correctFileName = Path.Combine(Path.GetDirectoryName(c.CompilationUnit.FileName),
-				                                      c.Name + Path.GetExtension(c.CompilationUnit.FileName));
-				if (FileUtility.IsValidPath(correctFileName)
-				    && Path.IsPathRooted(correctFileName)
-				    && !File.Exists(correctFileName))
-				{
-					if (c.CompilationUnit.Classes.Count == 1) {
-						// Rename file to ##
-						var cmd = new MenuCommand(
-							StringParser.Parse("${res:SharpDevelop.Refactoring.RenameFileTo}",
-							                   new string[,] {{ "FileName", Path.GetFileName(correctFileName) }}),
-							delegate {
-								IProject p = (IProject)c.ProjectContent.Project;
-								RefactoringHelpers.RenameFile(p, c.CompilationUnit.FileName, correctFileName);
-								if (p != null) {
-									p.Save();
-								}
-							});
-						resultItems.Add(cmd);
-					} else {
-						var refactoringProvider = c.ProjectContent.Language.RefactoringProvider;
-						if (refactoringProvider.SupportsCreateNewFileLikeExisting && refactoringProvider.SupportsGetFullCodeRangeForType) {
-							// Move class to file ##
-							var cmd = new MenuCommand(
-								StringParser.Parse("${res:SharpDevelop.Refactoring.MoveClassToFile}",
-								                   new string[,] {{ "FileName", Path.GetFileName(correctFileName) }}),
-								delegate {
-									FindReferencesAndRenameHelper.MoveClassToFile(c, correctFileName);
-								});
-							resultItems.Add(cmd);
-						}
-					}
-				}
-			}
 		}
 		
 		#region Implementation

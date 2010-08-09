@@ -135,11 +135,10 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			}
 			ParserService.ParseCurrentViewContent();
 			c = c.ProjectContent.GetClass(c.FullyQualifiedName, c.TypeParameters.Count, c.ProjectContent.Language, GetClassOptions.LookForInnerClass);
-			c = GetCurrentPart(c);
-			return c;
+			return GetCurrentPart(c);
 		}
 		
-		static IClass GetCurrentPart(IClass possibleCompound)
+		public static IClass GetCurrentPart(IClass possibleCompound)
 		{
 			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
 			if (viewContent != null)

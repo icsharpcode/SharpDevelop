@@ -71,6 +71,7 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\ClassRefactoringSubmenuBuilder.cs" />
     <Compile Include="Src\ContextActions\AddUsing.cs" />
+    <Compile Include="Src\ContextActions\CacheClassAtCaret.cs" />
     <Compile Include="Src\ContextActions\CheckAssignmentCache.cs" />
     <Compile Include="Src\ContextActions\CheckAssignmentNull.cs" />
     <Compile Include="Src\ContextActions\CheckAssignmentNotNull.cs" />
@@ -80,9 +81,11 @@
     <Compile Include="Src\ContextActions\GenerateMember.cs" />
     <Compile Include="Src\ContextActions\ImplementAbstractClass.cs" />
     <Compile Include="Src\ContextActions\ImplementInterface.cs" />
+    <Compile Include="Src\ContextActions\MoveClassToFile.cs" />
     <Compile Include="Src\ContextActions\ParamCheck.cs" />
     <Compile Include="Src\ContextActions\ParamCheckForNull.cs" />
     <Compile Include="Src\ContextActions\ParamRangeCheck.cs" />
+    <Compile Include="Src\ContextActions\RenameFileToMatchClassName.cs" />
     <Compile Include="Src\CSharpMethodExtractor.cs" />
     <Compile Include="Src\Extensions.cs" />
     <Compile Include="Src\ExtractMethodCommand.cs" />
