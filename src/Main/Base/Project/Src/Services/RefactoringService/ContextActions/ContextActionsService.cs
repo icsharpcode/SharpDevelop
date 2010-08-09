@@ -41,8 +41,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (ParserService.LoadSolutionProjectsThreadRunning)
 				yield break;
-			var parseTask = ParserService.BeginParseCurrentViewContent();
-			parseTask.Wait();
+			ParserService.ParseCurrentViewContent();
+			// DO NOT USE Wait on the main thread!
+			// causes deadlocks!
+			//parseTask.Wait();
 			
 			var sw = new Stopwatch(); sw.Start();
 			var editorContext = new EditorContext(editor);
@@ -55,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 			}
 			ICSharpCode.Core.LoggingService.Debug(string.Format("Context actions elapsed {0}ms ({1}ms in EditorContext)",
-			                                                   sw.ElapsedMilliseconds, elapsedEditorContextMs));
+			                                                    sw.ElapsedMilliseconds, elapsedEditorContextMs));
 		}
 	}
 }

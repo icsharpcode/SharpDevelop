@@ -658,6 +658,13 @@ namespace ICSharpCode.SharpDevelop
 		/// <returns>
 		/// Returns a task that will make the parse result available.
 		/// </returns>
+		/// <remarks>
+		/// EnqueueForParsing has been renamed to BeginParse and now provides a future (Task&lt;ParseInformation&gt;)
+		/// to allow waiting for the result. However, to avoid deadlocks, this should not be done by any
+		/// thread the parser might be waiting for  (especially the main thread).
+		/// 
+		/// Unlike BeginParse().Wait(), ParseFile() is safe to call from the main thread.
+		/// </remarks>
 		public static Task<ParseInformation> BeginParse(string fileName)
 		{
 			return GetFileEntry(fileName, true).BeginParse(null);
@@ -670,6 +677,13 @@ namespace ICSharpCode.SharpDevelop
 		/// <returns>
 		/// Returns a task that will make the parse result available.
 		/// </returns>
+		/// <remarks>
+		/// EnqueueForParsing has been renamed to BeginParse and now provides a future (Task&lt;ParseInformation&gt;)
+		/// to allow waiting for the result. However, to avoid deadlocks, this should not be done by any
+		/// thread the parser might be waiting for  (especially the main thread).
+		/// 
+		/// Unlike BeginParse().Wait(), ParseFile() is safe to call from the main thread.
+		/// </remarks>
 		public static Task<ParseInformation> BeginParse(string fileName, ITextBuffer fileContent)
 		{
 			if (fileContent == null)
@@ -714,6 +728,13 @@ namespace ICSharpCode.SharpDevelop
 		/// Parses the current view content.
 		/// This method can only be called from the main thread.
 		/// </summary>
+		/// <remarks>
+		/// EnqueueForParsing has been renamed to BeginParse and now provides a future (Task&lt;ParseInformation&gt;)
+		/// to allow waiting for the result. However, to avoid deadlocks, this should not be done by any
+		/// thread the parser might be waiting for  (especially the main thread).
+		/// 
+		/// Unlike BeginParse().Wait(), ParseFile() is safe to call from the main thread.
+		/// </remarks>
 		public static Task<ParseInformation> BeginParseCurrentViewContent()
 		{
 			WorkbenchSingleton.AssertMainThread();
@@ -728,6 +749,13 @@ namespace ICSharpCode.SharpDevelop
 		/// Begins parsing the specified view content.
 		/// This method can only be called from the main thread.
 		/// </summary>
+		/// <remarks>
+		/// EnqueueForParsing has been renamed to BeginParse and now provides a future (Task&lt;ParseInformation&gt;)
+		/// to allow waiting for the result. However, to avoid deadlocks, this should not be done by any
+		/// thread the parser might be waiting for  (especially the main thread).
+		/// 
+		/// Unlike BeginParse().Wait(), ParseFile() is safe to call from the main thread.
+		/// </remarks>
 		public static Task<ParseInformation> BeginParseViewContent(IViewContent viewContent)
 		{
 			if (viewContent == null)
