@@ -523,6 +523,15 @@ Next";
 		}
 		
 		[Test]
+		public void Bug3()
+		{
+			ILexer lexer = GenerateLexerForSnippet(new StringReader("New String() {}"), SnippetType.Expression);
+			
+			CheckTokens(lexer, Tokens.New, Tokens.String, Tokens.OpenParenthesis,
+			            Tokens.CloseParenthesis, Tokens.OpenCurlyBrace, Tokens.CloseCurlyBrace);
+		}
+		
+		[Test]
 		public void LessThanCheck()
 		{
 			ILexer lexer = GenerateLexer(new StringReader(TestStatement(@"Dim xml = <!-- test --><Data")));

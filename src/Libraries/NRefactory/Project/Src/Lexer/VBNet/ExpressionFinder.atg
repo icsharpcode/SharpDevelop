@@ -594,7 +594,6 @@ NewExpression =
 	"New" (. PushContext(Context.ObjectCreation, la, t); .)
 	(
 		TypeName
-		
 		[
 			EXPECTEDCONFLICT("From")
 			(
@@ -614,6 +613,11 @@ NewExpression =
 				)
 				(. PopContext(); .)
 			|
+				/* handle array initializer after New */
+				(. PushContext(Context.CollectionInitializer, la, t); .)
+				CollectionInitializer
+				(. PopContext(); .)
+			|
 				(. PushContext(Context.ObjectInitializer, la, t); .)
 				"With" ObjectInitializer
 				(. PopContext(); .)
@@ -628,11 +632,11 @@ NewExpression =
 .
 
 ObjectInitializer =
-	"{" [ "Key" ] "." IdentifierOrKeyword "=" Expression { "," [ "Key" ] "." IdentifierOrKeyword "=" Expression } "}"
+	"{" [ [ "Key" ] "." IdentifierOrKeyword "=" Expression { "," [ "Key" ] "." IdentifierOrKeyword "=" Expression } ] "}"
 .
 
 CollectionInitializer =
-	"{" Expression { "," Expression } "}"
+	"{" [ Expression { "," Expression } ] "}"
 .
 
 ExpressionSuffix =
@@ -1212,8 +1216,34 @@ EraseStatement =
 	"Erase" Expression { "," Expression }
 .
 
+UsingVariable =
+	[
+		EXPECTEDCONFLICT("Where", "Until", "Unicode", "Text", "Take", "Skip", "Preserve",
+						  "Order", "Off", "Out", "Key", "Join", "Into", "Infer", "Group", "From",
+						  "Explicit", "Equals", "Distinct", "Descending", "Compare", "By",
+						  "Binary", "Auto", "Assembly", "Ascending", "Ansi", "Aggregate", ident)
+		(
+			(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .) 
+			// HACK: needs to be optional because Expression can start with Identifier too
+			[
+				"As" (. PushContext(Context.Type, la, t); .) ( NewExpression | TypeName ) (. PopContext(); .) "="
+				| "="
+				| (.
+					currentState = endOfStatementTerminatorAndBlock; /* leave this block */
+					InformToken(t); /* process Identifier again*/
+					/* for processing current token (la): go to the position after processing End */
+					goto switchlbl;
+				.)
+				ANY /* never reached due to goto above: */
+				/* this ANY is just so that Coco knows this branch isn't empty */
+			]
+		)
+	]
+	Expression
+.
+
 UsingStatement =
-	"Using" Expression
+	"Using" UsingVariable { "," UsingVariable }
 	StatementTerminatorAndBlock
 	"End" "Using"
 .
