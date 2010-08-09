@@ -33,18 +33,11 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		public TreeMatrixControl()
 		{
 			InitializeComponent();
-			
-			matrixControl.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
-			matrixControl.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
-			matrixControl.BorderStyle = BorderStyle.FixedSingle;
-			
-			matrixControl.RowHeadersVisible = false;
-			matrixControl.ColumnHeadersVisible = false;
 		}
 		
 		public void DrawMatrix()
 		{
-			matrixControl.DrawMatrix();
+			// matrixControl.DrawMatrix();
 		}
 		
 		public void DrawTree(Module module)

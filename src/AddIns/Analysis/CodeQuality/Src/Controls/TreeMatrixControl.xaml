@@ -21,7 +21,7 @@
 		
 		<TreeView Name="leftTree" Grid.Row="1" Grid.Column="0">
 			<TreeView.Resources>
-				
+			
 			</TreeView.Resources>
 		</TreeView>
 		
@@ -31,8 +31,11 @@
 			</TreeView.LayoutTransform>
 		</TreeView>
 		
-		<WindowsFormsHost Grid.Column="1" Grid.Row="1">
-			<Controls:DependencyMatrixControl x:Name="matrixControl"></Controls:DependencyMatrixControl>
-		</WindowsFormsHost>
+		<Controls:DependencyMatrixControl Grid.Column="1" Grid.Row="1"
+			x:Name="matrixControl"
+			HorizontalAlignment="Stretch"
+			VerticalAlignment="Stretch">
+		</Controls:DependencyMatrixControl>
+	
 	</Grid>
 </UserControl>

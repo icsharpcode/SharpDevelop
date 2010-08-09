@@ -114,12 +114,16 @@
     <Compile Include="Src\Controls\DependencyGraph.cs" />
     <Compile Include="Src\Controls\DependencyGraphLayout.cs" />
     <Compile Include="Src\Controls\DependencyMatrixControl.cs">
-      <SubType>Component</SubType>    </Compile>    <Compile Include="Src\Controls\DependencyMatrix.cs" />
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\Controls\DependencyMatrix.cs" />
     <Compile Include="Src\Controls\DependencyVertex.cs" />
     <Compile Include="Src\Controls\DependencyIconVertexConverter.cs" />
     <Compile Include="Src\Controls\Matrix.cs" />
     <Compile Include="Src\Controls\MatrixControl.cs">
-      <SubType>Component</SubType>    </Compile>    <Compile Include="Src\Controls\TreeMatrixControl.xaml.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\Controls\TreeMatrixControl.xaml.cs">
       <DependentUpon>TreeMatrixControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -127,7 +131,8 @@
     <Compile Include="Src\Event.cs" />
     <Compile Include="Src\Field.cs" />
     <Compile Include="Src\INode.cs" />
-    <Compile Include="Src\Instruction.cs" />    <Compile Include="Src\NodeIconService.cs" />
+    <Compile Include="Src\Instruction.cs" />
+    <Compile Include="Src\NodeIconService.cs" />
     <Compile Include="Src\IDependency.cs" />
     <Compile Include="Src\MetricsReader.cs" />
     <Compile Include="Src\Method.cs" />
