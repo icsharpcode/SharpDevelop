@@ -74,6 +74,8 @@ namespace SharpRefactoring.ContextActions
 			if (currentSymbol == null || currentSymbol.ResolvedType == null)
 				return null;
 			IClass c = currentSymbol.ResolvedType.GetUnderlyingClass();
+			if (c == null)
+				return null;
 			c = c.ProjectContent.GetClass(c.FullyQualifiedName, c.TypeParameters.Count, c.ProjectContent.Language, GetClassOptions.LookForInnerClass);
 			return ClassBookmarkSubmenuBuilder.GetCurrentPart(c);
 		}
