@@ -575,7 +575,9 @@ SimpleExpressionWithSuffix =
 SimpleExpression =
 	(. PushContext(Context.Expression, la, t); .)
     (    Literal
-    |    ( "(" Expression ")" )
+    |    ( "(" Expression // HACK in ExpressionRangeVariable Identifier is consumed before start
+    						// of Expression so this can be an argument list too
+    		{ "," Expression } ")" )
     |    IdentifierForExpressionStart
     |    PrimitiveTypeName
     |    ( "." | "!" | ".@" | "..." ) (. nextTokenIsStartOfImportsOrAccessExpression = true; wasQualifierTokenAtStart = true; .) [ XmlOpenTag ] IdentifierOrKeyword [ XmlCloseTag ]

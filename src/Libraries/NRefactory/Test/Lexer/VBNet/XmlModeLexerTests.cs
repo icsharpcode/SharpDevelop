@@ -532,6 +532,23 @@ Next";
 		}
 		
 		[Test]
+		public void Bug4()
+		{
+			ILexer lexer = GenerateLexer(new StringReader(TestStatement(@"Dim x = From kvp As KeyValuePair(Of String, DataGridViewCellStyle) In styleCache.CellStyleCache _
+                            Select includeStyle(kvp.Key, kvp.Value)")));
+			
+			CheckHead(lexer);
+			
+			CheckTokens(lexer, Tokens.Dim, Tokens.Identifier, Tokens.Assign, Tokens.From, Tokens.Identifier, Tokens.As, Tokens.Identifier,
+			            Tokens.OpenParenthesis, Tokens.Of, Tokens.String, Tokens.Comma, Tokens.Identifier, Tokens.CloseParenthesis,
+			            Tokens.In, Tokens.Identifier, Tokens.Dot, Tokens.Identifier,
+			            Tokens.Select, Tokens.Identifier, Tokens.OpenParenthesis, Tokens.Identifier, Tokens.Dot, Tokens.Key, Tokens.Comma,
+			            Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.CloseParenthesis);
+						
+			CheckFoot(lexer);
+		}
+		
+		[Test]
 		public void LessThanCheck()
 		{
 			ILexer lexer = GenerateLexer(new StringReader(TestStatement(@"Dim xml = <!-- test --><Data")));
@@ -916,7 +933,7 @@ End Using";
 		public void NewExpressionWithObjectInitializer()
 		{
 			string code = @"New Common.ComboBoxItem With {.Item = _
-                            Localizer.GetString(""Month"" & initParameters.SelectedDate.FirstDayOfPreviousMonth.Month) & "" "" & 
+                            Localizer.GetString(""Month"" & initParameters.SelectedDate.FirstDayOfPreviousMonth.Month) & "" "" &
                             initParameters.SelectedDate.FirstDayOfPreviousMonth.Year, .Value = New Date(2010, initParameters.SelectedDate.FirstDayOfPreviousMonth.Month, 1)}";
 			
 			ILexer lexer = GenerateLexerForSnippet(new StringReader(code), SnippetType.Expression);
@@ -924,13 +941,13 @@ End Using";
 			CheckTokens(lexer, Tokens.New, Tokens.Identifier, Tokens.Dot, Tokens.Identifier,
 			            Tokens.With, Tokens.OpenCurlyBrace, Tokens.Dot, Tokens.Identifier, Tokens.Assign,
 			            Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.OpenParenthesis, Tokens.LiteralString,
-			           Tokens.ConcatString, Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.Dot,
-			           Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.CloseParenthesis, Tokens.ConcatString,
-			           Tokens.LiteralString, Tokens.ConcatString, Tokens.Identifier, Tokens.Dot, Tokens.Identifier,
-			           Tokens.Dot, Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.Comma, Tokens.Dot,
-			           Tokens.Identifier, Tokens.Assign, Tokens.New, Tokens.Date, Tokens.OpenParenthesis, Tokens.LiteralInteger,
-			           Tokens.Comma, Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.Dot,
-			           Tokens.Identifier, Tokens.Comma, Tokens.LiteralInteger, Tokens.CloseParenthesis, Tokens.CloseCurlyBrace);
+			            Tokens.ConcatString, Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.Dot,
+			            Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.CloseParenthesis, Tokens.ConcatString,
+			            Tokens.LiteralString, Tokens.ConcatString, Tokens.Identifier, Tokens.Dot, Tokens.Identifier,
+			            Tokens.Dot, Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.Comma, Tokens.Dot,
+			            Tokens.Identifier, Tokens.Assign, Tokens.New, Tokens.Date, Tokens.OpenParenthesis, Tokens.LiteralInteger,
+			            Tokens.Comma, Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.Dot,
+			            Tokens.Identifier, Tokens.Comma, Tokens.LiteralInteger, Tokens.CloseParenthesis, Tokens.CloseCurlyBrace);
 		}
 		#endregion
 		
