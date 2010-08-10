@@ -13,6 +13,7 @@ using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Commands.TabStrip
 {
@@ -77,7 +78,19 @@ namespace ICSharpCode.SharpDevelop.Commands.TabStrip
 	}
 	
 	/// <summary>
-	/// Opens the containing folder in the clipboard.
+	/// Expands and scrolls to this file in the project browser.
+	/// </summary>
+	public class NavigateToFileInProjectBrowser : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			var c = ProjectBrowserPad.Instance.Control as ProjectBrowserPanel;
+			c.ProjectBrowserControl.SelectFileAndExpand(((IWorkbenchWindow)Owner).ActiveViewContent.PrimaryFileName);
+		}
+	}
+	
+	/// <summary>
+	/// Opens the folder containing this file in the windows explorer.
 	/// </summary>
 	public class OpenFolderContainingFile : AbstractMenuCommand
 	{

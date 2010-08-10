@@ -228,6 +228,9 @@
 		</Condition>
 		
 		<MenuItem id = "AddSeparator" type = "Separator"/>
+		<MenuItem id    = "CollapseAll"
+		          label = "${res:ProjectComponent.ContextMenu.CollapseAll}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.CollapseAll"/>
 		<MenuItem id    = "Paste"
 		          label = "${res:XML.MainMenu.EditMenu.Paste}"
 		          icon  = "Icons.16x16.PasteIcon"
@@ -246,6 +249,8 @@
 	
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionFolderNode">
 		<Include id = "CombineAddMenu" item="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionNode/CombineAddMenu"/>
+		
+		<Include id = "CollapseAll" item="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionNode/CollapseAll"/>
 		
 		<MenuItem id = "AddSeparator" type = "Separator"/>
 		<Include id="CutPasteRemoveRename" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/CutPasteRemoveRename"/>
@@ -296,6 +301,8 @@
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>
 			<MenuItem id = "AddSeparator" type = "Separator"/>
 		</Condition>
+		
+		<Include id = "CollapseAll" item="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionNode/CollapseAll"/>
 		
 		<MenuItem id    = "OpenProjectWith"
 		          label = "${res:Gui.ProjectBrowser.OpenWith}"
@@ -552,6 +559,7 @@
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingFolderToProject"/>
 			</MenuItem>
 			<MenuItem id = "AddSeparator" type = "Separator"  />
+			<Include id = "CollapseAll" item="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionNode/CollapseAll"/>
 			<MenuItem id = "OpenFolder"
 			          label = "${res:Gui.ProjectBrowser.OpenFolderInExplorer}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFolder"/>
@@ -1005,6 +1013,9 @@
 			<MenuItem id = "CopyPathName"
 			          label = "${res:OpenFileTabEventHandler.CopyPathName}"
 			          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.CopyPathName"/>
+			<MenuItem id = "NavigateToFileInProjectBrowser"
+			          label = "${res:ICSharpCode.SharpDevelop.Commands.TabStrip.NavigateToFileInProjectBrowser}"
+			          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.NavigateToFileInProjectBrowser"/>
 			<MenuItem id = "OpenFolderContainingFileFromTab"
 			          label = "${res:OpenFileTabEventHandler.FileContainingFolderInExplorer}"
 			          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.OpenFolderContainingFile"/>
@@ -1340,7 +1351,7 @@
 			<MenuItem id = "Refactor" label = "${res:XML.MainMenu.RefactorMenu}" type="Menu">
 				<MenuItem id    = "Rename"
 				          label = "${res:SharpDevelop.Refactoring.RenameCommand}"
-				          class = "ICSharpCode.SharpDevelop.Refactoring.RenameCommand" 
+				          class = "ICSharpCode.SharpDevelop.Refactoring.RenameCommand"
 				          shortcut = "Control|R" />
 				<Condition name="RefactoringProviderSupports" supports="FindUnusedUsingDeclarations">
 					<MenuItem id    = "RemoveUnusedUsings"

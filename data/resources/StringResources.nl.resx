@@ -7252,6 +7252,12 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   <data name="Templates.Project.SharpDevelopMacro.Name" xml:space="preserve">
     <value>Eztra menu ingang</value>
   </data>
+  <data name="Templates.Project.SilverlightApplication.Description" xml:space="preserve">
+    <value>Project voor het maken van een Silverlight applicatie.</value>
+  </data>
+  <data name="Templates.Project.SilverlightApplication.Name" xml:space="preserve">
+    <value>Silverlight applicatie</value>
+  </data>
   <data name="Templates.Project.SysTrayIcon.Description" xml:space="preserve">
     <value>Een project waarin een applicatie wordt gemaakt met een pictogram in het meldingengebied van de taakbalk.</value>
   </data>

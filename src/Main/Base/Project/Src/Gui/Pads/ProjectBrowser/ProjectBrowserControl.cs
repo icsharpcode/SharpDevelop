@@ -236,6 +236,32 @@ namespace ICSharpCode.SharpDevelop.Project
 				inSelectFile = false;
 			}
 		}
+		
+		public void SelectFileAndExpand(string fileName)
+		{
+			try {
+				inSelectFile = true;
+				lastSelectionTarget = fileName;
+				TreeNode node = FindFileNode(fileName);
+				
+				if (node != null) {
+					// Expand to node
+					TreeNode parent = node.Parent;
+					while (parent != null) {
+						parent.Expand();
+						parent = parent.Parent;
+					}
+					//node = FindFileNode(fileName);
+					treeView.SelectedNode = node;
+				} else {
+					// Node for this file does not exist yet (the tree view is lazy loaded)
+					SelectDeepestOpenNodeForPath(fileName);
+				}
+				this.Focus();
+			} finally {
+				inSelectFile = false;
+			}
+		}
 
 		#region SelectDeepestOpenNode internals
 //

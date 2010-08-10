@@ -34,7 +34,14 @@ namespace SharpRefactoring.ContextActions
 		public bool IsFixClassFileNameAvailable
 		{
 			get {
-				return !IsClassReadOnly && IsCaretAtClassDeclaration && !IsClassFileNameCorrect && IsCorrectClassFileNameAvailable;
+				return IsCaretAtClassDeclaration && Class.IsUserCode() && !IsClassReadOnly && !IsClassFileNameCorrect && IsCorrectClassFileNameAvailable;
+			}
+		}
+		
+		public bool IsCreateDerivedClassAvailable
+		{
+			get {
+				return IsCaretAtClassDeclaration && Class.IsUserCode() && !Class.IsStatic && !Class.IsSealed;
 			}
 		}
 		
@@ -52,7 +59,7 @@ namespace SharpRefactoring.ContextActions
 			this.IsClassFileNameCorrect = (c.IsInnerClass() || (!c.IsUserCode()) ||
 			                               c.Name.Equals(Path.GetFileNameWithoutExtension(c.CompilationUnit.FileName), StringComparison.OrdinalIgnoreCase));
 			
-			if (string.IsNullOrEmpty(c.CompilationUnit.FileName)) {
+			if (string.IsNullOrEmpty(c.Name) || c.CompilationUnit == null || string.IsNullOrEmpty(c.CompilationUnit.FileName)) {
 				// Cannot get path
 				this.CorrectClassFileName = null;
 				this.IsCorrectClassFileNameAvailable = false;
