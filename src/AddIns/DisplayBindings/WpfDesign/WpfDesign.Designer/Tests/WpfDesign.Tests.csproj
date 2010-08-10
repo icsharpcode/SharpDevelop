@@ -55,6 +55,7 @@
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Designer\EditOperationTests.cs" />
     <Compile Include="Designer\FocusNavigatorTests.cs" />
     <Compile Include="Designer\MarginHandleTests.cs" />
     <Compile Include="Designer\MockFocusNavigator.cs" />

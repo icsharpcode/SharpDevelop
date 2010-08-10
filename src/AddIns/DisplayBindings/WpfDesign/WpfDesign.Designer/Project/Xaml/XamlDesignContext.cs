@@ -30,7 +30,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		
 		readonly XamlEditOperations _xamlEditOperations;
 		
-		internal XamlEditOperations XamlEditAction {
+		public XamlEditOperations XamlEditAction {
 			get { return _xamlEditOperations; }
 		}
 		

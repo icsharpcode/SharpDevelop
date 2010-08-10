@@ -16,6 +16,7 @@ using ICSharpCode.WpfDesign.Designer.Controls;
 using System.Diagnostics;
 using ICSharpCode.WpfDesign.XamlDom;
 using System.Windows.Media;
+using System.Windows.Controls.Primitives;
 
 namespace ICSharpCode.WpfDesign.Designer.Extensions
 {
@@ -23,6 +24,27 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	[ExtensionFor(typeof(ContentControl))]
 	public class DefaultPlacementBehavior : BehaviorExtension, IPlacementBehavior
 	{
+		static List<Type> _contentControlsNotAllowedToAdd;
+
+		static DefaultPlacementBehavior()
+		{
+			_contentControlsNotAllowedToAdd = new List<Type>();
+			_contentControlsNotAllowedToAdd.Add(typeof (Frame));
+			_contentControlsNotAllowedToAdd.Add(typeof (GroupItem));
+			_contentControlsNotAllowedToAdd.Add(typeof (HeaderedContentControl));
+			_contentControlsNotAllowedToAdd.Add(typeof (Label));
+			_contentControlsNotAllowedToAdd.Add(typeof (ListBoxItem));
+			_contentControlsNotAllowedToAdd.Add(typeof (ButtonBase));
+			_contentControlsNotAllowedToAdd.Add(typeof (StatusBarItem));
+			_contentControlsNotAllowedToAdd.Add(typeof (ToolTip));
+		}
+
+		public static bool CanContentControlAdd(ContentControl control)
+		{
+			Debug.Assert(control != null);
+			return !_contentControlsNotAllowedToAdd.Any(type => type.IsAssignableFrom(control.GetType()));
+		}
+		
 		protected override void OnInitialized()
 		{
 			base.OnInitialized();
@@ -83,6 +105,12 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			if (ExtendedItem.ContentProperty.IsCollection)
 				return CollectionSupport.CanCollectionAdd(ExtendedItem.ContentProperty.ReturnType,
 				                                          operation.PlacedItems.Select(p => p.Item.Component));
+			if (ExtendedItem.View is ContentControl) {
+				if (!CanContentControlAdd((ContentControl) ExtendedItem.View)) {
+					return false;
+				}
+			}
+			
 			if (!ExtendedItem.ContentProperty.IsSet)
 				return true;
 			
