@@ -52,6 +52,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Images\Icons.32x32.Error.png" />
     <None Include="WpfDesign.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -85,11 +86,16 @@
     <Compile Include="Src\PropertyDescriptionService.cs" />
     <Compile Include="Src\WpfAndWinFormsTopLevelWindowService.cs" />
     <Compile Include="Src\WpfDisplayBinding.cs" />
+    <Compile Include="Src\WpfDocumentError.xaml.cs">
+      <DependentUpon>WpfDocumentError.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\WpfSideTabItem.cs" />
     <Compile Include="Src\WpfToolbox.cs" />
     <Compile Include="Src\WpfViewContent.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\WpfDocumentError.xaml" />
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -145,6 +151,7 @@
     <Page Include="Src\ObjectEditor.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Images" />
     <Folder Include="Src\ImageSourceEditor" />
     <Folder Include="Src\Commands" />
   </ItemGroup>

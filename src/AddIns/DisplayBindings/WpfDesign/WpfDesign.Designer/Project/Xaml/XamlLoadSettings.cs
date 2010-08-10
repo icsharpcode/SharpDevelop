@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using ICSharpCode.WpfDesign.Designer.Services;
 using ICSharpCode.WpfDesign.XamlDom;
 
 namespace ICSharpCode.WpfDesign.Designer.Xaml
@@ -19,6 +20,7 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 	{
 		public readonly ICollection<Assembly> DesignerAssemblies = new List<Assembly>();
 		public readonly List<Action<XamlDesignContext>> CustomServiceRegisterFunctions = new List<Action<XamlDesignContext>>();
+		public Action<XamlErrorService> ReportErrors;
 		XamlTypeFinder typeFinder = XamlTypeFinder.CreateWpfTypeFinder();
 		
 		public XamlTypeFinder TypeFinder {
