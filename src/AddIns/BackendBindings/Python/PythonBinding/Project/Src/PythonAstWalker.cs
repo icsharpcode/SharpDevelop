@@ -46,6 +46,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			DefaultUsingScope usingScope = new DefaultUsingScope();
 			usingScope.NamespaceName = Path.GetFileNameWithoutExtension(fileName);
+			usingScope.Parent = new DefaultUsingScope();
 			compilationUnit.UsingScope = usingScope;
 		}
 		

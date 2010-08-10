@@ -71,8 +71,9 @@ namespace PythonBinding.Tests.Parsing
 		[Test]
 		public void CompilationUnitUsingScopeNamespaceNameIsNamespaceTakenFromFileName()
 		{
+			string namespaceName = compilationUnit.UsingScope.NamespaceName;
 			string expectedNamespace = "test";
-			Assert.AreEqual(expectedNamespace, compilationUnit.UsingScope.NamespaceName);
+			Assert.AreEqual(expectedNamespace, namespaceName);
 		}
 		
 		[Test]
@@ -84,6 +85,14 @@ namespace PythonBinding.Tests.Parsing
 			string actualBaseTypeName = baseBaseType.FullyQualifiedName;
 			string expectedBaseTypeName = "unittest.TestCase";
 			Assert.AreEqual(expectedBaseTypeName, actualBaseTypeName);
+		}
+		
+		[Test]
+		public void CompilationUnitUsingScopeHasParentUsingScopeWithNamespaceNameOfEmptyString()
+		{
+			IUsingScope parentUsingScope = compilationUnit.UsingScope.Parent;
+			string namespaceName = parentUsingScope.NamespaceName;
+			Assert.AreEqual(String.Empty, namespaceName);
 		}
 	}
 }
