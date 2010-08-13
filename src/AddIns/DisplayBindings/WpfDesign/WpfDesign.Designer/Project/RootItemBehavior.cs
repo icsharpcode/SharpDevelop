@@ -1,30 +1,32 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision$</version>
+//     <author name="Kumar Devvrat"/>
+//     <version>$Revision: $</version>
 // </file>
-
 using System;
-using System.Collections.Generic;
 using System.Windows;
-using ICSharpCode.WpfDesign.Extensions;
+using System.Collections.Generic;
+using System.Diagnostics;
 
-namespace ICSharpCode.WpfDesign.Designer.Extensions
+namespace ICSharpCode.WpfDesign.Designer
 {
 	/// <summary>
-	/// Supports resizing a Window.
+	/// Intializes different behaviors for the Root item. 
+	/// <remarks>Could not be a extension since Root Item is can be of any type</remarks>
 	/// </summary>
-	[ExtensionFor(typeof(Window))]
-	public class WindowResizeBehavior : BehaviorExtension, IRootPlacementBehavior
+	public class RootItemBehavior : IRootPlacementBehavior
 	{
-		protected override void OnInitialized()
+		private DesignItem _rootItem;
+		
+		public void Intialize(DesignContext context)
 		{
-			base.OnInitialized();
-			this.ExtendedItem.AddBehavior(typeof(IRootPlacementBehavior), this);
+			Debug.Assert(context.RootItem!=null);
+			this._rootItem=context.RootItem;
+			_rootItem.AddBehavior(typeof(IRootPlacementBehavior),this);
 		}
 		
-		public bool CanPlace(ICollection<DesignItem> children, PlacementType type, PlacementAlignment position)
+		public bool CanPlace(System.Collections.Generic.ICollection<DesignItem> childItems, PlacementType type, PlacementAlignment position)
 		{
 			return type == PlacementType.Resize &&
 				(position == PlacementAlignment.Right
@@ -32,23 +34,25 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				 || position == PlacementAlignment.Bottom);
 		}
 		
-		
 		public void BeginPlacement(PlacementOperation operation)
 		{
+			
 		}
 		
 		public void EndPlacement(PlacementOperation operation)
 		{
+			
 		}
 		
-		public Rect GetPosition(PlacementOperation operation, DesignItem childItem)
+		public System.Windows.Rect GetPosition(PlacementOperation operation, DesignItem childItem)
 		{
 			UIElement child = childItem.View;
 			return new Rect(0, 0, ModelTools.GetWidth(child), ModelTools.GetHeight(child));
 		}
-
-		public void BeforeSetPosition(PlacementOperation operation) 
+		
+		public void BeforeSetPosition(PlacementOperation operation)
 		{
+			throw new NotImplementedException();
 		}
 		
 		public void SetPosition(PlacementInformation info)
@@ -70,7 +74,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		public void LeaveContainer(PlacementOperation operation)
 		{
-			throw new NotSupportedException();
+			throw new NotImplementedException();
 		}
 		
 		public bool CanEnterContainer(PlacementOperation operation)
@@ -80,7 +84,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		
 		public void EnterContainer(PlacementOperation operation)
 		{
-			throw new NotSupportedException();
+			throw new NotImplementedException();
 		}
 	}
 }

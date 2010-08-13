@@ -45,12 +45,12 @@ namespace ICSharpCode.WpfDesign.AddIn
 						r.XmlResolver = null;
 						r.WhitespaceHandling = WhitespaceHandling.None;
 						while (r.NodeType != XmlNodeType.Element && r.Read());
-						
-						if (r.LocalName == "Window" || r.LocalName == "UserControl")
-							return true;
+						if(r.LocalName=="ResourceDictionary")
+							return false;						
 					} catch (XmlException) {
-						return false;
+						return true;
 					}
+					return true;
 				}
 			}
 			return false;

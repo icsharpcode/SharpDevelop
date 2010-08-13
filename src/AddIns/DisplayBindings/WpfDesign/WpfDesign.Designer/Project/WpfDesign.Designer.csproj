@@ -139,7 +139,6 @@
     <Compile Include="Extensions\TabItemClickableExtension.cs" />
     <Compile Include="Extensions\TopLeftContainerDragHandle.cs" />
     <Compile Include="Extensions\ResizeThumbExtension.cs" />
-    <Compile Include="Extensions\WindowResizeBehavior.cs" />
     <Compile Include="BasicMetadata.cs" />
     <Compile Include="OutlineView\DragListener.cs" />
     <Compile Include="OutlineView\DragTreeView.cs" />
@@ -197,6 +196,7 @@
     <Compile Include="PropertyGrid\PropertyGridView.xaml.cs">
       <DependentUpon>PropertyGridView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="RootItemBehavior.cs" />
     <Compile Include="Services\ChooseClass.cs" />
     <Compile Include="Services\ChooseClassDialog.xaml.cs">
       <DependentUpon>ChooseClassDialog.xaml</DependentUpon>

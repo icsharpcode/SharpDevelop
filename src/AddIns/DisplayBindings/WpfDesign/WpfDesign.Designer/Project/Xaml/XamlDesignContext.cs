@@ -95,6 +95,12 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			
 			_rootItem = _componentService.RegisterXamlComponentRecursive(_doc.RootElement);
 			
+			if(_rootItem!=null){
+				var rootBehavior=new RootItemBehavior();
+				rootBehavior.Intialize(this);
+			}
+				
+			
 			_xamlEditOperations=new XamlEditOperations(this,parserSettings);
 		}
 		

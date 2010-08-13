@@ -228,6 +228,21 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 			
 			foreach (XmlAttribute attribute in element.Attributes) {
+				if (attribute.Value.StartsWith("clr-namespace", StringComparison.OrdinalIgnoreCase)) {
+					// the format is "clr-namespace:<Namespace here>;assembly=<Assembly name here>"
+					var clrNamespace = attribute.Value.Split(new[] {':', ';', '='});
+					if (clrNamespace.Length == 4) {
+						// get the assembly name
+						var assembly=settings.TypeFinder.LoadAssembly(clrNamespace[3]);
+						if(assembly!=null)
+							settings.TypeFinder.RegisterAssembly(assembly);
+					} else {
+						// if no assembly name is there, then load the assembly of the opened file.
+						var assembly=settings.TypeFinder.LoadAssembly(null);
+						if(assembly!=null)
+							settings.TypeFinder.RegisterAssembly(assembly);
+					}
+				}
 				if (attribute.NamespaceURI == XamlConstants.XmlnsNamespace)
 					continue;
 				if (attribute.Name == "xml:space") {
@@ -586,27 +601,27 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// <param name="settings">Parser settings used by <see cref="XamlParser"/>.</param>
 		/// <returns>Returns the XamlObject of the parsed <paramref name="xaml"/>.</returns>
 		public static XamlObject ParseSnippet(XamlObject root, string xaml, XamlParserSettings settings)
-        {
-            XmlTextReader reader = new XmlTextReader(new StringReader(xaml));
-            var element = root.OwnerDocument.XmlDocument.ReadNode(reader);
-            
-            if (element != null) {
-                XmlAttribute xmlnsAttribute=null;
-                foreach (XmlAttribute attrib in element.Attributes) {
-                    if (attrib.Name == "xmlns")
-                        xmlnsAttribute = attrib;
-                }
-                if(xmlnsAttribute!=null)
-                    element.Attributes.Remove(xmlnsAttribute);
+		{
+			XmlTextReader reader = new XmlTextReader(new StringReader(xaml));
+			var element = root.OwnerDocument.XmlDocument.ReadNode(reader);
+			
+			if (element != null) {
+				XmlAttribute xmlnsAttribute=null;
+				foreach (XmlAttribute attrib in element.Attributes) {
+					if (attrib.Name == "xmlns")
+						xmlnsAttribute = attrib;
+				}
+				if(xmlnsAttribute!=null)
+					element.Attributes.Remove(xmlnsAttribute);
 
-                XamlParser parser = new XamlParser();
-                parser.settings = settings;
-                parser.document = root.OwnerDocument;
-                var xamlObject = parser.ParseObject(element as XmlElement);
-                if (xamlObject != null)
-                    return xamlObject;
-            }
-            return null;
-        }
+				XamlParser parser = new XamlParser();
+				parser.settings = settings;
+				parser.document = root.OwnerDocument;
+				var xamlObject = parser.ParseObject(element as XmlElement);
+				if (xamlObject != null)
+					return xamlObject;
+			}
+			return null;
+		}
 	}
 }

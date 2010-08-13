@@ -128,12 +128,15 @@ namespace ICSharpCode.WpfDesign.AddIn
 				}
 			}
 			else{
-				_stream.Position = 0;
-				using (var reader = new StreamReader(_stream))
+				if(_stream.CanRead){
+					_stream.Position = 0;
+					using (var reader = new StreamReader(_stream))
 					using (var writer = new StreamWriter(stream)) {
-					writer.Write(reader.ReadToEnd());
+						writer.Write(reader.ReadToEnd());
+					}
 				}
 			}
+			
 		}
 		
 		void UpdateTasks(XamlErrorService xamlErrorService)
