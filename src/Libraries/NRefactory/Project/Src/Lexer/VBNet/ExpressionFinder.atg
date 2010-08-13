@@ -576,9 +576,9 @@ SimpleExpressionWithSuffix =
 SimpleExpression =
 	(. PushContext(Context.Expression, la, t); .)
     (    Literal
-    |    ( "(" Expression // HACK in ExpressionRangeVariable Identifier is consumed before start
-    						// of Expression so this can be an argument list too
-    		{ "," Expression } ")" )
+    |    ( "(" (. activeArgument = 0; .) Expression // HACK in ExpressionRangeVariable Identifier is consumed before start
+    													// of Expression so this can be an argument list too
+    		{ "," (. activeArgument++; .) Expression } ")" )
     |    IdentifierForExpressionStart
     |    PrimitiveTypeName
     |    ( "." | "!" | ".@" | "..." ) (. nextTokenIsStartOfImportsOrAccessExpression = true; wasQualifierTokenAtStart = true; .) [ XmlOpenTag ] IdentifierOrKeyword [ XmlCloseTag ]
@@ -777,10 +777,10 @@ ExpressionRangeVariable =
 						  "Explicit", "Equals", "Distinct", "Descending", "Compare", "By",
 						  "Binary", "Auto", "Assembly", "Ascending", "Ansi", "Aggregate", ident)
 		(
-			(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .) 
+			(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier
 			// HACK: needs to be optional because Expression can start with Identifier too
-			[
-				"As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) "="
+			[  (. PopContext(); isAlreadyInExpr = true; .)
+				( "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) "="
 				| "="
 				| (.
 					currentState = endOfStatementTerminatorAndBlock; /* leave this block */
@@ -790,10 +790,12 @@ ExpressionRangeVariable =
 				.)
 				ANY /* never reached due to goto above: */
 				/* this ANY is just so that Coco knows this branch isn't empty */
+				)
 			]
 		)
 	]
 	Expression
+	(. if (!isAlreadyInExpr) PopContext(); isAlreadyInExpr = false; .)
 .
 
 CollectionRangeVariable =

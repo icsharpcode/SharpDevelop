@@ -149,7 +149,7 @@ End Class
 			string program1 = @"
 Imports System
 Imports System.Linq
-	|	
+	|
 Class MainClass ' a comment
 	Dim under_score_field As Integer
 	Sub SomeMethod()
@@ -508,6 +508,86 @@ End Module", "<![CDATA[some text]]>", ExpressionContext.Default);
 		Dim x = |5
 	End Sub
 End Module", "5", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void Linq1()
+		{
+			FindFull(@"Module Test
+	Sub Main()
+		Dim x = From kv|p As KeyValuePair(Of String, DataGridViewCellStyle) _
+				In styleCache.CellStyleCache _
+				Select includeStyle(kvp.Key, kvp.Value)
+	End Sub
+End Module", "kvp", ExpressionContext.Default);
+			
+			FindFull(@"Module Test
+	Sub Main()
+		Dim x = From kvp As KeyValueP|air(Of String, DataGridViewCellStyle) _
+				In styleCache.CellStyleCache _
+				Select includeStyle(kvp.Key, kvp.Value)
+	End Sub
+End Module", "KeyValuePair(Of String, DataGridViewCellStyle)", ExpressionContext.Type);
+			
+			FindFull(@"Module Test
+	Sub Main()
+		Dim x = From kvp As KeyValuePair(Of String, DataGridViewCellStyle) _
+				In styleCac|he.CellStyleCache _
+				Select includeStyle(kvp.Key, kvp.Value)
+	End Sub
+End Module", "styleCache", ExpressionContext.Default);
+			
+			FindFull(@"Module Test
+	Sub Main()
+		Dim x = From kvp As KeyValuePair(Of String, DataGridViewCellStyle) _
+				In styleCache.CellSty|leCache _
+				Select includeStyle(kvp.Key, kvp.Value)
+	End Sub
+End Module", "styleCache.CellStyleCache", ExpressionContext.Default);
+			
+			FindFull(@"Module Test
+	Sub Main()
+		Dim x = From kvp As KeyValuePair(Of String, DataGridViewCellStyle) _
+				In styleCache.CellStyleCache _
+				Select includ|eStyle(kvp.Key, kvp.Value)
+	End Sub
+End Module", "includeStyle(kvp.Key, kvp.Value)", ExpressionContext.Default);
+			
+			FindFull(@"Module Test
+	Sub Main()
+		Dim x = From kvp As KeyValuePair(Of String, DataGridViewCellStyle) _
+				In styleCache.CellStyleCache _
+				Select includeStyle(kv|p.Key, kvp.Value)
+	End Sub
+End Module", "kvp", ExpressionContext.Default);
+			
+			FindFull(@"Module Test
+	Sub Main()
+		Dim x = From kvp As KeyValuePair(Of String, DataGridViewCellStyle) _
+				In styleCache.CellStyleCache _
+				Select includeStyle(kvp.Key, kvp.Val|ue)
+	End Sub
+End Module", "kvp.Value", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void Linq2()
+		{
+			FindFull(@"Module Test
+	Sub Main()
+		Dim x = From kvp As KeyValuePair(Of String, DataGridViewCellStyle) _
+				In styleCache.CellStyleCache _
+				Select da|ta As DataGridViewCellStyle = includeStyle(kvp.Key, kvp.Value)
+	End Sub
+End Module", "data", ExpressionContext.Default);
+			
+			FindFull(@"Module Test
+	Sub Main()
+		Dim x = From kvp As KeyValuePair(Of String, DataGridViewCellStyle) _
+				In styleCache.CellStyleCache _
+				Select data As DataG|ridViewCellStyle = includeStyle(kvp.Key, kvp.Value)
+	End Sub
+End Module", "DataGridViewCellStyle", ExpressionContext.Type);
 		}
 		
 		#region Old Tests
