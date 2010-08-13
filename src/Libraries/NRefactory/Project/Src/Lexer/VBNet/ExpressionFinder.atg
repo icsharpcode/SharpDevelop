@@ -499,6 +499,7 @@ MemberVariableOrConstantDeclaration =
 MemberVariableOrConstantDeclarator =
 	[ "Const" ]
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) IdentifierForFieldDeclaration (. PopContext(); .)
+	[ "?" ] { "(" [ Expression ] { "," [ Expression ] } ")" }
 	[ "As" (. PushContext(Context.Type, la, t); .) ( NewExpression | TypeName ) (. PopContext(); .) ]
 	[ "=" Expression ]
 .
@@ -1072,10 +1073,10 @@ Statement =
 VariableDeclarationStatement =
 	( "Dim" | "Static" | "Const" )
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .)
-	Identifier (. PopContext(); .) [ "?" ] [ ( "(" { "," } ")" ) ]
+	Identifier (. PopContext(); .) [ "?" ] { "(" [ Expression ] { "," [ Expression ] } ")" }
 	{ ","
 		(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .)
-		Identifier (. PopContext(); .) [ "?" ] [ ( "(" { "," } ")" ) ]
+		Identifier (. PopContext(); .) [ "?" ] { "(" [ Expression ] { "," [ Expression ] } ")" }
 	}
 	[ "As" (. PushContext(Context.Type, la, t); .) ( NewExpression | TypeName ) (. PopContext(); .) ]
 	[ "=" Expression ]
@@ -1228,7 +1229,13 @@ UsingVariable =
 			(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .) 
 			// HACK: needs to be optional because Expression can start with Identifier too
 			[
-				"As" (. PushContext(Context.Type, la, t); .) ( NewExpression | TypeName ) (. PopContext(); .) "="
+				"As" [ EXPECTEDCONFLICT("Where", "UShort", "Until", "Unicode", "ULong", "UInteger", "Text", "Take",
+		                 "String", "Skip", "Single", "Short", "SByte", "Preserve", "Out", "Order",
+		                 "Off", "Object", "Long", "Key", "Join", "Into", "Integer", "Infer", "Group",
+		                 "From", "Explicit", "Equals", "Double", "Distinct", "Descending", "Decimal",
+		                 "Date", "Compare", "Char", "Byte", "By", "Boolean", "Binary", "Binary", "Auto",
+		                 "Assembly", "Ascending", "Ansi", "Aggregate", ident)
+						(. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) "=" ]
 				| "="
 				| (.
 					currentState = endOfStatementTerminatorAndBlock; /* leave this block */
