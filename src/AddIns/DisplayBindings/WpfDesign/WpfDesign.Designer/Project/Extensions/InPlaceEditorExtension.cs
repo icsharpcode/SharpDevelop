@@ -78,11 +78,11 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		void PropertyChanged(object sender,PropertyChangedEventArgs e)
 		{
 			if (textBlock != null) {
-				if (e.PropertyName == "Width"){					
+				if (e.PropertyName == "Width"){
 					placement.XOffset = Mouse.GetPosition((IInputElement) element).X - Mouse.GetPosition(textBlock).X-2.8;
 					editor.MaxWidth = Math.Max((ModelTools.GetWidth(element) - placement.XOffset), 0);
 				}
-				if (e.PropertyName == "Height"){					
+				if (e.PropertyName == "Height"){
 					placement.YOffset = Mouse.GetPosition((IInputElement) element).Y - Mouse.GetPosition(textBlock).Y-1;
 					editor.MaxHeight = Math.Max((ModelTools.GetHeight(element) - placement.YOffset), 0);
 				}
@@ -120,7 +120,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			
 			/* Hides the TextBlock in control because of some minor offset in placement, overlaping makes text look fuzzy */
 			textBlock.Visibility = Visibility.Hidden; // 
-			AdornerPanel.SetPlacement(editor, placement);			
+			AdornerPanel.SetPlacement(editor, placement);
 			
 			RemoveBorder(); // Remove the highlight border.
 		}
@@ -199,46 +199,48 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 		#region HighlightBorder
 		private Border _border;
 		private sealed class BorderPlacement : AdornerPlacement
-        {
-            private readonly FrameworkElement _element;
+		{
+			private readonly FrameworkElement _element;
 
-            public BorderPlacement(FrameworkElement element)
-            {
-                _element = element;
-            }
+			public BorderPlacement(FrameworkElement element)
+			{
+				_element = element;
+			}
 
-            public override void Arrange(AdornerPanel panel, UIElement adorner, Size adornedElementSize)
-            {
-                Point p = _element.TranslatePoint(new Point(), panel.AdornedElement);
-                var rect = new Rect(p, _element.RenderSize);
-                rect.Inflate(3, 1);
-                adorner.Arrange(rect);
-            }
-        }
+			public override void Arrange(AdornerPanel panel, UIElement adorner, Size adornedElementSize)
+			{
+				Point p = _element.TranslatePoint(new Point(), panel.AdornedElement);
+				var rect = new Rect(p, _element.RenderSize);
+				rect.Inflate(3, 1);
+				adorner.Arrange(rect);
+			}
+		}
 		
 		private void DrawBorder(FrameworkElement item)
-        {
-            if (editor != null && editor.Visibility != Visibility.Visible) {
-                if (adornerPanel.Children.Contains(_border))
-                    adornerPanel.Children.Remove(_border);
-                _border = new Border {BorderBrush = Brushes.Gray, BorderThickness = new Thickness(1.4), ToolTip = "Edit this Text", SnapsToDevicePixels = true};
-                var shadow = new DropShadowEffect {Color = Colors.LightGray, ShadowDepth = 3};
-                _border.Effect = shadow;
-                var bp = new BorderPlacement(item);
-                AdornerPanel.SetPlacement(_border, bp);
-                adornerPanel.Children.Add(_border);
-            }
-        }
+		{
+			if (editor != null && editor.Visibility != Visibility.Visible) {
+				if (adornerPanel.Children.Contains(_border))
+					adornerPanel.Children.Remove(_border);
+				_border = new Border {BorderBrush = Brushes.Gray, BorderThickness = new Thickness(1.4), ToolTip = "Edit this Text", SnapsToDevicePixels = true};
+				var shadow = new DropShadowEffect {Color = Colors.LightGray, ShadowDepth = 3};
+				_border.Effect = shadow;
+				var bp = new BorderPlacement(item);
+				AdornerPanel.SetPlacement(_border, bp);
+				adornerPanel.Children.Add(_border);
+			}
+		}
 
-        private void RemoveBorder()
-        {
-            if (adornerPanel.Children.Contains(_border))
-                adornerPanel.Children.Remove(_border);
-        }
+		private void RemoveBorder()
+		{
+			if (adornerPanel.Children.Contains(_border))
+				adornerPanel.Children.Remove(_border);
+		}
 		#endregion
 		
 		protected override void OnRemove()
 		{
+			if (textBlock != null)
+				textBlock.Visibility = Visibility.Visible;
 			ExtendedItem.PropertyChanged -= PropertyChanged;
 			designPanel.PreviewMouseLeftButtonDown -= MouseDown;
 			designPanel.PreviewMouseMove -= MouseMove;
