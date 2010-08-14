@@ -386,12 +386,10 @@
 				<ComponentRef Id="AddInWritingHelpWebsiteShortcut"/>
 				<ComponentRef Id="AppConfigFileTemplate"/>
 				<ComponentRef Id="InteropPartCoverDll"/>
-				<ComponentRef Id="PartCoverConsoleManualRtf"/>
-				<ComponentRef Id="PartCoverCorDriverDll"/>
+				<ComponentRef Id="PartCoverDll"/>
 				<ComponentRef Id="PartCoverExe"/>
 				<ComponentRef Id="PartCoverExeConfig"/>
 				<ComponentRef Id="PartCoverFrameworkDll"/>
-				<ComponentRef Id="PartCoverToNCoverXslt"/>
 				
 				<ComponentRef Id="PythonConsoleProjectTemplate"/>
 				<ComponentRef Id="PythonEmptyClassTemplate"/>

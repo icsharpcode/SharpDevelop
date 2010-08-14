@@ -12,7 +12,6 @@
 		<NUnitLibFiles Include="NUnit\lib\*.dll"/>
 		<HelpToolFiles Include="Help\*"/>
 		<PartCoverFiles Include="PartCover\*"/>
-		<PartCoverXsltFiles Include="PartCover\xslt\*"/>
 		<GraphSharpFiles Include="..\Libraries\GraphSharp\*"/>
 	
 		<LanguageResource Include="$(LanguageResourcePath)StringResources.*.resx"/>
@@ -33,7 +32,6 @@
 		<Copy SourceFiles="@(NUnitLibFiles)" DestinationFolder="..\..\bin\Tools\NUnit\lib" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(ToolFiles)" DestinationFolder="..\..\bin\Tools" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(PartCoverFiles)" DestinationFolder="..\..\bin\Tools\PartCover" SkipUnchangedFiles="true"/>
-		<Copy SourceFiles="@(PartCoverXsltFiles)" DestinationFolder="..\..\bin\Tools\PartCover\Xslt" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(GraphSharpFiles)" DestinationFolder="..\..\bin\" SkipUnchangedFiles="true"/>
 		
 		<!--
