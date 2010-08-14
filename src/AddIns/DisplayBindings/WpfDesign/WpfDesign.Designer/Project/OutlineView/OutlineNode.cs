@@ -20,6 +20,13 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 {
 	public class OutlineNode : INotifyPropertyChanged
 	{
+		//Used to check if element can enter other containers
+		public static PlacementType DummyPlacementType;
+		
+		static OutlineNode()
+		{
+			DummyPlacementType = PlacementType.Register("DummyPlacement");
+		}
 		public static OutlineNode Create(DesignItem designItem)
 		{
 			OutlineNode node;
@@ -137,25 +144,13 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 			}
 		}
 
-		// TODO: Outline and IPlacementBehavior must use the same logic (put it inside DesignItem)
 		public bool CanInsert(IEnumerable<OutlineNode> nodes, OutlineNode after, bool copy)
 		{
-			if (DesignItem.ContentPropertyName == null) return false;
-
-			if (DesignItem.ContentProperty.IsCollection) {
-				foreach (var node in nodes) {
-					if (!CollectionSupport.CanCollectionAdd(DesignItem.ContentProperty.ReturnType,
-					                                        node.DesignItem.ComponentType)) {
-						return false;
-					}
-				}
-				return true;
-			}
-			else {
-				return after == null && nodes.Count() == 1 &&
-					DesignItem.ContentProperty.DeclaringType.IsAssignableFrom(
-						nodes.First().DesignItem.ComponentType);
-			}
+			var operation = PlacementOperation.Start(nodes.Select(node => node.DesignItem).ToArray(), DummyPlacementType);
+			var placementBehavior = DesignItem.GetBehavior<IPlacementBehavior>();
+			if(operation!=null)
+				return placementBehavior.CanEnterContainer(operation);
+			return false;
 		}
 
 		public void Insert(IEnumerable<OutlineNode> nodes, OutlineNode after, bool copy)

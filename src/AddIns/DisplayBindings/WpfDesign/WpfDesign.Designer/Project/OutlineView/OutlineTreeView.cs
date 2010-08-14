@@ -16,14 +16,26 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 	{
 		protected override bool CanInsert(DragTreeViewItem target, DragTreeViewItem[] items, DragTreeViewItem after, bool copy)
 		{
-			return (target.DataContext as OutlineNode).CanInsert(items.Select(t => t.DataContext as OutlineNode), 
-				after == null ? null : after.DataContext as OutlineNode, copy);
+			UpdateCustomNodes(items);
+			return (target.DataContext as OutlineNode).CanInsert(_customOutlineNodes,
+			                                                     after == null ? null : after.DataContext as OutlineNode, copy);
 		}
 
 		protected override void Insert(DragTreeViewItem target, DragTreeViewItem[] items, DragTreeViewItem after, bool copy)
 		{
-			(target.DataContext as OutlineNode).Insert(items.Select(t => t.DataContext as OutlineNode), 
-				after == null ? null : after.DataContext as OutlineNode, copy);
+			UpdateCustomNodes(items);
+			(target.DataContext as OutlineNode).Insert(_customOutlineNodes,
+			                                           after == null ? null : after.DataContext as OutlineNode, copy);
+		}
+		
+		// Need to do this through a seperate List since previously LINQ queries apparently disconnected DataContext;bug in .NET 4.0
+		private List<OutlineNode> _customOutlineNodes;
+
+		void UpdateCustomNodes(IEnumerable<DragTreeViewItem> items)
+		{
+			_customOutlineNodes = new List<OutlineNode>();
+			foreach (var item in items)
+				_customOutlineNodes.Add(item.DataContext as OutlineNode);
 		}
 	}
 }

@@ -61,6 +61,9 @@
     <Compile Include="Designer\MockFocusNavigator.cs" />
     <Compile Include="Designer\ModelTestHelper.cs" />
     <Compile Include="Designer\ModelTests.cs" />
+    <Compile Include="Designer\OutlineView\HierarchyTests.cs" />
+    <Compile Include="Designer\OutlineView\InsertTests.cs" />
+    <Compile Include="Designer\OutlineView\SelectionTests.cs" />
     <Compile Include="Designer\PlacementTests.cs" />
     <Compile Include="XamlDom\ExampleClass.cs" />
     <Compile Include="XamlDom\ExampleClassContainer.cs" />
@@ -91,5 +94,8 @@
       <Project>{78CC29AC-CC79-4355-B1F2-97936DF198AC}</Project>
       <Name>WpfDesign.Designer</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Designer\OutlineView" />
   </ItemGroup>
 </Project>
