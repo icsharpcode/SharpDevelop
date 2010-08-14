@@ -35,6 +35,9 @@ namespace ICSharpCode.WpfDesign.AddIn
 		public WpfViewContent(OpenedFile file) : base(file)
 		{
 			BasicMetadata.Register();
+			var outlineContent = GetService(typeof(IOutlineContentHost));
+			if(outlineContent==null)
+				this.Services.AddService(typeof(IOutlineContentHost),Outline);
 			
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
 			this.IsActiveViewContentChanged += OnIsActiveViewContentChanged;
@@ -98,10 +101,6 @@ namespace ICSharpCode.WpfDesign.AddIn
 						outline.Root = OutlineNode.Create(designer.DesignContext.RootItem);
 					}
 					
-					var outlineContent = GetService(typeof(IOutlineContentHost));
-					if(outlineContent==null)
-						this.Services.AddService(typeof(IOutlineContentHost),Outline);
-					
 					propertyGridView.PropertyGrid.SelectedItems = null;
 					designer.DesignContext.Services.Selection.SelectionChanged += OnSelectionChanged;
 					designer.DesignContext.Services.GetService<UndoService>().UndoStackChanged += OnUndoStackChanged;
@@ -131,7 +130,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 				if(_stream.CanRead){
 					_stream.Position = 0;
 					using (var reader = new StreamReader(_stream))
-					using (var writer = new StreamWriter(stream)) {
+						using (var writer = new StreamWriter(stream)) {
 						writer.Write(reader.ReadToEnd());
 					}
 				}
