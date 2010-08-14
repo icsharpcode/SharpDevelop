@@ -6,11 +6,9 @@
 	xmlns:s="clr-namespace:System;assembly=mscorlib"
 	xmlns:aero="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero">
 	
-	<!--ContextActionsControl accepts IEnumerable<ContextActionViewModel> as its DataContext.-->
+	<!--The treeview with Context actions. Accepts IEnumerable<ContextActionViewModel> as its DataContext.-->
 	
 	<UserControl.Resources>
-		<SolidColorBrush x:Key="OuterBorderBrush" Color="#436C82"></SolidColorBrush>
-		
 		<Style x:Key="ClearButton" TargetType="Button">
 			<Setter Property="FocusVisualStyle" Value="{x:Null}"></Setter>	<!-- Disable the dashed focus rectangle -->
 			<Setter Property="Template">
@@ -52,9 +50,7 @@
 		</Style>
 	</UserControl.Resources>
 
-	<Border Padding="0 0 8 8">
-	<aero:SystemDropShadowChrome>
-	<Border BorderThickness="1" BorderBrush="{StaticResource OuterBorderBrush}" HorizontalAlignment="Stretch">
+	
 		<TreeView ItemsSource="{Binding}" x:Name="TreeView">
 			<TreeView.Background>
 				<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
@@ -102,15 +98,14 @@
 			</TreeView.ItemContainerStyle>
 			<TreeView.ItemTemplate>
 				<HierarchicalDataTemplate ItemsSource="{Binding ChildActions}">
-					<DockPanel HorizontalAlignment="Stretch">
+					<DockPanel HorizontalAlignment="Stretch" LastChildFill="True">
 						<Image Source="{Binding Image}" Margin="3 2 4 2" />
+						<CheckBox IsChecked="{Binding IsVisible}" DockPanel.Dock="Right" VerticalAlignment="Center" Click="CheckBox_Click" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed" />
+						<TextBlock Text="{Binding Comment}" Foreground="Gray" TextAlignment="Right" DockPanel.Dock="Right"/>
 						<TextBlock Text="{Binding Name}" Margin="0 2 20 2" />
-						<TextBlock Text="{Binding Comment}" Foreground="Gray" TextAlignment="Right" HorizontalAlignment="Right"/>
 					</DockPanel>
 				</HierarchicalDataTemplate>
 			</TreeView.ItemTemplate>
 		</TreeView>
-	</Border>
-	</aero:SystemDropShadowChrome>
-	</Border>
+	
 </UserControl>

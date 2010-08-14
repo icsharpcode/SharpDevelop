@@ -257,7 +257,6 @@ namespace ICSharpCode.SharpDevelop.Project
 					// Node for this file does not exist yet (the tree view is lazy loaded)
 					SelectDeepestOpenNodeForPath(fileName);
 				}
-				this.Focus();
 			} finally {
 				inSelectFile = false;
 			}

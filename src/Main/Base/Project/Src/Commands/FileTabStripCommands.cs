@@ -84,8 +84,9 @@ namespace ICSharpCode.SharpDevelop.Commands.TabStrip
 	{
 		public override void Run()
 		{
-			var c = ProjectBrowserPad.Instance.Control as ProjectBrowserPanel;
-			c.ProjectBrowserControl.SelectFileAndExpand(((IWorkbenchWindow)Owner).ActiveViewContent.PrimaryFileName);
+			var projectBrowser = (ProjectBrowserPad.Instance.Control as ProjectBrowserPanel).ProjectBrowserControl;
+			projectBrowser.SelectFileAndExpand(((IWorkbenchWindow)Owner).ActiveViewContent.PrimaryFileName);
+			projectBrowser.Focus();
 		}
 	}
 	

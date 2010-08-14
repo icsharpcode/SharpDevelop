@@ -16,6 +16,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		public abstract string Title { get; }
 		
+		public bool IsVisible { get; set; }
+		
 		public abstract bool IsAvailable(EditorContext context);
 		
 		public abstract void Execute(EditorContext context);

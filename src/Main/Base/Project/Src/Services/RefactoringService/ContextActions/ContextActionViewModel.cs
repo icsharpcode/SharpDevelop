@@ -20,6 +20,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		public ContextActionViewModel()
 		{
+			this.IsVisible = true;
 		}
 		
 		public ContextActionViewModel(IContextAction action)
@@ -34,6 +35,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public string Comment { get; set; }
 		
 		public ImageSource Image { get; set; }
+		
+		/// <summary>
+		/// Is this action enabled to be offered automatically?
+		/// </summary>
+		public bool IsVisible { get; set; }
 		
 		public ObservableCollection<ContextActionViewModel> ChildActions { get; set; }
 		

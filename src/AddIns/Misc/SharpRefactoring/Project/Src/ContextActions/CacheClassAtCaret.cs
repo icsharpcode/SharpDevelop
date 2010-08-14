@@ -47,6 +47,7 @@ namespace SharpRefactoring.ContextActions
 		
 		public void Initialize(EditorContext context)
 		{
+			// class at caret (either declaration of usage)
 			this.Class = GetClass(context.CurrentSymbol);
 			if (this.Class == null)
 				return;

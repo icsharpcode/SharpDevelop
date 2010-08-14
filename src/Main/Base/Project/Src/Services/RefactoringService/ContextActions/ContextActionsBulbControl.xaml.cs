@@ -33,6 +33,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			remove { this.ActionsTreeView.ActionExecuted -= value; }
 		}
 		
+		public new ContextActionsHiddenViewModel DataContext
+		{
+			get { return (ContextActionsHiddenViewModel)base.DataContext; }
+			set { base.DataContext = value; }
+		}
+		
 		bool isOpen;
 		public bool IsOpen {
 			get { return isOpen; }
@@ -40,8 +46,16 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				isOpen = value;
 				this.Header.Opacity = isOpen ? 1.0 : 0.7;
 				this.Header.BorderThickness = isOpen ? new Thickness(1, 1, 1, 0) : new Thickness(1);
-				this.ActionsTreeView.Visibility = isOpen ? Visibility.Visible : Visibility.Collapsed;
+				// Show / hide
+				this.ActionsTreeView.Visibility = this.HiddenActionsExpander.Visibility =
+					isOpen ? Visibility.Visible : Visibility.Collapsed;
 			}
+		}
+		
+		public bool IsHiddenActionsExpanded
+		{
+			get { return this.HiddenActionsExpander.IsExpanded; }
+			set { this.HiddenActionsExpander.IsExpanded = value; }
 		}
 		
 		public new void Focus()
@@ -53,6 +67,28 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		void Header_MouseUp(object sender, MouseButtonEventArgs e)
 		{
 			this.IsOpen = !this.IsOpen;
+		}
+		
+		void ActionsTreeView_ActionVisibleChanged(object sender, ContextActionViewModelEventArgs e)
+		{
+			var clickedAction = e.Action;
+			this.DataContext.Model.SetVisible(clickedAction.Action, false);
+//			this.DataContext.Actions.Remove(clickedAction);
+//			this.DataContext.HiddenActions.Add(clickedAction);
+			
+		}
+		
+		void HiddenActionsTreeView_ActionVisibleChanged(object sender, ContextActionViewModelEventArgs e)
+		{
+			var clickedAction = e.Action;
+			this.DataContext.Model.SetVisible(clickedAction.Action, true);
+//			this.DataContext.HiddenActions.Remove(clickedAction);
+//			this.DataContext.Actions.Add(clickedAction);
+		}
+		
+		void Expander_Expanded(object sender, RoutedEventArgs e)
+		{
+			this.DataContext.LoadHiddenActions();
 		}
 	}
 }

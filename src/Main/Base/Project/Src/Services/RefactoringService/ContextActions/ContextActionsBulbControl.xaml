@@ -6,12 +6,135 @@
 	
 	<UserControl.Resources>
 		<!--<BitmapImage x:Key="BulbImage" UriSource="bulb.png" />-->
+		<SolidColorBrush x:Key="OuterBorderBrush" Color="#436C82"></SolidColorBrush>
 		<BitmapImage x:Key="PencilImage" UriSource="pencil.png" />
 		<Geometry x:Key="DownArrowGeometry">M 0 0 L 2 3 L 4 0 Z</Geometry>
+		
+		<Style x:Key="ExpanderDownHeaderStyle"
+		       TargetType="{x:Type ToggleButton}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type ToggleButton}">
+						<Border Padding="{TemplateBinding Control.Padding}">
+							<Grid>
+								<Border Name="headerBorder" Height="10" >
+									<Path Name="arrow" Data="M1,1.5L4.5,5 8,1.5" Stroke="#888" StrokeThickness="2"  HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="False" />
+									<Border.Background>
+										<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+											<GradientStop Color="White" Offset="0.5"></GradientStop>
+											<GradientStop Color="#FFE9E9E9" Offset="1"></GradientStop>
+										</LinearGradientBrush>
+									</Border.Background>
+								</Border>
+							</Grid>
+						</Border>
+						
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsChecked" Value="true">
+								<Setter Property="Data"
+								        Value="M 1,4.5  L 4.5,1  L 8,4.5"
+								        TargetName="arrow"/>
+							</Trigger>
+							<Trigger Property="IsMouseOver"
+							         Value="true">
+								<Setter Property="Background"
+								        TargetName="headerBorder">
+									<Setter.Value>
+										<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+											<GradientStop Color="White" Offset="0.2"></GradientStop>
+											<GradientStop Color="#CCEBFF" Offset="1"></GradientStop>
+										</LinearGradientBrush>
+									</Setter.Value>
+								</Setter>
+								<Setter Property="Stroke"
+								        Value="#304760"
+								        TargetName="arrow"/>
+							</Trigger>
+							<Trigger Property="IsPressed"
+							         Value="true">
+							
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<Style x:Key="{x:Type Expander}"
+		       TargetType="{x:Type Expander}">
+			<Setter Property="Foreground"
+			        Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+			<Setter Property="Background"
+			        Value="Transparent"/>
+			<Setter Property="HorizontalContentAlignment"
+			        Value="Stretch"/>
+			<Setter Property="VerticalContentAlignment"
+			        Value="Stretch"/>
+			<Setter Property="BorderBrush"
+			        Value="Transparent"/>
+			<Setter Property="BorderThickness"
+			        Value="1"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type Expander}">
+						<Border BorderBrush="{TemplateBinding BorderBrush}"
+						        BorderThickness="{TemplateBinding BorderThickness}"
+						        Background="{TemplateBinding Background}"
+						        CornerRadius="3"
+						        SnapsToDevicePixels="true">
+							<DockPanel>
+								<ToggleButton x:Name="HeaderSite"
+								              DockPanel.Dock="Top"
+								              Margin="0"
+								              MinWidth="0"
+								              MinHeight="0"
+								              Style="{StaticResource ExpanderDownHeaderStyle}"
+								              IsChecked="{Binding Path=IsExpanded,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}"
+								              Content="{TemplateBinding Header}"
+								              ContentTemplate="{TemplateBinding HeaderTemplate}"
+								              ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}"
+								              Foreground="{TemplateBinding Foreground}"
+								              Padding="{TemplateBinding Padding}"
+								              FontFamily="{TemplateBinding FontFamily}"
+								              FontSize="{TemplateBinding FontSize}"
+								              FontStyle="{TemplateBinding FontStyle}"
+								              FontStretch="{TemplateBinding FontStretch}"
+								              FontWeight="{TemplateBinding FontWeight}"
+								              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+								              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"/>
+								<ContentPresenter x:Name="ExpandSite"
+									DockPanel.Dock="Bottom"
+									Visibility="Collapsed"
+									Focusable="false"
+									HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+									VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+									Margin="{TemplateBinding Padding}"/>
+							</DockPanel>
+						</Border>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsExpanded"
+							         Value="true">
+								<Setter Property="Visibility"
+								        Value="Visible"
+								        TargetName="ExpandSite"/>
+							</Trigger>
+							<Trigger Property="IsEnabled"
+							         Value="false">
+								<Setter Property="Foreground"
+								        Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
 	</UserControl.Resources>
 	
+	<!--<Border Padding="0 0 8 8">
+		<aero:SystemDropShadowChrome>
+			<Border BorderThickness="1" BorderBrush="{StaticResource OuterBorderBrush}" HorizontalAlignment="Stretch">-->
 	<Grid Background="Transparent">
 		<Grid.RowDefinitions>
+			<RowDefinition></RowDefinition>
 			<RowDefinition></RowDefinition>
 			<RowDefinition></RowDefinition>
 		</Grid.RowDefinitions>
@@ -37,7 +160,7 @@
 					<ColumnDefinition />
 				</Grid.ColumnDefinitions>
 				<Image Grid.Column="0" Width="12" Height="12" Stretch="Fill" Source="{StaticResource PencilImage}" />
-<!--				<Path Grid.Column="1" x:Name="Arrow" Fill="Black" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" Data="{StaticResource DownArrowGeometry}"/>-->
+				<!--				<Path Grid.Column="1" x:Name="Arrow" Fill="Black" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" Data="{StaticResource DownArrowGeometry}"/>-->
 			</Grid>
 			<!--<Border.Style>
 				<Style TargetType="{x:Type Border}">
@@ -51,6 +174,11 @@
 		</Border>
 		
 		<!-- Content - TreeView -->
-		<local:ContextActionsControl x:Name="ActionsTreeView" Grid.Row="1" Grid.Column="0" DataContext="{Binding Actions}"></local:ContextActionsControl>
+		<local:ContextActionsControl x:Name="ActionsTreeView" Grid.Row="1" Grid.Column="0"
+			DataContext="{Binding Actions}" ActionVisibleChanged="ActionsTreeView_ActionVisibleChanged"></local:ContextActionsControl>
+		<Expander x:Name="HiddenActionsExpander" Expanded="Expander_Expanded" Grid.Row="2" Grid.Column="0">
+			<local:ContextActionsControl x:Name="HiddenActionsTreeView"
+				DataContext="{Binding HiddenActions}" ActionVisibleChanged="HiddenActionsTreeView_ActionVisibleChanged"></local:ContextActionsControl>
+		</Expander>
 	</Grid>
 </UserControl>

@@ -16,9 +16,9 @@ namespace SharpRefactoring.ContextActions
 	/// <summary>
 	/// Description of GenerateMember.
 	/// </summary>
-	public class GenerateMemberProvider : IContextActionsProvider
+	public class GenerateMemberProvider : ContextActionsProvider
 	{
-		public IEnumerable<IContextAction> GetAvailableActions(EditorContext context)
+		public override IEnumerable<IContextAction> GetAvailableActions(EditorContext context)
 		{
 			if (string.IsNullOrEmpty(context.CurrentExpression.Expression)) {
 				yield break;

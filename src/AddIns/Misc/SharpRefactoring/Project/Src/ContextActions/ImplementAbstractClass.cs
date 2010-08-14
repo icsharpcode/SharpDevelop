@@ -19,9 +19,9 @@ namespace SharpRefactoring.ContextActions
 	/// <summary>
 	/// Description of ImplementAbstractClass.
 	/// </summary>
-	public class ImplementAbstractClassProvider : IContextActionsProvider
+	public class ImplementAbstractClassProvider : ContextActionsProvider
 	{
-		public IEnumerable<IContextAction> GetAvailableActions(EditorContext editorContext)
+		public override IEnumerable<IContextAction> GetAvailableActions(EditorContext editorContext)
 		{
 			var ambience = AmbienceService.GetCurrentAmbience();
 			

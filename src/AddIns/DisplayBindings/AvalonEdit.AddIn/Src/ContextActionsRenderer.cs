@@ -68,15 +68,73 @@ namespace ICSharpCode.AvalonEdit.AddIn
 
 		void ContextActionsRenderer_KeyDown(object sender, KeyEventArgs e)
 		{
+			if (this.popup == null)
+				return;
 			if (e.Key == Key.T && Keyboard.Modifiers == ModifierKeys.Control)
 			{
-				if (popup != null && popup.Actions != null && popup.Actions.Actions != null && popup.Actions.Actions.Count > 0) {
+				if (popup.ViewModel != null && popup.ViewModel.Actions != null && popup.ViewModel.Actions.Count > 0) {
 					popup.IsDropdownOpen = true;
 					popup.Focus();
+				} else {
+					// Popup is not shown but user explicitely requests it
+					var popupVM = BuildPopupViewModel(this.Editor);
+					popupVM.LoadHiddenActions();
+					if (popupVM.HiddenActions.Count == 0)
+						return;
+					this.popup.ViewModel = popupVM;
+					this.popup.IsDropdownOpen = true;
+					this.popup.IsHiddenActionsExpanded = true;
+					this.popup.OpenAtLineStart(this.Editor);
+					this.popup.Focus();
 				}
 			}
 		}
 
+		void ScrollChanged(object sender, EventArgs e)
+		{
+			ClosePopup();
+		}
+
+		void TimerMoveTick(object sender, EventArgs e)
+		{
+			this.delayMoveTimer.Stop();
+			if (!IsEnabled)
+				return;
+			ClosePopup();
+			
+			ContextActionsHiddenViewModel popupVM = BuildPopupViewModel(this.Editor);
+			//availableActionsVM.Title =
+			//availableActionsVM.Image =
+			if (popupVM.Actions.Count == 0)
+				return;
+			this.popup.ViewModel = popupVM;
+			this.popup.OpenAtLineStart(this.Editor);
+		}
+
+		ContextActionsHiddenViewModel BuildPopupViewModel(ITextEditor editor)
+		{
+			var actionsProvider = ContextActionsService.Instance.GetAvailableActions(editor);
+			return new ContextActionsHiddenViewModel(actionsProvider);
+		}
+
+		void CaretPositionChanged(object sender, EventArgs e)
+		{
+			if (this.popup.IsOpen)
+			{
+				ClosePopup();
+			}
+			this.delayMoveTimer.Stop();
+			this.delayMoveTimer.Start();
+		}
+		
+		void ClosePopup()
+		{
+			this.popup.Close();
+			this.popup.IsDropdownOpen = false;
+			this.popup.IsHiddenActionsExpanded = false;
+			this.popup.ViewModel = null;
+		}
+		
 		void WorkbenchSingleton_Workbench_ViewClosed(object sender, ViewContentEventArgs e)
 		{
 			try {
@@ -96,47 +154,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (((IViewContent)WorkbenchSingleton.Workbench.ActiveContent).PrimaryFileName == this.Editor.FileName)
 					CaretPositionChanged(this, EventArgs.Empty);
 			} catch {}
-		}
-
-		void ScrollChanged(object sender, EventArgs e)
-		{
-			ClosePopup();
-		}
-
-		void TimerMoveTick(object sender, EventArgs e)
-		{
-			this.delayMoveTimer.Stop();
-			if (!IsEnabled)
-				return;
-			ClosePopup();
-			var availableActions = ContextActionsService.Instance.GetAvailableActions(this.Editor);
-			var availableActionsVM = new ObservableCollection<ContextActionViewModel>(
-				availableActions.Select(a => new ContextActionViewModel(a)));
-			if (availableActionsVM.Count == 0)
-				return;
-			
-			this.popup.Actions = new ContextActionsViewModel {
-				//Image = ClassBrowserIconService.Class.ImageSource,
-				Actions = availableActionsVM
-			};
-			this.popup.OpenAtLineStart(this.Editor);
-		}
-
-		void CaretPositionChanged(object sender, EventArgs e)
-		{
-			if (this.popup.IsOpen)
-			{
-				ClosePopup();
-			}
-			this.delayMoveTimer.Stop();
-			this.delayMoveTimer.Start();
-		}
-		
-		void ClosePopup()
-		{
-			this.popup.Close();
-			this.popup.IsDropdownOpen = false;
-			this.popup.Actions = null;
 		}
 	}
 }

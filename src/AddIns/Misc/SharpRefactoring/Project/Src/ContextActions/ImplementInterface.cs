@@ -22,9 +22,9 @@ namespace SharpRefactoring.ContextActions
 	/// <summary>
 	/// Description of ImplementInterface.
 	/// </summary>
-	public class ImplementInterfaceProvider : IContextActionsProvider
+	public class ImplementInterfaceProvider : ContextActionsProvider
 	{
-		public IEnumerable<IContextAction> GetAvailableActions(EditorContext editorContext)
+		public override IEnumerable<IContextAction> GetAvailableActions(EditorContext editorContext)
 		{
 			// Using CurrentLineAST is basically OK, but when the "class" keyword is on different line than class name,
 			// parsing only one line never tells us that we are looking at TypeDeclaration

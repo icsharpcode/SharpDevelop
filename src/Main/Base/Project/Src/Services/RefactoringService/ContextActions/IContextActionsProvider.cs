@@ -20,5 +20,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// Gets actions available for current line of the editor.
 		/// </summary>
 		IEnumerable<IContextAction> GetAvailableActions(EditorContext context);
+		
+		/// <summary>
+		/// Is this provider enabled by user?
+		/// </summary>
+		bool IsVisible { get; set; }
 	}
 }

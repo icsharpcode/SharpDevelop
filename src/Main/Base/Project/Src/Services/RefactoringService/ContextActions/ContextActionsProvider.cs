@@ -5,16 +5,18 @@
 //     <version>$Revision: $</version>
 // </file>
 using System;
-using System.Windows;
+using System.Collections.Generic;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
-	/// Description of ContextAction.
+	/// Description of ContextActionsProvider.
 	/// </summary>
-	public interface IContextAction
+	public abstract class ContextActionsProvider : IContextActionsProvider
 	{
-		string Title { get; }
-		void Execute();
+		public bool IsVisible { get; set; }
+		
+		public abstract IEnumerable<IContextAction> GetAvailableActions(EditorContext context);
 	}
 }

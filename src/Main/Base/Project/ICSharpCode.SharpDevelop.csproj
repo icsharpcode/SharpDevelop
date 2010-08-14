@@ -341,7 +341,9 @@
       <DependentUpon>ContextActionsHeaderedControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsHiddenViewModel.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsPopupBase.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsProvider.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsService.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\EditorContext.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\IContextAction.cs" />

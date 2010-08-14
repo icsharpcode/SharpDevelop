@@ -57,5 +57,31 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 			return null;
 		}
+		
+		public event EventHandler<ContextActionViewModelEventArgs> ActionVisibleChanged;
+		
+		void CheckBox_Changed(object sender, RoutedEventArgs e)
+		{
+			var contextActionVM = (ContextActionViewModel)((CheckBox)sender).DataContext;
+			if (ActionVisibleChanged != null)
+				ActionVisibleChanged(sender, new ContextActionViewModelEventArgs(contextActionVM));
+		}
+		
+		void CheckBox_Click(object sender, RoutedEventArgs e)
+		{
+			e.Handled = true;
+		}
+	}
+	
+	public class ContextActionViewModelEventArgs : EventArgs
+	{
+		public ContextActionViewModel Action { get; private set; }
+		
+		public ContextActionViewModelEventArgs(ContextActionViewModel action)
+		{
+			if (action == null)
+				throw new ArgumentNullException("action");
+			this.Action = action;
+		}
 	}
 }
