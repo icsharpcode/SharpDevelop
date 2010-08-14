@@ -590,6 +590,42 @@ End Module", "data", ExpressionContext.Default);
 End Module", "DataGridViewCellStyle", ExpressionContext.Type);
 		}
 		
+		[Test]
+		public void Using1()
+		{
+			FindFull(@"Module Test
+	Sub Main()
+		Using |x As FileReader = New FileReader()
+		
+		End Using
+	End Sub
+End Module", "x", ExpressionContext.Default);
+			
+			FindFull(@"Module Test
+	Sub Main()
+		Using x As FileR|eader = New FileReader()
+		
+		End Using
+	End Sub
+End Module", "FileReader", ExpressionContext.Type);
+			
+			FindFull(@"Module Test
+	Sub Main()
+		Using x As New FileR|eader()
+		
+		End Using
+	End Sub
+End Module", "FileReader()", ExpressionContext.ObjectCreation);
+			
+			FindFull(@"Module Test
+	Sub Main()
+		Using FileRea|der()
+		
+		End Using
+	End Sub
+End Module", "FileReader()", ExpressionContext.Default);
+		}
+		
 		#region Old Tests
 		void OldTest(string expr, int offset)
 		{

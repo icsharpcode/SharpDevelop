@@ -1228,10 +1228,10 @@ UsingVariable =
 						  "Explicit", "Equals", "Distinct", "Descending", "Compare", "By",
 						  "Binary", "Auto", "Assembly", "Ascending", "Ansi", "Aggregate", ident)
 		(
-			(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .) 
+			(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier
 			// HACK: needs to be optional because Expression can start with Identifier too
-			[
-				"As" [ EXPECTEDCONFLICT("Where", "UShort", "Until", "Unicode", "ULong", "UInteger", "Text", "Take",
+			[ (. PopContext(); isAlreadyInExpr = true; .)
+				( "As" [ EXPECTEDCONFLICT("Where", "UShort", "Until", "Unicode", "ULong", "UInteger", "Text", "Take",
 		                 "String", "Skip", "Single", "Short", "SByte", "Preserve", "Out", "Order",
 		                 "Off", "Object", "Long", "Key", "Join", "Into", "Integer", "Infer", "Group",
 		                 "From", "Explicit", "Equals", "Double", "Distinct", "Descending", "Decimal",
@@ -1247,10 +1247,12 @@ UsingVariable =
 				.)
 				ANY /* never reached due to goto above: */
 				/* this ANY is just so that Coco knows this branch isn't empty */
+				)
 			]
 		)
 	]
 	Expression
+	(. if (!isAlreadyInExpr) PopContext(); isAlreadyInExpr = false; .)
 .
 
 UsingStatement =
