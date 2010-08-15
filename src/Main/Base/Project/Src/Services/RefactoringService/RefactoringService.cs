@@ -477,23 +477,29 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// <summary>
 		/// Gets actions which can add implementation of interface to given class.
 		/// </summary>
-		public static IEnumerable<ImplementInterfaceAction> GetImplementInterfaceActions(IClass c, bool returnMissingInterfacesOnly = true)
+		public static IEnumerable<ImplementInterfaceAction> GetImplementInterfaceActions(IClass c, bool isExplicit = false, bool returnMissingInterfacesOnly = true)
 		{
 			var interfacesToImplement = GetInterfacesToImplement(c, returnMissingInterfacesOnly).ToList();
 			
-			if (c.ProjectContent.Language.SupportsImplicitInterfaceImplementation) {
-				return MakeImplementActions(c, interfacesToImplement, false, "Implement interface {0}").Concat(
-					MakeImplementActions(c, interfacesToImplement, true, "Implement interface {0} (explicit)"));
+			if (!isExplicit) {
+				if (c.ProjectContent.Language.SupportsImplicitInterfaceImplementation) {
+					return MakeImplementActions(c, interfacesToImplement, false, "Implement interface {0}");
+				} else
+					return new ImplementInterfaceAction[0];
 			} else {
-				return MakeImplementActions(c, interfacesToImplement, true, "Implement interface {0}");
+				if (c.ProjectContent.Language.SupportsImplicitInterfaceImplementation) {
+					return MakeImplementActions(c, interfacesToImplement, true, "Implement interface {0} (explicit)");
+				} else {
+					return MakeImplementActions(c, interfacesToImplement, true, "Implement interface {0}");
+				}
 			}
 		}
 		
-		static IEnumerable<ImplementInterfaceAction> MakeImplementActions(IClass c, IEnumerable<IReturnType> interfaces, bool isExplit, string format)
+		static IEnumerable<ImplementInterfaceAction> MakeImplementActions(IClass c, IEnumerable<IReturnType> interfaces, bool isExplicit, string format)
 		{
 			var ambience = AmbienceService.GetCurrentAmbience();
 			foreach (var iface in interfaces) {
-				yield return new ImplementInterfaceAction(iface, c, isExplit) {
+				yield return new ImplementInterfaceAction(iface, c, isExplicit) {
 					Title = string.Format(format, ambience.Convert(iface))
 				};
 			}
@@ -527,7 +533,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 						continue;
 					}
 					IReturnType rtCopy = rt;
-					yield return new ImplementAbstractClassAction(rtCopy, c) { 
+					yield return new ImplementAbstractClassAction(rtCopy, c) {
 						Title = string.Format("Implement abstract class {0}", ambience.Convert(rtCopy)) };
 				}
 			}

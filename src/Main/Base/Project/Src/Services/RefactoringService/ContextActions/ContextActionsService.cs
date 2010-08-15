@@ -36,7 +36,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.providers = AddInTree.BuildItems<IContextActionsProvider>("/SharpDevelop/ViewContent/AvalonEdit/ContextActions", null, false);
 			var disabledActions = LoadProviderVisibilities().ToLookup(s => s);
 			foreach (var provider in providers) {
-				// load from configuration
 				provider.IsVisible = !disabledActions.Contains(provider.GetType().FullName);
 			}
 		}

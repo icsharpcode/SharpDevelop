@@ -81,6 +81,7 @@
     <Compile Include="Src\ContextActions\GenerateMember.cs" />
     <Compile Include="Src\ContextActions\ImplementAbstractClass.cs" />
     <Compile Include="Src\ContextActions\ImplementInterface.cs" />
+    <Compile Include="Src\ContextActions\ImplementInterfaceExplicit.cs" />
     <Compile Include="Src\ContextActions\MoveClassToFile.cs" />
     <Compile Include="Src\ContextActions\ParamCheck.cs" />
     <Compile Include="Src\ContextActions\ParamCheckForNull.cs" />

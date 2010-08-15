@@ -23,8 +23,6 @@ namespace SharpRefactoring.ContextActions
 	{
 		public override IEnumerable<IContextAction> GetAvailableActions(EditorContext editorContext)
 		{
-			var ambience = AmbienceService.GetCurrentAmbience();
-			
 			foreach (var targetClass in editorContext.GetClassDeclarationsOnCurrentLine().Where(c => c.ClassType == ClassType.Class)) {
 				
 				foreach (var implementAction in RefactoringService.GetImplementAbstractClassActions(targetClass)) {

@@ -42,6 +42,7 @@
 		<Class class="SharpRefactoring.ContextActions.MoveClassToFile" />
 		<Class class="SharpRefactoring.ContextActions.ImplementInterfaceProvider" />
 		<Class class="SharpRefactoring.ContextActions.ImplementAbstractClassProvider" />
+		<Class class="SharpRefactoring.ContextActions.ImplementInterfaceExplicitProvider" />
 		<Class class="SharpRefactoring.ContextActions.GenerateMemberProvider" />	
 		<Class class="SharpRefactoring.ContextActions.CheckAssignmentNull" />	
 		<Class class="SharpRefactoring.ContextActions.CheckAssignmentNotNull" />

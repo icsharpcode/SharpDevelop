@@ -22,17 +22,14 @@ namespace SharpRefactoring.ContextActions
 	/// <summary>
 	/// Description of ImplementInterface.
 	/// </summary>
-	public class ImplementInterfaceProvider : ContextActionsProvider
+	public class ImplementInterfaceExplicitProvider : ContextActionsProvider
 	{
 		public override IEnumerable<IContextAction> GetAvailableActions(EditorContext editorContext)
 		{
-			// Using CurrentLineAST is basically OK, but when the "class" keyword is on different line than class name,
-			// parsing only one line never tells us that we are looking at TypeDeclaration
-			// Alternative solution could be to try to resolve also IdentifierExpression to see if it is class declaration.
 			foreach (var targetClass in editorContext.GetClassDeclarationsOnCurrentLine().
 			         Where(c => c.ClassType == ClassType.Class || c.ClassType == ClassType.Interface)) {
 				
-				foreach (var implementAction in RefactoringService.GetImplementInterfaceActions(targetClass)) {
+				foreach (var implementAction in RefactoringService.GetImplementInterfaceActions(targetClass, true)) {
 					yield return implementAction;
 				}
 			}
