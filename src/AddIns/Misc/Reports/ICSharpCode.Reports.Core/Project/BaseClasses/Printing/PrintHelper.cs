@@ -28,7 +28,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		public static void SetLayoutForRow (Graphics graphics, ILayouter layouter,ISimpleContainer row)
 		{
-//			BaseReportItem item = row as BaseReportItem;
 			Rectangle textRect = layouter.Layout(graphics,row);
 			if (textRect.Height > row.Size.Height) {
 				row.Size = new Size(row.Size.Width,textRect.Height);

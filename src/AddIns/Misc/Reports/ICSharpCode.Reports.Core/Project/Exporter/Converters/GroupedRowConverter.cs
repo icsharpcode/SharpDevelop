@@ -28,10 +28,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		private BaseReportItem parent;
 		
 		public RowConverter(IDataNavigator dataNavigator,
-		                    ExporterPage singlePage,
-		                    
-		                    ILayouter layouter):base(dataNavigator,singlePage,layouter)
-		{
+		                    ExporterPage singlePage, ILayouter layouter):base(dataNavigator,singlePage,layouter)
+		{               
 		}
 		
 		public override ExporterCollection Convert(BaseReportItem parent, BaseReportItem item)
@@ -78,21 +76,17 @@ namespace ICSharpCode.Reports.Core.Exporter
 				
 				// Grouping Header
 				
-				if (base.DataNavigator.HasChildren)
-				{
-					TestDecorateElement(simpleContainer);
+				if (section.Items.HasGroupColumns) {
+					currentPosition = TestDecorateElement(mylist,section,simpleContainer,defaultLeftPos,currentPosition);
 				}
-			
-//				Collection<BaseGroupItem> inheritedReportItems = new Collection<BaseGroupItem>(simpleContainer.Items.OfType<BaseGroupItem>().ToList());
-				
-				base.FillRow(simpleContainer);
-				
-				PrepareContainerForConverting(simpleContainer);
-
-				base.FireSectionRendering(section);
-				StandardPrinter.EvaluateRow(base.Evaluator,mylist);
-				currentPosition = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
-				
+				else
+				{
+					base.FillRow(simpleContainer);
+					PrepareContainerForConverting(simpleContainer);
+					base.FireSectionRendering(section);
+					StandardPrinter.EvaluateRow(base.Evaluator,mylist);
+					currentPosition = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+				}
 				AfterConverting (section);
 				
 			// Grouping Items ----------------------
@@ -105,6 +99,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 						((BaseReportItem)simpleContainer).BackColor = color;
 
 						base.DataNavigator.FillChild(simpleContainer.Items);
+						
 						PrepareContainerForConverting(simpleContainer);
 
 						base.FireSectionRendering(section);
@@ -150,7 +145,31 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		private Color TestDecorateElement(ISimpleContainer simpleContainer)
+		
+		private Point TestDecorateElement(ExporterCollection mylist,BaseSection section,ISimpleContainer simpleContainer,int leftPos,Point offset)
+		{
+			
+		/*
+				base.FillRow(simpleContainer);
+				PrepareContainerForConverting(simpleContainer);
+
+				base.FireSectionRendering(section);
+				StandardPrinter.EvaluateRow(base.Evaluator,mylist);
+//				currentPosition = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+		*/
+			
+			var groupCollection = section.Items.ExtractGroupedColumns();
+			base.DataNavigator.Fill(groupCollection);
+			base.FireSectionRendering(section);
+			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
+			ExporterCollection list = StandardPrinter.ConvertPlainCollection(groupCollection,offset);
+			mylist.AddRange(list);
+			
+			return new Point (leftPos,offset.Y + groupCollection[0].Size.Height + 20  + (3 *GlobalValues.GapBetweenContainer));
+		}
+		 
+		
+		private Color old_TestDecorateElement(ISimpleContainer simpleContainer)
 		{
 			BaseReportItem i = simpleContainer as BaseReportItem;
 			var retval = i.BackColor;
