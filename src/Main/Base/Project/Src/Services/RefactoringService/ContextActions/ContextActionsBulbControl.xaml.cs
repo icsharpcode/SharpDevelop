@@ -47,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				this.Header.Opacity = isOpen ? 1.0 : 0.7;
 				this.Header.BorderThickness = isOpen ? new Thickness(1, 1, 1, 0) : new Thickness(1);
 				// Show / hide
-				this.ActionsTreeView.Visibility = this.HiddenActionsExpander.Visibility =
+				this.ContentBorder.Visibility =
 					isOpen ? Visibility.Visible : Visibility.Collapsed;
 			}
 		}

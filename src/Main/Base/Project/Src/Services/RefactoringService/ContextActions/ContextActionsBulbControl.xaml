@@ -129,12 +129,8 @@
 		</Style>
 	</UserControl.Resources>
 	
-	<!--<Border Padding="0 0 8 8">
-		<aero:SystemDropShadowChrome>
-			<Border BorderThickness="1" BorderBrush="{StaticResource OuterBorderBrush}" HorizontalAlignment="Stretch">-->
 	<Grid Background="Transparent">
 		<Grid.RowDefinitions>
-			<RowDefinition></RowDefinition>
 			<RowDefinition></RowDefinition>
 			<RowDefinition></RowDefinition>
 		</Grid.RowDefinitions>
@@ -173,12 +169,20 @@
 			</Border.Style>-->
 		</Border>
 		
-		<!-- Content - TreeView -->
-		<local:ContextActionsControl x:Name="ActionsTreeView" Grid.Row="1" Grid.Column="0"
-			DataContext="{Binding Actions}" ActionVisibleChanged="ActionsTreeView_ActionVisibleChanged"></local:ContextActionsControl>
-		<Expander x:Name="HiddenActionsExpander" Expanded="Expander_Expanded" Grid.Row="2" Grid.Column="0">
-			<local:ContextActionsControl x:Name="HiddenActionsTreeView"
-				DataContext="{Binding HiddenActions}" ActionVisibleChanged="HiddenActionsTreeView_ActionVisibleChanged"></local:ContextActionsControl>
-		</Expander>
+		<!-- Content -->
+		<Border x:Name="ContentBorder" Padding="0 0 8 8" Grid.Row="1" Grid.Column="0" MinWidth="200" Background="White">
+			<aero:SystemDropShadowChrome>
+				<Border BorderThickness="1" BorderBrush="{StaticResource OuterBorderBrush}" HorizontalAlignment="Stretch">
+					<StackPanel Orientation="Vertical">
+						<local:ContextActionsControl x:Name="ActionsTreeView"
+							DataContext="{Binding Actions}" ActionVisibleChanged="ActionsTreeView_ActionVisibleChanged"></local:ContextActionsControl>
+						<Expander x:Name="HiddenActionsExpander" Expanded="Expander_Expanded" Grid.Row="2" Grid.Column="0">
+							<local:ContextActionsControl x:Name="HiddenActionsTreeView"
+								DataContext="{Binding HiddenActions}" ActionVisibleChanged="HiddenActionsTreeView_ActionVisibleChanged"></local:ContextActionsControl>
+						</Expander>
+					</StackPanel>
+				</Border>
+			</aero:SystemDropShadowChrome>
+		</Border>
 	</Grid>
 </UserControl>

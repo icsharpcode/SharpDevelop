@@ -51,7 +51,7 @@
 	</UserControl.Resources>
 
 	
-		<TreeView ItemsSource="{Binding}" x:Name="TreeView">
+		<TreeView x:Name="TreeView" ItemsSource="{Binding}" BorderThickness="0">
 			<TreeView.Background>
 				<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
 					<GradientStop Color="White"/>
