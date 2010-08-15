@@ -21,6 +21,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		private static ContextActionsService instance = new ContextActionsService();
 		
+		const string PropertyServiceKey = "DisabledContextActionProviders";
+		
 		public static ContextActionsService Instance {
 			get {
 				return instance;
@@ -32,15 +34,27 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		private ContextActionsService()
 		{
 			this.providers = AddInTree.BuildItems<IContextActionsProvider>("/SharpDevelop/ViewContent/AvalonEdit/ContextActions", null, false);
+			var disabledActions = LoadProviderVisibilities().ToLookup(s => s);
 			foreach (var provider in providers) {
 				// load from configuration
-				provider.IsVisible = true;
+				provider.IsVisible = !disabledActions.Contains(provider.GetType().FullName);
 			}
 		}
 		
 		public EditorActionsProvider GetAvailableActions(ITextEditor editor)
 		{
 			return new EditorActionsProvider(editor, this.providers);
+		}
+		
+		static List<string> LoadProviderVisibilities()
+		{
+			return PropertyService.Get(PropertyServiceKey, new List<string>());
+		}
+		
+		public void SaveProviderVisibilities()
+		{
+			List<string> disabledProviders = this.providers.Where(p => !p.IsVisible).Select(p => p.GetType().FullName).ToList();
+			PropertyService.Set(PropertyServiceKey, disabledProviders);
 		}
 	}
 	
@@ -79,8 +93,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (providerForAction.TryGetValue(action, out provider)) {
 				provider.IsVisible = isVisible;
 			}
+			ContextActionsService.Instance.SaveProviderVisibilities();
 		}
 		
+		/// <summary>
+		/// For every returned action remembers its provider for so that SetVisible can work.
+		/// </summary>
 		Dictionary<IContextAction, IContextActionsProvider> providerForAction = new Dictionary<IContextAction, IContextActionsProvider>();
 
 		/// <summary>
