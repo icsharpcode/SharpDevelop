@@ -33,9 +33,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			remove { this.ActionsTreeView.ActionExecuted -= value; }
 		}
 		
-		public new ContextActionsHiddenViewModel DataContext
+		public new ContextActionsBulbViewModel DataContext
 		{
-			get { return (ContextActionsHiddenViewModel)base.DataContext; }
+			get { return (ContextActionsBulbViewModel)base.DataContext; }
 			set { base.DataContext = value; }
 		}
 		
@@ -69,26 +69,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.IsOpen = !this.IsOpen;
 		}
 		
-		void ActionsTreeView_ActionVisibleChanged(object sender, ContextActionViewModelEventArgs e)
-		{
-			var clickedAction = e.Action;
-			this.DataContext.Model.SetVisible(clickedAction.Action, false);
-//			this.DataContext.Actions.Remove(clickedAction);
-//			this.DataContext.HiddenActions.Add(clickedAction);
-			
-		}
-		
-		void HiddenActionsTreeView_ActionVisibleChanged(object sender, ContextActionViewModelEventArgs e)
-		{
-			var clickedAction = e.Action;
-			this.DataContext.Model.SetVisible(clickedAction.Action, true);
-//			this.DataContext.HiddenActions.Remove(clickedAction);
-//			this.DataContext.Actions.Add(clickedAction);
-		}
-		
 		void Expander_Expanded(object sender, RoutedEventArgs e)
 		{
 			this.DataContext.LoadHiddenActions();
+		}
+		
+		void CheckBox_Click(object sender, RoutedEventArgs e)
+		{
+			e.Handled = true;
 		}
 	}
 }

@@ -29,9 +29,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			set { this.Child = value; }
 		}
 		
-		public ContextActionsHiddenViewModel ViewModel
+		public ContextActionsBulbViewModel ViewModel
 		{
-			get { return (ContextActionsHiddenViewModel)this.DataContext; }
+			get { return (ContextActionsBulbViewModel)this.DataContext; }
 			set { this.DataContext = value; }
 		}
 		

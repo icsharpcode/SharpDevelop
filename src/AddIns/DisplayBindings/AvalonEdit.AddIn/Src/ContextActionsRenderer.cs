@@ -102,7 +102,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return;
 			ClosePopup();
 			
-			ContextActionsHiddenViewModel popupVM = BuildPopupViewModel(this.Editor);
+			ContextActionsBulbViewModel popupVM = BuildPopupViewModel(this.Editor);
 			//availableActionsVM.Title =
 			//availableActionsVM.Image =
 			if (popupVM.Actions.Count == 0)
@@ -111,10 +111,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.popup.OpenAtLineStart(this.Editor);
 		}
 
-		ContextActionsHiddenViewModel BuildPopupViewModel(ITextEditor editor)
+		ContextActionsBulbViewModel BuildPopupViewModel(ITextEditor editor)
 		{
 			var actionsProvider = ContextActionsService.Instance.GetAvailableActions(editor);
-			return new ContextActionsHiddenViewModel(actionsProvider);
+			return new ContextActionsBulbViewModel(actionsProvider);
 		}
 
 		void CaretPositionChanged(object sender, EventArgs e)

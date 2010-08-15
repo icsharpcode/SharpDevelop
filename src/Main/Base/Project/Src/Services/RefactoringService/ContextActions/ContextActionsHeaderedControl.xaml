@@ -36,7 +36,17 @@
 			<aero:SystemDropShadowChrome>
 				<Border BorderThickness="1" BorderBrush="{StaticResource OuterBorderBrush}" HorizontalAlignment="Stretch">
 					<!-- Content - TreeView -->
-					<local:ContextActionsControl x:Name="ActionsTreeView" DataContext="{Binding Actions}"></local:ContextActionsControl>
+					<local:ContextActionsControl x:Name="ActionsTreeView" DataContext="{Binding Actions}">
+						<local:ContextActionsControl.ItemTemplate>
+							<HierarchicalDataTemplate ItemsSource="{Binding ChildActions}">
+								<DockPanel HorizontalAlignment="Stretch" LastChildFill="True">
+									<Image Source="{Binding Image}" Margin="3 2 4 2" DockPanel.Dock="Left" />
+									<TextBlock Text="{Binding Comment}" Foreground="Gray" TextAlignment="Right" DockPanel.Dock="Right"/>
+									<TextBlock Text="{Binding Name}" Margin="0 2 20 2" />
+								</DockPanel>
+							</HierarchicalDataTemplate>
+						</local:ContextActionsControl.ItemTemplate>
+					</local:ContextActionsControl>
 				</Border>
 			</aero:SystemDropShadowChrome>
 		</Border>

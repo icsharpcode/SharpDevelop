@@ -9,6 +9,7 @@
 		<SolidColorBrush x:Key="OuterBorderBrush" Color="#436C82"></SolidColorBrush>
 		<BitmapImage x:Key="PencilImage" UriSource="pencil.png" />
 		<Geometry x:Key="DownArrowGeometry">M 0 0 L 2 3 L 4 0 Z</Geometry>
+		<local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 		
 		<Style x:Key="ExpanderDownHeaderStyle"
 		       TargetType="{x:Type ToggleButton}">
@@ -17,7 +18,7 @@
 					<ControlTemplate TargetType="{x:Type ToggleButton}">
 						<Border Padding="{TemplateBinding Control.Padding}">
 							<Grid>
-								<Border Name="headerBorder" Height="10" >
+								<Border Name="headerBorder" Height="8" >
 									<Path Name="arrow" Data="M1,1.5L4.5,5 8,1.5" Stroke="#888" StrokeThickness="2"  HorizontalAlignment="Center" VerticalAlignment="Center" SnapsToDevicePixels="False" />
 									<Border.Background>
 										<LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -71,16 +72,9 @@
 			        Value="Stretch"/>
 			<Setter Property="BorderBrush"
 			        Value="Transparent"/>
-			<Setter Property="BorderThickness"
-			        Value="1"/>
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate TargetType="{x:Type Expander}">
-						<Border BorderBrush="{TemplateBinding BorderBrush}"
-						        BorderThickness="{TemplateBinding BorderThickness}"
-						        Background="{TemplateBinding Background}"
-						        CornerRadius="3"
-						        SnapsToDevicePixels="true">
 							<DockPanel>
 								<ToggleButton x:Name="HeaderSite"
 								              DockPanel.Dock="Top"
@@ -109,7 +103,6 @@
 									VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
 									Margin="{TemplateBinding Padding}"/>
 							</DockPanel>
-						</Border>
 						<ControlTemplate.Triggers>
 							<Trigger Property="IsExpanded"
 							         Value="true">
@@ -129,6 +122,8 @@
 		</Style>
 	</UserControl.Resources>
 	
+	
+	<!-- Visual tree -->
 	<Grid Background="Transparent">
 		<Grid.RowDefinitions>
 			<RowDefinition></RowDefinition>
@@ -172,13 +167,50 @@
 		<!-- Content -->
 		<Border x:Name="ContentBorder" Padding="0 0 8 8" Grid.Row="1" Grid.Column="0" MinWidth="200" Background="White">
 			<aero:SystemDropShadowChrome>
-				<Border BorderThickness="1" BorderBrush="{StaticResource OuterBorderBrush}" HorizontalAlignment="Stretch">
+				<Border BorderThickness="1" Padding="0" Margin="0" BorderBrush="{StaticResource OuterBorderBrush}">
 					<StackPanel Orientation="Vertical">
 						<local:ContextActionsControl x:Name="ActionsTreeView"
-							DataContext="{Binding Actions}" ActionVisibleChanged="ActionsTreeView_ActionVisibleChanged"></local:ContextActionsControl>
-						<Expander x:Name="HiddenActionsExpander" Expanded="Expander_Expanded" Grid.Row="2" Grid.Column="0">
+							DataContext="{Binding Actions}">
+							<local:ContextActionsControl.ItemTemplate>
+								<DataTemplate>
+									<DockPanel HorizontalAlignment="Stretch" LastChildFill="True">
+										<Image Source="{Binding Image}" Margin="3 2 4 2" DockPanel.Dock="Left" />
+										 <!-- Command of every checkbox is the command on the main DataContext (ContextActionsBulbViewModel) -->
+										<CheckBox IsChecked="{Binding IsVisible}" VerticalAlignment="Center" DockPanel.Dock="Right"
+										          Command="{Binding Path=DataContext.ActionVisibleChangedCommand,
+										          			 RelativeSource={RelativeSource AncestorType={x:Type local:ContextActionsBulbControl}}}"
+										          CommandParameter="{Binding}"
+												   Visibility="{Binding DataContext.IsHiddenActionsExpanded,
+																RelativeSource={RelativeSource AncestorType={x:Type local:ContextActionsBulbControl}},
+																Converter={StaticResource BoolToVisibilityConverter}}"
+												   Click="CheckBox_Click"
+												   Focusable="False">
+										</CheckBox>
+										<TextBlock Text="{Binding Name}" Margin="0 2 20 2" />
+									</DockPanel>
+								</DataTemplate>
+							</local:ContextActionsControl.ItemTemplate>
+						</local:ContextActionsControl>
+						<Expander x:Name="HiddenActionsExpander" Expanded="Expander_Expanded" 
+						          IsExpanded="{Binding IsHiddenActionsExpanded}"
+						          Grid.Row="2" Grid.Column="0" Margin="0">
 							<local:ContextActionsControl x:Name="HiddenActionsTreeView"
-								DataContext="{Binding HiddenActions}" ActionVisibleChanged="HiddenActionsTreeView_ActionVisibleChanged"></local:ContextActionsControl>
+								DataContext="{Binding HiddenActions}">
+								<local:ContextActionsControl.ItemTemplate>
+									<DataTemplate>
+										<DockPanel HorizontalAlignment="Stretch" LastChildFill="True">
+											<Image Source="{Binding Image}" Margin="3 2 4 2" DockPanel.Dock="Left" />
+											<CheckBox IsChecked="{Binding IsVisible}" VerticalAlignment="Center" DockPanel.Dock="Right"
+											          Command="{Binding Path=DataContext.ActionVisibleChangedCommand,
+											          RelativeSource={RelativeSource AncestorType={x:Type local:ContextActionsBulbControl}}}"
+											          CommandParameter="{Binding}"
+											          Click="CheckBox_Click"
+													   Focusable="False"></CheckBox>
+											<TextBlock Text="{Binding Name}" Margin="0 2 20 2" />
+										</DockPanel>
+									</DataTemplate>
+								</local:ContextActionsControl.ItemTemplate>
+							</local:ContextActionsControl>
 						</Expander>
 					</StackPanel>
 				</Border>

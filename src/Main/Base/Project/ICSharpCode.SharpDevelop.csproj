@@ -331,6 +331,7 @@
     <Compile Include="Src\Services\ParserService\ParserService.cs" />
     <Compile Include="Src\Services\ProjectService\CompileModifiedProjectsOnly.cs" />
     <Compile Include="Src\Services\ProjectService\SolutionConfigurationEventHandler.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\BoolToVisibilityConverter.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextAction.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsBulbControl.xaml.cs">
       <DependentUpon>ContextActionsBulbControl.xaml</DependentUpon>
@@ -341,13 +342,12 @@
       <DependentUpon>ContextActionsHeaderedControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsHiddenViewModel.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsBulbViewModel.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsPopupBase.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsProvider.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsService.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\EditorContext.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\IContextAction.cs" />
-    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionCommand.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsControl.xaml.cs">
       <DependentUpon>ContextActionsControl.xaml</DependentUpon>
     </Compile>

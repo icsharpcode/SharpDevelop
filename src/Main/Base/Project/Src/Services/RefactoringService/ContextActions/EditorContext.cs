@@ -200,7 +200,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (currentLine == null)
 				return null;
 			var snippetParser = GetSnippetParser(editor);
-			return snippetParser.Parse(currentLine.Text);
+			if (snippetParser == null)
+				return null;
+			try	{
+				return snippetParser.Parse(currentLine.Text);
+			}
+			catch {
+				return null;
+			}
 		}
 		
 		SnippetParser GetSnippetParser(ITextEditor editor)

@@ -4,6 +4,7 @@
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:s="clr-namespace:System;assembly=mscorlib"
+	xmlns:local="clr-namespace:ICSharpCode.SharpDevelop.Refactoring"
 	xmlns:aero="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero">
 	
 	<!--The treeview with Context actions. Accepts IEnumerable<ContextActionViewModel> as its DataContext.-->
@@ -49,34 +50,35 @@
 			</Setter>
 		</Style>
 	</UserControl.Resources>
-
 	
-		<TreeView x:Name="TreeView" ItemsSource="{Binding}" BorderThickness="0">
-			<TreeView.Background>
-				<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-					<GradientStop Color="White"/>
-				</LinearGradientBrush>
-			</TreeView.Background>
-			<TreeView.ItemContainerStyle>
-				<Style TargetType="{x:Type TreeViewItem}">
-					<Setter Property="Template">
-						<Setter.Value>
-							<ControlTemplate TargetType="TreeViewItem">
-								<StackPanel>
-									<!-- ActionButtonClick is used just to close the Popup -->
-									<Button Command="{Binding ActionCommand}" Style="{StaticResource ClearButton}" Click="ActionButtonClick">
-										<Border SnapsToDevicePixels="True">
-											<ContentPresenter Content="{TemplateBinding HeaderedContentControl.Header}" ContentTemplate="{TemplateBinding HeaderedContentControl.HeaderTemplate}" ContentStringFormat="{TemplateBinding HeaderedItemsControl.HeaderStringFormat}" ContentSource="Header" Name="PART_Header"
-												HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
-										</Border>
-									</Button>
-									<Border Padding="14 0 0 0">
-										<ItemsPresenter Name="ItemsHost"  />
+	
+	<TreeView x:Name="TreeView" ItemsSource="{Binding}" BorderThickness="0"
+	          ItemTemplate="{Binding Path=ItemTemplate, RelativeSource={RelativeSource AncestorType={x:Type local:ContextActionsControl}}}">
+		<TreeView.Background>
+			<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+				<GradientStop Color="White"/>
+			</LinearGradientBrush>
+		</TreeView.Background>
+		<TreeView.ItemContainerStyle>
+			<Style TargetType="{x:Type TreeViewItem}">
+				<Setter Property="Template">
+					<Setter.Value>
+						<ControlTemplate TargetType="TreeViewItem">
+							<StackPanel>
+								<!-- ActionButtonClick event is used just to close the Popup -->
+								<Button Command="{Binding ActionCommand}" Style="{StaticResource ClearButton}" Click="ActionButtonClick">
+									<Border SnapsToDevicePixels="True">
+										<ContentPresenter Content="{TemplateBinding HeaderedContentControl.Header}" ContentTemplate="{TemplateBinding HeaderedContentControl.HeaderTemplate}" ContentStringFormat="{TemplateBinding HeaderedItemsControl.HeaderStringFormat}" ContentSource="Header" Name="PART_Header"
+											HorizontalAlignment="Stretch" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
 									</Border>
-								</StackPanel>
-								<ControlTemplate.Triggers>
-									<!-- Disable collapsing -->
-									<!--<Trigger Property="TreeViewItem.IsExpanded">
+								</Button>
+								<Border Padding="14 0 0 0">
+									<ItemsPresenter Name="ItemsHost"  />
+								</Border>
+							</StackPanel>
+							<ControlTemplate.Triggers>
+								<!-- Disable collapsing -->
+								<!--<Trigger Property="TreeViewItem.IsExpanded">
 										<Setter Property="UIElement.Visibility" TargetName="ItemsHost">
 											<Setter.Value>
 												<x:Static Member="Visibility.Collapsed" />
@@ -86,26 +88,16 @@
 											<s:Boolean>False</s:Boolean>
 										</Trigger.Value>
 									</Trigger>-->
-								</ControlTemplate.Triggers>
-							</ControlTemplate>
-						</Setter.Value>
-					</Setter>
-					<!-- Make all items expanded -->
-					<Setter Property="IsExpanded" Value="True"></Setter>
-					<!-- Make items not focusable so that contained button (not the TreeViewItem) gets focus on Down arrow -->
-					<Setter Property="Focusable" Value="False"></Setter>
-				</Style>
-			</TreeView.ItemContainerStyle>
-			<TreeView.ItemTemplate>
-				<HierarchicalDataTemplate ItemsSource="{Binding ChildActions}">
-					<DockPanel HorizontalAlignment="Stretch" LastChildFill="True">
-						<Image Source="{Binding Image}" Margin="3 2 4 2" />
-						<CheckBox IsChecked="{Binding IsVisible}" DockPanel.Dock="Right" VerticalAlignment="Center" Click="CheckBox_Click" Checked="CheckBox_Changed" Unchecked="CheckBox_Changed" />
-						<TextBlock Text="{Binding Comment}" Foreground="Gray" TextAlignment="Right" DockPanel.Dock="Right"/>
-						<TextBlock Text="{Binding Name}" Margin="0 2 20 2" />
-					</DockPanel>
-				</HierarchicalDataTemplate>
-			</TreeView.ItemTemplate>
-		</TreeView>
-	
+							</ControlTemplate.Triggers>
+						</ControlTemplate>
+					</Setter.Value>
+				</Setter>
+				<!-- Make all items expanded -->
+				<Setter Property="IsExpanded" Value="True"></Setter>
+				<!-- Make items not focusable so that contained button (not the TreeViewItem) gets focus on Down arrow -->
+				<Setter Property="Focusable" Value="False"></Setter>
+			</Style>
+		</TreeView.ItemContainerStyle>
+	</TreeView>
+
 </UserControl>
