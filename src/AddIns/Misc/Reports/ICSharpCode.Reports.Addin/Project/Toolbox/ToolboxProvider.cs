@@ -81,6 +81,12 @@ namespace ICSharpCode.Reports.Addin
 			tb.DisplayName = "GroupHeader";
 			sideTab.Items.Add(new SideTabItemDesigner(tb));
 			
+			//Group
+			tb = new ToolboxItem(typeof(ICSharpCode.Reports.Addin.BaseGroupedRowItem));
+			tb.Bitmap = WinFormsResourceService.GetBitmap("Icons.16x16.SharpQuery.Table");
+//			tb.DisplayName = ResourceService.GetString("SharpReport.Toolbar.DataRow");
+			tb.DisplayName = "GroupRow";
+			sideTab.Items.Add(new SideTabItemDesigner(tb));
 			
 			//BaseTable
 			tb.Bitmap = WinFormsResourceService.GetBitmap("Icons.16x16.SharpQuery.Table");

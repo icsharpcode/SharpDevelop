@@ -22,12 +22,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 	/// </summary>
 	/// 
 	
-	public class RowConverter:BaseConverter
+	public class GroupedRowConverter:BaseConverter
 	{
 
 		private BaseReportItem parent;
 		
-		public RowConverter(IDataNavigator dataNavigator,
+		public GroupedRowConverter(IDataNavigator dataNavigator,
 		                    ExporterPage singlePage, ILayouter layouter):base(dataNavigator,singlePage,layouter)
 		{               
 		}
@@ -72,43 +72,26 @@ namespace ICSharpCode.Reports.Core.Exporter
 				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
 				base.SaveSize(section.Items[0].Size);
 				
-				Color color = ((BaseReportItem)simpleContainer).BackColor;
-				
 				// Grouping Header
 				
 				if (section.Items.HasGroupColumns) {
-					currentPosition = TestDecorateElement(mylist,section,simpleContainer,defaultLeftPos,currentPosition);
+					currentPosition = ConvertGroupHeader(mylist,section,simpleContainer,defaultLeftPos,currentPosition);
 				}
 				else
 				{
-					base.FillRow(simpleContainer);
-					PrepareContainerForConverting(simpleContainer);
-					base.FireSectionRendering(section);
-					StandardPrinter.EvaluateRow(base.Evaluator,mylist);
-					currentPosition = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+					// No Grouping
+					currentPosition = ConvertStandardRow (mylist,section,simpleContainer,defaultLeftPos,currentPosition);
 				}
-				AfterConverting (section);
 				
-			// Grouping Items ----------------------
+				
+			// Group Children  ----------------------
 			
 				if (base.DataNavigator.HasChildren) {
 					
 					StandardPrinter.AdjustBackColor(simpleContainer,GlobalValues.DefaultBackColor);
 					base.DataNavigator.SwitchGroup();
 					do {
-						((BaseReportItem)simpleContainer).BackColor = color;
-
-						base.DataNavigator.FillChild(simpleContainer.Items);
-						
-						PrepareContainerForConverting(simpleContainer);
-
-						base.FireSectionRendering(section);
-						
-						StandardPrinter.EvaluateRow(base.Evaluator,mylist);
-						
-						currentPosition = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
-
-						AfterConverting (section);
+						currentPosition = ConvertGroupChilds (mylist,section,simpleContainer,defaultLeftPos,currentPosition);
 					}
 					while ( base.DataNavigator.ChildMoveNext());
 				}
@@ -135,7 +118,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-	
 		
 		
 		private void AfterConverting (BaseSection section)
@@ -146,36 +128,43 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		
 		
-		private Point TestDecorateElement(ExporterCollection mylist,BaseSection section,ISimpleContainer simpleContainer,int leftPos,Point offset)
+		private Point ConvertGroupHeader(ExporterCollection mylist,BaseSection section,ISimpleContainer simpleContainer,int leftPos,Point offset)
 		{
-			
-		/*
-				base.FillRow(simpleContainer);
-				PrepareContainerForConverting(simpleContainer);
-
-				base.FireSectionRendering(section);
-				StandardPrinter.EvaluateRow(base.Evaluator,mylist);
-//				currentPosition = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
-		*/
-			
 			var groupCollection = section.Items.ExtractGroupedColumns();
 			base.DataNavigator.Fill(groupCollection);
 			base.FireSectionRendering(section);
 			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
 			ExporterCollection list = StandardPrinter.ConvertPlainCollection(groupCollection,offset);
 			mylist.AddRange(list);
-			
+			AfterConverting (section);
 			return new Point (leftPos,offset.Y + groupCollection[0].Size.Height + 20  + (3 *GlobalValues.GapBetweenContainer));
 		}
 		 
 		
-		private Color old_TestDecorateElement(ISimpleContainer simpleContainer)
+		private Point ConvertGroupChilds(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer, int defaultLeftPos, Point currentPosition)
 		{
-			BaseReportItem i = simpleContainer as BaseReportItem;
-			var retval = i.BackColor;
-			i.BackColor = System.Drawing.Color.LightGray;
-			return retval;
+			base.DataNavigator.FillChild(simpleContainer.Items);
+			PrepareContainerForConverting(simpleContainer);
+			base.FireSectionRendering(section);
+			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
+			Point curPos  = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+			AfterConverting (section);
+			return curPos;
 		}
+		
+		
+		private  Point ConvertStandardRow(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer, int defaultLeftPos, Point currentPosition)
+		{
+			base.FillRow(simpleContainer);
+			PrepareContainerForConverting(simpleContainer);
+			base.FireSectionRendering(section);
+			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
+			Point curPos = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+			AfterConverting (section);
+			return curPos;
+		}
+		
+		
 		
 		private static void ShouldDrawBorder (BaseSection section,ExporterCollection list)
 		{

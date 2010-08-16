@@ -30,7 +30,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			}
 			
 			if (t.Equals(typeof(BaseRowItem))) {
-				return new RowConverter (dataNavigator,singlePage,layouter);
+				return new GroupedRowConverter (dataNavigator,singlePage,layouter);
 			}
 			
 			return null;

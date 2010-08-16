@@ -39,6 +39,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		#region Section's
 		
+		
 		public  static void AdjustParent (BaseReportItem parent,ReportItemCollection items)
 		{
 			foreach (BaseReportItem i in items) {

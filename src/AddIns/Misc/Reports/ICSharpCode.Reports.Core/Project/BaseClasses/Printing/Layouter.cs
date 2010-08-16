@@ -38,21 +38,21 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				return Rectangle.Empty;
 			}
 			
-			BaseReportItem containerItem = container as BaseReportItem;
+//			BaseReportItem containerItem = container as BaseReportItem;
 			
-			Rectangle desiredContainerRectangle = new Rectangle (containerItem.Location,containerItem.Size);
+			Rectangle desiredContainerRectangle = new Rectangle (container.Location,container.Size);
 			
 			System.Collections.Generic.IEnumerable<BaseReportItem> canGrowShrinkCollection = from bt in container.Items where bt.CanGrow == true select bt;
 			
 			if (canGrowShrinkCollection.Count() > 0 ) {
 				
-				int bottomPadding = containerItem.Size.Height - (container.Items[0].Location.Y + container.Items[0].Size.Height);
+				int bottomPadding = container.Size.Height - (container.Items[0].Location.Y + container.Items[0].Size.Height);
 				
 				Rectangle surroundingRec = FindSurroundingRectangle(graphics,canGrowShrinkCollection);
 				
-				desiredContainerRectangle = new Rectangle(containerItem.Location.X,
-				                                          containerItem  .Location.Y,
-				                                          containerItem .Size.Width,
+				desiredContainerRectangle = new Rectangle(container.Location.X,
+				                                          container.Location.Y,
+				                                          container.Size.Width,
 				                                          surroundingRec.Size.Height + bottomPadding );
 			}
 			

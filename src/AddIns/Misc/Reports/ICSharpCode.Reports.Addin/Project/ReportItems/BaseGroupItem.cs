@@ -33,13 +33,12 @@ namespace ICSharpCode.Reports.Addin
 		[System.ComponentModel.EditorBrowsableAttribute()]
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
 		{
-			if (String.IsNullOrEmpty(Text)) {
+			if (Text.CompareTo(ColumnName) != 0 ) {
 				Text = ColumnName;
 			}
 			base.OnPaint(e);
 			this.Draw(e.Graphics);
 		}
-		
 		
 		
 		public override void Draw(Graphics graphics)

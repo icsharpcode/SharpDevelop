@@ -87,10 +87,6 @@ namespace ICSharpCode.Reports.Addin
 		{
 		}
 		
-//		public DataItemTypeProvider(TypeDescriptionProvider parent): base(parent)
-//		{
-//		}
-
 	
 		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
 		{

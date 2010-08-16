@@ -295,9 +295,17 @@ namespace ICSharpCode.Reports.Core
 		
 		public override object Current {
 			get {
-				int cr = base.CurrentPosition;
+				try {
+					int cr = base.CurrentPosition;
 				int li = (base.IndexList[cr] ).ListIndex;
 				return this.table.Rows[li];
+				} catch (Exception) {
+					
+					throw;
+				}
+//				int cr = base.CurrentPosition;
+//				int li = (base.IndexList[cr] ).ListIndex;
+				
 			}
 		}
 		
