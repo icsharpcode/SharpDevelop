@@ -22,7 +22,7 @@ namespace ICSharpCode.Reports.Addin.Designer
 	public class DataItemDesigner:ControlDesigner
 	{
 		private ISelectionService selectionService;
-		
+		private IComponentChangeService componentChangeService;
 		
 		public override void Initialize(IComponent component)
 		{
@@ -49,12 +49,26 @@ namespace ICSharpCode.Reports.Addin.Designer
 		}
 		
 		
+		
+		private void OnComponentRename(object sender,ComponentRenameEventArgs e) {
+			if (e.Component == this.Component) {
+				Control.Name = e.NewName;
+				Control.Invalidate();
+			}
+		}
+		
+		
 		private void GetService ()
 		{
 			selectionService = GetService(typeof(ISelectionService)) as ISelectionService;
 			if (selectionService != null)
 			{
 				selectionService.SelectionChanged += OnSelectionChanged;
+			}
+			
+			componentChangeService = (IComponentChangeService)GetService(typeof(IComponentChangeService));
+			if (componentChangeService != null) {
+				componentChangeService.ComponentRename += new ComponentRenameEventHandler(OnComponentRename);
 			}
 		}
 		
@@ -65,6 +79,9 @@ namespace ICSharpCode.Reports.Addin.Designer
 		{
 			if (this.selectionService != null) {
 				selectionService.SelectionChanged -= OnSelectionChanged;
+			}
+			if (componentChangeService != null) {
+				componentChangeService.ComponentRename -= OnComponentRename;
 			}
 			base.Dispose(disposing);
 		}

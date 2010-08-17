@@ -39,6 +39,7 @@ namespace ICSharpCode.Reports.Addin.Designer
 			if (componentChangeService != null) {
 				componentChangeService.ComponentChanging += OnComponentChanging;
 				componentChangeService.ComponentChanged += OnComponentChanged;
+				componentChangeService.ComponentRename += new ComponentRenameEventHandler(OnComponentRename);
 			}
 			
 			selectionService = GetService(typeof(ISelectionService)) as ISelectionService;
@@ -63,6 +64,14 @@ namespace ICSharpCode.Reports.Addin.Designer
 		}
 		
 		
+		private void OnComponentRename(object sender,ComponentRenameEventArgs e) {
+			if (e.Component == this.Component) {
+				Control.Name = e.NewName;
+				Control.Invalidate();
+			}
+		}
+		
+		
 		private void OnSelectionChanged(object sender, EventArgs e)
 		{
 			Control.Invalidate(  );
@@ -74,6 +83,7 @@ namespace ICSharpCode.Reports.Addin.Designer
 			if (this.componentChangeService != null) {
 				componentChangeService.ComponentChanging -= OnComponentChanging;
 				componentChangeService.ComponentChanged -= OnComponentChanged;
+				componentChangeService.ComponentRename -= OnComponentRename;
 			}
 			if (this.selectionService != null) {
 				selectionService.SelectionChanged -= OnSelectionChanged;

@@ -20,6 +20,7 @@ namespace ICSharpCode.Reports.Addin.Designer
 	{
 		
 		private ISelectionService selectionService;
+		private IComponentChangeService componentChangeService;
 		
 		public GroupHeaderDesigner()
 		{
@@ -38,6 +39,14 @@ namespace ICSharpCode.Reports.Addin.Designer
 		}
 		
 		
+		private void OnComponentRename(object sender,ComponentRenameEventArgs e) {
+			if (e.Component == this.Component) {
+				Control.Name = e.NewName;
+				Control.Invalidate();
+			}
+		}
+		
+		
 		private void GetService ()
 		{
 			selectionService = GetService(typeof(ISelectionService)) as ISelectionService;
@@ -45,6 +54,24 @@ namespace ICSharpCode.Reports.Addin.Designer
 			{
 				selectionService.SelectionChanged += OnSelectionChanged;
 			}
+			
+			componentChangeService = (IComponentChangeService)GetService(typeof(IComponentChangeService));
+			if (componentChangeService != null) {
+				componentChangeService.ComponentRename += new ComponentRenameEventHandler(OnComponentRename);
+			}
+		}
+		
+			
+		protected override void Dispose(bool disposing)
+		{
+			if (this.selectionService != null) {
+				selectionService.SelectionChanged -= OnSelectionChanged;
+			}
+			
+			if (componentChangeService != null) {
+				componentChangeService.ComponentRename -= OnComponentRename;
+			}
+			base.Dispose(disposing);
 		}
 	
 	}

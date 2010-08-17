@@ -23,8 +23,9 @@ namespace ICSharpCode.Reports.Addin.Designer
 	public class TextItemDesigner:ControlDesigner
 	{
 		
-		ISelectionService selectionService;
-		BaseTextItem ctrl;
+		private ISelectionService selectionService;
+		private IComponentChangeService componentChangeService;
+		private BaseTextItem ctrl;
 		
 		public override void Initialize(IComponent component)
 		{
@@ -40,7 +41,14 @@ namespace ICSharpCode.Reports.Addin.Designer
 			if (selectionService != null)
 			{
 				selectionService.SelectionChanged += OnSelectionChanged;
+
 			}
+			
+			componentChangeService = (IComponentChangeService)GetService(typeof(IComponentChangeService));
+			if (componentChangeService != null) {
+				componentChangeService.ComponentRename += new ComponentRenameEventHandler(OnComponentRename);
+			}
+			
 		}
 		
 		
@@ -48,6 +56,17 @@ namespace ICSharpCode.Reports.Addin.Designer
 		{
 			Control.Invalidate( );
 		}
+		
+		
+		private void OnComponentRename(object sender,ComponentRenameEventArgs e) {
+			if (e.Component == this.Component) {
+				Control.Name = e.NewName;
+				Control.Text = e.NewName;
+				Control.Invalidate();
+			}
+		}
+
+		
 		
 		#region SmartTag
 		
@@ -100,6 +119,10 @@ namespace ICSharpCode.Reports.Addin.Designer
 		{
 			if (this.selectionService != null) {
 				selectionService.SelectionChanged -= OnSelectionChanged;
+			}
+			
+			if (componentChangeService != null) {
+				componentChangeService.ComponentRename -= OnComponentRename;
 			}
 			base.Dispose(disposing);
 		}

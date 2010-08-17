@@ -18,9 +18,9 @@ using System.Drawing.Printing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
-using ICSharpCode.Reports.Core;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
+using ICSharpCode.Reports.Core;
+
 namespace ICSharpCode.Reports.Addin.Designer
 {
 	/// <summary>
@@ -264,12 +264,6 @@ namespace ICSharpCode.Reports.Addin.Designer
 			LoggingService.InfoFormatted("RootDesigner:OnComponentChanged");
 			String str = String.Format("RootDesigner:OnComponentChanged <{0}> from <{1}> to <{2}>",ce.Component.ToString(),ce.OldValue,ce.NewValue);
 			LoggingService.InfoFormatted(str);
-			
-			AbstractItem item = ce.Component as AbstractItem;
-			var member = ce.Member;
-			if (member.Name == "Name") {
-				item.Name = ce.NewValue.ToString();
-			}
 
 			BaseSection section = ce.Component as BaseSection;
 			if (section != null) {
@@ -281,9 +275,7 @@ namespace ICSharpCode.Reports.Addin.Designer
 				}
 				RecalculateSections();
 			}
-			
 		}
-		
 		
 		
 		private void OnComponentChanging(object sender, ComponentChangingEventArgs ce)

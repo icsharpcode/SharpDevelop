@@ -18,6 +18,7 @@ namespace ICSharpCode.Reports.Addin.Designer
 	public class GroupedRowDesigner:RowItemDesigner
 	{
 		private ISelectionService selectionService;
+		private IComponentChangeService componentChangeService;
 		
 		public GroupedRowDesigner()
 		{
@@ -27,6 +28,51 @@ namespace ICSharpCode.Reports.Addin.Designer
 		public override void Initialize(IComponent component)
 		{
 			base.Initialize(component);
+			GetService();
+		}
+		
+		private void GetService ()
+		{
+			selectionService = GetService(typeof(ISelectionService)) as ISelectionService;
+			if (selectionService != null)
+			{
+				selectionService.SelectionChanged += OnSelectionChanged;
+
+			}
+			
+			componentChangeService = (IComponentChangeService)GetService(typeof(IComponentChangeService));
+			if (componentChangeService != null) {
+				componentChangeService.ComponentRename += new ComponentRenameEventHandler(OnComponentRename);
+			}
+			
+		}
+		
+		
+		private void OnSelectionChanged(object sender, EventArgs e)
+		{
+			Control.Invalidate( );
+		}
+		
+		
+		private void OnComponentRename(object sender,ComponentRenameEventArgs e) {
+			if (e.Component == this.Component) {
+				Control.Name = e.NewName;
+				Control.Text = e.NewName;
+				Control.Invalidate();
+			}
+		}
+		
+		
+		protected override void Dispose(bool disposing)
+		{
+			if (this.selectionService != null) {
+				selectionService.SelectionChanged -= OnSelectionChanged;
+			}
+			
+			if (componentChangeService != null) {
+				componentChangeService.ComponentRename -= OnComponentRename;
+			}
+			base.Dispose(disposing);
 		}
 	}
 }
