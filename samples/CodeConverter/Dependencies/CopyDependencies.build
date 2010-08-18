@@ -2,16 +2,17 @@
 	<ItemGroup>
 		<GenericDeps Include="..\..\..\bin\ICSharpCode.NRefactory.dll"/>
 		<GenericDeps Include="..\..\..\bin\ICSharpCode.SharpDevelop.Dom.dll"/>
-		<GenericDeps Include="..\..\..\bin\ICSharpCode.TextEditor.dll"/>
+
+		<GenericDeps Include="..\..\..\bin\ICSharpCode.AvalonEdit.dll"/>
 		<GenericDeps Include="..\..\..\bin\log4net.dll"/>
 
-		<BooDeps Include="..\..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.dll"/>
-		<BooDeps Include="..\..\..\AddIns\AddIns\BackendBindings\BooBinding\Boo.Lang.Compiler.dll"/>
-		<BooDeps Include="..\..\..\AddIns\AddIns\BackendBindings\BooBinding\NRefactoryToBooConverter.dll"/>
+		<BooDeps Include="..\..\..\AddIns\BackendBindings\BooBinding\Boo.Lang.dll"/>
+		<BooDeps Include="..\..\..\AddIns\BackendBindings\BooBinding\Boo.Lang.Compiler.dll"/>
+		<BooDeps Include="..\..\..\AddIns\BackendBindings\BooBinding\NRefactoryToBooConverter.dll"/>
 
-		<PyDeps Include="..\..\..\AddIns\AddIns\BackendBindings\PythonBinding\PythonBinding.dll"/>
+		<PyDeps Include="..\..\..\AddIns\BackendBindings\PythonBinding\PythonBinding.dll"/>
 
-		<IrDeps Include="..\..\..\AddIns\AddIns\BackendBindings\RubyBinding\RubyBinding.dll"/>
+		<IrDeps Include="..\..\..\AddIns\BackendBindings\RubyBinding\RubyBinding.dll"/>
 	</ItemGroup>
 
 	
