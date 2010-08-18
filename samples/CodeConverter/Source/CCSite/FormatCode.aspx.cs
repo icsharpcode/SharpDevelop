@@ -9,8 +9,6 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.HtmlControls;
 
-using ICSharpCode.HtmlSyntaxColorizer;
-using ICSharpCode.TextEditor.Document;
 
 namespace CCSite
 {
@@ -18,6 +16,11 @@ namespace CCSite
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            // this feature is currently disabled
+            Response.Redirect("default.aspx");
+            Response.End();
+
+            /*
             if (Page.IsPostBack) return;
 
             Hashtable ht = HighlightingManager.Manager.HighlightingDefinitions;
@@ -28,10 +31,12 @@ namespace CCSite
             }
 
             languageChoice.Items.FindByValue("C#").Selected = true;
+            */
         }
 
         protected void formatCode_Click(object sender, EventArgs e)
         {
+            /*
             HtmlWriter writer = new HtmlWriter();
             writer.ShowLineNumbers = ShowLineNumbers.Checked;
             writer.AlternateLineBackground = UseAlternatingBackground.Checked;
@@ -42,6 +47,7 @@ namespace CCSite
             outputTextBox.Text = codeHtmlDocument;
             inlineCodePreview.Text = generatedHtml;
             PreviewPane.Visible = true;
+            */
         }
     }
 }
