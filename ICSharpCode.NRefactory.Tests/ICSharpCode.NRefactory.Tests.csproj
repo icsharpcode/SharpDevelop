@@ -43,6 +43,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FormattingTests\TestBraceStlye.cs" />
+    <Compile Include="FormattingTests\TestFormattingBugs.cs" />
+    <Compile Include="FormattingTests\TestSpacingVisitor.cs" />
+    <Compile Include="FormattingTests\TestStatementIndentation.cs" />
+    <Compile Include="FormattingTests\TestTypeLevelIndentation.cs" />
     <Compile Include="MyClassTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
