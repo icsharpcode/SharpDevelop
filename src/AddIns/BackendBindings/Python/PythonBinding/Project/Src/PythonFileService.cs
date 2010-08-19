@@ -27,5 +27,10 @@ namespace ICSharpCode.PythonBinding
 		{
 			File.Delete(fileName);
 		}
+		
+		public bool FileExists(string fileName)
+		{
+			return File.Exists(fileName);
+		}
 	}
 }

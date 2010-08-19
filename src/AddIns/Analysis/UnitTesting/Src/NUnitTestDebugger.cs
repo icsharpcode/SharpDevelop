@@ -18,14 +18,14 @@ namespace ICSharpCode.UnitTesting
 		
 		public NUnitTestDebugger()
 			: this(new UnitTestDebuggerService(),
-				ServiceManager.Instance.MessageService,
+				new UnitTestMessageService(),
 				new TestResultsMonitor(),
 				new UnitTestingOptions())
 		{
 		}
 		
 		public NUnitTestDebugger(IUnitTestDebuggerService debuggerService,
-			IMessageService messageService,
+			IUnitTestMessageService messageService,
 			ITestResultsMonitor testResultsMonitor,
 			UnitTestingOptions options)
 			: base(debuggerService, messageService, testResultsMonitor)

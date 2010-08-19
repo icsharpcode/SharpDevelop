@@ -4255,6 +4255,9 @@ Toutes les modifications seront perdues.</value>
   <data name="ICSharpCode.SharpDevelop.Commands.SaveFileAs.FileSavedCaption" xml:space="preserve">
     <value>Fichier sauvé</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.TabStrip.NavigateToFileInProjectBrowser" xml:space="preserve">
+    <value>Naviguer par fichier avec l'explorateur de projet</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Commands.VBConvertProjectToCSharp" xml:space="preserve">
     <value>De VB.NET vers C#</value>
   </data>
@@ -5917,6 +5920,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="ProjectComponent.ContextMenu.Clean" xml:space="preserve">
     <value>&amp;Nettoyer</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.CollapseAll" xml:space="preserve">
+    <value>Réduire tout</value>
   </data>
   <data name="ProjectComponent.ContextMenu.Delete.Question" xml:space="preserve">
     <value>Supprimer '${FileName}' de façon permanente?</value>

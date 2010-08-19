@@ -125,6 +125,7 @@
     <Compile Include="Src\PythonTestResult.cs" />
     <Compile Include="Src\PythonTestRunner.cs" />
     <Compile Include="Src\PythonTestRunnerApplication.cs" />
+    <Compile Include="Src\PythonTestRunnerContext.cs" />
     <Compile Include="Src\PythonTestRunnerResponseFile.cs" />
     <Compile Include="Src\PythonTextEditorViewContent.cs" />
     <Compile Include="Src\SysModuleCompletionItems.cs" />

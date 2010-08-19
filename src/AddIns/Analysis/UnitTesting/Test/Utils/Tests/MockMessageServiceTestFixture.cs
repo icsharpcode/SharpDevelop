@@ -26,13 +26,13 @@ namespace UnitTesting.Tests.Utils.Tests
 		[Test]
 		public void CaptionIsNullByDefault()
 		{
-			Assert.IsNull(messageService.Caption);
+			Assert.IsNull(messageService.CaptionPassedToAskQuestion);
 		}
 		
 		[Test]
 		public void QuestionIsNullByDefault()
 		{
-			Assert.IsNull(messageService.Question);
+			Assert.IsNull(messageService.QuestionPassedToAskQuestion);
 		}
 		
 		[Test]
@@ -41,7 +41,7 @@ namespace UnitTesting.Tests.Utils.Tests
 			string expectedQuestion = "question";
 			messageService.AskQuestion(expectedQuestion, null);
 			
-			Assert.AreEqual(expectedQuestion, messageService.Question);
+			Assert.AreEqual(expectedQuestion, messageService.QuestionPassedToAskQuestion);
 		}
 		
 		[Test]
@@ -50,7 +50,7 @@ namespace UnitTesting.Tests.Utils.Tests
 			string expectedCaption = "caption";
 			messageService.AskQuestion(null, expectedCaption);
 			
-			Assert.AreEqual(expectedCaption, messageService.Caption);
+			Assert.AreEqual(expectedCaption, messageService.CaptionPassedToAskQuestion);
 		}
 		
 		[Test]

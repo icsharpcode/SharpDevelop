@@ -21,22 +21,16 @@ namespace ICSharpCode.RubyBinding
 		RubyTestRunnerApplication testRunnerApplication;
 		
 		public RubyTestRunner()
-			: this(new UnitTestProcessRunner(),
-				new TestResultsMonitor(),
-				new RubyAddInOptions(),
-				new RubyFileService())
+			: this(new RubyTestRunnerContext())
 		{
 		}
 		
-		public RubyTestRunner(IUnitTestProcessRunner processRunner,
-			ITestResultsMonitor testResultsMonitor,
-			RubyAddInOptions options,
-			IRubyFileService fileService)
-			: base(processRunner, testResultsMonitor)
+		public RubyTestRunner(RubyTestRunnerContext context)
+			: base(context)
 		{
-			this.options = options;
-			this.fileService = fileService;
-			testResultsMonitor.InitialFilePosition = 0;
+			this.options = context.Options;
+			this.fileService = context.RubyFileService;
+			context.TestResultsMonitor.InitialFilePosition = 0;
 		}
 		
 		public override void Start(SelectedTests selectedTests)

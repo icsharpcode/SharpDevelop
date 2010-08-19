@@ -22,21 +22,15 @@ namespace ICSharpCode.CodeCoverage
 		PartCoverSettingsFactory settingsFactory;
 		
 		public CodeCoverageTestRunner()
-			: this(new UnitTestProcessRunner(),
-				new TestResultsMonitor(),
-				new UnitTestingOptions(),
-				new FileSystem())
+			: this(new CodeCoverageTestRunnerContext())
 		{
 		}
 		
-		public CodeCoverageTestRunner(IUnitTestProcessRunner processRunner,
-			ITestResultsMonitor testResultsMonitor,
-			UnitTestingOptions options,
-			IFileSystem fileSystem)
-			: base(processRunner, testResultsMonitor)
+		public CodeCoverageTestRunner(CodeCoverageTestRunnerContext context)
+			: base(context)
 		{
-			this.options = options;
-			this.fileSystem = fileSystem;
+			this.options = context.Options;
+			this.fileSystem = context.CodeCoverageFileSystem;
 			settingsFactory = new PartCoverSettingsFactory(fileSystem);
 		}
 		

@@ -8,10 +8,11 @@
 using System;
 using System.IO;
 using System.Text;
+using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.PythonBinding
 {
-	public interface IPythonFileService
+	public interface IPythonFileService : IFileSystem
 	{
 		string GetTempFileName();
 		TextWriter CreateTextWriter(CreateTextWriterInfo createTextWriterInfo);

@@ -10,9 +10,8 @@ using System.IO;
 
 namespace ICSharpCode.CodeCoverage
 {
-	public interface IFileSystem
+	public interface IFileSystem : ICSharpCode.UnitTesting.IFileSystem
 	{
-		bool FileExists(string path);
 		void DeleteFile(string path);
 		
 		bool DirectoryExists(string path);

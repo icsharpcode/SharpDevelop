@@ -20,7 +20,7 @@ namespace ICSharpCode.UnitTesting
 		IBuildOptions BuildOptions { get; }
 		MessageViewCategory UnitTestCategory { get; }
 		IUnitTestsPad OpenUnitTestsPad { get; }
-		IMessageService MessageService { get; }
+		IUnitTestMessageService MessageService { get; }
 		IUnitTestSaveAllFilesCommand SaveAllFilesCommand { get; }
 		IStatusBarService StatusBarService { get; }
 	}

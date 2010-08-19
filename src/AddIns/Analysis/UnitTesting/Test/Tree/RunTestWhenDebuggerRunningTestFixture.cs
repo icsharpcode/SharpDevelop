@@ -28,7 +28,7 @@ namespace UnitTesting.Tests.Tree
 			RunTests();
 			
 			string expectedQuestion = "${res:XML.MainMenu.RunMenu.Compile.StopDebuggingQuestion}";
-			string actualQuestion = context.MockMessageService.Question;
+			string actualQuestion = context.MockMessageService.QuestionPassedToAskQuestion;
 			
 			Assert.AreEqual(expectedQuestion, actualQuestion);
 		}
@@ -52,7 +52,7 @@ namespace UnitTesting.Tests.Tree
 			RunTests();
 			
 			string expectedCaption = "${res:XML.MainMenu.RunMenu.Compile.StopDebuggingTitle}";
-			string actualCaption = context.MockMessageService.Caption;
+			string actualCaption = context.MockMessageService.CaptionPassedToAskQuestion;
 			
 			Assert.AreEqual(expectedCaption, actualCaption);
 		}

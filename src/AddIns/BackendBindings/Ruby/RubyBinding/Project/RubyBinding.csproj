@@ -135,6 +135,7 @@
     <Compile Include="Src\RubyTestResult.cs" />
     <Compile Include="Src\RubyTestRunner.cs" />
     <Compile Include="Src\RubyTestRunnerApplication.cs" />
+    <Compile Include="Src\RubyTestRunnerContext.cs" />
     <Compile Include="Src\RubyTestRunnerResponseFile.cs" />
     <Compile Include="Src\RubyTextEditorViewContent.cs" />
     <Compile Include="Src\RunDebugRubyCommand.cs" />

@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
-using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
@@ -23,7 +22,8 @@ namespace UnitTesting.Tests.Utils
 		ITestResultsMonitor testResultsMonitor;
 		UnitTestingOptions options;
 		IUnitTestDebuggerService debuggerService;
-		IMessageService messageService;
+		IUnitTestMessageService messageService;
+		IUnitTestFileService fileService = new MockFileService();
 
 		public MockNUnitTestFramework(IUnitTestProcessRunner processRunner,
 			ITestResultsMonitor testResultsMonitor, 
@@ -35,7 +35,7 @@ namespace UnitTesting.Tests.Utils
 		public MockNUnitTestFramework(IUnitTestDebuggerService debuggerService,
 			ITestResultsMonitor testResultsMonitor, 
 			UnitTestingOptions options,
-			IMessageService messageService)
+			IUnitTestMessageService messageService)
 			: this(debuggerService, null, testResultsMonitor, options, messageService)
 		{
 		}
@@ -44,7 +44,7 @@ namespace UnitTesting.Tests.Utils
 			IUnitTestProcessRunner processRunner,
 			ITestResultsMonitor testResultsMonitor, 
 			UnitTestingOptions options,
-			IMessageService messageService)
+			IUnitTestMessageService messageService)
 		{
 			this.debuggerService = debuggerService;
 			this.processRunner = processRunner;
@@ -70,7 +70,11 @@ namespace UnitTesting.Tests.Utils
 		
 		public ITestRunner CreateTestRunner()
 		{
-			NUnitTestRunner testRunner = new NUnitTestRunner(processRunner, testResultsMonitor, options);
+			TestProcessRunnerBaseContext context = new TestProcessRunnerBaseContext(processRunner, 
+				testResultsMonitor, 
+				fileService,
+				messageService);
+			NUnitTestRunner testRunner = new NUnitTestRunner(context, options);
 			testRunnersCreated.Add(testRunner);
 			return testRunner;
 		}

@@ -68,6 +68,7 @@
     <Compile Include="Src\CodeCoverageMethod.cs" />
     <Compile Include="Src\CodeCoverageSequencePoint.cs" />
     <Compile Include="Src\CodeCoverageTestRunner.cs" />
+    <Compile Include="Src\CodeCoverageTestRunnerContext.cs" />
     <Compile Include="Src\CodeCoverageTestRunnerFactory.cs" />
     <Compile Include="Src\CodeCoverageTreeView.cs" />
     <Compile Include="Src\CodeCoverageModuleTreeNode.cs" />

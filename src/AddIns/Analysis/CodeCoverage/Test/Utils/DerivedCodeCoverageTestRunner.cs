@@ -20,8 +20,9 @@ namespace ICSharpCode.CodeCoverage.Tests.Utils
 		public DerivedCodeCoverageTestRunner(IUnitTestProcessRunner processRunner,
 			ITestResultsMonitor testResultsMonitor,
 			UnitTestingOptions options,
-			IFileSystem fileSystem)
-			: base(processRunner, testResultsMonitor, options, fileSystem)
+			IFileSystem fileSystem,
+			IUnitTestMessageService messageService)
+			: base(new CodeCoverageTestRunnerContext(processRunner, testResultsMonitor, fileSystem, messageService, options))
 		{
 		}
 		

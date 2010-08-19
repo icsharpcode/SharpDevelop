@@ -8,10 +8,11 @@
 using System;
 using System.IO;
 using System.Text;
+using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.RubyBinding
 {
-	public interface IRubyFileService
+	public interface IRubyFileService : IFileSystem
 	{
 		string GetTempFileName();
 		TextWriter CreateTextWriter(CreateTextWriterInfo createTextWriterInfo);

@@ -20,6 +20,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Utils
 		public UnitTestingOptions Options;
 		public CodeCoverageTestRunner TestRunner;
 		public MockFileSystem FileSystem;
+		public MockMessageService MessageService;
 		
 		public MockCodeCoverageTestRunnerFactory()
 		{
@@ -27,7 +28,12 @@ namespace ICSharpCode.CodeCoverage.Tests.Utils
 			TestResultsMonitor = new MockTestResultsMonitor();
 			Options = new UnitTestingOptions(new Properties());
 			FileSystem = new MockFileSystem();
-			TestRunner = new CodeCoverageTestRunner(ProcessRunner, TestResultsMonitor, Options, FileSystem);
+			CodeCoverageTestRunnerContext context = new CodeCoverageTestRunnerContext(ProcessRunner, 
+				TestResultsMonitor, 
+				FileSystem, 
+				MessageService,
+				Options);
+			TestRunner = new CodeCoverageTestRunner(context);
 		}
 		
 		public CodeCoverageTestRunner CreateCodeCoverageTestRunner()

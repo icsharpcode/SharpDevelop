@@ -4258,6 +4258,9 @@ Noot: Dit beïnvloed eigen aangepaste opmaak niet.</value>
   <data name="ICSharpCode.SharpDevelop.Commands.SaveFileAs.FileSavedCaption" xml:space="preserve">
     <value>Bestand opgeslagen</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.TabStrip.NavigateToFileInProjectBrowser" xml:space="preserve">
+    <value>Naar bestand in project browser navigeren</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Commands.VBConvertProjectToCSharp" xml:space="preserve">
     <value>Van VB.NET naar C#</value>
   </data>
@@ -5918,6 +5921,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="ProjectComponent.ContextMenu.Clean" xml:space="preserve">
     <value>Opscho&amp;nen</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.CollapseAll" xml:space="preserve">
+    <value>Alles invouwen</value>
   </data>
   <data name="ProjectComponent.ContextMenu.Delete.Question" xml:space="preserve">
     <value>Wilt u '${FileName}' definitief verwijderen?</value>

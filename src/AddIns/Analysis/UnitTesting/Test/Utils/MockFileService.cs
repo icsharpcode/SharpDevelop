@@ -13,6 +13,9 @@ namespace UnitTesting.Tests.Utils
 {
 	public class MockFileService : IUnitTestFileService
 	{
+		public string FileNamePassedToFileExists;
+		public bool FileExistsReturnValue = true;
+		
 		string fileOpened;
 		FilePosition? filePositionJumpedTo;
 		
@@ -32,6 +35,12 @@ namespace UnitTesting.Tests.Utils
 		public void JumpToFilePosition(string fileName, int line, int column)
 		{
 			filePositionJumpedTo = new FilePosition(fileName, line, column);
+		}
+		
+		public bool FileExists(string fileName)
+		{
+			FileNamePassedToFileExists = fileName;
+			return FileExistsReturnValue;
 		}
 	}
 }
