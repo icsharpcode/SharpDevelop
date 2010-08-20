@@ -40,13 +40,11 @@ namespace ICSharpCode.Reports.Core
 			return inheritedReportItems;
 		}
 		
+		
 		#region IDataNavigator implementation
 		
 		public void Fill (ReportItemCollection collection) {
-
-			Collection<BaseDataItem> filteredCollection  = ExtraxtDataItems(collection);
-			
-			foreach (BaseReportItem item in filteredCollection) {
+			foreach (IDataItem item in collection) {
 				this.store.Fill(item);
 			}
 		}

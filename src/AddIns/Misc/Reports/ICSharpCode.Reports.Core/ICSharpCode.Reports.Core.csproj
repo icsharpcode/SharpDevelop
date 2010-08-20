@@ -94,6 +94,7 @@
     <Compile Include="Project\BaseItems\BaseDataItem.cs" />
     <Compile Include="Project\BaseItems\ErrorItem.cs" />
     <Compile Include="Project\BaseItems\Graphics\BaseLineItem.cs" />
+    <Compile Include="Project\BaseItems\IBaseDataItem.cs" />
     <Compile Include="Project\BaseItems\IExpression.cs" />
     <Compile Include="Project\DataManager\ChildNavigator.cs" />
     <Compile Include="Project\DataManager\Comparer\BaseComparer.cs" />

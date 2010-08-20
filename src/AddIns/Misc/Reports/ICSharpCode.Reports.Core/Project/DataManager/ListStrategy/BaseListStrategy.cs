@@ -113,7 +113,6 @@ namespace ICSharpCode.Reports.Core {
 							Console.WriteLine("---- {0}",c.ObjectArray[0]);
 					}
 				}
-//				
 			}
 		}
 		
@@ -240,9 +239,9 @@ namespace ICSharpCode.Reports.Core {
 			
 		}
 		
-		public  virtual void Fill(IReportItem item)
-		{
 		
+		public  virtual void Fill(IDataItem item)
+		{
 		}
 		
 		

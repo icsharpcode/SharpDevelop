@@ -195,23 +195,14 @@ namespace ICSharpCode.Reports.Core {
 		public override void Bind()
 		{
 			base.Bind();
-			/*
-			if (base.ReportSettings.GroupColumnsCollection.Count > 0) {
-//				this.Group ();
-				Reset();
-				return;
-			}
-			*/
 			if (base.ReportSettings.SortColumnsCollection != null) {
 				this.Sort ();
 			}
 			Reset();
 		}
 		
-		public override void Fill(IReportItem item)
+		public override void Fill(IDataItem item)
 		{
-			
-			base.Fill(item);
 			if (current != null) {
 				BaseDataItem baseDataItem = item as BaseDataItem;
 				if (baseDataItem != null) {

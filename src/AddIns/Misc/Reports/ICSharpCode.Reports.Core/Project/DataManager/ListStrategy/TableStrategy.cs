@@ -44,19 +44,10 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		
-		public override void Fill(IReportItem item)
+		public override void Fill(IDataItem item)
 		{
-			base.Fill(item);
-		
 			DataRow row = this.Current as DataRow;
-			
 			if (row != null) {
-				BaseDataItem baseDataItem = item as BaseDataItem;
-				if (baseDataItem != null) {
-					baseDataItem.DBValue = row[baseDataItem.ColumnName].ToString();
-					return;
-				}
 				BaseImageItem bi = item as BaseImageItem;
 				if (bi != null) {
 					using (System.IO.MemoryStream memStream = new System.IO.MemoryStream()){
@@ -71,6 +62,11 @@ namespace ICSharpCode.Reports.Core
 							bi.Image = image;
 						}
 					}
+				} else {
+					if (item != null) {
+					item.DBValue = row[item.ColumnName].ToString();
+					return;
+				}
 				}
 			}
 		}
