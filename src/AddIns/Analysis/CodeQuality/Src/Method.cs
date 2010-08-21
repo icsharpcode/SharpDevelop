@@ -111,6 +111,16 @@ namespace ICSharpCode.CodeQualityAnalysis
 		/// </summary>
 		public bool IsReturnTypeGenericInstance { get; set; }
 
+		/// <summary>
+		/// Cyclomatic Complexity of the method
+		/// </summary>
+		public int CyclomaticComplexity { get; set; }
+
+		/// <summary>
+		/// The number of variables declared in the body of the method
+		/// </summary>
+		public int Variables { get; set; }
+
 		public Method()
 		{
 			Parameters = new HashSet<MethodParameter>();
@@ -127,6 +137,9 @@ namespace ICSharpCode.CodeQualityAnalysis
 			IsReturnTypeGenericInstance = false;
 
 			Dependency = null;
+
+			CyclomaticComplexity = 0;
+			Variables = 0;
 		}
 		
 		public Relationship GetRelationship(INode node)
@@ -149,6 +162,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 			builder.Append(Environment.NewLine);
 			builder.AppendLine(String.Format("Name: {0}", Name));
 			builder.AppendLine(String.Format("Parameters: {0}", Parameters.Count));
+			builder.AppendLine(String.Format("Cyclomatic Complexity: {0}", CyclomaticComplexity));
+			builder.AppendLine(String.Format("Variables: {0}", Variables));
 			// more to come
 
 			builder.Append(Environment.NewLine);

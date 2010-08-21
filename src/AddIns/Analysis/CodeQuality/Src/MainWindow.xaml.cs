@@ -204,6 +204,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 
 			} else if (content == "Method") {
 				cbxMetrics.Items.Add(new ComboBoxItem { Content = "IL instructions" });
+				cbxMetrics.Items.Add(new ComboBoxItem { Content = "Cyclomatic Complexity" });
+				cbxMetrics.Items.Add(new ComboBoxItem { Content = "Variables" });
 			}
 		}
 
@@ -219,6 +221,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 
 			var metric = metricItem.Content.ToString();
 
+			// TODO: Redone this with enums or some smarter way
+
 			if (level == "Assembly") {
 				//cbxMetrics.Items.Add(new ComboBoxItem { Content = });
 			} else if (level == "Namespace") {
@@ -228,12 +232,19 @@ namespace ICSharpCode.CodeQualityAnalysis
 			} else if (level == "Field") {
 
 			} else if (level == "Method") {
-				if (metric == "IL instructions") {
-					treemap.ItemsSource = from ns in MetricsReader.MainModule.Namespaces
-						from type in ns.Types
-						from method in type.Methods
-						select method;
-				}
+				treemap.ItemsSource = from ns in MetricsReader.MainModule.Namespaces
+									  from type in ns.Types
+									  from method in type.Methods
+									  select method;
+
+				if (metric == "IL instructions")
+					treemap.ItemDefinition.ValuePath = "Instructions.Count";
+
+				if (metric == "Cyclomatic Complexity")
+					treemap.ItemDefinition.ValuePath = "CyclomaticComplexity";
+
+				if (metric == "Variables")
+					treemap.ItemDefinition.ValuePath = "Variables";
 			}
 		}
 	}

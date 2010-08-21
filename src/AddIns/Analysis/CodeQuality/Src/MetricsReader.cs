@@ -131,19 +131,19 @@ namespace ICSharpCode.CodeQualityAnalysis
 				IsStruct = typeDefinition.IsValueType && !typeDefinition.IsEnum && typeDefinition.IsSealed,
 				IsInternal = typeDefinition.IsNotPublic,
 				IsDelegate = (typeDefinition.BaseType != null ?
-							  typeDefinition.BaseType.FullName == "System.MulticastDelegate" : false),
+				              typeDefinition.BaseType.FullName == "System.MulticastDelegate" : false),
 				IsNestedPrivate = typeDefinition.IsNestedPrivate,
 				IsNestedPublic = typeDefinition.IsNestedPublic,
 				IsNestedProtected = (!typeDefinition.IsNestedPrivate && !typeDefinition.IsNestedPublic &&
-									 typeDefinition.IsNestedFamily)
+				                     typeDefinition.IsNestedFamily)
 			};
 
 			// try find namespace
 			var nsName = GetNamespaceName(typeDefinition);
 
 			var ns = (from n in module.Namespaces
-					  where n.Name == nsName
-					  select n).SingleOrDefault();
+			          where n.Name == nsName
+			          select n).SingleOrDefault();
 
 			if (ns == null)
 			{
@@ -182,9 +182,9 @@ namespace ICSharpCode.CodeQualityAnalysis
 					if (typeDefinition.BaseType != null)
 					{
 						var baseType = (from n in module.Namespaces
-										from t in n.Types
-										where (t.FullName == FormatTypeName(typeDefinition.BaseType, true))
-										select t).SingleOrDefault();
+						                from t in n.Types
+						                where (t.FullName == FormatTypeName(typeDefinition.BaseType, true))
+						                select t).SingleOrDefault();
 
 						type.BaseType = baseType; // if baseType is null so propably inherits from another assembly
 
@@ -192,7 +192,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 						{
 							type.IsBaseTypeGenericInstance = true;
 							type.GenericBaseTypes.UnionWith(ReadGenericArguments(type.Namespace.Module,
-																				 (GenericInstanceType)typeDefinition.BaseType));
+							                                                     (GenericInstanceType)typeDefinition.BaseType));
 						}
 					}
 
@@ -202,9 +202,9 @@ namespace ICSharpCode.CodeQualityAnalysis
 						foreach (var ic in typeDefinition.Interfaces)
 						{
 							var implementedIc = (from n in module.Namespaces
-												 from t in n.Types
-												 where (t.FullName == FormatTypeName(ic, true))
-												 select t).SingleOrDefault();
+							                     from t in n.Types
+							                     where (t.FullName == FormatTypeName(ic, true))
+							                     select t).SingleOrDefault();
 
 							if (implementedIc != null)
 								type.ImplementedInterfaces.Add(implementedIc);
@@ -212,7 +212,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 							if (ic.IsGenericInstance)
 							{
 								type.GenericBaseTypes.UnionWith(ReadGenericArguments(type.Namespace.Module,
-																					 (GenericInstanceType)ic));
+								                                                     (GenericInstanceType)ic));
 							}
 						}
 					}
@@ -307,7 +307,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				{
 					field.IsGenericInstance = true;
 					field.GenericTypes.UnionWith(ReadGenericArguments(type.Namespace.Module,
-																	  (GenericInstanceType)fieldDefinition.FieldType));
+					                                                  (GenericInstanceType)fieldDefinition.FieldType));
 				}
 
 				field.FieldType = fieldType;
@@ -336,7 +336,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 					IsAbstract = methodDefinition.IsAbstract,
 					IsSetter = methodDefinition.IsSetter,
 					IsGetter = methodDefinition.IsGetter,
-					IsVirtual = methodDefinition.IsVirtual
+					IsVirtual = methodDefinition.IsVirtual,
+					Variables = methodDefinition.Body != null ? methodDefinition.Body.Variables.Count : 0
 				};
 
 				var returnType =
@@ -351,7 +352,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				{
 					method.IsReturnTypeGenericInstance = true;
 					method.GenericReturnTypes.UnionWith(ReadGenericArguments(type.Namespace.Module,
-																			 (GenericInstanceType) methodDefinition.ReturnType));
+					                                                         (GenericInstanceType) methodDefinition.ReturnType));
 				}
 
 				// reading types from parameters
@@ -378,7 +379,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 						{
 							param.IsGenericInstance = true;
 							param.GenericTypes = ReadGenericArguments(type.Namespace.Module,
-																	  (GenericInstanceType) parameter.ParameterType);
+							                                          (GenericInstanceType) parameter.ParameterType);
 						}
 
 						method.Parameters.Add(param);
@@ -391,8 +392,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 			foreach (MethodDefinition methodDefinition in methods)
 			{
 				var method = (from m in type.Methods
-							  where m.Name == FormatMethodName(methodDefinition)
-							  select m).SingleOrDefault();
+				              where m.Name == FormatMethodName(methodDefinition)
+				              select m).SingleOrDefault();
 
 				if (methodDefinition.Body != null)
 				{
@@ -408,15 +409,19 @@ namespace ICSharpCode.CodeQualityAnalysis
 		/// <param name="methodDefinition">A method definition with instructions</param>
 		/// <param name="instructions">A collection of instructions</param>
 		public void ReadInstructions(Method method, MethodDefinition methodDefinition,
-									 Collection<Mono.Cecil.Cil.Instruction> instructions)
+		                             Collection<Mono.Cecil.Cil.Instruction> instructions)
 		{
 			foreach (var instruction in instructions)
 			{
 				method.Instructions.Add(new Instruction
-				                        	{
-				                        		DeclaringMethod = method,
-												// Operand = instruction.Operand.ToString() // for now operand as string should be enough
-				                        	});
+				                        {
+				                        	DeclaringMethod = method,
+				                        	// Operand = instruction.Operand.ToString() // for now operand as string should be enough
+				                        });
+
+				// IL cyclomatic complexity
+				if (instruction.OpCode.FlowControl == FlowControl.Cond_Branch)
+					method.CyclomaticComplexity++;
 
 				var operand = ReadOperand(instruction);
 
@@ -424,15 +429,15 @@ namespace ICSharpCode.CodeQualityAnalysis
 				{
 					var md = operand as MethodDefinition;
 					var type = (from n in method.DeclaringType.Namespace.Module.Namespaces
-							 from t in n.Types
-							 where t.FullName == FormatTypeName(md.DeclaringType, true)
-							 select t).SingleOrDefault();
+					            from t in n.Types
+					            where t.FullName == FormatTypeName(md.DeclaringType, true)
+					            select t).SingleOrDefault();
 
 					method.TypeUses.Add(type);
 
 					var findTargetMethod = (from m in type.Methods
-											where m.Name == FormatMethodName(md)
-											select m).SingleOrDefault();
+					                        where m.Name == FormatMethodName(md)
+					                        select m).SingleOrDefault();
 
 					if (findTargetMethod != null && type == method.DeclaringType)
 						method.MethodUses.Add(findTargetMethod);
@@ -442,8 +447,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 				{
 					var fd = operand as FieldDefinition;
 					var field = (from f in method.DeclaringType.Fields
-								 where f.Name == fd.Name
-								 select f).SingleOrDefault();
+					             where f.Name == fd.Name
+					             select f).SingleOrDefault();
 
 					if (field != null)
 						method.FieldUses.Add(field);
