@@ -292,7 +292,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					addUsing = !IsKnownName(nameResult);
 				}
 				
-				insertedText = StripGenericArgument(insertedText, context);
+				//insertedText = StripGenericArgument(insertedText, context);
 				InsertText(context, insertedText);
 				
 				if (addUsing && nameResult != null && nameResult.CallingClass != null) {
@@ -302,13 +302,13 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				}
 			} else {
 				// Something else than a class or Extension method is being inserted - just insert text
-				insertedText = StripGenericArgument(insertedText, context);
+				//insertedText = StripGenericArgument(insertedText, context);
 				InsertText(context, insertedText);
 			}
 		}
 		
 		/// <summary>
-		/// Turns "List&lt;T&gt;" into "List&lt;"
+		/// Turns e.g. "List&lt;T&gt;" into "List&lt;"
 		/// </summary>
 		string StripGenericArgument(string itemText, CompletionContext context)
 		{
