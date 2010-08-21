@@ -138,7 +138,7 @@
     <Compile Include="TreeModel\DebuggerResourceService.cs" />
     <Compile Include="Visualizers\Commands\ExpressionVisualizerCommand.cs" />
     <Compile Include="Visualizers\Commands\GridVisualizerCommand.cs" />
-    <Compile Include="Visualizers\Commands\IVisualizerCommandDescriptor.cs" />
+    <Compile Include="Visualizers\Commands\IVisualizerDescriptor.cs" />
     <Compile Include="Visualizers\Commands\ObjectGraphVisualizerCommand.cs" />
     <Compile Include="Visualizers\Commands\GridVisualizerMenuCommand.cs" />
     <Compile Include="Visualizers\Commands\ObjectGraphVisualizerMenuCommand.cs" />

@@ -25,8 +25,8 @@
 		          class="ICSharpCode.SharpDevelop.Services.WindowsDebugger"/>
 	</Path>
 	
- 	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
-		 <Condition name = "IsProcessRunning" isdebugging="True">
+	<Path name = "/SharpDevelop/ViewContent/TextEditor/ContextMenu">
+		<Condition name = "IsProcessRunning" isdebugging="True">
 			<Condition name = "IsProcessRunning" isdebugging="True" isprocessrunning="False">
 				<MenuItem id = "DebuggerSetCurrentStatement"
 				          insertbefore = "Refactoring"
@@ -52,7 +52,7 @@
 					<MenuItem id="DisableBreakpoint"
 					          class="Debugger.AddIn.DisableBreakpointMenuCommand"
 					          label= "${res:MainWindow.Windows.Debug.Conditional.Breakpoints.DisableBreakpoint}" />
-					</Condition>
+				</Condition>
 				<ComplexCondition>
 					<Not>
 						<Condition name="IsBreakpointActive" />
@@ -152,10 +152,17 @@
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebuggingSymbolsPanel"/>
 		</OptionPanel>
 	</Path>
-
+	
 	<Path name="/SharpDevelop/Pads/ConsolePad/ToolBar">
 		<Include id="StandardCommands" path="/SharpDevelop/Pads/CommonConsole/ToolBar" />
 		<ToolbarItem class="ICSharpCode.SharpDevelop.Gui.Pads.SelectLanguageCommand"
-			type="ComboBox" id="SelectLanguageCommand" />
+		             type="ComboBox" id="SelectLanguageCommand" />
+	</Path>
+	
+	<Path name="/SharpDevelop/Services/DebuggerService/Visualizers">
+		<Class class="Debugger.AddIn.Visualizers.TextVisualizerDescriptor" />
+		<Class class="Debugger.AddIn.Visualizers.XmlVisualizerDescriptor" />
+		<Class class="Debugger.AddIn.Visualizers.ObjectGraphVisualizerDescriptor" />
+		<Class class="Debugger.AddIn.Visualizers.GridVisualizerDescriptor" />
 	</Path>
 </AddIn>

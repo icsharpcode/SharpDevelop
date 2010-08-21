@@ -236,7 +236,7 @@
 								<DataTemplate>
 									<DockPanel HorizontalAlignment="Stretch" LastChildFill="True">
 										<Image Source="{Binding Image}" Margin="3 2 4 2" DockPanel.Dock="Left" />
-										<!-- Command of every checkbox is the command on the main DataContext (ContextActionsBulbViewModel) -->
+										<!-- Command of every checkbox points to the command on the main DataContext (ContextActionsBulbViewModel) -->
 										<CheckBox IsChecked="{Binding IsVisible}" VerticalAlignment="Center" DockPanel.Dock="Right"
 										          Command="{Binding Path=DataContext.ActionVisibleChangedCommand,
 										          RelativeSource={RelativeSource AncestorType={x:Type local:ContextActionsBulbControl}}}"

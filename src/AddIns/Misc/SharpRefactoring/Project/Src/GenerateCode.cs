@@ -44,7 +44,7 @@ namespace SharpRefactoring
 				} catch (FormatException) {
 				}
 				
-				if (unknownMethodCall.Target.IsUserCode()) {
+				if (unknownMethodCall.Target != null && unknownMethodCall.Target.IsUserCode()) {
 					// Don't introduce method on non-modyfiable types
 					return new IntroduceMethodContextAction(unknownMethodCall, expression, context.Editor) {
 						Title = title
