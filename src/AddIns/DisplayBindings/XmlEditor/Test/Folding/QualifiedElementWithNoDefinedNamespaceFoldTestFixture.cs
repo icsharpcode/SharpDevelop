@@ -6,15 +6,7 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-using System.Xml;
-using System.Xml.Schema;
-
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
 
@@ -23,12 +15,7 @@ namespace XmlEditor.Tests.Folding
 	[TestFixture]
 	public class QualifiedElementWithNoDefinedNamespaceFoldTestFixture
 	{
-		XmlFoldParser parser;
-		ICompilationUnit unit;
-		DefaultXmlFileExtensions extensions;
-		DefaultProjectContent projectContent;
-		MockTextBuffer textBuffer;
-		XmlEditorOptions options;
+		XmlFoldParserHelper helper;
 		
 		[SetUp]
 		public void Init()
@@ -37,31 +24,30 @@ namespace XmlEditor.Tests.Folding
 				"<t:root>\r\n" +
 				"</t:root>";
 			
-			projectContent = new DefaultProjectContent();
-			textBuffer = new MockTextBuffer(xml);
-			extensions = new DefaultXmlFileExtensions(null);
-			options = new XmlEditorOptions(new Properties());
-			MockParserService parserService = new MockParserService();
+			helper = new XmlFoldParserHelper();
+			helper.CreateParser();
+			helper.GetFolds(xml);
+		}
+		
+		[Test]
+		public void GetFolds_QualifiedRootElementWithNoNamespace_FoldNameContainsFullyQualifiedElementName()
+		{
+			string name = helper.GetFirstFoldName();
+			Assert.AreEqual("<t:root>", name);
+		}
+		
+		[Test]
+		public void GetFolds_QualifiedRootElementWithNoNamespace_FoldRegionContainsRootElement()
+		{
+			DomRegion region = helper.GetFirstFoldRegion();
 			
-			parser = new XmlFoldParser(extensions, options, parserService);
-			unit = parser.Parse(projectContent, @"a.xml", textBuffer);
-		}
-		
-		[Test]
-		public void FoldNameContainsFullyQualifiedElementName()
-		{
-			Assert.AreEqual("<t:root>", unit.FoldingRegions[0].Name);
-		}
-		
-		[Test]
-		public void FoldRegionContainsRootElement()
-		{
 			int beginLine = 1;
 			int beginColumn = 1;
 			int endLine = 2;
 			int endColumn = 10;
 			DomRegion expectedRegion = new DomRegion(beginLine, beginColumn, endLine, endColumn);
-			Assert.AreEqual(expectedRegion, unit.FoldingRegions[0].Region);
+			
+			Assert.AreEqual(expectedRegion, region);
 		}
 	}
 }

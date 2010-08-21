@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
@@ -17,6 +18,9 @@ namespace XmlEditor.Tests.Utils
 	{
 		string text = String.Empty;
 		TextSection textSectionUsedWithGetTextMethod;
+		ITextBuffer snapshot;
+		
+		public List<int> PositionToOffsetReturnValues = new List<int>();
 		
 		public MockDocument()
 		{
@@ -66,7 +70,9 @@ namespace XmlEditor.Tests.Utils
 		
 		public int PositionToOffset(int line, int column)
 		{
-			throw new NotImplementedException();
+			int offset = PositionToOffsetReturnValues[0];
+			PositionToOffsetReturnValues.RemoveAt(0);
+			return offset;
 		}
 		
 		public Location OffsetToPosition(int offset)
@@ -109,9 +115,14 @@ namespace XmlEditor.Tests.Utils
 			throw new NotImplementedException();
 		}
 		
+		public void SetSnapshot(ITextBuffer snapshot)
+		{
+			this.snapshot = snapshot;
+		}
+		
 		public ITextBuffer CreateSnapshot()
 		{
-			throw new NotImplementedException();
+			return snapshot;
 		}
 		
 		public ITextBuffer CreateSnapshot(int offset, int length)
@@ -150,11 +161,16 @@ namespace XmlEditor.Tests.Utils
 			remove { throw new NotImplementedException(); }
 		}
 		
-		public event EventHandler<TextChangeEventArgs> Changed {
-			add { throw new NotImplementedException(); }
-			remove { throw new NotImplementedException(); }
-		}
+		public event EventHandler<TextChangeEventArgs> Changed;
 		
+		public void RaiseChangedEvent()
+		{
+			TextChangeEventArgs e = new TextChangeEventArgs(0, "", "a");
+			if (Changed != null) {
+				Changed(this, e);
+			}
+		}
+
 		public TextReader CreateReader(int offset, int length)
 		{
 			throw new NotImplementedException();
