@@ -113,16 +113,12 @@
     <Compile Include="Src\Controls\DependencyEdge.cs" />
     <Compile Include="Src\Controls\DependencyGraph.cs" />
     <Compile Include="Src\Controls\DependencyGraphLayout.cs" />
-    <Compile Include="Src\Controls\DependencyMatrixControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Src\Controls\DependencyMatrixControl.cs" />
     <Compile Include="Src\Controls\DependencyMatrix.cs" />
     <Compile Include="Src\Controls\DependencyVertex.cs" />
     <Compile Include="Src\Controls\DependencyIconVertexConverter.cs" />
     <Compile Include="Src\Controls\Matrix.cs" />
-    <Compile Include="Src\Controls\MatrixControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Src\Controls\MatrixControl.cs" />
     <Compile Include="Src\Controls\TreeMatrixControl.xaml.cs">
       <DependentUpon>TreeMatrixControl.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -220,12 +216,12 @@
     <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
       <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
       <Name>ICSharpCode.Core.Presentation</Name>
-      <Private>False</Private>
+      <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
       <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
-      <Private>False</Private>
+      <Private>True</Private>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
     <ProjectReference Include="..\..\DisplayBindings\WpfDesign\WpfDesign.Designer\Project\WpfDesign.Designer.csproj">
@@ -240,9 +236,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Themes" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

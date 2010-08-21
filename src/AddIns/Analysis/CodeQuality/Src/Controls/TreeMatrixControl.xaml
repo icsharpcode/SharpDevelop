@@ -11,12 +11,12 @@
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
-			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
 		
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="Auto" />
-			<ColumnDefinition Width="Auto" />
+			<ColumnDefinition Width="*" />
 		</Grid.ColumnDefinitions>
 		
 		<TreeView Name="leftTree" Grid.Row="1" Grid.Column="0">
@@ -31,11 +31,8 @@
 			</TreeView.LayoutTransform>
 		</TreeView>
 		
-		<Controls:DependencyMatrixControl Grid.Column="1" Grid.Row="1"
-			x:Name="matrixControl"
-			HorizontalAlignment="Stretch"
-			VerticalAlignment="Stretch">
-		</Controls:DependencyMatrixControl>
-	
+		<ScrollViewer Grid.Column="1" Grid.Row="1" CanContentScroll="True" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible">
+			<Controls:DependencyMatrixControl x:Name="matrixControl" />
+		</ScrollViewer>
 	</Grid>
 </UserControl>
