@@ -3,26 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 using GraphSharp.Controls;
 using ICSharpCode.CodeQualityAnalysis.Controls;
-using ICSharpCode.Core.Presentation;
-using ICSharpCode.WpfDesign.Designer.Controls;
 using Microsoft.Win32;
-using Mono.Cecil;
-using Mono.Cecil.Cil;
-using QuickGraph;
-using QuickGraph.Collections;
 
 namespace ICSharpCode.CodeQualityAnalysis
 {
@@ -193,6 +182,58 @@ namespace ICSharpCode.CodeQualityAnalysis
 				
 				encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
 				encoder.Save(outStream);
+			}
+		}
+
+		private void MetricLevel_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			var comboBoxItem = cbxMetrixLevel.SelectedItem as ComboBoxItem;
+			if (comboBoxItem == null) return;
+
+			cbxMetrics.Items.Clear();
+
+			var content = comboBoxItem.Content.ToString();
+
+			if (content == "Assembly") {
+				//cbxMetrics.Items.Add(new ComboBoxItem { Content = });
+			} else if (content == "Namespace") {
+
+			} else if (content == "Type") {
+
+			} else if (content == "Field") {
+
+			} else if (content == "Method") {
+				cbxMetrics.Items.Add(new ComboBoxItem { Content = "IL instructions" });
+			}
+		}
+
+		private void Metrics_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			var levelItem = cbxMetrixLevel.SelectedItem as ComboBoxItem;
+			if (levelItem == null) return;
+
+			var level = levelItem.Content.ToString();
+
+			var metricItem = cbxMetrics.SelectedItem as ComboBoxItem;
+			if (metricItem == null) return;
+
+			var metric = metricItem.Content.ToString();
+
+			if (level == "Assembly") {
+				//cbxMetrics.Items.Add(new ComboBoxItem { Content = });
+			} else if (level == "Namespace") {
+
+			} else if (level == "Type") {
+
+			} else if (level == "Field") {
+
+			} else if (level == "Method") {
+				if (metric == "IL instructions") {
+					treemap.ItemsSource = from ns in MetricsReader.MainModule.Namespaces
+						from type in ns.Types
+						from method in type.Methods
+						select method;
+				}
 			}
 		}
 	}

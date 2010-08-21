@@ -49,7 +49,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		/// <summary>
 		/// Type which owns this method
 		/// </summary>
-		public Type Owner { get; set; }
+		public Type DeclaringType { get; set; }
 
 		/// <summary>
 		/// Whether the method is constructor or not
@@ -122,7 +122,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 			GenericReturnTypes = new HashSet<Type>();
 
 			ReturnType = null;
-			Owner = null;
+			DeclaringType = null;
 
 			IsReturnTypeGenericInstance = false;
 

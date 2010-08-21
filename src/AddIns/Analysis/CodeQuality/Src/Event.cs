@@ -23,7 +23,7 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <summary>
         /// Type which owns this event
         /// </summary>
-        public Type Owner { get; set; }
+        public Type DeclaringType { get; set; }
 
         public Event()
         {

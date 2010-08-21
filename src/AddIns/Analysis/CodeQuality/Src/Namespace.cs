@@ -181,7 +181,7 @@ namespace ICSharpCode.CodeQualityAnalysis
         				
         		}
         		
-        		if (this.Types.Contains(method.Owner))
+        		if (this.Types.Contains(method.DeclaringType))
     		    	relationship.Relationships.Add(RelationshipType.Contains);
         	}
         	
@@ -199,7 +199,7 @@ namespace ICSharpCode.CodeQualityAnalysis
     		    	}
     		    }
     		    
-    		    if (this.Types.Contains(field.Owner))
+    		    if (this.Types.Contains(field.DeclaringType))
     		    	relationship.Relationships.Add(RelationshipType.Contains);
         	}
         	

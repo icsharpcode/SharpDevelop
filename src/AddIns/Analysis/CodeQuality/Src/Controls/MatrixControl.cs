@@ -281,7 +281,7 @@ namespace ICSharpCode.CodeQualityAnalysis.Controls
 		
 		public void MouseWheelLeft()
 		{
-			SetVerticalOffset(HorizontalOffset + 4);
+			SetVerticalOffset(HorizontalOffset - 4);
 		}
 		
 		public void MouseWheelRight()

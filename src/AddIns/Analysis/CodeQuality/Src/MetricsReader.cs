@@ -244,7 +244,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				var e = new Event
 				{
 					Name = eventDefinition.Name,
-					Owner = type
+					DeclaringType = type
 				};
 
 				type.Events.Add(e);
@@ -266,7 +266,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 					(from n in type.Namespace.Module.Namespaces
 					 from t in n.Types
 					 from f in t.Fields
-					 where f.Name == e.Name && f.Owner == e.Owner
+					 where f.Name == e.Name && f.DeclaringType == e.DeclaringType
 					 select f).SingleOrDefault();
 
 				if (field != null)
@@ -286,7 +286,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				var field = new Field
 				{
 					Name = fieldDefinition.Name,
-					Owner = type,
+					DeclaringType = type,
 					IsPublic = fieldDefinition.IsPublic,
 					IsPrivate = fieldDefinition.IsPrivate,
 					IsProtected = !fieldDefinition.IsPublic && !fieldDefinition.IsPrivate,
@@ -326,7 +326,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				var method = new Method
 				{
 					Name = FormatMethodName(methodDefinition),
-					Owner = type,
+					DeclaringType = type,
 					IsConstructor = methodDefinition.IsConstructor,
 					IsPublic = methodDefinition.IsPublic,
 					IsPrivate = methodDefinition.IsPrivate,
@@ -423,7 +423,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				if (operand is MethodDefinition)
 				{
 					var md = operand as MethodDefinition;
-					var type = (from n in method.Owner.Namespace.Module.Namespaces
+					var type = (from n in method.DeclaringType.Namespace.Module.Namespaces
 							 from t in n.Types
 							 where t.FullName == FormatTypeName(md.DeclaringType, true)
 							 select t).SingleOrDefault();
@@ -434,14 +434,14 @@ namespace ICSharpCode.CodeQualityAnalysis
 											where m.Name == FormatMethodName(md)
 											select m).SingleOrDefault();
 
-					if (findTargetMethod != null && type == method.Owner)
+					if (findTargetMethod != null && type == method.DeclaringType)
 						method.MethodUses.Add(findTargetMethod);
 				}
 
 				if (operand is FieldDefinition)
 				{
 					var fd = operand as FieldDefinition;
-					var field = (from f in method.Owner.Fields
+					var field = (from f in method.DeclaringType.Fields
 								 where f.Name == fd.Name
 								 select f).SingleOrDefault();
 

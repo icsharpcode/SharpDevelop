@@ -6,6 +6,7 @@
         xmlns:Graph="clr-namespace:ICSharpCode.CodeQualityAnalysis.Controls"
         xmlns:src="clr-namespace:ICSharpCode.CodeQualityAnalysis"
         xmlns:debug="clr-namespace:System.Diagnostics;assembly=System"
+        xmlns:datavis="clr-namespace:System.Windows.Controls.DataVisualization;assembly=System.Windows.Controls.DataVisualization.Toolkit"
         Title="Code Quality Analysis"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         x:Name="root">
@@ -102,6 +103,48 @@
 			</TabItem>
 			<TabItem Header="Dependency Matrix">
 				<Graph:TreeMatrixControl x:Name="matrixControl"></Graph:TreeMatrixControl>
+			</TabItem>
+			<TabItem Header="Metrics">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="*" />
+					</Grid.RowDefinitions>
+					
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+					
+					<ToolBarTray Background="White" Grid.Row="0" Grid.Column="0">
+						<ToolBar>
+							<TextBlock Text="Level: " />
+							<ComboBox IsEditable="False" x:Name="cbxMetrixLevel" IsDropDownOpen="True" Width="150" SelectionChanged="MetricLevel_SelectionChanged">
+								<ComboBoxItem Name="assembly">Assembly</ComboBoxItem>
+								<ComboBoxItem Name="namespace">Namespace</ComboBoxItem>
+								<ComboBoxItem Name="type">Type</ComboBoxItem>
+								<ComboBoxItem Name="field">Field</ComboBoxItem>
+								<ComboBoxItem Name="method">Method</ComboBoxItem>
+							</ComboBox>
+							<TextBlock Text="Metric: " />
+							<ComboBox Width="200" x:Name="cbxMetrics" SelectionChanged="Metrics_SelectionChanged" />
+						</ToolBar>
+					</ToolBarTray>
+					
+					<datavis:TreeMap x:Name="treemap" Grid.Row="1" Grid.Column="0">
+						<datavis:TreeMap.ItemDefinition>
+							<datavis:TreeMapItemDefinition ValuePath="Instructions.Count">
+								<DataTemplate>
+									<Border Background="AliceBlue" BorderBrush="Black" BorderThickness="1" ToolTipService.ToolTip="{Binding ToolTip}">
+										<StackPanel>
+											<TextBlock Text="{Binding DeclaringType.Name}" />
+											<TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"/>
+										</StackPanel>
+									</Border>
+								</DataTemplate>
+							</datavis:TreeMapItemDefinition>
+						</datavis:TreeMap.ItemDefinition>
+					</datavis:TreeMap>
+				</Grid>
 			</TabItem>
 		</TabControl>
 		<StatusBar Grid.Row="1">

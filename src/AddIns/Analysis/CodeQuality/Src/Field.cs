@@ -23,7 +23,7 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <summary>
         /// Type which owns this field
         /// </summary>
-        public Type Owner { get; set; }
+        public Type DeclaringType { get; set; }
 
         /// <summary>
         /// Whether the field is event
@@ -74,7 +74,7 @@ namespace ICSharpCode.CodeQualityAnalysis
         {
             FieldType = null;
             IsEvent = false;
-            Owner = null;
+            DeclaringType = null;
             GenericTypes = new HashSet<Type>();
 
             Dependency = null;

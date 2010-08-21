@@ -83,6 +83,9 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Controls.DataVisualization.Toolkit">
+      <HintPath>..\..\..\Libraries\WPFToolkit\System.Windows.Controls.DataVisualization.Toolkit.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -100,6 +103,9 @@
     </Reference>
     <Reference Include="WPFExtensions">
       <HintPath>..\..\..\Libraries\GraphSharp\WPFExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="WPFToolkit">
+      <HintPath>..\..\..\Libraries\WPFToolkit\WPFToolkit.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

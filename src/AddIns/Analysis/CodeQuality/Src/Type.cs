@@ -19,7 +19,7 @@ namespace ICSharpCode.CodeQualityAnalysis
         public ISet<Type> NestedTypes { get; private set; }
 
         /// <summary>
-        /// Type which owns this type. If this isn't nested type so Owner is null.
+        /// Type which owns this type. If this isn't nested type so DeclaringType is null.
         /// </summary>
         public Type DeclaringType { get; set; }
 
