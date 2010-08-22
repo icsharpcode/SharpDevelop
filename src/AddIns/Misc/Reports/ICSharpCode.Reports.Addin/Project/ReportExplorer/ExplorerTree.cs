@@ -243,22 +243,28 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
-		public void ToggleSortOrder() 
+		public void ToggleSortOrder()
 		{
-			SortColumnNode scn = this.SelectedNode as SortColumnNode;
+			SortColumnNode sortColumnNode = this.SelectedNode as SortColumnNode;
 			
-			if (scn != null) {
-				if (scn.SortDirection ==  ListSortDirection.Ascending) {
-					scn.SortDirection = ListSortDirection.Descending;
-					scn.ImageIndex = descendingIcon;
-					scn.SelectedImageIndex = descendingIcon;
+			if (sortColumnNode != null) {
+				if (sortColumnNode.SortDirection ==  ListSortDirection.Ascending) {
+					sortColumnNode.SortDirection = ListSortDirection.Descending;
+					sortColumnNode.ImageIndex = descendingIcon;
+					sortColumnNode.SelectedImageIndex = descendingIcon;
 				} else {
-					scn.SortDirection = ListSortDirection.Ascending;
-					scn.ImageIndex = ascendingIcon;
-					scn.SelectedImageIndex = ascendingIcon;
+					sortColumnNode.SortDirection = ListSortDirection.Ascending;
+					sortColumnNode.ImageIndex = ascendingIcon;
+					sortColumnNode.SelectedImageIndex = ascendingIcon;
 				}
-				SortColumn abstr = (SortColumn)this.reportModel.ReportSettings.SortColumnsCollection.Find(this.SelectedNode.Text);
-				abstr.SortDirection = scn.SortDirection;
+				SortColumn abstractColumn = null;
+				if (this.SelectedNode is GroupColumnNode) {
+					
+					abstractColumn = (SortColumn)this.reportModel.ReportSettings.GroupColumnsCollection.Find(this.SelectedNode.Text);
+				} else {
+					abstractColumn = (SortColumn)this.reportModel.ReportSettings.SortColumnsCollection.Find(this.SelectedNode.Text);
+				}
+				abstractColumn.SortDirection = sortColumnNode.SortDirection;
 				this.OnPropertyChanged ("ToggleSortOrder");
 			}
 		}

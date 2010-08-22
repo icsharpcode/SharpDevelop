@@ -52,6 +52,9 @@ namespace ICSharpCode.Reports.Addin.Commands
 		}
 	}
 	
+	
+	
+	
 	public class ClearSelectedNodeCommand : AbstractCommand
 	{
 		public override void Run()
