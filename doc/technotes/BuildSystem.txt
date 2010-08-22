@@ -1,0 +1,23 @@
+The SharpDevelop Build System
+
+=Build scheduling engine=
+
+Main class: ICSharpCode.SharpDevelop.Project.BuildEngine
+
+The scheduling engine component is usable independently from the project system.
+Its main task is to take an IBuildable instance, determine its dependencies, and build everything
+by calling IBuildable.StartBuild.
+
+Usage:
+ BuildEngine.StartBuild(buildable, buildOptions, buildFeedbackSink);
+
+What the build engine will do is to call
+ buildable.StartBuild(buildable.CreateProjectBuildOptions(buildOptions))
+for the passed buildable (and for all of its dependencies).
+
+The build engine uses GetDependencies calls to build the full dependency graph. It splits up all projects in this graph into two sets:
+projects which have no dependencies and are ready to be built, and projects which need to wait for dependencies first.
+The build engine calls StartBuild concurrently on up to buildOptions.ParallelBuild* projects which are ready. Whenever a project finishes building sucessfully,
+the engine checks whether this causes any other projects to become available to be built.
+If there are more projects available to be built than parallel builds are allowed, then the scheduling algorithm tries to maximize the amount of projects
+that are available by first picking those projects that cause the most other projects to become available.
