@@ -595,6 +595,16 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		#endregion
 		
 		#region Add using
+		public static IEnumerable<AddUsingAction> GetAddUsingActions(ResolveResult symbol, ITextEditor editor)
+		{
+			if (symbol is UnknownIdentifierResolveResult) {
+				return GetAddUsingActions((UnknownIdentifierResolveResult)symbol, editor);
+			} else if (symbol is UnknownConstructorCallResolveResult) {
+				return GetAddUsingActions((UnknownConstructorCallResolveResult)symbol, editor);
+			}
+			return new AddUsingAction[0];
+		}
+		
 		public static IEnumerable<AddUsingAction> GetAddUsingActions(UnknownIdentifierResolveResult rr, ITextEditor textArea)
 		{
 			return GetAddUsingActionsForUnknownClass(rr.CallingClass, rr.Identifier, textArea);
@@ -632,7 +642,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
-		public class AddUsingAction
+		public class AddUsingAction : IContextAction
 		{
 			public ICompilationUnit CompilationUnit { get; private set; }
 			public ITextEditor Editor { get; private set; }
@@ -655,6 +665,15 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			{
 				NamespaceRefactoringService.AddUsingDeclaration(CompilationUnit, Editor.Document, NewNamespace, true);
 				ParserService.BeginParse(Editor.FileName, Editor.Document);
+			}
+			
+			public string Title {
+				get {
+					if (this.Editor.Language.Properties == LanguageProperties.VBNet) {
+						return "Import " + this.NewNamespace;
+					}
+					return "using " + this.NewNamespace;
+				}
 			}
 		}
 		#endregion
