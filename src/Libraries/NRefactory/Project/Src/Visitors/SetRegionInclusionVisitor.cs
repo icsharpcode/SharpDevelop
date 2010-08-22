@@ -6,13 +6,14 @@
 // </file>
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory.Ast;
 
 namespace ICSharpCode.NRefactory.Visitors
 {
 	/// <summary>
 	/// Sets StartLocation and EndLocation (region) of every node to union of regions of its children.
-	/// Parsers don't do this by default,
+	/// Parsers don't do this by default:
 	/// e.g. "a.Foo()" is InvocationExpression, its region includes only the "()" and it has a child MemberReferenceExpression, with region ".Foo".
 	/// </summary>
 	public class SetRegionInclusionVisitor : NodeTrackingAstVisitor
@@ -35,7 +36,7 @@ namespace ICSharpCode.NRefactory.Visitors
 				
 				if (node is PropertyDeclaration) {
 					// PropertyDeclaration has correctly set BodyStart and BodyEnd by the parser,
-					// but it has no subnode "body", just 2 children GetRegion and SetRegion which don't cover
+					// but it has no subnode "body", just 2 children GetRegion and SetRegion which don't span
 					// the whole (BodyStart, BodyEnd) region => We have to handle PropertyDeclaration as a special case.
 					node.EndLocation = ((PropertyDeclaration)node).BodyEnd;
 				}
@@ -60,6 +61,15 @@ namespace ICSharpCode.NRefactory.Visitors
 					parent.StartLocation = node.StartLocation;
 				if (node.EndLocation > parent.EndLocation)
 					parent.EndLocation = node.EndLocation;
+			}
+			
+			// Block statement as a special case - we want it without the '{' and '}'
+			if (node is BlockStatement) {
+				var firstSatement = node.Children.FirstOrDefault();
+				if (firstSatement != null) {
+					node.StartLocation = firstSatement.StartLocation;
+					node.EndLocation = node.Children.Last().EndLocation;
+				}
 			}
 		}
 	}

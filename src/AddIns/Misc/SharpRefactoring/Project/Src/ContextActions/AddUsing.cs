@@ -22,36 +22,63 @@ namespace SharpRefactoring.ContextActions
 	{
 		public override IEnumerable<IContextAction> GetAvailableActions(EditorContext context)
 		{
-			var currentLineAST = context.CurrentLineAST;
-			if (currentLineAST == null)
-				yield break;
-			var symbol = context.CurrentSymbol;
-			foreach (var contextAction in GetAddUsingContextActions(symbol, context.Editor, context.CurrentExpression.Context)) {
+			foreach (var contextAction in GetAddUsingContextActions(context.CurrentSymbol, context.Editor, context.CurrentExpression.Context)) {
 				yield return contextAction;
 			}
 		}
 		
 		IEnumerable<IContextAction> GetAddUsingContextActions(ResolveResult symbol, ITextEditor editor, ExpressionContext exprContext)
 		{
+			// class
 			foreach (var addUsingAction in RefactoringService.GetAddUsingActions(symbol,editor)) {
 				yield return addUsingAction;
 			}
+			// extension method
+			if (exprContext != ExpressionContext.Attribute) {
+				foreach (var addUsingAction in GetAddUsingExtensionMethodActions(symbol, editor)) {
+					yield return addUsingAction;
+				}
+			}
+			// attribute
 			if (exprContext == ExpressionContext.Attribute) {
 				foreach (var addUsingAction in GetAddUsingAttributeActions(symbol, editor)) {
 					yield return addUsingAction;
 				}
 			}
-			foreach (var addUsingAction in GetAddUsingExtensionMethodActions(symbol, editor)) {
-				yield return addUsingAction;
+		}
+		
+		#region Extension method
+		IEnumerable<IContextAction> GetAddUsingExtensionMethodActions(ResolveResult symbol, ITextEditor editor)
+		{
+			if (!(symbol is UnknownMethodResolveResult))
+				yield break;
+			
+			UnknownMethodResolveResult rr = symbol as UnknownMethodResolveResult;
+			List<IClass> results = new List<IClass>();
+			IProjectContent pc = rr.CallingClass.ProjectContent;
+			
+			SearchAllExtensionMethodsWithName(results, pc, rr.CallName);
+			foreach (IProjectContent content in pc.ReferencedContents)
+				SearchAllExtensionMethodsWithName(results, content, rr.CallName);
+			if (!results.Any())
+				yield break;
+			
+			foreach (IClass c in results) {
+				yield return new RefactoringService.AddUsingAction(rr.CallingClass.CompilationUnit, editor, c.Namespace);
 			}
 		}
 		
-		IEnumerable<IContextAction> GetAddUsingExtensionMethodActions(ResolveResult symbol, ITextEditor editor)
+		void SearchAllExtensionMethodsWithName(List<IClass> searchResults, IProjectContent pc, string name)
 		{
-			yield break;
+			foreach (IClass c in pc.Classes) {
+				if (c.HasExtensionMethods && !searchResults.Any(cl => cl.Namespace == c.Namespace) &&
+				    c.Methods.Any(m => m.IsExtensionMethod && m.Name == name))
+					searchResults.Add(c);
+			}
 		}
+		#endregion
 		
-		#region GetAddUsingAttributeActions
+		#region Attribute
 		IEnumerable<IContextAction> GetAddUsingAttributeActions(ResolveResult symbol, ITextEditor editor)
 		{
 			if (!(symbol is UnknownIdentifierResolveResult || symbol is UnknownMethodResolveResult))
@@ -76,13 +103,7 @@ namespace SharpRefactoring.ContextActions
 			}
 			
 			foreach (IClass c in results) {
-				string newNamespace = c.Namespace;
-				yield return new DelegateAction {Title = "using " + newNamespace,
-					ExecuteAction = delegate {
-						NamespaceRefactoringService.AddUsingDeclaration(unit, editor.Document, newNamespace, true);
-						ParserService.BeginParse(editor.FileName, editor.Document);
-					}
-				};
+				yield return new RefactoringService.AddUsingAction(unit, editor, c.Namespace);
 			}
 		}
 		

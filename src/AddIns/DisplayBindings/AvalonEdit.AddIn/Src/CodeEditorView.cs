@@ -376,6 +376,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		#endregion
 		
+		#region Expand selection
 		protected override void OnKeyUp(KeyEventArgs e)
 		{
 			base.OnKeyUp(e);
@@ -414,6 +415,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				this.Select(startOffset, endOffset - startOffset);
 			}
 		}
+		#endregion
 		
 		public void JumpTo(int line, int column)
 		{
