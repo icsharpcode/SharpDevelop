@@ -112,11 +112,13 @@
     <Compile Include="Project\Dialogs\EditorDialog.cs">
     </Compile>
     <Compile Include="Project\Dialogs\EditorDialog.Designer.cs" />
-    <Compile Include="Project\Dialogs\ExtendedCollectionEditor.cs" />
+    <Compile Include="Project\Dialogs\GroupingCollectionEditor.cs" />
+    <Compile Include="Project\Dialogs\ParametersCollectionEditor.cs" />
     <Compile Include="Project\Dialogs\ParameterDialog.cs" />
     <Compile Include="Project\Dialogs\PreviewControl.cs">
     </Compile>
     <Compile Include="Project\Dialogs\DefaultTextEditor.cs" />
+    <Compile Include="Project\Dialogs\SortingCollectionEditor.cs" />
     <Compile Include="Project\Events\GroupChangedEventArgs.cs" />
     <Compile Include="Project\Events\NewPageEventArgs.cs" />
     <Compile Include="Project\Events\ReportPageEventArgs.cs" />
@@ -302,7 +304,6 @@
     <Compile Include="Project\BaseClasses\DataTypeHelper.cs" />
     <Compile Include="Project\Exporter\ExporterPage.cs" />
     <Compile Include="Project\Exporter\DataPageBuilder.cs" />
-    <Compile Include="Project\Exporter\ExportItemsConverter.cs" />
     <Compile Include="Project\Exceptions\MissingDataManagerException.cs" />
     <Compile Include="Project\Exporter\ExportColumns\BaseExportColumn.cs" />
     <Compile Include="Project\Exporter\ExportColumns\ExportContainer.cs" />

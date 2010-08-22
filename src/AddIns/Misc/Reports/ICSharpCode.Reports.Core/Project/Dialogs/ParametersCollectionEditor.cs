@@ -11,16 +11,16 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing.Design;
 
-namespace ICSharpCode.Reports.Core
+namespace ICSharpCode.Reports.Core.Dialogs
 {
 	/// <summary>
 	/// Description of ExtendedCollectionEditor.
 	/// </summary>
-	public class ExtendedCollectionEditor:CollectionEditor
+	public class ParameterCollectionEditor:CollectionEditor
 	{
 		private Type[] types; 
 
-		public ExtendedCollectionEditor(Type type):base(type)
+		public ParameterCollectionEditor(Type type):base(type)
 		{
 			types = new Type[] {typeof(BasicParameter),typeof(SqlParameter)};
 		}

@@ -58,6 +58,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			}
 		}
 		
+		
 		private ExporterCollection ConvertDataRow (ISimpleContainer simpleContainer)
 		{
 			ExporterCollection mylist = new ExporterCollection();
@@ -133,8 +134,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 			var groupCollection = section.Items.ExtractGroupedColumns();
 			base.DataNavigator.Fill(groupCollection);
 			base.FireSectionRendering(section);
-			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
 			ExporterCollection list = StandardPrinter.ConvertPlainCollection(groupCollection,offset);
+			StandardPrinter.EvaluateRow(base.Evaluator,list);
 			mylist.AddRange(list);
 			AfterConverting (section);
 			return new Point (leftPos,offset.Y + groupCollection[0].Size.Height + 20  + (3 *GlobalValues.GapBetweenContainer));
@@ -146,8 +147,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 			base.DataNavigator.FillChild(simpleContainer.Items);
 			PrepareContainerForConverting(simpleContainer);
 			base.FireSectionRendering(section);
-			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
 			Point curPos  = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
 			AfterConverting (section);
 			return curPos;
 		}
@@ -158,8 +159,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 			base.FillRow(simpleContainer);
 			PrepareContainerForConverting(simpleContainer);
 			base.FireSectionRendering(section);
-			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
 			Point curPos = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
 			AfterConverting (section);
 			return curPos;
 		}

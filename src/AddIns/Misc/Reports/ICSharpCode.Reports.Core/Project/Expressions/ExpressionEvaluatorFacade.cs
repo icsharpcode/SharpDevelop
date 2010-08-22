@@ -6,11 +6,8 @@
  * 
  * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
  */
-using ICSharpCode.Reports.Core.Interfaces;
 using System;
-using ICSharpCode.Reports.Core;
-using ICSharpCode.Reports.Core.Exporter;
-using ICSharpCode.Reports.Expressions.ReportingLanguage;
+using ICSharpCode.Reports.Core.Interfaces;
 using SimpleExpressionEvaluator;
 using SimpleExpressionEvaluator.Evaluation;
 using SimpleExpressionEvaluator.Utilities;

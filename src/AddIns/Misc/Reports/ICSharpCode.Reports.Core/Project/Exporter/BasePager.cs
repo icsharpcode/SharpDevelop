@@ -199,7 +199,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			{
 				p.TotalPages = this.Pages.Count;
 			}
-			
+
 			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade();
 			
 			foreach (ExporterPage p in this.pages)
@@ -224,8 +224,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 					}
 				}
 				ExportText et = be as ExportText;
-				if (et != null) {
-					et.Text = evaluatorFassade.Evaluate(et.Text);
+				if (et != null) {Console.WriteLine("nav {0}",evaluatorFassade.SinglePage.IDataNavigator.CurrentRow);
+					
+//					et.Text = evaluatorFassade.Evaluate(et.Text);
 				}
 			}
 			

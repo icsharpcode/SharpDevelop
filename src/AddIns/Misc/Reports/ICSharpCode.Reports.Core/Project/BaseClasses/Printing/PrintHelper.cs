@@ -87,6 +87,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				throw new ArgumentNullException ("item");
 			}
 			BaseReportItem bri = (BaseReportItem) item;
+			
 			return new Rectangle(parent.Location.X + bri.Location.X ,
 				                     bri.Location.Y + bri.SectionOffset,
 				                     bri.Size.Width,bri.Size.Height);
@@ -156,7 +157,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 		
-		public static IExpressionEvaluatorFacade  SetupEvaluator (ISinglePage singlePage,IDataNavigator dataNavigator)
+		public static IExpressionEvaluatorFacade  CreateEvaluator (ISinglePage singlePage,IDataNavigator dataNavigator)
 		{
 			if (singlePage == null) {
 			

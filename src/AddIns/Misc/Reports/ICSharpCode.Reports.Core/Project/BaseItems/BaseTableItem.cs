@@ -59,16 +59,16 @@ namespace ICSharpCode.Reports.Core {
 		
 		private void EvaluateRecursive (IExpressionEvaluatorFacade evaluatorFassade,ReportItemCollection items)
 		{
-			foreach (BaseReportItem be in items) {
+			foreach (var item in items) {
 				
-				ISimpleContainer  ec = be as ISimpleContainer;
+				ISimpleContainer  ec = item as ISimpleContainer;
 				if (ec != null)
 				{
 					if (ec.Items.Count > 0) {
 						EvaluateRecursive(evaluatorFassade,ec.Items);
 					}
 				}
-				BaseTextItem bt = be as BaseTextItem;
+				BaseTextItem bt = item as BaseTextItem;
 				if (bt != null) {
 					bt.Text = evaluatorFassade.Evaluate(bt.Text);
 				}

@@ -54,7 +54,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			this.dataNavigator = dataNavigator;
 			this.sectionBounds = this.singlePage.SectionBounds;
 			this.layouter = layouter;
-			this.evaluator = PrintHelper.SetupEvaluator(this.singlePage,this.dataNavigator);
+			this.evaluator = PrintHelper.CreateEvaluator(this.singlePage,this.dataNavigator);
 		}
 		
 		

@@ -33,19 +33,22 @@ namespace ICSharpCode.Reports.Core
 		
 		#endregion
 		
-		
+		/*
 		private static Collection<BaseDataItem> ExtraxtDataItems (ReportItemCollection items)
 		{
 			Collection<BaseDataItem> inheritedReportItems = new Collection<BaseDataItem>(items.OfType<BaseDataItem>().ToList());
 			return inheritedReportItems;
 		}
 		
-		
+		*/
 		#region IDataNavigator implementation
 		
 		public void Fill (ReportItemCollection collection) {
-			foreach (IDataItem item in collection) {
-				this.store.Fill(item);
+			foreach (var item in collection) {
+				IDataItem dataItem = item as IDataItem;
+				if (dataItem != null) {
+					this.store.Fill(dataItem);
+				}
 			}
 		}
 		
@@ -140,15 +143,19 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
+		// at the moment only tables are working
+		
 		public void FillChild (ReportItemCollection collection)
 		{
 			TableStrategy tableStrategy = store as TableStrategy;
-			var filteredCollection = ExtraxtDataItems(collection);
-			
-			foreach (BaseDataItem item in filteredCollection) {
-				CurrentItemsCollection currentItemsCollection = tableStrategy.FillDataRow(ce.Current.ListIndex);
-				CurrentItem s = currentItemsCollection.FirstOrDefault(x => x.ColumnName == ((BaseDataItem)item).ColumnName);
-				item.DBValue = s.Value.ToString();
+			foreach (var item in collection) {
+				IDataItem dataItem = item as IDataItem;
+				if (dataItem != null) {
+					CurrentItemsCollection currentItemsCollection = tableStrategy.FillDataRow(ce.Current.ListIndex);
+					CurrentItem s = currentItemsCollection.FirstOrDefault(x => x.ColumnName == dataItem.ColumnName);
+					dataItem.DBValue = s.Value.ToString();
+				}
+				
 			}
 		}
 		

@@ -14,6 +14,8 @@ using System.IO;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 
+using ICSharpCode.Reports.Core.Dialogs;
+
 namespace ICSharpCode.Reports.Core{
 	/// <summary>
 	/// This class stores all the basic settings of an Report
@@ -224,12 +226,16 @@ namespace ICSharpCode.Reports.Core{
 		/// </summary>
 		
 		[Category("Sorting/Grouping")]
+		[EditorAttribute ( typeof(SortingCollectionEditor),
+		                  typeof(System.Drawing.Design.UITypeEditor) )]
 		public SortColumnCollection SortColumnsCollection {
 			get {return sortingCollection;}
 		}
 		
 		
 		[Category("Sorting/Grouping")]
+		[EditorAttribute ( typeof(GroupingCollectionEditor),
+		                  typeof(System.Drawing.Design.UITypeEditor) )]
 		public GroupColumnCollection GroupColumnsCollection {
 			get {
 				return groupingsCollection;
@@ -241,7 +247,7 @@ namespace ICSharpCode.Reports.Core{
 		#region ReportParameters
 		
 		[Category("Parameters")]
-		[EditorAttribute ( typeof(ExtendedCollectionEditor),
+		[EditorAttribute ( typeof(ParameterCollectionEditor),
 		                  typeof(System.Drawing.Design.UITypeEditor) )]
 		public ParameterCollection ParameterCollection
 		{

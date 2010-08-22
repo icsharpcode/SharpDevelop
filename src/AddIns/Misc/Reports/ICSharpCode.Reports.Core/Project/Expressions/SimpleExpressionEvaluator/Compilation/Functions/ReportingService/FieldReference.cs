@@ -39,6 +39,7 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.ReportingService
 				string retval;
 				if (item != null) {
 					retval = item.Value.ToString();
+					Console.WriteLine ("retval {0}",retval);
 				} else {
 					retval= String.Format("!! Can't find <{0}>  !! ",variable.VariableName);
 				}

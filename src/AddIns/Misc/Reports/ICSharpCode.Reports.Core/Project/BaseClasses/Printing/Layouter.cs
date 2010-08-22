@@ -38,8 +38,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				return Rectangle.Empty;
 			}
 			
-//			BaseReportItem containerItem = container as BaseReportItem;
-			
+
 			Rectangle desiredContainerRectangle = new Rectangle (container.Location,container.Size);
 			
 			System.Collections.Generic.IEnumerable<BaseReportItem> canGrowShrinkCollection = from bt in container.Items where bt.CanGrow == true select bt;

@@ -28,7 +28,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		public static void AdjustBackColor (ISimpleContainer container)
 		{
-			foreach (BaseReportItem item in container.Items)
+			foreach (var item in container.Items)
 			{
 				item.BackColor = container.BackColor;
 			}
@@ -38,7 +38,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		public static void AdjustBackColor (ISimpleContainer container, Color defaultColor)
 		{
 			if (container.BackColor != defaultColor) {
-				foreach (BaseReportItem item in container.Items)
+				foreach (var item in container.Items)
 				{
 					item.BackColor = defaultColor;
 				}
@@ -234,6 +234,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		public static void EvaluateRow(IExpressionEvaluatorFacade evaluator,ExporterCollection row)
 		{
+			Console.WriteLine("evaluate row with row:{0} ",evaluator.SinglePage.IDataNavigator.CurrentRow);
 			foreach (BaseExportColumn element in row) {
 				ExportText textItem = element as ExportText;
 				

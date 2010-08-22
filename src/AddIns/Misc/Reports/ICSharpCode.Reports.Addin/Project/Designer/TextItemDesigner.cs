@@ -61,7 +61,6 @@ namespace ICSharpCode.Reports.Addin.Designer
 		private void OnComponentRename(object sender,ComponentRenameEventArgs e) {
 			if (e.Component == this.Component) {
 				Control.Name = e.NewName;
-				Control.Text = e.NewName;
 				Control.Invalidate();
 			}
 		}
