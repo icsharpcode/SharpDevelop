@@ -21,6 +21,7 @@ namespace UnitTesting.Tests.Utils
 		public bool IsRunningTestWhenOnBeforeBuildCalled;
 		public bool IsOnStopMethodCalled;
 		public List<MockTestRunner> TestRunnersCreated = new List<MockTestRunner>();
+		public int OnBeforeRunTestsMethodCallCount;
 		
 		public DerivedRunTestCommand(IRunTestCommandContext context)
 			: base(context)
@@ -73,6 +74,11 @@ namespace UnitTesting.Tests.Utils
 		public ITestRunner CallCreateTestRunner(IProject project)
 		{
 			return CreateTestRunner(project);
+		}
+		
+		protected override void OnBeforeRunTests()
+		{
+			OnBeforeRunTestsMethodCallCount++;
 		}
 	}
 }

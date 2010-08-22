@@ -303,13 +303,13 @@ namespace ICSharpCode.UnitTesting
 		void RunTests(SelectedTests selectedTests)
 		{
 			if (testProgressMonitor == null) {
+				OnBeforeRunTests();
 				testProgressMonitor = context.StatusBarService.CreateProgressMonitor();
 				totalProjectCount = selectedTests.Projects.Count;
 			}
 			testProgressMonitor.TaskName = GetProgressMonitorLabel(selectedTests.Project);
 			testProgressMonitor.Progress = GetProgress(selectedTests.Projects);
 			
-			OnBeforeRunTests();
 			testRunner = CreateTestRunner(selectedTests.Project);
 			if (testRunner != null) {
 				StartTestRunner();
