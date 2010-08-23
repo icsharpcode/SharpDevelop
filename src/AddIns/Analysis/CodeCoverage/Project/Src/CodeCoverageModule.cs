@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.CodeCoverage
 {
-	public class CodeCoverageModule
+	public class CodeCoverageModule : ICodeCoverageWithVisits
 	{
 		string name = String.Empty;
 		List<CodeCoverageMethod> methods = new List<CodeCoverageMethod>();
@@ -21,51 +21,33 @@ namespace ICSharpCode.CodeCoverage
 			this.name = name;
 		}
 		
-		public bool IsExcluded {
-			get {
-				int excludedMethods = 0;
-				foreach (CodeCoverageMethod method in methods) {
-					if (method.IsExcluded) {
-						++excludedMethods;
-					}
-				}
-				return excludedMethods == methods.Count;
-			}
-		}
-		
 		/// <summary>
 		/// The module's assembly name.
 		/// </summary>
 		public string Name {
-			get {
-				return name;
-			}
+			get { return name; }
 		}
 		
 		public List<CodeCoverageMethod> Methods {
-			get {
-				return methods;
-			}
+			get { return methods; }
 		}
 		
-		public int VisitedSequencePointsCount {
-			get {
-				int count = 0;
-				foreach (CodeCoverageMethod method in methods) {
-					count += method.VisitedSequencePointsCount;
-				}
-				return count;
+		public int GetVisitedCodeLength()
+		{
+			int total = 0;
+			foreach (CodeCoverageMethod method in methods) {
+				total += method.GetVisitedCodeLength();
 			}
+			return total;
 		}
-		
-		public int NotVisitedSequencePointsCount {
-			get {
-				int count = 0;
-				foreach (CodeCoverageMethod method in methods) {
-					count += method.NotVisitedSequencePointsCount;
-				}
-				return count;
+				
+		public int GetUnvisitedCodeLength()
+		{
+			int total = 0;
+			foreach (CodeCoverageMethod method in methods) {
+				total += method.GetUnvisitedCodeLength();
 			}
+			return total;
 		}
 		
 		public List<CodeCoverageSequencePoint> GetSequencePoints(string fileName)

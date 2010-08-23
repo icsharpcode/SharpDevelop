@@ -13,7 +13,8 @@ namespace ICSharpCode.CodeCoverage
 	{
 		CodeCoverageProperty property;
 		
-		public CodeCoveragePropertyTreeNode(CodeCoverageProperty property) : base(property.Name, property.GetMethods(), CodeCoverageImageListIndex.Property)
+		public CodeCoveragePropertyTreeNode(CodeCoverageProperty property) : 
+			base(property.Name, property.GetMethods(), CodeCoverageImageListIndex.Property)
 		{
 			this.property = property;
 		}

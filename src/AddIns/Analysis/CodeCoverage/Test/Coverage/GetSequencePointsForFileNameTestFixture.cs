@@ -14,18 +14,13 @@ using System.IO;
 namespace ICSharpCode.CodeCoverage.Tests.Coverage
 {
 	[TestFixture]
-	public class GetSequencePointsForFileNameTestFixture
+	public class GetSequencePointsForFileNameTestFixture : CodeCoverageResultsTestsBase
 	{
-		CodeCoverageResults results;
-		List<CodeCoverageSequencePoint> fooTestFixtureSequencePoints;
-		List<CodeCoverageSequencePoint> barTestFixtureSequencePoints;
-		List<CodeCoverageSequencePoint> simpleTestFixtureSequencePoints;
-		List<CodeCoverageSequencePoint> nonExistentFileNameSequencePoints;
-		
 		[SetUp]
 		public void SetUpFixture()
 		{
-			string xml = "<PartCoverReport>\r\n" +
+			string xml = 
+				"<PartCoverReport>\r\n" +
 				"  <File id=\"1\" url=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
 				"  <File id=\"2\" url=\"c:\\Projects\\Foo\\SimpleTestFixture.cs\" />\r\n" +
 				"  <File id=\"3\" url=\"c:\\Projects\\Foo\\BarTestFixture.cs\" />\r\n" +
@@ -53,35 +48,43 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 				"  </Type>\r\n" +
 				"</PartCoverReport>";
 			
-			results = new CodeCoverageResults(new StringReader(xml));
-			fooTestFixtureSequencePoints = results.GetSequencePoints(@"c:\Projects\Foo\FooTestFixture.cs");
-			barTestFixtureSequencePoints = results.GetSequencePoints(@"c:\Projects\Foo\BarTestFixture.cs");
-			simpleTestFixtureSequencePoints = results.GetSequencePoints(@"c:\Projects\Foo\SimpleTestFixture.cs");
-			nonExistentFileNameSequencePoints = results.GetSequencePoints(@"c:\Projects\Foo\NoSuchTestFixture.cs");
+			base.CreateCodeCoverageResults(xml);
 		}
 		
 		[Test]
-		public void FooTestFixtureHasSequencePoint()
+		public void SequencePointsCount_FooTestFixture_HasSequencePoint()
 		{
-			Assert.AreEqual(1, fooTestFixtureSequencePoints.Count);
+			List<CodeCoverageSequencePoint> fooTestFixtureSequencePoints = 
+				results.GetSequencePoints(@"c:\Projects\Foo\FooTestFixture.cs");
+			int count = fooTestFixtureSequencePoints.Count;
+			Assert.AreEqual(1, count);
 		}
 		
 		[Test]
-		public void BarTestFixtureHasSequencePoint()
+		public void SequencePointsCount_BarTestFixture_HasSequencePoint()
 		{
-			Assert.AreEqual(1, barTestFixtureSequencePoints.Count);
+			List<CodeCoverageSequencePoint> barTestFixtureSequencePoints = 
+				results.GetSequencePoints(@"c:\Projects\Foo\BarTestFixture.cs");
+			int count = barTestFixtureSequencePoints.Count;
+			Assert.AreEqual(1, count);
 		}
 		
 		[Test]
-		public void SimpleTestFixtureHasSequencePoints()
+		public void SequencePointsCount_SimpleTestFixture_HasSequencePoints()
 		{
-			Assert.AreEqual(2, simpleTestFixtureSequencePoints.Count);
+			List<CodeCoverageSequencePoint> simpleTestFixtureSequencePoints = 
+				results.GetSequencePoints(@"c:\Projects\Foo\SimpleTestFixture.cs");
+			int count = simpleTestFixtureSequencePoints.Count;
+			Assert.AreEqual(2, count);
 		}
 		
 		[Test]
-		public void NonExistentFileNameHasNoSequencePoints()
+		public void SequencePointsCount_NonExistentFileName_HasNoSequencePoints()
 		{
-			Assert.AreEqual(0, nonExistentFileNameSequencePoints.Count);
+			List<CodeCoverageSequencePoint> nonExistentFileNameSequencePoints = 
+				results.GetSequencePoints(@"c:\Projects\Foo\NoSuchTestFixture.cs");
+			int count = nonExistentFileNameSequencePoints.Count;
+			Assert.AreEqual(0, count);
 		}		
 	}
 }

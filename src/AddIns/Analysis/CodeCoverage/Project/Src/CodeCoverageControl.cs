@@ -242,10 +242,12 @@ namespace ICSharpCode.CodeCoverage
 			
 			if (methodNode != null && methodNode.Method.SequencePoints.Count > 0) {
 				CodeCoverageSequencePoint sequencePoint = methodNode.Method.SequencePoints[0];
-				if (classNode == null) {
-					OpenFile(sequencePoint.Document, sequencePoint.Line - 1, sequencePoint.Column - 1);
-				} else {
-					OpenFile(sequencePoint.Document, 1, 1);
+				if (sequencePoint.HasDocument()) {
+					if (classNode == null) {
+						OpenFile(sequencePoint.Document, sequencePoint.Line - 1, sequencePoint.Column - 1);
+					} else {
+						OpenFile(sequencePoint.Document, 1, 1);
+					}
 				}
 			}
 		}

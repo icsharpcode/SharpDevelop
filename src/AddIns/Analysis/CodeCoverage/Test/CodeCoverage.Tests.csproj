@@ -63,8 +63,8 @@
     <Compile Include="Coverage\CodeCoverageResultsMissingFileIdTestFixture.cs" />
     <Compile Include="Coverage\CodeCoverageResultsPropertyFlagsTestFixture.cs" />
     <Compile Include="Coverage\CodeCoverageResultsTestFixture.cs" />
+    <Compile Include="Coverage\CodeCoverageResultsTestsBase.cs" />
     <Compile Include="Coverage\CodeCoverageResultsWithEmptyMethodElementTestFixture.cs" />
-    <Compile Include="Coverage\ExcludedModuleTestFixture.cs" />
     <Compile Include="Coverage\GetSequencePointsForFileNameTestFixture.cs" />
     <Compile Include="Coverage\InvalidSequencePointDataTestFixture.cs" />
     <Compile Include="Coverage\MethodHasNoNamespaceTestFixture.cs" />
@@ -73,6 +73,7 @@
     <Compile Include="Coverage\PartCoverSettingsMissingRulePrefixTestFixture.cs" />
     <Compile Include="Coverage\PartCoverSettingsTestFixture.cs" />
     <Compile Include="Coverage\RemoveTaskMarkerTests.cs" />
+    <Compile Include="Coverage\SequencePointTests.cs" />
     <Compile Include="Coverage\SimilarRootNamespaceTestFixture.cs" />
     <Compile Include="Gui\DisplayItemTestFixture.cs" />
     <Compile Include="Gui\PropertiesInCodeCoverageTreeView.cs" />

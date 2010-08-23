@@ -13,7 +13,8 @@ namespace ICSharpCode.CodeCoverage
 {
 	public class CodeCoverageClassTreeNode : CodeCoverageMethodsTreeNode
 	{
-		public CodeCoverageClassTreeNode(string name, List<CodeCoverageMethod> methods) : base(name, methods, CodeCoverageImageListIndex.Class)
+		public CodeCoverageClassTreeNode(string name, List<CodeCoverageMethod> methods)
+			: base(name, methods, CodeCoverageImageListIndex.Class)
 		{
 		}
 

@@ -31,8 +31,8 @@ namespace ICSharpCode.CodeCoverage.Tests.Gui
 			List<CodeCoverageModule> modules = new List<CodeCoverageModule>();
 			CodeCoverageModule fooModule = new CodeCoverageModule("Foo.Tests");
 			CodeCoverageMethod fooTestMethod = new CodeCoverageMethod("FooTest", "Foo.Tests.FooTestFixture");
-			fooTestMethod.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTestFixture.cs", 0, 1, 0, 2, 1));
-			fooTestMethod.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTestFixture.cs", 0, 2, 2, 3, 4));
+			fooTestMethod.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTestFixture.cs", 0, 1, 0, 2, 1, 1));
+			fooTestMethod.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTestFixture.cs", 0, 2, 2, 3, 4, 1));
 
 			fooModule.Methods.Add(fooTestMethod);
 					
@@ -59,56 +59,87 @@ namespace ICSharpCode.CodeCoverage.Tests.Gui
 		}
 
 		[Test]
-		public void FooModuleTreeNodeText()
+		public void ModuleTreeNodeText_FooModuleTreeNode_ShowsModuleNameAndPercentageCoverage()
 		{
-			Assert.AreEqual("Foo.Tests (0%)", fooModuleNode.Text);
+			string text = fooModuleNode.Text;
+			string expectedText = "Foo.Tests (0%)";
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void FooModuleTreeNodeForeColor()
+		public void ModuleTreeNodeForeColor_FooModuleTreeNode_IsZeroCodeCoverageTextColor()
 		{
-			Assert.AreEqual(CodeCoverageTreeNode.ZeroCoverageTextColor, fooModuleNode.ForeColor);
+			Color color = fooModuleNode.ForeColor;
+			Color expectedColor = CodeCoverageTreeNode.ZeroCoverageTextColor;
+			Assert.AreEqual(expectedColor, color);
 		}
 		
 		[Test]
-		public void FooMethodTreeNodeText()
+		public void MethodTreeNodeText_FooMethodTreeNode_ShowsMethodNameAndCodeCoveragePercentage()
 		{
-			Assert.AreEqual("FooTest (0%)", fooTestMethodTreeNode.Text);
+			string text = fooTestMethodTreeNode.Text;
+			string expectedText = "FooTest (0%)";
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void FooMethodTreeNodeForeColor()
+		public void MethodTreeNodeForeColor_FooMethodTreeNode_IsZeroCodeCoverageTextColor()
 		{
-			Assert.AreEqual(CodeCoverageTreeNode.ZeroCoverageTextColor, fooTestMethodTreeNode.ForeColor);
+			Color color = fooTestMethodTreeNode.ForeColor;
+			Color expectedColor = CodeCoverageTreeNode.ZeroCoverageTextColor;
+			Assert.AreEqual(expectedColor, color);
 		}
 		
 		[Test]
-		public void FooTestFixtureTreeNodeForeColor()
+		public void ClassTreeNodeForeColor_FooTestFixtureTreeNode_IsZeroCodeCoverageTextColor()
 		{
-			Assert.AreEqual(CodeCoverageTreeNode.ZeroCoverageTextColor, fooTestFixtureTreeNode.ForeColor);
+			Color color = fooTestFixtureTreeNode.ForeColor;
+			Color expectedColor = CodeCoverageTreeNode.ZeroCoverageTextColor;
+			Assert.AreEqual(expectedColor, color);
 		}
 		
 		[Test]
-		public void FooMethodTreeNodeImageIndex()
+		public void MethodTreeNodeImageIndex_FooTestMethodTreeNode_ImageIndexIsForMethodWithZeroCodeCoverage()
 		{
-			Assert.AreEqual(CodeCoverageImageListIndex.MethodWithZeroCoverage, (CodeCoverageImageListIndex)(fooTestMethodTreeNode.ImageIndex));
+			CodeCoverageImageListIndex actual = (CodeCoverageImageListIndex)(fooTestMethodTreeNode.ImageIndex);
+			CodeCoverageImageListIndex expected = CodeCoverageImageListIndex.MethodWithZeroCoverage;
+			Assert.AreEqual(expected, actual);
 		}
 		
 		[Test]
-		public void ChangeFooMethodFixtureVisitCount()
+		public void MethodTreeNodeImageIndex_FooTestMethodVisitedCodeLengthChangedToNonZero_ImageIndexChangedToImageIndexForMethodWithNonZeroCodeCoverage()
 		{
-			fooTestMethodTreeNode.VisitedCount = 1;
-			Assert.AreEqual(CodeCoverageImageListIndex.Method, (CodeCoverageImageListIndex)(fooTestMethodTreeNode.ImageIndex));
-			Assert.AreEqual(1, fooTestMethodTreeNode.VisitedCount);
+			fooTestMethodTreeNode.VisitedCodeLength = 1;
+			CodeCoverageImageListIndex actual = (CodeCoverageImageListIndex)(fooTestMethodTreeNode.ImageIndex);
+			CodeCoverageImageListIndex expected = CodeCoverageImageListIndex.Method;
+			Assert.AreEqual(expected, actual);
 		}
-
+		
 		[Test]
-		public void ChangeFooMethodFixtureTotalVisitsCount()
+		public void MethodTreeNodeVisiteCount_FooTestMethodVisitedCodeLengthSetToNonZero_VisitedCodeLengthSetToNonZeroValue()
 		{
-			fooTestMethodTreeNode.NotVisitedCount = 0;
-			fooTestMethodTreeNode.VisitedCount = 2;
-			Assert.AreEqual(Color.Empty, fooTestMethodTreeNode.ForeColor);
-			Assert.AreEqual(0, fooTestMethodTreeNode.NotVisitedCount);
+			fooTestMethodTreeNode.VisitedCodeLength = 1;
+			int length = fooTestMethodTreeNode.VisitedCodeLength;
+			Assert.AreEqual(1, length);
+		}
+		
+		[Test]
+		public void MethodTreeNodeForeColor_FooTestMethodVisitCodeLengthChangedSoCodeCoverageIsOneHundredPercent_ImageIndexChangedTo()
+		{
+			fooTestMethodTreeNode.UnvisitedCodeLength = 0;
+			fooTestMethodTreeNode.VisitedCodeLength = 2;
+			
+			Color color = fooTestMethodTreeNode.ForeColor;
+			Color expectedColor = Color.Empty;
+			Assert.AreEqual(expectedColor, color);
+		}
+		
+		[Test]
+		public void MethodTreeNodeNotVisitedCount_FooTestMethodUnvisitedCodeLengthChangedToZero_UnvisitedCodeLengthSetToZero()
+		{
+			fooTestMethodTreeNode.UnvisitedCodeLength = 0;
+			int length = fooTestMethodTreeNode.UnvisitedCodeLength;
+			Assert.AreEqual(0, length);
 		}
 	}
 }

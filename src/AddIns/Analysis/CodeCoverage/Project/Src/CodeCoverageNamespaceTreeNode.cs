@@ -14,7 +14,8 @@ namespace ICSharpCode.CodeCoverage
 	{
 		string namespacePrefix = String.Empty;
 				
-		public CodeCoverageNamespaceTreeNode(string name, List<CodeCoverageMethod> methods) : this(String.Empty, name, methods)
+		public CodeCoverageNamespaceTreeNode(string name, List<CodeCoverageMethod> methods)
+			: this(String.Empty, name, methods)
 		{
 		}
 		

@@ -5,12 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.CodeCoverage;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
 
 namespace ICSharpCode.CodeCoverage.Tests.Gui
 {
@@ -38,8 +39,8 @@ namespace ICSharpCode.CodeCoverage.Tests.Gui
 			List<CodeCoverageModule> modules = new List<CodeCoverageModule>();
 			CodeCoverageModule fooModule = new CodeCoverageModule("Foo.Tests");
 			CodeCoverageMethod fooTestMethod1 = new CodeCoverageMethod("FooTest1", "Foo.Tests.FooTestFixture");
-			fooTestMethod1.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTestFixture.cs", 1, 1, 0, 2, 1));
-			fooTestMethod1.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTestFixture.cs", 0, 2, 2, 3, 4));
+			fooTestMethod1.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTestFixture.cs", 1, 1, 0, 2, 1, 1));
+			fooTestMethod1.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTestFixture.cs", 0, 2, 2, 3, 4, 1));
 			CodeCoverageMethod fooTestMethod2 = new CodeCoverageMethod("FooTest2", "Foo.Tests.FooTestFixture");
 			CodeCoverageMethod helperMethod = new CodeCoverageMethod("GetCoverageFile", "Foo.Tests.Util.Helper");
 				
@@ -76,117 +77,151 @@ namespace ICSharpCode.CodeCoverage.Tests.Gui
 		}
 		
 		[Test]
-		public void RootNodesCount()
+		public void RootNodesCount_TwoModules_ReturnsTwo()
 		{
-			Assert.AreEqual(2, nodes.Count);
+			int count = nodes.Count;
+			Assert.AreEqual(2, count);
 		}
 		
 		[Test]
-		public void FooModuleTreeNodeText()
+		public void ModuleTreeNodeText_FooModuleTreeNode_ReturnsModuleNameWithPercentage()
 		{
-			Assert.AreEqual("Foo.Tests (50%)", fooModuleNode.Text);
+			string text = fooModuleNode.Text;
+			string expectedText = "Foo.Tests (50%)";
+			Assert.AreEqual(expectedText, text);
+		}
+				
+		[Test]
+		public void ModuleTreeNodeForeColor_FooModuleTreeNode_ForeColorIsPartialCoverageTextColor()
+		{
+			Color color = fooModuleNode.ForeColor;
+			Color expectedColor = CodeCoverageTreeNode.PartialCoverageTextColor;
+			Assert.AreEqual(expectedColor, color);
 		}
 		
 		[Test]
-		public void FooModuleTreeNodeForeColor()
+		public void ModuleTreeNodeNodesCount_FooModule_OneChildNode()
 		{
-			Assert.AreEqual(CodeCoverageTreeNode.PartialCoverageTextColor, fooModuleNode.ForeColor);
+			int count = fooModuleNode.Nodes.Count;
+			Assert.AreEqual(1, count);
 		}
 		
 		[Test]
-		public void FooModuleChildNodesCount()
+		public void ModuleTreeNodeName_FooModule_ReturnsAssemblyName()
 		{
-			Assert.AreEqual(1, fooModuleNode.Nodes.Count);
+			string name = fooModuleNode.Name;
+			string expectedName = "Foo.Tests";
+			Assert.AreEqual(expectedName, name);
 		}
 		
 		[Test]
-		public void FooModuleTreeNodeName()
+		public void ModuleTreeNodeText_BarModule_ReturnsAssemblyName()
 		{
-			Assert.AreEqual("Foo.Tests", fooModuleNode.Name);
+			string text = barModuleNode.Text;
+			string expectedText = "Bar.Tests";
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void BarModuleTreeNodeText()
+		public void ModuleTreeNodeForeColor_BarModule_ForeColorIsForZeroCodeCoverage()
 		{
-			Assert.AreEqual("Bar.Tests", barModuleNode.Text);
+			Color color = barModuleNode.ForeColor;
+			Color expectedColor = CodeCoverageTreeNode.ZeroCoverageTextColor;
+			Assert.AreEqual(expectedColor, color);
 		}
 		
 		[Test]
-		public void BarModuleTreeNodeForeColor()
+		public void ClassTreeNodeName_FooTestFixtureTreeNode_ReturnsClassName()
 		{
-			Assert.AreEqual(CodeCoverageTreeNode.ZeroCoverageTextColor, barModuleNode.ForeColor);
+			string name = fooTestFixtureTreeNode.Name;
+			string expectedName = "FooTestFixture";
+			Assert.AreEqual(expectedName, name);
 		}
 		
 		[Test]
-		public void FooTestFixtureTreeNodeName()
+		public void ClassTreeNodeText_FooTestFixtureTreeNode_ReturnsClassNameWithPercentageCoverage()
 		{
-			Assert.AreEqual("FooTestFixture", fooTestFixtureTreeNode.Name);
+			string name = fooTestFixtureTreeNode.Text;
+			string expectedName = "FooTestFixture (50%)";
+			Assert.AreEqual(expectedName, name);
 		}
 		
 		[Test]
-		public void FooTestFixtureTreeNodeText()
+		public void NamespaceTreeNodeName_FooNamespaceTreeNode_ReturnsNamespaceName()
 		{
-			Assert.AreEqual("FooTestFixture (50%)", fooTestFixtureTreeNode.Text);
+			string name = fooNamespaceTreeNode.Name;
+			string expectedName = "Foo";
+			Assert.AreEqual(expectedName, name);
 		}
 		
 		[Test]
-		public void FooNamespaceTreeNodeName()
+		public void NamespaceTreeNodeName_FooTestsNamespaceTreeNode_ReturnsNamespaceName()
 		{
-			Assert.AreEqual("Foo", fooNamespaceTreeNode.Name);
+			string name = fooTestsNamespaceTreeNode.Name;
+			string expectedName = "Tests";
+			Assert.AreEqual(expectedName, name);
 		}
 		
 		[Test]
-		public void FooTestsNamespaceTreeNodeName()
+		public void NamespaceTreeNodeText_FooNamespaceTreeNode_ReturnsNamespaceNameWithPercentageCodeCoverages()
 		{
-			Assert.AreEqual("Tests", fooTestsNamespaceTreeNode.Name);
+			string text = fooNamespaceTreeNode.Text;
+			string expectedText = "Foo (50%)";
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void FooNamespaceTreeNodeText()
+		public void NamespaceTreeNodeText_FooTestsNamespaceTreeNode_ReturnsNamespaceWithPercentageCodeCoverage()
 		{
-			Assert.AreEqual("Foo (50%)", fooNamespaceTreeNode.Text);
+			string text = fooTestsNamespaceTreeNode.Text;
+			string expectedText = "Tests (50%)";
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void FooTestsNamespaceTreeNodeText()
+		public void MethodTreeNodeName_FooTestMethod1TreeNode_ReturnsMethodName()
 		{
-			Assert.AreEqual("Tests (50%)", fooTestsNamespaceTreeNode.Text);
+			string name = fooTestMethod1TreeNode.Name;
+			string expectedText = "FooTest1";
+			Assert.AreEqual(expectedText, name);
 		}
 		
 		[Test]
-		public void FooTestMethod1TreeNodeName()
+		public void MethodTreeNodeText_FooTestMethod1TreeNode_ReturnsMethodNameWithPercentageCodeCoverage()
 		{
-			Assert.AreEqual("FooTest1", fooTestMethod1TreeNode.Name);
+			string text = fooTestMethod1TreeNode.Text;
+			string expectedText = "FooTest1 (50%)";
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void FooTestMethod1TreeNodeText()
+		public void MethodTreeNodeName_FooMethod2TreeNode_ReturnsMethodName()
 		{
-			Assert.AreEqual("FooTest1 (50%)", fooTestMethod1TreeNode.Text);
+			string name = fooTestMethod2TreeNode.Name;
+			string expectedName = "FooTest2";
+			Assert.AreEqual(expectedName, name);
 		}
 		
 		[Test]
-		public void FooMethod2TreeNodeText()
+		public void ClassTreeNodeChildNodesCount_FooTestFixtureTreeNode_ReturnsTwoChildNodes()
 		{
-			Assert.AreEqual("FooTest2", fooTestMethod2TreeNode.Name);
+			int count = fooTestFixtureTreeNode.Nodes.Count;
+			Assert.AreEqual(2, count);
 		}
 		
 		[Test]
-		public void FooTestFixtureTreeNodeChildNodesCount()
+		public void NamespaceTreeNodeChildNodesCount_FooTestsNamespaceTreeNode_ReturnsTwoChildNodes()
 		{
-			Assert.AreEqual(2, fooTestFixtureTreeNode.Nodes.Count);
+			int count = fooTestsNamespaceTreeNode.Nodes.Count;
+			Assert.AreEqual(2, count);
 		}
 		
 		[Test]
-		public void FooTestsNamespaceTreeNodeChildNodesCount()
+		public void ClassTreeNodeImageIndex_FooTestFixtureTreeNode_ReturnsClassImageIndex()
 		{
-			Assert.AreEqual(2, fooTestsNamespaceTreeNode.Nodes.Count);
-		}
-		
-		[Test]
-		public void FooTestFixtureTreeNodeImageIndex()
-		{
-			Assert.AreEqual(CodeCoverageImageListIndex.Class, (CodeCoverageImageListIndex)(fooTestFixtureTreeNode.ImageIndex));
+			CodeCoverageImageListIndex actual = (CodeCoverageImageListIndex)(fooTestFixtureTreeNode.ImageIndex);
+			CodeCoverageImageListIndex expected = CodeCoverageImageListIndex.Class;
+			Assert.AreEqual(expected, actual);
 		}
 	}
 }

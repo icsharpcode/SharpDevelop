@@ -19,24 +19,34 @@ namespace ICSharpCode.CodeCoverage
 	{
 		List<CodeCoverageMethod> methods = new List<CodeCoverageMethod>();
 				
-		public CodeCoverageMethodsTreeNode(string name, List<CodeCoverageMethod> methods, CodeCoverageImageListIndex index) : base(name, index)
+		public CodeCoverageMethodsTreeNode(string name, List<CodeCoverageMethod> methods, CodeCoverageImageListIndex index) 
+			: base(name, index)
 		{
 			this.methods = methods;
-			if (methods.Count > 0) {
-				// Add dummy node.
-				Nodes.Add(new ExtTreeNode());
-			}
+			AddDummyNodeIfHasNoMethods();
 			
-			int visitedCount = 0;
-			int notVisitedCount = 0;
+			int visitedCodeLength = 0;
+			int unvisitedCodeLength = 0;
 			foreach (CodeCoverageMethod method in methods) {
-				visitedCount += method.VisitedSequencePointsCount;
-				notVisitedCount += method.NotVisitedSequencePointsCount;
+				visitedCodeLength += method.GetVisitedCodeLength();
+				unvisitedCodeLength += method.GetUnvisitedCodeLength();
 			}
 			
 			Name = name;
-			VisitedCount = visitedCount;
-			NotVisitedCount = notVisitedCount;
+			VisitedCodeLength = visitedCodeLength;
+			UnvisitedCodeLength = unvisitedCodeLength;
+		}
+		
+		void AddDummyNodeIfHasNoMethods()
+		{
+			if (methods.Count > 0) {
+				AddDummyNode();
+			}
+		}
+		
+		void AddDummyNode()
+		{
+			Nodes.Add(new ExtTreeNode());
 		}
 		
 		public List<CodeCoverageMethod> Methods {

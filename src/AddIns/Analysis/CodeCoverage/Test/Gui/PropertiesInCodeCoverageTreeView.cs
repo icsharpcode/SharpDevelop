@@ -37,10 +37,11 @@ namespace ICSharpCode.CodeCoverage.Tests.Gui
 			List<CodeCoverageModule> modules = new List<CodeCoverageModule>();
 			CodeCoverageModule fooModule = new CodeCoverageModule("Tests");
 			fooSetterMethod = new CodeCoverageMethod("set_Count", "Tests.FooTest", MethodAttributes.SpecialName);
-			fooSetterMethod.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTest.cs", 1, 2, 2, 3, 4));
-			fooSetterMethod.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTest.cs", 0, 3, 4, 4, 4));
+			
+			fooSetterMethod.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTest.cs", 1, 2, 2, 3, 4, 2));
+			fooSetterMethod.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTest.cs", 0, 3, 4, 4, 4, 1));
 			fooGetterMethod = new CodeCoverageMethod("get_Count", "Tests.FooTest", MethodAttributes.SpecialName);
-			fooGetterMethod.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTest.cs", 1, 1, 0, 2, 1));
+			fooGetterMethod.SequencePoints.Add(new CodeCoverageSequencePoint("c:\\Projects\\Foo\\FooTest.cs", 1, 1, 0, 2, 1, 1));
 				
 			fooModule.Methods.Add(fooGetterMethod);
 			fooModule.Methods.Add(fooSetterMethod);
@@ -73,43 +74,57 @@ namespace ICSharpCode.CodeCoverage.Tests.Gui
 		}
 		
 		[Test]
-		public void FooClassOnlyHasOneChildNode()
+		public void ClassTreeNodeChildNodesCount_FooClassTreeNode_OnlyHasOneChildNode()
 		{
 			Assert.AreEqual(1, fooTestTreeNode.Nodes.Count);
 		}
 		
 		[Test]
-		public void PropertyTreeNodeExists()
+		public void PropertyTreeNode_CountPropertyTreeNode_Exists()
 		{
 			Assert.IsNotNull(countPropertyTreeNode);
 		}
 		
 		[Test]
-		public void PropertyTreeNodeImageIndexIsProperty()
+		public void PropertyTreeNodeImageIndex_CountPropertyTreeNode_ImageIndexIsProperty()
 		{
 			Assert.AreEqual(CodeCoverageImageListIndex.Property, (CodeCoverageImageListIndex)countPropertyTreeNode.ImageIndex);
 		}
 
 		[Test]
-		public void PropertyTreeNodeHasTwoChildNodes()
+		public void PropertyTreeNodeChildNodesCount_CountPropertyTreeNode_HasTwoChildNodes()
 		{
 			Assert.AreEqual(2, countPropertyTreeNode.Nodes.Count);
 		}
 		
 		[Test]
-		public void PropertyTreeNodeVisitedCount()
+		public void PropertyTreeNodeVisitedCodeLength_CountPropertyTreeNode_ReturnsThree()
 		{
-			Assert.AreEqual(2, countPropertyTreeNode.VisitedCount);
+			Assert.AreEqual(3, countPropertyTreeNode.VisitedCodeLength);
 		}
 		
 		[Test]
-		public void GetterTreeNodeMethod()
+		public void VisitedCodeLength_PropertyTreeNode_ReturnsThree()
+		{
+			int count = countPropertyTreeNode.VisitedCodeLength;
+			Assert.AreEqual(3, count);
+		}
+		
+		[Test]
+		public void UnvisitedCodeLength_PropertyTreeNode_ReturnsThree()
+		{
+			int count = countPropertyTreeNode.UnvisitedCodeLength;
+			Assert.AreEqual(1, count);
+		}
+		
+		[Test]
+		public void MethodTreeNodeMethod_GetterTreeNode_ReturnsGetterMethod()
 		{
 			Assert.AreEqual(fooGetterMethod, fooGetterTreeNode.Method);
 		}
 		
 		[Test]
-		public void SetterTreeNodeMethod()
+		public void MethodTreeNodeMethod_SetterTreeNode_ReturnsSetterMethod()
 		{
 			Assert.AreEqual(fooSetterMethod, fooSetterTreeNode.Method);
 		}		

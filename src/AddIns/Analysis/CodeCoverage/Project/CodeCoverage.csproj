@@ -76,6 +76,7 @@
     <Compile Include="Src\CodeCoverageMethodTreeNode.cs" />
     <Compile Include="Src\CodeCoverageClassTreeNode.cs" />
     <Compile Include="Src\CodeCoverageNamespaceTreeNode.cs" />
+    <Compile Include="Src\ICodeCoverageWithVisits.cs" />
     <Compile Include="Src\FileSystem.cs" />
     <Compile Include="Src\ICodeCoverageTestRunnerFactory.cs" />
     <Compile Include="Src\IFileSystem.cs" />
