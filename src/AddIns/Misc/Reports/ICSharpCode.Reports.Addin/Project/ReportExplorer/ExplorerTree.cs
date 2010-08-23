@@ -118,26 +118,44 @@ namespace ICSharpCode.Reports.Addin
 			ColumnNode node = (ColumnNode)drgevent.Data.GetData(typeof(ColumnNode));
 			Point pt = this.PointToClient (new Point( drgevent.X,drgevent.Y));
 			SectionNode sectionNode = this.GetNodeAt (pt) as SectionNode;
-			if (sectionNode != null) {
+			if ((sectionNode != null) && (!ExplorerTree.NodeExist (sectionNode,node.Text))) {
 				if (sectionNode == this.nodeGrouping) {
 					this.nodeSorting.Nodes.Clear();
-				}
-				
-				if (!ExplorerTree.NodeExist (sectionNode,node.Text)) {
-					SortColumnNode newNode = new SortColumnNode (node.Text,
-					                                             ExplorerTree.ascendingIcon,
-					                                             ExplorerTree.sortColumnMenu);
-
-					newNode.SortDirection = ListSortDirection.Ascending;
-					this.SelectedNode = newNode;
-					this.CheckNode (newNode);
-					sectionNode.Nodes.Add(newNode);
-					this.reportModel.ReportSettings.SortColumnsCollection.Add(new SortColumn(newNode.Text,
-					                                                                        ListSortDirection.Ascending,
-					                                                                        typeof(System.String),false));
-					this.OnPropertyChanged ("Sort_Group");
+					AddGrouping(sectionNode,node);
+				} else {
+					AddSorting (sectionNode,node);
 				}
 			}
+		}
+		
+		
+		private void AddSorting(SectionNode sectionNode, ColumnNode node)
+		{
+			SortColumnNode sortNode = new SortColumnNode (node.Text,
+			                                              ExplorerTree.ascendingIcon,
+			                                              ExplorerTree.sortColumnMenu);
+
+			sortNode.SortDirection = ListSortDirection.Ascending;
+			this.SelectedNode = sortNode;
+			sectionNode.Nodes.Add(sortNode);
+			this.reportModel.ReportSettings.SortColumnsCollection.Add(new SortColumn(sortNode.Text,
+			                                                                         ListSortDirection.Ascending,
+			                                                                         typeof(System.String),false));
+			this.OnPropertyChanged ("Sorting");
+			
+		}
+		
+		
+		private void AddGrouping(SectionNode sectionNode,ColumnNode node)
+		{
+			this.nodeSorting.Nodes.Clear();
+			GroupColumnNode groupNode = new GroupColumnNode(node.Text,ExplorerTree.ascendingIcon,
+			                                                ExplorerTree.sortColumnMenu);
+			groupNode.SortDirection = ListSortDirection.Ascending;
+			this.SelectedNode = groupNode;
+			sectionNode.Nodes.Add(groupNode);
+			this.reportModel.ReportSettings.GroupColumnsCollection.Add(new GroupColumn(groupNode.Text, 1,ListSortDirection.Ascending));
+			this.OnPropertyChanged ("Grouping");
 		}
 		
 		#endregion
@@ -154,24 +172,6 @@ namespace ICSharpCode.Reports.Addin
 				}
 			} 
 			return false;
-		}
-		
-		
-		private  void CheckNode (TreeNode node)
-		{
-			SortColumnNode cn = node as SortColumnNode;
-			if (cn != null) {
-				if (node.Parent == nodeSorting) {
-					if (cn.SortDirection ==  ListSortDirection.Ascending) {
-						cn.ImageIndex = ascendingIcon;
-					} else {
-						cn.ImageIndex = descendingIcon;
-					}
-				} else if (node.Parent == this.nodeGrouping) {
-					cn.ImageIndex = clearIcon;
-					cn.SelectedImageIndex = clearIcon;
-				}
-			}
 		}
 		
 		
@@ -443,12 +443,7 @@ namespace ICSharpCode.Reports.Addin
 				this.BuildTree();
 			}
 		}
-		
-		
-		public ColumnCollection SortColumnCollection
-		{
-			get{return this.CollectSortColumns();}
-		}
+	
 		
 		#endregion
 		
