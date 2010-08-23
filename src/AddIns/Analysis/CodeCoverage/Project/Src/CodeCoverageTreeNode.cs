@@ -7,6 +7,8 @@
 
 using System;
 using System.Drawing;
+using System.IO;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.CodeCoverage
@@ -135,6 +137,25 @@ namespace ICSharpCode.CodeCoverage
 		{
 			ExtTreeView treeView = (ExtTreeView)TreeView;
 			treeView.SortNodes(Nodes, false);
-		}				
+		}
+		
+		protected void OpenFile(string fileName)
+		{
+			if (FileExists(fileName)) {
+				FileService.OpenFile(fileName);
+			}
+		}
+		
+		bool FileExists(string fileName)
+		{
+			return !String.IsNullOrEmpty(fileName) && File.Exists(fileName);
+		}
+		
+		protected void JumpToFilePosition(string fileName, int line, int column)
+		{
+			if (FileExists(fileName)) {
+				FileService.JumpToFilePosition(fileName, line, column);
+			}
+		}
 	}
 }

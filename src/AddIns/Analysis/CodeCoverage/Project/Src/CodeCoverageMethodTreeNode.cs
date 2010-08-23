@@ -43,7 +43,7 @@ namespace ICSharpCode.CodeCoverage
 					}
 				}
 				
-				FileService.JumpToFilePosition(firstSequencePoint.Document, line, column);
+				JumpToFilePosition(firstSequencePoint.Document, line, column);
 				
 			} else if (Parent != null) {
 				((ExtTreeNode)Parent).ActivateItem();
