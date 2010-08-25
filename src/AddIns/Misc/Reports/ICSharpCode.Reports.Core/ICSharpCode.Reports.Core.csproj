@@ -86,7 +86,7 @@
     <Compile Include="Project\BaseClasses\SinglePage.cs" />
     <Compile Include="Project\BaseClasses\SectionBounds.cs" />
     <Compile Include="Project\BaseClasses\SortColumn.cs" />
-    <Compile Include="Project\BaseItems\BaseGroupeRow.cs" />
+    <Compile Include="Project\BaseItems\BaseGroupedRow.cs" />
     <Compile Include="Project\BaseItems\BaseGroupItem.cs" />
     <Compile Include="Project\BaseItems\BaseTextItem.cs" />
     <Compile Include="Project\BaseItems\BaseGraphicItem.cs" />
@@ -95,7 +95,7 @@
     <Compile Include="Project\BaseItems\BaseDataItem.cs" />
     <Compile Include="Project\BaseItems\ErrorItem.cs" />
     <Compile Include="Project\BaseItems\Graphics\BaseLineItem.cs" />
-    <Compile Include="Project\BaseItems\IBaseDataItem.cs" />
+    <Compile Include="Project\BaseItems\IDataItem.cs" />
     <Compile Include="Project\BaseItems\IExpression.cs" />
     <Compile Include="Project\DataManager\ChildNavigator.cs" />
     <Compile Include="Project\DataManager\Comparer\BaseComparer.cs" />
@@ -135,7 +135,6 @@
     <Compile Include="Project\Exceptions\UnknownItemException.cs" />
     <Compile Include="Project\Exceptions\WrongColumnException.cs" />
     <Compile Include="Project\Exceptions\WrongSectionException.cs" />
-    <Compile Include="Project\Exporter\Converters\old_GroupedRowConverter.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService\FieldReference.cs" />
     <Compile Include="Project\Exporter\BasePager.cs" />
     <Compile Include="Project\Exporter\Converters\BaseConverter.cs" />
