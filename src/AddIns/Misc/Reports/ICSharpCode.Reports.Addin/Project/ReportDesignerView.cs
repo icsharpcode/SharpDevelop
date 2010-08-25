@@ -8,18 +8,15 @@
  */
 using System;
 using System.Collections;
-using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing.Design;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Addin.Designer;
-using ICSharpCode.Reports.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 

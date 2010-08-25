@@ -73,6 +73,68 @@ namespace ICSharpCode.Reports.Core.Exporter
 				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
 				base.SaveSize(section.Items[0].Size);
 				
+				
+				
+				if (section.Items.HasGroupColumns) {
+					
+					// Convert Grouping Header
+					currentPosition = ConvertGroupHeader(mylist,section,simpleContainer,defaultLeftPos,currentPosition);
+					
+					//Convert children
+					
+					if (base.DataNavigator.HasChildren) {
+						
+						StandardPrinter.AdjustBackColor(simpleContainer,GlobalValues.DefaultBackColor);
+						base.DataNavigator.SwitchGroup();
+						do {
+							currentPosition = ConvertGroupChilds (mylist,section,simpleContainer,defaultLeftPos,currentPosition);
+						}
+						while ( base.DataNavigator.ChildMoveNext());
+					}
+				
+				}
+				else
+				{
+					// No Grouping
+					currentPosition = ConvertStandardRow (mylist,section,simpleContainer,defaultLeftPos,currentPosition);
+				}
+				
+				
+				if (PrintHelper.IsPageFull(new Rectangle(new Point (simpleContainer.Location.X,currentPosition.Y), section.Size),base.SectionBounds)) {
+					base.FirePageFull(mylist);
+					section.SectionOffset = base.SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;
+					currentPosition = new Point(base.SectionBounds.PageHeaderRectangle.X,base.SectionBounds.PageHeaderRectangle.Y);
+					mylist.Clear();
+				}
+				
+				ShouldDrawBorder (section,mylist);
+				
+			}
+			while (base.DataNavigator.MoveNext());
+			
+			SectionBounds.ReportFooterRectangle =  new Rectangle(SectionBounds.ReportFooterRectangle.Left,
+			                                                     section.Location.Y + section.Size.Height,
+			                                                     SectionBounds.ReportFooterRectangle.Width,
+			                                                     SectionBounds.ReportFooterRectangle.Height);
+			return mylist;
+		}
+		
+		
+		
+		private ExporterCollection old_ConvertDataRow (ISimpleContainer simpleContainer)
+		{
+			ExporterCollection mylist = new ExporterCollection();
+			Point currentPosition = new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y);
+			BaseSection section = parent as BaseSection;
+			
+			int defaultLeftPos = parent.Location.X;
+
+			do {
+				
+				PrintHelper.AdjustSectionLocation (section);
+				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
+				base.SaveSize(section.Items[0].Size);
+				
 				// Grouping Header
 				
 				if (section.Items.HasGroupColumns) {
@@ -92,7 +154,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 					StandardPrinter.AdjustBackColor(simpleContainer,GlobalValues.DefaultBackColor);
 					base.DataNavigator.SwitchGroup();
 					do {
-						currentPosition = ConvertGroupChilds (mylist,section,simpleContainer,defaultLeftPos,currentPosition);
+//						currentPosition = ConvertGroupChilds (mylist,section,simpleContainer,defaultLeftPos,currentPosition);
 					}
 					while ( base.DataNavigator.ChildMoveNext());
 				}
@@ -120,36 +182,50 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		
 		
-		
-		private void AfterConverting (BaseSection section)
-		{
-			section.Items[0].Size = base.RestoreSize;
-			section.SectionOffset += section.Size.Height + 3 * GlobalValues.GapBetweenContainer;
-		}
-		
-		
-		
 		private Point ConvertGroupHeader(ExporterCollection mylist,BaseSection section,ISimpleContainer simpleContainer,int leftPos,Point offset)
 		{
+			Point retVal = Point.Empty;
+			ReportItemCollection groupCollection = null;
+			var grh  = new Collection<BaseGroupedRow>(section.Items.OfType<BaseGroupedRow>().ToList());
+			if (grh.Count == 0) {
+				groupCollection = section.Items.ExtractGroupedColumns();
+				base.DataNavigator.Fill(groupCollection);
+				base.FireSectionRendering(section);
+				ExporterCollection list = StandardPrinter.ConvertPlainCollection(groupCollection,offset);
+//				StandardPrinter.EvaluateRow(base.Evaluator,list);
+				mylist.AddRange(list);
+				AfterConverting (section,list);
+				retVal =  new Point (leftPos,offset.Y + groupCollection[0].Size.Height + 20  + (3 *GlobalValues.GapBetweenContainer));
+			} else {
+				retVal = ConvertStandardRow(mylist,section,grh[0],leftPos,offset);
+			}
+			return retVal;
+		}
+		 
+		
+		
+		private Point old_ConvertGroupHeader(ExporterCollection mylist,BaseSection section,ISimpleContainer simpleContainer,int leftPos,Point offset)
+		{ 
 			var groupCollection = section.Items.ExtractGroupedColumns();
 			base.DataNavigator.Fill(groupCollection);
 			base.FireSectionRendering(section);
 			ExporterCollection list = StandardPrinter.ConvertPlainCollection(groupCollection,offset);
-			StandardPrinter.EvaluateRow(base.Evaluator,list);
+//			StandardPrinter.EvaluateRow(base.Evaluator,list);
 			mylist.AddRange(list);
-			AfterConverting (section);
+			AfterConverting (section,list);
+			
 			return new Point (leftPos,offset.Y + groupCollection[0].Size.Height + 20  + (3 *GlobalValues.GapBetweenContainer));
 		}
-		 
+		
 		
 		private Point ConvertGroupChilds(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer, int defaultLeftPos, Point currentPosition)
 		{
 			base.DataNavigator.FillChild(simpleContainer.Items);
-			PrepareContainerForConverting(simpleContainer);
-			base.FireSectionRendering(section);
+			PrepareContainerForConverting(section,simpleContainer);
+//			base.FireSectionRendering(section);
 			Point curPos  = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
-			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
-			AfterConverting (section);
+//			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
+			AfterConverting (section,mylist);
 			return curPos;
 		}
 		
@@ -157,14 +233,22 @@ namespace ICSharpCode.Reports.Core.Exporter
 		private  Point ConvertStandardRow(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer, int defaultLeftPos, Point currentPosition)
 		{
 			base.FillRow(simpleContainer);
-			PrepareContainerForConverting(simpleContainer);
-			base.FireSectionRendering(section);
+			PrepareContainerForConverting(section,simpleContainer);
+//			base.FireSectionRendering(section);
 			Point curPos = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
-			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
-			AfterConverting (section);
+//			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
+			AfterConverting (section,mylist);
 			return curPos;
 		}
 		
+		
+		private void AfterConverting (BaseSection section,ExporterCollection mylist)
+		{
+			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
+			
+			section.Items[0].Size = base.RestoreSize;
+			section.SectionOffset += section.Size.Height + 3 * GlobalValues.GapBetweenContainer;
+		}
 		
 		
 		private static void ShouldDrawBorder (BaseSection section,ExporterCollection list)

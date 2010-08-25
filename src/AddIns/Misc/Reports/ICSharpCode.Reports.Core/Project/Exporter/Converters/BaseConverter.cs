@@ -155,8 +155,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		
 		
-		protected	void PrepareContainerForConverting(ISimpleContainer simpleContainer)
+		protected	void PrepareContainerForConverting(BaseSection section,ISimpleContainer simpleContainer)
 		{
+			if (section != null) {
+				FireSectionRendering(section);
+			}
 			LayoutRow(simpleContainer);
 		}
 		

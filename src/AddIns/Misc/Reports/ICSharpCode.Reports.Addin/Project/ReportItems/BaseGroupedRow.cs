@@ -13,22 +13,22 @@ using System.Drawing;
 
 using ICSharpCode.Reports.Addin.Designer;
 using ICSharpCode.Reports.Core;
+
 namespace ICSharpCode.Reports.Addin
 {
 	/// <summary>
 	/// Description of GroupedRow.
 	/// </summary>
 	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.GroupedRowDesigner))]
-	public class BaseGroupedRowItem:BaseRowItem
+	public class BaseGroupedRow:BaseRowItem
 	{
-		public BaseGroupedRowItem()
+		public BaseGroupedRow()
 		{
 			
-//			http://www.cetix.de/DotNetNews/Thread188109-Schlankes_Grid.aspx
-//			http://msdn.microsoft.com/en-us/library/t9abe4ab(vs.71).aspx
-			TypeDescriptor.AddProvider(new GroupedRowTypeProvider(), typeof(BaseGroupedRowItem));
+			TypeDescriptor.AddProvider(new GroupedRowTypeProvider(), typeof(BaseGroupedRow));
 		}
 	}
+	
 	
 	internal class GroupedRowTypeProvider : TypeDescriptionProvider
 	{

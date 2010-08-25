@@ -79,9 +79,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 				
 				base.FillRow(simpleContainer);
 				
-				base.PrepareContainerForConverting(simpleContainer);
-				
-				base.FireSectionRendering(section);
+//				base.PrepareContainerForConverting(simpleContainer);
+//				
+//				base.FireSectionRendering(section);
 				
 				currentPosition = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
 				

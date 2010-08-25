@@ -88,7 +88,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 							
 							StandardPrinter.EvaluateRow(base.Evaluator,mylist);
 							
-							base.PrepareContainerForConverting(simpleContainer);
+							base.PrepareContainerForConverting(null,simpleContainer);
 							
 							if (PrintHelper.IsPageFull(new Rectangle(new Point (simpleContainer.Location.X,currentPosition.Y),simpleContainer.Size),base.SectionBounds)) {
 								base.FirePageFull(mylist);

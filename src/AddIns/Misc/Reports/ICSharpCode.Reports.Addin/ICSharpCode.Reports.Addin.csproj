@@ -166,7 +166,7 @@
     <Compile Include="Project\ReportItems\ErrorItem.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Project\ReportItems\GroupedRow.cs" />
+    <Compile Include="Project\ReportItems\BaseGroupedRow.cs" />
     <Compile Include="Project\ReportItems\RectangleItemTypeProvider.cs" />
     <Compile Include="Project\ReportManagers\BaseManager.cs" />
     <Compile Include="Project\ReportManagers\StandartPreviewManager.cs" />
