@@ -32,6 +32,7 @@ namespace ICSharpCode.Profiler.Controller
 		public int ProcessorFrequency;
 		public bool DoNotProfileDotnetInternals;
 		public bool CombineRecursiveFunction;
+		public bool TrackEvents;
 		public Allocator32 Allocator;
 	}
 	

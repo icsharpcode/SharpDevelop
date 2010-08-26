@@ -302,6 +302,7 @@ namespace ICSharpCode.Profiler.Controller
 			memHeader32->ProcessorFrequency = GetProcessorFrequency();
 			memHeader32->DoNotProfileDotnetInternals = profilerOptions.DoNotProfileDotNetInternals;
 			memHeader32->CombineRecursiveFunction = profilerOptions.CombineRecursiveFunction;
+			memHeader32->TrackEvents = profilerOptions.TrackEvents;
 			
 			if ((Int32)(fullView.Pointer + memHeader32->HeapOffset) % 8 != 0) {
 				throw new DataMisalignedException("Heap is not aligned properly: " + ((Int32)(fullView.Pointer + memHeader32->HeapOffset)).ToString(CultureInfo.InvariantCulture) + "!");

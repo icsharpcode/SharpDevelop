@@ -28,6 +28,7 @@ struct SharedMemoryHeader
 	int ProcFrequency;
 	bool doNotProfileDotnetInternals;
 	bool combineRecursiveFunction;
+	bool trackEvents;
 	freeListAllocator<FunctionInfoAllocationSize> mallocator;
 };
 

@@ -76,6 +76,7 @@ namespace ICSharpCode.Profiler.AddIn
 			LoggingService.Info("Combine recursive calls: " + options.CombineRecursiveFunction);
 			LoggingService.Info("Enable DC: " + options.EnableDC);
 			LoggingService.Info("Profile .NET internals: " + (!options.DoNotProfileDotNetInternals));
+			LoggingService.Info("Track events: " + options.TrackEvents);
 		}
 		
 		void FinishSession()
