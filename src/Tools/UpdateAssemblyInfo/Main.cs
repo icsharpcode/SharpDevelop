@@ -22,8 +22,8 @@ namespace UpdateAssemblyInfo
 	// Updates the version numbers in the assembly information.
 	class MainClass
 	{
-		const string BaseCommit = "f118057b0f20994c272aba765b54db10d5c1c793";
-		const int BaseCommitRev = 6366;
+		const string BaseCommit = "6eceaaafce5ed9b45d19a1645b1b012675aac996";
+		const int BaseCommitRev = 6450;
 		
 		const string globalAssemblyInfoTemplateFile = "src/Main/GlobalAssemblyInfo.template";
 		static readonly TemplateFile[] templateFiles = {
