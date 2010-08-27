@@ -33,7 +33,7 @@
 		     class = "ICSharpCode.WpfDesign.AddIn.OutlineViewPad"/>
 	</Path>
 	-->
-	<Path name="/Addins/WpfDesign/Designer/ContextMenu">
+	<Path name="/AddIns/WpfDesign/Designer/ContextMenu">
 		<MenuItem label="${res:ICSharpCode.WPFDesigner.ContextMenu.ViewXAML}" id="viewXaml" icon="Icons.16x16.XMLFileIcon" class="ICSharpCode.WpfDesign.AddIn.Commands.ViewXaml" />
 		<MenuItem label="seperator1" type="Separator" />
 		<Condition name="IsCutCopyEnabled" action="Disable">

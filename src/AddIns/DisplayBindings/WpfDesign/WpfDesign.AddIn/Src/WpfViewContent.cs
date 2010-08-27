@@ -95,7 +95,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 					settings.ReportErrors=UpdateTasks;
 					designer.LoadDesigner(r, settings);
 					
-					designer.ContextMenuOpening += (sender, e) => MenuService.ShowContextMenu(e.OriginalSource as UIElement, designer, "/Addins/WpfDesign/Designer/ContextMenu");
+					designer.ContextMenuOpening += (sender, e) => MenuService.ShowContextMenu(e.OriginalSource as UIElement, designer, "/AddIns/WpfDesign/Designer/ContextMenu");
 					
 					if (outline != null && designer.DesignContext != null && designer.DesignContext.RootItem != null) {
 						outline.Root = OutlineNode.Create(designer.DesignContext.RootItem);
