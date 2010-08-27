@@ -177,8 +177,10 @@ namespace UpdateAssemblyInfo
 		static void RetrieveRevisionNumber()
 		{
 			if (revisionNumber == null) {
-				if (Directory.Exists("..\\.git")) {
+				if (Directory.Exists(".git")) {
 					ReadRevisionNumberFromGit();
+				} else {
+					Console.WriteLine("There's no git working copy in " + Path.GetFullPath("."));
 				}
 			}
 			
