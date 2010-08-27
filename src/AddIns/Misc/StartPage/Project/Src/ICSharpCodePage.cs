@@ -10,8 +10,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using System.Xml;
-using System.Xml.Xsl;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
@@ -589,6 +587,7 @@ namespace ICSharpCode.StartPage
 		{
 			try {
 				if (changeLogHtml == null) {
+					/*
 					XslCompiledTransform transform = new XslCompiledTransform();
 					transform.Load(Path.Combine(PropertyService.DataDirectory, "ConversionStyleSheets/ShowChangeLog.xsl"));
 					StringWriter writer = new StringWriter();
@@ -596,6 +595,8 @@ namespace ICSharpCode.StartPage
 					xmlWriter.Formatting = Formatting.None;
 					transform.Transform(Path.Combine(FileUtility.ApplicationRootPath, "doc/ChangeLog.xml"), xmlWriter);
 					changeLogHtml = writer.ToString().Replace("\n", "\n<br>");
+					 */
+					changeLogHtml = File.ReadAllText(Path.Combine(FileUtility.ApplicationRootPath, "doc/ChangeLog.html"));
 				}
 				builder.Append(changeLogHtml);
 			} catch (Exception e) {

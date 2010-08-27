@@ -9,25 +9,50 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
-
-using SharpSvn;
 using System.Threading;
+using System.Xml.Linq;
 
 namespace UpdateAssemblyInfo
 {
 	// Updates the version numbers in the assembly information.
 	class MainClass
 	{
-		const string templateFile       = "Main/GlobalAssemblyInfo.template";
-		const string globalAssemblyInfo = "Main/GlobalAssemblyInfo.cs";
-		const string configTemplateFile = "Main/StartUp/Project/app.template.config";
-		const string configFile         = "Main/StartUp/Project/SharpDevelop.exe.config";
-		const string configFile2        = "Main/ICSharpCode.SharpDevelop.Sda/ICSharpCode.SharpDevelop.Sda.dll.config";
-		const string subversionLibraryDir = "Libraries/SharpSvn";
+		const string BaseCommit = "69a9221f57e6b184010f5bad16aa181ced91a0df";
+		const int BaseCommitRev = 6351;
+		
+		const string globalAssemblyInfoTemplateFile = "Main/GlobalAssemblyInfo.template";
+		static readonly TemplateFile[] templateFiles = {
+			new TemplateFile {
+				Input = globalAssemblyInfoTemplateFile,
+				Output = "Main/GlobalAssemblyInfo.cs"
+			},
+			new TemplateFile {
+				Input = "Main/StartUp/Project/app.template.config",
+				Output = "Main/StartUp/Project/SharpDevelop.exe.config"
+			},
+			new TemplateFile {
+				Input = "Main/StartUp/Project/app.template.config",
+				Output = "Main/ICSharpCode.SharpDevelop.Sda/ICSharpCode.SharpDevelop.Sda.dll.config"
+			},
+			new TemplateFile {
+				Input = "Setup/SharpDevelop.Setup.wixproj.user.template",
+				Output = "Setup/SharpDevelop.Setup.wixproj.user"
+			},
+			new TemplateFile {
+				Input = "../doc/ChangeLog.template.html",
+				Output = "../doc/ChangeLog.html"
+			},
+		};
+		
+		class TemplateFile
+		{
+			public string Input, Output;
+		}
 		
 		public static int Main(string[] args)
 		{
@@ -54,12 +79,17 @@ namespace UpdateAssemblyInfo
 						Console.WriteLine("Working directory must be SharpDevelop\\src!");
 						return 2;
 					}
-					FileCopy(Path.Combine(subversionLibraryDir, "SharpSvn.dll"),
-					         Path.Combine(exeDir, "SharpSvn.dll"));
 					RetrieveRevisionNumber();
-					string versionNumber = GetMajorVersion() + "." + revisionNumber;
-					UpdateStartup();
-					UpdateRedirectionConfig(versionNumber);
+					UpdateFiles();
+					if (args.Contains("--REVISION")) {
+						var doc = new XDocument(new XElement(
+							"versionInfo",
+							new XElement("version", fullVersionNumber),
+							new XElement("revision", revisionNumber),
+							new XElement("commitHash", gitCommitHash)
+						));
+						doc.Save("../REVISION");
+					}
 					return 0;
 				}
 			} catch (Exception ex) {
@@ -68,58 +98,29 @@ namespace UpdateAssemblyInfo
 			}
 		}
 		
-		static void FileCopy(string source, string target)
+		static void UpdateFiles()
 		{
-			if (File.Exists(target)) {
-				// don't copy file if it is up-to-date: repeatedly copying a 3 MB file slows down the build
-				if (File.GetLastWriteTimeUtc(source) == File.GetLastWriteTimeUtc(target))
-					return;
-			}
-			File.Copy(source, target, true);
-		}
-		
-		static void UpdateStartup()
-		{
-			string content;
-			using (StreamReader r = new StreamReader(templateFile)) {
-				content = r.ReadToEnd();
-			}
-			content = content.Replace("-INSERTREVISION-", revisionNumber);
-			if (File.Exists(globalAssemblyInfo)) {
-				using (StreamReader r = new StreamReader(globalAssemblyInfo)) {
-					if (r.ReadToEnd() == content) {
-						// nothing changed, do not overwrite file to prevent recompilation
-						// every time.
-						return;
+			foreach (var file in templateFiles) {
+				string content;
+				using (StreamReader r = new StreamReader(file.Input)) {
+					content = r.ReadToEnd();
+				}
+				content = content.Replace("$INSERTVERSION$", fullVersionNumber);
+				content = content.Replace("$INSERTREVISION$", revisionNumber);
+				content = content.Replace("$INSERTCOMMITHASH$", gitCommitHash);
+				content = content.Replace("$INSERTDATE$", DateTime.Now.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture));
+				if (File.Exists(file.Output)) {
+					using (StreamReader r = new StreamReader(file.Output)) {
+						if (r.ReadToEnd() == content) {
+							// nothing changed, do not overwrite file to prevent recompilation
+							// every time.
+							continue;
+						}
 					}
 				}
-			}
-			using (StreamWriter w = new StreamWriter(globalAssemblyInfo, false, Encoding.UTF8)) {
-				w.Write(content);
-			}
-		}
-		
-		static void UpdateRedirectionConfig(string fullVersionNumber)
-		{
-			string content;
-			using (StreamReader r = new StreamReader(configTemplateFile)) {
-				content = r.ReadToEnd();
-			}
-			content = content.Replace("$INSERTVERSION$", fullVersionNumber);
-			if (File.Exists(configFile) && File.Exists(configFile2)) {
-				using (StreamReader r = new StreamReader(configFile)) {
-					if (r.ReadToEnd() == content) {
-						// nothing changed, do not overwrite file to prevent recompilation
-						// every time.
-						return;
-					}
+				using (StreamWriter w = new StreamWriter(file.Output, false, Encoding.UTF8)) {
+					w.Write(content);
 				}
-			}
-			using (StreamWriter w = new StreamWriter(configFile, false, Encoding.UTF8)) {
-				w.Write(content);
-			}
-			using (StreamWriter w = new StreamWriter(configFile2, false, Encoding.UTF8)) {
-				w.Write(content);
 			}
 		}
 		
@@ -127,7 +128,7 @@ namespace UpdateAssemblyInfo
 		{
 			string version = "?";
 			// Get main version from startup
-			using (StreamReader r = new StreamReader(templateFile)) {
+			using (StreamReader r = new StreamReader(globalAssemblyInfoTemplateFile)) {
 				string line;
 				while ((line = r.ReadLine()) != null) {
 					string search = "string Major = \"";
@@ -168,53 +169,61 @@ namespace UpdateAssemblyInfo
 		}
 		
 		#region Retrieve Revision Number
-		static string revisionNumber = "0";
-		static string ReadRevisionFromFile()
+		static string revisionNumber;
+		static string fullVersionNumber;
+		static string gitCommitHash;
+		
+		static void RetrieveRevisionNumber()
+		{
+			if (revisionNumber == null) {
+				if (Directory.Exists("..\\..\\.git")) {
+					ReadRevisionNumberFromGit();
+				}
+			}
+			
+			if (revisionNumber == null) {
+				ReadRevisionFromFile();
+			}
+			fullVersionNumber = GetMajorVersion() + "." + revisionNumber;
+		}
+		
+		static void ReadRevisionNumberFromGit()
+		{
+			ProcessStartInfo info = new ProcessStartInfo("cmd", "/c git rev-list " + BaseCommit + "..HEAD");
+			info.RedirectStandardOutput = true;
+			info.UseShellExecute = false;
+			using (Process p = Process.Start(info)) {
+				string line;
+				int revNum = BaseCommitRev;
+				while ((line = p.StandardOutput.ReadLine()) != null) {
+					if (gitCommitHash == null) {
+						// first entry is HEAD
+						gitCommitHash = line;
+					}
+					revNum++;
+				}
+				revisionNumber = revNum.ToString();
+				p.WaitForExit();
+				if (p.ExitCode != 0)
+					throw new Exception("git-rev-list exit code was " + p.ExitCode);
+			}
+		}
+		
+		static void ReadRevisionFromFile()
 		{
 			try {
-				using (StreamReader reader = new StreamReader(@"..\REVISION")) {
-					return reader.ReadLine();
-				}
+				XDocument doc = XDocument.Load("../REVISION");
+				revisionNumber = (string)doc.Root.Element("revision");
+				gitCommitHash = (string)doc.Root.Element("commitHash");
 			} catch (Exception e) {
 				Console.WriteLine(e.Message);
 				Console.WriteLine();
 				Console.WriteLine("The revision number of the SharpDevelop version being compiled could not be retrieved.");
 				Console.WriteLine();
 				Console.WriteLine("Build continues with revision number '0'...");
-				try {
-					Process[] p = Process.GetProcessesByName("msbuild");
-					if (p != null && p.Length > 0) {
-						System.Threading.Thread.Sleep(3000);
-					}
-				} catch {}
-				return "0";
-			}
-		}
-		static void RetrieveRevisionNumber()
-		{
-			
-			string oldWorkingDir = Environment.CurrentDirectory;
-			try {
-				// Change working dir so that the subversion libraries can be found
-				Environment.CurrentDirectory = Path.Combine(Environment.CurrentDirectory, subversionLibraryDir);
 				
-				using (SvnClient client = new SvnClient()) {
-					client.Info(
-						oldWorkingDir,
-						(sender, info) => {
-							revisionNumber = info.Revision.ToString(CultureInfo.InvariantCulture);
-						});
-				}
-			} catch (Exception e) {
-				Console.WriteLine("Reading revision number with SharpSvn failed: " + e.ToString());
-			} finally {
-				Environment.CurrentDirectory = oldWorkingDir;
-			}
-			if (revisionNumber == null || revisionNumber.Length == 0 || revisionNumber == "0") {
-				revisionNumber = ReadRevisionFromFile();
-			}
-			if (revisionNumber == null || revisionNumber.Length == 0 || revisionNumber == "0") {
-				throw new ApplicationException("Error reading revision number");
+				revisionNumber = "0";
+				gitCommitHash = null;
 			}
 		}
 		#endregion
