@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Windows.Controls;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.StartPage
 {
@@ -27,8 +28,8 @@ namespace ICSharpCode.StartPage
 			List<BoxEntry> entries = items.ConvertAll(control => new BoxEntry { Control = control } );
 			startPageItems.ItemsSource = entries;
 			
-			var aca = (AssemblyCopyrightAttribute)typeof(StartPageControl).Assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false)[0];
-			copyrightYearRange.Text = aca.Copyright.Substring(0, 9);
+			var aca = (AssemblyCopyrightAttribute)typeof(CommonAboutDialog).Assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false)[0];
+			copyrightText.Text = aca.Copyright;
 		}
 		
 		sealed class BoxEntry
