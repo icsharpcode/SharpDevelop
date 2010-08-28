@@ -54,6 +54,7 @@
 	
 	<Target Name="PrepareRelease">
 		<!--<MSBuild Projects="@(PrepareReleaseProject)" Targets="Build"/>-->
+		<MSBuild Projects="UpdateAssemblyInfo\UpdateAssemblyInfo.csproj" Targets="Build" Properties="Configuration=Debug"/>
 		<Exec Command="UpdateAssemblyInfo.exe --REVISION" WorkingDirectory = "UpdateAssemblyInfo\bin\Debug" Timeout = "60000" IgnoreExitCode = "false"/>
 	</Target>
 	
