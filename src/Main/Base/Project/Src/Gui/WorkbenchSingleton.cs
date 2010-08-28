@@ -57,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public static IStatusBarService StatusBar { 
+		public static IStatusBarService StatusBar {
 			get {
 				return workbench != null ? workbench.StatusBar : null;
 			}
@@ -77,10 +77,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Project.CustomToolsService.Initialize();
 			Project.BuildModifiedProjectsOnlyService.Initialize();
 			
-			var messageService = (WinFormsMessageService)Core.Services.ServiceManager.Instance.MessageService;
-			messageService.DialogOwner = workbench.MainWin32Window;
-			Debug.Assert(messageService.DialogOwner != null);
-			messageService.DialogSynchronizeInvoke = workbench.SynchronizingObject;
+			var messageService = Core.Services.ServiceManager.Instance.MessageService as IDialogMessageService;
+			if (messageService != null) {
+				messageService.DialogOwner = workbench.MainWin32Window;
+				Debug.Assert(messageService.DialogOwner != null);
+				messageService.DialogSynchronizeInvoke = workbench.SynchronizingObject;
+			}
 			
 			workbench.Initialize();
 			workbench.SetMemento(PropertyService.Get(workbenchMemento, new Properties()));
