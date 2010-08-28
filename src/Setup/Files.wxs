@@ -1408,17 +1408,6 @@
 										<File Source="..\..\AddIns\Misc\StartPage\StartPage.addin" Id="StartPage.addin" Name="StartPage.addin" />
 									</Component>
 								</Directory>
-								<Directory Id="SubversionAddInFolder" Name="SubversionAddIn">
-									<Component Guid="C9B1D523-5674-4398-9073-20F57B45DD46" Id="SubversionAddInDll" DiskId="1">
-										<File Source="..\..\AddIns\Misc\SubversionAddin\SubversionAddIn.dll" Id="SubversionAddIn.dll" Name="SubversionAddIn.dll" Assembly=".net" AssemblyApplication="SubversionAddIn.dll" AssemblyManifest="SubversionAddIn.dll" KeyPath="yes" />
-										<File Source="..\..\AddIns\Misc\SubversionAddin\ICSharpCode.Svn.addin" Id="ICSharpCode.Svn.addin" Name="ICSharpCode.Svn.addin" />
-										<File Source="..\..\AddIns\Misc\SubversionAddin\SharpSvn.dll" Name="SharpSvn.dll" Id="SharpSvn.dll" />
-										<File Source="..\..\AddIns\Misc\SubversionAddin\SharpSvn.UI.dll" Name="SharpSvn.UI.dll" Id="SharpSvn.UI.dll" />
-										<File Source="..\..\AddIns\Misc\SubversionAddin\SharpPlink-Win32.svnExe" Name="SharpPlink-Win32.svnExe" Id="SharpPlink_Win32.svnExe" />
-										<File Source="..\..\AddIns\Misc\SubversionAddin\SharpSvn-DB44-20-Win32.dll" Name="SharpSvn-DB44-20-Win32.dll" Id="SharpSvn_DB44_20_Win32.dll" />
-										<File Source="..\..\AddIns\Misc\SubversionAddin\SharpSvn-SASL21-23-Win32.dll" Name="SharpSvn-SASL21-23-Win32.dll" Id="SharpSvn_SASL21_23_Win32.dll" />
-									</Component>
-								</Directory>
 								<Directory Id="SearchAndReplace" Name="SearchAndReplace">
 									<Component Guid="A76D4EB6-0EBB-49D7-9528-2FA87C983703" Id="SearchAndReplaceFiles" DiskId="1">
 										<File Source="..\..\AddIns\Misc\SearchAndReplace\SearchAndReplace.addin" Id="SearchAndReplace.addin" Name="SearchAndReplace.addin" />
@@ -1496,6 +1485,19 @@
 									</Component>
 									<Component Guid="A105D4E4-2AF4-43BE-AA71-15F14DA4163B" Id="ITextSharpDll" DiskId="1">
 										<File Source="..\..\AddIns\Misc\SharpDevelopReports\itextsharp.dll" Name="itextsharp.dll" Id="itextsharp.dll" KeyPath="yes" />
+									</Component>
+								</Directory>
+							</Directory>
+							<Directory Id="VersionControlAddInsFolder" Name="VersionControl">
+								<Directory Id="SubversionAddInFolder" Name="SubversionAddIn">
+									<Component Guid="C9B1D523-5674-4398-9073-20F57B45DD46" Id="SubversionAddInDll" DiskId="1">
+										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SubversionAddIn.dll" Id="SubversionAddIn.dll" Name="SubversionAddIn.dll" Assembly=".net" AssemblyApplication="SubversionAddIn.dll" AssemblyManifest="SubversionAddIn.dll" KeyPath="yes" />
+										<File Source="..\..\AddIns\VersionControl\SubversionAddin\ICSharpCode.Svn.addin" Id="ICSharpCode.Svn.addin" Name="ICSharpCode.Svn.addin" />
+										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpSvn.dll" Name="SharpSvn.dll" Id="SharpSvn.dll" />
+										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpSvn.UI.dll" Name="SharpSvn.UI.dll" Id="SharpSvn.UI.dll" />
+										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpPlink-Win32.svnExe" Name="SharpPlink-Win32.svnExe" Id="SharpPlink_Win32.svnExe" />
+										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpSvn-DB44-20-Win32.dll" Name="SharpSvn-DB44-20-Win32.dll" Id="SharpSvn_DB44_20_Win32.dll" />
+										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpSvn-SASL21-23-Win32.dll" Name="SharpSvn-SASL21-23-Win32.dll" Id="SharpSvn_SASL21_23_Win32.dll" />
 									</Component>
 								</Directory>
 							</Directory>
