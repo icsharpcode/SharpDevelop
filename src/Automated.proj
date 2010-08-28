@@ -132,7 +132,7 @@
 	
 	<Target Name="zipsource">
 		<CreateItem Include="$(ProjectDir)\**"
-		            Exclude="$(ProjectDir)\**\.svn\**;$(ProjectDir)\**\obj\**">
+		            Exclude="$(ProjectDir)\**\.svn\**;$(ProjectDir)\**\obj\**;$(ProjectDir)\.git\**;$(ProjectDir)\.git*;$(ProjectDir)\build\**">
 			<Output TaskParameter="Include" ItemName="FileToZip"/>
 		</CreateItem>
 		<Message Importance="high" Text="Creating ZIP file $(ArtefactPrefix)$(BuildNumber)_Source.zip"/>
