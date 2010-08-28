@@ -1,0 +1,19 @@
+# ignore all obj and bin folders (even in subdirectories)
+obj/
+bin/
+/REVISION
+/build/
+/AddIns/
+/doc/ChangeLog.html
+/data/resources/StringResources.*.resources
+/src/AddIns/Analysis/Profiler/Controller/Data/UnmanagedCallTreeNode64.cs
+/src/AddIns/Analysis/Profiler/Controller/Profiler64.cs
+/src/AddIns/Analysis/Profiler/Controller/structs64.cs
+/src/AddIns/Analysis/Profiler/Hook/Callback.x64.obj
+/src/AddIns/Analysis/Profiler/Hook/x64
+/src/AddIns/Analysis/Profiler/Hook/Win32
+/src/Tools/UpdateAssemblyInfo/bin
+/src/Setup/SharpDevelop.Setup.wixproj.user
+/src/Main/ICSharpCode.SharpDevelop.Sda/ICSharpCode.SharpDevelop.Sda.dll.config
+/src/Main/StartUp/Project/SharpDevelop.exe.config
+/src/Main/GlobalAssemblyInfo.cs
