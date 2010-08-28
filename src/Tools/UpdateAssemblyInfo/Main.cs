@@ -190,6 +190,9 @@ namespace UpdateAssemblyInfo
 		static void ReadRevisionNumberFromGit()
 		{
 			ProcessStartInfo info = new ProcessStartInfo("cmd", "/c git rev-list " + BaseCommit + "..HEAD");
+			string path = Environment.GetEnvironmentVariable("PATH");
+			path += ";" + Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "git\\bin");
+			info.EnvironmentVariables["PATH"] =  path;
 			info.RedirectStandardOutput = true;
 			info.UseShellExecute = false;
 			using (Process p = Process.Start(info)) {
