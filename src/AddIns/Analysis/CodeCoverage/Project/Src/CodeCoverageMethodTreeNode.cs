@@ -15,15 +15,17 @@ namespace ICSharpCode.CodeCoverage
 	{
 		CodeCoverageMethod method;
 		
-		public CodeCoverageMethodTreeNode(CodeCoverageMethod method) : base(method.Name, CodeCoverageImageListIndex.Method, method.VisitedSequencePointsCount, method.NotVisitedSequencePointsCount)
+		public CodeCoverageMethodTreeNode(CodeCoverageMethod method)
+			: base(method.Name, 
+				CodeCoverageImageListIndex.Method,
+				method.GetVisitedCodeLength(),
+				method.GetUnvisitedCodeLength())
 		{
 			this.method = method;
 		}
 		
 		public CodeCoverageMethod Method {
-			get {
-				return method;
-			}
+			get { return method; }
 		}
 		
 		public override void ActivateItem()
@@ -41,7 +43,7 @@ namespace ICSharpCode.CodeCoverage
 					}
 				}
 				
-				FileService.JumpToFilePosition(firstSequencePoint.Document, line, column);
+				JumpToFilePosition(firstSequencePoint.Document, line, column);
 				
 			} else if (Parent != null) {
 				((ExtTreeNode)Parent).ActivateItem();
@@ -64,7 +66,7 @@ namespace ICSharpCode.CodeCoverage
 					string property = Name.Substring(4);
 					return String.Concat(property, ' ', getterSetterPart);
 				}
-				return base.CompareString; 
+				return base.CompareString;
 			}
 		}
 		

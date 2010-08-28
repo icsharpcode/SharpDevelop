@@ -15,7 +15,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\BackendBindings\RubyBinding\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\AddIns\BackendBindings\RubyBinding\</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
@@ -23,7 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\BackendBindings\RubyBinding\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\AddIns\BackendBindings\RubyBinding\</OutputPath>
     <DebugSymbols>false</DebugSymbols>
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>
@@ -39,6 +39,9 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="Chiron">
+      <HintPath>..\..\IronRuby\bin\Chiron.exe</HintPath>
+    </Reference>
     <Reference Include="ir">
       <HintPath>..\..\IronRuby\bin\ir.exe</HintPath>
     </Reference>
@@ -132,6 +135,7 @@
     <Compile Include="Src\RubyTestResult.cs" />
     <Compile Include="Src\RubyTestRunner.cs" />
     <Compile Include="Src\RubyTestRunnerApplication.cs" />
+    <Compile Include="Src\RubyTestRunnerContext.cs" />
     <Compile Include="Src\RubyTestRunnerResponseFile.cs" />
     <Compile Include="Src\RubyTextEditorViewContent.cs" />
     <Compile Include="Src\RunDebugRubyCommand.cs" />
@@ -139,6 +143,10 @@
     <Compile Include="Src\RubyConsoleTextEditor.cs" />
     <EmbeddedResource Include="Resources\Ruby.xshd" />
     <EmbeddedResource Include="Resources\RubyOptionsPanel.xfrm" />
+    <None Include="..\..\IronRuby\bin\Chiron.exe.config">
+      <Link>Chiron.exe.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="..\..\IronRuby\bin\ir.exe.config">
       <Link>ir.exe.config</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -169,6 +177,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Templates\LibraryProject.xpt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\SilverlightApplication.xpt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WPFApplication.xpt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WPFWindow.xft">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="TestRunner\sdselectedtestsfile.rb">

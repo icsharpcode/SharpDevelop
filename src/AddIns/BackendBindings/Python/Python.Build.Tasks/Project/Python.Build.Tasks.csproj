@@ -15,7 +15,7 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\BackendBindings\PythonBinding\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\AddIns\BackendBindings\PythonBinding\</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
@@ -23,7 +23,7 @@
     <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\BackendBindings\PythonBinding\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\AddIns\BackendBindings\PythonBinding\</OutputPath>
     <DebugSymbols>false</DebugSymbols>
     <DebugType>None</DebugType>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>

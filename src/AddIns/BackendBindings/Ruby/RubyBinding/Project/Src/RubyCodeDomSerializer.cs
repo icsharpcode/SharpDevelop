@@ -251,7 +251,9 @@ namespace ICSharpCode.RubyBinding
 		
 		void AppendTypeReference(CodeTypeReference typeRef)
 		{
-			string typeName = typeRef.BaseType.Replace(".", "::");
+			string baseTypeName = typeRef.BaseType;
+			string typeName = baseTypeName.Replace(".", "::");
+			typeName = typeName.Replace("+", "::");
 			codeBuilder.Append(typeName);
 		}
 		

@@ -7,7 +7,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{1F261725-6318-4434-A1B1-6C70CE4CD324}</ProjectGuid>
-    <OutputPath>..\..\..\..\AddIns\AddIns\Misc\UnitTesting\</OutputPath>
+    <OutputPath>..\..\..\..\AddIns\Analysis\UnitTesting\</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <RegisterForComInterop>False</RegisterForComInterop>
@@ -57,12 +57,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Src\IFileSystem.cs" />
+    <Compile Include="Src\IUnitTestMessageService.cs" />
     <Compile Include="Src\MultipleProjectBuildable.cs" />
+    <Compile Include="Src\TestProcessRunnerBaseContext.cs" />
     <Compile Include="Src\UnitTestAddInTree.cs" />
     <Compile Include="Src\UnitTestBuildOptions.cs" />
     <Compile Include="Src\UnitTestBuildProjectFactory.cs" />
     <Compile Include="Src\UnitTestDebuggerService.cs" />
     <Compile Include="Src\UnitTestFileService.cs" />
+    <Compile Include="Src\UnitTestMessageService.cs" />
     <Compile Include="Src\UnitTestProcessRunner.cs" />
     <Compile Include="Src\UnitTestSaveAllFilesCommand.cs" />
     <Compile Include="Src\UnitTestTaskService.cs" />

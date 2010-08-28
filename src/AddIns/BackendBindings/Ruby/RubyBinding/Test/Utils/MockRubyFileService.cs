@@ -54,5 +54,10 @@ namespace RubyBinding.Tests.Utils
 			get { return fileNameDeleted; }
 			set { fileNameDeleted = value; }
 		}
+		
+		public bool FileExists(string fileName)
+		{
+			return true;
+		}
 	}
 }

@@ -20,6 +20,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		public ContextActionViewModel()
 		{
+			this.IsVisible = true;
 		}
 		
 		public ContextActionViewModel(IContextAction action)
@@ -34,6 +35,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public string Comment { get; set; }
 		
 		public ImageSource Image { get; set; }
+		
+		/// <summary>
+		/// Is this action enabled to be offered automatically?
+		/// </summary>
+		public bool IsVisible { get; set; }
 		
 		public ObservableCollection<ContextActionViewModel> ChildActions { get; set; }
 		
@@ -50,5 +56,37 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 		
 		public ICommand ActionCommand { get; private set; }
+	}
+	
+	/// <summary>
+	/// Just wraps <see cref="IContextAction"></see> inside a WPF Command to be used in XAML.
+	/// </summary>
+	public class ContextActionCommand : ICommand
+	{
+		IContextAction action;
+		
+		public ContextActionCommand(IContextAction action)
+		{
+			if (action == null)
+				throw new ArgumentNullException("action");
+			this.action = action;
+		}
+		
+		public event EventHandler CanExecuteChanged
+		{
+			// not supported - Context actions can always be executed
+			add { }
+			remove { }
+		}
+		
+		public void Execute(object parameter)
+		{
+			this.action.Execute();
+		}
+		
+		public bool CanExecute(object parameter)
+		{
+			return true;
+		}
 	}
 }

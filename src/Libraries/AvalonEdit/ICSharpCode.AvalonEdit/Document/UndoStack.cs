@@ -371,7 +371,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			if (redostack.Count != 0) {
 				redostack.Clear();
 				NotifyPropertyChanged("CanRedo");
-				// if the "orginal file" marker is on the redo stack: remove it
+				// if the "original file" marker is on the redo stack: remove it
 				if (elementsOnUndoUntilOriginalFile < 0)
 					elementsOnUndoUntilOriginalFile = int.MinValue;
 			}

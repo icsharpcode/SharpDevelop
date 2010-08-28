@@ -20,7 +20,7 @@ namespace ICSharpCode.RubyBinding
 		
 		public RubyTestDebugger()
 			: this(new UnitTestDebuggerService(),
-				ServiceManager.Instance.MessageService,
+				new UnitTestMessageService(),
 				new TestResultsMonitor(),
 				new RubyAddInOptions(),
 				new RubyFileService())
@@ -28,7 +28,7 @@ namespace ICSharpCode.RubyBinding
 		}
 		
 		public RubyTestDebugger(IUnitTestDebuggerService debuggerService,
-			IMessageService messageService,
+			IUnitTestMessageService messageService,
 			ITestResultsMonitor testResultsMonitor,
 			RubyAddInOptions options,
 			IRubyFileService fileService)

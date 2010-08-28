@@ -62,9 +62,6 @@
     <Compile Include="..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <None Include="SharpDevelop.Build.VisualBasic.targets">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="SharpDevelop.CheckMSBuild35Features.targets">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -75,9 +72,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SharpDevelop.Build.CSharp.targets">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="SharpDevelop.CodeAnalysis.targets">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

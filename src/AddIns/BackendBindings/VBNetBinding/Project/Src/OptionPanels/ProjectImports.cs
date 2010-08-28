@@ -52,7 +52,7 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 		private void AddNamespaces(IProjectContent projectContent)
 		{
 			foreach(string projectNamespace in projectContent.NamespaceNames) {
-				if (projectNamespace != "") {
+				if (!string.IsNullOrEmpty(projectNamespace)) {
 					if (!Get<ComboBox>("namespaces").Items.Contains(projectNamespace)) {
 						Get<ComboBox>("namespaces").Items.Add(projectNamespace);
 					}
@@ -62,7 +62,7 @@ namespace ICSharpCode.VBNetBinding.OptionPanels
 		
 		private void namespacesComboBox_TextCanged(object sender, EventArgs e)
 		{
-			Get<Button>("addImport").Enabled = Get<ComboBox>("namespaces").Text != "" &&
+			Get<Button>("addImport").Enabled = !string.IsNullOrEmpty(Get<ComboBox>("namespaces").Text) &&
 				! Get<ListBox>("imports").Items.Contains(Get<ComboBox>("namespaces").Text);
 		}
 		

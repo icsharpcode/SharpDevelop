@@ -88,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			
 			// convert NRefactory CU in DOM CU
-			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(project);
+			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(project, sourceLanguage);
 			visitor.VisitCompilationUnit(compilationUnit, null);
 			visitor.Cu.FileName = sourceLanguage == SupportedLanguage.CSharp ? "a.cs" : "a.vb";
 			

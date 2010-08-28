@@ -9,11 +9,11 @@ using System;
 using System.IO;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Dom.VBNet;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
+using ICSharpCode.SharpDevelop.Dom.VBNet;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.VBNetBinding.Parser
+namespace ICSharpCode.VBNetBinding
 {
 	public class TParser : IParser
 	{
@@ -50,7 +50,7 @@ namespace ICSharpCode.VBNetBinding.Parser
 			return project.Language == "VBNet";
 		}
 		
-		void RetrieveRegions(ICompilationUnit cu, ICSharpCode.NRefactory.Parser.SpecialTracker tracker)
+		static void RetrieveRegions(ICompilationUnit cu, ICSharpCode.NRefactory.Parser.SpecialTracker tracker)
 		{
 			for (int i = 0; i < tracker.CurrentSpecials.Count; ++i)
 			{
@@ -65,12 +65,12 @@ namespace ICSharpCode.VBNetBinding.Parser
 							ICSharpCode.NRefactory.PreprocessingDirective nextDirective = tracker.CurrentSpecials[j] as ICSharpCode.NRefactory.PreprocessingDirective;
 							if (nextDirective != null)
 							{
-								switch (nextDirective.Cmd.ToLowerInvariant())
+								switch (nextDirective.Cmd.ToUpperInvariant())
 								{
-									case "#region":
+									case "#REGION":
 										++deep;
 										break;
-									case "#end":
+									case "#END":
 										if (nextDirective.Arg.Equals("region", StringComparison.OrdinalIgnoreCase)) {
 											--deep;
 											if (deep == 0) {
@@ -101,7 +101,7 @@ namespace ICSharpCode.VBNetBinding.Parser
 			p.ParseMethodBodies = false;
 			p.Parse();
 			
-			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent);
+			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent, ICSharpCode.NRefactory.SupportedLanguage.VBNet);
 			if (projectContent.Project != null) {
 				visitor.VBRootNamespace = ((IProject)projectContent.Project).RootNamespace;
 			}
@@ -115,7 +115,7 @@ namespace ICSharpCode.VBNetBinding.Parser
 			return visitor.Cu;
 		}
 		
-		void AddCommentTags(ICompilationUnit cu, System.Collections.Generic.List<ICSharpCode.NRefactory.Parser.TagComment> tagComments)
+		static void AddCommentTags(ICompilationUnit cu, System.Collections.Generic.List<ICSharpCode.NRefactory.Parser.TagComment> tagComments)
 		{
 			foreach (ICSharpCode.NRefactory.Parser.TagComment tagComment in tagComments)
 			{

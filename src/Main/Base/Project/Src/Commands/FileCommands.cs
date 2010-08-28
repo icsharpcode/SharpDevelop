@@ -168,10 +168,10 @@ namespace ICSharpCode.SharpDevelop.Commands
 				fdiag.OverwritePrompt = true;
 				fdiag.AddExtension    = true;
 				
-				string[] fileFilters  = (string[])(AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(null)).ToArray(typeof(string));
-				fdiag.Filter          = String.Join("|", fileFilters);
-				for (int i = 0; i < fileFilters.Length; ++i) {
-					if (fileFilters[i].IndexOf(Path.GetExtension(file.FileName)) >= 0) {
+				var fileFilters = ProjectService.GetFileFilters();
+				fdiag.Filter = String.Join("|", fileFilters);
+				for (int i = 0; i < fileFilters.Count; ++i) {
+					if (fileFilters[i].ContainsExtension(Path.GetExtension(file.FileName))) {
 						fdiag.FilterIndex = i + 1;
 						break;
 					}
@@ -220,9 +220,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 			using (OpenFileDialog fdiag  = new OpenFileDialog()) {
 				fdiag.AddExtension    = true;
 				
-				string[] fileFilters  = (string[])(AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(this)).ToArray(typeof(string));
-				fdiag.Filter          = String.Join("|", fileFilters);
-				bool foundFilter      = false;
+				var fileFilters  = ProjectService.GetFileFilters();
+				fdiag.Filter     = String.Join("|", fileFilters);
+				bool foundFilter = false;
 				
 				// search filter like in the current open file
 				if (!foundFilter) {
@@ -230,8 +230,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 					if (content != null) {
 						string extension = Path.GetExtension(content.PrimaryFileName);
 						if (string.IsNullOrEmpty(extension) == false) {
-							for (int i = 0; i < fileFilters.Length; ++i) {
-								if (fileFilters[i].IndexOf(extension) >= 0) {
+							for (int i = 0; i < fileFilters.Count; ++i) {
+								if (fileFilters[i].ContainsExtension(extension)) {
 									fdiag.FilterIndex = i + 1;
 									foundFilter = true;
 									break;
@@ -242,7 +242,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				}
 				
 				if (!foundFilter) {
-					fdiag.FilterIndex = fileFilters.Length;
+					fdiag.FilterIndex = fileFilters.Count;
 				}
 				
 				fdiag.Multiselect     = true;

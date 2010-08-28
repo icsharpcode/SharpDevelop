@@ -21,26 +21,33 @@ namespace UnitTesting.Tests.Tree
 		SelectedTests selectedTests;
 		NUnitTestRunner testRunner;
 		
-		[SetUp]
-		public void Init()
+		void CreateNUnitTestRunner()
 		{
 			selectedTests = SelectedTestsHelper.CreateSelectedTestMethod();
 			context = new MockNUnitTestRunnerContext();
 			FileUtility.ApplicationRootPath = @"C:\SharpDevelop";
 			
 			testRunner = context.CreateNUnitTestRunner();
+		}
+		
+		void StartNUnitTestRunner()
+		{
 			testRunner.Start(selectedTests);
 		}
 		
 		[Test]
 		public void StartMethodCallsTestResultsMonitorStartMethod()
 		{
+			CreateNUnitTestRunner();
+			StartNUnitTestRunner();
 			Assert.IsTrue(context.MockTestResultsMonitor.IsStartMethodCalled);
 		}
 		
 		[Test]
 		public void StopMethodCallsTestResultsMonitorStopMethod()
 		{
+			CreateNUnitTestRunner();
+			StartNUnitTestRunner();
 			testRunner.Stop();
 			Assert.IsTrue(context.MockTestResultsMonitor.IsStopMethodCalled);
 		}
@@ -48,6 +55,8 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void DisposeMethodCallsTestResultsMonitorDisposeMethod()
 		{
+			CreateNUnitTestRunner();
+			StartNUnitTestRunner();
 			testRunner.Dispose();
 			Assert.IsTrue(context.MockTestResultsMonitor.IsDisposeMethodCalled);
 		}
@@ -55,12 +64,16 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void NUnitTestRunnerIsIDisposable()
 		{
+			CreateNUnitTestRunner();
+			StartNUnitTestRunner();
 			Assert.IsNotNull(testRunner as IDisposable);
 		}
 		
 		[Test]
 		public void StopMethodCallsTestResultsReadMethodToEnsureAllTestsAreRead()
 		{
+			CreateNUnitTestRunner();
+			StartNUnitTestRunner();
 			testRunner.Stop();
 			Assert.IsTrue(context.MockTestResultsMonitor.IsReadMethodCalled);
 		}
@@ -68,6 +81,8 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void StopMethodCallsProcessRunnerKillMethod()
 		{
+			CreateNUnitTestRunner();
+			StartNUnitTestRunner();
 			testRunner.Stop();
 			Assert.IsTrue(context.MockProcessRunner.IsKillMethodCalled);
 		}
@@ -75,6 +90,9 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void FiringTestResultsMonitorTestFinishedEventFiresNUnitTestRunnerTestFinishedEvent()
 		{
+			CreateNUnitTestRunner();
+			StartNUnitTestRunner();
+			
 			TestResult testResultToFire = new TestResult("abc");
 			TestResult resultFromEventHandler = FireTestResult(testResultToFire);
 			Assert.IsNotNull(resultFromEventHandler);
@@ -94,6 +112,9 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void FiringTestResultsMonitorTestFinishedCreatesNUnitTestResultWithCorrectNameFromNUnitTestRunnerTestFinishedEvent()
 		{
+			CreateNUnitTestRunner();
+			StartNUnitTestRunner();
+					
 			TestResult testResultToFire = new TestResult("abc");
 			NUnitTestResult resultFromEventHandler = FireTestResult(testResultToFire) as NUnitTestResult;
 			Assert.AreEqual("abc", resultFromEventHandler.Name);
@@ -102,6 +123,9 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void FiringTestResultsMonitorTestFinishedEventAfterDisposingTestRunnerDoesNotGenerateTestFinishedEvent()
 		{
+			CreateNUnitTestRunner();
+			StartNUnitTestRunner();
+
 			bool fired = false;
 			testRunner.TestFinished += delegate(object source, TestFinishedEventArgs e) {
 				fired = true;
@@ -117,12 +141,16 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void NUnitTestRunnerImplementsITestRunner()
 		{
+			CreateNUnitTestRunner();
 			Assert.IsNotNull(testRunner as ITestRunner);
 		}
 		
 		[Test]
 		public void FiringProcessExitEventCausesTestRunnerAllTestsFinishedEventToFire()
 		{
+			CreateNUnitTestRunner();
+			StartNUnitTestRunner();
+			
 			bool fired = false;
 			testRunner.AllTestsFinished += delegate (object source, EventArgs e) {
 				fired = true;
@@ -135,6 +163,9 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void NUnitConsoleExeProcessIsStarted()
 		{
+			CreateNUnitTestRunner();
+			StartNUnitTestRunner();
+			
 			string expectedCommand = @"C:\SharpDevelop\bin\Tools\NUnit\nunit-console-x86.exe";
 			Assert.AreEqual(expectedCommand, context.MockProcessRunner.CommandPassedToStartMethod);
 		}
@@ -142,6 +173,9 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void NUnitConsoleExeProcessIsStartedWithArgumentsToTestSingleMethod()
 		{
+			CreateNUnitTestRunner();
+			StartNUnitTestRunner();
+			
 			string expectedArgs = 
 				"\"c:\\projects\\MyTests\\bin\\Debug\\MyTests.dll\" " +
 				"/results=\"c:\\temp\\tmp66.tmp\" " +
@@ -152,6 +186,9 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void NUnitConsoleWorkingDirectoryIsUsedByProcessRunner()
 		{
+			CreateNUnitTestRunner();
+			StartNUnitTestRunner();
+			
 			string expectedDirectory = @"C:\SharpDevelop\bin\Tools\NUnit";
 			Assert.AreEqual(expectedDirectory, context.MockProcessRunner.WorkingDirectory);
 		}
@@ -159,12 +196,18 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void ProcessRunnerLogStandardOutputAndErrorIsFalse()
 		{
+			CreateNUnitTestRunner();
+			StartNUnitTestRunner();
+			
 			Assert.IsFalse(context.MockProcessRunner.LogStandardOutputAndError);
 		}
 		
 		[Test]
 		public void FiringProcessRunnerOutputLineReceivedEventFiresTestRunnerMessageReceivedEvent()
 		{
+			CreateNUnitTestRunner();
+			StartNUnitTestRunner();
+			
 			string message = null;
 			testRunner.MessageReceived += delegate (object o, MessageReceivedEventArgs e) {
 				message = e.Message;
@@ -179,6 +222,9 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void FiringProcessRunnerErrorLineReceivedEventFiresTestRunnerMessageReceivedEvent()
 		{
+			CreateNUnitTestRunner();
+			StartNUnitTestRunner();
+			
 			string message = null;
 			testRunner.MessageReceived += delegate (object o, MessageReceivedEventArgs e) {
 				message = e.Message;
@@ -193,6 +239,9 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void FiringProcessRunnerOutputLineReceivedEventAfterDisposingTestRunnerDoesNotMessageReceivedEvent()
 		{
+			CreateNUnitTestRunner();
+			StartNUnitTestRunner();
+			
 			string message = null;
 			testRunner.MessageReceived += delegate (object o, MessageReceivedEventArgs e) {
 				message = e.Message;
@@ -207,6 +256,9 @@ namespace UnitTesting.Tests.Tree
 		[Test]
 		public void FiringProcessRunnerErrorLineReceivedEventAfterDisposingTestRunnerDoesNotMessageReceivedEvent()
 		{
+			CreateNUnitTestRunner();
+			StartNUnitTestRunner();
+			
 			string message = null;
 			testRunner.MessageReceived += delegate (object o, MessageReceivedEventArgs e) {
 				message = e.Message;
@@ -216,6 +268,42 @@ namespace UnitTesting.Tests.Tree
 			context.MockProcessRunner.FireErrorLineReceivedEvent(new LineReceivedEventArgs("Test"));
 			
 			Assert.IsNull(message);
+		}
+		
+		[Test]
+		public void NUnitConsoleExeFileCheckedThatItExists()
+		{
+			CreateNUnitTestRunner();
+			StartNUnitTestRunner();
+			
+			string fileName = context.MockFileService.FileNamePassedToFileExists;
+			string expectedFileName = @"C:\SharpDevelop\bin\Tools\NUnit\nunit-console-x86.exe";
+			
+			Assert.AreEqual(expectedFileName, fileName);
+		}
+		
+		[Test]
+		public void NUnitConsoleExeNotStartedIfFileDoesNotExist()
+		{
+			CreateNUnitTestRunner();
+			context.MockFileService.FileExistsReturnValue = false;
+			StartNUnitTestRunner();
+			
+			Assert.IsNull(context.MockProcessRunner.CommandPassedToStartMethod);
+		}
+		
+		[Test]
+		public void MessageShowedToUserIfNUnitConsoleExeDoesNotExist()
+		{
+			CreateNUnitTestRunner();
+			context.MockFileService.FileExistsReturnValue = false;
+			StartNUnitTestRunner();
+			
+			string expectedFormat = "${res:ICSharpCode.UnitTesting.TestRunnerNotFoundMessageFormat}";
+			string expectedItem = @"C:\SharpDevelop\bin\Tools\NUnit\nunit-console-x86.exe";
+			
+			Assert.AreEqual(expectedFormat, context.MockMessageService.FormatPassedToShowFormattedErrorMessage);
+			Assert.AreEqual(expectedItem, context.MockMessageService.ItemPassedToShowFormattedErrorMessage);
 		}
 	}
 }

@@ -15,13 +15,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		public readonly static TargetFramework Net30 = new TargetFramework("v3.0", ".NET Framework 3.0") { BasedOn = Net20, MinimumMSBuildVersion = new Version(3, 5) };
 		public readonly static TargetFramework Net35 = new TargetFramework("v3.5", ".NET Framework 3.5") { BasedOn = Net30, MinimumMSBuildVersion = new Version(3, 5) };
 		public readonly static TargetFramework Net40 = new TargetFramework("v4.0", ".NET Framework 4.0") { BasedOn = Net35, MinimumMSBuildVersion = new Version(4, 0) };
-		public readonly static TargetFramework CF = new TargetFramework("CF", null);
-		public readonly static TargetFramework CF20 = new TargetFramework("CF 2.0", "Compact Framework 2.0") { BasedOn = CF, MinimumMSBuildVersion = new Version(2, 0) };
-		public readonly static TargetFramework CF35 = new TargetFramework("CF 3.5", "Compact Framework 3.5") { BasedOn = CF20, MinimumMSBuildVersion = new Version(3, 5) };
 		
 		public readonly static TargetFramework[] TargetFrameworks = {
-			Net40, Net35, Net30, Net20,
-			CF, CF35, CF20
+			Net40, Net35, Net30, Net20
 		};
 		
 		public const string DefaultTargetFrameworkName = "v4.0";

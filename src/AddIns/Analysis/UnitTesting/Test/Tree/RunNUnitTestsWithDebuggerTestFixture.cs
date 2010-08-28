@@ -184,7 +184,7 @@ namespace UnitTesting.Tests.Tree
 			StartTestDebugger();
 			string expectedQuestion = "${res:XML.MainMenu.RunMenu.Compile.StopDebuggingQuestion}";
 			
-			Assert.AreEqual(expectedQuestion, messageService.Question);
+			Assert.AreEqual(expectedQuestion, messageService.QuestionPassedToAskQuestion);
 		}
 		
 		void SetDebuggerIsLoadedToTrueAndDebuggingToTrue()
@@ -200,7 +200,7 @@ namespace UnitTesting.Tests.Tree
 			debuggerService.MockDebugger.IsDebugging = false;
 			StartTestDebugger();
 			
-			Assert.IsNull(messageService.Question);
+			Assert.IsNull(messageService.QuestionPassedToAskQuestion);
 		}
 		
 		[Test]
@@ -210,7 +210,7 @@ namespace UnitTesting.Tests.Tree
 			debuggerService.MockDebugger.IsDebugging = true;
 			StartTestDebugger();
 			
-			Assert.IsNull(messageService.Question);
+			Assert.IsNull(messageService.QuestionPassedToAskQuestion);
 		}
 		
 		[Test]
@@ -220,7 +220,7 @@ namespace UnitTesting.Tests.Tree
 			StartTestDebugger();
 			string expectedCaption = "${res:XML.MainMenu.RunMenu.Compile.StopDebuggingTitle}";
 			
-			Assert.AreEqual(expectedCaption, messageService.Caption);
+			Assert.AreEqual(expectedCaption, messageService.CaptionPassedToAskQuestion);
 		}
 		
 		[Test]

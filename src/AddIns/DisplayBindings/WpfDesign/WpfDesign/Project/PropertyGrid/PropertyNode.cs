@@ -368,7 +368,7 @@ namespace ICSharpCode.WpfDesign.PropertyGrid
 
 			if (Parent == null || Parent.IsExpanded) {
 				if (ValueItem != null) {
-					var list = TypeHelper.GetAvailableProperties(ValueItem.ComponentType)
+					var list = TypeHelper.GetAvailableProperties(ValueItem.Component)
 						.OrderBy(d => d.Name)
 						.Select(d => new PropertyNode(new[] { ValueItem.Properties[d.Name] }, this));
 

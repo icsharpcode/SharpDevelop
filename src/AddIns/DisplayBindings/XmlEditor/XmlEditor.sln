@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.0.0.5293
+# SharpDevelop 4.0.0.6374
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlEditor", "Project\XmlEditor.csproj", "{DCA2703D-250A-463E-A68A-07ED105AE6BD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlEditor.Tests", "Test\XmlEditor.Tests.csproj", "{FC0FE702-A87D-4D70-A9B6-1ECCD611125F}"
@@ -17,8 +17,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Core.WinForms", "..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj", "{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.SharpDevelop.Dom", "..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj", "{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.TextEditor", "..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj", "{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactory", "..\..\..\Libraries\NRefactory\Project\NRefactory.csproj", "{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}"
 EndProject
@@ -62,10 +60,6 @@ Global
 		{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}.Release|Any CPU.Build.0 = Release|Any CPU

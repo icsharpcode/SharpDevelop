@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Dom.Tests
 			ICSharpCode.NRefactory.IParser p = ICSharpCode.NRefactory.ParserFactory.CreateParser(ICSharpCode.NRefactory.SupportedLanguage.CSharp, new StringReader(fileContent));
 			p.ParseMethodBodies = false;
 			p.Parse();
-			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
+			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc, ICSharpCode.NRefactory.SupportedLanguage.CSharp);
 			visitor.VisitCompilationUnit(p.CompilationUnit, null);
 			Assert.AreEqual(0, p.Errors.Count, String.Format("Parse error preparing compilation unit: {0}", p.Errors.ErrorOutput));
 			visitor.Cu.ErrorsDuringCompile = p.Errors.Count > 0;

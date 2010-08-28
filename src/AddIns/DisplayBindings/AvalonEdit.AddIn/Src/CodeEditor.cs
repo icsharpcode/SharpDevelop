@@ -285,13 +285,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					this.Encoding = reader.CurrentEncoding;
 				}
 			}
-			primaryTextEditor.IsModified = false;
+			// raise event which allows removing existing NewLineConsistencyCheck overlays
+			if (LoadedFileContent != null)
+				LoadedFileContent(this, EventArgs.Empty);
 			NewLineConsistencyCheck.StartConsistencyCheck(this);
 		}
 		
+		public event EventHandler LoadedFileContent;
+		
 		public void Save(Stream stream)
 		{
-			primaryTextEditor.Save(stream);
+			// don't use TextEditor.Save here because that would touch the Modified flag,
+			// but OpenedFile is already managing IsDirty
+			using (StreamWriter writer = new StreamWriter(stream, primaryTextEditor.Encoding ?? Encoding.UTF8)) {
+				writer.Write(primaryTextEditor.Text);
+			}
 		}
 		
 		void OnSplitView(object sender, ExecutedRoutedEventArgs e)

@@ -281,6 +281,12 @@ namespace Debugger.MetaData
 			return membersByToken[(int)token];
 		}
 		
+		/// <summary> Return member with the given token</summary>
+		public bool TryGetMember(uint token, out MemberInfo memberInfo)
+		{
+			return membersByToken.TryGetValue((int)token, out memberInfo);
+		}
+		
 		public T GetMember<T>(string name, BindingFlags bindingFlags, Predicate<T> filter) where T:MemberInfo
 		{
 			T[] res = GetMembers<T>(name, bindingFlags, filter);
@@ -867,10 +873,7 @@ namespace Debugger.MetaData
 			if (type.DeclaringType != null)
 				declaringType = CreateFromType(module, type.DeclaringType);
 			
-			DebugType result = CreateFromName(module, type.FullName, declaringType);
-			if (result == null)
-				throw new DebuggerException("Type not found: " + type);
-			return result;
+			return CreateFromName(module, type.FullName, declaringType);
 		}
 		
 		public static DebugType CreateFromType(AppDomain appDomain, System.Type type, params DebugType[] genericArgumentsOverride)
@@ -897,19 +900,24 @@ namespace Debugger.MetaData
 				declaringType = null;
 			}
 			
-			DebugType result = CreateFromName(appDomain, name, declaringType, genericArgumentsOverride);
-			if (result == null)
-				throw new DebuggerException("Type not found: " + type);
-			return result;
+			return CreateFromName(appDomain, name, declaringType, genericArgumentsOverride);
 		}
 		
 		public static DebugType CreateFromName(AppDomain appDomain, string name, DebugType declaringType, params DebugType[] genericArguments)
 		{
+			DebugType type = CreateFromNameOrNull(appDomain, name, declaringType, genericArguments);
+			if (type == null)
+				throw new DebuggerException("Type not found: " + name + (declaringType != null ? " (declaring type = " + declaringType.FullName + ")" : string.Empty));
+			return type;
+		}
+		
+		public static DebugType CreateFromNameOrNull(AppDomain appDomain, string name, DebugType declaringType, params DebugType[] genericArguments)
+		{
 			if (declaringType != null)
-				return CreateFromName(declaringType.DebugModule, name, declaringType, genericArguments);
+				return CreateFromNameOrNull(declaringType.DebugModule, name, declaringType, genericArguments);
 			foreach(Module module in appDomain.Process.Modules) {
 				if (module.AppDomain != appDomain) continue;
-				DebugType result = CreateFromName(module, name, declaringType, genericArguments);
+				DebugType result = CreateFromNameOrNull(module, name, declaringType, genericArguments);
 				if (result != null)
 					return result;
 			}
@@ -917,6 +925,14 @@ namespace Debugger.MetaData
 		}
 		
 		public static DebugType CreateFromName(Module module, string name, DebugType declaringType, params DebugType[] genericArguments)
+		{
+			DebugType type = CreateFromNameOrNull(module, name, declaringType, genericArguments);
+			if (type == null)
+				throw new DebuggerException("Type not found: " + name + (declaringType != null ? " (declaring type = " + declaringType.FullName + ")" : string.Empty));
+			return type;
+		}
+		
+		public static DebugType CreateFromNameOrNull(Module module, string name, DebugType declaringType, params DebugType[] genericArguments)
 		{
 			if (declaringType != null && declaringType.DebugModule != module)
 				throw new DebuggerException("Declaring type must be in the same module");
@@ -1260,7 +1276,11 @@ namespace Debugger.MetaData
 				foreach(InterfaceImplProps implProps in module.MetaData.EnumInterfaceImplProps((uint)this.MetadataToken)) {
 					CorTokenType tkType = (CorTokenType)(implProps.Interface & 0xFF000000);
 					if (tkType == CorTokenType.TypeDef || tkType == CorTokenType.TypeRef) {
-						this.interfaces.Add(DebugType.CreateFromTypeDefOrRef(module, false, implProps.Interface, null));
+						// TODO: Fix properly
+						try {
+							this.interfaces.Add(DebugType.CreateFromTypeDefOrRef(module, false, implProps.Interface, null));
+						} catch (DebuggerException) {
+						}
 					} else if (tkType == CorTokenType.TypeSpec) {
 						this.interfaces.Add(DebugType.CreateFromTypeSpec(module, implProps.Interface, this));
 					} else {

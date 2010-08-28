@@ -96,6 +96,8 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Editor\CodeCompletion\ICompletionItemHandler.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\IInsightWindowHandler.cs" />
+    <Compile Include="Src\Editor\CodeCompletion\NRefactoryInsightWindowHandler.cs" />
     <Compile Include="Src\Editor\CodeCompletion\NRefactoryCompletionItemList.cs" />
     <Compile Include="Src\Editor\Commands\ClassBookmarkSubmenuBuilder.cs" />
     <Compile Include="Src\Editor\Commands\ClassMemberMenuBuilder.cs" />
@@ -194,6 +196,7 @@
       <DependentUpon>AbstractAttachToProcessForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ExtractInterfaceDialog.cs" />
+    <None Include="ICSharpCode.SharpDevelop.addin" />
     <None Include="Src\Gui\Dialogs\ExtractInterfaceDialog.cs">
       <Link>Src\Services\RefactoringService\ExtractInterfaceDialog.cs</Link>
     </None>
@@ -328,14 +331,23 @@
     <Compile Include="Src\Services\ParserService\ParserService.cs" />
     <Compile Include="Src\Services\ProjectService\CompileModifiedProjectsOnly.cs" />
     <Compile Include="Src\Services\ProjectService\SolutionConfigurationEventHandler.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\BoolToVisibilityConverter.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextAction.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsBulbControl.xaml.cs">
+      <DependentUpon>ContextActionsBulbControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsBulbPopup.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsHeaderedControl.xaml.cs">
       <DependentUpon>ContextActionsHeaderedControl.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsBulbViewModel.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsPopupBase.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsProvider.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsService.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\EditorContext.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\IContextAction.cs" />
-    <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionCommand.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsControl.xaml.cs">
       <DependentUpon>ContextActionsControl.xaml</DependentUpon>
     </Compile>
@@ -343,6 +355,7 @@
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionsViewModel.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\ContextActionViewModel.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActionsHelper.cs" />
+    <Compile Include="Src\Services\RefactoringService\ContextActions\IContextActionCache.cs" />
     <Compile Include="Src\Services\RefactoringService\ContextActions\IContextActionsProvider.cs" />
     <Compile Include="Src\Services\RefactoringService\ExtractInterfaceOptions.cs" />
     <Compile Include="Src\Services\RefactoringService\GoToClassAction.cs" />
@@ -355,6 +368,8 @@
     <Compile Include="Src\Services\ProjectBinding\IProjectBinding.cs" />
     <Compile Include="Src\Internal\Templates\Project\ProjectCreateInformation.cs" />
     <Compile Include="Src\Services\ProjectBinding\ProjectBindingService.cs" />
+    <Resource Include="Src\Services\RefactoringService\ContextActions\bulb.png" />
+    <Resource Include="Src\Services\RefactoringService\ContextActions\pencil.png" />
     <Resource Include="Src\Services\Debugger\Tooltips\magnifier.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -790,6 +805,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsBulbControl.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsControl.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsHeaderedControl.xaml" />
     <ProjectReference Include="..\..\..\Libraries\AvalonDock\AvalonDock\AvalonDock.csproj">
@@ -817,9 +833,6 @@
     <Folder Include="Src\Editor\Commands" />
     <Folder Include="Src\Editor\Search" />
     <Folder Include="Src\Gui\Pads\TaskList" />
-    <Content Include="..\..\..\..\AddIns\ICSharpCode.SharpDevelop.addin">
-      <Link>ICSharpCode.SharpDevelop.addin</Link>
-    </Content>
     <Folder Include="Src\Services\RefactoringService\ContextActions" />
     <Folder Include="Src\Util" />
     <Folder Include="Src\Gui\Pads\ClassBrowser\NodeBuilder" />
@@ -861,4 +874,5 @@
     <Page Include="Src\Services\Debugger\Tooltips\VisualizerPicker.xaml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="PostBuildEvent.proj" />
 </Project>

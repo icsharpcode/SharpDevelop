@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Xml;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.CodeCoverage
@@ -18,10 +19,12 @@ namespace ICSharpCode.CodeCoverage
 		string className = String.Empty;
 		string fullClassName = String.Empty;
 		string classNamespace = String.Empty;
+		int methodBodySize;
 		MethodAttributes methodAttributes;
 		List<CodeCoverageSequencePoint> sequencePoints = new List<CodeCoverageSequencePoint>();
 		
-		public CodeCoverageMethod(string name, string className) : this(name, className, MethodAttributes.Public)
+		public CodeCoverageMethod(string name, string className) 
+			: this(name, className, MethodAttributes.Public)
 		{
 		}
 		
@@ -40,21 +43,33 @@ namespace ICSharpCode.CodeCoverage
 			}
 		}
 		
-		/// <summary>
-		/// Determines whether this method has been excluded.
-		/// </summary>
-		/// <remarks>
-		/// A method is considered excluded if all of its
-		/// sequence points have been marked as excluded.
-		/// </remarks>
-		public bool IsExcluded {
-			get {
-				foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
-					if (!sequencePoint.IsExcluded) {
-						return false;
-					}
-				}
-				return true;
+		public CodeCoverageMethod(string className, XmlReader reader)
+			: this(GetMethodName(reader), className, GetMethodAttributes(reader))
+		{
+			ReadMethodBodySize(reader);
+		}
+		
+		static string GetMethodName(XmlReader reader)
+		{
+			return reader.GetAttribute("name");
+		}
+		
+		static MethodAttributes GetMethodAttributes(XmlReader reader)
+		{
+			string flags = reader.GetAttribute("flags");
+			if (flags != null) {
+				try {
+					return (MethodAttributes)Enum.Parse(typeof(MethodAttributes), flags);
+				} catch (ArgumentException) { }
+			}
+			return MethodAttributes.Public;
+		}
+		
+		void ReadMethodBodySize(XmlReader reader)
+		{
+			string bodySizeAsString = reader.GetAttribute("bodysize");
+			if (bodySizeAsString != null) {
+				methodBodySize = Int32.Parse(bodySizeAsString);
 			}
 		}
 		
@@ -63,8 +78,18 @@ namespace ICSharpCode.CodeCoverage
 		/// </summary>
 		public bool IsProperty {
 			get { 
-				return (methodAttributes & MethodAttributes.SpecialName) == MethodAttributes.SpecialName && IsPropertyMethodName(name);
+				return IsSpecialMethodName() && IsPropertyMethodName();
 			}
+		}
+		
+		bool IsSpecialMethodName()
+		{
+			return (methodAttributes & MethodAttributes.SpecialName) == MethodAttributes.SpecialName;
+		}
+		
+		 bool IsPropertyMethodName()
+		{
+			return name.StartsWith("get_") || name.StartsWith("set_");
 		}
 		
 		public string Name {
@@ -125,6 +150,32 @@ namespace ICSharpCode.CodeCoverage
 				}
 				return count;
 			}
+		}
+		
+		public int GetVisitedCodeLength()
+		{
+			int total = 0;
+			foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
+				if (sequencePoint.VisitCount > 0) {
+					total += sequencePoint.Length;
+				}
+			}
+			return total;
+		}
+		
+		public int GetUnvisitedCodeLength()
+		{
+			if (sequencePoints.Count == 0) {
+				return methodBodySize;
+			}
+			
+			int total = 0;
+			foreach (CodeCoverageSequencePoint sequencePoint in sequencePoints) {
+				if (sequencePoint.VisitCount == 0) {
+					total += sequencePoint.Length;
+				}
+			}
+			return total;
 		}
 		
 		public List<CodeCoverageSequencePoint> GetSequencePoints(string fileName)
@@ -218,11 +269,6 @@ namespace ICSharpCode.CodeCoverage
 				}
 			}
 			return names;
-		}
-		
-		static bool IsPropertyMethodName(string name)
-		{
-			return name.StartsWith("get_") || name.StartsWith("set_");
 		}
 	}
 }

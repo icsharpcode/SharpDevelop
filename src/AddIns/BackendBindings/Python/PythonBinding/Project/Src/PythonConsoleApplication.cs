@@ -13,7 +13,7 @@ namespace ICSharpCode.PythonBinding
 {
 	public class PythonConsoleApplication
 	{
-		string fileName = String.Empty;
+		PythonAddInOptions options;
 		StringBuilder arguments;
 		bool debug;
 		string pythonScriptFileName = String.Empty;
@@ -21,17 +21,12 @@ namespace ICSharpCode.PythonBinding
 		string workingDirectory = String.Empty;
 		
 		public PythonConsoleApplication(PythonAddInOptions options)
-			: this(options.PythonFileName)
 		{
-		}
-		
-		public PythonConsoleApplication(string fileName)
-		{
-			this.fileName = fileName;
+			this.options = options;
 		}
 		
 		public string FileName {
-			get { return fileName; }
+			get { return options.PythonFileName; }
 		}
 		
 		public bool Debug {
@@ -57,7 +52,7 @@ namespace ICSharpCode.PythonBinding
 		public ProcessStartInfo GetProcessStartInfo()
 		{
 			ProcessStartInfo processStartInfo = new ProcessStartInfo();
-			processStartInfo.FileName = fileName;
+			processStartInfo.FileName = FileName;
 			processStartInfo.Arguments = GetArguments();
 			processStartInfo.WorkingDirectory = workingDirectory;
 			return processStartInfo;

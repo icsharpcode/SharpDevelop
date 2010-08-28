@@ -36,6 +36,7 @@ namespace ICSharpCode.Profiler.Controller
 		bool enableDCAtStart;
 		bool dotNotProfileDotNetInternals;
 		bool combineRecursiveFunction;
+		bool trackEvents;
 		int sharedMemorySize;
 		
 		PerformanceCounterDescriptor[] counters;
@@ -83,16 +84,25 @@ namespace ICSharpCode.Profiler.Controller
 		}
 		
 		/// <summary>
+		/// Gets whether events should be tracked or not.
+		/// </summary>
+		public bool TrackEvents {
+			get { return trackEvents; }
+		}
+		
+		/// <summary>
 		/// Creates new ProfilerOptions using the selected settings.
 		/// </summary>
 		public ProfilerOptions(bool enableDC, int sharedMemorySize, bool profileDotNetInternals,
-		                       bool combineRecursiveFunction, bool enableDCAtStart, IEnumerable<PerformanceCounterDescriptor> counters)
+		                       bool combineRecursiveFunction, bool enableDCAtStart, bool trackEvents,
+		                       IEnumerable<PerformanceCounterDescriptor> counters)
 		{
 			this.enableDC = enableDC;
 			this.sharedMemorySize = sharedMemorySize;
 			this.dotNotProfileDotNetInternals = profileDotNetInternals;
 			this.combineRecursiveFunction = combineRecursiveFunction;
 			this.enableDCAtStart = enableDCAtStart;
+			this.trackEvents = trackEvents;
 			this.counters = counters.ToArray();
 		}
 		
@@ -100,7 +110,7 @@ namespace ICSharpCode.Profiler.Controller
 		/// Creates default ProfilerOptions.
 		/// </summary>
 		public ProfilerOptions()
-			: this(true, DefaultSharedMemorySize, false, false, true, DefaultCounters)
+			: this(true, DefaultSharedMemorySize, false, false, true, true, DefaultCounters)
 		{
 		}
 	}

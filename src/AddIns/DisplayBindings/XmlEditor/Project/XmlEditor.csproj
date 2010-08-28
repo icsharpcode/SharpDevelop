@@ -12,7 +12,7 @@
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\XmlEditor\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\DisplayBindings\XmlEditor\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -87,11 +87,13 @@
     <Compile Include="Src\DefaultXmlSchemaFileAssociations.cs" />
     <Compile Include="Src\EncodedStringWriter.cs" />
     <Compile Include="Src\FileSystem.cs" />
+    <Compile Include="Src\FoldingManagerAdapter.cs" />
     <Compile Include="Src\FormatXmlCommand.cs" />
     <Compile Include="Src\GoToSchemaDefinitionCommand.cs" />
     <Compile Include="Src\GoToSchemaDefinitionEditAction.cs" />
     <Compile Include="Src\IAddXmlNodeDialog.cs" />
     <Compile Include="Src\IFileSystem.cs" />
+    <Compile Include="Src\IFoldingManager.cs" />
     <Compile Include="Src\InsertCommentAfterCommand.cs" />
     <Compile Include="Src\InsertCommentBeforeCommand.cs" />
     <Compile Include="Src\InsertElementAfterCommand.cs" />
@@ -100,6 +102,7 @@
     <Compile Include="Src\InsertTextNodeBeforeCommand.cs" />
     <Compile Include="Src\IParserService.cs" />
     <Compile Include="Src\ISelectXmlSchemaWindow.cs" />
+    <Compile Include="Src\IXmlFoldParser.cs" />
     <Compile Include="Src\IXmlSchemaCompletionDataFactory.cs" />
     <Compile Include="Src\IXmlSchemasPanel.cs" />
     <Compile Include="Src\IXmlTreeView.cs" />
@@ -137,6 +140,7 @@
     <Compile Include="Src\XmlElementPathsByNamespace.cs" />
     <Compile Include="Src\XmlElementTreeNode.cs" />
     <Compile Include="Src\XmlEncoder.cs" />
+    <Compile Include="Src\XmlFoldingManager.cs" />
     <Compile Include="Src\XmlFoldParser.cs" />
     <Compile Include="Src\XmlElementFold.cs" />
     <Compile Include="Src\XmlFormattingStrategy.cs">

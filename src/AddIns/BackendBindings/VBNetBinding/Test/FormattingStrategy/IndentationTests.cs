@@ -13,7 +13,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.VBNetBinding.Tests
 {
-	[TestFixture]
+	[TestFixture, Ignore]
 	public class IndentationTests
 	{
 		[Test]
@@ -25,6 +25,22 @@ Sub Test2()
 End Interface";
 			
 			string expectedCode = @"Interface t
+	Sub Test()
+	Sub Test2()
+End Interface";
+			
+			RunFormatTest(code, expectedCode);
+		}
+		
+		[Test]
+		public void SimpleInterfaceWithModifierTest()
+		{
+			string code = @"Public Interface t
+Sub Test()
+Sub Test2()
+End Interface";
+			
+			string expectedCode = @"Public Interface t
 	Sub Test()
 	Sub Test2()
 End Interface";
@@ -135,7 +151,6 @@ End Class";
 		}
 		
 		[Test]
-		[Ignore("Test started failing after merge to SD 4.0")]
 		public void ElseIfMultiLineContinuationTest()
 		{
 			string expected = @"Public Class Test
@@ -314,7 +329,9 @@ End Class";
 			AvalonEditTextEditorAdapter editor = new AvalonEditTextEditorAdapter(new TextEditor());
 			editor.Document.Text = code;
 			VBNetFormattingStrategy formattingStrategy = new VBNetFormattingStrategy();
-			formattingStrategy.IndentLines(editor, 0, editor.Document.TotalNumberOfLines);
+			formattingStrategy.IndentLines(editor, 1, editor.Document.TotalNumberOfLines);
+			
+			Console.WriteLine(editor.Document.Text);
 			
 			Assert.AreEqual(expectedCode, editor.Document.Text);
 		}

@@ -7,7 +7,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{3EAA45A9-735C-4AC7-A799-947B93EA449D}</ProjectGuid>
-    <OutputPath>..\..\..\..\AddIns\AddIns\Misc\SourceAnalysis</OutputPath>
+    <OutputPath>..\..\..\..\AddIns\Analysis\SourceAnalysis</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <RegisterForComInterop>False</RegisterForComInterop>

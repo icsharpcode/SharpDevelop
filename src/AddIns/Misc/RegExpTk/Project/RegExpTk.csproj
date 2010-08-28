@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -24,18 +25,19 @@
     <Optimize>False</Optimize>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\RegExpTk\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\Misc\RegExpTk\</OutputPath>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <DefineConstants>DEBUG</DefineConstants>
     <DebugType>Full</DebugType>
+    <DefineConstants>DEBUG</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugSymbols>False</DebugSymbols>
+    <DebugSymbols>false</DebugSymbols>
     <Optimize>True</Optimize>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\RegExpTk\</OutputPath>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <OutputPath>..\..\..\..\..\AddIns\Misc\RegExpTk\</OutputPath>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugType>None</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

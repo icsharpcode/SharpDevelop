@@ -351,6 +351,10 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			              "Next",
 			              "for (long l = 10; l >= 0; l += -1) {\n" +
 			              "}");
+			TestStatement("For i As Integer = 0 To 10 Step +2\n" +
+			              "Next",
+			              "for (int i = 0; i <= 10; i += +2) {\n" +
+			              "}");
 		}
 		
 		[Test]
@@ -777,6 +781,14 @@ static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.Stat
 		public void CastToInteger()
 		{
 			TestStatement("Dim x As Integer = CInt(obj)", "int x = Convert.ToInt32(obj);");
+		}
+		
+		[Test]
+		public void ConditionalExprPrecedence()
+		{
+			TestStatement("Dim x As Integer = If(If(a,b,c),d,e)", "int x = (a ? b : c) ? d : e;");
+			TestStatement("Dim x As Integer = If(a,If(b,c,d),e)", "int x = a ? b ? c : d : e;");
+			TestStatement("Dim x As Integer = If(a,b,If(c,d,e))", "int x = a ? b : c ? d : e;");
 		}
 		
 		[Test]

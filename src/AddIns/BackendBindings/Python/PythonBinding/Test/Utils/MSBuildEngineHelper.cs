@@ -40,7 +40,7 @@ namespace PythonBinding.Tests.Utils
 			// to the shadow copy folder.
 			string codeBase = typeof(PythonParser).Assembly.CodeBase.Replace("file:///", String.Empty);
 			string folder = Path.GetDirectoryName(codeBase);
-			folder = Path.GetFullPath(Path.Combine(folder, @"..\..\AddIns\AddIns\BackendBindings\PythonBinding\"));
+			folder = Path.GetFullPath(Path.Combine(folder, @"..\..\AddIns\BackendBindings\PythonBinding\"));
 			MSBuildEngine.MSBuildProperties["PythonBinPath"] = folder;
 		}		
 	}

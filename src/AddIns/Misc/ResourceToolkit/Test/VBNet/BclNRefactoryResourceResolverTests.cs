@@ -16,7 +16,6 @@ using NUnit.Framework;
 namespace ResourceToolkit.Tests.VBNet
 {
 	[TestFixture]
-	[Ignore("VB ExpressionFinder is broken")]
 	public sealed class BclNRefactoryResourceResolverTests : AbstractVBNetResourceResolverTestFixture
 	{
 		// ********************************************************************************************************************************
@@ -34,6 +33,7 @@ End Class
 ";
 		
 		[Test]
+		[Ignore]
 		public void LocalSRMDirectInitFullNameGetString()
 		{
 			ResourceResolveResult rrr = Resolve(CodeLocalSRMDirectInitFullName, 3, 18, null);
@@ -62,6 +62,7 @@ End Class
 ";
 		
 		[Test]
+		[Ignore]
 		public void LocalSRMDeferredInitUsingGetString()
 		{
 			ResourceResolveResult rrr = Resolve(CodeLocalSRMDeferredInitUsing, 6, 18, null);
@@ -69,6 +70,7 @@ End Class
 		}
 		
 		[Test]
+		[Ignore]
 		public void LocalSRMDeferredInitUsingGetStringCompletion()
 		{
 			ResourceResolveResult rrr = Resolve(CodeLocalSRMDeferredInitUsing, 7, 16, '(');
@@ -95,6 +97,7 @@ End Class
 ";
 		
 		[Test]
+		[Ignore]
 		public void StaticPropertySRMFieldDirectInitUsingClassGetString()
 		{
 			ResourceResolveResult rrr = Resolve(CodeStaticPropertySRMFieldDirectInitUsing, 11, 25, null);
@@ -102,6 +105,7 @@ End Class
 		}
 		
 		[Test]
+		[Ignore]
 		public void StaticPropertySRMFieldDirectInitUsingGetString()
 		{
 			ResourceResolveResult rrr = Resolve(CodeStaticPropertySRMFieldDirectInitUsing, 12, 23, null);

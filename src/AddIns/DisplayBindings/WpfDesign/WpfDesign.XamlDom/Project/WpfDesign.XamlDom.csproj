@@ -1,4 +1,5 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectGuid>{88DA149F-21B2-48AB-82C4-28FB6BDFD783}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -16,8 +17,8 @@
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
     <RunCodeAnalysis>False</RunCodeAnalysis>
     <CodeAnalysisRules>-Microsoft.Globalization#CA1303;-Microsoft.Performance#CA1800</CodeAnalysisRules>
-    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\</OutputPath>
-    <DocumentationFile>..\..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.XamlDom.xml</DocumentationFile>
+    <OutputPath>..\..\..\..\..\..\AddIns\DisplayBindings\WpfDesign\</OutputPath>
+    <DocumentationFile>..\..\..\..\..\..\AddIns\DisplayBindings\WpfDesign\ICSharpCode.WpfDesign.XamlDom.xml</DocumentationFile>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SourceAnalysisOverrideSettingsFile>C:\Users\Daniel\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
   </PropertyGroup>
@@ -81,6 +82,7 @@
     <Compile Include="XamlProperty.cs" />
     <Compile Include="XamlPropertyInfo.cs" />
     <Compile Include="XamlPropertyValue.cs" />
+    <Compile Include="XamlStaticTools.cs" />
     <Compile Include="XamlTextValue.cs" />
     <Compile Include="XamlTypeFinder.cs" />
     <Compile Include="XamlTypeResolverProvider.cs" />

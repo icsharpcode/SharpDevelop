@@ -9,10 +9,9 @@ using System;
 
 namespace ICSharpCode.UnitTesting
 {
-	public interface IUnitTestFileService
+	public interface IUnitTestFileService : IFileSystem
 	{
 		void OpenFile(string fileName);
-		
 		void JumpToFilePosition(string fileName, int line, int column);
 	}
 }

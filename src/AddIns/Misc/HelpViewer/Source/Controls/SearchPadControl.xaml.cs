@@ -34,13 +34,12 @@ namespace MSHelpSystem.Controls
 		void DoSearchClicked(object sender, RoutedEventArgs e)
 		{
 			string term = searchCB.Text;
-			if (string.IsNullOrEmpty(term)) {
-				throw new ArgumentNullException("term");
+			if (!string.IsNullOrEmpty(term)) {
+				searchCB.Text = "";
+				if (searchTerms.IndexOf(term) < 0) searchTerms.Insert(0,term);
+				else searchTerms.Move(searchTerms.IndexOf(term), 0);
+				DisplayHelp.Search(term);
 			}
-			searchCB.Text = "";
-			if (searchTerms.IndexOf(term) < 0) searchTerms.Insert(0,term);
-			else searchTerms.Move(searchTerms.IndexOf(term), 0);
-			DisplayHelp.Search(term);
 		}
 	}
 }

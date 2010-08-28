@@ -165,5 +165,10 @@ namespace WixBinding.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
+		
+		public object GetService(Type serviceType)
+		{
+			return null;
+		}
 	}
 }

@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using ICSharpCode.Core;
@@ -15,6 +17,8 @@ using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.VB;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using Dom = ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Dom.VBNet;
 using ICSharpCode.SharpDevelop.Editor;
@@ -33,6 +37,8 @@ namespace ICSharpCode.VBNetBinding
 				return instance;
 			}
 		}
+		
+		NRefactoryInsightWindowHandler insightHandler = new NRefactoryInsightWindowHandler(SupportedLanguage.VBNet);
 		
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
@@ -57,9 +63,25 @@ namespace ICSharpCode.VBNetBinding
 				case '(':
 					if (CodeCompletionOptions.InsightEnabled) {
 						IInsightWindow insightWindow = editor.ShowInsightWindow(new MethodInsightProvider().ProvideInsight(editor));
-//						if (insightWindow != null)
-//							InitializeOpenedInsightWindow(editor, insightWindow);
+						if (insightWindow != null) {
+							insightHandler.InitializeOpenedInsightWindow(editor, insightWindow);
+							insightHandler.HighlightParameter(insightWindow, 0);
+							insightWindow.CaretPositionChanged += delegate { Run(insightWindow, editor); };
+						}
 						return CodeCompletionKeyPressResult.Completed;
+					}
+					break;
+				case ',':
+					if (CodeCompletionOptions.InsightRefreshOnComma && CodeCompletionOptions.InsightEnabled) {
+						IInsightWindow insightWindow;
+						editor.Document.Insert(editor.Caret.Offset, ",");
+						if (insightHandler.InsightRefreshOnComma(editor, ch, out insightWindow)) {
+							if (insightWindow != null) {
+								insightHandler.HighlightParameter(insightWindow, GetArgumentIndex(editor) + 1);
+								insightWindow.CaretPositionChanged += delegate { Run(insightWindow, editor); };;
+							}
+						}
+						return CodeCompletionKeyPressResult.EatKey;
 					}
 					break;
 				case '\n':
@@ -86,7 +108,7 @@ namespace ICSharpCode.VBNetBinding
 					result = ef.FindExpression(editor.Document.Text, editor.Caret.Offset);
 					
 					string word = editor.GetWordBeforeCaret().Trim();
-					if (word.Equals("overrides", StringComparison.InvariantCultureIgnoreCase) || word.Equals("return", StringComparison.InvariantCultureIgnoreCase) || !LiteralMayFollow((BitArray)result.Tag) && !OperatorMayFollow((BitArray)result.Tag) && ExpressionContext.IdentifierExpected != result.Context) {
+					if (word.Equals("overrides", StringComparison.OrdinalIgnoreCase) || word.Equals("return", StringComparison.OrdinalIgnoreCase) || !LiteralMayFollow((BitArray)result.Tag) && !OperatorMayFollow((BitArray)result.Tag) && ExpressionContext.IdentifierExpected != result.Context) {
 						LoggingService.Debug("CC: After space, result=" + result + ", context=" + result.Context);
 						ShowCompletion(result, editor, ch);
 					}
@@ -116,7 +138,27 @@ namespace ICSharpCode.VBNetBinding
 			return CodeCompletionKeyPressResult.None;
 		}
 		
-		bool IsTypeCharacter(char ch, char prevChar)
+		void Run(IInsightWindow insightWindow, ITextEditor editor)
+		{
+			insightHandler.HighlightParameter(insightWindow, GetArgumentIndex(editor));
+		}
+		
+		static int GetArgumentIndex(ITextEditor editor)
+		{
+			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, editor.Document.CreateReader());
+			ExpressionFinder ef = new ExpressionFinder();
+			
+			Token t = lexer.NextToken();
+			
+			while (t.Kind != Tokens.EOF && t.Location < editor.Caret.Position) {
+				ef.InformToken(t);
+				t = lexer.NextToken();
+			}
+			
+			return ef.ActiveArgument;
+		}
+		
+		static bool IsTypeCharacter(char ch, char prevChar)
 		{
 			ch = char.ToUpperInvariant(ch);
 			
@@ -134,7 +176,7 @@ namespace ICSharpCode.VBNetBinding
 			return false;
 		}
 
-		void ShowCompletion(ExpressionResult result, ITextEditor editor, char ch)
+		static void ShowCompletion(ExpressionResult result, ITextEditor editor, char ch)
 		{
 			VBNetCompletionItemList list = CompletionDataHelper.GenerateCompletionData(result, editor, ch);
 			list.Editor = editor;
@@ -142,7 +184,7 @@ namespace ICSharpCode.VBNetBinding
 		}
 		
 		#region Helpers
-		bool OperatorMayFollow(BitArray array)
+		static bool OperatorMayFollow(BitArray array)
 		{
 			if (array == null)
 				return false;
@@ -150,7 +192,7 @@ namespace ICSharpCode.VBNetBinding
 			return array[Tokens.Xor];
 		}
 		
-		bool LiteralMayFollow(BitArray array)
+		static bool LiteralMayFollow(BitArray array)
 		{
 			if (array == null)
 				return false;
@@ -163,20 +205,7 @@ namespace ICSharpCode.VBNetBinding
 			return false;
 		}
 		
-		bool HasKeywordsOnly(BitArray array)
-		{
-			if (array == null)
-				return false;
-			
-			for (int i = 0; i < array.Length; i++) {
-				if (array[i] && i < Tokens.AddHandler)
-					return false;
-			}
-			
-			return true;
-		}
-		
-		void GetCommentOrStringState(ITextEditor editor, out bool inString, out bool inComment)
+		static void GetCommentOrStringState(ITextEditor editor, out bool inString, out bool inComment)
 		{
 			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, editor.Document.CreateReader());
 			
@@ -214,14 +243,14 @@ namespace ICSharpCode.VBNetBinding
 			}
 		}
 		
-		bool IsInString(ITextEditor editor)
+		static bool IsInString(ITextEditor editor)
 		{
 			bool inString, inComment;
 			GetCommentOrStringState(editor, out inString, out inComment);
 			return inString;
 		}
 		
-		bool IsInComment(ITextEditor editor)
+		static bool IsInComment(ITextEditor editor)
 		{
 			bool inString, inComment;
 			GetCommentOrStringState(editor, out inString, out inComment);
@@ -260,7 +289,7 @@ namespace ICSharpCode.VBNetBinding
 			return true;
 		}
 		
-		bool TryDeclarationTypeInference(ITextEditor editor, IDocumentLine curLine)
+		static bool TryDeclarationTypeInference(ITextEditor editor, IDocumentLine curLine)
 		{
 			string lineText = editor.Document.GetText(curLine.Offset, curLine.Length);
 			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new System.IO.StringReader(lineText));

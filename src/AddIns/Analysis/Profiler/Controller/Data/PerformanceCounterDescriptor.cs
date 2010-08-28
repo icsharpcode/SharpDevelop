@@ -16,6 +16,7 @@ namespace ICSharpCode.Profiler.Controller.Data
 	/// Wraps <see cref="System.Diagnostics.PerformanceCounter" /> to support lazy-loading and easy value collection.
 	/// Stores additonal meta data such as min/max allowed value or unit of the values.
 	/// </summary>
+	[Serializable]
 	public class PerformanceCounterDescriptor
 	{
 		/// <summary>

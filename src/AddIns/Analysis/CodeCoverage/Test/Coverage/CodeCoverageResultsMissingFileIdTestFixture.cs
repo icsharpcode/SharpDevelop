@@ -14,15 +14,13 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 {
 	/// <summary>
 	/// PartCover does not always put a file id in the code
-	/// coverage report. We also ensure that a module that has no
-	/// associated source code is not included in the final list
-	/// of modules.
+	/// coverage report. This is typically for code that 
+	/// has no source code. It can also be for code that
+	/// is in a method that is not covered at all.
 	/// </summary>
 	[TestFixture]
-	public class CodeCoverageResultsMissingFileIdTestFixture
+	public class CodeCoverageResultsMissingFileIdTestFixture : CodeCoverageResultsTestsBase
 	{
-		CodeCoverageResults results;
-		
 		[SetUp]
 		public void SetUpFixture()
 		{
@@ -46,26 +44,47 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 				"  </Method>\r\n" +
 				"</Type>\r\n" +
 				"</PartCoverReport>";
-		
-			results = new CodeCoverageResults(new StringReader(xml));
+
+			base.CreateCodeCoverageResults(xml);
 		}
 		
 		[Test]
-		public void OneModule()
+		public void Modules_ModuleReadFromResults_HasTwoModules()
 		{
-			Assert.AreEqual(1, results.Modules.Count);
+			int count = results.Modules.Count;
+			Assert.AreEqual(2, count);
 		}
 		
 		[Test]
-		public void ModuleName()
+		public void ModulesName_FirstModuleNameReadFromResults_IsNUnitFrameworkAssembly()
 		{
-			Assert.AreEqual("MyTests.Tests", results.Modules[0].Name);
+			string name = FirstModule.Name;
+			string expectedName = "nunit.framework";
+			Assert.AreEqual(expectedName, name);
 		}
 		
 		[Test]
-		public void MyTestsCtorHasThreeSequencePoints()
+		public void ModulesName_SecondModuleNameReadFromResults_IsMyTestsAssembly()
 		{
-			Assert.AreEqual(3, results.Modules[0].Methods[0].SequencePoints.Count);
+			string name = SecondModule.Name;
+			string expectedName = "MyTests.Tests";
+			Assert.AreEqual(expectedName, name);
+		}
+		
+		[Test]
+		public void SequencePointsCount_NUnitNotEqualAssertFailMethod_ReturnsAllSequencePoints()
+		{
+			int sequencePointCount = FirstModuleFirstMethod.SequencePoints.Count;
+			int expectedSequencePointCount = 3;
+			Assert.AreEqual(expectedSequencePointCount, sequencePointCount);
+		}
+		
+		[Test]
+		public void SequencePointsCount_MyClassConstructorHasFourSequencePointsWithOneMissingFileId_ReturnsAllSequencePoints()
+		{
+			int sequencePointCount = SecondModule.Methods[0].SequencePoints.Count;
+			int expectedSequencePointCount = 4;
+			Assert.AreEqual(expectedSequencePointCount, sequencePointCount);
 		}
 	}
 }

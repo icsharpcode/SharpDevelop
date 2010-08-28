@@ -20,6 +20,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public string Title { get; set; }
 		
-		public ObservableCollection<ContextActionViewModel> Actions { get; set; }
+		public ObservableCollection<ContextActionViewModel> Actions { get; set; }		
 	}
 }

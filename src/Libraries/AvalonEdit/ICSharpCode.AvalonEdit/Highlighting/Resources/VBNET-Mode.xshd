@@ -207,11 +207,13 @@
 		<Keywords color="ContextKeywords">
 			<Word>Aggregate</Word>
 			<Word>Ansi</Word>
+			<Word>Ascending</Word>
 			<Word>Auto</Word>
 			<Word>Binary</Word>
 			<Word>By</Word>
 			<Word>Compare</Word>
 			<Word>Custom</Word>
+			<Word>Descending</Word>
 			<Word>Distinct</Word>
 			<Word>Equals</Word>
 			<Word>Explicit</Word>
@@ -235,13 +237,13 @@
 	<RuleSet name="PreprocessorSet" ignoreCase="true">
 		<Keywords fontWeight="bold">
 			<Word>Const</Word>
-			<Word>If</Word>
-			<Word>ElseIf</Word>
 			<Word>Else</Word>
+			<Word>ElseIf</Word>
 			<Word>End</Word>
-			<Word>ExternalSource</Word>
-			<Word>Region</Word>
 			<Word>ExternalChecksum</Word>
+			<Word>ExternalSource</Word>
+			<Word>If</Word>
+			<Word>Region</Word>
 		</Keywords>
 	</RuleSet>
 </SyntaxDefinition>

@@ -1,0 +1,51 @@
+﻿<AddIn name        = "GitAddIn"
+       author      = "Daniel Grunwald"
+       description = "Git Binding">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.GitAddIn" version="@GitAddIn.dll"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "GitAddIn.dll">
+			<ConditionEvaluator name="IsUnderGitControl" class="ICSharpCode.GitAddIn.IsUnderGitControlCondition"/>
+		</Import>
+	</Runtime>
+	
+	<Path name = "/Workspace/Autostart">
+		<Class id = "ICSharpCode.GitAddIn.RegisterEventsCommand"
+		       class = "ICSharpCode.GitAddIn.RegisterEventsCommand"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/GitItem">
+		<Condition name = "IsUnderGitControl">
+			<MenuItem id = "GitSeparator" type = "Separator"/>
+			
+			<MenuItem id = "GitCommit"
+			          label = "Git ${res:AddIns.Subversion.Commit}..."
+			          icon  = "Svn.Commit"
+			          class = "ICSharpCode.GitAddIn.GitCommitCommand"/>
+			
+			<MenuItem id = "GitDiff"
+			          label = "Git ${res:AddIns.Subversion.Diff}..."
+			          icon  = "Svn.Diff"
+			          class = "ICSharpCode.GitAddIn.GitDiffCommand"/>
+		</Condition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionNode">
+		<Include id = "SubversionInclude" path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/GitItem"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
+		<Include id = "SubversionInclude" path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/GitItem"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FolderNode">
+		<Include id = "SubversionInclude" path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/GitItem"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FileNode">
+		<Include id = "SubversionInclude" path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/GitItem"/>
+	</Path>
+</AddIn>

@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// A view content is a view onto multiple files, or other content that opens like a document
 	/// (e.g. the start page).
 	/// </summary>
-	public interface IViewContent : IDisposable, ICanBeDirty
+	public interface IViewContent : IDisposable, ICanBeDirty, IServiceProvider
 	{
 		/// <summary>
 		/// This is the UI element for the view.

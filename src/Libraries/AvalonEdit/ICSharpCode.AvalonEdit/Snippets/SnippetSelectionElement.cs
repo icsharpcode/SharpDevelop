@@ -18,6 +18,9 @@ namespace ICSharpCode.AvalonEdit.Snippets
 	[Serializable]
 	public class SnippetSelectionElement : SnippetElement
 	{
+		/// <summary>
+		/// Gets/Sets the new indentation of the selected text.
+		/// </summary>
 		public int Indentation { get; set; }
 		
 		/// <inheritdoc/>

@@ -8,34 +8,33 @@ using System;
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
 	/// Description of ContextActionsPopup.
 	/// </summary>
-	public class ContextActionsPopup : Popup
+	public class ContextActionsPopup : ContextActionsPopupBase
 	{
+		/// <summary>
+		/// DOM Entity (IClass, IMember etc.) for which this popup is displayed.
+		/// </summary>
+		public IEntity Symbol { get; set; }
+		
 		public ContextActionsPopup()
 		{
-			this.StaysOpen = false;
 			// Close on lost focus
+			this.StaysOpen = false;
 			this.AllowsTransparency = true;
 			this.ActionsControl = new ContextActionsHeaderedControl();
 			// Close when any action excecuted
 			this.ActionsControl.ActionExecuted += delegate { this.Close(); };
-			this.KeyDown += new KeyEventHandler(ContextActionsPopup_KeyDown);
-		}
-
-		void ContextActionsPopup_KeyDown(object sender, KeyEventArgs e)
-		{
-			if (e.Key == Key.Escape)
-				Close();
 		}
 		
-		ContextActionsHeaderedControl ActionsControl
+		public ContextActionsHeaderedControl ActionsControl
 		{
 			get { return (ContextActionsHeaderedControl)this.Child; }
 			set { this.Child = value; }
@@ -44,8 +43,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public ContextActionsViewModel Actions
 		{
 			get { return (ContextActionsViewModel)ActionsControl.DataContext; }
-			set { 
-				ActionsControl.DataContext = value; 
+			set {
+				ActionsControl.DataContext = value;
 			}
 		}
 		
@@ -54,58 +53,32 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.ActionsControl.Focus();
 		}
 		
-		public void Open()
+		public void OpenAtCaretAndFocus()
 		{
-			this.IsOpen = true;
-		}
-		
-		public void Close()
-		{
-			this.IsOpen = false;
-		}
-		
-		public void OpenAtCaretAndFocus(ITextEditor editor)
-		{
-			OpenAtPosition(editor, editor.Caret.Line, editor.Caret.Column, true);
+			ITextEditor currentEditor = GetCurrentEditor();
+			if (currentEditor == null) {
+				OpenAtMousePosition();
+				return;
+			}
+			// Should look if symbol under caret is the same as this.Symbol, so that when opened from class browser, popup opens at mouse pos
+			//var rr = ParserService.Resolve(currentEditor.Caret.Offset, currentEditor.Document, currentEditor.FileName);
+			OpenAtPosition(currentEditor, currentEditor.Caret.Line, currentEditor.Caret.Column, true);
 			this.Focus();
 		}
-		
-		public void OpenAtLineStart(ITextEditor editor)
+
+		ITextEditor GetCurrentEditor()
 		{
-			OpenAtPosition(editor, editor.Caret.Line, 1, false);
+			if (WorkbenchSingleton.Workbench == null)
+				return null;
+			var activeViewContent = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+			if (activeViewContent == null)
+				return null;
+			return activeViewContent.TextEditor;
 		}
 		
-		void OpenAtPosition(ITextEditor editor, int line, int column, bool openAtWordStart)
+		void OpenAtMousePosition()
 		{
-			var editorUIService = editor.GetService(typeof(IEditorUIService)) as IEditorUIService;
-			if (editorUIService != null) {
-				var document = editor.Document;
-				int offset = document.PositionToOffset(line, column);
-				if (openAtWordStart) {
-					int wordStart = document.FindPrevWordStart(offset);
-					if (wordStart != -1) {
-						var wordStartLocation = document.OffsetToPosition(wordStart);
-						line = wordStartLocation.Line;
-						column = wordStartLocation.Column;
-					}
-				}
-				this.Placement = PlacementMode.Absolute;
-				try
-				{
-					var caretScreenPos = editorUIService.GetScreenPosition(line, column);
-					this.HorizontalOffset = caretScreenPos.X;
-					this.VerticalOffset = caretScreenPos.Y;
-				}
-				catch
-				{
-					this.HorizontalOffset = 200;
-					this.VerticalOffset = 200;
-				}
-				
-			} else {
-				this.HorizontalOffset = 200;
-				this.VerticalOffset = 200;
-			}
+			this.Placement = PlacementMode.MousePoint;
 			this.Open();
 		}
 	}

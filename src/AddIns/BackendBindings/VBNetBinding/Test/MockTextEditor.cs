@@ -17,7 +17,6 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
-using ICSharpCode.VBNetBinding.Parser;
 
 namespace ICSharpCode.VBNetBinding.Tests
 {
@@ -67,7 +66,7 @@ namespace ICSharpCode.VBNetBinding.Tests
 		public void CreateParseInformation()
 		{
 			ParserService.RegisterAvailableParsers(new ParserDescriptor(typeof(TParser), "VBNet", new string[] { ".vb" }));
-			var parser = new VBNetBinding.Parser.TParser();
+			var parser = new VBNetBinding.TParser();
 			parser.LexerTags = new string[0];
 			var cu = parser.Parse(pc, this.FileName, this.Document);
 			ParserService.RegisterParseInformation(this.FileName, cu);

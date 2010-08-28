@@ -91,5 +91,14 @@ namespace RubyBinding.Tests.Testing
 			ProcessStartInfo startInfo = app.GetProcessStartInfo();
 			Assert.AreEqual(@"d:\temp", startInfo.WorkingDirectory);
 		}
+		
+		[Test]
+		public void ChangingOptionsRubyFileNameChangesProcessStartInfoFileName()
+		{
+			options.RubyFileName = @"d:\temp\test\ir.exe";
+			ProcessStartInfo startInfo = app.GetProcessStartInfo();
+			
+			Assert.AreEqual(@"d:\temp\test\ir.exe", startInfo.FileName);
+		}
 	}
 }

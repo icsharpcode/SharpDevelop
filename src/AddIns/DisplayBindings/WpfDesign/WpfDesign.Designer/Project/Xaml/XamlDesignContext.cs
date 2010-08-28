@@ -28,6 +28,12 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 		readonly XamlDesignItem _rootItem;
 		internal readonly XamlComponentService _componentService;
 		
+		readonly XamlEditOperations _xamlEditOperations;
+		
+		public XamlEditOperations XamlEditAction {
+			get { return _xamlEditOperations; }
+		}
+		
 		internal XamlDocument Document {
 			get { return _doc; }
 		}
@@ -84,8 +90,20 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 			parserSettings.CreateInstanceCallback = this.Services.ExtensionManager.CreateInstanceWithCustomInstanceFactory;
 			parserSettings.ServiceProvider = this.Services;
 			_doc = XamlParser.Parse(xamlReader, parserSettings);
-				_rootItem = _componentService.RegisterXamlComponentRecursive(_doc.RootElement);
+			if(_doc==null)
+				loadSettings.ReportErrors(xamlErrorService);
+			
+			_rootItem = _componentService.RegisterXamlComponentRecursive(_doc.RootElement);
+			
+			if(_rootItem!=null){
+				var rootBehavior=new RootItemBehavior();
+				rootBehavior.Intialize(this);
+			}
+				
+			
+			_xamlEditOperations=new XamlEditOperations(this,parserSettings);
 		}
+		
 		
 		/// <summary>
 		/// Saves the XAML DOM into the XML writer.

@@ -57,6 +57,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 				if (!FindReferencesAndRenameHelper.IsReadOnly(member.DeclaringType) &&
 				    !(member is IProperty && ((IProperty)member).IsIndexer)) {
 					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.RenameCommand}", Rename);
+					cmd.ShortcutKeys = Keys.Control | Keys.R;
 					cmd.Tag = member;
 					list.Add(cmd);
 				}
@@ -66,15 +67,13 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 				cmd.Tag = member;
 				list.Add(cmd);
 			}
-			if (member != null && member.IsOverridable) {
-				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.FindOverridesCommand}", FindOverrides);
-				cmd.Tag = member;
-				list.Add(cmd);
-			}
 			
 			cmd = new MenuCommand("${res:SharpDevelop.Refactoring.FindReferencesCommand}", FindReferences);
+			cmd.ShortcutKeys = Keys.F12;
 			cmd.Tag = member;
 			list.Add(cmd);
+			
+			list.AddIfNotNull(MakeFindOverridesItem(member));
 			
 			if (member is IField && member.DeclaringType.ClassType != ClassType.Enum) {
 				IProperty foundProperty = FindReferencesAndRenameHelper.FindProperty(member as IField);
@@ -116,6 +115,19 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			}
 			
 			return list.ToArray();
+		}
+		
+		MenuCommand MakeFindOverridesItem(IMember member)
+		{
+			if (member == null || !member.IsOverridable)
+				return null;
+			var item = new MenuCommand(StringParser.Parse("${res:SharpDevelop.Refactoring.FindOverridesCommand}"));
+			//item.Image = ClassBrowserIconService.Method.Bitmap;
+			item.ShortcutKeys = Keys.F6;
+			item.Click += delegate {
+				ContextActionsHelper.MakePopupWithOverrides(member).OpenAtCaretAndFocus();
+			};
+			return item;
 		}
 		
 		void CreateProperty(object sender, EventArgs e)
@@ -185,32 +197,6 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 		{
 			MenuCommand item = (MenuCommand)sender;
 			FindReferencesAndRenameHelper.RenameMember((IMember)item.Tag);
-		}
-		
-		void FindOverrides(object sender, EventArgs e)
-		{
-			MenuCommand item = (MenuCommand)sender;
-			IMember member = (IMember)item.Tag;
-			IEnumerable<IClass> derivedClasses = RefactoringService.FindDerivedClasses(member.DeclaringType, ParserService.AllProjectContents, false);
-			List<SearchResultMatch> results = new List<SearchResultMatch>();
-			IAmbience ambience = AmbienceService.GetCurrentAmbience();
-			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedMemberNames | ConversionFlags.ShowTypeParameterList;
-			foreach (IClass derivedClass in derivedClasses) {
-				if (derivedClass.CompilationUnit == null) continue;
-				if (derivedClass.CompilationUnit.FileName == null) continue;
-				IMember m = MemberLookupHelper.FindSimilarMember(derivedClass, member);
-				if (m != null && !m.Region.IsEmpty) {
-					string matchText = ambience.Convert(m);
-					ProvidedDocumentInformation documentInfo = FindReferencesAndRenameHelper.GetDocumentInformation(m.DeclaringType.CompilationUnit.FileName);
-					SearchResultMatch res = new SimpleSearchResultMatch(documentInfo, matchText, new Location(m.Region.BeginColumn, m.Region.BeginLine));
-					results.Add(res);
-				}
-			}
-			SearchResultsPad.Instance.ShowSearchResults(
-				StringParser.Parse("${res:SharpDevelop.Refactoring.OverridesOf}", new string[,] {{ "Name", member.Name }}),
-				results
-			);
-			SearchResultsPad.Instance.BringToFront();
 		}
 		
 		void FindReferences(object sender, EventArgs e)

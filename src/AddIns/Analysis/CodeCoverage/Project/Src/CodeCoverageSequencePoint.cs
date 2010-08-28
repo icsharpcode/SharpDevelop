@@ -6,74 +6,100 @@
 // </file>
 
 using System;
+using System.Xml;
 
 namespace ICSharpCode.CodeCoverage
 {
 	public class CodeCoverageSequencePoint
 	{
-		string document = String.Empty;
-		int visitCount = 0;
-		int line = 0;
-		int column = 0;		
-		int endLine = 0;		
-		int endColumn = 0;	
-		bool excluded = false;
-		
-		public CodeCoverageSequencePoint(string document, int visitCount, int line, int column, int endLine, int endColumn) : this(document, visitCount, line, column, endLine, endColumn, false)
+		public CodeCoverageSequencePoint()
 		{
+		}
+		
+		public CodeCoverageSequencePoint(string document, int visitCount, int line, int column, int endLine, int endColumn)
+			: this(document, visitCount, line, column, endLine, endColumn, 0)
+		{
+		}
+		
+		public CodeCoverageSequencePoint(string document, int visitCount, int line, int column, int endLine, int endColumn, int length)
+		{
+			this.Document = document;
+			this.VisitCount = visitCount;
+			this.Line = line;
+			this.Column = column;
+			this.EndLine = endLine;
+			this.EndColumn = endColumn;
+			this.Length = length;
+		}
+		
+		public CodeCoverageSequencePoint(string document, XmlReader reader)
+		{
+			this.Document = document;
+			Read(reader);
 		}
 
-		public CodeCoverageSequencePoint(string document, int visitCount, int line, int column, int endLine, int endColumn, bool excluded)
+		void Read(XmlReader reader)
 		{
-			this.document = document;
-			this.visitCount = visitCount;
-			this.line = line;
-			this.column = column;
-			this.endLine = endLine;
-			this.endColumn = endColumn;
-			this.excluded = excluded;
+			VisitCount = GetInteger(reader, "visit");
+			Line = GetInteger(reader, "sl");
+			Column = GetInteger(reader, "sc");
+			EndLine = GetInteger(reader, "el");
+			EndColumn = GetInteger(reader, "ec");
+			Length = GetInteger(reader, "len");
 		}
 		
-		public bool IsExcluded {
-			get {
-				return excluded;
-			}
+		int GetInteger(XmlReader reader, string attributeName)
+		{
+			string attributeValue = reader.GetAttribute(attributeName);
+			return GetInteger(attributeValue);
 		}
 		
-		public string Document {
-			get {
-				return document;
+		int GetInteger(string text)
+		{
+			int val;
+			if (Int32.TryParse(text, out val)) {
+				return val;
 			}
+			return 0;
 		}
 		
-		public int VisitCount {
-			get {
-				return visitCount;
-			}
+		public bool HasDocument()
+		{
+			return !String.IsNullOrEmpty(Document);
 		}
 		
-		public int Line {
-			get {
-				return line;
+		public string Document { get; set; }
+		public int VisitCount { get; set; }
+		public int Line { get; set; }
+		public int Column { get; set; }
+		public int EndLine { get; set; }
+		public int EndColumn { get; set; }
+		public int Length { get; set; }
+		
+		public override bool Equals(object obj)
+		{
+			CodeCoverageSequencePoint rhs = obj as CodeCoverageSequencePoint;
+			if (rhs != null) {
+				return (Document == rhs.Document) &&
+					(Column == rhs.Column) &&
+					(EndColumn == rhs.EndColumn) &&
+					(EndLine == rhs.EndLine) &&
+					(Line == rhs.Line) &&
+					(VisitCount == rhs.VisitCount) &&
+					(Length == rhs.Length);
 			}
+			return false;
 		}
 		
-		public int Column {
-			get {
-				return column;
-			}
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
 		}
 		
-		public int EndLine {
-			get {
-				return endLine;
-			}
-		}
-		
-		public int EndColumn {
-			get {
-				return endColumn;
-			}
+		public override string ToString()
+		{
+			return String.Format("Document: '{0}' VisitCount: {1} Line: {2} Col: {3} EndLine: {4} EndCol: {5} Length: {6}",
+				Document, VisitCount, Line, Column, EndLine, EndColumn, Length);
 		}
 	}
 }

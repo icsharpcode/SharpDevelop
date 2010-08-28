@@ -6,13 +6,7 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
 
@@ -21,9 +15,7 @@ namespace XmlEditor.Tests.Folding
 	[TestFixture]
 	public class TwoElementFoldsTestFixture
 	{
-		XmlFoldParser parser;
-		ICompilationUnit unit;
-		DefaultProjectContent projectContent;
+		XmlFoldParserHelper helper;
 		
 		[SetUp]
 		public void Init()
@@ -34,38 +26,37 @@ namespace XmlEditor.Tests.Folding
 				"    </child>\r\n" +
 				"</root>";
 			
-			projectContent = new DefaultProjectContent();
-			MockTextBuffer textBuffer = new MockTextBuffer(xml);
-			
-			DefaultXmlFileExtensions extensions = new DefaultXmlFileExtensions(null);
-			XmlEditorOptions options = new XmlEditorOptions(new Properties());
-			MockParserService parserService = new MockParserService();
-			parser = new XmlFoldParser(extensions, options, parserService);
-			unit = parser.Parse(projectContent, @"d:\projects\a.xml", textBuffer);
+			helper = new XmlFoldParserHelper();
+			helper.CreateParser();
+			helper.GetFolds(xml);
 		}
 		
 		[Test]
-		public void FirstFoldRegionCoversRootElement()
+		public void GetFolds_TwoElements_FirstFoldRegionCoversRootElement()
 		{
+			DomRegion region = helper.GetFirstFoldRegion();
+			
 			int beginLine = 1;
 			int endLine = 4;
 			int beginCol = 1;
 			int endCol = 8;
 			DomRegion expectedRegion = new DomRegion(beginLine, beginCol, endLine, endCol);
 			
-			Assert.AreEqual(expectedRegion, unit.FoldingRegions[0].Region);
+			Assert.AreEqual(expectedRegion, region);
 		}
 		
 		[Test]
-		public void SecondFoldRegionCoversChildElement()
+		public void GetFolds_TwoElements_SecondFoldRegionCoversChildElement()
 		{
+			DomRegion region = helper.GetSecondFoldRegion();
+			
 			int beginLine = 2;
 			int endLine = 3;
 			int beginCol = 5;
 			int endCol = 13;
 			DomRegion expectedRegion = new DomRegion(beginLine, beginCol, endLine, endCol);
 			
-			Assert.AreEqual(expectedRegion, unit.FoldingRegions[1].Region);
+			Assert.AreEqual(expectedRegion, region);
 		}
 	}
 }

@@ -284,7 +284,7 @@ namespace Debugger.MetaData
 					if (this.IsPropertyAccessor && this.IsSingleLine) return true;
 				}
 				if (opt.StepOverFieldAccessProperties) {
-					if (this.IsPropertyAccessor && this.BackingField != null) return true;
+					if (this.IsPropertyAccessor && this.BackingFieldToken != 0) return true;
 				}
 				return false;
 			}
@@ -292,37 +292,55 @@ namespace Debugger.MetaData
 		
 		internal bool IsPropertyAccessor { get; set; }
 		
-		DebugFieldInfo backingFieldCache;
-		bool getBackingFieldCalled;
+		uint backingFieldToken;
 		
 		/// <summary>
 		/// Backing field that can be used to obtain the same value as by calling this method.
 		/// </summary>
-		public DebugFieldInfo BackingField {
+		[Tests.Ignore]
+		public uint BackingFieldToken {
 			get {
-				if (!getBackingFieldCalled) {
-					backingFieldCache = GetBackingField();
-					getBackingFieldCalled = true;
-				}
-				return backingFieldCache;
+				LoadBackingFieldToken();
+				return backingFieldToken;
 			}
 		}
 		
-		// Is this method in form 'return this.field;'?
-		DebugFieldInfo GetBackingField()
+		/// <summary>
+		/// Backing field that can be used to obtain the same value as by calling this method.
+		/// It works only for fields defined in the class
+		/// </summary>
+		public DebugFieldInfo BackingField {
+			get {
+				uint token = this.BackingFieldToken;
+				if (token == 0) return null;
+				
+				// The token can be a field in different class (static or instance in base class) - so it might not be found in the next call
+				MemberInfo member;
+				if (!declaringType.TryGetMember(token, out member)) return null;
+				return (DebugFieldInfo)member;
+			}
+		}
+		
+		bool loadBackingFieldTokenCalled;
+		
+		/// <summary> Is this method in form 'return this.field;'? </summary>
+		void LoadBackingFieldToken()
 		{
-			if (this.ParameterCount != 0) return null;
+			if (loadBackingFieldTokenCalled) return;
+			loadBackingFieldTokenCalled = true;
+			
+			backingFieldToken = 0;
+			
+			if (this.ParameterCount != 0) return;
 			
 			ICorDebugCode corCode;
 			try {
 				corCode = this.CorFunction.GetILCode();
-			} catch {
-				return null;
+			} catch (COMException) {
+				return;
 			}
 			
-			if (corCode == null) return null;
-			if (corCode.IsIL() == 0) return null;
-			if (corCode.GetSize() > 12) return null;
+			if (corCode == null || corCode.IsIL() == 0 || corCode.GetSize() > 12)        return;
 			
 			List<byte> code = new List<byte>(corCode.GetCode());
 			
@@ -335,17 +353,13 @@ namespace Debugger.MetaData
 				(Read(code, 0x0A, 0x2B, 0x00, 0x06) || true) &&   // stloc.0; br.s; offset+00; ldloc.0 || nothing
 				Read(code, 0x2A);                                 // ret
 		
-			if (!success) return null;
-			
-			MemberInfo member = declaringType.GetMember(token);
-			
-			if (member == null) return null;
-			if (!(member is DebugFieldInfo)) return null;
+			if (!success) return;
 			
 			if (this.Process.Options.Verbose) {
-				this.Process.TraceMessage(string.Format("Found backing field for {0}: {1}", this.FullName, member.Name));
+				this.Process.TraceMessage(string.Format("Found backing field for {0}", this.FullName));
 			}
-			return (DebugFieldInfo)member;
+			
+			backingFieldToken = token;
 		}
 		
 		// Read expected sequence of bytes

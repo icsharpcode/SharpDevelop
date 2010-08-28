@@ -23,9 +23,9 @@ namespace ICSharpCode.VBNetBinding
 			}
 		}
 		
-		public IProject LoadProject(ProjectLoadInformation loadInformation)
+		public IProject LoadProject(ProjectLoadInformation info)
 		{
-			return new VBNetProject(loadInformation);
+			return new VBNetProject(info);
 		}
 		
 		public IProject CreateProject(ProjectCreateInformation info)

@@ -14,7 +14,7 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\BackendBindings\PythonBinding\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\AddIns\BackendBindings\PythonBinding\</OutputPath>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
@@ -22,7 +22,7 @@
     <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\BackendBindings\PythonBinding\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\AddIns\BackendBindings\PythonBinding\</OutputPath>
     <DebugSymbols>false</DebugSymbols>
     <DebugType>None</DebugType>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
@@ -38,6 +38,9 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="Chiron">
+      <HintPath>..\..\RequiredLibraries\Chiron.exe</HintPath>
+    </Reference>
     <Reference Include="ipy">
       <HintPath>..\..\RequiredLibraries\ipy.exe</HintPath>
     </Reference>
@@ -122,6 +125,7 @@
     <Compile Include="Src\PythonTestResult.cs" />
     <Compile Include="Src\PythonTestRunner.cs" />
     <Compile Include="Src\PythonTestRunnerApplication.cs" />
+    <Compile Include="Src\PythonTestRunnerContext.cs" />
     <Compile Include="Src\PythonTestRunnerResponseFile.cs" />
     <Compile Include="Src\PythonTextEditorViewContent.cs" />
     <Compile Include="Src\SysModuleCompletionItems.cs" />
@@ -171,6 +175,10 @@
     <Compile Include="Src\PythonVariableResolver.cs" />
     <Compile Include="Src\StringTextContentProvider.cs" />
     <Compile Include="Src\PythonConsoleTextEditor.cs" />
+    <None Include="..\..\RequiredLibraries\Chiron.exe.Config">
+      <Link>Chiron.exe.Config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Lib\runpy.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -208,6 +216,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <EmbeddedResource Include="Resources\Python.xshd" />
+    <None Include="Templates\SilverlightApplication.xpt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WPFApplication.xpt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\WPFWindow.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="TestRunner\sdtest.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

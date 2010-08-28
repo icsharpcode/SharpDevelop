@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			} else {
 				guiBuildCancellation = new CancellationTokenSource();
 				IProgressMonitor progressMonitor = WorkbenchSingleton.StatusBar.CreateProgressMonitor(guiBuildCancellation.Token);
-				guiBuildTrackedFeature = AnalyticsMonitorService.TrackFeature("Build");
+				guiBuildTrackedFeature = AnalyticsMonitorService.TrackFeature("ICSharpCode.SharpDevelop.Project.BuildEngine.Build");
 				WorkbenchSingleton.StatusBar.SetMessage(StringParser.Parse("${res:MainWindow.CompilerMessages.BuildVerb}..."));
 				ProjectService.RaiseEventBuildStarted(new BuildEventArgs(project, options));
 				StartBuild(project, options,

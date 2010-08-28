@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.0.0.6218
+# SharpDevelop 4.0.0.6261
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeQualityAnalysis", "CodeQualityAnalysis.csproj", "{76DD1CC0-0D86-44A1-9BD6-D91F79807BC3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Core", "..\..\..\Main\Core\Project\ICSharpCode.Core.csproj", "{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}"

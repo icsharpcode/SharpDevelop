@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop.Editor;
 using System;
 using System.IO;
 using ICSharpCode.SharpDevelop;
@@ -94,7 +93,7 @@ namespace CSharpBinding.Parser
 			p.ParseMethodBodies = false;
 			p.Parse();
 			
-			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent);
+			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent, ICSharpCode.NRefactory.SupportedLanguage.CSharp);
 			visitor.Specials = p.Lexer.SpecialTracker.CurrentSpecials;
 			visitor.VisitCompilationUnit(p.CompilationUnit, null);
 			visitor.Cu.FileName = fileName;

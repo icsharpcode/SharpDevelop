@@ -9,7 +9,7 @@
     <AssemblyName>ReflectorAddIn</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\Misc\ReflectorAddIn\</OutputPath>
+    <OutputPath>..\..\..\..\..\..\AddIns\Misc\ReflectorAddIn\</OutputPath>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>

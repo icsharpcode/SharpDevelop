@@ -10,6 +10,7 @@
     Go directly to the <a href="SnippetConverter.aspx">converter</a> (supports C#, VB.NET and Boo)
     </p>
     
+    <!--
     <p class="page_title">The Code Formatter</p>
     <p>
     Go directly to the <a href="FormatCode.aspx">Code Formatter</a> (supports ASP/XHTML, BAT, Boo, Coco, C++.NET, C#, 
@@ -19,7 +20,8 @@
     The code formatting capability is also exposed as a Web service. A <a href="CodeFormatClient.aspx">sample client application</a> is available 
     for download. Please note: SharpDevelop ships with \Samples\HtmlSyntaxColorizer on which this Web service is built upon.
     </p>
-    
+    -->
+
     <p class="page_title">Code Conversion as a Web Service</p>
     <p>
     If you want to use code conversion in your code, you can call the <a href="ConvertService.asmx">

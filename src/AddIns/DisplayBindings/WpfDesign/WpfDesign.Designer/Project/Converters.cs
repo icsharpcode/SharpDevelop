@@ -147,4 +147,19 @@ namespace ICSharpCode.WpfDesign.Designer.Converters
 			return value;
 		}
 	}
+	
+	public class FormatDoubleConverter : IValueConverter
+    {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes", Justification = "converter is immutable")]
+        public static readonly FormatDoubleConverter Instance=new FormatDoubleConverter();
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return Math.Round((double)value);
+        }
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			throw new NotImplementedException();
+		}
+    }
 }

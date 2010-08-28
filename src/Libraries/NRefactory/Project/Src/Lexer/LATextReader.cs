@@ -22,14 +22,6 @@ namespace ICSharpCode.NRefactory.Parser
 			this.reader = reader;
 		}
 		
-		public override void Close()
-		{
-			reader.Close();
-			reader = null;
-			buffer = null;
-			base.Close();
-		}
-		
 		public override int Peek()
 		{
 			return Peek(0);
@@ -52,6 +44,13 @@ namespace ICSharpCode.NRefactory.Parser
 				return -1;
 			
 			return buffer[step];
+		}
+		
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+				reader.Dispose();
+			base.Dispose(disposing);
 		}
 	}
 }

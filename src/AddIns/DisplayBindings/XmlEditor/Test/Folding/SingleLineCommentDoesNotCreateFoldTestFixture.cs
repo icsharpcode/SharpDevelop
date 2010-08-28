@@ -6,13 +6,6 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
 
@@ -21,30 +14,17 @@ namespace XmlEditor.Tests.Folding
 	[TestFixture]
 	public class SingleLineCommentDoesNotCreateFoldTestFixture
 	{
-		XmlFoldParser parser;
-		ICompilationUnit unit;
-		DefaultXmlFileExtensions extensions;
-		DefaultProjectContent projectContent;
-		
-		[SetUp]
-		public void Init()
-		{
-			string xml = "<!-- single line comment -->";
-			
-			projectContent = new DefaultProjectContent();
-			MockTextBuffer textBuffer = new MockTextBuffer(xml);
-			
-			extensions = new DefaultXmlFileExtensions(null);
-			XmlEditorOptions options = new XmlEditorOptions(new Properties());
-			MockParserService parserService = new MockParserService();
-			parser = new XmlFoldParser(extensions, options, parserService);
-			unit = parser.Parse(projectContent, @"d:\projects\a.xml", textBuffer);
-		}
+		XmlFoldParserHelper helper;
 		
 		[Test]
-		public void CompilationUnitHasNoFolds()
+		public void GetFolds_XmlOnlyHasSingleLineComment_NullReturned()
 		{
-			Assert.AreEqual(0, unit.FoldingRegions.Count);
+			string xml = "<!-- single line comment -->";
+			helper = new XmlFoldParserHelper();
+			helper.CreateParser();
+			helper.GetFolds(xml);
+			
+			Assert.IsNull(helper.Folds);
 		}
 	}
 }

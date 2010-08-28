@@ -70,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		/// <summary>
-		/// Returns the innerst class in which the carret currently is, returns null
+		/// Returns the innermost class in which the carret currently is, returns null
 		/// if the carret is outside any class boundaries.
 		/// </summary>
 		IClass GetInnermostClass(int caretLine, int caretColumn);

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Media.Imaging;
+
 using QuickGraph;
 
 namespace ICSharpCode.CodeQualityAnalysis
@@ -21,7 +23,7 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <summary>
         /// Type which owns this field
         /// </summary>
-        public Type Owner { get; set; }
+        public Type DeclaringType { get; set; }
 
         /// <summary>
         /// Whether the field is event
@@ -66,13 +68,14 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <summary>
         /// If the field has generic instance so all types used in generic are presented in this set.
         /// </summary>
-        public ISet<Type> GenericTypes { get; set; }
+        public ISet<Type> GenericTypes { get; private set; }
 
         public Field()
         {
             FieldType = null;
             IsEvent = false;
-            Owner = null;
+            DeclaringType = null;
+            GenericTypes = new HashSet<Type>();
 
             Dependency = null;
         }
@@ -117,5 +120,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 
             return builder.ToString();
         }
+        
+        public BitmapSource Icon { get { return NodeIconService.GetIcon(this); } }
     }
 }

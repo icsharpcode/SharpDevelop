@@ -41,7 +41,7 @@ namespace Debugger.Interop.MetaData
 				ISymUnmanagedBinder symBinder = new Debugger.Interop.CorSym.CorSymBinder_SxSClass();
 				TrackedComObjects.Track(symBinder);
 				return symBinder.GetReaderForFile(metaData, fullname, searchPath);
-			} catch {
+			} catch (COMException) {
 				return null;
 			}
 		}
@@ -52,7 +52,7 @@ namespace Debugger.Interop.MetaData
 				ISymUnmanagedBinder symBinder = new Debugger.Interop.CorSym.CorSymBinder_SxSClass();
 				TrackedComObjects.Track(symBinder);
 				return symBinder.GetReaderFromStream(metaData, stream);
-			} catch {
+			} catch (COMException) {
 				return null;
 			}
 		}
@@ -66,7 +66,7 @@ namespace Debugger.Interop.MetaData
 		{
 			IMetaDataImport m = this.metaData;
 			if (m != null) {
-				Marshal.ReleaseComObject(m);
+				Marshal.FinalReleaseComObject(m);
 				metaData = null;
 			}
 		}

@@ -17,109 +17,123 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 	/// via the flags attribute in the code coverage results file.
 	/// </summary>
 	[TestFixture]
-	public class CodeCoverageResultsPropertyFlagsTestFixture
+	public class CodeCoverageResultsPropertyFlagsTestFixture : CodeCoverageResultsTestsBase
 	{
-		CodeCoverageResults results;
-		CodeCoverageMethod getterMethod;
-		CodeCoverageMethod setterMethod;
-		CodeCoverageMethod method;
-		CodeCoverageMethod methodWithPropertyFlagsButInvalidName;
-		
 		[SetUp]
 		public void SetUpFixture()
 		{
-			string xml = "<PartCoverReport ver=\"1.0.2796.35184\">\r\n" +
-						"  <File id=\"1\" url=\"d:\\Projects\\test\\TestFixture1.cs\" />\r\n" +
-						"  <Assembly id=\"1\" name=\"MyTests\" module=\"C:\\Projects\\Test\\MyTests\\bin\\MyTests.DLL\" domain=\"test-domain-MyTests.dll\" domainIdx=\"1\" />\r\n" +
-						"  <Type asmref=\"1\" name=\"MyTests.Class1\" flags=\"2606412\">\r\n" +
-						"    <Method name=\"set_Count\" sig=\"void  (int)\" flags=\"2182\" iflags=\"0\">\r\n" +
-						"      <pt visit=\"0\" pos=\"9\" len=\"1\" fid=\"1\" sl=\"34\" sc=\"4\" el=\"34\" ec=\"5\" />\r\n" +
-						"      <pt visit=\"0\" pos=\"1\" len=\"8\" fid=\"1\" sl=\"33\" sc=\"5\" el=\"33\" ec=\"12\" />\r\n" +
-						"      <pt visit=\"0\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"32\" sc=\"8\" el=\"32\" ec=\"9\" />\r\n" +
-						"    </Method>\r\n" +
-						"    <Method name=\"get_Count\" sig=\"int  ()\" flags=\"2182\" iflags=\"0\">\r\n" +
-						"      <pt visit=\"0\" pos=\"6\" len=\"2\" fid=\"1\" sl=\"31\" sc=\"4\" el=\"31\" ec=\"5\" />\r\n" +
-						"      <pt visit=\"0\" pos=\"1\" len=\"5\" fid=\"1\" sl=\"30\" sc=\"5\" el=\"30\" ec=\"15\" />\r\n" +
-						"      <pt visit=\"0\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"29\" sc=\"8\" el=\"29\" ec=\"9\" />\r\n" +
-						"    </Method>\r\n" +
-						"    <Method name=\"get_NotAProperty\" sig=\"void  ()\" flags=\"134\" iflags=\"0\">\r\n" +
-						"      <pt visit=\"0\" pos=\"1\" len=\"1\" fid=\"1\" sl=\"26\" sc=\"3\" el=\"26\" ec=\"4\" />\r\n" +
-						"      <pt visit=\"0\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"25\" sc=\"3\" el=\"25\" ec=\"4\" />\r\n" +
-						"    </Method>\r\n" +
-						"    <Method name=\"PropertyFlagsButJustAMethod\" sig=\"void  ()\" flags=\"2182\" iflags=\"0\">\r\n" +
-						"      <pt visit=\"0\" pos=\"8\" len=\"2\" fid=\"1\" sl=\"22\" sc=\"3\" el=\"22\" ec=\"4\" />\r\n" +
-						"      <pt visit=\"0\" pos=\"7\" len=\"1\" fid=\"1\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" />\r\n" +
-						"      <pt visit=\"0\" pos=\"0\" len=\"7\" fid=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"18\" />\r\n" +
-						"    </Method>\r\n" +
-						"    <Method name=\"InvalidFlags\" sig=\"void  ()\" flags=\"\" iflags=\"0\">\r\n" +
-						"      <pt visit=\"0\" pos=\"8\" len=\"2\" fid=\"1\" sl=\"22\" sc=\"3\" el=\"22\" ec=\"4\" />\r\n" +
-						"      <pt visit=\"0\" pos=\"7\" len=\"1\" fid=\"1\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" />\r\n" +
-						"      <pt visit=\"0\" pos=\"0\" len=\"7\" fid=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"18\" />\r\n" +
-						"    </Method>\r\n" +
-						"  </Type>\r\n" +
-						"</PartCoverReport>";
+			string xml = 
+				"<PartCoverReport ver=\"1.0.2796.35184\">\r\n" +
+				"  <File id=\"1\" url=\"d:\\Projects\\test\\TestFixture1.cs\" />\r\n" +
+				"  <Assembly id=\"1\" name=\"MyTests\" module=\"C:\\Projects\\Test\\MyTests\\bin\\MyTests.DLL\" domain=\"test-domain-MyTests.dll\" domainIdx=\"1\" />\r\n" +
+				"  <Type asmref=\"1\" name=\"MyTests.Class1\" flags=\"2606412\">\r\n" +
+				"    <Method name=\"set_Count\" sig=\"void  (int)\" flags=\"2182\" iflags=\"0\">\r\n" +
+				"      <pt visit=\"0\" pos=\"9\" len=\"1\" fid=\"1\" sl=\"34\" sc=\"4\" el=\"34\" ec=\"5\" />\r\n" +
+				"      <pt visit=\"0\" pos=\"1\" len=\"8\" fid=\"1\" sl=\"33\" sc=\"5\" el=\"33\" ec=\"12\" />\r\n" +
+				"      <pt visit=\"0\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"32\" sc=\"8\" el=\"32\" ec=\"9\" />\r\n" +
+				"    </Method>\r\n" +
+				"    <Method name=\"get_Count\" sig=\"int  ()\" flags=\"2182\" iflags=\"0\">\r\n" +
+				"      <pt visit=\"0\" pos=\"6\" len=\"2\" fid=\"1\" sl=\"31\" sc=\"4\" el=\"31\" ec=\"5\" />\r\n" +
+				"      <pt visit=\"0\" pos=\"1\" len=\"5\" fid=\"1\" sl=\"30\" sc=\"5\" el=\"30\" ec=\"15\" />\r\n" +
+				"      <pt visit=\"0\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"29\" sc=\"8\" el=\"29\" ec=\"9\" />\r\n" +
+				"    </Method>\r\n" +
+				"    <Method name=\"get_NotAProperty\" sig=\"void  ()\" flags=\"134\" iflags=\"0\">\r\n" +
+				"      <pt visit=\"0\" pos=\"1\" len=\"1\" fid=\"1\" sl=\"26\" sc=\"3\" el=\"26\" ec=\"4\" />\r\n" +
+				"      <pt visit=\"0\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"25\" sc=\"3\" el=\"25\" ec=\"4\" />\r\n" +
+				"    </Method>\r\n" +
+				"    <Method name=\"PropertyFlagsButJustAMethod\" sig=\"void  ()\" flags=\"2182\" iflags=\"0\">\r\n" +
+				"      <pt visit=\"0\" pos=\"8\" len=\"2\" fid=\"1\" sl=\"22\" sc=\"3\" el=\"22\" ec=\"4\" />\r\n" +
+				"      <pt visit=\"0\" pos=\"7\" len=\"1\" fid=\"1\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" />\r\n" +
+				"      <pt visit=\"0\" pos=\"0\" len=\"7\" fid=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"18\" />\r\n" +
+				"    </Method>\r\n" +
+				"    <Method name=\"InvalidFlags\" sig=\"void  ()\" flags=\"\" iflags=\"0\">\r\n" +
+				"      <pt visit=\"0\" pos=\"8\" len=\"2\" fid=\"1\" sl=\"22\" sc=\"3\" el=\"22\" ec=\"4\" />\r\n" +
+				"      <pt visit=\"0\" pos=\"7\" len=\"1\" fid=\"1\" sl=\"21\" sc=\"3\" el=\"21\" ec=\"4\" />\r\n" +
+				"      <pt visit=\"0\" pos=\"0\" len=\"7\" fid=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"18\" />\r\n" +
+				"    </Method>\r\n" +
+				"  </Type>\r\n" +
+				"</PartCoverReport>";
 
-			results = new CodeCoverageResults(new StringReader(xml));
-			if (results.Modules.Count > 0) {
-				CodeCoverageModule module = results.Modules[0];
-				if (module.Methods.Count > 2) {
-					setterMethod = module.Methods[0];
-					getterMethod = module.Methods[1];
-					method = module.Methods[2];
-					methodWithPropertyFlagsButInvalidName = module.Methods[3];
-				}
-			}
+			base.CreateCodeCoverageResults(xml);			
 		}
 		
 		[Test]
-		public void GetterMethodName()
+		public void MethodName_GetterMethod_ReturnsExpectedGetterName()
 		{
-			Assert.AreEqual("get_Count", getterMethod.Name);
+			string name = GetterMethod.Name;
+			string expectedName = "get_Count";
+			Assert.AreEqual(expectedName, name);
+		}
+		
+		CodeCoverageMethod GetterMethod {
+			get { return base.FirstModuleSecondMethod; }
 		}
 		
 		[Test]
-		public void GetterMethodIsProperty()
+		public void MethodIsProperty_GetterMethod_ReturnsTrue()
 		{
-			Assert.IsTrue(getterMethod.IsProperty);
+			bool result = GetterMethod.IsProperty;
+			Assert.IsTrue(result);
 		}
 		
 		[Test]
-		public void NameOfMethodWithPropertyFlagsButInvalidName()
+		public void MethodName_NameOfMethodWithPropertyFlagsButInvalidName_ReturnsMethodName()
 		{
-			Assert.AreEqual("PropertyFlagsButJustAMethod", methodWithPropertyFlagsButInvalidName.Name);
+			string name = MethodWithPropertyFlagsButInvalidName.Name;
+			string expectedName = "PropertyFlagsButJustAMethod";
+			Assert.AreEqual(expectedName, name);
+		}
+		
+		CodeCoverageMethod MethodWithPropertyFlagsButInvalidName {
+			get { return FirstModule.Methods[3]; }
 		}
 		
 		[Test]
-		public void SetterMethodName()
+		public void MethodName_SetterMethod_ReturnsSetterMethodName()
 		{
-			Assert.AreEqual("set_Count", setterMethod.Name);
+			string name = SetterMethod.Name;
+			string expectedName = "set_Count";
+			Assert.AreEqual(expectedName, name);
+		}
+		
+		CodeCoverageMethod SetterMethod {
+			get { return FirstModuleFirstMethod; }
 		}
 		
 		[Test]
-		public void SetterMethodIsProperty()
+		public void MethodIsProperty_SetterMethod_ReturnsTrue()
 		{
-			Assert.IsTrue(setterMethod.IsProperty);
+			bool result = SetterMethod.IsProperty;
+			Assert.IsTrue(result);
 		}		
 		
 		[Test]
-		public void OrdinaryMethodName()
+		public void MethodName_OrdinaryMethod_ReturnsMethodName()
 		{
-			Assert.AreEqual("get_NotAProperty", method.Name);
+			string name = OrdinaryMethod.Name;
+			string expectedName = "get_NotAProperty";
+			Assert.AreEqual(expectedName, name);
+		}
+		
+		CodeCoverageMethod OrdinaryMethod {
+			get { return FirstModule.Methods[2]; }
 		}
 		
 		[Test]
-		public void OrdinaryMethodIsNotProperty()
+		public void MethodIsProperty_OrdinaryMethod_ReturnsFalse()
 		{
-			Assert.IsFalse(method.IsProperty);
+			bool result = OrdinaryMethod.IsProperty;
+			Assert.IsFalse(result);
 		}
 		
 		/// <summary>
 		/// Only methods with get_ or set_ as the start of the name are marked as properties.
 		/// </summary>
 		[Test]
-		public void MethodWithPropertyFlagButInvalidNameIsNotMarkedAsProperty()
+		public void MethodIsProperty_MethodWithPropertyFlagButInvalidName_IsNotMarkedAsProperty()
 		{
-			Assert.IsFalse(methodWithPropertyFlagsButInvalidName.IsProperty);
+			bool result = MethodWithPropertyFlagsButInvalidName.IsProperty;
+			Assert.IsFalse(result);
 		}
 	}
 }

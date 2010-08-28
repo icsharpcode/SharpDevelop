@@ -30,15 +30,15 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SharpDevelopReports\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>..\..\..\..\..\AddIns\Misc\SharpDevelopReports\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>PdbOnly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SharpDevelopReports\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\Misc\SharpDevelopReports\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>false</DebugSymbols>

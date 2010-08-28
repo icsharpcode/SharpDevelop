@@ -20,7 +20,7 @@ namespace ICSharpCode.UnitTesting
 		UnitTestBuildProjectFactory buildProjectFactory = new UnitTestBuildProjectFactory();
 		UnitTestBuildOptions buildOptions = new UnitTestBuildOptions();
 		MessageViewCategory unitTestCategory = TestService.UnitTestMessageView;
-		IMessageService messageService = ServiceManager.Instance.MessageService;
+		UnitTestMessageService messageService = new UnitTestMessageService();
 		UnitTestSaveAllFilesCommand saveAllFilesCommand = new UnitTestSaveAllFilesCommand();
 		IStatusBarService statusBarService = WorkbenchSingleton.StatusBar;
 		
@@ -52,7 +52,7 @@ namespace ICSharpCode.UnitTesting
 			get { return UnitTestsPad.Instance; }
 		}
 		
-		public IMessageService MessageService {
+		public IUnitTestMessageService MessageService {
 			get { return messageService; }
 		}
 		

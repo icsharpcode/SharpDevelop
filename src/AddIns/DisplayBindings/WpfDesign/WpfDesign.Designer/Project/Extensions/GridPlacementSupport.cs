@@ -25,6 +25,7 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 	public sealed class GridPlacementSupport : SnaplinePlacementBehavior
 	{
 		Grid grid;
+		private bool enteredIntoNewContainer;
 		
 		protected override void OnInitialized()
 		{
@@ -145,11 +146,19 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				return VerticalAlignment.Top;
 		}
 		
+		public override void EnterContainer(PlacementOperation operation)
+		{
+			enteredIntoNewContainer=true;
+			grid.UpdateLayout();
+			base.EnterContainer(operation);
+		}
+		
 		GrayOutDesignerExceptActiveArea grayOut;
 		
 		public override void EndPlacement(PlacementOperation operation)
 		{
 			GrayOutDesignerExceptActiveArea.Stop(ref grayOut);
+			enteredIntoNewContainer=false;
 			base.EndPlacement(operation);
 		}
 		
@@ -180,9 +189,10 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 			
 			HorizontalAlignment ha = (HorizontalAlignment)info.Item.Properties[FrameworkElement.HorizontalAlignmentProperty].ValueOnInstance;
 			VerticalAlignment va = (VerticalAlignment)info.Item.Properties[FrameworkElement.VerticalAlignmentProperty].ValueOnInstance;
-			ha = SuggestHorizontalAlignment(info.Bounds, availableSpaceRect);
-			va = SuggestVerticalAlignment(info.Bounds, availableSpaceRect);
-			
+			if(enteredIntoNewContainer){
+				ha = SuggestHorizontalAlignment(info.Bounds, availableSpaceRect);
+				va = SuggestVerticalAlignment(info.Bounds, availableSpaceRect);
+			}
 			info.Item.Properties[FrameworkElement.HorizontalAlignmentProperty].SetValue(ha);
 			info.Item.Properties[FrameworkElement.VerticalAlignmentProperty].SetValue(va);
 			
@@ -197,14 +207,28 @@ namespace ICSharpCode.WpfDesign.Designer.Extensions
 				margin.Bottom = GetRowOffset(bottomRowIndex + 1) - info.Bounds.Bottom;
 			info.Item.Properties[FrameworkElement.MarginProperty].SetValue(margin);
 			
-			if (ha == HorizontalAlignment.Stretch)
-				info.Item.Properties[FrameworkElement.WidthProperty].Reset();
-			else
+			var widthIsSet = info.Item.Properties[FrameworkElement.WidthProperty].IsSet;
+			var heightIsSet = info.Item.Properties[FrameworkElement.HeightProperty].IsSet;
+			if (!widthIsSet)
+			{
+				if (ha == HorizontalAlignment.Stretch)
+					info.Item.Properties[FrameworkElement.WidthProperty].Reset();
+				else
+					info.Item.Properties[FrameworkElement.WidthProperty].SetValue(info.Bounds.Width);
+			}
+			else {
 				info.Item.Properties[FrameworkElement.WidthProperty].SetValue(info.Bounds.Width);
-			if (va == VerticalAlignment.Stretch)
-				info.Item.Properties[FrameworkElement.HeightProperty].Reset();
-			else
+			}
+			if (!heightIsSet)
+			{
+				if (va == VerticalAlignment.Stretch)
+					info.Item.Properties[FrameworkElement.HeightProperty].Reset();
+				else
+					info.Item.Properties[FrameworkElement.HeightProperty].SetValue(info.Bounds.Height);
+			}
+			else {
 				info.Item.Properties[FrameworkElement.HeightProperty].SetValue(info.Bounds.Height);
+			}
 		}
 		
 		public override void LeaveContainer(PlacementOperation operation)

@@ -879,11 +879,29 @@ De geselecteerde code bevat een break commando zonder de insluitende lus. Wijzig
   <data name="AddIns.UsageDataCollector.Title" xml:space="preserve">
     <value>Gebruiksgegevens verzamelaar</value>
   </data>
+  <data name="AddIns.VBNetBinding.CodeCompletion.QuestionmarkEqualsItem.Description" xml:space="preserve">
+    <value>Laat SharpDevelop het type uitzoeken, gebaseerd op de initialisatiefunctie.</value>
+  </data>
   <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
     <value>Matrix kolommen en rijen bewerken</value>
   </data>
   <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle" xml:space="preserve">
     <value>Eigenschappen onttrekken als stijl</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ErrorNoSelection" xml:space="preserve">
+    <value>Geen geldig element geselecteerd!</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.PropertyColumn" xml:space="preserve">
+    <value>Naam van Eigenschap/Gebeurtenis</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ReplaceQuestion" xml:space="preserve">
+    <value>Met de geselecteerde control is al een stijl verbonden. Wilt u deze stijl vervangen door de nieuw gemaakte stijl?</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.StyleName" xml:space="preserve">
+    <value>Stijl naam:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ValueColumn" xml:space="preserve">
+    <value>Waarde van de eigenschap</value>
   </data>
   <data name="AddIns.XamlBinding.Menu.GroupInto" xml:space="preserve">
     <value>Groeperen</value>
@@ -929,6 +947,9 @@ De geselecteerde code bevat een break commando zonder de insluitende lus. Wijzig
   </data>
   <data name="AddIns.XamlBinding.Options.UseExtensionCompletion" xml:space="preserve">
     <value>Gebruik markup extentie completeren</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.UseHighlighting" xml:space="preserve">
+    <value>Geavanceerd markeren gebruiken</value>
   </data>
   <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss" xml:space="preserve">
     <value>Het bestand kan niet zonder gegevens verlies met de momentele encodering ${encoding} worden opgeslagen.</value>
@@ -2127,6 +2148,9 @@ Wilt u het nieuwe bestand toevoegen aan project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.CodeTemplate.ExtensionsLabel" xml:space="preserve">
     <value>&amp;Uitbreidingen</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.Keyword" xml:space="preserve">
+    <value>Sleutelwoord toewijzing</value>
   </data>
   <data name="Dialog.Options.CodeTemplate.PressTabToInsertTemplate" xml:space="preserve">
     <value>Druk Tab om dit sjabloon in te voegen.</value>
@@ -4234,6 +4258,9 @@ Noot: Dit beïnvloed eigen aangepaste opmaak niet.</value>
   <data name="ICSharpCode.SharpDevelop.Commands.SaveFileAs.FileSavedCaption" xml:space="preserve">
     <value>Bestand opgeslagen</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.TabStrip.NavigateToFileInProjectBrowser" xml:space="preserve">
+    <value>Naar bestand in project browser navigeren</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Commands.VBConvertProjectToCSharp" xml:space="preserve">
     <value>Van VB.NET naar C#</value>
   </data>
@@ -5045,6 +5072,36 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="ICSharpCode.WixBinding.WixVisualStudioExtensionTitle" xml:space="preserve">
     <value>Visual Studio extensie</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Copy" xml:space="preserve">
+    <value>Kopieëren</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Cut" xml:space="preserve">
+    <value>Knippen</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Outline" xml:space="preserve">
+    <value>Overzicht</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Paste" xml:space="preserve">
+    <value>Invoegen</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Properties" xml:space="preserve">
+    <value>Eigenschappen</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Redo" xml:space="preserve">
+    <value>Opnieuw</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Remove" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Tools" xml:space="preserve">
+    <value>Hulpmiddelen</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Undo" xml:space="preserve">
+    <value>Ongedaan maken</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.ViewXAML" xml:space="preserve">
+    <value>XAML weergeven</value>
   </data>
   <data name="ICSharpCode.XmlEditor.AddAttributeDialog.CustomAttributeLabel" xml:space="preserve">
     <value>Aangepast:</value>
@@ -5865,6 +5922,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="ProjectComponent.ContextMenu.Clean" xml:space="preserve">
     <value>Opscho&amp;nen</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.CollapseAll" xml:space="preserve">
+    <value>Alles invouwen</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.Delete.Question" xml:space="preserve">
     <value>Wilt u '${FileName}' definitief verwijderen?</value>
   </data>
@@ -6246,6 +6306,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="SharpDevelop.HexEditor.StreamAdded" xml:space="preserve">
     <value>Stream toegevoegd!</value>
   </data>
+  <data name="SharpDevelop.Refactoring.BaseClassesOf" xml:space="preserve">
+    <value>Basis klassen van $(Name)</value>
+  </data>
   <data name="SharpDevelop.Refactoring.CannotPerformOperationBecauseOfSyntaxErrors" xml:space="preserve">
     <value>Bewerking kan niet worden uitgevoerd, want de broncode bevat fouten:</value>
   </data>
@@ -6285,8 +6348,14 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="SharpDevelop.Refactoring.ExtractInterfaceCommand" xml:space="preserve">
     <value>Extract interface</value>
   </data>
+  <data name="SharpDevelop.Refactoring.FindBaseClassesCommand" xml:space="preserve">
+    <value>Basis klassen vinden</value>
+  </data>
   <data name="SharpDevelop.Refactoring.FindDerivedClassesCommand" xml:space="preserve">
     <value>Vind afgeleidde klassen</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.FindDerivedClassesOrOverridesCommand" xml:space="preserve">
+    <value>Afgeleide symbolen vinden</value>
   </data>
   <data name="SharpDevelop.Refactoring.FindingReferences" xml:space="preserve">
     <value>Referenties zoeken...</value>
@@ -6988,6 +7057,12 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   <data name="Templates.File.Struct.Name" xml:space="preserve">
     <value>Struct</value>
   </data>
+  <data name="Templates.File.Structure.Description" xml:space="preserve">
+    <value>Een structuur declaratie, inclusief Equals() en GetHashCode() implementatie.</value>
+  </data>
+  <data name="Templates.File.Structure.Name" xml:space="preserve">
+    <value>Structuur</value>
+  </data>
   <data name="Templates.File.Text.EmptyText.Name" xml:space="preserve">
     <value>Leeg tekstbestand</value>
   </data>
@@ -7182,6 +7257,12 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   </data>
   <data name="Templates.Project.SharpDevelopMacro.Name" xml:space="preserve">
     <value>Eztra menu ingang</value>
+  </data>
+  <data name="Templates.Project.SilverlightApplication.Description" xml:space="preserve">
+    <value>Project voor het maken van een Silverlight applicatie.</value>
+  </data>
+  <data name="Templates.Project.SilverlightApplication.Name" xml:space="preserve">
+    <value>Silverlight applicatie</value>
   </data>
   <data name="Templates.Project.SysTrayIcon.Description" xml:space="preserve">
     <value>Een project waarin een applicatie wordt gemaakt met een pictogram in het meldingengebied van de taakbalk.</value>

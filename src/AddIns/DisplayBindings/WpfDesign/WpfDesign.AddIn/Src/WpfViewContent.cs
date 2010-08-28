@@ -8,11 +8,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Xml;
 
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -32,6 +35,9 @@ namespace ICSharpCode.WpfDesign.AddIn
 		public WpfViewContent(OpenedFile file) : base(file)
 		{
 			BasicMetadata.Register();
+			var outlineContent = GetService(typeof(IOutlineContentHost));
+			if(outlineContent==null)
+				this.Services.AddService(typeof(IOutlineContentHost),Outline);
 			
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
 			this.IsActiveViewContentChanged += OnIsActiveViewContentChanged;
@@ -39,7 +45,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		static WpfViewContent()
 		{
-			DragDropExceptionHandler.UnhandledException += delegate(object sender, ThreadExceptionEventArgs e) { 
+			DragDropExceptionHandler.UnhandledException += delegate(object sender, ThreadExceptionEventArgs e) {
 				ICSharpCode.Core.MessageService.ShowException(e.Exception);
 			};
 		}
@@ -59,12 +65,17 @@ namespace ICSharpCode.WpfDesign.AddIn
 		{
 			Debug.Assert(file == this.PrimaryFile);
 			
+			_stream = new MemoryStream();
+			stream.CopyTo(_stream);
+			stream.Position = 0;
+			
 			if (designer == null) {
 				// initialize designer on first load
 				designer = new DesignSurface();
 				this.UserContent = designer;
 				InitPropertyEditor();
 			}
+			this.UserContent=designer;
 			if (outline != null) {
 				outline.Root = null;
 			}
@@ -80,45 +91,70 @@ namespace ICSharpCode.WpfDesign.AddIn
 						context.Services.AddService(typeof(ChooseClassServiceBase), new IdeChooseClassService());
 					});
 				settings.TypeFinder = MyTypeFinder.Create(this.PrimaryFile);
-				
-				designer.LoadDesigner(r, settings);
-				
-				UpdateTasks();
-				
-				if (outline != null && designer.DesignContext != null && designer.DesignContext.RootItem != null) {
-					outline.Root = OutlineNode.Create(designer.DesignContext.RootItem);
+				try{
+					settings.ReportErrors=UpdateTasks;
+					designer.LoadDesigner(r, settings);
+					
+					designer.ContextMenuOpening += (sender, e) => MenuService.ShowContextMenu(e.OriginalSource as UIElement, designer, "/AddIns/WpfDesign/Designer/ContextMenu");
+					
+					if (outline != null && designer.DesignContext != null && designer.DesignContext.RootItem != null) {
+						outline.Root = OutlineNode.Create(designer.DesignContext.RootItem);
+					}
+					
+					propertyGridView.PropertyGrid.SelectedItems = null;
+					designer.DesignContext.Services.Selection.SelectionChanged += OnSelectionChanged;
+					designer.DesignContext.Services.GetService<UndoService>().UndoStackChanged += OnUndoStackChanged;
 				}
-				
-				propertyGridView.PropertyGrid.SelectedItems = null;
-				designer.DesignContext.Services.Selection.SelectionChanged += OnSelectionChanged;
-				designer.DesignContext.Services.GetService<UndoService>().UndoStackChanged += OnUndoStackChanged;
+				catch
+				{
+					this.UserContent=new WpfDocumentError();
+				}
 			}
 		}
+		
+		
+		private MemoryStream _stream;
 		
 		protected override void SaveInternal(OpenedFile file, System.IO.Stream stream)
 		{
-			XmlWriterSettings settings = new XmlWriterSettings();
-			settings.Indent = true;
-			settings.IndentChars = EditorControlService.GlobalOptions.IndentationString;
-			settings.NewLineOnAttributes = true;
-			using (XmlWriter xmlWriter = XmlTextWriter.Create(stream, settings)) {
-				designer.SaveDesigner(xmlWriter);
+			if(designer.DesignContext!=null){
+				XmlWriterSettings settings = new XmlWriterSettings();
+				settings.Indent = true;
+				settings.IndentChars = EditorControlService.GlobalOptions.IndentationString;
+				settings.NewLineOnAttributes = true;
+				using (XmlWriter xmlWriter = XmlTextWriter.Create(stream, settings)) {
+					designer.SaveDesigner(xmlWriter);
+				}
 			}
+			else{
+				if(_stream.CanRead){
+					_stream.Position = 0;
+					using (var reader = new StreamReader(_stream))
+						using (var writer = new StreamWriter(stream)) {
+						writer.Write(reader.ReadToEnd());
+					}
+				}
+			}
+			
 		}
 		
-		void UpdateTasks()
+		void UpdateTasks(XamlErrorService xamlErrorService)
 		{
+			Debug.Assert(xamlErrorService!=null);
 			foreach (var task in tasks) {
 				TaskService.Remove(task);
 			}
 			
 			tasks.Clear();
 			
-			var xamlErrorService = designer.DesignContext.Services.GetService<XamlErrorService>();
 			foreach (var error in xamlErrorService.Errors) {
 				var task = new Task(PrimaryFile.FileName, error.Message, error.Column - 1, error.Line - 1, TaskType.Error);
 				tasks.Add(task);
 				TaskService.Add(task);
+			}
+			
+			if (xamlErrorService.Errors.Count != 0) {
+				WorkbenchSingleton.Workbench.GetPad(typeof (ErrorListPad)).BringPadToFront();
 			}
 		}
 		

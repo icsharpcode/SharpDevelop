@@ -9,7 +9,7 @@
 		<Category>VBNet</Category>
 		<Icon>VBNet.Project.EmptyProject</Icon>
 		<Description>${res:Templates.Project.EmptyProject.Description}</Description>
-		<SupportedTargetFrameworks>v2.0;CF</SupportedTargetFrameworks>
+		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<Project language = "VBNet">

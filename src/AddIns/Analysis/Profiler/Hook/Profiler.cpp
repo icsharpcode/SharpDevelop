@@ -18,18 +18,15 @@
 #include <intrin.h>
 #include "ProfilerMetaData.h"
 
-STDMETHODIMP_(ULONG) CProfiler::AddRef() 
-{
+STDMETHODIMP_(ULONG) CProfiler::AddRef() {
 	return 1;
 }
 
-STDMETHODIMP_(ULONG) CProfiler::Release() 
-{
+STDMETHODIMP_(ULONG) CProfiler::Release() {
 	return 1;
 }
 
-HRESULT CProfiler::QueryInterface(const IID &riid, LPVOID *ppv)
-{
+HRESULT CProfiler::QueryInterface(const IID &riid, LPVOID *ppv) {
   *ppv = nullptr;
   if(IsEqualIID(riid, IID_IUnknown) ||
 	 IsEqualIID(riid, IID_ICorProfilerCallback) ||
@@ -44,8 +41,7 @@ HRESULT CProfiler::QueryInterface(const IID &riid, LPVOID *ppv)
 
 // ----  CALLBACK FUNCTIONS ------------------
 
-__declspec(noinline) void FunctionEnterCreateNewRoot(ThreadLocalData *data, const ULONGLONG &tsc)
-{
+__declspec(noinline) void FunctionEnterCreateNewRoot(ThreadLocalData *data, const ULONGLONG &tsc) {
 	DebugWriteLine(L"Creating new root");
 	// first function call on this thread
 	// create a new root node for this thread
@@ -53,8 +49,7 @@ __declspec(noinline) void FunctionEnterCreateNewRoot(ThreadLocalData *data, cons
 	DebugWriteLine(L"Created new root");
 }
 
-void CProfiler::EnterLock(ThreadLocalData *data)
-{
+void CProfiler::EnterLock(ThreadLocalData *data) {
 	data->inLock = 1;
 	_ReadWriteBarrier(); _mm_mfence();
 
@@ -67,8 +62,7 @@ void CProfiler::EnterLock(ThreadLocalData *data)
 	}
 }
 
-ASSEMBLER_CALLBACK FunctionEnterGlobal(int functionID)
-{
+ASSEMBLER_CALLBACK FunctionEnterGlobal(int functionID) {
 	ThreadLocalData *data = getThreadLocalData();
 	
 	if (data == nullptr) {
@@ -116,8 +110,7 @@ EXIT:
 	data->inLock = 0;
 }
 
-void DetachFromThread(ThreadLocalData *data)
-{
+void DetachFromThread(ThreadLocalData *data) {
 	if (data != nullptr) {
 		DebugWriteLine(L"DetachFromThread %d", data->threadID);
 		ULONGLONG tsc = __rdtsc();
@@ -129,8 +122,7 @@ void DetachFromThread(ThreadLocalData *data)
 	}
 }
 
-ASSEMBLER_CALLBACK FunctionLeaveGlobal()
-{
+ASSEMBLER_CALLBACK FunctionLeaveGlobal() {
 	ThreadLocalData *data = getThreadLocalData();
 
 	profiler.EnterLock(data);
@@ -154,8 +146,7 @@ EXIT:
 	data->inLock = 0;
 }
 
-ASSEMBLER_CALLBACK FunctionTailcallGlobal()
-{
+ASSEMBLER_CALLBACK FunctionTailcallGlobal() {
 	DebugWriteLine(L"FunctionTailcallGlobal");
 	// handle tail calls A->B as leave A, enter B, ...
 	FunctionLeaveGlobal();
@@ -180,13 +171,11 @@ int getNewPosFunctionID() {
 }
 
 // this function is called by the CLR when a function has been mapped to an ID
-UINT_PTR CProfiler::FunctionMapper(FunctionID functionID, BOOL *)
-{
+UINT_PTR CProfiler::FunctionMapper(FunctionID functionID, BOOL *) {
 	return profiler.MapFunction(functionID, nullptr);
 }
 
-UINT_PTR CProfiler::MapFunction(FunctionID functionID, const WCHAR **sigOutput)
-{
+UINT_PTR CProfiler::MapFunction(FunctionID functionID, const WCHAR **sigOutput) {
 	mapFunctionCriticalSection.Enter();
 	int clientData = 0;
 	
@@ -233,15 +222,13 @@ FunctionInfo *CProfiler::CreateNewRoot() {
 	return newThreadRoot;
 }
 
-void CProfiler::MovedRootChild(FunctionInfo *newRootChild)
-{
+void CProfiler::MovedRootChild(FunctionInfo *newRootChild) {
 	rootElementCriticalSection.Enter();
 	sharedMemoryHeader->RootFuncInfo->AddOrUpdateChild(newRootChild);
 	rootElementCriticalSection.Leave();
 }
 
-CProfiler::CProfiler()
-{
+CProfiler::CProfiler() {
 	this->pICorProfilerInfo = nullptr;
 	this->pICorProfilerInfo2 = nullptr;
 	this->sigReader = nullptr;
@@ -250,8 +237,7 @@ CProfiler::CProfiler()
 // ----  ICorProfilerCallback IMPLEMENTATION ------------------
 
 // called when the profiling object is created by the CLR
-STDMETHODIMP CProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
-{
+STDMETHODIMP CProfiler::Initialize(IUnknown *pICorProfilerInfoUnk) {
 	#ifdef DEBUG
 	MessageBox(nullptr, TEXT("CProfiler::Initialize - Attach debugger now!"), TEXT("Attach debugger"), MB_OK);
 	//__debugbreak();
@@ -305,15 +291,13 @@ STDMETHODIMP CProfiler::Initialize(IUnknown *pICorProfilerInfoUnk)
 }
 
 // called when the profiler is being terminated by the CLR
-STDMETHODIMP CProfiler::Shutdown()
-{
+STDMETHODIMP CProfiler::Shutdown() {
 	LogString(L"Shutdown...");
 
     return S_OK;
 }
 
-int CProfiler::InitializeCommunication()
-{	
+int CProfiler::InitializeCommunication() {
 	DebugWriteLine(L"Looking for Shared Memory...");
 	TCHAR sharedMemName[68];
 	memset(sharedMemName, 0, sizeof(sharedMemName));
@@ -379,8 +363,7 @@ int CProfiler::InitializeCommunication()
 }
 
 // Writes a string to the log file.  Uses the same calling convention as printf.
-void CProfiler::LogString(WCHAR *pszFmtString, ...)
-{
+void CProfiler::LogString(WCHAR *pszFmtString, ...) {
 	WCHAR szBuffer[2 * 4096];
 
 	va_list args;
@@ -394,18 +377,17 @@ void CProfiler::LogString(WCHAR *pszFmtString, ...)
 	nativeToManagedCriticalSection.Leave();
 }
 
-HRESULT CProfiler::SetEventMask()
-{
+HRESULT CProfiler::SetEventMask() {
 	DWORD eventMask = COR_PRF_MONITOR_ENTERLEAVE | COR_PRF_MONITOR_THREADS | 
 		COR_PRF_MONITOR_FUNCTION_UNLOADS | COR_PRF_MONITOR_CLR_EXCEPTIONS |
-		COR_PRF_MONITOR_EXCEPTIONS | COR_PRF_MONITOR_JIT_COMPILATION |
-		COR_PRF_MONITOR_MODULE_LOADS;
+		COR_PRF_MONITOR_EXCEPTIONS;
+	if (sharedMemoryHeader->trackEvents)
+		eventMask = eventMask | COR_PRF_MONITOR_MODULE_LOADS/* | COR_PRF_MONITOR_JIT_COMPILATION*/;
 	return pICorProfilerInfo->SetEventMask(eventMask);
 }
 
 // THREAD CALLBACK FUNCTIONS
-STDMETHODIMP CProfiler::ThreadAssignedToOSThread(ThreadID managedThreadID, DWORD osThreadID)
-{
+STDMETHODIMP CProfiler::ThreadAssignedToOSThread(ThreadID managedThreadID, DWORD osThreadID) {
 	this->threadMapCriticalSection.Enter();
 	DebugWriteLine(L"ThreadAssignedToOSThread %d, %d", managedThreadID, osThreadID);
 	
@@ -429,8 +411,7 @@ STDMETHODIMP CProfiler::ThreadAssignedToOSThread(ThreadID managedThreadID, DWORD
 	return S_OK;
 }
 
-STDMETHODIMP CProfiler::ThreadNameChanged(ThreadID threadID, ULONG cchName, WCHAR name[])
-{
+STDMETHODIMP CProfiler::ThreadNameChanged(ThreadID threadID, ULONG cchName, WCHAR name[]) {
 	this->threadMapCriticalSection.Enter();
 	DebugWriteLine(L"ThreadNameChanged %d, %s", threadID, name);
 	
@@ -459,8 +440,7 @@ STDMETHODIMP CProfiler::ThreadNameChanged(ThreadID threadID, ULONG cchName, WCHA
 }
 
 // UNLOAD CALLBACK FUNCTIONS
-STDMETHODIMP CProfiler::FunctionUnloadStarted(FunctionID functionID)
-{
+STDMETHODIMP CProfiler::FunctionUnloadStarted(FunctionID functionID) {
 	mapFunctionCriticalSection.Enter();
 	DebugWriteLine(L"FunctionUnloadStarted %d", functionID);
 	
@@ -469,8 +449,7 @@ STDMETHODIMP CProfiler::FunctionUnloadStarted(FunctionID functionID)
     return S_OK;
 }
 
-STDMETHODIMP CProfiler::ThreadCreated(ThreadID threadID)
-{
+STDMETHODIMP CProfiler::ThreadCreated(ThreadID threadID) {
 	this->threadMapCriticalSection.Enter();
 	DebugWriteLine(L"ThreadCreated %d", threadID);
 	
@@ -490,8 +469,7 @@ STDMETHODIMP CProfiler::ThreadCreated(ThreadID threadID)
 	return S_OK;
 }
 
-STDMETHODIMP CProfiler::ThreadDestroyed(ThreadID threadID)
-{
+STDMETHODIMP CProfiler::ThreadDestroyed(ThreadID threadID) {
 	this->threadMapCriticalSection.Enter();
 	DebugWriteLine(L"ThreadDestroyed %d", threadID);
 	
@@ -510,23 +488,23 @@ STDMETHODIMP CProfiler::ThreadDestroyed(ThreadID threadID)
 	return S_OK;
 }
 
-STDMETHODIMP CProfiler::ExceptionThrown(ObjectID)
-{
+STDMETHODIMP CProfiler::ExceptionThrown(ObjectID) {
 	DebugWriteLine(L"ExceptionThrown");
     return S_OK;
 }
 
-STDMETHODIMP CProfiler::ExceptionUnwindFunctionLeave()
-{
+STDMETHODIMP CProfiler::ExceptionUnwindFunctionLeave() {
 	DebugWriteLine(L"ExceptionUnwindFunctionLeave");
 	FunctionLeaveGlobal();
     return S_OK;
 }
 
-STDMETHODIMP CProfiler::JITCompilationStarted(FunctionID functionID, BOOL /*fIsSafeToBlock*/)
-{
+STDMETHODIMP CProfiler::JITCompilationStarted(FunctionID functionID, BOOL /*fIsSafeToBlock*/) {
 	WCHAR *name;
 	int nameId = (int)MapFunction(functionID, (const WCHAR **)(&name));
+	
+	if (name == nullptr)
+		return S_OK;
 	
 	for (int i = 0; i < CONSOLE_GROUP_LENGTH; i++) {
 		if (wcsstr(consoleGroupList[i], name) != nullptr)
@@ -546,14 +524,12 @@ STDMETHODIMP CProfiler::JITCompilationStarted(FunctionID functionID, BOOL /*fIsS
 	return S_OK;
 }
 
-void CProfiler::Activate()
-{
+void CProfiler::Activate() {
 	ThreadLocalData *data = getThreadLocalData();
 	data->active = true;
 }
 
-void CProfiler::Deactivate()
-{
+void CProfiler::Deactivate() {
 	ThreadLocalData *data = getThreadLocalData();
 	data->active = false;
 }
@@ -563,8 +539,7 @@ const ULONG TINY_HEADER_SIZE = 0x1;    /* 1 byte */
 const ULONG MAX_CODE_SIZE_TINY = 0x40; /* 64 bytes */
 const WORD  DEFAULT_MAX_STACK = 0x8;   /* default stack depth in slots */
 
-void CProfiler::Rewrite(FunctionID functionID, int type, int nameId)
-{
+void CProfiler::Rewrite(FunctionID functionID, int type, int nameId) {
 	ModuleID moduleID;
 	mdToken token;
 	HRESULT hr = S_OK;
@@ -715,8 +690,7 @@ void CProfiler::Rewrite(FunctionID functionID, int type, int nameId)
 
 int CProfiler::SetInjectionCode(IMetaDataImport *metaData, byte *buffer, int *size,
 									mdMethodDef activateCall, mdMethodDef loggerCall, mdMethodDef deactivateCall,
-									int type, int nameId)
-{
+									int type, int nameId) {
 	HRESULT hr = S_OK;
 	
 	int start = *size;
@@ -797,8 +771,7 @@ int CProfiler::SetInjectionCode(IMetaDataImport *metaData, byte *buffer, int *si
 	return *size - start;
 }
 
-void CProfiler::ConvertToFat(byte *target, int *size)
-{
+void CProfiler::ConvertToFat(byte *target, int *size) {
 	COR_ILMETHOD_FAT *targetTable =  (COR_ILMETHOD_FAT *)target;
     memset(targetTable, 0, FAT_HEADER_SIZE);
     targetTable->Flags = CorILMethod_FatFormat;
@@ -810,8 +783,7 @@ void CProfiler::ConvertToFat(byte *target, int *size)
 /// <summary>
 /// Moves all offsets in SEH section tables by the given count of bytes.
 /// </summary>
-void CProfiler::FixSEHSections(const COR_ILMETHOD_SECT *sections, int offset)
-{
+void CProfiler::FixSEHSections(const COR_ILMETHOD_SECT *sections, int offset) {
     while (sections) {
         if (sections->Kind() == CorILMethod_Sect_EHTable) {
             COR_ILMETHOD_SECT_EH *peh = (COR_ILMETHOD_SECT_EH *) sections;
@@ -845,8 +817,7 @@ void CProfiler::FixSEHSections(const COR_ILMETHOD_SECT *sections, int offset)
     } 
 }
 
-bool CProfiler::CreateMethod(IMetaDataEmit *emitter, const WCHAR *name, PCCOR_SIGNATURE sig, mdMethodDef *methodDefinition, mdToken moduleRef)
-{
+bool CProfiler::CreateMethod(IMetaDataEmit *emitter, const WCHAR *name, PCCOR_SIGNATURE sig, mdMethodDef *methodDefinition, mdToken moduleRef) {
 	HRESULT hr = emitter->DefineMethod(mdTokenNil, name, mdPublic | mdStatic | mdPinvokeImpl, sig, sizeof(sig), 0, miIL | miManaged, methodDefinition);
 	
 	if (!SUCCEEDED(hr))
@@ -860,8 +831,7 @@ bool CProfiler::CreateMethod(IMetaDataEmit *emitter, const WCHAR *name, PCCOR_SI
 	return true;
 }
 
-STDMETHODIMP CProfiler::ModuleLoadFinished(ModuleID moduleID, HRESULT /*hrStatus*/)
-{
+STDMETHODIMP CProfiler::ModuleLoadFinished(ModuleID moduleID, HRESULT /*hrStatus*/) {
 	HRESULT hr = S_OK;
 	
 	IMetaDataEmit *pIMetaDataEmit = nullptr;
@@ -890,7 +860,7 @@ STDMETHODIMP CProfiler::ModuleLoadFinished(ModuleID moduleID, HRESULT /*hrStatus
 	mdMethodDef activator;
 	if (!CreateMethod(pIMetaDataEmit, L"ActivateProfiler", rgSig, &activator, moduleRef))
 		goto CLEANUP;
-		
+
 	mdMethodDef logger;
 	hr = pIMetaDataEmit->DefineMethod(mdTokenNil, L"LogEvent", mdPublic | mdStatic | mdPinvokeImpl, loggerSig, sizeof(loggerSig), 0, miIL | miManaged, &logger);
 	
@@ -912,6 +882,13 @@ STDMETHODIMP CProfiler::ModuleLoadFinished(ModuleID moduleID, HRESULT /*hrStatus
 	}
 	
 CLEANUP:
+	#ifdef DEBUG
+	if (!SUCCEEDED(hr)) {
+		MessageBox(nullptr, TEXT("Crashed in ModuleLoadFinished"), TEXT("Crash!"), MB_OK);
+		__debugbreak();
+	}
+	#endif
+	
 	if (pIMetaDataEmit != nullptr)
 		pIMetaDataEmit->Release();
 	

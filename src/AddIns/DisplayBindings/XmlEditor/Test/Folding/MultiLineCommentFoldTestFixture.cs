@@ -6,13 +6,7 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
 
@@ -21,10 +15,7 @@ namespace XmlEditor.Tests.Folding
 	[TestFixture]
 	public class MultiLineCommentFoldTestFixture
 	{
-		XmlFoldParser parser;
-		ICompilationUnit unit;
-		DefaultXmlFileExtensions extensions;
-		DefaultProjectContent projectContent;
+		XmlFoldParserHelper helper;
 		
 		[SetUp]
 		public void Init()
@@ -34,37 +25,38 @@ namespace XmlEditor.Tests.Folding
 				"second line -->\r\n" +
 				"<a />";
 			
-			projectContent = new DefaultProjectContent();
-			MockTextBuffer textBuffer = new MockTextBuffer(xml);
+			helper = new XmlFoldParserHelper();
+			helper.CreateParser();
+			helper.GetFolds(xml);
+		}
+		
+		[Test]
+		public void GetFolds_MultiLineComment_ReturnsOneFold()
+		{
+			int count = helper.Folds.Count;
+			Assert.AreEqual(1, count);
+		}
+		
+		[Test]
+		public void GetFolds_MultiLineComment_FoldNameIsCommentTagsWithFirstLineOfTextBetween()
+		{
+			string name = helper.GetFirstFoldName();
+			string expectedName = "<!-- first line -->";
+			Assert.AreEqual(expectedName, name);
+		}
+		
+		[Test]
+		public void GetFolds_MultiLineComment_FoldRegionContainsEntireComment()
+		{
+			DomRegion region = helper.GetFirstFoldRegion();
 			
-			extensions = new DefaultXmlFileExtensions(null);
-			XmlEditorOptions options = new XmlEditorOptions(new Properties());
-			MockParserService parserService = new MockParserService();
-			parser = new XmlFoldParser(extensions, options, parserService);
-			unit = parser.Parse(projectContent, @"d:\projects\a.xml", textBuffer);
-		}
-		
-		[Test]
-		public void FoldingRegionsHasOneFold()
-		{
-			Assert.AreEqual(1, unit.FoldingRegions.Count);
-		}
-		
-		[Test]
-		public void FoldNameIsCommentTagsWithFirstLineOfTextBetween()
-		{
-			Assert.AreEqual("<!-- first line -->", unit.FoldingRegions[0].Name);
-		}
-		
-		[Test]
-		public void FoldRegionContainsEntireComment()
-		{
 			int beginLine = 1;
 			int beginColumn = 1;
 			int endLine = 2;
 			int endColumn = 16;
 			DomRegion expectedRegion = new DomRegion(beginLine, beginColumn, endLine, endColumn);
-			Assert.AreEqual(expectedRegion, unit.FoldingRegions[0].Region);
+			
+			Assert.AreEqual(expectedRegion, region);
 		}
 	}
 }

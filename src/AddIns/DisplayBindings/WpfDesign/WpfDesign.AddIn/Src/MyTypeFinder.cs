@@ -37,6 +37,15 @@ namespace ICSharpCode.WpfDesign.AddIn
 				}
 				return null;
 			} else {
+				// Load any other assembly from the solution.
+				foreach(var project in ProjectService.OpenSolution.Projects) {
+					if(project.AssemblyName==name) {
+						var pc = ParserService.GetProjectContent(project);
+						if (pc != null)
+							return this.typeResolutionService.LoadAssembly(pc);
+					}
+
+				}
 				return base.LoadAssembly(name);
 			}
 		}

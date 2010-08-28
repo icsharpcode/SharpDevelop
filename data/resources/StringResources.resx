@@ -884,6 +884,9 @@ SharpDevelop can collect this information and upload it automatically.</value>
   <data name="AddIns.UsageDataCollector.Title" xml:space="preserve">
     <value>Usage Data Collector</value>
   </data>
+  <data name="AddIns.VBNetBinding.CodeCompletion.QuestionmarkEqualsItem.Description" xml:space="preserve">
+    <value>Let SharpDevelop figure out the type based on the initializer.</value>
+  </data>
   <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
     <value>Edit grid columns and rows</value>
   </data>
@@ -949,6 +952,9 @@ SharpDevelop can collect this information and upload it automatically.</value>
   </data>
   <data name="AddIns.XamlBinding.Options.UseExtensionCompletion" xml:space="preserve">
     <value>Use markup extension completion</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.UseHighlighting" xml:space="preserve">
+    <value>Use advanced highlighting</value>
   </data>
   <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss" xml:space="preserve">
     <value>The file cannot be saved with the current encoding ${encoding} without losing data.</value>
@@ -4263,6 +4269,9 @@ All changes get lost.</value>
   <data name="ICSharpCode.SharpDevelop.Commands.SaveFileAs.FileSavedCaption" xml:space="preserve">
     <value>File Saved</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.TabStrip.NavigateToFileInProjectBrowser" xml:space="preserve">
+    <value>Navigate to file in project browser</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Commands.VBConvertProjectToCSharp" xml:space="preserve">
     <value>From VB.NET to C#</value>
   </data>
@@ -4850,6 +4859,9 @@ Goto 'Options-&gt;Visual Style' and change the current language ambience.</value
   <data name="ICSharpCode.UnitTesting.TestMenu" xml:space="preserve">
     <value>&amp;Test</value>
   </data>
+  <data name="ICSharpCode.UnitTesting.TestRunnerNotFoundMessageFormat" xml:space="preserve">
+    <value>Unable to run unit tests. The file '{0}' cannot be found.</value>
+  </data>
   <data name="ICSharpCode.WixBinding.AddCompilerExtensionsDialog.Title" xml:space="preserve">
     <value>Add Extensions</value>
   </data>
@@ -5078,6 +5090,36 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ICSharpCode.WixBinding.WixVisualStudioExtensionTitle" xml:space="preserve">
     <value>Visual Studio Extension</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Cut" xml:space="preserve">
+    <value>Cut</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Outline" xml:space="preserve">
+    <value>Outline</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Paste" xml:space="preserve">
+    <value>Paste</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Properties" xml:space="preserve">
+    <value>Properties</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Redo" xml:space="preserve">
+    <value>Redo</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Remove" xml:space="preserve">
+    <value>Remove</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Tools" xml:space="preserve">
+    <value>Tools</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Undo" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.ViewXAML" xml:space="preserve">
+    <value>View XAML</value>
   </data>
   <data name="ICSharpCode.XmlEditor.AddAttributeDialog.CustomAttributeLabel" xml:space="preserve">
     <value>Custom:</value>
@@ -5898,6 +5940,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ProjectComponent.ContextMenu.Clean" xml:space="preserve">
     <value>Clea&amp;n</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.CollapseAll" xml:space="preserve">
+    <value>Collapse all</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.Delete.Question" xml:space="preserve">
     <value>Delete '${FileName}' permanently?</value>
   </data>
@@ -6279,6 +6324,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="SharpDevelop.HexEditor.StreamAdded" xml:space="preserve">
     <value>Stream added!</value>
   </data>
+  <data name="SharpDevelop.Refactoring.BaseClassesOf" xml:space="preserve">
+    <value>Base classes of ${Name}</value>
+  </data>
   <data name="SharpDevelop.Refactoring.CannotPerformOperationBecauseOfSyntaxErrors" xml:space="preserve">
     <value>The operation cannot be performed because your source code contains errors:</value>
   </data>
@@ -6318,8 +6366,14 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="SharpDevelop.Refactoring.ExtractInterfaceCommand" xml:space="preserve">
     <value>Extract Interface</value>
   </data>
+  <data name="SharpDevelop.Refactoring.FindBaseClassesCommand" xml:space="preserve">
+    <value>Find base classes</value>
+  </data>
   <data name="SharpDevelop.Refactoring.FindDerivedClassesCommand" xml:space="preserve">
     <value>Find &amp;derived classes</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.FindDerivedClassesOrOverridesCommand" xml:space="preserve">
+    <value>Find derived symbols</value>
   </data>
   <data name="SharpDevelop.Refactoring.FindingReferences" xml:space="preserve">
     <value>Finding references...</value>
@@ -7020,6 +7074,12 @@ The resources files have been renamed/moved accordingly.</value>
   <data name="Templates.File.Struct.Name" xml:space="preserve">
     <value>Struct</value>
   </data>
+  <data name="Templates.File.Structure.Description" xml:space="preserve">
+    <value>A structure declaration including Equals() and GetHashCode() implementation.</value>
+  </data>
+  <data name="Templates.File.Structure.Name" xml:space="preserve">
+    <value>Structure</value>
+  </data>
   <data name="Templates.File.Text.EmptyText.Name" xml:space="preserve">
     <value>Empty text file</value>
   </data>
@@ -7214,6 +7274,12 @@ The resources files have been renamed/moved accordingly.</value>
   </data>
   <data name="Templates.Project.SharpDevelopMacro.Name" xml:space="preserve">
     <value>Tools menu entry</value>
+  </data>
+  <data name="Templates.Project.SilverlightApplication.Description" xml:space="preserve">
+    <value>A project that creates a Silverlight application.</value>
+  </data>
+  <data name="Templates.Project.SilverlightApplication.Name" xml:space="preserve">
+    <value>Silverlight Application</value>
   </data>
   <data name="Templates.Project.SysTrayIcon.Description" xml:space="preserve">
     <value>A project that creates an application with a icon in the notification area on the taskbar.</value>

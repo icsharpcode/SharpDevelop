@@ -57,5 +57,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 			return null;
 		}
+		
+		public static readonly DependencyProperty ItemTemplateProperty =
+			DependencyProperty.Register("ItemTemplate", typeof(DataTemplate), typeof(ContextActionsControl),
+			                            new FrameworkPropertyMetadata());
+		
+		public DataTemplate ItemTemplate {
+			get { return (DataTemplate)GetValue(ItemTemplateProperty); }
+			set { SetValue(ItemTemplateProperty, value); }
+		}
 	}
 }

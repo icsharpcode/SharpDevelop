@@ -30,14 +30,16 @@ namespace ICSharpCode.XamlBinding
 			// try to access the ICSharpCode.AvalonEdit.Rendering.TextView
 			// of this ITextEditor
 			this.textView = editor.GetService(typeof(TextView)) as TextView;
-						
+			
 			// if editor is not an AvalonEdit.TextEditor
 			// GetService returns null
 			if (textView != null) {
 				if (WorkbenchSingleton.Workbench != null) {
-					colorizer = new XamlColorizer(editor, textView);
-					// attach the colorizer
-					textView.LineTransformers.Add(colorizer);
+					if (XamlBindingOptions.UseAdvancedHighlighting) {
+						colorizer = new XamlColorizer(editor, textView);
+						// attach the colorizer
+						textView.LineTransformers.Add(colorizer);
+					}
 					// add the XamlOutlineContentHost, which manages the tree view
 					contentHost = new XamlOutlineContentHost(editor);
 					textView.Services.AddService(typeof(IOutlineContentHost), contentHost);
@@ -52,13 +54,17 @@ namespace ICSharpCode.XamlBinding
 			base.Detach();
 			
 			// if we added something before
-			if (textView != null && colorizer != null && contentHost != null) {
+			if (textView != null) {
 				// remove and dispose everything we added
-				textView.LineTransformers.Remove(colorizer);
-				textView.Services.RemoveService(typeof(IOutlineContentHost));
+				if (colorizer != null) {
+					textView.LineTransformers.Remove(colorizer);
+					colorizer.Dispose();
+				}
+				if (contentHost != null) {
+					textView.Services.RemoveService(typeof(IOutlineContentHost));
+					contentHost.Dispose();
+				}
 				textView.Services.RemoveService(typeof(XamlLanguageBinding));
-				colorizer.Dispose();
-				contentHost.Dispose();
 			}
 		}
 	}

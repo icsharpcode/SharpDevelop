@@ -253,6 +253,9 @@ Laden Sie ein AddIn aus dem Internet herunter, klicken Sie auf "AddIn installier
   <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
     <value>Microsoft Help Viewer</value>
   </data>
+  <data name="AddIns.HelpViewer.OfflineFeatureRequestMsg" xml:space="preserve">
+    <value>Sie haben eine Offlinefunktion im Online Hilfe Modus gewählt. Sie müssen den Modus verändern um diese Funktion verwenden zu können.</value>
+  </data>
   <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
     <value>Suchen</value>
   </data>
@@ -875,11 +878,32 @@ Sie müssen diese Dateien speichern, bevor die Operation ausgeführt werden kann
   <data name="AddIns.UsageDataCollector.ShowCollectedData" xml:space="preserve">
     <value>Gesammelte Daten anzeigen</value>
   </data>
+  <data name="AddIns.UsageDataCollector.Title" xml:space="preserve">
+    <value>Usage Data Collector</value>
+  </data>
+  <data name="AddIns.VBNetBinding.CodeCompletion.QuestionmarkEqualsItem.Description" xml:space="preserve">
+    <value>SharpDevelop soll den Typ basierend auf dem Initialisierungsausdruck erkennen.</value>
+  </data>
   <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
     <value>Grid-Zeilen und Spalten bearbeiten</value>
   </data>
   <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle" xml:space="preserve">
     <value>Eigenschaften als Stil extrahieren</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ErrorNoSelection" xml:space="preserve">
+    <value>Kein gültiges Element gewählt!</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.PropertyColumn" xml:space="preserve">
+    <value>Eigenschafts-/Ereignisname</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ReplaceQuestion" xml:space="preserve">
+    <value>Das ausgewählte Steuerelement hat schon einen Stil zugewiesen. Wollen Sie den Stil mit dem neu erstellten Stil überschreiben?</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.StyleName" xml:space="preserve">
+    <value>Stilname:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ValueColumn" xml:space="preserve">
+    <value>Eigenschaftswert</value>
   </data>
   <data name="AddIns.XamlBinding.Menu.GroupInto" xml:space="preserve">
     <value>Gruppieren in</value>
@@ -925,6 +949,9 @@ Sie müssen diese Dateien speichern, bevor die Operation ausgeführt werden kann
   </data>
   <data name="AddIns.XamlBinding.Options.UseExtensionCompletion" xml:space="preserve">
     <value>Vervollständigung von Markup Erweiterungen aktivieren</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.UseHighlighting" xml:space="preserve">
+    <value>Erweiterte Hervorhebung verwenden</value>
   </data>
   <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss" xml:space="preserve">
     <value>Die Datei kann nicht mit der aktuellen Codierung ${encoding} ohne Datenverlust gespeichert werden.</value>
@@ -2119,6 +2146,9 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   <data name="Dialog.Options.CodeTemplate.ExtensionsLabel" xml:space="preserve">
     <value>Er&amp;weiterungen</value>
   </data>
+  <data name="Dialog.Options.CodeTemplate.Keyword" xml:space="preserve">
+    <value>Schlüsselwortzuweisung</value>
+  </data>
   <data name="Dialog.Options.CodeTemplate.PressTabToInsertTemplate" xml:space="preserve">
     <value>Drücken Sie Tab, um diese Codeschablone einzufügen.</value>
   </data>
@@ -2718,6 +2748,9 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
     <value>Markierung an Zeilen&amp;ende anzeigen</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox" xml:space="preserve">
+    <value>Symbole hervorheben</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
     <value>&amp;Passende Klammer markieren</value>
@@ -3827,6 +3860,9 @@ Wenn NCover installiert ist, geben sie den Pfad der Anwendung in den ${res:ICSha
   <data name="ICSharpCode.CppBinding.ProjectOptions.AdditionalOptions" xml:space="preserve">
     <value>Zusätzliche Optionen</value>
   </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker" xml:space="preserve">
+    <value>Linker</value>
+  </data>
   <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.AdditionalLibs" xml:space="preserve">
     <value>Zusätzliche Dateien linken</value>
   </data>
@@ -3856,6 +3892,9 @@ Wenn NCover installiert ist, geben sie den Pfad der Anwendung in den ${res:ICSha
   </data>
   <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Undefinitions" xml:space="preserve">
     <value>Entferne Definitionen folgender Präprozessor-Symbole</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.SymbolLabel" xml:space="preserve">
+    <value>Symbol</value>
   </data>
   <data name="ICSharpCode.FiletypeRegisterer.BinaryResourceFilesFileAssozisation" xml:space="preserve">
     <value>.NET Ressourcendatei (binär)</value>
@@ -4386,6 +4425,9 @@ wurde von ausserhalb der Applikation geändert wollen Sie die Datei neu laden?</
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GeneralOptionsPanel.PanelName" xml:space="preserve">
     <value>Allgemein</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GenerateVisualStudioStyleEventHandlers" xml:space="preserve">
+    <value>Ereignishandler im Stil von Visual Studio erstellen</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.GridPropertiesGroupBox" xml:space="preserve">
     <value>Rastereinstellungen</value>
   </data>
@@ -4746,8 +4788,11 @@ Grund: Der Wert zu dem zurückgesetzt werden soll ist ungültig weil sich eine a
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion" xml:space="preserve">
     <value>Die Projektdatei ${projectLocation} existiert schon. Wollen Sie die vorhandene Datei überschreiben?</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
+    <value>Die Datei(en) ${fileNames} existieren bereits, wollen Sie die existierende Datei überschreiben?</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
-    <value>Die Datei existiert schon</value>
+    <value>Die Datei(en) existieren schon</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Lade ${Filename}...</value>
@@ -4800,6 +4845,9 @@ In "Optionen-&gt;Visueller Stil" kann die Sprachumgebung neu eingestellt werden.
   </data>
   <data name="ICSharpCode.UnitTesting.RunWithDebugger" xml:space="preserve">
     <value>Mit Debugger starten</value>
+  </data>
+  <data name="ICSharpCode.UnitTesting.StatusBarProgressLabel" xml:space="preserve">
+    <value>Teste ${Name}...</value>
   </data>
   <data name="ICSharpCode.UnitTesting.TestMenu" xml:space="preserve">
     <value>&amp;Test</value>
@@ -6875,6 +6923,9 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Leere Datei</value>
   </data>
+  <data name="Templates.File.Exception.Name" xml:space="preserve">
+    <value>Ausnahme</value>
+  </data>
   <data name="Templates.File.GtkSharpWindow.Description" xml:space="preserve">
     <value>Ein Fenster für eine Gtk#-Anwendung.</value>
   </data>
@@ -6974,6 +7025,12 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   <data name="Templates.File.Struct.Name" xml:space="preserve">
     <value>Struct</value>
   </data>
+  <data name="Templates.File.Structure.Description" xml:space="preserve">
+    <value>Deklaration für eine Struktur mit Equals() und GetHashCode() Implementation.</value>
+  </data>
+  <data name="Templates.File.Structure.Name" xml:space="preserve">
+    <value>Struktur</value>
+  </data>
   <data name="Templates.File.Text.EmptyText.Name" xml:space="preserve">
     <value>Leere Textdatei</value>
   </data>
@@ -6997,6 +7054,9 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   </data>
   <data name="Templates.File.WebForm.Name" xml:space="preserve">
     <value>ASP.NET Web Form</value>
+  </data>
+  <data name="Templates.File.WebHandler.Name" xml:space="preserve">
+    <value>ASP.NET Web Handler</value>
   </data>
   <data name="Templates.File.WebService.Description" xml:space="preserve">
     <value>Komponentenrahmen für ASMX Web Service.</value>

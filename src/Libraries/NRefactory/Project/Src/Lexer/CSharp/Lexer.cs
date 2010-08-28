@@ -97,7 +97,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 							}
 						}
 						break;
-					default: 
+					default:
 						isAtLineBegin = false; // non-ws chars are handled here
 						ch = (char)nextChar;
 						if (Char.IsLetter(ch) || ch == '_' || ch == '\\') {
@@ -166,7 +166,9 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				}
 				
 				if (curPos < MAX_IDENTIFIER_LENGTH) {
-					identBuffer[curPos++] = ch;
+					if (ch != '\0') // only add character, if it is valid
+									 // prevents \ from being added
+						identBuffer[curPos++] = ch;
 				} else {
 					errors.Error(Line, Col, String.Format("Identifier too long"));
 					while (IsIdentifierPart(ReaderPeek())) {

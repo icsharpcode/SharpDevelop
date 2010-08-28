@@ -6,13 +6,6 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
 
@@ -21,35 +14,22 @@ namespace XmlEditor.Tests.Folding
 	[TestFixture]
 	public class ShowElementAttributesForElementWithNoAttributesTestFixture
 	{
-		XmlFoldParser parser;
-		ICompilationUnit unit;
-		DefaultXmlFileExtensions extensions;
-		DefaultProjectContent projectContent;
-		MockTextBuffer textBuffer;
-		XmlEditorOptions options;
+		XmlFoldParserHelper helper;
 		
-		[SetUp]
-		public void Init()
+		[Test]
+		public void GetFolds_RootElementOnlyWithNoAttributes_FoldNameIsElementNameOnlyWithNoExtraSpaceAtTheEnd()
 		{
 			string xml = 
 				"<root>\r\n" +
 				"</root>";
 			
-			projectContent = new DefaultProjectContent();
-			textBuffer = new MockTextBuffer(xml);
-			extensions = new DefaultXmlFileExtensions(null);
-			options = new XmlEditorOptions(new Properties());
-			options.ShowAttributesWhenFolded = true;
-			MockParserService parserService = new MockParserService();
-
-			parser = new XmlFoldParser(extensions, options, parserService);
-			unit = parser.Parse(projectContent, @"d:\projects\a.xml", textBuffer);
+			helper = new XmlFoldParserHelper();
+			helper.CreateParser();
+			helper.GetFolds(xml);
+			
+			string name = helper.GetFirstFoldName();
+		
+			Assert.AreEqual("<root>", name);
 		}
-
-		[Test]
-		public void FoldNameIsElementNameOnlyWithNoExtraSpaceAtTheEnd()
-		{
-			Assert.AreEqual("<root>", unit.FoldingRegions[0].Name);
-		}		
 	}
 }

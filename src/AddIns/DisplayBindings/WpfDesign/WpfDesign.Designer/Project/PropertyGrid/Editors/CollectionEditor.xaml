@@ -1,0 +1,24 @@
+﻿<Window x:Class="ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.CollectionEditor" 
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        xmlns:OutlineView="clr-namespace:ICSharpCode.WpfDesign.Designer.OutlineView" 
+        xmlns:PropertyGrid="clr-namespace:ICSharpCode.WpfDesign.Designer.PropertyGrid" 
+        Height="438" Width="750" Title="Edit Items" WindowStartupLocation="CenterScreen">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="3*" />
+			<ColumnDefinition Width="100" />
+			<ColumnDefinition Width="4*" />
+		</Grid.ColumnDefinitions>
+		<Border BorderBrush="Black" BorderThickness="0.75" Margin="10" SnapsToDevicePixels="True">
+			<OutlineView:Outline x:Name="Outline" />
+		</Border>
+		<Button Content="Add" Click="OnAddItemClicked" Grid.Column="1" Height="23" HorizontalAlignment="Left" Margin="0,12,0,0" Name="AddItem" VerticalAlignment="Top" Width="75" />
+		<Button Content="Remove" Click="OnRemoveItemClicked" Grid.Column="1" Height="23" HorizontalAlignment="Left" Margin="0,42,0,0" Name="RemoveItem" VerticalAlignment="Top" Width="75" />
+		<Button Content="Move Up" Click="OnMoveItemUpClicked" Grid.Column="1" Height="23" HorizontalAlignment="Left" Margin="0,72,0,0" Name="MoveUpItem" VerticalAlignment="Top" Width="75" />
+		<Button Content="Move Down" Click="OnMoveItemDownClicked" Grid.Column="1" Height="23" HorizontalAlignment="Left" Margin="0,102,0,0" Name="MoveDownItem" VerticalAlignment="Top" Width="75" />
+		<Border BorderBrush="Black" BorderThickness="0.75" Margin="10" Grid.Column="2" SnapsToDevicePixels="True">
+			<PropertyGrid:PropertyGridView x:Name="PropertyGridView" Margin="0.5" />
+		</Border>
+	</Grid>
+</Window>

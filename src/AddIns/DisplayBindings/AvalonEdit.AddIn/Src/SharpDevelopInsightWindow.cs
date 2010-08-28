@@ -95,6 +95,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public SharpDevelopInsightWindow(TextArea textArea) : base(textArea)
 		{
 			this.Provider = new SDItemProvider(this);
+			this.Provider.PropertyChanged += delegate(object sender, PropertyChangedEventArgs e) {
+				if (e.PropertyName == "SelectedIndex")
+					OnSelectedItemChanged(EventArgs.Empty);
+			};
 			this.Style = ICSharpCode.Core.Presentation.GlobalStyles.WindowStyle;
 			AttachEvents();
 		}
@@ -113,16 +117,26 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			set {
 				this.Provider.SelectedIndex = items.IndexOf(value);
+				OnSelectedItemChanged(EventArgs.Empty);
 			}
 		}
 		
 		TextDocument document;
+		Caret caret;
 		
 		void AttachEvents()
 		{
 			document = this.TextArea.Document;
+			caret = this.TextArea.Caret;
 			if (document != null)
 				document.Changed += document_Changed;
+			if (caret != null)
+				caret.PositionChanged += caret_PositionChanged;
+		}
+
+		void caret_PositionChanged(object sender, EventArgs e)
+		{
+			OnCaretPositionChanged(e);
 		}
 		
 		/// <inheritdoc/>
@@ -130,6 +144,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (document != null)
 				document.Changed -= document_Changed;
+			if (caret != null)
+				caret.PositionChanged -= caret_PositionChanged;
 			base.DetachEvents();
 		}
 		
@@ -140,5 +156,23 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		public event EventHandler<TextChangeEventArgs> DocumentChanged;
+		
+		public event EventHandler SelectedItemChanged;
+		
+		protected virtual void OnSelectedItemChanged(EventArgs e)
+		{
+			if (SelectedItemChanged != null) {
+				SelectedItemChanged(this, e);
+			}
+		}
+		
+		public event EventHandler CaretPositionChanged;
+		
+		protected virtual void OnCaretPositionChanged(EventArgs e)
+		{
+			if (CaretPositionChanged != null) {
+				CaretPositionChanged(this, e);
+			}
+		}
 	}
 }

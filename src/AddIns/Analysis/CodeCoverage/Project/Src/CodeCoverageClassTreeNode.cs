@@ -13,26 +13,39 @@ namespace ICSharpCode.CodeCoverage
 {
 	public class CodeCoverageClassTreeNode : CodeCoverageMethodsTreeNode
 	{
-		public CodeCoverageClassTreeNode(string name, List<CodeCoverageMethod> methods) : base(name, methods, CodeCoverageImageListIndex.Class)
+		public CodeCoverageClassTreeNode(string name, List<CodeCoverageMethod> methods)
+			: base(name, methods, CodeCoverageImageListIndex.Class)
 		{
 		}
 
 		public override void ActivateItem()
 		{
-			if (Nodes.Count > 0) {
-				CodeCoverageMethodTreeNode methodNode = Nodes[0] as CodeCoverageMethodTreeNode;
-				if (methodNode != null && methodNode.Method.SequencePoints.Count > 0) {
-					FileService.OpenFile(methodNode.Method.SequencePoints[0].Document);
+			foreach (CodeCoverageTreeNode node in Nodes) {
+				CodeCoverageMethodTreeNode methodNode = node as CodeCoverageMethodTreeNode;
+				CodeCoverageMethodsTreeNode methodsNode = node as CodeCoverageMethodsTreeNode;
+				
+				bool openedFile = false;
+				if (methodNode != null) {
+					openedFile = OpenFile(methodNode.Method.SequencePoints);
+				} else if ((methodsNode != null) && (methodsNode.Methods.Count > 0)) {
+					openedFile = OpenFile(methodsNode.Methods[0].SequencePoints);
 				}
-				// when the first node is a property:
-				CodeCoverageMethodsTreeNode methodsNode = Nodes[0] as CodeCoverageMethodsTreeNode;
-				if (methodsNode != null && methodsNode.Methods.Count > 0) {
-					var sequencePoints = methodsNode.Methods[0].SequencePoints;
-					if (sequencePoints != null) {
-						FileService.OpenFile(sequencePoints[0].Document);
-					}
+				
+				if (openedFile) {
+					break;
 				}
 			}
+		}
+		
+		bool OpenFile(List<CodeCoverageSequencePoint> sequencePoints)
+		{
+			foreach (CodeCoverageSequencePoint point in sequencePoints) {
+				if (point.HasDocument()) {
+					OpenFile(point.Document);
+					return true;
+				}
+			}
+			return false;
 		}
 		
 		protected override void Initialize()
@@ -50,7 +63,7 @@ namespace ICSharpCode.CodeCoverage
 				}
 			}
 			
-			// Add properties.
+			// Add properties.s
 			foreach (CodeCoverageProperty property in properties) {
 				CodeCoveragePropertyTreeNode node = new CodeCoveragePropertyTreeNode(property);
 				node.AddTo(this);

@@ -8,8 +8,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace SharpRefactoring
 {
@@ -35,6 +39,34 @@ namespace SharpRefactoring
 			
 			return instance.AllMembers
 				.SingleOrDefault(m => m.BodyRegion.IsInside(caretLine, caretColumn));
+		}
+		
+		public static NRefactoryResolver CreateResolverForContext(LanguageProperties language, ITextEditor context)
+		{
+			NRefactoryResolver resolver = new NRefactoryResolver(language);
+			resolver.Initialize(ParserService.GetParseInformation(context.FileName), context.Caret.Line, context.Caret.Column);
+			return resolver;
+		}
+		
+		public static bool IsUserCode(this IReturnType rt)
+		{
+			if (rt == null)
+				return false;
+			return IsUserCode(rt.GetUnderlyingClass());
+		}
+		
+		public static bool IsUserCode(this IClass c)
+		{
+			if (c == null)
+				throw new ArgumentNullException("c");
+			return !c.BodyRegion.IsEmpty;
+		}
+		
+		public static bool IsInnerClass(this IClass c)
+		{
+			if (c == null)
+				throw new ArgumentNullException("c");
+			 return c.DeclaringType != null;
 		}
 	}
 }

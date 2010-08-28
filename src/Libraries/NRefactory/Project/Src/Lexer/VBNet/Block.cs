@@ -17,6 +17,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		Global,
 		TypeDeclaration,
 		ObjectCreation,
+		ObjectInitializer,
+		CollectionInitializer,
 		Type,
 		Member,
 		Parameter,

@@ -23,10 +23,17 @@ namespace Debugger.Interop.CorSym
 		{
 			IntPtr pfilename = Marshal.StringToCoTaskMemUni(filename);
 			IntPtr psearchPath = Marshal.StringToCoTaskMemUni(searchPath);
-			ISymUnmanagedReader res = symBinder.GetReaderForFile(importer, pfilename, psearchPath);
+			object res = null;
+			// The method will create the object anyway so we have to use preservesig so that we can release it
+			// failing to do so would lock the assembly
+			int code = symBinder.GetReaderForFile(importer, pfilename, psearchPath, ref res);
 			Marshal.FreeCoTaskMem(pfilename);
 			Marshal.FreeCoTaskMem(psearchPath);
-			return res;
+			if (code != 0) {
+				Marshal.FinalReleaseComObject(res);
+				throw new COMException("", code);
+			}
+			return (ISymUnmanagedReader)res;
 		}
 		
 		// ISymUnmanagedDocument

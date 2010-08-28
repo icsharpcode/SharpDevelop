@@ -7,7 +7,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{3EAA45A9-735C-4AC7-A799-947B93EA449D}</ProjectGuid>
-    <OutputPath>..\..\..\..\AddIns\AddIns\Misc\CodeAnalysis\</OutputPath>
+    <OutputPath>..\..\..\..\AddIns\Analysis\CodeAnalysis\</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <RegisterForComInterop>False</RegisterForComInterop>
@@ -20,7 +20,6 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Debug\</IntermediateOutputPath>
     <Optimize>False</Optimize>
     <DefineConstants>DEBUG;TRACE</DefineConstants>

@@ -135,7 +135,6 @@
     <Compile Include="Folding\EmptyCommentDoesNotCreateFoldTestFixture.cs" />
     <Compile Include="Folding\FoldParserParsesInvalidXmlTestFixture.cs" />
     <Compile Include="Folding\MultiLineCommentFoldTestFixture.cs" />
-    <Compile Include="Folding\OldParseInfoFoldRegionUsedForInvalidXmlTestFixture.cs" />
     <Compile Include="Folding\QualifiedElementFoldTestFixture.cs" />
     <Compile Include="Folding\QualifiedElementWithNoDefinedNamespaceFoldTestFixture.cs" />
     <Compile Include="Folding\ShowElementAttributesForElementWithNoAttributesTestFixture.cs" />
@@ -145,6 +144,7 @@
     <Compile Include="Folding\SingleLineElementDoesNotCreateFoldTestFixture.cs" />
     <Compile Include="Folding\SingleRootElementFoldTestFixture.cs" />
     <Compile Include="Folding\TwoElementFoldsTestFixture.cs" />
+    <Compile Include="Folding\XmlFoldingManagerTests.cs" />
     <Compile Include="Parser\NamespacesInScopeForPathTests.cs" />
     <Compile Include="Parser\XamlMixedNamespaceTestFixture.cs" />
     <Compile Include="Paths\ChangeElementPathDefaultNamespaceTests.cs" />
@@ -233,11 +233,16 @@
     <Compile Include="Schema\AllElementTestFixture.cs" />
     <Compile Include="Parser\InsideAttributeValueTestFixture.cs" />
     <Compile Include="Utils\DerivedXmlSchemaObjectLocation.cs" />
+    <Compile Include="Utils\FakeFoldingManager.cs" />
+    <Compile Include="Utils\FakeXmlFoldParser.cs" />
     <Compile Include="Utils\MockTextEditorProviderViewContent.cs" />
     <Compile Include="Utils\MockViewContent.cs" />
     <Compile Include="Utils\MockWorkbench.cs" />
+    <Compile Include="Utils\NewFoldingHelper.cs" />
     <Compile Include="Utils\Tests\DerivedXmlSchemaObjectLocationTests.cs" />
+    <Compile Include="Utils\Tests\NewFoldingHelperTests.cs" />
     <Compile Include="Utils\Tests\XPathNodeMatchComparisonResultTests.cs" />
+    <Compile Include="Utils\XmlFoldParserHelper.cs" />
     <Compile Include="Utils\XPathNodeMatchComparisonResult.cs" />
     <Compile Include="Utils\DerivedAddXmlNodeDialog.cs" />
     <Compile Include="Utils\DerivedXmlTreeView.cs" />

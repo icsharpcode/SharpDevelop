@@ -148,4 +148,23 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 		}
 	}
+	
+	public class CollapseAll : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
+			if (node is SolutionNode) {
+				// Solution node does not collapse fully, but its subitems stay visible
+				foreach (var subNode in node.Nodes) {
+					var subBrowserNode = subNode as AbstractProjectBrowserTreeNode;
+					if (subBrowserNode != null) {
+						subBrowserNode.Collapse();
+					}
+				}
+			} else {
+				node.Collapse();
+			}
+		}
+	}
 }

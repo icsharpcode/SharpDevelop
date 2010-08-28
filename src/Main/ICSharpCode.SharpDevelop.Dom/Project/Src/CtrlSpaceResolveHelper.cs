@@ -213,6 +213,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public static ResolveResult GetResultFromDeclarationLine(IClass callingClass, IMethodOrProperty callingMember, int caretLine, int caretColumn, ExpressionResult expressionResult)
 		{
 			string expression = expressionResult.Expression;
+			if (expression == null) return null;
 			if (callingClass == null) return null;
 			int pos = expression.IndexOf('(');
 			if (pos >= 0) {

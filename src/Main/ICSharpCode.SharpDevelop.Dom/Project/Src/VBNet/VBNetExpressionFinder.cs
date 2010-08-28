@@ -127,7 +127,11 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				
 				if (ch == '"')
 					inString = !inString;
-				if (ch == '\'' && !inString) {
+				
+				bool isInWord = (i > 0 && char.IsLetterOrDigit(text[i - 1]))
+					|| (i + 1 < text.Length && char.IsLetterOrDigit(text[i + 1]));
+				
+				if ((ch == '\'' || ch == '_') && !inString && !isInWord) {
 					int eol = text.IndexOfAny(new[] { '\r', '\n' }, i);
 					
 					if (eol > -1) {
@@ -210,6 +214,8 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				if (block == null && t.EndLocation > targetPosition)
 					block = p.CurrentBlock;
 				if (block != null && (block.isClosed || expressionDelimiters.Contains(t.Kind) && block == p.CurrentBlock))
+					break;
+				if (t.Kind == Tokens.EOF)
 					break;
 			}
 			

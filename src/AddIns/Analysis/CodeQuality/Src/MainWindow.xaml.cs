@@ -1,294 +1,251 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+
 using GraphSharp.Controls;
 using ICSharpCode.CodeQualityAnalysis.Controls;
-using ICSharpCode.Core.Presentation;
-using ICSharpCode.WpfDesign.Designer.Controls;
 using Microsoft.Win32;
-using Mono.Cecil;
-using Mono.Cecil.Cil;
-using QuickGraph;
-using QuickGraph.Collections;
 
 namespace ICSharpCode.CodeQualityAnalysis
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
-    {
-        private MetricsReader _metricsReader;
+	/// <summary>
+	/// Interaction logic for MainWindow.xaml
+	/// </summary>
+	public partial class MainWindow : Window, INotifyPropertyChanged
+	{
+		private MetricsReader metricsReader;
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		public MetricsReader MetricsReader
+		{
+			get
+			{
+				return metricsReader;
+			}
+			
+			set
+			{
+				metricsReader = value;
+				NotifyPropertyChanged("MetricsReader");
+			}
+		}
 
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+		public MainWindow()
+		{
+			InitializeComponent();
+		}
+		
+		private void NotifyPropertyChanged(string propertyName)
+		{
+			if (PropertyChanged != null)
+				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+		}
 
-        private void btnOpenAssembly_Click(object sender, RoutedEventArgs e)
-        {
-            var fileDialog = new OpenFileDialog
-                                 {
-                                     Filter = "Component Files (*.dll, *.exe)|*.dll;*.exe"
-                                 };
+		private void btnOpenAssembly_Click(object sender, RoutedEventArgs e)
+		{
+			var fileDialog = new OpenFileDialog
+			{
+				Filter = "Component Files (*.dll, *.exe)|*.dll;*.exe"
+			};
 
-            fileDialog.ShowDialog();
+			fileDialog.ShowDialog();
 
-            if (String.IsNullOrEmpty(fileDialog.FileName))
-                return;
+			if (String.IsNullOrEmpty(fileDialog.FileName))
+				return;
+			
+			progressBar.Visibility = Visibility.Visible;
+			assemblyStats.Visibility = Visibility.Hidden;
+			fileAssemblyLoading.Text = System.IO.Path.GetFileName(fileDialog.FileName);
+			
+			var worker = new BackgroundWorker();
+			worker.DoWork += (source, args) => MetricsReader = new MetricsReader(fileDialog.FileName);
+			worker.RunWorkerCompleted += (source, args) => {
+				progressBar.Visibility = Visibility.Hidden;
+				assemblyStats.Visibility = Visibility.Visible;
+				FillMatrix();
+			};
+			
+			worker.RunWorkerAsync();
+		}
+		
+		private void btnRelayout_Click(object sender, RoutedEventArgs e)
+		{
+			graphLayout.Relayout();
+		}
 
-            definitionTree.Items.Clear();
-        
-            _metricsReader = new MetricsReader(fileDialog.FileName);
+		private void btnContinueLayout_Click(object sender, RoutedEventArgs e)
+		{
+			graphLayout.ContinueLayout();
+		}
 
-            FillTree();
+		private void FillMatrix()
+		{
+			var matrix = new DependencyMatrix();
 
-            FillMatrix();
-        }
-        
-        private void btnRelayout_Click(object sender, RoutedEventArgs e)
-        {
-            graphLayout.Relayout();
-        }
+			foreach (var ns in metricsReader.MainModule.Namespaces) {
+				matrix.HeaderRows.Add(new MatrixCell<INode>(ns));
+				foreach (var type in ns.Types) {
+					matrix.HeaderRows.Add(new MatrixCell<INode>(type));
+				}
+				matrix.HeaderColumns.Add(new MatrixCell<INode>(ns));
+				foreach (var type in ns.Types) {
+					matrix.HeaderColumns.Add(new MatrixCell<INode>(type));
+				}
+			}
 
-        private void btnContinueLayout_Click(object sender, RoutedEventArgs e)
-        {
-            graphLayout.ContinueLayout();
-        }
+			matrixControl.Matrix = matrix;
+			matrixControl.DrawMatrix();
+			matrixControl.DrawTree(metricsReader.MainModule);
+		}
 
-        /// <summary>
-        /// Fill tree with module, types and methods and fields
-        /// </summary>
-        private void FillTree()
-        {
-            var itemModule = new MetricTreeViewItem
-                                 {
-                                     Text = _metricsReader.MainModule.Name,
-                                     Dependency = _metricsReader.MainModule,
-                                     Icon = NodeIconService.GetIcon(_metricsReader.MainModule)
-                                 };
+		private void definitionTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+		{
+			var item = definitionTree.SelectedItem as INode;
 
-            definitionTree.Items.Add(itemModule);
-            
-            foreach (var ns in _metricsReader.MainModule.Namespaces)
-            {
-                var nsType = new MetricTreeViewItem
-                                 {
-                                     Text = ns.Name, 
-                                     Dependency = ns, 
-                                     Icon = NodeIconService.GetIcon(ns)
-                                 };
+			if (item != null && item.Dependency != null)
+			{
+				var graph = item.Dependency.BuildDependencyGraph();
+				graphLayout.ChangeGraph(graph);
+			}
+		}
 
-                itemModule.Items.Add(nsType);
+		private void graphLayout_VertexClick(object sender, MouseButtonEventArgs e)
+		{
+			var vertexControl = sender as VertexControl;
+			if (vertexControl != null)
+			{
+				var vertex = vertexControl.Vertex as DependencyVertex;
+				if (vertex != null)
+				{
+					txbTypeInfo.Text = vertex.Node.GetInfo();
+				}
+			}
+		}
 
-                foreach (var type in ns.Types)
-                {
-                    var itemType = new MetricTreeViewItem
-                                       {
-                                           Text = type.Name, 
-                                           Dependency = type, 
-                                           Icon = NodeIconService.GetIcon(type)
-                                       };
+		private void btnResetGraph_Click(object sender, RoutedEventArgs e)
+		{
+			graphLayout.ResetGraph();
+		}
 
-                    nsType.Items.Add(itemType);
+		private void btnSaveImageGraph_Click(object sender, RoutedEventArgs e)
+		{
+			var fileDialog = new SaveFileDialog()
+			{
+				Filter = "PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|GIF (*.gif)|*.gif|BMP (*.bmp)|*.bmp|TIFF (.tiff)|*.tiff"
+			};
 
-                    foreach (var method in type.Methods)
-                    {
-                        var itemMethod = new MetricTreeViewItem
-                                             {
-                                                 Text = method.Name,
-                                                 Dependency = null,
-                                                 Icon = NodeIconService.GetIcon(method)
-                                             };
+			fileDialog.ShowDialog();
 
-                        itemType.Items.Add(itemMethod);
-                    }
+			if (String.IsNullOrEmpty(fileDialog.FileName))
+				return;
 
-                    foreach (var field in type.Fields)
-                    {
-                        var itemField = new MetricTreeViewItem
-                                            {
-                                                Text = field.Name,
-                                                Dependency = null,
-                                                Icon = NodeIconService.GetIcon(field)
-                                            };
+			// render it
+			var renderBitmap = new RenderTargetBitmap((int)graphLayout.ActualWidth,
+			                                          (int)graphLayout.ActualHeight,
+			                                          96d,
+			                                          96d,
+			                                          PixelFormats.Default);
+			renderBitmap.Render(graphLayout);
 
-                        itemType.Items.Add(itemField);
-                    }
-                }
-            }
-        }
+			using (var outStream = new FileStream(fileDialog.FileName, FileMode.Create))
+			{
+				BitmapEncoder encoder;
 
-        private void FillMatrix()
-        {
-            var matrix = new DependencyMatrix();
+				switch (fileDialog.FilterIndex)
+				{
+					case 1:
+						encoder = new PngBitmapEncoder();
+						break;
+					case 2:
+						encoder = new JpegBitmapEncoder();
+						break;
+					case 3:
+						encoder = new GifBitmapEncoder();
+						break;
+					case 4:
+						encoder = new BmpBitmapEncoder();
+						break;
+					case 5:
+						encoder = new TiffBitmapEncoder();
+						break;
+					default:
+						encoder = new PngBitmapEncoder();
+						break;
+				}
+				
+				encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+				encoder.Save(outStream);
+			}
+		}
 
-            foreach (var ns in _metricsReader.MainModule.Namespaces) {
-                matrix.HeaderRows.Add(new MatrixCell<INode>(ns));
-                foreach (var type in ns.Types) {
-                	matrix.HeaderRows.Add(new MatrixCell<INode>(type));
-                }
-                matrix.HeaderColumns.Add(new MatrixCell<INode>(ns));
-                foreach (var type in ns.Types) {
-                	matrix.HeaderColumns.Add(new MatrixCell<INode>(type));
-                }
-            }
+		private void MetricLevel_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			var comboBoxItem = cbxMetrixLevel.SelectedItem as ComboBoxItem;
+			if (comboBoxItem == null) return;
 
-            matrixControl.Matrix = matrix;
-            matrixControl.DrawMatrix();
-        }
+			cbxMetrics.Items.Clear();
 
-        private void definitionTree_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            var item = definitionTree.SelectedItem as MetricTreeViewItem;
+			var content = comboBoxItem.Content.ToString();
 
-            if (item != null && item.Dependency != null)
-            {
-                var graph = item.Dependency.BuildDependencyGraph();
-                graphLayout.ChangeGraph(graph);
-            }
-        }
+			if (content == "Assembly") {
+				//cbxMetrics.Items.Add(new ComboBoxItem { Content = });
+			} else if (content == "Namespace") {
 
-        private void graphLayout_VertexClick(object sender, MouseButtonEventArgs e)
-        {
-            var vertexControl = sender as VertexControl;
-            if (vertexControl != null)
-            {
-                var vertex = vertexControl.Vertex as DependencyVertex;
-                if (vertex != null)
-                {
-                    txbTypeInfo.Text = vertex.Node.GetInfo();
-                }
-            }
-        }
+			} else if (content == "Type") {
 
-        private void btnResetGraph_Click(object sender, RoutedEventArgs e)
-        {
-            graphLayout.ResetGraph();
-        }
+			} else if (content == "Field") {
 
-        private void btnSaveImageGraph_Click(object sender, RoutedEventArgs e)
-        {
-            var fileDialog = new SaveFileDialog()
-            {
-                Filter = "PNG (*.png)|*.png|JPEG (*.jpg)|*.jpg|GIF (*.gif)|*.gif|BMP (*.bmp)|*.bmp|TIFF (.tiff)|*.tiff"
-            };
+			} else if (content == "Method") {
+				cbxMetrics.Items.Add(new ComboBoxItem { Content = "IL instructions" });
+				cbxMetrics.Items.Add(new ComboBoxItem { Content = "Cyclomatic Complexity" });
+				cbxMetrics.Items.Add(new ComboBoxItem { Content = "Variables" });
+			}
+		}
 
-            fileDialog.ShowDialog();
+		private void Metrics_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			var levelItem = cbxMetrixLevel.SelectedItem as ComboBoxItem;
+			if (levelItem == null) return;
 
-            if (String.IsNullOrEmpty(fileDialog.FileName))
-                return;
+			var level = levelItem.Content.ToString();
 
-            // render it
-            var renderBitmap = new RenderTargetBitmap((int)graphLayout.ActualWidth,
-                                                      (int)graphLayout.ActualHeight,
-                                                      96d,
-                                                      96d,
-                                                      PixelFormats.Default);
-            renderBitmap.Render(graphLayout);
+			var metricItem = cbxMetrics.SelectedItem as ComboBoxItem;
+			if (metricItem == null) return;
 
-            using (var outStream = new FileStream(fileDialog.FileName, FileMode.Create))
-            {
-                BitmapEncoder encoder;
+			var metric = metricItem.Content.ToString();
 
-                switch (fileDialog.FilterIndex)
-                {
-                    case 1:
-                        encoder = new PngBitmapEncoder();
-                        break;
-                    case 2:
-                        encoder = new JpegBitmapEncoder();
-                        break;
-                    case 3:
-                        encoder = new GifBitmapEncoder();
-                        break;
-                    case 4:
-                        encoder = new BmpBitmapEncoder();
-                        break;
-                    case 5:
-                        encoder = new TiffBitmapEncoder();
-                        break;
-                    default:
-                        encoder = new PngBitmapEncoder();
-                        break;
-                }
-                    
-                encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
-                encoder.Save(outStream);
-            }
-        }
+			// TODO: Redone this with enums or some smarter way
 
-        private class MetricTreeViewItem : TreeViewItem
-        {
-            private readonly Image _iconControl;
-            private readonly TextBlock _textControl;
-            private BitmapSource _bitmap;
+			if (level == "Assembly") {
+				//cbxMetrics.Items.Add(new ComboBoxItem { Content = });
+			} else if (level == "Namespace") {
 
-            public IDependency Dependency { get; set; }
+			} else if (level == "Type") {
 
-            /// <summary>
-            /// Gets or sets the text content for the item
-            /// </summary>
-            public string Text
-            {
-                get
-                {
-                    return _textControl.Text;
-                }
-                set
-                {
-                    _textControl.Text = value;
-                }
-            }
+			} else if (level == "Field") {
 
-            /// <summary>
-            /// Gets or sets the icon for the item
-            /// </summary>
-            public BitmapSource Icon
-            {
-                get
-                {
-                    return _bitmap;
-                }
-                set
-                {
-                    _iconControl.Source = _bitmap = value;
-                }
-            }
+			} else if (level == "Method") {
+				treemap.ItemsSource = from ns in MetricsReader.MainModule.Namespaces
+									  from type in ns.Types
+									  from method in type.Methods
+									  select method;
 
-            public MetricTreeViewItem()
-            {
-                var stack = new StackPanel
-                {
-                    Orientation = Orientation.Horizontal
-                };
+				if (metric == "IL instructions")
+					treemap.ItemDefinition.ValuePath = "Instructions.Count";
 
-                Header = stack;
+				if (metric == "Cyclomatic Complexity")
+					treemap.ItemDefinition.ValuePath = "CyclomaticComplexity";
 
-                _iconControl = new Image
-                {
-                    Margin = new Thickness(0, 0, 5, 0)
-                };
-
-                _textControl = new TextBlock()
-                {
-                    VerticalAlignment = VerticalAlignment.Center
-                };
-
-                stack.Children.Add(_iconControl);
-                stack.Children.Add(_textControl);
-            }
-        }
-    }
+				if (metric == "Variables")
+					treemap.ItemDefinition.ValuePath = "Variables";
+			}
+		}
+	}
 }

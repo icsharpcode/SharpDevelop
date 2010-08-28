@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using ICSharpCode.Core;
 
 namespace Debugger.AddIn.Visualizers
 {
@@ -17,23 +18,18 @@ namespace Debugger.AddIn.Visualizers
 	/// </summary>
 	public static class VisualizerDescriptors
 	{
-		static ReadOnlyCollection<IVisualizerDescriptor> allDescriptors;
-			
-		static IEnumerable<IVisualizerDescriptor> CreateAllDescriptors()
+		static IList<IVisualizerDescriptor> CreateAllDescriptors()
 		{
-			// these should be obtained from AddIn tree so that it is possible to write add-in for Debugger.AddIn with new visualizers
-			yield return new TextVisualizerDescriptor();
-			yield return new XmlVisualizerDescriptor();
-			yield return new ObjectGraphVisualizerDescriptor();
-			yield return new GridVisualizerDescriptor();
+			return AddInTree.BuildItems<IVisualizerDescriptor>("/SharpDevelop/Services/DebuggerService/Visualizers", null);
 		}
 		
+		static ReadOnlyCollection<IVisualizerDescriptor> descriptors;
 		public static ReadOnlyCollection<IVisualizerDescriptor> GetAllDescriptors()
 		{
-			if (allDescriptors == null) {
-				allDescriptors = CreateAllDescriptors().ToList().AsReadOnly();
+			if (descriptors == null) {
+				descriptors = CreateAllDescriptors().ToList().AsReadOnly();
 			}
-			return allDescriptors;
+			return descriptors;
 		}
 	}
 }

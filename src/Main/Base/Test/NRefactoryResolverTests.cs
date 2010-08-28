@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 				return pc;
 			};
 			lastPC = pc;
-			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
+			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc, ICSharpCode.NRefactory.SupportedLanguage.CSharp);
 			visitor.VisitCompilationUnit(p.CompilationUnit, null);
 			visitor.Cu.FileName = fileName;
 			Assert.AreEqual(0, p.Errors.Count, String.Format("Parse error preparing compilation unit: {0}", p.Errors.ErrorOutput));
@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			pc.ReferencedContents.Add(projectContentRegistry.GetProjectContentForReference("Microsoft.VisualBasic", "Microsoft.VisualBasic"));
 			pc.Language = LanguageProperties.VBNet;
 			lastPC = pc;
-			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
+			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc, ICSharpCode.NRefactory.SupportedLanguage.VBNet);
 			visitor.VBRootNamespace = "RootNamespace";
 			visitor.VisitCompilationUnit(p.CompilationUnit, null);
 			visitor.Cu.FileName = fileName;

@@ -14,7 +14,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SourceAnalysisOverrideSettingsFile>"C:\Program Files\SharpDevelop\3.0\bin\..\AddIns\AddIns\Misc\SourceAnalysis\Settings.SourceAnalysis"</SourceAnalysisOverrideSettingsFile>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SharpRefactoring\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\Misc\SharpRefactoring\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -71,12 +71,22 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\ClassRefactoringSubmenuBuilder.cs" />
     <Compile Include="Src\ContextActions\AddUsing.cs" />
+    <Compile Include="Src\ContextActions\CacheClassAtCaret.cs" />
+    <Compile Include="Src\ContextActions\CheckAssignmentCache.cs" />
+    <Compile Include="Src\ContextActions\CheckAssignmentNull.cs" />
+    <Compile Include="Src\ContextActions\CheckAssignmentNotNull.cs" />
     <Compile Include="Src\ContextActions\DelegateAction.cs" />
     <Compile Include="Src\ContextActions\Extensions.cs" />
-    <Compile Include="Src\ContextActions\FindNodesVisitor.cs" />
+    <Compile Include="Src\ContextActions\FindTypeDeclarationsVisitor.cs" />
     <Compile Include="Src\ContextActions\GenerateMember.cs" />
     <Compile Include="Src\ContextActions\ImplementAbstractClass.cs" />
     <Compile Include="Src\ContextActions\ImplementInterface.cs" />
+    <Compile Include="Src\ContextActions\ImplementInterfaceExplicit.cs" />
+    <Compile Include="Src\ContextActions\MoveClassToFile.cs" />
+    <Compile Include="Src\ContextActions\ParamCheck.cs" />
+    <Compile Include="Src\ContextActions\ParamCheckForNull.cs" />
+    <Compile Include="Src\ContextActions\ParamRangeCheck.cs" />
+    <Compile Include="Src\ContextActions\RenameFileToMatchClassName.cs" />
     <Compile Include="Src\CSharpMethodExtractor.cs" />
     <Compile Include="Src\Extensions.cs" />
     <Compile Include="Src\ExtractMethodCommand.cs" />
@@ -86,6 +96,7 @@
     <Compile Include="Src\Forms\ExtractMethodForm.Designer.cs">
       <DependentUpon>ExtractMethodForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\GenerateCode.cs" />
     <Compile Include="Src\Gui\AbstractInlineRefactorDialog.cs" />
     <Compile Include="Src\Gui\CtorParamWrapper.cs" />
     <Compile Include="Src\Gui\InlineRefactorSnippetElement.cs" />
@@ -107,16 +118,14 @@
     </Compile>
     <Compile Include="Src\Gui\Wrapper.cs" />
     <Compile Include="Src\InsertCtorSnippetRefactoring.cs" />
-    <Compile Include="Src\IntroduceMethod.cs" />
+    <Compile Include="Src\MenuItemFactories\ResolveAttribute.cs" />
+    <Compile Include="Src\MenuItemFactories\ResolveExtensionMethod.cs" />
     <Compile Include="Src\MethodExtractorBase.cs" />
     <Compile Include="Src\OverrideEqualsGetHashCodeMethodsRefactoring.cs" />
     <Compile Include="Src\OverrideToStringMethodRefactoring.cs" />
-    <Compile Include="Src\ParameterCheckRefactoringMenuBuilder.cs" />
     <Compile Include="Src\Options.cs" />
     <Compile Include="Src\RefactoringHelpers.cs" />
     <Compile Include="Src\PropertyRefactoringMenuBuilder.cs" />
-    <Compile Include="Src\ResolveAttribute.cs" />
-    <Compile Include="Src\ResolveExtensionMethod.cs" />
     <Compile Include="Src\SwitchBodySnippetElement.cs" />
     <Compile Include="Src\SwitchSnippetProvider.cs" />
     <Compile Include="Src\Visitors\FindJumpInstructionsVisitor.cs" />
@@ -131,6 +140,7 @@
   <ItemGroup>
     <Folder Include="Src\Gui" />
     <Folder Include="Src\ContextActions" />
+    <Folder Include="Src\MenuItemFactories" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Src\Gui\InsertCtorDialog.xaml" />

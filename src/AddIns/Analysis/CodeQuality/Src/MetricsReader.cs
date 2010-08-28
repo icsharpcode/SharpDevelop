@@ -14,12 +14,16 @@ namespace ICSharpCode.CodeQualityAnalysis
 	public class MetricsReader
 	{
 		IDictionary<MemberReference, string> nameCache;
+		IDictionary<MemberReference, string> fullNameCache;
 		
 		public Module MainModule { get; private set; }
+		public ISet<Module> Modules { get; private set; }
 
 		public MetricsReader(string file)
 		{
 			nameCache = new Dictionary<MemberReference, string>();
+			fullNameCache = new Dictionary<MemberReference, string>();
+			Modules = new HashSet<Module>();
 			ReadAssembly(file);
 		}
 
@@ -31,6 +35,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		{
 			var assembly = AssemblyDefinition.ReadAssembly(file);
 			ReadModule(assembly.MainModule);
+			// support for additional modules but never seen assembly with more than one
 		}
 
 		/// <summary>
@@ -39,10 +44,12 @@ namespace ICSharpCode.CodeQualityAnalysis
 		/// <param name="moduleDefinition">A module which contains information</param>
 		private void ReadModule(ModuleDefinition moduleDefinition)
 		{
-			this.MainModule = new Module()
+			MainModule = new Module()
 			{
 				Name = moduleDefinition.Name
 			};
+			
+			Modules.Add(MainModule);
 
 			if (moduleDefinition.HasTypes)
 				ReadTypes(MainModule, moduleDefinition.Types);
@@ -95,7 +102,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 					var type = CreateType(parentType.Namespace.Module, typeDefinition);
 
 					parentType.NestedTypes.Add(type);
-					type.Owner = parentType;
+					type.DeclaringType = parentType;
 
 					if (typeDefinition.HasNestedTypes)
 						AddNestedTypes(type, typeDefinition.NestedTypes);
@@ -114,6 +121,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 			var type = new Type
 			{
 				Name = FormatTypeName(typeDefinition),
+				FullName = FormatTypeName(typeDefinition, true),
 				IsInterface = typeDefinition.IsInterface,
 				IsEnum = typeDefinition.IsEnum,
 				IsClass = typeDefinition.IsClass,
@@ -168,14 +176,14 @@ namespace ICSharpCode.CodeQualityAnalysis
 					var type =
 						(from n in module.Namespaces
 						 from t in n.Types
-						 where (t.Name == FormatTypeName(typeDefinition))
+						 where t.FullName == FormatTypeName(typeDefinition, true)
 						 select t).SingleOrDefault();
-
+					
 					if (typeDefinition.BaseType != null)
 					{
 						var baseType = (from n in module.Namespaces
 						                from t in n.Types
-						                where (t.Name == FormatTypeName(typeDefinition.BaseType))
+						                where (t.FullName == FormatTypeName(typeDefinition.BaseType, true))
 						                select t).SingleOrDefault();
 
 						type.BaseType = baseType; // if baseType is null so propably inherits from another assembly
@@ -183,8 +191,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 						if (typeDefinition.BaseType.IsGenericInstance)
 						{
 							type.IsBaseTypeGenericInstance = true;
-							type.GenericBaseTypes = ReadGenericArguments(type.Namespace.Module,
-							                                             (GenericInstanceType)typeDefinition.BaseType);
+							type.GenericBaseTypes.UnionWith(ReadGenericArguments(type.Namespace.Module,
+							                                                     (GenericInstanceType)typeDefinition.BaseType));
 						}
 					}
 
@@ -195,7 +203,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 						{
 							var implementedIc = (from n in module.Namespaces
 							                     from t in n.Types
-							                     where (t.Name == FormatTypeName(ic))
+							                     where (t.FullName == FormatTypeName(ic, true))
 							                     select t).SingleOrDefault();
 
 							if (implementedIc != null)
@@ -236,7 +244,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				var e = new Event
 				{
 					Name = eventDefinition.Name,
-					Owner = type
+					DeclaringType = type
 				};
 
 				type.Events.Add(e);
@@ -244,7 +252,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				var declaringType =
 					(from n in type.Namespace.Module.Namespaces
 					 from t in n.Types
-					 where t.Name == FormatTypeName(eventDefinition.EventType)
+					 where t.FullName == FormatTypeName(eventDefinition.EventType, true)
 					 select t).SingleOrDefault();
 
 				e.EventType = declaringType;
@@ -258,7 +266,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 					(from n in type.Namespace.Module.Namespaces
 					 from t in n.Types
 					 from f in t.Fields
-					 where f.Name == e.Name && f.Owner == e.Owner
+					 where f.Name == e.Name && f.DeclaringType == e.DeclaringType
 					 select f).SingleOrDefault();
 
 				if (field != null)
@@ -278,7 +286,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				var field = new Field
 				{
 					Name = fieldDefinition.Name,
-					Owner = type,
+					DeclaringType = type,
 					IsPublic = fieldDefinition.IsPublic,
 					IsPrivate = fieldDefinition.IsPrivate,
 					IsProtected = !fieldDefinition.IsPublic && !fieldDefinition.IsPrivate,
@@ -292,14 +300,14 @@ namespace ICSharpCode.CodeQualityAnalysis
 				var fieldType =
 					(from n in type.Namespace.Module.Namespaces
 					 from t in n.Types
-					 where t.Name == FormatTypeName(fieldDefinition.FieldType)
+					 where t.FullName == FormatTypeName(fieldDefinition.FieldType, true)
 					 select t).SingleOrDefault();
 
 				if (fieldDefinition.FieldType.IsGenericInstance)
 				{
 					field.IsGenericInstance = true;
-					field.GenericTypes = ReadGenericArguments(type.Namespace.Module,
-					                                          (GenericInstanceType)fieldDefinition.FieldType);
+					field.GenericTypes.UnionWith(ReadGenericArguments(type.Namespace.Module,
+					                                                  (GenericInstanceType)fieldDefinition.FieldType));
 				}
 
 				field.FieldType = fieldType;
@@ -318,7 +326,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				var method = new Method
 				{
 					Name = FormatMethodName(methodDefinition),
-					Owner = type,
+					DeclaringType = type,
 					IsConstructor = methodDefinition.IsConstructor,
 					IsPublic = methodDefinition.IsPublic,
 					IsPrivate = methodDefinition.IsPrivate,
@@ -328,13 +336,14 @@ namespace ICSharpCode.CodeQualityAnalysis
 					IsAbstract = methodDefinition.IsAbstract,
 					IsSetter = methodDefinition.IsSetter,
 					IsGetter = methodDefinition.IsGetter,
-					IsVirtual = methodDefinition.IsVirtual
+					IsVirtual = methodDefinition.IsVirtual,
+					Variables = methodDefinition.Body != null ? methodDefinition.Body.Variables.Count : 0
 				};
 
 				var returnType =
 					(from n in type.Namespace.Module.Namespaces
 					 from t in n.Types
-					 where t.Name == FormatTypeName(methodDefinition.ReturnType)
+					 where t.FullName == FormatTypeName(methodDefinition.ReturnType, true)
 					 select t).SingleOrDefault();
 
 				method.ReturnType = returnType; // if null so return type is outside of assembly
@@ -342,8 +351,8 @@ namespace ICSharpCode.CodeQualityAnalysis
 				if (methodDefinition.ReturnType.IsGenericInstance)
 				{
 					method.IsReturnTypeGenericInstance = true;
-					method.GenericReturnTypes = ReadGenericArguments(type.Namespace.Module,
-					                                                 (GenericInstanceType) methodDefinition.ReturnType);
+					method.GenericReturnTypes.UnionWith(ReadGenericArguments(type.Namespace.Module,
+					                                                         (GenericInstanceType) methodDefinition.ReturnType));
 				}
 
 				// reading types from parameters
@@ -352,7 +361,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 					var parameterType =
 						(from n in type.Namespace.Module.Namespaces
 						 from t in n.Types
-						 where t.Name == FormatTypeName(parameter.ParameterType)
+						 where t.FullName == FormatTypeName(parameter.ParameterType, true)
 						 select t).SingleOrDefault();
 
 					if (parameterType != null)
@@ -400,19 +409,28 @@ namespace ICSharpCode.CodeQualityAnalysis
 		/// <param name="methodDefinition">A method definition with instructions</param>
 		/// <param name="instructions">A collection of instructions</param>
 		public void ReadInstructions(Method method, MethodDefinition methodDefinition,
-		                             Collection<Instruction> instructions)
+		                             Collection<Mono.Cecil.Cil.Instruction> instructions)
 		{
-			foreach (Instruction instruction in instructions)
+			foreach (var instruction in instructions)
 			{
-				var instr = ReadInstruction(instruction);
+				method.Instructions.Add(new Instruction
+				                        {
+				                        	DeclaringMethod = method,
+				                        	// Operand = instruction.Operand.ToString() // for now operand as string should be enough
+				                        });
 
-				if (instr is MethodDefinition)
+				// IL cyclomatic complexity
+				if (instruction.OpCode.FlowControl == FlowControl.Cond_Branch)
+					method.CyclomaticComplexity++;
+
+				var operand = ReadOperand(instruction);
+
+				if (operand is MethodDefinition)
 				{
-					var md = instr as MethodDefinition;
-					var type = (from n in method.Owner.Namespace.Module.Namespaces
+					var md = operand as MethodDefinition;
+					var type = (from n in method.DeclaringType.Namespace.Module.Namespaces
 					            from t in n.Types
-					            where t.Name == FormatTypeName(md.DeclaringType) &&
-					            n.Name == t.Namespace.Name
+					            where t.FullName == FormatTypeName(md.DeclaringType, true)
 					            select t).SingleOrDefault();
 
 					method.TypeUses.Add(type);
@@ -421,14 +439,14 @@ namespace ICSharpCode.CodeQualityAnalysis
 					                        where m.Name == FormatMethodName(md)
 					                        select m).SingleOrDefault();
 
-					if (findTargetMethod != null && type == method.Owner)
+					if (findTargetMethod != null && type == method.DeclaringType)
 						method.MethodUses.Add(findTargetMethod);
 				}
 
-				if (instr is FieldDefinition)
+				if (operand is FieldDefinition)
 				{
-					var fd = instr as FieldDefinition;
-					var field = (from f in method.Owner.Fields
+					var fd = operand as FieldDefinition;
+					var field = (from f in method.DeclaringType.Fields
 					             where f.Name == fd.Name
 					             select f).SingleOrDefault();
 
@@ -436,6 +454,25 @@ namespace ICSharpCode.CodeQualityAnalysis
 						method.FieldUses.Add(field);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Reads an instruction operand by recursive calling until non-instruction
+		/// operand is found
+		/// </summary>
+		/// <param name="instruction">An instruction with operand</param>
+		/// <returns>An instruction operand</returns>
+		public object ReadOperand(Mono.Cecil.Cil.Instruction instruction)
+		{
+			if (instruction.Operand == null)
+				return null;
+
+			var nextInstruction = instruction.Operand as Mono.Cecil.Cil.Instruction;
+
+			if (nextInstruction != null)
+				return ReadOperand(nextInstruction);
+
+			return instruction.Operand;
 		}
 
 		/// <summary>
@@ -453,7 +490,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 				var type =
 					(from n in module.Namespaces
 					 from t in n.Types
-					 where t.Name == FormatTypeName(parameter)
+					 where t.FullName == FormatTypeName(parameter, true)
 					 select t).SingleOrDefault();
 
 				if (type != null) //
@@ -464,25 +501,6 @@ namespace ICSharpCode.CodeQualityAnalysis
 			}
 
 			return types;
-		}
-
-		/// <summary>
-		/// Reads instruction operand by recursive calling until non-instruction
-		/// operand is found
-		/// </summary>
-		/// <param name="instruction">An instruction with operand</param>
-		/// <returns>An instruction operand</returns>
-		public object ReadInstruction(Instruction instruction)
-		{
-			if (instruction.Operand == null)
-				return null;
-			
-			var nextInstruction = instruction.Operand as Instruction;
-
-			if (nextInstruction != null)
-				return ReadInstruction(nextInstruction);
-			
-			return instruction.Operand;
 		}
 
 		/// <summary>
@@ -522,17 +540,21 @@ namespace ICSharpCode.CodeQualityAnalysis
 		/// </summary>
 		/// <param name="type">A type definition with declaring type and name</param>
 		/// <returns>A type name</returns>
-		public string FormatTypeName(TypeReference type)
+		public string FormatTypeName(TypeReference type, bool useFullName = false)
 		{
 			type = type.GetElementType();
 			
-			if (nameCache.ContainsKey(type))
-				return nameCache[type];
+			var cache = useFullName ? fullNameCache : nameCache;
+			
+			if (cache.ContainsKey(type))
+				return cache[type];
+			
+			var name = useFullName ? type.FullName : type.Name;
 
 			if (type.IsNested && type.DeclaringType != null)
 			{
-				nameCache[type] = FormatTypeName(type.DeclaringType) + "+" + type.Name;
-				return nameCache[type];
+				cache[type] = FormatTypeName(type.DeclaringType, useFullName) + "+" + name;
+				return cache[type];
 			}
 
 			if (type.HasGenericParameters)
@@ -548,11 +570,11 @@ namespace ICSharpCode.CodeQualityAnalysis
 						builder.Append(",");
 				}
 
-				nameCache[type] = StripGenericName(type.Name) + "<" + builder + ">";
-				return nameCache[type];
+				cache[type] = StripGenericName(name) + "<" + builder + ">";
+				return cache[type];
 			}
 			
-			return type.Name; // not neeeded to be cached
+			return name; // not neeeded to be cached
 		}
 
 		/// <summary>
@@ -570,7 +592,7 @@ namespace ICSharpCode.CodeQualityAnalysis
 		/// </summary>
 		/// <param name="type">A type definition with namespace</param>
 		/// <returns>A namespace</returns>
-		private string GetNamespaceName(TypeDefinition type)
+		private string GetNamespaceName(TypeReference type)
 		{
 			if (type.IsNested && type.DeclaringType != null)
 				return GetNamespaceName(type.DeclaringType);

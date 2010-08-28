@@ -7,7 +7,6 @@
 
 using System;
 using System.Diagnostics;
-using ICSharpCode.Core.Services;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.PythonBinding
@@ -21,7 +20,7 @@ namespace ICSharpCode.PythonBinding
 		
 		public PythonTestDebugger()
 			: this(new UnitTestDebuggerService(),
-				ServiceManager.Instance.MessageService,
+				new UnitTestMessageService(),
 				new TestResultsMonitor(),
 				new PythonAddInOptions(),
 				new PythonStandardLibraryPath(),
@@ -30,7 +29,7 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		public PythonTestDebugger(IUnitTestDebuggerService debuggerService,
-			IMessageService messageService,
+			IUnitTestMessageService messageService,
 			ITestResultsMonitor testResultsMonitor,
 			PythonAddInOptions options,
 			PythonStandardLibraryPath pythonStandardLibraryPath,

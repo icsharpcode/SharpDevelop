@@ -50,7 +50,7 @@
 		<Parser id    = "VBNet" 
 			supportedextensions  = ".vb"
 			projectfileextension = ".vbproj"
-			class = "ICSharpCode.VBNetBinding.Parser.TParser"/>
+			class = "ICSharpCode.VBNetBinding.TParser"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions/Convert">
@@ -64,7 +64,7 @@
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
 		<OptionPanel id = "VBSpecificOptions"
 			             label = "${res:Dialog.Options.IDEOptions.TextEditor.VB.PanelName}"
-			             class = "ICSharpCode.VBNetBinding.OptionPanels.VBNetTextEditorPanel"/>
+			             class = "ICSharpCode.VBNetBinding.OptionPanels.TextEditorOptions"/>
 	</Path>
 	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/VBNet">

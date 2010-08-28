@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.40607</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6e59af58-f635-459a-9a35-c9ac41c00339}</ProjectGuid>
+    <RootNamespace>ICSharpCode.ILAsmBinding</RootNamespace>
+    <AssemblyName>ILAsmBinding</AssemblyName>
+    <OutputTarget>Library</OutputTarget>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+    <OutputType>Library</OutputType>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>104333312</BaseAddress>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\AddIns\Samples\ILAsmBinding\</OutputPath>
+    <DebugType>Full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\AddIns\Samples\ILAsmBinding\</OutputPath>
+    <DebugType>None</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ICSharpCode.Core">
+      <HintPath>..\..\..\bin\ICSharpCode.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpDevelop">
+      <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpDevelop.Dom">
+      <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.Dom.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Src\AssemblyInfo.cs" />
+    <Compile Include="Src\ILAsmProjectBinding.cs" />
+    <EmbeddedResource Include="Resources\ILAsm-Mode.xshd" />
+    <None Include="ILAsmBinding.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Compile Include="Src\ILAsmProject.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Templates" />
+    <Content Include="Templates\ConsoleProject.xpt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+</Project>

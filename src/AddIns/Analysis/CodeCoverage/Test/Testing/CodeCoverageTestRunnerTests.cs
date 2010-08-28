@@ -28,6 +28,7 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 		UnitTestingOptions options;
 		DerivedCodeCoverageTestRunner testRunner;
 		MockFileSystem fileSystem;
+		MockMessageService messageService;
 		
 		[SetUp]
 		public void Init()
@@ -36,7 +37,8 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 			testResultsMonitor = new MockTestResultsMonitor();
 			options = new UnitTestingOptions(new Properties());
 			fileSystem = new MockFileSystem();
-			testRunner = new DerivedCodeCoverageTestRunner(processRunner, testResultsMonitor, options, fileSystem);
+			messageService = new MockMessageService();
+			testRunner = new DerivedCodeCoverageTestRunner(processRunner, testResultsMonitor, options, fileSystem, messageService);
 		}
 		
 		[Test]

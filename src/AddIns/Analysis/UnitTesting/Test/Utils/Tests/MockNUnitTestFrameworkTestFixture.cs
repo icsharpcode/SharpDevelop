@@ -127,7 +127,7 @@ namespace UnitTesting.Tests.Utils.Tests
 			SelectedTests tests = new SelectedTests(project);
 			testDebugger.Start(tests);
 			
-			Assert.IsNotNull(context.MockMessageService.Question);
+			Assert.IsNotNull(context.MockMessageService.QuestionPassedToAskQuestion);
 		}
 		
 		[Test]

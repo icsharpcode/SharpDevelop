@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProjectGuid>{83F15BA7-8478-4664-81BB-A82F146D88B3}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.GitAddIn</RootNamespace>
+    <AssemblyName>GitAddIn</AssemblyName>
+    <OutputPath>..\..\..\..\AddIns\AddIns\VersionControl\</OutputPath>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TargetFrameworkVersion Condition=" '$(TargetFrameworkVersion)' == '' ">v4.0</TargetFrameworkVersion>
+    <DefineConstants Condition="'$(TargetFrameworkVersion)' == 'v4.0' ">SD4</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>$(DefineConstants);DEBUG;TRACE</DefineConstants>
+    <Optimize>False</Optimize>
+    <StartAction>Program</StartAction>
+    <StartProgram>..\..\..\..\bin\SharpDevelop.exe</StartProgram>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\Commands.cs" />
+    <Compile Include="Src\Git.cs" />
+    <Compile Include="Src\GitGuiWrapper.cs" />
+    <Compile Include="Src\GitMessageView.cs" />
+    <Compile Include="Src\GitStatusCache.cs" />
+    <Compile Include="Src\IsUnderGitControlCondition.cs" />
+    <Compile Include="Src\OverlayIconManager.cs" />
+    <Compile Include="Src\RegisterEventsCommand.cs" />
+    <None Include="GitAddIn.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Name>ICSharpCode.Core.WinForms</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

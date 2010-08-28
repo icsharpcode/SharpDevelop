@@ -72,9 +72,15 @@ namespace ICSharpCode.Core.Presentation
 					return "Label";
 					//return new ToolBarLabel(codon, caller);
 				case "DropDownButton":
-					return new ToolBarDropDownButton(codon, caller, MenuService.CreateUnexpandedMenuItems(null, descriptor.SubItems));
+					return new ToolBarDropDownButton(
+						codon, caller, MenuService.CreateUnexpandedMenuItems(
+							new MenuService.MenuCreateContext { ActivationMethod = "ToolbarDropDownMenu" },
+							descriptor.SubItems));
 				case "SplitButton":
-					return new ToolBarSplitButton(codon, caller, MenuService.CreateUnexpandedMenuItems(null, descriptor.SubItems));
+					return new ToolBarSplitButton(
+						codon, caller, MenuService.CreateUnexpandedMenuItems(
+							new MenuService.MenuCreateContext { ActivationMethod = "ToolbarDropDownMenu" },
+							descriptor.SubItems));
 				case "Builder":
 					return codon.AddIn.CreateObject(codon.Properties["class"]);
 				default:

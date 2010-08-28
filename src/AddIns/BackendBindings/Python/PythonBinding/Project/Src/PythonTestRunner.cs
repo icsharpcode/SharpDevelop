@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using ICSharpCode.Core;
+using ICSharpCode.Core.Services;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.PythonBinding
@@ -22,24 +23,16 @@ namespace ICSharpCode.PythonBinding
 		PythonTestRunnerApplication testRunnerApplication;
 		
 		public PythonTestRunner()
-			: this(new UnitTestProcessRunner(),
-				new TestResultsMonitor(),
-				new PythonAddInOptions(),
-				new PythonStandardLibraryPath(),
-				new PythonFileService())
+			: this(new PythonTestRunnerContext())
 		{
 		}
 		
-		public PythonTestRunner(IUnitTestProcessRunner processRunner,
-			ITestResultsMonitor testResultsMonitor,
-			PythonAddInOptions options,
-			PythonStandardLibraryPath pythonStandardLibraryPath,
-			IPythonFileService fileService)
-			: base(processRunner, testResultsMonitor)
+		public PythonTestRunner(PythonTestRunnerContext context)
+			: base(context)
 		{
-			this.options = options;
-			this.pythonStandardLibraryPath = pythonStandardLibraryPath;
-			this.fileService = fileService;
+			this.options = context.Options;
+			this.pythonStandardLibraryPath = context.PythonStandardLibraryPath;
+			this.fileService = context.PythonFileService;
 		}
 		
 		public override void Start(SelectedTests selectedTests)

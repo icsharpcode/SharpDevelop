@@ -10,7 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Utils;
@@ -20,6 +19,7 @@ using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -32,6 +32,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		: AbstractViewContent, IEditable, IMementoCapable, ICodeEditorProvider, IPositionable, IToolsHost
 	{
 		readonly CodeEditor codeEditor = new CodeEditor();
+		IAnalyticsMonitorTrackedFeature trackedFeature;
 		
 		public AvalonEditViewContent(OpenedFile file, Encoding fixedEncodingForLoading = null)
 		{
@@ -40,6 +41,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				codeEditor.PrimaryTextEditor.Encoding = fixedEncodingForLoading;
 			}
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.SourceTabPage}";
+			
+			if (file.FileName != null) {
+				string filetype = Path.GetExtension(file.FileName);
+				if (!ProjectService.GetFileFilters().Any(f => f.ContainsExtension(filetype)))
+					filetype = ".?";
+				trackedFeature = AnalyticsMonitorService.TrackFeature(typeof(AvalonEditViewContent), "open" + filetype.ToLowerInvariant());
+			}
 			
 			this.Files.Add(file);
 			file.ForceInitializeView(this);
@@ -242,6 +250,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public override void Dispose()
 		{
+			if (trackedFeature != null)
+				trackedFeature.EndTracking();
 			this.PrimaryFile.IsDirtyChanged -= PrimaryFile_IsDirtyChanged;
 			base.Dispose();
 			BookmarksDetach();

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.IO;
 using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.UnitTesting
@@ -20,6 +21,11 @@ namespace ICSharpCode.UnitTesting
 		public void JumpToFilePosition(string fileName, int line, int column)
 		{
 			FileService.JumpToFilePosition(fileName, line, column);
+		}
+		
+		public bool FileExists(string fileName)
+		{
+			return File.Exists(fileName);
 		}
 	}
 }

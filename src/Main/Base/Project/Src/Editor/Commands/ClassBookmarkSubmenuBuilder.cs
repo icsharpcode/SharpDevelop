@@ -58,70 +58,24 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 				return new ToolStripMenuItem[0];
 			}
 			
-			LanguageProperties language = c.ProjectContent.Language;
-			
 			List<ToolStripItem> list = new List<ToolStripItem>();
 			
-			// navigation actions
-			if (c.BaseTypes.Count > 0) {
-				list.Add(new MenuSeparator());
-				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.GoToBaseCommand}", GoToBase);
-				cmd.Tag = c;
-				list.Add(cmd);
-			}
-			
-			// Search actions
-			list.Add(new MenuSeparator());
-			
-			if (!c.IsSealed && !c.IsStatic) {
-				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.FindDerivedClassesCommand}", FindDerivedClasses);
-				cmd.Tag = c;
-				list.Add(cmd);
-			}
+			// "Go to base" for classes is not that useful as it is faster to click the base class in the editor.
+			// Also, we have "Find base classes" which shows all base classes.
+//			if (c.BaseTypes.Count > 0) {
+//				list.Add(new MenuSeparator());
+//				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.GoToBaseCommand}", GoToBase);
+//				cmd.Tag = c;
+//				list.Add(cmd);
+//			}
 			
 			cmd = FindReferencesAndRenameHelper.MakeFindReferencesMenuCommand(FindReferences);
 			cmd.Tag = c;
 			list.Add(cmd);
+			list.AddIfNotNull(MakeFindBaseClassesItem(c));
+			list.AddIfNotNull(MakeFindDerivedClassesItem(c));
 			
 			return list.ToArray();
-		}
-		
-		void GoToBase(object sender, EventArgs e)
-		{
-			MenuCommand item = (MenuCommand)sender;
-			IClass c = (IClass)item.Tag;
-			IClass baseClass = c.BaseClass;
-			if (baseClass != null) {
-				string fileName = baseClass.CompilationUnit.FileName;
-				if (fileName != null) {
-					FileService.JumpToFilePosition(fileName, baseClass.Region.BeginLine, baseClass.Region.BeginColumn);
-				}
-			}
-		}
-		
-		void FindDerivedClasses(object sender, EventArgs e)
-		{
-			MenuCommand item = (MenuCommand)sender;
-			IClass c = (IClass)item.Tag;
-			IEnumerable<IClass> derivedClasses = RefactoringService.FindDerivedClasses(c, ParserService.AllProjectContents, false);
-			
-			IAmbience ambience = AmbienceService.GetCurrentAmbience();
-			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedMemberNames | ConversionFlags.ShowTypeParameterList;
-			
-			List<SearchResultMatch> results = new List<SearchResultMatch>();
-			foreach (IClass derivedClass in derivedClasses) {
-				if (derivedClass.CompilationUnit == null) continue;
-				if (derivedClass.CompilationUnit.FileName == null) continue;
-				
-				ProvidedDocumentInformation documentInfo = FindReferencesAndRenameHelper.GetDocumentInformation(derivedClass.CompilationUnit.FileName);
-				SearchResultMatch res = new SimpleSearchResultMatch(documentInfo, ambience.Convert(derivedClass), new Location(derivedClass.Region.BeginColumn, derivedClass.Region.BeginLine));
-				results.Add(res);
-			}
-			SearchResultsPad.Instance.ShowSearchResults(
-				StringParser.Parse("${res:SharpDevelop.Refactoring.ClassesDerivingFrom}", new string[,] {{ "Name", c.Name }}),
-				results
-			);
-			SearchResultsPad.Instance.BringToFront();
 		}
 		
 		void FindReferences(object sender, EventArgs e)
@@ -131,6 +85,43 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			FindReferencesAndRenameHelper.RunFindReferences(c);
 		}
 		
+		MenuCommand MakeFindDerivedClassesItem(IClass baseClass)
+		{
+			if (baseClass == null || baseClass.IsStatic || baseClass.IsSealed)
+				return null;
+			var item = new MenuCommand(StringParser.Parse("${res:SharpDevelop.Refactoring.FindDerivedClassesCommand}"));
+			item.ShortcutKeys = System.Windows.Forms.Keys.F6;
+			//item.Image = ClassBrowserIconService.Class.Bitmap;
+			item.Click += delegate {
+				ContextActionsHelper.MakePopupWithDerivedClasses(baseClass).OpenAtCaretAndFocus();
+			};
+			return item;
+		}
+		
+		MenuCommand MakeFindBaseClassesItem(IClass @class)
+		{
+			if (@class == null || @class.BaseTypes == null || @class.BaseTypes.Count == 0)
+				return null;
+			var item = new MenuCommand(StringParser.Parse("${res:SharpDevelop.Refactoring.FindBaseClassesCommand}"));
+			//item.Image = ClassBrowserIconService.Class.Bitmap;
+			item.Click += delegate {
+				ContextActionsHelper.MakePopupWithBaseClasses(@class).OpenAtCaretAndFocus();
+			};
+			return item;
+		}
+		
+//		void GoToBase(object sender, EventArgs e)
+//		{
+//			MenuCommand item = (MenuCommand)sender;
+//			IClass c = (IClass)item.Tag;
+//			IClass baseClass = c.BaseClass;
+//			if (baseClass != null) {
+//				string fileName = baseClass.CompilationUnit.FileName;
+//				if (fileName != null) {
+//					FileService.JumpToFilePosition(fileName, baseClass.Region.BeginLine, baseClass.Region.BeginColumn);
+//				}
+//			}
+//		}
 		
 		public static IClass GetClass(object menuOwner)
 		{
@@ -144,11 +135,10 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			}
 			ParserService.ParseCurrentViewContent();
 			c = c.ProjectContent.GetClass(c.FullyQualifiedName, c.TypeParameters.Count, c.ProjectContent.Language, GetClassOptions.LookForInnerClass);
-			c = GetCurrentPart(c);
-			return c;
+			return GetCurrentPart(c);
 		}
 		
-		static IClass GetCurrentPart(IClass possibleCompound)
+		public static IClass GetCurrentPart(IClass possibleCompound)
 		{
 			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveViewContent;
 			if (viewContent != null)

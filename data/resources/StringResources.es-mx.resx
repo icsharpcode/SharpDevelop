@@ -883,11 +883,29 @@ SharpDevelop puede obtener esta información y enviarla automáticamente.
   <data name="AddIns.UsageDataCollector.Title" xml:space="preserve">
     <value>Recopilador de Datos</value>
   </data>
+  <data name="AddIns.VBNetBinding.CodeCompletion.QuestionmarkEqualsItem.Description" xml:space="preserve">
+    <value>Permitir a SharpDevelop deducir el tipo basado en el inicializador.</value>
+  </data>
   <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
     <value>Editar columnas y filas de la grilla</value>
   </data>
   <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle" xml:space="preserve">
     <value>Estrar propiedades como estilo</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ErrorNoSelection" xml:space="preserve">
+    <value>No se seleccionó ningún elemento válido!</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.PropertyColumn" xml:space="preserve">
+    <value>Propiedad/Nombre de Evento</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ReplaceQuestion" xml:space="preserve">
+    <value>El control seleccionado ya tiene asignado un estilo. ¿Quiere reemplazar el estilo actual con el estilo recién creado?</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.StyleName" xml:space="preserve">
+    <value>Nombre de Estilo:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ValueColumn" xml:space="preserve">
+    <value>Valor de Propiedad</value>
   </data>
   <data name="AddIns.XamlBinding.Menu.GroupInto" xml:space="preserve">
     <value>Agrupar</value>
@@ -933,6 +951,9 @@ SharpDevelop puede obtener esta información y enviarla automáticamente.
   </data>
   <data name="AddIns.XamlBinding.Options.UseExtensionCompletion" xml:space="preserve">
     <value>Usar completado de extensión de marcado</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.UseHighlighting" xml:space="preserve">
+    <value>Usar resaltado de sintaxis avanzado</value>
   </data>
   <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss" xml:space="preserve">
     <value>El archivo no puede ser guardado con la actual codificación ${encoding} sin perder datos.</value>
@@ -2128,6 +2149,9 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
   </data>
   <data name="Dialog.Options.CodeTemplate.ExtensionsLabel" xml:space="preserve">
     <value>E&amp;xtensiones</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.Keyword" xml:space="preserve">
+    <value>Personalizar Teclas</value>
   </data>
   <data name="Dialog.Options.CodeTemplate.PressTabToInsertTemplate" xml:space="preserve">
     <value>Presione Tab para insertar esta plantilla de código.</value>
@@ -5049,6 +5073,36 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ICSharpCode.WixBinding.WixVisualStudioExtensionTitle" xml:space="preserve">
     <value>Extensión Visual Studio</value>
   </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Copy" xml:space="preserve">
+    <value>Copiar</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Cut" xml:space="preserve">
+    <value>Cortar</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Outline" xml:space="preserve">
+    <value>Subrayar</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Paste" xml:space="preserve">
+    <value>Pegar</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Properties" xml:space="preserve">
+    <value>Propiedades</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Redo" xml:space="preserve">
+    <value>Rehacer</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Remove" xml:space="preserve">
+    <value>Eliminar</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Tools" xml:space="preserve">
+    <value>Herramientas</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Undo" xml:space="preserve">
+    <value>Deshacer</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.ViewXAML" xml:space="preserve">
+    <value>Ver XAML</value>
+  </data>
   <data name="ICSharpCode.XmlEditor.AddAttributeDialog.CustomAttributeLabel" xml:space="preserve">
     <value>Personalizado:</value>
   </data>
@@ -6249,6 +6303,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="SharpDevelop.HexEditor.StreamAdded" xml:space="preserve">
     <value>Datos agregados!</value>
   </data>
+  <data name="SharpDevelop.Refactoring.BaseClassesOf" xml:space="preserve">
+    <value>Buscar clases base de ${Name}</value>
+  </data>
   <data name="SharpDevelop.Refactoring.CannotPerformOperationBecauseOfSyntaxErrors" xml:space="preserve">
     <value>La operación no puede ser realizada debido a que su código fuente contiene errores:</value>
   </data>
@@ -6288,8 +6345,14 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="SharpDevelop.Refactoring.ExtractInterfaceCommand" xml:space="preserve">
     <value>Extraer Interfase</value>
   </data>
+  <data name="SharpDevelop.Refactoring.FindBaseClassesCommand" xml:space="preserve">
+    <value>Buscar clases base</value>
+  </data>
   <data name="SharpDevelop.Refactoring.FindDerivedClassesCommand" xml:space="preserve">
     <value>Buscar clases &amp;derivadas</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.FindDerivedClassesOrOverridesCommand" xml:space="preserve">
+    <value>Buscar símbolos derivados</value>
   </data>
   <data name="SharpDevelop.Refactoring.FindingReferences" xml:space="preserve">
     <value>Buscando referencias...</value>
@@ -6988,6 +7051,12 @@ Los archivos de recursos han sido renombrados/movidos convenientemente.</value>
     <value>Una declaración de estructura que incluye una implementación de los métodos Equals() y GetHashCode().</value>
   </data>
   <data name="Templates.File.Struct.Name" xml:space="preserve">
+    <value>Estructura</value>
+  </data>
+  <data name="Templates.File.Structure.Description" xml:space="preserve">
+    <value>Una declaración de estructura que incluye implementaciones de Equals() y GetHashCode().</value>
+  </data>
+  <data name="Templates.File.Structure.Name" xml:space="preserve">
     <value>Estructura</value>
   </data>
   <data name="Templates.File.Text.EmptyText.Name" xml:space="preserve">

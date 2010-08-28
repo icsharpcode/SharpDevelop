@@ -1,6 +1,6 @@
 <%@ Page Language="C#" MasterPageFile="~/ProzacAfternoon.master" AutoEventWireup="true"
     Inherits="SnippetConverterPage" 
-    Title="Snippet Converter for .NET 2.0" 
+    Title="Snippet Converter for .NET 4.0" 
     ValidateRequest="false" Codebehind="SnippetConverter.aspx.cs" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="Server">

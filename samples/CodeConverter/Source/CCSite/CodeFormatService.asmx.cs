@@ -6,9 +6,6 @@ using System.Web.Services;
 using System.Web.Services.Protocols;
 using System.ComponentModel;
 
-using ICSharpCode.HtmlSyntaxColorizer;
-using ICSharpCode.TextEditor.Document;
-
 namespace CCSite
 {
     /// <summary>
@@ -23,27 +20,13 @@ namespace CCSite
         [WebMethod]
         public string Format(string Document, string HighlighterName, bool IncludeLineNumbers)
         {
-            HtmlWriter writer = new HtmlWriter();
-            writer.ShowLineNumbers = IncludeLineNumbers;
-            writer.AlternateLineBackground = false;
-
-            string generatedHtml = writer.GenerateHtml(Document, HighlighterName);
-            return "<html><body>" + generatedHtml + "</body></html>";
+            throw new NotImplementedException("This feature has been removed");
         }
 
         [WebMethod]
         public string[] RetrieveAvailableHighlighters()
         {
-            Hashtable ht = HighlightingManager.Manager.HighlightingDefinitions;
-            string[] highlighters = new string[ht.Count];
-
-            int currentElement = 0;
-            foreach (DictionaryEntry de in ht)
-            {
-                highlighters[currentElement++] = de.Key.ToString();
-            }
-
-            return highlighters;
+            throw new NotImplementedException("This feature has been removed");
         }
     }
 }

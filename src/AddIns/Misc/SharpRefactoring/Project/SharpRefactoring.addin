@@ -11,10 +11,6 @@
 		<Import assembly = "SharpRefactoring.dll"/>
 	</Runtime>
 	
-	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/ParameterDefinition">
-		<MenuItem id="parameterCheckRefactorings" type="Builder" class="SharpRefactoring.ParameterCheckRefactoringMenuBuilder"/>
-	</Path>
-	
 	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu">
 		<MenuItem id="classCodeGenerators"
 		          type="Builder"
@@ -29,17 +25,6 @@
 		          insertbefore="MenuBuilder" />
 	</Path>
 	
-	<Path name="/SharpDevelop/ViewContent/TextEditor/ContextMenu/Refactorings">
-		<Condition name="ActiveContentExtension" activeextension=".cs" action="Exclude">
-			<Class id="IntroduceMethod"
-			       class="SharpRefactoring.IntroduceMethod" />
-			<Class id="ResolveExtensionMethod"
-			       class="SharpRefactoring.ResolveExtensionMethod" />
-			<Class id="ResolveAttribute"
-					class="SharpRefactoring.ResolveAttribute" />
-		</Condition>
-	</Path>
-	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Refactor">
 		<MenuItem id = "ExtractMethod"
 		          label = "${res:AddIns.SharpRefactoring.ExtractMethod}"
@@ -51,11 +36,18 @@
 		<Class id="switch" class="SharpRefactoring.SwitchSnippetProvider" />
 	</Path>
 	
-	<Path name="/SharpDevelop/ViewContent/AvalonEdit/ContextActionProviders">
-		<Class id="addUsing" class="SharpRefactoring.ContextActions.AddUsingProvider" />
-		<Class id="implementInterface" class="SharpRefactoring.ContextActions.ImplementInterfaceProvider" />
-		<Class id="implementAbstractClass" class="SharpRefactoring.ContextActions.ImplementAbstractClassProvider" />
-		<Class id="generateMember" class="SharpRefactoring.ContextActions.GenerateMemberProvider" />	
+	<Path name="/SharpDevelop/ViewContent/AvalonEdit/ContextActions">
+		<Class class="SharpRefactoring.ContextActions.AddUsingProvider" />
+		<Class class="SharpRefactoring.ContextActions.RenameFileToMatchClassName" />
+		<Class class="SharpRefactoring.ContextActions.MoveClassToFile" />
+		<Class class="SharpRefactoring.ContextActions.ImplementInterfaceProvider" />
+		<Class class="SharpRefactoring.ContextActions.ImplementAbstractClassProvider" />
+		<Class class="SharpRefactoring.ContextActions.ImplementInterfaceExplicitProvider" />
+		<Class class="SharpRefactoring.ContextActions.GenerateMemberProvider" />	
+		<Class class="SharpRefactoring.ContextActions.CheckAssignmentNull" />	
+		<Class class="SharpRefactoring.ContextActions.CheckAssignmentNotNull" />
+		<Class class="SharpRefactoring.ContextActions.ParamCheckForNull" />
+		<Class class="SharpRefactoring.ContextActions.ParamRangeCheck" />
 	</Path>
 
 	<Path name="/SharpDevelop/ViewContent/TextEditor/OverrideCompletionHandler">

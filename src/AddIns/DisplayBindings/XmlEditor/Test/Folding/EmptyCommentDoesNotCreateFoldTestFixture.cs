@@ -7,11 +7,7 @@
 
 using System;
 using System.Collections.Generic;
-
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
@@ -21,10 +17,7 @@ namespace XmlEditor.Tests.Folding
 	[TestFixture]
 	public class EmptyCommentDoesNotCreateFoldTestFixture
 	{
-		XmlFoldParser parser;
-		ICompilationUnit unit;
-		DefaultXmlFileExtensions extensions;
-		DefaultProjectContent projectContent;
+		XmlFoldParserHelper helper;
 		
 		[SetUp]
 		public void Init()
@@ -34,31 +27,30 @@ namespace XmlEditor.Tests.Folding
 				"<root>\r\n" +
 				"</root>";
 			
-			projectContent = new DefaultProjectContent();
-			MockTextBuffer textBuffer = new MockTextBuffer(xml);
-			
-			extensions = new DefaultXmlFileExtensions(null);
-			XmlEditorOptions options = new XmlEditorOptions(new Properties());
-			MockParserService parserService = new MockParserService();
-			parser = new XmlFoldParser(extensions, options, parserService);
-			unit = parser.Parse(projectContent, @"d:\projects\a.xml", textBuffer);
+			helper = new XmlFoldParserHelper();
+			helper.CreateParser();
+			helper.GetFolds(xml);
 		}
 		
 		[Test]
-		public void CompilationUnitHasOneFold()
+		public void GetFolds_CommentAndSingleRootElement_ReturnsOneFold()
 		{
-			Assert.AreEqual(1, unit.FoldingRegions.Count);
+			int count = helper.Folds.Count;
+			Assert.AreEqual(1, count);
 		}
 		
 		[Test]
-		public void FoldRegionContainsRootElement()
+		public void GetFolds_CommentAndSingleRootElement_FoldRegionContainsRootElement()
 		{
+			DomRegion region = helper.GetFirstFoldRegion();
+
 			int beginLine = 2;
 			int beginColumn = 1;
 			int endLine = 3;
-			int endColumn =8;
+			int endColumn = 8;
 			DomRegion expectedRegion = new DomRegion(beginLine, beginColumn, endLine, endColumn);
-			Assert.AreEqual(expectedRegion, unit.FoldingRegions[0].Region);
+			
+			Assert.AreEqual(expectedRegion, region);
 		}
 	}
 }

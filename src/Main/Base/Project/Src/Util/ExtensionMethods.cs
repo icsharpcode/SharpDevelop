@@ -18,6 +18,8 @@ using System.Windows.Media;
 using System.Windows.Documents;
 using System.Windows.Forms;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using WinForms = System.Windows.Forms;
 
@@ -348,6 +350,29 @@ namespace ICSharpCode.SharpDevelop
 			return s.Substring(0, s.Length - stringToRemove.Length);
 		}
 		
+		/// <summary>
+		/// Takes at most <param name="length" /> first characters from string. 
+		/// String can be null.
+		/// </summary>
+		public static string TakeStart(this string s, int length)
+		{
+			if (string.IsNullOrEmpty(s) || length >= s.Length)
+				return s;
+			return s.Substring(0, length);
+		}
+
+		/// <summary>
+		/// Takes at most <param name="length" /> first characters from string, and appends '...' if string is longer. 
+		/// String can be null.
+		/// </summary>
+		public static string TakeStartEllipsis(this string s, int length)
+		{
+			if (string.IsNullOrEmpty(s) || length >= s.Length)
+				return s;
+			return s.Substring(0, length) + "...";
+		}
+
+		
 		public static string Replace(this string original, string pattern, string replacement, StringComparison comparisonType)
 		{
 			if (original == null)
@@ -421,6 +446,8 @@ namespace ICSharpCode.SharpDevelop
 		{
 			var r = new System.Windows.Controls.MenuItem();
 			r.Header = MenuService.ConvertLabel(item.Text);
+			r.InputGestureText = MenuService.ConvertKeys(item.ShortcutKeys);
+			//r.InputGestureText = new KeyGesture(Key.F6).GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			if (item.ImageIndex >= 0)
 				r.Icon = ClassBrowserIconService.GetImageByIndex(item.ImageIndex).CreateImage();
 			if (item.DropDownItems.Count > 0) {
@@ -455,6 +482,25 @@ namespace ICSharpCode.SharpDevelop
 		{
 			if (itemToAdd != null)
 				list.Add(itemToAdd);
+		}
+		
+		public static ExpressionResult FindFullExpressionAtCaret(this ITextEditor editor)
+		{
+			if (editor == null)
+				throw new ArgumentNullException("editor");
+			return ParserService.FindFullExpression(editor.Caret.Line, editor.Caret.Column, editor.Document, editor.FileName);
+		}
+		
+		public static ResolveResult ResolveSymbolAtCaret(this ITextEditor editor)
+		{
+			if (editor == null)
+				throw new ArgumentNullException("editor");
+			return ParserService.Resolve(editor.Caret.Line, editor.Caret.Column, editor.Document, editor.FileName);
+		}
+		
+		public static bool IsEmpty(ExpressionResult expr)
+		{
+			return expr.Region.IsEmpty;
 		}
 	}
 }

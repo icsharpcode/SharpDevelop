@@ -5,6 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
+using CSharpBinding;
 using ICSharpCode.AvalonEdit.Highlighting;
 using System;
 using System.Collections.Generic;
@@ -55,6 +56,10 @@ namespace SharpRefactoring.Tests
 		
 		public ICompletionItemList LastCompletionItemList {
 			get { return lastCompletionItemList; }
+		}
+		
+		public override ILanguageBinding Language {
+			get { return new CSharpLanguageBinding(); }
 		}
 		
 		public override ICompletionListWindow ShowCompletionWindow(ICompletionItemList data)

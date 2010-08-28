@@ -63,6 +63,12 @@ namespace ICSharpCode.VBNetBinding
 							.CtrlSpace(editor.Caret.Line, editor.Caret.Column, info, editor.Document.Text, expressionResult.Context,
 							           ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces);
 				} else {
+					if (rr is MethodGroupResolveResult) {
+						IMethod singleMethod = ((MethodGroupResolveResult)rr).GetMethodWithEmptyParameterList();
+						if (singleMethod != null)
+							rr = new MemberResolveResult(rr.CallingClass, rr.CallingMember, singleMethod);
+					}
+					
 					data = rr.GetCompletionData(info.CompilationUnit.ProjectContent, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces)
 						?? new NRefactoryResolver(LanguageProperties.VBNet)
 						.CtrlSpace(editor.Caret.Line, editor.Caret.Column, info, editor.Document.Text,
@@ -81,7 +87,7 @@ namespace ICSharpCode.VBNetBinding
 			
 			CodeCompletionItemProvider.ConvertCompletionData(result, data, expressionResult.Context);
 			
-			if (addedKeywords)
+			if (addedKeywords && result.Items.Any())
 				AddTemplates(editor, result);
 			
 			string word = editor.GetWordBeforeCaret().Trim();
@@ -89,9 +95,9 @@ namespace ICSharpCode.VBNetBinding
 			IClass c = GetCurrentClass(editor);
 			IMember m = GetCurrentMember(editor);
 			
-			HandleKeyword(ref result, info, resolvedType, word, c, m, editor, pressedKey);
+			HandleKeyword(ref result,  resolvedType, word, c, m, editor, pressedKey);
 			
-			AddSpecialItems(ref result, info, resolvedType, word, m, expressionResult, editor);
+			AddSpecialItems(ref result, info, resolvedType, m, expressionResult, editor);
 			
 			if (pressedKey == '\0') { // ctrl+space
 				char prevChar =  editor.Caret.Offset > 0 ? editor.Document.GetCharAt(editor.Caret.Offset - 1) : '\0';
@@ -106,10 +112,10 @@ namespace ICSharpCode.VBNetBinding
 			return result;
 		}
 
-		static void HandleKeyword(ref VBNetCompletionItemList result, ParseInformation info, IReturnType resolvedType, string word, IClass c, IMember m, ITextEditor editor, char pressedKey)
+		static void HandleKeyword(ref VBNetCompletionItemList result, IReturnType resolvedType, string word, IClass c, IMember m, ITextEditor editor, char pressedKey)
 		{
 			if (pressedKey == ' ') {
-				if (word.Equals("return", StringComparison.InvariantCultureIgnoreCase) && m != null) {
+				if (word.Equals("return", StringComparison.OrdinalIgnoreCase) && m != null) {
 					c = m.ReturnType != null ? m.ReturnType.GetUnderlyingClass() : null;
 					if (c != null) {
 						foreach (CodeCompletionItem item in result.Items.OfType<CodeCompletionItem>()) {
@@ -122,20 +128,20 @@ namespace ICSharpCode.VBNetBinding
 					}
 				}
 				
-				if (word.Equals("overrides", StringComparison.InvariantCultureIgnoreCase) && c != null) {
+				if (word.Equals("overrides", StringComparison.OrdinalIgnoreCase) && c != null) {
 					result = new OverrideCompletionItemProvider().GenerateCompletionList(editor).ToVBCCList();
 				}
 			}
 		}
 
-		static void AddSpecialItems(ref VBNetCompletionItemList result, ParseInformation info, IReturnType resolvedType, string word, IMember m, ExpressionResult expressionResult, ITextEditor editor)
+		static void AddSpecialItems(ref VBNetCompletionItemList result, ParseInformation info, IReturnType resolvedType, IMember m, ExpressionResult expressionResult, ITextEditor editor)
 		{
-//			if (expressionResult.Context == ExpressionContext.Type && m != null && m.BodyRegion.IsInside(editor.Caret.Line, editor.Caret.Column)) {
-//				result.Items.Add(new DefaultCompletionItem("? =") {
-//				                 	Image = ClassBrowserIconService.GotoArrow,
-//				                 	Description = StringParser.Parse("${res:AddIns.VBNetBinding.CodeCompletion.QuestionmarkEqualsItem.Description}")
-//				                 });
-//			}
+			if (expressionResult.Context == ExpressionContext.Type && m != null && m.BodyRegion.IsInside(editor.Caret.Line, editor.Caret.Column)) {
+				result.Items.Add(new DefaultCompletionItem("? =") {
+				                 	Image = ClassBrowserIconService.GotoArrow,
+				                 	Description = StringParser.Parse("${res:AddIns.VBNetBinding.CodeCompletion.QuestionmarkEqualsItem.Description}")
+				                 });
+			}
 			if (resolvedType != null && AllowsDescendentAccess(resolvedType, info.CompilationUnit.ProjectContent))
 				result.Items.Add(new DefaultCompletionItem("..") { Image = ClassBrowserIconService.GotoArrow });
 			if (resolvedType != null && AllowsAttributeValueAccess(resolvedType, info.CompilationUnit.ProjectContent))
@@ -202,9 +208,24 @@ namespace ICSharpCode.VBNetBinding
 			if (list == null)
 				return;
 			List<ICompletionItem> snippets = editor.GetSnippets().ToList();
+			snippets.RemoveAll(item => !FitsToContext(item, list.Items));
 			list.Items.RemoveAll(item => item.Image == ClassBrowserIconService.Keyword && snippets.Exists(i => i.Text == item.Text));
 			list.Items.AddRange(snippets);
 			list.SortItems();
+		}
+		
+		static bool FitsToContext(ICompletionItem item, List<ICompletionItem> list)
+		{
+			var snippetItem = item as ISnippetCompletionItem;
+			
+			if (snippetItem == null)
+				return false;
+			
+			if (string.IsNullOrEmpty(snippetItem.Keyword))
+				return true;
+			
+			return list.Any(x => x.Image == ClassBrowserIconService.Keyword
+			                && x.Text == snippetItem.Keyword);
 		}
 		
 		static IMember GetCurrentMember(ITextEditor editor)

@@ -94,7 +94,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				if (expr.StartLocation.IsEmpty)
 					expr.StartLocation = startLocation;
 				if (expr.EndLocation.IsEmpty)
-					expr.EndLocation = t.EndLocation;
+					expr.EndLocation = (t ?? la).EndLocation;
 				expr.AcceptVisitor(new SetParentVisitor(), null);
 			}
 			Expect(Tokens.EOF);
@@ -120,7 +120,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			}
 			
 			BlockEnd();
-			blockStmt.EndLocation = t.EndLocation;
+			// if lexer didn't return any tokens, use position of the EOF token in "la"
+			blockStmt.EndLocation = (t ?? la).EndLocation;
 			Expect(Tokens.EOF);
 			blockStmt.AcceptVisitor(new SetParentVisitor(), null);
 			return blockStmt;

@@ -13,8 +13,27 @@ namespace ICSharpCode.XmlEditor
 {
 	public class XmlLanguageBinding : DefaultLanguageBinding
 	{
+		XmlFoldingManager foldingManager;
+		
 		public override IFormattingStrategy FormattingStrategy {
 			get { return new XmlFormattingStrategy(); }
+		}
+		
+		public override void Attach(ITextEditor editor)
+		{
+			foldingManager = new XmlFoldingManager(editor);
+			foldingManager.UpdateFolds();
+			foldingManager.Start();
+			
+			base.Attach(editor);
+		}
+		
+		public override void Detach()
+		{
+			foldingManager.Stop();
+			foldingManager.Dispose();
+			
+			base.Detach();
 		}
 	}
 }

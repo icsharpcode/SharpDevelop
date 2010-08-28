@@ -68,5 +68,12 @@ namespace UnitTesting.Tests.Tree
 			runTestCommand.CallTestsCompleted();
 			Assert.IsFalse(AbstractRunTestCommand.IsRunningTest);
 		}
+		
+		[Test]
+		public void OnBeforeTestRunIsCalledOnlyOnce()
+		{
+			int count = runTestCommand.OnBeforeRunTestsMethodCallCount;
+			Assert.AreEqual(1, count);
+		}
 	}
 }

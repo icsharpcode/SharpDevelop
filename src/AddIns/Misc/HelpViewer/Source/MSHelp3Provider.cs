@@ -13,8 +13,7 @@ namespace MSHelpSystem
 				throw new ArgumentNullException("fullTypeName");
 			}
 			LoggingService.Info(string.Format("Help 3.0: Calling \"TryShowHelp\" with {0}", fullTypeName));
-			DisplayHelp.ContextualHelp(fullTypeName);
-			return true;
+			return DisplayHelp.ContextualHelp(fullTypeName);
 		}
 
 		public override bool TryShowHelpByKeyword(string keyword)

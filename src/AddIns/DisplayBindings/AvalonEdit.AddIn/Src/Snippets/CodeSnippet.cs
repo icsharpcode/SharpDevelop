@@ -23,16 +23,26 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 	/// <summary>
 	/// A code snippet.
 	/// </summary>
-	public class CodeSnippet : INotifyPropertyChanged
+	public class CodeSnippet : INotifyPropertyChanged, IEquatable<CodeSnippet>
 	{
 		string name, description, text, keyword;
-		bool isUserModified;
+		
+		public CodeSnippet()
+		{
+		}
+		
+		public CodeSnippet(CodeSnippet copy)
+		{
+			this.name = copy.name;
+			this.description = copy.description;
+			this.text = copy.text;
+			this.keyword = copy.keyword;
+		}
 		
 		public string Name {
 			get { return name; }
 			set {
 				if (name != value) {
-					isUserModified = true;
 					name = value;
 					OnPropertyChanged("Name");
 				}
@@ -43,7 +53,6 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			get { return text; }
 			set {
 				if (text != value) {
-					isUserModified = true;
 					text = value;
 					OnPropertyChanged("Text");
 				}
@@ -54,7 +63,6 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			get { return description; }
 			set {
 				if (description != value) {
-					isUserModified = true;
 					description = value;
 					OnPropertyChanged("Description");
 				}
@@ -73,19 +81,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			get { return keyword; }
 			set {
 				if (keyword != value) {
-					isUserModified = true;
 					keyword = value;
 					OnPropertyChanged("Keyword");
-				}
-			}
-		}
-		
-		public bool IsUserModified {
-			get { return isUserModified; }
-			set {
-				if (isUserModified != value) {
-					isUserModified = value;
-					OnPropertyChanged("IsUserModified");
 				}
 			}
 		}
@@ -239,6 +236,44 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			{
 				return function(input);
 			}
+		}
+		
+		public override int GetHashCode()
+		{
+			int hashCode = 0;
+			unchecked {
+				if (name != null)
+					hashCode += 1000000007 * name.GetHashCode();
+				if (description != null)
+					hashCode += 1000000009 * description.GetHashCode();
+				if (text != null)
+					hashCode += 1000000021 * text.GetHashCode();
+				if (keyword != null)
+					hashCode += 1000000033 * keyword.GetHashCode();
+			}
+			return hashCode;
+		}
+
+		public override bool Equals(object obj)
+		{
+			CodeSnippet other = obj as CodeSnippet;
+			return Equals(other);
+		}
+		
+		public bool Equals(CodeSnippet other)
+		{
+			if (other == null)
+				return false;
+			return this.name == other.name && this.description == other.description && this.text == other.text && this.keyword == other.keyword;
+		}
+		
+		/// <summary>
+		/// Reports the snippet usage to UDC
+		/// </summary>
+		internal void TrackUsage(string activationMethod)
+		{
+			bool isUserModified = !SnippetManager.defaultSnippets.Any(g => g.Snippets.Contains(this));
+			Core.AnalyticsMonitorService.TrackFeature(typeof(CodeSnippet), isUserModified ? "usersnippet" : Name, activationMethod);
 		}
 	}
 }

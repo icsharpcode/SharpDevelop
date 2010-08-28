@@ -11,20 +11,29 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace ICSharpCode.CodeCoverage
 {
 	/// <summary>
-	/// Represents an assembly in the code coverage tree view. NCover 
-	/// refers to it as a module. 
+	/// Represents an assembly in the code coverage tree view.
 	/// </summary>
 	public class CodeCoverageModuleTreeNode : CodeCoverageTreeNode
 	{
 		CodeCoverageModule module;
 		
-		public CodeCoverageModuleTreeNode(CodeCoverageModule module) : base(module.Name, CodeCoverageImageListIndex.Module, module.VisitedSequencePointsCount, module.NotVisitedSequencePointsCount)
+		public CodeCoverageModuleTreeNode(CodeCoverageModule module)
+			: base(module, CodeCoverageImageListIndex.Module)
 		{
 			this.module = module;
+			AddDummyNodeIfModuleHasNoMethods();
+		}
+		
+		void AddDummyNodeIfModuleHasNoMethods()
+		{
 			if (module.Methods.Count > 0) {
-				// Add dummy node.
-				Nodes.Add(new ExtTreeNode());
+				AddDummyNode();
 			}
+		}
+		
+		void AddDummyNode()
+		{
+			Nodes.Add(new ExtTreeNode());
 		}
 		
 		protected override void Initialize()

@@ -7,11 +7,7 @@
 
 using System;
 using System.Collections.Generic;
-
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
 using XmlEditor.Tests.Utils;
@@ -21,10 +17,7 @@ namespace XmlEditor.Tests.Folding
 	[TestFixture]
 	public class SingleRootElementFoldTestFixture
 	{
-		XmlFoldParser parser;
-		ICompilationUnit unit;
-		DefaultXmlFileExtensions extensions;
-		DefaultProjectContent projectContent;
+		XmlFoldParserHelper helper;
 		
 		[SetUp]
 		public void Init()
@@ -33,75 +26,37 @@ namespace XmlEditor.Tests.Folding
 				"<root>\r\n" +
 				"</root>";
 			
-			projectContent = new DefaultProjectContent();
-			MockTextBuffer textBuffer = new MockTextBuffer(xml);
-			
-			extensions = new DefaultXmlFileExtensions(null);
-			extensions.Add(".wxs");
-			XmlEditorOptions options = new XmlEditorOptions(new Properties());
-			MockParserService parserService = new MockParserService();
-			parser = new XmlFoldParser(extensions, options, parserService);
-			unit = parser.Parse(projectContent, @"d:\projects\a.xml", textBuffer);
+			helper = new XmlFoldParserHelper();
+			helper.CreateParser();
+			helper.GetFolds(xml);
 		}
 		
 		[Test]
-		public void XmlFoldParserCanParseProjectReturnsTrue()
+		public void GetFolds_OneRootXmlElement_ReturnsOneFold()
 		{
-			IProject project = null;
-			Assert.IsTrue(parser.CanParse(project));
+			int count = helper.Folds.Count;
+			Assert.AreEqual(1, count);
 		}
 		
 		[Test]
-		public void XmlFoldParserLexerTagsHasNoItems()
+		public void GetFolds_OneRootXmlElement_FoldNameIsRootElementNameSurroundedByAngledBrackets()
 		{
-			Assert.AreEqual(0, parser.LexerTags.Length);
+			string name = helper.GetFirstFoldName();
+			Assert.AreEqual("<root>", name);
 		}
 		
 		[Test]
-		public void XmlFoldParserCanParseReturnsTrueIfFileExtensionInDefaultXmlFileExtensions()
+		public void GetFolds_OneRootXmlElement_FoldRegionContainsRootElement()
 		{
-			Assert.IsTrue(parser.CanParse("TEST.WXS"));
-		}
-		
-		[Test]
-		public void XmlFoldParserCanParseReturnsFalseForUnknownFileExtension()
-		{
-			Assert.IsFalse(parser.CanParse("test.unknown"));
-		}
-		
-		[Test]
-		public void CompilationUnitUsesProjectContentPassedToParseMethod()
-		{
-			Assert.AreSame(projectContent, unit.ProjectContent);
-		}
-		
-		[Test]
-		public void CompilationUnitFileNameIsFileNamePassedToParseMethod()
-		{
-			Assert.AreEqual(@"d:\projects\a.xml", unit.FileName);
-		}
-		
-		[Test]
-		public void FoldingRegionsHasOneFold()
-		{
-			Assert.AreEqual(1, unit.FoldingRegions.Count);
-		}
-		
-		[Test]
-		public void FoldNameIsElementNameSurroundedByAngledBrackets()
-		{
-			Assert.AreEqual("<root>", unit.FoldingRegions[0].Name);
-		}
-		
-		[Test]
-		public void FoldRegionContainsRootElement()
-		{
+			DomRegion region = helper.GetFirstFoldRegion();
+
 			int beginLine = 1;
 			int beginColumn = 1;
 			int endLine = 2;
 			int endColumn = 8;
 			DomRegion expectedRegion = new DomRegion(beginLine, beginColumn, endLine, endColumn);
-			Assert.AreEqual(expectedRegion, unit.FoldingRegions[0].Region);
+			
+			Assert.AreEqual(expectedRegion, region);
 		}
 	}
 }

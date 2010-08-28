@@ -140,4 +140,8 @@
   <PropertyGroup>
     <PreBuildEvent>..\src\Tools\UpdateAssemblyInfo\bin\Debug\UpdateAssemblyInfo.exe</PreBuildEvent>
   </PropertyGroup>
+  <Target Name="BeforeBuild">
+	<MSBuild Projects="$(MSBuildProjectDirectory)\..\..\..\Tools\UpdateAssemblyInfo\UpdateAssemblyInfo.csproj" Targets="Build" Properties="Configuration=Debug"/>
+	<Exec WorkingDirectory="$(MSBuildProjectDirectory)\..\..\..\Tools\UpdateAssemblyInfo\bin\Debug" Command="UpdateAssemblyInfo.exe" />
+  </Target>
 </Project>

@@ -49,8 +49,10 @@ namespace RubyBinding.Tests.Testing
 			options = new RubyAddInOptions(new Properties());
 			options.RubyFileName = @"c:\ironruby\ir.exe";
 			fileService = new MockRubyFileService();
+			MockMessageService messageService = new MockMessageService();
 			
-			testRunner = new RubyTestRunner(processRunner, testResultsMonitor, options, fileService);
+			RubyTestRunnerContext context = new RubyTestRunnerContext(processRunner, testResultsMonitor, options, fileService, messageService);
+			testRunner = new RubyTestRunner(context);
 		}
 		
 		void CreateTestMethod()

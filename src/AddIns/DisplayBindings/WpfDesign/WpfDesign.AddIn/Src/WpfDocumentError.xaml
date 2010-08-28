@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+	x:Class="ICSharpCode.WpfDesign.AddIn.WpfDocumentError" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Background="#888">
+	<Border
+		Background="#DDD"
+		BorderBrush="#999"
+		BorderThickness="2"
+		Height="150"
+		Width="500">
+		<Border.Effect>
+			<DropShadowEffect
+				BlurRadius="15"
+				Color="#777"
+				ShadowDepth="2" />
+		</Border.Effect>
+		<Grid>
+			<Image
+				Name="ErrorIcon"
+				Width="32"
+				Height="32"
+				Margin="10,10,0,0"
+				Source="../Images/Icons.32x32.Error.png"
+				HorizontalAlignment="Left"
+				VerticalAlignment="Top" />
+			<TextBlock
+				Text="Problem Loading"
+				Foreground="#333"
+				Margin="50,10,0,0"
+				FontSize="16" />
+			<Line
+				X1="50"
+				X2="450"
+				Y1="40"
+				Y2="40"
+				Stroke="#444"
+				StrokeThickness="0.5" />
+			<TextBlock
+				TextWrapping="Wrap"
+				Text="The document contains errors which should be fixed so that the designer can load. Switch to XAML Tab to fix the errors."
+				Margin="50,50,20,0"
+				VerticalAlignment="Top"
+				FontSize="14"
+				Foreground="#333" />
+			<TextBlock
+				Margin="50,0,0,20"
+				HorizontalAlignment="Left"
+				VerticalAlignment="Bottom">
+				<Hyperlink
+					Foreground="Black"
+					Click="ViewXaml">View XAML</Hyperlink>
+			</TextBlock>
+		</Grid>
+	</Border>
+</UserControl>

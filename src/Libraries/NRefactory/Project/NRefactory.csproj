@@ -128,6 +128,7 @@
     <Compile Include="Src\Visitors\PrefixFieldsVisitor.cs" />
     <Compile Include="Src\Visitors\RenameIdentifierVisitor.cs" />
     <Compile Include="Src\Visitors\SetParentVisitor.cs" />
+    <Compile Include="Src\Visitors\SetRegionInclusionVisitor.cs" />
     <Compile Include="Src\Visitors\ToCSharpConvertVisitor.cs" />
     <Compile Include="Src\Visitors\ToVBNetConvertVisitor.cs" />
     <Compile Include="Src\Visitors\ToVBNetRenameConflictingVariables.cs" />

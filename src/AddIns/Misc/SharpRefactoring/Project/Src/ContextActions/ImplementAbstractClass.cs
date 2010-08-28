@@ -19,20 +19,14 @@ namespace SharpRefactoring.ContextActions
 	/// <summary>
 	/// Description of ImplementAbstractClass.
 	/// </summary>
-	public class ImplementAbstractClassProvider : IContextActionsProvider
+	public class ImplementAbstractClassProvider : ContextActionsProvider
 	{
-		public IEnumerable<IContextAction> GetAvailableActions(EditorContext editorContext)
+		public override IEnumerable<IContextAction> GetAvailableActions(EditorContext editorContext)
 		{
-			var ambience = AmbienceService.GetCurrentAmbience();
-			
 			foreach (var targetClass in editorContext.GetClassDeclarationsOnCurrentLine().Where(c => c.ClassType == ClassType.Class)) {
 				
 				foreach (var implementAction in RefactoringService.GetImplementAbstractClassActions(targetClass)) {
-					var implementActionCopy = implementAction;
-					yield return new DelegateAction {
-						Title = string.Format("Implement abstract class {0}", ambience.Convert(implementActionCopy.ClassToImplement)),
-						ExecuteAction = implementActionCopy.Execute
-					};
+					yield return implementAction;
 				}
 			}
 		}

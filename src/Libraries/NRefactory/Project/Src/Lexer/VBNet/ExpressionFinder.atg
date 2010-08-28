@@ -314,8 +314,8 @@ ClassOrModuleOrStructureTypeDeclaration =
 	(. PushContext(Context.TypeDeclaration, la, t); .)
 	( "Module" | "Class" | "Structure" ) (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
 	[ "(" "Of" GenericTypeParameterDeclaration ")" ] StatementTerminator
-	[ (. isMissingModifier = false; .) (. PushContext(Context.Type, la, t); .) "Inherits" TypeName (. PopContext(); .) StatementTerminator ]
-	[ (. isMissingModifier = false; .) (. PushContext(Context.Type, la, t); .) "Implements" TypeName (. PopContext(); .) { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) } StatementTerminator ]
+	[ (. isMissingModifier = false; .) "Inherits" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) StatementTerminator ]
+	[ (. isMissingModifier = false; .) "Implements" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) } StatementTerminator ]
 	{
 		{ AttributeBlock } (.OnEachPossiblePath: isMissingModifier = true; .)
 		{ TypeOrMemberModifier (. isMissingModifier = false; .) } (. isMissingModifier = false; .)
@@ -328,14 +328,24 @@ ClassOrModuleOrStructureTypeDeclaration =
 .
 
 EnumTypeDeclaration =
-	"Enum" Identifier [ "As" TypeName ] StatementTerminator
-	{ { AttributeBlock } Identifier [ "=" Expression ] StatementTerminator }
+	(. PushContext(Context.TypeDeclaration, la, t); .)
+	"Enum" (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
+	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] StatementTerminator
+	{
+		{ AttributeBlock }
+		(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
+		[ "=" Expression ]
+		StatementTerminator
+	}
 	"End" "Enum" StatementTerminator
+	(. PopContext(); .)
 .
 
 InterfaceDeclaration =
-	"Interface" Identifier [ "(" "Of" GenericTypeParameterDeclaration ")" ] StatementTerminator
-	[ (. PushContext(Context.Type, la, t); .) "Inherits" TypeName (. PopContext(); .) { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) } StatementTerminator ]
+	(. PushContext(Context.TypeDeclaration, la, t); .)
+	"Interface" (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
+	[ "(" "Of" GenericTypeParameterDeclaration ")" ] StatementTerminator
+	[ "Inherits" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) } StatementTerminator ]
 	{
 		{ AttributeBlock } (.OnEachPossiblePath: isMissingModifier = true; .)
 		{ TypeOrMemberModifier (. isMissingModifier = false; .) } (. isMissingModifier = false; .)
@@ -343,7 +353,8 @@ InterfaceDeclaration =
 		| InterfaceDeclaration | InterfaceMemberDeclaration )
 	}
 	(. isMissingModifier = false; .)
-	"End" "Interface" StatementTerminator	
+	"End" "Interface" StatementTerminator
+	(. PopContext(); .)
 .
 
 InterfaceMemberDeclaration =
@@ -355,11 +366,15 @@ TypeOrMemberModifier =
 .
 
 InterfaceEvent =
-	"Event" Identifier [ "As" TypeName | "(" [ ParameterList ] ")" ] StatementTerminator
+	"Event" (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
+	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) | "(" [ ParameterList ] ")" ]
+	StatementTerminator
 .
 
 InterfaceProperty =
-	"Property" Identifier [ "(" [ ParameterList ] ")" ] [ "As" { AttributeBlock } TypeName ] StatementTerminator
+	"Property" (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
+	[ "(" [ ParameterList ] ")" ] [ "As" (. PushContext(Context.Type, la, t); .) { AttributeBlock } TypeName (. PopContext(); .) ]
+	StatementTerminator
 .
 
 InterfaceSubOrFunction =
@@ -386,7 +401,9 @@ GenericTypeParameterDeclaration =
 DelegateTypeDeclaration =
 	"Delegate" ("Sub" | "Function")
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) ANY (. PopContext(); .)
-	[ "(" [ ParameterList ] ")" ] [ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] StatementTerminator
+	{ "(" [ "Of" GenericTypeParameterDeclaration | ParameterList ] ")" }
+	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
+	StatementTerminator
 .
 
 MemberDeclaration =
@@ -407,19 +424,28 @@ SubOrFunctionDeclaration =
 	("Sub" | "Function")
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) ANY (. PopContext(); .)
 	{ "(" [ ( "Of" GenericTypeParameterDeclaration | ParameterList ) ] ")" }
+	[ ( "Implements" | "Handles" ) [ ( "Me" | "MyClass" | "MyBase" ) "." ] TypeName ]
 	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
 	StatementTerminatorAndBlock
 	"End" ("Sub" | "Function") StatementTerminator
 .
 
 ExternalMemberDeclaration =
-	"Declare" [ "Ansi" | "Unicode" | "Auto" ] ( "Sub" | "Function" ) (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
-	"Lib" LiteralString [ "Alias" LiteralString ] [ "(" [ ParameterList ] ")" ] [ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] StatementTerminator
+	"Declare" [ "Ansi" | "Unicode" | "Auto" ] ( "Sub" | "Function" )
+	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
+	"Lib" LiteralString
+	[ "Alias" LiteralString ]
+	[ "(" [ ParameterList ] ")" ]
+	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
+	StatementTerminator
 .
 
 EventMemberDeclaration =
-	"Event" (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .) ( "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) | [ "(" [ ParameterList ] ")" ] )
-	[ "Implements" TypeName /*"." IdentifierOrKeyword*/ { "," TypeName /*"." IdentifierOrKeyword*/ } ]
+	"Event"
+	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
+	( "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) | [ "(" [ ParameterList ] ")" ] )
+	[ "Implements" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/
+	  { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/ } ]
 	/* the TypeName production already allows the "." IdentifierOrKeyword syntax, so to avoid an ambiguous grammer we just leave that out */
 	StatementTerminator
 .
@@ -439,7 +465,8 @@ PropertyDeclaration =
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
 	[ "(" [ ParameterList ] ")" ]
 	[ "As"  { AttributeBlock } ( NewExpression | (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ) ]
-	[ "Implements" TypeName /*"." IdentifierOrKeyword*/ { "," TypeName /*"." IdentifierOrKeyword*/ } ]
+	[ "Implements" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/
+	    { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) /*"." IdentifierOrKeyword*/ } ]
 	[ "=" Expression ] StatementTerminator
 	(. PopContext(); .) { EXPECTEDCONFLICT("<") AttributeBlock }
 	{ EXPECTEDCONFLICT("Public", "Protected", "Private", "Friend") AccessModifier
@@ -458,7 +485,9 @@ PropertyDeclaration =
 .
 
 OperatorDeclaration =
-	"Operator" (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) ANY (. PopContext(); .) "(" ParameterList ")" [ "As" { AttributeBlock } (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
+	"Operator" (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) ANY (. PopContext(); .)
+	"(" ParameterList ")"
+	[ "As" (. PushContext(Context.Type, la, t); .) { AttributeBlock } TypeName (. PopContext(); .) ]
 	StatementTerminatorAndBlock
 	"End" "Operator" StatementTerminator
 .
@@ -470,6 +499,7 @@ MemberVariableOrConstantDeclaration =
 MemberVariableOrConstantDeclarator =
 	[ "Const" ]
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) IdentifierForFieldDeclaration (. PopContext(); .)
+	[ "?" ] { "(" [ Expression ] { "," [ Expression ] } ")" }
 	[ "As" (. PushContext(Context.Type, la, t); .) ( NewExpression | TypeName ) (. PopContext(); .) ]
 	[ "=" Expression ]
 .
@@ -536,7 +566,7 @@ SimpleExpressionWithSuffix =
 	{ UnaryOperator }
 	(
 		SimpleExpression { ExpressionSuffix }
-		| "TypeOf" SimpleExpressionWithSuffix "Is" TypeName
+		| "TypeOf" SimpleExpressionWithSuffix "Is" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .)
 		| NewExpression
 		| CollectionInitializer
 	)
@@ -546,11 +576,13 @@ SimpleExpressionWithSuffix =
 SimpleExpression =
 	(. PushContext(Context.Expression, la, t); .)
     (    Literal
-    |    ( "(" Expression ")" )
+    |    ( "(" (. activeArgument = 0; .) Expression // HACK in ExpressionRangeVariable Identifier is consumed before start
+    													// of Expression so this can be an argument list too
+    		{ "," (. activeArgument++; .) Expression } ")" )
     |    IdentifierForExpressionStart
     |    PrimitiveTypeName
     |    ( "." | "!" | ".@" | "..." ) (. nextTokenIsStartOfImportsOrAccessExpression = true; wasQualifierTokenAtStart = true; .) [ XmlOpenTag ] IdentifierOrKeyword [ XmlCloseTag ]
-    |    "GetType" "(" TypeName ")"
+    |    "GetType" "(" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ")"
     |    "GetXmlNamespace" "(" (. readXmlIdentifier = true; .) Identifier ")"
     |    XmlLiteral
     |    LambdaExpression
@@ -565,10 +597,10 @@ NewExpression =
 	"New" (. PushContext(Context.ObjectCreation, la, t); .)
 	(
 		TypeName
-		
 		[
 			EXPECTEDCONFLICT("From")
 			(
+				(. PushContext(Context.CollectionInitializer, la, t); .)
 				"From"
 				(
 					CollectionInitializer /* From + CollectionInitializer is a NewExpression */
@@ -582,31 +614,44 @@ NewExpression =
 					ANY /* never reached due to goto above: */
 					/* this ANY is just so that Coco knows this branch isn't empty */
 				)
+				(. PopContext(); .)
 			|
+				/* handle array initializer after New */
+				(. PushContext(Context.CollectionInitializer, la, t); .)
+				CollectionInitializer
+				(. PopContext(); .)
+			|
+				(. PushContext(Context.ObjectInitializer, la, t); .)
 				"With" ObjectInitializer
+				(. PopContext(); .)
 			)
 		]
 	|
+		(. PushContext(Context.ObjectInitializer, la, t); .)
 		"With" ObjectInitializer
+		(. PopContext(); .)
 	)
 	(. PopContext(); .)
 .
 
 ObjectInitializer =
-	"{" [ "Key" ] "." IdentifierOrKeyword "=" Expression { "," [ "Key" ] "." IdentifierOrKeyword "=" Expression } "}"
+	"{" [ [ "Key" ] "." IdentifierOrKeyword "=" Expression { "," [ "Key" ] "." IdentifierOrKeyword "=" Expression } ] "}"
 .
 
 CollectionInitializer =
-	"{" Expression { "," Expression } "}"
+	"{" [ Expression { "," Expression } ] "}"
 .
 
 ExpressionSuffix =
-    "(" (. PushContext(Context.Expression, la, t); .) ( "Of" TypeName { "," TypeName } ")" |  [ ArgumentList ] (. PopContext(); .) ")" )
+    "(" (. PushContext(Context.Expression, la, t); .)
+        ( "Of" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .)
+            { "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) }
+    |  [ ArgumentList ] ) (. PopContext(); .) ")"
 |    ( "." | "!" | ".@" | "..." ) (. nextTokenIsStartOfImportsOrAccessExpression = true; .) [ XmlOpenTag ] IdentifierOrKeyword [ XmlCloseTag ]
 .
 
 CastExpression =
-	SimpleCastExpression | ("DirectCast" | "TryCast" | "CType") "(" Expression "," TypeName ")"
+	SimpleCastExpression | ("DirectCast" | "TryCast" | "CType") "(" Expression "," (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ")"
 .
 
 SimpleCastExpression =
@@ -732,9 +777,10 @@ ExpressionRangeVariable =
 						  "Explicit", "Equals", "Distinct", "Descending", "Compare", "By",
 						  "Binary", "Auto", "Assembly", "Ascending", "Ansi", "Aggregate", ident)
 		(
-			(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .) 
-			(
-				"As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) "="
+			(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier
+			// HACK: needs to be optional because Expression can start with Identifier too
+			[  (. PopContext(); isAlreadyInExpr = true; .)
+				( "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) "="
 				| "="
 				| (.
 					currentState = endOfStatementTerminatorAndBlock; /* leave this block */
@@ -744,10 +790,12 @@ ExpressionRangeVariable =
 				.)
 				ANY /* never reached due to goto above: */
 				/* this ANY is just so that Coco knows this branch isn't empty */
-			)
+				)
+			]
 		)
 	]
 	Expression
+	(. if (!isAlreadyInExpr) PopContext(); isAlreadyInExpr = false; .)
 .
 
 CollectionRangeVariable =
@@ -1027,10 +1075,10 @@ Statement =
 VariableDeclarationStatement =
 	( "Dim" | "Static" | "Const" )
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .)
-	Identifier (. PopContext(); .) [ "?" ] [ ( "(" { "," } ")" ) ]
+	Identifier (. PopContext(); .) [ "?" ] { "(" [ Expression ] { "," [ Expression ] } ")" }
 	{ ","
 		(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .)
-		Identifier (. PopContext(); .) [ "?" ] [ ( "(" { "," } ")" ) ]
+		Identifier (. PopContext(); .) [ "?" ] { "(" [ Expression ] { "," [ Expression ] } ")" }
 	}
 	[ "As" (. PushContext(Context.Type, la, t); .) ( NewExpression | TypeName ) (. PopContext(); .) ]
 	[ "=" Expression ]
@@ -1141,7 +1189,9 @@ TryStatement =
 	StatementTerminatorAndBlock
 	{
 		"Catch"
-		[ (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .) [ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ] ]
+		[ (. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier (. PopContext(); .)
+			[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
+		]
 		[ "When" Expression ]
 		StatementTerminatorAndBlock
 	}
@@ -1171,8 +1221,42 @@ EraseStatement =
 	"Erase" Expression { "," Expression }
 .
 
+UsingVariable =
+	[
+		EXPECTEDCONFLICT("Where", "Until", "Unicode", "Text", "Take", "Skip", "Preserve",
+						  "Order", "Off", "Out", "Key", "Join", "Into", "Infer", "Group", "From",
+						  "Explicit", "Equals", "Distinct", "Descending", "Compare", "By",
+						  "Binary", "Auto", "Assembly", "Ascending", "Ansi", "Aggregate", ident)
+		(
+			(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) Identifier
+			// HACK: needs to be optional because Expression can start with Identifier too
+			[ (. PopContext(); isAlreadyInExpr = true; .)
+				( "As" [ EXPECTEDCONFLICT("Where", "UShort", "Until", "Unicode", "ULong", "UInteger", "Text", "Take",
+		                 "String", "Skip", "Single", "Short", "SByte", "Preserve", "Out", "Order",
+		                 "Off", "Object", "Long", "Key", "Join", "Into", "Integer", "Infer", "Group",
+		                 "From", "Explicit", "Equals", "Double", "Distinct", "Descending", "Decimal",
+		                 "Date", "Compare", "Char", "Byte", "By", "Boolean", "Binary", "Binary", "Auto",
+		                 "Assembly", "Ascending", "Ansi", "Aggregate", ident)
+						(. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) "=" ]
+				| "="
+				| (.
+					currentState = endOfStatementTerminatorAndBlock; /* leave this block */
+					InformToken(t); /* process Identifier again*/
+					/* for processing current token (la): go to the position after processing End */
+					goto switchlbl;
+				.)
+				ANY /* never reached due to goto above: */
+				/* this ANY is just so that Coco knows this branch isn't empty */
+				)
+			]
+		)
+	]
+	Expression
+	(. if (!isAlreadyInExpr) PopContext(); isAlreadyInExpr = false; .)
+.
+
 UsingStatement =
-	"Using" Expression
+	"Using" UsingVariable { "," UsingVariable }
 	StatementTerminatorAndBlock
 	"End" "Using"
 .
@@ -1182,8 +1266,8 @@ InvocationStatement =
 .
 
 ArgumentList =
-   Expression { "," [ Expression ] }
-|   "," [ Expression ]  { "," [ Expression ] }
+  (. activeArgument = 0; .) Expression { "," (. activeArgument++; .) [ Expression ] }
+| (. activeArgument = 0; .)  "," (. activeArgument++; .) [ Expression ]  { "," (. activeArgument++; .) [ Expression ] }
 .
 
 /* This production handles pseudo keywords that are needed in the grammar */

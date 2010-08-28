@@ -8,7 +8,7 @@
 	-->
 
 	<Product Id="*" 
-		Name="SharpDevelop 4.0 Beta 1"
+		Name="SharpDevelop 4.0 Beta 2"
 		Manufacturer="ic#code"
 		Language="1033"
 		Codepage="1252"
@@ -180,7 +180,7 @@
 				<ComponentRef Id="ICSharpCodeCoreWinFormsDll"/>
 				<ComponentRef Id="ICSharpCodeNRefactoryDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopDll"/>
-				<ComponentRef Id="ICSharpCodeSharpDevelopDomdll"/>
+				<ComponentRef Id="ICSharpCodeSharpDevelopDomDll"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopWidgets"/>
 				<ComponentRef Id="ICSharpCodeSharpDevelopSdaFiles"/>
 				<ComponentRef Id="ICSharpCodeAvalonEditDll"/>
@@ -265,7 +265,6 @@
 				<ComponentRef Id="ConversionStyleSheetFiles"/>
 				<ComponentRef Id="TextLibOptionsFiles"/>
 				<ComponentRef Id="OptionsFiles"/>
-				<ComponentRef Id="CssFiles"/>
 				<ComponentRef Id="InstallerBitmapFiles"/>
 				<ComponentRef Id="LanguageBitmapFiles"/>
 				<ComponentRef Id="LayoutFiles"/>
@@ -276,7 +275,28 @@
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplate"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFileElementClass"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFilesCollectionClass"/>				
-				<ComponentRef Id="VBNetFileTemplates"/>
+				<ComponentRef Id="VBNetTemplatesFileCategorySortOrderXml"/>
+				<ComponentRef Id="VBNetExceptionFileTemplate"/>
+				<ComponentRef Id="VBNetEmptyFileTemplate"/>
+				<ComponentRef Id="VBNetEmptyClassFileTemplate"/>
+				<ComponentRef Id="VBNetFormFileTemplate"/>
+				<ComponentRef Id="VBNetUserControlFileTemplate"/>
+				<ComponentRef Id="VBNetInterfaceFileTemplate"/>
+				<ComponentRef Id="VBNetModuleFileTemplate"/>
+				<ComponentRef Id="VBNetMyExtensionClassFileTemplate"/>
+				<ComponentRef Id="VBNetPatternsSingletonFileTemplate"/>
+				<ComponentRef Id="VBNetUnitTestFileTemplate"/>				
+				<ComponentRef Id="VBNetStructureFileTemplate"/>
+				<ComponentRef Id="VBNetWebControlFileTemplate"/>
+				<ComponentRef Id="VBNetWebFormFileTemplate"/>
+				<ComponentRef Id="VBNetWebHandlerFileTemplate"/>
+				<ComponentRef Id="VBNetWebServiceFileTemplate"/>
+				<ComponentRef Id="VBNetWPFFlowDocumentFileTemplate"/>
+				<ComponentRef Id="VBNetWPFPageFileTemplate"/>
+				<ComponentRef Id="VBNetWPFPageFunctionFileTemplate"/>
+				<ComponentRef Id="VBNetWPFResourceDictionaryFileTemplate"/>
+				<ComponentRef Id="VBNetWPFUserControlFileTemplate"/>
+				<ComponentRef Id="VBNetWPFWindowFileTemplate"/>
 				<ComponentRef Id="EmptyHTMLFileTemplate"/>
 				<ComponentRef Id="EmptyMsBuildFileTemplate"/>
 				<ComponentRef Id="EmptyResourceFileTemplate"/>
@@ -316,8 +336,6 @@
 				<ComponentRef Id="BooConsoleProjectTemplate"/>
 				<ComponentRef Id="DefaultAssemblyInfoBooTemplate"/>
 				<ComponentRef Id="CSharpBindingFiles"/>
-				<ComponentRef Id="ILAsmTemplates"/>
-				<ComponentRef Id="ILAsmBindingFiles"/>
 				<ComponentRef Id="VBNetBindingFiles"/>
 				<ComponentRef Id="WixBindingFiles"/>
 				<ComponentRef Id="WixUIMondoProjectTemplate"/>
@@ -328,7 +346,6 @@
 				<ComponentRef Id="IconEditorAddInFiles"/>
 				<ComponentRef Id="IconEditorExe"/>
 				<ComponentRef Id="ResourceEditorFiles"/>
-				<ComponentRef Id="SettingsEditorFiles"/>
 				<ComponentRef Id="ClassDiagramResources"/>
 				<ComponentRef Id="ClassDiagramAddInFiles"/>
 				<ComponentRef Id="ClassCanvasDll"/>
@@ -365,17 +382,14 @@
 				<ComponentRef Id="AddInWritingHelp"/>
 				<ComponentRef Id="CSharpProjectSharpDevelopCustomToolTemplates"/>
 				<ComponentRef Id="StringResources.pt.resources"/>
-				<ComponentRef Id="VBNetProjectCompactFormsProjectTemplate"/>
 				<ComponentRef Id="StringResources.cngb.resources"/>
 				<ComponentRef Id="AddInWritingHelpWebsiteShortcut"/>
 				<ComponentRef Id="AppConfigFileTemplate"/>
 				<ComponentRef Id="InteropPartCoverDll"/>
-				<ComponentRef Id="PartCoverConsoleManualRtf"/>
-				<ComponentRef Id="PartCoverCorDriverDll"/>
+				<ComponentRef Id="PartCoverDll"/>
 				<ComponentRef Id="PartCoverExe"/>
 				<ComponentRef Id="PartCoverExeConfig"/>
 				<ComponentRef Id="PartCoverFrameworkDll"/>
-				<ComponentRef Id="PartCoverToNCoverXslt"/>
 				
 				<ComponentRef Id="PythonConsoleProjectTemplate"/>
 				<ComponentRef Id="PythonEmptyClassTemplate"/>
@@ -383,12 +397,17 @@
 				<ComponentRef Id="PythonEmptyUserControlTemplate"/>	
 				<ComponentRef Id="PythonEmptyFileTemplate"/>	
 				<ComponentRef Id="PythonFormsProjectTemplate"/>	
-				<ComponentRef Id="PythonLibraryProjectTemplate"/>	
+				<ComponentRef Id="PythonLibraryProjectTemplate"/>
+				<ComponentRef Id="PythonSilverlightApplicationProjectTemplate"/>
+				<ComponentRef Id="PythonWPFApplicationProjectTemplate"/>
+				<ComponentRef Id="PythonWPFWindowFileTemplate"/>
 				<ComponentRef Id="IpyExe"/>	
 				<ComponentRef Id="IronPythonModulesDll"/>	
 				<ComponentRef Id="IronPythonModulesXml"/>	
 				<ComponentRef Id="IronPythonDll"/>	
 				<ComponentRef Id="IronPythonXml"/>	
+				<ComponentRef Id="PythonChironExe"/>
+				<ComponentRef Id="PythonChironExeConfig"/>
 				<ComponentRef Id="MicrosoftDynamicDll"/>
 				<ComponentRef Id="MicrosoftScriptingDll"/>	
 				<ComponentRef Id="MicrosoftScriptingDebuggingDll"/>	
@@ -409,6 +428,8 @@
 				<ComponentRef Id="IronRubyLicenseApacheHtml"/>
 				<ComponentRef Id="RubyBindingAddin"/>
 				<ComponentRef Id="RubyBindingDll"/>
+				<ComponentRef Id="RubyChironExe"/>
+				<ComponentRef Id="RubyChironExeConfig"/>
 				<ComponentRef Id="RubyMicrosoftDynamicDll"/>
 				<ComponentRef Id="RubyMicrosoftScriptingDll"/>
 				<ComponentRef Id="RubyMicrosoftScriptingMetadataDll"/>
@@ -419,6 +440,9 @@
 				<ComponentRef Id="RubyEmptyUserControlFileTemplate"/>
 				<ComponentRef Id="RubyFormsProjectTemplate"/>
 				<ComponentRef Id="RubyLibraryProjectTemplate"/>
+				<ComponentRef Id="RubySilverlightApplicationProjectTemplate"/>
+				<ComponentRef Id="RubyWPFApplicationProjectTemplate"/>
+				<ComponentRef Id="RubyWPFWindowFileTemplate"/>
 				<ComponentRef Id="RubyBindingSdSelectedTestsFileRb"/>
 				<ComponentRef Id="RubyBindingSdTestRb"/>
 				<ComponentRef Id="RubyBindingSdTestResultRb"/>

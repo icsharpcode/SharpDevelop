@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Media.Imaging;
+
 using ICSharpCode.CodeQualityAnalysis.Controls;
 using QuickGraph;
 
@@ -14,12 +16,12 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <summary>
         /// Nested types like inner classes, interfaces and so on.
         /// </summary>
-        public ISet<Type> NestedTypes { get; set; }
+        public ISet<Type> NestedTypes { get; private set; }
 
         /// <summary>
-        /// Type which owns this type. If this isn't nested type so Owner is null.
+        /// Type which owns this type. If this isn't nested type so DeclaringType is null.
         /// </summary>
-        public Type Owner { get; set; }
+        public Type DeclaringType { get; set; }
 
         /// <summary>
         /// Inherited type. If there is no inheritance so it is null.
@@ -29,33 +31,38 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <summary>
         /// Interfaces which are implemented by this type
         /// </summary>
-        public ISet<Type> ImplementedInterfaces { get; set; }
+        public ISet<Type> ImplementedInterfaces { get; private set; }
 
         /// <summary>
         /// Methods within type
         /// </summary>
-        public ISet<Method> Methods { get; set; }
+        public ISet<Method> Methods { get; private set; }
 
         /// <summary>
         /// Fields within type
         /// </summary>
-        public ISet<Field> Fields { get; set; }
+        public ISet<Field> Fields { get; private set; }
+        
+        /// <summary>
+        /// Members of type such as methods and fields
+        /// </summary>
+        public IEnumerable<INode> Members
+        {
+        	get
+        	{
+        		return new HashSet<INode>(Methods).Union(Fields);
+        	}
+        }
 
         /// <summary>
         /// Events within type
         /// </summary>
-        public ISet<Event> Events { get; set; }
+        public ISet<Event> Events { get; private set; }
 
         /// <summary>
         /// Name of type with a name of namespace.
         /// </summary>
-        public string FullName
-        {
-            get
-            {
-                return Namespace.Name + "." + Name;
-            }
-        }
+        public string FullName { get; set; }
 
         /// <summary>
         /// Name of type
@@ -135,12 +142,12 @@ namespace ICSharpCode.CodeQualityAnalysis
         /// <summary>
         /// If the base type is generic instance so all types used in generic are presented in this set.
         /// </summary>
-        public ISet<Type> GenericBaseTypes { get; set; }
+        public ISet<Type> GenericBaseTypes { get; private set; }
 
         /// <summary>
         /// If one of implemented interfaces is generic instance so all types used in generic are presented in this set.
         /// </summary>
-        public ISet<Type> GenericImplementedInterfacesTypes { get; set; }
+        public ISet<Type> GenericImplementedInterfacesTypes { get; private set; }
 
         public Type()
         {
@@ -152,7 +159,7 @@ namespace ICSharpCode.CodeQualityAnalysis
             GenericBaseTypes = new HashSet<Type>();
             GenericImplementedInterfacesTypes = new HashSet<Type>();
 
-            Owner = null;
+            DeclaringType = null;
             BaseType = null;
 
             IsBaseTypeGenericInstance = false;
@@ -302,5 +309,7 @@ namespace ICSharpCode.CodeQualityAnalysis
             
             return builder.ToString();
         }
+        
+        public BitmapSource Icon { get { return NodeIconService.GetIcon(this); } }
     }
 }

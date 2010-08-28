@@ -16,20 +16,17 @@ namespace ICSharpCode.UnitTesting
 		UnitTestingOptions options;
 		
 		public NUnitTestRunner()
-			: this(new UnitTestProcessRunner(),
-				new TestResultsMonitor(),
+			: this(new TestProcessRunnerBaseContext(), 
 				new UnitTestingOptions())
 		{
 		}
 		
-		public NUnitTestRunner(IUnitTestProcessRunner processRunner,
-			ITestResultsMonitor testResultsMonitor,
-			UnitTestingOptions options)
-			: base(processRunner, testResultsMonitor)
+		public NUnitTestRunner(TestProcessRunnerBaseContext context, UnitTestingOptions options)
+			: base(context)
 		{
 			this.options = options;
 		}
-		
+				
 		protected override ProcessStartInfo GetProcessStartInfo(SelectedTests selectedTests)
 		{
 			NUnitConsoleApplication app = new NUnitConsoleApplication(selectedTests, options);

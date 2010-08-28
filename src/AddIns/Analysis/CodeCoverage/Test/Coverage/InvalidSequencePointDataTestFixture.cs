@@ -14,17 +14,13 @@ using System.IO;
 namespace ICSharpCode.CodeCoverage.Tests.Coverage
 {
 	[TestFixture]
-	public class InvalidSequencePointDataTestFixture
+	public class InvalidSequencePointDataTestFixture : CodeCoverageResultsTestsBase
 	{
-		CodeCoverageResults results;
-		CodeCoverageSequencePoint invalidVisitCountSequencePoint;
-		CodeCoverageSequencePoint invalidLineCountSequencePoint;
-		CodeCoverageSequencePoint invalidColumnCountSequencePoint;
-		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			string xml = "<PartCoverReport>\r\n" +
+			string xml = 
+				"<PartCoverReport>\r\n" +
 				"\t<File id=\"1\" url=\"c:\\Projects\\Foo\\SimpleTestFixture.cs\"/>\r\n" +
 				"\t<Assembly id=\"1\" name=\"Foo.Tests\" module=\"C:\\Projects\\Test\\bin\\Foo.Tests.DLL\" domain=\"test-domain-Foo.Tests.dll\" domainIdx=\"1\" />\r\n" +
 				"\t<Type name=\"Foo.Tests.FooTestFixture\" asmref=\"1\">\r\n" +
@@ -40,28 +36,40 @@ namespace ICSharpCode.CodeCoverage.Tests.Coverage
 				"\t</Type>\r\n" +
 				"</PartCoverReport>";
 			
-			results = new CodeCoverageResults(new StringReader(xml));
-			invalidVisitCountSequencePoint = results.Modules[0].Methods[0].SequencePoints[0];
-			invalidLineCountSequencePoint = results.Modules[0].Methods[1].SequencePoints[0];
-			invalidColumnCountSequencePoint = results.Modules[0].Methods[2].SequencePoints[0];
+			base.CreateCodeCoverageResults(xml);
 		}
 		
-		[Test]
-		public void InvalidVisitCount()
-		{
-			Assert.AreEqual(0, invalidVisitCountSequencePoint.VisitCount, "Should be set to zero since it is invalid.");
+		CodeCoverageSequencePoint InvalidVisitCountSequencePoint {
+			get { return FirstModuleFirstMethod.SequencePoints[0]; }
+		}
+		
+		CodeCoverageSequencePoint InvalidLineCountSequencePoint {
+			get { return FirstModuleSecondMethod.SequencePoints[0]; }
+		}
+
+		CodeCoverageSequencePoint InvalidColumnCountSequencePoint {
+			get { return FirstModule.Methods[2].SequencePoints[0]; }
 		}
 
 		[Test]
-		public void InvalidLineCount()
+		public void SequencePointVisitCount_InvalidVisitCount_ReturnsZero()
 		{
-			Assert.AreEqual(0, invalidLineCountSequencePoint.Line, "Should be set to zero since it is invalid.");
+			int count = InvalidVisitCountSequencePoint.VisitCount;
+			Assert.AreEqual(0, count, "Should be set to zero since it is invalid.");
+		}
+
+		[Test]
+		public void SequencePointLine_InvalidLineCount_ReturnsZero()
+		{
+			int line = InvalidLineCountSequencePoint.Line;
+			Assert.AreEqual(0, line, "Should be set to zero since it is invalid.");
 		}
 		
 		[Test]
-		public void InvalidColumnCount()
+		public void SequencePointColumn_InvalidColumnCount_ReturnsZero()
 		{
-			Assert.AreEqual(0, invalidColumnCountSequencePoint.Column, "Should be set to zero since it is invalid.");
+			int col = InvalidColumnCountSequencePoint.Column;
+			Assert.AreEqual(0, col, "Should be set to zero since it is invalid.");
 		}
 	}
 }

@@ -273,8 +273,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				// Class or Extension method is being inserted
 				var editor = context.Editor;
 				var document = context.Editor.Document;
-				// Resolve should:
-				//  return AmbiguousResolveResult or something like that when we resolve a name that exists in more imported namespaces
+				//  Resolve should return AmbiguousResolveResult or something like that when we resolve a name that exists in more imported namespaces
 				//   - so that we would know that we always want to insert fully qualified name
 				var nameResult = ResolveAtCurrentOffset(selectedClass.Name, context);
 				
@@ -284,13 +283,6 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					if (!IsUserTypingFullyQualifiedName(context)) {
 						nameResult = ResolveAtCurrentOffset(insertedText, context);
 						addUsing = (!IsKnownName(nameResult));
-						
-						if (IsKnownName(nameResult) && (!IsReferenceTo(nameResult, selectedClass))) {
-							// Selected name is known but resolves to something else than the user wants to insert
-							// (i.e. some other class with the same name closer to current context according to language rules)
-							// - the only solution is to insert user's choice fully qualified
-							insertedText = selectedClass.FullyQualifiedName;
-						}
 					}
 					// Special case for Attributes
 					if (insertedText.EndsWith("Attribute") && IsInAttributeContext(editor, context.StartOffset)) {
@@ -300,6 +292,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 					addUsing = !IsKnownName(nameResult);
 				}
 				
+				//insertedText = StripGenericArgument(insertedText, context);
 				InsertText(context, insertedText);
 				
 				if (addUsing && nameResult != null && nameResult.CallingClass != null) {
@@ -309,8 +302,31 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				}
 			} else {
 				// Something else than a class or Extension method is being inserted - just insert text
+				//insertedText = StripGenericArgument(insertedText, context);
 				InsertText(context, insertedText);
 			}
+		}
+		
+		/// <summary>
+		/// Turns e.g. "List&lt;T&gt;" into "List&lt;"
+		/// </summary>
+		string StripGenericArgument(string itemText, CompletionContext context)
+		{
+			if (context == null || context.Editor == null || context.Editor.Language == null ||
+			    context.Editor.Language.Properties != LanguageProperties.CSharp)
+				return itemText;
+			if (itemText != null && itemText.EndsWith(">")) {
+				int pos = itemText.LastIndexOf('<');
+				if (pos == -1)
+					return itemText;
+				int insertLen = pos + 1;
+				if (context.CompletionChar == '<') {
+					// don't insert '<' twice if user typed '<'
+					insertLen -= 1;
+				}
+				itemText = itemText.Substring(0, insertLen);
+			}
+			return itemText;
 		}
 		
 		bool IsReferenceTo(ResolveResult nameResult, IClass selectedClass)

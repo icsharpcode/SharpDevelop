@@ -5,8 +5,13 @@
 //     <version>$Revision: $</version>
 // </file>
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.SharpDevelop.Editor;
@@ -21,89 +26,190 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	public class EditorContext
 	{
 		public ITextEditor Editor { get; private set; }
-		public SnippetParser snippetParser { get; private set; }
-		public NRefactoryResolver resolver { get; private set; }
+		int CaretLine { get; set; }
+		int CaretColumn { get; set; }
+		
+		/// <summary>
+		/// Language independent.
+		/// </summary>
+		public ExpressionResult CurrentExpression { get; private set; }
+		/// <summary>
+		/// Language independent.
+		/// </summary>
+		public ResolveResult CurrentSymbol { get; private set; }
+		
+		public IDocumentLine CurrentLine { get; private set; }
+		/// <summary>
+		/// Only available for C# and VB.
+		/// </summary>
+		public INode CurrentLineAST { get; private set; }
+		/// <summary>
+		/// Only available for C# and VB.
+		/// </summary>
+		public INode CurrentMemberAST { get; private set; }
+		/// <summary>
+		/// Only available for C# and VB.
+		/// </summary>
+		public INode CurrentElement { get; private set; }
+		
+		NRefactoryResolver Resolver { get; set; }
 		
 		public EditorContext(ITextEditor editor)
 		{
 			if (editor == null)
 				throw new ArgumentNullException("editor");
 			this.Editor = editor;
-			this.snippetParser = GetSnippetParser(editor);
-			this.resolver = GetResolver(editor);
+			this.CaretLine = editor.Caret.Line;
+			this.CaretColumn = editor.Caret.Column;
+			if (CaretColumn > 1 && editor.Document.GetText(editor.Document.PositionToOffset(CaretLine, CaretColumn - 1), 1) == ";") {
+				// If caret is just after ';', pretend that caret is before ';'
+				// (works well e.g. for this.Foo();(*caret*) - we want to get "this.Foo()")
+				// This is equivalent to pretending that ; don't exist, and actually it's not such a bad idea.
+				CaretColumn -= 1;
+			}
+			
+			this.CurrentExpression = GetExpressionAtCaret(editor);
+			this.CurrentSymbol = ResolveExpression(CurrentExpression, editor, CaretLine, CaretColumn);
+			
+			this.CurrentLine = editor.Document.GetLine(CaretLine);
+			this.CurrentLineAST = GetCurrentLineAst(this.CurrentLine, editor);
+			
+			this.CurrentMemberAST = GetCurrentMemberAST(editor);
+			
+			this.CurrentElement = FindInnermostNode(this.CurrentMemberAST, new Location(CaretColumn, CaretLine));
+			
+//			DebugLog();
 		}
 		
-		// TODO make all reference types cached ResolveResult? - implement own Nullable<T>
-		ResolveResult symbolUnderCaret;
-		public ResolveResult SymbolUnderCaret
+		void DebugLog()
 		{
-			get
+			ICSharpCode.Core.LoggingService.Debug(string.Format(
+				@"
+	
+	Context actions :
+	ExprAtCaret: {0}
+	----------------------
+	SymbolAtCaret: {1}
+	----------------------
+	CurrentLineAST: {2}
+	----------------------
+	AstNodeAtCaret: {3}
+	----------------------
+	CurrentMemberAST: {4}
+	----------------------",
+				CurrentExpression, CurrentSymbol, CurrentLineAST,
+				CurrentElement == null ? "" : CurrentElement.ToString().TakeStartEllipsis(400),
+				CurrentMemberAST == null ? "" : CurrentMemberAST.ToString().TakeStartEllipsis(400)));
+		}
+		
+		public TNode GetCurrentElement<TNode>() where TNode : class, INode
+		{
+			if (this.CurrentElement is TNode)
+				return (TNode)this.CurrentElement;
+			return null;
+		}
+		
+		public TNode GetContainingElement<TNode>() where TNode : class, INode
+		{
+			var node = this.CurrentElement;
+			while(node != null)
 			{
-				if (symbolUnderCaret != null)
-					return symbolUnderCaret;
-				// workaround so that Resolve works when the caret is placed also at the end of the word
-				symbolUnderCaret = ParserService.Resolve(Editor.Caret.Line, Editor.Caret.Column - 1, Editor.Document, Editor.FileName);
-				if (symbolUnderCaret == null)
-					symbolUnderCaret = ParserService.Resolve(Editor.Caret.Line, Editor.Caret.Column, Editor.Document, Editor.FileName);
-				return symbolUnderCaret;
+				if (node is TNode)
+					return (TNode)node;
+				node = node.Parent;
+			}
+			return null;
+		}
+		
+		Dictionary<Type, object> cachedValues = new Dictionary<Type, object>();
+		
+		public T GetCached<T>() where T : IContextActionCache, new()
+		{
+			Type t = typeof(T);
+			if (cachedValues.ContainsKey(t)) {
+				return (T)cachedValues[t];
+			} else {
+				T cached = new T();
+				cached.Initialize(this);
+				cachedValues[t] = cached;
+				return cached;
 			}
 		}
 		
-		IDocumentLine currentLine;
-		public IDocumentLine CurrentLine
+		public static INode FindInnermostNode(INode node, Location position)
 		{
-			get
-			{
-				if (currentLine != null)
-					return currentLine;
-				try
-				{
-					return (currentLine = Editor.Document.GetLine(Editor.Caret.Line));
-				}
-				catch
-				{
-					return null;
-				}
-			}
+			if (node == null)
+				return null;
+			var findInnermostVisitor = new FindInnermostNodeByRangeVisitor(position);
+			node.AcceptVisitor(findInnermostVisitor, null);
+			return findInnermostVisitor.InnermostNode;
 		}
 		
-		INode currentLineAST;
-		public INode CurrentLineAST
+		public static INode FindInnermostNodeContainingSelection(INode node, Location start, Location end)
 		{
-			get
-			{
-				if (currentLineAST != null)
-					return currentLineAST;
-				if (this.snippetParser == null || this.CurrentLine == null)
-					return null;
-				try {
-					return (currentLineAST = snippetParser.Parse(this.CurrentLine.Text));
-				}
-				catch {
-					return null;
-				}
-			}
+			if (node == null)
+				return null;
+			var findInnermostVisitor = new FindInnermostNodeByRangeVisitor(start, end);
+			node.AcceptVisitor(findInnermostVisitor, null);
+			return findInnermostVisitor.InnermostNode;
 		}
 		
-		INode currentMemberAST;
-		public INode CurrentMemberAST
+		class FindInnermostNodeByRangeVisitor : NodeTrackingAstVisitor
 		{
-			get
+			public Location RangeStart { get; private set; }
+			public Location RangeEnd { get; private set; }
+			public INode InnermostNode { get; private set; }
+			
+			public FindInnermostNodeByRangeVisitor(Location caretPosition) : this(caretPosition, caretPosition)
 			{
-				if (resolver == null)
-					return null;
-				if (currentMemberAST != null)
-					return currentMemberAST;
-				try {
-					resolver.Initialize(ParserService.GetParseInformation(Editor.FileName), Editor.Caret.Line, Editor.Caret.Column);
-					return (currentMemberAST = resolver.ParseCurrentMember(Editor.Document.Text));
+			}
+			
+			public FindInnermostNodeByRangeVisitor(Location selectionStart, Location selectionEnd)
+			{
+				this.RangeStart = selectionStart;
+				this.RangeEnd = selectionEnd;
+			}
+			
+			protected override void BeginVisit(INode node)
+			{
+				if (node.StartLocation <= RangeStart && node.EndLocation >= RangeEnd) {
+					// the node visited last will be the innermost
+					this.InnermostNode = node;
 				}
-				catch {
-					return null;
-				}
+				base.BeginVisit(node);
 			}
 		}
 
+		ResolveResult ResolveExpression(ExpressionResult expression, ITextEditor editor, int caretLine, int caretColumn)
+		{
+			return ParserService.Resolve(expression, caretLine, caretColumn, editor.FileName, editor.Document.Text);
+		}
+
+		ExpressionResult GetExpressionAtCaret(ITextEditor editor)
+		{
+			ExpressionResult expr = ParserService.FindFullExpression(CaretLine, CaretColumn, editor.Document, editor.FileName);
+			// if no expression, look one character back (works better with method calls - Foo()(*caret*))
+			if (string.IsNullOrWhiteSpace(expr.Expression) && CaretColumn > 1)
+				expr = ParserService.FindFullExpression(CaretLine, CaretColumn - 1, editor.Document, editor.FileName);
+			return expr;
+		}
+		
+		
+		INode GetCurrentLineAst(IDocumentLine currentLine, ITextEditor editor)
+		{
+			if (currentLine == null)
+				return null;
+			var snippetParser = GetSnippetParser(editor);
+			if (snippetParser == null)
+				return null;
+			try	{
+				return snippetParser.Parse(currentLine.Text);
+			}
+			catch {
+				return null;
+			}
+		}
+		
 		SnippetParser GetSnippetParser(ITextEditor editor)
 		{
 			var lang = GetEditorLanguage(editor);
@@ -113,21 +219,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return null;
 		}
 		
-		NRefactoryResolver GetResolver(ITextEditor editor)
-		{
-			if (editor == null || editor.Language == null)
-				return null;
-			try
-			{
-				return new NRefactoryResolver(editor.Language.Properties);
-			}
-			catch(NotSupportedException)
-			{
-				return null;
-			}
-		}
-		
-		SupportedLanguage? GetEditorLanguage(ITextEditor editor)
+		public static SupportedLanguage? GetEditorLanguage(ITextEditor editor)
 		{
 			if (editor == null || editor.Language == null)
 				return null;
@@ -136,6 +228,34 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (editor.Language.Properties == LanguageProperties.VBNet)
 				return SupportedLanguage.VBNet;
 			return null;
+		}
+		
+		
+		INode GetCurrentMemberAST(ITextEditor editor)
+		{
+			try {
+				var resolver = GetInitializedNRefactoryResolver(editor, this.CaretLine, this.CaretColumn);
+				return resolver.ParseCurrentMember(editor.Document.Text);
+			}
+			catch {
+				return null;
+			}
+		}
+		
+		NRefactoryResolver GetInitializedNRefactoryResolver(ITextEditor editor, int caretLine, int caretColumn)
+		{
+			if (editor == null || editor.Language == null)
+				return null;
+			try
+			{
+				var resolver = new NRefactoryResolver(editor.Language.Properties);
+				resolver.Initialize(ParserService.GetParseInformation(editor.FileName), caretLine, caretColumn);
+				return resolver;
+			}
+			catch(NotSupportedException)
+			{
+				return null;
+			}
 		}
 	}
 }

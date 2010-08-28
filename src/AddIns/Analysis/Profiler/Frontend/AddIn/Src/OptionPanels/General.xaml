@@ -23,6 +23,10 @@
 					IsChecked="{sd:OptionBinding addin:OptionWrapper.EnableDCAtStart}"
 					VerticalAlignment="Top"
 					Content="{sd:Localize AddIns.Profiler.Options.General.DataCollection.EnableDCAtStartup}" />
+				<CheckBox
+					IsChecked="{sd:OptionBinding addin:OptionWrapper.TrackEvents}"
+					VerticalAlignment="Top"
+					Content="{sd:Localize AddIns.Profiler.Options.General.DataCollection.TrackEvents}" />
 				<Label
 					HorizontalAlignment="Left"
 					VerticalAlignment="Top"

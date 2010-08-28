@@ -1,0 +1,73 @@
+﻿<?xml version="1.0"?>
+<Template originator="Matt Ward">
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.SilverlightApplication.Name}</Name>
+		<Category>Ruby</Category>
+		<Icon>Ruby.Template.WinFormsProject</Icon>
+		<Description>${res:Templates.Project.SilverlightApplication.Description}</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename="index.html"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Project language="Ruby">
+		<PropertyGroup>
+			<OutputType>Exe</OutputType>
+			<MainFile>Application.rb</MainFile>
+		</PropertyGroup>
+
+		<PropertyGroup>
+			<DebugInfo>True</DebugInfo>
+			<StartArguments>-w -notification</StartArguments>
+			<StartWorkingDirectory>.\</StartWorkingDirectory>
+			<StartAction>Program</StartAction>
+			<StartProgram>${addinpath:ICSharpCode.RubyBinding}\Chiron.exe</StartProgram>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Release" escapeValue="false">
+			<StartArguments>-w -notification</StartArguments>
+			<StartWorkingDirectory>.\</StartWorkingDirectory>
+			<StartAction>Program</StartAction>
+			<StartProgram>${addinpath:ICSharpCode.RubyBinding}\Chiron.exe</StartProgram>
+		</PropertyGroup>
+		
+		<ProjectItems>
+			<Reference Include="mscorlib"/>
+			<Reference Include="System"/>
+			<Reference Include="System.Data" />
+			<Reference Include="System.Xml" />
+			<Reference Include="IronRuby">
+				<HintPath>${addinpath:ICSharpCode.RubyBinding}\IronRuby.dll</HintPath>
+			</Reference>
+
+		</ProjectItems>		
+		<Files>
+			<File 
+				name="Application.rb"
+				SubType="Code">
+<![CDATA[document.message.html = "IronRuby loaded"
+]]></File>
+			<File 
+				name="index.html" 
+				buildAction="None"
+				language="XML">
+<![CDATA[<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+    	<script type="text/javascript">
+			window.DLR = {}
+			DLR.settings = {console: true}
+		</script>
+    	<script src="http://gestalt.ironruby.net/dlr-latest.js" type="text/javascript"></script>
+    	<title>Silverlight Application</title>
+	</head>
+	<body>
+		<div id="message">Loading...</div>
+		<script type="application/ruby" src="Application.rb"></script>
+	</body>
+</html>]]></File>
+		</Files>
+	</Project>
+</Template>

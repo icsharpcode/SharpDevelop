@@ -131,6 +131,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 		bool enableIndexerInsight = true;
 		bool enableXmlCommentCompletion = true;
 		bool enableDotCompletion = true;
+		protected IInsightWindowHandler insightHandler;
 		
 		public bool EnableMethodInsight {
 			get {
@@ -168,26 +169,24 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			}
 		}
 		
-		protected virtual void InitializeOpenedInsightWindow(ITextEditor editor, IInsightWindow insightWindow)
-		{
-		}
-		
 		public virtual CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
 			switch (ch) {
 				case '(':
 					if (enableMethodInsight && CodeCompletionOptions.InsightEnabled) {
 						IInsightWindow insightWindow = editor.ShowInsightWindow(new MethodInsightProvider().ProvideInsight(editor));
-						if (insightWindow != null)
-							InitializeOpenedInsightWindow(editor, insightWindow);
+						if (insightWindow != null && insightHandler != null) {
+							insightHandler.InitializeOpenedInsightWindow(editor, insightWindow);
+							insightHandler.HighlightParameter(insightWindow, -1); // disable highlighting
+						}
 						return CodeCompletionKeyPressResult.Completed;
 					}
 					break;
 				case '[':
 					if (enableIndexerInsight && CodeCompletionOptions.InsightEnabled) {
 						IInsightWindow insightWindow = editor.ShowInsightWindow(new IndexerInsightProvider().ProvideInsight(editor));
-						if (insightWindow != null)
-							InitializeOpenedInsightWindow(editor, insightWindow);
+						if (insightWindow != null && insightHandler != null)
+							insightHandler.InitializeOpenedInsightWindow(editor, insightWindow);
 						return CodeCompletionKeyPressResult.Completed;
 					}
 					break;

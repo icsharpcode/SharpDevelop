@@ -12,7 +12,6 @@
 		<NUnitLibFiles Include="NUnit\lib\*.dll"/>
 		<HelpToolFiles Include="Help\*"/>
 		<PartCoverFiles Include="PartCover\*"/>
-		<PartCoverXsltFiles Include="PartCover\xslt\*"/>
 		<GraphSharpFiles Include="..\Libraries\GraphSharp\*"/>
 	
 		<LanguageResource Include="$(LanguageResourcePath)StringResources.*.resx"/>
@@ -33,7 +32,6 @@
 		<Copy SourceFiles="@(NUnitLibFiles)" DestinationFolder="..\..\bin\Tools\NUnit\lib" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(ToolFiles)" DestinationFolder="..\..\bin\Tools" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(PartCoverFiles)" DestinationFolder="..\..\bin\Tools\PartCover" SkipUnchangedFiles="true"/>
-		<Copy SourceFiles="@(PartCoverXsltFiles)" DestinationFolder="..\..\bin\Tools\PartCover\Xslt" SkipUnchangedFiles="true"/>
 		<Copy SourceFiles="@(GraphSharpFiles)" DestinationFolder="..\..\bin\" SkipUnchangedFiles="true"/>
 		
 		<!--
@@ -54,16 +52,9 @@
 	
 	<Target Name="Rebuild" DependsOnTargets="Build"/>
 	
-	<ItemGroup>
-		<PrepareReleaseProject Include="SVNChangeLogToXml\SVNChangeLogToXml.csproj" />
-	</ItemGroup>
-	
 	<Target Name="PrepareRelease">
-		<MSBuild Projects="@(PrepareReleaseProject)" Targets="Build"/>
-		<Exec Command="SVNChangelogToXml.exe --START 3392" WorkingDirectory="SVNChangeLogToXml\bin\Release" Timeout = "120000" IgnoreExitCode = "false"/>
-		<Exec WorkingDirectory="UpdateAssemblyInfo\bin\Debug" Command="UpdateAssemblyInfo.exe --REVISION"  Timeout = "60000" IgnoreExitCode = "false"/>
-		<RemoveDir Directories="SVNChangeLogToXml\bin" />
-		<RemoveDir Directories="SVNChangeLogToXml\obj" />
+		<!--<MSBuild Projects="@(PrepareReleaseProject)" Targets="Build"/>-->
+		<Exec Command="UpdateAssemblyInfo.exe --REVISION" WorkingDirectory = "UpdateAssemblyInfo\bin\Debug" Timeout = "60000" IgnoreExitCode = "false"/>
 	</Target>
 	
 	<ItemGroup>
@@ -73,7 +64,7 @@
 		<CleanupDirectories Include="..\..\bin\UnitTests"/>
 		<CleanupDirectories Include="..\..\bin\Tools"/>
 		<CleanupDirectories Include="..\..\bin\setup\help"/>
-		<CleanupDirectories Include="..\..\AddIns\Addins"/>
+		<CleanupDirectories Include="..\..\AddIns"/>
 		<CleanupDirectories Include="..\setup\bin"/>
 		<CleanupDirectories Include="..\AddIns\Misc\Profiler\bin"/>
 		<CleanupDirectories Include="..\AddIns\Misc\Profiler\Hook\obj"/>

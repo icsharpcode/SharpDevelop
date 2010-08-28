@@ -40,6 +40,11 @@ namespace ICSharpCode.XamlBinding
 			set { Properties.Set("SwitchToCodeViewAfterInsertion", value); }
 		}
 		
+		public static bool UseAdvancedHighlighting {
+			get { return Properties.Get("UseAdvancedHighlighting", true); }
+			set { Properties.Set("UseAdvancedHighlighting", value); }
+		}
+		
 		public static string EventHandlerNamePattern {
 			get { return Properties.Get("EventHandlerNamePattern", "%Object%_%Event%"); }
 			set { Properties.Set("EventHandlerNamePattern", value); }

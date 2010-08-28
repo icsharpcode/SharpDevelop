@@ -89,7 +89,7 @@ namespace UnitTesting.Tests.Utils
 			set { unitTestsPad = value; }
 		}
 		
-		public IMessageService MessageService {
+		public IUnitTestMessageService MessageService {
 			get { return messageService; }
 		}
 		

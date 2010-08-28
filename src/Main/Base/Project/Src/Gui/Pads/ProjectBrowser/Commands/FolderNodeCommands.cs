@@ -45,14 +45,14 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 		}
 		
-		int GetFileFilterIndex(IProject project, string[] fileFilters)
+		int GetFileFilterIndex(IProject project, IList<FileFilterDescriptor> fileFilters)
 		{
 			if (project != null) {
 				ProjectBindingDescriptor projectCodon = ProjectBindingService.GetCodonPerLanguageName(project.Language);
 				if (projectCodon != null) {
-					for (int i = 0; i < fileFilters.Length; ++i) {
+					for (int i = 0; i < fileFilters.Count; ++i) {
 						for (int j = 0; j < projectCodon.CodeFileExtensions.Length; ++j) {
-							if (fileFilters[i].ToUpperInvariant().IndexOf(projectCodon.CodeFileExtensions[j].ToUpperInvariant()) >= 0) {
+							if (fileFilters[i].ContainsExtension(projectCodon.CodeFileExtensions[j])) {
 								return i + 1;
 							}
 						}
@@ -179,8 +179,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			List<FileProjectItem> addedItems = new List<FileProjectItem>();
 			
 			using (OpenFileDialog fdiag  = new OpenFileDialog()) {
-				fdiag.AddExtension    = true;
-				string[] fileFilters  = (string[])(AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(this)).ToArray(typeof(string));
+				fdiag.AddExtension = true;
+				var fileFilters    = ProjectService.GetFileFilters();
 				
 				fdiag.InitialDirectory = node.Directory;
 				fdiag.FilterIndex     = GetFileFilterIndex(node.Project, fileFilters);

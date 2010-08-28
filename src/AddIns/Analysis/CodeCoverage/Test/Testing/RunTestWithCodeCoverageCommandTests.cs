@@ -164,9 +164,10 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 			command.CallCreateTestRunner(null);
 			MockCSharpProject project = new MockCSharpProject();
 			SelectedTests tests = new SelectedTests(project);
+			mockCodeCoverageTestRunnerFactory.FileSystem.FileExistsReturnValue = true;
+			mockCodeCoverageTestRunnerFactory.FileSystem.CreateTextReaderReturnValue = new StringReader("<a/>");
 			mockCodeCoverageTestRunnerFactory.TestRunner.Start(tests);
 			
-			mockCodeCoverageTestRunnerFactory.FileSystem.FileExistsReturnValue = true;
 			mockCodeCoverageTestRunnerFactory.FileSystem.CreateTextReaderReturnValue = CreateCodeCoverageResultsTextReader();
 			
 			mockCodeCoverageTestRunnerFactory.ProcessRunner.FireProcessExitedEvent();
@@ -225,14 +226,16 @@ namespace ICSharpCode.CodeCoverage.Tests.Testing
 		
 		ActionArguments<Task> CreateTestRunnerAndFirePartCoverProcessExitEventWhenNoCoverageFileProduced()
 		{
-			mockCodeCoverageTestRunnerFactory.FileSystem.FileExistsReturnValue = false;
-			
 			command.CallCreateTestRunner(null);
 			
 			MockCSharpProject project = new MockCSharpProject();
 			SelectedTests tests = new SelectedTests(project);
 			
+			mockCodeCoverageTestRunnerFactory.FileSystem.FileExistsReturnValue = true;
+			mockCodeCoverageTestRunnerFactory.FileSystem.CreateTextReaderReturnValue = new StringReader("<a/>");
 			mockCodeCoverageTestRunnerFactory.TestRunner.Start(tests);
+			
+			mockCodeCoverageTestRunnerFactory.FileSystem.FileExistsReturnValue = false;
 			mockCodeCoverageTestRunnerFactory.ProcessRunner.FireProcessExitedEvent();
 			
 			object actionArgsAsObject = context.MockUnitTestWorkbench.SafeThreadAsyncMethodCallsWithArguments[0];

@@ -13,143 +13,143 @@ using System.IO;
 namespace ICSharpCode.CodeCoverage.Tests.Coverage
 {
 	[TestFixture]
-	public class CodeCoverageResultsTestFixture
-	{
-		CodeCoverageModule module;
-		CodeCoverageResults results;
-		CodeCoverageMethod method;
-		CodeCoverageSequencePoint point1;
-		CodeCoverageSequencePoint point2;
-		CodeCoverageSequencePoint point3;
-		
+	public class CodeCoverageResultsTestFixture : CodeCoverageResultsTestsBase
+	{		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			string xml = "<PartCoverReport date=\"2008-07-10T02:59:13.7198656+01:00\">\r\n" +
+			string xml = 
+				"<PartCoverReport date=\"2008-07-10T02:59:13.7198656+01:00\">\r\n" +
 				"    <File id=\"1\" url=\"c:\\Projects\\Foo\\FooTestFixture.cs\" />\r\n" +
 				"    <Assembly id=\"1\" name=\"Foo.Tests\" module=\"C:\\Projects\\Test\\Foo.Tests\\bin\\Foo.Tests.DLL\" domain=\"test-domain-Foo.Tests.dll\" domainIdx=\"1\" />\r\n" +
 				"    <Type asmref=\"1\" name=\"Foo.Tests.FooTestFixture\" flags=\"1232592\">\r\n" +
 				"        <Method name=\"SimpleTest\" sig=\"void  ()\" bodysize=\"42\" flags=\"2182\" iflags=\"0\">\r\n" +
-				"            <pt visit=\"1\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
+				"            <pt visit=\"1\" pos=\"0\" len=\"2\" fid=\"1\" sl=\"20\" sc=\"3\" el=\"20\" ec=\"4\" />\r\n" +
 				"            <pt visit=\"1\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"21\" sc=\"13\" el=\"21\" ec=\"32\" />\r\n" +
-				"            <pt visit=\"0\" pos=\"0\" len=\"1\" fid=\"1\" sl=\"24\" sc=\"3\" el=\"24\" ec=\"4\" />\r\n" +
+				"            <pt visit=\"0\" pos=\"0\" len=\"4\" fid=\"1\" sl=\"24\" sc=\"3\" el=\"24\" ec=\"4\" />\r\n" +
 				"        </Method>\r\n" +
 				"    </Type>\r\n" +
 				"</PartCoverReport>";
-			results = new CodeCoverageResults(new StringReader(xml));
-			if (results.Modules.Count > 0) {
-				module = results.Modules[0];
-				if (module.Methods.Count > 0) {
-					method = module.Methods[0];
-					if (method.SequencePoints.Count == 3) {
-						point1 = method.SequencePoints[0];
-						point2 = method.SequencePoints[1];
-						point3 = method.SequencePoints[2];
-					}
-				}			
-			}
+			
+			base.CreateCodeCoverageResults(xml);			
 		}
 		
 		[Test]
-		public void AssemblyName()
+		public void ModuleName_OneModuleInCodeCoverageResults_AssemblyNameReturned()
 		{
-			Assert.AreEqual("Foo.Tests", module.Name);
+			string name = base.FirstModule.Name;
+			string expectedName = "Foo.Tests";
+			Assert.AreEqual(expectedName, name);
 		}
 		
 		[Test]
-		public void ModuleCount()
+		public void ModulesCount_OneModuleInCodeCoverageResults_ReturnsOneModule()
 		{
-			Assert.AreEqual(1, results.Modules.Count);
+			int count = results.Modules.Count;
+			Assert.AreEqual(1, count);
 		}
 		
 		[Test]
-		public void MethodCount()
+		public void MethodsCount_ModuleHasOneMethod_ReturnsOne()
 		{
-			Assert.AreEqual(1, module.Methods.Count);
+			int count = FirstModule.Methods.Count;
+			Assert.AreEqual(1, count);
 		}
 		
 		[Test]
-		public void MethodName()
+		public void MethodName_ModuleHasOneMethod_ReturnsExpectedMethodName()
 		{
-			Assert.AreEqual("SimpleTest", method.Name);
+			string name = FirstModuleFirstMethod.Name;
+			string expectedName = "SimpleTest";
+			Assert.AreEqual(expectedName, name);
 		}
 		
 		[Test]
-		public void FullClassName()
+		public void MethodFullClassName_ModuleHasOneMethod_ReturnsExpectedFullClassName()
 		{
-			Assert.AreEqual("Foo.Tests.FooTestFixture", method.FullClassName);
+			string name = FirstModuleFirstMethod.FullClassName;
+			string expectedName = "Foo.Tests.FooTestFixture";
+			Assert.AreEqual(expectedName, name);
 		}
 		
 		[Test]
-		public void ClassName()
+		public void MethodClassName_ModuleHasOneMethod_ReturnsExpectedClassName()
 		{
-			Assert.AreEqual("FooTestFixture", method.ClassName);
+			string name = FirstModuleFirstMethod.ClassName;
+			string expectedClassName = "FooTestFixture";
+			Assert.AreEqual(expectedClassName, name);
 		}
 		
 		[Test]
-		public void ClassNamespace()
+		public void MethodClassNamespace_ModuleHasOneMethod_ReturnsExpectedNamespace()
 		{
-			Assert.AreEqual("Foo.Tests", method.ClassNamespace);
+			string name = FirstModuleFirstMethod.ClassNamespace;
+			string expectedName = "Foo.Tests";
+			Assert.AreEqual(expectedName, name);
 		}
 		
 		[Test]
-		public void SequencePointCount()
+		public void SequencePointsCount_MethodHasThreeSequencePoints_ReturnsThree()
 		{
-			Assert.AreEqual(3, method.SequencePoints.Count);
+			int count = FirstModuleFirstMethod.SequencePoints.Count;
+			Assert.AreEqual(3, count);
 		}
 		
 		[Test]
-		public void SequencePointDocument()
+		public void SequencePoint_FirstSequencePoint_HasExpectedPropertyValues()
 		{
-			Assert.AreEqual("c:\\Projects\\Foo\\FooTestFixture.cs", point1.Document);
+			CodeCoverageSequencePoint point = base.CreateSequencePoint();
+			point.Document = @"c:\Projects\Foo\FooTestFixture.cs";
+			point.VisitCount = 1;
+			point.Column = 3;
+			point.EndColumn = 4;
+			point.Line = 20;
+			point.EndLine = 20;
+			point.Length = 2;
+			
+			Assert.AreEqual(point, FirstModuleFirstMethodFirstSequencePoint);
 		}
 		
 		[Test]
-		public void SequencePoint1VisitCount()
+		public void SequencePointVisitCount_SecondSequencePoint_ReturnsOneVisit()
 		{
-			Assert.AreEqual(1, point1.VisitCount);
+			int count = FirstModuleFirstMethodSecondSequencePoint.VisitCount;
+			Assert.AreEqual(1, count);
 		}
 		
 		[Test]
-		public void SequencePoint3VisitCount()
+		public void SequencePointVistCount_ThirdSequencePoint_ReturnsNoVisits()
 		{
-			Assert.AreEqual(0, point3.VisitCount);
+			int count = FirstModuleFirstMethodThirdSequencePoint.VisitCount;
+			Assert.AreEqual(0, count);
 		}
 		
 		[Test]
-		public void SequencePoint1Line()
+		public void VisitedSequencePointsCount_FirstMethod_ReturnsTwo()
 		{
-			Assert.AreEqual(20, point1.Line);
+			int count = FirstModuleFirstMethod.VisitedSequencePointsCount;
+			Assert.AreEqual(2, count);
 		}
 		
 		[Test]
-		public void SequencePoint1Column()
+		public void NotVisitedSequencePointsCount_FirstMethod_ReturnsOne()
 		{
-			Assert.AreEqual(3, point1.Column);
+			int count = FirstModuleFirstMethod.NotVisitedSequencePointsCount;
+			Assert.AreEqual(1, count);
 		}
 		
 		[Test]
-		public void SequencePoint1EndLine()
+		public void GetVisitedCodeLength_FirstMethod_ReturnsSummedLengthOfVisitedSequencePoints()
 		{
-			Assert.AreEqual(20, point1.EndLine);
+			int length = FirstModuleFirstMethod.GetVisitedCodeLength();
+			Assert.AreEqual(3, length);
 		}
 		
 		[Test]
-		public void SequencePoint1EndColumn()
+		public void GetUnvisitedCodeLength_FirstMethod_ReturnsSummedLengthOfUnvisitedSequencePoints()
 		{
-			Assert.AreEqual(4, point1.EndColumn);
-		}
-		
-		[Test]
-		public void MethodVisitedCount()
-		{
-			Assert.AreEqual(2, method.VisitedSequencePointsCount);
-		}
-		
-		[Test]
-		public void MethodNotVisitedCount()
-		{
-			Assert.AreEqual(1, method.NotVisitedSequencePointsCount);
+			int length = FirstModuleFirstMethod.GetUnvisitedCodeLength();
+			Assert.AreEqual(4, length);
 		}
 	}
 }

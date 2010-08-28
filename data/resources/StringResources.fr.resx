@@ -879,11 +879,29 @@ Sauvegardez ces fichiers avant de déclencher l'opération.</value>
   <data name="AddIns.UsageDataCollector.Title" xml:space="preserve">
     <value>Collecteur de données d'utilisation</value>
   </data>
+  <data name="AddIns.VBNetBinding.CodeCompletion.QuestionmarkEqualsItem.Description" xml:space="preserve">
+    <value>Laisser SharpDevelop deviner le type depuis l'initialisation.</value>
+  </data>
   <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
     <value>Editer colonnes et lignes de la grille</value>
   </data>
   <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle" xml:space="preserve">
     <value>Extraire les propriétés comme style</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ErrorNoSelection" xml:space="preserve">
+    <value>Aucun élément valide sélectionné !</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.PropertyColumn" xml:space="preserve">
+    <value>Nom Propriété/Evénement</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ReplaceQuestion" xml:space="preserve">
+    <value>Le contrôle sélectionné possède déjà un style. Voulez-vous le remplacer par celui que vous venez de créer ?</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.StyleName" xml:space="preserve">
+    <value>Nom du style:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ValueColumn" xml:space="preserve">
+    <value>Valeur de la Propriété</value>
   </data>
   <data name="AddIns.XamlBinding.Menu.GroupInto" xml:space="preserve">
     <value>Grouper avec</value>
@@ -929,6 +947,9 @@ Sauvegardez ces fichiers avant de déclencher l'opération.</value>
   </data>
   <data name="AddIns.XamlBinding.Options.UseExtensionCompletion" xml:space="preserve">
     <value>Utiliser la complétion d'extension</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.UseHighlighting" xml:space="preserve">
+    <value>Utiliser le surlignage avancé</value>
   </data>
   <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss" xml:space="preserve">
     <value>Impossible de sauvegarder sans perte d'informations avec l'encodage ${encoding}</value>
@@ -2120,6 +2141,9 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.CodeTemplate.ExtensionsLabel" xml:space="preserve">
     <value>E&amp;xtensions</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.Keyword" xml:space="preserve">
+    <value>Mappage clavier</value>
   </data>
   <data name="Dialog.Options.CodeTemplate.PressTabToInsertTemplate" xml:space="preserve">
     <value>Appuyer sur Tab pour insérer ce squelette de code.</value>
@@ -4231,6 +4255,9 @@ Toutes les modifications seront perdues.</value>
   <data name="ICSharpCode.SharpDevelop.Commands.SaveFileAs.FileSavedCaption" xml:space="preserve">
     <value>Fichier sauvé</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.TabStrip.NavigateToFileInProjectBrowser" xml:space="preserve">
+    <value>Naviguer par fichier avec l'explorateur de projet</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Commands.VBConvertProjectToCSharp" xml:space="preserve">
     <value>De VB.NET vers C#</value>
   </data>
@@ -5043,6 +5070,36 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="ICSharpCode.WixBinding.WixVisualStudioExtensionTitle" xml:space="preserve">
     <value>Extension Visual Studio</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Copy" xml:space="preserve">
+    <value>Copier</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Cut" xml:space="preserve">
+    <value>Couper</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Outline" xml:space="preserve">
+    <value>Souligner</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Paste" xml:space="preserve">
+    <value>Coller</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Properties" xml:space="preserve">
+    <value>Propriétés</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Redo" xml:space="preserve">
+    <value>Refaire</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Remove" xml:space="preserve">
+    <value>Enlever</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Tools" xml:space="preserve">
+    <value>Outils</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Undo" xml:space="preserve">
+    <value>Défaire</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.ViewXAML" xml:space="preserve">
+    <value>Voir le XAML</value>
   </data>
   <data name="ICSharpCode.XmlEditor.AddAttributeDialog.CustomAttributeLabel" xml:space="preserve">
     <value>Personnalisé:</value>
@@ -5864,6 +5921,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="ProjectComponent.ContextMenu.Clean" xml:space="preserve">
     <value>&amp;Nettoyer</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.CollapseAll" xml:space="preserve">
+    <value>Réduire tout</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.Delete.Question" xml:space="preserve">
     <value>Supprimer '${FileName}' de façon permanente?</value>
   </data>
@@ -6245,6 +6305,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="SharpDevelop.HexEditor.StreamAdded" xml:space="preserve">
     <value>Flux ajouté !</value>
   </data>
+  <data name="SharpDevelop.Refactoring.BaseClassesOf" xml:space="preserve">
+    <value>Classes de base de ${Name}</value>
+  </data>
   <data name="SharpDevelop.Refactoring.CannotPerformOperationBecauseOfSyntaxErrors" xml:space="preserve">
     <value>L'opération ne peut être effectuée car votre code contient des erreurs:</value>
   </data>
@@ -6284,8 +6347,14 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="SharpDevelop.Refactoring.ExtractInterfaceCommand" xml:space="preserve">
     <value>Extraire une interface</value>
   </data>
+  <data name="SharpDevelop.Refactoring.FindBaseClassesCommand" xml:space="preserve">
+    <value>Trouver les classes de base</value>
+  </data>
   <data name="SharpDevelop.Refactoring.FindDerivedClassesCommand" xml:space="preserve">
     <value>Chercher les classes &amp;dérivées</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.FindDerivedClassesOrOverridesCommand" xml:space="preserve">
+    <value>Trouver les symboles dérivés</value>
   </data>
   <data name="SharpDevelop.Refactoring.FindingReferences" xml:space="preserve">
     <value>Recherche des références...</value>
@@ -6986,6 +7055,12 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   <data name="Templates.File.Struct.Name" xml:space="preserve">
     <value>Structure</value>
   </data>
+  <data name="Templates.File.Structure.Description" xml:space="preserve">
+    <value>Une déclaration incluant les implémentations pour Equals() et GetHashCode()</value>
+  </data>
+  <data name="Templates.File.Structure.Name" xml:space="preserve">
+    <value>Structure</value>
+  </data>
   <data name="Templates.File.Text.EmptyText.Name" xml:space="preserve">
     <value>Fichier texte vide</value>
   </data>
@@ -7180,6 +7255,12 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   </data>
   <data name="Templates.Project.SharpDevelopMacro.Name" xml:space="preserve">
     <value>Entrée du menu Outils</value>
+  </data>
+  <data name="Templates.Project.SilverlightApplication.Description" xml:space="preserve">
+    <value>Un projet pour une application Silverlight.</value>
+  </data>
+  <data name="Templates.Project.SilverlightApplication.Name" xml:space="preserve">
+    <value>Application Silverlight</value>
   </data>
   <data name="Templates.Project.SysTrayIcon.Description" xml:space="preserve">
     <value>Un projet qui crée une application avec une icône dans la zone de notification de la barre des tâches.</value>
@@ -7455,7 +7536,7 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
     <value>Sélectionner &amp;tout</value>
   </data>
   <data name="XML.MainMenu.EditMenu.Undo" xml:space="preserve">
-    <value>&amp;Annuler</value>
+    <value>&amp;Défaire</value>
   </data>
   <data name="XML.MainMenu.EditMenu.Undo.Description" xml:space="preserve">
     <value>Annuler la dernière action</value>

@@ -7,6 +7,7 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
@@ -55,7 +56,9 @@ namespace ICSharpCode.PythonBinding
 		
 		ProcessStartInfo GetProcessStartInfo()
 		{
-			ipy.PythonScriptFileName = workbench.ActiveWorkbenchWindow.ActiveViewContent.PrimaryFileName;
+			string scriptFileName = workbench.ActiveWorkbenchWindow.ActiveViewContent.PrimaryFileName;
+			ipy.PythonScriptFileName = scriptFileName;
+			ipy.WorkingDirectory = Path.GetDirectoryName(scriptFileName);
 			return ipy.GetProcessStartInfo();
 		}
 	}

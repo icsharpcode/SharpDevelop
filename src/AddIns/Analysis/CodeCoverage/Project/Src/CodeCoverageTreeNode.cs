@@ -7,6 +7,8 @@
 
 using System;
 using System.Drawing;
+using System.IO;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.CodeCoverage
@@ -23,19 +25,28 @@ namespace ICSharpCode.CodeCoverage
 		/// </summary>
 		public static readonly Color ZeroCoverageTextColor = Color.Gray;
 		
-		int visitedCount;
-		int notVisitedCount;
+		int visitedCodeLength;
+		int unvisitedCodeLength;		
 		int baseImageIndex;
 		
-		public CodeCoverageTreeNode(string name, CodeCoverageImageListIndex index) : this(name, index, 0, 0)
+		public CodeCoverageTreeNode(string name, CodeCoverageImageListIndex index) 
+			: this(name, index, 0, 0)
 		{
 		}
 		
-		public CodeCoverageTreeNode(string name, CodeCoverageImageListIndex index, int visitedCount, int notVisitedCount)
+		public CodeCoverageTreeNode(ICodeCoverageWithVisits codeCoverageWithVisits, CodeCoverageImageListIndex index)
+			: this(codeCoverageWithVisits.Name,
+				index,
+				codeCoverageWithVisits.GetVisitedCodeLength(),
+				codeCoverageWithVisits.GetUnvisitedCodeLength())
+		{
+		}
+		
+		public CodeCoverageTreeNode(string name, CodeCoverageImageListIndex index, int visitedCodeLength, int unvisitedCodeLength)
 		{
 			sortOrder = 10;
-			this.visitedCount = visitedCount;
-			this.notVisitedCount = notVisitedCount;
+			this.visitedCodeLength = visitedCodeLength;
+			this.unvisitedCodeLength = unvisitedCodeLength;
 			
 			Name = name;
 			SetText();
@@ -44,34 +55,78 @@ namespace ICSharpCode.CodeCoverage
 			SetImageIndex();
 		}
 		
-		public int VisitedCount {
-			get {
-				return visitedCount;
+		void SetText()
+		{
+			UpdateTextForeColorBasedOnPercentageCodeCoverage();			
+			UpdateTextBasedOnPercentageCodeCoverage();
+		}
+		
+		void UpdateTextForeColorBasedOnPercentageCodeCoverage()
+		{
+			if (visitedCodeLength == 0) {
+				ForeColor = ZeroCoverageTextColor; 
+			} else if(TotalCodeLength != visitedCodeLength) {
+				ForeColor = PartialCoverageTextColor;
+			} else {
+				ForeColor = Color.Empty;
 			}
+		}
+		
+		void UpdateTextBasedOnPercentageCodeCoverage()
+		{
+			Text = GetNodeText();			
+		}
+		
+		string GetNodeText()
+		{
+			if (TotalCodeLength > 0) {
+				int percentage = GetPercentage();
+				return String.Format("{0} ({1}%)", Name, percentage);
+			}
+			return Name;
+		}
+		
+		int GetPercentage()
+		{
+			int percentage = (visitedCodeLength * 100) / TotalCodeLength;
+			return percentage;
+		}
+		
+		void SetImageIndex()
+		{
+			ImageIndex = baseImageIndex;
+			if (visitedCodeLength == 0) {
+				ImageIndex++;
+			}
+			SelectedImageIndex = ImageIndex;	
+		}
+		
+		public int VisitedCodeLength {
+			get { return visitedCodeLength; }
 			set {
-				visitedCount = value;
+				visitedCodeLength = value;
 				SetText();
 				SetImageIndex();
 			}
 		}
 		
-		public int NotVisitedCount {
-			get {
-				return notVisitedCount;
-			}
-			set {
-				notVisitedCount = value;
+		public int UnvisitedCodeLength {
+			get { return unvisitedCodeLength; }
+			set { 
+				unvisitedCodeLength = value;
 				SetText();
 			}
+		}
+		
+		public int TotalCodeLength {
+			get { return visitedCodeLength + unvisitedCodeLength; }
 		}
 		
 		/// <summary>
 		/// Gets the string to use when sorting the code coverage tree node. 
 		/// </summary>
 		public override string CompareString {
-			get { 
-				return Name;
-			}
+			get { return Name; }
 		}
 		
 		/// <summary>
@@ -84,44 +139,23 @@ namespace ICSharpCode.CodeCoverage
 			treeView.SortNodes(Nodes, false);
 		}
 		
-		static string GetPercentage(int visitedCount, int totalCount)
+		protected void OpenFile(string fileName)
 		{
-			int percentage = (visitedCount * 100) / totalCount;
-			return percentage.ToString();
+			if (FileExists(fileName)) {
+				FileService.OpenFile(fileName);
+			}
 		}
 		
-		static string GetNodeText(string name, int visitedCount, int totalCount)
+		bool FileExists(string fileName)
 		{
-			if (totalCount > 0) {
-				return String.Concat(name, " (", GetPercentage(visitedCount, totalCount), "%)");
-			}
-			return name;
+			return !String.IsNullOrEmpty(fileName) && File.Exists(fileName);
 		}
 		
-		void SetText()
+		protected void JumpToFilePosition(string fileName, int line, int column)
 		{
-			int total = visitedCount + notVisitedCount;
-			
-			// Change the text color for partial coverage.
-			if (visitedCount == 0) {
-				ForeColor = ZeroCoverageTextColor; 
-			} else if(total != visitedCount) {
-				ForeColor = PartialCoverageTextColor;
-			} else {
-				ForeColor = Color.Empty;
+			if (FileExists(fileName)) {
+				FileService.JumpToFilePosition(fileName, line, column);
 			}
-			
-			// Get the text for the node.
-			Text = GetNodeText(Name, visitedCount, total);
-		}
-		
-		void SetImageIndex()
-		{
-			ImageIndex = baseImageIndex;
-			if (visitedCount == 0) {
-				ImageIndex++;
-			}
-			SelectedImageIndex = ImageIndex;	
 		}
 	}
 }

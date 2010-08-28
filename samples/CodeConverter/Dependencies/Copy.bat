@@ -1,4 +1,4 @@
-%windir%\microsoft.net\framework\v3.5\msbuild CopyDependencies.build
+%windir%\microsoft.net\framework\v4.0.30319\msbuild CopyDependencies.build
 @IF %ERRORLEVEL% NEQ 0 GOTO err
 @exit /B 0
 :err

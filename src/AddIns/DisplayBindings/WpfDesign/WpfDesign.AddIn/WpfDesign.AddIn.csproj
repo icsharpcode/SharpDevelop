@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.WpfDesign.AddIn</RootNamespace>
     <AssemblyName>ICSharpCode.WpfDesign.AddIn</AssemblyName>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\WpfDesign\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\DisplayBindings\WpfDesign\</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>
@@ -52,6 +52,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Images\Icons.32x32.Error.png" />
     <None Include="WpfDesign.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -60,22 +61,41 @@
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AbstractEventHandlerService.cs" />
+    <Compile Include="Src\Commands\CutCopyPaste.cs" />
+    <Compile Include="Src\Commands\Pads.cs" />
+    <Compile Include="Src\Commands\Remove.cs" />
+    <Compile Include="Src\Commands\UndoRedo.cs" />
+    <Compile Include="Src\Commands\ViewXaml.cs" />
     <Compile Include="Src\CSharpEventHandlerService.cs" />
     <Compile Include="Src\FileUriContext.cs" />
     <Compile Include="Src\IdeChooseClassService.cs" />
+    <Compile Include="Src\ImageSourceEditor\ChooseImageDialog.xaml.cs">
+      <DependentUpon>ChooseImageDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\ImageSourceEditor\ImageSourceEditor.xaml.cs">
+      <DependentUpon>ImageSourceEditor.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\MyTypeFinder.cs" />
     <Compile Include="Src\ObjectEditor.xaml.cs">
       <DependentUpon>ObjectEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Src\OutlineViewPad.cs" />
+    <Compile Include="Src\ProjectTools.cs" />
     <Compile Include="Src\PropertyDescriptionService.cs" />
     <Compile Include="Src\WpfAndWinFormsTopLevelWindowService.cs" />
     <Compile Include="Src\WpfDisplayBinding.cs" />
+    <Compile Include="Src\WpfDocumentError.xaml.cs">
+      <DependentUpon>WpfDocumentError.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\WpfSideTabItem.cs" />
     <Compile Include="Src\WpfToolbox.cs" />
     <Compile Include="Src\WpfViewContent.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\WpfDocumentError.xaml" />
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
@@ -126,6 +146,13 @@
       <Name>WpfDesign</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Page Include="Src\ImageSourceEditor\ChooseImageDialog.xaml" />
+    <Page Include="Src\ImageSourceEditor\ImageSourceEditor.xaml" />
     <Page Include="Src\ObjectEditor.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Images" />
+    <Folder Include="Src\ImageSourceEditor" />
+    <Folder Include="Src\Commands" />
   </ItemGroup>
 </Project>

@@ -429,6 +429,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public IEnumerable<IClass> ClassInheritanceTreeClassesOnly {
 			get {
+				IClass compoundClass = GetCompoundClass();
+				if (compoundClass != this)
+					return compoundClass.ClassInheritanceTreeClassesOnly;
+				
 				// Notes:
 				// the ClassInheritanceTree must work even if the following things happen:
 				// - cyclic inheritance
@@ -568,7 +572,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return false;
 			}
 			foreach (IClass baseClass in this.ClassInheritanceTree) {
-				if (possibleBaseClass.FullyQualifiedName == baseClass.FullyQualifiedName)
+				if (possibleBaseClass.FullyQualifiedName == baseClass.FullyQualifiedName
+				    && possibleBaseClass.TypeParameters.Count == baseClass.TypeParameters.Count)
 					return true;
 			}
 			return false;

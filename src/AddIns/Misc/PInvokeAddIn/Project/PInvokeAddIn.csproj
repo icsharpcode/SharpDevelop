@@ -23,17 +23,18 @@
     <Optimize>False</Optimize>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\PInvokeAddIn\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\Misc\PInvokeAddIn\</OutputPath>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <DebugType>Full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugSymbols>False</DebugSymbols>
+    <DebugSymbols>false</DebugSymbols>
     <Optimize>True</Optimize>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\PInvokeAddIn\</OutputPath>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <OutputPath>..\..\..\..\..\AddIns\Misc\PInvokeAddIn\</OutputPath>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugType>None</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

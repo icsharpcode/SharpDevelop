@@ -80,5 +80,23 @@ namespace ICSharpCode.Core
 			{
 			}
 		}
+		
+		
+		/// <summary>
+		/// Tracks a feature use.
+		/// </summary>
+		/// <param name="featureClass">Class containing the feature</param>
+		/// <param name="featureName">Name of the feature</param>
+		/// <param name="activationMethod">Method used to 'activate' the feature (e.g. Menu, Toolbar, Shortcut, etc.)</param>
+		/// <returns>Object that can be used to 'end' the feature use, if measuring time spans is desired.</returns>
+		public static IAnalyticsMonitorTrackedFeature TrackFeature(Type featureClass, string featureName = null, string activationMethod = null)
+		{
+			if (featureClass == null)
+				throw new ArgumentNullException("featureClass");
+			if (featureName != null)
+				return TrackFeature(featureClass.FullName + "/" + featureName, activationMethod);
+			else
+				return TrackFeature(featureClass.FullName, activationMethod);
+		}
 	}
 }
