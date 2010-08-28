@@ -102,8 +102,9 @@
 			</RuleSet>
 		</Span>
 		
-		<Rule color="Punctuation">
-			[?,.;()\[\]{}+\-/%*&lt;&gt;^+~!|&amp;]+
+		<!-- don't highlight "@int" as keyword -->
+		<Rule>
+			@[\w\d_]+
 		</Rule>
 		
 		<Keywords fontWeight="bold" foreground="Black">
@@ -268,11 +269,15 @@
 		<!-- Digits -->
 		<Rule color="NumberLiteral">
 			\b0[xX][0-9a-fA-F]+  # hex number
-		|	\b
-			(	\d+(\.[0-9]+)?   #number with optional floating point
-			|	\.[0-9]+         #or just starting with floating point
+		|	
+			(	\b\d+(\.[0-9]+)?   #number with optional floating point
+			|	\.[0-9]+           #or just starting with floating point
 			)
 			([eE][+-]?[0-9]+)? # optional exponent
+		</Rule>
+		
+		<Rule color="Punctuation">
+			[?,.;()\[\]{}+\-/%*&lt;&gt;^+~!|&amp;]+
 		</Rule>
 	</RuleSet>
 </SyntaxDefinition>
