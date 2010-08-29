@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.GitAddIn</RootNamespace>
     <AssemblyName>GitAddIn</AssemblyName>
-    <OutputPath>..\..\..\..\AddIns\AddIns\VersionControl\</OutputPath>
+    <OutputPath>..\..\..\..\AddIns\VersionControl\</OutputPath>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <WarningLevel>4</WarningLevel>

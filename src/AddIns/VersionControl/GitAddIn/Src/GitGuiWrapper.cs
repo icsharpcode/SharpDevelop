@@ -8,8 +8,8 @@
 using System;
 using System.Diagnostics;
 using System.Text;
-
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 using Microsoft.Win32;
 
 namespace ICSharpCode.GitAddIn
@@ -48,7 +48,9 @@ namespace ICSharpCode.GitAddIn
 		{
 			string path = GetPathFromRegistry("ProcPath");
 			if (path == null) {
-				MessageService.ShowError("Could not find TortoiseGit.");
+				using (var dlg = new ToolNotFoundDialog("${res:AddIns.Git.TortoiseGitRequired}", "http://code.google.com/p/tortoisegit/")) {
+					dlg.ShowDialog(WorkbenchSingleton.MainWin32Window);
+				}
 			} else {
 				try {
 					StringBuilder arguments = new StringBuilder();

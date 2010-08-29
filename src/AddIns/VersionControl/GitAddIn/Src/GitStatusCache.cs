@@ -82,11 +82,21 @@ namespace ICSharpCode.GitAddIn
 			runner.WorkingDirectory = wcRoot;
 			runner.LogStandardOutputAndError = false;
 			runner.OutputLineReceived += delegate(object sender, LineReceivedEventArgs e) {
-				if (string.IsNullOrEmpty(e.Line))
-					return;
-				statusSet.AddEntry(e.Line, GitStatus.OK);
+				if (!string.IsNullOrEmpty(e.Line)) {
+					statusSet.AddEntry(e.Line, GitStatus.OK);
+				}
 			};
-			runner.Start("cmd", "/c git ls-files");
+			
+			string command = "git ls-files";
+			bool hasErrors = false;
+			runner.ErrorLineReceived += delegate(object sender, LineReceivedEventArgs e) {
+				if (!hasErrors) {
+					hasErrors = true;
+					GitMessageView.AppendLine(runner.WorkingDirectory + "> " + command);
+				}
+				GitMessageView.AppendLine(e.Line);
+			};
+			runner.Start("cmd", "/c " + command);
 			runner.WaitForExit();
 		}
 		
@@ -96,14 +106,23 @@ namespace ICSharpCode.GitAddIn
 			runner.WorkingDirectory = wcRoot;
 			runner.LogStandardOutputAndError = false;
 			runner.OutputLineReceived += delegate(object sender, LineReceivedEventArgs e) {
-				if (string.IsNullOrEmpty(e.Line))
-					return;
-				Match m = statusParseRegex.Match(e.Line);
-				if (m.Success) {
-					statusSet.AddEntry(m.Groups[2].Value, StatusFromText(m.Groups[1].Value));
+				if (!string.IsNullOrEmpty(e.Line)) {
+					Match m = statusParseRegex.Match(e.Line);
+					if (m.Success) {
+						statusSet.AddEntry(m.Groups[2].Value, StatusFromText(m.Groups[1].Value));
+					}
 				}
 			};
-			runner.Start("cmd", "/c git status -a --untracked-files=no");
+			string command = "git status -a --untracked-files=no";
+			bool hasErrors = false;
+			runner.ErrorLineReceived += delegate(object sender, LineReceivedEventArgs e) {
+				if (!hasErrors) {
+					hasErrors = true;
+					GitMessageView.AppendLine(runner.WorkingDirectory + "> " + command);
+				}
+				GitMessageView.AppendLine(e.Line);
+			};
+			runner.Start("cmd", "/c " + command);
 			runner.WaitForExit();
 		}
 		

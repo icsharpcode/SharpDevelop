@@ -74,7 +74,7 @@ namespace ICSharpCode.GitAddIn
 		
 		public static void RunGit(string workingDir, string arguments, Action<int> finished)
 		{
-			GitMessageView.AppendLine("$ git " + arguments);
+			GitMessageView.AppendLine(workingDir + "> git " + arguments);
 			ProcessRunner runner = new ProcessRunner();
 			runner.WorkingDirectory = workingDir;
 			runner.LogStandardOutputAndError = false;
@@ -121,6 +121,6 @@ namespace ICSharpCode.GitAddIn
 				}
 			}
 		}
-		*/
+		 */
 	}
 }
