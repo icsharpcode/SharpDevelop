@@ -38,6 +38,20 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		public ResolveResult CurrentSymbol { get; private set; }
 		
+		/// <summary>
+		/// Language independent.
+		/// </summary>
+		public ParseInformation CurrentParseInformation { get; private set; }
+		
+		public IProjectContent ProjectContent { 
+			get {
+				if (CurrentParseInformation != null)
+					return CurrentParseInformation.CompilationUnit.ProjectContent;
+				else
+					return null;
+			}
+		}
+		
 		public IDocumentLine CurrentLine { get; private set; }
 		/// <summary>
 		/// Only available for C# and VB.
@@ -70,6 +84,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			
 			this.CurrentExpression = GetExpressionAtCaret(editor);
 			this.CurrentSymbol = ResolveExpression(CurrentExpression, editor, CaretLine, CaretColumn);
+			this.CurrentParseInformation = ParserService.GetExistingParseInformation(editor.FileName);
 			
 			this.CurrentLine = editor.Document.GetLine(CaretLine);
 			this.CurrentLineAST = GetCurrentLineAst(this.CurrentLine, editor);
@@ -202,12 +217,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			var snippetParser = GetSnippetParser(editor);
 			if (snippetParser == null)
 				return null;
-			try	{
+			//try	{
 				return snippetParser.Parse(currentLine.Text);
-			}
-			catch {
-				return null;
-			}
+			//}
+			//catch {
+			//	return null;
+			//}
 		}
 		
 		SnippetParser GetSnippetParser(ITextEditor editor)
@@ -233,13 +248,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		INode GetCurrentMemberAST(ITextEditor editor)
 		{
-			try {
+			//try {
 				var resolver = GetInitializedNRefactoryResolver(editor, this.CaretLine, this.CaretColumn);
 				return resolver.ParseCurrentMember(editor.Document.Text);
-			}
-			catch {
-				return null;
-			}
+			//} catch {
+			//	return null;
+			//}
 		}
 		
 		NRefactoryResolver GetInitializedNRefactoryResolver(ITextEditor editor, int caretLine, int caretColumn)
