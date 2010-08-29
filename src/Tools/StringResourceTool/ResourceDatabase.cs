@@ -73,7 +73,8 @@ namespace StringResourceTool
 		{
 			using (ResXResourceWriter writer = new ResXResourceWriter(filename)) {
 				foreach (ResourceEntry entry in Entries.Values.OrderBy(e => e.Key, StringComparer.OrdinalIgnoreCase)) {
-					writer.AddResource(entry.Key, entry.Value);
+					string normalizedValue = entry.Value.Replace("\r", "").Replace("\n", Environment.NewLine);
+					writer.AddResource(entry.Key, normalizedValue);
 				}
 			}
 		}
