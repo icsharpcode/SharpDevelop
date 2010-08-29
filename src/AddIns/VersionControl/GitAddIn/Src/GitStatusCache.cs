@@ -102,6 +102,9 @@ namespace ICSharpCode.GitAddIn
 		
 		static void GitGetStatus(string wcRoot, GitStatusSet statusSet)
 		{
+			string command = "git status --porcelain --untracked-files=no";
+			bool hasErrors = false;
+			
 			ProcessRunner runner = new ProcessRunner();
 			runner.WorkingDirectory = wcRoot;
 			runner.LogStandardOutputAndError = false;
@@ -110,11 +113,15 @@ namespace ICSharpCode.GitAddIn
 					Match m = statusParseRegex.Match(e.Line);
 					if (m.Success) {
 						statusSet.AddEntry(m.Groups[2].Value, StatusFromText(m.Groups[1].Value));
+					} else {
+						if (!hasErrors) {
+							hasErrors = true;
+							GitMessageView.AppendLine(runner.WorkingDirectory + "> " + command);
+						}
+						GitMessageView.AppendLine("unknown output: " + e.Line);
 					}
 				}
 			};
-			string command = "git status -a --untracked-files=no";
-			bool hasErrors = false;
 			runner.ErrorLineReceived += delegate(object sender, LineReceivedEventArgs e) {
 				if (!hasErrors) {
 					hasErrors = true;
@@ -128,19 +135,17 @@ namespace ICSharpCode.GitAddIn
 		
 		static GitStatus StatusFromText(string text)
 		{
-			switch (text) {
-				case "deleted":
-					return GitStatus.Deleted;
-				case "modified":
-					return GitStatus.Modified;
-				case "new file":
-					return GitStatus.Added;
-				default:
-					throw new NotSupportedException();
-			}
+			if (text.Contains("A"))
+				return GitStatus.Added;
+			else if (text.Contains("D"))
+				return GitStatus.Deleted;
+			else if (text.Contains("M"))
+				return GitStatus.Modified;
+			else
+				return GitStatus.None;
 		}
 		
-		static readonly Regex statusParseRegex = new Regex(@"#\s+(deleted|modified|new file):\s+(\S.*)$");
+		static readonly Regex statusParseRegex = new Regex(@"^([DMA ][DMA ])\s(\S.*)$");
 	}
 	
 	public class GitStatusSet
