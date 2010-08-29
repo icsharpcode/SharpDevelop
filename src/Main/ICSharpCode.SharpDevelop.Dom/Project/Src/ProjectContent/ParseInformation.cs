@@ -19,6 +19,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		/// <summary>
 		/// Gets the compilation unit.
+		/// This property never returns null.
 		/// </summary>
 		public ICompilationUnit CompilationUnit {
 			get { return unit; }
