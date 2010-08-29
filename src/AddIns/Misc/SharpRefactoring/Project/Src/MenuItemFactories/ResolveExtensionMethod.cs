@@ -33,9 +33,6 @@ namespace SharpRefactoring
 			
 			UnknownMethodResolveResult rr = context.ResolveResult as UnknownMethodResolveResult;
 			
-			if (rr.CallingClass == null)
-				return null;
-			
 			MenuItem item = new MenuItem() {
 				Header = string.Format(StringParser.Parse("${res:AddIns.SharpRefactoring.ResolveExtensionMethod}"), rr.CallName),
 				Icon = ClassBrowserIconService.GotoArrow.CreateImage()
@@ -58,7 +55,7 @@ namespace SharpRefactoring
 				subItem.Icon = ClassBrowserIconService.Namespace.CreateImage();
 				item.Items.Add(subItem);
 				subItem.Click += delegate {
-					NamespaceRefactoringService.AddUsingDeclaration(rr.CallingClass.CompilationUnit, context.Editor.Document, newNamespace, true);
+					NamespaceRefactoringService.AddUsingDeclaration(context.CompilationUnit, context.Editor.Document, newNamespace, true);
 					ParserService.BeginParse(context.Editor.FileName, context.Editor.Document);
 				};
 			}

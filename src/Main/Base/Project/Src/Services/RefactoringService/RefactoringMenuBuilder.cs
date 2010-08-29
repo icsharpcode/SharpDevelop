@@ -38,15 +38,20 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public readonly ExpressionResult ExpressionResult;
 		public readonly ResolveResult ResolveResult;
 		public readonly bool IsDefinition;
+		/// <remarks>Can be null.</remarks>
 		public readonly IProjectContent ProjectContent;
+		public readonly ICompilationUnit CompilationUnit;
 		
-		public RefactoringMenuContext(ITextEditor editor, ExpressionResult expressionResult, ResolveResult resolveResult, bool isDefinition, IProjectContent projectContent)
+		public RefactoringMenuContext(ITextEditor editor, ExpressionResult expressionResult,
+		                              ResolveResult resolveResult, bool isDefinition,
+		                              IProjectContent projectContent, ICompilationUnit compilationUnit)
 		{
 			this.Editor = editor;
 			this.ExpressionResult = expressionResult;
 			this.ResolveResult = resolveResult;
 			this.IsDefinition = isDefinition;
 			this.ProjectContent = projectContent;
+			this.CompilationUnit = compilationUnit;
 		}
 	}
 	
@@ -116,7 +121,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				IProjectContent pc = null; 
 				if (pi != null)
 					pc = pi.CompilationUnit.ProjectContent;
-				RefactoringMenuContext context = new RefactoringMenuContext(textEditor, expressionResult, rr, isDefinition, pc);
+				RefactoringMenuContext context = new RefactoringMenuContext(textEditor, expressionResult, rr, isDefinition, pc, pi.CompilationUnit);
 				item = MakeItem((LocalResolveResult)rr, context);
 				insertIndex = 0;	// Insert local variable menu item at the topmost position.
 			}
