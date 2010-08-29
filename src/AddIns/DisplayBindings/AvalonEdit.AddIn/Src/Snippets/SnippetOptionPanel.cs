@@ -49,6 +49,13 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		
 		public bool SaveOptions()
 		{
+			CodeSnippet emptySnippet = new CodeSnippet();
+			foreach (CodeSnippetGroup g in groups) {
+				for (int i = 0; i < g.Snippets.Count; i++) {
+					if (emptySnippet.Equals(g.Snippets[i]))
+						g.Snippets.RemoveAt(i--);
+				}
+			}
 			SnippetManager.Instance.SaveGroups(groups);
 			return true;
 		}
@@ -56,9 +63,9 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 		void AddGroupButton_Click(object sender, RoutedEventArgs e)
 		{
 			string result = MessageService.ShowInputBox(
-					"${res:Dialog.Options.CodeTemplate.AddGroupLabel}",
-					"${res:Dialog.Options.CodeTemplate.EditGroupDialog.Text}",
-					"");
+				"${res:Dialog.Options.CodeTemplate.AddGroupLabel}",
+				"${res:Dialog.Options.CodeTemplate.EditGroupDialog.Text}",
+				"");
 			if (!string.IsNullOrEmpty(result)) {
 				CodeSnippetGroup g = new CodeSnippetGroup();
 				g.Extensions = result;
