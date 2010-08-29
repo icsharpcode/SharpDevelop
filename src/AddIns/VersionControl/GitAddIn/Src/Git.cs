@@ -44,7 +44,7 @@ namespace ICSharpCode.GitAddIn
 			}
 			if (!Directory.Exists(fileName))
 				fileName = Path.GetDirectoryName(fileName);
-			DirectoryInfo info = new DirectoryInfo(Path.GetDirectoryName(fileName));
+			DirectoryInfo info = new DirectoryInfo(fileName);
 			while (info != null) {
 				if (Directory.Exists(Path.Combine(info.FullName, ".git")))
 					return info.FullName;
