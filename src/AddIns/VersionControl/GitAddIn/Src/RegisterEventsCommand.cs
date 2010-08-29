@@ -30,9 +30,15 @@ namespace ICSharpCode.GitAddIn
 		public override void Run()
 		{
 			FileService.FileCreated += (sender, args) => {
-				Git.Add(args.FileName, 
+				Git.Add(args.FileName,
 				        exitcode => WorkbenchSingleton.SafeThreadAsyncCall(ClearStatusCacheAndEnqueueFile, args.FileName)
 				       );
+			};
+			FileService.FileRemoved += (sender, args) => {
+				if (GitStatusCache.GetFileStatus(args.FileName) == GitStatus.Added) {
+					Git.Remove(args.FileName, true,
+					           exitcode => WorkbenchSingleton.SafeThreadAsyncCall(ClearStatusCacheAndEnqueueFile, args.FileName));
+				}
 			};
 			FileUtility.FileSaved += (sender, e) => {
 				ClearStatusCacheAndEnqueueFile(e.FileName);
@@ -67,7 +73,7 @@ namespace ICSharpCode.GitAddIn
 			if (pad == null) return;
 			FileNode node = pad.ProjectBrowserControl.FindFileNode(fileName);
 			if (node == null) return;
-					OverlayIconManager.EnqueueParents(node);
+			OverlayIconManager.EnqueueParents(node);
 		}
 	}
 }

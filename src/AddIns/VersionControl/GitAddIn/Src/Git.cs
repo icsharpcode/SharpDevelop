@@ -61,6 +61,17 @@ namespace ICSharpCode.GitAddIn
 			RunGit(wcRoot, "add " + AdaptFileName(wcRoot, fileName), callback);
 		}
 		
+		public static void Remove(string fileName, bool indexOnly, Action<int> callback)
+		{
+			string wcRoot = FindWorkingCopyRoot(fileName);
+			if (wcRoot == null)
+				return;
+			if (indexOnly)
+				RunGit(wcRoot, "rm --cached " + AdaptFileName(wcRoot, fileName), callback);
+			else
+				RunGit(wcRoot, "rm " + AdaptFileName(wcRoot, fileName), callback);
+		}
+		
 		public static string AdaptFileName(string wcRoot, string fileName)
 		{
 			return '"' + AdaptFileNameNoQuotes(wcRoot, fileName) + '"';
