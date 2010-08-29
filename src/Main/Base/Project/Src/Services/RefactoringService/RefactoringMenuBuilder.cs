@@ -34,10 +34,20 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	public class RefactoringMenuContext
 	{
-		public ITextEditor Editor;
-		public ExpressionResult ExpressionResult;
-		public ResolveResult ResolveResult;
-		public bool IsDefinition;
+		public readonly ITextEditor Editor;
+		public readonly ExpressionResult ExpressionResult;
+		public readonly ResolveResult ResolveResult;
+		public readonly bool IsDefinition;
+		public readonly IProjectContent ProjectContent;
+		
+		public RefactoringMenuContext(ITextEditor editor, ExpressionResult expressionResult, ResolveResult resolveResult, bool isDefinition, IProjectContent projectContent)
+		{
+			this.Editor = editor;
+			this.ExpressionResult = expressionResult;
+			this.ResolveResult = resolveResult;
+			this.IsDefinition = isDefinition;
+			this.ProjectContent = projectContent;
+		}
 	}
 	
 	public interface IRefactoringMenuItemFactory
