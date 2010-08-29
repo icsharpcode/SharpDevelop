@@ -1500,6 +1500,10 @@
 										<File Source="..\..\AddIns\VersionControl\SubversionAddin\SharpSvn-SASL21-23-Win32.dll" Name="SharpSvn-SASL21-23-Win32.dll" Id="SharpSvn_SASL21_23_Win32.dll" />
 									</Component>
 								</Directory>
+								<Component Id="GitAddInDll" Guid="4AB2E967-7267-42F7-AED1-AB64809F0BC1" DiskId="1">
+									<File Id="GitAddIn.dll" Name="GitAddIn.dll" Source="..\..\AddIns\VersionControl\GitAddIn.dll" KeyPath="yes" />
+									<File Id="GitAddIn.addin" Name="GitAddIn.addin" Source="..\..\AddIns\VersionControl\GitAddIn.addin" />
+								</Component>
 							</Directory>
 						</Directory>
 						<Component Guid="542E5AE1-286C-4CE6-8800-F3AFBB24531D" Id="SharpDevelopWebsiteShortcut" DiskId="1">
