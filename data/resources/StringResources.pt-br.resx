@@ -237,6 +237,9 @@
   <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
     <value>Mostra Conteudo</value>
   </data>
+  <data name="AddIns.HelpViewer.DisplaySearchCommand" xml:space="preserve">
+    <value>Pesquisar</value>
+  </data>
   <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
     <value>Biblioteca de ajuda</value>
   </data>
@@ -251,6 +254,15 @@
   </data>
   <data name="AddIns.HelpViewer.OfflineFeatureRequestMsg" xml:space="preserve">
     <value>Você solicitou um recurso desconectado, no modo de ajuda conectado. Você tem que mudar o modo para utilizar esta funcionalidade.</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
+    <value>Pesquisar</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchLookForLabel" xml:space="preserve">
+    <value>Procurar por:</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchPadTitle" xml:space="preserve">
+    <value>Pesquisar</value>
   </data>
   <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
     <value>Mostra Ajuda</value>
@@ -511,6 +523,9 @@ Voce precisa instalar o .Net Framework SDK para acessar o sistema de ajuda.</val
   <data name="AddIns.Profiler.Options.General.DataCollection.SizeOfStorageDescription" xml:space="preserve">
     <value>Tamanho do arquivo temporario de armazenamento:</value>
   </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.TrackEvents" xml:space="preserve">
+    <value>Registrar eventos</value>
+  </data>
   <data name="AddIns.Profiler.Options.General.Title" xml:space="preserve">
     <value>Geral</value>
   </data>
@@ -672,6 +687,12 @@ Voce precisa instalar o .Net Framework SDK para acessar o sistema de ajuda.</val
   </data>
   <data name="AddIns.SharpRefactoring.InsertCtor.VariableLabel" xml:space="preserve">
     <value>Variavel</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.IntroduceMethod" xml:space="preserve">
+    <value>Introduzir método {0} em {1}</value>
+  </data>
+  <data name="AddIns.SourceAnalysis.CheckWithStyleCop" xml:space="preserve">
+    <value>Verificar com StyleCop</value>
   </data>
   <data name="AddIns.Subversion.AddToIgnoreList" xml:space="preserve">
     <value>Adicionar a lista ignore.</value>

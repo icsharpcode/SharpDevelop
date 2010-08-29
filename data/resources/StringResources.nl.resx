@@ -523,6 +523,9 @@ Om het help systeem te verkrijgen dient u de .NET Framework SDK te installeren.<
   <data name="AddIns.Profiler.Options.General.DataCollection.SizeOfStorageDescription" xml:space="preserve">
     <value>Grootte van tijdelijke opslag bestanden</value>
   </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.TrackEvents" xml:space="preserve">
+    <value>Volg gebeurtenissen</value>
+  </data>
   <data name="AddIns.Profiler.Options.General.Title" xml:space="preserve">
     <value>Algemeen</value>
   </data>
@@ -4843,6 +4846,9 @@ Ga naar 'Opties-&gt;Vormgeving' en wijzig de momentele taal ambience.</value>
   </data>
   <data name="ICSharpCode.UnitTesting.TestMenu" xml:space="preserve">
     <value>&amp;Testen</value>
+  </data>
+  <data name="ICSharpCode.UnitTesting.TestRunnerNotFoundMessageFormat" xml:space="preserve">
+    <value>Unittesten kunnen niet uitgevoerd omdat het bestand '{0}' niet gevonden wordt.</value>
   </data>
   <data name="ICSharpCode.WixBinding.AddCompilerExtensionsDialog.Title" xml:space="preserve">
     <value>Extensies toevoegen</value>
