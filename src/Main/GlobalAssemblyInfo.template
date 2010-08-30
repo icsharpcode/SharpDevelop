@@ -21,7 +21,8 @@ using System.Reflection;
 [assembly: AssemblyCompany("ic#code")]
 [assembly: AssemblyProduct("SharpDevelop")]
 [assembly: AssemblyCopyright("2000-$INSERTYEAR$ AlphaSierraPapa for the SharpDevelop Team")]
-[assembly: AssemblyVersion(RevisionClass.FullVersion)]
+[assembly: AssemblyVersion(RevisionClass.Major + "." + RevisionClass.Minor + "." + RevisionClass.Build + "." + RevisionClass.Revision)]
+[assembly: AssemblyInformationalVersion(RevisionClass.FullVersion + "-$INSERTSHORTCOMMITHASH$")]
 [assembly: NeutralResourcesLanguage("en-US")]
 
 internal static class RevisionClass
@@ -31,8 +32,5 @@ internal static class RevisionClass
 	public const string Build = "0";
 	public const string Revision = "$INSERTREVISION$";
 	
-	public const string MainVersion = Major + "." + Minor;
-	public const string FullVersion = Major + "." + Minor + "." + Build + "." + Revision;
-	
-	public const string BranchName = null;
+	public const string FullVersion = Major + "." + Minor + "." + Build + ".$INSERTREVISION$$INSERTBRANCHPOSTFIX$";
 }

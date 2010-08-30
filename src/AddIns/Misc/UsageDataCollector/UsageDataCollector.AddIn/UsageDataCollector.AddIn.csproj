@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>UsageDataCollector.AddIn</RootNamespace>
+    <RootNamespace>ICSharpCode.UsageDataCollector</RootNamespace>
     <AssemblyName>UsageDataCollector.AddIn</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <OutputPath>..\..\..\..\..\AddIns\Misc\UsageDataCollector\</OutputPath>
@@ -56,6 +56,9 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AnalyticsMonitor.AppProperties.cs">
+      <DependentUpon>AnalyticsMonitor.AppProperties.template</DependentUpon>
+    </Compile>
     <Compile Include="AnalyticsMonitor.cs" />
     <Compile Include="CollectedDataView.xaml.cs" />
     <Compile Include="OptionPage.xaml.cs" />
@@ -67,6 +70,7 @@
     <Page Include="StartPageMessage.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="AnalyticsMonitor.AppProperties.template" />
     <None Include="UsageDataCollector.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

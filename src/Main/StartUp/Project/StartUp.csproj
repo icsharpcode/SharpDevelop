@@ -72,6 +72,7 @@
     </None>
     <Compile Include="..\..\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+      <DependentUpon>GlobalAssemblyInfo.template</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
