@@ -28,6 +28,8 @@ namespace SharpRefactoring
 				return null;
 			if (!(context.ResolveResult is UnknownMethodResolveResult))
 				return null;
+			if (context.ProjectContent == null)
+				return null;
 			
 			UnknownMethodResolveResult rr = context.ResolveResult as UnknownMethodResolveResult;
 			
@@ -38,11 +40,9 @@ namespace SharpRefactoring
 			
 			List<IClass> results = new List<IClass>();
 			
-			IProjectContent pc = rr.CallingClass.ProjectContent;
+			SearchAllExtensionMethodsWithName(results, context.ProjectContent, rr.CallName);
 			
-			SearchAllExtensionMethodsWithName(results, pc, rr.CallName);
-			
-			foreach (IProjectContent content in pc.ReferencedContents)
+			foreach (IProjectContent content in context.ProjectContent.ReferencedContents)
 				SearchAllExtensionMethodsWithName(results, content, rr.CallName);
 			
 			if (!results.Any())
@@ -55,7 +55,7 @@ namespace SharpRefactoring
 				subItem.Icon = ClassBrowserIconService.Namespace.CreateImage();
 				item.Items.Add(subItem);
 				subItem.Click += delegate {
-					NamespaceRefactoringService.AddUsingDeclaration(rr.CallingClass.CompilationUnit, context.Editor.Document, newNamespace, true);
+					NamespaceRefactoringService.AddUsingDeclaration(context.CompilationUnit, context.Editor.Document, newNamespace, true);
 					ParserService.BeginParse(context.Editor.FileName, context.Editor.Document);
 				};
 			}

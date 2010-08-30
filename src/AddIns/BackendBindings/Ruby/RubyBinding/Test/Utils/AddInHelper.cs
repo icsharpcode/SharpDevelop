@@ -33,7 +33,7 @@ namespace RubyBinding.Tests.Utils
 		/// <summary>
 		/// Gets the codon with the specified name.
 		/// </summary>
-		public static Codon GetCodon(List<Codon> codons, string name)
+		public static Codon GetCodon(IEnumerable<Codon> codons, string name)
 		{
 			foreach (Codon codon in codons) {
 				if (codon.Id == name) {

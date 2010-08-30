@@ -17,3 +17,4 @@ bin/
 /src/Main/ICSharpCode.SharpDevelop.Sda/ICSharpCode.SharpDevelop.Sda.dll.config
 /src/Main/StartUp/Project/SharpDevelop.exe.config
 /src/Main/GlobalAssemblyInfo.cs
+/src/AddIns/Misc/UsageDataCollector/UsageDataCollector.AddIn/AnalyticsMonitor.AppProperties.cs

@@ -232,6 +232,9 @@ Download an AddIn from the Internet, then click 'Install AddIn' and choose the d
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Show Class Diagram</value>
   </data>
+  <data name="AddIns.Git.TortoiseGitRequired" xml:space="preserve">
+    <value>TortoiseGit needs to be installed to execute this action.</value>
+  </data>
   <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
     <value>Contents</value>
   </data>
@@ -524,6 +527,9 @@ You need to install the .NET Framework SDK to get the help system.</value>
   </data>
   <data name="AddIns.Profiler.Options.General.DataCollection.SizeOfStorageDescription" xml:space="preserve">
     <value>Size of temporary storage file:</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.TrackEvents" xml:space="preserve">
+    <value>Trace events</value>
   </data>
   <data name="AddIns.Profiler.Options.General.Title" xml:space="preserve">
     <value>General</value>

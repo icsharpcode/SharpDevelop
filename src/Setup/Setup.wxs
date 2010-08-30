@@ -374,6 +374,7 @@
 
 				<ComponentRef Id="StartPageAddInFiles"/>
 				<ComponentRef Id="SubversionAddInDll"/>
+				<ComponentRef Id="GitAddInDll"/>
 				<ComponentRef Id="UnitTestingAddInFiles"/>
 				<ComponentRef Id="SyntaxModesFiles"/>
 				<ComponentRef Id="SharpDevelopWebsiteShortcut"/>

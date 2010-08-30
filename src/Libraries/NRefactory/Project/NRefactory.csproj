@@ -169,7 +169,6 @@
     <Folder Include="Src\Parser\Frames" />
     <Content Include="Src\Parser\Frames\Scanner.frame" />
     <Content Include="Src\Parser\Frames\SharpCoco.exe" />
-    <Content Include="Src\Parser\Frames\trace.txt" />
     <Folder Include="Src\Parser\VBNet" />
     <None Include="Src\Parser\VBNet\VBNET.ATG">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

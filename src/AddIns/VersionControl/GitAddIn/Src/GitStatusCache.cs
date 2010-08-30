@@ -82,46 +82,70 @@ namespace ICSharpCode.GitAddIn
 			runner.WorkingDirectory = wcRoot;
 			runner.LogStandardOutputAndError = false;
 			runner.OutputLineReceived += delegate(object sender, LineReceivedEventArgs e) {
-				if (string.IsNullOrEmpty(e.Line))
-					return;
-				statusSet.AddEntry(e.Line, GitStatus.OK);
+				if (!string.IsNullOrEmpty(e.Line)) {
+					statusSet.AddEntry(e.Line, GitStatus.OK);
+				}
 			};
-			runner.Start("cmd", "/c git ls-files");
+			
+			string command = "git ls-files";
+			bool hasErrors = false;
+			runner.ErrorLineReceived += delegate(object sender, LineReceivedEventArgs e) {
+				if (!hasErrors) {
+					hasErrors = true;
+					GitMessageView.AppendLine(runner.WorkingDirectory + "> " + command);
+				}
+				GitMessageView.AppendLine(e.Line);
+			};
+			runner.Start("cmd", "/c " + command);
 			runner.WaitForExit();
 		}
 		
 		static void GitGetStatus(string wcRoot, GitStatusSet statusSet)
 		{
+			string command = "git status --porcelain --untracked-files=no";
+			bool hasErrors = false;
+			
 			ProcessRunner runner = new ProcessRunner();
 			runner.WorkingDirectory = wcRoot;
 			runner.LogStandardOutputAndError = false;
 			runner.OutputLineReceived += delegate(object sender, LineReceivedEventArgs e) {
-				if (string.IsNullOrEmpty(e.Line))
-					return;
-				Match m = statusParseRegex.Match(e.Line);
-				if (m.Success) {
-					statusSet.AddEntry(m.Groups[2].Value, StatusFromText(m.Groups[1].Value));
+				if (!string.IsNullOrEmpty(e.Line)) {
+					Match m = statusParseRegex.Match(e.Line);
+					if (m.Success) {
+						statusSet.AddEntry(m.Groups[2].Value, StatusFromText(m.Groups[1].Value));
+					} else {
+						if (!hasErrors) {
+							hasErrors = true;
+							GitMessageView.AppendLine(runner.WorkingDirectory + "> " + command);
+						}
+						GitMessageView.AppendLine("unknown output: " + e.Line);
+					}
 				}
 			};
-			runner.Start("cmd", "/c git status -a --untracked-files=no");
+			runner.ErrorLineReceived += delegate(object sender, LineReceivedEventArgs e) {
+				if (!hasErrors) {
+					hasErrors = true;
+					GitMessageView.AppendLine(runner.WorkingDirectory + "> " + command);
+				}
+				GitMessageView.AppendLine(e.Line);
+			};
+			runner.Start("cmd", "/c " + command);
 			runner.WaitForExit();
 		}
 		
 		static GitStatus StatusFromText(string text)
 		{
-			switch (text) {
-				case "deleted":
-					return GitStatus.Deleted;
-				case "modified":
-					return GitStatus.Modified;
-				case "new file":
-					return GitStatus.Added;
-				default:
-					throw new NotSupportedException();
-			}
+			if (text.Contains("A"))
+				return GitStatus.Added;
+			else if (text.Contains("D"))
+				return GitStatus.Deleted;
+			else if (text.Contains("M"))
+				return GitStatus.Modified;
+			else
+				return GitStatus.None;
 		}
 		
-		static readonly Regex statusParseRegex = new Regex(@"#\s+(deleted|modified|new file):\s+(\S.*)$");
+		static readonly Regex statusParseRegex = new Regex(@"^([DMA ][DMA ])\s(\S.*)$");
 	}
 	
 	public class GitStatusSet

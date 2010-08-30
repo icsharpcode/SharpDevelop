@@ -44,7 +44,7 @@ namespace ICSharpCode.GitAddIn
 			}
 			if (!Directory.Exists(fileName))
 				fileName = Path.GetDirectoryName(fileName);
-			DirectoryInfo info = new DirectoryInfo(Path.GetDirectoryName(fileName));
+			DirectoryInfo info = new DirectoryInfo(fileName);
 			while (info != null) {
 				if (Directory.Exists(Path.Combine(info.FullName, ".git")))
 					return info.FullName;
@@ -61,6 +61,17 @@ namespace ICSharpCode.GitAddIn
 			RunGit(wcRoot, "add " + AdaptFileName(wcRoot, fileName), callback);
 		}
 		
+		public static void Remove(string fileName, bool indexOnly, Action<int> callback)
+		{
+			string wcRoot = FindWorkingCopyRoot(fileName);
+			if (wcRoot == null)
+				return;
+			if (indexOnly)
+				RunGit(wcRoot, "rm --cached " + AdaptFileName(wcRoot, fileName), callback);
+			else
+				RunGit(wcRoot, "rm " + AdaptFileName(wcRoot, fileName), callback);
+		}
+		
 		public static string AdaptFileName(string wcRoot, string fileName)
 		{
 			return '"' + AdaptFileNameNoQuotes(wcRoot, fileName) + '"';
@@ -74,7 +85,7 @@ namespace ICSharpCode.GitAddIn
 		
 		public static void RunGit(string workingDir, string arguments, Action<int> finished)
 		{
-			GitMessageView.AppendLine("$ git " + arguments);
+			GitMessageView.AppendLine(workingDir + "> git " + arguments);
 			ProcessRunner runner = new ProcessRunner();
 			runner.WorkingDirectory = workingDir;
 			runner.LogStandardOutputAndError = false;
@@ -121,6 +132,6 @@ namespace ICSharpCode.GitAddIn
 				}
 			}
 		}
-		*/
+		 */
 	}
 }

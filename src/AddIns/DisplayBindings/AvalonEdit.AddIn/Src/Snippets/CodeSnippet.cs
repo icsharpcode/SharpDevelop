@@ -25,7 +25,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 	/// </summary>
 	public class CodeSnippet : INotifyPropertyChanged, IEquatable<CodeSnippet>
 	{
-		string name, description, text, keyword;
+		string name = string.Empty, description = string.Empty, text = string.Empty, keyword = string.Empty;
 		
 		public CodeSnippet()
 		{
@@ -43,7 +43,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			get { return name; }
 			set {
 				if (name != value) {
-					name = value;
+					name = value ?? string.Empty;
 					OnPropertyChanged("Name");
 				}
 			}
@@ -53,7 +53,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			get { return text; }
 			set {
 				if (text != value) {
-					text = value;
+					text = value ?? string.Empty;
 					OnPropertyChanged("Text");
 				}
 			}
@@ -63,7 +63,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			get { return description; }
 			set {
 				if (description != value) {
-					description = value;
+					description = value ?? string.Empty;
 					OnPropertyChanged("Description");
 				}
 			}
@@ -81,7 +81,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 			get { return keyword; }
 			set {
 				if (keyword != value) {
-					keyword = value;
+					keyword = value ?? string.Empty;
 					OnPropertyChanged("Keyword");
 				}
 			}

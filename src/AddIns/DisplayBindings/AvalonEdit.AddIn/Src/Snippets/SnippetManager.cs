@@ -304,43 +304,39 @@ End Property${Caret}",
 					var merged = group.Snippets.Concat(
 						defaultGroup.Snippets.Except(
 							group.Snippets,
-							new PredicateComparer<CodeSnippet>((x, y) => x.Name == y.Name, x => x.Name.GetHashCode())
-						).Select(s => new CodeSnippet(s))
+							new ByMemberComparer<CodeSnippet, string>(s => s.Name)
+						).Select(s => new CodeSnippet(s)) // clone snippets so that defaultGroup is not modified
 					).OrderBy(s => s.Name).ToList();
 					group.Snippets.Clear();
 					group.Snippets.AddRange(merged);
 				}
 			}
 			
-			foreach (var group in defaultSnippets.Except(savedSnippets, new PredicateComparer<CodeSnippetGroup>(
-				(x, y) => x.Extensions == y.Extensions,
-				x => x.Extensions.GetHashCode()
-			))) {
+			foreach (var group in defaultSnippets.Except(savedSnippets, new ByMemberComparer<CodeSnippetGroup, string>(g => g.Extensions))) {
 				savedSnippets.Add(group);
 			}
 			
 			return savedSnippets;
 		}
 		
-		class PredicateComparer<T> : IEqualityComparer<T>
+		sealed class ByMemberComparer<TObject, TMember> : IEqualityComparer<TObject>
 		{
-			Func<T, T, bool> equalsFunc;
-			Func<T, int> getHashCodeFunc;
+			readonly Func<TObject, TMember> selector;
+			readonly IEqualityComparer<TMember> memberComparer = EqualityComparer<TMember>.Default;
 			
-			public PredicateComparer(Func<T, T, bool> equalsFunc, Func<T, int> getHashCodeFunc)
+			public ByMemberComparer(Func<TObject, TMember> selector)
 			{
-				this.equalsFunc = equalsFunc;
-				this.getHashCodeFunc = getHashCodeFunc;
+				this.selector = selector;
 			}
 			
-			public bool Equals(T x, T y)
+			public bool Equals(TObject x, TObject y)
 			{
-				return equalsFunc(x, y);
+				return memberComparer.Equals(selector(x), selector(y));
 			}
 			
-			public int GetHashCode(T obj)
+			public int GetHashCode(TObject obj)
 			{
-				return getHashCodeFunc(obj);
+				return memberComparer.GetHashCode(selector(obj));
 			}
 		}
 		

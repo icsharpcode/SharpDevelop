@@ -47,6 +47,10 @@ namespace UpdateAssemblyInfo
 				Input = "doc/ChangeLog.template.html",
 				Output = "doc/ChangeLog.html"
 			},
+			new TemplateFile {
+				Input = "src/AddIns/Misc/UsageDataCollector/UsageDataCollector.AddIn/AnalyticsMonitor.AppProperties.template",
+				Output = "src/AddIns/Misc/UsageDataCollector/UsageDataCollector.AddIn/AnalyticsMonitor.AppProperties.cs"
+			}
 		};
 		
 		class TemplateFile
@@ -80,13 +84,18 @@ namespace UpdateAssemblyInfo
 						return 2;
 					}
 					RetrieveRevisionNumber();
+					for (int i = 0; i < args.Length; i++) {
+						if (args[i] == "--branchname" && i + 1 < args.Length && !string.IsNullOrEmpty(args[i+1]))
+							gitBranchName = args[i + 1];
+					}
 					UpdateFiles();
 					if (args.Contains("--REVISION")) {
 						var doc = new XDocument(new XElement(
 							"versionInfo",
 							new XElement("version", fullVersionNumber),
 							new XElement("revision", revisionNumber),
-							new XElement("commitHash", gitCommitHash)
+							new XElement("commitHash", gitCommitHash),
+							new XElement("branchName", gitBranchName)
 						));
 						doc.Save("REVISION");
 					}
@@ -108,8 +117,12 @@ namespace UpdateAssemblyInfo
 				content = content.Replace("$INSERTVERSION$", fullVersionNumber);
 				content = content.Replace("$INSERTREVISION$", revisionNumber);
 				content = content.Replace("$INSERTCOMMITHASH$", gitCommitHash);
+				content = content.Replace("$INSERTSHORTCOMMITHASH$", gitCommitHash.Substring(0, 8));
 				content = content.Replace("$INSERTDATE$", DateTime.Now.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture));
 				content = content.Replace("$INSERTYEAR$", DateTime.Now.Year.ToString());
+				content = content.Replace("$INSERTBRANCHNAME$", gitBranchName);
+				bool isDefaultBranch = string.IsNullOrEmpty(gitBranchName) || gitBranchName == "master" || char.IsDigit(gitBranchName, 0);
+				content = content.Replace("$INSERTBRANCHPOSTFIX$", isDefaultBranch ? "" : ("-" + gitBranchName));
 				if (File.Exists(file.Output)) {
 					using (StreamReader r = new StreamReader(file.Output)) {
 						if (r.ReadToEnd() == content) {
@@ -173,12 +186,14 @@ namespace UpdateAssemblyInfo
 		static string revisionNumber;
 		static string fullVersionNumber;
 		static string gitCommitHash;
+		static string gitBranchName;
 		
 		static void RetrieveRevisionNumber()
 		{
 			if (revisionNumber == null) {
 				if (Directory.Exists(".git")) {
 					ReadRevisionNumberFromGit();
+					ReadBranchNameFromGit();
 				} else {
 					Console.WriteLine("There's no git working copy in " + Path.GetFullPath("."));
 				}
@@ -192,7 +207,7 @@ namespace UpdateAssemblyInfo
 		
 		static void ReadRevisionNumberFromGit()
 		{
-			ProcessStartInfo info = new ProcessStartInfo("cmd", "/c git rev-list --first-parent " + BaseCommit + "..HEAD");
+			ProcessStartInfo info = new ProcessStartInfo("cmd", "/c git rev-list " + BaseCommit + "..HEAD");
 			string path = Environment.GetEnvironmentVariable("PATH");
 			path += ";" + Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "git\\bin");
 			info.EnvironmentVariables["PATH"] =  path;
@@ -215,12 +230,35 @@ namespace UpdateAssemblyInfo
 			}
 		}
 		
+		static void ReadBranchNameFromGit()
+		{
+			ProcessStartInfo info = new ProcessStartInfo("cmd", "/c git branch");
+			string path = Environment.GetEnvironmentVariable("PATH");
+			path += ";" + Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "git\\bin");
+			info.EnvironmentVariables["PATH"] =  path;
+			info.RedirectStandardOutput = true;
+			info.UseShellExecute = false;
+			using (Process p = Process.Start(info)) {
+				string line;
+				gitBranchName = "(no branch)";
+				while ((line = p.StandardOutput.ReadLine()) != null) {
+					if (line.StartsWith("* ", StringComparison.Ordinal)) {
+						gitBranchName = line.Substring(2);
+					}
+				}
+				p.WaitForExit();
+				if (p.ExitCode != 0)
+					throw new Exception("git-branch exit code was " + p.ExitCode);
+			}
+		}
+		
 		static void ReadRevisionFromFile()
 		{
 			try {
 				XDocument doc = XDocument.Load("REVISION");
 				revisionNumber = (string)doc.Root.Element("revision");
 				gitCommitHash = (string)doc.Root.Element("commitHash");
+				gitBranchName = (string)doc.Root.Element("branchName");
 			} catch (Exception e) {
 				Console.WriteLine(e.Message);
 				Console.WriteLine();

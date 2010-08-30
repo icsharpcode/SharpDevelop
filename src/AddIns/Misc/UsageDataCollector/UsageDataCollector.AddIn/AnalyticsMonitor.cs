@@ -22,7 +22,7 @@ namespace ICSharpCode.UsageDataCollector
 	/// <summary>
 	/// Main singleton class of the analytics. This class is thread-safe.
 	/// </summary>
-	public sealed class AnalyticsMonitor : IAnalyticsMonitor
+	public sealed partial class AnalyticsMonitor : IAnalyticsMonitor
 	{
 		const string UploadUrl = "http://usagedatacollector.sharpdevelop.net/upload/UploadUsageData.svc";
 		const string ProductName = "sharpdevelop";
@@ -120,10 +120,12 @@ namespace ICSharpCode.UsageDataCollector
 		static IEnumerable<UsageDataEnvironmentProperty> GetAppProperties()
 		{
 			List<UsageDataEnvironmentProperty> properties = new List<UsageDataEnvironmentProperty> {
-				new UsageDataEnvironmentProperty { Name = "appVersion", Value = RevisionClass.FullVersion },
+				new UsageDataEnvironmentProperty { Name = "appVersion", Value = RevisionClass.Major + "." + RevisionClass.Minor + "." + RevisionClass.Build + "." + RevisionClass.Revision },
 				new UsageDataEnvironmentProperty { Name = "language", Value = ResourceService.Language },
 				new UsageDataEnvironmentProperty { Name = "culture", Value = CultureInfo.CurrentCulture.Name },
-				new UsageDataEnvironmentProperty { Name = "userAddInCount", Value = AddInTree.AddIns.Where(a => !a.IsPreinstalled).Count().ToString() }
+				new UsageDataEnvironmentProperty { Name = "userAddInCount", Value = AddInTree.AddIns.Where(a => !a.IsPreinstalled).Count().ToString() },
+				new UsageDataEnvironmentProperty { Name = "branch", Value = BranchName },
+				new UsageDataEnvironmentProperty { Name = "commit", Value = CommitHash }
 			};
 			string PROCESSOR_ARCHITECTURE = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432");
 			if (string.IsNullOrEmpty(PROCESSOR_ARCHITECTURE)) {
@@ -132,11 +134,6 @@ namespace ICSharpCode.UsageDataCollector
 			if (!string.IsNullOrEmpty(PROCESSOR_ARCHITECTURE)) {
 				properties.Add(new UsageDataEnvironmentProperty { Name = "architecture", Value = PROCESSOR_ARCHITECTURE });
 			}
-			#pragma warning disable 0162
-			if (RevisionClass.BranchName != null) {
-				properties.Add(new UsageDataEnvironmentProperty { Name = "branch", Value = RevisionClass.BranchName });
-			}
-			#pragma warning restore 0162
 			#if DEBUG
 			properties.Add(new UsageDataEnvironmentProperty { Name = "debug", Value = "true" });
 			#endif

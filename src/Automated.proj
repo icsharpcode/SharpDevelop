@@ -27,6 +27,7 @@
 		<BuildProperties>$(BuildProperties) &quot;/p:SharpDevelopBinPath=$(SharpDevelopBin)&quot;</BuildProperties>
 		<BuildProperties>$(BuildProperties) &quot;/p:BooBinPath=$(SharpDevelopSrc)\AddIns\BackendBindings\Boo\RequiredLibraries&quot;</BuildProperties>
 		<BuildProperties>$(BuildProperties) &quot;/p:FSharpBuildTasksPath=$(SharpDevelopSrc)\AddIns\BackendBindings\FSharp\RequiredLibraries&quot;</BuildProperties>
+		<BuildProperties>$(BuildProperties) &quot;/p:BranchName=$(BranchName)&quot;</BuildProperties>
 		<BuildProperties>$(BuildProperties) $(AdditionalBuildProperties)</BuildProperties>
 	</PropertyGroup>
 	
@@ -50,12 +51,13 @@
 		
 		<CallTarget Targets="clean2"/>
 		<CallTarget Targets="zipsource"/>
+		<CallTarget Targets="addnote" Condition=" '$(IsOfficialBuildServer)' == 'True' "/>
 	</Target>
 	
 	<Target Name="build">
 		<MSBuild Projects="$(SharpDevelopSrc)\Tools\Tools.build"
 		         Targets="PrepareRelease"
-		         Properties="Configuration=Release"/>
+		         Properties="Configuration=Release;BranchName=$(BranchName)"/>
 		
 		<!-- read content of REVISION into $(BuildNumber) -->
 		<XmlRead XPath="/versionInfo/version"
@@ -141,5 +143,19 @@
 		     ZipLevel="6"
 		     WorkingDirectory="$(ProjectDir)"
 		     ZipFileName="$(ArtefactsOutputDir)\$(ArtefactPrefix)$(BuildNumber)_Source.zip"/>
+	</Target>
+	
+	<Target Name="addnote">
+		<XmlRead XPath="/versionInfo/version"
+		         XmlFileName="$(ProjectDir)\REVISION">
+			<Output TaskParameter="Value" PropertyName="BuildNumber" />
+		</XmlRead>
+		<XmlRead XPath="/versionInfo/branchName"
+		         XmlFileName="$(ProjectDir)\REVISION">
+			<Output TaskParameter="Value" PropertyName="BranchName" />
+		</XmlRead>
+		<Exec WorkingDirectory="$(ProjectDir)" Command='git fetch origin refs/notes/build:refs/notes/build -f' />
+		<Exec WorkingDirectory="$(ProjectDir)" Command='git notes --ref build add -m "Build $(BuildNumber) on $(BranchName) successful"' IgnoreExitCode="True" />
+		<Exec WorkingDirectory="$(ProjectDir)" Command='git push git@github.com:icsharpcode/SharpDevelop.git refs/notes/build:refs/notes/build' />
 	</Target>
 </Project>

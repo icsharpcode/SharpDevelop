@@ -52,7 +52,8 @@ namespace SharpRefactoring
 		{
 			if (rt == null)
 				return false;
-			return IsUserCode(rt.GetUnderlyingClass());
+			IClass c = rt.GetUnderlyingClass();
+			return c != null && IsUserCode(c);
 		}
 		
 		public static bool IsUserCode(this IClass c)

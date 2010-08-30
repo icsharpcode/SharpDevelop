@@ -158,14 +158,14 @@ namespace ICSharpCode.SharpDevelop
 				string configDirectory = ConfigurationManager.AppSettings["settingsPath"];
 				if (String.IsNullOrEmpty(configDirectory)) {
 					startup.ConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-					                                       "ICSharpCode/SharpDevelop" + RevisionClass.MainVersion);
+					                                       "ICSharpCode/SharpDevelop" + RevisionClass.Major + "." + RevisionClass.Minor);
 				} else {
 					startup.ConfigDirectory = Path.Combine(Path.GetDirectoryName(exe.Location), configDirectory);
 				}
 				
 				startup.DomPersistencePath = ConfigurationManager.AppSettings["domPersistencePath"];
 				if (string.IsNullOrEmpty(startup.DomPersistencePath)) {
-					startup.DomPersistencePath = Path.Combine(Path.GetTempPath(), "SharpDevelop" + RevisionClass.MainVersion);
+					startup.DomPersistencePath = Path.Combine(Path.GetTempPath(), "SharpDevelop" + RevisionClass.Major + "." + RevisionClass.Minor);
 					#if DEBUG
 					startup.DomPersistencePath = Path.Combine(startup.DomPersistencePath, "Debug");
 					#endif

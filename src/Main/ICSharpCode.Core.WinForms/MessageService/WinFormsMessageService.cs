@@ -18,7 +18,7 @@ namespace ICSharpCode.Core.WinForms
 	/// All text displayed using the MessageService is passed to the
 	/// <see cref="StringParser"/> to replace ${res} markers.
 	/// </summary>
-	public class WinFormsMessageService : IMessageService
+	public class WinFormsMessageService : IDialogMessageService
 	{
 		/// <summary>
 		/// Gets/Sets the form used as owner for shown message boxes.
