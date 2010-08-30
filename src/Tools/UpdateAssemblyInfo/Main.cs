@@ -84,6 +84,10 @@ namespace UpdateAssemblyInfo
 						return 2;
 					}
 					RetrieveRevisionNumber();
+					for (int i = 0; i < args.Length; i++) {
+						if (args[i] == "--branchname" && i + 1 < args.Length && !string.IsNullOrEmpty(args[i+1]))
+							gitBranchName = args[i + 1];
+					}
 					UpdateFiles();
 					if (args.Contains("--REVISION")) {
 						var doc = new XDocument(new XElement(
@@ -117,8 +121,8 @@ namespace UpdateAssemblyInfo
 				content = content.Replace("$INSERTDATE$", DateTime.Now.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture));
 				content = content.Replace("$INSERTYEAR$", DateTime.Now.Year.ToString());
 				content = content.Replace("$INSERTBRANCHNAME$", gitBranchName);
-				bool isDefaultBrach = string.IsNullOrEmpty(gitBranchName) || gitBranchName == "master" || char.IsDigit(gitBranchName, 0);
-				content = content.Replace("$INSERTBRANCHPOSTFIX$", isDefaultBrach ? "" : ("-" + gitBranchName));
+				bool isDefaultBranch = string.IsNullOrEmpty(gitBranchName) || gitBranchName == "master" || char.IsDigit(gitBranchName, 0);
+				content = content.Replace("$INSERTBRANCHPOSTFIX$", isDefaultBranch ? "" : ("-" + gitBranchName));
 				if (File.Exists(file.Output)) {
 					using (StreamReader r = new StreamReader(file.Output)) {
 						if (r.ReadToEnd() == content) {
