@@ -50,6 +50,7 @@
 		
 		<CallTarget Targets="clean2"/>
 		<CallTarget Targets="zipsource"/>
+		<CallTarget Targets="addnote" Condition=" '$(IsOfficialBuildServer)' == 'True' "/>
 	</Target>
 	
 	<Target Name="build">
@@ -141,5 +142,19 @@
 		     ZipLevel="6"
 		     WorkingDirectory="$(ProjectDir)"
 		     ZipFileName="$(ArtefactsOutputDir)\$(ArtefactPrefix)$(BuildNumber)_Source.zip"/>
+	</Target>
+	
+	<Target Name="addnote">
+		<XmlRead XPath="/versionInfo/version"
+		         XmlFileName="$(ProjectDir)\REVISION">
+			<Output TaskParameter="Value" PropertyName="BuildNumber" />
+		</XmlRead>
+		<XmlRead XPath="/versionInfo/branchName"
+		         XmlFileName="$(ProjectDir)\REVISION">
+			<Output TaskParameter="Value" PropertyName="BranchName" />
+		</XmlRead>
+		<Exec WorkingDirectory="$(ProjectDir)" Command='git fetch origin refs/notes/build:refs/notes/build -f' />
+		<Exec WorkingDirectory="$(ProjectDir)" Command='git notes --ref build add -m "Build $(BuildNumber) on $(BranchName) successful"' IgnoreExitCode="True" />
+		<Exec WorkingDirectory="$(ProjectDir)" Command='git push git@github.com:icsharpcode/SharpDevelop.git refs/notes/build:refs/notes/build' />
 	</Target>
 </Project>
