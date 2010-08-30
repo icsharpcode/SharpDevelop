@@ -7,13 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
-using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
@@ -35,7 +31,7 @@ namespace SharpRefactoring.Gui
 		
 		public IInlineUIElement Element { get; set; }
 		
-		public AbstractInlineRefactorDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor)
+		protected AbstractInlineRefactorDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor)
 		{
 			this.anchor = anchor;
 			this.editor = editor;
