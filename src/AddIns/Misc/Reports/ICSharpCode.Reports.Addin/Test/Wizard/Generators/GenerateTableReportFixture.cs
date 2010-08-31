@@ -27,7 +27,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		[Test]
 		public void InitModel()
 		{
-			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName,false);
 			Assert.AreEqual(reportName,m.ReportSettings.ReportName);
 			Assert.AreEqual(1,m.ReportSettings.AvailableFieldsCollection.Count);
 			Assert.AreEqual(GlobalEnums.ReportType.DataReport,m.ReportSettings.ReportType);
@@ -37,7 +37,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		[Test]
 		public void Datamodel_Should_PushModel()
 		{
-			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName,false);
 			Assert.AreEqual(GlobalEnums.PushPullModel.PushData,m.ReportSettings.DataModel);
 		}
 		
@@ -45,7 +45,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		[Test]
 		public void GroupColumCollection_Should_Empty ()
 		{
-			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName,false);
 			Assert.That(m.ReportSettings.GroupColumnsCollection,Is.Empty);
 		}
 		
@@ -53,7 +53,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		[Test]
 		public void SortColumnCollection_Should_Empty ()
 		{
-			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName,false);
 			Assert.That(m.ReportSettings.SortColumnsCollection,Is.Empty);
 		}
 		
@@ -64,7 +64,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		[Test]
 		public void GroupColumCollection_Grouping_Should_Set()
 		{
-			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName,false);
 			var rs = m.ReportSettings;
 			
 			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
@@ -77,7 +77,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		[Test]
 		public void SortColumCollection_Sorting_Should_Set()
 		{
-			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName,false);
 			var rs = m.ReportSettings;
 			
 			SortColumn gc = new SortColumn("GroupItem",ListSortDirection.Ascending);
@@ -128,7 +128,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		[TestFixtureSetUp]
 		public void Init()
 		{
-			this.reportModel = ReportGenerationHelper.CreateModel(reportName);
+			this.reportModel = ReportGenerationHelper.CreateModel(reportName,false);
 		}
 		
 		[TestFixtureTearDown]

@@ -75,7 +75,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				
 				
 				
-				if (section.Items.HasGroupColumns) {
+				if (section.Items.IsGrouped) {
 					
 					// Convert Grouping Header
 					currentPosition = ConvertGroupHeader(mylist,section,simpleContainer,defaultLeftPos,currentPosition);
@@ -137,7 +137,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				
 				// Grouping Header
 				
-				if (section.Items.HasGroupColumns) {
+				if (section.Items.IsGrouped) {
 					currentPosition = ConvertGroupHeader(mylist,section,simpleContainer,defaultLeftPos,currentPosition);
 				}
 				else

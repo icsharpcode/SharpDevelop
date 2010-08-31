@@ -24,9 +24,10 @@ namespace ICSharpCode.Reports.Addin
 	{
 		public BaseGroupedRow()
 		{
-			
 			TypeDescriptor.AddProvider(new GroupedRowTypeProvider(), typeof(BaseGroupedRow));
 		}
+		
+		
 	}
 	
 	

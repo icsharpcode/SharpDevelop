@@ -66,6 +66,7 @@
     <Compile Include="Wizard\GeneratePlainReportFixture_1.cs" />
     <Compile Include="Wizard\Generators\GenarateListReportFixture.cs" />
     <Compile Include="Wizard\Generators\GenerateFormsSheetReport.cs" />
+    <Compile Include="Wizard\Generators\GenerateListWithGroupFixture.cs" />
     <Compile Include="Wizard\Generators\GeneratePlainReportFixture_2.cs" />
     <Compile Include="Wizard\Generators\GenerateTableReportFixture.cs" />
     <Compile Include="Wizard\Generators\GeneratorFactoryFixture.cs" />
