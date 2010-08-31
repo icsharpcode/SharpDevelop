@@ -58,8 +58,17 @@ namespace ICSharpCode.AvalonEdit
 			
 			textArea.TextView.Services.AddService(typeof(TextEditor), this);
 			
-			this.Options = textArea.Options;
-			this.Document = new TextDocument();
+			SetCurrentPropertyValue(OptionsProperty, textArea.Options);
+			SetCurrentPropertyValue(DocumentProperty, new TextDocument());
+		}
+		
+		void SetCurrentPropertyValue(DependencyProperty property, object value)
+		{
+			#if DOTNET4
+			SetCurrentValue(property, value);
+			#else
+			SetValue(property, value);
+			#endif
 		}
 		#endregion
 		
@@ -431,7 +440,7 @@ namespace ICSharpCode.AvalonEdit
 			if (e.PropertyName == "IsOriginalFile") {
 				TextDocument document = this.Document;
 				if (document != null) {
-					this.IsModified = !document.UndoStack.IsOriginalFile;
+					SetCurrentPropertyValue(IsModifiedProperty, Boxes.Box(!document.UndoStack.IsOriginalFile));
 				}
 				return true;
 			} else {
