@@ -274,6 +274,10 @@ namespace ICSharpCode.SharpDevelop
 				double fileCountInverse = 1.0 / fileContents.Count;
 				Parallel.ForEach(
 					fileContents,
+					new ParallelOptions { 
+						MaxDegreeOfParallelism = Environment.ProcessorCount * 2,
+						CancellationToken = progressMonitor.CancellationToken
+					},
 					fileName => {
 						// Don't read files we don't have a parser for.
 						// This avoids loading huge files (e.g. sdps) when we have no intention of parsing them.
