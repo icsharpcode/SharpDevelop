@@ -275,11 +275,10 @@ namespace ICSharpCode.SharpDevelop
 				Parallel.ForEach(
 					fileContents,
 					fileName => {
-						ParseableFileContentEntry entry = finder.Create(fileName);
 						// Don't read files we don't have a parser for.
 						// This avoids loading huge files (e.g. sdps) when we have no intention of parsing them.
 						if (ParserService.GetParser(fileName) != null) {
-							ITextBuffer content = entry.GetContent();
+							ITextBuffer content = finder.Create(fileName);
 							if (content != null)
 								ParserService.ParseFile(this, fileName, content);
 						}

@@ -249,7 +249,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				progressMonitor.TaskName = StringParser.Parse("${res:SharpDevelop.Refactoring.FindingReferences}");
 			
 			foreach (ProjectItem item in files) {
-				var entry = finder.Create(FileName.Create(item.FileName));
+				FileName itemFileName = FileName.Create(item.FileName);
 				
 				if (progressMonitor != null) {
 					progressMonitor.Progress += 1.0 / files.Count;
@@ -257,9 +257,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 						return null;
 				}
 				
-				ITextBuffer content = entry.GetContent();
+				ITextBuffer content = finder.Create(itemFileName);
 				if (content != null) {
-					AddReferences(references, ownerClass, member, entry.FileName, content.Text);
+					AddReferences(references, ownerClass, member, itemFileName, content.Text);
 				}
 			}
 			
