@@ -157,16 +157,6 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 				}
 			}
 			
-			int typeSeparator = val.IndexOf(':');
-			if (typeSeparator > 0) {
-				string type = val.Substring(0, typeSeparator);
-				string name = val.Substring(typeSeparator + 1);
-				switch (type.ToLowerInvariant()) {
-					case "anchor":
-						return new SnippetAnchorElement(name);
-				}
-			}
-			
 			foreach (ISnippetElementProvider provider in SnippetManager.Instance.SnippetElementProviders) {
 				SnippetElement element = provider.GetElement(new SnippetInfo(val, snippetText, offset));
 				if (element != null)

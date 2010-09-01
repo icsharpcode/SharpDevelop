@@ -134,6 +134,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Src\PrintPreviewViewContent.cs" />
+    <Compile Include="Src\Snippets\AnchorSnippetElementProvider.cs" />
     <Compile Include="Src\Snippets\CodeSnippet.cs" />
     <Compile Include="Src\Snippets\CodeSnippetCompletionWindow.cs" />
     <Compile Include="Src\Snippets\CodeSnippetGroup.cs" />
