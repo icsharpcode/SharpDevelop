@@ -18,7 +18,7 @@ using RubyBinding.Tests.Utils;
 namespace RubyBinding.Tests.Console
 {
 	[TestFixture]
-	public class ConsoleTextEditorTestFixture
+	public class RubyConsoleTextEditorTests
 	{
 		RubyConsoleTextEditor consoleTextEditor;
 		TextEditor avalonEditTextEditor;

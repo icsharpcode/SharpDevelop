@@ -20,9 +20,9 @@ namespace ICSharpCode.RubyBinding
 		ITextEditor textEditor;
 		ITextEditorOptions textEditorOptions;
 		
-		public RubyTextEditorViewContent(IWorkbench workbench)
+		public RubyTextEditorViewContent(IRubyWorkbench workbench)
 		{
-			Init(workbench.ActiveWorkbenchWindow.ActiveViewContent);
+			Init(workbench.ActiveViewContent);
 		}
 		
 		public RubyTextEditorViewContent(IViewContent view)

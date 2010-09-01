@@ -42,7 +42,7 @@ namespace RubyBinding.Tests.Utils.Tests
 		public void CanReplaceTextEditorOptions()
 		{
 			MockTextEditorOptions options = new MockTextEditorOptions();
-			view.TextEditorOptions = options;
+			view.MockTextEditorOptions = options;
 			Assert.AreSame(options, view.TextEditor.Options);
 		}
 	}

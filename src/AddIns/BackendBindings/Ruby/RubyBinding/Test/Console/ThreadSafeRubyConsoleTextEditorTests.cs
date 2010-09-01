@@ -19,18 +19,18 @@ using RubyBinding.Tests.Utils.Tests;
 namespace RubyBinding.Tests.Console
 {
 	[TestFixture]
-	public class ConsoleTextEditorThreadSafetyTestFixture
+	public class ThreadSafeRubyConsoleTextEditorTests
 	{
-		RubyConsoleTextEditor consoleTextEditor;
-		TextEditor avalonEditTextEditor;
+		ThreadSafeRubyConsoleTextEditor consoleTextEditor;
+		MockConsoleTextEditor textEditor;
 		MockControlDispatcher dispatcher;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			avalonEditTextEditor = new TextEditor();
+			textEditor = new MockConsoleTextEditor();
 			dispatcher = new MockControlDispatcher();
-			consoleTextEditor = new RubyConsoleTextEditor(avalonEditTextEditor, dispatcher);
+			consoleTextEditor = new ThreadSafeRubyConsoleTextEditor(textEditor, dispatcher);
 		}
 		
 		[Test]
@@ -80,7 +80,7 @@ namespace RubyBinding.Tests.Console
 		{
 			dispatcher.CheckAccessReturnValue = false;
 			dispatcher.MethodInvoked = null;
-			avalonEditTextEditor.Text = "abcd";
+			textEditor.Text = "abcd";
 			
 			consoleTextEditor.Replace(0, 2, "12");
 			Assert.IsNotNull(dispatcher.MethodInvoked);
@@ -91,7 +91,7 @@ namespace RubyBinding.Tests.Console
 		{
 			dispatcher.CheckAccessReturnValue = false;
 			dispatcher.MethodInvokedArgs = null;
-			avalonEditTextEditor.Text = "abcd";
+			textEditor.Text = "abcd";
 			
 			consoleTextEditor.Replace(0, 2, "12");
 			object[] expectedArgs = new object[] { 0, 2, "12" };

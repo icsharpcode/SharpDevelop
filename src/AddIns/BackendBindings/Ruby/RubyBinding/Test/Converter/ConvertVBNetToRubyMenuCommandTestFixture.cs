@@ -14,9 +14,6 @@ using RubyBinding.Tests.Utils;
 
 namespace RubyBinding.Tests.Converter
 {
-	/// <summary>
-	/// Tests the ConvertVBNetToRubyMenuCommand.
-	/// </summary>
 	[TestFixture]
 	public class ConvertVBNetToRubyMenuCommandTestFixture : ConvertToRubyMenuCommand
 	{
@@ -24,28 +21,20 @@ namespace RubyBinding.Tests.Converter
 		string defaultFileName;
 		string language;
 		string fileNamePassedToGetParseInformation;
-		MockEditableViewContent mockViewContent;
 		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		[SetUp]
+		public void Init()
 		{
-			mockViewContent = new MockEditableViewContent();
-			mockViewContent.Text = 
+			MockWorkbench workbench = MockWorkbench.CreateWorkbenchWithOneViewContent("test.vb");
+			workbench.ActiveMockEditableViewContent.Text = 
 				"class Foo\r\n" +
 				"    Public Sub New\r\n" +
 				"    End Sub\r\n" +
 				"end class";
-			mockViewContent.PrimaryFileName = new FileName("test.vb");
 			
-			MockWorkbench workbench = new MockWorkbench();
-			MockWorkbenchWindow window = new MockWorkbenchWindow();
-			window.ActiveViewContent = mockViewContent;
-			workbench.ActiveWorkbenchWindow = window;
-			
-			MockTextEditorOptions options = new MockTextEditorOptions();
+			MockTextEditorOptions options = workbench.ActiveMockEditableViewContent.MockTextEditorOptions;	
 			options.ConvertTabsToSpaces = false;
 			options.IndentationSize = 2;
-			mockViewContent.TextEditorOptions = options;
 			
 			Run(workbench);
 		}

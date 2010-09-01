@@ -8,77 +8,69 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Windows.Input;
 using System.Text;
+using System.Windows.Input;
 
+using ICSharpCode.NRefactory;
 using ICSharpCode.RubyBinding;
 
 namespace RubyBinding.Tests.Utils
 {
 	public class MockConsoleTextEditor : IConsoleTextEditor
 	{
-		StringBuilder previousLines = new StringBuilder();
-		StringBuilder lineBuilder = new StringBuilder();
-		bool writeCalled;
-		int column;
-		int selectionStart;
-		int selectionLength;
-		int line;
-		int totalLines = 1;
-		bool showCompletionWindowCalled;
-		bool completionWindowDisplayed;
-		bool makeReadOnlyCalled;
-		RubyConsoleCompletionDataProvider completionProvider;
+		public bool IsDisposed;
+		public bool IsWriteCalled;
+		
+		public bool IsShowCompletionWindowCalled;
+		public bool IsMakeCurrentContentReadOnlyCalled;
+		public RubyConsoleCompletionDataProvider CompletionProviderPassedToShowCompletionWindow;
+		public string TextPassedToWrite;
+		public string TextPassedToReplace;
+		public int LengthPassedToReplace = -1;
+		public int IndexPassedToReplace = -1;
+		public Location CursorLocationWhenWriteTextCalled;
+		public bool IsColumnChangedBeforeTextWritten;
+		
+		public StringBuilder PreviousLines = new StringBuilder();
+		public StringBuilder LineBuilder = new StringBuilder();
+				
+		public event ConsoleTextEditorKeyEventHandler PreviewKeyDown;
 		
 		public MockConsoleTextEditor()
 		{
+			TotalLines = 1;
 		}
-		
-		public event ConsoleTextEditorKeyEventHandler PreviewKeyDown;
+				
+		public void Dispose()
+		{
+			IsDisposed = true;
+		}
 		
 		public void Write(string text)
 		{
-			writeCalled = true;
-			lineBuilder.Append(text);
-			column += text.Length;
+			TextPassedToWrite = text;
+			CursorLocationWhenWriteTextCalled = new Location(Column, Line);
+			IsWriteCalled = true;
+			LineBuilder.Append(text);
+			Column += text.Length;
 		}
 		
-		public bool IsWriteCalled {
-			get { return writeCalled; }
-			set { writeCalled = value; }
-		}
-
-		public bool IsShowCompletionWindowCalled {
-			get { return showCompletionWindowCalled; }
-		}
-		
-		public bool IsMakeCurrentContentReadOnlyCalled {
-			get { return makeReadOnlyCalled; }
-		}
-		
-		/// <summary>
-		/// Returns the code completion data provider passed to the ShowCompletionWindow method.
-		/// </summary>
-		public RubyConsoleCompletionDataProvider CompletionDataProvider {
-			get { return completionProvider; }
-		}
-
 		public string Text {
-			get { return previousLines.ToString() + lineBuilder.ToString(); }
+			get { return PreviousLines.ToString() + LineBuilder.ToString(); }
 			set {
-				previousLines = new StringBuilder();
-				lineBuilder = new StringBuilder();
-				totalLines = 1;
+				PreviousLines = new StringBuilder();
+				LineBuilder = new StringBuilder();
+				TotalLines = 1;
 				foreach (char ch in value) {
-					lineBuilder.Append(ch);
+					LineBuilder.Append(ch);
 					if (ch == '\n') {
-						totalLines++;
-						previousLines.Append(lineBuilder.ToString());
-						lineBuilder = new StringBuilder();
+						TotalLines++;
+						PreviousLines.Append(LineBuilder.ToString());
+						LineBuilder = new StringBuilder();
 					}
 				}
-				column = lineBuilder.Length;
-				selectionStart = column;
+				Column = LineBuilder.Length;
+				SelectionStart = Column;
 			}
 		}
 		
@@ -90,12 +82,12 @@ namespace RubyBinding.Tests.Utils
 				KeyConverter converter = new KeyConverter();
 				string text = converter.ConvertToString(key);
 				if (IsCursorAtEnd) {
-					lineBuilder.Append(text);
+					LineBuilder.Append(text);
 				} else {
-					lineBuilder.Insert(column, text);
+					LineBuilder.Insert(Column, text);
 				}
-				column++;
-				selectionStart = column;
+				Column++;
+				SelectionStart = Column;
 			}
 			return e.Handled;
 		}
@@ -107,6 +99,11 @@ namespace RubyBinding.Tests.Utils
 			}
 		}
 		
+		public void RaisePreviewKeyDownEvent(MockConsoleTextEditorKeyEventArgs e)
+		{
+			OnPreviewKeyDown(e);
+		}
+		
 		public bool RaisePreviewKeyDownEventForDialogKey(Key key)
 		{
 			MockConsoleTextEditorKeyEventArgs e = new MockConsoleTextEditorKeyEventArgs(key);
@@ -115,22 +112,22 @@ namespace RubyBinding.Tests.Utils
 				switch (key) {
 					case Key.Enter: {
 						if (IsCursorAtEnd) {
-							lineBuilder.Append(Environment.NewLine);
-							previousLines.Append(lineBuilder.ToString());
-							lineBuilder = new StringBuilder();
-							column = 0;
-							selectionStart = column;
+							LineBuilder.Append(Environment.NewLine);
+							PreviousLines.Append(LineBuilder.ToString());
+							LineBuilder = new StringBuilder();
+							Column = 0;
+							SelectionStart = Column;
 						} else {
-							int length = lineBuilder.Length;
-							string currentLine = lineBuilder.ToString();
-							previousLines.Append(currentLine.Substring(0, column) + Environment.NewLine);
-							lineBuilder = new StringBuilder();
-							lineBuilder.Append(currentLine.Substring(column));
-							column = length - column;
-							selectionStart = column;
+							int length = LineBuilder.Length;
+							string currentLine = LineBuilder.ToString();
+							PreviousLines.Append(currentLine.Substring(0, Column) + Environment.NewLine);
+							LineBuilder = new StringBuilder();
+							LineBuilder.Append(currentLine.Substring(Column));
+							Column = length - Column;
+							SelectionStart = Column;
 						}
-						totalLines++;
-						line++;
+						TotalLines++;
+						Line++;
 					}
 					break;
 					case Key.Back: {
@@ -138,13 +135,13 @@ namespace RubyBinding.Tests.Utils
 					}
 					break;
 					case Key.Left: {
-						column--;
-						selectionStart = column;
+						Column--;
+						SelectionStart = Column;
 					}
 					break;
 					case Key.Right: {
-						column++;
-						selectionStart = column;
+						Column++;
+						SelectionStart = Column;
 					}
 					break;
 				}
@@ -152,72 +149,54 @@ namespace RubyBinding.Tests.Utils
 			return e.Handled;
 		}
 		
-		public int Column {
-			get { return column; }
-			set { column = value; }
-		}
-		
-		public int SelectionStart {
-			get { return selectionStart; }
-			set { selectionStart = value; }
-		}
-		
-		public int SelectionLength {
-			get { return selectionLength; }
-			set { selectionLength = value; }
-		}
-		
-		public int Line {
-			get { return line; }
-			set { line = value; }
-		}
-
-		public int TotalLines {
-			get { return totalLines; }
-		}
+		public bool IsCompletionWindowDisplayed { get; set; }
+		public int Column { get; set; }		
+		public int SelectionStart { get; set; }
+		public int SelectionLength { get; set; }
+		public int Line { get; set; }
+		public int TotalLines { get; set; }
 		
 		public string GetLine(int index)
 		{
-			if (index == totalLines - 1) {
-				return lineBuilder.ToString();
+			if (index == TotalLines - 1) {
+				return LineBuilder.ToString();
 			}
 			return "aaaa";
 		}
 		
 		public void Replace(int index, int length, string text)
 		{
-			lineBuilder.Remove(index, length);
-			lineBuilder.Insert(index, text);
+			TextPassedToReplace = text;
+			IndexPassedToReplace = index;
+			LengthPassedToReplace = length;
+			
+			LineBuilder.Remove(index, length);
+			LineBuilder.Insert(index, text);
 		}
 		
 		public void ShowCompletionWindow(RubyConsoleCompletionDataProvider completionDataProvider)
 		{
-			showCompletionWindowCalled = true;
-			completionWindowDisplayed = true;
-			this.completionProvider = completionDataProvider;
+			IsShowCompletionWindowCalled = true;
+			IsCompletionWindowDisplayed = true;
+			this.CompletionProviderPassedToShowCompletionWindow = completionDataProvider;
 		}
-		
-		public bool IsCompletionWindowDisplayed {
-			get { return completionWindowDisplayed; }
-			set { completionWindowDisplayed = value; }
-		}
-		
+				
 		public void MakeCurrentContentReadOnly()
 		{
-			makeReadOnlyCalled = true;
+			IsMakeCurrentContentReadOnlyCalled = true;
 		}
 		
 		bool IsCursorAtEnd {
-			get { return column == lineBuilder.ToString().Length; }
+			get { return Column == LineBuilder.ToString().Length; }
 		}
 		
 		void OnBackspaceKeyPressed()
 		{
 			if (SelectionLength == 0) {
 				// Remove a single character to the left of the cursor position.
-				lineBuilder.Remove(Column - 1, 1);
+				LineBuilder.Remove(Column - 1, 1);
 			} else {
-				lineBuilder.Remove(SelectionStart, SelectionLength);
+				LineBuilder.Remove(SelectionStart, SelectionLength);
 			}
 		}
 	}

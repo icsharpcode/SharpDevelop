@@ -23,15 +23,15 @@ namespace ICSharpCode.RubyBinding
 	{
 		IDebugger debugger;
 		RubyAddInOptions options;
-		IWorkbench workbench;
+		IRubyWorkbench workbench;
 		bool debug;
 		
 		public RunRubyCommand()
-			: this(WorkbenchSingleton.Workbench, new RubyAddInOptions(), DebuggerService.CurrentDebugger)
+			: this(new RubyWorkbench(), new RubyAddInOptions(), DebuggerService.CurrentDebugger)
 		{
 		}
 		
-		public RunRubyCommand(IWorkbench workbench, RubyAddInOptions options, IDebugger debugger)
+		public RunRubyCommand(IRubyWorkbench workbench, RubyAddInOptions options, IDebugger debugger)
 		{
 			this.workbench = workbench;
 			this.debugger = debugger;
@@ -68,7 +68,7 @@ namespace ICSharpCode.RubyBinding
 		}
 		
 		FileName WorkbenchPrimaryFileName {
-			get { return workbench.ActiveWorkbenchWindow.ActiveViewContent.PrimaryFileName; }
+			get { return workbench.ActiveViewContent.PrimaryFileName; }
 		}
 		
 		string GetArguments()

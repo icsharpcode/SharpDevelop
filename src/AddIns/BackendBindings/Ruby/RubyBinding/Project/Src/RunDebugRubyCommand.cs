@@ -15,14 +15,14 @@ namespace ICSharpCode.RubyBinding
 {
 	public class RunDebugRubyCommand : RunRubyCommand
 	{
-		public RunDebugRubyCommand(IWorkbench workbench, RubyAddInOptions options, IDebugger debugger) 
+		public RunDebugRubyCommand(IRubyWorkbench workbench, RubyAddInOptions options, IDebugger debugger) 
 			: base(workbench, options, debugger)
 		{
 			Debug = true;
 		}
 		
 		public RunDebugRubyCommand()
-			: this(WorkbenchSingleton.Workbench, new RubyAddInOptions(), DebuggerService.CurrentDebugger)
+			: this(new RubyWorkbench(), new RubyAddInOptions(), DebuggerService.CurrentDebugger)
 		{
 		}
 	}

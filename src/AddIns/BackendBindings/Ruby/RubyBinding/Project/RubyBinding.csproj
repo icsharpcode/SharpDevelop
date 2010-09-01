@@ -91,7 +91,11 @@
     <Compile Include="Src\ControlDispatcher.cs" />
     <Compile Include="Src\CreateTextWriterInfo.cs" />
     <Compile Include="Src\IControlDispatcher.cs" />
+    <Compile Include="Src\ILock.cs" />
+    <Compile Include="Src\IRubyConsole.cs" />
+    <Compile Include="Src\IRubyConsolePad.cs" />
     <Compile Include="Src\IRubyFileService.cs" />
+    <Compile Include="Src\IRubyWorkbench.cs" />
     <Compile Include="Src\RubyConsoleApplication.cs" />
     <Compile Include="Src\RubyConsoleCompletionData.cs" />
     <Compile Include="Src\ConvertProjectToRubyProjectCommand.cs" />
@@ -138,9 +142,13 @@
     <Compile Include="Src\RubyTestRunnerContext.cs" />
     <Compile Include="Src\RubyTestRunnerResponseFile.cs" />
     <Compile Include="Src\RubyTextEditorViewContent.cs" />
+    <Compile Include="Src\RubyWorkbench.cs" />
     <Compile Include="Src\RunDebugRubyCommand.cs" />
     <Compile Include="Src\RunRubyCommand.cs" />
     <Compile Include="Src\RubyConsoleTextEditor.cs" />
+    <Compile Include="Src\SendLineToRubyConsoleCommand.cs" />
+    <Compile Include="Src\StringListLock.cs" />
+    <Compile Include="Src\ThreadSafeRubyConsoleTextEditor.cs" />
     <EmbeddedResource Include="Resources\Ruby.xshd" />
     <EmbeddedResource Include="Resources\RubyOptionsPanel.xfrm" />
     <None Include="..\..\IronRuby\bin\Chiron.exe.config">

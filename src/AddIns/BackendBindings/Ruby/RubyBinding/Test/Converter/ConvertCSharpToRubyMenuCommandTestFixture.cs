@@ -14,9 +14,6 @@ using RubyBinding.Tests.Utils;
 
 namespace RubyBinding.Tests.Converter
 {
-	/// <summary>
-	/// Tests the ConvertCSharpToRubyMenuCommand.
-	/// </summary>
 	[TestFixture]
 	public class ConvertCSharpToRubyMenuCommandTestFixture : ConvertToRubyMenuCommand
 	{
@@ -24,13 +21,12 @@ namespace RubyBinding.Tests.Converter
 		string defaultFileName;
 		string language;
 		string fileNamePassedToGetParseInformation;
-		MockEditableViewContent mockViewContent;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			mockViewContent = new MockEditableViewContent();
-			mockViewContent.Text = 
+			MockWorkbench workbench = MockWorkbench.CreateWorkbenchWithOneViewContent("test.cs");
+			workbench.ActiveMockEditableViewContent.Text = 
 				"class Foo\r\n" +
 				"{\r\n" +
 				"    public Foo()\r\n" +
@@ -38,17 +34,9 @@ namespace RubyBinding.Tests.Converter
 				"    }\r\n" +
 				"}";
 			
-			mockViewContent.PrimaryFileName = new FileName("test.cs");
-			
-			MockWorkbench workbench = new MockWorkbench();
-			MockWorkbenchWindow window = new MockWorkbenchWindow();
-			window.ActiveViewContent = mockViewContent;
-			workbench.ActiveWorkbenchWindow = window;
-			
-			MockTextEditorOptions options = new MockTextEditorOptions();
+			MockTextEditorOptions options = workbench.ActiveMockEditableViewContent.MockTextEditorOptions;
 			options.IndentationSize = 4;
 			options.ConvertTabsToSpaces = true;
-			mockViewContent.TextEditorOptions = options;
 			
 			Run(workbench);
 		}

@@ -16,21 +16,21 @@ namespace RubyBinding.Tests.Console
 	/// Tests the disposing of the RubyConsole.
 	/// </summary>
 	[TestFixture]
-	public class DisposedRubyConsoleTestFixture
+	public class DisposedRubyConsoleTestFixture : RubyConsoleTestsBase
 	{
 		[Test]
 		public void RubyConsoleImplementsIDisposable()
 		{
-			RubyConsole console = new RubyConsole(new MockConsoleTextEditor(), null);
-			Assert.IsNotNull(console as IDisposable);
+			base.CreateRubyConsole();
+			Assert.IsNotNull(TestableRubyConsole as IDisposable);
 		}
 		
 		[Test]
 		public void ReadLineReturnsNullWhenConsoleDisposed()
 		{
-			RubyConsole console = new RubyConsole(new MockConsoleTextEditor(), null);
-			console.Dispose();
-			Assert.IsNull(console.ReadLine(0));
+			base.CreateRubyConsole();
+			TestableRubyConsole.Dispose();
+			Assert.IsNull(TestableRubyConsole.ReadLine(0));
 		}
 	}
 }

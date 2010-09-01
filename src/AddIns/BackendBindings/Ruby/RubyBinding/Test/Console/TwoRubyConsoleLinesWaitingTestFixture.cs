@@ -29,7 +29,7 @@ namespace RubyBinding.Tests.Console
 	{
 		string line1;
 		string line2;
-		RubyConsole rubyConsole;
+		TestableRubyConsole rubyConsole;
 		bool lineAvailableBeforeFirstEnterKey;
 		bool lineAvailableAfterFirstEnterKey;
 		bool lineAvailableAtEnd;
@@ -37,9 +37,8 @@ namespace RubyBinding.Tests.Console
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MockConsoleTextEditor textEditor = new MockConsoleTextEditor();
-			using (rubyConsole = new RubyConsole(textEditor, null)) {
-
+			using (rubyConsole = new TestableRubyConsole()) {
+				MockConsoleTextEditor textEditor = rubyConsole.MockConsoleTextEditor;
 				textEditor.RaisePreviewKeyDownEvent(Input.Key.A);
 				textEditor.RaisePreviewKeyDownEvent(Input.Key.B);
 				textEditor.RaisePreviewKeyDownEvent(Input.Key.C);

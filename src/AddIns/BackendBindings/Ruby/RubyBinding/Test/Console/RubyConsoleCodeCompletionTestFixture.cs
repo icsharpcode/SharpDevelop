@@ -20,29 +20,26 @@ namespace RubyBinding.Tests.Console
 	/// When the dot character is typed in after an object the code completion window should appear.
 	/// </summary>
 	[TestFixture]
-	public class RubyConsoleCodeCompletionTestFixture
+	public class RubyConsoleCodeCompletionTestFixture : RubyConsoleTestsBase
 	{
-		MockConsoleTextEditor textEditor;
-		RubyConsole console;
 		string prompt = ">>> ";
 		bool showCompletionWindowCalledBeforeDotTypedIn;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			textEditor = new MockConsoleTextEditor();
-			console = new RubyConsole(textEditor, null);
-			console.WriteLine(prompt, Style.Prompt);
-									
-			textEditor.RaisePreviewKeyDownEvent(Key.A);
-			showCompletionWindowCalledBeforeDotTypedIn = textEditor.IsShowCompletionWindowCalled;
-			textEditor.RaisePreviewKeyDownEvent(Key.OemPeriod);		
+			base.CreateRubyConsole();
+			TestableRubyConsole.WriteLine(prompt, Style.Prompt);
+			
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+ 			showCompletionWindowCalledBeforeDotTypedIn = MockConsoleTextEditor.IsShowCompletionWindowCalled;
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.OemPeriod);	
 		}
 		
 		[Test]
 		public void ShowCompletionWindowCalled()
 		{
-			Assert.IsTrue(textEditor.IsShowCompletionWindowCalled);
+			Assert.IsTrue(MockConsoleTextEditor.IsShowCompletionWindowCalled);
 		}
 
 		[Test]
@@ -54,7 +51,7 @@ namespace RubyBinding.Tests.Console
 		[Test]
 		public void RubyConsoleCompletionDataProviderPassedToShowCompletionWindowMethod()
 		{
-			Assert.IsInstanceOf(typeof(RubyConsoleCompletionDataProvider), textEditor.CompletionDataProvider);
+			Assert.IsInstanceOf(typeof(RubyConsoleCompletionDataProvider), MockConsoleTextEditor.CompletionProviderPassedToShowCompletionWindow);
 		}
 	}
 }

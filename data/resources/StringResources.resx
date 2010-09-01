@@ -4071,6 +4071,9 @@ Please configure the NAnt executable's location in the SharpDevelop Options.</va
   <data name="ICSharpCode.PythonBinding.UnknownTypeName" xml:space="preserve">
     <value>Could not find type '{0}'. Are you missing an assembly reference?</value>
   </data>
+  <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
+    <value>Send Line to Ruby Console</value>
+  </data>
   <data name="ICSharpCode.Services.FileUtilityService.CantLoadFileStandardText" xml:space="preserve">
     <value>Can't load file ${FileNameWithoutPath} under ${Path}.
 Check the file permission and the existence of that file.</value>

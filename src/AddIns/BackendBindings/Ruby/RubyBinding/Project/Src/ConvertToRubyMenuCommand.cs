@@ -22,10 +22,10 @@ namespace ICSharpCode.RubyBinding
 		
 		public override void Run()
 		{
-			Run(WorkbenchSingleton.Workbench);
+			Run(new RubyWorkbench());
 		}
 		
-		protected void Run(IWorkbench workbench)
+		protected void Run(IRubyWorkbench workbench)
 		{
 			view = new RubyTextEditorViewContent(workbench);
 			string code = GenerateRubyCode();

@@ -20,37 +20,34 @@ namespace RubyBinding.Tests.Console
 	/// The Home Key should return the user to the start of the line after the prompt.
 	/// </summary>
 	[TestFixture]
-	public class RubyConsoleHomeKeyTestFixture
+	public class RubyConsoleHomeKeyTestFixture : RubyConsoleTestsBase
 	{
-		MockConsoleTextEditor textEditor;
-		RubyConsole console;
 		string prompt = ">>> ";
 
 		[SetUp]
 		public void Init()
 		{
-			textEditor = new MockConsoleTextEditor();
-			console = new RubyConsole(textEditor, null);
-			console.Write(prompt, Style.Prompt);
+			base.CreateRubyConsole();
+			TestableRubyConsole.Write(prompt, Style.Prompt);
 		}
 		
 		[Test]
 		public void HomeKeyPressedWhenNoUserTextInConsole()
 		{
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Home);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Home);
 		
 			int expectedColumn = prompt.Length;
-			Assert.AreEqual(expectedColumn, textEditor.Column);
+			Assert.AreEqual(expectedColumn, MockConsoleTextEditor.Column);
 		}
 		
 		[Test]
 		public void HomeKeyPressedWhenTextInConsole()
 		{
-			textEditor.RaisePreviewKeyDownEvent(Key.A);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Home);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Home);
 
 			int expectedColumn = prompt.Length;
-			Assert.AreEqual(expectedColumn, textEditor.Column);
+			Assert.AreEqual(expectedColumn, MockConsoleTextEditor.Column);
 		}
 	}
 }

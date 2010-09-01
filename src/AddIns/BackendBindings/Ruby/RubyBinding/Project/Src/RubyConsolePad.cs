@@ -11,23 +11,31 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.RubyBinding
 {
-	public class RubyConsolePad : AbstractPadContent
+	public class RubyConsolePad : AbstractPadContent, IRubyConsolePad
 	{
-		RubyConsoleTextEditor consoleTextEditor;
+		ThreadSafeRubyConsoleTextEditor consoleTextEditor;
 		AvalonEdit.TextEditor textEditor;
 		RubyConsoleHost host;
 		
 		public RubyConsolePad()
 		{
 			textEditor = new AvalonEdit.TextEditor();
-			consoleTextEditor = new RubyConsoleTextEditor(textEditor);
+			consoleTextEditor = new ThreadSafeRubyConsoleTextEditor(textEditor);
 			host = new RubyConsoleHost(consoleTextEditor);
-			host.Run();	
+			host.Run();
 		}
 		
+		public IConsoleTextEditor ConsoleTextEditor {
+			get { return consoleTextEditor; }
+		}
+		
+		public IRubyConsole RubyConsole {
+			get { return host.RubyConsole; }
+ 		}
+ 		
 		public override object Control {
 			get { return textEditor; }
-		}		
+		}
 		
 		public override void Dispose()
 		{

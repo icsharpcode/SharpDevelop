@@ -23,40 +23,37 @@ namespace RubyBinding.Tests.Console
 	/// Tests the RubyConsole's GetUnreadLines method.
 	/// </summary>
 	[TestFixture]
-	public class RubyConsoleUnreadLinesTestFixture
+	public class RubyConsoleUnreadLinesTestFixture : RubyConsoleTestsBase
 	{
-		RubyConsole rubyConsole;
-		MockConsoleTextEditor textEditor;
-		
 		[SetUp]
 		public void Init()
 		{
-			textEditor = new MockConsoleTextEditor();
-			rubyConsole = new RubyConsole(textEditor, null);
+			base.CreateRubyConsole();
 		}
 		
 		[Test]
 		public void NoUnreadLinesAtStart()
 		{
-			Assert.AreEqual(0, rubyConsole.GetUnreadLines().Length);
+			Assert.AreEqual(0, TestableRubyConsole.GetUnreadLines().Length);
 		}
 	
 		[Test]
 		public void HasUnreadLines()
 		{
-			Assert.IsFalse(rubyConsole.IsLineAvailable);
+			Assert.IsFalse(TestableRubyConsole.IsLineAvailable);
 		}
 		
 		[Test]
 		public void AddOneLine()
 		{
-			textEditor.RaisePreviewKeyDownEvent(System.Windows.Input.Key.A);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(System.Windows.Input.Key.Enter);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(System.Windows.Input.Key.A);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(System.Windows.Input.Key.Enter);
 			
+			string[] lines = TestableRubyConsole.GetUnreadLines();
 			string[] expectedLines = new string[] {"A"};
 			
-			Assert.AreEqual(expectedLines, rubyConsole.GetUnreadLines());
-			Assert.IsTrue(rubyConsole.IsLineAvailable);
+			Assert.AreEqual(expectedLines, lines);
+			Assert.IsTrue(TestableRubyConsole.IsLineAvailable);
 		}
 	}
 }

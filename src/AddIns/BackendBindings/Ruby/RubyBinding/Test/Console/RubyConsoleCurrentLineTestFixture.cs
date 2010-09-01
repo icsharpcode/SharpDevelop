@@ -23,16 +23,16 @@ namespace RubyBinding.Tests.Console
 	[TestFixture]
 	public class RubyConsoleCurrentLineTestFixture
 	{
-		RubyConsole rubyConsole;
+		TestableRubyConsole rubyConsole;
 		MockConsoleTextEditor textEditor;
 		string prompt = ">>> ";
 		
 		[SetUp]
 		public void Init()
 		{
-			textEditor = new MockConsoleTextEditor();
-			rubyConsole = new RubyConsole(textEditor, null);
+			rubyConsole = new TestableRubyConsole();
 			rubyConsole.Write(prompt, Style.Prompt);
+			textEditor = rubyConsole.MockConsoleTextEditor;
 		}
 		
 		[Test]

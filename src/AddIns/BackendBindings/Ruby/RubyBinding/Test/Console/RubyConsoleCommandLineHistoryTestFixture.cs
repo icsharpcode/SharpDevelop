@@ -21,74 +21,71 @@ namespace RubyBinding.Tests.Console
 	/// Tests the RubyConsole's command line history.
 	/// </summary>
 	[TestFixture]
-	public class RubyConsoleCommandLineHistoryTestFixture
+	public class RubyConsoleCommandLineHistoryTestFixture : RubyConsoleTestsBase
 	{
-		RubyConsole rubyConsole;
-		MockConsoleTextEditor textEditor;
 		string prompt = ">>> ";
 		
 		[SetUp]
 		public void Init()
 		{
-			textEditor = new MockConsoleTextEditor();
-			rubyConsole = new RubyConsole(textEditor, null);
-			rubyConsole.Write(prompt, Style.Prompt);
+			base.CreateRubyConsole();
+			TestableRubyConsole.Write(prompt, Style.Prompt);
 			
-			textEditor.RaisePreviewKeyDownEvent(Key.A);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
-			rubyConsole.Write(prompt, Style.Prompt);
-			textEditor.RaisePreviewKeyDownEvent(Key.B);
-			textEditor.RaisePreviewKeyDownEvent(Key.C);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
-			rubyConsole.Write(prompt, Style.Prompt);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+			TestableRubyConsole.Write(prompt, Style.Prompt);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.B);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.C);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+			TestableRubyConsole.Write(prompt, Style.Prompt);
 		}
 
 		[Test]
 		public void UpArrowKeyPressed()
 		{
-			Assert.IsTrue(textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up));
+			Assert.IsTrue(MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up));
 		}
 		
 		[Test]
 		public void CurrentLineAfterUpArrowKeyPressed()
 		{
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
-			Assert.AreEqual("BC", rubyConsole.GetCurrentLine());
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			Assert.AreEqual("BC", TestableRubyConsole.GetCurrentLine());
 		}
 		
 		[Test]
 		public void TextEditorCursorIsAtEndOfLineAfterUpArrowKeyPressed()
 		{
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
-			Assert.AreEqual(prompt.Length + 2, textEditor.Column);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			Assert.AreEqual(prompt.Length + 2, MockConsoleTextEditor.Column);
 		}
 		
 		[Test]
 		public void TextAfterUpArrowKeyPressedTwiceThenDownArrowKey()
 		{
 			UpArrowKeyPressedTwiceThenDownArrowKey();
-			Assert.AreEqual("BC", rubyConsole.GetCurrentLine());
+			Assert.AreEqual("BC", TestableRubyConsole.GetCurrentLine());
 		}
 
 		[Test]
 		public void TextEditorCursorAfterUpArrowKeyPressedTwice()
 		{
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
-			Assert.AreEqual(prompt.Length + 1, textEditor.Column);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			Assert.AreEqual(prompt.Length + 1, MockConsoleTextEditor.Column);
 		}
 		
 		[Test]
 		public void DownArrowKeyHandled()
 		{
-			Assert.IsTrue(textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Down));
+			Assert.IsTrue(MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Down));
 		}
 		
 		void UpArrowKeyPressedTwiceThenDownArrowKey()
 		{
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Down);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Down);
 		}
 	}
 }

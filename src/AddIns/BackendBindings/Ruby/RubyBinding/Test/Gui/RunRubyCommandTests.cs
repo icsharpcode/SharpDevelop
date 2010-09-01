@@ -20,7 +20,7 @@ namespace RubyBinding.Tests.Gui
 	/// passing the filename of the Ruby script active in SharpDevelop.
 	/// </summary>
 	[TestFixture]
-	public class RunRubyCommandTestFixture
+	public class RunRubyCommandTests
 	{
 		MockDebugger debugger;
 		RunRubyCommand command;
@@ -28,15 +28,8 @@ namespace RubyBinding.Tests.Gui
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			// Create dummy view content with the Ruby script.
-			MockViewContent viewContent = new MockViewContent();
-			viewContent.PrimaryFileName = new FileName(@"C:\Projects\test.rb");
-			MockWorkbenchWindow workbenchWindow = new MockWorkbenchWindow();
-			workbenchWindow.ActiveViewContent = viewContent;
-			MockWorkbench workbench = new MockWorkbench();
-			workbench.ActiveWorkbenchWindow = workbenchWindow;
+			MockWorkbench workbench = MockWorkbench.CreateWorkbenchWithOneViewContent(@"C:\Projects\test.rb");
 
-			// Create the Ruby binding addin options.
 			Properties p = new Properties();
 			RubyAddInOptions options = new RubyAddInOptions(p);
 			options.RubyFileName = @"C:\IronRuby\ir.exe";

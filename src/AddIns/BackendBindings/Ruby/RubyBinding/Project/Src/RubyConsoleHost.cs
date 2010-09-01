@@ -25,6 +25,11 @@ namespace ICSharpCode.RubyBinding
 		public RubyConsoleHost(IConsoleTextEditor textEditor)
 		{
 			this.textEditor = textEditor;
+			rubyConsole = new RubyConsole(textEditor);
+		}
+		
+		public RubyConsole RubyConsole {
+			get { return rubyConsole; }
 		}
 		
 		/// <summary>
@@ -47,9 +52,6 @@ namespace ICSharpCode.RubyBinding
 			}			
 		}
 
-		/// <summary>
-		/// Runs the console.
-		/// </summary>
 		void RunConsole()
 		{
 			Run(new string[0]);
@@ -88,7 +90,7 @@ namespace ICSharpCode.RubyBinding
 		protected override IConsole CreateConsole(ScriptEngine engine, CommandLine commandLine, ConsoleOptions options)
 		{
 			SetOutput(new RubyOutputStream(textEditor));
-			rubyConsole = new RubyConsole(textEditor, commandLine);
+			rubyConsole.CommandLine = commandLine;
 			return rubyConsole;
 		}
 	}

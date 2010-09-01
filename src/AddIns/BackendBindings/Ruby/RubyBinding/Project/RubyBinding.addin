@@ -73,6 +73,10 @@
 					  class="ICSharpCode.SharpDevelop.Project.Commands.StopDebuggingCommand"
 					  label="${res:XML.MainMenu.DebugMenu.Stop}"/>
 				</Condition>
+				<MenuItem id="SendToRubyConsoleSeparator" type="Separator"/>
+				<MenuItem id="SendLineToRubyConsole"
+					class="ICSharpCode.RubyBinding.SendLineToRubyConsoleCommand"
+					label="${res:ICSharpCode.RubyBinding.SendLineToRubyConsole}"/>
 			</MenuItem>
 		</Condition>
 	</Path>
@@ -165,25 +169,35 @@
 		<Pad id="RubyConsole"
 			category="Tools"
 			title="Ruby Console"
-			insertafter="Bookmarks"
 			insertbefore="DefinitionView"
 			icon="PadIcons.Output"
-			defaultPosition = "Bottom, Hidden"
+			defaultPosition="Bottom, Hidden"
 			class="ICSharpCode.RubyBinding.RubyConsolePad"/>
 	</Path>
 	
 	<Path name = "/Workspace/Icons">
 		<Icon id="RubyFileIcon"
 			extensions=".rb"
-			resource="Ruby.ProjectBrowser.File" />
+			resource="Ruby.ProjectBrowser.File"/>
 		<Icon id="RubyProjectIcon"
 			language="Ruby"
-			resource="Ruby.ProjectBrowser.Project" />
+			resource="Ruby.ProjectBrowser.Project"/>
 	</Path>
 
 	<Path name="/SharpDevelop/UnitTesting/TestFrameworks">
 		<TestFramework id="rbunit"
 			class="ICSharpCode.RubyBinding.RubyTestFramework"
-			supportedProjects=".rbproj" />
+			supportedProjects=".rbproj"/>
 	</Path>
+	
+	<Path name="/SharpDevelop/ViewContent/TextEditor/ContextMenu">
+		<Condition name="ActiveContentExtension" activeextension=".rb">
+			<MenuItem id="SendToRubyConsoleSeparator"
+			    insertafter="Indent"
+				type="Separator"/>
+			<MenuItem id="SendLineToRubyConsole"
+				class="ICSharpCode.RubyBinding.SendLineToRubyConsoleCommand"
+				label="${res:ICSharpCode.RubyBinding.SendLineToRubyConsole}"/>
+		</Condition>
+  </Path>
 </AddIn>

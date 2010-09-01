@@ -16,26 +16,29 @@ using Microsoft.Scripting.Hosting.Shell;
 
 namespace ICSharpCode.RubyBinding
 {
-	public class RubyConsole : IConsole, IDisposable, IMemberProvider
+	public class RubyConsole : IConsole, IDisposable, IMemberProvider, IRubyConsole
 	{
+		IConsoleTextEditor textEditor;
 		int lineReceivedEventIndex = 0; // The index into the waitHandles array where the lineReceivedEvent is stored.
 		ManualResetEvent lineReceivedEvent = new ManualResetEvent(false);
 		ManualResetEvent disposedEvent = new ManualResetEvent(false);
 		WaitHandle[] waitHandles;
 		int promptLength;
-		IConsoleTextEditor textEditor;
-		List<string> previousLines = new List<string>();
+		bool firstPromptDisplayed;
+		string savedSendLineText;
 		CommandLineHistory commandLineHistory = new CommandLineHistory();
-		CommandLine commandLine;
 
-		public RubyConsole(IConsoleTextEditor textEditor, CommandLine commandLine)
+		protected List<string> unreadLines = new List<string>();
+		
+		public RubyConsole(IConsoleTextEditor textEditor)
 		{
 			waitHandles = new WaitHandle[] {lineReceivedEvent, disposedEvent};
 			
-			this.commandLine = commandLine;
 			this.textEditor = textEditor;
 			textEditor.PreviewKeyDown += ProcessPreviewKeyDown;
 		}
+		
+		public CommandLine CommandLine { get; set; }
 		
 		public void Dispose()
 		{
@@ -64,9 +67,8 @@ namespace ICSharpCode.RubyBinding
 		
 		public string ReadLine(int autoIndentSize)
 		{
-			string indent = String.Empty;
+			string indent = GetIndent(autoIndentSize);
 			if (autoIndentSize > 0) {
-				indent = String.Empty.PadLeft(autoIndentSize);
 				Write(indent, Style.Prompt);
 			}
 			
@@ -77,13 +79,28 @@ namespace ICSharpCode.RubyBinding
 			return null;
 		}
 		
+		string GetIndent(int autoIndentSize)
+		{
+			return String.Empty.PadLeft(autoIndentSize);
+		}
+		
 		public void Write(string text, Style style)
 		{
 			textEditor.Write(text);
 
 			if (style == Style.Prompt) {
+				WriteSavedLineTextAfterFirstPrompt(text);
 				promptLength = text.Length;
 				textEditor.MakeCurrentContentReadOnly();
+			}
+		}
+		
+		void WriteSavedLineTextAfterFirstPrompt(string promptText)
+		{
+			firstPromptDisplayed = true;
+			if (savedSendLineText != null) {
+				textEditor.Write(savedSendLineText + "\r\n");
+				savedSendLineText = null;
 			}
 		}
 		
@@ -105,19 +122,10 @@ namespace ICSharpCode.RubyBinding
 		/// </summary>
 		public bool IsLineAvailable {
 			get { 
-				lock (previousLines) {
-					return (previousLines.Count > 0);
+				lock (unreadLines) {
+					return (unreadLines.Count > 0);
 				}
 			}
-		}
-		
-		/// <summary>
-		/// Gets the lines that have not been returned by the ReadLine method. This does not
-		/// include the current line.
-		/// </summary>
-		public string[] GetUnreadLines()
-		{
-			return previousLines.ToArray();
 		}
 		
 		/// <summary>
@@ -125,12 +133,12 @@ namespace ICSharpCode.RubyBinding
 		/// </summary>
 		public IList<string> GetMemberNames(string name)
 		{
-			return commandLine.GetMemberNames(name);
+			return CommandLine.GetMemberNames(name);
 		}
 		
 		public IList<string> GetGlobals(string name)
 		{
-			return commandLine.GetGlobals(name);
+			return CommandLine.GetGlobals(name);
 		}
 		
 		/// <summary>
@@ -185,13 +193,13 @@ namespace ICSharpCode.RubyBinding
 		}
 		
 		string ReadLineFromTextEditor()
-		{			
+		{
 			int result = WaitHandle.WaitAny(waitHandles);
 			if (result == lineReceivedEventIndex) {
-				lock (previousLines) {
-					string line = previousLines[0];
-					previousLines.RemoveAt(0);
-					if (previousLines.Count == 0) {
+				lock (unreadLines) {
+					string line = unreadLines[0];
+					unreadLines.RemoveAt(0);
+					if (unreadLines.Count == 0) {
 						lineReceivedEvent.Reset();
 					}
 					return line;
@@ -205,18 +213,26 @@ namespace ICSharpCode.RubyBinding
 		/// </summary>
 		void OnEnterKeyPressed()
 		{
-			lock (previousLines) {
-				// Move cursor to the end of the line.
-				textEditor.Column = GetLastTextEditorLine().Length;
-
-				// Append line.
-				string currentLine = GetCurrentLine();
-				previousLines.Add(currentLine);
-				commandLineHistory.Add(currentLine);
+			lock (unreadLines) {
+				MoveCursorToEndOfLastTextEditorLine();
+				SaveLastTextEditorLine();
 				
 				lineReceivedEvent.Set();
 			}
-		}			
+		}	
+		
+		void MoveCursorToEndOfLastTextEditorLine()
+		{
+			textEditor.Line = textEditor.TotalLines - 1;
+			textEditor.Column = GetLastTextEditorLine().Length;
+		}
+		
+		void SaveLastTextEditorLine()
+		{
+			string currentLine = GetCurrentLine();
+			unreadLines.Add(currentLine);
+			commandLineHistory.Add(currentLine);
+		}		
 	
 		string GetLastTextEditorLine()
 		{
@@ -299,6 +315,35 @@ namespace ICSharpCode.RubyBinding
 		{
 			RubyConsoleCompletionDataProvider completionProvider = new RubyConsoleCompletionDataProvider(this);
 			textEditor.ShowCompletionWindow(completionProvider);
+		}
+		
+		public void SendLine(string text)
+		{
+			using (ILock linesLock = CreateLock(unreadLines)) {
+				unreadLines.Add(text);					
+			}
+			FireLineReceivedEvent();
+			MoveCursorToEndOfLastTextEditorLine();
+			WriteLineIfFirstPromptHasBeenDisplayed(text);
+		}
+		
+		protected virtual ILock CreateLock(List<string> lines)
+		{
+			return new StringListLock(lines);
+		}
+		
+		protected virtual void FireLineReceivedEvent()
+		{
+			lineReceivedEvent.Set();
+		}
+		
+		void WriteLineIfFirstPromptHasBeenDisplayed(string text)
+		{
+			if (firstPromptDisplayed) {
+				WriteLine(text, Style.Out);
+			} else {
+				savedSendLineText = text;
+			}
 		}
 	}
 }
