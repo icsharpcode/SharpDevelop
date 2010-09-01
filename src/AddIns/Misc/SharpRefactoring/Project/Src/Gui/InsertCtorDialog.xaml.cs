@@ -104,10 +104,8 @@ namespace SharpRefactoring.Gui
 				block.AddChild(new ExpressionStatement(new AssignmentExpression(new MemberReferenceExpression(new ThisReferenceExpression(), w.MemberName), AssignmentOperatorType.Assign, new IdentifierExpression(w.ParameterName))));
 			
 			AnchorElement parameterList = context.ActiveElements
-				.FirstOrDefault(
-					item => item is AnchorElement &&
-					(item as AnchorElement).Name.Equals("parameterList", StringComparison.OrdinalIgnoreCase)
-				) as AnchorElement;
+				.OfType<AnchorElement>()
+				.FirstOrDefault(item => item.Name.Equals("parameterList", StringComparison.OrdinalIgnoreCase));
 			
 			if (parameterList != null) {
 				StringBuilder pList = new StringBuilder();
