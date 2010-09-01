@@ -58,7 +58,7 @@ namespace SharpRefactoring.Gui
 		{
 			var line = editor.Document.GetLineForOffset(editor.Caret.Offset);
 			
-			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset);
+			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset) + "\t";
 			
 			var filtered = paramList.Where(p => p.IsSelected).OrderBy(p => p.Index).ToList();
 			
@@ -103,11 +103,11 @@ namespace SharpRefactoring.Gui
 			foreach (CtorParamWrapper w in filtered)
 				block.AddChild(new ExpressionStatement(new AssignmentExpression(new MemberReferenceExpression(new ThisReferenceExpression(), w.MemberName), AssignmentOperatorType.Assign, new IdentifierExpression(w.ParameterName))));
 			
-			AnchorSnippetElement parameterList = context.ActiveElements
+			AnchorElement parameterList = context.ActiveElements
 				.FirstOrDefault(
-					item => item is AnchorSnippetElement &&
-					(item as AnchorSnippetElement).Name.Equals("parameterList", StringComparison.OrdinalIgnoreCase)
-				) as AnchorSnippetElement;
+					item => item is AnchorElement &&
+					(item as AnchorElement).Name.Equals("parameterList", StringComparison.OrdinalIgnoreCase)
+				) as AnchorElement;
 			
 			if (parameterList != null) {
 				StringBuilder pList = new StringBuilder();
@@ -122,13 +122,13 @@ namespace SharpRefactoring.Gui
 					pList.Append(language.CodeGenerator.GenerateCode(parameters[i], ""));
 				}
 				
-//				parameterList.Text = pList.ToString();
+				parameterList.Text = pList.ToString();
 			}
 			
 			StringBuilder builder = new StringBuilder();
 			
 			foreach (var element in block.Children.OfType<AbstractNode>()) {
-				builder.Append(language.CodeGenerator.GenerateCode(element, ""));
+				builder.Append(language.CodeGenerator.GenerateCode(element, indent));
 			}
 			
 			return builder.ToString().Trim();

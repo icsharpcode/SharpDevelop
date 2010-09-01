@@ -57,7 +57,10 @@ namespace SharpRefactoring.Gui
 				LanguageProperties language = parseInfo.CompilationUnit.Language;
 				IClass current = parseInfo.CompilationUnit.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
 				
-				editor.Document.Insert(anchor.Offset, GenerateCode(language, current) ?? "");
+				// Generate code could modify the document.
+				// So read anchor.Offset after code generation.
+				string code = GenerateCode(language, current) ?? "";
+				editor.Document.Insert(anchor.Offset, code);
 			}
 			
 			Deactivate();
@@ -95,17 +98,26 @@ namespace SharpRefactoring.Gui
 		{
 		}
 		
-		void IActiveElement.Deactivate()
+		void IActiveElement.Deactivate(SnippetEventArgs e)
 		{
+			if (e.Reason == DeactivateReason.ReturnPressed)
+				OKButtonClick(null, null);
+			
 			Deactivate();
 		}
+		
+		bool deactivated;
 
 		void Deactivate()
 		{
 			if (Element == null)
 				throw new InvalidOperationException("no IInlineUIElement set!");
-
+			if (deactivated)
+				return;
+			
+			deactivated = true;
 			Element.Remove();
+			context.Deactivate(null);
 		}
 	}
 }

@@ -24,7 +24,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		/// <summary>
 		/// Called when the interactive mode is deactivated.
 		/// </summary>
-		void Deactivate();
+		void Deactivate(SnippetEventArgs e);
 		
 		/// <summary>
 		/// Gets whether this element is editable (the user will be able to select it with Tab).

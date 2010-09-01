@@ -100,7 +100,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 			this.Text = GetText();
 		}
 
-		public void Deactivate()
+		public void Deactivate(SnippetEventArgs e)
 		{
 			TextDocumentWeakEventManager.TextChanged.RemoveListener(context.Document, this);
 			context.TextArea.TextView.BackgroundRenderers.Remove(background);

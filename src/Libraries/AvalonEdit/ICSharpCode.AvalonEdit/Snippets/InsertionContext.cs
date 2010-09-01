@@ -237,7 +237,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 			currentStatus = Status.RaisingDeactivated;
 			TextArea.PopStackedInputHandler(myInputHandler);
 			foreach (IActiveElement element in registeredElements) {
-				element.Deactivate();
+				element.Deactivate(e);
 			}
 			if (Deactivated != null)
 				Deactivated(this, e);

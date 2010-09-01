@@ -103,7 +103,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 			}
 		}
 		
-		public void Deactivate()
+		public void Deactivate(SnippetEventArgs e)
 		{
 		}
 		

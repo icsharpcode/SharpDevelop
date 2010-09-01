@@ -24,14 +24,12 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		public override void Insert(InsertionContext context)
 		{
 			int start = context.InsertionPosition;
-			context.InsertText("");
-			int end = context.InsertionPosition;
-			AnchorSegment segment = new AnchorSegment(context.Document, start, end - start);
-			context.RegisterActiveElement(this, new AnchorSnippetElement(segment, "", Name, context));
+			AnchorSegment segment = new AnchorSegment(context.Document, start, 0);
+			context.RegisterActiveElement(this, new AnchorElement(segment, "", Name, context));
 		}
 	}
 	
-	public sealed class AnchorSnippetElement : IActiveElement
+	public sealed class AnchorElement : IActiveElement
 	{
 		public bool IsEditable {
 			get { return false; }
@@ -44,7 +42,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 			get { return segment; }
 		}
 		
-		public AnchorSnippetElement(AnchorSegment segment, string text, string name, InsertionContext context)
+		public AnchorElement(AnchorSegment segment, string text, string name, InsertionContext context)
 		{
 			this.segment = segment;
 			this.context = context;
@@ -71,7 +69,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		{
 		}
 		
-		public void Deactivate()
+		public void Deactivate(SnippetEventArgs e)
 		{
 		}
 	}
