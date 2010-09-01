@@ -4065,6 +4065,9 @@ Please configure the NAnt executable's location in the SharpDevelop Options.</va
   <data name="ICSharpCode.PythonBinding.PythonProjectFiles" xml:space="preserve">
     <value>Python Project Files</value>
   </data>
+  <data name="ICSharpCode.PythonBinding.SendLineToPythonConsole" xml:space="preserve">
+    <value>Send Line to Python Console</value>
+  </data>
   <data name="ICSharpCode.PythonBinding.UnknownTypeName" xml:space="preserve">
     <value>Could not find type '{0}'. Are you missing an assembly reference?</value>
   </data>

@@ -13,11 +13,10 @@ namespace PythonBinding.Tests.Utils
 {
 	public class MockTextEditor : ITextEditor
 	{
-		ITextEditorOptions options;
+		public MockTextEditorOptions MockTextEditorOptions = new MockTextEditorOptions();
 		
-		public MockTextEditor()
-		{
-		}
+		public FakeDocument FakeDocument = new FakeDocument();
+		public FakeCaret FakeCaret = new FakeCaret();
 		
 		public event EventHandler SelectionChanged;
 		
@@ -44,20 +43,15 @@ namespace PythonBinding.Tests.Utils
 		}
 		
 		public IDocument Document {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return FakeDocument; }
 		}
 		
 		public ITextEditorCaret Caret {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return FakeCaret; }
 		}
 		
 		public ITextEditorOptions Options {
-			get { return options; }
-			set { options = value; }
+			get { return MockTextEditorOptions; }
 		}
 		
 		public ICSharpCode.SharpDevelop.ILanguageBinding Language {

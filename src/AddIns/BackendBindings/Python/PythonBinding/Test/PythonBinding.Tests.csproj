@@ -100,10 +100,11 @@
     <Compile Include="Completion\PythonImportExpressionContextTestFixture.cs" />
     <Compile Include="Completion\PythonSocketLibraryDocumentationTestFixture.cs" />
     <Compile Include="Completion\SysModuleMembersInPythonContextTestFixture.cs" />
-    <Compile Include="Configuration\AddInFileTestFixture.cs" />
     <Compile Include="Configuration\AddInOptionsTestFixture.cs" />
     <Compile Include="Console\BuiltinCodeCompletionTestFixture.cs" />
-    <Compile Include="Console\ConsoleTextEditorThreadSafetyTestFixture.cs" />
+    <Compile Include="Console\PythonConsoleSendLineTests.cs" />
+    <Compile Include="Console\PythonConsoleTestsBase.cs" />
+    <Compile Include="Console\ThreadSafePythonConsoleTextEditorTests.cs" />
     <Compile Include="Console\InsertConsoleCompletionDataTestFixture.cs" />
     <Compile Include="Console\KeysPressedWhenCompletionWindowOpenTestFixture.cs" />
     <Compile Include="Console\CommandLineHistoryTestFixture.cs" />
@@ -123,7 +124,7 @@
     <Compile Include="Console\PythonConsoleUnreadLinesTestFixture.cs" />
     <Compile Include="Console\PythonConsoleWriteTestFixture.cs" />
     <Compile Include="Console\PythonOutputStreamTestFixture.cs" />
-    <Compile Include="Console\ConsoleTextEditorTestFixture.cs" />
+    <Compile Include="Console\PythonConsoleTextEditorTests.cs" />
     <Compile Include="Console\TwoPythonConsoleLinesWaitingTestFixture.cs" />
     <Compile Include="Converter\AddHandlerConversionTestFixture.cs" />
     <Compile Include="Converter\ArrayCastConversionTestFixture.cs" />
@@ -346,7 +347,8 @@
     <Compile Include="Gui\FormsDesignerDisplayBindingTestFixture.cs" />
     <Compile Include="Gui\PythonIndentationTests.cs" />
     <Compile Include="Gui\PythonOptionsPanelTestFixture.cs" />
-    <Compile Include="Gui\RunPythonCommandTestFixture.cs" />
+    <Compile Include="Gui\RunPythonCommandTests.cs" />
+    <Compile Include="Gui\SendLineToPythonConsoleCommandTests.cs" />
     <Compile Include="Parsing\ClassWithBaseClassTestFixture.cs" />
     <Compile Include="Parsing\InvalidCastInPythonParserTestFixture.cs" />
     <Compile Include="Parsing\MethodWithParametersTestFixture.cs" />
@@ -455,6 +457,10 @@
     <Compile Include="Utils\DerivedToolStripMenuItem.cs" />
     <Compile Include="Utils\DoublePropertyUserControl.cs" />
     <Compile Include="Utils\DummySynchronizeInvoke.cs" />
+    <Compile Include="Utils\FakeCaret.cs" />
+    <Compile Include="Utils\FakeDocument.cs" />
+    <Compile Include="Utils\FakeDocumentLine.cs" />
+    <Compile Include="Utils\FakeLock.cs" />
     <Compile Include="Utils\FooItemCollection.cs" />
     <Compile Include="Utils\MockComponentCreator.cs" />
     <Compile Include="Utils\MockConsoleTextEditor.cs" />
@@ -468,10 +474,11 @@
     <Compile Include="Utils\MockEventDescriptor.cs" />
     <Compile Include="Utils\MockExtenderProviderService.cs" />
     <Compile Include="Utils\MockOpenedFile.cs" />
-    <Compile Include="Utils\MockPadDescriptor.cs" />
     <Compile Include="Utils\MockProject.cs" />
     <Compile Include="Utils\MockProjectContent.cs" />
     <Compile Include="Utils\MockPropertyDescriptor.cs" />
+    <Compile Include="Utils\MockPythonConsole.cs" />
+    <Compile Include="Utils\MockPythonConsolePad.cs" />
     <Compile Include="Utils\MockPythonFileService.cs" />
     <Compile Include="Utils\MockResourceReader.cs" />
     <Compile Include="Utils\MockResourceService.cs" />
@@ -482,14 +489,11 @@
     <Compile Include="Utils\MockTypeResolutionService.cs" />
     <Compile Include="Utils\MockViewContent.cs" />
     <Compile Include="Utils\MockWorkbench.cs" />
-    <Compile Include="Utils\MockWorkbenchWindow.cs" />
     <Compile Include="Utils\MSBuildEngineHelper.cs" />
+    <Compile Include="Utils\TestablePythonConsole.cs" />
     <Compile Include="Utils\Tests\AddInPathHelperTestFixture.cs" />
     <EmbeddedResource Include="..\Project\PythonBinding.addin">
       <Link>PythonBinding.addin</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\Project\Templates\Empty.xft">
-      <Link>Empty.xft</Link>
     </EmbeddedResource>
     <None Include="app.config" />
     <Compile Include="Parsing\AddInvalidSourceSpanToErrorSinkTestFixture.cs" />

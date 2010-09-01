@@ -16,21 +16,21 @@ namespace PythonBinding.Tests.Console
 	/// Tests the disposing of the PythonConsole.
 	/// </summary>
 	[TestFixture]
-	public class DisposedPythonConsoleTestFixture
+	public class DisposedPythonConsoleTestFixture : PythonConsoleTestsBase
 	{
 		[Test]
 		public void PythonConsoleImplementsIDisposable()
 		{
-			PythonConsole console = new PythonConsole(new MockConsoleTextEditor(), null);
-			Assert.IsNotNull(console as IDisposable);
+			base.CreatePythonConsole();
+			Assert.IsNotNull(TestablePythonConsole as IDisposable);
 		}
 		
 		[Test]
 		public void ReadLineReturnsNullWhenConsoleDisposed()
 		{
-			PythonConsole console = new PythonConsole(new MockConsoleTextEditor(), null);
-			console.Dispose();
-			Assert.IsNull(console.ReadLine(0));
+			base.CreatePythonConsole();
+			TestablePythonConsole.Dispose();
+			Assert.IsNull(TestablePythonConsole.ReadLine(0));
 		}
 	}
 }

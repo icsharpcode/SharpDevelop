@@ -24,15 +24,8 @@ namespace PythonBinding.Tests.Gui
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			// Create dummy view content with the Python script.
-			MockViewContent viewContent = new MockViewContent();
-			viewContent.PrimaryFileName =  new FileName(@"C:\Projects\test.py");
-			MockWorkbenchWindow workbenchWindow = new MockWorkbenchWindow();
-			workbenchWindow.ActiveViewContent = viewContent;
-			MockWorkbench workbench = new MockWorkbench();
-			workbench.ActiveWorkbenchWindow = workbenchWindow;
+			MockWorkbench workbench = MockWorkbench.CreateWorkbenchWithOneViewContent(@"C:\Projects\test.py");
 
-			// Create the Python binding addin options.
 			Properties p = new Properties();
 			PythonAddInOptions options = new PythonAddInOptions(p);
 			options.PythonFileName = @"C:\IronPython\ipy.exe";
@@ -43,21 +36,26 @@ namespace PythonBinding.Tests.Gui
 		}
 				
 		[Test]
-		public void DebuggerStartMethodCalled()
+		public void Run_PythonFileOpen_DebuggerStartMethodCalled()
 		{
-			Assert.IsTrue(debugger.StartMethodCalled);
+			bool result = debugger.StartMethodCalled;
+			Assert.IsTrue(result);
 		}
 		
 		[Test]
-		public void ProcessInfoFileName()
+		public void Run_PythonFileOpen_IronPythonConsoleFileNamePassedToDebugger()
 		{
-			Assert.AreEqual(@"C:\IronPython\ipy.exe", debugger.ProcessStartInfo.FileName);
+			string fileName = debugger.ProcessStartInfo.FileName;
+			string expectedFileName = @"C:\IronPython\ipy.exe";
+			Assert.AreEqual(expectedFileName, fileName);
 		}
 		
 		[Test]
-		public void ProcessInfoArgs()
+		public void Run_PythonFileOpen_DebugOptionsPassedToIronPythonConsole()
 		{
-			Assert.AreEqual("-X:Debug \"C:\\Projects\\test.py\"", debugger.ProcessStartInfo.Arguments);
+			string args = debugger.ProcessStartInfo.Arguments;
+			string expectedArgs = "-X:Debug \"C:\\Projects\\test.py\"";
+			Assert.AreEqual(expectedArgs, args);
 		}
 	}
 }

@@ -23,40 +23,37 @@ namespace PythonBinding.Tests.Console
 	/// Tests the PythonConsole's GetUnreadLines method.
 	/// </summary>
 	[TestFixture]
-	public class PythonConsoleUnreadLinesTestFixture
+	public class PythonConsoleUnreadLinesTestFixture : PythonConsoleTestsBase
 	{
-		PythonConsole pythonConsole;
-		MockConsoleTextEditor textEditor;
-		
 		[SetUp]
 		public void Init()
 		{
-			textEditor = new MockConsoleTextEditor();
-			pythonConsole = new PythonConsole(textEditor, null);
+			base.CreatePythonConsole();
 		}
 		
 		[Test]
 		public void NoUnreadLinesAtStart()
 		{
-			Assert.AreEqual(0, pythonConsole.GetUnreadLines().Length);
+			Assert.AreEqual(0, TestablePythonConsole.GetUnreadLines().Length);
 		}
 	
 		[Test]
 		public void HasUnreadLines()
 		{
-			Assert.IsFalse(pythonConsole.IsLineAvailable);
+			Assert.IsFalse(TestablePythonConsole.IsLineAvailable);
 		}
 		
 		[Test]
 		public void AddOneLine()
 		{
-			textEditor.RaisePreviewKeyDownEvent(System.Windows.Input.Key.A);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(System.Windows.Input.Key.Enter);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(System.Windows.Input.Key.A);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(System.Windows.Input.Key.Enter);
 			
+			string[] lines = TestablePythonConsole.GetUnreadLines();
 			string[] expectedLines = new string[] {"A"};
 			
-			Assert.AreEqual(expectedLines, pythonConsole.GetUnreadLines());
-			Assert.IsTrue(pythonConsole.IsLineAvailable);
+			Assert.AreEqual(expectedLines, lines);
+			Assert.IsTrue(TestablePythonConsole.IsLineAvailable);
 		}
 	}
 }

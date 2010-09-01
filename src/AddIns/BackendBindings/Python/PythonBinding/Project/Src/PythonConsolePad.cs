@@ -11,23 +11,31 @@ using AvalonEdit = ICSharpCode.AvalonEdit;
 
 namespace ICSharpCode.PythonBinding
 {
-	public class PythonConsolePad : AbstractPadContent
+	public class PythonConsolePad : AbstractPadContent, IPythonConsolePad
 	{
-		PythonConsoleTextEditor consoleTextEditor;
+		ThreadSafePythonConsoleTextEditor consoleTextEditor;
 		AvalonEdit.TextEditor textEditor;
 		PythonConsoleHost host;
 		
 		public PythonConsolePad()
 		{
 			textEditor = new AvalonEdit.TextEditor();
-			consoleTextEditor = new PythonConsoleTextEditor(textEditor);
+			consoleTextEditor = new ThreadSafePythonConsoleTextEditor(textEditor);
 			host = new PythonConsoleHost(consoleTextEditor);
-			host.Run();		
+			host.Run();	
+		}
+		
+		public IConsoleTextEditor ConsoleTextEditor {
+			get { return consoleTextEditor; }
+		}
+		
+		public IPythonConsole PythonConsole {
+			get { return host.PythonConsole; }
 		}
 		
 		public override object Control {
 			get { return textEditor; }
-		}		
+		}
 		
 		public override void Dispose()
 		{

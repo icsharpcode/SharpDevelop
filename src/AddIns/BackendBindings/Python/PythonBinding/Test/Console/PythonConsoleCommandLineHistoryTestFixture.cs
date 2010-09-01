@@ -21,74 +21,71 @@ namespace PythonBinding.Tests.Console
 	/// Tests the PythonConsole's command line history.
 	/// </summary>
 	[TestFixture]
-	public class PythonConsoleCommandLineHistoryTestFixture
+	public class PythonConsoleCommandLineHistoryTestFixture : PythonConsoleTestsBase
 	{
-		PythonConsole pythonConsole;
-		MockConsoleTextEditor textEditor;
 		string prompt = ">>> ";
 		
 		[SetUp]
 		public void Init()
 		{
-			textEditor = new MockConsoleTextEditor();
-			pythonConsole = new PythonConsole(textEditor, null);
-			pythonConsole.Write(prompt, Style.Prompt);
+			base.CreatePythonConsole();
+			TestablePythonConsole.Write(prompt, Style.Prompt);
 			
-			textEditor.RaisePreviewKeyDownEvent(Key.A);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
-			pythonConsole.Write(prompt, Style.Prompt);
-			textEditor.RaisePreviewKeyDownEvent(Key.B);
-			textEditor.RaisePreviewKeyDownEvent(Key.C);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
-			pythonConsole.Write(prompt, Style.Prompt);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+			TestablePythonConsole.Write(prompt, Style.Prompt);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.B);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.C);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+			TestablePythonConsole.Write(prompt, Style.Prompt);
 		}
 
 		[Test]
 		public void UpArrowKeyPressed()
 		{
-			Assert.IsTrue(textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up));
+			Assert.IsTrue(MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up));
 		}
 		
 		[Test]
 		public void CurrentLineAfterUpArrowKeyPressed()
 		{
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
-			Assert.AreEqual("BC", pythonConsole.GetCurrentLine());
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			Assert.AreEqual("BC", TestablePythonConsole.GetCurrentLine());
 		}
 		
 		[Test]
 		public void TextEditorCursorIsAtEndOfLineAfterUpArrowKeyPressed()
 		{
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
-			Assert.AreEqual(prompt.Length + 2, textEditor.Column);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			Assert.AreEqual(prompt.Length + 2, MockConsoleTextEditor.Column);
 		}
 		
 		[Test]
 		public void TextAfterUpArrowKeyPressedTwiceThenDownArrowKey()
 		{
 			UpArrowKeyPressedTwiceThenDownArrowKey();
-			Assert.AreEqual("BC", pythonConsole.GetCurrentLine());
+			Assert.AreEqual("BC", TestablePythonConsole.GetCurrentLine());
 		}
 
 		[Test]
 		public void TextEditorCursorAfterUpArrowKeyPressedTwice()
 		{
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
-			Assert.AreEqual(prompt.Length + 1, textEditor.Column);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			Assert.AreEqual(prompt.Length + 1, MockConsoleTextEditor.Column);
 		}
 		
 		[Test]
 		public void DownArrowKeyHandled()
 		{
-			Assert.IsTrue(textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Down));
+			Assert.IsTrue(MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Down));
 		}
 		
 		void UpArrowKeyPressedTwiceThenDownArrowKey()
 		{
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Down);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Down);
 		}
 	}
 }

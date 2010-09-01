@@ -29,7 +29,7 @@ namespace PythonBinding.Tests.Console
 	{
 		string line1;
 		string line2;
-		PythonConsole pythonConsole;
+		TestablePythonConsole pythonConsole;
 		bool lineAvailableBeforeFirstEnterKey;
 		bool lineAvailableAfterFirstEnterKey;
 		bool lineAvailableAtEnd;
@@ -37,9 +37,8 @@ namespace PythonBinding.Tests.Console
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MockConsoleTextEditor textEditor = new MockConsoleTextEditor();
-			using (pythonConsole = new PythonConsole(textEditor, null)) {
- 
+			using (pythonConsole = new TestablePythonConsole()) { 
+				MockConsoleTextEditor textEditor = pythonConsole.MockConsoleTextEditor;
 				textEditor.RaisePreviewKeyDownEvent(Input.Key.A);
 				textEditor.RaisePreviewKeyDownEvent(Input.Key.B);
 				textEditor.RaisePreviewKeyDownEvent(Input.Key.C);

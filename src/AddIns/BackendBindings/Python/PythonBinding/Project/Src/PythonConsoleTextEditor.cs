@@ -19,23 +19,14 @@ namespace ICSharpCode.PythonBinding
 {
 	public class PythonConsoleTextEditor : IConsoleTextEditor
 	{
-		delegate string GetLineInvoker(int index);
-
 		TextEditor textEditor;
 		Color customLineColour = Color.LightGray;
 		BeginReadOnlySectionProvider readOnlyRegion;
-		IControlDispatcher dispatcher;
 		CompletionWindow completionWindow;
 		
 		public PythonConsoleTextEditor(TextEditor textEditor)
-			: this(textEditor, new ControlDispatcher(textEditor))
-		{
-		}
-		
-		public PythonConsoleTextEditor(TextEditor textEditor, IControlDispatcher dispatcher)
 		{
 			this.textEditor = textEditor;
-			this.dispatcher = dispatcher;
 			readOnlyRegion = new BeginReadOnlySectionProvider();
 			textEditor.TextArea.ReadOnlySectionProvider = readOnlyRegion;
 			textEditor.PreviewKeyDown += OnTextEditorPreviewKeyDown;
@@ -50,20 +41,20 @@ namespace ICSharpCode.PythonBinding
 		
 		public event ConsoleTextEditorKeyEventHandler PreviewKeyDown;
 		
+		public void Dispose()
+		{
+			textEditor.PreviewKeyDown -= OnTextEditorPreviewKeyDown;
+		}
+		
 		public Color CustomLineColour {
 			get { return customLineColour; }
 		}
 		
 		public void Write(string text)
 		{
-			if (dispatcher.CheckAccess()) {
-				TextLocation location = GetCurrentCursorLocation();
-				int offset = textEditor.Document.GetOffset(location);
-				textEditor.Document.Insert(offset, text);
-			} else {
-				Action<string> action = Write;
-				dispatcher.Invoke(action, new object[] {text});
-			}
+			TextLocation location = GetCurrentCursorLocation();
+			int offset = textEditor.Document.GetOffset(location);
+			textEditor.Document.Insert(offset, text);
 		}
 		
 		TextLocation GetCurrentCursorLocation()
@@ -84,11 +75,9 @@ namespace ICSharpCode.PythonBinding
 			get { return textEditor.SelectionLength; }
 		}
 
-		/// <summary>
-		/// Gets the current cursor line.
-		/// </summary>
 		public int Line {
 			get { return textEditor.TextArea.Caret.Line - 1; }
+			set { textEditor.TextArea.Caret.Line = value + 1; }
 		}
 
 		/// <summary>
@@ -103,13 +92,8 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public string GetLine(int index)
 		{
-			if (dispatcher.CheckAccess()) {
-				DocumentLine line = textEditor.Document.GetLineByNumber(index + 1);
-				return textEditor.Document.GetText(line);
-			} else {
-				GetLineInvoker invoker = new GetLineInvoker(GetLine);
-				return (string)dispatcher.Invoke(invoker, new object[] {index});
-			}
+			DocumentLine line = textEditor.Document.GetLineByNumber(index + 1);
+			return textEditor.Document.GetText(line);
 		}
 		
 		/// <summary>
@@ -117,27 +101,17 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public void Replace(int index, int length, string text)
 		{
-			if (dispatcher.CheckAccess()) {
-				DocumentLine line = textEditor.Document.GetLineByNumber(textEditor.TextArea.Caret.Line);
-				int offset = line.Offset + index;
-				textEditor.Document.Replace(offset, length, text);
-			} else {
-				Action<int, int, string> action = Replace;
-				dispatcher.Invoke(action, new object[] {index, length, text});
-			}
+			DocumentLine line = textEditor.Document.GetLineByNumber(textEditor.TextArea.Caret.Line);
+			int offset = line.Offset + index;
+			textEditor.Document.Replace(offset, length, text);
 		}
-	
+				
 		/// <summary>
 		/// Makes the current text read only. Text can still be entered at the end.
 		/// </summary>
 		public void MakeCurrentContentReadOnly()
 		{
-			if (dispatcher.CheckAccess()) {
-				readOnlyRegion.EndOffset = textEditor.Document.TextLength;
-			} else {
-				Action action = MakeCurrentContentReadOnly;
-				dispatcher.Invoke(action);
-			}
+			readOnlyRegion.EndOffset = textEditor.Document.TextLength;
 		}
 		
 		public void ShowCompletionWindow(PythonConsoleCompletionDataProvider completionDataProvider)
@@ -157,8 +131,6 @@ namespace ICSharpCode.PythonBinding
 			}
 			completionWindow.ExpectInsertionBeforeStart = true;
 			completionWindow.Show();
-			Action<CompletionWindow> action = ShowCompletionWindow;
-			completionWindow.Dispatcher.BeginInvoke(DispatcherPriority.Normal, action, completionWindow);
 		}
 		
 		void ShowCompletionWindow(CompletionWindow window)

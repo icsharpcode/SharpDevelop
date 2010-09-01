@@ -19,22 +19,19 @@ namespace PythonBinding.Tests.Console
 	/// Tests the PythonConsole ReadLine method.
 	/// </summary>
 	[TestFixture]
-	public class PythonConsoleReadTestFixture
+	public class PythonConsoleReadTestFixture : PythonConsoleTestsBase
 	{
-		PythonConsole pythonConsole;
 		int initialAutoIndentSize = 4;
 		string readLine;
 		int autoIndentSize;
-		MockConsoleTextEditor mockTextEditor;
 		bool raiseKeyPressEvent;
 		bool raiseDialogKeyPressEvent;
 		
 		[TestFixtureSetUp]
 		public void Init()
 		{
-			mockTextEditor = new MockConsoleTextEditor();
-			pythonConsole = new PythonConsole(mockTextEditor, null);
-
+			base.CreatePythonConsole();
+			
 			autoIndentSize = initialAutoIndentSize;
 			Thread thread = new Thread(ReadLineFromConsoleOnDifferentThread);
 			thread.Start();
@@ -42,16 +39,16 @@ namespace PythonBinding.Tests.Console
 			int sleepInterval = 10;
 			int maxWait = 2000;
 			int currentWait = 0;
-			while ((mockTextEditor.Text.Length < autoIndentSize) && (currentWait < maxWait)) {
+			while ((MockConsoleTextEditor.Text.Length < autoIndentSize) && (currentWait < maxWait)) {
 				Thread.Sleep(sleepInterval);
 				currentWait += sleepInterval;
 			}
 			
-			raiseKeyPressEvent = mockTextEditor.RaisePreviewKeyDownEvent(Key.A);
-			raiseDialogKeyPressEvent = mockTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+			raiseKeyPressEvent = MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			raiseDialogKeyPressEvent = MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
 			
 			currentWait = 0;
-			while ((mockTextEditor.Text.Length < autoIndentSize + 2) && (currentWait < maxWait)) {
+			while ((MockConsoleTextEditor.Text.Length < autoIndentSize + 2) && (currentWait < maxWait)) {
 				Thread.Sleep(10);
 				currentWait += sleepInterval;				
 			}
@@ -61,7 +58,7 @@ namespace PythonBinding.Tests.Console
 		[TestFixtureTearDown]
 		public void TearDown()
 		{
-			pythonConsole.Dispose();
+			TestablePythonConsole.Dispose();
 		}
 
 		[Test]
@@ -75,30 +72,30 @@ namespace PythonBinding.Tests.Console
 		public void ReadLineWithNonZeroAutoIndentSizeWritesSpacesToTextEditor()
 		{
 			string expectedString = String.Empty.PadLeft(initialAutoIndentSize) + "A\r\n";
-			Assert.AreEqual(expectedString, mockTextEditor.Text);
+			Assert.AreEqual(expectedString, MockConsoleTextEditor.Text);
 		}
 		
 		[Test]
 		public void DocumentInsertCalledWhenAutoIndentIsNonZero()
 		{
-			Assert.IsTrue(mockTextEditor.IsWriteCalled);
+			Assert.IsTrue(MockConsoleTextEditor.IsWriteCalled);
 		}
 		
 		[Test]
 		public void NoTextWrittenWhenAutoIndentSizeIsZero()
 		{
-			MockConsoleTextEditor textEditor = new MockConsoleTextEditor();
-			PythonConsole console = new PythonConsole(textEditor, null);
+			TestablePythonConsole pythonConsole = new TestablePythonConsole();
+			MockConsoleTextEditor textEditor = pythonConsole.MockConsoleTextEditor;
 			textEditor.RaisePreviewKeyDownEvent(Key.A);
 			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
 			
 			textEditor.IsWriteCalled = false;
-			console.ReadLine(0);
+			pythonConsole.ReadLine(0);
 			Assert.IsFalse(textEditor.IsWriteCalled);
 		}
 		
 		/// <summary>
-		/// Should return false for any character that should be handled by the text editor itself.s
+		/// Should return false for any character that should be handled by the text editor itself.
 		/// </summary>
 		[Test]
 		public void RaiseKeyPressEventReturnedFalse()
@@ -107,7 +104,7 @@ namespace PythonBinding.Tests.Console
 		}
 		
 		/// <summary>
-		/// Should return false for any character that should be handled by the text editor itself.s
+		/// Should return false for any character that should be handled by the text editor itself.
 		/// </summary>
 		[Test]
 		public void RaiseDialogKeyPressEventReturnedFalse()
@@ -118,7 +115,7 @@ namespace PythonBinding.Tests.Console
 		void ReadLineFromConsoleOnDifferentThread()
 		{
 			System.Console.WriteLine("Reading on different thread");
-			readLine = pythonConsole.ReadLine(autoIndentSize);
+			readLine = TestablePythonConsole.ReadLine(autoIndentSize);
 			System.Console.WriteLine("Finished reading on different thread");
 		}
 	}

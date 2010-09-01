@@ -16,7 +16,7 @@ namespace ICSharpCode.PythonBinding
 	/// all the methods will be called on another thread not the main UI thread and will therefore need to
 	/// be invoked.
 	/// </summary>
-	public interface IConsoleTextEditor
+	public interface IConsoleTextEditor : IDisposable
 	{
 		/// <summary>
 		/// Fired when a key is pressed but before any text has been added to the text editor.
@@ -55,7 +55,7 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Gets the current line the cursor is on. This is zero based.
 		/// </summary>
-		int Line {get;}
+		int Line {get; set;}
 		
 		/// <summary>
 		/// Gets the total number of lines in the text editor.

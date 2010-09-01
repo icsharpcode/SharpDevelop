@@ -231,6 +231,9 @@
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Klassendiagram weergeven</value>
   </data>
+  <data name="AddIns.Git.TortoiseGitRequired" xml:space="preserve">
+    <value>Om deze actie uit te voeren dient TortoiseGit geïnstalleerd te zijn.</value>
+  </data>
   <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
     <value>Inhoud</value>
   </data>

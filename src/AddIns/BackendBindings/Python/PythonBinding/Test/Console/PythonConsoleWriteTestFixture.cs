@@ -18,45 +18,41 @@ namespace PythonBinding.Tests.Console
 	/// Tests that the PythonConsole Write method correctly update the text editor.
 	/// </summary>
 	[TestFixture]
-	public class PythonConsoleWriteTestFixture
+	public class PythonConsoleWriteTestFixture : PythonConsoleTestsBase
 	{
-		PythonConsole pythonConsole;
-		MockConsoleTextEditor mockTextEditor;
-		
 		[SetUp]
 		public void Init()
 		{
-			mockTextEditor = new MockConsoleTextEditor();
-			mockTextEditor.Text = String.Empty;			
-			pythonConsole = new PythonConsole(mockTextEditor, null);
+			base.CreatePythonConsole();
+			MockConsoleTextEditor.Text = String.Empty;			
 		}
 		
 		[Test]
 		public void WriteLine()
 		{
-			pythonConsole.WriteLine();
-			Assert.AreEqual(Environment.NewLine, mockTextEditor.Text);
+			TestablePythonConsole.WriteLine();
+			Assert.AreEqual(Environment.NewLine, MockConsoleTextEditor.Text);
 		}
 		
 		[Test]
 		public void WriteLineWithText()
 		{
-			pythonConsole.WriteLine("test", Style.Out);
-			Assert.AreEqual("test" + Environment.NewLine, mockTextEditor.Text);
+			TestablePythonConsole.WriteLine("test", Style.Out);
+			Assert.AreEqual("test" + Environment.NewLine, MockConsoleTextEditor.Text);
 		}	
 		
 		[Test]
 		public void TwoWrites()
 		{
-			pythonConsole.Write("a", Style.Out);
-			pythonConsole.Write("b", Style.Out);
-			Assert.AreEqual("ab", mockTextEditor.Text);
+			TestablePythonConsole.Write("a", Style.Out);
+			TestablePythonConsole.Write("b", Style.Out);
+			Assert.AreEqual("ab", MockConsoleTextEditor.Text);
 		}
 		
 		[Test]
 		public void DoesNotHasLinesWaitingToBeRead()
 		{
-			Assert.IsFalse(pythonConsole.IsLineAvailable);
+			Assert.IsFalse(TestablePythonConsole.IsLineAvailable);
 		}
 	}
 }

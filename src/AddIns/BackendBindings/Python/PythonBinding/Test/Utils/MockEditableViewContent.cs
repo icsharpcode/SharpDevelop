@@ -18,30 +18,31 @@ namespace PythonBinding.Tests.Utils
 	/// </summary>
 	public class MockEditableViewContent : MockViewContent, IEditable, ITextEditorProvider
 	{
-		MockTextEditor textEditor = new MockTextEditor();
-		string text = String.Empty;
+		public MockTextEditor MockTextEditor = new MockTextEditor();
 		
 		public MockEditableViewContent()
 		{
+			Text = String.Empty;
 		}
 		
-		public string Text {
-			get { return text; }
-			set { text = value; }
-		}		
+		public string Text { get; set; }
 		
 		public ITextBuffer CreateSnapshot()
 		{
-			return new StringTextBuffer(text);
+			return new StringTextBuffer(Text);
 		}
 		
 		public ITextEditorOptions TextEditorOptions {
-			get { return textEditor.Options; }
-			set { textEditor.Options = value; }
+			get { return MockTextEditor.Options; }
+		}
+		
+		public MockTextEditorOptions MockTextEditorOptions {
+			get { return MockTextEditor.MockTextEditorOptions; }
+			set { MockTextEditor.MockTextEditorOptions = value; }
 		}
 		
 		public ITextEditor TextEditor {
-			get { return textEditor; }
+			get { return MockTextEditor; }
 		}
 		
 		public IDocument GetDocumentForFile(OpenedFile file)

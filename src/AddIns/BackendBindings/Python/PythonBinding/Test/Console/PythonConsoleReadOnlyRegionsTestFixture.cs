@@ -20,148 +20,145 @@ namespace PythonBinding.Tests.Console
 	/// PythonConsole itself restricts typing itself by handling key press events.
 	/// </summary>
 	[TestFixture]
-	public class PythonConsoleReadOnlyRegionsTestFixture
+	public class PythonConsoleReadOnlyRegionsTestFixture : PythonConsoleTestsBase
 	{
-		PythonConsole console;
-		MockConsoleTextEditor textEditor;
 		string prompt = ">>> ";
 
 		[SetUp]
 		public void Init()
 		{
-			textEditor = new MockConsoleTextEditor();
-			console = new PythonConsole(textEditor, null);
-			console.Write(prompt, Style.Prompt);
+			base.CreatePythonConsole();
+			TestablePythonConsole.Write(prompt, Style.Prompt);
 		}
 		
 		[Test]
 		public void MakeCurrentContentReadOnlyIsCalled()
 		{
-			Assert.IsTrue(textEditor.IsMakeCurrentContentReadOnlyCalled);
+			Assert.IsTrue(MockConsoleTextEditor.IsMakeCurrentContentReadOnlyCalled);
 		}
 
 		[Test]
 		public void LeftArrowThenInsertNewCharacterInsertsText()
 		{
-			textEditor.RaisePreviewKeyDownEvent(Key.A);
-			textEditor.RaisePreviewKeyDownEvent(Key.B);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
-			textEditor.RaisePreviewKeyDownEvent(Key.C);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.B);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.C);
 			
-			Assert.AreEqual("ACB", console.GetCurrentLine());
+			Assert.AreEqual("ACB", TestablePythonConsole.GetCurrentLine());
 		}
 		
 		[Test]
 		public void MoveOneCharacterIntoPromptTypingShouldBePrevented()
 		{
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
-			textEditor.RaisePreviewKeyDownEvent(Key.A);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
 			
-			Assert.AreEqual(String.Empty, console.GetCurrentLine());
+			Assert.AreEqual(String.Empty, TestablePythonConsole.GetCurrentLine());
 		}
 
 		[Test]
 		public void MoveOneCharacterIntoPromptAndBackspaceKeyShouldNotRemoveAnything()
 		{
-			textEditor.RaisePreviewKeyDownEvent(Key.A);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back);
 			
-			Assert.AreEqual("A", console.GetCurrentLine());
-			Assert.AreEqual(prompt + "A", textEditor.Text);
+			Assert.AreEqual("A", TestablePythonConsole.GetCurrentLine());
+			Assert.AreEqual(prompt + "A", MockConsoleTextEditor.Text);
 		}
 		
 		[Test]
 		public void MoveTwoCharactersIntoPromptAndBackspaceKeyShouldNotRemoveAnything()
 		{
-			textEditor.RaisePreviewKeyDownEvent(Key.A);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back);
 			
-			Assert.AreEqual("A", console.GetCurrentLine());
-			Assert.AreEqual(prompt + "A", textEditor.Text);
+			Assert.AreEqual("A", TestablePythonConsole.GetCurrentLine());
+			Assert.AreEqual(prompt + "A", MockConsoleTextEditor.Text);
 		}
 		
 		[Test]
 		public void SelectLastCharacterOfPromptThenPressingTheBackspaceKeyShouldNotRemoveAnything()
 		{
-			textEditor.RaisePreviewKeyDownEvent(Key.A);
-			textEditor.SelectionStart = prompt.Length - 1;
-			textEditor.SelectionLength = 2;
-			textEditor.Column += 2;
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			MockConsoleTextEditor.SelectionStart = prompt.Length - 1;
+			MockConsoleTextEditor.SelectionLength = 2;
+			MockConsoleTextEditor.Column += 2;
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back);
 			
-			Assert.AreEqual("A", console.GetCurrentLine());
-			Assert.AreEqual(prompt + "A", textEditor.Text);
+			Assert.AreEqual("A", TestablePythonConsole.GetCurrentLine());
+			Assert.AreEqual(prompt + "A", MockConsoleTextEditor.Text);
 		}
 		
 		[Test]
 		public void CanMoveIntoPromptRegionWithLeftCursorKey()
 		{
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
-			Assert.IsFalse(textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left));
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
+			Assert.IsFalse(MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left));
 		}
 		
 		[Test]
 		public void CanMoveOutOfPromptRegionWithRightCursorKey()
 		{
-			textEditor.Column = 0;
-			Assert.IsFalse(textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Right));
+			MockConsoleTextEditor.Column = 0;
+			Assert.IsFalse(MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Right));
 		}
 		
 		[Test]
 		public void CanMoveOutOfPromptRegionWithUpCursorKey()
 		{
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
-			console.Write(prompt, Style.Prompt);
-			textEditor.Column = 0;
-			Assert.IsFalse(textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up));
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+			TestablePythonConsole.Write(prompt, Style.Prompt);
+			MockConsoleTextEditor.Column = 0;
+			Assert.IsFalse(MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up));
 		}
 		
 		[Test]
 		public void CanMoveInReadOnlyRegionWithDownCursorKey()
 		{
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
-			console.Write(prompt, Style.Prompt);
-			textEditor.Column = 0;
-			textEditor.Line = 0;
-			Assert.IsFalse(textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Down));
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+			TestablePythonConsole.Write(prompt, Style.Prompt);
+			MockConsoleTextEditor.Column = 0;
+			MockConsoleTextEditor.Line = 0;
+			Assert.IsFalse(MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Down));
 		}		
 		
 		[Test]
 		public void BackspaceKeyPressedIgnoredIfLineIsEmpty()
 		{
-			Assert.IsTrue(textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back));
+			Assert.IsTrue(MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back));
 		}
 		
 		[Test]
 		public void BackspaceOnPreviousLine()
 		{
-			textEditor.RaisePreviewKeyDownEvent(Key.A);
-			textEditor.RaisePreviewKeyDownEvent(Key.B);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.B);
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
 
-			console.Write(prompt, Style.Prompt);
+			TestablePythonConsole.Write(prompt, Style.Prompt);
 			
-			textEditor.RaisePreviewKeyDownEvent(Key.C);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.C);
 			
 			// Move up a line with cursor.
-			textEditor.Line = 0;
+			MockConsoleTextEditor.Line = 0;
 			
-			Assert.IsTrue(textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back));
-			Assert.AreEqual("C", console.GetCurrentLine());
+			Assert.IsTrue(MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back));
+			Assert.AreEqual("C", TestablePythonConsole.GetCurrentLine());
 		}
 		
 		[Test]
 		public void CanBackspaceFirstCharacterOnLine()
 		{
-			textEditor.RaisePreviewKeyDownEvent(Key.A);
-			textEditor.Column = 5;
-			textEditor.SelectionStart = 5;
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back);
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			MockConsoleTextEditor.Column = 5;
+			MockConsoleTextEditor.SelectionStart = 5;
+			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back);
 			
-			Assert.AreEqual(String.Empty, console.GetCurrentLine());
+			Assert.AreEqual(String.Empty, TestablePythonConsole.GetCurrentLine());
 		}
 	}
 }

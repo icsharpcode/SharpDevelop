@@ -23,15 +23,15 @@ namespace ICSharpCode.PythonBinding
 	{
 		IDebugger debugger;
 		PythonAddInOptions options;
-		IWorkbench workbench;
+		IPythonWorkbench workbench;
 		PythonConsoleApplication ipy;
 		
 		public RunPythonCommand()
-			: this(WorkbenchSingleton.Workbench, new PythonAddInOptions(), DebuggerService.CurrentDebugger)
+			: this(new PythonWorkbench(), new PythonAddInOptions(), DebuggerService.CurrentDebugger)
 		{
 		}
 		
-		public RunPythonCommand(IWorkbench workbench, PythonAddInOptions options, IDebugger debugger)
+		public RunPythonCommand(IPythonWorkbench workbench, PythonAddInOptions options, IDebugger debugger)
 		{
 			this.workbench = workbench;
 			this.debugger = debugger;
@@ -56,7 +56,7 @@ namespace ICSharpCode.PythonBinding
 		
 		ProcessStartInfo GetProcessStartInfo()
 		{
-			string scriptFileName = workbench.ActiveWorkbenchWindow.ActiveViewContent.PrimaryFileName;
+			string scriptFileName = workbench.ActiveViewContent.PrimaryFileName;
 			ipy.PythonScriptFileName = scriptFileName;
 			ipy.WorkingDirectory = Path.GetDirectoryName(scriptFileName);
 			return ipy.GetProcessStartInfo();

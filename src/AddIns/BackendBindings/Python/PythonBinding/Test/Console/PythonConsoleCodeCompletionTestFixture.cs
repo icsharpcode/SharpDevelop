@@ -20,29 +20,26 @@ namespace PythonBinding.Tests.Console
 	/// When the dot character is typed in after an object the code completion window should appear.
 	/// </summary>
 	[TestFixture]
-	public class PythonConsoleCodeCompletionTestFixture
+	public class PythonConsoleCodeCompletionTestFixture : PythonConsoleTestsBase
 	{
-		MockConsoleTextEditor textEditor;
-		PythonConsole console;
 		string prompt = ">>> ";
 		bool showCompletionWindowCalledBeforeDotTypedIn;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			textEditor = new MockConsoleTextEditor();
-			console = new PythonConsole(textEditor, null);
-			console.WriteLine(prompt, Style.Prompt);
-									
-			textEditor.RaisePreviewKeyDownEvent(Key.A);
- 			showCompletionWindowCalledBeforeDotTypedIn = textEditor.IsShowCompletionWindowCalled;
-			textEditor.RaisePreviewKeyDownEvent(Key.OemPeriod);		
+			base.CreatePythonConsole();
+			TestablePythonConsole.WriteLine(prompt, Style.Prompt);
+			
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+ 			showCompletionWindowCalledBeforeDotTypedIn = MockConsoleTextEditor.IsShowCompletionWindowCalled;
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.OemPeriod);		
 		}
 		
 		[Test]
 		public void ShowCompletionWindowCalled()
 		{
-			Assert.IsTrue(textEditor.IsShowCompletionWindowCalled);
+			Assert.IsTrue(MockConsoleTextEditor.IsShowCompletionWindowCalled);
 		}
 
 		[Test]
@@ -54,7 +51,7 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void PythonConsoleCompletionDataProviderPassedToShowCompletionWindowMethod()
 		{
-			Assert.IsInstanceOf(typeof(PythonConsoleCompletionDataProvider), textEditor.CompletionDataProvider);
+			Assert.IsInstanceOf(typeof(PythonConsoleCompletionDataProvider), MockConsoleTextEditor.CompletionProviderPassedToShowCompletionWindow);
 		}
 	}
 }

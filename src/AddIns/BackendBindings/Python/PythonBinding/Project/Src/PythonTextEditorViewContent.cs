@@ -20,9 +20,9 @@ namespace ICSharpCode.PythonBinding
 		ITextEditor textEditor;
 		ITextEditorOptions textEditorOptions;
 		
-		public PythonTextEditorViewContent(IWorkbench workbench)
+		public PythonTextEditorViewContent(IPythonWorkbench workbench)
 		{
-			Init(workbench.ActiveWorkbenchWindow.ActiveViewContent);
+			Init(workbench.ActiveViewContent);
 		}
 		
 		public PythonTextEditorViewContent(IViewContent view)

@@ -16,18 +16,20 @@ using Microsoft.Scripting.Hosting.Shell;
 
 namespace ICSharpCode.PythonBinding
 {
-	/// <summary>
-	/// Hosts the python console.
-	/// </summary>
 	public class PythonConsoleHost : ConsoleHost, IDisposable
 	{
 		Thread thread;
 		IConsoleTextEditor textEditor;
 		PythonConsole pythonConsole;
-				
+		
 		public PythonConsoleHost(IConsoleTextEditor textEditor)
 		{
 			this.textEditor = textEditor;
+			pythonConsole = new PythonConsole(textEditor);
+		}
+				
+		public PythonConsole PythonConsole {
+			get { return pythonConsole; }
 		}
 		
 		protected override Type Provider {
@@ -73,7 +75,7 @@ namespace ICSharpCode.PythonBinding
 		protected override IConsole CreateConsole(ScriptEngine engine, CommandLine commandLine, ConsoleOptions options)
 		{
 			SetOutput(new PythonOutputStream(textEditor));
-			pythonConsole = new PythonConsole(textEditor, commandLine);
+			pythonConsole.CommandLine = commandLine;
 			return pythonConsole;
 		}
 		
@@ -82,9 +84,6 @@ namespace ICSharpCode.PythonBinding
 			Runtime.IO.SetOutput(stream, Encoding.UTF8);
 		}
 		
-		/// <summary>
-		/// Runs the console.
-		/// </summary>
 		void RunConsole()
 		{
 			Run(new string[0]);

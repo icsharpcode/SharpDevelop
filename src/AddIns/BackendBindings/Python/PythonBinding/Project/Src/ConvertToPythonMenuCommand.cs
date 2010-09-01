@@ -21,10 +21,10 @@ namespace ICSharpCode.PythonBinding
 		
 		public override void Run()
 		{
-			Run(WorkbenchSingleton.Workbench);
+			Run(new PythonWorkbench());
 		}
 		
-		protected void Run(IWorkbench workbench)
+		protected void Run(IPythonWorkbench workbench)
 		{
 			view = new PythonTextEditorViewContent(workbench);
 			string code = GeneratePythonCode();

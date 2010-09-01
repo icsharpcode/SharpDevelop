@@ -15,14 +15,14 @@ namespace ICSharpCode.PythonBinding
 {
 	public class RunDebugPythonCommand : RunPythonCommand
 	{
-		public RunDebugPythonCommand(IWorkbench workbench, PythonAddInOptions options, IDebugger debugger) 
+		public RunDebugPythonCommand(IPythonWorkbench workbench, PythonAddInOptions options, IDebugger debugger) 
 			: base(workbench, options, debugger)
 		{
 			Debug = true;
 		}
 		
 		public RunDebugPythonCommand()
-			: this(WorkbenchSingleton.Workbench, new PythonAddInOptions(), DebuggerService.CurrentDebugger)
+			: this(new PythonWorkbench(), new PythonAddInOptions(), DebuggerService.CurrentDebugger)
 		{
 		}
 	}

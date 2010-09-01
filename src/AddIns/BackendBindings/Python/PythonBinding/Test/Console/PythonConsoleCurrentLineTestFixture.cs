@@ -23,16 +23,16 @@ namespace PythonBinding.Tests.Console
 	[TestFixture]
 	public class PythonConsoleCurrentLineTestFixture
 	{
-		PythonConsole pythonConsole;
+		TestablePythonConsole pythonConsole;
 		MockConsoleTextEditor textEditor;
 		string prompt = ">>> ";
 		
 		[SetUp]
 		public void Init()
 		{
-			textEditor = new MockConsoleTextEditor();
-			pythonConsole = new PythonConsole(textEditor, null);
+			pythonConsole = new TestablePythonConsole();
 			pythonConsole.Write(prompt, Style.Prompt);
+			textEditor = pythonConsole.MockConsoleTextEditor;
 		}
 		
 		[Test]
