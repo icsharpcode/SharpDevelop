@@ -156,15 +156,23 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 					return srte;
 				}
 			}
-			if ("Selection".Equals(val, StringComparison.OrdinalIgnoreCase))
-				return new SnippetSelectionElement() { Indentation = GetWhitespaceBefore(snippetText, offset).Length };
-			if ("Caret".Equals(val, StringComparison.OrdinalIgnoreCase))
-				return new SnippetCaretElement();
+			
+			int typeSeparator = val.IndexOf(':');
+			if (typeSeparator > 0) {
+				string type = val.Substring(0, typeSeparator);
+				string name = val.Substring(typeSeparator + 1);
+				switch (type.ToLowerInvariant()) {
+					case "anchor":
+						return new SnippetAnchorElement(name);
+				}
+			}
+			
 			foreach (ISnippetElementProvider provider in SnippetManager.Instance.SnippetElementProviders) {
-				SnippetElement element = provider.GetElement(val);
+				SnippetElement element = provider.GetElement(new SnippetInfo(val, snippetText, offset));
 				if (element != null)
 					return element;
 			}
+			
 			if (replaceableElements.TryGetValue(val, out srte))
 				return new SnippetBoundElement { TargetElement = srte };
 			Match m = functionPattern.Match(val);
@@ -186,12 +194,6 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 				return new SnippetTextElement { Text = result };
 			else
 				return new SnippetReplaceableTextElement { Text = val }; // ${unknown} -> replaceable element
-		}
-		
-		static string GetWhitespaceBefore(string snippetText, int offset)
-		{
-			int start = snippetText.LastIndexOfAny(new[] { '\r', '\n' }, offset) + 1;
-			return snippetText.Substring(start, offset - start);
 		}
 		
 		static string GetValue(ITextEditor editor, string propertyName)

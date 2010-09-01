@@ -27,7 +27,7 @@ namespace SharpRefactoring.Gui
 		protected ITextEditor editor;
 		
 		ClassFinder classFinderContext;
-		InsertionContext context;
+		protected InsertionContext context;
 		
 		public IInlineUIElement Element { get; set; }
 		
@@ -48,20 +48,16 @@ namespace SharpRefactoring.Gui
 		{
 			ParseInformation parseInfo = ParserService.GetParseInformation(editor.FileName);
 			
-			try {
-				if (optionBindings != null) {
-					foreach (OptionBinding binding in optionBindings)
-						binding.Save();
-				}
+			if (optionBindings != null) {
+				foreach (OptionBinding binding in optionBindings)
+					binding.Save();
+			}
+			
+			if (parseInfo != null) {
+				LanguageProperties language = parseInfo.CompilationUnit.Language;
+				IClass current = parseInfo.CompilationUnit.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
 				
-				if (parseInfo != null) {
-					LanguageProperties language = parseInfo.CompilationUnit.Language;
-					IClass current = parseInfo.CompilationUnit.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
-					
-					editor.Document.Insert(anchor.Offset, GenerateCode(language, current) ?? "");
-				}
-			} catch (Exception ex) {
-				MessageService.ShowError(ex.Message);
+				editor.Document.Insert(anchor.Offset, GenerateCode(language, current) ?? "");
 			}
 			
 			Deactivate();

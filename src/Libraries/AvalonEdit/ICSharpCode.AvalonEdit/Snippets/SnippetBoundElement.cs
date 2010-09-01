@@ -107,7 +107,6 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		{
 		}
 		
-		
 		public bool IsEditable {
 			get { return false; }
 		}

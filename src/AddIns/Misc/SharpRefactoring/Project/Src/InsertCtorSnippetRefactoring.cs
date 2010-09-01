@@ -18,10 +18,10 @@ namespace SharpRefactoring
 {
 	public class InsertCtorSnippetRefactoring : ISnippetElementProvider
 	{
-		public SnippetElement GetElement(string tag)
+		public SnippetElement GetElement(SnippetInfo snippetInfo)
 		{
-			if (tag.Equals("refactoring:ctor", StringComparison.InvariantCultureIgnoreCase))
-				return new InlineRefactorSnippetElement(context => CreateDialog(context));
+			if ("refactoring:ctor".Equals(snippetInfo.Tag, StringComparison.OrdinalIgnoreCase))
+				return new InlineRefactorSnippetElement(context => CreateDialog(context), "{" + snippetInfo.Tag + "}");
 			
 			return null;
 		}
@@ -45,7 +45,10 @@ namespace SharpRefactoring
 			
 			CodeGenerator generator = parseInfo.CompilationUnit.Language.CodeGenerator;
 			
-			var loc = context.Document.GetLocation(context.InsertionPosition);
+			// cannot use insertion position at this point, because it might not be
+			// valid, because we are still generating the elements.
+			// DOM is not updated
+			ICSharpCode.AvalonEdit.Document.TextLocation loc = context.Document.GetLocation(context.StartPosition);
 			
 			IClass current = parseInfo.CompilationUnit.GetInnermostClass(loc.Line, loc.Column);
 			
@@ -53,7 +56,7 @@ namespace SharpRefactoring
 				return null;
 			
 			ITextAnchor anchor = textEditor.Document.CreateAnchor(context.InsertionPosition);
-			anchor.MovementType = AnchorMovementType.AfterInsertion;
+			anchor.MovementType = AnchorMovementType.BeforeInsertion;
 			
 			InsertCtorDialog dialog = new InsertCtorDialog(context, textEditor, anchor, current);
 			

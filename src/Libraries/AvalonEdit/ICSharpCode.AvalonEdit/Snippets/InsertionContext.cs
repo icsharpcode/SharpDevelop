@@ -92,6 +92,15 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		AnchorSegment wholeSnippetAnchor;
 		bool deactivateIfSnippetEmpty;
 		
+		public int StartPosition {
+			get {
+				if (wholeSnippetAnchor != null)
+					return wholeSnippetAnchor.Offset;
+				else
+					return startPosition;
+			}
+		}
+		
 		/// <summary>
 		/// Inserts text at the insertion position and advances the insertion position.
 		/// This method will add the current indentation to every line in <paramref name="text"/> and will

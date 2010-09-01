@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Document;
@@ -28,10 +29,12 @@ namespace SharpRefactoring.Gui
 	class InlineRefactorSnippetElement : SnippetElement
 	{
 		Func<InsertionContext, AbstractInlineRefactorDialog> createDialog;
+		string previewText;
 		
-		public InlineRefactorSnippetElement(Func<InsertionContext, AbstractInlineRefactorDialog> createDialog)
+		public InlineRefactorSnippetElement(Func<InsertionContext, AbstractInlineRefactorDialog> createDialog, string previewText)
 		{
 			this.createDialog = createDialog;
+			this.previewText = previewText;
 		}
 		
 		public override void Insert(InsertionContext context)
@@ -39,6 +42,11 @@ namespace SharpRefactoring.Gui
 			AbstractInlineRefactorDialog dialog = createDialog(context);
 			if (dialog != null)
 				context.RegisterActiveElement(this, dialog);
+		}
+		
+		public override Inline ToTextRun()
+		{
+			return new Italic() { Inlines = { previewText } };
 		}
 	}
 }

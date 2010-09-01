@@ -16,13 +16,9 @@ namespace SharpRefactoring
 	/// </summary>
 	public class SwitchSnippetProvider : ISnippetElementProvider
 	{
-		public SwitchSnippetProvider()
+		public SnippetElement GetElement(SnippetInfo snippetInfo)
 		{
-		}
-		
-		public SnippetElement GetElement(string tag)
-		{
-			if (tag.Equals("refactoring:switchbody", StringComparison.InvariantCultureIgnoreCase))
+			if ("refactoring:switchbody".Equals(snippetInfo.Tag, StringComparison.OrdinalIgnoreCase))
 				return new SwitchBodySnippetElement();
 			
 			return null;

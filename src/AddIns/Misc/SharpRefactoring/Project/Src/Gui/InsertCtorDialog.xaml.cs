@@ -33,10 +33,10 @@ namespace SharpRefactoring.Gui
 		{
 			InitializeComponent();
 			
-			this.varList.ItemsSource = paramList = CreateCtorParams(current.Fields, current.Properties).
+			this.varList.ItemsSource = paramList = CreateCtorParams(current.Fields, current.Properties)
 				// "Add check for null" is checked for every item by default
 				//Select(w => { if(w.IsNullable) w.AddCheckForNull = true; return w; }).
-				ToList();
+				.ToList();
 		}
 		
 		IEnumerable<CtorParamWrapper> CreateCtorParams(IEnumerable<IField> fields, IEnumerable<IProperty> properties)
@@ -56,8 +56,6 @@ namespace SharpRefactoring.Gui
 		
 		protected override string GenerateCode(LanguageProperties language, IClass currentClass)
 		{
-			StringBuilder builder = new StringBuilder();
-			
 			var line = editor.Document.GetLineForOffset(editor.Caret.Offset);
 			
 			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset);
@@ -105,13 +103,35 @@ namespace SharpRefactoring.Gui
 			foreach (CtorParamWrapper w in filtered)
 				block.AddChild(new ExpressionStatement(new AssignmentExpression(new MemberReferenceExpression(new ThisReferenceExpression(), w.MemberName), AssignmentOperatorType.Assign, new IdentifierExpression(w.ParameterName))));
 			
-			ConstructorDeclaration ctor = new ConstructorDeclaration(currentClass.Name, Modifiers.Public, filtered.Select(p => new ParameterDeclarationExpression(ConvertType(p.Type), p.ParameterName)).ToList(), null) {
-				Body = block
-			};
+			AnchorSnippetElement parameterList = context.ActiveElements
+				.FirstOrDefault(
+					item => item is AnchorSnippetElement &&
+					(item as AnchorSnippetElement).Name.Equals("parameterList", StringComparison.OrdinalIgnoreCase)
+				) as AnchorSnippetElement;
 			
-			builder.Append(language.CodeGenerator.GenerateCode(ctor, indent));
+			if (parameterList != null) {
+				StringBuilder pList = new StringBuilder();
+				
+				var parameters = filtered
+					.Select(p => new ParameterDeclarationExpression(ConvertType(p.Type), p.ParameterName))
+					.ToList();
+				
+				for (int i = 0; i < parameters.Count; i++) {
+					if (i > 0)
+						pList.Append(", ");
+					pList.Append(language.CodeGenerator.GenerateCode(parameters[i], ""));
+				}
+				
+//				parameterList.Text = pList.ToString();
+			}
 			
-			return builder.ToString().TrimStart();
+			StringBuilder builder = new StringBuilder();
+			
+			foreach (var element in block.Children.OfType<AbstractNode>()) {
+				builder.Append(language.CodeGenerator.GenerateCode(element, ""));
+			}
+			
+			return builder.ToString().Trim();
 		}
 		
 		void UpClick(object sender, System.Windows.RoutedEventArgs e)
