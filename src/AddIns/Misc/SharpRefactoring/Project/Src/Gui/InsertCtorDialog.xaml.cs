@@ -11,7 +11,10 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
+using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.NRefactory.Ast;
@@ -37,6 +40,8 @@ namespace SharpRefactoring.Gui
 				// "Add check for null" is checked for every item by default
 				//Select(w => { if(w.IsNullable) w.AddCheckForNull = true; return w; }).
 				.ToList();
+			
+			FocusFirstElement();
 		}
 		
 		IEnumerable<CtorParamWrapper> CreateCtorParams(IEnumerable<IField> fields, IEnumerable<IProperty> properties)
@@ -164,6 +169,24 @@ namespace SharpRefactoring.Gui
 			
 			varList.ItemsSource = paramList.OrderBy(p => p.Index);
 			varList.SelectedIndex = selection + 1;
+		}
+		
+		protected override void FocusFirstElement()
+		{
+			Dispatcher.BeginInvoke((Action)TryFocusAndSelectItem, DispatcherPriority.Background);
+		}
+		
+		void TryFocusAndSelectItem()
+		{
+			object ctorParamWrapper = varList.Items.GetItemAt(0);
+			if (ctorParamWrapper != null) {
+				ListBoxItem item = (ListBoxItem)varList.ItemContainerGenerator.ContainerFromItem(ctorParamWrapper);
+				item.Focus();
+				
+				varList.ScrollIntoView(item);
+				varList.SelectedItem = item;
+				Keyboard.Focus(item);
+			}
 		}
 	}
 	
