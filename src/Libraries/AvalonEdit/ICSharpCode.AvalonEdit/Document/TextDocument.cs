@@ -664,7 +664,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		public int GetOffset(int line, int column)
 		{
 			DocumentLine docLine = GetLineByNumber(line);
-			if (column < 0)
+			if (column <= 0)
 				return docLine.Offset;
 			if (column > docLine.Length)
 				return docLine.EndOffset;
