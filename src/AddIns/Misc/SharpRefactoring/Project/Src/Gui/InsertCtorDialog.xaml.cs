@@ -61,9 +61,9 @@ namespace SharpRefactoring.Gui
 		
 		protected override string GenerateCode(LanguageProperties language, IClass currentClass)
 		{
-			var line = editor.Document.GetLineForOffset(editor.Caret.Offset);
+			var line = editor.Document.GetLineForOffset(anchor.Offset);
 			
-			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset) + "\t";
+			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset);
 			
 			var filtered = paramList.Where(p => p.IsSelected).OrderBy(p => p.Index).ToList();
 			
