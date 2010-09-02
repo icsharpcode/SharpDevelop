@@ -146,6 +146,18 @@ namespace ICSharpCode.SharpDevelop
 					watcher.Dispose();
 				}
 				watcher = null;
+			} catch (FileNotFoundException) {
+				// can occur if directory was deleted externally
+				if (watcher != null) {
+					watcher.Dispose();
+				}
+				watcher = null;
+			} catch (ArgumentException) {
+				// can occur if parent directory was deleted externally
+				if (watcher != null) {
+					watcher.Dispose();
+				}
+				watcher = null;
 			}
 		}
 		
