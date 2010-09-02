@@ -304,12 +304,6 @@
   <data name="AddIns.HtmlHelp2.LookForSimilarWords" xml:space="preserve">
     <value>비슷한 단어 찾기</value>
   </data>
-  <data name="AddIns.HtmlHelp2.MoveDown" xml:space="preserve">
-    <value>아래로 이동</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MoveUp" xml:space="preserve">
-    <value>위로 이동</value>
-  </data>
   <data name="AddIns.HtmlHelp2.MultiTopic" xml:space="preserve">
     <value>주제</value>
   </data>
@@ -1754,12 +1748,6 @@ ${CurrentProjectName} 프로젝트에 이 새 파일을 더하겠습니까?</val
   <data name="Dialog.Options.CombineOptions.Startup.EntryColumnHeader" xml:space="preserve">
     <value>엔트리</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveDownButton" xml:space="preserve">
-    <value>아래로 이동</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveUpButton" xml:space="preserve">
-    <value>위로 이동</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton" xml:space="preserve">
     <value>다중 시작 프로젝트(&amp;M)</value>
   </data>
@@ -1771,12 +1759,6 @@ ${CurrentProjectName} 프로젝트에 이 새 파일을 더하겠습니까?</val
   </data>
   <data name="Dialog.Options.ExternalTool.CommandLabel" xml:space="preserve">
     <value>명령(&amp;C)</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveDownButton" xml:space="preserve">
-    <value>아래로 이동(&amp;D)</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveUpButton" xml:space="preserve">
-    <value>위로 이동(&amp;U)</value>
   </data>
   <data name="Dialog.Options.ExternalTool.PromptForArgsCheckBox" xml:space="preserve">
     <value>인수 묻기(&amp;P)</value>
@@ -2914,6 +2896,12 @@ ${CurrentProjectName} 프로젝트에 이 새 파일을 더하겠습니까?</val
   </data>
   <data name="Global.Location.wholeproject" xml:space="preserve">
     <value>전체 프로젝트</value>
+  </data>
+  <data name="Global.MoveDown" xml:space="preserve">
+    <value>아래로 이동(&amp;D)</value>
+  </data>
+  <data name="Global.MoveUp" xml:space="preserve">
+    <value>위로 이동(&amp;U)</value>
   </data>
   <data name="Global.NA" xml:space="preserve">
     <value>사용할 수 없음</value>
@@ -6110,18 +6098,6 @@ SharpDevelop 2는 리소스를 다른 방법으로 컴파일합니다: 리소스
   </data>
   <data name="SideBarComponent.ContextMenu.DeleteTabItemQuestion" xml:space="preserve">
     <value>"${TabItem}" 항목을 정말로 지우겠습니까?</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabDown" xml:space="preserve">
-    <value>탭을 아래로 이동(&amp;W)</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemDown" xml:space="preserve">
-    <value>항목을 아래로 이동</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemUp" xml:space="preserve">
-    <value>항목을 위로 이동</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabUp" xml:space="preserve">
-    <value>탭을 위로 이동(&amp;U)</value>
   </data>
   <data name="SideBarComponent.ContextMenu.RenameTab" xml:space="preserve">
     <value>탭 제거(&amp;R)</value>

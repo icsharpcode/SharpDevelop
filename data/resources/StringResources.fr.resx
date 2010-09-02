@@ -232,6 +232,9 @@ Téléchargez un AddIn depuis l'Internet, cliquez ensuite sur 'Installer un AddI
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Afficher le diagramme des classes</value>
   </data>
+  <data name="AddIns.Git.TortoiseGitRequired" xml:space="preserve">
+    <value>TortoiseGit doit être installé pour exécuter cette action.</value>
+  </data>
   <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
     <value>Contenus</value>
   </data>
@@ -369,12 +372,6 @@ Téléchargez un AddIn depuis l'Internet, cliquez ensuite sur 'Installer un AddI
   </data>
   <data name="AddIns.HtmlHelp2.LookForSimilarWords" xml:space="preserve">
     <value>Rechercher des mots similaires</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MoveDown" xml:space="preserve">
-    <value>Déplacer vers la bas</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MoveUp" xml:space="preserve">
-    <value>Déplacer vers le haut</value>
   </data>
   <data name="AddIns.HtmlHelp2.MultiTopic" xml:space="preserve">
     <value>Sujets</value>
@@ -2220,12 +2217,6 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.CombineOptions.Startup.EntryColumnHeader" xml:space="preserve">
     <value>Elément</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveDownButton" xml:space="preserve">
-    <value>Bas</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveUpButton" xml:space="preserve">
-    <value>Haut</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton" xml:space="preserve">
     <value>Projet lancements &amp;multiples</value>
   </data>
@@ -2237,12 +2228,6 @@ Voulez-vous ajouter le nouveau fichier au projet ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.ExternalTool.CommandLabel" xml:space="preserve">
     <value>&amp;Commande</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveDownButton" xml:space="preserve">
-    <value>&amp;Descendre</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveUpButton" xml:space="preserve">
-    <value>Monter</value>
   </data>
   <data name="Dialog.Options.ExternalTool.PromptForArgsCheckBox" xml:space="preserve">
     <value>&amp;Demande d'Arguments</value>
@@ -3437,6 +3422,12 @@ Vous pouvez aussi choisir de stocker la configuration dans le fichier .user-file
   <data name="Global.Location.wholeproject" xml:space="preserve">
     <value>projet complet</value>
   </data>
+  <data name="Global.MoveDown" xml:space="preserve">
+    <value>&amp;Descendre</value>
+  </data>
+  <data name="Global.MoveUp" xml:space="preserve">
+    <value>Monter</value>
+  </data>
   <data name="Global.NA" xml:space="preserve">
     <value>Non disponible</value>
   </data>
@@ -4053,8 +4044,14 @@ Configurez le chemin vers NAnt dans les options de SharpDevelop.</value>
   <data name="ICSharpCode.PythonBinding.PythonProjectFiles" xml:space="preserve">
     <value>Projets Python</value>
   </data>
+  <data name="ICSharpCode.PythonBinding.SendLineToPythonConsole" xml:space="preserve">
+    <value>Envoyer cette ligne vers la console Python</value>
+  </data>
   <data name="ICSharpCode.PythonBinding.UnknownTypeName" xml:space="preserve">
     <value>Impossible de trouver le type '{0}'. Manque-t-il uUne référence d'assembly ?</value>
+  </data>
+  <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
+    <value>Envoyer cette ligne vers la console Ruby</value>
   </data>
   <data name="ICSharpCode.Services.FileUtilityService.CantLoadFileStandardText" xml:space="preserve">
     <value>Chargement du fichier ${FileNameWithoutPath} depuis ${Path}. Controler les droits et l'existence du fichier.</value>
@@ -6814,18 +6811,6 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   </data>
   <data name="SideBarComponent.ContextMenu.DeleteTabItemQuestion" xml:space="preserve">
     <value>Voulez-vous vraiment supprimer l'élément "${TabItem}" ?</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabDown" xml:space="preserve">
-    <value>Déplacer vers le bas</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemDown" xml:space="preserve">
-    <value>Déplacer vers la bas</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemUp" xml:space="preserve">
-    <value>Déplacer vers le haut</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabUp" xml:space="preserve">
-    <value>Déplacer vers le haut</value>
   </data>
   <data name="SideBarComponent.ContextMenu.RenameTab" xml:space="preserve">
     <value>&amp;Renommer</value>

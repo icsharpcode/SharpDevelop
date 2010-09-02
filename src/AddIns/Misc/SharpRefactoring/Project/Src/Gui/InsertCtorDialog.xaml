@@ -43,8 +43,8 @@
 		<DockPanel LastChildFill="False">
 			<Button DockPanel.Dock="Left" Content="{sd:Localize Global.OKButtonText}" Margin="3" Click="OKButtonClick" />
 			<Button DockPanel.Dock="Left" Content="{sd:Localize Global.CancelButtonText}" Margin="3" Click="CancelButtonClick" />
-			<Button DockPanel.Dock="Right" Content="Down" Margin="3" IsEnabled="{Binding SelectedIndex, ElementName=varList, Converter={StaticResource intToBoolConverter}}" Click="DownClick" />
-			<Button DockPanel.Dock="Right" Content="Up" Margin="3" IsEnabled="{Binding SelectedIndex, ElementName=varList, Converter={StaticResource intToBoolConverter}}" Click="UpClick" />
+			<Button DockPanel.Dock="Right" Content="{sd:Localize Global.MoveDown}" Margin="3" IsEnabled="{Binding SelectedIndex, ElementName=varList, Converter={StaticResource intToBoolConverter}}" Click="DownClick" />
+			<Button DockPanel.Dock="Right" Content="{sd:Localize Global.MoveUp}" Margin="3" IsEnabled="{Binding SelectedIndex, ElementName=varList, Converter={StaticResource intToBoolConverter}}" Click="UpClick" />
 		</DockPanel>
 	</StackPanel>
 </gui:AbstractInlineRefactorDialog>

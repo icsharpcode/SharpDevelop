@@ -299,12 +299,6 @@ Du måste installera .NET Framework SDK för att komma åt hjälpsystemet.</valu
   <data name="AddIns.HtmlHelp2.LookForSimilarWords" xml:space="preserve">
     <value>Sök efter liknande ord</value>
   </data>
-  <data name="AddIns.HtmlHelp2.MoveDown" xml:space="preserve">
-    <value>Flytta ner</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MoveUp" xml:space="preserve">
-    <value>Flytta upp</value>
-  </data>
   <data name="AddIns.HtmlHelp2.MultiTopic" xml:space="preserve">
     <value>ämnen</value>
   </data>
@@ -1279,12 +1273,6 @@ Vill du lägga till den nya filen till projektet ${CurrentProjectName}?</value>
   <data name="Dialog.Options.CombineOptions.Startup.EntryColumnHeader" xml:space="preserve">
     <value>Val</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveDownButton" xml:space="preserve">
-    <value>Flytta ner</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveUpButton" xml:space="preserve">
-    <value>Flytta upp</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton" xml:space="preserve">
     <value>Flera startprojekt</value>
   </data>
@@ -1296,12 +1284,6 @@ Vill du lägga till den nya filen till projektet ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.ExternalTool.CommandLabel" xml:space="preserve">
     <value>&amp;Kommando</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveDownButton" xml:space="preserve">
-    <value>Flytta &amp;Ner</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveUpButton" xml:space="preserve">
-    <value>Flytta &amp;Upp</value>
   </data>
   <data name="Dialog.Options.ExternalTool.PromptForArgsCheckBox" xml:space="preserve">
     <value>Plats för argument</value>
@@ -2301,6 +2283,12 @@ Du kan även välja att lagra inställningen i .user-filen istället för projek
   </data>
   <data name="Global.Location.wholeproject" xml:space="preserve">
     <value>hela projektet</value>
+  </data>
+  <data name="Global.MoveDown" xml:space="preserve">
+    <value>Flytta &amp;Ner</value>
+  </data>
+  <data name="Global.MoveUp" xml:space="preserve">
+    <value>Flytta &amp;Upp</value>
   </data>
   <data name="Global.Name" xml:space="preserve">
     <value>Namn</value>
@@ -4550,18 +4538,6 @@ Resursfilerna har därför bytt namn/flyttats enligt ovan.</value>
   </data>
   <data name="SideBarComponent.ContextMenu.DeleteTabItemQuestion" xml:space="preserve">
     <value>Vill du verkligen ta bort föremålet "${TabItem}"?</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabDown" xml:space="preserve">
-    <value>Flytta tabulator nedåt</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemDown" xml:space="preserve">
-    <value>Flytta föremål ner</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemUp" xml:space="preserve">
-    <value>Flytta föremål upp</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabUp" xml:space="preserve">
-    <value>Flytta tabulator &amp;uppåt</value>
   </data>
   <data name="SideBarComponent.ContextMenu.RenameTab" xml:space="preserve">
     <value>Byt namn på tabulator</value>

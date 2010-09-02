@@ -111,14 +111,14 @@
       <System.Windows.Forms.Button>
         <Name value="moveDownButton" />
         <Location value="{X=336,Y=144}" />
-        <Text value="${res:Dialog.Options.ExternalTool.MoveDownButton}" />
+        <Text value="${res:Global.MoveDown}" />
         <Anchor value="Top, Right" />
         <TabIndex value="5" />
       </System.Windows.Forms.Button>
       <System.Windows.Forms.Button>
         <Name value="moveUpButton" />
         <Location value="{X=336,Y=112}" />
-        <Text value="${res:Dialog.Options.ExternalTool.MoveUpButton}" />
+        <Text value="${res:Global.MoveUp}" />
         <Anchor value="Top, Right" />
         <TabIndex value="4" />
       </System.Windows.Forms.Button>

@@ -308,12 +308,6 @@ Yardım sistemini elde edebilmek için .NET Framework SDK 'yı yüklemelisiniz.<
   <data name="AddIns.HtmlHelp2.LookForSimilarWords" xml:space="preserve">
     <value>Benzer kelimeleri ara</value>
   </data>
-  <data name="AddIns.HtmlHelp2.MoveDown" xml:space="preserve">
-    <value>Aşağıya taşı</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MoveUp" xml:space="preserve">
-    <value>Yukarı taşı</value>
-  </data>
   <data name="AddIns.HtmlHelp2.MultiTopic" xml:space="preserve">
     <value>başlıklar</value>
   </data>
@@ -1646,12 +1640,6 @@ Ek olarak, bir ölçüm aralığı, içerisinde karmaşık biçimlemeye izin ver
   <data name="Dialog.Options.CombineOptions.Startup.EntryColumnHeader" xml:space="preserve">
     <value>Girdi</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveDownButton" xml:space="preserve">
-    <value>Aşağıya taşı</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveUpButton" xml:space="preserve">
-    <value>Yukarıya taşı</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton" xml:space="preserve">
     <value>&amp;Çoklu Başlangıç Projesi</value>
   </data>
@@ -1663,12 +1651,6 @@ Ek olarak, bir ölçüm aralığı, içerisinde karmaşık biçimlemeye izin ver
   </data>
   <data name="Dialog.Options.ExternalTool.CommandLabel" xml:space="preserve">
     <value>&amp;Komut</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveDownButton" xml:space="preserve">
-    <value>&amp;Aşağıya Taşı</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveUpButton" xml:space="preserve">
-    <value>&amp;Yukarıya Taşı</value>
   </data>
   <data name="Dialog.Options.ExternalTool.PromptForArgsCheckBox" xml:space="preserve">
     <value>Argümanlar için &amp;sor</value>
@@ -2717,6 +2699,12 @@ Ayrıca bir ayarı proje dosyası yerine .kullanıcı-dosyası(.user-file) için
   </data>
   <data name="Global.Location.wholeproject" xml:space="preserve">
     <value>tüm proje</value>
+  </data>
+  <data name="Global.MoveDown" xml:space="preserve">
+    <value>&amp;Aşağıya Taşı</value>
+  </data>
+  <data name="Global.MoveUp" xml:space="preserve">
+    <value>&amp;Yukarıya Taşı</value>
   </data>
   <data name="Global.NA" xml:space="preserve">
     <value>Uygulanamaz</value>
@@ -5501,18 +5489,6 @@ Kaynak dosyaları buna göre yeniden adlandırıldı/taşındı.</value>
   </data>
   <data name="SideBarComponent.ContextMenu.DeleteTabItemQuestion" xml:space="preserve">
     <value>"${TabItem}" yi gerçekten silmek istiyor musunuz?</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabDown" xml:space="preserve">
-    <value>Sekmeyi A&amp;şağı Taşı</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemDown" xml:space="preserve">
-    <value>Aşağı Taşı</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemUp" xml:space="preserve">
-    <value>Yukarı Taşı</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabUp" xml:space="preserve">
-    <value>Sekmeyi &amp;Yukarı Taşı</value>
   </data>
   <data name="SideBarComponent.ContextMenu.RenameTab" xml:space="preserve">
     <value>Sekmeyi &amp;YenidenAdlandır</value>

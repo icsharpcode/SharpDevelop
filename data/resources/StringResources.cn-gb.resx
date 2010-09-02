@@ -302,12 +302,6 @@
   <data name="AddIns.HtmlHelp2.LookForSimilarWords" xml:space="preserve">
     <value>查找相似词:</value>
   </data>
-  <data name="AddIns.HtmlHelp2.MoveDown" xml:space="preserve">
-    <value>下移</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MoveUp" xml:space="preserve">
-    <value>上移</value>
-  </data>
   <data name="AddIns.HtmlHelp2.MultiTopic" xml:space="preserve">
     <value>主题</value>
   </data>
@@ -1223,12 +1217,6 @@
   <data name="Dialog.Options.CombineOptions.Startup.EntryColumnHeader" xml:space="preserve">
     <value>入口</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveDownButton" xml:space="preserve">
-    <value>下移</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveUpButton" xml:space="preserve">
-    <value>上移</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton" xml:space="preserve">
     <value>多启动工程(&amp;M)</value>
   </data>
@@ -1240,12 +1228,6 @@
   </data>
   <data name="Dialog.Options.ExternalTool.CommandLabel" xml:space="preserve">
     <value>命令(&amp;C)</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveDownButton" xml:space="preserve">
-    <value>下移(&amp;D)</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveUpButton" xml:space="preserve">
-    <value>上移(&amp;U)</value>
   </data>
   <data name="Dialog.Options.ExternalTool.PromptForArgsCheckBox" xml:space="preserve">
     <value>参数提示(&amp;P)</value>
@@ -2198,6 +2180,12 @@
   </data>
   <data name="Global.Location.wholeproject" xml:space="preserve">
     <value>整个工程</value>
+  </data>
+  <data name="Global.MoveDown" xml:space="preserve">
+    <value>下移(&amp;D)</value>
+  </data>
+  <data name="Global.MoveUp" xml:space="preserve">
+    <value>上移(&amp;U)</value>
   </data>
   <data name="Global.NextButtonText" xml:space="preserve">
     <value>下一步&gt;</value>
@@ -3822,18 +3810,6 @@
   </data>
   <data name="SideBarComponent.ContextMenu.DeleteTabItemQuestion" xml:space="preserve">
     <value>确认要删除项目"${TabItem}"吗?</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabDown" xml:space="preserve">
-    <value>下移组(&amp;w)</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemDown" xml:space="preserve">
-    <value>下移项目</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemUp" xml:space="preserve">
-    <value>上移项目</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabUp" xml:space="preserve">
-    <value>上移组(&amp;U)</value>
   </data>
   <data name="SideBarComponent.ContextMenu.RenameTab" xml:space="preserve">
     <value>重命名组(&amp;R)</value>

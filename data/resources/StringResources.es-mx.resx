@@ -371,12 +371,6 @@ Necesita instalar el .NET Framework SDK para obtener el sistema de ayuda.</value
   <data name="AddIns.HtmlHelp2.LookForSimilarWords" xml:space="preserve">
     <value>Buscar palabras similares</value>
   </data>
-  <data name="AddIns.HtmlHelp2.MoveDown" xml:space="preserve">
-    <value>Mover hacia abajo</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MoveUp" xml:space="preserve">
-    <value>Mover hacia arriba</value>
-  </data>
   <data name="AddIns.HtmlHelp2.MultiTopic" xml:space="preserve">
     <value>tópicos</value>
   </data>
@@ -2225,12 +2219,6 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
   <data name="Dialog.Options.CombineOptions.Startup.EntryColumnHeader" xml:space="preserve">
     <value>Entrada</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveDownButton" xml:space="preserve">
-    <value>Mover abajo</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveUpButton" xml:space="preserve">
-    <value>Mover arriba</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton" xml:space="preserve">
     <value>Proyecto de inicio &amp;múltiple</value>
   </data>
@@ -2242,12 +2230,6 @@ Adicionalmente, se le puede asignar a una extensión un conjunto de reglas defin
   </data>
   <data name="Dialog.Options.ExternalTool.CommandLabel" xml:space="preserve">
     <value>&amp;Comando</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveDownButton" xml:space="preserve">
-    <value>Mover &amp;Abajo</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveUpButton" xml:space="preserve">
-    <value>Mover A&amp;rriba</value>
   </data>
   <data name="Dialog.Options.ExternalTool.PromptForArgsCheckBox" xml:space="preserve">
     <value>&amp;Solicitar argumentos</value>
@@ -3438,6 +3420,12 @@ También puede elegir guardar la opción en el archivo .user en lugar de en el a
   </data>
   <data name="Global.Location.wholeproject" xml:space="preserve">
     <value>todo el proyecto</value>
+  </data>
+  <data name="Global.MoveDown" xml:space="preserve">
+    <value>Mover &amp;Abajo</value>
+  </data>
+  <data name="Global.MoveUp" xml:space="preserve">
+    <value>Mover A&amp;rriba</value>
   </data>
   <data name="Global.NA" xml:space="preserve">
     <value>N/A</value>
@@ -6815,18 +6803,6 @@ Los archivos de recursos han sido renombrados/movidos convenientemente.</value>
   </data>
   <data name="SideBarComponent.ContextMenu.DeleteTabItemQuestion" xml:space="preserve">
     <value>¿Realmente desea borrar el elemento "${TabItem}"?</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabDown" xml:space="preserve">
-    <value>Bajar &amp;Pestaña</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemDown" xml:space="preserve">
-    <value>Bajar Elemento</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemUp" xml:space="preserve">
-    <value>Subir Elemento</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabUp" xml:space="preserve">
-    <value>S&amp;ubir Pestaña</value>
   </data>
   <data name="SideBarComponent.ContextMenu.RenameTab" xml:space="preserve">
     <value>&amp;Renombrar Pestaña</value>

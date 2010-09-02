@@ -308,12 +308,6 @@ Telepítenie kell a .NET keretrendszer 2.0-s verziójának szoftverfejlesztői k
   <data name="AddIns.HtmlHelp2.LookForSimilarWords" xml:space="preserve">
     <value>Hasonló szavak keresése</value>
   </data>
-  <data name="AddIns.HtmlHelp2.MoveDown" xml:space="preserve">
-    <value>Mozgatás felfelé</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MoveUp" xml:space="preserve">
-    <value>Mozgatás lefelé</value>
-  </data>
   <data name="AddIns.HtmlHelp2.MultiTopic" xml:space="preserve">
     <value>témakör</value>
   </data>
@@ -1422,12 +1416,6 @@ Hozzáadja az új fáljt a ${CurrentProjectName} projekthez?</value>
   <data name="Dialog.Options.CombineOptions.Startup.EntryColumnHeader" xml:space="preserve">
     <value>Elem</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveDownButton" xml:space="preserve">
-    <value>Le</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveUpButton" xml:space="preserve">
-    <value>Fel</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton" xml:space="preserve">
     <value>&amp;Több indulási projekt</value>
   </data>
@@ -1439,12 +1427,6 @@ Hozzáadja az új fáljt a ${CurrentProjectName} projekthez?</value>
   </data>
   <data name="Dialog.Options.ExternalTool.CommandLabel" xml:space="preserve">
     <value>P&amp;arancs</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveDownButton" xml:space="preserve">
-    <value>&amp;Le</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveUpButton" xml:space="preserve">
-    <value>&amp;Fel</value>
   </data>
   <data name="Dialog.Options.ExternalTool.PromptForArgsCheckBox" xml:space="preserve">
     <value>&amp;Kérje a paramétereket</value>
@@ -2503,6 +2485,12 @@ Ugyancsak választhatja hogy a beállításokat .user-fájlban tárolja a projek
   </data>
   <data name="Global.Location.wholeproject" xml:space="preserve">
     <value>a teljes projekt</value>
+  </data>
+  <data name="Global.MoveDown" xml:space="preserve">
+    <value>&amp;Le</value>
+  </data>
+  <data name="Global.MoveUp" xml:space="preserve">
+    <value>&amp;Fel</value>
   </data>
   <data name="Global.NA" xml:space="preserve">
     <value>N/A</value>
@@ -4981,18 +4969,6 @@ Az erőforrás fájlok mozgatása/átnevezése megtörtént.</value>
   </data>
   <data name="SideBarComponent.ContextMenu.DeleteTabItemQuestion" xml:space="preserve">
     <value>Biztosan törölhető a tétel "${TabItem}"?</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabDown" xml:space="preserve">
-    <value>Panel mozgatása &amp;le</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemDown" xml:space="preserve">
-    <value>Tétel mozgatása le</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemUp" xml:space="preserve">
-    <value>Tétel mozgatása föl</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabUp" xml:space="preserve">
-    <value>Panel mozgatása &amp;föl</value>
   </data>
   <data name="SideBarComponent.ContextMenu.RenameTab" xml:space="preserve">
     <value>&amp;Panel átnevezése</value>
