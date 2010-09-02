@@ -270,7 +270,6 @@
 				<ComponentRef Id="LayoutFiles"/>
 				<ComponentRef Id="StringResourceFiles"/>
 				<ComponentRef Id="SchemaFiles"/>
-				<ComponentRef Id="XmlXsd"/>
 				<ComponentRef Id="CSharpFileTemplates"/>
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplate"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFileElementClass"/>				
