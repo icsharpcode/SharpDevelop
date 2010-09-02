@@ -619,7 +619,6 @@
     <Compile Include="Src\Gui\Components\ExtTreeView\ExtTreeViewComparer.cs" />
     <Compile Include="Src\Project\WebReferenceUrl.cs" />
     <EmbeddedResource Include="Resources\CodeGenerationOptionsPanel.xfrm" />
-    <EmbeddedResource Include="Resources\CombineStartupPanel.xfrm" />
     <EmbeddedResource Include="Resources\CommonAboutDialog.xfrm" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <EmbeddedResource Include="Resources\EditStandardHeaderPanel.xfrm" />
