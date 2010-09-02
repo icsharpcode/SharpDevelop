@@ -6,6 +6,8 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -55,14 +57,31 @@ namespace SharpRefactoring
 			if (current == null)
 				return null;
 			
+			List<CtorParamWrapper> parameters = CreateCtorParams(current).ToList();
+			
 			ITextAnchor anchor = textEditor.Document.CreateAnchor(context.InsertionPosition);
 			anchor.MovementType = AnchorMovementType.BeforeInsertion;
 			
-			InsertCtorDialog dialog = new InsertCtorDialog(context, textEditor, anchor, current);
+			InsertCtorDialog dialog = new InsertCtorDialog(context, textEditor, anchor, current, parameters);
 			
 			dialog.Element = uiService.CreateInlineUIElement(anchor, dialog);
 			
 			return dialog;
+		}
+		
+		IEnumerable<CtorParamWrapper> CreateCtorParams(IClass sourceClass)
+		{
+			int i = 0;
+			
+			foreach (var f in sourceClass.Fields) {
+				yield return new CtorParamWrapper(f) { Index = i, IsSelected = !f.IsReadonly };
+				i++;
+			}
+			
+			foreach (var p in sourceClass.Properties.Where(prop => prop.CanSet && !prop.IsIndexer)) {
+				yield return new CtorParamWrapper(p) { Index = i, IsSelected = !p.IsReadonly };
+				i++;
+			}
 		}
 	}
 }

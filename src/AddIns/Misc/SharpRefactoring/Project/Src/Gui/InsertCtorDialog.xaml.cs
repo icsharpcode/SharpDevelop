@@ -11,7 +11,10 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
+using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.NRefactory.Ast;
@@ -26,41 +29,26 @@ namespace SharpRefactoring.Gui
 	/// </summary>
 	public partial class InsertCtorDialog : AbstractInlineRefactorDialog
 	{
-		protected IList<CtorParamWrapper> paramList;
+		IList<CtorParamWrapper> parameterList;
 		
-		public InsertCtorDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor, IClass current)
+		public InsertCtorDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor, IClass current, IList<CtorParamWrapper> possibleParameters)
 			: base(context, editor, anchor)
 		{
 			InitializeComponent();
 			
-			this.varList.ItemsSource = paramList = CreateCtorParams(current.Fields, current.Properties)
-				// "Add check for null" is checked for every item by default
-				//Select(w => { if(w.IsNullable) w.AddCheckForNull = true; return w; }).
-				.ToList();
-		}
-		
-		IEnumerable<CtorParamWrapper> CreateCtorParams(IEnumerable<IField> fields, IEnumerable<IProperty> properties)
-		{
-			int i = 0;
+			this.varList.ItemsSource = parameterList = possibleParameters;
 			
-			foreach (var f in fields) {
-				yield return new CtorParamWrapper(f) { Index = i, IsSelected = !f.IsReadonly };
-				i++;
-			}
-			
-			foreach (var p in properties.Where(prop => prop.CanSet && !prop.IsIndexer)) {
-				yield return new CtorParamWrapper(p) { Index = i, IsSelected = !p.IsReadonly };
-				i++;
-			}
+			if (!parameterList.Any())
+				Visibility = System.Windows.Visibility.Collapsed;
 		}
 		
 		protected override string GenerateCode(LanguageProperties language, IClass currentClass)
 		{
-			var line = editor.Document.GetLineForOffset(editor.Caret.Offset);
+			var line = editor.Document.GetLineForOffset(anchor.Offset);
 			
-			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset) + "\t";
+			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset);
 			
-			var filtered = paramList.Where(p => p.IsSelected).OrderBy(p => p.Index).ToList();
+			var filtered = parameterList.Where(p => p.IsSelected).OrderBy(p => p.Index).ToList();
 			
 			BlockStatement block = new BlockStatement();
 			
@@ -103,13 +91,11 @@ namespace SharpRefactoring.Gui
 			foreach (CtorParamWrapper w in filtered)
 				block.AddChild(new ExpressionStatement(new AssignmentExpression(new MemberReferenceExpression(new ThisReferenceExpression(), w.MemberName), AssignmentOperatorType.Assign, new IdentifierExpression(w.ParameterName))));
 			
-			AnchorElement parameterList = context.ActiveElements
-				.FirstOrDefault(
-					item => item is AnchorElement &&
-					(item as AnchorElement).Name.Equals("parameterList", StringComparison.OrdinalIgnoreCase)
-				) as AnchorElement;
+			AnchorElement parameterListElement = context.ActiveElements
+				.OfType<AnchorElement>()
+				.FirstOrDefault(item => item.Name.Equals("parameterList", StringComparison.OrdinalIgnoreCase));
 			
-			if (parameterList != null) {
+			if (parameterListElement != null) {
 				StringBuilder pList = new StringBuilder();
 				
 				var parameters = filtered
@@ -122,7 +108,7 @@ namespace SharpRefactoring.Gui
 					pList.Append(language.CodeGenerator.GenerateCode(parameters[i], ""));
 				}
 				
-				parameterList.Text = pList.ToString();
+				parameterListElement.Text = pList.ToString();
 			}
 			
 			StringBuilder builder = new StringBuilder();
@@ -141,13 +127,13 @@ namespace SharpRefactoring.Gui
 			if (selection <= 0)
 				return;
 			
-			var curItem = paramList.First(p => p.Index == selection);
-			var exchangeItem = paramList.First(p => p.Index == selection - 1);
+			var curItem = parameterList.First(p => p.Index == selection);
+			var exchangeItem = parameterList.First(p => p.Index == selection - 1);
 			
 			curItem.Index = selection - 1;
 			exchangeItem.Index = selection;
 			
-			varList.ItemsSource = paramList.OrderBy(p => p.Index);
+			varList.ItemsSource = parameterList.OrderBy(p => p.Index);
 			varList.SelectedIndex = selection - 1;
 		}
 		
@@ -155,17 +141,57 @@ namespace SharpRefactoring.Gui
 		{
 			int selection = varList.SelectedIndex;
 			
-			if (selection < 0 || selection >= paramList.Count - 1)
+			if (selection < 0 || selection >= parameterList.Count - 1)
 				return;
 			
-			var curItem = paramList.First(p => p.Index == selection);
-			var exchangeItem = paramList.First(p => p.Index == selection + 1);
+			var curItem = parameterList.First(p => p.Index == selection);
+			var exchangeItem = parameterList.First(p => p.Index == selection + 1);
 			
 			curItem.Index = selection + 1;
 			exchangeItem.Index = selection;
 			
-			varList.ItemsSource = paramList.OrderBy(p => p.Index);
+			varList.ItemsSource = parameterList.OrderBy(p => p.Index);
 			varList.SelectedIndex = selection + 1;
+		}
+		
+		protected override void FocusFirstElement()
+		{
+			Dispatcher.BeginInvoke((Action)TryFocusAndSelectItem, DispatcherPriority.Background);
+		}
+		
+		void TryFocusAndSelectItem()
+		{
+			if (!parameterList.Any())
+				return;
+			
+			object ctorParamWrapper = varList.Items.GetItemAt(0);
+			if (ctorParamWrapper != null) {
+				ListBoxItem item = (ListBoxItem)varList.ItemContainerGenerator.ContainerFromItem(ctorParamWrapper);
+				item.Focus();
+				
+				varList.ScrollIntoView(item);
+				varList.SelectedItem = item;
+				Keyboard.Focus(item);
+			}
+		}
+		
+		protected override void OnInsertionCompleted()
+		{
+			base.OnInsertionCompleted();
+			
+			Dispatcher.BeginInvoke(
+				DispatcherPriority.Background,
+				(Action)(
+					() => {
+						if (!parameterList.Any())
+							context.Deactivate(null);
+						else {
+							insertionEndAnchor = editor.Document.CreateAnchor(anchor.Offset);
+							insertionEndAnchor.MovementType = AnchorMovementType.AfterInsertion;
+						}
+					}
+				)
+			);
 		}
 	}
 	

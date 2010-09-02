@@ -10,9 +10,6 @@ using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 {
-	/// <summary>
-	/// Description of DefaultSnippetElementProvider.
-	/// </summary>
 	public class DefaultSnippetElementProvider : ISnippetElementProvider
 	{
 		public SnippetElement GetElement(SnippetInfo snippetInfo)

@@ -9,9 +9,10 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.Snippets;
-using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
@@ -24,6 +25,7 @@ namespace SharpRefactoring.Gui
 	public abstract class AbstractInlineRefactorDialog : GroupBox, IOptionBindingContainer, IActiveElement
 	{
 		protected ITextAnchor anchor;
+		protected ITextAnchor insertionEndAnchor;
 		protected ITextEditor editor;
 		
 		ClassFinder classFinderContext;
@@ -33,13 +35,18 @@ namespace SharpRefactoring.Gui
 		
 		protected AbstractInlineRefactorDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor)
 		{
-			this.anchor = anchor;
+			this.anchor = insertionEndAnchor = anchor;
 			this.editor = editor;
 			this.context = context;
 			
-			this.classFinderContext = new ClassFinder(ParserService.ParseCurrentViewContent(), editor.Document.Text, editor.Caret.Offset);
+			this.classFinderContext = new ClassFinder(ParserService.ParseCurrentViewContent(), editor.Document.Text, anchor.Offset);
 			
 			this.Background = SystemColors.ControlBrush;
+		}
+		
+		protected virtual void FocusFirstElement()
+		{
+			Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(delegate { this.MoveFocus(new TraversalRequest(FocusNavigationDirection.First)); }));
 		}
 		
 		protected abstract string GenerateCode(LanguageProperties language, IClass currentClass);
@@ -55,7 +62,7 @@ namespace SharpRefactoring.Gui
 			
 			if (parseInfo != null) {
 				LanguageProperties language = parseInfo.CompilationUnit.Language;
-				IClass current = parseInfo.CompilationUnit.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
+				IClass current = parseInfo.CompilationUnit.GetInnermostClass(anchor.Line, anchor.Column);
 				
 				// Generate code could modify the document.
 				// So read anchor.Offset after code generation.
@@ -96,12 +103,20 @@ namespace SharpRefactoring.Gui
 		
 		void IActiveElement.OnInsertionCompleted()
 		{
+			OnInsertionCompleted();
+		}
+		
+		protected virtual void OnInsertionCompleted()
+		{
+			FocusFirstElement();
 		}
 		
 		void IActiveElement.Deactivate(SnippetEventArgs e)
 		{
 			if (e.Reason == DeactivateReason.ReturnPressed)
 				OKButtonClick(null, null);
+			
+			context.TextArea.Caret.Offset = insertionEndAnchor.Offset;
 			
 			Deactivate();
 		}
