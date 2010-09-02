@@ -155,6 +155,7 @@
     <Compile Include="Src\Editor\ITooltip.cs">
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Editor\ReadOnlyDocument.cs" />
     <Compile Include="Src\Editor\RefactoringDocumentAdapter.cs" />
     <Compile Include="Src\Editor\Search\ISearchResult.cs" />
     <Compile Include="Src\Editor\Search\ISearchResultFactory.cs" />

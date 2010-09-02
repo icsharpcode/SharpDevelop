@@ -21,6 +21,30 @@ namespace ICSharpCode.SharpDevelop.Editor
 	public static class DocumentUtilitites
 	{
 		/// <summary>
+		/// Creates a new mutable document from the specified text buffer.
+		/// </summary>
+		/// <remarks>
+		/// Use the more efficient <see cref="LoadReadOnlyDocumentFromBuffer"/> if you only need a read-only document.
+		/// </remarks>
+		public static IDocument LoadDocumentFromBuffer(ITextBuffer buffer)
+		{
+			if (buffer == null)
+				throw new ArgumentNullException("buffer");
+			var doc = new TextDocument(GetTextSource(buffer));
+			return new AvalonEditDocumentAdapter(doc, null);
+		}
+		
+		/// <summary>
+		/// Creates a new read-only document from the specified text buffer.
+		/// </summary>
+		public static IDocument LoadReadOnlyDocumentFromBuffer(ITextBuffer buffer)
+		{
+			if (buffer == null)
+				throw new ArgumentNullException("buffer");
+			return new ReadOnlyDocument(buffer);
+		}
+		
+		/// <summary>
 		/// Gets the word in front of the caret.
 		/// </summary>
 		public static string GetWordBeforeCaret(this ITextEditor editor)
@@ -171,17 +195,6 @@ namespace ICSharpCode.SharpDevelop.Editor
 		public static string NormalizeNewLines(string input, IDocument document, int lineNumber)
 		{
 			return NormalizeNewLines(input, GetLineTerminator(document, lineNumber));
-		}
-		
-		/// <summary>
-		/// Creates an IDocument from an ITextBuffer.
-		/// </summary>
-		public static IDocument LoadDocumentFromBuffer(ITextBuffer buffer)
-		{
-			if (buffer == null)
-				throw new ArgumentNullException("buffer");
-			TextDocument document = new TextDocument(buffer.Text);
-			return new AvalonEdit.AvalonEditDocumentAdapter(document, null);
 		}
 		
 		#region ITextSource implementation
