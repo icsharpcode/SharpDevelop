@@ -24,8 +24,7 @@
 		</xs:documentation>
 	</xs:annotation>
 
-	<xs:import namespace="http://www.w3.org/XML/1998/namespace" 
-	           schemaLocation="xml.xsd"/>
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace"/>
 	
 	<xs:element name="stylesheet">
 		<xs:complexType mixed="true">
