@@ -25,6 +25,7 @@ namespace SharpRefactoring.Gui
 	public abstract class AbstractInlineRefactorDialog : GroupBox, IOptionBindingContainer, IActiveElement
 	{
 		protected ITextAnchor anchor;
+		protected ITextAnchor insertionEndAnchor;
 		protected ITextEditor editor;
 		
 		ClassFinder classFinderContext;
@@ -34,15 +35,13 @@ namespace SharpRefactoring.Gui
 		
 		protected AbstractInlineRefactorDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor)
 		{
-			this.anchor = anchor;
+			this.anchor = insertionEndAnchor = anchor;
 			this.editor = editor;
 			this.context = context;
 			
 			this.classFinderContext = new ClassFinder(ParserService.ParseCurrentViewContent(), editor.Document.Text, anchor.Offset);
 			
 			this.Background = SystemColors.ControlBrush;
-			
-			FocusFirstElement();
 		}
 		
 		protected virtual void FocusFirstElement()
@@ -104,12 +103,20 @@ namespace SharpRefactoring.Gui
 		
 		void IActiveElement.OnInsertionCompleted()
 		{
+			OnInsertionCompleted();
+		}
+		
+		protected virtual void OnInsertionCompleted()
+		{
+			FocusFirstElement();
 		}
 		
 		void IActiveElement.Deactivate(SnippetEventArgs e)
 		{
 			if (e.Reason == DeactivateReason.ReturnPressed)
 				OKButtonClick(null, null);
+			
+			context.TextArea.Caret.Offset = insertionEndAnchor.Offset;
 			
 			Deactivate();
 		}

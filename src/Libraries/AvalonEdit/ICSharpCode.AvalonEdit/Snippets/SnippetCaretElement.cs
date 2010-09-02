@@ -24,7 +24,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 				SetCaret(context);
 		}
 		
-		internal static void SetCaret(InsertionContext context)
+		public static void SetCaret(InsertionContext context)
 		{
 			TextAnchor pos = context.Document.CreateAnchor(context.InsertionPosition);
 			pos.SurviveDeletion = true;
