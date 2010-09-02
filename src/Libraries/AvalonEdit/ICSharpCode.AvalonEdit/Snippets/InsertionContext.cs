@@ -92,6 +92,9 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		AnchorSegment wholeSnippetAnchor;
 		bool deactivateIfSnippetEmpty;
 		
+		/// <summary>
+		/// Gets the start position of the snippet insertion.
+		/// </summary>
 		public int StartPosition {
 			get {
 				if (wholeSnippetAnchor != null)
