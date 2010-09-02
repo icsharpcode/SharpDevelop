@@ -8,10 +8,10 @@
 using System;
 using System.Diagnostics;
 using System.Windows.Documents;
-
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -178,6 +178,15 @@ namespace ICSharpCode.SharpDevelop.Editor
 		{
 			if (textBuffer == null)
 				throw new ArgumentNullException("textBuffer");
+			
+			var textSourceAdapter = textBuffer as AvalonEditTextSourceAdapter;
+			if (textSourceAdapter != null)
+				return textSourceAdapter.textSource;
+			
+			var documentAdapter = textBuffer as AvalonEditDocumentAdapter;
+			if (documentAdapter != null)
+				return documentAdapter.document;
+			
 			return new TextBufferTextSource(textBuffer);
 		}
 		
