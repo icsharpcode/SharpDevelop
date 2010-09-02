@@ -75,6 +75,7 @@
     <Compile Include="OverridableMethodsTestFixture.cs" />
     <Compile Include="OverridablePropertiesTestFixture.cs" />
     <Compile Include="PropertyPadSortingTests.cs" />
+    <Compile Include="ReadOnlyDocumentTests.cs" />
     <Compile Include="ReflectionLayerTests.cs" />
     <Compile Include="GenericResolverTests.cs" />
     <Compile Include="InnerClassesResolverTests.cs" />
