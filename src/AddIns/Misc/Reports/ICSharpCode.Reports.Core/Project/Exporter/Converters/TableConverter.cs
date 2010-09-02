@@ -95,8 +95,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 								mylist.Clear();
 
 								currentPosition = BaseConverter.BaseConvert(mylist,headerContainer,
-								                                     defaultLeftPos,
-								                                     base.SectionBounds.ReportHeaderRectangle.Location);
+								                                            defaultLeftPos,
+								                                            base.SectionBounds.ReportHeaderRectangle.Location);
 							}
 							
 							currentPosition = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
