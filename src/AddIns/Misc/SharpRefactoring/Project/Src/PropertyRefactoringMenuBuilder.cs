@@ -75,21 +75,7 @@ namespace SharpRefactoring
 			if (fileName == null)
 				return false;
 			
-			IDocument document;
-			ITextEditorProvider provider = FileService.GetOpenFile(fileName) as ITextEditorProvider;
-			
-			if (provider == null) {
-				if (!File.Exists(fileName))
-					return false;
-				try {
-					document = DocumentUtilitites.LoadDocumentFromBuffer(new StringTextBuffer(File.ReadAllText(fileName)));
-				} catch (IOException) {
-					return false;
-				}
-			} else {
-				document = provider.TextEditor.Document;
-			}
-			
+			IDocument document = DocumentUtilitites.LoadDocumentFromBuffer(ParserService.GetParseableFileContent(fileName));
 			bool isAutomatic = false;
 			
 			if (property.CanGet) {
