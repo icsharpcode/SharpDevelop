@@ -8,6 +8,8 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Utils;
 using IronPython.Hosting;
 
 namespace PythonBinding.Tests.Utils

@@ -7,9 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.Core;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 

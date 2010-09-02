@@ -13,7 +13,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
-namespace PythonBinding.Tests
+namespace PythonBinding.Tests.Completion
 {
 	/// <summary>
 	/// Tests that the From keyword is correctly identified as a 

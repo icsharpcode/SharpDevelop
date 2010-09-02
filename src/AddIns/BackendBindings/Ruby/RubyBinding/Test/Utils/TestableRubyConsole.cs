@@ -8,6 +8,8 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Utils;
 using IronRuby.Hosting;
 
 namespace RubyBinding.Tests.Utils

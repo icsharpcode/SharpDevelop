@@ -12,7 +12,9 @@ using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Windows.Forms;
+
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 
@@ -69,18 +71,18 @@ namespace RubyBinding.Tests.Designer
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "    fooItem1 = RubyBinding::Tests::Utils::FooItem.new()\r\n" +
-								"    fooItem2 = RubyBinding::Tests::Utils::FooItem.new()\r\n" +
-								"    barItem1 = RubyBinding::Tests::Utils::BarItem.new()\r\n" +
-								"    barItem2 = RubyBinding::Tests::Utils::BarItem.new()\r\n" +
-								"    @userControl1 = RubyBinding::Tests::Utils::CustomUserControl.new()\r\n" +
+			string expectedCode = "    fooItem1 = ICSharpCode::Scripting::Tests::Utils::FooItem.new()\r\n" +
+								"    fooItem2 = ICSharpCode::Scripting::Tests::Utils::FooItem.new()\r\n" +
+								"    barItem1 = ICSharpCode::Scripting::Tests::Utils::BarItem.new()\r\n" +
+								"    barItem2 = ICSharpCode::Scripting::Tests::Utils::BarItem.new()\r\n" +
+								"    @userControl1 = ICSharpCode::Scripting::Tests::Utils::CustomUserControl.new()\r\n" +
 								"    self.SuspendLayout()\r\n" +
 								"    # \r\n" +
 								"    # userControl1\r\n" +
 								"    # \r\n" +
 								"    fooItem1.Text = \"aa\"\r\n" +
 								"    fooItem2.Text = \"bb\"\r\n" +
-								"    @userControl1.FooItems.AddRange(System::Array[RubyBinding::Tests::Utils::FooItem].new(\r\n" +
+								"    @userControl1.FooItems.AddRange(System::Array[ICSharpCode::Scripting::Tests::Utils::FooItem].new(\r\n" +
 								"        [fooItem1,\r\n" +
 								"        fooItem2]))\r\n" +
 								"    @userControl1.Location = System::Drawing::Point.new(0, 0)\r\n" +
@@ -90,7 +92,7 @@ namespace RubyBinding.Tests.Designer
 								"    # \r\n" +
 								"    barItem1.Text = \"cc\"\r\n" +
 								"    barItem2.Text = \"dd\"\r\n" +
-								"    @userControl1.ParentComponent.ParentBarItems.AddRange(System::Array[RubyBinding::Tests::Utils::BarItem].new(\r\n" +
+								"    @userControl1.ParentComponent.ParentBarItems.AddRange(System::Array[ICSharpCode::Scripting::Tests::Utils::BarItem].new(\r\n" +
 								"        [barItem1,\r\n" +
 								"        barItem2]))\r\n" +
 								"    @userControl1.Size = System::Drawing::Size.new(200, 100)\r\n" +

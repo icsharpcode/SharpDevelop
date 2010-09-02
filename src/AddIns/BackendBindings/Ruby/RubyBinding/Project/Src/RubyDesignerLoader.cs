@@ -18,6 +18,7 @@ using System.Security.Permissions;
 
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.FormsDesigner.Services;
+using ICSharpCode.Scripting;
 
 namespace ICSharpCode.RubyBinding
 {

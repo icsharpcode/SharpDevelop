@@ -12,6 +12,7 @@ using System.Text;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;

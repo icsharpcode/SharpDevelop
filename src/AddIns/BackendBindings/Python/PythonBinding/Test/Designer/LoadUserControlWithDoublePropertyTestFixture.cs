@@ -12,6 +12,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
@@ -30,7 +31,7 @@ namespace PythonBinding.Tests.Designer
 				componentCreator.AddType(type.FullName, type);
 				return "class MainForm(System.Windows.Forms.Form):\r\n" +
 							"    def InitializeComponent(self):\r\n" +
-							"        self._userControl = PythonBinding.Tests.Utils.DoublePropertyUserControl()\r\n" +
+							"        self._userControl = ICSharpCode.Scripting.Tests.Utils.DoublePropertyUserControl()\r\n" +
 							"        self.SuspendLayout()\r\n" +
 							"        # \r\n" +
 							"        # userControl1\r\n" +
@@ -48,7 +49,7 @@ namespace PythonBinding.Tests.Designer
 
 		[TestFixtureSetUp]
 		public void SetUpFixture()
-		{			
+		{
 			PythonComponentWalker walker = new PythonComponentWalker(componentCreator);
 			form = walker.CreateComponent(PythonCode) as Form;
 			userControl = form.Controls[0] as DoublePropertyUserControl;

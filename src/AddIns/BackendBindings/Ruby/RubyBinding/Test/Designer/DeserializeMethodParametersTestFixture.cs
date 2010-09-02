@@ -11,7 +11,9 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Windows.Forms;
+
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using IronRuby.Compiler.Ast;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;

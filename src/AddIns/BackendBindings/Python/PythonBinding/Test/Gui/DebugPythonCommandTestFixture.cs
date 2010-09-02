@@ -8,10 +8,11 @@
 using System;
 using System.Diagnostics;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.PythonBinding;
-using PythonBinding.Tests.Utils;
+using ICSharpCode.Scripting.Tests.Utils;
+using ICSharpCode.SharpDevelop.Debugging;
 using NUnit.Framework;
+using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Gui
 {

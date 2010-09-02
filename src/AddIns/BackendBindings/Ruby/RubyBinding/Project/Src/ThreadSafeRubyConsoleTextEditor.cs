@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.AvalonEdit;
+using ICSharpCode.Scripting;
 
 namespace ICSharpCode.RubyBinding
 {

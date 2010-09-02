@@ -15,8 +15,9 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
-using ICSharpCode.PythonBinding;
 using ICSharpCode.FormsDesigner;
+using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;

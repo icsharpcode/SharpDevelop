@@ -11,7 +11,7 @@ using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using NUnit.Framework;
 
-namespace PythonBinding.Tests
+namespace PythonBinding.Tests.PythonLanguage
 {
 	/// <summary>
 	/// Tests the PythonProjectBinding class.

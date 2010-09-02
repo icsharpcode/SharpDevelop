@@ -18,6 +18,7 @@ using System.Windows.Forms;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 

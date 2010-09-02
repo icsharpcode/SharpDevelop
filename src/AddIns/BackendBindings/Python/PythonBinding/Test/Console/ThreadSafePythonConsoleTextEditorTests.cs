@@ -9,9 +9,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Input;
+
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Utils;
+using ICSharpCode.Scripting.Tests.Utils.Tests;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 using PythonBinding.Tests.Utils.Tests;

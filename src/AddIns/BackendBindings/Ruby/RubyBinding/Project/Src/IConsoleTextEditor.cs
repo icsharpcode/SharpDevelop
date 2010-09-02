@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.Scripting;
 
 namespace ICSharpCode.RubyBinding
 {

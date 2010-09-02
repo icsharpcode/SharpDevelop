@@ -12,7 +12,9 @@ using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Windows.Forms;
+
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
@@ -69,18 +71,18 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "    fooItem1 = PythonBinding.Tests.Utils.FooItem()\r\n" +
-								"    fooItem2 = PythonBinding.Tests.Utils.FooItem()\r\n" +
-								"    barItem1 = PythonBinding.Tests.Utils.BarItem()\r\n" +
-								"    barItem2 = PythonBinding.Tests.Utils.BarItem()\r\n" +
-								"    self._userControl1 = PythonBinding.Tests.Utils.CustomUserControl()\r\n" +
+			string expectedCode = "    fooItem1 = ICSharpCode.Scripting.Tests.Utils.FooItem()\r\n" +
+								"    fooItem2 = ICSharpCode.Scripting.Tests.Utils.FooItem()\r\n" +
+								"    barItem1 = ICSharpCode.Scripting.Tests.Utils.BarItem()\r\n" +
+								"    barItem2 = ICSharpCode.Scripting.Tests.Utils.BarItem()\r\n" +
+								"    self._userControl1 = ICSharpCode.Scripting.Tests.Utils.CustomUserControl()\r\n" +
 								"    self.SuspendLayout()\r\n" +
 								"    # \r\n" +
 								"    # userControl1\r\n" +
 								"    # \r\n" +
 								"    fooItem1.Text = \"aa\"\r\n" +
 								"    fooItem2.Text = \"bb\"\r\n" +
-								"    self._userControl1.FooItems.AddRange(System.Array[PythonBinding.Tests.Utils.FooItem](\r\n" +
+								"    self._userControl1.FooItems.AddRange(System.Array[ICSharpCode.Scripting.Tests.Utils.FooItem](\r\n" +
 								"        [fooItem1,\r\n" +
 								"        fooItem2]))\r\n" +
 								"    self._userControl1.Location = System.Drawing.Point(0, 0)\r\n" +
@@ -90,7 +92,7 @@ namespace PythonBinding.Tests.Designer
 								"    # \r\n" +
 								"    barItem1.Text = \"cc\"\r\n" +
 								"    barItem2.Text = \"dd\"\r\n" +
-								"    self._userControl1.ParentComponent.ParentBarItems.AddRange(System.Array[PythonBinding.Tests.Utils.BarItem](\r\n" +
+								"    self._userControl1.ParentComponent.ParentBarItems.AddRange(System.Array[ICSharpCode.Scripting.Tests.Utils.BarItem](\r\n" +
 								"        [barItem1,\r\n" +
 								"        barItem2]))\r\n" +
 								"    self._userControl1.Size = System.Drawing.Size(200, 100)\r\n" +

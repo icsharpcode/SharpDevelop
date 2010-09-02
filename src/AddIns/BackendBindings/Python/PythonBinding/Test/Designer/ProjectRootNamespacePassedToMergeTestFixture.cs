@@ -13,15 +13,17 @@ using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using AvalonEdit = ICSharpCode.AvalonEdit;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Refactoring;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
+using AvalonEdit = ICSharpCode.AvalonEdit;
 
 namespace PythonBinding.Tests.Designer
 {

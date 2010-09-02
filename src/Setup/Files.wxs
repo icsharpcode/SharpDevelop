@@ -438,6 +438,9 @@
 								</File>
 								<File Id="ICSharpCode.SharpDevelop.BuildWorker40.exe.config" Name="ICSharpCode.SharpDevelop.BuildWorker40.exe.config" Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker40.exe.config" />
 							</Component>
+							<Component Id="ICSharpCodeScriptingDll" Guid="62B44EFA-CCB4-4B73-B455-AE3C72B8121F" DiskId="1">
+								<File Id="ICSharpCode.Scripting.dll" Name="ICSharpCode.Scripting.dll" Source="..\..\bin\ICSharpCode.Scripting.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.Scripting.dll" AssemblyManifest="ICSharpCode.Scripting.dll" />
+							</Component>
 						</Directory>
 						<Directory Id="DocFolder" Name="doc">
 							<Component Guid="9DCED5AC-B771-4A4F-B4FE-69867BF2EBDE" Id="SharpDevelopDocFiles" DiskId="1">

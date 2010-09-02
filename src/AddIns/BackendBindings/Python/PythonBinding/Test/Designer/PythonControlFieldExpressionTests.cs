@@ -8,7 +8,9 @@
 using System;
 using System.ComponentModel;
 using System.Windows.Forms;
+
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using IronPython.Compiler.Ast;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;

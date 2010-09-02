@@ -5,7 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.SharpDevelop;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,7 +15,10 @@ using System.Reflection;
 using System.Resources;
 using System.Text;
 using System.Windows.Forms;
+
 using ICSharpCode.Core;
+using ICSharpCode.Scripting;
+using ICSharpCode.SharpDevelop;
 using IronPython.Compiler.Ast;
 
 namespace ICSharpCode.PythonBinding

@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Input;
 using ICSharpCode.AvalonEdit.CodeCompletion;
+using ICSharpCode.Scripting;
 using IronPython.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
 

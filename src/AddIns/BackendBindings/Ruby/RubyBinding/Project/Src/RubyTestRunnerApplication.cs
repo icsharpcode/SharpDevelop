@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using ICSharpCode.Core;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;

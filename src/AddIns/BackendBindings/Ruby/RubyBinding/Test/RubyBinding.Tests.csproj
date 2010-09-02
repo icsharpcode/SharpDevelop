@@ -73,13 +73,9 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Configuration\RubyAddInOptionsTestFixture.cs" />
     <Compile Include="Console\CodeCompletionTests.cs" />
-    <Compile Include="Console\CommandLineHistoryTestFixture.cs" />
     <Compile Include="Console\DisposedRubyConsoleTestFixture.cs" />
-    <Compile Include="Console\EmptyCommandLineHistoryTestFixture.cs" />
     <Compile Include="Console\InsertConsoleCompletionDataTestFixture.cs" />
     <Compile Include="Console\KeysPressedWhenCompletionWindowOpenTestFixture.cs" />
-    <Compile Include="Console\MockMemberProvider.cs" />
-    <Compile Include="Console\OneItemCommandLineHistoryTestFixture.cs" />
     <Compile Include="Console\RubyConsoleCodeCompletionTestFixture.cs" />
     <Compile Include="Console\RubyConsoleCommandLineHistoryTestFixture.cs" />
     <Compile Include="Console\RubyConsoleCurrentLineTestFixture.cs" />
@@ -322,8 +318,6 @@
     <Compile Include="RubyLanguage\RubyLanguageBindingTestFixture.cs" />
     <Compile Include="RubyLanguage\RubyLanguagePropertiesTests.cs" />
     <Compile Include="Testing\CreateRubyTestRunnerTestFixture.cs" />
-    <Compile Include="Testing\CreateTextWriterInfoEqualsTestFixture.cs" />
-    <Compile Include="Testing\CreateTextWriterFromCreateTextWriterInfoTestFixture.cs" />
     <Compile Include="Testing\RubyConsoleApplicationTestFixture.cs" />
     <Compile Include="Testing\RubyTestDebuggerRunsSelectedTestMethodTestFixture.cs" />
     <Compile Include="Testing\RubyTestFrameworkIsTestClassTests.cs" />
@@ -333,67 +327,28 @@
     <Compile Include="Testing\RubyTestRunnerApplicationTests.cs" />
     <Compile Include="Testing\RubyTestRunnerRunsSelectedTestMethodTestFixture.cs" />
     <Compile Include="Testing\RubyTestRunnerResponseFileTestFixture.cs" />
-    <Compile Include="Utils\AddedComponent.cs" />
-    <Compile Include="Utils\AddInHelper.cs" />
     <Compile Include="Utils\AddInPathHelper.cs" />
-    <Compile Include="Utils\BarItemCollection.cs" />
-    <Compile Include="Utils\ConvertedFile.cs" />
-    <Compile Include="Utils\CreatedComponent.cs" />
-    <Compile Include="Utils\CreatedInstance.cs" />
-    <Compile Include="Utils\CustomUserControl.cs" />
     <Compile Include="Utils\DerivedConvertProjectToRubyProjectCommand.cs" />
-    <Compile Include="Utils\DerivedFormDesignerViewContent.cs" />
     <Compile Include="Utils\DerivedRubyAddInOptions.cs" />
     <Compile Include="Utils\DerivedRubyConsoleHost.cs" />
     <Compile Include="Utils\DerivedRubyDesignerGenerator.cs" />
     <Compile Include="Utils\DerivedRubyDesignerLoader.cs" />
     <Compile Include="Utils\DerivedRubyFormsDesignerDisplayBinding.cs" />
-    <Compile Include="Utils\DerivedToolStripMenuItem.cs" />
-    <Compile Include="Utils\DoublePropertyUserControl.cs" />
-    <Compile Include="Utils\FakeCaret.cs" />
-    <Compile Include="Utils\FakeDocument.cs" />
-    <Compile Include="Utils\FakeDocumentLine.cs" />
-    <Compile Include="Utils\FakeLock.cs" />
-    <Compile Include="Utils\FooItemCollection.cs" />
-    <Compile Include="Utils\MockComponentCreator.cs" />
-    <Compile Include="Utils\MockConsoleTextEditorKeyEventArgs.cs" />
-    <Compile Include="Utils\MockControlDispatcher.cs" />
-    <Compile Include="Utils\MockDebugger.cs" />
     <Compile Include="Utils\MockDesignerGenerator.cs" />
-    <Compile Include="Utils\MockDesignerLoaderHost.cs" />
-    <Compile Include="Utils\MockEditableViewContent.cs" />
-    <Compile Include="Utils\MockEventBindingService.cs" />
-    <Compile Include="Utils\MockEventDescriptor.cs" />
-    <Compile Include="Utils\MockExtenderProviderService.cs" />
-    <Compile Include="Utils\MockOpenedFile.cs" />
-    <Compile Include="Utils\MockProject.cs" />
     <Compile Include="Utils\MockProjectContent.cs" />
-    <Compile Include="Utils\MockPropertyDescriptor.cs" />
-    <Compile Include="Utils\MockResourceReader.cs" />
-    <Compile Include="Utils\MockResourceService.cs" />
-    <Compile Include="Utils\MockResourceWriter.cs" />
     <Compile Include="Utils\MockRubyConsole.cs" />
     <Compile Include="Utils\MockRubyConsolePad.cs" />
     <Compile Include="Utils\MockRubyFileService.cs" />
     <Compile Include="Utils\MockSite.cs" />
     <Compile Include="Utils\MockConsoleTextEditor.cs" />
-    <Compile Include="Utils\MockTextEditor.cs" />
-    <Compile Include="Utils\MockTextEditorOptions.cs" />
-    <Compile Include="Utils\MockTextEditorViewContent.cs" />
-    <Compile Include="Utils\MockTypeResolutionService.cs" />
-    <Compile Include="Utils\MockViewContent.cs" />
     <Compile Include="Utils\MockWorkbench.cs" />
     <Compile Include="Utils\MSBuildEngineHelper.cs" />
-    <Compile Include="Utils\NullPropertyUserControl.cs" />
     <Compile Include="Utils\RubyBindingAddInFile.cs" />
     <Compile Include="Utils\RubyParserHelper.cs" />
     <Compile Include="Utils\RubySelectedTestsHelper.cs" />
-    <Compile Include="Utils\SupportInitCustomControl.cs" />
     <Compile Include="Utils\TestableRubyConsole.cs" />
     <Compile Include="Utils\Tests\AddInPathHelperTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockControlDispatcherTestFixture.cs" />
     <Compile Include="Utils\Tests\MockConsoleTextEditorTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockEditableViewContentTestFixture.cs" />
     <Compile Include="Utils\Tests\MockRubyFileServiceTestFixture.cs" />
     <EmbeddedResource Include="..\Project\RubyBinding.addin">
       <Link>RubyBinding.addin</Link>
@@ -444,6 +399,14 @@
     <ProjectReference Include="..\..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
       <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
       <Name>FormsDesigner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Scripting\Project\ICSharpCode.Scripting.csproj">
+      <Project>{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}</Project>
+      <Name>ICSharpCode.Scripting</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Scripting\Test\ICSharpCode.Scripting.Tests.csproj">
+      <Project>{85C09AD8-183B-403A-869A-7226646218A9}</Project>
+      <Name>ICSharpCode.Scripting.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\Project\RubyBinding.csproj">
       <Project>{C896FFFF-5B6C-4B0E-B6DF-049865F501B4}</Project>

@@ -11,7 +11,9 @@ using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Windows.Forms;
+
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 
@@ -55,7 +57,7 @@ namespace RubyBinding.Tests.Designer
 		public void GeneratedCode()
 		{
 			string expectedCode =
-				"@userControl1 = RubyBinding::Tests::Utils::NullPropertyUserControl.new()\r\n" +
+				"@userControl1 = ICSharpCode::Scripting::Tests::Utils::NullPropertyUserControl.new()\r\n" +
 				"self.SuspendLayout()\r\n" +
 				"# \r\n" +
 				"# userControl1\r\n" +

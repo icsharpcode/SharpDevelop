@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Reflection;
+
+using ICSharpCode.Scripting;
 using IronPython.Compiler;
 using IronPython.Compiler.Ast;
 

@@ -7,6 +7,7 @@
 
 using System;
 using System.Windows.Input;
+using ICSharpCode.Scripting;
 
 namespace ICSharpCode.PythonBinding
 {

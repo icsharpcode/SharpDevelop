@@ -12,6 +12,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 
@@ -31,7 +32,7 @@ namespace RubyBinding.Tests.Designer
 				return
 					"class MainForm < System::Windows::Forms::Form\r\n" +
 					"    def InitializeComponent()\r\n" +
-					"        @userControl = RubyBinding::Tests::Utils::DoublePropertyUserControl.new()\r\n" +
+					"        @userControl = ICSharpCode::Scripting::Tests::Utils::DoublePropertyUserControl.new()\r\n" +
 					"        self.SuspendLayout()\r\n" +
 					"        # \r\n" +
 					"        # userControl1\r\n" +

@@ -13,6 +13,7 @@ using System.Windows.Threading;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PythonBinding

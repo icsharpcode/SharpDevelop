@@ -7,11 +7,11 @@
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Scripting.Hosting;
-
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Console;
+using Microsoft.Scripting.Hosting;
 using NUnit.Framework;
 
 namespace PythonBinding.Tests.Console

@@ -8,6 +8,8 @@
 using System;
 using System.IO;
 using System.Text;
+
+using ICSharpCode.Scripting;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.PythonBinding

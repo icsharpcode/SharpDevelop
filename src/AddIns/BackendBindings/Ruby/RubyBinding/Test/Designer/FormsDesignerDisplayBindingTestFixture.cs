@@ -9,6 +9,7 @@ using System;
 using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using NUnit.Framework;

@@ -16,6 +16,7 @@ using System.Resources;
 using System.Windows.Forms;
 
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
 using IronRuby.Compiler.Ast;
 using Microsoft.Scripting;
 using NUnit.Framework;

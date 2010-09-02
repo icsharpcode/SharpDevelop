@@ -11,7 +11,9 @@ using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.Windows.Forms;
+
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
@@ -54,7 +56,7 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void GeneratedCode()
 		{
-			string expectedCode = "self._userControl1 = PythonBinding.Tests.Utils.NullPropertyUserControl()\r\n" +
+			string expectedCode = "self._userControl1 = ICSharpCode.Scripting.Tests.Utils.NullPropertyUserControl()\r\n" +
 								"self.SuspendLayout()\r\n" +
 								"# \r\n" +
 								"# userControl1\r\n" +

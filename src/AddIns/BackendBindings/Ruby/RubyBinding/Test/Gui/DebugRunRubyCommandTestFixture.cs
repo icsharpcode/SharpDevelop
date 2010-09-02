@@ -8,10 +8,11 @@
 using System;
 using System.Diagnostics;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.RubyBinding;
-using RubyBinding.Tests.Utils;
+using ICSharpCode.Scripting.Tests.Utils;
+using ICSharpCode.SharpDevelop.Debugging;
 using NUnit.Framework;
+using RubyBinding.Tests.Utils;
 
 namespace RubyBinding.Tests.Gui
 {

@@ -17,10 +17,11 @@ using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop;
-using IronRuby.Hosting;
 using IronRuby.Compiler;
 using IronRuby.Compiler.Ast;
+using IronRuby.Hosting;
 using IronRuby.Runtime;
 
 namespace ICSharpCode.RubyBinding

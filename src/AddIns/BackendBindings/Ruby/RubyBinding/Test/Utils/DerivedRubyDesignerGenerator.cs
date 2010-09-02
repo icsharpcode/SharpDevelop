@@ -14,9 +14,10 @@ using System.Reflection;
 
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace RubyBinding.Tests.Utils
 {

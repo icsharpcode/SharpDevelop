@@ -86,12 +86,6 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\CommandLineHistory.cs" />
-    <Compile Include="Src\ConsoleTextEditorKeyEventArgs.cs" />
-    <Compile Include="Src\ControlDispatcher.cs" />
-    <Compile Include="Src\CreateTextWriterInfo.cs" />
-    <Compile Include="Src\IControlDispatcher.cs" />
-    <Compile Include="Src\ILock.cs" />
     <Compile Include="Src\IRubyConsole.cs" />
     <Compile Include="Src\IRubyConsolePad.cs" />
     <Compile Include="Src\IRubyFileService.cs" />
@@ -100,8 +94,6 @@
     <Compile Include="Src\RubyConsoleCompletionData.cs" />
     <Compile Include="Src\ConvertProjectToRubyProjectCommand.cs" />
     <Compile Include="Src\ConvertToRubyMenuCommand.cs" />
-    <Compile Include="Src\IComponentCreator.cs" />
-    <Compile Include="Src\IMemberProvider.cs" />
     <Compile Include="Src\IConsoleTextEditor.cs" />
     <Compile Include="Src\NRefactoryToRubyConverter.cs" />
     <Compile Include="Src\RubyAddInOptions.cs" />
@@ -147,7 +139,6 @@
     <Compile Include="Src\RunRubyCommand.cs" />
     <Compile Include="Src\RubyConsoleTextEditor.cs" />
     <Compile Include="Src\SendLineToRubyConsoleCommand.cs" />
-    <Compile Include="Src\StringListLock.cs" />
     <Compile Include="Src\ThreadSafeRubyConsoleTextEditor.cs" />
     <EmbeddedResource Include="Resources\Ruby.xshd" />
     <EmbeddedResource Include="Resources\RubyOptionsPanel.xfrm" />
@@ -250,6 +241,11 @@
     <ProjectReference Include="..\..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
       <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
       <Name>FormsDesigner</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Scripting\Project\ICSharpCode.Scripting.csproj">
+      <Project>{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}</Project>
+      <Name>ICSharpCode.Scripting</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

@@ -14,6 +14,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using IronRuby.Compiler.Ast;
 using Microsoft.Scripting;
 using NUnit.Framework;

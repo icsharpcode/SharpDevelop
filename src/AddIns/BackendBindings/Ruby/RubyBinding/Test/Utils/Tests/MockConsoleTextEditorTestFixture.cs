@@ -8,6 +8,7 @@
 using System;
 using System.Windows.Input;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
 using NUnit.Framework;
 using RubyBinding.Tests.Console;
 using RubyBinding.Tests.Utils;

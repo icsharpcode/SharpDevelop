@@ -391,6 +391,7 @@
 				<ComponentRef Id="PartCoverExeConfig"/>
 				<ComponentRef Id="PartCoverFrameworkDll"/>
 				
+				<ComponentRef Id="ICSharpCodeScriptingDll"/>
 				<ComponentRef Id="PythonConsoleProjectTemplate"/>
 				<ComponentRef Id="PythonEmptyClassTemplate"/>
 				<ComponentRef Id="PythonEmptyFormTemplate"/>

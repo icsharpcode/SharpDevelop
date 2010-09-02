@@ -11,6 +11,8 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
+
+using ICSharpCode.Scripting;
 using IronRuby.Builtins;
 using IronRuby.Compiler.Ast;
 

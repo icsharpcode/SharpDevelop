@@ -8,7 +8,9 @@
 using System;
 using System.IO;
 using System.Text;
+
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
 using NUnit.Framework;
 
 namespace RubyBinding.Tests.Utils.Tests

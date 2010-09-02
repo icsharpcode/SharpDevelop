@@ -10,7 +10,7 @@ using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 
-namespace PythonBinding.Tests
+namespace PythonBinding.Tests.PythonLanguage
 {
 	[TestFixture]
 	public class PythonLanguagePropertiesTests

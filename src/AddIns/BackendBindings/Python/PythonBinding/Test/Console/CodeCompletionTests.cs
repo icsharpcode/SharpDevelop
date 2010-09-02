@@ -6,9 +6,9 @@
 // </file>
 
 using System;
-
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Console;
 using ICSharpCode.SharpDevelop;
 using NUnit.Framework;
 

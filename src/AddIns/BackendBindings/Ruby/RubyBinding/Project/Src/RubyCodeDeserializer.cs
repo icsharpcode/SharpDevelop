@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using System.Text;
+
+using ICSharpCode.Scripting;
 using IronRuby.Builtins;
 using IronRuby.Compiler;
 using IronRuby.Compiler.Ast;

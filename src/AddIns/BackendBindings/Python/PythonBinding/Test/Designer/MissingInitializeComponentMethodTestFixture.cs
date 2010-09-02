@@ -16,6 +16,7 @@ using System.Resources;
 using System.Windows.Forms;
 
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
 using IronPython.Compiler.Ast;
 using Microsoft.Scripting;
 using NUnit.Framework;

@@ -8,6 +8,7 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using NUnit.Framework;

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-# SharpDevelop 4.0.0.6500
+# SharpDevelop 4.0.0.6511
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PythonBinding", "PythonBinding\Project\PythonBinding.csproj", "{8D732610-8FC6-43BA-94C9-7126FD7FE361}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PythonBinding.Tests", "PythonBinding\Test\PythonBinding.Tests.csproj", "{23B517C9-1ECC-4419-A13F-0B7136D085CB}"
@@ -34,12 +34,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesting", "..\..\Analys
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesting.Tests", "..\..\Analysis\UnitTesting\Test\UnitTesting.Tests.csproj", "{44A8DE09-CAB9-49D8-9CFC-5EB0A552F181}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Scripting", "..\Scripting\Project\ICSharpCode.Scripting.csproj", "{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Scripting.Tests", "..\Scripting\Test\ICSharpCode.Scripting.Tests.csproj", "{85C09AD8-183B-403A-869A-7226646218A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{8D732610-8FC6-43BA-94C9-7126FD7FE361}.Debug|Any CPU.Build.0 = Debug|Any CPU
@@ -106,5 +112,21 @@ Global
 		{44A8DE09-CAB9-49D8-9CFC-5EB0A552F181}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{44A8DE09-CAB9-49D8-9CFC-5EB0A552F181}.Release|Any CPU.Build.0 = Release|Any CPU
 		{44A8DE09-CAB9-49D8-9CFC-5EB0A552F181}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}.Debug|Any CPU.Build.0 = Debug|x86
+		{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}.Release|Any CPU.Build.0 = Release|x86
+		{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}.Release|Any CPU.ActiveCfg = Release|x86
+		{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}.Debug|x86.Build.0 = Debug|x86
+		{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}.Debug|x86.ActiveCfg = Debug|x86
+		{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}.Release|x86.Build.0 = Release|x86
+		{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}.Release|x86.ActiveCfg = Release|x86
+		{85C09AD8-183B-403A-869A-7226646218A9}.Debug|Any CPU.Build.0 = Debug|x86
+		{85C09AD8-183B-403A-869A-7226646218A9}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{85C09AD8-183B-403A-869A-7226646218A9}.Debug|x86.Build.0 = Debug|x86
+		{85C09AD8-183B-403A-869A-7226646218A9}.Debug|x86.ActiveCfg = Debug|x86
+		{85C09AD8-183B-403A-869A-7226646218A9}.Release|Any CPU.Build.0 = Release|x86
+		{85C09AD8-183B-403A-869A-7226646218A9}.Release|Any CPU.ActiveCfg = Release|x86
+		{85C09AD8-183B-403A-869A-7226646218A9}.Release|x86.Build.0 = Release|x86
+		{85C09AD8-183B-403A-869A-7226646218A9}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal

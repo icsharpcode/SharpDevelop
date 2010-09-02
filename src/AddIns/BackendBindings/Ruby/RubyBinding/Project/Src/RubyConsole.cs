@@ -11,6 +11,7 @@ using System.IO;
 using System.Threading;
 using System.Windows.Input;
 using ICSharpCode.AvalonEdit.CodeCompletion;
+using ICSharpCode.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
 

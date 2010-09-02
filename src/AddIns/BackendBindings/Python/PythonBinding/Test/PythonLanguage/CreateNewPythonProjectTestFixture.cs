@@ -17,7 +17,7 @@ using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
-namespace PythonBinding.Tests
+namespace PythonBinding.Tests.PythonLanguage
 {
 	/// <summary>
 	/// Tests the initial properties set in a newly created PythonProject.

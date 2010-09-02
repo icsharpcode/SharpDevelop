@@ -81,24 +81,18 @@
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Src\CommandLineHistory.cs" />
-    <Compile Include="Src\ConsoleTextEditorKeyEventArgs.cs" />
     <Compile Include="Src\ConstructorInfo.cs" />
-    <Compile Include="Src\ControlDispatcher.cs" />
     <Compile Include="Src\ConvertProjectToPythonProjectCommand.cs" />
     <Compile Include="Src\ConvertToPythonMenuCommand.cs" />
     <Compile Include="Src\ApplicationSettingsPanel.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AddInOptions.cs" />
     <Compile Include="Src\CompilingOptionsPanel.cs" />
-    <Compile Include="Src\CreateTextWriterInfo.cs" />
-    <Compile Include="Src\IControlDispatcher.cs" />
     <Compile Include="Src\IPythonConsole.cs" />
     <Compile Include="Src\IPythonConsolePad.cs" />
     <Compile Include="Src\IPythonFileService.cs" />
     <Compile Include="Src\IPythonResolver.cs" />
     <Compile Include="Src\IPythonWorkbench.cs" />
-    <Compile Include="Src\ILock.cs" />
     <Compile Include="Src\MemberName.cs" />
     <Compile Include="Src\PythonBuiltInModuleMemberName.cs" />
     <Compile Include="Src\PythonClassResolver.cs" />
@@ -134,10 +128,7 @@
     <Compile Include="Src\PythonTextEditorViewContent.cs" />
     <Compile Include="Src\PythonWorkbench.cs" />
     <Compile Include="Src\SendLineToPythonConsoleCommand.cs" />
-    <Compile Include="Src\StringListLock.cs" />
     <Compile Include="Src\SysModuleCompletionItems.cs" />
-    <Compile Include="Src\IComponentCreator.cs" />
-    <Compile Include="Src\IMemberProvider.cs" />
     <Compile Include="Src\IConsoleTextEditor.cs" />
     <Compile Include="Src\NRefactoryToPythonConverter.cs" />
     <Compile Include="Src\PythonAstWalker.cs" />
@@ -276,6 +267,11 @@
     <ProjectReference Include="..\..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
       <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
       <Name>FormsDesigner</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Scripting\Project\ICSharpCode.Scripting.csproj">
+      <Project>{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}</Project>
+      <Name>ICSharpCode.Scripting</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

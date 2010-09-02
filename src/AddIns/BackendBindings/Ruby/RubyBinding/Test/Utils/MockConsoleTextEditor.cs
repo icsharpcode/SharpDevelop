@@ -13,6 +13,8 @@ using System.Windows.Input;
 
 using ICSharpCode.NRefactory;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Utils;
 
 namespace RubyBinding.Tests.Utils
 {

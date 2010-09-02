@@ -9,9 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Input;
+
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils.Tests;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 using RubyBinding.Tests.Utils.Tests;

@@ -8,7 +8,9 @@
 using System;
 using System.IO;
 using System.Text;
+
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
 using NUnit.Framework;
 
 namespace PythonBinding.Tests.Utils.Tests

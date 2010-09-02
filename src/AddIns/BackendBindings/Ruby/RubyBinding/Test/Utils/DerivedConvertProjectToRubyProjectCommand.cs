@@ -8,8 +8,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using ICSharpCode.Core;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;

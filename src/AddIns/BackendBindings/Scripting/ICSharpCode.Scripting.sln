@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+# SharpDevelop 4.0.0.6511
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Scripting", "Project\ICSharpCode.Scripting.csproj", "{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Scripting.Tests", "Test\ICSharpCode.Scripting.Tests.csproj", "{85C09AD8-183B-403A-869A-7226646218A9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}.Debug|x86.Build.0 = Debug|x86
+		{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}.Debug|x86.ActiveCfg = Debug|x86
+		{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}.Release|x86.Build.0 = Release|x86
+		{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}.Release|x86.ActiveCfg = Release|x86
+		{85C09AD8-183B-403A-869A-7226646218A9}.Debug|x86.Build.0 = Debug|x86
+		{85C09AD8-183B-403A-869A-7226646218A9}.Debug|x86.ActiveCfg = Debug|x86
+		{85C09AD8-183B-403A-869A-7226646218A9}.Release|x86.Build.0 = Release|x86
+		{85C09AD8-183B-403A-869A-7226646218A9}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+EndGlobal

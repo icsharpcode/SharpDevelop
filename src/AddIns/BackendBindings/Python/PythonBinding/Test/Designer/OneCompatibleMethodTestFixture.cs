@@ -10,7 +10,9 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 using System.Collections;
 using System.IO;
+
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
