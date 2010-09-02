@@ -58,18 +58,16 @@ namespace ICSharpCode.AvalonEdit
 			
 			textArea.TextView.Services.AddService(typeof(TextEditor), this);
 			
-			SetCurrentPropertyValue(OptionsProperty, textArea.Options);
-			SetCurrentPropertyValue(DocumentProperty, new TextDocument());
+			SetCurrentValue(OptionsProperty, textArea.Options);
+			SetCurrentValue(DocumentProperty, new TextDocument());
 		}
 		
-		void SetCurrentPropertyValue(DependencyProperty property, object value)
+		#if !DOTNET4
+		void SetCurrentValue(DependencyProperty property, object value)
 		{
-			#if DOTNET4
-			SetCurrentValue(property, value);
-			#else
 			SetValue(property, value);
-			#endif
 		}
+		#endif
 		#endregion
 		
 		/// <inheritdoc/>
@@ -440,7 +438,7 @@ namespace ICSharpCode.AvalonEdit
 			if (e.PropertyName == "IsOriginalFile") {
 				TextDocument document = this.Document;
 				if (document != null) {
-					SetCurrentPropertyValue(IsModifiedProperty, Boxes.Box(!document.UndoStack.IsOriginalFile));
+					SetCurrentValue(IsModifiedProperty, Boxes.Box(!document.UndoStack.IsOriginalFile));
 				}
 				return true;
 			} else {

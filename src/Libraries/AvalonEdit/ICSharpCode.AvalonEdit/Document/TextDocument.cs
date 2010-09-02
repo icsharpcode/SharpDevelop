@@ -105,6 +105,31 @@ namespace ICSharpCode.AvalonEdit.Document
 			undoStack.AttachToDocument(this);
 			FireChangeEvents();
 		}
+		
+		/// <summary>
+		/// Create a new text document with the specified initial text.
+		/// </summary>
+		public TextDocument(ITextSource initialText)
+			: this(GetTextFromTextSource(initialText))
+		{
+		}
+		
+		// gets the text from a text source, directly retrieving the underlying rope where possible
+		static IEnumerable<char> GetTextFromTextSource(ITextSource textSource)
+		{
+			if (textSource == null)
+				throw new ArgumentNullException("textSource");
+			
+			RopeTextSource rts = textSource as RopeTextSource;
+			if (rts != null)
+				return rts.GetRope();
+			
+			TextDocument doc = textSource as TextDocument;
+			if (doc != null)
+				return doc.rope;
+			
+			return textSource.Text;
+		}
 		#endregion
 		
 		#region Text
