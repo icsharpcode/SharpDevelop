@@ -173,6 +173,17 @@ namespace ICSharpCode.SharpDevelop.Editor
 			return NormalizeNewLines(input, GetLineTerminator(document, lineNumber));
 		}
 		
+		/// <summary>
+		/// Creates an IDocument from an ITextBuffer.
+		/// </summary>
+		public static IDocument LoadDocumentFromBuffer(ITextBuffer buffer)
+		{
+			if (buffer == null)
+				throw new ArgumentNullException("buffer");
+			TextDocument document = new TextDocument(buffer.Text);
+			return new AvalonEdit.AvalonEditDocumentAdapter(document, null);
+		}
+		
 		#region ITextSource implementation
 		public static ICSharpCode.AvalonEdit.Document.ITextSource GetTextSource(ITextBuffer textBuffer)
 		{
