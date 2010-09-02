@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -80,13 +81,15 @@ namespace SharpRefactoring
 		{
 			int i = 0;
 			
-			foreach (var f in sourceClass.Fields) {
-				yield return new CtorParamWrapper(f) { Index = i, IsSelected = !f.IsReadonly };
+			foreach (var f in sourceClass.Fields.Where(field => !field.IsConst && field.IsStatic == sourceClass.IsStatic)) {
+				yield return new CtorParamWrapper(f) { Index = i, IsSelected = true };
 				i++;
 			}
 			
-			foreach (var p in sourceClass.Properties.Where(prop => prop.CanSet && !prop.IsIndexer)) {
-				yield return new CtorParamWrapper(p) { Index = i, IsSelected = !p.IsReadonly };
+			foreach (var p in sourceClass.Properties.Where(prop => prop.CanSet && !prop.IsIndexer
+			                                               && PropertyRefactoringMenuBuilder.IsAutomaticProperty(prop)
+			                                               && prop.IsStatic == sourceClass.IsStatic)) {
+				yield return new CtorParamWrapper(p) { Index = i, IsSelected = true };
 				i++;
 			}
 		}
