@@ -7,15 +7,14 @@
 
 using System;
 using System.Windows.Input;
-using ICSharpCode.Scripting;
 
-namespace ICSharpCode.PythonBinding
+namespace ICSharpCode.Scripting
 {
-	public class PythonConsoleTextEditorKeyEventArgs : ConsoleTextEditorKeyEventArgs
+	public class ScriptingConsoleTextEditorKeyEventArgs : ConsoleTextEditorKeyEventArgs
 	{
 		KeyEventArgs e;
 		
-		public PythonConsoleTextEditorKeyEventArgs(KeyEventArgs e)
+		public ScriptingConsoleTextEditorKeyEventArgs(KeyEventArgs e)
 			: base(e.Key)
 		{
 			this.e = e;

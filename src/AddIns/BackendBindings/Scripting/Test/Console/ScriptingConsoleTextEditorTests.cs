@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
@@ -12,72 +12,82 @@ using System.Windows.Input;
 
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Editing;
-using ICSharpCode.RubyBinding;
 using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
-using RubyBinding.Tests.Utils;
 
-namespace RubyBinding.Tests.Console
+namespace ICSharpCode.Scripting.Tests.Console
 {
 	[TestFixture]
-	public class RubyConsoleTextEditorTests
+	public class ScriptingConsoleTextEditorTests
 	{
-		RubyConsoleTextEditor consoleTextEditor;
+		ScriptingConsoleTextEditor consoleTextEditor;
 		TextEditor avalonEditTextEditor;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
 			avalonEditTextEditor = new TextEditor();
-			consoleTextEditor = new RubyConsoleTextEditor(avalonEditTextEditor);
+			consoleTextEditor = new ScriptingConsoleTextEditor(avalonEditTextEditor);
 		}
 		
 		[Test]
-		public void RubyConsoleTextEditorImplementsIScriptingConsoleTextEditorInterface()
+		public void InterfaceImplemented_NewInstance_ImplementsIScriptingConsoleTextEditorInterface()
 		{
 			Assert.IsNotNull(consoleTextEditor as IScriptingConsoleTextEditor);
 		}
 		
 		[Test]
-		public void MakeCurrentTextEditorContentReadOnlyExtendsReadOnlyRegionToEntireDocument()
+		public void MakeCurrentContentReadOnly_OneLineOfTextInTextEditor_ExtendsReadOnlyRegionToEntireDocument()
 		{
 			avalonEditTextEditor.Text = String.Empty;
 			consoleTextEditor.Write("abc" + Environment.NewLine);
 			consoleTextEditor.MakeCurrentContentReadOnly();
 			
 			IReadOnlySectionProvider readOnlySection = avalonEditTextEditor.TextArea.ReadOnlySectionProvider;
-			Assert.IsFalse(readOnlySection.CanInsert(2));
+			bool canInsertInsideText = readOnlySection.CanInsert(2);
+			Assert.IsFalse(canInsertInsideText);
 		}
 		
 		[Test]
-		public void WriteMethodUpdatesTextEditor()
+		public void Write_TextEditorHasNoText_UpdatesTextEditor()
 		{
 			avalonEditTextEditor.Text = String.Empty;
 			consoleTextEditor.Write("abc");
-			Assert.AreEqual("abc", avalonEditTextEditor.Text);
+			
+			string text = avalonEditTextEditor.Text;
+			string expectedText = "abc";
+			
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void ZeroBasedConsoleTextEditorColumnPositionIsOneLessThanAvalonTextEditorColumnPositionWhichIsOneBased()
+		public void Column_TextEditorColumnSetToThree_ZeroBasedConsoleTextEditorColumnPositionReturnsTwoWhichIsOneLessThanAvalonTextEditorColumnPositionWhichIsOneBased()
 		{
 			avalonEditTextEditor.Text = "test";
 			avalonEditTextEditor.TextArea.Caret.Column = 3;
 			
-			Assert.AreEqual(2, consoleTextEditor.Column);
+			int column = consoleTextEditor.Column;
+			int expectedColumn = 2;
+			
+			Assert.AreEqual(expectedColumn, column);
 		}
 		
 		[Test]
-		public void SettingConsoleTextEditorColumnPositionUpdatesAvalonTextEditorColumnPosition()
+		public void Column_SettingConsoleTextEditorColumnPosition_UpdatesAvalonTextEditorColumnPosition()
 		{
 			avalonEditTextEditor.Text = "test";
 			avalonEditTextEditor.TextArea.Caret.Column = 0;
 
 			consoleTextEditor.Column = 1;
-			Assert.AreEqual(2, avalonEditTextEditor.TextArea.Caret.Column);
+			int column = avalonEditTextEditor.TextArea.Caret.Column;
+			int expectedColumn = 2;
+			
+			Assert.AreEqual(expectedColumn, column);
 		}
 		
 		[Test]
-		public void GetSelectionStartAndLengthWhenThreeCharactersSelected()
+		public void SelectionStart_ThreeCharactersSelectedInTextEditor_ConsoleTextEditorSelectionIsEqualToTextEditorSelection()
 		{
 			avalonEditTextEditor.Text = "te000xt";
 			int startOffset = 2;
@@ -100,7 +110,7 @@ namespace RubyBinding.Tests.Console
 		}
 		
 		[Test]
-		public void GetSelectionStartAndLengthWhenNothingSelected()
+		public void SelectionLength_NothingSelectedInTextEditor_ConsoleTextEditorSelectionMatchesTextEditorSelection()
 		{
 			avalonEditTextEditor.Text = "text";
 			avalonEditTextEditor.TextArea.Caret.Column = 1;
@@ -111,37 +121,62 @@ namespace RubyBinding.Tests.Console
 		}
 
 		[Test]
-		public void ConsoleTextEditorLineEqualsOneLessThanAvalonTextEditorCaretLine()
+		public void Line_TextEditorCaretLineIsTwo_ConsoleTextEditorLineEqualsOneLessThanAvalonTextEditorCaretLine()
 		{
 			avalonEditTextEditor.Text = "abc\r\ndef";
 			avalonEditTextEditor.TextArea.Caret.Line = 2;
-			Assert.AreEqual(1, consoleTextEditor.Line);		
+			int line = consoleTextEditor.Line;
+			int expectedLine = 1;
+			Assert.AreEqual(expectedLine, line);		
 		}
 		
 		[Test]
-		public void ConsoleTextEditorTotalLinesEqualsAvalonTextEditorTotalLines()
-		{
-			avalonEditTextEditor.Text = "abc\r\ndef\r\nghi";
-			Assert.AreEqual(3, consoleTextEditor.TotalLines);
-		}
-		
-		[Test]
-		public void GetLineForZerothLineReturnsFirstLineInAvalonTextEditor()
-		{
-			avalonEditTextEditor.Text = "abc\r\ndef\r\nghi";
-			Assert.AreEqual("abc", consoleTextEditor.GetLine(0));
-		}
-		
-		[Test]
-		public void ReplaceTextReplacesTextInAvalonEditTextEditor()
+		public void Line_SettingConsoleTextEditorToLineOne_AvalonTextEditorCaretLineIsSetToTwo()
 		{
 			avalonEditTextEditor.Text = "abc\r\ndef";
+			avalonEditTextEditor.TextArea.Caret.Line = 0;
+			consoleTextEditor.Line = 1;
+			int line = avalonEditTextEditor.TextArea.Caret.Line;
+			int expectedLine = 2;
+			Assert.AreEqual(expectedLine, line);		
+		}
+		
+		[Test]
+		public void TotalLines_ThreeLinesInTextEditor_ReturnsThreeLines()
+		{
+			avalonEditTextEditor.Text = "abc\r\ndef\r\nghi";
+			int total = consoleTextEditor.TotalLines;
+			int expected = 3;
+			Assert.AreEqual(expected, total);
+		}
+		
+		[Test]
+		public void GetLine_GetLineForZerothLine_ReturnsFirstLineInAvalonTextEditor()
+		{
+			avalonEditTextEditor.Text = "abc\r\ndef\r\nghi";
+			string line = consoleTextEditor.GetLine(0);
+			string expectedLine = "abc";
+			Assert.AreEqual(expectedLine, line);
+		}
+		
+		[Test]
+		public void Replace_ReplaceSingleCharacterOnSecondLine_ReplacesCorrectTextInAvalonEditTextEditor()
+		{
+			avalonEditTextEditor.Text = 
+				"abc\r\n" +
+				"def";
 			avalonEditTextEditor.TextArea.Caret.Line = 2;
 			
 			int lineOffset = 1;
 			int length = 1;
 			consoleTextEditor.Replace(lineOffset, length, "test");
-			Assert.AreEqual("abc\r\ndtestf", avalonEditTextEditor.Text);
+			
+			string text = avalonEditTextEditor.Text;
+			string expectedText = 
+				"abc\r\n" +
+				"dtestf";
+			
+			Assert.AreEqual(expectedText, text);
 		}
 	}
 }

@@ -8,6 +8,7 @@
 using System;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
 using IronPython.Hosting;
 using IronPython.Runtime;
@@ -27,13 +28,13 @@ namespace PythonBinding.Tests.Console
 	{
 		DerivedPythonConsoleHost host;
 		TextEditor textEditorControl;
-		PythonConsoleTextEditor textEditor;
+		ScriptingConsoleTextEditor textEditor;
 		
 		[TestFixtureSetUp]
 		public void Init()
 		{
 			textEditorControl = new TextEditor();
-			textEditor = new PythonConsoleTextEditor(textEditorControl);
+			textEditor = new ScriptingConsoleTextEditor(textEditorControl);
 			host = new DerivedPythonConsoleHost(textEditor);
 			
 			ScriptRuntime runtime = IronPython.Hosting.Python.CreateRuntime();

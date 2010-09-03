@@ -104,7 +104,6 @@
     <Compile Include="Console\BuiltinCodeCompletionTestFixture.cs" />
     <Compile Include="Console\PythonConsoleSendLineTests.cs" />
     <Compile Include="Console\PythonConsoleTestsBase.cs" />
-    <Compile Include="Console\ThreadSafePythonConsoleTextEditorTests.cs" />
     <Compile Include="Console\KeysPressedWhenCompletionWindowOpenTestFixture.cs" />
     <Compile Include="Console\DisposedPythonConsoleTestFixture.cs" />
     <Compile Include="Console\PythonConsoleCommandLineHistoryTestFixture.cs" />
@@ -118,7 +117,6 @@
     <Compile Include="Console\PythonConsoleUnreadLinesTestFixture.cs" />
     <Compile Include="Console\PythonConsoleWriteTestFixture.cs" />
     <Compile Include="Console\PythonOutputStreamTestFixture.cs" />
-    <Compile Include="Console\PythonConsoleTextEditorTests.cs" />
     <Compile Include="Console\TwoPythonConsoleLinesWaitingTestFixture.cs" />
     <Compile Include="Converter\AddHandlerConversionTestFixture.cs" />
     <Compile Include="Converter\ArrayCastConversionTestFixture.cs" />

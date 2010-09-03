@@ -12,20 +12,16 @@ using System.Windows.Input;
 
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Editing;
-using ICSharpCode.PythonBinding;
 using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
-using ICSharpCode.Scripting.Tests.Utils.Tests;
 using NUnit.Framework;
-using PythonBinding.Tests.Utils;
-using PythonBinding.Tests.Utils.Tests;
 
-namespace PythonBinding.Tests.Console
+namespace ICSharpCode.Scripting.Tests.Console
 {
 	[TestFixture]
-	public class ThreadSafePythonConsoleTextEditorTests
+	public class ThreadSafeScriptingConsoleTextEditorTests
 	{
-		ThreadSafePythonConsoleTextEditor threadSafeConsoleTextEditor;
+		ThreadSafeScriptingConsoleTextEditor threadSafeConsoleTextEditor;
 		TextEditor avalonEditTextEditor;
 		MockControlDispatcher dispatcher;
 		MockConsoleTextEditor fakeConsoleTextEditor;
@@ -39,7 +35,7 @@ namespace PythonBinding.Tests.Console
 			dispatcher.CheckAccessReturnValue = true;
 			
 			fakeConsoleTextEditor = new MockConsoleTextEditor();
-			threadSafeConsoleTextEditor = new ThreadSafePythonConsoleTextEditor(fakeConsoleTextEditor, dispatcher);
+			threadSafeConsoleTextEditor = new ThreadSafeScriptingConsoleTextEditor(fakeConsoleTextEditor, dispatcher);
 		}
 		
 		[Test]

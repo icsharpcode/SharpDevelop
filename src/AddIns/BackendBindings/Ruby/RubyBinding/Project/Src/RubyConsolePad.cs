@@ -14,14 +14,14 @@ namespace ICSharpCode.RubyBinding
 {
 	public class RubyConsolePad : AbstractPadContent, IRubyConsolePad
 	{
-		ThreadSafeRubyConsoleTextEditor consoleTextEditor;
+		ThreadSafeScriptingConsoleTextEditor consoleTextEditor;
 		AvalonEdit.TextEditor textEditor;
 		RubyConsoleHost host;
 		
 		public RubyConsolePad()
 		{
 			textEditor = new AvalonEdit.TextEditor();
-			consoleTextEditor = new ThreadSafeRubyConsoleTextEditor(textEditor);
+			consoleTextEditor = new ThreadSafeScriptingConsoleTextEditor(textEditor);
 			host = new RubyConsoleHost(consoleTextEditor);
 			host.Run();
 		}

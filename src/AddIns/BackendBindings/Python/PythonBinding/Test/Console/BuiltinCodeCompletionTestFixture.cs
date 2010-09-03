@@ -33,7 +33,7 @@ namespace PythonBinding.Tests.Console
 		{			
 			TextEditor textEditorControl = new TextEditor();
 			textEditorControl.Text = ">>> __builtins__";
-			PythonConsoleTextEditor textEditor = new PythonConsoleTextEditor(textEditorControl);
+			ScriptingConsoleTextEditor textEditor = new ScriptingConsoleTextEditor(textEditorControl);
 				
 			memberProvider = new MockMemberProvider();
 			memberProvider.SetMemberNames(new string[] {"a", "b", "c"});

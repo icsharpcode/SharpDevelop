@@ -84,11 +84,9 @@
     <Compile Include="Console\RubyConsoleReadTestFixture.cs" />
     <Compile Include="Console\RubyConsoleSendLineTests.cs" />
     <Compile Include="Console\RubyConsoleTestsBase.cs" />
-    <Compile Include="Console\RubyConsoleTextEditorTests.cs" />
     <Compile Include="Console\RubyConsoleUnreadLinesTestFixture.cs" />
     <Compile Include="Console\RubyConsoleWriteTestFixture.cs" />
     <Compile Include="Console\RubyOutputStreamTestFixture.cs" />
-    <Compile Include="Console\ThreadSafeRubyConsoleTextEditorTests.cs" />
     <Compile Include="Console\TwoRubyConsoleLinesWaitingTestFixture.cs" />
     <Compile Include="Converter\AddHandlerConversionTestFixture.cs" />
     <Compile Include="Converter\ArrayCastConversionTestFixture.cs" />

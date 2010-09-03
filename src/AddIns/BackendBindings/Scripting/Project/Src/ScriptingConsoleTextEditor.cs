@@ -13,19 +13,18 @@ using System.Windows.Threading;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.PythonBinding
+namespace ICSharpCode.Scripting
 {
-	public class PythonConsoleTextEditor : IScriptingConsoleTextEditor
+	public class ScriptingConsoleTextEditor : IScriptingConsoleTextEditor
 	{
 		TextEditor textEditor;
 		Color customLineColour = Color.LightGray;
 		BeginReadOnlySectionProvider readOnlyRegion;
 		CompletionWindow completionWindow;
 		
-		public PythonConsoleTextEditor(TextEditor textEditor)
+		public ScriptingConsoleTextEditor(TextEditor textEditor)
 		{
 			this.textEditor = textEditor;
 			readOnlyRegion = new BeginReadOnlySectionProvider();
@@ -36,7 +35,7 @@ namespace ICSharpCode.PythonBinding
 		void OnTextEditorPreviewKeyDown(object source, KeyEventArgs e)
 		{
 			if (PreviewKeyDown != null) {
-				PreviewKeyDown(this, new PythonConsoleTextEditorKeyEventArgs(e));
+				PreviewKeyDown(this, new ScriptingConsoleTextEditorKeyEventArgs(e));
 			}
 		}
 		

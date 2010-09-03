@@ -8,7 +8,7 @@
 using System;
 using ICSharpCode.Scripting;
 
-namespace ICSharpCode.Scripting.Tests.Utils.Tests
+namespace ICSharpCode.Scripting.Tests.Utils
 {
 	public class MockControlDispatcher : IControlDispatcher
 	{

@@ -8,6 +8,7 @@
 using System;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
 using IronRuby.Hosting;
 using IronRuby.Runtime;
@@ -27,13 +28,13 @@ namespace RubyBinding.Tests.Console
 	{
 		DerivedRubyConsoleHost host;
 		TextEditor textEditorControl;
-		RubyConsoleTextEditor textEditor;
+		ScriptingConsoleTextEditor textEditor;
 		
 		[TestFixtureSetUp]
 		public void Init()
 		{
 			textEditorControl = new TextEditor();
-			textEditor = new RubyConsoleTextEditor(textEditorControl);
+			textEditor = new ScriptingConsoleTextEditor(textEditorControl);
 			host = new DerivedRubyConsoleHost(textEditor);
 		}
 		

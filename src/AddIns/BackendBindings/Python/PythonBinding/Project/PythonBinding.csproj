@@ -97,7 +97,6 @@
     <Compile Include="Src\PythonBuiltInModuleMemberName.cs" />
     <Compile Include="Src\PythonClassResolver.cs" />
     <Compile Include="Src\PythonConsoleApplication.cs" />
-    <Compile Include="Src\PythonConsoleTextEditorKeyEventArgs.cs" />
     <Compile Include="Src\PythonDotNetMethodResolver.cs" />
     <Compile Include="Src\PythonFileService.cs" />
     <Compile Include="Src\PythonFromImport.cs" />
@@ -167,8 +166,6 @@
     <Compile Include="Src\PythonStandardModules.cs" />
     <Compile Include="Src\PythonVariableResolver.cs" />
     <Compile Include="Src\StringTextContentProvider.cs" />
-    <Compile Include="Src\PythonConsoleTextEditor.cs" />
-    <Compile Include="Src\ThreadSafePythonConsoleTextEditor.cs" />
     <None Include="..\..\RequiredLibraries\Chiron.exe.Config">
       <Link>Chiron.exe.Config</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

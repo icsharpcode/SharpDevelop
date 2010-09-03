@@ -7,23 +7,22 @@
 
 using System;
 using ICSharpCode.AvalonEdit;
-using ICSharpCode.Scripting;
 
-namespace ICSharpCode.PythonBinding
+namespace ICSharpCode.Scripting
 {
-	public class ThreadSafePythonConsoleTextEditor : IScriptingConsoleTextEditor
+	public class ThreadSafeScriptingConsoleTextEditor : IScriptingConsoleTextEditor
 	{
 		delegate string GetLineInvoker(int index);
 		
 		IScriptingConsoleTextEditor consoleTextEditor;
 		IControlDispatcher dispatcher;
 		
-		public ThreadSafePythonConsoleTextEditor(TextEditor textEditor)
-			: this(new PythonConsoleTextEditor(textEditor), new ControlDispatcher(textEditor))
+		public ThreadSafeScriptingConsoleTextEditor(TextEditor textEditor)
+			: this(new ScriptingConsoleTextEditor(textEditor), new ControlDispatcher(textEditor))
 		{
 		}
 		
-		public ThreadSafePythonConsoleTextEditor(IScriptingConsoleTextEditor consoleTextEditor, IControlDispatcher dispatcher)
+		public ThreadSafeScriptingConsoleTextEditor(IScriptingConsoleTextEditor consoleTextEditor, IControlDispatcher dispatcher)
 		{
 			this.consoleTextEditor = consoleTextEditor;
 			this.dispatcher = dispatcher;

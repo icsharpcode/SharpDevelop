@@ -14,14 +14,14 @@ namespace ICSharpCode.PythonBinding
 {
 	public class PythonConsolePad : AbstractPadContent, IPythonConsolePad
 	{
-		ThreadSafePythonConsoleTextEditor consoleTextEditor;
+		ThreadSafeScriptingConsoleTextEditor consoleTextEditor;
 		AvalonEdit.TextEditor textEditor;
 		PythonConsoleHost host;
 		
 		public PythonConsolePad()
 		{
 			textEditor = new AvalonEdit.TextEditor();
-			consoleTextEditor = new ThreadSafePythonConsoleTextEditor(textEditor);
+			consoleTextEditor = new ThreadSafeScriptingConsoleTextEditor(textEditor);
 			host = new PythonConsoleHost(consoleTextEditor);
 			host.Run();	
 		}

@@ -72,7 +72,10 @@
     <Compile Include="Src\IScriptingConsoleTextEditor.cs" />
     <Compile Include="Src\ScriptingConsoleCompletionData.cs" />
     <Compile Include="Src\ScriptingConsoleCompletionDataProvider.cs" />
+    <Compile Include="Src\ScriptingConsoleTextEditor.cs" />
+    <Compile Include="Src\ScriptingConsoleTextEditorKeyEventArgs.cs" />
     <Compile Include="Src\StringListLock.cs" />
+    <Compile Include="Src\ThreadSafeScriptingConsoleTextEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">

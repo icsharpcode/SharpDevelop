@@ -105,7 +105,6 @@
     <Compile Include="Src\RubyConsole.cs" />
     <Compile Include="Src\RubyConsoleHost.cs" />
     <Compile Include="Src\RubyConsolePad.cs" />
-    <Compile Include="Src\RubyConsoleTextEditorKeyEventArgs.cs" />
     <Compile Include="Src\RubyConstructorInfo.cs" />
     <Compile Include="Src\RubyControlFieldExpression.cs" />
     <Compile Include="Src\RubyDesignerGenerator.cs" />
@@ -134,9 +133,7 @@
     <Compile Include="Src\RubyWorkbench.cs" />
     <Compile Include="Src\RunDebugRubyCommand.cs" />
     <Compile Include="Src\RunRubyCommand.cs" />
-    <Compile Include="Src\RubyConsoleTextEditor.cs" />
     <Compile Include="Src\SendLineToRubyConsoleCommand.cs" />
-    <Compile Include="Src\ThreadSafeRubyConsoleTextEditor.cs" />
     <EmbeddedResource Include="Resources\Ruby.xshd" />
     <EmbeddedResource Include="Resources\RubyOptionsPanel.xfrm" />
     <None Include="..\..\IronRuby\bin\Chiron.exe.config">
