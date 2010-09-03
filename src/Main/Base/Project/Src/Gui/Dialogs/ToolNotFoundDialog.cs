@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <param name="description">The description text</param>
 		/// <param name="linkTarget">The link target (with leading http://)</param>
 		/// <param name="icon">32x32 icon to display next to the description. May be null.</param>
-		public ToolNotFoundDialog(string description, string linkTarget, Image icon)
+		public ToolNotFoundDialog(string description, string linkTarget, Image icon = null)
 		{
 			// The InitializeComponent() call is required for Windows Forms designer support.
 			InitializeComponent();

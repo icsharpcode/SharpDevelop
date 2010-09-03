@@ -69,8 +69,8 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 							ColorReference = GetColorReference(syntaxDefinition["Digits"]),
 							RegexType = XshdRegexType.IgnorePatternWhitespace,
 							Regex = @"\b0[xX][0-9a-fA-F]+"
-								+ @"|\b"
-								+ @"(\d+(" + floatingPoint + ")?"
+								+ @"|"
+								+ @"(\b\d+(" + floatingPoint + ")?"
 								+ @"|" + floatingPoint + ")"
 								+ optionalExponent
 						});

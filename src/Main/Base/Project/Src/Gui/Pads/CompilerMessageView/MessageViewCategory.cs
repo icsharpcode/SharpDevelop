@@ -20,8 +20,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// Creates a new MessageViewCategory with the specified category
 		/// and adds it to the CompilerMessageView pad.
-		/// This method is thread-safe and works correctly even if called multiple times for the same
-		/// thread; only one messageViewCategory will be created.
+		/// This method is thread-safe and works correctly even if called concurrently for the same
+		/// category; only one messageViewCategory will be created.
 		/// </summary>
 		public static void Create(ref MessageViewCategory messageViewCategory, string category)
 		{

@@ -1,6 +1,7 @@
 ﻿<AddIn name        = "GitAddIn"
        author      = "Daniel Grunwald"
-       description = "Git Binding">
+       description = "Git Binding"
+       addInManagerHidden = "preinstalled">
 	
 	<Manifest>
 		<Identity name="ICSharpCode.GitAddIn" version="@GitAddIn.dll"/>

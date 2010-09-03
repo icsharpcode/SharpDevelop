@@ -4260,6 +4260,9 @@ Se perderán todos los cambios.</value>
   <data name="ICSharpCode.SharpDevelop.Commands.SaveFileAs.FileSavedCaption" xml:space="preserve">
     <value>Archivo Guardado</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.TabStrip.NavigateToFileInProjectBrowser" xml:space="preserve">
+    <value>Navegar al archivo en el explorador de proyectos.</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Commands.VBConvertProjectToCSharp" xml:space="preserve">
     <value>De VB.NET a C#</value>
   </data>
@@ -4846,6 +4849,9 @@ Vaya a 'Opciones-&gt;Estilo Visual' y cambie el lenguaje del ambiente.</value>
   </data>
   <data name="ICSharpCode.UnitTesting.TestMenu" xml:space="preserve">
     <value>&amp;Pruebas</value>
+  </data>
+  <data name="ICSharpCode.UnitTesting.TestRunnerNotFoundMessageFormat" xml:space="preserve">
+    <value>No se pudieron ejecutar los test de unidad. El archivo '{0}' no se pudo encontrar.</value>
   </data>
   <data name="ICSharpCode.WixBinding.AddCompilerExtensionsDialog.Title" xml:space="preserve">
     <value>Agregar Extensiones</value>
@@ -5924,6 +5930,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ProjectComponent.ContextMenu.Clean" xml:space="preserve">
     <value>Li&amp;mpiar</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.CollapseAll" xml:space="preserve">
+    <value>Colapsar todo.</value>
   </data>
   <data name="ProjectComponent.ContextMenu.Delete.Question" xml:space="preserve">
     <value>¿Eliminar '${FileName}' permanentemente?</value>
@@ -7257,6 +7266,12 @@ Los archivos de recursos han sido renombrados o cambiados de ubicación de acuer
   </data>
   <data name="Templates.Project.SharpDevelopMacro.Name" xml:space="preserve">
     <value>Entrada para menú Herramientas</value>
+  </data>
+  <data name="Templates.Project.SilverlightApplication.Description" xml:space="preserve">
+    <value>Un proyecto que crea una aplicación SilverLight.</value>
+  </data>
+  <data name="Templates.Project.SilverlightApplication.Name" xml:space="preserve">
+    <value>Aplicación SilverLight.</value>
   </data>
   <data name="Templates.Project.SysTrayIcon.Description" xml:space="preserve">
     <value>Un proyecto que crea una aplicación con un icono en la bandeja del sistema.</value>

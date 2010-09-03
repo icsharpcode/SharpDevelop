@@ -2781,7 +2781,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.Optional);
 				outputFormatter.Space();
 			}
-			if ((modifier & ParameterModifiers.Ref) == ParameterModifiers.Ref) {
+			if ((modifier & ParameterModifiers.Ref) == ParameterModifiers.Ref
+			    || (modifier & ParameterModifiers.Out) == ParameterModifiers.Out) {
 				outputFormatter.PrintToken(Tokens.ByRef);
 				outputFormatter.Space();
 			}

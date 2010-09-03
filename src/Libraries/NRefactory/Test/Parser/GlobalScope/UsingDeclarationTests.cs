@@ -94,6 +94,39 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			CheckAliases(parser.CompilationUnit);
 		}
+		
+		[Test]
+		public void CSharpUsingWithAliasing()
+		{
+			string program = "using global::System;\n" +
+				"using myAlias=global::My.Name.Space;\n" +
+				"using a::b.c;\n";
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(program));
+			parser.Parse();
+			
+			Assert.AreEqual("", parser.Errors.ErrorOutput);
+			CompilationUnit u = parser.CompilationUnit;
+			Assert.AreEqual(3, u.Children.Count);
+			
+			Assert.IsTrue(u.Children[0] is UsingDeclaration);
+			UsingDeclaration ud = (UsingDeclaration)u.Children[0];
+			Assert.AreEqual(1, ud.Usings.Count);
+			Assert.IsFalse(((Using)ud.Usings[0]).IsAlias);
+			Assert.AreEqual("System", ud.Usings[0].Name);
+			
+			Assert.IsTrue(u.Children[1] is UsingDeclaration);
+			ud = (UsingDeclaration)u.Children[1];
+			Assert.AreEqual(1, ud.Usings.Count);
+			Assert.IsTrue(((Using)ud.Usings[0]).IsAlias);
+			Assert.AreEqual("myAlias", ud.Usings[0].Name);
+			Assert.AreEqual("My.Name.Space", ud.Usings[0].Alias.Type);
+			
+			Assert.IsTrue(u.Children[2] is UsingDeclaration);
+			ud = (UsingDeclaration)u.Children[2];
+			Assert.AreEqual(1, ud.Usings.Count);
+			Assert.IsFalse(((Using)ud.Usings[0]).IsAlias);
+			Assert.AreEqual("a.b.c", ud.Usings[0].Name);
+		}
 		#endregion
 		
 		#region VB.NET

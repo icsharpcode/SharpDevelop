@@ -6,7 +6,9 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 
 namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
@@ -133,11 +135,13 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			AddIn addIn = AddIn.Load(new StringReader(addInText));
 			Assert.AreEqual(1, addIn.Paths.Count);
 			Assert.IsNotNull(addIn.Paths["/Path1"]);
-			Assert.AreEqual(1, addIn.Paths["/Path1"].Codons.Count);
-			Assert.AreEqual("Simple", addIn.Paths["/Path1"].Codons[0].Name);
-			Assert.AreEqual("Simple", addIn.Paths["/Path1"].Codons[0].Id);
-			Assert.AreEqual("a", addIn.Paths["/Path1"].Codons[0].Properties["attr"]);
-			Assert.AreEqual("b", addIn.Paths["/Path1"].Codons[0].Properties["attr2"]);
+			
+			List<Codon> codons = addIn.Paths["/Path1"].Codons.ToList();
+			Assert.AreEqual(1, codons.Count);
+			Assert.AreEqual("Simple", codons[0].Name);
+			Assert.AreEqual("Simple", codons[0].Id);
+			Assert.AreEqual("a", codons[0].Properties["attr"]);
+			Assert.AreEqual("b", codons[0].Properties["attr2"]);
 		}
 		
 		[Test]
@@ -154,14 +158,16 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			AddIn addIn = AddIn.Load(new StringReader(addInText));
 			Assert.AreEqual(2, addIn.Paths.Count);
 			Assert.IsNotNull(addIn.Paths["/Path1"]);
-			Assert.AreEqual(1, addIn.Paths["/Path1"].Codons.Count);
-			Assert.AreEqual("Sub", addIn.Paths["/Path1"].Codons[0].Name);
-			Assert.AreEqual("Path2", addIn.Paths["/Path1"].Codons[0].Id);
+			List<Codon> codons1 = addIn.Paths["/Path1"].Codons.ToList();
+			Assert.AreEqual(1, codons1.Count);
+			Assert.AreEqual("Sub", codons1[0].Name);
+			Assert.AreEqual("Path2", codons1[0].Id);
 			
 			Assert.IsNotNull(addIn.Paths["/Path1/Path2"]);
-			Assert.AreEqual(1, addIn.Paths["/Path1/Path2"].Codons.Count);
-			Assert.AreEqual("Codon2", addIn.Paths["/Path1/Path2"].Codons[0].Name);
-			Assert.AreEqual("Sub2", addIn.Paths["/Path1/Path2"].Codons[0].Id);
+			List<Codon> codons2 = addIn.Paths["/Path1/Path2"].Codons.ToList();
+			Assert.AreEqual(1, codons2.Count);
+			Assert.AreEqual("Codon2", codons2[0].Name);
+			Assert.AreEqual("Sub2", codons2[0].Id);
 		}
 		
 		[Test]
@@ -180,16 +186,18 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			AddIn addIn = AddIn.Load(new StringReader(addInText));
 			Assert.AreEqual(2, addIn.Paths.Count);
 			Assert.IsNotNull(addIn.Paths["/Path1"]);
-			Assert.AreEqual(1, addIn.Paths["/Path1"].Codons.Count);
-			Assert.AreEqual("Sub", addIn.Paths["/Path1"].Codons[0].Name);
-			Assert.AreEqual("Path2", addIn.Paths["/Path1"].Codons[0].Id);
-			Assert.AreEqual(1, addIn.Paths["/Path1"].Codons[0].Conditions.Length);
+			List<Codon> codons1 = addIn.Paths["/Path1"].Codons.ToList();
+			Assert.AreEqual(1, codons1.Count);
+			Assert.AreEqual("Sub", codons1[0].Name);
+			Assert.AreEqual("Path2", codons1[0].Id);
+			Assert.AreEqual(1, codons1[0].Conditions.Length);
 			
 			Assert.IsNotNull(addIn.Paths["/Path1/Path2"]);
-			Assert.AreEqual(1, addIn.Paths["/Path1/Path2"].Codons.Count);
-			Assert.AreEqual("Codon2", addIn.Paths["/Path1/Path2"].Codons[0].Name);
-			Assert.AreEqual("Sub2", addIn.Paths["/Path1/Path2"].Codons[0].Id);
-			Assert.AreEqual(0, addIn.Paths["/Path1/Path2"].Codons[0].Conditions.Length);
+			List<Codon> codons2 = addIn.Paths["/Path1/Path2"].Codons.ToList();
+			Assert.AreEqual(1, codons2.Count);
+			Assert.AreEqual("Codon2", codons2[0].Name);
+			Assert.AreEqual("Sub2", codons2[0].Id);
+			Assert.AreEqual(0, codons2[0].Conditions.Length);
 		}
 		
 		[Test]
@@ -207,8 +215,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual(1, addIn.Paths.Count, "Paths != 1");
 			ExtensionPath path = addIn.Paths["/Path1"];
 			Assert.IsNotNull(path);
-			Assert.AreEqual(1, path.Codons.Count);
-			Codon codon = path.Codons[0];
+			Codon codon = path.Codons.Single();
 			Assert.AreEqual("Simple", codon.Name);
 			Assert.AreEqual("Simple", codon.Id);
 			Assert.AreEqual("a",      codon["attr"]);
@@ -244,8 +251,8 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			ExtensionPath path = addIn.Paths["/Path1"];
 			Assert.IsNotNull(path);
 			
-			Assert.AreEqual(3, path.Codons.Count);
-			Codon codon = path.Codons[0];
+			Assert.AreEqual(3, path.Codons.Count());
+			Codon codon = path.Codons.ElementAt(0);
 			Assert.AreEqual("Simple", codon.Name);
 			Assert.AreEqual("Simple", codon.Id);
 			Assert.AreEqual("a",      codon["attr"]);
@@ -265,7 +272,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual("1", condition["string"]);
 			Assert.AreEqual("2", condition["equal"]);
 			
-			codon = path.Codons[1];
+			codon = path.Codons.ElementAt(1);
 			Assert.AreEqual(1, codon.Conditions.Length);
 			condition = codon.Conditions[0] as Condition;
 			Assert.IsNotNull(condition);
@@ -273,7 +280,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual("a", condition["string"]);
 			Assert.AreEqual("b", condition["equal"]);
 			
-			codon = path.Codons[2];
+			codon = path.Codons.ElementAt(2);
 			Assert.AreEqual(0, codon.Conditions.Length);
 			
 		}
@@ -301,8 +308,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual(1, addIn.Paths.Count);
 			ExtensionPath path = addIn.Paths["/Path1"];
 			Assert.IsNotNull(path);
-			Assert.AreEqual(1, path.Codons.Count);
-			Codon codon = path.Codons[0];
+			Codon codon = path.Codons.Single();
 			Assert.AreEqual("Simple", codon.Name);
 			Assert.AreEqual("Simple", codon.Id);
 			Assert.AreEqual("a",      codon["attr"]);

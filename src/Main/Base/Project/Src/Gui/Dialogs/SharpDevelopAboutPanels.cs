@@ -101,8 +101,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static string GetVersionInformationString()
 		{
 			string str = "";
-			Version v = typeof(AboutSharpDevelopTabPage).Assembly.GetName().Version;
-			str += "SharpDevelop Version : " + v.ToString() + Environment.NewLine;
+			object[] attr = typeof(AboutSharpDevelopTabPage).Assembly.GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false);
+			if (attr.Length == 1) {
+				AssemblyInformationalVersionAttribute aiva = (AssemblyInformationalVersionAttribute)attr[0];
+				str += "SharpDevelop Version : " + aiva.InformationalVersion + Environment.NewLine;
+			}
 			str += ".NET Version         : " + Environment.Version.ToString() + Environment.NewLine;
 			str += "OS Version           : " + Environment.OSVersion.ToString() + Environment.NewLine;
 			string cultureName = null;

@@ -59,6 +59,7 @@
     <Compile Include="Menu\MenuSeparator.cs" />
     <Compile Include="Menu\MenuService.cs" />
     <Compile Include="MessageService\CustomDialog.cs" />
+    <Compile Include="MessageService\IDialogMessageService.cs" />
     <Compile Include="MessageService\InputBox.cs" />
     <Compile Include="MessageService\SaveErrorChooseDialog.cs" />
     <Compile Include="MessageService\SaveErrorInformDialog.cs" />
