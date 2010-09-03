@@ -6,12 +6,11 @@
 // </file>
 
 using System;
-using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.PythonBinding
+namespace ICSharpCode.Scripting
 {
-	public interface IPythonWorkbench
+	public interface IScriptingWorkbench
 	{
 		IScriptingConsolePad GetScriptingConsolePad();
 		IViewContent ActiveViewContent { get; }

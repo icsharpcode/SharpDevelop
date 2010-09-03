@@ -10,15 +10,14 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.PythonBinding;
 using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace PythonBinding.Tests.Utils
+namespace ICSharpCode.Scripting.Tests.Utils
 {
-	public class MockWorkbench : IPythonWorkbench
+	public class MockWorkbench : IScriptingWorkbench
 	{		
 		public MockScriptingConsolePad MockScriptingConsolePad = new MockScriptingConsolePad();
 		public MockEditableViewContent ActiveMockEditableViewContent;

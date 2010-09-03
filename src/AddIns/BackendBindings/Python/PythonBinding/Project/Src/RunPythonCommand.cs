@@ -8,7 +8,9 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+
 using ICSharpCode.Core;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Util;
@@ -23,7 +25,7 @@ namespace ICSharpCode.PythonBinding
 	{
 		IDebugger debugger;
 		PythonAddInOptions options;
-		IPythonWorkbench workbench;
+		IScriptingWorkbench workbench;
 		PythonConsoleApplication ipy;
 		
 		public RunPythonCommand()
@@ -31,7 +33,7 @@ namespace ICSharpCode.PythonBinding
 		{
 		}
 		
-		public RunPythonCommand(IPythonWorkbench workbench, PythonAddInOptions options, IDebugger debugger)
+		public RunPythonCommand(IScriptingWorkbench workbench, PythonAddInOptions options, IDebugger debugger)
 		{
 			this.workbench = workbench;
 			this.debugger = debugger;

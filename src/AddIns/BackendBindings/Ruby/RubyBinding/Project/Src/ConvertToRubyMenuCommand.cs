@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
@@ -25,7 +26,7 @@ namespace ICSharpCode.RubyBinding
 			Run(new RubyWorkbench());
 		}
 		
-		protected void Run(IRubyWorkbench workbench)
+		protected void Run(IScriptingWorkbench workbench)
 		{
 			view = new RubyTextEditorViewContent(workbench);
 			string code = GenerateRubyCode();

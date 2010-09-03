@@ -15,7 +15,7 @@ namespace ICSharpCode.PythonBinding
 {
 	public class SendLineToPythonConsoleCommand : AbstractCommand
 	{
-		IPythonWorkbench workbench;
+		IScriptingWorkbench workbench;
 		IScriptingConsolePad consolePad;
 		PythonTextEditorViewContent textEditorView;
 		ITextEditor activeTextEditor;
@@ -27,7 +27,7 @@ namespace ICSharpCode.PythonBinding
 		{
 		}
 		
-		public SendLineToPythonConsoleCommand(IPythonWorkbench workbench)
+		public SendLineToPythonConsoleCommand(IScriptingWorkbench workbench)
 		{
 			this.workbench = workbench;
 			

@@ -12,23 +12,11 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.RubyBinding
 {
-	public class RubyWorkbench : IRubyWorkbench
-	{
-		IWorkbench workbench;
-		
+	public class RubyWorkbench : ScriptingWorkbench
+	{		
 		public RubyWorkbench()
+			: base(typeof(RubyConsolePad))
 		{
-			workbench = WorkbenchSingleton.Workbench;
 		}		
-		
-		public IViewContent ActiveViewContent {
-			get { return workbench.ActiveViewContent; }
-		}
-		
-		public IScriptingConsolePad GetScriptingConsolePad()
-		{
-			PadDescriptor padDescriptor = workbench.GetPad(typeof(RubyConsolePad));
-			return padDescriptor.PadContent as IScriptingConsolePad;
-		}
 	}
 }

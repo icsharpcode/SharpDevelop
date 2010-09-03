@@ -15,7 +15,7 @@ namespace ICSharpCode.RubyBinding
 {
 	public class SendLineToRubyConsoleCommand : AbstractCommand
 	{
-		IRubyWorkbench workbench;
+		IScriptingWorkbench workbench;
 		IScriptingConsolePad consolePad;
 		RubyTextEditorViewContent textEditorView;
 		ITextEditor activeTextEditor;
@@ -27,7 +27,7 @@ namespace ICSharpCode.RubyBinding
 		{
 		}
 		
-		public SendLineToRubyConsoleCommand(IRubyWorkbench workbench)
+		public SendLineToRubyConsoleCommand(IScriptingWorkbench workbench)
 		{
 			this.workbench = workbench;
 			

@@ -123,6 +123,7 @@
     <Compile Include="Utils\MockTextEditorViewContent.cs" />
     <Compile Include="Utils\MockTypeResolutionService.cs" />
     <Compile Include="Utils\MockViewContent.cs" />
+    <Compile Include="Utils\MockWorkbench.cs" />
     <Compile Include="Utils\MSBuildEngineHelper.cs" />
     <Compile Include="Utils\NullPropertyUserControl.cs" />
     <Compile Include="Utils\SupportInitCustomControl.cs" />

@@ -8,7 +8,9 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+
 using ICSharpCode.Core;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Util;
@@ -23,7 +25,7 @@ namespace ICSharpCode.RubyBinding
 	{
 		IDebugger debugger;
 		RubyAddInOptions options;
-		IRubyWorkbench workbench;
+		IScriptingWorkbench workbench;
 		bool debug;
 		
 		public RunRubyCommand()
@@ -31,7 +33,7 @@ namespace ICSharpCode.RubyBinding
 		{
 		}
 		
-		public RunRubyCommand(IRubyWorkbench workbench, RubyAddInOptions options, IDebugger debugger)
+		public RunRubyCommand(IScriptingWorkbench workbench, RubyAddInOptions options, IDebugger debugger)
 		{
 			this.workbench = workbench;
 			this.debugger = debugger;

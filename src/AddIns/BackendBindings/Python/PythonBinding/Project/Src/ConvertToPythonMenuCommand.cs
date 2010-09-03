@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -24,7 +25,7 @@ namespace ICSharpCode.PythonBinding
 			Run(new PythonWorkbench());
 		}
 		
-		protected void Run(IPythonWorkbench workbench)
+		protected void Run(IScriptingWorkbench workbench)
 		{
 			view = new PythonTextEditorViewContent(workbench);
 			string code = GeneratePythonCode();

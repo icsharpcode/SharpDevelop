@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Util;
@@ -15,7 +16,7 @@ namespace ICSharpCode.PythonBinding
 {
 	public class RunDebugPythonCommand : RunPythonCommand
 	{
-		public RunDebugPythonCommand(IPythonWorkbench workbench, PythonAddInOptions options, IDebugger debugger) 
+		public RunDebugPythonCommand(IScriptingWorkbench workbench, PythonAddInOptions options, IDebugger debugger) 
 			: base(workbench, options, debugger)
 		{
 			Debug = true;

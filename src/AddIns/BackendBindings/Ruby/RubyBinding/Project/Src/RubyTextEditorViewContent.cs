@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -20,7 +21,7 @@ namespace ICSharpCode.RubyBinding
 		ITextEditor textEditor;
 		ITextEditorOptions textEditorOptions;
 		
-		public RubyTextEditorViewContent(IRubyWorkbench workbench)
+		public RubyTextEditorViewContent(IScriptingWorkbench workbench)
 		{
 			Init(workbench.ActiveViewContent);
 		}
