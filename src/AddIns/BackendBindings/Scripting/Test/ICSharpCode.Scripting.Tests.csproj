@@ -78,6 +78,7 @@
     <Compile Include="Testing\CreateTextWriterInfoEqualsTestFixture.cs" />
     <Compile Include="Utils\AddedComponent.cs" />
     <Compile Include="Utils\AddInHelper.cs" />
+    <Compile Include="Utils\AddInPathHelper.cs" />
     <Compile Include="Utils\BarItemCollection.cs" />
     <Compile Include="Utils\ConvertedFile.cs" />
     <Compile Include="Utils\CreatedComponent.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="Utils\MSBuildEngineHelper.cs" />
     <Compile Include="Utils\NullPropertyUserControl.cs" />
     <Compile Include="Utils\SupportInitCustomControl.cs" />
+    <Compile Include="Utils\Tests\AddInPathHelperTests.cs" />
     <Compile Include="Utils\Tests\MockComponentCreatorTests.cs" />
     <Compile Include="Utils\Tests\MockConsoleTextEditorTests.cs" />
     <Compile Include="Utils\Tests\MockControlDispatcherTestFixture.cs" />

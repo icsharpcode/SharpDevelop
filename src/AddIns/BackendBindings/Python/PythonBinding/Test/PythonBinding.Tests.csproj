@@ -425,7 +425,6 @@
     <Compile Include="Testing\PythonTestResultStackTraceLineNumberOverflowTestFixture.cs" />
     <Compile Include="Testing\PythonTestRunnerResponseFileTestFixture.cs" />
     <Compile Include="Testing\PythonTestRunnerRunsSelectedTestMethodTestFixture.cs" />
-    <Compile Include="Utils\AddInPathHelper.cs" />
     <Compile Include="Utils\BrowseButtonInfo.cs" />
     <Compile Include="Utils\BrowseFolderButtonInfo.cs" />
     <Compile Include="Utils\DerivedApplicationSettingsPanel.cs" />
@@ -443,7 +442,6 @@
     <Compile Include="Utils\MockWorkbench.cs" />
     <Compile Include="Utils\PythonMSBuildEngineHelper.cs" />
     <Compile Include="Utils\TestablePythonConsole.cs" />
-    <Compile Include="Utils\Tests\AddInPathHelperTestFixture.cs" />
     <EmbeddedResource Include="..\Project\PythonBinding.addin">
       <Link>PythonBinding.addin</Link>
     </EmbeddedResource>

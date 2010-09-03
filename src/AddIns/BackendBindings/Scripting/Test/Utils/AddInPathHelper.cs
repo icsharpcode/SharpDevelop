@@ -9,11 +9,22 @@ using System;
 using System.IO;
 using ICSharpCode.Core;
 
-namespace PythonBinding.Tests.Utils
+namespace ICSharpCode.Scripting.Tests.Utils
 {
-	public static class AddInPathHelper
+	public class AddInPathHelper
 	{
-		public static AddIn CreateDummyPythonAddInInsideAddInTree()
+		string addInName;
+		string identity;
+		string fileName;
+		
+		public AddInPathHelper(string addInName)
+		{
+			this.addInName = addInName;
+			identity = String.Format("ICSharpCode.{0}", addInName);
+			fileName = String.Format(@"C:\SharpDevelop\AddIns\{0}\{0}.addin", addInName);
+		}
+		
+		public AddIn CreateDummyAddInInsideAddInTree()
 		{
 			RemoveOldAddIn();
 			AddIn addin = CreateAddIn();
@@ -21,7 +32,7 @@ namespace PythonBinding.Tests.Utils
 			return addin;
 		}
 		
-		static void RemoveOldAddIn()
+		void RemoveOldAddIn()
 		{
 			AddIn oldAddin = FindOldAddIn();
 			if (oldAddin != null) {
@@ -29,32 +40,34 @@ namespace PythonBinding.Tests.Utils
 			}
 		}
 		
-		static AddIn FindOldAddIn()
+		AddIn FindOldAddIn()
 		{
 			foreach (AddIn addin in AddInTree.AddIns) {
-				if (addin.Manifest.PrimaryIdentity == "ICSharpCode.PythonBinding") {
+				if (addin.Manifest.PrimaryIdentity == identity) {
 					return addin;
 				}
 			}
 			return null;
 		}
 		
-		static AddIn CreateAddIn()
+		AddIn CreateAddIn()
 		{
 			string xml = GetAddInXml();
 			AddIn addin = AddIn.Load(new StringReader(xml));
-			addin.FileName = @"C:\SharpDevelop\AddIns\PythonBinding\PythonBinding.addin";
+			addin.FileName = fileName;
 			return addin;
 		}
 		
-		static string GetAddInXml()
+		string GetAddInXml()
 		{
-			return
-				"<AddIn name='PythonBinding' author= '' copyright='' description=''>\r\n" +
+			string format =
+				"<AddIn name='{0}' author= '' copyright='' description=''>\r\n" +
 				"    <Manifest>\r\n" +
-				"        <Identity name='ICSharpCode.PythonBinding'/>\r\n" +
+				"        <Identity name='{1}'/>\r\n" +
 				"    </Manifest>\r\n" +
 				"</AddIn>";
+
+			return String.Format(format, addInName, identity);
 		}
 	}
 }

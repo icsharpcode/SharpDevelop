@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
@@ -27,7 +28,8 @@ namespace PythonBinding.Tests.Configuration
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			addin = AddInPathHelper.CreateDummyPythonAddInInsideAddInTree();
+			AddInPathHelper helper = new AddInPathHelper("PythonBinding");
+			addin = helper.CreateDummyAddInInsideAddInTree();
 			addin.FileName = @"C:\Projects\SD\AddIns\Python\pythonbinding.addin";
 		}
 		

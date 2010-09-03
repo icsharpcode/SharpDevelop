@@ -323,7 +323,6 @@
     <Compile Include="Testing\RubyTestRunnerApplicationTests.cs" />
     <Compile Include="Testing\RubyTestRunnerRunsSelectedTestMethodTestFixture.cs" />
     <Compile Include="Testing\RubyTestRunnerResponseFileTestFixture.cs" />
-    <Compile Include="Utils\AddInPathHelper.cs" />
     <Compile Include="Utils\DerivedConvertProjectToRubyProjectCommand.cs" />
     <Compile Include="Utils\DerivedRubyAddInOptions.cs" />
     <Compile Include="Utils\DerivedRubyConsoleHost.cs" />
@@ -340,7 +339,6 @@
     <Compile Include="Utils\RubyParserHelper.cs" />
     <Compile Include="Utils\RubySelectedTestsHelper.cs" />
     <Compile Include="Utils\TestableRubyConsole.cs" />
-    <Compile Include="Utils\Tests\AddInPathHelperTestFixture.cs" />
     <Compile Include="Utils\Tests\MockRubyFileServiceTestFixture.cs" />
     <EmbeddedResource Include="..\Project\RubyBinding.addin">
       <Link>RubyBinding.addin</Link>

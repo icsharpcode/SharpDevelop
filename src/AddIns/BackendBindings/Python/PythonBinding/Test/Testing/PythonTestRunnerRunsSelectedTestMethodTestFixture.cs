@@ -9,8 +9,10 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+
 using ICSharpCode.Core;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.UnitTesting;
@@ -97,7 +99,8 @@ namespace PythonBinding.Tests.Testing
 		[Test]
 		public void CommandLineArgumentHasSharpDevelopTestPythonScriptAndResponseFileName()
 		{
-			AddIn addin = AddInPathHelper.CreateDummyPythonAddInInsideAddInTree();
+			AddInPathHelper helper = new AddInPathHelper("PythonBinding");
+			AddIn addin = helper.CreateDummyAddInInsideAddInTree();
 			addin.FileName = @"c:\sharpdevelop\addins\pythonbinding\pythonbinding.addin";
 			
 			RunTestsOnSelectedTestMethod();

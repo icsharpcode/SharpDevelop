@@ -7,10 +7,10 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
-using PythonBinding.Tests.Utils;
 
-namespace PythonBinding.Tests.Utils.Tests
+namespace ICSharpCode.Scripting.Tests.Utils.Tests
 {
 	[TestFixture]
 	public class AddInPathHelperTestFixture
@@ -20,7 +20,8 @@ namespace PythonBinding.Tests.Utils.Tests
 		[SetUp]
 		public void Init()
 		{
-			pythonAddIn = AddInPathHelper.CreateDummyPythonAddInInsideAddInTree();
+			AddInPathHelper helper = new AddInPathHelper("PythonBinding");
+			pythonAddIn = helper.CreateDummyAddInInsideAddInTree();
 		}
 		
 		[Test]

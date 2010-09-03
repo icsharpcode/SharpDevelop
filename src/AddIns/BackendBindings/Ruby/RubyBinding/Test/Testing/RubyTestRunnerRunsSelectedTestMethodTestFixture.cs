@@ -9,8 +9,10 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+
 using ICSharpCode.Core;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.UnitTesting;
@@ -90,7 +92,8 @@ namespace RubyBinding.Tests.Testing
 		[Test]
 		public void CommandLineArgumentHasSharpDevelopTestRubyScriptFileNameAndTestResultsFileNameAndResponseFileName()
 		{
-			AddIn addin = AddInPathHelper.CreateDummyRubyAddInInsideAddInTree();
+			AddInPathHelper helper = new AddInPathHelper("RubyBinding");
+			AddIn addin = helper.CreateDummyAddInInsideAddInTree();
 			addin.FileName = @"c:\sharpdevelop\addins\rubybinding\rubybinding.addin";
 			
 			testResultsMonitor.FileName = @"d:\testresults.txt";
