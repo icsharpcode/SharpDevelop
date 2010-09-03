@@ -6,11 +6,11 @@
 // </file>
 
 using System;
-using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
 
-namespace PythonBinding.Tests.Utils
+namespace ICSharpCode.Scripting.Tests.Utils
 {
-	public class MockPythonConsole : IPythonConsole
+	public class MockScriptingConsole : IScriptingConsole
 	{
 		public string TextPassedToSendLine;
 		

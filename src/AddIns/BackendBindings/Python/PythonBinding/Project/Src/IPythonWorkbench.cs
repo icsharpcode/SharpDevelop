@@ -6,13 +6,14 @@
 // </file>
 
 using System;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PythonBinding
 {
 	public interface IPythonWorkbench
 	{
-		IPythonConsolePad GetPythonConsolePad();
+		IScriptingConsolePad GetScriptingConsolePad();
 		IViewContent ActiveViewContent { get; }
 	}
 }

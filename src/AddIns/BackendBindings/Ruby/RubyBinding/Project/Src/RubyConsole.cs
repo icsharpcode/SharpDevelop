@@ -17,7 +17,7 @@ using Microsoft.Scripting.Hosting.Shell;
 
 namespace ICSharpCode.RubyBinding
 {
-	public class RubyConsole : IConsole, IDisposable, IMemberProvider, IRubyConsole
+	public class RubyConsole : IConsole, IDisposable, IMemberProvider, IScriptingConsole
 	{
 		IScriptingConsoleTextEditor textEditor;
 		int lineReceivedEventIndex = 0; // The index into the waitHandles array where the lineReceivedEvent is stored.

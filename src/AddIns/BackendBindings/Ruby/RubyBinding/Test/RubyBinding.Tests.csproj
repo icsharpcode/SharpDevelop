@@ -328,8 +328,6 @@
     <Compile Include="Utils\DerivedRubyDesignerGenerator.cs" />
     <Compile Include="Utils\DerivedRubyDesignerLoader.cs" />
     <Compile Include="Utils\DerivedRubyFormsDesignerDisplayBinding.cs" />
-    <Compile Include="Utils\MockRubyConsole.cs" />
-    <Compile Include="Utils\MockRubyConsolePad.cs" />
     <Compile Include="Utils\MockWorkbench.cs" />
     <Compile Include="Utils\RubyBindingAddInFile.cs" />
     <Compile Include="Utils\RubyMSBuildEngineHelper.cs" />

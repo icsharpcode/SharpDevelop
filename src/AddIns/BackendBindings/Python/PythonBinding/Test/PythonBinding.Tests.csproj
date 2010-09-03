@@ -434,8 +434,6 @@
     <Compile Include="Utils\DerivedPythonDesignerGenerator.cs" />
     <Compile Include="Utils\DerivedPythonDesignerLoader.cs" />
     <Compile Include="Utils\DerivedPythonFormsDesignerDisplayBinding.cs" />
-    <Compile Include="Utils\MockPythonConsole.cs" />
-    <Compile Include="Utils\MockPythonConsolePad.cs" />
     <Compile Include="Utils\MockWorkbench.cs" />
     <Compile Include="Utils\PythonMSBuildEngineHelper.cs" />
     <Compile Include="Utils\TestablePythonConsole.cs" />

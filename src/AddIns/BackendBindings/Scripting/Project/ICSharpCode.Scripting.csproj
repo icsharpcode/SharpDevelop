@@ -69,6 +69,8 @@
     <Compile Include="Src\IControlDispatcher.cs" />
     <Compile Include="Src\ILock.cs" />
     <Compile Include="Src\IMemberProvider.cs" />
+    <Compile Include="Src\IScriptingConsole.cs" />
+    <Compile Include="Src\IScriptingConsolePad.cs" />
     <Compile Include="Src\IScriptingConsoleTextEditor.cs" />
     <Compile Include="Src\IScriptingDesignerGenerator.cs" />
     <Compile Include="Src\IScriptingFileService.cs" />

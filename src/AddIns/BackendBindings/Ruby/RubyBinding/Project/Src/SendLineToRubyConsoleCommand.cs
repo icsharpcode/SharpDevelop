@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -15,10 +16,10 @@ namespace ICSharpCode.RubyBinding
 	public class SendLineToRubyConsoleCommand : AbstractCommand
 	{
 		IRubyWorkbench workbench;
-		IRubyConsolePad consolePad;
+		IScriptingConsolePad consolePad;
 		RubyTextEditorViewContent textEditorView;
 		ITextEditor activeTextEditor;
-		IRubyConsole RubyConsole;
+		IScriptingConsole RubyConsole;
 		string lineFromActiveTextEditor;
 		
 		public SendLineToRubyConsoleCommand()
@@ -51,7 +52,7 @@ namespace ICSharpCode.RubyBinding
 		
 		void GetRubyConsolePad()
 		{
-			consolePad = workbench.GetRubyConsolePad();
+			consolePad = workbench.GetScriptingConsolePad();
 		}
 				
 		void ShowRubyConsolePad()
@@ -67,7 +68,7 @@ namespace ICSharpCode.RubyBinding
 		
 		void GetRubyConsole()
 		{
-			RubyConsole = consolePad.RubyConsole;
+			RubyConsole = consolePad.ScriptingConsole;
 		}
 	}
 }

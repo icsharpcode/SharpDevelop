@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -15,10 +16,10 @@ namespace ICSharpCode.PythonBinding
 	public class SendLineToPythonConsoleCommand : AbstractCommand
 	{
 		IPythonWorkbench workbench;
-		IPythonConsolePad consolePad;
+		IScriptingConsolePad consolePad;
 		PythonTextEditorViewContent textEditorView;
 		ITextEditor activeTextEditor;
-		IPythonConsole pythonConsole;
+		IScriptingConsole pythonConsole;
 		string lineFromActiveTextEditor;
 		
 		public SendLineToPythonConsoleCommand()
@@ -51,7 +52,7 @@ namespace ICSharpCode.PythonBinding
 		
 		void GetPythonConsolePad()
 		{
-			consolePad = workbench.GetPythonConsolePad();
+			consolePad = workbench.GetScriptingConsolePad();
 		}
 				
 		void ShowPythonConsolePad()
@@ -67,7 +68,7 @@ namespace ICSharpCode.PythonBinding
 		
 		void GetPythonConsole()
 		{
-			pythonConsole = consolePad.PythonConsole;
+			pythonConsole = consolePad.ScriptingConsole;
 		}
 	}
 }

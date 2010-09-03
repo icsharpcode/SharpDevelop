@@ -6,13 +6,14 @@
 // </file>
 
 using System;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.RubyBinding
 {
 	public interface IRubyWorkbench
 	{
-		IRubyConsolePad GetRubyConsolePad();
+		IScriptingConsolePad GetScriptingConsolePad();
 		IViewContent ActiveViewContent { get; }
 	}
 }

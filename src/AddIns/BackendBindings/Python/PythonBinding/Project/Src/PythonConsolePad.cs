@@ -12,7 +12,7 @@ using AvalonEdit = ICSharpCode.AvalonEdit;
 
 namespace ICSharpCode.PythonBinding
 {
-	public class PythonConsolePad : AbstractPadContent, IPythonConsolePad
+	public class PythonConsolePad : AbstractPadContent, IScriptingConsolePad
 	{
 		ThreadSafeScriptingConsoleTextEditor consoleTextEditor;
 		AvalonEdit.TextEditor textEditor;
@@ -26,11 +26,11 @@ namespace ICSharpCode.PythonBinding
 			host.Run();	
 		}
 		
-		public IScriptingConsoleTextEditor ConsoleTextEditor {
+		public IScriptingConsoleTextEditor ScriptingConsoleTextEditor {
 			get { return consoleTextEditor; }
 		}
 		
-		public IPythonConsole PythonConsole {
+		public IScriptingConsole ScriptingConsole {
 			get { return host.PythonConsole; }
 		}
 		

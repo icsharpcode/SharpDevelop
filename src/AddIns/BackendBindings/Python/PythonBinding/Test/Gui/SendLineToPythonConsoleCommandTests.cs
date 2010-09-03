@@ -20,7 +20,7 @@ namespace PythonBinding.Tests.Gui
 		MockConsoleTextEditor fakeConsoleTextEditor;
 		MockTextEditor fakeTextEditor;
 		MockWorkbench workbench;
-		MockPythonConsole fakeConsole;
+		MockScriptingConsole fakeConsole;
 		
 		[Test]
 		public void Run_SingleLineInTextEditor_FirstLineSentToPythonConsole()
@@ -38,8 +38,8 @@ namespace PythonBinding.Tests.Gui
 		void CreateSendLineToConsoleCommand()
 		{
 			workbench = MockWorkbench.CreateWorkbenchWithOneViewContent("test.py");
-			fakeConsoleTextEditor = workbench.MockPythonConsolePad.MockConsoleTextEditor;
-			fakeConsole = workbench.MockPythonConsolePad.MockPythonConsole;
+			fakeConsoleTextEditor = workbench.MockScriptingConsolePad.MockConsoleTextEditor;
+			fakeConsole = workbench.MockScriptingConsolePad.MockScriptingConsole;
 			fakeTextEditor = workbench.ActiveMockEditableViewContent.MockTextEditor;
 			sendLineToConsoleCommand = new SendLineToPythonConsoleCommand(workbench);
 		}
@@ -87,7 +87,7 @@ namespace PythonBinding.Tests.Gui
 			
 			sendLineToConsoleCommand.Run();
 			
-			bool broughtToFront = workbench.MockPythonConsolePad.BringToFrontCalled;
+			bool broughtToFront = workbench.MockScriptingConsolePad.BringToFrontCalled;
 			Assert.IsTrue(broughtToFront);
 		}
 	}

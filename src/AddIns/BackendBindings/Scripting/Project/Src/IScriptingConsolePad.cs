@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
@@ -7,10 +7,12 @@
 
 using System;
 
-namespace ICSharpCode.RubyBinding
+namespace ICSharpCode.Scripting
 {
-	public interface IRubyConsole
+	public interface IScriptingConsolePad
 	{
-		void SendLine(string text);
+		void BringToFront();
+		IScriptingConsoleTextEditor ScriptingConsoleTextEditor { get; }
+		IScriptingConsole ScriptingConsole { get; }
 	}
 }

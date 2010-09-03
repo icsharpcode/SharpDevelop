@@ -20,7 +20,7 @@ namespace RubyBinding.Tests.Gui
 		MockConsoleTextEditor fakeConsoleTextEditor;
 		MockTextEditor fakeTextEditor;
 		MockWorkbench workbench;
-		MockRubyConsole fakeConsole;
+		MockScriptingConsole fakeConsole;
 		
 		[Test]
 		public void Run_SingleLineInTextEditor_FirstLineSentToRubyConsole()
@@ -38,8 +38,8 @@ namespace RubyBinding.Tests.Gui
 		void CreateSendLineToConsoleCommand()
 		{
 			workbench = MockWorkbench.CreateWorkbenchWithOneViewContent("test.rb");
-			fakeConsoleTextEditor = workbench.MockRubyConsolePad.MockConsoleTextEditor;
-			fakeConsole = workbench.MockRubyConsolePad.MockRubyConsole;
+			fakeConsoleTextEditor = workbench.MockScriptingConsolePad.MockConsoleTextEditor;
+			fakeConsole = workbench.MockScriptingConsolePad.MockScriptingConsole;
 			fakeTextEditor = workbench.ActiveMockEditableViewContent.MockTextEditor;
 			sendLineToConsoleCommand = new SendLineToRubyConsoleCommand(workbench);
 		}
@@ -87,7 +87,7 @@ namespace RubyBinding.Tests.Gui
 			
 			sendLineToConsoleCommand.Run();
 			
-			bool broughtToFront = workbench.MockRubyConsolePad.BringToFrontCalled;
+			bool broughtToFront = workbench.MockScriptingConsolePad.BringToFrontCalled;
 			Assert.IsTrue(broughtToFront);
 		}
 	}

@@ -11,6 +11,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -19,7 +20,7 @@ namespace PythonBinding.Tests.Utils
 {
 	public class MockWorkbench : IPythonWorkbench
 	{		
-		public MockPythonConsolePad MockPythonConsolePad = new MockPythonConsolePad();
+		public MockScriptingConsolePad MockScriptingConsolePad = new MockScriptingConsolePad();
 		public MockEditableViewContent ActiveMockEditableViewContent;
 		
 		public static MockWorkbench CreateWorkbenchWithOneViewContent(string fileName)
@@ -37,9 +38,9 @@ namespace PythonBinding.Tests.Utils
 			get { return ActiveMockEditableViewContent; }
 		}		
 				
-		public IPythonConsolePad GetPythonConsolePad()
+		public IScriptingConsolePad GetScriptingConsolePad()
 		{
-			return MockPythonConsolePad;
+			return MockScriptingConsolePad;
 		}
 	}
 }

@@ -12,7 +12,7 @@ using AvalonEdit = ICSharpCode.AvalonEdit;
 
 namespace ICSharpCode.RubyBinding
 {
-	public class RubyConsolePad : AbstractPadContent, IRubyConsolePad
+	public class RubyConsolePad : AbstractPadContent, IScriptingConsolePad
 	{
 		ThreadSafeScriptingConsoleTextEditor consoleTextEditor;
 		AvalonEdit.TextEditor textEditor;
@@ -26,11 +26,11 @@ namespace ICSharpCode.RubyBinding
 			host.Run();
 		}
 		
-		public IScriptingConsoleTextEditor ConsoleTextEditor {
+		public IScriptingConsoleTextEditor ScriptingConsoleTextEditor {
 			get { return consoleTextEditor; }
 		}
 		
-		public IRubyConsole RubyConsole {
+		public IScriptingConsole ScriptingConsole {
 			get { return host.RubyConsole; }
  		}
  		

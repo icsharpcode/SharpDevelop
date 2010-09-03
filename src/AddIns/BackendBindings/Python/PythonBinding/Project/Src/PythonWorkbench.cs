@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -24,10 +25,10 @@ namespace ICSharpCode.PythonBinding
 			get { return workbench.ActiveViewContent; }
 		}
 		
-		public IPythonConsolePad GetPythonConsolePad()
+		public IScriptingConsolePad GetScriptingConsolePad()
 		{
 			PadDescriptor padDescriptor = workbench.GetPad(typeof(PythonConsolePad));
-			return padDescriptor.PadContent as IPythonConsolePad;
+			return padDescriptor.PadContent as IScriptingConsolePad;
 		}
 	}
 }

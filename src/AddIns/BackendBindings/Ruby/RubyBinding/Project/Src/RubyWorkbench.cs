@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -24,10 +25,10 @@ namespace ICSharpCode.RubyBinding
 			get { return workbench.ActiveViewContent; }
 		}
 		
-		public IRubyConsolePad GetRubyConsolePad()
+		public IScriptingConsolePad GetScriptingConsolePad()
 		{
 			PadDescriptor padDescriptor = workbench.GetPad(typeof(RubyConsolePad));
-			return padDescriptor.PadContent as IRubyConsolePad;
+			return padDescriptor.PadContent as IScriptingConsolePad;
 		}
 	}
 }

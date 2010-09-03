@@ -88,8 +88,6 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AddInOptions.cs" />
     <Compile Include="Src\CompilingOptionsPanel.cs" />
-    <Compile Include="Src\IPythonConsole.cs" />
-    <Compile Include="Src\IPythonConsolePad.cs" />
     <Compile Include="Src\IPythonResolver.cs" />
     <Compile Include="Src\IPythonWorkbench.cs" />
     <Compile Include="Src\MemberName.cs" />

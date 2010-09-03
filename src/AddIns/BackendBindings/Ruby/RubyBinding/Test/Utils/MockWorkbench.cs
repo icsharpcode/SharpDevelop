@@ -11,6 +11,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
@@ -19,7 +20,7 @@ namespace RubyBinding.Tests.Utils
 {
 	public class MockWorkbench : IRubyWorkbench
 	{		
-		public MockRubyConsolePad MockRubyConsolePad = new MockRubyConsolePad();
+		public MockScriptingConsolePad MockScriptingConsolePad = new MockScriptingConsolePad();
 		public MockEditableViewContent ActiveMockEditableViewContent;
 		
 		public static MockWorkbench CreateWorkbenchWithOneViewContent(string fileName)
@@ -37,9 +38,9 @@ namespace RubyBinding.Tests.Utils
 			get { return ActiveMockEditableViewContent; }
 		}		
 				
-		public IRubyConsolePad GetRubyConsolePad()
+		public IScriptingConsolePad GetScriptingConsolePad()
 		{
-			return MockRubyConsolePad;
+			return MockScriptingConsolePad;
 		}
 	}
 }

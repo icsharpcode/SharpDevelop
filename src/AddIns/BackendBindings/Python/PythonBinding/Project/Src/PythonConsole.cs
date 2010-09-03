@@ -19,7 +19,7 @@ using Microsoft.Scripting.Hosting.Shell;
 
 namespace ICSharpCode.PythonBinding
 {
-	public class PythonConsole : IConsole, IDisposable, IMemberProvider, IPythonConsole
+	public class PythonConsole : IConsole, IDisposable, IMemberProvider, IScriptingConsole
 	{
 		IScriptingConsoleTextEditor textEditor;
 		int lineReceivedEventIndex = 0; // The index into the waitHandles array where the lineReceivedEvent is stored.

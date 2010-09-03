@@ -6,16 +6,14 @@
 // </file>
 
 using System;
-using ICSharpCode.PythonBinding;
 using ICSharpCode.Scripting;
-using ICSharpCode.Scripting.Tests.Utils;
 
-namespace PythonBinding.Tests.Utils
+namespace ICSharpCode.Scripting.Tests.Utils
 {
-	public class MockPythonConsolePad : IPythonConsolePad
+	public class MockScriptingConsolePad : IScriptingConsolePad
 	{
 		public MockConsoleTextEditor MockConsoleTextEditor = new MockConsoleTextEditor();
-		public MockPythonConsole MockPythonConsole = new MockPythonConsole();
+		public MockScriptingConsole MockScriptingConsole = new MockScriptingConsole();
 		
 		public bool BringToFrontCalled;
 		
@@ -24,12 +22,12 @@ namespace PythonBinding.Tests.Utils
 			BringToFrontCalled = true;
 		}
 		
-		public IScriptingConsoleTextEditor ConsoleTextEditor {
+		public IScriptingConsoleTextEditor ScriptingConsoleTextEditor {
 			get { return MockConsoleTextEditor; }
 		}
 		
-		public IPythonConsole PythonConsole {
-			get { return MockPythonConsole; }
+		public IScriptingConsole ScriptingConsole {
+			get { return MockScriptingConsole; }
 		}
 	}
 }
