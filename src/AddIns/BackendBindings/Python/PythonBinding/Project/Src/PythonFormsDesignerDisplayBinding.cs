@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.FormsDesigner;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
@@ -45,7 +46,7 @@ namespace ICSharpCode.PythonBinding
 
 		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
 		{
-			PythonTextEditorViewContent textEditorView = new PythonTextEditorViewContent(viewContent);
+			ScriptingTextEditorViewContent textEditorView = new ScriptingTextEditorViewContent(viewContent);
 			return CreateSecondaryViewContent(viewContent, textEditorView.TextEditorOptions);
 		}
 		

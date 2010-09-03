@@ -18,7 +18,7 @@ namespace ICSharpCode.PythonBinding
 	/// </summary>
 	public class ConvertToPythonMenuCommand : AbstractMenuCommand
 	{
-		PythonTextEditorViewContent view;
+		ScriptingTextEditorViewContent view;
 		
 		public override void Run()
 		{
@@ -27,7 +27,7 @@ namespace ICSharpCode.PythonBinding
 		
 		protected void Run(IScriptingWorkbench workbench)
 		{
-			view = new PythonTextEditorViewContent(workbench);
+			view = new ScriptingTextEditorViewContent(workbench);
 			string code = GeneratePythonCode();
 			ShowPythonCodeInNewWindow(code);
 		}

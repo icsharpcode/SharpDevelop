@@ -123,7 +123,6 @@
     <Compile Include="Src\RubyTestRunnerApplication.cs" />
     <Compile Include="Src\RubyTestRunnerContext.cs" />
     <Compile Include="Src\RubyTestRunnerResponseFile.cs" />
-    <Compile Include="Src\RubyTextEditorViewContent.cs" />
     <Compile Include="Src\RubyWorkbench.cs" />
     <Compile Include="Src\RunDebugRubyCommand.cs" />
     <Compile Include="Src\RunRubyCommand.cs" />

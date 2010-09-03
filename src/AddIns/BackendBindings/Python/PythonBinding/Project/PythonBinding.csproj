@@ -117,7 +117,6 @@
     <Compile Include="Src\PythonTestRunnerApplication.cs" />
     <Compile Include="Src\PythonTestRunnerContext.cs" />
     <Compile Include="Src\PythonTestRunnerResponseFile.cs" />
-    <Compile Include="Src\PythonTextEditorViewContent.cs" />
     <Compile Include="Src\PythonWorkbench.cs" />
     <Compile Include="Src\SendLineToPythonConsoleCommand.cs" />
     <Compile Include="Src\SysModuleCompletionItems.cs" />

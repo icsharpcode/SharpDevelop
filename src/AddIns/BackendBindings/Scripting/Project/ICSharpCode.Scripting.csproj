@@ -82,6 +82,7 @@
     <Compile Include="Src\ScriptingConsoleTextEditorKeyEventArgs.cs" />
     <Compile Include="Src\ScriptingFileService.cs" />
     <Compile Include="Src\ScriptingNameCreationService.cs" />
+    <Compile Include="Src\ScriptingTextEditorViewContent.cs" />
     <Compile Include="Src\ScriptingWorkbench.cs" />
     <Compile Include="Src\StringListLock.cs" />
     <Compile Include="Src\ThreadSafeScriptingConsoleTextEditor.cs" />

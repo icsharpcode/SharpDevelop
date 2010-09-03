@@ -17,7 +17,7 @@ namespace ICSharpCode.RubyBinding
 	{
 		IScriptingWorkbench workbench;
 		IScriptingConsolePad consolePad;
-		RubyTextEditorViewContent textEditorView;
+		ScriptingTextEditorViewContent textEditorView;
 		ITextEditor activeTextEditor;
 		IScriptingConsole RubyConsole;
 		string lineFromActiveTextEditor;
@@ -31,7 +31,7 @@ namespace ICSharpCode.RubyBinding
 		{
 			this.workbench = workbench;
 			
-			textEditorView = new RubyTextEditorViewContent(workbench);
+			textEditorView = new ScriptingTextEditorViewContent(workbench);
 			activeTextEditor = textEditorView.TextEditor;
 		}	
 		

@@ -17,7 +17,7 @@ namespace ICSharpCode.PythonBinding
 	{
 		IScriptingWorkbench workbench;
 		IScriptingConsolePad consolePad;
-		PythonTextEditorViewContent textEditorView;
+		ScriptingTextEditorViewContent textEditorView;
 		ITextEditor activeTextEditor;
 		IScriptingConsole pythonConsole;
 		string lineFromActiveTextEditor;
@@ -31,7 +31,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			this.workbench = workbench;
 			
-			textEditorView = new PythonTextEditorViewContent(workbench);
+			textEditorView = new ScriptingTextEditorViewContent(workbench);
 			activeTextEditor = textEditorView.TextEditor;
 		}	
 		

@@ -19,7 +19,7 @@ namespace ICSharpCode.RubyBinding
 	/// </summary>
 	public class ConvertToRubyMenuCommand : AbstractMenuCommand
 	{
-		RubyTextEditorViewContent view;
+		ScriptingTextEditorViewContent view;
 		
 		public override void Run()
 		{
@@ -28,7 +28,7 @@ namespace ICSharpCode.RubyBinding
 		
 		protected void Run(IScriptingWorkbench workbench)
 		{
-			view = new RubyTextEditorViewContent(workbench);
+			view = new ScriptingTextEditorViewContent(workbench);
 			string code = GenerateRubyCode();
 			ShowRubyCodeInNewWindow(code);
 		}
