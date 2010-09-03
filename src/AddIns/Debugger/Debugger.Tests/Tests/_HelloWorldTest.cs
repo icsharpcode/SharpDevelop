@@ -43,7 +43,7 @@ namespace Debugger.Tests {
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Hello world!\r\n</LogMessage>
-    <DebuggingPaused>Break _HelloWorldTest.cs:18,4-18,40</DebuggingPaused>
+    <DebuggingPaused>Break _HelloWorldTest.cs:14,4-14,40</DebuggingPaused>
     <ProcessExited />
   </Test>
 </DebuggerTests>

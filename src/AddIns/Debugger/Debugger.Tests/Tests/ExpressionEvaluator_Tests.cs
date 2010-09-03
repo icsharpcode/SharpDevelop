@@ -311,9 +311,9 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ExpressionEvaluator_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:147,4-147,40</DebuggingPaused>
-    <DebuggingPaused>StepComplete ExpressionEvaluator_Tests.cs:148,4-148,19</DebuggingPaused>
-    <DebuggingPaused>StepComplete ExpressionEvaluator_Tests.cs:149,4-149,39</DebuggingPaused>
+    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:143,4-143,40</DebuggingPaused>
+    <DebuggingPaused>StepComplete ExpressionEvaluator_Tests.cs:144,4-144,19</DebuggingPaused>
+    <DebuggingPaused>StepComplete ExpressionEvaluator_Tests.cs:145,4-145,39</DebuggingPaused>
     <Eval> </Eval>
     <Eval> b = 1 </Eval>
     <Eval> i = 4 </Eval>
@@ -451,7 +451,7 @@ namespace Debugger.Tests {
     <TypesIdentitcal>True</TypesIdentitcal>
     <TypesEqual>True</TypesEqual>
     <WorkerThreadMoved>False</WorkerThreadMoved>
-    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:150,4-150,40</DebuggingPaused>
+    <DebuggingPaused>Break ExpressionEvaluator_Tests.cs:146,4-146,40</DebuggingPaused>
     <WorkerThreadMoved>True</WorkerThreadMoved>
     <ProcessExited />
   </Test>

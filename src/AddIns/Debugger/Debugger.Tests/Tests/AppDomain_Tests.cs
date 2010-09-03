@@ -63,11 +63,11 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>AppDomain_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break AppDomain_Tests.cs:17,4-17,40</DebuggingPaused>
+    <DebuggingPaused>Break AppDomain_Tests.cs:13,4-13,40</DebuggingPaused>
     <SameDomainEqual>True</SameDomainEqual>
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>AppDomain_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break AppDomain_Tests.cs:30,4-30,40</DebuggingPaused>
+    <DebuggingPaused>Break AppDomain_Tests.cs:26,4-26,40</DebuggingPaused>
     <AppDomainName>myDomain Id=2</AppDomainName>
     <OtherDomainEqual>False</OtherDomainEqual>
     <AppDomainsEqual>False</AppDomainsEqual>

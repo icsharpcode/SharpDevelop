@@ -251,7 +251,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DebugType_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DebugType_Tests.cs:171,4-171,40</DebuggingPaused>
+    <DebuggingPaused>Break DebugType_Tests.cs:167,4-167,40</DebuggingPaused>
     <DefinedTypes
       Capacity="16"
       Count="15">

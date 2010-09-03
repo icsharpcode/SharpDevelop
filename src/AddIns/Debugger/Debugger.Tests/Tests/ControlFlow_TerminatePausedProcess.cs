@@ -41,12 +41,12 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ControlFlow_TerminatePausedProcess.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ControlFlow_TerminatePausedProcess.cs:16,4-16,40</DebuggingPaused>
+    <DebuggingPaused>Break ControlFlow_TerminatePausedProcess.cs:12,4-12,40</DebuggingPaused>
     <ProcessExited />
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ControlFlow_TerminatePausedProcess.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ControlFlow_TerminatePausedProcess.cs:16,4-16,40</DebuggingPaused>
+    <DebuggingPaused>Break ControlFlow_TerminatePausedProcess.cs:12,4-12,40</DebuggingPaused>
     <ProcessExited />
   </Test>
 </DebuggerTests>

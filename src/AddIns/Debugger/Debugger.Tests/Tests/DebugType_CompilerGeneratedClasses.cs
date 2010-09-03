@@ -91,7 +91,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DebugType_CompilerGeneratedClasses.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:38,5-38,41</DebuggingPaused>
+    <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:34,5-34,41</DebuggingPaused>
     <YieldLocalVariables>
       <Item>
         <LocalVariable
@@ -142,7 +142,7 @@ namespace Debugger.Tests {
           Value="103" />
       </Item>
     </YieldLocalVariables>
-    <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:57,6-57,42</DebuggingPaused>
+    <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:53,6-53,42</DebuggingPaused>
     <OutterDelegateLocalVariables>
       <Item>
         <LocalVariable
@@ -199,7 +199,7 @@ namespace Debugger.Tests {
           Value="{Debugger.Tests.DebugType_CompilerGeneratedClasses}" />
       </Item>
     </OutterDelegateLocalVariables>
-    <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:54,7-54,43</DebuggingPaused>
+    <DebuggingPaused>Break DebugType_CompilerGeneratedClasses.cs:50,7-50,43</DebuggingPaused>
     <InnterDelegateLocalVariables>
       <Item>
         <LocalVariable
