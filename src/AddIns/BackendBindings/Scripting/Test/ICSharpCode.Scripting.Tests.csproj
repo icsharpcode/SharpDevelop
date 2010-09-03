@@ -103,6 +103,7 @@
     <Compile Include="Utils\MockResourceReader.cs" />
     <Compile Include="Utils\MockResourceService.cs" />
     <Compile Include="Utils\MockResourceWriter.cs" />
+    <Compile Include="Utils\MockSite.cs" />
     <Compile Include="Utils\MockTextEditor.cs" />
     <Compile Include="Utils\MockTextEditorOptions.cs" />
     <Compile Include="Utils\MockTextEditorViewContent.cs" />

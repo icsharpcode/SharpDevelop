@@ -339,7 +339,6 @@
     <Compile Include="Utils\MockRubyConsole.cs" />
     <Compile Include="Utils\MockRubyConsolePad.cs" />
     <Compile Include="Utils\MockRubyFileService.cs" />
-    <Compile Include="Utils\MockSite.cs" />
     <Compile Include="Utils\MockConsoleTextEditor.cs" />
     <Compile Include="Utils\MockWorkbench.cs" />
     <Compile Include="Utils\MSBuildEngineHelper.cs" />

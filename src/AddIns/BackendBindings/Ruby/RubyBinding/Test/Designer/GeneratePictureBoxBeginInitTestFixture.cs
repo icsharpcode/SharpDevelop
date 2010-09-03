@@ -9,7 +9,9 @@ using System;
 using System.CodeDom;
 using System.ComponentModel.Design.Serialization;
 using System.Windows.Forms;
+
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 
