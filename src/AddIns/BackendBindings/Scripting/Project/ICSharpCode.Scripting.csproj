@@ -72,6 +72,7 @@
     <Compile Include="Src\IScriptingConsoleTextEditor.cs" />
     <Compile Include="Src\IScriptingDesignerGenerator.cs" />
     <Compile Include="Src\IScriptingFileService.cs" />
+    <Compile Include="Src\ScriptingCodeBuilder.cs" />
     <Compile Include="Src\ScriptingConsoleCompletionData.cs" />
     <Compile Include="Src\ScriptingConsoleCompletionDataProvider.cs" />
     <Compile Include="Src\ScriptingConsoleTextEditor.cs" />
