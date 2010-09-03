@@ -774,7 +774,6 @@
 											<File Source="..\..\data\templates\project\CSharp\ConsoleProject.xpt" Id="CSharpConsoleProject.xpt" Name="ConsoleProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\ControlLibrary.xpt" Id="CSharpControlLibrary.xpt" Name="ControlLibrary.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\DefaultAssemblyInfo.cs" Id="CSharpDefaultAssemblyInfo.cs" Name="DefaultAssemblyInfo.cs" />
-											<File Source="..\..\data\templates\project\CSharp\Direct3DProject.xpt" Id="CSharpDirect3DProject.xpt" Name="Direct3DProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\EmptyProject.xpt" Id="CSharpEmptyProject.xpt" Name="EmptyProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\FormsProject.xpt" Id="CSharpFormsProject.xpt" Name="FormsProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\Library.xpt" Name="Library.xpt" Id="CSharpLibrary.xpt" />
@@ -813,7 +812,6 @@
 											<File Source="..\..\data\templates\project\VBNet\ConsoleProject.xpt" Id="VBNetConsoleProject.xpt" Name="ConsoleProject.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\ControlLibrary.xpt" Id="VBNetControlLibrary.xpt" Name="ControlLibrary.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\DefaultAssemblyInfo.vb" Id="VBNetDefaultAssemblyInfo.vb" Name="DefaultAssemblyInfo.vb" />
-											<File Source="..\..\data\templates\project\VBNet\Direct3DProject.xpt" Id="VBNetDirect3DProject.xpt" Name="Direct3DProject.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\EmptyProject.xpt" Id="VBNetEmptyProject.xpt" Name="EmptyProject.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\FormsProject.xpt" Id="VBNetFormsProject.xpt" Name="FormsProject.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\Library.xpt" Name="Library.xpt" Id="VBNetLibrary.xpt" />
