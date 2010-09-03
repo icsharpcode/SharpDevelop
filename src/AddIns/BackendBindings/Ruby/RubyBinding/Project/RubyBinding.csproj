@@ -88,7 +88,6 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\IRubyConsole.cs" />
     <Compile Include="Src\IRubyConsolePad.cs" />
-    <Compile Include="Src\IRubyFileService.cs" />
     <Compile Include="Src\IRubyWorkbench.cs" />
     <Compile Include="Src\RubyConsoleApplication.cs" />
     <Compile Include="Src\ConvertProjectToRubyProjectCommand.cs" />
@@ -110,7 +109,6 @@
     <Compile Include="Src\RubyDesignerGenerator.cs" />
     <Compile Include="Src\RubyDesignerLoader.cs" />
     <Compile Include="Src\RubyDesignerLoaderProvider.cs" />
-    <Compile Include="Src\RubyFileService.cs" />
     <Compile Include="Src\RubyFormattingStrategy.cs" />
     <Compile Include="Src\RubyFormsDesignerDisplayBinding.cs" />
     <Compile Include="Src\RubyLanguageBinding.cs" />

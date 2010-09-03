@@ -8,11 +8,10 @@
 using System;
 using System.IO;
 using System.Text;
-using ICSharpCode.Scripting;
 
-namespace ICSharpCode.RubyBinding
+namespace ICSharpCode.Scripting
 {
-	public class RubyFileService : IRubyFileService
+	public class ScriptingFileService : IScriptingFileService
 	{
 		public string GetTempFileName()
 		{

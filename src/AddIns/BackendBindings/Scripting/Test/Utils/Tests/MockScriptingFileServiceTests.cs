@@ -9,21 +9,20 @@ using System;
 using System.IO;
 using System.Text;
 
-using ICSharpCode.PythonBinding;
 using ICSharpCode.Scripting;
 using NUnit.Framework;
 
-namespace PythonBinding.Tests.Utils.Tests
+namespace ICSharpCode.Scripting.Tests.Utils.Tests
 {
 	[TestFixture]
-	public class MockPythonFileServiceTestFixture
+	public class MockScriptingFileServiceTests
 	{
-		MockPythonFileService fileService;
+		MockScriptingFileService fileService;
 		
 		[SetUp]
 		public void Init()
 		{
-			fileService = new MockPythonFileService();
+			fileService = new MockScriptingFileService();
 		}
 		
 		[Test]

@@ -332,14 +332,12 @@
     <Compile Include="Utils\MockDesignerGenerator.cs" />
     <Compile Include="Utils\MockRubyConsole.cs" />
     <Compile Include="Utils\MockRubyConsolePad.cs" />
-    <Compile Include="Utils\MockRubyFileService.cs" />
     <Compile Include="Utils\MockWorkbench.cs" />
     <Compile Include="Utils\RubyBindingAddInFile.cs" />
     <Compile Include="Utils\RubyMSBuildEngineHelper.cs" />
     <Compile Include="Utils\RubyParserHelper.cs" />
     <Compile Include="Utils\RubySelectedTestsHelper.cs" />
     <Compile Include="Utils\TestableRubyConsole.cs" />
-    <Compile Include="Utils\Tests\MockRubyFileServiceTestFixture.cs" />
     <EmbeddedResource Include="..\Project\RubyBinding.addin">
       <Link>RubyBinding.addin</Link>
     </EmbeddedResource>
@@ -349,7 +347,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Testing" />
-    <Folder Include="Utils\Tests" />
     <ProjectReference Include="..\..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
       <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
       <Name>ICSharpCode.AvalonEdit</Name>

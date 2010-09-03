@@ -33,7 +33,7 @@ namespace RubyBinding.Tests.Testing
 		SelectedTests selectedTests;
 		MockMethod methodToTest;
 		RubyAddInOptions options;
-		MockRubyFileService fileService;
+		MockScriptingFileService fileService;
 		StringBuilder responseFileText;
 		StringWriter responseFileStringWriter;
 		
@@ -53,7 +53,7 @@ namespace RubyBinding.Tests.Testing
 			testResultsMonitor.InitialFilePosition = 3;
 			options = new RubyAddInOptions(new Properties());
 			options.RubyFileName = @"c:\ironruby\ir.exe";
-			fileService = new MockRubyFileService();
+			fileService = new MockScriptingFileService();
 			testDebugger = new RubyTestDebugger(debuggerService, messageService, testResultsMonitor, options, fileService);
 		}
 		

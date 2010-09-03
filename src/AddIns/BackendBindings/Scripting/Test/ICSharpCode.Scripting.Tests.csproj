@@ -110,6 +110,7 @@
     <Compile Include="Utils\MockResourceReader.cs" />
     <Compile Include="Utils\MockResourceService.cs" />
     <Compile Include="Utils\MockResourceWriter.cs" />
+    <Compile Include="Utils\MockScriptingFileService.cs" />
     <Compile Include="Utils\MockSite.cs" />
     <Compile Include="Utils\MockTextEditor.cs" />
     <Compile Include="Utils\MockTextEditorOptions.cs" />
@@ -125,6 +126,7 @@
     <Compile Include="Utils\Tests\MockControlDispatcherTestFixture.cs" />
     <Compile Include="Utils\Tests\MockEditableViewContentTestFixture.cs" />
     <Compile Include="Utils\Tests\MockProjectContentTests.cs" />
+    <Compile Include="Utils\Tests\MockScriptingFileServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
@@ -150,6 +152,10 @@
     <ProjectReference Include="..\..\..\Analysis\UnitTesting\Test\UnitTesting.Tests.csproj">
       <Project>{44A8DE09-CAB9-49D8-9CFC-5EB0A552F181}</Project>
       <Name>UnitTesting.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Analysis\UnitTesting\UnitTesting.csproj">
+      <Project>{1F261725-6318-4434-A1B1-6C70CE4CD324}</Project>
+      <Name>UnitTesting</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
       <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>

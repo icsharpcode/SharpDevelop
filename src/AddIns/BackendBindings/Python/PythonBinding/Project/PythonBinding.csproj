@@ -90,7 +90,6 @@
     <Compile Include="Src\CompilingOptionsPanel.cs" />
     <Compile Include="Src\IPythonConsole.cs" />
     <Compile Include="Src\IPythonConsolePad.cs" />
-    <Compile Include="Src\IPythonFileService.cs" />
     <Compile Include="Src\IPythonResolver.cs" />
     <Compile Include="Src\IPythonWorkbench.cs" />
     <Compile Include="Src\MemberName.cs" />
@@ -98,7 +97,6 @@
     <Compile Include="Src\PythonClassResolver.cs" />
     <Compile Include="Src\PythonConsoleApplication.cs" />
     <Compile Include="Src\PythonDotNetMethodResolver.cs" />
-    <Compile Include="Src\PythonFileService.cs" />
     <Compile Include="Src\PythonFromImport.cs" />
     <Compile Include="Src\PythonImport.cs" />
     <Compile Include="Src\PythonLanguageBinding.cs" />

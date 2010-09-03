@@ -32,7 +32,7 @@ namespace PythonBinding.Tests.Testing
 		SelectedTests selectedTests;
 		MockMethod methodToTest;
 		PythonAddInOptions options;
-		MockPythonFileService fileService;
+		MockScriptingFileService fileService;
 		StringBuilder responseFileText;
 		StringWriter responseFileStringWriter;
 		PythonStandardLibraryPath standardLibraryPath;
@@ -51,7 +51,7 @@ namespace PythonBinding.Tests.Testing
 			testResultsMonitor = new MockTestResultsMonitor();
 			options = new PythonAddInOptions(new Properties());
 			options.PythonFileName = @"c:\ironpython\ipy.exe";
-			fileService = new MockPythonFileService();
+			fileService = new MockScriptingFileService();
 			messageService = new MockMessageService();
 			standardLibraryPath = new PythonStandardLibraryPath(@"c:\python\lib");
 			PythonTestRunnerContext context = new PythonTestRunnerContext(processRunner, 

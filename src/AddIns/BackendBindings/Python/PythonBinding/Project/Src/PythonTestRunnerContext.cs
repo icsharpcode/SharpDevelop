@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.Scripting;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.PythonBinding
@@ -14,14 +15,14 @@ namespace ICSharpCode.PythonBinding
 	{
 		PythonAddInOptions options;
 		PythonStandardLibraryPath pythonStandardLibraryPath;
-		IPythonFileService fileService;
+		IScriptingFileService fileService;
 
 		public PythonTestRunnerContext(IUnitTestProcessRunner processRunner,
 			ITestResultsMonitor testResultsMonitor,
 			IUnitTestMessageService messageService,
 			PythonAddInOptions options,
 			PythonStandardLibraryPath pythonStandardLibraryPath,
-			IPythonFileService fileService)
+			IScriptingFileService fileService)
 			: base(processRunner, testResultsMonitor, fileService, messageService)
 		{
 			this.options = options;
@@ -35,7 +36,7 @@ namespace ICSharpCode.PythonBinding
 				new UnitTestMessageService(),
 				new PythonAddInOptions(),
 				new PythonStandardLibraryPath(),
-				new PythonFileService())
+				new ScriptingFileService())
 		{
 		}
 		
@@ -47,8 +48,8 @@ namespace ICSharpCode.PythonBinding
 			get { return pythonStandardLibraryPath; }
 		}
 
-		public IPythonFileService PythonFileService {
-			get { return base.FileSystem as IPythonFileService; }
+		public IScriptingFileService ScriptingFileService {
+			get { return base.FileSystem as IScriptingFileService; }
 		}
 	}
 }

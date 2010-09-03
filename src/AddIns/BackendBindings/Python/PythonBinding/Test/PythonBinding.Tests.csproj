@@ -438,7 +438,6 @@
     <Compile Include="Utils\MockDesignerGenerator.cs" />
     <Compile Include="Utils\MockPythonConsole.cs" />
     <Compile Include="Utils\MockPythonConsolePad.cs" />
-    <Compile Include="Utils\MockPythonFileService.cs" />
     <Compile Include="Utils\MockWorkbench.cs" />
     <Compile Include="Utils\PythonMSBuildEngineHelper.cs" />
     <Compile Include="Utils\TestablePythonConsole.cs" />
@@ -450,7 +449,6 @@
     <Compile Include="Utils\PythonBindingAddInFile.cs" />
     <Compile Include="Utils\PythonCompletionItemsHelper.cs" />
     <Compile Include="Utils\PythonParserHelper.cs" />
-    <Compile Include="Utils\Tests\MockPythonFileServiceTestFixture.cs" />
     <Compile Include="Utils\Tests\PythonCompletionItemsHelperTests.cs" />
     <Compile Include="Utils\Tests\PythonParserHelperTests.cs" />
     <EmbeddedResource Include="Designer\App.ico" />

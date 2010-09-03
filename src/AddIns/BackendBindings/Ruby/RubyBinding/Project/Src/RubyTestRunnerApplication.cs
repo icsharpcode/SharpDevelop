@@ -22,14 +22,14 @@ namespace ICSharpCode.RubyBinding
 		string testResultsFileName = String.Empty;
 		RubyAddInOptions options;
 		RubyTestRunnerResponseFile responseFile;
-		IRubyFileService fileService;
+		IScriptingFileService fileService;
 		CreateTextWriterInfo textWriterInfo;
 		RubyConsoleApplication consoleApplication;
 		StringBuilder arguments;
 
 		public RubyTestRunnerApplication(string testResultsFileName,
 			RubyAddInOptions options,
-			IRubyFileService fileService)
+			IScriptingFileService fileService)
 		{
 			this.testResultsFileName = testResultsFileName;
 			this.options = options;

@@ -22,14 +22,14 @@ namespace ICSharpCode.PythonBinding
 		PythonAddInOptions options;
 		PythonStandardLibraryPath pythonStandardLibraryPath;
 		PythonTestRunnerResponseFile responseFile;
-		IPythonFileService fileService;
+		IScriptingFileService fileService;
 		CreateTextWriterInfo textWriterInfo;
 		PythonConsoleApplication consoleApplication;
 		
 		public PythonTestRunnerApplication(string testResultsFileName,
 			PythonAddInOptions options,
 			PythonStandardLibraryPath pythonStandardLibraryPath,
-			IPythonFileService fileService)
+			IScriptingFileService fileService)
 		{
 			this.testResultsFileName = testResultsFileName;
 			this.options = options;

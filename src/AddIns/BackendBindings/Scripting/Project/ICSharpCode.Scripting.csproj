@@ -70,10 +70,12 @@
     <Compile Include="Src\ILock.cs" />
     <Compile Include="Src\IMemberProvider.cs" />
     <Compile Include="Src\IScriptingConsoleTextEditor.cs" />
+    <Compile Include="Src\IScriptingFileService.cs" />
     <Compile Include="Src\ScriptingConsoleCompletionData.cs" />
     <Compile Include="Src\ScriptingConsoleCompletionDataProvider.cs" />
     <Compile Include="Src\ScriptingConsoleTextEditor.cs" />
     <Compile Include="Src\ScriptingConsoleTextEditorKeyEventArgs.cs" />
+    <Compile Include="Src\ScriptingFileService.cs" />
     <Compile Include="Src\StringListLock.cs" />
     <Compile Include="Src\ThreadSafeScriptingConsoleTextEditor.cs" />
   </ItemGroup>
@@ -91,6 +93,11 @@
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Analysis\UnitTesting\UnitTesting.csproj">
+      <Project>{1F261725-6318-4434-A1B1-6C70CE4CD324}</Project>
+      <Name>UnitTesting</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

@@ -9,8 +9,10 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+
 using ICSharpCode.Core;
 using ICSharpCode.Core.Services;
+using ICSharpCode.Scripting;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.PythonBinding
@@ -19,7 +21,7 @@ namespace ICSharpCode.PythonBinding
 	{
 		PythonAddInOptions options;
 		PythonStandardLibraryPath pythonStandardLibraryPath;
-		IPythonFileService fileService;
+		IScriptingFileService fileService;
 		PythonTestRunnerApplication testRunnerApplication;
 		
 		public PythonTestRunner()
@@ -32,7 +34,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			this.options = context.Options;
 			this.pythonStandardLibraryPath = context.PythonStandardLibraryPath;
-			this.fileService = context.PythonFileService;
+			this.fileService = context.ScriptingFileService;
 		}
 		
 		public override void Start(SelectedTests selectedTests)

@@ -7,6 +7,7 @@
 
 using System;
 using System.Diagnostics;
+using ICSharpCode.Scripting;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.PythonBinding
@@ -14,7 +15,7 @@ namespace ICSharpCode.PythonBinding
 	public class PythonTestDebugger : TestDebuggerBase
 	{
 		PythonAddInOptions options;
-		IPythonFileService fileService;
+		IScriptingFileService fileService;
 		PythonTestRunnerApplication testRunnerApplication;
 		PythonStandardLibraryPath pythonStandardLibraryPath;
 		
@@ -24,7 +25,7 @@ namespace ICSharpCode.PythonBinding
 				new TestResultsMonitor(),
 				new PythonAddInOptions(),
 				new PythonStandardLibraryPath(),
-				new PythonFileService())
+				new ScriptingFileService())
 		{
 		}
 		
@@ -33,7 +34,7 @@ namespace ICSharpCode.PythonBinding
 			ITestResultsMonitor testResultsMonitor,
 			PythonAddInOptions options,
 			PythonStandardLibraryPath pythonStandardLibraryPath,
-			IPythonFileService fileService)
+			IScriptingFileService fileService)
 			: base(debuggerService, messageService, testResultsMonitor)
 		{
 			this.options = options;

@@ -32,7 +32,7 @@ namespace RubyBinding.Tests.Testing
 		public void Init()
 		{
 			string tempFileName = "temp.tmp";
-			MockRubyFileService fileService = new MockRubyFileService();
+			MockScriptingFileService fileService = new MockScriptingFileService();
 			fileService.SetTempFileName(tempFileName);
 			fileService.SetTextWriter(new StringWriter());
 
