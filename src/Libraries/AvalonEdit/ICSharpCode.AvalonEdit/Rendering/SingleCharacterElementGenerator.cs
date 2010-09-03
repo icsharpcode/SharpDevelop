@@ -1,9 +1,5 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <author name="Daniel Grunwald"/>
-//     <version>$Revision$</version>
-// </file>
+ï»¿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Windows;
@@ -19,7 +15,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 	// This class is internal because it does not need to be accessed by the user - it can be configured using TextEditorOptions.
 	
 	/// <summary>
-	/// Element generator that displays · for spaces and » for tabs and a box for control characters.
+	/// Element generator that displays Â· for spaces and Â» for tabs and a box for control characters.
 	/// </summary>
 	/// <remarks>
 	/// This element generator is present in every TextView by default; the enabled features can be configured using the
@@ -29,12 +25,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
 	sealed class SingleCharacterElementGenerator : VisualLineElementGenerator, IBuiltinElementGenerator
 	{
 		/// <summary>
-		/// Gets/Sets whether to show · for spaces.
+		/// Gets/Sets whether to show Â· for spaces.
 		/// </summary>
 		public bool ShowSpaces { get; set; }
 		
 		/// <summary>
-		/// Gets/Sets whether to show » for tabs.
+		/// Gets/Sets whether to show Â» for tabs.
 		/// </summary>
 		public bool ShowTabs { get; set; }
 		

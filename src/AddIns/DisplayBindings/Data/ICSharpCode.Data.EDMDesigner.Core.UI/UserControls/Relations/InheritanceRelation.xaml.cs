@@ -1,4 +1,7 @@
-﻿using System.Windows.Data;
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+using System.Windows.Data;
 using System.Windows.Shapes;
 using ICSharpCode.Data.EDMDesigner.Core.UI.Converters;
 using ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.CSDLType;

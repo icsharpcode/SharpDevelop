@@ -1,9 +1,5 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision$</version>
-// </file>
+ï»¿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -88,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					MakeExplicitParameterTypeInference(ei, Ti);
 					
 					if (OutputTypeContainsUnfixed(ei, Ti) && !InputTypesContainsUnfixed(ei, Ti)) {
-						// an output type inference (§7.4.2.6) is made for ei with type Ti.
+						// anÂ outputÂ typeÂ inferenceÂ (Â§7.4.2.6)Â isÂ madeÂ forÂ eiÂ withÂ typeÂ Ti.
 						Log("MakeOutputTypeInference for #" + i);
 						MakeOutputTypeInference(ei, Ti);
 					}
@@ -102,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		bool PhaseTwo()
 		{
 			Log("Phase Two");
-			// All unfixed type variables Xi which do not depend on any Xj are fixed.
+			// AllÂ unfixedÂ typeÂ variablesÂ XiÂ whichÂ doÂ notÂ dependÂ onÂ anyÂ XjÂ areÂ fixed.
 			List<TP> typeParametersToFix = new List<TP>();
 			foreach (TP Xi in typeParameters) {
 				if (Xi.Fixed == false) {
@@ -111,12 +107,12 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					}
 				}
 			}
-			// If no such type variables exist, all unfixed type variables Xi are fixed for which all of the following hold:
+			// IfÂ noÂ suchÂ typeÂ variablesÂ exist,Â allÂ unfixedÂ typeÂ variablesÂ XiÂ areÂ fixedÂ forÂ whichÂ allÂ ofÂ theÂ followingÂ hold:
 			if (typeParametersToFix.Count == 0) {
 				foreach (TP Xi in typeParameters) {
-					// Xi has a non­empty set of bounds
+					// XiÂ hasÂ aÂ nonÂ­emptyÂ setÂ ofÂ bounds
 					if (Xi.Fixed == false && Xi.Bounds.Count > 0) {
-						// There is at least one type variable Xj that depends on Xi
+						// ThereÂ isÂ atÂ leastÂ oneÂ typeÂ variableÂ Xj thatÂ dependsÂ onÂ Xi
 						if (typeParameters.Any((TP Xj) => DependsOn(Xj, Xi))) {
 							typeParametersToFix.Add(Xi);
 						}
@@ -133,25 +129,25 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 				return false;
 			bool unfixedTypeVariablesExist = typeParameters.Any((TP X) => X.Fixed == false);
 			if (typeParametersToFix.Count == 0 && unfixedTypeVariablesExist) {
-				// If no such type variables exist and there are still unfixed type variables, type inference fails.
+				// IfÂ noÂ suchÂ typeÂ variablesÂ existÂ andÂ thereÂ areÂ stillÂ unfixedÂ typeÂ variables,Â typeÂ inferenceÂ fails.
 				return false;
 			} else if (!unfixedTypeVariablesExist) {
-				// Otherwise, if no further unfixed type variables exist, type inference succeeds.
+				// Otherwise,Â ifÂ noÂ furtherÂ unfixedÂ typeÂ variablesÂ exist,Â typeÂ inferenceÂ succeeds.
 				return true;
 			} else {
-				// Otherwise, for all arguments ei with corresponding parameter type Ti
+				// Otherwise,Â forÂ allÂ argumentsÂ eiÂ withÂ correspondingÂ parameterÂ typeÂ Ti
 				for (int i = 0; i < arguments.Count; i++) {
 					IReturnType ei = arguments[i];
 					IReturnType Ti = parameterTypes[i];
-					// where the output types (§7.4.2.4) contain unfixed type variables Xj
-					// but the input types (§7.4.2.3) do not
+					// whereÂ theÂ outputÂ typesÂ (Â§7.4.2.4)Â containÂ unfixedÂ typeÂ variablesÂ Xj
+					// butÂ theÂ inputÂ typesÂ (Â§7.4.2.3)Â doÂ not
 					if (OutputTypeContainsUnfixed(ei, Ti) && !InputTypesContainsUnfixed(ei, Ti)) {
-						// an output type inference (§7.4.2.6) is made for ei with type Ti.
+						// anÂ outputÂ typeÂ inferenceÂ (Â§7.4.2.6)Â isÂ madeÂ forÂ eiÂ withÂ typeÂ Ti.
 						Log("MakeOutputTypeInference for #" + i);
 						MakeOutputTypeInference(ei, Ti);
 					}
 				}
-				// Then the second phase is repeated.
+				// ThenÂ theÂ secondÂ phaseÂ isÂ repeated.
 				return PhaseTwo();
 			}
 		}
@@ -252,9 +248,9 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		
 		void MakeOutputTypeInference(IReturnType e, IReturnType T)
 		{
-			//If e is an anonymous function with inferred return type  U (§7.4.2.11) and T is
-			// a delegate type or expression tree type with return type Tb, then a lower­bound
-			// inference (§7.4.2.9) is made from U for Tb.
+			//IfÂ eÂ isÂ anÂ anonymousÂ functionÂ withÂ inferredÂ returnÂ typeÂ Â UÂ (Â§7.4.2.11)Â andÂ TÂ is
+			// aÂ delegateÂ typeÂ orÂ expression treeÂ typeÂ withÂ returnÂ typeÂ Tb,Â thenÂ aÂ lowerÂ­bound
+			// inferenceÂ (Â§7.4.2.9)Â isÂ madeÂ fromÂ UÂ forÂ Tb.
 			AnonymousMethodReturnType amrt = e as AnonymousMethodReturnType;
 			if (amrt != null) {
 				IMethod m = GetDelegateOrExpressionTreeSignature(T, amrt.CanBeConvertedToExpressionTree);
@@ -271,16 +267,16 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 					return;
 				}
 			}
-			// Otherwise, if e is a method group and T is a delegate type or expression tree type
-			// return type Tb with parameter types T1…Tk and return type Tb, and overload resolution
-			// of e with the types T1…Tk yields a single method with return type U, then a lower­bound
-			// inference is made from U for Tb.
+			// Otherwise,Â ifÂ eÂ isÂ aÂ methodÂ groupÂ andÂ TÂ isÂ aÂ delegateÂ typeÂ orÂ expressionÂ treeÂ type
+			// returnÂ typeÂ TbÂ with parameterÂ typesÂ T1â€¦TkÂ andÂ returnÂ typeÂ Tb,Â andÂ overloadÂ resolution
+			// ofÂ eÂ withÂ theÂ typesÂ T1â€¦TkÂ yieldsÂ aÂ single methodÂ withÂ returnÂ typeÂ U,Â thenÂ aÂ lowerÂ­bound
+			// inferenceÂ isÂ madeÂ fromÂ UÂ forÂ Tb.
 			if (e is MethodGroupReturnType) {
 				// the MS C# doesn't seem to implement this rule, so we can safely skip this
 				return;
 			}
-			// Otherwise, if e is an expression with type U, then a lower­bound inference is made from
-			// U for T.
+			// Otherwise,Â ifÂ eÂ isÂ anÂ expressionÂ withÂ typeÂ U,Â thenÂ aÂ lowerÂ­boundÂ inferenceÂ isÂ madeÂ from
+			// UÂ forÂ T.
 			MakeLowerBoundInference(e, T);
 		}
 		
@@ -292,9 +288,9 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		
 		void MakeExplicitParameterTypeInference(IReturnType e, IReturnType T)
 		{
-			// If e is an explicitly typed anonymous function with parameter types U1…Uk and T is a
-			// delegate type with parameter types V1…Vk then for each Ui an exact inference (§7.4.2.8)
-			// is made from Ui for the corresponding Vi.
+			// IfÂ eÂ isÂ anÂ explicitlyÂ typedÂ anonymousÂ functionÂ withÂ parameterÂ typesÂ U1â€¦UkÂ andÂ TÂ isÂ a
+			// delegateÂ typeÂ with parameterÂ typesÂ V1â€¦VkÂ thenÂ forÂ eachÂ UiÂ anÂ exactÂ inferenceÂ (Â§7.4.2.8)
+			// isÂ madeÂ fromÂ UiÂ forÂ theÂ correspondingÂ Vi.
 			AnonymousMethodReturnType amrt = e as AnonymousMethodReturnType;
 			if (amrt != null && amrt.HasParameterList) {
 				IMethod m = GetDelegateOrExpressionTreeSignature(T, amrt.CanBeConvertedToExpressionTree);
@@ -315,23 +311,23 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			if (U == null || V == null)
 				return;
 			
-			// If V is one of the unfixed Xi then U is added to the set of bounds for Xi.
+			// IfÂ VÂ isÂ oneÂ ofÂ theÂ unfixedÂ XiÂ thenÂ UÂ isÂ addedÂ toÂ theÂ setÂ ofÂ boundsÂ forÂ Xi.
 			TP tp = GetTPForType(V);
 			if (tp != null && tp.Fixed == false) {
 				Log(" Add bound '" + U.DotNetName + "' to " + tp);
 				tp.Bounds.Add(U);
 				return;
 			}
-			// Otherwise if U is an array type Ue[…] and V is an array type Ve[…] of the same rank
-			// then an exact inference from Ue to Ve is made
+			// OtherwiseÂ ifÂ UÂ isÂ anÂ arrayÂ typeÂ Ue[â€¦]Â andÂ VÂ isÂ anÂ arrayÂ typeÂ Ve[â€¦]Â ofÂ theÂ sameÂ rank
+			// thenÂ anÂ exactÂ inference fromÂ UeÂ toÂ VeÂ isÂ made
 			ArrayReturnType arrU = U.CastToArrayReturnType();
 			ArrayReturnType arrV = V.CastToArrayReturnType();
 			if (arrU != null && arrV != null && arrU.ArrayDimensions == arrV.ArrayDimensions) {
 				MakeExactInference(arrU.ArrayElementType, arrV.ArrayElementType);
 				return;
 			}
-			// Otherwise if V is a constructed type C<V1…Vk> and U is a constructed
-			// type C<U1…Uk> then an exact inference is made from each Ui to the corresponding Vi.
+			// OtherwiseÂ ifÂ VÂ isÂ aÂ constructedÂ typeÂ C<V1â€¦Vk>Â andÂ UÂ isÂ aÂ constructed
+			// typeÂ C<U1â€¦Uk>Â thenÂ anÂ exact inferenceÂ isÂ madeÂ fromÂ eachÂ UiÂ toÂ theÂ correspondingÂ Vi.
 			ConstructedReturnType CU = U.CastToConstructedReturnType();
 			ConstructedReturnType CV = V.CastToConstructedReturnType();
 			if (CU != null && CV != null
@@ -365,16 +361,16 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			if (U == null || V == null)
 				return;
 			
-			// If V is one of the unfixed Xi then U is added to the set of bounds for Xi.
+			// IfÂ VÂ isÂ oneÂ ofÂ theÂ unfixedÂ XiÂ thenÂ UÂ isÂ addedÂ toÂ theÂ setÂ ofÂ boundsÂ forÂ Xi.
 			TP tp = GetTPForType(V);
 			if (tp != null && tp.Fixed == false) {
 				Log("  Add bound '" + U.DotNetName + "' to " + tp);
 				tp.Bounds.Add(U);
 				return;
 			}
-			// Otherwise if U is an array type Ue[…] and V is either an array type Ve[…]of the
-			// same rank, or if U is a one­dimensional array type Ue[]and V is one of
-			// IEnumerable<Ve>, ICollection<Ve> or IList<Ve> then
+			// OtherwiseÂ ifÂ UÂ isÂ anÂ arrayÂ typeÂ Ue[â€¦]Â andÂ VÂ isÂ eitherÂ anÂ arrayÂ typeÂ Ve[â€¦]ofÂ the
+			// sameÂ rank,Â orÂ ifÂ UÂ isÂ aÂ oneÂ­dimensionalÂ arrayÂ typeÂ Ue[]andÂ VÂ isÂ oneÂ of
+			// IEnumerable<Ve>,Â ICollection<Ve>Â orÂ IList<Ve>Â then
 			ArrayReturnType arrU = U.CastToArrayReturnType();
 			ArrayReturnType arrV = V.CastToArrayReturnType();
 			ConstructedReturnType CV = V.CastToConstructedReturnType();
@@ -384,18 +380,18 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 			{
 				IReturnType Ue = arrU.ArrayElementType;
 				IReturnType Ve = arrV != null ? arrV.ArrayElementType : CV.TypeArguments[0];
-				// If Ue is known to be a reference type then a lower­bound inference from Ue to Ve is made
+				// IfÂ UeÂ isÂ knownÂ toÂ beÂ aÂ referenceÂ typeÂ thenÂ aÂ lowerÂ­boundÂ inferenceÂ fromÂ UeÂ toÂ VeÂ isÂ made
 				if (IsReferenceType(Ue) ?? false) {
 					MakeLowerBoundInference(Ue, Ve);
 				} else {
-					// Otherwise an exact inference from Ue to Ve is made
+					// OtherwiseÂ anÂ exactÂ inferenceÂ fromÂ UeÂ toÂ VeÂ isÂ made
 					MakeExactInference(Ue, Ve);
 				}
 				return;
 			}
-			// Otherwise if V is a constructed type C<V1…Vk> and there is a unique set of
-			// types U1…Uk such that a standard implicit conversion exists from U to C<U1…Uk>
-			// then an exact inference is made from each Ui for the corresponding Vi.
+			// OtherwiseÂ ifÂ VÂ isÂ aÂ constructedÂ typeÂ C<V1â€¦Vk>Â andÂ thereÂ isÂ aÂ uniqueÂ setÂ of
+			// typesÂ U1â€¦UkÂ suchÂ thatÂ a standardÂ implicitÂ conversionÂ existsÂ fromÂ UÂ toÂ C<U1â€¦Uk>
+			// thenÂ anÂ exactÂ inferenceÂ isÂ madeÂ fromÂ eachÂ UiÂ for theÂ correspondingÂ Vi.
 			if (CV != null) {
 				foreach (IReturnType U2 in MemberLookupHelper.GetTypeInheritanceTree(U)) {
 					ConstructedReturnType CU2 = U2.CastToConstructedReturnType();

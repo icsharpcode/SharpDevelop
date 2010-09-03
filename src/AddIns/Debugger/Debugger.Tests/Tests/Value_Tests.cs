@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <author name="David Srbecký"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 
@@ -66,7 +62,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Value_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break Value_Tests.cs:31,4-31,40</DebuggingPaused>
+    <DebuggingPaused>Break Value_Tests.cs:27,4-27,40</DebuggingPaused>
     <LocalVariables>
       <Item>
         <LocalVariable

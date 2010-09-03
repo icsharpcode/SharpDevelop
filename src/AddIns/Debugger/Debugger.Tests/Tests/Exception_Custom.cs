@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 
@@ -54,7 +50,7 @@ namespace Debugger.Tests {
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Exception_Custom.exe (Has symbols)</ModuleLoaded>
     <ExceptionThrown>Debugger.Tests.MyException: test2 ---&gt; Debugger.Tests.MyException: test1</ExceptionThrown>
-    <DebuggingPaused>ExceptionIntercepted Exception_Custom.cs:27,5-27,39</DebuggingPaused>
+    <DebuggingPaused>ExceptionIntercepted Exception_Custom.cs:23,5-23,39</DebuggingPaused>
     <ProcessExited />
   </Test>
 </DebuggerTests>

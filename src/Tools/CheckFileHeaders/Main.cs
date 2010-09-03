@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -15,17 +11,25 @@ namespace CheckFileHeaders
 {
 	class MainClass
 	{
+		const string copyrightHeader = @"// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)";
+		const string licenseHeaderLGPL = @"// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)";
+		
+		string currentLicense = licenseHeaderLGPL;
+		
 		static int Main(string[] args)
 		{
-			int count;
 			try {
 				MainClass m = new MainClass();
+				
+				int count;
 				if (args.Length == 0) {
-					Console.WriteLine("Checking files in {0}  ...", Path.GetFullPath(@"..\..\..\..\"));
-					count = m.Run(@"..\..\..\..\");
+					Environment.CurrentDirectory = Path.GetFullPath(@"..\..\..\..\..");
+					Console.WriteLine("Checking files in {0}  ...", Path.GetFullPath("src"));
+					count = m.Run("src");
 				} else {
-					Console.WriteLine("Checking files in {0}  ...", Path.GetFullPath(args[0]));
-					count = m.Run(args[0]);
+					Environment.CurrentDirectory = Path.GetFullPath(args[0]);
+					Console.WriteLine("Checking files in {0}  ...", Path.GetFullPath("."));
+					count = m.Run(".");
 				}
 				Console.WriteLine("Finished! (checked {0} files, changed {1} files, ignored {2} files)", count, m.changeCount, m.ignoreCount);
 			} catch (Exception ex) {
@@ -37,10 +41,14 @@ namespace CheckFileHeaders
 		}
 		int Run(string dir)
 		{
+			string oldLicense = currentLicense;
+			if (File.Exists(Path.Combine(dir, "license.txt"))) {
+				if (File.ReadAllText(Path.Combine(dir, "license.txt")).Contains("Redistributions  of  source code must retain the above copyright notice")) {
+					currentLicense = @"// This code is distributed under the BSD license (for details please see \" + dir + @"\license.txt)";
+				}
+			}
 			int count = 0;
 			foreach (string file in Directory.GetFiles(dir, "*.cs")) {
-				if (file.EndsWith(".Designer.cs") || file.EndsWith("\\AssemblyInfo.cs"))
-					continue;
 				count++;
 				ProcessFile(file);
 			}
@@ -57,166 +65,50 @@ namespace CheckFileHeaders
 					continue;
 				if (subdir.EndsWith("Libraries\\TreeViewAdv"))
 					continue;
+				if (subdir.EndsWith("Debugger.Core\\Mono.Cecil"))
+					continue;
 				if (Path.GetFullPath(subdir).EndsWith("src\\Tools"))
-					continue;
-				// Disabled addins:
-				if (subdir.EndsWith("AddIns\\Misc\\SharpReport"))
-					continue;
-				if (subdir.EndsWith("AddIns\\Misc\\ComponentInspector"))
-					continue;
-				if (subdir.EndsWith("AddIns\\BackendBindings\\CppBinding"))
-					continue;
-				if (subdir.EndsWith(@"AddIns\BackendBindings\CSharpBinding\Project\Resources"))
-					continue;
-				if (subdir.EndsWith(@"Debugger\Debugger.Core\Mono.Cecil"))
-					continue;
-				if (subdir.EndsWith(@"AddIns\DisplayBindings\Data"))
 					continue;
 				count += Run(subdir);
 			}
+			currentLicense = oldLicense;
 			return count;
 		}
-		
-		// must be splitted because this file is under version control, too
-		Regex resetVersionRegex = new Regex(@"//     <version>\$Revi" + @"sion: \d+ \$</version>", RegexOptions.Compiled);
 		
 		int changeCount, ignoreCount;
 		
 		void ProcessFile(string file)
 		{
 			string content = GetFileContent(file);
-			string author, email;
 			int lastLine;
-			int headerType = AnalyzeHeader(content, out author, out email, out lastLine);
+			int headerType = AnalyzeHeader(content, out lastLine);
+			if (headerType == 7)
+				return;
 			if (headerType == 5) {
-				//Console.WriteLine("unknown file: " + file);
+				Console.WriteLine("unknown file: " + file);
 				ignoreCount++;
 				return;
 			}
-			if (author == null)
-				author = "";
-			if (author == "") {
-				Console.Write(file);
-				char ch;
-				do {
-					Console.WriteLine();
-					Console.Write("  Daniel/Matt/Other/None/Ignore (D/M/O/N/I): ");
-				}
-				while ((ch = char.ToUpper(Console.ReadKey().KeyChar)) != 'M'
-				       && ch != 'N' && ch != 'I' && ch != 'O' && ch != 'D');
-				Console.WriteLine();
-				if (ch == 'M') {
-					author = "Matthew Ward";
-				} else if (ch == 'D') {
-					author = "Daniel Grunwald";
-				} else if (ch == 'O') {
-					bool ok;
-					do {
-						Console.Write("Enter author name: ");
-						author = Console.ReadLine();
-						author = CheckAuthor(author);
-						ok = author != null;
-					} while (!ok);
-				} else if (ch == 'I') {
-					ignoreCount++;
-					return;
-				} else {
-					author = "unknown";
-				}
-			}
-			string oldAuthor = author;
-			author = CheckAuthor(author);
-			if (author == null) {
-				Console.WriteLine("Unknown author: " + oldAuthor + " in " + file);
-				Console.WriteLine("    File was ignored.");
+			if (headerType == 6) {
+				Console.WriteLine("file with explicit license: " + file);
+				ignoreCount++;
 				return;
 			}
+			
 			StringBuilder builder = new StringBuilder();
-			builder.AppendLine("// <file>");
-			builder.AppendLine("//     <copyright see=\"prj:///doc/copyright.txt\"/>");
-			if (headerType != 6) { // only if file doesn't have explicit license
-				builder.AppendLine("//     <license see=\"prj:///doc/license.txt\"/>");
-			}
+			builder.AppendLine(copyrightHeader);
+			builder.AppendLine(currentLicense);
+			builder.AppendLine();
 			
-			if (!string.IsNullOrEmpty(email)) {
-				builder.Append("//     <owner name=\"");
-				builder.Append(author);
-				builder.Append("\" email=\"");
-				builder.Append(email);
-			} else {
-				builder.Append("//     <author name=\"");
-				builder.Append(author);
-			}
-			builder.AppendLine("\"/>");
-			
-			// must be splitted because this file is under version control, too
-			const string versionLine = "//     <version>$Revi" + "sion$</version>";
-			builder.AppendLine(versionLine);
-			builder.AppendLine("// </file>");
-			if (headerType != 6) { // only if file doesn't have explicit license
-				builder.AppendLine();
-			}
 			int offset = FindLineOffset(content, lastLine + 1);
 			builder.Append(content.Substring(offset).Trim());
 			builder.AppendLine();
 			string newContent = builder.ToString();
-			string resettedVersion = resetVersionRegex.Replace(content, versionLine);
-			if (newContent.TrimEnd() != resettedVersion.TrimEnd()) {
+			if (newContent.TrimEnd() != content.TrimEnd()) {
 				using (StreamWriter w = new StreamWriter(file, false, GetOptimalEncoding(newContent))) {
 					changeCount++;
 					w.Write(newContent);
 				}
-			}
-		}
-		
-		string CheckAuthor(string author)
-		{
-			switch (author) {
-				case "none":
-				case "unknown":
-					return "unknown";
-				case "David":
-				case "David Srbecký":
-				case "David Srbecky":
-					return "David Srbecký";
-				case "Peter Forstmeier":
-				case "Forstmeier Peter":
-					return "Peter Forstmeier";
-				case "Daniel":
-				case "Daniel Grunwald":
-					return "Daniel Grunwald";
-				case "Martin":
-				case "Martin Koníček":
-				case "Martin Konícek":
-					return "Martin Koníček";
-				case "Siegfried":
-				case "Siegfried Pammer":
-					return "Siegfried Pammer";
-				case "Itai Bar-Haim":
-				case "itai":
-					return "Itai Bar-Haim";
-					
-				case "Markus Palme":
-				case "Mike Krüger":
-				case "Mathias Simmack":
-				case "David Alpert":
-				case "Matthew Ward":
-				case "Andrea Paatz":
-				case "Ivan Shumilin":
-				case "Christian Hornung":
-				case "Denis ERCHOFF":
-				case "Georg Brandl":
-				case "Matt Everson":
-				case "Shinsaku Nakagawa":
-				case "Christoph Wille":
-				case "Robert Zaunere":
-				case "Justin Dearing":
-				case "Poul Staugaard":
-				case "Roman Taranchenko":
-				case "John Simons":
-					return author;
-				default:
-					return null;
 			}
 		}
 		
@@ -250,12 +142,13 @@ namespace CheckFileHeaders
 		// 4 = unknown header
 		// 5 = outcommented file
 		// 6 = XML header followed by explicit license
-		int AnalyzeHeader(string content, out string author, out string email, out int lastLine)
+		// 7 = modern header
+		int AnalyzeHeader(string content, out int lastLine)
 		{
 			string content2 = content;
 			
-			author = null;
-			email = null;
+			string author = null;
+			string email = null;
 			int lineNumber = -1;
 			lastLine = -1;
 			
@@ -266,7 +159,6 @@ namespace CheckFileHeaders
 			// 2 = parse SharpDevelop header
 			// 3 = search end of GPL header
 			// 4 = block comment start
-			// 5 = parse after XML header
 			using (StringReader r = new StringReader(content)) {
 				string line;
 				while ((line = r.ReadLine()) != null) {
@@ -275,7 +167,9 @@ namespace CheckFileHeaders
 					if (state == 0) {
 						if (line.Length == 0)
 							continue;
-						if (line.StartsWith("using ")) {
+						if (line == copyrightHeader) {
+							return 7;
+						} else if (line.StartsWith("using ")) {
 							lastLine = -1;
 							return 0;
 						} else if (line == "// <file>") {
@@ -297,7 +191,7 @@ namespace CheckFileHeaders
 					} else if (state == 1) {
 						if (line == "// </file>") {
 							lastLine = lineNumber;
-							state = 5;
+							return 1;
 						} else if (xmlRegex.IsMatch(line)) {
 							Match m = xmlRegex.Match(line);
 							author = m.Groups[1].Value;
@@ -330,13 +224,6 @@ namespace CheckFileHeaders
 						} else {
 							break;
 						}
-					} else if (state == 5) {
-						if (line.Length == 0)
-							continue;
-						if (line == "#region License")
-							return 6;
-						else
-							return 1;
 					} else {
 						throw new NotSupportedException();
 					}

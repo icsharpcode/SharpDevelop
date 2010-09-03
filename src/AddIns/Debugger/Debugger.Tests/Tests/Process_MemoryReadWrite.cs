@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 
@@ -73,7 +69,7 @@ namespace Debugger.Tests {
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>Process_MemoryReadWrite.exe (Has symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
-    <DebuggingPaused>Break Process_MemoryReadWrite.cs:18,4-18,40</DebuggingPaused>
+    <DebuggingPaused>Break Process_MemoryReadWrite.cs:14,4-14,40</DebuggingPaused>
     <hello>5 0 0 0 48 0 65 0 6C 0 6C 0 6F 0 </hello>
     <world>6 0 0 0 20 0 20 0 20 0 20 0 20 0 21 0 </world>
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>

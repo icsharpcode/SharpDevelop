@@ -1,9 +1,5 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <author name="Daniel Grunwald"/>
-//     <version>$Revision$</version>
-// </file>
+ï»¿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.ComponentModel;
@@ -46,7 +42,7 @@ namespace ICSharpCode.AvalonEdit
 		bool showSpaces;
 		
 		/// <summary>
-		/// Gets/Sets whether to show · for spaces.
+		/// Gets/Sets whether to show Â· for spaces.
 		/// </summary>
 		/// <remarks>The default value is <c>false</c>.</remarks>
 		[DefaultValue(false)]
@@ -63,7 +59,7 @@ namespace ICSharpCode.AvalonEdit
 		bool showTabs;
 		
 		/// <summary>
-		/// Gets/Sets whether to show » for tabs.
+		/// Gets/Sets whether to show Â» for tabs.
 		/// </summary>
 		/// <remarks>The default value is <c>false</c>.</remarks>
 		[DefaultValue(false)]
@@ -80,7 +76,7 @@ namespace ICSharpCode.AvalonEdit
 		bool showEndOfLine;
 		
 		/// <summary>
-		/// Gets/Sets whether to show ¶ at the end of lines.
+		/// Gets/Sets whether to show Â¶ at the end of lines.
 		/// </summary>
 		/// <remarks>The default value is <c>false</c>.</remarks>
 		[DefaultValue(false)]

@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Threading;
@@ -60,7 +56,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>ControlFlow_MainThreadExit.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break ControlFlow_MainThreadExit.cs:24,4-24,40</DebuggingPaused>
+    <DebuggingPaused>Break ControlFlow_MainThreadExit.cs:20,4-20,40</DebuggingPaused>
     <ThreadsBeforeExit
       Count="2"
       Selected="Thread Name =  Suspended = False">
@@ -88,7 +84,7 @@ namespace Debugger.Tests {
           RuntimeValue="{System.Threading.Thread}" />
       </Item>
     </ThreadsBeforeExit>
-    <DebuggingPaused>ForcedBreak ControlFlow_MainThreadExit.cs:29,4-29,26</DebuggingPaused>
+    <DebuggingPaused>ForcedBreak ControlFlow_MainThreadExit.cs:25,4-25,26</DebuggingPaused>
     <ThreadsAfterExit
       Count="2"
       Selected="Thread Name = Worker thread Suspended = False">

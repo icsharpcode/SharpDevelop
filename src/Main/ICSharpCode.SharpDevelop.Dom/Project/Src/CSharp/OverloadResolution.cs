@@ -1,9 +1,5 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision$</version>
-// </file>
+ï»¿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Linq;
@@ -232,7 +228,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		}
 		
 		/// <summary>
-		/// Gets which function member is better. (§ 14.4.2.2)
+		/// Gets which function member is better. (Â§ 14.4.2.2)
 		/// </summary>
 		/// <returns>0 if neither method is better. 1 if c1 is better. 2 if c2 is better.</returns>
 		int GetBetterFunctionMember(Candidate c1, Candidate c2)
@@ -291,7 +287,7 @@ namespace ICSharpCode.SharpDevelop.Dom.CSharp
 		
 		/// <summary>
 		/// Gets which return type list is more specific.
-		/// § 14.4.2.2: types with generic arguments are less specific than types with fixed arguments
+		/// Â§ 14.4.2.2: types with generic arguments are less specific than types with fixed arguments
 		/// </summary>
 		/// <returns>0 if both are equally specific, 1 if <paramref name="r"/> is more specific,
 		/// 2 if <paramref name="s"/> is more specific.</returns>

@@ -1,11 +1,6 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Daniel Grunwald
- * Date: 10/28/2006
- * Time: 5:54 PM
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 namespace ICSharpCode.SettingsEditor
 {
 	partial class SettingsView
