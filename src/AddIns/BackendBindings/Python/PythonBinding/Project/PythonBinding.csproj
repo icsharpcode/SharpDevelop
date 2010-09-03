@@ -149,7 +149,6 @@
     <Compile Include="Src\PythonLanguageProperties.cs" />
     <Compile Include="Src\PythonImportModuleResolveResult.cs" />
     <Compile Include="Src\PythonOptionsPanel.cs" />
-    <Compile Include="Src\PythonOutputStream.cs" />
     <Compile Include="Src\PythonParser.cs" />
     <Compile Include="Src\PythonProject.cs" />
     <Compile Include="Src\PythonPropertyValueAssignment.cs" />

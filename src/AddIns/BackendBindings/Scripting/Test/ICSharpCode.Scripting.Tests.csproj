@@ -73,6 +73,7 @@
     <Compile Include="Console\EmptyStringCodeCompletionTests.cs" />
     <Compile Include="Console\InsertConsoleCompletionDataTestFixture.cs" />
     <Compile Include="Console\OneItemCommandLineHistoryTestFixture.cs" />
+    <Compile Include="Console\ScriptingConsoleOutputStreamTests.cs" />
     <Compile Include="Console\ScriptingConsoleTextEditorTests.cs" />
     <Compile Include="Console\ThreadSafeScriptingConsoleTextEditorTests.cs" />
     <Compile Include="Designer\NameCreationServiceTests.cs" />

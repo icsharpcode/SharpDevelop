@@ -5,24 +5,23 @@ using System;
 using System.IO;
 using System.Text;
 
-using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
-using RubyBinding.Tests.Utils;
 
-namespace RubyBinding.Tests.Console
+namespace ICSharpCode.Scripting.Tests.Console
 {
 	[TestFixture]
-	public class RubyOutputStreamTestFixture
+	public class ScriptingConsoleOutputStreamTestFixture
 	{
-		RubyOutputStream stream;
+		ScriptingConsoleOutputStream stream;
 		MockConsoleTextEditor textEditor;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
 			textEditor = new MockConsoleTextEditor();
-			stream = new RubyOutputStream(textEditor);
+			stream = new ScriptingConsoleOutputStream(textEditor);
 		}
 		
 		[Test]

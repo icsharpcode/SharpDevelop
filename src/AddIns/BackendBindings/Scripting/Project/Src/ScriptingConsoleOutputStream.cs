@@ -5,15 +5,13 @@ using System;
 using System.IO;
 using System.Text;
 
-using ICSharpCode.Scripting;
-
-namespace ICSharpCode.RubyBinding
+namespace ICSharpCode.Scripting
 {
-	public class RubyOutputStream : Stream
+	public class ScriptingConsoleOutputStream : Stream
 	{
 		IScriptingConsoleTextEditor textEditor;
 		
-		public RubyOutputStream(IScriptingConsoleTextEditor textEditor)
+		public ScriptingConsoleOutputStream(IScriptingConsoleTextEditor textEditor)
 		{
 			this.textEditor = textEditor;
 		}

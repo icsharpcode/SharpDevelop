@@ -13,7 +13,7 @@ namespace PythonBinding.Tests.Console
 {
 	public class DerivedPythonConsoleHost : PythonConsoleHost
 	{
-		PythonOutputStream outputStream;
+		ScriptingConsoleOutputStream outputStream;
 		
 		public DerivedPythonConsoleHost(IScriptingConsoleTextEditor textEditor) : base(textEditor)
 		{
@@ -42,11 +42,11 @@ namespace PythonBinding.Tests.Console
 		/// <summary>
 		/// Gets the output stream class passed to SetOutput method.
 		/// </summary>
-		public PythonOutputStream OutputStream {
+		public ScriptingConsoleOutputStream OutputStream {
 			get { return outputStream; }
 		}
 			
-		protected override void SetOutput(PythonOutputStream stream)
+		protected override void SetOutput(ScriptingConsoleOutputStream stream)
 		{
 			outputStream = stream;
 		}

@@ -78,6 +78,7 @@
     <Compile Include="Src\ScriptingCodeBuilder.cs" />
     <Compile Include="Src\ScriptingConsoleCompletionData.cs" />
     <Compile Include="Src\ScriptingConsoleCompletionDataProvider.cs" />
+    <Compile Include="Src\ScriptingConsoleOutputStream.cs" />
     <Compile Include="Src\ScriptingConsoleTextEditor.cs" />
     <Compile Include="Src\ScriptingConsoleTextEditorKeyEventArgs.cs" />
     <Compile Include="Src\ScriptingFileService.cs" />

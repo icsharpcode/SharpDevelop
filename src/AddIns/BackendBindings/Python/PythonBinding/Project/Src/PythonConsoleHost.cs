@@ -71,12 +71,12 @@ namespace ICSharpCode.PythonBinding
 		/// </remarks>
 		protected override IConsole CreateConsole(ScriptEngine engine, CommandLine commandLine, ConsoleOptions options)
 		{
-			SetOutput(new PythonOutputStream(textEditor));
+			SetOutput(new ScriptingConsoleOutputStream(textEditor));
 			pythonConsole.CommandLine = commandLine;
 			return pythonConsole;
 		}
 		
-		protected virtual void SetOutput(PythonOutputStream stream)
+		protected virtual void SetOutput(ScriptingConsoleOutputStream stream)
 		{
 			Runtime.IO.SetOutput(stream, Encoding.UTF8);
 		}

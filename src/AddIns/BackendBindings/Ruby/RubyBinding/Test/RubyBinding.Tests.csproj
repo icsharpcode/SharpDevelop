@@ -86,7 +86,6 @@
     <Compile Include="Console\RubyConsoleTestsBase.cs" />
     <Compile Include="Console\RubyConsoleUnreadLinesTestFixture.cs" />
     <Compile Include="Console\RubyConsoleWriteTestFixture.cs" />
-    <Compile Include="Console\RubyOutputStreamTestFixture.cs" />
     <Compile Include="Console\TwoRubyConsoleLinesWaitingTestFixture.cs" />
     <Compile Include="Converter\AddHandlerConversionTestFixture.cs" />
     <Compile Include="Converter\ArrayCastConversionTestFixture.cs" />

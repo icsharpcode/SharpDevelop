@@ -116,7 +116,6 @@
     <Compile Include="Console\PythonConsoleReadTestFixture.cs" />
     <Compile Include="Console\PythonConsoleUnreadLinesTestFixture.cs" />
     <Compile Include="Console\PythonConsoleWriteTestFixture.cs" />
-    <Compile Include="Console\PythonOutputStreamTestFixture.cs" />
     <Compile Include="Console\TwoPythonConsoleLinesWaitingTestFixture.cs" />
     <Compile Include="Converter\AddHandlerConversionTestFixture.cs" />
     <Compile Include="Converter\ArrayCastConversionTestFixture.cs" />

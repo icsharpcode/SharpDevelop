@@ -55,7 +55,7 @@ namespace ICSharpCode.RubyBinding
 			Run(new string[0]);
 		}
 		
-		protected virtual void SetOutput(RubyOutputStream stream)
+		protected virtual void SetOutput(ScriptingConsoleOutputStream stream)
 		{
 			Runtime.IO.SetOutput(stream, Encoding.UTF8);
 		}
@@ -87,7 +87,7 @@ namespace ICSharpCode.RubyBinding
 		/// </remarks>
 		protected override IConsole CreateConsole(ScriptEngine engine, CommandLine commandLine, ConsoleOptions options)
 		{
-			SetOutput(new RubyOutputStream(textEditor));
+			SetOutput(new ScriptingConsoleOutputStream(textEditor));
 			rubyConsole.CommandLine = commandLine;
 			return rubyConsole;
 		}

@@ -13,7 +13,7 @@ namespace RubyBinding.Tests.Console
 {	
 	public class DerivedRubyConsoleHost : RubyConsoleHost
 	{
-		RubyOutputStream outputStream;
+		ScriptingConsoleOutputStream outputStream;
 		
 		public DerivedRubyConsoleHost(IScriptingConsoleTextEditor textEditor) : base(textEditor)
 		{
@@ -47,11 +47,11 @@ namespace RubyBinding.Tests.Console
 		/// <summary>
 		/// Gets the output stream class passed to SetOutput method.
 		/// </summary>
-		public RubyOutputStream OutputStream {
+		public ScriptingConsoleOutputStream OutputStream {
 			get { return outputStream; }
 		}
 			
-		protected override void SetOutput(RubyOutputStream stream)
+		protected override void SetOutput(ScriptingConsoleOutputStream stream)
 		{
 			outputStream = stream;
 		}
