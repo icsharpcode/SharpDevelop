@@ -22,7 +22,7 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <NoWarn>1591, 1574</NoWarn>
+    <NoWarn>419, 1570, 1572, 1573, 1574, 1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
