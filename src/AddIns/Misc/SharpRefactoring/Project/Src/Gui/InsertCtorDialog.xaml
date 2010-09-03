@@ -45,6 +45,7 @@
 			<Button DockPanel.Dock="Left" Content="{sd:Localize Global.CancelButtonText}" Margin="3" Click="CancelButtonClick" />
 			<Button DockPanel.Dock="Right" Content="{sd:Localize Global.MoveDown}" Margin="3" IsEnabled="{Binding SelectedIndex, ElementName=varList, Converter={StaticResource intToBoolConverter}}" Click="DownClick" />
 			<Button DockPanel.Dock="Right" Content="{sd:Localize Global.MoveUp}" Margin="3" IsEnabled="{Binding SelectedIndex, ElementName=varList, Converter={StaticResource intToBoolConverter}}" Click="UpClick" />
+			<ToggleButton DockPanel.Dock="Right" Content="{sd:Localize Global.SelectAllButtonText}" Margin="3" IsChecked="{Binding AllSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type gui:InsertCtorDialog}}, Mode=OneWay}" Checked="SelectAllChecked" Unchecked="SelectAllUnchecked" />
 		</DockPanel>
 	</StackPanel>
 </gui:AbstractInlineRefactorDialog>

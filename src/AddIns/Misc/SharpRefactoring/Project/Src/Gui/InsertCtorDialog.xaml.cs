@@ -189,6 +189,24 @@ namespace SharpRefactoring.Gui
 				)
 			);
 		}
+		
+		void SelectAllChecked(object sender, System.Windows.RoutedEventArgs e)
+		{
+			foreach (CtorParamWrapper param in parameterList) {
+				param.IsSelected = true;
+			}
+		}
+		
+		void SelectAllUnchecked(object sender, System.Windows.RoutedEventArgs e)
+		{
+			foreach (CtorParamWrapper param in parameterList) {
+				param.IsSelected = false;
+			}
+		}
+		
+		public bool AllSelected {
+			get { return parameterList.All(p => p.IsSelected); }
+		}
 	}
 	
 	[ValueConversion(typeof(int), typeof(bool))]
