@@ -67,7 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
-      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+      <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CodeCompletionTests.cs" />
     <Compile Include="CodeInsertionTests.cs" />
@@ -79,7 +79,6 @@
     <Compile Include="GetMarkupExtensionAtPositionTests.cs" />
     <Compile Include="MockTextEditor.cs" />
     <Compile Include="ParserTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MarkupExtensionTests.cs" />
     <Compile Include="ResolveContextTests.cs" />
     <Compile Include="TextEditorBasedTests.cs" />

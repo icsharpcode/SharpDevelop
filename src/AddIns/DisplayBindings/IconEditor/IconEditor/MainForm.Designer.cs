@@ -1,11 +1,6 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Daniel
- * Date: 7/30/2006
- * Time: 1:57 PM
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 namespace IconEditor
 {
 	partial class MainForm : System.Windows.Forms.Form

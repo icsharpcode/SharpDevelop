@@ -1,11 +1,6 @@
-﻿/*
- * Created by SharpDevelop.
- * User: alperd1
- * Date: 1/31/2008
- * Time: 4:26 AM
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	partial class ExtractInterfaceDialog
