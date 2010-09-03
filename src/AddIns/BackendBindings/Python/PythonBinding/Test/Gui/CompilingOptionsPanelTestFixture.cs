@@ -30,7 +30,7 @@ namespace PythonBinding.Tests.Gui
 		[SetUp]
 		public void SetUp()
 		{
-			MSBuildEngineHelper.InitMSBuildEngine();
+			PythonMSBuildEngineHelper.InitMSBuildEngine();
 			
 			ProjectCreateInformation info = new ProjectCreateInformation();
 			info.Solution = new Solution();

@@ -24,7 +24,7 @@ namespace PythonBinding.Tests.Testing
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MSBuildEngineHelper.InitMSBuildEngine();
+			PythonMSBuildEngineHelper.InitMSBuildEngine();
 		}
 		
 		[SetUp]

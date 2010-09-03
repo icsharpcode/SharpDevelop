@@ -45,7 +45,7 @@ namespace RubyBinding.Tests.Converter
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MSBuildEngineHelper.InitMSBuildEngine();
+			RubyMSBuildEngineHelper.InitMSBuildEngine();
 
 			List<ProjectBindingDescriptor> bindings = new List<ProjectBindingDescriptor>();
 			using (TextReader reader = RubyBindingAddInFile.ReadAddInFile()) {

@@ -24,7 +24,7 @@ namespace RubyBinding.Tests.Testing
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MSBuildEngineHelper.InitMSBuildEngine();
+			RubyMSBuildEngineHelper.InitMSBuildEngine();
 		}
 		
 		[SetUp]

@@ -54,7 +54,7 @@ namespace PythonBinding.Tests.Converter
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MSBuildEngineHelper.InitMSBuildEngine();
+			PythonMSBuildEngineHelper.InitMSBuildEngine();
 
 			List<ProjectBindingDescriptor> bindings = new List<ProjectBindingDescriptor>();
 			using (TextReader reader = PythonBindingAddInFile.ReadAddInFile()) {

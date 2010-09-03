@@ -446,7 +446,7 @@
     <Compile Include="Utils\MockPythonConsolePad.cs" />
     <Compile Include="Utils\MockPythonFileService.cs" />
     <Compile Include="Utils\MockWorkbench.cs" />
-    <Compile Include="Utils\MSBuildEngineHelper.cs" />
+    <Compile Include="Utils\PythonMSBuildEngineHelper.cs" />
     <Compile Include="Utils\TestablePythonConsole.cs" />
     <Compile Include="Utils\Tests\AddInPathHelperTestFixture.cs" />
     <EmbeddedResource Include="..\Project\PythonBinding.addin">

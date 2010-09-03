@@ -8,13 +8,14 @@
 using System;
 using System.IO;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace RubyBinding.Tests.Utils
 {
-	public sealed class MSBuildEngineHelper
+	public sealed class RubyMSBuildEngineHelper
 	{
-		MSBuildEngineHelper()
+		RubyMSBuildEngineHelper()
 		{
 		}
 		
@@ -29,16 +30,8 @@ namespace RubyBinding.Tests.Utils
 		/// </summary>
 		public static void InitMSBuildEngine()
 		{
-			// Remove existing RubyBinPath property.
-			MSBuildEngine.MSBuildProperties.Remove("RubyBinPath");
-
-			// Set the RubyBinPath property so it points to
-			// the actual bin path where the Ruby.Build.Tasks was built not
-			// to the shadow copy folder.
-			string codeBase = typeof(RubyParser).Assembly.CodeBase.Replace("file:///", String.Empty);
-			string folder = Path.GetDirectoryName(codeBase);
-			folder = Path.GetFullPath(Path.Combine(folder, @"..\..\AddIns\AddIns\BackendBindings\RubyBinding\"));
-			MSBuildEngine.MSBuildProperties["RubyBinPath"] = folder;
+			string relativePath = @"..\..\AddIns\BackendBindings\RubyBinding\";
+			MSBuildEngineHelper.InitMSBuildEngine("RubyBinPath", relativePath, typeof(RubyParser));
 		}		
 	}
 }

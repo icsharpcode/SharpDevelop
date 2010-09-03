@@ -31,7 +31,7 @@ namespace PythonBinding.Tests.PythonLanguage
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MSBuildEngineHelper.InitMSBuildEngine();
+			PythonMSBuildEngineHelper.InitMSBuildEngine();
 			
 			info = new ProjectCreateInformation();
 			info.Solution = new Solution();

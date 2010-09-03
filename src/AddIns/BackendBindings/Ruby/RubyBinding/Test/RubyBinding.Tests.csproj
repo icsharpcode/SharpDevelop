@@ -340,8 +340,8 @@
     <Compile Include="Utils\MockRubyFileService.cs" />
     <Compile Include="Utils\MockConsoleTextEditor.cs" />
     <Compile Include="Utils\MockWorkbench.cs" />
-    <Compile Include="Utils\MSBuildEngineHelper.cs" />
     <Compile Include="Utils\RubyBindingAddInFile.cs" />
+    <Compile Include="Utils\RubyMSBuildEngineHelper.cs" />
     <Compile Include="Utils\RubyParserHelper.cs" />
     <Compile Include="Utils\RubySelectedTestsHelper.cs" />
     <Compile Include="Utils\TestableRubyConsole.cs" />
