@@ -92,7 +92,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 					new CodeSnippet {
 						Name = "ctor",
 						Description = "Constructor",
-						Text = " ${ClassName}(${anchor:parameterList})\n{\n\t${refactoring:ctor}\n}",
+						Text = "public ${ClassName}(${anchor:parameterList})\n{\n\t${refactoring:ctor}\n}",
 						Keyword = "event"
 					},
 					new CodeSnippet {

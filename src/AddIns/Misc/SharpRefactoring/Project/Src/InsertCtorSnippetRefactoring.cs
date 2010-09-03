@@ -59,13 +59,6 @@ namespace SharpRefactoring
 			ITextAnchor anchor = textEditor.Document.CreateAnchor(context.InsertionPosition);
 			anchor.MovementType = AnchorMovementType.BeforeInsertion;
 			
-			if (current.IsStatic)
-				context.Document.Insert(context.StartPosition, "static");
-			else
-				context.Document.Insert(context.StartPosition, "public");
-			
-			context.InsertionPosition += 6;
-			
 			InsertCtorDialog dialog = new InsertCtorDialog(context, textEditor, anchor, current, parameters);
 			
 			dialog.Element = uiService.CreateInlineUIElement(anchor, dialog);
