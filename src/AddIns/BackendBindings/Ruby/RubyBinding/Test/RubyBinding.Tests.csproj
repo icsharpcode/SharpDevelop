@@ -273,7 +273,6 @@
     <Compile Include="Designer\LoadUserControlWithDoublePropertyTestFixture.cs" />
     <Compile Include="Designer\MergeFormTestFixture.cs" />
     <Compile Include="Designer\MissingInitializeComponentMethodTestFixture.cs" />
-    <Compile Include="Designer\NameCreationServiceTestFixture.cs" />
     <Compile Include="Designer\NoNewLineAfterInitializeComponentMethodTestFixture.cs" />
     <Compile Include="Designer\NullGeneratorPassedToLoader.cs" />
     <Compile Include="Designer\OneCompatibleMethodTestFixture.cs" />
@@ -329,7 +328,6 @@
     <Compile Include="Utils\DerivedRubyDesignerGenerator.cs" />
     <Compile Include="Utils\DerivedRubyDesignerLoader.cs" />
     <Compile Include="Utils\DerivedRubyFormsDesignerDisplayBinding.cs" />
-    <Compile Include="Utils\MockDesignerGenerator.cs" />
     <Compile Include="Utils\MockRubyConsole.cs" />
     <Compile Include="Utils\MockRubyConsolePad.cs" />
     <Compile Include="Utils\MockWorkbench.cs" />

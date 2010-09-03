@@ -30,11 +30,11 @@ namespace ICSharpCode.PythonBinding
 	[PermissionSet(SecurityAction.LinkDemand, Name="FullTrust")]
 	public class PythonDesignerLoader : BasicDesignerLoader, IComponentCreator
 	{
-		IPythonDesignerGenerator generator;
+		IScriptingDesignerGenerator generator;
 		IDesignerSerializationManager serializationManager;
 		Dictionary<string, IComponent> addedObjects = new Dictionary<string, IComponent>();
 	
-		public PythonDesignerLoader(IPythonDesignerGenerator generator)
+		public PythonDesignerLoader(IScriptingDesignerGenerator generator)
 		{
 			if (generator == null) {
 				throw new ArgumentException("Generator cannot be null.", "generator");
@@ -45,7 +45,7 @@ namespace ICSharpCode.PythonBinding
 		public override void BeginLoad(IDesignerLoaderHost host)
 		{
 			host.AddService(typeof(ComponentSerializationService), new CodeDomComponentSerializationService((IServiceProvider)host));
-			host.AddService(typeof(INameCreationService), new PythonNameCreationService(host));
+			host.AddService(typeof(INameCreationService), new ScriptingNameCreationService(host));
 			host.AddService(typeof(IDesignerSerializationService), new DesignerSerializationService(host));
 			
 			ProjectResourceService projectResourceService = host.GetService(typeof(ProjectResourceService)) as ProjectResourceService;

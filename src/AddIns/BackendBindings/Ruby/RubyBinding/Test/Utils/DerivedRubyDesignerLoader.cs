@@ -6,14 +6,16 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using System.Collections;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.IO;
-using ICSharpCode.RubyBinding;
+
 using ICSharpCode.FormsDesigner;
+using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
 
 namespace RubyBinding.Tests.Utils
 {
@@ -23,7 +25,7 @@ namespace RubyBinding.Tests.Utils
 	/// </summary>
 	public class DerivedRubyDesignerLoader : RubyDesignerLoader
 	{				
-		public DerivedRubyDesignerLoader(IRubyDesignerGenerator generator) : base(generator)
+		public DerivedRubyDesignerLoader(IScriptingDesignerGenerator generator) : base(generator)
 		{
 		}
 

@@ -8,6 +8,7 @@
 using System;
 using System.ComponentModel.Design.Serialization;
 using ICSharpCode.FormsDesigner;
+using ICSharpCode.Scripting;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -19,7 +20,7 @@ namespace ICSharpCode.PythonBinding
 		
 		public DesignerLoader CreateLoader(IDesignerGenerator generator)
 		{
-			return new PythonDesignerLoader(generator as IPythonDesignerGenerator);
+			return new PythonDesignerLoader(generator as IScriptingDesignerGenerator);
 		}	
 	}
 }

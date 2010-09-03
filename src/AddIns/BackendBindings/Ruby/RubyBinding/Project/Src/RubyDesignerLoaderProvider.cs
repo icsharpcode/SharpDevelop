@@ -8,6 +8,7 @@
 using System;
 using System.ComponentModel.Design.Serialization;
 using ICSharpCode.FormsDesigner;
+using ICSharpCode.Scripting;
 
 namespace ICSharpCode.RubyBinding
 {
@@ -19,7 +20,7 @@ namespace ICSharpCode.RubyBinding
 		
 		public DesignerLoader CreateLoader(IDesignerGenerator generator)
 		{
-			return new RubyDesignerLoader(generator as IRubyDesignerGenerator);
+			return new RubyDesignerLoader(generator as IScriptingDesignerGenerator);
 		}	
 	}
 }

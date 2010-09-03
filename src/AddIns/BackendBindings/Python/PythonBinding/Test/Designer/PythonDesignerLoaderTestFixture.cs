@@ -18,6 +18,7 @@ using System.Windows.Forms;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
@@ -110,7 +111,7 @@ namespace PythonBinding.Tests.Designer
 		[Test]
 		public void NameCreationServiceCreated()
 		{
-			PythonNameCreationService service = mockDesignerLoaderHost.GetService(typeof(INameCreationService)) as PythonNameCreationService;
+			ScriptingNameCreationService service = mockDesignerLoaderHost.GetService(typeof(INameCreationService)) as ScriptingNameCreationService;
 			Assert.IsNotNull(service);
 		}
 		

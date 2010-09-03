@@ -70,12 +70,14 @@
     <Compile Include="Src\ILock.cs" />
     <Compile Include="Src\IMemberProvider.cs" />
     <Compile Include="Src\IScriptingConsoleTextEditor.cs" />
+    <Compile Include="Src\IScriptingDesignerGenerator.cs" />
     <Compile Include="Src\IScriptingFileService.cs" />
     <Compile Include="Src\ScriptingConsoleCompletionData.cs" />
     <Compile Include="Src\ScriptingConsoleCompletionDataProvider.cs" />
     <Compile Include="Src\ScriptingConsoleTextEditor.cs" />
     <Compile Include="Src\ScriptingConsoleTextEditorKeyEventArgs.cs" />
     <Compile Include="Src\ScriptingFileService.cs" />
+    <Compile Include="Src\ScriptingNameCreationService.cs" />
     <Compile Include="Src\StringListLock.cs" />
     <Compile Include="Src\ThreadSafeScriptingConsoleTextEditor.cs" />
   </ItemGroup>
@@ -98,6 +100,11 @@
     <ProjectReference Include="..\..\..\Analysis\UnitTesting\UnitTesting.csproj">
       <Project>{1F261725-6318-4434-A1B1-6C70CE4CD324}</Project>
       <Name>UnitTesting</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
+      <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
+      <Name>FormsDesigner</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

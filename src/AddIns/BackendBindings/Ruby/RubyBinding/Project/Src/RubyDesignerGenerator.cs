@@ -13,33 +13,21 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
-using System.Drawing;
-using System.Reflection;
 using System.Text;
-using System.Windows.Forms;
 
 using ICSharpCode.FormsDesigner;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.RubyBinding
 {
-	public interface IRubyDesignerGenerator : IDesignerGenerator
-	{
-		/// <summary>
-		/// Updates the Ruby form or user control's InitializeComponent method with any 
-		/// changes to the designed form or user control.
-		/// </summary>
-		void MergeRootComponentChanges(IDesignerHost host, IDesignerSerializationManager serializationManager);
-	}
-	
 	/// <summary>
 	/// Form's designer generator for the Ruby language.
 	/// </summary>
-	public class RubyDesignerGenerator : IRubyDesignerGenerator
+	public class RubyDesignerGenerator : IScriptingDesignerGenerator
 	{
 		FormsDesignerViewContent viewContent;
 		ITextEditorOptions textEditorOptions;

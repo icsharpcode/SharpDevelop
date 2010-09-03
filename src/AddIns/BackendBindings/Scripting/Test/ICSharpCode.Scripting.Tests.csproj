@@ -61,6 +61,7 @@
   <ItemGroup>
     <Folder Include="Configuration" />
     <Folder Include="Console" />
+    <Folder Include="Designer" />
     <Folder Include="Testing" />
     <Folder Include="Utils" />
     <Folder Include="Utils\Tests" />
@@ -74,6 +75,7 @@
     <Compile Include="Console\OneItemCommandLineHistoryTestFixture.cs" />
     <Compile Include="Console\ScriptingConsoleTextEditorTests.cs" />
     <Compile Include="Console\ThreadSafeScriptingConsoleTextEditorTests.cs" />
+    <Compile Include="Designer\NameCreationServiceTests.cs" />
     <Compile Include="Testing\CreateTextWriterFromCreateTextWriterInfoTestFixture.cs" />
     <Compile Include="Testing\CreateTextWriterInfoEqualsTestFixture.cs" />
     <Compile Include="Utils\AddedComponent.cs" />
@@ -97,6 +99,7 @@
     <Compile Include="Utils\MockConsoleTextEditorKeyEventArgs.cs" />
     <Compile Include="Utils\MockControlDispatcher.cs" />
     <Compile Include="Utils\MockDebugger.cs" />
+    <Compile Include="Utils\MockDesignerGenerator.cs" />
     <Compile Include="Utils\MockDesignerLoaderHost.cs" />
     <Compile Include="Utils\MockEditableViewContent.cs" />
     <Compile Include="Utils\MockEventBindingService.cs" />

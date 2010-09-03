@@ -30,11 +30,11 @@ namespace ICSharpCode.RubyBinding
 	[PermissionSet(SecurityAction.LinkDemand, Name="FullTrust")]
 	public class RubyDesignerLoader : BasicDesignerLoader, IComponentCreator
 	{
-		IRubyDesignerGenerator generator;
+		IScriptingDesignerGenerator generator;
 		IDesignerSerializationManager serializationManager;
 		Dictionary<string, IComponent> addedObjects = new Dictionary<string, IComponent>();
 	
-		public RubyDesignerLoader(IRubyDesignerGenerator generator)
+		public RubyDesignerLoader(IScriptingDesignerGenerator generator)
 		{
 			if (generator == null) {
 				throw new ArgumentException("Generator cannot be null.", "generator");
@@ -45,7 +45,7 @@ namespace ICSharpCode.RubyBinding
 		public override void BeginLoad(IDesignerLoaderHost host)
 		{
 			host.AddService(typeof(ComponentSerializationService), new CodeDomComponentSerializationService((IServiceProvider)host));
-			host.AddService(typeof(INameCreationService), new RubyNameCreationService(host));
+			host.AddService(typeof(INameCreationService), new ScriptingNameCreationService(host));
 			host.AddService(typeof(IDesignerSerializationService), new DesignerSerializationService(host));
 			
 			ProjectResourceService projectResourceService = host.GetService(typeof(ProjectResourceService)) as ProjectResourceService;

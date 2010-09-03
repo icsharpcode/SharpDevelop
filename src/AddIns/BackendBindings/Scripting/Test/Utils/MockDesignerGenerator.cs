@@ -17,15 +17,11 @@ using System.Reflection;
 using System.Windows.Forms;
 
 using ICSharpCode.FormsDesigner;
-using ICSharpCode.PythonBinding;
 using ICSharpCode.SharpDevelop;
 
-namespace PythonBinding.Tests.Utils
+namespace ICSharpCode.Scripting.Tests.Utils
 {
-	/// <summary>
-	/// Mock IDesignerGenerator class.
-	/// </summary>
-	public class MockDesignerGenerator : IPythonDesignerGenerator
+	public class MockDesignerGenerator : IScriptingDesignerGenerator
 	{
 		FormsDesignerViewContent viewContent;
 		IDesignerHost mergeChangesHost;

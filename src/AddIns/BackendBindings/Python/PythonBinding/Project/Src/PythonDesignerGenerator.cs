@@ -16,26 +16,18 @@ using System.ComponentModel.Design.Serialization;
 using System.Text;
 
 using ICSharpCode.FormsDesigner;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.PythonBinding
-{
-	public interface IPythonDesignerGenerator : IDesignerGenerator
-	{
-		/// <summary>
-		/// Updates the python form or user control's InitializeComponent method with any 
-		/// changes to the designed form or user control.
-		/// </summary>
-		void MergeRootComponentChanges(IDesignerHost host, IDesignerSerializationManager serializationManager);
-	}
-	
+{	
 	/// <summary>
 	/// Form's designer generator for the Python language.
 	/// </summary>
-	public class PythonDesignerGenerator : IPythonDesignerGenerator
+	public class PythonDesignerGenerator : IScriptingDesignerGenerator
 	{
 		FormsDesignerViewContent viewContent;
 		ITextEditorOptions textEditorOptions;

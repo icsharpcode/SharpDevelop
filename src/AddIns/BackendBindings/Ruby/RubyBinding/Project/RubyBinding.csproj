@@ -114,7 +114,6 @@
     <Compile Include="Src\RubyLanguageBinding.cs" />
     <Compile Include="Src\RubyProjectBinding.cs" />
     <Compile Include="Src\RubyLanguageProperties.cs" />
-    <Compile Include="Src\RubyNameCreationService.cs" />
     <Compile Include="Src\RubyOptionsPanel.cs" />
     <Compile Include="Src\RubyOutputStream.cs" />
     <Compile Include="Src\RubyParser.cs" />

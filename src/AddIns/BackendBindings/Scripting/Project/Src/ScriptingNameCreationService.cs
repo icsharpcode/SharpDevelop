@@ -11,14 +11,14 @@ using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using ICSharpCode.FormsDesigner;
 
-namespace ICSharpCode.PythonBinding
+namespace ICSharpCode.Scripting
 {
-	public class PythonNameCreationService : INameCreationService
+	public class ScriptingNameCreationService : INameCreationService
 	{
 		IDesignerHost host;
 		XmlDesignerNameCreationService nameCreationService;
 		
-		public PythonNameCreationService(IDesignerHost host)
+		public ScriptingNameCreationService(IDesignerHost host)
 		{
 			this.host = host;
 			nameCreationService = new XmlDesignerNameCreationService(host);

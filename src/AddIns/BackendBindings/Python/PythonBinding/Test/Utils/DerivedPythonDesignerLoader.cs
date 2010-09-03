@@ -6,14 +6,16 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.CodeDom;
 using System.CodeDom.Compiler;
+using System.Collections;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.IO;
-using ICSharpCode.PythonBinding;
+
 using ICSharpCode.FormsDesigner;
+using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
 
 namespace PythonBinding.Tests.Utils
 {
@@ -23,7 +25,7 @@ namespace PythonBinding.Tests.Utils
 	/// </summary>
 	public class DerivedPythonDesignerLoader : PythonDesignerLoader
 	{				
-		public DerivedPythonDesignerLoader(IPythonDesignerGenerator generator) : base(generator)
+		public DerivedPythonDesignerLoader(IScriptingDesignerGenerator generator) : base(generator)
 		{
 		}
 

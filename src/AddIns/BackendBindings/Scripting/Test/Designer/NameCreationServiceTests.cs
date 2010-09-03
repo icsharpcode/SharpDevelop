@@ -9,17 +9,16 @@ using System;
 using System.ComponentModel.Design.Serialization;
 using System.Windows.Forms;
 
-using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
-using PythonBinding.Tests.Utils;
 
-namespace PythonBinding.Tests.Designer
+namespace ICSharpCode.Scripting.Tests.Designer
 {
 	[TestFixture]
 	public class NameCreationServiceTestFixture
 	{
-		PythonNameCreationService nameCreationService;
+		ScriptingNameCreationService nameCreationService;
 		MockDesignerLoaderHost host;
 		
 		[SetUp]
@@ -27,7 +26,7 @@ namespace PythonBinding.Tests.Designer
 		{
 			host = new MockDesignerLoaderHost();
 			host.Container.Add(new Button(), "button1");
-			nameCreationService = new PythonNameCreationService(host);
+			nameCreationService = new ScriptingNameCreationService(host);
 		}
 		
 		[Test]
