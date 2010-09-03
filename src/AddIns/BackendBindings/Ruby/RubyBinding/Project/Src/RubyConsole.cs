@@ -19,7 +19,7 @@ namespace ICSharpCode.RubyBinding
 {
 	public class RubyConsole : IConsole, IDisposable, IMemberProvider, IRubyConsole
 	{
-		IConsoleTextEditor textEditor;
+		IScriptingConsoleTextEditor textEditor;
 		int lineReceivedEventIndex = 0; // The index into the waitHandles array where the lineReceivedEvent is stored.
 		ManualResetEvent lineReceivedEvent = new ManualResetEvent(false);
 		ManualResetEvent disposedEvent = new ManualResetEvent(false);
@@ -31,7 +31,7 @@ namespace ICSharpCode.RubyBinding
 
 		protected List<string> unreadLines = new List<string>();
 		
-		public RubyConsole(IConsoleTextEditor textEditor)
+		public RubyConsole(IScriptingConsoleTextEditor textEditor)
 		{
 			waitHandles = new WaitHandle[] {lineReceivedEvent, disposedEvent};
 			
@@ -314,7 +314,7 @@ namespace ICSharpCode.RubyBinding
 		
 		void ShowCompletionWindow()
 		{
-			RubyConsoleCompletionDataProvider completionProvider = new RubyConsoleCompletionDataProvider(this);
+			ScriptingConsoleCompletionDataProvider completionProvider = new ScriptingConsoleCompletionDataProvider(this);
 			textEditor.ShowCompletionWindow(completionProvider);
 		}
 		

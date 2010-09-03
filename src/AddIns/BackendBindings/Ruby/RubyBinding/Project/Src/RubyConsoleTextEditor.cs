@@ -19,7 +19,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.RubyBinding
 {
-	public class RubyConsoleTextEditor : IConsoleTextEditor
+	public class RubyConsoleTextEditor : IScriptingConsoleTextEditor
 	{
 		TextEditor textEditor;
 		Color customLineColour = Color.LightGray;
@@ -116,7 +116,7 @@ namespace ICSharpCode.RubyBinding
 			readOnlyRegion.EndOffset = textEditor.Document.TextLength;
 		}
 		
-		public void ShowCompletionWindow(RubyConsoleCompletionDataProvider completionDataProvider)
+		public void ShowCompletionWindow(ScriptingConsoleCompletionDataProvider completionDataProvider)
 		{
 			ICompletionData[] items = completionDataProvider.GenerateCompletionData(this);
 			if (items.Length > 0) {

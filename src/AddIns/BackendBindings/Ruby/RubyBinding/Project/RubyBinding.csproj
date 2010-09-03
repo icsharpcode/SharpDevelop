@@ -91,10 +91,8 @@
     <Compile Include="Src\IRubyFileService.cs" />
     <Compile Include="Src\IRubyWorkbench.cs" />
     <Compile Include="Src\RubyConsoleApplication.cs" />
-    <Compile Include="Src\RubyConsoleCompletionData.cs" />
     <Compile Include="Src\ConvertProjectToRubyProjectCommand.cs" />
     <Compile Include="Src\ConvertToRubyMenuCommand.cs" />
-    <Compile Include="Src\IConsoleTextEditor.cs" />
     <Compile Include="Src\NRefactoryToRubyConverter.cs" />
     <Compile Include="Src\RubyAddInOptions.cs" />
     <Compile Include="Src\RubyAstWalker.cs" />
@@ -105,7 +103,6 @@
     <Compile Include="Src\RubyComponentWalker.cs" />
     <Compile Include="Src\RubyComponentWalkerException.cs" />
     <Compile Include="Src\RubyConsole.cs" />
-    <Compile Include="Src\RubyConsoleCompletionDataProvider.cs" />
     <Compile Include="Src\RubyConsoleHost.cs" />
     <Compile Include="Src\RubyConsolePad.cs" />
     <Compile Include="Src\RubyConsoleTextEditorKeyEventArgs.cs" />

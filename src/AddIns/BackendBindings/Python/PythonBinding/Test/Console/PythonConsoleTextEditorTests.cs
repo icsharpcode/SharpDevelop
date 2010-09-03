@@ -9,9 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Input;
+
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
@@ -31,9 +33,9 @@ namespace PythonBinding.Tests.Console
 		}
 		
 		[Test]
-		public void InterfaceImplemented_NewInstance_ImplementsIConsoleTextEditorInterface()
+		public void InterfaceImplemented_NewInstance_ImplementsIScriptingConsoleTextEditorInterface()
 		{
-			Assert.IsNotNull(consoleTextEditor as IConsoleTextEditor);
+			Assert.IsNotNull(consoleTextEditor as IScriptingConsoleTextEditor);
 		}
 		
 		[Test]
@@ -101,7 +103,7 @@ namespace PythonBinding.Tests.Console
 			AssertSelectionsAreEqual(expectedSelection, consoleTextEditor);
 		}
 		
-		void AssertSelectionsAreEqual(SimpleSelection expectedSelection, IConsoleTextEditor consoleTextEditor)
+		void AssertSelectionsAreEqual(SimpleSelection expectedSelection, IScriptingConsoleTextEditor consoleTextEditor)
 		{
 			int selectionLength = consoleTextEditor.SelectionStart + consoleTextEditor.SelectionLength;
 			SimpleSelection actualSelection = new SimpleSelection(consoleTextEditor.SelectionStart, selectionLength);

@@ -7,11 +7,11 @@
 
 using System;
 using System.Windows.Input;
-
+using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
-using ICSharpCode.RubyBinding;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 

@@ -7,8 +7,8 @@
 
 using System;
 using System.IO;
-
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
@@ -19,7 +19,7 @@ namespace RubyBinding.Tests.Console
 	{
 		RubyOutputStream outputStream;
 		
-		public DerivedRubyConsoleHost(IConsoleTextEditor textEditor) : base(textEditor)
+		public DerivedRubyConsoleHost(IScriptingConsoleTextEditor textEditor) : base(textEditor)
 		{
 		}
 		

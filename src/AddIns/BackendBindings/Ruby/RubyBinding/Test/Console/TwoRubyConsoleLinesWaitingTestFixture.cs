@@ -7,16 +7,16 @@
 
 using System;
 using System.Threading;
-using Input = System.Windows.Input;
-
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using IronRuby.Hosting;
 using IronRuby.Runtime;
-using NUnit.Framework;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
+using NUnit.Framework;
 using RubyBinding.Tests.Utils;
+using Input = System.Windows.Input;
 
 namespace RubyBinding.Tests.Console
 {

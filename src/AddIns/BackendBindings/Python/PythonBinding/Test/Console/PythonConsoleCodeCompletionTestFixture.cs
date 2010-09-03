@@ -7,10 +7,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Input;
 using System.Threading;
-using Microsoft.Scripting.Hosting.Shell;
+using System.Windows.Input;
+
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
+using Microsoft.Scripting.Hosting.Shell;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
@@ -49,9 +51,9 @@ namespace PythonBinding.Tests.Console
 		}
 		
 		[Test]
-		public void PythonConsoleCompletionDataProviderPassedToShowCompletionWindowMethod()
+		public void ScriptingConsoleCompletionDataProviderPassedToShowCompletionWindowMethod()
 		{
-			Assert.IsInstanceOf(typeof(PythonConsoleCompletionDataProvider), MockConsoleTextEditor.CompletionProviderPassedToShowCompletionWindow);
+			Assert.IsInstanceOf(typeof(ScriptingConsoleCompletionDataProvider), MockConsoleTextEditor.CompletionProviderPassedToShowCompletionWindow);
 		}
 	}
 }

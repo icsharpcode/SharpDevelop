@@ -26,7 +26,7 @@ namespace PythonBinding.Tests.Utils
 		{
 		}
 		
-		TestablePythonConsole(IConsoleTextEditor consoleTextEditor, PythonCommandLine commandLine)
+		TestablePythonConsole(IScriptingConsoleTextEditor consoleTextEditor, PythonCommandLine commandLine)
 			: base(consoleTextEditor)
 		{
 			CommandLine = commandLine;

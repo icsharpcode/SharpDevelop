@@ -7,15 +7,13 @@
 
 using System;
 using System.Windows.Input;
-using ICSharpCode.PythonBinding;
 using ICSharpCode.Scripting;
 using NUnit.Framework;
-using PythonBinding.Tests.Utils;
 
-namespace PythonBinding.Tests.Utils.Tests
+namespace ICSharpCode.Scripting.Tests.Utils.Tests
 {
 	[TestFixture]
-	public class MockConsoleTextEditorTestFixture
+	public class MockConsoleTextEditorTests
 	{
 		MockConsoleTextEditor textEditor;
 		

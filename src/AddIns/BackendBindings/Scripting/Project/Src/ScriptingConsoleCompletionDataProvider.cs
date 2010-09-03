@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
@@ -9,30 +9,28 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.Core;
-using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
 
-namespace ICSharpCode.RubyBinding
+namespace ICSharpCode.Scripting
 {
 	/// <summary>
-	/// Provides code completion for the Ruby Console window.
+	/// Provides code completion for the Scripting Console window.
 	/// </summary>
-	public class RubyConsoleCompletionDataProvider
+	public class ScriptingConsoleCompletionDataProvider
 	{
 		IMemberProvider memberProvider;
 		
-		public RubyConsoleCompletionDataProvider(IMemberProvider memberProvider)
+		public ScriptingConsoleCompletionDataProvider(IMemberProvider memberProvider)
 		{
 			this.memberProvider = memberProvider;
-			//DefaultIndex = 0;
 		}
-		
-		public ICompletionData[] GenerateCompletionData(IConsoleTextEditor textEditor)
-		{
+				
+		public ICompletionData[] GenerateCompletionData(IScriptingConsoleTextEditor textEditor)
+ 		{
 			string line = textEditor.GetLine(textEditor.TotalLines - 1);
 			return GenerateCompletionData(line);
-		}
+ 		}
 		
 		/// <summary>
 		/// Generates completion data for the specified text. The text should be everything before
@@ -41,13 +39,13 @@ namespace ICSharpCode.RubyBinding
 		/// </summary>
 		public ICompletionData[] GenerateCompletionData(string line)
 		{
-			List<RubyConsoleCompletionData> items = new List<RubyConsoleCompletionData>();
+			List<ScriptingConsoleCompletionData> items = new List<ScriptingConsoleCompletionData>();
 
 			string name = GetName(line);
 			if (!String.IsNullOrEmpty(name)) {
 				try {
 					foreach (string member in memberProvider.GetMemberNames(name)) {
-						items.Add(new RubyConsoleCompletionData(member));
+						items.Add(new ScriptingConsoleCompletionData(member));
 					}
 				} catch { 
 					// Do nothing.

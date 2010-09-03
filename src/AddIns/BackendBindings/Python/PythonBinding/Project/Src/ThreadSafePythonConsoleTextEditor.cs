@@ -11,11 +11,11 @@ using ICSharpCode.Scripting;
 
 namespace ICSharpCode.PythonBinding
 {
-	public class ThreadSafePythonConsoleTextEditor : IConsoleTextEditor
+	public class ThreadSafePythonConsoleTextEditor : IScriptingConsoleTextEditor
 	{
 		delegate string GetLineInvoker(int index);
 		
-		IConsoleTextEditor consoleTextEditor;
+		IScriptingConsoleTextEditor consoleTextEditor;
 		IControlDispatcher dispatcher;
 		
 		public ThreadSafePythonConsoleTextEditor(TextEditor textEditor)
@@ -23,7 +23,7 @@ namespace ICSharpCode.PythonBinding
 		{
 		}
 		
-		public ThreadSafePythonConsoleTextEditor(IConsoleTextEditor consoleTextEditor, IControlDispatcher dispatcher)
+		public ThreadSafePythonConsoleTextEditor(IScriptingConsoleTextEditor consoleTextEditor, IControlDispatcher dispatcher)
 		{
 			this.consoleTextEditor = consoleTextEditor;
 			this.dispatcher = dispatcher;
@@ -95,12 +95,12 @@ namespace ICSharpCode.PythonBinding
 			}
 		}
 		
-		public void ShowCompletionWindow(PythonConsoleCompletionDataProvider completionDataProvider)
+		public void ShowCompletionWindow(ScriptingConsoleCompletionDataProvider completionDataProvider)
 		{
 			if (dispatcher.CheckAccess()) {
 				consoleTextEditor.ShowCompletionWindow(completionDataProvider);
 			} else {
-				Action<PythonConsoleCompletionDataProvider> action = ShowCompletionWindow;
+				Action<ScriptingConsoleCompletionDataProvider> action = ShowCompletionWindow;
 				dispatcher.Invoke(action, completionDataProvider);
 			}
 		}

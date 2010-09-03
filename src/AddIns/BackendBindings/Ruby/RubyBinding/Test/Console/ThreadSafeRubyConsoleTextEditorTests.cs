@@ -13,6 +13,7 @@ using System.Windows.Input;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.Scripting.Tests.Utils.Tests;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;

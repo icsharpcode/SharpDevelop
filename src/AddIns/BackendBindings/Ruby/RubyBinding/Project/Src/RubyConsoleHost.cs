@@ -8,6 +8,8 @@
 using System;
 using System.Text;
 using System.Threading;
+
+using ICSharpCode.Scripting;
 using IronRuby;
 using IronRuby.Hosting;
 using IronRuby.Runtime;
@@ -19,10 +21,10 @@ namespace ICSharpCode.RubyBinding
 	public class RubyConsoleHost : ConsoleHost, IDisposable
 	{
 		Thread thread;
-		IConsoleTextEditor textEditor;
+		IScriptingConsoleTextEditor textEditor;
 		RubyConsole rubyConsole;
 
-		public RubyConsoleHost(IConsoleTextEditor textEditor)
+		public RubyConsoleHost(IScriptingConsoleTextEditor textEditor)
 		{
 			this.textEditor = textEditor;
 			rubyConsole = new RubyConsole(textEditor);

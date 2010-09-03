@@ -12,20 +12,18 @@ using System.Text;
 using System.Windows.Input;
 
 using ICSharpCode.NRefactory;
-using ICSharpCode.PythonBinding;
 using ICSharpCode.Scripting;
-using ICSharpCode.Scripting.Tests.Utils;
 
-namespace PythonBinding.Tests.Utils
+namespace ICSharpCode.Scripting.Tests.Utils
 {
-	public class MockConsoleTextEditor : IConsoleTextEditor
+	public class MockConsoleTextEditor : IScriptingConsoleTextEditor
 	{
 		public bool IsDisposed;
 		public bool IsWriteCalled;
 		
 		public bool IsShowCompletionWindowCalled;
 		public bool IsMakeCurrentContentReadOnlyCalled;
-		public PythonConsoleCompletionDataProvider CompletionProviderPassedToShowCompletionWindow;
+		public ScriptingConsoleCompletionDataProvider CompletionProviderPassedToShowCompletionWindow;
 		public string TextPassedToWrite;
 		public string TextPassedToReplace;
 		public int LengthPassedToReplace = -1;
@@ -176,7 +174,7 @@ namespace PythonBinding.Tests.Utils
 			LineBuilder.Insert(index, text);
 		}
 		
-		public void ShowCompletionWindow(PythonConsoleCompletionDataProvider completionDataProvider)
+		public void ShowCompletionWindow(ScriptingConsoleCompletionDataProvider completionDataProvider)
 		{
 			IsShowCompletionWindowCalled = true;
 			IsCompletionWindowDisplayed = true;

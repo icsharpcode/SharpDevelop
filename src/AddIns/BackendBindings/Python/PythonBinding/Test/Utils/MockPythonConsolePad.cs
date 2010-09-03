@@ -7,6 +7,8 @@
 
 using System;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Utils;
 
 namespace PythonBinding.Tests.Utils
 {
@@ -22,7 +24,7 @@ namespace PythonBinding.Tests.Utils
 			BringToFrontCalled = true;
 		}
 		
-		public IConsoleTextEditor ConsoleTextEditor {
+		public IScriptingConsoleTextEditor ConsoleTextEditor {
 			get { return MockConsoleTextEditor; }
 		}
 		

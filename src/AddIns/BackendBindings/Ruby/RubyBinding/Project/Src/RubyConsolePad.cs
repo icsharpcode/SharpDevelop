@@ -6,8 +6,9 @@
 // </file>
 
 using System;
-using AvalonEdit = ICSharpCode.AvalonEdit;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Gui;
+using AvalonEdit = ICSharpCode.AvalonEdit;
 
 namespace ICSharpCode.RubyBinding
 {
@@ -25,7 +26,7 @@ namespace ICSharpCode.RubyBinding
 			host.Run();
 		}
 		
-		public IConsoleTextEditor ConsoleTextEditor {
+		public IScriptingConsoleTextEditor ConsoleTextEditor {
 			get { return consoleTextEditor; }
 		}
 		

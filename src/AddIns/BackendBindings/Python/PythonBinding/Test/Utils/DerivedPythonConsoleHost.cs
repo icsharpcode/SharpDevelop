@@ -7,8 +7,8 @@
 
 using System;
 using System.IO;
-
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
@@ -19,7 +19,7 @@ namespace PythonBinding.Tests.Console
 	{
 		PythonOutputStream outputStream;
 		
-		public DerivedPythonConsoleHost(IConsoleTextEditor textEditor) : base(textEditor)
+		public DerivedPythonConsoleHost(IScriptingConsoleTextEditor textEditor) : base(textEditor)
 		{
 		}
 		

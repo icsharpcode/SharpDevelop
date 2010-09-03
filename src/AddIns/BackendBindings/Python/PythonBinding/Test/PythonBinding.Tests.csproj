@@ -105,10 +105,8 @@
     <Compile Include="Console\PythonConsoleSendLineTests.cs" />
     <Compile Include="Console\PythonConsoleTestsBase.cs" />
     <Compile Include="Console\ThreadSafePythonConsoleTextEditorTests.cs" />
-    <Compile Include="Console\InsertConsoleCompletionDataTestFixture.cs" />
     <Compile Include="Console\KeysPressedWhenCompletionWindowOpenTestFixture.cs" />
     <Compile Include="Console\DisposedPythonConsoleTestFixture.cs" />
-    <Compile Include="Console\CodeCompletionTests.cs" />
     <Compile Include="Console\PythonConsoleCommandLineHistoryTestFixture.cs" />
     <Compile Include="Console\PythonConsoleHomeKeyTestFixture.cs" />
     <Compile Include="Console\PythonConsoleCodeCompletionTestFixture.cs" />
@@ -440,7 +438,6 @@
     <Compile Include="Utils\DerivedPythonDesignerGenerator.cs" />
     <Compile Include="Utils\DerivedPythonDesignerLoader.cs" />
     <Compile Include="Utils\DerivedPythonFormsDesignerDisplayBinding.cs" />
-    <Compile Include="Utils\MockConsoleTextEditor.cs" />
     <Compile Include="Utils\MockDesignerGenerator.cs" />
     <Compile Include="Utils\MockPythonConsole.cs" />
     <Compile Include="Utils\MockPythonConsolePad.cs" />
@@ -457,7 +454,6 @@
     <Compile Include="Utils\PythonBindingAddInFile.cs" />
     <Compile Include="Utils\PythonCompletionItemsHelper.cs" />
     <Compile Include="Utils\PythonParserHelper.cs" />
-    <Compile Include="Utils\Tests\MockConsoleTextEditorTestFixture.cs" />
     <Compile Include="Utils\Tests\MockPythonFileServiceTestFixture.cs" />
     <Compile Include="Utils\Tests\PythonCompletionItemsHelperTests.cs" />
     <Compile Include="Utils\Tests\PythonParserHelperTests.cs" />

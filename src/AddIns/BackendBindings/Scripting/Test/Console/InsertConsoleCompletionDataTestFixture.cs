@@ -8,15 +8,15 @@
 using System;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Editing;
-using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
 using NUnit.Framework;
 
-namespace RubyBinding.Tests.Console
+namespace ICSharpCode.Scripting.Tests.Console
 {
 	[TestFixture]
 	public class InsertConsoleCompletionDataTestFixture
 	{
-		RubyConsoleCompletionData completionData;
+		ScriptingConsoleCompletionData completionData;
 		TextEditor textEditor;
 		
 		[SetUp]
@@ -35,7 +35,7 @@ namespace RubyBinding.Tests.Console
 			int endOffset = 5;
 			SimpleSelection selection = new SimpleSelection(startOffset, endOffset);
 			
-			completionData = new RubyConsoleCompletionData("new");
+			completionData = new ScriptingConsoleCompletionData("new");
 			completionData.Complete(textEditor.TextArea, selection, null);
 			
 			string expectedText = 

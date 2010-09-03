@@ -6,13 +6,14 @@
 // </file>
 
 using System;
+using ICSharpCode.Scripting;
 
 namespace ICSharpCode.PythonBinding
 {
 	public interface IPythonConsolePad
 	{
 		void BringToFront();
-		IConsoleTextEditor ConsoleTextEditor { get; }
+		IScriptingConsoleTextEditor ConsoleTextEditor { get; }
 		IPythonConsole PythonConsole { get; }
 	}
 }

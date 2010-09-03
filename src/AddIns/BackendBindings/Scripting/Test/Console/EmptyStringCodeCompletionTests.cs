@@ -7,24 +7,23 @@
 
 using System;
 using ICSharpCode.AvalonEdit.CodeCompletion;
-using ICSharpCode.PythonBinding;
-using ICSharpCode.Scripting.Tests.Console;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop;
 using NUnit.Framework;
 
-namespace PythonBinding.Tests.Console
+namespace ICSharpCode.Scripting.Tests.Console
 {
 	[TestFixture]
-	public class EmptyStringCodeCompletionTestFixture
+	public class EmptyStringCodeCompletionTests
 	{
 		MockMemberProvider memberProvider;
-		PythonConsoleCompletionDataProvider completionProvider;
+		ScriptingConsoleCompletionDataProvider completionProvider;
 		
 		[SetUp]
 		public void Init()
 		{
 			memberProvider = new MockMemberProvider();
-			completionProvider = new PythonConsoleCompletionDataProvider(memberProvider);
+			completionProvider = new ScriptingConsoleCompletionDataProvider(memberProvider);
 		}
 		
 		/// <summary>

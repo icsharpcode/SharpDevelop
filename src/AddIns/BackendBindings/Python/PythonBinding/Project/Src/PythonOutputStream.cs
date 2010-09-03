@@ -9,13 +9,15 @@ using System;
 using System.IO;
 using System.Text;
 
+using ICSharpCode.Scripting;
+
 namespace ICSharpCode.PythonBinding
 {
 	public class PythonOutputStream : Stream
 	{
-		IConsoleTextEditor textEditor;
+		IScriptingConsoleTextEditor textEditor;
 		
-		public PythonOutputStream(IConsoleTextEditor textEditor)
+		public PythonOutputStream(IScriptingConsoleTextEditor textEditor)
 		{
 			this.textEditor = textEditor;
 		}

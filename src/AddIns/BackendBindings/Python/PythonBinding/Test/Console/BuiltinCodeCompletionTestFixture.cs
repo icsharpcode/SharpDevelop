@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Console;
 using Microsoft.Scripting.Hosting;
 using NUnit.Framework;
@@ -24,7 +25,7 @@ namespace PythonBinding.Tests.Console
 	{
 		ICompletionData[] completionItems;
 		ICompletionData[] expectedCompletionItems;
-		PythonConsoleCompletionDataProvider provider;
+		ScriptingConsoleCompletionDataProvider provider;
 		MockMemberProvider memberProvider;
 		
 		[TestFixtureSetUp]
@@ -38,7 +39,7 @@ namespace PythonBinding.Tests.Console
 			memberProvider.SetMemberNames(new string[] {"a", "b", "c"});
 			expectedCompletionItems = CreateCompletionItems(memberProvider.GetMemberNames("__builtins__"));
 			
-			provider = new PythonConsoleCompletionDataProvider(memberProvider);
+			provider = new ScriptingConsoleCompletionDataProvider(memberProvider);
 			completionItems = provider.GenerateCompletionData(textEditor);
 		}
 		
@@ -70,9 +71,9 @@ namespace PythonBinding.Tests.Console
 		
 		ICompletionData[] CreateCompletionItems(IList<string> memberNames)
 		{
-			List<PythonConsoleCompletionData> items = new List<PythonConsoleCompletionData>();
+			List<ScriptingConsoleCompletionData> items = new List<ScriptingConsoleCompletionData>();
 			foreach (string memberName in memberNames) {
-				items.Add(new PythonConsoleCompletionData(memberName));
+				items.Add(new ScriptingConsoleCompletionData(memberName));
 			}
 			return items.ToArray();
 		}

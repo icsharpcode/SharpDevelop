@@ -21,7 +21,7 @@ namespace ICSharpCode.PythonBinding
 {
 	public class PythonConsole : IConsole, IDisposable, IMemberProvider, IPythonConsole
 	{
-		IConsoleTextEditor textEditor;
+		IScriptingConsoleTextEditor textEditor;
 		int lineReceivedEventIndex = 0; // The index into the waitHandles array where the lineReceivedEvent is stored.
 		ManualResetEvent lineReceivedEvent = new ManualResetEvent(false);
 		ManualResetEvent disposedEvent = new ManualResetEvent(false);
@@ -33,7 +33,7 @@ namespace ICSharpCode.PythonBinding
 		
 		protected List<string> unreadLines = new List<string>();
 		
-		public PythonConsole(IConsoleTextEditor textEditor)
+		public PythonConsole(IScriptingConsoleTextEditor textEditor)
 		{
 			waitHandles = new WaitHandle[] {lineReceivedEvent, disposedEvent};
 			
@@ -282,7 +282,7 @@ namespace ICSharpCode.PythonBinding
 		
 		void ShowCompletionWindow()
 		{
-			PythonConsoleCompletionDataProvider completionProvider = new PythonConsoleCompletionDataProvider(this);
+			ScriptingConsoleCompletionDataProvider completionProvider = new ScriptingConsoleCompletionDataProvider(this);
 			textEditor.ShowCompletionWindow(completionProvider);
 		}
 

@@ -9,9 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Input;
+
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 
@@ -31,9 +33,9 @@ namespace RubyBinding.Tests.Console
 		}
 		
 		[Test]
-		public void RubyConsoleTextEditorImplementsIConsoleTextEditorInterface()
+		public void RubyConsoleTextEditorImplementsIScriptingConsoleTextEditorInterface()
 		{
-			Assert.IsNotNull(consoleTextEditor as IConsoleTextEditor);
+			Assert.IsNotNull(consoleTextEditor as IScriptingConsoleTextEditor);
 		}
 		
 		[Test]
@@ -90,7 +92,7 @@ namespace RubyBinding.Tests.Console
 			AssertSelectionsAreEqual(expectedSelection, consoleTextEditor);
 		}
 		
-		void AssertSelectionsAreEqual(SimpleSelection expectedSelection, IConsoleTextEditor consoleTextEditor)
+		void AssertSelectionsAreEqual(SimpleSelection expectedSelection, IScriptingConsoleTextEditor consoleTextEditor)
 		{
 			int selectionLength = consoleTextEditor.SelectionStart + consoleTextEditor.SelectionLength;
 			SimpleSelection actualSelection = new SimpleSelection(consoleTextEditor.SelectionStart, selectionLength);

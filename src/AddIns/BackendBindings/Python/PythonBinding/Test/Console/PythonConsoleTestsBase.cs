@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Console

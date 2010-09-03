@@ -9,6 +9,7 @@ using System;
 using System.Text;
 using System.Threading;
 
+using ICSharpCode.Scripting;
 using IronPython.Hosting;
 using IronPython.Runtime;
 using Microsoft.Scripting.Hosting;
@@ -19,10 +20,10 @@ namespace ICSharpCode.PythonBinding
 	public class PythonConsoleHost : ConsoleHost, IDisposable
 	{
 		Thread thread;
-		IConsoleTextEditor textEditor;
+		IScriptingConsoleTextEditor textEditor;
 		PythonConsole pythonConsole;
 		
-		public PythonConsoleHost(IConsoleTextEditor textEditor)
+		public PythonConsoleHost(IScriptingConsoleTextEditor textEditor)
 		{
 			this.textEditor = textEditor;
 			pythonConsole = new PythonConsole(textEditor);

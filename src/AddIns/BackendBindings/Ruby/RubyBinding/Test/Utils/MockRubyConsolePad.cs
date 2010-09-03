@@ -7,6 +7,8 @@
 
 using System;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Utils;
 
 namespace RubyBinding.Tests.Utils
 {
@@ -22,7 +24,7 @@ namespace RubyBinding.Tests.Utils
 			BringToFrontCalled = true;
 		}
 		
-		public IConsoleTextEditor ConsoleTextEditor {
+		public IScriptingConsoleTextEditor ConsoleTextEditor {
 			get { return MockConsoleTextEditor; }
 		}
 		

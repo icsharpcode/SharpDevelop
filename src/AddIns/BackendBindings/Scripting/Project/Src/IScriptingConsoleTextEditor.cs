@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
@@ -6,16 +6,17 @@
 // </file>
 
 using System;
-using ICSharpCode.Scripting;
+using System.Drawing;
+using System.Windows.Input;
 
-namespace ICSharpCode.RubyBinding
+namespace ICSharpCode.Scripting
 {
 	/// <summary>
-	/// The interface that the text editor used by the RubyConsole needs to be implement. Note that
+	/// The interface that the text editor used by the Python and Ruby Consoles needs to be implement. Note that
 	/// all the methods will be called on another thread not the main UI thread and will therefore need to
 	/// be invoked.
 	/// </summary>
-	public interface IConsoleTextEditor : IDisposable
+	public interface IScriptingConsoleTextEditor : IDisposable
 	{
 		/// <summary>
 		/// Fired when a key is pressed but before any text has been added to the text editor.
@@ -69,7 +70,7 @@ namespace ICSharpCode.RubyBinding
 		/// <summary>
 		/// Shows the code completion window.
 		/// </summary>
-		void ShowCompletionWindow(RubyConsoleCompletionDataProvider completionDataProvider);
+		void ShowCompletionWindow(ScriptingConsoleCompletionDataProvider completionDataProvider);
 	
 		/// <summary>
 		/// Indicates whether the completion window is currently being displayed.

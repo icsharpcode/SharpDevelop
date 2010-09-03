@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Gui;
 using AvalonEdit = ICSharpCode.AvalonEdit;
 
@@ -25,7 +26,7 @@ namespace ICSharpCode.PythonBinding
 			host.Run();	
 		}
 		
-		public IConsoleTextEditor ConsoleTextEditor {
+		public IScriptingConsoleTextEditor ConsoleTextEditor {
 			get { return consoleTextEditor; }
 		}
 		

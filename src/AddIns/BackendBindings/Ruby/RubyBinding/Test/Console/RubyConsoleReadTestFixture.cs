@@ -10,6 +10,7 @@ using System.Threading;
 using System.Windows.Input;
 
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 

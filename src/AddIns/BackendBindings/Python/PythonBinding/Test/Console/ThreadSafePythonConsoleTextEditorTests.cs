@@ -166,10 +166,10 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void ShowCompletionWindow_WrappedConsoleTextEditor_CallsWrappedConsoleTextEditorMethod()
 		{
-			PythonConsoleCompletionDataProvider expectedProvider = new PythonConsoleCompletionDataProvider(null);
+			ScriptingConsoleCompletionDataProvider expectedProvider = new ScriptingConsoleCompletionDataProvider(null);
 			threadSafeConsoleTextEditor.ShowCompletionWindow(expectedProvider);
 			
-			PythonConsoleCompletionDataProvider provider = fakeConsoleTextEditor.CompletionProviderPassedToShowCompletionWindow;
+			ScriptingConsoleCompletionDataProvider provider = fakeConsoleTextEditor.CompletionProviderPassedToShowCompletionWindow;
 			
 			Assert.AreEqual(expectedProvider, provider);
 		}
@@ -311,7 +311,7 @@ namespace PythonBinding.Tests.Console
 			dispatcher.CheckAccessReturnValue = false;
 			dispatcher.MethodInvoked = null;
 			
-			PythonConsoleCompletionDataProvider provider = new PythonConsoleCompletionDataProvider(null);
+			ScriptingConsoleCompletionDataProvider provider = new ScriptingConsoleCompletionDataProvider(null);
 			threadSafeConsoleTextEditor.ShowCompletionWindow(provider);
 			Assert.IsNotNull(dispatcher.MethodInvoked);
 		}
@@ -322,7 +322,7 @@ namespace PythonBinding.Tests.Console
 			dispatcher.CheckAccessReturnValue = false;
 			dispatcher.MethodInvoked = null;
 			
-			PythonConsoleCompletionDataProvider provider = new PythonConsoleCompletionDataProvider(null);
+			ScriptingConsoleCompletionDataProvider provider = new ScriptingConsoleCompletionDataProvider(null);
 			threadSafeConsoleTextEditor.ShowCompletionWindow(provider);
 			object[] expectedArgs = new object[] { provider };
 			

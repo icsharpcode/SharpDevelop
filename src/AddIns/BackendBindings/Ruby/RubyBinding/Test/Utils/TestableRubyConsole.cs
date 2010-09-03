@@ -26,7 +26,7 @@ namespace RubyBinding.Tests.Utils
 		{
 		}
 		
-		TestableRubyConsole(IConsoleTextEditor consoleTextEditor, RubyCommandLine commandLine)
+		TestableRubyConsole(IScriptingConsoleTextEditor consoleTextEditor, RubyCommandLine commandLine)
 			: base(consoleTextEditor)
 		{
 			CommandLine = commandLine;

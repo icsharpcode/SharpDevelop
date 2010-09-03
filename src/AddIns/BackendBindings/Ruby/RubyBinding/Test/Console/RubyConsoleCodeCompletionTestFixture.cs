@@ -7,10 +7,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Input;
 using System.Threading;
-using Microsoft.Scripting.Hosting.Shell;
+using System.Windows.Input;
+
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
+using Microsoft.Scripting.Hosting.Shell;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 
@@ -49,9 +51,9 @@ namespace RubyBinding.Tests.Console
 		}
 		
 		[Test]
-		public void RubyConsoleCompletionDataProviderPassedToShowCompletionWindowMethod()
+		public void ScriptingConsoleCompletionDataProviderPassedToShowCompletionWindowMethod()
 		{
-			Assert.IsInstanceOf(typeof(RubyConsoleCompletionDataProvider), MockConsoleTextEditor.CompletionProviderPassedToShowCompletionWindow);
+			Assert.IsInstanceOf(typeof(ScriptingConsoleCompletionDataProvider), MockConsoleTextEditor.CompletionProviderPassedToShowCompletionWindow);
 		}
 	}
 }

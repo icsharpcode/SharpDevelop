@@ -10,6 +10,7 @@ using System.IO;
 using System.Text;
 
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 

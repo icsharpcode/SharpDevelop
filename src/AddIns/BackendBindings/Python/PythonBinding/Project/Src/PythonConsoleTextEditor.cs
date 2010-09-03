@@ -18,7 +18,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.PythonBinding
 {
-	public class PythonConsoleTextEditor : IConsoleTextEditor
+	public class PythonConsoleTextEditor : IScriptingConsoleTextEditor
 	{
 		TextEditor textEditor;
 		Color customLineColour = Color.LightGray;
@@ -115,7 +115,7 @@ namespace ICSharpCode.PythonBinding
 			readOnlyRegion.EndOffset = textEditor.Document.TextLength;
 		}
 		
-		public void ShowCompletionWindow(PythonConsoleCompletionDataProvider completionDataProvider)
+		public void ShowCompletionWindow(ScriptingConsoleCompletionDataProvider completionDataProvider)
 		{
 			ICompletionData[] items = completionDataProvider.GenerateCompletionData(this);
 			if (items.Length > 0) {

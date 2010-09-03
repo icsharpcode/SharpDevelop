@@ -7,6 +7,7 @@
 
 using System;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using RubyBinding.Tests.Utils;
 
 namespace RubyBinding.Tests.Console

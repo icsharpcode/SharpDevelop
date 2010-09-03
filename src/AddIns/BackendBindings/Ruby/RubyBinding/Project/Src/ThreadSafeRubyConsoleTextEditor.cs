@@ -11,11 +11,11 @@ using ICSharpCode.Scripting;
 
 namespace ICSharpCode.RubyBinding
 {
-	public class ThreadSafeRubyConsoleTextEditor : IConsoleTextEditor
+	public class ThreadSafeRubyConsoleTextEditor : IScriptingConsoleTextEditor
 	{
 		delegate string GetLineInvoker(int index);
 		
-		IConsoleTextEditor consoleTextEditor;
+		IScriptingConsoleTextEditor consoleTextEditor;
 		IControlDispatcher dispatcher;
 		
 		public ThreadSafeRubyConsoleTextEditor(TextEditor textEditor)
@@ -23,7 +23,7 @@ namespace ICSharpCode.RubyBinding
 		{
 		}
 		
-		public ThreadSafeRubyConsoleTextEditor(IConsoleTextEditor consoleTextEditor, IControlDispatcher dispatcher)
+		public ThreadSafeRubyConsoleTextEditor(IScriptingConsoleTextEditor consoleTextEditor, IControlDispatcher dispatcher)
 		{
 			this.consoleTextEditor = consoleTextEditor;
 			this.dispatcher = dispatcher;
@@ -95,12 +95,12 @@ namespace ICSharpCode.RubyBinding
 			}
 		}
 		
-		public void ShowCompletionWindow(RubyConsoleCompletionDataProvider completionDataProvider)
+		public void ShowCompletionWindow(ScriptingConsoleCompletionDataProvider completionDataProvider)
 		{
 			if (dispatcher.CheckAccess()) {
 				consoleTextEditor.ShowCompletionWindow(completionDataProvider);
 			} else {
-				Action<RubyConsoleCompletionDataProvider> action = ShowCompletionWindow;
+				Action<ScriptingConsoleCompletionDataProvider> action = ShowCompletionWindow;
 				dispatcher.Invoke(action, completionDataProvider);
 			}
 		}

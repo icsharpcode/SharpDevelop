@@ -6,15 +6,15 @@
 // </file>
 
 using System;
-
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using IronPython.Hosting;
 using IronPython.Runtime;
-using NUnit.Framework;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
+using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Console

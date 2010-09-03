@@ -6,13 +6,14 @@
 // </file>
 
 using System;
+using ICSharpCode.Scripting;
 
 namespace ICSharpCode.RubyBinding
 {
 	public interface IRubyConsolePad
 	{
 		void BringToFront();
-		IConsoleTextEditor ConsoleTextEditor { get; }
+		IScriptingConsoleTextEditor ConsoleTextEditor { get; }
 		IRubyConsole RubyConsole { get; }
 	}
 }

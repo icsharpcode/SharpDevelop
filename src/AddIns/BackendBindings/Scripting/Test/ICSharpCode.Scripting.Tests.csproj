@@ -69,6 +69,8 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Console\CommandLineHistoryTestFixture.cs" />
     <Compile Include="Console\EmptyCommandLineHistoryTestFixture.cs" />
+    <Compile Include="Console\EmptyStringCodeCompletionTests.cs" />
+    <Compile Include="Console\InsertConsoleCompletionDataTestFixture.cs" />
     <Compile Include="Console\OneItemCommandLineHistoryTestFixture.cs" />
     <Compile Include="Testing\CreateTextWriterFromCreateTextWriterInfoTestFixture.cs" />
     <Compile Include="Testing\CreateTextWriterInfoEqualsTestFixture.cs" />
@@ -88,6 +90,7 @@
     <Compile Include="Utils\FakeLock.cs" />
     <Compile Include="Utils\FooItemCollection.cs" />
     <Compile Include="Utils\MockComponentCreator.cs" />
+    <Compile Include="Utils\MockConsoleTextEditor.cs" />
     <Compile Include="Utils\MockConsoleTextEditorKeyEventArgs.cs" />
     <Compile Include="Utils\MockControlDispatcher.cs" />
     <Compile Include="Utils\MockDebugger.cs" />
@@ -114,6 +117,7 @@
     <Compile Include="Utils\NullPropertyUserControl.cs" />
     <Compile Include="Utils\SupportInitCustomControl.cs" />
     <Compile Include="Utils\Tests\MockComponentCreatorTests.cs" />
+    <Compile Include="Utils\Tests\MockConsoleTextEditorTests.cs" />
     <Compile Include="Utils\Tests\MockControlDispatcherTestFixture.cs" />
     <Compile Include="Utils\Tests\MockEditableViewContentTestFixture.cs" />
     <Compile Include="Utils\Tests\MockProjectContentTests.cs" />
@@ -151,6 +155,9 @@
       <Project>{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}</Project>
       <Name>ICSharpCode.Scripting</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

@@ -11,13 +11,13 @@ using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 
-namespace ICSharpCode.PythonBinding
+namespace ICSharpCode.Scripting
 {
-	public class PythonConsoleCompletionData : ICompletionData
+	public class ScriptingConsoleCompletionData : ICompletionData
 	{
 		string text = String.Empty;
 		
-		public PythonConsoleCompletionData(string text)
+		public ScriptingConsoleCompletionData(string text)
 		{
 			this.text = text;
 		}

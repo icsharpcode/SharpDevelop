@@ -9,13 +9,15 @@ using System;
 using System.IO;
 using System.Text;
 
+using ICSharpCode.Scripting;
+
 namespace ICSharpCode.RubyBinding
 {
 	public class RubyOutputStream : Stream
 	{
-		IConsoleTextEditor textEditor;
+		IScriptingConsoleTextEditor textEditor;
 		
-		public RubyOutputStream(IConsoleTextEditor textEditor)
+		public RubyOutputStream(IScriptingConsoleTextEditor textEditor)
 		{
 			this.textEditor = textEditor;
 		}

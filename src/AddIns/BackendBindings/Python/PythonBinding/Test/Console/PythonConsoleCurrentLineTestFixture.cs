@@ -7,11 +7,11 @@
 
 using System;
 using System.Windows.Input;
-
+using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
-using ICSharpCode.PythonBinding;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 

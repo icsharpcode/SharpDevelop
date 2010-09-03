@@ -96,7 +96,6 @@
     <Compile Include="Src\MemberName.cs" />
     <Compile Include="Src\PythonBuiltInModuleMemberName.cs" />
     <Compile Include="Src\PythonClassResolver.cs" />
-    <Compile Include="Src\PythonConsoleCompletionData.cs" />
     <Compile Include="Src\PythonConsoleApplication.cs" />
     <Compile Include="Src\PythonConsoleTextEditorKeyEventArgs.cs" />
     <Compile Include="Src\PythonDotNetMethodResolver.cs" />
@@ -129,7 +128,6 @@
     <Compile Include="Src\PythonWorkbench.cs" />
     <Compile Include="Src\SendLineToPythonConsoleCommand.cs" />
     <Compile Include="Src\SysModuleCompletionItems.cs" />
-    <Compile Include="Src\IConsoleTextEditor.cs" />
     <Compile Include="Src\NRefactoryToPythonConverter.cs" />
     <Compile Include="Src\PythonAstWalker.cs" />
     <Compile Include="Src\PythonCodeCompletionBinding.cs" />
@@ -139,7 +137,6 @@
     <Compile Include="Src\PythonCompilerError.cs" />
     <Compile Include="Src\PythonCompilerSink.cs" />
     <Compile Include="Src\PythonConsole.cs" />
-    <Compile Include="Src\PythonConsoleCompletionDataProvider.cs" />
     <Compile Include="Src\PythonConsoleHost.cs" />
     <Compile Include="Src\PythonConsolePad.cs" />
     <Compile Include="Src\PythonControlFieldExpression.cs">
