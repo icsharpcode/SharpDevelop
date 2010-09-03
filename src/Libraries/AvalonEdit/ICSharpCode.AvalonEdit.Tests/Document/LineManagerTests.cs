@@ -495,5 +495,41 @@ namespace ICSharpCode.AvalonEdit.Document
 			                   "x",
 			                   "c");
 		}
+		
+		[Test]
+		public void GetOffset()
+		{
+			document.Text = "Hello,\nWorld!";
+			Assert.AreEqual(0, document.GetOffset(1, 1));
+			Assert.AreEqual(1, document.GetOffset(1, 2));
+			Assert.AreEqual(5, document.GetOffset(1, 6));
+			Assert.AreEqual(6, document.GetOffset(1, 7));
+			Assert.AreEqual(7, document.GetOffset(2, 1));
+			Assert.AreEqual(8, document.GetOffset(2, 2));
+			Assert.AreEqual(12, document.GetOffset(2, 6));
+			Assert.AreEqual(13, document.GetOffset(2, 7));
+		}
+		
+		[Test]
+		public void GetOffsetIgnoreNegativeColumns()
+		{
+			document.Text = "Hello,\nWorld!";
+			Assert.AreEqual(0, document.GetOffset(1, -1));
+			Assert.AreEqual(0, document.GetOffset(1, -100));
+			Assert.AreEqual(0, document.GetOffset(1, 0));
+			Assert.AreEqual(7, document.GetOffset(2, -1));
+			Assert.AreEqual(7, document.GetOffset(2, -100));
+			Assert.AreEqual(7, document.GetOffset(2, 0));
+		}
+		
+		[Test]
+		public void GetOffsetIgnoreTooHighColumns()
+		{
+			document.Text = "Hello,\nWorld!";
+			Assert.AreEqual(6, document.GetOffset(1, 8));
+			Assert.AreEqual(6, document.GetOffset(1, 100));
+			Assert.AreEqual(13, document.GetOffset(2, 8));
+			Assert.AreEqual(13, document.GetOffset(2, 100));
+		}
 	}
 }

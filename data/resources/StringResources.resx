@@ -374,12 +374,6 @@ You need to install the .NET Framework SDK to get the help system.</value>
   <data name="AddIns.HtmlHelp2.LookForSimilarWords" xml:space="preserve">
     <value>Look for similiar words</value>
   </data>
-  <data name="AddIns.HtmlHelp2.MoveDown" xml:space="preserve">
-    <value>Move down</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MoveUp" xml:space="preserve">
-    <value>Move up</value>
-  </data>
   <data name="AddIns.HtmlHelp2.MultiTopic" xml:space="preserve">
     <value>topics</value>
   </data>
@@ -2233,12 +2227,6 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.CombineOptions.Startup.EntryColumnHeader" xml:space="preserve">
     <value>Entry</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveDownButton" xml:space="preserve">
-    <value>Move down</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveUpButton" xml:space="preserve">
-    <value>Move up</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton" xml:space="preserve">
     <value>&amp;Multiple Startup Project</value>
   </data>
@@ -2250,12 +2238,6 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.ExternalTool.CommandLabel" xml:space="preserve">
     <value>&amp;Command</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveDownButton" xml:space="preserve">
-    <value>Move &amp;Down</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveUpButton" xml:space="preserve">
-    <value>Move &amp;Up</value>
   </data>
   <data name="Dialog.Options.ExternalTool.PromptForArgsCheckBox" xml:space="preserve">
     <value>&amp;Prompt for Arguments</value>
@@ -3278,18 +3260,6 @@ You can also choose to store the setting in the .user-file instead of the projec
   <data name="Dialog.SelectReferenceDialog.TypeHeader" xml:space="preserve">
     <value>Type</value>
   </data>
-  <data name="Dialog.TipOfTheDay.button1Text" xml:space="preserve">
-    <value>&amp;Next Tip</value>
-  </data>
-  <data name="Dialog.TipOfTheDay.checkBox1Text" xml:space="preserve">
-    <value>Show tips at startup</value>
-  </data>
-  <data name="Dialog.TipOfTheDay.DialogName" xml:space="preserve">
-    <value>Tip of the Day</value>
-  </data>
-  <data name="Dialog.TipOfTheDay.DidYouKnowText" xml:space="preserve">
-    <value>Did you know...</value>
-  </data>
   <data name="Dialog.ViewGPL.DialogName" xml:space="preserve">
     <value>GNU General Public License</value>
   </data>
@@ -3448,6 +3418,12 @@ You can also choose to store the setting in the .user-file instead of the projec
   </data>
   <data name="Global.Location.wholeproject" xml:space="preserve">
     <value>whole project</value>
+  </data>
+  <data name="Global.MoveDown" xml:space="preserve">
+    <value>Move &amp;Down</value>
+  </data>
+  <data name="Global.MoveUp" xml:space="preserve">
+    <value>Move &amp;Up</value>
   </data>
   <data name="Global.NA" xml:space="preserve">
     <value>N/A</value>
@@ -6839,18 +6815,6 @@ The resources files have been renamed/moved accordingly.</value>
   </data>
   <data name="SideBarComponent.ContextMenu.DeleteTabItemQuestion" xml:space="preserve">
     <value>Do you really want to delete item "${TabItem}"?</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabDown" xml:space="preserve">
-    <value>Move Tab Do&amp;wn</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemDown" xml:space="preserve">
-    <value>Move Item Down</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemUp" xml:space="preserve">
-    <value>Move Item Up</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabUp" xml:space="preserve">
-    <value>Move Tab &amp;Up</value>
   </data>
   <data name="SideBarComponent.ContextMenu.RenameTab" xml:space="preserve">
     <value>&amp;Rename Tab</value>

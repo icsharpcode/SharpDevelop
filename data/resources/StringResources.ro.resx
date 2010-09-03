@@ -301,12 +301,6 @@ Pentru aceasta trebuie să instalaţi .NET Framework SDK.</value>
   <data name="AddIns.HtmlHelp2.LookForSimilarWords" xml:space="preserve">
     <value>Căutare cuvinte similare</value>
   </data>
-  <data name="AddIns.HtmlHelp2.MoveDown" xml:space="preserve">
-    <value>Mută în jos</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MoveUp" xml:space="preserve">
-    <value>Mută în sus</value>
-  </data>
   <data name="AddIns.HtmlHelp2.MultiTopic" xml:space="preserve">
     <value>subiecte</value>
   </data>
@@ -1133,12 +1127,6 @@ Doriţi adăugarea noului fişier la proiectul ${CurrentProjectName}?</value>
   <data name="Dialog.Options.CombineOptions.Startup.EntryColumnHeader" xml:space="preserve">
     <value>Intrare</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveDownButton" xml:space="preserve">
-    <value>Deplasare în jos</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveUpButton" xml:space="preserve">
-    <value>Deplasare în sus</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton" xml:space="preserve">
     <value>Proiect cu Start &amp;Multiplu</value>
   </data>
@@ -1150,12 +1138,6 @@ Doriţi adăugarea noului fişier la proiectul ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.ExternalTool.CommandLabel" xml:space="preserve">
     <value>&amp;Comanda</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveDownButton" xml:space="preserve">
-    <value>Muta &amp;Jos</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveUpButton" xml:space="preserve">
-    <value>Muta &amp;Sus</value>
   </data>
   <data name="Dialog.Options.ExternalTool.QuickInsertMenu.CombineDirectory" xml:space="preserve">
     <value>Director &amp;Soluţii</value>
@@ -1862,18 +1844,6 @@ Doriţi adăugarea noului fişier la proiectul ${CurrentProjectName}?</value>
   <data name="Dialog.SelectReferenceDialog.TypeHeader" xml:space="preserve">
     <value>Tip</value>
   </data>
-  <data name="Dialog.TipOfTheDay.button1Text" xml:space="preserve">
-    <value>&amp;Următorul</value>
-  </data>
-  <data name="Dialog.TipOfTheDay.checkBox1Text" xml:space="preserve">
-    <value>Afişare indicii la pornire</value>
-  </data>
-  <data name="Dialog.TipOfTheDay.DialogName" xml:space="preserve">
-    <value>Indiciul zilei</value>
-  </data>
-  <data name="Dialog.TipOfTheDay.DidYouKnowText" xml:space="preserve">
-    <value>Ştiaţi că...</value>
-  </data>
   <data name="Dialog.ViewGPL.DialogName" xml:space="preserve">
     <value>Licenţă Publică Generală GNU</value>
   </data>
@@ -1996,6 +1966,12 @@ Doriţi adăugarea noului fişier la proiectul ${CurrentProjectName}?</value>
   </data>
   <data name="Global.Location.wholeproject" xml:space="preserve">
     <value>întregul proiect</value>
+  </data>
+  <data name="Global.MoveDown" xml:space="preserve">
+    <value>Muta &amp;Jos</value>
+  </data>
+  <data name="Global.MoveUp" xml:space="preserve">
+    <value>Muta &amp;Sus</value>
   </data>
   <data name="Global.Name" xml:space="preserve">
     <value>Nume</value>
@@ -3692,18 +3668,6 @@ Toate modificările se vor pierde.</value>
   </data>
   <data name="SideBarComponent.ContextMenu.DeleteTabItemQuestion" xml:space="preserve">
     <value>Doriţi ştergerea elementului "${TabItem}"?</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabDown" xml:space="preserve">
-    <value>Deplasare Tab În &amp;Jos</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemDown" xml:space="preserve">
-    <value>Deplasare Element În Jos</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemUp" xml:space="preserve">
-    <value>Deplasare Element În Sus</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabUp" xml:space="preserve">
-    <value>Deplasare Tab În &amp;Sos</value>
   </data>
   <data name="SideBarComponent.ContextMenu.RenameTab" xml:space="preserve">
     <value>&amp;Redenumire Tab</value>

@@ -8,10 +8,10 @@
 using System;
 using System.Diagnostics;
 using System.Windows.Documents;
-
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -20,6 +20,30 @@ namespace ICSharpCode.SharpDevelop.Editor
 	/// </summary>
 	public static class DocumentUtilitites
 	{
+		/// <summary>
+		/// Creates a new mutable document from the specified text buffer.
+		/// </summary>
+		/// <remarks>
+		/// Use the more efficient <see cref="LoadReadOnlyDocumentFromBuffer"/> if you only need a read-only document.
+		/// </remarks>
+		public static IDocument LoadDocumentFromBuffer(ITextBuffer buffer)
+		{
+			if (buffer == null)
+				throw new ArgumentNullException("buffer");
+			var doc = new TextDocument(GetTextSource(buffer));
+			return new AvalonEditDocumentAdapter(doc, null);
+		}
+		
+		/// <summary>
+		/// Creates a new read-only document from the specified text buffer.
+		/// </summary>
+		public static IDocument LoadReadOnlyDocumentFromBuffer(ITextBuffer buffer)
+		{
+			if (buffer == null)
+				throw new ArgumentNullException("buffer");
+			return new ReadOnlyDocument(buffer);
+		}
+		
 		/// <summary>
 		/// Gets the word in front of the caret.
 		/// </summary>
@@ -178,6 +202,15 @@ namespace ICSharpCode.SharpDevelop.Editor
 		{
 			if (textBuffer == null)
 				throw new ArgumentNullException("textBuffer");
+			
+			var textSourceAdapter = textBuffer as AvalonEditTextSourceAdapter;
+			if (textSourceAdapter != null)
+				return textSourceAdapter.textSource;
+			
+			var documentAdapter = textBuffer as AvalonEditDocumentAdapter;
+			if (documentAdapter != null)
+				return documentAdapter.document;
+			
 			return new TextBufferTextSource(textBuffer);
 		}
 		

@@ -302,12 +302,6 @@ Precisa de instalar o .NET Framework SDK para utilizar o sistema de ajuda.</valu
   <data name="AddIns.HtmlHelp2.LookForSimilarWords" xml:space="preserve">
     <value>Procurar por palavras semelhantes</value>
   </data>
-  <data name="AddIns.HtmlHelp2.MoveDown" xml:space="preserve">
-    <value>Mover para baixo</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MoveUp" xml:space="preserve">
-    <value>Mover para cima</value>
-  </data>
   <data name="AddIns.HtmlHelp2.MultiTopic" xml:space="preserve">
     <value>Tópicos</value>
   </data>
@@ -1688,12 +1682,6 @@ Além disso, um bloco pode ser associado a um conjunto de regras que permita uma
   <data name="Dialog.Options.CombineOptions.Startup.EntryColumnHeader" xml:space="preserve">
     <value>Entrada</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveDownButton" xml:space="preserve">
-    <value>Para baixo</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveUpButton" xml:space="preserve">
-    <value>Para cima</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton" xml:space="preserve">
     <value>Projecto com múltiplos arranques</value>
   </data>
@@ -1705,12 +1693,6 @@ Além disso, um bloco pode ser associado a um conjunto de regras que permita uma
   </data>
   <data name="Dialog.Options.ExternalTool.CommandLabel" xml:space="preserve">
     <value>&amp;Comando</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveDownButton" xml:space="preserve">
-    <value>&amp;Descer</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveUpButton" xml:space="preserve">
-    <value>&amp;Subir</value>
   </data>
   <data name="Dialog.Options.ExternalTool.PromptForArgsCheckBox" xml:space="preserve">
     <value>&amp;Pedir argumentos</value>
@@ -2619,18 +2601,6 @@ Pode também escolher guardar o parâmetro num ficheiro .user-file em vez de no 
   <data name="Dialog.SelectReferenceDialog.TypeHeader" xml:space="preserve">
     <value>Tipo</value>
   </data>
-  <data name="Dialog.TipOfTheDay.button1Text" xml:space="preserve">
-    <value>&amp;Próxima sugestão</value>
-  </data>
-  <data name="Dialog.TipOfTheDay.checkBox1Text" xml:space="preserve">
-    <value>Mostra sugestões no início</value>
-  </data>
-  <data name="Dialog.TipOfTheDay.DialogName" xml:space="preserve">
-    <value>Sugestão do dia</value>
-  </data>
-  <data name="Dialog.TipOfTheDay.DidYouKnowText" xml:space="preserve">
-    <value>Sabia que...</value>
-  </data>
   <data name="Dialog.ViewGPL.DialogName" xml:space="preserve">
     <value>Licença pública GNU geral</value>
   </data>
@@ -2762,6 +2732,12 @@ Pode também escolher guardar o parâmetro num ficheiro .user-file em vez de no 
   </data>
   <data name="Global.Location.wholeproject" xml:space="preserve">
     <value>projecto inteiro</value>
+  </data>
+  <data name="Global.MoveDown" xml:space="preserve">
+    <value>&amp;Descer</value>
+  </data>
+  <data name="Global.MoveUp" xml:space="preserve">
+    <value>&amp;Subir</value>
   </data>
   <data name="Global.NA" xml:space="preserve">
     <value>N/A</value>
@@ -5598,18 +5574,6 @@ Os ficheiros de recursos foram renomeados/movidos em conformidade.</value>
   </data>
   <data name="SideBarComponent.ContextMenu.DeleteTabItemQuestion" xml:space="preserve">
     <value>Deseja mesmo apagar o item "${TabItem}"?</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabDown" xml:space="preserve">
-    <value>Mover o Separador para &amp;Baixo</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemDown" xml:space="preserve">
-    <value>Mover o Item para Baixo</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemUp" xml:space="preserve">
-    <value>Mover o Item para Cima</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabUp" xml:space="preserve">
-    <value>Mover o Separador para &amp;Cima</value>
   </data>
   <data name="SideBarComponent.ContextMenu.RenameTab" xml:space="preserve">
     <value>Altera&amp;r o nome do Separador</value>

@@ -113,6 +113,11 @@ namespace SharpRefactoring.Gui
 		
 		void IActiveElement.Deactivate(SnippetEventArgs e)
 		{
+			if (e.Reason == DeactivateReason.Deleted) {
+				Deactivate();
+				return;
+			}
+			
 			if (e.Reason == DeactivateReason.ReturnPressed)
 				OKButtonClick(null, null);
 			

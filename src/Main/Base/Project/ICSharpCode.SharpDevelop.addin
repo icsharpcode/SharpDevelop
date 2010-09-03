@@ -1093,13 +1093,13 @@
 		<MenuItem id = "Separator2" type = "Separator" />
 		<Condition name = "Ownerstate" ownerstate="CanMoveUp" action="Disable">
 			<MenuItem id    = "MoveTabUp"
-			          label = "${res:SideBarComponent.ContextMenu.MoveTabUp}"
+			          label = "${res:Global.MoveUp}"
 			          class = "ICSharpCode.SharpDevelop.Commands.SideBarMoveTabUp"/>
 		</Condition>
 		
 		<Condition name = "Ownerstate" ownerstate="CanMoveDown" action="Disable">
 			<MenuItem id    = "MoveTabDown"
-			          label = "${res:SideBarComponent.ContextMenu.MoveTabDown}"
+			          label = "${res:Global.MoveDown}"
 			          class = "ICSharpCode.SharpDevelop.Commands.SideBarMoveTabDown"/>
 		</Condition>
 		
@@ -1122,13 +1122,13 @@
 		<MenuItem id = "Separator1" type = "Separator" />
 		<Condition name = "Ownerstate" ownerstate="CanMoveItemUp" action="Disable">
 			<MenuItem id = "MoveItemUp"
-			          label = "${res:SideBarComponent.ContextMenu.MoveTabItemUp}"
+			          label = "${res:Global.MoveUp}"
 			          class = "ICSharpCode.SharpDevelop.Commands.SideBarMoveActiveItemUp"/>
 		</Condition>
 		
 		<Condition name = "Ownerstate" ownerstate="CanMoveItemDown" action="Disable">
 			<MenuItem id = "MoveItemDown"
-			          label = "${res:SideBarComponent.ContextMenu.MoveTabItemDown}"
+			          label = "${res:Global.MoveDown}"
 			          class = "ICSharpCode.SharpDevelop.Commands.SideBarMoveActiveItemDown"/>
 		</Condition>
 		

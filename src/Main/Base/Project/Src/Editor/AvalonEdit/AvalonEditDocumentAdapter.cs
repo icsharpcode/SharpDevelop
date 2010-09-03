@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 	/// </summary>
 	public class AvalonEditDocumentAdapter : IDocument
 	{
-		readonly TextDocument document;
+		internal readonly TextDocument document;
 		readonly IServiceProvider parentServiceProvider;
 		
 		/// <summary>

@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 {
 	public class AvalonEditTextSourceAdapter : ITextBuffer
 	{
-		ITextSource textSource;
+		internal readonly ITextSource textSource;
 		
 		public AvalonEditTextSourceAdapter(ITextSource textSource)
 		{

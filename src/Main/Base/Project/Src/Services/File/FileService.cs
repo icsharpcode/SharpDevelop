@@ -336,6 +336,9 @@ namespace ICSharpCode.SharpDevelop
 			return fileNames;
 		}
 		
+		/// <summary>
+		/// Gets the IViewContent for a fileName. Returns null if the file is not opened currently.
+		/// </summary>
 		public static IViewContent GetOpenFile(string fileName)
 		{
 			if (fileName != null && fileName.Length > 0) {
