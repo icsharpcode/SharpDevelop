@@ -24,7 +24,7 @@ namespace PythonBinding.Tests.Resolver
 	public class ResolveSystemConsoleTestFixture
 	{
 		PythonResolver resolver;
-		PythonBinding.Tests.Utils.MockProjectContent mockProjectContent;
+		ICSharpCode.Scripting.Tests.Utils.MockProjectContent mockProjectContent;
 		ResolveResult resolveResult;
 		MockClass testClass;
 		ICompilationUnit compilationUnit;
@@ -35,7 +35,7 @@ namespace PythonBinding.Tests.Resolver
 		public void SetUpFixture()
 		{
 			resolver = new PythonResolver();
-			mockProjectContent = new PythonBinding.Tests.Utils.MockProjectContent();
+			mockProjectContent = new ICSharpCode.Scripting.Tests.Utils.MockProjectContent();
 			
 			systemConsoleClass = new MockClass(mockProjectContent, "System.Console");
 			mockProjectContent.ClassToReturnFromGetClass = systemConsoleClass;

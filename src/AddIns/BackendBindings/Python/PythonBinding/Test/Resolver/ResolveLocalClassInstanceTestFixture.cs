@@ -28,7 +28,7 @@ namespace PythonBinding.Tests.Resolver
 	public class ResolveLocalClassInstanceTestFixture
 	{
 		PythonResolver resolver;
-		PythonBinding.Tests.Utils.MockProjectContent mockProjectContent;
+		ICSharpCode.Scripting.Tests.Utils.MockProjectContent mockProjectContent;
 		LocalResolveResult resolveResult;
 		MockClass testClass;
 		ICompilationUnit compilationUnit;
@@ -38,7 +38,7 @@ namespace PythonBinding.Tests.Resolver
 		{
 			resolver = new PythonResolver();
 			
-			mockProjectContent = new PythonBinding.Tests.Utils.MockProjectContent();
+			mockProjectContent = new ICSharpCode.Scripting.Tests.Utils.MockProjectContent();
 			testClass = new MockClass(mockProjectContent, "Test.Test1");
 			mockProjectContent.ClassesInProjectContent.Add(testClass);			
 			mockProjectContent.ClassToReturnFromGetClass = testClass;

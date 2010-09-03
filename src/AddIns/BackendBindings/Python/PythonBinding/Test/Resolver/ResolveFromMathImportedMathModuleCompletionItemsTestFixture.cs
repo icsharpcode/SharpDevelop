@@ -8,7 +8,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 using PythonBinding.Tests;

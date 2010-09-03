@@ -8,6 +8,7 @@
 using System;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
@@ -33,7 +34,7 @@ namespace RubyBinding.Tests.Designer
 		{
 			RubyParser parser = new RubyParser();
 			MockProjectContent mockProjectContent = new MockProjectContent();
-			ICompilationUnit compilationUnit = parser.Parse(mockProjectContent, @"C:\Projects    est\MainForm.py", GetRubyCode());
+			ICompilationUnit compilationUnit = parser.Parse(mockProjectContent, @"C:\Projects\test\MainForm.py", GetRubyCode());
 
 			parseInfo = new ParseInformation(compilationUnit);
 			

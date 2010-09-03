@@ -26,14 +26,14 @@ namespace PythonBinding.Tests.Resolver
 	{
 		List<ICompletionEntry> results;
 		PythonResolver resolver;
-		PythonBinding.Tests.Utils.MockProjectContent mockProjectContent;
+		ICSharpCode.Scripting.Tests.Utils.MockProjectContent mockProjectContent;
 		MockClass myTestClass;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
 			resolver = new PythonResolver();
-			mockProjectContent = new PythonBinding.Tests.Utils.MockProjectContent();
+			mockProjectContent = new ICSharpCode.Scripting.Tests.Utils.MockProjectContent();
 			mockProjectContent.NamespacesToAdd.Add("Test");
 			myTestClass = new MockClass(mockProjectContent, "MyTestClass");
 			List<ICompletionEntry> namespaceItems = new List<ICompletionEntry>();

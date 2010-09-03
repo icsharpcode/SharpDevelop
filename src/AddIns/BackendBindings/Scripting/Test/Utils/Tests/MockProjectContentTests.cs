@@ -7,24 +7,23 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
-using PythonBinding.Tests.Utils;
 using UnitTesting.Tests.Utils;
 
-namespace PythonBinding.Tests.Utils.Tests
+namespace ICSharpCode.Scripting.Tests.Utils.Tests
 {
 	[TestFixture]
 	public class MockProjectContentTests
 	{
-		PythonBinding.Tests.Utils.MockProjectContent projectContent;
+		ICSharpCode.Scripting.Tests.Utils.MockProjectContent projectContent;
 		List<ICompletionEntry> items;
 		
 		[SetUp]
 		public void Init()
 		{
-			projectContent = new PythonBinding.Tests.Utils.MockProjectContent();
+			projectContent = new ICSharpCode.Scripting.Tests.Utils.MockProjectContent();
 			items = new List<ICompletionEntry>();
 		}
 		
@@ -32,7 +31,7 @@ namespace PythonBinding.Tests.Utils.Tests
 		public void AddNamespaceContentsAddsNamespaces()
 		{
 			projectContent.NamespacesToAdd.Add("test");
-			projectContent.AddNamespaceContents(items, String.Empty, PythonLanguageProperties.Default, false);
+			projectContent.AddNamespaceContents(items, String.Empty, null, false);
 			
 			List<ICompletionEntry> expectedItems = new List<ICompletionEntry>();
 			expectedItems.Add(new NamespaceEntry("test"));
@@ -45,7 +44,7 @@ namespace PythonBinding.Tests.Utils.Tests
 		{
 			MockClass c = new MockClass(new MockProjectContent(), "TestClass");
 			projectContent.ClassesInProjectContent.Add(c);
-			projectContent.AddNamespaceContents(items, String.Empty, PythonLanguageProperties.Default, false);
+			projectContent.AddNamespaceContents(items, String.Empty, null, false);
 			
 			List<ICompletionEntry> expectedItems = new List<ICompletionEntry>();
 			expectedItems.Add(c);

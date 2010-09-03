@@ -33,7 +33,7 @@ namespace PythonBinding.Tests.Converter
 		FileProjectItem targetMain2File;
 		MSBuildBasedProject sourceProject;
 		PythonProject targetProject;
-		PythonBinding.Tests.Utils.MockProjectContent mockProjectContent;
+		ICSharpCode.Scripting.Tests.Utils.MockProjectContent mockProjectContent;
 		
 		string startupObject = "RootNamespace.Main";
 		
@@ -66,7 +66,7 @@ namespace PythonBinding.Tests.Converter
 			// Set up IProjectContent so the ConvertProjectToPythonProjectCommand can
 			// locate the startup object and determine it's filename.
 			
-			mockProjectContent = new PythonBinding.Tests.Utils.MockProjectContent();
+			mockProjectContent = new ICSharpCode.Scripting.Tests.Utils.MockProjectContent();
 			MockClass mainClass = new MockClass(mockProjectContent, startupObject);
 			mainClass.CompilationUnit.FileName = @"d:\projects\test\src\Main2.cs";
 			mockProjectContent.ClassToReturnFromGetClass = mainClass;

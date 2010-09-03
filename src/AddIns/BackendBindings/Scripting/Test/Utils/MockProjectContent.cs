@@ -10,11 +10,8 @@ using System.Collections;
 using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Dom;
 
-namespace PythonBinding.Tests.Utils
+namespace ICSharpCode.Scripting.Tests.Utils
 {
-	/// <summary>
-	/// Mock IProjectContent implementation.
-	/// </summary>
 	public class MockProjectContent : IProjectContent
 	{
 		string namespacePassedToNamespaceExistsMethod;

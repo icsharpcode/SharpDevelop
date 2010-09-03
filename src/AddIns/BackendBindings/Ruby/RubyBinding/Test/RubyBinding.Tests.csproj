@@ -335,7 +335,6 @@
     <Compile Include="Utils\DerivedRubyDesignerLoader.cs" />
     <Compile Include="Utils\DerivedRubyFormsDesignerDisplayBinding.cs" />
     <Compile Include="Utils\MockDesignerGenerator.cs" />
-    <Compile Include="Utils\MockProjectContent.cs" />
     <Compile Include="Utils\MockRubyConsole.cs" />
     <Compile Include="Utils\MockRubyConsolePad.cs" />
     <Compile Include="Utils\MockRubyFileService.cs" />
