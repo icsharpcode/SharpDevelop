@@ -440,7 +440,6 @@
     <Compile Include="Utils\DerivedPythonDesignerGenerator.cs" />
     <Compile Include="Utils\DerivedPythonDesignerLoader.cs" />
     <Compile Include="Utils\DerivedPythonFormsDesignerDisplayBinding.cs" />
-    <Compile Include="Utils\DummySynchronizeInvoke.cs" />
     <Compile Include="Utils\MockConsoleTextEditor.cs" />
     <Compile Include="Utils\MockDesignerGenerator.cs" />
     <Compile Include="Utils\MockProjectContent.cs" />
