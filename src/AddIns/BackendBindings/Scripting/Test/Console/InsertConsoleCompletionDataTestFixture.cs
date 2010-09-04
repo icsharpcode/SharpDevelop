@@ -10,6 +10,7 @@ using NUnit.Framework;
 namespace ICSharpCode.Scripting.Tests.Console
 {
 	[TestFixture]
+	[RequiresSTA]
 	public class InsertConsoleCompletionDataTestFixture
 	{
 		ScriptingConsoleCompletionData completionData;

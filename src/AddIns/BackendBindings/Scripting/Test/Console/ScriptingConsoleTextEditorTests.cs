@@ -15,6 +15,7 @@ using NUnit.Framework;
 namespace ICSharpCode.Scripting.Tests.Console
 {
 	[TestFixture]
+	[RequiresSTA]
 	public class ScriptingConsoleTextEditorTests
 	{
 		ScriptingConsoleTextEditor consoleTextEditor;
