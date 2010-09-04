@@ -77,6 +77,7 @@
     <Compile Include="Console\ScriptingConsoleTextEditorTests.cs" />
     <Compile Include="Console\ThreadSafeScriptingConsoleTextEditorTests.cs" />
     <Compile Include="Designer\NameCreationServiceTests.cs" />
+    <Compile Include="Designer\ScriptingDesignerGeneratorTests.cs" />
     <Compile Include="Designer\ScriptingCodeBuilderTests.cs" />
     <Compile Include="Designer\ScriptingDesignerLoaderGetResourcesTests.cs" />
     <Compile Include="Designer\ScriptingDesignerLoaderTests.cs" />
@@ -132,6 +133,7 @@
     <Compile Include="Utils\MSBuildEngineHelper.cs" />
     <Compile Include="Utils\NullPropertyUserControl.cs" />
     <Compile Include="Utils\SupportInitCustomControl.cs" />
+    <Compile Include="Utils\TestableScriptingDesignerGenerator.cs" />
     <Compile Include="Utils\TestableScriptingDesignerLoader.cs" />
     <Compile Include="Utils\Tests\AddInPathHelperTests.cs" />
     <Compile Include="Utils\Tests\MockComponentCreatorTests.cs" />

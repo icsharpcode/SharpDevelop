@@ -73,7 +73,7 @@ namespace RubyBinding.Tests.Designer
 			method.BodyRegion = bodyRegion;
 			DomRegion expectedRegion = new DomRegion(bodyRegion.BeginLine + 1, 1, bodyRegion.EndLine, 1);
 			
-			Assert.AreEqual(expectedRegion, RubyDesignerGenerator.GetBodyRegionInDocument(method));
+			Assert.AreEqual(expectedRegion, generator.GetBodyRegionInDocument(method));
 		}
 		
 		[Test]

@@ -70,7 +70,8 @@ namespace PythonBinding.Tests.Designer
 				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
 				using (serializationManager.CreateSession()) {
 					AvalonEditDocumentAdapter adapter = new AvalonEditDocumentAdapter(document, null);
-					PythonDesignerGenerator.Merge(host, adapter, compilationUnit, options, serializationManager);
+					PythonDesignerGenerator generator = new PythonDesignerGenerator(options);
+					generator.Merge(host, adapter, compilationUnit, serializationManager);
 				}
 			}
 		}

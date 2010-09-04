@@ -8,12 +8,14 @@ using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Text;
 
+using ICSharpCode.Scripting;
+
 namespace ICSharpCode.RubyBinding
 {
 	/// <summary>
 	/// Used to generate Ruby code after the form has been changed in the designer.
 	/// </summary>
-	public class RubyCodeDomSerializer
+	public class RubyCodeDomSerializer : IScriptingCodeDomSerializer
 	{
 		RubyCodeBuilder codeBuilder;
 		

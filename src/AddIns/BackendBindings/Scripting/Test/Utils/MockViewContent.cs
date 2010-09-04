@@ -13,6 +13,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 {
 	public class MockViewContent : IViewContent
 	{
+		OpenedFile primaryFile = new MockOpenedFile();
 		FileName fileName;
 		List<IViewContent> secondaryViewContents = new List<IViewContent>();
 		
@@ -143,11 +144,8 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		}
 		
 		public OpenedFile PrimaryFile {
-			get {
-				MockOpenedFile file = new MockOpenedFile();
-				//file.FileName = fileName;
-				return file;
-			}
+			get { return primaryFile; }
+			set { primaryFile = value; }
 		}
 		
 		public FileName PrimaryFileName {

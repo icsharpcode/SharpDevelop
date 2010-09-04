@@ -7,8 +7,9 @@ using System.CodeDom.Compiler;
 using System.ComponentModel;
 using System.IO;
 
-using ICSharpCode.PythonBinding;
 using ICSharpCode.FormsDesigner;
+using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
@@ -29,7 +30,7 @@ namespace PythonBinding.Tests.Designer
 			DomRegion expectedRegion = new DomRegion(bodyRegion.BeginLine + 1, 1, bodyRegion.EndLine + 1, 1);
 			DerivedPythonDesignerGenerator generator = new DerivedPythonDesignerGenerator();
 			
-			Assert.AreEqual(expectedRegion, PythonDesignerGenerator.GetBodyRegionInDocument(method));
+			Assert.AreEqual(expectedRegion, generator.GetBodyRegionInDocument(method));
 		}		
 		
 		[Test]

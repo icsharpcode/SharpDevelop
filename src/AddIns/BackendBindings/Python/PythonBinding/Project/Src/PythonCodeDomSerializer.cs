@@ -7,12 +7,14 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 
+using ICSharpCode.Scripting;
+
 namespace ICSharpCode.PythonBinding
 {
 	/// <summary>
 	/// Used to generate Python code after the form has been changed in the designer.
 	/// </summary>
-	public class PythonCodeDomSerializer
+	public class PythonCodeDomSerializer : IScriptingCodeDomSerializer
 	{
 		PythonCodeBuilder codeBuilder;
 		string indentString = String.Empty;

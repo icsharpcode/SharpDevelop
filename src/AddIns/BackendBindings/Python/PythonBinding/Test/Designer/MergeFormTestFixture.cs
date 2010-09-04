@@ -60,7 +60,8 @@ namespace PythonBinding.Tests.Designer
 				using (serializationManager.CreateSession()) {
 					AvalonEditDocumentAdapter adapter = new AvalonEditDocumentAdapter(document, null);
 					MockTextEditorOptions options = new MockTextEditorOptions();
-					PythonDesignerGenerator.Merge(host, adapter, compilationUnit, options, serializationManager);
+					PythonDesignerGenerator generator = new PythonDesignerGenerator(options);
+					generator.Merge(host, adapter, compilationUnit, serializationManager);
 				}
 			}
 		}

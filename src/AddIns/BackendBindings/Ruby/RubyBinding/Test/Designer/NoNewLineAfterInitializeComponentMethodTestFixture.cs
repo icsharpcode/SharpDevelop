@@ -53,7 +53,8 @@ namespace RubyBinding.Tests.Designer
 				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
 				using (serializationManager.CreateSession()) {
 					AvalonEditDocumentAdapter docAdapter = new AvalonEditDocumentAdapter(document, null);
-					RubyDesignerGenerator.Merge(host, docAdapter, compilationUnit, new MockTextEditorOptions(), serializationManager);
+					RubyDesignerGenerator generator = new RubyDesignerGenerator(new MockTextEditorOptions());
+					generator.Merge(host, docAdapter, compilationUnit, serializationManager);
 				}
 			}
 		}

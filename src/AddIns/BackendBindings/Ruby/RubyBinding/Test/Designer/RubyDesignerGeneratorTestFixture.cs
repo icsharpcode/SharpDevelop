@@ -29,7 +29,7 @@ namespace RubyBinding.Tests.Designer
 			DomRegion expectedRegion = new DomRegion(bodyRegion.BeginLine + 1, 1, bodyRegion.EndLine, 1);
 			DerivedRubyDesignerGenerator generator = new DerivedRubyDesignerGenerator();
 			
-			Assert.AreEqual(expectedRegion, RubyDesignerGenerator.GetBodyRegionInDocument(method));
+			Assert.AreEqual(expectedRegion, generator.GetBodyRegionInDocument(method));
 		}		
 		
 		[Test]
