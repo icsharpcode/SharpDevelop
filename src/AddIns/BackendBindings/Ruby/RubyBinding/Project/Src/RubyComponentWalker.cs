@@ -25,7 +25,7 @@ namespace ICSharpCode.RubyBinding
 	/// <summary>
 	/// Visits the code's Ruby AST and creates a Windows Form.
 	/// </summary>
-	public class RubyComponentWalker : Walker
+	public class RubyComponentWalker : Walker, IComponentWalker
 	{
 		IComponent component;
 		IComponentCreator componentCreator;

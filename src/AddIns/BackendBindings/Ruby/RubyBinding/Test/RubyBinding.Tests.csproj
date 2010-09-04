@@ -228,9 +228,6 @@
     <Compile Include="Designer\GenerateToolTipFormTestFixture.cs" />
     <Compile Include="Designer\GenerateTreeViewTestFixture.cs" />
     <Compile Include="Designer\GeneratorMergeFindsInitializeComponentsTestFixture.cs" />
-    <Compile Include="Designer\GetComponentFromDesignerLoaderTestFixture.cs" />
-    <Compile Include="Designer\GetInstanceFromDesignerLoaderTestFixture.cs" />
-    <Compile Include="Designer\GetResourcesFromDesignerLoaderTestFixture.cs" />
     <Compile Include="Designer\IgnoreDesignTimePropertiesTestFixture.cs" />
     <Compile Include="Designer\InsertEventHandlerTestFixtureBase.cs" />
     <Compile Include="Designer\InsertEventHandlerWithSpaceIndentTestFixture.cs" />
@@ -273,7 +270,6 @@
     <Compile Include="Designer\MergeFormTestFixture.cs" />
     <Compile Include="Designer\MissingInitializeComponentMethodTestFixture.cs" />
     <Compile Include="Designer\NoNewLineAfterInitializeComponentMethodTestFixture.cs" />
-    <Compile Include="Designer\NullGeneratorPassedToLoader.cs" />
     <Compile Include="Designer\OneCompatibleMethodTestFixture.cs" />
     <Compile Include="Designer\ProjectRootNamespacePassedToMergeTestFixture.cs" />
     <Compile Include="Designer\RemoveMainMenuStripFromFormTestFixture.cs" />
@@ -282,7 +278,6 @@
     <Compile Include="Designer\RubyCodeDeserializerTests.cs" />
     <Compile Include="Designer\RubyControlFieldExpressionTests.cs" />
     <Compile Include="Designer\RubyDesignerLoaderProviderTestFixture.cs" />
-    <Compile Include="Designer\RubyDesignerLoaderTestFixture.cs" />
     <Compile Include="Designer\RubyDesignerGeneratorTestFixture.cs" />
     <Compile Include="Designer\RubyPropertyAssignmentToStringTests.cs" />
     <Compile Include="Designer\TextBoxNotAddedToFormTestFixture.cs" />
@@ -325,7 +320,6 @@
     <Compile Include="Utils\DerivedRubyAddInOptions.cs" />
     <Compile Include="Utils\DerivedRubyConsoleHost.cs" />
     <Compile Include="Utils\DerivedRubyDesignerGenerator.cs" />
-    <Compile Include="Utils\DerivedRubyDesignerLoader.cs" />
     <Compile Include="Utils\DerivedRubyFormsDesignerDisplayBinding.cs" />
     <Compile Include="Utils\RubyBindingAddInFile.cs" />
     <Compile Include="Utils\RubyMSBuildEngineHelper.cs" />

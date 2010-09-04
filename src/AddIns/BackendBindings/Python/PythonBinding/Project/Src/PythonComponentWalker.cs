@@ -22,7 +22,7 @@ namespace ICSharpCode.PythonBinding
 	/// <summary>
 	/// Visits the code's Python AST and creates a Windows Form.
 	/// </summary>
-	public class PythonComponentWalker : PythonWalker
+	public class PythonComponentWalker : PythonWalker, IComponentWalker
 	{
 		IComponent component;
 		PythonControlFieldExpression fieldExpression;

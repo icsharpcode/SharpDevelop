@@ -253,9 +253,6 @@
     <Compile Include="Designer\GenerateToolTipFormTestFixture.cs" />
     <Compile Include="Designer\GenerateTreeViewTestFixture.cs" />
     <Compile Include="Designer\GeneratorMergeFindsInitializeComponentsTestFixture.cs" />
-    <Compile Include="Designer\GetComponentFromDesignerLoaderTestFixture.cs" />
-    <Compile Include="Designer\GetInstanceFromDesignerLoaderTestFixture.cs" />
-    <Compile Include="Designer\GetResourcesFromDesignerLoaderTestFixture.cs" />
     <Compile Include="Designer\IgnoreDesignTimePropertiesTestFixture.cs" />
     <Compile Include="Designer\InsertEventHandlerTestFixtureBase.cs" />
     <Compile Include="Designer\InsertEventHandlerWithSpaceIndentTestFixture.cs" />
@@ -305,9 +302,7 @@
     <Compile Include="Designer\PythonControlFieldExpressionTests.cs" />
     <Compile Include="Designer\PythonGeneratorTestFixture.cs" />
     <Compile Include="Designer\IsFormDesignableTestFixture.cs" />
-    <Compile Include="Designer\NullGeneratorPassedToLoader.cs" />
     <Compile Include="Designer\PythonDesignerLoaderProviderTestFixture.cs" />
-    <Compile Include="Designer\PythonDesignerLoaderTestFixture.cs" />
     <Compile Include="Designer\PythonPropertyAssignmentToStringTests.cs" />
     <Compile Include="Designer\RemoveMainMenuStripFromFormTestFixture.cs" />
     <Compile Include="Designer\TextBoxNotAddedToFormTestFixture.cs" />
@@ -431,7 +426,6 @@
     <Compile Include="Utils\DerivedPythonCodeCompletionBinding.cs" />
     <Compile Include="Utils\DerivedPythonConsoleHost.cs" />
     <Compile Include="Utils\DerivedPythonDesignerGenerator.cs" />
-    <Compile Include="Utils\DerivedPythonDesignerLoader.cs" />
     <Compile Include="Utils\DerivedPythonFormsDesignerDisplayBinding.cs" />
     <Compile Include="Utils\PythonMSBuildEngineHelper.cs" />
     <Compile Include="Utils\TestablePythonConsole.cs" />

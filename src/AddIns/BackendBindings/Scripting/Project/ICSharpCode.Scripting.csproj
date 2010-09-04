@@ -43,6 +43,7 @@
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
@@ -66,6 +67,7 @@
     <Compile Include="Src\ControlDispatcher.cs" />
     <Compile Include="Src\CreateTextWriterInfo.cs" />
     <Compile Include="Src\IComponentCreator.cs" />
+    <Compile Include="Src\IComponentWalker.cs" />
     <Compile Include="Src\IControlDispatcher.cs" />
     <Compile Include="Src\ILock.cs" />
     <Compile Include="Src\IMemberProvider.cs" />
@@ -81,6 +83,7 @@
     <Compile Include="Src\ScriptingConsoleOutputStream.cs" />
     <Compile Include="Src\ScriptingConsoleTextEditor.cs" />
     <Compile Include="Src\ScriptingConsoleTextEditorKeyEventArgs.cs" />
+    <Compile Include="Src\ScriptingDesignerLoader.cs" />
     <Compile Include="Src\ScriptingFileService.cs" />
     <Compile Include="Src\ScriptingNameCreationService.cs" />
     <Compile Include="Src\ScriptingTextEditorViewContent.cs" />

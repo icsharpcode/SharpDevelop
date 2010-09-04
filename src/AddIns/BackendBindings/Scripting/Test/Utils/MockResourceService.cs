@@ -39,7 +39,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		/// <summary>
 		/// Gets the culture passed to GetResourceReader.
 		/// </summary>
-		public CultureInfo ResourceReaderCultureInfo {
+		public CultureInfo CultureInfoPassedToGetResourceReader {
 			get { return readerCultureInfo; }
 		}
 		
@@ -52,7 +52,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		/// <summary>
 		/// Gets the culture passed to GetResourceWriter.
 		/// </summary>
-		public CultureInfo ResourceWriterCultureInfo {
+		public CultureInfo CultureInfoPassedToGetResourceWriter {
 			get { return writerCultureInfo; }
 		}		
 	}

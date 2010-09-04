@@ -78,6 +78,8 @@
     <Compile Include="Console\ThreadSafeScriptingConsoleTextEditorTests.cs" />
     <Compile Include="Designer\NameCreationServiceTests.cs" />
     <Compile Include="Designer\ScriptingCodeBuilderTests.cs" />
+    <Compile Include="Designer\ScriptingDesignerLoaderGetResourcesTests.cs" />
+    <Compile Include="Designer\ScriptingDesignerLoaderTests.cs" />
     <Compile Include="Testing\CreateTextWriterFromCreateTextWriterInfoTestFixture.cs" />
     <Compile Include="Testing\CreateTextWriterInfoEqualsTestFixture.cs" />
     <Compile Include="Utils\AddedComponent.cs" />
@@ -92,6 +94,8 @@
     <Compile Include="Utils\DerivedToolStripMenuItem.cs" />
     <Compile Include="Utils\DoublePropertyUserControl.cs" />
     <Compile Include="Utils\FakeCaret.cs" />
+    <Compile Include="Utils\FakeComponentWalker.cs" />
+    <Compile Include="Utils\FakeDesignerSerializationManager.cs" />
     <Compile Include="Utils\FakeDocument.cs" />
     <Compile Include="Utils\FakeDocumentLine.cs" />
     <Compile Include="Utils\FakeLock.cs" />
@@ -128,6 +132,7 @@
     <Compile Include="Utils\MSBuildEngineHelper.cs" />
     <Compile Include="Utils\NullPropertyUserControl.cs" />
     <Compile Include="Utils\SupportInitCustomControl.cs" />
+    <Compile Include="Utils\TestableScriptingDesignerLoader.cs" />
     <Compile Include="Utils\Tests\AddInPathHelperTests.cs" />
     <Compile Include="Utils\Tests\MockComponentCreatorTests.cs" />
     <Compile Include="Utils\Tests\MockConsoleTextEditorTests.cs" />

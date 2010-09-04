@@ -18,6 +18,12 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			Component = component;
 		}
 		
+		public CreatedComponent(string typeName, string name)
+		{
+			TypeName = typeName;
+			Name = name;
+		}
+		
 		public string TypeName { get; set; }	
 		public string Name { get; set; }
 		public IComponent Component { get; set; }
