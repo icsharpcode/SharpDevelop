@@ -309,8 +309,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSharpBinding", "src\AddIns
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Scripting", "src\AddIns\BackendBindings\Scripting\Project\ICSharpCode.Scripting.csproj", "{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Scripting.Tests", "src\AddIns\BackendBindings\Scripting\Test\ICSharpCode.Scripting.Tests.csproj", "{85C09AD8-183B-403A-869A-7226646218A9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C} = {35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Debugger", "Debugger", "{CDE0C5A4-2096-48B5-BEA3-74DBA0F0E1EF}"
 	ProjectSection(SolutionItems) = postProject
