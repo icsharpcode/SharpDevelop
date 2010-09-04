@@ -43,6 +43,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 				Assert.That(item,Is.InstanceOf(typeof(ICSharpCode.Reports.Core.BaseDataItem)));
 		}
 		
+		
 		[Test]
 		public void PageDetail_Second_Item_Should_Row()
 		{
@@ -50,6 +51,17 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 			BaseReportItem item = s.Items[1];
 			Assert.That(item,Is.InstanceOf(typeof(ICSharpCode.Reports.Core.BaseRowItem)));
 		}
+		
+		
+		[Test]
+		public void DataRow_Should_Contain_DataItem()
+		{
+				ICSharpCode.Reports.Core.BaseSection s = this.reportModel.DetailSection;
+				ICSharpCode.Reports.Core.BaseRowItem dataRow = (ICSharpCode.Reports.Core.BaseRowItem)s.Items[1];
+				var item = dataRow.Items[0];
+				Assert.That(item,Is.InstanceOf(typeof(ICSharpCode.Reports.Core.BaseDataItem)));
+		}
+		
 		
 		[Test]
 		public void PageDetail_Should_Contain_Two_items()

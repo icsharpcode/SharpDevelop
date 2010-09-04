@@ -39,6 +39,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 			Assert.AreEqual(GlobalEnums.PushPullModel.PushData,m.ReportSettings.DataModel);
 		}
 		
+		
 		[Test]
 		public void GroupColumCollection_Should_Empty ()
 		{
@@ -131,6 +132,17 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 			BaseReportItem item = s.Items[0];
 			Assert.That(item,Is.InstanceOf(typeof(ICSharpCode.Reports.Core.BaseRowItem)));
 		}
+		
+		
+		[Test]
+		public void Row_Should_Contain_Dataitems()
+		{
+			ICSharpCode.Reports.Core.BaseSection s = this.reportModel.DetailSection;
+			ICSharpCode.Reports.Core.BaseRowItem dataRow = (ICSharpCode.Reports.Core.BaseRowItem)s.Items[0];
+			var item = dataRow.Items[0];
+			Assert.That(item,Is.InstanceOf(typeof(ICSharpCode.Reports.Core.BaseDataItem)));
+		}
+		
 		
 		#endregion
 		
