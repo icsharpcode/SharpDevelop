@@ -106,7 +106,7 @@ namespace ICSharpCode.Profiler.Controller
 		/// Creates default ProfilerOptions.
 		/// </summary>
 		public ProfilerOptions()
-			: this(true, DefaultSharedMemorySize, false, false, true, true, DefaultCounters)
+			: this(true, DefaultSharedMemorySize, false, false, true, false, DefaultCounters)
 		{
 		}
 	}

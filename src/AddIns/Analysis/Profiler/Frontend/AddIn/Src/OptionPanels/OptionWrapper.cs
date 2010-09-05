@@ -38,7 +38,7 @@ namespace ICSharpCode.Profiler.AddIn.OptionPanels
 		}
 		
 		public static bool TrackEvents {
-			get { return properties.Get("TrackEvents", true); }
+			get { return properties.Get("TrackEvents", false); }
 			set { properties.Set("TrackEvents", value); }
 		}
 		
@@ -50,7 +50,7 @@ namespace ICSharpCode.Profiler.AddIn.OptionPanels
 				properties.Get("DoNotProfileNetInternals", false),
 				properties.Get("CombineRecursiveFunction", false),
 				properties.Get("EnableDCAtStart", true),
-				properties.Get("TrackEvents", true),
+				properties.Get("TrackEvents", false),
 				ProfilerOptions.DefaultCounters
 			);
 		}
