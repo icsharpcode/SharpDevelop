@@ -3,52 +3,52 @@
 
 using System;
 using System.Drawing;
-using ICSharpCode.PythonBinding;
-using Microsoft.Scripting.Hosting.Shell;
+using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
-using PythonBinding.Tests.Utils;
 
-namespace PythonBinding.Tests.Console
+namespace ICSharpCode.Scripting.Tests.Console
 {
 	/// <summary>
-	/// Tests that the PythonConsole Write method correctly update the text editor.
+	/// Tests that the ScriptingConsole Write method correctly update the text editor.
 	/// </summary>
 	[TestFixture]
-	public class PythonConsoleWriteTestFixture : PythonConsoleTestsBase
+	public class ScriptingConsoleWriteTestFixture : ScriptingConsoleTestsBase
 	{
 		[SetUp]
 		public void Init()
 		{
-			base.CreatePythonConsole();
+			base.CreateConsole();
 			MockConsoleTextEditor.Text = String.Empty;			
 		}
 		
 		[Test]
 		public void WriteLine()
 		{
-			TestablePythonConsole.WriteLine();
+			TestableScriptingConsole.WriteLine();
 			Assert.AreEqual(Environment.NewLine, MockConsoleTextEditor.Text);
 		}
 		
 		[Test]
 		public void WriteLineWithText()
 		{
-			TestablePythonConsole.WriteLine("test", Style.Out);
-			Assert.AreEqual("test" + Environment.NewLine, MockConsoleTextEditor.Text);
+			TestableScriptingConsole.WriteLine("test", ScriptingStyle.Out);
+			string expectedText = "test" + Environment.NewLine;
+			Assert.AreEqual(expectedText, MockConsoleTextEditor.Text);
 		}	
 		
 		[Test]
 		public void TwoWrites()
 		{
-			TestablePythonConsole.Write("a", Style.Out);
-			TestablePythonConsole.Write("b", Style.Out);
+			TestableScriptingConsole.Write("a", ScriptingStyle.Out);
+			TestableScriptingConsole.Write("b", ScriptingStyle.Out);
 			Assert.AreEqual("ab", MockConsoleTextEditor.Text);
 		}
 		
 		[Test]
 		public void DoesNotHasLinesWaitingToBeRead()
 		{
-			Assert.IsFalse(TestablePythonConsole.IsLineAvailable);
+			Assert.IsFalse(TestableScriptingConsole.IsLineAvailable);
 		}
 	}
 }

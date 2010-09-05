@@ -6,19 +6,17 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Input;
 
-using ICSharpCode.RubyBinding;
 using ICSharpCode.Scripting;
-using Microsoft.Scripting.Hosting.Shell;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
-using RubyBinding.Tests.Utils;
 
-namespace RubyBinding.Tests.Console
+namespace ICSharpCode.Scripting.Tests.Console
 {
 	/// <summary>
 	/// When the dot character is typed in after an object the code completion window should appear.
 	/// </summary>
 	[TestFixture]
-	public class RubyConsoleCodeCompletionTestFixture : RubyConsoleTestsBase
+	public class ScriptingConsoleCodeCompletionTests : ScriptingConsoleTestsBase
 	{
 		string prompt = ">>> ";
 		bool showCompletionWindowCalledBeforeDotTypedIn;
@@ -26,12 +24,12 @@ namespace RubyBinding.Tests.Console
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			base.CreateRubyConsole();
-			TestableRubyConsole.WriteLine(prompt, Style.Prompt);
+			base.CreateConsole();
+			TestableScriptingConsole.WriteLine(prompt, ScriptingStyle.Prompt);
 			
 			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
  			showCompletionWindowCalledBeforeDotTypedIn = MockConsoleTextEditor.IsShowCompletionWindowCalled;
-			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.OemPeriod);	
+			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.OemPeriod);		
 		}
 		
 		[Test]

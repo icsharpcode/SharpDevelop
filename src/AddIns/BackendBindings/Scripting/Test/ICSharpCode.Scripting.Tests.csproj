@@ -69,13 +69,27 @@
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Console\CommandLineHistoryTestFixture.cs" />
+    <Compile Include="Console\DisposedScriptingConsoleTests.cs" />
     <Compile Include="Console\EmptyCommandLineHistoryTestFixture.cs" />
     <Compile Include="Console\EmptyStringCodeCompletionTests.cs" />
     <Compile Include="Console\InsertConsoleCompletionDataTestFixture.cs" />
+    <Compile Include="Console\KeysPressedWhenCompletionWindowOpenTests.cs" />
     <Compile Include="Console\OneItemCommandLineHistoryTestFixture.cs" />
+    <Compile Include="Console\ScriptingConsoleCodeCompletionTests.cs" />
+    <Compile Include="Console\ScriptingConsoleCommandLineHistoryTests.cs" />
+    <Compile Include="Console\ScriptingConsoleCurrentLineTests.cs" />
+    <Compile Include="Console\ScriptingConsoleEnterKeyTests.cs" />
+    <Compile Include="Console\ScriptingConsoleHomeKeyTests.cs" />
     <Compile Include="Console\ScriptingConsoleOutputStreamTests.cs" />
+    <Compile Include="Console\ScriptingConsoleReadOnlyRegionsTests.cs" />
+    <Compile Include="Console\ScriptingConsoleReadTests.cs" />
+    <Compile Include="Console\ScriptingConsoleSendLineTests.cs" />
+    <Compile Include="Console\ScriptingConsoleTestsBase.cs" />
     <Compile Include="Console\ScriptingConsoleTextEditorTests.cs" />
+    <Compile Include="Console\ScriptingConsoleUnreadLinesTests.cs" />
+    <Compile Include="Console\ScriptingConsoleWriteTests.cs" />
     <Compile Include="Console\ThreadSafeScriptingConsoleTextEditorTests.cs" />
+    <Compile Include="Console\TwoConsoleLinesWaitingTests.cs" />
     <Compile Include="Designer\CallBeginInitOnLoadTests.cs" />
     <Compile Include="Designer\GenerateAcceptButtonFormTestsBase.cs" />
     <Compile Include="Designer\GenerateDesignerCodeTestsBase.cs" />
@@ -141,6 +155,7 @@
     <Compile Include="Utils\MSBuildEngineHelper.cs" />
     <Compile Include="Utils\NullPropertyUserControl.cs" />
     <Compile Include="Utils\SupportInitCustomControl.cs" />
+    <Compile Include="Utils\TestableScriptingConsole.cs" />
     <Compile Include="Utils\TestableScriptingDesignerGenerator.cs" />
     <Compile Include="Utils\TestableScriptingDesignerLoader.cs" />
     <Compile Include="Utils\Tests\AddInPathHelperTests.cs" />

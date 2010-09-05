@@ -5,18 +5,17 @@ using System;
 using System.Threading;
 using System.Windows.Input;
 
-using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
-using RubyBinding.Tests.Utils;
 
-namespace RubyBinding.Tests.Console
+namespace ICSharpCode.Scripting.Tests.Console
 {
 	/// <summary>
-	/// Tests the RubyConsole ReadLine method.
+	/// Tests the ScriptingConsole ReadLine method.
 	/// </summary>
 	[TestFixture]
-	public class RubyConsoleReadTestFixture : RubyConsoleTestsBase
+	public class ScriptingConsoleReadTests : ScriptingConsoleTestsBase
 	{
 		int initialAutoIndentSize = 4;
 		string readLine;
@@ -27,7 +26,7 @@ namespace RubyBinding.Tests.Console
 		[TestFixtureSetUp]
 		public void Init()
 		{
-			base.CreateRubyConsole();
+			base.CreateConsole();
 			
 			autoIndentSize = initialAutoIndentSize;
 			Thread thread = new Thread(ReadLineFromConsoleOnDifferentThread);
@@ -55,7 +54,7 @@ namespace RubyBinding.Tests.Console
 		[TestFixtureTearDown]
 		public void TearDown()
 		{
-			TestableRubyConsole.Dispose();
+			TestableScriptingConsole.Dispose();
 		}
 
 		[Test]
@@ -81,7 +80,7 @@ namespace RubyBinding.Tests.Console
 		[Test]
 		public void NoTextWrittenWhenAutoIndentSizeIsZero()
 		{
-			TestableRubyConsole console = new TestableRubyConsole();
+			TestableScriptingConsole console = new TestableScriptingConsole();
 			MockConsoleTextEditor textEditor = console.MockConsoleTextEditor;
 			textEditor.RaisePreviewKeyDownEvent(Key.A);
 			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
@@ -112,7 +111,7 @@ namespace RubyBinding.Tests.Console
 		void ReadLineFromConsoleOnDifferentThread()
 		{
 			System.Console.WriteLine("Reading on different thread");
-			readLine = TestableRubyConsole.ReadLine(autoIndentSize);
+			readLine = TestableScriptingConsole.ReadLine(autoIndentSize);
 			System.Console.WriteLine("Finished reading on different thread");
 		}
 	}

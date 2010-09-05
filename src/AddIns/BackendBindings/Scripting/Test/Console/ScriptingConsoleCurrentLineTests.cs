@@ -3,45 +3,41 @@
 
 using System;
 using System.Windows.Input;
-using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
-using Microsoft.Scripting;
-using Microsoft.Scripting.Hosting;
-using Microsoft.Scripting.Hosting.Shell;
 using NUnit.Framework;
-using PythonBinding.Tests.Utils;
 
-namespace PythonBinding.Tests.Console
+namespace ICSharpCode.Scripting.Tests.Console
 {
 	/// <summary>
-	/// Tests the PythonConsole's GetCurrentLine method.
+	/// Tests the ScriptingConsole's GetCurrentLine method.
 	/// </summary>
 	[TestFixture]
-	public class PythonConsoleCurrentLineTestFixture
+	public class ScriptingConsoleCurrentLineTests
 	{
-		TestablePythonConsole pythonConsole;
+		TestableScriptingConsole console;
 		MockConsoleTextEditor textEditor;
 		string prompt = ">>> ";
 		
 		[SetUp]
 		public void Init()
 		{
-			pythonConsole = new TestablePythonConsole();
-			pythonConsole.Write(prompt, Style.Prompt);
-			textEditor = pythonConsole.MockConsoleTextEditor;
+			console = new TestableScriptingConsole();
+			console.Write(prompt, ScriptingStyle.Prompt);
+			textEditor = console.MockConsoleTextEditor;
 		}
 		
 		[Test]
 		public void CurrentLineIsEmpty()
 		{
-			Assert.AreEqual(String.Empty, pythonConsole.GetCurrentLine());
+			Assert.AreEqual(String.Empty, console.GetCurrentLine());
 		}
 		
 		[Test]
 		public void SingleCharacterAddedToTextEditor()
 		{
 			textEditor.RaisePreviewKeyDownEvent(Key.A);
-			Assert.AreEqual("A", pythonConsole.GetCurrentLine());
+			Assert.AreEqual("A", console.GetCurrentLine());
 		}
 	}
 }

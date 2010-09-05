@@ -3,28 +3,27 @@
 
 using System;
 using System.Windows.Input;
-using Microsoft.Scripting.Hosting.Shell;
-using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
 using NUnit.Framework;
-using PythonBinding.Tests.Utils;
+using ICSharpCode.Scripting.Tests.Utils;
 
-namespace PythonBinding.Tests.Console
+namespace ICSharpCode.Scripting.Tests.Console
 {
 	/// <summary>
-	/// Tests that pressing the enter key in the middle of a typed in line in the python console
+	/// Tests that pressing the enter key in the middle of a typed in line in the console
 	/// leaves the line alone and moves the cursor to the next line. By default the text editor
 	/// will break the line and move the last part to the second line.
 	/// </summary>
 	[TestFixture]
-	public class PythonConsoleEnterKeyTestFixture : PythonConsoleTestsBase
+	public class ScriptingConsoleEnterKeyTests : ScriptingConsoleTestsBase
 	{
 		string prompt = ">>> ";
 
 		[SetUp]
 		public void Init()
 		{
-			base.CreatePythonConsole();
-			TestablePythonConsole.Write(prompt, Style.Prompt);
+			base.CreateConsole();
+			TestableScriptingConsole.Write(prompt, ScriptingStyle.Prompt);
 		}
 		
 		public void EnterKeyDoesNotBreakUpExistingLine()
@@ -44,7 +43,7 @@ namespace PythonBinding.Tests.Console
 			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
 			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.B);
 			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
- 			TestablePythonConsole.Write(prompt, Style.Prompt);
+ 			TestableScriptingConsole.Write(prompt, ScriptingStyle.Prompt);
  			
  			// Move up a line with cursor.
  			MockConsoleTextEditor.Line = 0;

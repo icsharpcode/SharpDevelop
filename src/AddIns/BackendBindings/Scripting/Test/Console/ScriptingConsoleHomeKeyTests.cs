@@ -5,26 +5,25 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Input;
 using System.Threading;
-using Microsoft.Scripting.Hosting.Shell;
-using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
 using NUnit.Framework;
-using PythonBinding.Tests.Utils;
+using ICSharpCode.Scripting.Tests.Utils;
 
-namespace PythonBinding.Tests.Console
+namespace ICSharpCode.Scripting.Tests.Console
 {
 	/// <summary>
 	/// The Home Key should return the user to the start of the line after the prompt.
 	/// </summary>
 	[TestFixture]
-	public class PythonConsoleHomeKeyTestFixture : PythonConsoleTestsBase
+	public class ScriptingConsoleHomeKeyTests : ScriptingConsoleTestsBase
 	{
 		string prompt = ">>> ";
 
 		[SetUp]
 		public void Init()
 		{
-			base.CreatePythonConsole();
-			TestablePythonConsole.Write(prompt, Style.Prompt);
+			base.CreateConsole();
+			TestableScriptingConsole.Write(prompt, ScriptingStyle.Prompt);
 		}
 		
 		[Test]

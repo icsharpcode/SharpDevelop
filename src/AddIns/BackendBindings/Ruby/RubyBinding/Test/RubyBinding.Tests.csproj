@@ -72,21 +72,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Configuration\RubyAddInOptionsTestFixture.cs" />
-    <Compile Include="Console\DisposedRubyConsoleTestFixture.cs" />
-    <Compile Include="Console\KeysPressedWhenCompletionWindowOpenTestFixture.cs" />
-    <Compile Include="Console\RubyConsoleCodeCompletionTestFixture.cs" />
-    <Compile Include="Console\RubyConsoleCommandLineHistoryTestFixture.cs" />
-    <Compile Include="Console\RubyConsoleCurrentLineTestFixture.cs" />
-    <Compile Include="Console\RubyConsoleEnterKeyTestFixture.cs" />
-    <Compile Include="Console\RubyConsoleHomeKeyTestFixture.cs" />
     <Compile Include="Console\RubyConsoleHostTests.cs" />
-    <Compile Include="Console\RubyConsoleReadOnlyRegionsTestFixture.cs" />
-    <Compile Include="Console\RubyConsoleReadTestFixture.cs" />
-    <Compile Include="Console\RubyConsoleSendLineTests.cs" />
-    <Compile Include="Console\RubyConsoleTestsBase.cs" />
-    <Compile Include="Console\RubyConsoleUnreadLinesTestFixture.cs" />
-    <Compile Include="Console\RubyConsoleWriteTestFixture.cs" />
-    <Compile Include="Console\TwoRubyConsoleLinesWaitingTestFixture.cs" />
     <Compile Include="Converter\AddHandlerConversionTestFixture.cs" />
     <Compile Include="Converter\ArrayCastConversionTestFixture.cs" />
     <Compile Include="Converter\ArrayConversionTestFixture.cs" />

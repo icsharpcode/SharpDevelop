@@ -4,36 +4,33 @@
 using System;
 using System.Windows.Input;
 
-using Microsoft.Scripting;
-using Microsoft.Scripting.Hosting;
-using Microsoft.Scripting.Hosting.Shell;
-using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
-using RubyBinding.Tests.Utils;
 
-namespace RubyBinding.Tests.Console
+namespace ICSharpCode.Scripting.Tests.Console
 {
 	/// <summary>
-	/// Tests the RubyConsole's command line history.
+	/// Tests the ScriptingConsole's command line history.
 	/// </summary>
 	[TestFixture]
-	public class RubyConsoleCommandLineHistoryTestFixture : RubyConsoleTestsBase
+	public class ScriptingConsoleCommandLineHistoryTestFixture : ScriptingConsoleTestsBase
 	{
 		string prompt = ">>> ";
 		
 		[SetUp]
 		public void Init()
 		{
-			base.CreateRubyConsole();
-			TestableRubyConsole.Write(prompt, Style.Prompt);
+			base.CreateConsole();
+			TestableScriptingConsole.Write(prompt, ScriptingStyle.Prompt);
 			
 			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
 			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
-			TestableRubyConsole.Write(prompt, Style.Prompt);
+			TestableScriptingConsole.Write(prompt, ScriptingStyle.Prompt);
 			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.B);
 			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.C);
 			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
-			TestableRubyConsole.Write(prompt, Style.Prompt);
+			TestableScriptingConsole.Write(prompt, ScriptingStyle.Prompt);
 		}
 
 		[Test]
@@ -46,7 +43,7 @@ namespace RubyBinding.Tests.Console
 		public void CurrentLineAfterUpArrowKeyPressed()
 		{
 			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
-			Assert.AreEqual("BC", TestableRubyConsole.GetCurrentLine());
+			Assert.AreEqual("BC", TestableScriptingConsole.GetCurrentLine());
 		}
 		
 		[Test]
@@ -60,7 +57,7 @@ namespace RubyBinding.Tests.Console
 		public void TextAfterUpArrowKeyPressedTwiceThenDownArrowKey()
 		{
 			UpArrowKeyPressedTwiceThenDownArrowKey();
-			Assert.AreEqual("BC", TestableRubyConsole.GetCurrentLine());
+			Assert.AreEqual("BC", TestableScriptingConsole.GetCurrentLine());
 		}
 
 		[Test]

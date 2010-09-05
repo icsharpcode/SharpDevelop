@@ -4,21 +4,20 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory;
-using ICSharpCode.PythonBinding;
-using Microsoft.Scripting.Hosting.Shell;
+using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
-using PythonBinding.Tests.Utils;
 
-namespace PythonBinding.Tests.Console
+namespace ICSharpCode.Scripting.Tests.Console
 {
 	[TestFixture]
-	public class PythonConsoleSendLineTests : PythonConsoleTestsBase
+	public class ScriptingConsoleSendLineTests : ScriptingConsoleTestsBase
 	{
 		[Test]
 		public void SendLine_NoUnreadLines_AddsLineToUnreadLines()
 		{
 			SendLineToConsole("test");
-			string[] unreadLines = TestablePythonConsole.GetUnreadLines();
+			string[] unreadLines = TestableScriptingConsole.GetUnreadLines();
 			
 			string[] expectedUnreadlines = new string[] {"test"};
 			
@@ -27,22 +26,22 @@ namespace PythonBinding.Tests.Console
 		
 		void SendLineToConsole(string text)
 		{
-			base.CreatePythonConsole();
+			base.CreateConsole();
 			WritePrompt();
-			TestablePythonConsole.SendLine(text);
+			TestableScriptingConsole.SendLine(text);
 		}
 		
 		void WritePrompt()
 		{
-			TestablePythonConsole.Write(">>> ", Style.Prompt);
+			TestableScriptingConsole.Write(">>> ", ScriptingStyle.Prompt);
 		}
 		
 		[Test]
 		public void SendLine_NoUnreadLines_CreatesLockForPreviousLines()
 		{
 			SendLineToConsole("test");
-			List<string> lines = TestablePythonConsole.LockCreated.Lines;
-			List<string> expectedLines = TestablePythonConsole.GetUnreadLinesList();
+			List<string> lines = TestableScriptingConsole.LockCreated.Lines;
+			List<string> expectedLines = TestableScriptingConsole.GetUnreadLinesList();
 			
 			Assert.AreEqual(expectedLines, lines);
 		}
@@ -51,7 +50,7 @@ namespace PythonBinding.Tests.Console
 		public void SendLine_NoUnreadLines_LockForPreviousLinesIsDisposed()
 		{
 			SendLineToConsole("test");
-			bool disposed = TestablePythonConsole.LockCreated.IsDisposed;
+			bool disposed = TestableScriptingConsole.LockCreated.IsDisposed;
 			
 			Assert.IsTrue(disposed);
 		}
@@ -60,7 +59,7 @@ namespace PythonBinding.Tests.Console
 		public void SendLine_NoUnreadLines_LineNotAddedBeforeLockCreated()
 		{
 			SendLineToConsole("test");
-			int count = TestablePythonConsole.LockCreated.UnreadLineCountWhenLockCreated;
+			int count = TestableScriptingConsole.LockCreated.UnreadLineCountWhenLockCreated;
 			int expectedCount = 0;
 			
 			Assert.AreEqual(expectedCount, count);
@@ -70,7 +69,7 @@ namespace PythonBinding.Tests.Console
 		public void SendLine_NoUnreadLines_LineAddedBeforeLockDisposed()
 		{
 			SendLineToConsole("test");
-			int count = TestablePythonConsole.LockCreated.UnreadLineCountWhenLockDisposed;
+			int count = TestableScriptingConsole.LockCreated.UnreadLineCountWhenLockDisposed;
 			int expectedCount = 1;
 			
 			Assert.AreEqual(expectedCount, count);
@@ -80,7 +79,7 @@ namespace PythonBinding.Tests.Console
 		public void SendLine_NoUnreadLines_LineReceivedEventIsFired()
 		{
 			SendLineToConsole("test");
-			bool fired = TestablePythonConsole.IsLineReceivedEventFired;
+			bool fired = TestableScriptingConsole.IsLineReceivedEventFired;
 			Assert.IsTrue(fired);
 		}
 		
@@ -88,7 +87,7 @@ namespace PythonBinding.Tests.Console
 		public void SendLine_NoUnreadLines_LineReceivedEventAfterLineAddedToUnreadLines()
 		{
 			SendLineToConsole("test");
-			int count = TestablePythonConsole.UnreadLineCountWhenLineReceivedEventFired;
+			int count = TestableScriptingConsole.UnreadLineCountWhenLineReceivedEventFired;
 			int expectedCount = 1;
 			Assert.AreEqual(expectedCount, count);
 		}
@@ -106,7 +105,7 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void SendLine_TwoLinesInConsoleTextEditorCursorOnFirstLine_CursorMovedToEndOfLastLineBeforeTextWritten()
 		{
-			base.CreatePythonConsole();
+			base.CreateConsole();
 			WritePrompt();
 			MockConsoleTextEditor.Text = 
 				">>> first\r\n" +
@@ -115,7 +114,7 @@ namespace PythonBinding.Tests.Console
 			
 			MockConsoleTextEditor.Line = 0;
 			MockConsoleTextEditor.Column = 0;
-			TestablePythonConsole.SendLine("test");
+			TestableScriptingConsole.SendLine("test");
 			
 			int expectedLine = 2;
 			int expectedColumn = 4;
@@ -129,8 +128,8 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void SendLine_NoUnreadLines_NoTextWrittenToConsoleTextEditorBeforeFirstPromptIsWritten()
 		{
-			base.CreatePythonConsole();
-			TestablePythonConsole.SendLine("test");
+			base.CreateConsole();
+			TestableScriptingConsole.SendLine("test");
 			string text = MockConsoleTextEditor.TextPassedToWrite;
 			
 			Assert.IsNull(text);
@@ -139,10 +138,10 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void Write_SendLineCalledButNoPromptWritten_WritesOutSavedSendLineText()
 		{
-			base.CreatePythonConsole();
-			TestablePythonConsole.SendLine("test");
+			base.CreateConsole();
+			TestableScriptingConsole.SendLine("test");
 			
-			TestablePythonConsole.Write(">>> ", Style.Prompt);
+			TestableScriptingConsole.Write(">>> ", ScriptingStyle.Prompt);
 			string text = MockConsoleTextEditor.Text;
 			
 			string expectedText = 
@@ -153,11 +152,11 @@ namespace PythonBinding.Tests.Console
 		[Test]
 		public void Write_CalledTwiceAfterSendLineCalledButNoPromptWritten_WritesOutSavedSendLineTextOnlyOnce()
 		{
-			base.CreatePythonConsole();
-			TestablePythonConsole.SendLine("test");
+			base.CreateConsole();
+			TestableScriptingConsole.SendLine("test");
 			
-			TestablePythonConsole.Write(">>> ", Style.Prompt);
-			TestablePythonConsole.Write(">>> ", Style.Prompt);
+			TestableScriptingConsole.Write(">>> ", ScriptingStyle.Prompt);
+			TestableScriptingConsole.Write(">>> ", ScriptingStyle.Prompt);
 
 			string text = MockConsoleTextEditor.Text;
 			

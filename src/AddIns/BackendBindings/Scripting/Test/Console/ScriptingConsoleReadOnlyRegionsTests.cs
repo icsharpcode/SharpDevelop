@@ -4,27 +4,26 @@
 using System;
 using System.Windows.Input;
 
-using ICSharpCode.RubyBinding;
-using Microsoft.Scripting.Hosting.Shell;
+using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
-using RubyBinding.Tests.Utils;
 
-namespace RubyBinding.Tests.Console
+namespace ICSharpCode.Scripting.Tests.Console
 {
 	/// <summary>
 	/// Tests that the user cannot type into read-only regions of the text editor. The
-	/// RubyConsole itself restricts typing itself by handling key press events.
+	/// ScriptingConsole itself restricts typing itself by handling key press events.
 	/// </summary>
 	[TestFixture]
-	public class RubyConsoleReadOnlyRegionsTestFixture : RubyConsoleTestsBase
+	public class ScriptingConsoleReadOnlyRegionsTests : ScriptingConsoleTestsBase
 	{
 		string prompt = ">>> ";
 
 		[SetUp]
 		public void Init()
 		{
-			base.CreateRubyConsole();
-			TestableRubyConsole.Write(prompt, Style.Prompt);
+			base.CreateConsole();
+			TestableScriptingConsole.Write(prompt, ScriptingStyle.Prompt);
 		}
 		
 		[Test]
@@ -41,7 +40,7 @@ namespace RubyBinding.Tests.Console
 			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
 			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.C);
 			
-			Assert.AreEqual("ACB", TestableRubyConsole.GetCurrentLine());
+			Assert.AreEqual("ACB", TestableScriptingConsole.GetCurrentLine());
 		}
 		
 		[Test]
@@ -50,7 +49,7 @@ namespace RubyBinding.Tests.Console
 			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
 			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
 			
-			Assert.AreEqual(String.Empty, TestableRubyConsole.GetCurrentLine());
+			Assert.AreEqual(String.Empty, TestableScriptingConsole.GetCurrentLine());
 		}
 
 		[Test]
@@ -60,7 +59,7 @@ namespace RubyBinding.Tests.Console
 			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
 			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back);
 			
-			Assert.AreEqual("A", TestableRubyConsole.GetCurrentLine());
+			Assert.AreEqual("A", TestableScriptingConsole.GetCurrentLine());
 			Assert.AreEqual(prompt + "A", MockConsoleTextEditor.Text);
 		}
 		
@@ -72,7 +71,7 @@ namespace RubyBinding.Tests.Console
 			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Left);
 			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back);
 			
-			Assert.AreEqual("A", TestableRubyConsole.GetCurrentLine());
+			Assert.AreEqual("A", TestableScriptingConsole.GetCurrentLine());
 			Assert.AreEqual(prompt + "A", MockConsoleTextEditor.Text);
 		}
 		
@@ -85,7 +84,7 @@ namespace RubyBinding.Tests.Console
 			MockConsoleTextEditor.Column += 2;
 			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back);
 			
-			Assert.AreEqual("A", TestableRubyConsole.GetCurrentLine());
+			Assert.AreEqual("A", TestableScriptingConsole.GetCurrentLine());
 			Assert.AreEqual(prompt + "A", MockConsoleTextEditor.Text);
 		}
 		
@@ -107,7 +106,7 @@ namespace RubyBinding.Tests.Console
 		public void CanMoveOutOfPromptRegionWithUpCursorKey()
 		{
 			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
-			TestableRubyConsole.Write(prompt, Style.Prompt);
+			TestableScriptingConsole.Write(prompt, ScriptingStyle.Prompt);
 			MockConsoleTextEditor.Column = 0;
 			Assert.IsFalse(MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up));
 		}
@@ -116,7 +115,7 @@ namespace RubyBinding.Tests.Console
 		public void CanMoveInReadOnlyRegionWithDownCursorKey()
 		{
 			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
-			TestableRubyConsole.Write(prompt, Style.Prompt);
+			TestableScriptingConsole.Write(prompt, ScriptingStyle.Prompt);
 			MockConsoleTextEditor.Column = 0;
 			MockConsoleTextEditor.Line = 0;
 			Assert.IsFalse(MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Down));
@@ -135,7 +134,7 @@ namespace RubyBinding.Tests.Console
 			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.B);
 			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
 
-			TestableRubyConsole.Write(prompt, Style.Prompt);
+			TestableScriptingConsole.Write(prompt, ScriptingStyle.Prompt);
 			
 			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.C);
 			
@@ -143,9 +142,9 @@ namespace RubyBinding.Tests.Console
 			MockConsoleTextEditor.Line = 0;
 			
 			Assert.IsTrue(MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back));
-			Assert.AreEqual("C", TestableRubyConsole.GetCurrentLine());
+			Assert.AreEqual("C", TestableScriptingConsole.GetCurrentLine());
 		}
-
+		
 		[Test]
 		public void CanBackspaceFirstCharacterOnLine()
 		{
@@ -154,7 +153,7 @@ namespace RubyBinding.Tests.Console
 			MockConsoleTextEditor.SelectionStart = 5;
 			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Back);
 			
-			Assert.AreEqual(String.Empty, TestableRubyConsole.GetCurrentLine());
+			Assert.AreEqual(String.Empty, TestableScriptingConsole.GetCurrentLine());
 		}
 	}
 }

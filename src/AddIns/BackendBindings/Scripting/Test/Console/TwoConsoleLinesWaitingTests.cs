@@ -3,29 +3,22 @@
 
 using System;
 using System.Threading;
-using ICSharpCode.PythonBinding;
 using ICSharpCode.Scripting.Tests.Utils;
-using IronPython.Hosting;
-using IronPython.Runtime;
-using Microsoft.Scripting;
-using Microsoft.Scripting.Hosting;
-using Microsoft.Scripting.Hosting.Shell;
 using NUnit.Framework;
-using PythonBinding.Tests.Utils;
 using Input = System.Windows.Input;
 
-namespace PythonBinding.Tests.Console
+namespace ICSharpCode.Scripting.Tests.Console
 {
 	/// <summary>
-	/// Ensures that both lines of text can be read from the python console if they are written
+	/// Ensures that both lines of text can be read from the console if they are written
 	/// before ReadLine is called.
 	/// </summary>
 	[TestFixture]
-	public class TwoPythonConsoleLinesWaitingTestFixture
+	public class TwoConsoleLinesWaitingTests
 	{
 		string line1;
 		string line2;
-		TestablePythonConsole pythonConsole;
+		TestableScriptingConsole scriptingConsole;
 		bool lineAvailableBeforeFirstEnterKey;
 		bool lineAvailableAfterFirstEnterKey;
 		bool lineAvailableAtEnd;
@@ -33,14 +26,14 @@ namespace PythonBinding.Tests.Console
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			using (pythonConsole = new TestablePythonConsole()) { 
-				MockConsoleTextEditor textEditor = pythonConsole.MockConsoleTextEditor;
+			using (scriptingConsole = new TestableScriptingConsole()) { 
+				MockConsoleTextEditor textEditor = scriptingConsole.MockConsoleTextEditor;
 				textEditor.RaisePreviewKeyDownEvent(Input.Key.A);
 				textEditor.RaisePreviewKeyDownEvent(Input.Key.B);
 				textEditor.RaisePreviewKeyDownEvent(Input.Key.C);
-				lineAvailableBeforeFirstEnterKey = pythonConsole.IsLineAvailable;
+				lineAvailableBeforeFirstEnterKey = scriptingConsole.IsLineAvailable;
 				textEditor.RaisePreviewKeyDownEventForDialogKey(Input.Key.Enter);
-				lineAvailableAfterFirstEnterKey = pythonConsole.IsLineAvailable;
+				lineAvailableAfterFirstEnterKey = scriptingConsole.IsLineAvailable;
  				
 				textEditor.RaisePreviewKeyDownEvent(Input.Key.D);
 				textEditor.RaisePreviewKeyDownEvent(Input.Key.E);
@@ -59,7 +52,7 @@ namespace PythonBinding.Tests.Console
 					currentWait += sleepInterval;
 				}
 				
-				lineAvailableAtEnd = pythonConsole.IsLineAvailable;
+				lineAvailableAtEnd = scriptingConsole.IsLineAvailable;
 			}
 		}
 		
@@ -95,8 +88,8 @@ namespace PythonBinding.Tests.Console
 		
 		void ReadLinesOnSeparateThread()
 		{
-			line1 = pythonConsole.ReadLine(0);
-			line2 = pythonConsole.ReadLine(0);
+			line1 = scriptingConsole.ReadLine(0);
+			line2 = scriptingConsole.ReadLine(0);
 		}
 	}
 }
