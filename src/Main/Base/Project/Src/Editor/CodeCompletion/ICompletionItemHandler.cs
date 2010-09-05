@@ -7,7 +7,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 {
 	public interface ICompletionItemHandler
 	{
-		void Insert(CompletionContext context);
+		void Insert(CompletionContext context, ICompletionItem item);
 		bool Handles(ICompletionItem item);
 	}
 }

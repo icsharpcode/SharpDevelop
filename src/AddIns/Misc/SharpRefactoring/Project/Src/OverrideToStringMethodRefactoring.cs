@@ -13,7 +13,7 @@ namespace SharpRefactoring
 {
 	public class OverrideToStringMethodRefactoring : ICompletionItemHandler
 	{
-		public void Insert(CompletionContext context)
+		public void Insert(CompletionContext context, ICompletionItem item)
 		{
 			ITextEditor textEditor = context.Editor;
 			

@@ -14,7 +14,7 @@ namespace SharpRefactoring
 {
 	public class OverrideEqualsGetHashCodeMethodsRefactoring : ICompletionItemHandler
 	{
-		public void Insert(CompletionContext context)
+		public void Insert(CompletionContext context, ICompletionItem item)
 		{
 			ITextEditor textEditor = context.Editor;
 			

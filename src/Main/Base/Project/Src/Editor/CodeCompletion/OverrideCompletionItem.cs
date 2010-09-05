@@ -76,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			foreach (ICompletionItemHandler handler in handlers) {
 				if (handler.Handles(this)) {
 					editor.Document.Insert(line.Offset, indentation);
-					handler.Insert(context);
+					handler.Insert(context, this);
 					return;
 				}
 			}
