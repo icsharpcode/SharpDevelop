@@ -49,18 +49,6 @@ namespace PythonBinding.Tests.Designer
 		{
 			Assert.AreEqual(12, position);
 		}
-		
-		[Test]
-		public void TextPassedToParseFileMethod()
-		{
-			Assert.AreEqual(GetTextEditorCode(), generator.TextContentPassedToParseFileMethod);
-		}
-		
-		[Test]
-		public void FileNamePassedToParseFileMethod()
-		{
-			Assert.AreEqual(fileName, generator.FileNamePassedToParseFileMethod);
-		}
 			
 		protected override string GetTextEditorCode()
 		{

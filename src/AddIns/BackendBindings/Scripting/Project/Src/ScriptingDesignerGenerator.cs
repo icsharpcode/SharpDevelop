@@ -70,21 +70,60 @@ namespace ICSharpCode.Scripting
 		/// </summary>
 		public ICollection GetCompatibleMethods(EventDescriptor edesc)
 		{
-			// Get the form or user control class.
 			ParseInformation parseInfo = ParseFile();
-			
-			// Look at the form's methods and see which are compatible.
-			ArrayList methods = new ArrayList();
+			return GetCompatibleMethods(parseInfo);
+		}
+		
+		/// <summary>
+		/// Parses the form or user control being designed.
+		/// </summary>
+		ParseInformation ParseFile()
+		{
+			string fileName = viewContent.DesignerCodeFile.FileName;
+			string textContent = viewContent.DesignerCodeFileContent;
+			return ParseFile(fileName, textContent);
+		}
+				
+		/// <summary>
+		/// The default implementation calls the ParserService.ParseFile. This
+		/// method is overridable so the class can be easily tested without
+		/// the ParserService being required.
+		/// </summary>
+		protected virtual ParseInformation ParseFile(string fileName, string textContent)
+		{
+			return ParserService.ParseFile(fileName, new StringTextBuffer(textContent));
+		}
+		
+		ICollection GetCompatibleMethods(ParseInformation parseInfo)
+		{
 			IClass c = GetClass(parseInfo.CompilationUnit);
+			return GetCompatibleMethods(c);
+		}
+		
+		/// <summary>
+		/// Gets the form or user control class from the compilation unit.
+		/// </summary>
+		IClass GetClass(ICompilationUnit unit)
+		{
+			return unit.Classes[0];
+		}
+		
+		ICollection GetCompatibleMethods(IClass c)
+		{
+			ArrayList methods = new ArrayList();
 			foreach (IMethod method in c.Methods) {
-				if (method.Parameters.Count == 2) {
+				if (IsCompatibleMethod(method)) {
 					methods.Add(method.Name);
 				}
 			}
-			
 			return methods;
 		}
 		
+		bool IsCompatibleMethod(IMethod method)
+		{
+			return method.Parameters.Count == 2;
+		}
+
 		public void NotifyFormRenamed(string newName)
 		{
 		}
@@ -99,16 +138,6 @@ namespace ICSharpCode.Scripting
 		}
 		
 		/// <summary>
-		/// The default implementation calls the ParserService.ParseFile. This
-		/// method is overridable so the class can be easily tested without
-		/// the ParserService being required.
-		/// </summary>
-		protected virtual ParseInformation ParseFile(string fileName, string textContent)
-		{
-			return ParserService.ParseFile(fileName, new StringTextBuffer(textContent));
-		}
-		
-		/// <summary>
 		/// Merges the generated code into the specified document.
 		/// </summary>
 		/// <param name="component">The designer host.</param>
@@ -116,25 +145,17 @@ namespace ICSharpCode.Scripting
 		/// <param name="parseInfo">The current compilation unit for the <paramref name="document"/>.</param>
 		public void Merge(IDesignerHost host, IDocument document, ICompilationUnit compilationUnit, IDesignerSerializationManager serializationManager)
 		{
-			IMethod method = GetInitializeComponents(compilationUnit);
-			
-			// Generate the python source code.
-			IScriptingCodeDomSerializer serializer = CreateCodeDomSerializer(TextEditorOptions);
-			int indent = GetIndent(method);
-			string rootNamespace = GetProjectRootNamespace(compilationUnit);
-			string methodBody = serializer.GenerateInitializeComponentMethodBody(host, serializationManager, rootNamespace, indent);
-			
-			// Merge the code.
-			DomRegion methodRegion = GetBodyRegionInDocument(method);
-			int startOffset = GetStartOffset(document, methodRegion);
-			int endOffset = GetEndOffset(document, methodRegion);
-
-			document.Replace(startOffset, endOffset - startOffset, methodBody);
+			IMethod method = GetInitializeComponents(compilationUnit);			
+			string methodBody = GenerateMethodBody(method, host, serializationManager);
+			UpdateMethodBody(document, method, methodBody);
 		}
 		
-		public virtual IScriptingCodeDomSerializer CreateCodeDomSerializer(ITextEditorOptions options)
+		public string GenerateMethodBody(IMethod method, IDesignerHost host, IDesignerSerializationManager serializationManager)
 		{
-			return null;
+			int indent = GetIndent(method);
+			string rootNamespace = GetProjectRootNamespace(method.CompilationUnit);
+			IScriptingCodeDomSerializer serializer = CreateCodeDomSerializer(textEditorOptions);
+			return serializer.GenerateInitializeComponentMethodBody(host, serializationManager, rootNamespace, indent);
 		}
 		
 		public int GetIndent(IMethod method)
@@ -147,6 +168,29 @@ namespace ICSharpCode.Scripting
 				}
 			}
 			return indent;
+		}
+		
+		public string GetProjectRootNamespace(ICompilationUnit compilationUnit)
+		{
+			IProject project = compilationUnit.ProjectContent.Project as IProject;
+			if (project != null) {
+				return project.RootNamespace;
+			}
+			return String.Empty;
+		}
+		
+		public virtual IScriptingCodeDomSerializer CreateCodeDomSerializer(ITextEditorOptions options)
+		{
+			return null;
+		}
+
+		public void UpdateMethodBody(IDocument document, IMethod method, string methodBody)
+		{
+			DomRegion methodRegion = GetBodyRegionInDocument(method);
+			int startOffset = GetStartOffset(document, methodRegion);
+			int endOffset = GetEndOffset(document, methodRegion);
+
+			document.Replace(startOffset, endOffset - startOffset, methodBody);
 		}
 		
 		public virtual DomRegion GetBodyRegionInDocument(IMethod method)
@@ -176,14 +220,6 @@ namespace ICSharpCode.Scripting
 				}
 			}
 			return null;
-		}
-		
-		/// <summary>
-		/// Gets the form or user control class from the compilation unit.
-		/// </summary>
-		IClass GetClass(ICompilationUnit unit)
-		{
-			return unit.Classes[0];
 		}
 
 		/// <summary>
@@ -217,8 +253,7 @@ namespace ICSharpCode.Scripting
 				// of the source code before we insert any new code.
 				viewContent.MergeFormChanges();
 				
-				// Insert the event handler at the end of the class with an extra 
-				// new line before it.
+				// Insert the event handler at the end of the class.
 				IDocument doc = ViewContent.DesignerCodeFileDocument;
 				string eventHandler = CreateEventHandler(eventMethodName, body, TextEditorOptions.IndentationString);
 				position = InsertEventHandler(doc, eventHandler);
@@ -254,23 +289,6 @@ namespace ICSharpCode.Scripting
 		public virtual int InsertEventHandler(IDocument document, string eventHandler)
 		{
 			return 0;
-		}
-		
-		/// <summary>
-		/// Parses the form or user control being designed.
-		/// </summary>
-		ParseInformation ParseFile()
-		{
-			return ParseFile(this.ViewContent.DesignerCodeFile.FileName, this.ViewContent.DesignerCodeFileContent);
-		}
-		
-		string GetProjectRootNamespace(ICompilationUnit compilationUnit)
-		{
-			IProject project = compilationUnit.ProjectContent.Project as IProject;
-			if (project != null) {
-				return project.RootNamespace;
-			}
-			return String.Empty;
-		}
+		}		
 	}
 }

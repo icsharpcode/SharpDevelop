@@ -33,14 +33,9 @@ namespace ICSharpCode.PythonBinding
 				
 		public string GenerateInitializeComponentMethodBody(IDesignerHost host, IDesignerSerializationManager serializationManager)
 		{
-			return GenerateInitializeComponentMethodBody(host, serializationManager, String.Empty);
+			return GenerateInitializeComponentMethodBody(host, serializationManager, String.Empty, 0);
 		}
 
-		public string GenerateInitializeComponentMethodBody(IDesignerHost host, IDesignerSerializationManager serializationManager, string rootNamespace)
-		{
-			return GenerateInitializeComponentMethodBody(host, serializationManager, rootResourceName, 0);
-		}
-		
 		public string GenerateInitializeComponentMethodBody(IDesignerHost host, IDesignerSerializationManager serializationManager, string rootNamespace, int initialIndent)
 		{
 			codeBuilder = new PythonCodeBuilder(initialIndent);

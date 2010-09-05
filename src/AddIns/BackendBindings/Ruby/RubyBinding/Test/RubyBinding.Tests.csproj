@@ -227,7 +227,6 @@
     <Compile Include="Designer\GenerateTimerTestFixture.cs" />
     <Compile Include="Designer\GenerateToolTipFormTestFixture.cs" />
     <Compile Include="Designer\GenerateTreeViewTestFixture.cs" />
-    <Compile Include="Designer\GeneratorMergeFindsInitializeComponentsTestFixture.cs" />
     <Compile Include="Designer\IgnoreDesignTimePropertiesTestFixture.cs" />
     <Compile Include="Designer\InsertEventHandlerTestFixtureBase.cs" />
     <Compile Include="Designer\InsertEventHandlerWithSpaceIndentTestFixture.cs" />
@@ -270,7 +269,6 @@
     <Compile Include="Designer\MergeFormTestFixture.cs" />
     <Compile Include="Designer\MissingInitializeComponentMethodTestFixture.cs" />
     <Compile Include="Designer\NoNewLineAfterInitializeComponentMethodTestFixture.cs" />
-    <Compile Include="Designer\OneCompatibleMethodTestFixture.cs" />
     <Compile Include="Designer\ProjectRootNamespacePassedToMergeTestFixture.cs" />
     <Compile Include="Designer\RemoveMainMenuStripFromFormTestFixture.cs" />
     <Compile Include="Designer\RubyBaseClassTests.cs" />
@@ -281,7 +279,6 @@
     <Compile Include="Designer\RubyDesignerGeneratorTestFixture.cs" />
     <Compile Include="Designer\RubyPropertyAssignmentToStringTests.cs" />
     <Compile Include="Designer\TextBoxNotAddedToFormTestFixture.cs" />
-    <Compile Include="Designer\TextEditorIndentPassedToGeneratorTestFixture.cs" />
     <Compile Include="Designer\UnknownTypeTestFixture.cs" />
     <Compile Include="Gui\DebugRunRubyCommandTestFixture.cs" />
     <Compile Include="Gui\RubyIndentationTests.cs" />

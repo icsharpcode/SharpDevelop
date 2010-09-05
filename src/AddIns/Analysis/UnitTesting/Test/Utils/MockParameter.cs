@@ -89,7 +89,6 @@ namespace UnitTesting.Tests.Utils
 		
 		public void Freeze()
 		{
-			throw new NotImplementedException();
 		}
 	}
 }

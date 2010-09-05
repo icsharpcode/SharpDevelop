@@ -95,6 +95,7 @@
     <Compile Include="Utils\DerivedToolStripMenuItem.cs" />
     <Compile Include="Utils\DoublePropertyUserControl.cs" />
     <Compile Include="Utils\FakeCaret.cs" />
+    <Compile Include="Utils\FakeCodeDomSerializer.cs" />
     <Compile Include="Utils\FakeComponentWalker.cs" />
     <Compile Include="Utils\FakeDesignerSerializationManager.cs" />
     <Compile Include="Utils\FakeDocument.cs" />
@@ -142,6 +143,7 @@
     <Compile Include="Utils\Tests\MockEditableViewContentTestFixture.cs" />
     <Compile Include="Utils\Tests\MockProjectContentTests.cs" />
     <Compile Include="Utils\Tests\MockScriptingFileServiceTests.cs" />
+    <Compile Include="Utils\Tests\TestableScriptingDesignerGeneratorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
