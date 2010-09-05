@@ -47,7 +47,7 @@ namespace SharpRefactoring.Gui
 		
 		protected abstract string GenerateCode(LanguageProperties language, IClass currentClass);
 		
-		protected void OKButtonClick(object sender, RoutedEventArgs e)
+		protected virtual void OKButtonClick(object sender, RoutedEventArgs e)
 		{
 			ParseInformation parseInfo = ParserService.GetParseInformation(editor.FileName);
 			
@@ -69,7 +69,7 @@ namespace SharpRefactoring.Gui
 			Deactivate();
 		}
 		
-		protected void CancelButtonClick(object sender, RoutedEventArgs e)
+		protected virtual void CancelButtonClick(object sender, RoutedEventArgs e)
 		{
 			Deactivate();
 		}
@@ -133,7 +133,9 @@ namespace SharpRefactoring.Gui
 			
 			deactivated = true;
 			Element.Remove();
-			context.Deactivate(null);
+			
+			if (context != null)
+				context.Deactivate(null);
 		}
 	}
 }
