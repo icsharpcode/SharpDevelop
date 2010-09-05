@@ -160,19 +160,18 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 		
-		protected void AddItemsToContainer (ICSharpCode.Reports.Core.BaseSection section,ReportItemCollection items,Point start)
+		protected void AddItemsToContainer (ICSharpCode.Reports.Core.BaseSection section,ReportItemCollection items)
 		{
 			section.Items.Add(this.parentItem as BaseReportItem);
+			int locationY = 10;
+			int locationX = this.parentItem.Location.X + GlobalValues.ControlMargins.Left;
+			int minCtrlWidth = this.parentItem.Size.Width / items.Count;
 			
-			int defY = this.parentItem.Location.Y + start.Y;
-			int defX = this.parentItem.Size.Width / items.Count;
-			int startX = this.parentItem.Location.X + GlobalValues.ControlMargins.Left;
 			
 			foreach (var ir in items) {
-				Point np = new Point(startX,defY);
-				startX += defX;
-				ir.Location = np;
+				ir.Location = new Point(locationX,locationY);
 				this.parentItem.Items.Add(ir);
+				locationX += minCtrlWidth;
 			}
 		}
 		

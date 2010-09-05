@@ -224,12 +224,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 					}
 				}
 				ExportText et = be as ExportText;
-				if (et != null) {Console.WriteLine("nav {0}",evaluatorFassade.SinglePage.IDataNavigator.CurrentRow);
-					
-//					et.Text = evaluatorFassade.Evaluate(et.Text);
+				if (et != null) {
+					Console.WriteLine("nav {0}",evaluatorFassade.SinglePage.IDataNavigator.CurrentRow);
+					Console.WriteLine("-- {0}",et.Text);
+					et.Text = evaluatorFassade.Evaluate(et.Text);
 				}
 			}
-			
 		}
 		
 		

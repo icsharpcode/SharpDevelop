@@ -47,15 +47,17 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			if (section == null) {
 				throw new ArgumentNullException("section");
 			}
-			
-			Point p = new Point (5,5);
+		
 			if (base.ReportModel.ReportSettings.GroupColumnsCollection.Count > 0) {
-				p = InsertGroupHeader();
-				AdjustParent(section);
+				InsertGroupHeader();
+				ParentItem.Location = new Point(ParentItem.Location.X,50);
+				ParentItem.Size = new Size(ParentItem.Size.Width,40);
+				section.Size = new Size(section.Size.Width,100);
 			}
 			
 			if (base.ParentItem != null) {
-				base.AddItemsToContainer(base.ReportModel.DetailSection,this.reportItems,p);
+				base.AddItemsToContainer(base.ReportModel.DetailSection,this.reportItems);
+				ParentItem.Size = new Size(ParentItem.Size.Width,40);
 			}
 			else{
 				AddItemsToSection (base.ReportModel.DetailSection,this.reportItems);
@@ -64,14 +66,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 		
-		void AdjustParent(ICSharpCode.Reports.Core.BaseSection section)
-		{
-			base.ParentItem.Size = new Size(base.ParentItem.Size.Width,base.ParentItem.Size.Height + 30);
-			section.Size = new Size(section.Size.Width,section.Size.Height + 30);
-		}
-		
-		
-		private Point InsertGroupHeader()
+		private void InsertGroupHeader()
 		{
 			ICSharpCode.Reports.Core.BaseDataItem dataItem = new ICSharpCode.Reports.Core.BaseDataItem();
 			dataItem.ColumnName = base.ReportModel.ReportSettings.GroupColumnsCollection[0].ColumnName;
@@ -81,11 +76,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			dataItem.Text = base.ReportModel.ReportSettings.GroupColumnsCollection[0].ColumnName;
 			
 			ICSharpCode.Reports.Core.BaseGroupedRow groupHeader = new ICSharpCode.Reports.Core.BaseGroupedRow();
-			groupHeader.Location = new Point(10,10);
+			groupHeader.Location = new Point(5,10);
 			groupHeader.Size = new Size (300,30);
 			groupHeader.Items.Add(dataItem);
 			base.ReportModel.DetailSection.Items.Add(groupHeader);
-			return new Point (5,45);
 		}
 		
 		#endregion
