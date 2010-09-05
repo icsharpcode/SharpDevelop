@@ -163,7 +163,7 @@
     <Compile Include="Converter\VBStringConcatTestFixture.cs" />
     <Compile Include="Converter\WhileLoopConversionTestFixture.cs" />
     <Compile Include="Converter\XmlDocCommentConversionTestFixture.cs" />
-    <Compile Include="Designer\AppendNullPropertyValueTestFixture.cs" />
+    <Compile Include="Designer\GenerateUserControlWithNullPropertyValueTests.cs" />
     <Compile Include="Designer\CallBeginInitOnLoadTestFixture.cs" />
     <Compile Include="Designer\ConvertCustomClassUsingTypeConverterTestFixture.cs" />
     <Compile Include="Designer\CursorTypeResolutionTestFixture.cs" />
@@ -182,7 +182,7 @@
     <Compile Include="Designer\FindInitializeComponentMethodTestFixture.cs" />
     <Compile Include="Designer\FormBaseClassCreatedOnLoadTestFixture.cs" />
     <Compile Include="Designer\FormsDesignerDisplayBindingTestFixture.cs" />
-    <Compile Include="Designer\GenerateAcceptButtonTestFixture.cs" />
+    <Compile Include="Designer\GenerateAcceptButtonFormTestFixture.cs" />
     <Compile Include="Designer\GenerateAccessibleRoleFormTestFixture.cs" />
     <Compile Include="Designer\GenerateAutoScaleModeFormTestFixture.cs" />
     <Compile Include="Designer\GenerateAutoScrollFormTestFixture.cs" />
@@ -319,6 +319,8 @@
     <Compile Include="Utils\DerivedRubyDesignerGenerator.cs" />
     <Compile Include="Utils\DerivedRubyFormsDesignerDisplayBinding.cs" />
     <Compile Include="Utils\RubyBindingAddInFile.cs" />
+    <Compile Include="Utils\RubyCodeDomSerializerHelper.cs" />
+    <Compile Include="Utils\RubyComponentWalkerHelper.cs" />
     <Compile Include="Utils\RubyMSBuildEngineHelper.cs" />
     <Compile Include="Utils\RubyParserHelper.cs" />
     <Compile Include="Utils\RubySelectedTestsHelper.cs" />

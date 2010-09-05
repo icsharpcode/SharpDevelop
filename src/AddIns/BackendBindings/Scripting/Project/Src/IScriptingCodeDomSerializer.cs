@@ -14,5 +14,6 @@ namespace ICSharpCode.Scripting
 	public interface IScriptingCodeDomSerializer
 	{
 		string GenerateInitializeComponentMethodBody(IDesignerHost host, IDesignerSerializationManager serializationManager, string rootNamespace, int initialIndent);
+		string GenerateInitializeComponentMethodBody(IDesignerHost host, IDesignerSerializationManager serializationManager);
 	}
 }

@@ -2,10 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Drawing;
-using System.Windows.Forms;
-
-using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Designer;
 using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
@@ -16,18 +14,18 @@ namespace RubyBinding.Tests.Designer
 	/// Tests that the control's BeginInit and EndInit methods are called.
 	/// </summary>
 	[TestFixture]
-	public class CallBeginInitOnLoadTestFixture : LoadFormTestFixtureBase
+	public class CallBeginInitOnLoadTestFixture : CallBeginInitOnLoadTestsBase
 	{		
-		public override string RubyCode {
+		public override string Code {
 			get {
-				ComponentCreator.AddType("RubyBinding.Tests.Utils.SupportInitCustomControl", typeof(SupportInitCustomControl));
+				ComponentCreator.AddType("ICSharpCode.Scripting.Tests.Utils.SupportInitCustomControl", typeof(SupportInitCustomControl));
 				
 				return
 					"class TestForm < System::Windows::Forms::Form\r\n" +
 					"    def InitializeComponent()\r\n" +
-					"        @control = RubyBinding::Tests::Utils::SupportInitCustomControl.new()\r\n" +
+					"        @control = ICSharpCode::Scripting::Tests::Utils::SupportInitCustomControl.new()\r\n" +
 					"        @control.clr_member(System::ComponentModel::ISupportInitialize, :BeginInit).call()\r\n" +
-					"        localVariable = RubyBinding::Tests::Utils::SupportInitCustomControl.new()\r\n" +
+					"        localVariable = ICSharpCode::Scripting::Tests::Utils::SupportInitCustomControl.new()\r\n" +
 					"        localVariable.clr_member(System::ComponentModel::ISupportInitialize, :BeginInit).call()\r\n" +
 					"        self.SuspendLayout()\r\n" +
 					"        # \r\n" +
@@ -43,37 +41,10 @@ namespace RubyBinding.Tests.Designer
 					"end";
 			}
 		}
-	
-		public SupportInitCustomControl Control {
-			get { return Form.Controls[0] as SupportInitCustomControl; }
-		}
-		
-		public SupportInitCustomControl LocalControl {
-			get { return base.ComponentCreator.GetInstance("localVariable") as SupportInitCustomControl; }
-		}
 			
-		[Test]
-		public void BeginInitCalled()
+		protected override IComponentWalker CreateComponentWalker(IComponentCreator componentCreator)
 		{
-			Assert.IsTrue(Control.IsBeginInitCalled);
+			return RubyComponentWalkerHelper.CreateComponentWalker(componentCreator);
 		}
-		
-		[Test]
-		public void EndInitCalled()
-		{
-			Assert.IsTrue(Control.IsEndInitCalled);
-		}
-		
-		[Test]
-		public void BeginInitCalledOnLocalVariable()
-		{
-			Assert.IsTrue(LocalControl.IsBeginInitCalled);
-		}
-		
-		[Test]
-		public void EndInitCalledOnLocalVariable()
-		{
-			Assert.IsTrue(LocalControl.IsEndInitCalled);
-		}		
 	}
 }

@@ -189,7 +189,6 @@
     <Compile Include="Converter\VBStringConcatTestFixture.cs" />
     <Compile Include="Converter\WhileLoopConversionTestFixture.cs" />
     <Compile Include="Converter\XmlDocCommentConversionTestFixture.cs" />
-    <Compile Include="Designer\AppendNullPropertyValueTestFixture.cs" />
     <Compile Include="Designer\CallBeginInitOnLoadTestFixture.cs" />
     <Compile Include="Designer\ConvertCustomClassUsingTypeConverterTestFixture.cs" />
     <Compile Include="Designer\CursorTypeResolutionTestFixture.cs" />
@@ -252,6 +251,7 @@
     <Compile Include="Designer\GenerateTimerTestFixture.cs" />
     <Compile Include="Designer\GenerateToolTipFormTestFixture.cs" />
     <Compile Include="Designer\GenerateTreeViewTestFixture.cs" />
+    <Compile Include="Designer\GenerateUserControlWithNullPropertyValueTests.cs" />
     <Compile Include="Designer\IgnoreDesignTimePropertiesTestFixture.cs" />
     <Compile Include="Designer\InsertEventHandlerTestFixtureBase.cs" />
     <Compile Include="Designer\InsertEventHandlerWithSpaceIndentTestFixture.cs" />
@@ -424,6 +424,8 @@
     <Compile Include="Utils\DerivedPythonConsoleHost.cs" />
     <Compile Include="Utils\DerivedPythonDesignerGenerator.cs" />
     <Compile Include="Utils\DerivedPythonFormsDesignerDisplayBinding.cs" />
+    <Compile Include="Utils\PythonCodeDomSerializerHelper.cs" />
+    <Compile Include="Utils\PythonComponentWalkerHelper.cs" />
     <Compile Include="Utils\PythonMSBuildEngineHelper.cs" />
     <Compile Include="Utils\TestablePythonConsole.cs" />
     <EmbeddedResource Include="..\Project\PythonBinding.addin">

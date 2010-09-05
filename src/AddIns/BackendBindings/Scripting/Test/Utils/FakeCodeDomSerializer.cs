@@ -29,5 +29,10 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			
 			return MethodBodyToReturnFromGenerateMethodBodyCall;
 		}
+		
+		public string GenerateInitializeComponentMethodBody(IDesignerHost host, IDesignerSerializationManager serializationManager)
+		{
+			return GenerateInitializeComponentMethodBody(host, serializationManager, String.Empty, 0);
+		}
 	}
 }
