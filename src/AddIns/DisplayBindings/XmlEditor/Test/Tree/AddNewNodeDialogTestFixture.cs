@@ -288,12 +288,12 @@ namespace XmlEditor.Tests.Tree
 		public void RightToLeftConversion()
 		{
 			try {
-				PropertyService.Set("CoreProperties.UILanguage", RightToLeftConverter.RightToLeftLanguages[0]);
+				RightToLeftConverter.IsRightToLeft = true;
 				using (AddXmlNodeDialog dialog = new AddXmlNodeDialog()) {
 					Assert.AreEqual(RightToLeft.Yes, dialog.RightToLeft);
 				}
 			} finally {
-				PropertyService.Set("CoreProperties.UILanguage", Thread.CurrentThread.CurrentUICulture.Name);
+				RightToLeftConverter.IsRightToLeft = false;
 			}
 		}
 		
