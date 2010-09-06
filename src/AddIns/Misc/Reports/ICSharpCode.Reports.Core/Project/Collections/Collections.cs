@@ -156,7 +156,8 @@ namespace ICSharpCode.Reports.Core{
 		public bool IsGrouped
 		{
 			get {
-				return CreateGroupedList().Count > 0;
+				return (this[0] is BaseGroupedRow)|| (this[0] is BaseGroupItem) ;
+				//return CreateGroupedList().Count > 0;
 			}
 		}
 		
