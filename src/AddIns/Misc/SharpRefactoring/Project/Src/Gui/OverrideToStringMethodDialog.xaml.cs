@@ -5,19 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Snippets;
-using Ast = ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using Ast = ICSharpCode.NRefactory.Ast;
 
 namespace SharpRefactoring.Gui
 {
@@ -28,7 +22,7 @@ namespace SharpRefactoring.Gui
 	{
 		List<Wrapper<IField>> fields;
 		
-		public OverrideToStringMethodDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor, IList<IField> fields)
+		public OverrideToStringMethodDialog(InsertionContext context, ITextEditor editor, ITextAnchor startAnchor, ITextAnchor anchor, IList<IField> fields)
 			: base(context, editor, anchor)
 		{
 			InitializeComponent();

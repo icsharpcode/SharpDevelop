@@ -3,14 +3,14 @@
 
 using System;
 using System.Linq;
+using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
-using ICSharpCode.SharpDevelop.Refactoring;
 using SharpRefactoring.Gui;
 
 namespace SharpRefactoring
@@ -68,10 +68,15 @@ namespace SharpRefactoring
 			ITextAnchor insertionPos = textEditor.Document.CreateAnchor(anchor.Offset);
 			insertionPos.MovementType = AnchorMovementType.BeforeInsertion;
 			
-			AbstractInlineRefactorDialog dialog = new OverrideEqualsGetHashCodeMethodsDialog(textEditor, start, anchor, insertionPos, current, completionItem.Member as IMethod, codeForBaseCall.Trim());
+			InsertionContext insertionContext = new InsertionContext(textEditor.GetService(typeof(TextArea)) as TextArea, start.Offset);
+			
+			AbstractInlineRefactorDialog dialog = new OverrideEqualsGetHashCodeMethodsDialog(insertionContext, textEditor, start, anchor, insertionPos, current, completionItem.Member as IMethod, codeForBaseCall.Trim());
 			dialog.Element = uiService.CreateInlineUIElement(insertionPos, dialog);
 			
 			textEditor.Document.InsertNormalized(anchor.Offset, Environment.NewLine + code.Substring(marker + codeForBaseCall.Length));
+			
+			insertionContext.RegisterActiveElement(new InlineRefactorSnippetElement(cxt => null, ""), dialog);
+			insertionContext.RaiseInsertionCompleted(EventArgs.Empty);
 		}
 		
 		public bool Handles(ICompletionItem item)

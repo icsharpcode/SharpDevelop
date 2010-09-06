@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Dom;
@@ -25,9 +26,9 @@ namespace SharpRefactoring.Gui
 		IMethod selectedMethod;
 		string baseCall;
 		
-		public OverrideEqualsGetHashCodeMethodsDialog(ITextEditor editor, ITextAnchor startAnchor, ITextAnchor endAnchor,
+		public OverrideEqualsGetHashCodeMethodsDialog(InsertionContext context, ITextEditor editor, ITextAnchor startAnchor, ITextAnchor endAnchor,
 		                                              ITextAnchor insertionPosition, IClass selectedClass, IMethod selectedMethod, string baseCall)
-			: base(null, editor, insertionPosition)
+			: base(context, editor, insertionPosition)
 		{
 			if (selectedClass == null)
 				throw new ArgumentNullException("selectedClass");
@@ -58,6 +59,11 @@ namespace SharpRefactoring.Gui
 					return boundTo.Name == selectedClass.Name;
 				}
 			);
+		}
+		
+		protected override void OnInsertionCompleted()
+		{
+			base.OnInsertionCompleted();
 		}
 		
 		static int[] largePrimes = {

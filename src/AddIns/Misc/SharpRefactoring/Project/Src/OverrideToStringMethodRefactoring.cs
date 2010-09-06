@@ -2,6 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
@@ -36,9 +38,17 @@ namespace SharpRefactoring
 			ITextAnchor anchor = textEditor.Document.CreateAnchor(textEditor.Caret.Offset);
 			anchor.MovementType = AnchorMovementType.AfterInsertion;
 			
-			AbstractInlineRefactorDialog dialog = new OverrideToStringMethodDialog(null, textEditor, anchor, current.Fields);
+			ITextAnchor startAnchor = textEditor.Document.CreateAnchor(textEditor.Caret.Offset);
+			anchor.MovementType = AnchorMovementType.BeforeInsertion;
+			
+			InsertionContext insertionContext = new InsertionContext(textEditor.GetService(typeof(TextArea)) as TextArea, startAnchor.Offset);
+			
+			AbstractInlineRefactorDialog dialog = new OverrideToStringMethodDialog(insertionContext, textEditor, startAnchor, anchor, current.Fields);
 			
 			dialog.Element = uiService.CreateInlineUIElement(anchor, dialog);
+			
+			insertionContext.RegisterActiveElement(new InlineRefactorSnippetElement(cxt => null, ""), dialog);
+			insertionContext.RaiseInsertionCompleted(EventArgs.Empty);
 		}
 		
 		public bool Handles(ICompletionItem item)
