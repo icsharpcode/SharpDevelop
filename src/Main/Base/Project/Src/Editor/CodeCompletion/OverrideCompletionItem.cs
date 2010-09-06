@@ -12,6 +12,11 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 	public sealed class OverrideCompletionItem : ICompletionItem
 	{
 		IMember member;
+		
+		public IMember Member {
+			get { return member; }
+		}
+		
 		string text;
 		IImage image;
 		
