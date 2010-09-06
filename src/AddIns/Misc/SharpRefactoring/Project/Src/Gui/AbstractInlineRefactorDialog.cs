@@ -31,6 +31,9 @@ namespace SharpRefactoring.Gui
 		
 		protected AbstractInlineRefactorDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor)
 		{
+			if (context == null)
+				throw new ArgumentNullException("context");
+			
 			this.anchor = insertionEndAnchor = anchor;
 			this.editor = editor;
 			this.context = context;
@@ -134,8 +137,7 @@ namespace SharpRefactoring.Gui
 			deactivated = true;
 			Element.Remove();
 			
-			if (context != null)
-				context.Deactivate(null);
+			context.Deactivate(null);
 		}
 	}
 }
