@@ -193,6 +193,15 @@ namespace ICSharpCode.SharpDevelop.Editor
 			return NormalizeNewLines(input, GetLineTerminator(document, lineNumber));
 		}
 		
+		public static void InsertNormalized(this IDocument document, int offset, string text)
+		{
+			if (document == null)
+				throw new ArgumentNullException("document");
+			IDocumentLine line = document.GetLineForOffset(offset);
+			text = NormalizeNewLines(text, document, line.LineNumber);
+			document.Insert(offset, text);
+		}
+		
 		#region ITextSource implementation
 		public static ICSharpCode.AvalonEdit.Document.ITextSource GetTextSource(ITextBuffer textBuffer)
 		{
