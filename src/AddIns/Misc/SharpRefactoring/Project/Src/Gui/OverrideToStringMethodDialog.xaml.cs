@@ -21,40 +21,34 @@ namespace SharpRefactoring.Gui
 	public partial class OverrideToStringMethodDialog : AbstractInlineRefactorDialog
 	{
 		List<Wrapper<IField>> fields;
+		string baseCall;
 		
-		public OverrideToStringMethodDialog(InsertionContext context, ITextEditor editor, ITextAnchor startAnchor, ITextAnchor anchor, IList<IField> fields)
+		public OverrideToStringMethodDialog(InsertionContext context, ITextEditor editor, ITextAnchor startAnchor, ITextAnchor anchor, IList<IField> fields, string baseCall)
 			: base(context, editor, anchor)
 		{
 			InitializeComponent();
 			
+			this.baseCall = baseCall;
 			this.fields = fields.Select(f => new Wrapper<IField>() { Entity = f }).ToList();
 			this.listBox.ItemsSource = this.fields.Select(i => i.Create(null));
 		}
 		
 		protected override string GenerateCode(LanguageProperties language, IClass currentClass)
 		{
-			var fields = this.fields
+			string[] fields = this.fields
 				.Where(f => f.IsChecked)
 				.Select(f2 => f2.Entity.Name)
 				.ToArray();
 			
-			ClassFinder context = new ClassFinder(currentClass, editor.Caret.Line, editor.Caret.Column);
-			IMember member =  OverrideCompletionItemProvider.GetOverridableMembers(currentClass).First(m => m.Name == "ToString");
-			var node = language.CodeGenerator.GetOverridingMethod(member, context) as Ast.MethodDeclaration;
-			var formatString = new Ast.PrimitiveExpression(GenerateFormatString(currentClass, language.CodeGenerator, fields));
-			var param = new List<Ast.Expression>() { formatString };
+			Ast.PrimitiveExpression formatString = new Ast.PrimitiveExpression(GenerateFormatString(currentClass, language.CodeGenerator, fields));
+			List<Ast.Expression> param = new List<Ast.Expression>() { formatString };
 			
 			Ast.ReturnStatement ret = new Ast.ReturnStatement(new Ast.InvocationExpression(
 				new Ast.MemberReferenceExpression(new Ast.TypeReferenceExpression(new Ast.TypeReference("System.String", true)), "Format"),
 				param.Concat(fields.Select(f => new Ast.IdentifierExpression(f))).ToList()
 			));
 			
-			node.Body.Children.Clear();
-			node.Body.AddChild(ret);
-			
-			int offset = editor.Document.GetLineForOffset(editor.Caret.Offset).Offset;
-			
-			return language.CodeGenerator.GenerateCode(node, DocumentUtilitites.GetWhitespaceAfter(editor.Document, offset)).TrimStart();
+			return language.CodeGenerator.GenerateCode(ret, "").Trim();
 		}
 		
 		string GenerateFormatString(IClass currentClass, CodeGenerator generator, string[] fields)
@@ -74,6 +68,14 @@ namespace SharpRefactoring.Gui
 			}
 			
 			return "[" + currentClass.Name + fieldsString + "]";
+		}
+		
+		protected override void CancelButtonClick(object sender, System.Windows.RoutedEventArgs e)
+		{
+			base.CancelButtonClick(sender, e);
+			
+			editor.Document.Insert(anchor.Offset, baseCall);
+			editor.Select(anchor.Offset, baseCall.Length);
 		}
 	}
 }
