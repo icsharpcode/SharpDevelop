@@ -60,7 +60,7 @@ namespace SharpRefactoring.Gui
 				LanguageProperties language = parseInfo.CompilationUnit.Language;
 				IClass current = parseInfo.CompilationUnit.GetInnermostClass(anchor.Line, anchor.Column);
 				
-				// Generate code could modify the document.
+				// GenerateCode could modify the document.
 				// So read anchor.Offset after code generation.
 				string code = GenerateCode(language, current) ?? "";
 				editor.Document.Insert(anchor.Offset, code);
