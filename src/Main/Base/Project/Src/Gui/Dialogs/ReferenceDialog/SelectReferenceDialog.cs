@@ -5,8 +5,8 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -64,6 +64,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			projectTabPage.Controls.Add(new ProjectReferencePanel(this));
 			browserTabPage.Controls.Add(new AssemblyReferencePanel(this));
 			comTabPage.Controls.Add(new COMReferencePanel(this));
+			RightToLeftConverter.ConvertRecursive(this);
 		}
 		
 		void Translate(Control ctl)

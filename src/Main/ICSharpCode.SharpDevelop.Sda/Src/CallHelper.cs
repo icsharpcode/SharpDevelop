@@ -51,9 +51,6 @@ namespace ICSharpCode.SharpDevelop.Sda
 			}
 			AssemblyParserService.DomPersistencePath = properties.DomPersistencePath;
 			
-			// disable RTL: translations for the RTL languages are inactive
-			RightToLeftConverter.RightToLeftLanguages = new string[0];
-			
 			if (properties.ApplicationRootPath != null) {
 				FileUtility.ApplicationRootPath = properties.ApplicationRootPath;
 			}

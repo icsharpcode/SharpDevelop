@@ -394,6 +394,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				ctl.Text = StringParser.Parse(ctl.Text);
 			}
 			this.Text = StringParser.Parse(this.Text);
+			RightToLeftConverter.Convert(this);
 			
 			ImageList imglist = new ImageList();
 			imglist.ColorDepth = ColorDepth.Depth32Bit;

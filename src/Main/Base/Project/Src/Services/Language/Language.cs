@@ -10,6 +10,7 @@ namespace ICSharpCode.SharpDevelop
 		string name;
 		string code;
 		string imagePath;
+		bool isRightToLeft;
 		
 		public string Name {
 			get {
@@ -27,13 +28,18 @@ namespace ICSharpCode.SharpDevelop
 			get {
 				return imagePath;
 			}
-		}		
+		}
 		
-		public Language(string name, string code, string imagePath)
+		public bool IsRightToLeft {
+			get { return isRightToLeft; }
+		}
+		
+		public Language(string name, string code, string imagePath, bool isRightToLeft)
 		{
 			this.name       = name;
 			this.code       = code;
 			this.imagePath  = imagePath;
+			this.isRightToLeft = isRightToLeft;
 		}
 	}
 }

@@ -59,5 +59,11 @@ namespace ICSharpCode.Core.Presentation
 		public static ResourceKey WordWrapCheckBoxStyleKey {
 			get { return wordWrapCheckBoxStyleKey; }
 		}
+		
+		static readonly ResourceKey flowDirectionKey = new ComponentResourceKey(typeof(GlobalStyles), "FlowDirectionKey");
+		
+		public static ResourceKey FlowDirectionKey {
+			get { return flowDirectionKey; }
+		}
 	}
 }

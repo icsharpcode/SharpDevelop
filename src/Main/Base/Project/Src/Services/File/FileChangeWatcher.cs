@@ -189,10 +189,7 @@ namespace ICSharpCode.SharpDevelop
 				
 				string message = StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage}", new string[,] {{"File", Path.GetFullPath(fileName)}});
 				if ((AutoLoadExternalChangesOption && file.IsDirty == false)
-				    || MessageBox.Show(message,
-				                       StringParser.Parse("${res:MainWindow.DialogName}"),
-				                       MessageBoxButtons.YesNo,
-				                       MessageBoxIcon.Question) == DialogResult.Yes)
+				    || MessageService.AskQuestion(message, StringParser.Parse("${res:MainWindow.DialogName}")))
 				{
 					if (File.Exists(fileName)) {
 						file.ReloadFromDisk();

@@ -5,14 +5,18 @@
 	<Style TargetType="{x:Type Window}" x:Key="{x:Static local:GlobalStyles.WindowStyleKey}">
 		<Setter Property="UseLayoutRounding" Value="True" />
 		<Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+		<Setter Property="FlowDirection" Value="{DynamicResource {x:Static local:GlobalStyles.FlowDirectionKey}}" />
 	</Style>
 	
 	<Style TargetType="{x:Type Window}" x:Key="{x:Static local:GlobalStyles.DialogWindowStyleKey}">
 		<Setter Property="UseLayoutRounding" Value="True" />
 		<Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+		<Setter Property="FlowDirection" Value="{DynamicResource {x:Static local:GlobalStyles.FlowDirectionKey}}" />
 		<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
 		<Setter Property="ShowInTaskbar" Value="False" />
 	</Style>
+	
+	<x:StaticExtension x:Key="{x:Static local:GlobalStyles.FlowDirectionKey}" MemberType="FlowDirection" Member="LeftToRight" />
 	
 	<Style TargetType="{x:Type Button}" x:Key="{x:Static local:GlobalStyles.ButtonStyleKey}">
 		<Setter Property="MinWidth" Value="73" />

@@ -8,21 +8,11 @@ using System.Windows.Forms;
 namespace ICSharpCode.Core.WinForms
 {
 	/// <summary>
-	/// Description of RightToLeftConverter.
+	/// Allows converting forms to right-to-left layout.
 	/// </summary>
 	public static class RightToLeftConverter
 	{
-		public static string[] RightToLeftLanguages = new string[] {"ar", "he", "fa", "urdu"};
-		
-		public static bool IsRightToLeft {
-			get {
-				foreach (string language in RightToLeftLanguages) {
-					if (ResourceService.Language.StartsWith(language))
-						return true;
-				}
-				return false;
-			}
-		}
+		public static bool IsRightToLeft { get; set; }
 		
 		static AnchorStyles Mirror(AnchorStyles anchor)
 		{
@@ -53,17 +43,19 @@ namespace ICSharpCode.Core.WinForms
 		/// </summary>
 		static void Mirror(Control control)
 		{
-			switch (control.Dock) {
-				case DockStyle.Left:
-					control.Dock = DockStyle.Right;
-					break;
-				case DockStyle.Right:
-					control.Dock = DockStyle.Left;
-					break;
-				case DockStyle.None:
-					control.Anchor = Mirror(control.Anchor);
-					control.Location = MirrorLocation(control);
-					break;
+			if (!(control.Parent is SplitContainer)) {
+				switch (control.Dock) {
+					case DockStyle.Left:
+						control.Dock = DockStyle.Right;
+						break;
+					case DockStyle.Right:
+						control.Dock = DockStyle.Left;
+						break;
+					case DockStyle.None:
+						control.Anchor = Mirror(control.Anchor);
+						control.Location = MirrorLocation(control);
+						break;
+				}
 			}
 			// Panels with RightToLeft = No won't have their children mirrored
 			if (control.RightToLeft != RightToLeft.Yes)

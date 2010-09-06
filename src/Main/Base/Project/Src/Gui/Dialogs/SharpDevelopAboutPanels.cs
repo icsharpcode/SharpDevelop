@@ -69,6 +69,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			versionInfoTextBox.TabIndex = 9;
 			versionInfoTextBox.Font = WinFormsResourceService.LoadFont("Courier New", 8);
 			versionInfoTextBox.KeyDown += new KeyEventHandler(versionInfoTextBox_KeyDown);
+			versionInfoTextBox.RightToLeft = RightToLeft.No;
 			Controls.Add(versionInfoTextBox);
 			
 			Dock = DockStyle.Fill;

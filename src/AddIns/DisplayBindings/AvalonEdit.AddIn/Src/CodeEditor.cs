@@ -138,6 +138,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			CustomizedHighlightingColor.ActiveColorsChanged += CustomizedHighlightingColor_ActiveColorsChanged;
 			ParserService.ParseInformationUpdated += ParserServiceParseInformationUpdated;
 			
+			this.FlowDirection = FlowDirection.LeftToRight; // code editing is always left-to-right
 			this.CommandBindings.Add(new CommandBinding(SharpDevelopRoutedCommands.SplitView, OnSplitView));
 			
 			textMarkerService = new TextMarkerService(this);
