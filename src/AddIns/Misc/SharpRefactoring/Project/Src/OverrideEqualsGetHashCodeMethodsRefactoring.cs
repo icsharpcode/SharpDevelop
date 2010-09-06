@@ -46,34 +46,30 @@ namespace SharpRefactoring
 			if (current == null)
 				return;
 			
-			ITextAnchor start = textEditor.Document.CreateAnchor(textEditor.Caret.Offset);
-			start.MovementType = AnchorMovementType.BeforeInsertion;
+			ITextAnchor startAnchor = textEditor.Document.CreateAnchor(textEditor.Caret.Offset);
+			startAnchor.MovementType = AnchorMovementType.BeforeInsertion;
 			
-			ITextAnchor anchor = textEditor.Document.CreateAnchor(textEditor.Caret.Offset);
-			anchor.MovementType = AnchorMovementType.AfterInsertion;
+			ITextAnchor endAnchor = textEditor.Document.CreateAnchor(textEditor.Caret.Offset);
+			endAnchor.MovementType = AnchorMovementType.AfterInsertion;
 			
-			IAmbience ambience = parseInfo.CompilationUnit.Language.GetAmbience();
 			MethodDeclaration member = (MethodDeclaration)generator.GetOverridingMethod(completionItem.Member, finder);
 			
 			string indent = DocumentUtilitites.GetWhitespaceBefore(textEditor.Document, textEditor.Caret.Offset);
-			
 			string codeForBaseCall = generator.GenerateCode(member.Body.Children.OfType<AbstractNode>().First(), "");
-			
 			string code = generator.GenerateCode(member, indent);
-			
 			int marker = code.IndexOf(codeForBaseCall);
 			
-			textEditor.Document.Insert(start.Offset, code.Substring(0, marker).TrimStart());
+			textEditor.Document.Insert(startAnchor.Offset, code.Substring(0, marker).TrimStart());
 			
-			ITextAnchor insertionPos = textEditor.Document.CreateAnchor(anchor.Offset);
+			ITextAnchor insertionPos = textEditor.Document.CreateAnchor(endAnchor.Offset);
 			insertionPos.MovementType = AnchorMovementType.BeforeInsertion;
 			
-			InsertionContext insertionContext = new InsertionContext(textEditor.GetService(typeof(TextArea)) as TextArea, start.Offset);
+			InsertionContext insertionContext = new InsertionContext(textEditor.GetService(typeof(TextArea)) as TextArea, startAnchor.Offset);
 			
-			AbstractInlineRefactorDialog dialog = new OverrideEqualsGetHashCodeMethodsDialog(insertionContext, textEditor, start, anchor, insertionPos, current, completionItem.Member as IMethod, codeForBaseCall.Trim());
+			AbstractInlineRefactorDialog dialog = new OverrideEqualsGetHashCodeMethodsDialog(insertionContext, textEditor, startAnchor, endAnchor, insertionPos, current, completionItem.Member as IMethod, codeForBaseCall.Trim());
 			dialog.Element = uiService.CreateInlineUIElement(insertionPos, dialog);
 			
-			textEditor.Document.InsertNormalized(anchor.Offset, Environment.NewLine + code.Substring(marker + codeForBaseCall.Length));
+			textEditor.Document.InsertNormalized(endAnchor.Offset, Environment.NewLine + code.Substring(marker + codeForBaseCall.Length));
 			
 			insertionContext.RegisterActiveElement(new InlineRefactorSnippetElement(cxt => null, ""), dialog);
 			insertionContext.RaiseInsertionCompleted(EventArgs.Empty);
