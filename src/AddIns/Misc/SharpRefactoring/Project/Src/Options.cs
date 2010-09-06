@@ -31,6 +31,11 @@ namespace SharpRefactoring
 			set { properties.Set("AddIEquatableInterface", value); }
 		}
 		
+		public static bool AddOtherMethod {
+			get { return properties.Get("AddOtherMethod", true); }
+			set { properties.Set("AddOtherMethod", value); }
+		}
+		
 		public static bool SurroundWithRegion {
 			get { return properties.Get("SurroundWithRegion", true); }
 			set { properties.Set("SurroundWithRegion", value); }

@@ -43,6 +43,10 @@ namespace SharpRefactoring.Gui
 			addIEquatable.Content = string.Format(StringParser.Parse("${res:AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddInterface}"),
 			                                      "IEquatable<" + selectedClass.Name + ">");
 			
+			string otherMethod = selectedMethod.Name == "Equals" ? "GetHashCode" : "Equals";
+			
+			addOtherMethod.Content = StringParser.Parse("${res:AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOtherMethod}", new StringTagPair("otherMethod", otherMethod));
+			
 			addIEquatable.IsEnabled = !selectedClass.BaseTypes.Any(
 				type => {
 					if (!type.IsGenericReturnType)
@@ -156,9 +160,11 @@ namespace SharpRefactoring.Gui
 				
 				codeForMethodBody = builder.ToString().Trim();
 				
-				if (equalsOverrides.Any())
-					code.Append(indent + "\n" + string.Join("\n", equalsOverrides.Select(item => generator.GenerateCode(item, indent))));
-				code.Append(indent + "\n" + generator.GenerateCode(CreateGetHashCodeOverride(currentClass), indent));
+				if (addOtherMethod.IsChecked == true) {
+					if (equalsOverrides.Any())
+						code.Append(indent + "\n" + string.Join("\n", equalsOverrides.Select(item => generator.GenerateCode(item, indent))));
+					code.Append(indent + "\n" + generator.GenerateCode(CreateGetHashCodeOverride(currentClass), indent));
+				}
 			} else {
 				StringBuilder builder = new StringBuilder();
 				
@@ -168,7 +174,8 @@ namespace SharpRefactoring.Gui
 				
 				codeForMethodBody = builder.ToString().Trim();
 				
-				code.Append(indent + "\n" + string.Join("\n", CreateEqualsOverrides(currentClass).Select(item => generator.GenerateCode(item, indent))));
+				if (addOtherMethod.IsChecked == true)
+					code.Append(indent + "\n" + string.Join("\n", CreateEqualsOverrides(currentClass).Select(item => generator.GenerateCode(item, indent))));
 			}
 			
 			if (Options.AddOperatorOverloads) {
