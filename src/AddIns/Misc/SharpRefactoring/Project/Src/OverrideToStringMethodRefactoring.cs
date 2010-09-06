@@ -46,33 +46,35 @@ namespace SharpRefactoring
 			if (current == null)
 				return;
 			
-			ITextAnchor endAnchor = textEditor.Document.CreateAnchor(textEditor.Caret.Offset);
-			endAnchor.MovementType = AnchorMovementType.AfterInsertion;
-			
-			ITextAnchor startAnchor = textEditor.Document.CreateAnchor(textEditor.Caret.Offset);
-			startAnchor.MovementType = AnchorMovementType.BeforeInsertion;
-			
-			MethodDeclaration member = (MethodDeclaration)generator.GetOverridingMethod(completionItem.Member, finder);
-			
-			string indent = DocumentUtilitites.GetWhitespaceBefore(textEditor.Document, textEditor.Caret.Offset);
-			string codeForBaseCall = generator.GenerateCode(member.Body.Children.OfType<AbstractNode>().First(), "");
-			string code = generator.GenerateCode(member, indent);
-			int marker = code.IndexOf(codeForBaseCall);
-			
-			textEditor.Document.Insert(startAnchor.Offset, code.Substring(0, marker).TrimStart());
-			
-			ITextAnchor insertionPos = textEditor.Document.CreateAnchor(endAnchor.Offset);
-			insertionPos.MovementType = AnchorMovementType.BeforeInsertion;
-			
-			InsertionContext insertionContext = new InsertionContext(textEditor.GetService(typeof(TextArea)) as TextArea, startAnchor.Offset);
-			
-			AbstractInlineRefactorDialog dialog = new OverrideToStringMethodDialog(insertionContext, textEditor, startAnchor, insertionPos, current.Fields);
-			dialog.Element = uiService.CreateInlineUIElement(insertionPos, dialog);
-			
-			textEditor.Document.InsertNormalized(endAnchor.Offset, Environment.NewLine + code.Substring(marker + codeForBaseCall.Length));
-			
-			insertionContext.RegisterActiveElement(new InlineRefactorSnippetElement(cxt => null, ""), dialog);
-			insertionContext.RaiseInsertionCompleted(EventArgs.Empty);
+			using (textEditor.Document.OpenUndoGroup()) {
+				ITextAnchor endAnchor = textEditor.Document.CreateAnchor(textEditor.Caret.Offset);
+				endAnchor.MovementType = AnchorMovementType.AfterInsertion;
+				
+				ITextAnchor startAnchor = textEditor.Document.CreateAnchor(textEditor.Caret.Offset);
+				startAnchor.MovementType = AnchorMovementType.BeforeInsertion;
+				
+				MethodDeclaration member = (MethodDeclaration)generator.GetOverridingMethod(completionItem.Member, finder);
+				
+				string indent = DocumentUtilitites.GetWhitespaceBefore(textEditor.Document, textEditor.Caret.Offset);
+				string codeForBaseCall = generator.GenerateCode(member.Body.Children.OfType<AbstractNode>().First(), "");
+				string code = generator.GenerateCode(member, indent);
+				int marker = code.IndexOf(codeForBaseCall);
+				
+				textEditor.Document.Insert(startAnchor.Offset, code.Substring(0, marker).TrimStart());
+				
+				ITextAnchor insertionPos = textEditor.Document.CreateAnchor(endAnchor.Offset);
+				insertionPos.MovementType = AnchorMovementType.BeforeInsertion;
+				
+				InsertionContext insertionContext = new InsertionContext(textEditor.GetService(typeof(TextArea)) as TextArea, startAnchor.Offset);
+				
+				AbstractInlineRefactorDialog dialog = new OverrideToStringMethodDialog(insertionContext, textEditor, startAnchor, insertionPos, current.Fields, codeForBaseCall.Trim());
+				dialog.Element = uiService.CreateInlineUIElement(insertionPos, dialog);
+				
+				textEditor.Document.InsertNormalized(endAnchor.Offset, Environment.NewLine + code.Substring(marker + codeForBaseCall.Length));
+				
+				insertionContext.RegisterActiveElement(new InlineRefactorSnippetElement(cxt => null, ""), dialog);
+				insertionContext.RaiseInsertionCompleted(EventArgs.Empty);
+			}
 		}
 		
 		public bool Handles(ICompletionItem item)
