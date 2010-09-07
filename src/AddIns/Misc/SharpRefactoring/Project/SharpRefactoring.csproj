@@ -98,7 +98,7 @@
     </Compile>
     <Compile Include="Src\GenerateCode.cs" />
     <Compile Include="Src\Gui\AbstractInlineRefactorDialog.cs" />
-    <Compile Include="Src\Gui\CtorParamWrapper.cs" />
+    <Compile Include="Src\Gui\PropertyOrFieldWrapper.cs" />
     <Compile Include="Src\Gui\InlineRefactorSnippetElement.cs" />
     <Compile Include="Src\Gui\InsertCtorDialog.xaml.cs">
       <DependentUpon>InsertCtorDialog.xaml</DependentUpon>
@@ -116,7 +116,6 @@
       <DependentUpon>OverrideToStringMethodDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Wrapper.cs" />
     <Compile Include="Src\InsertCtorSnippetRefactoring.cs" />
     <Compile Include="Src\MenuItemFactories\ResolveAttribute.cs" />
     <Compile Include="Src\MenuItemFactories\ResolveExtensionMethod.cs" />

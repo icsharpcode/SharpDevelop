@@ -20,7 +20,7 @@ namespace SharpRefactoring.Gui
 	/// </summary>
 	public partial class OverrideToStringMethodDialog : AbstractInlineRefactorDialog
 	{
-		List<Wrapper<IField>> fields;
+		List<PropertyOrFieldWrapper> fields;
 		string baseCall;
 		
 		public OverrideToStringMethodDialog(InsertionContext context, ITextEditor editor, ITextAnchor startAnchor, ITextAnchor anchor, IList<IField> fields, string baseCall)
@@ -29,15 +29,15 @@ namespace SharpRefactoring.Gui
 			InitializeComponent();
 			
 			this.baseCall = baseCall;
-			this.fields = fields.Select(f => new Wrapper<IField>() { Entity = f }).ToList();
-			this.listBox.ItemsSource = this.fields.Select(i => i.Create(null));
+			this.fields = fields.Select(f => new PropertyOrFieldWrapper(f) { IsSelected = true }).ToList();
+			this.listBox.ItemsSource = this.fields;
 		}
 		
 		protected override string GenerateCode(LanguageProperties language, IClass currentClass)
 		{
 			string[] fields = this.fields
-				.Where(f => f.IsChecked)
-				.Select(f2 => f2.Entity.Name)
+				.Where(f => f.IsSelected)
+				.Select(f2 => f2.MemberName)
 				.ToArray();
 			
 			Ast.PrimitiveExpression formatString = new Ast.PrimitiveExpression(GenerateFormatString(currentClass, language.CodeGenerator, fields));
@@ -68,6 +68,24 @@ namespace SharpRefactoring.Gui
 			}
 			
 			return "[" + currentClass.Name + fieldsString + "]";
+		}
+		
+		void SelectAllChecked(object sender, System.Windows.RoutedEventArgs e)
+		{
+			foreach (PropertyOrFieldWrapper field in fields) {
+				field.IsSelected = true;
+			}
+		}
+		
+		void SelectAllUnchecked(object sender, System.Windows.RoutedEventArgs e)
+		{
+			foreach (PropertyOrFieldWrapper field in fields) {
+				field.IsSelected = false;
+			}
+		}
+		
+		public bool AllSelected {
+			get { return fields.All(f => f.IsSelected); }
 		}
 		
 		protected override void CancelButtonClick(object sender, System.Windows.RoutedEventArgs e)

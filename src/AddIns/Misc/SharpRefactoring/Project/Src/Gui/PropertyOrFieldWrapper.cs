@@ -16,14 +16,14 @@ using ICSharpCode.SharpDevelop.Editor;
 
 namespace SharpRefactoring.Gui
 {
-	public class CtorParamWrapper : INotifyPropertyChanged
+	public class PropertyOrFieldWrapper : INotifyPropertyChanged
 	{
 		/// <summary>
 		/// Underlying member. Always IField or IProperty.
 		/// </summary>
 		readonly IMember member;
 		
-		public CtorParamWrapper(IMember member)
+		public PropertyOrFieldWrapper(IMember member)
 		{
 			if (member == null || member.ReturnType == null)
 				throw new ArgumentNullException("field");

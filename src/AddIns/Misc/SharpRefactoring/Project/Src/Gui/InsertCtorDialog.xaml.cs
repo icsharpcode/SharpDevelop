@@ -25,9 +25,9 @@ namespace SharpRefactoring.Gui
 	/// </summary>
 	public partial class InsertCtorDialog : AbstractInlineRefactorDialog
 	{
-		IList<CtorParamWrapper> parameterList;
+		IList<PropertyOrFieldWrapper> parameterList;
 		
-		public InsertCtorDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor, IClass current, IList<CtorParamWrapper> possibleParameters)
+		public InsertCtorDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor, IClass current, IList<PropertyOrFieldWrapper> possibleParameters)
 			: base(context, editor, anchor)
 		{
 			InitializeComponent();
@@ -48,7 +48,7 @@ namespace SharpRefactoring.Gui
 			
 			BlockStatement block = new BlockStatement();
 			
-			foreach (CtorParamWrapper w in filtered) {
+			foreach (PropertyOrFieldWrapper w in filtered) {
 				if (w.AddCheckForNull) {
 					if (w.Type.IsReferenceType == true)
 						block.AddChild(
@@ -84,7 +84,7 @@ namespace SharpRefactoring.Gui
 				}
 			}
 			
-			foreach (CtorParamWrapper w in filtered)
+			foreach (PropertyOrFieldWrapper w in filtered)
 				block.AddChild(new ExpressionStatement(new AssignmentExpression(new MemberReferenceExpression(new ThisReferenceExpression(), w.MemberName), AssignmentOperatorType.Assign, new IdentifierExpression(w.ParameterName))));
 			
 			AnchorElement parameterListElement = context.ActiveElements
@@ -192,14 +192,14 @@ namespace SharpRefactoring.Gui
 		
 		void SelectAllChecked(object sender, System.Windows.RoutedEventArgs e)
 		{
-			foreach (CtorParamWrapper param in parameterList) {
+			foreach (PropertyOrFieldWrapper param in parameterList) {
 				param.IsSelected = true;
 			}
 		}
 		
 		void SelectAllUnchecked(object sender, System.Windows.RoutedEventArgs e)
 		{
-			foreach (CtorParamWrapper param in parameterList) {
+			foreach (PropertyOrFieldWrapper param in parameterList) {
 				param.IsSelected = false;
 			}
 		}

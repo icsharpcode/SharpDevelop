@@ -54,7 +54,7 @@ namespace SharpRefactoring
 			if (current == null)
 				return null;
 			
-			List<CtorParamWrapper> parameters = CreateCtorParams(current).ToList();
+			List<PropertyOrFieldWrapper> parameters = CreateCtorParams(current).ToList();
 			
 			ITextAnchor anchor = textEditor.Document.CreateAnchor(context.InsertionPosition);
 			anchor.MovementType = AnchorMovementType.BeforeInsertion;
@@ -66,19 +66,19 @@ namespace SharpRefactoring
 			return dialog;
 		}
 		
-		IEnumerable<CtorParamWrapper> CreateCtorParams(IClass sourceClass)
+		IEnumerable<PropertyOrFieldWrapper> CreateCtorParams(IClass sourceClass)
 		{
 			int i = 0;
 			
 			foreach (var f in sourceClass.Fields.Where(field => !field.IsConst && field.IsStatic == sourceClass.IsStatic)) {
-				yield return new CtorParamWrapper(f) { Index = i, IsSelected = true };
+				yield return new PropertyOrFieldWrapper(f) { Index = i, IsSelected = true };
 				i++;
 			}
 			
 			foreach (var p in sourceClass.Properties.Where(prop => prop.CanSet && !prop.IsIndexer
 			                                               && PropertyRefactoringMenuBuilder.IsAutomaticProperty(prop)
 			                                               && prop.IsStatic == sourceClass.IsStatic)) {
-				yield return new CtorParamWrapper(p) { Index = i, IsSelected = true };
+				yield return new PropertyOrFieldWrapper(p) { Index = i, IsSelected = true };
 				i++;
 			}
 		}
