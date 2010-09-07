@@ -270,7 +270,6 @@
     <Compile Include="Gui\RubyIndentationTests.cs" />
     <Compile Include="Gui\RubyOptionsPanelTestFixture.cs" />
     <Compile Include="Gui\RunRubyCommandTests.cs" />
-    <Compile Include="Gui\SendLineToRubyConsoleCommandTests.cs" />
     <Compile Include="Parsing\ParseClassWithBaseClassTestFixture.cs" />
     <Compile Include="Parsing\ParseMethodWithOptionalParametersTestFixture.cs" />
     <Compile Include="Parsing\ParseMethodWithParametersTestFixture.cs" />

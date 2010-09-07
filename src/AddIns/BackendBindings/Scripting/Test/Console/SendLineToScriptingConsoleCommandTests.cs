@@ -2,17 +2,16 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
-using PythonBinding.Tests.Utils;
 
-namespace PythonBinding.Tests.Gui
+namespace ICSharpCode.Scripting.Tests.Console
 {
 	[TestFixture]
-	public class SendLineToPythonConsoleCommandTests
+	public class SendLineToScriptingConsoleCommandTests
 	{
-		SendLineToPythonConsoleCommand sendLineToConsoleCommand;
+		SendLineToScriptingConsoleCommand sendLineToConsoleCommand;
 		MockConsoleTextEditor fakeConsoleTextEditor;
 		MockTextEditor fakeTextEditor;
 		MockWorkbench workbench;
@@ -37,7 +36,7 @@ namespace PythonBinding.Tests.Gui
 			fakeConsoleTextEditor = workbench.MockScriptingConsolePad.MockConsoleTextEditor;
 			fakeConsole = workbench.MockScriptingConsolePad.MockScriptingConsole;
 			fakeTextEditor = workbench.ActiveMockEditableViewContent.MockTextEditor;
-			sendLineToConsoleCommand = new SendLineToPythonConsoleCommand(workbench);
+			sendLineToConsoleCommand = new SendLineToScriptingConsoleCommand(workbench);
 		}
 		
 		void AddSingleLineToTextEditor(string line)

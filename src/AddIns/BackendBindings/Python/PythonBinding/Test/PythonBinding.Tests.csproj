@@ -316,7 +316,6 @@
     <Compile Include="Gui\PythonIndentationTests.cs" />
     <Compile Include="Gui\PythonOptionsPanelTestFixture.cs" />
     <Compile Include="Gui\RunPythonCommandTests.cs" />
-    <Compile Include="Gui\SendLineToPythonConsoleCommandTests.cs" />
     <Compile Include="Parsing\ClassWithBaseClassTestFixture.cs" />
     <Compile Include="Parsing\InvalidCastInPythonParserTestFixture.cs" />
     <Compile Include="Parsing\MethodWithParametersTestFixture.cs" />

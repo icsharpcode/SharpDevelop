@@ -88,6 +88,7 @@
     <Compile Include="Console\ScriptingConsoleTextEditorTests.cs" />
     <Compile Include="Console\ScriptingConsoleUnreadLinesTests.cs" />
     <Compile Include="Console\ScriptingConsoleWriteTests.cs" />
+    <Compile Include="Console\SendLineToScriptingConsoleCommandTests.cs" />
     <Compile Include="Console\ThreadSafeScriptingConsoleTextEditorTests.cs" />
     <Compile Include="Console\TwoConsoleLinesWaitingTests.cs" />
     <Compile Include="Designer\CallBeginInitOnLoadTests.cs" />
