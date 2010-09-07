@@ -22,6 +22,7 @@ namespace SharpRefactoring.Gui
 	{
 		List<PropertyOrFieldWrapper> fields;
 		string baseCall;
+		string insertedCode;
 		
 		public OverrideToStringMethodDialog(InsertionContext context, ITextEditor editor, ITextAnchor startAnchor, ITextAnchor anchor, IList<IField> fields, string baseCall)
 			: base(context, editor, anchor)
@@ -48,7 +49,9 @@ namespace SharpRefactoring.Gui
 				param.Concat(fields.Select(f => new Ast.IdentifierExpression(f))).ToList()
 			));
 			
-			return language.CodeGenerator.GenerateCode(ret, "").Trim();
+			insertedCode = language.CodeGenerator.GenerateCode(ret, "").Trim();
+			
+			return insertedCode;
 		}
 		
 		string GenerateFormatString(IClass currentClass, CodeGenerator generator, string[] fields)
@@ -94,6 +97,13 @@ namespace SharpRefactoring.Gui
 			
 			editor.Document.Insert(anchor.Offset, baseCall);
 			editor.Select(anchor.Offset, baseCall.Length);
+		}
+		
+		protected override void OKButtonClick(object sender, System.Windows.RoutedEventArgs e)
+		{
+			base.OKButtonClick(sender, e);
+			
+			editor.Caret.Offset = insertionEndAnchor.Offset + insertedCode.Length;
 		}
 	}
 }

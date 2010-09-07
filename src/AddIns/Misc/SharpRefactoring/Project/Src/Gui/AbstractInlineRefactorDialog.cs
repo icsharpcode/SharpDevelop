@@ -120,7 +120,8 @@ namespace SharpRefactoring.Gui
 			if (e.Reason == DeactivateReason.ReturnPressed)
 				OKButtonClick(null, null);
 			
-			context.TextArea.Caret.Offset = insertionEndAnchor.Offset;
+			if (e.Reason == DeactivateReason.EscapePressed)
+				CancelButtonClick(null, null);
 			
 			Deactivate();
 		}

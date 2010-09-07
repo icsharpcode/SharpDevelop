@@ -207,6 +207,20 @@ namespace SharpRefactoring.Gui
 		public bool AllSelected {
 			get { return parameterList.All(p => p.IsSelected); }
 		}
+		
+		protected override void CancelButtonClick(object sender, System.Windows.RoutedEventArgs e)
+		{
+			base.CancelButtonClick(sender, e);
+			
+			editor.Caret.Offset = anchor.Offset;
+		}
+		
+		protected override void OKButtonClick(object sender, System.Windows.RoutedEventArgs e)
+		{
+			base.OKButtonClick(sender, e);
+			
+			editor.Caret.Offset = insertionEndAnchor.Offset;
+		}
 	}
 	
 	[ValueConversion(typeof(int), typeof(bool))]

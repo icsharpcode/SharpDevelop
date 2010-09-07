@@ -61,11 +61,6 @@ namespace SharpRefactoring.Gui
 			);
 		}
 		
-		protected override void OnInsertionCompleted()
-		{
-			base.OnInsertionCompleted();
-		}
-		
 		static int[] largePrimes = {
 			1000000007, 1000000009, 1000000021, 1000000033,
 			1000000087, 1000000093, 1000000097, 1000000103,
@@ -413,6 +408,13 @@ namespace SharpRefactoring.Gui
 			
 			editor.Document.Insert(anchor.Offset, baseCall);
 			editor.Select(anchor.Offset, baseCall.Length);
+		}
+		
+		protected override void OKButtonClick(object sender, System.Windows.RoutedEventArgs e)
+		{
+			base.OKButtonClick(sender, e);
+			
+			editor.Caret.Offset = insertionEndAnchor.Offset;
 		}
 	}
 }
