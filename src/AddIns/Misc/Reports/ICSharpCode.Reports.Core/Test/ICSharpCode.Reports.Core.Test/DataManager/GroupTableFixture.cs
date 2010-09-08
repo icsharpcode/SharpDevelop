@@ -32,10 +32,12 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		}
 		
 		
+		#region Group by String
+		
 		[Test]
 		public void GroupingCollection_Contains_IsGrouped_False()
 		{
-			var dataNav = PrepareStandardGrouping();
+			var dataNav = PrepareStringGrouping();
 			Assert.That(dataNav.IsGrouped == true);
 		}
 		
@@ -43,7 +45,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		[Test]
 		public void Has_Children()
 		{
-			var dataNav = PrepareStandardGrouping();
+			var dataNav = PrepareStringGrouping();
 			while (dataNav.MoveNext()) {
 				Assert.That(dataNav.HasChildren,Is.True);
 			}
@@ -52,19 +54,59 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		[Test]
 		public void Can_Read_Child_Count ()
 		{
-			var dataNav = PrepareStandardGrouping();
+			var dataNav = PrepareStringGrouping();
 			while (dataNav.MoveNext()) 
 			{
 				Assert.That(dataNav.ChildListCount,Is.GreaterThan(0));
 			}
 		}
 		
+		#endregion
+		
+		
+		#region GroupbyDataTime
+		
+		[Test]
+		public void DateTimeCan_FillChild()
+		{
+			var dataNav = PrepareDateTimeGrouping();
+			while (dataNav.MoveNext()) {
+				if (dataNav.HasChildren) {
+					Assert.That(dataNav.HasChildren,Is.True);
+					DataRow r = dataNav.Current as DataRow;
+					string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString();
+					Console.WriteLine(v2);
+					FillChildList(dataNav);
+				}
+				
+			}
+		}
+		
+		
+		[Test]
+		public void DataTimeCollection_Contains_IsGrouped_False()
+		{
+			var dataNav = PrepareDateTimeGrouping();
+			Assert.That(dataNav.IsGrouped == true);
+		}
+		
+		
+		[Test]
+		public void DataTime_Has_Children()
+		{
+			var dataNav = PrepareDateTimeGrouping();
+			while (dataNav.MoveNext()) {
+				Assert.That(dataNav.HasChildren,Is.True);
+			}
+		}
+		#endregion
+		
 		#region Read-Fill Child List
 		
 		[Test]
 		public void Can_FillChild()
 		{
-			var dataNav = PrepareStandardGrouping();
+			var dataNav = PrepareStringGrouping();
 			while (dataNav.MoveNext()) {
 				if (dataNav.HasChildren) {
 					Assert.That(dataNav.HasChildren,Is.True);
@@ -105,7 +147,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		[Test]
 		public void Can_Get_ChildNavigator ()
 		{
-			var dataNav = PrepareStandardGrouping();
+			var dataNav = PrepareStringGrouping();
 			while (dataNav.MoveNext()) {
 				if (dataNav.HasChildren) {
 					IDataNavigator child = dataNav.GetChildNavigator();
@@ -118,7 +160,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		[Test]
 		public void RecursiveCall_Childs ()
 		{
-				var dataNav = PrepareStandardGrouping();
+				var dataNav = PrepareStringGrouping();
 				dataNav.MoveNext();
 				Console.WriteLine("--------------start rec ------------");
 				reccall (dataNav);
@@ -169,7 +211,9 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		
 		#endregion
 		
-		private IDataNavigator PrepareStandardGrouping ()
+		
+		
+		private IDataNavigator PrepareStringGrouping ()
 		{
 			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
 			ReportSettings rs = new ReportSettings();
@@ -177,12 +221,25 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
 			return dm.GetNavigator;
 		}
+		
+		
+		private IDataNavigator PrepareDateTimeGrouping ()
+		{
+			GroupColumn gc = new GroupColumn("RandomDate",1,ListSortDirection.Ascending);
+			ReportSettings rs = new ReportSettings();
+			rs.GroupColumnsCollection.Add(gc);
+			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,rs);
+			return dm.GetNavigator;
+		}
+		
+		
 		[TestFixtureSetUp]
 		public void Init()
 		{
 			ContributorsList contributorsList = new ContributorsList();
 			this.table = contributorsList.ContributorTable;
 		}
+		
 		
 		[TestFixtureTearDown]
 		public void Dispose()
