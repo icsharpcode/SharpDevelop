@@ -12,8 +12,9 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 
-using ICSharpCode.Reports.Core.Interfaces;
+using ICSharpCode.Reports.Core.Events;
 using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core.BaseClasses.Printing
@@ -148,6 +149,14 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				container;
 		}
 		
+		#region PageBreak
+		
+		public static Rectangle CalculatePageBreakRectangle(BaseReportItem simpleContainer,Point curPos)
+		{
+			return new Rectangle(new Point (simpleContainer.Location.X,curPos.Y), simpleContainer.Size);
+		}
+		
+		
 		public static bool IsPageFull (Rectangle rectangle,SectionBounds bounds)
 		{
 			if (rectangle.Bottom > bounds.PageFooterRectangle.Top) {
@@ -156,6 +165,8 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			return false;
 		}
 		
+		
+		#endregion
 		
 		public static IExpressionEvaluatorFacade  CreateEvaluator (ISinglePage singlePage,IDataNavigator dataNavigator)
 		{

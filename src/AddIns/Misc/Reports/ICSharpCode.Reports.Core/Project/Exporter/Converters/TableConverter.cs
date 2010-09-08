@@ -23,7 +23,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		public TableConverter(IDataNavigator dataNavigator,
 		                      ExporterPage singlePage,
-		                     
+		                      
 		                      ILayouter layouter ):base(dataNavigator,singlePage,layouter)
 		{
 		}
@@ -50,7 +50,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			
 			Point currentPosition = new Point(PrintHelper.DrawingAreaRelativeToParent(this.baseTable.Parent,this.baseTable).Location.X,
-			                                                                           base.SectionBounds.DetailStart.Y);
+			                                  base.SectionBounds.DetailStart.Y);
 			
 			int defaultLeftPos = currentPosition.X;
 			
@@ -69,13 +69,13 @@ namespace ICSharpCode.Reports.Core.Exporter
 					simpleContainer.Parent = (BaseReportItem)this.baseTable;
 					base.SaveSize( new Size (simpleContainer.Size.Width,simpleContainer.Size.Height));
 					// Header/FooterRow
-				
+					
 					if (PrintHelper.IsTextOnlyRow(simpleContainer) ) {
 						headerContainer = simpleContainer;
 						currentPosition = BaseConverter.BaseConvert(mylist,headerContainer,defaultLeftPos,currentPosition);
 					}
 					
-					else 
+					else
 					{
 						// DataRegion
 						base.SaveSize(simpleContainer.Size);
@@ -90,31 +90,34 @@ namespace ICSharpCode.Reports.Core.Exporter
 							
 							base.PrepareContainerForConverting(null,simpleContainer);
 							
-							if (PrintHelper.IsPageFull(new Rectangle(new Point (simpleContainer.Location.X,currentPosition.Y),simpleContainer.Size),base.SectionBounds)) {
-								base.FirePageFull(mylist);
-								mylist.Clear();
+							Rectangle pageBreakRect = PrintHelper.CalculatePageBreakRectangle((BaseReportItem)simpleContainer,currentPosition);
+							
+							if (PrintHelper.IsPageFull(pageBreakRect,base.SectionBounds))
+						 	{		
+								base.BuildNewPage(mylist,section);
+	
+									currentPosition = BaseConverter.BaseConvert(mylist,headerContainer,
+									                                            defaultLeftPos,
+									                                            base.SectionBounds.ReportHeaderRectangle.Location);
 
-								currentPosition = BaseConverter.BaseConvert(mylist,headerContainer,
-								                                            defaultLeftPos,
-								                                            base.SectionBounds.ReportHeaderRectangle.Location);
+								}
+								
+								currentPosition = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+								
+								simpleContainer.Size = base.RestoreSize;
 							}
-							
-							currentPosition = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
-							
-							simpleContainer.Size = base.RestoreSize;
+							while (base.DataNavigator.MoveNext());
+							//Allway's reset the DataNavigator
+							base.DataNavigator.Reset();
+							base.DataNavigator.MoveNext();
+							SectionBounds.ReportFooterRectangle =  new Rectangle(SectionBounds.ReportFooterRectangle.Left,
+							                                                     currentPosition.Y,
+							                                                     SectionBounds.ReportFooterRectangle.Width,
+							                                                     SectionBounds.ReportFooterRectangle.Height);
 						}
-						while (base.DataNavigator.MoveNext());
-						//Allway's reset the DataNavigator
-						base.DataNavigator.Reset();
-						base.DataNavigator.MoveNext();
-						SectionBounds.ReportFooterRectangle =  new Rectangle(SectionBounds.ReportFooterRectangle.Left,
-						                                                     currentPosition.Y,
-						                                                     SectionBounds.ReportFooterRectangle.Width,
-						                                                     SectionBounds.ReportFooterRectangle.Height);
 					}
 				}
+				return mylist;
 			}
-			return mylist;
 		}
 	}
-}

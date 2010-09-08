@@ -8,7 +8,6 @@
  */
 using System;
 using System.Drawing;
-using System.Linq;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Events;
 using ICSharpCode.Reports.Core.Interfaces;
@@ -58,12 +57,25 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
+		
+		#region PageBreak
+		
+		protected void BuildNewPage(ExporterCollection myList,BaseSection section)
+		{
+			FirePageFull(myList);
+			section.SectionOffset = SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;
+			myList.Clear();
+		}
+		
+		
 		protected void FirePageFull (ExporterCollection items)
 		{
 			EventHelper.Raise<NewPageEventArgs>(PageFull,this,new NewPageEventArgs(items));
 		}
 		
-			
+		#endregion
+		
+		
 		protected void FireSectionRendering (BaseSection section)
 		{
 			SectionRenderEventArgs srea = new SectionRenderEventArgs(section,
@@ -143,10 +155,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 			get {return this.saveSize;}
 		}
 		
+		
 		protected IExpressionEvaluatorFacade Evaluator
 		{
 			get {return this.evaluator;}
 		}
+		
 		
 		protected void FillRow (ISimpleContainer row)
 		{
@@ -168,7 +182,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			PrintHelper.SetLayoutForRow(Graphics,Layouter,row);
 		}
-		
 		
 	
 		protected static Point BaseConvert(ExporterCollection myList,ISimpleContainer container,int leftPos,Point curPos)

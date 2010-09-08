@@ -40,6 +40,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (item == null) {
 				throw new ArgumentNullException("item");
 			}
+			
 			ISimpleContainer simpleContainer = item as ISimpleContainer;
 			this.parent = parent;
 			
@@ -67,7 +68,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			
 			int defaultLeftPos = parent.Location.X;
 
-			Rectangle curRect = Rectangle.Empty;
+			Rectangle pageBreakRect = Rectangle.Empty;
 			
 			do {
 				
@@ -90,27 +91,26 @@ namespace ICSharpCode.Reports.Core.Exporter
 						do {
 							currentPosition = ConvertGroupChilds (exporterCollection,section,simpleContainer,defaultLeftPos,currentPosition);
 							
-							curRect = PageBreakRectangle((BaseReportItem)section.Items[1],currentPosition,section);
+							pageBreakRect = PrintHelper.CalculatePageBreakRectangle((BaseReportItem)section.Items[1],currentPosition);
 							
-							if (PrintHelper.IsPageFull(curRect,base.SectionBounds )) {
-								BuildNewPage(exporterCollection,section);
+							if (PrintHelper.IsPageFull(pageBreakRect,base.SectionBounds )) {
+								base.BuildNewPage(exporterCollection,section);
 								currentPosition = CalculateStartPosition ();
 							}
 						}
 						while ( base.DataNavigator.ChildMoveNext());
 					}
-					
 				}
 				else
 				{
-					// No Grouping
+					// No Grouping at all
 					currentPosition = ConvertStandardRow (exporterCollection,section,simpleContainer,defaultLeftPos,currentPosition);
 				}
-				curRect = PageBreakRectangle((BaseReportItem)section.Items[0],currentPosition,section);
-				//PageBreakNeeded(exporterCollection,section,curRect,currentPosition);
-				if (PrintHelper.IsPageFull(curRect,base.SectionBounds)) {
-					BuildNewPage(exporterCollection,section);
-					currentPosition = CalculateStartPosition ();
+				
+				pageBreakRect = PrintHelper.CalculatePageBreakRectangle((BaseReportItem)section.Items[0],currentPosition);
+				if (PrintHelper.IsPageFull(pageBreakRect,base.SectionBounds)) {
+					base.BuildNewPage(exporterCollection,section);
+					currentPosition = CalculateStartPosition();
 				}
 				
 				ShouldDrawBorder (section,exporterCollection);
@@ -125,26 +125,16 @@ namespace ICSharpCode.Reports.Core.Exporter
 			return exporterCollection;
 		}
 		
-		
-		Rectangle PageBreakRectangle(BaseReportItem simpleContainer,Point curPos,BaseSection section)
-		{
-			return new Rectangle(new Point (simpleContainer.Location.X,curPos.Y), simpleContainer.Size);
-		}
-		
-		
-		
+	
+//		private Point PerformPageBreak (ExporterCollection exporterCollection,BaseSection section)
+//		{
+//			BuildNewPage(exporterCollection,section);
+//			return CalculateStartPosition();
+//		}
+//		
 		private Point CalculateStartPosition()
 		{
 			return new Point(base.SectionBounds.PageHeaderRectangle.X,base.SectionBounds.PageHeaderRectangle.Y);
-		}
-		
-		
-		
-		private void BuildNewPage(ExporterCollection myList,BaseSection section)
-		{
-			base.FirePageFull(myList);
-			section.SectionOffset = base.SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;
-			myList.Clear();
 		}
 		
 		
