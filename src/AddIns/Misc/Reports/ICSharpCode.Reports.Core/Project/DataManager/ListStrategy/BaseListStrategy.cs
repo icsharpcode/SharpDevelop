@@ -42,9 +42,7 @@ namespace ICSharpCode.Reports.Core {
 	
 	internal  abstract class BaseListStrategy :IDataViewStrategy,IEnumerator {
 
-		//Index to plain Datat
 		private IndexList indexList;
-
 		private AvailableFieldsCollection availableFields;
 		
 
@@ -76,6 +74,7 @@ namespace ICSharpCode.Reports.Core {
 		protected ReportSettings ReportSettings {get;private set;}
 	
 		
+		
 		#region Sorting delegates
 		
 		protected static List<BaseComparer>  GenericSorter (List<BaseComparer> list)
@@ -93,8 +92,26 @@ namespace ICSharpCode.Reports.Core {
 			return lbc;
 		}
 		
-		
 		#endregion
+		
+		#region Grouping
+		
+		protected GroupComparer CreateGroupHeader (BaseComparer sc)
+		{
+			GroupComparer gc = new GroupComparer(sc.ColumnCollection,sc.ListIndex,sc.ObjectArray);
+			IndexList.Add(gc);
+			return gc;
+		}
+		
+		
+		protected void CreateGroupeChildren(IndexList list,BaseComparer sc)
+		{
+			string v = sc.ObjectArray[0].ToString();
+			list.Add(sc);
+		}
+		#endregion
+		
+		#region Debug Code
 		
 		protected  static void ShowIndexList (IndexList list)
 		{
@@ -116,11 +133,13 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 		
+		#endregion
 		
 		public  virtual void Reset()
 		{
 			this.indexList.CurrentPosition = -1;
 		}
+		
 		
 		public virtual object Current 
 		{

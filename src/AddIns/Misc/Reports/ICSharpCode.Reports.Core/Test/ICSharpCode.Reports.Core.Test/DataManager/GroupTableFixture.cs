@@ -35,7 +35,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		#region Group by String
 		
 		[Test]
-		public void GroupingCollection_Contains_IsGrouped_False()
+		public void GroupingCollection_Contains_IsGrouped_True()
 		{
 			var dataNav = PrepareStringGrouping();
 			Assert.That(dataNav.IsGrouped == true);
@@ -70,13 +70,15 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		public void DateTimeCan_FillChild()
 		{
 			var dataNav = PrepareDateTimeGrouping();
+			
+			Console.WriteLine("start datetime");
 			while (dataNav.MoveNext()) {
 				if (dataNav.HasChildren) {
 					Assert.That(dataNav.HasChildren,Is.True);
 					DataRow r = dataNav.Current as DataRow;
-					string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString();
+					string v2 = r["last"].ToString() + " GroupVal :" +  r[5].ToString();
 					Console.WriteLine(v2);
-					FillChildList(dataNav);
+					DateTimeChildList(dataNav);
 				}
 				
 			}
@@ -101,6 +103,8 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		}
 		#endregion
 		
+		
+		
 		#region Read-Fill Child List
 		
 		[Test]
@@ -120,20 +124,43 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		}
 		
 		
-		void FillChildList (IDataNavigator nav)
+		private void DateTimeChildList (IDataNavigator nav)
 		{
 			BaseDataItem first= new BaseDataItem("First");
 			BaseDataItem last  = new BaseDataItem("Last");
+			BaseDataItem datetime = new BaseDataItem("RandomDate");
+			
 			ReportItemCollection ric = new ReportItemCollection();
 			
 			ric.Add(first);
 			ric.Add(last);
+			ric.Add(datetime);
 			
 			nav.SwitchGroup();
 			do {
 				nav.FillChild(ric);
 				foreach (BaseDataItem element in ric) {
-					Console.WriteLine("\t{0} - {1}",element.ColumnName,element.DBValue);
+					Console.WriteLine("\t{0} - {1} ",element.ColumnName,element.DBValue);
+				}
+			}
+			while ( nav.ChildMoveNext());
+		}
+		
+		
+		private void FillChildList (IDataNavigator nav)
+		{
+			BaseDataItem first= new BaseDataItem("First");
+			BaseDataItem last  = new BaseDataItem("Last");
+			
+			ReportItemCollection ric = new ReportItemCollection();
+			
+			ric.Add(first);
+			ric.Add(last);
+			nav.SwitchGroup();
+			do {
+				nav.FillChild(ric);
+				foreach (BaseDataItem element in ric) {
+					Console.WriteLine("\t{0} - {1} ",element.ColumnName,element.DBValue);
 				}
 			}
 			while ( nav.ChildMoveNext());
@@ -225,6 +252,8 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		
 		private IDataNavigator PrepareDateTimeGrouping ()
 		{
+			Console.WriteLine("PrepareDateTimeGrouping ()");
+			
 			GroupColumn gc = new GroupColumn("RandomDate",1,ListSortDirection.Ascending);
 			ReportSettings rs = new ReportSettings();
 			rs.GroupColumnsCollection.Add(gc);

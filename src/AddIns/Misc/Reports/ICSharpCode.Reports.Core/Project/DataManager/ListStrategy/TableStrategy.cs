@@ -161,32 +161,33 @@ namespace ICSharpCode.Reports.Core
 				string v = element.ObjectArray[0].ToString();
 				if (compVal != v) {
 					childList = new IndexList();
-					GroupComparer gc = BuildGroupHeader(element);
+					GroupComparer gc = base.CreateGroupHeader(element);
 					gc.IndexList = childList;
-					
-					GChild(childList,element);
+					CreateGroupeChildren(childList,element);
 				} else {
-					GChild(childList,element);
+					CreateGroupeChildren(childList,element);
 				}
 				compVal = v;
 			}
 			ShowIndexList(base.IndexList);
 		}
 		
-		private GroupComparer BuildGroupHeader (BaseComparer sc)
-		{
-			GroupComparer gc = new GroupComparer(sc.ColumnCollection,sc.ListIndex,sc.ObjectArray);
-			base.IndexList.Add(gc);
-			return gc;
-		}
 		
+//		private GroupComparer CreateGroupHeader (BaseComparer sc)
+//		{
+//			GroupComparer gc = new GroupComparer(sc.ColumnCollection,sc.ListIndex,sc.ObjectArray);
+//			base.IndexList.Add(gc);
+//			return gc;
+//		}
 		
-		private void GChild(IndexList list,BaseComparer sc)
+		/*
+		 
+		private void CreateGroupeChildren(IndexList list,BaseComparer sc)
 		{
 			string v = sc.ObjectArray[0].ToString();
 			list.Add(sc);
 		}
-		
+		*/
 		
 		private IndexList IndexBuilder(SortColumnCollection col)
 		{

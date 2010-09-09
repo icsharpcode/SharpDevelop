@@ -46,10 +46,6 @@ namespace ICSharpCode.Reports.Core {
 		#endregion
 		
 		
-		#region build grouping
-	
-		#endregion
-		
 		
 		#region build sorting
 		
@@ -168,7 +164,54 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 
+		public override void Group ()
+		{
+			base.Group();
+			IndexList gl = new IndexList("group");
+			gl = this.BuildSortIndex (ReportSettings.GroupColumnsCollection);
+			ShowIndexList(gl);
+			BuildGroup(gl);
+		}
 		
+		
+		private void BuildGroup (IndexList list)
+		{
+			string compVal = String.Empty;
+			base.IndexList.Clear();
+			IndexList childList = null;
+			BaseComparer checkElem = list[0];
+			foreach (BaseComparer element in list)
+			{
+				string v = element.ObjectArray[0].ToString();
+				if (compVal != v) {
+					childList = new IndexList();
+					GroupComparer gc = base.CreateGroupHeader(element);
+					gc.IndexList = childList;
+					
+					CreateGroupeChildren(childList,element);
+				} else {
+					CreateGroupeChildren(childList,element);
+				}
+				compVal = v;
+			}
+			ShowIndexList(base.IndexList);
+		}
+		
+		/*
+		private GroupComparer BuildGroupHeader (BaseComparer sc)
+		{
+			GroupComparer gc = new GroupComparer(sc.ColumnCollection,sc.ListIndex,sc.ObjectArray);
+			base.IndexList.Add(gc);
+			return gc;
+		}
+		
+		
+		private void GChild(IndexList list,BaseComparer sc)
+		{
+			string v = sc.ObjectArray[0].ToString();
+			list.Add(sc);
+		}
+			*/
 		public override void Sort() 
 		{
 			base.Sort();		
@@ -185,6 +228,8 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
+		
+		
 		public override void Reset() 
 		{
 			this.CurrentPosition = 0;
@@ -195,7 +240,9 @@ namespace ICSharpCode.Reports.Core {
 		public override void Bind()
 		{
 			base.Bind();
-			if (base.ReportSettings.SortColumnsCollection != null) {
+			if (base.ReportSettings.GroupColumnsCollection.Count > 0) {
+				this.Group();
+			} else {
 				this.Sort ();
 			}
 			Reset();
