@@ -92,6 +92,7 @@
     <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\ISnippetElementProvider.cs" />
     <Compile Include="Src\Editor\AvalonEdit\TextContentCondition.cs" />
+    <Compile Include="Src\Editor\AvalonEdit\TextSelectedCondition.cs" />
     <Compile Include="Src\Editor\CodeCompletion\CodeCompletionPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>

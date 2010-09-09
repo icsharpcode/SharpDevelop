@@ -31,11 +31,6 @@ namespace ICSharpCode.Scripting.Tests.Console
 			TestableScriptingConsole.SendLine(text);
 		}
 		
-		void WritePrompt()
-		{
-			TestableScriptingConsole.Write(">>> ", ScriptingStyle.Prompt);
-		}
-		
 		[Test]
 		public void SendLine_NoUnreadLines_CreatesLockForPreviousLines()
 		{

@@ -77,6 +77,11 @@
 				<MenuItem id="SendLineToRubyConsole"
 					class="ICSharpCode.RubyBinding.SendLineToRubyConsoleCommand"
 					label="${res:ICSharpCode.RubyBinding.SendLineToRubyConsole}"/>
+				<Condition name="IsTextSelected" action="Disable">
+					<MenuItem id="SendSelectedTextToRubyConsole"
+						class="ICSharpCode.RubyBinding.SendSelectedTextToRubyConsoleCommand"
+						label="${res:ICSharpCode.RubyBinding.SendSelectedTextToRubyConsole}"/>
+				</Condition>
 			</MenuItem>
 		</Condition>
 	</Path>
@@ -198,6 +203,11 @@
 			<MenuItem id="SendLineToRubyConsole"
 				class="ICSharpCode.RubyBinding.SendLineToRubyConsoleCommand"
 				label="${res:ICSharpCode.RubyBinding.SendLineToRubyConsole}"/>
+			<Condition name="IsTextSelected" action="Disable">
+				<MenuItem id="SendSelectedTextToRubyConsole"
+					class="ICSharpCode.RubyBinding.SendSelectedTextToRubyConsoleCommand"
+					label="${res:ICSharpCode.RubyBinding.SendSelectedTextToRubyConsole}"/>
+			</Condition>
 		</Condition>
   </Path>
 </AddIn>

@@ -699,6 +699,9 @@ De geselecteerde code bevat een break commando zonder de insluitende lus. Wijzig
   <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOperatorOverloads" xml:space="preserve">
     <value>Voeg operator overladingen toe</value>
   </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOtherMethod" xml:space="preserve">
+    <value>Voeg overschreven $(otherMethod} toe</value>
+  </data>
   <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.SurroundWithRegion" xml:space="preserve">
     <value>Insluiten met #region</value>
   </data>
@@ -4038,11 +4041,17 @@ Configureer a.u.b. in SharpDevelop opties de locatie van NAnt's uitvoerend besta
   <data name="ICSharpCode.PythonBinding.SendLineToPythonConsole" xml:space="preserve">
     <value>Stuur regel naar Python console</value>
   </data>
+  <data name="ICSharpCode.PythonBinding.SendSelectedTextToPythonConsole" xml:space="preserve">
+    <value>Naar Python Console leiden</value>
+  </data>
   <data name="ICSharpCode.PythonBinding.UnknownTypeName" xml:space="preserve">
     <value>Kan type {0} niet vinden. Ontbreekt er een assembly referentie?</value>
   </data>
   <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
     <value>Stuur regel naar Ruby console</value>
+  </data>
+  <data name="ICSharpCode.RubyBinding.SendSelectedTextToRubyConsole" xml:space="preserve">
+    <value>Naar Ruby Console leiden</value>
   </data>
   <data name="ICSharpCode.Services.FileUtilityService.CantLoadFileStandardText" xml:space="preserve">
     <value>Kan het bestand ${FileNameWithoutPath} in de map ${Path} niet laden. Controleer de beveiliging en het bestaan van het bestand.</value>

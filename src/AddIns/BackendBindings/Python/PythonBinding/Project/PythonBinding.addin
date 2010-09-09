@@ -83,6 +83,11 @@
 				<MenuItem id="SendLineToPythonConsole"
 					class="ICSharpCode.PythonBinding.SendLineToPythonConsoleCommand"
 					label="${res:ICSharpCode.PythonBinding.SendLineToPythonConsole}"/>
+				<Condition name="IsTextSelected" action="Disable">
+					<MenuItem id="SendSelectedTextToPythonConsole"
+						class="ICSharpCode.PythonBinding.SendSelectedTextToPythonConsoleCommand"
+						label="${res:ICSharpCode.PythonBinding.SendSelectedTextToPythonConsole}"/>
+				</Condition>
 			</MenuItem>
 		</Condition>
 	</Path>
@@ -211,6 +216,11 @@
 			<MenuItem id="SendLineToPythonConsole"
 				class="ICSharpCode.PythonBinding.SendLineToPythonConsoleCommand"
 				label="${res:ICSharpCode.PythonBinding.SendLineToPythonConsole}"/>
+			<Condition name="IsTextSelected" action="Disable">
+				<MenuItem id="SendSelectedTextToPythonConsole"
+					class="ICSharpCode.PythonBinding.SendSelectedTextToPythonConsoleCommand"
+					label="${res:ICSharpCode.PythonBinding.SendSelectedTextToPythonConsole}"/>
+			</Condition>
 		</Condition>
 	</Path>
 </AddIn>

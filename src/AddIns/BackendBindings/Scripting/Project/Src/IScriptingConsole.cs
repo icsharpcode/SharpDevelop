@@ -7,6 +7,7 @@ namespace ICSharpCode.Scripting
 {
 	public interface IScriptingConsole
 	{
-		void SendLine(string text);
+		void SendLine(string line);
+		void SendText(string text);
 	}
 }

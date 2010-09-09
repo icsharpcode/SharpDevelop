@@ -84,11 +84,14 @@
     <Compile Include="Console\ScriptingConsoleReadOnlyRegionsTests.cs" />
     <Compile Include="Console\ScriptingConsoleReadTests.cs" />
     <Compile Include="Console\ScriptingConsoleSendLineTests.cs" />
+    <Compile Include="Console\ScriptingConsoleSendTextTests.cs" />
     <Compile Include="Console\ScriptingConsoleTestsBase.cs" />
     <Compile Include="Console\ScriptingConsoleTextEditorTests.cs" />
     <Compile Include="Console\ScriptingConsoleUnreadLinesTests.cs" />
     <Compile Include="Console\ScriptingConsoleWriteTests.cs" />
     <Compile Include="Console\SendLineToScriptingConsoleCommandTests.cs" />
+    <Compile Include="Console\SendSelectedTextToScriptingConsoleCommandTests.cs" />
+    <Compile Include="Console\SendToScriptingConsoleCommandTestsBase.cs" />
     <Compile Include="Console\ThreadSafeScriptingConsoleTextEditorTests.cs" />
     <Compile Include="Console\TwoConsoleLinesWaitingTests.cs" />
     <Compile Include="Designer\CallBeginInitOnLoadTests.cs" />

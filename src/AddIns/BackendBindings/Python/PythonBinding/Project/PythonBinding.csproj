@@ -119,6 +119,7 @@
     <Compile Include="Src\PythonTestRunnerResponseFile.cs" />
     <Compile Include="Src\PythonWorkbench.cs" />
     <Compile Include="Src\SendLineToPythonConsoleCommand.cs" />
+    <Compile Include="Src\SendSelectedTextToPythonConsoleCommand.cs" />
     <Compile Include="Src\SysModuleCompletionItems.cs" />
     <Compile Include="Src\NRefactoryToPythonConverter.cs" />
     <Compile Include="Src\PythonAstWalker.cs" />

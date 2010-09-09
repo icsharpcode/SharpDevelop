@@ -126,6 +126,7 @@
     <Compile Include="Src\RunDebugRubyCommand.cs" />
     <Compile Include="Src\RunRubyCommand.cs" />
     <Compile Include="Src\SendLineToRubyConsoleCommand.cs" />
+    <Compile Include="Src\SendSelectedTextToRubyConsoleCommand.cs" />
     <EmbeddedResource Include="Resources\Ruby.xshd" />
     <EmbeddedResource Include="Resources\RubyOptionsPanel.xfrm" />
     <None Include="..\..\IronRuby\bin\Chiron.exe.config">

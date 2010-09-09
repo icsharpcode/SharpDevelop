@@ -232,6 +232,9 @@ Laden Sie ein AddIn aus dem Internet herunter, klicken Sie auf "AddIn installier
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Klassendiagramm anzeigen</value>
   </data>
+  <data name="AddIns.Git.TortoiseGitRequired" xml:space="preserve">
+    <value>TortoiseGit muss installiert sein, um diese Aktion auszuführen.</value>
+  </data>
   <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
     <value>Inhalt</value>
   </data>
@@ -695,6 +698,9 @@ Optional können Sie auch ein Arbeitsverzeichnis und Kommandozeilen-Argumente an
   </data>
   <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOperatorOverloads" xml:space="preserve">
     <value>Operatoren überladen</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOtherMethod" xml:space="preserve">
+    <value>${otherMethod}-Override hinzufügen</value>
   </data>
   <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.SurroundWithRegion" xml:space="preserve">
     <value>Mit #region umschließen</value>
@@ -4033,8 +4039,14 @@ Bitte stellen Sie den Pfad zur NAnt-Anwendung in den SharpDevelop-Optionen ein.<
   <data name="ICSharpCode.PythonBinding.PythonProjectFiles" xml:space="preserve">
     <value>Python-Projektdateien</value>
   </data>
+  <data name="ICSharpCode.PythonBinding.SendLineToPythonConsole" xml:space="preserve">
+    <value>Zeile an Python Konsole senden</value>
+  </data>
   <data name="ICSharpCode.PythonBinding.UnknownTypeName" xml:space="preserve">
     <value>Konnte Typ '{0}' nicht finden. Fehlt eine Assembly-Referenz?</value>
+  </data>
+  <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
+    <value>Zeile an Ruby Konsole senden</value>
   </data>
   <data name="ICSharpCode.Services.FileUtilityService.CantLoadFileStandardText" xml:space="preserve">
     <value>Konnte Datei ${FileNameWithoutPath} im Verzeichns ${Path} nicht laden.

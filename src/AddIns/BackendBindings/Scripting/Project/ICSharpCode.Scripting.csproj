@@ -93,6 +93,8 @@
     <Compile Include="Src\ScriptingTextEditorViewContent.cs" />
     <Compile Include="Src\ScriptingWorkbench.cs" />
     <Compile Include="Src\SendLineToScriptingConsoleCommand.cs" />
+    <Compile Include="Src\SendSelectedTextToScriptingConsoleCommand.cs" />
+    <Compile Include="Src\SendToScriptingConsoleCommand.cs" />
     <Compile Include="Src\StringListLock.cs" />
     <Compile Include="Src\ThreadSafeScriptingConsoleTextEditor.cs" />
   </ItemGroup>

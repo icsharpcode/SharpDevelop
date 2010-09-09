@@ -17,5 +17,10 @@ namespace ICSharpCode.Scripting.Tests.Console
 			TestableScriptingConsole = new TestableScriptingConsole();
 			MockConsoleTextEditor = TestableScriptingConsole.MockConsoleTextEditor;
 		}
+		
+		public void WritePrompt()
+		{
+			TestableScriptingConsole.Write(">>> ", ScriptingStyle.Prompt);
+		}
 	}
 }

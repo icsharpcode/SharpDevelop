@@ -62,20 +62,9 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			}
 		}
 		
-		public int SelectionLength {
-			get {
-				throw new NotImplementedException();
-			}
-		}
+		public int SelectionLength { get; set; }
 		
-		public string SelectedText {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
+		public string SelectedText { get; set; }
 		
 		public ICSharpCode.Core.FileName FileName {
 			get {

@@ -9,10 +9,16 @@ namespace ICSharpCode.Scripting.Tests.Utils
 	public class MockScriptingConsole : IScriptingConsole
 	{
 		public string TextPassedToSendLine;
+		public string TextPassedToSendText;
 		
 		public void SendLine(string text)
 		{
 			TextPassedToSendLine = text;
+		}
+		
+		public void SendText(string text)
+		{
+			TextPassedToSendText = text;
 		}
 	}
 }

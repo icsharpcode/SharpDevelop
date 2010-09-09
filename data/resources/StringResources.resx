@@ -701,6 +701,9 @@ Optionally you can specify a working directory and command line arguments.
   <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOperatorOverloads" xml:space="preserve">
     <value>Add operator overloads</value>
   </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOtherMethod" xml:space="preserve">
+    <value>Add ${otherMethod} override</value>
+  </data>
   <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.SurroundWithRegion" xml:space="preserve">
     <value>Surround with #region</value>
   </data>
@@ -4044,11 +4047,17 @@ Please configure the NAnt executable's location in the SharpDevelop Options.</va
   <data name="ICSharpCode.PythonBinding.SendLineToPythonConsole" xml:space="preserve">
     <value>Send Line to Python Console</value>
   </data>
+  <data name="ICSharpCode.PythonBinding.SendSelectedTextToPythonConsole" xml:space="preserve">
+    <value>Send to Python Console</value>
+  </data>
   <data name="ICSharpCode.PythonBinding.UnknownTypeName" xml:space="preserve">
     <value>Could not find type '{0}'. Are you missing an assembly reference?</value>
   </data>
   <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
     <value>Send Line to Ruby Console</value>
+  </data>
+  <data name="ICSharpCode.RubyBinding.SendSelectedTextToRubyConsole" xml:space="preserve">
+    <value>Send to Ruby Console</value>
   </data>
   <data name="ICSharpCode.Services.FileUtilityService.CantLoadFileStandardText" xml:space="preserve">
     <value>Can't load file ${FileNameWithoutPath} under ${Path}.

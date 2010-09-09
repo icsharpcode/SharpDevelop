@@ -9,13 +9,9 @@ using NUnit.Framework;
 namespace ICSharpCode.Scripting.Tests.Console
 {
 	[TestFixture]
-	public class SendLineToScriptingConsoleCommandTests
+	public class SendLineToScriptingConsoleCommandTests : SendToScriptingConsoleCommandTestsBase
 	{
 		SendLineToScriptingConsoleCommand sendLineToConsoleCommand;
-		MockConsoleTextEditor fakeConsoleTextEditor;
-		MockTextEditor fakeTextEditor;
-		MockWorkbench workbench;
-		MockScriptingConsole fakeConsole;
 		
 		[Test]
 		public void Run_SingleLineInTextEditor_FirstLineSentToPythonConsole()
@@ -32,10 +28,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 		
 		void CreateSendLineToConsoleCommand()
 		{
-			workbench = MockWorkbench.CreateWorkbenchWithOneViewContent("test.py");
-			fakeConsoleTextEditor = workbench.MockScriptingConsolePad.MockConsoleTextEditor;
-			fakeConsole = workbench.MockScriptingConsolePad.MockScriptingConsole;
-			fakeTextEditor = workbench.ActiveMockEditableViewContent.MockTextEditor;
+			base.CreateFakeWorkbench();
 			sendLineToConsoleCommand = new SendLineToScriptingConsoleCommand(workbench);
 		}
 		
@@ -75,7 +68,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 		}
 		
 		[Test]
-		public void Run_SingleLineInTextEditor_PythonConsolePadBroughtToFront()
+		public void Run_SingleLineInTextEditor_ScriptingConsolePadBroughtToFront()
 		{
 			CreateSendLineToConsoleCommand();
 			AddSingleLineToTextEditor("print 'hello'");
