@@ -12,6 +12,7 @@ using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
@@ -33,10 +34,13 @@ namespace SharpRefactoring
 			List<System.Windows.Forms.ToolStripItem> items = new List<System.Windows.Forms.ToolStripItem>();
 			MenuCommand cmd;
 			
-			if (!(owner is ICSharpCode.SharpDevelop.Gui.ClassBrowser.MemberNode))
-				return items.ToArray();
-			
-			IProperty property = (owner as ICSharpCode.SharpDevelop.Gui.ClassBrowser.MemberNode).Member as IProperty;
+			IProperty property;
+			if (owner is ICSharpCode.SharpDevelop.Gui.ClassBrowser.MemberNode)
+				property = ((ICSharpCode.SharpDevelop.Gui.ClassBrowser.MemberNode)owner).Member as IProperty;
+			else if (owner is ClassMemberBookmark)
+				property = ((ClassMemberBookmark)owner).Member as IProperty;
+			else
+				property = null;
 			
 			if (property == null)
 				return items.ToArray();
@@ -64,8 +68,12 @@ namespace SharpRefactoring
 			return items.ToArray();
 		}
 		
+		#region ExpandAutomaticProperty
 		internal static bool IsAutomaticProperty(IProperty property)
 		{
+			if (property.IsAbstract || property.DeclaringType.ClassType == ICSharpCode.SharpDevelop.Dom.ClassType.Interface)
+				return false;
+			
 			string fileName = property.CompilationUnit.FileName;
 			
 			if (fileName == null)
@@ -153,7 +161,9 @@ namespace SharpRefactoring
 				ParserService.ParseCurrentViewContent();
 			}
 		}
+		#endregion
 		
+		#region ConvertToAutomaticProperty
 		bool IsSimpleProperty(ITextEditor editor, IProperty property, out Ast.PropertyDeclaration astProperty, out string fieldName)
 		{
 			astProperty = null;
@@ -299,5 +309,6 @@ namespace SharpRefactoring
 				}
 			}
 		}
+		#endregion
 	}
 }

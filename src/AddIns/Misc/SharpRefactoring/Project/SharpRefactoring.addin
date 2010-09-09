@@ -54,7 +54,11 @@
 		<Class id="toString" class="SharpRefactoring.OverrideToStringMethodRefactoring" />
 		<Class id="equalsAndGetHashCode" class="SharpRefactoring.OverrideEqualsGetHashCodeMethodsRefactoring" />
 	</Path>
-
+	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu">
+		<MenuItem id="propertyRefactorings" type="Builder" class="SharpRefactoring.PropertyRefactoringMenuBuilder" />
+	</Path>
+	
 	<Path name="/SharpDevelop/Pads/ClassBrowser/MemberContextMenu">
 		<MenuItem id="propertyRefactorings" type="Builder" class="SharpRefactoring.PropertyRefactoringMenuBuilder" />
 	</Path>
