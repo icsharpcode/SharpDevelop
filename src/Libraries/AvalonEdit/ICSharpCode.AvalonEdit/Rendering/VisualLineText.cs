@@ -58,6 +58,18 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		}
 		
 		/// <inheritdoc/>
+		public override TextSpan<CultureSpecificCharacterBufferRange> GetPrecedingText(int visualColumnLimit, ITextRunConstructionContext context)
+		{
+			if (context == null)
+				throw new ArgumentNullException("context");
+			
+			int relativeOffset = visualColumnLimit - VisualColumn;
+			string text = context.Document.GetText(context.VisualLine.FirstDocumentLine.Offset + RelativeTextOffset, relativeOffset);
+			CharacterBufferRange range = new CharacterBufferRange(text, 0, text.Length);
+			return new TextSpan<CultureSpecificCharacterBufferRange>(range.Length, new CultureSpecificCharacterBufferRange(this.TextRunProperties.CultureInfo, range));
+		}
+		
+		/// <inheritdoc/>
 		public override bool CanSplit {
 			get { return true; }
 		}

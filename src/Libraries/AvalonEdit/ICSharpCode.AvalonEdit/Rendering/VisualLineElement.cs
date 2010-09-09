@@ -81,6 +81,15 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		public abstract TextRun CreateTextRun(int startVisualColumn, ITextRunConstructionContext context);
 		
 		/// <summary>
+		/// Retrieves the text span immediately before the visual column.
+		/// </summary>
+		/// <remarks>This method is used for word-wrapping in bidirectional text.</remarks>
+		public virtual TextSpan<CultureSpecificCharacterBufferRange> GetPrecedingText(int visualColumnLimit, ITextRunConstructionContext context)
+		{
+			return null;
+		}
+		
+		/// <summary>
 		/// Gets if this VisualLineElement can be split.
 		/// </summary>
 		public virtual bool CanSplit {

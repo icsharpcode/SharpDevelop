@@ -56,12 +56,31 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		public override TextSpan<CultureSpecificCharacterBufferRange> GetPrecedingText(int textSourceCharacterIndexLimit)
 		{
-			throw new NotImplementedException();
+			try {
+				foreach (VisualLineElement element in VisualLine.Elements) {
+					if (textSourceCharacterIndexLimit > element.VisualColumn
+					    && textSourceCharacterIndexLimit <= element.VisualColumn + element.VisualLength)
+					{
+						TextSpan<CultureSpecificCharacterBufferRange> span = element.GetPrecedingText(textSourceCharacterIndexLimit, this);
+						if (span == null)
+							break;
+						int relativeOffset = textSourceCharacterIndexLimit - element.VisualColumn;
+						if (span.Length > relativeOffset)
+							throw new ArgumentException("The returned TextSpan is too long.", element.GetType().Name + ".GetPrecedingText");
+						return span;
+					}
+				}
+				CharacterBufferRange empty = CharacterBufferRange.Empty;
+				return new TextSpan<CultureSpecificCharacterBufferRange>(empty.Length, new CultureSpecificCharacterBufferRange(null, empty));
+			} catch (Exception ex) {
+				Debug.WriteLine(ex.ToString());
+				throw;
+			}
 		}
 		
 		public override int GetTextEffectCharacterIndexFromTextSourceCharacterIndex(int textSourceCharacterIndex)
 		{
-			throw new NotImplementedException();
+			throw new NotSupportedException();
 		}
 	}
 }
