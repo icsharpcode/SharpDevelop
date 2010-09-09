@@ -96,14 +96,14 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			}
 			if (member is IProperty) {
 				IProperty property = member as IProperty;
-				if (property.CanSet && canGenerateCode) {
+				if (property.CanSet && canGenerateCode && !property.IsAbstract && property.DeclaringType.ClassType != ClassType.Interface) {
 					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateChangedEvent}", CreateChangedEvent);
 					cmd.Tag = member;
 					list.Add(cmd);
 				}
 			}
 			if (member is IEvent) {
-				if (canGenerateCode) {
+				if (canGenerateCode && !member.IsAbstract && member.DeclaringType.ClassType != ClassType.Interface) {
 					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateOnEventMethod}", CreateOnEventMethod);
 					cmd.Tag = member;
 					list.Add(cmd);
