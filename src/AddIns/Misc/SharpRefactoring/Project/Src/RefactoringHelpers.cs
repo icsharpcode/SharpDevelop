@@ -5,11 +5,12 @@ using System;
 using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace SharpRefactoring
 {
-	public class RefactoringHelpers
+	public static class RefactoringHelpers
 	{
 		/// <summary>
 		/// Renames file as well as files it is dependent upon.
@@ -38,6 +39,18 @@ namespace SharpRefactoring
 					}
 				}
 			}
+		}
+		
+		public static IClass GetCurrentClassPart(this IClass c, string fileName)
+		{
+			if (c is CompoundClass) {
+				foreach (IClass part in ((CompoundClass)c).Parts) {
+					if (fileName.Equals(part.CompilationUnit.FileName, StringComparison.OrdinalIgnoreCase))
+						return part;
+				}
+			}
+			
+			return c;
 		}
 	}
 }

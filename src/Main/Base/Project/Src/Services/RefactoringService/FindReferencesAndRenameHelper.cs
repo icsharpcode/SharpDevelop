@@ -509,6 +509,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 
 		public static IDocument GetDocument(IClass c)
 		{
+			if (c is CompoundClass)
+				throw new ArgumentException("Cannot get document from compound class - must pass a specific class part");
+			
 			ITextEditorProvider tecp = FileService.OpenFile(c.CompilationUnit.FileName) as ITextEditorProvider;
 			if (tecp == null) return null;
 			return tecp.TextEditor.Document;

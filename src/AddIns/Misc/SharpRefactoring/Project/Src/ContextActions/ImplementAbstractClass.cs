@@ -20,8 +20,7 @@ namespace SharpRefactoring.ContextActions
 	{
 		public override IEnumerable<IContextAction> GetAvailableActions(EditorContext editorContext)
 		{
-			foreach (var targetClass in editorContext.GetClassDeclarationsOnCurrentLine().Where(c => c.ClassType == ClassType.Class)) {
-				
+			foreach (var targetClass in editorContext.GetClassDeclarationsOnCurrentLine().Where(c => c.ClassType == ClassType.Class).Select(c2 => c2.GetCurrentClassPart(editorContext.Editor.FileName))) {
 				foreach (var implementAction in RefactoringService.GetImplementAbstractClassActions(targetClass)) {
 					yield return implementAction;
 				}

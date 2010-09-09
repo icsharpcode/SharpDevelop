@@ -23,9 +23,9 @@ namespace SharpRefactoring.ContextActions
 	{
 		public override IEnumerable<IContextAction> GetAvailableActions(EditorContext editorContext)
 		{
-			foreach (var targetClass in editorContext.GetClassDeclarationsOnCurrentLine().
-			         Where(c => c.ClassType == ClassType.Class || c.ClassType == ClassType.Interface)) {
-				
+			foreach (var targetClass in editorContext.GetClassDeclarationsOnCurrentLine()
+			         .Where(c => c.ClassType == ClassType.Class || c.ClassType == ClassType.Interface)
+			         .Select(c2 => c2.GetCurrentClassPart(editorContext.Editor.FileName))) {
 				foreach (var implementAction in RefactoringService.GetImplementInterfaceActions(targetClass, true)) {
 					yield return implementAction;
 				}
