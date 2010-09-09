@@ -40,17 +40,20 @@ namespace SharpRefactoring.Gui
 		
 		protected override string GenerateCode(LanguageProperties language, IClass currentClass)
 		{
-			var line = editor.Document.GetLineForOffset(anchor.Offset);
+			IDocumentLine line = editor.Document.GetLineForOffset(anchor.Offset);
 			
 			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset);
 			
-			var filtered = parameterList.Where(p => p.IsSelected).OrderBy(p => p.Index).ToList();
+			List<PropertyOrFieldWrapper> filtered = parameterList
+				.Where(p => p.IsSelected)
+				.OrderBy(p => p.Index)
+				.ToList();
 			
 			BlockStatement block = new BlockStatement();
 			
 			foreach (PropertyOrFieldWrapper w in filtered) {
 				if (w.AddCheckForNull) {
-					if (w.Type.IsReferenceType == true)
+					if (w.Type.IsReferenceType == true || PropertyOrFieldWrapper.IsGenericReferenceType(w.Type))
 						block.AddChild(
 							new IfElseStatement(
 								new BinaryOperatorExpression(new IdentifierExpression(w.ParameterName), BinaryOperatorType.Equality, new PrimitiveExpression(null)),

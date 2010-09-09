@@ -58,9 +58,19 @@ namespace SharpRefactoring.Gui
 		
 		public bool IsNullable {
 			get {
-				return member.ReturnType.IsReferenceType == true ||
-					member.ReturnType.IsConstructedReturnType && member.ReturnType.Name == "Nullable";
+				return member.ReturnType.IsReferenceType == true
+					|| member.ReturnType.IsConstructedReturnType && member.ReturnType.Name == "Nullable"
+					|| IsGenericReferenceType(member.ReturnType);
 			}
+		}
+		
+		public static bool IsGenericReferenceType(IReturnType type)
+		{
+			if (type == null || !type.IsGenericReturnType)
+				return false;
+			ITypeParameter param = type.CastToGenericReturnType().TypeParameter;
+			return param.HasReferenceTypeConstraint
+				|| param.Constraints.Any(constr => constr.IsReferenceType == true);
 		}
 		
 		public bool HasRange {
