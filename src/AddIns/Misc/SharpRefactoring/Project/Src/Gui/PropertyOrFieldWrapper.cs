@@ -26,7 +26,7 @@ namespace SharpRefactoring.Gui
 		public PropertyOrFieldWrapper(IMember member)
 		{
 			if (member == null || member.ReturnType == null)
-				throw new ArgumentNullException("field");
+				throw new ArgumentNullException("member");
 			if (!(member is IField || member is IProperty))
 				throw new ArgumentException("member must be IField or IProperty");
 			
@@ -39,7 +39,7 @@ namespace SharpRefactoring.Gui
 		
 		string parameterName;
 		public string ParameterName {
-			get { 
+			get {
 				if (parameterName == null)
 					parameterName = ToParameterName(this.MemberName);
 				return parameterName;
@@ -58,27 +58,18 @@ namespace SharpRefactoring.Gui
 		
 		public bool IsNullable {
 			get {
-				return member.ReturnType.IsReferenceType == true
-					|| member.ReturnType.IsConstructedReturnType && member.ReturnType.Name == "Nullable"
-					|| IsGenericReferenceType(member.ReturnType);
+				// true = reference, null = generic or unknown
+				return member.ReturnType.IsReferenceType != false
+					|| (member.ReturnType.IsConstructedReturnType && member.ReturnType.Name == "Nullable");
 			}
-		}
-		
-		public static bool IsGenericReferenceType(IReturnType type)
-		{
-			if (type == null || !type.IsGenericReturnType)
-				return false;
-			ITypeParameter param = type.CastToGenericReturnType().TypeParameter;
-			return param.HasReferenceTypeConstraint
-				|| param.Constraints.Any(constr => constr.IsReferenceType == true);
 		}
 		
 		public bool HasRange {
 			get {
 				return IsTypeWithRange(member.ReturnType) ||
 					// IsConstructedReturnType handles Nullable types
-					(member.ReturnType.IsConstructedReturnType &&
-					 IsTypeWithRange(member.ReturnType.CastToConstructedReturnType().TypeArguments.First()));
+					(member.ReturnType.IsConstructedReturnType && member.ReturnType.Name == "Nullable"
+					&& IsTypeWithRange(member.ReturnType.CastToConstructedReturnType().TypeArguments.First()));
 			}
 		}
 		

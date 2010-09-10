@@ -53,7 +53,8 @@ namespace SharpRefactoring.Gui
 			
 			foreach (PropertyOrFieldWrapper w in filtered) {
 				if (w.AddCheckForNull) {
-					if (w.Type.IsReferenceType == true || PropertyOrFieldWrapper.IsGenericReferenceType(w.Type))
+					// true = reference, null = generic or unknown
+					if (w.Type.IsReferenceType != false)
 						block.AddChild(
 							new IfElseStatement(
 								new BinaryOperatorExpression(new IdentifierExpression(w.ParameterName), BinaryOperatorType.Equality, new PrimitiveExpression(null)),
