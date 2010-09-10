@@ -4,7 +4,7 @@
 using System;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.SharpDevelop.Refactoring
@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// <summary>
 	/// Description of ContextActionsPopupBase.
 	/// </summary>
-	public abstract class ContextActionsPopupBase : Popup
+	public abstract class ContextActionsPopupBase : ExtendedPopup
 	{
 		protected ContextActionsPopupBase()
 		{
