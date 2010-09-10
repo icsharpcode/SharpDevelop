@@ -162,9 +162,9 @@ namespace ICSharpCode.Reports.Core
 		
 		private IndexList BuildChildList()
 		{
-			var t = store as TableStrategy;
-			IndexList i = t.IndexList;
-			GroupComparer gc = i[t.CurrentPosition] as GroupComparer;
+
+			IndexList i = store.IndexList;
+			GroupComparer gc = i[store.CurrentPosition] as GroupComparer;
 			if (gc == null) {
 				return null;
 			}

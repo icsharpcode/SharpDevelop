@@ -39,6 +39,32 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		}
 		
 		
+		#region group by StringValue
+		
+		[Test]
+		public void Has_Children()
+		{
+			var dataNav = PrepareStringGrouping();
+			while (dataNav.MoveNext()) {
+				Assert.That(dataNav.HasChildren,Is.True);
+			}
+		}
+		
+		
+		[Test]
+		public void Can_Read_Child_Count ()
+		{
+			var dataNav = PrepareStringGrouping();
+			while (dataNav.MoveNext()) 
+			{
+				Assert.That(dataNav.ChildListCount,Is.GreaterThan(0));
+			}
+		}
+		
+		
+		#endregion
+		
+		
 		private IDataNavigator PrepareStringGrouping ()
 		{
 			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);

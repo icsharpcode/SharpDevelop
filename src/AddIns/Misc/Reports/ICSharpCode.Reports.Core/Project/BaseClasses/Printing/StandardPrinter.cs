@@ -239,7 +239,11 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				ExportText textItem = element as ExportText;
 				
 				if (textItem != null) {
-					textItem.Text = evaluator.Evaluate(textItem.Text);
+					
+					string s =  evaluator.Evaluate(textItem.Text);
+					Console.WriteLine("\teval {0} - {1} ",textItem.Text,s);
+//					textItem.Text = evaluator.Evaluate(textItem.Text);
+					textItem.Text = s;
 				}
 			}
 		}
