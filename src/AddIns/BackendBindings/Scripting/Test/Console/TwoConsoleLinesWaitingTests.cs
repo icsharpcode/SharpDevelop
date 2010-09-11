@@ -14,82 +14,84 @@ namespace ICSharpCode.Scripting.Tests.Console
 	/// before ReadLine is called.
 	/// </summary>
 	[TestFixture]
-	public class TwoConsoleLinesWaitingTests
+	public class TwoConsoleLinesWaitingTests : ScriptingConsoleTestsBase
 	{
-		string line1;
-		string line2;
-		TestableScriptingConsole scriptingConsole;
-		bool lineAvailableBeforeFirstEnterKey;
-		bool lineAvailableAfterFirstEnterKey;
-		bool lineAvailableAtEnd;
-		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		[SetUp]
+		public void Init()
 		{
-			using (scriptingConsole = new TestableScriptingConsole()) { 
-				MockConsoleTextEditor textEditor = scriptingConsole.MockConsoleTextEditor;
-				textEditor.RaisePreviewKeyDownEvent(Input.Key.A);
-				textEditor.RaisePreviewKeyDownEvent(Input.Key.B);
-				textEditor.RaisePreviewKeyDownEvent(Input.Key.C);
-				lineAvailableBeforeFirstEnterKey = scriptingConsole.IsLineAvailable;
-				textEditor.RaisePreviewKeyDownEventForDialogKey(Input.Key.Enter);
-				lineAvailableAfterFirstEnterKey = scriptingConsole.IsLineAvailable;
- 				
-				textEditor.RaisePreviewKeyDownEvent(Input.Key.D);
-				textEditor.RaisePreviewKeyDownEvent(Input.Key.E);
-				textEditor.RaisePreviewKeyDownEvent(Input.Key.F);
-				textEditor.RaisePreviewKeyDownEventForDialogKey(Input.Key.Enter);
+			CreateConsole();
+		}
+		
+		[Test]
+		public void IsLineAvailable_ThreeCharactersWritten_ReturnsFalse()
+		{
+			WriteThreeCharactersToTextEditor();
+			bool result = TestableScriptingConsole.IsLineAvailable;
+			Assert.IsFalse(result);
+		}
+		
+		void WriteThreeCharactersToTextEditor()
+		{
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Input.Key.A);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Input.Key.B);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Input.Key.C);
+		}
+		
+		[Test]
+		public void ReadLine_WriteThreeCharactersFollowedByEnterKey_ReturnsFirstThreeCharacters()
+		{
+			WriteThreeCharactersFollowedByEnterKey();
+			string line = TestableScriptingConsole.ReadLine(0);
+			
+			string expectedLine = "ABC";
+			Assert.AreEqual(expectedLine, line);
+		}
+		
+		void WriteThreeCharactersFollowedByEnterKey()
+		{
+			WriteThreeCharactersToTextEditor();
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Input.Key.Enter);
+		}
+		
+		[Test]
+		public void ReadLine_WriteTwoLinesWithThreeCharactersInEachLine_SecondLineReadReturnsSecondLinesCharacters()
+		{
+			WriteTwoLinesEachFollowedByEnterKey();
 
-				Thread t = new Thread(ReadLinesOnSeparateThread);
-				t.Start();
-
-				int sleepInterval = 20;
-				int currentWait = 0;
-				int maxWait = 2000;
-				
-				while (line2 == null && currentWait < maxWait) {
-					Thread.Sleep(sleepInterval);
-					currentWait += sleepInterval;
-				}
-				
-				lineAvailableAtEnd = scriptingConsole.IsLineAvailable;
-			}
+			TestableScriptingConsole.ReadLine(0);
+			string secondLine = TestableScriptingConsole.ReadLine(0);
+			
+			string expectedSecondLine = "DEF";
+			Assert.AreEqual(expectedSecondLine, secondLine);
 		}
 		
-		[Test]
-		public void FirstLineRead()
+		void WriteTwoLinesEachFollowedByEnterKey()
 		{
-			Assert.AreEqual("ABC", line1);
-		}
-		
-		[Test]
-		public void SecondLineRead()
-		{
-			Assert.AreEqual("DEF", line2);
-		}
-		
-		[Test]
-		public void LineAvailableBeforeEnterKeyPressed()
-		{
-			Assert.IsFalse(lineAvailableBeforeFirstEnterKey);
+			WriteThreeCharactersFollowedByEnterKey();
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Input.Key.D);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Input.Key.E);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Input.Key.F);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Input.Key.Enter);
 		}
 
 		[Test]
-		public void LineAvailableAfterEnterKeyPressed()
+		public void IsLineAvailable_ThreeCharactersAndEnterKeyWrittenToTextEditor_ReturnsTrue()
 		{
-			Assert.IsTrue(lineAvailableAfterFirstEnterKey);
+			WriteThreeCharactersFollowedByEnterKey();
+			bool result = TestableScriptingConsole.IsLineAvailable;
+			
+			Assert.IsTrue(result);
 		}
 		
 		[Test]
-		public void LineAvailableAfterAllLinesRead()
+		public void IsLineAvailable_TwoLinesRead_ReturnsFalse()
 		{
-			Assert.IsFalse(lineAvailableAtEnd);
-		}
-		
-		void ReadLinesOnSeparateThread()
-		{
-			line1 = scriptingConsole.ReadLine(0);
-			line2 = scriptingConsole.ReadLine(0);
+			WriteTwoLinesEachFollowedByEnterKey();
+			TestableScriptingConsole.ReadLine(0);
+			TestableScriptingConsole.ReadLine(0);
+			bool result = TestableScriptingConsole.IsLineAvailable;
+			
+			Assert.IsFalse(result);
 		}
 	}
 }

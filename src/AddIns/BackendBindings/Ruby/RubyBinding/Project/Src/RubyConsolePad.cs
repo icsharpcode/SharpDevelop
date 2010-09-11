@@ -3,6 +3,7 @@
 
 using System;
 using ICSharpCode.Scripting;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using AvalonEdit = ICSharpCode.AvalonEdit;
 
@@ -10,16 +11,24 @@ namespace ICSharpCode.RubyBinding
 {
 	public class RubyConsolePad : AbstractPadContent, IScriptingConsolePad
 	{
-		ThreadSafeScriptingConsoleTextEditor consoleTextEditor;
+		ScriptingConsoleTextEditor consoleTextEditor;
 		AvalonEdit.TextEditor textEditor;
 		RubyConsoleHost host;
 		
 		public RubyConsolePad()
 		{
-			textEditor = new AvalonEdit.TextEditor();
-			consoleTextEditor = new ThreadSafeScriptingConsoleTextEditor(textEditor);
-			host = new RubyConsoleHost(consoleTextEditor);
+			textEditor = CreateTextEditor();
+			ControlDispatcher dispatcher = new ControlDispatcher(textEditor);
+			consoleTextEditor = new ScriptingConsoleTextEditor(textEditor);
+			host = new RubyConsoleHost(consoleTextEditor, dispatcher);
 			host.Run();
+		}
+		
+		AvalonEdit.TextEditor CreateTextEditor()
+		{
+			object textEditor;
+			EditorControlService.CreateEditor(out textEditor);
+			return (AvalonEdit.TextEditor)textEditor;
 		}
 		
 		public IScriptingConsoleTextEditor ScriptingConsoleTextEditor {

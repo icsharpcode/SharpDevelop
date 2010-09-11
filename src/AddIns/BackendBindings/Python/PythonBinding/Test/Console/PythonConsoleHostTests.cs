@@ -82,25 +82,12 @@ namespace PythonBinding.Tests.Console
 		}
 		
 		/// <summary>
-		/// When the console is disposed calling ReadLine returns null.
-		/// </summary>
-		[Test]
-		public void HostDisposesPythonConsole()
-		{
-			DerivedPythonConsoleHost host = new DerivedPythonConsoleHost(new MockConsoleTextEditor());
-			PythonConsole console = host.CallCreateConsole(null, null, null) as PythonConsole;
-			host.Dispose();
-
-			Assert.IsNull(console.ReadLine(0));
-		}
-		
-		/// <summary>
 		/// Makes sure the Dispose method checks if the python console is null before trying to dispose it.
 		/// </summary>
 		[Test]
 		public void DisposingPythonConsoleHostWithoutCreatingPythonConsole()
 		{
-			PythonConsoleHost host = new PythonConsoleHost(new MockConsoleTextEditor());
+			PythonConsoleHost host = new PythonConsoleHost(new FakeConsoleTextEditor(), new FakeControlDispatcher());
 			host.Dispose();
 		}
 		

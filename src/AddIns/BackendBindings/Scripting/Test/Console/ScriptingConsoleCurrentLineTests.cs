@@ -16,7 +16,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 	public class ScriptingConsoleCurrentLineTests
 	{
 		TestableScriptingConsole console;
-		MockConsoleTextEditor textEditor;
+		FakeConsoleTextEditor textEditor;
 		string prompt = ">>> ";
 		
 		[SetUp]
@@ -24,7 +24,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 		{
 			console = new TestableScriptingConsole();
 			console.Write(prompt, ScriptingStyle.Prompt);
-			textEditor = console.MockConsoleTextEditor;
+			textEditor = console.FakeConsoleTextEditor;
 		}
 		
 		[Test]

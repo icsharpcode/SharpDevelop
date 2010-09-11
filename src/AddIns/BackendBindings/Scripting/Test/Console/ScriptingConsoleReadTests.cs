@@ -16,103 +16,113 @@ namespace ICSharpCode.Scripting.Tests.Console
 	/// </summary>
 	[TestFixture]
 	public class ScriptingConsoleReadTests : ScriptingConsoleTestsBase
-	{
-		int initialAutoIndentSize = 4;
-		string readLine;
-		int autoIndentSize;
-		bool raiseKeyPressEvent;
-		bool raiseDialogKeyPressEvent;
-		
-		[TestFixtureSetUp]
-		public void Init()
+	{	
+		[Test]
+		public void ReadLine_AutoIndentIsTwo_TwoSpacesWrittenToConsoleTextEditor()
 		{
-			base.CreateConsole();
+			CreateConsole();
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
 			
-			autoIndentSize = initialAutoIndentSize;
-			Thread thread = new Thread(ReadLineFromConsoleOnDifferentThread);
-			thread.Start();
-						
-			int sleepInterval = 10;
-			int maxWait = 2000;
-			int currentWait = 0;
-			while ((MockConsoleTextEditor.Text.Length < autoIndentSize) && (currentWait < maxWait)) {
-				Thread.Sleep(sleepInterval);
-				currentWait += sleepInterval;
-			}
+			int indent = 2;
+			TestableScriptingConsole.ReadLine(indent);
 			
-			raiseKeyPressEvent = MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
-			raiseDialogKeyPressEvent = MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+			string expectedText = "  ";
+			Assert.AreEqual(expectedText, FakeConsoleTextEditor.TextPassedToWrite);
+		}
+		
+		[Test]
+		public void ReadLine_AutoIndentIsZero_NoTextWrittenToConsoleTextEditor()
+		{
+			CreateConsole();
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
 			
-			currentWait = 0;
-			while ((MockConsoleTextEditor.Text.Length < autoIndentSize + 2) && (currentWait < maxWait)) {
-				Thread.Sleep(10);
-				currentWait += sleepInterval;				
-			}
-			thread.Join(2000);
-		}
-		
-		[TestFixtureTearDown]
-		public void TearDown()
-		{
-			TestableScriptingConsole.Dispose();
-		}
-
-		[Test]
-		public void ReadLineFromConsole()
-		{
-			string expectedString = String.Empty.PadLeft(initialAutoIndentSize) + "A";
-			Assert.AreEqual(expectedString, readLine);
-		}
-		
-		[Test]
-		public void ReadLineWithNonZeroAutoIndentSizeWritesSpacesToTextEditor()
-		{
-			string expectedString = String.Empty.PadLeft(initialAutoIndentSize) + "A\r\n";
-			Assert.AreEqual(expectedString, MockConsoleTextEditor.Text);
-		}
-		
-		[Test]
-		public void DocumentInsertCalledWhenAutoIndentIsNonZero()
-		{
-			Assert.IsTrue(MockConsoleTextEditor.IsWriteCalled);
-		}
-		
-		[Test]
-		public void NoTextWrittenWhenAutoIndentSizeIsZero()
-		{
-			TestableScriptingConsole console = new TestableScriptingConsole();
-			MockConsoleTextEditor textEditor = console.MockConsoleTextEditor;
-			textEditor.RaisePreviewKeyDownEvent(Key.A);
-			textEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+			FakeConsoleTextEditor.IsWriteCalled = false;
 			
-			textEditor.IsWriteCalled = false;
-			console.ReadLine(0);
-			Assert.IsFalse(textEditor.IsWriteCalled);
+			TestableScriptingConsole.ReadLine(0);
+			
+			Assert.IsFalse(FakeConsoleTextEditor.IsWriteCalled);
 		}
 		
-		/// <summary>
-		/// Should return false for any character that should be handled by the text editor itself.
-		/// </summary>
 		[Test]
-		public void RaiseKeyPressEventReturnedFalse()
+		public void ProcessPreviewKeyDown_TextEditorPreviewKeyDownEventFiresWithLetterA_ReturnsFalseForLetterThatShouldBeHandledByTextEditorItself()
 		{
-			Assert.IsFalse(raiseKeyPressEvent);
+			CreateConsole();
+			bool result = FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			Assert.IsFalse(result);
 		}
 		
-		/// <summary>
-		/// Should return false for any character that should be handled by the text editor itself.
-		/// </summary>
 		[Test]
-		public void RaiseDialogKeyPressEventReturnedFalse()
+		public void ProcessPreviewKeyDown_TextEditorPreviewKeyDownEventFiresWithEnterKey_ReturnsFalseForLetterThatShouldBeHandledByTextEditorItself()
 		{
-			Assert.IsFalse(raiseDialogKeyPressEvent);
+			CreateConsole();
+			bool result = FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+			Assert.IsFalse(result);
 		}
 		
-		void ReadLineFromConsoleOnDifferentThread()
+		[Test]
+		public void ReadLine_NoLinesAvailable_ReturnsNull()
 		{
-			System.Console.WriteLine("Reading on different thread");
-			readLine = TestableScriptingConsole.ReadLine(autoIndentSize);
-			System.Console.WriteLine("Finished reading on different thread");
+			CreateConsole();
+			string line = TestableScriptingConsole.ReadLine(0);
+			
+			Assert.IsNull(line);
+		}
+		
+		[Test]
+		public void ReadLine_OneLineWaitingAndAutoIndentIsTwo_TwoSpacesAddedToLineText()
+		{
+			CreateConsole();
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+			
+			int indent = 2;
+			string line = TestableScriptingConsole.ReadLine(indent);
+			
+			string expectedLine = "  A";
+			Assert.AreEqual(expectedLine, line);
+		}
+		
+		[Test]
+		public void FireLineReceivedEvent_LineReceivedEventHandlerRegistered_CallsEventHandler()
+		{
+			CreateConsole();
+			
+			bool fired = false;
+			TestableScriptingConsole.LineReceived += delegate { 
+				fired = true;
+			};
+			
+			TestableScriptingConsole.CallBaseFireLineReceivedEvent();
+			
+			Assert.IsTrue(fired);
+		}
+		
+		[Test]
+		public void ReadFirstUnreadLine_OneLineUnread_ReturnsLine()
+		{
+			CreateConsole();
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+			
+			string line = TestableScriptingConsole.ReadFirstUnreadLine();
+			
+			string expectedline = "A";
+			Assert.AreEqual(expectedline, line);
+		}
+		
+		[Test]
+		public void ReadFirstUnreadLine_OneLineUnreadReadTwoLines_ReturnsNull()
+		{
+			CreateConsole();
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+			
+			TestableScriptingConsole.ReadFirstUnreadLine();
+			string line = TestableScriptingConsole.ReadFirstUnreadLine();
+			
+			Assert.IsNull(line);
 		}
 	}
 }

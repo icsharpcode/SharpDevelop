@@ -2,17 +2,25 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+
 using ICSharpCode.Scripting;
 using Microsoft.Scripting.Hosting.Shell;
 
 namespace ICSharpCode.RubyBinding
 {
-	public class RubyConsole : ScriptingConsole, IConsole
+	public class RubyConsole : ThreadSafeScriptingConsole, IConsole, IMemberProvider
 	{
-		public RubyConsole(IScriptingConsoleTextEditor textEditor)
-			: base(textEditor)
+		public RubyConsole(IScriptingConsoleTextEditor textEditor, IControlDispatcher dispatcher)
+			: this(new ScriptingConsole(textEditor), dispatcher)
 		{
+		}
+		
+		RubyConsole(ScriptingConsole console, IControlDispatcher dispatcher)
+			: base(console, dispatcher)
+		{
+			console.MemberProvider = this;
 		}
 		
 		public CommandLine CommandLine { get; set; }			
@@ -35,6 +43,16 @@ namespace ICSharpCode.RubyBinding
 		public void WriteLine(string text, Style style)
 		{
 			base.WriteLine(text, (ScriptingStyle)style);
+		}
+		
+		public IList<string> GetMemberNames(string name)
+		{
+			return new string[0];
+		}
+		
+		public IList<string> GetGlobals(string name)
+		{
+			return new string[0];
 		}
 	}
 }

@@ -27,15 +27,15 @@ namespace ICSharpCode.Scripting.Tests.Console
 			base.CreateConsole();
 			TestableScriptingConsole.WriteLine(prompt, ScriptingStyle.Prompt);
 			
-			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
- 			showCompletionWindowCalledBeforeDotTypedIn = MockConsoleTextEditor.IsShowCompletionWindowCalled;
-			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.OemPeriod);		
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+ 			showCompletionWindowCalledBeforeDotTypedIn = FakeConsoleTextEditor.IsShowCompletionWindowCalled;
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.OemPeriod);		
 		}
 		
 		[Test]
 		public void ShowCompletionWindowCalled()
 		{
-			Assert.IsTrue(MockConsoleTextEditor.IsShowCompletionWindowCalled);
+			Assert.IsTrue(FakeConsoleTextEditor.IsShowCompletionWindowCalled);
 		}
 
 		[Test]
@@ -47,7 +47,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 		[Test]
 		public void ScriptingConsoleCompletionDataProviderPassedToShowCompletionWindowMethod()
 		{
-			Assert.IsInstanceOf(typeof(ScriptingConsoleCompletionDataProvider), MockConsoleTextEditor.CompletionProviderPassedToShowCompletionWindow);
+			Assert.IsInstanceOf(typeof(ScriptingConsoleCompletionDataProvider), FakeConsoleTextEditor.CompletionProviderPassedToShowCompletionWindow);
 		}
 	}
 }

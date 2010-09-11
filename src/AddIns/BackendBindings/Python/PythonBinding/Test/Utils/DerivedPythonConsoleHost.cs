@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Utils;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
@@ -15,7 +16,8 @@ namespace PythonBinding.Tests.Console
 	{
 		ScriptingConsoleOutputStream outputStream;
 		
-		public DerivedPythonConsoleHost(IScriptingConsoleTextEditor textEditor) : base(textEditor)
+		public DerivedPythonConsoleHost(IScriptingConsoleTextEditor textEditor)
+			: base(textEditor, new FakeControlDispatcher())
 		{
 		}
 		

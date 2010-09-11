@@ -2,23 +2,23 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Windows.Input;
 using ICSharpCode.Scripting;
 
 namespace ICSharpCode.Scripting.Tests.Utils
 {
-	public class MockScriptingConsole : IScriptingConsole
+	public class FakeConsoleTextEditorKeyEventArgs : ConsoleTextEditorKeyEventArgs
 	{
-		public string TextPassedToSendLine;
-		public string TextPassedToSendText;
+		bool handled;
 		
-		public void SendLine(string text)
+		public FakeConsoleTextEditorKeyEventArgs(Key key)
+			: base(key)
 		{
-			TextPassedToSendLine = text;
 		}
 		
-		public void SendText(string text)
-		{
-			TextPassedToSendText = text;
+		public override bool Handled {
+			get { return handled; }
+			set { handled = value; }
 		}
 	}
 }

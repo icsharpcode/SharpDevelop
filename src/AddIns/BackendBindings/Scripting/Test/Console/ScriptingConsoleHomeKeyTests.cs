@@ -29,20 +29,20 @@ namespace ICSharpCode.Scripting.Tests.Console
 		[Test]
 		public void HomeKeyPressedWhenNoUserTextInConsole()
 		{
-			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Home);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Home);
 		
 			int expectedColumn = prompt.Length;
-			Assert.AreEqual(expectedColumn, MockConsoleTextEditor.Column);
+			Assert.AreEqual(expectedColumn, FakeConsoleTextEditor.Column);
 		}
 		
 		[Test]
 		public void HomeKeyPressedWhenTextInConsole()
 		{
-			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
-			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Home);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Home);
 
 			int expectedColumn = prompt.Length;
-			Assert.AreEqual(expectedColumn, MockConsoleTextEditor.Column);
+			Assert.AreEqual(expectedColumn, FakeConsoleTextEditor.Column);
 		}		
 	}
 }

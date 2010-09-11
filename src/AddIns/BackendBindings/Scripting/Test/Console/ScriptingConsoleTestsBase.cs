@@ -9,13 +9,13 @@ namespace ICSharpCode.Scripting.Tests.Console
 {
 	public class ScriptingConsoleTestsBase
 	{
-		public MockConsoleTextEditor MockConsoleTextEditor;
+		public FakeConsoleTextEditor FakeConsoleTextEditor;
 		public TestableScriptingConsole TestableScriptingConsole;
 		
 		public void CreateConsole()
 		{
 			TestableScriptingConsole = new TestableScriptingConsole();
-			MockConsoleTextEditor = TestableScriptingConsole.MockConsoleTextEditor;
+			FakeConsoleTextEditor = TestableScriptingConsole.FakeConsoleTextEditor;
 		}
 		
 		public void WritePrompt()

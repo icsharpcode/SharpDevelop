@@ -8,6 +8,7 @@ using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.Scripting;
 using ICSharpCode.Scripting.Tests.Console;
+using ICSharpCode.Scripting.Tests.Utils;
 using Microsoft.Scripting.Hosting;
 using NUnit.Framework;
 

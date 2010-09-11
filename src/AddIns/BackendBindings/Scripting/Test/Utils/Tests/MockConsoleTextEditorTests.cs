@@ -11,12 +11,12 @@ namespace ICSharpCode.Scripting.Tests.Utils.Tests
 	[TestFixture]
 	public class MockConsoleTextEditorTests
 	{
-		MockConsoleTextEditor textEditor;
+		FakeConsoleTextEditor textEditor;
 		
 		[SetUp]
 		public void Init()
 		{
-			textEditor = new MockConsoleTextEditor();
+			textEditor = new FakeConsoleTextEditor();
 		}
 		
 		[Test]

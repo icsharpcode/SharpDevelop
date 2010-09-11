@@ -19,14 +19,14 @@ namespace ICSharpCode.Scripting.Tests.Console
 		public void Init()
 		{
 			base.CreateConsole();
-			MockConsoleTextEditor.Text = String.Empty;			
+			FakeConsoleTextEditor.Text = String.Empty;			
 		}
 		
 		[Test]
 		public void WriteLine()
 		{
 			TestableScriptingConsole.WriteLine();
-			Assert.AreEqual(Environment.NewLine, MockConsoleTextEditor.Text);
+			Assert.AreEqual(Environment.NewLine, FakeConsoleTextEditor.Text);
 		}
 		
 		[Test]
@@ -34,7 +34,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 		{
 			TestableScriptingConsole.WriteLine("test", ScriptingStyle.Out);
 			string expectedText = "test" + Environment.NewLine;
-			Assert.AreEqual(expectedText, MockConsoleTextEditor.Text);
+			Assert.AreEqual(expectedText, FakeConsoleTextEditor.Text);
 		}	
 		
 		[Test]
@@ -42,7 +42,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 		{
 			TestableScriptingConsole.Write("a", ScriptingStyle.Out);
 			TestableScriptingConsole.Write("b", ScriptingStyle.Out);
-			Assert.AreEqual("ab", MockConsoleTextEditor.Text);
+			Assert.AreEqual("ab", FakeConsoleTextEditor.Text);
 		}
 		
 		[Test]

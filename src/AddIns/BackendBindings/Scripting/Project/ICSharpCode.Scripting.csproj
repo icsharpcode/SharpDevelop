@@ -96,7 +96,8 @@
     <Compile Include="Src\SendSelectedTextToScriptingConsoleCommand.cs" />
     <Compile Include="Src\SendToScriptingConsoleCommand.cs" />
     <Compile Include="Src\StringListLock.cs" />
-    <Compile Include="Src\ThreadSafeScriptingConsoleTextEditor.cs" />
+    <Compile Include="Src\ThreadSafeScriptingConsole.cs" />
+    <Compile Include="Src\ThreadSafeScriptingConsoleEvents.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">

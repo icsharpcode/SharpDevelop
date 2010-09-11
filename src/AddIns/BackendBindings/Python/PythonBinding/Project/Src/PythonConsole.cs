@@ -10,11 +10,17 @@ using Microsoft.Scripting.Hosting.Shell;
 
 namespace ICSharpCode.PythonBinding
 {
-	public class PythonConsole : ScriptingConsole, IConsole
+	public class PythonConsole : ThreadSafeScriptingConsole, IConsole, IMemberProvider
 	{
-		public PythonConsole(IScriptingConsoleTextEditor textEditor)
-			: base(textEditor)
+		public PythonConsole(IScriptingConsoleTextEditor textEditor, IControlDispatcher dispatcher)
+			: this(new ScriptingConsole(textEditor), dispatcher)
 		{
+		}
+		
+		PythonConsole(ScriptingConsole console, IControlDispatcher dispatcher)
+			: base(console, dispatcher)
+		{
+			console.MemberProvider = this;
 		}
 		
 		public CommandLine CommandLine { get; set; }
@@ -32,12 +38,12 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Gets the member names of the specified item.
 		/// </summary>
-		public override IList<string> GetMemberNames(string name)
+		public IList<string> GetMemberNames(string name)
 		{
 			return CommandLine.GetMemberNames(name);
 		}
 		
-		public override IList<string> GetGlobals(string name)
+		public IList<string> GetGlobals(string name)
 		{
 			return CommandLine.GetGlobals(name);
 		}

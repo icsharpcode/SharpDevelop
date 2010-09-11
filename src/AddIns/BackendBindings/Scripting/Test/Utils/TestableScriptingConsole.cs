@@ -10,20 +10,21 @@ namespace ICSharpCode.Scripting.Tests.Utils
 {
 	public class TestableScriptingConsole : ScriptingConsole
 	{
-		public MockConsoleTextEditor MockConsoleTextEditor;
+		public FakeConsoleTextEditor FakeConsoleTextEditor;
 		public FakeLock LockCreated;
 		public bool IsLineReceivedEventFired;
 		public int UnreadLineCountWhenLineReceivedEventFired = -1;
 		
 		public TestableScriptingConsole()
-			: this(new MockConsoleTextEditor())
+			: this(new FakeConsoleTextEditor())
 		{
+			MemberProvider = new MockMemberProvider();
 		}
 		
 		TestableScriptingConsole(IScriptingConsoleTextEditor consoleTextEditor)
 			: base(consoleTextEditor)
 		{
-			MockConsoleTextEditor = (MockConsoleTextEditor)consoleTextEditor;
+			FakeConsoleTextEditor = (FakeConsoleTextEditor)consoleTextEditor;
 		}
 		
 		public List<string> GetUnreadLinesList()
@@ -46,6 +47,11 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		{
 			IsLineReceivedEventFired = true;
 			UnreadLineCountWhenLineReceivedEventFired = LockCreated.Lines.Count;
+		}
+		
+		public void CallBaseFireLineReceivedEvent()
+		{
+			base.FireLineReceivedEvent();
 		}
 	}
 }

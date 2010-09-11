@@ -10,12 +10,12 @@ namespace ICSharpCode.Scripting.Tests.Utils.Tests
 	[TestFixture]
 	public class MockControlDispatcherTestFixture
 	{
-		MockControlDispatcher dispatcher;
+		FakeControlDispatcher dispatcher;
 		
 		[SetUp]
 		public void Init()
 		{
-			dispatcher = new MockControlDispatcher();
+			dispatcher = new FakeControlDispatcher();
 		}
 		
 		[Test]

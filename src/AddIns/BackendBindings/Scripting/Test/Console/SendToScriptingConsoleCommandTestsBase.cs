@@ -12,16 +12,16 @@ namespace ICSharpCode.Scripting.Tests.Console
 {
 	public abstract class SendToScriptingConsoleCommandTestsBase
 	{
-		protected MockConsoleTextEditor fakeConsoleTextEditor;
+		protected FakeConsoleTextEditor fakeConsoleTextEditor;
 		protected MockTextEditor fakeTextEditor;
 		protected MockWorkbench workbench;
-		protected MockScriptingConsole fakeConsole;
+		protected FakeScriptingConsole fakeConsole;
 		
 		public void CreateFakeWorkbench()
 		{
 			workbench = MockWorkbench.CreateWorkbenchWithOneViewContent("test.py");
-			fakeConsoleTextEditor = workbench.MockScriptingConsolePad.MockConsoleTextEditor;
-			fakeConsole = workbench.MockScriptingConsolePad.MockScriptingConsole;
+			fakeConsoleTextEditor = workbench.FakeScriptingConsolePad.FakeConsoleTextEditor;
+			fakeConsole = workbench.FakeScriptingConsolePad.FakeScriptingConsole;
 			fakeTextEditor = workbench.ActiveMockEditableViewContent.MockTextEditor;
 		}
 	}

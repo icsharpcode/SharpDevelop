@@ -19,10 +19,10 @@ namespace ICSharpCode.PythonBinding
 		IScriptingConsoleTextEditor textEditor;
 		PythonConsole pythonConsole;
 		
-		public PythonConsoleHost(IScriptingConsoleTextEditor textEditor)
+		public PythonConsoleHost(IScriptingConsoleTextEditor textEditor, IControlDispatcher dispatcher)
 		{
 			this.textEditor = textEditor;
-			pythonConsole = new PythonConsole(textEditor);
+			pythonConsole = new PythonConsole(textEditor, dispatcher);
 		}
 				
 		public PythonConsole PythonConsole {

@@ -7,7 +7,14 @@ namespace ICSharpCode.Scripting
 {
 	public interface IScriptingConsole
 	{
+		event EventHandler LineReceived;
+		
 		void SendLine(string line);
 		void SendText(string text);
+		void WriteLine();
+		void WriteLine(string text, ScriptingStyle style);
+		void Write(string text, ScriptingStyle style);
+		string ReadLine(int autoIndentSize);
+		string ReadFirstUnreadLine();
 	}
 }

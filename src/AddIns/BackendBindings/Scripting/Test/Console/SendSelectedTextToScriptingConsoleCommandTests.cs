@@ -44,7 +44,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 			
 			sendSelectedTextToConsoleCommand.Run();
 			
-			bool broughtToFront = workbench.MockScriptingConsolePad.BringToFrontCalled;
+			bool broughtToFront = workbench.FakeScriptingConsolePad.BringToFrontCalled;
 			Assert.IsTrue(broughtToFront);
 		}
 	}

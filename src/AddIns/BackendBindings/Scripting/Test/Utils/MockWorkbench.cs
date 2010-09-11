@@ -15,7 +15,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 {
 	public class MockWorkbench : IScriptingWorkbench
 	{		
-		public MockScriptingConsolePad MockScriptingConsolePad = new MockScriptingConsolePad();
+		public FakeScriptingConsolePad FakeScriptingConsolePad = new FakeScriptingConsolePad();
 		public MockEditableViewContent ActiveMockEditableViewContent;
 		
 		public static MockWorkbench CreateWorkbenchWithOneViewContent(string fileName)
@@ -35,7 +35,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 				
 		public IScriptingConsolePad GetScriptingConsolePad()
 		{
-			return MockScriptingConsolePad;
+			return FakeScriptingConsolePad;
 		}
 	}
 }

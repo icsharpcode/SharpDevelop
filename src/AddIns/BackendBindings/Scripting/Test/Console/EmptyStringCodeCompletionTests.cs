@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop;
 using NUnit.Framework;
 

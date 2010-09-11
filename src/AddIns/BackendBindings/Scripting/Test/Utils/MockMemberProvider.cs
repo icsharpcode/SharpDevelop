@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.Scripting;
 
-namespace ICSharpCode.Scripting.Tests.Console
+namespace ICSharpCode.Scripting.Tests.Utils
 {
 	public class MockMemberProvider : IMemberProvider
 	{

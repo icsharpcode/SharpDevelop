@@ -28,31 +28,31 @@ namespace ICSharpCode.Scripting.Tests.Console
 		
 		public void EnterKeyDoesNotBreakUpExistingLine()
  		{
-			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
-			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.B);
- 			MockConsoleTextEditor.SelectionStart = 1 + prompt.Length;
- 			MockConsoleTextEditor.Column = 1 + prompt.Length;
-			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.B);
+ 			FakeConsoleTextEditor.SelectionStart = 1 + prompt.Length;
+ 			FakeConsoleTextEditor.Column = 1 + prompt.Length;
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
  			
-			Assert.AreEqual(">>> AB\r\n", MockConsoleTextEditor.Text);
+			Assert.AreEqual(">>> AB\r\n", FakeConsoleTextEditor.Text);
  		}
  		
  		[Test]
  		public void PreviousLineIsReadOnlyAfterEnterPressed()
  		{
-			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
-			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.B);
-			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.B);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
  			TestableScriptingConsole.Write(prompt, ScriptingStyle.Prompt);
  			
  			// Move up a line with cursor.
- 			MockConsoleTextEditor.Line = 0;
-			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.C);
+ 			FakeConsoleTextEditor.Line = 0;
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.C);
  			
 			string expectedText = 
 				">>> AB\r\n" +
 				">>> ";
- 			Assert.AreEqual(expectedText, MockConsoleTextEditor.Text);
+ 			Assert.AreEqual(expectedText, FakeConsoleTextEditor.Text);
  		}
 	}
 }

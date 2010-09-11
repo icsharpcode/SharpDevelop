@@ -91,7 +91,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 		public void SendLine_NoUnreadLines_LineWrittenToConsoleTextEditor()
 		{
 			SendLineToConsole("test");
-			string text = MockConsoleTextEditor.TextPassedToWrite;
+			string text = FakeConsoleTextEditor.TextPassedToWrite;
 			string expectedTextWritten = "test\r\n";
 			
 			Assert.AreEqual(expectedTextWritten, text);
@@ -102,20 +102,20 @@ namespace ICSharpCode.Scripting.Tests.Console
 		{
 			base.CreateConsole();
 			WritePrompt();
-			MockConsoleTextEditor.Text = 
+			FakeConsoleTextEditor.Text = 
 				">>> first\r\n" +
 				">>> second\r\n" +
 				">>> ";
 			
-			MockConsoleTextEditor.Line = 0;
-			MockConsoleTextEditor.Column = 0;
+			FakeConsoleTextEditor.Line = 0;
+			FakeConsoleTextEditor.Column = 0;
 			TestableScriptingConsole.SendLine("test");
 			
 			int expectedLine = 2;
 			int expectedColumn = 4;
 			Location expectedLocation = new Location(expectedColumn, expectedLine);
 			
-			Location location = MockConsoleTextEditor.CursorLocationWhenWriteTextCalled;
+			Location location = FakeConsoleTextEditor.CursorLocationWhenWriteTextCalled;
 			
 			Assert.AreEqual(expectedLocation, location);			
 		}
@@ -125,7 +125,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 		{
 			base.CreateConsole();
 			TestableScriptingConsole.SendLine("test");
-			string text = MockConsoleTextEditor.TextPassedToWrite;
+			string text = FakeConsoleTextEditor.TextPassedToWrite;
 			
 			Assert.IsNull(text);
 		}
@@ -137,7 +137,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 			TestableScriptingConsole.SendLine("test");
 			
 			TestableScriptingConsole.Write(">>> ", ScriptingStyle.Prompt);
-			string text = MockConsoleTextEditor.Text;
+			string text = FakeConsoleTextEditor.Text;
 			
 			string expectedText = 
 				">>> test\r\n";
@@ -153,7 +153,7 @@ namespace ICSharpCode.Scripting.Tests.Console
 			TestableScriptingConsole.Write(">>> ", ScriptingStyle.Prompt);
 			TestableScriptingConsole.Write(">>> ", ScriptingStyle.Prompt);
 
-			string text = MockConsoleTextEditor.Text;
+			string text = FakeConsoleTextEditor.Text;
 			
 			string expectedText = 
 				">>> test\r\n" +

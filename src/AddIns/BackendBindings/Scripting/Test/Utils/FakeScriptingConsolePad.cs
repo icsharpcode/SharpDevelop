@@ -6,10 +6,10 @@ using ICSharpCode.Scripting;
 
 namespace ICSharpCode.Scripting.Tests.Utils
 {
-	public class MockScriptingConsolePad : IScriptingConsolePad
+	public class FakeScriptingConsolePad : IScriptingConsolePad
 	{
-		public MockConsoleTextEditor MockConsoleTextEditor = new MockConsoleTextEditor();
-		public MockScriptingConsole MockScriptingConsole = new MockScriptingConsole();
+		public FakeConsoleTextEditor FakeConsoleTextEditor = new FakeConsoleTextEditor();
+		public FakeScriptingConsole FakeScriptingConsole = new FakeScriptingConsole();
 		
 		public bool BringToFrontCalled;
 		
@@ -19,11 +19,11 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		}
 		
 		public IScriptingConsoleTextEditor ScriptingConsoleTextEditor {
-			get { return MockConsoleTextEditor; }
+			get { return FakeConsoleTextEditor; }
 		}
 		
 		public IScriptingConsole ScriptingConsole {
-			get { return MockScriptingConsole; }
+			get { return FakeScriptingConsole; }
 		}
 	}
 }

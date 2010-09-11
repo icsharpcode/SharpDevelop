@@ -86,7 +86,7 @@ namespace RubyBinding.Tests.Console
 		[Test]
 		public void HostDisposesRubyConsole()
 		{
-			DerivedRubyConsoleHost host = new DerivedRubyConsoleHost(new MockConsoleTextEditor());
+			DerivedRubyConsoleHost host = new DerivedRubyConsoleHost(new FakeConsoleTextEditor());
 			RubyConsole console = host.CallCreateConsole(null, null, null) as RubyConsole;
 			host.Dispose();
 
@@ -99,7 +99,7 @@ namespace RubyBinding.Tests.Console
 		[Test]
 		public void DisposingRubyConsoleHostWithoutCreatingRubyConsole()
 		{
-			RubyConsoleHost host = new RubyConsoleHost(new MockConsoleTextEditor());
+			RubyConsoleHost host = new RubyConsoleHost(new FakeConsoleTextEditor(), new FakeControlDispatcher());
 			host.Dispose();
 		}
 		

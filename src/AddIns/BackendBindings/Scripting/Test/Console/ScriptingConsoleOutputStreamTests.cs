@@ -15,12 +15,12 @@ namespace ICSharpCode.Scripting.Tests.Console
 	public class ScriptingConsoleOutputStreamTestFixture
 	{
 		ScriptingConsoleOutputStream stream;
-		MockConsoleTextEditor textEditor;
+		FakeConsoleTextEditor textEditor;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			textEditor = new MockConsoleTextEditor();
+			textEditor = new FakeConsoleTextEditor();
 			stream = new ScriptingConsoleOutputStream(textEditor);
 		}
 		

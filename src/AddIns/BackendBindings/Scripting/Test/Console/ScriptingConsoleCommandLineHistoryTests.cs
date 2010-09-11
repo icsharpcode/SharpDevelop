@@ -24,33 +24,33 @@ namespace ICSharpCode.Scripting.Tests.Console
 			base.CreateConsole();
 			TestableScriptingConsole.Write(prompt, ScriptingStyle.Prompt);
 			
-			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
-			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.A);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
 			TestableScriptingConsole.Write(prompt, ScriptingStyle.Prompt);
-			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.B);
-			MockConsoleTextEditor.RaisePreviewKeyDownEvent(Key.C);
-			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.B);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(Key.C);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Enter);
 			TestableScriptingConsole.Write(prompt, ScriptingStyle.Prompt);
 		}
 
 		[Test]
 		public void UpArrowKeyPressed()
 		{
-			Assert.IsTrue(MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up));
+			Assert.IsTrue(FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up));
 		}
 		
 		[Test]
 		public void CurrentLineAfterUpArrowKeyPressed()
 		{
-			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
 			Assert.AreEqual("BC", TestableScriptingConsole.GetCurrentLine());
 		}
 		
 		[Test]
 		public void TextEditorCursorIsAtEndOfLineAfterUpArrowKeyPressed()
 		{
-			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
-			Assert.AreEqual(prompt.Length + 2, MockConsoleTextEditor.Column);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			Assert.AreEqual(prompt.Length + 2, FakeConsoleTextEditor.Column);
 		}
 		
 		[Test]
@@ -63,22 +63,22 @@ namespace ICSharpCode.Scripting.Tests.Console
 		[Test]
 		public void TextEditorCursorAfterUpArrowKeyPressedTwice()
 		{
-			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
-			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
-			Assert.AreEqual(prompt.Length + 1, MockConsoleTextEditor.Column);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			Assert.AreEqual(prompt.Length + 1, FakeConsoleTextEditor.Column);
 		}
 		
 		[Test]
 		public void DownArrowKeyHandled()
 		{
-			Assert.IsTrue(MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Down));
+			Assert.IsTrue(FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Down));
 		}
 		
 		void UpArrowKeyPressedTwiceThenDownArrowKey()
 		{
-			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
-			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
-			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Down);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Up);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(Key.Down);
 		}
 	}
 }

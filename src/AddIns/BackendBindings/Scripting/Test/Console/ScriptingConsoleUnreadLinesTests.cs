@@ -38,8 +38,8 @@ namespace ICSharpCode.Scripting.Tests.Console
 		[Test]
 		public void AddOneLine()
 		{
-			MockConsoleTextEditor.RaisePreviewKeyDownEvent(System.Windows.Input.Key.A);
-			MockConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(System.Windows.Input.Key.Enter);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEvent(System.Windows.Input.Key.A);
+			FakeConsoleTextEditor.RaisePreviewKeyDownEventForDialogKey(System.Windows.Input.Key.Enter);
 			
 			string[] lines = TestableScriptingConsole.GetUnreadLines();
 			string[] expectedLines = new string[] {"A"};

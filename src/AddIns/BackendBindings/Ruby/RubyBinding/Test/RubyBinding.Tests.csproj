@@ -309,7 +309,6 @@
     <Compile Include="Utils\RubyMSBuildEngineHelper.cs" />
     <Compile Include="Utils\RubyParserHelper.cs" />
     <Compile Include="Utils\RubySelectedTestsHelper.cs" />
-    <Compile Include="Utils\TestableRubyConsole.cs" />
     <EmbeddedResource Include="..\Project\RubyBinding.addin">
       <Link>RubyBinding.addin</Link>
     </EmbeddedResource>

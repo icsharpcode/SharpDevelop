@@ -12,7 +12,7 @@ using ICSharpCode.Scripting;
 
 namespace ICSharpCode.Scripting.Tests.Utils
 {
-	public class MockConsoleTextEditor : IScriptingConsoleTextEditor
+	public class FakeConsoleTextEditor : IScriptingConsoleTextEditor
 	{
 		public bool IsDisposed;
 		public bool IsWriteCalled;
@@ -32,7 +32,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 				
 		public event ConsoleTextEditorKeyEventHandler PreviewKeyDown;
 		
-		public MockConsoleTextEditor()
+		public FakeConsoleTextEditor()
 		{
 			TotalLines = 1;
 		}
@@ -72,7 +72,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		
 		public bool RaisePreviewKeyDownEvent(Key key)
 		{
-			MockConsoleTextEditorKeyEventArgs e = new MockConsoleTextEditorKeyEventArgs(key);
+			FakeConsoleTextEditorKeyEventArgs e = new FakeConsoleTextEditorKeyEventArgs(key);
 			OnPreviewKeyDown(e);
 			if (!e.Handled) {
 				KeyConverter converter = new KeyConverter();
@@ -88,21 +88,21 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			return e.Handled;
 		}
 		
-		void OnPreviewKeyDown(MockConsoleTextEditorKeyEventArgs e)
+		void OnPreviewKeyDown(FakeConsoleTextEditorKeyEventArgs e)
 		{
 			if (PreviewKeyDown != null) {
 				PreviewKeyDown(this, e);
 			}
 		}
 		
-		public void RaisePreviewKeyDownEvent(MockConsoleTextEditorKeyEventArgs e)
+		public void RaisePreviewKeyDownEvent(FakeConsoleTextEditorKeyEventArgs e)
 		{
 			OnPreviewKeyDown(e);
 		}
 		
 		public bool RaisePreviewKeyDownEventForDialogKey(Key key)
 		{
-			MockConsoleTextEditorKeyEventArgs e = new MockConsoleTextEditorKeyEventArgs(key);
+			FakeConsoleTextEditorKeyEventArgs e = new FakeConsoleTextEditorKeyEventArgs(key);
 			OnPreviewKeyDown(e);
 			if (!e.Handled) {
 				switch (key) {

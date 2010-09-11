@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using ICSharpCode.RubyBinding;
 using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Utils;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
@@ -15,7 +16,8 @@ namespace RubyBinding.Tests.Console
 	{
 		ScriptingConsoleOutputStream outputStream;
 		
-		public DerivedRubyConsoleHost(IScriptingConsoleTextEditor textEditor) : base(textEditor)
+		public DerivedRubyConsoleHost(IScriptingConsoleTextEditor textEditor)
+			: base(textEditor, new FakeControlDispatcher())
 		{
 		}
 		

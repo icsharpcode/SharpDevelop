@@ -10,13 +10,10 @@ using ICSharpCode.Scripting;
 
 namespace ICSharpCode.Scripting
 {
-	public class ScriptingConsole : IDisposable, IMemberProvider, IScriptingConsole
+	public class ScriptingConsole : IDisposable, IScriptingConsole
 	{
 		IScriptingConsoleTextEditor textEditor;
-		int lineReceivedEventIndex = 0; // The index into the waitHandles array where the lineReceivedEvent is stored.
-		ManualResetEvent lineReceivedEvent = new ManualResetEvent(false);
-		ManualResetEvent disposedEvent = new ManualResetEvent(false);
-		WaitHandle[] waitHandles;
+		
 		int promptLength;
 		bool firstPromptDisplayed;
 		List<string> savedTextLines = new List<string>();
@@ -24,17 +21,18 @@ namespace ICSharpCode.Scripting
 		
 		protected List<string> unreadLines = new List<string>();
 		
+		public event EventHandler LineReceived;
+		
+		public IMemberProvider MemberProvider { get; set; }
+		
 		public ScriptingConsole(IScriptingConsoleTextEditor textEditor)
 		{
-			waitHandles = new WaitHandle[] {lineReceivedEvent, disposedEvent};
-			
 			this.textEditor = textEditor;
 			textEditor.PreviewKeyDown += ProcessPreviewKeyDown;
 		}
 		
 		public void Dispose()
 		{
-			disposedEvent.Set();
 		}
 		
 		/// <summary>
@@ -127,14 +125,10 @@ namespace ICSharpCode.Scripting
 		
 		string ReadLineFromTextEditor()
 		{
-			int result = WaitHandle.WaitAny(waitHandles);
-			if (result == lineReceivedEventIndex) {
-				lock (unreadLines) {
+			lock (unreadLines) {
+				if (IsLineAvailable) {
 					string line = unreadLines[0];
 					unreadLines.RemoveAt(0);
-					if (unreadLines.Count == 0) {
-						lineReceivedEvent.Reset();
-					}
 					return line;
 				}
 			}
@@ -194,11 +188,18 @@ namespace ICSharpCode.Scripting
 		
 		void OnEnterKeyPressed()
 		{
-			lock (unreadLines) {
+			using (ILock linesLock = CreateLock(unreadLines)) {
 				MoveCursorToEndOfLastTextEditorLine();
 				SaveLastTextEditorLine();
 				
-				lineReceivedEvent.Set();
+				FireLineReceivedEvent();
+			}
+		}
+		
+		protected virtual void OnLineReceived()
+		{
+			if (LineReceived != null) {
+				LineReceived(this, new EventArgs());
 			}
 		}
 		
@@ -249,7 +250,7 @@ namespace ICSharpCode.Scripting
 		
 		void ShowCompletionWindow()
 		{
-			ScriptingConsoleCompletionDataProvider completionProvider = new ScriptingConsoleCompletionDataProvider(this);
+			ScriptingConsoleCompletionDataProvider completionProvider = new ScriptingConsoleCompletionDataProvider(MemberProvider);
 			textEditor.ShowCompletionWindow(completionProvider);
 		}
 
@@ -310,7 +311,7 @@ namespace ICSharpCode.Scripting
 		
 		protected virtual void FireLineReceivedEvent()
 		{
-			lineReceivedEvent.Set();
+			OnLineReceived();
 		}
 		
 		void WriteTextIfFirstPromptHasBeenDisplayed(string text)
@@ -378,6 +379,16 @@ namespace ICSharpCode.Scripting
 				string line = lines[i];
 				unreadLines.Add(line);
 			}
+		}
+		
+		public string ReadFirstUnreadLine()
+		{
+			if (unreadLines.Count > 0) {
+				string line = unreadLines[0];
+				unreadLines.RemoveAt(0);
+				return line;
+			}
+			return null;
 		}
 	}
 }

@@ -412,7 +412,6 @@
     <Compile Include="Utils\PythonCodeDomSerializerHelper.cs" />
     <Compile Include="Utils\PythonComponentWalkerHelper.cs" />
     <Compile Include="Utils\PythonMSBuildEngineHelper.cs" />
-    <Compile Include="Utils\TestablePythonConsole.cs" />
     <EmbeddedResource Include="..\Project\PythonBinding.addin">
       <Link>PythonBinding.addin</Link>
     </EmbeddedResource>

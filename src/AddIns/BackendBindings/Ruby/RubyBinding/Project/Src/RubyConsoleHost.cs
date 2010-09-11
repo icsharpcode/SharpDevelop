@@ -20,10 +20,10 @@ namespace ICSharpCode.RubyBinding
 		IScriptingConsoleTextEditor textEditor;
 		RubyConsole rubyConsole;
 
-		public RubyConsoleHost(IScriptingConsoleTextEditor textEditor)
+		public RubyConsoleHost(IScriptingConsoleTextEditor textEditor, IControlDispatcher dispatcher)
 		{
 			this.textEditor = textEditor;
-			rubyConsole = new RubyConsole(textEditor);
+			rubyConsole = new RubyConsole(textEditor, dispatcher);
 		}
 		
 		public RubyConsole RubyConsole {
