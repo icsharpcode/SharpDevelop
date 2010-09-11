@@ -17,7 +17,11 @@ namespace ICSharpCode.Reports.Core
 	/// </summary>
 	public class DataNavigator :IDataNavigator
 	{
+		
 		private IDataViewStrategy store;
+		private IndexList childList;
+		private System.Collections.Generic.List<BaseComparer>.Enumerator ce;
+		
 		
 		public DataNavigator(IDataViewStrategy store){
 			this.store = store;
@@ -41,6 +45,8 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		*/
+		
+		
 		#region IDataNavigator implementation
 		
 		public void Fill (ReportItemCollection collection) {
@@ -116,9 +122,6 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
-		
-		IndexList childList;
-		private System.Collections.Generic.List<BaseComparer>.Enumerator ce;
 		
 		public void SwitchGroup()
 		{

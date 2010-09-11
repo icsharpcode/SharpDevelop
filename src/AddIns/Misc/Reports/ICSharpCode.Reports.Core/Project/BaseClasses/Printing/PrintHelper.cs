@@ -168,28 +168,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		#endregion
 		
-		public static IExpressionEvaluatorFacade  CreateEvaluator (ISinglePage singlePage,IDataNavigator dataNavigator)
-		{
-			if (singlePage == null) {
-			
-				throw new ArgumentNullException("singlePage");
-			}
-			if (dataNavigator == null) {
-				throw new ArgumentNullException("dataNavigator");
-			}
-			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade();
-			evaluatorFacade.SinglePage = singlePage;
-			evaluatorFacade.SinglePage.IDataNavigator = dataNavigator;
-			return evaluatorFacade;
-		}
-		
-		
-		public static IExpressionEvaluatorFacade  SetupEvaluator ()
-		{
-			return new ExpressionEvaluatorFacade();
-		}
-		
-		
 		public static Point ConvertRectangleToCurentPosition (Rectangle r)
 		{
 			return new Point(r.Left,r.Bottom);

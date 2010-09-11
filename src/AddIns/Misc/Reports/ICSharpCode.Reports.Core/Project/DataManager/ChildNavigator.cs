@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+using System.Linq;
 
 namespace ICSharpCode.Reports.Core
 {
@@ -15,21 +16,21 @@ namespace ICSharpCode.Reports.Core
 	/// </summary>
 	public class ChildNavigator:IDataNavigator
 	{
-		IndexList indexList;
-		IDataViewStrategy dataStore;
-			private System.Collections.Generic.List<BaseComparer>.Enumerator ce;
+		private IndexList indexList;
+		private IDataViewStrategy dataStore;
+		private System.Collections.Generic.List<BaseComparer>.Enumerator ce;
 			
 		public ChildNavigator(IDataViewStrategy dataStore,IndexList indexList)
 		{
-		if (dataStore == null) {
-				
+			if (dataStore == null) {
 				throw new ArgumentNullException("dataStore");
-		}	
+			}
 			this.dataStore = dataStore;
 			this.indexList = indexList;
 			ce = this.indexList.GetEnumerator();
 			ce.MoveNext();
 		}
+		
 		
 		public bool HasMoreData {
 			get {
@@ -91,7 +92,16 @@ namespace ICSharpCode.Reports.Core
 		
 		public void Fill(ReportItemCollection collection)
 		{
-			throw new NotImplementedException();
+			TableStrategy tableStrategy =  dataStore as TableStrategy;
+			foreach (var item in collection) {
+				IDataItem dataItem = item as IDataItem;
+				if (dataItem != null) {
+					CurrentItemsCollection currentItemsCollection = tableStrategy.FillDataRow(ce.Current.ListIndex);
+					CurrentItem s = currentItemsCollection.FirstOrDefault(x => x.ColumnName == dataItem.ColumnName);
+					dataItem.DBValue = s.Value.ToString();
+				}
+				
+			}
 		}
 		
 		public bool MoveNext()

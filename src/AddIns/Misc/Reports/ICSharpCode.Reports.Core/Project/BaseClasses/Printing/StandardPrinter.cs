@@ -232,16 +232,39 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		#region Evaluate
 		
+		
+		public static IExpressionEvaluatorFacade  SetupEvaluator ()
+		{
+			return new ExpressionEvaluatorFacade();
+		}
+		
+		
+		public static IExpressionEvaluatorFacade  CreateEvaluator (ISinglePage singlePage,IDataNavigator dataNavigator)
+		{
+			if (singlePage == null) {
+			
+				throw new ArgumentNullException("singlePage");
+			}
+			if (dataNavigator == null) {
+				throw new ArgumentNullException("dataNavigator");
+			}
+			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade();
+			evaluatorFacade.SinglePage = singlePage;
+			evaluatorFacade.SinglePage.IDataNavigator = dataNavigator;
+			return evaluatorFacade;
+		}
+		
+		
 		public static void EvaluateRow(IExpressionEvaluatorFacade evaluator,ExporterCollection row)
 		{
-			Console.WriteLine("evaluate row with row:{0} ",evaluator.SinglePage.IDataNavigator.CurrentRow);
+//			Console.WriteLine("evaluate row with row:{0} ",evaluator.SinglePage.IDataNavigator.CurrentRow);
 			foreach (BaseExportColumn element in row) {
 				ExportText textItem = element as ExportText;
 				
 				if (textItem != null) {
 					
 					string s =  evaluator.Evaluate(textItem.Text);
-					Console.WriteLine("\teval {0} - {1} ",textItem.Text,s);
+//					Console.WriteLine("\teval {0} - {1} ",textItem.Text,s);
 //					textItem.Text = evaluator.Evaluate(textItem.Text);
 					textItem.Text = s;
 				}

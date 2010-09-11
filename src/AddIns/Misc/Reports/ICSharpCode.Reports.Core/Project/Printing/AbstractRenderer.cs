@@ -89,7 +89,7 @@ namespace ICSharpCode.Reports.Core
 			this.reportDocument.RenderPageEnd += new EventHandler<ReportPageEventArgs> (PrintPageFooter);
 			this.reportDocument.RenderReportEnd += new EventHandler<ReportPageEventArgs> (PrintReportFooter);
 			
-			this.Evaluator = PrintHelper.SetupEvaluator();
+			this.Evaluator = StandardPrinter.SetupEvaluator();
 		}
 		
 		
@@ -262,6 +262,7 @@ namespace ICSharpCode.Reports.Core
 		
 		internal virtual void ReportQueryPage (object sender,QueryPageSettingsEventArgs qpea) 
 		{
+			
 			qpea.PageSettings.Margins = new Margins(reportSettings.LeftMargin,reportSettings.RightMargin,reportSettings.TopMargin,reportSettings.BottomMargin);
 			bool firstPage;
 			if (this.currentPageNumber == 0) {
@@ -270,10 +271,11 @@ namespace ICSharpCode.Reports.Core
 				firstPage = false;
 			}
 			this.currentPageNumber ++;
-			ISinglePage sp  = new SinglePage(new SectionBounds (reportSettings,firstPage),0);	
-			PrintHelper.InitPage(sp,this.reportSettings);
-			sp.PageNumber = this.currentPageNumber;
-			reportDocument.SinglePage = sp;
+			
+			ISinglePage singlePage  = new SinglePage(new SectionBounds (reportSettings,firstPage),0);	
+			PrintHelper.InitPage(singlePage,this.reportSettings);
+			singlePage.PageNumber = this.currentPageNumber;
+			reportDocument.SinglePage = singlePage;
 		}
 		
 		

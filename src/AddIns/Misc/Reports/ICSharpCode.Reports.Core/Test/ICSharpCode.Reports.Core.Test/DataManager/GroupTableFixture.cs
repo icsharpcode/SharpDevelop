@@ -170,29 +170,55 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		
 		
 		#region Try make recursive with ChildNavigator
-		
-		[Test]
-		public void Can_Get_ChildNavigator ()
+		/*
+		public void Can_FillChild()
 		{
 			var dataNav = PrepareStringGrouping();
 			while (dataNav.MoveNext()) {
 				if (dataNav.HasChildren) {
+					Assert.That(dataNav.HasChildren,Is.True);
+					DataRow r = dataNav.Current as DataRow;
+					string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString();
+					Console.WriteLine(v2);
+					FillChildList(dataNav);
+				}
+				
+			}
+		}
+		*/
+		
+		[Test]
+		public void Can_Get_ChildNavigator ()
+		{
+			Console.WriteLine("Start Recusive Version");
+			var dataNav = PrepareStringGrouping();
+			
+			while (dataNav.MoveNext()) {
+				if (dataNav.HasChildren) {
+					DataRow r = dataNav.Current as DataRow;
+					
+					
 					IDataNavigator child = dataNav.GetChildNavigator();
+					string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString() ;
+					Console.WriteLine(v2);
 					Assert.That (child,Is.Not.Null);
+					reccall(child);
 				}
 			}
+			Console.WriteLine("End Recusive Version");
 		}
 		
 		
 		[Test]
 		public void RecursiveCall_Childs ()
 		{
-				var dataNav = PrepareStringGrouping();
-				dataNav.MoveNext();
-				Console.WriteLine("--------------start rec ------------");
-				reccall (dataNav);
+			var dataNav = PrepareStringGrouping();
+			dataNav.MoveNext();
+			Console.WriteLine("--------------start rec ------------");
+			reccall (dataNav);
 			Console.WriteLine("--------------end rec ------------");
 		}
+		
 		
 		private void reccall (IDataNavigator startNavigator)
 		{
