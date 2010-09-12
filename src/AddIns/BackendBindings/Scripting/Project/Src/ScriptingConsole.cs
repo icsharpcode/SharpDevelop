@@ -18,7 +18,8 @@ namespace ICSharpCode.Scripting
 		
 		int promptLength;
 		bool firstPromptDisplayed;
-		List<string> savedTextLines = new List<string>();
+		
+		TextSentToScriptingConsole textSent = new TextSentToScriptingConsole();
 		
 		public event EventHandler LineReceived;
 		
@@ -70,18 +71,19 @@ namespace ICSharpCode.Scripting
 		{
 			textEditor.Write(text);
 			if (style == ScriptingStyle.Prompt) {
-				WriteSavedTextAfterFirstPrompt();
+				firstPromptDisplayed = true;
 				promptLength = text.Length;
+				
+				WriteFirstLineOfSentText();
+				
 				textEditor.MakeCurrentContentReadOnly();
 			}
 		}
 		
-		void WriteSavedTextAfterFirstPrompt()
+		void WriteFirstLineOfSentText()
 		{
-			firstPromptDisplayed = true;
-			if (savedTextLines.Count > 0) {
-				string line = GetFirstLineOfText(savedTextLines);
-				savedTextLines.RemoveAt(0);
+			if (textSent.HasLine) {
+				string line = textSent.RemoveFirstLine();
 				textEditor.Write(line);
 			}
 		}
@@ -286,7 +288,12 @@ namespace ICSharpCode.Scripting
 			unreadLines.AddLine(line);					
 			FireLineReceivedEvent();
 			MoveCursorToEndOfLastTextEditorLine();
-			WriteTextIfFirstPromptHasBeenDisplayed(line + "\r\n");
+			
+			if (firstPromptDisplayed) {
+				WriteLine(line, ScriptingStyle.Out);
+			} else {
+				SaveLineToDisplayAfterFirstPromptDisplayed(line);
+			}
 		}
 		
 		protected virtual void FireLineReceivedEvent()
@@ -294,23 +301,10 @@ namespace ICSharpCode.Scripting
 			OnLineReceived();
 		}
 		
-		void WriteTextIfFirstPromptHasBeenDisplayed(string text)
+		void SaveLineToDisplayAfterFirstPromptDisplayed(string line)
 		{
-			if (firstPromptDisplayed) {
-				Write(text, ScriptingStyle.Out);
-			} else {
-				savedTextLines = GetLines(text);
-			}
-		}
-		
-		void WriteFirstLineIfFirstPromptHasBeenDisplayed(List<string> lines)
-		{
-			string firstLine = GetFirstLineOfText(lines);
-			if (firstPromptDisplayed) {
-				Write(firstLine, ScriptingStyle.Out);
-				lines.RemoveAt(0);
-			}
-			savedTextLines = lines;
+			string text = line + "\r\n";
+			textSent.AddText(text);
 		}
 		
 		public virtual IList<string> GetMemberNames(string name)
@@ -325,34 +319,21 @@ namespace ICSharpCode.Scripting
 		
 		public void SendText(string text)
 		{
+			textSent.AddText(text);
 			MoveCursorToEndOfLastTextEditorLine();
-			WriteFirstLineOfTextIfFirstPromptHasBeenDisplayed(text);
+			SaveUnreadLinesOfSentText();
+			
+			if (firstPromptDisplayed) {
+				WriteFirstLineOfSentText();
+			}
 		}
 		
-		void WriteFirstLineOfTextIfFirstPromptHasBeenDisplayed(string text)
+		void SaveUnreadLinesOfSentText()
 		{
-			List<string> lines = GetLines(text);
-			if (lines.Count > 1) {
-				unreadLines.AddAllLinesExceptLast(lines);
+			if (textSent.HasAtLeastOneLine) {
+				unreadLines.AddAllLinesExceptLast(textSent.lines);
 				FireLineReceivedEvent();
 			}
-			WriteFirstLineIfFirstPromptHasBeenDisplayed(lines);
-		}
-		
-		List<string> GetLines(string text)
-		{
-			text = text.Replace("\r\n", "\n");
-			string[] lines = text.Split('\n');
-			return new List<string>(lines);
-		}
-		
-		string GetFirstLineOfText(List<string> lines)
-		{
-			if (lines.Count > 1) {
-				string firstLine = lines[0] + "\r\n";
-				return firstLine;
-			}
-			return lines[0];
 		}
 		
 		public string ReadFirstUnreadLine()

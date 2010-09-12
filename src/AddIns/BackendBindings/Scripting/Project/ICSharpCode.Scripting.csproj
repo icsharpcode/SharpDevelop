@@ -97,6 +97,7 @@
     <Compile Include="Src\SendLineToScriptingConsoleCommand.cs" />
     <Compile Include="Src\SendSelectedTextToScriptingConsoleCommand.cs" />
     <Compile Include="Src\SendToScriptingConsoleCommand.cs" />
+    <Compile Include="Src\TextSentToScriptingConsole.cs" />
     <Compile Include="Src\ThreadSafeScriptingConsole.cs" />
     <Compile Include="Src\ThreadSafeScriptingConsoleEvents.cs" />
   </ItemGroup>
