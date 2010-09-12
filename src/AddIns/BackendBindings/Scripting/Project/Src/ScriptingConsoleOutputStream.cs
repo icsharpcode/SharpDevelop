@@ -10,10 +10,12 @@ namespace ICSharpCode.Scripting
 	public class ScriptingConsoleOutputStream : Stream
 	{
 		IScriptingConsoleTextEditor textEditor;
+		IControlDispatcher dispatcher;
 		
-		public ScriptingConsoleOutputStream(IScriptingConsoleTextEditor textEditor)
+		public ScriptingConsoleOutputStream(IScriptingConsoleTextEditor textEditor, IControlDispatcher dispatcher)
 		{
 			this.textEditor = textEditor;
+			this.dispatcher = dispatcher;
 		}
 		
 		public override bool CanRead {
@@ -61,7 +63,17 @@ namespace ICSharpCode.Scripting
 		public override void Write(byte[] buffer, int offset, int count)
 		{
 			string text = UTF8Encoding.UTF8.GetString(buffer, offset, count);
-			textEditor.Write(text);
+			ThreadSafeTextEditorWrite(text);
+		}
+		
+		void ThreadSafeTextEditorWrite(string text)
+		{
+			if (dispatcher.CheckAccess()) {
+				textEditor.Write(text);
+			} else {
+				Action<string> action = ThreadSafeTextEditorWrite;
+				dispatcher.Invoke(action, text);
+			}
 		}
 	}
 }

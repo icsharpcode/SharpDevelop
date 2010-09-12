@@ -12,54 +12,87 @@ using NUnit.Framework;
 namespace ICSharpCode.Scripting.Tests.Console
 {
 	[TestFixture]
-	public class ScriptingConsoleOutputStreamTestFixture
+	public class ScriptingConsoleOutputStreamTests
 	{
 		ScriptingConsoleOutputStream stream;
 		FakeConsoleTextEditor textEditor;
+		FakeControlDispatcher dispatcher;
 		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		[SetUp]
+		public void Init()
 		{
 			textEditor = new FakeConsoleTextEditor();
-			stream = new ScriptingConsoleOutputStream(textEditor);
+			dispatcher = new FakeControlDispatcher();
+			dispatcher.CheckAccessReturnValue = true;
+			
+			stream = new ScriptingConsoleOutputStream(textEditor, dispatcher);
 		}
 		
 		[Test]
-		public void CanReadIsFalse()
+		public void CanRead_NewInstance_ReturnsFalse()
 		{
 			Assert.IsFalse(stream.CanRead);
 		}
 
 		[Test]
-		public void CanSeekIsFalse()
+		public void CanSeek_NewInstance_ReturnsFalse()
 		{
 			Assert.IsFalse(stream.CanSeek);
 		}
 
 		[Test]
-		public void CanWriteIsTrue()
+		public void CanWrite_NewInstance_ReturnsTrue()
 		{
 			Assert.IsTrue(stream.CanWrite);
 		}
 		
 		[Test]
-		public void WriteAddsTextToTextEditor()
+		public void Write_UTF8ByteArrayPassed_AddsTextToTextEditor()
 		{
-			textEditor.Text = String.Empty;
 			byte[] bytes = UTF8Encoding.UTF8.GetBytes("test");
 			stream.Write(bytes, 0, bytes.Length);
 			
-			Assert.AreEqual("test", textEditor.Text);
+			string text = textEditor.TextPassedToWrite;
+			
+			string expectedText = "test";
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void OffsetAndLengthUsedInWriteMethod()
+		public void Write_UTF8ByteArrayPassed_OffsetAndLengthUsedInWriteMethod()
 		{
 			textEditor.Text = String.Empty;
 			byte[] bytes = UTF8Encoding.UTF8.GetBytes("0output1");
 			stream.Write(bytes, 1, bytes.Length - 2);
 			
-			Assert.AreEqual("output", textEditor.Text);
-		}		
+			string text = textEditor.TextPassedToWrite;
+			string expectedText = "output";
+			
+			Assert.AreEqual(expectedText, text);
+		}
+		
+		[Test]
+		public void Write_DispatcherCheckAccessReturnsFalse_WriteMethodIsInvoked()
+		{
+			dispatcher.CheckAccessReturnValue = false;
+			
+			byte[] bytes = UTF8Encoding.UTF8.GetBytes("test");
+			stream.Write(bytes, 0, bytes.Length);
+			
+			Assert.IsNotNull(dispatcher.MethodInvoked);
+		}
+		
+		[Test]
+		public void Write_DispatcherCheckAccessReturnsFalse_WriteMethodIsInvokedWithTextAsArgument()
+		{
+			dispatcher.CheckAccessReturnValue = false;
+			
+			byte[] bytes = UTF8Encoding.UTF8.GetBytes("test");
+			stream.Write(bytes, 0, bytes.Length);
+			
+			object[] expectedArgs = new object[] { "test" };
+			
+			Assert.AreEqual(expectedArgs, dispatcher.MethodInvokedArgs);
+		}
 	}
 }

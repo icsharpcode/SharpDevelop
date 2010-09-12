@@ -16,12 +16,10 @@ namespace ICSharpCode.PythonBinding
 	public class PythonConsoleHost : ConsoleHost, IScriptingConsoleHost
 	{
 		Thread thread;
-		IScriptingConsoleTextEditor textEditor;
 		PythonConsole pythonConsole;
 		
 		public PythonConsoleHost(IScriptingConsoleTextEditor textEditor, IControlDispatcher dispatcher)
 		{
-			this.textEditor = textEditor;
 			pythonConsole = new PythonConsole(textEditor, dispatcher);
 		}
 				
@@ -71,7 +69,8 @@ namespace ICSharpCode.PythonBinding
 		/// </remarks>
 		protected override IConsole CreateConsole(ScriptEngine engine, CommandLine commandLine, ConsoleOptions options)
 		{
-			SetOutput(new ScriptingConsoleOutputStream(textEditor));
+			ScriptingConsoleOutputStream stream = pythonConsole.CreateOutputStream();
+			SetOutput(stream);
 			pythonConsole.CommandLine = commandLine;
 			return pythonConsole;
 		}

@@ -12,15 +12,25 @@ namespace ICSharpCode.RubyBinding
 {
 	public class RubyConsole : ThreadSafeScriptingConsole, IConsole, IMemberProvider
 	{
+		IScriptingConsoleTextEditor textEditor;
+		IControlDispatcher dispatcher;
+		
 		public RubyConsole(IScriptingConsoleTextEditor textEditor, IControlDispatcher dispatcher)
 			: this(new ScriptingConsole(textEditor), dispatcher)
 		{
+			this.textEditor = textEditor;
 		}
 		
 		RubyConsole(ScriptingConsole console, IControlDispatcher dispatcher)
 			: base(console, dispatcher)
 		{
+			this.dispatcher = dispatcher;
 			console.MemberProvider = this;
+		}
+		
+		public ScriptingConsoleOutputStream CreateOutputStream()
+		{
+			return new ScriptingConsoleOutputStream(textEditor, dispatcher);
 		}
 		
 		public CommandLine CommandLine { get; set; }			

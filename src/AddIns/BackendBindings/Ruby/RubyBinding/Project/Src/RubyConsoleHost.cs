@@ -87,7 +87,8 @@ namespace ICSharpCode.RubyBinding
 		/// </remarks>
 		protected override IConsole CreateConsole(ScriptEngine engine, CommandLine commandLine, ConsoleOptions options)
 		{
-			SetOutput(new ScriptingConsoleOutputStream(textEditor));
+			ScriptingConsoleOutputStream stream = rubyConsole.CreateOutputStream();
+			SetOutput(stream);
 			rubyConsole.CommandLine = commandLine;
 			return rubyConsole;
 		}

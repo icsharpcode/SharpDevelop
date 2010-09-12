@@ -12,15 +12,25 @@ namespace ICSharpCode.PythonBinding
 {
 	public class PythonConsole : ThreadSafeScriptingConsole, IConsole, IMemberProvider
 	{
+		IScriptingConsoleTextEditor textEditor;
+		IControlDispatcher dispatcher;
+		
 		public PythonConsole(IScriptingConsoleTextEditor textEditor, IControlDispatcher dispatcher)
 			: this(new ScriptingConsole(textEditor), dispatcher)
 		{
+			this.textEditor = textEditor;
 		}
 		
 		PythonConsole(ScriptingConsole console, IControlDispatcher dispatcher)
 			: base(console, dispatcher)
 		{
+			this.dispatcher = dispatcher;
 			console.MemberProvider = this;
+		}
+		
+		public ScriptingConsoleOutputStream CreateOutputStream()
+		{
+			return new ScriptingConsoleOutputStream(textEditor, dispatcher);
 		}
 		
 		public CommandLine CommandLine { get; set; }
