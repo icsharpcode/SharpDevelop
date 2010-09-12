@@ -4,6 +4,7 @@
 using System;
 using ICSharpCode.NRefactory;
 using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
 
 namespace ICSharpCode.Scripting.Tests.Console
@@ -65,10 +66,28 @@ namespace ICSharpCode.Scripting.Tests.Console
 			TestableScriptingConsole.SendText("test");
 			
 			TestableScriptingConsole.Write(">>> ", ScriptingStyle.Prompt);
-			string text = FakeConsoleTextEditor.Text;
+			string text = FakeConsoleTextEditor.TextPassedToWrite;
 			
-			string expectedText =  ">>> test";
+			string expectedText = "test";
 			Assert.AreEqual(expectedText, text);
+		}
+		
+		[Test]
+		public void Write_SendTextCalledWithTwoLinesButNoPromptWrittenAndWriteCalledTwice_WritesOutSecondLineOfSavedText()
+		{
+			base.CreateConsole();
+			string text = 
+				"first\r\n" +
+				"second";
+			TestableScriptingConsole.SendText(text);
+			
+			TestableScriptingConsole.Write(">>> ", ScriptingStyle.Prompt);
+			TestableScriptingConsole.Write(">>> ", ScriptingStyle.Prompt);
+			
+			string textPassedToWrite = FakeConsoleTextEditor.TextPassedToWrite;
+			string expectedText =  "second";
+			
+			Assert.AreEqual(expectedText, textPassedToWrite);
 		}
 		
 		[Test]

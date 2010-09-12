@@ -310,6 +310,16 @@ namespace ICSharpCode.Scripting
 			}
 		}
 		
+		void WriteFirstLineIfFirstPromptHasBeenDisplayed(List<string> lines)
+		{
+			string firstLine = GetFirstLineOfText(lines);
+			if (firstPromptDisplayed) {
+				Write(firstLine, ScriptingStyle.Out);
+				lines.RemoveAt(0);
+			}
+			savedTextLines = lines;
+		}
+		
 		public virtual IList<string> GetMemberNames(string name)
 		{
 			return new string[0];
@@ -329,16 +339,11 @@ namespace ICSharpCode.Scripting
 		void WriteFirstLineOfTextIfFirstPromptHasBeenDisplayed(string text)
 		{
 			List<string> lines = GetLines(text);
-			string firstLine = GetFirstLineOfText(lines);
-			
 			if (lines.Count > 1) {
 				AddAllLinesButLastToUnreadLines(lines);
 				FireLineReceivedEvent();
 			}
-			lines.RemoveAt(0);
-			savedTextLines = lines;
-			
-			WriteTextIfFirstPromptHasBeenDisplayed(firstLine);
+			WriteFirstLineIfFirstPromptHasBeenDisplayed(lines);
 		}
 		
 		List<string> GetLines(string text)
