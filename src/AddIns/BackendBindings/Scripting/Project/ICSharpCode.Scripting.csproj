@@ -69,7 +69,6 @@
     <Compile Include="Src\IComponentCreator.cs" />
     <Compile Include="Src\IComponentWalker.cs" />
     <Compile Include="Src\IControlDispatcher.cs" />
-    <Compile Include="Src\ILock.cs" />
     <Compile Include="Src\IMemberProvider.cs" />
     <Compile Include="Src\IScriptingCodeDomSerializer.cs" />
     <Compile Include="Src\IScriptingConsole.cs" />
@@ -97,7 +96,6 @@
     <Compile Include="Src\SendLineToScriptingConsoleCommand.cs" />
     <Compile Include="Src\SendSelectedTextToScriptingConsoleCommand.cs" />
     <Compile Include="Src\SendToScriptingConsoleCommand.cs" />
-    <Compile Include="Src\StringListLock.cs" />
     <Compile Include="Src\ThreadSafeScriptingConsole.cs" />
     <Compile Include="Src\ThreadSafeScriptingConsoleEvents.cs" />
   </ItemGroup>

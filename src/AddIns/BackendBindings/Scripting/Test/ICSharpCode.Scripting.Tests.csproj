@@ -124,7 +124,6 @@
     <Compile Include="Utils\FakeDesignerSerializationManager.cs" />
     <Compile Include="Utils\FakeDocument.cs" />
     <Compile Include="Utils\FakeDocumentLine.cs" />
-    <Compile Include="Utils\FakeLock.cs" />
     <Compile Include="Utils\FakeScriptingConsole.cs" />
     <Compile Include="Utils\FooItemCollection.cs" />
     <Compile Include="Utils\MockComponentCreator.cs" />

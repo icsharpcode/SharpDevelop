@@ -37,7 +37,7 @@ namespace ICSharpCode.Scripting
 		
 		/// <summary>
 		/// Returns the next line typed in by the console user. If no line is available this method
-		/// will block.
+		/// will return null.
 		/// </summary>
 		public string ReadLine(int autoIndentSize)
 		{
@@ -102,9 +102,7 @@ namespace ICSharpCode.Scripting
 		/// </summary>
 		public bool IsLineAvailable {
 			get { 
-				lock (unreadLines) {
-					return (unreadLines.Count > 0);
-				}
+				return (unreadLines.Count > 0);
 			}
 		}
 
@@ -125,12 +123,10 @@ namespace ICSharpCode.Scripting
 		
 		string ReadLineFromTextEditor()
 		{
-			lock (unreadLines) {
-				if (IsLineAvailable) {
-					string line = unreadLines[0];
-					unreadLines.RemoveAt(0);
-					return line;
-				}
+			if (IsLineAvailable) {
+				string line = unreadLines[0];
+				unreadLines.RemoveAt(0);
+				return line;
 			}
 			return null;
 		}
@@ -188,12 +184,10 @@ namespace ICSharpCode.Scripting
 		
 		void OnEnterKeyPressed()
 		{
-			using (ILock linesLock = CreateLock(unreadLines)) {
-				MoveCursorToEndOfLastTextEditorLine();
-				SaveLastTextEditorLine();
-				
-				FireLineReceivedEvent();
-			}
+			MoveCursorToEndOfLastTextEditorLine();
+			SaveLastTextEditorLine();
+			
+			FireLineReceivedEvent();
 		}
 		
 		protected virtual void OnLineReceived()
@@ -296,17 +290,10 @@ namespace ICSharpCode.Scripting
 		
 		public void SendLine(string line)
 		{
-			using (ILock linesLock = CreateLock(unreadLines)) {
-				unreadLines.Add(line);					
-			}
+			unreadLines.Add(line);					
 			FireLineReceivedEvent();
 			MoveCursorToEndOfLastTextEditorLine();
 			WriteTextIfFirstPromptHasBeenDisplayed(line + "\r\n");
-		}
-		
-		protected virtual ILock CreateLock(List<string> lines)
-		{
-			return new StringListLock(lines);
 		}
 		
 		protected virtual void FireLineReceivedEvent()
@@ -345,9 +332,7 @@ namespace ICSharpCode.Scripting
 			string firstLine = GetFirstLineOfText(lines);
 			
 			if (lines.Count > 1) {
-				using (ILock linesLock = CreateLock(unreadLines)) {
-					AddAllLinesButLastToUnreadLines(lines);
-				}
+				AddAllLinesButLastToUnreadLines(lines);
 				FireLineReceivedEvent();
 			}
 			lines.RemoveAt(0);

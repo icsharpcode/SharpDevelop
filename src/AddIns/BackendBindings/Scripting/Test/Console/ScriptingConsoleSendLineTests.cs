@@ -32,45 +32,6 @@ namespace ICSharpCode.Scripting.Tests.Console
 		}
 		
 		[Test]
-		public void SendLine_NoUnreadLines_CreatesLockForPreviousLines()
-		{
-			SendLineToConsole("test");
-			List<string> lines = TestableScriptingConsole.LockCreated.Lines;
-			List<string> expectedLines = TestableScriptingConsole.GetUnreadLinesList();
-			
-			Assert.AreEqual(expectedLines, lines);
-		}
-		
-		[Test]
-		public void SendLine_NoUnreadLines_LockForPreviousLinesIsDisposed()
-		{
-			SendLineToConsole("test");
-			bool disposed = TestableScriptingConsole.LockCreated.IsDisposed;
-			
-			Assert.IsTrue(disposed);
-		}
-		
-		[Test]
-		public void SendLine_NoUnreadLines_LineNotAddedBeforeLockCreated()
-		{
-			SendLineToConsole("test");
-			int count = TestableScriptingConsole.LockCreated.UnreadLineCountWhenLockCreated;
-			int expectedCount = 0;
-			
-			Assert.AreEqual(expectedCount, count);
-		}
-		
-		[Test]
-		public void SendLine_NoUnreadLines_LineAddedBeforeLockDisposed()
-		{
-			SendLineToConsole("test");
-			int count = TestableScriptingConsole.LockCreated.UnreadLineCountWhenLockDisposed;
-			int expectedCount = 1;
-			
-			Assert.AreEqual(expectedCount, count);
-		}
-		
-		[Test]
 		public void SendLine_NoUnreadLines_LineReceivedEventIsFired()
 		{
 			SendLineToConsole("test");

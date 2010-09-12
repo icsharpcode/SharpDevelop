@@ -11,7 +11,6 @@ namespace ICSharpCode.Scripting.Tests.Utils
 	public class TestableScriptingConsole : ScriptingConsole
 	{
 		public FakeConsoleTextEditor FakeConsoleTextEditor;
-		public FakeLock LockCreated;
 		public bool IsLineReceivedEventFired;
 		public int UnreadLineCountWhenLineReceivedEventFired = -1;
 		
@@ -37,16 +36,10 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			return base.unreadLines.ToArray();
 		}
 		
-		protected override ILock CreateLock(List<string> lines)
-		{
-			LockCreated = new FakeLock(lines);
-			return LockCreated;
-		}
-		
 		protected override void FireLineReceivedEvent()
 		{
 			IsLineReceivedEventFired = true;
-			UnreadLineCountWhenLineReceivedEventFired = LockCreated.Lines.Count;
+			UnreadLineCountWhenLineReceivedEventFired = base.unreadLines.Count;
 		}
 		
 		public void CallBaseFireLineReceivedEvent()
