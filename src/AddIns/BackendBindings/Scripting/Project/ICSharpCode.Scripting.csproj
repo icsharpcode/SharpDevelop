@@ -86,6 +86,7 @@
     <Compile Include="Src\ScriptingConsolePad.cs" />
     <Compile Include="Src\ScriptingConsoleTextEditor.cs" />
     <Compile Include="Src\ScriptingConsoleTextEditorKeyEventArgs.cs" />
+    <Compile Include="Src\ScriptingConsoleUnreadLines.cs" />
     <Compile Include="Src\ScriptingDesignerGenerator.cs" />
     <Compile Include="Src\ScriptingDesignerLoader.cs" />
     <Compile Include="Src\ScriptingFileService.cs" />

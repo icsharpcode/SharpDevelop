@@ -13,21 +13,26 @@ namespace ICSharpCode.Scripting
 	public class ScriptingConsole : IDisposable, IScriptingConsole
 	{
 		IScriptingConsoleTextEditor textEditor;
+		CommandLineHistory commandLineHistory = new CommandLineHistory();
+		ScriptingConsoleUnreadLines unreadLines;
 		
 		int promptLength;
 		bool firstPromptDisplayed;
 		List<string> savedTextLines = new List<string>();
-		CommandLineHistory commandLineHistory = new CommandLineHistory();
-		
-		protected List<string> unreadLines = new List<string>();
 		
 		public event EventHandler LineReceived;
 		
 		public IMemberProvider MemberProvider { get; set; }
 		
 		public ScriptingConsole(IScriptingConsoleTextEditor textEditor)
+			: this(textEditor, new ScriptingConsoleUnreadLines())
+		{
+		}
+		
+		public ScriptingConsole(IScriptingConsoleTextEditor textEditor, ScriptingConsoleUnreadLines unreadLines)
 		{
 			this.textEditor = textEditor;
+			this.unreadLines = unreadLines;
 			textEditor.PreviewKeyDown += ProcessPreviewKeyDown;
 		}
 		
@@ -46,7 +51,7 @@ namespace ICSharpCode.Scripting
 				Write(indent, ScriptingStyle.Prompt);
 			}
 			
-			string line = ReadLineFromTextEditor();
+			string line = ReadFirstUnreadLine();
 			if (line != null) {
 				return indent + line;
 			}
@@ -101,9 +106,7 @@ namespace ICSharpCode.Scripting
 		/// Indicates whether there is a line already read by the console and waiting to be processed.
 		/// </summary>
 		public bool IsLineAvailable {
-			get { 
-				return (unreadLines.Count > 0);
-			}
+			get {  return (unreadLines.Count > 0); }
 		}
 
 		/// <summary>
@@ -119,16 +122,6 @@ namespace ICSharpCode.Scripting
 		string GetLastTextEditorLine()
 		{
 			return textEditor.GetLine(textEditor.TotalLines - 1);
-		}
-		
-		string ReadLineFromTextEditor()
-		{
-			if (IsLineAvailable) {
-				string line = unreadLines[0];
-				unreadLines.RemoveAt(0);
-				return line;
-			}
-			return null;
 		}
 		
 		/// <summary>
@@ -206,7 +199,7 @@ namespace ICSharpCode.Scripting
 		void SaveLastTextEditorLine()
 		{
 			string currentLine = GetCurrentLine();
-			unreadLines.Add(currentLine);
+			unreadLines.AddLine(currentLine);
 			commandLineHistory.Add(currentLine);
 		}
 
@@ -290,7 +283,7 @@ namespace ICSharpCode.Scripting
 		
 		public void SendLine(string line)
 		{
-			unreadLines.Add(line);					
+			unreadLines.AddLine(line);					
 			FireLineReceivedEvent();
 			MoveCursorToEndOfLastTextEditorLine();
 			WriteTextIfFirstPromptHasBeenDisplayed(line + "\r\n");
@@ -340,7 +333,7 @@ namespace ICSharpCode.Scripting
 		{
 			List<string> lines = GetLines(text);
 			if (lines.Count > 1) {
-				AddAllLinesButLastToUnreadLines(lines);
+				unreadLines.AddAllLinesExceptLast(lines);
 				FireLineReceivedEvent();
 			}
 			WriteFirstLineIfFirstPromptHasBeenDisplayed(lines);
@@ -362,23 +355,9 @@ namespace ICSharpCode.Scripting
 			return lines[0];
 		}
 		
-		void AddAllLinesButLastToUnreadLines(List<string> lines)
-		{
-			int howMany = lines.Count - 1;
-			for (int i = 0; i < howMany; ++i) {
-				string line = lines[i];
-				unreadLines.Add(line);
-			}
-		}
-		
 		public string ReadFirstUnreadLine()
 		{
-			if (unreadLines.Count > 0) {
-				string line = unreadLines[0];
-				unreadLines.RemoveAt(0);
-				return line;
-			}
-			return null;
+			return unreadLines.RemoveFirstLine();
 		}
 	}
 }

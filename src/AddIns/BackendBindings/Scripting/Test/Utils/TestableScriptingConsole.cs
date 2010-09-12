@@ -13,33 +13,30 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		public FakeConsoleTextEditor FakeConsoleTextEditor;
 		public bool IsLineReceivedEventFired;
 		public int UnreadLineCountWhenLineReceivedEventFired = -1;
+		public ScriptingConsoleUnreadLines UnreadLines;
 		
 		public TestableScriptingConsole()
-			: this(new FakeConsoleTextEditor())
+			: this(new FakeConsoleTextEditor(), new ScriptingConsoleUnreadLines())
 		{
 			MemberProvider = new MockMemberProvider();
 		}
 		
-		TestableScriptingConsole(IScriptingConsoleTextEditor consoleTextEditor)
-			: base(consoleTextEditor)
+		TestableScriptingConsole(IScriptingConsoleTextEditor consoleTextEditor, ScriptingConsoleUnreadLines unreadLines)
+			: base(consoleTextEditor, unreadLines)
 		{
 			FakeConsoleTextEditor = (FakeConsoleTextEditor)consoleTextEditor;
-		}
-		
-		public List<string> GetUnreadLinesList()
-		{
-			return base.unreadLines;
+			UnreadLines = unreadLines;
 		}
 		
 		public string[] GetUnreadLines()
 		{
-			return base.unreadLines.ToArray();
+			return UnreadLines.ToArray();
 		}
 		
 		protected override void FireLineReceivedEvent()
 		{
 			IsLineReceivedEventFired = true;
-			UnreadLineCountWhenLineReceivedEventFired = base.unreadLines.Count;
+			UnreadLineCountWhenLineReceivedEventFired = UnreadLines.Count;
 		}
 		
 		public void CallBaseFireLineReceivedEvent()
