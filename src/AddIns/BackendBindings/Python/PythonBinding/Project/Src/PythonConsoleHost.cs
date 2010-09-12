@@ -13,7 +13,7 @@ using Microsoft.Scripting.Hosting.Shell;
 
 namespace ICSharpCode.PythonBinding
 {
-	public class PythonConsoleHost : ConsoleHost, IDisposable
+	public class PythonConsoleHost : ConsoleHost, IScriptingConsoleHost
 	{
 		Thread thread;
 		IScriptingConsoleTextEditor textEditor;
@@ -25,7 +25,7 @@ namespace ICSharpCode.PythonBinding
 			pythonConsole = new PythonConsole(textEditor, dispatcher);
 		}
 				
-		public PythonConsole PythonConsole {
+		public IScriptingConsole ScriptingConsole {
 			get { return pythonConsole; }
 		}
 		

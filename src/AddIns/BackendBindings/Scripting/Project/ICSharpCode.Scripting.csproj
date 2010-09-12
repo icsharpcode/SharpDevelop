@@ -73,6 +73,7 @@
     <Compile Include="Src\IMemberProvider.cs" />
     <Compile Include="Src\IScriptingCodeDomSerializer.cs" />
     <Compile Include="Src\IScriptingConsole.cs" />
+    <Compile Include="Src\IScriptingConsoleHost.cs" />
     <Compile Include="Src\IScriptingConsolePad.cs" />
     <Compile Include="Src\IScriptingConsoleTextEditor.cs" />
     <Compile Include="Src\IScriptingDesignerGenerator.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Src\ScriptingConsoleCompletionData.cs" />
     <Compile Include="Src\ScriptingConsoleCompletionDataProvider.cs" />
     <Compile Include="Src\ScriptingConsoleOutputStream.cs" />
+    <Compile Include="Src\ScriptingConsolePad.cs" />
     <Compile Include="Src\ScriptingConsoleTextEditor.cs" />
     <Compile Include="Src\ScriptingConsoleTextEditorKeyEventArgs.cs" />
     <Compile Include="Src\ScriptingDesignerGenerator.cs" />

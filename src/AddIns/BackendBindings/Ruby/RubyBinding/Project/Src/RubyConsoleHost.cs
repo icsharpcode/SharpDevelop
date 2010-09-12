@@ -14,7 +14,7 @@ using Microsoft.Scripting.Hosting.Shell;
 
 namespace ICSharpCode.RubyBinding
 {
-	public class RubyConsoleHost : ConsoleHost, IDisposable
+	public class RubyConsoleHost : ConsoleHost, IScriptingConsoleHost
 	{
 		Thread thread;
 		IScriptingConsoleTextEditor textEditor;
@@ -26,7 +26,7 @@ namespace ICSharpCode.RubyBinding
 			rubyConsole = new RubyConsole(textEditor, dispatcher);
 		}
 		
-		public RubyConsole RubyConsole {
+		public IScriptingConsole ScriptingConsole {
 			get { return rubyConsole; }
 		}
 		
