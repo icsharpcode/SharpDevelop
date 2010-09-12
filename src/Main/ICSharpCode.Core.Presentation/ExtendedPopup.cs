@@ -10,17 +10,16 @@ using System.Windows.Interop;
 namespace ICSharpCode.Core.Presentation
 {
 	/// <summary>
-	/// Description of ExtendedPopup.
+	/// Extends WPF popup to prevent it from being the topmost window on the screen.
 	/// </summary>
 	public class ExtendedPopup : Popup
 	{
-		Visibility oldState;
 		IntPtr hwnd;
 		
 		protected override void OnOpened(EventArgs e)
 		{
 			hwnd = ((HwndSource)PresentationSource.FromVisual(Child)).Handle;
-			SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+			SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, NoChangeFlags);
 			
 			Application.Current.Activated += ApplicationActivated;
 			Application.Current.Deactivated += ApplicationDeactivated;
@@ -34,25 +33,35 @@ namespace ICSharpCode.Core.Presentation
 		
 		void ApplicationActivated(object sender, EventArgs e)
 		{
-			Visibility = oldState;
-			SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+			LoggingService.Debug("Application activated!");
+			SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, NoChangeFlags | SWP_SHOWWINDOW);
 		}
 		
 		void ApplicationDeactivated(object sender, EventArgs e)
 		{
-			oldState = Visibility;
-			Visibility = Visibility.Hidden;
+			LoggingService.Debug("Application deactivated!");
+			SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, NoChangeFlags | SWP_HIDEWINDOW);
 		}
 		
 		#region Win32 API
-		const int SWP_NOMOVE = 0x002;
-		const int SWP_NOSIZE = 0x001;
-		static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
-		static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
-		static readonly IntPtr HWND_TOP = new IntPtr(0);
+		// for all possible flags see http://msdn.microsoft.com/en-us/library/ms633545%28VS.85%29.aspx
 		
-		[DllImport("user32", EntryPoint="SetWindowPos")]
-		static extern int SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
+		const int SWP_NOSIZE     = 0x0001;
+		const int SWP_NOMOVE     = 0x0002;
+		const int SWP_NOACTIVATE = 0x0010;
+		const int SWP_SHOWWINDOW = 0x0040;
+		const int SWP_HIDEWINDOW = 0x0080;
+		
+		// SWP_NOACTIVATE fixes SD-1728 - http://bugtracker.sharpdevelop.net/Default.aspx?p=4&i=1728
+		static readonly uint NoChangeFlags = SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE;
+		
+		static readonly IntPtr HWND_TOP       = new IntPtr(0);
+		static readonly IntPtr HWND_TOPMOST   = new IntPtr(-1);
+		static readonly IntPtr HWND_NOTOPMOST = new IntPtr(-2);
+		
+		[DllImport("user32.dll", SetLastError=true, EntryPoint="SetWindowPos")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 		#endregion
 	}
 }
