@@ -9,7 +9,7 @@ using System.Diagnostics;
 namespace ICSharpCode.WpfDesign.Designer
 {
 	/// <summary>
-	/// Intializes different behaviors for the Root item. 
+	/// Intializes different behaviors for the Root item.
 	/// <remarks>Could not be a extension since Root Item is can be of any type</remarks>
 	/// </summary>
 	public class RootItemBehavior : IRootPlacementBehavior
@@ -49,7 +49,6 @@ namespace ICSharpCode.WpfDesign.Designer
 		
 		public void BeforeSetPosition(PlacementOperation operation)
 		{
-			throw new NotImplementedException();
 		}
 		
 		public void SetPosition(PlacementInformation info)
