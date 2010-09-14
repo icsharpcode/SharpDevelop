@@ -1,0 +1,4194 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AddInManager.About" xml:space="preserve">
+    <value>О Менеджере Надстроек</value>
+  </data>
+  <data name="AddInManager.ActionCancelDeinstallation" xml:space="preserve">
+    <value>Отменить удаление</value>
+  </data>
+  <data name="AddInManager.ActionCancelInstallation" xml:space="preserve">
+    <value>Отменить установку</value>
+  </data>
+  <data name="AddInManager.ActionCancelUpdate" xml:space="preserve">
+    <value>Отменить обновление</value>
+  </data>
+  <data name="AddInManager.ActionDisable" xml:space="preserve">
+    <value>Отключить</value>
+  </data>
+  <data name="AddInManager.ActionEnable" xml:space="preserve">
+    <value>Включить</value>
+  </data>
+  <data name="AddInManager.ActionInstall" xml:space="preserve">
+    <value>Установить</value>
+  </data>
+  <data name="AddInManager.ActionUninstall" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="AddInManager.ActionUpdate" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="AddInManager.AddInDependencyFailed" xml:space="preserve">
+    <value>Для работы этого AddInа требуется другой AddIn. Установите его чтобы включить этот.</value>
+  </data>
+  <data name="AddInManager.AddInDisabled" xml:space="preserve">
+    <value>Отключен</value>
+  </data>
+  <data name="AddInManager.AddInEnabled" xml:space="preserve">
+    <value>Надстройка будет включена после перезапуска SharpDevelop</value>
+  </data>
+  <data name="AddInManager.AddInInstalled" xml:space="preserve">
+    <value>Надстройка будет установлена после перезапуска SharpDevelop</value>
+  </data>
+  <data name="AddInManager.AddInInstalledTwice" xml:space="preserve">
+    <value>Надстройка установлена дважды. Пожалуйста, удалите одну копию.</value>
+  </data>
+  <data name="AddInManager.AddInMustHaveIdentity" xml:space="preserve">
+    <value>Эта Надстройка должна иметь &lt;Identity&gt; для использовании в Менеджере Надстроек</value>
+  </data>
+  <data name="AddInManager.AddInRemoved" xml:space="preserve">
+    <value>Надстройка будет удалена после перезапуска SharpDevelop</value>
+  </data>
+  <data name="AddInManager.AddInUpdated" xml:space="preserve">
+    <value>Надстройка будет обновлена после перезапуска SharpDevelop</value>
+  </data>
+  <data name="AddInManager.AddInWillBeDisabled" xml:space="preserve">
+    <value>Надстройка будет отключена после перезапуска SharpDevelop</value>
+  </data>
+  <data name="AddInManager.CannotDisableAddInManager" xml:space="preserve">
+    <value>Вы не можете отключить Менеджер Надстроек. Он необходим для переподключения Надстроек!</value>
+  </data>
+  <data name="AddInManager.CannotInstallIntoApplicationDirectory" xml:space="preserve">
+    <value>Надстройки внутри папки ${ProductName} не нужно устанавливать, они предустанавливаются автоматически.</value>
+  </data>
+  <data name="AddInManager.DescriptionCancelDeinstallation" xml:space="preserve">
+    <value>Отменяет удаление выделеных Надстроек.</value>
+  </data>
+  <data name="AddInManager.DescriptionCancelInstall" xml:space="preserve">
+    <value>Отменяет установку выделенных Надстроек.</value>
+  </data>
+  <data name="AddInManager.DescriptionCancelUpdate" xml:space="preserve">
+    <value>Отменяет обновление выделенных Надстроек.</value>
+  </data>
+  <data name="AddInManager.DescriptionDisable" xml:space="preserve">
+    <value>Выключает выбранные Надстройки</value>
+  </data>
+  <data name="AddInManager.DescriptionEnable" xml:space="preserve">
+    <value>Включает выбранные Надстройки</value>
+  </data>
+  <data name="AddInManager.DescriptionInconsistentSelection" xml:space="preserve">
+    <value>Неправильное выделение, пожалуйста выделите Надстройки с одинаковым статусом.</value>
+  </data>
+  <data name="AddInManager.FileAssociation" xml:space="preserve">
+    <value>Пакет установки Надстройки</value>
+  </data>
+  <data name="AddInManager.FileFilter" xml:space="preserve">
+    <value>Надстройки SharpDevelop|*.addin;*.sdaddin|Все файлы|*.*</value>
+  </data>
+  <data name="AddInManager.InstallButton" xml:space="preserve">
+    <value>Установить Надстройку</value>
+  </data>
+  <data name="AddInManager.NoAddInsInstalled" xml:space="preserve">
+    <value>У вас нет установленных Надстроек.
+Вы можете скачать их из Интернета, потом нажать 'Установить Надстройку' и выбрать скачаный файл, чтобы установить его.</value>
+  </data>
+  <data name="AddInManager.OpenWebsite" xml:space="preserve">
+    <value>Открыть Web-сайт</value>
+  </data>
+  <data name="AddInManager.Options" xml:space="preserve">
+    <value>Опции</value>
+  </data>
+  <data name="AddInManager.RequiredBy" xml:space="preserve">
+    <value>Надстройки необходимы для:</value>
+  </data>
+  <data name="AddInManager.RequiredDependencies" xml:space="preserve">
+    <value>Необходимые зависимости:</value>
+  </data>
+  <data name="AddInManager.ShowPreinstalledAddIns" xml:space="preserve">
+    <value>Показать предустановленные Надстройки</value>
+  </data>
+  <data name="AddInManager.Title" xml:space="preserve">
+    <value>Менеджер Надстроек</value>
+  </data>
+  <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
+    <value>Неизвестный формат файла:</value>
+  </data>
+  <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
+    <value>Показать диаграмму классов</value>
+  </data>
+  <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
+    <value>Содержание</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
+    <value>Показать содержание</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplaySearchCommand" xml:space="preserve">
+    <value>Поиск</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
+    <value>Справочная библиотека</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
+    <value>Режим справки</value>
+  </data>
+  <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
+    <value>Установленные справочные каталоги</value>
+  </data>
+  <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
+    <value>Микрософт "Help Viewer"</value>
+  </data>
+  <data name="AddIns.HelpViewer.OfflineFeatureRequestMsg" xml:space="preserve">
+    <value>Вы запросили автономную возможность в сетевом режиме справки. Требуется сменить режим, чтобы воспользоваться этой возможностью.</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
+    <value>Поиск</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchLookForLabel" xml:space="preserve">
+    <value>Строка поиска:</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchPadTitle" xml:space="preserve">
+    <value>Поиск</value>
+  </data>
+  <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
+    <value>Показать справку</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
+    <value>Использовать внешнюю справку</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
+    <value>Использовать локальную справку</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOnlineHelpLabel" xml:space="preserve">
+    <value>Использовать интернет справку</value>
+  </data>
+  <data name="AddIns.HexEditor.DefaultBytesPerLine" xml:space="preserve">
+    <value>Число байт в строке</value>
+  </data>
+  <data name="AddIns.HexEditor.Display" xml:space="preserve">
+    <value>Отображение</value>
+  </data>
+  <data name="AddIns.HexEditor.Display.Elements" xml:space="preserve">
+    <value>Элементы</value>
+  </data>
+  <data name="AddIns.HexEditor.Display.Elements.Data" xml:space="preserve">
+    <value>Данные</value>
+  </data>
+  <data name="AddIns.HexEditor.Display.Elements.Offset" xml:space="preserve">
+    <value>Смещение</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem" xml:space="preserve">
+    <value>Система счисления</value>
+  </data>
+  <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
+    <value>Подогнать по ширине</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.AddToFavorites" xml:space="preserve">
+    <value>Добавить в Избранное</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Back" xml:space="preserve">
+    <value>Назад</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Contents" xml:space="preserve">
+    <value>Содержание</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.DefaultEmptyFilter" xml:space="preserve">
+    <value>(фильтра нет)</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Delete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.DynamicHelp" xml:space="preserve">
+    <value>Динамическая помощь</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.EnterURL" xml:space="preserve">
+    <value>Введите URL</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Environment" xml:space="preserve">
+    <value>Справочная Система 2.0</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Favorites" xml:space="preserve">
+    <value>Избранное</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.FilteredBy" xml:space="preserve">
+    <value>Отфильтровано по:</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Forward" xml:space="preserve">
+    <value>Вперед</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.HelpCollectionMayBeEmpty" xml:space="preserve">
+    <value>Справочная Система 2.0 видимо инсталирована, но содержание выбранной коллекции отсутствует, или недоступно.</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.HelpSearchCaption" xml:space="preserve">
+    <value>Поиск</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.HelpSearchInProgress" xml:space="preserve">
+    <value>Поиск "${0}" ...</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.HelpSystemNotAvailable" xml:space="preserve">
+    <value>Справочная Система недоступна.
+Установите .NET Framework SDK, чтобы получить справочную систему.</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.HelpUpdateCaption" xml:space="preserve">
+    <value>Идет обновление справки</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.HelpUpdateInProgress" xml:space="preserve">
+    <value>Справка обновляется в соответсвии с последними изменениями. Это может занять несколько минут.</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.HighlightMatches" xml:space="preserve">
+    <value>Подсветить совпадения</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Homepage" xml:space="preserve">
+    <value>Стартовая страница</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Index" xml:space="preserve">
+    <value>Индекс</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.IndexResults" xml:space="preserve">
+    <value>Результаты индексации</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Location" xml:space="preserve">
+    <value>Расположение</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.LookFor" xml:space="preserve">
+    <value>Искать:</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.LookForSimilarWords" xml:space="preserve">
+    <value>Искать похожие слова</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.MultiTopic" xml:space="preserve">
+    <value>Темы</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.NewWindow" xml:space="preserve">
+    <value>Новое окно</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.NextTopic" xml:space="preserve">
+    <value>Следующая тема</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.NoDataIsAvailableForDynamicHelp" xml:space="preserve">
+    <value>По такому выбору данных нет.</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Options.AdditionOptions" xml:space="preserve">
+    <value>Дополнительные настройки</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Options.Groupbox" xml:space="preserve">
+    <value>Коллекция Справки</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Options.Label" xml:space="preserve">
+    <value>Пожалуйста, выберите коллекцию справки для SharpDevelop.</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Options.Reregister" xml:space="preserve">
+    <value>Регистрировать Справку SharpDevelop</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Options.ShowTocPictures" xml:space="preserve">
+    <value>Показывать изображения</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.PreviousTopic" xml:space="preserve">
+    <value>Предыдущая тема</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.PrintSubtopics" xml:space="preserve">
+    <value>Печатать подтемы ...</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.PrintTopic" xml:space="preserve">
+    <value>Печатать тему ...</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.PrintTopicAndSubtopics" xml:space="preserve">
+    <value>Печатать тему с подтемами ...</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Rank" xml:space="preserve">
+    <value>Разряд</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Refresh" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.RemoveFavorite" xml:space="preserve">
+    <value>Вы действительно хотите удалить "${0}" из избранного?</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Rename" xml:space="preserve">
+    <value>Переименовать</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.ResultsOfIndexResults" xml:space="preserve">
+    <value>Результаты индекса для ${0} - найдено ${1} ${2}</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.ResultsOfSearchResults" xml:space="preserve">
+    <value>Результаты поиска для ${0} - найдено ${1} ${2}</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Search" xml:space="preserve">
+    <value>Поиск</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.SearchCommand" xml:space="preserve">
+    <value>Искать..</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.SearchInPreviouslyFoundTopics" xml:space="preserve">
+    <value>Искать только в ранее найденых темах</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.SearchInTitlesOnly" xml:space="preserve">
+    <value>Искать только в заголовках</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.SearchOnline" xml:space="preserve">
+    <value>Искать в сети</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.SearchResults" xml:space="preserve">
+    <value>Результаты поиска</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.SingleTopic" xml:space="preserve">
+    <value>тема</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Stop" xml:space="preserve">
+    <value>Остановить</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.SyncTOC" xml:space="preserve">
+    <value>Соотнести с Cодержанием</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.TextZoom" xml:space="preserve">
+    <value>Приближение текста</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.Title" xml:space="preserve">
+    <value>Заголовок</value>
+  </data>
+  <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
+    <value>Использовать текущий язык проекта</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.FindCallsOfSelected.TabTitle" xml:space="preserve">
+    <value>Результат</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.SetAsRoot.TabTitle" xml:space="preserve">
+    <value>Объединенные узлы</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.ShowFunctions.TabTitle" xml:space="preserve">
+    <value>Все процедуры для {0}</value>
+  </data>
+  <data name="AddIns.Profiler.DatabaseTooNewError" xml:space="preserve">
+    <value>Выбранная сессия профайлинга SharpDevelop создана в более новой версии SharpDevelop и не может быть открыта.</value>
+  </data>
+  <data name="AddIns.Profiler.FileExtensionDescription" xml:space="preserve">
+    <value>SharpDevelop сессия профайлинга</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.FileNotFound" xml:space="preserve">
+    <value>Проект не может стартовать, потому что выполняемый файл не найден. Пожалуйста проверьте, что проект и все его зависимости корректны!</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.NoStartableProjectFound" xml:space="preserve">
+    <value>Проект не найден. Отмена ...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.NoStartableProjectWantToProfileStartupProject" xml:space="preserve">
+    <value>Проект не может стартовать. Вы хотите профилировать StartUp проект решения вместо этого?</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.PreparingForAnalysis" xml:space="preserve">
+    <value>Подготовка к анализу ...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.RegisterFailed" xml:space="preserve">
+    <value>Не удалось зарегистрировать профайлер в реестре COM. Нельзя запустить профайлинг!</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.UnregisterFailed" xml:space="preserve">
+    <value>Не удалось убрать регистрацию профайлера в реестре COM!</value>
+  </data>
+  <data name="AddIns.Profiler.MessageViewCategory" xml:space="preserve">
+    <value>Профиль</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.CombineRecursiveCalls" xml:space="preserve">
+    <value>Объединить рекурсивные вызовы.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.DoNotProfileNetInternals" xml:space="preserve">
+    <value>Не профилировать внутренние вызовы dotNET.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.EnableDCAtStartup" xml:space="preserve">
+    <value>Начать сбор данных немедленно после начала сессии.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.Header" xml:space="preserve">
+    <value>Сбор данных</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.SizeOfStorageDescription" xml:space="preserve">
+    <value>Размер временного файла:</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.Title" xml:space="preserve">
+    <value>Основное</value>
+  </data>
+  <data name="AddIns.Profiler.Options.Title" xml:space="preserve">
+    <value>Профайлинг</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileCurrentProject" xml:space="preserve">
+    <value>Профилировать текущий проект</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutable" xml:space="preserve">
+    <value>Выберите стартовый файл для профайлинга</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutable.ErrorMessage" xml:space="preserve">
+    <value>Неправильные данные, пожалуйста повторите!</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.CmdLineArgsText" xml:space="preserve">
+    <value>Аргументы командной строки:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.DescriptionText" xml:space="preserve">
+    <value>Выберите путь выполнимой программы для профилирования.
+Дополнительно можно указать рабочий каталог и аргументы командной строки.</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.ExePathText" xml:space="preserve">
+    <value>Путь к выполнимому файлу:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.StartText" xml:space="preserve">
+    <value>Старт профайлинга</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.Title" xml:space="preserve">
+    <value>Выполнимый файл для профайлинга</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.WorkingDirText" xml:space="preserve">
+    <value>Рабочий каталог:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.CollectData" xml:space="preserve">
+    <value>Сбор данных</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.Shutdown" xml:space="preserve">
+    <value>Завершить</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.Title" xml:space="preserve">
+    <value>Окно управления профайлером</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CallCountColumnText" xml:space="preserve">
+    <value>Кол-во вызовов</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CallsText" xml:space="preserve">
+    <value>Вызовы:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ClearQueryHistoryText" xml:space="preserve">
+    <value>Очистить историю запросов</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.CopySelectedData" xml:space="preserve">
+    <value>Копировать выбранные данные</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.CopyStacktrace" xml:space="preserve">
+    <value>Копировать трассировку стека</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.FindCallsOfSelected" xml:space="preserve">
+    <value>Найти вызовы выбранной процедуры</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.GoToDefinition" xml:space="preserve">
+    <value>Перейти к определению</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.SetAsRoot" xml:space="preserve">
+    <value>Сделать корневым/Объединить</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.ShowFunctions" xml:space="preserve">
+    <value>Показать процедуры</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CpuCyclesText" xml:space="preserve">
+    <value>Циклов ЦП:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ExecuteQueryText" xml:space="preserve">
+    <value>Выполнить запрос</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ExpandHotPathSubtreeText" xml:space="preserve">
+    <value>Развернуть выделенный элемент</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.NameColumnText" xml:space="preserve">
+    <value>Название</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.OverviewTabText" xml:space="preserve">
+    <value>Обзор</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.QueryHistoryText" xml:space="preserve">
+    <value>История запросов</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.SearchLabelText" xml:space="preserve">
+    <value>Поиск:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ShowQueryBarText" xml:space="preserve">
+    <value>Показать панель запросов</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimePercentageOfParentColumnText" xml:space="preserve">
+    <value>% от родительского</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentColumnText" xml:space="preserve">
+    <value>Потраченное время</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentPerCallColumnText" xml:space="preserve">
+    <value>Время/вызов</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentSelfColumnText" xml:space="preserve">
+    <value>Время (собств.)</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentSelfPerCallColumnText" xml:space="preserve">
+    <value>Время (собств.)/вызов</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeText" xml:space="preserve">
+    <value>Время:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.Title" xml:space="preserve">
+    <value>Анализатор сессии профилирования</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.Top20TabText" xml:space="preserve">
+    <value>20 верхних</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.WaitBarText" xml:space="preserve">
+    <value>Обновление отображения, пожалуйста подождите ...</value>
+  </data>
+  <data name="AddIns.Profiler.UnitTests.RunWithProfiler" xml:space="preserve">
+    <value>Старт с профайлером</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
+    <value>Извлечь в отдельный метод</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsBreakError" xml:space="preserve">
+    <value>Выделенный текст содержит оператор break без соответствующего цикла. Пожалуйста проверьте выделение!</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsContinueError" xml:space="preserve">
+    <value>Выделенный текст содержит оператор continue без соответствующего цикла. Пожалуйста проверьте выделение!</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsGotoError" xml:space="preserve">
+    <value>Выделенный текст содержит оператор goto без соответствующей метки. Пожалуйста проверьте выделение!</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.EnterName" xml:space="preserve">
+    <value>Введите название нового метода</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.InvalidSelection" xml:space="preserve">
+    <value>Неправильное выделение! Пожалуйста проверьте правильность диапазона.</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ParseErrors" xml:space="preserve">
+    <value>Ошибка при разборе! Нельзя извлечь текст в новый метод.</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethodNotSupported" xml:space="preserve">
+    <value>Извлекаемый исходный текст в {0} не поддерживается!</value>
+  </data>
+  <data name="AddIns.Subversion.AddToIgnoreList" xml:space="preserve">
+    <value>Добавить в список отклоненных</value>
+  </data>
+  <data name="AddIns.Subversion.Blame" xml:space="preserve">
+    <value>Аннотировать</value>
+  </data>
+  <data name="AddIns.Subversion.BranchOrTag" xml:space="preserve">
+    <value>Ветвь/ярлык</value>
+  </data>
+  <data name="AddIns.Subversion.CheckForModifications" xml:space="preserve">
+    <value>Проверить на изменения</value>
+  </data>
+  <data name="AddIns.Subversion.Checkout" xml:space="preserve">
+    <value>Получить</value>
+  </data>
+  <data name="AddIns.Subversion.CleanUp" xml:space="preserve">
+    <value>Почистить</value>
+  </data>
+  <data name="AddIns.Subversion.Commit" xml:space="preserve">
+    <value>Совершить</value>
+  </data>
+  <data name="AddIns.Subversion.CreatePatch" xml:space="preserve">
+    <value>Создать отрывок</value>
+  </data>
+  <data name="AddIns.Subversion.DeleteDirectory" xml:space="preserve">
+    <value>Удалить каталог</value>
+  </data>
+  <data name="AddIns.Subversion.Diff" xml:space="preserve">
+    <value>Разность</value>
+  </data>
+  <data name="AddIns.Subversion.EditConflicts" xml:space="preserve">
+    <value>Править противоречия</value>
+  </data>
+  <data name="AddIns.Subversion.ErrorDelete" xml:space="preserve">
+    <value>Ошибка удаления ${File}</value>
+  </data>
+  <data name="AddIns.Subversion.Export" xml:space="preserve">
+    <value>Экспорт</value>
+  </data>
+  <data name="AddIns.Subversion.History" xml:space="preserve">
+    <value>История</value>
+  </data>
+  <data name="AddIns.Subversion.MarkConflictsAsResolved" xml:space="preserve">
+    <value>Считать противоречие разрешенным</value>
+  </data>
+  <data name="AddIns.Subversion.Merge" xml:space="preserve">
+    <value>Объединить</value>
+  </data>
+  <data name="AddIns.Subversion.Options.AutoAdd" xml:space="preserve">
+    <value>Авто-добавление новых файлов</value>
+  </data>
+  <data name="AddIns.Subversion.Options.AutoDelete" xml:space="preserve">
+    <value>Авто-удаление удаленных файлов</value>
+  </data>
+  <data name="AddIns.Subversion.Options.ReloadProjectAfterChanges" xml:space="preserve">
+    <value>Перезагрузка проекта при изменении файлов проекта</value>
+  </data>
+  <data name="AddIns.Subversion.Options.RenameInsideSubversion" xml:space="preserve">
+    <value>Переименовывать файлы внутри Subversion (сохраняет историю)</value>
+  </data>
+  <data name="AddIns.Subversion.Options.Title" xml:space="preserve">
+    <value>Опции Subversion</value>
+  </data>
+  <data name="AddIns.Subversion.Options.UseHistoryDisplayBinding" xml:space="preserve">
+    <value>Показывать историю контролируемых файлов</value>
+  </data>
+  <data name="AddIns.Subversion.Relocate" xml:space="preserve">
+    <value>Переместить</value>
+  </data>
+  <data name="AddIns.Subversion.RemoveFromIgnoreList" xml:space="preserve">
+    <value>Перестать игнорировать</value>
+  </data>
+  <data name="AddIns.Subversion.RepositoryBrowser" xml:space="preserve">
+    <value>Броузер хранилища</value>
+  </data>
+  <data name="AddIns.Subversion.Revert" xml:space="preserve">
+    <value>Вернуть</value>
+  </data>
+  <data name="AddIns.Subversion.SaveFiles" xml:space="preserve">
+    <value>Сохранить файлы</value>
+  </data>
+  <data name="AddIns.Subversion.ShowLog" xml:space="preserve">
+    <value>Показать лог</value>
+  </data>
+  <data name="AddIns.Subversion.Switch" xml:space="preserve">
+    <value>Переключить</value>
+  </data>
+  <data name="AddIns.Subversion.TortoiseSVNRequired" xml:space="preserve">
+    <value>Для этого действия требуется TortoiseSVN</value>
+  </data>
+  <data name="AddIns.Subversion.Update" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="AddIns.Subversion.UpdateToRevision" xml:space="preserve">
+    <value>Обновить до версии</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
+    <value>Редактировать колонки и строки таблицы</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.RemoveMargin" xml:space="preserve">
+    <value>Удалить отступы</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.RemoveUnnecessaryAttributes" xml:space="preserve">
+    <value>Удалить ненужные атрибуты</value>
+  </data>
+  <data name="AddIns.XamlBinding.NewEventHandlerItem" xml:space="preserve">
+    <value>&lt;новый event handler&gt;</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.EventColor" xml:space="preserve">
+    <value>Цвет для события:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.EventHandlerNamePattern" xml:space="preserve">
+    <value>Шаблон имени для event handler:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.HighlightingDescription" xml:space="preserve">
+    <value>Выберите цвета, которые должны использоваться в XAML подсветке:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.HighlightingGroupLabel" xml:space="preserve">
+    <value>Подсветка</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.IgnoredElementColor" xml:space="preserve">
+    <value>Цвет проигнорированного элемента:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.NamespaceDeclarationColor" xml:space="preserve">
+    <value>Цвет пространства имен XML:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.PropertyColor" xml:space="preserve">
+    <value>Цвет свойства:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.SwitchToCodeViewAfterInsertion" xml:space="preserve">
+    <value>Переключиться на код после вставки нового event handler</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.Title" xml:space="preserve">
+    <value>XAML</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss" xml:space="preserve">
+    <value>Файл не может быть записан в текущей кодировке ${encoding} без потери данных.</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss.Continue" xml:space="preserve">
+    <value>Продолжить</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss.UseUTF8" xml:space="preserve">
+    <value>Сохранить в UTF-8</value>
+  </data>
+  <data name="BackendBindings.ExecutionManager.CantExecuteDLLError" xml:space="preserve">
+    <value>Проект сконфигурирован как DLL, а команда для ее выполнения не указана.
+Вы можете указать команду для запуска в параметрах проекта.</value>
+  </data>
+  <data name="BackendBindings.ExecutionManager.NoSingleFileCompilation" xml:space="preserve">
+    <value>Компиляция отдельных файлов не поддерживается, пожалуйста, создайте проект.</value>
+  </data>
+  <data name="CompilerResultView.DescriptionText" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="CompilerResultView.FileText" xml:space="preserve">
+    <value>Файл</value>
+  </data>
+  <data name="CompilerResultView.LineText" xml:space="preserve">
+    <value>Строка</value>
+  </data>
+  <data name="ComponentInspector.AboutDialog.Title" xml:space="preserve">
+    <value>О программе</value>
+  </data>
+  <data name="ComponentInspector.AboutDialog.VersionLabel" xml:space="preserve">
+    <value>Версия:</value>
+  </data>
+  <data name="ComponentInspector.ActionMenu.CopyObjectMenuItem" xml:space="preserve">
+    <value>Копировать объект</value>
+  </data>
+  <data name="ComponentInspector.ActionMenu.CopyTextMenuItem" xml:space="preserve">
+    <value>Копировать текст</value>
+  </data>
+  <data name="ComponentInspector.ActionMenu.CopyValueTextMenuItem" xml:space="preserve">
+    <value>Копировать значение</value>
+  </data>
+  <data name="ComponentInspector.ActionMenu.CutObjectMenuItem" xml:space="preserve">
+    <value>Вырезать объект</value>
+  </data>
+  <data name="ComponentInspector.ActionMenu.EventLoggingMenuItem" xml:space="preserve">
+    <value>&amp;Протокол событий</value>
+  </data>
+  <data name="ComponentInspector.ActionMenu.PasteObjectMenuItem" xml:space="preserve">
+    <value>Вставить объект</value>
+  </data>
+  <data name="ComponentInspector.ActionMenu.RefreshRunningComObjectsMenuItem" xml:space="preserve">
+    <value>Обновить выполняющиеся COM объекты</value>
+  </data>
+  <data name="ComponentInspector.ActionMenu.RegisterTypeLibMenuItem" xml:space="preserve">
+    <value>Зарегистрировать TypeLib</value>
+  </data>
+  <data name="ComponentInspector.ActionMenu.RemoveFromFavouritesMenuItem" xml:space="preserve">
+    <value>Удалить из Избранного</value>
+  </data>
+  <data name="ComponentInspector.ActionMenu.UnregisterTypeLibMenuItem" xml:space="preserve">
+    <value>Убрать регистрацию TypeLib</value>
+  </data>
+  <data name="ComponentInspector.AssemblyTreeNode.Text" xml:space="preserve">
+    <value>Открытые сборки</value>
+  </data>
+  <data name="ComponentInspector.AttachDialog.AttachFailedMessage" xml:space="preserve">
+    <value>Ошибка присоединения к процессу {0}.</value>
+  </data>
+  <data name="ComponentInspector.AttachDialog.ProcessLabel" xml:space="preserve">
+    <value>Процесс</value>
+  </data>
+  <data name="ComponentInspector.AttachDialog.Title" xml:space="preserve">
+    <value>Присоединение</value>
+  </data>
+  <data name="ComponentInspector.CastDialog.CannotFindType" xml:space="preserve">
+    <value>Не удалось найти тип</value>
+  </data>
+  <data name="ComponentInspector.CastDialog.CannotFindTypeInAssembliesMessage" xml:space="preserve">
+    <value>Не удалось найти тип {0} ни в одной открытой сейчас сборке.</value>
+  </data>
+  <data name="ComponentInspector.ComCategoryRootTreeNode.Text" xml:space="preserve">
+    <value>Категории компонентов</value>
+  </data>
+  <data name="ComponentInspector.ComClassRootTreeNode.Text" xml:space="preserve">
+    <value>Классы</value>
+  </data>
+  <data name="ComponentInspector.ComInterfaceRootTreeNode.Text" xml:space="preserve">
+    <value>Интерфейсы</value>
+  </data>
+  <data name="ComponentInspector.ComRunningObjectsTreeNode.Text" xml:space="preserve">
+    <value>Выполняющиеся COM объекты</value>
+  </data>
+  <data name="ComponentInspector.ComTypeLibraryRootTreeNode.Text" xml:space="preserve">
+    <value>Библиотеки типов</value>
+  </data>
+  <data name="ComponentInspector.ConstructorDialog.Information" xml:space="preserve">
+    <value>Если вы выбрали конструктор с параметрами, то нажмите Ok и заполните параметры. После этого перетащите конструктор в то место, где должен быть создан объект.</value>
+  </data>
+  <data name="ComponentInspector.ConstructorDialog.Title" xml:space="preserve">
+    <value>Выбор конструктора</value>
+  </data>
+  <data name="ComponentInspector.CreateObjectMenuItem" xml:space="preserve">
+    <value>Создать О&amp;бъект</value>
+  </data>
+  <data name="ComponentInspector.CustDirectoriesPanel.ApplicationWorkingFolder" xml:space="preserve">
+    <value>Рабочий каталог приложения</value>
+  </data>
+  <data name="ComponentInspector.CustDirectoriesPanel.ConvertedAssembliesFolder" xml:space="preserve">
+    <value>Конвертированные сборки ActiveX</value>
+  </data>
+  <data name="ComponentInspector.CustDirectoriesPanel.Title" xml:space="preserve">
+    <value>Папки</value>
+  </data>
+  <data name="ComponentInspector.CustomActiveXPanel.AutomaticallyGetPropertiesCheckBox" xml:space="preserve">
+    <value>Автоматически получить COM свойства</value>
+  </data>
+  <data name="ComponentInspector.CustomObjectPanel.ShowLabel" xml:space="preserve">
+    <value>Показать</value>
+  </data>
+  <data name="ComponentInspector.ErrorDialog.LessInformationButton" xml:space="preserve">
+    <value>Подробнее</value>
+  </data>
+  <data name="ComponentInspector.ErrorDialog.MoreInformationButton" xml:space="preserve">
+    <value>Скрыть подробности</value>
+  </data>
+  <data name="ComponentInspector.ErrorDialog.ReportAsBugButton" xml:space="preserve">
+    <value>Сообщить разработчикам</value>
+  </data>
+  <data name="ComponentInspector.EventLogList.ClearAllMenuItem" xml:space="preserve">
+    <value>Очистить всё</value>
+  </data>
+  <data name="ComponentInspector.EventLogList.ClearMenuItem" xml:space="preserve">
+    <value>Очистить</value>
+  </data>
+  <data name="ComponentInspector.EventLogList.ParametersColumnHeader" xml:space="preserve">
+    <value>Параметры</value>
+  </data>
+  <data name="ComponentInspector.EventLogList.TimeColumnHeader" xml:space="preserve">
+    <value>Время</value>
+  </data>
+  <data name="ComponentInspector.FindDialog.FindButton" xml:space="preserve">
+    <value>Найти</value>
+  </data>
+  <data name="ComponentInspector.FindDialog.FindIn" xml:space="preserve">
+    <value>Найти в</value>
+  </data>
+  <data name="ComponentInspector.FindDialog.FindWhatLabel" xml:space="preserve">
+    <value>Что найти:</value>
+  </data>
+  <data name="ComponentInspector.FindDialog.LevelSelectOnlyDownLabel" xml:space="preserve">
+    <value>Только вниз</value>
+  </data>
+  <data name="ComponentInspector.FindDialog.MatchLabel" xml:space="preserve">
+    <value>Совпадение</value>
+  </data>
+  <data name="ComponentInspector.FindDialog.NoItemsFoundMessage" xml:space="preserve">
+    <value>Ничего не найдено</value>
+  </data>
+  <data name="ComponentInspector.FindDialog.ObjectTreeValueCheckBox" xml:space="preserve">
+    <value>Значение</value>
+  </data>
+  <data name="ComponentInspector.FindDialog.StartsWithRadioButton" xml:space="preserve">
+    <value>Начинается с</value>
+  </data>
+  <data name="ComponentInspector.FindDialog.Title" xml:space="preserve">
+    <value>Найти</value>
+  </data>
+  <data name="ComponentInspector.GacList.OpenMenuItem" xml:space="preserve">
+    <value>Открыть</value>
+  </data>
+  <data name="ComponentInspector.GacList.VersionColumn" xml:space="preserve">
+    <value>Версия</value>
+  </data>
+  <data name="ComponentInspector.GettingStartedDialog.ShowThisDialogCheckBox" xml:space="preserve">
+    <value>Показывать это окно</value>
+  </data>
+  <data name="ComponentInspector.ObjectBrowserForm.OptionsMenuItem" xml:space="preserve">
+    <value>&amp;Параметры</value>
+  </data>
+  <data name="ComponentInspector.ObjectBrowserForm.ShowHelpMenuItem" xml:space="preserve">
+    <value>&amp;Справка...</value>
+  </data>
+  <data name="ComponentInspector.ObjectTreeOptionsPanel.CategoriesGroupBox" xml:space="preserve">
+    <value>Категории</value>
+  </data>
+  <data name="ComponentInspector.ParamControlInfo.ValueLabel" xml:space="preserve">
+    <value>значение</value>
+  </data>
+  <data name="CSharpBinding.InsertAnonymousMethod" xml:space="preserve">
+    <value>Вставить анонимный метод без параметров.</value>
+  </data>
+  <data name="CSharpBinding.InsertAnonymousMethodWithParameters" xml:space="preserve">
+    <value>Вставить анонимный метод с параметрами.</value>
+  </data>
+  <data name="Dialog.About.ChangeLogTabName" xml:space="preserve">
+    <value>Журнал изменений</value>
+  </data>
+  <data name="Dialog.About.DialogName" xml:space="preserve">
+    <value>О SharpDevelop</value>
+  </data>
+  <data name="Dialog.About.label1Text" xml:space="preserve">
+    <value>Версия</value>
+  </data>
+  <data name="Dialog.About.label2Text" xml:space="preserve">
+    <value>Сборка</value>
+  </data>
+  <data name="Dialog.About.License" xml:space="preserve">
+    <value>Выпуск в соответствии с определениями ${License}.</value>
+  </data>
+  <data name="Dialog.About.ThrowExceptionButton" xml:space="preserve">
+    <value>Выбросить &amp;исключение</value>
+  </data>
+  <data name="Dialog.About.VersionInfoTabName" xml:space="preserve">
+    <value>Версии библиотек</value>
+  </data>
+  <data name="Dialog.About.VersionInfoTabName.CopyButton" xml:space="preserve">
+    <value>Копировать</value>
+  </data>
+  <data name="Dialog.About.VersionInfoTabName.VersionColumn" xml:space="preserve">
+    <value>Версия</value>
+  </data>
+  <data name="Dialog.Componnents.RichMenuItem.LoadFileDescription" xml:space="preserve">
+    <value>загрузить файл ${File}</value>
+  </data>
+  <data name="Dialog.Componnents.RichMenuItem.LoadProjectDescription" xml:space="preserve">
+    <value>загрузить проект ${Project}</value>
+  </data>
+  <data name="Dialog.Componnents.RichMenuItem.NoRecentFilesString" xml:space="preserve">
+    <value>последние файлы</value>
+  </data>
+  <data name="Dialog.Componnents.RichMenuItem.NoRecentProjectsString" xml:space="preserve">
+    <value>последние проекты</value>
+  </data>
+  <data name="Dialog.DirtyFiles.DialogName" xml:space="preserve">
+    <value>Сохранить изменённые файлы?</value>
+  </data>
+  <data name="Dialog.DirtyFiles.DirtyFiles" xml:space="preserve">
+    <value>Изменённые файлы</value>
+  </data>
+  <data name="Dialog.DirtyFiles.DiscardAllButton" xml:space="preserve">
+    <value>Отменить все</value>
+  </data>
+  <data name="Dialog.DirtyFiles.Files" xml:space="preserve">
+    <value>Файлы</value>
+  </data>
+  <data name="Dialog.DirtyFiles.SaveAllButton" xml:space="preserve">
+    <value>Сохранить все</value>
+  </data>
+  <data name="Dialog.DirtyFiles.SaveButton" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="Dialog.ExportProjectToHtml.DialogName" xml:space="preserve">
+    <value>Экспортировать в HTML</value>
+  </data>
+  <data name="Dialog.ExportProjectToHtml.FolderLabel" xml:space="preserve">
+    <value>Папка:</value>
+  </data>
+  <data name="Dialog.ExportProjectToHtml.SelectTargetDirInfo" xml:space="preserve">
+    <value>Выбор папки</value>
+  </data>
+  <data name="Dialog.Goto.DialogName" xml:space="preserve">
+    <value>Перейти к</value>
+  </data>
+  <data name="Dialog.Goto.GotoLine" xml:space="preserve">
+    <value>Перейти к строчке</value>
+  </data>
+  <data name="Dialog.Goto.IntroText" xml:space="preserve">
+    <value>Введите выражение для перехода: номер строки, назавание класса или файла.
+Примеры: "120", "MainClass", "Main.cs,120".</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Add" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Change" xml:space="preserve">
+    <value>Изменить...</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.ColorDlg.Background" xml:space="preserve">
+    <value>Цвет фона</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.ColorDlg.Bold" xml:space="preserve">
+    <value>Полужирный</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.ColorDlg.Caption" xml:space="preserve">
+    <value>Здесь Вы можете редактировать выбранный цвет подсветки.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.ColorDlg.Foreground" xml:space="preserve">
+    <value>Цвет переднего плана</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.ColorDlg.Italic" xml:space="preserve">
+    <value>Курсив</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.ColorDlg.NoColor" xml:space="preserve">
+    <value>Цвет не выбран (использовать цвет по умолчанию)</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.ColorDlg.SystemColor" xml:space="preserve">
+    <value>Системный цвет:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.ColorDlg.Title" xml:space="preserve">
+    <value>Редактировать цвет</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.ColorDlg.UserDefined" xml:space="preserve">
+    <value>Определенный пользователем цвет:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Digits.Explanation" xml:space="preserve">
+    <value>Этот параметр позволяет устанавливать цвет цифр в Вашем файле.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Digits.Sample" xml:space="preserve">
+    <value>Пример цвета цифр:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Edit" xml:space="preserve">
+    <value>Изменить...</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.EditDlg.Title" xml:space="preserve">
+    <value>Редактировать схему</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.EnterText" xml:space="preserve">
+    <value>Введите текст</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.EnvColors.BookMarks" xml:space="preserve">
+    <value>Закладки</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.EnvColors.CaretMarker" xml:space="preserve">
+    <value>Текстовый курсор</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.EnvColors.Cursor" xml:space="preserve">
+    <value>Курсор</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.EnvColors.Default" xml:space="preserve">
+    <value>Стандартный текст/фон</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.EnvColors.EOLMarkers" xml:space="preserve">
+    <value>Концы строк</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.EnvColors.FoldLine" xml:space="preserve">
+    <value>Линия свёртки</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.EnvColors.FoldMarker" xml:space="preserve">
+    <value>Свёртка</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.EnvColors.InvalidLines" xml:space="preserve">
+    <value>Неправильные строки</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.EnvColors.LineNumbers" xml:space="preserve">
+    <value>Номера строк</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.EnvColors.Selection" xml:space="preserve">
+    <value>Выделение</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.EnvColors.SpaceMarkers" xml:space="preserve">
+    <value>Пробелы</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.EnvColors.TabMarkers" xml:space="preserve">
+    <value>Табуляции</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.EnvColors.VRuler" xml:space="preserve">
+    <value>Вертикальная линейка</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Environment.Colors" xml:space="preserve">
+    <value>Цвета окружения:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Environment.Explanation" xml:space="preserve">
+    <value>Здесь Вы можете определить цвета подсветки для различных областей текстового редактора.
+
+Выберите область в списке и нажмите на "Изменить" для изменения цветов.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Explanation" xml:space="preserve">
+    <value>Описание:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.KeywordList.ColorSample" xml:space="preserve">
+    <value>Используемая схема подсветки:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.KeywordList.EnterName" xml:space="preserve">
+    <value>Введите имя нового ключевого слова:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.KeywordList.Explanation" xml:space="preserve">
+    <value>Каждое ключевое слово в списке расцвечивается выбранным цветом.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.KeywordList.Keywords" xml:space="preserve">
+    <value>Ключевые слова в списке:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.KeywordList.ListName" xml:space="preserve">
+    <value>Имя списка:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.KeywordList.NameEmpty" xml:space="preserve">
+    <value>У ключевого слова должно быть имя.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.KeywordLists.EnterName" xml:space="preserve">
+    <value>Введите имя нового списка ключевых слов:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.KeywordLists.Explanation" xml:space="preserve">
+    <value>Каждому списку ключевых слов может быть назначен индивидуальный цвет.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.KeywordLists.Lists" xml:space="preserve">
+    <value>Списки ключевых слов:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Marker.ExplanationNext" xml:space="preserve">
+    <value>Введите ключевую строку следующее слово после которой будет окрашено выбранным цветом.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Marker.ExplanationPrev" xml:space="preserve">
+    <value>Введите ключевую строку предыдущее слово перед которой будет окрашено выбранным цветом.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Marker.KeyString" xml:space="preserve">
+    <value>Ключевая строка:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Marker.MarkMarker" xml:space="preserve">
+    <value>Использовать цевет и для ключевой строки</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Marker.NameEmpty" xml:space="preserve">
+    <value>Ключевая строка не может быть пустой.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Marker.SampleColor" xml:space="preserve">
+    <value>Пример подцветки предыдущих/следующих слов:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Markers.EnterName" xml:space="preserve">
+    <value>Введите новую ключевую строку-маркер.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Markers.Explanation" xml:space="preserve">
+    <value>Здесь можно определить, строки которые не расцвечиваются сами по себе, а влияют на цвет предыдущего/следующего слова.
+
+Это полезно, например, для расцветки вызовов методов используя ( как ключевую строку.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Markers.KeyString" xml:space="preserve">
+    <value>Ключевая строка</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Markers.Next" xml:space="preserve">
+    <value>Клюевые строки маркера следующего токена:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Markers.Previous" xml:space="preserve">
+    <value>Ключевые строки маркера предыдущего токена:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Properties.EnterName" xml:space="preserve">
+    <value>Введите имя нового свойства:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Properties.EnterValue" xml:space="preserve">
+    <value>Введите значение свойства {0}:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Properties.Explanation" xml:space="preserve">
+    <value>Здесь можно определить свойства схемы.
+
+Свойства - это пары имя/значение, которые управляют поведением редактора. Сейчас единственное поддерживаемое свойство - это "LineComment", которое сообщает редактору строку для вставки в начало строки текста, когда Вы хотите её закомментировать.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Properties.Name" xml:space="preserve">
+    <value>Имя</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Properties.Properties" xml:space="preserve">
+    <value>Свойства:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Properties.Value" xml:space="preserve">
+    <value>Значение</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Remove" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.RuleSet.Delimiters" xml:space="preserve">
+    <value>Разделители:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.RuleSet.Explanation" xml:space="preserve">
+    <value>Это общие свойства набора правил.
+
+Разделители определяют, какие символы используются для разделения слов.
+Если Вы введете что-нибудь в "Импортировать набор", это будет означать, что набор будет корневым набором импортированным из другой схемы. Все другие параметры этого набора правил игнорируются. Это полезно, например, для HTML и ASP, которые используют JavaScript как импротируемый набор правил.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.RuleSet.IgnoreCase" xml:space="preserve">
+    <value>Игнорировать регистр в наборе правил</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.RuleSet.Name" xml:space="preserve">
+    <value>Имя набора правил:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.RuleSet.NameEmpty" xml:space="preserve">
+    <value>Имя нобора правил не может быть пустым. Только корневой набор правил может быть безымянным.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.RuleSet.NoEscapeSeq" xml:space="preserve">
+    <value>Неправильная escape-последовательность в наборе правил</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.RuleSet.Reference" xml:space="preserve">
+    <value>Ссылаемый набор:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.RuleSet.SpaceAndTab" xml:space="preserve">
+    <value>Пробел и знак табуляции добавляется автоматически.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.RuleSets.EnterName" xml:space="preserve">
+    <value>Введите имя нового набора правил:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.RuleSets.Explanation" xml:space="preserve">
+    <value>Здесь можно определить наборы правил для схемы подсветки.
+
+Наборы правил - это сердце системы подсветки в SharpDevelop. Каждый набор правил - это коллекция списков ключевых слов и промежутков (последовательностей символов между заданными начальным и конечным символами, например кавычками).
+Козневой набор правил используется для главного файла, другие (именованные) наборы могут использоваться внутри промежутков.
+Таким образом, для различных регионов текста могут существовать свои наборы правил, такие как XML-коментарии или строки.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.RuleSets.NamedRuleSets" xml:space="preserve">
+    <value>Именованные наборы правил:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.SampleText" xml:space="preserve">
+    <value>Пример</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Scheme.Explanation" xml:space="preserve">
+    <value>У каждой схемы подсветки должно быть уникальное имя, которое идентифицирует схему.
+Определенная пользователем схема, имя которой совпадает со встроенной, полностью переопределяет встроеную схему.
+
+Поле 'Расширения' - это разделенный точкой с запятой список расширений файлов, которым принадлежит эта схема, например '.htm;.htnl;.asp'. Эта строка не должна содержать пробелы.
+Когда расширение используется и встроенной и определенной пользователем схемой, последняя имеет приоритет.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Scheme.Extensions" xml:space="preserve">
+    <value>Расширения:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Scheme.Name" xml:space="preserve">
+    <value>Имя схемы:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Scheme.NameEmpty" xml:space="preserve">
+    <value>Имя схемы не может быть пустым.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Span.Begin" xml:space="preserve">
+    <value>Начало промежутка:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Span.BeginCol" xml:space="preserve">
+    <value>Начало</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Span.BeginEmpty" xml:space="preserve">
+    <value>Начальная строка не может быть пустой.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Span.Colors" xml:space="preserve">
+    <value>Цвета:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Span.ContCol" xml:space="preserve">
+    <value>Содержит</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Span.End" xml:space="preserve">
+    <value>Конец промежутка:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Span.EndCol" xml:space="preserve">
+    <value>Конец</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Span.Explanation" xml:space="preserve">
+    <value>В полях "Начало" и "Конец", @ имеет особое значение: @!string@ (string не ищется при поиске начала/конца), и @@ соответствует одному @.
+
+Если не указан цвет начала/конца, используется цвет содержания.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Span.Name" xml:space="preserve">
+    <value>Имя промежутка:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Span.NameEmpty" xml:space="preserve">
+    <value>Имя промежутка не может быть пустым.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Span.NoEscSeq" xml:space="preserve">
+    <value>Неизветсная escape-последовательность</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Span.Ruleset" xml:space="preserve">
+    <value>Использовать набор правил:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Span.StopEol" xml:space="preserve">
+    <value>Промежуток заканчивается в конце строки, если не найден конечный маркер.</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Span.Use" xml:space="preserve">
+    <value>Использовать</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Spans.EnterName" xml:space="preserve">
+    <value>Введите имя промежутка:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Spans.Explanation" xml:space="preserve">
+    <value>Промежутки - это последовательности символов определенные начальной строкой и (опционально) конечной строкой (или они могут закнчиваться в конце строки), имеющие отдельный цвет подсветки.
+
+Дополнительно промежутку может быть назначен именованный набор правил, который позволяет определять сожное форматирование (HTML-тэги или XML-коментарии, например).</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.Spans.Spans" xml:space="preserve">
+    <value>Определенные промежутки:</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.TreeView.DigitsColor" xml:space="preserve">
+    <value>Цифры</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.TreeView.EnvironmentColors" xml:space="preserve">
+    <value>Цвета окружения</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.TreeView.KeywordList" xml:space="preserve">
+    <value>Список ключевых слов</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.TreeView.KeywordLists" xml:space="preserve">
+    <value>Списки ключевых слов</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.TreeView.MarkNextWord" xml:space="preserve">
+    <value>Маркировать следующее слово</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.TreeView.MarkPreviousWord" xml:space="preserve">
+    <value>Маркировать предыдущее слово</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.TreeView.Properties" xml:space="preserve">
+    <value>Свойства</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.TreeView.RootRuleSet" xml:space="preserve">
+    <value>Корневой набор правил</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.TreeView.RuleSet" xml:space="preserve">
+    <value>Набор правил</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.TreeView.RuleSets" xml:space="preserve">
+    <value>Наборы правил</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.TreeView.Span" xml:space="preserve">
+    <value>Зазор</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.TreeView.Spans" xml:space="preserve">
+    <value>Промежутки</value>
+  </data>
+  <data name="Dialog.HighlightingEditor.ValidationError" xml:space="preserve">
+    <value>Исправьте установки, которые Вы сделали:</value>
+  </data>
+  <data name="Dialog.NewFile.AddToProjectQuestion" xml:space="preserve">
+    <value>Чтобы использовать новый файл в текущем проекте, необходимо добавить его в проект.
+Хотите добавить новый файл в проект ${CurrentProjectName}?</value>
+  </data>
+  <data name="Dialog.NewFile.AddToProjectQuestionProject" xml:space="preserve">
+    <value>Создать файл внутри проекта</value>
+  </data>
+  <data name="Dialog.NewFile.AddToProjectQuestionStandalone" xml:space="preserve">
+    <value>Создать отдельный файл</value>
+  </data>
+  <data name="Dialog.NewFile.AddToProjectQuestionTitle" xml:space="preserve">
+    <value>Добавить файл в проект?</value>
+  </data>
+  <data name="Dialog.NewFile.CategoryText" xml:space="preserve">
+    <value>Категории:</value>
+  </data>
+  <data name="Dialog.NewFile.DialogName" xml:space="preserve">
+    <value>Новый файл</value>
+  </data>
+  <data name="Dialog.NewFile.FileNameLabel" xml:space="preserve">
+    <value>Имя файла</value>
+  </data>
+  <data name="Dialog.NewFile.FillOutFirstCaption" xml:space="preserve">
+    <value>Заполните сначала свойства</value>
+  </data>
+  <data name="Dialog.NewFile.FillOutFirstMessage" xml:space="preserve">
+    <value>Чтобы создать этот файл, Вы должны указать сначала значения свойств.</value>
+  </data>
+  <data name="Dialog.NewFile.ReadOnlyProjectWarning" xml:space="preserve">
+    <value>Текущий выделенный файл проекта {0} отмечен атрибутом "только для чтения". В проект нельзя добавить новый файл.</value>
+  </data>
+  <data name="Dialog.NewFile.TemplateText" xml:space="preserve">
+    <value>Шаблоны:</value>
+  </data>
+  <data name="Dialog.NewProject.autoCreateSubDirCheckBox" xml:space="preserve">
+    <value>Создать папку для проекта</value>
+  </data>
+  <data name="Dialog.NewProject.checkBox1Text" xml:space="preserve">
+    <value>Создать папку для исходных файлов</value>
+  </data>
+  <data name="Dialog.NewProject.CreateDirectoryForSolution" xml:space="preserve">
+    <value>Создать &amp;каталог для Решения.</value>
+  </data>
+  <data name="Dialog.NewProject.DialogName" xml:space="preserve">
+    <value>Новый Проект</value>
+  </data>
+  <data name="Dialog.NewProject.EmptyProjectFieldWarning" xml:space="preserve">
+    <value>Имя проекта или файла не заполнено, создание проекта невозможно.</value>
+  </data>
+  <data name="Dialog.NewProject.LocationLabelText" xml:space="preserve">
+    <value>Расположение:</value>
+  </data>
+  <data name="Dialog.NewProject.NameLabelText" xml:space="preserve">
+    <value>Имя:</value>
+  </data>
+  <data name="Dialog.NewProject.NewSolutionLabelText" xml:space="preserve">
+    <value>Новое имя проекта:</value>
+  </data>
+  <data name="Dialog.NewProject.ProjectAtDescription" xml:space="preserve">
+    <value>Проект будет создан в</value>
+  </data>
+  <data name="Dialog.NewProject.ProjectTypeLabelText" xml:space="preserve">
+    <value>Типы проектов:</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.ErrorParsingRegex" xml:space="preserve">
+    <value>Ошибка разбора регулярного выражения:</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.FindAll" xml:space="preserve">
+    <value>Найти все</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.FindButton" xml:space="preserve">
+    <value>Найти</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.FindDialogName" xml:space="preserve">
+    <value>Найти</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.FindNextButton" xml:space="preserve">
+    <value>Найти далее</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.FindWhat" xml:space="preserve">
+    <value>Что найти:</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.IncludeSubFolders" xml:space="preserve">
+    <value>Включая подпапки</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.LookAtFileTypes" xml:space="preserve">
+    <value>Смотреть файлы этих типов:</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.LookIn.AllOpenDocuments" xml:space="preserve">
+    <value>все открытые документы</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.LookIn.CurrentDocument" xml:space="preserve">
+    <value>текущий документ</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.LookIn.CurrentSelection" xml:space="preserve">
+    <value>текущая выборка</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.LookIn.DirectoryNotFound" xml:space="preserve">
+    <value>Директория '{0}' не существует.</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.LookIn.SelectDirectory" xml:space="preserve">
+    <value>Выберите директорию поиска</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.LookIn.WholeProject" xml:space="preserve">
+    <value>проект целеком</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.LookIn.WholeSolution" xml:space="preserve">
+    <value>решение целиком</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.MarkAllButton" xml:space="preserve">
+    <value>Расставить закладки</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.MatchCase" xml:space="preserve">
+    <value>Учитывать регистр</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.MatchWholeWord" xml:space="preserve">
+    <value>Сравнивать целое слово</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.ReplaceAllButton" xml:space="preserve">
+    <value>Заменить все</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.ReplaceButton" xml:space="preserve">
+    <value>Заменить</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.ReplaceDialogName" xml:space="preserve">
+    <value>Заменить</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.ReplaceWith" xml:space="preserve">
+    <value>Заменить на:</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.SearchIn" xml:space="preserve">
+    <value>Искать в:</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.SearchStrategy.RegexSearch" xml:space="preserve">
+    <value>Регулярные выражения</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.SearchStrategy.Standard" xml:space="preserve">
+    <value>Стандартный поиск</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.SearchStrategy.WildcardSearch" xml:space="preserve">
+    <value>Шаблоны файлов</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.SearchStringNotFound" xml:space="preserve">
+    <value>Строка не найдена</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.SearchStringNotFound.Title" xml:space="preserve">
+    <value>Не найдено</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.Title" xml:space="preserve">
+    <value>Искать и заменять</value>
+  </data>
+  <data name="Dialog.NewProject.SearchReplace.UseMethodLabel" xml:space="preserve">
+    <value>Использовать:</value>
+  </data>
+  <data name="Dialog.NewProject.SelectDirectoryForProject" xml:space="preserve">
+    <value>Выберите папку, в которой будет создан проект.</value>
+  </data>
+  <data name="Dialog.NewProject.SolutionName" xml:space="preserve">
+    <value>&amp;Название Решения:</value>
+  </data>
+  <data name="Dialog.NewProject.TemplateLabelText" xml:space="preserve">
+    <value>Шаблоны:</value>
+  </data>
+  <data name="Dialog.Options.BufferOptions" xml:space="preserve">
+    <value>Параметры буфера</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.AddGroupLabel" xml:space="preserve">
+    <value>Добавить новую группу</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.Description" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.EditTemplateDialog.DescriptionLabel" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.EditTemplateDialog.DialogName" xml:space="preserve">
+    <value>Исправить шаблон</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.EditTemplateDialog.TemplateLabel" xml:space="preserve">
+    <value>Шаблон</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.ExtensionsLabel" xml:space="preserve">
+    <value>Расширения</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.RemoveGroupLabel" xml:space="preserve">
+    <value>Удалить группу</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.Template" xml:space="preserve">
+    <value>Шаблон</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplatesText" xml:space="preserve">
+    <value>Шаблоны кода</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Configurations.BuildCheckBox" xml:space="preserve">
+    <value>Сборка</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Configurations.BuildColumnHeader" xml:space="preserve">
+    <value>Сборка</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Configurations.CombineConfigLabel" xml:space="preserve">
+    <value>Конфигурация объединения</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Configurations.ConfigurationColumnHeader" xml:space="preserve">
+    <value>Конфигурация</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Configurations.ConfigurationEditor" xml:space="preserve">
+    <value>Редактор конфигураций</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Configurations.ConfigurationManagerButton" xml:space="preserve">
+    <value>Менеджер конфигураций</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Configurations.EntriesGroupBox" xml:space="preserve">
+    <value>Вхождения</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Configurations.EntryColumnHeader" xml:space="preserve">
+    <value>Вхождение</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Configurations.EntryConfigurationLabel" xml:space="preserve">
+    <value>Конфигурация вхождения</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Configurations.PlatformColumnHeader" xml:space="preserve">
+    <value>Платформа</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Configurations.ProjectNameColumnHeader" xml:space="preserve">
+    <value>Имя проекта</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Configurations.SolutionConfiguration" xml:space="preserve">
+    <value>Конфигурация решения:</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Dependencies.DependsOnLabel" xml:space="preserve">
+    <value>Зависит от:</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Dependencies.EntryLabel" xml:space="preserve">
+    <value>Вхождение:</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Startup.Action.Execute" xml:space="preserve">
+    <value>Выполнить</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Startup.Action.None" xml:space="preserve">
+    <value>Нет</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Startup.ActionColumnHeader" xml:space="preserve">
+    <value>Действие</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Startup.ActionLabel" xml:space="preserve">
+    <value>Действие</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Startup.EntryColumnHeader" xml:space="preserve">
+    <value>Вхождение</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton" xml:space="preserve">
+    <value>Несколько стартовых проектов</value>
+  </data>
+  <data name="Dialog.Options.CombineOptions.Startup.SingleStartupRadioButton" xml:space="preserve">
+    <value>Один стартовый проект</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.ArgumentLabel" xml:space="preserve">
+    <value>Аргументы</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.CommandLabel" xml:space="preserve">
+    <value>Команда</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.PromptForArgsCheckBox" xml:space="preserve">
+    <value>Запрашивать аргументы</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.QuickInsertMenu.CombineDirectory" xml:space="preserve">
+    <value>Каталог объединения</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.QuickInsertMenu.CombineFileName" xml:space="preserve">
+    <value>Имя файла объединения</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.QuickInsertMenu.CurrentColumn" xml:space="preserve">
+    <value>Текущая колонка</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.QuickInsertMenu.CurrentLine" xml:space="preserve">
+    <value>Текущая строка</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.QuickInsertMenu.CurrentText" xml:space="preserve">
+    <value>Текущий текст</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.QuickInsertMenu.FullItemDirectory" xml:space="preserve">
+    <value>Каталог</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.QuickInsertMenu.FullItemPath" xml:space="preserve">
+    <value>Путь</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.QuickInsertMenu.FullTargetPath" xml:space="preserve">
+    <value>Целевой путь</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.QuickInsertMenu.ItemExtension" xml:space="preserve">
+    <value>Расширение</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.QuickInsertMenu.ItemFileName" xml:space="preserve">
+    <value>Имя файла</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.QuickInsertMenu.ProjectDirectory" xml:space="preserve">
+    <value>Каталог проекта</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.QuickInsertMenu.ProjectFileName" xml:space="preserve">
+    <value>Имя файла проекта</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.QuickInsertMenu.SharpDevelopStartupPath" xml:space="preserve">
+    <value>Стартовый каталог #Develop</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.QuickInsertMenu.TargetDirectory" xml:space="preserve">
+    <value>Целевой каталог</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.QuickInsertMenu.TargetExtension" xml:space="preserve">
+    <value>Расширение цели</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.QuickInsertMenu.TargetName" xml:space="preserve">
+    <value>Имя цели</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.TitleLabel" xml:space="preserve">
+    <value>Название</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.ToolsLabel" xml:space="preserve">
+    <value>Инструменты</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.UseOutputWindow" xml:space="preserve">
+    <value>Использовать окно вывода</value>
+  </data>
+  <data name="Dialog.Options.ExternalTool.WorkingDirLabel" xml:space="preserve">
+    <value>Рабочий каталог</value>
+  </data>
+  <data name="Dialog.Options.ExternalToolsText" xml:space="preserve">
+    <value>Внешние инструменты</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.AssemblyScout.GreyOut" xml:space="preserve">
+    <value>Выводить серым</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.AssemblyScout.Hide" xml:space="preserve">
+    <value>Скрыть</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.AssemblyScout.InternalMembers" xml:space="preserve">
+    <value>Внутренние члены:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.AssemblyScout.InternalTypes" xml:space="preserve">
+    <value>Внутренние типы:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.AssemblyScout.MembersGroupBox" xml:space="preserve">
+    <value>Выбор членов в дереве</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.AssemblyScout.OtherGroupBox" xml:space="preserve">
+    <value>Другие параметры</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.AssemblyScout.PanelName" xml:space="preserve">
+    <value>Браузер сборок</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.AssemblyScout.PrivateMembers" xml:space="preserve">
+    <value>Частные члены:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.AssemblyScout.PrivateTypes" xml:space="preserve">
+    <value>Частные типы:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.AssemblyScout.Show" xml:space="preserve">
+    <value>Показать</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.AssemblyScout.ShowResourcePreviewBox" xml:space="preserve">
+    <value>Показывать ресурсы</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.AssemblyScout.ShowReturnTypesBox" xml:space="preserve">
+    <value>Покзывать возвращаемые значения в дереве</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.AssemblyScout.ShowSpecialMethods" xml:space="preserve">
+    <value>Показывать "специальные" методы</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.AssemblyScout.TypesGroupBox" xml:space="preserve">
+    <value>Выбор типов в дереве</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.ClearCache" xml:space="preserve">
+    <value>Очистить</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.CompleteWhenTyping" xml:space="preserve">
+    <value>Показать список автодополнения при начале ввода</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.DetailSettings" xml:space="preserve">
+    <value>Подробные настройки автодополнения</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.LanguageDependend" xml:space="preserve">
+    <value>Эти параметры зависят от языка, они могут быть недоступны для некоторых языков программирования.</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.MainOption" xml:space="preserve">
+    <value>Эта опция полностью отключит автодополнение кода:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.SaveItemCountBeforeNumber" xml:space="preserve">
+    <value>Запоминать</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.UseDataUsageCache" xml:space="preserve">
+    <value>Показать ранее использованные</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.UseDebugTooltipsOnly" xml:space="preserve">
+    <value>Только в режиме отладки</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.UseInsight" xml:space="preserve">
+    <value>Показать подсказку при наборе вызова метода</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeCompletion.UseTooltips" xml:space="preserve">
+    <value>Показать подсказку, если указатель мыши над выражением</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.BlankLinesBetweenMembersCheckBox" xml:space="preserve">
+    <value>Вставлять пустые строки между членами класса</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.CodeGenerationOptionsGroupBox" xml:space="preserve">
+    <value>Параметры создания текста программ</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.CommentGenerationOptionsGroupBox" xml:space="preserve">
+    <value>Параметры создания комментариев</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.ElseOnClosingCheckBox" xml:space="preserve">
+    <value>else на той же строке, что и закрывающая скобка</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.GenerateAdditionalCommentsCheckBox" xml:space="preserve">
+    <value>Создавать дополнительные комментарии</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.GenerateDocCommentsCheckBox" xml:space="preserve">
+    <value>Создавать комментарии-документацию</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.StartBlockOnTheSameLineCheckBox" xml:space="preserve">
+    <value>Начинать блок кода с той же строки</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.Title" xml:space="preserve">
+    <value>Генерация кода</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.UseFullTypeNamesCheckBox" xml:space="preserve">
+    <value>Использовать полные имена типов</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.CodingOptionsText" xml:space="preserve">
+    <value>Кодирование</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.Debugging" xml:space="preserve">
+    <value>Отладка</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.EditStandardHeaderPanel.HeaderLabel" xml:space="preserve">
+    <value>Заголовок</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.EditStandardHeaderPanel.LanguageLabel" xml:space="preserve">
+    <value>Язык</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.EditStandardHeaderPanel.Title" xml:space="preserve">
+    <value>Редактировать стандартные заголовки</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.FullScreen.DescriptionLabel" xml:space="preserve">
+    <value>Когде SharpDevelop в полноэкранном режиме:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.FullScreen.HideHorizontalScrollbar" xml:space="preserve">
+    <value>Скрыть горизонтальную полосу прокрутки редактора</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.FullScreen.HideMainMenu" xml:space="preserve">
+    <value>Скрыть главное меню</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.FullScreen.HideStatusBar" xml:space="preserve">
+    <value>Скрыть строку состояния</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.FullScreen.HideTabs" xml:space="preserve">
+    <value>Скрыть вкладки</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.FullScreen.HideToolbars" xml:space="preserve">
+    <value>Скрыть панели инструментов</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.FullScreen.HideVerticalScrollbar" xml:space="preserve">
+    <value>Скрыть вертикальную полосу прокрутки редактора</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.FullScreen.HideWindowsTaskbar" xml:space="preserve">
+    <value>Скрыть панель задач Windows</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.FullScreen.ShowMainMenuOnMouseHover" xml:space="preserve">
+    <value>Показывать при движении над ним курсора</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.FullScreen.Title" xml:space="preserve">
+    <value>Полный экран</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.General" xml:space="preserve">
+    <value>Общие</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.AutoLoadExternalChanges" xml:space="preserve">
+    <value>Автоматически загружать, если сохранено</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.CreateBackupCopyCheckBox" xml:space="preserve">
+    <value>Всегда создавать резервную копию</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.DetectExternalChanges" xml:space="preserve">
+    <value>Обнаруживать изменения файлов внешними программами</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LineTerminatorStyleGroupBox" xml:space="preserve">
+    <value>Стиль концов строк</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LoadLabel" xml:space="preserve">
+    <value>Загрузка</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.LoadUserDataCheckBox" xml:space="preserve">
+    <value>Загружать установки пользователя вместе с документом</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.MacintoshRadioButton" xml:space="preserve">
+    <value>Macintosh</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.PanelName" xml:space="preserve">
+    <value>Загрузка/Сохранение</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.SaveLabel" xml:space="preserve">
+    <value>Сохранение</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.UnixRadioButton" xml:space="preserve">
+    <value>Unix</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.UseRecycleBin" xml:space="preserve">
+    <value>Удалять в Корзину</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.WindowsRadioButton" xml:space="preserve">
+    <value>Windows</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.OutputPanel.WordWrap" xml:space="preserve">
+    <value>Переносить длинные строки</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SelectCulture.CurrentUILanguageLabel" xml:space="preserve">
+    <value>Текущий язык интерфейса:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SelectCulture.DescriptionText" xml:space="preserve">
+    <value>Щелкните по значку для выбора языка.</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SelectCulture.PanelName" xml:space="preserve">
+    <value>Язык интерфейса</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SelectCulture.UILanguageSetToLabel" xml:space="preserve">
+    <value>Новый язык интерфейса:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SelectStyle.SelectAmbienceLabel" xml:space="preserve">
+    <value>Выберите окружение:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SelectStyle.ShowExtensionsCheckBox" xml:space="preserve">
+    <value>Показывать расширения файлов в панели проекта</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SelectStyle.ShowStatusBarCheckBox" xml:space="preserve">
+    <value>Показать строку состояния</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SelectStyle.ShowToolBarCheckBox" xml:space="preserve">
+    <value>Показать панель инструментов</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SelectStyle.UseProfessionalStyleCheckBox" xml:space="preserve">
+    <value>Использовать голубой стиль (как в Office 2003) для меню и панелей инструментов.</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SelectStyle.UseProjectAmbience" xml:space="preserve">
+    <value>Предпочесть окружение проекта.</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SelectStyle.VisualStyleGroupBox" xml:space="preserve">
+    <value>Внешний вид</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SelectVisualStyle.PanelName" xml:space="preserve">
+    <value>Внешний вид</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TaskListOptions.CommentTagsGroupBox" xml:space="preserve">
+    <value>Тэги комментариев</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TaskListOptions.NameLabel" xml:space="preserve">
+    <value>Имя</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TaskListOptions.PanelName" xml:space="preserve">
+    <value>Список задач</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TaskListOptions.TokenListLabel" xml:space="preserve">
+    <value>Список токенов</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.BehaviourGroupBox" xml:space="preserve">
+    <value>Поведение</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.BehindEOLCheckBox" xml:space="preserve">
+    <value>Перемещать курсор за конец строки</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.ConvertTabsToSpacesCheckBox" xml:space="preserve">
+    <value>Преобразовывать символы табуляции в пробелы</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CurlyBracketCheckBox" xml:space="preserve">
+    <value>Автоматически вставлять фигурные скобки</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CutCopyWholeLine" xml:space="preserve">
+    <value>Вырезать/копировать всю строку, если ничего не выделено</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.HideMouseCheckBox" xml:space="preserve">
+    <value>Прятать курсор мыши во время набора текста</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.IndentLabel" xml:space="preserve">
+    <value>Делать отступы</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.IndentSizeLabel" xml:space="preserve">
+    <value>Размер отступа</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.IndentStyle.Automatic" xml:space="preserve">
+    <value>Автоматически</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.IndentStyle.None" xml:space="preserve">
+    <value>Нет</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.IndentStyle.Smart" xml:space="preserve">
+    <value>Разумно</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.MouseWhellGroupBox" xml:space="preserve">
+    <value>Направление колеса мышки</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.NormalMouseDirectionRadioButton" xml:space="preserve">
+    <value>Обычное</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.PanelName" xml:space="preserve">
+    <value>Поведение</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.ReverseMouseDirectionRadioButton" xml:space="preserve">
+    <value>Обратное</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.TabsGroupBox" xml:space="preserve">
+    <value>Отступы</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.TabSizeLabel" xml:space="preserve">
+    <value>Размер табуляции</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.TemplateInsertCheckBox" xml:space="preserve">
+    <value>Автоматическая вставка шаблонов</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName" xml:space="preserve">
+    <value>Автодополнение кода</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.AntialiasedFontCheckBox" xml:space="preserve">
+    <value>Сглаживать шрифты</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.CodeCompletionCheckBox" xml:space="preserve">
+    <value>Включить автозавершение кода</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.DoubleBufferCheckBox" xml:space="preserve">
+    <value>Включить двойную буферизацию</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.FoldingCheckBox" xml:space="preserve">
+    <value>Включить свертку</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.FontGroupBox" xml:space="preserve">
+    <value>Выбор шрифта</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.FontGroupBox.FileEncodingGroupBox" xml:space="preserve">
+    <value>Кодировка файлов</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.FontGroupBox.FileEncodingLabel" xml:space="preserve">
+    <value>Выберите кодировку:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.FontSizeLabel" xml:space="preserve">
+    <value>Размер:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.GeneralOptionsGroupBox" xml:space="preserve">
+    <value>Общие параметры</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.MouseWheelZoomCheckBoxCheckBox" xml:space="preserve">
+    <value>Изменять размер шрифта колесом мыши</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.ShowQuickClassBrowserCheckBox" xml:space="preserve">
+    <value>Показывать панель "быстрого" браузера классов</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.General.TextfontLabel" xml:space="preserve">
+    <value>Шрифт:</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.AtRowLabel" xml:space="preserve">
+    <value>в строке</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.BracketMatchingStyle.AfterCaret" xml:space="preserve">
+    <value>После курсора</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.BracketMatchingStyle.BeforeCaret" xml:space="preserve">
+    <value>До курсора</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
+    <value>Показывать конец строки</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
+    <value>Подсвечивать соответствующие фигурные скобки</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HorizontalRulerCheckBox" xml:space="preserve">
+    <value>Показывать горизонтальную линейку</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.InvalidLinesCheckBox" xml:space="preserve">
+    <value>Показывать неверные строки</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.LineMarkerLabel" xml:space="preserve">
+    <value>Стиль маркировки строк</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.LineNumberCheckBox" xml:space="preserve">
+    <value>Показывать номера строк</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.LineViewerStyle.FullRow" xml:space="preserve">
+    <value>Всю строку</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.LineViewerStyle.None" xml:space="preserve">
+    <value>Нет</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.MarkersGroupBox" xml:space="preserve">
+    <value>Маркеры и линейки</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.PanelName" xml:space="preserve">
+    <value>Маркеры и линейки</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.SpacesCheckBox" xml:space="preserve">
+    <value>Показывать пробелы</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.TabsCheckBox" xml:space="preserve">
+    <value>Показывать символы табуляции</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.UnderLineErrorsCheckBox" xml:space="preserve">
+    <value>Подчеркивать ошибки</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.VerticalRulerCheckBox" xml:space="preserve">
+    <value>Показывать вертикальную линейку</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.VB.EnableCasingCheckBox" xml:space="preserve">
+    <value>Исправлять кейсинг ключевых слов</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.VB.EnableEndConstructsCheckBox" xml:space="preserve">
+    <value>Вставлять конструкции end</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.VB.FormattingGroupBox" xml:space="preserve">
+    <value>Форматирование кода</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.VB.PanelName" xml:space="preserve">
+    <value>Настройки, специфические для VB</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditorOptionsText" xml:space="preserve">
+    <value>Текстовый редактор</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.ToolsOptionsText" xml:space="preserve">
+    <value>Инструменты</value>
+  </data>
+  <data name="Dialog.Options.PrjOptions.Configuration.CompileTarget.Exe" xml:space="preserve">
+    <value>Консольное приложение</value>
+  </data>
+  <data name="Dialog.Options.PrjOptions.Configuration.CompileTarget.Library" xml:space="preserve">
+    <value>Библиотека классов</value>
+  </data>
+  <data name="Dialog.Options.PrjOptions.Configuration.CompileTarget.Module" xml:space="preserve">
+    <value>Модуль</value>
+  </data>
+  <data name="Dialog.Options.PrjOptions.Configuration.CompileTarget.WinExe" xml:space="preserve">
+    <value>Windows приложение</value>
+  </data>
+  <data name="Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription" xml:space="preserve">
+    <value>Выберите папку, в которой будет создана сборка</value>
+  </data>
+  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.BuiltinLabel" xml:space="preserve">
+    <value>Встроенные:</value>
+  </data>
+  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.CaptionLabel" xml:space="preserve">
+    <value>Существующие схемы подсветки:</value>
+  </data>
+  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.CopyButton" xml:space="preserve">
+    <value>Копировать</value>
+  </data>
+  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.CopyError" xml:space="preserve">
+    <value>Невозможно скопировать файл.</value>
+  </data>
+  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteButton" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteConfirm" xml:space="preserve">
+    <value>Вы действительно хотите удалить эту определенную пользователем схему?</value>
+  </data>
+  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DeleteError" xml:space="preserve">
+    <value>Невозможно удалить файл.</value>
+  </data>
+  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.DescLabel" xml:space="preserve">
+    <value>Определенные пользователем схемы имеют приоритет перед встроенными.
+Изменение схемы подсветки станет видимым после перезапуска #Develop.</value>
+  </data>
+  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.LoadError" xml:space="preserve">
+    <value>Невозможно загрузить файл определений.</value>
+  </data>
+  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.ModifyButton" xml:space="preserve">
+    <value>Изменить</value>
+  </data>
+  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.Title" xml:space="preserve">
+    <value>Подсветка</value>
+  </data>
+  <data name="Dialog.Options.TextEditorOptions.EditHighlighting.UserLabel" xml:space="preserve">
+    <value>Определенные пользователем:</value>
+  </data>
+  <data name="Dialog.Options.TreeViewOptions.DialogName" xml:space="preserve">
+    <value>Параметры</value>
+  </data>
+  <data name="Dialog.Options.TreeViewOptions.SharpDevelopOptionsText" xml:space="preserve">
+    <value>Общие параметры</value>
+  </data>
+  <data name="Dialog.ProjectOptions.ApplicationSettings" xml:space="preserve">
+    <value>Приложение</value>
+  </data>
+  <data name="Dialog.ProjectOptions.ApplicationSettings.ApplicationIcon" xml:space="preserve">
+    <value>Иконка программы</value>
+  </data>
+  <data name="Dialog.ProjectOptions.ApplicationSettings.InvalidIconFile" xml:space="preserve">
+    <value>{0} - не файл значка.</value>
+  </data>
+  <data name="Dialog.ProjectOptions.ApplicationSettings.ProjectFile" xml:space="preserve">
+    <value>Файл проекта:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.ApplicationSettings.ProjectFolder" xml:space="preserve">
+    <value>Папка проекта:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.ApplicationSettings.ProjectInformation" xml:space="preserve">
+    <value>Информация о проекте</value>
+  </data>
+  <data name="Dialog.ProjectOptions.ApplicationSettings.RootNamespace" xml:space="preserve">
+    <value>Корневое пространство имен</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Build.ErrorsAndWarnings" xml:space="preserve">
+    <value>Ошибки и предупреждения</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Build.Off" xml:space="preserve">
+    <value>Выкл.</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Build.On" xml:space="preserve">
+    <value>Вкл.</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Build.TargetCPU.Any" xml:space="preserve">
+    <value>Любой процессор</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Build.TargetCPU.Itanium" xml:space="preserve">
+    <value>64-битный процессор Intel Itanium</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Build.TargetCPU.x64" xml:space="preserve">
+    <value>64-х битный процессор AMD</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Build.TargetCPU.x86" xml:space="preserve">
+    <value>32-битный, Intel-совместимый процессор</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Build.TreatWarningsAsErrors.All" xml:space="preserve">
+    <value>Все</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Platform" xml:space="preserve">
+    <value>Платформа</value>
+  </data>
+  <data name="Dialog.ProjectOptions.ProjectImports.Namespace" xml:space="preserve">
+    <value>Пространство имен:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.RunPostBuildEvent.Always" xml:space="preserve">
+    <value>Всегда</value>
+  </data>
+  <data name="Dialog.ProjectOptions.RunPostBuildEvent.OnOutputUpdated" xml:space="preserve">
+    <value>По обновлению выходных файлов проекта при сборке.</value>
+  </data>
+  <data name="Dialog.ProjectOptions.RunPostBuildEvent.OnSuccessfulBuild" xml:space="preserve">
+    <value>По удачной сборке</value>
+  </data>
+  <data name="Dialog.ProjectOptions.SelectFolderTitle" xml:space="preserve">
+    <value>Выбрать папку</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Signing.ChangePassword" xml:space="preserve">
+    <value>Сменить пароль...</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Signing.EnterKeyName" xml:space="preserve">
+    <value>Необходимо ввести имя ключа.</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Signing.ErrorCreatingKey" xml:space="preserve">
+    <value>Была ошибка создания файла ключа.</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Signing.PasswordsDontMatch" xml:space="preserve">
+    <value>Введенные пароли не совпадают.</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Signing.PasswordTooShort" xml:space="preserve">
+    <value>Пароль должен быть не меньше 6-и символов длиной.</value>
+  </data>
+  <data name="Dialog.ProjectOptions.Signing.SNnotFound" xml:space="preserve">
+    <value>sn.exe не найден. Удостоверьтесь, что .NET Framework SDK инсталлирован.</value>
+  </data>
+  <data name="Dialog.SelectReferenceDialog.BrowserTabPage" xml:space="preserve">
+    <value>Броузер сборок .NET</value>
+  </data>
+  <data name="Dialog.SelectReferenceDialog.DialogName" xml:space="preserve">
+    <value>Добавить ссылку</value>
+  </data>
+  <data name="Dialog.SelectReferenceDialog.GacReferencePanel.ReferenceHeader" xml:space="preserve">
+    <value>Имя ссылки</value>
+  </data>
+  <data name="Dialog.SelectReferenceDialog.GacReferencePanel.VersionHeader" xml:space="preserve">
+    <value>Версия</value>
+  </data>
+  <data name="Dialog.SelectReferenceDialog.GacTabPage" xml:space="preserve">
+    <value>GAC</value>
+  </data>
+  <data name="Dialog.SelectReferenceDialog.LocationHeader" xml:space="preserve">
+    <value>Расположение</value>
+  </data>
+  <data name="Dialog.SelectReferenceDialog.ProjectReferencePanel.DirectoryHeader" xml:space="preserve">
+    <value>Папка проекта</value>
+  </data>
+  <data name="Dialog.SelectReferenceDialog.ProjectReferencePanel.NameHeader" xml:space="preserve">
+    <value>Имя проекта</value>
+  </data>
+  <data name="Dialog.SelectReferenceDialog.ProjectTabPage" xml:space="preserve">
+    <value>Проекты</value>
+  </data>
+  <data name="Dialog.SelectReferenceDialog.ReferenceHeader" xml:space="preserve">
+    <value>Имя ссылки</value>
+  </data>
+  <data name="Dialog.SelectReferenceDialog.ReferencesLabel" xml:space="preserve">
+    <value>Выбранные ссылки</value>
+  </data>
+  <data name="Dialog.SelectReferenceDialog.SelectButton" xml:space="preserve">
+    <value>Выбрать</value>
+  </data>
+  <data name="Dialog.SelectReferenceDialog.TypeHeader" xml:space="preserve">
+    <value>Тип</value>
+  </data>
+  <data name="Dialog.ViewGPL.DialogName" xml:space="preserve">
+    <value>GNU General Public License</value>
+  </data>
+  <data name="Dialog.WizardDialog.FinishButton" xml:space="preserve">
+    <value>Готово</value>
+  </data>
+  <data name="Dialog.WordCountDialog.CharsText" xml:space="preserve">
+    <value>Символов</value>
+  </data>
+  <data name="Dialog.WordCountDialog.DialogName" xml:space="preserve">
+    <value>Количество слов</value>
+  </data>
+  <data name="Dialog.WordCountDialog.FileText" xml:space="preserve">
+    <value>Файл</value>
+  </data>
+  <data name="Dialog.WordCountDialog.IsNotTextFile" xml:space="preserve">
+    <value>Текущий файл не текстовый, и не может быть учтен.</value>
+  </data>
+  <data name="Dialog.WordCountDialog.Label1Text" xml:space="preserve">
+    <value>Где считать</value>
+  </data>
+  <data name="Dialog.WordCountDialog.LinesText" xml:space="preserve">
+    <value>Строк</value>
+  </data>
+  <data name="Dialog.WordCountDialog.MustBeInProtectedModeWarning" xml:space="preserve">
+    <value>Вы должны находиться в режиме проекта</value>
+  </data>
+  <data name="Dialog.WordCountDialog.SaveTheFileWarning" xml:space="preserve">
+    <value>Вы должны сохранить файл</value>
+  </data>
+  <data name="Dialog.WordCountDialog.StartButton" xml:space="preserve">
+    <value>&amp;Начать</value>
+  </data>
+  <data name="Dialog.WordCountDialog.TotalText" xml:space="preserve">
+    <value>всего</value>
+  </data>
+  <data name="Dialog.WordCountDialog.WordsText" xml:space="preserve">
+    <value>Слов</value>
+  </data>
+  <data name="Fileutility.CantFindFileError" xml:space="preserve">
+    <value>Файл ${File} не найден.</value>
+  </data>
+  <data name="FileUtilityService.ErrorWhileLoading" xml:space="preserve">
+    <value>Ошибка во время загрузки</value>
+  </data>
+  <data name="FileUtilityService.ErrorWhileSaving" xml:space="preserve">
+    <value>Ошибка во время сохранения</value>
+  </data>
+  <data name="FileUtilityService.FileSizeTooBig" xml:space="preserve">
+    <value>Открываемый файл превышает допустимый размер.</value>
+  </data>
+  <data name="FormsDesigner.DesignErrorPanel.ErrorText" xml:space="preserve">
+    <value>Исправьте все ошибки в исходном коде до переключения в дизайнер форм</value>
+  </data>
+  <data name="FormsDesigner.DesignTabPages.DesignTabPage" xml:space="preserve">
+    <value>Дизайнер</value>
+  </data>
+  <data name="FormsDesigner.DesignTabPages.SourceTabPage" xml:space="preserve">
+    <value>Исходный код</value>
+  </data>
+  <data name="Global.AbortButtonText" xml:space="preserve">
+    <value>Прервать</value>
+  </data>
+  <data name="Global.AddButtonText" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="Global.BackButtonText" xml:space="preserve">
+    <value>&lt; Назад</value>
+  </data>
+  <data name="Global.BrowseButtonText" xml:space="preserve">
+    <value>Обзор...</value>
+  </data>
+  <data name="Global.BrowseText" xml:space="preserve">
+    <value>Выбрать</value>
+  </data>
+  <data name="Global.CancelButtonText" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="Global.ChangeButtonText" xml:space="preserve">
+    <value>Изменить</value>
+  </data>
+  <data name="Global.ChooseLocationButtonText" xml:space="preserve">
+    <value>Выбрать место</value>
+  </data>
+  <data name="Global.CloseButtonText" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="Global.CreateButtonText" xml:space="preserve">
+    <value>Создать</value>
+  </data>
+  <data name="Global.Delete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="Global.DeleteButtonText" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="Global.DeselectAllButtonText" xml:space="preserve">
+    <value>Отменить выбор</value>
+  </data>
+  <data name="Global.EditButtonText" xml:space="preserve">
+    <value>Редактировать</value>
+  </data>
+  <data name="Global.ErrorText" xml:space="preserve">
+    <value>Ошибка</value>
+  </data>
+  <data name="Global.FileName" xml:space="preserve">
+    <value>Имя файла</value>
+  </data>
+  <data name="Global.FinishButtonText" xml:space="preserve">
+    <value>Готово</value>
+  </data>
+  <data name="Global.FinishedCaptionText" xml:space="preserve">
+    <value>Завершено</value>
+  </data>
+  <data name="Global.Folder" xml:space="preserve">
+    <value>Папка</value>
+  </data>
+  <data name="Global.HelpButtonText" xml:space="preserve">
+    <value>Справка</value>
+  </data>
+  <data name="Global.ID" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="Global.IgnoreButtonText" xml:space="preserve">
+    <value>Пропустить</value>
+  </data>
+  <data name="Global.LargeIconToolTip" xml:space="preserve">
+    <value>Большие значки</value>
+  </data>
+  <data name="Global.Location.allopenfiles" xml:space="preserve">
+    <value>во всех открытых файлах</value>
+  </data>
+  <data name="Global.Location.currentfile" xml:space="preserve">
+    <value>в текущем файле</value>
+  </data>
+  <data name="Global.Location.directories" xml:space="preserve">
+    <value>в папках</value>
+  </data>
+  <data name="Global.Location.wholeproject" xml:space="preserve">
+    <value>во всём проекте</value>
+  </data>
+  <data name="Global.MoveDown" xml:space="preserve">
+    <value>Вниз</value>
+  </data>
+  <data name="Global.MoveUp" xml:space="preserve">
+    <value>Вверх</value>
+  </data>
+  <data name="Global.Name" xml:space="preserve">
+    <value>Имя</value>
+  </data>
+  <data name="Global.NextButtonText" xml:space="preserve">
+    <value>Далее &gt;</value>
+  </data>
+  <data name="Global.No" xml:space="preserve">
+    <value>Нет</value>
+  </data>
+  <data name="Global.OKButtonText" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Global.OpenButtonText" xml:space="preserve">
+    <value>Открыть</value>
+  </data>
+  <data name="Global.Path" xml:space="preserve">
+    <value>Путь</value>
+  </data>
+  <data name="Global.PleaseWait" xml:space="preserve">
+    <value>Пожалуйста, подождите...</value>
+  </data>
+  <data name="Global.Preview" xml:space="preserve">
+    <value>Предпросмотр</value>
+  </data>
+  <data name="Global.QuestionText" xml:space="preserve">
+    <value>Вопрос</value>
+  </data>
+  <data name="Global.ReadOnly" xml:space="preserve">
+    <value>только для чтения</value>
+  </data>
+  <data name="Global.RemoveButtonText" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="Global.RenameButtonText" xml:space="preserve">
+    <value>Переименовать</value>
+  </data>
+  <data name="Global.ReplaceButtonText" xml:space="preserve">
+    <value>Заменить</value>
+  </data>
+  <data name="Global.RetryButtonText" xml:space="preserve">
+    <value>Повтор</value>
+  </data>
+  <data name="Global.SelectAllButtonText" xml:space="preserve">
+    <value>Выбрать все</value>
+  </data>
+  <data name="Global.SmallIconToolTip" xml:space="preserve">
+    <value>Маленькие значки</value>
+  </data>
+  <data name="Global.StartButtonText" xml:space="preserve">
+    <value>Старт</value>
+  </data>
+  <data name="Global.WarningText" xml:space="preserve">
+    <value>Предупреждение</value>
+  </data>
+  <data name="Global.Yes" xml:space="preserve">
+    <value>Да</value>
+  </data>
+  <data name="Global.YesToAll" xml:space="preserve">
+    <value>Да для всех</value>
+  </data>
+  <data name="Gui.ProjectBrowser.FileInUseError" xml:space="preserve">
+    <value>Файл или папка с таким именем уже существует, выберите другое имя.</value>
+  </data>
+  <data name="Gui.ProjectBrowser.IllegalCharactersInFileNameError" xml:space="preserve">
+    <value>В выбранном вами имени файла содержатся недопустимые символы. Выберите другое имя.</value>
+  </data>
+  <data name="Gui.ProjectBrowser.Open" xml:space="preserve">
+    <value>Открыть</value>
+  </data>
+  <data name="Gui.ProjectBrowser.OpenWith" xml:space="preserve">
+    <value>Открыть с помощью...</value>
+  </data>
+  <data name="Gui.ProjectBrowser.OpenWith.Bindings.IconEditor" xml:space="preserve">
+    <value>Редактор иконок</value>
+  </data>
+  <data name="Gui.ProjectBrowser.OpenWith.Bindings.TextEditor" xml:space="preserve">
+    <value>Текстовый редактор</value>
+  </data>
+  <data name="Gui.ProjectBrowser.OpenWith.Bindings.WebBrowser" xml:space="preserve">
+    <value>Встроенный веб-браузер</value>
+  </data>
+  <data name="Gui.ProjectBrowser.OpenWith.Bindings.XmlEditor" xml:space="preserve">
+    <value>Редактор XML</value>
+  </data>
+  <data name="Gui.ProjectBrowser.OpenWith.Default" xml:space="preserve">
+    <value>По умолчанию</value>
+  </data>
+  <data name="Gui.ProjectBrowser.OpenWith.DialogTitle" xml:space="preserve">
+    <value>Открыть с помощью</value>
+  </data>
+  <data name="Gui.ProjectBrowser.OpenWith.SetAsDefault" xml:space="preserve">
+    <value>Установить по умолчанию</value>
+  </data>
+  <data name="Gui.ProjectBrowser.ShowAllFiles" xml:space="preserve">
+    <value>Показать все файлы</value>
+  </data>
+  <data name="Hornung.ResourceToolkit.ErrorProcessingResourceFile" xml:space="preserve">
+    <value>При обработке файла '{0}' произошла ошибка.</value>
+  </data>
+  <data name="ICSharpCode.BooInterpreter" xml:space="preserve">
+    <value>Интерпретатор Boo</value>
+  </data>
+  <data name="ICSharpCode.CodeAnalysis" xml:space="preserve">
+    <value>Анализ кода</value>
+  </data>
+  <data name="ICSharpCode.CodeAnalysis.CheckWithFxCop" xml:space="preserve">
+    <value>Проверить FxCop-ом</value>
+  </data>
+  <data name="ICSharpCode.CodeAnalysis.Rule" xml:space="preserve">
+    <value>Правило</value>
+  </data>
+  <data name="ICSharpCode.CodeCoverage.CodeCovered" xml:space="preserve">
+    <value>Покрытый код</value>
+  </data>
+  <data name="ICSharpCode.CodeCoverage.CodeNotCovered" xml:space="preserve">
+    <value>Непокрытый код</value>
+  </data>
+  <data name="ICSharpCode.CodeCoverage.EndLine" xml:space="preserve">
+    <value>Конец строки</value>
+  </data>
+  <data name="ICSharpCode.ConsolePad.PadName" xml:space="preserve">
+    <value>Консоль</value>
+  </data>
+  <data name="ICSharpCode.Core.Services.ErrorDialogs.DescriptionLabel" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="ICSharpCode.Core.Services.ErrorDialogs.ExceptionGotDescription" xml:space="preserve">
+    <value>Исключение получено</value>
+  </data>
+  <data name="ICSharpCode.Core.Services.ErrorDialogs.ShowExceptionButton" xml:space="preserve">
+    <value>Показывать исключение</value>
+  </data>
+  <data name="ICSharpCode.FiletypeRegisterer.BinaryResourceFilesFileAssozisation" xml:space="preserve">
+    <value>Файл ресурсов .NET (двоичный)</value>
+  </data>
+  <data name="ICSharpCode.FiletypeRegisterer.CSharpSourceFileAssozisation" xml:space="preserve">
+    <value>Исходный код на C#</value>
+  </data>
+  <data name="ICSharpCode.FiletypeRegisterer.JavaSourceFileAssozisation" xml:space="preserve">
+    <value>Исходный код на Java</value>
+  </data>
+  <data name="ICSharpCode.FiletypeRegisterer.Project" xml:space="preserve">
+    <value>Проект</value>
+  </data>
+  <data name="ICSharpCode.FiletypeRegisterer.ResXResourceFilesFileAssozisation" xml:space="preserve">
+    <value>Файл ресурсов .NET</value>
+  </data>
+  <data name="ICSharpCode.FiletypeRegisterer.SolutionFileAssozisation" xml:space="preserve">
+    <value>Решение SharpDevelop</value>
+  </data>
+  <data name="ICSharpCode.FiletypeRegisterer.VBNetSourceFileAssozisation" xml:space="preserve">
+    <value>Исходный код на VB.NET</value>
+  </data>
+  <data name="ICSharpCode.FiletypeRegisterer.XmlFileAssozisation" xml:space="preserve">
+    <value>XML-документ</value>
+  </data>
+  <data name="ICSharpCode.FiletypeRegisterer.XMLFormFileAssozisation" xml:space="preserve">
+    <value>XML-форма #Develop</value>
+  </data>
+  <data name="ICSharpCode.NAntAddIn.GotoErrorMenuLabel" xml:space="preserve">
+    <value>Перейти к ошибке</value>
+  </data>
+  <data name="ICSharpCode.NAntAddIn.StopNAntMenuLabel" xml:space="preserve">
+    <value>Остановить NAnt</value>
+  </data>
+  <data name="ICSharpCode.NUnitPad.NUnitPadContent.PadName" xml:space="preserve">
+    <value>Тесты</value>
+  </data>
+  <data name="ICSharpCode.Services.FileUtilityService.CantLoadFileStandardText" xml:space="preserve">
+    <value>Невозможно загрузить файл ${FileNameWithoutPath} из ${Path}. Проверьте права доступа и существование этого файла.</value>
+  </data>
+  <data name="ICSharpCode.Services.FileUtilityService.CantSaveFileStandardText" xml:space="preserve">
+    <value>Невозможно сохранить файл ${FileNameWithoutPath} в ${Path}. Выберите другое имя файла или проверьте, существует ли папка, и Вы имеете достаточно прав для записи.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.ConvertVBNetProjectToBoo" xml:space="preserve">
+    <value>Из VB.NET в Boo</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.ReloadFile.ReloadFileQuestion" xml:space="preserve">
+    <value>Вы уверены, что хотите перезагрузить файл?
+Все изменения будут утрачены?</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.SaveFile.FileSaved" xml:space="preserve">
+    <value>Файл сохранен</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.SaveFileAs.FileSavedCaption" xml:space="preserve">
+    <value>Файл сохранен</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.OverloadsCounter" xml:space="preserve">
+    <value>(+${NumOverloads} пергрузок)</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.InsightWindow.NumberOfText" xml:space="preserve">
+    <value>${CurrentMethodNumber} из ${NumberOfTotalMethods}</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage" xml:space="preserve">
+    <value>Файл ${File} изменён внешней программой. Перезагрузить его?</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.CantDeserializeFormError" xml:space="preserve">
+    <value>Невозможно десериализовать форму. Возможная причина: метод InitializeComponent был изменён вручную.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Assembly" xml:space="preserve">
+    <value>Сборка</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Location" xml:space="preserve">
+    <value>Расположение</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Namespace" xml:space="preserve">
+    <value>Пространство имен</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.ComponentsToAddLabel" xml:space="preserve">
+    <value>Добавить компоненты</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.CustomTabPage" xml:space="preserve">
+    <value>Пользовательские</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.DialogName" xml:space="preserve">
+    <value>Добавить компоненты</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.GAC.Version" xml:space="preserve">
+    <value>Версия</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.GACTabPage" xml:space="preserve">
+    <value>GAC</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.NoComponentsFound" xml:space="preserve">
+    <value>Сборка ${Name} не содержит компонентов.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponentsFileNameLabel" xml:space="preserve">
+    <value>Имя файла</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.AddComponentsButton" xml:space="preserve">
+    <value>Добавить компоненты</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Assembly" xml:space="preserve">
+    <value>Сборка</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Categories" xml:space="preserve">
+    <value>Категории</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.DialogName" xml:space="preserve">
+    <value>Настройка панели инструментов</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Namespace" xml:space="preserve">
+    <value>Пространство имен</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.NewButton" xml:space="preserve">
+    <value>Новая</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.RemoveComponentsButton" xml:space="preserve">
+    <value>Удалить компоненты</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.RenameButton" xml:space="preserve">
+    <value>Переименовать</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.GridPropertiesGroupBox" xml:space="preserve">
+    <value>Параметры сетки</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.HeightLabel" xml:space="preserve">
+    <value>Высота</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.PanelName" xml:space="preserve">
+    <value>Параметры сетки</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.PropertyGridGroupBox" xml:space="preserve">
+    <value>Настройки окна свойств</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.PropertyGridSortCheckBox" xml:space="preserve">
+    <value>Сортировать свойства в алфавитном порядке</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.ShowGridComboBox" xml:space="preserve">
+    <value>Показать сетку</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.SnapToGridComboBox" xml:space="preserve">
+    <value>Выравнивать по сетке</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.WidthLabel" xml:space="preserve">
+    <value>Ширина</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.PanelName" xml:space="preserve">
+    <value>Дизайнер форм</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.RenameCategoryDialog.CategoryNameLabel" xml:space="preserve">
+    <value>Имя категории</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.RenameCategoryDialog.NewCategoryDialogName" xml:space="preserve">
+    <value>Новая категория</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.RenameCategoryDialog.RenameCategoryDialogName" xml:space="preserve">
+    <value>Переименовать категорию</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.ShowComponentsButton" xml:space="preserve">
+    <value>Показать компоненты</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Components.BooleanTypeConverter.FalseString" xml:space="preserve">
+    <value>Ложь</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Components.BooleanTypeConverter.TrueString" xml:space="preserve">
+    <value>Истина</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.ForwardButtonTooltip" xml:space="preserve">
+    <value>Вперед</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.GoButtonTooltip" xml:space="preserve">
+    <value>Перейти</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.StopButtonTooltip" xml:space="preserve">
+    <value>Остановить</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.UrlAddressLabel" xml:space="preserve">
+    <value>Адрес:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.IllegalProjectNameError" xml:space="preserve">
+    <value>Недопустимое имя проекта.
+Используйте только буквы, цифры, '.' или '_'.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.ProjectNameMustNotEndWithDot" xml:space="preserve">
+    <value>Недопустимое имя проекта: имя проекта не может завершаться символом '.'.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.RegisterFiletypesPanel.CaptionLabel" xml:space="preserve">
+    <value>Выберите типы файлов, которые Вы хотите ассоциировать с SharpDevelop:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.RegisterFiletypesPanel.PanelName" xml:space="preserve">
+    <value>Типы файлов</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.RegisterFiletypesPanel.RegisterCheckBox" xml:space="preserve">
+    <value>Регистрировать типы файлов при старте</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.SortOptionsDialog.CaseSensitiveCheckBox" xml:space="preserve">
+    <value>Учитывать регистр</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.SortOptionsDialog.DialogName" xml:space="preserve">
+    <value>Параметры сортировки</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.SortOptionsDialog.IgnoreTrailingWhitespacesCheckBox" xml:space="preserve">
+    <value>Игнорировать начальные и концевые пробелы</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.SortOptionsDialog.RemoveDuplicateLinesCheckBox" xml:space="preserve">
+    <value>Удалять дублируемые строки</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.SortOptionsDialog.SortDirectionGroupBox" xml:space="preserve">
+    <value>Направление сортировки</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.SortOptionsDialog.SortDirectionGroupBox.Ascending" xml:space="preserve">
+    <value>По возрастанию</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.SortOptionsDialog.SortDirectionGroupBox.Descending" xml:space="preserve">
+    <value>По убыванию</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.UserCredentialsDialog.InformationLabel" xml:space="preserve">
+    <value>Пожалуйста, продоставьте реквизиты доступа к указанному ресурсу.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.UserCredentialsDialog.UrlLabel" xml:space="preserve">
+    <value>Url:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.UserCredentialsDialog.UserNameLabel" xml:space="preserve">
+    <value>Имя пользователя:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Pads.PropertyPad.ContextMenu.Reset" xml:space="preserve">
+    <value>Сброс</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Pads.PropertyPad.ContextMenu.ShowDescription" xml:space="preserve">
+    <value>Показать описание</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.BuildAction" xml:space="preserve">
+    <value>Действие сборки</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.BuildAction.Description" xml:space="preserve">
+    <value>Действие сборки этого файла</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.LocalCopy" xml:space="preserve">
+    <value>Локальная копия</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.LocalCopy.Description" xml:space="preserve">
+    <value>Определяет, нужно ли копировать сборку в каталог компиляции</value>
+  </data>
+  <data name="ICSharpCode.UnitTesting.CodeCoverage" xml:space="preserve">
+    <value>Покрытие кода</value>
+  </data>
+  <data name="Internal.ExternalTool.CantLoadToolConfigWarining" xml:space="preserve">
+    <value>Невозможно загрузить конфигурацию внешнего инструмента</value>
+  </data>
+  <data name="Internal.Templates.CodeTemplateLoader.CantLoadTemplatesWarning" xml:space="preserve">
+    <value>Невозможно загрузить конфигурацию шаблонов</value>
+  </data>
+  <data name="Internal.Templates.ProjectTemplate.LoadingError" xml:space="preserve">
+    <value>Ошибка загрузки шаблона проекта:</value>
+  </data>
+  <data name="MainWindow.CompilerMessages.BuildStartedOutput" xml:space="preserve">
+    <value>------ Процесс сборки начат: Проект: ${Project} Конфигурация: ${Config} ------</value>
+  </data>
+  <data name="MainWindow.CompilerMessages.PerformingMainCompilationOutput" xml:space="preserve">
+    <value>Выполнение главной компиляции...</value>
+  </data>
+  <data name="MainWindow.CompilerMessages.ProjectStatsOutput" xml:space="preserve">
+    <value>Сборка завершена: ошибок: ${Errors}, предупреждений ${Warnings}</value>
+  </data>
+  <data name="MainWindow.DialogName" xml:space="preserve">
+    <value>SharpDevelop</value>
+  </data>
+  <data name="MainWindow.SaveChangesMessage" xml:space="preserve">
+    <value>Сохранить текущие изменения?</value>
+  </data>
+  <data name="MainWindow.SaveChangesMessageHeader" xml:space="preserve">
+    <value>Сохранить изменения в</value>
+  </data>
+  <data name="MainWindow.StatusBar.CompilingMessage" xml:space="preserve">
+    <value>Компиляция ${Project}</value>
+  </data>
+  <data name="MainWindow.StatusBar.ReadyMessage" xml:space="preserve">
+    <value>Готово</value>
+  </data>
+  <data name="MainWindow.Windows.BookmarkPad.GotoNext.ToolTip" xml:space="preserve">
+    <value>Перейти к следующей закладке</value>
+  </data>
+  <data name="MainWindow.Windows.BookmarkPad.GotoPrev.ToolTip" xml:space="preserve">
+    <value>Перейти к предыдущей закладке</value>
+  </data>
+  <data name="MainWindow.Windows.BookmarksLabel" xml:space="preserve">
+    <value>Закладки</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.BaseTypes" xml:space="preserve">
+    <value>Базовые типы</value>
+  </data>
+  <data name="MainWindow.Windows.ClassBrowser.NoResultsFound" xml:space="preserve">
+    <value>Ничего не найдено.</value>
+  </data>
+  <data name="MainWindow.Windows.ClassScoutLabel" xml:space="preserve">
+    <value>Классы</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Breakpoints" xml:space="preserve">
+    <value>Точки останова</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.CallStack" xml:space="preserve">
+    <value>Стек вызовов</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ExceptionForm.Title" xml:space="preserve">
+    <value>Исключение</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ExceptionHistory.Exception" xml:space="preserve">
+    <value>Исключение</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ExceptionHistory.Time" xml:space="preserve">
+    <value>Время</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Local" xml:space="preserve">
+    <value>Локальные переменные</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.LocalVariables" xml:space="preserve">
+    <value>Локальные переменные</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Modules" xml:space="preserve">
+    <value>Модули</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Threads" xml:space="preserve">
+    <value>Нити</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Watch.Refresh" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="MainWindow.Windows.DefinitionViewLabel" xml:space="preserve">
+    <value>Просмотр определения</value>
+  </data>
+  <data name="MainWindow.Windows.FileScout.DriveType.CD" xml:space="preserve">
+    <value>CD</value>
+  </data>
+  <data name="MainWindow.Windows.FileScout.MyDocuments" xml:space="preserve">
+    <value>Мои документы</value>
+  </data>
+  <data name="MainWindow.Windows.FileScoutLabel" xml:space="preserve">
+    <value>Файлы</value>
+  </data>
+  <data name="MainWindow.Windows.HelpScoutLabel" xml:space="preserve">
+    <value>Справка</value>
+  </data>
+  <data name="MainWindow.Windows.OutputWindow" xml:space="preserve">
+    <value>Вывод</value>
+  </data>
+  <data name="MainWindow.Windows.OutputWindow.BuildCategory" xml:space="preserve">
+    <value>Сборка</value>
+  </data>
+  <data name="MainWindow.Windows.OutputWindow.DebugCategory" xml:space="preserve">
+    <value>Отладка</value>
+  </data>
+  <data name="MainWindow.Windows.ProjectScoutLabel" xml:space="preserve">
+    <value>Проекты</value>
+  </data>
+  <data name="MainWindow.Windows.PropertiesScoutLabel" xml:space="preserve">
+    <value>Свойства</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.ClearHistory" xml:space="preserve">
+    <value>&lt;Очистить историю&gt;</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.FileCount" xml:space="preserve">
+    <value>файлов: ${Count}</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.Flat" xml:space="preserve">
+    <value>Плоско</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.OccurrencesCount" xml:space="preserve">
+    <value>${Count} совпадения(ий)</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.OccurrencesOf" xml:space="preserve">
+    <value>Совпадения для '${Pattern}'</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.OneFile" xml:space="preserve">
+    <value>1 файл</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.OneOccurrence" xml:space="preserve">
+    <value>1 совпадение</value>
+  </data>
+  <data name="MainWindow.Windows.SearchResultPanel.PerFile" xml:space="preserve">
+    <value>По файлам</value>
+  </data>
+  <data name="MainWindow.Windows.TaskList" xml:space="preserve">
+    <value>Список задач</value>
+  </data>
+  <data name="MainWindow.Windows.ToolbarLabel" xml:space="preserve">
+    <value>Инструменты</value>
+  </data>
+  <data name="NUnitPad.NUnitPadContent.CancelItem" xml:space="preserve">
+    <value>Выгружает тестируемые сбоки, отменяет автозагрузку.</value>
+  </data>
+  <data name="NUnitPad.NUnitPadContent.GotoDefinitionContextMenuLabel" xml:space="preserve">
+    <value>Прейти к определению</value>
+  </data>
+  <data name="NUnitPad.NUnitPadContent.ReferenceItem" xml:space="preserve">
+    <value>Добавить ссылку на nunit к выбранному проекту</value>
+  </data>
+  <data name="NUnitPad.NUnitPadContent.RefreshItem" xml:space="preserve">
+    <value>Перезагружает тестируемые сборки</value>
+  </data>
+  <data name="NUnitPad.NUnitPadContent.RunItem" xml:space="preserve">
+    <value>Запустить тесты</value>
+  </data>
+  <data name="NUnitPad.NUnitPadContent.RunTestsContextMenuLabel" xml:space="preserve">
+    <value>Запустить тесты</value>
+  </data>
+  <data name="NUnitPad.NUnitPadContent.TestTreeView.ClickOnRunInformationNode" xml:space="preserve">
+    <value>Щёлкните на запущенном тесте или обновите окно для активизации тестирования</value>
+  </data>
+  <data name="NUnitPad.NUnitPadContent.TestTreeView.LoadingErrorNode" xml:space="preserve">
+    <value>Ошибка загрузки</value>
+  </data>
+  <data name="ObjectBrowser.Menu.GoBack" xml:space="preserve">
+    <value>Назад</value>
+  </data>
+  <data name="ObjectBrowser.Menu.LoadAssembly" xml:space="preserve">
+    <value>Загрузить сборку...</value>
+  </data>
+  <data name="ObjectBrowser.Menu.LoadRef" xml:space="preserve">
+    <value>Загрузить ссылающиеся сборки</value>
+  </data>
+  <data name="ObjectBrowser.Menu.LoadStd" xml:space="preserve">
+    <value>Загрузить стандартные сборки</value>
+  </data>
+  <data name="OpenFileTabEventHandler.ContextMenu.Close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="OpenFileTabEventHandler.ContextMenu.Save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="OpenFileTabEventHandler.ContextMenu.SaveAs" xml:space="preserve">
+    <value>Сохранить как...</value>
+  </data>
+  <data name="OpenFileTabEventHandler.CopyPathName" xml:space="preserve">
+    <value>Копировать путь/имя файла</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.AddExistingFiles" xml:space="preserve">
+    <value>Добавить существующие файлы</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.AddExistingFiles.Copy" xml:space="preserve">
+    <value>Корировать</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.AddExistingFiles.Link" xml:space="preserve">
+    <value>Создать ссылку</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.AddExistingFiles.Question" xml:space="preserve">
+    <value>Копировать файлы, или создать ссылки?</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.AddItem" xml:space="preserve">
+    <value>Добавить...</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.AddMenu" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.AddReference" xml:space="preserve">
+    <value>Добавить ссылку</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.Build" xml:space="preserve">
+    <value>Собрать</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.Clean" xml:space="preserve">
+    <value>Очистить</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.ExistingItem" xml:space="preserve">
+    <value>Существующее...</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.ExistingProject" xml:space="preserve">
+    <value>Существующий проект</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.GenerateDocumentation" xml:space="preserve">
+    <value>Построить документацию с NDoc</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.HtmlExport" xml:space="preserve">
+    <value>Экспорт в HTML</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.IncludeMenu.InCompile" xml:space="preserve">
+    <value>В компиляцию</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.IncludeMenu.InDeploy" xml:space="preserve">
+    <value>В развертывание</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.NewFolder" xml:space="preserve">
+    <value>Новая папка</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.NewItem" xml:space="preserve">
+    <value>Новое...</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.NewProject" xml:space="preserve">
+    <value>Новый проект</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.NewSolutionFolder" xml:space="preserve">
+    <value>Новая папка решения</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.Open" xml:space="preserve">
+    <value>Открыть</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.Rebuild" xml:space="preserve">
+    <value>Пересобрать</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.Rename" xml:space="preserve">
+    <value>Переименовать</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.RunProject" xml:space="preserve">
+    <value>Запустить проект</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.SetAsStartupProject" xml:space="preserve">
+    <value>Использовать как StartUp проект</value>
+  </data>
+  <data name="ProjectComponent.NewFolderString" xml:space="preserve">
+    <value>Новая папка</value>
+  </data>
+  <data name="RegExpTk.MainDialog.Assembly" xml:space="preserve">
+    <value>Сборка</value>
+  </data>
+  <data name="RegExpTk.MainDialog.Classname" xml:space="preserve">
+    <value>Имя класса</value>
+  </data>
+  <data name="RegExpTk.MainDialog.CompileTab" xml:space="preserve">
+    <value>Компиляция</value>
+  </data>
+  <data name="RegExpTk.MainDialog.CreateAssembly" xml:space="preserve">
+    <value>Создать сборку</value>
+  </data>
+  <data name="RegExpTk.MainDialog.ECMA" xml:space="preserve">
+    <value>ECMA Сценарий</value>
+  </data>
+  <data name="RegExpTk.MainDialog.EndColumn" xml:space="preserve">
+    <value>Конец</value>
+  </data>
+  <data name="RegExpTk.MainDialog.ExplicitCapture" xml:space="preserve">
+    <value>"Жадный" захват</value>
+  </data>
+  <data name="RegExpTk.MainDialog.GroupsColumn" xml:space="preserve">
+    <value>Группы</value>
+  </data>
+  <data name="RegExpTk.MainDialog.IgnoreCase" xml:space="preserve">
+    <value>Игнорировать регистр</value>
+  </data>
+  <data name="RegExpTk.MainDialog.IgnoreWhitespace" xml:space="preserve">
+    <value>Игнорировать пробельные символы</value>
+  </data>
+  <data name="RegExpTk.MainDialog.Input" xml:space="preserve">
+    <value>Вход</value>
+  </data>
+  <data name="RegExpTk.MainDialog.LengthColumn" xml:space="preserve">
+    <value>Длина</value>
+  </data>
+  <data name="RegExpTk.MainDialog.Multiline" xml:space="preserve">
+    <value>Многострочное</value>
+  </data>
+  <data name="RegExpTk.MainDialog.Namespace" xml:space="preserve">
+    <value>Пространство имён</value>
+  </data>
+  <data name="RegExpTk.MainDialog.PublicVisible" xml:space="preserve">
+    <value>public</value>
+  </data>
+  <data name="RegExpTk.MainDialog.Regex" xml:space="preserve">
+    <value>Регулярное выражение</value>
+  </data>
+  <data name="RegExpTk.MainDialog.Replace" xml:space="preserve">
+    <value>Замена</value>
+  </data>
+  <data name="RegExpTk.MainDialog.Replacement" xml:space="preserve">
+    <value>Что заменить</value>
+  </data>
+  <data name="RegExpTk.MainDialog.ReplaceResult" xml:space="preserve">
+    <value>Результат замены</value>
+  </data>
+  <data name="RegExpTk.MainDialog.RightToLeft" xml:space="preserve">
+    <value>Справа налево</value>
+  </data>
+  <data name="RegExpTk.MainDialog.Singleline" xml:space="preserve">
+    <value>Однострочное</value>
+  </data>
+  <data name="RegExpTk.MainDialog.StartColumn" xml:space="preserve">
+    <value>Начало</value>
+  </data>
+  <data name="RegExpTk.MainDialog.StringColumn" xml:space="preserve">
+    <value>Строка</value>
+  </data>
+  <data name="RegExpTk.MainDialog.TestTab" xml:space="preserve">
+    <value>Тест</value>
+  </data>
+  <data name="RegExpTk.Messages.ClassNameMissing" xml:space="preserve">
+    <value>Имя класса не может быть пустым</value>
+  </data>
+  <data name="RegExpTk.Messages.CompilationError" xml:space="preserve">
+    <value>Невозможно скомпилировать регулярное выражение:</value>
+  </data>
+  <data name="RegExpTk.Messages.CreationError" xml:space="preserve">
+    <value>Невозможно создать регулярное выражение:</value>
+  </data>
+  <data name="RegExpTk.Messages.FileCreated" xml:space="preserve">
+    <value>Файл был успешно создан:</value>
+  </data>
+  <data name="RegExpTk.Messages.FilenameInvalid" xml:space="preserve">
+    <value>Введите допустимое имя файла</value>
+  </data>
+  <data name="RegExpTk.Messages.FilenameMissing" xml:space="preserve">
+    <value>Введите имя файла</value>
+  </data>
+  <data name="RegExpTk.Messages.Match" xml:space="preserve">
+    <value>совпадает</value>
+  </data>
+  <data name="RegExpTk.Messages.Matches" xml:space="preserve">
+    <value>совпадений</value>
+  </data>
+  <data name="RegExpTk.Messages.RegexMissing" xml:space="preserve">
+    <value>Введите регулярное выражение</value>
+  </data>
+  <data name="ResourceEditor.BitmapView.UpdateBitmap" xml:space="preserve">
+    <value>Обновить изображение...</value>
+  </data>
+  <data name="ResourceEditor.DeleteEntry.Confirm" xml:space="preserve">
+    <value>Действительно хотите удалить выбраные ресурсы?</value>
+  </data>
+  <data name="ResourceEditor.DeleteEntry.Title" xml:space="preserve">
+    <value>Удалить ресурс</value>
+  </data>
+  <data name="ResourceEditor.Messages.CantLoadResource" xml:space="preserve">
+    <value>Невозможно загрузить ресурс</value>
+  </data>
+  <data name="ResourceEditor.ResourceEdit.ContentColumn" xml:space="preserve">
+    <value>Содержание</value>
+  </data>
+  <data name="ResourceEditor.ResourceEdit.ContextMenu.AddFiles" xml:space="preserve">
+    <value>Добавить файлы...</value>
+  </data>
+  <data name="ResourceEditor.ResourceEdit.ContextMenu.AddStringEntry" xml:space="preserve">
+    <value>Добавить строку</value>
+  </data>
+  <data name="ResourceEditor.ResourceEdit.ContextMenu.CopyResourceName" xml:space="preserve">
+    <value>Копировать имя ресурса</value>
+  </data>
+  <data name="ResourceEditor.ResourceEdit.ContextMenu.Rename" xml:space="preserve">
+    <value>Переименовать</value>
+  </data>
+  <data name="ResourceEditor.ResourceEdit.TypeColumn" xml:space="preserve">
+    <value>Тип</value>
+  </data>
+  <data name="SharpDevelop.FileFilter.AllFiles" xml:space="preserve">
+    <value>Все файлы (*.*)</value>
+  </data>
+  <data name="SharpDevelop.FileFilter.AssemblyFiles" xml:space="preserve">
+    <value>Файлы сборок (*.exe;*.dll)</value>
+  </data>
+  <data name="SharpDevelop.FileFilter.CombineFiles" xml:space="preserve">
+    <value>Файлы объединений (*.cmbx)</value>
+  </data>
+  <data name="SharpDevelop.FileFilter.CPPFiles" xml:space="preserve">
+    <value>C++ файлы (*.cpp;*.c;*.hpp;*.h)</value>
+  </data>
+  <data name="SharpDevelop.FileFilter.CSharpFiles" xml:space="preserve">
+    <value>C# файлы (*.cs)</value>
+  </data>
+  <data name="SharpDevelop.FileFilter.ExecutableFiles" xml:space="preserve">
+    <value>Выполнимые файлы (*.exe;*.com;*.pif;*.bat;*.cmd)</value>
+  </data>
+  <data name="SharpDevelop.FileFilter.Icons" xml:space="preserve">
+    <value>Файлы значков (*.ico)</value>
+  </data>
+  <data name="SharpDevelop.FileFilter.KeyFiles" xml:space="preserve">
+    <value>Ключи</value>
+  </data>
+  <data name="SharpDevelop.FileFilter.VBNetFiles" xml:space="preserve">
+    <value>VB файлы (*.vb)</value>
+  </data>
+  <data name="SharpDevelop.FileFilter.XmlFiles" xml:space="preserve">
+    <value>XML файлы (*.xml)</value>
+  </data>
+  <data name="SharpDevelop.FormsDesigner.ContextMenus.SelectionMenu.AlignToGrid" xml:space="preserve">
+    <value>Выравнивать по сетке</value>
+  </data>
+  <data name="SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand" xml:space="preserve">
+    <value>Показать код</value>
+  </data>
+  <data name="SharpDevelop.Gui.Dialogs.WizardDialog.StepsLabel" xml:space="preserve">
+    <value>Шаги</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.CreateChangedEvent" xml:space="preserve">
+    <value>Создать событие изменения</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.CreateOnEventMethod" xml:space="preserve">
+    <value>Создать метод по событию</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.CurrentMethod" xml:space="preserve">
+    <value>Текущий метод</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.DeclaringType" xml:space="preserve">
+    <value>Текларирующий тип</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ImplementInterfaceExplicit" xml:space="preserve">
+    <value>Реализовать интерфейс (явно)</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ImplementInterfaceImplicit" xml:space="preserve">
+    <value>Реализовать интерфейс (неявно)</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.RenameFieldAndProperty" xml:space="preserve">
+    <value>Переименовать свойство '{0}' в '{1}'?</value>
+  </data>
+  <data name="SharpDevelop.SideBar.AsciiTable" xml:space="preserve">
+    <value>Таблица ASCII</value>
+  </data>
+  <data name="SharpDevelop.SideBar.ClipboardRing" xml:space="preserve">
+    <value>Буфер обмена</value>
+  </data>
+  <data name="SharpDevelop.SideBar.CSharpDocumentationTags" xml:space="preserve">
+    <value>Тэги документации C#</value>
+  </data>
+  <data name="SharpDevelop.SideBar.GeneralCategory" xml:space="preserve">
+    <value>Общие</value>
+  </data>
+  <data name="SharpDevelop.SideBar.LicensesTags" xml:space="preserve">
+    <value>Лицензии</value>
+  </data>
+  <data name="SharpDevelop.SideBar.XSLTTags" xml:space="preserve">
+    <value>XSLT</value>
+  </data>
+  <data name="SharpQuery.Error.InvalidValue" xml:space="preserve">
+    <value>Одно или несколько записываемых значений неверны.</value>
+  </data>
+  <data name="SharpQuery.Error.NotSuported" xml:space="preserve">
+    <value>не поддерживается</value>
+  </data>
+  <data name="SharpQuery.Error.OpenError" xml:space="preserve">
+    <value>Невозможно открыть соединение. Проверьте строку соединения.</value>
+  </data>
+  <data name="SharpQuery.Error.ProcedureExecution" xml:space="preserve">
+    <value>Невозможно выполнить процедуру из-за ошибки.</value>
+  </data>
+  <data name="SharpQuery.Error.SQLExecution" xml:space="preserve">
+    <value>Невезможно выполниеть SQL-запрс из-за ошибки</value>
+  </data>
+  <data name="SharpQuery.Error.WrongConnectionString" xml:space="preserve">
+    <value>Неверная строка соединения!</value>
+  </data>
+  <data name="SharpQuery.Error.WrongKeyType" xml:space="preserve">
+    <value>ключ должен быть строкового типа</value>
+  </data>
+  <data name="SharpQuery.Error.WrongValueType" xml:space="preserve">
+    <value>Значение должно быть строкового типа.</value>
+  </data>
+  <data name="SharpQuery.Label.AddConnection" xml:space="preserve">
+    <value>Добавить соединение...</value>
+  </data>
+  <data name="SharpQuery.Label.Connect" xml:space="preserve">
+    <value>Подключиться к базе данных</value>
+  </data>
+  <data name="SharpQuery.Label.DataBasesRoot" xml:space="preserve">
+    <value>Соединения с базами данных</value>
+  </data>
+  <data name="SharpQuery.Label.Disconnect" xml:space="preserve">
+    <value>Отключить</value>
+  </data>
+  <data name="SharpQuery.Label.Execute" xml:space="preserve">
+    <value>Выполнить</value>
+  </data>
+  <data name="SharpQuery.Label.ExtractData" xml:space="preserve">
+    <value>Извлечь данные</value>
+  </data>
+  <data name="SharpQuery.Label.ModifyConnection" xml:space="preserve">
+    <value>Изменить соединение...</value>
+  </data>
+  <data name="SharpQuery.Label.ProceduresRoot" xml:space="preserve">
+    <value>Процедуры</value>
+  </data>
+  <data name="SharpQuery.Label.Refresh" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="SharpQuery.Label.Remove" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="SharpQuery.Label.Schemas" xml:space="preserve">
+    <value>Схемы</value>
+  </data>
+  <data name="SharpQuery.Label.SharpQuery" xml:space="preserve">
+    <value>Базы данных</value>
+  </data>
+  <data name="SharpQuery.Label.TablesRoot" xml:space="preserve">
+    <value>Таблицы</value>
+  </data>
+  <data name="SharpQuery.Label.ViewsRoot" xml:space="preserve">
+    <value>Представления</value>
+  </data>
+  <data name="SharpQuery.ToolTip.AddConnection" xml:space="preserve">
+    <value>Добавить соединение</value>
+  </data>
+  <data name="SharpQuery.ToolTip.Refresh" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="SharpQuery.XMLForm.ResetButton" xml:space="preserve">
+    <value>Сброс</value>
+  </data>
+  <data name="SharpQuery.XMLForm.SQLParameterDataType" xml:space="preserve">
+    <value>Тип данных параметра</value>
+  </data>
+  <data name="SharpQuery.XMLForm.SQLParameterInputTitle" xml:space="preserve">
+    <value>Ввод параметров</value>
+  </data>
+  <data name="SharpQuery.XMLForm.SQLParameterName" xml:space="preserve">
+    <value>Имя параметра</value>
+  </data>
+  <data name="SharpQuery.XMLForm.SQLParameterType" xml:space="preserve">
+    <value>Тип параметра</value>
+  </data>
+  <data name="SharpQuery.XMLForm.SQLParameterValue" xml:space="preserve">
+    <value>Значение параметра</value>
+  </data>
+  <data name="SideBarComponent.ContextMenu.AddTab" xml:space="preserve">
+    <value>&amp;Добавить закладку</value>
+  </data>
+  <data name="SideBarComponent.ContextMenu.DeleteTab" xml:space="preserve">
+    <value>&amp;Удалить закладку</value>
+  </data>
+  <data name="SideBarComponent.ContextMenu.DeleteTabHeaderQuestion" xml:space="preserve">
+    <value>Вы действительно хотите удалить закладку "${TabHeader}"?</value>
+  </data>
+  <data name="SideBarComponent.ContextMenu.DeleteTabItem" xml:space="preserve">
+    <value>Удалить объект</value>
+  </data>
+  <data name="SideBarComponent.ContextMenu.DeleteTabItemQuestion" xml:space="preserve">
+    <value>Вы действительно хотите удалить объект "${TabItem}"?</value>
+  </data>
+  <data name="SideBarComponent.ContextMenu.RenameTab" xml:space="preserve">
+    <value>&amp;Переименовать закладку</value>
+  </data>
+  <data name="SideBarComponent.ContextMenu.RenameTabItem" xml:space="preserve">
+    <value>Переименовать &amp;объект</value>
+  </data>
+  <data name="StartPage.AuthorsMenu.BarNameName" xml:space="preserve">
+    <value>Авторы</value>
+  </data>
+  <data name="StartPage.AuthorsMenu.Name" xml:space="preserve">
+    <value>Авторы</value>
+  </data>
+  <data name="StartPage.ChangeLogMenu.BarNameName" xml:space="preserve">
+    <value>Журнал изменений</value>
+  </data>
+  <data name="StartPage.ChangeLogMenu.Name" xml:space="preserve">
+    <value>Журнал изменений</value>
+  </data>
+  <data name="StartPage.ContactUs" xml:space="preserve">
+    <value>Связь с нами</value>
+  </data>
+  <data name="StartPage.HelpWantedMenu.BarNameName" xml:space="preserve">
+    <value>Нужна помощь</value>
+  </data>
+  <data name="StartPage.HelpWantedMenu.Name" xml:space="preserve">
+    <value>Нужна помощь</value>
+  </data>
+  <data name="StartPage.StartMenu.BarNameName" xml:space="preserve">
+    <value>Выберите проект</value>
+  </data>
+  <data name="StartPage.StartMenu.LocationTable" xml:space="preserve">
+    <value>Расположение</value>
+  </data>
+  <data name="StartPage.StartMenu.ModifiedTable" xml:space="preserve">
+    <value>Изменён</value>
+  </data>
+  <data name="StartPage.StartMenu.Name" xml:space="preserve">
+    <value>Старт</value>
+  </data>
+  <data name="StartPage.StartMenu.NewCombineButton" xml:space="preserve">
+    <value>Новое объединение</value>
+  </data>
+  <data name="StartPage.StartMenu.OpenCombineButton" xml:space="preserve">
+    <value>Открыть объединение</value>
+  </data>
+  <data name="StartPage.StartPageContentName" xml:space="preserve">
+    <value>Стартовая страница</value>
+  </data>
+  <data name="StatusBarService.CaretModes.Insert" xml:space="preserve">
+    <value>ВСТ</value>
+  </data>
+  <data name="StatusBarService.CaretModes.Overwrite" xml:space="preserve">
+    <value>ЗАМ</value>
+  </data>
+  <data name="StatusBarService.CursorStatusBarPanelText" xml:space="preserve">
+    <value>Ст ${Line} Кол ${Column} Сим ${Character}</value>
+  </data>
+  <data name="Templates.File.Categories.Misc" xml:space="preserve">
+    <value>Разное</value>
+  </data>
+  <data name="Templates.File.Categories.WindowsApplications" xml:space="preserve">
+    <value>Windows-приложения</value>
+  </data>
+  <data name="Templates.File.EmptyClass.Description" xml:space="preserve">
+    <value>Объявление пустого класса.</value>
+  </data>
+  <data name="Templates.File.EmptyClass.Name" xml:space="preserve">
+    <value>Класс</value>
+  </data>
+  <data name="Templates.File.EmptyFile.Description" xml:space="preserve">
+    <value>Создаёт пустой файл.</value>
+  </data>
+  <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
+    <value>Пустой файл</value>
+  </data>
+  <data name="Templates.File.HeaderFile.Description" xml:space="preserve">
+    <value>Создаёт пустой файл заголовка.</value>
+  </data>
+  <data name="Templates.File.HeaderFile.Name" xml:space="preserve">
+    <value>Файл заголовка</value>
+  </data>
+  <data name="Templates.File.Html.EmptyHtml.Name" xml:space="preserve">
+    <value>Пустой HTML файл</value>
+  </data>
+  <data name="Templates.File.Html.EmptyHtmlFile.Description" xml:space="preserve">
+    <value>Создаёт пустой HTML файл.</value>
+  </data>
+  <data name="Templates.File.Interface.Description" xml:space="preserve">
+    <value>Объявление пустого интерфейса.</value>
+  </data>
+  <data name="Templates.File.Interface.Name" xml:space="preserve">
+    <value>Интерфейс</value>
+  </data>
+  <data name="Templates.File.Module.Description" xml:space="preserve">
+    <value>Пустое объявление модуля.</value>
+  </data>
+  <data name="Templates.File.Module.Name" xml:space="preserve">
+    <value>Модуль</value>
+  </data>
+  <data name="Templates.File.MsBuild.Description" xml:space="preserve">
+    <value>Создает файл MSBuild без неопределенной целью сборки</value>
+  </data>
+  <data name="Templates.File.MsBuild.Name" xml:space="preserve">
+    <value>Файл MSBuild</value>
+  </data>
+  <data name="Templates.File.MyExtensionClass.Description" xml:space="preserve">
+    <value>Шаблон класса, расширяющего пространство имен "My".</value>
+  </data>
+  <data name="Templates.File.MyExtensionClass.Name" xml:space="preserve">
+    <value>Расширение "Му"</value>
+  </data>
+  <data name="Templates.File.NAnt.NAntBuildFile.Description" xml:space="preserve">
+    <value>Создает новый файл сборки NAnt.</value>
+  </data>
+  <data name="Templates.File.NAnt.NAntBuildFile.Name" xml:space="preserve">
+    <value>Файл сборки NAnt</value>
+  </data>
+  <data name="Templates.File.Properties.AddIFDEFTest" xml:space="preserve">
+    <value>Добавить '#if TEST ... #endif'</value>
+  </data>
+  <data name="Templates.File.Properties.AddIFDEFTest.Description" xml:space="preserve">
+    <value>Если да, класс компилируется только если определён символ TEST.</value>
+  </data>
+  <data name="Templates.File.Properties.AddSetupCode" xml:space="preserve">
+    <value>Добавить setup-код</value>
+  </data>
+  <data name="Templates.File.Properties.AddSetupCode.Description" xml:space="preserve">
+    <value>Если да, будет генерироваться setup-код.</value>
+  </data>
+  <data name="Templates.File.Properties.AddTearDownCode" xml:space="preserve">
+    <value>Добавить 'tear down' код</value>
+  </data>
+  <data name="Templates.File.Properties.AddTearDownCode.Description" xml:space="preserve">
+    <value>Если да, будет генерироваться 'tear down' код.</value>
+  </data>
+  <data name="Templates.File.Properties.ContextCategory" xml:space="preserve">
+    <value>Контекст</value>
+  </data>
+  <data name="Templates.File.Properties.OptionCategory" xml:space="preserve">
+    <value>Параметры</value>
+  </data>
+  <data name="Templates.File.Resource.EmptyResourceFile.Description" xml:space="preserve">
+    <value>создаёт пустой файл ресурсов</value>
+  </data>
+  <data name="Templates.File.Resource.EmptyResourceFile.Name" xml:space="preserve">
+    <value>Пустой файл ресурсов</value>
+  </data>
+  <data name="Templates.File.SingletonClass.Description" xml:space="preserve">
+    <value>Класс следующий патерну Singleton.</value>
+  </data>
+  <data name="Templates.File.SingletonClass.Name" xml:space="preserve">
+    <value>Singleton-класс</value>
+  </data>
+  <data name="Templates.File.Text.EmptyText.Name" xml:space="preserve">
+    <value>Пустой текстовый файл</value>
+  </data>
+  <data name="Templates.File.Text.EmptyTextFile.Description" xml:space="preserve">
+    <value>Создаёт пустой текстовый файл.</value>
+  </data>
+  <data name="Templates.File.UnitTest.Description" xml:space="preserve">
+    <value>Создаёт базовый unit test.</value>
+  </data>
+  <data name="Templates.File.UnitTest.Name" xml:space="preserve">
+    <value>Unit Test</value>
+  </data>
+  <data name="Templates.File.WindowsForm.Description" xml:space="preserve">
+    <value>Форма для Windows-приложения.</value>
+  </data>
+  <data name="Templates.File.WindowsForm.Name" xml:space="preserve">
+    <value>Форма</value>
+  </data>
+  <data name="Templates.File.WindowsUserControl.Description" xml:space="preserve">
+    <value>Пользовательский элемент управления для Windows-приложения</value>
+  </data>
+  <data name="Templates.File.WindowsUserControl.Name" xml:space="preserve">
+    <value>Пользовательский элемент управления</value>
+  </data>
+  <data name="Templates.File.Xml.EmptyXml.Name" xml:space="preserve">
+    <value>Пустой XML файл</value>
+  </data>
+  <data name="Templates.File.Xml.EmptyXmlFile.Description" xml:space="preserve">
+    <value>Создаёт пустой XML файл.</value>
+  </data>
+  <data name="Templates.Project.BlankCombine.Description" xml:space="preserve">
+    <value>Создаёт пустое объединение без проектов.</value>
+  </data>
+  <data name="Templates.Project.BlankCombine.Name" xml:space="preserve">
+    <value>Пустое объединение</value>
+  </data>
+  <data name="Templates.Project.ClassLibrary.Description" xml:space="preserve">
+    <value>Проект для создания классов, которые используются другим приложением.</value>
+  </data>
+  <data name="Templates.Project.ClassLibrary.Name" xml:space="preserve">
+    <value>Библиотека классов</value>
+  </data>
+  <data name="Templates.Project.ConsoleProject.Description" xml:space="preserve">
+    <value>Проект, создающий приложение командной строки.</value>
+  </data>
+  <data name="Templates.Project.ConsoleProject.Name" xml:space="preserve">
+    <value>Консольное приложение</value>
+  </data>
+  <data name="Templates.Project.Direct3DApplication.Description" xml:space="preserve">
+    <value>Проект для создания Direct3D-приложения.</value>
+  </data>
+  <data name="Templates.Project.Direct3DApplication.Name" xml:space="preserve">
+    <value>Приложение Direct3D</value>
+  </data>
+  <data name="Templates.Project.EmptyProject.Description" xml:space="preserve">
+    <value>Пустой проект.</value>
+  </data>
+  <data name="Templates.Project.EmptyProject.Name" xml:space="preserve">
+    <value>Пустой проект</value>
+  </data>
+  <data name="Templates.Project.GladeSharpProject.Name" xml:space="preserve">
+    <value>Glade#-приложение</value>
+  </data>
+  <data name="Templates.Project.GtkSharpProject.Description" xml:space="preserve">
+    <value>Проект, создающий Gtk#-приложение</value>
+  </data>
+  <data name="Templates.Project.GtkSharpProject.Name" xml:space="preserve">
+    <value>Gtk#-приложение</value>
+  </data>
+  <data name="Templates.Project.SetupProject.Description" xml:space="preserve">
+    <value>Проект для создания MSI-инсталлятора.</value>
+  </data>
+  <data name="Templates.Project.SetupProject.Name" xml:space="preserve">
+    <value>Инсталлятор</value>
+  </data>
+  <data name="Templates.Project.SharpDevelopAddin.Description" xml:space="preserve">
+    <value>Шаблон проекта для быстрого создания надстройки SharpDevelop</value>
+  </data>
+  <data name="Templates.Project.SharpDevelopAddin.Name" xml:space="preserve">
+    <value>Надстройка SharpDevelop</value>
+  </data>
+  <data name="Templates.Project.SharpDevelopMacro.Description" xml:space="preserve">
+    <value>Шаблон надстройки для пункта меню инструментов, для работы с выбраным текстом в активном редакторе.</value>
+  </data>
+  <data name="Templates.Project.SharpDevelopMacro.Name" xml:space="preserve">
+    <value>Пункт меню инструментов</value>
+  </data>
+  <data name="Templates.Project.UserControlLibrary.Description" xml:space="preserve">
+    <value>Проект для создания пользовательского элемента управления, который используется в Windows-приложении.</value>
+  </data>
+  <data name="Templates.Project.UserControlLibrary.Name" xml:space="preserve">
+    <value>Библиотека пользовательского элемента управления</value>
+  </data>
+  <data name="Templates.Project.WindowsApplication.Description" xml:space="preserve">
+    <value>Проект для создания приложения с Windows-интерфейсом.</value>
+  </data>
+  <data name="Templates.Project.WindowsApplication.Name" xml:space="preserve">
+    <value>Windows-приложение</value>
+  </data>
+  <data name="Templates.Project.WindowsService.Description" xml:space="preserve">
+    <value>Проект для создания сервиса windows.</value>
+  </data>
+  <data name="Templates.Project.WindowsService.Name" xml:space="preserve">
+    <value>Сервис Windows</value>
+  </data>
+  <data name="XML.FormsDesigner.SideBar.CustomizeSidebar" xml:space="preserve">
+    <value>Настроить панель инструментов...</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu" xml:space="preserve">
+    <value>Отладка</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Continue" xml:space="preserve">
+    <value>Продолжить отладку</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Continue.Description" xml:space="preserve">
+    <value>Продолжает выполнение процесса.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
+    <value>Запустить без отладчика</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.RunWithoutDebug.Description" xml:space="preserve">
+    <value>Запускает программу без присоединённого отладчика</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Stop" xml:space="preserve">
+    <value>Остановить процесс</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Stop.Description" xml:space="preserve">
+    <value>Останавливает текущий процесс и завершает отладку</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.ToggleBreakpoint" xml:space="preserve">
+    <value>Вкл/выкл. контрольную точку</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu" xml:space="preserve">
+    <value>Правка</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.Copy" xml:space="preserve">
+    <value>Копировать</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.Copy.Description" xml:space="preserve">
+    <value>Копировать выделенный текст в буфер обмена</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.Cut" xml:space="preserve">
+    <value>Вырезать</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.Cut.Description" xml:space="preserve">
+    <value>Вырезать выделенный текст в буфер обмена</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.Delete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.Delete.Description" xml:space="preserve">
+    <value>Удалить выделенный текст</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.FoldingMenu" xml:space="preserve">
+    <value>Свертка</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.FoldingMenu.ShowDefinitions" xml:space="preserve">
+    <value>Показывать только определения</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.FoldingMenu.ToggleAllFoldings" xml:space="preserve">
+    <value>Переключить все</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.FoldingMenu.ToggleFolding" xml:space="preserve">
+    <value>Переключить</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.FormatMenu" xml:space="preserve">
+    <value>Формат</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.FormatMenu.Capitalize" xml:space="preserve">
+    <value>Все слова с прописных букв</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.FormatMenu.InvertCase" xml:space="preserve">
+    <value>Инвертировать регистр</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.FormatMenu.LdSpace2Tab" xml:space="preserve">
+    <value>Начальные пробелы в символы табуляции</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.FormatMenu.LdTab2Space" xml:space="preserve">
+    <value>Начальные символы табуляции в пробелы</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.FormatMenu.LowerCase" xml:space="preserve">
+    <value>К нижнему регистру</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.FormatMenu.RlWs" xml:space="preserve">
+    <value>Удалить начальные пробельные символы</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.FormatMenu.RtWs" xml:space="preserve">
+    <value>Удалить конечные пробельные символы</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.FormatMenu.SortLines" xml:space="preserve">
+    <value>Сортировать строки...</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.FormatMenu.Space2Tab" xml:space="preserve">
+    <value>Пробелы в символы табуляции</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.FormatMenu.Tab2Space" xml:space="preserve">
+    <value>Символы табуляции в пробелы</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.FormatMenu.UpperCase" xml:space="preserve">
+    <value>К верхнему регистру</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.Insert" xml:space="preserve">
+    <value>Вставка</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.Paste" xml:space="preserve">
+    <value>Вставить</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.Paste.Description" xml:space="preserve">
+    <value>Вставить текст из буфера обмена</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.Redo" xml:space="preserve">
+    <value>Повторить</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.Redo.Description" xml:space="preserve">
+    <value>Повторить последнее действие</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.SelectAll" xml:space="preserve">
+    <value>Выделить все</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.Undo" xml:space="preserve">
+    <value>Отменить</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.Undo.Description" xml:space="preserve">
+    <value>Отменяет последнее действие</value>
+  </data>
+  <data name="XML.MainMenu.EditMenu.WordCount" xml:space="preserve">
+    <value>Посчитать слова...</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu" xml:space="preserve">
+    <value>Файл</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.ClearRecentFiles" xml:space="preserve">
+    <value>Очистить список последних файлов</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.ClearRecentProjects" xml:space="preserve">
+    <value>Очистить список последних проектов</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.Close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.Close.File" xml:space="preserve">
+    <value>Файл</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.Close.Project" xml:space="preserve">
+    <value>Объединение</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.CloseAll" xml:space="preserve">
+    <value>Закрыть все</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.Exit" xml:space="preserve">
+    <value>Выход</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.New" xml:space="preserve">
+    <value>Создать</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.New.File" xml:space="preserve">
+    <value>Файл...</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.New.File.Description" xml:space="preserve">
+    <value>Создать новый файл</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+    <value>Объединение...</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">
+    <value>Открыть</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.Open.File" xml:space="preserve">
+    <value>Файл...</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.Open.File.Description" xml:space="preserve">
+    <value>Открыть файл</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.Open.Project" xml:space="preserve">
+    <value>Проект/Объединение...</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.Open.Project.Description" xml:space="preserve">
+    <value>Открыть проект/объединение</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.Print" xml:space="preserve">
+    <value>Печать</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.PrintPreview" xml:space="preserve">
+    <value>Предварительный просмотр</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.RecentFiles" xml:space="preserve">
+    <value>Последние файлы</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.RecentProjects" xml:space="preserve">
+    <value>Последние проекты</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.Reload" xml:space="preserve">
+    <value>Перезагрузить файл</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.Save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.Save.Description" xml:space="preserve">
+    <value>Сохранить текущий файл</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.SaveAll" xml:space="preserve">
+    <value>Сохранить все</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.SaveAll.Description" xml:space="preserve">
+    <value>Сохранить все открытые файлы</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.SaveAs" xml:space="preserve">
+    <value>Сохранить как...</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu" xml:space="preserve">
+    <value>Формат</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.AlignMenu" xml:space="preserve">
+    <value>Выравнивание</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.AlignMenu.AlignBottom" xml:space="preserve">
+    <value>По нижнему краю</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.AlignMenu.AlignHorizontalCenters" xml:space="preserve">
+    <value>По центру</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.AlignMenu.AlignHorizontalLeft" xml:space="preserve">
+    <value>По левому краю</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.AlignMenu.AlignHorizontalRight" xml:space="preserve">
+    <value>По правому краю</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.AlignMenu.AlignToGrid" xml:space="preserve">
+    <value>По сетке</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.AlignMenu.AlignTop" xml:space="preserve">
+    <value>По верхнему краю</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.AlignMenu.AlignVerticalCenters" xml:space="preserve">
+    <value>По середине</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.CenterMenu" xml:space="preserve">
+    <value>Центрировать</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.CenterMenu.CenterHorizontally" xml:space="preserve">
+    <value>По горизонтали</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.CenterMenu.CenterVertically" xml:space="preserve">
+    <value>По вертикали</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.HorizontalSpacingMenu" xml:space="preserve">
+    <value>Горизонтальные промежутки</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.HorizontalSpacingMenu.BringToFront" xml:space="preserve">
+    <value>Наверх</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.HorizontalSpacingMenu.HorizSpaceConcatenate" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.HorizontalSpacingMenu.HorizSpaceDecrease" xml:space="preserve">
+    <value>Уменьшить</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.HorizontalSpacingMenu.HorizSpaceIncrease" xml:space="preserve">
+    <value>Увеличить</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.HorizontalSpacingMenu.HorizSpaceMakeEqual" xml:space="preserve">
+    <value>Сравнять</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.HorizontalSpacingMenu.SendToBack" xml:space="preserve">
+    <value>Вниз</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.LineUpIcons" xml:space="preserve">
+    <value>Выстроить значки</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.Lock" xml:space="preserve">
+    <value>Заблокировать элементы управления</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.OrderMenu" xml:space="preserve">
+    <value>Порядок</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.OrderMenu.BringToFront" xml:space="preserve">
+    <value>Переместить вверх</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.OrderMenu.SendToBack" xml:space="preserve">
+    <value>Вниз</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.SameSizeMenu" xml:space="preserve">
+    <value>Один размер</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.SameSizeMenu.SizeToControl" xml:space="preserve">
+    <value>Оба</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.SameSizeMenu.SizeToControlHeight" xml:space="preserve">
+    <value>По высоте</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.SameSizeMenu.SizeToControlWidth" xml:space="preserve">
+    <value>По ширине</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.SameSizeMenu.SizeToGrid" xml:space="preserve">
+    <value>По сетке</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.ShowLargeIcons" xml:space="preserve">
+    <value>Большие значки</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.ShowProperties" xml:space="preserve">
+    <value>Свойства</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.ShowTabOrder" xml:space="preserve">
+    <value>Показать порядок обхода</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.VerticalSpacingMenu" xml:space="preserve">
+    <value>Вертикальные промежутки</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.VerticalSpacingMenu.VertSpaceConcatenate" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.VerticalSpacingMenu.VertSpaceDecrease" xml:space="preserve">
+    <value>Уменьшить</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.VerticalSpacingMenu.VertSpaceIncrease" xml:space="preserve">
+    <value>Увеличить</value>
+  </data>
+  <data name="XML.MainMenu.FormatMenu.VerticalSpacingMenu.VertSpaceMakeEqual" xml:space="preserve">
+    <value>Сравнять</value>
+  </data>
+  <data name="XML.MainMenu.HelpMenu" xml:space="preserve">
+    <value>Справка</value>
+  </data>
+  <data name="XML.MainMenu.HelpMenu.About" xml:space="preserve">
+    <value>&amp;О программе...</value>
+  </data>
+  <data name="XML.MainMenu.HelpMenu.ContextHelp" xml:space="preserve">
+    <value>Контекстная справка</value>
+  </data>
+  <data name="XML.MainMenu.HelpMenu.DynamicHelp" xml:space="preserve">
+    <value>Динамическая подсказка</value>
+  </data>
+  <data name="XML.MainMenu.HelpMenu.GPL" xml:space="preserve">
+    <value>&amp;GPL...</value>
+  </data>
+  <data name="XML.MainMenu.HelpMenu.ReadMe" xml:space="preserve">
+    <value>Файл Readme...</value>
+  </data>
+  <data name="XML.MainMenu.HelpMenu.StyleGuide" xml:space="preserve">
+    <value>Стиль оформления исходных текстов</value>
+  </data>
+  <data name="XML.MainMenu.HelpMenu.Tips" xml:space="preserve">
+    <value>Совет дня...</value>
+  </data>
+  <data name="XML.MainMenu.HelpMenu.Topics" xml:space="preserve">
+    <value>Вызов справки</value>
+  </data>
+  <data name="XML.MainMenu.HelpMenu.WebMenu" xml:space="preserve">
+    <value>Web</value>
+  </data>
+  <data name="XML.MainMenu.ProjectMenu" xml:space="preserve">
+    <value>Проект</value>
+  </data>
+  <data name="XML.MainMenu.ProjectMenu.Options" xml:space="preserve">
+    <value>Параметры проекта...</value>
+  </data>
+  <data name="XML.MainMenu.RunMenu.BuildProject.Description" xml:space="preserve">
+    <value>Собрать текущий проект</value>
+  </data>
+  <data name="XML.MainMenu.RunMenu.Compile.Description" xml:space="preserve">
+    <value>Собрать активный проект или файл, если нет открытого проекта (поизводит автосохранение)</value>
+  </data>
+  <data name="XML.MainMenu.RunMenu.Compile.StopDebuggingQuestion" xml:space="preserve">
+    <value>Вам необходимо остановить отладчик для сборки проекта.
+Хотите остановить отладку?</value>
+  </data>
+  <data name="XML.MainMenu.RunMenu.Compile.StopDebuggingTitle" xml:space="preserve">
+    <value>Остановить отладку</value>
+  </data>
+  <data name="XML.MainMenu.RunMenu.Run" xml:space="preserve">
+    <value>Запустить</value>
+  </data>
+  <data name="XML.MainMenu.RunMenu.Run.Description" xml:space="preserve">
+    <value>Запускает скомпилированное приложение</value>
+  </data>
+  <data name="XML.MainMenu.SearchMenu" xml:space="preserve">
+    <value>Поиск</value>
+  </data>
+  <data name="XML.MainMenu.SearchMenu.ClrBookmark" xml:space="preserve">
+    <value>Сбросить все закладки</value>
+  </data>
+  <data name="XML.MainMenu.SearchMenu.ClrBookmark.Description" xml:space="preserve">
+    <value>Сбросить все закладки в текущем файле</value>
+  </data>
+  <data name="XML.MainMenu.SearchMenu.Find" xml:space="preserve">
+    <value>Искать...</value>
+  </data>
+  <data name="XML.MainMenu.SearchMenu.FindNext" xml:space="preserve">
+    <value>Искать далее</value>
+  </data>
+  <data name="XML.MainMenu.SearchMenu.FindNextSelected" xml:space="preserve">
+    <value>Найти выделенное дальше</value>
+  </data>
+  <data name="XML.MainMenu.SearchMenu.Goto" xml:space="preserve">
+    <value>Перейти к строке №...</value>
+  </data>
+  <data name="XML.MainMenu.SearchMenu.GotoBrace" xml:space="preserve">
+    <value>Прейти на парную скобку</value>
+  </data>
+  <data name="XML.MainMenu.SearchMenu.IncrementalSearch" xml:space="preserve">
+    <value>Инкрементный поиск</value>
+  </data>
+  <data name="XML.MainMenu.SearchMenu.NextBookmark" xml:space="preserve">
+    <value>Следующая закладка</value>
+  </data>
+  <data name="XML.MainMenu.SearchMenu.NextBookmark.Description" xml:space="preserve">
+    <value>Перейти на следующую закладку</value>
+  </data>
+  <data name="XML.MainMenu.SearchMenu.PrevBookmark" xml:space="preserve">
+    <value>Предыдущая закладка</value>
+  </data>
+  <data name="XML.MainMenu.SearchMenu.PrevBookmark.Description" xml:space="preserve">
+    <value>Перейти на предыдущую закладку</value>
+  </data>
+  <data name="XML.MainMenu.SearchMenu.Replace" xml:space="preserve">
+    <value>Заменить...</value>
+  </data>
+  <data name="XML.MainMenu.SearchMenu.ToggleBookmark" xml:space="preserve">
+    <value>Переключить закладку</value>
+  </data>
+  <data name="XML.MainMenu.SearchMenu.ToggleBookmark.Description" xml:space="preserve">
+    <value>Переключить закладку</value>
+  </data>
+  <data name="XML.MainMenu.ToolMenu" xml:space="preserve">
+    <value>Инструменты</value>
+  </data>
+  <data name="XML.MainMenu.ToolMenu.ExternalTools.EnterArguments" xml:space="preserve">
+    <value>Введите аргументы для утилиты:</value>
+  </data>
+  <data name="XML.MainMenu.ToolMenu.ExternalTools.ExecutionFailed" xml:space="preserve">
+    <value>Сбой в выполнении внешней программы.
+Ошибка при старте:</value>
+  </data>
+  <data name="XML.MainMenu.ToolMenu.ExternalTools.ExitedWithCode" xml:space="preserve">
+    <value>Завершено с кодом:</value>
+  </data>
+  <data name="XML.MainMenu.ToolMenu.GenerateCode" xml:space="preserve">
+    <value>Автоматическая кодогенерация</value>
+  </data>
+  <data name="XML.MainMenu.ToolMenu.InsColor" xml:space="preserve">
+    <value>Вставить цвет...</value>
+  </data>
+  <data name="XML.MainMenu.ToolMenu.InsGUID" xml:space="preserve">
+    <value>Вставьте новый GUID</value>
+  </data>
+  <data name="XML.MainMenu.ToolMenu.Options" xml:space="preserve">
+    <value>Параметры...</value>
+  </data>
+  <data name="XML.MainMenu.ToolMenu.QuickXmlDoc" xml:space="preserve">
+    <value>Краткая XML-документация</value>
+  </data>
+  <data name="XML.MainMenu.ToolsMenu.RegularExpressionToolkit" xml:space="preserve">
+    <value>Регулярные выражения</value>
+  </data>
+  <data name="XML.MainMenu.ViewMenu" xml:space="preserve">
+    <value>Вид</value>
+  </data>
+  <data name="XML.MainMenu.ViewMenu.DebugMenu" xml:space="preserve">
+    <value>Отладка</value>
+  </data>
+  <data name="XML.MainMenu.ViewMenu.FullScreen" xml:space="preserve">
+    <value>На весь экран</value>
+  </data>
+  <data name="XML.MainMenu.ViewMenu.ShowStartPage" xml:space="preserve">
+    <value>Показывать стартовую страницу</value>
+  </data>
+  <data name="XML.MainMenu.ViewMenu.ToolsMenu" xml:space="preserve">
+    <value>Инструменты</value>
+  </data>
+  <data name="XML.MainMenu.WindowMenu" xml:space="preserve">
+    <value>Окно</value>
+  </data>
+  <data name="XML.MainMenu.WindowMenu.NxtWindow" xml:space="preserve">
+    <value>Следующее окно</value>
+  </data>
+  <data name="XML.MainMenu.WindowMenu.PrvWindow" xml:space="preserve">
+    <value>Предыдущее окно</value>
+  </data>
+  <data name="XML.MainMenu.WindowMenu.Split" xml:space="preserve">
+    <value>Разделить</value>
+  </data>
+  <data name="XML.StandardHeader.CreatedBySharpDevelop" xml:space="preserve">
+    <value>Сделано в SharpDevelop.</value>
+  </data>
+  <data name="XML.StandardHeader.Date" xml:space="preserve">
+    <value>Дата:</value>
+  </data>
+  <data name="XML.StandardHeader.Time" xml:space="preserve">
+    <value>Время:</value>
+  </data>
+  <data name="XML.StandardHeader.User" xml:space="preserve">
+    <value>Пользователь:</value>
+  </data>
+  <data name="XML.StartupTips.Tip1" xml:space="preserve">
+    <value>Вам следует следить за новыми версиями SharpDevelop и рассказывать всем своим друзьям, как классно создавать в нём программы на C#!</value>
+  </data>
+  <data name="XML.StartupTips.Tip2" xml:space="preserve">
+    <value>Окно шаблонов можно открыть, нажав Ctrl-J?</value>
+  </data>
+  <data name="XML.StartupTips.Tip3" xml:space="preserve">
+    <value>Что вы можете ввести "? name = ...;" (C#) или "Dim name As ? = ..." (VB) и SharpDevelop заменит вопросительный знак на тип "..."?</value>
+  </data>
+  <data name="XML.TextAreaContextMenu.BufferOptions" xml:space="preserve">
+    <value>Параметры</value>
+  </data>
+  <data name="XML.TextAreaContextMenu.CommentUncommentSelection" xml:space="preserve">
+    <value>Закомментировать</value>
+  </data>
+  <data name="XML.TextAreaContextMenu.Copy" xml:space="preserve">
+    <value>Копировать</value>
+  </data>
+  <data name="XML.TextAreaContextMenu.Cut" xml:space="preserve">
+    <value>Вырезать</value>
+  </data>
+  <data name="XML.TextAreaContextMenu.FileMode" xml:space="preserve">
+    <value>Режим файла</value>
+  </data>
+  <data name="XML.TextAreaContextMenu.Indent" xml:space="preserve">
+    <value>Отступ</value>
+  </data>
+  <data name="XML.TextAreaContextMenu.Paste" xml:space="preserve">
+    <value>Вставить</value>
+  </data>
+  <data name="XML.TextAreaContextMenu.Refactoring" xml:space="preserve">
+    <value>Рефакторинг</value>
+  </data>
+  <data name="XML.TextAreaContextMenu.UncommentSelection" xml:space="preserve">
+    <value>Раскомментировать</value>
+  </data>
+  <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
+    <value>Эта строка нигде не используется. Она нужна для тестирования базы данных переводов, а также в ней есть
+перенос строки</value>
+  </data>
+</root>
