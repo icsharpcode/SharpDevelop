@@ -42,7 +42,9 @@ namespace ICSharpCode.Core
 				return PropertyService.Get(uiLanguageProperty, Thread.CurrentThread.CurrentUICulture.Name);
 			}
 			set {
-				PropertyService.Set(uiLanguageProperty, value);
+				if (Language != value) {
+					PropertyService.Set(uiLanguageProperty, value);
+				}
 			}
 		}
 		

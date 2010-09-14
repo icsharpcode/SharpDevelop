@@ -58,5 +58,13 @@ namespace ICSharpCode.SharpDevelop
 			}
 			LanguageService.languages = languages.AsReadOnly();
 		}
+		
+		/// <summary>
+		/// Ensures that the active language exists
+		/// </summary>
+		public static void ValidateLanguage()
+		{
+			ResourceService.Language = GetLanguage(ResourceService.Language).Code;
+		}
 	}
 }

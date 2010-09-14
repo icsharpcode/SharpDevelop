@@ -62,7 +62,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static void InitializeWorkbench(IWorkbench workbench, IWorkbenchLayout layout)
 		{
 			WorkbenchSingleton.workbench = workbench;
-
+			
+			LanguageService.ValidateLanguage();
+			
 			DisplayBindingService.InitializeService();
 			LayoutConfiguration.LoadLayoutConfiguration();
 			FileService.InitializeService();
