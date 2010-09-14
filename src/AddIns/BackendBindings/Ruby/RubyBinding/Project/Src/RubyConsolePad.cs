@@ -13,5 +13,9 @@ namespace ICSharpCode.RubyBinding
 		{
 			return new RubyConsoleHost(consoleTextEditor, dispatcher);
 		}
+		
+		protected override string SyntaxHighlightingName {
+			get { return "Ruby"; }
+		}
 	}
 }

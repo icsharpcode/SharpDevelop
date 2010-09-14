@@ -13,5 +13,9 @@ namespace ICSharpCode.PythonBinding
 		{
 			return new PythonConsoleHost(consoleTextEditor, dispatcher);
 		}
+		
+		protected override string SyntaxHighlightingName {
+			get { return "Python"; }
+		}
 	}
 }

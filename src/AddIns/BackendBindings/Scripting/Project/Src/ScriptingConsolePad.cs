@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using AvalonEdit = ICSharpCode.AvalonEdit;
@@ -17,6 +18,7 @@ namespace ICSharpCode.Scripting
 		public ScriptingConsolePad()
 		{
 			textEditor = CreateTextEditor();
+			textEditor.SyntaxHighlighting = GetSyntaxHighlighting();
 			CreateConsoleHost();
 			host.Run();	
 		}
@@ -28,6 +30,13 @@ namespace ICSharpCode.Scripting
 			return (AvalonEdit.TextEditor)textEditor;
 		}
 		
+		IHighlightingDefinition GetSyntaxHighlighting()
+		{
+			return HighlightingManager.Instance.GetDefinition(SyntaxHighlightingName);
+		}
+		
+		protected abstract string SyntaxHighlightingName { get; }
+		
 		void CreateConsoleHost()
 		{
 			ControlDispatcher dispatcher = new ControlDispatcher(textEditor);
@@ -35,12 +44,9 @@ namespace ICSharpCode.Scripting
 			host = CreateConsoleHost(consoleTextEditor, dispatcher);
 		}
 		
-		protected virtual IScriptingConsoleHost CreateConsoleHost(
+		protected abstract IScriptingConsoleHost CreateConsoleHost(
 			IScriptingConsoleTextEditor consoleTextEditor,
-			IControlDispatcher dispatcher)
-		{
-			return null;
-		}
+			IControlDispatcher dispatcher);
 		
 		public IScriptingConsoleTextEditor ScriptingConsoleTextEditor {
 			get { return consoleTextEditor; }
