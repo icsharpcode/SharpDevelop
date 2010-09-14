@@ -381,8 +381,6 @@
 				<ComponentRef Id="WPFAssemblyInfoTemplate"/>
 				<ComponentRef Id="AddInWritingHelp"/>
 				<ComponentRef Id="CSharpProjectSharpDevelopCustomToolTemplates"/>
-				<ComponentRef Id="StringResources.pt.resources"/>
-				<ComponentRef Id="StringResources.cngb.resources"/>
 				<ComponentRef Id="AddInWritingHelpWebsiteShortcut"/>
 				<ComponentRef Id="AppConfigFileTemplate"/>
 				<ComponentRef Id="InteropPartCoverDll"/>
