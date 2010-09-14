@@ -57,12 +57,12 @@ namespace ICSharpCode.RubyBinding
 		
 		public IList<string> GetMemberNames(string name)
 		{
-			return new string[0];
+			return CommandLine.GetMemberNames(name);
 		}
 		
 		public IList<string> GetGlobals(string name)
 		{
-			return new string[0];
+			return CommandLine.GetGlobals(name);
 		}
 	}
 }
