@@ -37,15 +37,6 @@ namespace ICSharpCode.Reports.Core
 		
 		#endregion
 		
-		/*
-		private static Collection<BaseDataItem> ExtraxtDataItems (ReportItemCollection items)
-		{
-			Collection<BaseDataItem> inheritedReportItems = new Collection<BaseDataItem>(items.OfType<BaseDataItem>().ToList());
-			return inheritedReportItems;
-		}
-		
-		*/
-		
 		
 		#region IDataNavigator implementation
 		
@@ -122,14 +113,6 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
-		
-		public void SwitchGroup()
-		{
-			this.childList = BuildChildList();
-			ce = childList.GetEnumerator();
-			ce.MoveNext();
-		}
-		
 	
 		
 		public int ChildListCount
@@ -138,13 +121,6 @@ namespace ICSharpCode.Reports.Core
 				return BuildChildList().Count;
 			}
 		}
-		
-		
-		public bool ChildMoveNext()
-		{
-			return ce.MoveNext();
-		}
-		
 		
 		// at the moment only tables are working
 		

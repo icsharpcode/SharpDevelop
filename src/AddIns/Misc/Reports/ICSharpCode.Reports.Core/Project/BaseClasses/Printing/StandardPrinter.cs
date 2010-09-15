@@ -258,17 +258,20 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		public static void EvaluateRow(IExpressionEvaluatorFacade evaluator,ExporterCollection row)
 		{
 //			Console.WriteLine("evaluate row with row:{0} ",evaluator.SinglePage.IDataNavigator.CurrentRow);
-			foreach (BaseExportColumn element in row) {
-				ExportText textItem = element as ExportText;
-				
-				if (textItem != null) {
-					
-					string s =  evaluator.Evaluate(textItem.Text);
-//					Console.WriteLine("\teval {0} - {1} ",textItem.Text,s);
-//					textItem.Text = evaluator.Evaluate(textItem.Text);
-					textItem.Text = s;
+			try {
+				foreach (BaseExportColumn element in row) {
+					ExportText textItem = element as ExportText;
+					if (textItem != null) {
+//						string s =  evaluator.Evaluate(textItem.Text);
+//						Console.WriteLine("\teval {0} - {1} ",textItem.Text,s);
+					textItem.Text = evaluator.Evaluate(textItem.Text);
+//						textItem.Text = s;
+					}
 				}
+			} catch (Exception e) {
+				throw e;
 			}
+			
 		}
 		
 		#endregion

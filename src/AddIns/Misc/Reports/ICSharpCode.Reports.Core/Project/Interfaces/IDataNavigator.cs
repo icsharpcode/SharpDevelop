@@ -32,9 +32,6 @@ using System.ComponentModel;
  		
  		bool HasChildren {get;}
  		
- 		void SwitchGroup();
- 		
- 		bool ChildMoveNext();
  		
  		int ChildListCount {get;}
  		

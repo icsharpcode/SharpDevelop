@@ -16,6 +16,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.Reports.Core.Test.DataManager
 {
+	
 	[TestFixture]
 	public class GroupTableFixture
 	{
@@ -23,7 +24,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		DataTable table;
 		
 		[Test]
-		public void GroupingCollection_Empty_IsGrouped_False()
+		public void GroupingCollection_EmptyGrouping_IsGrouped_False()
 		{
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.table,new ReportSettings());
 			DataNavigator dataNav = dm.GetNavigator;
@@ -35,7 +36,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		#region Group by String
 		
 		[Test]
-		public void GroupingCollection_Contains_IsGrouped_True()
+		public void GroupingCollection_ContainsGrouping_IsGrouped_True()
 		{
 			var dataNav = PrepareStringGrouping();
 			Assert.That(dataNav.IsGrouped == true);
@@ -112,16 +113,22 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		{
 			var dataNav = PrepareStringGrouping();
 			while (dataNav.MoveNext()) {
-				if (dataNav.HasChildren) {
-					Assert.That(dataNav.HasChildren,Is.True);
-					DataRow r = dataNav.Current as DataRow;
-					string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString();
-					Console.WriteLine(v2);
-					FillChildList(dataNav);
-				}
 				
+				if (dataNav.HasChildren)
+				{
+					var n = dataNav.GetChildNavigator();
+					do
+					{
+						Assert.That(dataNav.HasChildren,Is.True);
+						DataRow r = dataNav.Current as DataRow;
+						string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString();
+						Console.WriteLine(v2);
+					}
+					while (n.MoveNext());
+				}
 			}
 		}
+		
 		
 		
 		private void DateTimeChildList (IDataNavigator nav)
@@ -135,7 +142,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			ric.Add(first);
 			ric.Add(last);
 			ric.Add(datetime);
-			
+			/*
 			nav.SwitchGroup();
 			do {
 				nav.FillChild(ric);
@@ -144,6 +151,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 				}
 			}
 			while ( nav.ChildMoveNext());
+			*/
 		}
 		
 		
@@ -156,6 +164,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			
 			ric.Add(first);
 			ric.Add(last);
+			/*
 			nav.SwitchGroup();
 			do {
 				nav.FillChild(ric);
@@ -164,6 +173,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 				}
 			}
 			while ( nav.ChildMoveNext());
+			*/
 		}
 		
 		#endregion

@@ -17,7 +17,7 @@ namespace ICSharpCode.Reports.Core
 	public class ChildNavigator:IDataNavigator
 	{
 		private IndexList indexList;
-		private IDataViewStrategy dataStore;
+		private IDataViewStrategy store;
 		private System.Collections.Generic.List<BaseComparer>.Enumerator ce;
 			
 		public ChildNavigator(IDataViewStrategy dataStore,IndexList indexList)
@@ -25,7 +25,7 @@ namespace ICSharpCode.Reports.Core
 			if (dataStore == null) {
 				throw new ArgumentNullException("dataStore");
 			}
-			this.dataStore = dataStore;
+			this.store = dataStore;
 			this.indexList = indexList;
 			ce = this.indexList.GetEnumerator();
 			ce.MoveNext();
@@ -42,9 +42,9 @@ namespace ICSharpCode.Reports.Core
 			get {
 				IndexList ind = BuildChildList();
 				return ((ind != null) && (ind.Count > 0));
-//				return false;
 			}
 		}
+		
 		
 		public int ChildListCount {
 			get {
@@ -58,17 +58,19 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
+		
 		public bool IsGrouped {
 			get {
 				throw new NotImplementedException();
 			}
 		}
 		
-		public int CurrentRow {
-			get {
-				throw new NotImplementedException();
-			}
+		
+		public int CurrentRow 
+		{
+			get {return this.indexList.CurrentPosition;}
 		}
+		
 		
 		public int Count {
 			get {
@@ -76,13 +78,14 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
+		
 		public object Current {
 			get {
-				TableStrategy t = this.dataStore as TableStrategy;
+				TableStrategy t = this.store as TableStrategy;
 				return t.myCurrent(ce.Current.ListIndex);
-//					return ci;
 			}
 		}
+		
 		
 		public AvailableFieldsCollection AvailableFields {
 			get {
@@ -90,13 +93,14 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
+		
 		public void Fill(ReportItemCollection collection)
 		{
-			TableStrategy tableStrategy =  dataStore as TableStrategy;
+			TableStrategy tableStrategy =  store as TableStrategy;
 			foreach (var item in collection) {
 				IDataItem dataItem = item as IDataItem;
 				if (dataItem != null) {
-					CurrentItemsCollection currentItemsCollection = tableStrategy.FillDataRow(ce.Current.ListIndex);
+					CurrentItemsCollection currentItemsCollection = tableStrategy.FillDataRow(this.indexList[CurrentRow].ListIndex);
 					CurrentItem s = currentItemsCollection.FirstOrDefault(x => x.ColumnName == dataItem.ColumnName);
 					dataItem.DBValue = s.Value.ToString();
 				}
@@ -106,18 +110,21 @@ namespace ICSharpCode.Reports.Core
 		
 		public bool MoveNext()
 		{
-			return this.ce.MoveNext();
+			this.indexList.CurrentPosition ++;
+			return this.indexList.CurrentPosition<this.indexList.Count;
 		}
 		
 		public void Reset()
 		{
-			throw new NotImplementedException();
+			this.indexList.CurrentPosition = -1;
 		}
 		
 		public CurrentItemsCollection GetDataRow()
 		{
-			throw new NotImplementedException();
+			var st= store as TableStrategy;
+			return st.FillDataRow(this.indexList[CurrentRow].ListIndex);
 		}
+		
 		
 		public IDataNavigator GetChildNavigator()
 		{
@@ -125,18 +132,9 @@ namespace ICSharpCode.Reports.Core
 			if ((i == null) || (i.Count == 0)) {
 				return null;
 			} 
-			return new ChildNavigator(this.dataStore,i);
+			return new ChildNavigator(this.store,i);
 		}
 		
-		public void SwitchGroup()
-		{
-			throw new NotImplementedException();
-		}
-		
-		public bool ChildMoveNext()
-		{
-			throw new NotImplementedException();
-		}
 		
 		public void FillChild(ReportItemCollection collection)
 		{
