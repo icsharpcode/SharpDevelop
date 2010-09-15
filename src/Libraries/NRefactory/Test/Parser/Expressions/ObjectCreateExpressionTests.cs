@@ -202,6 +202,19 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
+		public void VBNetAnonymousTypeWithoutProperty()
+		{
+			ObjectCreateExpression oce = ParseUtilVBNet.ParseExpression<ObjectCreateExpression>("New With { c }");
+			
+			Assert.IsTrue(oce.CreateType.IsNull);
+			Assert.AreEqual(0, oce.Parameters.Count);
+			Assert.AreEqual(1, oce.ObjectInitializer.CreateExpressions.Count);
+			
+			Assert.IsInstanceOf(typeof(IdentifierExpression), oce.ObjectInitializer.CreateExpressions[0]);
+			Assert.AreEqual("c", (oce.ObjectInitializer.CreateExpressions[0] as IdentifierExpression).Identifier);
+		}
+		
+		[Test]
 		public void VBNetSimpleObjectCreateExpressionTest()
 		{
 			CheckSimpleObjectCreateExpression(ParseUtilVBNet.ParseExpression<ObjectCreateExpression>("New MyObject(1, 2, 3)"));

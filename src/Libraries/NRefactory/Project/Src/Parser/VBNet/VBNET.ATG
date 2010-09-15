@@ -2112,6 +2112,7 @@ ObjectCreateExpression<out Expression oce>
 		(
 			(.
 				MemberInitializerExpression memberInitializer = null;
+				Expression anonymousMember = null;
 			.)
 			"With"
 			(.
@@ -2119,11 +2120,19 @@ ObjectCreateExpression<out Expression oce>
 				memberInitializers.StartLocation = la.Location;
 			.)
 			"{"
-				MemberInitializer<out memberInitializer>
-				(. memberInitializers.CreateExpressions.Add(memberInitializer); .)
-				{ ","
+				(
 					MemberInitializer<out memberInitializer>
-					(. memberInitializers.CreateExpressions.Add(memberInitializer); .)
+						(. memberInitializers.CreateExpressions.Add(memberInitializer); .)
+					| Expr<out anonymousMember>
+						(. memberInitializers.CreateExpressions.Add(anonymousMember); .)
+				)
+				{ ","
+					(
+						MemberInitializer<out memberInitializer>
+							(. memberInitializers.CreateExpressions.Add(memberInitializer); .)
+						| Expr<out anonymousMember>
+							(. memberInitializers.CreateExpressions.Add(anonymousMember); .)
+					)
 				}
 			"}"
 			(.
