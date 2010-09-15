@@ -1,4 +1,7 @@
-﻿#region Usings
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+#region Usings
 
 using System;
 using System.Linq;
@@ -35,7 +38,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
 
         private static EDM Read(XElement edmx, Action<XElement> readMoreAction)
         {
-            XElement edmxRuntime = edmx.Element(XName.Get("Runtime", "http://schemas.microsoft.com/ado/2007/06/edmx"));
+            XElement edmxRuntime = edmx.Element(XName.Get("Runtime", edmxNamespace.NamespaceName));
 
             SSDLContainer ssdlContainer = SSDLIO.ReadXElement(edmxRuntime);
             CSDLContainer csdlContainer = CSDLIO.ReadXElement(edmxRuntime);
@@ -59,6 +62,19 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
 
             readMoreAction(edmx);
             return edm;
+        }
+
+        public static XDocument WriteXDocument(XDocument ssdlXDocument, XDocument csdlXDocument, XDocument mslXDocument)
+        {
+            return new XDocument(new XDeclaration("1.0", "utf-8", null),
+                new XElement(edmxNamespace + "Edmx", new XAttribute("Version", "1.0"), new XAttribute(XNamespace.Xmlns + "edmx", edmxNamespace.NamespaceName),
+                    new XElement(edmxNamespace + "Runtime",
+                        new XElement(edmxNamespace + "StorageModels",
+                            ssdlXDocument.Root),
+                        new XElement(edmxNamespace + "ConceptualModels",
+                            csdlXDocument.Root),
+                        new XElement(edmxNamespace + "Mappings",
+                            mslXDocument.Root))));
         }
     }
 }

@@ -1,4 +1,7 @@
-﻿#region Usings
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+#region Usings
 
 using System;
 using System.Collections.Generic;
@@ -46,12 +49,12 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
             {
                 XElement entitySet = new XElement(ssdlNamespace + "EntitySet",
                     new XAttribute("Name", entityType.EntitySetName), new XAttribute("EntityType", string.Concat(entityContainerNamespace, entityType.Name)))
-                        .AddAttribute("Schema", entityType.Schema)
+                        .AddAttribute(entityType.StoreType == StoreType.Views ? null : new XAttribute("Schema", entityType.Schema))
                         .AddAttribute("Table", entityType.Table)
                         .AddAttribute(storeNamespace, "Name", entityType.StoreName)
                         .AddAttribute(storeNamespace, "Schema", entityType.StoreSchema)
                         .AddAttribute(storeNamespace, "Type", entityType.StoreType)
-                        .AddElement(string.IsNullOrEmpty(entityType.DefiningQuery) ? null : new XElement("DefiningQuery", entityType.DefiningQuery));
+                        .AddElement(string.IsNullOrEmpty(entityType.DefiningQuery) ? null : new XElement(ssdlNamespace + "DefiningQuery", entityType.DefiningQuery));
 
                 entityContainer.Add(entitySet);
             }
@@ -84,7 +87,9 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
 
                 foreach (Property property in entityType.Properties)
                 {
-                    if (property.IsKey)
+                    // If we have a table then we set a key element if the current property is a primary key or part of a composite key.
+                    // AND: If we have a view then we make a composite key of all non-nullable properties of the entity (VS2010 is also doing this).
+                    if ((entityType.StoreType == StoreType.Tables && property.IsKey) || (entityType.StoreType == StoreType.Views && property.Nullable == false))
                         keys.Add(new XElement(ssdlNamespace + "PropertyRef", new XAttribute("Name", property.Name)));
                 }
 

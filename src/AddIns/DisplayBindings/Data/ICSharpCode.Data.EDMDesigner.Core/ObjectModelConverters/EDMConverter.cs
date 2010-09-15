@@ -1,4 +1,7 @@
-﻿#region Usings
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+#region Usings
 
 using System;
 using System.Collections.Generic;
@@ -46,7 +49,6 @@ namespace ICSharpCode.Data.EDMDesigner.Core.ObjectModelConverters
             string filenameRump = Path.GetTempPath() + fileInfo.Name.Replace(fileInfo.Extension, string.Empty);
 
             string edmGenPath = RuntimeEnvironment.GetRuntimeDirectory() + "\\EdmGen.exe";
-            edmGenPath = @"C:\Windows\Microsoft.NET\Framework\v3.5\EdmGen.exe";
 
             Process process = new Process();
             ProcessStartInfo processStartInfo = new ProcessStartInfo();
@@ -65,26 +67,15 @@ namespace ICSharpCode.Data.EDMDesigner.Core.ObjectModelConverters
             
             if (process.ExitCode != 0)
             {
-            	throw new Exception("An error occured during generating the EDMX file.", new Exception(outputMessage));
+            	throw new ObjectModelConverterException(string.Format("An error occured during generating the EDMX file from \"{0}.ssdl\".", filenameRump), 
+                    outputMessage, ObjectModelConverterExceptionEnum.EDM);
             }
 
             XDocument csdlXDocument = XDocument.Load(filenameRump + ".csdl");
             XDocument mslXDocument = XDocument.Load(filenameRump + ".msl");
             mslXDocument = MSLIO.GenerateTypeMapping(mslXDocument);
 
-            XNamespace edmxNamespace = "http://schemas.microsoft.com/ado/2007/06/edmx";
-
-            XDocument edmXDocument = new XDocument(new XDeclaration("1.0", "utf-8", null),
-                new XElement(edmxNamespace + "Edmx", new XAttribute("Version", "1.0"), new XAttribute(XNamespace.Xmlns + "edmx", edmxNamespace.NamespaceName),
-                    new XElement(edmxNamespace + "Runtime",
-                        new XElement(edmxNamespace + "StorageModels",
-                            ssdlXDocument.Root),
-                        new XElement(edmxNamespace + "ConceptualModels",
-                            csdlXDocument.Root),
-                        new XElement(edmxNamespace + "Mappings",
-                            mslXDocument.Root))));
-
-            return edmXDocument;
+            return EDMXIO.WriteXDocument(ssdlXDocument, csdlXDocument, mslXDocument);
         }
 
         private static string GetTempFilename()

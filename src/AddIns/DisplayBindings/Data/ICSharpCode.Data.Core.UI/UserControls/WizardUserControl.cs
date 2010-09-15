@@ -1,4 +1,7 @@
-﻿#region Usings
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+#region Usings
 
 using System;
 using System.Collections.Generic;
@@ -60,6 +63,14 @@ namespace ICSharpCode.Data.Core.UI.UserControls
         }
 
         /// <summary>
+        /// Returns if this WizardUserControl is dependent of its predecessor user control.
+        /// </summary>
+        public virtual bool IsDependentOnPredecessor
+        {
+            get { return true; }
+        }
+
+        /// <summary>
         /// Returns if this WizardUserControl can finish the WizardWindow.
         /// </summary>
         public virtual bool CanFinish
@@ -107,6 +118,19 @@ namespace ICSharpCode.Data.Core.UI.UserControls
         #endregion
 
         #region Methods
+
+        internal void Activate(bool activatedFromPredecessor)
+        {
+            if (activatedFromPredecessor && IsDependentOnPredecessor)
+            {
+                OnActivateFromPredecessor();
+            }
+
+            OnActivate();
+        }
+
+        public virtual void OnActivateFromPredecessor()
+        { }
 
         public virtual void OnActivate()
         { }

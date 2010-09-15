@@ -1,4 +1,7 @@
-﻿#region Usings
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+#region Usings
 
 using System;
 using System.Linq;
@@ -13,14 +16,14 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
     {
         #region Namespace declarations
 
-        protected static XNamespace edmxNamespace = "http://schemas.microsoft.com/ado/2007/06/edmx";
-        protected static XNamespace ssdlNamespace = "http://schemas.microsoft.com/ado/2006/04/edm/ssdl";
+        protected static XNamespace edmxNamespace = "http://schemas.microsoft.com/ado/2008/10/edmx";
+        protected static XNamespace ssdlNamespace = "http://schemas.microsoft.com/ado/2009/02/edm/ssdl";
         protected static XNamespace storeNamespace = "http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator";
 
-        protected static XNamespace csdlNamespace = "http://schemas.microsoft.com/ado/2006/04/edm";
+        protected static XNamespace csdlNamespace = "http://schemas.microsoft.com/ado/2008/09/edm";
         protected static XNamespace csdlCodeGenerationNamespace = "http://schemas.microsoft.com/ado/2006/04/codegeneration";
 
-        protected static XNamespace mslNamespace = "urn:schemas-microsoft-com:windows:storage:mapping:CS";
+        protected static XNamespace mslNamespace = "http://schemas.microsoft.com/ado/2008/09/mapping/cs";
 
         #endregion
 

@@ -1,4 +1,7 @@
-﻿#region Usings
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+#region Usings
 
 using System;
 using System.Collections.Generic;
@@ -139,27 +142,11 @@ namespace ICSharpCode.Data.EDMDesigner.Core.Windows.EDMWizard
             Title = "Entity Framework Wizard";
             Width = 640;
             Height = 480;
+            WizardWindowInnards.WizardErrorUserControl = new EDMWizardErrorUserControl();            
             AddWizardUserControl<ChooseDatabaseConnectionUserControl>();
             AddWizardUserControl<ChooseDatabaseObjectsUserControl>();
 
             _file = file;
-        }
-
-        #endregion
-
-        #region Event handlers
-
-        private void btnNewConnection_Click(object sender, RoutedEventArgs e)
-        {
-            ConnectionWizardWindow connectionWizardWindow = new ConnectionWizardWindow();
-            connectionWizardWindow.Owner = this;
-            connectionWizardWindow.ShowDialog();
-
-            if (connectionWizardWindow.DialogResult.HasValue && connectionWizardWindow.DialogResult.Value)
-            {
-                _databases.Add(connectionWizardWindow.SelectedDatabase);
-                SelectedDatabase = connectionWizardWindow.SelectedDatabase;
-            }
         }
 
         #endregion

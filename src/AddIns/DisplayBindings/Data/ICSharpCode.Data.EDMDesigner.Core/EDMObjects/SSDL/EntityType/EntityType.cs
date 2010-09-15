@@ -1,4 +1,7 @@
-﻿#region Usings
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+#region Usings
 
 using System;
 using System.Collections.Generic;
@@ -43,7 +46,37 @@ namespace ICSharpCode.Data.EDMDesigner.Core.EDMObjects.SSDL.EntityType
 
         public string DefiningQuery
         {
-            get { return _definingQuery; }
+            get 
+            {
+                if (StoreType == null || StoreType == SSDL.EntityType.StoreType.Tables)
+                    return _definingQuery;
+                
+                if (string.IsNullOrEmpty(_definingQuery))
+                {
+                    string definingQuery = string.Empty;
+
+                    for (int i = 0; i < _properties.Count; i++)
+                    {
+                        if (string.IsNullOrEmpty(definingQuery))
+                            definingQuery += "SELECT \r";
+
+                        definingQuery += string.Format("[{0}].[{1}] AS [{1}]", _entitySetName, _properties[i].Name);
+
+                        if (i < _properties.Count - 1)
+                        {
+                            definingQuery += ", \r";
+                        }
+                        else
+                        {
+                            definingQuery += string.Format(" \rFROM [{0}].[{1}] AS [{1}]", Schema, _entitySetName);
+                        }
+                    }
+
+                    return definingQuery;
+                }
+
+                return _definingQuery; 
+            }
             set
             {
                 _definingQuery = value;

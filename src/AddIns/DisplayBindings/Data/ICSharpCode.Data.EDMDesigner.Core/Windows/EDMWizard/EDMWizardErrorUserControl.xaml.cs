@@ -19,47 +19,26 @@ using ICSharpCode.Data.Core.UI.UserControls;
 namespace ICSharpCode.Data.EDMDesigner.Core.Windows.EDMWizard
 {
     /// <summary>
-    /// Interaction logic for ChooseDatabaseObjectsUserControl.xaml
+    /// Interaction logic for EDMWizardErrorUserControl.xaml
     /// </summary>
-    public partial class ChooseDatabaseObjectsUserControl : WizardUserControl
+    public partial class EDMWizardErrorUserControl : WizardErrorUserControl
     {
-        public override int Index
-        {
-            get
-            {
-                return 1;
-            }
-        }
-
-        public override bool CanFinish
-        {
-            get
-            {
-                return true;
-            }
-        }
-
         public override string Title
         {
             get
             {
-                return "Choose database objects";
+                return "Error while generating Entity Model";
             }
         }
-        
-        public ChooseDatabaseObjectsUserControl()
+
+        public EDMWizardErrorUserControl()
         {
             InitializeComponent();
         }
 
-        public override void OnActivateFromPredecessor()
+        public override void OnActivate()
         {
-            EDMWizardWindow edmWizardWindow = WizardWindow as EDMWizardWindow;
-            if (edmWizardWindow.SelectedDatabase != null)
-            {
-                edmWizardWindow.SelectedDatabase.LoadDatabase();
-                IsReadyForNextStep = true;
-            }
+            
         }
     }
 }

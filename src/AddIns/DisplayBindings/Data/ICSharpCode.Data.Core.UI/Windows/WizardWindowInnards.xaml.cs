@@ -1,4 +1,7 @@
-﻿#region Usings
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+#region Usings
 
 using System;
 using System.Collections.Generic;
@@ -32,8 +35,10 @@ namespace ICSharpCode.Data.Core.UI.Windows
             DependencyProperty.Register("IsReadyForNextStep", typeof(bool), typeof(WizardWindowInnards), new FrameworkPropertyMetadata(false, IsReadyForNextStep_Changed)); 
         private WizardWindow _wizardWindow = null;
         private ObservableCollection<WizardUserControl> _wizardUserControls = new ObservableCollection<WizardUserControl>();
+        private WizardErrorUserControl _wizardErrorUserControl = null;
         private WizardUserControl _currentWizardUserControl = null;
         private int _currentIndex = 0;
+        private int _previousIndex = 0;
 
         #endregion
 
@@ -48,6 +53,15 @@ namespace ICSharpCode.Data.Core.UI.Windows
         }
 
         /// <summary>
+        /// Gets or sets the current WizardWindows' user control for displaying errors.
+        /// </summary>
+        public WizardErrorUserControl WizardErrorUserControl
+        {
+            get { return _wizardErrorUserControl; }
+            set { _wizardErrorUserControl = value; }
+        }
+
+        /// <summary>
         /// Returns the current WizardUserControls index of the WizardWindow.
         /// </summary>
         public int CurrentIndex
@@ -55,6 +69,7 @@ namespace ICSharpCode.Data.Core.UI.Windows
             get { return _currentIndex; }
             protected set
             {
+                _previousIndex = _currentIndex;
                 _currentIndex = value;
                 _currentWizardUserControl = null;
                 OnPropertyChanged("CurrentIndex");
@@ -73,10 +88,28 @@ namespace ICSharpCode.Data.Core.UI.Windows
                     return _currentWizardUserControl;
                 else
                 {
-                    _currentWizardUserControl = _wizardUserControls.FirstOrDefault(wuc => wuc.Index == _currentIndex);
-                    BindingBase binding = new Binding("IsReadyForNextStep") { Source = _currentWizardUserControl };
-                    SetBinding(WizardWindowInnards.IsReadyForNextStepProperty, binding);
-                    ToggleEnabledButtons();
+
+                    if (_currentIndex == -1)
+                    {
+                        _currentWizardUserControl = _wizardErrorUserControl;
+                    }
+                    else
+                    {
+                        _currentWizardUserControl = _wizardUserControls.FirstOrDefault(wuc => wuc.Index == _currentIndex);
+                        BindingBase binding = new Binding("IsReadyForNextStep") { Source = _currentWizardUserControl };
+                        SetBinding(WizardWindowInnards.IsReadyForNextStepProperty, binding);
+                    }
+
+                    if (_currentWizardUserControl != null)
+                    {
+                        if (_currentIndex != -1 && _currentIndex - 1 == _previousIndex)
+                            _currentWizardUserControl.Activate(true);
+                        else
+                            _currentWizardUserControl.Activate(false);
+
+                        ToggleEnabledButtons();
+                    }
+
                     return _currentWizardUserControl;
                 }
             }
@@ -106,7 +139,7 @@ namespace ICSharpCode.Data.Core.UI.Windows
             if (!IsInitialized)
                 return;
             
-            if (CurrentIndex == 0)
+            if (_currentIndex == 0)
             {
                 btnPrevious.IsEnabled = false;
             }
@@ -115,7 +148,7 @@ namespace ICSharpCode.Data.Core.UI.Windows
                 btnPrevious.IsEnabled = true;
             }
 
-            if (CurrentIndex == _wizardUserControls.Count - 1)
+            if (_currentIndex == -1 || _currentIndex == _wizardUserControls.Count - 1)
             {
                 btnNext.IsEnabled = false;
             }
@@ -134,8 +167,6 @@ namespace ICSharpCode.Data.Core.UI.Windows
             }
             else
                 btnFinish.IsEnabled = false;
-
-            CurrentWizardUserControl.OnActivate();
         }
 
         #endregion
@@ -157,6 +188,10 @@ namespace ICSharpCode.Data.Core.UI.Windows
         {
             if (CurrentIndex == 0)
                 return;
+            else if (CurrentIndex == -1)
+            {
+                CurrentIndex = _wizardErrorUserControl.PreviousIndex;
+            }
             else
             {
                 CurrentIndex--;
@@ -175,7 +210,25 @@ namespace ICSharpCode.Data.Core.UI.Windows
 
         private void btnFinish_Click(object sender, RoutedEventArgs e)
         {
-            _wizardWindow.OnFinished();
+            try
+            {
+                _wizardWindow.OnFinished();
+            }
+            catch (Exception ex)
+            {
+                if (_wizardErrorUserControl != null)
+                {
+                    _wizardErrorUserControl.Exception = ex;
+                    _wizardErrorUserControl.PreviousIndex = _currentIndex;
+                    CurrentIndex = -1;
+
+                    return;
+                }
+                else
+                {
+                    throw ex;
+                }                    
+            }
             
             _wizardWindow.DialogResult = true;
             _wizardWindow.Close();

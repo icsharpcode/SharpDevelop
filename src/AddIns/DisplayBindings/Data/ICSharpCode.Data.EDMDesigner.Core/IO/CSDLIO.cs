@@ -1,4 +1,7 @@
-﻿#region Usings
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+#region Usings
 
 using System;
 using System.Linq;
@@ -124,6 +127,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
             ReadCSDLType(schemaElement, entityTypeElement, container, (TypeBase)entityType);
             return entityType;
         }
+
         private static void ReadCSDLType(XElement schemaElement, XElement entityTypeElement, CSDLContainer container, TypeBase baseType)
         {
             if (baseType.Name == null)

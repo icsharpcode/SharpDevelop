@@ -165,6 +165,7 @@
     <Compile Include="EDMObjects\SSDL\Property\Property.cs" />
     <Compile Include="EDMObjects\SSDL\Property\StoreGeneratedPattern.cs" />
     <Compile Include="EDMObjects\SSDL\SSDLContainer.cs" />
+    <Compile Include="ObjectModelConverters\ObjectModelConverterException.cs" />
     <Compile Include="ObjectModelConverters\SSDLConverter.cs" />
     <Compile Include="ObjectModelConverters\EDMConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -175,6 +176,9 @@
       <DependentUpon>ChooseDatabaseObjectsUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\EDMWizard\EDMWizardWindow.cs" />
+    <Compile Include="Windows\EDMWizard\EDMWizardErrorUserControl.xaml.cs">
+      <DependentUpon>EDMWizardErrorUserControl.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Windows\EDMWizard\ChooseDatabaseConnectionUserControl.xaml">
@@ -184,6 +188,10 @@
     <Page Include="Windows\EDMWizard\ChooseDatabaseObjectsUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\EDMWizard\EDMWizardErrorUserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

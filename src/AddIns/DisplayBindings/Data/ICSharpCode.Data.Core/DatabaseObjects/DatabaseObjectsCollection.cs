@@ -1,4 +1,7 @@
-﻿#region Usings
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+#region Usings
 
 using System;
 using System.Collections.Generic;
@@ -28,6 +31,22 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
                 List<IDatabaseObjectBase> items = new List<IDatabaseObjectBase>();
                 items.AddRange(this.Cast<IDatabaseObjectBase>());
                 return items;
+            }
+        }
+
+        public int SelectedItemsCount
+        {
+            get 
+            {
+                int selectedItemsCount = 0;
+
+                foreach (T item in this)
+                {
+                    if (item.IsSelected)
+                        selectedItemsCount++;
+                }
+
+                return selectedItemsCount;
             }
         }
 

@@ -1,0 +1,14 @@
+﻿<data:WizardErrorUserControl x:Class="ICSharpCode.Data.EDMDesigner.Core.Windows.EDMWizard.EDMWizardErrorUserControl" x:Name="This"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:data="http://icsharpcode.net/data">
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        
+        <TextBlock Margin="3">The following error(s) occured during generation of the Entity Data Model:</TextBlock>
+        <TextBox Grid.Row="1" Margin="3" Text="{Binding Path=Exception.FullMessage, ElementName=This, Mode=OneWay}" IsReadOnly="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
+    </Grid>
+</data:WizardErrorUserControl>

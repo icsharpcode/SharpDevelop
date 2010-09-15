@@ -1,4 +1,7 @@
-﻿#region Usings
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
+#region Usings
 
 using System;
 using System.Collections.Generic;
@@ -14,11 +17,22 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
     {
         #region Fields
 
+        private string _query = string.Empty;
         private string _definingQuery = string.Empty;
 
         #endregion
 
         #region Properties
+
+        public string Query
+        {
+            get { return _query; }
+            set
+            {
+                _query = value;
+                OnPropertyChanged("Query");
+            }
+        }
 
         public string DefiningQuery
         {
