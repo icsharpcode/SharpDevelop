@@ -82,6 +82,7 @@
     <Compile Include="Src\AvalonEditViewContent.cs" />
     <Compile Include="Src\BracketHighlightRenderer.cs" />
     <Compile Include="Src\CaretReferencesRenderer.cs" />
+    <Compile Include="Src\ChangeMarkerMargin.cs" />
     <Compile Include="Src\ChooseEncodingDialog.xaml.cs">
       <DependentUpon>ChooseEncodingDialog.xaml</DependentUpon>
       <SubType>Code</SubType>
