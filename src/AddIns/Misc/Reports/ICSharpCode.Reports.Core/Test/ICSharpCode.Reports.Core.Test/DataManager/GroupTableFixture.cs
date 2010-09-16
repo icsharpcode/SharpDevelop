@@ -56,14 +56,38 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		public void Can_Read_Child_Count ()
 		{
 			var dataNav = PrepareStringGrouping();
-			while (dataNav.MoveNext()) 
+			while (dataNav.MoveNext())
 			{
-				Assert.That(dataNav.ChildListCount,Is.GreaterThan(0));
+				if (dataNav.HasChildren)
+				{
+					var childNavigator = dataNav.GetChildNavigator();
+					Assert.That(childNavigator.Count,Is.GreaterThan(0));
+				}
+			}
+		}
+			
+		
+		[Test]
+		public void Can_FillChild()
+		{
+			var dataNav = PrepareStringGrouping();
+			while (dataNav.MoveNext()) {
+				if (dataNav.HasChildren)
+				{
+					var childNavigator = dataNav.GetChildNavigator();
+					do
+					{
+						Assert.That(dataNav.HasChildren,Is.True);
+						DataRow r = dataNav.Current as DataRow;
+						string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString();
+						Console.WriteLine(v2);
+					}
+					while (childNavigator.MoveNext());
+				}
 			}
 		}
 		
 		#endregion
-		
 		
 		#region GroupbyDataTime
 		
@@ -71,17 +95,19 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		public void DateTimeCan_FillChild()
 		{
 			var dataNav = PrepareDateTimeGrouping();
-			
-			Console.WriteLine("start datetime");
 			while (dataNav.MoveNext()) {
-				if (dataNav.HasChildren) {
-					Assert.That(dataNav.HasChildren,Is.True);
-					DataRow r = dataNav.Current as DataRow;
-					string v2 = r["last"].ToString() + " GroupVal :" +  r[5].ToString();
-					Console.WriteLine(v2);
-					DateTimeChildList(dataNav);
+				if (dataNav.HasChildren)
+				{
+					var childNavigator = dataNav.GetChildNavigator();
+					do
+					{
+						Assert.That(dataNav.HasChildren,Is.True);
+						DataRow r = dataNav.Current as DataRow;
+						string v2 = r["last"].ToString() + " GroupVal :" +  r[5].ToString();
+						Console.WriteLine(v2);
+					}
+					while (childNavigator.MoveNext());
 				}
-				
 			}
 		}
 		
@@ -102,100 +128,14 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 				Assert.That(dataNav.HasChildren,Is.True);
 			}
 		}
-		#endregion
 		
-		
-		
-		#region Read-Fill Child List
-		
-		[Test]
-		public void Can_FillChild()
-		{
-			var dataNav = PrepareStringGrouping();
-			while (dataNav.MoveNext()) {
-				
-				if (dataNav.HasChildren)
-				{
-					var n = dataNav.GetChildNavigator();
-					do
-					{
-						Assert.That(dataNav.HasChildren,Is.True);
-						DataRow r = dataNav.Current as DataRow;
-						string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString();
-						Console.WriteLine(v2);
-					}
-					while (n.MoveNext());
-				}
-			}
-		}
-		
-		
-		
-		private void DateTimeChildList (IDataNavigator nav)
-		{
-			BaseDataItem first= new BaseDataItem("First");
-			BaseDataItem last  = new BaseDataItem("Last");
-			BaseDataItem datetime = new BaseDataItem("RandomDate");
-			
-			ReportItemCollection ric = new ReportItemCollection();
-			
-			ric.Add(first);
-			ric.Add(last);
-			ric.Add(datetime);
-			/*
-			nav.SwitchGroup();
-			do {
-				nav.FillChild(ric);
-				foreach (BaseDataItem element in ric) {
-					Console.WriteLine("\t{0} - {1} ",element.ColumnName,element.DBValue);
-				}
-			}
-			while ( nav.ChildMoveNext());
-			*/
-		}
-		
-		
-		private void FillChildList (IDataNavigator nav)
-		{
-			BaseDataItem first= new BaseDataItem("First");
-			BaseDataItem last  = new BaseDataItem("Last");
-			
-			ReportItemCollection ric = new ReportItemCollection();
-			
-			ric.Add(first);
-			ric.Add(last);
-			/*
-			nav.SwitchGroup();
-			do {
-				nav.FillChild(ric);
-				foreach (BaseDataItem element in ric) {
-					Console.WriteLine("\t{0} - {1} ",element.ColumnName,element.DBValue);
-				}
-			}
-			while ( nav.ChildMoveNext());
-			*/
-		}
 		
 		#endregion
 		
+	
 		
 		#region Try make recursive with ChildNavigator
-		/*
-		public void Can_FillChild()
-		{
-			var dataNav = PrepareStringGrouping();
-			while (dataNav.MoveNext()) {
-				if (dataNav.HasChildren) {
-					Assert.That(dataNav.HasChildren,Is.True);
-					DataRow r = dataNav.Current as DataRow;
-					string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString();
-					Console.WriteLine(v2);
-					FillChildList(dataNav);
-				}
-				
-			}
-		}
-		*/
+	
 		
 		[Test]
 		public void Can_Get_ChildNavigator ()
@@ -212,25 +152,14 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 					string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString() ;
 					Console.WriteLine(v2);
 					Assert.That (child,Is.Not.Null);
-					reccall(child);
+					RecursiveCall(child);
 				}
 			}
-			Console.WriteLine("End Recusive Version");
 		}
 		
 		
-		[Test]
-		public void RecursiveCall_Childs ()
-		{
-			var dataNav = PrepareStringGrouping();
-			dataNav.MoveNext();
-			Console.WriteLine("--------------start rec ------------");
-			reccall (dataNav);
-			Console.WriteLine("--------------end rec ------------");
-		}
 		
-		
-		private void reccall (IDataNavigator startNavigator)
+		private void RecursiveCall (IDataNavigator startNavigator)
 		{
 			do
 			{
@@ -240,37 +169,12 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 				if (startNavigator.HasChildren) {
 					IDataNavigator child = startNavigator.GetChildNavigator();
 					Console.WriteLine("header {0} - Child_Count:{1}",v1,child.Count);
-					reccall (child);
+					RecursiveCall (child);
 				}
 				
 			} while (startNavigator.MoveNext());
 		}
 	
-		
-		
-		private void reccall_1 (IDataNavigator startNavigator)
-		{
-			Console.WriteLine("start rec ");
-			do
-			{
-				DataRow r = startNavigator.Current as DataRow;
-				string v1 = r["last"].ToString() + " :" +  r[3].ToString();
-				Console.WriteLine(v1);
-				if (startNavigator.HasChildren) {
-					IDataNavigator child = startNavigator.GetChildNavigator();
-					
-					if (child.HasChildren) {
-						do {
-							Console.WriteLine ("children");
-							//reccall (child);
-						}
-						while (child.MoveNext()) ;
-					}
-				}
-			} while (startNavigator.MoveNext());
-			
-		}
-		
 		
 		#endregion
 		

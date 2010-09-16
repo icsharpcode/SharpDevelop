@@ -55,14 +55,80 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		public void Can_Read_Child_Count ()
 		{
 			var dataNav = PrepareStringGrouping();
-			while (dataNav.MoveNext()) 
+			while (dataNav.MoveNext())
 			{
-				Assert.That(dataNav.ChildListCount,Is.GreaterThan(0));
+				if (dataNav.HasChildren)
+				{
+					var childNavigator = dataNav.GetChildNavigator();
+					Assert.That(childNavigator.Count,Is.GreaterThan(0));
+				}
+			}
+		}
+		
+		
+		[Test]
+		public void Can_FillChild()
+		{
+			var dataNav = PrepareStringGrouping();
+			while (dataNav.MoveNext()) {
+				if (dataNav.HasChildren)
+				{
+					var childNavigator = dataNav.GetChildNavigator();
+					do
+					{
+						Assert.That(dataNav.HasChildren,Is.True);
+						
+						// we know that current is a 'contributor'
+						Contributor c = dataNav.Current as Contributor;
+						string v2 = c.Last + " GroupVal :" +  c.GroupItem;
+						Console.WriteLine(v2);
+					}
+					while (childNavigator.MoveNext());
+				}
 			}
 		}
 		
 		
 		#endregion
+		
+		#region GroupbyDataTime
+		
+		[Test]
+		public void DateTimeCan_FillChild()
+		{
+			var dataNav = PrepareDateTimeGrouping();
+			
+			Console.WriteLine("start datetime");
+			while (dataNav.MoveNext()) {
+				if (dataNav.HasChildren) {
+					var childNavigator = dataNav.GetChildNavigator();
+					do
+					{
+						
+						Assert.That(dataNav.HasChildren,Is.True);
+						// we know that current is a 'contributor'
+						Contributor c = dataNav.Current as Contributor;
+						string v2 = c.Last + " GroupVal :" +  c.RandomDate;
+						Console.WriteLine(v2);
+					}
+					while (childNavigator.MoveNext());
+				}
+				
+			}
+		}
+		
+		#endregion
+		
+		private IDataNavigator PrepareDateTimeGrouping ()
+		{
+			Console.WriteLine("PrepareDateTimeGrouping ()");
+			
+			GroupColumn gc = new GroupColumn("RandomDate",1,ListSortDirection.Ascending);
+			ReportSettings rs = new ReportSettings();
+			rs.GroupColumnsCollection.Add(gc);
+			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,rs);
+			return dm.GetNavigator;
+		}
 		
 		
 		private IDataNavigator PrepareStringGrouping ()

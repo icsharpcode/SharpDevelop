@@ -114,13 +114,15 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 	
-		
+		/*
 		public int ChildListCount
 		{
 			get {
 				return BuildChildList().Count;
 			}
 		}
+		*/
+		
 		
 		// at the moment only tables are working
 		

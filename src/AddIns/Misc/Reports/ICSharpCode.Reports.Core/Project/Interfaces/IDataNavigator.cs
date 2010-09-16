@@ -33,7 +33,7 @@ using System.ComponentModel;
  		bool HasChildren {get;}
  		
  		
- 		int ChildListCount {get;}
+// 		int ChildListCount {get;}
  		
  		void FillChild (ReportItemCollection collection);
  		

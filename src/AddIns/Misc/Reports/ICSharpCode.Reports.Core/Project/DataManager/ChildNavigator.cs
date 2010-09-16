@@ -46,12 +46,13 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
+		/*
 		public int ChildListCount {
 			get {
 				throw new NotImplementedException();
 			}
 		}
-		
+		*/
 		public bool IsSorted {
 			get {
 				throw new NotImplementedException();
