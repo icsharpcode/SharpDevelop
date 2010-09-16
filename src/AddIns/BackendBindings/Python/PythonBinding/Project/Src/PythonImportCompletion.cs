@@ -12,6 +12,8 @@ namespace ICSharpCode.PythonBinding
 {
 	public class PythonImportCompletion
 	{
+		public static readonly NamespaceEntry ImportAll = new NamespaceEntry("*");
+		
 		IProjectContent projectContent;
 		static readonly PythonStandardModules standardPythonModules = new PythonStandardModules();
 
@@ -42,11 +44,21 @@ namespace ICSharpCode.PythonBinding
 		
 		public List<ICompletionEntry> GetCompletionItemsFromModule(string module)
 		{
+			List<ICompletionEntry> items = GetCompletionItemsFromStandardPythonModules(module);
+			if (items == null) {
+				items = projectContent.GetNamespaceContents(module);
+			}
+			items.Add(ImportAll);
+			return items;
+		}
+		
+		List<ICompletionEntry> GetCompletionItemsFromStandardPythonModules(string module)
+		{
 			PythonStandardModuleType type = standardPythonModules.GetModuleType(module);
 			if (type != null) {
 				return GetCompletionItemsFromModule(type);
 			}
-			return projectContent.GetNamespaceContents(module);
+			return null;
 		}
 		
 		List<ICompletionEntry> GetCompletionItemsFromModule(PythonStandardModuleType type)

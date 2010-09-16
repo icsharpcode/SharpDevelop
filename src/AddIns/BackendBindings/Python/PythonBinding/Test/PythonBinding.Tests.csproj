@@ -80,11 +80,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Completion\CodeCompletionBindingFromImportCompletionTestFixture.cs" />
-    <Compile Include="Completion\CodeCompletionBindingImportCompletionTestFixture.cs" />
+    <Compile Include="Completion\CodeCompletionBindingFromImportCompletionTests.cs" />
+    <Compile Include="Completion\CodeCompletionBindingImportCompletionTests.cs" />
     <Compile Include="Completion\FromDateTimeImportCompletionTestFixture.cs" />
-    <Compile Include="Completion\FromImportDotNetNamespaceCompletionTestFixture.cs" />
-    <Compile Include="Completion\FromImportPythonModuleCompletionTestFixture.cs" />
+    <Compile Include="Completion\FromImportDotNetNamespaceCompletionTests.cs" />
+    <Compile Include="Completion\FromImportPythonModuleCompletionTests.cs" />
     <Compile Include="Completion\FromMathLibraryImportCompletionTestFixture.cs" />
     <Compile Include="Completion\FromMathLibraryImportCosMethodCompletionTestFixture.cs" />
     <Compile Include="Completion\FromSysLibraryImportCompletionItemsTestFixture.cs" />
@@ -97,7 +97,9 @@
     <Compile Include="Completion\ImportSubNamespaceCompletionTestFixture.cs" />
     <Compile Include="Completion\MathModuleMembersInPythonContextTestFixture.cs" />
     <Compile Include="Completion\NamespaceContentsAddedToCtrlSpaceTestFixture.cs" />
-    <Compile Include="Completion\PythonImportExpressionContextTestFixture.cs" />
+    <Compile Include="Completion\PythonCodeCompletionItemProviderTests.cs" />
+    <Compile Include="Completion\PythonCompletionItemListTests.cs" />
+    <Compile Include="Completion\PythonImportExpressionContextTests.cs" />
     <Compile Include="Completion\PythonSocketLibraryDocumentationTestFixture.cs" />
     <Compile Include="Completion\SysModuleMembersInPythonContextTestFixture.cs" />
     <Compile Include="Configuration\AddInOptionsTestFixture.cs" />
@@ -405,10 +407,10 @@
     <Compile Include="Utils\DerivedApplicationSettingsPanel.cs" />
     <Compile Include="Utils\DerivedCompilingOptionsPanel.cs" />
     <Compile Include="Utils\DerivedConvertProjectToPythonProjectCommand.cs" />
-    <Compile Include="Utils\DerivedPythonCodeCompletionBinding.cs" />
     <Compile Include="Utils\DerivedPythonConsoleHost.cs" />
     <Compile Include="Utils\DerivedPythonDesignerGenerator.cs" />
     <Compile Include="Utils\DerivedPythonFormsDesignerDisplayBinding.cs" />
+    <Compile Include="Utils\FakeCompletionItemProvider.cs" />
     <Compile Include="Utils\PythonCodeDomSerializerHelper.cs" />
     <Compile Include="Utils\PythonComponentWalkerHelper.cs" />
     <Compile Include="Utils\PythonMSBuildEngineHelper.cs" />
@@ -420,6 +422,8 @@
     <Compile Include="Utils\PythonBindingAddInFile.cs" />
     <Compile Include="Utils\PythonCompletionItemsHelper.cs" />
     <Compile Include="Utils\PythonParserHelper.cs" />
+    <Compile Include="Utils\TestablePythonCodeCompletionBinding.cs" />
+    <Compile Include="Utils\TestablePythonCodeCompletionItemProvider.cs" />
     <Compile Include="Utils\Tests\PythonCompletionItemsHelperTests.cs" />
     <Compile Include="Utils\Tests\PythonParserHelperTests.cs" />
     <EmbeddedResource Include="Designer\App.ico" />

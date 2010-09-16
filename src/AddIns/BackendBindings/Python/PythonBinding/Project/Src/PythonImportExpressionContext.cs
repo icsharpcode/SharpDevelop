@@ -31,8 +31,15 @@ namespace ICSharpCode.PythonBinding
 				return true;
 			} else if (entry is IClass) {
 				return true;
+			} else if (entry is NamespaceEntry) {
+				return IsImportAll(entry);
 			}
 			return false;
+		}
+		
+		bool IsImportAll(ICompletionEntry entry)
+		{
+			return PythonImportCompletion.ImportAll.Equals(entry);
 		}
 	}
 }

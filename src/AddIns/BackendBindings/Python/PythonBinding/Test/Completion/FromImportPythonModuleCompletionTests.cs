@@ -12,7 +12,7 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Completion
 {
 	[TestFixture]
-	public class FromImportPythonModuleCompletionTestFixture
+	public class FromImportPythonModuleCompletionTests
 	{
 		PythonImportCompletion completion;
 		MockProjectContent projectContent;
@@ -26,18 +26,30 @@ namespace PythonBinding.Tests.Completion
 		}
 		
 		[Test]
-		public void FromUnknownLibraryNoCompletionItemsReturned()
+		public void GetCompletionItemsFromModule_UnknownModule_OnlyImportAllItemsCompletionItemReturned()
 		{
 			List<ICompletionEntry> items = completion.GetCompletionItemsFromModule("unknown");
-			Assert.AreEqual(0, items.Count);
+			List<ICompletionEntry> expectedItems = new List<ICompletionEntry>();
+			expectedItems.Add(new NamespaceEntry("*"));
+			Assert.AreEqual(expectedItems, items);
 		}
 		
 		[Test]
-		public void FromMathLibraryGetCompletionItemsReturnsPiField()
+		public void GetCompletionItemsFromModule_MathModule_ReturnsPiField()
 		{
 			List<ICompletionEntry> items = completion.GetCompletionItemsFromModule("math");
 			IField field = PythonCompletionItemsHelper.FindFieldFromCollection("pi", items);
 			Assert.IsNotNull(field);
+		}
+		
+		[Test]
+		public void GetCompletionItemsFromModule_MathModule_LastCompletionItemIsAsterisk()
+		{
+			List<ICompletionEntry> items = completion.GetCompletionItemsFromModule("math");
+			int lastItem = items.Count - 1;			
+			ICompletionEntry lastCompletionItem = items[lastItem];
+			NamespaceEntry expectedCompletionItem = new NamespaceEntry("*");
+			Assert.AreEqual(expectedCompletionItem, lastCompletionItem);
 		}
 	}
 }

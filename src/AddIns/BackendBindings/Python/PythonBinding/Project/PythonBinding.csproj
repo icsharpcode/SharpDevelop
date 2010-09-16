@@ -92,6 +92,8 @@
     <Compile Include="Src\MemberName.cs" />
     <Compile Include="Src\PythonBuiltInModuleMemberName.cs" />
     <Compile Include="Src\PythonClassResolver.cs" />
+    <Compile Include="Src\PythonCodeCompletionItemProvider.cs" />
+    <Compile Include="Src\PythonCompletionItemList.cs" />
     <Compile Include="Src\PythonConsoleApplication.cs" />
     <Compile Include="Src\PythonDotNetMethodResolver.cs" />
     <Compile Include="Src\PythonFromImport.cs" />

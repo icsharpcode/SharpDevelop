@@ -12,7 +12,7 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Completion
 {
 	[TestFixture]
-	public class FromImportDotNetNamespaceCompletionTestFixture
+	public class FromImportDotNetNamespaceCompletionTes
 	{
 		PythonImportCompletion completion;
 		MockProjectContent projectContent;
@@ -33,20 +33,22 @@ namespace PythonBinding.Tests.Completion
 		}
 
 		[Test]
-		public void FromDotNetSystemLibraryGetCompletionItemsReturnsAllClassesFromSystemNamespace()
+		public void GetCompletionItemsFromModule_DotNetSystemLibrary_ReturnsAllClassesFromSystemNamespaceAndAsteriskForImportAll()
 		{
 			List<ICompletionEntry> items = completion.GetCompletionItemsFromModule("System");
 			List<ICompletionEntry> expectedItems = new List<ICompletionEntry>();
 			expectedItems.Add(c);
+			expectedItems.Add(new NamespaceEntry("*"));
 			
 			Assert.AreEqual(expectedItems, items);
 		}
 		
 		[Test]
-		public void SystemNamespaceSearchedForWhenGetCompletionItemsMethodCalled()
+		public void GetCompletionItems_DotNetSystemLibrary_SystemNamespaceSearchedForWhenGetCompletionItemsMethodCalled()
 		{
 			completion.GetCompletionItemsFromModule("System");
-			Assert.AreEqual("System", projectContent.NamespacePassedToGetNamespaceContentsMethod);
+			string expectedNamespace = "System";
+			Assert.AreEqual(expectedNamespace, projectContent.NamespacePassedToGetNamespaceContentsMethod);
 		}
 	}
 }

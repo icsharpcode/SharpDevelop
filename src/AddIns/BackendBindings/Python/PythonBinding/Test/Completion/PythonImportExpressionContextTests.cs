@@ -11,17 +11,18 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Completion
 {
 	[TestFixture]
-	public class PythonImportExpressionContextTestFixture
+	public class PythonImportExpressionContextTests
 	{
 		[Test]
-		public void ShowEntryReturnsTrueForIMethod()
+		public void ShowEntry_IMethodPassed_ReturnsTrue()
 		{
 			PythonImportExpressionContext context = new PythonImportExpressionContext();
 			context.HasFromAndImport = true;
 			
 			IMethod method = CreateMethod();
+			bool result = context.ShowEntry(method);
 			
-			Assert.IsTrue(context.ShowEntry(method));
+			Assert.IsTrue(result);
 		}
 		
 		IMethod CreateMethod()
@@ -37,36 +38,40 @@ namespace PythonBinding.Tests.Completion
 		}
 		
 		[Test]
-		public void ShowEntryReturnsFalseForNull()
+		public void ShowEntry_PassedNull_ReturnsFalse()
 		{
 			PythonImportExpressionContext context = new PythonImportExpressionContext();
 			context.HasFromAndImport = true;
-			Assert.IsFalse(context.ShowEntry(null));
+			bool result = context.ShowEntry(null);
+			Assert.IsFalse(result);
 		}
 		
 		[Test]
-		public void ShowEntryReturnsFalseForIMethodWhenHasFromAndImportIsFalse()
+		public void ShowEntry_PassedIMethodWhenHasFromAndImportIsFalse_ReturnsFalse()
 		{
 			PythonImportExpressionContext context = new PythonImportExpressionContext();
 			IMethod method = CreateMethod();
-			Assert.IsFalse(context.ShowEntry(method));
+			bool result = context.ShowEntry(method);
+			Assert.IsFalse(result);
 		}
 		
 		[Test]
-		public void PythonImportExpressionContextHasFromAndImportIsFalseByDefault()
+		public void HasFromAndImport_NewPythonImportExpressionContextInstance_IsFalseByDefault()
 		{
 			PythonImportExpressionContext context = new PythonImportExpressionContext();
-			Assert.IsFalse(context.HasFromAndImport);
+			bool result = context.HasFromAndImport;
+			Assert.IsFalse(result);
 		}
 		
 		[Test]
-		public void ShowEntryReturnsTrueForIField()
+		public void ShowEntry_PassedIField_ReturnsTrue()
 		{
 			PythonImportExpressionContext context = new PythonImportExpressionContext();
 			context.HasFromAndImport = true;
 			IField field = CreateField();
+			bool result = context.ShowEntry(field);
 			
-			Assert.IsTrue(context.ShowEntry(field));
+			Assert.IsTrue(result);
 		}
 		
 		IField CreateField()
@@ -76,31 +81,45 @@ namespace PythonBinding.Tests.Completion
 		}
 
 		[Test]
-		public void ShowEntryReturnsFalseForIFieldWhenHasFromAndImportIsFalse()
+		public void ShowEntry_PassedIFieldWhenHasFromAndImportIsFalse_ReturnsFalse()
 		{
 			PythonImportExpressionContext context = new PythonImportExpressionContext();	
 			IField field = CreateField();
+			bool result = context.ShowEntry(field);
 			
-			Assert.IsFalse(context.ShowEntry(field));
+			Assert.IsFalse(result);
 		}
 		
 		[Test]
-		public void ShowEntryReturnsTrueForIClass()
+		public void ShowEntry_PassedIClass_ReturnsTrue()
 		{
 			PythonImportExpressionContext context = new PythonImportExpressionContext();	
 			context.HasFromAndImport = true;
 			IClass c = CreateClass();
+			bool result = context.ShowEntry(c);
 			
-			Assert.IsTrue(context.ShowEntry(c));
+			Assert.IsTrue(result);
 		}
 		
 		[Test]
-		public void ShowEntryReturnsFalseForIClassWhenHasFromAndImportIsFalse()
+		public void ShowEntry_PassedIClassWhenHasFromAndImportIsFalse_ReturnsFalse()
 		{
 			PythonImportExpressionContext context = new PythonImportExpressionContext();	
 			IClass c = CreateClass();
+			bool result = context.ShowEntry(c);
 			
-			Assert.IsFalse(context.ShowEntry(c));
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void ShowEntry_PassedImportAllNamespaceEntryWhenHasFromAndImportIsTrue_ReturnsTrue()
+		{
+			PythonImportExpressionContext context = new PythonImportExpressionContext();
+			context.HasFromAndImport = true;
+			NamespaceEntry entry = new NamespaceEntry("*");
+			bool result = context.ShowEntry(entry);
+			
+			Assert.IsTrue(result);
 		}
 	}
 }
