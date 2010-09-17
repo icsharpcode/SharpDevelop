@@ -273,8 +273,6 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                             }
 
                             role.Properties = properties;
-
-                            //role.Properties = role.Type.Properties.Where(p => p.Name == principalElement.Element(XName.Get("PropertyRef", ssdlNamespace.NamespaceName)).Attribute("Name").Value).ToEventedObservableCollection();
                         }
                         else
                         {
@@ -294,8 +292,6 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                             }
 
                             role.Properties = properties;
-
-                            //role.Properties = role.Type.Properties.Where(p => p.Name == referentialConstraintElement.Element(XName.Get("Dependent", ssdlNamespace.NamespaceName)).Element(XName.Get("PropertyRef", ssdlNamespace.NamespaceName)).Attribute("Name").Value).ToEventedObservableCollection();
                         }
                     }
                     if (isPrincipal)

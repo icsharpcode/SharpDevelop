@@ -115,7 +115,9 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
             EntityTypeDesigner.Init = true;
 
             if (edmxElement == null || edmxElement.Element("DesignerViews") == null)
-                edmxElement = new XElement("Designer", DesignerIO.GenerateNewDesignerViewsFromCSDLView(_edmView.CSDL));
+            {
+                edmxElement = new XElement("Designer", DesignerIO.GenerateNewDesignerViewsFromCSDLView(_edmView));
+            }
  
             if (edmxElement != null && edmxElement.Element("DesignerViews") != null)
                 DesignerIO.Read(_edmView, edmxElement.Element("DesignerViews"), entityType => new EntityTypeDesigner(entityType), complexType => new ComplexTypeDesigner(complexType));
@@ -135,7 +137,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 		
 		public override void Save(OpenedFile file, Stream stream)
 		{
-            EDMXIO.WriteXDocument(_edmView.EDM).Save(stream);
+            EDMXIO.WriteXDocument(_edmView).Save(stream);
 		}
 		
 		private EDMWizardWindow RunWizard(OpenedFile file)

@@ -10,6 +10,7 @@ using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL.Type;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.Common;
+using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Common;
 
 #endregion
 
@@ -86,49 +87,88 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
             return designerView;
         }
 
-        public static XElement GenerateNewDesignerViewsFromCSDLView(CSDLView csdl)
+        public static XElement GenerateNewDesignerViewsFromCSDLView(EDMView edmView)
         {
             XElement designerView = new XElement("DesignerView", new XAttribute("Name", "View"), new XAttribute("Zoom", 100), new XAttribute("Arrange", true));
 
-            foreach (UIEntityType entityType in csdl.EntityTypes)
+            foreach (UIEntityType entityType in edmView.CSDL.EntityTypes)
             {
                 designerView.Add(new XElement("DesignerType", new XAttribute("Name", entityType.Name), new XAttribute("Top", 0), new XAttribute("Left", 0), new XAttribute("IsExpanded", true)));
             }
 
+            edmView.EDM.EDMXDesignerDiagrams = designerView.Elements();
+
             return new XElement("DesignerViews", designerView);
         }
 
-        public static XElement Write(EDM edm)
+        public static XElement Write(EDMView edmView)
         {
-            if (edm.DesignerProperties == null)
-                return null;
-            
-            XElement connectionElement = new XElement(edmxNamespace + "Connection");
-            XElement designerInfoPropertyElement1 = new XElement(edmxNamespace + "DesignerInfoPropertyElement");
-            connectionElement.Add(designerInfoPropertyElement1);
+            XElement connectionElement = null;
+            XElement optionsElement = null;
 
-            foreach (DesignerProperty designerProperty in edm.DesignerProperties)
+            if (edmView.EDM.DesignerProperties != null)
             {
-                connectionElement.Add(new XElement(edmxNamespace + "DesignerProperty",
-                    new XAttribute("Name", designerProperty.Name),
-                    new XAttribute("Value", designerProperty.Value)));
+                connectionElement = new XElement(edmxNamespace + "Connection");
+                XElement designerInfoPropertyElement1 = new XElement(edmxNamespace + "DesignerInfoPropertyElement");
+                connectionElement.Add(designerInfoPropertyElement1);
+
+                foreach (DesignerProperty designerProperty in edmView.EDM.DesignerProperties)
+                {
+                    connectionElement.Add(new XElement(edmxNamespace + "DesignerProperty",
+                        new XAttribute("Name", designerProperty.Name),
+                        new XAttribute("Value", designerProperty.Value)));
+                }
+
+                optionsElement = new XElement(edmxNamespace + "Options");
+                XElement designerInfoPropertyElement2 = new XElement(edmxNamespace + "DesignerInfoPropertyElement");
+                optionsElement.Add(designerInfoPropertyElement2);
+
+                foreach (DesignerProperty designerProperty in edmView.EDM.DesignerProperties)
+                {
+                    optionsElement.Add(new XElement(edmxNamespace + "DesignerProperty",
+                       new XAttribute("Name", designerProperty.Name),
+                       new XAttribute("Value", designerProperty.Value)));
+                }
             }
 
-            XElement optionsElement = new XElement(edmxNamespace + "Options");
-            XElement designerInfoPropertyElement2 = new XElement(edmxNamespace + "DesignerInfoPropertyElement");
-            optionsElement.Add(designerInfoPropertyElement2);
-
-            foreach (DesignerProperty designerProperty in edm.DesignerProperties)
-            {
-                optionsElement.Add(new XElement(edmxNamespace + "DesignerProperty",
-                   new XAttribute("Name", designerProperty.Name),
-                   new XAttribute("Value", designerProperty.Value)));
-            }
-
-            return new XElement(edmxNamespace + "Designer")
+            XElement designerElement = new XElement(edmxNamespace + "Designer")
                 .AddElement(connectionElement)
-                .AddElement(optionsElement)
-                .AddElement(new XElement(edmxNamespace + "Diagrams", edm.EDMXDesignerDiagrams));
+                .AddElement(optionsElement);
+
+            //if (edmView.EDM.EDMXDesignerDiagrams != null)
+            //    designerElement.AddElement(new XElement(edmxNamespace + "Diagrams", edmView.EDM.EDMXDesignerDiagrams));
+            //else
+                designerElement.AddElement(new XElement(edmxNamespace + "Diagrams", Write(edmView.DesignerViews)));
+
+            return designerElement;
+        }
+
+        private static XElement Write(EventedObservableCollection<DesignerView> designerViews)
+        {
+            XElement designerViewsElement = new XElement("DesignerViews");
+
+            foreach (DesignerView designerView in designerViews)
+                designerViewsElement.Add(Write(designerView));
+
+            return designerViewsElement;
+        }
+
+        private static XElement Write(DesignerView designerView)
+        {
+            XElement designerViewElement = new XElement("DesignerView",
+                new XAttribute("Name", designerView.Name),
+                new XAttribute("Zoom", designerView.Zoom));
+
+            foreach (ITypeDesigner uiType in designerView)
+            { 
+                designerViewElement.Add(new XElement("DesignerType",
+                    new XAttribute("Name", uiType.UIType.Name),
+                    new XAttribute("Left", uiType.Left),
+                    new XAttribute("Top", uiType.Top),
+                    new XAttribute("IsExpanded", uiType.IsExpanded)));
+            }
+
+            return designerViewElement;
         }
     }
 }

@@ -12,6 +12,7 @@ using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.SSDL;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.CSDL;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.Common;
 using System.IO;
+using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer;
 
 #endregion
 
@@ -82,12 +83,12 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                             mslElement))).AddElement(designerElement));
         }
 
-        public static XDocument WriteXDocument(EDM edm)
+        public static XDocument WriteXDocument(EDMView edmView)
         {
-            XElement ssdlElement = SSDLIO.WriteXElement(edm.SSDLContainer);
-            XElement csdlElement = CSDLIO.Write(edm.CSDLContainer);
-            XElement mslElement = MSLIO.Write(edm);
-            XElement designerElement = DesignerIO.Write(edm);
+            XElement ssdlElement = SSDLIO.WriteXElement(edmView.EDM.SSDLContainer);
+            XElement csdlElement = CSDLIO.Write(edmView.EDM.CSDLContainer);
+            XElement mslElement = MSLIO.Write(edmView.EDM);
+            XElement designerElement = DesignerIO.Write(edmView);
 
             return WriteXDocument(ssdlElement, csdlElement, mslElement, designerElement);
         }

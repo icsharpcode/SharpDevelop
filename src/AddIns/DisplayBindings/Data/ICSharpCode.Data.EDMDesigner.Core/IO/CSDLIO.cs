@@ -266,7 +266,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                 XElement entitySetElement = new XElement(csdlNamespace + "EntitySet",
                     new XAttribute("Name", entityType.EntitySetName), 
                     new XAttribute("EntityType", string.Concat(entityContainerNamespace, entityType.Name)));
-                    //.AddAttribute(csdlCodeGenerationNamespace, "GetterAccess", entityType.EntitySetVisibility);
+                    //.AddAttribute(csdlCodeGenerationNamespace, "GetterAccess", entityType.EntitySetVisibility); // Not available in EF 4.0
 
                 entityContainer.Add(entitySetElement);
             }
@@ -312,7 +312,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
             {
                 XElement complexTypeElement = new XElement(csdlNamespace + "ComplexType",
                     new XAttribute("Name", complexType.Name));
-                    //.AddAttribute(new XAttribute(csdlCodeGenerationNamespace + "TypeAccess", complexType.Visibility));
+                    //.AddAttribute(new XAttribute(csdlCodeGenerationNamespace + "TypeAccess", complexType.Visibility)); // Not available in EF 4.0
 
                 complexTypeElement.Add(WriteScalarProperties(complexType));
                 complexTypeElement.Add(WriteComplexProperties(complexType, string.Concat(csdlContainer.Alias, ".")));
@@ -325,7 +325,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
             {
                 XElement entityTypeElement = new XElement(csdlNamespace + "EntityType")
                     .AddAttribute("Name", entityType.Name)
-                    //.AddAttribute(csdlCodeGenerationNamespace, "TypeAccess", entityType.Visibility)
+                    //.AddAttribute(csdlCodeGenerationNamespace, "TypeAccess", entityType.Visibility) // Not available in EF 4.0
                     .AddAttribute("BaseType", entityType.BaseType == null ? null : string.Concat(entityContainerNamespace, entityType.BaseType.Name))
                     .AddAttribute("Abstract", entityType.Abstract);
 
@@ -353,7 +353,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                         .AddAttribute("Relationship", string.Concat(entityContainerNamespace, navigationProperty.Association.Name))
                         .AddAttribute("FromRole", navigationProperty.Association.GetRoleName(navigationProperty))
                         .AddAttribute("ToRole", navigationProperty.Association.GetRoleName(navigationProperty.Association.PropertiesEnd.First(role => role != navigationProperty))));
-                        //.AddAttribute(csdlCodeGenerationNamespace, "GetterAccess", navigationProperty.GetVisibility)
+                        //.AddAttribute(csdlCodeGenerationNamespace, "GetterAccess", navigationProperty.GetVisibility) // Not available in EF 4.0
                         //.AddAttribute(csdlCodeGenerationNamespace, "SetterAccess", navigationProperty.SetVisibility));
                 });
 
@@ -414,12 +414,12 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                     .AddAttribute("ConcurrencyMode", scalarProperty.ConcurrencyMode)
                     .AddAttribute("DefaultValue", scalarProperty.DefaultValue)
                     .AddAttribute("FixedLength", scalarProperty.FixedLength)
-                    //.AddAttribute(csdlCodeGenerationNamespace, "GetterAccess", scalarProperty.GetVisibility)
+                    //.AddAttribute(csdlCodeGenerationNamespace, "GetterAccess", scalarProperty.GetVisibility)  // Not available in EF 4.0
                     .AddAttribute("MaxLength", scalarProperty.MaxLength)
                     .AddAttribute("Nullable", scalarProperty.Nullable)
                     .AddAttribute("Precision", scalarProperty.Precision)
                     .AddAttribute("Scale", scalarProperty.Scale)
-                    //.AddAttribute(csdlCodeGenerationNamespace, "SetterAccess", scalarProperty.SetVisibility)
+                    //.AddAttribute(csdlCodeGenerationNamespace, "SetterAccess", scalarProperty.SetVisibility)  // Not available in EF 4.0
                     .AddAttribute("Unicode", scalarProperty.Unicode);
             }
         }
@@ -432,7 +432,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                     .AddAttribute("Name", complexProperty.Name)
                     .AddAttribute("Type", string.Concat(csdlAlias, complexProperty.ComplexType.Name))
                     .AddAttribute("Nullable", false);
-                    //.AddAttribute(csdlCodeGenerationNamespace, "GetterAccess", complexProperty.GetVisibility);
+                    //.AddAttribute(csdlCodeGenerationNamespace, "GetterAccess", complexProperty.GetVisibility);  // Not available in EF 4.0
             }
         }
 
