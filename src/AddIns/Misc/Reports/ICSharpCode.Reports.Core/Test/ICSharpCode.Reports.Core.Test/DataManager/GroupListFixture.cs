@@ -34,19 +34,30 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		[Test]
 		public void GroupingCollection_Contains_IsGrouped_True()
 		{
-			var dataNav = PrepareStringGrouping();
-			Assert.That(dataNav.IsGrouped,Is.True);
+			var dataNavigator = PrepareStringGrouping();
+			Assert.That(dataNavigator.IsGrouped,Is.True);
 		}
 		
+		
+		[Test]
+		public void AvaiableFields_Should_Be_Set()
+		{
+			var dataNavigator = PrepareStringGrouping();
+			dataNavigator.MoveNext();
+			IDataNavigator child = dataNavigator.GetChildNavigator();
+			AvailableFieldsCollection availableFieldsCollection = child.AvailableFields;
+			Assert.That(availableFieldsCollection,Is.Not.Null);
+			Assert.That(availableFieldsCollection.Count,Is.GreaterThan(0));
+		}
 		
 		#region group by StringValue
 		
 		[Test]
 		public void Has_Children()
 		{
-			var dataNav = PrepareStringGrouping();
-			while (dataNav.MoveNext()) {
-				Assert.That(dataNav.HasChildren,Is.True);
+			var dataNavigator = PrepareStringGrouping();
+			while (dataNavigator.MoveNext()) {
+				Assert.That(dataNavigator.HasChildren,Is.True);
 			}
 		}
 		
@@ -54,12 +65,12 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		[Test]
 		public void Can_Read_Child_Count ()
 		{
-			var dataNav = PrepareStringGrouping();
-			while (dataNav.MoveNext())
+			var dataNavigator = PrepareStringGrouping();
+			while (dataNavigator.MoveNext())
 			{
-				if (dataNav.HasChildren)
+				if (dataNavigator.HasChildren)
 				{
-					var childNavigator = dataNav.GetChildNavigator();
+					var childNavigator = dataNavigator.GetChildNavigator();
 					Assert.That(childNavigator.Count,Is.GreaterThan(0));
 				}
 			}
@@ -69,17 +80,17 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		[Test]
 		public void Can_FillChild()
 		{
-			var dataNav = PrepareStringGrouping();
-			while (dataNav.MoveNext()) {
-				if (dataNav.HasChildren)
+			var dataNavigator = PrepareStringGrouping();
+			while (dataNavigator.MoveNext()) {
+				if (dataNavigator.HasChildren)
 				{
-					var childNavigator = dataNav.GetChildNavigator();
+					var childNavigator = dataNavigator.GetChildNavigator();
 					do
 					{
-						Assert.That(dataNav.HasChildren,Is.True);
+						Assert.That(dataNavigator.HasChildren,Is.True);
 						
 						// we know that current is a 'contributor'
-						Contributor c = dataNav.Current as Contributor;
+						Contributor c = dataNavigator.Current as Contributor;
 						string v2 = c.Last + " GroupVal :" +  c.GroupItem;
 						Console.WriteLine(v2);
 					}
@@ -96,18 +107,18 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		[Test]
 		public void DateTimeCan_FillChild()
 		{
-			var dataNav = PrepareDateTimeGrouping();
+			var dataNavigator = PrepareDateTimeGrouping();
 			
 			Console.WriteLine("start datetime");
-			while (dataNav.MoveNext()) {
-				if (dataNav.HasChildren) {
-					var childNavigator = dataNav.GetChildNavigator();
+			while (dataNavigator.MoveNext()) {
+				if (dataNavigator.HasChildren) {
+					var childNavigator = dataNavigator.GetChildNavigator();
 					do
 					{
 						
-						Assert.That(dataNav.HasChildren,Is.True);
+						Assert.That(dataNavigator.HasChildren,Is.True);
 						// we know that current is a 'contributor'
-						Contributor c = dataNav.Current as Contributor;
+						Contributor c = dataNavigator.Current as Contributor;
 						string v2 = c.Last + " GroupVal :" +  c.RandomDate;
 						Console.WriteLine(v2);
 					}
@@ -121,8 +132,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		
 		private IDataNavigator PrepareDateTimeGrouping ()
 		{
-			Console.WriteLine("PrepareDateTimeGrouping ()");
-			
 			GroupColumn gc = new GroupColumn("RandomDate",1,ListSortDirection.Ascending);
 			ReportSettings rs = new ReportSettings();
 			rs.GroupColumnsCollection.Add(gc);

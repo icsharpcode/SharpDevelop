@@ -118,7 +118,6 @@
     </ProjectReference>
     <Folder Include="BaseItems" />
     <Folder Include="DataManager\Strategy" />
-    <Folder Include="Layout" />
     <Folder Include="DataManager" />
     <Folder Include="Collections" />
     <Folder Include="BaseClasses" />

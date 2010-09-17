@@ -73,7 +73,7 @@ namespace ICSharpCode.Reports.Core.Exporter {
 
 			string formated = StandardFormatter.FormatOutput(this.text,this.StyleDecorator.FormatString,
 			                                                 this.StyleDecorator.DataType,String.Empty);
-			
+			Console.WriteLine("--- {0}",formated);
 			Chunk chunk = new Chunk(formated,font);
 			columnText.AddText(chunk);
 			

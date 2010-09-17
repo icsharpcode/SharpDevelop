@@ -90,7 +90,7 @@ namespace ICSharpCode.Reports.Core
 		
 		public AvailableFieldsCollection AvailableFields {
 			get {
-				throw new NotImplementedException();
+				return store.AvailableFields;
 			}
 		}
 		

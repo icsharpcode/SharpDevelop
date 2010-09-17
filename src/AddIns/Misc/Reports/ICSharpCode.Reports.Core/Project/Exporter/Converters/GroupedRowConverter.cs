@@ -203,7 +203,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		private void AfterConverting (BaseSection section,ExporterCollection mylist)
 		{
-//			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
+			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
 			
 			section.Items[0].Size = base.RestoreSize;
 			section.SectionOffset += section.Size.Height + 3 * GlobalValues.GapBetweenContainer;

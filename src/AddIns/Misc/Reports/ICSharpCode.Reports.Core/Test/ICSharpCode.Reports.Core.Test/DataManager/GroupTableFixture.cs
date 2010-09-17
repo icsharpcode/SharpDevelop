@@ -33,34 +33,45 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		}
 		
 		
+		[Test]
+		public void AvaiableFields_Should_Be_Set()
+		{
+			var dataNavigator = PrepareStringGrouping();
+			dataNavigator.MoveNext();
+			IDataNavigator child = dataNavigator.GetChildNavigator();
+			AvailableFieldsCollection availableFieldsCollection = child.AvailableFields;
+			Assert.That(availableFieldsCollection,Is.Not.Null);
+			Assert.That(availableFieldsCollection.Count,Is.GreaterThan(0));
+		}
+		
 		#region Group by String
 		
 		[Test]
 		public void GroupingCollection_ContainsGrouping_IsGrouped_True()
 		{
-			var dataNav = PrepareStringGrouping();
-			Assert.That(dataNav.IsGrouped == true);
+			var dataNavigator = PrepareStringGrouping();
+			Assert.That(dataNavigator.IsGrouped == true);
 		}
 		
 		
 		[Test]
 		public void Has_Children()
 		{
-			var dataNav = PrepareStringGrouping();
-			while (dataNav.MoveNext()) {
-				Assert.That(dataNav.HasChildren,Is.True);
+			var dataNavigator = PrepareStringGrouping();
+			while (dataNavigator.MoveNext()) {
+				Assert.That(dataNavigator.HasChildren,Is.True);
 			}
 		}
 		
 		[Test]
 		public void Can_Read_Child_Count ()
 		{
-			var dataNav = PrepareStringGrouping();
-			while (dataNav.MoveNext())
+			var dataNavigator = PrepareStringGrouping();
+			while (dataNavigator.MoveNext())
 			{
-				if (dataNav.HasChildren)
+				if (dataNavigator.HasChildren)
 				{
-					var childNavigator = dataNav.GetChildNavigator();
+					var childNavigator = dataNavigator.GetChildNavigator();
 					Assert.That(childNavigator.Count,Is.GreaterThan(0));
 				}
 			}
@@ -70,15 +81,15 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		[Test]
 		public void Can_FillChild()
 		{
-			var dataNav = PrepareStringGrouping();
-			while (dataNav.MoveNext()) {
-				if (dataNav.HasChildren)
+			var dataNavigator = PrepareStringGrouping();
+			while (dataNavigator.MoveNext()) {
+				if (dataNavigator.HasChildren)
 				{
-					var childNavigator = dataNav.GetChildNavigator();
+					var childNavigator = dataNavigator.GetChildNavigator();
 					do
 					{
-						Assert.That(dataNav.HasChildren,Is.True);
-						DataRow r = dataNav.Current as DataRow;
+						Assert.That(dataNavigator.HasChildren,Is.True);
+						DataRow r = dataNavigator.Current as DataRow;
 						string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString();
 						Console.WriteLine(v2);
 					}
@@ -94,15 +105,15 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		[Test]
 		public void DateTimeCan_FillChild()
 		{
-			var dataNav = PrepareDateTimeGrouping();
-			while (dataNav.MoveNext()) {
-				if (dataNav.HasChildren)
+			var dataNavigator = PrepareDateTimeGrouping();
+			while (dataNavigator.MoveNext()) {
+				if (dataNavigator.HasChildren)
 				{
-					var childNavigator = dataNav.GetChildNavigator();
+					var childNavigator = dataNavigator.GetChildNavigator();
 					do
 					{
-						Assert.That(dataNav.HasChildren,Is.True);
-						DataRow r = dataNav.Current as DataRow;
+						Assert.That(dataNavigator.HasChildren,Is.True);
+						DataRow r = dataNavigator.Current as DataRow;
 						string v2 = r["last"].ToString() + " GroupVal :" +  r[5].ToString();
 						Console.WriteLine(v2);
 					}
@@ -115,8 +126,8 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		[Test]
 		public void DataTimeCollection_Contains_IsGrouped_False()
 		{
-			var dataNav = PrepareDateTimeGrouping();
-			Assert.That(dataNav.IsGrouped == true);
+			var dataNavigator = PrepareDateTimeGrouping();
+			Assert.That(dataNavigator.IsGrouped == true);
 		}
 		
 		
@@ -133,7 +144,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		#endregion
 		
 	
-		
 		#region Try make recursive with ChildNavigator
 	
 		
@@ -141,14 +151,14 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		public void Can_Get_ChildNavigator ()
 		{
 			Console.WriteLine("Start Recusive Version");
-			var dataNav = PrepareStringGrouping();
+			var dataNavigator = PrepareStringGrouping();
 			
-			while (dataNav.MoveNext()) {
-				if (dataNav.HasChildren) {
-					DataRow r = dataNav.Current as DataRow;
+			while (dataNavigator.MoveNext()) {
+				if (dataNavigator.HasChildren) {
+					DataRow r = dataNavigator.Current as DataRow;
 					
 					
-					IDataNavigator child = dataNav.GetChildNavigator();
+					IDataNavigator child = dataNavigator.GetChildNavigator();
 					string v2 = r["last"].ToString() + " GroupVal :" +  r[3].ToString() ;
 					Console.WriteLine(v2);
 					Assert.That (child,Is.Not.Null);
