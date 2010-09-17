@@ -22,6 +22,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.ChangeWatcher;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Common;
+using ICSharpCode.SharpDevelop.Project;
 
 #endregion
 
@@ -109,7 +110,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
             if (_edmView.EDM.IsEmpty)
             {
                 edmxElement = null;
-                EDMWizardWindow wizard = RunWizard(file);
+                EDMWizardWindow wizard = RunWizard(file, ProjectService.CurrentProject.RootNamespace);
 
                 if (wizard.DialogResult == true)
                     _edmView = new EDMView(wizard.EDMXDocument, readMoreAction);
@@ -150,9 +151,9 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
             EDMXIO.WriteXDocument(_edmView).Save(stream);
 		}
 		
-		private EDMWizardWindow RunWizard(OpenedFile file)
+		private EDMWizardWindow RunWizard(OpenedFile file, string projectStandardNamespace)
 		{
-            EDMWizardWindow wizard = new EDMWizardWindow(file);
+            EDMWizardWindow wizard = new EDMWizardWindow(file, projectStandardNamespace);
             wizard.Owner = Application.Current.MainWindow;
             wizard.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             wizard.ShowDialog();

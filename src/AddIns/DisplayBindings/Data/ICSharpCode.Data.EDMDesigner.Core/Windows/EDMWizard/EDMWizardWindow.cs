@@ -37,6 +37,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.Windows.EDMWizard
         private IDatabase _selectedDatabase = null;
         private string _modelNamespace = string.Empty;
         private string _objectContextName = string.Empty;
+        private string _projectStandardNamespace = string.Empty;
         private OpenedFile _file = null;
         private XDocument _edmxDocument = null;
 
@@ -137,7 +138,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.Windows.EDMWizard
 
         #region Constructor
 
-        public EDMWizardWindow(OpenedFile file)
+        public EDMWizardWindow(OpenedFile file, string projectStandardNamespace)
         {
             Title = "Entity Framework Wizard";
             Width = 640;
@@ -147,6 +148,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.Windows.EDMWizard
             AddWizardUserControl<ChooseDatabaseObjectsUserControl>();
 
             _file = file;
+            _projectStandardNamespace = projectStandardNamespace;
         }
 
         #endregion
@@ -157,7 +159,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.Windows.EDMWizard
         {          
             if (SelectedDatabase != null)
             {
-                _edmxDocument = EDMConverter.CreateEDMXFromIDatabase(SelectedDatabase, ModelNamespace, "TestNamespace", ObjectContextName);
+                _edmxDocument = EDMConverter.CreateEDMXFromIDatabase(SelectedDatabase, ModelNamespace, _projectStandardNamespace, ObjectContextName);
             }
         }
 

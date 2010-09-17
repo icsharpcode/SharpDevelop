@@ -38,7 +38,7 @@
 		${Path}                     -> Full path of the file
 	 -->
 	<Files>
-    <File name="${FullName}" language="XML" buildAction="EntityDeploy" CustomTool="EntityModelCodeGenerator">
+    <File name="${FullName}" language="XML" buildAction="EntityDeploy" Generator="EntityModelCodeGenerator">
       <![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
   <!-- EF Runtime content -->

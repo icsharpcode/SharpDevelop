@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 10
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DatabaseDrivers", "DatabaseDrivers", "{C5FB6340-6A60-40EA-9C06-708BE0EC84F2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{1F5B7C44-B137-4D74-A594-96EAC98890F8}"
@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Data.Addin", "I
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.Data.DemoApp", "ICSharpCode.Data.DemoApp\ICSharpCode.Data.DemoApp.csproj", "{1EB79CD3-ECF1-420E-8A44-FA1EDD15390F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A3C49AAC-F616-4575-9522-E6A3ACA36884}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

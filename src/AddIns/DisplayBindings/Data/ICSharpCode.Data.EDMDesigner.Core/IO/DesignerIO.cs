@@ -12,6 +12,7 @@ using ICSharpCode.Data.EDMDesigner.Core.EDMObjects;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.Common;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Common;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.ChangeWatcher;
+using System.Collections.Generic;
 
 #endregion
 
@@ -44,7 +45,9 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
             if (arrange != null)
                 designerView.ArrangeTypeDesigners =  bool.Parse(arrange.Value);
 
-            foreach (var designerTypeXElement in designerViewXElement.Elements("DesignerType"))
+            IEnumerable<XElement> designerTypeXElements = designerViewXElement.Elements("DesignerType");
+
+            foreach (var designerTypeXElement in designerTypeXElements)
             {
                 var name = designerTypeXElement.Attribute("Name").Value;
                 

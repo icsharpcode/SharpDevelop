@@ -33,7 +33,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                 throw new ArgumentException("Input file is not a valid EDMX file.");
 
             XDocument csdlDocument = new XDocument(new XDeclaration("1.0", "utf-8", null), conceptualModelsElement.Element(XName.Get("Schema", csdlNamespace.NamespaceName)));
-
+            
             string tempFileName = IO.GetTempFilenameWithExtension("csdl");
             csdlDocument.Save(tempFileName);
 
