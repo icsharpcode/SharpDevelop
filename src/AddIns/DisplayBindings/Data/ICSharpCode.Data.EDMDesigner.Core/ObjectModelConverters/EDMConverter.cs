@@ -42,7 +42,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.ObjectModelConverters
         {
             XDocument ssdlXDocument = GetSSDLXML(database, modelNamespace);
 
-            string ssdlTempFilename = GetTempFilenameWithExtension("ssdl");
+            string ssdlTempFilename = IO.IO.GetTempFilenameWithExtension("ssdl");
             ssdlXDocument.Save(ssdlTempFilename);
 
             FileInfo fileInfo = new FileInfo(ssdlTempFilename);
@@ -76,29 +76,6 @@ namespace ICSharpCode.Data.EDMDesigner.Core.ObjectModelConverters
             mslXDocument = MSLIO.GenerateTypeMapping(mslXDocument);
 
             return EDMXIO.WriteXDocument(ssdlXDocument, csdlXDocument, mslXDocument);
-        }
-
-        private static string GetTempFilename()
-        {
-            return Path.GetTempFileName();
-        }
-
-        private static string GetTempFilenameWithExtension(string filenamePrefix, string extension)
-        {
-            string tempFileAuto = GetTempFilename();
-
-            string tempFile =
-                Path.GetTempPath() +
-                filenamePrefix +
-                Path.GetFileNameWithoutExtension(tempFileAuto)
-                + "." + extension;
-
-            return tempFile;
-        }
-
-        private static string GetTempFilenameWithExtension(string extension)
-        {
-            return GetTempFilenameWithExtension(string.Empty, extension);
         }
     }
 }

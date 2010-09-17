@@ -56,13 +56,98 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
 
             if (edmxDesigner != null)
             {
-                edm.DesignerProperties = edmxDesigner.Element(XName.Get("Connection", edmxNamespace.NamespaceName)).Element(XName.Get("DesignerInfoPropertySet", edmxNamespace.NamespaceName)).Elements(XName.Get("DesignerProperty", edmxNamespace.NamespaceName)).Select(e => new DesignerProperty { Name = e.Attribute("Name").Value, Value = e.Attribute("Value").Value });
-                edm.EDMXDesignerDesignerProperties = edmxDesigner.Element(XName.Get("Options", edmxNamespace.NamespaceName)).Element(XName.Get("DesignerInfoPropertySet", edmxNamespace.NamespaceName)).Elements(XName.Get("DesignerProperty", edmxNamespace.NamespaceName)).Select(e => new DesignerProperty { Name = e.Attribute("Name").Value, Value = e.Attribute("Value").Value });
-                edm.EDMXDesignerDiagrams = edmxDesigner.Element(XName.Get("Diagrams", edmxNamespace.NamespaceName)).Elements(XName.Get("Diagram", edmxNamespace.NamespaceName));
+                if (edmxDesigner.Element(XName.Get("Connection", edmxNamespace.NamespaceName)) != null)
+                    edm.DesignerProperties = edmxDesigner.Element(XName.Get("Connection", edmxNamespace.NamespaceName)).Element(XName.Get("DesignerInfoPropertySet", edmxNamespace.NamespaceName)).Elements(XName.Get("DesignerProperty", edmxNamespace.NamespaceName)).Select(e => new DesignerProperty { Name = e.Attribute("Name").Value, Value = e.Attribute("Value").Value });
+
+                if (edmxDesigner.Element(XName.Get("Options", edmxNamespace.NamespaceName)) != null)
+                    edm.EDMXDesignerDesignerProperties = edmxDesigner.Element(XName.Get("Options", edmxNamespace.NamespaceName)).Element(XName.Get("DesignerInfoPropertySet", edmxNamespace.NamespaceName)).Elements(XName.Get("DesignerProperty", edmxNamespace.NamespaceName)).Select(e => new DesignerProperty { Name = e.Attribute("Name").Value, Value = e.Attribute("Value").Value });
+
+                if (edmxDesigner.Element(XName.Get("Diagrams", edmxNamespace.NamespaceName)) != null)
+                    edm.EDMXDesignerDiagrams = edmxDesigner.Element(XName.Get("Diagrams", edmxNamespace.NamespaceName)).Elements(XName.Get("Diagram", edmxNamespace.NamespaceName));
             }
 
             readMoreAction(edmx);
             return edm;
+        }
+
+        public enum EDMXSection
+        { 
+            EDMX,
+            Runtime,
+            SSDL,
+            CSDL,
+            MSL,
+            Designer,
+            DesignerViews
+        }
+
+        public static XElement ReadSection(XDocument edmxDocument, EDMXSection section)
+        {
+            return ReadSection(edmxDocument.Root, section);
+        }
+
+        public static XElement ReadSection(XElement edmxElement, EDMXSection section)
+        {
+            if (section == EDMXSection.EDMX)
+                return edmxElement;
+            
+            if (edmxElement == null)
+                throw new ArgumentException("Input file is not a valid EDMX file.");
+
+            if (section == EDMXSection.Designer || section == EDMXSection.DesignerViews)
+            {
+                XElement designerElement = edmxElement.Element(XName.Get("Designer", edmxNamespace.NamespaceName));
+
+                if (designerElement == null)
+                    return null;
+
+                if (section == EDMXSection.Designer)
+                    return designerElement;
+                else
+                {
+                    XElement diagramsElement = designerElement.Element(XName.Get("Diagrams", edmxNamespace.NamespaceName));
+
+                    if (diagramsElement == null)
+                        throw new ArgumentException("Input file is not a valid EDMX file.");
+
+                    return diagramsElement.Element(XName.Get("DesignerViews"));
+                }
+            }
+
+            XElement runtimeElement = edmxElement.Element(XName.Get("Runtime", edmxNamespace.NamespaceName));
+
+            if (runtimeElement == null)
+                throw new ArgumentException("Input file is not a valid EDMX file.");
+
+            if (section == EDMXSection.Runtime)
+                return runtimeElement;
+
+            switch (section)
+            { 
+                case EDMXSection.SSDL:
+                    XElement storageModelsElement = runtimeElement.Element(XName.Get("StorageModels", edmxNamespace.NamespaceName));
+
+                    if (storageModelsElement == null)
+                        throw new ArgumentException("Input file is not a valid EDMX file.");
+
+                    return storageModelsElement;
+                case EDMXSection.CSDL:
+                    XElement conceptualModelsElement = runtimeElement.Element(XName.Get("ConceptualModels", edmxNamespace.NamespaceName));
+
+                    if (conceptualModelsElement == null)
+                        throw new ArgumentException("Input file is not a valid EDMX file.");
+
+                    return conceptualModelsElement;
+                case EDMXSection.MSL:
+                    XElement mappingsElement = runtimeElement.Element(XName.Get("Mappings", edmxNamespace.NamespaceName));
+
+                    if (mappingsElement == null)
+                        throw new ArgumentException("Input file is not a valid EDMX file.");
+
+                    return mappingsElement;
+            }
+
+            return null;
         }
 
         public static XDocument WriteXDocument(XDocument ssdlDocument, XDocument csdlDocument, XDocument mslDocument)

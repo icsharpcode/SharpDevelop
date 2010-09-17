@@ -20,12 +20,14 @@ using ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.CSDLType;
 using ICSharpCode.Data.EDMDesigner.Core.Windows.EDMWizard;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.ChangeWatcher;
+using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Common;
 
 #endregion
 
 namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 {
-    public class EDMDesignerViewContent : AbstractViewContent, IHasPropertyContainer, IToolsHost
+    public class EDMDesignerViewContent : AbstractViewContent, IHasPropertyContainer, IToolsHost, IEDMDesignerChangeWatcherObserver
     {
         #region Fields
 
@@ -69,9 +71,9 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 		}
 		
 		public DesignerCanvas DesignerCanvas 
-       {
+        {
             get { return _designerCanvas; }
-		}		
+		}
 
         #endregion
 
@@ -83,7 +85,9 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
             if (primaryFile == null)
 				throw new ArgumentNullException("primaryFile");
 			
-			primaryFile.ForceInitializeView(this); // call Load()			
+			primaryFile.ForceInitializeView(this); // call Load()
+
+            EDMDesignerChangeWatcher.AddEDMDesignerViewContent(this);
         }
 
         #endregion
@@ -93,6 +97,8 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
         public override void Load(OpenedFile file, Stream stream)
 		{
 			Debug.Assert(file == this.PrimaryFile);
+
+            EDMDesignerChangeWatcher.Init = true;
 
             // Load EDMX from stream
             XElement edmxElement = null;
@@ -114,15 +120,17 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
             // Load or generate DesignerView and EntityTypeDesigners
             EntityTypeDesigner.Init = true;
 
-            if (edmxElement == null || edmxElement.Element("DesignerViews") == null)
-            {
-                edmxElement = new XElement("Designer", DesignerIO.GenerateNewDesignerViewsFromCSDLView(_edmView));
-            }
- 
-            if (edmxElement != null && edmxElement.Element("DesignerViews") != null)
-                DesignerIO.Read(_edmView, edmxElement.Element("DesignerViews"), entityType => new EntityTypeDesigner(entityType), complexType => new ComplexTypeDesigner(complexType));
+            XElement designerViewsElement = null;
 
-            EntityTypeDesigner.Init = false;
+            if (edmxElement == null || (designerViewsElement = EDMXIO.ReadSection(edmxElement, EDMXIO.EDMXSection.DesignerViews)) == null)
+            {
+                designerViewsElement = DesignerIO.GenerateNewDesignerViewsFromCSDLView(_edmView);
+            }
+
+            if (edmxElement != null && designerViewsElement != null)
+                DesignerIO.Read(_edmView, designerViewsElement, entityType => new EntityTypeDesigner(entityType), complexType => new ComplexTypeDesigner(complexType));
+
+            EntityTypeDesigner.Init = false; 
 
             // Call DoEvents, otherwise drawing associations can fail
             VisualHelper.DoEvents();
@@ -133,6 +141,8 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
             
             // Register CSDL of EDMX in CSDL DatabaseTreeView
             CSDLDatabaseTreeViewAdditionalNode.Instance.CSDLViews.Add(_edmView.CSDL);
+            
+            EDMDesignerChangeWatcher.Init = false;
 		}
 		
 		public override void Save(OpenedFile file, Stream stream)
@@ -154,6 +164,8 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
         {
             if (CSDLDatabaseTreeViewAdditionalNode.Instance.CSDLViews.Contains(_edmView.CSDL))
                 CSDLDatabaseTreeViewAdditionalNode.Instance.CSDLViews.Remove(_edmView.CSDL);
+
+            EDMDesignerChangeWatcher.RemoveEDMDesignerViewContent(this);
         }
 
         public void ShowMappingTab(IUIType uiType)
@@ -175,6 +187,27 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
         object IToolsHost.ToolsContent 
         {
 			get { return null; }
+        }
+
+        #endregion
+
+        #region IEDMDesignerChangeWatcherObserver Member
+
+        public bool ObjectChanged(object changedObject)
+        {
+            foreach (DesignerView designerView in _edmView.DesignerViews)
+            {                
+                foreach (ITypeDesigner uiType in designerView)
+                {
+                    if (uiType == changedObject || uiType.UIType.BusinessInstance == changedObject)
+                    {
+                        PrimaryFile.IsDirty = true;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         #endregion

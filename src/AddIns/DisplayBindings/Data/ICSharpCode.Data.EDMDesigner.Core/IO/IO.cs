@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Xml.Linq;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Common;
+using System.IO;
 
 #endregion
 
@@ -107,6 +108,29 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
             var subElement = element.Element(XName.Get(elementName, ns));
             if (subElement != null)
                 setAction(subElement.Value);
+        }
+
+        public static string GetTempFilename()
+        {
+            return Path.GetTempFileName();
+        }
+
+        public static string GetTempFilenameWithExtension(string filenamePrefix, string extension)
+        {
+            string tempFileAuto = GetTempFilename();
+
+            string tempFile =
+                Path.GetTempPath() +
+                filenamePrefix +
+                Path.GetFileNameWithoutExtension(tempFileAuto)
+                + "." + extension;
+
+            return tempFile;
+        }
+
+        public static string GetTempFilenameWithExtension(string extension)
+        {
+            return GetTempFilenameWithExtension(string.Empty, extension);
         }
 
         #endregion

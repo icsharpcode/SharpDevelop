@@ -15,6 +15,7 @@ using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL.Type;
 using ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Common;
 using ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding;
 using ICSharpCode.Data.EDMDesigner.Core.UI.Helpers;
+using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.ChangeWatcher;
 
 #endregion
 
@@ -328,6 +329,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls
                 double currentRowsMaxHeight = 0;
 
                 EntityTypeDesigner.Init = true;
+                EDMDesignerChangeWatcher.Init = true;
 
                 foreach(EntityTypeDesigner entityTypeDesigner in DesignerView.TypeDesignersLocations)
                 {
@@ -347,10 +349,17 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls
                 }
 
                 EntityTypeDesigner.Init = false;
+                EDMDesignerChangeWatcher.Init = false;
             }
 
             foreach (TypeBaseDesigner typeBaseDesigner in DesignerView)
-                typeBaseDesigner.DrawRelations();
+            {
+                try
+                {
+                    typeBaseDesigner.DrawRelations();
+                }
+                catch { }
+            }
 
             (sender as DesignerCanvas).Zoom = DesignerView.Zoom;
 		}

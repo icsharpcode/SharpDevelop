@@ -22,7 +22,6 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
 {
     public class SSDLIO : IO
     {
-
         public static XDocument WriteXDocument(SSDLContainer ssdlContainer)
         {
             return new XDocument(new XDeclaration("1.0", "utf-8", null), WriteXElement(ssdlContainer));

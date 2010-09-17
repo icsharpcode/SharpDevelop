@@ -57,6 +57,8 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Data.Entity.Design" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
@@ -97,8 +99,10 @@
     <Compile Include="EDMObjects\Designer\Common\DesignerProperty.cs" />
     <Compile Include="EDMObjects\Designer\DesignerView.cs" />
     <Compile Include="EDMObjects\Designer\EDMController.cs" />
+    <Compile Include="EDMObjects\Designer\ChangeWatcher\EDMDesignerChangeWatcher.cs" />
     <Compile Include="EDMObjects\Designer\EDMView.cs" />
     <Compile Include="EDMObjects\Designer\Common\IndexableUIBusinessTypeObservableCollection.cs" />
+    <Compile Include="EDMObjects\Designer\ChangeWatcher\IEDMDesignerChangeWatcherObserver.cs" />
     <Compile Include="EDMObjects\Designer\ItemBase.cs" />
     <Compile Include="EDMObjects\Designer\ITypeDesigner.cs" />
     <Compile Include="EDMObjects\Designer\Common\UIBusinessType.cs" />
@@ -143,6 +147,7 @@
     <Compile Include="IO\CSDLIO.cs" />
     <Compile Include="IO\DesignerIO.cs" />
     <Compile Include="IO\EDMXIO.cs" />
+    <Compile Include="IO\EntityModelCodeGenerator.cs" />
     <Compile Include="IO\ExtensionMethods.cs" />
     <Compile Include="IO\IO.cs" />
     <Compile Include="IO\MSLIO.cs" />

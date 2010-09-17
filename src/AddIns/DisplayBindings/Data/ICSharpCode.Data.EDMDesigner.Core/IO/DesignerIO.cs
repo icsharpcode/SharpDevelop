@@ -11,6 +11,7 @@ using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.Common;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Common;
+using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.ChangeWatcher;
 
 #endregion
 
@@ -30,6 +31,8 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
 
         public static DesignerView Read(EDMView edmView, Func<UIEntityType, ITypeDesigner> createEntityDesignerFromUIType, Func<UIComplexType, ITypeDesigner> createComplexDesignerFromUIType, XElement designerViewXElement)
         {
+            EDMDesignerChangeWatcher.Init = true;
+
             var designerView = new DesignerView()
                 { 
                     Name = designerViewXElement.Attribute("Name").Value, 
@@ -76,14 +79,19 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                     RoutedEventHandler loaded = null;
                     loaded = delegate
                     {
+                        EDMDesignerChangeWatcher.Init = true;
                         typeDesigner.IsExpanded = bool.Parse(isExpandedAttribute.Value);
                         typeDesigner.Loaded -= loaded;
+                        EDMDesignerChangeWatcher.Init = false;
                     };
                     typeDesigner.Loaded += loaded;
                 }
 
                 designerView.TypeDesignersLocations.Add(typeDesigner);
             }
+
+            EDMDesignerChangeWatcher.Init = false;
+
             return designerView;
         }
 
