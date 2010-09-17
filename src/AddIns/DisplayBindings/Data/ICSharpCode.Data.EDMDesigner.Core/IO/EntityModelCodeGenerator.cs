@@ -42,7 +42,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
             EntityCodeGenerator entityCodeGenerator = new EntityCodeGenerator(languageToGenerateCode);
             IList<EdmSchemaError> edmSchemaErrors = entityCodeGenerator.GenerateCode(tempFileName, outputFileName);
             File.Delete(tempFileName);
-
+            
             context.EnsureOutputFileIsInProject(item, outputFileName);
         }
 

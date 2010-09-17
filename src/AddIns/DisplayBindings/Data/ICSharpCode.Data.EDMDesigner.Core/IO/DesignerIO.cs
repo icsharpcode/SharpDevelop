@@ -117,29 +117,40 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
             XElement connectionElement = null;
             XElement optionsElement = null;
 
-            if (edmView.EDM.DesignerProperties != null)
+            if (edmView.EDM.DesignerProperties == null || edmView.EDM.DesignerProperties.FirstOrDefault(dp => dp.Name == "MetadataArtifactProcessing") == null)
             {
-                connectionElement = new XElement(edmxNamespace + "Connection");
-                XElement designerInfoPropertyElement1 = new XElement(edmxNamespace + "DesignerInfoPropertyElement");
-                connectionElement.Add(designerInfoPropertyElement1);
+                List<DesignerProperty> standardDesignerProperties = null;
 
-                foreach (DesignerProperty designerProperty in edmView.EDM.DesignerProperties)
-                {
-                    connectionElement.Add(new XElement(edmxNamespace + "DesignerProperty",
-                        new XAttribute("Name", designerProperty.Name),
-                        new XAttribute("Value", designerProperty.Value)));
-                }
+                if (edmView.EDM.DesignerProperties == null)
+                    standardDesignerProperties = new List<DesignerProperty>();
+                else
+                    standardDesignerProperties = edmView.EDM.DesignerProperties.ToList();
 
-                optionsElement = new XElement(edmxNamespace + "Options");
-                XElement designerInfoPropertyElement2 = new XElement(edmxNamespace + "DesignerInfoPropertyElement");
-                optionsElement.Add(designerInfoPropertyElement2);
+                standardDesignerProperties.Add(new DesignerProperty() { Name = "MetadataArtifactProcessing", Value = "EmbedInOutputAssembly" });
 
-                foreach (DesignerProperty designerProperty in edmView.EDM.DesignerProperties)
-                {
-                    optionsElement.Add(new XElement(edmxNamespace + "DesignerProperty",
-                       new XAttribute("Name", designerProperty.Name),
-                       new XAttribute("Value", designerProperty.Value)));
-                }
+                edmView.EDM.DesignerProperties = standardDesignerProperties;
+            }
+
+            connectionElement = new XElement(edmxNamespace + "Connection");
+            XElement designerInfoPropertyElement1 = new XElement(edmxNamespace + "DesignerInfoPropertySet");
+            connectionElement.Add(designerInfoPropertyElement1);
+
+            foreach (DesignerProperty designerProperty in edmView.EDM.DesignerProperties)
+            {
+                designerInfoPropertyElement1.Add(new XElement(edmxNamespace + "DesignerProperty",
+                    new XAttribute("Name", designerProperty.Name),
+                    new XAttribute("Value", designerProperty.Value)));
+            }
+
+            optionsElement = new XElement(edmxNamespace + "Options");
+            XElement designerInfoPropertyElement2 = new XElement(edmxNamespace + "DesignerInfoPropertySet");
+            optionsElement.Add(designerInfoPropertyElement2);
+
+            foreach (DesignerProperty designerProperty in edmView.EDM.DesignerProperties)
+            {
+                designerInfoPropertyElement2.Add(new XElement(edmxNamespace + "DesignerProperty",
+                    new XAttribute("Name", designerProperty.Name),
+                    new XAttribute("Value", designerProperty.Value)));
             }
 
             XElement designerElement = new XElement(edmxNamespace + "Designer")
