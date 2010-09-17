@@ -17,18 +17,16 @@ namespace ICSharpCode.SharpDevelop
 {
 	public sealed class ParseProjectContent : DefaultProjectContent
 	{
-		internal static ParseProjectContent CreateUninitalized(IProject project)
+		public ParseProjectContent(IProject project)
 		{
-			ParseProjectContent newProjectContent = new ParseProjectContent();
-			newProjectContent.project = project;
-			newProjectContent.Language = project.LanguageProperties;
-			newProjectContent.initializing = true;
-			IProjectContent mscorlib = AssemblyParserService.GetRegistryForReference(new ReferenceProjectItem(project, "mscorlib")).Mscorlib;
-			newProjectContent.AddReferencedContent(mscorlib);
-			return newProjectContent;
+			if (project == null)
+				throw new ArgumentNullException("project");
+			this.project = project;
+			this.Language = project.LanguageProperties;
+			this.initializing = true;
 		}
 		
-		IProject project;
+		readonly IProject project;
 		
 		public override object Project {
 			get {
