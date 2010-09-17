@@ -154,6 +154,8 @@ namespace ICSharpCode.SharpDevelop.Sda
 			LoggingService.Info("Initializing workbench...");
 			wbc.InitializeWorkbench();
 			
+			RunWorkbenchInitializedCommands();
+			
 			LoggingService.Info("Starting workbench...");
 			Exception exception = null;
 			// finally start the workbench.
@@ -189,6 +191,18 @@ namespace ICSharpCode.SharpDevelop.Sda
 					System.Windows.Forms.Application.Run(new ExceptionBox(exception, errorText, true));
 				} else {
 					throw new RunWorkbenchException(errorText, exception);
+				}
+			}
+		}
+		
+		void RunWorkbenchInitializedCommands()
+		{
+			foreach (ICommand command in AddInTree.BuildItems<ICommand>("/Workspace/AutostartAfterWorkbenchInitialized", null, false)) {
+				try {
+					command.Run();
+				} catch (Exception ex) {
+					// allow startup to continue if some commands fail
+					MessageService.ShowException(ex);
 				}
 			}
 		}
