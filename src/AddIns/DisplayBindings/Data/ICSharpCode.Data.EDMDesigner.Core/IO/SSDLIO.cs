@@ -67,7 +67,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
 
                 string role2Name = association.Role2.Name;
 
-                // If the assocation end properties are the same properties
+                // If the association end properties are the same properties
                 if (association.Role1.Name == association.Role2.Name && association.Role1.Type.Name == association.Role2.Type.Name)
                     role2Name += "1";
 
@@ -120,17 +120,17 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
             {
                 string role2Name = association.Role2.Name;
 
-                // If the assocation end properties are the same properties
+                // If the association end properties are the same properties
                 if (association.Role1.Name == association.Role2.Name && association.Role1.Type.Name == association.Role2.Type.Name)
                     role2Name += "1";
                 
                 XElement associationElement = new XElement(ssdlNamespace + "Association", new XAttribute("Name", association.Name),
-                        new XElement(ssdlNamespace + "End", new XAttribute("Role", association.Role1.Name), new XAttribute("Type", string.Concat(entityContainerNamespace, association.Role1.Type.Name)), new XAttribute("Multiplicity", CardinalityStringConverter.CardinalityToSTring(association.Role1.Cardinality))),
-                        new XElement(ssdlNamespace + "End", new XAttribute("Role", role2Name), new XAttribute("Type", string.Concat(entityContainerNamespace, association.Role2.Type.Name)), new XAttribute("Multiplicity", CardinalityStringConverter.CardinalityToSTring(association.Role2.Cardinality))));
+                        new XElement(ssdlNamespace + "End", new XAttribute("Role", association.Role1.Name), new XAttribute("Type", string.Concat(entityContainerNamespace, association.Role1.Type.Name)), new XAttribute("Multiplicity", CardinalityStringConverter.CardinalityToString(association.Role1.Cardinality))),
+                        new XElement(ssdlNamespace + "End", new XAttribute("Role", role2Name), new XAttribute("Type", string.Concat(entityContainerNamespace, association.Role2.Type.Name)), new XAttribute("Multiplicity", CardinalityStringConverter.CardinalityToString(association.Role2.Cardinality))));
 
                 string dependentRoleName = association.DependantRole.Name;
 
-                // If the assocation end properties are the same properties
+                // If the association end properties are the same properties
                 if (association.PrincipalRole.Name == association.DependantRole.Name && association.PrincipalRole.Type.Name == association.DependantRole.Type.Name)
                     dependentRoleName += "1";
 
@@ -260,13 +260,42 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
                         {
                             isPrincipal = true;
                             association.PrincipalRole = role;
-                            role.Properties = role.Type.Properties.Where(p => p.Name == principalElement.Element(XName.Get("PropertyRef", ssdlNamespace.NamespaceName)).Attribute("Name").Value).ToEventedObservableCollection();
+
+                            EventedObservableCollection<Property> properties = new EventedObservableCollection<Property>();
+
+                            foreach (XElement element in principalElement.Elements(XName.Get("PropertyRef", ssdlNamespace.NamespaceName)))
+                            {
+                                foreach (Property property in role.Type.Properties)
+                                {
+                                    if (property.Name == element.Attribute("Name").Value)
+                                        properties.Add(property);
+                                }
+                            }
+
+                            role.Properties = properties;
+
+                            //role.Properties = role.Type.Properties.Where(p => p.Name == principalElement.Element(XName.Get("PropertyRef", ssdlNamespace.NamespaceName)).Attribute("Name").Value).ToEventedObservableCollection();
                         }
                         else
                         {
                             isPrincipal = false;
                             association.DependantRole = role;
-                            role.Properties = role.Type.Properties.Where(p => p.Name == referentialConstraintElement.Element(XName.Get("Dependent", ssdlNamespace.NamespaceName)).Element(XName.Get("PropertyRef", ssdlNamespace.NamespaceName)).Attribute("Name").Value).ToEventedObservableCollection();
+
+                            EventedObservableCollection<Property> properties = new EventedObservableCollection<Property>();
+                            XElement dependentElement = referentialConstraintElement.Element(XName.Get("Dependent", ssdlNamespace.NamespaceName));
+
+                            foreach (XElement element in dependentElement.Elements(XName.Get("PropertyRef", ssdlNamespace.NamespaceName)))
+                            {
+                                foreach (Property property in role.Type.Properties)
+                                {
+                                    if (property.Name == element.Attribute("Name").Value)
+                                        properties.Add(property);
+                                }
+                            }
+
+                            role.Properties = properties;
+
+                            //role.Properties = role.Type.Properties.Where(p => p.Name == referentialConstraintElement.Element(XName.Get("Dependent", ssdlNamespace.NamespaceName)).Element(XName.Get("PropertyRef", ssdlNamespace.NamespaceName)).Attribute("Name").Value).ToEventedObservableCollection();
                         }
                     }
                     if (isPrincipal)

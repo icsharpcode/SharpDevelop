@@ -8,12 +8,14 @@ using System.Xml.Linq;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL.Type;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL;
+using ICSharpCode.Data.EDMDesigner.Core.EDMObjects;
+using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.Common;
 
 #endregion
 
 namespace ICSharpCode.Data.EDMDesigner.Core.IO
 {
-    public class DesignerIO
+    public class DesignerIO : IO
     {
         public static void Read(EDMView edmView, XElement designerViewsXElement, Func<UIEntityType, ITypeDesigner> createEntityDesignerFromUIType, Func<UIComplexType, ITypeDesigner> createComplexDesignerFromUIType)
         {
@@ -94,6 +96,39 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
             }
 
             return new XElement("DesignerViews", designerView);
+        }
+
+        public static XElement Write(EDM edm)
+        {
+            if (edm.DesignerProperties == null)
+                return null;
+            
+            XElement connectionElement = new XElement(edmxNamespace + "Connection");
+            XElement designerInfoPropertyElement1 = new XElement(edmxNamespace + "DesignerInfoPropertyElement");
+            connectionElement.Add(designerInfoPropertyElement1);
+
+            foreach (DesignerProperty designerProperty in edm.DesignerProperties)
+            {
+                connectionElement.Add(new XElement(edmxNamespace + "DesignerProperty",
+                    new XAttribute("Name", designerProperty.Name),
+                    new XAttribute("Value", designerProperty.Value)));
+            }
+
+            XElement optionsElement = new XElement(edmxNamespace + "Options");
+            XElement designerInfoPropertyElement2 = new XElement(edmxNamespace + "DesignerInfoPropertyElement");
+            optionsElement.Add(designerInfoPropertyElement2);
+
+            foreach (DesignerProperty designerProperty in edm.DesignerProperties)
+            {
+                optionsElement.Add(new XElement(edmxNamespace + "DesignerProperty",
+                   new XAttribute("Name", designerProperty.Name),
+                   new XAttribute("Value", designerProperty.Value)));
+            }
+
+            return new XElement(edmxNamespace + "Designer")
+                .AddElement(connectionElement)
+                .AddElement(optionsElement)
+                .AddElement(new XElement(edmxNamespace + "Diagrams", edm.EDMXDesignerDiagrams));
         }
     }
 }

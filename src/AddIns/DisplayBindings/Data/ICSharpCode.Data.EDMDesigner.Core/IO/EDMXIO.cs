@@ -64,17 +64,32 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
             return edm;
         }
 
-        public static XDocument WriteXDocument(XDocument ssdlXDocument, XDocument csdlXDocument, XDocument mslXDocument)
+        public static XDocument WriteXDocument(XDocument ssdlDocument, XDocument csdlDocument, XDocument mslDocument)
+        {
+            return WriteXDocument(ssdlDocument.Root, csdlDocument.Root, mslDocument.Root, null);
+        }
+
+        public static XDocument WriteXDocument(XElement ssdlElement, XElement csdlElement, XElement mslElement, XElement designerElement)
         {
             return new XDocument(new XDeclaration("1.0", "utf-8", null),
                 new XElement(edmxNamespace + "Edmx", new XAttribute("Version", "1.0"), new XAttribute(XNamespace.Xmlns + "edmx", edmxNamespace.NamespaceName),
                     new XElement(edmxNamespace + "Runtime",
                         new XElement(edmxNamespace + "StorageModels",
-                            ssdlXDocument.Root),
+                            ssdlElement),
                         new XElement(edmxNamespace + "ConceptualModels",
-                            csdlXDocument.Root),
+                            csdlElement),
                         new XElement(edmxNamespace + "Mappings",
-                            mslXDocument.Root))));
+                            mslElement))).AddElement(designerElement));
+        }
+
+        public static XDocument WriteXDocument(EDM edm)
+        {
+            XElement ssdlElement = SSDLIO.WriteXElement(edm.SSDLContainer);
+            XElement csdlElement = CSDLIO.Write(edm.CSDLContainer);
+            XElement mslElement = MSLIO.Write(edm);
+            XElement designerElement = DesignerIO.Write(edm);
+
+            return WriteXDocument(ssdlElement, csdlElement, mslElement, designerElement);
         }
     }
 }

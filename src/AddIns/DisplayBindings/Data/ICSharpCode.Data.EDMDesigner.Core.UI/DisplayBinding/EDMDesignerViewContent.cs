@@ -135,8 +135,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding
 		
 		public override void Save(OpenedFile file, Stream stream)
 		{
-			Debug.Assert(file == this.PrimaryFile);
-           //Writer.Write(_designerCanvas.EDMView.EDM, EDMDesignerView.Writer.Write(_designerCanvas.EDMView)).Save(file.FileName);
+            EDMXIO.WriteXDocument(_edmView.EDM).Save(stream);
 		}
 		
 		private EDMWizardWindow RunWizard(OpenedFile file)

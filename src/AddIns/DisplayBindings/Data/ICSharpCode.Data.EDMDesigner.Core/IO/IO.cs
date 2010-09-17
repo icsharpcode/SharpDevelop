@@ -22,9 +22,10 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
 
         protected static XNamespace csdlNamespace = "http://schemas.microsoft.com/ado/2008/09/edm";
         protected static XNamespace csdlCodeGenerationNamespace = "http://schemas.microsoft.com/ado/2006/04/codegeneration";
+        protected static XNamespace csdlAnnotationNamespace = "http://schemas.microsoft.com/ado/2009/02/edm/annotation";
 
         protected static XNamespace mslNamespace = "http://schemas.microsoft.com/ado/2008/09/mapping/cs";
-
+        
         #endregion
 
         #region Helper functions

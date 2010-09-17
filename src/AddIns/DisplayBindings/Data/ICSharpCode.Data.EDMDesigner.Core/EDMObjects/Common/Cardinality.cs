@@ -25,7 +25,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Common
             throw new NotImplementedException();
         }
 
-        public static string CardinalityToSTring(Cardinality cardinality)
+        public static string CardinalityToString(Cardinality cardinality)
         {
             switch (cardinality)
             {
