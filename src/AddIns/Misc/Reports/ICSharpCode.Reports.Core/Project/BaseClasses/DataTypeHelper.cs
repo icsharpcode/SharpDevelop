@@ -17,12 +17,12 @@ namespace ICSharpCode.Reports.Core
 		private DataTypeHelper () {
 			
 		}
-		internal static TypeCode TypeCodeFromString (string type) {
-			if (String.IsNullOrEmpty(type)) {
-				throw new ArgumentNullException("type");
-			}
-			return Type.GetTypeCode( Type.GetType(type));
-		}
+//		internal static TypeCode TypeCodeFromString (string type) {
+//			if (String.IsNullOrEmpty(type)) {
+//				throw new ArgumentNullException("type");
+//			}
+//			return Type.GetTypeCode( Type.GetType(type));
+//		}
 		
 		/*
 		internal static  bool IsNumber(TypeCode tc){

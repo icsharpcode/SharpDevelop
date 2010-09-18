@@ -70,11 +70,15 @@ namespace ICSharpCode.Reports.Core.Exporter {
 			ColumnText columnText = new ColumnText(contentByte);
 			iTextSharp.text.Rectangle r = base.ConvertToPdfRectangle();
 			columnText.SetSimpleColumn(r.Left, r.Top , r.Left + r.Width,r.Top - r.Height,pdfFormat.Leading,pdfFormat.Alignment);
-
-			string formated = StandardFormatter.FormatOutput(this.text,this.StyleDecorator.FormatString,
-			                                                 this.StyleDecorator.DataType,String.Empty);
-			Console.WriteLine("--- {0}",formated);
-			Chunk chunk = new Chunk(formated,font);
+		
+			string formatedText = this.text;
+			
+			if (!String.IsNullOrEmpty(StyleDecorator.FormatString)) {
+				formatedText = StandardFormatter.FormatOutput(this.text,this.StyleDecorator.FormatString,
+				                                                 this.StyleDecorator.DataType,String.Empty);
+			}
+			
+			Chunk chunk = new Chunk(formatedText,font);
 			columnText.AddText(chunk);
 			
 			columnText.Go();

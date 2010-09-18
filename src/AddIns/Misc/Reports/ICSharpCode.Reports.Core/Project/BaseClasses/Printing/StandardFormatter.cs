@@ -18,10 +18,18 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 	internal static class StandardFormatter
 	{
 		
+		private static TypeCode TypeCodeFromString (string type) {
+			if (String.IsNullOrEmpty(type)) {
+				throw new ArgumentNullException("type");
+			}
+			return Type.GetTypeCode( Type.GetType(type));
+		}
+		
+		
 		public static string FormatOutput(string valueToFormat,string format,
 		                                     string dataType, string nullValue )
 		{
-			TypeCode typeCode = DataTypeHelper.TypeCodeFromString(dataType);
+			TypeCode typeCode = TypeCodeFromString(dataType);
 			return StandardFormatter.FormatItem(valueToFormat,format,
 			                                    typeCode,nullValue);
 		}
