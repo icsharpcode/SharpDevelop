@@ -17,6 +17,7 @@ namespace ICSharpCode.PythonBinding
 		PythonNamespaceResolver namespaceResolver = new PythonNamespaceResolver();
 		PythonClassResolver classResolver = new PythonClassResolver();
 		PythonStandardModuleResolver standardModuleResolver = new PythonStandardModuleResolver();
+		PythonSelfResolver selfResolver = new PythonSelfResolver();
 		PythonMethodResolver methodResolver;
 		
 		List<IPythonResolver> resolvers = new List<IPythonResolver>();
@@ -29,6 +30,7 @@ namespace ICSharpCode.PythonBinding
 			resolvers.Add(classResolver);
 			resolvers.Add(standardModuleResolver);
 			resolvers.Add(methodResolver);
+			resolvers.Add(selfResolver);
 			resolvers.Add(namespaceResolver);
 		}
 		

@@ -52,6 +52,10 @@ namespace ICSharpCode.PythonBinding
 			get { return callingClass; }
 		}
 		
+		public bool HasCallingClass {
+			get { return callingClass != null; }
+		}
+		
 		public bool NamespaceExistsInProjectReferences(string name)
 		{
 			return projectContent.NamespaceExists(name);

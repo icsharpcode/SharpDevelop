@@ -348,6 +348,7 @@
     <Compile Include="Resolver\ImportModuleResolveResultTests.cs" />
     <Compile Include="Resolver\InvalidResolveInputsTestFixture.cs" />
     <Compile Include="Resolver\MemberNameTests.cs" />
+    <Compile Include="Resolver\PythonSelfResolverTests.cs" />
     <Compile Include="Resolver\ResolveBuiltInRoundMethodTestFixture.cs" />
     <Compile Include="Resolver\ResolveClassInstanceWithNamespaceTestFixture.cs" />
     <Compile Include="Resolver\ResolveConsoleWriteLineTestFixture.cs" />
@@ -371,6 +372,7 @@
     <Compile Include="Resolver\ResolverContextHasImportTests.cs" />
     <Compile Include="Resolver\ResolverContextPartialNamespaceExistsTests.cs" />
     <Compile Include="Resolver\ResolverContextUnaliasImportedModuleNameTestFixture.cs" />
+    <Compile Include="Resolver\ResolveSelfTests.cs" />
     <Compile Include="Resolver\ResolveSysModuleExitMethodTestFixture.cs" />
     <Compile Include="Resolver\ResolveSysModuleImportedAsMySysTestFixture.cs" />
     <Compile Include="Resolver\ResolveSysModuleTestFixture.cs">

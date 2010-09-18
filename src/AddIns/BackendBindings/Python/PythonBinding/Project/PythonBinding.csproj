@@ -106,6 +106,7 @@
     <Compile Include="Src\PythonImportResolver.cs" />
     <Compile Include="Src\PythonNamespaceResolver.cs" />
     <Compile Include="Src\PythonResolverContext.cs" />
+    <Compile Include="Src\PythonSelfResolver.cs" />
     <Compile Include="Src\PythonStandardLibraryPath.cs" />
     <Compile Include="Src\PythonStandardModuleMethodResolver.cs" />
     <Compile Include="Src\PythonStandardModuleMethodResolveResult.cs" />
