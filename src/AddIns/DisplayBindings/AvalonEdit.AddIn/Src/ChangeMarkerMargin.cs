@@ -2,9 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
-
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop.Editor;
@@ -53,8 +53,41 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						default:
 							throw new Exception("Invalid value for ChangeType");
 					}
+					
+					if (!string.IsNullOrEmpty(info.DeletedLinesAfterThisLine)) {
+						Point pt1 = new Point(5,  line.VisualTop + line.Height - textView.ScrollOffset.Y - 4);
+						Point pt2 = new Point(10, line.VisualTop + line.Height - textView.ScrollOffset.Y);
+						Point pt3 = new Point(5,  line.VisualTop + line.Height - textView.ScrollOffset.Y + 4);
+						
+						drawingContext.DrawGeometry(Brushes.Red, null, new PathGeometry(new List<PathFigure>() { CreateNAngle(pt1, pt2, pt3) }));
+					}
+					
+					// special case for line 0
+					if (line.FirstDocumentLine.LineNumber == 1) {
+						info = changeWatcher.GetChange(null);
+						
+						if (!string.IsNullOrEmpty(info.DeletedLinesAfterThisLine)) {
+							Point pt1 = new Point(5,  line.VisualTop - textView.ScrollOffset.Y - 4);
+							Point pt2 = new Point(10, line.VisualTop - textView.ScrollOffset.Y);
+							Point pt3 = new Point(5,  line.VisualTop - textView.ScrollOffset.Y + 4);
+							
+							drawingContext.DrawGeometry(Brushes.Red, null, new PathGeometry(new List<PathFigure>() { CreateNAngle(pt1, pt2, pt3) }));
+						}
+					}
 				}
 			}
+		}
+		
+		PathFigure CreateNAngle(params Point[] points)
+		{
+			if (points == null || points.Length == 0)
+				return new PathFigure();
+			
+			List<PathSegment> segs = new List<PathSegment>();
+			PathSegment seg = new PolyLineSegment(points, true);
+			segs.Add(seg);
+			
+			return new PathFigure(points[0], segs, true);
 		}
 		
 		protected override void OnTextViewChanged(TextView oldTextView, TextView newTextView)
