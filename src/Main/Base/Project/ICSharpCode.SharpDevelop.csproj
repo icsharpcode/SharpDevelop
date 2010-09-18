@@ -107,6 +107,7 @@
     <Compile Include="Src\Editor\Commands\FindReferences.cs" />
     <Compile Include="Src\Editor\Commands\GotoLineNumber.cs" />
     <Compile Include="Src\Editor\Commands\SymbolUnderCaretMenuCommand.cs" />
+    <Compile Include="Src\Editor\IDocumentBaseVersionProvider.cs" />
     <Compile Include="Src\Editor\IEditorControlService.cs" />
     <Compile Include="Src\Editor\IEditorUIService.cs" />
     <Compile Include="Src\Editor\CodeCompletion\AttributesItemProvider.cs" />

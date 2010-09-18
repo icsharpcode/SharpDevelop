@@ -23,6 +23,16 @@
 		       class = "ICSharpCode.Svn.Commands.RegisterEventsCommand"/>
 	</Path>
 	
+	<Path name="/Workspace/DiffProviders">
+		<Class id="svn"
+		       class="ICSharpCode.Svn.SvnDiffProvider" />
+	</Path>
+	
+	<Path name="/Workspace/BaseVersionProviders">
+		<Class id="svn"
+		       class="ICSharpCode.Svn.SvnBaseVersionProvider" />
+	</Path>
+	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id               = "SubversionHistoryView"
 		                type             = "Secondary"
