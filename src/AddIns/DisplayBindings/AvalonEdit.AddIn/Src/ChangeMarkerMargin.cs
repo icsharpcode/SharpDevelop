@@ -34,11 +34,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				changeWatcher.Initialize(editor.Document);
 				
 				foreach (VisualLine line in textView.VisualLines) {
-					Rect rect = new Rect(0, line.VisualTop - textView.ScrollOffset.Y, renderSize.Width, line.Height);
+					Rect rect = new Rect(0, line.VisualTop - textView.ScrollOffset.Y, 5, line.Height);
 					
-					ChangeType type = changeWatcher.GetChange(editor.Document.GetLine(line.FirstDocumentLine.LineNumber));
+					LineChangeInfo info = changeWatcher.GetChange(editor.Document.GetLine(line.FirstDocumentLine.LineNumber));
 					
-					switch (type) {
+					switch (info.Change) {
 						case ChangeType.None:
 							break;
 						case ChangeType.Added:
@@ -87,7 +87,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		protected override Size MeasureOverride(Size availableSize)
 		{
-			return new Size(5, 0);
+			return new Size(10, 0);
 		}
 		
 		bool disposed = false;

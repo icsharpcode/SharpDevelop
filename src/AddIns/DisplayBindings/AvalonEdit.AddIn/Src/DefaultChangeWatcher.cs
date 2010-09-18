@@ -14,62 +14,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 {
 	public class DefaultChangeWatcher : IChangeWatcher, ILineTracker
 	{
-		struct LineChangeInfo : IEquatable<LineChangeInfo>
-		{
-			ChangeType change;
-			
-			public ChangeType Change {
-				get { return change; }
-				set { change = value; }
-			}
-			
-			string deletedLinesAfterThisLine;
-			
-			public string DeletedLinesAfterThisLine {
-				get { return deletedLinesAfterThisLine; }
-				set { deletedLinesAfterThisLine = value; }
-			}
-			
-			public LineChangeInfo(ChangeType change, string deletedLinesAfterThisLine)
-			{
-				this.change = change;
-				this.deletedLinesAfterThisLine = deletedLinesAfterThisLine;
-			}
-			
-			#region Equals and GetHashCode implementation
-			public override bool Equals(object obj)
-			{
-				return (obj is DefaultChangeWatcher.LineChangeInfo) && Equals((DefaultChangeWatcher.LineChangeInfo)obj);
-			}
-			
-			public bool Equals(DefaultChangeWatcher.LineChangeInfo other)
-			{
-				return this.change == other.change && this.deletedLinesAfterThisLine == other.deletedLinesAfterThisLine;
-			}
-			
-			public override int GetHashCode()
-			{
-				int hashCode = 0;
-				unchecked {
-					hashCode += 1000000007 * change.GetHashCode();
-					if (deletedLinesAfterThisLine != null)
-						hashCode += 1000000009 * deletedLinesAfterThisLine.GetHashCode();
-				}
-				return hashCode;
-			}
-			
-			public static bool operator ==(DefaultChangeWatcher.LineChangeInfo lhs, DefaultChangeWatcher.LineChangeInfo rhs)
-			{
-				return lhs.Equals(rhs);
-			}
-			
-			public static bool operator !=(DefaultChangeWatcher.LineChangeInfo lhs, DefaultChangeWatcher.LineChangeInfo rhs)
-			{
-				return !(lhs == rhs);
-			}
-			#endregion
-		}
-		
 		WeakLineTracker lineTracker;
 		CompressingTreeList<LineChangeInfo> changeList;
 		TextDocument document;
@@ -83,9 +27,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		public ChangeType GetChange(IDocumentLine line)
+		public LineChangeInfo GetChange(IDocumentLine line)
 		{
-			return changeList[line.LineNumber].Change;
+			if (line == null)
+				return changeList[0];
+			
+			return changeList[line.LineNumber];
 		}
 		
 		public void Initialize(IDocument document)
