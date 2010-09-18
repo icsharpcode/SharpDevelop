@@ -48,4 +48,19 @@ namespace ICSharpCode.SharpDevelop.Editor
 			}
 		}
 	}
+	
+	public interface IChangeWatcher : IDisposable
+	{
+		event EventHandler ChangeOccurred;
+		ChangeType GetChange(IDocumentLine line);
+		void Initialize(IDocument document);
+	}
+	
+	public enum ChangeType
+	{
+		None,
+		Added,
+		Modified,
+		Unsaved
+	}
 }
