@@ -2,15 +2,15 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
-using ICSharpCode.AvalonEdit.Folding;
 using ICSharpCode.AvalonEdit.Rendering;
-using ICSharpCode.SharpDevelop;
+using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -22,15 +22,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	{
 		IChangeWatcher changeWatcher;
 		
-		public IChangeWatcher ChangeWatcher {
-			get { return changeWatcher; }
-			set {
-				if (changeWatcher != null)
-					changeWatcher.ChangeOccured -= ChangeOccured;
-				changeWatcher = value;
-				if (changeWatcher != null)
-					changeWatcher.ChangeOccured += ChangeOccured;
-			}
+		public ChangeMarkerMargin()
+		{
+			changeWatcher = new DefaultChangeWatcher();
+			changeWatcher.ChangeOccurred += new EventHandler(ChangeOccurred);
 		}
 		
 		protected override void OnRender(DrawingContext drawingContext)
@@ -40,6 +35,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			if (textView != null && textView.VisualLinesValid) {
 				ITextEditor editor = textView.Services.GetService(typeof(ITextEditor)) as ITextEditor;
+				changeWatcher.Initialize(editor.Document);
 				
 				foreach (VisualLine line in textView.VisualLines) {
 					Rect rect = new Rect(0, line.VisualTop - textView.ScrollOffset.Y, renderSize.Width, line.Height);
@@ -50,11 +46,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						case ChangeType.None:
 							break;
 						case ChangeType.Added:
-						case ChangeType.Saved:
 							drawingContext.DrawRectangle(Brushes.LightGreen, null, rect);
-							break;
-						case ChangeType.Deleted:
-							// TODO : implement
 							break;
 						case ChangeType.Modified:
 							drawingContext.DrawRectangle(Brushes.Blue, null, rect);
@@ -71,9 +63,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		protected override void OnTextViewChanged(TextView oldTextView, TextView newTextView)
 		{
-			if (ChangeWatcher == null)
-				ChangeWatcher = new LocalChangeWatcher();
-			
 			if (oldTextView != null) {
 				oldTextView.VisualLinesChanged -= VisualLinesChanged;
 				oldTextView.ScrollOffsetChanged -= ScrollOffsetChanged;
@@ -82,32 +71,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (newTextView != null) {
 				newTextView.VisualLinesChanged += VisualLinesChanged;
 				newTextView.ScrollOffsetChanged += ScrollOffsetChanged;
-				
-				ITextEditor editor = newTextView.Services.GetService(typeof(ITextEditor)) as ITextEditor;
-				changeWatcher.UpdateTextEditor(editor);
 			}
 		}
 		
-		protected override void OnDocumentChanged(TextDocument oldDocument, TextDocument newDocument)
+		void ChangeOccurred(object sender, EventArgs e)
 		{
-			if (ChangeWatcher == null)
-				ChangeWatcher = new LocalChangeWatcher();
-			
-			ITextEditor editor = TextView.Services.GetService(typeof(ITextEditor)) as ITextEditor;
-			changeWatcher.UpdateTextEditor(editor);
+			InvalidateVisual();
 		}
-
+		
 		void VisualLinesChanged(object sender, EventArgs e)
 		{
 			InvalidateVisual();
 		}
 		
 		void ScrollOffsetChanged(object sender, EventArgs e)
-		{
-			InvalidateVisual();
-		}
-		
-		void ChangeOccured(object sender, EventArgs e)
 		{
 			InvalidateVisual();
 		}
@@ -124,7 +101,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (!disposed) {
 				OnTextViewChanged(TextView, null);
 				changeWatcher.Dispose();
-				ChangeWatcher = null;
+				changeWatcher = null;
 				disposed = true;
 			}
 		}
@@ -132,95 +109,157 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	
 	public interface IChangeWatcher : IDisposable
 	{
-		event EventHandler ChangeOccured;
+		event EventHandler ChangeOccurred;
 		ChangeType GetChange(IDocumentLine line);
-		void UpdateTextEditor(ITextEditor editor);
+		void Initialize(IDocument document);
 	}
 	
-	public enum ChangeType : int
+	public enum ChangeType
 	{
-		None       = 0x0000,
-		Added      = 0x0001,
-		Deleted    = 0x0002,
-		Modified   = 0x0004,
-		/// <summary>
-		/// Only to be used by LocalChangeWatcher. States if a change is unsaved or not.
-		/// </summary>
-		Saved      = 0x0008,
-		/// <summary>
-		/// Only to be used by LocalChangeWatcher. States if a change is unsaved or not.
-		/// </summary>
-		Unsaved    = 0x0016
+		None,
+		Added,
+		Modified,
+		Unsaved
 	}
 	
-	public class LocalChangeWatcher : IChangeWatcher, ILineTracker
+	public class DefaultChangeWatcher : IChangeWatcher, ILineTracker
 	{
-		WeakLineTracker lineTracker;
-		List<DocumentLine> changedLines;
-		List<DocumentLine> lastSavedChangedLines;
-		bool changed;
-		OpenedFile openedFile;
-		TextView textView;
-		ITextEditor editor;
-		
-		public event EventHandler ChangeOccured;
-		
-		protected void OnChangeOccured(EventArgs e)
+		struct LineChangeInfo : IEquatable<LineChangeInfo>
 		{
-			if (ChangeOccured != null) {
-				ChangeOccured(this, e);
+			ChangeType change;
+			
+			public ChangeType Change {
+				get { return change; }
+				set { change = value; }
+			}
+			
+			string deletedLinesAfterThisLine;
+			
+			public string DeletedLinesAfterThisLine {
+				get { return deletedLinesAfterThisLine; }
+				set { deletedLinesAfterThisLine = value; }
+			}
+			
+			public LineChangeInfo(ChangeType change, string deletedLinesAfterThisLine)
+			{
+				this.change = change;
+				this.deletedLinesAfterThisLine = deletedLinesAfterThisLine;
+			}
+			
+			#region Equals and GetHashCode implementation
+			public override bool Equals(object obj)
+			{
+				return (obj is DefaultChangeWatcher.LineChangeInfo) && Equals((DefaultChangeWatcher.LineChangeInfo)obj);
+			}
+			
+			public bool Equals(DefaultChangeWatcher.LineChangeInfo other)
+			{
+				return this.change == other.change && this.deletedLinesAfterThisLine == other.deletedLinesAfterThisLine;
+			}
+			
+			public override int GetHashCode()
+			{
+				int hashCode = 0;
+				unchecked {
+					hashCode += 1000000007 * change.GetHashCode();
+					if (deletedLinesAfterThisLine != null)
+						hashCode += 1000000009 * deletedLinesAfterThisLine.GetHashCode();
+				}
+				return hashCode;
+			}
+			
+			public static bool operator ==(DefaultChangeWatcher.LineChangeInfo lhs, DefaultChangeWatcher.LineChangeInfo rhs)
+			{
+				return lhs.Equals(rhs);
+			}
+			
+			public static bool operator !=(DefaultChangeWatcher.LineChangeInfo lhs, DefaultChangeWatcher.LineChangeInfo rhs)
+			{
+				return !(lhs == rhs);
+			}
+			#endregion
+		}
+		
+		WeakLineTracker lineTracker;
+		CompressingTreeList<LineChangeInfo> changeList;
+		TextDocument document;
+		
+		public event EventHandler ChangeOccurred;
+		
+		protected void OnChangeOccurred(EventArgs e)
+		{
+			if (ChangeOccurred != null) {
+				ChangeOccurred(this, e);
 			}
 		}
 		
 		public ChangeType GetChange(IDocumentLine line)
 		{
-			if (openedFile == null && editor.FileName != null) {
-				openedFile = FileService.GetOpenedFile(editor.FileName);
-				openedFile.IsDirtyChanged += IsDirtyChanged;
-			}
-			
-			DocumentLine documentLine = textView.Document.GetLineByNumber(line.LineNumber);
-			
-			if (lastSavedChangedLines.Contains(documentLine))
-				return ChangeType.Saved;
-			if (changedLines.Contains(documentLine))
-				return ChangeType.Unsaved;
-			
-			return ChangeType.None;
+			return changeList[line.LineNumber].Change;
 		}
 		
-		void IsDirtyChanged(object sender, EventArgs e)
+		public void Initialize(IDocument document)
 		{
-			if (changed && !openedFile.IsDirty) {
-				lastSavedChangedLines = lastSavedChangedLines.Concat(changedLines).Distinct().ToList();
-				changedLines.Clear();
-				changed = false;
-				OnChangeOccured(EventArgs.Empty);
-			}
+			if (this.document != null)
+				return;
+			
+			this.document = ((TextView)document.GetService(typeof(TextView))).Document;
+			this.changeList = new CompressingTreeList<LineChangeInfo>((x, y) => x.Equals(y));
+			
+			SetupInitialFileState();
+			
+			lineTracker = WeakLineTracker.Register(this.document, this);
+			this.document.UndoStack.PropertyChanged += UndoStackPropertyChanged;
+		}
+
+		void SetupInitialFileState()
+		{
+			changeList.Clear();
+			changeList.InsertRange(0, this.document.LineCount + 1, new LineChangeInfo(ChangeType.None, ""));
+			OnChangeOccurred(EventArgs.Empty);
+		}
+
+		void UndoStackPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (document.UndoStack.IsOriginalFile)
+				SetupInitialFileState();
 		}
 		
 		void ILineTracker.BeforeRemoveLine(DocumentLine line)
 		{
-			changedLines.Remove(line);
-			lastSavedChangedLines.Remove(line);
-			changed = true;
+			int index = line.LineNumber;
+			LineChangeInfo info = changeList[index];
+			LineChangeInfo lineBefore = changeList[index - 1];
+			
+			lineBefore.DeletedLinesAfterThisLine
+				+= (document.GetText(line.Offset, line.Length)
+				    + Environment.NewLine + info.DeletedLinesAfterThisLine);
+			
+			Debug.Assert(lineBefore.DeletedLinesAfterThisLine.EndsWith(Environment.NewLine));
+			
+			changeList[index - 1] = lineBefore;
+			changeList.RemoveAt(index);
 		}
 		
 		void ILineTracker.SetLineLength(DocumentLine line, int newTotalLength)
 		{
-			if (!changedLines.Contains(line))
-				changedLines.Add(line);
-			lastSavedChangedLines.Remove(line);
-			changed = true;
+			int index = line.LineNumber;
+			var info = changeList[index];
+			info.Change = ChangeType.Unsaved;
+			changeList[index] = info;
 		}
 		
 		void ILineTracker.LineInserted(DocumentLine insertionPos, DocumentLine newLine)
 		{
-			if (!changedLines.Contains(insertionPos))
-				changedLines.Add(insertionPos);
-			lastSavedChangedLines.Remove(insertionPos);
-			changedLines.Add(newLine);
-			changed = true;
+			int index = insertionPos.LineNumber;
+			var firstLine = changeList[index];
+			var newLineInfo = new LineChangeInfo(ChangeType.Unsaved, firstLine.DeletedLinesAfterThisLine);
+			
+			firstLine.Change = ChangeType.Unsaved;
+			firstLine.DeletedLinesAfterThisLine = "";
+			
+			changeList.Insert(index + 1, newLineInfo);
+			changeList[index] = firstLine;
 		}
 		
 		void ILineTracker.RebuildDocument()
@@ -233,36 +272,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (!disposed) {
 				lineTracker.Deregister();
-				openedFile.IsDirtyChanged -= IsDirtyChanged;
-				FileService.FileCreated -= FileServiceFileCreated;
+				this.document.UndoStack.PropertyChanged -= UndoStackPropertyChanged;
 				disposed = true;
 			}
-		}
-		
-		public void UpdateTextEditor(ITextEditor editor)
-		{
-			if (lineTracker != null)
-				lineTracker.Deregister();
-			if (openedFile != null)
-				openedFile.IsDirtyChanged -= IsDirtyChanged;
-			
-			if (editor == null)
-				throw new ArgumentNullException("editor");
-			
-			this.editor = editor;
-			this.textView = editor.GetService(typeof(TextView)) as TextView;
-			FileService.FileCreated += FileServiceFileCreated;
-			
-			lineTracker = WeakLineTracker.Register(textView.Document, this);
-			
-			changed = false;
-			changedLines = new List<DocumentLine>();
-			lastSavedChangedLines = new List<DocumentLine>();
-		}
-		
-		void FileServiceFileCreated(object sender, FileEventArgs e)
-		{
-			
 		}
 	}
 }
