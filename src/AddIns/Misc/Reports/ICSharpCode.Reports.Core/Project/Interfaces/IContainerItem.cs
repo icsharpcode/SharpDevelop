@@ -30,7 +30,6 @@ namespace ICSharpCode.Reports.Core.Interfaces
 	public interface ITableContainer:ISimpleContainer
 	{
 		IDataNavigator DataNavigator {set;}
-		IExpressionEvaluatorFacade ExpressionEvaluatorFacade {set;}
 		void StartLayoutAt (BaseSection section);         
 	}
 }

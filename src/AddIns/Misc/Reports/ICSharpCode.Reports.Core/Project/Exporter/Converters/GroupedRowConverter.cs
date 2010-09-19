@@ -167,20 +167,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		private Point old_ConvertGroupHeader(ExporterCollection mylist,BaseSection section,ISimpleContainer simpleContainer,int leftPos,Point offset)
-		{ 
-			var groupCollection = section.Items.ExtractGroupedColumns();
-			base.DataNavigator.Fill(groupCollection);
-			base.FireSectionRendering(section);
-			ExporterCollection list = StandardPrinter.ConvertPlainCollection(groupCollection,offset);
-//			StandardPrinter.EvaluateRow(base.Evaluator,list);
-			mylist.AddRange(list);
-			AfterConverting (section,list);
-			
-			return new Point (leftPos,offset.Y + groupCollection[0].Size.Height + 20  + (3 *GlobalValues.GapBetweenContainer));
-		}
-		
-		
 		private Point ConvertGroupChilds(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer, int defaultLeftPos, Point currentPosition)
 		{
 			PrepareContainerForConverting(section,simpleContainer);

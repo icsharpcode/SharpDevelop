@@ -301,7 +301,6 @@
     <Compile Include="Project\BaseItems\BaseTableItem.cs" />
     <Compile Include="Project\Exceptions\IllegalQueryException.cs" />
     <Compile Include="Project\Events\SectionRenderEventArgs.cs" />
-    <Compile Include="Project\BaseClasses\DataTypeHelper.cs" />
     <Compile Include="Project\Exporter\ExporterPage.cs" />
     <Compile Include="Project\Exporter\DataPageBuilder.cs" />
     <Compile Include="Project\Exceptions\MissingDataManagerException.cs" />

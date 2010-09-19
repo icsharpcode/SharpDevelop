@@ -15,6 +15,9 @@ using System.Globalization;
 namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 {
 	
+//	http://en.csharp-online.net/Create_List_Controls
+	
+	
 	internal static class StandardFormatter
 	{
 		
@@ -100,9 +103,8 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 					                          CultureInfo.CurrentCulture.NumberFormat);
 					
 					str = number.ToString (format,CultureInfo.CurrentCulture);
-				} catch (System.FormatException) {
-//						string s = String.Format("\tDecimalValue < {0} > {1}",toFormat,e.Message);
-//						System.Console.WriteLine("\t{0}",s);
+				} catch (System.FormatException e) {
+					throw e;
 				}
 				return str;
 			} else {

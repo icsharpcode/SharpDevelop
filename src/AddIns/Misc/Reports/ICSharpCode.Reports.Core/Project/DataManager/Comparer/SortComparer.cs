@@ -38,7 +38,7 @@ namespace ICSharpCode.Reports.Core {
 				object rightValue = value.ObjectArray[index];
 
 				// Indizes sind hier deckungsgleich
-				Type t = rightValue.GetType();
+
 				SortColumn sortColumn = (SortColumn)base.ColumnCollection[index];
 
 				bool descending = (sortColumn.SortDirection == ListSortDirection.Descending);

@@ -110,7 +110,7 @@ namespace ICSharpCode.Reports.Core{
 	
 		private BaseReportItem InnerFind (string name)
 		{
-			return this.FirstOrDefault(x => 0 == String.Compare(x.Name, name,true));
+			return this.FirstOrDefault(x => 0 == String.Compare(x.Name, name,true,CultureInfo.InvariantCulture));
 		}
 		
 		

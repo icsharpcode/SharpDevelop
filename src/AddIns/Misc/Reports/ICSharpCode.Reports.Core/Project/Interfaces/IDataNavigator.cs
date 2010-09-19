@@ -31,12 +31,7 @@ using System.ComponentModel;
  		// childList -----------------
  		
  		bool HasChildren {get;}
- 		
- 		
-// 		int ChildListCount {get;}
- 		
- 		void FillChild (ReportItemCollection collection);
- 		
+ 
  		// end child list --------------------
  		
  		bool IsSorted {get;}
@@ -51,7 +46,5 @@ using System.ComponentModel;
  		
  		AvailableFieldsCollection AvailableFields{get;}
  		 
-// 		System.Collections.IEnumerator RangeEnumerator(int start, int end);
- 			
  	}
  }

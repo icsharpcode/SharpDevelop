@@ -6,11 +6,10 @@
  * 
  * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
  */
-using ICSharpCode.Reports.Core.Interfaces;
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Reports.Core.Interfaces;
 using Irony.CompilerServices;
-using Org.BouncyCastle.Crypto.Engines;
 using SimpleExpressionEvaluator;
 using SimpleExpressionEvaluator.Compilation;
 using SimpleExpressionEvaluator.Compilation.Functions;

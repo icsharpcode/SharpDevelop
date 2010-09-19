@@ -127,7 +127,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 				throw new ArgumentNullException("reportModel");
 			}
 			if (dataSource == null) {
-				throw new ArgumentNullException("dataTable");
+				throw new ArgumentNullException("dataSource");
 			}
 			ReportEngine.CheckForParameters(reportModel,parameters);
 			IDataManager dataManager = DataManagerFactory.CreateDataManager(reportModel,dataSource);

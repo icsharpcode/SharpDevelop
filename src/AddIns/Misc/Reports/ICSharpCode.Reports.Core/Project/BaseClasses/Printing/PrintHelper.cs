@@ -63,7 +63,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 		
-		public static void AdjustSectionLocation (BaseSection section)
+		public static void AdjustSectionLocation (BaseReportItem section)
 		{
 			section.Location = new Point(section.Location.X,section.SectionOffset );
 		}
@@ -168,9 +168,9 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		#endregion
 		
-		public static Point ConvertRectangleToCurentPosition (Rectangle r)
+		public static Point ConvertRectangleToCurentPosition (Rectangle rectangle)
 		{
-			return new Point(r.Left,r.Bottom);
+			return new Point(rectangle.Left,rectangle.Bottom);
 		}
 		
 		

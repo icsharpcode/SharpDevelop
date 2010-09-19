@@ -101,7 +101,6 @@ namespace ICSharpCode.Reports.Core {
 			string compVal = String.Empty;
 			IndexList.Clear();
 			IndexList childList = null;
-			BaseComparer checkElem = list[0];
 			foreach (BaseComparer element in list)
 			{
 				string v = element.ObjectArray[0].ToString();
@@ -127,9 +126,8 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		protected void CreateGroupeChildren(IndexList list,BaseComparer sc)
+		protected static void CreateGroupeChildren(IndexList list,BaseComparer sc)
 		{
-			string v = sc.ObjectArray[0].ToString();
 			list.Add(sc);
 		}
 		

@@ -19,9 +19,6 @@ namespace ICSharpCode.Reports.Core
 	{
 		
 		private IDataViewStrategy store;
-		private IndexList childList;
-		private System.Collections.Generic.List<BaseComparer>.Enumerator ce;
-		
 		
 		public DataNavigator(IDataViewStrategy store){
 			this.store = store;
@@ -125,7 +122,7 @@ namespace ICSharpCode.Reports.Core
 		
 		
 		// at the moment only tables are working
-		
+		/*
 		public void FillChild (ReportItemCollection collection)
 		{
 			TableStrategy tableStrategy = store as TableStrategy;
@@ -139,7 +136,7 @@ namespace ICSharpCode.Reports.Core
 				
 			}
 		}
-		
+		*/
 		
 		private IndexList BuildChildList()
 		{
