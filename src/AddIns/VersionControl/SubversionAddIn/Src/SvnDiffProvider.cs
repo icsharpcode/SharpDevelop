@@ -3,8 +3,10 @@
 
 using System;
 using System.IO;
+using System.Threading;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.Svn.Commands;
 using SharpSvn.Diff;
 
 namespace ICSharpCode.Svn
@@ -16,6 +18,9 @@ namespace ICSharpCode.Svn
 	{
 		public Stream GetDiff(string fileName, ITextBuffer modifiedBuffer)
 		{
+			if (!RegisterEventsCommand.CanBeVersionControlledFile(fileName))
+				return null;
+			
 			SvnFileDiff diff;
 			string tempFile = Path.GetTempFileName();
 			MemoryStream stream = new MemoryStream();
@@ -24,6 +29,8 @@ namespace ICSharpCode.Svn
 			SvnFileDiff.TryCreate(fileName, tempFile, new SvnFileDiffArgs(), out diff);
 			diff.WriteDifferences(stream, new SvnDiffWriteDifferencesArgs());
 			File.Delete(tempFile);
+			
+			
 
 			return stream;
 		}

@@ -17,9 +17,25 @@ namespace ICSharpCode.SharpDevelop.Editor
 		Stream OpenBaseVersion(string fileName);
 	}
 	
+	public sealed class DefaultBaseVersionProvider : IDocumentBaseVersionProvider
+	{
+		public Stream OpenBaseVersion(string fileName)
+		{
+			return File.OpenRead(fileName);
+		}
+	}
+	
 	public interface IDiffProvider
 	{
 		Stream GetDiff(string fileName, ITextBuffer modifiedBuffer);
+	}
+	
+	public sealed class DefaultDiffProvider : IDiffProvider
+	{
+		public Stream GetDiff(string fileName, ITextBuffer modifiedBuffer)
+		{
+			return null;
+		}
 	}
 	
 	public class VersioningServices

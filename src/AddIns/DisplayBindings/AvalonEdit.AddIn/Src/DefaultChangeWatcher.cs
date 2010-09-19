@@ -4,10 +4,12 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-
+using System.IO;
+using System.Linq;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -16,7 +18,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	{
 		WeakLineTracker lineTracker;
 		CompressingTreeList<LineChangeInfo> changeList;
-		TextDocument document;
+		IDocument document;
+		TextDocument textDocument;
 		
 		public event EventHandler ChangeOccurred;
 		
@@ -37,28 +40,64 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public void Initialize(IDocument document)
 		{
-			if (this.document != null)
+			if (this.textDocument != null)
 				return;
 			
-			this.document = ((TextView)document.GetService(typeof(TextView))).Document;
+			this.document = document;
+			this.textDocument = ((TextView)document.GetService(typeof(TextView))).Document;
 			this.changeList = new CompressingTreeList<LineChangeInfo>((x, y) => x.Equals(y));
 			
 			SetupInitialFileState();
 			
-			lineTracker = WeakLineTracker.Register(this.document, this);
-			this.document.UndoStack.PropertyChanged += UndoStackPropertyChanged;
+			lineTracker = WeakLineTracker.Register(this.textDocument, this);
+			this.textDocument.UndoStack.PropertyChanged += UndoStackPropertyChanged;
 		}
 	
 		void SetupInitialFileState()
 		{
 			changeList.Clear();
-			changeList.InsertRange(0, this.document.LineCount + 1, new LineChangeInfo(ChangeType.None, ""));
+			
+			Stream diff = GetDiff();
+			
+			if (diff == null)
+				changeList.InsertRange(0, document.TotalNumberOfLines + 1, new LineChangeInfo(ChangeType.None, ""));
+			else {
+				changeList.InsertRange(0, document.TotalNumberOfLines + 1, new LineChangeInfo(ChangeType.None, ""));
+			}
+						
 			OnChangeOccurred(EventArgs.Empty);
+		}
+		
+		Stream GetBaseVersion()
+		{
+			string fileName = ((ITextEditor)document.GetService(typeof(ITextEditor))).FileName;
+			
+			foreach (IDocumentBaseVersionProvider provider in VersioningServices.Instance.BaseVersionProviders) {
+				var result = provider.OpenBaseVersion(fileName);
+				if (result != null)
+					return result;
+			}
+			
+			return new DefaultBaseVersionProvider().OpenBaseVersion(fileName);
+		}
+		
+		Stream GetDiff()
+		{
+			ITextBuffer buffer = document.CreateSnapshot();
+			string fileName = ((ITextEditor)document.GetService(typeof(ITextEditor))).FileName;
+			
+			foreach (IDiffProvider provider in VersioningServices.Instance.DiffProviders) {
+				var result = provider.GetDiff(fileName, buffer);
+				if (result != null)
+					return result;
+			}
+			
+			return new DefaultDiffProvider().GetDiff(fileName, buffer);
 		}
 	
 		void UndoStackPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (document.UndoStack.IsOriginalFile)
+			if (textDocument.UndoStack.IsOriginalFile)
 				SetupInitialFileState();
 		}
 		
@@ -69,7 +108,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			LineChangeInfo lineBefore = changeList[index - 1];
 			
 			lineBefore.DeletedLinesAfterThisLine
-				+= (document.GetText(line.Offset, line.Length)
+				+= (textDocument.GetText(line.Offset, line.Length)
 				    + Environment.NewLine + info.DeletedLinesAfterThisLine);
 			
 			Debug.Assert(lineBefore.DeletedLinesAfterThisLine.EndsWith(Environment.NewLine));
@@ -109,7 +148,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (!disposed) {
 				lineTracker.Deregister();
-				this.document.UndoStack.PropertyChanged -= UndoStackPropertyChanged;
+				this.textDocument.UndoStack.PropertyChanged -= UndoStackPropertyChanged;
 				disposed = true;
 			}
 		}
