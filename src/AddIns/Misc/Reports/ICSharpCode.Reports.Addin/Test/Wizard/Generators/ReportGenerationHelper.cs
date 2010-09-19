@@ -43,7 +43,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 		}
 		
 		
-		public static ReportModel CreateModel (string reportName)
+		public static ReportModel CreateModel (string reportName,bool createGrouping)
 		{
 			
 			ReportStructure structure = CreateReportStructure(reportName);
@@ -55,6 +55,10 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard
 			ICSharpCode.Reports.Core.BaseDataItem bri = new ICSharpCode.Reports.Core.BaseDataItem();
 			bri.Name ="Field1";
 			structure.ReportItemCollection.Add(bri);
+			
+			if (createGrouping) {
+				structure.Grouping = "group";
+			}
 			
 			ReportModel m = structure.CreateAndFillReportModel();
 			ICSharpCode.Core.Properties customizer = new ICSharpCode.Core.Properties();

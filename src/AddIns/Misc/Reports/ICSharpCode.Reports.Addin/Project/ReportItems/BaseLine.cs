@@ -13,12 +13,14 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
+using ICSharpCode.Reports.Addin.Designer;
+
 namespace ICSharpCode.Reports.Addin
 {
 	/// <summary>
 	/// Description of BaseLine.
 	/// </summary>
-	[Designer(typeof(ICSharpCode.Reports.Addin.LineDesigner))]
+	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.LineDesigner))]
 	public class BaseLineItem:AbstractItem
 	{
 		private Point fromPoint;

@@ -20,92 +20,80 @@ using ICSharpCode.Reports.Core.Exporter;
 /// 	created by - Forstmeier Peter
 /// 	created on - 22.08.2005 00:12:59
 /// </remarks>
-namespace ICSharpCode.Reports.Core {	
-	public class BaseDataItem : BaseTextItem,IDataRenderer,IExportColumnBuilder				
+namespace ICSharpCode.Reports.Core
+{
+	public class BaseDataItem : BaseTextItem, IDataRenderer, IExportColumnBuilder, IDataItem
 	{
-		
+
 		private string columnName;
-		private string baseTableName;
 		private string dbValue;
-		private string nullValue;
-		
+
+
 		#region Constructor
-		
-		public BaseDataItem():base() 
+
+		public BaseDataItem() : base()
 		{
 		}
-		
-		public BaseDataItem(string columnName):base()
+
+		public BaseDataItem(string columnName) : base()
 		{
 			this.columnName = columnName;
 		}
-		
+
 		#endregion
-		
+
 		#region privates
-				
-		private string CheckForNullValue() 
+
+		private string CheckForNullValue()
 		{
 			if (String.IsNullOrEmpty(this.dbValue)) {
-				if (String.IsNullOrEmpty(this.nullValue)) {
+				if (String.IsNullOrEmpty(this.NullValue)) {
 					return GlobalValues.UnboundName;
 				} else
-					return this.nullValue;
+					return this.NullValue;
 			}
 			return this.dbValue;
 		}
-	
+
 		#endregion
-		
+
 		#region IExportColumnBuilder  implementation
-		
-		public new BaseExportColumn  CreateExportColumn()
+
+		public new BaseExportColumn CreateExportColumn()
 		{
 			string toPrint = CheckForNullValue();
 			TextStyleDecorator st = base.CreateItemStyle();
-			ExportText item = new ExportText(st,false);
-			item.Text = StandardFormatter.FormatOutput(toPrint,
-			                              this.FormatString,
-			                              base.DataType,
-			                              this.nullValue);
-			
+			ExportText item = new ExportText(st, false);
+			item.Text = StandardFormatter.FormatOutput(toPrint, this.FormatString, base.DataType, this.NullValue);
+
 			return item;
 		}
-		
+
 		#endregion
-		
-		public override void Render(ReportPageEventArgs rpea) 
+
+		public override void Render(ReportPageEventArgs rpea)
 		{
 			string toPrint = CheckForNullValue();
-			base.Text = StandardFormatter.FormatOutput(toPrint,
-			                              this.FormatString,
-			                              base.DataType,
-			                              this.nullValue);
-			base.Render (rpea);
+			base.Text = StandardFormatter.FormatOutput(toPrint, this.FormatString, base.DataType, this.NullValue);
+			base.Render(rpea);
 		}
-		
-		public override string ToString() 
+
+		public override string ToString()
 		{
 			return this.GetType().Name;
 		}
-		
+
 		#region Properies
-		
-		[XmlIgnoreAttribute]
+
+		[XmlIgnoreAttribute()]
 		[Browsable(false)]
-		public virtual string DBValue 
-		{
-			get {
-				return dbValue;
-			}
-			set {
-				dbValue = value;
-			}
+		public virtual string DBValue {
+			get { return dbValue; }
+			set { dbValue = value; }
 		}
-		
-		
-		public virtual string ColumnName 
-		{
+
+
+		public virtual string ColumnName {
 			get {
 				if (String.IsNullOrEmpty(columnName)) {
 					this.columnName = GlobalValues.UnboundName;
@@ -117,45 +105,29 @@ namespace ICSharpCode.Reports.Core {
 				this.Text = this.columnName;
 			}
 		}
-		
+
 		///<summary>
 		/// Mappingname to Datasource
 		/// </summary>
 		/// 
-		
-		[XmlIgnoreAttribute]
-		[Browsable(true),Category("Databinding"),
-		 Description("Mapping Name to DataTable")]
-		public string MappingName 
-		{
-			get {
-				return baseTableName + "." + columnName;
-			} 
+
+		[XmlIgnoreAttribute()]
+		[Browsable(true), Category("Databinding"), Description("Mapping Name to DataTable")]
+		public string MappingName {
+			get { return BaseTableName + "." + this.ColumnName; }
 		}
+
+
+		public string BaseTableName {get;set;}
 		
+
+		[Browsable(true),
+		 Category("Databinding"),
+		 Description("Display Value for empty Field")]
+		public string NullValue {get;set;}
 		
-		public string BaseTableName 
-		{
-			get {
-				return baseTableName;
-			}
-			set {
-				baseTableName = value;
-			}
-		}
-		
-		
-		[Browsable(true),Category("Databinding"),Description("Display Value for empty Field")]
-		public string NullValue {
-			get {
-				return nullValue;
-			}
-			set {
-				nullValue = value;
-			}
-		}
-		
+
 		#endregion
-		
+
 	}
 }

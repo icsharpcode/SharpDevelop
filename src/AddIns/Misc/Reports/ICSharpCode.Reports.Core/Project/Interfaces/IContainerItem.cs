@@ -23,13 +23,13 @@ namespace ICSharpCode.Reports.Core.Interfaces
 		BaseReportItem Parent {set;get;}
 		Point Location {set;get;}
 		Size Size {get;set;}
+		Color BackColor {get;set;}
 	}
 	
 	
 	public interface ITableContainer:ISimpleContainer
 	{
 		IDataNavigator DataNavigator {set;}
-		IExpressionEvaluatorFacade ExpressionEvaluatorFacade {set;}
 		void StartLayoutAt (BaseSection section);         
 	}
 }

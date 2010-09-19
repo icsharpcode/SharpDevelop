@@ -10,8 +10,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
-using ICSharpCode.Reports.Core;
+
 using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.Interfaces;
 
 namespace ICSharpCode.Reports.Core{
 	
@@ -60,8 +61,6 @@ namespace ICSharpCode.Reports.Core{
 	///</summary>
 	public class ReportItemCollection : Collection<BaseReportItem>
 	{
-		public event EventHandler<CollectionChangedEventArgs<BaseReportItem>> Added;
-		public event EventHandler<CollectionChangedEventArgs<BaseReportItem>> Removed;
 		
 		// Trick to get the inner list as List<T> (InnerList always has that type because we only use
 		// the parameterless constructor on Collection<T>)
@@ -111,7 +110,7 @@ namespace ICSharpCode.Reports.Core{
 	
 		private BaseReportItem InnerFind (string name)
 		{
-			return this.FirstOrDefault(x => 0 == String.Compare(x.Name, name,true));
+			return this.FirstOrDefault(x => 0 == String.Compare(x.Name, name,true,CultureInfo.InvariantCulture));
 		}
 		
 		
@@ -143,7 +142,6 @@ namespace ICSharpCode.Reports.Core{
 		protected override void InsertItem(int index, BaseReportItem item)
 		{
 			base.InsertItem(index, item);
-			this.OnAdded (item);
 		}
 		
 		
@@ -151,20 +149,64 @@ namespace ICSharpCode.Reports.Core{
 		{
 			BaseReportItem item = this[index];
 			base.RemoveItem(index);
-			this.OnRemoved(item);
+		}
+	
+		#region Grouphandling
+		
+		public bool IsGrouped
+		{
+			get {
+				return (this[0] is BaseGroupedRow)|| (this[0] is BaseGroupItem) ;
+				//return CreateGroupedList().Count > 0;
+			}
 		}
 		
 		
-		void OnAdded(BaseReportItem item){
-			if (Added != null)
-				Added(this, new CollectionChangedEventArgs<BaseReportItem>(item));
+		private Collection<BaseDataItem> CreateGroupedList ()
+		{
+			Collection<BaseDataItem> inheritedReportItems = null;
+			foreach (BaseReportItem element in this) {
+				ISimpleContainer container = element as ISimpleContainer;
+				if (container == null) {
+					inheritedReportItems = new Collection<BaseDataItem>(this.OfType<BaseDataItem>().ToList());
+					break;
+				} else {
+					inheritedReportItems = new Collection<BaseDataItem>(container.Items.OfType<BaseDataItem>().ToList());
+					break;
+				}
+			}
+			return inheritedReportItems;
 		}
 		
 		
-		void OnRemoved( BaseReportItem item){
-			if (Removed != null)
-				Removed(this, new CollectionChangedEventArgs<BaseReportItem>(item));
+		private Collection<BaseGroupItem> old_CreateGroupedList ()
+		{
+			Collection<BaseGroupItem> inheritedReportItems = null;
+			foreach (BaseReportItem element in this) {
+				ISimpleContainer container = element as ISimpleContainer;
+				if (container == null) {
+					inheritedReportItems = new Collection<BaseGroupItem>(this.OfType<BaseGroupItem>().ToList());
+					break;
+				} else {
+					inheritedReportItems = new Collection<BaseGroupItem>(container.Items.OfType<BaseGroupItem>().ToList());
+					break;
+					
+				}
+			}
+			return inheritedReportItems;
 		}
+		
+		
+		public ReportItemCollection ExtractGroupedColumns ()
+		{
+			Collection<BaseDataItem> inheritedReportItems = CreateGroupedList();
+//			Collection<BaseGroupItem> inheritedReportItems = CreateGroupedList();
+			ReportItemCollection r = new ReportItemCollection();
+			r.AddRange(inheritedReportItems);
+			return r;
+		}
+		
+		#endregion
 	}
 
 	/// <summary>
@@ -189,23 +231,27 @@ namespace ICSharpCode.Reports.Core{
 				throw new ArgumentNullException("columnName");
 			}
 			
-			 return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true));
+			 return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
 		}
 	}
+	
+	
+	
+	
 	[Serializable()]
-	public class SortColumnCollection: Collection<SortColumn>{
-		
+	public class SortColumnCollection: ColumnCollection
+	{
 		public SortColumnCollection()
 		{
 		}
 		
-		public AbstractColumn Find (string columnName)
+		public new AbstractColumn Find (string columnName)
 		{
 			if (String.IsNullOrEmpty(columnName)) {
 				throw new ArgumentNullException("columnName");
 			}
 			
-			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true));
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
 		}
 	
 		
@@ -221,9 +267,27 @@ namespace ICSharpCode.Reports.Core{
 		/// The Culture is used for direct String Comparison
 		/// </summary>
 		
-		public static CultureInfo Culture
+		public new static CultureInfo Culture
 		{
 			get { return CultureInfo.CurrentCulture;}
+		}
+	}
+	
+	
+	[Serializable()]
+	public class GroupColumnCollection: SortColumnCollection
+	{
+		public GroupColumnCollection()
+		{
+		}
+		
+		public new AbstractColumn Find (string columnName)
+		{
+			if (String.IsNullOrEmpty(columnName)) {
+				throw new ArgumentNullException("columnName");
+			}
+			
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
 		}
 	}
 	
@@ -242,7 +306,7 @@ namespace ICSharpCode.Reports.Core{
 				throw new ArgumentNullException("columnName");
 			}
 			
-			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true));
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
 		}
 	
 		
@@ -279,7 +343,7 @@ namespace ICSharpCode.Reports.Core{
 				throw new ArgumentNullException("parameterName");
 			}
 			
-			return this.FirstOrDefault(x => 0 == String.Compare(x.ParameterName,parameterName,true));
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ParameterName,parameterName,true,CultureInfo.InvariantCulture));
 		}
 		
 		
@@ -347,7 +411,7 @@ namespace ICSharpCode.Reports.Core{
 				throw new ArgumentNullException("columnName");
 			}
 			
-			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true));
+			return this.FirstOrDefault(x => 0 == String.Compare(x.ColumnName,columnName,true,CultureInfo.InvariantCulture));
 		}
 	}
 }

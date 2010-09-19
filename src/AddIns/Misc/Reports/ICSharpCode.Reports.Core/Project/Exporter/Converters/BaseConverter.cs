@@ -53,7 +53,18 @@ namespace ICSharpCode.Reports.Core.Exporter
 			this.dataNavigator = dataNavigator;
 			this.sectionBounds = this.singlePage.SectionBounds;
 			this.layouter = layouter;
-			this.evaluator = PrintHelper.SetupEvaluator(this.singlePage,this.dataNavigator);
+			this.evaluator = StandardPrinter.CreateEvaluator(this.singlePage,this.dataNavigator);
+		}
+		
+		
+		
+		#region PageBreak
+		
+		protected void BuildNewPage(ExporterCollection myList,BaseSection section)
+		{
+			FirePageFull(myList);
+			section.SectionOffset = SinglePage.SectionBounds.PageHeaderRectangle.Location.Y;
+			myList.Clear();
 		}
 		
 		
@@ -62,7 +73,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 			EventHelper.Raise<NewPageEventArgs>(PageFull,this,new NewPageEventArgs(items));
 		}
 		
-			
+		#endregion
+		
+		
 		protected void FireSectionRendering (BaseSection section)
 		{
 			SectionRenderEventArgs srea = new SectionRenderEventArgs(section,
@@ -81,12 +94,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 			if (exportLineBuilder != null) {
 
-				ExportContainer lineItem = StandardPrinter.ConvertToContainer(row.Parent,row,offset);
-				
-				BaseReportItem baseReportItem = row as BaseReportItem;
+				ExportContainer lineItem = StandardPrinter.ConvertToContainer(row,offset);
 				
 				StandardPrinter.AdjustBackColor(row);
-				ExporterCollection list = StandardPrinter.ConvertPlainCollection(row as BaseReportItem,row.Items,offset);
+				ExporterCollection list = StandardPrinter.ConvertPlainCollection(row.Items,offset);
 					
 				lineItem.Items.AddRange(list);
 				
@@ -144,10 +155,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 			get {return this.saveSize;}
 		}
 		
+		
 		protected IExpressionEvaluatorFacade Evaluator
 		{
 			get {return this.evaluator;}
 		}
+		
 		
 		protected void FillRow (ISimpleContainer row)
 		{
@@ -156,14 +169,22 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		
 		
-		protected void LayoutRow (ISimpleContainer row)
+		protected	void PrepareContainerForConverting(BaseSection section,ISimpleContainer simpleContainer)
+		{
+			if (section != null) {
+				FireSectionRendering(section);
+			}
+			LayoutRow(simpleContainer);
+		}
+		
+		
+		private void LayoutRow (ISimpleContainer row)
 		{
 			PrintHelper.SetLayoutForRow(Graphics,Layouter,row);
 		}
 		
-		
 	
-		protected Point BaseConvert(ExporterCollection myList,ISimpleContainer container,int leftPos,Point curPos)
+		protected static Point BaseConvert(ExporterCollection myList,ISimpleContainer container,int leftPos,Point curPos)
 		{
 			ExporterCollection ml = BaseConverter.ConvertItems (container, curPos);		
 			myList.AddRange(ml);

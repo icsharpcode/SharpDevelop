@@ -9,8 +9,6 @@
 
 using System;
 using System.ComponentModel;
-using ICSharpCode.Core;
-using ICSharpCode.Reports.Addin.ReportWizard;
 using ICSharpCode.Reports.Core;
 using NUnit.Framework;
 
@@ -25,7 +23,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		[Test]
 		public void InitModel()
 		{
-			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName,false);
 			Assert.AreEqual(reportName,m.ReportSettings.ReportName);
 			Assert.AreEqual(1,m.ReportSettings.AvailableFieldsCollection.Count);
 			Assert.AreEqual(GlobalEnums.ReportType.DataReport,m.ReportSettings.ReportType);
@@ -37,14 +35,15 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		[Test]
 		public void Datamodel_Should_PushModel()
 		{
-			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName,false);
 			Assert.AreEqual(GlobalEnums.PushPullModel.PushData,m.ReportSettings.DataModel);
 		}
+		
 		
 		[Test]
 		public void GroupColumCollection_Should_Empty ()
 		{
-			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName,false);
 			Assert.That(m.ReportSettings.GroupColumnsCollection,Is.Empty);
 		}
 		
@@ -52,7 +51,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		[Test]
 		public void SortColumnCollection_Should_Empty ()
 		{
-			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName,false);
 			Assert.That(m.ReportSettings.SortColumnsCollection,Is.Empty);
 		}
 		
@@ -63,7 +62,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		[Test]
 		public void GroupColumCollection_Grouping_Should_Set()
 		{
-			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName,false);
 			var rs = m.ReportSettings;
 			
 			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
@@ -76,7 +75,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		[Test]
 		public void SortColumCollection_Sorting_Should_Set()
 		{
-			ReportModel m = ReportGenerationHelper.CreateModel(reportName);
+			ReportModel m = ReportGenerationHelper.CreateModel(reportName,false);
 			var rs = m.ReportSettings;
 			
 			SortColumn gc = new SortColumn("GroupItem",ListSortDirection.Ascending);
@@ -127,7 +126,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		#region Detail
 		
 		[Test]
-		public void PageDetail_Should_Contain_RowItem()
+		public void PageDetail_Should_Contain_Row()
 		{
 			ICSharpCode.Reports.Core.BaseSection s = this.reportModel.DetailSection;
 			BaseReportItem item = s.Items[0];
@@ -136,14 +135,14 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		
 		
 		[Test]
-		public void PageDetail_Row_Should_Contain_DataItems()
+		public void Row_Should_Contain_Dataitems()
 		{
 			ICSharpCode.Reports.Core.BaseSection s = this.reportModel.DetailSection;
-			ICSharpCode.Reports.Core.BaseRowItem rowItem = (ICSharpCode.Reports.Core.BaseRowItem)s.Items[0];
-			Assert.IsTrue(rowItem.Items.Count > 0);	
-			BaseReportItem item = rowItem.Items[0];
+			ICSharpCode.Reports.Core.BaseRowItem dataRow = (ICSharpCode.Reports.Core.BaseRowItem)s.Items[0];
+			var item = dataRow.Items[0];
 			Assert.That(item,Is.InstanceOf(typeof(ICSharpCode.Reports.Core.BaseDataItem)));
 		}
+		
 		
 		#endregion
 		
@@ -177,7 +176,9 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		[TestFixtureSetUp]
 		public void Init()
 		{
-			this.reportModel = ReportGenerationHelper.CreateModel(reportName);
+			bool createGrouping = false;
+			this.reportModel = ReportGenerationHelper.CreateModel(reportName,createGrouping);
+			                                             
 		}
 		
 		[TestFixtureTearDown]

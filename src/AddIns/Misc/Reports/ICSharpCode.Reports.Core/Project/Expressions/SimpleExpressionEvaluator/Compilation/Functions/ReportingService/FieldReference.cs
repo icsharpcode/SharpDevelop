@@ -7,6 +7,7 @@
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
+
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Interfaces;
 using SimpleExpressionEvaluator.Compilation.Functions.AggregateFunctions;
@@ -32,7 +33,6 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.ReportingService
 			Variable variable = Arguments[0] as Variable;
 			
 			if (singlePage.IDataNavigator.CurrentRow > -1) {
-				var avc = singlePage.IDataNavigator.AvailableFields;
 				var dataRow = singlePage.IDataNavigator.GetDataRow();
 				var item = dataRow.Find(variable.VariableName);
 				
@@ -40,7 +40,8 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.ReportingService
 				if (item != null) {
 					retval = item.Value.ToString();
 				} else {
-					retval= String.Format("!! Can't find <{0}>  !! ",variable.VariableName);
+					retval= String.Format(System.Globalization.CultureInfo.InvariantCulture,
+					                      "!! Can't find <{0}>  !! ",variable.VariableName);
 				}
 				return retval;
 			}

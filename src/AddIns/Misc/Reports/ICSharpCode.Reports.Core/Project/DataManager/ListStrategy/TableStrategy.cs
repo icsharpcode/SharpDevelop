@@ -44,19 +44,10 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		
-		public override void Fill(IReportItem item)
+		public override void Fill(IDataItem item)
 		{
-			base.Fill(item);
-		
 			DataRow row = this.Current as DataRow;
-			
 			if (row != null) {
-				BaseDataItem baseDataItem = item as BaseDataItem;
-				if (baseDataItem != null) {
-					baseDataItem.DBValue = row[baseDataItem.ColumnName].ToString();
-					return;
-				}
 				BaseImageItem bi = item as BaseImageItem;
 				if (bi != null) {
 					using (System.IO.MemoryStream memStream = new System.IO.MemoryStream()){
@@ -71,6 +62,11 @@ namespace ICSharpCode.Reports.Core
 							bi.Image = image;
 						}
 					}
+				} else {
+					if (item != null) {
+					item.DBValue = row[item.ColumnName].ToString();
+					return;
+				}
 				}
 			}
 		}
@@ -94,7 +90,7 @@ namespace ICSharpCode.Reports.Core
 			base.Sort();
 			if ((base.ReportSettings.SortColumnsCollection != null)) {
 				if (base.ReportSettings.SortColumnsCollection.Count > 0) {
-					base.IndexList = this.BuildSortIndex (BaseListStrategy.CreateSortCollection(ReportSettings.SortColumnsCollection));
+					base.IndexList = this.BuildSortIndex (ReportSettings.SortColumnsCollection);
 					base.IsSorted = true;
 				} else {
 					// if we have no sorting, we build the indexlist as well
@@ -109,7 +105,7 @@ namespace ICSharpCode.Reports.Core
 		{
 			base.Group();
 			IndexList gl = new IndexList("group");
-			gl = this.BuildSortIndex (BaseListStrategy.CreateSortCollection(ReportSettings.GroupColumnsCollection));
+			gl = this.BuildSortIndex (ReportSettings.GroupColumnsCollection);
 			ShowIndexList(gl);
 			BuildGroup(gl);
 			
@@ -118,7 +114,7 @@ namespace ICSharpCode.Reports.Core
 		#endregion
 		
 		
-		private IndexList  BuildSortIndex(Collection<AbstractColumn> col)
+		private IndexList  BuildSortIndex(ColumnCollection col)
 		{
 			IndexList arrayList = new IndexList();
 			
@@ -153,46 +149,8 @@ namespace ICSharpCode.Reports.Core
 			return arrayList;
 		}
 		
-	
-		private void BuildGroup (IndexList list)
-		{
-			string compVal = String.Empty;
-			base.IndexList.Clear();
-			IndexList childList = null;
-			BaseComparer checkElem = list[0];
-			foreach (BaseComparer element in list)
-			{
-				string v = element.ObjectArray[0].ToString();
-				if (compVal != v) {
-					childList = new IndexList();
-					GroupComparer gc = BuildGroupHeader(element);
-					gc.IndexList = childList;
-					
-					GChild(childList,element);
-				} else {
-					GChild(childList,element);
-				}
-				compVal = v;
-			}
-			ShowIndexList(base.IndexList);
-		}
 		
-		private GroupComparer BuildGroupHeader (BaseComparer sc)
-		{
-			GroupComparer gc = new GroupComparer(sc.ColumnCollection,sc.ListIndex,sc.ObjectArray);
-			base.IndexList.Add(gc);
-			return gc;
-		}
-		
-		
-		private void GChild(IndexList list,BaseComparer sc)
-		{
-			string v = sc.ObjectArray[0].ToString();
-			list.Add(sc);
-		}
-		
-		
-		private IndexList IndexBuilder(Collection<AbstractColumn> col)
+		private IndexList IndexBuilder(SortColumnCollection col)
 		{
 			IndexList arrayList = new IndexList();
 			for (int rowIndex = 0; rowIndex < this.table.Rows.Count; rowIndex++){
@@ -295,9 +253,13 @@ namespace ICSharpCode.Reports.Core
 		
 		public override object Current {
 			get {
-				int cr = base.CurrentPosition;
-				int li = (base.IndexList[cr] ).ListIndex;
-				return this.table.Rows[li];
+				try {
+					int cr = base.CurrentPosition;
+					int li = (base.IndexList[cr] ).ListIndex;
+					return this.table.Rows[li];
+				} catch (Exception) {
+					throw;
+				}
 			}
 		}
 		

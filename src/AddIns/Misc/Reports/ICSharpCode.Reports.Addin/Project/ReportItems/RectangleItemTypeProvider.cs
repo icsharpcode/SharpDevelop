@@ -8,6 +8,7 @@
  */
 using System;
 using System.ComponentModel;
+using ICSharpCode.Reports.Addin.Designer;
 
 namespace ICSharpCode.Reports.Addin
 {

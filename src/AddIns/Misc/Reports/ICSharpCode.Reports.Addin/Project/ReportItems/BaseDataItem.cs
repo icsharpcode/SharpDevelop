@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 
+using ICSharpCode.Reports.Addin.Designer;
 using ICSharpCode.Reports.Core;
 
 namespace ICSharpCode.Reports.Addin
@@ -20,7 +21,7 @@ namespace ICSharpCode.Reports.Addin
 	/// <summary>
 	/// Description of BaseDataItem.
 	/// </summary>
-	[Designer(typeof(ICSharpCode.Reports.Addin.DataItemDesigner))]
+	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.DataItemDesigner))]
 	public class BaseDataItem:BaseTextItem
 	{
 		private string columnName;
@@ -31,19 +32,6 @@ namespace ICSharpCode.Reports.Addin
 		public BaseDataItem():base()
 		{
 			TypeDescriptor.AddProvider(new DataItemTypeProvider(), typeof(BaseDataItem));
-		}
-		
-		
-		private string CheckForNullValue() 
-		{
-			if (String.IsNullOrEmpty(this.dbValue)) {
-				if (String.IsNullOrEmpty(this.nullValue)) {
-					return GlobalValues.UnboundName;
-					
-				} else
-					return this.nullValue;
-			}
-			return this.dbValue;
 		}
 		
 		
@@ -99,10 +87,6 @@ namespace ICSharpCode.Reports.Addin
 		{
 		}
 		
-//		public DataItemTypeProvider(TypeDescriptionProvider parent): base(parent)
-//		{
-//		}
-
 	
 		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
 		{

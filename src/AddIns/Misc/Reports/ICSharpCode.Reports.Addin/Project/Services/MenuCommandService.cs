@@ -6,13 +6,15 @@
  * 
  * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
  */
-using ICSharpCode.Core.WinForms;
 using System;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
+using ICSharpCode.Reports.Addin.Designer;
 using CommandID = System.ComponentModel.Design.CommandID;
 
 namespace ICSharpCode.Reports.Addin

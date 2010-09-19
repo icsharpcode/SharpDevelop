@@ -42,9 +42,7 @@ namespace ICSharpCode.Reports.Core {
 	
 	internal  abstract class BaseListStrategy :IDataViewStrategy,IEnumerator {
 
-		//Index to plain Datat
 		private IndexList indexList;
-
 		private AvailableFieldsCollection availableFields;
 		
 
@@ -62,19 +60,6 @@ namespace ICSharpCode.Reports.Core {
 		#endregion
 		
 		
-		
-		protected static Collection<AbstractColumn> CreateSortCollection (ColumnCollection items)
-		{
-			
-				Collection<AbstractColumn> abstrCol = new Collection<AbstractColumn>();
-				foreach(SortColumn sc in items)
-				{
-					abstrCol.Add(sc);
-				}
-				return abstrCol;
-		
-		}
-
 		public IndexList IndexList
 		{
 			get {
@@ -106,8 +91,49 @@ namespace ICSharpCode.Reports.Core {
 			return lbc;
 		}
 		
+		#endregion
+		
+		
+		#region Grouping
+		
+		protected void BuildGroup (IndexList list)
+		{
+			string compVal = String.Empty;
+			IndexList.Clear();
+			IndexList childList = null;
+			foreach (BaseComparer element in list)
+			{
+				string v = element.ObjectArray[0].ToString();
+				if (compVal != v) {
+					childList = new IndexList();
+					GroupComparer gc = CreateGroupHeader(element);
+					gc.IndexList = childList;
+					CreateGroupeChildren(childList,element);
+				} else {
+					CreateGroupeChildren(childList,element);
+				}
+				compVal = v;
+			}
+			ShowIndexList(IndexList);
+		}
+		
+		
+		protected GroupComparer CreateGroupHeader (BaseComparer sc)
+		{
+			GroupComparer gc = new GroupComparer(sc.ColumnCollection,sc.ListIndex,sc.ObjectArray);
+			IndexList.Add(gc);
+			return gc;
+		}
+		
+		
+		protected static void CreateGroupeChildren(IndexList list,BaseComparer sc)
+		{
+			list.Add(sc);
+		}
 		
 		#endregion
+		
+		#region Debug Code
 		
 		protected  static void ShowIndexList (IndexList list)
 		{
@@ -126,15 +152,16 @@ namespace ICSharpCode.Reports.Core {
 							Console.WriteLine("---- {0}",c.ObjectArray[0]);
 					}
 				}
-//				
 			}
 		}
 		
+		#endregion
 		
 		public  virtual void Reset()
 		{
 			this.indexList.CurrentPosition = -1;
 		}
+		
 		
 		public virtual object Current 
 		{
@@ -253,9 +280,9 @@ namespace ICSharpCode.Reports.Core {
 			
 		}
 		
-		public  virtual void Fill(IReportItem item)
-		{
 		
+		public  virtual void Fill(IDataItem item)
+		{
 		}
 		
 		

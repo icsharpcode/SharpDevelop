@@ -91,12 +91,12 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		{
 			get {
 				string ret = String.Empty;
-				if (!String.IsNullOrEmpty(comboBox1.SelectedItem.ToString()))
-				    {
-				    	ret =  comboBox1.SelectedItem.ToString();
-				    }
-				    return ret;
+				if (checkBox1.Checked) {
+					ret =  comboBox1.SelectedItem.ToString();
 				}
+				return ret;
+			}
+			
 		}
 	}
 }

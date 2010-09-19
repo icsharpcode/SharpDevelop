@@ -113,11 +113,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 					
 					if (container != null) {
 
-						ExportContainer exportContainer = StandardPrinter.ConvertToContainer(section,container,offset);
+						ExportContainer exportContainer = StandardPrinter.ConvertToContainer(container,offset);
 			          
 			          StandardPrinter.AdjustBackColor (container);
 						
-						ExporterCollection clist = StandardPrinter.ConvertPlainCollection(item,container.Items,offset);
+						ExporterCollection clist = StandardPrinter.ConvertPlainCollection(container.Items,offset);
 						
 						exportContainer.Items.AddRange(clist);
 						list.Add(exportContainer);
@@ -131,7 +131,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 							section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height);
 						}
 						
-						list = StandardPrinter.ConvertPlainCollection(section,section.Items,offset);
+						list = StandardPrinter.ConvertPlainCollection(section.Items,offset);
 					}
 				}
 			}
@@ -199,7 +199,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			{
 				p.TotalPages = this.Pages.Count;
 			}
-			
+
 			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade();
 			
 			foreach (ExporterPage p in this.pages)
@@ -228,7 +228,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 					et.Text = evaluatorFassade.Evaluate(et.Text);
 				}
 			}
-			
 		}
 		
 		

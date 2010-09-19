@@ -5,14 +5,13 @@
 //     <version>$Revision$</version>
 // </file>
 
-using ICSharpCode.Core.WinForms;
 using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using ICSharpCode.Core;
+
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.Reports.Core;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Reports.Addin
@@ -73,13 +72,14 @@ namespace ICSharpCode.Reports.Addin
 			}
 		}
 		
-		void ActiveViewClosed (object source, ViewContentEventArgs e)
+		private void ActiveViewClosed (object source, ViewContentEventArgs e)
 		{
 			if (e.Content is ReportDesignerView) {
 				Console.WriteLine ("Designer closed");
 				                   ViewCount --;
 			}
 		}
+		
 		
 		#region Mouse
 		
@@ -97,62 +97,6 @@ namespace ICSharpCode.Reports.Addin
 			}
 		}
 		
-		#endregion
-		
-		
-		#region DragDrop
-		/*
-		void TreeViewItemDrag (object sender,ItemDragEventArgs e) 
-		{
-			
-			ColumnNode node = (ColumnNode)e.Item;
-			if (node != null) {
-				if (node.ImageIndex == ExplorerTree.ColumnIcon) {
-					this.treeView.SelectedNode = node;
-					if (node != null) {
-						this.treeView.DoDragDrop(node.DragDropDataObject,
-						                         DragDropEffects.Copy | DragDropEffects.Scroll);
-					}
-				}
-			}
-			
-		}
-		
-		*/
-		
-		
-		void TreeViewDragDrop (object sender,DragEventArgs e)
-		{
-			/*
-			if(e.Data.GetDataPresent(ReportExplorer.DragNodeDescription, false)){
-				Point pt = this.treeView.PointToClient (new Point( e.X,e.Y));
-
-				SectionTreeNode sectionNode = this.treeView.GetNodeAt (pt) as SectionTreeNode;
-				
-				if (sectionNode != null) {
-					// If we dragdrop to GroupNode, remove all subnods in SortNode
-					if (this.treeView.IsGroupNode(sectionNode)) {
-						this.treeView.ClearSortNode();
-					} 
-					ColumnsTreeNode t = (ColumnsTreeNode)e.Data.GetData(ReportExplorer.DragNodeDescription, true);
-					ColumnsTreeNode newNode = new ColumnsTreeNode (t.FieldName);
-
-					// Useless to add a node twice
-					if (!ExplorerTree.NodeExist (sectionNode,newNode)) {
-						newNode.SortDirection = ListSortDirection.Ascending;
-						newNode.ImageIndex = ExplorerTree.AscendingIcon;
-						newNode.SelectedImageIndex = ExplorerTree.AscendingIcon;
-						this.treeView.SelectedNode = (TreeNode)newNode;
-						this.treeView.CheckNode (newNode);
-						sectionNode.Nodes.Add(newNode);
-						ReportExplorer.NotifyReportView();
-					}
-				}
-			}
-			*/
-		}
-		
-
 		#endregion
 		
 		
@@ -211,12 +155,9 @@ namespace ICSharpCode.Reports.Addin
 		public ReportModel ReportModel 
 		{get {return this.reportModel;}}
 		
-		public	ColumnCollection SortColumnCollection
-		{
-			get {return this.explorerTree.SortColumnCollection;}
-		}
-		
+
 		#region IPropertyChanged
+		
 		
 		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
 		

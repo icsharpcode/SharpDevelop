@@ -15,7 +15,7 @@ namespace ICSharpCode.Reports.Core {
 	
 	public class SortComparer : BaseComparer {
 		
-		public SortComparer(Collection<AbstractColumn> owner, int listIndex, object[] values):base(owner,listIndex,values)
+		public SortComparer(ColumnCollection owner, int listIndex, object[] values):base(owner,listIndex,values)
 		{
 		}
 		
@@ -38,7 +38,7 @@ namespace ICSharpCode.Reports.Core {
 				object rightValue = value.ObjectArray[index];
 
 				// Indizes sind hier deckungsgleich
-				Type t = rightValue.GetType();
+
 				SortColumn sortColumn = (SortColumn)base.ColumnCollection[index];
 
 				bool descending = (sortColumn.SortDirection == ListSortDirection.Descending);

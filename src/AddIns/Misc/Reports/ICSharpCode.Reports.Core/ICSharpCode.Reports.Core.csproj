@@ -86,6 +86,8 @@
     <Compile Include="Project\BaseClasses\SinglePage.cs" />
     <Compile Include="Project\BaseClasses\SectionBounds.cs" />
     <Compile Include="Project\BaseClasses\SortColumn.cs" />
+    <Compile Include="Project\BaseItems\BaseGroupedRow.cs" />
+    <Compile Include="Project\BaseItems\BaseGroupItem.cs" />
     <Compile Include="Project\BaseItems\BaseTextItem.cs" />
     <Compile Include="Project\BaseItems\BaseGraphicItem.cs" />
     <Compile Include="Project\BaseItems\BaseReportItem.cs" />
@@ -93,6 +95,7 @@
     <Compile Include="Project\BaseItems\BaseDataItem.cs" />
     <Compile Include="Project\BaseItems\ErrorItem.cs" />
     <Compile Include="Project\BaseItems\Graphics\BaseLineItem.cs" />
+    <Compile Include="Project\BaseItems\IDataItem.cs" />
     <Compile Include="Project\BaseItems\IExpression.cs" />
     <Compile Include="Project\DataManager\ChildNavigator.cs" />
     <Compile Include="Project\DataManager\Comparer\BaseComparer.cs" />
@@ -110,11 +113,13 @@
     <Compile Include="Project\Dialogs\EditorDialog.cs">
     </Compile>
     <Compile Include="Project\Dialogs\EditorDialog.Designer.cs" />
-    <Compile Include="Project\Dialogs\ExtendedCollectionEditor.cs" />
+    <Compile Include="Project\Dialogs\GroupingCollectionEditor.cs" />
+    <Compile Include="Project\Dialogs\ParametersCollectionEditor.cs" />
     <Compile Include="Project\Dialogs\ParameterDialog.cs" />
     <Compile Include="Project\Dialogs\PreviewControl.cs">
     </Compile>
     <Compile Include="Project\Dialogs\DefaultTextEditor.cs" />
+    <Compile Include="Project\Dialogs\SortingCollectionEditor.cs" />
     <Compile Include="Project\Events\GroupChangedEventArgs.cs" />
     <Compile Include="Project\Events\NewPageEventArgs.cs" />
     <Compile Include="Project\Events\ReportPageEventArgs.cs" />
@@ -130,7 +135,6 @@
     <Compile Include="Project\Exceptions\UnknownItemException.cs" />
     <Compile Include="Project\Exceptions\WrongColumnException.cs" />
     <Compile Include="Project\Exceptions\WrongSectionException.cs" />
-    <Compile Include="Project\Exporter\Converters\old_GroupedRowConverter.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService\FieldReference.cs" />
     <Compile Include="Project\Exporter\BasePager.cs" />
     <Compile Include="Project\Exporter\Converters\BaseConverter.cs" />
@@ -297,10 +301,8 @@
     <Compile Include="Project\BaseItems\BaseTableItem.cs" />
     <Compile Include="Project\Exceptions\IllegalQueryException.cs" />
     <Compile Include="Project\Events\SectionRenderEventArgs.cs" />
-    <Compile Include="Project\BaseClasses\DataTypeHelper.cs" />
     <Compile Include="Project\Exporter\ExporterPage.cs" />
     <Compile Include="Project\Exporter\DataPageBuilder.cs" />
-    <Compile Include="Project\Exporter\ExportItemsConverter.cs" />
     <Compile Include="Project\Exceptions\MissingDataManagerException.cs" />
     <Compile Include="Project\Exporter\ExportColumns\BaseExportColumn.cs" />
     <Compile Include="Project\Exporter\ExportColumns\ExportContainer.cs" />

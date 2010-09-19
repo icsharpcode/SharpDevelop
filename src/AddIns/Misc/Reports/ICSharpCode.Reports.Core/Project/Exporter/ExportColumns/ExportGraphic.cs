@@ -77,7 +77,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		
 		
-		private void PdfLineDrawer (PdfWriter pdfWriter)                    
+		private void PdfLineDrawer ()                    
 		{
 			LineDecorator lineStyle = base.StyleDecorator as LineDecorator;
 			if (lineStyle != null) {
@@ -107,7 +107,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			base.DrawItem(pdfWriter, converter);
 			ILineDecorator lineDecorator = base.StyleDecorator as LineDecorator;
 			if (lineDecorator != null) {
-				PdfLineDrawer (pdfWriter);
+				PdfLineDrawer ();
 			}
 			else  {
 				IGraphicStyleDecorator style = base.StyleDecorator as GraphicStyleDecorator;

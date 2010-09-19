@@ -14,6 +14,8 @@ using System.IO;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 
+using ICSharpCode.Reports.Core.Dialogs;
+
 namespace ICSharpCode.Reports.Core{
 	/// <summary>
 	/// This class stores all the basic settings of an Report
@@ -49,8 +51,8 @@ namespace ICSharpCode.Reports.Core{
 	
 		private ParameterCollection parameterCollection;
 		private AvailableFieldsCollection availableFields;
-		private ColumnCollection groupingsCollection;
-		private ColumnCollection sortingCollection;
+		private GroupColumnCollection groupingsCollection;
+		private SortColumnCollection sortingCollection;
 
 		
 		#region Constructor
@@ -104,8 +106,8 @@ namespace ICSharpCode.Reports.Core{
 			this.RightMargin = GlobalValues.DefaultPageMargin.Right;
 			
 			this.availableFields = new AvailableFieldsCollection();
-			this.groupingsCollection = new ColumnCollection();
-			this.sortingCollection = new ColumnCollection();
+			this.groupingsCollection = new GroupColumnCollection();
+			this.sortingCollection = new SortColumnCollection();
 			this.parameterCollection = new ParameterCollection();
 			this.NoDataMessage = "No Data for this Report";
 		}
@@ -224,13 +226,17 @@ namespace ICSharpCode.Reports.Core{
 		/// </summary>
 		
 		[Category("Sorting/Grouping")]
-		public ColumnCollection SortColumnsCollection {
+		[EditorAttribute ( typeof(SortingCollectionEditor),
+		                  typeof(System.Drawing.Design.UITypeEditor) )]
+		public SortColumnCollection SortColumnsCollection {
 			get {return sortingCollection;}
 		}
 		
 		
 		[Category("Sorting/Grouping")]
-		public ColumnCollection GroupColumnsCollection {
+		[EditorAttribute ( typeof(GroupingCollectionEditor),
+		                  typeof(System.Drawing.Design.UITypeEditor) )]
+		public GroupColumnCollection GroupColumnsCollection {
 			get {
 				return groupingsCollection;
 			}
@@ -241,7 +247,7 @@ namespace ICSharpCode.Reports.Core{
 		#region ReportParameters
 		
 		[Category("Parameters")]
-		[EditorAttribute ( typeof(ExtendedCollectionEditor),
+		[EditorAttribute ( typeof(ParameterCollectionEditor),
 		                  typeof(System.Drawing.Design.UITypeEditor) )]
 		public ParameterCollection ParameterCollection
 		{

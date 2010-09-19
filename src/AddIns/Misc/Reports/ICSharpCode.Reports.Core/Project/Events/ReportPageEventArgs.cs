@@ -36,7 +36,7 @@ namespace ICSharpCode.Reports.Core {
 		                           Point locationAfterDraw){
 			
 			if (singlePage == null) {
-				throw new ArgumentNullException("pageInfo");
+				throw new ArgumentNullException("singlePage");
 			}
 			this.printEventArgs = e;
 			this.singlePage = singlePage;

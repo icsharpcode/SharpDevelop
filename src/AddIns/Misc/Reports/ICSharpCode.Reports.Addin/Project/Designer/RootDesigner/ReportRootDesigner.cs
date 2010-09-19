@@ -18,10 +18,10 @@ using System.Drawing.Printing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
-using ICSharpCode.Reports.Core;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
-namespace ICSharpCode.Reports.Addin
+using ICSharpCode.Reports.Core;
+
+namespace ICSharpCode.Reports.Addin.Designer
 {
 	/// <summary>
 	/// Description of ReportRootDesigner.
@@ -100,7 +100,7 @@ namespace ICSharpCode.Reports.Addin
 //				this.componentChangeService.ComponentRemoving += new ComponentEventHandler(OnComponentRemoving);
 //				this.componentChangeService.ComponentRemoved += new ComponentEventHandler(OnComponentRemoved);
 				this.componentChangeService.ComponentChanged += new ComponentChangedEventHandler(OnComponentChanged);
-//				this.componentChangeService.ComponentChanging += new ComponentChangingEventHandler(OnComponentChanging);
+				this.componentChangeService.ComponentChanging += new ComponentChangingEventHandler(OnComponentChanging);
 			}
 	
 	
@@ -258,17 +258,13 @@ namespace ICSharpCode.Reports.Addin
 		}
 		*/
 		
+		
 		private void OnComponentChanged(object sender, ComponentChangedEventArgs ce)
 		{
-			System.Console.WriteLine("RootDesigner:OnComponentChanged {0} from {1} to {2}",ce.Component.ToString(),ce.OldValue,ce.NewValue);
-			
-			LoggingService.Debug("RootDesigner:OnComponentChanged");
-			AbstractItem item = ce.Component as AbstractItem;
-			if (item != null) {
-				item.Name = ce.NewValue.ToString();
-			}
+			LoggingService.InfoFormatted("RootDesigner:OnComponentChanged");
+			String str = String.Format("RootDesigner:OnComponentChanged <{0}> from <{1}> to <{2}>",ce.Component.ToString(),ce.OldValue,ce.NewValue);
+			LoggingService.InfoFormatted(str);
 
-			
 			BaseSection section = ce.Component as BaseSection;
 			if (section != null) {
 				foreach (BaseSection s in sections)
@@ -284,7 +280,8 @@ namespace ICSharpCode.Reports.Addin
 		
 		private void OnComponentChanging(object sender, ComponentChangingEventArgs ce)
 		{
-//			System.Console.WriteLine("RootDesigner:OnComponentChanging");
+			System.Console.WriteLine("RootDesigner:OnComponentChanging");
+//			Host.CreateTransaction();
 		}
 		
 		

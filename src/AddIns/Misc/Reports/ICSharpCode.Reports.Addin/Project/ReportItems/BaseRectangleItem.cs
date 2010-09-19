@@ -20,7 +20,7 @@ namespace ICSharpCode.Reports.Addin
 	/// Description of BaseRectangleItem.
 	/// </summary>
 	
-	[Designer(typeof(ICSharpCode.Reports.Addin.ShapeDesigner))]
+	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.ShapeDesigner))]
 	public class BaseRectangleItem:AbstractItem
 	{
 		private RectangleShape shape = new RectangleShape();

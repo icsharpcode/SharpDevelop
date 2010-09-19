@@ -10,11 +10,10 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
-using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
-namespace ICSharpCode.Reports.Addin
+namespace ICSharpCode.Reports.Addin.Designer
 	
 {
 	/// <summary>
@@ -40,6 +39,7 @@ namespace ICSharpCode.Reports.Addin
 			if (componentChangeService != null) {
 				componentChangeService.ComponentChanging += OnComponentChanging;
 				componentChangeService.ComponentChanged += OnComponentChanged;
+				componentChangeService.ComponentRename += new ComponentRenameEventHandler(OnComponentRename);
 			}
 			
 			selectionService = GetService(typeof(ISelectionService)) as ISelectionService;
@@ -64,6 +64,14 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
+		private void OnComponentRename(object sender,ComponentRenameEventArgs e) {
+			if (e.Component == this.Component) {
+				Control.Name = e.NewName;
+				Control.Invalidate();
+			}
+		}
+		
+		
 		private void OnSelectionChanged(object sender, EventArgs e)
 		{
 			Control.Invalidate(  );
@@ -75,6 +83,7 @@ namespace ICSharpCode.Reports.Addin
 			if (this.componentChangeService != null) {
 				componentChangeService.ComponentChanging -= OnComponentChanging;
 				componentChangeService.ComponentChanged -= OnComponentChanged;
+				componentChangeService.ComponentRename -= OnComponentRename;
 			}
 			if (this.selectionService != null) {
 				selectionService.SelectionChanged -= OnSelectionChanged;

@@ -54,9 +54,17 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				throw new ArgumentNullException("decorator");
 			}
 			StringFormat stringFormat = BuildStringFormat(decorator.StringTrimming,decorator.ContentAlignment);
+			
+			string formattedString = text;
+
+			if (! String.IsNullOrEmpty(decorator.FormatString)) {
+				formattedString = StandardFormatter.FormatOutput(text,decorator.FormatString,decorator.DataType,"yyy");
+			}
+			
+			
 			graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
 			
-			graphics.DrawString (text,decorator.Font,
+			graphics.DrawString (formattedString,decorator.Font,
 			                     new SolidBrush(decorator.ForeColor),
 			                     new Rectangle(decorator.Location.X,
 			                                   decorator.Location.Y,

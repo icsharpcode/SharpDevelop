@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 
+using ICSharpCode.Reports.Addin.Designer;
 using ICSharpCode.Reports.Core;
 
 namespace ICSharpCode.Reports.Addin
@@ -19,7 +20,7 @@ namespace ICSharpCode.Reports.Addin
 	/// <summary>
 	/// Description of BaseRowItem.
 	/// </summary>
-	[Designer(typeof(ICSharpCode.Reports.Addin.RowItemDesigner))]
+	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.RowItemDesigner))]
 	public class BaseRowItem:AbstractItem
 	{
 
@@ -86,11 +87,6 @@ namespace ICSharpCode.Reports.Addin
 		{
 		}
 		
-//		public RowItemTypeProvider(TypeDescriptionProvider parent): base(parent)
-//		{
-//		
-//		}
-
 	
 		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
 		{

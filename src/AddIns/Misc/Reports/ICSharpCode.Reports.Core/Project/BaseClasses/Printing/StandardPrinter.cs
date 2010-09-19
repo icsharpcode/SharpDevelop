@@ -8,8 +8,8 @@
  */
 using System;
 using System.Drawing;
-using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core.BaseClasses.Printing
@@ -28,21 +28,17 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		public static void AdjustBackColor (ISimpleContainer container)
 		{
-			BaseReportItem parent = container as BaseReportItem;
-			if (parent.BackColor != GlobalValues.DefaultBackColor) {
-				foreach (BaseReportItem item in container.Items)
-				{
-					item.BackColor = parent.BackColor;
-				}
+			foreach (var item in container.Items)
+			{
+				item.BackColor = container.BackColor;
 			}
 		}
 		
 		
 		public static void AdjustBackColor (ISimpleContainer container, Color defaultColor)
 		{
-			BaseReportItem parent = container as BaseReportItem;
-			if (parent.BackColor != defaultColor) {
-				foreach (BaseReportItem item in container.Items)
+			if (container.BackColor != defaultColor) {
+				foreach (var item in container.Items)
 				{
 					item.BackColor = defaultColor;
 				}
@@ -166,7 +162,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 		
-		public static  ExporterCollection ConvertPlainCollection (BaseReportItem parent,ReportItemCollection items,Point offset)
+		public static  ExporterCollection ConvertPlainCollection (ReportItemCollection items,Point offset)
 		{
 			if (items == null) {
 				throw new ArgumentNullException("items");
@@ -210,7 +206,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 		
-		public static ExportContainer ConvertToContainer (BaseReportItem parent,ISimpleContainer item,Point offset) 
+		public static ExportContainer ConvertToContainer (ISimpleContainer item,Point offset) 
 		{
 			if (item == null) {
 				throw new ArgumentNullException("item");
@@ -236,14 +232,43 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		#region Evaluate
 		
+		
+		public static IExpressionEvaluatorFacade  SetupEvaluator ()
+		{
+			return new ExpressionEvaluatorFacade();
+		}
+		
+		
+		public static IExpressionEvaluatorFacade  CreateEvaluator (ISinglePage singlePage,IDataNavigator dataNavigator)
+		{
+			if (singlePage == null) {
+			
+				throw new ArgumentNullException("singlePage");
+			}
+			if (dataNavigator == null) {
+				throw new ArgumentNullException("dataNavigator");
+			}
+			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade();
+			evaluatorFacade.SinglePage = singlePage;
+			evaluatorFacade.SinglePage.IDataNavigator = dataNavigator;
+			return evaluatorFacade;
+		}
+		
+		
 		public static void EvaluateRow(IExpressionEvaluatorFacade evaluator,ExporterCollection row)
 		{
-			foreach (BaseExportColumn element in row) {
-				ExportText textItem = element as ExportText;
-				
-				if (textItem != null) {
-					textItem.Text = evaluator.Evaluate(textItem.Text);
+			try {
+				foreach (BaseExportColumn element in row) {
+					ExportText textItem = element as ExportText;
+					if (textItem != null) {
+						if (textItem.Text.StartsWith("=")) {
+							Console.WriteLine(textItem.Text);
+						}
+						textItem.Text = evaluator.Evaluate(textItem.Text);
+					}
 				}
+			} catch (Exception e) {
+				throw e;
 			}
 		}
 		

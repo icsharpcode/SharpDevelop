@@ -10,7 +10,7 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 
-namespace ICSharpCode.Reports.Addin
+namespace ICSharpCode.Reports.Addin.Designer
 {
 	/// <summary>
 	/// Description of TextBasedDesignerActionList.

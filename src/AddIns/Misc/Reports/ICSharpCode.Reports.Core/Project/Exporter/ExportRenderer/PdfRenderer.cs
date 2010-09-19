@@ -31,17 +31,16 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 		ReportSettings reportSettings;
 		
 		
-		public static PdfRenderer CreateInstance (IReportCreator basePager,string fileToSave,bool showOutput) {
-//		public static PdfRenderer CreateInstance (BasePager basePager,string fileToSave,bool showOutput) {
+		public static PdfRenderer CreateInstance (IReportCreator basePager,string fileName,bool showOutput) {
 			if ( basePager == null) {
 				throw new ArgumentNullException("basePager");
 			}
-			if (String.IsNullOrEmpty(fileToSave)) {
-				throw new ArgumentNullException("fileTosave");
+			if (String.IsNullOrEmpty(fileName)) {
+				throw new ArgumentNullException("fileName");
 			}
 			BasePager bp = basePager as BasePager;
 			
-			return PdfRenderer.CreateInstance(bp.ReportModel.ReportSettings,bp.Pages,fileToSave,showOutput);
+			return PdfRenderer.CreateInstance(bp.ReportModel.ReportSettings,bp.Pages,fileName,showOutput);
 		}
 		
 		
@@ -121,13 +120,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 			}
 		}
 		
-//		
-//		private static void DebugRectangle (PdfContentByte cb,Rectangle r)
-//		{
-//			cb.Rectangle(r.Left,r.Bottom,r.Right,r.Top);
-//			cb.Stroke();
-//		}
-		
+
 		
 		public override void End()
 		{
@@ -183,7 +176,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 				throw new ArgumentNullException("pageSize");
 			}
 			if (reportSettings == null) {
-				throw new ArgumentNullException("reportsettings");
+				throw new ArgumentNullException("reportSettings");
 			}
 			this.pageSize = pageSize;
 			this.reportSettings = reportSettings;

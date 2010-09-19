@@ -12,8 +12,9 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 
-using ICSharpCode.Reports.Core.Interfaces;
+using ICSharpCode.Reports.Core.Events;
 using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core.BaseClasses.Printing
@@ -28,7 +29,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		public static void SetLayoutForRow (Graphics graphics, ILayouter layouter,ISimpleContainer row)
 		{
-//			BaseReportItem item = row as BaseReportItem;
 			Rectangle textRect = layouter.Layout(graphics,row);
 			if (textRect.Height > row.Size.Height) {
 				row.Size = new Size(row.Size.Width,textRect.Height);
@@ -39,6 +39,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		
 		#region Section's
+		
 		
 		public  static void AdjustParent (BaseReportItem parent,ReportItemCollection items)
 		{
@@ -62,7 +63,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 		
-		public static void AdjustSectionLocation (BaseSection section)
+		public static void AdjustSectionLocation (BaseReportItem section)
 		{
 			section.Location = new Point(section.Location.X,section.SectionOffset );
 		}
@@ -87,6 +88,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				throw new ArgumentNullException ("item");
 			}
 			BaseReportItem bri = (BaseReportItem) item;
+			
 			return new Rectangle(parent.Location.X + bri.Location.X ,
 				                     bri.Location.Y + bri.SectionOffset,
 				                     bri.Size.Width,bri.Size.Height);
@@ -147,6 +149,14 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				container;
 		}
 		
+		#region PageBreak
+		
+		public static Rectangle CalculatePageBreakRectangle(BaseReportItem simpleContainer,Point curPos)
+		{
+			return new Rectangle(new Point (simpleContainer.Location.X,curPos.Y), simpleContainer.Size);
+		}
+		
+		
 		public static bool IsPageFull (Rectangle rectangle,SectionBounds bounds)
 		{
 			if (rectangle.Bottom > bounds.PageFooterRectangle.Top) {
@@ -156,31 +166,11 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 		
-		public static IExpressionEvaluatorFacade  SetupEvaluator (ISinglePage singlePage,IDataNavigator dataNavigator)
+		#endregion
+		
+		public static Point ConvertRectangleToCurentPosition (Rectangle rectangle)
 		{
-			if (singlePage == null) {
-			
-				throw new ArgumentNullException("singlePage");
-			}
-			if (dataNavigator == null) {
-				throw new ArgumentNullException("dataNavigator");
-			}
-			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade();
-			evaluatorFacade.SinglePage = singlePage;
-			evaluatorFacade.SinglePage.IDataNavigator = dataNavigator;
-			return evaluatorFacade;
-		}
-		
-		
-		public static IExpressionEvaluatorFacade  SetupEvaluator ()
-		{
-			return new ExpressionEvaluatorFacade();
-		}
-		
-		
-		public static Point ConvertRectangleToCurentPosition (Rectangle r)
-		{
-			return new Point(r.Left,r.Bottom);
+			return new Point(rectangle.Left,rectangle.Bottom);
 		}
 		
 		

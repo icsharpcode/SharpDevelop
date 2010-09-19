@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace ICSharpCode.Reports.Core
@@ -15,8 +16,8 @@ namespace ICSharpCode.Reports.Core
 	/// Description of DataNavigator.
 	/// </summary>
 	public class DataNavigator :IDataNavigator
-//	public class DataNavigator :IDataNavigator,IEnumerable
 	{
+		
 		private IDataViewStrategy store;
 		
 		public DataNavigator(IDataViewStrategy store){
@@ -33,11 +34,15 @@ namespace ICSharpCode.Reports.Core
 		
 		#endregion
 		
+		
 		#region IDataNavigator implementation
 		
 		public void Fill (ReportItemCollection collection) {
-			foreach (IReportItem item in collection) {
-				this.store.Fill(item);
+			foreach (var item in collection) {
+				IDataItem dataItem = item as IDataItem;
+				if (dataItem != null) {
+					this.store.Fill(dataItem);
+				}
 			}
 		}
 		
@@ -95,33 +100,6 @@ namespace ICSharpCode.Reports.Core
 		#endregion
 		
 		
-		#region IEnumarable
-		/*
-		public IEnumerator RangeEnumerator(int start, int end)
-        {
-			if (start > end) {
-				throw new ArgumentException("start-end");
-			}
-			for (int i = start; i <= end; i++)
-            {
-            	IDataViewStrategy d = this.store as IDataViewStrategy;
-            	d.CurrentPosition = i;
-            	yield return this.Current;
-            }
-        }
-
-		
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			for (int i =0;i < this.Count;i++){
-				this.store.MoveNext();
-				yield return this.Current;
-			}
-		}
-		*/
-		#endregion
-		
-		
 		#region GroupedList
 		
 		public bool HasChildren
@@ -132,51 +110,39 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
-		
-		IndexList childList;
-		private System.Collections.Generic.List<BaseComparer>.Enumerator ce;
-		
-		public void SwitchGroup()
-		{
-			this.childList = BuildChildList();
-			ce = childList.GetEnumerator();
-			ce.MoveNext();
-		}
-		
 	
-		
+		/*
 		public int ChildListCount
 		{
 			get {
 				return BuildChildList().Count;
 			}
 		}
+		*/
 		
 		
-		public bool ChildMoveNext()
-		{
-			return ce.MoveNext();
-		}
-		
+		// at the moment only tables are working
+		/*
 		public void FillChild (ReportItemCollection collection)
 		{
-			TableStrategy t = store as TableStrategy;
-			
-			foreach (BaseDataItem item in collection) {
-				CurrentItemsCollection ci = t.FillDataRow(ce.Current.ListIndex);
-				CurrentItem s = ci.FirstOrDefault(x => x.ColumnName == ((BaseDataItem)item).ColumnName);
-				item.DBValue = s.Value.ToString();
+			TableStrategy tableStrategy = store as TableStrategy;
+			foreach (var item in collection) {
+				IDataItem dataItem = item as IDataItem;
+				if (dataItem != null) {
+					CurrentItemsCollection currentItemsCollection = tableStrategy.FillDataRow(ce.Current.ListIndex);
+					CurrentItem s = currentItemsCollection.FirstOrDefault(x => x.ColumnName == dataItem.ColumnName);
+					dataItem.DBValue = s.Value.ToString();
+				}
 				
 			}
-			
 		}
-		
+		*/
 		
 		private IndexList BuildChildList()
 		{
-			var t = store as TableStrategy;
-			IndexList i = t.IndexList;
-			GroupComparer gc = i[t.CurrentPosition] as GroupComparer;
+
+			IndexList i = store.IndexList;
+			GroupComparer gc = i[store.CurrentPosition] as GroupComparer;
 			if (gc == null) {
 				return null;
 			}

@@ -90,6 +90,8 @@
     <Compile Include="Project\DesignerBinding\InternalReportLoader.cs" />
     <Compile Include="Project\Designer\DataItemDesigner.cs" />
     <Compile Include="Project\Designer\DesignerHelper.cs" />
+    <Compile Include="Project\Designer\GroupedRowDesigner.cs" />
+    <Compile Include="Project\Designer\GroupeHeaderDesigner.cs" />
     <Compile Include="Project\Designer\ImageDesigner.cs" />
     <Compile Include="Project\Designer\LineDesigner.cs" />
     <Compile Include="Project\Designer\RowItemDesigner.cs" />
@@ -139,6 +141,7 @@
     <Compile Include="Project\ReportItems\BaseDataItem.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Project\ReportItems\BaseGroupItem.cs" />
     <Compile Include="Project\ReportItems\BaseImageItem.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -163,6 +166,7 @@
     <Compile Include="Project\ReportItems\ErrorItem.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Project\ReportItems\BaseGroupedRow.cs" />
     <Compile Include="Project\ReportItems\RectangleItemTypeProvider.cs" />
     <Compile Include="Project\ReportManagers\BaseManager.cs" />
     <Compile Include="Project\ReportManagers\StandartPreviewManager.cs" />
@@ -307,9 +311,6 @@
       <Name>ICSharpCode.Reports.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Project\ReportWizard\Templates\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

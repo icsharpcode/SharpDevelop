@@ -23,7 +23,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 {
 	public class GeneratePushDataReport : AbstractReportGenerator
 	{
-//		private ReportStructure reportStructure;
+
 		/// <summary>
 		/// Default constructor - initializes all fields to default values
 		/// </summary>
@@ -40,7 +40,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		{
 			base.ReportModel.ReportSettings.ReportType = GlobalEnums.ReportType.DataReport;
 			base.ReportModel.ReportSettings.DataModel = GlobalEnums.PushPullModel.PushData;
-		//	base.ReportModel.ReportSettings.AvailableFieldsCollection.AddRange(base.ReportStructure.AvailableFieldsCollection);
 			base.GenerateReport();
 			GlobalEnums.ReportLayout reportLayout = (GlobalEnums.ReportLayout)base.Properties.Get("ReportLayout");
 			

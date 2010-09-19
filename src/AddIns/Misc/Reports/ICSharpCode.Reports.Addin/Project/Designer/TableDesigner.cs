@@ -14,7 +14,7 @@ using System.Drawing.Design;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
-namespace ICSharpCode.Reports.Addin
+namespace ICSharpCode.Reports.Addin.Designer
 {
 	/// <summary>
 	/// Description of TableDesigner.
@@ -22,6 +22,7 @@ namespace ICSharpCode.Reports.Addin
 	public class TableDesigner:ParentControlDesigner
 	{
 		private ISelectionService selectionService;
+		private IComponentChangeService componentChangeService;
 		
 		public TableDesigner():base()
 		{
@@ -70,12 +71,25 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
+		private void OnComponentRename(object sender,ComponentRenameEventArgs e) {
+			if (e.Component == this.Component) {
+				Control.Name = e.NewName;
+				Control.Invalidate();
+			}
+		}
+		
+		
 		private void GetService ()
 		{
 			selectionService = GetService(typeof(ISelectionService)) as ISelectionService;
 			if (selectionService != null)
 			{
 				selectionService.SelectionChanged += OnSelectionChanged;
+			}
+			
+			componentChangeService = (IComponentChangeService)GetService(typeof(IComponentChangeService));
+			if (componentChangeService != null) {
+				componentChangeService.ComponentRename += new ComponentRenameEventHandler(OnComponentRename);
 			}
 		}
 		
@@ -98,6 +112,10 @@ namespace ICSharpCode.Reports.Addin
 		{
 			if (this.selectionService != null) {
 				selectionService.SelectionChanged -= OnSelectionChanged;
+			}
+			
+			if (componentChangeService != null) {
+				componentChangeService.ComponentRename -= OnComponentRename;
 			}
 			base.Dispose(disposing);
 		}

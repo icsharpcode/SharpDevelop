@@ -20,7 +20,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	/// </summary>
 	public class AbstractLayout
 	{
-//		ReportModel reportModel;
+
 		ISimpleContainer parentItem;
 		
 		public AbstractLayout(ReportModel reportModel)
@@ -160,20 +160,18 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 		
-		protected  void AddItemsToContainer (ICSharpCode.Reports.Core.BaseSection section,ReportItemCollection items)
+		protected void AddItemsToContainer (ICSharpCode.Reports.Core.BaseSection section,ReportItemCollection items)
 		{
 			section.Items.Add(this.parentItem as BaseReportItem);
-			ICSharpCode.Reports.Core.BaseReportItem bri = this.parentItem as ICSharpCode.Reports.Core.BaseReportItem;
+			int locationY = 10;
+			int locationX = this.parentItem.Location.X + GlobalValues.ControlMargins.Left;
+			int minCtrlWidth = this.parentItem.Size.Width / items.Count;
 			
-			int defY = bri.Location.Y + GlobalValues.ControlMargins.Top;
-			int defX = bri.Size.Width / items.Count;
-			int startX = bri.Location.X + GlobalValues.ControlMargins.Left;
 			
 			foreach (var ir in items) {
-				Point np = new Point(startX,defY);
-				startX += defX;
-				ir.Location = np;
+				ir.Location = new Point(locationX,locationY);
 				this.parentItem.Items.Add(ir);
+				locationX += minCtrlWidth;
 			}
 		}
 		

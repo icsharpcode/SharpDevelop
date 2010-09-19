@@ -46,14 +46,10 @@ namespace ICSharpCode.Reports.Core {
 		#endregion
 		
 		
-		#region build grouping
-	
-		#endregion
-		
 		
 		#region build sorting
 		
-		private PropertyDescriptor[] BuildSortProperties (Collection<AbstractColumn> col)
+		private PropertyDescriptor[] BuildSortProperties (SortColumnCollection col)
 		{
 			PropertyDescriptor[] sortProperties = new PropertyDescriptor[col.Count];
 			PropertyDescriptorCollection c = this.baseList.GetItemProperties(null);
@@ -72,7 +68,7 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		private  IndexList BuildSortIndex(Collection<AbstractColumn> col) 
+		private  IndexList BuildSortIndex(SortColumnCollection col) 
 		{
 			IndexList arrayList = new IndexList();
 			PropertyDescriptor[] sortProperties = BuildSortProperties (col);
@@ -112,7 +108,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		
 		// if we have no sorting, we build the indexlist as well, so we don't need to
-		private IndexList IndexBuilder(Collection <AbstractColumn>col)
+		private IndexList IndexBuilder(SortColumnCollection col)
 		{
 			IndexList arrayList = new IndexList();
 			for (int rowIndex = 0; rowIndex < this.baseList.Count; rowIndex++){
@@ -169,16 +165,26 @@ namespace ICSharpCode.Reports.Core {
 		}
 
 		
+		public override void Group ()
+		{
+			base.Group();
+			IndexList gl = new IndexList("group");
+			gl = this.BuildSortIndex (ReportSettings.GroupColumnsCollection);
+			ShowIndexList(gl);
+			base.BuildGroup(gl);
+		}
+		
+		
 		public override void Sort() 
 		{
 			base.Sort();		
 			if ((base.ReportSettings.SortColumnsCollection != null)) {
 				if (base.ReportSettings.SortColumnsCollection.Count > 0) {
-					
-					base.IndexList = this.BuildSortIndex (BaseListStrategy.CreateSortCollection(ReportSettings.SortColumnsCollection));
+
+					base.IndexList = this.BuildSortIndex (ReportSettings.SortColumnsCollection);
 					base.IsSorted = true;
 				} else {
-					base.IndexList = this.IndexBuilder(BaseListStrategy.CreateSortCollection(ReportSettings.SortColumnsCollection));
+					base.IndexList = this.IndexBuilder(ReportSettings.SortColumnsCollection);
 					base.IsSorted = false;
 				}
 			}
@@ -195,23 +201,18 @@ namespace ICSharpCode.Reports.Core {
 		public override void Bind()
 		{
 			base.Bind();
-			/*
 			if (base.ReportSettings.GroupColumnsCollection.Count > 0) {
-//				this.Group ();
-				Reset();
-				return;
-			}
-			*/
-			if (base.ReportSettings.SortColumnsCollection != null) {
+				this.Group();
+			} else {
 				this.Sort ();
 			}
 			Reset();
 		}
 		
-		public override void Fill(IReportItem item)
+		#endregion
+		
+		public override void Fill(IDataItem item)
 		{
-			
-			base.Fill(item);
 			if (current != null) {
 				BaseDataItem baseDataItem = item as BaseDataItem;
 				if (baseDataItem != null) {
@@ -277,21 +278,7 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		#endregion
-		
-		/*
-		protected override void Group()
-		{
-			if (base.ReportSettings.GroupColumnsCollection.Count == 0) {
-				return;
-			}
-			this.BuildGroup();
-			base.Group();
-		}
-		
-		*/
-		
-		#endregion
-		
+	
 		#region IDisposable
 		
 		public override void Dispose(){

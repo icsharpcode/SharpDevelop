@@ -21,7 +21,7 @@ using ICSharpCode.Reports.Core.Exporter;
 
 namespace ICSharpCode.Reports.Core {
 	
-	public class BaseImageItem : BaseGraphicItem,IDataRenderer ,IExportColumnBuilder{
+	public class BaseImageItem : BaseGraphicItem,IDataItem,IDataRenderer,IExportColumnBuilder{
 		
 		/// <summary>
 		/// Default constructor 
@@ -173,6 +173,13 @@ namespace ICSharpCode.Reports.Core {
 				return baseTableName + "." + columnName;
 			} 
 		}
+		
+		
+		public string DBValue {
+			get{throw new NotImplementedException();}
+			set{throw new NotImplementedException();}
+		}
+		
 		
 		
 		public virtual string ImageFileName 

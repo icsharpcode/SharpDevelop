@@ -47,8 +47,8 @@ namespace ICSharpCode.Reports.Addin
 			Application.UseWaitCursor = true;
 			Application.DoEvents();
 			try {
-				IComponent cc = this.host.CreateComponent(typeof(ICSharpCode.Reports.Addin.RootReportModel),"RootReportModel");
-				ICSharpCode.Reports.Addin.RootReportModel rootControl = cc as ICSharpCode.Reports.Addin.RootReportModel;
+				IComponent cc = this.host.CreateComponent(typeof(ICSharpCode.Reports.Addin.Designer.RootReportModel),"RootReportModel");
+				ICSharpCode.Reports.Addin.Designer.RootReportModel rootControl = cc as ICSharpCode.Reports.Addin.Designer.RootReportModel;
 				UpdateStatusbar();
 				this.CreateNamedSurface();
 				rootControl.Size = this.ReportModel.ReportSettings.PageSize;

@@ -19,7 +19,6 @@ namespace ICSharpCode.Reports.Core.Test.Basics
 	{
 		
 		private ReportItemCollection itemCollection;
-		private bool gotEvent;
 		
 		
 		[Test]
@@ -74,25 +73,16 @@ namespace ICSharpCode.Reports.Core.Test.Basics
 		public void InsertOneItem ()
 		{
 			itemCollection = this.PlainCollection();
-			itemCollection.Added += OnItemAdded;
 			int len = itemCollection.Count();
 			BaseReportItem r = new BaseReportItem();
 			r.Name = "Inserted";
 			itemCollection.Insert(1,r);
 			Assert.AreEqual (len + 1,itemCollection.Count());
-			Assert.IsTrue(gotEvent,"No inserted' Event");
-			this.gotEvent = false;
+		
 			// read inserted element and check some default values
 			BaseReportItem r1 = itemCollection.Find("Inserted");
 			Assert.AreEqual(GlobalValues.DefaultBackColor,r1.BackColor);
 			Assert.AreEqual(System.Drawing.Color.Black,r1.ForeColor);
-		}
-		
-		
-		private void OnItemAdded (object sender,CollectionChangedEventArgs<BaseReportItem> e)
-		{
-			this.gotEvent = true;
-			Assert.AreEqual ("Inserted",e.Item.Name,"Item should be the same as we insert");
 		}
 		
 		#endregion
@@ -104,11 +94,8 @@ namespace ICSharpCode.Reports.Core.Test.Basics
 		{
 			itemCollection = this.PlainCollection();
 			int i = itemCollection.Count;
-			itemCollection.Removed += OnRemoveItem;
 			itemCollection.RemoveAt(1);
 			Assert.AreEqual(i-1,itemCollection.Count) ;
-			Assert.IsTrue(gotEvent,"No 'removed' Event");
-			gotEvent = false;
 		}
 		
 		
@@ -117,13 +104,10 @@ namespace ICSharpCode.Reports.Core.Test.Basics
 		{
 			itemCollection = this.PlainCollection();
 			int i = itemCollection.Count;
-			itemCollection.Removed += OnRemoveItem;
 			BaseReportItem r = itemCollection[1];
 			Assert.AreEqual("t2",r.Name);
 			itemCollection.Remove (r);
 			Assert.AreEqual(i-1,itemCollection.Count);
-			Assert.IsTrue(gotEvent,"No 'removed' Event");
-			gotEvent = false;
 		}
 		
 		
@@ -166,13 +150,6 @@ namespace ICSharpCode.Reports.Core.Test.Basics
 		#endregion
 		
 		#region privates
-		
-		private void OnRemoveItem (object sender,CollectionChangedEventArgs<BaseReportItem> e)
-		{
-			gotEvent = true;
-			Assert.AreEqual("t2",e.Item.Name);
-		}
-		
 		
 		private ReportItemCollection PlainCollection()
 		{

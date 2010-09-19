@@ -20,15 +20,15 @@ namespace ICSharpCode.Reports.Core {
 		
 		private int listIndex;
 		private object[] objectArray;
-//		private SortColumnCollection columnCollection;
-		Collection<AbstractColumn> columnCollection;
+
+//		Collection<AbstractColumn> columnCollection;
+		ColumnCollection columnCollection;
 		/// <summary>
 		/// Default constructor - initializes all fields to default values
 		/// </summary>
-//		public BaseComparer(ColumnCollection owner, int listIndex, object[] values) {
-//		public BaseComparer(SortColumnCollection owner, int listIndex, object[] values) {
-		public BaseComparer(Collection<AbstractColumn> owner, int listIndex, object[] values) {
-			this.columnCollection = owner;
+
+		public BaseComparer(ColumnCollection columnCollection , int listIndex, object[] values) {
+			this.columnCollection = columnCollection;
 			this.listIndex = listIndex;
 			this.objectArray = values;
 		}
@@ -88,8 +88,8 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 		
-		public Collection<AbstractColumn> ColumnCollection {
-//		public SortColumnCollection ColumnCollection {
+//		public Collection<AbstractColumn> ColumnCollection {
+		public ColumnCollection ColumnCollection {
 			get {
 				return columnCollection;
 			}

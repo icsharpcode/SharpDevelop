@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.ComponentModel;
 
-namespace ICSharpCode.Reports.Addin
+namespace ICSharpCode.Reports.Addin.Designer
 {
 	/// <summary>
 	/// Description of DesignerHelper.

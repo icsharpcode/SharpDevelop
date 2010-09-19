@@ -17,6 +17,7 @@ using System.IO;
 using System.Windows.Forms.Design;
 using System.Xml.Serialization;
 
+using ICSharpCode.Reports.Addin.Designer;
 using ICSharpCode.Reports.Core;
 
 namespace ICSharpCode.Reports.Addin
@@ -24,7 +25,7 @@ namespace ICSharpCode.Reports.Addin
 	/// <summary>
 	/// Description of BaseImageItem.
 	/// </summary>
-	[Designer(typeof(ICSharpCode.Reports.Addin.ImageDesigner))]
+	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.ImageDesigner))]
 	public class BaseImageItem:AbstractItem
 	{
 		private string imageFileName;

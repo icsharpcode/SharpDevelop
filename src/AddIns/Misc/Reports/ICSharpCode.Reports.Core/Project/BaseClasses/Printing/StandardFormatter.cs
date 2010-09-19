@@ -15,13 +15,24 @@ using System.Globalization;
 namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 {
 	
+//	http://en.csharp-online.net/Create_List_Controls
+	
+	
 	internal static class StandardFormatter
 	{
+		
+		private static TypeCode TypeCodeFromString (string type) {
+			if (String.IsNullOrEmpty(type)) {
+				throw new ArgumentNullException("type");
+			}
+			return Type.GetTypeCode( Type.GetType(type));
+		}
+		
 		
 		public static string FormatOutput(string valueToFormat,string format,
 		                                     string dataType, string nullValue )
 		{
-			TypeCode typeCode = DataTypeHelper.TypeCodeFromString(dataType);
+			TypeCode typeCode = TypeCodeFromString(dataType);
 			return StandardFormatter.FormatItem(valueToFormat,format,
 			                                    typeCode,nullValue);
 		}
@@ -92,9 +103,8 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 					                          CultureInfo.CurrentCulture.NumberFormat);
 					
 					str = number.ToString (format,CultureInfo.CurrentCulture);
-				} catch (System.FormatException) {
-//						string s = String.Format("\tDecimalValue < {0} > {1}",toFormat,e.Message);
-//						System.Console.WriteLine("\t{0}",s);
+				} catch (System.FormatException e) {
+					throw e;
 				}
 				return str;
 			} else {

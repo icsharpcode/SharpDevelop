@@ -18,7 +18,9 @@ namespace ICSharpCode.Reports.Core{
 		
 		void Bind();
 		
-		void Fill (IReportItem item);
+		void Fill (IDataItem item);
+		
+		IndexList IndexList {get;}
 		//test
 		CurrentItemsCollection FillDataRow();
 		//
@@ -28,21 +30,11 @@ namespace ICSharpCode.Reports.Core{
 	
  		int CurrentPosition {get;set;}
  	
- 		bool HasMoreData  {
- 			get;
- 		}
+ 		bool HasMoreData  {get;}
  		
  		bool IsSorted {get;}
- 		/*
- 		bool IsFiltered{get;}
- 		*/
  		
  		bool IsGrouped {get;set;}
- 		
- 		/*
- 		bool HasChildren {get;}
- 		
- 		IndexList ChildRows {get;}
- */
+ 	
 	}
 }

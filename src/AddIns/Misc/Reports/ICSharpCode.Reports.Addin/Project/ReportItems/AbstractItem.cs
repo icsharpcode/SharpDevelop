@@ -24,8 +24,7 @@ namespace ICSharpCode.Reports.Addin
 	public abstract class AbstractItem:System.Windows.Forms.Control
 	{
 		private Color frameColor = Color.Black;
-		//private bool drawBorder;
-		//private Size defaultSize;
+		
 
 		protected AbstractItem()
 		{

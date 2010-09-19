@@ -69,6 +69,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			base.BuildDetailInternal(section);
 			section.SectionOffset = base.SinglePage.SectionBounds.DetailStart.Y;
+			ExporterCollection convertedList = convertedList = base.ConvertSection (base.ReportModel.DetailSection,0);
+			base.SinglePage.Items.AddRange(convertedList);	   
 		}
 
 		

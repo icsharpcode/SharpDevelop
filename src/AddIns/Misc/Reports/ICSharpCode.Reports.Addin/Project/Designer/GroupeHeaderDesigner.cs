@@ -1,51 +1,36 @@
-/*
- * Erstellt mit SharpDevelop.
- * Benutzer: Peter Forstmeier
- * Datum: 28.01.2008
- * Zeit: 18:32
+ï»¿/*
+ * Created by SharpDevelop.
+ * User: Peter Forstmeier
+ * Date: 08.08.2010
+ * Time: 18:33
  * 
- * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
+ * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
+
 using System;
-using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design;
-using System.Drawing;
-using System.Drawing.Design;
-using System.Windows.Forms;
-using System.Windows.Forms.Design;
 
 namespace ICSharpCode.Reports.Addin.Designer
 {
 	/// <summary>
-	/// Description of RowItemDesigner.
+	/// Description of GroupeHeaderDesigner.
 	/// </summary>
-	public class RowItemDesigner:ParentControlDesigner
+	public class GroupHeaderDesigner:DataItemDesigner
 	{
 		
 		private ISelectionService selectionService;
 		private IComponentChangeService componentChangeService;
 		
-		public RowItemDesigner()
+		public GroupHeaderDesigner()
 		{
 		}
 		
 		public override void Initialize(IComponent component)
 		{
-			if (component == null) {
-				throw new ArgumentNullException("component");
-			}
 			base.Initialize(component);
-			GetService ();	
 		}
 		
-		
-		protected override void OnDragDrop(DragEventArgs de)
-		{
-			base.OnDragDrop(de);
-			IToolboxService it = (IToolboxService)this.GetService(typeof(IToolboxService));
-			it.SetSelectedToolboxItem(null);
-		}
 		
 		
 		private void OnSelectionChanged(object sender, EventArgs e)
@@ -53,13 +38,14 @@ namespace ICSharpCode.Reports.Addin.Designer
 			Control.Invalidate( );
 		}
 		
-	
+		
 		private void OnComponentRename(object sender,ComponentRenameEventArgs e) {
 			if (e.Component == this.Component) {
 				Control.Name = e.NewName;
 				Control.Invalidate();
 			}
 		}
+		
 		
 		private void GetService ()
 		{
@@ -70,26 +56,23 @@ namespace ICSharpCode.Reports.Addin.Designer
 			}
 			
 			componentChangeService = (IComponentChangeService)GetService(typeof(IComponentChangeService));
-			if (componentChangeService != null)
-			{
+			if (componentChangeService != null) {
 				componentChangeService.ComponentRename += new ComponentRenameEventHandler(OnComponentRename);
 			}
 		}
 		
-		
-		#region Dispose
+			
 		protected override void Dispose(bool disposing)
 		{
 			if (this.selectionService != null) {
 				selectionService.SelectionChanged -= OnSelectionChanged;
 			}
 			
-			
 			if (componentChangeService != null) {
 				componentChangeService.ComponentRename -= OnComponentRename;
 			}
 			base.Dispose(disposing);
 		}
-		#endregion
+	
 	}
 }
