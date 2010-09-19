@@ -18,7 +18,7 @@ namespace ICSharpCode.Reports.Core
 	{
 		private IndexList indexList;
 		private IDataViewStrategy store;
-		private System.Collections.Generic.List<BaseComparer>.Enumerator ce;
+		private System.Collections.Generic.List<BaseComparer>.Enumerator genEnumerator;
 			
 		public ChildNavigator(IDataViewStrategy dataStore,IndexList indexList)
 		{
@@ -27,8 +27,8 @@ namespace ICSharpCode.Reports.Core
 			}
 			this.store = dataStore;
 			this.indexList = indexList;
-			ce = this.indexList.GetEnumerator();
-			ce.MoveNext();
+			genEnumerator = this.indexList.GetEnumerator();
+			genEnumerator.MoveNext();
 		}
 		
 		
@@ -46,13 +46,6 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		/*
-		public int ChildListCount {
-			get {
-				throw new NotImplementedException();
-			}
-		}
-		*/
 		public bool IsSorted {
 			get {
 				throw new NotImplementedException();
@@ -83,7 +76,7 @@ namespace ICSharpCode.Reports.Core
 		public object Current {
 			get {
 				TableStrategy t = this.store as TableStrategy;
-				return t.myCurrent(ce.Current.ListIndex);
+				return t.myCurrent(genEnumerator.Current.ListIndex);
 			}
 		}
 		

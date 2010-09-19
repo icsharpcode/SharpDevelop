@@ -260,9 +260,6 @@ namespace ICSharpCode.Reports.Core
 				} catch (Exception) {
 					throw;
 				}
-//				int cr = base.CurrentPosition;
-//				int li = (base.IndexList[cr] ).ListIndex;
-				
 			}
 		}
 		
