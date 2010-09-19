@@ -8,7 +8,7 @@
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>C#.Project.DOSProject</Icon>
 		<Description>${res:Templates.Project.ConsoleProject.Description}</Description>
-		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
+		<SupportedTargetFrameworks>v2.0;v3.5Client</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
@@ -18,9 +18,6 @@
 	
 	<!-- Template Content -->
 	<Project language = "C#">
-		<CreateActions>
-			<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35"/>
-		</CreateActions>
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />

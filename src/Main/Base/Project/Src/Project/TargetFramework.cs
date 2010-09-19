@@ -10,13 +10,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		public readonly static TargetFramework Net20 = new TargetFramework("v2.0", ".NET Framework 2.0") { MinimumMSBuildVersion = new Version(2, 0) };
 		public readonly static TargetFramework Net30 = new TargetFramework("v3.0", ".NET Framework 3.0") { BasedOn = Net20, MinimumMSBuildVersion = new Version(3, 5) };
 		public readonly static TargetFramework Net35 = new TargetFramework("v3.5", ".NET Framework 3.5") { BasedOn = Net30, MinimumMSBuildVersion = new Version(3, 5) };
+		public readonly static TargetFramework Net35Client = new ClientProfileTargetFramework(Net35);
 		public readonly static TargetFramework Net40 = new TargetFramework("v4.0", ".NET Framework 4.0") { BasedOn = Net35, MinimumMSBuildVersion = new Version(4, 0) };
+		public readonly static TargetFramework Net40Client = new ClientProfileTargetFramework(Net40) { BasedOn = Net35Client };
 		
 		public readonly static TargetFramework[] TargetFrameworks = {
-			Net40, Net35, Net30, Net20
+			Net40, Net35, Net30, Net20, Net40Client, Net35Client
 		};
 		
-		public const string DefaultTargetFrameworkName = "v4.0";
+		public readonly static TargetFramework DefaultTargetFramework = Net40Client;
 		
 		public static TargetFramework GetByName(string name)
 		{
@@ -60,6 +62,18 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override string ToString()
 		{
 			return DisplayName;
+		}
+	}
+	
+	public class ClientProfileTargetFramework : TargetFramework
+	{
+		public TargetFramework FullFramework { get; private set; }
+		
+		public ClientProfileTargetFramework(TargetFramework fullFramework)
+			: base(fullFramework.Name + "Client", fullFramework.DisplayName + " Client Profile")
+		{
+			this.FullFramework = fullFramework;
+			this.MinimumMSBuildVersion = fullFramework.MinimumMSBuildVersion;
 		}
 	}
 }

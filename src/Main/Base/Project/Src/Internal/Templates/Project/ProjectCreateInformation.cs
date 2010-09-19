@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		public string RootNamespace { get; set; }
 		public string SolutionPath { get; set; }
 		public string ProjectBasePath { get; set; }
-		public string TargetFramework { get; set; }
+		public TargetFramework TargetFramework { get; set; }
 		public Solution Solution { get; set; }
 	}
 }

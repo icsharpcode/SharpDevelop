@@ -10,7 +10,7 @@
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>VBNet.Project.ServiceProject</Icon>
 		<Description>${res:Templates.Project.WindowsService.Description}</Description>
-		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
+		<SupportedTargetFrameworks>v2.0;v3.5Client</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
@@ -19,10 +19,6 @@
 	</Actions>
 	
 	<Project language="VBNet">
-		<CreateActions>
-			<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35"/>
-		</CreateActions>
-		
 		<PropertyGroup>
 			<OutputType>Exe</OutputType>
 			<AppDesignerFolder>Properties</AppDesignerFolder>

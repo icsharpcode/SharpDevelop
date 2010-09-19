@@ -5,7 +5,7 @@
 		<Category>Boo</Category>
 		<Icon>Boo.Project.EmptyProject</Icon>
 		<Description>${res:Templates.Project.ConsoleProject.Description}</Description>
-		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
+		<SupportedTargetFrameworks>v2.0;v3.5Client</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
@@ -15,10 +15,6 @@
 	
 	<!-- Template Content -->
 	<Project language="Boo">
-		<CreateActions>
-			<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35"/>
-		</CreateActions>
-		
 		<PropertyGroup>
 			<OutputType>Exe</OutputType>
 		</PropertyGroup>

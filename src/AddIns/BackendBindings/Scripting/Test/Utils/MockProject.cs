@@ -294,6 +294,11 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
+		
+		public void ProjectCreationComplete()
+		{
+			throw new NotImplementedException();
+		}
 		#endregion
 	}
 }

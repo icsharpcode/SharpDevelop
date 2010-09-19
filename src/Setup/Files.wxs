@@ -800,7 +800,7 @@
 									</Directory>
 									<Directory Id="MiscProjectTemplatesFolder" Name="Misc">
 										<Component Guid="F9A7F832-6EC8-4B15-A037-146BD028C9D5" Id="MiscProjectTemplates" DiskId="1">
-											<File Source="..\..\data\templates\project\Misc\BlankCombine.xpt" Id="BlankCombine.xpt" Name="BlankCombine.xpt" />
+											<File Source="..\..\data\templates\project\Misc\BlankSolution.xpt" Id="BlankSolution.xpt" Name="BlankSolution.xpt" />
 										</Component>
 									</Directory>
 									<Directory Id="VBNetProjectTemplatesFolder" Name="VBNet">

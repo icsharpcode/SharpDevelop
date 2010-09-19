@@ -15,10 +15,6 @@
 	
 	<!-- Template Content -->
 	<Project language="Python">
-		<CreateActions>
-			<RunCommand path="/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35"/>
-		</CreateActions>
-
 		<PropertyGroup>
 			<OutputType>WinExe</OutputType>
 			<MainFile>Application.py</MainFile>

@@ -252,6 +252,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// This method is thread safe.
 		/// </summary>
 		void ResolveAssemblyReferences();
+		
+		/// <summary>
+		/// Notifies the project that it was succesfully created from a project template.
+		/// </summary>
+		void ProjectCreationComplete();
 	}
 	
 	/// <summary>

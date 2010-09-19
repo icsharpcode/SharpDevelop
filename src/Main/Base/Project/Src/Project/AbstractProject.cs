@@ -544,5 +544,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			return projectOptions;
 		}
+		
+		public virtual void ProjectCreationComplete()
+		{
+		}
 	}
 }

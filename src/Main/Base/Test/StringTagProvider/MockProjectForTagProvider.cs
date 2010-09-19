@@ -275,5 +275,10 @@ namespace ICSharpCode.SharpDevelop.Tests.StringTagProvider
 		{
 			throw new NotImplementedException();
 		}		
+		
+		public void ProjectCreationComplete()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

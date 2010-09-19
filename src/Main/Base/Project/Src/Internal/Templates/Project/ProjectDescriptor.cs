@@ -156,10 +156,20 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			switch (el.Name) {
 				case "RunCommand":
 					if (el.HasAttribute("path")) {
-						ICommand command = (ICommand)AddInTree.BuildItem(el.GetAttribute("path"), null);
+						string path = el.GetAttribute("path");
+						#if DEBUG
+						ICommand command = (ICommand)AddInTree.BuildItem(path, null);
+						if (command == null)
+							throw new TemplateLoadException("Unknown create action " + path);
+						#endif
 						return project => {
-							command.Owner = project;
-							command.Run();
+							#if !DEBUG
+							ICommand command = (ICommand)AddInTree.BuildItem(path, null);
+							#endif
+							if (command != null) {
+								command.Owner = project;
+								command.Run();
+							}
 						};
 					} else {
 						ProjectTemplate.WarnAttributeMissing(el, "path");
@@ -474,6 +484,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				#endregion
 				
 				RunCreateActions(project);
+				
+				project.ProjectCreationComplete();
 				
 				// Save project
 				project.Save();
