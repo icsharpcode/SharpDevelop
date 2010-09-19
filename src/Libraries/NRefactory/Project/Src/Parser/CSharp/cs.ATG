@@ -906,8 +906,8 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		                                      if (m.isNone) Error("at least one modifier must be set");
 		                                   .)
 		"operator" OverloadableOperator<out op> (. TypeReference firstType, secondType = null; string secondName = null; .)
-		"(" Type<out firstType> Identifier (. string firstName = t.val; .)
-		( "," Type<out secondType> Identifier (. secondName = t.val; .)        /* (. if (Tokens.OverloadableUnaryOp[op.kind] && !Tokens.OverloadableBinaryOp[op.kind])
+		"(" (. Location firstStart = la.Location, secondStart = Location.Empty, secondEnd = Location.Empty; .) Type<out firstType> Identifier (. string firstName = t.val; Location firstEnd = t.EndLocation; .)
+		( "," (. secondStart = la.Location; .) Type<out secondType> Identifier (. secondName = t.val; secondEnd = t.EndLocation; .)        /* (. if (Tokens.OverloadableUnaryOp[op.kind] && !Tokens.OverloadableBinaryOp[op.kind])
 		                                      Error("too many operands for unary operator"); 
 		                                   .)*/
 		| /* empty */                      /*(. if (Tokens.OverloadableBinaryOp[op.kind]){
@@ -932,9 +932,9 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 				StartLocation = m.GetDeclarationLocation(startPos),
 				EndLocation = endPos
 			};
-			SafeAdd(operatorDeclaration, operatorDeclaration.Parameters, new ParameterDeclarationExpression(firstType, firstName));
+			SafeAdd(operatorDeclaration, operatorDeclaration.Parameters, new ParameterDeclarationExpression(firstType, firstName) { StartLocation = firstStart, EndLocation = firstEnd });
 			if (secondType != null) {
-				SafeAdd(operatorDeclaration, operatorDeclaration.Parameters, new ParameterDeclarationExpression(secondType, secondName));
+				SafeAdd(operatorDeclaration, operatorDeclaration.Parameters, new ParameterDeclarationExpression(secondType, secondName) { StartLocation = secondStart, EndLocation = secondEnd });
 			}
 			AddChild(operatorDeclaration);
 		.)
