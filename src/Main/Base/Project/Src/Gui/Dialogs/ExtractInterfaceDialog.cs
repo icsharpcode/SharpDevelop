@@ -91,33 +91,29 @@ namespace ICSharpCode.SharpDevelop.Gui
 					this.selectMembersListBox.Items.Add(FormatMemberForDisplay(p), CheckState.Checked);
 				}
 			}
+			foreach (IEvent classEvent in c.Events) {
+				if (classEvent.IsPublic && !classEvent.IsStatic) {
+					this.possibleInterfaceMembers.Add(classEvent);
+					this.selectMembersListBox.Items.Add(FormatMemberForDisplay(classEvent), CheckState.Checked);
+				}
+			}
 		}
 		
 		// TODO: i think these really belong in the model (ExtractInterfaceOptions)
 		//       rather than the view's code-behind...
-		string FormatMemberForDisplay(IMethod m)
+		string FormatMemberForDisplay(IMember m)
 		{
-			StringBuilder sb = new StringBuilder();
-			sb.AppendFormat("{0} {1} ( ", m.ReturnType.Name, m.Name);
-			foreach (IParameter p in m.Parameters) {
-				if (p != m.Parameters[0]) {
-					sb.Append(" , ");
-				}
-				sb.AppendFormat("{0} {1}", p.ReturnType.Name, p.Name);
-			}
-			sb.Append(" );");
-			return sb.ToString();
-		}
-		
-		string FormatMemberForDisplay(IProperty p)
-		{
-			StringBuilder sb = new StringBuilder();
-			sb.AppendFormat("{0} {1} {{ ", p.ReturnType.Name, p.Name);
-			if (p.CanGet) sb.Append("get;");
-			if (p.CanSet && p.CanSet) sb.Append(" ");
-			if (p.CanSet) sb.Append("set;");
-			sb.Append(" }");
-			return sb.ToString();
+			IAmbience ambience = options.ClassEntity.ProjectContent.Language.GetAmbience();
+			
+			if (m is IProperty)
+				ambience.ConversionFlags |= ConversionFlags.IncludeBody;
+			ambience.ConversionFlags &= ~(ConversionFlags.ShowAccessibility | ConversionFlags.ShowModifiers);
+			
+			return ambience.Convert(m)
+				.Replace('\n', ' ')
+				.Replace('\t', ' ')
+				.Replace('\r', ' ')
+				.Replace("  ", " ");
 		}
 		
 		#region Event Handlers
