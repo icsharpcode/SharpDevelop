@@ -78,9 +78,9 @@
         <TabIndex value="1" />
         <Controls>
           <System.Windows.Forms.Button>
-            <Name value="convertProjectToMSBuild35Button" />
+            <Name value="projectUpdateButton" />
             <Location value="337, 106" />
-            <Text value="Convert project to C# 3.0..." />
+            <Text value="Change" />
             <UseVisualStyleBackColor value="True" />
             <Size value="173, 23" />
             <TabIndex value="12" />
