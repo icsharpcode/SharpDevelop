@@ -1,9 +1,5 @@
 @echo off
 
-goto old
-
-
-:old
 echo Generating with #Coco
 
 cd Frames
@@ -19,6 +15,5 @@ move Parser.cs ..\VBNet
 del cs.ATG
 del VBNET.ATG
 
-:exit
 pause
 cd ..
