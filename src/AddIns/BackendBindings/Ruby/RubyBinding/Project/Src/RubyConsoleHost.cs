@@ -1,13 +1,11 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Text;
 using System.Threading;
+
+using ICSharpCode.Scripting;
 using IronRuby;
 using IronRuby.Hosting;
 using IronRuby.Runtime;
@@ -16,15 +14,20 @@ using Microsoft.Scripting.Hosting.Shell;
 
 namespace ICSharpCode.RubyBinding
 {
-	public class RubyConsoleHost : ConsoleHost, IDisposable
+	public class RubyConsoleHost : ConsoleHost, IScriptingConsoleHost
 	{
 		Thread thread;
-		IConsoleTextEditor textEditor;
+		IScriptingConsoleTextEditor textEditor;
 		RubyConsole rubyConsole;
 
-		public RubyConsoleHost(IConsoleTextEditor textEditor)
+		public RubyConsoleHost(IScriptingConsoleTextEditor textEditor, IControlDispatcher dispatcher)
 		{
 			this.textEditor = textEditor;
+			rubyConsole = new RubyConsole(textEditor, dispatcher);
+		}
+		
+		public IScriptingConsole ScriptingConsole {
+			get { return rubyConsole; }
 		}
 		
 		/// <summary>
@@ -47,15 +50,12 @@ namespace ICSharpCode.RubyBinding
 			}			
 		}
 
-		/// <summary>
-		/// Runs the console.
-		/// </summary>
 		void RunConsole()
 		{
 			Run(new string[0]);
 		}
 		
-		protected virtual void SetOutput(RubyOutputStream stream)
+		protected virtual void SetOutput(ScriptingConsoleOutputStream stream)
 		{
 			Runtime.IO.SetOutput(stream, Encoding.UTF8);
 		}
@@ -87,8 +87,9 @@ namespace ICSharpCode.RubyBinding
 		/// </remarks>
 		protected override IConsole CreateConsole(ScriptEngine engine, CommandLine commandLine, ConsoleOptions options)
 		{
-			SetOutput(new RubyOutputStream(textEditor));
-			rubyConsole = new RubyConsole(textEditor, commandLine);
+			ScriptingConsoleOutputStream stream = rubyConsole.CreateOutputStream();
+			SetOutput(stream);
+			rubyConsole.CommandLine = commandLine;
 			return rubyConsole;
 		}
 	}

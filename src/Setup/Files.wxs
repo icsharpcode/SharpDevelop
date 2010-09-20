@@ -438,6 +438,9 @@
 								</File>
 								<File Id="ICSharpCode.SharpDevelop.BuildWorker40.exe.config" Name="ICSharpCode.SharpDevelop.BuildWorker40.exe.config" Source="..\..\bin\ICSharpCode.SharpDevelop.BuildWorker40.exe.config" />
 							</Component>
+							<Component Id="ICSharpCodeScriptingDll" Guid="62B44EFA-CCB4-4B73-B455-AE3C72B8121F" DiskId="1">
+								<File Id="ICSharpCode.Scripting.dll" Name="ICSharpCode.Scripting.dll" Source="..\..\bin\ICSharpCode.Scripting.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="ICSharpCode.Scripting.dll" AssemblyManifest="ICSharpCode.Scripting.dll" />
+							</Component>
 						</Directory>
 						<Directory Id="DocFolder" Name="doc">
 							<Component Guid="9DCED5AC-B771-4A4F-B4FE-69867BF2EBDE" Id="SharpDevelopDocFiles" DiskId="1">
@@ -565,12 +568,9 @@
 									<File Source="..\..\data\resources\StringResources.pt-br.resources" Id="StringResources.pt_br.resources" Name="StringResources.pt-br.resources" />
 									<File Source="..\..\data\resources\StringResources.ro.resources" Id="StringResources.ro.resources" Name="StringResources.ro.resources" />
 									<File Source="..\..\data\resources\StringResources.se.resources" Id="StringResources.se.resources" Name="StringResources.se.resources" />
-								</Component>
-								<Component Guid="720DC3DF-9547-4069-9C36-873F41579791" Id="StringResources.pt.resources" DiskId="1">
-									<File Source="..\..\data\resources\StringResources.pt.resources" Id="StringResources.pt.resources" Name="StringResources.pt.resources" />
-								</Component>
-								<Component Guid="78CE4E0B-296B-4479-8978-8D389BF01885" Id="StringResources.cngb.resources" DiskId="1">
-									<File Source="..\..\data\resources\StringResources.cn-gb.resources" Id="StringResources.cn_gb.resources" Name="StringResources.cn-gb.resources" />
+									<File Id="StringResources.cn_gb.resources" Name="StringResources.cn-gb.resources" Source="..\..\data\resources\StringResources.cn-gb.resources" />
+									<File Id="StringResources.pt.resources" Name="StringResources.pt.resources" Source="..\..\data\resources\StringResources.pt.resources" />
+									<File Id="StringResources.ru.resources" Name="StringResources.ru.resources" Source="..\..\data\resources\StringResources.ru.resources" />
 								</Component>
 							</Directory>
 							<Directory Id="SchemasFolder" Name="schemas">
@@ -618,9 +618,6 @@
 								</Component>
 								<Component Guid="CA5C2E97-D332-4FA3-8782-50A3FC09FAC7" Id="WixGamingSchema" DiskId="1">
 									<File Source="..\..\data\schemas\gaming.xsd" Name="gaming.xsd" Id="schemas.wix.gaming.xsd" KeyPath="yes" />
-								</Component>
-								<Component Id="XmlXsd" Guid="2FB03BBC-9874-4D5B-B778-84D2F24CE688" DiskId="1">
-									<File Id="xml.xsd" Name="xml.xsd" Source="..\..\data\schemas\xml.xsd" KeyPath="yes" />
 								</Component>
 							</Directory>
 							<Directory Id="TemplatesFolder" Name="templates">
@@ -774,7 +771,6 @@
 											<File Source="..\..\data\templates\project\CSharp\ConsoleProject.xpt" Id="CSharpConsoleProject.xpt" Name="ConsoleProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\ControlLibrary.xpt" Id="CSharpControlLibrary.xpt" Name="ControlLibrary.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\DefaultAssemblyInfo.cs" Id="CSharpDefaultAssemblyInfo.cs" Name="DefaultAssemblyInfo.cs" />
-											<File Source="..\..\data\templates\project\CSharp\Direct3DProject.xpt" Id="CSharpDirect3DProject.xpt" Name="Direct3DProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\EmptyProject.xpt" Id="CSharpEmptyProject.xpt" Name="EmptyProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\FormsProject.xpt" Id="CSharpFormsProject.xpt" Name="FormsProject.xpt" />
 											<File Source="..\..\data\templates\project\CSharp\Library.xpt" Name="Library.xpt" Id="CSharpLibrary.xpt" />
@@ -804,7 +800,7 @@
 									</Directory>
 									<Directory Id="MiscProjectTemplatesFolder" Name="Misc">
 										<Component Guid="F9A7F832-6EC8-4B15-A037-146BD028C9D5" Id="MiscProjectTemplates" DiskId="1">
-											<File Source="..\..\data\templates\project\Misc\BlankCombine.xpt" Id="BlankCombine.xpt" Name="BlankCombine.xpt" />
+											<File Source="..\..\data\templates\project\Misc\BlankSolution.xpt" Id="BlankSolution.xpt" Name="BlankSolution.xpt" />
 										</Component>
 									</Directory>
 									<Directory Id="VBNetProjectTemplatesFolder" Name="VBNet">
@@ -813,7 +809,6 @@
 											<File Source="..\..\data\templates\project\VBNet\ConsoleProject.xpt" Id="VBNetConsoleProject.xpt" Name="ConsoleProject.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\ControlLibrary.xpt" Id="VBNetControlLibrary.xpt" Name="ControlLibrary.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\DefaultAssemblyInfo.vb" Id="VBNetDefaultAssemblyInfo.vb" Name="DefaultAssemblyInfo.vb" />
-											<File Source="..\..\data\templates\project\VBNet\Direct3DProject.xpt" Id="VBNetDirect3DProject.xpt" Name="Direct3DProject.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\EmptyProject.xpt" Id="VBNetEmptyProject.xpt" Name="EmptyProject.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\FormsProject.xpt" Id="VBNetFormsProject.xpt" Name="FormsProject.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\Library.xpt" Name="Library.xpt" Id="VBNetLibrary.xpt" />

@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Diagnostics;
@@ -81,8 +77,8 @@ namespace Debugger.Tests {
     <ModuleLoaded>DynamicllyGeneratedAssembly (No symbols)</ModuleLoaded>
     <ModuleLoaded>ISymWrapper.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.dll (No symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DynamicCode.cs:46,4-46,40</DebuggingPaused>
-    <DebuggingPaused>StepComplete DynamicCode.cs:47,4-47,73</DebuggingPaused>
+    <DebuggingPaused>Break DynamicCode.cs:42,4-42,40</DebuggingPaused>
+    <DebuggingPaused>StepComplete DynamicCode.cs:43,4-43,73</DebuggingPaused>
     <DebuggingPaused>StepComplete Source.txt:1,1-1,100</DebuggingPaused>
     <ProcessExited />
   </Test>

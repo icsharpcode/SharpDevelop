@@ -1,15 +1,12 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Siegfried Pammer" email="siegfriedpammer@gmail.com"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Dom;
@@ -25,9 +22,13 @@ namespace SharpRefactoring.Gui
 	public partial class OverrideEqualsGetHashCodeMethodsDialog : AbstractInlineRefactorDialog
 	{
 		IClass selectedClass;
+		ITextAnchor startAnchor;
+		IMethod selectedMethod;
+		string baseCall;
 		
-		public OverrideEqualsGetHashCodeMethodsDialog(ITextEditor editor, ITextAnchor anchor, IClass selectedClass)
-			: base(null, editor, anchor)
+		public OverrideEqualsGetHashCodeMethodsDialog(InsertionContext context, ITextEditor editor, ITextAnchor startAnchor, ITextAnchor endAnchor,
+		                                              ITextAnchor insertionPosition, IClass selectedClass, IMethod selectedMethod, string baseCall)
+			: base(context, editor, insertionPosition)
 		{
 			if (selectedClass == null)
 				throw new ArgumentNullException("selectedClass");
@@ -35,9 +36,17 @@ namespace SharpRefactoring.Gui
 			InitializeComponent();
 			
 			this.selectedClass = selectedClass;
+			this.startAnchor = startAnchor;
+			this.insertionEndAnchor = endAnchor;
+			this.selectedMethod = selectedMethod;
+			this.baseCall = baseCall;
 			
 			addIEquatable.Content = string.Format(StringParser.Parse("${res:AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddInterface}"),
 			                                      "IEquatable<" + selectedClass.Name + ">");
+			
+			string otherMethod = selectedMethod.Name == "Equals" ? "GetHashCode" : "Equals";
+			
+			addOtherMethod.Content = StringParser.Parse("${res:AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOtherMethod}", new StringTagPair("otherMethod", otherMethod));
 			
 			addIEquatable.IsEnabled = !selectedClass.BaseTypes.Any(
 				type => {
@@ -102,7 +111,7 @@ namespace SharpRefactoring.Gui
 		{
 			StringBuilder code = new StringBuilder();
 			
-			var line = editor.Document.GetLineForOffset(editor.Caret.Offset);
+			var line = editor.Document.GetLineForOffset(startAnchor.Offset);
 			
 			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset);
 			
@@ -111,35 +120,64 @@ namespace SharpRefactoring.Gui
 			if (Options.AddIEquatableInterface) {
 				// TODO : add IEquatable<T> to class
 //				IAmbience ambience = currentClass.CompilationUnit.Language.GetAmbience();
-//				
+//
 //				IReturnType baseRType = currentClass.CompilationUnit.ProjectContent.GetClass("System.IEquatable", 1).DefaultReturnType;
-//				
+//
 //				IClass newClass = new DefaultClass(currentClass.CompilationUnit, currentClass.FullyQualifiedName, currentClass.Modifiers, currentClass.Region, null);
-//				
+//
 //				foreach (IReturnType type in currentClass.BaseTypes) {
 //					newClass.BaseTypes.Add(type);
 //				}
-//				
-//				
+//
+//
 //				newClass.BaseTypes.Add(new ConstructedReturnType(baseRType, new List<IReturnType>() { currentClass.DefaultReturnType }));
-//				
+//
 //				ambience.ConversionFlags = ConversionFlags.IncludeBody;
-//				
+//
 //				string a = ambience.Convert(currentClass);
-//				
+//
 //				int startOffset = editor.Document.PositionToOffset(currentClass.Region.BeginLine, currentClass.Region.BeginColumn);
 //				int endOffset = editor.Document.PositionToOffset(currentClass.BodyRegion.EndLine, currentClass.BodyRegion.EndColumn);
-//				
+//
 //				editor.Document.Replace(startOffset, endOffset - startOffset, a);
 			}
 			
 			if (Options.SurroundWithRegion) {
-				code.AppendLine("#region Equals and GetHashCode implementation");
+				editor.Document.InsertNormalized(startAnchor.Offset, "#region Equals and GetHashCode implementation\n" + indent);
 			}
 			
-			code.Append(generator.GenerateCode(CreateGetHashCodeOverride(currentClass), indent));
+			string codeForMethodBody;
 			
-			code.Append("\n" + string.Join("\n", CreateEqualsOverrides(currentClass).Select(item => generator.GenerateCode(item, indent))));
+			if ("Equals".Equals(selectedMethod.Name, StringComparison.Ordinal)) {
+				IList<MethodDeclaration> equalsOverrides = CreateEqualsOverrides(currentClass);
+				MethodDeclaration defaultOverride = equalsOverrides.First();
+				equalsOverrides = equalsOverrides.Skip(1).ToList();
+				
+				StringBuilder builder = new StringBuilder();
+				
+				foreach (AbstractNode element in defaultOverride.Body.Children.OfType<AbstractNode>()) {
+					builder.Append(language.CodeGenerator.GenerateCode(element, indent + "\t"));
+				}
+				
+				codeForMethodBody = builder.ToString().Trim();
+				
+				if (addOtherMethod.IsChecked == true) {
+					if (equalsOverrides.Any())
+						code.Append(indent + "\n" + string.Join("\n", equalsOverrides.Select(item => generator.GenerateCode(item, indent))));
+					code.Append(indent + "\n" + generator.GenerateCode(CreateGetHashCodeOverride(currentClass), indent));
+				}
+			} else {
+				StringBuilder builder = new StringBuilder();
+				
+				foreach (AbstractNode element in CreateGetHashCodeOverride(currentClass).Body.Children.OfType<AbstractNode>()) {
+					builder.Append(language.CodeGenerator.GenerateCode(element, indent + "\t"));
+				}
+				
+				codeForMethodBody = builder.ToString().Trim();
+				
+				if (addOtherMethod.IsChecked == true)
+					code.Append(indent + "\n" + string.Join("\n", CreateEqualsOverrides(currentClass).Select(item => generator.GenerateCode(item, indent))));
+			}
 			
 			if (Options.AddOperatorOverloads) {
 				var checkStatements = new[] {
@@ -198,15 +236,17 @@ namespace SharpRefactoring.Gui
 					}
 				};
 				
-				code.Append("\n" + generator.GenerateCode(CreateOperatorOverload(OverloadableOperatorType.Equality, currentClass, equalsOpBody), indent));
-				code.Append("\n" + generator.GenerateCode(CreateOperatorOverload(OverloadableOperatorType.InEquality, currentClass, notEqualsOpBody), indent));
+				code.Append(indent + "\n" + generator.GenerateCode(CreateOperatorOverload(OverloadableOperatorType.Equality, currentClass, equalsOpBody), indent));
+				code.Append(indent + "\n" + generator.GenerateCode(CreateOperatorOverload(OverloadableOperatorType.InEquality, currentClass, notEqualsOpBody), indent));
 			}
 			
 			if (Options.SurroundWithRegion) {
 				code.AppendLine(indent + "#endregion");
 			}
 			
-			return code.ToString();
+			editor.Document.InsertNormalized(insertionEndAnchor.Offset, code.ToString());
+			
+			return codeForMethodBody;
 		}
 		
 		List<MethodDeclaration> CreateEqualsOverrides(IClass currentClass)
@@ -360,6 +400,21 @@ namespace SharpRefactoring.Gui
 				Modifier = Modifiers.Public | Modifiers.Static,
 				Body = body
 			};
+		}
+		
+		protected override void CancelButtonClick(object sender, System.Windows.RoutedEventArgs e)
+		{
+			base.CancelButtonClick(sender, e);
+			
+			editor.Document.Insert(anchor.Offset, baseCall);
+			editor.Select(anchor.Offset, baseCall.Length);
+		}
+		
+		protected override void OKButtonClick(object sender, System.Windows.RoutedEventArgs e)
+		{
+			base.OKButtonClick(sender, e);
+			
+			editor.Caret.Offset = insertionEndAnchor.Offset;
 		}
 	}
 }

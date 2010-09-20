@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -160,10 +156,20 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			switch (el.Name) {
 				case "RunCommand":
 					if (el.HasAttribute("path")) {
-						ICommand command = (ICommand)AddInTree.BuildItem(el.GetAttribute("path"), null);
+						string path = el.GetAttribute("path");
+						#if DEBUG
+						ICommand command = (ICommand)AddInTree.BuildItem(path, null);
+						if (command == null)
+							throw new TemplateLoadException("Unknown create action " + path);
+						#endif
 						return project => {
-							command.Owner = project;
-							command.Run();
+							#if !DEBUG
+							ICommand command = (ICommand)AddInTree.BuildItem(path, null);
+							#endif
+							if (command != null) {
+								command.Owner = project;
+								command.Run();
+							}
 						};
 					} else {
 						ProjectTemplate.WarnAttributeMissing(el, "path");
@@ -478,6 +484,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				#endregion
 				
 				RunCreateActions(project);
+				
+				project.ProjectCreationComplete();
 				
 				// Save project
 				project.Save();

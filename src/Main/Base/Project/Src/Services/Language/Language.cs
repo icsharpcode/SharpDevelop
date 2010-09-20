@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 
@@ -14,6 +10,7 @@ namespace ICSharpCode.SharpDevelop
 		string name;
 		string code;
 		string imagePath;
+		bool isRightToLeft;
 		
 		public string Name {
 			get {
@@ -31,13 +28,18 @@ namespace ICSharpCode.SharpDevelop
 			get {
 				return imagePath;
 			}
-		}		
+		}
 		
-		public Language(string name, string code, string imagePath)
+		public bool IsRightToLeft {
+			get { return isRightToLeft; }
+		}
+		
+		public Language(string name, string code, string imagePath, bool isRightToLeft)
 		{
 			this.name       = name;
 			this.code       = code;
 			this.imagePath  = imagePath;
+			this.isRightToLeft = isRightToLeft;
 		}
 	}
 }

@@ -1,41 +1,21 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using AvalonEdit = ICSharpCode.AvalonEdit;
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.Scripting;
 
 namespace ICSharpCode.RubyBinding
 {
-	public class RubyConsolePad : AbstractPadContent
-	{
-		RubyConsoleTextEditor consoleTextEditor;
-		AvalonEdit.TextEditor textEditor;
-		RubyConsoleHost host;
-		
-		public RubyConsolePad()
+	public class RubyConsolePad : ScriptingConsolePad
+	{		
+		protected override IScriptingConsoleHost CreateConsoleHost(IScriptingConsoleTextEditor consoleTextEditor, 
+			IControlDispatcher dispatcher)
 		{
-			textEditor = new AvalonEdit.TextEditor();
-			consoleTextEditor = new RubyConsoleTextEditor(textEditor);
-			host = new RubyConsoleHost(consoleTextEditor);
-			host.Run();	
+			return new RubyConsoleHost(consoleTextEditor, dispatcher);
 		}
 		
-		public override object Control {
-			get { return textEditor; }
-		}		
-		
-		public override void Dispose()
-		{
-			host.Dispose();
-		}
-		
-		public override object InitiallyFocusedControl {
-			get { return textEditor; }
+		protected override string SyntaxHighlightingName {
+			get { return "Ruby"; }
 		}
 	}
 }

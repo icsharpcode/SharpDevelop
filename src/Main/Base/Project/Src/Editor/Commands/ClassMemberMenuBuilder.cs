@@ -1,9 +1,5 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -100,14 +96,14 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 			}
 			if (member is IProperty) {
 				IProperty property = member as IProperty;
-				if (property.CanSet && canGenerateCode) {
+				if (property.CanSet && canGenerateCode && !property.IsAbstract && property.DeclaringType.ClassType != ClassType.Interface) {
 					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateChangedEvent}", CreateChangedEvent);
 					cmd.Tag = member;
 					list.Add(cmd);
 				}
 			}
 			if (member is IEvent) {
-				if (canGenerateCode) {
+				if (canGenerateCode && !member.IsAbstract && member.DeclaringType.ClassType != ClassType.Interface) {
 					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateOnEventMethod}", CreateOnEventMethod);
 					cmd.Tag = member;
 					list.Add(cmd);

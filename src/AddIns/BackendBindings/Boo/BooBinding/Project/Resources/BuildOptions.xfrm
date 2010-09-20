@@ -181,9 +181,9 @@
         <TabIndex value="1" />
         <Controls>
           <System.Windows.Forms.Button>
-            <Name value="convertProjectToMSBuild35Button" />
+            <Name value="projectUpdateButton" />
             <Location value="337, 93" />
-            <Text value="Convert project to MSBuild 3.5.." />
+            <Text value="Change" />
             <UseVisualStyleBackColor value="True" />
             <Size value="166, 23" />
             <TabIndex value="12" />

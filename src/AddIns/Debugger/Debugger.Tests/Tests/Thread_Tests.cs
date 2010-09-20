@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 
@@ -66,7 +62,7 @@ namespace Debugger.Tests {
         RuntimeValue="null" />
     </ThreadStartedEvent>
     <ModuleLoaded>Thread_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break Thread_Tests.cs:17,4-17,40</DebuggingPaused>
+    <DebuggingPaused>Break Thread_Tests.cs:13,4-13,40</DebuggingPaused>
     <Thread>
       <Thread
         Callstack="{static void Debugger.Tests.Thread_Tests.Main()}"
@@ -79,7 +75,7 @@ namespace Debugger.Tests {
         RuntimeValue="{System.Threading.Thread}"
         SelectedStackFrame="static void Debugger.Tests.Thread_Tests.Main()" />
     </Thread>
-    <DebuggingPaused>Break Thread_Tests.cs:19,4-19,40</DebuggingPaused>
+    <DebuggingPaused>Break Thread_Tests.cs:15,4-15,40</DebuggingPaused>
     <Thread>
       <Thread
         Callstack="{static void Debugger.Tests.Thread_Tests.Main()}"

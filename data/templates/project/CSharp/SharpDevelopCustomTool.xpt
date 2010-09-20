@@ -8,7 +8,7 @@
 		<Subcategory>SharpDevelop</Subcategory>
 		<Icon>C#.Project.ControlLibrary</Icon>
 		<Description>A custom tool that implements a code generator transforming a source file into an output file whenever the source is changed inside SharpDevelop</Description>
-		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
+		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
@@ -18,10 +18,6 @@
 	</Actions>
 	
 	<Project language="C#">
-		<CreateActions>
-			<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35"/>
-		</CreateActions>
-		
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Data" />

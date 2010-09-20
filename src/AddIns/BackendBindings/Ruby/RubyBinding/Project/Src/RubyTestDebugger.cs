@@ -1,13 +1,10 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Diagnostics;
 using ICSharpCode.Core.Services;
+using ICSharpCode.Scripting;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.RubyBinding
@@ -15,7 +12,7 @@ namespace ICSharpCode.RubyBinding
 	public class RubyTestDebugger : TestDebuggerBase
 	{
 		RubyAddInOptions options;
-		IRubyFileService fileService;
+		IScriptingFileService fileService;
 		RubyTestRunnerApplication testRunnerApplication;
 		
 		public RubyTestDebugger()
@@ -23,7 +20,7 @@ namespace ICSharpCode.RubyBinding
 				new UnitTestMessageService(),
 				new TestResultsMonitor(),
 				new RubyAddInOptions(),
-				new RubyFileService())
+				new ScriptingFileService())
 		{
 		}
 		
@@ -31,7 +28,7 @@ namespace ICSharpCode.RubyBinding
 			IUnitTestMessageService messageService,
 			ITestResultsMonitor testResultsMonitor,
 			RubyAddInOptions options,
-			IRubyFileService fileService)
+			IScriptingFileService fileService)
 			: base(debuggerService, messageService, testResultsMonitor)
 		{
 			this.options = options;

@@ -1,9 +1,5 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -110,7 +106,7 @@ namespace ICSharpCode.Profiler.Controller
 		/// Creates default ProfilerOptions.
 		/// </summary>
 		public ProfilerOptions()
-			: this(true, DefaultSharedMemorySize, false, false, true, true, DefaultCounters)
+			: this(true, DefaultSharedMemorySize, false, false, true, false, DefaultCounters)
 		{
 		}
 	}

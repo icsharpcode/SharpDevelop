@@ -63,7 +63,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 		
-		public static void AdjustSectionLocation (BaseSection section)
+		public static void AdjustSectionLocation (BaseReportItem section)
 		{
 			section.Location = new Point(section.Location.X,section.SectionOffset );
 		}
@@ -168,31 +168,9 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		#endregion
 		
-		public static IExpressionEvaluatorFacade  CreateEvaluator (ISinglePage singlePage,IDataNavigator dataNavigator)
+		public static Point ConvertRectangleToCurentPosition (Rectangle rectangle)
 		{
-			if (singlePage == null) {
-			
-				throw new ArgumentNullException("singlePage");
-			}
-			if (dataNavigator == null) {
-				throw new ArgumentNullException("dataNavigator");
-			}
-			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade();
-			evaluatorFacade.SinglePage = singlePage;
-			evaluatorFacade.SinglePage.IDataNavigator = dataNavigator;
-			return evaluatorFacade;
-		}
-		
-		
-		public static IExpressionEvaluatorFacade  SetupEvaluator ()
-		{
-			return new ExpressionEvaluatorFacade();
-		}
-		
-		
-		public static Point ConvertRectangleToCurentPosition (Rectangle r)
-		{
-			return new Point(r.Left,r.Bottom);
+			return new Point(rectangle.Left,rectangle.Bottom);
 		}
 		
 		

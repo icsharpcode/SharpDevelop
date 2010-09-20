@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 
@@ -98,7 +94,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>StackFrame_VariablesLifetime.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:25,4-25,40</DebuggingPaused>
+    <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:21,4-21,40</DebuggingPaused>
     <argument>
       <Value
         AsString="1"
@@ -117,7 +113,7 @@ namespace Debugger.Tests {
         PrimitiveValue="3"
         Type="System.Int32" />
     </_x0040_class>
-    <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:34,4-34,40</DebuggingPaused>
+    <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:30,4-30,40</DebuggingPaused>
     <argument>
       <Value
         AsString="{Exception: Value is no longer valid}"
@@ -148,7 +144,7 @@ namespace Debugger.Tests {
         PrimitiveValue="4"
         Type="System.Int32" />
     </localInSubFunction>
-    <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:27,4-27,40</DebuggingPaused>
+    <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:23,4-23,40</DebuggingPaused>
     <argument>
       <Value
         AsString="{Exception: Value is no longer valid}"
@@ -181,7 +177,7 @@ namespace Debugger.Tests {
         PrimitiveValue="{Exception: Value is no longer valid}"
         Type="System.Int32" />
     </localInSubFunction>
-    <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:34,4-34,40</DebuggingPaused>
+    <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:30,4-30,40</DebuggingPaused>
     <argument>
       <Value
         AsString="{Exception: Value is no longer valid}"
@@ -220,7 +216,7 @@ namespace Debugger.Tests {
         PrimitiveValue="4"
         Type="System.Int32" />
     </localInSubFunction_x0028_new_x0029_>
-    <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:19,4-19,40</DebuggingPaused>
+    <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:15,4-15,40</DebuggingPaused>
     <argument>
       <Value
         AsString="{Exception: Value is no longer valid}"

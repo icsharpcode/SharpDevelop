@@ -1,13 +1,10 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using ICSharpCode.FormsDesigner;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
@@ -33,7 +30,7 @@ namespace RubyBinding.Tests.Designer
 		{
 			RubyParser parser = new RubyParser();
 			MockProjectContent mockProjectContent = new MockProjectContent();
-			ICompilationUnit compilationUnit = parser.Parse(mockProjectContent, @"C:\Projects    est\MainForm.py", GetRubyCode());
+			ICompilationUnit compilationUnit = parser.Parse(mockProjectContent, @"C:\Projects\test\MainForm.py", GetRubyCode());
 
 			parseInfo = new ParseInformation(compilationUnit);
 			

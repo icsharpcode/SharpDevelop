@@ -1,9 +1,5 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <author name="Daniel Grunwald"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -59,6 +55,18 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			int relativeOffset = startVisualColumn - VisualColumn;
 			string text = context.Document.GetText(context.VisualLine.FirstDocumentLine.Offset + RelativeTextOffset + relativeOffset, DocumentLength - relativeOffset);
 			return new TextCharacters(text, 0, text.Length, this.TextRunProperties);
+		}
+		
+		/// <inheritdoc/>
+		public override TextSpan<CultureSpecificCharacterBufferRange> GetPrecedingText(int visualColumnLimit, ITextRunConstructionContext context)
+		{
+			if (context == null)
+				throw new ArgumentNullException("context");
+			
+			int relativeOffset = visualColumnLimit - VisualColumn;
+			string text = context.Document.GetText(context.VisualLine.FirstDocumentLine.Offset + RelativeTextOffset, relativeOffset);
+			CharacterBufferRange range = new CharacterBufferRange(text, 0, text.Length);
+			return new TextSpan<CultureSpecificCharacterBufferRange>(range.Length, new CultureSpecificCharacterBufferRange(this.TextRunProperties.CultureInfo, range));
 		}
 		
 		/// <inheritdoc/>

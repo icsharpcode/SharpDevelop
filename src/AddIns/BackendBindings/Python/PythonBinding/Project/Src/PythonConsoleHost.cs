@@ -1,14 +1,11 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Text;
 using System.Threading;
 
+using ICSharpCode.Scripting;
 using IronPython.Hosting;
 using IronPython.Runtime;
 using Microsoft.Scripting.Hosting;
@@ -16,18 +13,18 @@ using Microsoft.Scripting.Hosting.Shell;
 
 namespace ICSharpCode.PythonBinding
 {
-	/// <summary>
-	/// Hosts the python console.
-	/// </summary>
-	public class PythonConsoleHost : ConsoleHost, IDisposable
+	public class PythonConsoleHost : ConsoleHost, IScriptingConsoleHost
 	{
 		Thread thread;
-		IConsoleTextEditor textEditor;
 		PythonConsole pythonConsole;
-				
-		public PythonConsoleHost(IConsoleTextEditor textEditor)
+		
+		public PythonConsoleHost(IScriptingConsoleTextEditor textEditor, IControlDispatcher dispatcher)
 		{
-			this.textEditor = textEditor;
+			pythonConsole = new PythonConsole(textEditor, dispatcher);
+		}
+				
+		public IScriptingConsole ScriptingConsole {
+			get { return pythonConsole; }
 		}
 		
 		protected override Type Provider {
@@ -72,19 +69,17 @@ namespace ICSharpCode.PythonBinding
 		/// </remarks>
 		protected override IConsole CreateConsole(ScriptEngine engine, CommandLine commandLine, ConsoleOptions options)
 		{
-			SetOutput(new PythonOutputStream(textEditor));
-			pythonConsole = new PythonConsole(textEditor, commandLine);
+			ScriptingConsoleOutputStream stream = pythonConsole.CreateOutputStream();
+			SetOutput(stream);
+			pythonConsole.CommandLine = commandLine;
 			return pythonConsole;
 		}
 		
-		protected virtual void SetOutput(PythonOutputStream stream)
+		protected virtual void SetOutput(ScriptingConsoleOutputStream stream)
 		{
 			Runtime.IO.SetOutput(stream, Encoding.UTF8);
 		}
 		
-		/// <summary>
-		/// Runs the console.
-		/// </summary>
 		void RunConsole()
 		{
 			Run(new string[0]);

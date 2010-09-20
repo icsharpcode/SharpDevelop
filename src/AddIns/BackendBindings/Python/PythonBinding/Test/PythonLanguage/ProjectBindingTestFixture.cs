@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using ICSharpCode.PythonBinding;
@@ -11,7 +7,7 @@ using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using NUnit.Framework;
 
-namespace PythonBinding.Tests
+namespace PythonBinding.Tests.PythonLanguage
 {
 	/// <summary>
 	/// Tests the PythonProjectBinding class.

@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <author name="Daniel Grunwald"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Windows.Media;
@@ -24,7 +20,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		/// <summary>
 		/// Called when the interactive mode is deactivated.
 		/// </summary>
-		void Deactivate();
+		void Deactivate(SnippetEventArgs e);
 		
 		/// <summary>
 		/// Gets whether this element is editable (the user will be able to select it with Tab).

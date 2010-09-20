@@ -1,13 +1,10 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.IO;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
@@ -28,7 +25,7 @@ namespace PythonBinding.Tests.Parsing
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MSBuildEngineHelper.InitMSBuildEngine();
+			PythonMSBuildEngineHelper.InitMSBuildEngine();
 			parser = new PythonParser();
 		}
 		

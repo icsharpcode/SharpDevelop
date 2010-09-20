@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.Scripting</RootNamespace>
+    <AssemblyName>ICSharpCode.Scripting</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <OutputPath>..\..\..\..\..\bin\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configuration" />
+    <Folder Include="Src" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\CommandLineHistory.cs" />
+    <Compile Include="Src\ConsoleTextEditorKeyEventArgs.cs" />
+    <Compile Include="Src\ControlDispatcher.cs" />
+    <Compile Include="Src\CreateTextWriterInfo.cs" />
+    <Compile Include="Src\IComponentCreator.cs" />
+    <Compile Include="Src\IComponentWalker.cs" />
+    <Compile Include="Src\IControlDispatcher.cs" />
+    <Compile Include="Src\IMemberProvider.cs" />
+    <Compile Include="Src\IScriptingCodeDomSerializer.cs" />
+    <Compile Include="Src\IScriptingConsole.cs" />
+    <Compile Include="Src\IScriptingConsoleHost.cs" />
+    <Compile Include="Src\IScriptingConsolePad.cs" />
+    <Compile Include="Src\IScriptingConsoleTextEditor.cs" />
+    <Compile Include="Src\IScriptingDesignerGenerator.cs" />
+    <Compile Include="Src\IScriptingFileService.cs" />
+    <Compile Include="Src\IScriptingWorkbench.cs" />
+    <Compile Include="Src\ScriptingCodeBuilder.cs" />
+    <Compile Include="Src\ScriptingConsole.cs" />
+    <Compile Include="Src\ScriptingConsoleCompletionData.cs" />
+    <Compile Include="Src\ScriptingConsoleCompletionDataProvider.cs" />
+    <Compile Include="Src\ScriptingConsoleOutputStream.cs" />
+    <Compile Include="Src\ScriptingConsolePad.cs" />
+    <Compile Include="Src\ScriptingConsoleTextEditor.cs" />
+    <Compile Include="Src\ScriptingConsoleTextEditorKeyEventArgs.cs" />
+    <Compile Include="Src\ScriptingConsoleUnreadLines.cs" />
+    <Compile Include="Src\ScriptingDesignerGenerator.cs" />
+    <Compile Include="Src\ScriptingDesignerLoader.cs" />
+    <Compile Include="Src\ScriptingFileService.cs" />
+    <Compile Include="Src\ScriptingNameCreationService.cs" />
+    <Compile Include="Src\ScriptingStyle.cs" />
+    <Compile Include="Src\ScriptingTextEditorViewContent.cs" />
+    <Compile Include="Src\ScriptingWorkbench.cs" />
+    <Compile Include="Src\SendLineToScriptingConsoleCommand.cs" />
+    <Compile Include="Src\SendSelectedTextToScriptingConsoleCommand.cs" />
+    <Compile Include="Src\SendToScriptingConsoleCommand.cs" />
+    <Compile Include="Src\TextSentToScriptingConsole.cs" />
+    <Compile Include="Src\ThreadSafeScriptingConsole.cs" />
+    <Compile Include="Src\ThreadSafeScriptingConsoleEvents.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Analysis\UnitTesting\UnitTesting.csproj">
+      <Project>{1F261725-6318-4434-A1B1-6C70CE4CD324}</Project>
+      <Name>UnitTesting</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
+      <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
+      <Name>FormsDesigner</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

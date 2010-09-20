@@ -1,0 +1,213 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{85C09AD8-183B-403A-869A-7226646218A9}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.Scripting.Tests</RootNamespace>
+    <AssemblyName>ICSharpCode.Scripting.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <OutputPath>..\..\..\..\..\bin\UnitTests\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configuration" />
+    <Folder Include="Console" />
+    <Folder Include="Designer" />
+    <Folder Include="Testing" />
+    <Folder Include="Utils" />
+    <Folder Include="Utils\Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Console\CommandLineHistoryTestFixture.cs" />
+    <Compile Include="Console\EmptyCommandLineHistoryTestFixture.cs" />
+    <Compile Include="Console\EmptyStringCodeCompletionTests.cs" />
+    <Compile Include="Console\InsertConsoleCompletionDataTestFixture.cs" />
+    <Compile Include="Console\KeysPressedWhenCompletionWindowOpenTests.cs" />
+    <Compile Include="Console\OneItemCommandLineHistoryTestFixture.cs" />
+    <Compile Include="Console\ScriptingConsoleCodeCompletionTests.cs" />
+    <Compile Include="Console\ScriptingConsoleCommandLineHistoryTests.cs" />
+    <Compile Include="Console\ScriptingConsoleCurrentLineTests.cs" />
+    <Compile Include="Console\ScriptingConsoleEnterKeyTests.cs" />
+    <Compile Include="Console\ScriptingConsoleHomeKeyTests.cs" />
+    <Compile Include="Console\ScriptingConsoleOutputStreamTests.cs" />
+    <Compile Include="Console\ScriptingConsoleReadOnlyRegionsTests.cs" />
+    <Compile Include="Console\ScriptingConsoleReadTests.cs" />
+    <Compile Include="Console\ScriptingConsoleSendLineTests.cs" />
+    <Compile Include="Console\ScriptingConsoleSendTextTests.cs" />
+    <Compile Include="Console\ScriptingConsoleTestsBase.cs" />
+    <Compile Include="Console\ScriptingConsoleTextEditorTests.cs" />
+    <Compile Include="Console\ScriptingConsoleUnreadLinesTests.cs" />
+    <Compile Include="Console\ScriptingConsoleWriteTests.cs" />
+    <Compile Include="Console\SendLineToScriptingConsoleCommandTests.cs" />
+    <Compile Include="Console\SendSelectedTextToScriptingConsoleCommandTests.cs" />
+    <Compile Include="Console\SendToScriptingConsoleCommandTestsBase.cs" />
+    <Compile Include="Console\ThreadSafeScriptingConsoleTests.cs" />
+    <Compile Include="Console\TwoConsoleLinesWaitingTests.cs" />
+    <Compile Include="Designer\CallBeginInitOnLoadTests.cs" />
+    <Compile Include="Designer\GenerateAcceptButtonFormTestsBase.cs" />
+    <Compile Include="Designer\GenerateDesignerCodeTestsBase.cs" />
+    <Compile Include="Designer\GenerateEnabledUsingPropertyDescriptorTestsBase.cs" />
+    <Compile Include="Designer\GenerateUserControlWithNullPropertyValueTestsBase.cs" />
+    <Compile Include="Designer\LoadFormTestsBase.cs" />
+    <Compile Include="Designer\NameCreationServiceTests.cs" />
+    <Compile Include="Designer\ScriptingDesignerGeneratorTests.cs" />
+    <Compile Include="Designer\ScriptingCodeBuilderTests.cs" />
+    <Compile Include="Designer\ScriptingDesignerLoaderGetResourcesTests.cs" />
+    <Compile Include="Designer\ScriptingDesignerLoaderTests.cs" />
+    <Compile Include="Testing\CreateTextWriterFromCreateTextWriterInfoTestFixture.cs" />
+    <Compile Include="Testing\CreateTextWriterInfoEqualsTestFixture.cs" />
+    <Compile Include="Utils\AddedComponent.cs" />
+    <Compile Include="Utils\AddInHelper.cs" />
+    <Compile Include="Utils\AddInPathHelper.cs" />
+    <Compile Include="Utils\BarItemCollection.cs" />
+    <Compile Include="Utils\ConvertedFile.cs" />
+    <Compile Include="Utils\CreatedComponent.cs" />
+    <Compile Include="Utils\CreatedInstance.cs" />
+    <Compile Include="Utils\CustomClassTypeConverter.cs" />
+    <Compile Include="Utils\CustomUserControl.cs" />
+    <Compile Include="Utils\DerivedFormDesignerViewContent.cs" />
+    <Compile Include="Utils\DerivedToolStripMenuItem.cs" />
+    <Compile Include="Utils\DoublePropertyUserControl.cs" />
+    <Compile Include="Utils\FakeCaret.cs" />
+    <Compile Include="Utils\FakeCodeDomSerializer.cs" />
+    <Compile Include="Utils\FakeComponentWalker.cs" />
+    <Compile Include="Utils\FakeDesignerSerializationManager.cs" />
+    <Compile Include="Utils\FakeDocument.cs" />
+    <Compile Include="Utils\FakeDocumentLine.cs" />
+    <Compile Include="Utils\FakeScriptingConsole.cs" />
+    <Compile Include="Utils\FooItemCollection.cs" />
+    <Compile Include="Utils\MockComponentCreator.cs" />
+    <Compile Include="Utils\FakeConsoleTextEditor.cs" />
+    <Compile Include="Utils\FakeConsoleTextEditorKeyEventArgs.cs" />
+    <Compile Include="Utils\FakeControlDispatcher.cs" />
+    <Compile Include="Utils\MockDebugger.cs" />
+    <Compile Include="Utils\MockDesignerGenerator.cs" />
+    <Compile Include="Utils\MockDesignerLoaderHost.cs" />
+    <Compile Include="Utils\MockEditableViewContent.cs" />
+    <Compile Include="Utils\MockEventBindingService.cs" />
+    <Compile Include="Utils\MockEventDescriptor.cs" />
+    <Compile Include="Utils\MockExtenderProviderService.cs" />
+    <Compile Include="Utils\MockMemberProvider.cs" />
+    <Compile Include="Utils\MockOpenedFile.cs" />
+    <Compile Include="Utils\MockProject.cs" />
+    <Compile Include="Utils\MockProjectContent.cs" />
+    <Compile Include="Utils\MockPropertyDescriptor.cs" />
+    <Compile Include="Utils\MockResourceReader.cs" />
+    <Compile Include="Utils\MockResourceService.cs" />
+    <Compile Include="Utils\MockResourceWriter.cs" />
+    <Compile Include="Utils\FakeScriptingConsolePad.cs" />
+    <Compile Include="Utils\MockScriptingFileService.cs" />
+    <Compile Include="Utils\MockSite.cs" />
+    <Compile Include="Utils\MockTextEditor.cs" />
+    <Compile Include="Utils\MockTextEditorOptions.cs" />
+    <Compile Include="Utils\MockTextEditorViewContent.cs" />
+    <Compile Include="Utils\MockTypeResolutionService.cs" />
+    <Compile Include="Utils\MockViewContent.cs" />
+    <Compile Include="Utils\MockWorkbench.cs" />
+    <Compile Include="Utils\MSBuildEngineHelper.cs" />
+    <Compile Include="Utils\NullPropertyUserControl.cs" />
+    <Compile Include="Utils\SupportInitCustomControl.cs" />
+    <Compile Include="Utils\TestableScriptingConsole.cs" />
+    <Compile Include="Utils\TestableScriptingDesignerGenerator.cs" />
+    <Compile Include="Utils\TestableScriptingDesignerLoader.cs" />
+    <Compile Include="Utils\TestableThreadSafeScriptingConsole.cs" />
+    <Compile Include="Utils\TestableThreadSafeScriptingConsoleEvents.cs" />
+    <Compile Include="Utils\Tests\AddInPathHelperTests.cs" />
+    <Compile Include="Utils\Tests\MockComponentCreatorTests.cs" />
+    <Compile Include="Utils\Tests\MockConsoleTextEditorTests.cs" />
+    <Compile Include="Utils\Tests\MockControlDispatcherTestFixture.cs" />
+    <Compile Include="Utils\Tests\MockEditableViewContentTestFixture.cs" />
+    <Compile Include="Utils\Tests\MockProjectContentTests.cs" />
+    <Compile Include="Utils\Tests\MockScriptingFileServiceTests.cs" />
+    <Compile Include="Utils\Tests\TestableScriptingDesignerGeneratorTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Analysis\UnitTesting\Test\UnitTesting.Tests.csproj">
+      <Project>{44A8DE09-CAB9-49D8-9CFC-5EB0A552F181}</Project>
+      <Name>UnitTesting.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Analysis\UnitTesting\UnitTesting.csproj">
+      <Project>{1F261725-6318-4434-A1B1-6C70CE4CD324}</Project>
+      <Name>UnitTesting</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
+      <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
+      <Name>FormsDesigner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Project\ICSharpCode.Scripting.csproj">
+      <Project>{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}</Project>
+      <Name>ICSharpCode.Scripting</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

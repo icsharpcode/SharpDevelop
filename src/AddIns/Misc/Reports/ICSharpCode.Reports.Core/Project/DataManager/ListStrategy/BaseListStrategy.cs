@@ -74,7 +74,6 @@ namespace ICSharpCode.Reports.Core {
 		protected ReportSettings ReportSettings {get;private set;}
 	
 		
-		
 		#region Sorting delegates
 		
 		protected static List<BaseComparer>  GenericSorter (List<BaseComparer> list)
@@ -94,7 +93,30 @@ namespace ICSharpCode.Reports.Core {
 		
 		#endregion
 		
+		
 		#region Grouping
+		
+		protected void BuildGroup (IndexList list)
+		{
+			string compVal = String.Empty;
+			IndexList.Clear();
+			IndexList childList = null;
+			foreach (BaseComparer element in list)
+			{
+				string v = element.ObjectArray[0].ToString();
+				if (compVal != v) {
+					childList = new IndexList();
+					GroupComparer gc = CreateGroupHeader(element);
+					gc.IndexList = childList;
+					CreateGroupeChildren(childList,element);
+				} else {
+					CreateGroupeChildren(childList,element);
+				}
+				compVal = v;
+			}
+			ShowIndexList(IndexList);
+		}
+		
 		
 		protected GroupComparer CreateGroupHeader (BaseComparer sc)
 		{
@@ -104,11 +126,11 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		protected void CreateGroupeChildren(IndexList list,BaseComparer sc)
+		protected static void CreateGroupeChildren(IndexList list,BaseComparer sc)
 		{
-			string v = sc.ObjectArray[0].ToString();
 			list.Add(sc);
 		}
+		
 		#endregion
 		
 		#region Debug Code

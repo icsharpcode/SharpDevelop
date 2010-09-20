@@ -1,9 +1,5 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -54,9 +50,6 @@ namespace ICSharpCode.SharpDevelop.Sda
 				startup.PropertiesName = properties.PropertiesName;
 			}
 			AssemblyParserService.DomPersistencePath = properties.DomPersistencePath;
-			
-			// disable RTL: translations for the RTL languages are inactive
-			RightToLeftConverter.RightToLeftLanguages = new string[0];
 			
 			if (properties.ApplicationRootPath != null) {
 				FileUtility.ApplicationRootPath = properties.ApplicationRootPath;
@@ -161,6 +154,8 @@ namespace ICSharpCode.SharpDevelop.Sda
 			LoggingService.Info("Initializing workbench...");
 			wbc.InitializeWorkbench();
 			
+			RunWorkbenchInitializedCommands();
+			
 			LoggingService.Info("Starting workbench...");
 			Exception exception = null;
 			// finally start the workbench.
@@ -196,6 +191,18 @@ namespace ICSharpCode.SharpDevelop.Sda
 					System.Windows.Forms.Application.Run(new ExceptionBox(exception, errorText, true));
 				} else {
 					throw new RunWorkbenchException(errorText, exception);
+				}
+			}
+		}
+		
+		void RunWorkbenchInitializedCommands()
+		{
+			foreach (ICommand command in AddInTree.BuildItems<ICommand>("/Workspace/AutostartAfterWorkbenchInitialized", null, false)) {
+				try {
+					command.Run();
+				} catch (Exception ex) {
+					// allow startup to continue if some commands fail
+					MessageService.ShowException(ex);
 				}
 			}
 		}
@@ -307,5 +314,3 @@ namespace ICSharpCode.SharpDevelop.Sda
 		}
 	}
 }
-
-

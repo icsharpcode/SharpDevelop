@@ -20,10 +20,6 @@
 
 	<!-- Template Content -->
 	<Project language = "C#">
-		<CreateActions>
-			<RunCommand path = "/SharpDevelop/BackendBindings/TemplateCommands/AddDotNet35ReferencesIfTargetFrameworkIs35"/>
-		</CreateActions>
-		
 		<ProjectItems>
 			<Reference Include="System" />
 			<Reference Include="System.Configuration.Install" />

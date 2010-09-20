@@ -1,17 +1,15 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
-using Microsoft.Scripting.Hosting;
-
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Console;
+using ICSharpCode.Scripting.Tests.Utils;
+using Microsoft.Scripting.Hosting;
 using NUnit.Framework;
 
 namespace PythonBinding.Tests.Console
@@ -24,7 +22,7 @@ namespace PythonBinding.Tests.Console
 	{
 		ICompletionData[] completionItems;
 		ICompletionData[] expectedCompletionItems;
-		PythonConsoleCompletionDataProvider provider;
+		ScriptingConsoleCompletionDataProvider provider;
 		MockMemberProvider memberProvider;
 		
 		[TestFixtureSetUp]
@@ -32,13 +30,13 @@ namespace PythonBinding.Tests.Console
 		{			
 			TextEditor textEditorControl = new TextEditor();
 			textEditorControl.Text = ">>> __builtins__";
-			PythonConsoleTextEditor textEditor = new PythonConsoleTextEditor(textEditorControl);
+			ScriptingConsoleTextEditor textEditor = new ScriptingConsoleTextEditor(textEditorControl);
 				
 			memberProvider = new MockMemberProvider();
 			memberProvider.SetMemberNames(new string[] {"a", "b", "c"});
 			expectedCompletionItems = CreateCompletionItems(memberProvider.GetMemberNames("__builtins__"));
 			
-			provider = new PythonConsoleCompletionDataProvider(memberProvider);
+			provider = new ScriptingConsoleCompletionDataProvider(memberProvider);
 			completionItems = provider.GenerateCompletionData(textEditor);
 		}
 		
@@ -70,9 +68,9 @@ namespace PythonBinding.Tests.Console
 		
 		ICompletionData[] CreateCompletionItems(IList<string> memberNames)
 		{
-			List<PythonConsoleCompletionData> items = new List<PythonConsoleCompletionData>();
+			List<ScriptingConsoleCompletionData> items = new List<ScriptingConsoleCompletionData>();
 			foreach (string memberName in memberNames) {
-				items.Add(new PythonConsoleCompletionData(memberName));
+				items.Add(new ScriptingConsoleCompletionData(memberName));
 			}
 			return items.ToArray();
 		}

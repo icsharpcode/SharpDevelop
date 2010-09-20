@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 
@@ -47,7 +43,7 @@ namespace Debugger.Tests {
     <ModuleLoaded>System.Configuration.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>System.Xml.dll (No symbols)</ModuleLoaded>
     <LogMessage>Hello world!\r\n</LogMessage>
-    <DebuggingPaused>Break _HelloWorldTest.cs:18,4-18,40</DebuggingPaused>
+    <DebuggingPaused>Break _HelloWorldTest.cs:14,4-14,40</DebuggingPaused>
     <ProcessExited />
   </Test>
 </DebuggerTests>

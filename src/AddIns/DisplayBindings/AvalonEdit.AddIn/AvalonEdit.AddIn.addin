@@ -172,4 +172,9 @@
 			             class = "ICSharpCode.AvalonEdit.AddIn.Options.HighlightingOptions"/>
 		</OptionPanel>
 	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/AvalonEdit/SnippetElementProviders">
+		<Class id="default" class="ICSharpCode.AvalonEdit.AddIn.Snippets.DefaultSnippetElementProvider" />
+		<Class id="anchor" class="ICSharpCode.AvalonEdit.AddIn.Snippets.AnchorSnippetElementProvider" />
+	</Path>
 </AddIn>

@@ -1,20 +1,17 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Utils;
 using IronPython.Hosting;
 using IronPython.Runtime;
-using NUnit.Framework;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
+using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Console
@@ -27,13 +24,13 @@ namespace PythonBinding.Tests.Console
 	{
 		DerivedPythonConsoleHost host;
 		TextEditor textEditorControl;
-		PythonConsoleTextEditor textEditor;
+		ScriptingConsoleTextEditor textEditor;
 		
 		[TestFixtureSetUp]
 		public void Init()
 		{
 			textEditorControl = new TextEditor();
-			textEditor = new PythonConsoleTextEditor(textEditorControl);
+			textEditor = new ScriptingConsoleTextEditor(textEditorControl);
 			host = new DerivedPythonConsoleHost(textEditor);
 			
 			ScriptRuntime runtime = IronPython.Hosting.Python.CreateRuntime();
@@ -85,25 +82,12 @@ namespace PythonBinding.Tests.Console
 		}
 		
 		/// <summary>
-		/// When the console is disposed calling ReadLine returns null.
-		/// </summary>
-		[Test]
-		public void HostDisposesPythonConsole()
-		{
-			DerivedPythonConsoleHost host = new DerivedPythonConsoleHost(new MockConsoleTextEditor());
-			PythonConsole console = host.CallCreateConsole(null, null, null) as PythonConsole;
-			host.Dispose();
-
-			Assert.IsNull(console.ReadLine(0));
-		}
-		
-		/// <summary>
 		/// Makes sure the Dispose method checks if the python console is null before trying to dispose it.
 		/// </summary>
 		[Test]
 		public void DisposingPythonConsoleHostWithoutCreatingPythonConsole()
 		{
-			PythonConsoleHost host = new PythonConsoleHost(new MockConsoleTextEditor());
+			PythonConsoleHost host = new PythonConsoleHost(new FakeConsoleTextEditor(), new FakeControlDispatcher());
 			host.Dispose();
 		}
 		

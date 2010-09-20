@@ -94,9 +94,9 @@
         <TabIndex value="1" />
         <Controls>
           <System.Windows.Forms.Button>
-            <Name value="convertProjectToMSBuild35Button" />
+            <Name value="projectUpdateButton" />
             <Location value="291, 113" />
-            <Text value="Convert project to VB 9..." />
+            <Text value="Change" />
             <UseVisualStyleBackColor value="True" />
             <Size value="179, 23" />
             <TabIndex value="10" />

@@ -1,9 +1,5 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -21,18 +17,16 @@ namespace ICSharpCode.SharpDevelop
 {
 	public sealed class ParseProjectContent : DefaultProjectContent
 	{
-		internal static ParseProjectContent CreateUninitalized(IProject project)
+		public ParseProjectContent(IProject project)
 		{
-			ParseProjectContent newProjectContent = new ParseProjectContent();
-			newProjectContent.project = project;
-			newProjectContent.Language = project.LanguageProperties;
-			newProjectContent.initializing = true;
-			IProjectContent mscorlib = AssemblyParserService.GetRegistryForReference(new ReferenceProjectItem(project, "mscorlib")).Mscorlib;
-			newProjectContent.AddReferencedContent(mscorlib);
-			return newProjectContent;
+			if (project == null)
+				throw new ArgumentNullException("project");
+			this.project = project;
+			this.Language = project.LanguageProperties;
+			this.initializing = true;
 		}
 		
-		IProject project;
+		readonly IProject project;
 		
 		public override object Project {
 			get {
@@ -274,12 +268,15 @@ namespace ICSharpCode.SharpDevelop
 				double fileCountInverse = 1.0 / fileContents.Count;
 				Parallel.ForEach(
 					fileContents,
+					new ParallelOptions { 
+						MaxDegreeOfParallelism = Environment.ProcessorCount * 2,
+						CancellationToken = progressMonitor.CancellationToken
+					},
 					fileName => {
-						ParseableFileContentEntry entry = finder.Create(fileName);
 						// Don't read files we don't have a parser for.
 						// This avoids loading huge files (e.g. sdps) when we have no intention of parsing them.
 						if (ParserService.GetParser(fileName) != null) {
-							ITextBuffer content = entry.GetContent();
+							ITextBuffer content = finder.Create(fileName);
 							if (content != null)
 								ParserService.ParseFile(this, fileName, content);
 						}

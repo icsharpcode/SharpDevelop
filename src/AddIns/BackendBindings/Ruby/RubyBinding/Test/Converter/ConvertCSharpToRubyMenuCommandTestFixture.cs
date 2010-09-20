@@ -1,22 +1,16 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
+using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 
 namespace RubyBinding.Tests.Converter
 {
-	/// <summary>
-	/// Tests the ConvertCSharpToRubyMenuCommand.
-	/// </summary>
 	[TestFixture]
 	public class ConvertCSharpToRubyMenuCommandTestFixture : ConvertToRubyMenuCommand
 	{
@@ -24,13 +18,12 @@ namespace RubyBinding.Tests.Converter
 		string defaultFileName;
 		string language;
 		string fileNamePassedToGetParseInformation;
-		MockEditableViewContent mockViewContent;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			mockViewContent = new MockEditableViewContent();
-			mockViewContent.Text = 
+			MockWorkbench workbench = MockWorkbench.CreateWorkbenchWithOneViewContent("test.cs");
+			workbench.ActiveMockEditableViewContent.Text = 
 				"class Foo\r\n" +
 				"{\r\n" +
 				"    public Foo()\r\n" +
@@ -38,17 +31,9 @@ namespace RubyBinding.Tests.Converter
 				"    }\r\n" +
 				"}";
 			
-			mockViewContent.PrimaryFileName = new FileName("test.cs");
-			
-			MockWorkbench workbench = new MockWorkbench();
-			MockWorkbenchWindow window = new MockWorkbenchWindow();
-			window.ActiveViewContent = mockViewContent;
-			workbench.ActiveWorkbenchWindow = window;
-			
-			MockTextEditorOptions options = new MockTextEditorOptions();
+			MockTextEditorOptions options = workbench.ActiveMockEditableViewContent.MockTextEditorOptions;
 			options.IndentationSize = 4;
 			options.ConvertTabsToSpaces = true;
-			mockViewContent.TextEditorOptions = options;
 			
 			Run(workbench);
 		}

@@ -6,7 +6,8 @@
 		<Category>C#</Category>
 		<Subcategory>Silverlight</Subcategory>
 		<Icon>C#.Project.Form</Icon>
-		<Description>Default Silverlight 3.0 Application</Description>
+		<Description>Default Silverlight Application</Description>
+		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
@@ -32,7 +33,7 @@
 		    <AppDesignerFolder>Properties</AppDesignerFolder>
 		    <RootNamespace>${StandardNamespace}</RootNamespace>
 		    <AssemblyName>${StandardNamespace}</AssemblyName>
-		    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+		    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
 		    <SilverlightApplication>true</SilverlightApplication>
 		    <SupportedCultures>
 		    </SupportedCultures>
@@ -59,7 +60,7 @@
 		</PropertyGroup>
 		
 		<Imports clear="True">
-			<Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v3.0\Microsoft.Silverlight.CSharp.targets" />
+			<Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v4.0\Microsoft.Silverlight.CSharp.targets" />
 		</Imports>		
 		
 		<Files>
@@ -107,21 +108,15 @@ namespace ${StandardNamespace}
 		{
 
 		}
+		
 		private void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
 		{
-			// If the app is running outside of the debugger then report the exception using
-			// the browser's exception mechanism. On IE this will display it a yellow alert 
-			// icon in the status bar and Firefox will display a script error.
 			if (!System.Diagnostics.Debugger.IsAttached) {
-
-				// NOTE: This will allow the application to continue running after an exception has been thrown
-				// but not handled. 
-				// For production applications this error handling should be replaced with something that will 
-				// report the error to the website and stop the application.
 				e.Handled = true;
 				Deployment.Current.Dispatcher.BeginInvoke(delegate { ReportErrorToDOM(e); });
 			}
 		}
+		
 		private void ReportErrorToDOM(ApplicationUnhandledExceptionEventArgs e)
 		{
 			try {
@@ -173,16 +168,6 @@ namespace ${StandardNamespace}
 >
     <Deployment.Parts>
     </Deployment.Parts>
-
-    <!-- Uncomment the markup and update the fields below to make your application offline enabled
-    <Deployment.ApplicationIdentity>
-        <ApplicationIdentity 
-            ShortName="Out of Browser Silverlight Application" 
-            Title="Window Title of Your Silverlight Application">
-            <ApplicationIdentity.Blurb>Description of your Silverlight application</ApplicationIdentity.Blurb>
-        </ApplicationIdentity>
-    </Deployment.ApplicationIdentity>
-    -->
 </Deployment>]]></File>
 			
 			<File name="Properties\AssemblyInfo.cs" src="DefaultAssemblyInfo.cs" />

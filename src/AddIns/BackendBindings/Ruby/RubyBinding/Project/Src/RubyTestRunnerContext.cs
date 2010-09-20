@@ -1,11 +1,8 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Scripting;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.RubyBinding
@@ -13,13 +10,13 @@ namespace ICSharpCode.RubyBinding
 	public class RubyTestRunnerContext : TestProcessRunnerBaseContext
 	{
 		RubyAddInOptions options;
-		IRubyFileService fileService;
+		IScriptingFileService fileService;
 		
 		public RubyTestRunnerContext()
 			: this(new UnitTestProcessRunner(),
 				new TestResultsMonitor(),
 				new RubyAddInOptions(),
-				new RubyFileService(),
+				new ScriptingFileService(),
 				new UnitTestMessageService())
 		{
 		}
@@ -27,7 +24,7 @@ namespace ICSharpCode.RubyBinding
 		public RubyTestRunnerContext(IUnitTestProcessRunner processRunner,
 			ITestResultsMonitor testResultsMonitor,
 			RubyAddInOptions options,
-			IRubyFileService fileService,
+			IScriptingFileService fileService,
 			IUnitTestMessageService messageService)
 			: base(processRunner, testResultsMonitor, fileService, messageService)
 		{
@@ -39,7 +36,7 @@ namespace ICSharpCode.RubyBinding
 			get { return options; }
 		}
 		
-		public IRubyFileService RubyFileService {
+		public IScriptingFileService ScriptingFileService {
 			get { return fileService; }
 		}
 	}

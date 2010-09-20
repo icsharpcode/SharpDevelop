@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -73,6 +69,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			versionInfoTextBox.TabIndex = 9;
 			versionInfoTextBox.Font = WinFormsResourceService.LoadFont("Courier New", 8);
 			versionInfoTextBox.KeyDown += new KeyEventHandler(versionInfoTextBox_KeyDown);
+			versionInfoTextBox.RightToLeft = RightToLeft.No;
 			Controls.Add(versionInfoTextBox);
 			
 			Dock = DockStyle.Fill;

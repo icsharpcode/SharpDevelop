@@ -1,17 +1,15 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
@@ -43,7 +41,7 @@ namespace RubyBinding.Tests.Converter
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MSBuildEngineHelper.InitMSBuildEngine();
+			RubyMSBuildEngineHelper.InitMSBuildEngine();
 
 			List<ProjectBindingDescriptor> bindings = new List<ProjectBindingDescriptor>();
 			using (TextReader reader = RubyBindingAddInFile.ReadAddInFile()) {

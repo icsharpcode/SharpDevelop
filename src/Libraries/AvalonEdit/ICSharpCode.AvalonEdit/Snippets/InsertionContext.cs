@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <author name="Daniel Grunwald"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -91,6 +87,18 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		readonly int startPosition;
 		AnchorSegment wholeSnippetAnchor;
 		bool deactivateIfSnippetEmpty;
+		
+		/// <summary>
+		/// Gets the start position of the snippet insertion.
+		/// </summary>
+		public int StartPosition {
+			get {
+				if (wholeSnippetAnchor != null)
+					return wholeSnippetAnchor.Offset;
+				else
+					return startPosition;
+			}
+		}
 		
 		/// <summary>
 		/// Inserts text at the insertion position and advances the insertion position.
@@ -228,7 +236,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 			currentStatus = Status.RaisingDeactivated;
 			TextArea.PopStackedInputHandler(myInputHandler);
 			foreach (IActiveElement element in registeredElements) {
-				element.Deactivate();
+				element.Deactivate(e);
 			}
 			if (Deactivated != null)
 				Deactivated(this, e);

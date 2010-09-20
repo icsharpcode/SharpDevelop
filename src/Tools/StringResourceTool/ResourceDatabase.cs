@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Data.OleDb;
 using System.Linq;
 using System.Resources;
+using System.Xml.Linq;
 
 namespace StringResourceTool
 {
@@ -69,12 +70,17 @@ namespace StringResourceTool
 			this.LanguageName = languageName;
 		}
 		
-		public void SaveAsResx(string filename)
+		public void SaveAsResx(string filename, bool includeDescriptions)
 		{
 			using (ResXResourceWriter writer = new ResXResourceWriter(filename)) {
 				foreach (ResourceEntry entry in Entries.Values.OrderBy(e => e.Key, StringComparer.OrdinalIgnoreCase)) {
 					string normalizedValue = entry.Value.Replace("\r", "").Replace("\n", Environment.NewLine);
-					writer.AddResource(entry.Key, normalizedValue);
+					if (includeDescriptions) {
+						string normalizedDescription = entry.Description.Replace("\r", "").Replace("\n", Environment.NewLine);
+						writer.AddResource(new ResXDataNode(entry.Key, normalizedValue) { Comment = normalizedDescription });
+					} else {
+						writer.AddResource(entry.Key, normalizedValue);
+					}
 				}
 			}
 		}

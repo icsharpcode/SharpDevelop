@@ -1,20 +1,17 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
-namespace PythonBinding.Tests
+namespace PythonBinding.Tests.Gui
 {
 	/// <summary>
 	/// Tests that the PythonFormattingStrategy indents the new line added after pressing the ':' character.

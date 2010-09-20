@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections;
@@ -24,7 +20,7 @@ namespace PythonBinding.Tests.Resolver
 	public class ResolveSystemConsoleTestFixture
 	{
 		PythonResolver resolver;
-		PythonBinding.Tests.Utils.MockProjectContent mockProjectContent;
+		ICSharpCode.Scripting.Tests.Utils.MockProjectContent mockProjectContent;
 		ResolveResult resolveResult;
 		MockClass testClass;
 		ICompilationUnit compilationUnit;
@@ -35,7 +31,7 @@ namespace PythonBinding.Tests.Resolver
 		public void SetUpFixture()
 		{
 			resolver = new PythonResolver();
-			mockProjectContent = new PythonBinding.Tests.Utils.MockProjectContent();
+			mockProjectContent = new ICSharpCode.Scripting.Tests.Utils.MockProjectContent();
 			
 			systemConsoleClass = new MockClass(mockProjectContent, "System.Console");
 			mockProjectContent.ClassToReturnFromGetClass = systemConsoleClass;

@@ -19,6 +19,8 @@ namespace ICSharpCode.Reports.Core{
 		void Bind();
 		
 		void Fill (IDataItem item);
+		
+		IndexList IndexList {get;}
 		//test
 		CurrentItemsCollection FillDataRow();
 		//

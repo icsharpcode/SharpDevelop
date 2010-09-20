@@ -134,7 +134,7 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.AggregateFunctions
         
         
         
-        private CurrentItem  ExtractItemFromDataSet (CurrentItemsCollection row,object data)
+        private static CurrentItem  ExtractItemFromDataSet (CurrentItemsCollection row,object data)
         {
         	CurrentItem currentItem = null;
         	if (data != null)

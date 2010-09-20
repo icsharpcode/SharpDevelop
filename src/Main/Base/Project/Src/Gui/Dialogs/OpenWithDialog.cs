@@ -1,15 +1,12 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -65,6 +62,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (defaultBindingIndex < programListBox.Items.Count) {
 				programListBox.SelectedIndex = defaultBindingIndex;
 			}
+			RightToLeftConverter.ConvertRecursive(this);
 		}
 		
 		/// <summary>

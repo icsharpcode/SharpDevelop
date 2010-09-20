@@ -37,7 +37,7 @@ namespace ICSharpCode.Reports.Addin
 		
 		private static int folderClosed = 0;
 		private static int folderOpen  = 1;
-		private static int clearIcon = 2;
+//		private static int clearIcon = 2;
 		
 		private static int ascendingIcon = 4;
 		private static int descendingIcon = 5;

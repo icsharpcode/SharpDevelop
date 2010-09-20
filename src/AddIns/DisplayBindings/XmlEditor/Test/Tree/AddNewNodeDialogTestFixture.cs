@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Drawing;
@@ -292,12 +288,12 @@ namespace XmlEditor.Tests.Tree
 		public void RightToLeftConversion()
 		{
 			try {
-				PropertyService.Set("CoreProperties.UILanguage", RightToLeftConverter.RightToLeftLanguages[0]);
+				RightToLeftConverter.IsRightToLeft = true;
 				using (AddXmlNodeDialog dialog = new AddXmlNodeDialog()) {
 					Assert.AreEqual(RightToLeft.Yes, dialog.RightToLeft);
 				}
 			} finally {
-				PropertyService.Set("CoreProperties.UILanguage", Thread.CurrentThread.CurrentUICulture.Name);
+				RightToLeftConverter.IsRightToLeft = false;
 			}
 		}
 		

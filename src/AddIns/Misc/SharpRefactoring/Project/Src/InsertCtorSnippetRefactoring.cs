@@ -1,11 +1,10 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Siegfried Pammer" email="siegfriedpammer@gmail.com"/>
-//     <version>$Revision: 5529 $</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -18,10 +17,10 @@ namespace SharpRefactoring
 {
 	public class InsertCtorSnippetRefactoring : ISnippetElementProvider
 	{
-		public SnippetElement GetElement(string tag)
+		public SnippetElement GetElement(SnippetInfo snippetInfo)
 		{
-			if (tag.Equals("refactoring:ctor", StringComparison.InvariantCultureIgnoreCase))
-				return new InlineRefactorSnippetElement(context => CreateDialog(context));
+			if ("refactoring:ctor".Equals(snippetInfo.Tag, StringComparison.OrdinalIgnoreCase))
+				return new InlineRefactorSnippetElement(context => CreateDialog(context), "{" + snippetInfo.Tag + "}");
 			
 			return null;
 		}
@@ -45,21 +44,43 @@ namespace SharpRefactoring
 			
 			CodeGenerator generator = parseInfo.CompilationUnit.Language.CodeGenerator;
 			
-			var loc = context.Document.GetLocation(context.InsertionPosition);
+			// cannot use insertion position at this point, because it might not be
+			// valid, because we are still generating the elements.
+			// DOM is not updated
+			ICSharpCode.AvalonEdit.Document.TextLocation loc = context.Document.GetLocation(context.StartPosition);
 			
 			IClass current = parseInfo.CompilationUnit.GetInnermostClass(loc.Line, loc.Column);
 			
 			if (current == null)
 				return null;
 			
-			ITextAnchor anchor = textEditor.Document.CreateAnchor(context.InsertionPosition);
-			anchor.MovementType = AnchorMovementType.AfterInsertion;
+			List<PropertyOrFieldWrapper> parameters = CreateCtorParams(current).ToList();
 			
-			InsertCtorDialog dialog = new InsertCtorDialog(context, textEditor, anchor, current);
+			ITextAnchor anchor = textEditor.Document.CreateAnchor(context.InsertionPosition);
+			anchor.MovementType = AnchorMovementType.BeforeInsertion;
+			
+			InsertCtorDialog dialog = new InsertCtorDialog(context, textEditor, anchor, current, parameters);
 			
 			dialog.Element = uiService.CreateInlineUIElement(anchor, dialog);
 			
 			return dialog;
+		}
+		
+		IEnumerable<PropertyOrFieldWrapper> CreateCtorParams(IClass sourceClass)
+		{
+			int i = 0;
+			
+			foreach (var f in sourceClass.Fields.Where(field => !field.IsConst && field.IsStatic == sourceClass.IsStatic)) {
+				yield return new PropertyOrFieldWrapper(f) { Index = i, IsSelected = true };
+				i++;
+			}
+			
+			foreach (var p in sourceClass.Properties.Where(prop => prop.CanSet && !prop.IsIndexer
+			                                               && PropertyRefactoringMenuBuilder.IsAutomaticProperty(prop)
+			                                               && prop.IsStatic == sourceClass.IsStatic)) {
+				yield return new PropertyOrFieldWrapper(p) { Index = i, IsSelected = true };
+				i++;
+			}
 		}
 	}
 }

@@ -1,15 +1,13 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+
 using ICSharpCode.Core;
+using ICSharpCode.Scripting;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.PythonBinding
@@ -20,14 +18,14 @@ namespace ICSharpCode.PythonBinding
 		PythonAddInOptions options;
 		PythonStandardLibraryPath pythonStandardLibraryPath;
 		PythonTestRunnerResponseFile responseFile;
-		IPythonFileService fileService;
+		IScriptingFileService fileService;
 		CreateTextWriterInfo textWriterInfo;
 		PythonConsoleApplication consoleApplication;
 		
 		public PythonTestRunnerApplication(string testResultsFileName,
 			PythonAddInOptions options,
 			PythonStandardLibraryPath pythonStandardLibraryPath,
-			IPythonFileService fileService)
+			IScriptingFileService fileService)
 		{
 			this.testResultsFileName = testResultsFileName;
 			this.options = options;

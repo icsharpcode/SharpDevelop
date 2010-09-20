@@ -1,17 +1,14 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Diagnostics;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.RubyBinding;
-using RubyBinding.Tests.Utils;
+using ICSharpCode.Scripting.Tests.Utils;
+using ICSharpCode.SharpDevelop.Debugging;
 using NUnit.Framework;
+using RubyBinding.Tests.Utils;
 
 namespace RubyBinding.Tests.Gui
 {
@@ -24,15 +21,8 @@ namespace RubyBinding.Tests.Gui
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			// Create dummy view content with the Ruby script.
-			MockViewContent viewContent = new MockViewContent();
-			viewContent.PrimaryFileName = new FileName(@"C:\Projects\test.rb");
-			MockWorkbenchWindow workbenchWindow = new MockWorkbenchWindow();
-			workbenchWindow.ActiveViewContent = viewContent;
-			MockWorkbench workbench = new MockWorkbench();
-			workbench.ActiveWorkbenchWindow = workbenchWindow;
+			MockWorkbench workbench = MockWorkbench.CreateWorkbenchWithOneViewContent(@"C:\Projects\test.rb");
 
-			// Create the Ruby binding addin options.
 			Properties p = new Properties();
 			RubyAddInOptions options = new RubyAddInOptions(p);
 			options.RubyFileName = @"C:\IronRuby\ir.exe";

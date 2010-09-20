@@ -232,7 +232,7 @@ namespace UpdateAssemblyInfo
 		
 		static void ReadBranchNameFromGit()
 		{
-			ProcessStartInfo info = new ProcessStartInfo("cmd", "/c git branch");
+			ProcessStartInfo info = new ProcessStartInfo("cmd", "/c git branch --no-color");
 			string path = Environment.GetEnvironmentVariable("PATH");
 			path += ";" + Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "git\\bin");
 			info.EnvironmentVariables["PATH"] =  path;

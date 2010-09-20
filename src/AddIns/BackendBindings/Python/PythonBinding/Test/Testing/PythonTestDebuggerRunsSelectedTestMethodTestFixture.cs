@@ -1,16 +1,14 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+
 using ICSharpCode.Core;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -31,7 +29,7 @@ namespace PythonBinding.Tests.Testing
 		SelectedTests selectedTests;
 		MockMethod methodToTest;
 		PythonAddInOptions options;
-		MockPythonFileService fileService;
+		MockScriptingFileService fileService;
 		StringBuilder responseFileText;
 		StringWriter responseFileStringWriter;
 		PythonStandardLibraryPath standardLibraryPath;
@@ -52,7 +50,7 @@ namespace PythonBinding.Tests.Testing
 			options = new PythonAddInOptions(new Properties());
 			options.PythonFileName = @"c:\ironpython\ipy.exe";
 			standardLibraryPath = new PythonStandardLibraryPath(@"c:\python\lib");
-			fileService = new MockPythonFileService();
+			fileService = new MockScriptingFileService();
 			testDebugger = new PythonTestDebugger(debuggerService, messageService, testResultsMonitor, options, standardLibraryPath, fileService);
 		}
 		
@@ -110,7 +108,8 @@ namespace PythonBinding.Tests.Testing
 		[Test]
 		public void CommandLineArgumentHasSharpDevelopTestPythonScriptAndResponseFileName()
 		{
-			AddIn addin = AddInPathHelper.CreateDummyPythonAddInInsideAddInTree();
+			AddInPathHelper helper = new AddInPathHelper("PythonBinding");
+			AddIn addin = helper.CreateDummyAddInInsideAddInTree();
 			addin.FileName = @"c:\sharpdevelop\addins\pythonbinding\pythonbinding.addin";
 			
 			RunTestsOnSelectedTestMethod();

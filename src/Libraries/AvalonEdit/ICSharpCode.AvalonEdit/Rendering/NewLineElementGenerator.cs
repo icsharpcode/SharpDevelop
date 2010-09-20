@@ -1,9 +1,5 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <author name="Daniel Grunwald"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Windows;
@@ -18,7 +14,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 	// This class is internal because it does not need to be accessed by the user - it can be configured using TextEditorOptions.
 	
 	/// <summary>
-	/// Elements generator that displays "�" at the end of lines.
+	/// Elements generator that displays "¶" at the end of lines.
 	/// </summary>
 	/// <remarks>
 	/// This element generator can be easily enabled and configured using the

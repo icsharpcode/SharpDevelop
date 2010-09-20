@@ -1,9 +1,5 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <author name="Daniel Grunwald"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -181,7 +177,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			if (targetFrameworkComboBox.Items.Count > 0) {
 				targetFrameworkComboBox.Visible = true;
 				targetFrameworkComboBox.SelectedIndex = 0;
-				string lastUsedTargetFramework = PropertyService.Get("Dialogs.NewProjectDialog.TargetFramework", TargetFramework.DefaultTargetFrameworkName);
+				string lastUsedTargetFramework = PropertyService.Get("Dialogs.NewProjectDialog.TargetFramework", TargetFramework.DefaultTargetFramework.Name);
 				for (int i = 0; i < targetFrameworkComboBox.Items.Count; i++) {
 					if (((TargetFramework)targetFrameworkComboBox.Items[i]).Name == lastUsedTargetFramework) {
 						targetFrameworkComboBox.SelectedIndex = i;
@@ -341,8 +337,8 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				}
 				
 				if (item.Template.HasSupportedTargetFrameworks) {
-					cinfo.TargetFramework = ((TargetFramework)targetFrameworkComboBox.SelectedItem).Name;
-					PropertyService.Set("Dialogs.NewProjectDialog.TargetFramework", cinfo.TargetFramework);
+					cinfo.TargetFramework = (TargetFramework)targetFrameworkComboBox.SelectedItem;
+					PropertyService.Set("Dialogs.NewProjectDialog.TargetFramework", cinfo.TargetFramework.Name);
 				}
 				
 				cinfo.ProjectBasePath = NewProjectDirectory;
@@ -398,6 +394,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				ctl.Text = StringParser.Parse(ctl.Text);
 			}
 			this.Text = StringParser.Parse(this.Text);
+			RightToLeftConverter.Convert(this);
 			
 			ImageList imglist = new ImageList();
 			imglist.ColorDepth = ColorDepth.Depth32Bit;

@@ -167,7 +167,6 @@ namespace ICSharpCode.Reports.Core {
 			{
 				tableContainer.DataNavigator = nav;
 				tableContainer.Parent = base.CurrentSection;
-				tableContainer.ExpressionEvaluatorFacade = base.Evaluator;
 				if (rpea.SinglePage.PageNumber == 1) {
 					tableContainer.StartLayoutAt(base.Sections[2]);
 				} else {

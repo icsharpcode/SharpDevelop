@@ -82,7 +82,7 @@
 					<ColumnDefinition
 						Width="Auto" />
 					<ColumnDefinition
-						Width="160" />
+						Width="210" />
 				</Grid.ColumnDefinitions>
 				<Label
 					Content="Convert selected _projects to:"

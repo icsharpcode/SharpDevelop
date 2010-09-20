@@ -1,15 +1,13 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+
 using ICSharpCode.Core;
+using ICSharpCode.Scripting;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.RubyBinding
@@ -17,7 +15,7 @@ namespace ICSharpCode.RubyBinding
 	public class RubyTestRunner : TestProcessRunnerBase
 	{
 		RubyAddInOptions options;
-		IRubyFileService fileService;
+		IScriptingFileService fileService;
 		RubyTestRunnerApplication testRunnerApplication;
 		
 		public RubyTestRunner()
@@ -29,7 +27,7 @@ namespace ICSharpCode.RubyBinding
 			: base(context)
 		{
 			this.options = context.Options;
-			this.fileService = context.RubyFileService;
+			this.fileService = context.ScriptingFileService;
 			context.TestResultsMonitor.InitialFilePosition = 0;
 		}
 		

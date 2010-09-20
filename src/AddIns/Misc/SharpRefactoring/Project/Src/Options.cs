@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Siegfried Pammer" email="siegfriedpammer@gmail.com"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Diagnostics;
@@ -33,6 +29,11 @@ namespace SharpRefactoring
 		public static bool AddIEquatableInterface {
 			get { return properties.Get("AddIEquatableInterface", false); }
 			set { properties.Set("AddIEquatableInterface", value); }
+		}
+		
+		public static bool AddOtherMethod {
+			get { return properties.Get("AddOtherMethod", true); }
+			set { properties.Set("AddOtherMethod", value); }
 		}
 		
 		public static bool SurroundWithRegion {

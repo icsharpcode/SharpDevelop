@@ -1,50 +1,36 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Converter
 {
-	/// <summary>
-	/// Tests the ConvertCSharpToPythonMenuCommand.
-	/// </summary>
 	[TestFixture]
 	public class ConvertCSharpToPythonMenuCommandTestFixture : ConvertToPythonMenuCommand
 	{
 		string newFileText;
 		string defaultFileName;
 		string language;
-		MockEditableViewContent mockViewContent;
 		
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			mockViewContent = new MockEditableViewContent();
-			mockViewContent.Text = "class Foo { }";
-			mockViewContent.PrimaryFileName = new ICSharpCode.Core.FileName("test.cs");
+			MockWorkbench workbench = MockWorkbench.CreateWorkbenchWithOneViewContent("test.cs");
+			workbench.ActiveMockEditableViewContent.Text = "class Foo { }";
 			
-			MockWorkbench workbench = new MockWorkbench();
-			MockWorkbenchWindow window = new MockWorkbenchWindow();
-			window.ActiveViewContent = mockViewContent;
-			workbench.ActiveWorkbenchWindow = window;
-			
-			MockTextEditorOptions options = new MockTextEditorOptions();
+			MockTextEditorOptions options = workbench.ActiveMockEditableViewContent.MockTextEditorOptions;
 			options.IndentationSize = 4;
 			options.ConvertTabsToSpaces = true;
-			mockViewContent.TextEditorOptions = options;
 			
 			Run(workbench);
 		}
 		
 		[Test]
-		public void GeneratedPythonCode()
+		public void Run_CSharpFileOpen_PythonCodeGeneratedInNewFile()
 		{
 			string code = 
 				"class Foo(object):\r\n" +
@@ -53,13 +39,13 @@ namespace PythonBinding.Tests.Converter
 		}
 		
 		[Test]
-		public void NewFileName()
+		public void Run_CSharpFileOpen_NewFileNameIsGeneratedPy()
 		{
 			Assert.AreEqual("Generated.py", defaultFileName);
 		}
 
 		[Test]
-		public void NewFileLanguage()
+		public void Run_CSharpFileOpen_NewFileLanguageIsPython()
 		{
 			Assert.AreEqual("Python", language);
 		}

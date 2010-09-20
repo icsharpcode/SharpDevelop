@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Siegfried Pammer" email="siegfriedpammer@gmail.com"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -11,7 +7,10 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
+using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.NRefactory.Ast;
@@ -26,49 +25,36 @@ namespace SharpRefactoring.Gui
 	/// </summary>
 	public partial class InsertCtorDialog : AbstractInlineRefactorDialog
 	{
-		protected IList<CtorParamWrapper> paramList;
+		IList<PropertyOrFieldWrapper> parameterList;
 		
-		public InsertCtorDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor, IClass current)
+		public InsertCtorDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor, IClass current, IList<PropertyOrFieldWrapper> possibleParameters)
 			: base(context, editor, anchor)
 		{
 			InitializeComponent();
 			
-			this.varList.ItemsSource = paramList = CreateCtorParams(current.Fields, current.Properties).
-				// "Add check for null" is checked for every item by default
-				//Select(w => { if(w.IsNullable) w.AddCheckForNull = true; return w; }).
-				ToList();
-		}
-		
-		IEnumerable<CtorParamWrapper> CreateCtorParams(IEnumerable<IField> fields, IEnumerable<IProperty> properties)
-		{
-			int i = 0;
+			this.varList.ItemsSource = parameterList = possibleParameters;
 			
-			foreach (var f in fields) {
-				yield return new CtorParamWrapper(f) { Index = i, IsSelected = !f.IsReadonly };
-				i++;
-			}
-			
-			foreach (var p in properties.Where(prop => prop.CanSet && !prop.IsIndexer)) {
-				yield return new CtorParamWrapper(p) { Index = i, IsSelected = !p.IsReadonly };
-				i++;
-			}
+			if (!parameterList.Any())
+				Visibility = System.Windows.Visibility.Collapsed;
 		}
 		
 		protected override string GenerateCode(LanguageProperties language, IClass currentClass)
 		{
-			StringBuilder builder = new StringBuilder();
-			
-			var line = editor.Document.GetLineForOffset(editor.Caret.Offset);
+			IDocumentLine line = editor.Document.GetLineForOffset(anchor.Offset);
 			
 			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, line.Offset);
 			
-			var filtered = paramList.Where(p => p.IsSelected).OrderBy(p => p.Index).ToList();
+			List<PropertyOrFieldWrapper> filtered = parameterList
+				.Where(p => p.IsSelected)
+				.OrderBy(p => p.Index)
+				.ToList();
 			
 			BlockStatement block = new BlockStatement();
 			
-			foreach (CtorParamWrapper w in filtered) {
+			foreach (PropertyOrFieldWrapper w in filtered) {
 				if (w.AddCheckForNull) {
-					if (w.Type.IsReferenceType == true)
+					// true = reference, null = generic or unknown
+					if (w.Type.IsReferenceType != false)
 						block.AddChild(
 							new IfElseStatement(
 								new BinaryOperatorExpression(new IdentifierExpression(w.ParameterName), BinaryOperatorType.Equality, new PrimitiveExpression(null)),
@@ -102,16 +88,36 @@ namespace SharpRefactoring.Gui
 				}
 			}
 			
-			foreach (CtorParamWrapper w in filtered)
+			foreach (PropertyOrFieldWrapper w in filtered)
 				block.AddChild(new ExpressionStatement(new AssignmentExpression(new MemberReferenceExpression(new ThisReferenceExpression(), w.MemberName), AssignmentOperatorType.Assign, new IdentifierExpression(w.ParameterName))));
 			
-			ConstructorDeclaration ctor = new ConstructorDeclaration(currentClass.Name, Modifiers.Public, filtered.Select(p => new ParameterDeclarationExpression(ConvertType(p.Type), p.ParameterName)).ToList(), null) {
-				Body = block
-			};
+			AnchorElement parameterListElement = context.ActiveElements
+				.OfType<AnchorElement>()
+				.FirstOrDefault(item => item.Name.Equals("parameterList", StringComparison.OrdinalIgnoreCase));
 			
-			builder.Append(language.CodeGenerator.GenerateCode(ctor, indent));
+			if (parameterListElement != null) {
+				StringBuilder pList = new StringBuilder();
+				
+				var parameters = filtered
+					.Select(p => new ParameterDeclarationExpression(ConvertType(p.Type), p.ParameterName))
+					.ToList();
+				
+				for (int i = 0; i < parameters.Count; i++) {
+					if (i > 0)
+						pList.Append(", ");
+					pList.Append(language.CodeGenerator.GenerateCode(parameters[i], ""));
+				}
+				
+				parameterListElement.Text = pList.ToString();
+			}
 			
-			return builder.ToString().TrimStart();
+			StringBuilder builder = new StringBuilder();
+			
+			foreach (var element in block.Children.OfType<AbstractNode>()) {
+				builder.Append(language.CodeGenerator.GenerateCode(element, indent));
+			}
+			
+			return builder.ToString().Trim();
 		}
 		
 		void UpClick(object sender, System.Windows.RoutedEventArgs e)
@@ -121,13 +127,13 @@ namespace SharpRefactoring.Gui
 			if (selection <= 0)
 				return;
 			
-			var curItem = paramList.First(p => p.Index == selection);
-			var exchangeItem = paramList.First(p => p.Index == selection - 1);
+			var curItem = parameterList.First(p => p.Index == selection);
+			var exchangeItem = parameterList.First(p => p.Index == selection - 1);
 			
 			curItem.Index = selection - 1;
 			exchangeItem.Index = selection;
 			
-			varList.ItemsSource = paramList.OrderBy(p => p.Index);
+			varList.ItemsSource = parameterList.OrderBy(p => p.Index);
 			varList.SelectedIndex = selection - 1;
 		}
 		
@@ -135,17 +141,89 @@ namespace SharpRefactoring.Gui
 		{
 			int selection = varList.SelectedIndex;
 			
-			if (selection < 0 || selection >= paramList.Count - 1)
+			if (selection < 0 || selection >= parameterList.Count - 1)
 				return;
 			
-			var curItem = paramList.First(p => p.Index == selection);
-			var exchangeItem = paramList.First(p => p.Index == selection + 1);
+			var curItem = parameterList.First(p => p.Index == selection);
+			var exchangeItem = parameterList.First(p => p.Index == selection + 1);
 			
 			curItem.Index = selection + 1;
 			exchangeItem.Index = selection;
 			
-			varList.ItemsSource = paramList.OrderBy(p => p.Index);
+			varList.ItemsSource = parameterList.OrderBy(p => p.Index);
 			varList.SelectedIndex = selection + 1;
+		}
+		
+		protected override void FocusFirstElement()
+		{
+			Dispatcher.BeginInvoke((Action)TryFocusAndSelectItem, DispatcherPriority.Background);
+		}
+		
+		void TryFocusAndSelectItem()
+		{
+			if (!parameterList.Any())
+				return;
+			
+			object ctorParamWrapper = varList.Items.GetItemAt(0);
+			if (ctorParamWrapper != null) {
+				ListBoxItem item = (ListBoxItem)varList.ItemContainerGenerator.ContainerFromItem(ctorParamWrapper);
+				item.Focus();
+				
+				varList.ScrollIntoView(item);
+				varList.SelectedItem = item;
+				Keyboard.Focus(item);
+			}
+		}
+		
+		protected override void OnInsertionCompleted()
+		{
+			base.OnInsertionCompleted();
+			
+			Dispatcher.BeginInvoke(
+				DispatcherPriority.Background,
+				(Action)(
+					() => {
+						if (!parameterList.Any())
+							context.Deactivate(null);
+						else {
+							insertionEndAnchor = editor.Document.CreateAnchor(anchor.Offset);
+							insertionEndAnchor.MovementType = AnchorMovementType.AfterInsertion;
+						}
+					}
+				)
+			);
+		}
+		
+		void SelectAllChecked(object sender, System.Windows.RoutedEventArgs e)
+		{
+			foreach (PropertyOrFieldWrapper param in parameterList) {
+				param.IsSelected = true;
+			}
+		}
+		
+		void SelectAllUnchecked(object sender, System.Windows.RoutedEventArgs e)
+		{
+			foreach (PropertyOrFieldWrapper param in parameterList) {
+				param.IsSelected = false;
+			}
+		}
+		
+		public bool AllSelected {
+			get { return parameterList.All(p => p.IsSelected); }
+		}
+		
+		protected override void CancelButtonClick(object sender, System.Windows.RoutedEventArgs e)
+		{
+			base.CancelButtonClick(sender, e);
+			
+			editor.Caret.Offset = anchor.Offset;
+		}
+		
+		protected override void OKButtonClick(object sender, System.Windows.RoutedEventArgs e)
+		{
+			base.OKButtonClick(sender, e);
+			
+			editor.Caret.Offset = insertionEndAnchor.Offset;
 		}
 	}
 	

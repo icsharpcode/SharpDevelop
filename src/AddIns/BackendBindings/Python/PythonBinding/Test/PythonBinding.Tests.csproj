@@ -80,11 +80,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Completion\CodeCompletionBindingFromImportCompletionTestFixture.cs" />
-    <Compile Include="Completion\CodeCompletionBindingImportCompletionTestFixture.cs" />
+    <Compile Include="Completion\CodeCompletionBindingFromImportCompletionTests.cs" />
+    <Compile Include="Completion\CodeCompletionBindingImportCompletionTests.cs" />
     <Compile Include="Completion\FromDateTimeImportCompletionTestFixture.cs" />
-    <Compile Include="Completion\FromImportDotNetNamespaceCompletionTestFixture.cs" />
-    <Compile Include="Completion\FromImportPythonModuleCompletionTestFixture.cs" />
+    <Compile Include="Completion\FromImportDotNetNamespaceCompletionTests.cs" />
+    <Compile Include="Completion\FromImportPythonModuleCompletionTests.cs" />
     <Compile Include="Completion\FromMathLibraryImportCompletionTestFixture.cs" />
     <Compile Include="Completion\FromMathLibraryImportCosMethodCompletionTestFixture.cs" />
     <Compile Include="Completion\FromSysLibraryImportCompletionItemsTestFixture.cs" />
@@ -97,34 +97,14 @@
     <Compile Include="Completion\ImportSubNamespaceCompletionTestFixture.cs" />
     <Compile Include="Completion\MathModuleMembersInPythonContextTestFixture.cs" />
     <Compile Include="Completion\NamespaceContentsAddedToCtrlSpaceTestFixture.cs" />
-    <Compile Include="Completion\PythonImportExpressionContextTestFixture.cs" />
+    <Compile Include="Completion\PythonCodeCompletionItemProviderTests.cs" />
+    <Compile Include="Completion\PythonCompletionItemListTests.cs" />
+    <Compile Include="Completion\PythonImportExpressionContextTests.cs" />
     <Compile Include="Completion\PythonSocketLibraryDocumentationTestFixture.cs" />
     <Compile Include="Completion\SysModuleMembersInPythonContextTestFixture.cs" />
-    <Compile Include="Configuration\AddInFileTestFixture.cs" />
     <Compile Include="Configuration\AddInOptionsTestFixture.cs" />
     <Compile Include="Console\BuiltinCodeCompletionTestFixture.cs" />
-    <Compile Include="Console\ConsoleTextEditorThreadSafetyTestFixture.cs" />
-    <Compile Include="Console\InsertConsoleCompletionDataTestFixture.cs" />
-    <Compile Include="Console\KeysPressedWhenCompletionWindowOpenTestFixture.cs" />
-    <Compile Include="Console\CommandLineHistoryTestFixture.cs" />
-    <Compile Include="Console\DisposedPythonConsoleTestFixture.cs" />
-    <Compile Include="Console\CodeCompletionTests.cs" />
-    <Compile Include="Console\EmptyCommandLineHistoryTestFixture.cs" />
-    <Compile Include="Console\OneItemCommandLineHistoryTestFixture.cs" />
-    <Compile Include="Console\PythonConsoleCommandLineHistoryTestFixture.cs" />
-    <Compile Include="Console\PythonConsoleHomeKeyTestFixture.cs" />
-    <Compile Include="Console\MockMemberProvider.cs" />
-    <Compile Include="Console\PythonConsoleCodeCompletionTestFixture.cs" />
-    <Compile Include="Console\PythonConsoleCurrentLineTestFixture.cs" />
-    <Compile Include="Console\PythonConsoleEnterKeyTestFixture.cs" />
     <Compile Include="Console\PythonConsoleHostTests.cs" />
-    <Compile Include="Console\PythonConsoleReadOnlyRegionsTestFixture.cs" />
-    <Compile Include="Console\PythonConsoleReadTestFixture.cs" />
-    <Compile Include="Console\PythonConsoleUnreadLinesTestFixture.cs" />
-    <Compile Include="Console\PythonConsoleWriteTestFixture.cs" />
-    <Compile Include="Console\PythonOutputStreamTestFixture.cs" />
-    <Compile Include="Console\ConsoleTextEditorTestFixture.cs" />
-    <Compile Include="Console\TwoPythonConsoleLinesWaitingTestFixture.cs" />
     <Compile Include="Converter\AddHandlerConversionTestFixture.cs" />
     <Compile Include="Converter\ArrayCastConversionTestFixture.cs" />
     <Compile Include="Converter\ArrayConversionTestFixture.cs" />
@@ -197,7 +177,6 @@
     <Compile Include="Converter\VBStringConcatTestFixture.cs" />
     <Compile Include="Converter\WhileLoopConversionTestFixture.cs" />
     <Compile Include="Converter\XmlDocCommentConversionTestFixture.cs" />
-    <Compile Include="Designer\AppendNullPropertyValueTestFixture.cs" />
     <Compile Include="Designer\CallBeginInitOnLoadTestFixture.cs" />
     <Compile Include="Designer\ConvertCustomClassUsingTypeConverterTestFixture.cs" />
     <Compile Include="Designer\CursorTypeResolutionTestFixture.cs" />
@@ -260,10 +239,7 @@
     <Compile Include="Designer\GenerateTimerTestFixture.cs" />
     <Compile Include="Designer\GenerateToolTipFormTestFixture.cs" />
     <Compile Include="Designer\GenerateTreeViewTestFixture.cs" />
-    <Compile Include="Designer\GeneratorMergeFindsInitializeComponentsTestFixture.cs" />
-    <Compile Include="Designer\GetComponentFromDesignerLoaderTestFixture.cs" />
-    <Compile Include="Designer\GetInstanceFromDesignerLoaderTestFixture.cs" />
-    <Compile Include="Designer\GetResourcesFromDesignerLoaderTestFixture.cs" />
+    <Compile Include="Designer\GenerateUserControlWithNullPropertyValueTests.cs" />
     <Compile Include="Designer\IgnoreDesignTimePropertiesTestFixture.cs" />
     <Compile Include="Designer\InsertEventHandlerTestFixtureBase.cs" />
     <Compile Include="Designer\InsertEventHandlerWithSpaceIndentTestFixture.cs" />
@@ -304,9 +280,7 @@
     <Compile Include="Designer\LoadUserControlWithDoublePropertyTestFixture.cs" />
     <Compile Include="Designer\MergeFormTestFixture.cs" />
     <Compile Include="Designer\MissingInitializeComponentMethodTestFixture.cs" />
-    <Compile Include="Designer\NameCreationServiceTestFixture.cs" />
     <Compile Include="Designer\NoNewLineAfterInitializeComponentTestFixture.cs" />
-    <Compile Include="Designer\OneCompatibleMethodTestFixture.cs" />
     <Compile Include="Designer\ProjectRootNamespacePassedToMergeTestFixture.cs" />
     <Compile Include="Designer\PythonBaseClassTests.cs" />
     <Compile Include="Designer\PythonCodeDeserializerTests.cs" />
@@ -314,13 +288,10 @@
     <Compile Include="Designer\PythonControlFieldExpressionTests.cs" />
     <Compile Include="Designer\PythonGeneratorTestFixture.cs" />
     <Compile Include="Designer\IsFormDesignableTestFixture.cs" />
-    <Compile Include="Designer\NullGeneratorPassedToLoader.cs" />
     <Compile Include="Designer\PythonDesignerLoaderProviderTestFixture.cs" />
-    <Compile Include="Designer\PythonDesignerLoaderTestFixture.cs" />
     <Compile Include="Designer\PythonPropertyAssignmentToStringTests.cs" />
     <Compile Include="Designer\RemoveMainMenuStripFromFormTestFixture.cs" />
     <Compile Include="Designer\TextBoxNotAddedToFormTestFixture.cs" />
-    <Compile Include="Designer\TextEditorIndentPassedToGeneratorTestFixture.cs" />
     <Compile Include="Designer\UnknownTypeTestFixture.cs" />
     <Compile Include="Expressions\FindExpressionOnLineWithSingleSpaceTestFixture.cs" />
     <Compile Include="Expressions\FindExpressionWithImportOnPreviousLineTestFixture.cs" />
@@ -346,7 +317,7 @@
     <Compile Include="Gui\FormsDesignerDisplayBindingTestFixture.cs" />
     <Compile Include="Gui\PythonIndentationTests.cs" />
     <Compile Include="Gui\PythonOptionsPanelTestFixture.cs" />
-    <Compile Include="Gui\RunPythonCommandTestFixture.cs" />
+    <Compile Include="Gui\RunPythonCommandTests.cs" />
     <Compile Include="Parsing\ClassWithBaseClassTestFixture.cs" />
     <Compile Include="Parsing\InvalidCastInPythonParserTestFixture.cs" />
     <Compile Include="Parsing\MethodWithParametersTestFixture.cs" />
@@ -377,6 +348,7 @@
     <Compile Include="Resolver\ImportModuleResolveResultTests.cs" />
     <Compile Include="Resolver\InvalidResolveInputsTestFixture.cs" />
     <Compile Include="Resolver\MemberNameTests.cs" />
+    <Compile Include="Resolver\PythonSelfResolverTests.cs" />
     <Compile Include="Resolver\ResolveBuiltInRoundMethodTestFixture.cs" />
     <Compile Include="Resolver\ResolveClassInstanceWithNamespaceTestFixture.cs" />
     <Compile Include="Resolver\ResolveConsoleWriteLineTestFixture.cs" />
@@ -400,6 +372,7 @@
     <Compile Include="Resolver\ResolverContextHasImportTests.cs" />
     <Compile Include="Resolver\ResolverContextPartialNamespaceExistsTests.cs" />
     <Compile Include="Resolver\ResolverContextUnaliasImportedModuleNameTestFixture.cs" />
+    <Compile Include="Resolver\ResolveSelfTests.cs" />
     <Compile Include="Resolver\ResolveSysModuleExitMethodTestFixture.cs" />
     <Compile Include="Resolver\ResolveSysModuleImportedAsMySysTestFixture.cs" />
     <Compile Include="Resolver\ResolveSysModuleTestFixture.cs">
@@ -421,8 +394,6 @@
     <Compile Include="Resolver\ResolveTextBoxFromSystemWindowsFormsImportTextBoxTestFixture.cs" />
     <Compile Include="Resolver\ResolveUnknownNamespaceTestFixture.cs" />
     <Compile Include="Testing\CreatePythonTestRunnerTestFixture.cs" />
-    <Compile Include="Testing\CreateTextWriterFromCreateTextWriterInfoTestFixture.cs" />
-    <Compile Include="Testing\CreateTextWriterInfoEqualsTestFixture.cs" />
     <Compile Include="Testing\PythonConsoleApplicationTestFixture.cs" />
     <Compile Include="Testing\PythonStandardLibraryPathTests.cs" />
     <Compile Include="Testing\PythonTestDebuggerRunsSelectedTestMethodTestFixture.cs" />
@@ -433,77 +404,28 @@
     <Compile Include="Testing\PythonTestResultStackTraceLineNumberOverflowTestFixture.cs" />
     <Compile Include="Testing\PythonTestRunnerResponseFileTestFixture.cs" />
     <Compile Include="Testing\PythonTestRunnerRunsSelectedTestMethodTestFixture.cs" />
-    <Compile Include="Utils\AddedComponent.cs" />
-    <Compile Include="Utils\AddInHelper.cs" />
-    <Compile Include="Utils\AddInPathHelper.cs" />
-    <Compile Include="Utils\BarItemCollection.cs" />
     <Compile Include="Utils\BrowseButtonInfo.cs" />
     <Compile Include="Utils\BrowseFolderButtonInfo.cs" />
-    <Compile Include="Utils\ConvertedFile.cs" />
-    <Compile Include="Utils\CreatedComponent.cs" />
-    <Compile Include="Utils\CreatedInstance.cs" />
-    <Compile Include="Utils\CustomUserControl.cs" />
     <Compile Include="Utils\DerivedApplicationSettingsPanel.cs" />
     <Compile Include="Utils\DerivedCompilingOptionsPanel.cs" />
     <Compile Include="Utils\DerivedConvertProjectToPythonProjectCommand.cs" />
-    <Compile Include="Utils\DerivedFormDesignerViewContent.cs" />
-    <Compile Include="Utils\DerivedPythonCodeCompletionBinding.cs" />
     <Compile Include="Utils\DerivedPythonConsoleHost.cs" />
     <Compile Include="Utils\DerivedPythonDesignerGenerator.cs" />
-    <Compile Include="Utils\DerivedPythonDesignerLoader.cs" />
     <Compile Include="Utils\DerivedPythonFormsDesignerDisplayBinding.cs" />
-    <Compile Include="Utils\DerivedToolStripMenuItem.cs" />
-    <Compile Include="Utils\DoublePropertyUserControl.cs" />
-    <Compile Include="Utils\DummySynchronizeInvoke.cs" />
-    <Compile Include="Utils\FooItemCollection.cs" />
-    <Compile Include="Utils\MockComponentCreator.cs" />
-    <Compile Include="Utils\MockConsoleTextEditor.cs" />
-    <Compile Include="Utils\MockConsoleTextEditorKeyEventArgs.cs" />
-    <Compile Include="Utils\MockControlDispatcher.cs" />
-    <Compile Include="Utils\MockDebugger.cs" />
-    <Compile Include="Utils\MockDesignerGenerator.cs" />
-    <Compile Include="Utils\MockDesignerLoaderHost.cs" />
-    <Compile Include="Utils\MockEditableViewContent.cs" />
-    <Compile Include="Utils\MockEventBindingService.cs" />
-    <Compile Include="Utils\MockEventDescriptor.cs" />
-    <Compile Include="Utils\MockExtenderProviderService.cs" />
-    <Compile Include="Utils\MockOpenedFile.cs" />
-    <Compile Include="Utils\MockPadDescriptor.cs" />
-    <Compile Include="Utils\MockProject.cs" />
-    <Compile Include="Utils\MockProjectContent.cs" />
-    <Compile Include="Utils\MockPropertyDescriptor.cs" />
-    <Compile Include="Utils\MockPythonFileService.cs" />
-    <Compile Include="Utils\MockResourceReader.cs" />
-    <Compile Include="Utils\MockResourceService.cs" />
-    <Compile Include="Utils\MockResourceWriter.cs" />
-    <Compile Include="Utils\MockTextEditor.cs" />
-    <Compile Include="Utils\MockTextEditorOptions.cs" />
-    <Compile Include="Utils\MockTextEditorViewContent.cs" />
-    <Compile Include="Utils\MockTypeResolutionService.cs" />
-    <Compile Include="Utils\MockViewContent.cs" />
-    <Compile Include="Utils\MockWorkbench.cs" />
-    <Compile Include="Utils\MockWorkbenchWindow.cs" />
-    <Compile Include="Utils\MSBuildEngineHelper.cs" />
-    <Compile Include="Utils\Tests\AddInPathHelperTestFixture.cs" />
+    <Compile Include="Utils\FakeCompletionItemProvider.cs" />
+    <Compile Include="Utils\PythonCodeDomSerializerHelper.cs" />
+    <Compile Include="Utils\PythonComponentWalkerHelper.cs" />
+    <Compile Include="Utils\PythonMSBuildEngineHelper.cs" />
     <EmbeddedResource Include="..\Project\PythonBinding.addin">
       <Link>PythonBinding.addin</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\Project\Templates\Empty.xft">
-      <Link>Empty.xft</Link>
-    </EmbeddedResource>
     <None Include="app.config" />
     <Compile Include="Parsing\AddInvalidSourceSpanToErrorSinkTestFixture.cs" />
-    <Compile Include="Utils\NullPropertyUserControl.cs" />
     <Compile Include="Utils\PythonBindingAddInFile.cs" />
     <Compile Include="Utils\PythonCompletionItemsHelper.cs" />
     <Compile Include="Utils\PythonParserHelper.cs" />
-    <Compile Include="Utils\SupportInitCustomControl.cs" />
-    <Compile Include="Utils\Tests\MockComponentCreatorTests.cs" />
-    <Compile Include="Utils\Tests\MockConsoleTextEditorTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockControlDispatcherTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockEditableViewContentTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockProjectContentTests.cs" />
-    <Compile Include="Utils\Tests\MockPythonFileServiceTestFixture.cs" />
+    <Compile Include="Utils\TestablePythonCodeCompletionBinding.cs" />
+    <Compile Include="Utils\TestablePythonCodeCompletionItemProvider.cs" />
     <Compile Include="Utils\Tests\PythonCompletionItemsHelperTests.cs" />
     <Compile Include="Utils\Tests\PythonParserHelperTests.cs" />
     <EmbeddedResource Include="Designer\App.ico" />
@@ -554,6 +476,14 @@
     <ProjectReference Include="..\..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
       <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
       <Name>FormsDesigner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Scripting\Project\ICSharpCode.Scripting.csproj">
+      <Project>{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}</Project>
+      <Name>ICSharpCode.Scripting</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Scripting\Test\ICSharpCode.Scripting.Tests.csproj">
+      <Project>{85C09AD8-183B-403A-869A-7226646218A9}</Project>
+      <Name>ICSharpCode.Scripting.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\Project\PythonBinding.csproj">
       <Project>{8D732610-8FC6-43BA-94C9-7126FD7FE361}</Project>

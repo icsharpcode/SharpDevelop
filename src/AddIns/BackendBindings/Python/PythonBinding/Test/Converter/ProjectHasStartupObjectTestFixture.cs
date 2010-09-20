@@ -1,19 +1,17 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
@@ -31,7 +29,7 @@ namespace PythonBinding.Tests.Converter
 		FileProjectItem targetMain2File;
 		MSBuildBasedProject sourceProject;
 		PythonProject targetProject;
-		PythonBinding.Tests.Utils.MockProjectContent mockProjectContent;
+		ICSharpCode.Scripting.Tests.Utils.MockProjectContent mockProjectContent;
 		
 		string startupObject = "RootNamespace.Main";
 		
@@ -52,7 +50,7 @@ namespace PythonBinding.Tests.Converter
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MSBuildEngineHelper.InitMSBuildEngine();
+			PythonMSBuildEngineHelper.InitMSBuildEngine();
 
 			List<ProjectBindingDescriptor> bindings = new List<ProjectBindingDescriptor>();
 			using (TextReader reader = PythonBindingAddInFile.ReadAddInFile()) {
@@ -64,7 +62,7 @@ namespace PythonBinding.Tests.Converter
 			// Set up IProjectContent so the ConvertProjectToPythonProjectCommand can
 			// locate the startup object and determine it's filename.
 			
-			mockProjectContent = new PythonBinding.Tests.Utils.MockProjectContent();
+			mockProjectContent = new ICSharpCode.Scripting.Tests.Utils.MockProjectContent();
 			MockClass mainClass = new MockClass(mockProjectContent, startupObject);
 			mainClass.CompilationUnit.FileName = @"d:\projects\test\src\Main2.cs";
 			mockProjectContent.ClassToReturnFromGetClass = mainClass;

@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <author name="Daniel Grunwald"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using ICSharpCode.Core.Presentation;
 using System;
@@ -25,17 +21,33 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 	/// </summary>
 	internal partial class UpgradeView : UserControl
 	{
-		Solution solution;
+		readonly Solution solution;
+		readonly List<Entry> entries;
 		
 		public UpgradeView(Solution solution)
 		{
+			if (solution == null)
+				throw new ArgumentNullException("solution");
 			this.solution = solution;
 			InitializeComponent();
 			
-			listView.ItemsSource = solution.Projects.OfType<IUpgradableProject>().Select(p => new Entry(p)).ToList();
+			this.entries = solution.Projects.OfType<IUpgradableProject>().Select(p => new Entry(p)).ToList();
+			listView.ItemsSource = entries;
 			SortableGridViewColumn.SetCurrentSortColumn(listView, nameColumn);
 			SortableGridViewColumn.SetSortDirection(listView, ColumnSortDirection.Ascending);
 			ListView_SelectionChanged(null, null);
+		}
+		
+		public Solution Solution {
+			get { return solution; }
+		}
+		
+		public void Select(IUpgradableProject project)
+		{
+			foreach (Entry entry in entries) {
+				if (entry.Project == project)
+					listView.SelectedItem = entry;
+			}
 		}
 		
 		void SelectAllCheckBox_Checked(object sender, RoutedEventArgs e)

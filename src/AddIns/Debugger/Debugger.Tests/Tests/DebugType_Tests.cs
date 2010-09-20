@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -255,7 +251,7 @@ namespace Debugger.Tests {
     <ProcessStarted />
     <ModuleLoaded>mscorlib.dll (No symbols)</ModuleLoaded>
     <ModuleLoaded>DebugType_Tests.exe (Has symbols)</ModuleLoaded>
-    <DebuggingPaused>Break DebugType_Tests.cs:171,4-171,40</DebuggingPaused>
+    <DebuggingPaused>Break DebugType_Tests.cs:167,4-167,40</DebuggingPaused>
     <DefinedTypes
       Capacity="16"
       Count="15">

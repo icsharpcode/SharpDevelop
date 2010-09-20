@@ -1325,6 +1325,7 @@ AccessModifier =
 
 TypeModifier =
 	AccessModifier |
+	"NotInheritable" |
 	"Shadows" |
 	"Partial"
 .
@@ -1335,6 +1336,7 @@ MemberModifier =
 	"Shared" |
 	"Overridable" |
 	"NotOverridable" |
+	"NotInheritable" |
 	"Overrides" |
 	"Overloads" |
 	"Partial" |

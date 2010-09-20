@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -39,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		public string RootNamespace { get; set; }
 		public string SolutionPath { get; set; }
 		public string ProjectBasePath { get; set; }
-		public string TargetFramework { get; set; }
+		public TargetFramework TargetFramework { get; set; }
 		public Solution Solution { get; set; }
 	}
 }

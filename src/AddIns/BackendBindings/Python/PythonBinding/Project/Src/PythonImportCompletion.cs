@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -16,6 +12,8 @@ namespace ICSharpCode.PythonBinding
 {
 	public class PythonImportCompletion
 	{
+		public static readonly NamespaceEntry ImportAll = new NamespaceEntry("*");
+		
 		IProjectContent projectContent;
 		static readonly PythonStandardModules standardPythonModules = new PythonStandardModules();
 
@@ -46,11 +44,21 @@ namespace ICSharpCode.PythonBinding
 		
 		public List<ICompletionEntry> GetCompletionItemsFromModule(string module)
 		{
+			List<ICompletionEntry> items = GetCompletionItemsFromStandardPythonModules(module);
+			if (items == null) {
+				items = projectContent.GetNamespaceContents(module);
+			}
+			items.Add(ImportAll);
+			return items;
+		}
+		
+		List<ICompletionEntry> GetCompletionItemsFromStandardPythonModules(string module)
+		{
 			PythonStandardModuleType type = standardPythonModules.GetModuleType(module);
 			if (type != null) {
 				return GetCompletionItemsFromModule(type);
 			}
-			return projectContent.GetNamespaceContents(module);
+			return null;
 		}
 		
 		List<ICompletionEntry> GetCompletionItemsFromModule(PythonStandardModuleType type)

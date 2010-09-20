@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Diagnostics;
@@ -66,7 +62,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static void InitializeWorkbench(IWorkbench workbench, IWorkbenchLayout layout)
 		{
 			WorkbenchSingleton.workbench = workbench;
-
+			
+			LanguageService.ValidateLanguage();
+			
 			DisplayBindingService.InitializeService();
 			LayoutConfiguration.LoadLayoutConfiguration();
 			FileService.InitializeService();

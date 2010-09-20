@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.CodeDom;
@@ -11,12 +7,14 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 
+using ICSharpCode.Scripting;
+
 namespace ICSharpCode.PythonBinding
 {
 	/// <summary>
 	/// Used to generate Python code after the form has been changed in the designer.
 	/// </summary>
-	public class PythonCodeDomSerializer
+	public class PythonCodeDomSerializer : IScriptingCodeDomSerializer
 	{
 		PythonCodeBuilder codeBuilder;
 		string indentString = String.Empty;
@@ -35,14 +33,9 @@ namespace ICSharpCode.PythonBinding
 				
 		public string GenerateInitializeComponentMethodBody(IDesignerHost host, IDesignerSerializationManager serializationManager)
 		{
-			return GenerateInitializeComponentMethodBody(host, serializationManager, String.Empty);
+			return GenerateInitializeComponentMethodBody(host, serializationManager, String.Empty, 0);
 		}
 
-		public string GenerateInitializeComponentMethodBody(IDesignerHost host, IDesignerSerializationManager serializationManager, string rootNamespace)
-		{
-			return GenerateInitializeComponentMethodBody(host, serializationManager, rootResourceName, 0);
-		}
-		
 		public string GenerateInitializeComponentMethodBody(IDesignerHost host, IDesignerSerializationManager serializationManager, string rootNamespace, int initialIndent)
 		{
 			codeBuilder = new PythonCodeBuilder(initialIndent);

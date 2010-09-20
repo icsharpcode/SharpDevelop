@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <author name="Daniel Grunwald"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Globalization;
@@ -20,6 +16,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 	/// </summary>
 	static class TextFormatterFactory
 	{
+		#if !DOTNET4
 		readonly static DependencyProperty TextFormattingModeProperty;
 		
 		static TextFormatterFactory()
@@ -30,6 +27,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 				TextFormattingModeProperty = textOptionsType.GetField("TextFormattingModeProperty").GetValue(null) as DependencyProperty;
 			}
 		}
+		#endif
 		
 		/// <summary>
 		/// Creates a <see cref="TextFormatter"/> using the formatting mode used by the specified owner object.
@@ -38,7 +36,9 @@ namespace ICSharpCode.AvalonEdit.Utils
 		{
 			if (owner == null)
 				throw new ArgumentNullException("owner");
-			// return TextFormatter.Create(TextOptions.GetTextFormattingMode(this));
+			#if DOTNET4
+			return TextFormatter.Create(TextOptions.GetTextFormattingMode(owner));
+			#else
 			if (TextFormattingModeProperty != null) {
 				object formattingMode = owner.GetValue(TextFormattingModeProperty);
 				return (TextFormatter)typeof(TextFormatter).InvokeMember(
@@ -50,6 +50,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 			} else {
 				return TextFormatter.Create();
 			}
+			#endif
 		}
 		
 		/// <summary>
@@ -58,8 +59,11 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// </summary>
 		public static bool PropertyChangeAffectsTextFormatter(DependencyProperty dp)
 		{
-			// return dp == TextOptions.TextFormattingModeProperty;
+			#if DOTNET4
+			return dp == TextOptions.TextFormattingModeProperty;
+			#else
 			return dp == TextFormattingModeProperty && TextFormattingModeProperty != null;
+			#endif
 		}
 		
 		/// <summary>
@@ -83,6 +87,18 @@ namespace ICSharpCode.AvalonEdit.Utils
 				emSize = TextBlock.GetFontSize(element);
 			if (foreground == null)
 				foreground = TextBlock.GetForeground(element);
+			#if DOTNET4
+			return new FormattedText(
+				text,
+				CultureInfo.CurrentCulture,
+				FlowDirection.LeftToRight,
+				typeface,
+				emSize.Value,
+				foreground,
+				null,
+				TextOptions.GetTextFormattingMode(element)
+			);
+			#else
 			if (TextFormattingModeProperty != null) {
 				object formattingMode = element.GetValue(TextFormattingModeProperty);
 				return (FormattedText)Activator.CreateInstance(
@@ -106,6 +122,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 					foreground
 				);
 			}
+			#endif
 		}
 	}
 }

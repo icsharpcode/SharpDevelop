@@ -1,16 +1,14 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+
 using ICSharpCode.Core;
 using ICSharpCode.Core.Services;
+using ICSharpCode.Scripting;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.PythonBinding
@@ -19,7 +17,7 @@ namespace ICSharpCode.PythonBinding
 	{
 		PythonAddInOptions options;
 		PythonStandardLibraryPath pythonStandardLibraryPath;
-		IPythonFileService fileService;
+		IScriptingFileService fileService;
 		PythonTestRunnerApplication testRunnerApplication;
 		
 		public PythonTestRunner()
@@ -32,7 +30,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			this.options = context.Options;
 			this.pythonStandardLibraryPath = context.PythonStandardLibraryPath;
-			this.fileService = context.PythonFileService;
+			this.fileService = context.ScriptingFileService;
 		}
 		
 		public override void Start(SelectedTests selectedTests)

@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections;
@@ -21,6 +17,7 @@ namespace ICSharpCode.PythonBinding
 		PythonNamespaceResolver namespaceResolver = new PythonNamespaceResolver();
 		PythonClassResolver classResolver = new PythonClassResolver();
 		PythonStandardModuleResolver standardModuleResolver = new PythonStandardModuleResolver();
+		PythonSelfResolver selfResolver = new PythonSelfResolver();
 		PythonMethodResolver methodResolver;
 		
 		List<IPythonResolver> resolvers = new List<IPythonResolver>();
@@ -33,6 +30,7 @@ namespace ICSharpCode.PythonBinding
 			resolvers.Add(classResolver);
 			resolvers.Add(standardModuleResolver);
 			resolvers.Add(methodResolver);
+			resolvers.Add(selfResolver);
 			resolvers.Add(namespaceResolver);
 		}
 		

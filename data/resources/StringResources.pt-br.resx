@@ -370,12 +370,6 @@ Voce precisa instalar o .Net Framework SDK para acessar o sistema de ajuda.</val
   <data name="AddIns.HtmlHelp2.LookForSimilarWords" xml:space="preserve">
     <value>Procurar por palavras similares</value>
   </data>
-  <data name="AddIns.HtmlHelp2.MoveDown" xml:space="preserve">
-    <value>Mover para baixo</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MoveUp" xml:space="preserve">
-    <value>Mover para cima</value>
-  </data>
   <data name="AddIns.HtmlHelp2.MultiTopic" xml:space="preserve">
     <value>tópicos</value>
   </data>
@@ -2038,12 +2032,6 @@ Além disso, um span pode definir um rule set nomedo que permite uma formataçã
   <data name="Dialog.Options.CombineOptions.Startup.EntryColumnHeader" xml:space="preserve">
     <value>Entrada</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveDownButton" xml:space="preserve">
-    <value>Mover para baixo</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveUpButton" xml:space="preserve">
-    <value>Mover para cima</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton" xml:space="preserve">
     <value>Projeto de Inicializações &amp;Múltiplas</value>
   </data>
@@ -2055,12 +2043,6 @@ Além disso, um span pode definir um rule set nomedo que permite uma formataçã
   </data>
   <data name="Dialog.Options.ExternalTool.CommandLabel" xml:space="preserve">
     <value>&amp;Comando</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveDownButton" xml:space="preserve">
-    <value>Mover para baixo</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveUpButton" xml:space="preserve">
-    <value>Mover para cima</value>
   </data>
   <data name="Dialog.Options.ExternalTool.PromptForArgsCheckBox" xml:space="preserve">
     <value>&amp;Prompt para Argumentos</value>
@@ -3034,18 +3016,6 @@ Além disso, um span pode definir um rule set nomedo que permite uma formataçã
   <data name="Dialog.SelectReferenceDialog.TypeHeader" xml:space="preserve">
     <value>Tipo</value>
   </data>
-  <data name="Dialog.TipOfTheDay.button1Text" xml:space="preserve">
-    <value>Próxi&amp;ma Dica</value>
-  </data>
-  <data name="Dialog.TipOfTheDay.checkBox1Text" xml:space="preserve">
-    <value>Mostrar dicas ao iniciar</value>
-  </data>
-  <data name="Dialog.TipOfTheDay.DialogName" xml:space="preserve">
-    <value>Dica do Dia</value>
-  </data>
-  <data name="Dialog.TipOfTheDay.DidYouKnowText" xml:space="preserve">
-    <value>Você sabia ...</value>
-  </data>
   <data name="Dialog.ViewGPL.DialogName" xml:space="preserve">
     <value>Licença Pública Geral do GNU</value>
   </data>
@@ -3189,6 +3159,12 @@ Além disso, um span pode definir um rule set nomedo que permite uma formataçã
   </data>
   <data name="Global.Location.wholeproject" xml:space="preserve">
     <value>projeto inteiro</value>
+  </data>
+  <data name="Global.MoveDown" xml:space="preserve">
+    <value>Mover para baixo</value>
+  </data>
+  <data name="Global.MoveUp" xml:space="preserve">
+    <value>Mover para cima</value>
   </data>
   <data name="Global.NA" xml:space="preserve">
     <value>N/D</value>
@@ -5665,18 +5641,6 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   </data>
   <data name="SideBarComponent.ContextMenu.DeleteTabItemQuestion" xml:space="preserve">
     <value>Você realemente deseja deletar o item "${TabItem}"?</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabDown" xml:space="preserve">
-    <value>Mover Tab para &amp;Baixo</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemDown" xml:space="preserve">
-    <value>Mover Item para Baixo</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemUp" xml:space="preserve">
-    <value>Mover Item para Cima</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabUp" xml:space="preserve">
-    <value>Mover Tab para &amp;Cima</value>
   </data>
   <data name="SideBarComponent.ContextMenu.RenameTab" xml:space="preserve">
     <value>Re&amp;nomear Tab</value>

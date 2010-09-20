@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Linq;
@@ -17,7 +13,7 @@ using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
-namespace PythonBinding.Tests
+namespace PythonBinding.Tests.PythonLanguage
 {
 	/// <summary>
 	/// Tests the initial properties set in a newly created PythonProject.
@@ -31,7 +27,7 @@ namespace PythonBinding.Tests
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MSBuildEngineHelper.InitMSBuildEngine();
+			PythonMSBuildEngineHelper.InitMSBuildEngine();
 			
 			info = new ProjectCreateInformation();
 			info.Solution = new Solution();

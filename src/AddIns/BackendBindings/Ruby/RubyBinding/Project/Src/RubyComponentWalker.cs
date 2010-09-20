@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -17,10 +13,11 @@ using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop;
-using IronRuby.Hosting;
 using IronRuby.Compiler;
 using IronRuby.Compiler.Ast;
+using IronRuby.Hosting;
 using IronRuby.Runtime;
 
 namespace ICSharpCode.RubyBinding
@@ -28,7 +25,7 @@ namespace ICSharpCode.RubyBinding
 	/// <summary>
 	/// Visits the code's Ruby AST and creates a Windows Form.
 	/// </summary>
-	public class RubyComponentWalker : Walker
+	public class RubyComponentWalker : Walker, IComponentWalker
 	{
 		IComponent component;
 		IComponentCreator componentCreator;

@@ -19,6 +19,10 @@
 				Visibility="Collapsed"
 				IsChecked="{sd:OptionBinding addin:Options.AddIEquatableInterface}" />
 			<CheckBox
+				x:Name="addOtherMethod"
+				Margin="3"
+				IsChecked="{sd:OptionBinding addin:Options.AddOtherMethod}" />
+			<CheckBox
 				Content="{sd:Localize AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOperatorOverloads}"
 				Margin="3"
 				IsChecked="{sd:OptionBinding addin:Options.AddOperatorOverloads}" />

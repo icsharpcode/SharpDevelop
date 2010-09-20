@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <author name="Daniel Grunwald"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -156,15 +152,13 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 					return srte;
 				}
 			}
-			if ("Selection".Equals(val, StringComparison.OrdinalIgnoreCase))
-				return new SnippetSelectionElement() { Indentation = GetWhitespaceBefore(snippetText, offset).Length };
-			if ("Caret".Equals(val, StringComparison.OrdinalIgnoreCase))
-				return new SnippetCaretElement();
+			
 			foreach (ISnippetElementProvider provider in SnippetManager.Instance.SnippetElementProviders) {
-				SnippetElement element = provider.GetElement(val);
+				SnippetElement element = provider.GetElement(new SnippetInfo(val, snippetText, offset));
 				if (element != null)
 					return element;
 			}
+			
 			if (replaceableElements.TryGetValue(val, out srte))
 				return new SnippetBoundElement { TargetElement = srte };
 			Match m = functionPattern.Match(val);
@@ -186,12 +180,6 @@ namespace ICSharpCode.AvalonEdit.AddIn.Snippets
 				return new SnippetTextElement { Text = result };
 			else
 				return new SnippetReplaceableTextElement { Text = val }; // ${unknown} -> replaceable element
-		}
-		
-		static string GetWhitespaceBefore(string snippetText, int offset)
-		{
-			int start = snippetText.LastIndexOfAny(new[] { '\r', '\n' }, offset) + 1;
-			return snippetText.Substring(start, offset - start);
 		}
 		
 		static string GetValue(ITextEditor editor, string propertyName)

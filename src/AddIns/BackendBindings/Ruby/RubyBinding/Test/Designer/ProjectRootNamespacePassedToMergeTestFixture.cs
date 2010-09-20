@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.CodeDom;
@@ -14,15 +10,16 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
-using AvalonEdit = ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Refactoring;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
+using AvalonEdit = ICSharpCode.AvalonEdit;
 
 namespace RubyBinding.Tests.Designer
 {
@@ -73,7 +70,8 @@ namespace RubyBinding.Tests.Designer
 				DesignerSerializationManager serializationManager = new DesignerSerializationManager(host);
 				using (serializationManager.CreateSession()) {
 					AvalonEditDocumentAdapter docAdapter = new AvalonEditDocumentAdapter(document, null);
-					RubyDesignerGenerator.Merge(host, docAdapter, compilationUnit, options, serializationManager);
+					RubyDesignerGenerator generator = new RubyDesignerGenerator(options);
+					generator.Merge(host, docAdapter, compilationUnit, serializationManager);
 				}
 			}
 		}

@@ -1,20 +1,17 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Utils;
 using IronRuby.Hosting;
 using IronRuby.Runtime;
-using NUnit.Framework;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
+using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 
 namespace RubyBinding.Tests.Console
@@ -27,13 +24,13 @@ namespace RubyBinding.Tests.Console
 	{
 		DerivedRubyConsoleHost host;
 		TextEditor textEditorControl;
-		RubyConsoleTextEditor textEditor;
+		ScriptingConsoleTextEditor textEditor;
 		
 		[TestFixtureSetUp]
 		public void Init()
 		{
 			textEditorControl = new TextEditor();
-			textEditor = new RubyConsoleTextEditor(textEditorControl);
+			textEditor = new ScriptingConsoleTextEditor(textEditorControl);
 			host = new DerivedRubyConsoleHost(textEditor);
 		}
 		
@@ -89,7 +86,7 @@ namespace RubyBinding.Tests.Console
 		[Test]
 		public void HostDisposesRubyConsole()
 		{
-			DerivedRubyConsoleHost host = new DerivedRubyConsoleHost(new MockConsoleTextEditor());
+			DerivedRubyConsoleHost host = new DerivedRubyConsoleHost(new FakeConsoleTextEditor());
 			RubyConsole console = host.CallCreateConsole(null, null, null) as RubyConsole;
 			host.Dispose();
 
@@ -102,7 +99,7 @@ namespace RubyBinding.Tests.Console
 		[Test]
 		public void DisposingRubyConsoleHostWithoutCreatingRubyConsole()
 		{
-			RubyConsoleHost host = new RubyConsoleHost(new MockConsoleTextEditor());
+			RubyConsoleHost host = new RubyConsoleHost(new FakeConsoleTextEditor(), new FakeControlDispatcher());
 			host.Dispose();
 		}
 		

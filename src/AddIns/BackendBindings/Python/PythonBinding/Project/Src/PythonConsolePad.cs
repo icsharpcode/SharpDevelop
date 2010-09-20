@@ -1,41 +1,21 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using ICSharpCode.SharpDevelop.Gui;
-using AvalonEdit = ICSharpCode.AvalonEdit;
+using ICSharpCode.Scripting;
 
 namespace ICSharpCode.PythonBinding
 {
-	public class PythonConsolePad : AbstractPadContent
-	{
-		PythonConsoleTextEditor consoleTextEditor;
-		AvalonEdit.TextEditor textEditor;
-		PythonConsoleHost host;
-		
-		public PythonConsolePad()
+	public class PythonConsolePad : ScriptingConsolePad
+	{		
+		protected override IScriptingConsoleHost CreateConsoleHost(IScriptingConsoleTextEditor consoleTextEditor, 
+			IControlDispatcher dispatcher)
 		{
-			textEditor = new AvalonEdit.TextEditor();
-			consoleTextEditor = new PythonConsoleTextEditor(textEditor);
-			host = new PythonConsoleHost(consoleTextEditor);
-			host.Run();		
+			return new PythonConsoleHost(consoleTextEditor, dispatcher);
 		}
 		
-		public override object Control {
-			get { return textEditor; }
-		}		
-		
-		public override void Dispose()
-		{
-			host.Dispose();
-		}
-		
-		public override object InitiallyFocusedControl {
-			get { return textEditor; }
+		protected override string SyntaxHighlightingName {
+			get { return "Python"; }
 		}
 	}
 }

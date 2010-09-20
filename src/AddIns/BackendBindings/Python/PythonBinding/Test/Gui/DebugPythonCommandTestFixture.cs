@@ -1,17 +1,14 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Diagnostics;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.PythonBinding;
-using PythonBinding.Tests.Utils;
+using ICSharpCode.Scripting.Tests.Utils;
+using ICSharpCode.SharpDevelop.Debugging;
 using NUnit.Framework;
+using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Gui
 {
@@ -24,15 +21,8 @@ namespace PythonBinding.Tests.Gui
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			// Create dummy view content with the Python script.
-			MockViewContent viewContent = new MockViewContent();
-			viewContent.PrimaryFileName =  new FileName(@"C:\Projects\test.py");
-			MockWorkbenchWindow workbenchWindow = new MockWorkbenchWindow();
-			workbenchWindow.ActiveViewContent = viewContent;
-			MockWorkbench workbench = new MockWorkbench();
-			workbench.ActiveWorkbenchWindow = workbenchWindow;
+			MockWorkbench workbench = MockWorkbench.CreateWorkbenchWithOneViewContent(@"C:\Projects\test.py");
 
-			// Create the Python binding addin options.
 			Properties p = new Properties();
 			PythonAddInOptions options = new PythonAddInOptions(p);
 			options.PythonFileName = @"C:\IronPython\ipy.exe";
@@ -43,21 +33,26 @@ namespace PythonBinding.Tests.Gui
 		}
 				
 		[Test]
-		public void DebuggerStartMethodCalled()
+		public void Run_PythonFileOpen_DebuggerStartMethodCalled()
 		{
-			Assert.IsTrue(debugger.StartMethodCalled);
+			bool result = debugger.StartMethodCalled;
+			Assert.IsTrue(result);
 		}
 		
 		[Test]
-		public void ProcessInfoFileName()
+		public void Run_PythonFileOpen_IronPythonConsoleFileNamePassedToDebugger()
 		{
-			Assert.AreEqual(@"C:\IronPython\ipy.exe", debugger.ProcessStartInfo.FileName);
+			string fileName = debugger.ProcessStartInfo.FileName;
+			string expectedFileName = @"C:\IronPython\ipy.exe";
+			Assert.AreEqual(expectedFileName, fileName);
 		}
 		
 		[Test]
-		public void ProcessInfoArgs()
+		public void Run_PythonFileOpen_DebugOptionsPassedToIronPythonConsole()
 		{
-			Assert.AreEqual("-X:Debug \"C:\\Projects\\test.py\"", debugger.ProcessStartInfo.Arguments);
+			string args = debugger.ProcessStartInfo.Arguments;
+			string expectedArgs = "-X:Debug \"C:\\Projects\\test.py\"";
+			Assert.AreEqual(expectedArgs, args);
 		}
 	}
 }

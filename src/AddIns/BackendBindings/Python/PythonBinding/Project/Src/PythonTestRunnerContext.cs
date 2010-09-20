@@ -1,11 +1,8 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Scripting;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.PythonBinding
@@ -14,14 +11,14 @@ namespace ICSharpCode.PythonBinding
 	{
 		PythonAddInOptions options;
 		PythonStandardLibraryPath pythonStandardLibraryPath;
-		IPythonFileService fileService;
+		IScriptingFileService fileService;
 
 		public PythonTestRunnerContext(IUnitTestProcessRunner processRunner,
 			ITestResultsMonitor testResultsMonitor,
 			IUnitTestMessageService messageService,
 			PythonAddInOptions options,
 			PythonStandardLibraryPath pythonStandardLibraryPath,
-			IPythonFileService fileService)
+			IScriptingFileService fileService)
 			: base(processRunner, testResultsMonitor, fileService, messageService)
 		{
 			this.options = options;
@@ -35,7 +32,7 @@ namespace ICSharpCode.PythonBinding
 				new UnitTestMessageService(),
 				new PythonAddInOptions(),
 				new PythonStandardLibraryPath(),
-				new PythonFileService())
+				new ScriptingFileService())
 		{
 		}
 		
@@ -47,8 +44,8 @@ namespace ICSharpCode.PythonBinding
 			get { return pythonStandardLibraryPath; }
 		}
 
-		public IPythonFileService PythonFileService {
-			get { return base.FileSystem as IPythonFileService; }
+		public IScriptingFileService ScriptingFileService {
+			get { return base.FileSystem as IScriptingFileService; }
 		}
 	}
 }

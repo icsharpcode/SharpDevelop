@@ -20,10 +20,8 @@ namespace ICSharpCode.Reports.Core {
 		
 		private ReportItemCollection items;
 		private IDataNavigator dataNavigator;
-		private IExpressionEvaluatorFacade expressionEvaluatorFacade;
 		private BaseSection startSection;
 
-		
 		
 		#region Constructor
 		
@@ -80,77 +78,9 @@ namespace ICSharpCode.Reports.Core {
 		
 		public override void Render(ReportPageEventArgs rpea)
 		{
-			/*
-			if (rpea == null) {
-				throw new ArgumentNullException("rpea");
-			}
-
-			Point saveLocation = this.Location;
-			Point currentPosition = new Point(this.startSection.Location.X,this.startSection.Location.Y);
-			Point tableStart = currentPosition;
-			base.Render(rpea);
-			int defaultLeftPos = PrintHelper.DrawingAreaRelativeToParent(this.Parent,this).Left;
-			this.Items.SortByLocation();
-			rpea.SinglePage.StartRow  = this.dataNavigator.CurrentRow;
-			foreach (BaseRowItem row in this.items)
-			{
-				if (row != null)
-				{
-					row.Parent = this;
-					if (PrintHelper.IsTextOnlyRow(row) )
-					{
-						currentPosition = this.PrintTextRow (rpea,row,defaultLeftPos,currentPosition);
-						this.Location = saveLocation;
-					}
-					else {
-						do {
-							if (PrintHelper.IsPageFull(new Rectangle(currentPosition,row.Size),sectionBounds)) {
-								this.Location = saveLocation;
-							
-								rpea.SinglePage.EndRow = this.dataNavigator.CurrentRow;
-								AbstractRenderer.PageBreak(rpea);
-								return;
-							}
-							currentPosition = this.PrintDataRow (rpea,row,defaultLeftPos,currentPosition);
-						}
-						while (this.dataNavigator.MoveNext());
-					}
-				}
-			}
-			if (this.DrawBorder) {
-				Border border = new Border(new BaseLine (this.ForeColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
-				border.DrawBorder(rpea.PrintPageEventArgs.Graphics,
-				                  new Rectangle(this.Parent.Location.X,tableStart.Y,
-				                                this.Parent.Size.Width,currentPosition.Y + 5));
-			}
-			rpea.LocationAfterDraw = new Point(rpea.LocationAfterDraw.X,rpea.LocationAfterDraw.Y + 20);
-			base.NotifyAfterPrint (rpea.LocationAfterDraw);
-			*/
+			base.Render (rpea);
 		}
 		
-		/*
-		private Point PrintTextRow(ReportPageEventArgs rpea,BaseRowItem row,int left,Point currentPos	)
-		{
-			Rectangle saveRec = new Rectangle (row.Location,row.Size);
-			row.Location = new Point (left,currentPos.Y);
-			EvaluateRecursive (this.expressionEvaluatorFacade,row.Items);
-			PrintHelper.SetLayoutForRow(rpea.PrintPageEventArgs.Graphics,layouter,row);
-			row.Render (rpea);
-			
-			Point retVal = new Point (left,currentPos.Y + row.Size.Height +10);
-			//reset values
-			row.Size = new Size(saveRec.Size.Width,saveRec.Size.Height);
-			row.Location = saveRec.Location;
-			return retVal;
-		}
-		
-		
-		private Point PrintDataRow (ReportPageEventArgs rpea,BaseRowItem row,int left,Point currentPos)
-		{
-			this.dataNavigator.Fill(row.Items);
-			return this.PrintTextRow(rpea,row,left,currentPos);
-		}
-		*/
 		
 		
 		public override string ToString(){
@@ -190,12 +120,6 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 		
-		
-		public IExpressionEvaluatorFacade ExpressionEvaluatorFacade {
-			set { this.expressionEvaluatorFacade = value; }
-		}
-		
-
 		#endregion
 	}
 }

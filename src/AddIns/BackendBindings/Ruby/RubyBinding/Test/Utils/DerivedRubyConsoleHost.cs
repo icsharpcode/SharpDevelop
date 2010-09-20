@@ -1,14 +1,11 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.IO;
-
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Utils;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting.Hosting.Shell;
@@ -17,9 +14,10 @@ namespace RubyBinding.Tests.Console
 {	
 	public class DerivedRubyConsoleHost : RubyConsoleHost
 	{
-		RubyOutputStream outputStream;
+		ScriptingConsoleOutputStream outputStream;
 		
-		public DerivedRubyConsoleHost(IConsoleTextEditor textEditor) : base(textEditor)
+		public DerivedRubyConsoleHost(IScriptingConsoleTextEditor textEditor)
+			: base(textEditor, new FakeControlDispatcher())
 		{
 		}
 		
@@ -51,11 +49,11 @@ namespace RubyBinding.Tests.Console
 		/// <summary>
 		/// Gets the output stream class passed to SetOutput method.
 		/// </summary>
-		public RubyOutputStream OutputStream {
+		public ScriptingConsoleOutputStream OutputStream {
 			get { return outputStream; }
 		}
 			
-		protected override void SetOutput(RubyOutputStream stream)
+		protected override void SetOutput(ScriptingConsoleOutputStream stream)
 		{
 			outputStream = stream;
 		}

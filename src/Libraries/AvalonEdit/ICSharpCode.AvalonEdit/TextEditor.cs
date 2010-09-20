@@ -1,9 +1,5 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <author name="Daniel Grunwald"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.ComponentModel;
@@ -58,9 +54,16 @@ namespace ICSharpCode.AvalonEdit
 			
 			textArea.TextView.Services.AddService(typeof(TextEditor), this);
 			
-			this.Options = textArea.Options;
-			this.Document = new TextDocument();
+			SetCurrentValue(OptionsProperty, textArea.Options);
+			SetCurrentValue(DocumentProperty, new TextDocument());
 		}
+		
+		#if !DOTNET4
+		void SetCurrentValue(DependencyProperty property, object value)
+		{
+			SetValue(property, value);
+		}
+		#endif
 		#endregion
 		
 		/// <inheritdoc/>
@@ -431,7 +434,7 @@ namespace ICSharpCode.AvalonEdit
 			if (e.PropertyName == "IsOriginalFile") {
 				TextDocument document = this.Document;
 				if (document != null) {
-					this.IsModified = !document.UndoStack.IsOriginalFile;
+					SetCurrentValue(IsModifiedProperty, Boxes.Box(!document.UndoStack.IsOriginalFile));
 				}
 				return true;
 			} else {

@@ -1,16 +1,14 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
-
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting;
+using ICSharpCode.Scripting.Tests.Designer;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 
@@ -19,34 +17,11 @@ namespace RubyBinding.Tests.Designer
 	/// <summary>
 	/// Base class for all LoadFormTestFixture classes.
 	/// </summary>
-	public class LoadFormTestFixtureBase
-	{		
-		MockComponentCreator componentCreator = new MockComponentCreator();
-		Form form;
-
-		public LoadFormTestFixtureBase()
+	public class LoadFormTestFixtureBase : LoadFormTestsBase
+	{
+		protected override IComponentWalker CreateComponentWalker(IComponentCreator componentCreator)
 		{
-		}
-				
-		[TestFixtureSetUp]
-		public void SetUpFixture()
-		{			
-			BeforeSetUpFixture();
-			RubyComponentWalker walker = new RubyComponentWalker(componentCreator);
-			form = walker.CreateComponent(RubyCode) as Form;
-		}
-
-		[TestFixtureTearDown]
-		public void TearDownFixture()
-		{
-			form.Dispose();
-		}		
-
-		/// <summary>
-		/// Called at the start of SetUpFixture method before anything is setup.
-		/// </summary>
-		public virtual void BeforeSetUpFixture()
-		{
+			return RubyComponentWalkerHelper.CreateComponentWalker(componentCreator);
 		}
 		
 		/// <summary>
@@ -56,12 +31,8 @@ namespace RubyBinding.Tests.Designer
 			get { return String.Empty; }
 		}
 		
-		protected MockComponentCreator ComponentCreator {
-			get { return componentCreator; }
+		public override string Code {
+			get { return RubyCode; }
 		}
-				
-		protected Form Form {
-			get { return form; }
-		}		
 	}
 }

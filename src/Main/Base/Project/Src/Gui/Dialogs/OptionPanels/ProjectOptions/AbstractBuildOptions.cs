@@ -1,19 +1,15 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
-using StringPair = System.Collections.Generic.KeyValuePair<System.String, System.String>;
+using ICSharpCode.SharpDevelop.Project.Converter;
+using StringPair = System.Collections.Generic.KeyValuePair<string, string>;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
@@ -238,36 +234,18 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		protected void InitTargetFramework()
 		{
-			Button convertProjectToMSBuild35Button = (Button)ControlDictionary["convertProjectToMSBuild35Button"];
-			ComboBox targetFrameworkComboBox = (ComboBox)ControlDictionary["targetFrameworkComboBox"];
-			
-			if (convertProjectToMSBuild35Button != null) {
-				if (project.MinimumSolutionVersion <= Solution.SolutionVersionVS2008) {
-					// VS05/VS08 project
-					targetFrameworkComboBox.Enabled = false;
-					convertProjectToMSBuild35Button.Enabled = false;
-					return;
-				} else {
-					// VS2010 project
-					targetFrameworkComboBox.Enabled = true;
-					convertProjectToMSBuild35Button.Visible = false;
-				}
+			Button projectUpdateButton = ControlDictionary["projectUpdateButton"] as Button;
+			if (projectUpdateButton != null) {
+				projectUpdateButton.Click += delegate {
+					UpgradeViewContent.Show(project.ParentSolution).Select(project as IUpgradableProject);
+				};
 			}
-			
-			const string TargetFrameworkProperty = "TargetFrameworkVersion";
-			ConfigurationGuiBinding targetFrameworkBinding;
-			
-			targetFrameworkBinding = helper.BindStringEnum(
-				"targetFrameworkComboBox", TargetFrameworkProperty,
-				"v2.0",
-				(from targetFramework in TargetFramework.TargetFrameworks
-				 where targetFramework.DisplayName != null
-				 select new StringPair(targetFramework.Name, targetFramework.DisplayName)).ToArray());
-			targetFrameworkBinding.CreateLocationButton("targetFrameworkLabel");
-			helper.Saved += delegate {
-				CompilableProject cProject = (CompilableProject)project;
-				cProject.AddOrRemoveExtensions();
-			};
+			ComboBox targetFrameworkComboBox = ControlDictionary["targetFrameworkComboBox"] as ComboBox;
+			if (targetFrameworkComboBox != null) {
+				targetFrameworkComboBox.Enabled = false;
+				targetFrameworkComboBox.Items.Add(((IUpgradableProject)project).CurrentTargetFramework.DisplayName);
+				targetFrameworkComboBox.SelectedIndex = 0;
+			}
 		}
 	}
 }

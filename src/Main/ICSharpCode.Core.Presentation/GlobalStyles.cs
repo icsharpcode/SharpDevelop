@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <author name="Daniel Grunwald"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Windows;
@@ -62,6 +58,12 @@ namespace ICSharpCode.Core.Presentation
 		
 		public static ResourceKey WordWrapCheckBoxStyleKey {
 			get { return wordWrapCheckBoxStyleKey; }
+		}
+		
+		static readonly ResourceKey flowDirectionKey = new ComponentResourceKey(typeof(GlobalStyles), "FlowDirectionKey");
+		
+		public static ResourceKey FlowDirectionKey {
+			get { return flowDirectionKey; }
 		}
 	}
 }

@@ -1,21 +1,14 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Siegfried Pammer" email="siegfriedpammer@gmail.com"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
+using System.Windows.Input;
+using System.Windows.Threading;
 
-using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Snippets;
-using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
@@ -28,50 +21,58 @@ namespace SharpRefactoring.Gui
 	public abstract class AbstractInlineRefactorDialog : GroupBox, IOptionBindingContainer, IActiveElement
 	{
 		protected ITextAnchor anchor;
+		protected ITextAnchor insertionEndAnchor;
 		protected ITextEditor editor;
 		
 		ClassFinder classFinderContext;
-		InsertionContext context;
+		protected InsertionContext context;
 		
 		public IInlineUIElement Element { get; set; }
 		
-		public AbstractInlineRefactorDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor)
+		protected AbstractInlineRefactorDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor)
 		{
-			this.anchor = anchor;
+			if (context == null)
+				throw new ArgumentNullException("context");
+			
+			this.anchor = insertionEndAnchor = anchor;
 			this.editor = editor;
 			this.context = context;
 			
-			this.classFinderContext = new ClassFinder(ParserService.ParseCurrentViewContent(), editor.Document.Text, editor.Caret.Offset);
+			this.classFinderContext = new ClassFinder(ParserService.ParseCurrentViewContent(), editor.Document.Text, anchor.Offset);
 			
 			this.Background = SystemColors.ControlBrush;
 		}
 		
+		protected virtual void FocusFirstElement()
+		{
+			Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(delegate { this.MoveFocus(new TraversalRequest(FocusNavigationDirection.First)); }));
+		}
+		
 		protected abstract string GenerateCode(LanguageProperties language, IClass currentClass);
 		
-		protected void OKButtonClick(object sender, RoutedEventArgs e)
+		protected virtual void OKButtonClick(object sender, RoutedEventArgs e)
 		{
 			ParseInformation parseInfo = ParserService.GetParseInformation(editor.FileName);
 			
-			try {
-				if (optionBindings != null) {
-					foreach (OptionBinding binding in optionBindings)
-						binding.Save();
-				}
+			if (optionBindings != null) {
+				foreach (OptionBinding binding in optionBindings)
+					binding.Save();
+			}
+			
+			if (parseInfo != null) {
+				LanguageProperties language = parseInfo.CompilationUnit.Language;
+				IClass current = parseInfo.CompilationUnit.GetInnermostClass(anchor.Line, anchor.Column);
 				
-				if (parseInfo != null) {
-					LanguageProperties language = parseInfo.CompilationUnit.Language;
-					IClass current = parseInfo.CompilationUnit.GetInnermostClass(editor.Caret.Line, editor.Caret.Column);
-					
-					editor.Document.Insert(anchor.Offset, GenerateCode(language, current) ?? "");
-				}
-			} catch (Exception ex) {
-				MessageService.ShowError(ex.Message);
+				// GenerateCode could modify the document.
+				// So read anchor.Offset after code generation.
+				string code = GenerateCode(language, current) ?? "";
+				editor.Document.Insert(anchor.Offset, code);
 			}
 			
 			Deactivate();
 		}
 		
-		protected void CancelButtonClick(object sender, RoutedEventArgs e)
+		protected virtual void CancelButtonClick(object sender, RoutedEventArgs e)
 		{
 			Deactivate();
 		}
@@ -101,19 +102,43 @@ namespace SharpRefactoring.Gui
 		
 		void IActiveElement.OnInsertionCompleted()
 		{
+			OnInsertionCompleted();
 		}
 		
-		void IActiveElement.Deactivate()
+		protected virtual void OnInsertionCompleted()
 		{
+			FocusFirstElement();
+		}
+		
+		void IActiveElement.Deactivate(SnippetEventArgs e)
+		{
+			if (e.Reason == DeactivateReason.Deleted) {
+				Deactivate();
+				return;
+			}
+			
+			if (e.Reason == DeactivateReason.ReturnPressed)
+				OKButtonClick(null, null);
+			
+			if (e.Reason == DeactivateReason.EscapePressed)
+				CancelButtonClick(null, null);
+			
 			Deactivate();
 		}
+		
+		bool deactivated;
 
 		void Deactivate()
 		{
 			if (Element == null)
 				throw new InvalidOperationException("no IInlineUIElement set!");
-
+			if (deactivated)
+				return;
+			
+			deactivated = true;
 			Element.Remove();
+			
+			context.Deactivate(null);
 		}
 	}
 }

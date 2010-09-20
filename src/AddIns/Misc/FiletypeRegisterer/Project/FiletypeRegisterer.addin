@@ -50,10 +50,6 @@
 			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/java.ico"
 			text = "${res:ICSharpCode.FiletypeRegisterer.JavaSourceFileAssozisation}"/>-->
 		<FiletypeAssociation
-			id = "xfrm"
-			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/xfrm.ico"
-			text = "${res:ICSharpCode.FiletypeRegisterer.XMLFormFileAssozisation}"/>
-		<FiletypeAssociation
 			id = "resx"
 			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/resx.ico"
 			text = "${res:ICSharpCode.FiletypeRegisterer.ResXResourceFilesFileAssozisation}"/>
@@ -65,17 +61,9 @@
 			id = "xml"
 			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/xml.ico"
 			text = "${res:ICSharpCode.FiletypeRegisterer.XmlFileAssozisation}"/>
-		<FiletypeAssociation
-			id = "cmbx"
-			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/cmbx.ico"
-			text = "SharpDevelop 1.x Combine"/>
-		<FiletypeAssociation
-			id = "prjx"
-			icon = "${AddInPath:ICSharpCode.FiletypeRegisterer}/filetypes/prjx.ico"
-			text = "SharpDevelop 1.x ${res:ICSharpCode.FiletypeRegisterer.Project}"/>
 	</Path>
 	
-	<!--
+	<!-- Disabled as we now do initial registration in the setup
 	<Path name = "/Workspace/Autostart">
 		<Condition name = "Compare" string = "${property:SharpDevelop.FiletypesRegisterStartup??False}" equals = "True">
 			<Class id    = "RegisterFiletypes"

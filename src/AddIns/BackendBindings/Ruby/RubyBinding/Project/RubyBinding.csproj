@@ -86,19 +86,9 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\CommandLineHistory.cs" />
-    <Compile Include="Src\ConsoleTextEditorKeyEventArgs.cs" />
-    <Compile Include="Src\ControlDispatcher.cs" />
-    <Compile Include="Src\CreateTextWriterInfo.cs" />
-    <Compile Include="Src\IControlDispatcher.cs" />
-    <Compile Include="Src\IRubyFileService.cs" />
     <Compile Include="Src\RubyConsoleApplication.cs" />
-    <Compile Include="Src\RubyConsoleCompletionData.cs" />
     <Compile Include="Src\ConvertProjectToRubyProjectCommand.cs" />
     <Compile Include="Src\ConvertToRubyMenuCommand.cs" />
-    <Compile Include="Src\IComponentCreator.cs" />
-    <Compile Include="Src\IMemberProvider.cs" />
-    <Compile Include="Src\IConsoleTextEditor.cs" />
     <Compile Include="Src\NRefactoryToRubyConverter.cs" />
     <Compile Include="Src\RubyAddInOptions.cs" />
     <Compile Include="Src\RubyAstWalker.cs" />
@@ -109,24 +99,19 @@
     <Compile Include="Src\RubyComponentWalker.cs" />
     <Compile Include="Src\RubyComponentWalkerException.cs" />
     <Compile Include="Src\RubyConsole.cs" />
-    <Compile Include="Src\RubyConsoleCompletionDataProvider.cs" />
     <Compile Include="Src\RubyConsoleHost.cs" />
     <Compile Include="Src\RubyConsolePad.cs" />
-    <Compile Include="Src\RubyConsoleTextEditorKeyEventArgs.cs" />
     <Compile Include="Src\RubyConstructorInfo.cs" />
     <Compile Include="Src\RubyControlFieldExpression.cs" />
     <Compile Include="Src\RubyDesignerGenerator.cs" />
     <Compile Include="Src\RubyDesignerLoader.cs" />
     <Compile Include="Src\RubyDesignerLoaderProvider.cs" />
-    <Compile Include="Src\RubyFileService.cs" />
     <Compile Include="Src\RubyFormattingStrategy.cs" />
     <Compile Include="Src\RubyFormsDesignerDisplayBinding.cs" />
     <Compile Include="Src\RubyLanguageBinding.cs" />
     <Compile Include="Src\RubyProjectBinding.cs" />
     <Compile Include="Src\RubyLanguageProperties.cs" />
-    <Compile Include="Src\RubyNameCreationService.cs" />
     <Compile Include="Src\RubyOptionsPanel.cs" />
-    <Compile Include="Src\RubyOutputStream.cs" />
     <Compile Include="Src\RubyParser.cs" />
     <Compile Include="Src\RubyProject.cs" />
     <Compile Include="Src\RubyPropertyValueAssignment.cs" />
@@ -137,10 +122,11 @@
     <Compile Include="Src\RubyTestRunnerApplication.cs" />
     <Compile Include="Src\RubyTestRunnerContext.cs" />
     <Compile Include="Src\RubyTestRunnerResponseFile.cs" />
-    <Compile Include="Src\RubyTextEditorViewContent.cs" />
+    <Compile Include="Src\RubyWorkbench.cs" />
     <Compile Include="Src\RunDebugRubyCommand.cs" />
     <Compile Include="Src\RunRubyCommand.cs" />
-    <Compile Include="Src\RubyConsoleTextEditor.cs" />
+    <Compile Include="Src\SendLineToRubyConsoleCommand.cs" />
+    <Compile Include="Src\SendSelectedTextToRubyConsoleCommand.cs" />
     <EmbeddedResource Include="Resources\Ruby.xshd" />
     <EmbeddedResource Include="Resources\RubyOptionsPanel.xfrm" />
     <None Include="..\..\IronRuby\bin\Chiron.exe.config">
@@ -242,6 +228,11 @@
     <ProjectReference Include="..\..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
       <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
       <Name>FormsDesigner</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Scripting\Project\ICSharpCode.Scripting.csproj">
+      <Project>{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}</Project>
+      <Name>ICSharpCode.Scripting</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

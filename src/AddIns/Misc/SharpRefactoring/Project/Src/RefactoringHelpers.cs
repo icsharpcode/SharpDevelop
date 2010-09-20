@@ -1,18 +1,16 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Martin Konicek" email="martin.konicek@gmail.com"/>
-//     <version>$Revision: $</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace SharpRefactoring
 {
-	public class RefactoringHelpers
+	public static class RefactoringHelpers
 	{
 		/// <summary>
 		/// Renames file as well as files it is dependent upon.
@@ -41,6 +39,18 @@ namespace SharpRefactoring
 					}
 				}
 			}
+		}
+		
+		public static IClass GetCurrentClassPart(this IClass c, string fileName)
+		{
+			if (c is CompoundClass) {
+				foreach (IClass part in ((CompoundClass)c).Parts) {
+					if (fileName.Equals(part.CompilationUnit.FileName, StringComparison.OrdinalIgnoreCase))
+						return part;
+				}
+			}
+			
+			return c;
 		}
 	}
 }

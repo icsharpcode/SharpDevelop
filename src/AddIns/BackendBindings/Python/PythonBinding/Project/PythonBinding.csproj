@@ -81,28 +81,21 @@
     <Compile Include="..\..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Src\CommandLineHistory.cs" />
-    <Compile Include="Src\ConsoleTextEditorKeyEventArgs.cs" />
     <Compile Include="Src\ConstructorInfo.cs" />
-    <Compile Include="Src\ControlDispatcher.cs" />
     <Compile Include="Src\ConvertProjectToPythonProjectCommand.cs" />
     <Compile Include="Src\ConvertToPythonMenuCommand.cs" />
     <Compile Include="Src\ApplicationSettingsPanel.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AddInOptions.cs" />
     <Compile Include="Src\CompilingOptionsPanel.cs" />
-    <Compile Include="Src\CreateTextWriterInfo.cs" />
-    <Compile Include="Src\IControlDispatcher.cs" />
-    <Compile Include="Src\IPythonFileService.cs" />
     <Compile Include="Src\IPythonResolver.cs" />
     <Compile Include="Src\MemberName.cs" />
     <Compile Include="Src\PythonBuiltInModuleMemberName.cs" />
     <Compile Include="Src\PythonClassResolver.cs" />
-    <Compile Include="Src\PythonConsoleCompletionData.cs" />
+    <Compile Include="Src\PythonCodeCompletionItemProvider.cs" />
+    <Compile Include="Src\PythonCompletionItemList.cs" />
     <Compile Include="Src\PythonConsoleApplication.cs" />
-    <Compile Include="Src\PythonConsoleTextEditorKeyEventArgs.cs" />
     <Compile Include="Src\PythonDotNetMethodResolver.cs" />
-    <Compile Include="Src\PythonFileService.cs" />
     <Compile Include="Src\PythonFromImport.cs" />
     <Compile Include="Src\PythonImport.cs" />
     <Compile Include="Src\PythonLanguageBinding.cs" />
@@ -111,9 +104,9 @@
     <Compile Include="Src\PythonModuleCompletionItems.cs" />
     <Compile Include="Src\PythonModuleCompletionItemsFactory.cs" />
     <Compile Include="Src\PythonImportResolver.cs" />
-    <Compile Include="Src\PythonNameCreationService.cs" />
     <Compile Include="Src\PythonNamespaceResolver.cs" />
     <Compile Include="Src\PythonResolverContext.cs" />
+    <Compile Include="Src\PythonSelfResolver.cs" />
     <Compile Include="Src\PythonStandardLibraryPath.cs" />
     <Compile Include="Src\PythonStandardModuleMethodResolver.cs" />
     <Compile Include="Src\PythonStandardModuleMethodResolveResult.cs" />
@@ -127,12 +120,10 @@
     <Compile Include="Src\PythonTestRunnerApplication.cs" />
     <Compile Include="Src\PythonTestRunnerContext.cs" />
     <Compile Include="Src\PythonTestRunnerResponseFile.cs" />
-    <Compile Include="Src\PythonTextEditorViewContent.cs" />
+    <Compile Include="Src\PythonWorkbench.cs" />
+    <Compile Include="Src\SendLineToPythonConsoleCommand.cs" />
+    <Compile Include="Src\SendSelectedTextToPythonConsoleCommand.cs" />
     <Compile Include="Src\SysModuleCompletionItems.cs" />
-    <Compile Include="Src\IComponentCreator.cs" />
-    <Compile Include="Src\IMemberProvider.cs" />
-    <Compile Include="Src\IPadDescriptor.cs" />
-    <Compile Include="Src\IConsoleTextEditor.cs" />
     <Compile Include="Src\NRefactoryToPythonConverter.cs" />
     <Compile Include="Src\PythonAstWalker.cs" />
     <Compile Include="Src\PythonCodeCompletionBinding.cs" />
@@ -142,7 +133,6 @@
     <Compile Include="Src\PythonCompilerError.cs" />
     <Compile Include="Src\PythonCompilerSink.cs" />
     <Compile Include="Src\PythonConsole.cs" />
-    <Compile Include="Src\PythonConsoleCompletionDataProvider.cs" />
     <Compile Include="Src\PythonConsoleHost.cs" />
     <Compile Include="Src\PythonConsolePad.cs" />
     <Compile Include="Src\PythonControlFieldExpression.cs">
@@ -163,8 +153,6 @@
     <Compile Include="Src\PythonLanguageProperties.cs" />
     <Compile Include="Src\PythonImportModuleResolveResult.cs" />
     <Compile Include="Src\PythonOptionsPanel.cs" />
-    <Compile Include="Src\PythonOutputStream.cs" />
-    <Compile Include="Src\PythonOutputWindowPadDescriptor.cs" />
     <Compile Include="Src\PythonParser.cs" />
     <Compile Include="Src\PythonProject.cs" />
     <Compile Include="Src\PythonPropertyValueAssignment.cs" />
@@ -174,7 +162,6 @@
     <Compile Include="Src\PythonStandardModules.cs" />
     <Compile Include="Src\PythonVariableResolver.cs" />
     <Compile Include="Src\StringTextContentProvider.cs" />
-    <Compile Include="Src\PythonConsoleTextEditor.cs" />
     <None Include="..\..\RequiredLibraries\Chiron.exe.Config">
       <Link>Chiron.exe.Config</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -270,6 +257,11 @@
     <ProjectReference Include="..\..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
       <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
       <Name>FormsDesigner</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Scripting\Project\ICSharpCode.Scripting.csproj">
+      <Project>{7048AE18-EB93-4A84-82D0-DD60EB58ADBD}</Project>
+      <Name>ICSharpCode.Scripting</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

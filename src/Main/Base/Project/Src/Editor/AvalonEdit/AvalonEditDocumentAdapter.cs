@@ -1,9 +1,5 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <author name="Daniel Grunwald"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -20,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 	/// </summary>
 	public class AvalonEditDocumentAdapter : IDocument
 	{
-		readonly TextDocument document;
+		internal readonly TextDocument document;
 		readonly IServiceProvider parentServiceProvider;
 		
 		/// <summary>

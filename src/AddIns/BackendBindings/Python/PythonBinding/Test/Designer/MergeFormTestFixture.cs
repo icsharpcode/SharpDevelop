@@ -1,11 +1,6 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Refactoring;
 using System;
 using System.CodeDom;
 using System.ComponentModel;
@@ -14,13 +9,16 @@ using System.ComponentModel.Design.Serialization;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using AvalonEdit = ICSharpCode.AvalonEdit;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
+using ICSharpCode.SharpDevelop.Refactoring;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
+using AvalonEdit = ICSharpCode.AvalonEdit;
 
 namespace PythonBinding.Tests.Designer
 {
@@ -62,7 +60,8 @@ namespace PythonBinding.Tests.Designer
 				using (serializationManager.CreateSession()) {
 					AvalonEditDocumentAdapter adapter = new AvalonEditDocumentAdapter(document, null);
 					MockTextEditorOptions options = new MockTextEditorOptions();
-					PythonDesignerGenerator.Merge(host, adapter, compilationUnit, options, serializationManager);
+					PythonDesignerGenerator generator = new PythonDesignerGenerator(options);
+					generator.Merge(host, adapter, compilationUnit, serializationManager);
 				}
 			}
 		}

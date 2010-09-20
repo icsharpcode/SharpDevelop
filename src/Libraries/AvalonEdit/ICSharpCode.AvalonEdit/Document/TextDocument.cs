@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <author name="Daniel Grunwald"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -104,6 +100,31 @@ namespace ICSharpCode.AvalonEdit.Document
 			undoStack = new UndoStack();
 			undoStack.AttachToDocument(this);
 			FireChangeEvents();
+		}
+		
+		/// <summary>
+		/// Create a new text document with the specified initial text.
+		/// </summary>
+		public TextDocument(ITextSource initialText)
+			: this(GetTextFromTextSource(initialText))
+		{
+		}
+		
+		// gets the text from a text source, directly retrieving the underlying rope where possible
+		static IEnumerable<char> GetTextFromTextSource(ITextSource textSource)
+		{
+			if (textSource == null)
+				throw new ArgumentNullException("textSource");
+			
+			RopeTextSource rts = textSource as RopeTextSource;
+			if (rts != null)
+				return rts.GetRope();
+			
+			TextDocument doc = textSource as TextDocument;
+			if (doc != null)
+				return doc.rope;
+			
+			return textSource.Text;
 		}
 		#endregion
 		
@@ -664,7 +685,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		public int GetOffset(int line, int column)
 		{
 			DocumentLine docLine = GetLineByNumber(line);
-			if (column < 0)
+			if (column <= 0)
 				return docLine.Offset;
 			if (column > docLine.Length)
 				return docLine.EndOffset;

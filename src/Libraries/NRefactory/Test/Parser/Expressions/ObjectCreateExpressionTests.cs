@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.IO;
@@ -203,6 +199,19 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 			
 			Assert.IsInstanceOf(typeof(PrimitiveExpression), CheckPropertyInitializationExpression(oce.ObjectInitializer.CreateExpressions[0], "Id"));
 			Assert.IsInstanceOf(typeof(MemberInitializerExpression), oce.ObjectInitializer.CreateExpressions[1]);
+		}
+		
+		[Test]
+		public void VBNetAnonymousTypeWithoutProperty()
+		{
+			ObjectCreateExpression oce = ParseUtilVBNet.ParseExpression<ObjectCreateExpression>("New With { c }");
+			
+			Assert.IsTrue(oce.CreateType.IsNull);
+			Assert.AreEqual(0, oce.Parameters.Count);
+			Assert.AreEqual(1, oce.ObjectInitializer.CreateExpressions.Count);
+			
+			Assert.IsInstanceOf(typeof(IdentifierExpression), oce.ObjectInitializer.CreateExpressions[0]);
+			Assert.AreEqual("c", (oce.ObjectInitializer.CreateExpressions[0] as IdentifierExpression).Identifier);
 		}
 		
 		[Test]

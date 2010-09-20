@@ -1,16 +1,12 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections;
 using System.IO;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
+using ICSharpCode.Core.WinForms;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -68,6 +64,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			projectTabPage.Controls.Add(new ProjectReferencePanel(this));
 			browserTabPage.Controls.Add(new AssemblyReferencePanel(this));
 			comTabPage.Controls.Add(new COMReferencePanel(this));
+			RightToLeftConverter.ConvertRecursive(this);
 		}
 		
 		void Translate(Control ctl)

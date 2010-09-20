@@ -1,64 +1,54 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
 using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Converter
 {
-	/// <summary>
-	/// Tests the ConvertVBNetToPythonMenuCommand.
-	/// </summary>
 	[TestFixture]
 	public class ConvertVBNetToPythonMenuCommandTestFixture : ConvertToPythonMenuCommand
 	{
 		string newFileText;
 		string defaultFileName;
 		string language;
-		MockEditableViewContent mockViewContent;
 		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		[SetUp]
+		public void Init()
 		{
-			mockViewContent = new MockEditableViewContent();
-			mockViewContent.Text =
+			MockWorkbench workbench = MockWorkbench.CreateWorkbenchWithOneViewContent("test.vb");
+			workbench.ActiveMockEditableViewContent.Text = 
 				"class Foo\r\n" +
 				"end class";
-			mockViewContent.PrimaryFileName = new ICSharpCode.Core.FileName("test.vb");
 			
-			MockWorkbench workbench = new MockWorkbench();
-			MockWorkbenchWindow window = new MockWorkbenchWindow();
-			window.ActiveViewContent = mockViewContent;
-			workbench.ActiveWorkbenchWindow = window;
-			
-			MockTextEditorOptions options = new MockTextEditorOptions();
+			MockTextEditorOptions options = workbench.ActiveMockEditableViewContent.MockTextEditorOptions;
 			options.ConvertTabsToSpaces = false;
 			options.IndentationSize = 2;
-			mockViewContent.TextEditorOptions = options;
 			
 			Run(workbench);
 		}
 		
 		[Test]
-		public void GeneratedPythonCode()
+		public void Run_VBNetFileOpen_PythonCodeIsSavedInFileCreated()
 		{
-			Assert.AreEqual("class Foo(object):\r\n\tpass", newFileText);
+			string expectedNewFileText = 
+				"class Foo(object):\r\n" +
+				"\tpass";
+			
+			Assert.AreEqual(expectedNewFileText, newFileText);
 		}
 		
 		[Test]
-		public void NewFileName()
+		public void Run_VBNetFileOpen_NewFileNameIsGeneratedPy()
 		{
 			Assert.AreEqual("Generated.py", defaultFileName);
 		}
 
 		[Test]
-		public void NewFileLanguage()
+		public void Run_VBNetFileOpen_NewFileLanguageIsPython()
 		{
 			Assert.AreEqual("Python", language);
 		}

@@ -270,7 +270,6 @@
 				<ComponentRef Id="LayoutFiles"/>
 				<ComponentRef Id="StringResourceFiles"/>
 				<ComponentRef Id="SchemaFiles"/>
-				<ComponentRef Id="XmlXsd"/>
 				<ComponentRef Id="CSharpFileTemplates"/>
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplate"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFileElementClass"/>				
@@ -382,8 +381,6 @@
 				<ComponentRef Id="WPFAssemblyInfoTemplate"/>
 				<ComponentRef Id="AddInWritingHelp"/>
 				<ComponentRef Id="CSharpProjectSharpDevelopCustomToolTemplates"/>
-				<ComponentRef Id="StringResources.pt.resources"/>
-				<ComponentRef Id="StringResources.cngb.resources"/>
 				<ComponentRef Id="AddInWritingHelpWebsiteShortcut"/>
 				<ComponentRef Id="AppConfigFileTemplate"/>
 				<ComponentRef Id="InteropPartCoverDll"/>
@@ -392,6 +389,7 @@
 				<ComponentRef Id="PartCoverExeConfig"/>
 				<ComponentRef Id="PartCoverFrameworkDll"/>
 				
+				<ComponentRef Id="ICSharpCodeScriptingDll"/>
 				<ComponentRef Id="PythonConsoleProjectTemplate"/>
 				<ComponentRef Id="PythonEmptyClassTemplate"/>
 				<ComponentRef Id="PythonEmptyFormTemplate"/>

@@ -232,6 +232,9 @@ Laden Sie ein AddIn aus dem Internet herunter, klicken Sie auf "AddIn installier
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Klassendiagramm anzeigen</value>
   </data>
+  <data name="AddIns.Git.TortoiseGitRequired" xml:space="preserve">
+    <value>TortoiseGit muss installiert sein, um diese Aktion auszuführen.</value>
+  </data>
   <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
     <value>Inhalt</value>
   </data>
@@ -370,12 +373,6 @@ Installieren Sie das .NET Framework SDK.</value>
   </data>
   <data name="AddIns.HtmlHelp2.LookForSimilarWords" xml:space="preserve">
     <value>Nach verwandten Worten suchen</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MoveDown" xml:space="preserve">
-    <value>Ab</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MoveUp" xml:space="preserve">
-    <value>Auf</value>
   </data>
   <data name="AddIns.HtmlHelp2.MultiTopic" xml:space="preserve">
     <value>Themen</value>
@@ -701,6 +698,9 @@ Optional können Sie auch ein Arbeitsverzeichnis und Kommandozeilen-Argumente an
   </data>
   <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOperatorOverloads" xml:space="preserve">
     <value>Operatoren überladen</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOtherMethod" xml:space="preserve">
+    <value>${otherMethod}-Override hinzufügen</value>
   </data>
   <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.SurroundWithRegion" xml:space="preserve">
     <value>Mit #region umschließen</value>
@@ -2224,12 +2224,6 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   <data name="Dialog.Options.CombineOptions.Startup.EntryColumnHeader" xml:space="preserve">
     <value>Eintrag</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveDownButton" xml:space="preserve">
-    <value>Runter</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveUpButton" xml:space="preserve">
-    <value>Hoch</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton" xml:space="preserve">
     <value>&amp;Mehrfachausführung</value>
   </data>
@@ -2241,12 +2235,6 @@ Wollen Sie die neue Datei zum Projekt ${CurrentProjectName} hinzufügen?</value>
   </data>
   <data name="Dialog.Options.ExternalTool.CommandLabel" xml:space="preserve">
     <value>B&amp;efehl</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveDownButton" xml:space="preserve">
-    <value>Nach &amp;oben</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveUpButton" xml:space="preserve">
-    <value>Nach &amp;unten</value>
   </data>
   <data name="Dialog.Options.ExternalTool.PromptForArgsCheckBox" xml:space="preserve">
     <value>Zu&amp;r Argumenteingabe auffordern</value>
@@ -3269,18 +3257,6 @@ Sie können die Einstellungen auch in einer .user-Datei anstelle der Projektdate
   <data name="Dialog.SelectReferenceDialog.TypeHeader" xml:space="preserve">
     <value>Typ</value>
   </data>
-  <data name="Dialog.TipOfTheDay.button1Text" xml:space="preserve">
-    <value>&amp;Nächster Tip</value>
-  </data>
-  <data name="Dialog.TipOfTheDay.checkBox1Text" xml:space="preserve">
-    <value>Tips beim Start zeigen</value>
-  </data>
-  <data name="Dialog.TipOfTheDay.DialogName" xml:space="preserve">
-    <value>Tip des Tages</value>
-  </data>
-  <data name="Dialog.TipOfTheDay.DidYouKnowText" xml:space="preserve">
-    <value>Wussten sie schon...</value>
-  </data>
   <data name="Dialog.ViewGPL.DialogName" xml:space="preserve">
     <value>GNU General Public License</value>
   </data>
@@ -3439,6 +3415,12 @@ Sie können die Einstellungen auch in einer .user-Datei anstelle der Projektdate
   </data>
   <data name="Global.Location.wholeproject" xml:space="preserve">
     <value>ganzes Projekt</value>
+  </data>
+  <data name="Global.MoveDown" xml:space="preserve">
+    <value>Nach &amp;oben</value>
+  </data>
+  <data name="Global.MoveUp" xml:space="preserve">
+    <value>Nach &amp;unten</value>
   </data>
   <data name="Global.NA" xml:space="preserve">
     <value>N/A</value>
@@ -4057,8 +4039,14 @@ Bitte stellen Sie den Pfad zur NAnt-Anwendung in den SharpDevelop-Optionen ein.<
   <data name="ICSharpCode.PythonBinding.PythonProjectFiles" xml:space="preserve">
     <value>Python-Projektdateien</value>
   </data>
+  <data name="ICSharpCode.PythonBinding.SendLineToPythonConsole" xml:space="preserve">
+    <value>Zeile an Python Konsole senden</value>
+  </data>
   <data name="ICSharpCode.PythonBinding.UnknownTypeName" xml:space="preserve">
     <value>Konnte Typ '{0}' nicht finden. Fehlt eine Assembly-Referenz?</value>
+  </data>
+  <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
+    <value>Zeile an Ruby Konsole senden</value>
   </data>
   <data name="ICSharpCode.Services.FileUtilityService.CantLoadFileStandardText" xml:space="preserve">
     <value>Konnte Datei ${FileNameWithoutPath} im Verzeichns ${Path} nicht laden.
@@ -6829,18 +6817,6 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   </data>
   <data name="SideBarComponent.ContextMenu.DeleteTabItemQuestion" xml:space="preserve">
     <value>Wollen Sie den Eintrag "${TabItem}" löschen?</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabDown" xml:space="preserve">
-    <value>Tab runter bewegen</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemDown" xml:space="preserve">
-    <value>Item runter bewegen</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemUp" xml:space="preserve">
-    <value>Item hoch bewegen</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabUp" xml:space="preserve">
-    <value>Tab hoch bewegen</value>
   </data>
   <data name="SideBarComponent.ContextMenu.RenameTab" xml:space="preserve">
     <value>Tab umbenennen</value>

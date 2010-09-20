@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.CodeDom;
@@ -12,12 +8,14 @@ using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Text;
 
+using ICSharpCode.Scripting;
+
 namespace ICSharpCode.RubyBinding
 {
 	/// <summary>
 	/// Used to generate Ruby code after the form has been changed in the designer.
 	/// </summary>
-	public class RubyCodeDomSerializer
+	public class RubyCodeDomSerializer : IScriptingCodeDomSerializer
 	{
 		RubyCodeBuilder codeBuilder;
 		

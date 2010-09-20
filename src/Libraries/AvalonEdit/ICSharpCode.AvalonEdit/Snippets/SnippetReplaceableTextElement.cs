@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <author name="Daniel Grunwald"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Linq;
@@ -100,7 +96,7 @@ namespace ICSharpCode.AvalonEdit.Snippets
 			this.Text = GetText();
 		}
 
-		public void Deactivate()
+		public void Deactivate(SnippetEventArgs e)
 		{
 			TextDocumentWeakEventManager.TextChanged.RemoveListener(context.Document, this);
 			context.TextArea.TextView.BackgroundRenderers.Remove(background);

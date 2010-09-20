@@ -1,15 +1,13 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
+
 using ICSharpCode.Core;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.UnitTesting;
@@ -30,14 +28,15 @@ namespace RubyBinding.Tests.Testing
 		public void Init()
 		{
 			string tempFileName = "temp.tmp";
-			MockRubyFileService fileService = new MockRubyFileService();
+			MockScriptingFileService fileService = new MockScriptingFileService();
 			fileService.SetTempFileName(tempFileName);
 			fileService.SetTextWriter(new StringWriter());
 
 			Properties properties = new Properties();
 			options = new RubyAddInOptions(properties);
 
-			AddIn addin = AddInPathHelper.CreateDummyRubyAddInInsideAddInTree();
+			AddInPathHelper helper = new AddInPathHelper("RubyBinding");
+			AddIn addin = helper.CreateDummyAddInInsideAddInTree();
 			addin.FileName = @"c:\rubybinding\rubybinding.addin";
 
 			string testResultsFileName = "results.txt";
@@ -91,7 +90,8 @@ namespace RubyBinding.Tests.Testing
 		[Test]
 		public void CreateProcessInfoReturnsFixedTestRunnerFilePath()
 		{
-			AddIn addin = AddInPathHelper.CreateDummyRubyAddInInsideAddInTree();
+			AddInPathHelper helper = new AddInPathHelper("RubyBinding");
+			AddIn addin = helper.CreateDummyAddInInsideAddInTree();
 			addin.FileName = @"c:\rubybinding\bin\..\AddIns\rubybinding.addin";
 			
 			MockCSharpProject project = new MockCSharpProject();

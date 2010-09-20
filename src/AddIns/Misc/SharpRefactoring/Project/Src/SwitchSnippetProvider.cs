@@ -1,9 +1,6 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Martin Konicek" email="martin.konicek@gmail.com"/>
-//     <version>$Revision: $</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using ICSharpCode.AvalonEdit.Snippets;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
@@ -16,13 +13,9 @@ namespace SharpRefactoring
 	/// </summary>
 	public class SwitchSnippetProvider : ISnippetElementProvider
 	{
-		public SwitchSnippetProvider()
+		public SnippetElement GetElement(SnippetInfo snippetInfo)
 		{
-		}
-		
-		public SnippetElement GetElement(string tag)
-		{
-			if (tag.Equals("refactoring:switchbody", StringComparison.InvariantCultureIgnoreCase))
+			if ("refactoring:switchbody".Equals(snippetInfo.Tag, StringComparison.OrdinalIgnoreCase))
 				return new SwitchBodySnippetElement();
 			
 			return null;

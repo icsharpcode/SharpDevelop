@@ -149,45 +149,6 @@ namespace ICSharpCode.Reports.Core
 			return arrayList;
 		}
 		
-	
-		private void BuildGroup (IndexList list)
-		{
-			string compVal = String.Empty;
-			base.IndexList.Clear();
-			IndexList childList = null;
-			BaseComparer checkElem = list[0];
-			foreach (BaseComparer element in list)
-			{
-				string v = element.ObjectArray[0].ToString();
-				if (compVal != v) {
-					childList = new IndexList();
-					GroupComparer gc = base.CreateGroupHeader(element);
-					gc.IndexList = childList;
-					CreateGroupeChildren(childList,element);
-				} else {
-					CreateGroupeChildren(childList,element);
-				}
-				compVal = v;
-			}
-			ShowIndexList(base.IndexList);
-		}
-		
-		
-//		private GroupComparer CreateGroupHeader (BaseComparer sc)
-//		{
-//			GroupComparer gc = new GroupComparer(sc.ColumnCollection,sc.ListIndex,sc.ObjectArray);
-//			base.IndexList.Add(gc);
-//			return gc;
-//		}
-		
-		/*
-		 
-		private void CreateGroupeChildren(IndexList list,BaseComparer sc)
-		{
-			string v = sc.ObjectArray[0].ToString();
-			list.Add(sc);
-		}
-		*/
 		
 		private IndexList IndexBuilder(SortColumnCollection col)
 		{
@@ -299,9 +260,6 @@ namespace ICSharpCode.Reports.Core
 				} catch (Exception) {
 					throw;
 				}
-//				int cr = base.CurrentPosition;
-//				int li = (base.IndexList[cr] ).ListIndex;
-				
 			}
 		}
 		

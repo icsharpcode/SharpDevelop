@@ -1,14 +1,12 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Diagnostics;
 using System.IO;
+
 using ICSharpCode.Core;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Util;
@@ -23,15 +21,15 @@ namespace ICSharpCode.RubyBinding
 	{
 		IDebugger debugger;
 		RubyAddInOptions options;
-		IWorkbench workbench;
+		IScriptingWorkbench workbench;
 		bool debug;
 		
 		public RunRubyCommand()
-			: this(WorkbenchSingleton.Workbench, new RubyAddInOptions(), DebuggerService.CurrentDebugger)
+			: this(new RubyWorkbench(), new RubyAddInOptions(), DebuggerService.CurrentDebugger)
 		{
 		}
 		
-		public RunRubyCommand(IWorkbench workbench, RubyAddInOptions options, IDebugger debugger)
+		public RunRubyCommand(IScriptingWorkbench workbench, RubyAddInOptions options, IDebugger debugger)
 		{
 			this.workbench = workbench;
 			this.debugger = debugger;
@@ -68,7 +66,7 @@ namespace ICSharpCode.RubyBinding
 		}
 		
 		FileName WorkbenchPrimaryFileName {
-			get { return workbench.ActiveWorkbenchWindow.ActiveViewContent.PrimaryFileName; }
+			get { return workbench.ActiveViewContent.PrimaryFileName; }
 		}
 		
 		string GetArguments()

@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Siegfried Pammer" email="siegfriedpammer@gmail.com" />
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using ICSharpCode.AvalonEdit.Snippets;
@@ -15,6 +11,20 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 	/// </summary>
 	public interface ISnippetElementProvider
 	{
-		SnippetElement GetElement(string tag);
+		SnippetElement GetElement(SnippetInfo snippetInfo);
+	}
+	
+	public class SnippetInfo
+	{
+		public readonly string Tag;
+		public readonly string SnippetText;
+		public readonly int Position;
+		
+		public SnippetInfo(string tag, string snippetText, int position)
+		{
+			this.Tag = tag;
+			this.SnippetText = snippetText;
+			this.Position = position;
+		}
 	}
 }

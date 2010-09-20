@@ -1,9 +1,6 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Martin Konicek" email="martin.konicek@gmail.com"/>
-//     <version>$Revision: $</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,9 +26,9 @@ namespace SharpRefactoring.ContextActions
 			// Using CurrentLineAST is basically OK, but when the "class" keyword is on different line than class name,
 			// parsing only one line never tells us that we are looking at TypeDeclaration
 			// Alternative solution could be to try to resolve also IdentifierExpression to see if it is class declaration.
-			foreach (var targetClass in editorContext.GetClassDeclarationsOnCurrentLine().
-			         Where(c => c.ClassType == ClassType.Class || c.ClassType == ClassType.Interface)) {
-				
+			foreach (var targetClass in editorContext.GetClassDeclarationsOnCurrentLine()
+			         .Where(c => c.ClassType == ClassType.Class || c.ClassType == ClassType.Interface)
+			         .Select(c2 => c2.GetCurrentClassPart(editorContext.Editor.FileName))) {
 				foreach (var implementAction in RefactoringService.GetImplementInterfaceActions(targetClass)) {
 					yield return implementAction;
 				}

@@ -1,9 +1,6 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <author name="Kumar Devvrat"/>
-//     <version>$Revision: $</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.Windows;
 using System.Collections.Generic;
@@ -12,7 +9,7 @@ using System.Diagnostics;
 namespace ICSharpCode.WpfDesign.Designer
 {
 	/// <summary>
-	/// Intializes different behaviors for the Root item. 
+	/// Intializes different behaviors for the Root item.
 	/// <remarks>Could not be a extension since Root Item is can be of any type</remarks>
 	/// </summary>
 	public class RootItemBehavior : IRootPlacementBehavior
@@ -52,7 +49,6 @@ namespace ICSharpCode.WpfDesign.Designer
 		
 		public void BeforeSetPosition(PlacementOperation operation)
 		{
-			throw new NotImplementedException();
 		}
 		
 		public void SetPosition(PlacementInformation info)

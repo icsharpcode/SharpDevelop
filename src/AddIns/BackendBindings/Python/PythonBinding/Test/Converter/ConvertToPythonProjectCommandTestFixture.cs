@@ -1,9 +1,5 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -12,6 +8,7 @@ using System.Text;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.PythonBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using NUnit.Framework;
@@ -41,7 +38,7 @@ namespace PythonBinding.Tests.Converter
 		[TestFixtureSetUp]
 		public void SetUpFixture()
 		{
-			MSBuildEngineHelper.InitMSBuildEngine();
+			PythonMSBuildEngineHelper.InitMSBuildEngine();
 
 			List<ProjectBindingDescriptor> bindings = new List<ProjectBindingDescriptor>();
 			using (TextReader reader = PythonBindingAddInFile.ReadAddInFile()) {

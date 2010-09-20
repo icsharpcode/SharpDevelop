@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -12,6 +8,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using NUnit.Framework;
 using RubyBinding.Tests.Utils;
 
@@ -31,7 +28,7 @@ namespace RubyBinding.Tests.Designer
 				return
 					"class MainForm < System::Windows::Forms::Form\r\n" +
 					"    def InitializeComponent()\r\n" +
-					"        @userControl = RubyBinding::Tests::Utils::DoublePropertyUserControl.new()\r\n" +
+					"        @userControl = ICSharpCode::Scripting::Tests::Utils::DoublePropertyUserControl.new()\r\n" +
 					"        self.SuspendLayout()\r\n" +
 					"        # \r\n" +
 					"        # userControl1\r\n" +

@@ -10,6 +10,7 @@
 		<Subcategory>ASP.NET</Subcategory>
 		<Icon>C#.Project.Form</Icon>
 		<Description>${res:Templates.Project.WebPage.Description}</Description>
+		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
 	</TemplateConfiguration>
 
 	<!-- Actions -->

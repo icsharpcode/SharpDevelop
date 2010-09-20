@@ -1,12 +1,9 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Util;
@@ -15,14 +12,14 @@ namespace ICSharpCode.RubyBinding
 {
 	public class RunDebugRubyCommand : RunRubyCommand
 	{
-		public RunDebugRubyCommand(IWorkbench workbench, RubyAddInOptions options, IDebugger debugger) 
+		public RunDebugRubyCommand(IScriptingWorkbench workbench, RubyAddInOptions options, IDebugger debugger) 
 			: base(workbench, options, debugger)
 		{
 			Debug = true;
 		}
 		
 		public RunDebugRubyCommand()
-			: this(WorkbenchSingleton.Workbench, new RubyAddInOptions(), DebuggerService.CurrentDebugger)
+			: this(new RubyWorkbench(), new RubyAddInOptions(), DebuggerService.CurrentDebugger)
 		{
 		}
 	}

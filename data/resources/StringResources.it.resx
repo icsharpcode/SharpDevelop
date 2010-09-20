@@ -302,12 +302,6 @@ Installare il .NET Framework SDK per utilizzare il sistema di help.</value>
   <data name="AddIns.HtmlHelp2.LookForSimilarWords" xml:space="preserve">
     <value>Cerca parole simili</value>
   </data>
-  <data name="AddIns.HtmlHelp2.MoveDown" xml:space="preserve">
-    <value>Sposta in basso</value>
-  </data>
-  <data name="AddIns.HtmlHelp2.MoveUp" xml:space="preserve">
-    <value>Sposta in alto</value>
-  </data>
   <data name="AddIns.HtmlHelp2.MultiTopic" xml:space="preserve">
     <value>argomenti</value>
   </data>
@@ -1205,12 +1199,6 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   <data name="Dialog.Options.CombineOptions.Startup.EntryColumnHeader" xml:space="preserve">
     <value>Parte</value>
   </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveDownButton" xml:space="preserve">
-    <value>Muove giu</value>
-  </data>
-  <data name="Dialog.Options.CombineOptions.Startup.MoveUpButton" xml:space="preserve">
-    <value>Muove su</value>
-  </data>
   <data name="Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton" xml:space="preserve">
     <value>Progetto di avvio &amp;Multiplo</value>
   </data>
@@ -1222,12 +1210,6 @@ Vuoi aggiungere il nuovo file al progetto ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.Options.ExternalTool.CommandLabel" xml:space="preserve">
     <value>&amp;Comando</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveDownButton" xml:space="preserve">
-    <value>Muove &amp;Giu</value>
-  </data>
-  <data name="Dialog.Options.ExternalTool.MoveUpButton" xml:space="preserve">
-    <value>Muove &amp;Su</value>
   </data>
   <data name="Dialog.Options.ExternalTool.PromptForArgsCheckBox" xml:space="preserve">
     <value>&amp;Richiesta Argomenti</value>
@@ -2127,18 +2109,6 @@ Puoi anche scegliere di memorizzare le impostazioni in un file .user invece che 
   <data name="Dialog.SelectReferenceDialog.TypeHeader" xml:space="preserve">
     <value>Tipo</value>
   </data>
-  <data name="Dialog.TipOfTheDay.button1Text" xml:space="preserve">
-    <value>&amp;Prossima Idea</value>
-  </data>
-  <data name="Dialog.TipOfTheDay.checkBox1Text" xml:space="preserve">
-    <value>Mostra suggerimenti all'avvio</value>
-  </data>
-  <data name="Dialog.TipOfTheDay.DialogName" xml:space="preserve">
-    <value>Suggerimento del giorno</value>
-  </data>
-  <data name="Dialog.TipOfTheDay.DidYouKnowText" xml:space="preserve">
-    <value>Lo sapevate che...</value>
-  </data>
   <data name="Dialog.ViewGPL.DialogName" xml:space="preserve">
     <value>Licenza pubblica generale GNU</value>
   </data>
@@ -2268,6 +2238,12 @@ Puoi anche scegliere di memorizzare le impostazioni in un file .user invece che 
   </data>
   <data name="Global.Location.wholeproject" xml:space="preserve">
     <value>intero progetto</value>
+  </data>
+  <data name="Global.MoveDown" xml:space="preserve">
+    <value>Muove &amp;Giu</value>
+  </data>
+  <data name="Global.MoveUp" xml:space="preserve">
+    <value>Muove &amp;Su</value>
   </data>
   <data name="Global.NA" xml:space="preserve">
     <value>N/A</value>
@@ -4642,18 +4618,6 @@ SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è 
   </data>
   <data name="SideBarComponent.ContextMenu.DeleteTabItemQuestion" xml:space="preserve">
     <value>Vuoi eliminare veramente la tabulazione "${TabItem}"?</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabDown" xml:space="preserve">
-    <value>Muove Tabulazione G&amp;iù</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemDown" xml:space="preserve">
-    <value>Muovi Item Giù</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabItemUp" xml:space="preserve">
-    <value>Muovi Item Su</value>
-  </data>
-  <data name="SideBarComponent.ContextMenu.MoveTabUp" xml:space="preserve">
-    <value>Muove Tabulazione &amp;Sù</value>
   </data>
   <data name="SideBarComponent.ContextMenu.RenameTab" xml:space="preserve">
     <value>&amp;Rinomina Tabulazione</value>

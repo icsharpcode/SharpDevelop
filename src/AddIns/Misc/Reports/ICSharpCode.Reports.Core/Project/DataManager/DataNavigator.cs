@@ -17,6 +17,7 @@ namespace ICSharpCode.Reports.Core
 	/// </summary>
 	public class DataNavigator :IDataNavigator
 	{
+		
 		private IDataViewStrategy store;
 		
 		public DataNavigator(IDataViewStrategy store){
@@ -33,14 +34,7 @@ namespace ICSharpCode.Reports.Core
 		
 		#endregion
 		
-		/*
-		private static Collection<BaseDataItem> ExtraxtDataItems (ReportItemCollection items)
-		{
-			Collection<BaseDataItem> inheritedReportItems = new Collection<BaseDataItem>(items.OfType<BaseDataItem>().ToList());
-			return inheritedReportItems;
-		}
 		
-		*/
 		#region IDataNavigator implementation
 		
 		public void Fill (ReportItemCollection collection) {
@@ -116,35 +110,19 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
-		
-		IndexList childList;
-		private System.Collections.Generic.List<BaseComparer>.Enumerator ce;
-		
-		public void SwitchGroup()
-		{
-			this.childList = BuildChildList();
-			ce = childList.GetEnumerator();
-			ce.MoveNext();
-		}
-		
 	
-		
+		/*
 		public int ChildListCount
 		{
 			get {
 				return BuildChildList().Count;
 			}
 		}
-		
-		
-		public bool ChildMoveNext()
-		{
-			return ce.MoveNext();
-		}
+		*/
 		
 		
 		// at the moment only tables are working
-		
+		/*
 		public void FillChild (ReportItemCollection collection)
 		{
 			TableStrategy tableStrategy = store as TableStrategy;
@@ -158,13 +136,13 @@ namespace ICSharpCode.Reports.Core
 				
 			}
 		}
-		
+		*/
 		
 		private IndexList BuildChildList()
 		{
-			var t = store as TableStrategy;
-			IndexList i = t.IndexList;
-			GroupComparer gc = i[t.CurrentPosition] as GroupComparer;
+
+			IndexList i = store.IndexList;
+			GroupComparer gc = i[store.CurrentPosition] as GroupComparer;
 			if (gc == null) {
 				return null;
 			}

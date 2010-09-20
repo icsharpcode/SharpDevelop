@@ -92,6 +92,7 @@
     <Compile Include="Src\Editor\AvalonEdit\IndentationStrategyAdapter.cs" />
     <Compile Include="Src\Editor\AvalonEdit\ISnippetElementProvider.cs" />
     <Compile Include="Src\Editor\AvalonEdit\TextContentCondition.cs" />
+    <Compile Include="Src\Editor\AvalonEdit\TextSelectedCondition.cs" />
     <Compile Include="Src\Editor\CodeCompletion\CodeCompletionPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -155,6 +156,7 @@
     <Compile Include="Src\Editor\ITooltip.cs">
       <DependentUpon>ToolTipService.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\Editor\ReadOnlyDocument.cs" />
     <Compile Include="Src\Editor\RefactoringDocumentAdapter.cs" />
     <Compile Include="Src\Editor\Search\ISearchResult.cs" />
     <Compile Include="Src\Editor\Search\ISearchResultFactory.cs" />
@@ -619,7 +621,6 @@
     <Compile Include="Src\Gui\Components\ExtTreeView\ExtTreeViewComparer.cs" />
     <Compile Include="Src\Project\WebReferenceUrl.cs" />
     <EmbeddedResource Include="Resources\CodeGenerationOptionsPanel.xfrm" />
-    <EmbeddedResource Include="Resources\CombineStartupPanel.xfrm" />
     <EmbeddedResource Include="Resources\CommonAboutDialog.xfrm" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <EmbeddedResource Include="Resources\EditStandardHeaderPanel.xfrm" />
@@ -678,7 +679,7 @@
     <Compile Include="Src\Bookmarks\ClassMemberBookmark.cs" />
     <Compile Include="Src\Services\RefactoringService\RefactoringService.cs" />
     <Compile Include="Src\Services\RefactoringService\Reference.cs" />
-    <Compile Include="Src\Services\ProjectService\ParseableFileContentEnumerator.cs" />
+    <Compile Include="Src\Services\ProjectService\ParseableFileContentFinder.cs" />
     <Compile Include="Src\Services\ParserService\ParseProjectContent.cs" />
     <Compile Include="Src\Project\Items\ImportProjectItem.cs" />
     <EmbeddedResource Include="Resources\CodeCompletionOptionPanel.xfrm" />

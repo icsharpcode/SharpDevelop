@@ -1,9 +1,5 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -146,6 +142,18 @@ namespace ICSharpCode.SharpDevelop
 					watcher.Dispose();
 				}
 				watcher = null;
+			} catch (FileNotFoundException) {
+				// can occur if directory was deleted externally
+				if (watcher != null) {
+					watcher.Dispose();
+				}
+				watcher = null;
+			} catch (ArgumentException) {
+				// can occur if parent directory was deleted externally
+				if (watcher != null) {
+					watcher.Dispose();
+				}
+				watcher = null;
 			}
 		}
 		
@@ -181,10 +189,7 @@ namespace ICSharpCode.SharpDevelop
 				
 				string message = StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage}", new string[,] {{"File", Path.GetFullPath(fileName)}});
 				if ((AutoLoadExternalChangesOption && file.IsDirty == false)
-				    || MessageBox.Show(message,
-				                       StringParser.Parse("${res:MainWindow.DialogName}"),
-				                       MessageBoxButtons.YesNo,
-				                       MessageBoxIcon.Question) == DialogResult.Yes)
+				    || MessageService.AskQuestion(message, StringParser.Parse("${res:MainWindow.DialogName}")))
 				{
 					if (File.Exists(fileName)) {
 						file.ReloadFromDisk();

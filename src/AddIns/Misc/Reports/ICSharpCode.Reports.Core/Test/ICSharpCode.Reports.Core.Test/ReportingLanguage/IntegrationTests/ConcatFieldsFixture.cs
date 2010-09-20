@@ -62,7 +62,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		
 		
 		[Test]
-//		[Ignore]
+		[Ignore]
 		public void Unkown_ColumnName ()
 		{
 			const string expression = "=Fields!Unknown";

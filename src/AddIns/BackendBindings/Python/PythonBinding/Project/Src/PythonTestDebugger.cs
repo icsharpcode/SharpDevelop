@@ -1,12 +1,9 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Diagnostics;
+using ICSharpCode.Scripting;
 using ICSharpCode.UnitTesting;
 
 namespace ICSharpCode.PythonBinding
@@ -14,7 +11,7 @@ namespace ICSharpCode.PythonBinding
 	public class PythonTestDebugger : TestDebuggerBase
 	{
 		PythonAddInOptions options;
-		IPythonFileService fileService;
+		IScriptingFileService fileService;
 		PythonTestRunnerApplication testRunnerApplication;
 		PythonStandardLibraryPath pythonStandardLibraryPath;
 		
@@ -24,7 +21,7 @@ namespace ICSharpCode.PythonBinding
 				new TestResultsMonitor(),
 				new PythonAddInOptions(),
 				new PythonStandardLibraryPath(),
-				new PythonFileService())
+				new ScriptingFileService())
 		{
 		}
 		
@@ -33,7 +30,7 @@ namespace ICSharpCode.PythonBinding
 			ITestResultsMonitor testResultsMonitor,
 			PythonAddInOptions options,
 			PythonStandardLibraryPath pythonStandardLibraryPath,
-			IPythonFileService fileService)
+			IScriptingFileService fileService)
 			: base(debuggerService, messageService, testResultsMonitor)
 		{
 			this.options = options;

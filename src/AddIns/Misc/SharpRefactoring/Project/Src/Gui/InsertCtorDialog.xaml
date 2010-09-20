@@ -9,17 +9,11 @@
 		<gui:IntToBoolConverter x:Key="intToBoolConverter" />
 		<Style TargetType="Button" BasedOn="{x:Static sd:GlobalStyles.ButtonStyle}"/>
 	</gui:AbstractInlineRefactorDialog.Resources>
-	<DockPanel Cursor="Arrow">
+	<StackPanel Cursor="Arrow">
 		<TextBlock DockPanel.Dock="Top" Margin="3"
 		           Text="{sd:Localize AddIns.SharpRefactoring.InsertCtor.Description}"
 		           TextWrapping="Wrap" />
-		<DockPanel DockPanel.Dock="Bottom" LastChildFill="False">
-			<Button DockPanel.Dock="Left" Content="{sd:Localize Global.OKButtonText}" Margin="3" Click="OKButtonClick" />
-			<Button DockPanel.Dock="Left" Content="{sd:Localize Global.CancelButtonText}" Margin="3" Click="CancelButtonClick" />
-			<Button DockPanel.Dock="Right" Content="Down" Margin="3" IsEnabled="{Binding SelectedIndex, ElementName=varList, Converter={StaticResource intToBoolConverter}}" Click="DownClick" />
-			<Button DockPanel.Dock="Right" Content="Up" Margin="3" IsEnabled="{Binding SelectedIndex, ElementName=varList, Converter={StaticResource intToBoolConverter}}" Click="UpClick" />
-		</DockPanel>
-		<ListView x:Name="varList">
+		<ListView x:Name="varList" MaxHeight="300">
 			<ListView.View>
 				<GridView>
 					<GridViewColumn Header="{sd:Localize AddIns.SharpRefactoring.InsertCtor.VariableLabel}">
@@ -46,5 +40,12 @@
 				</GridView>
 			</ListView.View>
 		</ListView>
-	</DockPanel>
+		<DockPanel LastChildFill="False">
+			<Button DockPanel.Dock="Left" Content="{sd:Localize Global.OKButtonText}" Margin="3" Click="OKButtonClick" />
+			<Button DockPanel.Dock="Left" Content="{sd:Localize Global.CancelButtonText}" Margin="3" Click="CancelButtonClick" />
+			<Button DockPanel.Dock="Right" Content="{sd:Localize Global.MoveDown}" Margin="3" IsEnabled="{Binding SelectedIndex, ElementName=varList, Converter={StaticResource intToBoolConverter}}" Click="DownClick" />
+			<Button DockPanel.Dock="Right" Content="{sd:Localize Global.MoveUp}" Margin="3" IsEnabled="{Binding SelectedIndex, ElementName=varList, Converter={StaticResource intToBoolConverter}}" Click="UpClick" />
+			<ToggleButton DockPanel.Dock="Right" Content="{sd:Localize Global.SelectAllButtonText}" Margin="3" IsChecked="{Binding AllSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type gui:InsertCtorDialog}}, Mode=OneWay}" Checked="SelectAllChecked" Unchecked="SelectAllUnchecked" />
+		</DockPanel>
+	</StackPanel>
 </gui:AbstractInlineRefactorDialog>

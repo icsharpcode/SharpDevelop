@@ -28,7 +28,7 @@
 		<LanguageBinding id="Python"
 			class="ICSharpCode.PythonBinding.PythonLanguageBinding"
 			extensions=".py" />
-	</Path>-->
+	</Path>
 	
 	<!-- Add the "Python" entry to the Open File Dialog -->
 	<Path name="/SharpDevelop/Workbench/FileFilter">
@@ -78,6 +78,15 @@
 						icon="Icons.16x16.StopProcess"
 						class="ICSharpCode.SharpDevelop.Project.Commands.StopDebuggingCommand"
 						label="${res:XML.MainMenu.DebugMenu.Stop}"/>
+				</Condition>
+				<MenuItem id="SendToPythonConsoleSeparator" type="Separator"/>
+				<MenuItem id="SendLineToPythonConsole"
+					class="ICSharpCode.PythonBinding.SendLineToPythonConsoleCommand"
+					label="${res:ICSharpCode.PythonBinding.SendLineToPythonConsole}"/>
+				<Condition name="IsTextSelected" action="Disable">
+					<MenuItem id="SendSelectedTextToPythonConsole"
+						class="ICSharpCode.PythonBinding.SendSelectedTextToPythonConsoleCommand"
+						label="${res:ICSharpCode.PythonBinding.SendSelectedTextToPythonConsole}"/>
 				</Condition>
 			</MenuItem>
 		</Condition>
@@ -178,7 +187,6 @@
 		<Pad id="PythonConsole"
 			category="Tools"
 			title="${res:ICSharpCode.PythonBinding.PythonConsole}"
-			insertafter="Bookmarks"
 			insertbefore="DefinitionView"
 			icon="PadIcons.Output"
 			defaultPosition="Bottom, Hidden"
@@ -188,15 +196,31 @@
 	<Path name="/Workspace/Icons">
 		<Icon id="PythonFileIcon"
 			extensions=".py"
-			resource="Python.ProjectBrowser.File" />
+			resource="Python.ProjectBrowser.File"/>
 		<Icon id="PythonProjectIcon"
 			language="Python"
-			resource="Python.ProjectBrowser.Project" />
+			resource="Python.ProjectBrowser.Project"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/UnitTesting/TestFrameworks">
 		<TestFramework id="pyunit"
 			class="ICSharpCode.PythonBinding.PythonTestFramework"
-			supportedProjects=".pyproj" />
+			supportedProjects=".pyproj"/>
+	</Path>
+
+	<Path name="/SharpDevelop/ViewContent/TextEditor/ContextMenu">
+		<Condition name="ActiveContentExtension" activeextension=".py">
+			<MenuItem id="SendToPythonConsoleSeparator"
+			    insertafter="Indent"
+				type="Separator"/>
+			<MenuItem id="SendLineToPythonConsole"
+				class="ICSharpCode.PythonBinding.SendLineToPythonConsoleCommand"
+				label="${res:ICSharpCode.PythonBinding.SendLineToPythonConsole}"/>
+			<Condition name="IsTextSelected" action="Disable">
+				<MenuItem id="SendSelectedTextToPythonConsole"
+					class="ICSharpCode.PythonBinding.SendSelectedTextToPythonConsoleCommand"
+					label="${res:ICSharpCode.PythonBinding.SendSelectedTextToPythonConsole}"/>
+			</Condition>
+		</Condition>
 	</Path>
 </AddIn>

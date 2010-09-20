@@ -1,12 +1,9 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Util;
@@ -15,14 +12,14 @@ namespace ICSharpCode.PythonBinding
 {
 	public class RunDebugPythonCommand : RunPythonCommand
 	{
-		public RunDebugPythonCommand(IWorkbench workbench, PythonAddInOptions options, IDebugger debugger) 
+		public RunDebugPythonCommand(IScriptingWorkbench workbench, PythonAddInOptions options, IDebugger debugger) 
 			: base(workbench, options, debugger)
 		{
 			Debug = true;
 		}
 		
 		public RunDebugPythonCommand()
-			: this(WorkbenchSingleton.Workbench, new PythonAddInOptions(), DebuggerService.CurrentDebugger)
+			: this(new PythonWorkbench(), new PythonAddInOptions(), DebuggerService.CurrentDebugger)
 		{
 		}
 	}

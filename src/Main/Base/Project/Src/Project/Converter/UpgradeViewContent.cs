@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <author name="Daniel Grunwald"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Linq;
@@ -22,16 +18,40 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			var projects = solution.Projects.OfType<IUpgradableProject>().ToList();
 			if (projects.Count > 0 && projects.All(u => u.UpgradeDesired)) {
 				Core.AnalyticsMonitorService.TrackFeature(typeof(UpgradeView), "opened automatically");
-				WorkbenchSingleton.Workbench.ShowView(new UpgradeViewContent(solution));
+				Show(solution);
 			}
+		}
+		
+		public static UpgradeViewContent Show(Solution solution)
+		{
+			foreach (UpgradeViewContent vc in WorkbenchSingleton.Workbench.ViewContentCollection.OfType<UpgradeViewContent>()) {
+				if (vc.Solution == solution) {
+					vc.WorkbenchWindow.SelectWindow();
+					return vc;
+				}
+			}
+			var newVC = new UpgradeViewContent(solution);
+			WorkbenchSingleton.Workbench.ShowView(newVC);
+			return newVC;
 		}
 		
 		UpgradeView upgradeView;
 		
 		public UpgradeViewContent(Solution solution)
 		{
+			if (solution == null)
+				throw new ArgumentNullException("solution");
 			this.TitleName = "Project Upgrade";
 			upgradeView = new UpgradeView(solution);
+		}
+		
+		public Solution Solution {
+			get { return upgradeView.Solution; }
+		}
+		
+		public void Select(IUpgradableProject project)
+		{
+			upgradeView.Select(project);
 		}
 		
 		public override object Control {
@@ -45,11 +65,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 	{
 		public override void Run()
 		{
-			UpgradeViewContent uvc = WorkbenchSingleton.Workbench.ViewContentCollection.OfType<UpgradeViewContent>().FirstOrDefault();
-			if (uvc != null)
-				uvc.WorkbenchWindow.SelectWindow();
-			else if (ProjectService.OpenSolution != null)
-				WorkbenchSingleton.Workbench.ShowView(new UpgradeViewContent(ProjectService.OpenSolution));
+			UpgradeViewContent.Show(ProjectService.OpenSolution);
 		}
 	}
 }

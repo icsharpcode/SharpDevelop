@@ -1,16 +1,14 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+
 using ICSharpCode.Core;
 using ICSharpCode.RubyBinding;
+using ICSharpCode.Scripting.Tests.Utils;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.UnitTesting;
 using NUnit.Framework;
@@ -31,7 +29,7 @@ namespace RubyBinding.Tests.Testing
 		SelectedTests selectedTests;
 		MockMethod methodToTest;
 		RubyAddInOptions options;
-		MockRubyFileService fileService;
+		MockScriptingFileService fileService;
 		StringBuilder responseFileText;
 		StringWriter responseFileStringWriter;
 		
@@ -51,7 +49,7 @@ namespace RubyBinding.Tests.Testing
 			testResultsMonitor.InitialFilePosition = 3;
 			options = new RubyAddInOptions(new Properties());
 			options.RubyFileName = @"c:\ironruby\ir.exe";
-			fileService = new MockRubyFileService();
+			fileService = new MockScriptingFileService();
 			testDebugger = new RubyTestDebugger(debuggerService, messageService, testResultsMonitor, options, fileService);
 		}
 		
@@ -109,7 +107,8 @@ namespace RubyBinding.Tests.Testing
 		[Test]
 		public void CommandLineArgumentHasSharpDevelopTestRubyScriptFileNameAndTestResultsFileNameResponseFileName()
 		{
-			AddIn addin = AddInPathHelper.CreateDummyRubyAddInInsideAddInTree();
+			AddInPathHelper helper = new AddInPathHelper("RubyBinding");
+			AddIn addin = helper.CreateDummyAddInInsideAddInTree();
 			addin.FileName = @"c:\sharpdevelop\addins\rubybinding\rubybinding.addin";
 				
 			testResultsMonitor.FileName = @"d:\testresults.txt";

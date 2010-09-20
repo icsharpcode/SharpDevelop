@@ -1,27 +1,17 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Siegfried Pammer" email="siegfriedpammer@gmail.com"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Snippets;
-using Ast = ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.Refactoring;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.CodeCompletion;
+using Ast = ICSharpCode.NRefactory.Ast;
 
 namespace SharpRefactoring.Gui
 {
@@ -30,41 +20,38 @@ namespace SharpRefactoring.Gui
 	/// </summary>
 	public partial class OverrideToStringMethodDialog : AbstractInlineRefactorDialog
 	{
-		List<Wrapper<IField>> fields;
+		List<PropertyOrFieldWrapper> fields;
+		string baseCall;
+		string insertedCode;
 		
-		public OverrideToStringMethodDialog(InsertionContext context, ITextEditor editor, ITextAnchor anchor, IList<IField> fields)
+		public OverrideToStringMethodDialog(InsertionContext context, ITextEditor editor, ITextAnchor startAnchor, ITextAnchor anchor, IList<IField> fields, string baseCall)
 			: base(context, editor, anchor)
 		{
 			InitializeComponent();
 			
-			this.fields = fields.Select(f => new Wrapper<IField>() { Entity = f }).ToList();
-			this.listBox.ItemsSource = this.fields.Select(i => i.Create(null));
+			this.baseCall = baseCall;
+			this.fields = fields.Select(f => new PropertyOrFieldWrapper(f) { IsSelected = true }).ToList();
+			this.listBox.ItemsSource = this.fields;
 		}
 		
 		protected override string GenerateCode(LanguageProperties language, IClass currentClass)
 		{
-			var fields = this.fields
-				.Where(f => f.IsChecked)
-				.Select(f2 => f2.Entity.Name)
+			string[] fields = this.fields
+				.Where(f => f.IsSelected)
+				.Select(f2 => f2.MemberName)
 				.ToArray();
 			
-			ClassFinder context = new ClassFinder(currentClass, editor.Caret.Line, editor.Caret.Column);
-			IMember member =  OverrideCompletionItemProvider.GetOverridableMembers(currentClass).First(m => m.Name == "ToString");
-			var node = language.CodeGenerator.GetOverridingMethod(member, context) as Ast.MethodDeclaration;
-			var formatString = new Ast.PrimitiveExpression(GenerateFormatString(currentClass, language.CodeGenerator, fields));
-			var param = new List<Ast.Expression>() { formatString };
+			Ast.PrimitiveExpression formatString = new Ast.PrimitiveExpression(GenerateFormatString(currentClass, language.CodeGenerator, fields));
+			List<Ast.Expression> param = new List<Ast.Expression>() { formatString };
 			
 			Ast.ReturnStatement ret = new Ast.ReturnStatement(new Ast.InvocationExpression(
 				new Ast.MemberReferenceExpression(new Ast.TypeReferenceExpression(new Ast.TypeReference("System.String", true)), "Format"),
 				param.Concat(fields.Select(f => new Ast.IdentifierExpression(f))).ToList()
 			));
 			
-			node.Body.Children.Clear();
-			node.Body.AddChild(ret);
+			insertedCode = language.CodeGenerator.GenerateCode(ret, "").Trim();
 			
-			int offset = editor.Document.GetLineForOffset(editor.Caret.Offset).Offset;
-			
-			return language.CodeGenerator.GenerateCode(node, DocumentUtilitites.GetWhitespaceAfter(editor.Document, offset)).TrimStart();
+			return insertedCode;
 		}
 		
 		string GenerateFormatString(IClass currentClass, CodeGenerator generator, string[] fields)
@@ -84,6 +71,39 @@ namespace SharpRefactoring.Gui
 			}
 			
 			return "[" + currentClass.Name + fieldsString + "]";
+		}
+		
+		void SelectAllChecked(object sender, System.Windows.RoutedEventArgs e)
+		{
+			foreach (PropertyOrFieldWrapper field in fields) {
+				field.IsSelected = true;
+			}
+		}
+		
+		void SelectAllUnchecked(object sender, System.Windows.RoutedEventArgs e)
+		{
+			foreach (PropertyOrFieldWrapper field in fields) {
+				field.IsSelected = false;
+			}
+		}
+		
+		public bool AllSelected {
+			get { return fields.All(f => f.IsSelected); }
+		}
+		
+		protected override void CancelButtonClick(object sender, System.Windows.RoutedEventArgs e)
+		{
+			base.CancelButtonClick(sender, e);
+			
+			editor.Document.Insert(anchor.Offset, baseCall);
+			editor.Select(anchor.Offset, baseCall.Length);
+		}
+		
+		protected override void OKButtonClick(object sender, System.Windows.RoutedEventArgs e)
+		{
+			base.OKButtonClick(sender, e);
+			
+			editor.Caret.Offset = insertionEndAnchor.Offset + insertedCode.Length;
 		}
 	}
 }

@@ -1,12 +1,9 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using ICSharpCode.FormsDesigner;
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
@@ -45,7 +42,7 @@ namespace ICSharpCode.PythonBinding
 
 		public IViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
 		{
-			PythonTextEditorViewContent textEditorView = new PythonTextEditorViewContent(viewContent);
+			ScriptingTextEditorViewContent textEditorView = new ScriptingTextEditorViewContent(viewContent);
 			return CreateSecondaryViewContent(viewContent, textEditorView.TextEditorOptions);
 		}
 		

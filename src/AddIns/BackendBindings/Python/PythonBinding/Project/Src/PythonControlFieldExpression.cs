@@ -1,9 +1,5 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
@@ -11,6 +7,8 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
+
+using ICSharpCode.Scripting;
 using IronPython.Compiler.Ast;
 
 namespace ICSharpCode.PythonBinding
