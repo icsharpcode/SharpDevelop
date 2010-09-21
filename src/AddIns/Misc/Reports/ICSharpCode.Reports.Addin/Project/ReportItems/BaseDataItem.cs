@@ -1,11 +1,5 @@
-/*
- * Erstellt mit SharpDevelop.
- * Benutzer: Peter Forstmeier
- * Datum: 28.01.2008
- * Zeit: 16:47
- * 
- * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
- */
+ï»¿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;

@@ -1,22 +1,11 @@
-﻿/*
- * Erstellt mit SharpDevelop.
- * Benutzer: Peter Forstmeier
- * Datum: 29.08.2009
- * Zeit: 16:27
- * 
- * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
- */
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Peter Forstmeier" email="peter.forstmeier@t-online.de"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.ComponentModel;
 
-
-
+namespace ICSharpCode.Reports.Core
+{
 	/// <summary>
 	/// This Class represents a Column to sort
 	/// </summary>
@@ -24,9 +13,6 @@ using System.ComponentModel;
 	/// 	created by - Forstmeier Peter
 	/// 	created on - 18.05.2005 11:34:45
 	/// </remarks>
-	/// 
-namespace ICSharpCode.Reports.Core
-{	
 	public class SortColumn : AbstractColumn {
 		
 		private ListSortDirection sortDirection = ListSortDirection.Ascending;
@@ -72,4 +58,3 @@ namespace ICSharpCode.Reports.Core
 		#endregion
 	}
 }
-

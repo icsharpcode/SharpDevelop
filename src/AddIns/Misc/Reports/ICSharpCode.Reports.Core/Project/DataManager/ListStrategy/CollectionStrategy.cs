@@ -1,9 +1,5 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Peter Forstmeier" email="peter.forstmeier@t-online.de"/>
-//     <version>$Revision$</version>
-// </file>
+Ôªø// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Collections;
@@ -59,7 +55,7 @@ namespace ICSharpCode.Reports.Core {
 		
 				if (descriptor == null){
 					throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture,
-					                                                  "Die Liste enth‰lt keine Spalte [{0}].",
+					                                                  "Die Liste enth√§lt keine Spalte [{0}].",
 					                                                  col[criteriaIndex].ColumnName));
 				}
 				sortProperties[criteriaIndex] = descriptor;
@@ -76,10 +72,10 @@ namespace ICSharpCode.Reports.Core {
 				object rowItem = this.baseList[rowIndex];
 				object[] values = new object[col.Count];
 				
-				// Hier bereits Wertabruf um dies nicht w‰hrend des Sortierens tun zu m¸ssen.
+				// Hier bereits Wertabruf um dies nicht w√§hrend des Sortierens tun zu m√ºssen.
 				for (int criteriaIndex = 0; criteriaIndex < sortProperties.Length; criteriaIndex++){
 					object value = sortProperties[criteriaIndex].GetValue(rowItem);
-					// Hier auf Vertr‰glichkeit testen um Vergleiche bei Sortierung zu vereinfachen.
+					// Hier auf Vertr√§glichkeit testen um Vergleiche bei Sortierung zu vereinfachen.
 					// Muss IComparable und gleicher Typ sein.
 					
 					if (value != null && value != DBNull.Value)
