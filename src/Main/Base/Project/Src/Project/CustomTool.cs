@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				ProjectService.AddProjectItem(project, outputItem);
 				FileService.FireFileCreated(outputFileName, false);
 				project.Save();
-				ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
+				ProjectBrowserPad.RefreshViewAsync();
 			}
 			return outputItem;
 		}

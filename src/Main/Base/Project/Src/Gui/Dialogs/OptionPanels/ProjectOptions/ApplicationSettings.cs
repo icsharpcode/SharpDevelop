@@ -129,7 +129,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				FileProjectItem newItem = new FileProjectItem(project, ItemType.None);
 				newItem.Include = "app.manifest";
 				ProjectService.AddProjectItem(project, newItem);
-				ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
+				ProjectBrowserPad.RefreshViewAsync();
 			}
 			
 			FileService.OpenFile(manifestFile);

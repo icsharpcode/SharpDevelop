@@ -62,6 +62,9 @@
     <Reference Include="System.Xaml" />
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -727,6 +730,7 @@
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AsyncDiscoveryState.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\DiscoveryNetworkCredential.cs" />
     <Compile Include="Src\Services\ProjectService\ProjectLoader.cs" />
+    <Compile Include="Src\Util\FakeXmlViewContent.cs" />
     <Compile Include="Src\Util\TreeNode.cs" />
     <Compile Include="Src\Util\NativeMethods.cs" />
     <Compile Include="Src\Util\ProcessRunnerException.cs" />

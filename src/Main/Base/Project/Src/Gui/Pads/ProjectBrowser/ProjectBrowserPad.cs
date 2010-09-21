@@ -255,5 +255,22 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		#endregion
+		
+		static bool refreshViewEnqueued;
+		
+		public static void RefreshViewAsync()
+		{
+			WorkbenchSingleton.AssertMainThread();
+			if (refreshViewEnqueued)
+				return;
+			refreshViewEnqueued = true;
+			WorkbenchSingleton.SafeThreadAsyncCall(
+				delegate {
+					refreshViewEnqueued = false;
+					if (instance != null) {
+						instance.ProjectBrowserControl.RefreshView();
+					}
+				});
+		}
 	}
 }

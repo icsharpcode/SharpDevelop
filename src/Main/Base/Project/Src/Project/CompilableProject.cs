@@ -1,6 +1,8 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System.Xml.Linq;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project.Converter;
 using System;
 using System.Collections.Generic;
@@ -11,6 +13,7 @@ using System.Linq;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -430,6 +433,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (fx != null && (fx.IsBasedOn(TargetFramework.Net40) || fx.IsBasedOn(TargetFramework.Net40Client))) {
 				AddDotnet40References();
 			}
+			if (fx != null)
+				UpdateAppConfig(fx);
 			base.ProjectCreationComplete();
 		}
 		
@@ -545,6 +550,8 @@ namespace ICSharpCode.SharpDevelop.Project
 						SetToolsVersion(newVersion.MSBuildVersion.Major + "." + newVersion.MSBuildVersion.Minor);
 					}
 					if (newFramework != null) {
+						UpdateAppConfig(newFramework);
+						
 						ClientProfileTargetFramework clientProfile = newFramework as ClientProfileTargetFramework;
 						if (clientProfile != null) {
 							newFramework = clientProfile.FullFramework;
@@ -569,6 +576,51 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 					AddOrRemoveExtensions();
 					Save();
+				}
+			}
+		}
+		
+		void UpdateAppConfig(TargetFramework newFramework)
+		{
+			// When changing the target framework, update any existing app.config
+			// Also, for applications (not libraries), create an app.config is it is required for the target framework
+			bool createAppConfig = newFramework.RequiresAppConfigEntry && (this.OutputType != OutputType.Library && this.OutputType != OutputType.Module);
+			
+			string appConfigFileName = Path.Combine(this.Directory, "app.config");
+			
+			if (!File.Exists(appConfigFileName)) {
+				if (createAppConfig) {
+					File.WriteAllText(appConfigFileName,
+					                  "<?xml version=\"1.0\"?>" + Environment.NewLine +
+					                  "<configuration>" + Environment.NewLine
+					                  + "</configuration>");
+				} else {
+					return;
+				}
+			}
+			
+			if (!IsFileInProject(appConfigFileName)) {
+				FileProjectItem fpi = new FileProjectItem(this, ItemType.None, "app.config");
+				ProjectService.AddProjectItem(this, fpi);
+				FileService.FireFileCreated(appConfigFileName, false);
+				ProjectBrowserPad.RefreshViewAsync();
+			}
+			
+			using (FakeXmlViewContent xml = new FakeXmlViewContent(appConfigFileName)) {
+				if (xml.Document != null) {
+					XElement configuration = xml.Document.Root;
+					XElement startup = configuration.Element("startup");
+					if (startup == null) {
+						startup = new XElement("startup");
+						configuration.AddFirst(startup);
+					}
+					XElement supportedRuntime = startup.Element("supportedRuntime");
+					if (supportedRuntime == null) {
+						supportedRuntime = new XElement("supportedRuntime");
+						startup.AddFirst(supportedRuntime);
+					}
+					supportedRuntime.SetAttributeValue("version", newFramework.SupportedRuntimeVersion);
+					supportedRuntime.SetAttributeValue("sku", newFramework.SupportedSku);
 				}
 			}
 		}

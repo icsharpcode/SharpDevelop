@@ -33,7 +33,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 				ProjectService.AddProjectItem(project,fileProjectItem);
 			}
 			project.Save();
-			ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
+			ProjectBrowserPad.RefreshViewAsync();
 		}
 		
 		/// <summary>
