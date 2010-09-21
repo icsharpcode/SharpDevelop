@@ -306,12 +306,24 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		/// <summary>
 		/// Gets the visual column from a document position (relative to top left of the document).
+		/// If the user clicks between two visual columns, rounds to the nearest column.
 		/// </summary>
 		public int GetVisualColumn(Point point)
 		{
 			TextLine textLine = GetTextLineByVisualYPosition(point.Y);
 			CharacterHit ch = textLine.GetCharacterHitFromDistance(point.X);
 			return ch.FirstCharacterIndex + ch.TrailingLength;
+		}
+		
+		/// <summary>
+		/// Gets the visual column from a document position (relative to top left of the document).
+		/// If the user clicks between two visual columns, returns the first of those columns.
+		/// </summary>
+		public int GetVisualColumnFloor(Point point)
+		{
+			TextLine textLine = GetTextLineByVisualYPosition(point.Y);
+			CharacterHit ch = textLine.GetCharacterHitFromDistance(point.X);
+			return ch.FirstCharacterIndex;
 		}
 		
 		/// <summary>
