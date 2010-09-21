@@ -351,6 +351,7 @@
     <Compile Include="Resolver\PythonSelfResolverTests.cs" />
     <Compile Include="Resolver\ResolveBuiltInRoundMethodTestFixture.cs" />
     <Compile Include="Resolver\ResolveClassInstanceWithNamespaceTestFixture.cs" />
+    <Compile Include="Resolver\ResolveClassPropertyTests.cs" />
     <Compile Include="Resolver\ResolveConsoleWriteLineTestFixture.cs" />
     <Compile Include="Resolver\ResolveExitMethodFromSysImportExitAsMyExitTestFixture.cs" />
     <Compile Include="Resolver\ResolveExitMethodFromSysImportExitTestFixture.cs" />
