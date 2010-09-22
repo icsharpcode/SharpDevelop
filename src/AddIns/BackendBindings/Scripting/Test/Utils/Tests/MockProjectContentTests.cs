@@ -24,7 +24,7 @@ namespace ICSharpCode.Scripting.Tests.Utils.Tests
 		}
 		
 		[Test]
-		public void AddNamespaceContentsAddsNamespaces()
+		public void AddNamespaceContents_NamespacesSetToBeAdded_AddsNamespacesToList()
 		{
 			projectContent.NamespacesToAdd.Add("test");
 			projectContent.AddNamespaceContents(items, String.Empty, null, false);
@@ -36,7 +36,7 @@ namespace ICSharpCode.Scripting.Tests.Utils.Tests
 		}
 			
 		[Test]
-		public void AddNamespaceContentsAddsClasses()
+		public void AddNamespaceContents_OneClassInProjectContent_AddsClassToList()
 		{
 			MockClass c = new MockClass(new MockProjectContent(), "TestClass");
 			projectContent.ClassesInProjectContent.Add(c);
@@ -49,20 +49,22 @@ namespace ICSharpCode.Scripting.Tests.Utils.Tests
 		}
 
 		[Test]
-		public void NamespaceContentsSearchedIsNullByDefault()
+		public void NamespacePassedToGetNamespaceContentsMethod_GetNamespaceContentsNotCalled_ReturnsNull()
 		{
-			Assert.IsNull(projectContent.NamespacePassedToGetNamespaceContentsMethod);
+			string name = projectContent.NamespacePassedToGetNamespaceContentsMethod;
+			Assert.IsNull(name);
 		}
 		
 		[Test]
-		public void NamespacePassedToGetNamespaceMethodIsSaved()
+		public void NamespacePassedToGetNamespaceMethod_GetNamespaceContentsCalled_ReturnsNamespacePassedMethod()
 		{
 			projectContent.GetNamespaceContents("abc");
-			Assert.AreEqual("abc", projectContent.NamespacePassedToGetNamespaceContentsMethod);
+			string name = projectContent.NamespacePassedToGetNamespaceContentsMethod;
+			Assert.AreEqual("abc", name);
 		}
 		
 		[Test]
-		public void GetNamespaceContentsReturnsExpectedItems()
+		public void GetNamespaceContents_EmptyNamespacePassed_ReturnsExpectedItemsForEmptyNamespace()
 		{
 			List<ICompletionEntry> namespaceItems = new List<ICompletionEntry>();
 			namespaceItems.Add(new NamespaceEntry("test"));
@@ -76,25 +78,26 @@ namespace ICSharpCode.Scripting.Tests.Utils.Tests
 		}
 		
 		[Test]
-		public void NamespaceExistsReturnsTrueForAddedExistingNamespace()
+		public void NamespaceExists_NamespaceAddedToExistingNamespaceContents_ReturnsTrue()
 		{
 			List<ICompletionEntry> items = new List<ICompletionEntry>();
 			projectContent.AddExistingNamespaceContents("System", items);
-
-			Assert.IsTrue(projectContent.NamespaceExists("System"));
-		}
-		
-		[Test]
-		public void NamespaceExistsReturnsFalseForUnknownNamespace()
-		{
-			List<ICompletionEntry> items = new List<ICompletionEntry>();
-			projectContent.AddExistingNamespaceContents("System", items);
+			bool result = projectContent.NamespaceExists("System");
 			
-			Assert.IsFalse(projectContent.NamespaceExists("Unknown"));
+			Assert.IsTrue(result);
 		}
 		
 		[Test]
-		public void GetNamespaceContentsReturnsItemsForAddedExistingNamespace()
+		public void NamespaceExists_UnknownNamespace_ReturnsFalse()
+		{
+			List<ICompletionEntry> items = new List<ICompletionEntry>();
+			projectContent.AddExistingNamespaceContents("System", items);
+			bool result = projectContent.NamespaceExists("Unknown");
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void GetNamespaceContents_AddExistingNamespaceContentsCalledWithCompletionItemsForTwoNamespaces_ReturnsItemsForSystemNamespace()
 		{
 			List<ICompletionEntry> items = new List<ICompletionEntry>();
 			items.Add(new NamespaceEntry("test"));
@@ -102,22 +105,25 @@ namespace ICSharpCode.Scripting.Tests.Utils.Tests
 			projectContent.AddExistingNamespaceContents("Math", new List<ICompletionEntry>());
 			projectContent.AddExistingNamespaceContents("System", items);
 			
+			List<ICompletionEntry> actualItems = projectContent.GetNamespaceContents("System");
+			
 			List<ICompletionEntry> expectedItems = new List<ICompletionEntry>();
 			expectedItems.Add(new NamespaceEntry("test"));
 			
-			Assert.AreEqual(expectedItems, projectContent.GetNamespaceContents("System"));
+			Assert.AreEqual(expectedItems, actualItems);
 		}
 		
 		[Test]
-		public void GetNamespaceContentsReturnsEmptyArrayListForUnknownNamespace()
+		public void GetNamespaceContents_UnknownNamespace_ReturnsEmptyArrayListF()
 		{
 			List<ICompletionEntry> items = new List<ICompletionEntry>();
 			items.Add(new NamespaceEntry("test"));
 			projectContent.AddExistingNamespaceContents("System", items);
 			
+			List<ICompletionEntry> actualItems = projectContent.GetNamespaceContents("Unknown");
 			List<ICompletionEntry> expectedItems = new List<ICompletionEntry>();
 			
-			Assert.AreEqual(expectedItems, projectContent.GetNamespaceContents("Unknown"));
+			Assert.AreEqual(expectedItems, actualItems);
 		}
 		
 		[Test]
@@ -128,88 +134,90 @@ namespace ICSharpCode.Scripting.Tests.Utils.Tests
 		}
 		
 		[Test]
-		public void NamespaceExistsCalledIsFalseInitially()
+		public void NamespaceExistsCalled_NamespaceExistsMethodNotCalled_ReturnsFalse()
 		{
 			Assert.IsFalse(projectContent.NamespaceExistsCalled);
 		}
 		
 		[Test]
-		public void NamespaceExistsCalledReturnsTrueAfterMethodCall()
+		public void NamespaceExistsCalled_NamespaceExistsMethodCalled_ReturnsTrue()
 		{
 			projectContent.NamespaceExists("System");
-			Assert.IsTrue(projectContent.NamespaceExistsCalled);
+			bool result = projectContent.NamespaceExistsCalled;
+			Assert.IsTrue(result);
 		}
 		
 		[Test]
-		public void GetClassReturnsNullByDefault()
+		public void GetClass_NewInstance_ReturnsNullByDefault()
 		{
-			Assert.IsNull(projectContent.GetClass("test", 0));
+			IClass c = projectContent.GetClass("test", 0);
+			Assert.IsNull(c);
 		}
 		
 		[Test]
-		public void GetClassNameReturnsClassNamePassedToGetClassMethod()
-		{
-			projectContent.GetClass("abc", 0);
-			Assert.AreEqual("abc", projectContent.GetClassName);
-		}
-		
-		[Test]
-		public void GetClassCalledIsFalseByDefault()
-		{
-			Assert.IsFalse(projectContent.GetClassCalled);
-		}
-		
-		[Test]
-		public void GetClassCalledIsTrueAfterGetClassCalled()
+		public void GetClassName_GetClassCalledWithClassName_ReturnsClassNamePassedToGetClassMethod()
 		{
 			projectContent.GetClass("abc", 0);
-			Assert.IsTrue(projectContent.GetClassCalled);
+			string name = projectContent.GetClassName;
+			Assert.AreEqual("abc", name);
 		}
 		
 		[Test]
-		public void GetClassReturnsClassEvenIfClassNameDoesNotMatchAndNoClassNameForGetClassSpecified()
+		public void GetClass_ClassNameDoesNotMatchAndNoClassNameForGetClassSpecified_ReturnsTestClassSinceNoClassNameRestrictionSpecified()
 		{
-			MockClass c = new MockClass(projectContent, "test");
-			projectContent.ClassToReturnFromGetClass = c;
+			MockClass expectedClass = new MockClass(projectContent, "test");
+			projectContent.ClassToReturnFromGetClass = expectedClass;
+			IClass c = projectContent.GetClass("abcdef", 0);
 			
-			Assert.AreEqual(c, projectContent.GetClass("abcdef", 0));
+			Assert.AreEqual(expectedClass, c);
 		}
 		
 		[Test]
-		public void GetClassReturnsNullIfClassNameDoesNotMatchClassNameForGetClassProperty()
+		public void GetClass_ClassNameDoesNotMatchClassNameForGetClassProperty_ReturnsNull()
 		{
 			MockClass c = new MockClass(projectContent, "test");
-			projectContent.ClassToReturnFromGetClass = c;
-			projectContent.ClassNameForGetClass = "test";
+			projectContent.SetClassToReturnFromGetClass("test", c);
 			
 			Assert.IsNull(projectContent.GetClass("abcdef", 0));
 		}
 		
 		[Test]
-		public void GetClassReturnsClassIfClassNameMatchesClassNameForGetClassProperty()
+		public void GetClass_ClassNameMatchesClassNameForGetClassProperty_ReturnsTestClass()
 		{
-			MockClass c = new MockClass(projectContent, "test");
-			projectContent.ClassToReturnFromGetClass = c;
-			projectContent.ClassNameForGetClass = "test";
+			MockClass expectedClass = new MockClass(projectContent, "test");
+			projectContent.SetClassToReturnFromGetClass("test", expectedClass);
 			
-			Assert.AreEqual(c, projectContent.GetClass("test", 0));
+			IClass c = projectContent.GetClass("test", 0);
+			
+			Assert.AreEqual(expectedClass, c);
 		}
 		
 		[Test]
-		public void NamespaceNamesHasNoItemsByDefault()
+		public void ReferencedContents_NewInstance_HasNoItemsByDefault()
 		{
-			Assert.AreEqual(0, projectContent.ReferencedContents.Count);
+			int count = projectContent.ReferencedContents.Count;
+			Assert.AreEqual(0, count);
 		}
 		
 		[Test]
-		public void NamespaceNamesContainingsNamespaceAddedToExistingNamespaces()
+		public void NamespaceNames_NewInstance_HasNoItemsByDefault()
+		{
+			int count = projectContent.NamespaceNames.Count;
+			Assert.AreEqual(0, count);
+		}
+		
+		[Test]
+		public void NamespaceNames_NamespaceAddedToExistingNamespaces_NamespaceIncludedInReturnedCollection()
 		{
 			List<ICompletionEntry> namespaceItems = new List<ICompletionEntry>();
 			projectContent.AddExistingNamespaceContents("System", namespaceItems);
+			
+			ICollection<string> names = projectContent.NamespaceNames;
+			
 			List<string> expectedNames = new List<string>();
 			expectedNames.Add("System");
 			
-			Assert.AreEqual(expectedNames, projectContent.NamespaceNames);
+			Assert.AreEqual(expectedNames, names);
 		}
 	}
 }

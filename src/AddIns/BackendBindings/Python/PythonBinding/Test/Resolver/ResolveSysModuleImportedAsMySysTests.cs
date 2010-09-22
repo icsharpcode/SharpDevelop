@@ -11,25 +11,19 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Resolver
 {
 	[TestFixture]
-	public class ResolveSysModuleTestFixture : ResolveTestsBase
+	public class ResolveSysModuleImportedAsMySysTestFixture : ResolveTestsBase
 	{
 		protected override ExpressionResult GetExpressionResult()
 		{
-			return new ExpressionResult("sys", ExpressionContext.Default);
+			return new ExpressionResult("mysys", ExpressionContext.Default);
 		}
 		
 		protected override string GetPythonScript()
 		{
 			return 
-				"import sys\r\n" +
-				"sys\r\n" +
+				"import sys as mysys\r\n" +
+				"mysys\r\n" +
 				"\r\n";
-		}
-		
-		[Test]
-		public void CompilationUnitHasSysModuleInUsingsCollection()
-		{
-			Assert.AreEqual("sys", compilationUnit.UsingScope.Usings[0].Usings[0]);
 		}
 		
 		[Test]
@@ -43,15 +37,6 @@ namespace PythonBinding.Tests.Resolver
 		List<ICompletionEntry> GetCompletionItems()
 		{
 			return resolveResult.GetCompletionData(projectContent);
-		}
-		
-		[Test]
-		public void MathModuleExpressionShouldNotHaveAnyCompletionItemsSinceMathModuleIsNotImported()
-		{
-			ExpressionResult result = new ExpressionResult("math", ExpressionContext.Default);
-			resolveResult = resolver.Resolve(result, parseInfo, GetPythonScript());
-			
-			Assert.IsNull(resolveResult);
 		}
 	}
 }

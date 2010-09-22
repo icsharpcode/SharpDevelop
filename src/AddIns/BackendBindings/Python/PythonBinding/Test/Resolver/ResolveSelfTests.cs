@@ -9,7 +9,7 @@ using UnitTesting.Tests.Utils;
 namespace PythonBinding.Tests.Resolver
 {
 	[TestFixture]
-	public class ResolveSelfTests : ResolveTestFixtureBase
+	public class ResolveSelfTests : ResolveTestsBase
 	{
 		IClass fooClass;
 		

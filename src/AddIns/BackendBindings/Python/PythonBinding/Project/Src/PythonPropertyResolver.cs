@@ -17,19 +17,21 @@ namespace ICSharpCode.PythonBinding
 		
 		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)
 		{
-			IProperty property = FindProperty(resolverContext, expressionResult);
+			IProperty property = FindProperty(resolverContext, expressionResult.Expression);
 			if (property != null) {
 				return CreateMemberResolveResult(property);
 			}
 			return null;
 		}
 		
-		IProperty FindProperty(PythonResolverContext resolverContext, ExpressionResult expressionResult)
+		IProperty FindProperty(PythonResolverContext resolverContext, string expression)
 		{
-			MemberName memberName = new MemberName(expressionResult.Expression);
+			MemberName memberName = new MemberName(expression);
 			IClass matchingClass = FindClass(resolverContext, memberName.Type);
 			if (matchingClass != null) {
-				return FindProperty(matchingClass, memberName.Name);
+				return FindPropertyInClass(matchingClass, memberName.Name);
+			} else if (memberName.HasName) {
+				return FindProperty(resolverContext, memberName);
 			}
 			return null;
 		}
@@ -44,7 +46,7 @@ namespace ICSharpCode.PythonBinding
 			return classResolver.GetClass(resolverContext, typeName);
 		}
 		
-		IProperty FindProperty(IClass matchingClass, string memberName)
+		IProperty FindPropertyInClass(IClass matchingClass, string memberName)
 		{
 			foreach (IProperty property in matchingClass.Properties) {
 				if (property.Name == memberName) {
@@ -52,6 +54,21 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return null;
+		}
+		
+		IProperty FindProperty(PythonResolverContext resolverContext, MemberName memberName)
+		{
+			IProperty parentProperty = FindProperty(resolverContext, memberName.Type);
+			if (parentProperty != null) {
+				return FindPropertyInProperty(parentProperty, memberName.Name);
+			}
+			return null;
+		}
+		
+		IProperty FindPropertyInProperty(IProperty parentProperty, string propertyName)
+		{
+			IClass parentPropertyClass = parentProperty.ReturnType.GetUnderlyingClass();
+			return FindPropertyInClass(parentPropertyClass, propertyName);
 		}
 	}
 }

@@ -13,18 +13,18 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Resolver
 {
 	[TestFixture]
-	public class ResolveExitMethodFromSysImportExitTestFixture : ResolveTestsBase
+	public class ResolveTanMethodFromMathImportCosAndTanTestFixture : ResolveTestsBase
 	{
 		protected override ExpressionResult GetExpressionResult()
 		{
-			return new ExpressionResult("exit", ExpressionContext.Default);
+			return new ExpressionResult("tan", ExpressionContext.Default);
 		}
 		
 		protected override string GetPythonScript()
 		{
 			return 
-				"from sys import exit\r\n" +
-				"exit\r\n" +
+				"from math import cos, tan\r\n" +
+				"tan\r\n" +
 				"\r\n";
 		}
 			
@@ -35,9 +35,9 @@ namespace PythonBinding.Tests.Resolver
 		}
 		
 		[Test]
-		public void ResolveResultMethodNameIsExit()
+		public void ResolveResultMethodNameIsTan()
 		{
-			Assert.AreEqual("exit", MethodResolveResult.Name);
+			Assert.AreEqual("tan", MethodResolveResult.Name);
 		}
 		
 		MethodGroupResolveResult MethodResolveResult {
@@ -45,16 +45,16 @@ namespace PythonBinding.Tests.Resolver
 		}
 		
 		[Test]
-		public void ResolveResultContainingTypeHasTwoExitMethods()
+		public void ResolveResultContainingTypeHasOneTanMethods()
 		{
-			List<IMethod> exitMethods = GetExitMethods();
-			Assert.AreEqual(2, exitMethods.Count);
+			List<IMethod> tanMethods = GetTanMethods();
+			Assert.AreEqual(1, tanMethods.Count);
 		}
 		
-		List<IMethod> GetExitMethods()
+		List<IMethod> GetTanMethods()
 		{
 			List<IMethod> methods = MethodResolveResult.ContainingType.GetMethods();
-			return PythonCompletionItemsHelper.FindAllMethodsFromCollection("exit", -1, methods.ToArray());
+			return PythonCompletionItemsHelper.FindAllMethodsFromCollection("tan", -1, methods.ToArray());
 		}
 	}
 }

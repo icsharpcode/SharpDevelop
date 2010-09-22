@@ -13,18 +13,18 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Resolver
 {
 	[TestFixture]
-	public class ResolveExitMethodFromSysImportExitTestFixture : ResolveTestsBase
+	public class ResolveExitMethodFromSysImportExitAsMyExitTestFixture : ResolveTestsBase
 	{
 		protected override ExpressionResult GetExpressionResult()
 		{
-			return new ExpressionResult("exit", ExpressionContext.Default);
+			return new ExpressionResult("myexit", ExpressionContext.Default);
 		}
 		
 		protected override string GetPythonScript()
 		{
 			return 
-				"from sys import exit\r\n" +
-				"exit\r\n" +
+				"from sys import exit as myexit\r\n" +
+				"myexit\r\n" +
 				"\r\n";
 		}
 			
@@ -42,19 +42,6 @@ namespace PythonBinding.Tests.Resolver
 		
 		MethodGroupResolveResult MethodResolveResult {
 			get { return (MethodGroupResolveResult)resolveResult; }
-		}
-		
-		[Test]
-		public void ResolveResultContainingTypeHasTwoExitMethods()
-		{
-			List<IMethod> exitMethods = GetExitMethods();
-			Assert.AreEqual(2, exitMethods.Count);
-		}
-		
-		List<IMethod> GetExitMethods()
-		{
-			List<IMethod> methods = MethodResolveResult.ContainingType.GetMethods();
-			return PythonCompletionItemsHelper.FindAllMethodsFromCollection("exit", -1, methods.ToArray());
 		}
 	}
 }

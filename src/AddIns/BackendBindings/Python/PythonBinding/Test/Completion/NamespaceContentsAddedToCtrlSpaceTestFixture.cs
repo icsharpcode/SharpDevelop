@@ -36,7 +36,7 @@ namespace PythonBinding.Tests.Resolver
 			namespaceItems.Add(myTestClass);
 			mockProjectContent.AddExistingNamespaceContents("MyNamespace", namespaceItems);
 			
-			DefaultCompilationUnit cu = new DefaultCompilationUnit(mockProjectContent) { ErrorsDuringCompile = true };
+			DefaultCompilationUnit cu = new DefaultCompilationUnit(mockProjectContent);
 			
 			// Add usings.
 			DefaultUsing newUsing = new DefaultUsing(cu.ProjectContent);

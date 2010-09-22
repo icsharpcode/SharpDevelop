@@ -15,53 +15,60 @@ namespace PythonBinding.Tests.Resolver
 	{
 		ResolveResult result;
 		ParseInformation parseInfo;
+		ScriptingUtils.MockProjectContent projectContent;
 		IProperty myClassProperty;
 		MockClass myClass;
+		IProperty nestedClassProperty;
 		
-		void ResolveClassProperty()
+		void ResolvePropertyExpression(string expression)
 		{
 			PythonResolverContext context = new PythonResolverContext(parseInfo);
-			ExpressionResult expression = new ExpressionResult("MyClass.MyProperty");
+			ExpressionResult expressionResult = new ExpressionResult(expression);
 			
 			PythonResolver resolver = new PythonResolver();
-			result = resolver.Resolve(context, expression);
+			result = resolver.Resolve(context, expressionResult);
 		}
 		
-		void CreateParseInfoWithOneClass()
+		void CreateParseInfoWithOneClassWithOneProperty()
 		{
-			ScriptingUtils.MockProjectContent projectContent = new ScriptingUtils.MockProjectContent();
+			projectContent = new ScriptingUtils.MockProjectContent();
 			myClass = new MockClass(projectContent, "MyClass");
 			
-			projectContent.ClassToReturnFromGetClass = myClass;
-			projectContent.ClassNameForGetClass = "MyClass";
-			
-			myClassProperty = CreateProperty(myClass);
-			myClass.Properties.Add(myClassProperty);
+			myClassProperty = AddPropertyToClass("MyProperty", myClass);
 			
 			DefaultCompilationUnit unit = new DefaultCompilationUnit(projectContent);
 			parseInfo = new ParseInformation(unit);
+			
+			projectContent.SetClassToReturnFromGetClass("MyClass", myClass);
 		}
 		
-		IProperty CreateProperty(IClass c)
+		IProperty AddPropertyToClass(string propertyName, IClass c)
 		{
-			return new DefaultProperty(c, "MyProperty");
+			IProperty property = CreateProperty(propertyName, c);
+			c.Properties.Add(property);
+			return property;
+		}
+		
+		IProperty CreateProperty(string propertyName, IClass c)
+		{
+			return new DefaultProperty(c, propertyName);
 		}
 		
 		[Test]
-		public void Resolve_ClassHasOneProperty_ReturnsMemberResolveResult()
+		public void Resolve_ExpressionIsForPropertyOnClassWithOneProperty_ReturnsMemberResolveResult()
 		{
-			CreateParseInfoWithOneClass();
-			ResolveClassProperty();
+			CreateParseInfoWithOneClassWithOneProperty();
+			ResolvePropertyExpression("MyClass.MyProperty");
 			MemberResolveResult memberResolveResult = result as MemberResolveResult;
 			
 			Assert.IsNotNull(memberResolveResult);
 		}
 		
 		[Test]
-		public void Resolve_ClassHasOneProperty_MemberResolveResultResolvedTypeIsMyClassProperty()
+		public void Resolve_ExpressionIsForPropertyOnClassWithOneProperty_MemberResolveResultResolvedTypeIsMyClassProperty()
 		{
-			CreateParseInfoWithOneClass();
-			ResolveClassProperty();
+			CreateParseInfoWithOneClassWithOneProperty();
+			ResolvePropertyExpression("MyClass.MyProperty");
 			MemberResolveResult memberResolveResult = result as MemberResolveResult;
 			IMember resolvedMember = memberResolveResult.ResolvedMember;
 			
@@ -69,17 +76,42 @@ namespace PythonBinding.Tests.Resolver
 		}
 		
 		[Test]
-		public void Resolve_ClassHasTwoProperties_MemberResolveResultResolvedTypeIsSecondClassProperty()
+		public void Resolve_ExpressionIsForSecondPropertyOnClassWithTwoProperties_MemberResolveResultResolvedTypeIsSecondClassProperty()
 		{
-			CreateParseInfoWithOneClass();
-			DefaultProperty extraProperty = new DefaultProperty(myClass, "ExtraProperty");
-			myClass.Properties.Insert(0, extraProperty);
-			ResolveClassProperty();
+			CreateParseInfoWithOneClassWithOneProperty();
+			InsertNewPropertyOnClassBeforeExistingProperty();
+			ResolvePropertyExpression("MyClass.MyProperty");
 			
 			MemberResolveResult memberResolveResult = result as MemberResolveResult;
 			IMember resolvedMember = memberResolveResult.ResolvedMember;
 			
 			Assert.AreEqual(myClassProperty, resolvedMember);
+		}
+		
+		void InsertNewPropertyOnClassBeforeExistingProperty()
+		{
+			IProperty extraProperty = CreateProperty("ExtraProperty", myClass);
+			myClass.Properties.Insert(0, extraProperty);
+		}
+		
+		[Test]
+		public void Resolve_ExpressionRefersToNestedProperty_MemberResolveResultResolvedTypeIsNestedProperty()
+		{
+			CreateParseInfoWithOneClassWithOneProperty();
+			AddNestedPropertyToExistingProperty();
+			ResolvePropertyExpression("MyClass.MyProperty.MyNestedProperty");
+			
+			MemberResolveResult memberResolveResult = result as MemberResolveResult;
+			IMember resolvedMember = memberResolveResult.ResolvedMember;
+			
+			Assert.AreEqual(nestedClassProperty, resolvedMember);
+		}
+		
+		void AddNestedPropertyToExistingProperty()
+		{
+			MockClass nestedPropertyClass = new MockClass(projectContent, "MyNestedPropertyClass");
+			nestedClassProperty = AddPropertyToClass("MyNestedProperty", nestedPropertyClass);
+			myClassProperty.ReturnType = new DefaultReturnType(nestedPropertyClass);
 		}
 	}
 }
