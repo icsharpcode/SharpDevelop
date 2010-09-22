@@ -114,6 +114,7 @@
     </Compile>
     <Compile Include="Project\Dialogs\EditorDialog.Designer.cs" />
     <Compile Include="Project\Dialogs\GroupingCollectionEditor.cs" />
+    <Compile Include="Project\Dialogs\IStringBasedEditorDialog.cs" />
     <Compile Include="Project\Dialogs\ParametersCollectionEditor.cs" />
     <Compile Include="Project\Dialogs\ParameterDialog.cs" />
     <Compile Include="Project\Dialogs\PreviewControl.cs">

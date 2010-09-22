@@ -93,7 +93,7 @@ namespace ICSharpCode.Reports.Addin.Designer
 		
 		private void OnRunTextEditor (object sender,EventArgs e)
 		{
-			ITextEditorDialog ed = new TextEditorDialog (ctrl.Text,ctrl.Name);
+			IStringBasedEditorDialog ed = new TextEditorDialog (ctrl.Text,ctrl.Name);
 			if (ed.ShowDialog() == DialogResult.OK) {
 				ctrl.Text = ed.TextValue;
 				this.SetProperty ("Name",ed.TextValue);

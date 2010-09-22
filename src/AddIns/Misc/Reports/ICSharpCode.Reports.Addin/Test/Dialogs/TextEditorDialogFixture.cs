@@ -19,7 +19,7 @@ namespace ICSharpCode.Reports.Addin.Test.Dialogs
 		[Test]
 		public void ConstructorWithEmptyString()
 		{
-			ITextEditorDialog ed = new DummyEditorDialog(String.Empty);
+			IStringBasedEditorDialog ed = new DummyEditorDialog(String.Empty);
 			Assert.AreEqual(ed.TextValue,String.Empty,"TextValue should be empty");
 		}
 		
@@ -27,7 +27,7 @@ namespace ICSharpCode.Reports.Addin.Test.Dialogs
 		public void ConstructorWithText ()
 		{
 			string s = "myteststring";
-			ITextEditorDialog ed = new DummyEditorDialog(s);
+			IStringBasedEditorDialog ed = new DummyEditorDialog(s);
 			Assert.AreEqual (ed.TextValue,s);
 		}
 		

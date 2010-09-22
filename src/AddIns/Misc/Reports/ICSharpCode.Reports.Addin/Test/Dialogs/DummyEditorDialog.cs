@@ -15,7 +15,7 @@ using ICSharpCode.Reports.Core;
 namespace ICSharpCode.Reports.Addin.Test.Dialogs
 {
 	
-	public class DummyEditorDialog:ITextEditorDialog
+	public class DummyEditorDialog:IStringBasedEditorDialog
 	{
 		string textValue;
 		

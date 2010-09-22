@@ -10,6 +10,8 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 
+using ICSharpCode.Reports.Addin.Dialogs;
+
 namespace ICSharpCode.Reports.Addin.Designer
 {
 	/// <summary>
@@ -79,6 +81,8 @@ namespace ICSharpCode.Reports.Addin.Designer
 				t.Commit();}
 		}
 		
+		
+		[TypeConverter(typeof(FormatStringConverter))]
 		public string FormatString 
 		{
 			get {return this.Item.FormatString;}
