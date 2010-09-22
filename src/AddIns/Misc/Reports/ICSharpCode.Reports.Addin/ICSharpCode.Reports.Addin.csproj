@@ -124,7 +124,7 @@
     <Compile Include="Project\Dialogs\ExpressionEditor.Designer.cs">
       <DependentUpon>ExpressionEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Project\Dialogs\StringConverter.cs" />
+    <Compile Include="Project\Dialogs\FormatStringConverte.cs" />
     <Compile Include="Project\Globals\FormsDesignerLoadException.cs" />
     <Compile Include="Project\Globals\GlobalsDesigner.cs" />
     <Compile Include="Project\Globals\StringWriterWithEncoding.cs" />
