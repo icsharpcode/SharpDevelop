@@ -68,29 +68,10 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			get { return searchTypeRequest; }
 		}
 		
-		/// <summary>
-		/// Gets or sets the class to return from the GetClass Method.
-		/// </summary>
-		public IClass ClassToReturnFromGetClass
-		{
-			get { return classToReturnFromGetClass; }
-			set { classToReturnFromGetClass = value; }
-		}
-		
-		/// <summary>
-		/// Gets or sets the class name that needs to match in order
-		/// for the GetClass call to return a class. If nothing is
-		/// specified then every class name matches. 
-		/// </summary>
-		public string ClassNameForGetClass {
-			get { return classNameForGetClass; }
-			set { classNameForGetClass = value; }
-		}
-		
 		public void SetClassToReturnFromGetClass(string className, IClass classToReturn)
 		{
-			ClassToReturnFromGetClass = classToReturn;
-			ClassNameForGetClass = className;
+			classToReturnFromGetClass = classToReturn;
+			classNameForGetClass = className;
 		}
 
 		/// <summary>

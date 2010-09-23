@@ -194,7 +194,7 @@
     <Compile Include="Utils\Tests\MockAddInTreeTestFixture.cs" />
     <Compile Include="Utils\Tests\MockBuildOptionsTestFixture.cs" />
     <Compile Include="Utils\Tests\MockBuildProjectBeforeTestRunTestFixture.cs" />
-    <Compile Include="Utils\Tests\MockClassTestFixture.cs" />
+    <Compile Include="Utils\Tests\MockClassTests.cs" />
     <Compile Include="Utils\Tests\MockDebuggerServiceTestFixture.cs" />
     <Compile Include="Utils\Tests\MockFileServiceTestFixture.cs" />
     <Compile Include="Utils\Tests\MockMessageServiceTestFixture.cs" />

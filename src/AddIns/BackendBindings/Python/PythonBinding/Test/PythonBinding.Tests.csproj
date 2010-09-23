@@ -350,6 +350,7 @@
     <Compile Include="Resolver\MemberNameTests.cs" />
     <Compile Include="Resolver\PythonSelfResolverTests.cs" />
     <Compile Include="Resolver\ResolveBuiltInRoundMethodTests.cs" />
+    <Compile Include="Resolver\ResolveClassEventTests.cs" />
     <Compile Include="Resolver\ResolveClassInstanceWithNamespaceTestFixture.cs" />
     <Compile Include="Resolver\ResolveClassPropertyTests.cs" />
     <Compile Include="Resolver\ResolveConsoleWriteLineTests.cs" />
@@ -425,6 +426,7 @@
     <Compile Include="Utils\PythonBindingAddInFile.cs" />
     <Compile Include="Utils\PythonCompletionItemsHelper.cs" />
     <Compile Include="Utils\PythonParserHelper.cs" />
+    <Compile Include="Utils\PythonResolverTestsHelper.cs" />
     <Compile Include="Utils\TestablePythonCodeCompletionBinding.cs" />
     <Compile Include="Utils\TestablePythonCodeCompletionItemProvider.cs" />
     <Compile Include="Utils\Tests\PythonCompletionItemsHelperTests.cs" />

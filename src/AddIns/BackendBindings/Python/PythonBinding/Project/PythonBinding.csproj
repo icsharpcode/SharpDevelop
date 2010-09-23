@@ -101,13 +101,13 @@
     <Compile Include="Src\PythonFromImport.cs" />
     <Compile Include="Src\PythonImport.cs" />
     <Compile Include="Src\PythonLanguageBinding.cs" />
+    <Compile Include="Src\PythonMemberResolver.cs" />
     <Compile Include="Src\PythonMethodGroupResolveResult.cs" />
     <Compile Include="Src\PythonMethodResolver.cs" />
     <Compile Include="Src\PythonModuleCompletionItems.cs" />
     <Compile Include="Src\PythonModuleCompletionItemsFactory.cs" />
     <Compile Include="Src\PythonImportResolver.cs" />
     <Compile Include="Src\PythonNamespaceResolver.cs" />
-    <Compile Include="Src\PythonPropertyResolver.cs" />
     <Compile Include="Src\PythonResolverContext.cs" />
     <Compile Include="Src\PythonSelfResolver.cs" />
     <Compile Include="Src\PythonStandardLibraryPath.cs" />

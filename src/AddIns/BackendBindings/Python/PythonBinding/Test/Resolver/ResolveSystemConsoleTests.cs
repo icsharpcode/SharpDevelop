@@ -34,7 +34,7 @@ namespace PythonBinding.Tests.Resolver
 			mockProjectContent = new ICSharpCode.Scripting.Tests.Utils.MockProjectContent();
 			
 			systemConsoleClass = new MockClass(mockProjectContent, "System.Console");
-			mockProjectContent.ClassToReturnFromGetClass = systemConsoleClass;
+			mockProjectContent.SetClassToReturnFromGetClass("System.Console", systemConsoleClass);
 			
 			compilationUnit = CreateCompilationUnit(mockProjectContent);
 			ParseInformation parseInfo = new ParseInformation(compilationUnit);

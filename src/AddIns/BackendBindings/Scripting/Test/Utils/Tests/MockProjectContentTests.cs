@@ -163,16 +163,6 @@ namespace ICSharpCode.Scripting.Tests.Utils.Tests
 		}
 		
 		[Test]
-		public void GetClass_ClassNameDoesNotMatchAndNoClassNameForGetClassSpecified_ReturnsTestClassSinceNoClassNameRestrictionSpecified()
-		{
-			MockClass expectedClass = new MockClass(projectContent, "test");
-			projectContent.ClassToReturnFromGetClass = expectedClass;
-			IClass c = projectContent.GetClass("abcdef", 0);
-			
-			Assert.AreEqual(expectedClass, c);
-		}
-		
-		[Test]
 		public void GetClass_ClassNameDoesNotMatchClassNameForGetClassProperty_ReturnsNull()
 		{
 			MockClass c = new MockClass(projectContent, "test");

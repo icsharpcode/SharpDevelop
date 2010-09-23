@@ -19,19 +19,19 @@ namespace ICSharpCode.PythonBinding
 		PythonStandardModuleResolver standardModuleResolver = new PythonStandardModuleResolver();
 		PythonSelfResolver selfResolver = new PythonSelfResolver();
 		PythonMethodResolver methodResolver;
-		PythonPropertyResolver propertyResolver;
+		PythonMemberResolver memberResolver;
 		
 		List<IPythonResolver> resolvers = new List<IPythonResolver>();
 		
 		public PythonResolver()
 		{
 			methodResolver = new PythonMethodResolver(classResolver, standardModuleResolver);
-			propertyResolver = new PythonPropertyResolver(classResolver);
+			memberResolver = new PythonMemberResolver(classResolver);
 			
 			resolvers.Add(importResolver);
 			resolvers.Add(classResolver);
 			resolvers.Add(standardModuleResolver);
-			resolvers.Add(propertyResolver);
+			resolvers.Add(memberResolver);
 			resolvers.Add(methodResolver);
 			resolvers.Add(selfResolver);
 			resolvers.Add(namespaceResolver);
