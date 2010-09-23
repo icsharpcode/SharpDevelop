@@ -18,14 +18,22 @@ namespace PythonBinding.Tests.Utils
 		public PythonResolver Resolver;
 		public ResolveResult ResolveResult;
 		
-		public PythonResolverTestsHelper()
+		public PythonResolverTestsHelper(string code)
 		{
 			ProjectContent = new ScriptingUtils.MockProjectContent();
-			CompilationUnit = new DefaultCompilationUnit(ProjectContent);
+			PythonParser parser = new PythonParser();
+			string fileName = @"test.py";
+			CompilationUnit = parser.Parse(ProjectContent, fileName, code) as DefaultCompilationUnit;
+			
 			ParseInfo = new ParseInformation(CompilationUnit);
 			Context = new PythonResolverContext(ParseInfo);
 			
 			Resolver = new PythonResolver();
+		}
+		
+		public PythonResolverTestsHelper()
+			: this(String.Empty)
+		{
 		}
 		
 		public ResolveResult Resolve(string expression)

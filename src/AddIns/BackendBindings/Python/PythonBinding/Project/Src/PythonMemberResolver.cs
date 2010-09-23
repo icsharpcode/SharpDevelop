@@ -32,7 +32,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			MemberName memberName = new MemberName(expression);
 			if (memberName.HasName) {
-				IClass c = resolverContext.GetClass(memberName.Type);
+				IClass c = FindClass(resolverContext, memberName.Type);
 				if (c != null) {
 					return FindMemberInClass(c, memberName.Name);
 				} else {
@@ -40,6 +40,11 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return null;
+		}
+		
+		IClass FindClass(PythonResolverContext resolverContext, string className)
+		{
+			 return classResolver.GetClass(resolverContext, className);
 		}
 		
 		MemberResolveResult CreateMemberResolveResult(IMember member)

@@ -28,13 +28,17 @@ namespace PythonBinding.Tests.Resolver
 		
 		void CreateClassWithOneEvent()
 		{
-			resolverHelper = new PythonResolverTestsHelper();
+			// Define imports.
+			string code = 
+				"from MyNamespace import MyClass";
+			
+			resolverHelper = new PythonResolverTestsHelper(code);
 			myClass = resolverHelper.CreateClass("MyClass");
 			myClassEvent = myClass.AddEvent("MyEvent");
 			
 			AddEventHandlerClass();
 			
-			resolverHelper.ProjectContent.SetClassToReturnFromGetClass("MyClass", myClass);
+			resolverHelper.ProjectContent.SetClassToReturnFromGetClass("MyNamespace.MyClass", myClass);
 		}
 		
 		void AddEventHandlerClass()
