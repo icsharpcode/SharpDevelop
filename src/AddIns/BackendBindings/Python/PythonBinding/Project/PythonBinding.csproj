@@ -101,6 +101,7 @@
     <Compile Include="Src\PythonFromImport.cs" />
     <Compile Include="Src\PythonImport.cs" />
     <Compile Include="Src\PythonLanguageBinding.cs" />
+    <Compile Include="Src\PythonLocalVariableResolver.cs" />
     <Compile Include="Src\PythonMemberResolver.cs" />
     <Compile Include="Src\PythonMethodGroupResolveResult.cs" />
     <Compile Include="Src\PythonMethodResolver.cs" />
@@ -163,7 +164,6 @@
     <Compile Include="Src\RunDebugPythonCommand.cs" />
     <Compile Include="Src\RunPythonCommand.cs" />
     <Compile Include="Src\PythonStandardModules.cs" />
-    <Compile Include="Src\PythonVariableResolver.cs" />
     <Compile Include="Src\StringTextContentProvider.cs" />
     <None Include="..\..\RequiredLibraries\Chiron.exe.Config">
       <Link>Chiron.exe.Config</Link>

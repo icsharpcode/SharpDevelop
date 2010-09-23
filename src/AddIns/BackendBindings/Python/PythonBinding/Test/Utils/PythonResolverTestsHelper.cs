@@ -14,7 +14,6 @@ namespace PythonBinding.Tests.Utils
 		public ScriptingUtils.MockProjectContent ProjectContent;
 		public	DefaultCompilationUnit CompilationUnit;
 		public ParseInformation ParseInfo;
-		public PythonResolverContext Context;
 		public PythonResolver Resolver;
 		public ResolveResult ResolveResult;
 		
@@ -25,9 +24,7 @@ namespace PythonBinding.Tests.Utils
 			string fileName = @"test.py";
 			CompilationUnit = parser.Parse(ProjectContent, fileName, code) as DefaultCompilationUnit;
 			
-			ParseInfo = new ParseInformation(CompilationUnit);
-			Context = new PythonResolverContext(ParseInfo);
-			
+			ParseInfo = new ParseInformation(CompilationUnit);			
 			Resolver = new PythonResolver();
 		}
 		
@@ -39,12 +36,24 @@ namespace PythonBinding.Tests.Utils
 		public ResolveResult Resolve(string expression)
 		{
 			ExpressionResult expressionResult = new ExpressionResult(expression);
-			ResolveResult = Resolver.Resolve(Context, expressionResult);
+			PythonResolverContext context = new PythonResolverContext(ParseInfo);
+			ResolveResult = Resolver.Resolve(context, expressionResult);
 			return ResolveResult;
 		}
 		
-		public MemberResolveResult MemberResultResult {
+		public ResolveResult Resolve(string expression, string code)
+		{
+			ExpressionResult expressionResult = new ExpressionResult(expression);
+			ResolveResult = Resolver.Resolve(expressionResult, ParseInfo, code);
+			return ResolveResult;
+		}
+		
+		public MemberResolveResult MemberResolveResult {
 			get { return ResolveResult as MemberResolveResult; }
+		}
+		
+		public LocalResolveResult LocalResolveResult {
+			get { return ResolveResult as LocalResolveResult; }
 		}
 		
 		public MockClass CreateClass(string name)

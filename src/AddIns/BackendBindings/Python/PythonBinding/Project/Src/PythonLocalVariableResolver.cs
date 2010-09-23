@@ -21,16 +21,12 @@ namespace ICSharpCode.PythonBinding
 	/// <summary>
 	/// Determines the type of a variable.
 	/// </summary>
-	public class PythonVariableResolver : PythonWalker
+	public class PythonLocalVariableResolver : PythonWalker, IPythonResolver
 	{
 		string variableName = String.Empty;
 		string typeName;
 		AssignmentStatement currentAssignStatement;
 		bool foundVariableAssignment;
-		
-		public PythonVariableResolver()
-		{
-		}
 		
 		/// <summary>
 		/// The resolved type name.
@@ -44,19 +40,21 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		/// <param name="variableName">Name of the variable.</param>
 		/// <param name="code">The python code containing the variable.</param>
-		public string Resolve(string variableName, string fileName, string code)
+		public string Resolve(string variableName, string code)
 		{
 			if (code != null) {
-				ScriptEngine scriptEngine = IronPython.Hosting.Python.CreateEngine();
-				PythonCompilerSink sink = new PythonCompilerSink();
-				SourceUnit source = DefaultContext.DefaultPythonContext.CreateFileUnit(fileName, code);
-				CompilerContext context = new CompilerContext(source, new PythonCompilerOptions(), sink);
-				Parser parser = Parser.CreateParser(context, new PythonOptions());
-				PythonAst ast = parser.ParseFile(false);
-
+				PythonParser parser = new PythonParser();
+				PythonAst ast = parser.CreateAst("resolver.py", code);
 				return Resolve(variableName, ast);
 			}
 			return null;
+		}
+		
+		string Resolve(string variableName, PythonAst ast)
+		{
+			this.variableName = variableName;
+			ast.Walk(this);
+			return TypeName;		
 		}
 				
 		public override bool Walk(AssignmentStatement node)
@@ -136,11 +134,52 @@ namespace ICSharpCode.PythonBinding
 			return typeName.ToString();
 		}
 		
-		string Resolve(string variableName, PythonAst ast)
+		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)
 		{
-			this.variableName = variableName;
-			ast.Walk(this);
-			return TypeName;		
+			return GetLocalVariable(resolverContext, expressionResult.Expression);
+		}
+		
+		/// <summary>
+		/// Tries to find the type that matches the local variable name.
+		/// </summary>
+		LocalResolveResult GetLocalVariable(PythonResolverContext resolverContext, string expression)
+		{
+			PythonLocalVariableResolver resolver = new PythonLocalVariableResolver();
+			string typeName = resolver.Resolve(expression, resolverContext.FileContent);
+			if (typeName != null) {
+				return CreateLocalResolveResult(typeName, expression, resolverContext);
+			}
+			return null;
+		}
+		
+		LocalResolveResult CreateLocalResolveResult(string typeName, string identifier, PythonResolverContext resolverContext)
+		{
+			IClass resolvedClass = resolverContext.GetClass(typeName);
+			if (resolvedClass != null) {
+				return CreateLocalResolveResult(identifier, resolvedClass);
+			}
+			return null;
+		}
+		
+		LocalResolveResult CreateLocalResolveResult(string identifier, IClass resolvedClass)
+		{
+			DefaultMethod dummyMethod = CreateDummyMethod();
+			DefaultField.LocalVariableField field = CreateLocalVariableField(identifier, resolvedClass, dummyMethod.DeclaringType);
+			return new LocalResolveResult(dummyMethod, field);
+		}
+		
+		DefaultField.LocalVariableField CreateLocalVariableField(string identifier, IClass resolvedClass, IClass callingClass)
+		{
+			return new DefaultField.LocalVariableField(resolvedClass.DefaultReturnType,
+				identifier,
+				DomRegion.Empty, 
+				callingClass);
+		}
+		
+		DefaultMethod CreateDummyMethod()
+		{
+			DefaultClass dummyClass = new DefaultClass(DefaultCompilationUnit.DummyCompilationUnit, "Global");
+			return new DefaultMethod(dummyClass, String.Empty);
 		}
 	}
 }

@@ -53,7 +53,7 @@ namespace PythonBinding.Tests.Resolver
 		{
 			CreateClassWithOneEvent();
 			resolverHelper.Resolve("MyClass.MyEvent");
-			IMember resolvedMember = resolverHelper.MemberResultResult.ResolvedMember;
+			IMember resolvedMember = resolverHelper.MemberResolveResult.ResolvedMember;
 			
 			Assert.AreEqual(myClassEvent, resolvedMember);
 		}
@@ -64,7 +64,7 @@ namespace PythonBinding.Tests.Resolver
 			CreateClassWithOneEvent();
 			IEvent secondEvent = myClass.AddEvent("SecondEvent");
 			resolverHelper.Resolve("MyClass.SecondEvent");
-			IMember resolvedMember = resolverHelper.MemberResultResult.ResolvedMember;
+			IMember resolvedMember = resolverHelper.MemberResolveResult.ResolvedMember;
 			
 			Assert.AreEqual(secondEvent, resolvedMember);
 		}
@@ -74,7 +74,7 @@ namespace PythonBinding.Tests.Resolver
 		{
 			CreateClassWithOneEvent();
 			resolverHelper.Resolve("MyClass.MyEvent.Target");
-			IMember resolvedMember = resolverHelper.MemberResultResult.ResolvedMember;
+			IMember resolvedMember = resolverHelper.MemberResolveResult.ResolvedMember;
 			
 			Assert.AreEqual(eventHandlerTargetProperty, resolvedMember);
 		}

@@ -54,7 +54,7 @@ namespace PythonBinding.Tests.Resolver
 		{
 			CreateClassWithOneProperty();
 			resolverHelper.Resolve("MyClass.MyProperty");
-			IMember resolvedMember = resolverHelper.MemberResultResult.ResolvedMember;
+			IMember resolvedMember = resolverHelper.MemberResolveResult.ResolvedMember;
 			
 			Assert.AreEqual(myClassProperty, resolvedMember);
 		}
@@ -65,7 +65,7 @@ namespace PythonBinding.Tests.Resolver
 			CreateClassWithOneProperty();
 			myClass.InsertPropertyAtStart("ExtraProperty");
 			resolverHelper.Resolve("MyClass.MyProperty");
-			IMember resolvedMember = resolverHelper.MemberResultResult.ResolvedMember;
+			IMember resolvedMember = resolverHelper.MemberResolveResult.ResolvedMember;
 			
 			Assert.AreEqual(myClassProperty, resolvedMember);
 		}
@@ -76,7 +76,7 @@ namespace PythonBinding.Tests.Resolver
 			CreateClassWithOneProperty();
 			AddNestedPropertyToExistingProperty();
 			resolverHelper.Resolve("MyClass.MyProperty.MyNestedProperty");
-			IMember resolvedMember = resolverHelper.MemberResultResult.ResolvedMember;
+			IMember resolvedMember = resolverHelper.MemberResolveResult.ResolvedMember;
 			
 			Assert.AreEqual(nestedClassProperty, resolvedMember);
 		}

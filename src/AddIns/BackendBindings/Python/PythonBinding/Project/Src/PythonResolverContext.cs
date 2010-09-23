@@ -13,9 +13,16 @@ namespace ICSharpCode.PythonBinding
 		ICompilationUnit compilationUnit;
 		IProjectContent projectContent;
 		IClass callingClass;
+		string fileContent;
 		
 		public PythonResolverContext(ParseInformation parseInfo)
+			: this(parseInfo, String.Empty)
 		{
+		}
+		
+		public PythonResolverContext(ParseInformation parseInfo, string fileContent)
+		{
+			this.fileContent = fileContent;
 			GetCompilationUnits(parseInfo);
 			GetProjectContent();
 		}
@@ -38,6 +45,10 @@ namespace ICSharpCode.PythonBinding
 			if (compilationUnit != null) {
 				projectContent = compilationUnit.ProjectContent;
 			}
+		}
+		
+		public string FileContent {
+			get { return fileContent; }
 		}
 		
 		public IProjectContent ProjectContent {

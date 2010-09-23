@@ -44,7 +44,7 @@ namespace PythonBinding.Tests.Resolver
 		{
 			CreateClassWithOneEvent();
 			resolverHelper.Resolve("MyClass.MyField");
-			IMember resolvedMember = resolverHelper.MemberResultResult.ResolvedMember;
+			IMember resolvedMember = resolverHelper.MemberResolveResult.ResolvedMember;
 			
 			Assert.AreEqual(myClassField, resolvedMember);
 		}
