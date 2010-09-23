@@ -67,6 +67,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			List<IMember> members = new List<IMember>();
 			members.AddRange(c.Events);
+			members.AddRange(c.Fields);
 			members.AddRange(c.Properties);
 			return members;
 		}

@@ -351,6 +351,7 @@
     <Compile Include="Resolver\PythonSelfResolverTests.cs" />
     <Compile Include="Resolver\ResolveBuiltInRoundMethodTests.cs" />
     <Compile Include="Resolver\ResolveClassEventTests.cs" />
+    <Compile Include="Resolver\ResolveClassFieldTests.cs" />
     <Compile Include="Resolver\ResolveClassInstanceWithNamespaceTestFixture.cs" />
     <Compile Include="Resolver\ResolveClassPropertyTests.cs" />
     <Compile Include="Resolver\ResolveConsoleWriteLineTests.cs" />

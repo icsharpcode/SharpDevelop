@@ -148,5 +148,12 @@ namespace UnitTesting.Tests.Utils
 			Events.Add(classEvent);
 			return classEvent;
 		}
+		
+		public DefaultField AddField(string name)
+		{
+			DefaultField field = new DefaultField(this, name);
+			Fields.Add(field);
+			return field;
+		}
 	}
 }

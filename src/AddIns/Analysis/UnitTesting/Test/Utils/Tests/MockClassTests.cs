@@ -233,5 +233,27 @@ namespace UnitTesting.Tests.Utils.Tests
 			
 			Assert.AreEqual("MyEvent", name);
 		}
+		
+		[Test]
+		public void AddField_PassedFieldName_AddsFieldToClass()
+		{
+			MockClass c = new MockClass();
+			c.AddField("MyField");
+			
+			IField myField = c.Fields[0];
+			string name = myField.Name;
+			
+			Assert.AreEqual("MyField", name);
+		}
+		
+		[Test]
+		public void AddField_PassedFieldName_ReturnsFieldWithExpectedName()
+		{
+			MockClass c = new MockClass();
+			IField myField = c.AddField("MyField");			
+			string name = myField.Name;
+			
+			Assert.AreEqual("MyField", name);
+		}
 	}
 }
