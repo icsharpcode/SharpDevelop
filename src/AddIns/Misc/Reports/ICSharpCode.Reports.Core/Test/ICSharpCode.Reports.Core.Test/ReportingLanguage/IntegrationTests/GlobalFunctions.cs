@@ -101,7 +101,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		
 		
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
+		[ExpectedException(typeof(UnknownFunctionException))]
 		public void Throw_On_UnknownFunction()
 		{
 			const string expression = "=TotalWrongFunction()";

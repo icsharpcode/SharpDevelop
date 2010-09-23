@@ -115,7 +115,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			
 			PrintHelper.AdjustChildLocation(item,offset);
 			
-			BaseTextItem textItem = item as BaseTextItem;
+			//BaseTextItem textItem = item as BaseTextItem;
 			
 			IReportExpression epr = item as IReportExpression;
 			
@@ -129,26 +129,17 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 						
 					} else 
 					{
-						evaluatedValue =  evaluator.Evaluate(textItem.Text);
+						evaluatedValue =  evaluator.Evaluate(epr.Text);
 					}
-					textItem.Text = evaluatedValue;
+					epr.Text = evaluatedValue;
 					
 				} catch (UnknownFunctionException ufe) {
 					
-					textItem.Text = GlobalValues.UnkownFunctionMessage(ufe.Message);
+					epr.Text = GlobalValues.UnkownFunctionMessage(ufe.Message);
 				}
 				
 			}
-			
-			
-			if (textItem != null) {
-				string str = textItem.Text;
-				textItem.Text = evaluator.Evaluate(textItem.Text);
-				textItem.Render(rpea);
-				textItem.Text = str;
-			} else {
-				item.Render (rpea);
-			}
+			item.Render (rpea);
 			item.Location = saveLocation;
 		}
 		

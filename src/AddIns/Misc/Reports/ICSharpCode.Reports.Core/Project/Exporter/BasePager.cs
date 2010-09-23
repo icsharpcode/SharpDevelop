@@ -230,8 +230,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 					}
 					catch (UnknownFunctionException ufe)
 					{
-//						et.Text = String.Format(System.Globalization.CultureInfo.InvariantCulture,
-//					                      "!! Can't find <{0}>  !! ",ufe.Message);
 						et.Text = GlobalValues.UnkownFunctionMessage(ufe.Message);
 					}
 					finally 
