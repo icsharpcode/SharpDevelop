@@ -225,7 +225,20 @@ namespace ICSharpCode.Reports.Core.Exporter
 				}
 				ExportText et = be as ExportText;
 				if (et != null) {
-					et.Text = evaluatorFassade.Evaluate(et.Text);
+					try{
+						et.Text = evaluatorFassade.Evaluate(et.Text);
+					}
+					catch (UnknownFunctionException ufe)
+					{
+//						et.Text = String.Format(System.Globalization.CultureInfo.InvariantCulture,
+//					                      "!! Can't find <{0}>  !! ",ufe.Message);
+						et.Text = GlobalValues.UnkownFunctionMessage(ufe.Message);
+					}
+					finally 
+					{
+						
+					}	
+					
 				}
 			}
 		}

@@ -132,7 +132,6 @@
     <Compile Include="Project\Exceptions\MissingDataSourceException.cs" />
     <Compile Include="Project\Exceptions\MissingParentException.cs" />
     <Compile Include="Project\Exceptions\ReportException.cs" />
-    <Compile Include="Project\Exceptions\UnknownFunctionException.cs" />
     <Compile Include="Project\Exceptions\UnknownItemException.cs" />
     <Compile Include="Project\Exceptions\WrongColumnException.cs" />
     <Compile Include="Project\Exceptions\WrongSectionException.cs" />
@@ -233,6 +232,7 @@
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Utilities\PropertyPath.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Utilities\ReflectionExtensions.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Utilities\TypeNormalizer.cs" />
+    <Compile Include="Project\Expressions\UnknownFunctionException.cs" />
     <Compile Include="Project\Factories\ConnectionObjectFactory.cs" />
     <Compile Include="Project\Factories\DataManagerFacrory.cs" />
     <Compile Include="Project\Factories\DisplayNameAttribute.cs" />

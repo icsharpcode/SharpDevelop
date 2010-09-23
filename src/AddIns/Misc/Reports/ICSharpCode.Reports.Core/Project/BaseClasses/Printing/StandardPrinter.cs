@@ -117,14 +117,27 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			
 			BaseTextItem textItem = item as BaseTextItem;
 			
-			
 			IReportExpression epr = item as IReportExpression;
 			
+			string evaluatedValue = String.Empty;
+			
 			if (epr != null) {
-				string sss =  evaluator.Evaluate(epr.Expression);
-				if (!String.IsNullOrEmpty(sss)) {
-					textItem.Text = sss;
+				try {
+					if (!String.IsNullOrEmpty(epr.Expression))
+					{
+						evaluatedValue =  evaluator.Evaluate(epr.Expression);
+						
+					} else 
+					{
+						evaluatedValue =  evaluator.Evaluate(textItem.Text);
+					}
+					textItem.Text = evaluatedValue;
+					
+				} catch (UnknownFunctionException ufe) {
+					
+					textItem.Text = GlobalValues.UnkownFunctionMessage(ufe.Message);
 				}
+				
 			}
 			
 			

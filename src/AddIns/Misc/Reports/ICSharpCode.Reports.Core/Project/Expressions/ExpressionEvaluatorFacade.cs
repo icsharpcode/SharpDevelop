@@ -7,6 +7,7 @@
  * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
  */
 using System;
+using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Interfaces;
 using SimpleExpressionEvaluator;
 using SimpleExpressionEvaluator.Evaluation;
@@ -54,6 +55,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			return false;
 		}
 		
+		
 		private void FunctionStore (object sender,SimpleExpressionEvaluator.Evaluation.UnknownFunctionEventArgs e)
 		{
 			
@@ -64,9 +66,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			if (path != null) {
 				searchObj = e.ContextObject;
 			} else {
-				throw new InvalidOperationException("A function specified in the expression (" + e.FunctionName +
-                                                ") does not exist.");
-				
+				throw new UnknownFunctionException(e.FunctionName);
 			}
 			e.Function = functionArgs => path.Evaluate(searchObj);
 		}
