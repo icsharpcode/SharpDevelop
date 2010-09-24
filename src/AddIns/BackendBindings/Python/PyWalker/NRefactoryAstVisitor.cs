@@ -278,11 +278,6 @@ namespace PyWalker
 			return base.VisitIfElseStatement(ifElseStatement, data);
 		}
 		
-		public override object VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
-		{
-			return base.VisitIndexerDeclaration(indexerDeclaration, data);
-		}
-		
 		public override object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
 			return base.VisitIndexerExpression(indexerExpression, data);

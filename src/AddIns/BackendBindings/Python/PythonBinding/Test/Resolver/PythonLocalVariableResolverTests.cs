@@ -3,7 +3,9 @@
 
 using System;
 using ICSharpCode.PythonBinding;
+using IronPython.Compiler.Ast;
 using NUnit.Framework;
+using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Resolver
 {
@@ -73,6 +75,15 @@ namespace PythonBinding.Tests.Resolver
 			string code = "a = Root.Test.Class1()";
 			Resolve("a", code);
 			Assert.AreEqual("Root.Test.Class1", typeName);
+		}
+		
+		[Test]
+		public void GetTypeName_ExpressionIsNotNameOrMemberExpression_ReturnsEmptyStringAndDoesNotGetStuckInInfiniteLoop()
+		{
+			AssignmentStatement statement = PythonParserHelper.GetAssignmentStatement("a = 2");
+			Expression expression = statement.Right;
+			string typeName = PythonLocalVariableResolver.GetTypeName(expression);
+			Assert.AreEqual(String.Empty, typeName);
 		}
 	}
 }

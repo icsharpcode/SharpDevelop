@@ -105,33 +105,13 @@ namespace ICSharpCode.PythonBinding
 		/// 
 		/// then the expression will be a name expression referring to Class1.
 		/// </remarks>
-		static string GetTypeName(Expression node)
+		public static string GetTypeName(Expression node)
 		{
-			// Collect the names that make up the type name.
-			NameExpression nameExpression = null;
-			List<string> names = new List<string>();
-			do {
-				nameExpression = node as NameExpression;
-				MemberExpression memberExpression = node as MemberExpression;
-				string name = String.Empty;
-				if (memberExpression != null) {
-					name = memberExpression.Name;
-					node = memberExpression.Target;
-				} else if (nameExpression != null) {
-					name = nameExpression.Name;
-				}
-				names.Add(name);
-			} while (nameExpression == null);
-			
-			// Create the fully qualified type name by adding the names
-			// in reverse order.
-			StringBuilder typeName = new StringBuilder();
-			typeName.Append(names[names.Count - 1]);
-			for (int i = names.Count - 2; i >= 0; --i) {
-				typeName.Append('.');
-				typeName.Append(names[i]);
+			NameExpression nameExpression = node as NameExpression;
+			if (nameExpression != null) {
+				return nameExpression.Name;
 			}
-			return typeName.ToString();
+			return PythonControlFieldExpression.GetMemberName(node as MemberExpression);
 		}
 		
 		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)
