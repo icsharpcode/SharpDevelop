@@ -48,7 +48,8 @@ namespace ICSharpCode.PythonBinding
 			if (Debug) {
 				debugger.Start(processStartInfo);
 			} else {
-				debugger.StartWithoutDebugging(processStartInfo);
+				PauseCommandPromptProcessStartInfo pauseCommandPrompt = new PauseCommandPromptProcessStartInfo(processStartInfo);
+				debugger.StartWithoutDebugging(pauseCommandPrompt.ProcessStartInfo);
 			}
 		}
 		

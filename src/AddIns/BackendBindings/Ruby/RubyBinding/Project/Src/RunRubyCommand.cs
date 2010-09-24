@@ -43,10 +43,12 @@ namespace ICSharpCode.RubyBinding
 		
 		public override void Run()
 		{
+			ProcessStartInfo processStartInfo = CreateProcessStartInfo();
 			if (debug) {
-				debugger.Start(CreateProcessStartInfo());
+				debugger.Start(processStartInfo);
 			} else {
-				debugger.StartWithoutDebugging(CreateProcessStartInfo());
+				PauseCommandPromptProcessStartInfo commandPrompt = new PauseCommandPromptProcessStartInfo(processStartInfo);
+				debugger.StartWithoutDebugging(commandPrompt.ProcessStartInfo);
 			}
 		}
 		

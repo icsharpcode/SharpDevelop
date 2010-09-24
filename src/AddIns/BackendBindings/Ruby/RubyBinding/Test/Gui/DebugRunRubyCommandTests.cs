@@ -13,13 +13,13 @@ using RubyBinding.Tests.Utils;
 namespace RubyBinding.Tests.Gui
 {
 	[TestFixture]
-	public class DebugRubyCommandTestFixture
+	public class DebugRubyCommandTests
 	{
 		MockDebugger debugger;
 		RunDebugRubyCommand command;
 		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		[SetUp]
+		public void Init()
 		{
 			MockWorkbench workbench = MockWorkbench.CreateWorkbenchWithOneViewContent(@"C:\Projects\test.rb");
 
@@ -33,21 +33,28 @@ namespace RubyBinding.Tests.Gui
 		}
 				
 		[Test]
-		public void DebuggerStartMethodCalled()
+		public void Run_RubyFileOpen_DebuggerStartMethodCalled()
 		{
-			Assert.IsTrue(debugger.StartMethodCalled);
+			bool startMethodCalled = debugger.StartMethodCalled;
+			Assert.IsTrue(startMethodCalled);
 		}
 		
 		[Test]
-		public void ProcessInfoFileNameContainsPathToIronRubyConsole()
+		public void Run_RubyFileOpen_ProcessInfoFileNameContainsPathToIronRubyConsole()
 		{
-			Assert.AreEqual(@"C:\IronRuby\ir.exe", debugger.ProcessStartInfo.FileName);
+			string fileName = debugger.ProcessStartInfo.FileName;
+			string expectedFileName = @"C:\IronRuby\ir.exe";
+			
+			Assert.AreEqual(expectedFileName, fileName);
 		}
 		
 		[Test]
-		public void ProcessInfoArgsHasDebugArgument()
+		public void Run_RubyFileOpen_ProcessInfoArgsHasDebugArgument()
 		{
-			Assert.AreEqual("-D test.rb", debugger.ProcessStartInfo.Arguments);
+			string arguments = debugger.ProcessStartInfo.Arguments;
+			string expectedArguments = "-D test.rb";
+			
+			Assert.AreEqual(expectedArguments, arguments);
 		}
 	}
 }

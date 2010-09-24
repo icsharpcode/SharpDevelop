@@ -22,8 +22,8 @@ namespace RubyBinding.Tests.Gui
 		MockDebugger debugger;
 		RunRubyCommand command;
 		
-		[TestFixtureSetUp]
-		public void SetUpFixture()
+		[SetUp]
+		public void Init()
 		{
 			MockWorkbench workbench = MockWorkbench.CreateWorkbenchWithOneViewContent(@"C:\Projects\test.rb");
 
@@ -37,33 +37,42 @@ namespace RubyBinding.Tests.Gui
 		}
 		
 		[Test]
-		public void RunRubyCommandIsAbstractCommand()
+		public void Run_RubyFileOpen_RubyCommandIsAbstractCommand()
 		{
-			Assert.IsNotNull(command as AbstractCommand);
+			AbstractCommand abstractCommand = command as AbstractCommand;
+			Assert.IsNotNull(abstractCommand);
 		}
 		
 		[Test]
-		public void DebuggerStartWithoutDebuggingMethodCalled()
+		public void Run_RubyFileOpen_DebuggerStartWithoutDebuggingMethodCalled()
 		{
-			Assert.IsTrue(debugger.StartWithoutDebuggingMethodCalled);
+			bool startCalled = debugger.StartWithoutDebuggingMethodCalled;
+			Assert.IsTrue(startCalled);
 		}
 		
 		[Test]
-		public void ProcessInfoFileNameIsIronRubyConsole()
+		public void Run_RubyFileOpen_ProcessInfoFileNameIsIronRubyConsole()
 		{
-			Assert.AreEqual(@"C:\IronRuby\ir.exe", debugger.ProcessStartInfo.FileName);
+			string fileName = debugger.ProcessStartInfo.FileName;
+			string expectedFileName = "cmd.exe";
+			Assert.AreEqual(expectedFileName, fileName);
 		}
 		
 		[Test]
-		public void ProcessInfoArgsContainsFileNameActiveInTextEditor()
+		public void Run_RubyFileOpen_ProcessInfoArgsContainsFileNameActiveInTextEditor()
 		{
-			Assert.AreEqual("test.rb", debugger.ProcessStartInfo.Arguments);
+			string arguments = debugger.ProcessStartInfo.Arguments;
+			string expectedArguments = "/c \"C:\\IronRuby\\ir.exe test.rb\" & pause";
+			
+			Assert.AreEqual(expectedArguments, arguments);
 		}
 		
 		[Test]
-		public void WorkingDirectoryIsSameDirectoryAsFileBeingRun()
+		public void Run_RubyFileOpen_WorkingDirectoryIsSameDirectoryAsFileBeingRun()
 		{
-			Assert.AreEqual(@"C:\Projects", debugger.ProcessStartInfo.WorkingDirectory);
+			string directory = debugger.ProcessStartInfo.WorkingDirectory;
+			string expectedDirectory = @"C:\Projects";
+			Assert.AreEqual(expectedDirectory, directory);
 		}
 	}
 }

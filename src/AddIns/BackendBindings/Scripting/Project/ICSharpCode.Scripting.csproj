@@ -80,6 +80,7 @@
     <Compile Include="Src\IScriptingDesignerGenerator.cs" />
     <Compile Include="Src\IScriptingFileService.cs" />
     <Compile Include="Src\IScriptingWorkbench.cs" />
+    <Compile Include="Src\PauseCommandPromptProcessStartInfo.cs" />
     <Compile Include="Src\ScriptingCodeBuilder.cs" />
     <Compile Include="Src\ScriptingConsole.cs" />
     <Compile Include="Src\ScriptingConsoleCompletionData.cs" />
