@@ -34,12 +34,8 @@ namespace ICSharpCode.Svn
 			if (file == null || file.IsUntitled || !File.Exists(file.FileName)) {
 				return false;
 			}
-			if (Commands.RegisterEventsCommand.CanBeVersionControlledFile(file.FileName)) {
-				StatusKind status = OverlayIconManager.GetStatus(file.FileName);
-				return status != StatusKind.None && status != StatusKind.Unversioned && status != StatusKind.Ignored;
-			} else {
-				return false;
-			}
+			
+			return SvnClientWrapper.IsInSourceControl(file.FileName);
 		}
 	}
 }
