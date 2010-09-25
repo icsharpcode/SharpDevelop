@@ -252,7 +252,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						toolTip.Closed += ToolTipClosed;
 					}
 					toolTip.PlacementTarget = this; // required for property inheritance
-					toolTip.Content = args.ContentToShow;
+									
+					if(args.ContentToShow is string) {
+						toolTip.Content = new TextBlock 
+						{
+							Text = args.ContentToShow as string,
+							TextWrapping = TextWrapping.Wrap
+						};
+					}
+					else 
+						toolTip.Content = args.ContentToShow;
+					
 					toolTip.IsOpen = true;
 					e.Handled = true;
 				}

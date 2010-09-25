@@ -70,7 +70,15 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 				return;
 			object description = item.Description;
 			if (description != null) {
-				toolTip.Content = description;
+				if(description is string) {
+					toolTip.Content = new TextBlock 
+					{
+						Text = description as string,
+						TextWrapping = TextWrapping.Wrap
+					};
+				}
+				else 
+					toolTip.Content = description;
 				toolTip.IsOpen = true;
 			} else {
 				toolTip.IsOpen = false;
