@@ -19,6 +19,9 @@ namespace ICSharpCode.Scripting
 			}
 		}
 		
+		/// <summary>
+		/// End line is one based.
+		/// </summary>
 		public string GetCode(int endLine)
 		{
 			int endIndex = FindIndexForEndOfLine(endLine);
@@ -31,7 +34,7 @@ namespace ICSharpCode.Scripting
 		int FindIndexForEndOfLine(int line)
 		{
 			int index = 0;
-			for (int i = 0; i <= line; ++i) {
+			for (int i = 0; i < line; ++i) {
 				index = code.IndexOf('\n', index) + 1;
 			}
 			return index;

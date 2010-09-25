@@ -86,6 +86,8 @@ namespace ICSharpCode.PythonBinding
 		{
 			if (foundVariableAssignment) {
 				typeName = GetTypeName(node.Target);
+				currentAssignStatement = null;
+				foundVariableAssignment = false;
 			}
 			return base.Walk(node);
 		}
