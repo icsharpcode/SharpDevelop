@@ -62,6 +62,7 @@
     <Folder Include="Configuration" />
     <Folder Include="Console" />
     <Folder Include="Designer" />
+    <Folder Include="Resolver" />
     <Folder Include="Testing" />
     <Folder Include="Utils" />
     <Folder Include="Utils\Tests" />
@@ -104,6 +105,7 @@
     <Compile Include="Designer\ScriptingCodeBuilderTests.cs" />
     <Compile Include="Designer\ScriptingDesignerLoaderGetResourcesTests.cs" />
     <Compile Include="Designer\ScriptingDesignerLoaderTests.cs" />
+    <Compile Include="Resolver\ScriptingLocalMethodTests.cs" />
     <Compile Include="Testing\CreateTextWriterFromCreateTextWriterInfoTestFixture.cs" />
     <Compile Include="Testing\CreateTextWriterInfoEqualsTestFixture.cs" />
     <Compile Include="Utils\AddedComponent.cs" />

@@ -44,6 +44,11 @@ namespace PythonBinding.Tests.Utils
 		public ResolveResult Resolve(string expression, string code)
 		{
 			ExpressionResult expressionResult = new ExpressionResult(expression);
+			return Resolve(expressionResult, code);
+		}
+		
+		public ResolveResult Resolve(ExpressionResult expressionResult, string code)
+		{
 			ResolveResult = Resolver.Resolve(expressionResult, ParseInfo, code);
 			return ResolveResult;
 		}

@@ -1,20 +1,21 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using Microsoft.Scripting;
-using Microsoft.Scripting.Hosting;
-using Microsoft.Scripting.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
+using ICSharpCode.Scripting;
 using ICSharpCode.SharpDevelop.Dom;
 using IronPython;
 using IronPython.Compiler;
 using IronPython.Compiler.Ast;
-using IronPython.Runtime;
 using IronPython.Hosting;
+using IronPython.Runtime;
 using IronPython.Runtime.Exceptions;
+using Microsoft.Scripting;
+using Microsoft.Scripting.Hosting;
+using Microsoft.Scripting.Runtime;
 
 namespace ICSharpCode.PythonBinding
 {
@@ -54,7 +55,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			this.variableName = variableName;
 			ast.Walk(this);
-			return TypeName;		
+			return TypeName;
 		}
 				
 		public override bool Walk(AssignmentStatement node)
@@ -116,20 +117,26 @@ namespace ICSharpCode.PythonBinding
 		
 		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)
 		{
-			return GetLocalVariable(resolverContext, expressionResult.Expression);
+			return GetLocalVariable(resolverContext, expressionResult);
 		}
 		
 		/// <summary>
 		/// Tries to find the type that matches the local variable name.
 		/// </summary>
-		LocalResolveResult GetLocalVariable(PythonResolverContext resolverContext, string expression)
+		LocalResolveResult GetLocalVariable(PythonResolverContext resolverContext, ExpressionResult expressionResult)
 		{
-			PythonLocalVariableResolver resolver = new PythonLocalVariableResolver();
-			string typeName = resolver.Resolve(expression, resolverContext.FileContent);
+			string code = GetLocalMethodCode(resolverContext.FileContent, expressionResult);
+			string typeName = Resolve(expressionResult.Expression, code);
 			if (typeName != null) {
-				return CreateLocalResolveResult(typeName, expression, resolverContext);
+				return CreateLocalResolveResult(typeName, expressionResult.Expression, resolverContext);
 			}
 			return null;
+		}
+		
+		string GetLocalMethodCode(string fullCode, ExpressionResult expressionResult)
+		{
+			ScriptingLocalMethod localMethod = new ScriptingLocalMethod(fullCode);
+			return localMethod.GetCode(expressionResult.Region.BeginLine);
 		}
 		
 		LocalResolveResult CreateLocalResolveResult(string typeName, string identifier, PythonResolverContext resolverContext)

@@ -23,21 +23,15 @@ namespace ICSharpCode.PythonBinding
 		public PythonResolverContext(ParseInformation parseInfo, string fileContent)
 		{
 			this.fileContent = fileContent;
-			GetCompilationUnits(parseInfo);
+			GetCompilationUnit(parseInfo);
 			GetProjectContent();
 		}
 		
-		void GetCompilationUnits(ParseInformation parseInfo)
-		{
-			compilationUnit = GetCompilationUnit(parseInfo);
-		}
-		
-		ICompilationUnit GetCompilationUnit(ParseInformation parseInfo)
+		void GetCompilationUnit(ParseInformation parseInfo)
 		{
 			if (parseInfo != null) {
-				return parseInfo.CompilationUnit;
+				compilationUnit = parseInfo.CompilationUnit;
 			}
-			return null;
 		}
 		
 		void GetProjectContent()

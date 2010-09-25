@@ -96,6 +96,7 @@
     <Compile Include="Src\ScriptingDesignerGenerator.cs" />
     <Compile Include="Src\ScriptingDesignerLoader.cs" />
     <Compile Include="Src\ScriptingFileService.cs" />
+    <Compile Include="Src\ScriptingLocalMethod.cs" />
     <Compile Include="Src\ScriptingNameCreationService.cs" />
     <Compile Include="Src\ScriptingStyle.cs" />
     <Compile Include="Src\ScriptingTextEditorViewContent.cs" />
