@@ -18,7 +18,7 @@ namespace ICSharpCode.Scripting.Tests.Resolver
 		}
 		
 		[Test]
-		public void GetCode_EndLineIsZeroAndTwoLinesOfCode_ReturnsFirstLineOfCode()
+		public void GetCode_EndLineIsOneAndTwoLinesOfCode_ReturnsFirstLineOfCode()
 		{
 			string fullCode =
 				"first\r\n" +
@@ -26,7 +26,7 @@ namespace ICSharpCode.Scripting.Tests.Resolver
 			
 			CreateLocalMethod(fullCode);
 			
-			int endLine = 0;
+			int endLine = 1;
 			string code = method.GetCode(endLine);
 			
 			string expectedCode = "first\r\n";
@@ -35,7 +35,7 @@ namespace ICSharpCode.Scripting.Tests.Resolver
 		}
 		
 		[Test]
-		public void GetCode_EndLineIsOneAndThreeLinesOfCode_ReturnsFirstTwoLinesOfCode()
+		public void GetCode_EndLineIsTwoAndThreeLinesOfCode_ReturnsFirstTwoLinesOfCode()
 		{
 			string fullCode =
 				"first\r\n" +
@@ -44,7 +44,7 @@ namespace ICSharpCode.Scripting.Tests.Resolver
 			
 			CreateLocalMethod(fullCode);
 			
-			int endLine = 1;
+			int endLine = 2;
 			string code = method.GetCode(endLine);
 			
 			string expectedCode =
@@ -55,7 +55,7 @@ namespace ICSharpCode.Scripting.Tests.Resolver
 		}
 		
 		[Test]
-		public void GetCode_EndLineIsOneAndTwoLinesOfCode_ReturnsFirstTwoLinesOfCode()
+		public void GetCode_EndLineIsTwoAndTwoLinesOfCode_ReturnsFirstTwoLinesOfCode()
 		{
 			string fullCode =
 				"first\r\n" +
@@ -63,7 +63,7 @@ namespace ICSharpCode.Scripting.Tests.Resolver
 			
 			CreateLocalMethod(fullCode);
 			
-			int endLine = 1;
+			int endLine = 2;
 			string code = method.GetCode(endLine);
 			
 			string expectedCode =
@@ -74,13 +74,13 @@ namespace ICSharpCode.Scripting.Tests.Resolver
 		}
 		
 		[Test]
-		public void GetCode_EndLineIsOneAndCodeIsNull_ReturnsEmptyString()
+		public void GetCode_EndLineIsTwoAndCodeIsNull_ReturnsEmptyString()
 		{
 			string fullCode = null;
 			
 			CreateLocalMethod(fullCode);
 			
-			int endLine = 1;
+			int endLine = 2;
 			string code = method.GetCode(endLine);
 			
 			string expectedCode = String.Empty;
