@@ -10,11 +10,12 @@
 using System;
 using System.Data;
 using System.Windows.Forms;
+using System.Xml;
 
+using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.Test.TestHelpers;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 using NUnit.Framework;
-using System.Xml;
 
 namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 {

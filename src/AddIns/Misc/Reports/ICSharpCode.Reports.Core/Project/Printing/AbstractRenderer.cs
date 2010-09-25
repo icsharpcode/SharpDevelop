@@ -11,6 +11,7 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.Globalization;
 
+using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;

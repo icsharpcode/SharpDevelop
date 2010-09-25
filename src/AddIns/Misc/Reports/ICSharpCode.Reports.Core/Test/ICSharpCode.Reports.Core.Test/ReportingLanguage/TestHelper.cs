@@ -7,6 +7,7 @@
  * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
  */
 using System;
+using ICSharpCode.Reports.Core.BaseClasses;
 
 namespace ICSharpCode.Reports.Core.Test.ReportingLanguage
 {

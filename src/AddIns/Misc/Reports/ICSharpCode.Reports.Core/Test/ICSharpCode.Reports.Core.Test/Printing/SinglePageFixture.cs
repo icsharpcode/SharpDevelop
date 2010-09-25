@@ -9,6 +9,7 @@
 
 using System;
 using System.Drawing;
+using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.Interfaces;
 using NUnit.Framework;
 

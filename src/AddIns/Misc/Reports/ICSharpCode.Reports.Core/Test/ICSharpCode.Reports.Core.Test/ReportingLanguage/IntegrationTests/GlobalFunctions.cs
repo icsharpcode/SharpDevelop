@@ -8,6 +8,7 @@
  */
 
 using System;
+using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 using NUnit.Framework;
 using SimpleExpressionEvaluator;

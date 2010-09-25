@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.Reports.Core.BaseClasses;
 
 namespace ICSharpCode.Reports.Core.Exporter
 {

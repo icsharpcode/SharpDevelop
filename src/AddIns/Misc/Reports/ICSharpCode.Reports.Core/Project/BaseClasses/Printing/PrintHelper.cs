@@ -114,8 +114,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		public static void InitPage (ISinglePage singlePage,ReportSettings reportSettings)
 		{
-			singlePage.StartRow = -1;
-			singlePage.EndRow = -1;
 			singlePage.ReportFileName = reportSettings.FileName;
 			singlePage.ReportName = reportSettings.ReportName;
 			singlePage.ParameterHash = reportSettings.ParameterCollection.CreateHash();	

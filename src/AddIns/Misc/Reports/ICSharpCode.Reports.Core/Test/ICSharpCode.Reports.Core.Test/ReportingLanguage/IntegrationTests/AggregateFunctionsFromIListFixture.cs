@@ -9,6 +9,7 @@
 
 using System;
 using System.Data;
+using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.Test.TestHelpers;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 using NUnit.Framework;
