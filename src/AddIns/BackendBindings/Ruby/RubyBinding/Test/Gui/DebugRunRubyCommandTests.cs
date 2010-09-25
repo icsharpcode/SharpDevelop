@@ -52,7 +52,7 @@ namespace RubyBinding.Tests.Gui
 		public void Run_RubyFileOpen_ProcessInfoArgsHasDebugArgument()
 		{
 			string arguments = debugger.ProcessStartInfo.Arguments;
-			string expectedArguments = "-D test.rb";
+			string expectedArguments = "-D \"test.rb\"";
 			
 			Assert.AreEqual(expectedArguments, arguments);
 		}

@@ -22,7 +22,7 @@ namespace ICSharpCode.RubyBinding
 		IDebugger debugger;
 		RubyAddInOptions options;
 		IScriptingWorkbench workbench;
-		bool debug;
+		RubyConsoleApplication rubyConsoleApplication;
 		
 		public RunRubyCommand()
 			: this(new RubyWorkbench(), new RubyAddInOptions(), DebuggerService.CurrentDebugger)
@@ -34,17 +34,18 @@ namespace ICSharpCode.RubyBinding
 			this.workbench = workbench;
 			this.debugger = debugger;
 			this.options = options;
+			rubyConsoleApplication = new RubyConsoleApplication(options);
 		}
 		
 		public bool Debug {
-			get { return debug; }
-			set { debug = value; }
+			get { return rubyConsoleApplication.Debug; }
+			set { rubyConsoleApplication.Debug = value; }
 		}
 		
 		public override void Run()
 		{
 			ProcessStartInfo processStartInfo = CreateProcessStartInfo();
-			if (debug) {
+			if (Debug) {
 				debugger.Start(processStartInfo);
 			} else {
 				PauseCommandPromptProcessStartInfo commandPrompt = new PauseCommandPromptProcessStartInfo(processStartInfo);
@@ -54,12 +55,9 @@ namespace ICSharpCode.RubyBinding
 		
 		ProcessStartInfo CreateProcessStartInfo()
 		{
-			ProcessStartInfo info = new ProcessStartInfo();
-			info.FileName = options.RubyFileName;
-			info.Arguments = GetArguments();
-			info.WorkingDirectory = GetWorkingDirectory();
-				
-			return info;
+			rubyConsoleApplication.ScriptFileName = GetRubyScriptFileName();
+			rubyConsoleApplication.WorkingDirectory = GetWorkingDirectory();
+			return rubyConsoleApplication.GetProcessStartInfo();
 		}
 		
 		string GetWorkingDirectory()
@@ -69,15 +67,6 @@ namespace ICSharpCode.RubyBinding
 		
 		FileName WorkbenchPrimaryFileName {
 			get { return workbench.ActiveViewContent.PrimaryFileName; }
-		}
-		
-		string GetArguments()
-		{
-			string args = GetRubyScriptFileName();			
-			if (Debug) {
-				return "-D " + args;
-			}
-			return args;
 		}
 		
 		string GetRubyScriptFileName()

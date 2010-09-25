@@ -11,7 +11,7 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Testing
 {
 	[TestFixture]
-	public class PythonConsoleApplicationTestFixture
+	public class PythonConsoleApplicationTests
 	{
 		PythonConsoleApplication app;
 		PythonAddInOptions options;
@@ -25,44 +25,48 @@ namespace PythonBinding.Tests.Testing
 		}
 		
 		[Test]
-		public void FileNameIsPythonFileNameFromAddInOptions()
+		public void FileName_NewInstance_FileNameIsPythonFileNameFromAddInOptions()
 		{
+			string fileName = app.FileName;
 			string expectedFileName = @"C:\IronPython\ipy.exe";
-			Assert.AreEqual(expectedFileName, app.FileName);
+			Assert.AreEqual(expectedFileName, fileName);
 		}
 		
 		[Test]
-		public void GetArgumentsReturnsDebugOptionWhenDebugIsTrue()
+		public void GetArguments_DebugIsTrue_ReturnsDebugOption()
 		{
 			app.Debug = true;
+			string args = app.GetArguments();
 			string expectedCommandLine = "-X:Debug";
 			
-			Assert.AreEqual(expectedCommandLine, app.GetArguments());
+			Assert.AreEqual(expectedCommandLine, args);
 		}
 		
 		[Test]
-		public void GetArgumentsReturnsQuotedPythonScriptFileName()
+		public void GetArguments_ScriptFileNameSet_ReturnsQuotedPythonScriptFileName()
 		{
-			app.PythonScriptFileName = @"d:\projects\my ipy\test.py";
+			app.ScriptFileName = @"d:\projects\my ipy\test.py";
+			string args = app.GetArguments();
 			string expectedCommandLine = "\"d:\\projects\\my ipy\\test.py\"";
 			
-			Assert.AreEqual(expectedCommandLine, app.GetArguments());
+			Assert.AreEqual(expectedCommandLine, args);
 		}
 		
 		[Test]
-		public void GetArgumentsReturnsQuotedPythonScriptFileNameAndItsCommandLineArguments()
+		public void GetArguments_ScriptFileNameAndScriptCommandLineArgsSet_ReturnsQuotedPythonScriptFileNameAndItsCommandLineArguments()
 		{
 			app.Debug = true;
-			app.PythonScriptFileName = @"d:\projects\my ipy\test.py";
-			app.PythonScriptCommandLineArguments = "@responseFile.txt -def";
+			app.ScriptFileName = @"d:\projects\my ipy\test.py";
+			app.ScriptCommandLineArguments = "@responseFile.txt -def";
+			string args = app.GetArguments();
 			string expectedCommandLine =
 				"-X:Debug \"d:\\projects\\my ipy\\test.py\" @responseFile.txt -def";
 			
-			Assert.AreEqual(expectedCommandLine, app.GetArguments());
+			Assert.AreEqual(expectedCommandLine, args);
 		}
 		
 		[Test]
-		public void GetProcessStartInfoHasFileNameThatEqualsIronPythonConsoleApplicationExeFileName()
+		public void GetProcessStartInfo_NewInstance_ReturnsProcessStartInfoWithFileNameThatEqualsIronPythonConsoleApplicationExeFileName()
 		{
 			ProcessStartInfo startInfo = app.GetProcessStartInfo();
 			string expectedFileName = @"C:\IronPython\ipy.exe";
@@ -71,7 +75,7 @@ namespace PythonBinding.Tests.Testing
 		}
 		
 		[Test]
-		public void GetProcessStartInfoHasDebugFlagSetInArguments()
+		public void GetProcessStartInfo_DebugIsTrue_ReturnsProcessStartInfoWithDebugFlagSetInArguments()
 		{
 			app.Debug = true;
 			ProcessStartInfo startInfo = app.GetProcessStartInfo();
@@ -81,20 +85,21 @@ namespace PythonBinding.Tests.Testing
 		}
 		
 		[Test]
-		public void GetProcessStartInfoHasWorkingDirectoryIfSet()
+		public void GetProcessStartInfo_WorkingDirectorySet_ReturnsProcessStartInfoWithMatchingWorkingDirectory()
 		{
 			app.WorkingDirectory = @"d:\temp";
 			ProcessStartInfo startInfo = app.GetProcessStartInfo();
-			Assert.AreEqual(@"d:\temp", startInfo.WorkingDirectory);
+			string expectedDirectory = @"d:\temp";
+			Assert.AreEqual(expectedDirectory, startInfo.WorkingDirectory);
 		}
 		
 		[Test]
-		public void ChangingOptionsPythonFileNameChangesProcessStartInfoFileName()
+		public void GetProcessStartInfo_ChangingPythonOptionsFileName_ProcessStartInfoFileNameMatchesChange()
 		{
 			options.PythonFileName = @"d:\temp\test\ipy.exe";
 			ProcessStartInfo startInfo = app.GetProcessStartInfo();
-			
-			Assert.AreEqual(@"d:\temp\test\ipy.exe", startInfo.FileName);
+			string expectedFileName = @"d:\temp\test\ipy.exe";
+			Assert.AreEqual(expectedFileName, startInfo.FileName);
 		}
 	}
 }

@@ -397,7 +397,7 @@
     <Compile Include="Resolver\ResolveTextBoxFromSystemWindowsFormsImportTextBoxTests.cs" />
     <Compile Include="Resolver\ResolveUnknownNamespaceTests.cs" />
     <Compile Include="Testing\CreatePythonTestRunnerTestFixture.cs" />
-    <Compile Include="Testing\PythonConsoleApplicationTestFixture.cs" />
+    <Compile Include="Testing\PythonConsoleApplicationTests.cs" />
     <Compile Include="Testing\PythonStandardLibraryPathTests.cs" />
     <Compile Include="Testing\PythonTestDebuggerRunsSelectedTestMethodTestFixture.cs" />
     <Compile Include="Testing\PythonTestFrameworkIsTestClassTests.cs" />

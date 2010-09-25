@@ -66,9 +66,9 @@ namespace ICSharpCode.RubyBinding
 		
 		public ProcessStartInfo CreateProcessStartInfo(SelectedTests selectedTests)
 		{
-			consoleApplication.RubyScriptFileName = GetSharpDevelopTestRubyScriptFileName();
+			consoleApplication.ScriptFileName = GetSharpDevelopTestRubyScriptFileName();
 			AddLoadPaths(selectedTests.Project);
-			consoleApplication.RubyScriptCommandLineArguments = GetCommandLineArguments(selectedTests);
+			consoleApplication.ScriptCommandLineArguments = GetCommandLineArguments(selectedTests);
 			consoleApplication.WorkingDirectory = selectedTests.Project.Directory;
 			return consoleApplication.GetProcessStartInfo();
 		}
@@ -84,7 +84,7 @@ namespace ICSharpCode.RubyBinding
 			if (options.HasRubyLibraryPath) {
 				consoleApplication.AddLoadPath(options.RubyLibraryPath);
 			}
-			string testRunnerLoadPath = Path.GetDirectoryName(consoleApplication.RubyScriptFileName);
+			string testRunnerLoadPath = Path.GetDirectoryName(consoleApplication.ScriptFileName);
 			consoleApplication.AddLoadPath(testRunnerLoadPath);
 		}
 		

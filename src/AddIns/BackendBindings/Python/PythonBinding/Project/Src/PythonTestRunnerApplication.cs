@@ -83,8 +83,8 @@ namespace ICSharpCode.PythonBinding
 		
 		public ProcessStartInfo CreateProcessStartInfo(SelectedTests selectedTests)
 		{
-			consoleApplication.PythonScriptFileName = GetSharpDevelopTestPythonScriptFileName();
-			consoleApplication.PythonScriptCommandLineArguments = GetResponseFileNameCommandLineArgument();
+			consoleApplication.ScriptFileName = GetSharpDevelopTestPythonScriptFileName();
+			consoleApplication.ScriptCommandLineArguments = GetResponseFileNameCommandLineArgument();
 			consoleApplication.WorkingDirectory = selectedTests.Project.Directory;
 			return consoleApplication.GetProcessStartInfo();
 		}

@@ -11,7 +11,7 @@ using RubyBinding.Tests.Utils;
 namespace RubyBinding.Tests.Testing
 {
 	[TestFixture]
-	public class RubyConsoleApplicationTestFixture
+	public class RubyConsoleApplicationTests
 	{
 		RubyConsoleApplication app;
 		RubyAddInOptions options;
@@ -25,44 +25,49 @@ namespace RubyBinding.Tests.Testing
 		}
 		
 		[Test]
-		public void FileNameIsRubyFileNameFromAddInOptions()
+		public void FileName_NewInstance_FileNameIsRubyFileNameFromAddInOptions()
 		{
+			string fileName = app.FileName;
 			string expectedFileName = @"C:\IronRuby\ir.exe";
-			Assert.AreEqual(expectedFileName, app.FileName);
+			Assert.AreEqual(expectedFileName, fileName);
 		}
 		
 		[Test]
-		public void GetArgumentsReturnsDebugOptionWhenDebugIsTrue()
+		public void GetArguments_DebugIsTrue_ReturnsDebugOption()
 		{
 			app.Debug = true;
+			string args = app.GetArguments();
 			string expectedCommandLine = "-D";
 			
-			Assert.AreEqual(expectedCommandLine, app.GetArguments());
+			Assert.AreEqual(expectedCommandLine, args);
 		}
 		
 		[Test]
-		public void GetArgumentsReturnsQuotedRubyScriptFileName()
+		public void GetArguments_ScriptFileNameIsSet_ReturnsQuotedRubyScriptFileName()
 		{
-			app.RubyScriptFileName = @"d:\projects\my ruby\test.rb";
+			app.ScriptFileName = @"d:\projects\my ruby\test.rb";
+			string args = app.GetArguments();
 			string expectedCommandLine = "\"d:\\projects\\my ruby\\test.rb\"";
 			
-			Assert.AreEqual(expectedCommandLine, app.GetArguments());
+			Assert.AreEqual(expectedCommandLine, args);
 		}
 		
 		[Test]
-		public void GetArgumentsReturnsQuotedRubyScriptFileNameAndItsCommandLineArguments()
+		public void GetArguments_ScriptFileNameAndScriptCommandLineArgumentsSet_ReturnsQuotedRubyScriptFileNameAndItsCommandLineArguments()
 		{
 			app.Debug = true;
-			app.RubyScriptFileName = @"d:\projects\my ruby\test.rb";
-			app.RubyScriptCommandLineArguments = "-- responseFile.txt";
+			app.ScriptFileName = @"d:\projects\my ruby\test.rb";
+			app.ScriptCommandLineArguments = "-- responseFile.txt";
+			string args = app.GetArguments();
+			
 			string expectedCommandLine =
 				"-D \"d:\\projects\\my ruby\\test.rb\" -- responseFile.txt";
 			
-			Assert.AreEqual(expectedCommandLine, app.GetArguments());
+			Assert.AreEqual(expectedCommandLine, args);
 		}
 		
 		[Test]
-		public void GetProcessStartInfoHasFileNameThatEqualsIronRubyConsoleApplicationExeFileName()
+		public void GetProcessStartInfo_NewInstance_HasFileNameThatEqualsIronRubyConsoleApplicationExeFileName()
 		{
 			ProcessStartInfo startInfo = app.GetProcessStartInfo();
 			string expectedFileName = @"C:\IronRuby\ir.exe";
@@ -71,7 +76,7 @@ namespace RubyBinding.Tests.Testing
 		}
 		
 		[Test]
-		public void GetProcessStartInfoHasDebugFlagSetInArguments()
+		public void GetProcessStartInfo_DebugIsTrue_HasDebugFlagSetInArguments()
 		{
 			app.Debug = true;
 			ProcessStartInfo startInfo = app.GetProcessStartInfo();
@@ -81,7 +86,7 @@ namespace RubyBinding.Tests.Testing
 		}
 		
 		[Test]
-		public void GetProcessStartInfoHasWorkingDirectoryIfSet()
+		public void GetProcessStartInfo_WorkingDirectorySet_ProcessStartInfoHasMatchingWorkingDirectory()
 		{
 			app.WorkingDirectory = @"d:\temp";
 			ProcessStartInfo startInfo = app.GetProcessStartInfo();
@@ -89,7 +94,7 @@ namespace RubyBinding.Tests.Testing
 		}
 		
 		[Test]
-		public void ChangingOptionsRubyFileNameChangesProcessStartInfoFileName()
+		public void GetProcessStartInfo_ChangingOptionsRubyFileName_ChangesProcessStartInfoFileName()
 		{
 			options.RubyFileName = @"d:\temp\test\ir.exe";
 			ProcessStartInfo startInfo = app.GetProcessStartInfo();

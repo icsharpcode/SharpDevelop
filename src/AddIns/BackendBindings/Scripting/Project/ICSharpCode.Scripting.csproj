@@ -82,7 +82,9 @@
     <Compile Include="Src\IScriptingWorkbench.cs" />
     <Compile Include="Src\PauseCommandPromptProcessStartInfo.cs" />
     <Compile Include="Src\ScriptingCodeBuilder.cs" />
+    <Compile Include="Src\ScriptingCommandLineBuilder.cs" />
     <Compile Include="Src\ScriptingConsole.cs" />
+    <Compile Include="Src\ScriptingConsoleApplication.cs" />
     <Compile Include="Src\ScriptingConsoleCompletionData.cs" />
     <Compile Include="Src\ScriptingConsoleCompletionDataProvider.cs" />
     <Compile Include="Src\ScriptingConsoleOutputStream.cs" />

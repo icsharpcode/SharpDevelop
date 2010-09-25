@@ -289,7 +289,7 @@
     <Compile Include="RubyLanguage\RubyLanguageBindingTestFixture.cs" />
     <Compile Include="RubyLanguage\RubyLanguagePropertiesTests.cs" />
     <Compile Include="Testing\CreateRubyTestRunnerTestFixture.cs" />
-    <Compile Include="Testing\RubyConsoleApplicationTestFixture.cs" />
+    <Compile Include="Testing\RubyConsoleApplicationTests.cs" />
     <Compile Include="Testing\RubyTestDebuggerRunsSelectedTestMethodTestFixture.cs" />
     <Compile Include="Testing\RubyTestFrameworkIsTestClassTests.cs" />
     <Compile Include="Testing\RubyTestFrameworkIsTestMethodTests.cs" />

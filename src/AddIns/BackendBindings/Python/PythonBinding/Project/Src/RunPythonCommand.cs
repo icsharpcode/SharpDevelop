@@ -56,7 +56,7 @@ namespace ICSharpCode.PythonBinding
 		ProcessStartInfo GetProcessStartInfo()
 		{
 			string scriptFileName = workbench.ActiveViewContent.PrimaryFileName;
-			ipy.PythonScriptFileName = scriptFileName;
+			ipy.ScriptFileName = scriptFileName;
 			ipy.WorkingDirectory = Path.GetDirectoryName(scriptFileName);
 			return ipy.GetProcessStartInfo();
 		}
