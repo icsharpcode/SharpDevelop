@@ -51,7 +51,7 @@ namespace PythonBinding.Tests.Gui
 		public void Run_PythonFileOpen_DebugOptionsPassedToIronPythonConsole()
 		{
 			string args = debugger.ProcessStartInfo.Arguments;
-			string expectedArgs = "-X:Debug \"C:\\Projects\\test.py\"";
+			string expectedArgs = "-X:Debug \"test.py\"";
 			Assert.AreEqual(expectedArgs, args);
 		}
 	}

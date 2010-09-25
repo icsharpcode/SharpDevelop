@@ -61,7 +61,7 @@ namespace PythonBinding.Tests.Gui
 		public void Run_PythonFileOpen_IronPythonConsoleAndPythonFileNameAndPausePassedAsCommandLineArguments()
 		{
 			string args = debugger.ProcessStartInfo.Arguments;
-			string expectedArgs = "/c \"C:\\IronPython\\ipy.exe \"C:\\Projects\\test.py\"\" & pause";
+			string expectedArgs = "/c \"C:\\IronPython\\ipy.exe \"test.py\"\" & pause";
 			Assert.AreEqual(expectedArgs, args);
 		}
 		
