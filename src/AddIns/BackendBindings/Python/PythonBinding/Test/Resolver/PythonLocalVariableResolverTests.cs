@@ -16,7 +16,8 @@ namespace PythonBinding.Tests.Resolver
 		
 		void Resolve(string variableName, string code)
 		{
-			PythonLocalVariableResolver resolver = new PythonLocalVariableResolver();
+			PythonClassResolver classResolver = new PythonClassResolver();
+			PythonLocalVariableResolver resolver = new PythonLocalVariableResolver(classResolver);
 			typeName = resolver.Resolve(variableName, code);
 		}
 		

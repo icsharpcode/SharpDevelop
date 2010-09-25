@@ -22,20 +22,25 @@ namespace PythonBinding.Tests.Resolver
 		PythonResolverTestsHelper resolverHelper;
 		MockClass testClass;
 		
-		[SetUp]
-		public void Init()
+		void CreateResolver()
 		{
-			resolverHelper = new PythonResolverTestsHelper();
+			CreateResolver(String.Empty);
+		}
+		
+		void CreateResolver(string code)
+		{
+			resolverHelper = new PythonResolverTestsHelper(code);
 			
 			testClass = resolverHelper.CreateClass("Test.Test1");
 			resolverHelper.ProjectContent.ClassesInProjectContent.Add(testClass);			
 			resolverHelper.ProjectContent.SetClassToReturnFromGetClass("Test.Test1", testClass);
-
 		}
 
 		[Test]
 		public void Resolve_LocalVariableIsCreatedOnPreviousLine_ResolveResultVariableNameIsA()
 		{
+			CreateResolver();
+			
 			string python =
 				"a = Test.Test1()\r\n" +
 				"a";
@@ -50,6 +55,8 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void Resolve_LocalVariableIsCreatedOnPreviousLine_ResolveResultResolvedTypeIsTestClass()
 		{
+			CreateResolver();
+			
 			string python =
 				"a = Test.Test1()\r\n" +
 				"a";
@@ -65,6 +72,8 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void Resolve_LocalVariableIsReDefinedAfterLineBeingConsidered_ResolveResultResolvedTypeIsTestClass()
 		{
+			CreateResolver();
+			
 			string python =
 				"a = Test.Test1()\r\n" +
 				"a\r\n" +
@@ -88,6 +97,8 @@ namespace PythonBinding.Tests.Resolver
 		[Test]
 		public void Resolve_LocalVariableIsReDefinedAfterLineBeingConsideredAndExpressionRegionEndLineIsMinusOne_ResolveResultResolvedTypeIsTestClass()
 		{
+			CreateResolver();
+			
 			string python =
 				"a = Test.Test1()\r\n" +
 				"a\r\n" +
@@ -106,6 +117,28 @@ namespace PythonBinding.Tests.Resolver
 			IClass underlyingClass = resolvedType.GetUnderlyingClass();
 			
 			Assert.AreEqual(testClass, underlyingClass);
+		}
+		
+		[Test]
+		public void Resolve_LocalVariableTypeIsImported_ResolveResultResolvedTypeDeterminedFromImportedTypes()
+		{
+			string python =
+				"from MyNamespace import MyClass\r\n" +
+				"\r\n" +
+				"a = MyClass()\r\n" +
+				"a";
+			
+			CreateResolver(python);
+			
+			MockClass myClass = resolverHelper.CreateClass("MyNamespace.MyClass");
+			resolverHelper.ProjectContent.SetClassToReturnFromGetClass("MyNamespace.MyClass", myClass);
+			
+			resolverHelper.Resolve("a", python);
+			
+			IReturnType resolvedType = resolverHelper.LocalResolveResult.ResolvedType;
+			IClass underlyingClass = resolvedType.GetUnderlyingClass();
+			
+			Assert.AreEqual(myClass, underlyingClass);
 		}
 	}
 }

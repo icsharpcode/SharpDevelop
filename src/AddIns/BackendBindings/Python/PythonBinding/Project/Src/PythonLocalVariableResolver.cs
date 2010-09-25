@@ -24,10 +24,16 @@ namespace ICSharpCode.PythonBinding
 	/// </summary>
 	public class PythonLocalVariableResolver : PythonWalker, IPythonResolver
 	{
+		PythonClassResolver classResolver;
 		string variableName = String.Empty;
 		string typeName;
 		AssignmentStatement currentAssignStatement;
 		bool foundVariableAssignment;
+		
+		public PythonLocalVariableResolver(PythonClassResolver classResolver)
+		{
+			this.classResolver = classResolver;
+		}
 		
 		/// <summary>
 		/// The resolved type name.
@@ -141,7 +147,7 @@ namespace ICSharpCode.PythonBinding
 		
 		LocalResolveResult CreateLocalResolveResult(string typeName, string identifier, PythonResolverContext resolverContext)
 		{
-			IClass resolvedClass = resolverContext.GetClass(typeName);
+			IClass resolvedClass = classResolver.GetClass(resolverContext, typeName);
 			if (resolvedClass != null) {
 				return CreateLocalResolveResult(identifier, resolvedClass);
 			}
