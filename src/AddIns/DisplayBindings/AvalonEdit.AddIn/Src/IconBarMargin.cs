@@ -141,8 +141,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			dragDropBookmark = bm;
 			dragDropStartPoint = dragDropCurrentPoint = e.GetPosition(this).Y;
-			if (TextView != null)
-				TextView.PreviewKeyDown += TextView_PreviewKeyDown;
+			if (TextView != null) {
+				TextArea area = TextView.Services.GetService(typeof(TextArea)) as TextArea;
+				if (area != null)
+					area.PreviewKeyDown += TextArea_PreviewKeyDown;
+			}
 		}
 		
 		void CancelDragDrop()
@@ -150,14 +153,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (dragDropBookmark != null) {
 				dragDropBookmark = null;
 				dragStarted = false;
-				if (TextView != null)
-					TextView.PreviewKeyDown -= TextView_PreviewKeyDown;
+				if (TextView != null) {
+					TextArea area = TextView.Services.GetService(typeof(TextArea)) as TextArea;
+					if (area != null)
+						area.PreviewKeyDown -= TextArea_PreviewKeyDown;
+				}
 				ReleaseMouseCapture();
 				InvalidateVisual();
 			}
 		}
 		
-		void TextView_PreviewKeyDown(object sender, KeyEventArgs e)
+		void TextArea_PreviewKeyDown(object sender, KeyEventArgs e)
 		{
 			// any key press cancels drag'n'drop
 			CancelDragDrop();
