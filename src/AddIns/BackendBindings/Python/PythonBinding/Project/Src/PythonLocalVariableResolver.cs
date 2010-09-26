@@ -123,34 +123,36 @@ namespace ICSharpCode.PythonBinding
 			return PythonControlFieldExpression.GetMemberName(node as MemberExpression);
 		}
 		
-		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)
+		public ResolveResult Resolve(PythonResolverContext resolverContext)
 		{
-			return GetLocalVariable(resolverContext, expressionResult);
+			return GetLocalVariable(resolverContext);
 		}
 		
 		/// <summary>
 		/// Tries to find the type that matches the local variable name.
 		/// </summary>
-		LocalResolveResult GetLocalVariable(PythonResolverContext resolverContext, ExpressionResult expressionResult)
+		LocalResolveResult GetLocalVariable(PythonResolverContext resolverContext)
 		{
-			string code = GetLocalMethodCode(resolverContext.FileContent, expressionResult);
-			string typeName = Resolve(expressionResult.Expression, code);
+			string code = GetLocalMethodCode(resolverContext);
+			string typeName = Resolve(resolverContext.Expression, code);
 			if (typeName != null) {
-				return CreateLocalResolveResult(typeName, expressionResult.Expression, resolverContext);
+				return CreateLocalResolveResult(typeName, resolverContext);
 			}
 			return null;
 		}
 		
-		string GetLocalMethodCode(string fullCode, ExpressionResult expressionResult)
+		string GetLocalMethodCode(PythonResolverContext resolverContext)
 		{
-			ScriptingLocalMethod localMethod = new ScriptingLocalMethod(fullCode);
-			return localMethod.GetCode(expressionResult.Region.BeginLine);
+			ScriptingLocalMethod localMethod = new ScriptingLocalMethod(resolverContext.FileContent);
+			int beginLine = resolverContext.ExpressionRegion.BeginLine;
+			return localMethod.GetCode(beginLine);
 		}
 		
-		LocalResolveResult CreateLocalResolveResult(string typeName, string identifier, PythonResolverContext resolverContext)
+		LocalResolveResult CreateLocalResolveResult(string typeName, PythonResolverContext resolverContext)
 		{
 			IClass resolvedClass = classResolver.GetClass(resolverContext, typeName);
 			if (resolvedClass != null) {
+				string identifier = resolverContext.Expression;
 				return CreateLocalResolveResult(identifier, resolvedClass);
 			}
 			return null;

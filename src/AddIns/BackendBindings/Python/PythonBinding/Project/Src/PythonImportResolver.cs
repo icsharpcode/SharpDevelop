@@ -8,15 +8,11 @@ namespace ICSharpCode.PythonBinding
 {
 	public class PythonImportResolver : IPythonResolver
 	{
-		public PythonImportResolver()
+		public ResolveResult Resolve(PythonResolverContext resolverContext)
 		{
-		}
-		
-		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)
-		{
-			if (IsNamespace(expressionResult)) {
-				PythonImportExpression importExpression = new PythonImportExpression(expressionResult.Expression);
-				PythonImportExpressionContext context = expressionResult.Context as PythonImportExpressionContext;
+			if (IsNamespace(resolverContext.ExpressionResult)) {
+				PythonImportExpression importExpression = new PythonImportExpression(resolverContext.Expression);
+				PythonImportExpressionContext context = resolverContext.ExpressionContext as PythonImportExpressionContext;
 				context.HasFromAndImport = importExpression.HasFromAndImport;
 				
 				return new PythonImportModuleResolveResult(importExpression);

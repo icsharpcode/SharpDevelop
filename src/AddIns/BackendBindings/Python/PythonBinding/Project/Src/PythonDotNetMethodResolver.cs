@@ -15,9 +15,9 @@ namespace ICSharpCode.PythonBinding
 			this.classResolver = classResolver;
 		}
 		
-		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)
+		public ResolveResult Resolve(PythonResolverContext resolverContext)
 		{
-			MemberName memberName = new MemberName(expressionResult.Expression);
+			MemberName memberName = resolverContext.CreateExpressionMemberName();
 			IClass matchingClass = classResolver.GetClass(resolverContext, memberName.Type);
 			if (matchingClass != null) {
 				return new PythonMethodGroupResolveResult(matchingClass, memberName.Name);

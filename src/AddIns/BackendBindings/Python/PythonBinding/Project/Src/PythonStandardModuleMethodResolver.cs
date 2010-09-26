@@ -15,9 +15,9 @@ namespace ICSharpCode.PythonBinding
 			this.standardModuleResolver = standardModuleResolver;
 		}
 		
-		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)
+		public ResolveResult Resolve(PythonResolverContext resolverContext)
 		{
-			MemberName memberName = new MemberName(expressionResult.Expression);
+			MemberName memberName = resolverContext.CreateExpressionMemberName();
 			MethodGroupResolveResult result = ResolveMethodFromImportedNames(resolverContext, memberName);
 			if (result != null) {
 				return result;

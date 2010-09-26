@@ -8,6 +8,6 @@ namespace ICSharpCode.PythonBinding
 {
 	public interface IPythonResolver
 	{
-		ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult);
+		ResolveResult Resolve(PythonResolverContext resolverContext);
 	}
 }

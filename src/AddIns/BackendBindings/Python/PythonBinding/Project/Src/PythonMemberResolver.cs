@@ -19,13 +19,18 @@ namespace ICSharpCode.PythonBinding
 			this.classResolver = classResolver;
 		}
 		
-		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)
+		public ResolveResult Resolve(PythonResolverContext resolverContext)
 		{
-			IMember member = FindMember(resolverContext, expressionResult.Expression);
+			IMember member = FindMember(resolverContext);
 			if (member != null) {
 				return CreateMemberResolveResult(member);
 			}
 			return null;
+		}
+		
+		IMember FindMember(PythonResolverContext resolverContext)
+		{
+			return FindMember(resolverContext, resolverContext.Expression);
 		}
 		
 		IMember FindMember(PythonResolverContext resolverContext, string expression)

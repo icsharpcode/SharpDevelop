@@ -46,18 +46,18 @@ namespace ICSharpCode.PythonBinding
 				return null;
 			}
 			
-			resolverContext = new PythonResolverContext(parseInfo, fileContent);
-			if (!resolverContext.GetCallingMember(expressionResult.Region)) {
+			resolverContext = new PythonResolverContext(parseInfo, expressionResult, fileContent);
+			if (!resolverContext.HasProjectContent) {
 				return null;
 			}
 			
-			return Resolve(resolverContext, expressionResult);
+			return Resolve(resolverContext);
 		}
 		
-		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)
+		public ResolveResult Resolve(PythonResolverContext resolverContext)
 		{
 			foreach (IPythonResolver resolver in resolvers) {
-				ResolveResult resolveResult = resolver.Resolve(resolverContext, expressionResult);
+				ResolveResult resolveResult = resolver.Resolve(resolverContext);
 				if (resolveResult != null) {
 					return resolveResult;
 				}

@@ -8,22 +8,22 @@ namespace ICSharpCode.PythonBinding
 {
 	public class PythonSelfResolver : IPythonResolver
 	{
-		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)
+		public ResolveResult Resolve(PythonResolverContext resolverContext)
 		{
 			if (resolverContext.HasCallingClass) {
-				if (IsSelfExpression(expressionResult)) {
+				if (IsSelfExpression(resolverContext)) {
 					return CreateResolveResult(resolverContext);
-				} else if (IsSelfExpressionAtStart(expressionResult)) {
-					MemberName memberName = new MemberName(expressionResult.Expression);
+				} else if (IsSelfExpressionAtStart(resolverContext)) {
+					MemberName memberName = resolverContext.CreateExpressionMemberName();
 					return new PythonMethodGroupResolveResult(resolverContext.CallingClass, memberName.Name);
 				}
 			}
 			return null;
 		}
 		
-		bool IsSelfExpression(ExpressionResult expressionResult)
+		bool IsSelfExpression(PythonResolverContext resolverContext)
 		{
-			return expressionResult.Expression == "self";
+			return resolverContext.Expression == "self";
 		}
 		
 		ResolveResult CreateResolveResult(PythonResolverContext resolverContext)
@@ -33,9 +33,9 @@ namespace ICSharpCode.PythonBinding
 			return new ResolveResult(callingClass, null, returnType);
 		}
 		
-		bool IsSelfExpressionAtStart(ExpressionResult expressionResult)
+		bool IsSelfExpressionAtStart(PythonResolverContext resolverContext)
 		{
-			return expressionResult.Expression.StartsWith("self.");
+			return resolverContext.Expression.StartsWith("self.");
 		}
 	}
 }

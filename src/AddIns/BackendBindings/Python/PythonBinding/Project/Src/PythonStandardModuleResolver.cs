@@ -10,17 +10,19 @@ namespace ICSharpCode.PythonBinding
 	{
 		PythonStandardModules standardPythonModules = new PythonStandardModules();
 		
-		public PythonStandardModuleResolver()
+		public ResolveResult Resolve(PythonResolverContext resolverContext)
 		{
-		}
-		
-		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)
-		{
-			PythonStandardModuleType type = GetStandardModuleTypeIfImported(resolverContext, expressionResult.Expression);
+			PythonStandardModuleType type = GetStandardModuleTypeIfImported(resolverContext);
 			if (type != null) {
 				return new PythonStandardModuleResolveResult(type);
 			}
 			return null;
+		}
+		
+		PythonStandardModuleType GetStandardModuleTypeIfImported(PythonResolverContext resolverContext)
+		{
+			string moduleName = resolverContext.Expression;
+			return GetStandardModuleTypeIfImported(resolverContext, moduleName);
 		}
 		
 		public PythonStandardModuleType GetStandardModuleTypeIfImported(PythonResolverContext resolverContext, string moduleName)

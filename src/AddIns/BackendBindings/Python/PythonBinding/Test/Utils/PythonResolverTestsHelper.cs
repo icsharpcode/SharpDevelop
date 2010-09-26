@@ -36,9 +36,8 @@ namespace PythonBinding.Tests.Utils
 		public ResolveResult Resolve(string expression)
 		{
 			ExpressionResult expressionResult = new ExpressionResult(expression);
-			PythonResolverContext context = new PythonResolverContext(ParseInfo);
-			context.GetCallingMember(expressionResult.Region);
-			ResolveResult = Resolver.Resolve(context, expressionResult);
+			PythonResolverContext context = new PythonResolverContext(ParseInfo, expressionResult, String.Empty);
+			ResolveResult = Resolver.Resolve(context);
 			return ResolveResult;
 		}
 		

@@ -14,6 +14,7 @@ namespace ICSharpCode.PythonBinding
 		IProjectContent projectContent;
 		IClass callingClass;
 		string fileContent;
+		ExpressionResult expressionResult;
 		
 		public PythonResolverContext(ParseInformation parseInfo)
 			: this(parseInfo, String.Empty)
@@ -21,10 +22,17 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		public PythonResolverContext(ParseInformation parseInfo, string fileContent)
+			: this(parseInfo, new ExpressionResult(), fileContent)
+		{
+		}
+		
+		public PythonResolverContext(ParseInformation parseInfo, ExpressionResult expressionResult, string fileContent)
 		{
 			this.fileContent = fileContent;
+			this.expressionResult = expressionResult;
 			GetCompilationUnit(parseInfo);
 			GetProjectContent();
+			GetCallingMember();
 		}
 		
 		void GetCompilationUnit(ParseInformation parseInfo)
@@ -41,12 +49,54 @@ namespace ICSharpCode.PythonBinding
 			}
 		}
 		
+		/// <summary>
+		/// Determines the class and member at the specified
+		/// line and column in the specified file.
+		/// </summary>
+		void GetCallingMember()
+		{
+			if (projectContent != null) {
+				GetCallingClass();
+			}
+		}
+				
+		/// <summary>
+		/// Gets the calling class at the specified line and column.
+		/// </summary>
+		void GetCallingClass()
+		{
+			if (compilationUnit.Classes.Count > 0) {
+				callingClass = compilationUnit.Classes[0];
+			}
+		}
+		
 		public string FileContent {
 			get { return fileContent; }
 		}
 		
 		public IProjectContent ProjectContent {
 			get { return projectContent; }
+		}
+		
+		public ExpressionResult ExpressionResult {
+			get { return expressionResult; }
+		}
+		
+		public MemberName CreateExpressionMemberName()
+		{
+			return new MemberName(Expression);
+		}
+		
+		public string Expression {
+			get { return expressionResult.Expression; }
+		}
+		
+		public ExpressionContext ExpressionContext {
+			get { return expressionResult.Context; }
+		}
+		
+		public DomRegion ExpressionRegion {
+			get { return expressionResult.Region; }
 		}
 		
 		public bool HasProjectContent {
@@ -84,34 +134,6 @@ namespace ICSharpCode.PythonBinding
 				}
 			}
 			return false;
-		}
-		
-		/// <summary>
-		/// Determines the class and member at the specified
-		/// line and column in the specified file.
-		/// </summary>
-		public bool GetCallingMember(DomRegion region)
-		{
-			if (compilationUnit == null) {
-				return false;
-			}
-			
-			if (projectContent != null) {
-				callingClass = GetCallingClass(region);
-				return true;
-			}
-			return false;
-		}
-				
-		/// <summary>
-		/// Gets the calling class at the specified line and column.
-		/// </summary>
-		IClass GetCallingClass(DomRegion region)
-		{
-			if (compilationUnit.Classes.Count > 0) {
-				return compilationUnit.Classes[0];
-			}
-			return null;
 		}
 		
 		public IClass GetClass(string fullyQualifiedName)
