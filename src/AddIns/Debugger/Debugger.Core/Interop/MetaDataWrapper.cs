@@ -16,7 +16,7 @@ namespace Debugger.Interop.MetaData
 {
 	/// <summary>Wrapper for the unmanaged metadata API.</summary>
 	/// <remarks>http://msdn.microsoft.com/en-us/library/ms230172.aspx</remarks>
-	public class MetaDataImport: IDisposable
+	public class MetaDataImport
 	{
 		const int DefaultBufferSize = 8;
 		// If buffer is too small, enlarge it
@@ -50,20 +50,6 @@ namespace Debugger.Interop.MetaData
 				return symBinder.GetReaderFromStream(metaData, stream);
 			} catch (COMException) {
 				return null;
-			}
-		}
-		
-		~MetaDataImport()
-		{
-			Dispose();
-		}
-		
-		public void Dispose()
-		{
-			IMetaDataImport m = this.metaData;
-			if (m != null) {
-				Marshal.FinalReleaseComObject(m);
-				metaData = null;
 			}
 		}
 		
