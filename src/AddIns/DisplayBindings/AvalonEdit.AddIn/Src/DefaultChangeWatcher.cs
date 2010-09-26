@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
@@ -40,7 +41,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public void Initialize(IDocument document)
 		{
-			if (this.textDocument != null)
+			if (changeList != null && changeList.Any())
 				return;
 			
 			this.document = document;
@@ -52,19 +53,32 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			lineTracker = WeakLineTracker.Register(this.textDocument, this);
 			this.textDocument.UndoStack.PropertyChanged += UndoStackPropertyChanged;
 		}
-	
+		
 		void SetupInitialFileState()
 		{
 			changeList.Clear();
 			
-			Stream diff = GetDiff();
+			Stream baseFileStream = GetBaseVersion();
+			byte[] baseFile = new byte[baseFileStream.Length];
+			
+			baseFileStream.Read(baseFile, 0, baseFile.Length);
+			
+			Stream currentFileStream = GetCurrentVersion();
+			byte[] currentFile = new byte[currentFileStream.Length];
+			
+			currentFileStream.Read(currentFile, 0, currentFileStream.Length);
+			
+			MyersDiff diff = new MyersDiff(new RawText(baseFile), new RawText(currentFile));
 			
 			if (diff == null)
 				changeList.InsertRange(0, document.TotalNumberOfLines + 1, new LineChangeInfo(ChangeType.None, ""));
 			else {
-				changeList.InsertRange(0, document.TotalNumberOfLines + 1, new LineChangeInfo(ChangeType.None, ""));
+				changeList.Add(new LineChangeInfo(ChangeType.None, ""));
+				foreach (Edit edit in diff.GetEdits()) {
+					changeList.InsertRange(changeList.Count, edit.EndB - edit.BeginB, new LineChangeInfo(edit.EditType, ""));
+				}
 			}
-						
+			
 			OnChangeOccurred(EventArgs.Empty);
 		}
 		
@@ -72,29 +86,28 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			string fileName = ((ITextEditor)document.GetService(typeof(ITextEditor))).FileName;
 			
-			foreach (IDocumentBaseVersionProvider provider in VersioningServices.Instance.BaseVersionProviders) {
+			foreach (IDocumentVersionProvider provider in VersioningServices.Instance.DocumentVersionProviders) {
 				var result = provider.OpenBaseVersion(fileName);
 				if (result != null)
 					return result;
 			}
 			
-			return new DefaultBaseVersionProvider().OpenBaseVersion(fileName);
+			return new DefaultVersionProvider().OpenBaseVersion(fileName);
 		}
 		
-		Stream GetDiff()
+		Stream GetCurrentVersion()
 		{
-			ITextBuffer buffer = document.CreateSnapshot();
 			string fileName = ((ITextEditor)document.GetService(typeof(ITextEditor))).FileName;
 			
-			foreach (IDiffProvider provider in VersioningServices.Instance.DiffProviders) {
-				var result = provider.GetDiff(fileName, buffer);
+			foreach (IDocumentVersionProvider provider in VersioningServices.Instance.DocumentVersionProviders) {
+				var result = provider.OpenCurrentVersion(fileName);
 				if (result != null)
 					return result;
 			}
 			
-			return new DefaultDiffProvider().GetDiff(fileName, buffer);
+			return new DefaultVersionProvider().OpenCurrentVersion(fileName);
 		}
-	
+		
 		void UndoStackPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (textDocument.UndoStack.IsOriginalFile)

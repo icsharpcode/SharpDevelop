@@ -446,7 +446,18 @@ namespace ICSharpCode.Svn
 		public Stream OpenBaseVersion(string fileName)
 		{
 			MemoryStream stream = new MemoryStream();
-			this.client.Write(fileName, stream, new SvnWriteArgs() { Revision = SvnRevision.Base });
+			if (!this.client.Write(fileName, stream, new SvnWriteArgs() { Revision = SvnRevision.Base }))
+				return null;
+			stream.Seek(0, SeekOrigin.Begin);
+			return stream;
+		}
+		
+		public Stream OpenCurrentVersion(string fileName)
+		{
+			MemoryStream stream = new MemoryStream();
+			if (!this.client.Write(fileName, stream, new SvnWriteArgs() { Revision = SvnRevision.Working }))
+				return null;
+			stream.Seek(0, SeekOrigin.Begin);
 			return stream;
 		}
 		

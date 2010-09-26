@@ -9,16 +9,24 @@ using SharpSvn;
 
 namespace ICSharpCode.Svn
 {
-	public class SvnBaseVersionProvider : IDocumentBaseVersionProvider
+	public class SvnVersionProvider : IDocumentVersionProvider
 	{
 		public Stream OpenBaseVersion(string fileName)
 		{
 			if (!SvnClientWrapper.IsInSourceControl(fileName))
 				return null;
 			
-			using (SvnClientWrapper client = new SvnClientWrapper()) {
+			using (SvnClientWrapper client = new SvnClientWrapper())
 				return client.OpenBaseVersion(fileName);
-			}
+		}
+		
+		public Stream OpenCurrentVersion(string fileName)
+		{
+			if (!SvnClientWrapper.IsInSourceControl(fileName))
+				return null;
+			
+			using (SvnClientWrapper client = new SvnClientWrapper())
+				return client.OpenCurrentVersion(fileName);
 		}
 	}
 }

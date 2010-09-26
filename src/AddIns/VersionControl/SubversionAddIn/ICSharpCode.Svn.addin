@@ -23,14 +23,9 @@
 		       class = "ICSharpCode.Svn.Commands.RegisterEventsCommand"/>
 	</Path>
 	
-	<Path name="/Workspace/DiffProviders">
+	<Path name="/Workspace/DocumentVersionProviders">
 		<Class id="svn"
-		       class="ICSharpCode.Svn.SvnDiffProvider" />
-	</Path>
-	
-	<Path name="/Workspace/BaseVersionProviders">
-		<Class id="svn"
-		       class="ICSharpCode.Svn.SvnBaseVersionProvider" />
+		       class="ICSharpCode.Svn.SvnVersionProvider" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">

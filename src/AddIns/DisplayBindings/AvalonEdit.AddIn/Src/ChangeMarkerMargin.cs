@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -26,52 +27,54 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		protected override void OnRender(DrawingContext drawingContext)
 		{
-			Size renderSize = this.RenderSize;
-			TextView textView = this.TextView;
-			
-			if (textView != null && textView.VisualLinesValid) {
-				ITextEditor editor = textView.Services.GetService(typeof(ITextEditor)) as ITextEditor;
-				changeWatcher.Initialize(editor.Document);
+			using (DebugTimer.Time("ChangeMarkerMargin.OnRender")) {
+				Size renderSize = this.RenderSize;
+				TextView textView = this.TextView;
 				
-				foreach (VisualLine line in textView.VisualLines) {
-					Rect rect = new Rect(0, line.VisualTop - textView.ScrollOffset.Y, 5, line.Height);
+				if (textView != null && textView.VisualLinesValid) {
+					ITextEditor editor = textView.Services.GetService(typeof(ITextEditor)) as ITextEditor;
+					changeWatcher.Initialize(editor.Document);
 					
-					LineChangeInfo info = changeWatcher.GetChange(editor.Document.GetLine(line.FirstDocumentLine.LineNumber));
-					
-					switch (info.Change) {
-						case ChangeType.None:
-							break;
-						case ChangeType.Added:
-							drawingContext.DrawRectangle(Brushes.LightGreen, null, rect);
-							break;
-						case ChangeType.Modified:
-							drawingContext.DrawRectangle(Brushes.Blue, null, rect);
-							break;
-						case ChangeType.Unsaved:
-							drawingContext.DrawRectangle(Brushes.Yellow, null, rect);
-							break;
-						default:
-							throw new Exception("Invalid value for ChangeType");
-					}
-					
-					if (!string.IsNullOrEmpty(info.DeletedLinesAfterThisLine)) {
-						Point pt1 = new Point(5,  line.VisualTop + line.Height - textView.ScrollOffset.Y - 4);
-						Point pt2 = new Point(10, line.VisualTop + line.Height - textView.ScrollOffset.Y);
-						Point pt3 = new Point(5,  line.VisualTop + line.Height - textView.ScrollOffset.Y + 4);
+					foreach (VisualLine line in textView.VisualLines) {
+						Rect rect = new Rect(0, line.VisualTop - textView.ScrollOffset.Y, 5, line.Height);
 						
-						drawingContext.DrawGeometry(Brushes.Red, null, new PathGeometry(new List<PathFigure>() { CreateNAngle(pt1, pt2, pt3) }));
-					}
-					
-					// special case for line 0
-					if (line.FirstDocumentLine.LineNumber == 1) {
-						info = changeWatcher.GetChange(null);
+						LineChangeInfo info = changeWatcher.GetChange(editor.Document.GetLine(line.FirstDocumentLine.LineNumber));
+						
+						switch (info.Change) {
+							case ChangeType.None:
+								break;
+							case ChangeType.Added:
+								drawingContext.DrawRectangle(Brushes.LightGreen, null, rect);
+								break;
+							case ChangeType.Modified:
+								drawingContext.DrawRectangle(Brushes.Blue, null, rect);
+								break;
+							case ChangeType.Unsaved:
+								drawingContext.DrawRectangle(Brushes.Yellow, null, rect);
+								break;
+							default:
+								throw new Exception("Invalid value for ChangeType");
+						}
 						
 						if (!string.IsNullOrEmpty(info.DeletedLinesAfterThisLine)) {
-							Point pt1 = new Point(5,  line.VisualTop - textView.ScrollOffset.Y - 4);
-							Point pt2 = new Point(10, line.VisualTop - textView.ScrollOffset.Y);
-							Point pt3 = new Point(5,  line.VisualTop - textView.ScrollOffset.Y + 4);
+							Point pt1 = new Point(5,  line.VisualTop + line.Height - textView.ScrollOffset.Y - 4);
+							Point pt2 = new Point(10, line.VisualTop + line.Height - textView.ScrollOffset.Y);
+							Point pt3 = new Point(5,  line.VisualTop + line.Height - textView.ScrollOffset.Y + 4);
 							
 							drawingContext.DrawGeometry(Brushes.Red, null, new PathGeometry(new List<PathFigure>() { CreateNAngle(pt1, pt2, pt3) }));
+						}
+						
+						// special case for line 0
+						if (line.FirstDocumentLine.LineNumber == 1) {
+							info = changeWatcher.GetChange(null);
+							
+							if (!string.IsNullOrEmpty(info.DeletedLinesAfterThisLine)) {
+								Point pt1 = new Point(5,  line.VisualTop - textView.ScrollOffset.Y - 4);
+								Point pt2 = new Point(10, line.VisualTop - textView.ScrollOffset.Y);
+								Point pt3 = new Point(5,  line.VisualTop - textView.ScrollOffset.Y + 4);
+								
+								drawingContext.DrawGeometry(Brushes.Red, null, new PathGeometry(new List<PathFigure>() { CreateNAngle(pt1, pt2, pt3) }));
+							}
 						}
 					}
 				}

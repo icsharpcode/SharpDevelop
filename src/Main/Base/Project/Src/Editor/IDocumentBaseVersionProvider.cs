@@ -4,37 +4,32 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
-	public interface IDocumentBaseVersionProvider
+	public interface IDocumentVersionProvider
 	{
 		/// <summary>
 		/// Provides the BASE-Version for a file. This can be either the file saved
 		/// to disk or a base version provided by any VCS.
 		/// </summary>
 		Stream OpenBaseVersion(string fileName);
+		
+		Stream OpenCurrentVersion(string fileName);
 	}
 	
-	public sealed class DefaultBaseVersionProvider : IDocumentBaseVersionProvider
+	public sealed class DefaultVersionProvider : IDocumentVersionProvider
 	{
 		public Stream OpenBaseVersion(string fileName)
 		{
 			return File.OpenRead(fileName);
 		}
-	}
-	
-	public interface IDiffProvider
-	{
-		Stream GetDiff(string fileName, ITextBuffer modifiedBuffer);
-	}
-	
-	public sealed class DefaultDiffProvider : IDiffProvider
-	{
-		public Stream GetDiff(string fileName, ITextBuffer modifiedBuffer)
+		
+		public Stream OpenCurrentVersion(string fileName)
 		{
-			return null;
+			return File.OpenRead(fileName);
 		}
 	}
 	
@@ -42,25 +37,14 @@ namespace ICSharpCode.SharpDevelop.Editor
 	{
 		public static readonly VersioningServices Instance = new VersioningServices();
 		
-		List<IDocumentBaseVersionProvider> baseVersionProviders;
+		List<IDocumentVersionProvider> baseVersionProviders;
 		
-		public List<IDocumentBaseVersionProvider> BaseVersionProviders {
+		public List<IDocumentVersionProvider> DocumentVersionProviders {
 			get {
 				if (baseVersionProviders == null)
-					baseVersionProviders = AddInTree.BuildItems<IDocumentBaseVersionProvider>("/Workspace/BaseVersionProviders", this, false);
+					baseVersionProviders = AddInTree.BuildItems<IDocumentVersionProvider>("/Workspace/DocumentVersionProviders", this, false);
 				
 				return baseVersionProviders;
-			}
-		}
-		
-		List<IDiffProvider> diffProviders;
-		
-		public List<IDiffProvider> DiffProviders {
-			get {
-				if (diffProviders == null)
-					diffProviders = AddInTree.BuildItems<IDiffProvider>("/Workspace/DiffProviders", this, false);
-				
-				return diffProviders;
 			}
 		}
 	}
@@ -80,6 +64,7 @@ namespace ICSharpCode.SharpDevelop.Editor
 	{
 		None,
 		Added,
+		Deleted,
 		Modified,
 		Unsaved
 	}
