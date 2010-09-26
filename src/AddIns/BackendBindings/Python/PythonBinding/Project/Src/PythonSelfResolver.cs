@@ -13,6 +13,9 @@ namespace ICSharpCode.PythonBinding
 			if (resolverContext.HasCallingClass) {
 				if (IsSelfExpression(expressionResult)) {
 					return CreateResolveResult(resolverContext);
+				} else if (IsSelfExpressionAtStart(expressionResult)) {
+					MemberName memberName = new MemberName(expressionResult.Expression);
+					return new PythonMethodGroupResolveResult(resolverContext.CallingClass, memberName.Name);
 				}
 			}
 			return null;
@@ -28,6 +31,11 @@ namespace ICSharpCode.PythonBinding
 			IClass callingClass = resolverContext.CallingClass;
 			IReturnType returnType = callingClass.DefaultReturnType;
 			return new ResolveResult(callingClass, null, returnType);
+		}
+		
+		bool IsSelfExpressionAtStart(ExpressionResult expressionResult)
+		{
+			return expressionResult.Expression.StartsWith("self.");
 		}
 	}
 }

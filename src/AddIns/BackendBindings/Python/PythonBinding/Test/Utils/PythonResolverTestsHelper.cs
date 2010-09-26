@@ -37,6 +37,7 @@ namespace PythonBinding.Tests.Utils
 		{
 			ExpressionResult expressionResult = new ExpressionResult(expression);
 			PythonResolverContext context = new PythonResolverContext(ParseInfo);
+			context.GetCallingMember(expressionResult.Region);
 			ResolveResult = Resolver.Resolve(context, expressionResult);
 			return ResolveResult;
 		}
@@ -59,6 +60,10 @@ namespace PythonBinding.Tests.Utils
 		
 		public LocalResolveResult LocalResolveResult {
 			get { return ResolveResult as LocalResolveResult; }
+		}
+		
+		public MethodGroupResolveResult MethodGroupResolveResult {
+			get { return ResolveResult as MethodGroupResolveResult; }
 		}
 		
 		public MockClass CreateClass(string name)
