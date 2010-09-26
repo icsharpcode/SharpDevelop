@@ -114,8 +114,8 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		public void Init()
 		{
 			this.singlePage = TestHelper.CreateSinglePage();
-			this.evaluator = new ExpressionEvaluatorFacade();
-			this.evaluator.SinglePage = this.singlePage;
+			this.evaluator = new ExpressionEvaluatorFacade(this.singlePage);
+//			this.evaluator.SinglePage = this.singlePage;
 		}
 	}
 }

@@ -201,13 +201,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 				p.TotalPages = this.Pages.Count;
 			}
 
-			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade();
+			this.singlePage.IDataNavigator = navigator;
+			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade(this.singlePage);
 			
 			foreach (ExporterPage p in this.pages)
 			{
 				this.singlePage = p;
-				evaluatorFacade.SinglePage = this.singlePage;
-				evaluatorFacade.SinglePage.IDataNavigator = navigator;
+//				evaluatorFacade.SinglePage = this.singlePage;
+//				evaluatorFacade.SinglePage.IDataNavigator = navigator;
 				EvaluateRecursive(evaluatorFacade,p.Items);
 			}
 		}

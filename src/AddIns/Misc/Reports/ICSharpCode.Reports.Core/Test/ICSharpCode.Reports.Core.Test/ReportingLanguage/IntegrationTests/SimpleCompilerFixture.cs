@@ -84,7 +84,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage
 		[SetUp]
 		public void Init()
 		{
-			this.evaluator = new ExpressionEvaluatorFacade();
+			this.evaluator = new ExpressionEvaluatorFacade(null);
 		}
 		
 		#endregion

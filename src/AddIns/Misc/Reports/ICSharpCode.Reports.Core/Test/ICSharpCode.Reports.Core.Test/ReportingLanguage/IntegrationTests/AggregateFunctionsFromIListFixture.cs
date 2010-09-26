@@ -142,10 +142,9 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		[TestFixtureSetUp]
 		public void Init()
 		{
-			this.evaluator = new ExpressionEvaluatorFacade();
-			this.singlePage = TestHelper.CreateSinglePage();
-			this.evaluator.SinglePage = this.singlePage;
 			
+			this.singlePage = TestHelper.CreateSinglePage();
+			this.evaluator = new ExpressionEvaluatorFacade(this.singlePage);
 
 			
 			AggregateFuctionHelper ah = new AggregateFuctionHelper();

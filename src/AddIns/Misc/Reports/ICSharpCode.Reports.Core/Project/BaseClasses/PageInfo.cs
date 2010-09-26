@@ -8,13 +8,14 @@
  */
 using System;
 using System.Collections;
+using ICSharpCode.Reports.Core.Interfaces;
 
 namespace ICSharpCode.Reports.Core.BaseClasses
 {
 	/// <summary>
 	/// Description of PageInfo.
 	/// </summary>
-	public class PageInfo
+	public class PageInfo:IPageInfo
 	{
 		
 		private Hashtable parameterHash;

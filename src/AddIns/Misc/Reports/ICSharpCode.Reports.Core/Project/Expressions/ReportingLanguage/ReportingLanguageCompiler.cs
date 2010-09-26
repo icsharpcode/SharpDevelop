@@ -22,7 +22,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 	/// </summary>
 	public class ReportingLanguageCompiler:SimpleExpressionLanguageCompiler
 	{
-		private ISinglePage singlePage;
+		private IPageInfo singlePage;
 		private ReportingLanguage reportingLanguage;
 		private Compiler compiler;
 		
@@ -304,7 +304,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		}
 		
 		
-		public ISinglePage SinglePage {
+		public IPageInfo SinglePage {
 			get { return singlePage; }
 			set { singlePage = value; }
 		}

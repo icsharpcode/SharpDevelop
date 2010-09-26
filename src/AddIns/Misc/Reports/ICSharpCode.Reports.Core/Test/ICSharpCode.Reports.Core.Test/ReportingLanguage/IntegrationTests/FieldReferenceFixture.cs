@@ -45,8 +45,8 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		[TestFixtureSetUp]
 		public void Init()
 		{
-			this.evaluator = new ExpressionEvaluatorFacade();
-			this.evaluator.SinglePage = TestHelper.CreateSinglePage();
+			this.evaluator = new ExpressionEvaluatorFacade(TestHelper.CreateSinglePage());
+//			this.evaluator.SinglePage = TestHelper.CreateSinglePage();
 		}
 	}
 }

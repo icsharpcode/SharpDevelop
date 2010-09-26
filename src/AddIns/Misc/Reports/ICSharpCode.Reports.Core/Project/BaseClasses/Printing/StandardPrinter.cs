@@ -239,7 +239,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		public static IExpressionEvaluatorFacade  SetupEvaluator ()
 		{
-			return new ExpressionEvaluatorFacade();
+			return new ExpressionEvaluatorFacade(null);
 		}
 		
 		
@@ -252,9 +252,8 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			if (dataNavigator == null) {
 				throw new ArgumentNullException("dataNavigator");
 			}
-			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade();
-			evaluatorFacade.SinglePage = singlePage;
-			evaluatorFacade.SinglePage.IDataNavigator = dataNavigator;
+			singlePage.IDataNavigator = dataNavigator;
+			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade(singlePage);
 			return evaluatorFacade;
 		}
 		

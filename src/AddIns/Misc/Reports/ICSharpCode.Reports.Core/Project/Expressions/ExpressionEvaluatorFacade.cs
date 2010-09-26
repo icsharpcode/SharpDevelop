@@ -22,15 +22,17 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 	{
 		private ReportingLanguageCompiler compiler;
 		private ExpressionContext context;
-		private ISinglePage singlePage;
+		private IPageInfo singlePage;
 		 
 		
-		public ExpressionEvaluatorFacade()
+		public ExpressionEvaluatorFacade(IPageInfo pageInfo)
 		{
 			compiler = new ReportingLanguageCompiler();
 			this.context = new ExpressionContext(null);
 			context.ResolveUnknownVariable += VariableStore;
 			context.ResolveMissingFunction += FunctionStore;
+			SinglePage = pageInfo;
+			compiler.SinglePage = pageInfo;
 		}
 		
 		
@@ -86,7 +88,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		}
 		
 		
-		public ISinglePage SinglePage {
+		public IPageInfo SinglePage {
 			get { return singlePage; }
 			set {
 				singlePage = value;
