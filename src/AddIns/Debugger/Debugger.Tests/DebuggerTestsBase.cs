@@ -145,6 +145,8 @@ namespace Debugger.Tests
 			string actualXml = new StreamReader(newXmlStream).ReadToEnd() + "\r\n";
 			
 			string sourceCode = GetResource(testName);
+			// Normalize the line endings
+			sourceCode = sourceCode.Replace("\r\n", "\n").Replace("\n", "\r\n");
 			int startIndex = sourceCode.IndexOf(startMark);
 			int endIndex = sourceCode.IndexOf(endMark);
 			if (startIndex == -1 || endIndex == -1) {
