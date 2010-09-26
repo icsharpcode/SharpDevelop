@@ -88,32 +88,40 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					IBookmark bm;
 					if (bookmarkDict.TryGetValue(lineNumber, out bm)) {
 						Rect rect = new Rect(0, PixelSnapHelpers.Round(line.VisualTop - textView.VerticalOffset, pixelSize.Height), 16, 16);
+						if (dragDropBookmark == bm && dragStarted)
+							drawingContext.PushOpacity(0.5);
 						drawingContext.DrawImage((bm.Image ?? BookmarkBase.DefaultBookmarkImage).ImageSource, rect);
+						if (dragDropBookmark == bm && dragStarted)
+							drawingContext.Pop();
 					}
+				}
+				if (dragDropBookmark != null && dragStarted) {
+					Rect rect = new Rect(0, PixelSnapHelpers.Round(dragDropCurrentPoint - 8, pixelSize.Height), 16, 16);
+					drawingContext.DrawImage((dragDropBookmark.Image ?? BookmarkBase.DefaultBookmarkImage).ImageSource, rect);
 				}
 			}
 		}
 		
+		IBookmark dragDropBookmark; // bookmark being dragged (!=null if drag'n'drop is active)
+		double dragDropStartPoint;
+		double dragDropCurrentPoint;
+		bool dragStarted; // whether drag'n'drop operation has started (mouse was moved minimum distance)
+		
 		protected override void OnMouseDown(MouseButtonEventArgs e)
 		{
+			CancelDragDrop();
 			base.OnMouseDown(e);
-			TextView textView = this.TextView;
-			if (!e.Handled && textView != null) {
-				VisualLine visualLine = textView.GetVisualLineFromVisualTop(e.GetPosition(textView).Y + textView.VerticalOffset);
-				if (visualLine != null) {
-					int line = visualLine.FirstDocumentLine.LineNumber;
-					foreach (IBookmark bm in manager.Bookmarks) {
-						if (bm.LineNumber == line) {
-							bm.MouseDown(e);
-							if (e.Handled)
-								return;
-						}
-					}
-					if (e.ChangedButton == MouseButton.Left) {
-						// no bookmark on the line: create a new breakpoint
-						ITextEditor textEditor = textView.Services.GetService(typeof(ITextEditor)) as ITextEditor;
-						if (textEditor != null) {
-							ICSharpCode.SharpDevelop.Debugging.DebuggerService.ToggleBreakpointAt(textEditor, line);
+			int line = GetLineFromMousePosition(e);
+			if (!e.Handled && line > 0) {
+				foreach (IBookmark bm in manager.Bookmarks) {
+					if (bm.LineNumber == line) {
+						bm.MouseDown(e);
+						if (e.Handled)
+							return;
+						if (e.ChangedButton == MouseButton.Left && bm.CanDragDrop && CaptureMouse()) {
+							StartDragDrop(bm, e);
+							e.Handled = true;
+							return;
 						}
 					}
 				}
@@ -121,6 +129,92 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// don't allow selecting text through the IconBarMargin
 			if (e.ChangedButton == MouseButton.Left)
 				e.Handled = true;
+		}
+		
+		protected override void OnLostMouseCapture(MouseEventArgs e)
+		{
+			CancelDragDrop();
+			base.OnLostMouseCapture(e);
+		}
+		
+		void StartDragDrop(IBookmark bm, MouseEventArgs e)
+		{
+			dragDropBookmark = bm;
+			dragDropStartPoint = dragDropCurrentPoint = e.GetPosition(this).Y;
+			if (TextView != null)
+				TextView.PreviewKeyDown += TextView_PreviewKeyDown;
+		}
+		
+		void CancelDragDrop()
+		{
+			if (dragDropBookmark != null) {
+				dragDropBookmark = null;
+				dragStarted = false;
+				if (TextView != null)
+					TextView.PreviewKeyDown -= TextView_PreviewKeyDown;
+				ReleaseMouseCapture();
+				InvalidateVisual();
+			}
+		}
+		
+		void TextView_PreviewKeyDown(object sender, KeyEventArgs e)
+		{
+			// any key press cancels drag'n'drop
+			CancelDragDrop();
+			if (e.Key == Key.Escape)
+				e.Handled = true;
+		}
+		
+		int GetLineFromMousePosition(MouseEventArgs e)
+		{
+			TextView textView = this.TextView;
+			if (textView == null)
+				return 0;
+			VisualLine vl = textView.GetVisualLineFromVisualTop(e.GetPosition(textView).Y + textView.ScrollOffset.Y);
+			if (vl == null)
+				return 0;
+			return vl.FirstDocumentLine.LineNumber;
+		}
+		
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			base.OnMouseMove(e);
+			if (dragDropBookmark != null) {
+				dragDropCurrentPoint = e.GetPosition(this).Y;
+				if (Math.Abs(dragDropCurrentPoint - dragDropStartPoint) > SystemParameters.MinimumVerticalDragDistance)
+					dragStarted = true;
+				InvalidateVisual();
+			}
+		}
+		
+		protected override void OnMouseUp(MouseButtonEventArgs e)
+		{
+			base.OnMouseUp(e);
+			int line = GetLineFromMousePosition(e);
+			if (!e.Handled && dragDropBookmark != null) {
+				if (dragStarted) {
+					if (line != 0)
+						dragDropBookmark.Drop(line);
+					e.Handled = true;
+				}
+				CancelDragDrop();
+			}
+			if (!e.Handled && line != 0) {
+				foreach (IBookmark bm in manager.Bookmarks) {
+					if (bm.LineNumber == line) {
+						bm.MouseUp(e);
+						if (e.Handled)
+							return;
+					}
+				}
+				if (e.ChangedButton == MouseButton.Left && TextView != null) {
+					// no bookmark on the line: create a new breakpoint
+					ITextEditor textEditor = TextView.Services.GetService(typeof(ITextEditor)) as ITextEditor;
+					if (textEditor != null) {
+						ICSharpCode.SharpDevelop.Debugging.DebuggerService.ToggleBreakpointAt(textEditor, line);
+					}
+				}
+			}
 		}
 	}
 }

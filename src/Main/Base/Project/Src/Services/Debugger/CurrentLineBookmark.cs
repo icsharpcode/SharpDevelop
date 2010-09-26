@@ -88,5 +88,19 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			marker.ForegroundColor = Colors.Blue;
 			return marker;
 		}
+		
+		public override bool CanDragDrop {
+			get { return true; }
+		}
+		
+		public override void Drop(int lineNumber)
+		{
+			// call async because the Debugger seems to use Application.DoEvents(), but we don't want to process events
+			// because Drag'N'Drop operation has finished
+			WorkbenchSingleton.SafeThreadAsyncCall(
+				delegate {
+					DebuggerService.CurrentDebugger.SetInstructionPointer(this.FileName, lineNumber, 1);
+				});
+		}
 	}
 }

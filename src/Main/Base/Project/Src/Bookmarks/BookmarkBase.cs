@@ -150,10 +150,22 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public virtual void MouseDown(MouseButtonEventArgs e)
 		{
+		}
+		
+		public virtual void MouseUp(MouseButtonEventArgs e)
+		{
 			if (e.ChangedButton == MouseButton.Left && CanToggle) {
 				RemoveMark();
 				e.Handled = true;
 			}
+		}
+		
+		public virtual bool CanDragDrop {
+			get { return false; }
+		}
+		
+		public virtual void Drop(int lineNumber)
+		{
 		}
 	}
 }
