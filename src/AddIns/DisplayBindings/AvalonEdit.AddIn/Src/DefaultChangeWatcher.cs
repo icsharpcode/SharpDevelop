@@ -61,12 +61,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			Stream baseFileStream = GetBaseVersion();
 			byte[] baseFile = new byte[baseFileStream.Length];
 			
-			baseFileStream.Read(baseFile, 0, baseFile.Length);
+			ReadAll(baseFileStream, baseFile);
 			
 			Stream currentFileStream = GetCurrentVersion();
 			byte[] currentFile = new byte[currentFileStream.Length];
 			
-			currentFileStream.Read(currentFile, 0, currentFileStream.Length);
+			ReadAll(currentFileStream, currentFile);
 			
 			MyersDiff diff = new MyersDiff(new RawText(baseFile), new RawText(currentFile));
 			
@@ -74,12 +74,25 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				changeList.InsertRange(0, document.TotalNumberOfLines + 1, new LineChangeInfo(ChangeType.None, ""));
 			else {
 				changeList.Add(new LineChangeInfo(ChangeType.None, ""));
+				int lastEnd = 0;
 				foreach (Edit edit in diff.GetEdits()) {
+					changeList.InsertRange(changeList.Count, edit.BeginB - lastEnd, new LineChangeInfo(ChangeType.None, ""));
 					changeList.InsertRange(changeList.Count, edit.EndB - edit.BeginB, new LineChangeInfo(edit.EditType, ""));
+					lastEnd = edit.EndB;
 				}
+				changeList.InsertRange(changeList.Count, document.TotalNumberOfLines - lastEnd, new LineChangeInfo(ChangeType.None, ""));
 			}
 			
 			OnChangeOccurred(EventArgs.Empty);
+		}
+
+		void ReadAll(Stream stream, byte[] buffer)
+		{
+			int offset = 0;
+			int readBytes = 0;
+			
+			while ((readBytes = stream.Read(buffer, offset, buffer.Length - offset)) > 0)
+				offset += readBytes;
 		}
 		
 		Stream GetBaseVersion()
