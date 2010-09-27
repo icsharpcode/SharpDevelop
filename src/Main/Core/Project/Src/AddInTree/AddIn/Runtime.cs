@@ -59,8 +59,6 @@ namespace ICSharpCode.Core
 		{
 			lock (lockObj) {
 				if (!isAssemblyLoaded) {
-					LoggingService.Info("Loading addin " + assembly);
-					
 					if (!this.IsActive)
 						throw new InvalidOperationException("Cannot load inactive AddIn runtime");
 					
