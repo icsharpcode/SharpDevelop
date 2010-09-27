@@ -4038,11 +4038,17 @@ Configurez le chemin vers NAnt dans les options de SharpDevelop.</value>
   <data name="ICSharpCode.PythonBinding.SendLineToPythonConsole" xml:space="preserve">
     <value>Envoyer cette ligne vers la console Python</value>
   </data>
+  <data name="ICSharpCode.PythonBinding.SendSelectedTextToPythonConsole" xml:space="preserve">
+    <value>Envoyer vers la console Python</value>
+  </data>
   <data name="ICSharpCode.PythonBinding.UnknownTypeName" xml:space="preserve">
     <value>Impossible de trouver le type '{0}'. Manque-t-il uUne référence d'assembly ?</value>
   </data>
   <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
     <value>Envoyer cette ligne vers la console Ruby</value>
+  </data>
+  <data name="ICSharpCode.RubyBinding.SendSelectedTextToRubyConsole" xml:space="preserve">
+    <value>Envoyer vers la console Ruby</value>
   </data>
   <data name="ICSharpCode.Services.FileUtilityService.CantLoadFileStandardText" xml:space="preserve">
     <value>Chargement du fichier ${FileNameWithoutPath} depuis ${Path}. Controler les droits et l'existence du fichier.</value>
@@ -5003,7 +5009,7 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
     <value>Program Menu</value>
   </data>
   <data name="ICSharpCode.WixBinding.WixDirectoryElement.SendToFolder" xml:space="preserve">
-    <value>Send To</value>
+    <value>Envoyer Vers</value>
   </data>
   <data name="ICSharpCode.WixBinding.WixDirectoryElement.StartMenuFolder" xml:space="preserve">
     <value>Start Menu</value>
