@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			var projects = solution.Projects.OfType<IUpgradableProject>().ToList();
 			if (projects.Count > 0 && projects.All(u => u.UpgradeDesired)) {
 				Core.AnalyticsMonitorService.TrackFeature(typeof(UpgradeView), "opened automatically");
-				Show(solution);
+				Show(solution).upgradeView.UpgradeViewOpenedAutomatically = true;
 			}
 		}
 		
@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		{
 			if (solution == null)
 				throw new ArgumentNullException("solution");
-			this.TitleName = "Project Upgrade";
+			SetLocalizedTitle("${res:ICSharpCode.SharpDevelop.Project.UpgradeView.Title}");
 			upgradeView = new UpgradeView(solution);
 		}
 		

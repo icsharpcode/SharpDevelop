@@ -3562,8 +3562,8 @@ You can also choose to store the setting in the .user-file instead of the projec
     <value>Retry</value>
   </data>
   <data name="Global.SelectAllButtonText" xml:space="preserve">
-    <value>Select All</value>
-    <comment>"Unselect All" translated into the local language.</comment>
+    <value>Select &amp;All</value>
+    <comment>selects all items in a list</comment>
   </data>
   <data name="Global.SmallIconToolTip" xml:space="preserve">
     <value>Small Icons</value>
@@ -4208,11 +4208,12 @@ Please configure the NAnt executable's location in the SharpDevelop Options.</va
   <data name="ICSharpCode.PythonBinding.SendSelectedTextToPythonConsole" xml:space="preserve">
     <value>Send to Python Console</value>
   </data>
-  <data name="ICSharpCode.PythonBinding.SendSelectedTextToPythonConsole" xml:space="preserve">
-    <value>Send to Python Console</value>
-  </data>
   <data name="ICSharpCode.PythonBinding.UnknownTypeName" xml:space="preserve">
     <value>Could not find type '{0}'. Are you missing an assembly reference?</value>
+  </data>
+  <data name="ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursor" xml:space="preserve">
+    <value>The selected element is not a class or overridable member, so no derived symbols can be shown.</value>
+    <comment>Error message when using 'Search&gt;Find Derived Symbols' when it isn't applicable.</comment>
   </data>
   <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
     <value>Send Line to Ruby Console</value>
@@ -5020,6 +5021,36 @@ Only letters, digits, space, '.' or '_' are allowed.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Loading ${Filename}...</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
+    <value>Convert selected &amp;projects to:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeTargetFrameworkLabel" xml:space="preserve">
+    <value>Change &amp;target framework:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeVersionGroupBoxHeader" xml:space="preserve">
+    <value>Change version of selected projects</value>
+    <comment>Title of group box that allows changing the version of the selected projects</comment>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.CompilerVersion" xml:space="preserve">
+    <value>Compiler Version</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ConvertButton" xml:space="preserve">
+    <value>&amp;Convert</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange" xml:space="preserve">
+    <value>&lt;do not change&gt;</value>
+    <comment>item in compiler version/target framework combo boxes that is used to indicate an ambiguous selection (several projects with different targets frameworks) and allows the user to change one of (compiler version, target framework) without changing the other</comment>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.TargetFramework" xml:space="preserve">
+    <value>Target Framework</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.Title" xml:space="preserve">
+    <value>Project Upgrade</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription" xml:space="preserve">
+    <value>This solution was created using a previous version of SharpDevelop.
+You might want to upgrade it so that you can use new language or framework features.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError" xml:space="preserve">
     <value>Current ambience not found.

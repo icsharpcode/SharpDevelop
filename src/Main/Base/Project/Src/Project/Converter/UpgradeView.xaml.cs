@@ -1,18 +1,14 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.Core.Presentation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
+
+using ICSharpCode.Core.Presentation;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter
 {
@@ -36,6 +32,11 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			SortableGridViewColumn.SetCurrentSortColumn(listView, nameColumn);
 			SortableGridViewColumn.SetSortDirection(listView, ColumnSortDirection.Ascending);
 			ListView_SelectionChanged(null, null);
+		}
+		
+		public bool UpgradeViewOpenedAutomatically {
+			get { return upgradeDescription.Visibility == Visibility.Visible; }
+			set { upgradeDescription.Visibility = value ? Visibility.Visible : Visibility.Collapsed; }
 		}
 		
 		public Solution Solution {
@@ -240,7 +241,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		sealed class UnchangedCompilerVersion : CompilerVersion
 		{
-			public UnchangedCompilerVersion() : base(new Version(0, 0), "<do not change>")
+			public UnchangedCompilerVersion() : base(new Version(0, 0), Core.StringParser.Parse("${res:ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange}"))
 			{
 			}
 			
@@ -257,7 +258,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		sealed class UnchangedTargetFramework : TargetFramework
 		{
-			public UnchangedTargetFramework() : base(string.Empty, "<do not change>")
+			public UnchangedTargetFramework() : base(string.Empty, Core.StringParser.Parse("${res:ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange}"))
 			{
 			}
 			

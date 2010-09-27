@@ -1632,7 +1632,7 @@
 			</Condition>
 			<Condition name = "SolutionOpen" action="Disable">
 				<MenuItem id = "Upgrade"
-				          label = "Project Upgrade"
+				          label = "${res:ICSharpCode.SharpDevelop.Project.UpgradeView.Title}"
 				          class = "ICSharpCode.SharpDevelop.Project.Converter.ShowUpgradeView"/>
 			</Condition>
 			

@@ -14,13 +14,13 @@
 				Height="Auto" />
 		</Grid.RowDefinitions>
 		<TextBlock
+			Name="upgradeDescription"
+			Visibility="Collapsed"
 			Grid.Column="0"
 			Grid.Row="0"
 			TextWrapping="WrapWithOverflow"
-			Margin="8,8,8,4">
-			This solution was created using a previous version of SharpDevelop.
-			You might want to upgrade it so that you can use new language or framework features.
-		</TextBlock>
+			Margin="8,8,8,4"
+			Text="{core:Localize ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription}" />
 		<ListView
 			x:Name="listView"
 			core:SortableGridViewColumn.SortMode="Automatic"
@@ -34,7 +34,7 @@
 					<core:SortableGridViewColumn
 						x:Name="nameColumn"
 						SortBy="Name"
-						Header="Project">
+						Header="{core:Localize ICSharpCode.FiletypeRegisterer.Project}">
 						<GridViewColumn.CellTemplate>
 							<DataTemplate>
 								<CheckBox
@@ -45,15 +45,15 @@
 					</core:SortableGridViewColumn>
 					<core:SortableGridViewColumn
 						DisplayMemberBinding="{Binding CompilerVersionName}"
-						Header="Compiler Version" />
+						Header="{core:Localize ICSharpCode.SharpDevelop.Project.UpgradeView.CompilerVersion}" />
 					<core:SortableGridViewColumn
 						DisplayMemberBinding="{Binding TargetFrameworkName}"
-						Header="Target Framework" />
+						Header="{core:Localize ICSharpCode.SharpDevelop.Project.UpgradeView.TargetFramework}" />
 				</GridView>
 			</ListView.View>
 		</ListView>
 		<CheckBox
-			Content="Select _all"
+			Content="{core:Localize Global.SelectAllButtonText}"
 			Grid.Row="2"
 			Name="selectAllCheckBox"
 			Checked="SelectAllCheckBox_Checked"
@@ -66,7 +66,7 @@
 			HorizontalAlignment="Stretch"
 			VerticalAlignment="Stretch"
 			Margin="8,0,8,8"
-			Header="Change version of selected projects"
+			Header="{core:Localize ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeVersionGroupBoxHeader}"
 			Name="conversionGroupBox">
 			<Grid
 				Margin="4">
@@ -85,7 +85,7 @@
 						Width="210" />
 				</Grid.ColumnDefinitions>
 				<Label
-					Content="Convert selected _projects to:"
+					Content="{core:Localize ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel}"
 					Grid.Column="0"
 					Grid.Row="0"
 					Target="{Binding ElementName=newVersionComboBox}" />
@@ -97,7 +97,7 @@
 					Grid.Row="0"
 					Grid.Column="1" />
 				<Label
-					Content="Change _target framework:"
+					Content="{core:Localize ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeTargetFrameworkLabel}"
 					Grid.Column="0"
 					Grid.Row="1"
 					Target="{Binding ElementName=newFrameworkComboBox}" />
@@ -112,7 +112,7 @@
 					Name="convertButton"
 					Style="{x:Static core:GlobalStyles.ButtonStyle}"
 					HorizontalAlignment="Center"
-					Content="_Convert"
+					Content="{core:Localize ICSharpCode.SharpDevelop.Project.UpgradeView.ConvertButton}"
 					Grid.Column="0"
 					Grid.ColumnSpan="2"
 					Grid.Row="2"
