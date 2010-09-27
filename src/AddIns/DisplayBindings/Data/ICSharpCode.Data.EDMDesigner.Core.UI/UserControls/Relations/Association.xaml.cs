@@ -65,11 +65,11 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Relations
 
         public string FromCardinality
         {
-            get { return CardinalityStringConverter.CardinalityToSTring(CSDLAssociation.PropertyEnd1.Cardinality); }
+            get { return CardinalityStringConverter.CardinalityToString(CSDLAssociation.PropertyEnd1.Cardinality); }
         }
         public string ToCardinality
         {
-            get { return CardinalityStringConverter.CardinalityToSTring(CSDLAssociation.PropertyEnd2.Cardinality); }
+            get { return CardinalityStringConverter.CardinalityToString(CSDLAssociation.PropertyEnd2.Cardinality); }
         }
 
         protected override void OnAssociationCoordonatesChanged()

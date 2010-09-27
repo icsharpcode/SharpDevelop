@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Interfaces;
 using System.ComponentModel;
+using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.ChangeWatcher;
 
 #endregion
 
@@ -51,6 +52,8 @@ namespace ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Common
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
             }
+
+            EDMDesignerChangeWatcher.ObjectChanged(this);
         }
 
         #endregion

@@ -78,7 +78,9 @@ namespace ICSharpCode.Data.EDMDesigner.Core.ObjectModelConverters
             {
                 Name = table.TableName,
                 EntitySetName = table.TableName,
-                Schema = table.SchemaName
+                Schema = table.SchemaName,
+                StoreName = table.TableName,
+                StoreSchema = table.SchemaName
             };
 
             if (table is IView)

@@ -113,6 +113,7 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
                 1,2,3,4";
 
         private const string _getViews = @"SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='VIEW' AND TABLE_NAME<>'dtproperties' ORDER BY TABLE_SCHEMA, TABLE_NAME";
+        private const string _getViewDefiningQuery = @"EXEC sp_helptext '{0}'";
         private const string _getProcedures = "SELECT ROUTINE_NAME, ROUTINE_SCHEMA, ROUTINE_BODY, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE'";
         private const string _getProcedureParameters = @"SELECT PARAMETER_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, PARAMETER_MODE, IS_RESULT FROM information_schema.PARAMETERS WHERE SPECIFIC_NAME = '{0}' AND SPECIFIC_SCHEMA = '{1}' AND SPECIFIC_CATALOG = '{2}'";
 
@@ -360,14 +361,32 @@ namespace ICSharpCode.Data.Core.DatabaseDrivers.SQLServer
                     string schemaName = (string)dtViews.Rows[i]["TABLE_SCHEMA"];
                     string viewName = (string)dtViews.Rows[i]["TABLE_NAME"];
 
-                    View view = new View() { SchemaName = schemaName, TableName = viewName };
+                    View view = new View() { SchemaName = schemaName, TableName = viewName, Query = LoadViewQuery(sqlConnection, schemaName, viewName) };            
                     LoadColumns(sqlConnection, view, TableType.View);
-
                     views.Add(view);
                 }
             }
 
             return views;
+        }
+
+        private string LoadViewQuery(SqlConnection sqlConnection, string schemaName, string tableName)
+        {
+            string definingQuery = string.Empty;
+            
+            using (SqlDataAdapter dataAdapter =
+                new SqlDataAdapter(string.Format(_getViewDefiningQuery, schemaName + "." + tableName), sqlConnection))
+            {
+                DataTable dtQuery = new DataTable("Text");
+                dataAdapter.Fill(dtQuery);
+
+                for (int i = 0; i < dtQuery.Rows.Count; i++)
+                {
+                    definingQuery += (string)dtQuery.Rows[i]["Text"];
+                }
+            }
+
+            return definingQuery;
         }
 
         public override DatabaseObjectsCollection<IProcedure> LoadProcedures(IDatabase database)

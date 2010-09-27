@@ -162,6 +162,7 @@
     <Compile Include="UserControls\LoadingCircle.xaml.cs">
       <DependentUpon>LoadingCircle.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\WizardErrorUserControl.cs" />
     <Compile Include="UserControls\WizardUserControl.cs" />
     <Compile Include="Windows\ConnectionWizardWindow.xaml.cs">
       <DependentUpon>ConnectionWizardWindow.xaml</DependentUpon>

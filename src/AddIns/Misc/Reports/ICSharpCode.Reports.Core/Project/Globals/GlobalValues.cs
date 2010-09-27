@@ -263,6 +263,12 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 		
+		
+		public static string UnkownFunctionMessage (string functionName)
+		{
+			 return String.Format(System.Globalization.CultureInfo.InvariantCulture,
+					                      "!! Can't find <{0}>  !! ",functionName);
+		}
 		#endregion
 		
 		#region Color's

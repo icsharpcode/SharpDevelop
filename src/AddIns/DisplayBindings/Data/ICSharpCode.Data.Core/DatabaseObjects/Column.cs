@@ -194,6 +194,9 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
         {
             get
             {
+                if (_parentTable.Constraints == null)
+                    return false;
+                
                 IConstraint constraint = _parentTable.Constraints.FirstOrDefault(constr => constr.FKColumns.FirstOrDefault(column => column.ColumnId == ColumnId && column.Name == Name) != null);
 
                 if (constraint == null)

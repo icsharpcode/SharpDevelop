@@ -4,7 +4,8 @@
 using System;
 using System.Drawing;
 
-namespace ICSharpCode.Reports.Core{
+namespace ICSharpCode.Reports.Core.BaseClasses
+{
 	/// <summary>
 	/// Description of Page.
 	/// </summary>
@@ -21,7 +22,6 @@ namespace ICSharpCode.Reports.Core{
 		Point DetailEnds {get;}
 		Rectangle DetailArea {get;}
 		Size PageSize {get;set;}
-		//int Gap {get;}
 		bool Landscape{get;}
 	}
 	

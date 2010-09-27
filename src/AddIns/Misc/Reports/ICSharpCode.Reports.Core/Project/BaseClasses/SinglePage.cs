@@ -5,18 +5,19 @@ using System;
 using System.Collections;
 using ICSharpCode.Reports.Core.Interfaces;
 
-namespace ICSharpCode.Reports.Core
+namespace ICSharpCode.Reports.Core.BaseClasses
 {
 	/// <summary>
 	/// Description of AbstractPage.
 	/// </summary>
-	public class SinglePage : ISinglePage
+	public class SinglePage :PageInfo, ISinglePage
 	{
 		
 		private SectionBounds sectionBounds;
-		private Hashtable parameterHash;
+		
 
-		public SinglePage(SectionBounds sectionBounds, int pageNumber)
+		public SinglePage(SectionBounds sectionBounds, int pageNumber):base(pageNumber)
+			
 		{
 			if (sectionBounds == null) {
 				throw new ArgumentNullException("sectionBounds");
@@ -61,47 +62,5 @@ namespace ICSharpCode.Reports.Core
 			set { this.sectionBounds = value; }
 		}
 		
-		
-		public int StartRow {get;set;}
-	
-		
-		public int EndRow {get;set;}
-		
-		
-		public int PageNumber {get;set;}
-			
-		
-		public int TotalPages {get;set;}
-	
-		
-		public string ReportName {get;set;}
-			
-		
-		public string ReportFileName {get;set;}
-		
-	
-		public string ReportFolder {
-			get{
-				return System.IO.Path.GetDirectoryName(this.ReportFileName);
-			}
-		}
-		
-			
-		
-		public DateTime ExecutionTime {get;set;}
-			
-		
-		public Hashtable ParameterHash{
-		get{
-				if (this.parameterHash == null) {
-					this.parameterHash  = new Hashtable();
-				}
-				return parameterHash;
-			}
-			set {this.parameterHash = value;}
-		}
-		
-		
-		public IDataNavigator IDataNavigator {get;set;}
 	}
 }

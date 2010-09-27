@@ -34,6 +34,22 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
             }
         }
 
+        public int SelectedItemsCount
+        {
+            get 
+            {
+                int selectedItemsCount = 0;
+
+                foreach (T item in this)
+                {
+                    if (item.IsSelected)
+                        selectedItemsCount++;
+                }
+
+                return selectedItemsCount;
+            }
+        }
+
         #endregion
 
         #region Methods

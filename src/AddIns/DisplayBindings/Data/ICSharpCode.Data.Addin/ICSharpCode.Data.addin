@@ -38,12 +38,19 @@
     <DisplayBinding id="EDMDesignerDisplayBinding"
   	                class="ICSharpCode.Data.EDMDesigner.Core.UI.DisplayBinding.EDMDesignerDisplayBinding"
   	                insertbefore="Text"
-  	                fileNamePattern="\.(edmx)$"
+  	                fileNamePattern="\.edmx$"
   	                languagePattern="^Edmx$" />
   </Path>
 
   <!--Template path -->
   <Path name = "/SharpDevelop/BackendBindings/Templates">
     <Directory id = "Data" path = "./Templates/Files" />
+  </Path>
+
+  <!-- Custom tools path-->
+  <Path name = "/SharpDevelop/CustomTools">
+    <CustomTool id    = "EntityModelCodeGenerator"
+		            class = "ICSharpCode.Data.EDMDesigner.Core.IO.EntityModelCodeGenerator"
+		            fileNamePattern = "\.edmx$"/>
   </Path>
 </AddIn>

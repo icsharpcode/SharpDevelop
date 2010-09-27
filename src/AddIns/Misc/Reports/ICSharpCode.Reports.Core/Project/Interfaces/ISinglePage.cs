@@ -3,18 +3,13 @@
 
 using System;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.BaseClasses;
 
 namespace ICSharpCode.Reports.Core.Interfaces
 {
-	public interface ISinglePage
+	
+	public interface IPageInfo
 	{
-		void CalculatePageBounds(IReportModel reportModel);
-		
-		
-		SectionBounds SectionBounds {get;set;}
-		
-		int StartRow {get;set;}
-		int EndRow {get;set;}
 		int PageNumber {get;set;}
 		int TotalPages {get;set;}
 		string ReportName {get;set;}
@@ -23,5 +18,12 @@ namespace ICSharpCode.Reports.Core.Interfaces
 		DateTime ExecutionTime {get;set;}
 		System.Collections.Hashtable ParameterHash {get;set;}
 		IDataNavigator IDataNavigator {get;set;}
+	}
+	
+	
+	public interface ISinglePage:IPageInfo
+	{
+		void CalculatePageBounds(IReportModel reportModel);
+		SectionBounds SectionBounds {get;set;}
 	}
 }

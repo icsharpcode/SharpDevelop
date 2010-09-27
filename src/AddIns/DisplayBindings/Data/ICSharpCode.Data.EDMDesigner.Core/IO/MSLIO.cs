@@ -15,6 +15,9 @@ using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.MSL.Condition;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.MSL.CUDFunction;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.MSL.EntityType;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.SSDL;
+using ICSharpCode.Data.EDMDesigner.Core.EDMObjects;
+using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.CSDL.Association;
+using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.CSDL.Function;
 
 #endregion
 
@@ -23,7 +26,9 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
     public class MSLIO : IO
     {
         #region Methods
-        
+
+        #region Read
+
         public static XDocument GenerateTypeMapping(XDocument mslDocument)
         {
             XElement mappingElement = mslDocument.Element(XName.Get("Mapping", mslNamespace.NamespaceName));
@@ -259,5 +264,303 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
         }
 
         #endregion
+
+        #region Write
+
+        public static XElement Write(EDM edm)
+        {
+            CSDLContainer csdlContainer = edm.CSDLContainer;
+            string entityContainerNamespace = string.Concat(csdlContainer.Namespace, ".");
+
+            // Instantiate Mapping
+            XElement mapping = new XElement(mslNamespace + "Mapping",
+                new XAttribute("Space", "C-S"));
+
+            // EntityContainerMapping
+            XElement entityContainerMapping = new XElement(mslNamespace + "EntityContainerMapping", 
+                new XAttribute("StorageEntityContainer", edm.SSDLContainer.Name),
+                new XAttribute("CdmEntityContainer", csdlContainer.Name));
+
+            foreach (EntityType entitySet in csdlContainer.EntitySets)
+            {
+                IEnumerable<EntityType> entityTypes = csdlContainer.EntityTypes.Where(entityType => entityType.EntitySetName == entitySet.EntitySetName);
+
+                // EntityContainerMapping : EntitySetMapping
+                XElement entitySetMappingElement = new XElement(mslNamespace + "EntitySetMapping", 
+                    new XAttribute("Name", entitySet.Name));
+
+                // EntityContainerMapping : EntitySetMapping : EntityTypeMapping
+                foreach (EntityType entityType in entityTypes)
+                {
+                    XElement entityTypeMappingElement = new XElement(mslNamespace + "EntityTypeMapping", 
+                        new XAttribute("TypeName", string.Format("IsTypeOf({0}{1})", entityContainerNamespace, entityType.Name)));
+
+                    // EntityContainerMapping : EntitySetMapping : EntityTypeMapping : MappingFragment
+                    foreach (EDMObjects.SSDL.EntityType.EntityType table in entityType.Mapping.MappedSSDLTables)
+                    { 
+                        XElement mappingFragmentElement = new XElement(mslNamespace + "MappingFragment", 
+                            new XAttribute("StoreEntitySet", table.EntitySetName));
+
+                        IEnumerable<PropertyMapping> scalarMappings = entityType.Mapping.GetSpecificMappingForTable(table);
+
+                        foreach (PropertyMapping scalarMapping in scalarMappings)
+                        {
+                            mappingFragmentElement.AddElement(new XElement(mslNamespace + "ScalarProperty",
+                                new XAttribute("Name", scalarMapping.Property.Name),
+                                new XAttribute("ColumnName", scalarMapping.Column.Name)));
+                        }
+
+                        mappingFragmentElement.Add(MappingComplexProperties(entityType, entityType.Mapping, table, entityContainerNamespace));
+
+                        IEnumerable<ConditionMapping> conditionMappings = entityType.Mapping.ConditionsMapping.Where(condition => condition.Table == table);
+
+                        foreach (ConditionMapping conditionMapping in conditionMappings)
+                        {
+                            XElement conditionElement = new XElement(mslNamespace + "Condition");
+
+                            if (conditionMapping is ColumnConditionMapping)
+                                conditionElement.AddAttribute("ColumnName", (conditionMapping as ColumnConditionMapping).Column.Name);
+                            else if (conditionMapping is PropertyConditionMapping)
+                                conditionElement.AddAttribute("Name", (conditionMapping as PropertyConditionMapping).CSDLProperty.Name);
+
+                            mappingFragmentElement.Add(conditionElement.AddMappingConditionAttribute(conditionMapping));
+                        }
+
+                        entityTypeMappingElement.Add(mappingFragmentElement);
+                    }
+
+                    entitySetMappingElement.Add(entityTypeMappingElement);
+                }
+
+                // EntityContainerMapping : EntitySetMapping : CUDFunctionMapping
+                foreach (EntityType entityType in entityTypes)
+                {
+                    entitySetMappingElement.Add(CUDFunctionMapping(entityType, entityContainerNamespace, string.Concat(edm.SSDLContainer.Namespace, ".")));
+                }
+
+                entityContainerMapping.Add(entitySetMappingElement);
+            }
+
+            // EntityContainerMapping : AssociationSetMappings
+            IEnumerable<Association> associations = csdlContainer.Associations.Where(association => association.Mapping.SSDLTableMapped != null);
+
+            foreach (Association association in associations)
+            {
+                XElement associationSetMappingElement = new XElement(mslNamespace + "AssociationSetMapping",
+                    new XAttribute("Name", association.AssociationSetName),
+                    new XAttribute("TypeName", string.Concat(entityContainerNamespace, association.Name)),
+                    new XAttribute("StoreEntitySet", association.Mapping.SSDLTableMapped.Name));
+
+                XElement endPropertyElement1 = new XElement(mslNamespace + "EndProperty",
+                    new XAttribute("Name", association.PropertyEnd1Role));
+
+                foreach (PropertyMapping navigationPropertyMapping in association.PropertyEnd1.Mapping)
+                {
+                    endPropertyElement1.AddElement(new XElement(mslNamespace + "ScalarProperty",
+                        new XAttribute("Name", navigationPropertyMapping.Property.Name),
+                        new XAttribute("ColumnName", navigationPropertyMapping.Column.Name)));
+                }
+
+                XElement endPropertyElement2 = new XElement(mslNamespace + "EndProperty",
+                    new XAttribute("Name", association.PropertyEnd2Role));
+
+                foreach (PropertyMapping navigationPropertyMapping in association.PropertyEnd2.Mapping)
+                {
+                    endPropertyElement2.AddElement(new XElement(mslNamespace + "ScalarProperty",
+                        new XAttribute("Name", navigationPropertyMapping.Property.Name),
+                        new XAttribute("ColumnName", navigationPropertyMapping.Column.Name)));
+                }
+
+                associationSetMappingElement.Add(endPropertyElement1);
+                associationSetMappingElement.Add(endPropertyElement2);
+
+                entityContainerMapping.Add(associationSetMappingElement);
+            }
+
+            // EntityContainerMapping : Conditions
+            foreach (Function function in csdlContainer.Functions)
+            {
+                entityContainerMapping.Add(new XElement(mslNamespace + "FunctionImportMapping",
+                    new XAttribute("FunctionImportName", function.Name),
+                    new XAttribute("FunctionName", string.Format("{0}.{1}", edm.SSDLContainer.Namespace, function.SSDLFunction.Name))));
+            }
+
+            return mapping.AddElement(entityContainerMapping);
+        }
+
+        private static IEnumerable<XElement> MappingComplexProperties(TypeBase type, MappingBase mapping, EDMObjects.SSDL.EntityType.EntityType table, string entityContainerNamespace)
+        {
+            foreach (ComplexProperty complexProperty in type.AllComplexProperties)
+            {
+                ComplexPropertyMapping complexPropertyMapping = mapping.GetEntityTypeSpecificComplexPropertyMapping(complexProperty);
+
+                if (complexPropertyMapping != null)
+                {
+                    XElement complexPropertyElement = new XElement(mslNamespace + "ComplexProperty",
+                        new XAttribute("Name", complexProperty.Name));
+
+                    IEnumerable<PropertyMapping> scalarMappings = complexPropertyMapping.GetSpecificMappingForTable(table);
+
+                    foreach (PropertyMapping scalarMapping in scalarMappings)
+                    {
+                        complexPropertyElement.AddElement(new XElement(mslNamespace + "ScalarProperty",
+                            new XAttribute("Name", scalarMapping.Property.Name),
+                            new XAttribute("ColumnName", scalarMapping.Column.Name)));
+                    }
+
+                    foreach (ComplexProperty subComplexProperty in complexProperty.ComplexType.ComplexProperties)
+                    {
+                        complexPropertyElement.Add(MappingComplexProperties(complexProperty.ComplexType, complexPropertyMapping, table, entityContainerNamespace));
+                    }
+
+                    yield return complexPropertyElement;
+                }
+            }
+        }
+
+        private static XElement MappingColumnCondition(ColumnConditionMapping condition)
+        {
+            return new XElement(mslNamespace + "Condition", new XAttribute("ColumnName", condition.Column.Name)).AddMappingConditionAttribute(condition);
+        }
+
+        private static XElement CUDFunctionMapping(EntityType entityType, string entityContainerNamespace, string storeContainerNamespace)
+        {
+            EntityTypeMapping mapping = entityType.Mapping;
+
+            if (mapping.InsertFunctionMapping == null || mapping.UpdateFunctionMapping == null || mapping.DeleteFunctionMapping == null)
+                return null;
+
+            XElement modificationFunctionMapping = new XElement(mslNamespace + "ModificationFunctionMapping");
+
+            var insertFunction = mapping.InsertFunctionMapping;
+
+            if (insertFunction != null)
+            {
+                XElement insertFunctionElement = new XElement(mslNamespace + "InsertFunction",
+                    new XAttribute("FunctionName", string.Concat(storeContainerNamespace, insertFunction.SSDLFunction.Name)));
+
+                insertFunctionElement.Add(CUDFunctionMappingAssociation(insertFunction));
+                insertFunctionElement.Add(CUDFunctionMappingParameters(insertFunction));
+                insertFunctionElement.Add(CUDFunctionMappingResults(insertFunction));
+
+                modificationFunctionMapping.AddElement(insertFunctionElement);
+            }
+
+            var updateFunction = mapping.UpdateFunctionMapping;
+
+            if (updateFunction != null)
+            {
+                XElement updateFunctionElement = new XElement(mslNamespace + "UpdateFunction",
+                    new XAttribute("FunctionName", string.Concat(storeContainerNamespace, updateFunction.SSDLFunction.Name)));
+
+                updateFunctionElement.Add(CUDFunctionMappingAssociation(updateFunction));
+                updateFunctionElement.Add(CUDFunctionMappingParameters(updateFunction));
+                updateFunctionElement.Add(CUDFunctionMappingResults(updateFunction));
+
+                modificationFunctionMapping.AddElement(updateFunctionElement);
+            }
+
+            var deleteFunction = mapping.DeleteFunctionMapping;
+
+            if (deleteFunction != null)
+            {
+                XElement deleteFunctionElement = new XElement(mslNamespace + "DeleteFunction",
+                    new XAttribute("FunctionName", string.Concat(storeContainerNamespace, deleteFunction.SSDLFunction.Name)));
+
+                deleteFunctionElement.Add(CUDFunctionMappingAssociation(deleteFunction));
+                deleteFunctionElement.Add(CUDFunctionMappingParameters(deleteFunction));
+                deleteFunctionElement.Add(CUDFunctionMappingResults(deleteFunction));
+
+                modificationFunctionMapping.AddElement(deleteFunctionElement);
+            }
+
+            return new XElement(mslNamespace + "EntityTypeMapping",
+                new XAttribute("TypeName", string.Concat(entityContainerNamespace, entityType.Name)),
+                modificationFunctionMapping);
+        }
+
+        private static IEnumerable<XElement> CUDFunctionMappingAssociation(CUDFunctionMapping functionMapping)
+        {
+            foreach (CUDFunctionAssociationMapping cudFunctionAssiociation in functionMapping.AssociationMappings)
+            {
+                XElement associationEndElement = new XElement(mslNamespace + "AssociationEnd",
+                    new XAttribute("AssociationSet", cudFunctionAssiociation.Association.AssociationSetName),
+                    new XAttribute("From", cudFunctionAssiociation.FromRole),
+                    new XAttribute("To", cudFunctionAssiociation.ToRole));
+
+                associationEndElement.Add(CUDFunctionMappingScalarPropertiesParameters(cudFunctionAssiociation.AssociationPropertiesMapping));
+
+                yield return associationEndElement;
+            }
+        }
+
+        private static IEnumerable<XElement> CUDFunctionMappingParameters(CUDFunctionMapping functionMapping)
+        {
+            return CUDFunctionMappingParameters(functionMapping.ParametersMapping);
+        }
+
+        private static IEnumerable<XElement> CUDFunctionMappingParameters(EntityTypeCUDFunctionParametersMapping cudFunctionParameters)
+        { 
+            List<XElement> complexProperties = new List<XElement>();
+                        
+            foreach (var complexParameter in cudFunctionParameters.ComplexPropertiesMapping)
+            {
+                XElement complexProperty = new XElement(mslNamespace + "Complexproperty",
+                    new XAttribute("Name", complexParameter.Key.Name));
+                complexProperty.Add(CUDFunctionMappingParameters(complexParameter.Value));
+            }
+
+            return CUDFunctionMappingScalarPropertiesParameters(cudFunctionParameters).Union(complexProperties);
+        }
+
+        private static IEnumerable<XElement> CUDFunctionMappingScalarPropertiesParameters(CUDFunctionParametersMapping cudFunctionParameters)
+        {
+            foreach (var parameter in cudFunctionParameters)
+            {
+                yield return new XElement(mslNamespace + "ScalarProperty",
+                    new XAttribute("Name", parameter.Key.Name),
+                    new XAttribute("ParameterName", parameter.Value.SSDLFunctionParameter.Name))
+                    .AddAttribute(null, "Version", parameter.Value.Version);
+            }
+        }
+
+        private static IEnumerable<XElement> CUDFunctionMappingResults(CUDFunctionMapping functionMapping)
+        {
+            foreach (var result in functionMapping.ResultsMapping)
+            {
+                yield return new XElement(mslNamespace + "ResultBinding",
+                    new XAttribute("Name", result.Key.Name),
+                    new XAttribute("ColumnName", result.Value));
+            }
+        }
+
+        #endregion 
+
+        #endregion
     }
+
+    #region Extension methods
+
+    internal static class MSLIOHelpers
+    {
+        public static XElement AddMappingConditionAttribute(this XElement element, ConditionMapping conditionMapping)
+        {
+            switch (conditionMapping.Operator)
+            { 
+                case ConditionOperator.IsNotNull:
+                    element.Add(new XAttribute("IsNull", false));
+                    break;
+                case ConditionOperator.IsNull:
+                    element.Add(new XAttribute("IsNull", true));
+                    break;
+                case ConditionOperator.Equals:
+                    element.Add(new XAttribute("Value", conditionMapping.Value));
+                    break;
+            }
+
+            return element;
+        }
+    }
+
+    #endregion
 }

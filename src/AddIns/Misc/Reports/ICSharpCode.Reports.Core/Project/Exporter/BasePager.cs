@@ -3,6 +3,7 @@
 
 using System;
 using System.Drawing;
+using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
@@ -194,13 +195,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 				p.TotalPages = this.Pages.Count;
 			}
 
-			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade();
+			this.singlePage.IDataNavigator = navigator;
+			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade(this.singlePage);
 			
 			foreach (ExporterPage p in this.pages)
 			{
 				this.singlePage = p;
-				evaluatorFacade.SinglePage = this.singlePage;
-				evaluatorFacade.SinglePage.IDataNavigator = navigator;
+//				evaluatorFacade.SinglePage = this.singlePage;
+//				evaluatorFacade.SinglePage.IDataNavigator = navigator;
 				EvaluateRecursive(evaluatorFacade,p.Items);
 			}
 		}
@@ -219,7 +221,18 @@ namespace ICSharpCode.Reports.Core.Exporter
 				}
 				ExportText et = be as ExportText;
 				if (et != null) {
-					et.Text = evaluatorFassade.Evaluate(et.Text);
+					try{
+						et.Text = evaluatorFassade.Evaluate(et.Text);
+					}
+					catch (UnknownFunctionException ufe)
+					{
+						et.Text = GlobalValues.UnkownFunctionMessage(ufe.Message);
+					}
+					finally 
+					{
+						
+					}	
+					
 				}
 			}
 		}

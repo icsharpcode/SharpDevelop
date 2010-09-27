@@ -13,6 +13,6 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 	public interface IExpressionEvaluatorFacade
 	{
 		string Evaluate (string expression);
-		ISinglePage SinglePage {get;set;}
+		IPageInfo SinglePage {get;set;}
 	}
 }

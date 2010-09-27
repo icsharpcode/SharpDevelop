@@ -68,7 +68,6 @@ namespace ICSharpCode.Reports.Core
 			                                                                           this.CurrentSection.Location.Y);
 			tableContainer.Items.SortByLocation();
 			
-			rpea.SinglePage.StartRow  = this.dataNavigator.CurrentRow;
 			Size rs = Size.Empty;
 			
 			foreach (BaseRowItem row in tableContainer.Items)
@@ -102,7 +101,6 @@ namespace ICSharpCode.Reports.Core
 						do {
 							if (PrintHelper.IsPageFull(new Rectangle(currentPosition,row.Size),this.SectionBounds)) {
 								tableContainer.Location = saveLocation;
-								rpea.SinglePage.EndRow = this.dataNavigator.CurrentRow;
 								AbstractRenderer.PageBreak(rpea);
 								return;
 							}

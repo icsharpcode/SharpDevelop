@@ -9,6 +9,7 @@ using System.Drawing;
 using ICSharpCode.Reports.Addin.Designer;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
+using ICSharpCode.Reports.Addin.Dialogs;
 
 namespace ICSharpCode.Reports.Addin
 {
@@ -84,6 +85,11 @@ namespace ICSharpCode.Reports.Addin
 		[Browsable(true),
 		 Category("Appearance"),
 		 Description("String to format Number's Date's etc")]
+		
+		[DefaultValue("entry1")]
+
+[TypeConverter(typeof(FormatStringConverter))]
+
 		public string FormatString {
 			get { return formatString; }
 			set {
@@ -130,6 +136,11 @@ namespace ICSharpCode.Reports.Addin
 		 Category("Databinding"),
 		 Description("Datatype of the underlying Column")]
 		
+		
+		[DefaultValue("System.String")]
+		
+		[TypeConverter(typeof(DataTypeStringConverter))]
+
 		public string DataType {get;set;}
 		
 		

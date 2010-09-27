@@ -11,5 +11,6 @@ namespace ICSharpCode.Reports.Core
 	public interface IReportExpression
 	{
 		string Expression {get;set;}
+		string Text {get;set;}
 	}
 }

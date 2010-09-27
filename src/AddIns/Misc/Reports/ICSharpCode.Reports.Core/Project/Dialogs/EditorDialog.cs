@@ -11,15 +11,9 @@ namespace ICSharpCode.Reports.Core
 	/// Description of EditorDialog.
 	/// </summary>
 	/// 
-	public interface ITextEditorDialog
-	{
-		DialogResult ShowDialog();
-		string TextValue {get;}
-	}
 	
 	
-	
-	public partial class TextEditorDialog : Form,ITextEditorDialog
+	public partial class TextEditorDialog : Form,IStringBasedEditorDialog
 	{
 		string textValue;
 	

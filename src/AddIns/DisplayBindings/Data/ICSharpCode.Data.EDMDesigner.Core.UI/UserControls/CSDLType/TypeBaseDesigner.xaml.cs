@@ -20,6 +20,7 @@ using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.CSDL.Type;
 using ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Common;
 using ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.Relations;
 using ICSharpCode.Data.Core.UI;
+using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Designer.ChangeWatcher;
 
 #endregion
 
@@ -288,6 +289,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.CSDLType
             set
             {
                 entityTypeExpander.IsExpanded = value;
+                OnPropertyChanged("IsExpanded");
             }
         }
 
@@ -329,6 +331,8 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.CSDLType
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+
+            EDMDesignerChangeWatcher.ObjectChanged(this);
         }
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -341,12 +345,20 @@ namespace ICSharpCode.Data.EDMDesigner.Core.UI.UserControls.CSDLType
         public double Left
         {
             get { return Canvas.GetLeft(this); }
-            set { Canvas.SetLeft(this, value); }
+            set 
+            { 
+                Canvas.SetLeft(this, value);
+                OnPropertyChanged("Left");
+            }
         }
         public double Top
         {
             get { return Canvas.GetTop(this); }
-            set { Canvas.SetTop(this, value); }
+            set 
+            { 
+                Canvas.SetTop(this, value);
+                OnPropertyChanged("Top");
+            }
         }
     }
 }

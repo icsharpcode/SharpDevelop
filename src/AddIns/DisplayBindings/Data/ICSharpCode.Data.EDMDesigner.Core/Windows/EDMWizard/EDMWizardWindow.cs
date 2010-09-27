@@ -37,6 +37,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.Windows.EDMWizard
         private IDatabase _selectedDatabase = null;
         private string _modelNamespace = string.Empty;
         private string _objectContextName = string.Empty;
+        private string _projectStandardNamespace = string.Empty;
         private OpenedFile _file = null;
         private XDocument _edmxDocument = null;
 
@@ -137,32 +138,17 @@ namespace ICSharpCode.Data.EDMDesigner.Core.Windows.EDMWizard
 
         #region Constructor
 
-        public EDMWizardWindow(OpenedFile file)
+        public EDMWizardWindow(OpenedFile file, string projectStandardNamespace)
         {
             Title = "Entity Framework Wizard";
             Width = 640;
             Height = 480;
+            WizardWindowInnards.WizardErrorUserControl = new EDMWizardErrorUserControl();            
             AddWizardUserControl<ChooseDatabaseConnectionUserControl>();
             AddWizardUserControl<ChooseDatabaseObjectsUserControl>();
 
             _file = file;
-        }
-
-        #endregion
-
-        #region Event handlers
-
-        private void btnNewConnection_Click(object sender, RoutedEventArgs e)
-        {
-            ConnectionWizardWindow connectionWizardWindow = new ConnectionWizardWindow();
-            connectionWizardWindow.Owner = this;
-            connectionWizardWindow.ShowDialog();
-
-            if (connectionWizardWindow.DialogResult.HasValue && connectionWizardWindow.DialogResult.Value)
-            {
-                _databases.Add(connectionWizardWindow.SelectedDatabase);
-                SelectedDatabase = connectionWizardWindow.SelectedDatabase;
-            }
+            _projectStandardNamespace = projectStandardNamespace;
         }
 
         #endregion
@@ -173,7 +159,7 @@ namespace ICSharpCode.Data.EDMDesigner.Core.Windows.EDMWizard
         {          
             if (SelectedDatabase != null)
             {
-                _edmxDocument = EDMConverter.CreateEDMXFromIDatabase(SelectedDatabase, ModelNamespace, "TestNamespace", ObjectContextName);
+                _edmxDocument = EDMConverter.CreateEDMXFromIDatabase(SelectedDatabase, ModelNamespace, _projectStandardNamespace, ObjectContextName);
             }
         }
 

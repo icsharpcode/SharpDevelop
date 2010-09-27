@@ -119,12 +119,14 @@
     <Compile Include="Project\Designer\RootDesigner\ReportRootDesigner.cs" />
     <Compile Include="Project\Designer\ShapeDesigner.cs" />
     <Compile Include="Project\Designer\TableDesigner.cs" />
+    <Compile Include="Project\Dialogs\DataTypeStringConverter.cs" />
     <Compile Include="Project\Dialogs\ExpressionEditor.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Project\Dialogs\ExpressionEditor.Designer.cs">
       <DependentUpon>ExpressionEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Project\Dialogs\FormatStringConverte.cs" />
     <Compile Include="Project\Globals\FormsDesignerLoadException.cs" />
     <Compile Include="Project\Globals\GlobalsDesigner.cs" />
     <Compile Include="Project\Globals\StringWriterWithEncoding.cs" />

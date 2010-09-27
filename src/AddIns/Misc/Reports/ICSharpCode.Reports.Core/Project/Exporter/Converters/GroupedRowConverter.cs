@@ -65,8 +65,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 			Rectangle pageBreakRect = Rectangle.Empty;
 			
-			Console.WriteLine("datanav currentrow {0}",base.DataNavigator.CurrentRow);
-			
 			do {
 				
 				PrintHelper.AdjustSectionLocation (section);

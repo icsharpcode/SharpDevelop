@@ -110,27 +110,31 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			
 			PrintHelper.AdjustChildLocation(item,offset);
 			
-			BaseTextItem textItem = item as BaseTextItem;
-			
+			//BaseTextItem textItem = item as BaseTextItem;
 			
 			IReportExpression epr = item as IReportExpression;
 			
+			string evaluatedValue = String.Empty;
+			
 			if (epr != null) {
-				string sss =  evaluator.Evaluate(epr.Expression);
-				if (!String.IsNullOrEmpty(sss)) {
-					textItem.Text = sss;
+				try {
+					if (!String.IsNullOrEmpty(epr.Expression))
+					{
+						evaluatedValue =  evaluator.Evaluate(epr.Expression);
+						
+					} else 
+					{
+						evaluatedValue =  evaluator.Evaluate(epr.Text);
+					}
+					epr.Text = evaluatedValue;
+					
+				} catch (UnknownFunctionException ufe) {
+					
+					epr.Text = GlobalValues.UnkownFunctionMessage(ufe.Message);
 				}
+				
 			}
-			
-			
-			if (textItem != null) {
-				string str = textItem.Text;
-				textItem.Text = evaluator.Evaluate(textItem.Text);
-				textItem.Render(rpea);
-				textItem.Text = str;
-			} else {
-				item.Render (rpea);
-			}
+			item.Render (rpea);
 			item.Location = saveLocation;
 		}
 		
@@ -230,7 +234,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		public static IExpressionEvaluatorFacade  SetupEvaluator ()
 		{
-			return new ExpressionEvaluatorFacade();
+			return new ExpressionEvaluatorFacade(null);
 		}
 		
 		
@@ -243,9 +247,8 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			if (dataNavigator == null) {
 				throw new ArgumentNullException("dataNavigator");
 			}
-			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade();
-			evaluatorFacade.SinglePage = singlePage;
-			evaluatorFacade.SinglePage.IDataNavigator = dataNavigator;
+			singlePage.IDataNavigator = dataNavigator;
+			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade(singlePage);
 			return evaluatorFacade;
 		}
 		

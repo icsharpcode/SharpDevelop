@@ -17,11 +17,22 @@ namespace ICSharpCode.Data.Core.DatabaseObjects
     {
         #region Fields
 
+        private string _query = string.Empty;
         private string _definingQuery = string.Empty;
 
         #endregion
 
         #region Properties
+
+        public string Query
+        {
+            get { return _query; }
+            set
+            {
+                _query = value;
+                OnPropertyChanged("Query");
+            }
+        }
 
         public string DefiningQuery
         {

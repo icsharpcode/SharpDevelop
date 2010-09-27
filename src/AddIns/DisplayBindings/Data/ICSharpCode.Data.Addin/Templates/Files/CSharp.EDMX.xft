@@ -9,8 +9,26 @@
 		  language    = "C#" />
 	 
 	<Description>Entity Framework Data Model</Description>
-	
-	<!-- 
+
+  <References>
+    <Reference include="System.Data">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference include="System.Data.Entity">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference include="System.Runtime.Serialization">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference include="System.Security">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference include="System.XML">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+  </References>
+
+  <!-- 
 	Special new file templates:
 		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
 		${FullName}                 -> Full generated path name
@@ -20,10 +38,9 @@
 		${Path}                     -> Full path of the file
 	 -->
 	<Files>
-		<!--<File name="${FileNameWithoutExtension}.Designer.cs" language="C#" DependentUpon="${FileName}" SubType="Code"><![CDATA[${StandardHeader.C#}]]></File>-->
-    <File name="${FullName}" language="XML" buildAction="Page">
+    <File name="${FullName}" language="XML" buildAction="EntityDeploy" Generator="EntityModelCodeGenerator">
       <![CDATA[<?xml version="1.0" encoding="utf-8"?>
-<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
   <!-- EF Runtime content -->
   <edmx:Runtime>
     <!-- SSDL content -->
@@ -36,6 +53,7 @@
   <DesignerViews />
 </edmx:Edmx>]]>
     </File>
+    <File name="${FileNameWithoutExtension}.Designer.cs" language="C#" DependentUpon="${FileName}" SubType="Code"><![CDATA[${StandardHeader.C#}]]></File>
 	</Files>
 	
 	<AdditionalOptions/>

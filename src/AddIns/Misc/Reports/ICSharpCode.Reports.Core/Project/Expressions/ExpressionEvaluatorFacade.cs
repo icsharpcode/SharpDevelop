@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Interfaces;
 using SimpleExpressionEvaluator;
 using SimpleExpressionEvaluator.Evaluation;
@@ -16,15 +17,17 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 	{
 		private ReportingLanguageCompiler compiler;
 		private ExpressionContext context;
-		private ISinglePage singlePage;
+		private IPageInfo singlePage;
 		 
 		
-		public ExpressionEvaluatorFacade()
+		public ExpressionEvaluatorFacade(IPageInfo pageInfo)
 		{
 			compiler = new ReportingLanguageCompiler();
 			this.context = new ExpressionContext(null);
 			context.ResolveUnknownVariable += VariableStore;
 			context.ResolveMissingFunction += FunctionStore;
+			SinglePage = pageInfo;
+			compiler.SinglePage = pageInfo;
 		}
 		
 		
@@ -49,6 +52,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			return false;
 		}
 		
+		
 		private void FunctionStore (object sender,SimpleExpressionEvaluator.Evaluation.UnknownFunctionEventArgs e)
 		{
 			
@@ -59,9 +63,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 			if (path != null) {
 				searchObj = e.ContextObject;
 			} else {
-				throw new InvalidOperationException("A function specified in the expression (" + e.FunctionName +
-                                                ") does not exist.");
-				
+				throw new UnknownFunctionException(e.FunctionName);
 			}
 			e.Function = functionArgs => path.Evaluate(searchObj);
 		}
@@ -81,7 +83,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		}
 		
 		
-		public ISinglePage SinglePage {
+		public IPageInfo SinglePage {
 			get { return singlePage; }
 			set {
 				singlePage = value;

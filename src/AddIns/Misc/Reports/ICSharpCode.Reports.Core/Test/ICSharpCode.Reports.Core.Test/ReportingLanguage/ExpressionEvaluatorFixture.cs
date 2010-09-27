@@ -15,7 +15,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage
 		[Test]
 		public void Can_Init_ExpressionEvaluatorFassade()
 		{
-			IExpressionEvaluatorFacade f = new ExpressionEvaluatorFacade();
+			IExpressionEvaluatorFacade f = new ExpressionEvaluatorFacade(null);
 			Assert.IsNotNull (f);
 		}
 		
@@ -40,7 +40,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage
 		
 		public override void Setup()
 		{
-			Sut = new ExpressionEvaluatorFacade();
+			Sut = new ExpressionEvaluatorFacade(null);
 		}
 		
 		

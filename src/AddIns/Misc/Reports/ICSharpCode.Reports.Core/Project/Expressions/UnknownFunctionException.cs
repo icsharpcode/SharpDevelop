@@ -5,7 +5,9 @@ using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 
-namespace ICSharpCode.Reports.Core
+using SimpleExpressionEvaluator.Evaluation;
+
+namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 {
 	/// <summary>
 	/// Description of UnknownFunctionException.
@@ -39,4 +41,6 @@ namespace ICSharpCode.Reports.Core
 			base.GetObjectData(info, context);
 		}
 	}
+	
+
 }

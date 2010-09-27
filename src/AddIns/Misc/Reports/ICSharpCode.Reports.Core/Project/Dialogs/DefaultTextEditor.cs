@@ -24,7 +24,7 @@ namespace ICSharpCode.Reports.Core
 				s = value.ToString();
 			}
 
-			ITextEditorDialog ed = new TextEditorDialog (s,"ReportSettings");
+			IStringBasedEditorDialog ed = new TextEditorDialog (s,"ReportSettings");
 			if (ed.ShowDialog() == DialogResult.OK) {
 				return ed.TextValue;
 			} else {

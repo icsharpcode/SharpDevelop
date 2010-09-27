@@ -59,6 +59,8 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Data.Entity.Design" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
@@ -99,8 +101,10 @@
     <Compile Include="EDMObjects\Designer\Common\DesignerProperty.cs" />
     <Compile Include="EDMObjects\Designer\DesignerView.cs" />
     <Compile Include="EDMObjects\Designer\EDMController.cs" />
+    <Compile Include="EDMObjects\Designer\ChangeWatcher\EDMDesignerChangeWatcher.cs" />
     <Compile Include="EDMObjects\Designer\EDMView.cs" />
     <Compile Include="EDMObjects\Designer\Common\IndexableUIBusinessTypeObservableCollection.cs" />
+    <Compile Include="EDMObjects\Designer\ChangeWatcher\IEDMDesignerChangeWatcherObserver.cs" />
     <Compile Include="EDMObjects\Designer\ItemBase.cs" />
     <Compile Include="EDMObjects\Designer\ITypeDesigner.cs" />
     <Compile Include="EDMObjects\Designer\Common\UIBusinessType.cs" />
@@ -145,6 +149,7 @@
     <Compile Include="IO\CSDLIO.cs" />
     <Compile Include="IO\DesignerIO.cs" />
     <Compile Include="IO\EDMXIO.cs" />
+    <Compile Include="IO\EntityModelCodeGenerator.cs" />
     <Compile Include="IO\ExtensionMethods.cs" />
     <Compile Include="IO\IO.cs" />
     <Compile Include="IO\MSLIO.cs" />
@@ -167,6 +172,7 @@
     <Compile Include="EDMObjects\SSDL\Property\Property.cs" />
     <Compile Include="EDMObjects\SSDL\Property\StoreGeneratedPattern.cs" />
     <Compile Include="EDMObjects\SSDL\SSDLContainer.cs" />
+    <Compile Include="ObjectModelConverters\ObjectModelConverterException.cs" />
     <Compile Include="ObjectModelConverters\SSDLConverter.cs" />
     <Compile Include="ObjectModelConverters\EDMConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -177,6 +183,9 @@
       <DependentUpon>ChooseDatabaseObjectsUserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\EDMWizard\EDMWizardWindow.cs" />
+    <Compile Include="Windows\EDMWizard\EDMWizardErrorUserControl.xaml.cs">
+      <DependentUpon>EDMWizardErrorUserControl.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Include="Windows\EDMWizard\ChooseDatabaseConnectionUserControl.xaml">
@@ -186,6 +195,10 @@
     <Page Include="Windows\EDMWizard\ChooseDatabaseObjectsUserControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\EDMWizard\EDMWizardErrorUserControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 using NUnit.Framework;
 using SimpleExpressionEvaluator;
@@ -95,7 +96,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		
 		
 		[Test]
-		[ExpectedException(typeof(InvalidOperationException))]
+		[ExpectedException(typeof(UnknownFunctionException))]
 		public void Throw_On_UnknownFunction()
 		{
 			const string expression = "=TotalWrongFunction()";
@@ -107,8 +108,8 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		public void Init()
 		{
 			this.singlePage = TestHelper.CreateSinglePage();
-			this.evaluator = new ExpressionEvaluatorFacade();
-			this.evaluator.SinglePage = this.singlePage;
+			this.evaluator = new ExpressionEvaluatorFacade(this.singlePage);
+//			this.evaluator.SinglePage = this.singlePage;
 		}
 	}
 }

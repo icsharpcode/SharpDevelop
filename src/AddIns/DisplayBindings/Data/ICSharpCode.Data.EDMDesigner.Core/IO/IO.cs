@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Xml.Linq;
 using ICSharpCode.Data.EDMDesigner.Core.EDMObjects.Common;
+using System.IO;
 
 #endregion
 
@@ -16,15 +17,16 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
     {
         #region Namespace declarations
 
-        protected static XNamespace edmxNamespace = "http://schemas.microsoft.com/ado/2007/06/edmx";
-        protected static XNamespace ssdlNamespace = "http://schemas.microsoft.com/ado/2006/04/edm/ssdl";
+        protected static XNamespace edmxNamespace = "http://schemas.microsoft.com/ado/2008/10/edmx";
+        protected static XNamespace ssdlNamespace = "http://schemas.microsoft.com/ado/2009/02/edm/ssdl";
         protected static XNamespace storeNamespace = "http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator";
 
-        protected static XNamespace csdlNamespace = "http://schemas.microsoft.com/ado/2006/04/edm";
+        protected static XNamespace csdlNamespace = "http://schemas.microsoft.com/ado/2008/09/edm";
         protected static XNamespace csdlCodeGenerationNamespace = "http://schemas.microsoft.com/ado/2006/04/codegeneration";
+        protected static XNamespace csdlAnnotationNamespace = "http://schemas.microsoft.com/ado/2009/02/edm/annotation";
 
-        protected static XNamespace mslNamespace = "urn:schemas-microsoft-com:windows:storage:mapping:CS";
-
+        protected static XNamespace mslNamespace = "http://schemas.microsoft.com/ado/2008/09/mapping/cs";
+        
         #endregion
 
         #region Helper functions
@@ -106,6 +108,29 @@ namespace ICSharpCode.Data.EDMDesigner.Core.IO
             var subElement = element.Element(XName.Get(elementName, ns));
             if (subElement != null)
                 setAction(subElement.Value);
+        }
+
+        public static string GetTempFilename()
+        {
+            return Path.GetTempFileName();
+        }
+
+        public static string GetTempFilenameWithExtension(string filenamePrefix, string extension)
+        {
+            string tempFileAuto = GetTempFilename();
+
+            string tempFile =
+                Path.GetTempPath() +
+                filenamePrefix +
+                Path.GetFileNameWithoutExtension(tempFileAuto)
+                + "." + extension;
+
+            return tempFile;
+        }
+
+        public static string GetTempFilenameWithExtension(string extension)
+        {
+            return GetTempFilenameWithExtension(string.Empty, extension);
         }
 
         #endregion

@@ -50,9 +50,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected override void BuildNewPage ()
 		{
 			base.BuildNewPage();
-			if (this.dataNavigator != null) {
-				this.SinglePage.StartRow = this.dataNavigator.CurrentRow +1;
-			}
 			
 			this.BuildReportHeader();
 			this.BuildPageHeader();
@@ -61,18 +58,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 		#endregion
 		
 		
-		private void SetPageFull()
-		{
-			if (this.dataNavigator != null) {
-				this.SinglePage.EndRow = this.dataNavigator.CurrentRow;
-			}
-		}
-		
-		
 		private void OnPageFull(object sender, NewPageEventArgs e)
 		{
 			this.SinglePage.Items.AddRange(e.ItemsList);
-			SetPageFull();
 			PageBreak();
 		}
 		
@@ -136,7 +124,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 					convertedList = baseConverter.Convert(section,item);
 					
 					base.SinglePage.Items.AddRange(convertedList);
-					SetPageFull();
 				}
 			}
 		}

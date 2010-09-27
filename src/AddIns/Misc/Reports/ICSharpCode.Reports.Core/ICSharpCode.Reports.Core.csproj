@@ -79,6 +79,7 @@
     </Compile>
     <Compile Include="Project\BaseClasses\CurrentItem.cs" />
     <Compile Include="Project\BaseClasses\GroupColumn.cs" />
+    <Compile Include="Project\BaseClasses\PageInfo.cs" />
     <Compile Include="Project\BaseClasses\Printing\Layouter.cs" />
     <Compile Include="Project\BaseClasses\Printing\MeasurementService.cs" />
     <Compile Include="Project\BaseClasses\Printing\PrintHelper.cs" />
@@ -116,6 +117,7 @@
     </Compile>
     <Compile Include="Project\Dialogs\EditorDialog.Designer.cs" />
     <Compile Include="Project\Dialogs\GroupingCollectionEditor.cs" />
+    <Compile Include="Project\Dialogs\IStringBasedEditorDialog.cs" />
     <Compile Include="Project\Dialogs\ParametersCollectionEditor.cs" />
     <Compile Include="Project\Dialogs\ParameterDialog.cs" />
     <Compile Include="Project\Dialogs\PreviewControl.cs">
@@ -133,7 +135,6 @@
     <Compile Include="Project\Exceptions\MissingDataSourceException.cs" />
     <Compile Include="Project\Exceptions\MissingParentException.cs" />
     <Compile Include="Project\Exceptions\ReportException.cs" />
-    <Compile Include="Project\Exceptions\UnknownFunctionException.cs" />
     <Compile Include="Project\Exceptions\UnknownItemException.cs" />
     <Compile Include="Project\Exceptions\WrongColumnException.cs" />
     <Compile Include="Project\Exceptions\WrongSectionException.cs" />
@@ -234,6 +235,7 @@
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Utilities\PropertyPath.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Utilities\ReflectionExtensions.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Utilities\TypeNormalizer.cs" />
+    <Compile Include="Project\Expressions\UnknownFunctionException.cs" />
     <Compile Include="Project\Factories\ConnectionObjectFactory.cs" />
     <Compile Include="Project\Factories\DataManagerFacrory.cs" />
     <Compile Include="Project\Factories\DisplayNameAttribute.cs" />

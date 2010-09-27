@@ -54,6 +54,20 @@ namespace ICSharpCode.Reports.Core
 		
 		#endregion
 		
+		#region DataTypes
+		public static string[] DataTypeList ()
+		{
+			return (string[])MyDataTypeList.Clone();
+		}
+		
+		
+		private static readonly string[] MyDataTypeList = new string[] {
+			"System.String",
+			"System.DateTime",
+			"System.Decimal",
+			"System.Int"};
+		#endregion
+		
 		#region Aggregates
 		
 		public static string[] AggregateFunctions ()
