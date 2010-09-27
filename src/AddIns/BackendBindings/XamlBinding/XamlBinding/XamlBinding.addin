@@ -76,13 +76,49 @@
 						   label="${res:AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle}" />
 				<MenuItem id="GroupInto" label="${res:AddIns.XamlBinding.Menu.GroupInto}" type="Menu">
 					<MenuItem id="GroupIntoBorder" label="Border" type="Menu">
-						<MenuItem id="GroupIntoBorderBuilder"
-						          type="Builder"
-								   class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoBorderBuilder" />
+						<MenuItem id="GroupIntoBorderWithoutChild"
+						          label="Border"
+						          class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoBorderWithoutChild" />
+						<MenuItem id="GroupIntoBorderWithGrid"
+						          label="Border With Root Grid"
+						          class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoBorderWithGrid" />
+						<MenuItem id="GroupIntoBorderWithStackPanelVertical"
+						          label="Border With Root StackPanel - Vertical"
+						          class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoBorderWithStackPanelVertical" />
+						<MenuItem id="GroupIntoBorderWithStackPanelHorizontal"
+						          label="Border With Root StackPanel - Horizontal"
+						          class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoBorderWithStackPanelHorizontal" />
 					</MenuItem>
-					<MenuItem id="GroupIntoBuilder"
-					          type="Builder"
-							   class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoBuilder" />
+					<MenuItem id="GroupIntoCanvas"
+					          label="Canvas"
+					          class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoCanvas" />
+					<MenuItem id="GroupIntoDockPanel"
+					          label="DockPanel"
+					          class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoDockPanel" />
+					<MenuItem id="GroupIntoGrid"
+					          label="Grid"
+					          class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoGrid" />
+					<MenuItem id="GroupIntoGroupBoxWithGrid"
+					          label="GroupBox With Root Grid"
+					          class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoGroupBoxWithGrid" />
+					<MenuItem id="GroupIntoScrollViewerWithGrid"
+					          label="ScrollViewer With Root Grid"
+					          class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoScrollViewerWithGrid" />
+					<MenuItem id="GroupIntoStackPanelHorizontal"
+					          label="StackPanel - Horizontal"
+					          class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoStackPanelHorizontal" />
+					<MenuItem id="GroupIntoStackPanelVertical"
+					          label="StackPanel - Vertical"
+					          class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoStackPanelVertical" />
+					<MenuItem id="GroupIntoUniformGrid"
+					          label="UniformGrid"
+					          class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoUniformGrid" />
+					<MenuItem id="GroupIntoViewbox"
+					          label="Viewbox"
+					          class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoViewbox" />
+					<MenuItem id="GroupIntoWrapPanel"
+					          label="WrapPanel"
+					          class="ICSharpCode.XamlBinding.PowerToys.Commands.GroupIntoWrapPanel" />
 				</MenuItem>
 				<MenuItem id="EditGridColumnsAndRows"
 						   class="ICSharpCode.XamlBinding.PowerToys.Commands.EditGridColumnsAndRowsCommand"

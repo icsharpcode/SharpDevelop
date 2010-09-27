@@ -16,22 +16,7 @@ using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.XamlBinding.PowerToys.Commands
 {
-	public class GroupIntoBorderBuilder : AbstractMenuItemBuilder
-	{
-		public override ICollection BuildItems(Codon codon, object owner)
-		{
-			List<MenuItem> items = new List<MenuItem>();
-			
-			items.Add(CreateItem("Border", delegate { new GroupIntoBorderWithoutChild().Run(); }));
-			items.Add(CreateItem("Border With Root Grid", delegate { new GroupIntoBorderWithGrid().Run(); }));
-			items.Add(CreateItem("Border With Root StackPanel - Vertical", delegate { new GroupIntoBorderWithStackPanelVertical().Run(); }));
-			items.Add(CreateItem("Border With Root StackPanel - Horizontal", delegate { new GroupIntoBorderWithStackPanelHorizontal().Run(); }));
-			
-			return items.OrderBy(item => item.Header).ToList();
-		}
-	}
-	
-	class GroupIntoBorderWithoutChild : SimpleGroupIntoBase
+	public class GroupIntoBorderWithoutChild : SimpleGroupIntoBase
 	{
 		protected override XElement CreateParent()
 		{
@@ -39,7 +24,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		}
 	}
 	
-	class GroupIntoBorderWithGrid : GroupIntoBase
+	public class GroupIntoBorderWithGrid : GroupIntoBase
 	{
 		protected override bool GroupInto(XElement parent, IEnumerable<XElement> children)
 		{
@@ -56,7 +41,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		}
 	}
 	
-	class GroupIntoBorderWithStackPanelVertical : GroupIntoBase
+	public class GroupIntoBorderWithStackPanelVertical : GroupIntoBase
 	{
 		protected override bool GroupInto(XElement parent, IEnumerable<XElement> children)
 		{
@@ -75,7 +60,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		}
 	}
 	
-	class GroupIntoBorderWithStackPanelHorizontal : GroupIntoBase
+	public class GroupIntoBorderWithStackPanelHorizontal : GroupIntoBase
 	{
 		protected override bool GroupInto(XElement parent, IEnumerable<XElement> children)
 		{
@@ -94,19 +79,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		}
 	}
 
-	public abstract class AbstractMenuItemBuilder : IMenuItemBuilder
-	{
-		public abstract ICollection BuildItems(Codon codon, object owner);
-		
-		protected static MenuItem CreateItem(string header, Action clickAction)
-		{
-			MenuItem item = new MenuItem() { Header = header };
-			item.Click += new RoutedEventHandler(delegate { clickAction(); });
-			return item;
-		}
-	}
-
-	abstract class GroupIntoBase : XamlMenuCommand
+	public abstract class GroupIntoBase : XamlMenuCommand
 	{
 		protected string currentWpfNamespace;
 		
@@ -140,7 +113,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		protected abstract bool GroupInto(XElement parent, IEnumerable<XElement> children);
 	}
 
-	abstract class SimpleGroupIntoBase : GroupIntoBase
+	public abstract class SimpleGroupIntoBase : GroupIntoBase
 	{
 		protected sealed override bool GroupInto(XElement parent, IEnumerable<XElement> children)
 		{
@@ -158,28 +131,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		protected abstract XElement CreateParent();
 	}
 
-	public class GroupIntoBuilder : AbstractMenuItemBuilder
-	{
-		public override ICollection BuildItems(Codon codon, object owner)
-		{
-			List<MenuItem> items = new List<MenuItem>();
-			
-			items.Add(CreateItem("Grid", delegate { new GroupIntoGrid().Run(); }));
-			items.Add(CreateItem("Canvas", delegate { new GroupIntoCanvas().Run(); }));
-			items.Add(CreateItem("DockPanel", delegate { new GroupIntoDockPanel().Run(); }));
-			items.Add(CreateItem("ScrollViewer With Root Grid", delegate { new GroupIntoScrollViewerWithGrid().Run(); }));
-			items.Add(CreateItem("StackPanel - Vertical", delegate { new GroupIntoStackPanelVertical().Run(); }));
-			items.Add(CreateItem("StackPanel - Horizontal", delegate { new GroupIntoStackPanelHorizontal().Run(); }));
-			items.Add(CreateItem("UniformGrid", delegate { new GroupIntoUniformGrid().Run(); }));
-			items.Add(CreateItem("Viewbox", delegate { new GroupIntoViewbox().Run(); }));
-			items.Add(CreateItem("WrapPanel", delegate { new GroupIntoWrapPanel().Run(); }));
-			items.Add(CreateItem("GroupBox With Root Grid", delegate { new GroupIntoGroupBoxWithGrid().Run(); }));
-			
-			return items.OrderBy(item => item.Header).ToList();
-		}
-	}
-	
-	class GroupIntoGrid : SimpleGroupIntoBase
+	public class GroupIntoGrid : SimpleGroupIntoBase
 	{
 		protected override XElement CreateParent()
 		{
@@ -187,7 +139,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		}
 	}
 	
-	class GroupIntoCanvas : SimpleGroupIntoBase
+	public class GroupIntoCanvas : SimpleGroupIntoBase
 	{
 		protected override XElement CreateParent()
 		{
@@ -195,7 +147,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		}
 	}
 	
-	class GroupIntoDockPanel : SimpleGroupIntoBase
+	public class GroupIntoDockPanel : SimpleGroupIntoBase
 	{
 		protected override XElement CreateParent()
 		{
@@ -203,7 +155,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		}
 	}
 	
-	class GroupIntoUniformGrid : SimpleGroupIntoBase
+	public class GroupIntoUniformGrid : SimpleGroupIntoBase
 	{
 		protected override XElement CreateParent()
 		{
@@ -211,7 +163,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		}
 	}
 	
-	class GroupIntoViewbox : SimpleGroupIntoBase
+	public class GroupIntoViewbox : SimpleGroupIntoBase
 	{
 		protected override XElement CreateParent()
 		{
@@ -219,7 +171,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		}
 	}
 	
-	class GroupIntoWrapPanel : SimpleGroupIntoBase
+	public class GroupIntoWrapPanel : SimpleGroupIntoBase
 	{
 		protected override XElement CreateParent()
 		{
@@ -227,7 +179,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		}
 	}
 	
-	class GroupIntoStackPanelVertical : SimpleGroupIntoBase
+	public class GroupIntoStackPanelVertical : SimpleGroupIntoBase
 	{
 		protected override XElement CreateParent()
 		{
@@ -237,7 +189,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		}
 	}
 	
-	class GroupIntoStackPanelHorizontal : SimpleGroupIntoBase
+	public class GroupIntoStackPanelHorizontal : SimpleGroupIntoBase
 	{
 		protected override XElement CreateParent()
 		{
@@ -247,7 +199,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		}
 	}
 	
-	class GroupIntoScrollViewerWithGrid : GroupIntoBase
+	public class GroupIntoScrollViewerWithGrid : GroupIntoBase
 	{
 		protected override bool GroupInto(XElement parent, IEnumerable<XElement> children)
 		{
@@ -264,7 +216,7 @@ namespace ICSharpCode.XamlBinding.PowerToys.Commands
 		}
 	}
 	
-	class GroupIntoGroupBoxWithGrid : GroupIntoBase
+	public class GroupIntoGroupBoxWithGrid : GroupIntoBase
 	{
 		protected override bool GroupInto(XElement parent, IEnumerable<XElement> children)
 		{
