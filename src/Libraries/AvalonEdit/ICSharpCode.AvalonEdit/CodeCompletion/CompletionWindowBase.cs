@@ -48,6 +48,11 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		public int EndOffset { get; set; }
 		
 		/// <summary>
+		/// Gets whether the window was opened above the current line.
+		/// </summary>
+		protected bool IsUp { get; private set; }
+		
+		/// <summary>
 		/// Creates a new CompletionWindowBase.
 		/// </summary>
 		public CompletionWindowBase(TextArea textArea)
@@ -307,6 +312,9 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 				}
 				if (bounds.Bottom > workingScreen.Bottom) {
 					bounds.Y = locationTop.Y - bounds.Height;
+					IsUp = true;
+				} else {
+					IsUp = false;
 				}
 				if (bounds.Y < workingScreen.Top) {
 					bounds.Y = workingScreen.Top;
@@ -316,6 +324,15 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			bounds = bounds.TransformFromDevice(textView);
 			this.Left = bounds.X;
 			this.Top = bounds.Y;
+		}
+		
+		/// <inheritdoc/>
+		protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+		{
+			base.OnRenderSizeChanged(sizeInfo);
+			if (sizeInfo.HeightChanged && IsUp) {
+				this.Top += sizeInfo.PreviousSize.Height - sizeInfo.NewSize.Height;
+			}
 		}
 		
 		/// <summary>
