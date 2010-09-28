@@ -17,6 +17,7 @@ using ICSharpCode.Core.WinForms;
 using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.FormsDesigner.Gui
@@ -369,11 +370,15 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		Dictionary<string, object> GetResources(string fileName)
 		{
-			Stream s;
-			OpenedFile file = FileService.GetOpenedFile(fileName);
-			if (file != null) {
-				s = file.OpenRead();
-			} else {
+			Stream s = null;
+			WorkbenchSingleton.SafeThreadCall(
+				delegate {
+					OpenedFile file = FileService.GetOpenedFile(fileName);
+					if (file != null) {
+						s = file.OpenRead();
+					}
+				});
+			if (s == null) {
 				s = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
 			}
 			using(s) {
