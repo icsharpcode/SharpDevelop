@@ -35,7 +35,7 @@ namespace SearchAndReplace
 			var startPosition = result.GetStartPosition(document);
 			int lineNumber = startPosition.Line;
 			int column = startPosition.Column;
-			this.anchor = new PermanentAnchor(FileName.Create(result.FileName), lineNumber, column);
+			this.anchor = new PermanentAnchor(result.FileName, lineNumber, column);
 			anchor.SurviveDeletion = true;
 			
 			if (lineNumber >= 1 && lineNumber <= document.TotalNumberOfLines) {
@@ -80,6 +80,10 @@ namespace SearchAndReplace
 					InvalidateText();
 				}
 			}
+		}
+		
+		public FileName FileName {
+			get { return anchor.FileName; }
 		}
 		
 		protected override object CreateText()

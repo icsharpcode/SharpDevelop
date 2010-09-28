@@ -18,23 +18,34 @@ namespace SearchAndReplace
 {
 	sealed class SearchRootNode : SearchNode
 	{
-		IList<SearchResultNode> results;
-		int fileCount;
+		IList<SearchResultNode> resultNodes;
+		IList<SearchFileNode> fileNodes;
 		
 		public string Title { get; private set; }
 		
 		public SearchRootNode(string title, IList<SearchResultMatch> results)
 		{
 			this.Title = title;
-			this.results = results.Select(r => new SearchResultNode(r)).ToArray();
+			this.resultNodes = results.Select(r => new SearchResultNode(r)).ToArray();
+			this.fileNodes = resultNodes.GroupBy(r => r.FileName).Select(g => new SearchFileNode(g.Key, g.ToArray())).ToArray();
 			
-			fileCount = results.GroupBy(r => r.FileName).Count();
-			this.Children = this.results;
+			this.Children = this.resultNodes;
 			this.IsExpanded = true;
 		}
 		
+		public void GroupResultsByFile(bool perFile)
+		{
+			if (perFile)
+				this.Children = fileNodes;
+			else
+				this.Children = resultNodes;
+			foreach (SearchResultNode node in resultNodes) {
+				node.ShowFileName = !perFile;
+			}
+		}
+		
 		public int Occurrences {
-			get { return results.Count; }
+			get { return resultNodes.Count; }
 		}
 		
 		protected override object CreateText()
@@ -42,9 +53,9 @@ namespace SearchAndReplace
 			return new TextBlock {
 				Inlines = {
 					new Bold(new Run(this.Title)),
-					new Run(" (" + GetOccurrencesString(results.Count)
+					new Run(" (" + GetOccurrencesString(resultNodes.Count)
 					        + StringParser.Parse(" ${res:MainWindow.Windows.SearchResultPanel.In} ")
-					        + GetFileCountString(fileCount) + ")")
+					        + GetFileCountString(fileNodes.Count) + ")")
 				}
 			};
 		}

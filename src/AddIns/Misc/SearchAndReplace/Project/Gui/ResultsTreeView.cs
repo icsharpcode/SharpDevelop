@@ -5,6 +5,8 @@ using System;
 using System.Windows.Controls;
 using System.Windows.Input;
 
+using ICSharpCode.Core;
+
 namespace SearchAndReplace
 {
 	/// <summary>
@@ -34,6 +36,15 @@ namespace SearchAndReplace
 			if (node != null)
 				node.ActivateItem();
 			e.Handled = true;
+		}
+		
+		public static bool GroupResultsByFile {
+			get {
+				return PropertyService.Get("SearchAndReplace.GroupResultsByFile", false);
+			}
+			set {
+				PropertyService.Set("SearchAndReplace.GroupResultsByFile", value);
+			}
 		}
 	}
 }
