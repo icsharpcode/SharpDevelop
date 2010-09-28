@@ -341,6 +341,7 @@
     <Compile Include="Parsing\InvalidClassTestFixture.cs" />
     <Compile Include="Parsing\ParseTestClassTestFixture.cs" />
     <Compile Include="Parsing\ParseTestClassWithBaseClassTestFixture.cs" />
+    <Compile Include="Parsing\PythonParserParsePropertyTests.cs" />
     <Compile Include="PythonLanguage\CreateNewPythonProjectTestFixture.cs" />
     <Compile Include="PythonLanguage\ProjectBindingTestFixture.cs" />
     <Compile Include="PythonLanguage\PythonLanguageBindingTestFixture.cs" />

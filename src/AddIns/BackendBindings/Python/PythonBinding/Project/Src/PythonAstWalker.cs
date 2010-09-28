@@ -223,7 +223,6 @@ namespace ICSharpCode.PythonBinding
 			return convertedParameters.ToArray();
 		}
 		
-		
 		/// <summary>
 		/// Adds the namespace to the class name taken from the class definition.
 		/// </summary>
@@ -240,6 +239,23 @@ namespace ICSharpCode.PythonBinding
 			if (globalClass == null) {
 				globalClass = new DefaultClass(compilationUnit, compilationUnit.UsingScope.NamespaceName);
 				compilationUnit.Classes.Add(globalClass);
+			}
+		}
+		
+		public override bool Walk(AssignmentStatement node)
+		{
+			if (currentClass != null) {
+				WalkPropertyAssignment(node);
+				return false;
+			}
+			return base.Walk(node);
+		}
+		
+		void WalkPropertyAssignment(AssignmentStatement node)
+		{
+			PythonPropertyAssignment propertyAssignment = new PythonPropertyAssignment(node);
+			if (propertyAssignment.IsProperty()) {
+				propertyAssignment.AddPropertyToClass(currentClass);
 			}
 		}
 	}
