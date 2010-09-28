@@ -4,7 +4,7 @@
        addInManagerHidden = "preinstalled">
 	
 	<Manifest>
-		<Identity name="ICSharpCode.GitAddIn" version="@GitAddIn.dll"/>
+		<Identity name="ICSharpCode.GitAddIn" />
 	</Manifest>
 	
 	<Runtime>

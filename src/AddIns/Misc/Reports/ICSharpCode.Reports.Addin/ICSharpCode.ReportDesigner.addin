@@ -5,10 +5,10 @@
 	   addInManagerHidden = "preinstalled">
 	
 	<Manifest>
-		<Identity name="ICSharpCode.Reports.Addin" version="@ICSharpCode.Reports.Addin.dll"/>
+		<Identity name="ICSharpCode.Reports.Addin" />
 		
-		<Dependency addin="SharpDevelop" version="4.0"/>
-		<Dependency addin="ICSharpCode.Data.Addin" requirePreload="true"/>
+		<Dependency addin="SharpDevelop" />
+		<Dependency addin="ICSharpCode.Data.Addin" requirePreload="true" />
 	</Manifest>
 	
 	<Runtime>

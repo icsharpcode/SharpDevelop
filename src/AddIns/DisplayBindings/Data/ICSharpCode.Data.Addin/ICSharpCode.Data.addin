@@ -14,8 +14,7 @@
   </Runtime>
   
   <Manifest>
-      <Identity name="ICSharpCode.Data.Addin" version="@ICSharpCode.Data.Addin.dll" />
-      <Dependency addin="SharpDevelop" version="4.0" />
+      <Identity name="ICSharpCode.Data.Addin" />
   </Manifest>
 
   <Path name="/SharpDevelop/Workbench/FileFilter">
