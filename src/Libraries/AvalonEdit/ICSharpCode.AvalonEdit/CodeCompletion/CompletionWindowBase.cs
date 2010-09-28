@@ -76,7 +76,8 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			if (document != null) {
 				document.Changing += textArea_Document_Changing;
 			}
-			this.TextArea.PreviewLostKeyboardFocus += TextAreaLostFocus;
+			// LostKeyboardFocus seems to be more reliable than PreviewLostKeyboardFocus - see SD-1729
+			this.TextArea.LostKeyboardFocus += TextAreaLostFocus;
 			this.TextArea.TextView.ScrollOffsetChanged += TextViewScrollOffsetChanged;
 			this.TextArea.DocumentChanged += TextAreaDocumentChanged;
 			if (parentWindow != null) {
@@ -101,7 +102,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			if (document != null) {
 				document.Changing -= textArea_Document_Changing;
 			}
-			this.TextArea.PreviewLostKeyboardFocus -= TextAreaLostFocus;
+			this.TextArea.LostKeyboardFocus -= TextAreaLostFocus;
 			this.TextArea.TextView.ScrollOffsetChanged -= TextViewScrollOffsetChanged;
 			this.TextArea.DocumentChanged -= TextAreaDocumentChanged;
 			if (parentWindow != null) {
