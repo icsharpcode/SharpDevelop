@@ -331,6 +331,7 @@ namespace ICSharpCode.NRefactory.Visitors
 			CodeMemberMethod memberMethod = new CodeMemberMethod();
 			memberMethod.Name = methodDeclaration.Name;
 			memberMethod.Attributes = ConvMemberAttributes(methodDeclaration.Modifier);
+			memberMethod.ReturnType = ConvType(methodDeclaration.TypeReference);
 
 			// RG: Private Interface Decl
 			if ((memberMethod.Attributes & MemberAttributes.Public) != MemberAttributes.Public &&
