@@ -3,7 +3,7 @@
              xmlns:sd="http://icsharpcode.net/sharpdevelop/core"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 	<DockPanel>
-		<ListView Name="view" SelectionChanged="ViewSelectionChanged">
+		<ListView Name="view" MouseLeftButtonUp="View_MouseLeftButtonUp" KeyDown="View_KeyDown">
 			<ListView.View>
 				<GridView>
 					<GridViewColumn Header="{sd:Localize Global.Name}">

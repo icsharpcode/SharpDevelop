@@ -3,11 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -84,8 +82,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			RefreshPad();
 		}
 		
-		void ViewSelectionChanged(object sender, SelectionChangedEventArgs e)
+		void View_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
 		{
+			if (debuggedProcess == null)
+				return;
 			if (debuggedProcess.IsPaused) {
 				CallStackItem item = view.SelectedItem as CallStackItem;
 				
@@ -105,6 +105,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
+		void View_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Enter) {
+				View_MouseLeftButtonUp(sender, null);
+				e.Handled = true;
+			}
+		}
+		
 		public void RefreshPad()
 		{
 			if (debuggedProcess == null || debuggedProcess.IsRunning || debuggedProcess.SelectedThread == null) {
@@ -112,10 +120,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				return;
 			}
 			
+			List<CallStackItem> items = null;
+			StackFrame activeFrame = null;
 			using(new PrintTimes("Callstack refresh")) {
 				try {
 					Utils.DoEvents(debuggedProcess);
-					view.ItemsSource = CreateItems();
+					items = CreateItems().ToList();
+					activeFrame = debuggedProcess.SelectedThread.SelectedStackFrame;
 				} catch(AbortedBecauseDebuggeeResumedException) {
 				} catch(System.Exception) {
 					if (debuggedProcess == null || debuggedProcess.HasExited) {
@@ -125,6 +136,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					}
 				}
 			}
+			view.ItemsSource = items;
+			view.SelectedItem = items != null ? items.FirstOrDefault(item => object.Equals(activeFrame, item.Frame)) : null;
 		}
 		
 		IEnumerable<CallStackItem> CreateItems()
