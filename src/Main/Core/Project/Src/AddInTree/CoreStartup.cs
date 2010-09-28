@@ -102,13 +102,13 @@ namespace ICSharpCode.Core
 		
 		/// <summary>
 		/// Find AddIns by searching all .addin files recursively in <paramref name="addInDir"/>.
-		/// The found AddIns are added to the list of AddIn files to load.
+		/// The AddIns that were found are added to the list of AddIn files to load.
 		/// </summary>
 		public void AddAddInsFromDirectory(string addInDir)
 		{
 			if (addInDir == null)
 				throw new ArgumentNullException("addInDir");
-			addInFiles.AddRange(FileUtility.SearchDirectory(addInDir, "*.addin"));
+			addInFiles.AddRange(Directory.GetFiles(addInDir, "*.addin", SearchOption.AllDirectories));
 		}
 		
 		/// <summary>
