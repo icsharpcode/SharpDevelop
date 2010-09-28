@@ -1,4 +1,5 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>ICSharpCode.Build.Tasks.Tests</RootNamespace>
@@ -33,12 +34,6 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ICSharpCode.Core">
-      <HintPath>..\..\..\bin\ICSharpCode.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="ICSharpCode.SharpDevelop">
-      <HintPath>..\..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Tasks.v3.5">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>

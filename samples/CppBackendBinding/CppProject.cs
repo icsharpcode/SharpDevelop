@@ -213,7 +213,7 @@ namespace CppBackendBinding
 			return null;
 		}
 		
-		public override void StartBuild(ThreadSafeServiceContainer buildServices, ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
+		public override void StartBuild(ProjectBuildOptions options, IBuildFeedbackSink feedbackSink)
 		{
 			string productDir = GetPathFromRegistry(@"SOFTWARE\Microsoft\VisualStudio\9.0\Setup\VC", "ProductDir");
 			
