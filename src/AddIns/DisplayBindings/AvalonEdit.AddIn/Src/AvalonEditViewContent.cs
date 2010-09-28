@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Threading;
+using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Utils;
@@ -182,7 +183,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void CaretChanged(object sender, EventArgs e)
 		{
 			NavigationService.Log(this.BuildNavPoint());
-			WorkbenchSingleton.StatusBar.SetCaretPosition(this.Column, this.Line, this.Column);
+			var document = codeEditor.Document;
+			int lineOffset = document.GetLineByNumber(this.Line).Offset;
+			int chOffset = this.Column;
+			int col = 1;
+			for (int i = 1; i < chOffset; i++) {
+				if (document.GetCharAt(lineOffset + i - 1) == '\t')
+					col += CodeEditorOptions.Instance.IndentationSize;
+				else
+					col += 1;
+			}
+			WorkbenchSingleton.StatusBar.SetCaretPosition(col, this.Line, chOffset);
 		}
 		
 		public override bool IsReadOnly {
