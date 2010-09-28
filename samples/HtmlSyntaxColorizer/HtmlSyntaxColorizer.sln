@@ -1,7 +1,7 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-# SharpDevelop 4.0.0.5490
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+# SharpDevelop 4.0.0.6517
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HtmlSyntaxColorizer", "HtmlSyntaxColorizer.csproj", "{6D17428C-A444-4C26-8FE3-976160F41D97}"
 EndProject
 Global

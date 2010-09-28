@@ -18,7 +18,6 @@ namespace ICSharpCode.XamlDesigner
         {
 			DispatcherUnhandledException += App_DispatcherUnhandledException;
 			Args = e.Args;
-			System.Windows.Forms.Application.EnableVisualStyles();			
             base.OnStartup(e);
         }
 
