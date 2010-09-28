@@ -247,6 +247,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			//try {
 				var resolver = GetInitializedNRefactoryResolver(editor, this.CaretLine, this.CaretColumn);
+				if (resolver == null)
+					return null;
 				return resolver.ParseCurrentMember(editor.Document.Text);
 			//} catch {
 			//	return null;

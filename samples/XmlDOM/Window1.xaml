@@ -4,6 +4,7 @@
 	xmlns:clr="clr-namespace:ICSharpCode.AvalonEdit.Xml;assembly=ICSharpCode.AvalonEdit"
 	xmlns:ic="http://icsharpcode.net/sharpdevelop/avalonedit"
 	Title="XmlEditor" Height="450" Width="600"
+	TextOptions.TextFormattingMode="Display"
 	>
 	<Window.Resources>
 		<Storyboard x:Key="anim">

@@ -80,11 +80,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\AddIns\AddIns\DisplayBindings\AvalonEdit\AvalonEdit.AddIn.addin">
+    <Content Include="..\..\AddIns\DisplayBindings\AvalonEdit\AvalonEdit.AddIn.addin">
       <Link>SdaAddIns\AvalonEdit.AddIn.addin</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\..\AddIns\AddIns\DisplayBindings\AvalonEdit\ICSharpCode.AvalonEdit.AddIn.dll">
+    <Content Include="..\..\AddIns\DisplayBindings\AvalonEdit\ICSharpCode.AvalonEdit.AddIn.dll">
       <Link>SdaAddIns\ICSharpCode.AvalonEdit.AddIn.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
