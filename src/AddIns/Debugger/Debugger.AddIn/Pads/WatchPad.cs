@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
 using Debugger;
+using Debugger.AddIn;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
@@ -89,11 +90,20 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			watchList.AllowDrop = true;
 			watchList.DragEnter += new DragEventHandler(watchList_DragEnter);
 			watchList.DragDrop += new DragEventHandler(watchList_DragDrop);
+			watchList.KeyUp += new KeyEventHandler(watchList_KeyUp);
 			
 			watches = new List<TextNode>();
 			
 			ResourceService.LanguageChanged += delegate { OnLanguageChanged(); };
 			OnLanguageChanged();
+		}
+
+		void watchList_KeyUp(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Delete) {
+				RemoveWatchCommand cmd = new RemoveWatchCommand { Owner = this };
+				cmd.Run();
+			}
 		}
 		
 		void watchList_DragDrop(object sender, DragEventArgs e)
@@ -123,22 +133,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void watchList_DoubleClick(object sender, MouseEventArgs e)
 		{
 			if (watchList.SelectedNode == null)
-			{
-				watchList.BeginUpdate();
-				TextNode text = new TextNode("", SupportedLanguage.CSharp);
-				TreeViewVarNode node = new TreeViewVarNode(this.debuggedProcess, this.watchList, text);
-				watches.Add(text);
-				watchList.Root.Children.Add(node);
-				watchList.EndUpdate();
-				
-				node.IsSelected = true;
-				
-				this.RefreshPad();
-				
-				foreach (NodeControlInfo nfo in watchList.GetNodeControls(node)) {
-					if (nfo.Control is WatchItemName)
-						((EditableControl)nfo.Control).MouseUp(new TreeNodeAdvMouseEventArgs(e));
-				}
+			{			
+				AddWatchCommand command = new AddWatchCommand { Owner = this };
+				command.Run();
 			}
 		}
 		
