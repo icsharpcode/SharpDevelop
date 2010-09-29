@@ -16,39 +16,39 @@ namespace ICSharpCode.PythonBinding
 			this.assignmentStatement = assignmentStatement;
 		}
 		
-		public bool IsProperty()
+		public PythonProperty CreateProperty(IClass c)
 		{
-			CallExpression rhs = assignmentStatement.Right as CallExpression;
-			if (rhs != null) {
-				NameExpression nameExpression = rhs.Target as NameExpression;
+			if (IsProperty()) {
+				NameExpression nameExpression = assignmentStatement.Left[0] as NameExpression;
 				if (nameExpression != null) {
-					return nameExpression.Name == "property";
+					string propertyName = nameExpression.Name;
+					return CreateProperty(c, propertyName);
 				}
+			}
+			return null;
+		}
+		
+		bool IsProperty()
+		{
+			CallExpression callExpression = assignmentStatement.Right as CallExpression;
+			if (callExpression != null) {
+				return IsPropertyFunctionBeingCalled(callExpression);
 			}
 			return false;
 		}
 		
-		public void AddPropertyToClass(IClass c)
+		bool IsPropertyFunctionBeingCalled(CallExpression callExpression)
 		{
-			NameExpression nameExpression = assignmentStatement.Left[0] as NameExpression;
+			NameExpression nameExpression = callExpression.Target as NameExpression;
 			if (nameExpression != null) {
-				string propertyName = nameExpression.Name;
-				AddPropertyToClass(c, propertyName);
+				return nameExpression.Name == "property";
 			}
+			return false;
 		}
 		
-		void AddPropertyToClass(IClass c, string propertyName)
+		PythonProperty CreateProperty(IClass c, string propertyName)
 		{
-			DefaultProperty property = new DefaultProperty(c, propertyName);
-			property.Region = GetPropertyRegion();
-			c.Properties.Add(property);
-		}
-		
-		DomRegion GetPropertyRegion()
-		{
-			int line = assignmentStatement.Start.Line;
-			int column = assignmentStatement.Start.Column;
-			return new DomRegion(line, column, line, column);
+			return new PythonProperty(c, propertyName, assignmentStatement.Start);
 		}
 	}
 }

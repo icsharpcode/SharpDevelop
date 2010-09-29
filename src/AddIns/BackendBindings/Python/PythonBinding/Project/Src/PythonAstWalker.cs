@@ -18,32 +18,16 @@ namespace ICSharpCode.PythonBinding
 	/// </summary>
 	public class PythonAstWalker : PythonWalker
 	{
-		DefaultCompilationUnit compilationUnit;
+		PythonCompilationUnit compilationUnit;
 		IClass currentClass;
-		IClass globalClass;
+		PythonModule module;
 		
 		/// <summary>
 		/// All classes in a file take the namespace of the filename. 
 		/// </summary>
 		public PythonAstWalker(IProjectContent projectContent, string fileName)
 		{
-			CreateCompilationUnit(projectContent, fileName);
-		}
-		
-		void CreateCompilationUnit(IProjectContent projectContent, string fileName)
-		{
-			compilationUnit = new DefaultCompilationUnit(projectContent);
-			compilationUnit.FileName = fileName;
-			
-			CreateUsingScopeForCompilationUnit(fileName);
-		}
-		
-		void CreateUsingScopeForCompilationUnit(string fileName)
-		{
-			DefaultUsingScope usingScope = new DefaultUsingScope();
-			usingScope.NamespaceName = Path.GetFileNameWithoutExtension(fileName);
-			usingScope.Parent = new DefaultUsingScope();
-			compilationUnit.UsingScope = usingScope;
+			compilationUnit = new PythonCompilationUnit(projectContent, fileName);
 		}
 		
 		/// <summary>
@@ -62,61 +46,55 @@ namespace ICSharpCode.PythonBinding
 			statement.Walk(this);
 		}
 		
-		/// <summary>
-		/// Walks a class definition.
-		/// </summary>
-		public override bool Walk(ClassDefinition node)
+		public override bool Walk(ClassDefinition classDefinition)
 		{
-			DefaultClass c = new DefaultClass(compilationUnit, GetFullyQualifiedClassName(node));
-			c.Region = GetRegion(node);
-			c.BodyRegion = GetBodyRegion(node.Body, node.Header);
-			AddBaseTypes(c, node.Bases);
-			
-			// Save the class.
-			compilationUnit.Classes.Add(c);
-			
-			// Walk through all the class items.
-			currentClass = c;
-			node.Body.Walk(this);
-			currentClass = null;
-			
+			PythonClass c = new PythonClass(compilationUnit, classDefinition);
+			WalkClassBody(c, classDefinition.Body);
 			return false;
 		}
 		
-		/// <summary>
-		/// Walks a function definition.
-		/// </summary>
+		void WalkClassBody(IClass c, Statement classBody)
+		{
+			currentClass = c;
+			classBody.Walk(this);
+			currentClass = null;
+		}
+		
 		public override bool Walk(FunctionDefinition node)
 		{
 			if (node.Body == null) {
 				return false;
 			}
 			
-			bool ignoreFirstMethodParameter = true;
-			IClass c = currentClass;
-			if (currentClass == null) {
-				// Walking a global method.
-				CreateGlobalClass();
-				c = globalClass;
-				ignoreFirstMethodParameter = false;
-			}
+			IClass c = GetClassBeingWalked();
 			
-			// Create method.
-			string methodName = node.Name;
-			DomRegion bodyRegion = GetBodyRegion(node.Body, node.Header);
-			DomRegion region = GetMethodRegion(node);
-			
-			DefaultMethod method;
-			if (methodName == "__init__") {
-				method = new Constructor(ModifierEnum.Public, region, bodyRegion, c);
-			} else {
-				method = new DefaultMethod(methodName, new DefaultReturnType(c), ModifierEnum.Public, region, bodyRegion, c);
-			}
-			foreach (IParameter parameter in ConvertParameters(node.Parameters, ignoreFirstMethodParameter)) {
-				method.Parameters.Add(parameter);
-			}
-			c.Methods.Add(method);
+			PythonMethodDefinition methodDefinition = new PythonMethodDefinition(node);
+			methodDefinition.CreateMethod(c);
 			return false;
+		}
+		
+		/// <summary>
+		/// If the current class is null then create a module so a method outside of a class can be
+		/// parsed.
+		/// </summary>
+		IClass GetClassBeingWalked()
+		{
+			if (currentClass == null) {
+				// Walking a method outside a class.
+				CreateModule();
+				return module;
+			}
+			return currentClass;
+		}
+		
+		/// <summary>
+		/// Creates the module which will act as a class so it can hold any methods defined in the module.
+		/// </summary>
+		void CreateModule()
+		{
+			if (module == null) {
+				module = new PythonModule(compilationUnit);
+			}
 		}
 		
 		/// <summary>
@@ -136,111 +114,6 @@ namespace ICSharpCode.PythonBinding
 			compilationUnit.UsingScope.Usings.Add(import);
 			return false;
 		}
-				
-		/// <summary>
-		/// Gets the body region for a class or a method.
-		/// </summary>
-		/// <remarks>
-		/// Note that SharpDevelop line numbers are zero based but the
-		/// DomRegion values are one based. IronPython columns and lines are one based.
-		/// </remarks>
-		/// <param name="body">The body statement.</param>
-		/// <param name="header">The location of the header. This gives the end location for the
-		/// method or class definition up to the colon.</param>
-		DomRegion GetBodyRegion(Statement body, SourceLocation header)
-		{
-			int columnAfterColonCharacter = header.Column + 1;
-			return new DomRegion(header.Line, header.Column + 1, body.End.Line, body.End.Column);			
-		}
-		
-		/// <summary>
-		/// Gets the region of the scope statement (typically a ClassDefinition). 
-		/// </summary>
-		/// <remarks>
-		/// A class region includes the body.
-		/// </remarks>
-		DomRegion GetRegion(ScopeStatement statement)
-		{
-			return new DomRegion(statement.Start.Line, statement.Start.Column, statement.End.Line, statement.End.Column);
-		}
-		
-		/// <summary>
-		/// Gets the region of a method. This does not include the body.
-		/// </summary>
-		DomRegion GetMethodRegion(FunctionDefinition node)
-		{
-			return new DomRegion(node.Start.Line, node.Start.Column, node.Header.Line, node.Header.Column + 1);
-		}
-		
-		/// <summary>
-		/// Looks for any base types for the class defined in the
-		/// list of expressions and adds them to the class.
-		/// </summary>
-		void AddBaseTypes(IClass c, IList<Expression> baseTypes)
-		{
-			foreach (Expression expression in baseTypes) {
-				NameExpression nameExpression = expression as NameExpression;
-				MemberExpression memberExpression = expression as MemberExpression;
-				if (nameExpression != null) {
-					AddBaseType(c, nameExpression.Name);
-				} else if (memberExpression != null) {
-					AddBaseType(c, PythonControlFieldExpression.GetMemberName(memberExpression));
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Adds the named base type to the class.
-		/// </summary>
-		void AddBaseType(IClass c, string name)
-		{
-			c.BaseTypes.Add(CreateSearchClassReturnType(c, name));
-		}
-		
-		SearchClassReturnType CreateSearchClassReturnType(IClass c, string name)
-		{
-			return new SearchClassReturnType(c.ProjectContent, c, 0, 0, name, 0);
-		}
-		
-		/// <summary>
-		/// Converts from Python AST expressions to parameters.
-		/// </summary>
-		/// <remarks>If the parameters belong to a class method then the first
-		/// "self" parameter can be ignored.</remarks>
-		IParameter[] ConvertParameters(IList<Parameter> parameters, bool ignoreFirstParameter)
-		{
-			List<IParameter> convertedParameters = new List<IParameter>();
-
-			int startingIndex = 0;
-			if (ignoreFirstParameter) {
-				startingIndex = 1;
-			}
-			
-			for (int i = startingIndex; i < parameters.Count; ++i) {				
-				DefaultParameter parameter = new DefaultParameter(parameters[i].Name, null, new DomRegion());
-				convertedParameters.Add(parameter);
-			}
-			return convertedParameters.ToArray();
-		}
-		
-		/// <summary>
-		/// Adds the namespace to the class name taken from the class definition.
-		/// </summary>
-		string GetFullyQualifiedClassName(ClassDefinition classDef)
-		{
-			return String.Concat(compilationUnit.UsingScope.NamespaceName, ".", classDef.Name);
-		}
-		
-		/// <summary>
-		/// Creates the dummy class that is used to hold global methods.
-		/// </summary>
-		void CreateGlobalClass()
-		{
-			if (globalClass == null) {
-				globalClass = new DefaultClass(compilationUnit, compilationUnit.UsingScope.NamespaceName);
-				compilationUnit.Classes.Add(globalClass);
-			}
-		}
 		
 		public override bool Walk(AssignmentStatement node)
 		{
@@ -254,9 +127,7 @@ namespace ICSharpCode.PythonBinding
 		void WalkPropertyAssignment(AssignmentStatement node)
 		{
 			PythonPropertyAssignment propertyAssignment = new PythonPropertyAssignment(node);
-			if (propertyAssignment.IsProperty()) {
-				propertyAssignment.AddPropertyToClass(currentClass);
-			}
+			propertyAssignment.CreateProperty(currentClass);
 		}
 	}
 }

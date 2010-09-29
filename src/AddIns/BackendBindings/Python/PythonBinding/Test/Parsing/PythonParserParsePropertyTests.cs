@@ -59,5 +59,61 @@ namespace PythonBinding.Tests.Parsing
 			
 			Assert.AreEqual(expectedRegion, region);
 		}
+		
+		[Test]
+		public void Parse_ClassMethodHasNoPropertyButHasAssignmentStatementSetToValueFromFunctionCall_ParseInfoHasNoPropertyAdded()
+		{
+			string code =
+				"class MyClass:\r\n" +
+				"    a = foo()\r\n" +
+				"\r\n";
+			
+			ParseInformation parseInfo = PythonParserHelper.CreateParseInfo(code);
+			int count = parseInfo.CompilationUnit.Classes[0].Properties.Count;
+			
+			Assert.AreEqual(0, count);
+		}
+		
+		[Test]
+		public void Parse_ClassMethodHasNoPropertyButHasAssignmentStatementUsingMemberExpression_ParseInfoHasNoPropertyAddedAndNoExceptionThrown()
+		{
+			string code =
+				"class MyClass:\r\n" +
+				"    a.b = foo()\r\n" +
+				"\r\n";
+			
+			ParseInformation parseInfo = PythonParserHelper.CreateParseInfo(code);
+			int count = parseInfo.CompilationUnit.Classes[0].Properties.Count;
+			
+			Assert.AreEqual(0, count);
+		}
+		
+		[Test]
+		public void Parse_ClassMethodHasNoPropertyButHasAssignmentStatementSetToIntegerValue_ParseInfoHasNoPropertyAddedAndNoExceptionThrown()
+		{
+			string code =
+				"class MyClass:\r\n" +
+				"    a = 1\r\n" +
+				"\r\n";
+			
+			ParseInformation parseInfo = PythonParserHelper.CreateParseInfo(code);
+			int count = parseInfo.CompilationUnit.Classes[0].Properties.Count;
+			
+			Assert.AreEqual(0, count);
+		}
+		
+		[Test]
+		public void Parse_ClassMethodHasNoPropertyButHasAssignmentStatementSetToValueFromMemberExpressionCall_ParseInfoHasNoPropertyAddedAndNoExceptionThrown()
+		{
+			string code =
+				"class MyClass:\r\n" +
+				"    a = foo.bar()\r\n" +
+				"\r\n";
+			
+			ParseInformation parseInfo = PythonParserHelper.CreateParseInfo(code);
+			int count = parseInfo.CompilationUnit.Classes[0].Properties.Count;
+			
+			Assert.AreEqual(0, count);
+		}
 	}
 }
