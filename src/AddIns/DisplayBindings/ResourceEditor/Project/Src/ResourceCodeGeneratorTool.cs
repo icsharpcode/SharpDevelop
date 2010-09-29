@@ -60,13 +60,22 @@ namespace ResourceEditor
 			
 			string[] unmatchable = null;
 			
+			string generatedCodeNamespace = context.OutputNamespace;
+			if (context.Project.LanguageProperties == ICSharpCode.SharpDevelop.Dom.LanguageProperties.VBNet) {
+				if (generatedCodeNamespace == context.Project.RootNamespace) {
+					generatedCodeNamespace = null; // namespace is implicit in VB
+				} else if (generatedCodeNamespace.StartsWith(context.Project.RootNamespace + ".", StringComparison.OrdinalIgnoreCase)) {
+					generatedCodeNamespace = generatedCodeNamespace.Substring(context.Project.RootNamespace.Length + 1);
+				}
+			}
+			
 			context.WriteCodeDomToFile(
 				item,
 				context.GetOutputFileName(item, ".Designer"),
 				StronglyTypedResourceBuilder.Create(
 					resources,        // resourceList
 					Path.GetFileNameWithoutExtension(inputFilePath), // baseName
-					context.OutputNamespace, // generatedCodeNamespace
+					generatedCodeNamespace, // generatedCodeNamespace
 					context.OutputNamespace, // resourcesNamespace
 					context.Project.LanguageProperties.CodeDomProvider, // codeProvider
 					createInternalClass,             // internal class
