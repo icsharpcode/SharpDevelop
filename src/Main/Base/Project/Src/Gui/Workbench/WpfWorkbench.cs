@@ -456,6 +456,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 								break;							
 							}
 						}
+						
+						if (isSolutionWindow)
+							break;
 					}
 					
 					if (isSolutionWindow)
