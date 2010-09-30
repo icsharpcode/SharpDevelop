@@ -164,6 +164,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void CloseAllViews();
 		
 		/// <summary>
+		/// 	Closes all views related to current solution.
+		/// </summary>
+		/// <returns>
+		/// 	True if all views were closed properly, false if closing was aborted.
+		/// </returns>
+		bool CloseAllSolutionViews();
+		
+		/// <summary>
 		/// Is called, when a workbench view was opened
 		/// </summary>
 		/// <example>

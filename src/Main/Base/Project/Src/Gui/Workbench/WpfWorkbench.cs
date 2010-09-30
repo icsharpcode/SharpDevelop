@@ -17,6 +17,7 @@ using System.Windows.Media;
 using System.Windows.Navigation;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -431,6 +432,43 @@ namespace ICSharpCode.SharpDevelop.Gui
 				closeAll = false;
 				OnActiveWindowChanged(this, EventArgs.Empty);
 			}
+		}
+		
+		public bool CloseAllSolutionViews()
+		{
+			bool isSolutionWindow;
+			bool result = true;
+			
+			WorkbenchSingleton.AssertMainThread();
+			try
+			{
+				closeAll = true;
+				foreach (IWorkbenchWindow window in this.WorkbenchWindowCollection.ToArray())
+				{
+					isSolutionWindow = false;
+					foreach (IViewContent content in window.ViewContents)
+					{
+						foreach (OpenedFile file in content.Files)
+						{
+							if (ProjectService.OpenSolution.FindProjectContainingFile(file.FileName) != null)
+							{
+								isSolutionWindow = true;
+								break;							
+							}
+						}
+					}
+					
+					if (isSolutionWindow)
+						result = window.CloseWindow(false) && result;
+				}
+			}
+			finally
+			{
+				closeAll = false;
+				OnActiveWindowChanged(this, EventArgs.Empty);
+			}
+			
+			return result;
 		}
 		
 		#region ViewContent Memento Handling

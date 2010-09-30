@@ -40,8 +40,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			ProjectService.SaveSolutionPreferences();
-			WorkbenchSingleton.Workbench.CloseAllViews();
-			if (WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count == 0) {
+			if (WorkbenchSingleton.Workbench.CloseAllSolutionViews()) {
 				ProjectService.CloseSolution();
 			}
 		}
