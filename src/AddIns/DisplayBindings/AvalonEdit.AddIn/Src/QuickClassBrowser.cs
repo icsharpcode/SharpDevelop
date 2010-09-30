@@ -88,6 +88,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					return r;
 				return string.Compare(text, other.text, StringComparison.Ordinal);
 			}
+			
+			/// <summary>
+			/// ToString override is necessary to support keyboard navigation in WPF
+			/// </summary>
+			public override string ToString()
+			{
+				return text;
+			}
 		}
 		
 		public QuickClassBrowser()
