@@ -45,7 +45,7 @@ namespace ICSharpCode.Reports.Addin
 		{
 
 			Application.UseWaitCursor = true;
-			Application.DoEvents();
+//			Application.DoEvents();
 			try {
 				IComponent cc = this.host.CreateComponent(typeof(ICSharpCode.Reports.Addin.Designer.RootReportModel),"RootReportModel");
 				ICSharpCode.Reports.Addin.Designer.RootReportModel rootControl = cc as ICSharpCode.Reports.Addin.Designer.RootReportModel;
