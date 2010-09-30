@@ -1,9 +1,5 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Peter Forstmeier" email="peter.forstmeier@t-online.de"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Drawing;
@@ -343,7 +339,7 @@ namespace ICSharpCode.Reports.Core {
 			string[] resources = thisExe.GetManifestResourceNames();
 			string list = String.Empty;
 			foreach (string resource in resources) list += resource + NL;
-//			System.Windows.Forms.MessageBox.Show("Verf�gbare Ressource-Namen:" + NL + list);
+//			System.Windows.Forms.MessageBox.Show("Verfügbare Ressource-Namen:" + NL + list);
 
 			
 		}

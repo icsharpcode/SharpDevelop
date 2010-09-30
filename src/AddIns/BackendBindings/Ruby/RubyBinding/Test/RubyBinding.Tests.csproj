@@ -266,7 +266,7 @@
     <Compile Include="Designer\RubyPropertyAssignmentToStringTests.cs" />
     <Compile Include="Designer\TextBoxNotAddedToFormTestFixture.cs" />
     <Compile Include="Designer\UnknownTypeTestFixture.cs" />
-    <Compile Include="Gui\DebugRunRubyCommandTestFixture.cs" />
+    <Compile Include="Gui\DebugRunRubyCommandTests.cs" />
     <Compile Include="Gui\RubyIndentationTests.cs" />
     <Compile Include="Gui\RubyOptionsPanelTestFixture.cs" />
     <Compile Include="Gui\RunRubyCommandTests.cs" />
@@ -289,7 +289,7 @@
     <Compile Include="RubyLanguage\RubyLanguageBindingTestFixture.cs" />
     <Compile Include="RubyLanguage\RubyLanguagePropertiesTests.cs" />
     <Compile Include="Testing\CreateRubyTestRunnerTestFixture.cs" />
-    <Compile Include="Testing\RubyConsoleApplicationTestFixture.cs" />
+    <Compile Include="Testing\RubyConsoleApplicationTests.cs" />
     <Compile Include="Testing\RubyTestDebuggerRunsSelectedTestMethodTestFixture.cs" />
     <Compile Include="Testing\RubyTestFrameworkIsTestClassTests.cs" />
     <Compile Include="Testing\RubyTestFrameworkIsTestMethodTests.cs" />

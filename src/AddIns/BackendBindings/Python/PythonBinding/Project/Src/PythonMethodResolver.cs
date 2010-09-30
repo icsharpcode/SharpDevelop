@@ -17,13 +17,13 @@ namespace ICSharpCode.PythonBinding
 			standardModuleMethodResolver = new PythonStandardModuleMethodResolver(standardModuleResolver);
 		}
 		
-		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)
+		public ResolveResult Resolve(PythonResolverContext resolverContext)
 		{
-			ResolveResult resolveResult = dotNetMethodResolver.Resolve(resolverContext, expressionResult);
+			ResolveResult resolveResult = dotNetMethodResolver.Resolve(resolverContext);
 			if (resolveResult != null) {
 				return resolveResult;
 			}
-			return standardModuleMethodResolver.Resolve(resolverContext, expressionResult);
+			return standardModuleMethodResolver.Resolve(resolverContext);
 		}
 	}
 }

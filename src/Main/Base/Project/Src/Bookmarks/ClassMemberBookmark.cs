@@ -49,6 +49,19 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				e.Handled = true;
 			}
 		}
+		
+		public virtual void MouseUp(MouseButtonEventArgs e)
+		{
+		}
+		
+		bool IBookmark.CanDragDrop {
+			get { return false; }
+		}
+		
+		void IBookmark.Drop(int lineNumber)
+		{
+			throw new NotSupportedException();
+		}
 	}
 	
 	public class ClassBookmark : IBookmark
@@ -89,6 +102,19 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				ctx.Closed += delegate { f.EndTracking(); };
 				e.Handled = true;
 			}
+		}
+		
+		public virtual void MouseUp(MouseButtonEventArgs e)
+		{
+		}
+		
+		bool IBookmark.CanDragDrop {
+			get { return false; }
+		}
+		
+		void IBookmark.Drop(int lineNumber)
+		{
+			throw new NotSupportedException();
 		}
 	}
 }

@@ -13,7 +13,7 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Resolver
 {
 	[TestFixture]
-	public class ResolveExitMethodFromSysImportExitTestFixture : ResolveTestFixtureBase
+	public class ResolveExitMethodFromSysImportExitTestFixture : ResolveTestsBase
 	{
 		protected override ExpressionResult GetExpressionResult()
 		{

@@ -24,14 +24,13 @@ namespace PythonBinding.Tests.Resolver
 			CreateParseInfo();
 			CreatePythonResolverContext();
 			
-			ResolveResult result = resolver.Resolve(context, expression);
+			ResolveResult result = resolver.Resolve(context);
 			Assert.IsNull(result);
 		}
 		
 		void CreatePythonSelfResolver()
 		{
 			resolver = new PythonSelfResolver();
-			expression = new ExpressionResult("self");
 		}
 		
 		void CreateParseInfo()
@@ -43,7 +42,8 @@ namespace PythonBinding.Tests.Resolver
 		
 		void CreatePythonResolverContext()
 		{
-			context = new PythonResolverContext(parseInfo);
+			expression = new ExpressionResult("self");
+			context = new PythonResolverContext(parseInfo, expression, String.Empty);
 		}
 	}
 }

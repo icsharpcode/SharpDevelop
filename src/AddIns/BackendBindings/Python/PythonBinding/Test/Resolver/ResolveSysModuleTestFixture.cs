@@ -11,7 +11,7 @@ using PythonBinding.Tests.Utils;
 namespace PythonBinding.Tests.Resolver
 {
 	[TestFixture]
-	public class ResolveSysModuleTestFixture : ResolveTestFixtureBase
+	public class ResolveSysModuleTestFixture : ResolveTestsBase
 	{
 		protected override ExpressionResult GetExpressionResult()
 		{

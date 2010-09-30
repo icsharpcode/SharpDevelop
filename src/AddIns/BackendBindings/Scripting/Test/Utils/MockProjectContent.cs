@@ -16,7 +16,6 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		bool searchTypeCalled;
 		SearchTypeRequest searchTypeRequest;
 		IClass classToReturnFromGetClass;
-		bool getClassCalled;
 		string getClassName;
 		List<IClass> classesInProjectContent = new List<IClass>();
 		string namespacePassedToGetNamespaceContentsMethod;
@@ -26,10 +25,6 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		Dictionary<string, List<ICompletionEntry>> namespaceContents = new Dictionary<string, List<ICompletionEntry>>();
 		LanguageProperties language = LanguageProperties.CSharp;
 		List<IProjectContent> referencedContents = new List<IProjectContent>();
-		
-		public MockProjectContent()
-		{
-		}
 			
 		/// <summary>
 		/// Gets the namespaces that will be added when the
@@ -73,30 +68,10 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			get { return searchTypeRequest; }
 		}
 		
-		/// <summary>
-		/// Gets or sets the class to return from the GetClass Method.
-		/// </summary>
-		public IClass ClassToReturnFromGetClass
+		public void SetClassToReturnFromGetClass(string className, IClass classToReturn)
 		{
-			get { return classToReturnFromGetClass; }
-			set { classToReturnFromGetClass = value; }
-		}
-		
-		/// <summary>
-		/// Gets or sets the class name that needs to match in order
-		/// for the GetClass call to return a class. If nothing is
-		/// specified then every class name matches. 
-		/// </summary>
-		public string ClassNameForGetClass {
-			get { return classNameForGetClass; }
-			set { classNameForGetClass = value; }
-		}
-
-		/// <summary>
-		/// Gets whether the GetClass method was called.
-		/// </summary>
-		public bool GetClassCalled {
-			get { return getClassCalled; }
+			classToReturnFromGetClass = classToReturn;
+			classNameForGetClass = className;
 		}
 
 		/// <summary>
@@ -187,7 +162,6 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		public IClass GetClass(string typeName, int typeParameterCount)
 		{
 			getClassName = typeName;
-			getClassCalled = true;
 			
 			// If a class name is specified then only return a class
 			// if we have a match.
@@ -258,9 +232,6 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		
 		public string SearchNamespace(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn)
 		{
-//			searchNamespaceCalled = true;
-//			namespaceSearchedFor = name;
-//			return searchNamespace;
 			throw new NotImplementedException();
 		}
 		
@@ -290,21 +261,13 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
-		#endregion
-
-		protected virtual void OnReferencedContentsChanged(EventArgs e)
-		{
-			if (ReferencedContentsChanged != null) {
-				ReferencedContentsChanged(this, e);
-			}
-		}
 		
 		public bool InternalsVisibleTo(IProjectContent otherProjectContent)
 		{
 			throw new NotImplementedException();
 		}
 		
-			public string AssemblyName {
+		public string AssemblyName {
 			get {
 				throw new NotImplementedException();
 			}
@@ -318,6 +281,14 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		public void AddAllContents(List<ICompletionEntry> list, LanguageProperties language, bool lookInReferences)
 		{
 			throw new NotImplementedException();
+		}
+		#endregion
+
+		protected virtual void OnReferencedContentsChanged(EventArgs e)
+		{
+			if (ReferencedContentsChanged != null) {
+				ReferencedContentsChanged(this, e);
+			}
 		}
 	}
 }

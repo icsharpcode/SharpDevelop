@@ -116,6 +116,12 @@ namespace ICSharpCode.SharpDevelop.Dom.Refactoring
 						p.SetRegion.Block= BlockStatement.Null;
 						p.Modifier = Modifiers.None;
 						node = p;
+					} else {
+						if (an is EventDeclaration) {
+							EventDeclaration e = an as EventDeclaration;
+							e.Modifier = Modifiers.None;
+							node = e;
+						}
 					}
 				}
 				

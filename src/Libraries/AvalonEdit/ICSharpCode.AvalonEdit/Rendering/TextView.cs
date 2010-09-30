@@ -1307,10 +1307,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			VisualLine vl = GetVisualLineFromVisualTop(visualPosition.Y);
 			if (vl != null) {
-				int column = vl.GetVisualColumn(visualPosition);
+				int column = vl.GetVisualColumnFloor(visualPosition);
 //				Debug.WriteLine(vl.FirstDocumentLine.LineNumber + " vc " + column);
 				foreach (VisualLineElement element in vl.Elements) {
-					if (element.VisualColumn + element.VisualLength < column)
+					if (element.VisualColumn + element.VisualLength <= column)
 						continue;
 					return element;
 				}

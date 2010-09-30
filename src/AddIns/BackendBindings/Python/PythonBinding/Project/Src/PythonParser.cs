@@ -27,10 +27,6 @@ namespace ICSharpCode.PythonBinding
 		string[] lexerTags = new string[0];
 		ScriptEngine scriptEngine;
 		
-		public PythonParser()
-		{
-		}
-		
 		public string[] LexerTags {
 			get { return lexerTags;	}
 			set { lexerTags = value; }
@@ -40,10 +36,6 @@ namespace ICSharpCode.PythonBinding
 			get { return LanguageProperties.None; }
 		}
 		
-		
-		/// <summary>
-		/// Creates a PythonExpressionFinder.
-		/// </summary>
 		public IExpressionFinder CreateExpressionFinder(string fileName)
 		{
 			return new PythonExpressionFinder();
@@ -75,14 +67,22 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Parses a python file and creates a PythonAst.
 		/// </summary>
-		public PythonAst CreateAst(string fileName, ITextBuffer fileContent)
+		public PythonAst CreateAst(string fileName, ITextBuffer textBuffer)
+		{
+			return CreateAst(fileName, textBuffer.Text);
+		}
+		
+		/// <summary>
+		/// Parses a python file and creates a PythonAst.
+		/// </summary>
+		public PythonAst CreateAst(string fileName, string fileContent)
 		{
 			if (scriptEngine == null) {
 				scriptEngine = IronPython.Hosting.Python.CreateEngine();
 			}
 
 			PythonCompilerSink sink = new PythonCompilerSink();
-			SourceUnit source = DefaultContext.DefaultPythonContext.CreateFileUnit(fileName, fileContent.Text);
+			SourceUnit source = DefaultContext.DefaultPythonContext.CreateFileUnit(fileName, fileContent);
 			CompilerContext context = new CompilerContext(source, new PythonCompilerOptions(), sink);
 			using (Parser parser = Parser.CreateParser(context, new PythonOptions())) {
 				return parser.ParseFile(false);	
@@ -92,12 +92,24 @@ namespace ICSharpCode.PythonBinding
 		/// <summary>
 		/// Parses the python code and returns an ICompilationUnit.
 		/// </summary>
-		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
+		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ITextBuffer textBuffer)
 		{
-			return Parse(projectContent, fileName, new StringTextBuffer(fileContent));
+			string fileContent = GetFileContent(textBuffer);
+			return Parse(projectContent, fileName, fileContent);
 		}
 		
-		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ITextBuffer fileContent)
+		string GetFileContent(ITextBuffer textBuffer)
+		{
+			if (textBuffer != null) {
+				return textBuffer.Text;
+			}
+			return null;	
+		}
+		
+		/// <summary>
+		/// Parses the python code and returns an ICompilationUnit.
+		/// </summary>
+		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
 		{
 			if (fileContent != null) {
 				try { 
@@ -115,9 +127,6 @@ namespace ICSharpCode.PythonBinding
 			return compilationUnit;
 		}
 		
-		/// <summary>
-		/// Creates a new PythonResolver.
-		/// </summary>
 		public IResolver CreateResolver()
 		{
 			return new PythonResolver();

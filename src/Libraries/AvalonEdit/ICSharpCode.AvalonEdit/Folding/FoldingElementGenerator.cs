@@ -3,6 +3,7 @@
 
 using System;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
 
@@ -48,23 +49,24 @@ namespace ICSharpCode.AvalonEdit.Folding
 			if (FoldingManager == null)
 				return null;
 			int foldedUntil = -1;
-			string title = null;
+			FoldingSection foldingSection = null;
 			foreach (FoldingSection fs in FoldingManager.GetFoldingsAt(offset)) {
 				if (fs.IsFolded) {
 					if (fs.EndOffset > foldedUntil) {
 						foldedUntil = fs.EndOffset;
-						title = fs.Title;
+						foldingSection = fs;
 					}
 				}
 			}
-			if (foldedUntil > offset) {
+			if (foldedUntil > offset && foldingSection != null) {
+				string title = foldingSection.Title;
 				if (string.IsNullOrEmpty(title))
 					title = "...";
 				var p = new VisualLineElementTextRunProperties(CurrentContext.GlobalTextRunProperties);
 				p.SetForegroundBrush(Brushes.Gray);
 				var textFormatter = TextFormatterFactory.Create(CurrentContext.TextView);
 				var text = FormattedTextElement.PrepareText(textFormatter, title, p);
-				return new FoldingLineElement(text, foldedUntil - offset);
+				return new FoldingLineElement(foldingSection, text, foldedUntil - offset);
 			} else {
 				return null;
 			}
@@ -72,13 +74,26 @@ namespace ICSharpCode.AvalonEdit.Folding
 		
 		sealed class FoldingLineElement : FormattedTextElement
 		{
-			public FoldingLineElement(TextLine text, int documentLength) : base(text, documentLength)
+			readonly FoldingSection fs;
+			
+			public FoldingLineElement(FoldingSection fs, TextLine text, int documentLength) : base(text, documentLength)
 			{
+				this.fs = fs;
 			}
 			
 			public override TextRun CreateTextRun(int startVisualColumn, ITextRunConstructionContext context)
 			{
 				return new FoldingLineTextRun(this, this.TextRunProperties);
+			}
+			
+			protected internal override void OnMouseDown(MouseButtonEventArgs e)
+			{
+				if (e.ClickCount == 2 && e.ChangedButton == MouseButton.Left) {
+					fs.IsFolded = false;
+					e.Handled = true;
+				} else {
+					base.OnMouseDown(e);
+				}
 			}
 		}
 		

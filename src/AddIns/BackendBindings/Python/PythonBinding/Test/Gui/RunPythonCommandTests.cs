@@ -50,18 +50,18 @@ namespace PythonBinding.Tests.Gui
 		}
 		
 		[Test]
-		public void Run_PythonFileOpen_IronPythonConsoleFileNamePassedToDebugger()
+		public void Run_PythonFileOpen_CommandPromptExePassedToDebugger()
 		{
 			string fileName = debugger.ProcessStartInfo.FileName;
-			string expectedFileName = @"C:\IronPython\ipy.exe";
+			string expectedFileName = "cmd.exe";
 			Assert.AreEqual(expectedFileName, fileName);
 		}
 		
 		[Test]
-		public void Run_PythonFileOpen_PythonFileNamePassedToIronPythonConsole()
+		public void Run_PythonFileOpen_IronPythonConsoleAndPythonFileNameAndPausePassedAsCommandLineArguments()
 		{
 			string args = debugger.ProcessStartInfo.Arguments;
-			string expectedArgs = "\"C:\\Projects\\test.py\"";
+			string expectedArgs = "/c \"C:\\IronPython\\ipy.exe \"test.py\"\" & pause";
 			Assert.AreEqual(expectedArgs, args);
 		}
 		

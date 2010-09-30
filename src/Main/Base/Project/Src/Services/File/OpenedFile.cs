@@ -259,8 +259,12 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		
-		protected void SwitchedToView(IViewContent newView)
+		public void SwitchedToView(IViewContent newView)
 		{
+			if (newView == null)
+				throw new ArgumentNullException("newView");
+			if (currentView == newView)
+				return;
 			if (currentView != null) {
 				if (newView.SupportsSwitchToThisWithoutSaveLoad(this, currentView)
 				    || currentView.SupportsSwitchFromThisWithoutSaveLoad(this, newView))

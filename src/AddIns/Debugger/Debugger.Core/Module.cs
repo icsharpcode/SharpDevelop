@@ -307,8 +307,6 @@ namespace Debugger
 		public void Dispose()
 		{
 			UnloadSymbols();
-			metaData.Dispose();
-			
 			unloaded = true;
 		}
 		

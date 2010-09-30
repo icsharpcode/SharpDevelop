@@ -14,12 +14,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.WpfDesign.Designer.OutlineView
 {
-	public partial class Outline : IOutlineContentHost
+	public partial class Outline
 	{
 		public Outline()
 		{

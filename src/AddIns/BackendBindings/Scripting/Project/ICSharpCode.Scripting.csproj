@@ -13,6 +13,8 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <OutputPath>..\..\..\..\..\bin\</OutputPath>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -78,8 +80,12 @@
     <Compile Include="Src\IScriptingDesignerGenerator.cs" />
     <Compile Include="Src\IScriptingFileService.cs" />
     <Compile Include="Src\IScriptingWorkbench.cs" />
+    <Compile Include="Src\PauseCommandPromptProcessStartInfo.cs" />
+    <Compile Include="Src\RunScriptingConsoleApplicationCommand.cs" />
     <Compile Include="Src\ScriptingCodeBuilder.cs" />
+    <Compile Include="Src\ScriptingCommandLineBuilder.cs" />
     <Compile Include="Src\ScriptingConsole.cs" />
+    <Compile Include="Src\ScriptingConsoleApplication.cs" />
     <Compile Include="Src\ScriptingConsoleCompletionData.cs" />
     <Compile Include="Src\ScriptingConsoleCompletionDataProvider.cs" />
     <Compile Include="Src\ScriptingConsoleOutputStream.cs" />
@@ -90,6 +96,7 @@
     <Compile Include="Src\ScriptingDesignerGenerator.cs" />
     <Compile Include="Src\ScriptingDesignerLoader.cs" />
     <Compile Include="Src\ScriptingFileService.cs" />
+    <Compile Include="Src\ScriptingLocalMethod.cs" />
     <Compile Include="Src\ScriptingNameCreationService.cs" />
     <Compile Include="Src\ScriptingStyle.cs" />
     <Compile Include="Src\ScriptingTextEditorViewContent.cs" />

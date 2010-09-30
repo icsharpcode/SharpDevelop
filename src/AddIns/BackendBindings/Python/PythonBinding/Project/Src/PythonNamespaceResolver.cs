@@ -11,8 +11,9 @@ namespace ICSharpCode.PythonBinding
 		PythonResolverContext resolverContext;
 		ExpressionResult expressionResult;
 		
-		public PythonNamespaceResolver()
+		public ResolveResult Resolve(PythonResolverContext resolverContext)
 		{
+			return Resolve(resolverContext, resolverContext.ExpressionResult);
 		}
 		
 		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)

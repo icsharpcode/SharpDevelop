@@ -4,41 +4,80 @@
 using System;
 using ICSharpCode.SharpDevelop.Dom;
 using NUnit.Framework;
+using PythonBinding.Tests.Utils;
 using UnitTesting.Tests.Utils;
 
 namespace PythonBinding.Tests.Resolver
 {
 	[TestFixture]
-	public class ResolveSelfTests : ResolveTestFixtureBase
+	public class ResolveSelfTests
 	{
 		IClass fooClass;
+		PythonResolverTestsHelper resolverHelper;
 		
-		protected override ExpressionResult GetExpressionResult()
+		void CreateResolver(string code)
 		{
-			fooClass = compilationUnit.Classes[0];
-			return new ExpressionResult("self", ExpressionContext.Default);
-		}
-		
-		protected override string GetPythonScript()
-		{
-			return 
-				"class Foo(self)\r\n" +
-				"    def bar(self):\r\n" +
-				"        self\r\n" +
-				"\r\n";
+			resolverHelper = new PythonResolverTestsHelper(code);
+			fooClass = resolverHelper.CompilationUnit.Classes[0];
 		}
 		
 		[Test]
 		public void Resolve_ExpressionIsSelf_ResolveResultResolvedTypeUnderlyingClassReturnsFooClass()
 		{
-			IClass underlyingClass = resolveResult.ResolvedType.GetUnderlyingClass();
+			ResolveSelfExpression();
+			IClass underlyingClass = resolverHelper.ResolveResult.ResolvedType.GetUnderlyingClass();
+			
 			Assert.AreEqual(fooClass, underlyingClass);
+		}
+		
+		void ResolveSelfExpression()
+		{
+			string code =
+				"class Foo:\r\n" +
+				"    def bar(self):\r\n" +
+				"        self\r\n" +
+				"\r\n";
+			
+			CreateResolver(code);
+			resolverHelper.Resolve("self");
 		}
 		
 		[Test]
 		public void Resolve_ExpressionIsSelf_ResolveResultCallingClassReturnsFooClass()
 		{
-			IClass underlyingClass = resolveResult.CallingClass;
+			ResolveSelfExpression();
+			IClass underlyingClass = resolverHelper.ResolveResult.CallingClass;
+			
+			Assert.AreEqual(fooClass, underlyingClass);
+		}
+		
+		[Test]
+		public void Resolve_ExpressionIsSelfFollowedByMethodCall_MethodGroupResolveResultNameIsMethodCalled()
+		{
+			ResolveSelfMethodExpression();
+			string methodName = resolverHelper.MethodGroupResolveResult.Name;
+			
+			Assert.AreEqual("bar", methodName);
+		}
+		
+		void ResolveSelfMethodExpression()
+		{
+			string code =
+				"class Foo:\r\n" +
+				"    def bar(self):\r\n" +
+				"        return 0\r\n" +
+				"\r\n";
+			
+			CreateResolver(code);
+			resolverHelper.Resolve("self.bar");
+		}
+		
+		[Test]
+		public void Resolve_ExpressionIsSelfFollowedByMethodCall_MethodGroupResolveResultContainingTypeUnderlyingClassIsFooClass()
+		{
+			ResolveSelfMethodExpression();
+			IClass underlyingClass = resolverHelper.MethodGroupResolveResult.ContainingType.GetUnderlyingClass();
+			
 			Assert.AreEqual(fooClass, underlyingClass);
 		}
 	}

@@ -60,16 +60,16 @@
 	</Path>
 	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/F#">
-		<DialogPanel id    = "Application"
+		<OptionPanel id    = "Application"
 		             label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ApplicationSettings"/>
-		<DialogPanel id    = "BuildEvents"
+		<OptionPanel id    = "BuildEvents"
 		             label = "${res:Dialog.ProjectOptions.BuildEvents}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>
-		<DialogPanel id    = "BuildOptions"
+		<OptionPanel id    = "BuildOptions"
 		             label = "${res:Dialog.ProjectOptions.BuildOptions}"
 		             class = "CSharpBinding.OptionPanels.BuildOptions"/>
-		<DialogPanel id    = "FsOptions"
+		<OptionPanel id    = "FsOptions"
 		             label = "F# Options"
 		             class = "FSharpBinding.FsOptions"/>
 		<Include id = "AllManaged" path="/SharpDevelop/BackendBindings/ProjectOptions/AllManaged"/>

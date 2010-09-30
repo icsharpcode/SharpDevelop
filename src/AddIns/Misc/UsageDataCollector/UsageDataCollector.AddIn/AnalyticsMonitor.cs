@@ -7,7 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
-
+using System.Windows.Media;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop;
@@ -121,7 +121,8 @@ namespace ICSharpCode.UsageDataCollector
 				new UsageDataEnvironmentProperty { Name = "culture", Value = CultureInfo.CurrentCulture.Name },
 				new UsageDataEnvironmentProperty { Name = "userAddInCount", Value = AddInTree.AddIns.Where(a => !a.IsPreinstalled).Count().ToString() },
 				new UsageDataEnvironmentProperty { Name = "branch", Value = BranchName },
-				new UsageDataEnvironmentProperty { Name = "commit", Value = CommitHash }
+				new UsageDataEnvironmentProperty { Name = "commit", Value = CommitHash },
+				new UsageDataEnvironmentProperty { Name = "renderingTier", Value = (RenderCapability.Tier >> 16).ToString() }
 			};
 			string PROCESSOR_ARCHITECTURE = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITEW6432");
 			if (string.IsNullOrEmpty(PROCESSOR_ARCHITECTURE)) {

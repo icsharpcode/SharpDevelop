@@ -42,5 +42,20 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		/// Handles the mouse down event.
 		/// </summary>
 		void MouseDown(MouseButtonEventArgs e);
+		
+		/// <summary>
+		/// Handles the mouse up event.
+		/// </summary>
+		void MouseUp(MouseButtonEventArgs e);
+		
+		/// <summary>
+		/// Gets whether this bookmark can be dragged around.
+		/// </summary>
+		bool CanDragDrop { get; }
+		
+		/// <summary>
+		/// Notifies the bookmark that it was dropped on the specified line.
+		/// </summary>
+		void Drop(int lineNumber);
 	}
 }

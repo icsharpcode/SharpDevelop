@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					ProjectService.AddProjectItem(project, projectItem);
 					FileService.FireFileCreated(newInterfaceFileName, false);
 					project.Save();
-					ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
+					ProjectBrowserPad.RefreshViewAsync();
 				}
 			}
 			
@@ -458,7 +458,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				ProjectService.AddProjectItem(project, projectItem);
 				FileService.FireFileCreated(newFileName, false);
 				project.Save();
-				ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
+				ProjectBrowserPad.RefreshViewAsync();
 			}
 		}
 		

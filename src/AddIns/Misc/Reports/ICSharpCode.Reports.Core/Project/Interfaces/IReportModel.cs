@@ -1,11 +1,6 @@
-﻿/*
- * Erstellt mit SharpDevelop.
- * Benutzer: Peter
- * Datum: 09.07.2009
- * Zeit: 19:57
- * 
- * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 
 namespace ICSharpCode.Reports.Core.Interfaces

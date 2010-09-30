@@ -6,31 +6,22 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
+using ICSharpCode.Scripting;
+
 namespace ICSharpCode.RubyBinding
 {
-	public class RubyConsoleApplication
+	public class RubyConsoleApplication : ScriptingConsoleApplication
 	{
 		RubyAddInOptions options;
-		bool debug;
 		List<string> loadPaths = new List<string>();
-		string rubyScriptFileName = String.Empty;
-		string rubyScriptCommandLineArguments = String.Empty;
-		string workingDirectory = String.Empty;
-		string loadPath = String.Empty;
-		StringBuilder arguments;
 		
 		public RubyConsoleApplication(RubyAddInOptions options)
 		{
 			this.options = options;
 		}
 		
-		public string FileName {
+		public override string FileName {
 			get { return options.RubyFileName; }
-		}
-		
-		public bool Debug {
-			get { return debug; }
-			set { debug = value; }
 		}
 		
 		public void AddLoadPath(string path)
@@ -38,78 +29,18 @@ namespace ICSharpCode.RubyBinding
 			loadPaths.Add(path);
 		}
 		
-		public string RubyScriptFileName {
-			get { return rubyScriptFileName; }
-			set { rubyScriptFileName = value; }
-		}
-		
-		public string RubyScriptCommandLineArguments {
-			get { return rubyScriptCommandLineArguments; }
-			set { rubyScriptCommandLineArguments = value; }
-		}
-		
-		public string WorkingDirectory {
-			get { return workingDirectory; }
-			set { workingDirectory = value; }
-		}
-		
-		public ProcessStartInfo GetProcessStartInfo()
+		protected override void AddArguments(ScriptingCommandLineBuilder commandLine)
 		{
-			ProcessStartInfo processStartInfo = new ProcessStartInfo();
-			processStartInfo.FileName = FileName;
-			processStartInfo.Arguments = GetArguments();
-			processStartInfo.WorkingDirectory = workingDirectory;
-			return processStartInfo;
+			commandLine.AppendBooleanOptionIfTrue("-D", Debug);
+			AppendLoadPaths(commandLine);
+			commandLine.AppendQuotedStringIfNotEmpty(ScriptFileName);
+			commandLine.AppendStringIfNotEmpty(ScriptCommandLineArguments);
 		}
 		
-		public string GetArguments()
-		{
-			arguments = new StringBuilder();
-			
-			AppendBooleanOptionIfTrue("-D", debug);
-			AppendLoadPaths();
-			AppendQuotedStringIfNotEmpty(rubyScriptFileName);
-			AppendStringIfNotEmpty(rubyScriptCommandLineArguments);
-			
-			return arguments.ToString().TrimEnd();
-		}
-		
-		void AppendBooleanOptionIfTrue(string option, bool flag)
-		{
-			if (flag) {
-				AppendOption(option);
-			}
-		}
-		
-		void AppendOption(string option)
-		{
-			arguments.Append(option + " ");
-		}
-		
-		void AppendLoadPaths()
+		void AppendLoadPaths(ScriptingCommandLineBuilder commandLine)
 		{
 			foreach (string path in loadPaths) {
-				AppendQuotedString("-I" + path);
-			}
-		}
-		
-		void AppendQuotedStringIfNotEmpty(string option)
-		{
-			if (!String.IsNullOrEmpty(option)) {
-				AppendQuotedString(option);
-			}
-		}
-		
-		void AppendQuotedString(string option)
-		{
-			string quotedOption = String.Format("\"{0}\"", option);
-			AppendOption(quotedOption);
-		}
-		
-		void AppendStringIfNotEmpty(string option)
-		{
-			if (!String.IsNullOrEmpty(option)) {
-				AppendOption(option);
+				commandLine.AppendQuotedString("-I" + path);
 			}
 		}
 	}

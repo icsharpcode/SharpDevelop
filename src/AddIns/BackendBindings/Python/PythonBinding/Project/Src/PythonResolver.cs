@@ -19,19 +19,25 @@ namespace ICSharpCode.PythonBinding
 		PythonStandardModuleResolver standardModuleResolver = new PythonStandardModuleResolver();
 		PythonSelfResolver selfResolver = new PythonSelfResolver();
 		PythonMethodResolver methodResolver;
+		PythonMemberResolver memberResolver;
+		PythonLocalVariableResolver localVariableResolver;
 		
 		List<IPythonResolver> resolvers = new List<IPythonResolver>();
 		
 		public PythonResolver()
 		{
 			methodResolver = new PythonMethodResolver(classResolver, standardModuleResolver);
+			memberResolver = new PythonMemberResolver(classResolver);
+			localVariableResolver = new PythonLocalVariableResolver(classResolver);
 			
 			resolvers.Add(importResolver);
 			resolvers.Add(classResolver);
 			resolvers.Add(standardModuleResolver);
+			resolvers.Add(memberResolver);
 			resolvers.Add(methodResolver);
 			resolvers.Add(selfResolver);
 			resolvers.Add(namespaceResolver);
+			resolvers.Add(localVariableResolver);
 		}
 		
 		public ResolveResult Resolve(ExpressionResult expressionResult, ParseInformation parseInfo, string fileContent)
@@ -40,29 +46,22 @@ namespace ICSharpCode.PythonBinding
 				return null;
 			}
 			
-			resolverContext = new PythonResolverContext(parseInfo);
-			if (!resolverContext.GetCallingMember(expressionResult.Region)) {
+			resolverContext = new PythonResolverContext(parseInfo, expressionResult, fileContent);
+			if (!resolverContext.HasProjectContent) {
 				return null;
 			}
 			
-			return Resolve(resolverContext, expressionResult);
+			return Resolve(resolverContext);
 		}
 		
-		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)
+		public ResolveResult Resolve(PythonResolverContext resolverContext)
 		{
 			foreach (IPythonResolver resolver in resolvers) {
-				ResolveResult resolveResult = resolver.Resolve(resolverContext, expressionResult);
+				ResolveResult resolveResult = resolver.Resolve(resolverContext);
 				if (resolveResult != null) {
 					return resolveResult;
 				}
 			}
-			
-//			// Search for a local variable.
-//			LocalResolveResult localResolveResult = GetLocalVariable(expressionResult.Expression, parseInfo.BestCompilationUnit.FileName, fileContent);
-//			if (localResolveResult != null) {
-//				return localResolveResult;
-//			}
-			
 			return null;
 		}
 		
@@ -71,35 +70,25 @@ namespace ICSharpCode.PythonBinding
 		/// </summary>
 		public List<ICompletionEntry> CtrlSpace(int caretLine, int caretColumn, ParseInformation parseInfo, string fileContent, ExpressionContext context)
 		{
-			resolverContext = new PythonResolverContext(parseInfo);
+			resolverContext = new PythonResolverContext(parseInfo, fileContent);
+			return CtrlSpace(resolverContext, context);
+		}
+		
+		List<ICompletionEntry> CtrlSpace(PythonResolverContext resolverContext, ExpressionContext expressionContext)
+		{
 			if (resolverContext.HasProjectContent) {
-				if (context == ExpressionContext.Namespace) {
-					PythonImportCompletion importCompletion = new PythonImportCompletion(resolverContext.ProjectContent);
-					return importCompletion.GetCompletionItems();
-				} else {
-					return resolverContext.GetImportedTypes();
+				if (expressionContext == ExpressionContext.Namespace) {
+					return GetImportCompletionItems(resolverContext.ProjectContent);
 				}
+				return resolverContext.GetImportedTypes();
 			}
 			return new List<ICompletionEntry>();
 		}
 		
-		/// <summary>
-		/// Tries to find the type that matches the local variable name.
-		/// </summary>
-		LocalResolveResult GetLocalVariable(string expression, string fileName, string fileContent)
+		List<ICompletionEntry> GetImportCompletionItems(IProjectContent projectContent)
 		{
-//			PythonVariableResolver resolver = new PythonVariableResolver();
-//			string typeName = resolver.Resolve(expression, fileName, fileContent);
-//			if (typeName != null) {
-//				IClass resolvedClass = GetClass(typeName);
-//				if (resolvedClass != null) {
-//					DefaultClass dummyClass = new DefaultClass(DefaultCompilationUnit.DummyCompilationUnit, "Global");
-//					DefaultMethod dummyMethod = new DefaultMethod(dummyClass, String.Empty);
-//					DefaultField.LocalVariableField field = new DefaultField.LocalVariableField(resolvedClass.DefaultReturnType, expression, DomRegion.Empty, dummyClass);
-//					return new LocalResolveResult(dummyMethod, field);
-//				}
-//			}
-			return null;
+			PythonImportCompletion importCompletion = new PythonImportCompletion(projectContent);
+			return importCompletion.GetCompletionItems();
 		}
 	}
 }

@@ -10,17 +10,19 @@ namespace ICSharpCode.PythonBinding
 	{
 		PythonResolverContext resolverContext;
 		
-		public PythonClassResolver()
+		public ResolveResult Resolve(PythonResolverContext resolverContext)
 		{
-		}
-		
-		public ResolveResult Resolve(PythonResolverContext resolverContext, ExpressionResult expressionResult)
-		{
-			IClass matchingClass = GetClass(resolverContext, expressionResult.Expression);
+			IClass matchingClass = GetClass(resolverContext);
 			if (matchingClass != null) {
 				return CreateTypeResolveResult(matchingClass);
 			}
 			return null;
+		}
+		
+		public IClass GetClass(PythonResolverContext resolverContext)
+		{
+			string name = resolverContext.Expression;
+			return GetClass(resolverContext, name);
 		}
 		
 		public IClass GetClass(PythonResolverContext resolverContext, string name)

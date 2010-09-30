@@ -26,14 +26,11 @@ namespace ICSharpCode.WpfDesign.AddIn
 	/// <summary>
 	/// IViewContent implementation that hosts the WPF designer.
 	/// </summary>
-	public class WpfViewContent : AbstractViewContentHandlingLoadErrors, IHasPropertyContainer, IToolsHost
+	public class WpfViewContent : AbstractViewContentHandlingLoadErrors, IHasPropertyContainer, IToolsHost, IOutlineContentHost
 	{
 		public WpfViewContent(OpenedFile file) : base(file)
 		{
 			BasicMetadata.Register();
-			var outlineContent = GetService(typeof(IOutlineContentHost));
-			if(outlineContent==null)
-				this.Services.AddService(typeof(IOutlineContentHost),Outline);
 			
 			this.TabPageText = "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
 			this.IsActiveViewContentChanged += OnIsActiveViewContentChanged;
@@ -229,6 +226,10 @@ namespace ICSharpCode.WpfDesign.AddIn
 				}
 				return outline;
 			}
+		}
+		
+		public object OutlineContent {
+			get { return this.Outline; }
 		}
 	}
 }

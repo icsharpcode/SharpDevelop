@@ -128,5 +128,32 @@ namespace UnitTesting.Tests.Utils
 			DefaultReturnType returnType = new DefaultReturnType(baseClass);
 			BaseTypes.Add(returnType);
 		}
+		
+		public DefaultProperty AddProperty(string name)
+		{
+			DefaultProperty property = new DefaultProperty(this, name);
+			Properties.Add(property);
+			return property;
+		}
+		
+		public void InsertPropertyAtStart(string name)
+		{
+			DefaultProperty property = new DefaultProperty(this, name);
+			Properties.Insert(0, property);
+		}
+		
+		public DefaultEvent AddEvent(string name)
+		{
+			DefaultEvent classEvent = new DefaultEvent(this, name);
+			Events.Add(classEvent);
+			return classEvent;
+		}
+		
+		public DefaultField AddField(string name)
+		{
+			DefaultField field = new DefaultField(this, name);
+			Fields.Add(field);
+			return field;
+		}
 	}
 }

@@ -65,7 +65,7 @@ namespace PythonBinding.Tests.Converter
 			mockProjectContent = new ICSharpCode.Scripting.Tests.Utils.MockProjectContent();
 			MockClass mainClass = new MockClass(mockProjectContent, startupObject);
 			mainClass.CompilationUnit.FileName = @"d:\projects\test\src\Main2.cs";
-			mockProjectContent.ClassToReturnFromGetClass = mainClass;
+			mockProjectContent.SetClassToReturnFromGetClass(startupObject, mainClass);
 			
 			convertProjectCommand = new DerivedConvertProjectToPythonProjectCommand();
 			convertProjectCommand.ProjectContent = mockProjectContent;

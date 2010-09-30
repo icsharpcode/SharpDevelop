@@ -1,11 +1,5 @@
-﻿/*
- * Erstellt mit SharpDevelop.
- * Benutzer: Peter Forstmeier
- * Datum: 27.09.2009
- * Zeit: 12:02
- * 
- * Sie können diese Vorlage unter Extras > Optionen > Codeerstellung > Standardheader ändern.
- */
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
 using System.Drawing;
@@ -18,5 +12,3 @@ namespace ICSharpCode.Reports.Core.Exporter
 		Point To { get; set; }
 	}
 }
-
-

@@ -510,14 +510,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 		#endregion
 		
 		#region IServiceProvider
-		ServiceContainer _services=new ServiceContainer();
+		ServiceContainer services = new ServiceContainer();
 		
-		public object GetService(Type serviceType){
-			return _services.GetService(serviceType);
+		public object GetService(Type serviceType)
+		{
+			object obj = services.GetService(serviceType);
+			if (obj == null) {
+				if (serviceType.IsInstanceOfType(this))
+					return this;
+			}
+			return obj;
 		}
 		
 		public ServiceContainer Services {
-			get { return _services; }
+			get { return services; }
 		}
 		
 		#endregion
