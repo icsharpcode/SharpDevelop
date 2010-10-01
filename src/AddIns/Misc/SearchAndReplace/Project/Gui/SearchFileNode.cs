@@ -5,8 +5,8 @@ using System;
 using System.IO;
 using System.Windows.Controls;
 using System.Windows.Documents;
-
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor.Search;
 
 namespace SearchAndReplace
@@ -30,6 +30,11 @@ namespace SearchAndReplace
 					new Run(StringParser.Parse(" (${res:MainWindow.Windows.SearchResultPanel.In} ") + Path.GetDirectoryName(fileName) + ")")
 				}
 			};
+		}
+		
+		public override void ActivateItem()
+		{
+			FileService.OpenFile(fileName);
 		}
 	}
 }

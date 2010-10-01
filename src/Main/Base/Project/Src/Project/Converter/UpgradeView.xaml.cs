@@ -289,6 +289,11 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				get { return this.Project.Name; }
 			}
 			
+			public override string ToString()
+			{
+				return this.Name;
+			}
+			
 			public CompilerVersion CompilerVersion;
 			public TargetFramework TargetFramework;
 			

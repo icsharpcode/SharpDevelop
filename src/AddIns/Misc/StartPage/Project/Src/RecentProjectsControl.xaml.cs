@@ -79,6 +79,11 @@ namespace ICSharpCode.StartPage
 			public string Path { get; set; }
 			
 			event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged { add { } remove { } }
+			
+			public override string ToString()
+			{
+				return this.Name;
+			}
 		}
 		
 		void lastProjectsDoubleClick(object sender, RoutedEventArgs e)
