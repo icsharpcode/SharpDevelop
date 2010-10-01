@@ -68,7 +68,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// <summary>
 		/// Serializes this HighlightingColor instance.
 		/// </summary>
+		#if DOTNET4
+		[System.Security.SecurityCritical]
+		#else
 		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+		#endif
 		public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			if (info == null)

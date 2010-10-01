@@ -25,6 +25,9 @@ using System.Reflection;
 [assembly: AssemblyInformationalVersion(RevisionClass.FullVersion + "-$INSERTSHORTCOMMITHASH$")]
 [assembly: NeutralResourcesLanguage("en-US")]
 
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2243:AttributeStringLiteralsShouldParseCorrectly",
+	Justification = "AssemblyInformationalVersion does not need to be a parsable version")]
+
 internal static class RevisionClass
 {
 	public const string Major = "4";

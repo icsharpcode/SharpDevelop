@@ -71,7 +71,11 @@ namespace ICSharpCode.AvalonEdit.Highlighting.Xshd
 		/// <summary>
 		/// Serializes this XshdColor instance.
 		/// </summary>
+		#if DOTNET4
+		[System.Security.SecurityCritical]
+		#else
 		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+		#endif
 		public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			if (info == null)
