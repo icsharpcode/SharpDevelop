@@ -64,7 +64,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			int defaultLeftPos = parent.Location.X;
 
 			Rectangle pageBreakRect = Rectangle.Empty;
-			
+				
 			do {
 				
 				PrintHelper.AdjustSectionLocation (section);
@@ -80,7 +80,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 					base.Evaluator.SinglePage.IDataNavigator = childNavigator;
 					// Convert Grouping Header
 					
-					currentPosition = ConvertGroupHeader(exporterCollection,section,simpleContainer,defaultLeftPos,currentPosition);
+					currentPosition = ConvertGroupHeader(exporterCollection,section,defaultLeftPos,currentPosition);
 					
 					childNavigator.Reset();
 					childNavigator.MoveNext();
@@ -97,24 +97,26 @@ namespace ICSharpCode.Reports.Core.Exporter
 							pageBreakRect = PrintHelper.CalculatePageBreakRectangle((BaseReportItem)section.Items[1],currentPosition);
 							
 							if (PrintHelper.IsPageFull(pageBreakRect,base.SectionBounds )) {
-								ForcePagePreak (exporterCollection,section);
+								currentPosition = ForcePageBreak (exporterCollection,section);
 //								base.BuildNewPage(exporterCollection,section);
-								currentPosition = CalculateStartPosition ();
+//								currentPosition = CalculateStartPosition ();
 							}
 							
 							
 						}
 						while ( childNavigator.MoveNext());
+						
+					
 						if (PageBreakAfterGroupChange(section) ) {
-							var b = base.DataNavigator.HasMoreData;
-							Console.WriteLine("datanav {0}",b);
-							ForcePagePreak (exporterCollection,section);
-							Console.WriteLine ("PageBreakaftrer");
+							
+							if ( base.DataNavigator.HasMoreData)
+							{
+								currentPosition = ForcePageBreak (exporterCollection,section);
+								//currentPosition = CalculateStartPosition ();
 
-							currentPosition = CalculateStartPosition ();
+							}
 						}
 						
-						var groupedRow  = new Collection<BaseGroupedRow>(section.Items.OfType<BaseGroupedRow>().ToList());
 						base.Evaluator.SinglePage.IDataNavigator = base.DataNavigator;
 					}
 				}
@@ -126,8 +128,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 				
 				pageBreakRect = PrintHelper.CalculatePageBreakRectangle((BaseReportItem)section.Items[0],currentPosition);
 				if (PrintHelper.IsPageFull(pageBreakRect,base.SectionBounds)) {
-					ForcePagePreak (exporterCollection,section);
-					currentPosition = CalculateStartPosition();
+					currentPosition= ForcePageBreak (exporterCollection,section);
+//					currentPosition = CalculateStartPosition();
 				}
 				
 				ShouldDrawBorder (section,exporterCollection);
@@ -144,20 +146,21 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		
-		void ForcePagePreak(ExporterCollection exporterCollection, BaseSection section)
+		private Point ForcePageBreak(ExporterCollection exporterCollection, BaseSection section)
 		{
 			base.BuildNewPage(exporterCollection,section);
+			return CalculateStartPosition();
 		}
 		
 		
-		bool PageBreakAfterGroupChange(BaseSection section)
+		private static bool PageBreakAfterGroupChange(BaseSection section)
 		{
 			var groupedRowCollection  = new Collection<BaseGroupedRow>(section.Items.OfType<BaseGroupedRow>().ToList());
-			var groupedRow = groupedRowCollection[0];
-			Console.WriteLine(base.DataNavigator.HasMoreData);
-			
-			return groupedRow.PageBreakOnGroupChange;
+			if (groupedRowCollection.Count > 0) {
+				var groupedRow = groupedRowCollection[0];
+				return groupedRow.PageBreakOnGroupChange;
+			}
+			return false;
 		}
 		
 		
@@ -167,9 +170,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		private Point ConvertGroupHeader(ExporterCollection exportList,BaseSection section,ISimpleContainer simpleContainer,int leftPos,Point offset)
+		private Point ConvertGroupHeader(ExporterCollection exportList,BaseSection section,int leftPos,Point offset)
 		{
-			Point retVal = Point.Empty;
+			var retVal = Point.Empty;
 			ReportItemCollection groupCollection = null;
 			var groupedRow  = new Collection<BaseGroupedRow>(section.Items.OfType<BaseGroupedRow>().ToList());
 			if (groupedRow.Count == 0) {
@@ -213,7 +216,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		private void AfterConverting (BaseSection section,ExporterCollection mylist)
 		{
 			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
-			
 			section.Items[0].Size = base.RestoreSize;
 			section.SectionOffset += section.Size.Height + 3 * GlobalValues.GapBetweenContainer;
 		}

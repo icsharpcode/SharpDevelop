@@ -45,7 +45,7 @@ namespace ICSharpCode.Reports.Core
 		
 		public bool HasMoreData {
 			get {
-				if (this.CurrentRow < store.IndexList.Count +1 ){
+				if (this.CurrentRow < store.IndexList.Count -1 ){
 //				if (this.CurrentRow < this.Count -1 ){
 					return true;
 				} else {
