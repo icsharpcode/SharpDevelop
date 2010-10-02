@@ -46,7 +46,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			}
 		
 			if (base.ReportModel.ReportSettings.GroupColumnsCollection.Count > 0) {
-				InsertGroupHeader();
+				var groupheader = base.CreateGroupHeader(new Point (5,10));
+				
+				base.ReportModel.DetailSection.Items.Add(groupheader);
+				
 				ParentItem.Location = new Point(ParentItem.Location.X,50);
 				ParentItem.Size = new Size(ParentItem.Size.Width,40);
 				section.Size = new Size(section.Size.Width,100);
@@ -60,23 +63,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				AddItemsToSection (base.ReportModel.DetailSection,this.reportItems);
 			}
 			
-		}
-		
-		
-		private void InsertGroupHeader()
-		{
-			ICSharpCode.Reports.Core.BaseDataItem dataItem = new ICSharpCode.Reports.Core.BaseDataItem();
-			dataItem.ColumnName = base.ReportModel.ReportSettings.GroupColumnsCollection[0].ColumnName;
-			dataItem.DataType = base.ReportModel.ReportSettings.GroupColumnsCollection[0].DataTypeName;
-			dataItem.Location = new Point (10,5);
-			dataItem.Size = new Size (150,20);
-			dataItem.Text = base.ReportModel.ReportSettings.GroupColumnsCollection[0].ColumnName;
-			
-			ICSharpCode.Reports.Core.BaseGroupedRow groupHeader = new ICSharpCode.Reports.Core.BaseGroupedRow();
-			groupHeader.Location = new Point(5,10);
-			groupHeader.Size = new Size (300,30);
-			groupHeader.Items.Add(dataItem);
-			base.ReportModel.DetailSection.Items.Add(groupHeader);
 		}
 		
 		#endregion

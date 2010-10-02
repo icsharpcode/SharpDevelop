@@ -4,6 +4,7 @@
 using System;
 using System.Drawing;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Interfaces;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
 {
@@ -43,36 +44,62 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 			AdjustContainer(base.ReportModel.DetailSection,table);
 			
-			ICSharpCode.Reports.Core.BaseRowItem r1 = CreateRowWithTextColumns(table,
+			
+			ICSharpCode.Reports.Core.BaseRowItem headerRow = CreateRowWithTextColumns(table,
 			                                                                   this.reportItems);
 			
+			Point insertLocation =  new Point (margin.Left,headerRow.Location.Y + headerRow.Size.Height + margin.Bottom + margin.Top);
 			
-			ICSharpCode.Reports.Core.BaseRowItem r2 = new ICSharpCode.Reports.Core.BaseRowItem();
 			
-			AdjustContainer (table,r2);
-						
-			r2.Location = new Point (margin.Left,
-			                         r1.Location.Y + r1.Size.Height + margin.Bottom + margin.Top);
+			if (base.ReportModel.ReportSettings.GroupColumnsCollection.Count > 0) {                 
+				var groupHeader = base.CreateGroupHeader(insertLocation);
+				table.Items.Add(groupHeader);
+				insertLocation = new Point(margin.Left,insertLocation.Y + groupHeader.Size.Height + margin.Bottom + margin.Top);
+			}
+			
+			
+			ICSharpCode.Reports.Core.BaseRowItem detailRow = new ICSharpCode.Reports.Core.BaseRowItem();
+			AdjustContainer (table,detailRow);
+			
+			
+			detailRow.Location = insertLocation;
 
-			int defX = r2.Size.Width / this.reportItems.Count;
+			int defX = detailRow.Size.Width / this.reportItems.Count;
 			
-			int startX = r2.Location.X + margin.Left;
+			int startX = detailRow.Location.X + margin.Left;
 			
 			foreach (ICSharpCode.Reports.Core.BaseReportItem ir in this.reportItems)
 			{
 				Point np = new Point(startX,margin.Top);
 				startX += defX;
 				ir.Location = np;
-				ir.Parent = r2;
-				r2.Items.Add(ir);
+				ir.Parent = detailRow;
+				detailRow.Items.Add(ir);
 			}
 			
-			table.Size = new Size (table.Size.Width,
-			                       margin.Top + r1.Size.Height + margin.Bottom + r2.Size.Height + margin.Bottom);
+			insertLocation = new Point(margin.Left,insertLocation.Y + detailRow.Size.Height + margin.Bottom + margin.Top);
+			
+		
+			table.Items.Add (headerRow);
+			table.Items.Add (detailRow);
+			
+			table.Size = CalculateContainerSize(table,margin);
+
 			section.Size = new Size (section.Size.Width,table.Size.Height + margin.Top + margin.Bottom);
-			table.Items.Add (r1);
-			table.Items.Add (r2);
 			base.ReportModel.DetailSection.Items.Add(table);
+		}
+		
+		
+		private Size CalculateContainerSize(ISimpleContainer container,System.Drawing.Printing.Margins margin)
+		{
+			int h = margin.Top;
+			
+			foreach (ICSharpCode.Reports.Core.BaseReportItem item  in container.Items)
+			{
+				h = h + item.Size.Height + margin.Bottom;
+			}
+			h 	= h + 3*margin.Bottom;
+			return new Size (container.Size.Width,h);
 		}
 	}
 }

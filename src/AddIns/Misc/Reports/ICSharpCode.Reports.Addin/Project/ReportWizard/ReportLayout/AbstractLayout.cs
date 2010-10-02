@@ -170,6 +170,27 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 		
+		#region Grouping
+		
+		protected ICSharpCode.Reports.Core.BaseGroupedRow CreateGroupHeader(Point headerLocation)
+		{
+			ICSharpCode.Reports.Core.BaseDataItem dataItem = new ICSharpCode.Reports.Core.BaseDataItem();
+			
+			dataItem.ColumnName = ReportModel.ReportSettings.GroupColumnsCollection[0].ColumnName;
+			
+			dataItem.DataType = ReportModel.ReportSettings.GroupColumnsCollection[0].DataTypeName;
+			dataItem.Location = new Point (10,5);
+			dataItem.Size = new Size (150,20);
+			dataItem.Text = ReportModel.ReportSettings.GroupColumnsCollection[0].ColumnName;
+			
+			ICSharpCode.Reports.Core.BaseGroupedRow groupHeader = new ICSharpCode.Reports.Core.BaseGroupedRow();
+			groupHeader.Location = headerLocation;
+			groupHeader.Size = new Size (300,30);
+			groupHeader.Items.Add(dataItem);
+			return groupHeader;
+		}
+		
+		#endregion
 		protected ReportModel ReportModel {get; private set;}
 	
 		

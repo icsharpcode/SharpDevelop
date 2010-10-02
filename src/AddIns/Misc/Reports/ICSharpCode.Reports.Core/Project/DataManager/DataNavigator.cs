@@ -43,10 +43,10 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		public bool HasMoreData {
+		public bool HasMoreData
+		{
 			get {
 				if (this.CurrentRow < store.IndexList.Count -1 ){
-//				if (this.CurrentRow < this.Count -1 ){
 					return true;
 				} else {
 					return false;
@@ -122,6 +122,7 @@ namespace ICSharpCode.Reports.Core
 		
 		#endregion
 	
+		
 		#region Try make recursive with ChildNavigavtor
 		
 		public IDataNavigator GetChildNavigator()
