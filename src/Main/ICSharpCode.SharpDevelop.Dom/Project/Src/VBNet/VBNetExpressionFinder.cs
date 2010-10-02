@@ -108,6 +108,14 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 
 		ExpressionResult MakeResult(string text, int startOffset, int endOffset, ExpressionContext context, BitArray expectedKeywords)
 		{
+			// partial/incomplete expressions (especially between comments) need this hack.
+			// see http://community.sharpdevelop.net/forums/t/11951.aspx (first post)
+			if (startOffset > endOffset) {
+				int tmp = startOffset;
+				startOffset = endOffset;
+				endOffset = tmp;
+			}
+			
 			return new ExpressionResult(TrimComment(text.Substring(startOffset, endOffset - startOffset)).Trim(),
 			                            DomRegion.FromLocation(OffsetToLocation(startOffset), OffsetToLocation(endOffset)),
 			                            context, expectedKeywords);
