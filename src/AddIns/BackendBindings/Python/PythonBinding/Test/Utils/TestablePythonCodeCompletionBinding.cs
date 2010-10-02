@@ -47,5 +47,9 @@ namespace PythonBinding.Tests.Utils
 			IsCodeCompletionWindowDisplayed = true;
 			CompletionItemProviderUsedWhenDisplayingCodeCompletionWindow = completionItemProvider;
 		}
+		
+		public PythonInsightWindowHandler PythonInsightWindowHandler {
+			get { return base.insightHandler as PythonInsightWindowHandler; }
+		}
 	}
 }

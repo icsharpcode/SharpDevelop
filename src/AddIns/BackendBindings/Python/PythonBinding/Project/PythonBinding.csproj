@@ -103,6 +103,7 @@
     <Compile Include="Src\PythonDotNetMethodResolver.cs" />
     <Compile Include="Src\PythonFromImport.cs" />
     <Compile Include="Src\PythonImport.cs" />
+    <Compile Include="Src\PythonInsightWindowHandler.cs" />
     <Compile Include="Src\PythonLanguageBinding.cs" />
     <Compile Include="Src\PythonLineIndenter.cs" />
     <Compile Include="Src\PythonLocalVariableResolver.cs" />

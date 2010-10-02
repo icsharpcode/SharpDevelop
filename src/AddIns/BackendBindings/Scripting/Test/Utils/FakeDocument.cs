@@ -124,7 +124,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		
 		public string GetText(int offset, int length)
 		{
-			throw new NotImplementedException();
+			return Text.Substring(offset, length);
 		}
 		
 		public object GetService(Type serviceType)

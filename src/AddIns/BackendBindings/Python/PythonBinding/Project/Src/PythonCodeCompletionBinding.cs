@@ -12,6 +12,11 @@ namespace ICSharpCode.PythonBinding
 {
 	public class PythonCodeCompletionBinding : DefaultCodeCompletionBinding
 	{
+		public PythonCodeCompletionBinding()
+		{
+			base.insightHandler = new PythonInsightWindowHandler();
+		}
+		
 		/// <summary>
 		/// Shows the code completion window if the keyword is handled.
 		/// </summary>

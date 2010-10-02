@@ -97,9 +97,11 @@
     <Compile Include="Completion\ImportSubNamespaceCompletionTestFixture.cs" />
     <Compile Include="Completion\MathModuleMembersInPythonContextTestFixture.cs" />
     <Compile Include="Completion\NamespaceContentsAddedToCtrlSpaceTestFixture.cs" />
+    <Compile Include="Completion\PythonCodeCompletionBindingTests.cs" />
     <Compile Include="Completion\PythonCodeCompletionItemProviderTests.cs" />
     <Compile Include="Completion\PythonCompletionItemListTests.cs" />
     <Compile Include="Completion\PythonImportExpressionContextTests.cs" />
+    <Compile Include="Completion\PythonInsightWindowHandlerTests.cs" />
     <Compile Include="Completion\PythonSocketLibraryDocumentationTestFixture.cs" />
     <Compile Include="Completion\SysModuleMembersInPythonContextTestFixture.cs" />
     <Compile Include="Configuration\AddInOptionsTestFixture.cs" />
@@ -417,6 +419,7 @@
     <Compile Include="Utils\DerivedPythonDesignerGenerator.cs" />
     <Compile Include="Utils\DerivedPythonFormsDesignerDisplayBinding.cs" />
     <Compile Include="Utils\FakeCompletionItemProvider.cs" />
+    <Compile Include="Utils\FakeInsightWindow.cs" />
     <Compile Include="Utils\PythonCodeDomSerializerHelper.cs" />
     <Compile Include="Utils\PythonComponentWalkerHelper.cs" />
     <Compile Include="Utils\PythonMSBuildEngineHelper.cs" />

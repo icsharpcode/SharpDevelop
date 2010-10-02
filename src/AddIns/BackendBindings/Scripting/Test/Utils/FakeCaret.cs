@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.Scripting.Tests.Utils
@@ -17,15 +18,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			}
 		}
 		
-		public int Offset {
-			get {
-				throw new NotImplementedException();
-			}
-			set {
-				throw new NotImplementedException();
-			}
-		}
-		
+		public int Offset { get; set; }
 		public int Line { get; set; }
 		
 		public int Column {
@@ -37,7 +30,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			}
 		}
 		
-		public ICSharpCode.NRefactory.Location Position {
+		public Location Position {
 			get {
 				throw new NotImplementedException();
 			}
