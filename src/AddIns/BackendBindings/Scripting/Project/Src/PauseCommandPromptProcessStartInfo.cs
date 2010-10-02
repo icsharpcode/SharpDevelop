@@ -28,7 +28,7 @@ namespace ICSharpCode.Scripting
 		
 		string GetArguments()
 		{
-			return String.Format("/c \"{0} {1}\" & pause", 
+			return String.Format("/c \"\"{0}\" {1}\" & pause", 
 				processStartInfo.FileName, processStartInfo.Arguments);
 		}
 	}
