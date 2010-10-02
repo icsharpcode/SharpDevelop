@@ -315,7 +315,7 @@
     <Compile Include="Gui\CompilingOptionsPanelTestFixture.cs" />
     <Compile Include="Gui\DebugPythonCommandTests.cs" />
     <Compile Include="Gui\FormsDesignerDisplayBindingTestFixture.cs" />
-    <Compile Include="Gui\PythonIndentationTests.cs" />
+    <Compile Include="Gui\PythonFormattingStrategyTests.cs" />
     <Compile Include="Gui\PythonOptionsPanelTestFixture.cs" />
     <Compile Include="Gui\RunPythonCommandTests.cs" />
     <Compile Include="Parsing\ClassWithBaseClassTestFixture.cs" />

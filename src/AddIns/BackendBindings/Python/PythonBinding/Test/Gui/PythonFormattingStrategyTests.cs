@@ -5,26 +5,20 @@ using System;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.PythonBinding;
 using ICSharpCode.Scripting.Tests.Utils;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using NUnit.Framework;
-using PythonBinding.Tests.Utils;
 
 namespace PythonBinding.Tests.Gui
 {
-	/// <summary>
-	/// Tests that the PythonFormattingStrategy indents the new line added after pressing the ':' character.
-	/// </summary>
 	[TestFixture]
-	public class PythonIndentationTestFixture
+	public class PythonFormattingStrategyTests
 	{
 		TextEditor textEditor;
 		AvalonEditTextEditorAdapter textEditorAdapter;
 		PythonFormattingStrategy formattingStrategy;
 		
-		[SetUp]
-		public void Init()
+		void CreatePythonFormattingStrategy()
 		{
 			MockTextEditorOptions textEditorOptions = new MockTextEditorOptions();
 			textEditorOptions.IndentationSize = 4;
@@ -35,62 +29,74 @@ namespace PythonBinding.Tests.Gui
 			formattingStrategy = new PythonFormattingStrategy();
 		}
 		
+				
 		[Test]
-		public void NewMethodDefinition()
+		public void IndentLine_IndentLineAfterNewMethodDefinition_LineIsIndentedByOneTab()
 		{
+			CreatePythonFormattingStrategy();
+			
 			textEditor.Text =
 				"def newMethod:\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
-			formattingStrategy.IndentLine(textEditorAdapter, line);
+			formattingStrategy.IndentLine(textEditorAdapter, line);			
+			string text = textEditor.Text;
 			
 			string expectedText = 
 				"def newMethod:\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void NoExtraIndentationRequired()
+		public void IndentLine_NoExtraIndentationRequiredAfterPrintLineStatement_SecondLineIsIndentedToSameLevelAsPrintStatementLine()
 		{
+			CreatePythonFormattingStrategy();
+			
 			textEditor.Text = 
 				"\tprint 'abc'\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText = 
 				"\tprint 'abc'\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void PassStatementDecreasesIndentOnThirdLine()
+		public void IndentLine_IndentAfterPassStatementOnSecondLine_DecreasesIndentOnThirdLine()
 		{
-			textEditor.Text = 
+			CreatePythonFormattingStrategy();
+
+			textEditor.Text =
 				"def method1:\r\n" +
 				"\tpass\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"def method1:\r\n" +
 				"\tpass\r\n" +
 				"";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void ReturnValueStatementDecreasesIndentOnThirdLine()
+		public void IndentLine_IndentAfterReturnValueStatementOnSecondLine_DecreasesIndentOnThirdLine()
 		{
+			CreatePythonFormattingStrategy();
+			
 			textEditor.Text = 
 				"def method1:\r\n" +
 				"\treturn 0\r\n" +
@@ -98,173 +104,216 @@ namespace PythonBinding.Tests.Gui
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText = 
 				"def method1:\r\n" +
 				"\treturn 0\r\n" +
 				"";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 
 		[Test]
-		public void ReturnStatementDecreasesIndentOnThirdLine()
+		public void IndentLine_IndentAfterReturnStatementOnSecondLine_DecreasesIndentOnThirdLine()
 		{
-			textEditor.Text = 
+			CreatePythonFormattingStrategy();
+			
+			textEditor.Text =
 				"def method1:\r\n" +
 				"\treturn\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText = 
 				"def method1:\r\n" +	
 				"\treturn\r\n" +
 				"";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}		
 		[Test]
-		public void ReturnStatementWithNoIndentOnPreviousLine()
+		public void IndentLine_ReturnStatementWithNoIndentPreviousLine_SecondLineIsNotIndented()
 		{
+			CreatePythonFormattingStrategy();
+			
 			textEditor.Text = 
 				"return\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText = 
 				"return\r\n" +
 				"";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);			
+			Assert.AreEqual(expectedText, text);			
 		}
 		
 		[Test]
-		public void StatementIsNotAReturnOnPreviousLine()
+		public void IndentLine_StatementIsNotReturnOnPreviousLineAndIsIndentedByOneTab_LineIsIndentedByOneTab()
 		{
+			CreatePythonFormattingStrategy();
+			
 			textEditor.Text = 
 				"\treturnValue\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText = 
 				"\treturnValue\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);			
+			Assert.AreEqual(expectedText, text);			
 		}
 		
 		[Test]
-		public void RaiseStatementWithObjectDecreasesIndentOnThirdLine()
+		public void IndentLine_RaiseStatementWithObjectOneSecondLine_DecreasesIndentOnThirdLineByOne()
 		{
+			CreatePythonFormattingStrategy();
+			
 			textEditor.Text = 
 				"def method1:\r\n" +
 				"\traise 'a'\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
-			formattingStrategy.IndentLine(textEditorAdapter, line);
+			formattingStrategy.IndentLine(textEditorAdapter, line);		
+			string text = textEditor.Text;
 			
 			string expectedText = 
 				"def method1:\r\n" +
 				"\traise 'a'\r\n" +
 				"";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void RaiseStatementDecreasesIndentOnThirdLine()
+		public void IndentLine_RaiseStatementOnSecondLine_IndentOnThirdLineIsDecreasedByOne()
 		{
+			CreatePythonFormattingStrategy();
+			
 			textEditor.Text =
 				"def method1:\r\n" +
 				"\traise\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
-			formattingStrategy.IndentLine(textEditorAdapter, line);
+			formattingStrategy.IndentLine(textEditorAdapter, line);		
+			string text = textEditor.Text;
 			
 			string expectedText = 
 				"def method1:\r\n" +
 				"\traise\r\n" +
 				"";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void StatementIsNotARaiseStatementOnPreviousLine()
+		public void IndentLine_StatementIsNotRaiseStatementOnPreviousLine_LineIsIndentedToSameLevelAsPreviouisLine()
 		{
+			CreatePythonFormattingStrategy();
+			
 			textEditor.Text = 
 				"def method1:\r\n" +
 				"\traiseThis\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
-			formattingStrategy.IndentLine(textEditorAdapter, line);
+			formattingStrategy.IndentLine(textEditorAdapter, line);		
+			string text = textEditor.Text;
 			
 			string expectedText = 
 				"def method1:\r\n" +
 				"\traiseThis\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void BreakStatementDecreasesIndentOnThirdLine()
+		public void IndentLine_BreakStatementOnSecondLine_DecreasesIndentOnThirdLine()
 		{
+			CreatePythonFormattingStrategy();
+			
 			textEditor.Text = 
 				"def method1:\r\n" +
 				"\tbreak\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
-			formattingStrategy.IndentLine(textEditorAdapter, line);
-			
+			formattingStrategy.IndentLine(textEditorAdapter, line);		
+			string text = textEditor.Text;
+
 			string expectedText = 
 				"def method1:\r\n" +
 				"\tbreak\r\n" +
 				"";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void StatementIsNotABreakStatementOnPreviousLine()
+		public void IndentLine_StatementIsNotBreakStatementOnPreviousLine_LineIsIndentedToSameLevelAsPreviousLine()
 		{
+			CreatePythonFormattingStrategy();
+			
 			textEditor.Text = 
 				"def method1:\r\n" +
 				"\tbreakThis\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
-			formattingStrategy.IndentLine(textEditorAdapter, line);
+			formattingStrategy.IndentLine(textEditorAdapter, line);		
+			string text = textEditor.Text;
 			
 			string expectedText = 
 				"def method1:\r\n" +
 				"\tbreakThis\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void IndentingFirstLineDoesNotThrowArgumentOutOfRangeException()
+		public void IndentLine_LineNumberOutOfRange_DoesNotThrowArgumentOutOfRangeException()
 		{
+			CreatePythonFormattingStrategy();
+			
 			textEditor.Text = "print 'hello'";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(1);
-			
 			Assert.DoesNotThrow(delegate { 
 				formattingStrategy.IndentLine(textEditorAdapter, line); });
+			string text = textEditor.Text;
 			
-			Assert.AreEqual("print 'hello'", textEditor.Text);
+			string expectedText = "print 'hello'";
+		
+			Assert.AreEqual(expectedText, text);
+		}
+		
+		[Test]
+		public void SurroundSelectionWithComment_CursorOnFirstLineAndNothingSelected_FirstLineIsCommented()
+		{
+			CreatePythonFormattingStrategy();
+			
+			textEditor.Text = "print 'hello'";
+			formattingStrategy.SurroundSelectionWithComment(textEditorAdapter);
+			string text = textEditor.Text;
+			
+			string expectedText = "#print 'hello'";
+			
+			Assert.AreEqual(expectedText, text);
 		}
 	}
 }

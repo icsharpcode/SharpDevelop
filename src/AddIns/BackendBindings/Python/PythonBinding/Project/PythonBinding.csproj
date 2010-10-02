@@ -104,6 +104,7 @@
     <Compile Include="Src\PythonFromImport.cs" />
     <Compile Include="Src\PythonImport.cs" />
     <Compile Include="Src\PythonLanguageBinding.cs" />
+    <Compile Include="Src\PythonLineIndenter.cs" />
     <Compile Include="Src\PythonLocalVariableResolver.cs" />
     <Compile Include="Src\PythonMemberResolver.cs" />
     <Compile Include="Src\PythonMethod.cs" />

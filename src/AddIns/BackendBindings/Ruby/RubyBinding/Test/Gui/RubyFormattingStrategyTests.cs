@@ -13,18 +13,14 @@ using RubyBinding.Tests.Utils;
 
 namespace RubyBinding.Tests.Gui
 {
-	/// <summary>
-	/// Tests that the RubyFormattingStrategy indents the new line added after method and class definitions.
-	/// </summary>
 	[TestFixture]
-	public class RubyNewMethodIndentationTestFixture
+	public class RubyFormattingStrategyTests
 	{
 		TextEditor textEditor;
 		RubyFormattingStrategy formattingStrategy;
 		AvalonEditTextEditorAdapter textEditorAdapter;
 		
-		[SetUp]
-		public void Init()
+		void CreateFormattingStrategy()
 		{
 			MockTextEditorOptions textEditorOptions = new MockTextEditorOptions();
 			textEditorOptions.IndentationSize = 4;
@@ -37,76 +33,90 @@ namespace RubyBinding.Tests.Gui
 		}
 		
 		[Test]
-		public void NewMethodDefinition()
+		public void IndentLine_NewMethodDefinitionOnPreviousLine_NextLineIsIndented()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"def newMethod\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"def newMethod\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void NewMethodDefinitionWithBrackets()
+		public void IndentLine_NewMethodDefinitionWithBracketsOnPreviousLine_NextLineIsIndented()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"def newMethod()\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"def newMethod()\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void NewClassDefinition()
+		public void IndentLine_NewClassDefinitionOnPreviousLine_NextLineIsIndented()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"class MyClass\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"class MyClass\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void NoExtraIndentationRequired()
+		public void IndentLine_PrintStatementOnPreviousLineSoNoExtraIndentationRequired_NextLineIndentedToSameLevelAsPreviousLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"\tprint 'abc'\r\n" +
 				"";
 
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 
 			string expectedText =
 				"\tprint 'abc'\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void ReturnValueStatementDecreasesIndentOnThirdLine()
+		public void IndentLine_ReturnValueStatementOnPreviousLine_DecreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"def method1\r\n" +
 				"\treturn 0\r\n" +
@@ -114,18 +124,21 @@ namespace RubyBinding.Tests.Gui
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"def method1\r\n" +
 				"\treturn 0\r\n" +
 				"";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 
 		[Test]
-		public void ReturnStatementDecreasesIndentOnThirdLine()
+		public void IndentLine_ReturnStatementOnPreviousLine_DecreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"def method1\r\n" +
 				"\treturn\r\n" +
@@ -133,51 +146,61 @@ namespace RubyBinding.Tests.Gui
 
 			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 
 			string expectedText =
 				"def method1\r\n" +
 				"\treturn\r\n" +
 				"";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
-		}		
+			Assert.AreEqual(expectedText, text);
+		}
+		
 		[Test]
-		public void ReturnStatementWithNoIndentOnPreviousLine()
+		public void IndentLine_ReturnStatementOnPreviousLineWithNoIndentOnPreviousLine_NextLineIsNotIndented()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"return\r\n" +
 				"";
 
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 
 			string expectedText =
 				"return\r\n" +
 				"";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);			
+			Assert.AreEqual(expectedText, text);			
 		}
 		
 		[Test]
-		public void StatementIsNotAReturnOnPreviousLine()
+		public void IndentLine_StatementIsNotReturnOnPreviousLine_NextLineIndentedToSameLevelAsPreviousLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"\treturnValue\r\n" +
 				"";
 
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 
 			string expectedText =
 				"\treturnValue\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);			
+			Assert.AreEqual(expectedText, text);			
 		}
 		
 		[Test]
-		public void RaiseStatementWithObjectDecreasesIndentOnThirdLine()
+		public void IndentLine_RaiseStatementWithObjectOnPreviousLine_DecreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"def method1\r\n" +
 				"\traise 'a'\r\n" +
@@ -185,18 +208,21 @@ namespace RubyBinding.Tests.Gui
 
 			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 
 			string expectedText =
 				"def method1\r\n" +
 				"\traise 'a'\r\n" +
 				"";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void RaiseStatementDecreasesIndentOnThirdLine()
+		public void IndentLine_RaiseStatementOnPreviousLine_DecreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"def method1\r\n" +
 				"\traise\r\n" +
@@ -204,18 +230,21 @@ namespace RubyBinding.Tests.Gui
 
 			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 
 			string expectedText =
 				"def method1\r\n" +
 				"\traise\r\n" +
 				"";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void StatementIsNotARaiseStatementOnPreviousLine()
+		public void IndentLine_StatementIsNotRaiseStatementOnPreviousLine_NextLineIsIndentedToSameLevelAsPreviousLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"def method1\r\n" +
 				"\traiseThis\r\n" +
@@ -223,18 +252,21 @@ namespace RubyBinding.Tests.Gui
 
 			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 
 			string expectedText =
 				"def method1\r\n" +
 				"\traiseThis\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void BreakStatementDecreasesIndentOnThirdLine()
+		public void IndentLine_BreakStatementOnPreviousLine_DecreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"def method1\r\n" +
 				"\tbreak\r\n" +
@@ -242,18 +274,21 @@ namespace RubyBinding.Tests.Gui
 
 			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 
 			string expectedText =
 				"def method1\r\n" +
 				"\tbreak\r\n" +
 				"";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void StatementIsNotABreakStatementOnPreviousLine()
+		public void IndentLine_StatementIsNotBreakStatementOnPreviousLine_LineIsIndentedToSameLevelAsPreviousLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"def method1\r\n" +
 				"\tbreakThis\r\n" +
@@ -261,273 +296,321 @@ namespace RubyBinding.Tests.Gui
 
 			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 
 			string expectedText =
 				"def method1\r\n" +
 				"\tbreakThis\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void IfThenStatementIncreasesIndentOnNextLine()
+		public void IndentLine_IfThenStatementOnPreviousLine_IndentIncreasedOnNextLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"if i > 0 then\r\n" +
 				"";
 
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 
 			string expectedText =
 				"if i > 0 then\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void IfStatementIncreasesIndentOnNextLine()
+		public void IndentLine_IfStatementOnPreviousLine_IndentIncreasedOnNextLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"if i > 0\r\n" +
 				"";
 
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 
 			string expectedText =
 				"if i > 0\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void ElseStatementIncreasesIndentOnNextLine()
+		public void IndentLine_ElseStatementOnPreviousLine_IncreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"else\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"else\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void ElseIfStatementIncreasesIndentOnNextLine()
+		public void IndentLine_ElseIfStatementOnPreviousLine_IncreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"elsif i > 0\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"elsif i > 0\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void LoopStatementIncreasesIndentOnNextLine()
+		public void IndentLine_LoopStatementOnPreviousLine_IncreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+
 			textEditor.Text =
 				"loop do\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"loop do\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void UnlessStatementIncreasesIndentOnNextLine()
+		public void IndentLine_UnlessStatementOnPreviousLine_IncreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+
 			textEditor.Text =
 				"unless i > 0\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"unless i > 0\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void UntilStatementIncreasesIndentOnNextLine()
+		public void IndentLine_UntilStatementOnPreviousLine_IncreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+
 			textEditor.Text =
 				"until i > 0\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"until i > 0\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void ForStatementIncreasesIndentOnNextLine()
+		public void IndentLine_ForStatementOnPreviousLine_IncreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+
 			textEditor.Text =
 				"for i in 1..5\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"for i in 1..5\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void DoStatementAtEndOfLineIncreasesIndentOnNextLine()
+		public void IndentLine_DoStatementAtEndOfPreviousLine_IncreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"expr do\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"expr do\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void OpenCurlyBraceAtEndOfLineIncreasesIndentOnNextLine()
+		public void IndentLine_OpenCurlyBraceAtEndOfPreviousLine_IncreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"expr {\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"expr {\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void BeginStatementIncreasesIndentOnNextLine()
+		public void IndentLine_BeginStatementOnPreviousLine_IncreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"begin\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"begin\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void RescueStatementWithExceptionIncreasesIndentOnNextLine()
+		public void IndentLine_RescueStatementWithExceptionOnPreviousLine_IncreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"rescue Exception => ex\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"rescue Exception => ex\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void RescueStatementIncreasesIndentOnNextLine()
+		public void IndentLine_RescueStatementOnPreviousLine_IncreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"rescue\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"rescue\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void EnsureStatementIncreasesIndentOnNextLine()
+		public void IndentLine_EnsureStatementOnPreviousLine_IncreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"ensure\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"ensure\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void ModuleStatementIncreasesIndentOnNextLine()
+		public void IndentLine_ModuleStatementOnPreviousLine_IncreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"module Foo\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"module Foo\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void CaseWhenStatementIncreasesIndentOnNextLine()
+		public void IndentLine_CaseWhenStatementOnPreviousLine_IncreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"case num\r\n" +
 				"\twhen 0\r\n" +
@@ -535,47 +618,68 @@ namespace RubyBinding.Tests.Gui
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(3);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"case num\r\n" +
 				"\twhen 0\r\n" +
 				"\t\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void CaseStatementIncreasesIndentOnNextLine()
+		public void IndentLine_CaseStatementOnPreviousLine_IncreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"case num\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"case num\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
 		}
 		
 		[Test]
-		public void CaseStatementInMiddleOfLineIncreasesIndentOnNextLine()
+		public void IndentLine_CaseStatementInMiddleOnPreviousLine_IncreasesIndentOnNextLine()
 		{
+			CreateFormattingStrategy();
+			
 			textEditor.Text =
 				"value = case num\r\n" +
 				"";
 			
 			IDocumentLine line = textEditorAdapter.Document.GetLine(2);
 			formattingStrategy.IndentLine(textEditorAdapter, line);
+			string text = textEditor.Text;
 			
 			string expectedText =
 				"value = case num\r\n" +
 				"\t";
 			
-			Assert.AreEqual(expectedText, textEditor.Text);
+			Assert.AreEqual(expectedText, text);
+		}
+		
+		[Test]
+		public void SurroundSelectionWithComment_CursorOnFirstLineNothingSelected_CommentsFirstLine()
+		{
+			CreateFormattingStrategy();
+			
+			textEditor.Text = "print 'hello'";
+			formattingStrategy.SurroundSelectionWithComment(textEditorAdapter);
+			string text = textEditor.Text;
+			
+			string expectedText = "#print 'hello'";
+			
+			Assert.AreEqual(expectedText, text);
 		}
 	}
 }

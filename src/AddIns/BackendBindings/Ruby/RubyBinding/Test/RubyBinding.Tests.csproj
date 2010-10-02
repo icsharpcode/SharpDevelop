@@ -267,7 +267,7 @@
     <Compile Include="Designer\TextBoxNotAddedToFormTestFixture.cs" />
     <Compile Include="Designer\UnknownTypeTestFixture.cs" />
     <Compile Include="Gui\DebugRunRubyCommandTests.cs" />
-    <Compile Include="Gui\RubyIndentationTests.cs" />
+    <Compile Include="Gui\RubyFormattingStrategyTests.cs" />
     <Compile Include="Gui\RubyOptionsPanelTestFixture.cs" />
     <Compile Include="Gui\RunRubyCommandTests.cs" />
     <Compile Include="Parsing\ParseClassWithBaseClassTestFixture.cs" />

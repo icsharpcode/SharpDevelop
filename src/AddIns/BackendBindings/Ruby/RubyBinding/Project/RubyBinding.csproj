@@ -111,6 +111,7 @@
     <Compile Include="Src\RubyFormattingStrategy.cs" />
     <Compile Include="Src\RubyFormsDesignerDisplayBinding.cs" />
     <Compile Include="Src\RubyLanguageBinding.cs" />
+    <Compile Include="Src\RubyLineIndenter.cs" />
     <Compile Include="Src\RubyProjectBinding.cs" />
     <Compile Include="Src\RubyLanguageProperties.cs" />
     <Compile Include="Src\RubyOptionsPanel.cs" />
