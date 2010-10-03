@@ -4080,12 +4080,12 @@ out val);
 					lexer.NextToken();
 
 #line  1748 "VBNET.ATG" 
-					retExpr = new BaseReferenceExpression(); 
+					retExpr = new BaseReferenceExpression() { StartLocation = t.Location, EndLocation = t.EndLocation }; 
 				} else if (la.kind == 159) {
 					lexer.NextToken();
 
 #line  1749 "VBNET.ATG" 
-					retExpr = new ClassReferenceExpression(); 
+					retExpr = new ClassReferenceExpression() { StartLocation = t.Location, EndLocation = t.EndLocation }; 
 				} else SynErr(281);
 				Expect(26);
 				IdentifierOrKeyword(

@@ -1745,8 +1745,8 @@ SimpleNonInvocationExpression<out Expression pexpr>
 			(. pexpr = new TypeReferenceExpression(new TypeReference(val, true)); .)
 		|	"Me"							(. pexpr = new ThisReferenceExpression(); .)
 		|	(. Expression retExpr = null; .)
-			( "MyBase"										(. retExpr = new BaseReferenceExpression(); .)
-			| "MyClass"										(. retExpr = new ClassReferenceExpression(); .)
+			( "MyBase"										(. retExpr = new BaseReferenceExpression() { StartLocation = t.Location, EndLocation = t.EndLocation }; .)
+			| "MyClass"										(. retExpr = new ClassReferenceExpression() { StartLocation = t.Location, EndLocation = t.EndLocation }; .)
 			)
 			"." IdentifierOrKeyword<out name>				(. pexpr = new MemberReferenceExpression(retExpr, name); .)
 		|	"Global" "."
