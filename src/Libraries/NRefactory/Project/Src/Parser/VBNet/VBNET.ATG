@@ -1222,22 +1222,19 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 		Location startPos = t.Location;
 		TypeReference returnType = NullTypeReference.Instance;
 		TypeReference operandType = NullTypeReference.Instance;
-		string operandName;
 		OverloadableOperatorType operatorType;
 		AttributeSection section;
+		ParameterDeclarationExpression param;
 		List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>();
 	.)
 	OverloadableOperator<out operatorType>
-	"(" [ "ByVal" ] Identifier (. operandName = t.val; .)
-		[ "As" TypeName<out operandType> ]
-		(. parameters.Add(new ParameterDeclarationExpression(operandType, operandName, ParameterModifiers.In)); .)
-		
-		{
-			","
-			[ "ByVal" ] Identifier (. operandName = t.val; .)
-			[ "As" TypeName<out operandType> ]
-			(. parameters.Add(new ParameterDeclarationExpression(operandType, operandName, ParameterModifiers.In)); .)
-		}
+	"("
+	FormalParameter<out param>
+	(. if (param != null) parameters.Add(param); .)
+	[
+		"," FormalParameter<out param>
+		(. if (param != null) parameters.Add(param); .)
+	]
 	")"
 	(. Location endPos = t.EndLocation; .)
 	[ "As" { AttributeSection<out section>
@@ -2874,9 +2871,9 @@ AttributeSection<out AttributeSection section>
 FormalParameterList<List<ParameterDeclarationExpression> parameter>
 (. ParameterDeclarationExpression p; .)
 =
-	FormalParameter <out p>	(. if (p != null) parameter.Add(p); .)
+	FormalParameter<out p>	(. if (p != null) parameter.Add(p); .)
 	{	","
-		FormalParameter <out p>	(. if (p != null) parameter.Add(p); .)
+		FormalParameter<out p>	(. if (p != null) parameter.Add(p); .)
 	}
 .
 /* 9.2.5 */
@@ -2889,6 +2886,7 @@ FormalParameter<out ParameterDeclarationExpression p>
 	Expression expr = null;
 	p = null;
 	ArrayList arrayModifiers = null;
+	Location startLocation = la.Location;
 .)
 =
 	{ AttributeSection<out section> (. attributes.Add(section); .) }
@@ -2912,6 +2910,8 @@ FormalParameter<out ParameterDeclarationExpression p>
 		mod.Check();
 		p = new ParameterDeclarationExpression(type, parameterName, mod.Modifier, expr);
 		p.Attributes = attributes;
+		p.StartLocation = startLocation;
+		p.EndLocation = t.EndLocation;
 	.)
 .
 
