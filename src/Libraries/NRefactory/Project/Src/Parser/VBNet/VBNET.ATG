@@ -1642,11 +1642,20 @@ EventMemberSpecifier<out string name>
 .
 
 Expr<out Expression expr>
-	(. expr = null; .) =
-	  IF ( IsQueryExpression() )
-	  QueryExpr<out expr>
-	| LambdaExpr<out expr>
-	| DisjunctionExpr<out expr>
+	(. expr = null; Location startLocation = la.Location; .)
+	=
+	(
+		  IF ( IsQueryExpression() )
+		  QueryExpr<out expr>
+		| LambdaExpr<out expr>
+		| DisjunctionExpr<out expr>
+	)
+	(.
+		if (expr != null) {
+			expr.StartLocation = startLocation;
+			expr.EndLocation = t.EndLocation;
+		}
+	.)
 .
 
 AssignmentOperator<out AssignmentOperatorType op>
@@ -2998,7 +3007,9 @@ EmbeddedStatement<out Statement statement>
 		Expression expr = null;
 		string name = String.Empty;
 		List<Expression> p = null;
+		Location startLocation = la.Location;
 	.) =
+	(
 		"Exit"				(. ExitType exitType = ExitType.None; .)
 		(
 		"Sub"				(. exitType = ExitType.Sub; .)
@@ -3081,7 +3092,6 @@ EmbeddedStatement<out Statement statement>
 			Expression group = null;
 			TypeReference typeReference;
 			string        typeName;
-			Location startLocation = t.Location;
 	.)
 	(
 		/* 10.9.3  */
@@ -3281,6 +3291,13 @@ EmbeddedStatement<out Statement statement>
 		)
 		"End" "Using"
 	| LocalDeclarationStatement<out statement>
+)
+(.
+	if (statement != null) {
+		statement.StartLocation = startLocation;
+		statement.EndLocation = t.EndLocation;
+	}
+.)
 .
 
 SingleLineStatementList<List<Statement> list>
