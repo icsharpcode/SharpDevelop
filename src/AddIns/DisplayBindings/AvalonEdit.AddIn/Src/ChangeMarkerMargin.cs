@@ -50,13 +50,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 								drawingContext.DrawRectangle(Brushes.Blue, null, rect);
 								break;
 							case ChangeType.Unsaved:
-								drawingContext.DrawRectangle(Brushes.Yellow, null, rect);
+								drawingContext.DrawRectangle(Brushes., null, rect);
 								break;
 							default:
 								throw new Exception("Invalid value for ChangeType");
 						}
 						
-						if (!string.IsNullOrEmpty(info.DeletedLinesAfterThisLine)) {
+						// not needed currently - TODO we have no complete SVN/Git support
+						/*if (!string.IsNullOrEmpty(info.DeletedLinesAfterThisLine)) {
 							Point pt1 = new Point(5,  line.VisualTop + line.Height - textView.ScrollOffset.Y - 4);
 							Point pt2 = new Point(10, line.VisualTop + line.Height - textView.ScrollOffset.Y);
 							Point pt3 = new Point(5,  line.VisualTop + line.Height - textView.ScrollOffset.Y + 4);
@@ -75,7 +76,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 								
 								drawingContext.DrawGeometry(Brushes.Red, null, new PathGeometry(new List<PathFigure>() { CreateNAngle(pt1, pt2, pt3) }));
 							}
-						}
+						}*/
 					}
 				}
 			}
@@ -123,7 +124,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		protected override Size MeasureOverride(Size availableSize)
 		{
-			return new Size(10, 0);
+			return new Size(5, 0);
 		}
 		
 		bool disposed = false;

@@ -58,30 +58,30 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			changeList.Clear();
 			
-			Stream baseFileStream = GetBaseVersion();
-			byte[] baseFile = new byte[baseFileStream.Length];
-			
-			ReadAll(baseFileStream, baseFile);
-			
-			Stream currentFileStream = GetCurrentVersion();
-			byte[] currentFile = new byte[currentFileStream.Length];
+//			Stream baseFileStream = GetBaseVersion();
+//			byte[] baseFile = new byte[baseFileStream.Length];
+//			
+//			ReadAll(baseFileStream, baseFile);
+//			
+//			Stream currentFileStream = GetCurrentVersion();
+//			byte[] currentFile = new byte[currentFileStream.Length];
 			
 			ReadAll(currentFileStream, currentFile);
 			
-			MyersDiff diff = new MyersDiff(new RawText(baseFile), new RawText(currentFile));
+//			MyersDiff diff = new MyersDiff(new RawText(baseFile), new RawText(currentFile));
 			
-			if (diff == null)
+//			if (diff == null)
 				changeList.InsertRange(0, document.TotalNumberOfLines + 1, new LineChangeInfo(ChangeType.None, ""));
-			else {
-				changeList.Add(new LineChangeInfo(ChangeType.None, ""));
-				int lastEnd = 0;
-				foreach (Edit edit in diff.GetEdits()) {
-					changeList.InsertRange(changeList.Count, edit.BeginB - lastEnd, new LineChangeInfo(ChangeType.None, ""));
-					changeList.InsertRange(changeList.Count, edit.EndB - edit.BeginB, new LineChangeInfo(edit.EditType, ""));
-					lastEnd = edit.EndB;
-				}
-				changeList.InsertRange(changeList.Count, document.TotalNumberOfLines - lastEnd, new LineChangeInfo(ChangeType.None, ""));
-			}
+//			else {
+//				changeList.Add(new LineChangeInfo(ChangeType.None, ""));
+//				int lastEnd = 0;
+//				foreach (Edit edit in diff.GetEdits()) {
+//					changeList.InsertRange(changeList.Count, edit.BeginB - lastEnd, new LineChangeInfo(ChangeType.None, ""));
+//					changeList.InsertRange(changeList.Count, edit.EndB - edit.BeginB, new LineChangeInfo(edit.EditType, ""));
+//					lastEnd = edit.EndB;
+//				}
+//				changeList.InsertRange(changeList.Count, document.TotalNumberOfLines - lastEnd, new LineChangeInfo(ChangeType.None, ""));
+//			}
 			
 			OnChangeOccurred(EventArgs.Empty);
 		}
@@ -133,11 +133,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			LineChangeInfo info = changeList[index];
 			LineChangeInfo lineBefore = changeList[index - 1];
 			
-			lineBefore.DeletedLinesAfterThisLine
-				+= (textDocument.GetText(line.Offset, line.Length)
-				    + Environment.NewLine + info.DeletedLinesAfterThisLine);
-			
-			Debug.Assert(lineBefore.DeletedLinesAfterThisLine.EndsWith(Environment.NewLine));
+			// TODO : add deleted text (GetText not allowed in ILineTracker callbacks)
+//			lineBefore.DeletedLinesAfterThisLine
+//				+= (textDocument.GetText(line.Offset, line.Length)
+//				    + Environment.NewLine + info.DeletedLinesAfterThisLine);
+//			
+//			Debug.Assert(lineBefore.DeletedLinesAfterThisLine.EndsWith(Environment.NewLine));
 			
 			changeList[index - 1] = lineBefore;
 			changeList.RemoveAt(index);
