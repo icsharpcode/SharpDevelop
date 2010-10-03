@@ -26,8 +26,9 @@ namespace PythonBinding.Tests.Resolver
 		{
 			string code = "a = Class1()";
 			Resolve("a", code);
+			string expectedTypeName = "Class1";
 			
-			Assert.AreEqual("Class1", typeName);
+			Assert.AreEqual(expectedTypeName, typeName);
 		}
 
 		/// <summary>
@@ -42,8 +43,9 @@ namespace PythonBinding.Tests.Resolver
 				"b = Class2()";
 			
 			Resolve("a", code);
+			string expectedTypeName = "Class1";
 			
-			Assert.AreEqual("Class1", typeName);
+			Assert.AreEqual(expectedTypeName, typeName);
 		}
 		
 		[Test]
@@ -59,6 +61,7 @@ namespace PythonBinding.Tests.Resolver
 		public void Resolve_CodeIsNull_ReturnsNull()
 		{
 			Resolve("a", null);
+			
 			Assert.IsNull(typeName);
 		}
 		
@@ -67,7 +70,9 @@ namespace PythonBinding.Tests.Resolver
 		{
 			string code = "a = Test.Class1()";
 			Resolve("a", code);
-			Assert.AreEqual("Test.Class1", typeName);
+			string expectedTypeName = "Test.Class1";
+			
+			Assert.AreEqual(expectedTypeName, typeName);
 		}
 		
 		[Test]
@@ -75,16 +80,23 @@ namespace PythonBinding.Tests.Resolver
 		{
 			string code = "a = Root.Test.Class1()";
 			Resolve("a", code);
-			Assert.AreEqual("Root.Test.Class1", typeName);
+			string expectedTypeName = "Root.Test.Class1";
+			
+			Assert.AreEqual(expectedTypeName, typeName);
 		}
 		
 		[Test]
-		public void GetTypeName_ExpressionIsNotNameOrMemberExpression_ReturnsEmptyStringAndDoesNotGetStuckInInfiniteLoop()
+		public void Resolve_AssignmentToPropertyOnLocalVariableThenMethodCallOnLocalVariable_CorrectLocalVariableTypeReturned()
 		{
-			AssignmentStatement statement = PythonParserHelper.GetAssignmentStatement("a = 2");
-			Expression expression = statement.Right;
-			string typeName = PythonLocalVariableResolver.GetTypeName(expression);
-			Assert.AreEqual(String.Empty, typeName);
+			string code = 
+				"connection = OracleClient.OracleConnection()\r\n" +
+				"connection.ConnectionString = connectionString\r\n" +
+				"connection.Open()\r\n" + 
+				"connection";
+			
+			Resolve("connection", code);
+			
+			Assert.AreEqual("OracleClient.OracleConnection", typeName);
 		}
 	}
 }

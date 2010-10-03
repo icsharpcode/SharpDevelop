@@ -106,6 +106,7 @@
     <Compile Include="Src\PythonInsightWindowHandler.cs" />
     <Compile Include="Src\PythonLanguageBinding.cs" />
     <Compile Include="Src\PythonLineIndenter.cs" />
+    <Compile Include="Src\PythonLocalVariableAssignment.cs" />
     <Compile Include="Src\PythonLocalVariableResolver.cs" />
     <Compile Include="Src\PythonMemberResolver.cs" />
     <Compile Include="Src\PythonMethod.cs" />

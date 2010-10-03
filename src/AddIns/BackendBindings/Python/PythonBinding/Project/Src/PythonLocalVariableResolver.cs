@@ -27,8 +27,6 @@ namespace ICSharpCode.PythonBinding
 		PythonClassResolver classResolver;
 		string variableName = String.Empty;
 		string typeName;
-		AssignmentStatement currentAssignStatement;
-		bool foundVariableAssignment;
 		
 		public PythonLocalVariableResolver(PythonClassResolver classResolver)
 		{
@@ -66,61 +64,13 @@ namespace ICSharpCode.PythonBinding
 				
 		public override bool Walk(AssignmentStatement node)
 		{
-			currentAssignStatement = node;
-			foundVariableAssignment = false;
-			return base.Walk(node);
-		}		
-		
-		public override bool Walk(NameExpression node)
-		{
-			if (currentAssignStatement != null) {
-				string nodeName = node.Name;
-				if (nodeName == variableName) {
-					foundVariableAssignment = true;
+			PythonLocalVariableAssignment localVariableAssignment = new PythonLocalVariableAssignment(node);
+			if (localVariableAssignment.IsLocalVariableAssignment()) {
+				if (localVariableAssignment.VariableName == variableName) {
+					typeName = localVariableAssignment.TypeName;
 				}
 			}
 			return base.Walk(node);
-		}
-		
-		public override bool Walk(CallExpression node)
-		{
-			if (foundVariableAssignment) {
-				typeName = GetTypeName(node.Target);
-				currentAssignStatement = null;
-				foundVariableAssignment = false;
-			}
-			return base.Walk(node);
-		}
-		
-		/// <summary>
-		/// Gets the fully qualified name of the type from the expression.
-		/// 
-		/// </summary>
-		/// <remarks>
-		/// The expression is the first target of a call expression.
-		/// 
-		/// A call expression is a method or constructor call (right hand side of expression below):
-		/// 
-		/// a = Root.Test.Class1()
-		/// 
-		/// So the expression passed to this method will be a field expression in the
-		/// above example which refers to Class1. The next target will be a field
-		/// expression referring to Test. The The last target will be a name expression
-		/// referring to Root.
-		/// 
-		/// If we have 
-		/// 
-		/// a = Class1()
-		/// 
-		/// then the expression will be a name expression referring to Class1.
-		/// </remarks>
-		public static string GetTypeName(Expression node)
-		{
-			NameExpression nameExpression = node as NameExpression;
-			if (nameExpression != null) {
-				return nameExpression.Name;
-			}
-			return PythonControlFieldExpression.GetMemberName(node as MemberExpression);
 		}
 		
 		public ResolveResult Resolve(PythonResolverContext resolverContext)

@@ -351,6 +351,7 @@
     <Compile Include="Resolver\ImportModuleResolveResultTests.cs" />
     <Compile Include="Resolver\InvalidResolveInputsTestFixture.cs" />
     <Compile Include="Resolver\MemberNameTests.cs" />
+    <Compile Include="Resolver\PythonLocalVariableAssignmentTests.cs" />
     <Compile Include="Resolver\PythonLocalVariableResolverTests.cs" />
     <Compile Include="Resolver\PythonSelfResolverTests.cs" />
     <Compile Include="Resolver\ResolveBuiltInRoundMethodTests.cs" />
