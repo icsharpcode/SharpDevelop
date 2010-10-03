@@ -1549,6 +1549,7 @@ CollectionInitializer<out CollectionInitializerExpression outExpr>
 	(.
 		Expression expr = null;
 		CollectionInitializerExpression initializer = new CollectionInitializerExpression();
+		Location startLocation = la.Location;
 	.) =
 	"{"
 	[
@@ -1561,8 +1562,13 @@ CollectionInitializer<out CollectionInitializerExpression outExpr>
 			(. if (expr != null) { initializer.CreateExpressions.Add(expr); } .)
 		}
 	]
-	"}" (. outExpr = initializer; .)
-	.
+	"}"
+	(.
+		outExpr = initializer;
+		outExpr.StartLocation = startLocation;
+		outExpr.EndLocation = t.EndLocation;
+	.)
+.
 
 Charset<out CharsetModifier charsetModifier>
 	(. charsetModifier = CharsetModifier.None; .) =
