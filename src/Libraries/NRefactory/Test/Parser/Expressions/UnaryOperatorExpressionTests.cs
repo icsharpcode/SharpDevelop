@@ -82,7 +82,7 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
-		public void DereferenceAfterCast()
+		public void CSharpDereferenceAfterCast()
 		{
 			UnaryOperatorExpression uoe = ParseUtilCSharp.ParseExpression<UnaryOperatorExpression>("*((SomeType*) &w)");
 			Assert.AreEqual(UnaryOperatorType.Dereference, uoe.Op);

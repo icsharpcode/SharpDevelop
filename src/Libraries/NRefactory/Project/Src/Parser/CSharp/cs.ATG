@@ -1822,20 +1822,20 @@ UnaryExpr<out Expression uExpr>
 	{
 		/* IF (Tokens.UnaryOp[la.kind] || IsTypeCast()) */
 		(
-			  "+"  (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Plus)); .)
-			| "-"  (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Minus)); .)
-			| "!"  (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Not)); .)
-			| "~"  (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.BitNot)); .)
-			| "*"  (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Dereference)); .)
-			| "++" (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Increment)); .)
-			| "--" (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Decrement)); .)
-			| "&"  (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.AddressOf)); .)
+			  "+"  (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Plus) { StartLocation = t.Location }); .)
+			| "-"  (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Minus) { StartLocation = t.Location })); .)
+			| "!"  (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Not) { StartLocation = t.Location })); .)
+			| "~"  (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.BitNot) { StartLocation = t.Location })); .)
+			| "*"  (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Dereference) { StartLocation = t.Location })); .)
+			| "++" (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Increment) { StartLocation = t.Location })); .)
+			| "--" (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Decrement) { StartLocation = t.Location })); .)
+			| "&"  (. expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.AddressOf) { StartLocation = t.Location })); .)
 			
 			/*--- cast expression: */
 			/* Problem:  "(" Type ")" from here and                     *
 			 *           "(" Expr ")" from PrimaryExpr                  *
 			 * Solution: (in IsTypeCast())                              */
-			| IF (IsTypeCast()) "(" Type<out type> ")"  (.  expressions.Add(new CastExpression(type)); .)
+			| IF (IsTypeCast()) "(" Type<out type> ")"  (.  expressions.Add(new CastExpression(type) { StartLocation = t.Location })); .)
 		)
 	}
 	
