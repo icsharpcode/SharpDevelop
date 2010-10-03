@@ -12,8 +12,15 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 	{
 		protected override void BeginVisit(INode node)
 		{
-			Assert.IsFalse(node.StartLocation.IsEmpty);
-			Assert.IsFalse(node.EndLocation.IsEmpty);
+			if (node is CompilationUnit)
+				return;
+			if (node is INullable && ((INullable)node).IsNull)
+				return;
+			if (node is TypeReference)
+				return;
+			
+			Assert.IsFalse(node.StartLocation.IsEmpty, "StartLocation of {0}", node);
+			Assert.IsFalse(node.EndLocation.IsEmpty, "EndLocation of {0}", node);
 		}
 	}
 }
