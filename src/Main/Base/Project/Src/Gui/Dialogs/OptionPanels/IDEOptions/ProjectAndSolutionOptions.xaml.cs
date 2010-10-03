@@ -47,7 +47,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public override void LoadOptions()
 		{
 			base.LoadOptions();
-			defaultProjectLocationTextBox.Text = DefaultProjectCreationPath;
 			parallelBuildCount.Value = Project.BuildOptions.DefaultParallelProjectCount;
 			onExecuteComboBox.SelectedIndex = (int)Project.BuildModifiedProjectsOnlyService.Setting;
 			verbosityComboBox.SelectedIndex = (int)Project.BuildOptions.DefaultBuildOutputVerbosity;
