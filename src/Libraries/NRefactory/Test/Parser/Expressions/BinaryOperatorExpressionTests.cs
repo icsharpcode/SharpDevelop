@@ -280,12 +280,6 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
-		public void VBNetTest()
-		{
-			VBNetTestBinaryOperatorExpressionTest("a ^ b", BinaryOperatorType.Power);
-		}
-		
-		[Test]
 		public void VBNetPowerTest()
 		{
 			VBNetTestBinaryOperatorExpressionTest("a ^ b", BinaryOperatorType.Power);

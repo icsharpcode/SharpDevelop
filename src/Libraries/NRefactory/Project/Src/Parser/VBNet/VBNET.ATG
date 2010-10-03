@@ -1694,7 +1694,7 @@ SimpleExpr<out Expression pexpr>
 			[ IF (la.kind == Tokens.OpenParenthesis && Peek(1).kind == Tokens.Of)
 					"(" "Of" TypeArgumentList<((MemberReferenceExpression)pexpr).TypeArguments> ")"
 			]
-		|	"!" IdentifierOrKeyword<out name> (. pexpr = new BinaryOperatorExpression(pexpr, BinaryOperatorType.DictionaryAccess, new PrimitiveExpression(name, name)); .)
+		|	"!" IdentifierOrKeyword<out name> (. pexpr = new BinaryOperatorExpression(pexpr, BinaryOperatorType.DictionaryAccess, new PrimitiveExpression(name, name) { StartLocation = t.Location, EndLocation = t.EndLocation }); .)
 		|	(. XmlAxisType type = XmlAxisType.Attribute; bool isXmlName = false; .)
 			( ".@" | "..." (. type = XmlAxisType.Descendents; .) ) [ XmlOpenTag (. isXmlName = true; .) ] IdentifierOrKeyword<out name> [ XmlCloseTag ]
 			(. pexpr = new XmlMemberAccessExpression(pexpr, type, name, isXmlName); .)
@@ -1780,7 +1780,7 @@ SimpleNonInvocationExpression<out Expression pexpr>
 				| IdentifierOrKeyword<out name>
 				(. pexpr = new MemberReferenceExpression(null, name); .)
 			) |
-			"!" IdentifierOrKeyword<out name> (. pexpr = new BinaryOperatorExpression(null, BinaryOperatorType.DictionaryAccess, new PrimitiveExpression(name, name)); .)
+			"!" IdentifierOrKeyword<out name> (. pexpr = new BinaryOperatorExpression(null, BinaryOperatorType.DictionaryAccess, new PrimitiveExpression(name, name) { StartLocation = t.Location, EndLocation = t.EndLocation }); .)
 			| (. XmlAxisType axisType = XmlAxisType.Element; bool isXmlIdentifier = false; .)
 			( "..." (. axisType = XmlAxisType.Descendents; .) | ".@" (. axisType = XmlAxisType.Attribute; .) ) (
 				[ XmlOpenTag (. isXmlIdentifier = true; .) ] IdentifierOrKeyword<out name> [ XmlCloseTag ]
@@ -1950,6 +1950,7 @@ DisjunctionExpr<out Expression outExpr>
 (.
 	Expression expr;
 	BinaryOperatorType op = BinaryOperatorType.None;
+	Location startLocation = la.Location;
 .) =
 	ConjunctionExpr<out outExpr>
 	{
@@ -1958,7 +1959,7 @@ DisjunctionExpr<out Expression outExpr>
 			| "OrElse" (. op = BinaryOperatorType.LogicalOr; .)
 			| "Xor"    (. op = BinaryOperatorType.ExclusiveOr; .)
 		)
-		ConjunctionExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr);  .)
+		ConjunctionExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr) { StartLocation = startLocation, EndLocation = t.EndLocation };  .)
 	}
 .
 
@@ -1966,6 +1967,7 @@ ConjunctionExpr<out Expression outExpr>
 (.
 	Expression expr;
 	BinaryOperatorType op = BinaryOperatorType.None;
+	Location startLocation = la.Location;
 .) =
 	NotExpr<out outExpr>
 	{
@@ -1973,7 +1975,7 @@ ConjunctionExpr<out Expression outExpr>
 			  "And"     (. op = BinaryOperatorType.BitwiseAnd; .)
 			| "AndAlso" (. op = BinaryOperatorType.LogicalAnd; .)
 		)
-		NotExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr);  .)
+		NotExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr) { StartLocation = startLocation, EndLocation = t.EndLocation };  .)
 	}
 .
 
@@ -1990,6 +1992,7 @@ ComparisonExpr<out Expression outExpr>
 (.
 	Expression expr;
 	BinaryOperatorType op = BinaryOperatorType.None;
+	Location startLocation = la.Location;
 .) =
 	ShiftExpr<out outExpr>
 	{
@@ -2005,10 +2008,10 @@ ComparisonExpr<out Expression outExpr>
 			| "IsNot" (. op = BinaryOperatorType.ReferenceInequality; .)
 		)
 		(
-			ShiftExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr);  .)
-		|
+			ShiftExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr) { StartLocation = startLocation, EndLocation = t.EndLocation };  .)
+		| (. Location startLocation2 = la.Location; .)
 			"Not"
-			ShiftExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, new UnaryOperatorExpression(expr, UnaryOperatorType.Not));  .)
+			ShiftExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, new UnaryOperatorExpression(expr, UnaryOperatorType.Not) { StartLocation = startLocation2, EndLocation = t.EndLocation }) { StartLocation = startLocation, EndLocation = t.EndLocation };  .)
 		)
 	}
 .
@@ -2017,6 +2020,7 @@ ShiftExpr<out Expression outExpr>
 	(.
 		Expression expr;
 		BinaryOperatorType op = BinaryOperatorType.None;
+		Location startLocation = la.Location;
 	.) =
 	ConcatenationExpr<out outExpr> 
 	{
@@ -2024,20 +2028,21 @@ ShiftExpr<out Expression outExpr>
 			"<<"   (. op = BinaryOperatorType.ShiftLeft; .)
 			| ">>" (. op = BinaryOperatorType.ShiftRight; .)
 		)
-		ConcatenationExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr);  .) 
+		ConcatenationExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr) { StartLocation = startLocation, EndLocation = t.EndLocation };  .) 
 	}
 	.
 
 ConcatenationExpr<out Expression outExpr>
-(. Expression expr; .)
+(. Expression expr; Location startLocation = la.Location; .)
 =
-	AdditiveExpr<out outExpr> { "&" AdditiveExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.Concat, expr);  .) }
+	AdditiveExpr<out outExpr> { "&" AdditiveExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.Concat, expr) { StartLocation = startLocation, EndLocation = t.EndLocation };  .) }
 .
 
 AdditiveExpr<out Expression outExpr>
 (.
 	Expression expr;
 	BinaryOperatorType op = BinaryOperatorType.None;
+	Location startLocation = la.Location;
 .) =
 	ModuloExpr<out outExpr>
 	{
@@ -2045,26 +2050,27 @@ AdditiveExpr<out Expression outExpr>
 			  "+"   (. op = BinaryOperatorType.Add; .)
 			| "-" (. op = BinaryOperatorType.Subtract; .)
 		)
-		ModuloExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr);  .)
+		ModuloExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr) { StartLocation = startLocation, EndLocation = t.EndLocation };  .)
 	}
 .
 
 ModuloExpr<out Expression outExpr>
-(. Expression expr; .)
+(. Expression expr; Location startLocation = la.Location; .)
 = 
-	IntegerDivisionExpr<out outExpr> { "Mod" IntegerDivisionExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.Modulus, expr);  .) }
+	IntegerDivisionExpr<out outExpr> { "Mod" IntegerDivisionExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.Modulus, expr) { StartLocation = startLocation, EndLocation = t.EndLocation };  .) }
 .
 
 IntegerDivisionExpr<out Expression outExpr>
-(. Expression expr; .)
+(. Expression expr; Location startLocation = la.Location; .)
 =
-	MultiplicativeExpr<out outExpr> { "\\" MultiplicativeExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.DivideInteger, expr);  .) }
+	MultiplicativeExpr<out outExpr> { "\\" MultiplicativeExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.DivideInteger, expr) { StartLocation = startLocation, EndLocation = t.EndLocation };  .) }
 .
 
 MultiplicativeExpr<out Expression outExpr>
 (.
 	Expression expr;
 	BinaryOperatorType op = BinaryOperatorType.None;
+	Location startLocation = la.Location;
 .) =
 	UnaryExpr<out outExpr>
 	{
@@ -2072,7 +2078,7 @@ MultiplicativeExpr<out Expression outExpr>
 			"*"   (. op = BinaryOperatorType.Multiply; .)
 			| "/" (. op = BinaryOperatorType.Divide; .)
 		) 
-		UnaryExpr<out expr> (. outExpr = new BinaryOperatorExpression(outExpr, op, expr); .) 
+		UnaryExpr<out expr> (. outExpr = new BinaryOperatorExpression(outExpr, op, expr) { StartLocation = startLocation, EndLocation = t.EndLocation }; .) 
 	}
 .
 
@@ -2080,6 +2086,7 @@ UnaryExpr<out Expression uExpr>
 (.
 	Expression expr;
 	UnaryOperatorType uop = UnaryOperatorType.None;
+	Location startLocation = la.Location;
 	bool isUOp = false;
 .) =
 	{ 	"+" 		(. uop = UnaryOperatorType.Plus; isUOp = true; .)
@@ -2089,7 +2096,7 @@ UnaryExpr<out Expression uExpr>
 	ExponentiationExpr<out expr>
 	(.
 		if (isUOp) {
-			uExpr = new UnaryOperatorExpression(expr, uop);
+			uExpr = new UnaryOperatorExpression(expr, uop) { StartLocation = startLocation, EndLocation = t.EndLocation };
 		} else {
 			uExpr = expr;
 		}
@@ -2097,9 +2104,9 @@ UnaryExpr<out Expression uExpr>
 .
 
 ExponentiationExpr<out Expression outExpr>
-(. Expression expr; .)
+(. Expression expr; Location startLocation = la.Location; .)
 =
-	SimpleExpr<out outExpr> { "^" SimpleExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.Power, expr);  .) }
+	SimpleExpr<out outExpr> { "^" SimpleExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.Power, expr) { StartLocation = startLocation, EndLocation = t.EndLocation };  .) }
 .
 	
 ObjectCreateExpression<out Expression oce>
