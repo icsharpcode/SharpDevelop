@@ -3276,13 +3276,19 @@ EmbeddedStatement<out Statement statement>
 	(.
 		Expression val = null;
 		AssignmentOperatorType op;
+		Location startLoc = la.Location;
 		
 		bool mustBeAssignment = la.kind == Tokens.Plus  || la.kind == Tokens.Minus ||
 		                        la.kind == Tokens.Not   || la.kind == Tokens.Times;
 	.)
 	SimpleExpr<out expr>
 		(
-		AssignmentOperator<out op> Expr<out val>	(. expr = new AssignmentExpression(expr, op, val); .)
+		AssignmentOperator<out op> Expr<out val>
+		(.
+			expr = new AssignmentExpression(expr, op, val);
+			expr.StartLocation = startLoc;
+			expr.EndLocation = t.EndLocation;
+		.)
 		| (. if (mustBeAssignment) Error("error in assignment."); .)
 		)
 		(.
