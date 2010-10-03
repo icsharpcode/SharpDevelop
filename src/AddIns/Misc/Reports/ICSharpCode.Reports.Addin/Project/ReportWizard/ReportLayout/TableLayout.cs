@@ -23,7 +23,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 	
-		
 		public override void CreatePageHeader()
 		{
 			base.CreatePageHeader();
@@ -41,30 +40,30 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 			ICSharpCode.Reports.Core.BaseTableItem table = new ICSharpCode.Reports.Core.BaseTableItem();
 			table.Name = "Table1";
-			
 			AdjustContainer(base.ReportModel.DetailSection,table);
+			base.ReportModel.DetailSection.Items.Add(table);
 			
+			base.ParentItem = table;
 			
-			ICSharpCode.Reports.Core.BaseRowItem headerRow = CreateRowWithTextColumns(table,
-			                                                                   this.reportItems);
+			ICSharpCode.Reports.Core.BaseRowItem headerRow = CreateRowWithTextColumns(ParentItem,  this.reportItems);
+			                                                                 
 			
 			Point insertLocation =  new Point (margin.Left,headerRow.Location.Y + headerRow.Size.Height + margin.Bottom + margin.Top);
 			
 			
 			if (base.ReportModel.ReportSettings.GroupColumnsCollection.Count > 0) {                 
 				var groupHeader = base.CreateGroupHeader(insertLocation);
-				table.Items.Add(groupHeader);
+				ParentItem.Items.Add(groupHeader);
 				insertLocation = new Point(margin.Left,insertLocation.Y + groupHeader.Size.Height + margin.Bottom + margin.Top);
 			}
 			
 			
 			ICSharpCode.Reports.Core.BaseRowItem detailRow = new ICSharpCode.Reports.Core.BaseRowItem();
-			AdjustContainer (table,detailRow);
-			
+			AdjustContainer (ParentItem,detailRow);
 			
 			detailRow.Location = insertLocation;
 
-			int defX = detailRow.Size.Width / this.reportItems.Count;
+			int defX = AbstractLayout.CalculateControlWidth(detailRow,reportItems);
 			
 			int startX = detailRow.Location.X + margin.Left;
 			
@@ -80,13 +79,13 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			insertLocation = new Point(margin.Left,insertLocation.Y + detailRow.Size.Height + margin.Bottom + margin.Top);
 			
 		
-			table.Items.Add (headerRow);
-			table.Items.Add (detailRow);
+			ParentItem.Items.Add (headerRow);
+			ParentItem.Items.Add (detailRow);
 			
-			table.Size = CalculateContainerSize(table,margin);
+			ParentItem.Size = CalculateContainerSize(ParentItem,margin);
 
-			section.Size = new Size (section.Size.Width,table.Size.Height + margin.Top + margin.Bottom);
-			base.ReportModel.DetailSection.Items.Add(table);
+			section.Size = new Size (section.Size.Width,ParentItem.Size.Height + margin.Top + margin.Bottom);
+			
 		}
 		
 		

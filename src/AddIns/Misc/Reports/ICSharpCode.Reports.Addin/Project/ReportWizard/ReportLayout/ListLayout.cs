@@ -23,7 +23,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			this.reportItems = reportItemCollection;
 			ICSharpCode.Reports.Core.BaseRowItem row = new ICSharpCode.Reports.Core.BaseRowItem();
 			AdjustContainer(base.ReportModel.DetailSection,row);
-			base.SetParent(row);
+			base.ParentItem = row;
 		}
 		
 		
@@ -45,7 +45,9 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				throw new ArgumentNullException("section");
 			}
 		
-			if (base.ReportModel.ReportSettings.GroupColumnsCollection.Count > 0) {
+			if (base.ReportModel.ReportSettings.GroupColumnsCollection.Count > 0)
+			{
+				
 				var groupheader = base.CreateGroupHeader(new Point (5,10));
 				
 				base.ReportModel.DetailSection.Items.Add(groupheader);
@@ -56,11 +58,16 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			}
 			
 			if (base.ParentItem != null) {
-				base.AddItemsToContainer(base.ReportModel.DetailSection,this.reportItems);
+				var items = base.AddItemsToContainer(this.reportItems);
+				ParentItem.Items.AddRange(items);
 				ParentItem.Size = new Size(ParentItem.Size.Width,40);
+				section.Items.Add(ParentItem as BaseReportItem);
 			}
-			else{
-				AddItemsToSection (base.ReportModel.DetailSection,this.reportItems);
+			else
+			{
+				//var items1 = AddItemsToSection (base.ReportModel.DetailSection,this.reportItems);
+				//AddItemsToSection (base.ReportModel.DetailSection,this.reportItems);
+				//section.Items.AddRange(items1);
 			}
 			
 		}
