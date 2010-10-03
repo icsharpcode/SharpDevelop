@@ -2649,10 +2649,11 @@ Argument<out Expression argumentexpr>
 		Expression expr;
 		argumentexpr = null;
 		string name;
+		Location startLocation = la.Location;
 	.) =
 	IF(IsNamedAssign()) Identifier (. name = t.val;  .) ":=" Expr<out expr>
 	(.
-		argumentexpr = new NamedArgumentExpression(name, expr);
+		argumentexpr = new NamedArgumentExpression(name, expr) { StartLocation = startLocation, EndLocation = t.EndLocation };
 	.)
 	|
 	Expr<out argumentexpr>
@@ -2810,15 +2811,17 @@ GlobalAttributeSection =
 
 /* Spec, 5. */
 Attribute<out ASTAttribute attribute>
-(. string name;
-   List<Expression> positional = new List<Expression>();
-   List<NamedArgumentExpression> named = new List<NamedArgumentExpression>();
+(.
+	string name;
+	List<Expression> positional = new List<Expression>();
+	List<NamedArgumentExpression> named = new List<NamedArgumentExpression>();
+	Location startLocation = la.Location;
 .) =
 	[ "Global" "." ]
 	Qualident<out name>
 	[ AttributeArguments<positional, named> ]
 	(.
-		attribute  = new ASTAttribute(name, positional, named);
+		attribute  = new ASTAttribute(name, positional, named) { StartLocation = startLocation, EndLocation = t.EndLocation };
 	.)
 .
 
@@ -2831,7 +2834,8 @@ AttributeArguments<List<Expression> positional, List<NamedArgumentExpression> na
 	.) =
 	"("
 	[
-		IF (IsNotClosingParenthesis()) ( 
+		IF (IsNotClosingParenthesis()) (
+			(. Location startLocation = la.Location; .)
 			[
 				IF (IsNamedAssign()) (. nameFound = true; .)
 				IdentifierOrKeyword<out name>
@@ -2840,7 +2844,7 @@ AttributeArguments<List<Expression> positional, List<NamedArgumentExpression> na
 				(.
 					if (expr != null) {
 						if (string.IsNullOrEmpty(name)) { positional.Add(expr); }
-						else { named.Add(new NamedArgumentExpression(name, expr)); name = ""; }
+						else { named.Add(new NamedArgumentExpression(name, expr) { StartLocation = startLocation, EndLocation = t.EndLocation }); name = ""; }
 					}
 				.)
 			{
@@ -2851,7 +2855,7 @@ AttributeArguments<List<Expression> positional, List<NamedArgumentExpression> na
 						( ":=" | "=" )
 						| (. if (nameFound) Error("no positional argument after named argument"); .)
 					) Expr<out expr>	(. 	if (expr != null) { if(name == "") positional.Add(expr);
-											else { named.Add(new NamedArgumentExpression(name, expr)); name = ""; }
+											else { named.Add(new NamedArgumentExpression(name, expr) { StartLocation = startLocation, EndLocation = t.EndLocation }); name = ""; }
 											}
 										.)
 			}
@@ -2863,11 +2867,12 @@ AttributeArguments<List<Expression> positional, List<NamedArgumentExpression> na
 /* Spec, 5. */
 AttributeSection<out AttributeSection section>
 	(.
-		string attributeTarget = "";List<ASTAttribute> attributes = new List<ASTAttribute>();
+		string attributeTarget = "";
+		List<ASTAttribute> attributes = new List<ASTAttribute>();
 		ASTAttribute attribute;
-		
+		Location startLocation = la.Location;
 	.) =
-	"<" (. Location startPos = t.Location; .)
+	"<"
 	[ IF (IsLocalAttrTarget())
 		( "Event"		(. attributeTarget = "event";.)
 		| "Return"		(. attributeTarget = "return";.)
@@ -2891,7 +2896,7 @@ AttributeSection<out AttributeSection section>
 			section = new AttributeSection {
 				AttributeTarget = attributeTarget,
 				Attributes = attributes,
-				StartLocation = startPos,
+				StartLocation = startLocation,
 				EndLocation = t.EndLocation
 			};
 		.)

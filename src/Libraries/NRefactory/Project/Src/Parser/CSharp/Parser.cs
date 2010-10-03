@@ -459,7 +459,7 @@ positional, named);
 List<Expression> positional, List<NamedArgumentExpression> named) {
 
 #line  275 "cs.ATG" 
-		string name = null; bool isNamed = false; Expression expr; 
+		string name = null; bool isNamed = false; Expression expr; Location startLocation = la.Location; 
 		if (
 #line  278 "cs.ATG" 
 IsAssignment()) {
@@ -488,12 +488,12 @@ out expr);
 #line  289 "cs.ATG" 
 		if (expr != null) {
 		if (isNamed) {
-			named.Add(new NamedArgumentExpression(name, expr));
+			named.Add(new NamedArgumentExpression(name, expr) { StartLocation = startLocation, EndLocation = t.EndLocation });
 		} else {
 			if (named.Count > 0)
 				Error("positional argument after named argument is not allowed");
 			if (name != null)
-				expr = new NamedArgumentExpression(name, expr);
+				expr = new NamedArgumentExpression(name, expr) { StartLocation = startLocation, EndLocation = t.EndLocation };
 			positional.Add(expr);
 		}
 		}
