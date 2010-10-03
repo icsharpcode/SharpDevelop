@@ -29,13 +29,13 @@ namespace PythonBinding.Tests.Completion
 		}
 		
 		[Test]
-		public void ProcessInput_KeyIsAsterisk_InsertSpaceSetToFalseAfterMethodCalled()
+		public void ProcessInput_KeyIsOpenParenthesis_ReturnsNormalKey()
 		{
 			CreatePythonCompletionItemList();
-			completionItemList.InsertSpace = true;
-			completionItemList.ProcessInput('*');
+			CompletionItemListKeyResult result = completionItemList.ProcessInput('(');
+			CompletionItemListKeyResult expectedResult = CompletionItemListKeyResult.NormalKey;
 			
-			Assert.IsFalse(completionItemList.InsertSpace);
+			Assert.AreEqual(expectedResult, result);
 		}
 	}
 }

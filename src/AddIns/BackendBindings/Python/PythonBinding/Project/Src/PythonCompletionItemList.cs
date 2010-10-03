@@ -10,16 +10,17 @@ namespace ICSharpCode.PythonBinding
 	{
 		public override CompletionItemListKeyResult ProcessInput(char key)
 		{
-			if (key == '*') {
-				return ProcessAsterisk();
+			if (IsNormalKey(key)) {
+				return CompletionItemListKeyResult.NormalKey;
+			} else if (key == '(') {
+				return CompletionItemListKeyResult.NormalKey;
 			}
 			return base.ProcessInput(key);
 		}
 		
-		CompletionItemListKeyResult ProcessAsterisk()
+		bool IsNormalKey(char key)
 		{
-			InsertSpace = false;
-			return CompletionItemListKeyResult.NormalKey;
+			return (key == '*') || (key == '(');
 		}
 	}
 }
