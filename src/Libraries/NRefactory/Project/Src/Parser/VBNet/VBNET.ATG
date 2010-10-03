@@ -1674,8 +1674,9 @@ AssignmentOperator<out AssignmentOperatorType op>
 
 /* 11.4 */
 SimpleExpr<out Expression pexpr>
-(. string name; .)
+(. string name; Location startLocation = la.Location; .)
 =
+(
 	SimpleNonInvocationExpression<out pexpr>
 	{
 			"." (
@@ -1693,6 +1694,13 @@ SimpleExpr<out Expression pexpr>
 			(. pexpr = new XmlMemberAccessExpression(pexpr, type, name, isXmlName); .)
 		|	InvocationExpression<ref pexpr>
 	}
+)
+(.
+	if (pexpr != null) {
+		pexpr.StartLocation = startLocation;
+		pexpr.EndLocation = t.EndLocation;
+	}
+.)
 .
 
 SimpleNonInvocationExpression<out Expression pexpr>
@@ -1701,6 +1709,7 @@ SimpleNonInvocationExpression<out Expression pexpr>
 	CollectionInitializerExpression cie;
 	TypeReference type = null;
 	string name = String.Empty;
+	Location startLocation = la.Location;
 	pexpr = null;
 .) =
 	(
@@ -1773,6 +1782,12 @@ SimpleNonInvocationExpression<out Expression pexpr>
 			)
 		)
 	)
+(.
+	if (pexpr != null) {
+		pexpr.StartLocation = startLocation;
+		pexpr.EndLocation = t.EndLocation;
+	}
+.)
 .
 
 XmlLiteralExpression<out Expression pexpr>
