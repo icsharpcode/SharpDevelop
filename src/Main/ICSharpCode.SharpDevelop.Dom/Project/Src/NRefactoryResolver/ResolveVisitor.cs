@@ -375,7 +375,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			ResolveResult targetRR = Resolve(memberReferenceExpression.TargetObject);
 			if (targetRR == null)
 				return null;
-			type = targetRR.ResolvedType;
+
+			type = GetType(targetRR);
 			if (targetRR is NamespaceResolveResult) {
 				return ResolveMemberInNamespace(((NamespaceResolveResult)targetRR).Name, memberReferenceExpression);
 			} else if (type != null) {
@@ -393,22 +394,33 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				
 				var memberRR = resolver.ResolveMember(type, memberReferenceExpression.MemberName,
-				                              memberReferenceExpression.TypeArguments,
-				                              NRefactoryResolver.IsInvoked(memberReferenceExpression),
-				                              typeRR == null, // allow extension methods only for non-static method calls
-				                              targetRR is BaseResolveResult ? (bool?)true : null // allow calling protected members using "base."
-				                             );
+				                                      memberReferenceExpression.TypeArguments,
+				                                      NRefactoryResolver.IsInvoked(memberReferenceExpression),
+				                                      typeRR == null, // allow extension methods only for non-static method calls
+				                                      targetRR is BaseResolveResult ? (bool?)true : null // allow calling protected members using "base."
+				                                     );
 				
 //				MethodGroupResolveResult mgRR = memberRR as MethodGroupResolveResult;
-//				
+//
 //				if (mgRR == null)
 //					mgRR = targetRR as MethodGroupResolveResult;
-//				
+//
 //				if (mgRR != null && !resolver.allowMethodGroupResolveResult)
 //					return CreateMemberResolveResult(mgRR.GetMethodWithEmptyParameterList());
 				
 				return memberRR;
 			}
+			return null;
+		}
+		
+		IReturnType GetType(ResolveResult targetRR)
+		{
+			if (targetRR.ResolvedType != null)
+				return targetRR.ResolvedType;
+			
+			if (targetRR is MixedResolveResult && ((MixedResolveResult)targetRR).TypeResult != null)
+				return ((MixedResolveResult)targetRR).TypeResult.ResolvedType;
+			
 			return null;
 		}
 		
