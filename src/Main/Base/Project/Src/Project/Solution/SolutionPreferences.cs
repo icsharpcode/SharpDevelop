@@ -96,10 +96,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			// validate configuration and platform:
 			IList<string> available = solution.GetConfigurationNames();
-			if (!available.Contains(configuration))
+			if (available.Count > 0 && !available.Contains(configuration))
 				configuration = available[0];
 			available = solution.GetPlatformNames();
-			if (!available.Contains(platform))
+			if (available.Count > 0 && !available.Contains(platform))
 				platform = available[0];
 			
 			this.ActiveConfiguration = configuration;
