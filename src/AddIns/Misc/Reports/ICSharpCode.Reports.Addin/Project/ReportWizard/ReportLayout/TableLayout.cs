@@ -46,7 +46,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			base.ParentItem = table;
 			
 			ICSharpCode.Reports.Core.BaseRowItem headerRow = CreateRowWithTextColumns(ParentItem,  this.reportItems);
-			                                                                 
+			ParentItem.Items.Add (headerRow);                                                                 
 			
 			Point insertLocation =  new Point (margin.Left,headerRow.Location.Y + headerRow.Size.Height + margin.Bottom + margin.Top);
 			
@@ -78,8 +78,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 			insertLocation = new Point(margin.Left,insertLocation.Y + detailRow.Size.Height + margin.Bottom + margin.Top);
 			
-		
-			ParentItem.Items.Add (headerRow);
 			ParentItem.Items.Add (detailRow);
 			
 			ParentItem.Size = CalculateContainerSize(ParentItem,margin);
