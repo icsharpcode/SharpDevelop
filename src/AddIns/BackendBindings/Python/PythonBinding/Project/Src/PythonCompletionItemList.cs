@@ -12,8 +12,6 @@ namespace ICSharpCode.PythonBinding
 		{
 			if (IsNormalKey(key)) {
 				return CompletionItemListKeyResult.NormalKey;
-			} else if (key == '(') {
-				return CompletionItemListKeyResult.NormalKey;
 			}
 			return base.ProcessInput(key);
 		}

@@ -27,8 +27,8 @@ namespace ICSharpCode.PythonBinding
 		public PythonResolver()
 		{
 			methodResolver = new PythonMethodResolver(classResolver, standardModuleResolver);
-			memberResolver = new PythonMemberResolver(classResolver);
 			localVariableResolver = new PythonLocalVariableResolver(classResolver);
+			memberResolver = new PythonMemberResolver(classResolver, localVariableResolver);
 			
 			resolvers.Add(importResolver);
 			resolvers.Add(classResolver);

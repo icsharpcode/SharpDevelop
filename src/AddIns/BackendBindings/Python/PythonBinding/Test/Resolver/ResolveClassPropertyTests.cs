@@ -80,5 +80,19 @@ namespace PythonBinding.Tests.Resolver
 			
 			Assert.AreEqual(nestedClassProperty, resolvedMember);
 		}
+		
+		[Test]
+		public void Resolve_ExpressionIsForPropertyOnLocalVariable_MemberResolveResultResolvedTypeIsMyClassProperty()
+		{
+			CreateClassWithOneProperty();
+			string code =
+				"a = MyClass()\r\n" +
+				"a.MyProperty";
+			
+			resolverHelper.Resolve("a.MyProperty", code);
+			IMember resolvedMember = resolverHelper.MemberResolveResult.ResolvedMember;
+			
+			Assert.AreEqual(myClassProperty, resolvedMember);
+		}
 	}
 }

@@ -13,83 +13,92 @@ namespace ICSharpCode.PythonBinding
 	public class PythonMemberResolver : IPythonResolver
 	{
 		PythonClassResolver classResolver;
+		PythonLocalVariableResolver localVariableResolver;
+		PythonResolverContext resolverContext;
 		
-		public PythonMemberResolver(PythonClassResolver classResolver)
+		public PythonMemberResolver(PythonClassResolver classResolver, PythonLocalVariableResolver localVariableResolver)
 		{
 			this.classResolver = classResolver;
+			this.localVariableResolver = localVariableResolver;
 		}
 		
 		public ResolveResult Resolve(PythonResolverContext resolverContext)
 		{
-			IMember member = FindMember(resolverContext);
-			if (member != null) {
-				return CreateMemberResolveResult(member);
-			}
-			return null;
+			this.resolverContext = resolverContext;
+			IMember member = FindMember();
+			return CreateMemberResolveResult(member);
 		}
 		
-		IMember FindMember(PythonResolverContext resolverContext)
+		IMember FindMember()
 		{
-			return FindMember(resolverContext, resolverContext.Expression);
+			return FindMember(resolverContext.Expression);
 		}
 		
-		IMember FindMember(PythonResolverContext resolverContext, string expression)
+		IMember FindMember(string expression)
 		{
 			MemberName memberName = new MemberName(expression);
 			if (memberName.HasName) {
-				IClass c = FindClass(resolverContext, memberName.Type);
+				IClass c = FindClass(memberName.Type);
 				if (c != null) {
 					return FindMemberInClass(c, memberName.Name);
 				} else {
-					return FindMember(resolverContext, memberName);
+					return FindMemberInParent(memberName);
 				}
 			}
 			return null;
 		}
 		
-		IClass FindClass(PythonResolverContext resolverContext, string className)
+		IClass FindClass(string className)
 		{
-			 return classResolver.GetClass(resolverContext, className);
+			IClass c = FindClassFromClassResolver(className);
+			if (c != null) {
+				return c;
+			}
+			return FindClassFromLocalVariableResolver(className);
+		}
+		
+		IClass FindClassFromClassResolver(string className)
+		{
+			return classResolver.GetClass(resolverContext, className);
+		}
+		
+		IClass FindClassFromLocalVariableResolver(string localVariableName)
+		{
+			 MemberName memberName = new MemberName(localVariableName);
+			 if (!memberName.HasName) {
+			 	string typeName = localVariableResolver.Resolve(localVariableName, resolverContext.FileContent);
+		 		return FindClassFromClassResolver(typeName);
+			 }
+			 return null;
 		}
 		
 		MemberResolveResult CreateMemberResolveResult(IMember member)
 		{
-			return new MemberResolveResult(null, null, member);
-		}
-		
-		IMember FindMemberInClass(IClass matchingClass, string memberName)
-		{
-			List<IMember> members = GetMembers(matchingClass);
-			foreach (IMember member in members) {
-				if (member.Name == memberName) {
-					return member;
-				}
+			if (member != null) {
+				return new MemberResolveResult(null, null, member);
 			}
 			return null;
 		}
 		
-		List<IMember> GetMembers(IClass c)
+		IMember FindMemberInClass(IClass matchingClass, string memberName)
 		{
-			List<IMember> members = new List<IMember>();
-			members.AddRange(c.Events);
-			members.AddRange(c.Fields);
-			members.AddRange(c.Properties);
-			return members;
+			PythonClassMembers classMembers = new PythonClassMembers(matchingClass);
+			return classMembers.FindMember(memberName);
 		}
 		
-		IMember FindMember(PythonResolverContext resolverContext, MemberName memberName)
+		IMember FindMemberInParent(MemberName memberName)
 		{
-			IMember parentMember = FindMember(resolverContext, memberName.Type);
+			IMember parentMember = FindMember(memberName.Type);
 			if (parentMember != null) {
 				return FindMemberInParent(parentMember, memberName.Name);
 			}
 			return null;
 		}
 		
-		IMember FindMemberInParent(IMember parentMember, string propertyName)
+		IMember FindMemberInParent(IMember parentMember, string memberName)
 		{
 			IClass parentMemberClass = parentMember.ReturnType.GetUnderlyingClass();
-			return FindMemberInClass(parentMemberClass, propertyName);
+			return FindMemberInClass(parentMemberClass, memberName);
 		}
 	}
 }
