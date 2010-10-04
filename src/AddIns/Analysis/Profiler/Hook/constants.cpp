@@ -1,9 +1,5 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Siegfried Pammer" email="siegfriedpammer@gmail.com"/>
-//     <version>$Revision$</version>
-// </file>
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 #include "global.h"
 
@@ -13,10 +9,11 @@ WCHAR *consoleGroupList[CONSOLE_GROUP_LENGTH] = {
 };
 
 WCHAR *winFormsGroupList[WINFORMS_GROUP_LENGTH] = {
-	L"System.Windows.Forms.Control.OnClick",
-	L"System.Windows.Forms.Control.OnDoubleClick",
-	L"System.Windows.Forms.Control.OnMouseWheel",
-	L"System.Windows.Forms.Control.OnKeyDown"
+	L"-------------------------------------------------",
+	// L"System.Windows.Forms.Control.OnClick",
+	// L"System.Windows.Forms.Control.OnDoubleClick",
+	// L"System.Windows.Forms.Control.OnMouseWheel",
+	// L"System.Windows.Forms.Control.OnKeyDown"
 };
 
 WCHAR *wpfGroupList[WPF_GROUP_LENGTH] = {

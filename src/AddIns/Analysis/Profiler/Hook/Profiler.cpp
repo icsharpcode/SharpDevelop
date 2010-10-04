@@ -1,9 +1,5 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
-//     <version>$Revision$</version>
-// </file>
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 #include "main.h"
 #include "global.h"
@@ -496,7 +492,7 @@ STDMETHODIMP CProfiler::ExceptionThrown(ObjectID) {
 STDMETHODIMP CProfiler::ExceptionUnwindFunctionLeave() {
 	DebugWriteLine(L"ExceptionUnwindFunctionLeave");
 	FunctionLeaveGlobal();
-    return S_OK;
+	return S_OK;
 }
 
 STDMETHODIMP CProfiler::JITCompilationStarted(FunctionID functionID, BOOL /*fIsSafeToBlock*/) {
@@ -507,18 +503,24 @@ STDMETHODIMP CProfiler::JITCompilationStarted(FunctionID functionID, BOOL /*fIsS
 		return S_OK;
 	
 	for (int i = 0; i < CONSOLE_GROUP_LENGTH; i++) {
-		if (wcsstr(consoleGroupList[i], name) != nullptr)
+		if (wcsstr(consoleGroupList[i], name) != nullptr) {
+			DebugWriteLine(L"Rewriting %s", name);
 			Rewrite(functionID, 0x1, nameId);
+		}
 	}
 	
 	for (int i = 0; i < WINFORMS_GROUP_LENGTH; i++) {
-		if (wcsstr(winFormsGroupList[i], name) != nullptr)
+		if (wcsstr(winFormsGroupList[i], name) != nullptr) {
+			DebugWriteLine(L"Rewriting %s", name);
 			Rewrite(functionID, 0x2, nameId);
+		}
 	}
 	
 	for (int i = 0; i < WPF_GROUP_LENGTH; i++) {
-		if (wcsstr(wpfGroupList[i], name) != nullptr)
+		if (wcsstr(wpfGroupList[i], name) != nullptr) {
+			DebugWriteLine(L"Rewriting %s", name);
 			Rewrite(functionID, 0x3, nameId);
+		}
 	}
 
 	return S_OK;

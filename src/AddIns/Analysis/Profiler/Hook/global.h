@@ -1,11 +1,8 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Siegfried Pammer" email="sie_pam@gmx.at"/>
-//     <version>$Revision$</version>
-// </file>
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 #pragma once
+
 #include "main.h"
 #include "allocator.h"
 #include "sharedMemory.h"
@@ -14,7 +11,7 @@
 #include "LightweightList.h"
 
 #define CONSOLE_GROUP_LENGTH 2
-#define WINFORMS_GROUP_LENGTH 4
+#define WINFORMS_GROUP_LENGTH 1
 #define WPF_GROUP_LENGTH 1
 
 extern fastAllocator stackAllocator;
