@@ -101,7 +101,6 @@
     <Compile Include="Src\PythonCompletionItemList.cs" />
     <Compile Include="Src\PythonConsoleApplication.cs" />
     <Compile Include="Src\PythonConstructor.cs" />
-    <Compile Include="Src\PythonDotNetMethodResolver.cs" />
     <Compile Include="Src\PythonFromImport.cs" />
     <Compile Include="Src\PythonImport.cs" />
     <Compile Include="Src\PythonInsightWindowHandler.cs" />
@@ -114,7 +113,6 @@
     <Compile Include="Src\PythonMethodDefinition.cs" />
     <Compile Include="Src\PythonMethodGroupResolveResult.cs" />
     <Compile Include="Src\PythonMethodOrClassBodyRegion.cs" />
-    <Compile Include="Src\PythonMethodResolver.cs" />
     <Compile Include="Src\PythonModule.cs" />
     <Compile Include="Src\PythonModuleCompletionItems.cs" />
     <Compile Include="Src\PythonModuleCompletionItemsFactory.cs" />

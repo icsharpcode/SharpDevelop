@@ -155,5 +155,12 @@ namespace UnitTesting.Tests.Utils
 			Fields.Add(field);
 			return field;
 		}
+		
+		public DefaultMethod AddMethod(string name)
+		{
+			DefaultMethod method = new DefaultMethod(this, name);
+			Methods.Add(method);
+			return method;
+		}
 	}
 }

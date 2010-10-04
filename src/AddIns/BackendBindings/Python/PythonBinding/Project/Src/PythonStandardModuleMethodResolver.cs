@@ -6,7 +6,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.PythonBinding
 {
-	public class PythonStandardModuleMethodResolver
+	public class PythonStandardModuleMethodResolver : IPythonResolver
 	{
 		PythonStandardModuleResolver standardModuleResolver;
 		

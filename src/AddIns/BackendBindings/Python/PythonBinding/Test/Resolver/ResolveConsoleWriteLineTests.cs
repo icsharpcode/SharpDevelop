@@ -24,6 +24,7 @@ namespace PythonBinding.Tests.Resolver
 		protected override ExpressionResult GetExpressionResult()
 		{
 			systemConsoleClass = new MockClass(projectContent, "System.Console");
+			systemConsoleClass.AddMethod("WriteLine");
 			projectContent.SetClassToReturnFromGetClass("Console", systemConsoleClass);
 			return new ExpressionResult("Console.WriteLine", new DomRegion(2, 2), null, null);
 		}
@@ -35,26 +36,23 @@ namespace PythonBinding.Tests.Resolver
 				"Console.WriteLine\r\n";
 		}
 		
-		[Test]
-		public void ResolveResultExists()
-		{
-			Assert.IsNotNull(resolveResult);
-		}
-		
 		/// <summary>
 		/// Gets the class name used in IProjectContent.GetClass call.
 		/// </summary>
 		[Test]
-		public void GetClassName()
+		public void Resolve_ExpressionIsSystemConsoleWriteLine_ProjectContentGetClassNamePassedConsole()
 		{
-			Assert.AreEqual("Console", projectContent.GetClassName);
+			string className = projectContent.GetClassName;
+			Assert.AreEqual("Console", className);
 		}
 				
 		[Test]
-		public void MethodNameResolveIsWriteLine()
+		public void Resolve_ExpressionIsSystemConsoleWriteLine_MethodNameResolvedIsWriteLine()
 		{
 			MethodGroupResolveResult methodResolveResult = (MethodGroupResolveResult)resolveResult;
-			Assert.AreEqual("WriteLine", methodResolveResult.Name);
+			string name = methodResolveResult.Name;
+			string expectedName = "WriteLine";
+			Assert.AreEqual(expectedName, name);
 		}
 	}
 }

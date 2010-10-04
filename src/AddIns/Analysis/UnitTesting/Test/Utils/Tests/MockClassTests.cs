@@ -255,5 +255,27 @@ namespace UnitTesting.Tests.Utils.Tests
 			
 			Assert.AreEqual("MyField", name);
 		}
+		
+		[Test]
+		public void AddMethod_PassedName_AddsMethodToClass()
+		{
+			MockClass c = new MockClass();
+			c.AddMethod("MyMethod");
+			
+			IMethod myMethod = c.Methods[0];
+			string name = myMethod.Name;
+			
+			Assert.AreEqual("MyMethod", name);
+		}
+		
+		[Test]
+		public void AddMethod_PassedMethodName_ReturnsMethodWithExpectedName()
+		{
+			MockClass c = new MockClass();
+			IMethod myMethod = c.AddMethod("MyMethod");			
+			string name = myMethod.Name;
+			
+			Assert.AreEqual("MyMethod", name);
+		}
 	}
 }

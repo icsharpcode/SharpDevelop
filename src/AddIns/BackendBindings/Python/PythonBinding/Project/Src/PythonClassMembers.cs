@@ -32,6 +32,7 @@ namespace ICSharpCode.PythonBinding
 			members.AddRange(declaringType.Events);
 			members.AddRange(declaringType.Fields);
 			members.AddRange(declaringType.Properties);
+			members.AddRange(declaringType.Methods);
 			return members;
 		}
 	}

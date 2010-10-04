@@ -367,6 +367,7 @@
     <Compile Include="Resolver\ResolveFromSystemImportEverythingTests.cs" />
     <Compile Include="Resolver\ResolveImportsTestFixture.cs" />
     <Compile Include="Resolver\ResolveLocalClassInstanceTests.cs" />
+    <Compile Include="Resolver\ResolveLocalVariableMethodTests.cs" />
     <Compile Include="Resolver\ResolveMethodFromUnknownImportAllTests.cs" />
     <Compile Include="Resolver\ResolveMethodWhenFromImportIsUnknownTests.cs" />
     <Compile Include="Resolver\ResolveMethodWhenImportIsUnknownTests.cs" />

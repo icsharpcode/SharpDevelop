@@ -26,7 +26,7 @@ namespace ICSharpCode.PythonBinding
 		{
 			this.resolverContext = resolverContext;
 			IMember member = FindMember();
-			return CreateMemberResolveResult(member);
+			return CreateResolveResult(member);
 		}
 		
 		IMember FindMember()
@@ -72,9 +72,12 @@ namespace ICSharpCode.PythonBinding
 			 return null;
 		}
 		
-		MemberResolveResult CreateMemberResolveResult(IMember member)
+		ResolveResult CreateResolveResult(IMember member)
 		{
 			if (member != null) {
+				if (member is IMethod) {
+					return new PythonMethodGroupResolveResult(member.DeclaringType, member.Name);
+				}
 				return new MemberResolveResult(null, null, member);
 			}
 			return null;
