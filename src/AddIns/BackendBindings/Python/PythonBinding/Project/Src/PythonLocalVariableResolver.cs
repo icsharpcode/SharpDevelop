@@ -34,13 +34,6 @@ namespace ICSharpCode.PythonBinding
 		}
 		
 		/// <summary>
-		/// The resolved type name.
-		/// </summary>
-		public string TypeName {
-			get { return typeName; }
-		}
-		
-		/// <summary>
 		/// Resolves the type of the variable name specified.
 		/// </summary>
 		/// <param name="variableName">Name of the variable.</param>
@@ -57,9 +50,10 @@ namespace ICSharpCode.PythonBinding
 		
 		string Resolve(string variableName, PythonAst ast)
 		{
+			typeName = null;
 			this.variableName = variableName;
 			ast.Walk(this);
-			return TypeName;
+			return typeName;
 		}
 				
 		public override bool Walk(AssignmentStatement node)

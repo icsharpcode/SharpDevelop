@@ -52,6 +52,5 @@ namespace PythonBinding.Tests.Resolver
 			
 			Assert.AreEqual(myClass, c);
 		}
-		
 	}
 }

@@ -14,10 +14,15 @@ namespace PythonBinding.Tests.Resolver
 	{
 		string typeName;
 		
-		void Resolve(string variableName, string code)
+		PythonLocalVariableResolver CreateResolver()
 		{
 			PythonClassResolver classResolver = new PythonClassResolver();
-			PythonLocalVariableResolver resolver = new PythonLocalVariableResolver(classResolver);
+			return new PythonLocalVariableResolver(classResolver);
+		}
+		
+		void Resolve(string variableName, string code)
+		{
+			PythonLocalVariableResolver resolver = CreateResolver();
 			typeName = resolver.Resolve(variableName, code);
 		}
 		
@@ -97,6 +102,18 @@ namespace PythonBinding.Tests.Resolver
 			Resolve("connection", code);
 			
 			Assert.AreEqual("OracleClient.OracleConnection", typeName);
+		}
+		
+		[Test]
+		public void Resolve_CalledTwiceFirstCallResolvesTypeNameSecondCallDoesNotResolve_ReturnsNull()
+		{
+			string code = "a = Class1()";
+			
+			PythonLocalVariableResolver resolver = CreateResolver();
+			resolver.Resolve("a", code);
+			string typeName = resolver.Resolve("b", code);
+			
+			Assert.IsNull(typeName);
 		}
 	}
 }
