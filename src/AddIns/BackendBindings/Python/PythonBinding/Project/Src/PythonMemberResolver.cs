@@ -15,6 +15,7 @@ namespace ICSharpCode.PythonBinding
 		PythonClassResolver classResolver;
 		PythonLocalVariableResolver localVariableResolver;
 		PythonResolverContext resolverContext;
+		PythonSelfResolver selfResolver = new PythonSelfResolver();
 		
 		public PythonMemberResolver(PythonClassResolver classResolver, PythonLocalVariableResolver localVariableResolver)
 		{
@@ -54,6 +55,9 @@ namespace ICSharpCode.PythonBinding
 			if (c != null) {
 				return c;
 			}
+			if (PythonSelfResolver.IsSelfExpression(className)) {
+				return FindClassFromSelfResolver();
+			}
 			return FindClassFromLocalVariableResolver(className);
 		}
 		
@@ -70,6 +74,16 @@ namespace ICSharpCode.PythonBinding
 		 		return FindClassFromClassResolver(typeName);
 			 }
 			 return null;
+		}
+		
+		IClass FindClassFromSelfResolver()
+		{
+			PythonResolverContext newContext = resolverContext.Clone("self");
+			ResolveResult result = selfResolver.Resolve(newContext);
+			if (result != null) {
+				return result.ResolvedType.GetUnderlyingClass();
+			}
+			return null;
 		}
 		
 		ResolveResult CreateResolveResult(IMember member)

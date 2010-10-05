@@ -42,6 +42,18 @@ namespace PythonBinding.Tests.Resolver
 			resolverHelper.Resolve("self");
 		}
 		
+		void ResolveSelfMethodExpression()
+		{
+			string code =
+				"class Foo:\r\n" +
+				"    def bar(self):\r\n" +
+				"        return 0\r\n" +
+				"\r\n";
+			
+			CreateResolver(code);
+			resolverHelper.Resolve("self.bar");
+		}
+		
 		[Test]
 		public void Resolve_ExpressionIsSelf_ResolveResultCallingClassReturnsFooClass()
 		{
@@ -60,18 +72,6 @@ namespace PythonBinding.Tests.Resolver
 			Assert.AreEqual("bar", methodName);
 		}
 		
-		void ResolveSelfMethodExpression()
-		{
-			string code =
-				"class Foo:\r\n" +
-				"    def bar(self):\r\n" +
-				"        return 0\r\n" +
-				"\r\n";
-			
-			CreateResolver(code);
-			resolverHelper.Resolve("self.bar");
-		}
-		
 		[Test]
 		public void Resolve_ExpressionIsSelfFollowedByMethodCall_MethodGroupResolveResultContainingTypeUnderlyingClassIsFooClass()
 		{
@@ -79,6 +79,37 @@ namespace PythonBinding.Tests.Resolver
 			IClass underlyingClass = resolverHelper.MethodGroupResolveResult.ContainingType.GetUnderlyingClass();
 			
 			Assert.AreEqual(fooClass, underlyingClass);
+		}
+		
+		[Test]
+		public void Resolve_ClassPropertyReferencedThroughSelf_MemberResolveResultResolvedMemberIsNamePropertyOnFooClass()
+		{
+			string code =
+				"class Foo:\r\n" +
+				"    def get_name(self):\r\n" +
+				"        return 'test'\r\n" +
+				"    name = property(fget=get_name)\r\n" +
+				"\r\n";
+			
+			CreateResolver(code);
+			resolverHelper.Resolve("self.name");
+			
+			IMember member = resolverHelper.MemberResolveResult.ResolvedMember;
+			IMember expectedMember = fooClass.Properties[0];
+			
+			Assert.AreSame(expectedMember, member);
+		}
+		
+		[Test]
+		public void Resolve_PropertyReferencedThroughSelfButOutsideClass_ReturnsNull()
+		{
+			string code = String.Empty;
+			resolverHelper = new PythonResolverTestsHelper(code);
+			resolverHelper.Resolve("self.name");
+			
+			ResolveResult result = resolverHelper.ResolveResult;
+			
+			Assert.IsNull(result);
 		}
 	}
 }

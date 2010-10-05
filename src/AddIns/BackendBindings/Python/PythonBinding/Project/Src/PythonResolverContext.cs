@@ -300,5 +300,12 @@ namespace ICSharpCode.PythonBinding
 			}
 			return false;
 		}
+		
+		public PythonResolverContext Clone(string newExpression)
+		{
+			ParseInformation parseInfo = new ParseInformation(compilationUnit);
+			ExpressionResult newExpressionResult = new ExpressionResult(newExpression);
+			return new PythonResolverContext(parseInfo, newExpressionResult, fileContent);
+		}
 	}
 }

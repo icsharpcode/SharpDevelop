@@ -60,16 +60,19 @@ namespace ICSharpCode.PythonBinding
 			currentClass = null;
 		}
 		
-		public override bool Walk(FunctionDefinition node)
+		public override bool Walk(FunctionDefinition functionDefinition)
 		{
-			if (node.Body == null) {
+			if (functionDefinition.Body == null) {
 				return false;
 			}
 			
 			IClass c = GetClassBeingWalked();
 			
-			PythonMethodDefinition methodDefinition = new PythonMethodDefinition(node);
-			methodDefinition.CreateMethod(c);
+			PythonMethodDefinition methodDefinition = new PythonMethodDefinition(functionDefinition);
+			PythonMethod method = methodDefinition.CreateMethod(c);
+			if (method is PythonConstructor) {
+				FindFields(c, functionDefinition);
+			}
 			return false;
 		}
 		
@@ -97,6 +100,12 @@ namespace ICSharpCode.PythonBinding
 			}
 		}
 		
+		void FindFields(IClass c, FunctionDefinition functionDefinition)
+		{
+			PythonClassFields fields = new PythonClassFields(functionDefinition);
+			fields.AddFields(c);
+		}
+		
 		/// <summary>
 		/// Walks an import statement and adds it to the compilation unit's
 		/// Usings.
@@ -118,13 +127,13 @@ namespace ICSharpCode.PythonBinding
 		public override bool Walk(AssignmentStatement node)
 		{
 			if (currentClass != null) {
-				WalkPropertyAssignment(node);
+				FindProperty(node);
 				return false;
 			}
 			return base.Walk(node);
 		}
 		
-		void WalkPropertyAssignment(AssignmentStatement node)
+		void FindProperty(AssignmentStatement node)
 		{
 			PythonPropertyAssignment propertyAssignment = new PythonPropertyAssignment(node);
 			propertyAssignment.CreateProperty(currentClass);

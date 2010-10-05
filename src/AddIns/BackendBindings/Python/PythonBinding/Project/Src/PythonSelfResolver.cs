@@ -21,9 +21,14 @@ namespace ICSharpCode.PythonBinding
 			return null;
 		}
 		
+		public static bool IsSelfExpression(string expression)
+		{
+			return expression == "self";
+		}
+		
 		bool IsSelfExpression(PythonResolverContext resolverContext)
 		{
-			return resolverContext.Expression == "self";
+			return IsSelfExpression(resolverContext.Expression);
 		}
 		
 		ResolveResult CreateResolveResult(PythonResolverContext resolverContext)
