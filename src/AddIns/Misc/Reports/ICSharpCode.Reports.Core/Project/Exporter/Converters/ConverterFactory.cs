@@ -21,7 +21,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 			Type t = itemToConvert.GetType();
 			if (t.Equals(typeof(BaseTableItem))) {
-				return new TableConverter(dataNavigator,singlePage,layouter);
+				return new GroupedTableConverter(dataNavigator,singlePage,layouter);
 			}
 			
 			if (t.Equals(typeof(BaseRowItem))) {

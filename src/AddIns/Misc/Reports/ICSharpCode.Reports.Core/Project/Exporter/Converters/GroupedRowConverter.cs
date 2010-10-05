@@ -97,22 +97,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 							
 							if (PrintHelper.IsPageFull(pageBreakRect,base.SectionBounds )) {
 								currentPosition = ForcePageBreak (exporterCollection,section);
-//								base.BuildNewPage(exporterCollection,section);
-//								currentPosition = CalculateStartPosition ();
 							}
-							
-							
 						}
 						while ( childNavigator.MoveNext());
 						
-					
 						if (PageBreakAfterGroupChange(section) ) {
 							
 							if ( base.DataNavigator.HasMoreData)
 							{
 								currentPosition = ForcePageBreak (exporterCollection,section);
-								//currentPosition = CalculateStartPosition ();
-
 							}
 						}
 						
@@ -128,12 +121,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 				pageBreakRect = PrintHelper.CalculatePageBreakRectangle((BaseReportItem)section.Items[0],currentPosition);
 				if (PrintHelper.IsPageFull(pageBreakRect,base.SectionBounds)) {
 					currentPosition= ForcePageBreak (exporterCollection,section);
-//					currentPosition = CalculateStartPosition();
 				}
 				
 				ShouldDrawBorder (section,exporterCollection);
-				
-				
 			}
 			while (base.DataNavigator.MoveNext());
 			
@@ -206,7 +196,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			base.FillRow(simpleContainer);
 			PrepareContainerForConverting(section,simpleContainer);
 			Point curPos = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
-			StandardPrinter.EvaluateRow(base.Evaluator,mylist);
 			AfterConverting (section,mylist);
 			return curPos;
 		}
