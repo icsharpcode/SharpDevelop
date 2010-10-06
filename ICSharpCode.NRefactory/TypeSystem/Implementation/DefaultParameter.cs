@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Text;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -132,6 +133,25 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			DefaultParameter p = other as DefaultParameter;
 			return p != null && type == p.type && attributes == p.attributes
 				&& defaultValue == p.defaultValue && region == p.region && flags == p.flags;
+		}
+		
+		public override string ToString()
+		{
+			StringBuilder b = new StringBuilder();
+			if (IsRef)
+				b.Append("ref ");
+			if (IsOut)
+				b.Append("out ");
+			if (IsParams)
+				b.Append("params ");
+			b.Append(name);
+			b.Append(':');
+			b.Append(type.ToString());
+			if (defaultValue != null) {
+				b.Append(" = ");
+				b.Append(defaultValue.ToString());
+			}
+			return b.ToString();
 		}
 	}
 }

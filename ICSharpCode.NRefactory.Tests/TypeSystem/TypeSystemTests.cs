@@ -41,7 +41,27 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			IMethod method = c.Methods.Single(m => m.Name == "Method");
 			Assert.AreEqual(typeof(SimplePublicClass).FullName + ".Method", method.FullName);
 			Assert.AreSame(c, method.DeclaringType);
-			
+			Assert.AreEqual(Accessibility.Public, method.Accessibility);
+			Assert.AreEqual(EntityType.Method, method.EntityType);
+			Assert.IsFalse(method.IsVirtual);
+			Assert.IsFalse(method.IsStatic);
+			Assert.IsTrue(method.IsFrozen);
+			Assert.AreEqual(0, method.Parameters.Count);
+			Assert.AreEqual(0, method.Attributes.Count);
+		}
+		
+		[Test]
+		[Ignore]
+		public void DynamicTypeInGenerics()
+		{
+			ITypeDefinition testClass = testCasePC.GetClass(typeof(DynamicTest).FullName, 0, StringComparer.Ordinal);
+			/*CSharpAmbience a = new CSharpAmbience();
+			a.ConversionFlags = ConversionFlags.ShowReturnType | ConversionFlags.ShowParameterList;
+			Assert.AreEqual("List<dynamic> DynamicGenerics1(Action<object, dynamic[], object>)", a.Convert(testClass.Methods.Single(me => me.Name == "DynamicGenerics1")));
+			Assert.AreEqual("void DynamicGenerics2(Action<object, dynamic, object>)", a.Convert(testClass.Methods.Single(me => me.Name == "DynamicGenerics2")));
+			Assert.AreEqual("void DynamicGenerics3(Action<int, dynamic, object>)", a.Convert(testClass.Methods.Single(me => me.Name == "DynamicGenerics3")));
+			Assert.AreEqual("void DynamicGenerics4(Action<int[], dynamic, object>)", a.Convert(testClass.Methods.Single(me => me.Name == "DynamicGenerics4")));
+			Assert.AreEqual("void DynamicGenerics5(Action<Int32*[], dynamic, object>)", a.Convert(testClass.Methods.Single(me => me.Name == "DynamicGenerics5")));*/
 		}
 	}
 }

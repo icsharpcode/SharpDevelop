@@ -174,6 +174,25 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 			return hashCode;
 		}
+		
+		public static ITypeReference Create(ITypeReference genericType, IEnumerable<ITypeReference> typeArguments)
+		{
+			if (genericType == null)
+				throw new ArgumentNullException("genericType");
+			if (typeArguments == null)
+				throw new ArgumentNullException("typeArguments");
+			
+			ITypeReference[] typeArgs = typeArguments.ToArray();
+			if (genericType is ITypeDefinition && Array.TrueForAll(typeArgs, t => t is IType)) {
+				IType[] ta = new IType[typeArgs.Length];
+				for (int i = 0; i < ta.Length; i++) {
+					ta[i] = (IType)typeArgs[i];
+				}
+				return new ConstructedType((ITypeDefinition)genericType, ta);
+			} else {
+				return new ConstructedTypeReference(genericType, typeArgs);
+			}
+		}
 	}
 	
 	/// <summary>
@@ -225,6 +244,21 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					resolvedTypes[i] = SharedTypes.UnknownType;
 			}
 			return new ConstructedType(baseTypeDef, resolvedTypes);
+		}
+		
+		public override string ToString()
+		{
+			StringBuilder b = new StringBuilder(genericType.ToString());
+			b.Append('[');
+			for (int i = 0; i < typeArguments.Length; i++) {
+				if (i > 0)
+					b.Append(',');
+				b.Append('[');
+				b.Append(typeArguments[i].ToString());
+				b.Append(']');
+			}
+			b.Append(']');
+			return b.ToString();
 		}
 	}
 }

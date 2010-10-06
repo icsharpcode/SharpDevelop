@@ -33,5 +33,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			else
 				return value;
 		}
+		
+		public override string ToString()
+		{
+			if (value == null)
+				return "null";
+			else
+				return value.ToString();
+		}
 	}
 }

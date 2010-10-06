@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-
+using System.Runtime.CompilerServices;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using Mono.Cecil;
 
@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeResolveContext oldEarlyBindContext = this.EarlyBindContext;
 			try {
 				List<IAttribute> assemblyAttributes = new List<IAttribute>();
-				ReadAttributes(assemblyDefinition, assemblyAttributes);
+				AddAttributes(assemblyDefinition, assemblyAttributes);
 				TypeStorage typeStorage = new TypeStorage();
 				CecilProjectContent pc = new CecilProjectContent(typeStorage, assemblyDefinition.Name.FullName, assemblyAttributes.AsReadOnly());
 				
@@ -181,26 +181,23 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return PointerTypeReference.Create(
 					CreateType(
 						(type as Mono.Cecil.PointerType).ElementType,
-						entity,
-						typeAttributes, ref typeIndex));
+						entity, typeAttributes, ref typeIndex));
 			} else if (type is Mono.Cecil.ArrayType) {
 				typeIndex++;
 				return ArrayTypeReference.Create(
 					CreateType(
 						(type as Mono.Cecil.ArrayType).ElementType,
-						entity,
-						typeAttributes, ref typeIndex),
+						entity, typeAttributes, ref typeIndex),
 					(type as Mono.Cecil.ArrayType).Rank);
 			} else if (type is GenericInstanceType) {
 				GenericInstanceType gType = (GenericInstanceType)type;
-				/*IReturnType baseType = CreateType(pc, member, gType.ElementType, attributeProvider, ref typeIndex);
-				IReturnType[] para = new IReturnType[gType.GenericArguments.Count];
+				ITypeReference baseType = CreateType(gType.ElementType, entity, typeAttributes, ref typeIndex);
+				ITypeReference[] para = new ITypeReference[gType.GenericArguments.Count];
 				for (int i = 0; i < para.Length; ++i) {
 					typeIndex++;
-					para[i] = CreateType(pc, member, gType.GenericArguments[i], attributeProvider, ref typeIndex);
+					para[i] = CreateType(gType.GenericArguments[i], entity, typeAttributes, ref typeIndex);
 				}
-				return new ConstructedReturnType(baseType, para);*/
-				throw new NotImplementedException();
+				return ConstructedType.Create(baseType, para);
 			} else if (type is GenericParameter) {
 				GenericParameter typeGP = type as GenericParameter;
 				if (typeGP.Owner is MethodDefinition) {
@@ -303,7 +300,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Attributes
-		void ReadAttributes(ICustomAttributeProvider attributeProvider, IList<IAttribute> outputList)
+		void AddAttributes(ICustomAttributeProvider attributeProvider, IList<IAttribute> outputList)
 		{
 			foreach (var cecilAttribute in attributeProvider.CustomAttributes) {
 				outputList.Add(ReadAttribute(cecilAttribute));
@@ -422,7 +419,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				InitNestedTypes(loader); // nested types can be initialized only after generic parameters were created
 				
 				if (typeDefinition.HasCustomAttributes) {
-					loader.ReadAttributes(typeDefinition, this.Attributes);
+					loader.AddAttributes(typeDefinition, this.Attributes);
 				}
 				
 				// set base classes
@@ -538,19 +535,168 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			void InitMembers(CecilLoader loader)
 			{
+				this.AddDefaultConstructorIfRequired = (this.ClassType == ClassType.Struct || this.ClassType == ClassType.Enum);
 				if (typeDefinition.HasMethods) {
 					foreach (MethodDefinition method in typeDefinition.Methods) {
-						this.Methods.Add(loader.ReadMethod(method, this));
+						if (loader.IsVisible(method.Attributes)) {
+							EntityType type = EntityType.Method;
+							if (method.IsSpecialName) {
+								if (method.IsConstructor)
+									type = EntityType.Constructor;
+								else if (method.Name.StartsWith("op_", StringComparison.Ordinal))
+									type = EntityType.Operator;
+								else
+									continue;
+							}
+							this.Methods.Add(loader.ReadMethod(method, this, type));
+						}
 					}
 				}
 			}
 		}
 		#endregion
 		
-		IMethod ReadMethod(MethodDefinition method, ITypeDefinition parentType)
+		#region ReadMethod
+		IMethod ReadMethod(MethodDefinition method, ITypeDefinition parentType, EntityType methodType)
 		{
 			DefaultMethod m = new DefaultMethod(parentType, method.Name);
+			m.EntityType = methodType;
+			if (method.HasGenericParameters) {
+				throw new NotImplementedException();
+				/*foreach (GenericParameter g in method.GenericParameters) {
+					m.TypeParameters.Add(new DefaultTypeParameter(this, g.Name, g.Position));
+				}
+				int i = 0;
+				foreach (GenericParameter g in method.GenericParameters) {
+					AddConstraintsFromType(m.TypeParameters[i++], g);
+				}*/
+			}
+			
+			if (method.IsConstructor)
+				m.ReturnType = parentType;
+			else
+				m.ReturnType = ReadTypeReference(method.ReturnType, typeAttributes: method, entity: m);
+			
+			if (method.HasCustomAttributes) {
+				AddAttributes(method, m.Attributes);
+			}
+			
+			if (parentType.ClassType == ClassType.Interface) {
+				// interface members don't have modifiers, but we want to handle them as "public abstract"
+				m.Accessibility = Accessibility.Public;
+				m.IsAbstract = true;
+			} else {
+				TranslateModifiers(method, m);
+			}
+			
+			if (method.HasParameters) {
+				foreach (ParameterDefinition p in method.Parameters) {
+					m.Parameters.Add(ReadParameter(p, parentMember: m));
+				}
+			}
+			
+			AddExplicitInterfaceImplementations(method, m);
+			
+			// mark as extension method is the attribute is set
+			if (method.IsStatic && method.HasCustomAttributes) {
+				foreach (var attr in method.CustomAttributes) {
+					if (attr.AttributeType.FullName == typeof(ExtensionAttribute).FullName)
+						m.IsExtensionMethod = true;
+				}
+			}
+			
 			return m;
+		}
+		
+		bool IsVisible(MethodAttributes att)
+		{
+			att &= MethodAttributes.MemberAccessMask;
+			return IncludeInternalMembers
+				|| att == MethodAttributes.Public
+				|| att == MethodAttributes.Family
+				|| att == MethodAttributes.FamORAssem;
+		}
+		
+		Accessibility GetAccessibility(MethodAttributes attr)
+		{
+			switch (attr & MethodAttributes.MemberAccessMask) {
+				case MethodAttributes.Private:
+					return Accessibility.Private;
+				case MethodAttributes.FamANDAssem:
+					return Accessibility.ProtectedAndInternal;
+				case MethodAttributes.Assem:
+					return Accessibility.Internal;
+				case MethodAttributes.Family:
+					return Accessibility.Protected;
+				case MethodAttributes.FamORAssem:
+					return Accessibility.ProtectedOrInternal;
+				default:
+					return Accessibility.Public;
+			}
+		}
+		
+		void TranslateModifiers(MethodDefinition method, AbstractMember member)
+		{
+			member.Accessibility = GetAccessibility(method.Attributes);
+			if (method.IsAbstract)
+				member.IsAbstract = true;
+			else if (method.IsFinal)
+				member.IsSealed = true;
+			else if (method.IsVirtual)
+				member.IsVirtual = true;
+		}
+		#endregion
+		
+		bool IsVisible(FieldAttributes att)
+		{
+			att &= FieldAttributes.FieldAccessMask;
+			return IncludeInternalMembers
+				|| att == FieldAttributes.Public
+				|| att == FieldAttributes.Family
+				|| att == FieldAttributes.FamORAssem;
+		}
+		
+		#region ReadParameter
+		public IParameter ReadParameter(ParameterDefinition parameter, IParameterizedMember parentMember = null)
+		{
+			if (parameter == null)
+				throw new ArgumentNullException("parameter");
+			DefaultParameter p = new DefaultParameter();
+			p.Name = parameter.Name;
+			p.Type = ReadTypeReference(parameter.ParameterType, typeAttributes: parameter, entity: parentMember);
+			
+			if (parameter.HasCustomAttributes)
+				AddAttributes(parameter, p.Attributes);
+			
+			if (parameter.ParameterType is ByReferenceType) {
+				if (parameter.IsOut)
+					p.IsOut = true;
+				else
+					p.IsRef = true;
+			}
+			
+			if (parameter.IsOptional) {
+				p.DefaultValue = ReadConstantValue(new CustomAttributeArgument(parameter.ParameterType, parameter.Constant));
+			}
+			
+			if (parameter.ParameterType is Mono.Cecil.ArrayType) {
+				foreach (CustomAttribute att in parameter.CustomAttributes) {
+					if (att.AttributeType.FullName == typeof(ParamArrayAttribute).FullName) {
+						p.IsParams = true;
+						break;
+					}
+				}
+			}
+			
+			return p;
+		}
+		#endregion
+		
+		void AddExplicitInterfaceImplementations(MethodDefinition method, AbstractMember targetMember)
+		{
+			if (method.HasOverrides) {
+				throw new NotImplementedException();
+			}
 		}
 	}
 }

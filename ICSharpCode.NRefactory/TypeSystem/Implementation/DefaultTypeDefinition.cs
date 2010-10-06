@@ -37,6 +37,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		const ushort FlagAbstract  = 0x0002;
 		const ushort FlagShadowing = 0x0004;
 		const ushort FlagSynthetic = 0x0008;
+		const ushort FlagAddDefaultConstructorIfRequired = 0x0010;
 		
 		protected override void FreezeInternal()
 		{
@@ -397,6 +398,21 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public override string ToString()
 		{
 			return DotNetName;
+		}
+		
+		/// <summary>
+		/// Gets whether a default constructor should be added to this class if it is required.
+		/// Such automatic default constructors will not appear in ITypeDefinition.Methods, but will be present
+		/// in IType.GetMethods().
+		/// </summary>
+		/// <remarks>This way of creating the default constructor is necessary because
+		/// we cannot create it directly in the IClass - we need to consider partial classes.</remarks>
+		public bool AddDefaultConstructorIfRequired {
+			get { return flags[FlagAddDefaultConstructorIfRequired]; }
+			set {
+				CheckBeforeMutation();
+				flags[FlagAddDefaultConstructorIfRequired] = value;
+			}
 		}
 	}
 }

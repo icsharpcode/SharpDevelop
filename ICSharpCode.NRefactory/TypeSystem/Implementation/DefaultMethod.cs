@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -72,6 +73,26 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					parameters = new List<IParameter>();
 				return parameters;
 			}
+		}
+		
+		public override string ToString()
+		{
+			StringBuilder b = new StringBuilder("[");
+			b.Append(EntityType.ToString());
+			b.Append(' ');
+			b.Append(DeclaringType.Name);
+			b.Append('.');
+			b.Append(Name);
+			b.Append('(');
+			var p = this.Parameters;
+			for (int i = 0; i < p.Count; i++) {
+				if (i > 0) b.Append(", ");
+				b.Append(p[i].ToString());
+			}
+			b.Append("):");
+			b.Append(ReturnType.ToString());
+			b.Append(']');
+			return b.ToString();
 		}
 	}
 }

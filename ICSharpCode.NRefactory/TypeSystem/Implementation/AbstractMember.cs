@@ -244,5 +244,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual string DotNetName {
 			get { return this.DeclaringType.DotNetName + "." + this.Name; }
 		}
+		
+		public override string ToString()
+		{
+			return "[" + EntityType + " " + DotNetName + ":" + ReturnType + "]";
+		}
 	}
 }
