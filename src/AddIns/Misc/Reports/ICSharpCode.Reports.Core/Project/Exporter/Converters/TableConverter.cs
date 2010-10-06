@@ -78,7 +78,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 							BaseSection section = this.baseTable.Parent as BaseSection;
 							PrintHelper.AdjustSectionLocation(section);
 							
-							base.FillRow(simpleContainer);
+//							base.FillRow(simpleContainer);
 							
 							StandardPrinter.EvaluateRow(base.Evaluator,mylist);
 							
@@ -154,7 +154,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 							BaseSection section = this.baseTable.Parent as BaseSection;
 							PrintHelper.AdjustSectionLocation(section);
 							
-							base.FillRow(simpleContainer);
+//							base.FillRow(simpleContainer);
 							
 							StandardPrinter.EvaluateRow(base.Evaluator,mylist);
 							

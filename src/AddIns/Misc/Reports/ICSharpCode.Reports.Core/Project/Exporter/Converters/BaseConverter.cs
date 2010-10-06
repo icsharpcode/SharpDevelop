@@ -53,7 +53,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		
 		#region PageBreak
 		
 		protected void BuildNewPage(ExporterCollection myList,BaseSection section)
@@ -68,6 +67,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			EventHelper.Raise<NewPageEventArgs>(PageFull,this,new NewPageEventArgs(items));
 		}
+		
 		
 		#endregion
 		
@@ -105,6 +105,17 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 	
+		#region Grouping
+		
+		protected Point ConvertGroupChilds(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer, int defaultLeftPos, Point currentPosition)
+		{
+			PrepareContainerForConverting(section,simpleContainer);
+			Point curPos  = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+			AfterConverting (mylist);
+			return curPos;
+		}
+		
+		#endregion
 		
 		#region IBaseConverter
 		
@@ -140,6 +151,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		public Graphics Graphics {get;set;}
 		#endregion
 		
+		
+		
 		protected void  SaveSize(Size size)
 		{
 			this.saveSize = size;
@@ -158,13 +171,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		protected void FillRow (ISimpleContainer row)
-		{
-			DataNavigator.Fill(row.Items);
-		}
-		
-		
-		
 		protected	void PrepareContainerForConverting(BaseSection section,ISimpleContainer simpleContainer)
 		{
 			if (section != null) {
@@ -174,17 +180,41 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		private void LayoutRow (ISimpleContainer row)
+		protected void AfterConverting (ExporterCollection convertedList)
 		{
-			PrintHelper.SetLayoutForRow(Graphics,Layouter,row);
+			StandardPrinter.EvaluateRow(Evaluator,convertedList);
+//			section.Items[0].Size = base.RestoreSize;
+//			section.SectionOffset += section.Size.Height + 3 * GlobalValues.GapBetweenContainer;
 		}
 		
-	
+		
+		protected  Point ConvertStandardRow(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer, int defaultLeftPos, Point currentPosition)
+		{
+			FillRow(simpleContainer);
+			PrepareContainerForConverting(section,simpleContainer);
+			Point curPos = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+			AfterConverting (mylist);
+			return curPos;
+		}
+		
+		
 		protected static Point BaseConvert(ExporterCollection myList,ISimpleContainer container,int leftPos,Point curPos)
 		{
 			ExporterCollection ml = BaseConverter.ConvertItems (container, curPos);		
 			myList.AddRange(ml);
 			return new Point (leftPos,curPos.Y + container.Size.Height + (3 *GlobalValues.GapBetweenContainer));
+		}
+		
+		
+		private void FillRow (ISimpleContainer row)
+		{
+			DataNavigator.Fill(row.Items);
+		}
+		
+		
+		private void LayoutRow (ISimpleContainer row)
+		{
+			PrintHelper.SetLayoutForRow(Graphics,Layouter,row);
 		}
 	}
 }
