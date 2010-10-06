@@ -2,6 +2,7 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -11,8 +12,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// </summary>
 	public class ProxyTypeResolveContext : ITypeResolveContext
 	{
-		ITypeResolveContext target;
+		readonly ITypeResolveContext target;
 		
+		/// <summary>
+		/// Creates a new ProxyTypeResolveContext.
+		/// </summary>
 		public ProxyTypeResolveContext(ITypeResolveContext target)
 		{
 			if (target == null)
@@ -20,11 +24,31 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.target = target;
 		}
 		
+		/// <inheritdoc/>
 		public virtual ITypeDefinition GetClass(string fullTypeName, int typeParameterCount, StringComparer nameComparer)
 		{
 			return target.GetClass(fullTypeName, typeParameterCount, nameComparer);
 		}
 		
+		/// <inheritdoc/>
+		public virtual IEnumerable<ITypeDefinition> GetClasses()
+		{
+			return target.GetClasses();
+		}
+		
+		/// <inheritdoc/>
+		public virtual IEnumerable<ITypeDefinition> GetClasses(string nameSpace, StringComparer nameComparer)
+		{
+			return target.GetClasses(nameSpace, nameComparer);
+		}
+		
+		/// <inheritdoc/>
+		public virtual IEnumerable<string> GetNamespaces()
+		{
+			return target.GetNamespaces();
+		}
+		
+		/// <inheritdoc/>
 		public virtual ISynchronizedTypeResolveContext Synchronize()
 		{
 			return target.Synchronize();

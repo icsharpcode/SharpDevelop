@@ -12,18 +12,18 @@ using Mono.Cecil;
 namespace ICSharpCode.NRefactory.TypeSystem
 {
 	/// <summary>
-	/// Project content that represents an already compiled assembly.
+	/// Static methods for loading an IProjectContent from an already compiled assembly.
 	/// </summary>
-	public class CecilProjectContent : IProjectContent
+	public static class CecilLoader
 	{
-		IList<IAttribute> assemblyAttributes;
-		
-		#region Constructor
-		public CecilProjectContent(AssemblyDefinition assemblyDefinition)
+		#region Load From AssemblyDefinition
+		public static IProjectContent LoadAssembly(AssemblyDefinition assemblyDefinition)
 		{
-			this.assemblyAttributes = new List<IAttribute>();
-			ReadAttributes(assemblyDefinition, this.assemblyAttributes);
-			this.assemblyAttributes = new ReadOnlyCollection<IAttribute>(this.assemblyAttributes);
+			if (assemblyDefinition == null)
+				throw new ArgumentNullException("assemblyDefinition");
+			List<IAttribute> assemblyAttributes = new List<IAttribute>();
+			ReadAttributes(assemblyDefinition, assemblyAttributes, earlyBindContext: null);
+			CecilProjectContent pc = new CecilProjectContent(assemblyDefinition.Name.FullName, assemblyAttributes.AsReadOnly());
 			List<CecilTypeDefinition> types = new List<CecilTypeDefinition>();
 			foreach (ModuleDefinition module in assemblyDefinition.Modules) {
 				foreach (TypeDefinition td in module.Types) {
@@ -31,38 +31,72 @@ namespace ICSharpCode.NRefactory.TypeSystem
 						string name = td.FullName;
 						if (name.Length == 0 || name[0] == '<')
 							continue;
-						types.Add(new CecilTypeDefinition(this, td));
+						types.Add(new CecilTypeDefinition(pc, td));
 					}
 				}
 			}
 			foreach (CecilTypeDefinition c in types) {
-				c.Init(this);
+				c.Init(pc);
+				pc.AddType(c);
 			}
+			pc.initialized = true;
+			return pc;
 		}
 		
-		public CecilProjectContent(TypeDefinition typeDefinition)
+		/// <summary>
+		/// Loads a type from Cecil.
+		/// </summary>
+		/// <param name="typeDefinition">The Cecil TypeDefinition.</param>
+		/// <param name="projectContent">The project content used as parent for the new type.</param>
+		/// <returns>ITypeDefinition representing the Cecil type.</returns>
+		public static ITypeDefinition LoadType(TypeDefinition typeDefinition, IProjectContent projectContent)
 		{
-			this.assemblyAttributes = EmptyList<IAttribute>.Instance;
-			List<CecilTypeDefinition> types = new List<CecilTypeDefinition>();
-			types.Add(new CecilTypeDefinition(this, typeDefinition));
-			types[0].Init(this);
+			if (typeDefinition == null)
+				throw new ArgumentNullException("typeDefinition");
+			if (projectContent == null)
+				throw new ArgumentNullException("projectContent");
+			var c = new CecilTypeDefinition(projectContent, typeDefinition);
+			c.Init(null);
+			return c;
 		}
 		#endregion
 		
 		#region IProjectContent implementation
-		public IList<IAttribute> AssemblyAttributes {
-			get { return assemblyAttributes; }
-		}
-		
-		public ITypeDefinition GetClass(string fullTypeName, int typeParameterCount, StringComparer nameComparer)
+		sealed class CecilProjectContent : SimpleProjectContent
 		{
-			throw new NotImplementedException();
-		}
-		
-		public ISynchronizedTypeResolveContext Synchronize()
-		{
-			// CecilProjectContent is immutable, so we don't need to synchronize
-			return new DummySynchronizedTypeResolveContext(this);
+			readonly string assemblyName;
+			internal bool initialized;
+			
+			public CecilProjectContent(string assemblyName, ReadOnlyCollection<IAttribute> assemblyAttributes)
+			{
+				this.assemblyName = assemblyName;
+				this.AssemblyAttributes = assemblyAttributes;
+			}
+			
+			public override string ToString()
+			{
+				return "[CecilProjectContent " + assemblyName + "]";
+			}
+			
+			public override void AddType(ITypeDefinition typeDefinition)
+			{
+				// ensure that CecilProjectContent stays immutable after it's initialized
+				if (initialized)
+					throw new NotSupportedException();
+				base.AddType(typeDefinition);
+			}
+			
+			public override void RemoveType(ITypeDefinition typeDefinition)
+			{
+				// ensure that CecilProjectContent stays immutable after it's initialized
+				throw new NotSupportedException();
+			}
+			
+			public override ISynchronizedTypeResolveContext Synchronize()
+			{
+				// CecilProjectContent is immutable, so we don't need to synchronize
+				return new DummySynchronizedTypeResolveContext(this);
+			}
 		}
 		
 		sealed class DummySynchronizedTypeResolveContext : ProxyTypeResolveContext, ISynchronizedTypeResolveContext
@@ -74,16 +108,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			public void Dispose()
 			{
 			}
+			
+			public override ISynchronizedTypeResolveContext Synchronize()
+			{
+				return this;
+			}
 		}
 		#endregion
 		
 		#region Load Assembly From Disk
-		public static CecilProjectContent LoadAssembly(string fileName)
+		public static IProjectContent LoadAssembly(string fileName)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
 			AssemblyDefinition asm = AssemblyDefinition.ReadAssembly(fileName, new ReaderParameters { AssemblyResolver = new DummyAssemblyResolver() });
-			return new CecilProjectContent(asm);
+			return LoadAssembly(asm);
 		}
 		
 		// used to prevent Cecil from loading referenced assemblies
@@ -109,10 +148,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// a type system type reference.</param>
 		/// <param name="typeAttributes">Attributes associated with the Cecil type reference.
 		/// This is used to support the 'dynamic' type.</param>
-		/// <param name="earlyBindContext">Early binding context - used to pre-resolve
-		/// type references where possible.</param>
 		/// <param name="entity">The entity that owns this type reference.
 		/// Used for generic type references.</param>
+		/// <param name="earlyBindContext">Early binding context - used to pre-resolve
+		/// type references where possible.</param>
 		public static ITypeReference ReadTypeReference(
 			TypeReference type,
 			ICustomAttributeProvider typeAttributes = null,
@@ -262,10 +301,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Attributes
-		void ReadAttributes(ICustomAttributeProvider attributeProvider, IList<IAttribute> outputList)
+		static void ReadAttributes(ICustomAttributeProvider attributeProvider, IList<IAttribute> outputList, ITypeResolveContext earlyBindContext)
 		{
 			foreach (var cecilAttribute in attributeProvider.CustomAttributes) {
-				outputList.Add(new CecilAttribute(cecilAttribute, this));
+				outputList.Add(new CecilAttribute(cecilAttribute, earlyBindContext));
 			}
 		}
 		
@@ -356,9 +395,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				this.typeDefinition = typeDefinition;
 			}
 			
-			public void Init(CecilProjectContent pc)
+			public void Init(ITypeResolveContext earlyBindContext)
 			{
-				InitNestedTypes(pc);
+				InitNestedTypes(earlyBindContext);
 				InitModifiers();
 				
 				if (typeDefinition.HasGenericParameters) {
@@ -373,26 +412,26 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 				
 				if (typeDefinition.HasCustomAttributes) {
-					pc.ReadAttributes(typeDefinition, this.Attributes);
+					ReadAttributes(typeDefinition, this.Attributes, earlyBindContext);
 				}
 				
 				// set base classes
 				if (typeDefinition.BaseType != null) {
-					BaseTypes.Add(ReadTypeReference(typeDefinition.BaseType, entity: this, earlyBindContext: pc));
+					BaseTypes.Add(ReadTypeReference(typeDefinition.BaseType, entity: this, earlyBindContext: earlyBindContext));
 				}
 				if (typeDefinition.HasInterfaces) {
 					foreach (TypeReference iface in typeDefinition.Interfaces) {
-						BaseTypes.Add(ReadTypeReference(iface, entity: this, earlyBindContext: pc));
+						BaseTypes.Add(ReadTypeReference(iface, entity: this, earlyBindContext: earlyBindContext));
 					}
 				}
 				
-				InitMembers(pc);
+				InitMembers(earlyBindContext);
 				
 				this.typeDefinition = null;
 				Freeze(); // freeze after initialization
 			}
 			
-			void InitNestedTypes(CecilProjectContent pc)
+			void InitNestedTypes(ITypeResolveContext earlyBindContext)
 			{
 				if (!typeDefinition.HasNestedTypes)
 					return;
@@ -413,7 +452,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					}
 				}
 				foreach (CecilTypeDefinition innerClass in this.InnerClasses) {
-					innerClass.Init(pc);
+					innerClass.Init(earlyBindContext);
 				}
 			}
 			
@@ -471,7 +510,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return false;
 			}
 			
-			void InitMembers(CecilProjectContent pc)
+			void InitMembers(ITypeResolveContext earlyBindContext)
 			{
 				throw new NotImplementedException();
 			}
