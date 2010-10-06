@@ -2,6 +2,7 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.TypeSystem
@@ -12,7 +13,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		[TestFixtureSetUp]
 		public void SetUp()
 		{
-			//CecilProjectContent pc = new CecilProjectContent(
+			testCasePC = CecilLoader.LoadAssemblyFile(typeof(TestCase.SimplePublicClass).Assembly.Location);
 		}
 	}
 }

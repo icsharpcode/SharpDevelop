@@ -173,6 +173,7 @@
     <Compile Include="TypeSystem\Implementation\NullType.cs" />
     <Compile Include="TypeSystem\Implementation\SimpleConstantValue.cs" />
     <Compile Include="TypeSystem\Implementation\SimpleProjectContent.cs" />
+    <Compile Include="TypeSystem\Implementation\TypeStorage.cs" />
     <Compile Include="TypeSystem\Implementation\TypeWithElementType.cs" />
     <Compile Include="TypeSystem\Implementation\UnknownType.cs" />
     <Compile Include="TypeSystem\INamedElement.cs" />

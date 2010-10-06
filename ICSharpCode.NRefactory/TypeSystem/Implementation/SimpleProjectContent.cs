@@ -3,91 +3,67 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	/// <summary>
 	/// Simple <see cref="IProjectContent"/> implementation that stores the list of classes/namespaces.
 	/// </summary>
-	public class SimpleProjectContent : IProjectContent
+	/// <remarks>
+	/// This is a decorator around <see cref="TypeStorage"/> that adds support for the IProjectContent interface
+	/// and for partial classes.
+	/// </remarks>
+	public class SimpleProjectContent : ProxyTypeResolveContext, IProjectContent
 	{
-		ReaderWriterLockSlim readWriteLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+		readonly TypeStorage types;
+		
+		#region Constructors
+		/// <summary>
+		/// Creates a new SimpleProjectContent.
+		/// </summary>
+		public SimpleProjectContent()
+			: this(new TypeStorage())
+		{
+		}
+		
+		/// <summary>
+		/// Creates a new SimpleProjectContent that reuses the specified type storage.
+		/// </summary>
+		protected SimpleProjectContent(TypeStorage types)
+			: base(types)
+		{
+			this.types = types;
+			this.assemblyAttributes = new List<IAttribute>();
+			this.readOnlyAssemblyAttributes = assemblyAttributes.AsReadOnly();
+		}
+		#endregion
 		
 		#region AssemblyAttributes
-		IList<IAttribute> assemblyAttributes = new List<IAttribute>();
+		readonly List<IAttribute> assemblyAttributes;
+		readonly ReadOnlyCollection<IAttribute> readOnlyAssemblyAttributes;
 		
 		/// <inheritdoc/>
-		public IList<IAttribute> AssemblyAttributes {
-			get { return assemblyAttributes; }
-			protected set {
-				if (value == null)
-					throw new ArgumentNullException();
-				assemblyAttributes = value;
-			}
-		}
-		#endregion
-		
-		#region ITypeResolveContext implementation
-		/// <inheritdoc/>
-		public ITypeDefinition GetClass(string fullTypeName, int typeParameterCount, StringComparer nameComparer)
-		{
-			throw new NotImplementedException();
+		public virtual IList<IAttribute> AssemblyAttributes {
+			get { return readOnlyAssemblyAttributes; }
 		}
 		
-		/// <inheritdoc/>
-		public IEnumerable<ITypeDefinition> GetClasses()
+		void AddAssemblyAttributes(ICollection<IAttribute> attributes)
 		{
-			throw new NotImplementedException();
+			// API uses ICollection instead of IEnumerable to discourage users from evaluating
+			// the list inside the lock (this method is called inside the ReaderWriterLock)
+			assemblyAttributes.AddRange(attributes);
 		}
 		
-		/// <inheritdoc/>
-		public IEnumerable<ITypeDefinition> GetClasses(string nameSpace, StringComparer nameComparer)
+		void RemoveAssemblyAttributes(ICollection<IAttribute> attributes)
 		{
-			throw new NotImplementedException();
-		}
-		
-		/// <inheritdoc/>
-		public IEnumerable<string> GetNamespaces()
-		{
-			throw new NotImplementedException();
-		}
-		#endregion
-		
-		#region Synchronize
-		/// <inheritdoc/>
-		public virtual ISynchronizedTypeResolveContext Synchronize()
-		{
-			readWriteLock.EnterReadLock();
-			return new ReadWriteSynchronizedTypeResolveContext(this, readWriteLock);
-		}
-		
-		sealed class ReadWriteSynchronizedTypeResolveContext : ProxyTypeResolveContext, ISynchronizedTypeResolveContext
-		{
-			readonly ReaderWriterLockSlim readWriteLock;
-			bool disposed;
-			
-			public ReadWriteSynchronizedTypeResolveContext(ITypeResolveContext context, ReaderWriterLockSlim readWriteLock)
-				: base(context)
-			{
-				this.readWriteLock = readWriteLock;
-			}
-			
-			public void Dispose()
-			{
-				if (!disposed) {
-					disposed = true;
-					readWriteLock.ExitReadLock();
-				}
-			}
+			assemblyAttributes.RemoveAll(attributes.Contains);
 		}
 		#endregion
 		
 		#region AddType
-		/// <summary>
-		/// Adds a type definition to this project content.
-		/// </summary>
-		public virtual void AddType(ITypeDefinition typeDefinition)
+		void AddType(ITypeDefinition typeDefinition)
 		{
 			if (typeDefinition == null)
 				throw new ArgumentNullException("typeDefinition");
@@ -95,28 +71,49 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				throw new ArgumentException("Type definition must be frozen before it can be added to a project content");
 			if (typeDefinition.ProjectContent != this)
 				throw new ArgumentException("Cannot add a type definition that belongs to another project content");
-			try {
-				readWriteLock.EnterWriteLock();
-				throw new NotImplementedException();
-			} finally {
-				readWriteLock.ExitWriteLock();
-			}
+			throw new NotImplementedException();
 		}
 		#endregion
 		
 		#region RemoveType
-		/// <summary>
-		/// Removes a type definition from this project content.
-		/// </summary>
-		public virtual void RemoveType(ITypeDefinition typeDefinition)
+		void RemoveType(ITypeDefinition typeDefinition)
 		{
-			if (typeDefinition == null)
-				throw new ArgumentNullException("typeDefinition");
+			throw new NotImplementedException();
+		}
+		#endregion
+		
+		#region UpdateProjectContent
+		/// <summary>
+		/// Removes oldTypes from the project, adds newTypes.
+		/// Removes oldAssemblyAttributes, adds newAssemblyAttributes.
+		/// </summary>
+		/// <remarks>
+		/// The update is done inside a write lock; when other threads access this project content
+		/// from within a <c>using (Synchronize())</c> block, they will not see intermediate (inconsistent) state.
+		/// </remarks>
+		public void UpdateProjectContent(ICollection<ITypeDefinition> oldTypes = null,
+		                                 ICollection<ITypeDefinition> newTypes = null,
+		                                 ICollection<IAttribute> oldAssemblyAttributes = null,
+		                                 ICollection<IAttribute> newAssemblyAttributes = null)
+		{
 			try {
-				readWriteLock.EnterWriteLock();
-				throw new NotImplementedException();
+				types.ReadWriteLock.EnterWriteLock();
+				if (oldTypes != null) {
+					foreach (var element in oldTypes) {
+						RemoveType(element);
+					}
+				}
+				if (newTypes != null) {
+					foreach (var element in newTypes) {
+						AddType(element);
+					}
+				}
+				if (oldAssemblyAttributes != null)
+					RemoveAssemblyAttributes(oldAssemblyAttributes);
+				if (newAssemblyAttributes != null)
+					AddAssemblyAttributes(newAssemblyAttributes);
 			} finally {
-				readWriteLock.ExitWriteLock();
+				types.ReadWriteLock.ExitWriteLock();
 			}
 		}
 		#endregion

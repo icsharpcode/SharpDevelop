@@ -12,7 +12,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// </summary>
 	public class ProxyTypeResolveContext : ITypeResolveContext
 	{
-		readonly ITypeResolveContext target;
+		protected readonly ITypeResolveContext target;
 		
 		/// <summary>
 		/// Creates a new ProxyTypeResolveContext.

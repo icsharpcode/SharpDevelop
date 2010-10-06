@@ -392,5 +392,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return ns.GetHashCode() ^ name.GetHashCode() ^ this.TypeParameterCount;
 			}
 		}
+		
+		public override string ToString()
+		{
+			return DotNetName;
+		}
 	}
 }

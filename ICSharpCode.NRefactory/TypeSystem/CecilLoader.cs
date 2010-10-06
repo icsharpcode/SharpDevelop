@@ -23,7 +23,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentNullException("assemblyDefinition");
 			List<IAttribute> assemblyAttributes = new List<IAttribute>();
 			ReadAttributes(assemblyDefinition, assemblyAttributes, earlyBindContext: null);
-			CecilProjectContent pc = new CecilProjectContent(assemblyDefinition.Name.FullName, assemblyAttributes.AsReadOnly());
+			TypeStorage typeStorage = new TypeStorage();
+			CecilProjectContent pc = new CecilProjectContent(typeStorage, assemblyDefinition.Name.FullName, assemblyAttributes.AsReadOnly());
 			List<CecilTypeDefinition> types = new List<CecilTypeDefinition>();
 			foreach (ModuleDefinition module in assemblyDefinition.Modules) {
 				foreach (TypeDefinition td in module.Types) {
@@ -37,9 +38,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			foreach (CecilTypeDefinition c in types) {
 				c.Init(pc);
-				pc.AddType(c);
+				typeStorage.UpdateType(c);
 			}
-			pc.initialized = true;
 			return pc;
 		}
 		
@@ -62,15 +62,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region IProjectContent implementation
-		sealed class CecilProjectContent : SimpleProjectContent
+		sealed class CecilProjectContent : ProxyTypeResolveContext, IProjectContent, ISynchronizedTypeResolveContext
 		{
 			readonly string assemblyName;
-			internal bool initialized;
+			readonly ReadOnlyCollection<IAttribute> assemblyAttributes;
 			
-			public CecilProjectContent(string assemblyName, ReadOnlyCollection<IAttribute> assemblyAttributes)
+			public CecilProjectContent(TypeStorage types, string assemblyName, ReadOnlyCollection<IAttribute> assemblyAttributes)
+				: base(types)
 			{
 				this.assemblyName = assemblyName;
-				this.AssemblyAttributes = assemblyAttributes;
+				this.assemblyAttributes = assemblyAttributes;
+			}
+			
+			public IList<IAttribute> AssemblyAttributes {
+				get { return assemblyAttributes; }
 			}
 			
 			public override string ToString()
@@ -78,46 +83,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return "[CecilProjectContent " + assemblyName + "]";
 			}
 			
-			public override void AddType(ITypeDefinition typeDefinition)
-			{
-				// ensure that CecilProjectContent stays immutable after it's initialized
-				if (initialized)
-					throw new NotSupportedException();
-				base.AddType(typeDefinition);
-			}
-			
-			public override void RemoveType(ITypeDefinition typeDefinition)
-			{
-				// ensure that CecilProjectContent stays immutable after it's initialized
-				throw new NotSupportedException();
-			}
-			
 			public override ISynchronizedTypeResolveContext Synchronize()
 			{
 				// CecilProjectContent is immutable, so we don't need to synchronize
-				return new DummySynchronizedTypeResolveContext(this);
-			}
-		}
-		
-		sealed class DummySynchronizedTypeResolveContext : ProxyTypeResolveContext, ISynchronizedTypeResolveContext
-		{
-			public DummySynchronizedTypeResolveContext(ITypeResolveContext context) : base(context)
-			{
+				return this;
 			}
 			
 			public void Dispose()
 			{
 			}
-			
-			public override ISynchronizedTypeResolveContext Synchronize()
-			{
-				return this;
-			}
 		}
 		#endregion
 		
 		#region Load Assembly From Disk
-		public static IProjectContent LoadAssembly(string fileName)
+		public static IProjectContent LoadAssemblyFile(string fileName)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
@@ -512,7 +491,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			void InitMembers(ITypeResolveContext earlyBindContext)
 			{
-				throw new NotImplementedException();
+				//throw new NotImplementedException();
 			}
 		}
 		#endregion

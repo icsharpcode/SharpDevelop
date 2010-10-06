@@ -5,7 +5,7 @@ using System;
 
 namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 {
-	class SimpleInternalClass
+	public class SimplePublicClass
 	{
 		public void Method() {}
 	}
