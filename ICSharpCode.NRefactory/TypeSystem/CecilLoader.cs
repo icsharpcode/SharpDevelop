@@ -4,43 +4,66 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.Contracts;
-using System.Text;
+
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using Mono.Cecil;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
 	/// <summary>
-	/// Static methods for loading an IProjectContent from an already compiled assembly.
+	/// Allows loading an IProjectContent from an already compiled assembly.
 	/// </summary>
-	public static class CecilLoader
+	/// <remarks>Instance methods are not thread-safe; you need to create multiple instances of CecilLoader
+	/// if you want to load multiple project contents in parallel.</remarks>
+	public class CecilLoader
 	{
+		#region Options
+		/// <summary>
+		/// Gets/Sets the early bind context.
+		/// This context is used to pre-resolve type references - setting this property will cause the CecilLoader
+		/// to directly reference the resolved types, and create links (<see cref="GetClassTypeReference"/>) to types
+		/// that could not be resolved.
+		/// </summary>
+		public ITypeResolveContext EarlyBindContext { get; set; }
+		
+		/// <summary>
+		/// Specifies whether to include internal members. The default is false.
+		/// </summary>
+		public bool IncludeInternalMembers { get; set; }
+		#endregion
+		
 		#region Load From AssemblyDefinition
-		public static IProjectContent LoadAssembly(AssemblyDefinition assemblyDefinition)
+		public IProjectContent LoadAssembly(AssemblyDefinition assemblyDefinition)
 		{
 			if (assemblyDefinition == null)
 				throw new ArgumentNullException("assemblyDefinition");
-			List<IAttribute> assemblyAttributes = new List<IAttribute>();
-			ReadAttributes(assemblyDefinition, assemblyAttributes, earlyBindContext: null);
-			TypeStorage typeStorage = new TypeStorage();
-			CecilProjectContent pc = new CecilProjectContent(typeStorage, assemblyDefinition.Name.FullName, assemblyAttributes.AsReadOnly());
-			List<CecilTypeDefinition> types = new List<CecilTypeDefinition>();
-			foreach (ModuleDefinition module in assemblyDefinition.Modules) {
-				foreach (TypeDefinition td in module.Types) {
-					if ((td.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.Public) {
-						string name = td.FullName;
-						if (name.Length == 0 || name[0] == '<')
-							continue;
-						types.Add(new CecilTypeDefinition(pc, td));
+			ITypeResolveContext oldEarlyBindContext = this.EarlyBindContext;
+			try {
+				List<IAttribute> assemblyAttributes = new List<IAttribute>();
+				ReadAttributes(assemblyDefinition, assemblyAttributes);
+				TypeStorage typeStorage = new TypeStorage();
+				CecilProjectContent pc = new CecilProjectContent(typeStorage, assemblyDefinition.Name.FullName, assemblyAttributes.AsReadOnly());
+				
+				this.EarlyBindContext = MultiTypeResolveContext.Combine(pc, this.EarlyBindContext);
+				List<CecilTypeDefinition> types = new List<CecilTypeDefinition>();
+				foreach (ModuleDefinition module in assemblyDefinition.Modules) {
+					foreach (TypeDefinition td in module.Types) {
+						if (this.IncludeInternalMembers || (td.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.Public) {
+							string name = td.FullName;
+							if (name.Length == 0 || name[0] == '<')
+								continue;
+							types.Add(new CecilTypeDefinition(pc, td));
+						}
 					}
 				}
+				foreach (CecilTypeDefinition c in types) {
+					c.Init(this);
+					typeStorage.UpdateType(c);
+				}
+				return pc;
+			} finally {
+				this.EarlyBindContext = oldEarlyBindContext;
 			}
-			foreach (CecilTypeDefinition c in types) {
-				c.Init(pc);
-				typeStorage.UpdateType(c);
-			}
-			return pc;
 		}
 		
 		/// <summary>
@@ -49,14 +72,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <param name="typeDefinition">The Cecil TypeDefinition.</param>
 		/// <param name="projectContent">The project content used as parent for the new type.</param>
 		/// <returns>ITypeDefinition representing the Cecil type.</returns>
-		public static ITypeDefinition LoadType(TypeDefinition typeDefinition, IProjectContent projectContent)
+		public ITypeDefinition LoadType(TypeDefinition typeDefinition, IProjectContent projectContent)
 		{
 			if (typeDefinition == null)
 				throw new ArgumentNullException("typeDefinition");
 			if (projectContent == null)
 				throw new ArgumentNullException("projectContent");
 			var c = new CecilTypeDefinition(projectContent, typeDefinition);
-			c.Init(null);
+			c.Init(this);
 			return c;
 		}
 		#endregion
@@ -96,11 +119,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Load Assembly From Disk
-		public static IProjectContent LoadAssemblyFile(string fileName)
+		public IProjectContent LoadAssemblyFile(string fileName)
 		{
 			if (fileName == null)
 				throw new ArgumentNullException("fileName");
-			AssemblyDefinition asm = AssemblyDefinition.ReadAssembly(fileName, new ReaderParameters { AssemblyResolver = new DummyAssemblyResolver() });
+			var param = new ReaderParameters { AssemblyResolver = new DummyAssemblyResolver() };
+			AssemblyDefinition asm = AssemblyDefinition.ReadAssembly(fileName, param);
 			return LoadAssembly(asm);
 		}
 		
@@ -129,22 +153,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// This is used to support the 'dynamic' type.</param>
 		/// <param name="entity">The entity that owns this type reference.
 		/// Used for generic type references.</param>
-		/// <param name="earlyBindContext">Early binding context - used to pre-resolve
-		/// type references where possible.</param>
-		public static ITypeReference ReadTypeReference(
+		public ITypeReference ReadTypeReference(
 			TypeReference type,
 			ICustomAttributeProvider typeAttributes = null,
-			IEntity entity = null,
-			ITypeResolveContext earlyBindContext = null)
+			IEntity entity = null)
 		{
 			int typeIndex = 0;
-			return CreateType(type, entity, earlyBindContext, typeAttributes, ref typeIndex);
+			return CreateType(type, entity, typeAttributes, ref typeIndex);
 		}
 		
-		static ITypeReference CreateType(
+		ITypeReference CreateType(
 			TypeReference type,
 			IEntity entity ,
-			ITypeResolveContext earlyBindContext,
 			ICustomAttributeProvider typeAttributes, ref int typeIndex)
 		{
 			while (type is OptionalModifierType || type is RequiredModifierType) {
@@ -162,7 +182,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					CreateType(
 						(type as Mono.Cecil.PointerType).ElementType,
 						entity,
-						earlyBindContext,
 						typeAttributes, ref typeIndex));
 			} else if (type is Mono.Cecil.ArrayType) {
 				typeIndex++;
@@ -170,7 +189,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					CreateType(
 						(type as Mono.Cecil.ArrayType).ElementType,
 						entity,
-						earlyBindContext,
 						typeAttributes, ref typeIndex),
 					(type as Mono.Cecil.ArrayType).Rank);
 			} else if (type is GenericInstanceType) {
@@ -209,7 +227,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				
 				if (name.IndexOf('/') > 0) {
 					string[] nameparts = name.Split('/');
-					ITypeReference typeRef = GetSimpleType(nameparts[0], earlyBindContext);
+					ITypeReference typeRef = GetSimpleType(nameparts[0]);
 					for (int i = 1; i < nameparts.Length; i++) {
 						int partTypeParameterCount;
 						string namepart = SplitTypeParameterCountFromReflectionName(nameparts[i], out partTypeParameterCount);
@@ -219,15 +237,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				} else if (name == "System.Object" && HasDynamicAttribute(typeAttributes, typeIndex)) {
 					return SharedTypes.Dynamic;
 				} else {
-					return GetSimpleType(name, earlyBindContext);
+					return GetSimpleType(name);
 				}
 			}
 		}
 		
-		static ITypeReference GetSimpleType(string reflectionName, ITypeResolveContext earlyBindContext)
+		/// <summary>
+		/// Gets a type reference for a reflection name.
+		/// This method does not handle nested types -- it can be only used with top-level types.
+		/// </summary>
+		ITypeReference GetSimpleType(string reflectionName)
 		{
 			int typeParameterCount;
 			string name = SplitTypeParameterCountFromReflectionName(reflectionName, out typeParameterCount);
+			var earlyBindContext = this.EarlyBindContext;
 			if (earlyBindContext != null) {
 				IType c = earlyBindContext.GetClass(name, typeParameterCount, StringComparer.Ordinal);
 				if (c != null)
@@ -280,11 +303,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Attributes
-		static void ReadAttributes(ICustomAttributeProvider attributeProvider, IList<IAttribute> outputList, ITypeResolveContext earlyBindContext)
+		void ReadAttributes(ICustomAttributeProvider attributeProvider, IList<IAttribute> outputList)
 		{
 			foreach (var cecilAttribute in attributeProvider.CustomAttributes) {
-				outputList.Add(new CecilAttribute(cecilAttribute, earlyBindContext));
+				outputList.Add(ReadAttribute(cecilAttribute));
 			}
+		}
+		
+		public IAttribute ReadAttribute(CustomAttribute cecilAttribute)
+		{
+			if (cecilAttribute == null)
+				throw new ArgumentNullException("cecilAttribute");
+			return new CecilAttribute(cecilAttribute, this);
 		}
 		
 		sealed class CecilAttribute : Immutable, IAttribute
@@ -293,14 +323,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			readonly IList<IConstantValue> positionalArguments;
 			readonly IList<KeyValuePair<string, IConstantValue>> namedArguments;
 			
-			public CecilAttribute(CustomAttribute ca, ITypeResolveContext earlyBindContext)
+			public CecilAttribute(CustomAttribute ca, CecilLoader loader)
 			{
-				this.attributeType = ReadTypeReference(ca.AttributeType, earlyBindContext: earlyBindContext);
+				this.attributeType = loader.ReadTypeReference(ca.AttributeType);
 				try {
 					if (ca.HasConstructorArguments) {
 						var posArgs = new List<IConstantValue>();
 						foreach (var arg in ca.ConstructorArguments) {
-							posArgs.Add(ReadConstantValue(arg, earlyBindContext));
+							posArgs.Add(loader.ReadConstantValue(arg));
 						}
 						this.positionalArguments = posArgs.AsReadOnly();
 					} else {
@@ -313,10 +343,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					if (ca.HasFields || ca.HasProperties) {
 						var namedArgs = new List<KeyValuePair<string, IConstantValue>>();
 						foreach (var arg in ca.Fields) {
-							namedArgs.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument, earlyBindContext)));
+							namedArgs.Add(new KeyValuePair<string, IConstantValue>(arg.Name, loader.ReadConstantValue(arg.Argument)));
 						}
 						foreach (var arg in ca.Properties) {
-							namedArgs.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument, earlyBindContext)));
+							namedArgs.Add(new KeyValuePair<string, IConstantValue>(arg.Name, loader.ReadConstantValue(arg.Argument)));
 						}
 						this.namedArguments = namedArgs.AsReadOnly();
 					} else {
@@ -346,19 +376,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Constant Value
-		static IConstantValue ReadConstantValue(CustomAttributeArgument arg, ITypeResolveContext earlyBindContext)
+		public IConstantValue ReadConstantValue(CustomAttributeArgument arg)
 		{
-			ITypeReference type = ReadTypeReference(arg.Type, earlyBindContext: earlyBindContext);
+			ITypeReference type = ReadTypeReference(arg.Type);
 			object value = arg.Value;
 			TypeReference valueType = value as TypeReference;
 			if (valueType != null)
-				value = ReadTypeReference(valueType, earlyBindContext: earlyBindContext);
+				value = ReadTypeReference(valueType);
 			return new SimpleConstantValue(type, value);
 		}
 		#endregion
 		
 		#region Read Type Definition
-		class CecilTypeDefinition : DefaultTypeDefinition
+		sealed class CecilTypeDefinition : DefaultTypeDefinition
 		{
 			TypeDefinition typeDefinition;
 			
@@ -374,9 +404,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				this.typeDefinition = typeDefinition;
 			}
 			
-			public void Init(ITypeResolveContext earlyBindContext)
+			public void Init(CecilLoader loader)
 			{
-				InitNestedTypes(earlyBindContext);
 				InitModifiers();
 				
 				if (typeDefinition.HasGenericParameters) {
@@ -390,33 +419,36 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					}*/
 				}
 				
+				InitNestedTypes(loader); // nested types can be initialized only after generic parameters were created
+				
 				if (typeDefinition.HasCustomAttributes) {
-					ReadAttributes(typeDefinition, this.Attributes, earlyBindContext);
+					loader.ReadAttributes(typeDefinition, this.Attributes);
 				}
 				
 				// set base classes
 				if (typeDefinition.BaseType != null) {
-					BaseTypes.Add(ReadTypeReference(typeDefinition.BaseType, entity: this, earlyBindContext: earlyBindContext));
+					BaseTypes.Add(loader.ReadTypeReference(typeDefinition.BaseType, entity: this));
 				}
 				if (typeDefinition.HasInterfaces) {
 					foreach (TypeReference iface in typeDefinition.Interfaces) {
-						BaseTypes.Add(ReadTypeReference(iface, entity: this, earlyBindContext: earlyBindContext));
+						BaseTypes.Add(loader.ReadTypeReference(iface, entity: this));
 					}
 				}
 				
-				InitMembers(earlyBindContext);
+				InitMembers(loader);
 				
 				this.typeDefinition = null;
 				Freeze(); // freeze after initialization
 			}
 			
-			void InitNestedTypes(ITypeResolveContext earlyBindContext)
+			void InitNestedTypes(CecilLoader loader)
 			{
 				if (!typeDefinition.HasNestedTypes)
 					return;
 				foreach (TypeDefinition nestedType in typeDefinition.NestedTypes) {
 					TypeAttributes visibility = nestedType.Attributes & TypeAttributes.VisibilityMask;
-					if (visibility == TypeAttributes.NestedPublic
+					if (loader.IncludeInternalMembers
+					    || visibility == TypeAttributes.NestedPublic
 					    || visibility == TypeAttributes.NestedFamily
 					    || visibility == TypeAttributes.NestedFamORAssem)
 					{
@@ -431,7 +463,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					}
 				}
 				foreach (CecilTypeDefinition innerClass in this.InnerClasses) {
-					innerClass.Init(earlyBindContext);
+					innerClass.Init(loader);
 				}
 			}
 			
@@ -454,15 +486,30 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 				this.IsSealed = td.IsSealed;
 				this.IsAbstract = td.IsAbstract;
-				if ((td.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedPublic) {
-					this.Accessibility = Accessibility.Public;
-				} else if ((td.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedFamily) {
-					this.Accessibility = Accessibility.Protected;
-				} else if ((td.Attributes & TypeAttributes.VisibilityMask) == TypeAttributes.NestedFamORAssem) {
-					// we don't care about the 'OrAssem' part because it's an external assembly
-					this.Accessibility = Accessibility.Protected;
-				} else {
-					this.Accessibility = Accessibility.Public;
+				switch (td.Attributes & TypeAttributes.VisibilityMask) {
+					case TypeAttributes.NotPublic:
+					case TypeAttributes.NestedAssembly:
+						this.Accessibility = Accessibility.Internal;
+						break;
+					case TypeAttributes.Public:
+					case TypeAttributes.NestedPublic:
+						this.Accessibility = Accessibility.Public;
+						break;
+					case TypeAttributes.NestedPrivate:
+						this.Accessibility = Accessibility.Private;
+						break;
+					case TypeAttributes.NestedFamily:
+						this.Accessibility = Accessibility.Protected;
+						break;
+					case TypeAttributes.NestedFamANDAssem:
+						this.Accessibility = Accessibility.ProtectedAndInternal;
+						break;
+					case TypeAttributes.NestedFamORAssem:
+						this.Accessibility = Accessibility.ProtectedOrInternal;
+						break;
+					case TypeAttributes.LayoutMask:
+						this.Accessibility = Accessibility;
+						break;
 				}
 			}
 			
@@ -489,11 +536,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return false;
 			}
 			
-			void InitMembers(ITypeResolveContext earlyBindContext)
+			void InitMembers(CecilLoader loader)
 			{
-				//throw new NotImplementedException();
+				if (typeDefinition.HasMethods) {
+					foreach (MethodDefinition method in typeDefinition.Methods) {
+						this.Methods.Add(loader.ReadMethod(method, this));
+					}
+				}
 			}
 		}
 		#endregion
+		
+		IMethod ReadMethod(MethodDefinition method, ITypeDefinition parentType)
+		{
+			DefaultMethod m = new DefaultMethod(parentType, method.Name);
+			return m;
+		}
 	}
 }

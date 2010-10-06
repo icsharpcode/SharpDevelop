@@ -3,10 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
-using System.Diagnostics.Contracts;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -327,6 +326,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IType Resolve(ITypeResolveContext context)
 		{
+			if (context == null)
+				throw new ArgumentNullException("context");
 			return this;
 		}
 		

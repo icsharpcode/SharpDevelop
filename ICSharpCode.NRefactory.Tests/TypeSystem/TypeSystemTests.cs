@@ -2,6 +2,7 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem.TestCase;
 using NUnit.Framework;
 
@@ -29,6 +30,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.IsFalse(c.IsSealed);
 			Assert.IsFalse(c.IsStatic);
 			Assert.IsFalse(c.IsShadowing);
+		}
+		
+		[Test]
+		public void SimplePublicClassMethodTest()
+		{
+			ITypeDefinition c = testCasePC.GetClass(typeof(SimplePublicClass).FullName, 0, StringComparer.Ordinal);
+			Assert.AreEqual(2, c.Methods.Count);
+			
+			IMethod method = c.Methods.Single(m => m.Name == "Method");
+			Assert.AreEqual(typeof(SimplePublicClass).FullName + ".Method", method.FullName);
+			Assert.AreSame(c, method.DeclaringType);
+			
 		}
 	}
 }

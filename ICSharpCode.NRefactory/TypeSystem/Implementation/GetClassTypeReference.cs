@@ -23,6 +23,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public override IType Resolve(ITypeResolveContext context)
 		{
+			if (context == null)
+				throw new ArgumentNullException("context");
 			return context.GetClass(fullTypeName, typeParameterCount, StringComparer.Ordinal);
 		}
 		

@@ -43,12 +43,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public static bool operator ==(BitVector16 left, BitVector16 right)
 		{
-			return left.Equals(right);
+			return left.data == right.data;
 		}
 		
 		public static bool operator !=(BitVector16 left, BitVector16 right)
 		{
-			return !left.Equals(right);
+			return left.data != right.data;
 		}
 		#endregion
 	}

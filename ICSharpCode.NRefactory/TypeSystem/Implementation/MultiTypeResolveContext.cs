@@ -12,6 +12,20 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// </summary>
 	public class MultiTypeResolveContext : ITypeResolveContext
 	{
+		/// <summary>
+		/// Creates a <see cref="MultiTypeResolveContext"/> that combines the given resolve contexts.
+		/// If one of the input parameters is null, the other input parameter is returned directly.
+		/// If both input parameters are null, the function returns null.
+		/// </summary>
+		public static ITypeResolveContext Combine(ITypeResolveContext a, ITypeResolveContext b)
+		{
+			if (a == null)
+				return b;
+			if (b == null)
+				return a;
+			return new MultiTypeResolveContext(new [] { a, b });
+		}
+		
 		readonly ITypeResolveContext[] contexts;
 		
 		/// <summary>

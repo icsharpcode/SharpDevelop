@@ -13,7 +13,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		[TestFixtureSetUp]
 		public void SetUp()
 		{
-			testCasePC = CecilLoader.LoadAssemblyFile(typeof(TestCase.SimplePublicClass).Assembly.Location);
+			// use "IncludeInternalMembers" so that Cecil results match C# parser results
+			CecilLoader loader = new CecilLoader() { IncludeInternalMembers = true };
+			testCasePC = loader.LoadAssemblyFile(typeof(TestCase.SimplePublicClass).Assembly.Location);
 		}
 	}
 }

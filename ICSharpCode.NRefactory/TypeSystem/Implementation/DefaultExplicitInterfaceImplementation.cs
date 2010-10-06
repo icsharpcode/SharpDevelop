@@ -8,7 +8,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation for IExplicitInterfaceImplementation.
 	/// </summary>
-	public sealed class DefaultExplicitInterfaceImplementation : IExplicitInterfaceImplementation
+	public sealed class DefaultExplicitInterfaceImplementation : Immutable, IExplicitInterfaceImplementation
 	{
 		public ITypeReference InterfaceType { get; private set; }
 		public string MemberName { get; private set; }
@@ -21,14 +21,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				throw new ArgumentNullException("memberName");
 			this.InterfaceType = interfaceType;
 			this.MemberName = memberName;
-		}
-		
-		bool IFreezable.IsFrozen {
-			get { return true; }
-		}
-		
-		void IFreezable.Freeze()
-		{
 		}
 	}
 }

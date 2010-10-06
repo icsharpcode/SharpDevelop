@@ -156,12 +156,14 @@
     <Compile Include="TypeSystem\IMember.cs" />
     <Compile Include="TypeSystem\IMethod.cs" />
     <Compile Include="TypeSystem\Implementation\AbstractFreezable.cs" />
+    <Compile Include="TypeSystem\Implementation\AbstractMember.cs" />
     <Compile Include="TypeSystem\Implementation\AbstractType.cs" />
     <Compile Include="TypeSystem\Implementation\AbstractTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\ArrayType.cs" />
     <Compile Include="TypeSystem\Implementation\BitVector16.cs" />
     <Compile Include="TypeSystem\Implementation\ConstructedType.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultExplicitInterfaceImplementation.cs" />
+    <Compile Include="TypeSystem\Implementation\DefaultMethod.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultParameter.cs" />
     <Compile Include="TypeSystem\Implementation\DynamicType.cs" />
     <Compile Include="TypeSystem\Implementation\GetClassTypeReference.cs" />
