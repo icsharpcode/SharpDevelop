@@ -147,7 +147,23 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		public IList<IType> GetNestedTypes(ITypeResolveContext context)
 		{
-			throw new NotImplementedException();
+			/*
+			class Base<T> {
+				class Nested {}
+			}
+			class Derived<A, B> : Base<B> {}
+			
+			Derived<string,int>.GetNestedTypes() = { Base`1+Nested<int> }
+			Derived.GetNestedTypes() = { Base`1+Nested<B> }
+			Base<B>.GetNestedTypes() = { Base`1+Nested<B> }
+			Base.GetNestedTypes() = { Base`1+Nested<T2> } where T2 = copy of T in Base`1+Nested
+			 */
+			Substitution substitution = new Substitution(typeArguments);
+			IList<IType> types = genericType.GetNestedTypes(context);
+			for (int i = 0; i < types.Count; i++) {
+				types[i] = types[i].AcceptVisitor(substitution);
+			}
+			return types;
 		}
 		
 		public IList<IMethod> GetMethods(ITypeResolveContext context)

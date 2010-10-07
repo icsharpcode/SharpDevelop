@@ -121,81 +121,63 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		#region IEntity
 		EntityType IEntity.EntityType {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return EntityType.None; }
 		}
 		
 		DomRegion IEntity.Region {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return DomRegion.Empty; }
 		}
 		
 		DomRegion IEntity.BodyRegion {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return DomRegion.Empty; }
 		}
 		
 		ITypeDefinition IEntity.DeclaringTypeDefinition {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return null; }
 		}
 		
 		IList<IAttribute> IEntity.Attributes {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return null; }
 		}
 		
 		string IEntity.Documentation {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return null; }
 		}
 		
 		bool IEntity.IsStatic {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return false; }
 		}
 		
 		Accessibility IEntity.Accessibility {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return Accessibility.None; }
 		}
 		
 		bool IEntity.IsAbstract {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return false; }
 		}
 		
 		bool IEntity.IsSealed {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return false; }
 		}
 		
 		bool IEntity.IsShadowing {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return false; }
 		}
 		
 		bool IEntity.IsSynthetic {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return false; }
 		}
 		
 		IProjectContent IEntity.ProjectContent {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return null; }
+		}
+		
+		bool IFreezable.IsFrozen {
+			get { return false; }
+		}
+		
+		void IFreezable.Freeze()
+		{
 		}
 		#endregion
 	}

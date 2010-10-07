@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		/// <summary>
-		/// Performts type substitution in parameter types and in the return type.
+		/// Performs type substitution in parameter types and in the return type.
 		/// </summary>
 		public void SubstituteTypes(ITypeResolveContext context, TypeVisitor substitution)
 		{

@@ -69,11 +69,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		string IVariable.Name {
-			get { throw new NotImplementedException();  }
+			get { return null;  }
 		}
 		
 		ITypeReference IVariable.Type {
-			get { throw new NotImplementedException(); }
+			get { return null; }
 		}
 	}
 }

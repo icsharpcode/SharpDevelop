@@ -85,14 +85,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		bool IFreezable.IsFrozen {
-			get {
-				throw new NotImplementedException();
-			}
+			get { return false; }
 		}
 		
 		void IFreezable.Freeze()
 		{
-			throw new NotImplementedException();
 		}
 	}
 }

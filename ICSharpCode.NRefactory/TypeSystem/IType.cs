@@ -55,6 +55,45 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// by the return values of the visit calls.
 		/// </summary>
 		IType VisitChildren(TypeVisitor visitor);
+		
+		/// <summary>
+		/// Gets the direct base types.
+		/// </summary>
+		IEnumerable<IType> GetBaseTypes(ITypeResolveContext context);
+		
+		/// <summary>
+		/// Gets inner classes (including inherited inner classes).
+		/// </summary>
+		/// <remarks>
+		/// If the inner class is generic, this method produces <see cref="ConstructedType"/>s that
+		/// parameterize each nested class with its own type parameters.
+		/// </remarks>
+		/// <returns>A new mutable list</returns>
+		IList<IType> GetNestedTypes(ITypeResolveContext context);
+		
+		/// <summary>
+		/// Gets all methods that can be called on this return type.
+		/// </summary>
+		/// <returns>A new mutable list</returns>
+		IList<IMethod> GetMethods(ITypeResolveContext context);
+		
+		/// <summary>
+		/// Gets all properties that can be called on this return type.
+		/// </summary>
+		/// <returns>A new mutable list</returns>
+		IList<IProperty> GetProperties(ITypeResolveContext context);
+		
+		/// <summary>
+		/// Gets all fields that can be called on this return type.
+		/// </summary>
+		/// <returns>A new mutable list</returns>
+		IList<IField> GetFields(ITypeResolveContext context);
+		
+		/// <summary>
+		/// Gets all events that can be called on this return type.
+		/// </summary>
+		/// <returns>A new mutable list</returns>
+		IList<IEvent> GetEvents(ITypeResolveContext context);
 	}
 	
 	[ContractClassFor(typeof(IType))]
@@ -73,6 +112,48 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		IType IType.DeclaringType {
 			get { return null; }
+		}
+		
+		IEnumerable<IType> IType.GetBaseTypes(ITypeResolveContext context)
+		{
+			Contract.Requires(context != null);
+			Contract.Ensures(Contract.Result<IEnumerable<IType>>() != null);
+			return null;
+		}
+		
+		IList<IType> IType.GetNestedTypes(ITypeResolveContext context)
+		{
+			Contract.Requires(context != null);
+			Contract.Ensures(Contract.Result<IList<IType>>() != null);
+			return null;
+		}
+
+		IList<IMethod> IType.GetMethods(ITypeResolveContext context)
+		{
+			Contract.Requires(context != null);
+			Contract.Ensures(Contract.Result<IList<IMethod>>() != null);
+			return null;
+		}
+		
+		IList<IProperty> IType.GetProperties(ITypeResolveContext context)
+		{
+			Contract.Requires(context != null);
+			Contract.Ensures(Contract.Result<IList<IProperty>>() != null);
+			return null;
+		}
+		
+		IList<IField> IType.GetFields(ITypeResolveContext context)
+		{
+			Contract.Requires(context != null);
+			Contract.Ensures(Contract.Result<IList<IField>>() != null);
+			return null;
+		}
+		
+		IList<IEvent> IType.GetEvents(ITypeResolveContext context)
+		{
+			Contract.Requires(context != null);
+			Contract.Ensures(Contract.Result<IList<IEvent>>() != null);
+			return null;
 		}
 		
 		string INamedElement.FullName {

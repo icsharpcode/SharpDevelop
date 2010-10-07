@@ -73,6 +73,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			else
 				return new ReadOnlyCollection<string>(list.ToArray());
 		}
+		
+		protected static IList<ITypeReference> FreezeList(IList<ITypeReference> list)
+		{
+			if (list == null || list.Count == 0)
+				return EmptyList<ITypeReference>.Instance;
+			else
+				return new ReadOnlyCollection<ITypeReference>(list.ToArray());
+		}
 	}
 	
 	static class EmptyList<T>

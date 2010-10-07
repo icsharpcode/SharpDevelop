@@ -76,19 +76,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Contract.Requires(fullTypeName != null);
 			Contract.Requires(typeParameterCount >= 0);
 			Contract.Requires(nameComparer != null);
-			throw new NotImplementedException();
+			return null;
 		}
 		
 		ISynchronizedTypeResolveContext ITypeResolveContext.Synchronize()
 		{
 			Contract.Ensures(Contract.Result<ISynchronizedTypeResolveContext>() != null);
-			throw new NotImplementedException();
+			return null;
 		}
 		
 		IEnumerable<ITypeDefinition> ITypeResolveContext.GetClasses()
 		{
 			Contract.Ensures(Contract.Result<IEnumerable<ITypeDefinition>>() != null);
-			throw new NotImplementedException();
+			return null;
 		}
 		
 		IEnumerable<ITypeDefinition> ITypeResolveContext.GetClasses(string nameSpace, StringComparer nameComparer)
@@ -96,13 +96,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Contract.Requires(nameSpace != null);
 			Contract.Requires(nameComparer != null);
 			Contract.Ensures(Contract.Result<IEnumerable<ITypeDefinition>>() != null);
-			throw new NotImplementedException();
+			return null;
 		}
 		
 		IEnumerable<string> ITypeResolveContext.GetNamespaces()
 		{
 			Contract.Ensures(Contract.Result<IEnumerable<ITypeDefinition>>() != null);
-			throw new NotImplementedException();
+			return null;
 		}
 	}
 }

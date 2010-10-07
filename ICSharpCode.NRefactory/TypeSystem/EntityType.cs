@@ -7,6 +7,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 {
 	public enum EntityType : byte
 	{
+		None,
 		TypeDefinition,
 		Field,
 		Property,

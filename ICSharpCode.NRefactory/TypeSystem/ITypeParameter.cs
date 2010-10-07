@@ -169,5 +169,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		VarianceModifier ITypeParameter.Variance {
 			get { return VarianceModifier.Invariant; }
 		}
+		
+		bool IFreezable.IsFrozen {
+			get { return false; }
+		}
+		
+		void IFreezable.Freeze()
+		{
+		}
 	}
 }

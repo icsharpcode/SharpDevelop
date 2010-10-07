@@ -47,7 +47,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		protected override void FreezeInternal()
 		{
-			type.Freeze();
 			attributes = FreezeList(attributes);
 			if (defaultValue != null)
 				defaultValue.Freeze();

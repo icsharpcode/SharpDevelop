@@ -19,7 +19,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		protected override void FreezeInternal()
 		{
-			attributeType.Freeze();
 			positionalArguments = FreezeList(positionalArguments);
 			
 			if (namedArguments == null || namedArguments.Count == 0) {
