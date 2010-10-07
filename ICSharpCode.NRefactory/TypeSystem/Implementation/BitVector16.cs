@@ -56,5 +56,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return left.data != right.data;
 		}
 		#endregion
+		
+		public override string ToString()
+		{
+			return data.ToString("x4");
+		}
 	}
 }

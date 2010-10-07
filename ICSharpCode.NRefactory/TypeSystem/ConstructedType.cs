@@ -44,6 +44,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					return base.VisitTypeParameter(type);
 				}
 			}
+			
+			public IType Apply(IType type)
+			{
+				return type.AcceptVisitor(this);
+			}
 		}
 		
 		readonly ITypeDefinition genericType;
@@ -150,7 +155,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
 			Substitution substitution = new Substitution(typeArguments);
-			return genericType.GetBaseTypes(context).Select(t => t.AcceptVisitor(substitution));
+			return genericType.GetBaseTypes(context).Select(substitution.Apply);
 		}
 		
 		public IList<IType> GetNestedTypes(ITypeResolveContext context)

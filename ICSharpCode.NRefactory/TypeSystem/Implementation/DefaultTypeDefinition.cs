@@ -357,82 +357,104 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IList<IType> GetNestedTypes(ITypeResolveContext context)
 		{
-			IList<IType> nestedTypes = null;
-			foreach (var baseTypeRef in this.BaseTypes) {
-				IType baseType = baseTypeRef.Resolve(context);
-				ITypeDefinition baseTypeDef = baseType.GetDefinition();
-				if (baseTypeDef != null && baseTypeDef.ClassType != ClassType.Interface) {
-					// get nested types from baseType (not baseTypeDef) so that generics work correctly
-					nestedTypes = baseType.GetNestedTypes(context);
-					break; // there is at most 1 non-interface base
-				}
-			}
-			if (nestedTypes == null)
-				nestedTypes = new List<IType>();
-			foreach (ITypeDefinition innerClass in this.InnerClasses) {
-				if (innerClass.TypeParameterCount > 0) {
-					// Parameterize inner classes with their own type parameters, as per <remarks> on IType.GetNestedTypes.
-					nestedTypes.Add(new ConstructedType(innerClass, innerClass.TypeParameters));
+			using (var busyLock = BusyManager.Enter(this)) {
+				if (busyLock.Success) {
+					IList<IType> nestedTypes = null;
+					foreach (var baseTypeRef in this.BaseTypes) {
+						IType baseType = baseTypeRef.Resolve(context);
+						ITypeDefinition baseTypeDef = baseType.GetDefinition();
+						if (baseTypeDef != null && baseTypeDef.ClassType != ClassType.Interface) {
+							// get nested types from baseType (not baseTypeDef) so that generics work correctly
+							nestedTypes = baseType.GetNestedTypes(context);
+							break; // there is at most 1 non-interface base
+						}
+					}
+					if (nestedTypes == null)
+						nestedTypes = new List<IType>();
+					foreach (ITypeDefinition innerClass in this.InnerClasses) {
+						if (innerClass.TypeParameterCount > 0) {
+							// Parameterize inner classes with their own type parameters, as per <remarks> on IType.GetNestedTypes.
+							nestedTypes.Add(new ConstructedType(innerClass, innerClass.TypeParameters));
+						} else {
+							nestedTypes.Add(innerClass);
+						}
+					}
+					return nestedTypes;
 				} else {
-					nestedTypes.Add(innerClass);
+					return new List<IType>();
 				}
 			}
-			return nestedTypes;
 		}
 		
 		public IList<IMethod> GetMethods(ITypeResolveContext context)
 		{
 			List<IMethod> methods = new List<IMethod>();
-			foreach (var baseTypeRef in this.BaseTypes) {
-				IType baseType = baseTypeRef.Resolve(context);
-				ITypeDefinition baseTypeDef = baseType.GetDefinition();
-				if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
-					methods.AddRange(baseType.GetMethods(context));
+			using (var busyLock = BusyManager.Enter(this)) {
+				if (busyLock.Success) {
+					foreach (var baseTypeRef in this.BaseTypes) {
+						IType baseType = baseTypeRef.Resolve(context);
+						ITypeDefinition baseTypeDef = baseType.GetDefinition();
+						if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
+							methods.AddRange(baseType.GetMethods(context));
+						}
+					}
+					methods.AddRange(this.Methods);
 				}
 			}
-			methods.AddRange(this.Methods);
 			return methods;
 		}
 		
 		public IList<IProperty> GetProperties(ITypeResolveContext context)
 		{
 			List<IProperty> properties = new List<IProperty>();
-			foreach (var baseTypeRef in this.BaseTypes) {
-				IType baseType = baseTypeRef.Resolve(context);
-				ITypeDefinition baseTypeDef = baseType.GetDefinition();
-				if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
-					properties.AddRange(baseType.GetProperties(context));
+			using (var busyLock = BusyManager.Enter(this)) {
+				if (busyLock.Success) {
+					foreach (var baseTypeRef in this.BaseTypes) {
+						IType baseType = baseTypeRef.Resolve(context);
+						ITypeDefinition baseTypeDef = baseType.GetDefinition();
+						if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
+							properties.AddRange(baseType.GetProperties(context));
+						}
+					}
+					properties.AddRange(this.Properties);
 				}
 			}
-			properties.AddRange(this.Properties);
 			return properties;
 		}
 		
 		public IList<IField> GetFields(ITypeResolveContext context)
 		{
 			List<IField> fields = new List<IField>();
-			foreach (var baseTypeRef in this.BaseTypes) {
-				IType baseType = baseTypeRef.Resolve(context);
-				ITypeDefinition baseTypeDef = baseType.GetDefinition();
-				if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
-					fields.AddRange(baseType.GetFields(context));
+			using (var busyLock = BusyManager.Enter(this)) {
+				if (busyLock.Success) {
+					foreach (var baseTypeRef in this.BaseTypes) {
+						IType baseType = baseTypeRef.Resolve(context);
+						ITypeDefinition baseTypeDef = baseType.GetDefinition();
+						if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
+							fields.AddRange(baseType.GetFields(context));
+						}
+					}
+					fields.AddRange(this.Fields);
 				}
 			}
-			fields.AddRange(this.Fields);
 			return fields;
 		}
 		
 		public IList<IEvent> GetEvents(ITypeResolveContext context)
 		{
 			List<IEvent> events = new List<IEvent>();
-			foreach (var baseTypeRef in this.BaseTypes) {
-				IType baseType = baseTypeRef.Resolve(context);
-				ITypeDefinition baseTypeDef = baseType.GetDefinition();
-				if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
-					events.AddRange(baseType.GetEvents(context));
+			using (var busyLock = BusyManager.Enter(this)) {
+				if (busyLock.Success) {
+					foreach (var baseTypeRef in this.BaseTypes) {
+						IType baseType = baseTypeRef.Resolve(context);
+						ITypeDefinition baseTypeDef = baseType.GetDefinition();
+						if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
+							events.AddRange(baseType.GetEvents(context));
+						}
+					}
+					events.AddRange(this.Events);
 				}
 			}
-			events.AddRange(this.Events);
 			return events;
 		}
 		

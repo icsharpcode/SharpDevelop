@@ -71,5 +71,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return namedArguments;
 			}
 		}
+		
+		public override string ToString()
+		{
+			return "[" + attributeType + "]";
+		}
 	}
 }

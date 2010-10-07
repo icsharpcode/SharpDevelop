@@ -22,5 +22,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.InterfaceType = interfaceType;
 			this.MemberName = memberName;
 		}
+		
+		public override string ToString()
+		{
+			return InterfaceType + "." + MemberName;
+		}
 	}
 }

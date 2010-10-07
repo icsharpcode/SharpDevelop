@@ -74,15 +74,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			for (int i = 0; i < sync.Length; i++) {
 				sync[i] = contexts[i].Synchronize();
 			}
-			return new MultiSynchronizedTypeResolveContext(this, sync);
+			return new AggregateSynchronizedTypeResolveContext(sync);
 		}
 		
-		sealed class MultiSynchronizedTypeResolveContext : ProxyTypeResolveContext, ISynchronizedTypeResolveContext
+		sealed class AggregateSynchronizedTypeResolveContext : AggregateTypeResolveContext, ISynchronizedTypeResolveContext
 		{
 			readonly ISynchronizedTypeResolveContext[] sync;
 			
-			public MultiSynchronizedTypeResolveContext(ITypeResolveContext target, ISynchronizedTypeResolveContext[] sync)
-				: base(target)
+			public AggregateSynchronizedTypeResolveContext(ISynchronizedTypeResolveContext[] sync)
+				: base(sync)
 			{
 				this.sync = sync;
 			}

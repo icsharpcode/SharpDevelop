@@ -18,8 +18,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		/// Creates a new NestedTypeReference.
 		/// </summary>
 		/// <param name="baseTypeRef">Reference to the base type.</param>
-		/// <param name="name"></param>
-		/// <param name="additionalTypeParameterCount"></param>
+		/// <param name="name">Name of the nested class</param>
+		/// <param name="additionalTypeParameterCount">Number of type parameters on the inner class (without type parameters on baseTypeRef)</param>
 		public NestedTypeReference(ITypeReference baseTypeRef, string name, int additionalTypeParameterCount)
 		{
 			if (baseTypeRef == null)
