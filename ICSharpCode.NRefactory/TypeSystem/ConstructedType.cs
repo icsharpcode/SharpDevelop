@@ -8,7 +8,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace ICSharpCode.NRefactory.TypeSystem.Implementation
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
+
+namespace ICSharpCode.NRefactory.TypeSystem
 {
 	/// <summary>
 	/// ConstructedType represents an instance of a generic type.

@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
-			return context.GetClass(fullTypeName, typeParameterCount, StringComparer.Ordinal);
+			return context.GetClass(fullTypeName, typeParameterCount, StringComparer.Ordinal) ?? SharedTypes.UnknownType;
 		}
 		
 		public override string ToString()

@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using ICSharpCode.NRefactory.TypeSystem.TestCase;
 using NUnit.Framework;
 
@@ -15,6 +16,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	public abstract class TypeSystemTests
 	{
 		protected IProjectContent testCasePC;
+		
+		ITypeDefinition GetClass(Type type)
+		{
+			return testCasePC.GetClass(type.FullName, type.GetGenericArguments().Length, StringComparer.Ordinal);
+		}
 		
 		[Test]
 		public void SimplePublicClassTest()
@@ -62,6 +68,27 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual("void DynamicGenerics3(Action<int, dynamic, object>)", a.Convert(testClass.Methods.Single(me => me.Name == "DynamicGenerics3")));
 			Assert.AreEqual("void DynamicGenerics4(Action<int[], dynamic, object>)", a.Convert(testClass.Methods.Single(me => me.Name == "DynamicGenerics4")));
 			Assert.AreEqual("void DynamicGenerics5(Action<Int32*[], dynamic, object>)", a.Convert(testClass.Methods.Single(me => me.Name == "DynamicGenerics5")));*/
+		}
+		
+		[Test]
+		public void AssemblyAttribute()
+		{
+			ITypeResolveContext ctx = MultiTypeResolveContext.Combine(testCasePC, CecilLoaderTests.Mscorlib);
+			var attributes = testCasePC.AssemblyAttributes;
+			var typeTest = attributes.First(a => a.AttributeType.Resolve(testCasePC).FullName == typeof(TypeTestAttribute).FullName);
+			Assert.AreEqual(3, typeTest.PositionalArguments.Count);
+			// first argument is (int)42
+			Assert.AreEqual(42, (int)typeTest.PositionalArguments[0].GetValue(testCasePC));
+			// second argument is typeof(System.Action<>)
+			IType rt = (IType)typeTest.PositionalArguments[1].GetValue(testCasePC);
+			Assert.IsFalse(rt is ConstructedType); // rt must not be constructed - it's just an unbound type
+			Assert.AreEqual("System.Action", rt.FullName);
+			Assert.AreEqual(1, rt.TypeParameterCount);
+			// third argument is typeof(IDictionary<string, IList<TestAttribute>>)
+			ConstructedType crt = (ConstructedType)typeTest.PositionalArguments[2];
+			Assert.AreEqual("System.Collections.Generic.IDictionary", crt.FullName);
+			Assert.AreEqual("System.String", crt.TypeArguments[0].FullName);
+			Assert.AreEqual("System.Collections.Generic.IList{NUnit.Framework.TestAttribute}", crt.TypeArguments[1].DotNetName);
 		}
 	}
 }

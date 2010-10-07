@@ -10,6 +10,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	[TestFixture]
 	public class CecilLoaderTests : TypeSystemTests
 	{
+		public static readonly IProjectContent Mscorlib = new CecilLoader().LoadAssemblyFile(typeof(object).Assembly.Location);
+		
 		[TestFixtureSetUp]
 		public void SetUp()
 		{
