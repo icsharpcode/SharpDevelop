@@ -144,7 +144,6 @@
     <Compile Include="Project\Exporter\Converters\BaseConverter.cs" />
     <Compile Include="Project\Exporter\Converters\ConverterFactory.cs" />
     <Compile Include="Project\Exporter\Converters\GroupedRowConverter.cs" />
-    <Compile Include="Project\Exporter\Converters\TableConverter.cs" />
     <Compile Include="Project\Exporter\Decorators\IBaseStyleDecorator.cs" />
     <Compile Include="Project\Exporter\Decorators\ILineDecorator.cs" />
     <Compile Include="Project\Exporter\Decorators\Linedecorator.cs" />
