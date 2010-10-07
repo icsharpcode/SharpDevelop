@@ -83,7 +83,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		public IType DeclaringType {
-			get { return genericType.DeclaringType; }
+			get {
+				ITypeDefinition declaringTypeDef = genericType.DeclaringTypeDefinition;
+				if (declaringTypeDef != null && declaringTypeDef.TypeParameterCount > 0) {
+					IType[] newTypeArgs = new IType[declaringTypeDef.TypeParameterCount];
+					Array.Copy(this.typeArguments, 0, newTypeArgs, 0, newTypeArgs.Length);
+					return new ConstructedType(declaringTypeDef, newTypeArgs);
+				}
+				return declaringTypeDef;
+			}
 		}
 		
 		public int TypeParameterCount {
