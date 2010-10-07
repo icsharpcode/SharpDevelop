@@ -176,7 +176,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			return hashCode;
 		}
-		
+	}
+	
+	/// <summary>
+	/// ConstructedTypeReference is a reference to generic class that specifies the type parameters.
+	/// Example: List&lt;string&gt;
+	/// </summary>
+	public class ConstructedTypeReference : AbstractTypeReference
+	{
 		public static ITypeReference Create(ITypeReference genericType, IEnumerable<ITypeReference> typeArguments)
 		{
 			if (genericType == null)
@@ -195,14 +202,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return new ConstructedTypeReference(genericType, typeArgs);
 			}
 		}
-	}
-	
-	/// <summary>
-	/// ConstructedTypeReference is a reference to generic class that specifies the type parameters.
-	/// Example: List&lt;string&gt;
-	/// </summary>
-	public class ConstructedTypeReference : AbstractTypeReference
-	{
+		
 		readonly ITypeReference genericType;
 		readonly ITypeReference[] typeArguments;
 		

@@ -22,6 +22,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
+		public ushort Data {
+			get { return data; }
+			set { data = value; }
+		}
+		
 		#region Equals and GetHashCode implementation
 		public override bool Equals(object obj)
 		{

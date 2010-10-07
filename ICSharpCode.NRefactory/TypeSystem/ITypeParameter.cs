@@ -25,14 +25,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IList<IAttribute> Attributes { get; }
 		
 		/// <summary>
+		/// Gets the class or method for which this type parameter is defined.
+		/// This property never returns null.
+		/// </summary>
+		IEntity Parent { get; }
+		
+		/// <summary>
 		/// The method this type parameter is defined for.
-		/// This property returns null if the type parameter belong to a class.
+		/// This property returns null if the type parameter belongs to a class.
 		/// </summary>
 		IMethod ParentMethod { get; }
 		
 		/// <summary>
 		/// The class this type parameter is defined for.
-		/// This property returns null if the type parameter belong to a method.
+		/// This property returns null if the type parameter belongs to a method.
 		/// </summary>
 		ITypeDefinition ParentClass { get; }
 		
@@ -44,7 +50,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets if the type parameter has the 'new()' constraint.
 		/// </summary>
-		bool HasConstructableConstraint { get; }
+		bool HasDefaultConstructorConstraint { get; }
 		
 		/// <summary>
 		/// Gets if the type parameter has the 'class' constraint.
@@ -77,7 +83,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <summary>
 	/// Represents the variance of a type parameter.
 	/// </summary>
-	public enum VarianceModifier
+	public enum VarianceModifier : byte
 	{
 		/// <summary>
 		/// The type parameter is not variant.
@@ -110,6 +116,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
+		IEntity ITypeParameter.Parent {
+			get {
+				Contract.Ensures(Contract.Result<IEntity>() != null);
+				return null;
+			}
+		}
+		
 		IMethod ITypeParameter.ParentMethod {
 			get {
 				return null;
@@ -129,7 +142,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		bool ITypeParameter.HasConstructableConstraint {
+		bool ITypeParameter.HasDefaultConstructorConstraint {
 			get { return false; }
 		}
 		

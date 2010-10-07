@@ -164,7 +164,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		ITypeReference CreateType(
 			TypeReference type,
-			IEntity entity ,
+			IEntity entity,
 			ICustomAttributeProvider typeAttributes, ref int typeIndex)
 		{
 			while (type is OptionalModifierType || type is RequiredModifierType) {
@@ -174,8 +174,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return SharedTypes.UnknownType;
 			}
 			
-			if (type is ByReferenceType) {
-				throw new NotImplementedException();
+			if (type is Mono.Cecil.ByReferenceType) {
+				return ByReferenceTypeReference.Create(
+					CreateType(
+						(type as Mono.Cecil.ByReferenceType).ElementType,
+						entity, typeAttributes, ref typeIndex));
 			} else if (type is Mono.Cecil.PointerType) {
 				typeIndex++;
 				return PointerTypeReference.Create(
@@ -197,7 +200,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					typeIndex++;
 					para[i] = CreateType(gType.GenericArguments[i], entity, typeAttributes, ref typeIndex);
 				}
-				return ConstructedType.Create(baseType, para);
+				return ConstructedTypeReference.Create(baseType, para);
 			} else if (type is GenericParameter) {
 				GenericParameter typeGP = type as GenericParameter;
 				if (typeGP.Owner is MethodDefinition) {
@@ -286,7 +289,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (attributeProvider == null || !attributeProvider.HasCustomAttributes)
 				return false;
 			foreach (CustomAttribute a in attributeProvider.CustomAttributes) {
-				if (a.Constructor.DeclaringType.FullName == "System.Runtime.CompilerServices.DynamicAttribute") {
+				if (a.Constructor.DeclaringType.FullName == typeof(DynamicAttribute).FullName) {
 					if (a.ConstructorArguments.Count == 1) {
 						CustomAttributeArgument[] values = a.ConstructorArguments[0].Value as CustomAttributeArgument[];
 						if (values != null && typeIndex < values.Length && values[typeIndex].Value is bool)
@@ -406,14 +409,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				InitModifiers();
 				
 				if (typeDefinition.HasGenericParameters) {
-					throw new NotImplementedException();
-					/*foreach (GenericParameter g in td.GenericParameters) {
-						this.TypeParameters.Add(new DefaultTypeParameter(this, g.Name, g.Position));
+					for (int i = 0; i < typeDefinition.GenericParameters.Count; i++) {
+						if (typeDefinition.GenericParameters[i].Position != i)
+							throw new InvalidOperationException("g.Position != i");
+						this.TypeParameters.Add(new DefaultTypeParameter(this, i, typeDefinition.GenericParameters[i].Name));
 					}
-					int i = 0;
-					foreach (GenericParameter g in td.GenericParameters) {
-						AddConstraintsFromType(this.TypeParameters[i++], g);
-					}*/
+					for (int i = 0; i < typeDefinition.GenericParameters.Count; i++) {
+						loader.AddConstraints((DefaultTypeParameter)this.TypeParameters[i], typeDefinition.GenericParameters[i]);
+					}
 				}
 				
 				InitNestedTypes(loader); // nested types can be initialized only after generic parameters were created
@@ -556,20 +559,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		#endregion
 		
-		#region ReadMethod
+		#region Read Method
 		IMethod ReadMethod(MethodDefinition method, ITypeDefinition parentType, EntityType methodType)
 		{
 			DefaultMethod m = new DefaultMethod(parentType, method.Name);
 			m.EntityType = methodType;
 			if (method.HasGenericParameters) {
-				throw new NotImplementedException();
-				/*foreach (GenericParameter g in method.GenericParameters) {
-					m.TypeParameters.Add(new DefaultTypeParameter(this, g.Name, g.Position));
+				for (int i = 0; i < method.GenericParameters.Count; i++) {
+					if (method.GenericParameters[i].Position != i)
+						throw new InvalidOperationException("g.Position != i");
+					m.TypeParameters.Add(new DefaultTypeParameter(m, i, method.GenericParameters[i].Name));
 				}
-				int i = 0;
-				foreach (GenericParameter g in method.GenericParameters) {
-					AddConstraintsFromType(m.TypeParameters[i++], g);
-				}*/
+				for (int i = 0; i < method.GenericParameters.Count; i++) {
+					AddConstraints((DefaultTypeParameter)m.TypeParameters[i], method.GenericParameters[i]);
+				}
 			}
 			
 			if (method.IsConstructor)
@@ -647,16 +650,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		#endregion
 		
-		bool IsVisible(FieldAttributes att)
-		{
-			att &= FieldAttributes.FieldAccessMask;
-			return IncludeInternalMembers
-				|| att == FieldAttributes.Public
-				|| att == FieldAttributes.Family
-				|| att == FieldAttributes.FamORAssem;
-		}
-		
-		#region ReadParameter
+		#region Read Parameter
 		public IParameter ReadParameter(ParameterDefinition parameter, IParameterizedMember parentMember = null)
 		{
 			if (parameter == null)
@@ -668,7 +662,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (parameter.HasCustomAttributes)
 				AddAttributes(parameter, p.Attributes);
 			
-			if (parameter.ParameterType is ByReferenceType) {
+			if (parameter.ParameterType is Mono.Cecil.ByReferenceType) {
 				if (parameter.IsOut)
 					p.IsOut = true;
 				else
@@ -692,11 +686,46 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		#endregion
 		
+		#region Read Field
+		bool IsVisible(FieldAttributes att)
+		{
+			att &= FieldAttributes.FieldAccessMask;
+			return IncludeInternalMembers
+				|| att == FieldAttributes.Public
+				|| att == FieldAttributes.Family
+				|| att == FieldAttributes.FamORAssem;
+		}
+		#endregion
+		
 		void AddExplicitInterfaceImplementations(MethodDefinition method, AbstractMember targetMember)
 		{
 			if (method.HasOverrides) {
 				throw new NotImplementedException();
 			}
 		}
+		
+		#region Type Parameter Constraints
+		void AddConstraints(DefaultTypeParameter tp, GenericParameter g)
+		{
+			switch (g.Attributes & GenericParameterAttributes.VarianceMask) {
+				case GenericParameterAttributes.Contravariant:
+					tp.Variance = VarianceModifier.Contravariant;
+					break;
+				case GenericParameterAttributes.Covariant:
+					tp.Variance = VarianceModifier.Covariant;
+					break;
+			}
+			
+			tp.HasDefaultConstructorConstraint = g.HasReferenceTypeConstraint;
+			tp.HasValueTypeConstraint = g.HasNotNullableValueTypeConstraint;
+			tp.HasDefaultConstructorConstraint = g.HasDefaultConstructorConstraint;
+			
+			if (g.HasConstraints) {
+				foreach (TypeReference constraint in g.Constraints) {
+					tp.Constraints.Add(ReadTypeReference(constraint, entity: tp.Parent));
+				}
+			}
+		}
+		#endregion
 	}
 }

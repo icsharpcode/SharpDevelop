@@ -142,6 +142,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeSystem\Accessibility.cs" />
     <Compile Include="TypeSystem\ArrayType.cs" />
+    <Compile Include="TypeSystem\ByReferenceType.cs" />
     <Compile Include="TypeSystem\CecilLoader.cs" />
     <Compile Include="TypeSystem\ClassType.cs" />
     <Compile Include="TypeSystem\ConstructedType.cs" />
@@ -162,9 +163,11 @@
     <Compile Include="TypeSystem\Implementation\AbstractType.cs" />
     <Compile Include="TypeSystem\Implementation\AbstractTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\BitVector16.cs" />
+    <Compile Include="TypeSystem\Implementation\DefaultAttribute.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultExplicitInterfaceImplementation.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultMethod.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultParameter.cs" />
+    <Compile Include="TypeSystem\Implementation\DefaultTypeParameter.cs" />
     <Compile Include="TypeSystem\Implementation\GetClassTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\MultiTypeResolveContext.cs" />
     <Compile Include="TypeSystem\Implementation\NestedTypeReference.cs" />
