@@ -2,7 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Linq;
+
 using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Events;
@@ -115,6 +118,29 @@ namespace ICSharpCode.Reports.Core.Exporter
 			return curPos;
 		}
 		
+		protected  bool PageBreakAfterGroupChange(ISimpleContainer container)
+		{
+			var groupedRows  = BaseConverter.FindGroups(container);
+			if (groupedRows.Count > 0) {
+				var groupedRow = groupedRows[0];
+				return groupedRow.PageBreakOnGroupChange;
+			}
+			return false;
+		}
+		
+		
+		protected static Collection<BaseGroupedRow> FindGroups (ISimpleContainer container)
+		{
+			return new Collection<BaseGroupedRow>(container.Items.OfType<BaseGroupedRow>().ToList());
+		}
+		
+		
+		protected virtual Point ForcePageBreak(ExporterCollection exporterCollection, BaseSection section)
+		{
+			BuildNewPage(exporterCollection,section);
+			return Point.Empty;
+		}
+		
 		#endregion
 		
 		#region IBaseConverter
@@ -150,7 +176,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		public Graphics Graphics {get;set;}
 		#endregion
-		
 		
 		
 		protected void  SaveSize(Size size)

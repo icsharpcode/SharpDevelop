@@ -119,6 +119,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				}
 				
 				pageBreakRect = PrintHelper.CalculatePageBreakRectangle((BaseReportItem)section.Items[0],currentPosition);
+				
 				if (PrintHelper.IsPageFull(pageBreakRect,base.SectionBounds)) {
 					currentPosition= ForcePageBreak (exporterCollection,section);
 				}
@@ -135,23 +136,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		private Point ForcePageBreak(ExporterCollection exporterCollection, BaseSection section)
+		protected override Point ForcePageBreak(ExporterCollection exporterCollection, BaseSection section)
 		{
-			base.BuildNewPage(exporterCollection,section);
+			base.ForcePageBreak(exporterCollection,section);
 			return CalculateStartPosition();
 		}
-		
-		
-		private static bool PageBreakAfterGroupChange(BaseSection section)
-		{
-			var groupedRowCollection  = new Collection<BaseGroupedRow>(section.Items.OfType<BaseGroupedRow>().ToList());
-			if (groupedRowCollection.Count > 0) {
-				var groupedRow = groupedRowCollection[0];
-				return groupedRow.PageBreakOnGroupChange;
-			}
-			return false;
-		}
-		
+	
 		
 		private Point CalculateStartPosition()
 		{
@@ -163,8 +153,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			var retVal = Point.Empty;
 			ReportItemCollection groupCollection = null;
-			var groupedRow  = new Collection<BaseGroupedRow>(section.Items.OfType<BaseGroupedRow>().ToList());
-			if (groupedRow.Count == 0) {
+			var groupedRows  = BaseConverter.FindGroups(section);
+			if (groupedRows.Count == 0) {
 				groupCollection = section.Items.ExtractGroupedColumns();
 				base.DataNavigator.Fill(groupCollection);
 				base.FireSectionRendering(section);
@@ -176,7 +166,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				AfterConverting (list);
 				retVal =  new Point (leftPos,offset.Y + groupCollection[0].Size.Height + 20  + (3 *GlobalValues.GapBetweenContainer));
 			} else {
-				retVal = ConvertStandardRow(exportList,section,groupedRow[0],leftPos,offset);
+				retVal = ConvertStandardRow(exportList,section,groupedRows[0],leftPos,offset);
 			}
 			return retVal;
 		}
