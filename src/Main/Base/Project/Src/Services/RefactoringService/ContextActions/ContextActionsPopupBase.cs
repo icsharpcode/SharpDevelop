@@ -4,6 +4,7 @@
 using System;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Editor;
 
@@ -17,6 +18,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		protected ContextActionsPopupBase()
 		{
 			this.KeyDown += OnKeyDown;
+			this.UseLayoutRounding = true;
+			TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
 		}
 		
 		void OnKeyDown(object sender, KeyEventArgs e)
