@@ -116,7 +116,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return this;
 		}
 		
-		public IType GetBaseType(ITypeResolveContext context)
+		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
 			throw new NotImplementedException();
 		}
@@ -175,6 +175,29 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 			}
 			return hashCode;
+		}
+		
+		public IType AcceptVisitor(TypeVisitor visitor)
+		{
+			return visitor.VisitConstructedType(this);
+		}
+		
+		public IType VisitChildren(TypeVisitor visitor)
+		{
+			IType g = genericType.AcceptVisitor(visitor);
+			ITypeDefinition def = g as ITypeDefinition;
+			if (def == null)
+				return g;
+			IType[] ta = new IType[typeArguments.Length];
+			bool isSame = g == this;
+			for (int i = 0; i < typeArguments.Length; i++) {
+				ta[i] = typeArguments[i].AcceptVisitor(visitor);
+				isSame &= ta[i] == typeArguments[i];
+			}
+			if (isSame)
+				return this;
+			else
+				return new ConstructedType(def, ta);
 		}
 	}
 	

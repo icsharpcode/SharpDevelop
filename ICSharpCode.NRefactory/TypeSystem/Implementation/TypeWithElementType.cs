@@ -38,5 +38,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			return elementType;
 		}
+		
+		// Force concrete implementations to override VisitChildren - the base implementation
+		// in AbstractType assumes there are no children, but we know there is (at least) 1.
+		public abstract override IType VisitChildren(TypeVisitor visitor);
 	}
 }

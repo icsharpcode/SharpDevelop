@@ -32,6 +32,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			PointerType a = other as PointerType;
 			return a != null && elementType.Equals(a.elementType);
 		}
+		
+		public override IType AcceptVisitor(TypeVisitor visitor)
+		{
+			return visitor.VisitPointerType(this);
+		}
+		
+		public override IType VisitChildren(TypeVisitor visitor)
+		{
+			IType elementType = GetElementType();
+			IType e = elementType.AcceptVisitor(visitor);
+			if (e == elementType)
+				return this;
+			else
+				return new PointerType(e);
+		}
 	}
 	
 	public class PointerTypeReference : AbstractTypeReference

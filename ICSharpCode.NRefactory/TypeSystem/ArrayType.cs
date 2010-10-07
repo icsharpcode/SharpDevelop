@@ -2,6 +2,7 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.TypeSystem
@@ -46,6 +47,33 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			ArrayType a = other as ArrayType;
 			return a != null && elementType.Equals(a.elementType) && a.dimensions == dimensions;
+		}
+		
+		public override IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
+		{
+			List<IType> baseTypes = new List<IType>();
+			IType t = context.GetClass(typeof(Array));
+			if (t != null)
+				baseTypes.Add(t);
+			t = context.GetClass(typeof(List<>));
+			if (t != null)
+				baseTypes.Add(t);
+			return baseTypes;
+		}
+		
+		public override IType AcceptVisitor(TypeVisitor visitor)
+		{
+			return visitor.VisitArrayType(this);
+		}
+		
+		public override IType VisitChildren(TypeVisitor visitor)
+		{
+			IType elementType = GetElementType();
+			IType e = elementType.AcceptVisitor(visitor);
+			if (e == elementType)
+				return this;
+			else
+				return new ArrayType(e, dimensions);
 		}
 	}
 	

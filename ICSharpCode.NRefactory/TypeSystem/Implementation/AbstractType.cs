@@ -61,9 +61,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return this;
 		}
 		
-		public IType GetBaseType(ITypeResolveContext context)
+		public virtual IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
-			return null;
+			return EmptyList<IType>.Instance;
 		}
 		
 		public virtual IList<IType> GetNestedTypes(ITypeResolveContext context)
@@ -102,6 +102,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public override string ToString()
 		{
 			return this.DotNetName;
+		}
+		
+		public virtual IType AcceptVisitor(TypeVisitor visitor)
+		{
+			return visitor.VisitOtherType(this);
+		}
+		
+		public virtual IType VisitChildren(TypeVisitor visitor)
+		{
+			return this;
 		}
 	}
 }

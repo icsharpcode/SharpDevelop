@@ -163,5 +163,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public virtual ITypeParameter UnboundTypeParameter {
 			get { return null; }
 		}
+		
+		public override IType AcceptVisitor(TypeVisitor visitor)
+		{
+			return visitor.VisitTypeParameter(this);
+		}
 	}
 }

@@ -30,6 +30,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ByReferenceType a = other as ByReferenceType;
 			return a != null && elementType.Equals(a.elementType);
 		}
+		
+		public override IType AcceptVisitor(TypeVisitor visitor)
+		{
+			return visitor.VisitByReferenceType(this);
+		}
+		
+		public override IType VisitChildren(TypeVisitor visitor)
+		{
+			IType elementType = GetElementType();
+			IType e = elementType.AcceptVisitor(visitor);
+			if (e == elementType)
+				return this;
+			else
+				return new ByReferenceType(e);
+		}
 	}
 	
 	public class ByReferenceTypeReference : AbstractTypeReference

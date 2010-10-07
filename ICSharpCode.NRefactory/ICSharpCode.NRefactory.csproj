@@ -192,8 +192,10 @@
     <Compile Include="TypeSystem\ITypeParameter.cs" />
     <Compile Include="TypeSystem\ITypeReference.cs" />
     <Compile Include="TypeSystem\ITypeResolveContext.cs" />
+    <Compile Include="TypeSystem\TypeVisitor.cs" />
     <Compile Include="TypeSystem\IVariable.cs" />
     <Compile Include="TypeSystem\PointerType.cs" />
+    <Compile Include="TypeSystem\ReflectionHelper.cs" />
     <Compile Include="TypeSystem\SharedTypes.cs" />
     <Compile Include="CSharp\Parser\mcs\cs-parser.cs" />
     <Compile Include="CSharp\Parser\mcs\expression.cs" />

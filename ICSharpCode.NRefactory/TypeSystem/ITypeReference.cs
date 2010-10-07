@@ -16,9 +16,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IType Resolve(ITypeResolveContext context);
 		
 		/// <summary>
-		/// Gets the base type. May return null.
+		/// Gets the direct base types.
 		/// </summary>
-		IType GetBaseType(ITypeResolveContext context);
+		IEnumerable<IType> GetBaseTypes(ITypeResolveContext context);
 		
 		/// <summary>
 		/// Gets inner classes (including inherited inner classes).
@@ -56,9 +56,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return null;
 		}
 		
-		IType ITypeReference.GetBaseType(ITypeResolveContext context)
+		IEnumerable<IType> ITypeReference.GetBaseTypes(ITypeResolveContext context)
 		{
 			Contract.Requires(context != null);
+			Contract.Ensures(Contract.Result<IEnumerable<IType>>() != null);
 			return null;
 		}
 		

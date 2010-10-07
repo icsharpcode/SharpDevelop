@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		[Test]
 		public void SimplePublicClassTest()
 		{
-			ITypeDefinition c = testCasePC.GetClass(typeof(SimplePublicClass).FullName, 0, StringComparer.Ordinal);
+			ITypeDefinition c = testCasePC.GetClass(typeof(SimplePublicClass));
 			Assert.AreEqual(typeof(SimplePublicClass).Name, c.Name);
 			Assert.AreEqual(typeof(SimplePublicClass).FullName, c.FullName);
 			Assert.AreEqual(typeof(SimplePublicClass).Namespace, c.Namespace);
@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		[Test]
 		public void SimplePublicClassMethodTest()
 		{
-			ITypeDefinition c = testCasePC.GetClass(typeof(SimplePublicClass).FullName, 0, StringComparer.Ordinal);
+			ITypeDefinition c = testCasePC.GetClass(typeof(SimplePublicClass));
 			Assert.AreEqual(2, c.Methods.Count);
 			
 			IMethod method = c.Methods.Single(m => m.Name == "Method");
@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		[Ignore]
 		public void DynamicTypeInGenerics()
 		{
-			ITypeDefinition testClass = testCasePC.GetClass(typeof(DynamicTest).FullName, 0, StringComparer.Ordinal);
+			ITypeDefinition testClass = testCasePC.GetClass(typeof(DynamicTest));
 			/*CSharpAmbience a = new CSharpAmbience();
 			a.ConversionFlags = ConversionFlags.ShowReturnType | ConversionFlags.ShowParameterList;
 			Assert.AreEqual("List<dynamic> DynamicGenerics1(Action<object, dynamic[], object>)", a.Convert(testClass.Methods.Single(me => me.Name == "DynamicGenerics1")));

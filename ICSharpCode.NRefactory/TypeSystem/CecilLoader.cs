@@ -230,7 +230,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					ITypeReference typeRef = GetSimpleType(nameparts[0]);
 					for (int i = 1; i < nameparts.Length; i++) {
 						int partTypeParameterCount;
-						string namepart = SplitTypeParameterCountFromReflectionName(nameparts[i], out partTypeParameterCount);
+						string namepart = ReflectionHelper.SplitTypeParameterCountFromReflectionName(nameparts[i], out partTypeParameterCount);
 						typeRef = new NestedTypeReference(typeRef, namepart, partTypeParameterCount);
 					}
 					return typeRef;
@@ -249,7 +249,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		ITypeReference GetSimpleType(string reflectionName)
 		{
 			int typeParameterCount;
-			string name = SplitTypeParameterCountFromReflectionName(reflectionName, out typeParameterCount);
+			string name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(reflectionName, out typeParameterCount);
 			var earlyBindContext = this.EarlyBindContext;
 			if (earlyBindContext != null) {
 				IType c = earlyBindContext.GetClass(name, typeParameterCount, StringComparer.Ordinal);
@@ -257,31 +257,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					return c;
 			}
 			return new GetClassTypeReference(name, typeParameterCount);
-		}
-		
-		static string SplitTypeParameterCountFromReflectionName(string reflectionName)
-		{
-			int pos = reflectionName.LastIndexOf('`');
-			if (pos < 0) {
-				return reflectionName;
-			} else {
-				return reflectionName.Substring(0, pos);
-			}
-		}
-		
-		static string SplitTypeParameterCountFromReflectionName(string reflectionName, out int typeParameterCount)
-		{
-			int pos = reflectionName.LastIndexOf('`');
-			if (pos < 0) {
-				typeParameterCount = 0;
-				return reflectionName;
-			} else {
-				string typeCount = reflectionName.Substring(pos + 1);
-				if (int.TryParse(typeCount, out typeParameterCount))
-					return reflectionName.Substring(0, pos);
-				else
-					return reflectionName;
-			}
 		}
 		
 		static bool HasDynamicAttribute(ICustomAttributeProvider attributeProvider, int typeIndex)
@@ -358,7 +333,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			TypeDefinition typeDefinition;
 			
 			public CecilTypeDefinition(IProjectContent pc, TypeDefinition typeDefinition)
-				: base(pc, typeDefinition.Namespace, SplitTypeParameterCountFromReflectionName(typeDefinition.Name))
+				: base(pc, typeDefinition.Namespace, ReflectionHelper.SplitTypeParameterCountFromReflectionName(typeDefinition.Name))
 			{
 				this.typeDefinition = typeDefinition;
 			}
@@ -423,7 +398,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 							name = name.Substring(pos + 1);
 						if (name.Length == 0 || name[0] == '<')
 							continue;
-						name = SplitTypeParameterCountFromReflectionName(name);
+						name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(name);
 						InnerClasses.Add(new CecilTypeDefinition(this, name, nestedType));
 					}
 				}

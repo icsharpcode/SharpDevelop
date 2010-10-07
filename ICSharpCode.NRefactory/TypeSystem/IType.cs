@@ -44,6 +44,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the number of type parameters.
 		/// </summary>
 		int TypeParameterCount { get; }
+		
+		/// <summary>
+		/// Calls ITypeVisitor.Visit for this type.
+		/// </summary>
+		IType AcceptVisitor(TypeVisitor visitor);
+		
+		/// <summary>
+		/// Calls ITypeVisitor.Visit for all children of this type, and reconstructs this type with the children based
+		/// by the return values of the visit calls.
+		/// </summary>
+		IType VisitChildren(TypeVisitor visitor);
 	}
 	
 	[ContractClassFor(typeof(IType))]
@@ -106,6 +117,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		bool IEquatable<IType>.Equals(IType other)
 		{
 			return false;
+		}
+		
+		IType IType.AcceptVisitor(TypeVisitor visitor)
+		{
+			Contract.Requires(visitor != null);
+			Contract.Ensures(Contract.Result<IType>() != null);
+			return this;
+		}
+		
+		IType IType.VisitChildren(TypeVisitor visitor)
+		{
+			Contract.Requires(visitor != null);
+			Contract.Ensures(Contract.Result<IType>() != null);
+			return this;
 		}
 	}
 }

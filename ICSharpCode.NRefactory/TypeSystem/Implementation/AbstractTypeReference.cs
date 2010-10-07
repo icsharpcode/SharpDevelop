@@ -10,9 +10,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	{
 		public abstract IType Resolve(ITypeResolveContext context);
 		
-		public virtual IType GetBaseType(ITypeResolveContext context)
+		public virtual IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
-			return Resolve(context).GetBaseType(context);
+			return Resolve(context).GetBaseTypes(context);
 		}
 		
 		public virtual IList<IType> GetNestedTypes(ITypeResolveContext context)

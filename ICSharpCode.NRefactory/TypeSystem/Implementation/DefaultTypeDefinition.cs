@@ -300,9 +300,32 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return projectContent; }
 		}
 		
-		public IType GetBaseType(ITypeResolveContext context)
+		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
-			throw new NotImplementedException();
+			if (baseTypes == null || baseTypes.Count == 0) {
+				if (this.FullName == "System.Object")
+					return EmptyList<IType>.Instance;
+				switch (classType) {
+					case ClassType.Enum:
+						return GetPrimitiveBaseType(typeof(Enum), context);
+					case ClassType.Struct:
+						return GetPrimitiveBaseType(typeof(ValueType), context);
+					case ClassType.Delegate:
+						return GetPrimitiveBaseType(typeof(Delegate), context);
+					default:
+						return GetPrimitiveBaseType(typeof(object), context);
+				}
+			}
+			return baseTypes.Select(t => t.Resolve(context)).Where(t => t != SharedTypes.UnknownType);
+		}
+		
+		static IEnumerable<IType> GetPrimitiveBaseType(Type type, ITypeResolveContext context)
+		{
+			IType t = context.GetClass(type);
+			if (t != null)
+				return new [] { t };
+			else
+				return EmptyList<IType>.Instance;
 		}
 		
 		public virtual ITypeDefinition GetCompoundClass()
@@ -413,6 +436,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				CheckBeforeMutation();
 				flags[FlagAddDefaultConstructorIfRequired] = value;
 			}
+		}
+		
+		public IType AcceptVisitor(TypeVisitor visitor)
+		{
+			return visitor.VisitTypeDefinition(this);
+		}
+		
+		public IType VisitChildren(TypeVisitor visitor)
+		{
+			return this;
 		}
 	}
 }

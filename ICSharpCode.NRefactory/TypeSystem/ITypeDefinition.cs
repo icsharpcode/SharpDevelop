@@ -37,6 +37,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IList<IProperty> Properties { get; }
 		IList<IMethod> Methods { get; }
 		IList<IEvent> Events { get; }
+		
+		/// <summary>
+		/// Gets all members declared in this class. This is the union of Fields,Properties,Methods and Events.
+		/// </summary>
 		IEnumerable<IMember> Members { get; }
 	}
 	
