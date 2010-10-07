@@ -51,7 +51,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.name = name;
 		}
 		
-		/* do we really need copy constructor (for specialized members?)
+		/// <summary>
+		/// Copy constructor
+		/// </summary>
 		protected AbstractMember(IMember member)
 		{
 			if (member == null)
@@ -64,6 +66,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.bodyRegion = member.BodyRegion;
 			this.name = member.Name;
 			this.accessibility = member.Accessibility;
+			this.entityType = member.EntityType;
 			this.IsSealed = member.IsSealed;
 			this.IsAbstract = member.IsAbstract;
 			this.IsShadowing = member.IsShadowing;
@@ -73,14 +76,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.IsStatic = member.IsStatic;
 		}
 		
-		static IList<T> CopyList<T>(IList<T> inputList)
+		protected static IList<T> CopyList<T>(IList<T> inputList)
 		{
 			if (inputList.Count == 0)
 				return null;
 			else
 				return new List<T>(inputList);
 		}
-		 */
 		
 		public ITypeDefinition DeclaringTypeDefinition {
 			get { return declaringTypeDefinition; }
@@ -90,8 +92,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return declaringTypeDefinition; }
 		}
 		
-		public virtual IMember GenericMember {
-			get { return null; }
+		public virtual IMember MemberDefinition {
+			get { return this; }
 		}
 		
 		public ITypeReference ReturnType {

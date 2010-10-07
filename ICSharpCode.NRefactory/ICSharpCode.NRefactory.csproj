@@ -178,6 +178,10 @@
     <Compile Include="TypeSystem\Implementation\DefaultTypeDefinition.cs" />
     <Compile Include="TypeSystem\Implementation\SimpleConstantValue.cs" />
     <Compile Include="TypeSystem\Implementation\SimpleProjectContent.cs" />
+    <Compile Include="TypeSystem\Implementation\SpecializedEvent.cs" />
+    <Compile Include="TypeSystem\Implementation\SpecializedField.cs" />
+    <Compile Include="TypeSystem\Implementation\SpecializedMethod.cs" />
+    <Compile Include="TypeSystem\Implementation\SpecializedProperty.cs" />
     <Compile Include="TypeSystem\Implementation\TypeStorage.cs" />
     <Compile Include="TypeSystem\Implementation\TypeWithElementType.cs" />
     <Compile Include="TypeSystem\INamedElement.cs" />

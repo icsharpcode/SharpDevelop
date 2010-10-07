@@ -31,6 +31,17 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 		}
 		
+		/// <summary>
+		/// Copy constructor
+		/// </summary>
+		protected DefaultMethod(IMethod method) : base(method)
+		{
+			returnTypeAttributes = CopyList(returnTypeAttributes);
+			typeParameters = CopyList(typeParameters);
+			parameters = CopyList(parameters);
+			this.IsExtensionMethod = method.IsExtensionMethod;
+		}
+		
 		public IList<IAttribute> ReturnTypeAttributes {
 			get {
 				if (returnTypeAttributes == null)

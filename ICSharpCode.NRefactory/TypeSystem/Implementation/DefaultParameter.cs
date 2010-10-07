@@ -20,6 +20,31 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		DomRegion region;
 		byte flags;
 		
+		public DefaultParameter(ITypeReference type, string name)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			if (name == null)
+				throw new ArgumentNullException("name");
+			this.type = type;
+			this.name = name;
+		}
+		
+		/// <summary>
+		/// Copy constructor
+		/// </summary>
+		public DefaultParameter(IParameter p)
+		{
+			this.name = p.Name;
+			this.type = p.Type;
+			this.attributes = p.Attributes;
+			this.defaultValue = p.DefaultValue;
+			this.region = p.Region;
+			this.IsRef = p.IsRef;
+			this.IsOut = p.IsOut;
+			this.IsParams = p.IsParams;
+		}
+		
 		protected override void FreezeInternal()
 		{
 			type.Freeze();

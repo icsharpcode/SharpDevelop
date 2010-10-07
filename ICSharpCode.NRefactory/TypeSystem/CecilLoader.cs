@@ -617,9 +617,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			if (parameter == null)
 				throw new ArgumentNullException("parameter");
-			DefaultParameter p = new DefaultParameter();
-			p.Name = parameter.Name;
-			p.Type = ReadTypeReference(parameter.ParameterType, typeAttributes: parameter, entity: parentMember);
+			var type = ReadTypeReference(parameter.ParameterType, typeAttributes: parameter, entity: parentMember);
+			DefaultParameter p = new DefaultParameter(type, parameter.Name);
 			
 			if (parameter.HasCustomAttributes)
 				AddAttributes(parameter, p.Attributes);

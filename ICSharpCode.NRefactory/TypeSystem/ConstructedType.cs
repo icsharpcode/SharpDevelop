@@ -23,6 +23,29 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// </remarks>
 	public class ConstructedType : Immutable, IType
 	{
+		sealed class Substitution : TypeVisitor
+		{
+			readonly IType[] typeArguments;
+			
+			public Substitution(IType[] typeArguments)
+			{
+				this.typeArguments = typeArguments;
+			}
+			
+			public override IType VisitTypeParameter(ITypeParameter type)
+			{
+				int index = type.Index;
+				if (type.ParentClass != null) {
+					if (index >= 0 && index < typeArguments.Length)
+						return typeArguments[index];
+					else
+						return SharedTypes.UnknownType;
+				} else {
+					return base.VisitTypeParameter(type);
+				}
+			}
+		}
+		
 		readonly ITypeDefinition genericType;
 		readonly IType[] typeArguments;
 		
@@ -118,7 +141,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
-			throw new NotImplementedException();
+			Substitution substitution = new Substitution(typeArguments);
+			return genericType.GetBaseTypes(context).Select(t => t.AcceptVisitor(substitution));
 		}
 		
 		public IList<IType> GetNestedTypes(ITypeResolveContext context)
@@ -128,22 +152,54 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		public IList<IMethod> GetMethods(ITypeResolveContext context)
 		{
-			throw new NotImplementedException();
+			Substitution substitution = new Substitution(typeArguments);
+			IList<IMethod> methods = genericType.GetMethods(context);
+			for (int i = 0; i < methods.Count; i++) {
+				SpecializedMethod m = new SpecializedMethod(methods[i]);
+				m.SetDeclaringType(this);
+				m.SubstituteTypes(context, substitution);
+				methods[i] = m;
+			}
+			return methods;
 		}
 		
 		public IList<IProperty> GetProperties(ITypeResolveContext context)
 		{
-			throw new NotImplementedException();
+			Substitution substitution = new Substitution(typeArguments);
+			IList<IProperty> properties = genericType.GetProperties(context);
+			for (int i = 0; i < properties.Count; i++) {
+				SpecializedProperty p = new SpecializedProperty(properties[i]);
+				p.SetDeclaringType(this);
+				p.SubstituteTypes(context, substitution);
+				properties[i] = p;
+			}
+			return properties;
 		}
 		
 		public IList<IField> GetFields(ITypeResolveContext context)
 		{
-			throw new NotImplementedException();
+			Substitution substitution = new Substitution(typeArguments);
+			IList<IField> fields = genericType.GetFields(context);
+			for (int i = 0; i < fields.Count; i++) {
+				SpecializedField f = new SpecializedField(fields[i]);
+				f.SetDeclaringType(this);
+				f.ReturnType = f.ReturnType.Resolve(context).AcceptVisitor(substitution);
+				fields[i] = f;
+			}
+			return fields;
 		}
 		
 		public IList<IEvent> GetEvents(ITypeResolveContext context)
 		{
-			throw new NotImplementedException();
+			Substitution substitution = new Substitution(typeArguments);
+			IList<IEvent> events = genericType.GetEvents(context);
+			for (int i = 0; i < events.Count; i++) {
+				SpecializedEvent e = new SpecializedEvent(events[i]);
+				e.SetDeclaringType(this);
+				e.ReturnType = e.ReturnType.Resolve(context).AcceptVisitor(substitution);
+				events[i] = e;
+			}
+			return events;
 		}
 		
 		public override bool Equals(object obj)

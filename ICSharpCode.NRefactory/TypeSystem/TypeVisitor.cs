@@ -6,7 +6,7 @@ using System;
 namespace ICSharpCode.NRefactory.TypeSystem
 {
 	/// <summary>
-	/// Description of ITypeVisitor.
+	/// Base class for the visitor pattern on <see cref="IType"/>.
 	/// </summary>
 	public abstract class TypeVisitor
 	{

@@ -27,6 +27,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 		}
 		
+		protected DefaultField(IField f) : base(f)
+		{
+			this.constantValue = f.ConstantValue;
+			this.IsReadOnly = f.IsReadOnly;
+			this.IsVolatile = f.IsVolatile;
+		}
+		
 		public bool IsConst {
 			get { return constantValue != null; }
 		}

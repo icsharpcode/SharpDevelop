@@ -30,6 +30,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 		}
 		
+		protected DefaultProperty(IProperty p) : base(p)
+		{
+			this.getterAccessibility = p.GetterAccessibility;
+			this.setterAccessibility = p.SetterAccessibility;
+			this.parameters = CopyList(p.Parameters);
+			this.IsIndexer = p.IsIndexer;
+			this.CanGet = p.CanGet;
+			this.CanSet = p.CanSet;
+		}
+		
 		public bool IsIndexer {
 			get { return flags[FlagIsIndexer]; }
 			set {

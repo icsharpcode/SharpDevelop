@@ -27,11 +27,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IType DeclaringType { get; }
 		
 		/// <summary>
-		/// Gets the generic member this member is based on.
-		/// Returns null if this is not a specialized member.
+		/// Gets the original member definition for this member.
+		/// Returns <c>this</c> if this is not a specialized member.
 		/// Specialized members are the result of overload resolution with type substitution.
 		/// </summary>
-		IMember GenericMember { get; }
+		IMember MemberDefinition { get; }
 		
 		/// <summary>
 		/// Gets the return type of this member.
@@ -81,8 +81,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		IMember IMember.GenericMember {
+		IMember IMember.MemberDefinition {
 			get {
+				Contract.Ensures(Contract.Result<IMember>() != null);
 				return null;
 			}
 		}

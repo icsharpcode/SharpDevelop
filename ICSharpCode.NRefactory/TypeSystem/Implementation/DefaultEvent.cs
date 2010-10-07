@@ -23,6 +23,20 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 		}
 		
+		/// <summary>
+		/// Copy constructor
+		/// </summary>
+		protected DefaultEvent(IEvent ev)
+			: base(ev)
+		{
+			this.CanAdd = ev.CanAdd;
+			this.addAccessibility = ev.AddAccessibility;
+			this.CanRemove = ev.CanRemove;
+			this.removeAccessibility = ev.RemoveAccessibility;
+			this.CanInvoke = ev.CanInvoke;
+			this.invokeAccessibility = ev.InvokeAccessibility;
+		}
+		
 		public bool CanAdd {
 			get { return flags[FlagCanAdd]; }
 			set {

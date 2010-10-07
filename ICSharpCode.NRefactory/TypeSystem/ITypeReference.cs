@@ -28,21 +28,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets all methods that can be called on this return type.
 		/// </summary>
+		/// <returns>A new mutable list</returns>
 		IList<IMethod> GetMethods(ITypeResolveContext context);
 		
 		/// <summary>
 		/// Gets all properties that can be called on this return type.
 		/// </summary>
+		/// <returns>A new mutable list</returns>
 		IList<IProperty> GetProperties(ITypeResolveContext context);
 		
 		/// <summary>
 		/// Gets all fields that can be called on this return type.
 		/// </summary>
+		/// <returns>A new mutable list</returns>
 		IList<IField> GetFields(ITypeResolveContext context);
 		
 		/// <summary>
 		/// Gets all events that can be called on this return type.
 		/// </summary>
+		/// <returns>A new mutable list</returns>
 		IList<IEvent> GetEvents(ITypeResolveContext context);
 	}
 	
