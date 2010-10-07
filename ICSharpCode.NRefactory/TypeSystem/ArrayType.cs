@@ -77,7 +77,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 	}
 	
-	public class ArrayTypeReference : AbstractTypeReference
+	public class ArrayTypeReference : ITypeReference
 	{
 		ITypeReference elementType;
 		int dimensions;
@@ -100,7 +100,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			get { return dimensions; }
 		}
 		
-		public override IType Resolve(ITypeResolveContext context)
+		public IType Resolve(ITypeResolveContext context)
 		{
 			return new ArrayType(elementType.Resolve(context), dimensions);
 		}

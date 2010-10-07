@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 	}
 	
-	public class ByReferenceTypeReference : AbstractTypeReference
+	public class ByReferenceTypeReference : ITypeReference
 	{
 		readonly ITypeReference elementType;
 		
@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			get { return elementType; }
 		}
 		
-		public override IType Resolve(ITypeResolveContext context)
+		public IType Resolve(ITypeResolveContext context)
 		{
 			return new ByReferenceType(elementType.Resolve(context));
 		}

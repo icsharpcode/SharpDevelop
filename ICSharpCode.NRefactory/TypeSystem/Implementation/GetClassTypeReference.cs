@@ -8,7 +8,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Type Reference used when the fully qualified type name is known.
 	/// </summary>
-	public class GetClassTypeReference : AbstractTypeReference
+	public class GetClassTypeReference : ITypeReference
 	{
 		string fullTypeName;
 		int typeParameterCount;
@@ -21,7 +21,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.typeParameterCount = typeParameterCount;
 		}
 		
-		public override IType Resolve(ITypeResolveContext context)
+		public IType Resolve(ITypeResolveContext context)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");

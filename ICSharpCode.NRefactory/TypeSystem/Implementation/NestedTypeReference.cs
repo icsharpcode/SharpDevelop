@@ -8,7 +8,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Type reference used to reference nested types.
 	/// </summary>
-	public class NestedTypeReference : AbstractTypeReference
+	public class NestedTypeReference : ITypeReference
 	{
 		ITypeReference baseTypeRef;
 		string name;
@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.additionalTypeParameterCount = additionalTypeParameterCount;
 		}
 		
-		public override IType Resolve(ITypeResolveContext context)
+		public IType Resolve(ITypeResolveContext context)
 		{
 			IType baseType = baseTypeRef.Resolve(context);
 			int tpc = baseType.TypeParameterCount;

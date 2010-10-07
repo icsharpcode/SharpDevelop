@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 	}
 	
-	public class PointerTypeReference : AbstractTypeReference
+	public class PointerTypeReference : ITypeReference
 	{
 		readonly ITypeReference elementType;
 		
@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			get { return elementType; }
 		}
 		
-		public override IType Resolve(ITypeResolveContext context)
+		public IType Resolve(ITypeResolveContext context)
 		{
 			return new PointerType(elementType.Resolve(context));
 		}
