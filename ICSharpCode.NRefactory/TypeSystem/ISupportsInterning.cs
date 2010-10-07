@@ -9,6 +9,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 {
 	/// <summary>
 	/// Interface for DOM objects that support interning.
+	/// See <see cref="IInterningProvider"/> for more information.
 	/// </summary>
 	[ContractClass(typeof(ISupportsInterningContract))]
 	public interface ISupportsInterning

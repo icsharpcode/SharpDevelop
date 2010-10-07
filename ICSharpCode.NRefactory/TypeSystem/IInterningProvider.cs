@@ -7,6 +7,24 @@ using System.Diagnostics.Contracts;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
+	/// <summary>
+	/// Provider used for interning.
+	/// </summary>
+	/// <remarks>
+	/// A simple IInterningProvider implementation could use 3 dictionaries:
+	///  1. using value equality comparer (for certain types known to implement value equality, e.g. string and IType)
+	///  2. using comparer that calls into ISupportsInterning (for types implementing ISupportsInterning)
+	///  3. list comparer (for InternList method)
+	/// 
+	/// On the first Intern()-call, the provider tells the object to prepare for interning (ISupportsInterning.PrepareForInterning)
+	/// and stores it into a dictionary. On further Intern() calls, the original object is returned for all equal objects.
+	/// This allows reducing the memory usage by using a single object instance where possible.
+	/// 
+	/// Interning provider implementations could also use the interning logic for different purposes:
+	/// for example, it could be used to determine which objects are used jointly between multiple type definitions
+	/// and which are used only within a single type definition. Then a persistent file format could be organized so
+	/// that shared objects are loaded only once, yet non-shared objects get loaded lazily together with the class.
+	/// </remarks>
 	[ContractClass(typeof(IInterningProviderContract))]
 	public interface IInterningProvider
 	{

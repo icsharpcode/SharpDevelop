@@ -74,12 +74,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			uniqueObjectsPreIntern.Add(obj);
 			ISupportsInterning s = obj as ISupportsInterning;
 			if (s != null) {
-				s.PrepareForInterning(this);
 				ISupportsInterning output;
-				if (supportsInternDict.TryGetValue(s, out output))
+				if (supportsInternDict.TryGetValue(s, out output)) {
 					obj = (T)output;
-				else
-					supportsInternDict.Add(s, s);
+				} else {
+					s.PrepareForInterning(this);
+					if (supportsInternDict.TryGetValue(s, out output))
+						obj = (T)output;
+					else
+						supportsInternDict.Add(s, s);
+				}
 			} else if (obj is string || obj is IType || obj is bool || obj is int) {
 				object output;
 				if (byValueDict.TryGetValue(obj, out output))
