@@ -42,6 +42,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.IsExtensionMethod = method.IsExtensionMethod;
 		}
 		
+		public override void PrepareForInterning(IInterningProvider provider)
+		{
+			base.PrepareForInterning(provider);
+			returnTypeAttributes = provider.InternList(returnTypeAttributes);
+			typeParameters = provider.InternList(typeParameters);
+			parameters = provider.InternList(parameters);
+		}
+		
 		public IList<IAttribute> ReturnTypeAttributes {
 			get {
 				if (returnTypeAttributes == null)

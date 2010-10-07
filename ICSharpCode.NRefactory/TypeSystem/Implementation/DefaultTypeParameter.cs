@@ -9,7 +9,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation of <see cref="ITypeParameter"/>.
 	/// </summary>
-	public class DefaultTypeParameter : AbstractType, ITypeParameter
+	public class DefaultTypeParameter : AbstractType, ITypeParameter, ISupportsInterning
 	{
 		IEntity parent;
 		
@@ -167,6 +167,22 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public override IType AcceptVisitor(TypeVisitor visitor)
 		{
 			return visitor.VisitTypeParameter(this);
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			constraints = provider.InternList(constraints);
+			attributes = provider.InternList(attributes);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return GetHashCode();
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			return this == other;
 		}
 	}
 }

@@ -8,7 +8,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation for IExplicitInterfaceImplementation.
 	/// </summary>
-	public sealed class DefaultExplicitInterfaceImplementation : Immutable, IExplicitInterfaceImplementation
+	public sealed class DefaultExplicitInterfaceImplementation : Immutable, IExplicitInterfaceImplementation, ISupportsInterning
 	{
 		public ITypeReference InterfaceType { get; private set; }
 		public string MemberName { get; private set; }
@@ -26,6 +26,23 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public override string ToString()
 		{
 			return InterfaceType + "." + MemberName;
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			InterfaceType = provider.Intern(InterfaceType);
+			MemberName = provider.Intern(MemberName);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return InterfaceType.GetHashCode() ^ MemberName.GetHashCode();
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			DefaultExplicitInterfaceImplementation o = other as DefaultExplicitInterfaceImplementation;
+			return InterfaceType == o.InterfaceType && MemberName == o.MemberName;
 		}
 	}
 }

@@ -2,9 +2,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
 
@@ -101,10 +101,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				T newItem = Intern(oldItem);
 				if (oldItem != newItem) {
 					if (list.IsReadOnly)
-						list = new List<T>(list);
+						list = new T[list.Count];
 					list[i] = newItem;
 				}
 			}
+			if (!list.IsReadOnly)
+				list = new ReadOnlyCollection<T>(list);
 			IEnumerable<object> output;
 			if (listDict.TryGetValue(list, out output))
 				list = (IList<T>)output;
@@ -120,28 +122,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				Run(n);
 			}
 			Intern(c.Name);
-			foreach (IProperty p in c.Properties) {
-				Intern(p.Name);
-				Intern(p.ReturnType);
-				InternList(p.Parameters);
-				InternList(p.Attributes);
-			}
-			foreach (IMethod m in c.Methods) {
-				Intern(m.Name);
-				Intern(m.ReturnType);
-				InternList(m.Parameters);
-				InternList(m.Attributes);
-			}
-			foreach (IField f in c.Fields) {
-				Intern(f.Name);
-				Intern(f.ReturnType);
-				Intern(f.ConstantValue);
-				InternList(f.Attributes);
-			}
-			foreach (IEvent e in c.Events) {
-				Intern(e.Name);
-				Intern(e.ReturnType);
-				InternList(e.Attributes);
+			foreach (IMember m in c.Members) {
+				Intern(m);
 			}
 		}
 		

@@ -9,7 +9,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Base class for <see cref="IMember"/> implementations.
 	/// </summary>
-	public abstract class AbstractMember : AbstractFreezable, IMember
+	public abstract class AbstractMember : AbstractFreezable, IMember, ISupportsInterning
 	{
 		ITypeDefinition declaringTypeDefinition;
 		ITypeReference returnType = SharedTypes.UnknownType;
@@ -243,6 +243,24 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public override string ToString()
 		{
 			return "[" + EntityType + " " + DotNetName + ":" + ReturnType + "]";
+		}
+		
+		public virtual void PrepareForInterning(IInterningProvider provider)
+		{
+			returnType = provider.Intern(returnType);
+			attributes = provider.InternList(attributes);
+			interfaceImplementations = provider.InternList(interfaceImplementations);
+			name = provider.Intern(name);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return GetHashCode();
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			return this == other;
 		}
 	}
 }

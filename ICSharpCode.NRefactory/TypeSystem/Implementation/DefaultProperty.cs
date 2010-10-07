@@ -40,6 +40,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.CanSet = p.CanSet;
 		}
 		
+		public override void PrepareForInterning(IInterningProvider provider)
+		{
+			base.PrepareForInterning(provider);
+			parameters = provider.InternList(parameters);
+		}
+		
 		public bool IsIndexer {
 			get { return flags[FlagIsIndexer]; }
 			set {
