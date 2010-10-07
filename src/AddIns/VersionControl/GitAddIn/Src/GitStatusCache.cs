@@ -93,13 +93,18 @@ namespace ICSharpCode.GitAddIn
 			ProcessRunner runner = new ProcessRunner();
 			runner.WorkingDirectory = wcRoot;
 			runner.LogStandardOutputAndError = false;
+			string commandPrompt = wcRoot + ">@"; // C:\work\SD>@git.exe %*
 			runner.OutputLineReceived += delegate(object sender, LineReceivedEventArgs e) {
 				if (!string.IsNullOrEmpty(e.Line)) {
 					Match m = statusParseRegex.Match(e.Line);
 					if (m.Success) {
 						statusSet.AddEntry(m.Groups[2].Value, StatusFromText(m.Groups[1].Value));
-					} else {
+					} else if (!e.Line.StartsWith(commandPrompt, StringComparison.Ordinal)) {
+						// Suppress "unknown output" produced by git.cmd when git is installed
+						// in the PATH but the git unix tools aren't
+						
 						if (!hasErrors) {
+							// in front of first output line, print the command line we invoked
 							hasErrors = true;
 							GitMessageView.AppendLine(runner.WorkingDirectory + "> " + command);
 						}
