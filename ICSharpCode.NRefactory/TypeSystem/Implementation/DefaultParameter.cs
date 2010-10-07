@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			this.name = p.Name;
 			this.type = p.Type;
-			this.attributes = p.Attributes;
+			this.attributes = CopyList(p.Attributes);
 			this.defaultValue = p.DefaultValue;
 			this.region = p.Region;
 			this.IsRef = p.IsRef;
@@ -140,11 +140,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
 		{
-			CheckBeforeMutation();
-			name = provider.InternString(name);
-			type = provider.InternObject(type);
-			attributes = provider.InternObjectList(attributes);
-			defaultValue = provider.InternObject(defaultValue);
+			name = provider.Intern(name);
+			type = provider.Intern(type);
+			attributes = provider.InternList(attributes);
+			defaultValue = provider.Intern(defaultValue);
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()

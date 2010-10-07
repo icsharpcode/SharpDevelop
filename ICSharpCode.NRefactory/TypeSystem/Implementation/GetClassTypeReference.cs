@@ -8,7 +8,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Type Reference used when the fully qualified type name is known.
 	/// </summary>
-	public class GetClassTypeReference : ITypeReference
+	public sealed class GetClassTypeReference : ITypeReference, ISupportsInterning
 	{
 		string fullTypeName;
 		int typeParameterCount;
@@ -34,6 +34,22 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return fullTypeName;
 			else
 				return fullTypeName + "`" + typeParameterCount;
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			fullTypeName = provider.Intern(fullTypeName);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return fullTypeName.GetHashCode() ^ typeParameterCount;
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			GetClassTypeReference o = other as GetClassTypeReference;
+			return o != null && fullTypeName == o.fullTypeName && typeParameterCount == o.typeParameterCount;
 		}
 	}
 }

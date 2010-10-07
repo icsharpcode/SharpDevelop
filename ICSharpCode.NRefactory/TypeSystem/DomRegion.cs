@@ -61,8 +61,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		public DomRegion(string fileName, int beginLine, int beginColumn, int endLine, int endColumn)
 		{
-			if (fileName == null)
-				throw new ArgumentNullException("fileName");
 			this.fileName = fileName;
 			this.beginLine   = beginLine;
 			this.beginColumn = beginColumn;
@@ -72,8 +70,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		public DomRegion(string fileName, int beginLine, int beginColumn)
 		{
-			if (fileName == null)
-				throw new ArgumentNullException("fileName");
 			this.fileName = fileName;
 			this.beginLine   = beginLine;
 			this.beginColumn = beginColumn;

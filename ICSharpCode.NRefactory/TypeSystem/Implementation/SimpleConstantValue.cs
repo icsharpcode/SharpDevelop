@@ -8,10 +8,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// A simple constant value that is independent of the resolve context.
 	/// </summary>
-	public sealed class SimpleConstantValue : Immutable, IConstantValue
+	public sealed class SimpleConstantValue : Immutable, IConstantValue, ISupportsInterning
 	{
-		readonly ITypeReference type;
-		readonly object value;
+		ITypeReference type;
+		object value;
 		
 		public SimpleConstantValue(ITypeReference type, object value)
 		{
@@ -40,6 +40,23 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return "null";
 			else
 				return value.ToString();
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			type = provider.Intern(type);
+			value = provider.Intern(value);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return type.GetHashCode() ^ (value != null ? value.GetHashCode() : 0);
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			SimpleConstantValue scv = other as SimpleConstantValue;
+			return scv != null && type == scv.type && value == scv.value;
 		}
 	}
 }

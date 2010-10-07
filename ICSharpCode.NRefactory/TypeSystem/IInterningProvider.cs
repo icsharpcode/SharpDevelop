@@ -11,36 +11,26 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	public interface IInterningProvider
 	{
 		/// <summary>
-		/// Intern the specified string.
-		/// </summary>
-		string InternString(string s);
-		
-		/// <summary>
 		/// Interns the specified object.
-		/// The object must implement <see cref="ISupportsInterning"/>, otherwise it will be returned without being interned.
+		/// The object must implement <see cref="ISupportsInterning"/>, or must be of one of the types
+		/// known to the interning provider to use value equality,
+		/// otherwise it will be returned without being interned.
 		/// </summary>
-		T InternObject<T>(T obj);
+		T Intern<T>(T obj) where T : class;
 		
-		IList<T> InternObjectList<T>(IList<T> list);
+		IList<T> InternList<T>(IList<T> list) where T : class;
 	}
 	
 	[ContractClassFor(typeof(IInterningProvider))]
 	abstract class IInterningProviderContract : IInterningProvider
 	{
-		string IInterningProvider.InternString(string s)
-		{
-			Contract.Ensures((Contract.Result<string>() == null) == (s == null));
-			Contract.Ensures(string.IsNullOrEmpty(Contract.Result<string>()) == string.IsNullOrEmpty(s));
-			return s;
-		}
-		
-		T IInterningProvider.InternObject<T>(T obj)
+		T IInterningProvider.Intern<T>(T obj)
 		{
 			Contract.Ensures((Contract.Result<T>() == null) == (obj == null));
 			return obj;
 		}
 		
-		IList<T> IInterningProvider.InternObjectList<T>(IList<T> list)
+		IList<T> IInterningProvider.InternList<T>(IList<T> list)
 		{
 			Contract.Ensures((Contract.Result<IList<T>>() == null) == (list == null));
 			return list;

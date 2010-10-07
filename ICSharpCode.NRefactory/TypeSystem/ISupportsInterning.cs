@@ -11,7 +11,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// Interface for DOM objects that support interning.
 	/// </summary>
 	[ContractClass(typeof(ISupportsInterningContract))]
-	public interface ISupportsInterning : IFreezable
+	public interface ISupportsInterning
 	{
 		/// <summary>
 		/// Interns child objects and strings.
@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	}
 	
 	[ContractClassFor(typeof(ISupportsInterning))]
-	abstract class ISupportsInterningContract : IFreezableContract, ISupportsInterning
+	abstract class ISupportsInterningContract : ISupportsInterning
 	{
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
 		{

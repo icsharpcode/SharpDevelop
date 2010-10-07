@@ -141,6 +141,7 @@
     <Compile Include="CSharp\Parser\mcs\roottypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeSystem\Accessibility.cs" />
+    <Compile Include="TypeSystem\AmbiguousType.cs" />
     <Compile Include="TypeSystem\ArrayType.cs" />
     <Compile Include="TypeSystem\ByReferenceType.cs" />
     <Compile Include="TypeSystem\CecilLoader.cs" />

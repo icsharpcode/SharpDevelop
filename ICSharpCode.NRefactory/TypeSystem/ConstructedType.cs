@@ -21,7 +21,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <see cref="GenericReturnType"/>s are replaced with the return types in the
 	/// type arguments collection.
 	/// </remarks>
-	public class ConstructedType : Immutable, IType
+	public sealed class ConstructedType : Immutable, IType
 	{
 		sealed class Substitution : TypeVisitor
 		{
@@ -290,7 +290,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// ConstructedTypeReference is a reference to generic class that specifies the type parameters.
 	/// Example: List&lt;string&gt;
 	/// </summary>
-	public class ConstructedTypeReference : ITypeReference
+	public sealed class ConstructedTypeReference : ITypeReference, ISupportsInterning
 	{
 		public static ITypeReference Create(ITypeReference genericType, IEnumerable<ITypeReference> typeArguments)
 		{
@@ -311,8 +311,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		readonly ITypeReference genericType;
-		readonly ITypeReference[] typeArguments;
+		ITypeReference genericType;
+		ITypeReference[] typeArguments;
 		
 		public ConstructedTypeReference(ITypeReference genericType, IEnumerable<ITypeReference> typeArguments)
 		{
@@ -369,6 +369,40 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			b.Append(']');
 			return b.ToString();
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			genericType = provider.Intern(genericType);
+			for (int i = 0; i < typeArguments.Length; i++) {
+				typeArguments[i] = provider.Intern(typeArguments[i]);
+			}
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			int hashCode = genericType.GetHashCode();
+			unchecked {
+				foreach (ITypeReference t in typeArguments) {
+					hashCode *= 27;
+					hashCode += t.GetHashCode();
+				}
+			}
+			return hashCode;
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			ConstructedTypeReference o = other as ConstructedTypeReference;
+			if (o != null && genericType == o.genericType && typeArguments.Length == o.typeArguments.Length) {
+				for (int i = 0; i < typeArguments.Length; i++) {
+					if (typeArguments[i] != o.typeArguments[i])
+						return false;
+				}
+				return true;
+			}
+			return false;
+			
 		}
 	}
 }

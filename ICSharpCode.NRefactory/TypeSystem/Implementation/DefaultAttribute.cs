@@ -10,7 +10,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation of <see cref="IAttribute"/>.
 	/// </summary>
-	public sealed class DefaultAttribute : AbstractFreezable, IAttribute
+	public sealed class DefaultAttribute : AbstractFreezable, IAttribute, ISupportsInterning
 	{
 		DomRegion region;
 		ITypeReference attributeType;
@@ -75,6 +75,23 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public override string ToString()
 		{
 			return "[" + attributeType + "]";
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			attributeType = provider.Intern(attributeType);
+			positionalArguments = provider.InternList(positionalArguments);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return attributeType.GetHashCode() ^ (positionalArguments != null ? positionalArguments.GetHashCode() : 0) ^ (namedArguments != null ? namedArguments.GetHashCode() : 0);
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			DefaultAttribute a = other as DefaultAttribute;
+			return a != null && attributeType == a.attributeType && positionalArguments == a.positionalArguments && namedArguments == a.namedArguments;
 		}
 	}
 }

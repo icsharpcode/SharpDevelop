@@ -8,7 +8,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Type reference used to reference nested types.
 	/// </summary>
-	public class NestedTypeReference : ITypeReference
+	public sealed class NestedTypeReference : ITypeReference, ISupportsInterning
 	{
 		ITypeReference baseTypeRef;
 		string name;
@@ -48,6 +48,23 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return baseTypeRef + "+" + name;
 			else
 				return baseTypeRef + "+" + name + "`" + additionalTypeParameterCount;
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			baseTypeRef = provider.Intern(baseTypeRef);
+			name = provider.Intern(name);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return baseTypeRef.GetHashCode() ^ name.GetHashCode() ^ additionalTypeParameterCount;
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			NestedTypeReference o = other as NestedTypeReference;
+			return o != null && baseTypeRef == o.baseTypeRef && name == o.name && additionalTypeParameterCount == o.additionalTypeParameterCount;
 		}
 	}
 }

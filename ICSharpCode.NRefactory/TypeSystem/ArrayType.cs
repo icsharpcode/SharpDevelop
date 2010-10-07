@@ -77,7 +77,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 	}
 	
-	public class ArrayTypeReference : ITypeReference
+	public class ArrayTypeReference : ITypeReference, ISupportsInterning
 	{
 		ITypeReference elementType;
 		int dimensions;
@@ -116,6 +116,22 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return new ArrayType((IType)elementType, dimensions);
 			else
 				return new ArrayTypeReference(elementType, dimensions);
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			elementType = provider.Intern(elementType);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return elementType.GetHashCode() ^ dimensions;
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			ArrayTypeReference o = other as ArrayTypeReference;
+			return o != null && elementType == o.elementType && dimensions == o.dimensions;
 		}
 	}
 }

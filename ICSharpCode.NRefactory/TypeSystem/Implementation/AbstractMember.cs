@@ -76,14 +76,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.IsStatic = member.IsStatic;
 		}
 		
-		protected static IList<T> CopyList<T>(IList<T> inputList)
-		{
-			if (inputList.Count == 0)
-				return null;
-			else
-				return new List<T>(inputList);
-		}
-		
 		public ITypeDefinition DeclaringTypeDefinition {
 			get { return declaringTypeDefinition; }
 		}

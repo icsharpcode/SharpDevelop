@@ -50,6 +50,7 @@
     <Compile Include="FormattingTests\TestTypeLevelIndentation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeSystem\CecilLoaderTests.cs" />
+    <Compile Include="TypeSystem\TestInterningProvider.cs" />
     <Compile Include="TypeSystem\TypeSystemTests.cs" />
     <Compile Include="TypeSystem\TypeSystemTests.TestCase.cs" />
   </ItemGroup>

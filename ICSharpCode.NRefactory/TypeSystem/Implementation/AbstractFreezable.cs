@@ -55,6 +55,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				throw new InvalidOperationException("Cannot mutate frozen " + GetType().Name);
 		}
 		
+		protected static IList<T> CopyList<T>(IList<T> inputList)
+		{
+			if (inputList.Count == 0)
+				return null;
+			else
+				return new List<T>(inputList);
+		}
+		
 		protected static IList<T> FreezeList<T>(IList<T> list) where T : IFreezable
 		{
 			if (list == null || list.Count == 0)
