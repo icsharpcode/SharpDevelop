@@ -755,7 +755,30 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#region Read Event
 		public IEvent ReadEvent(EventDefinition ev, ITypeDefinition parentType)
 		{
-			throw new NotImplementedException();
+			if (ev == null)
+				throw new ArgumentNullException("ev");
+			if (parentType == null)
+				throw new ArgumentNullException("parentType");
+			
+			DefaultEvent e = new DefaultEvent(parentType, ev.Name);
+			TranslateModifiers(ev.AddMethod, e);
+			e.ReturnType = ReadTypeReference(ev.EventType, typeAttributes: ev, entity: e);
+			
+			e.CanAdd = ev.AddMethod != null && IsVisible(ev.AddMethod.Attributes);
+			e.CanRemove = ev.RemoveMethod != null && IsVisible(ev.RemoveMethod.Attributes);
+			e.CanInvoke = ev.InvokeMethod != null && IsVisible(ev.InvokeMethod.Attributes);
+			
+			if (e.CanAdd)
+				e.AddAccessibility = GetAccessibility(ev.AddMethod.Attributes);
+			if (e.CanRemove)
+				e.RemoveAccessibility = GetAccessibility(ev.RemoveMethod.Attributes);
+			if (e.CanInvoke)
+				e.InvokeAccessibility = GetAccessibility(ev.InvokeMethod.Attributes);
+			
+			if (ev.HasCustomAttributes)
+				AddAttributes(ev, e.Attributes);
+			
+			return e;
 		}
 		#endregion
 	}

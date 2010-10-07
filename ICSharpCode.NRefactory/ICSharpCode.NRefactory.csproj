@@ -164,6 +164,7 @@
     <Compile Include="TypeSystem\Implementation\AbstractTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\BitVector16.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultAttribute.cs" />
+    <Compile Include="TypeSystem\Implementation\DefaultEvent.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultExplicitInterfaceImplementation.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultMethod.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultParameter.cs" />

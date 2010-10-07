@@ -6,38 +6,14 @@ using System.Diagnostics.Contracts;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
-	[ContractClass(typeof(IEventContract))]
 	public interface IEvent : IMember
 	{
-		/// <summary>
-		/// Gets the add method.
-		/// </summary>
-		IMethod AddMethod { get; }
+		bool CanAdd { get; }
+		bool CanRemove { get; }
+		bool CanInvoke { get; }
 		
-		/// <summary>
-		/// Gets the remove method.
-		/// </summary>
-		IMethod RemoveMethod { get; }
-		
-		/// <summary>
-		/// Gets the raise method.
-		/// </summary>
-		IMethod RaiseMethod { get; }
-	}
-	
-	[ContractClassFor(typeof(IEvent))]
-	abstract class IEventContract : IMemberContract, IEvent
-	{
-		IMethod IEvent.AddMethod {
-			get { return null; }
-		}
-		
-		IMethod IEvent.RemoveMethod {
-			get { return null; }
-		}
-		
-		IMethod IEvent.RaiseMethod {
-			get { return null; }
-		}
+		Accessibility AddAccessibility { get; }
+		Accessibility RemoveAccessibility { get; }
+		Accessibility InvokeAccessibility { get; }
 	}
 }

@@ -16,9 +16,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		Accessibility GetterAccessibility { get; }
 		Accessibility SetterAccessibility { get; }
 		
-		//IMethod GetMethod { get; }
-		//IMethod SetMethod { get; }
-		
 		bool IsIndexer { get; }
 	}
 }
