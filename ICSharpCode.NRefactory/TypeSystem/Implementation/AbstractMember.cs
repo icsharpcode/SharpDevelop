@@ -22,6 +22,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		// 1 byte per enum + 2 bytes for flags
 		Accessibility accessibility;
 		EntityType entityType;
+		
 		protected BitVector16 flags;
 		const ushort FlagSealed    = 0x0001;
 		const ushort FlagAbstract  = 0x0002;

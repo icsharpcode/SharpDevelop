@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				TypeStorage typeStorage = new TypeStorage();
 				CecilProjectContent pc = new CecilProjectContent(typeStorage, assemblyDefinition.Name.FullName, assemblyAttributes.AsReadOnly());
 				
-				this.EarlyBindContext = MultiTypeResolveContext.Combine(pc, this.EarlyBindContext);
+				this.EarlyBindContext = AggregateTypeResolveContext.Combine(pc, this.EarlyBindContext);
 				List<CecilTypeDefinition> types = new List<CecilTypeDefinition>();
 				foreach (ModuleDefinition module in assemblyDefinition.Modules) {
 					foreach (TypeDefinition td in module.Types) {
@@ -223,7 +223,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			} else {
 				string name = type.FullName;
 				if (name == null)
-					throw new ApplicationException("type.FullName returned null. Type: " + type.ToString());
+					throw new InvalidOperationException("type.FullName returned null. Type: " + type.ToString());
 				
 				if (name.IndexOf('/') > 0) {
 					string[] nameparts = name.Split('/');
@@ -310,68 +310,33 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		public IAttribute ReadAttribute(CustomAttribute cecilAttribute)
+		public IAttribute ReadAttribute(CustomAttribute attribute)
 		{
-			if (cecilAttribute == null)
-				throw new ArgumentNullException("cecilAttribute");
-			return new CecilAttribute(cecilAttribute, this);
-		}
-		
-		sealed class CecilAttribute : Immutable, IAttribute
-		{
-			readonly ITypeReference attributeType;
-			readonly IList<IConstantValue> positionalArguments;
-			readonly IList<KeyValuePair<string, IConstantValue>> namedArguments;
-			
-			public CecilAttribute(CustomAttribute ca, CecilLoader loader)
-			{
-				this.attributeType = loader.ReadTypeReference(ca.AttributeType);
-				try {
-					if (ca.HasConstructorArguments) {
-						var posArgs = new List<IConstantValue>();
-						foreach (var arg in ca.ConstructorArguments) {
-							posArgs.Add(loader.ReadConstantValue(arg));
-						}
-						this.positionalArguments = posArgs.AsReadOnly();
-					} else {
-						this.positionalArguments = EmptyList<IConstantValue>.Instance;
+			if (attribute == null)
+				throw new ArgumentNullException("attribute");
+			DefaultAttribute a = new DefaultAttribute(ReadTypeReference(attribute.AttributeType));
+			try {
+				if (attribute.HasConstructorArguments) {
+					foreach (var arg in attribute.ConstructorArguments) {
+						a.PositionalArguments.Add(ReadConstantValue(arg));
 					}
-				} catch (InvalidOperationException) {
-					this.positionalArguments = EmptyList<IConstantValue>.Instance;
 				}
-				try {
-					if (ca.HasFields || ca.HasProperties) {
-						var namedArgs = new List<KeyValuePair<string, IConstantValue>>();
-						foreach (var arg in ca.Fields) {
-							namedArgs.Add(new KeyValuePair<string, IConstantValue>(arg.Name, loader.ReadConstantValue(arg.Argument)));
-						}
-						foreach (var arg in ca.Properties) {
-							namedArgs.Add(new KeyValuePair<string, IConstantValue>(arg.Name, loader.ReadConstantValue(arg.Argument)));
-						}
-						this.namedArguments = namedArgs.AsReadOnly();
-					} else {
-						this.namedArguments = EmptyList<KeyValuePair<string, IConstantValue>>.Instance;
+			} catch (InvalidOperationException) {
+				// occurs when Cecil can't decode an argument
+			}
+			try {
+				if (attribute.HasFields || attribute.HasProperties) {
+					foreach (var arg in attribute.Fields) {
+						a.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument)));
 					}
-				} catch (InvalidOperationException) {
-					this.namedArguments = EmptyList<KeyValuePair<string, IConstantValue>>.Instance;
+					foreach (var arg in attribute.Properties) {
+						a.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(arg.Name, ReadConstantValue(arg.Argument)));
+					}
 				}
+			} catch (InvalidOperationException) {
+				// occurs when Cecil can't decode an argument
 			}
-			
-			public DomRegion Region {
-				get { return DomRegion.Empty; }
-			}
-			
-			public ITypeReference AttributeType {
-				get { return attributeType; }
-			}
-			
-			public IList<IConstantValue> PositionalArguments {
-				get { return positionalArguments; }
-			}
-			
-			public IList<KeyValuePair<string, IConstantValue>> NamedArguments {
-				get { return namedArguments; }
-			}
+			return a;
 		}
 		#endregion
 		
@@ -555,6 +520,29 @@ namespace ICSharpCode.NRefactory.TypeSystem
 						}
 					}
 				}
+				if (typeDefinition.HasFields) {
+					foreach (FieldDefinition field in typeDefinition.Fields) {
+						if (loader.IsVisible(field.Attributes)) {
+							this.Fields.Add(loader.ReadField(field, this));
+						}
+					}
+				}
+				if (typeDefinition.HasProperties) {
+					foreach (PropertyDefinition property in typeDefinition.Properties) {
+						bool getterVisible = property.GetMethod != null && loader.IsVisible(property.GetMethod.Attributes);
+						bool setterVisible = property.SetMethod != null && loader.IsVisible(property.SetMethod.Attributes);
+						if (getterVisible || setterVisible) {
+							this.Properties.Add(loader.ReadProperty(property, this));
+						}
+					}
+				}
+				if (typeDefinition.HasEvents) {
+					foreach (EventDefinition ev in typeDefinition.Events) {
+						if (ev.AddMethod != null && loader.IsVisible(ev.AddMethod.Attributes)) {
+							this.Events.Add(loader.ReadEvent(ev, this));
+						}
+					}
+				}
 			}
 		}
 		#endregion
@@ -584,13 +572,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				AddAttributes(method, m.Attributes);
 			}
 			
-			if (parentType.ClassType == ClassType.Interface) {
-				// interface members don't have modifiers, but we want to handle them as "public abstract"
-				m.Accessibility = Accessibility.Public;
-				m.IsAbstract = true;
-			} else {
-				TranslateModifiers(method, m);
-			}
+			TranslateModifiers(method, m);
 			
 			if (method.HasParameters) {
 				foreach (ParameterDefinition p in method.Parameters) {
@@ -620,11 +602,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				|| att == MethodAttributes.FamORAssem;
 		}
 		
-		Accessibility GetAccessibility(MethodAttributes attr)
+		static Accessibility GetAccessibility(MethodAttributes attr)
 		{
 			switch (attr & MethodAttributes.MemberAccessMask) {
-				case MethodAttributes.Private:
-					return Accessibility.Private;
+				case MethodAttributes.Public:
+					return Accessibility.Public;
 				case MethodAttributes.FamANDAssem:
 					return Accessibility.ProtectedAndInternal;
 				case MethodAttributes.Assem:
@@ -634,19 +616,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				case MethodAttributes.FamORAssem:
 					return Accessibility.ProtectedOrInternal;
 				default:
-					return Accessibility.Public;
+					return Accessibility.Private;
 			}
 		}
 		
-		void TranslateModifiers(MethodDefinition method, AbstractMember member)
+		void TranslateModifiers(MethodDefinition method, AbstractMember m)
 		{
-			member.Accessibility = GetAccessibility(method.Attributes);
-			if (method.IsAbstract)
-				member.IsAbstract = true;
-			else if (method.IsFinal)
-				member.IsSealed = true;
-			else if (method.IsVirtual)
-				member.IsVirtual = true;
+			if (m.DeclaringTypeDefinition.ClassType == ClassType.Interface) {
+				// interface members don't have modifiers, but we want to handle them as "public abstract"
+				m.Accessibility = Accessibility.Public;
+				m.IsAbstract = true;
+			} else {
+				m.Accessibility = GetAccessibility(method.Attributes);
+				if (method.IsAbstract)
+					m.IsAbstract = true;
+				else if (method.IsFinal)
+					m.IsSealed = true;
+				else if (method.IsVirtual)
+					m.IsVirtual = true;
+			}
 		}
 		#endregion
 		
@@ -695,6 +683,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				|| att == FieldAttributes.Family
 				|| att == FieldAttributes.FamORAssem;
 		}
+		
+		public IField ReadField(FieldDefinition field, ITypeDefinition parentType)
+		{
+			throw new NotImplementedException();
+		}
 		#endregion
 		
 		void AddExplicitInterfaceImplementations(MethodDefinition method, AbstractMember targetMember)
@@ -725,6 +718,44 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					tp.Constraints.Add(ReadTypeReference(constraint, entity: tp.Parent));
 				}
 			}
+		}
+		#endregion
+		
+		#region Read Property
+		public IProperty ReadProperty(PropertyDefinition property, ITypeDefinition parentType)
+		{
+			if (property == null)
+				throw new ArgumentNullException("property");
+			if (parentType == null)
+				throw new ArgumentNullException("parentType");
+			DefaultProperty p = new DefaultProperty(parentType, property.Name);
+			TranslateModifiers(property.GetMethod ?? property.SetMethod, p);
+			p.ReturnType = ReadTypeReference(property.PropertyType, typeAttributes: property, entity: p);
+			
+			p.CanGet = property.GetMethod != null && IsVisible(property.GetMethod.Attributes);
+			p.CanSet = property.SetMethod != null && IsVisible(property.SetMethod.Attributes);
+			
+			if (p.CanGet)
+				p.GetterAccessibility = GetAccessibility(property.GetMethod.Attributes);
+			if (p.CanSet)
+				p.SetterAccessibility = GetAccessibility(property.SetMethod.Attributes);
+			
+			if (property.HasParameters) {
+				foreach (ParameterDefinition par in property.Parameters) {
+					p.Parameters.Add(ReadParameter(par, parentMember: p));
+				}
+			}
+			if (property.HasCustomAttributes)
+				AddAttributes(property, p.Attributes);
+			
+			return p;
+		}
+		#endregion
+		
+		#region Read Event
+		public IEvent ReadEvent(EventDefinition ev, ITypeDefinition parentType)
+		{
+			throw new NotImplementedException();
 		}
 		#endregion
 	}

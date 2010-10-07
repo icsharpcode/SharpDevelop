@@ -10,8 +10,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// </summary>
 	public interface IProperty : IParameterizedMember
 	{
-		IMethod GetMethod { get; }
-		IMethod SetMethod { get; }
+		bool CanGet { get; }
+		bool CanSet { get; }
+		
+		Accessibility GetterAccessibility { get; }
+		Accessibility SetterAccessibility { get; }
+		
+		//IMethod GetMethod { get; }
+		//IMethod SetMethod { get; }
 		
 		bool IsIndexer { get; }
 	}

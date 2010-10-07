@@ -10,7 +10,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Represents multiple type resolve contexts.
 	/// </summary>
-	public class MultiTypeResolveContext : ITypeResolveContext
+	public class AggregateTypeResolveContext : ITypeResolveContext
 	{
 		/// <summary>
 		/// Creates a <see cref="MultiTypeResolveContext"/> that combines the given resolve contexts.
@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return b;
 			if (b == null)
 				return a;
-			return new MultiTypeResolveContext(new [] { a, b });
+			return new AggregateTypeResolveContext(new [] { a, b });
 		}
 		
 		readonly ITypeResolveContext[] contexts;
@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		/// <summary>
 		/// Creates a new <see cref="MultiTypeResolveContext"/>
 		/// </summary>
-		public MultiTypeResolveContext(IEnumerable<ITypeResolveContext> contexts)
+		public AggregateTypeResolveContext(IEnumerable<ITypeResolveContext> contexts)
 		{
 			if (contexts == null)
 				throw new ArgumentNullException("contexts");

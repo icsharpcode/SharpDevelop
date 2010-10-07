@@ -73,22 +73,23 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		[Test]
 		public void AssemblyAttribute()
 		{
-			ITypeResolveContext ctx = MultiTypeResolveContext.Combine(testCasePC, CecilLoaderTests.Mscorlib);
+			ITypeResolveContext ctx = AggregateTypeResolveContext.Combine(testCasePC, CecilLoaderTests.Mscorlib);
 			var attributes = testCasePC.AssemblyAttributes;
-			var typeTest = attributes.First(a => a.AttributeType.Resolve(testCasePC).FullName == typeof(TypeTestAttribute).FullName);
+			var typeTest = attributes.First(a => a.AttributeType.Resolve(ctx).FullName == typeof(TypeTestAttribute).FullName);
 			Assert.AreEqual(3, typeTest.PositionalArguments.Count);
 			// first argument is (int)42
-			Assert.AreEqual(42, (int)typeTest.PositionalArguments[0].GetValue(testCasePC));
+			Assert.AreEqual(42, (int)typeTest.PositionalArguments[0].GetValue(ctx));
 			// second argument is typeof(System.Action<>)
-			IType rt = (IType)typeTest.PositionalArguments[1].GetValue(testCasePC);
+			IType rt = (IType)typeTest.PositionalArguments[1].GetValue(ctx);
 			Assert.IsFalse(rt is ConstructedType); // rt must not be constructed - it's just an unbound type
 			Assert.AreEqual("System.Action", rt.FullName);
 			Assert.AreEqual(1, rt.TypeParameterCount);
 			// third argument is typeof(IDictionary<string, IList<TestAttribute>>)
-			ConstructedType crt = (ConstructedType)typeTest.PositionalArguments[2];
+			ConstructedType crt = (ConstructedType)typeTest.PositionalArguments[2].GetValue(ctx);
 			Assert.AreEqual("System.Collections.Generic.IDictionary", crt.FullName);
 			Assert.AreEqual("System.String", crt.TypeArguments[0].FullName);
-			Assert.AreEqual("System.Collections.Generic.IList{NUnit.Framework.TestAttribute}", crt.TypeArguments[1].DotNetName);
+			// ? for NUnit.TestAttribute (because that assembly isn't in ctx)
+			Assert.AreEqual("System.Collections.Generic.IList[[?]]", crt.TypeArguments[1].DotNetName);
 		}
 	}
 }

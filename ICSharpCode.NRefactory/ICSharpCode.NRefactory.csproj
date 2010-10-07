@@ -167,9 +167,10 @@
     <Compile Include="TypeSystem\Implementation\DefaultExplicitInterfaceImplementation.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultMethod.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultParameter.cs" />
+    <Compile Include="TypeSystem\Implementation\DefaultProperty.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultTypeParameter.cs" />
     <Compile Include="TypeSystem\Implementation\GetClassTypeReference.cs" />
-    <Compile Include="TypeSystem\Implementation\MultiTypeResolveContext.cs" />
+    <Compile Include="TypeSystem\Implementation\AggregateTypeResolveContext.cs" />
     <Compile Include="TypeSystem\Implementation\NestedTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\ProxyTypeResolveContext.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultTypeDefinition.cs" />

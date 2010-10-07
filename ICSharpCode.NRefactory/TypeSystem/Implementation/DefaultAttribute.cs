@@ -13,7 +13,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	public sealed class DefaultAttribute : AbstractFreezable, IAttribute
 	{
 		DomRegion region;
-		ITypeReference attributeType = SharedTypes.UnknownType;
+		ITypeReference attributeType;
 		IList<IConstantValue> positionalArguments;
 		IList<KeyValuePair<string, IConstantValue>> namedArguments;
 		
@@ -32,6 +32,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 			
 			base.FreezeInternal();
+		}
+		
+		public DefaultAttribute(ITypeReference attributeType)
+		{
+			if (attributeType == null)
+				throw new ArgumentNullException("attributeType");
+			this.attributeType = attributeType;
 		}
 		
 		public DomRegion Region {
