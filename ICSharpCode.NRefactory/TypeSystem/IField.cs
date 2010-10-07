@@ -28,6 +28,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		bool IsReadOnly { get; }
 		
 		/// <summary>
+		/// Gets whether this field is volatile.
+		/// </summary>
+		bool IsVolatile { get; }
+		
+		/// <summary>
 		/// If this field is a constant, retrieves the value.
 		/// </summary>
 		IConstantValue ConstantValue { get; }
@@ -52,6 +57,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		bool IField.IsReadOnly {
+			get { return false; }
+		}
+		
+		bool IField.IsVolatile {
 			get { return false; }
 		}
 		

@@ -522,7 +522,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 				if (typeDefinition.HasFields) {
 					foreach (FieldDefinition field in typeDefinition.Fields) {
-						if (loader.IsVisible(field.Attributes)) {
+						if (loader.IsVisible(field.Attributes) && !field.IsSpecialName) {
 							this.Fields.Add(loader.ReadField(field, this));
 						}
 					}
@@ -580,8 +580,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 			}
 			
-			AddExplicitInterfaceImplementations(method, m);
-			
 			// mark as extension method is the attribute is set
 			if (method.IsStatic && method.HasCustomAttributes) {
 				foreach (var attr in method.CustomAttributes) {
@@ -634,6 +632,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					m.IsSealed = true;
 				else if (method.IsVirtual)
 					m.IsVirtual = true;
+				m.IsStatic = method.IsStatic;
 			}
 		}
 		#endregion
@@ -686,16 +685,47 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		public IField ReadField(FieldDefinition field, ITypeDefinition parentType)
 		{
-			throw new NotImplementedException();
+			if (field == null)
+				throw new ArgumentNullException("field");
+			if (parentType == null)
+				throw new ArgumentNullException("parentType");
+			
+			DefaultField f = new DefaultField(parentType, field.Name);
+			f.Accessibility = GetAccessibility(field.Attributes);
+			f.IsReadOnly = field.IsInitOnly;
+			f.IsStatic = field.IsStatic;
+			if (field.HasConstant) {
+				f.ConstantValue = ReadConstantValue(new CustomAttributeArgument(field.FieldType, field.Constant));
+			}
+			if (field.HasCustomAttributes) {
+				AddAttributes(field, f.Attributes);
+			}
+			RequiredModifierType modreq = field.FieldType as RequiredModifierType;
+			if (modreq != null && modreq.ModifierType.FullName == typeof(IsVolatile).FullName) {
+				f.IsVolatile = true;
+			}
+			
+			return f;
 		}
-		#endregion
 		
-		void AddExplicitInterfaceImplementations(MethodDefinition method, AbstractMember targetMember)
+		static Accessibility GetAccessibility(FieldAttributes attr)
 		{
-			if (method.HasOverrides) {
-				throw new NotImplementedException();
+			switch (attr & FieldAttributes.FieldAccessMask) {
+				case FieldAttributes.Public:
+					return Accessibility.Public;
+				case FieldAttributes.FamANDAssem:
+					return Accessibility.ProtectedAndInternal;
+				case FieldAttributes.Assembly:
+					return Accessibility.Internal;
+				case FieldAttributes.Family:
+					return Accessibility.Protected;
+				case FieldAttributes.FamORAssem:
+					return Accessibility.ProtectedOrInternal;
+				default:
+					return Accessibility.Private;
 			}
 		}
+		#endregion
 		
 		#region Type Parameter Constraints
 		void AddConstraints(DefaultTypeParameter tp, GenericParameter g)
