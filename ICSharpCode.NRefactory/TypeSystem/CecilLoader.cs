@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using Mono.Cecil;
 
@@ -40,7 +41,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeResolveContext oldEarlyBindContext = this.EarlyBindContext;
 			try {
 				List<IAttribute> assemblyAttributes = new List<IAttribute>();
-				AddAttributes(assemblyDefinition, assemblyAttributes);
+				foreach (var attr in assemblyDefinition.CustomAttributes) {
+					assemblyAttributes.Add(ReadAttribute(attr));
+				}
 				TypeStorage typeStorage = new TypeStorage();
 				CecilProjectContent pc = new CecilProjectContent(typeStorage, assemblyDefinition.Name.FullName, assemblyAttributes.AsReadOnly());
 				
@@ -52,13 +55,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 							string name = td.FullName;
 							if (name.Length == 0 || name[0] == '<')
 								continue;
-							types.Add(new CecilTypeDefinition(pc, td));
+							if (name == "System.Void") {
+								var c = new VoidTypeDefinition(pc);
+								AddAttributes(td, c);
+								typeStorage.UpdateType(c);
+							} else {
+								CecilTypeDefinition c = new CecilTypeDefinition(pc, td);
+								types.Add(c);
+								typeStorage.UpdateType(c);
+							}
 						}
 					}
 				}
 				foreach (CecilTypeDefinition c in types) {
 					c.Init(this);
-					typeStorage.UpdateType(c);
 				}
 				return pc;
 			} finally {
@@ -278,10 +288,81 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Attributes
-		void AddAttributes(ICustomAttributeProvider attributeProvider, IList<IAttribute> outputList)
+		void AddAttributes(ICustomAttributeProvider customAttributeProvider, IEntity targetEntity)
 		{
-			foreach (var cecilAttribute in attributeProvider.CustomAttributes) {
-				outputList.Add(ReadAttribute(cecilAttribute));
+			if (customAttributeProvider.HasCustomAttributes) {
+				foreach (var cecilAttribute in customAttributeProvider.CustomAttributes) {
+					targetEntity.Attributes.Add(ReadAttribute(cecilAttribute));
+				}
+			}
+		}
+		
+		void AddAttributes(ParameterDefinition parameter, DefaultParameter targetParameter)
+		{
+			if (parameter.HasCustomAttributes) {
+				foreach (var cecilAttribute in parameter.CustomAttributes) {
+					targetParameter.Attributes.Add(ReadAttribute(cecilAttribute));
+				}
+			}
+		}
+		
+		static readonly DefaultAttribute serializableAttribute = new DefaultAttribute(typeof(SerializableAttribute).ToTypeReference());
+		
+		void AddAttributes(TypeDefinition typeDefinition, ITypeDefinition targetEntity)
+		{
+			#region SerializableAttribute
+			if (typeDefinition.IsSerializable)
+				targetEntity.Attributes.Add(serializableAttribute);
+			#endregion
+			
+			#region StructLayoutAttribute
+			LayoutKind layoutKind = LayoutKind.Auto;
+			switch (typeDefinition.Attributes & TypeAttributes.LayoutMask) {
+				case TypeAttributes.SequentialLayout:
+					layoutKind = LayoutKind.Sequential;
+					break;
+				case TypeAttributes.ExplicitLayout:
+					layoutKind = LayoutKind.Explicit;
+					break;
+			}
+			CharSet charSet = CharSet.None;
+			switch (typeDefinition.Attributes & TypeAttributes.StringFormatMask) {
+				case TypeAttributes.AnsiClass:
+					charSet = CharSet.Ansi;
+					break;
+				case TypeAttributes.AutoClass:
+					charSet = CharSet.Auto;
+					break;
+				case TypeAttributes.UnicodeClass:
+					charSet = CharSet.Unicode;
+					break;
+			}
+			if (layoutKind != LayoutKind.Auto || charSet != CharSet.Ansi || typeDefinition.PackingSize > 0 || typeDefinition.ClassSize > 0) {
+				DefaultAttribute structLayout = new DefaultAttribute(typeof(StructLayoutAttribute).ToTypeReference());
+				structLayout.PositionalArguments.Add(new SimpleConstantValue(typeof(LayoutKind).ToTypeReference(), (int)layoutKind));
+				if (charSet != CharSet.Ansi) {
+					structLayout.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(
+						"CharSet",
+						new SimpleConstantValue(typeof(CharSet).ToTypeReference(), (int)charSet)));
+				}
+				if (typeDefinition.PackingSize > 0) {
+					structLayout.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(
+						"Pack",
+						new SimpleConstantValue(typeof(int).ToTypeReference(), (int)typeDefinition.PackingSize)));
+				}
+				if (typeDefinition.ClassSize > 0) {
+					structLayout.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(
+						"Size",
+						new SimpleConstantValue(typeof(int).ToTypeReference(), (int)typeDefinition.ClassSize)));
+				}
+				targetEntity.Attributes.Add(structLayout);
+			}
+			#endregion
+			
+			if (typeDefinition.HasCustomAttributes) {
+				foreach (var cecilAttribute in typeDefinition.CustomAttributes) {
+					targetEntity.Attributes.Add(ReadAttribute(cecilAttribute));
+				}
 			}
 		}
 		
@@ -336,12 +417,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				: base(pc, typeDefinition.Namespace, ReflectionHelper.SplitTypeParameterCountFromReflectionName(typeDefinition.Name))
 			{
 				this.typeDefinition = typeDefinition;
+				InitTypeParameters();
 			}
 			
 			public CecilTypeDefinition(CecilTypeDefinition parentType, string name, TypeDefinition typeDefinition)
 				: base(parentType, name)
 			{
 				this.typeDefinition = typeDefinition;
+				InitTypeParameters();
+			}
+			
+			void InitTypeParameters()
+			{
+				// Type parameters are initialized within the constructor so that the class can be put into the type storage
+				// before the rest of the initialization runs - this allows it to be available for early binding as soon as possible.
+				for (int i = 0; i < typeDefinition.GenericParameters.Count; i++) {
+					if (typeDefinition.GenericParameters[i].Position != i)
+						throw new InvalidOperationException("g.Position != i");
+					this.TypeParameters.Add(new DefaultTypeParameter(this, i, typeDefinition.GenericParameters[i].Name));
+				}
 			}
 			
 			public void Init(CecilLoader loader)
@@ -350,11 +444,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				
 				if (typeDefinition.HasGenericParameters) {
 					for (int i = 0; i < typeDefinition.GenericParameters.Count; i++) {
-						if (typeDefinition.GenericParameters[i].Position != i)
-							throw new InvalidOperationException("g.Position != i");
-						this.TypeParameters.Add(new DefaultTypeParameter(this, i, typeDefinition.GenericParameters[i].Name));
-					}
-					for (int i = 0; i < typeDefinition.GenericParameters.Count; i++) {
 						loader.AddConstraints((DefaultTypeParameter)this.TypeParameters[i], typeDefinition.GenericParameters[i]);
 					}
 				}
@@ -362,7 +451,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				InitNestedTypes(loader); // nested types can be initialized only after generic parameters were created
 				
 				if (typeDefinition.HasCustomAttributes) {
-					loader.AddAttributes(typeDefinition, this.Attributes);
+					loader.AddAttributes(typeDefinition, this);
 				}
 				
 				// set base classes
@@ -543,10 +632,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			else
 				m.ReturnType = ReadTypeReference(method.ReturnType, typeAttributes: method, entity: m);
 			
-			if (method.HasCustomAttributes) {
-				AddAttributes(method, m.Attributes);
-			}
-			
+			AddAttributes(method, m);
 			TranslateModifiers(method, m);
 			
 			if (method.HasParameters) {
@@ -620,8 +706,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var type = ReadTypeReference(parameter.ParameterType, typeAttributes: parameter, entity: parentMember);
 			DefaultParameter p = new DefaultParameter(type, parameter.Name);
 			
-			if (parameter.HasCustomAttributes)
-				AddAttributes(parameter, p.Attributes);
+			AddAttributes(parameter, p);
 			
 			if (parameter.ParameterType is Mono.Cecil.ByReferenceType) {
 				if (parameter.IsOut)
@@ -671,9 +756,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (field.HasConstant) {
 				f.ConstantValue = ReadConstantValue(new CustomAttributeArgument(field.FieldType, field.Constant));
 			}
-			if (field.HasCustomAttributes) {
-				AddAttributes(field, f.Attributes);
-			}
+			AddAttributes(field, f);
+			
 			RequiredModifierType modreq = field.FieldType as RequiredModifierType;
 			if (modreq != null && modreq.ModifierType.FullName == typeof(IsVolatile).FullName) {
 				f.IsVolatile = true;
@@ -749,8 +833,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					p.Parameters.Add(ReadParameter(par, parentMember: p));
 				}
 			}
-			if (property.HasCustomAttributes)
-				AddAttributes(property, p.Attributes);
+			AddAttributes(property, p);
 			
 			return p;
 		}
@@ -779,8 +862,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (e.CanInvoke)
 				e.InvokeAccessibility = GetAccessibility(ev.InvokeMethod.Attributes);
 			
-			if (ev.HasCustomAttributes)
-				AddAttributes(ev, e.Attributes);
+			AddAttributes(ev, e);
 			
 			return e;
 		}

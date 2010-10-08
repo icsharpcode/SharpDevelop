@@ -192,6 +192,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return methods;
 		}
 		
+		public IList<IMethod> GetConstructors(ITypeResolveContext context)
+		{
+			Substitution substitution = new Substitution(typeArguments);
+			IList<IMethod> methods = genericType.GetConstructors(context);
+			for (int i = 0; i < methods.Count; i++) {
+				SpecializedMethod m = new SpecializedMethod(methods[i]);
+				m.SetDeclaringType(this);
+				m.SubstituteTypes(context, substitution);
+				methods[i] = m;
+			}
+			return methods;
+		}
+		
 		public IList<IProperty> GetProperties(ITypeResolveContext context)
 		{
 			Substitution substitution = new Substitution(typeArguments);

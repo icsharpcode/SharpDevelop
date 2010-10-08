@@ -76,6 +76,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return EmptyList<IMethod>.Instance;
 		}
 		
+		public virtual IList<IMethod> GetConstructors(ITypeResolveContext context)
+		{
+			return EmptyList<IMethod>.Instance;
+		}
+		
 		public virtual IList<IProperty> GetProperties(ITypeResolveContext context)
 		{
 			return EmptyList<IProperty>.Instance;

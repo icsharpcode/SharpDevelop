@@ -183,6 +183,7 @@
     <Compile Include="TypeSystem\Implementation\SpecializedProperty.cs" />
     <Compile Include="TypeSystem\Implementation\TypeStorage.cs" />
     <Compile Include="TypeSystem\Implementation\TypeWithElementType.cs" />
+    <Compile Include="TypeSystem\Implementation\VoidTypeDefinition.cs" />
     <Compile Include="TypeSystem\INamedElement.cs" />
     <Compile Include="TypeSystem\IParameter.cs" />
     <Compile Include="TypeSystem\IParameterizedMember.cs" />

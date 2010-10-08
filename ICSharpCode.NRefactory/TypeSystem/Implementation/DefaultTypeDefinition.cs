@@ -196,15 +196,19 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 						combinedName = declaringTypeDefinition.DotNetName + "+" + this.Name + "`" + tpCount.ToString(CultureInfo.InvariantCulture);
 					else
 						combinedName = declaringTypeDefinition.DotNetName + "+" + this.Name;
-					Contract.Assume(!string.IsNullOrEmpty(combinedName)); // help out the static checker
 					return combinedName;
 				} else {
+					int tpCount = this.TypeParameterCount;
 					if (string.IsNullOrEmpty(ns)) {
-						return this.Name;
+						if (tpCount > 0)
+							return this.Name + "`" + tpCount.ToString(CultureInfo.InvariantCulture);
+						else
+							return this.Name;
 					} else {
-						string combinedName = this.Namespace + "." + this.Name;
-						Contract.Assume(!string.IsNullOrEmpty(combinedName)); // help out the static checker
-						return combinedName;
+						if (tpCount > 0)
+							return this.Namespace + "." + this.Name + "`" + tpCount.ToString(CultureInfo.InvariantCulture);
+						else
+							return this.Namespace + "." + this.Name;
 					}
 				}
 			}
@@ -357,8 +361,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return this;
 		}
 		
-		public IList<IType> GetNestedTypes(ITypeResolveContext context)
+		public virtual IList<IType> GetNestedTypes(ITypeResolveContext context)
 		{
+			ITypeDefinition compound = GetCompoundClass();
+			if (compound != this)
+				return compound.GetNestedTypes(context);
+			
 			using (var busyLock = BusyManager.Enter(this)) {
 				if (busyLock.Success) {
 					IList<IType> nestedTypes = null;
@@ -388,8 +396,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public IList<IMethod> GetMethods(ITypeResolveContext context)
+		public virtual IList<IMethod> GetMethods(ITypeResolveContext context)
 		{
+			ITypeDefinition compound = GetCompoundClass();
+			if (compound != this)
+				return compound.GetMethods(context);
+			
 			List<IMethod> methods = new List<IMethod>();
 			using (var busyLock = BusyManager.Enter(this)) {
 				if (busyLock.Success) {
@@ -400,14 +412,45 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 							methods.AddRange(baseType.GetMethods(context));
 						}
 					}
-					methods.AddRange(this.Methods);
+					methods.AddRange(this.Methods.Where(m => !m.IsConstructor));
 				}
 			}
 			return methods;
 		}
 		
-		public IList<IProperty> GetProperties(ITypeResolveContext context)
+		public virtual IList<IMethod> GetConstructors(ITypeResolveContext context)
 		{
+			ITypeDefinition compound = GetCompoundClass();
+			if (compound != this)
+				return compound.GetConstructors(context);
+			
+			List<IMethod> methods = new List<IMethod>();
+			methods.AddRange(this.Methods.Where(m => m.IsConstructor && !m.IsStatic));
+			
+			if (this.AddDefaultConstructorIfRequired) {
+				if (this.ClassType == ClassType.Class && methods.Count == 0
+				    || this.ClassType == ClassType.Enum || this.ClassType == ClassType.Struct)
+				{
+					DomRegion region = new DomRegion(this.Region.FileName, this.Region.BeginLine, this.Region.BeginColumn);
+					methods.Add(new DefaultMethod(this, ".ctor") {
+					            	EntityType = EntityType.Constructor,
+					            	Accessibility = IsAbstract ? Accessibility.Protected : Accessibility.Public,
+					            	IsSynthetic = true,
+					            	Region = region,
+					            	BodyRegion = region,
+					            	ReturnType = this
+					            });
+				}
+			}
+			return methods;
+		}
+		
+		public virtual IList<IProperty> GetProperties(ITypeResolveContext context)
+		{
+			ITypeDefinition compound = GetCompoundClass();
+			if (compound != this)
+				return compound.GetProperties(context);
+			
 			List<IProperty> properties = new List<IProperty>();
 			using (var busyLock = BusyManager.Enter(this)) {
 				if (busyLock.Success) {
@@ -424,8 +467,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return properties;
 		}
 		
-		public IList<IField> GetFields(ITypeResolveContext context)
+		public virtual IList<IField> GetFields(ITypeResolveContext context)
 		{
+			ITypeDefinition compound = GetCompoundClass();
+			if (compound != this)
+				return compound.GetFields(context);
+			
 			List<IField> fields = new List<IField>();
 			using (var busyLock = BusyManager.Enter(this)) {
 				if (busyLock.Success) {
@@ -442,8 +489,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return fields;
 		}
 		
-		public IList<IEvent> GetEvents(ITypeResolveContext context)
+		public virtual IList<IEvent> GetEvents(ITypeResolveContext context)
 		{
+			ITypeDefinition compound = GetCompoundClass();
+			if (compound != this)
+				return compound.GetEvents(context);
+			
 			List<IEvent> events = new List<IEvent>();
 			using (var busyLock = BusyManager.Enter(this)) {
 				if (busyLock.Success) {

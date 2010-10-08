@@ -89,7 +89,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual("System.Collections.Generic.IDictionary", crt.FullName);
 			Assert.AreEqual("System.String", crt.TypeArguments[0].FullName);
 			// ? for NUnit.TestAttribute (because that assembly isn't in ctx)
-			Assert.AreEqual("System.Collections.Generic.IList[[?]]", crt.TypeArguments[1].DotNetName);
+			Assert.AreEqual("System.Collections.Generic.IList`1[[?]]", crt.TypeArguments[1].DotNetName);
 		}
 	}
 }

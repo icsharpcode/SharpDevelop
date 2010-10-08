@@ -62,6 +62,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return name; }
 		}
 		
+		public override string DotNetName {
+			get {
+				if (parent is IMethod)
+					return "``" + index.ToString();
+				else
+					return "`" + index.ToString();
+			}
+		}
+		
 		public override bool? IsReferenceType {
 			get {
 				switch (flags.Data & (FlagReferenceTypeConstraint | FlagValueTypeConstraint)) {

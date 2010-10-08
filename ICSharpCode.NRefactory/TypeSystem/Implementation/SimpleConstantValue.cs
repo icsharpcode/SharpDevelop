@@ -38,6 +38,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			if (value == null)
 				return "null";
+			else if (value is bool)
+				return value.ToString().ToLowerInvariant();
 			else
 				return value.ToString();
 		}

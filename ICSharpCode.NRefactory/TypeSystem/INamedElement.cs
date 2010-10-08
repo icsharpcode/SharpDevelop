@@ -15,6 +15,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <returns>
 		/// "System.Int32[]" for int[]<br/>
 		/// "System.Collections.Generic.List" for List&lt;string&gt;
+		/// "System.Environment.SpecialFolder" for Environment.SpecialFolder
 		/// </returns>
 		string FullName {
 			get;
@@ -26,6 +27,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <returns>
 		/// "Int32[]" for int[]<br/>
 		/// "List" for List&lt;string&gt;
+		/// "SpecialFolder" for Environment.SpecialFolder
 		/// </returns>
 		string Name {
 			get;
@@ -37,6 +39,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <returns>
 		/// "System" for int[]<br/>
 		/// "System.Collections.Generic" for List&lt;string&gt;
+		/// "System" for Environment.SpecialFolder
 		/// </returns>
 		string Namespace {
 			get;
@@ -49,6 +52,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// "System.Int32[]" for int[]<br/>
 		/// "System.Int32[][,]" for C# int[,][]<br/>
 		/// "System.Collections.Generic.List`1[[System.String]]" for List&lt;string&gt;
+		/// "System.Environment+SpecialFolder" for Environment.SpecialFolder
 		/// </returns>
 		string DotNetName {
 			get;

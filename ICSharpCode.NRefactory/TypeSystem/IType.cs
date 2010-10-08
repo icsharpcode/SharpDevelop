@@ -74,8 +74,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets all methods that can be called on this return type.
 		/// </summary>
+		/// <remarks>The list does not include constructors.</remarks>
 		/// <returns>A new mutable list</returns>
 		IList<IMethod> GetMethods(ITypeResolveContext context);
+		
+		/// <summary>
+		/// Gets all instance constructors for this type.
+		/// </summary>
+		/// <remarks>This list does not include constructors in base classes or static constructors.</remarks>
+		/// <returns>A new mutable list</returns>
+		IList<IMethod> GetConstructors(ITypeResolveContext context);
 		
 		/// <summary>
 		/// Gets all properties that can be called on this return type.
@@ -129,6 +137,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 
 		IList<IMethod> IType.GetMethods(ITypeResolveContext context)
+		{
+			Contract.Requires(context != null);
+			Contract.Ensures(Contract.Result<IList<IMethod>>() != null);
+			return null;
+		}
+		
+		IList<IMethod> IType.GetConstructors(ITypeResolveContext context)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IList<IMethod>>() != null);

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -74,7 +75,26 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public override string ToString()
 		{
-			return "[" + attributeType + "]";
+			StringBuilder b = new StringBuilder();
+			b.Append('[');
+			b.Append(attributeType.ToString());
+			if (this.PositionalArguments.Count + this.NamedArguments.Count > 0) {
+				b.Append('(');
+				bool first = true;
+				foreach (var element in this.PositionalArguments) {
+					if (first) first = false; else b.Append(", ");
+					b.Append(element.ToString());
+				}
+				foreach (var pair in this.NamedArguments) {
+					if (first) first = false; else b.Append(", ");
+					b.Append(pair.Key);
+					b.Append('=');
+					b.Append(pair.Value.ToString());
+				}
+				b.Append(')');
+			}
+			b.Append(']');
+			return b.ToString();
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
