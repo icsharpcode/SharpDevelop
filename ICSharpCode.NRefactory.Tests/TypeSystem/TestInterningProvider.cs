@@ -123,22 +123,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return list;
 		}
 		
-		void Run(ITypeDefinition c)
-		{
-			foreach (ITypeDefinition n in c.InnerClasses) {
-				Run(n);
-			}
-			Intern(c.Name);
-			foreach (IMember m in c.Members) {
-				Intern(m);
-			}
-		}
-		
 		[Test]
 		public void PrintStatistics()
 		{
-			foreach (var c in CecilLoaderTests.Mscorlib.GetClasses()) {
-				Run(c);
+			foreach (var c in TreeTraversal.PreOrder(CecilLoaderTests.Mscorlib.GetClasses(), c => c.InnerClasses)) {
+				Intern(c.Namespace);
+				Intern(c.Name);
+				foreach (IMember m in c.Members) {
+					Intern(m);
+				}
 			}
 			
 			var stats =

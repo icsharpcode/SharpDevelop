@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -597,6 +598,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 						bool setterVisible = property.SetMethod != null && loader.IsVisible(property.SetMethod.Attributes);
 						if (getterVisible || setterVisible) {
 							this.Properties.Add(loader.ReadProperty(property, this));
+						}
+					}
+					var defaultMemberAttribute = typeDefinition.CustomAttributes.FirstOrDefault(
+						a => a.AttributeType.FullName == typeof(System.Reflection.DefaultMemberAttribute).FullName);
+					if (defaultMemberAttribute != null && defaultMemberAttribute.ConstructorArguments.Count == 1) {
+						string defaultMemberName = defaultMemberAttribute.ConstructorArguments[0].Value as string;
+						if (defaultMemberName != null) {
+							foreach (DefaultProperty p in this.Properties) {
+								if (p.Name == defaultMemberName) {
+									p.IsIndexer = true;
+								}
+							}
 						}
 					}
 				}

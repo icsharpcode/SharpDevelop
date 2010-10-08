@@ -151,6 +151,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			var testClass = testCasePC.GetClass(typeof(PropertyTest));
 			IProperty p = testClass.Properties.Single(pr => pr.Name == "PropertyWithProtectedSetter");
+			Assert.IsTrue(p.CanGet);
+			Assert.IsTrue(p.CanSet);
 			Assert.AreEqual(Accessibility.Public, p.Accessibility);
 			Assert.AreEqual(Accessibility.Public, p.GetterAccessibility);
 			Assert.AreEqual(Accessibility.Protected, p.SetterAccessibility);
@@ -161,9 +163,23 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			var testClass = testCasePC.GetClass(typeof(PropertyTest));
 			IProperty p = testClass.Properties.Single(pr => pr.Name == "PropertyWithPrivateSetter");
+			Assert.IsTrue(p.CanGet);
+			Assert.IsTrue(p.CanSet);
 			Assert.AreEqual(Accessibility.Public, p.Accessibility);
 			Assert.AreEqual(Accessibility.Public, p.GetterAccessibility);
 			Assert.AreEqual(Accessibility.Private, p.SetterAccessibility);
+		}
+		
+		[Test]
+		public void Indexer()
+		{
+			var testClass = testCasePC.GetClass(typeof(PropertyTest));
+			IProperty p = testClass.Properties.Single(pr => pr.IsIndexer);
+			Assert.IsTrue(p.CanGet);
+			Assert.AreEqual(Accessibility.Public, p.Accessibility);
+			Assert.AreEqual(Accessibility.Public, p.GetterAccessibility);
+			Assert.IsFalse(p.CanSet);
+			Assert.AreEqual(Accessibility.None, p.SetterAccessibility);
 		}
 	}
 }
