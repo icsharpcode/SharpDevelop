@@ -81,11 +81,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(42, (int)typeTest.PositionalArguments[0].GetValue(ctx));
 			// second argument is typeof(System.Action<>)
 			IType rt = (IType)typeTest.PositionalArguments[1].GetValue(ctx);
-			Assert.IsFalse(rt is ConstructedType); // rt must not be constructed - it's just an unbound type
+			Assert.IsFalse(rt is ParameterizedType); // rt must not be constructed - it's just an unbound type
 			Assert.AreEqual("System.Action", rt.FullName);
 			Assert.AreEqual(1, rt.TypeParameterCount);
 			// third argument is typeof(IDictionary<string, IList<TestAttribute>>)
-			ConstructedType crt = (ConstructedType)typeTest.PositionalArguments[2].GetValue(ctx);
+			ParameterizedType crt = (ParameterizedType)typeTest.PositionalArguments[2].GetValue(ctx);
 			Assert.AreEqual("System.Collections.Generic.IDictionary", crt.FullName);
 			Assert.AreEqual("System.String", crt.TypeArguments[0].FullName);
 			// ? for NUnit.TestAttribute (because that assembly isn't in ctx)

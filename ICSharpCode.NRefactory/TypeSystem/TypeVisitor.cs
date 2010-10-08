@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return type.VisitChildren(this);
 		}
 		
-		public virtual IType VisitConstructedType(ConstructedType type)
+		public virtual IType VisitParameterizedType(ParameterizedType type)
 		{
 			return type.VisitChildren(this);
 		}

@@ -65,7 +65,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets inner classes (including inherited inner classes).
 		/// </summary>
 		/// <remarks>
-		/// If the inner class is generic, this method produces <see cref="ConstructedType"/>s that
+		/// If the inner class is generic, this method produces <see cref="ParameterizedType"/>s that
 		/// parameterize each nested class with its own type parameters.
 		/// </remarks>
 		/// <returns>A new mutable list</returns>

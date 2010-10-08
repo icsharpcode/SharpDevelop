@@ -376,7 +376,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					foreach (ITypeDefinition innerClass in this.InnerClasses) {
 						if (innerClass.TypeParameterCount > 0) {
 							// Parameterize inner classes with their own type parameters, as per <remarks> on IType.GetNestedTypes.
-							nestedTypes.Add(new ConstructedType(innerClass, innerClass.TypeParameters));
+							nestedTypes.Add(new ParameterizedType(innerClass, innerClass.TypeParameters));
 						} else {
 							nestedTypes.Add(innerClass);
 						}

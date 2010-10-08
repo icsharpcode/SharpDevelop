@@ -13,7 +13,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 namespace ICSharpCode.NRefactory.TypeSystem
 {
 	/// <summary>
-	/// ConstructedType represents an instance of a generic type.
+	/// ParameterizedType represents an instance of a generic type.
 	/// Example: List&lt;string&gt;
 	/// </summary>
 	/// <remarks>
@@ -21,7 +21,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// <see cref="GenericReturnType"/>s are replaced with the return types in the
 	/// type arguments collection.
 	/// </remarks>
-	public sealed class ConstructedType : Immutable, IType
+	public sealed class ParameterizedType : Immutable, IType
 	{
 		sealed class Substitution : TypeVisitor
 		{
@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		readonly ITypeDefinition genericType;
 		readonly IType[] typeArguments;
 		
-		public ConstructedType(ITypeDefinition genericType, IEnumerable<IType> typeArguments)
+		public ParameterizedType(ITypeDefinition genericType, IEnumerable<IType> typeArguments)
 		{
 			if (genericType == null)
 				throw new ArgumentNullException("genericType");
@@ -63,7 +63,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			this.genericType = genericType;
 			this.typeArguments = typeArguments.ToArray(); // copy input array to ensure it isn't modified
 			if (this.typeArguments.Length == 0)
-				throw new ArgumentException("Cannot use ConstructedType with 0 type arguments.");
+				throw new ArgumentException("Cannot use ParameterizedType with 0 type arguments.");
 			if (genericType.TypeParameterCount != this.typeArguments.Length)
 				throw new ArgumentException("Number of type arguments must match the type definition's number of type parameters");
 			for (int i = 0; i < this.typeArguments.Length; i++) {
@@ -76,7 +76,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Fast internal version of the constructor. (no safety checks)
 		/// Keeps the array that was passed and assumes it won't be modified.
 		/// </summary>
-		internal ConstructedType(ITypeDefinition genericType, IType[] typeArguments)
+		internal ParameterizedType(ITypeDefinition genericType, IType[] typeArguments)
 		{
 			Debug.Assert(genericType.TypeParameterCount == typeArguments.Length);
 			this.genericType = genericType;
@@ -93,7 +93,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				if (declaringTypeDef != null && declaringTypeDef.TypeParameterCount > 0) {
 					IType[] newTypeArgs = new IType[declaringTypeDef.TypeParameterCount];
 					Array.Copy(this.typeArguments, 0, newTypeArgs, 0, newTypeArgs.Length);
-					return new ConstructedType(declaringTypeDef, newTypeArgs);
+					return new ParameterizedType(declaringTypeDef, newTypeArgs);
 				}
 				return declaringTypeDef;
 			}
@@ -238,7 +238,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		public bool Equals(IType other)
 		{
-			ConstructedType c = other as ConstructedType;
+			ParameterizedType c = other as ParameterizedType;
 			if (c == null || typeArguments.Length != c.typeArguments.Length)
 				return false;
 			if (genericType.Equals(c.genericType)) {
@@ -264,7 +264,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		public IType AcceptVisitor(TypeVisitor visitor)
 		{
-			return visitor.VisitConstructedType(this);
+			return visitor.VisitParameterizedType(this);
 		}
 		
 		public IType VisitChildren(TypeVisitor visitor)
@@ -282,15 +282,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (isSame)
 				return this;
 			else
-				return new ConstructedType(def, ta);
+				return new ParameterizedType(def, ta);
 		}
 	}
 	
 	/// <summary>
-	/// ConstructedTypeReference is a reference to generic class that specifies the type parameters.
+	/// ParameterizedTypeReference is a reference to generic class that specifies the type parameters.
 	/// Example: List&lt;string&gt;
 	/// </summary>
-	public sealed class ConstructedTypeReference : ITypeReference, ISupportsInterning
+	public sealed class ParameterizedTypeReference : ITypeReference, ISupportsInterning
 	{
 		public static ITypeReference Create(ITypeReference genericType, IEnumerable<ITypeReference> typeArguments)
 		{
@@ -305,16 +305,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				for (int i = 0; i < ta.Length; i++) {
 					ta[i] = (IType)typeArgs[i];
 				}
-				return new ConstructedType((ITypeDefinition)genericType, ta);
+				return new ParameterizedType((ITypeDefinition)genericType, ta);
 			} else {
-				return new ConstructedTypeReference(genericType, typeArgs);
+				return new ParameterizedTypeReference(genericType, typeArgs);
 			}
 		}
 		
 		ITypeReference genericType;
 		ITypeReference[] typeArguments;
 		
-		public ConstructedTypeReference(ITypeReference genericType, IEnumerable<ITypeReference> typeArguments)
+		public ParameterizedTypeReference(ITypeReference genericType, IEnumerable<ITypeReference> typeArguments)
 		{
 			if (genericType == null)
 				throw new ArgumentNullException("genericType");
@@ -353,7 +353,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				else
 					resolvedTypes[i] = SharedTypes.UnknownType;
 			}
-			return new ConstructedType(baseTypeDef, resolvedTypes);
+			return new ParameterizedType(baseTypeDef, resolvedTypes);
 		}
 		
 		public override string ToString()
@@ -393,7 +393,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
 		{
-			ConstructedTypeReference o = other as ConstructedTypeReference;
+			ParameterizedTypeReference o = other as ParameterizedTypeReference;
 			if (o != null && genericType == o.genericType && typeArguments.Length == o.typeArguments.Length) {
 				for (int i = 0; i < typeArguments.Length; i++) {
 					if (typeArguments[i] != o.typeArguments[i])

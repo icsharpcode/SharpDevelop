@@ -200,7 +200,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					typeIndex++;
 					para[i] = CreateType(gType.GenericArguments[i], entity, typeAttributes, ref typeIndex);
 				}
-				return ConstructedTypeReference.Create(baseType, para);
+				return ParameterizedTypeReference.Create(baseType, para);
 			} else if (type is GenericParameter) {
 				GenericParameter typeGP = type as GenericParameter;
 				if (typeGP.Owner is MethodDefinition) {

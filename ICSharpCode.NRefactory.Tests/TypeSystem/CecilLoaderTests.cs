@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			ITypeDefinition c = Mscorlib.GetClass(typeof(Comparer<>));
 			IProperty def = c.Properties.Single(p => p.Name == "Default");
-			ConstructedType pt = (ConstructedType)def.ReturnType.Resolve(ctx);
+			ParameterizedType pt = (ParameterizedType)def.ReturnType.Resolve(ctx);
 			Assert.AreEqual("System.Collections.Generic.Comparer", pt.FullName);
 			Assert.AreSame(c.TypeParameters[0], pt.TypeArguments[0]);
 		}
