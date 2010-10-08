@@ -8,6 +8,9 @@ using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
+	/// <summary>
+	/// Contains logic that determines whether an implicit conversion exists between two types.
+	/// </summary>
 	public class Conversions
 	{
 		readonly ITypeResolveContext context;
@@ -117,7 +120,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// Conversions to integral types: look at the table
 				return from >= TypeCode.Char && from <= TypeCode.UInt32
 					&& to >= TypeCode.Int16 && to <= TypeCode.UInt64
-					&& implicitNumericConversionLookup[to - TypeCode.Int16, from - TypeCode.Char];
+					&& implicitNumericConversionLookup[from - TypeCode.Char, to - TypeCode.Int16];
 			}
 		}
 		#endregion
@@ -312,5 +315,76 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		// TODO: add support for user-defined conversions
+		
+		#region BetterConversion
+		/// <summary>
+		/// Gets the better conversion (C# 4.0 spec, §7.5.3.3)
+		/// </summary>
+		/// <returns>0 = neither is better; 1 = t1 is better; 2 = t2 is better</returns>
+		public int BetterConversion(ConstantResolveResult rr, IType t1, IType t2)
+		{
+			// TODO: implement the special logic for anonymous functions
+			return BetterConversion(rr.Type, t1, t2);
+		}
+		
+		/// <summary>
+		/// Gets the better conversion (C# 4.0 spec, §7.5.3.4)
+		/// </summary>
+		/// <returns>0 = neither is better; 1 = t1 is better; 2 = t2 is better</returns>
+		public int BetterConversion(IType s, IType t1, IType t2)
+		{
+			bool ident1 = IdentityConversion(s, t1);
+			bool ident2 = IdentityConversion(s, t2);
+			if (ident1 && !ident2)
+				return 1;
+			if (ident2 && !ident1)
+				return 2;
+			return BetterConversionTarget(t1, t2);
+		}
+		
+		/// <summary>
+		/// Gets the better conversion target (C# 4.0 spec, §7.5.3.5)
+		/// </summary>
+		/// <returns>0 = neither is better; 1 = t1 is better; 2 = t2 is better</returns>
+		int BetterConversionTarget(IType t1, IType t2)
+		{
+			bool t1To2 = ImplicitConversion(t1, t2);
+			bool t2To1 = ImplicitConversion(t2, t1);
+			if (t1To2 && !t2To1)
+				return 1;
+			if (t2To1 && !t1To2)
+				return 2;
+			TypeCode t1Code = ReflectionHelper.GetTypeCode(t1);
+			TypeCode t2Code = ReflectionHelper.GetTypeCode(t2);
+			if (IsBetterIntegralType(t1Code, t2Code))
+				return 1;
+			if (IsBetterIntegralType(t2Code, t1Code))
+				return 2;
+			return 0;
+		}
+		
+		bool IsBetterIntegralType(TypeCode t1, TypeCode t2)
+		{
+			// signed types are better than unsigned types
+			switch (t1) {
+				case TypeCode.SByte:
+					return t2 == TypeCode.Byte || t2 == TypeCode.UInt16 || t2 == TypeCode.UInt32 || t2 == TypeCode.UInt64;
+				case TypeCode.Int16:
+					return t2 == TypeCode.UInt16 || t2 == TypeCode.UInt32 || t2 == TypeCode.UInt64;
+				case TypeCode.Int32:
+					return t2 == TypeCode.UInt32 || t2 == TypeCode.UInt64;
+				case TypeCode.Int64:
+					return t2 == TypeCode.UInt64;
+				default:
+					return false;
+			}
+		}
+		
+		static void Test(short a) {}
+		static void Test(sbyte a)
+		{
+			Test(1);
+		}
+		#endregion
 	}
 }

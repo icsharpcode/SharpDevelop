@@ -55,6 +55,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.IsFalse(ImplicitConversion(typeof(bool), typeof(float)));
 			Assert.IsTrue(ImplicitConversion(typeof(float), typeof(double)));
 			Assert.IsFalse(ImplicitConversion(typeof(float), typeof(decimal)));
+			Assert.IsTrue(ImplicitConversion(typeof(char), typeof(long)));
+			Assert.IsTrue(ImplicitConversion(typeof(uint), typeof(long)));
 		}
 		
 		[Test]
@@ -238,6 +240,52 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.IsTrue(IntegerLiteralConversion(0, typeof(IComparable<int>)));
 			Assert.IsFalse(IntegerLiteralConversion(0, typeof(IComparable<short>)));
 			Assert.IsFalse(IntegerLiteralConversion(0, typeof(IComparable<long>)));
+		}
+		
+		int BetterConversion(Type s, Type t1, Type t2)
+		{
+			IType sType = s.ToTypeReference().Resolve(mscorlib);
+			IType t1Type = t1.ToTypeReference().Resolve(mscorlib);
+			IType t2Type = t2.ToTypeReference().Resolve(mscorlib);
+			return conversions.BetterConversion(sType, t1Type, t2Type);
+		}
+		
+		int BetterConversion(object value, Type t1, Type t2)
+		{
+			IType fromType = value.GetType().ToTypeReference().Resolve(mscorlib);
+			ConstantResolveResult crr = new ConstantResolveResult(fromType, value);
+			IType t1Type = t1.ToTypeReference().Resolve(mscorlib);
+			IType t2Type = t2.ToTypeReference().Resolve(mscorlib);
+			return conversions.BetterConversion(crr, t1Type, t2Type);
+		}
+		
+		[Test]
+		public void BetterConversion()
+		{
+			Assert.AreEqual(1, BetterConversion(typeof(string), typeof(string), typeof(object)));
+			Assert.AreEqual(2, BetterConversion(typeof(string), typeof(object), typeof(IComparable<string>)));
+			Assert.AreEqual(0, BetterConversion(typeof(string), typeof(IEnumerable<char>), typeof(IComparable<string>)));
+		}
+		
+		[Test]
+		public void BetterPrimitiveConversion()
+		{
+			Assert.AreEqual(1, BetterConversion(typeof(short), typeof(int), typeof(long)));
+			Assert.AreEqual(1, BetterConversion(typeof(short), typeof(int), typeof(uint)));
+			Assert.AreEqual(2, BetterConversion(typeof(ushort), typeof(uint), typeof(int)));
+		}
+		
+		[Test]
+		public void BetterNullableConversion()
+		{
+			Assert.AreEqual(0, BetterConversion(typeof(byte), typeof(int), typeof(uint?)));
+			Assert.AreEqual(0, BetterConversion(typeof(byte?), typeof(int?), typeof(uint?)));
+			Assert.AreEqual(1, BetterConversion(typeof(byte), typeof(ushort?), typeof(uint?)));
+			Assert.AreEqual(2, BetterConversion(typeof(byte?), typeof(ulong?), typeof(uint?)));
+			Assert.AreEqual(0, BetterConversion(typeof(byte), typeof(ushort?), typeof(uint)));
+			Assert.AreEqual(0, BetterConversion(typeof(byte), typeof(ushort?), typeof(int)));
+			Assert.AreEqual(2, BetterConversion(typeof(byte), typeof(ulong?), typeof(uint)));
+			Assert.AreEqual(0, BetterConversion(typeof(byte), typeof(ulong?), typeof(int)));
 		}
 	}
 }
