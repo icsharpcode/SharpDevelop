@@ -3,7 +3,7 @@
 
 using System;
 
-namespace ICSharpCode.NRefactory.TypeSystem.Implementation
+namespace ICSharpCode.NRefactory.Util
 {
 	/// <summary>
 	/// Holds 16 boolean values.

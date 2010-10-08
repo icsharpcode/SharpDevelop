@@ -53,6 +53,7 @@
     <Compile Include="TypeSystem\TestInterningProvider.cs" />
     <Compile Include="TypeSystem\TypeSystemTests.cs" />
     <Compile Include="TypeSystem\TypeSystemTests.TestCase.cs" />
+    <Compile Include="Util\TreeTraversalTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -61,6 +62,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Util" />
     <Folder Include="TypeSystem" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.Util;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {

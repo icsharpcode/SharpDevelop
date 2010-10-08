@@ -149,6 +149,7 @@
     <Compile Include="TypeSystem\ConstructedType.cs" />
     <Compile Include="TypeSystem\DomRegion.cs" />
     <Compile Include="TypeSystem\EntityType.cs" />
+    <Compile Include="TypeSystem\ExtensionMethods.cs" />
     <Compile Include="TypeSystem\IAttribute.cs" />
     <Compile Include="TypeSystem\IConstantValue.cs" />
     <Compile Include="TypeSystem\IEntity.cs" />
@@ -162,8 +163,6 @@
     <Compile Include="TypeSystem\Implementation\AbstractFreezable.cs" />
     <Compile Include="TypeSystem\Implementation\AbstractMember.cs" />
     <Compile Include="TypeSystem\Implementation\AbstractType.cs" />
-    <Compile Include="TypeSystem\Implementation\BitVector16.cs" />
-    <Compile Include="TypeSystem\Implementation\BusyManager.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultAttribute.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultEvent.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultExplicitInterfaceImplementation.cs" />
@@ -250,6 +249,12 @@
     <Compile Include="CSharp\Parser\mcs\support.cs" />
     <Compile Include="CSharp\Parser\mcs\complete.cs" />
     <Compile Include="CSharp\Parser\mcs\literal.cs" />
+    <Compile Include="Util\BitVector16.cs" />
+    <Compile Include="Util\BusyManager.cs" />
+    <Compile Include="Util\TreeTraversal.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Util" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

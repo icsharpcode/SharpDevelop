@@ -7,6 +7,8 @@ using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 
+using ICSharpCode.NRefactory.Util;
+
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	public class DefaultTypeDefinition : AbstractFreezable, ITypeDefinition
