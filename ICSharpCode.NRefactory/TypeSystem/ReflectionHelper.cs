@@ -17,6 +17,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <returns>Returns the class; or null if it is not found.</returns>
 		public static ITypeDefinition GetClass(this ITypeResolveContext context, Type type)
 		{
+			if (type == null)
+				return null;
+			while (type.IsArray || type.IsPointer || type.IsByRef)
+				type = type.GetElementType();
+			if (type.IsGenericType && !type.IsGenericTypeDefinition)
+				type = type.GetGenericTypeDefinition();
+			if (type.IsGenericParameter)
+				return null;
 			if (type.DeclaringType != null) {
 				ITypeDefinition declaringType = GetClass(context, type.DeclaringType);
 				if (declaringType != null) {
@@ -42,9 +50,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <param name="type">The type to be converted.</param>
 		/// <param name="entity">The parent entity, used to fetch the ITypeParameter for generic types.</param>
-		/// <returns>Returns the class; or null if it is not found.</returns>
+		/// <returns>Returns the type reference.</returns>
 		public static ITypeReference ToTypeReference(this Type type, IEntity entity = null)
 		{
+			if (type == null)
+				return SharedTypes.UnknownType;
 			if (type.IsGenericType && !type.IsGenericTypeDefinition) {
 				ITypeReference def = ToTypeReference(type.GetGenericTypeDefinition(), entity);
 				Type[] arguments = type.GetGenericArguments();

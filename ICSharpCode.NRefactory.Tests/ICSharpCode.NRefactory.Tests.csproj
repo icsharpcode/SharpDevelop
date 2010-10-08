@@ -54,6 +54,7 @@
     <Compile Include="TypeSystem\TestInterningProvider.cs" />
     <Compile Include="TypeSystem\TypeSystemTests.cs" />
     <Compile Include="TypeSystem\TypeSystemTests.TestCase.cs" />
+    <Compile Include="Untested.cs" />
     <Compile Include="Util\TreeTraversalTests.cs" />
   </ItemGroup>
   <ItemGroup>

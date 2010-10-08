@@ -68,40 +68,34 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// If the inner class is generic, this method produces <see cref="ParameterizedType"/>s that
 		/// parameterize each nested class with its own type parameters.
 		/// </remarks>
-		/// <returns>A new mutable list</returns>
-		IList<IType> GetNestedTypes(ITypeResolveContext context);
+		IEnumerable<IType> GetNestedTypes(ITypeResolveContext context);
 		
 		/// <summary>
 		/// Gets all methods that can be called on this return type.
 		/// </summary>
 		/// <remarks>The list does not include constructors.</remarks>
-		/// <returns>A new mutable list</returns>
-		IList<IMethod> GetMethods(ITypeResolveContext context);
+		IEnumerable<IMethod> GetMethods(ITypeResolveContext context);
 		
 		/// <summary>
 		/// Gets all instance constructors for this type.
 		/// </summary>
 		/// <remarks>This list does not include constructors in base classes or static constructors.</remarks>
-		/// <returns>A new mutable list</returns>
-		IList<IMethod> GetConstructors(ITypeResolveContext context);
+		IEnumerable<IMethod> GetConstructors(ITypeResolveContext context);
 		
 		/// <summary>
 		/// Gets all properties that can be called on this return type.
 		/// </summary>
-		/// <returns>A new mutable list</returns>
-		IList<IProperty> GetProperties(ITypeResolveContext context);
+		IEnumerable<IProperty> GetProperties(ITypeResolveContext context);
 		
 		/// <summary>
 		/// Gets all fields that can be called on this return type.
 		/// </summary>
-		/// <returns>A new mutable list</returns>
-		IList<IField> GetFields(ITypeResolveContext context);
+		IEnumerable<IField> GetFields(ITypeResolveContext context);
 		
 		/// <summary>
 		/// Gets all events that can be called on this return type.
 		/// </summary>
-		/// <returns>A new mutable list</returns>
-		IList<IEvent> GetEvents(ITypeResolveContext context);
+		IEnumerable<IEvent> GetEvents(ITypeResolveContext context);
 	}
 	
 	[ContractClassFor(typeof(IType))]
@@ -129,42 +123,42 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return null;
 		}
 		
-		IList<IType> IType.GetNestedTypes(ITypeResolveContext context)
+		IEnumerable<IType> IType.GetNestedTypes(ITypeResolveContext context)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IList<IType>>() != null);
 			return null;
 		}
 
-		IList<IMethod> IType.GetMethods(ITypeResolveContext context)
+		IEnumerable<IMethod> IType.GetMethods(ITypeResolveContext context)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IList<IMethod>>() != null);
 			return null;
 		}
 		
-		IList<IMethod> IType.GetConstructors(ITypeResolveContext context)
+		IEnumerable<IMethod> IType.GetConstructors(ITypeResolveContext context)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IList<IMethod>>() != null);
 			return null;
 		}
 		
-		IList<IProperty> IType.GetProperties(ITypeResolveContext context)
+		IEnumerable<IProperty> IType.GetProperties(ITypeResolveContext context)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IList<IProperty>>() != null);
 			return null;
 		}
 		
-		IList<IField> IType.GetFields(ITypeResolveContext context)
+		IEnumerable<IField> IType.GetFields(ITypeResolveContext context)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IList<IField>>() != null);
 			return null;
 		}
 		
-		IList<IEvent> IType.GetEvents(ITypeResolveContext context)
+		IEnumerable<IEvent> IType.GetEvents(ITypeResolveContext context)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IList<IEvent>>() != null);

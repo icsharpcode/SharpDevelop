@@ -21,10 +21,25 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 	
 	public class DynamicTest
 	{
+		public dynamic SimpleProperty { get; set; }
+		
 		public List<dynamic> DynamicGenerics1(Action<object, dynamic[], object> param) { return null; }
 		public void DynamicGenerics2(Action<object, dynamic, object> param) { }
 		public void DynamicGenerics3(Action<int, dynamic, object> param) { }
 		public void DynamicGenerics4(Action<int[], dynamic, object> param) { }
 		public void DynamicGenerics5(Action<int*[], dynamic, object> param) { }
+	}
+	
+	public class GenericClass<A, B> where A : B
+	{
+		public void TestMethod<K, V>(string param) where V: K where K: IComparable<V> {}
+		public void GetIndex<T>(T element) where T : IEquatable<T> {}
+	}
+	
+	public class PropertyTest
+	{
+		public int PropertyWithProtectedSetter { get; protected set; }
+		
+		public object PropertyWithPrivateSetter { get; private set; }
 	}
 }

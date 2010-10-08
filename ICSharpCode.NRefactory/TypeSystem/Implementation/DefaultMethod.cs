@@ -113,5 +113,18 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			b.Append(']');
 			return b.ToString();
 		}
+		
+		public static DefaultMethod CreateDefaultConstructor(ITypeDefinition typeDefinition)
+		{
+			DomRegion region = new DomRegion(typeDefinition.Region.FileName, typeDefinition.Region.BeginLine, typeDefinition.Region.BeginColumn);
+			return new DefaultMethod(typeDefinition, ".ctor") {
+				EntityType = EntityType.Constructor,
+				Accessibility = typeDefinition.IsAbstract ? Accessibility.Protected : Accessibility.Public,
+				IsSynthetic = true,
+				Region = region,
+				BodyRegion = region,
+				ReturnType = typeDefinition
+			};
+		}
 	}
 }

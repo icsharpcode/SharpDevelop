@@ -179,6 +179,29 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return visitor.VisitTypeParameter(this);
 		}
 		
+		DefaultTypeDefinition GetDummyClassForTypeParameter()
+		{
+			DefaultTypeDefinition c = new DefaultTypeDefinition(ParentClass ?? ParentMethod.DeclaringTypeDefinition, this.Name);
+			c.Region = new DomRegion(parent.Region.FileName, parent.Region.BeginLine, parent.Region.BeginColumn);
+			if (HasValueTypeConstraint) {
+				c.ClassType = ClassType.Struct;
+			} else if (HasDefaultConstructorConstraint) {
+				c.ClassType = ClassType.Class;
+			} else {
+				c.ClassType = ClassType.Interface;
+			}
+			return c;
+		}
+		
+		public override IEnumerable<IMethod> GetConstructors(ITypeResolveContext context)
+		{
+			if (HasDefaultConstructorConstraint || HasValueTypeConstraint) {
+				return new [] { DefaultMethod.CreateDefaultConstructor(GetDummyClassForTypeParameter()) };
+			} else {
+				return EmptyList<IMethod>.Instance;
+			}
+		}
+		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
 		{
 			constraints = provider.InternList(constraints);

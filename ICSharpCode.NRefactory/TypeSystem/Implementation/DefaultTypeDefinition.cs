@@ -361,26 +361,24 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return this;
 		}
 		
-		public virtual IList<IType> GetNestedTypes(ITypeResolveContext context)
+		public virtual IEnumerable<IType> GetNestedTypes(ITypeResolveContext context)
 		{
 			ITypeDefinition compound = GetCompoundClass();
 			if (compound != this)
 				return compound.GetNestedTypes(context);
 			
+			List<IType> nestedTypes = new List<IType>();
 			using (var busyLock = BusyManager.Enter(this)) {
 				if (busyLock.Success) {
-					IList<IType> nestedTypes = null;
 					foreach (var baseTypeRef in this.BaseTypes) {
 						IType baseType = baseTypeRef.Resolve(context);
 						ITypeDefinition baseTypeDef = baseType.GetDefinition();
 						if (baseTypeDef != null && baseTypeDef.ClassType != ClassType.Interface) {
 							// get nested types from baseType (not baseTypeDef) so that generics work correctly
-							nestedTypes = baseType.GetNestedTypes(context);
+							nestedTypes.AddRange(baseType.GetNestedTypes(context));
 							break; // there is at most 1 non-interface base
 						}
 					}
-					if (nestedTypes == null)
-						nestedTypes = new List<IType>();
 					foreach (ITypeDefinition innerClass in this.InnerClasses) {
 						if (innerClass.TypeParameterCount > 0) {
 							// Parameterize inner classes with their own type parameters, as per <remarks> on IType.GetNestedTypes.
@@ -389,14 +387,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 							nestedTypes.Add(innerClass);
 						}
 					}
-					return nestedTypes;
-				} else {
-					return new List<IType>();
 				}
 			}
+			return nestedTypes;
 		}
 		
-		public virtual IList<IMethod> GetMethods(ITypeResolveContext context)
+		public virtual IEnumerable<IMethod> GetMethods(ITypeResolveContext context)
 		{
 			ITypeDefinition compound = GetCompoundClass();
 			if (compound != this)
@@ -418,7 +414,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return methods;
 		}
 		
-		public virtual IList<IMethod> GetConstructors(ITypeResolveContext context)
+		public virtual IEnumerable<IMethod> GetConstructors(ITypeResolveContext context)
 		{
 			ITypeDefinition compound = GetCompoundClass();
 			if (compound != this)
@@ -431,21 +427,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				if (this.ClassType == ClassType.Class && methods.Count == 0
 				    || this.ClassType == ClassType.Enum || this.ClassType == ClassType.Struct)
 				{
-					DomRegion region = new DomRegion(this.Region.FileName, this.Region.BeginLine, this.Region.BeginColumn);
-					methods.Add(new DefaultMethod(this, ".ctor") {
-					            	EntityType = EntityType.Constructor,
-					            	Accessibility = IsAbstract ? Accessibility.Protected : Accessibility.Public,
-					            	IsSynthetic = true,
-					            	Region = region,
-					            	BodyRegion = region,
-					            	ReturnType = this
-					            });
+					methods.Add(DefaultMethod.CreateDefaultConstructor(this));
 				}
 			}
 			return methods;
 		}
 		
-		public virtual IList<IProperty> GetProperties(ITypeResolveContext context)
+		public virtual IEnumerable<IProperty> GetProperties(ITypeResolveContext context)
 		{
 			ITypeDefinition compound = GetCompoundClass();
 			if (compound != this)
@@ -467,7 +455,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return properties;
 		}
 		
-		public virtual IList<IField> GetFields(ITypeResolveContext context)
+		public virtual IEnumerable<IField> GetFields(ITypeResolveContext context)
 		{
 			ITypeDefinition compound = GetCompoundClass();
 			if (compound != this)
@@ -489,7 +477,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return fields;
 		}
 		
-		public virtual IList<IEvent> GetEvents(ITypeResolveContext context)
+		public virtual IEnumerable<IEvent> GetEvents(ITypeResolveContext context)
 		{
 			ITypeDefinition compound = GetCompoundClass();
 			if (compound != this)

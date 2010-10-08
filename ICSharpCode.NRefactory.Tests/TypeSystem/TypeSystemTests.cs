@@ -17,6 +17,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	{
 		protected IProjectContent testCasePC;
 		
+		ITypeResolveContext ctx;
+		
+		[SetUpAttribute]
+		public void SetUp()
+		{
+			ctx = AggregateTypeResolveContext.Combine(testCasePC, CecilLoaderTests.Mscorlib);
+		}
+		
 		ITypeDefinition GetClass(Type type)
 		{
 			return testCasePC.GetClass(type.FullName, type.GetGenericArguments().Length, StringComparer.Ordinal);
@@ -57,6 +65,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
+		public void DynamicType()
+		{
+			ITypeDefinition testClass = testCasePC.GetClass(typeof(DynamicTest));
+			Assert.AreSame(SharedTypes.Dynamic, testClass.Properties.Single().ReturnType.Resolve(ctx));
+		}
+		
+		[Test]
 		[Ignore]
 		public void DynamicTypeInGenerics()
 		{
@@ -73,7 +88,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		[Test]
 		public void AssemblyAttribute()
 		{
-			ITypeResolveContext ctx = AggregateTypeResolveContext.Combine(testCasePC, CecilLoaderTests.Mscorlib);
 			var attributes = testCasePC.AssemblyAttributes;
 			var typeTest = attributes.First(a => a.AttributeType.Resolve(ctx).FullName == typeof(TypeTestAttribute).FullName);
 			Assert.AreEqual(3, typeTest.PositionalArguments.Count);
@@ -90,6 +104,66 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual("System.String", crt.TypeArguments[0].FullName);
 			// ? for NUnit.TestAttribute (because that assembly isn't in ctx)
 			Assert.AreEqual("System.Collections.Generic.IList`1[[?]]", crt.TypeArguments[1].DotNetName);
+		}
+		
+		[Test]
+		public void TestClassTypeParameters()
+		{
+			var testClass = testCasePC.GetClass(typeof(GenericClass<,>));
+			Assert.AreSame(testClass, testClass.TypeParameters[0].ParentClass);
+			Assert.AreSame(testClass, testClass.TypeParameters[1].ParentClass);
+			Assert.AreSame(testClass.TypeParameters[1], testClass.TypeParameters[0].Constraints[0].Resolve(ctx));
+		}
+		
+		[Test]
+		public void TestMethod()
+		{
+			var testClass = testCasePC.GetClass(typeof(GenericClass<,>));
+			
+			IMethod m = testClass.Methods.Single(me => me.Name == "TestMethod");
+			Assert.AreEqual("K", m.TypeParameters[0].Name);
+			Assert.AreEqual("V", m.TypeParameters[1].Name);
+			Assert.AreSame(m, m.TypeParameters[0].ParentMethod);
+			Assert.AreSame(m, m.TypeParameters[1].ParentMethod);
+			
+			Assert.AreEqual("System.IComparable`1[[``1]]", m.TypeParameters[0].Constraints[0].Resolve(ctx).DotNetName);
+			Assert.AreSame(m.TypeParameters[0], m.TypeParameters[1].Constraints[0].Resolve(ctx));
+		}
+		
+		[Test]
+		public void GetIndex()
+		{
+			var testClass = testCasePC.GetClass(typeof(GenericClass<,>));
+			
+			IMethod m = testClass.Methods.Single(me => me.Name == "GetIndex");
+			Assert.AreEqual("T", m.TypeParameters[0].Name);
+			Assert.AreSame(m, m.TypeParameters[0].ParentMethod);
+			
+			ParameterizedType constraint = (ParameterizedType)m.TypeParameters[0].Constraints[0].Resolve(ctx);
+			Assert.AreEqual("IEquatable", constraint.Name);
+			Assert.AreEqual(1, constraint.TypeParameterCount);
+			Assert.AreEqual(1, constraint.TypeArguments.Count);
+			Assert.AreSame(m.TypeParameters[0], constraint.TypeArguments[0]);
+		}
+		
+		[Test]
+		public void PropertyWithProtectedSetter()
+		{
+			var testClass = testCasePC.GetClass(typeof(PropertyTest));
+			IProperty p = testClass.Properties.Single(pr => pr.Name == "PropertyWithProtectedSetter");
+			Assert.AreEqual(Accessibility.Public, p.Accessibility);
+			Assert.AreEqual(Accessibility.Public, p.GetterAccessibility);
+			Assert.AreEqual(Accessibility.Protected, p.SetterAccessibility);
+		}
+		
+		[Test]
+		public void PropertyWithPrivateSetter()
+		{
+			var testClass = testCasePC.GetClass(typeof(PropertyTest));
+			IProperty p = testClass.Properties.Single(pr => pr.Name == "PropertyWithPrivateSetter");
+			Assert.AreEqual(Accessibility.Public, p.Accessibility);
+			Assert.AreEqual(Accessibility.Public, p.GetterAccessibility);
+			Assert.AreEqual(Accessibility.Private, p.SetterAccessibility);
 		}
 	}
 }

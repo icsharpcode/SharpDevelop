@@ -79,7 +79,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			// EncodingInfo only has an internal constructor
 			Assert.IsFalse(c.Methods.Any(m => m.IsConstructor));
 			// and no implicit ctor should be added:
-			Assert.AreEqual(0, c.GetConstructors(ctx).Count);
+			Assert.AreEqual(0, c.GetConstructors(ctx).Count());
 		}
 		
 		[Test]
@@ -115,7 +115,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			ITypeDefinition c = Mscorlib.GetClass(typeof(void));
 			Assert.IsNotNull(c, "System.Void not found");
-			Assert.AreEqual(0, c.GetMethods(ctx).Count);
+			Assert.AreEqual(0, c.GetMethods(ctx).Count());
 			Assert.AreEqual(
 				new string[] {
 					"[System.SerializableAttribute]",
@@ -123,6 +123,125 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					"[System.Runtime.InteropServices.ComVisibleAttribute(true)]"
 				},
 				c.Attributes.Select(a => a.ToString()).ToArray());
+		}
+		
+		[Test]
+		public void NestedClassInGenericClassTest()
+		{
+			ITypeDefinition dictionary = Mscorlib.GetClass(typeof(Dictionary<,>));
+			Assert.IsNotNull(dictionary);
+			ITypeDefinition valueCollection = Mscorlib.GetClass(typeof(Dictionary<,>.ValueCollection));
+			Assert.IsNotNull(valueCollection);
+			var dictionaryRT = new ParameterizedType(dictionary, new[] { Mscorlib.GetClass(typeof(string)), Mscorlib.GetClass(typeof(int)) });
+			IProperty valueProperty = dictionaryRT.GetProperties(ctx).Single(p => p.Name == "Values");
+			IType parameterizedValueCollection = valueProperty.ReturnType.Resolve(ctx);
+			Assert.AreEqual("System.Collections.Generic.Dictionary`2+ValueCollection[[System.String],[System.Int32]]", parameterizedValueCollection.DotNetName);
+			Assert.AreSame(valueCollection, parameterizedValueCollection.GetDefinition());
+		}
+		
+		[Test]
+		public void ValueCollectionCountModifiers()
+		{
+			ITypeDefinition valueCollection = Mscorlib.GetClass(typeof(Dictionary<,>.ValueCollection));
+			Assert.AreEqual(Accessibility.Public, valueCollection.Accessibility);
+			Assert.IsTrue(valueCollection.IsSealed);
+			Assert.IsFalse(valueCollection.IsAbstract);
+			Assert.IsFalse(valueCollection.IsStatic);
+			
+			IProperty count = valueCollection.Properties.Single(p => p.Name == "Count");
+			Assert.AreEqual(Accessibility.Public, count.Accessibility);
+			Assert.IsTrue(count.IsSealed);
+			Assert.IsFalse(count.IsVirtual);
+			Assert.IsFalse(count.IsAbstract);
+		}
+		
+		[Test]
+		public void MathAcosModifiers()
+		{
+			ITypeDefinition math = Mscorlib.GetClass(typeof(Math));
+			Assert.AreEqual(Accessibility.Public, math.Accessibility);
+			Assert.IsTrue(math.IsSealed);
+			Assert.IsTrue(math.IsAbstract);
+			Assert.IsTrue(math.IsStatic);
+			
+			IMethod acos = math.Methods.Single(p => p.Name == "Acos");
+			Assert.AreEqual(Accessibility.Public, acos.Accessibility);
+			Assert.IsTrue(acos.IsStatic);
+			Assert.IsFalse(acos.IsAbstract);
+			Assert.IsFalse(acos.IsSealed);
+			Assert.IsFalse(acos.IsVirtual);
+			Assert.IsFalse(acos.IsOverride);
+		}
+		
+		[Test]
+		public void EncodingModifiers()
+		{
+			ITypeDefinition encoding = Mscorlib.GetClass(typeof(Encoding));
+			Assert.AreEqual(Accessibility.Public, encoding.Accessibility);
+			Assert.IsFalse(encoding.IsSealed);
+			Assert.IsTrue(encoding.IsAbstract);
+			
+			IMethod getDecoder = encoding.Methods.Single(p => p.Name == "GetDecoder");
+			Assert.AreEqual(Accessibility.Public, getDecoder.Accessibility);
+			Assert.IsFalse(getDecoder.IsStatic);
+			Assert.IsFalse(getDecoder.IsAbstract);
+			Assert.IsFalse(getDecoder.IsSealed);
+			Assert.IsTrue(getDecoder.IsVirtual);
+			Assert.IsFalse(getDecoder.IsOverride);
+			
+			IMethod getMaxByteCount = encoding.Methods.Single(p => p.Name == "GetMaxByteCount");
+			Assert.AreEqual(Accessibility.Public, getMaxByteCount.Accessibility);
+			Assert.IsFalse(getMaxByteCount.IsStatic);
+			Assert.IsTrue(getMaxByteCount.IsAbstract);
+			Assert.IsFalse(getMaxByteCount.IsSealed);
+			Assert.IsFalse(getMaxByteCount.IsVirtual);
+			Assert.IsFalse(getMaxByteCount.IsOverride);
+			
+			IProperty encoderFallback = encoding.Properties.Single(p => p.Name == "EncoderFallback");
+			Assert.AreEqual(Accessibility.Public, encoderFallback.Accessibility);
+			Assert.IsFalse(encoderFallback.IsStatic);
+			Assert.IsFalse(encoderFallback.IsAbstract);
+			Assert.IsFalse(encoderFallback.IsSealed);
+			Assert.IsFalse(encoderFallback.IsVirtual);
+			Assert.IsFalse(encoderFallback.IsOverride);
+		}
+		
+		[Test]
+		public void UnicodeEncodingModifiers()
+		{
+			ITypeDefinition encoding = Mscorlib.GetClass(typeof(UnicodeEncoding));
+			Assert.AreEqual(Accessibility.Public, encoding.Accessibility);
+			Assert.IsFalse(encoding.IsSealed);
+			Assert.IsFalse(encoding.IsAbstract);
+			
+			IMethod getDecoder = encoding.Methods.Single(p => p.Name == "GetDecoder");
+			Assert.AreEqual(Accessibility.Public, getDecoder.Accessibility);
+			Assert.IsFalse(getDecoder.IsStatic);
+			Assert.IsFalse(getDecoder.IsAbstract);
+			Assert.IsFalse(getDecoder.IsSealed);
+			// Should be override, but actually is 'virtual'. We cannot do better because 'override' is not encoded in the metadata
+			// (the .override directive is unrelated; it's meant for explicit interface implementations)
+			Assert.IsTrue(getDecoder.IsVirtual);
+			Assert.IsFalse(getDecoder.IsOverride);
+		}
+		
+		[Test]
+		public void UTF32EncodingModifiers()
+		{
+			ITypeDefinition encoding = Mscorlib.GetClass(typeof(UTF32Encoding));
+			Assert.AreEqual(Accessibility.Public, encoding.Accessibility);
+			Assert.IsTrue(encoding.IsSealed);
+			Assert.IsFalse(encoding.IsAbstract);
+			
+			IMethod getDecoder = encoding.Methods.Single(p => p.Name == "GetDecoder");
+			Assert.AreEqual(Accessibility.Public, getDecoder.Accessibility);
+			Assert.IsFalse(getDecoder.IsStatic);
+			Assert.IsFalse(getDecoder.IsAbstract);
+			Assert.IsFalse(getDecoder.IsSealed);
+			// Should be override, but actually is 'virtual'. We cannot do better because 'override' is not encoded in the metadata
+			// (the .override directive is unrelated; it's meant for explicit interface implementations)
+			Assert.IsTrue(getDecoder.IsVirtual);
+			Assert.IsFalse(getDecoder.IsOverride);
 		}
 	}
 }

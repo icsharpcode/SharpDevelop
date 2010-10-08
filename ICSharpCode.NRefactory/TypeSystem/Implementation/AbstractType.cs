@@ -66,32 +66,32 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return EmptyList<IType>.Instance;
 		}
 		
-		public virtual IList<IType> GetNestedTypes(ITypeResolveContext context)
+		public virtual IEnumerable<IType> GetNestedTypes(ITypeResolveContext context)
 		{
 			return EmptyList<IType>.Instance;
 		}
 
-		public virtual IList<IMethod> GetMethods(ITypeResolveContext context)
+		public virtual IEnumerable<IMethod> GetMethods(ITypeResolveContext context)
 		{
 			return EmptyList<IMethod>.Instance;
 		}
 		
-		public virtual IList<IMethod> GetConstructors(ITypeResolveContext context)
+		public virtual IEnumerable<IMethod> GetConstructors(ITypeResolveContext context)
 		{
 			return EmptyList<IMethod>.Instance;
 		}
 		
-		public virtual IList<IProperty> GetProperties(ITypeResolveContext context)
+		public virtual IEnumerable<IProperty> GetProperties(ITypeResolveContext context)
 		{
 			return EmptyList<IProperty>.Instance;
 		}
 		
-		public virtual IList<IField> GetFields(ITypeResolveContext context)
+		public virtual IEnumerable<IField> GetFields(ITypeResolveContext context)
 		{
 			return EmptyList<IField>.Instance;
 		}
 		
-		public virtual IList<IEvent> GetEvents(ITypeResolveContext context)
+		public virtual IEnumerable<IEvent> GetEvents(ITypeResolveContext context)
 		{
 			return EmptyList<IEvent>.Instance;
 		}
