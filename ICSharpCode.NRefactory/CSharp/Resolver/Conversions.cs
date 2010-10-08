@@ -19,20 +19,36 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("context");
 			this.context = context;
 			this.objectType = context.GetClass(typeof(object)) ?? SharedTypes.UnknownType;
+			this.dynamicErasure = new DynamicErasure(this);
 		}
 		
 		#region ImplicitConversion
 		public bool ImplicitConversion(IType fromType, IType toType)
 		{
+			if (fromType == null)
+				throw new ArgumentNullException("fromType");
+			if (toType == null)
+				throw new ArgumentNullException("toType");
 			// C# 4.0 spec: §6.1
-			return IdentityConversion(fromType, toType)
-				|| ImplicitNumericConversion(fromType, toType)
-				|| ImplicitEnumerationConversion(fromType, toType)
-				|| ImplicitNullableConversion(fromType, toType)
-				|| NullLiteralConversion(fromType, toType)
-				|| ImplicitReferenceConversion(fromType, toType)
-				|| BoxingConversion(fromType, toType)
-				|| ImplicitConstantExpressionConversion(fromType, toType);
+			if (IdentityConversion(fromType, toType))
+				return true;
+			if (ImplicitNumericConversion(fromType, toType))
+				return true;
+			if (ImplicitReferenceConversion(fromType, toType))
+				return true;
+			if (ImplicitEnumerationConversion(fromType, toType))
+				return true;
+			if (ImplicitNullableConversion(fromType, toType))
+				return true;
+			if (NullLiteralConversion(fromType, toType))
+				return true;
+			if (BoxingConversion(fromType, toType))
+				return true;
+			if (ImplicitDynamicConversion(fromType, toType))
+				return true;
+			if (ImplicitConstantExpressionConversion(fromType, toType))
+				return true;
+			return false;
 		}
 		#endregion
 		
@@ -43,9 +59,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool IdentityConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec: §6.1.1
-			DynamicErasure erasure = new DynamicErasure(this);
-			return fromType.AcceptVisitor(erasure).Equals(toType.AcceptVisitor(erasure));
+			return fromType.AcceptVisitor(dynamicErasure).Equals(toType.AcceptVisitor(dynamicErasure));
 		}
+		
+		readonly DynamicErasure dynamicErasure;
 		
 		sealed class DynamicErasure : TypeVisitor
 		{
@@ -166,7 +183,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ParameterizedType toPT = toType as ParameterizedType;
 				if (fromArray.Dimensions == 1 && toPT != null && toPT.TypeArguments.Count == 1
 				    && toPT.Namespace == "System.Collections.Generic"
-				    && (toPT.Name == "List" || toPT.Name == "Collection" || toPT.Name == "IEnumerable"))
+				    && (toPT.Name == "IList" || toPT.Name == "ICollection" || toPT.Name == "IEnumerable"))
 				{
 					// array covariance plays a part here as well (string[] is IList<object>)
 					return IdentityConversion(fromArray.ElementType, toPT.TypeArguments[0])
@@ -189,6 +206,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (t == SharedTypes.Dynamic || t.Equals(objectType))
 				return true;
 			
+			// let GetAllBaseTypes do the work for us
 			foreach (IType baseType in s.GetAllBaseTypes(context)) {
 				if (IdentityOrVarianceConversion(baseType, t))
 					return true;
@@ -202,11 +220,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (def != null && def.Equals(t.GetDefinition())) {
 				ParameterizedType ps = s as ParameterizedType;
 				ParameterizedType pt = t as ParameterizedType;
-				if (ps != null && pt != null 
+				if (ps != null && pt != null
 				    && ps.TypeArguments.Count == pt.TypeArguments.Count
-				    && ps.TypeArguments.Count == def.TypeParameters.Count) 
+				    && ps.TypeArguments.Count == def.TypeParameters.Count)
 				{
-					// §13.1.3.2 Variance Conversion
+					// C# 4.0 spec: §13.1.3.2 Variance Conversion
 					for (int i = 0; i < def.TypeParameters.Count; i++) {
 						IType si = ps.TypeArguments[i];
 						IType ti = pt.TypeArguments[i];
@@ -222,6 +240,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 								if (!ImplicitReferenceConversion(ti, si))
 									return false;
 								break;
+							default:
+								return false;
 						}
 					}
 				} else if (ps != null || pt != null) {

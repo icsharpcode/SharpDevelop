@@ -159,7 +159,17 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public bool? IsReferenceType {
 			get {
-				return this.ClassType == ClassType.Enum || this.ClassType == ClassType.Struct;
+				switch (this.ClassType) {
+					case ClassType.Class:
+					case ClassType.Interface:
+					case ClassType.Delegate:
+						return true;
+					case ClassType.Enum:
+					case ClassType.Struct:
+						return false;
+					default:
+						return null;
+				}
 			}
 		}
 		

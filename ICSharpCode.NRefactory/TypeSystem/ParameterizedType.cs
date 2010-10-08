@@ -252,13 +252,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public bool Equals(IType other)
 		{
 			ParameterizedType c = other as ParameterizedType;
-			if (c == null || typeArguments.Length != c.typeArguments.Length)
+			if (c == null || !genericType.Equals(c.genericType) || typeArguments.Length != c.typeArguments.Length)
 				return false;
-			if (genericType.Equals(c.genericType)) {
-				for (int i = 0; i < typeArguments.Length; i++) {
-					if (!typeArguments[i].Equals(c.typeArguments[i]))
-						return false;
-				}
+			for (int i = 0; i < typeArguments.Length; i++) {
+				if (!typeArguments[i].Equals(c.typeArguments[i]))
+					return false;
 			}
 			return true;
 		}
@@ -287,7 +285,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (def == null)
 				return g;
 			IType[] ta = new IType[typeArguments.Length];
-			bool isSame = g == this;
+			bool isSame = g == genericType;
 			for (int i = 0; i < typeArguments.Length; i++) {
 				ta[i] = typeArguments[i].AcceptVisitor(visitor);
 				isSame &= ta[i] == typeArguments[i];

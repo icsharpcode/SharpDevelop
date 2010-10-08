@@ -43,6 +43,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CSharp\Resolver\ConversionsTest.cs" />
     <Compile Include="FormattingTests\TestBraceStlye.cs" />
     <Compile Include="FormattingTests\TestFormattingBugs.cs" />
     <Compile Include="FormattingTests\TestSpacingVisitor.cs" />
@@ -64,6 +65,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="CSharp" />
+    <Folder Include="CSharp\Resolver" />
     <Folder Include="Util" />
     <Folder Include="TypeSystem" />
   </ItemGroup>

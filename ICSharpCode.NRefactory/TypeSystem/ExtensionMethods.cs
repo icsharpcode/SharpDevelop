@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Note that this method does not return all supertypes - doing so is impossible due to contravariance
 		/// (and underisable for covariance and the list could become very large).
 		/// This method may return an infinite list for certain (invalid) class declarations like <c>class C{T} : C{C{T}}</c>
-		/// TODO: we could ensure a finite list by filtering out cyclic inheritance
+		/// TODO: ensure we never produce infinite lists (important for C# Conversions implementation)
 		/// </remarks>
 		public static IEnumerable<IType> GetAllBaseTypes(this IType type, ITypeResolveContext context)
 		{
