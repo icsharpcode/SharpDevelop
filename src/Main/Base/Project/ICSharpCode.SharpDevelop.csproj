@@ -256,6 +256,7 @@
     </Compile>
     <Compile Include="Src\Gui\IImage.cs" />
     <Compile Include="Src\Gui\Pads\AbstractConsolePad.cs" />
+    <Compile Include="Src\Gui\Pads\BaseWatchBox.cs" />
     <Compile Include="Src\Gui\Pads\OutlinePad.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\DirectoryNodeFactory.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPadCommands.cs" />

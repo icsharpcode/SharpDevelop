@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 using Aga.Controls.Tree;
+using Debugger.AddIn.Pads;
 using Debugger.AddIn.TreeModel;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui.Pads;
 
 namespace Debugger.AddIn
@@ -24,9 +25,15 @@ namespace Debugger.AddIn
 				WatchPad pad = (WatchPad)this.Owner;
 				TreeViewAdv ctrl = (TreeViewAdv)pad.Control;
 				
-				string input = MessageService.ShowInputBox(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.AddWatch}"),
-				                                           StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.EnterExpression}"),
-				                                           "");
+				var inputWindow = new WatchInputBox(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.AddWatch}"), 
+				                                    StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.EnterExpression}"));
+				
+				var result = inputWindow.ShowDialog();
+				if (!result.HasValue || !result.Value)
+					return;
+				
+				string input = inputWindow.CommandText;
+				
 				if (!string.IsNullOrEmpty(input)) {
 					ctrl.BeginUpdate();
 					TextNode text = new TextNode(input, SupportedLanguage.CSharp);

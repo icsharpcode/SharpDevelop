@@ -1051,5 +1051,14 @@ namespace ICSharpCode.AvalonEdit
 				}
 			}
 		}
+		
+		/// <summary>
+		/// Hides the scroll viewer.
+		/// </summary>
+		public void HideScrollBar()
+		{
+			scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
+			scrollViewer.VerticalScrollBarVisibility =  ScrollBarVisibility.Hidden;
+		}
 	}
 }

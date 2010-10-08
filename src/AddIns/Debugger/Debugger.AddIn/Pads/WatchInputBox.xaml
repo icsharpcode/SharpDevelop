@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<src:BaseWatchBox
+	x:Class="Debugger.AddIn.Pads.WatchInputBox" xmlns:src="clr-namespace:ICSharpCode.SharpDevelop.Gui.Pads;assembly=ICSharpCode.SharpDevelop" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	ShowInTaskbar="False"
+	WindowStartupLocation="CenterScreen"
+	WindowState="Normal"
+	WindowStyle="ToolWindow"
+	Height="75"
+	Width="271"
+	ResizeMode="NoResize"
+	Background="LightGray">
+	<Grid
+		Height="50"
+		VerticalAlignment="Top">
+		<Grid.RowDefinitions>
+			<RowDefinition
+				Height="23" />
+			<RowDefinition
+				Height="24" />
+		</Grid.RowDefinitions>
+		<DockPanel
+			VerticalAlignment="Top"
+			Name="ConsolePanel" />
+		<DockPanel
+			VerticalAlignment="Bottom"
+			Grid.Row="1"
+			HorizontalAlignment="Center">
+			<Button
+				Name="AcceptButton"
+				Width="100"
+				Content="Accept"
+				Click="AcceptButton_Click"
+				IsDefault="True" />
+			<Button
+				Name="CancelButton"
+				Width="100"
+				Content="Cancel"
+				Click="CancelButton_Click" />
+		</DockPanel>
+	</Grid>
+</src:BaseWatchBox>

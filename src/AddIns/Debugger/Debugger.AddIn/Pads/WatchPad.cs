@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Forms.Integration;
 
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
