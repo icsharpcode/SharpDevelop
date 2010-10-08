@@ -21,16 +21,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		bool? IsReferenceType { get; }
 		
 		/// <summary>
-		/// Gets the element type of array or pointer types.
-		/// </summary>
-		/// <exception cref="InvalidOperationException">
-		/// This type is not an array or pointer type.
-		/// </exception>
-		IType GetElementType();
-		
-		/// <summary>
 		/// Gets the underlying type definition.
-		/// Can return null for types which do not have a type definition (for example type parameters)
+		/// Can return null for types which do not have a type definition (for example arrays, pointers, type parameters)
 		/// </summary>
 		ITypeDefinition GetDefinition();
 		
@@ -191,12 +183,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				Contract.Ensures(Contract.Result<string>() != null);
 				return null;
 			}
-		}
-		
-		IType IType.GetElementType()
-		{
-			Contract.Ensures(Contract.Result<IType>() != null);
-			return null;
 		}
 		
 		ITypeDefinition IType.GetDefinition()

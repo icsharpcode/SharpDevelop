@@ -40,7 +40,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		public override IType VisitChildren(TypeVisitor visitor)
 		{
-			IType elementType = GetElementType();
 			IType e = elementType.AcceptVisitor(visitor);
 			if (e == elementType)
 				return this;

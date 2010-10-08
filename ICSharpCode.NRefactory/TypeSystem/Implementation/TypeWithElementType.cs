@@ -34,9 +34,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public abstract string NameSuffix { get; }
 		
-		public override IType GetElementType()
-		{
-			return elementType;
+		public IType ElementType {
+			get { return elementType; }
 		}
 		
 		// Force concrete implementations to override VisitChildren - the base implementation

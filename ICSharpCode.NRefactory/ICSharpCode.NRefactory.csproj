@@ -139,6 +139,7 @@
     <Compile Include="CSharp\Parser\mcs\MonoSymbolWriter.cs" />
     <Compile Include="CSharp\Parser\mcs\outline.cs" />
     <Compile Include="CSharp\Parser\mcs\roottypes.cs" />
+    <Compile Include="CSharp\Resolver\Conversions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeSystem\Accessibility.cs" />
     <Compile Include="TypeSystem\AmbiguousType.cs" />
@@ -255,6 +256,7 @@
     <Compile Include="Util\TreeTraversal.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="CSharp\Resolver" />
     <Folder Include="Util" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

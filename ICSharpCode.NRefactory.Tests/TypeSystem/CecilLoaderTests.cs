@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			IMethod toPointer = c.Methods.Single(p => p.Name == "ToPointer");
 			Assert.AreEqual("System.Void*", toPointer.ReturnType.Resolve(ctx).DotNetName);
 			Assert.IsInstanceOf(typeof(PointerType), toPointer.ReturnType.Resolve(ctx));
-			Assert.AreEqual("System.Void", toPointer.ReturnType.Resolve(ctx).GetElementType().FullName);
+			Assert.AreEqual("System.Void", ((PointerType)toPointer.ReturnType.Resolve(ctx)).ElementType.FullName);
 		}
 		
 		[Test]

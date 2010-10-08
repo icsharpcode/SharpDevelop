@@ -46,11 +46,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return null; }
 		}
 		
-		public virtual IType GetElementType()
-		{
-			throw new InvalidOperationException();
-		}
-		
 		public virtual ITypeDefinition GetDefinition()
 		{
 			return null;

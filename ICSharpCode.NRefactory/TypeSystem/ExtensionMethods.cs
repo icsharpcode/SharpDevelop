@@ -17,7 +17,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets all base types.
 		/// </summary>
 		/// <remarks>This is the reflexive and transitive closure of <see cref="IType.GetBaseTypes"/>.
-		/// Note that this method does not return all supertypes - doing so is impossible due to contravariance.
+		/// Note that this method does not return all supertypes - doing so is impossible due to contravariance
+		/// (and underisable for covariance and the list could become very large).
 		/// This method may return an infinite list for certain (invalid) class declarations like <c>class C{T} : C{C{T}}</c>
 		/// TODO: we could ensure a finite list by filtering out cyclic inheritance
 		/// </remarks>

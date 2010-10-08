@@ -2,6 +2,7 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.TypeSystem
@@ -130,6 +131,39 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				else
 					return reflectionName;
 			}
+		}
+		
+		static readonly Dictionary<string, TypeCode> typeNameToCodeDict = new Dictionary<string, TypeCode> {
+			{ typeof(Boolean).FullName, TypeCode.Boolean },
+			{ typeof(Byte).FullName, TypeCode.Byte },
+			{ typeof(Char).FullName, TypeCode.Char },
+			{ typeof(DateTime).FullName, TypeCode.DateTime },
+			{ typeof(DBNull).FullName, TypeCode.DBNull },
+			{ typeof(Decimal).FullName, TypeCode.Decimal },
+			{ typeof(Double).FullName, TypeCode.Double },
+			{ typeof(Int16).FullName, TypeCode.Int16 },
+			{ typeof(Int32).FullName, TypeCode.Int32 },
+			{ typeof(Int64).FullName, TypeCode.Int64 },
+			{ typeof(Object).FullName, TypeCode.Object },
+			{ typeof(SByte).FullName, TypeCode.SByte },
+			{ typeof(Single).FullName, TypeCode.Single },
+			{ typeof(String).FullName, TypeCode.String },
+			{ typeof(UInt16).FullName, TypeCode.UInt16 },
+			{ typeof(UInt32).FullName, TypeCode.UInt32 },
+			{ typeof(UInt64).FullName, TypeCode.UInt64 }
+		};
+		
+		/// <summary>
+		/// Gets the type code for the specified type, or TypeCode.Empty if none of the other type codes matches.
+		/// </summary>
+		public static TypeCode GetTypeCode(IType type)
+		{
+			ITypeDefinition def = type as ITypeDefinition;
+			TypeCode typeCode;
+			if (def != null && def.TypeParameterCount == 0 && typeNameToCodeDict.TryGetValue(def.FullName, out typeCode))
+				return typeCode;
+			else
+				return TypeCode.Empty;
 		}
 	}
 }

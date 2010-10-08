@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		public override int GetHashCode()
 		{
-			return unchecked(GetElementType().GetHashCode() * 71681 + dimensions);
+			return unchecked(elementType.GetHashCode() * 71681 + dimensions);
 		}
 		
 		public override bool Equals(IType other)
@@ -55,9 +55,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			IType t = context.GetClass(typeof(Array));
 			if (t != null)
 				baseTypes.Add(t);
-			t = context.GetClass(typeof(List<>));
-			if (t != null)
-				baseTypes.Add(t);
+			if (dimensions == 1) { // single-dimensional arrays implement IList<T>
+				t = context.GetClass(typeof(IList<>));
+				if (t != null)
+					baseTypes.Add(t);
+			}
 			return baseTypes;
 		}
 		
@@ -68,7 +70,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		public override IType VisitChildren(TypeVisitor visitor)
 		{
-			IType elementType = GetElementType();
 			IType e = elementType.AcceptVisitor(visitor);
 			if (e == elementType)
 				return this;
