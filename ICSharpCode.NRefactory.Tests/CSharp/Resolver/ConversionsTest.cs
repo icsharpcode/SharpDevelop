@@ -116,6 +116,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		[Test]
+		public void ParameterizedTypeConversions()
+		{
+			Assert.IsTrue(ImplicitConversion(typeof(List<string>), typeof(ICollection<string>)));
+			Assert.IsTrue(ImplicitConversion(typeof(IList<string>), typeof(ICollection<string>)));
+			Assert.IsFalse(ImplicitConversion(typeof(List<string>), typeof(ICollection<object>)));
+			Assert.IsFalse(ImplicitConversion(typeof(IList<string>), typeof(ICollection<object>)));
+		}
+		
+		[Test]
 		public void ArrayConversions()
 		{
 			Assert.IsTrue(ImplicitConversion(typeof(string[]), typeof(object[])));
@@ -152,6 +161,83 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.IsTrue(ImplicitConversion(typeof(Func<IEnumerable, IList>), typeof(Func<ICollection, ICollection>)));
 			Assert.IsFalse(ImplicitConversion(typeof(Func<ICollection, ICollection>), typeof(Func<IEnumerable, IList>)));
 			Assert.IsFalse(ImplicitConversion(typeof(Func<IList, IEnumerable>), typeof(Func<ICollection, ICollection>)));
+		}
+		
+		bool IntegerLiteralConversion(object value, Type to)
+		{
+			IType fromType = value.GetType().ToTypeReference().Resolve(mscorlib);
+			ConstantResolveResult crr = new ConstantResolveResult(fromType, value);
+			IType to2 = to.ToTypeReference().Resolve(mscorlib);
+			return conversions.ImplicitConversion(crr, to2);
+		}
+		
+		[Test]
+		public void IntegerLiteralToEnumConversions()
+		{
+			Assert.IsTrue(IntegerLiteralConversion(0, typeof(LoaderOptimization)));
+			Assert.IsTrue(IntegerLiteralConversion(0L, typeof(LoaderOptimization)));
+			Assert.IsTrue(IntegerLiteralConversion(0, typeof(LoaderOptimization?)));
+			Assert.IsFalse(IntegerLiteralConversion(0, typeof(string)));
+			Assert.IsFalse(IntegerLiteralConversion(1, typeof(LoaderOptimization)));
+		}
+		
+		[Test]
+		public void ImplicitConstantExpressionConversion()
+		{
+			Assert.IsTrue(IntegerLiteralConversion(0, typeof(int)));
+			Assert.IsTrue(IntegerLiteralConversion(0, typeof(ushort)));
+			Assert.IsTrue(IntegerLiteralConversion(0, typeof(sbyte)));
+			
+			Assert.IsTrue (IntegerLiteralConversion(-1, typeof(int)));
+			Assert.IsFalse(IntegerLiteralConversion(-1, typeof(ushort)));
+			Assert.IsTrue (IntegerLiteralConversion(-1, typeof(sbyte)));
+			
+			Assert.IsTrue (IntegerLiteralConversion(200, typeof(int)));
+			Assert.IsTrue (IntegerLiteralConversion(200, typeof(ushort)));
+			Assert.IsFalse(IntegerLiteralConversion(200, typeof(sbyte)));
+		}
+		
+		[Test]
+		public void ImplicitLongConstantExpressionConversion()
+		{
+			Assert.IsFalse(IntegerLiteralConversion(0L, typeof(int)));
+			Assert.IsTrue(IntegerLiteralConversion(0L, typeof(long)));
+			Assert.IsTrue(IntegerLiteralConversion(0L, typeof(ulong)));
+			
+			Assert.IsTrue(IntegerLiteralConversion(-1L, typeof(long)));
+			Assert.IsFalse(IntegerLiteralConversion(-1L, typeof(ulong)));
+		}
+		
+		[Test]
+		public void ImplicitConstantExpressionConversionToNullable()
+		{
+			Assert.IsTrue(IntegerLiteralConversion(0, typeof(uint?)));
+			Assert.IsTrue(IntegerLiteralConversion(0, typeof(short?)));
+			Assert.IsTrue(IntegerLiteralConversion(0, typeof(byte?)));
+			
+			Assert.IsFalse(IntegerLiteralConversion(-1, typeof(uint?)));
+			Assert.IsTrue (IntegerLiteralConversion(-1, typeof(short?)));
+			Assert.IsFalse(IntegerLiteralConversion(-1, typeof(byte?)));
+			
+			Assert.IsTrue(IntegerLiteralConversion(200, typeof(uint?)));
+			Assert.IsTrue(IntegerLiteralConversion(200, typeof(short?)));
+			Assert.IsTrue(IntegerLiteralConversion(200, typeof(byte?)));
+			
+			Assert.IsFalse(IntegerLiteralConversion(0L, typeof(uint?)));
+			Assert.IsTrue (IntegerLiteralConversion(0L, typeof(long?)));
+			Assert.IsTrue (IntegerLiteralConversion(0L, typeof(ulong?)));
+			
+			Assert.IsTrue(IntegerLiteralConversion(-1L, typeof(long?)));
+			Assert.IsFalse(IntegerLiteralConversion(-1L, typeof(ulong?)));
+		}
+		
+		[Test]
+		public void ImplicitConstantExpressionConversionNumberInterfaces()
+		{
+			Assert.IsTrue(IntegerLiteralConversion(0, typeof(IFormattable)));
+			Assert.IsTrue(IntegerLiteralConversion(0, typeof(IComparable<int>)));
+			Assert.IsFalse(IntegerLiteralConversion(0, typeof(IComparable<short>)));
+			Assert.IsFalse(IntegerLiteralConversion(0, typeof(IComparable<long>)));
 		}
 	}
 }

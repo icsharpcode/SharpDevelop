@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICSharpCode.NRefactory.Util;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -10,7 +11,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation of <see cref="ITypeParameter"/>.
 	/// </summary>
-	public class DefaultTypeParameter : AbstractType, ITypeParameter, ISupportsInterning
+	public class DefaultTypeParameter : AbstractFreezable, ITypeParameter, ISupportsInterning
 	{
 		IEntity parent;
 		
@@ -58,11 +59,19 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.name = name;
 		}
 		
-		public override string Name {
+		public string Name {
 			get { return name; }
 		}
 		
-		public override string DotNetName {
+		string INamedElement.FullName {
+			get { return name; }
+		}
+		
+		string INamedElement.Namespace {
+			get { return string.Empty; }
+		}
+		
+		public string DotNetName {
 			get {
 				if (parent is IMethod)
 					return "``" + index.ToString();
@@ -71,7 +80,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public override bool? IsReferenceType {
+		public bool? IsReferenceType {
 			get {
 				switch (flags.Data & (FlagReferenceTypeConstraint | FlagValueTypeConstraint)) {
 					case FlagReferenceTypeConstraint:
@@ -84,6 +93,24 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
+		int IType.TypeParameterCount {
+			get { return 0; }
+		}
+		
+		IType IType.DeclaringType {
+			get { return null; }
+		}
+		
+		ITypeDefinition IType.GetDefinition()
+		{
+			return null;
+		}
+		
+		IType ITypeReference.Resolve(ITypeResolveContext context)
+		{
+			return this;
+		}
+		
 		public override int GetHashCode()
 		{
 			int hashCode = parent.GetHashCode();
@@ -93,7 +120,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return hashCode;
 		}
 		
-		public override bool Equals(IType other)
+		public override bool Equals(object obj)
+		{
+			return Equals(obj as IType);
+		}
+		
+		public bool Equals(IType other)
 		{
 			DefaultTypeParameter p = other as DefaultTypeParameter;
 			if (p == null)
@@ -174,9 +206,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return null; }
 		}
 		
-		public override IType AcceptVisitor(TypeVisitor visitor)
+		public IType AcceptVisitor(TypeVisitor visitor)
 		{
 			return visitor.VisitTypeParameter(this);
+		}
+		
+		public IType VisitChildren(TypeVisitor visitor)
+		{
+			return this;
 		}
 		
 		DefaultTypeDefinition GetDummyClassForTypeParameter()
@@ -193,12 +230,57 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return c;
 		}
 		
-		public override IEnumerable<IMethod> GetConstructors(ITypeResolveContext context)
+		public IEnumerable<IMethod> GetConstructors(ITypeResolveContext context)
 		{
 			if (HasDefaultConstructorConstraint || HasValueTypeConstraint) {
 				return new [] { DefaultMethod.CreateDefaultConstructor(GetDummyClassForTypeParameter()) };
 			} else {
 				return EmptyList<IMethod>.Instance;
+			}
+		}
+		
+		public IEnumerable<IMethod> GetMethods(ITypeResolveContext context)
+		{
+			// TODO: get methods from constraints
+			IType objectType = context.GetClass("System.Object", 0, StringComparer.Ordinal);
+			IEnumerable<IMethod> objectMethods;
+			if (objectType != null)
+				objectMethods = objectType.GetMethods(context);
+			else
+				objectMethods = EmptyList<IMethod>.Instance;
+			
+			// don't return static methods (those cannot be called from type parameter)
+			return objectMethods.Where(m => !m.IsStatic);
+		}
+		
+		public IEnumerable<IProperty> GetProperties(ITypeResolveContext context)
+		{
+			return EmptyList<IProperty>.Instance;
+		}
+		
+		public IEnumerable<IField> GetFields(ITypeResolveContext context)
+		{
+			return EmptyList<IField>.Instance;
+		}
+		
+		public IEnumerable<IEvent> GetEvents(ITypeResolveContext context)
+		{
+			return EmptyList<IEvent>.Instance;
+		}
+		
+		IEnumerable<IType> IType.GetNestedTypes(ITypeResolveContext context)
+		{
+			return EmptyList<IType>.Instance;
+		}
+		
+		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
+		{
+			IType defaultBaseType = context.GetClass(HasValueTypeConstraint ? "System.ValueType" : "System.Object", 0, StringComparer.Ordinal);
+			if (defaultBaseType != null)
+				yield return defaultBaseType;
+			
+			foreach (ITypeReference constraint in this.Constraints) {
+				yield return constraint.Resolve(context);
 			}
 		}
 		

@@ -23,6 +23,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		#region ImplicitConversion
+		public bool ImplicitConversion(ConstantResolveResult resolveResult, IType toType)
+		{
+			if (resolveResult == null)
+				throw new ArgumentNullException("resolveResult");
+			ConstantResolveResult crr = resolveResult as ConstantResolveResult;
+			if (crr != null && (ImplicitEnumerationConversion(crr, toType) || ImplicitConstantExpressionConversion(crr, toType)))
+				return true;
+			return ImplicitConversion(resolveResult.Type, toType);
+		}
+		
 		public bool ImplicitConversion(IType fromType, IType toType)
 		{
 			if (fromType == null)
@@ -36,8 +46,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return true;
 			if (ImplicitReferenceConversion(fromType, toType))
 				return true;
-			if (ImplicitEnumerationConversion(fromType, toType))
-				return true;
 			if (ImplicitNullableConversion(fromType, toType))
 				return true;
 			if (NullLiteralConversion(fromType, toType))
@@ -45,8 +53,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (BoxingConversion(fromType, toType))
 				return true;
 			if (ImplicitDynamicConversion(fromType, toType))
-				return true;
-			if (ImplicitConstantExpressionConversion(fromType, toType))
 				return true;
 			return false;
 		}
@@ -117,10 +123,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region ImplicitEnumerationConversion
-		bool ImplicitEnumerationConversion(IType fromType, IType toType)
+		bool ImplicitEnumerationConversion(ConstantResolveResult rr, IType toType)
 		{
 			// C# 4.0 spec: §6.1.3
-			// TODO: implement ImplicitEnumerationConversion and ImplicitConstantExpressionConversion
+			TypeCode constantType = ReflectionHelper.GetTypeCode(rr.Type);
+			if (constantType >= TypeCode.SByte && constantType <= TypeCode.Decimal && Convert.ToDecimal(rr.Value) == 0) {
+				toType = UnpackNullable(toType) ?? toType;
+				ITypeDefinition toDef = toType.GetDefinition();
+				return toDef.ClassType == ClassType.Enum;
+			}
 			return false;
 		}
 		#endregion
@@ -271,10 +282,31 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region ImplicitConstantExpressionConversion
-		bool ImplicitConstantExpressionConversion(IType fromType, IType toType)
+		bool ImplicitConstantExpressionConversion(ConstantResolveResult rr, IType toType)
 		{
 			// C# 4.0 spec: §6.1.9
-			// TODO: implement ImplicitEnumerationConversion and ImplicitConstantExpressionConversion
+			TypeCode fromTypeCode = ReflectionHelper.GetTypeCode(rr.Type);
+			TypeCode toTypeCode = ReflectionHelper.GetTypeCode(UnpackNullable(toType) ?? toType);
+			if (fromTypeCode == TypeCode.Int64) {
+				long val = (long)rr.Value;
+				return val >= 0 && toTypeCode == TypeCode.UInt64;
+			} else if (fromTypeCode == TypeCode.Int32) {
+				int val = (int)rr.Value;
+				switch (toTypeCode) {
+					case TypeCode.SByte:
+						return val >= SByte.MinValue && val <= SByte.MaxValue;
+					case TypeCode.Byte:
+						return val >= Byte.MinValue && val <= Byte.MaxValue;
+					case TypeCode.Int16:
+						return val >= Int16.MinValue && val <= Int16.MaxValue;
+					case TypeCode.UInt16:
+						return val >= UInt16.MinValue && val <= UInt16.MaxValue;
+					case TypeCode.UInt32:
+						return val >= 0;
+					case TypeCode.UInt64:
+						return val >= 0;
+				}
+			}
 			return false;
 		}
 		#endregion

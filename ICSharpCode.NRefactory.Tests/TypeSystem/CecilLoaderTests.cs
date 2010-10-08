@@ -17,7 +17,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		ITypeResolveContext ctx = Mscorlib;
 		
 		[TestFixtureSetUp]
-		public void SetUp()
+		public void FixtureSetUp()
 		{
 			// use "IncludeInternalMembers" so that Cecil results match C# parser results
 			CecilLoader loader = new CecilLoader() { IncludeInternalMembers = true };

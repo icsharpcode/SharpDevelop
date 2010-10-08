@@ -10,7 +10,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation for IType interface.
 	/// </summary>
-	public abstract class AbstractType : AbstractFreezable, IType
+	public abstract class AbstractType : IType
 	{
 		public virtual string FullName {
 			get {
@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return null;
 		}
 		
-		public IType Resolve(ITypeResolveContext context)
+		IType ITypeReference.Resolve(ITypeResolveContext context)
 		{
 			return this;
 		}

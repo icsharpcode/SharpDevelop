@@ -54,11 +54,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		sealed class UnknownTypeImpl : AbstractType
 		{
-			public UnknownTypeImpl()
-			{
-				Freeze();
-			}
-			
 			public override string Name {
 				get { return "?"; }
 			}
@@ -83,11 +78,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		sealed class NullType : AbstractType
 		{
-			public NullType()
-			{
-				Freeze();
-			}
-			
 			public override string Name {
 				get { return "null"; }
 			}
@@ -112,11 +102,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		sealed class DynamicType : AbstractType
 		{
-			public DynamicType()
-			{
-				Freeze();
-			}
-			
 			public override string Name {
 				get { return "dynamic"; }
 			}
