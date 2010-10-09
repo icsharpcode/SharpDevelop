@@ -17,9 +17,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// Example: List&lt;string&gt;
 	/// </summary>
 	/// <remarks>
-	/// When getting the Members, this type modifies the lists in such a way that the
-	/// <see cref="GenericReturnType"/>s are replaced with the return types in the
-	/// type arguments collection.
+	/// When getting the members, this type modifies the lists so that
+	/// type parameters in the signatures of the members are replaced with
+	/// the type arguments.
 	/// </remarks>
 	public sealed class ParameterizedType : Immutable, IType
 	{
@@ -131,9 +131,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		public IType GetElementType()
+		public override string ToString()
 		{
-			throw new NotSupportedException();
+			return DotNetName;
 		}
 		
 		public ReadOnlyCollection<IType> TypeArguments {
@@ -284,13 +284,23 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition def = g as ITypeDefinition;
 			if (def == null)
 				return g;
-			IType[] ta = new IType[typeArguments.Length];
-			bool isSame = g == genericType;
+			// Keep ta == null as long as no elements changed, allocate the array only if necessary.
+			IType[] ta = (g != genericType) ? new IType[typeArguments.Length] : null;
 			for (int i = 0; i < typeArguments.Length; i++) {
-				ta[i] = typeArguments[i].AcceptVisitor(visitor);
-				isSame &= ta[i] == typeArguments[i];
+				IType r = typeArguments[i].AcceptVisitor(visitor);
+				if (r == null)
+					throw new NullReferenceException("TypeVisitor.Visit-method returned null");
+				if (ta == null && r != typeArguments[i]) {
+					// we found a difference, so we need to allocate the array
+					ta = new IType[typeArguments.Length];
+					for (int j = 0; j < i; j++) {
+						ta[j] = typeArguments[j];
+					}
+				}
+				if (ta != null)
+					ta[i] = r;
 			}
-			if (isSame)
+			if (ta == null)
 				return this;
 			else
 				return new ParameterizedType(def, ta);

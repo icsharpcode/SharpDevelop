@@ -39,9 +39,35 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			Assert.IsTrue(ImplicitConversion(typeof(char), typeof(char)));
 			Assert.IsTrue(ImplicitConversion(typeof(string), typeof(string)));
+			Assert.IsTrue(ImplicitConversion(typeof(object), typeof(object)));
+			Assert.IsFalse(ImplicitConversion(typeof(bool), typeof(char)));
+			
 			Assert.IsTrue(conversions.ImplicitConversion(SharedTypes.Dynamic, SharedTypes.Dynamic));
 			Assert.IsTrue(conversions.ImplicitConversion(SharedTypes.UnknownType, SharedTypes.UnknownType));
 			Assert.IsTrue(conversions.ImplicitConversion(SharedTypes.Null, SharedTypes.Null));
+		}
+		
+		[Test]
+		public void DynamicIdentityConversions()
+		{
+			Assert.IsTrue(ImplicitConversion(typeof(object), SharedTypes.Dynamic));
+			Assert.IsTrue(ImplicitConversion(SharedTypes.Dynamic, typeof(object)));
+		}
+		
+		[Test]
+		public void ComplexDynamicIdentityConversions()
+		{
+			var listOfDynamic = new ParameterizedType(mscorlib.GetClass(typeof(List<>)), new [] { SharedTypes.Dynamic });
+			Assert.IsTrue(ImplicitConversion(typeof(List<object>), listOfDynamic));
+			Assert.IsTrue(ImplicitConversion(listOfDynamic, typeof(List<object>)));
+			Assert.IsFalse(ImplicitConversion(typeof(List<string>), listOfDynamic));
+			Assert.IsFalse(ImplicitConversion(listOfDynamic, typeof(List<string>)));
+			
+			var complexTypeInvolvingDynamic = new ParameterizedType(mscorlib.GetClass(typeof(List<>)), new [] { new ArrayType(listOfDynamic, 1) });
+			// complexTypeInvolvingDynamic = List<List<dynamic>[]>
+			Assert.IsTrue(ImplicitConversion(complexTypeInvolvingDynamic, typeof(List<List<object>[]>)));
+			Assert.IsTrue(ImplicitConversion(typeof(List<List<object>[]>), complexTypeInvolvingDynamic));
+			Assert.IsFalse(ImplicitConversion(typeof(List<List<object>[,]>), complexTypeInvolvingDynamic));
 		}
 		
 		[Test]

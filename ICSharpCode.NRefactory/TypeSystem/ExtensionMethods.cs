@@ -18,21 +18,39 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <remarks>This is the reflexive and transitive closure of <see cref="IType.GetBaseTypes"/>.
 		/// Note that this method does not return all supertypes - doing so is impossible due to contravariance
-		/// (and underisable for covariance and the list could become very large).
-		/// This method may return an infinite list for certain (invalid) class declarations like <c>class C{T} : C{C{T}}</c>
-		/// TODO: ensure we never produce infinite lists (important for C# Conversions implementation)
+		/// (and undesirable for covariance as the list could become very large).
 		/// </remarks>
 		public static IEnumerable<IType> GetAllBaseTypes(this IType type, ITypeResolveContext context)
 		{
-			// Given types as nodes and GetBaseTypes() as edges, the type hierarchy forms a graph.
-			// This method should return all nodes reachable from the given start node.
-			
-			// We perform this operation by converting the graph into a tree by making sure we return each node at most once.
-			// Then we convert the tree into a flat list using the Flatten operation.
-			
-			HashSet<IType> visited = new HashSet<IType>();
-			visited.Add(type);
-			return TreeTraversal.PreOrder(type, t => t.GetBaseTypes(context).Where(visited.Add));
+			List<IType> output = new List<IType>();
+			Stack<ITypeDefinition> activeTypeDefinitions = new Stack<ITypeDefinition>();
+			CollectAllBaseTypes(type, context, activeTypeDefinitions, output);
+			return output;
+		}
+		
+		static void CollectAllBaseTypes(IType type, ITypeResolveContext context, Stack<ITypeDefinition> activeTypeDefinitions, List<IType> output)
+		{
+			ITypeDefinition def = type.GetDefinition();
+			if (def != null) {
+				// Maintain a stack of currently active type definitions, and avoid having one definition
+				// multiple times on that stack.
+				// This is necessary to ensure the output is finite in the presence of cyclic inheritance:
+				// class C<X> : C<C<X>> {} would not be caught by the 'no duplicate output' check, yet would
+				// produce infinite output.
+				if (activeTypeDefinitions.Contains(def))
+					return;
+				activeTypeDefinitions.Push(def);
+			}
+			// Avoid outputting a type more than once - necessary for "diamond" multiple inheritance
+			// (e.g. C implements I1 and I2, and both interfaces derive from Object)
+			if (output.Contains(type))
+				return;
+			output.Add(type);
+			foreach (IType baseType in type.GetBaseTypes(context)) {
+				CollectAllBaseTypes(baseType, context, activeTypeDefinitions, output);
+			}
+			if (def != null)
+				activeTypeDefinitions.Pop();
 		}
 	}
 }
