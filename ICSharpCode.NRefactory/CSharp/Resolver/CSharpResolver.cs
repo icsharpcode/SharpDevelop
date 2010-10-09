@@ -309,6 +309,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				else
 					return baseMethod.Invoke(resolver, input);
 			}
+			
+			public IList<IParameter> NonLiftedParameters {
+				get { return baseMethod.Parameters; }
+			}
 		}
 		
 		static UnaryOperatorMethod[] Lift(params UnaryOperatorMethod[] methods)
@@ -360,6 +364,143 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		);
 		
 		object GetUserUnaryOperatorCandidates()
+		{
+			// C# 4.0 spec: §7.3.5 Candidate user-defined operators
+			// TODO: implement user-defined operators
+			throw new NotImplementedException();
+		}
+		#endregion
+		
+		#region ResolveBinaryOperator
+		public ResolveResult ResolveBinaryOperator(BinaryOperatorType op, ResolveResult lhs, ResolveResult rhs)
+		{
+			if (lhs.Type == SharedTypes.Dynamic || rhs.Type == SharedTypes.Dynamic)
+				return DynamicResult;
+			
+			// C# 4.0 spec: §7.3.4 Binary operator overload resolution
+			string overloadableOperatorName = GetOverloadableOperatorName(op);
+			if (overloadableOperatorName == null) {
+				switch (op) {
+					case BinaryOperatorType.LogicalAnd:
+						throw new NotImplementedException();
+					case BinaryOperatorType.LogicalOr:
+						throw new NotImplementedException();
+					case BinaryOperatorType.NullCoalescing:
+						throw new NotImplementedException();
+					default:
+						throw new ArgumentException("Invalid value for BinaryOperatorType", "op");
+				}
+			}
+			
+			// If the type is nullable, get the underlying type:
+			bool isNullable = NullableType.IsNullable(lhs.Type) || NullableType.IsNullable(rhs.Type);
+			IType lhsType = NullableType.GetUnderlyingType(lhs.Type);
+			IType rhsType = NullableType.GetUnderlyingType(rhs.Type);
+			
+			throw new NotImplementedException();
+		}
+		
+		static string GetOverloadableOperatorName(BinaryOperatorType op)
+		{
+			switch (op) {
+				case BinaryOperatorType.Add:
+					return "op_Addition";
+				case BinaryOperatorType.Subtract:
+					return "op_Subtraction";
+				case BinaryOperatorType.Multiply:
+					return "op_Multiply";
+				case BinaryOperatorType.Divide:
+					return "op_Division";
+				case BinaryOperatorType.Modulus:
+					return "op_Modulus";
+				case BinaryOperatorType.BitwiseAnd:
+					return "op_BitwiseAnd";
+				case BinaryOperatorType.BitwiseOr:
+					return "op_BitwiseOr";
+				case BinaryOperatorType.ExclusiveOr:
+					return "op_ExclusiveOr";
+				case BinaryOperatorType.ShiftLeft:
+					return "op_LeftShift";
+				case BinaryOperatorType.ShiftRight:
+					return "op_RightShift";
+				case BinaryOperatorType.Equality:
+					return "op_Equality";
+				case BinaryOperatorType.InEquality:
+					return "op_Inequality";
+				case BinaryOperatorType.GreaterThan:
+					return "op_GreaterThan";
+				case BinaryOperatorType.LessThan:
+					return "op_LessThan";
+				case BinaryOperatorType.GreaterThanOrEqual:
+					return "op_GreaterThanOrEqual";
+				case BinaryOperatorType.LessThanOrEqual:
+					return "op_LessThanOrEqual";
+				default:
+					return null;
+			}
+		}
+		
+		abstract class BinaryOperatorMethod : OperatorMethod
+		{
+			public abstract object Invoke(CSharpResolver resolver, object lhs, object rhs);
+		}
+		
+		sealed class LambdaBinaryOperatorMethod<T> : BinaryOperatorMethod
+		{
+			readonly Func<T, T, T> func;
+			
+			public LambdaBinaryOperatorMethod(Func<T, T, T> func)
+			{
+				this.ReturnType = typeof(T).ToTypeReference();
+				this.Parameters.Add(new DefaultParameter(this.ReturnType, string.Empty));
+				this.Parameters.Add(new DefaultParameter(this.ReturnType, string.Empty));
+				this.func = func;
+			}
+			
+			public override object Invoke(CSharpResolver resolver, object lhs, object rhs)
+			{
+				TypeCode typeCode = Type.GetTypeCode(typeof(T));
+				return func((T)resolver.CSharpPrimitiveCast(typeCode, lhs),
+				            (T)resolver.CSharpPrimitiveCast(typeCode, rhs));
+			}
+		}
+		
+		sealed class LiftedBinaryOperatorMethod : BinaryOperatorMethod, OverloadResolution.ILiftedOperator
+		{
+			readonly BinaryOperatorMethod baseMethod;
+			
+			public LiftedBinaryOperatorMethod(BinaryOperatorMethod baseMethod)
+			{
+				this.baseMethod = baseMethod;
+				this.ReturnType = NullableType.Create(baseMethod.ReturnType);
+				this.Parameters.Add(new DefaultParameter(NullableType.Create(baseMethod.Parameters[0].Type), string.Empty));
+				this.Parameters.Add(new DefaultParameter(NullableType.Create(baseMethod.Parameters[1].Type), string.Empty));
+			}
+			
+			public override object Invoke(CSharpResolver resolver, object lhs, object rhs)
+			{
+				if (lhs == null || rhs == null)
+					return null;
+				else
+					return baseMethod.Invoke(resolver, lhs, rhs);
+			}
+			
+			public IList<IParameter> NonLiftedParameters {
+				get { return baseMethod.Parameters; }
+			}
+		}
+		
+		static BinaryOperatorMethod[] Lift(params BinaryOperatorMethod[] methods)
+		{
+			BinaryOperatorMethod[] lifted = new BinaryOperatorMethod[methods.Length * 2];
+			methods.CopyTo(lifted, 0);
+			for (int i = 0; i < methods.Length; i++) {
+				lifted[methods.Length + i] = new LiftedBinaryOperatorMethod(methods[i]);
+			}
+			return lifted;
+		}
+		
+		object GetUserBinaryOperatorCandidates()
 		{
 			// C# 4.0 spec: §7.3.5 Candidate user-defined operators
 			// TODO: implement user-defined operators

@@ -293,10 +293,36 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return r;
 				
 				// prefer non-lifted operators
-				if (!(c1.Member is ILiftedOperator) && (c2.Member is ILiftedOperator))
+				ILiftedOperator lift1 = c1.Member as ILiftedOperator;
+				ILiftedOperator lift2 = c2.Member as ILiftedOperator;
+				if (lift1 == null && lift2 != null)
 					return 1;
-				if ((c1.Member is ILiftedOperator) && !(c2.Member is ILiftedOperator))
+				if (lift1 != null && lift2 == null)
 					return 2;
+				if (lift1 != null && lift2 != null
+				    && lift1.NonLiftedParameters.Count == arguments.Length
+				    && lift2.NonLiftedParameters.Count == arguments.Length)
+				{
+					// for two lifted operators, compare which of the non-lifted versions is better
+					for (int i = 0; i < arguments.Length; i++) {
+						switch (conversions.BetterConversion(
+							arguments[i],
+							lift1.NonLiftedParameters[i].Type.Resolve(context),
+							lift2.NonLiftedParameters[i].Type.Resolve(context)))
+						{
+							case 1:
+								c1IsBetter = true;
+								break;
+							case 2:
+								c2IsBetter = true;
+								break;
+						}
+					}
+					if (c1IsBetter && !c2IsBetter)
+						return 1;
+					if (!c1IsBetter && c2IsBetter)
+						return 2;
+				}
 			}
 			return 0;
 		}
@@ -307,6 +333,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public interface ILiftedOperator : IParameterizedMember
 		{
+			IList<IParameter> NonLiftedParameters { get; }
 		}
 		
 		int MoreSpecificFormalParameters(Candidate c1, Candidate c2)
@@ -316,10 +343,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (r > 0) return 1;
 			else if (r < 0) return 2;
 			
+			return MoreSpecificFormalParameters(c1.Parameters.Select(p => p.Type.Resolve(context)),
+			                                    c2.Parameters.Select(p => p.Type.Resolve(context)));
+		}
+		
+		static int MoreSpecificFormalParameters(IEnumerable<IType> t1, IEnumerable<IType> t2)
+		{
 			bool c1IsBetter = false;
 			bool c2IsBetter = false;
-			for (int i = 0; i < c1.Parameters.Count; i++) {
-				switch (MoreSpecificFormalParameter(c1.Parameters[i].Type.Resolve(context), c2.Parameters[i].Type.Resolve(context))) {
+			foreach (var pair in t1.Zip(t2, Tuple.Create)) {
+				switch (MoreSpecificFormalParameter(pair.Item1, pair.Item2)) {
 					case 1:
 						c1IsBetter = true;
 						break;
@@ -345,22 +378,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ParameterizedType p1 = t1 as ParameterizedType;
 			ParameterizedType p2 = t2 as ParameterizedType;
 			if (p1 != null && p2 != null && p1.TypeParameterCount == p2.TypeParameterCount) {
-				bool t1IsBetter = false;
-				bool t2IsBetter = false;
-				for (int i = 0; i < p1.TypeParameterCount; i++) {
-					switch (MoreSpecificFormalParameter(p1.TypeArguments[i], p2.TypeArguments[i])) {
-						case 1:
-							t1IsBetter = true;
-							break;
-						case 2:
-							t2IsBetter = true;
-							break;
-					}
-				}
-				if (t1IsBetter && !t2IsBetter)
-					return 1;
-				if (!t1IsBetter && t2IsBetter)
-					return 2;
+				int r = MoreSpecificFormalParameters(p1.TypeArguments, p2.TypeArguments);
+				if (r > 0)
+					return r;
 			}
 			TypeWithElementType tew1 = t1 as TypeWithElementType;
 			TypeWithElementType tew2 = t2 as TypeWithElementType;

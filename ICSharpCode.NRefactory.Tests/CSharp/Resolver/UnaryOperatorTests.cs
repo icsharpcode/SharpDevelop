@@ -56,6 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			AssertConstant((ulong)1, resolver.ResolveUnaryOperator(UnaryOperatorType.Plus, MakeConstant((ulong)1)));
 			
 			AssertType(typeof(dynamic), resolver.ResolveUnaryOperator(UnaryOperatorType.Plus, MakeResult(typeof(dynamic))));
+			AssertType(typeof(int?), resolver.ResolveUnaryOperator(UnaryOperatorType.Plus, MakeResult(typeof(ushort?))));
 		}
 		
 		[Test]
@@ -70,6 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			AssertConstant(-65, resolver.ResolveUnaryOperator(UnaryOperatorType.Minus, MakeConstant('A')));
 			
 			AssertType(typeof(dynamic), resolver.ResolveUnaryOperator(UnaryOperatorType.Minus, MakeResult(typeof(dynamic))));
+			AssertType(typeof(long?), resolver.ResolveUnaryOperator(UnaryOperatorType.Minus, MakeResult(typeof(uint?))));
 		}
 		
 		[Test]
@@ -99,8 +101,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			AssertConstant(~(ulong)1, resolver.ResolveUnaryOperator(UnaryOperatorType.BitNot, MakeConstant((ulong)1)));
 			Assert.IsTrue(resolver.ResolveUnaryOperator(UnaryOperatorType.BitNot, MakeConstant(1.0)).IsError);
 			
-			AssertType(typeof(dynamic), resolver.ResolveUnaryOperator(UnaryOperatorType.Minus, MakeResult(typeof(dynamic))));
-			AssertType(typeof(long), resolver.ResolveUnaryOperator(UnaryOperatorType.Minus, MakeResult(typeof(uint))));
+			AssertType(typeof(dynamic), resolver.ResolveUnaryOperator(UnaryOperatorType.BitNot, MakeResult(typeof(dynamic))));
+			AssertType(typeof(uint), resolver.ResolveUnaryOperator(UnaryOperatorType.BitNot, MakeResult(typeof(uint))));
+			AssertType(typeof(int?), resolver.ResolveUnaryOperator(UnaryOperatorType.BitNot, MakeResult(typeof(ushort?))));
 		}
 		
 		[Test]
@@ -109,6 +112,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			AssertConstant(true, resolver.ResolveUnaryOperator(UnaryOperatorType.Not, MakeConstant(false)));
 			AssertConstant(false, resolver.ResolveUnaryOperator(UnaryOperatorType.Not, MakeConstant(true)));
 			AssertType(typeof(dynamic), resolver.ResolveUnaryOperator(UnaryOperatorType.Not, MakeResult(typeof(dynamic))));
+			AssertType(typeof(bool), resolver.ResolveUnaryOperator(UnaryOperatorType.Not, MakeResult(typeof(bool))));
+			AssertType(typeof(bool?), resolver.ResolveUnaryOperator(UnaryOperatorType.Not, MakeResult(typeof(bool?))));
 		}
 		
 		[Test]
@@ -117,6 +122,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.IsTrue(resolver.ResolveUnaryOperator(UnaryOperatorType.Not, MakeConstant(StringComparison.Ordinal)).IsError);
 			Assert.IsTrue(resolver.ResolveUnaryOperator(UnaryOperatorType.Plus, MakeConstant(StringComparison.Ordinal)).IsError);
 			Assert.IsTrue(resolver.ResolveUnaryOperator(UnaryOperatorType.Minus, MakeConstant(StringComparison.Ordinal)).IsError);
+			
+			Assert.IsTrue(resolver.ResolveUnaryOperator(UnaryOperatorType.Not, MakeResult(typeof(StringComparison))).IsError);
+			Assert.IsTrue(resolver.ResolveUnaryOperator(UnaryOperatorType.Plus, MakeResult(typeof(StringComparison))).IsError);
+			Assert.IsTrue(resolver.ResolveUnaryOperator(UnaryOperatorType.Minus, MakeResult(typeof(StringComparison))).IsError);
+			
+			Assert.IsTrue(resolver.ResolveUnaryOperator(UnaryOperatorType.Not, MakeResult(typeof(StringComparison?))).IsError);
+			Assert.IsTrue(resolver.ResolveUnaryOperator(UnaryOperatorType.Plus, MakeResult(typeof(StringComparison?))).IsError);
+			Assert.IsTrue(resolver.ResolveUnaryOperator(UnaryOperatorType.Minus, MakeResult(typeof(StringComparison?))).IsError);
 		}
 		
 		[Test]
@@ -127,17 +140,5 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			AssertType(typeof(StringComparison), resolver.ResolveUnaryOperator(UnaryOperatorType.BitNot, MakeResult(typeof(StringComparison))));
 			AssertType(typeof(StringComparison?), resolver.ResolveUnaryOperator(UnaryOperatorType.BitNot, MakeResult(typeof(StringComparison?))));
 		}
-		
-		void Test(LoaderOptimization a)
-		{
-			var x = ~a;
-			x.GetType();
-		}
-	}
-	
-	class X
-	{
-		//public static implicit operator int(X a) { return 0; }
-		public static implicit operator LoaderOptimization(X a) { return 0; }
 	}
 }
