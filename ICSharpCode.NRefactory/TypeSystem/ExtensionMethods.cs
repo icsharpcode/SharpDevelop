@@ -43,11 +43,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			// Avoid outputting a type more than once - necessary for "diamond" multiple inheritance
 			// (e.g. C implements I1 and I2, and both interfaces derive from Object)
-			if (output.Contains(type))
-				return;
-			output.Add(type);
-			foreach (IType baseType in type.GetBaseTypes(context)) {
-				CollectAllBaseTypes(baseType, context, activeTypeDefinitions, output);
+			if (!output.Contains(type)) {
+				output.Add(type);
+				foreach (IType baseType in type.GetBaseTypes(context)) {
+					CollectAllBaseTypes(baseType, context, activeTypeDefinitions, output);
+				}
 			}
 			if (def != null)
 				activeTypeDefinitions.Pop();

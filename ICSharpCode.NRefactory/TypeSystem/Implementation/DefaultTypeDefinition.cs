@@ -318,30 +318,36 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
-			if (baseTypes == null || baseTypes.Count == 0) {
-				if (this.FullName == "System.Object")
-					return EmptyList<IType>.Instance;
-				switch (classType) {
-					case ClassType.Enum:
-						return GetPrimitiveBaseType(typeof(Enum), context);
-					case ClassType.Struct:
-						return GetPrimitiveBaseType(typeof(ValueType), context);
-					case ClassType.Delegate:
-						return GetPrimitiveBaseType(typeof(Delegate), context);
-					default:
-						return GetPrimitiveBaseType(typeof(object), context);
+			bool hasNonInterface = false;
+			if (baseTypes != null) {
+				foreach (ITypeReference baseTypeRef in baseTypes) {
+					IType baseType = baseTypeRef.Resolve(context);
+					ITypeDefinition baseTypeDef = baseType.GetDefinition();
+					if (baseTypeDef == null || baseTypeDef.ClassType != ClassType.Interface)
+						hasNonInterface = true;
+					yield return baseType;
 				}
 			}
-			return baseTypes.Select(t => t.Resolve(context)).Where(t => t != SharedTypes.UnknownType);
-		}
-		
-		static IEnumerable<IType> GetPrimitiveBaseType(Type type, ITypeResolveContext context)
-		{
-			IType t = context.GetClass(type);
-			if (t != null)
-				return new [] { t };
-			else
-				return EmptyList<IType>.Instance;
+			if (!hasNonInterface && !(this.Name == "Object" && this.Namespace == "System" && this.TypeParameterCount == 0)) {
+				Type primitiveBaseType;
+				switch (classType) {
+					case ClassType.Enum:
+						primitiveBaseType = typeof(Enum);
+						break;
+					case ClassType.Struct:
+						primitiveBaseType = typeof(ValueType);
+						break;
+					case ClassType.Delegate:
+						primitiveBaseType = typeof(Delegate);
+						break;
+					default:
+						primitiveBaseType = typeof(object);
+						break;
+				}
+				IType t = context.GetClass(primitiveBaseType);
+				if (t != null)
+					yield return t;
+			}
 		}
 		
 		public virtual ITypeDefinition GetCompoundClass()

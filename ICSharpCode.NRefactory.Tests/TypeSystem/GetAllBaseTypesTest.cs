@@ -70,7 +70,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(new [] { c }, c.GetAllBaseTypes(context).ToArray());
 		}
 		
-		
 		[Test]
 		public void ClassDerivingFromTwoInstanciationsOfIEnumerable()
 		{
@@ -78,14 +77,33 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			DefaultTypeDefinition c = new DefaultTypeDefinition(mscorlib, string.Empty, "C");
 			c.BaseTypes.Add(typeof(IEnumerable<int>).ToTypeReference());
 			c.BaseTypes.Add(typeof(IEnumerable<uint>).ToTypeReference());
-			Assert.AreEqual(new [] {
-			                	c,
-			                	c.BaseTypes[0].Resolve(context),
-			                	c.BaseTypes[1].Resolve(context),
-			                	mscorlib.GetClass(typeof(IEnumerable)),
-			                	mscorlib.GetClass(typeof(object))
-			                },
+			IType[] expected = {
+				c,
+				c.BaseTypes[0].Resolve(context),
+				c.BaseTypes[1].Resolve(context),
+				mscorlib.GetClass(typeof(IEnumerable)),
+				mscorlib.GetClass(typeof(object))
+			};
+			Assert.AreEqual(expected,
 			                c.GetAllBaseTypes(context).OrderBy(t => t.DotNetName).ToArray());
+		}
+		
+		[Test]
+		public void StructImplementingIEquatable()
+		{
+			// struct S : IEquatable<S> {}
+			// don't use a Cecil-loaded struct for this test; we're testing the implicit addition of System.ValueType
+			DefaultTypeDefinition s = new DefaultTypeDefinition(mscorlib, string.Empty, "S");
+			s.ClassType = ClassType.Struct;
+			s.BaseTypes.Add(new ParameterizedType(mscorlib.GetClass(typeof(IEquatable<>)), new[] { s }));
+			IType[] expected = {
+				s,
+				s.BaseTypes[0].Resolve(context),
+				mscorlib.GetClass(typeof(object)),
+				mscorlib.GetClass(typeof(ValueType))
+			};
+			Assert.AreEqual(expected,
+			                s.GetAllBaseTypes(context).OrderBy(t => t.DotNetName).ToArray());
 		}
 	}
 }
