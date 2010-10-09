@@ -130,8 +130,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// C# 4.0 spec: §6.1.3
 			TypeCode constantType = ReflectionHelper.GetTypeCode(rr.Type);
 			if (constantType >= TypeCode.SByte && constantType <= TypeCode.Decimal && Convert.ToDecimal(rr.ConstantValue) == 0) {
-				toType = NullableType.GetUnderlyingType(toType) ?? toType;
-				return toType.IsEnum();
+				return NullableType.GetUnderlyingType(toType).IsEnum();
 			}
 			return false;
 		}
@@ -141,9 +140,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool ImplicitNullableConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec: §6.1.4
-			IType t = NullableType.GetUnderlyingType(toType);
-			if (t != null) {
-				IType s = NullableType.GetUnderlyingType(fromType) ?? fromType;
+			if (NullableType.IsNullable(toType)) {
+				IType t = NullableType.GetUnderlyingType(toType);
+				IType s = NullableType.GetUnderlyingType(fromType); // might or might not be nullable
 				return IdentityConversion(s, t) || ImplicitNumericConversion(s, t);
 			} else {
 				return false;
@@ -260,7 +259,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool BoxingConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec: §6.1.7
-			fromType = NullableType.GetUnderlyingType(fromType) ?? fromType;
+			fromType = NullableType.GetUnderlyingType(fromType);
 			return fromType.IsReferenceType == false && toType.IsReferenceType == true && IsSubtypeOf(fromType, toType);
 		}
 		#endregion
@@ -278,7 +277,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// C# 4.0 spec: §6.1.9
 			TypeCode fromTypeCode = ReflectionHelper.GetTypeCode(rr.Type);
-			TypeCode toTypeCode = ReflectionHelper.GetTypeCode(NullableType.GetUnderlyingType(toType) ?? toType);
+			TypeCode toTypeCode = ReflectionHelper.GetTypeCode(NullableType.GetUnderlyingType(toType));
 			if (fromTypeCode == TypeCode.Int64) {
 				long val = (long)rr.ConstantValue;
 				return val >= 0 && toTypeCode == TypeCode.UInt64;

@@ -13,6 +13,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	public static class ReflectionHelper
 	{
 		/// <summary>
+		/// A reflection class used to represent <c>null</c>.
+		/// </summary>
+		public sealed class Null {}
+		
+		/// <summary>
+		/// A reflection class used to represent <c>dynamic</c>.
+		/// </summary>
+		public sealed class Dynamic {}
+		
+		/// <summary>
 		/// Retrieves a class.
 		/// </summary>
 		/// <returns>Returns the class; or null if it is not found.</returns>
@@ -89,6 +99,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					return SharedTypes.UnknownType;
 				}
 			} else if (type.DeclaringType != null) {
+				if (type == typeof(Dynamic))
+					return SharedTypes.Dynamic;
+				else if (type == typeof(Null))
+					return SharedTypes.Null;
 				ITypeReference baseTypeRef = ToTypeReference(type.DeclaringType, entity);
 				int typeParameterCount;
 				string name = SplitTypeParameterCountFromReflectionName(type.Name, out typeParameterCount);

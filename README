@@ -8,3 +8,21 @@ ICSharpCode.NRefactory.TypeSystem.Implementation:
 
 ICSharpCode.NRefactory.CSharp.Dom:
 	Abstract Syntax Tree for C#
+
+ICSharpCode.NRefactory.CSharp.Resolver:
+	Semantic analysis for C#
+
+Null-Object pattern:
+	The NRefactory library makes extensive use of the null object pattern.
+	As a reult, NullReferenceExceptions should be very rare when working with this library.
+	In the type system, both ITypeReference and IType use SharedTypes.UnknownType to represent unknown types.
+	Unless the method is documented otherwise, no method or property returning a ITypeReference or IType will return null.
+	When adding to this library, to try to keep such uses of null rare.
+	
+	Note that the null object pattern is not used for ITypeDefinition:
+	IProjectContent.GetClass() returns null when a type is not found. Take care to abort your operation or substitute UnknownType
+	instead of passing the null to code expecting an IType.
+	
+	The pattern also extends to the C# resolver, which always produces a ResolveResult, even in error cases.
+	Use ResolveResult.IsError to detect resolver errors. Also note that many resolver errors still have a meaningful type attached,
+	this allows code completion to work in the presence of minor semantic errors.

@@ -9,6 +9,10 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
+	// assign short names to the fake reflection types
+	using Null = ICSharpCode.NRefactory.TypeSystem.ReflectionHelper.Null;
+	using dynamic = ICSharpCode.NRefactory.TypeSystem.ReflectionHelper.Dynamic;
+	
 	[TestFixture]
 	public class ConversionsTest
 	{
@@ -20,18 +24,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IType from2 = from.ToTypeReference().Resolve(mscorlib);
 			IType to2 = to.ToTypeReference().Resolve(mscorlib);
 			return conversions.ImplicitConversion(from2, to2);
-		}
-		
-		bool ImplicitConversion(Type from, IType to)
-		{
-			IType from2 = from.ToTypeReference().Resolve(mscorlib);
-			return conversions.ImplicitConversion(from2, to);
-		}
-		
-		bool ImplicitConversion(IType from, Type to)
-		{
-			IType to2 = to.ToTypeReference().Resolve(mscorlib);
-			return conversions.ImplicitConversion(from, to2);
 		}
 		
 		[Test]
@@ -50,24 +42,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void DynamicIdentityConversions()
 		{
-			Assert.IsTrue(ImplicitConversion(typeof(object), SharedTypes.Dynamic));
-			Assert.IsTrue(ImplicitConversion(SharedTypes.Dynamic, typeof(object)));
+			Assert.IsTrue(ImplicitConversion(typeof(object), typeof(ReflectionHelper.Dynamic)));
+			Assert.IsTrue(ImplicitConversion(typeof(ReflectionHelper.Dynamic), typeof(object)));
 		}
 		
 		[Test]
 		public void ComplexDynamicIdentityConversions()
 		{
-			var listOfDynamic = new ParameterizedType(mscorlib.GetClass(typeof(List<>)), new [] { SharedTypes.Dynamic });
-			Assert.IsTrue(ImplicitConversion(typeof(List<object>), listOfDynamic));
-			Assert.IsTrue(ImplicitConversion(listOfDynamic, typeof(List<object>)));
-			Assert.IsFalse(ImplicitConversion(typeof(List<string>), listOfDynamic));
-			Assert.IsFalse(ImplicitConversion(listOfDynamic, typeof(List<string>)));
+			Assert.IsTrue(ImplicitConversion(typeof(List<object>), typeof(List<dynamic>)));
+			Assert.IsTrue(ImplicitConversion(typeof(List<dynamic>), typeof(List<object>)));
+			Assert.IsFalse(ImplicitConversion(typeof(List<string>), typeof(List<dynamic>)));
+			Assert.IsFalse(ImplicitConversion(typeof(List<dynamic>), typeof(List<string>)));
 			
-			var complexTypeInvolvingDynamic = new ParameterizedType(mscorlib.GetClass(typeof(List<>)), new [] { new ArrayType(listOfDynamic, 1) });
-			// complexTypeInvolvingDynamic = List<List<dynamic>[]>
-			Assert.IsTrue(ImplicitConversion(complexTypeInvolvingDynamic, typeof(List<List<object>[]>)));
-			Assert.IsTrue(ImplicitConversion(typeof(List<List<object>[]>), complexTypeInvolvingDynamic));
-			Assert.IsFalse(ImplicitConversion(typeof(List<List<object>[,]>), complexTypeInvolvingDynamic));
+			Assert.IsTrue(ImplicitConversion(typeof(List<List<dynamic>[]>), typeof(List<List<object>[]>)));
+			Assert.IsTrue(ImplicitConversion(typeof(List<List<object>[]>), typeof(List<List<dynamic>[]>)));
+			Assert.IsFalse(ImplicitConversion(typeof(List<List<object>[,]>), typeof(List<List<dynamic>[]>)));
 		}
 		
 		[Test]
@@ -114,13 +103,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void NullLiteralConversions()
 		{
-			Assert.IsTrue(ImplicitConversion(SharedTypes.Null, typeof(int?)));
-			Assert.IsTrue(ImplicitConversion(SharedTypes.Null, typeof(char?)));
-			Assert.IsFalse(ImplicitConversion(SharedTypes.Null, typeof(int)));
-			Assert.IsTrue(ImplicitConversion(SharedTypes.Null, typeof(object)));
-			Assert.IsTrue(conversions.ImplicitConversion(SharedTypes.Null, SharedTypes.Dynamic));
-			Assert.IsTrue(ImplicitConversion(SharedTypes.Null, typeof(string)));
-			Assert.IsTrue(ImplicitConversion(SharedTypes.Null, typeof(int[])));
+			Assert.IsTrue(ImplicitConversion(typeof(Null), typeof(int?)));
+			Assert.IsTrue(ImplicitConversion(typeof(Null), typeof(char?)));
+			Assert.IsFalse(ImplicitConversion(typeof(Null), typeof(int)));
+			Assert.IsTrue(ImplicitConversion(typeof(Null), typeof(object)));
+			Assert.IsTrue(ImplicitConversion(typeof(Null), typeof(dynamic)));
+			Assert.IsTrue(ImplicitConversion(typeof(Null), typeof(string)));
+			Assert.IsTrue(ImplicitConversion(typeof(Null), typeof(int[])));
 		}
 		
 		[Test]
@@ -137,10 +126,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void SimpleDynamicConversions()
 		{
-			Assert.IsTrue(ImplicitConversion(typeof(string), SharedTypes.Dynamic));
-			Assert.IsTrue(ImplicitConversion(SharedTypes.Dynamic, typeof(string)));
-			Assert.IsTrue(ImplicitConversion(typeof(int), SharedTypes.Dynamic));
-			Assert.IsTrue(ImplicitConversion(SharedTypes.Dynamic, typeof(int)));
+			Assert.IsTrue(ImplicitConversion(typeof(string), typeof(dynamic)));
+			Assert.IsTrue(ImplicitConversion(typeof(dynamic), typeof(string)));
+			Assert.IsTrue(ImplicitConversion(typeof(int), typeof(dynamic)));
+			Assert.IsTrue(ImplicitConversion(typeof(dynamic), typeof(int)));
 		}
 		
 		[Test]

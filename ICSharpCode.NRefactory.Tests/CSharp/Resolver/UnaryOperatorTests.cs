@@ -7,30 +7,39 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
+	// assign short name to the fake reflection type
+	using dynamic = ICSharpCode.NRefactory.TypeSystem.ReflectionHelper.Dynamic;
+	
 	[TestFixture]
-	public class UnaryOperatorTests
+	public class UnaryOperatorTests : ResolverTestBase
 	{
-		IProjectContent mscorlib = CecilLoaderTests.Mscorlib;
-		CSharpResolver resolver;
-		
-		ConstantResolveResult MakeConstant(object value)
+		[Test]
+		public void TestAddressOf()
 		{
-			return new ConstantResolveResult(value.GetType().ToTypeReference().Resolve(mscorlib), value);
+			AssertType(typeof(int*), resolver.ResolveUnaryOperator(UnaryOperatorType.AddressOf, MakeResult(typeof(int))));
+			AssertType(typeof(byte**), resolver.ResolveUnaryOperator(UnaryOperatorType.AddressOf, MakeResult(typeof(byte*))));
+			AssertType(typeof(dynamic), resolver.ResolveUnaryOperator(UnaryOperatorType.AddressOf, MakeResult(typeof(dynamic))));
 		}
 		
-		void AssertConstant(object expectedValue, ResolveResult rr)
+		[Test]
+		public void TestDereference()
 		{
-			Assert.IsFalse(rr.IsError, rr.ToString() + " is an error");
-			Assert.IsTrue(rr.IsCompileTimeConstant, rr.ToString() + " is not a compile-time constant");
-			Assert.AreEqual(expectedValue, rr.ConstantValue);
-			Assert.AreEqual(expectedValue.GetType(), rr.ConstantValue.GetType(), "ResolveResult.ConstantValue has wrong Type");
-			Assert.AreEqual(expectedValue.GetType().ToTypeReference().Resolve(mscorlib), rr.Type, "ResolveResult.Type is wrong");
+			AssertType(typeof(int), resolver.ResolveUnaryOperator(UnaryOperatorType.Dereference, MakeResult(typeof(int*))));
+			AssertType(typeof(long*), resolver.ResolveUnaryOperator(UnaryOperatorType.Dereference, MakeResult(typeof(long**))));
+			Assert.IsTrue(resolver.ResolveUnaryOperator(UnaryOperatorType.Dereference, MakeResult(typeof(int))).IsError);
+			AssertType(typeof(dynamic), resolver.ResolveUnaryOperator(UnaryOperatorType.Dereference, MakeResult(typeof(dynamic))));
 		}
 		
-		[SetUp]
-		public void SetUp()
+		[Test]
+		public void TestIncrementDecrement()
 		{
-			resolver = new CSharpResolver(CecilLoaderTests.Mscorlib);
+			AssertType(typeof(byte), resolver.ResolveUnaryOperator(UnaryOperatorType.Increment, MakeResult(typeof(byte))));
+			AssertType(typeof(ulong), resolver.ResolveUnaryOperator(UnaryOperatorType.Decrement, MakeResult(typeof(ulong))));
+			AssertType(typeof(short?), resolver.ResolveUnaryOperator(UnaryOperatorType.PostDecrement, MakeResult(typeof(short?))));
+			AssertType(typeof(TypeCode), resolver.ResolveUnaryOperator(UnaryOperatorType.PostIncrement, MakeResult(typeof(TypeCode))));
+			AssertType(typeof(TypeCode?), resolver.ResolveUnaryOperator(UnaryOperatorType.PostIncrement, MakeResult(typeof(TypeCode?))));
+			AssertType(typeof(dynamic), resolver.ResolveUnaryOperator(UnaryOperatorType.PostIncrement, MakeResult(typeof(dynamic))));
+			AssertError(typeof(object), resolver.ResolveUnaryOperator(UnaryOperatorType.Increment, MakeResult(typeof(object))));
 		}
 		
 		[Test]
@@ -45,6 +54,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			AssertConstant((uint)1, resolver.ResolveUnaryOperator(UnaryOperatorType.Plus, MakeConstant((uint)1)));
 			AssertConstant(1L, resolver.ResolveUnaryOperator(UnaryOperatorType.Plus, MakeConstant((long)1)));
 			AssertConstant((ulong)1, resolver.ResolveUnaryOperator(UnaryOperatorType.Plus, MakeConstant((ulong)1)));
+			
+			AssertType(typeof(dynamic), resolver.ResolveUnaryOperator(UnaryOperatorType.Plus, MakeResult(typeof(dynamic))));
 		}
 		
 		[Test]
@@ -57,6 +68,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			AssertConstant(-1.0, resolver.ResolveUnaryOperator(UnaryOperatorType.Minus, MakeConstant(1.0)));
 			AssertConstant(1m, resolver.ResolveUnaryOperator(UnaryOperatorType.Minus, MakeConstant(-1m)));
 			AssertConstant(-65, resolver.ResolveUnaryOperator(UnaryOperatorType.Minus, MakeConstant('A')));
+			
+			AssertType(typeof(dynamic), resolver.ResolveUnaryOperator(UnaryOperatorType.Minus, MakeResult(typeof(dynamic))));
 		}
 		
 		[Test]
@@ -69,10 +82,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void TestUnaryMinusCheckedOverflow()
 		{
 			resolver.IsCheckedContext = true;
-			ResolveResult rr = resolver.ResolveUnaryOperator(UnaryOperatorType.Minus, MakeConstant(-2147483648));
-			Assert.AreEqual("System.Int32", rr.Type.DotNetName);
-			Assert.IsTrue(rr.IsError);
-			Assert.IsFalse(rr.IsCompileTimeConstant);
+			AssertError(typeof(int), resolver.ResolveUnaryOperator(UnaryOperatorType.Minus, MakeConstant(-2147483648)));
 		}
 		
 		[Test]
@@ -88,6 +98,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			AssertConstant(~(long)1, resolver.ResolveUnaryOperator(UnaryOperatorType.BitNot, MakeConstant((long)1)));
 			AssertConstant(~(ulong)1, resolver.ResolveUnaryOperator(UnaryOperatorType.BitNot, MakeConstant((ulong)1)));
 			Assert.IsTrue(resolver.ResolveUnaryOperator(UnaryOperatorType.BitNot, MakeConstant(1.0)).IsError);
+			
+			AssertType(typeof(dynamic), resolver.ResolveUnaryOperator(UnaryOperatorType.Minus, MakeResult(typeof(dynamic))));
+			AssertType(typeof(long), resolver.ResolveUnaryOperator(UnaryOperatorType.Minus, MakeResult(typeof(uint))));
 		}
 		
 		[Test]
@@ -95,11 +108,29 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			AssertConstant(true, resolver.ResolveUnaryOperator(UnaryOperatorType.Not, MakeConstant(false)));
 			AssertConstant(false, resolver.ResolveUnaryOperator(UnaryOperatorType.Not, MakeConstant(true)));
+			AssertType(typeof(dynamic), resolver.ResolveUnaryOperator(UnaryOperatorType.Not, MakeResult(typeof(dynamic))));
 		}
 		
-		void Test(char a)
+		[Test]
+		public void TestInvalidUnaryOperatorsOnEnum()
 		{
-			var x = -a;
+			Assert.IsTrue(resolver.ResolveUnaryOperator(UnaryOperatorType.Not, MakeConstant(StringComparison.Ordinal)).IsError);
+			Assert.IsTrue(resolver.ResolveUnaryOperator(UnaryOperatorType.Plus, MakeConstant(StringComparison.Ordinal)).IsError);
+			Assert.IsTrue(resolver.ResolveUnaryOperator(UnaryOperatorType.Minus, MakeConstant(StringComparison.Ordinal)).IsError);
+		}
+		
+		[Test]
+		public void TestBitwiseNotOnEnum()
+		{
+			AssertConstant(~StringComparison.Ordinal, resolver.ResolveUnaryOperator(UnaryOperatorType.BitNot, MakeConstant(StringComparison.Ordinal)));
+			AssertConstant(~StringComparison.CurrentCultureIgnoreCase, resolver.ResolveUnaryOperator(UnaryOperatorType.BitNot, MakeConstant(StringComparison.CurrentCultureIgnoreCase)));
+			AssertType(typeof(StringComparison), resolver.ResolveUnaryOperator(UnaryOperatorType.BitNot, MakeResult(typeof(StringComparison))));
+			AssertType(typeof(StringComparison?), resolver.ResolveUnaryOperator(UnaryOperatorType.BitNot, MakeResult(typeof(StringComparison?))));
+		}
+		
+		void Test(LoaderOptimization a)
+		{
+			var x = ~a;
 			x.GetType();
 		}
 	}

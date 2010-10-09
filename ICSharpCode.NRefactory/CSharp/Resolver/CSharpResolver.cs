@@ -181,9 +181,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			// If the type is nullable, get the underlying type:
 			IType type = NullableType.GetUnderlyingType(expression.Type);
-			bool isNullable = type != null;
-			if (!isNullable)
-				type = expression.Type;
+			bool isNullable = NullableType.IsNullable(expression.Type);
 			
 			// the operator is overloadable:
 			// TODO: implicit support for user operators
@@ -198,10 +196,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// C# 4.0 spec: §7.6.9 Postfix increment and decrement operators
 					// C# 4.0 spec: §7.7.5 Prefix increment and decrement operators
 					TypeCode code = ReflectionHelper.GetTypeCode(type);
-					if (type.IsEnum() || (code >= TypeCode.SByte && code <= TypeCode.Decimal))
+					if ((code >= TypeCode.SByte && code <= TypeCode.Decimal) || type.IsEnum())
 						return new ResolveResult(expression.Type);
 					else
-						return ErrorResult;
+						return new ErrorResolveResult(expression.Type);
 				case UnaryOperatorType.Plus:
 					methodGroup = unaryPlusOperators;
 					break;
@@ -217,7 +215,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							// evaluate as (E)(~(U)x);
 							var U = expression.ConstantValue.GetType().ToTypeReference().Resolve(context);
 							var unpackedEnum = new ConstantResolveResult(U, expression.ConstantValue);
-							return ResolveCast(expression.Type, ResolveUnaryOperator(op, unpackedEnum));
+							return CheckErrorAndResolveCast(expression.Type, ResolveUnaryOperator(op, unpackedEnum));
 						} else {
 							return new ResolveResult(expression.Type);
 						}
@@ -239,7 +237,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			} else if (expression.IsCompileTimeConstant && !isNullable) {
 				object val;
 				try {
-					val = m.Invoke(expression.ConstantValue);
+					val = m.Invoke(this, expression.ConstantValue);
 				} catch (OverflowException) {
 					return new ErrorResolveResult(resultType);
 				}
@@ -273,7 +271,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		abstract class UnaryOperatorMethod : OperatorMethod
 		{
-			public abstract object Invoke(object input);
+			public abstract object Invoke(CSharpResolver resolver, object input);
 		}
 		
 		sealed class LambdaUnaryOperatorMethod<T> : UnaryOperatorMethod
@@ -287,9 +285,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				this.func = func;
 			}
 			
-			public override object Invoke(object input)
+			public override object Invoke(CSharpResolver resolver, object input)
 			{
-				return func((T)Convert.ChangeType(input, typeof(T)));
+				return func((T)resolver.CSharpPrimitiveCast(Type.GetTypeCode(typeof(T)), input));
 			}
 		}
 		
@@ -304,12 +302,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				this.Parameters.Add(new DefaultParameter(NullableType.Create(baseMethod.Parameters[0].Type), string.Empty));
 			}
 			
-			public override object Invoke(object input)
+			public override object Invoke(CSharpResolver resolver, object input)
 			{
 				if (input == null)
 					return null;
 				else
-					return baseMethod.Invoke(input);
+					return baseMethod.Invoke(resolver, input);
 			}
 		}
 		
@@ -364,6 +362,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		object GetUserUnaryOperatorCandidates()
 		{
 			// C# 4.0 spec: §7.3.5 Candidate user-defined operators
+			// TODO: implement user-defined operators
 			throw new NotImplementedException();
 		}
 		#endregion
@@ -371,16 +370,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region ResolveCast
 		public ResolveResult ResolveCast(IType targetType, ResolveResult expression)
 		{
-			if (expression.IsError)
-				return new ErrorResolveResult(targetType);
-			
 			// C# 4.0 spec: §7.7.6 Cast expressions
 			if (expression.IsCompileTimeConstant) {
 				TypeCode code = ReflectionHelper.GetTypeCode(targetType);
-				if (code >= TypeCode.Boolean && code <= TypeCode.Decimal) {
+				if (code >= TypeCode.Boolean && code <= TypeCode.Decimal && expression.ConstantValue != null) {
 					try {
-						return new ConstantResolveResult(targetType, Convert.ChangeType(expression.ConstantValue, code, CultureInfo.InvariantCulture));
-					} catch (InvalidCastException) {
+						return new ConstantResolveResult(targetType, CSharpPrimitiveCast(code, expression.ConstantValue));
+					} catch (OverflowException) {
 						return new ErrorResolveResult(targetType);
 					}
 				} else if (code == TypeCode.String) {
@@ -390,10 +386,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						return new ErrorResolveResult(targetType);
 				} else if (targetType.IsEnum()) {
 					code = ReflectionHelper.GetTypeCode(targetType.GetEnumUnderlyingType(context));
-					if (code >= TypeCode.SByte && code <= TypeCode.UInt64) {
+					if (code >= TypeCode.SByte && code <= TypeCode.UInt64 && expression.ConstantValue != null) {
 						try {
-							return new ConstantResolveResult(targetType, Convert.ChangeType(expression.ConstantValue, code, CultureInfo.InvariantCulture));
-						} catch (InvalidCastException) {
+							return new ConstantResolveResult(targetType, CSharpPrimitiveCast(code, expression.ConstantValue));
+						} catch (OverflowException) {
 							return new ErrorResolveResult(targetType);
 						}
 					}
@@ -401,6 +397,415 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			return new ResolveResult(targetType);
 		}
+		
+		ResolveResult CheckErrorAndResolveCast(IType targetType, ResolveResult expression)
+		{
+			if (expression.IsError)
+				return expression;
+			else
+				return ResolveCast(targetType, expression);
+		}
+		
+		#region CSharpPrimitiveCast
+		/// <summary>
+		/// Performs a conversion between primitive types.
+		/// Unfortunately we cannot use Convert.ChangeType because it has different semantics
+		/// (e.g. rounding behavior for floats, overflow, etc.), so we write down every possible primitive C# cast
+		/// and let the compiler figure out the exact semantics.
+		/// And we have to do everything twice, once in a checked-block, once in an unchecked-block.
+		/// </summary>
+		object CSharpPrimitiveCast(TypeCode targetType, object input)
+		{
+			if (IsCheckedContext)
+				return CSharpPrimitiveCastChecked(targetType, input);
+			else
+				return CSharpPrimitiveCastUnchecked(targetType, input);
+		}
+		
+		static object CSharpPrimitiveCastChecked(TypeCode targetType, object input)
+		{
+			checked {
+				TypeCode sourceType = Type.GetTypeCode(input.GetType());
+				if (sourceType == targetType)
+					return input;
+				switch (targetType) {
+					case TypeCode.Char:
+						switch (sourceType) {
+								case TypeCode.SByte:   return (char)(sbyte)input;
+								case TypeCode.Byte:    return (char)(byte)input;
+								case TypeCode.Int16:   return (char)(short)input;
+								case TypeCode.UInt16:  return (char)(ushort)input;
+								case TypeCode.Int32:   return (char)(int)input;
+								case TypeCode.UInt32:  return (char)(uint)input;
+								case TypeCode.Int64:   return (char)(long)input;
+								case TypeCode.UInt64:  return (char)(ulong)input;
+								case TypeCode.Single:  return (char)(float)input;
+								case TypeCode.Double:  return (char)(double)input;
+								case TypeCode.Decimal: return (char)(decimal)input;
+						}
+						break;
+					case TypeCode.SByte:
+						switch (sourceType) {
+								case TypeCode.Char:    return (sbyte)(char)input;
+								case TypeCode.Byte:    return (sbyte)(byte)input;
+								case TypeCode.Int16:   return (sbyte)(short)input;
+								case TypeCode.UInt16:  return (sbyte)(ushort)input;
+								case TypeCode.Int32:   return (sbyte)(int)input;
+								case TypeCode.UInt32:  return (sbyte)(uint)input;
+								case TypeCode.Int64:   return (sbyte)(long)input;
+								case TypeCode.UInt64:  return (sbyte)(ulong)input;
+								case TypeCode.Single:  return (sbyte)(float)input;
+								case TypeCode.Double:  return (sbyte)(double)input;
+								case TypeCode.Decimal: return (sbyte)(decimal)input;
+						}
+						break;
+					case TypeCode.Byte:
+						switch (sourceType) {
+								case TypeCode.Char:    return (byte)(char)input;
+								case TypeCode.SByte:   return (byte)(sbyte)input;
+								case TypeCode.Int16:   return (byte)(short)input;
+								case TypeCode.UInt16:  return (byte)(ushort)input;
+								case TypeCode.Int32:   return (byte)(int)input;
+								case TypeCode.UInt32:  return (byte)(uint)input;
+								case TypeCode.Int64:   return (byte)(long)input;
+								case TypeCode.UInt64:  return (byte)(ulong)input;
+								case TypeCode.Single:  return (byte)(float)input;
+								case TypeCode.Double:  return (byte)(double)input;
+								case TypeCode.Decimal: return (byte)(decimal)input;
+						}
+						break;
+					case TypeCode.Int16:
+						switch (sourceType) {
+								case TypeCode.Char:    return (short)(char)input;
+								case TypeCode.SByte:   return (short)(sbyte)input;
+								case TypeCode.Byte:    return (short)(byte)input;
+								case TypeCode.UInt16:  return (short)(ushort)input;
+								case TypeCode.Int32:   return (short)(int)input;
+								case TypeCode.UInt32:  return (short)(uint)input;
+								case TypeCode.Int64:   return (short)(long)input;
+								case TypeCode.UInt64:  return (short)(ulong)input;
+								case TypeCode.Single:  return (short)(float)input;
+								case TypeCode.Double:  return (short)(double)input;
+								case TypeCode.Decimal: return (short)(decimal)input;
+						}
+						break;
+					case TypeCode.UInt16:
+						switch (sourceType) {
+								case TypeCode.Char:    return (ushort)(char)input;
+								case TypeCode.SByte:   return (ushort)(sbyte)input;
+								case TypeCode.Byte:    return (ushort)(byte)input;
+								case TypeCode.Int16:   return (ushort)(short)input;
+								case TypeCode.Int32:   return (ushort)(int)input;
+								case TypeCode.UInt32:  return (ushort)(uint)input;
+								case TypeCode.Int64:   return (ushort)(long)input;
+								case TypeCode.UInt64:  return (ushort)(ulong)input;
+								case TypeCode.Single:  return (ushort)(float)input;
+								case TypeCode.Double:  return (ushort)(double)input;
+								case TypeCode.Decimal: return (ushort)(decimal)input;
+						}
+						break;
+					case TypeCode.Int32:
+						switch (sourceType) {
+								case TypeCode.Char:    return (int)(char)input;
+								case TypeCode.SByte:   return (int)(sbyte)input;
+								case TypeCode.Byte:    return (int)(byte)input;
+								case TypeCode.Int16:   return (int)(short)input;
+								case TypeCode.UInt16:  return (int)(ushort)input;
+								case TypeCode.UInt32:  return (int)(uint)input;
+								case TypeCode.Int64:   return (int)(long)input;
+								case TypeCode.UInt64:  return (int)(ulong)input;
+								case TypeCode.Single:  return (int)(float)input;
+								case TypeCode.Double:  return (int)(double)input;
+								case TypeCode.Decimal: return (int)(decimal)input;
+						}
+						break;
+					case TypeCode.UInt32:
+						switch (sourceType) {
+								case TypeCode.Char:    return (uint)(char)input;
+								case TypeCode.SByte:   return (uint)(sbyte)input;
+								case TypeCode.Byte:    return (uint)(byte)input;
+								case TypeCode.Int16:   return (uint)(short)input;
+								case TypeCode.UInt16:  return (uint)(ushort)input;
+								case TypeCode.Int32:   return (uint)(int)input;
+								case TypeCode.Int64:   return (uint)(long)input;
+								case TypeCode.UInt64:  return (uint)(ulong)input;
+								case TypeCode.Single:  return (uint)(float)input;
+								case TypeCode.Double:  return (uint)(double)input;
+								case TypeCode.Decimal: return (uint)(decimal)input;
+						}
+						break;
+					case TypeCode.Int64:
+						switch (sourceType) {
+								case TypeCode.Char:    return (long)(char)input;
+								case TypeCode.SByte:   return (long)(sbyte)input;
+								case TypeCode.Byte:    return (long)(byte)input;
+								case TypeCode.Int16:   return (long)(short)input;
+								case TypeCode.UInt16:  return (long)(ushort)input;
+								case TypeCode.Int32:   return (long)(int)input;
+								case TypeCode.UInt32:  return (long)(uint)input;
+								case TypeCode.UInt64:  return (long)(ulong)input;
+								case TypeCode.Single:  return (long)(float)input;
+								case TypeCode.Double:  return (long)(double)input;
+								case TypeCode.Decimal: return (long)(decimal)input;
+						}
+						break;
+					case TypeCode.UInt64:
+						switch (sourceType) {
+								case TypeCode.Char:    return (ulong)(char)input;
+								case TypeCode.SByte:   return (ulong)(sbyte)input;
+								case TypeCode.Byte:    return (ulong)(byte)input;
+								case TypeCode.Int16:   return (ulong)(short)input;
+								case TypeCode.UInt16:  return (ulong)(ushort)input;
+								case TypeCode.Int32:   return (ulong)(int)input;
+								case TypeCode.UInt32:  return (ulong)(uint)input;
+								case TypeCode.Int64:   return (ulong)(long)input;
+								case TypeCode.Single:  return (ulong)(float)input;
+								case TypeCode.Double:  return (ulong)(double)input;
+								case TypeCode.Decimal: return (ulong)(decimal)input;
+						}
+						break;
+					case TypeCode.Single:
+						switch (sourceType) {
+								case TypeCode.Char:    return (float)(char)input;
+								case TypeCode.SByte:   return (float)(sbyte)input;
+								case TypeCode.Byte:    return (float)(byte)input;
+								case TypeCode.Int16:   return (float)(short)input;
+								case TypeCode.UInt16:  return (float)(ushort)input;
+								case TypeCode.Int32:   return (float)(int)input;
+								case TypeCode.UInt32:  return (float)(uint)input;
+								case TypeCode.Int64:   return (float)(long)input;
+								case TypeCode.UInt64:  return (float)(ulong)input;
+								case TypeCode.Double:  return (float)(double)input;
+								case TypeCode.Decimal: return (float)(decimal)input;
+						}
+						break;
+					case TypeCode.Double:
+						switch (sourceType) {
+								case TypeCode.Char:    return (double)(char)input;
+								case TypeCode.SByte:   return (double)(sbyte)input;
+								case TypeCode.Byte:    return (double)(byte)input;
+								case TypeCode.Int16:   return (double)(short)input;
+								case TypeCode.UInt16:  return (double)(ushort)input;
+								case TypeCode.Int32:   return (double)(int)input;
+								case TypeCode.UInt32:  return (double)(uint)input;
+								case TypeCode.Int64:   return (double)(long)input;
+								case TypeCode.UInt64:  return (double)(ulong)input;
+								case TypeCode.Single:  return (double)(float)input;
+								case TypeCode.Decimal: return (double)(decimal)input;
+						}
+						break;
+					case TypeCode.Decimal:
+						switch (sourceType) {
+								case TypeCode.Char:    return (decimal)(char)input;
+								case TypeCode.SByte:   return (decimal)(sbyte)input;
+								case TypeCode.Byte:    return (decimal)(byte)input;
+								case TypeCode.Int16:   return (decimal)(short)input;
+								case TypeCode.UInt16:  return (decimal)(ushort)input;
+								case TypeCode.Int32:   return (decimal)(int)input;
+								case TypeCode.UInt32:  return (decimal)(uint)input;
+								case TypeCode.Int64:   return (decimal)(long)input;
+								case TypeCode.UInt64:  return (decimal)(ulong)input;
+								case TypeCode.Single:  return (decimal)(float)input;
+								case TypeCode.Double:  return (decimal)(double)input;
+						}
+						break;
+				}
+				throw new InvalidCastException("Cast from " + sourceType + " to " + targetType + "not supported.");
+			}
+		}
+		
+		static object CSharpPrimitiveCastUnchecked(TypeCode targetType, object input)
+		{
+			unchecked {
+				TypeCode sourceType = Type.GetTypeCode(input.GetType());
+				if (sourceType == targetType)
+					return input;
+				switch (targetType) {
+					case TypeCode.Char:
+						switch (sourceType) {
+								case TypeCode.SByte:   return (char)(sbyte)input;
+								case TypeCode.Byte:    return (char)(byte)input;
+								case TypeCode.Int16:   return (char)(short)input;
+								case TypeCode.UInt16:  return (char)(ushort)input;
+								case TypeCode.Int32:   return (char)(int)input;
+								case TypeCode.UInt32:  return (char)(uint)input;
+								case TypeCode.Int64:   return (char)(long)input;
+								case TypeCode.UInt64:  return (char)(ulong)input;
+								case TypeCode.Single:  return (char)(float)input;
+								case TypeCode.Double:  return (char)(double)input;
+								case TypeCode.Decimal: return (char)(decimal)input;
+						}
+						break;
+					case TypeCode.SByte:
+						switch (sourceType) {
+								case TypeCode.Char:    return (sbyte)(char)input;
+								case TypeCode.Byte:    return (sbyte)(byte)input;
+								case TypeCode.Int16:   return (sbyte)(short)input;
+								case TypeCode.UInt16:  return (sbyte)(ushort)input;
+								case TypeCode.Int32:   return (sbyte)(int)input;
+								case TypeCode.UInt32:  return (sbyte)(uint)input;
+								case TypeCode.Int64:   return (sbyte)(long)input;
+								case TypeCode.UInt64:  return (sbyte)(ulong)input;
+								case TypeCode.Single:  return (sbyte)(float)input;
+								case TypeCode.Double:  return (sbyte)(double)input;
+								case TypeCode.Decimal: return (sbyte)(decimal)input;
+						}
+						break;
+					case TypeCode.Byte:
+						switch (sourceType) {
+								case TypeCode.Char:    return (byte)(char)input;
+								case TypeCode.SByte:   return (byte)(sbyte)input;
+								case TypeCode.Int16:   return (byte)(short)input;
+								case TypeCode.UInt16:  return (byte)(ushort)input;
+								case TypeCode.Int32:   return (byte)(int)input;
+								case TypeCode.UInt32:  return (byte)(uint)input;
+								case TypeCode.Int64:   return (byte)(long)input;
+								case TypeCode.UInt64:  return (byte)(ulong)input;
+								case TypeCode.Single:  return (byte)(float)input;
+								case TypeCode.Double:  return (byte)(double)input;
+								case TypeCode.Decimal: return (byte)(decimal)input;
+						}
+						break;
+					case TypeCode.Int16:
+						switch (sourceType) {
+								case TypeCode.Char:    return (short)(char)input;
+								case TypeCode.SByte:   return (short)(sbyte)input;
+								case TypeCode.Byte:    return (short)(byte)input;
+								case TypeCode.UInt16:  return (short)(ushort)input;
+								case TypeCode.Int32:   return (short)(int)input;
+								case TypeCode.UInt32:  return (short)(uint)input;
+								case TypeCode.Int64:   return (short)(long)input;
+								case TypeCode.UInt64:  return (short)(ulong)input;
+								case TypeCode.Single:  return (short)(float)input;
+								case TypeCode.Double:  return (short)(double)input;
+								case TypeCode.Decimal: return (short)(decimal)input;
+						}
+						break;
+					case TypeCode.UInt16:
+						switch (sourceType) {
+								case TypeCode.Char:    return (ushort)(char)input;
+								case TypeCode.SByte:   return (ushort)(sbyte)input;
+								case TypeCode.Byte:    return (ushort)(byte)input;
+								case TypeCode.Int16:   return (ushort)(short)input;
+								case TypeCode.Int32:   return (ushort)(int)input;
+								case TypeCode.UInt32:  return (ushort)(uint)input;
+								case TypeCode.Int64:   return (ushort)(long)input;
+								case TypeCode.UInt64:  return (ushort)(ulong)input;
+								case TypeCode.Single:  return (ushort)(float)input;
+								case TypeCode.Double:  return (ushort)(double)input;
+								case TypeCode.Decimal: return (ushort)(decimal)input;
+						}
+						break;
+					case TypeCode.Int32:
+						switch (sourceType) {
+								case TypeCode.Char:    return (int)(char)input;
+								case TypeCode.SByte:   return (int)(sbyte)input;
+								case TypeCode.Byte:    return (int)(byte)input;
+								case TypeCode.Int16:   return (int)(short)input;
+								case TypeCode.UInt16:  return (int)(ushort)input;
+								case TypeCode.UInt32:  return (int)(uint)input;
+								case TypeCode.Int64:   return (int)(long)input;
+								case TypeCode.UInt64:  return (int)(ulong)input;
+								case TypeCode.Single:  return (int)(float)input;
+								case TypeCode.Double:  return (int)(double)input;
+								case TypeCode.Decimal: return (int)(decimal)input;
+						}
+						break;
+					case TypeCode.UInt32:
+						switch (sourceType) {
+								case TypeCode.Char:    return (uint)(char)input;
+								case TypeCode.SByte:   return (uint)(sbyte)input;
+								case TypeCode.Byte:    return (uint)(byte)input;
+								case TypeCode.Int16:   return (uint)(short)input;
+								case TypeCode.UInt16:  return (uint)(ushort)input;
+								case TypeCode.Int32:   return (uint)(int)input;
+								case TypeCode.Int64:   return (uint)(long)input;
+								case TypeCode.UInt64:  return (uint)(ulong)input;
+								case TypeCode.Single:  return (uint)(float)input;
+								case TypeCode.Double:  return (uint)(double)input;
+								case TypeCode.Decimal: return (uint)(decimal)input;
+						}
+						break;
+					case TypeCode.Int64:
+						switch (sourceType) {
+								case TypeCode.Char:    return (long)(char)input;
+								case TypeCode.SByte:   return (long)(sbyte)input;
+								case TypeCode.Byte:    return (long)(byte)input;
+								case TypeCode.Int16:   return (long)(short)input;
+								case TypeCode.UInt16:  return (long)(ushort)input;
+								case TypeCode.Int32:   return (long)(int)input;
+								case TypeCode.UInt32:  return (long)(uint)input;
+								case TypeCode.UInt64:  return (long)(ulong)input;
+								case TypeCode.Single:  return (long)(float)input;
+								case TypeCode.Double:  return (long)(double)input;
+								case TypeCode.Decimal: return (long)(decimal)input;
+						}
+						break;
+					case TypeCode.UInt64:
+						switch (sourceType) {
+								case TypeCode.Char:    return (ulong)(char)input;
+								case TypeCode.SByte:   return (ulong)(sbyte)input;
+								case TypeCode.Byte:    return (ulong)(byte)input;
+								case TypeCode.Int16:   return (ulong)(short)input;
+								case TypeCode.UInt16:  return (ulong)(ushort)input;
+								case TypeCode.Int32:   return (ulong)(int)input;
+								case TypeCode.UInt32:  return (ulong)(uint)input;
+								case TypeCode.Int64:   return (ulong)(long)input;
+								case TypeCode.Single:  return (ulong)(float)input;
+								case TypeCode.Double:  return (ulong)(double)input;
+								case TypeCode.Decimal: return (ulong)(decimal)input;
+						}
+						break;
+					case TypeCode.Single:
+						switch (sourceType) {
+								case TypeCode.Char:    return (float)(char)input;
+								case TypeCode.SByte:   return (float)(sbyte)input;
+								case TypeCode.Byte:    return (float)(byte)input;
+								case TypeCode.Int16:   return (float)(short)input;
+								case TypeCode.UInt16:  return (float)(ushort)input;
+								case TypeCode.Int32:   return (float)(int)input;
+								case TypeCode.UInt32:  return (float)(uint)input;
+								case TypeCode.Int64:   return (float)(long)input;
+								case TypeCode.UInt64:  return (float)(ulong)input;
+								case TypeCode.Double:  return (float)(double)input;
+								case TypeCode.Decimal: return (float)(decimal)input;
+						}
+						break;
+					case TypeCode.Double:
+						switch (sourceType) {
+								case TypeCode.Char:    return (double)(char)input;
+								case TypeCode.SByte:   return (double)(sbyte)input;
+								case TypeCode.Byte:    return (double)(byte)input;
+								case TypeCode.Int16:   return (double)(short)input;
+								case TypeCode.UInt16:  return (double)(ushort)input;
+								case TypeCode.Int32:   return (double)(int)input;
+								case TypeCode.UInt32:  return (double)(uint)input;
+								case TypeCode.Int64:   return (double)(long)input;
+								case TypeCode.UInt64:  return (double)(ulong)input;
+								case TypeCode.Single:  return (double)(float)input;
+								case TypeCode.Decimal: return (double)(decimal)input;
+						}
+						break;
+					case TypeCode.Decimal:
+						switch (sourceType) {
+								case TypeCode.Char:    return (decimal)(char)input;
+								case TypeCode.SByte:   return (decimal)(sbyte)input;
+								case TypeCode.Byte:    return (decimal)(byte)input;
+								case TypeCode.Int16:   return (decimal)(short)input;
+								case TypeCode.UInt16:  return (decimal)(ushort)input;
+								case TypeCode.Int32:   return (decimal)(int)input;
+								case TypeCode.UInt32:  return (decimal)(uint)input;
+								case TypeCode.Int64:   return (decimal)(long)input;
+								case TypeCode.UInt64:  return (decimal)(ulong)input;
+								case TypeCode.Single:  return (decimal)(float)input;
+								case TypeCode.Double:  return (decimal)(double)input;
+						}
+						break;
+				}
+				throw new InvalidCastException("Cast from " + sourceType + " to " + targetType + "not supported.");
+			}
+		}
+		#endregion
 		#endregion
 	}
 }

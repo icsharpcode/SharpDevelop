@@ -16,12 +16,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		public static bool IsNullable(IType type)
 		{
-			return GetUnderlyingType(type) != null;
+			if (type == null)
+				throw new ArgumentNullException("type");
+			ParameterizedType pt = type as ParameterizedType;
+			return pt != null && pt.TypeArguments.Count == 1 && pt.FullName == "System.Nullable";
 		}
 		
 		/// <summary>
 		/// Returns the element type, if <paramref name="type"/> is a nullable type.
-		/// Otherwise, returns null.
+		/// Otherwise, returns the type itself.
 		/// </summary>
 		public static IType GetUnderlyingType(IType type)
 		{
@@ -31,7 +34,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (pt != null && pt.TypeArguments.Count == 1 && pt.FullName == "System.Nullable")
 				return pt.TypeArguments[0];
 			else
-				return null;
+				return type;
 		}
 		
 		/// <summary>
