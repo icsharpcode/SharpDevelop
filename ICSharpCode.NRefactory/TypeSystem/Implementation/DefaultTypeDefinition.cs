@@ -319,7 +319,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
 			bool hasNonInterface = false;
-			if (baseTypes != null) {
+			if (baseTypes != null && this.ClassType != ClassType.Enum) {
 				foreach (ITypeReference baseTypeRef in baseTypes) {
 					IType baseType = baseTypeRef.Resolve(context);
 					ITypeDefinition baseTypeDef = baseType.GetDefinition();

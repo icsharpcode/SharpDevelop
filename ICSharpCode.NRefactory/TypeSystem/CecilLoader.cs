@@ -456,12 +456,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 				
 				// set base classes
-				if (typeDefinition.BaseType != null) {
-					BaseTypes.Add(loader.ReadTypeReference(typeDefinition.BaseType, entity: this));
-				}
-				if (typeDefinition.HasInterfaces) {
-					foreach (TypeReference iface in typeDefinition.Interfaces) {
-						BaseTypes.Add(loader.ReadTypeReference(iface, entity: this));
+				if (typeDefinition.IsEnum) {
+					foreach (FieldDefinition enumField in typeDefinition.Fields) {
+						if (!enumField.IsStatic) {
+							BaseTypes.Add(loader.ReadTypeReference(enumField.FieldType, entity: this));
+							break;
+						}
+					}
+				} else {
+					if (typeDefinition.BaseType != null) {
+						BaseTypes.Add(loader.ReadTypeReference(typeDefinition.BaseType, entity: this));
+					}
+					if (typeDefinition.HasInterfaces) {
+						foreach (TypeReference iface in typeDefinition.Interfaces) {
+							BaseTypes.Add(loader.ReadTypeReference(iface, entity: this));
+						}
 					}
 				}
 				

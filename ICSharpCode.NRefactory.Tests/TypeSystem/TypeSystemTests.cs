@@ -181,5 +181,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.IsFalse(p.CanSet);
 			Assert.AreEqual(Accessibility.None, p.SetterAccessibility);
 		}
+		
+		[Test]
+		public void EnumTest()
+		{
+			var e = testCasePC.GetClass(typeof(MyEnum));
+			Assert.AreEqual(ClassType.Enum, e.ClassType);
+			Assert.AreEqual(false, e.IsReferenceType);
+			Assert.AreEqual("System.Int16", e.BaseTypes[0].Resolve(ctx).DotNetName);
+			Assert.AreEqual(new[] { "System.Enum" }, e.GetBaseTypes(ctx).Select(t => t.DotNetName).ToArray());
+		}
 	}
 }

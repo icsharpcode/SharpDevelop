@@ -44,4 +44,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		
 		public string this[int index] { get { return "Test"; } }
 	}
+	
+	public enum MyEnum : short
+	{
+		First,
+		Second,
+		Flag1 = 0x10,
+		Flag2 = 0x20,
+		CombinedFlags = Flag1 | Flag2
+	}
 }

@@ -378,7 +378,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					else
 						return new ErrorResolveResult(targetType);
 				} else if (targetType.IsEnum()) {
-					throw new NotImplementedException();
+					code = ReflectionHelper.GetTypeCode(targetType.GetEnumUnderlyingType(context));
+					if (code >= TypeCode.SByte && code <= TypeCode.UInt64) {
+						try {
+							return new ConstantResolveResult(targetType, Convert.ChangeType(expression.ConstantValue, code, CultureInfo.InvariantCulture));
+						} catch (InvalidCastException) {
+							return new ErrorResolveResult(targetType);
+						}
+					}
 				}
 			}
 			return new ResolveResult(targetType);

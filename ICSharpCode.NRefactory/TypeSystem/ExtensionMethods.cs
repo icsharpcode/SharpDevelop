@@ -88,7 +88,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentNullException("type");
 			return type is ITypeDefinition && type.TypeParameterCount > 0;
 		}
+		#endregion
 		
+		#region IsEnum / GetEnumUnderlyingType
 		/// <summary>
 		/// Gets whether the type is an enumeration type.
 		/// </summary>
@@ -98,6 +100,26 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentNullException("type");
 			ITypeDefinition def = type.GetDefinition();
 			return def != null && def.ClassType == ClassType.Enum;
+		}
+		
+		/// <summary>
+		/// Gets the underlying type for this enum type.
+		/// </summary>
+		public static IType GetEnumUnderlyingType(this IType enumType, ITypeResolveContext context)
+		{
+			if (enumType == null)
+				throw new ArgumentNullException("enumType");
+			if (context == null)
+				throw new ArgumentNullException("context");
+			ITypeDefinition def = enumType.GetDefinition();
+			if (def != null && def.ClassType == ClassType.Enum) {
+				if (def.BaseTypes.Count == 1)
+					return def.BaseTypes[0].Resolve(context);
+				else
+					return context.GetClass(typeof(int)) ?? SharedTypes.UnknownType;
+			} else {
+				throw new ArgumentException("enumType must be an enum");
+			}
 		}
 		#endregion
 	}
