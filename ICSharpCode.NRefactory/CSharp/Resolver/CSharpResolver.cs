@@ -3,7 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
@@ -32,7 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		#region class OperatorMethod
-		class OperatorMethod : Immutable, IMethod
+		class OperatorMethod : Immutable, IParameterizedMember
 		{
 			IList<IParameter> parameters = new List<IParameter>();
 			
@@ -42,30 +44,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public ITypeReference ReturnType {
 				get; set;
-			}
-			
-			IList<IAttribute> IMethod.ReturnTypeAttributes {
-				get { return EmptyList<IAttribute>.Instance; }
-			}
-			
-			IList<ITypeParameter> IMethod.TypeParameters {
-				get { return EmptyList<ITypeParameter>.Instance; }
-			}
-			
-			bool IMethod.IsExtensionMethod {
-				get { return false; }
-			}
-			
-			bool IMethod.IsConstructor {
-				get { return false; }
-			}
-			
-			bool IMethod.IsDestructor {
-				get { return false; }
-			}
-			
-			bool IMethod.IsOperator {
-				get { return true; }
 			}
 			
 			ITypeDefinition IEntity.DeclaringTypeDefinition {
@@ -163,6 +141,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			string INamedElement.DotNetName {
 				get { return "operator"; }
 			}
+			
+			public override string ToString()
+			{
+				StringBuilder b = new StringBuilder();
+				b.Append(ReturnType + " operator(");
+				for (int i = 0; i < parameters.Count; i++) {
+					if (i > 0)
+						b.Append(", ");
+					b.Append(parameters[i].Type);
+				}
+				b.Append(')');
+				return b.ToString();
+			}
 		}
 		#endregion
 		
@@ -222,7 +213,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					break;
 				case UnaryOperatorType.BitNot:
 					if (type.IsEnum()) {
-						if (expression.IsCompileTimeConstant && expression.ConstantValue != null) {
+						if (expression.IsCompileTimeConstant && !isNullable) {
 							// evaluate as (E)(~(U)x);
 							var U = expression.ConstantValue.GetType().ToTypeReference().Resolve(context);
 							var unpackedEnum = new ConstantResolveResult(U, expression.ConstantValue);
@@ -237,13 +228,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				default:
 					throw new InvalidOperationException();
 			}
-			throw new NotImplementedException();
-		}
-		
-		object GetUserUnaryOperatorCandidates()
-		{
-			// C# 4.0 spec: §7.3.5 Candidate user-defined operators
-			throw new NotImplementedException();
+			OverloadResolution r = new OverloadResolution(context, new[] { expression });
+			foreach (var candidate in methodGroup) {
+				r.AddCandidate(candidate);
+			}
+			UnaryOperatorMethod m = (UnaryOperatorMethod)r.BestCandidate;
+			IType resultType = m.ReturnType.Resolve(context);
+			if (r.BestCandidateErrors != OverloadResolutionErrors.None) {
+				return new ErrorResolveResult(resultType);
+			} else if (expression.IsCompileTimeConstant && !isNullable) {
+				object val;
+				try {
+					val = m.Invoke(expression.ConstantValue);
+				} catch (OverflowException) {
+					return new ErrorResolveResult(resultType);
+				}
+				return new ConstantResolveResult(resultType, val);
+			} else {
+				return new ResolveResult(resultType);
+			}
 		}
 		
 		static string GetOverloadableOperatorName(UnaryOperatorType op)
@@ -279,16 +282,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public LambdaUnaryOperatorMethod(Func<T, T> func)
 			{
+				this.ReturnType = typeof(T).ToTypeReference();
+				this.Parameters.Add(new DefaultParameter(this.ReturnType, string.Empty));
 				this.func = func;
 			}
 			
 			public override object Invoke(object input)
 			{
-				return func((T)input);
+				return func((T)Convert.ChangeType(input, typeof(T)));
 			}
 		}
 		
-		sealed class LiftedUnaryOperatorMethod : UnaryOperatorMethod
+		sealed class LiftedUnaryOperatorMethod : UnaryOperatorMethod, OverloadResolution.ILiftedOperator
 		{
 			UnaryOperatorMethod baseMethod;
 			
@@ -355,6 +360,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			new LambdaUnaryOperatorMethod<long>(i => ~i),
 			new LambdaUnaryOperatorMethod<ulong>(i => ~i)
 		);
+		
+		object GetUserUnaryOperatorCandidates()
+		{
+			// C# 4.0 spec: §7.3.5 Candidate user-defined operators
+			throw new NotImplementedException();
+		}
 		#endregion
 		
 		#region ResolveCast

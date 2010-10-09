@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Gets whether there is an identity conversion from <paramref name="fromType"/> to <paramref name="toType"/>
 		/// </summary>
-		bool IdentityConversion(IType fromType, IType toType)
+		public bool IdentityConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec: §6.1.1
 			return fromType.AcceptVisitor(dynamicErasure).Equals(toType.AcceptVisitor(dynamicErasure));
@@ -367,12 +367,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				default:
 					return false;
 			}
-		}
-		
-		static void Test(short a) {}
-		static void Test(sbyte a)
-		{
-			Test(1);
 		}
 		#endregion
 	}

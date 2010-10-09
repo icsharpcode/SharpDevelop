@@ -25,6 +25,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		public static IType GetUnderlyingType(IType type)
 		{
+			if (type == null)
+				throw new ArgumentNullException("type");
 			ParameterizedType pt = type as ParameterizedType;
 			if (pt != null && pt.TypeArguments.Count == 1 && pt.FullName == "System.Nullable")
 				return pt.TypeArguments[0];
@@ -56,6 +58,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		public static ITypeReference Create(ITypeReference elementType)
 		{
+			if (elementType == null)
+				throw new ArgumentNullException("elementType");
 			return new ParameterizedTypeReference(NullableReference, new [] { elementType });
 		}
 	}

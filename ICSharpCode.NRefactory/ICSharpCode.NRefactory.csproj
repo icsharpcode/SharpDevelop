@@ -139,10 +139,13 @@
     <Compile Include="CSharp\Parser\mcs\MonoSymbolWriter.cs" />
     <Compile Include="CSharp\Parser\mcs\outline.cs" />
     <Compile Include="CSharp\Parser\mcs\roottypes.cs" />
+    <Compile Include="CSharp\Resolver\ByReferenceResolveResult.cs" />
     <Compile Include="CSharp\Resolver\ConstantResolveResult.cs" />
     <Compile Include="CSharp\Resolver\Conversions.cs" />
     <Compile Include="CSharp\Resolver\CSharpResolver.cs" />
     <Compile Include="CSharp\Resolver\ErrorResolveResult.cs" />
+    <Compile Include="CSharp\Resolver\OverloadResolution.cs" />
+    <Compile Include="CSharp\Resolver\OverloadResolutionErrors.cs" />
     <Compile Include="CSharp\Resolver\ResolveResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeSystem\Accessibility.cs" />
