@@ -43,6 +43,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CSharp\Resolver\BinaryOperatorTests.cs" />
     <Compile Include="CSharp\Resolver\CastTests.cs" />
     <Compile Include="CSharp\Resolver\ConversionsTest.cs" />
     <Compile Include="CSharp\Resolver\ResolverTestBase.cs" />

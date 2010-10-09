@@ -34,6 +34,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		#region class OperatorMethod
+		static OperatorMethod[] Lift(params OperatorMethod[] methods)
+		{
+			List<OperatorMethod> result = new List<OperatorMethod>(methods);
+			foreach (OperatorMethod method in methods) {
+				OperatorMethod lifted = method.Lift();
+				if (lifted != null)
+					result.Add(lifted);
+			}
+			return result.ToArray();
+		}
+		
 		class OperatorMethod : Immutable, IParameterizedMember
 		{
 			IList<IParameter> parameters = new List<IParameter>();
@@ -44,6 +55,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public ITypeReference ReturnType {
 				get; set;
+			}
+			
+			public virtual OperatorMethod Lift()
+			{
+				return null;
 			}
 			
 			ITypeDefinition IEntity.DeclaringTypeDefinition {
@@ -187,7 +203,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// TODO: implicit support for user operators
 			//var candidateSet = GetUnaryOperatorCandidates();
 			
-			UnaryOperatorMethod[] methodGroup;
+			expression = UnaryNumericPromotion(op, ref type, isNullable, expression);
+			OperatorMethod[] methodGroup;
 			switch (op) {
 				case UnaryOperatorType.Increment:
 				case UnaryOperatorType.Decrement:
@@ -238,13 +255,39 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				object val;
 				try {
 					val = m.Invoke(this, expression.ConstantValue);
-				} catch (OverflowException) {
+				} catch (ArithmeticException) {
 					return new ErrorResolveResult(resultType);
 				}
 				return new ConstantResolveResult(resultType, val);
 			} else {
 				return new ResolveResult(resultType);
 			}
+		}
+		
+		ResolveResult UnaryNumericPromotion(UnaryOperatorType op, ref IType type, bool isNullable, ResolveResult expression)
+		{
+			// C# 4.0 spec: §7.3.6.1
+			TypeCode code = ReflectionHelper.GetTypeCode(type);
+			switch (op) {
+				case UnaryOperatorType.Minus:
+					if (code == TypeCode.UInt32) {
+						IType targetType = context.GetClass(typeof(long)) ?? SharedTypes.UnknownType;
+						type = targetType;
+						if (isNullable) targetType = NullableType.Create(targetType, context);
+						return ResolveCast(targetType, expression);
+					}
+					goto case UnaryOperatorType.Plus;
+				case UnaryOperatorType.Plus:
+				case UnaryOperatorType.BitNot:
+					if (code >= TypeCode.Char && code <= TypeCode.UInt16) {
+						IType targetType = context.GetClass(typeof(int)) ?? SharedTypes.UnknownType;
+						type = targetType;
+						if (isNullable) targetType = NullableType.Create(targetType, context);
+						return ResolveCast(targetType, expression);
+					}
+					break;
+			}
+			return expression;
 		}
 		
 		static string GetOverloadableOperatorName(UnaryOperatorType op)
@@ -289,6 +332,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				return func((T)resolver.CSharpPrimitiveCast(Type.GetTypeCode(typeof(T)), input));
 			}
+			
+			public override OperatorMethod Lift()
+			{
+				return new LiftedUnaryOperatorMethod(this);
+			}
 		}
 		
 		sealed class LiftedUnaryOperatorMethod : UnaryOperatorMethod, OverloadResolution.ILiftedOperator
@@ -315,18 +363,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		static UnaryOperatorMethod[] Lift(params UnaryOperatorMethod[] methods)
-		{
-			UnaryOperatorMethod[] lifted = new UnaryOperatorMethod[methods.Length * 2];
-			methods.CopyTo(lifted, 0);
-			for (int i = 0; i < methods.Length; i++) {
-				lifted[methods.Length + i] = new LiftedUnaryOperatorMethod(methods[i]);
-			}
-			return lifted;
-		}
-		
 		// C# 4.0 spec: §7.7.1 Unary plus operator
-		static readonly UnaryOperatorMethod[] unaryPlusOperators = Lift(
+		static readonly OperatorMethod[] unaryPlusOperators = Lift(
 			new LambdaUnaryOperatorMethod<int>(i => +i),
 			new LambdaUnaryOperatorMethod<uint>(i => +i),
 			new LambdaUnaryOperatorMethod<long>(i => +i),
@@ -337,14 +375,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		);
 		
 		// C# 4.0 spec: §7.7.2 Unary minus operator
-		static readonly UnaryOperatorMethod[] uncheckedUnaryMinusOperators = Lift(
+		static readonly OperatorMethod[] uncheckedUnaryMinusOperators = Lift(
 			new LambdaUnaryOperatorMethod<int>(i => unchecked(-i)),
 			new LambdaUnaryOperatorMethod<long>(i => unchecked(-i)),
 			new LambdaUnaryOperatorMethod<float>(i => -i),
 			new LambdaUnaryOperatorMethod<double>(i => -i),
 			new LambdaUnaryOperatorMethod<decimal>(i => -i)
 		);
-		static readonly UnaryOperatorMethod[] checkedUnaryMinusOperators = Lift(
+		static readonly OperatorMethod[] checkedUnaryMinusOperators = Lift(
 			new LambdaUnaryOperatorMethod<int>(i => checked(-i)),
 			new LambdaUnaryOperatorMethod<long>(i => checked(-i)),
 			new LambdaUnaryOperatorMethod<float>(i => -i),
@@ -353,10 +391,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		);
 		
 		// C# 4.0 spec: §7.7.3 Logical negation operator
-		static readonly UnaryOperatorMethod[] logicalNegationOperator = Lift(new LambdaUnaryOperatorMethod<bool>(b => !b));
+		static readonly OperatorMethod[] logicalNegationOperator = Lift(new LambdaUnaryOperatorMethod<bool>(b => !b));
 		
 		// C# 4.0 spec: §7.7.4 Bitwise complement operator
-		static readonly UnaryOperatorMethod[] bitwiseComplementOperators = Lift(
+		static readonly OperatorMethod[] bitwiseComplementOperators = Lift(
 			new LambdaUnaryOperatorMethod<int>(i => ~i),
 			new LambdaUnaryOperatorMethod<uint>(i => ~i),
 			new LambdaUnaryOperatorMethod<long>(i => ~i),
@@ -397,7 +435,118 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IType lhsType = NullableType.GetUnderlyingType(lhs.Type);
 			IType rhsType = NullableType.GetUnderlyingType(rhs.Type);
 			
-			throw new NotImplementedException();
+			// TODO: find user-defined operators
+			if (!BinaryNumericPromotion(isNullable, ref lhs, ref rhs))
+				return new ErrorResolveResult(lhs.Type);
+			// re-read underlying types after numeric promotion
+			lhsType = NullableType.GetUnderlyingType(lhs.Type);
+			rhsType = NullableType.GetUnderlyingType(rhs.Type);
+			
+			IEnumerable<OperatorMethod> methodGroup;
+			switch (op) {
+				case BinaryOperatorType.Multiply:
+					methodGroup = IsCheckedContext ? checkedMultiplicationOperators : uncheckedMultiplicationOperators;
+					break;
+				case BinaryOperatorType.Divide:
+					methodGroup = IsCheckedContext ? checkedDivisionOperators : uncheckedDivisionOperators;
+					break;
+				case BinaryOperatorType.Modulus:
+					methodGroup = IsCheckedContext ? checkedRemainderOperators : uncheckedRemainderOperators;
+					break;
+				case BinaryOperatorType.Add:
+					methodGroup = IsCheckedContext ? checkedAdditionOperators : uncheckedAdditionOperators;
+					Conversions conversions = new Conversions(context);
+					if (lhsType.IsEnum() && conversions.ImplicitConversion(rhsType, lhsType.GetEnumUnderlyingType(context))) {
+						// E operator +(E x, U y);
+						if (lhs.IsCompileTimeConstant && rhs.IsCompileTimeConstant && !isNullable) {
+							// evaluate as (E)((U)x + (U)y)
+							lhs = ResolveCast(lhsType.GetEnumUnderlyingType(context), lhs);
+							if (lhs.IsError) return lhs;
+							rhs = ResolveCast(lhsType.GetEnumUnderlyingType(context), rhs);
+							if (rhs.IsError) return rhs;
+							return CheckErrorAndResolveCast(lhsType, ResolveBinaryOperator(op, lhs, rhs));
+						}
+						return new ResolveResult(isNullable ? NullableType.Create(lhsType, context) : lhsType);
+					} else if (rhsType.IsEnum() && conversions.ImplicitConversion(lhsType, rhsType.GetEnumUnderlyingType(context))) {
+						// E operator +(U x, E y);
+						return ResolveBinaryOperator(op, rhs, lhs); // swap arguments
+					}
+					if (lhsType.IsDelegate() && conversions.ImplicitConversion(rhsType, lhsType)) {
+						return new ResolveResult(lhsType);
+					} else if (rhsType.IsDelegate() && conversions.ImplicitConversion(lhsType, rhsType)) {
+						return new ResolveResult(rhsType);
+					}
+					if (lhsType == SharedTypes.Null && rhsType == SharedTypes.Null)
+						return new ErrorResolveResult(SharedTypes.Null);
+					break;
+				default:
+					throw new InvalidOperationException();
+			}
+			OverloadResolution r = new OverloadResolution(context, new[] { lhs, rhs });
+			foreach (var candidate in methodGroup) {
+				r.AddCandidate(candidate);
+			}
+			BinaryOperatorMethod m = (BinaryOperatorMethod)r.BestCandidate;
+			IType resultType = m.ReturnType.Resolve(context);
+			if (r.BestCandidateErrors != OverloadResolutionErrors.None) {
+				return new ErrorResolveResult(resultType);
+			} else if (lhs.IsCompileTimeConstant && rhs.IsCompileTimeConstant && !isNullable && m.CanEvaluateAtCompileTime) {
+				object val;
+				try {
+					val = m.Invoke(this, lhs.ConstantValue, rhs.ConstantValue);
+				} catch (ArithmeticException) {
+					return new ErrorResolveResult(resultType);
+				}
+				return new ConstantResolveResult(resultType, val);
+			} else {
+				return new ResolveResult(resultType);
+			}
+		}
+		
+		bool BinaryNumericPromotion(bool isNullable, ref ResolveResult lhs, ref ResolveResult rhs)
+		{
+			// C# 4.0 spec: §7.3.6.2
+			TypeCode lhsCode = ReflectionHelper.GetTypeCode(lhs.Type);
+			TypeCode rhsCode = ReflectionHelper.GetTypeCode(rhs.Type);
+			bool bindingError = false;
+			if (lhsCode >= TypeCode.Char && lhsCode <= TypeCode.Decimal
+			    && rhsCode >= TypeCode.Char && rhsCode <= TypeCode.Decimal)
+			{
+				Type targetType;
+				if (lhsCode == TypeCode.Decimal || rhsCode == TypeCode.Decimal) {
+					targetType = typeof(decimal);
+					bindingError = (lhsCode == TypeCode.Single || lhsCode == TypeCode.Double
+					                || rhsCode == TypeCode.Single || rhsCode == TypeCode.Double);
+				} else if (lhsCode == TypeCode.Double || rhsCode == TypeCode.Double) {
+					targetType = typeof(double);
+				} else if (lhsCode == TypeCode.Single || rhsCode == TypeCode.Single) {
+					targetType = typeof(float);
+				} else if (lhsCode == TypeCode.UInt64 || rhsCode == TypeCode.UInt64) {
+					targetType = typeof(ulong);
+					bindingError = IsSigned(lhsCode) || IsSigned(rhsCode);
+				} else if (lhsCode == TypeCode.Int64 || rhsCode == TypeCode.Int64) {
+					targetType = typeof(long);
+				} else if (lhsCode == TypeCode.UInt32 || rhsCode == TypeCode.UInt32) {
+					targetType = (IsSigned(lhsCode) || IsSigned(rhsCode)) ? typeof(long) : typeof(uint);
+				} else {
+					targetType = typeof(int);
+				}
+				lhs = CastTo(targetType, isNullable, lhs);
+				rhs = CastTo(targetType, isNullable, rhs);
+			}
+			return !bindingError;
+		}
+		
+		bool IsSigned(TypeCode code)
+		{
+			return code == TypeCode.SByte || code == TypeCode.Int16 || code == TypeCode.Int32 || code == TypeCode.Int64;
+		}
+		
+		ResolveResult CastTo(Type targetType, bool isNullable, ResolveResult expression)
+		{
+			IType t = context.GetClass(targetType) ?? SharedTypes.UnknownType;
+			if (isNullable) t = NullableType.Create(t, context);
+			return ResolveCast(t, expression);
 		}
 		
 		static string GetOverloadableOperatorName(BinaryOperatorType op)
@@ -442,6 +591,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		abstract class BinaryOperatorMethod : OperatorMethod
 		{
+			public virtual bool CanEvaluateAtCompileTime { get { return true; } }
 			public abstract object Invoke(CSharpResolver resolver, object lhs, object rhs);
 		}
 		
@@ -462,6 +612,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				TypeCode typeCode = Type.GetTypeCode(typeof(T));
 				return func((T)resolver.CSharpPrimitiveCast(typeCode, lhs),
 				            (T)resolver.CSharpPrimitiveCast(typeCode, rhs));
+			}
+			
+			public override OperatorMethod Lift()
+			{
+				return new LiftedBinaryOperatorMethod(this);
 			}
 		}
 		
@@ -490,14 +645,112 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		static BinaryOperatorMethod[] Lift(params BinaryOperatorMethod[] methods)
+		// C# 4.0 spec: §7.8.1 Multiplication operator
+		static readonly OperatorMethod[] checkedMultiplicationOperators = Lift(
+			new LambdaBinaryOperatorMethod<int>    ((a, b) => checked(a * b)),
+			new LambdaBinaryOperatorMethod<uint>   ((a, b) => checked(a * b)),
+			new LambdaBinaryOperatorMethod<long>   ((a, b) => checked(a * b)),
+			new LambdaBinaryOperatorMethod<ulong>  ((a, b) => checked(a * b)),
+			new LambdaBinaryOperatorMethod<float>  ((a, b) => checked(a * b)),
+			new LambdaBinaryOperatorMethod<double> ((a, b) => checked(a * b)),
+			new LambdaBinaryOperatorMethod<decimal>((a, b) => checked(a * b))
+		);
+		static readonly OperatorMethod[] uncheckedMultiplicationOperators = Lift(
+			new LambdaBinaryOperatorMethod<int>    ((a, b) => unchecked(a * b)),
+			new LambdaBinaryOperatorMethod<uint>   ((a, b) => unchecked(a * b)),
+			new LambdaBinaryOperatorMethod<long>   ((a, b) => unchecked(a * b)),
+			new LambdaBinaryOperatorMethod<ulong>  ((a, b) => unchecked(a * b)),
+			new LambdaBinaryOperatorMethod<float>  ((a, b) => unchecked(a * b)),
+			new LambdaBinaryOperatorMethod<double> ((a, b) => unchecked(a * b)),
+			new LambdaBinaryOperatorMethod<decimal>((a, b) => unchecked(a * b))
+		);
+		
+		// C# 4.0 spec: §7.8.2 Division operator
+		static readonly OperatorMethod[] checkedDivisionOperators = Lift(
+			new LambdaBinaryOperatorMethod<int>    ((a, b) => checked(a / b)),
+			new LambdaBinaryOperatorMethod<uint>   ((a, b) => checked(a / b)),
+			new LambdaBinaryOperatorMethod<long>   ((a, b) => checked(a / b)),
+			new LambdaBinaryOperatorMethod<ulong>  ((a, b) => checked(a / b)),
+			new LambdaBinaryOperatorMethod<float>  ((a, b) => checked(a / b)),
+			new LambdaBinaryOperatorMethod<double> ((a, b) => checked(a / b)),
+			new LambdaBinaryOperatorMethod<decimal>((a, b) => checked(a / b))
+		);
+		static readonly OperatorMethod[] uncheckedDivisionOperators = Lift(
+			new LambdaBinaryOperatorMethod<int>    ((a, b) => unchecked(a / b)),
+			new LambdaBinaryOperatorMethod<uint>   ((a, b) => unchecked(a / b)),
+			new LambdaBinaryOperatorMethod<long>   ((a, b) => unchecked(a / b)),
+			new LambdaBinaryOperatorMethod<ulong>  ((a, b) => unchecked(a / b)),
+			new LambdaBinaryOperatorMethod<float>  ((a, b) => unchecked(a / b)),
+			new LambdaBinaryOperatorMethod<double> ((a, b) => unchecked(a / b)),
+			new LambdaBinaryOperatorMethod<decimal>((a, b) => unchecked(a / b))
+		);
+		
+		// C# 4.0 spec: §7.8.3 Remainder operator
+		static readonly OperatorMethod[] checkedRemainderOperators = Lift(
+			new LambdaBinaryOperatorMethod<int>    ((a, b) => checked(a % b)),
+			new LambdaBinaryOperatorMethod<uint>   ((a, b) => checked(a % b)),
+			new LambdaBinaryOperatorMethod<long>   ((a, b) => checked(a % b)),
+			new LambdaBinaryOperatorMethod<ulong>  ((a, b) => checked(a % b)),
+			new LambdaBinaryOperatorMethod<float>  ((a, b) => checked(a % b)),
+			new LambdaBinaryOperatorMethod<double> ((a, b) => checked(a % b)),
+			new LambdaBinaryOperatorMethod<decimal>((a, b) => checked(a % b))
+		);
+		static readonly OperatorMethod[] uncheckedRemainderOperators = Lift(
+			new LambdaBinaryOperatorMethod<int>    ((a, b) => unchecked(a % b)),
+			new LambdaBinaryOperatorMethod<uint>   ((a, b) => unchecked(a % b)),
+			new LambdaBinaryOperatorMethod<long>   ((a, b) => unchecked(a % b)),
+			new LambdaBinaryOperatorMethod<ulong>  ((a, b) => unchecked(a % b)),
+			new LambdaBinaryOperatorMethod<float>  ((a, b) => unchecked(a % b)),
+			new LambdaBinaryOperatorMethod<double> ((a, b) => unchecked(a % b)),
+			new LambdaBinaryOperatorMethod<decimal>((a, b) => unchecked(a % b))
+		);
+		
+		// C# 4.0 spec: §7.8.3 Addition operator
+		static readonly OperatorMethod[] checkedAdditionOperators = Lift(
+			new LambdaBinaryOperatorMethod<int>    ((a, b) => checked(a + b)),
+			new LambdaBinaryOperatorMethod<uint>   ((a, b) => checked(a + b)),
+			new LambdaBinaryOperatorMethod<long>   ((a, b) => checked(a + b)),
+			new LambdaBinaryOperatorMethod<ulong>  ((a, b) => checked(a + b)),
+			new LambdaBinaryOperatorMethod<float>  ((a, b) => checked(a + b)),
+			new LambdaBinaryOperatorMethod<double> ((a, b) => checked(a + b)),
+			new LambdaBinaryOperatorMethod<decimal>((a, b) => checked(a + b)),
+			new StringConcatenation(typeof(string), typeof(string)),
+			new StringConcatenation(typeof(string), typeof(object)),
+			new StringConcatenation(typeof(object), typeof(string))
+		);
+		static readonly OperatorMethod[] uncheckedAdditionOperators = Lift(
+			new LambdaBinaryOperatorMethod<int>    ((a, b) => unchecked(a + b)),
+			new LambdaBinaryOperatorMethod<uint>   ((a, b) => unchecked(a + b)),
+			new LambdaBinaryOperatorMethod<long>   ((a, b) => unchecked(a + b)),
+			new LambdaBinaryOperatorMethod<ulong>  ((a, b) => unchecked(a + b)),
+			new LambdaBinaryOperatorMethod<float>  ((a, b) => unchecked(a + b)),
+			new LambdaBinaryOperatorMethod<double> ((a, b) => unchecked(a + b)),
+			new LambdaBinaryOperatorMethod<decimal>((a, b) => unchecked(a + b)),
+			new StringConcatenation(typeof(string), typeof(string)),
+			new StringConcatenation(typeof(string), typeof(object)),
+			new StringConcatenation(typeof(object), typeof(string))
+		);
+		// not in this list, but handled manually: enum addition, delegate combination
+		sealed class StringConcatenation : BinaryOperatorMethod
 		{
-			BinaryOperatorMethod[] lifted = new BinaryOperatorMethod[methods.Length * 2];
-			methods.CopyTo(lifted, 0);
-			for (int i = 0; i < methods.Length; i++) {
-				lifted[methods.Length + i] = new LiftedBinaryOperatorMethod(methods[i]);
+			bool canEvaluateAtCompileTime;
+			
+			public StringConcatenation(Type p1, Type p2)
+			{
+				this.canEvaluateAtCompileTime = p1 == typeof(string) && p2 == typeof(string);
+				this.ReturnType = typeof(string).ToTypeReference();
+				this.Parameters.Add(new DefaultParameter(p1.ToTypeReference(), string.Empty));
+				this.Parameters.Add(new DefaultParameter(p2.ToTypeReference(), string.Empty));
 			}
-			return lifted;
+			
+			public override bool CanEvaluateAtCompileTime {
+				get { return canEvaluateAtCompileTime; }
+			}
+			
+			public override object Invoke(CSharpResolver resolver, object lhs, object rhs)
+			{
+				return string.Concat(lhs, rhs);
+			}
 		}
 		
 		object GetUserBinaryOperatorCandidates()

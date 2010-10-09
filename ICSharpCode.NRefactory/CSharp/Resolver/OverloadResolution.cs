@@ -299,30 +299,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return 1;
 				if (lift1 != null && lift2 == null)
 					return 2;
-				if (lift1 != null && lift2 != null
-				    && lift1.NonLiftedParameters.Count == arguments.Length
-				    && lift2.NonLiftedParameters.Count == arguments.Length)
-				{
-					// for two lifted operators, compare which of the non-lifted versions is better
-					for (int i = 0; i < arguments.Length; i++) {
-						switch (conversions.BetterConversion(
-							arguments[i],
-							lift1.NonLiftedParameters[i].Type.Resolve(context),
-							lift2.NonLiftedParameters[i].Type.Resolve(context)))
-						{
-							case 1:
-								c1IsBetter = true;
-								break;
-							case 2:
-								c2IsBetter = true;
-								break;
-						}
-					}
-					if (c1IsBetter && !c2IsBetter)
-						return 1;
-					if (!c1IsBetter && c2IsBetter)
-						return 2;
-				}
 			}
 			return 0;
 		}
@@ -399,7 +375,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			} else {
 				switch (BetterFunctionMember(candidate, bestCandidate)) {
 					case 0:
-						bestCandidateAmbiguousWith = candidate;
+						if (bestCandidateAmbiguousWith == null)
+							bestCandidateAmbiguousWith = candidate;
 						break;
 					case 1:
 						bestCandidate = candidate;
@@ -412,11 +389,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		public IParameterizedMember BestCandidate {
-			get { return bestCandidate.Member; }
+			get { return bestCandidate != null ? bestCandidate.Member : null; }
 		}
 		
 		public OverloadResolutionErrors BestCandidateErrors {
 			get {
+				if (bestCandidate == null)
+					return OverloadResolutionErrors.None;
 				OverloadResolutionErrors err = bestCandidate.Errors;
 				if (bestCandidateAmbiguousWith != null)
 					err |= OverloadResolutionErrors.AmbiguousMatch;
@@ -425,7 +404,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		public IParameterizedMember BestCandidateAmbiguousWith {
-			get { return bestCandidateAmbiguousWith.Member; }
+			get { return bestCandidateAmbiguousWith != null ? bestCandidateAmbiguousWith.Member : null; }
 		}
 	}
 }

@@ -31,6 +31,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		protected ConstantResolveResult MakeConstant(object value)
 		{
+			if (value == null)
+				return new ConstantResolveResult(SharedTypes.Null, null);
 			IType type = ResolveType(value.GetType());
 			if (type.IsEnum())
 				value = Convert.ChangeType(value, Enum.GetUnderlyingType(value.GetType()));

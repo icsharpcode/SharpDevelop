@@ -121,6 +121,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentException("enumType must be an enum");
 			}
 		}
+		
+		/// <summary>
+		/// Gets whether the type is an delegate type.
+		/// </summary>
+		public static bool IsDelegate(this IType type)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			ITypeDefinition def = type.GetDefinition();
+			return def != null && def.ClassType == ClassType.Delegate;
+		}
 		#endregion
 	}
 }

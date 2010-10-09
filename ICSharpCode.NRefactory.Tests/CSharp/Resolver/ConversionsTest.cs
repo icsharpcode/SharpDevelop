@@ -301,6 +301,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.AreEqual(0, BetterConversion(typeof(byte), typeof(ushort?), typeof(int)));
 			Assert.AreEqual(2, BetterConversion(typeof(byte), typeof(ulong?), typeof(uint)));
 			Assert.AreEqual(0, BetterConversion(typeof(byte), typeof(ulong?), typeof(int)));
+			Assert.AreEqual(2, BetterConversion(typeof(ushort?), typeof(long?), typeof(int?)));
 		}
+		
+		void Bla(X x) {
+			var y = x + x;
+		}
+		class X { public static implicit operator string(X x) { return null ; } }
 	}
 }
