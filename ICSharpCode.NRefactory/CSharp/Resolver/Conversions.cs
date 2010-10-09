@@ -26,12 +26,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		#region ImplicitConversion
-		public bool ImplicitConversion(ConstantResolveResult resolveResult, IType toType)
+		public bool ImplicitConversion(ResolveResult resolveResult, IType toType)
 		{
 			if (resolveResult == null)
 				throw new ArgumentNullException("resolveResult");
-			ConstantResolveResult crr = resolveResult as ConstantResolveResult;
-			if (crr != null && (ImplicitEnumerationConversion(crr, toType) || ImplicitConstantExpressionConversion(crr, toType)))
+			if (resolveResult.IsCompileTimeConstant && (ImplicitEnumerationConversion(resolveResult, toType) || ImplicitConstantExpressionConversion(resolveResult, toType)))
 				return true;
 			return ImplicitConversion(resolveResult.Type, toType);
 		}
@@ -126,14 +125,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region ImplicitEnumerationConversion
-		bool ImplicitEnumerationConversion(ConstantResolveResult rr, IType toType)
+		bool ImplicitEnumerationConversion(ResolveResult rr, IType toType)
 		{
 			// C# 4.0 spec: §6.1.3
 			TypeCode constantType = ReflectionHelper.GetTypeCode(rr.Type);
-			if (constantType >= TypeCode.SByte && constantType <= TypeCode.Decimal && Convert.ToDecimal(rr.Value) == 0) {
-				toType = UnpackNullable(toType) ?? toType;
-				ITypeDefinition toDef = toType.GetDefinition();
-				return toDef.ClassType == ClassType.Enum;
+			if (constantType >= TypeCode.SByte && constantType <= TypeCode.Decimal && Convert.ToDecimal(rr.ConstantValue) == 0) {
+				toType = NullableType.GetUnderlyingType(toType) ?? toType;
+				return toType.IsEnum();
 			}
 			return false;
 		}
@@ -143,22 +141,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool ImplicitNullableConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec: §6.1.4
-			IType t = UnpackNullable(toType);
+			IType t = NullableType.GetUnderlyingType(toType);
 			if (t != null) {
-				IType s = UnpackNullable(fromType) ?? fromType;
+				IType s = NullableType.GetUnderlyingType(fromType) ?? fromType;
 				return IdentityConversion(s, t) || ImplicitNumericConversion(s, t);
 			} else {
 				return false;
 			}
-		}
-		
-		static IType UnpackNullable(IType type)
-		{
-			ParameterizedType pt = type as ParameterizedType;
-			if (pt != null && pt.TypeArguments.Count == 1 && pt.FullName == "System.Nullable")
-				return pt.TypeArguments[0];
-			else
-				return null;
 		}
 		#endregion
 		
@@ -166,7 +155,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool NullLiteralConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec: §6.1.5
-			return fromType == SharedTypes.Null && (UnpackNullable(toType) != null);
+			return fromType == SharedTypes.Null && NullableType.IsNullable(toType);
 			// This function only handles the conversion from the null literal to nullable value types,
 			// reference types are handled by ImplicitReferenceConversion instead.
 		}
@@ -271,7 +260,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		bool BoxingConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec: §6.1.7
-			fromType = UnpackNullable(fromType) ?? fromType;
+			fromType = NullableType.GetUnderlyingType(fromType) ?? fromType;
 			return fromType.IsReferenceType == false && toType.IsReferenceType == true && IsSubtypeOf(fromType, toType);
 		}
 		#endregion
@@ -285,16 +274,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region ImplicitConstantExpressionConversion
-		bool ImplicitConstantExpressionConversion(ConstantResolveResult rr, IType toType)
+		bool ImplicitConstantExpressionConversion(ResolveResult rr, IType toType)
 		{
 			// C# 4.0 spec: §6.1.9
 			TypeCode fromTypeCode = ReflectionHelper.GetTypeCode(rr.Type);
-			TypeCode toTypeCode = ReflectionHelper.GetTypeCode(UnpackNullable(toType) ?? toType);
+			TypeCode toTypeCode = ReflectionHelper.GetTypeCode(NullableType.GetUnderlyingType(toType) ?? toType);
 			if (fromTypeCode == TypeCode.Int64) {
-				long val = (long)rr.Value;
+				long val = (long)rr.ConstantValue;
 				return val >= 0 && toTypeCode == TypeCode.UInt64;
 			} else if (fromTypeCode == TypeCode.Int32) {
-				int val = (int)rr.Value;
+				int val = (int)rr.ConstantValue;
 				switch (toTypeCode) {
 					case TypeCode.SByte:
 						return val >= SByte.MinValue && val <= SByte.MaxValue;
@@ -321,10 +310,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Gets the better conversion (C# 4.0 spec, §7.5.3.3)
 		/// </summary>
 		/// <returns>0 = neither is better; 1 = t1 is better; 2 = t2 is better</returns>
-		public int BetterConversion(ConstantResolveResult rr, IType t1, IType t2)
+		public int BetterConversion(ResolveResult resolveResult, IType t1, IType t2)
 		{
 			// TODO: implement the special logic for anonymous functions
-			return BetterConversion(rr.Type, t1, t2);
+			return BetterConversion(resolveResult.Type, t1, t2);
 		}
 		
 		/// <summary>

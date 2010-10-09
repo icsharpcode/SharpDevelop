@@ -141,6 +141,9 @@
     <Compile Include="CSharp\Parser\mcs\roottypes.cs" />
     <Compile Include="CSharp\Resolver\ConstantResolveResult.cs" />
     <Compile Include="CSharp\Resolver\Conversions.cs" />
+    <Compile Include="CSharp\Resolver\CSharpResolver.cs" />
+    <Compile Include="CSharp\Resolver\ErrorResolveResult.cs" />
+    <Compile Include="CSharp\Resolver\ResolveResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeSystem\Accessibility.cs" />
     <Compile Include="TypeSystem\AmbiguousType.cs" />
@@ -198,6 +201,7 @@
     <Compile Include="TypeSystem\ITypeParameter.cs" />
     <Compile Include="TypeSystem\ITypeReference.cs" />
     <Compile Include="TypeSystem\ITypeResolveContext.cs" />
+    <Compile Include="TypeSystem\NullableType.cs" />
     <Compile Include="TypeSystem\ParameterizedType.cs" />
     <Compile Include="TypeSystem\TypeVisitor.cs" />
     <Compile Include="TypeSystem\IVariable.cs" />

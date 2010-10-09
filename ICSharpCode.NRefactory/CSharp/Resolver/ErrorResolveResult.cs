@@ -7,23 +7,16 @@ using ICSharpCode.NRefactory.TypeSystem;
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	/// <summary>
-	/// ResolveResult representing a compile-time constant.
+	/// Represents a resolve error.
 	/// </summary>
-	public class ConstantResolveResult : ResolveResult
+	public class ErrorResolveResult : ResolveResult
 	{
-		object constantValue;
-		
-		public ConstantResolveResult(IType type, object constantValue) : base(type)
+		public ErrorResolveResult(IType type) : base(type)
 		{
-			this.constantValue = constantValue;
 		}
 		
-		public override bool IsCompileTimeConstant {
+		public override bool IsError {
 			get { return true; }
-		}
-		
-		public override object ConstantValue {
-			get { return constantValue; }
 		}
 	}
 }

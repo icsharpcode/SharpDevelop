@@ -13,6 +13,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// </summary>
 	public static class ExtensionMethods
 	{
+		#region GetAllBaseTypes
 		/// <summary>
 		/// Gets all base types.
 		/// </summary>
@@ -52,5 +53,52 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (def != null)
 				activeTypeDefinitions.Pop();
 		}
+		#endregion
+		
+		#region IsOpen / IsUnbound
+		sealed class TypeClassificationVisitor : TypeVisitor
+		{
+			internal bool isOpen;
+			
+			public override IType VisitTypeParameter(ITypeParameter type)
+			{
+				isOpen = true;
+				return base.VisitTypeParameter(type);
+			}
+		}
+		
+		/// <summary>
+		/// Gets whether the type is an open type (contains type parameters).
+		/// </summary>
+		public static bool IsOpen(this IType type)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			TypeClassificationVisitor v = new TypeClassificationVisitor();
+			type.AcceptVisitor(v);
+			return v.isOpen;
+		}
+		
+		/// <summary>
+		/// Gets whether the type is unbound.
+		/// </summary>
+		public static bool IsUnbound(this IType type)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			return type is ITypeDefinition && type.TypeParameterCount > 0;
+		}
+		
+		/// <summary>
+		/// Gets whether the type is an enumeration type.
+		/// </summary>
+		public static bool IsEnum(this IType type)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			ITypeDefinition def = type.GetDefinition();
+			return def != null && def.ClassType == ClassType.Enum;
+		}
+		#endregion
 	}
 }
