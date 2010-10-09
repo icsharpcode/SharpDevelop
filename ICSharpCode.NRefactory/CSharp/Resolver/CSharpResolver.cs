@@ -436,8 +436,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IType rhsType = NullableType.GetUnderlyingType(rhs.Type);
 			
 			// TODO: find user-defined operators
-			if (!BinaryNumericPromotion(isNullable, ref lhs, ref rhs))
-				return new ErrorResolveResult(lhs.Type);
+			
+			if (op == BinaryOperatorType.ShiftLeft || op == BinaryOperatorType.ShiftRight) {
+				// for shift operators, do unary promotion independently on both arguments
+				lhs = UnaryNumericPromotion(UnaryOperatorType.Plus, ref lhsType, isNullable, lhs);
+				rhs = UnaryNumericPromotion(UnaryOperatorType.Plus, ref rhsType, isNullable, rhs);
+			} else {
+				if (!BinaryNumericPromotion(isNullable, ref lhs, ref rhs))
+					return new ErrorResolveResult(lhs.Type);
+			}
 			// re-read underlying types after numeric promotion
 			lhsType = NullableType.GetUnderlyingType(lhs.Type);
 			rhsType = NullableType.GetUnderlyingType(rhs.Type);
@@ -455,29 +462,52 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					break;
 				case BinaryOperatorType.Add:
 					methodGroup = IsCheckedContext ? checkedAdditionOperators : uncheckedAdditionOperators;
-					Conversions conversions = new Conversions(context);
-					if (lhsType.IsEnum() && conversions.ImplicitConversion(rhsType, lhsType.GetEnumUnderlyingType(context))) {
-						// E operator +(E x, U y);
-						if (lhs.IsCompileTimeConstant && rhs.IsCompileTimeConstant && !isNullable) {
-							// evaluate as (E)((U)x + (U)y)
-							lhs = ResolveCast(lhsType.GetEnumUnderlyingType(context), lhs);
-							if (lhs.IsError) return lhs;
-							rhs = ResolveCast(lhsType.GetEnumUnderlyingType(context), rhs);
-							if (rhs.IsError) return rhs;
-							return CheckErrorAndResolveCast(lhsType, ResolveBinaryOperator(op, lhs, rhs));
+					{
+						Conversions conversions = new Conversions(context);
+						if (lhsType.IsEnum() && conversions.ImplicitConversion(rhsType, lhsType.GetEnumUnderlyingType(context))) {
+							// E operator +(E x, U y);
+							return HandleEnumAdditionOrSubtraction(isNullable, lhsType, op, lhs, rhs);
+						} else if (rhsType.IsEnum() && conversions.ImplicitConversion(lhsType, rhsType.GetEnumUnderlyingType(context))) {
+							// E operator +(U x, E y);
+							return ResolveBinaryOperator(op, rhs, lhs); // swap arguments
 						}
-						return new ResolveResult(isNullable ? NullableType.Create(lhsType, context) : lhsType);
-					} else if (rhsType.IsEnum() && conversions.ImplicitConversion(lhsType, rhsType.GetEnumUnderlyingType(context))) {
-						// E operator +(U x, E y);
-						return ResolveBinaryOperator(op, rhs, lhs); // swap arguments
+						if (lhsType.IsDelegate() && conversions.ImplicitConversion(rhsType, lhsType)) {
+							return new ResolveResult(lhsType);
+						} else if (rhsType.IsDelegate() && conversions.ImplicitConversion(lhsType, rhsType)) {
+							return new ResolveResult(rhsType);
+						}
+						if (lhsType == SharedTypes.Null && rhsType == SharedTypes.Null)
+							return new ErrorResolveResult(SharedTypes.Null);
 					}
-					if (lhsType.IsDelegate() && conversions.ImplicitConversion(rhsType, lhsType)) {
-						return new ResolveResult(lhsType);
-					} else if (rhsType.IsDelegate() && conversions.ImplicitConversion(lhsType, rhsType)) {
-						return new ResolveResult(rhsType);
+					break;
+				case BinaryOperatorType.Subtract:
+					methodGroup = IsCheckedContext ? checkedSubtractionOperators : uncheckedSubtractionOperators;
+					{
+						Conversions conversions = new Conversions(context);
+						if (lhsType.IsEnum() && conversions.ImplicitConversion(rhsType, lhsType.GetEnumUnderlyingType(context))) {
+							// E operator –(E x, U y);
+							return HandleEnumAdditionOrSubtraction(isNullable, lhsType, op, lhs, rhs);
+						} else if (lhsType.IsEnum() && conversions.ImplicitConversion(rhsType, lhsType)) {
+							// U operator –(E x, E y);
+							return HandleEnumSubtraction(isNullable, lhsType, lhs, rhs);
+						} else if (rhsType.IsEnum() && conversions.ImplicitConversion(lhsType, rhsType)) {
+							// U operator –(E x, E y);
+							return HandleEnumSubtraction(isNullable, lhsType, lhs, rhs);
+						}
+						if (lhsType.IsDelegate() && conversions.ImplicitConversion(rhsType, lhsType)) {
+							return new ResolveResult(lhsType);
+						} else if (rhsType.IsDelegate() && conversions.ImplicitConversion(lhsType, rhsType)) {
+							return new ResolveResult(rhsType);
+						}
+						if (lhsType == SharedTypes.Null && rhsType == SharedTypes.Null)
+							return new ErrorResolveResult(SharedTypes.Null);
 					}
-					if (lhsType == SharedTypes.Null && rhsType == SharedTypes.Null)
-						return new ErrorResolveResult(SharedTypes.Null);
+					break;
+				case BinaryOperatorType.ShiftLeft:
+					methodGroup = shiftLeftOperators;
+					break;
+				case BinaryOperatorType.ShiftRight:
+					methodGroup = shiftRightOperators;
 					break;
 				default:
 					throw new InvalidOperationException();
@@ -501,6 +531,48 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			} else {
 				return new ResolveResult(resultType);
 			}
+		}
+		
+		/// <summary>
+		/// Handle the case where an enum value is subtracted from another enum value
+		/// U operator –(E x, E y);
+		/// </summary>
+		ResolveResult HandleEnumSubtraction(bool isNullable, IType enumType, ResolveResult lhs, ResolveResult rhs)
+		{
+			// evaluate as (U)((U)x – (U)y)
+			IType elementType = enumType.GetEnumUnderlyingType(context);
+			if (lhs.IsCompileTimeConstant && rhs.IsCompileTimeConstant && !isNullable) {
+				lhs = ResolveCast(elementType, lhs);
+				if (lhs.IsError)
+					return lhs;
+				rhs = ResolveCast(elementType, rhs);
+				if (rhs.IsError)
+					return rhs;
+				return CheckErrorAndResolveCast(elementType, ResolveBinaryOperator(BinaryOperatorType.Subtract, lhs, rhs));
+			}
+			return new ResolveResult(isNullable ? NullableType.Create(elementType, context) : elementType);
+		}
+		
+		/// <summary>
+		/// Handle the case where an integral value is added to or subtracted from an enum value.
+		/// E operator +(E x, U y);
+		/// E operator –(E x, U y);
+		/// </summary>
+		ResolveResult HandleEnumAdditionOrSubtraction(bool isNullable, IType enumType, BinaryOperatorType op, ResolveResult lhs, ResolveResult rhs)
+		{
+			// lhsType is the enum
+			// evaluate as (E)((U)x op (U)y)
+			if (lhs.IsCompileTimeConstant && rhs.IsCompileTimeConstant && !isNullable) {
+				IType elementType = enumType.GetEnumUnderlyingType(context);
+				lhs = ResolveCast(elementType, lhs);
+				if (lhs.IsError)
+					return lhs;
+				rhs = ResolveCast(elementType, rhs);
+				if (rhs.IsError)
+					return rhs;
+				return CheckErrorAndResolveCast(enumType, ResolveBinaryOperator(op, lhs, rhs));
+			}
+			return new ResolveResult(isNullable ? NullableType.Create(enumType, context) : enumType);
 		}
 		
 		bool BinaryNumericPromotion(bool isNullable, ref ResolveResult lhs, ref ResolveResult rhs)
@@ -595,23 +667,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			public abstract object Invoke(CSharpResolver resolver, object lhs, object rhs);
 		}
 		
-		sealed class LambdaBinaryOperatorMethod<T> : BinaryOperatorMethod
+		sealed class LambdaBinaryOperatorMethod<T1, T2> : BinaryOperatorMethod
 		{
-			readonly Func<T, T, T> func;
+			readonly Func<T1, T2, T1> func;
 			
-			public LambdaBinaryOperatorMethod(Func<T, T, T> func)
+			public LambdaBinaryOperatorMethod(Func<T1, T2, T1> func)
 			{
-				this.ReturnType = typeof(T).ToTypeReference();
+				this.ReturnType = typeof(T1).ToTypeReference();
 				this.Parameters.Add(new DefaultParameter(this.ReturnType, string.Empty));
-				this.Parameters.Add(new DefaultParameter(this.ReturnType, string.Empty));
+				this.Parameters.Add(new DefaultParameter(typeof(T2).ToTypeReference(), string.Empty));
 				this.func = func;
 			}
 			
 			public override object Invoke(CSharpResolver resolver, object lhs, object rhs)
 			{
-				TypeCode typeCode = Type.GetTypeCode(typeof(T));
-				return func((T)resolver.CSharpPrimitiveCast(typeCode, lhs),
-				            (T)resolver.CSharpPrimitiveCast(typeCode, rhs));
+				return func((T1)resolver.CSharpPrimitiveCast(Type.GetTypeCode(typeof(T1)), lhs),
+				            (T2)resolver.CSharpPrimitiveCast(Type.GetTypeCode(typeof(T2)), rhs));
 			}
 			
 			public override OperatorMethod Lift()
@@ -647,85 +718,85 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		// C# 4.0 spec: §7.8.1 Multiplication operator
 		static readonly OperatorMethod[] checkedMultiplicationOperators = Lift(
-			new LambdaBinaryOperatorMethod<int>    ((a, b) => checked(a * b)),
-			new LambdaBinaryOperatorMethod<uint>   ((a, b) => checked(a * b)),
-			new LambdaBinaryOperatorMethod<long>   ((a, b) => checked(a * b)),
-			new LambdaBinaryOperatorMethod<ulong>  ((a, b) => checked(a * b)),
-			new LambdaBinaryOperatorMethod<float>  ((a, b) => checked(a * b)),
-			new LambdaBinaryOperatorMethod<double> ((a, b) => checked(a * b)),
-			new LambdaBinaryOperatorMethod<decimal>((a, b) => checked(a * b))
+			new LambdaBinaryOperatorMethod<int,     int>    ((a, b) => checked(a * b)),
+			new LambdaBinaryOperatorMethod<uint,    uint>   ((a, b) => checked(a * b)),
+			new LambdaBinaryOperatorMethod<long,    long>   ((a, b) => checked(a * b)),
+			new LambdaBinaryOperatorMethod<ulong,   ulong>  ((a, b) => checked(a * b)),
+			new LambdaBinaryOperatorMethod<float,   float>  ((a, b) => checked(a * b)),
+			new LambdaBinaryOperatorMethod<double,  double> ((a, b) => checked(a * b)),
+			new LambdaBinaryOperatorMethod<decimal, decimal>((a, b) => checked(a * b))
 		);
 		static readonly OperatorMethod[] uncheckedMultiplicationOperators = Lift(
-			new LambdaBinaryOperatorMethod<int>    ((a, b) => unchecked(a * b)),
-			new LambdaBinaryOperatorMethod<uint>   ((a, b) => unchecked(a * b)),
-			new LambdaBinaryOperatorMethod<long>   ((a, b) => unchecked(a * b)),
-			new LambdaBinaryOperatorMethod<ulong>  ((a, b) => unchecked(a * b)),
-			new LambdaBinaryOperatorMethod<float>  ((a, b) => unchecked(a * b)),
-			new LambdaBinaryOperatorMethod<double> ((a, b) => unchecked(a * b)),
-			new LambdaBinaryOperatorMethod<decimal>((a, b) => unchecked(a * b))
+			new LambdaBinaryOperatorMethod<int,     int>    ((a, b) => unchecked(a * b)),
+			new LambdaBinaryOperatorMethod<uint,    uint>   ((a, b) => unchecked(a * b)),
+			new LambdaBinaryOperatorMethod<long,    long>   ((a, b) => unchecked(a * b)),
+			new LambdaBinaryOperatorMethod<ulong,   ulong>  ((a, b) => unchecked(a * b)),
+			new LambdaBinaryOperatorMethod<float,   float>  ((a, b) => unchecked(a * b)),
+			new LambdaBinaryOperatorMethod<double,  double> ((a, b) => unchecked(a * b)),
+			new LambdaBinaryOperatorMethod<decimal, decimal>((a, b) => unchecked(a * b))
 		);
 		
 		// C# 4.0 spec: §7.8.2 Division operator
 		static readonly OperatorMethod[] checkedDivisionOperators = Lift(
-			new LambdaBinaryOperatorMethod<int>    ((a, b) => checked(a / b)),
-			new LambdaBinaryOperatorMethod<uint>   ((a, b) => checked(a / b)),
-			new LambdaBinaryOperatorMethod<long>   ((a, b) => checked(a / b)),
-			new LambdaBinaryOperatorMethod<ulong>  ((a, b) => checked(a / b)),
-			new LambdaBinaryOperatorMethod<float>  ((a, b) => checked(a / b)),
-			new LambdaBinaryOperatorMethod<double> ((a, b) => checked(a / b)),
-			new LambdaBinaryOperatorMethod<decimal>((a, b) => checked(a / b))
+			new LambdaBinaryOperatorMethod<int,     int>    ((a, b) => checked(a / b)),
+			new LambdaBinaryOperatorMethod<uint,    uint>   ((a, b) => checked(a / b)),
+			new LambdaBinaryOperatorMethod<long,    long>   ((a, b) => checked(a / b)),
+			new LambdaBinaryOperatorMethod<ulong,   ulong>  ((a, b) => checked(a / b)),
+			new LambdaBinaryOperatorMethod<float,   float>  ((a, b) => checked(a / b)),
+			new LambdaBinaryOperatorMethod<double,  double> ((a, b) => checked(a / b)),
+			new LambdaBinaryOperatorMethod<decimal, decimal>((a, b) => checked(a / b))
 		);
 		static readonly OperatorMethod[] uncheckedDivisionOperators = Lift(
-			new LambdaBinaryOperatorMethod<int>    ((a, b) => unchecked(a / b)),
-			new LambdaBinaryOperatorMethod<uint>   ((a, b) => unchecked(a / b)),
-			new LambdaBinaryOperatorMethod<long>   ((a, b) => unchecked(a / b)),
-			new LambdaBinaryOperatorMethod<ulong>  ((a, b) => unchecked(a / b)),
-			new LambdaBinaryOperatorMethod<float>  ((a, b) => unchecked(a / b)),
-			new LambdaBinaryOperatorMethod<double> ((a, b) => unchecked(a / b)),
-			new LambdaBinaryOperatorMethod<decimal>((a, b) => unchecked(a / b))
+			new LambdaBinaryOperatorMethod<int,     int>    ((a, b) => unchecked(a / b)),
+			new LambdaBinaryOperatorMethod<uint,    uint>   ((a, b) => unchecked(a / b)),
+			new LambdaBinaryOperatorMethod<long,    long>   ((a, b) => unchecked(a / b)),
+			new LambdaBinaryOperatorMethod<ulong,   ulong>  ((a, b) => unchecked(a / b)),
+			new LambdaBinaryOperatorMethod<float,   float>  ((a, b) => unchecked(a / b)),
+			new LambdaBinaryOperatorMethod<double,  double> ((a, b) => unchecked(a / b)),
+			new LambdaBinaryOperatorMethod<decimal, decimal>((a, b) => unchecked(a / b))
 		);
 		
 		// C# 4.0 spec: §7.8.3 Remainder operator
 		static readonly OperatorMethod[] checkedRemainderOperators = Lift(
-			new LambdaBinaryOperatorMethod<int>    ((a, b) => checked(a % b)),
-			new LambdaBinaryOperatorMethod<uint>   ((a, b) => checked(a % b)),
-			new LambdaBinaryOperatorMethod<long>   ((a, b) => checked(a % b)),
-			new LambdaBinaryOperatorMethod<ulong>  ((a, b) => checked(a % b)),
-			new LambdaBinaryOperatorMethod<float>  ((a, b) => checked(a % b)),
-			new LambdaBinaryOperatorMethod<double> ((a, b) => checked(a % b)),
-			new LambdaBinaryOperatorMethod<decimal>((a, b) => checked(a % b))
+			new LambdaBinaryOperatorMethod<int,     int>    ((a, b) => checked(a % b)),
+			new LambdaBinaryOperatorMethod<uint,    uint>   ((a, b) => checked(a % b)),
+			new LambdaBinaryOperatorMethod<long,    long>   ((a, b) => checked(a % b)),
+			new LambdaBinaryOperatorMethod<ulong,   ulong>  ((a, b) => checked(a % b)),
+			new LambdaBinaryOperatorMethod<float,   float>  ((a, b) => checked(a % b)),
+			new LambdaBinaryOperatorMethod<double,  double> ((a, b) => checked(a % b)),
+			new LambdaBinaryOperatorMethod<decimal, decimal>((a, b) => checked(a % b))
 		);
 		static readonly OperatorMethod[] uncheckedRemainderOperators = Lift(
-			new LambdaBinaryOperatorMethod<int>    ((a, b) => unchecked(a % b)),
-			new LambdaBinaryOperatorMethod<uint>   ((a, b) => unchecked(a % b)),
-			new LambdaBinaryOperatorMethod<long>   ((a, b) => unchecked(a % b)),
-			new LambdaBinaryOperatorMethod<ulong>  ((a, b) => unchecked(a % b)),
-			new LambdaBinaryOperatorMethod<float>  ((a, b) => unchecked(a % b)),
-			new LambdaBinaryOperatorMethod<double> ((a, b) => unchecked(a % b)),
-			new LambdaBinaryOperatorMethod<decimal>((a, b) => unchecked(a % b))
+			new LambdaBinaryOperatorMethod<int,     int>    ((a, b) => unchecked(a % b)),
+			new LambdaBinaryOperatorMethod<uint,    uint>   ((a, b) => unchecked(a % b)),
+			new LambdaBinaryOperatorMethod<long,    long>   ((a, b) => unchecked(a % b)),
+			new LambdaBinaryOperatorMethod<ulong,   ulong>  ((a, b) => unchecked(a % b)),
+			new LambdaBinaryOperatorMethod<float,   float>  ((a, b) => unchecked(a % b)),
+			new LambdaBinaryOperatorMethod<double,  double> ((a, b) => unchecked(a % b)),
+			new LambdaBinaryOperatorMethod<decimal, decimal>((a, b) => unchecked(a % b))
 		);
 		
 		// C# 4.0 spec: §7.8.3 Addition operator
 		static readonly OperatorMethod[] checkedAdditionOperators = Lift(
-			new LambdaBinaryOperatorMethod<int>    ((a, b) => checked(a + b)),
-			new LambdaBinaryOperatorMethod<uint>   ((a, b) => checked(a + b)),
-			new LambdaBinaryOperatorMethod<long>   ((a, b) => checked(a + b)),
-			new LambdaBinaryOperatorMethod<ulong>  ((a, b) => checked(a + b)),
-			new LambdaBinaryOperatorMethod<float>  ((a, b) => checked(a + b)),
-			new LambdaBinaryOperatorMethod<double> ((a, b) => checked(a + b)),
-			new LambdaBinaryOperatorMethod<decimal>((a, b) => checked(a + b)),
+			new LambdaBinaryOperatorMethod<int,     int>    ((a, b) => checked(a + b)),
+			new LambdaBinaryOperatorMethod<uint,    uint>   ((a, b) => checked(a + b)),
+			new LambdaBinaryOperatorMethod<long,    long>   ((a, b) => checked(a + b)),
+			new LambdaBinaryOperatorMethod<ulong,   ulong>  ((a, b) => checked(a + b)),
+			new LambdaBinaryOperatorMethod<float,   float>  ((a, b) => checked(a + b)),
+			new LambdaBinaryOperatorMethod<double,  double> ((a, b) => checked(a + b)),
+			new LambdaBinaryOperatorMethod<decimal, decimal>((a, b) => checked(a + b)),
 			new StringConcatenation(typeof(string), typeof(string)),
 			new StringConcatenation(typeof(string), typeof(object)),
 			new StringConcatenation(typeof(object), typeof(string))
 		);
 		static readonly OperatorMethod[] uncheckedAdditionOperators = Lift(
-			new LambdaBinaryOperatorMethod<int>    ((a, b) => unchecked(a + b)),
-			new LambdaBinaryOperatorMethod<uint>   ((a, b) => unchecked(a + b)),
-			new LambdaBinaryOperatorMethod<long>   ((a, b) => unchecked(a + b)),
-			new LambdaBinaryOperatorMethod<ulong>  ((a, b) => unchecked(a + b)),
-			new LambdaBinaryOperatorMethod<float>  ((a, b) => unchecked(a + b)),
-			new LambdaBinaryOperatorMethod<double> ((a, b) => unchecked(a + b)),
-			new LambdaBinaryOperatorMethod<decimal>((a, b) => unchecked(a + b)),
+			new LambdaBinaryOperatorMethod<int,     int>    ((a, b) => unchecked(a + b)),
+			new LambdaBinaryOperatorMethod<uint,    uint>   ((a, b) => unchecked(a + b)),
+			new LambdaBinaryOperatorMethod<long,    long>   ((a, b) => unchecked(a + b)),
+			new LambdaBinaryOperatorMethod<ulong,   ulong>  ((a, b) => unchecked(a + b)),
+			new LambdaBinaryOperatorMethod<float,   float>  ((a, b) => unchecked(a + b)),
+			new LambdaBinaryOperatorMethod<double,  double> ((a, b) => unchecked(a + b)),
+			new LambdaBinaryOperatorMethod<decimal, decimal>((a, b) => unchecked(a + b)),
 			new StringConcatenation(typeof(string), typeof(string)),
 			new StringConcatenation(typeof(string), typeof(object)),
 			new StringConcatenation(typeof(object), typeof(string))
@@ -752,6 +823,40 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return string.Concat(lhs, rhs);
 			}
 		}
+		
+		// C# 4.0 spec: §7.8.4 Subtraction operator
+		static readonly OperatorMethod[] checkedSubtractionOperators = Lift(
+			new LambdaBinaryOperatorMethod<int,     int>    ((a, b) => checked(a - b)),
+			new LambdaBinaryOperatorMethod<uint,    uint>   ((a, b) => checked(a - b)),
+			new LambdaBinaryOperatorMethod<long,    long>   ((a, b) => checked(a - b)),
+			new LambdaBinaryOperatorMethod<ulong,   ulong>  ((a, b) => checked(a - b)),
+			new LambdaBinaryOperatorMethod<float,   float>  ((a, b) => checked(a - b)),
+			new LambdaBinaryOperatorMethod<double,  double> ((a, b) => checked(a - b)),
+			new LambdaBinaryOperatorMethod<decimal, decimal>((a, b) => checked(a - b))
+		);
+		static readonly OperatorMethod[] uncheckedSubtractionOperators = Lift(
+			new LambdaBinaryOperatorMethod<int,     int>    ((a, b) => unchecked(a - b)),
+			new LambdaBinaryOperatorMethod<uint,    uint>   ((a, b) => unchecked(a - b)),
+			new LambdaBinaryOperatorMethod<long,    long>   ((a, b) => unchecked(a - b)),
+			new LambdaBinaryOperatorMethod<ulong,   ulong>  ((a, b) => unchecked(a - b)),
+			new LambdaBinaryOperatorMethod<float,   float>  ((a, b) => unchecked(a - b)),
+			new LambdaBinaryOperatorMethod<double,  double> ((a, b) => unchecked(a - b)),
+			new LambdaBinaryOperatorMethod<decimal, decimal>((a, b) => unchecked(a - b))
+		);
+		
+		// C# 4.0 spec: §7.8.5 Shift operators
+		static readonly OperatorMethod[] shiftLeftOperators = Lift(
+			new LambdaBinaryOperatorMethod<int,   int>((a, b) => a << b),
+			new LambdaBinaryOperatorMethod<uint,  int>((a, b) => a << b),
+			new LambdaBinaryOperatorMethod<long,  int>((a, b) => a << b),
+			new LambdaBinaryOperatorMethod<ulong, int>((a, b) => a << b)
+		);
+		static readonly OperatorMethod[] shiftRightOperators = Lift(
+			new LambdaBinaryOperatorMethod<int,   int>((a, b) => a >> b),
+			new LambdaBinaryOperatorMethod<uint,  int>((a, b) => a >> b),
+			new LambdaBinaryOperatorMethod<long,  int>((a, b) => a >> b),
+			new LambdaBinaryOperatorMethod<ulong, int>((a, b) => a >> b)
+		);
 		
 		object GetUserBinaryOperatorCandidates()
 		{
