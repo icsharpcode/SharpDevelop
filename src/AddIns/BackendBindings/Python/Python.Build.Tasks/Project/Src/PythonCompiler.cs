@@ -233,28 +233,34 @@ namespace ICSharpCode.Python.Build.Tasks
 		void AddResource(ModuleBuilder moduleBuilder, ResourceFile resourceFile)
 		{
 			string fileName = resourceFile.FileName;
-			IResourceWriter resourceWriter = moduleBuilder.DefineResource(Path.GetFileName(fileName), resourceFile.Name, ResourceAttributes.Public);
 			string extension = Path.GetExtension(fileName).ToLowerInvariant();
 			if (extension == ".resources") {
-				ResourceReader resourceReader = new ResourceReader(fileName);
-				using (resourceReader) {
-					IDictionaryEnumerator enumerator = resourceReader.GetEnumerator();
-					while (enumerator.MoveNext()) {
-						string key = enumerator.Key as string;
-						Stream resourceStream = enumerator.Value as Stream;
-						if (resourceStream != null) {
-							BinaryReader reader = new BinaryReader(resourceStream);
-							MemoryStream stream = new MemoryStream();						
-							byte[] bytes = reader.ReadBytes((int)resourceStream.Length);
-							stream.Write(bytes, 0, bytes.Length);
-							resourceWriter.AddResource(key, stream);
-						} else {
-							resourceWriter.AddResource(key, enumerator.Value);
-						}
+				string fullFileName = Path.GetFileName(fileName);
+				IResourceWriter resourceWriter = moduleBuilder.DefineResource(fullFileName, resourceFile.Name, ResourceAttributes.Public);
+				AddResources(resourceWriter, fileName);
+			} else {
+				moduleBuilder.DefineManifestResource(resourceFile.Name, new FileStream(fileName, FileMode.Open), ResourceAttributes.Public);
+			}
+		}
+		
+		void AddResources(IResourceWriter resourceWriter, string fileName)
+		{
+			ResourceReader resourceReader = new ResourceReader(fileName);
+			using (resourceReader) {
+				IDictionaryEnumerator enumerator = resourceReader.GetEnumerator();
+				while (enumerator.MoveNext()) {
+					string key = enumerator.Key as string;
+					Stream resourceStream = enumerator.Value as Stream;
+					if (resourceStream != null) {
+						BinaryReader reader = new BinaryReader(resourceStream);
+						MemoryStream stream = new MemoryStream();						
+						byte[] bytes = reader.ReadBytes((int)resourceStream.Length);
+						stream.Write(bytes, 0, bytes.Length);
+						resourceWriter.AddResource(key, stream);
+					} else {
+						resourceWriter.AddResource(key, enumerator.Value);
 					}
 				}
-			} else {
-				resourceWriter.AddResource(resourceFile.Name, File.ReadAllBytes(fileName));
 			}
 		}
 	}

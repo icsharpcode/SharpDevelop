@@ -266,13 +266,22 @@ namespace ICSharpCode.Python.Build.Tasks
 			if (taskItems != null) {
 				foreach (ITaskItem item in taskItems) {
 					string resourceFileName = GetFullPath(item.ItemSpec);
-					string resourceName = Path.GetFileName(resourceFileName);
+					string resourceName = GetResourceName(item);
 					ResourceFile resourceFile = new ResourceFile(resourceName, resourceFileName);
 					files.Add(resourceFile);
 				}
 			}
 			return files;
-		}		
+		}
+		
+		string GetResourceName(ITaskItem item)
+		{
+			string logicalResourceName = item.GetMetadata("LogicalName");
+			if (!String.IsNullOrEmpty(logicalResourceName)) {
+				return logicalResourceName;
+			}
+			return Path.GetFileName(item.ItemSpec);
+		}
 	
 		/// <summary>
 		/// Takes a relative path to a file and turns it into the full path using the current folder

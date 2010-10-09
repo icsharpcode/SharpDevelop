@@ -67,6 +67,7 @@
     <Compile Include="DummyPythonCompilerTask.cs" />
     <Compile Include="IncludeDebugInfoTestFixture.cs" />
     <Compile Include="IOErrorTestFixture.cs" />
+    <Compile Include="LogicalResourceNamesTests.cs" />
     <Compile Include="MainEntryPointTestFixture.cs" />
     <Compile Include="MissingMainEntryPointTestFixture.cs" />
     <Compile Include="MockPythonCompiler.cs" />
