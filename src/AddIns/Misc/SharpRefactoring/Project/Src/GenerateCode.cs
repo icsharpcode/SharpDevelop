@@ -195,7 +195,10 @@ namespace SharpRefactoring
 				if (isNew)
 					targetClass = info.CompilationUnit.Classes.FirstOrDefault(c => c.DotNetName == c.Namespace + "." + (result as string));
 				else
-					targetClass = info.CompilationUnit.Classes.FirstOrDefault(c => c.DotNetName == targetClass.DotNetName);
+					targetClass = info.CompilationUnit.Classes.Flatten(c => c.InnerClasses).FirstOrDefault(c => c.DotNetName == targetClass.DotNetName);
+				
+				if (targetClass == null)
+					return;
 				
 				if (IsEqualClass(rr.CallingClass, targetClass)) {
 					newMember = targetClass.GetInnermostMember(editor.Caret.Line, editor.Caret.Column);
