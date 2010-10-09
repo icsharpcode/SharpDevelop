@@ -28,6 +28,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public void DynamicGenerics3(Action<int, dynamic, object> param) { }
 		public void DynamicGenerics4(Action<int[], dynamic, object> param) { }
 		public void DynamicGenerics5(Action<int*[], dynamic, object> param) { }
+		public void DynamicGenerics6(ref Action<object, dynamic, object> param) { }
+		public void DynamicGenerics7(Action<int[,][], dynamic, object> param) { }
 	}
 	
 	public class GenericClass<A, B> where A : B

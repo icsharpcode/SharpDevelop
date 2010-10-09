@@ -72,17 +72,31 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
-		[Ignore]
 		public void DynamicTypeInGenerics()
 		{
 			ITypeDefinition testClass = testCasePC.GetClass(typeof(DynamicTest));
-			/*CSharpAmbience a = new CSharpAmbience();
-			a.ConversionFlags = ConversionFlags.ShowReturnType | ConversionFlags.ShowParameterList;
-			Assert.AreEqual("List<dynamic> DynamicGenerics1(Action<object, dynamic[], object>)", a.Convert(testClass.Methods.Single(me => me.Name == "DynamicGenerics1")));
-			Assert.AreEqual("void DynamicGenerics2(Action<object, dynamic, object>)", a.Convert(testClass.Methods.Single(me => me.Name == "DynamicGenerics2")));
-			Assert.AreEqual("void DynamicGenerics3(Action<int, dynamic, object>)", a.Convert(testClass.Methods.Single(me => me.Name == "DynamicGenerics3")));
-			Assert.AreEqual("void DynamicGenerics4(Action<int[], dynamic, object>)", a.Convert(testClass.Methods.Single(me => me.Name == "DynamicGenerics4")));
-			Assert.AreEqual("void DynamicGenerics5(Action<Int32*[], dynamic, object>)", a.Convert(testClass.Methods.Single(me => me.Name == "DynamicGenerics5")));*/
+			
+			IMethod m1 = testClass.Methods.Single(me => me.Name == "DynamicGenerics1");
+			Assert.AreEqual("System.Collections.Generic.List`1[[dynamic]]", m1.ReturnType.Resolve(ctx).DotNetName);
+			Assert.AreEqual("System.Action`3[[System.Object],[dynamic[]],[System.Object]]", m1.Parameters[0].Type.Resolve(ctx).DotNetName);
+			
+			IMethod m2 = testClass.Methods.Single(me => me.Name == "DynamicGenerics2");
+			Assert.AreEqual("System.Action`3[[System.Object],[dynamic],[System.Object]]", m2.Parameters[0].Type.Resolve(ctx).DotNetName);
+			
+			IMethod m3 = testClass.Methods.Single(me => me.Name == "DynamicGenerics3");
+			Assert.AreEqual("System.Action`3[[System.Int32],[dynamic],[System.Object]]", m3.Parameters[0].Type.Resolve(ctx).DotNetName);
+			
+			IMethod m4 = testClass.Methods.Single(me => me.Name == "DynamicGenerics4");
+			Assert.AreEqual("System.Action`3[[System.Int32[]],[dynamic],[System.Object]]", m4.Parameters[0].Type.Resolve(ctx).DotNetName);
+			
+			IMethod m5 = testClass.Methods.Single(me => me.Name == "DynamicGenerics5");
+			Assert.AreEqual("System.Action`3[[System.Int32*[]],[dynamic],[System.Object]]", m5.Parameters[0].Type.Resolve(ctx).DotNetName);
+			
+			IMethod m6 = testClass.Methods.Single(me => me.Name == "DynamicGenerics6");
+			Assert.AreEqual("System.Action`3[[System.Object],[dynamic],[System.Object]]&", m6.Parameters[0].Type.Resolve(ctx).DotNetName);
+			
+			IMethod m7 = testClass.Methods.Single(me => me.Name == "DynamicGenerics7");
+			Assert.AreEqual("System.Action`3[[System.Int32[][,]],[dynamic],[System.Object]]", m7.Parameters[0].Type.Resolve(ctx).DotNetName);
 		}
 		
 		[Test]
@@ -190,6 +204,36 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(false, e.IsReferenceType);
 			Assert.AreEqual("System.Int16", e.BaseTypes[0].Resolve(ctx).DotNetName);
 			Assert.AreEqual(new[] { "System.Enum" }, e.GetBaseTypes(ctx).Select(t => t.DotNetName).ToArray());
+		}
+		
+		[Test]
+		public void EnumFieldsTest()
+		{
+			var e = testCasePC.GetClass(typeof(MyEnum));
+			Assert.AreEqual(5, e.Fields.Count);
+			
+			foreach (IField f in e.Fields) {
+				Assert.IsTrue(f.IsStatic);
+				Assert.IsTrue(f.IsConst);
+				Assert.AreSame(e, f.ConstantValue.GetValueType(ctx));
+				Assert.AreEqual(typeof(short), f.ConstantValue.GetValue(ctx).GetType());
+			}
+			
+			Assert.AreEqual("First", e.Fields[0].Name);
+			Assert.AreEqual(0, e.Fields[0].ConstantValue.GetValue(ctx));
+			
+			Assert.AreEqual("Second", e.Fields[1].Name);
+			Assert.AreSame(e, e.Fields[1].ConstantValue.GetValueType(ctx));
+			Assert.AreEqual(1, e.Fields[1].ConstantValue.GetValue(ctx));
+			
+			Assert.AreEqual("Flag1", e.Fields[2].Name);
+			Assert.AreEqual(0x10, e.Fields[2].ConstantValue.GetValue(ctx));
+
+			Assert.AreEqual("Flag2", e.Fields[3].Name);
+			Assert.AreEqual(0x20, e.Fields[3].ConstantValue.GetValue(ctx));
+			
+			Assert.AreEqual("CombinedFlags", e.Fields[4].Name);
+			Assert.AreEqual(0x30, e.Fields[4].ConstantValue.GetValue(ctx));
 		}
 	}
 }

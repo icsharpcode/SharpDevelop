@@ -186,6 +186,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			
 			if (type is Mono.Cecil.ByReferenceType) {
+				typeIndex++;
 				return ByReferenceTypeReference.Create(
 					CreateType(
 						(type as Mono.Cecil.ByReferenceType).ElementType,
@@ -652,7 +653,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (method.IsConstructor)
 				m.ReturnType = parentType;
 			else
-				m.ReturnType = ReadTypeReference(method.ReturnType, typeAttributes: method, entity: m);
+				m.ReturnType = ReadTypeReference(method.ReturnType, typeAttributes: method.MethodReturnType, entity: m);
 			
 			AddAttributes(method, m);
 			TranslateModifiers(method, m);
