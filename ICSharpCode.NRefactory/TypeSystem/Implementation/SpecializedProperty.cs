@@ -33,6 +33,26 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return memberDefinition; }
 		}
 		
+		public override int GetHashCode()
+		{
+			int hashCode = 0;
+			unchecked {
+				if (memberDefinition != null)
+					hashCode += 1000000007 * memberDefinition.GetHashCode();
+				if (declaringType != null)
+					hashCode += 1000000009 * declaringType.GetHashCode();
+			}
+			return hashCode;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			SpecializedProperty other = obj as SpecializedProperty;
+			if (other == null)
+				return false;
+			return object.Equals(this.memberDefinition, other.memberDefinition) && object.Equals(this.declaringType, other.declaringType);
+		}
+		
 		/// <summary>
 		/// Performs type substitution in parameter types and in the return type.
 		/// </summary>

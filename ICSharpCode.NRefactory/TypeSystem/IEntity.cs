@@ -18,7 +18,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets the declaring class.
 		/// For members, this is the class that contains the member.
-		/// For nested classes, this is the outer class. For top-level classes, this property returns null.
+		/// For nested classes, this is the outer class. For top-level entities, this property returns null.
 		/// </summary>
 		ITypeDefinition DeclaringTypeDefinition { get; }
 		

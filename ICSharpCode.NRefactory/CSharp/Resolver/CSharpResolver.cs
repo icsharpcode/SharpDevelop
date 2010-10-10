@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -47,7 +48,34 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		class OperatorMethod : Immutable, IParameterizedMember
 		{
-			IList<IParameter> parameters = new List<IParameter>();
+			static readonly IParameter[] normalParameters = new IParameter[TypeCode.String + 1 - TypeCode.Object];
+			static readonly IParameter[] nullableParameters = new IParameter[TypeCode.Decimal + 1 - TypeCode.Boolean];
+			
+			static OperatorMethod()
+			{
+				for (TypeCode i = TypeCode.Object; i <= TypeCode.String; i++) {
+					normalParameters[i - TypeCode.Object] = new DefaultParameter(i.ToTypeReference(), string.Empty);
+				}
+				for (TypeCode i = TypeCode.Boolean; i <= TypeCode.Decimal; i++) {
+					nullableParameters[i - TypeCode.Boolean] = new DefaultParameter(NullableType.Create(i.ToTypeReference()), string.Empty);
+				}
+			}
+			
+			protected static IParameter MakeParameter(TypeCode code)
+			{
+				return normalParameters[code - TypeCode.Object];
+			}
+			
+			protected static IParameter MakeNullableParameter(IParameter normalParameter)
+			{
+				for (TypeCode i = TypeCode.Boolean; i <= TypeCode.Decimal; i++) {
+					if (normalParameter == normalParameters[i - TypeCode.Object])
+						return nullableParameters[i - TypeCode.Boolean];
+				}
+				throw new ArgumentException();
+			}
+			
+			readonly IList<IParameter> parameters = new List<IParameter>();
 			
 			public IList<IParameter> Parameters {
 				get { return parameters; }
@@ -66,12 +94,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return null; }
 			}
 			
-			ITypeDefinition IMember.DeclaringTypeDefinition {
-				get { return null; }
-			}
-			
 			IType IMember.DeclaringType {
-				get { return null; }
+				get { return SharedTypes.UnknownType; }
 			}
 			
 			IMember IMember.MemberDefinition {
@@ -174,6 +198,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region ResolveUnaryOperator
+		#region ResolveUnaryOperator method
 		public ResolveResult ResolveUnaryOperator(UnaryOperatorType op, ResolveResult expression)
 		{
 			if (expression.Type == SharedTypes.Dynamic)
@@ -263,11 +288,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return new ResolveResult(resultType);
 			}
 		}
+		#endregion
 		
+		#region UnaryNumericPromotion
 		ResolveResult UnaryNumericPromotion(UnaryOperatorType op, ref IType type, bool isNullable, ResolveResult expression)
 		{
 			// C# 4.0 spec: §7.3.6.1
 			TypeCode code = ReflectionHelper.GetTypeCode(type);
+			if (isNullable && type == SharedTypes.Null)
+				code = TypeCode.SByte; // cause promotion of null to int32
 			switch (op) {
 				case UnaryOperatorType.Minus:
 					if (code == TypeCode.UInt32) {
@@ -289,7 +318,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			return expression;
 		}
+		#endregion
 		
+		#region GetOverloadableOperatorName
 		static string GetOverloadableOperatorName(UnaryOperatorType op)
 		{
 			switch (op) {
@@ -311,7 +342,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return null;
 			}
 		}
+		#endregion
 		
+		#region Unary operator class definitions
 		abstract class UnaryOperatorMethod : OperatorMethod
 		{
 			public abstract object Invoke(CSharpResolver resolver, object input);
@@ -323,8 +356,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public LambdaUnaryOperatorMethod(Func<T, T> func)
 			{
-				this.ReturnType = typeof(T).ToTypeReference();
-				this.Parameters.Add(new DefaultParameter(this.ReturnType, string.Empty));
+				TypeCode t = Type.GetTypeCode(typeof(T));
+				this.ReturnType = t.ToTypeReference();
+				this.Parameters.Add(MakeParameter(t));
 				this.func = func;
 			}
 			
@@ -362,7 +396,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return baseMethod.Parameters; }
 			}
 		}
+		#endregion
 		
+		#region Unary operator definitions
 		// C# 4.0 spec: §7.7.1 Unary plus operator
 		static readonly OperatorMethod[] unaryPlusOperators = Lift(
 			new LambdaUnaryOperatorMethod<int>(i => +i),
@@ -400,6 +436,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			new LambdaUnaryOperatorMethod<long>(i => ~i),
 			new LambdaUnaryOperatorMethod<ulong>(i => ~i)
 		);
+		#endregion
 		
 		object GetUserUnaryOperatorCandidates()
 		{
@@ -410,6 +447,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region ResolveBinaryOperator
+		#region ResolveBinaryOperator method
 		public ResolveResult ResolveBinaryOperator(BinaryOperatorType op, ResolveResult lhs, ResolveResult rhs)
 		{
 			if (lhs.Type == SharedTypes.Dynamic || rhs.Type == SharedTypes.Dynamic)
@@ -437,12 +475,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			// TODO: find user-defined operators
 			
+			if (lhsType == SharedTypes.Null && rhsType.IsReferenceType == false
+			    || lhsType.IsReferenceType == false && rhsType == SharedTypes.Null)
+			{
+				isNullable = true;
+			}
 			if (op == BinaryOperatorType.ShiftLeft || op == BinaryOperatorType.ShiftRight) {
+				// special case: the shift operators allow "var x = null << null", producing int?.
+				if (lhsType == SharedTypes.Null && rhsType == SharedTypes.Null)
+					isNullable = true;
 				// for shift operators, do unary promotion independently on both arguments
 				lhs = UnaryNumericPromotion(UnaryOperatorType.Plus, ref lhsType, isNullable, lhs);
 				rhs = UnaryNumericPromotion(UnaryOperatorType.Plus, ref rhsType, isNullable, rhs);
 			} else {
-				if (!BinaryNumericPromotion(isNullable, ref lhs, ref rhs))
+				bool allowNullableConstants = op == BinaryOperatorType.Equality || op == BinaryOperatorType.InEquality;
+				if (!BinaryNumericPromotion(isNullable, ref lhs, ref rhs, allowNullableConstants))
 					return new ErrorResolveResult(lhs.Type);
 			}
 			// re-read underlying types after numeric promotion
@@ -509,6 +556,37 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case BinaryOperatorType.ShiftRight:
 					methodGroup = shiftRightOperators;
 					break;
+				case BinaryOperatorType.Equality:
+				case BinaryOperatorType.InEquality:
+				case BinaryOperatorType.LessThan:
+				case BinaryOperatorType.GreaterThan:
+				case BinaryOperatorType.LessThanOrEqual:
+				case BinaryOperatorType.GreaterThanOrEqual:
+					{
+						Conversions conversions = new Conversions(context);
+						if (lhsType.IsEnum() && conversions.ImplicitConversion(rhsType, lhsType)) {
+							// bool operator op(E x, E y);
+							return HandleEnumComparison(op, lhsType, isNullable, lhs, rhs);
+						} else if (rhsType.IsEnum() && conversions.ImplicitConversion(lhsType, rhsType)) {
+							// bool operator op(E x, E y);
+							return HandleEnumComparison(op, rhsType, isNullable, lhs, rhs);
+						}
+						switch (op) {
+							case BinaryOperatorType.Equality:
+								methodGroup = equalityOperators;
+								break;
+							case BinaryOperatorType.InEquality:
+								methodGroup = inequalityOperators;
+								break;
+							case BinaryOperatorType.LessThan:
+							case BinaryOperatorType.GreaterThan:
+							case BinaryOperatorType.LessThanOrEqual:
+							case BinaryOperatorType.GreaterThanOrEqual:
+							default:
+								throw new InvalidOperationException();
+						}
+					}
+					break;
 				default:
 					throw new InvalidOperationException();
 			}
@@ -520,7 +598,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IType resultType = m.ReturnType.Resolve(context);
 			if (r.BestCandidateErrors != OverloadResolutionErrors.None) {
 				return new ErrorResolveResult(resultType);
-			} else if (lhs.IsCompileTimeConstant && rhs.IsCompileTimeConstant && !isNullable && m.CanEvaluateAtCompileTime) {
+			} else if (lhs.IsCompileTimeConstant && rhs.IsCompileTimeConstant && m.CanEvaluateAtCompileTime) {
 				object val;
 				try {
 					val = m.Invoke(this, lhs.ConstantValue, rhs.ConstantValue);
@@ -531,6 +609,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			} else {
 				return new ResolveResult(resultType);
 			}
+		}
+		#endregion
+		
+		#region Enum helper methods
+		/// <summary>
+		/// Handle the case where an enum value is compared with another enum value
+		/// bool operator op(E x, E y);
+		/// </summary>
+		ResolveResult HandleEnumComparison(BinaryOperatorType op, IType enumType, bool isNullable, ResolveResult lhs, ResolveResult rhs)
+		{
+			// evaluate as ((U)x op (U)y)
+			IType elementType = enumType.GetEnumUnderlyingType(context);
+			if (lhs.IsCompileTimeConstant && rhs.IsCompileTimeConstant && !isNullable) {
+				lhs = ResolveCast(elementType, lhs);
+				if (lhs.IsError)
+					return lhs;
+				rhs = ResolveCast(elementType, rhs);
+				if (rhs.IsError)
+					return rhs;
+				return ResolveBinaryOperator(op, lhs, rhs);
+			}
+			return new ResolveResult(context.GetClass(typeof(bool)) ?? SharedTypes.UnknownType);
 		}
 		
 		/// <summary>
@@ -574,37 +674,47 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			return new ResolveResult(isNullable ? NullableType.Create(enumType, context) : enumType);
 		}
+		#endregion
 		
-		bool BinaryNumericPromotion(bool isNullable, ref ResolveResult lhs, ref ResolveResult rhs)
+		#region BinaryNumericPromotion
+		bool BinaryNumericPromotion(bool isNullable, ref ResolveResult lhs, ref ResolveResult rhs, bool allowNullableConstants)
 		{
 			// C# 4.0 spec: §7.3.6.2
-			TypeCode lhsCode = ReflectionHelper.GetTypeCode(lhs.Type);
-			TypeCode rhsCode = ReflectionHelper.GetTypeCode(rhs.Type);
+			TypeCode lhsCode = ReflectionHelper.GetTypeCode(NullableType.GetUnderlyingType(lhs.Type));
+			TypeCode rhsCode = ReflectionHelper.GetTypeCode(NullableType.GetUnderlyingType(rhs.Type));
+			// if one of the inputs is the null literal, promote that to the type of the other operand
+			if (isNullable && lhs.Type == SharedTypes.Null) {
+				lhs = CastTo(rhsCode, isNullable, lhs, allowNullableConstants);
+				lhsCode = rhsCode;
+			} else if (isNullable && rhs.Type == SharedTypes.Null) {
+				rhs = CastTo(lhsCode, isNullable, rhs, allowNullableConstants);
+				rhsCode = lhsCode;
+			}
 			bool bindingError = false;
 			if (lhsCode >= TypeCode.Char && lhsCode <= TypeCode.Decimal
 			    && rhsCode >= TypeCode.Char && rhsCode <= TypeCode.Decimal)
 			{
-				Type targetType;
+				TypeCode targetType;
 				if (lhsCode == TypeCode.Decimal || rhsCode == TypeCode.Decimal) {
-					targetType = typeof(decimal);
+					targetType = TypeCode.Decimal;
 					bindingError = (lhsCode == TypeCode.Single || lhsCode == TypeCode.Double
 					                || rhsCode == TypeCode.Single || rhsCode == TypeCode.Double);
 				} else if (lhsCode == TypeCode.Double || rhsCode == TypeCode.Double) {
-					targetType = typeof(double);
+					targetType = TypeCode.Double;
 				} else if (lhsCode == TypeCode.Single || rhsCode == TypeCode.Single) {
-					targetType = typeof(float);
+					targetType = TypeCode.Single;
 				} else if (lhsCode == TypeCode.UInt64 || rhsCode == TypeCode.UInt64) {
-					targetType = typeof(ulong);
+					targetType = TypeCode.UInt64;
 					bindingError = IsSigned(lhsCode) || IsSigned(rhsCode);
 				} else if (lhsCode == TypeCode.Int64 || rhsCode == TypeCode.Int64) {
-					targetType = typeof(long);
+					targetType = TypeCode.Int64;
 				} else if (lhsCode == TypeCode.UInt32 || rhsCode == TypeCode.UInt32) {
-					targetType = (IsSigned(lhsCode) || IsSigned(rhsCode)) ? typeof(long) : typeof(uint);
+					targetType = (IsSigned(lhsCode) || IsSigned(rhsCode)) ? TypeCode.Int64 : TypeCode.UInt32;
 				} else {
-					targetType = typeof(int);
+					targetType = TypeCode.Int32;
 				}
-				lhs = CastTo(targetType, isNullable, lhs);
-				rhs = CastTo(targetType, isNullable, rhs);
+				lhs = CastTo(targetType, isNullable, lhs, allowNullableConstants);
+				rhs = CastTo(targetType, isNullable, rhs, allowNullableConstants);
 			}
 			return !bindingError;
 		}
@@ -614,13 +724,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return code == TypeCode.SByte || code == TypeCode.Int16 || code == TypeCode.Int32 || code == TypeCode.Int64;
 		}
 		
-		ResolveResult CastTo(Type targetType, bool isNullable, ResolveResult expression)
+		ResolveResult CastTo(TypeCode targetType, bool isNullable, ResolveResult expression, bool allowNullableConstants)
 		{
-			IType t = context.GetClass(targetType) ?? SharedTypes.UnknownType;
-			if (isNullable) t = NullableType.Create(t, context);
-			return ResolveCast(t, expression);
+			IType elementType = targetType.ToTypeReference().Resolve(context);
+			IType nullableType = isNullable ? NullableType.Create(elementType, context) : elementType;
+			if (allowNullableConstants && expression.IsCompileTimeConstant) {
+				if (expression.ConstantValue == null)
+					return new ConstantResolveResult(nullableType, null);
+				ResolveResult rr = ResolveCast(elementType, expression);
+				if (rr.IsError)
+					return rr;
+				Debug.Assert(rr.IsCompileTimeConstant);
+				return new ConstantResolveResult(nullableType, rr.ConstantValue);
+			} else {
+				return ResolveCast(nullableType, expression);
+			}
 		}
+		#endregion
 		
+		#region GetOverloadableOperatorName
 		static string GetOverloadableOperatorName(BinaryOperatorType op)
 		{
 			switch (op) {
@@ -660,7 +782,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return null;
 			}
 		}
+		#endregion
 		
+		#region Binary operator class definitions
 		abstract class BinaryOperatorMethod : OperatorMethod
 		{
 			public virtual bool CanEvaluateAtCompileTime { get { return true; } }
@@ -673,9 +797,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public LambdaBinaryOperatorMethod(Func<T1, T2, T1> func)
 			{
-				this.ReturnType = typeof(T1).ToTypeReference();
-				this.Parameters.Add(new DefaultParameter(this.ReturnType, string.Empty));
-				this.Parameters.Add(new DefaultParameter(typeof(T2).ToTypeReference(), string.Empty));
+				TypeCode t1 = Type.GetTypeCode(typeof(T1));
+				this.ReturnType = t1.ToTypeReference();
+				this.Parameters.Add(MakeParameter(t1));
+				this.Parameters.Add(MakeParameter(Type.GetTypeCode(typeof(T2))));
 				this.func = func;
 			}
 			
@@ -699,8 +824,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				this.baseMethod = baseMethod;
 				this.ReturnType = NullableType.Create(baseMethod.ReturnType);
-				this.Parameters.Add(new DefaultParameter(NullableType.Create(baseMethod.Parameters[0].Type), string.Empty));
-				this.Parameters.Add(new DefaultParameter(NullableType.Create(baseMethod.Parameters[1].Type), string.Empty));
+				this.Parameters.Add(MakeNullableParameter(baseMethod.Parameters[0]));
+				this.Parameters.Add(MakeNullableParameter(baseMethod.Parameters[1]));
+			}
+			
+			public override bool CanEvaluateAtCompileTime {
+				get { return false; }
 			}
 			
 			public override object Invoke(CSharpResolver resolver, object lhs, object rhs)
@@ -715,7 +844,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return baseMethod.Parameters; }
 			}
 		}
+		#endregion
 		
+		#region Arithmetic operators
 		// C# 4.0 spec: §7.8.1 Multiplication operator
 		static readonly OperatorMethod[] checkedMultiplicationOperators = Lift(
 			new LambdaBinaryOperatorMethod<int,     int>    ((a, b) => checked(a * b)),
@@ -785,9 +916,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			new LambdaBinaryOperatorMethod<float,   float>  ((a, b) => checked(a + b)),
 			new LambdaBinaryOperatorMethod<double,  double> ((a, b) => checked(a + b)),
 			new LambdaBinaryOperatorMethod<decimal, decimal>((a, b) => checked(a + b)),
-			new StringConcatenation(typeof(string), typeof(string)),
-			new StringConcatenation(typeof(string), typeof(object)),
-			new StringConcatenation(typeof(object), typeof(string))
+			new StringConcatenation(TypeCode.String, TypeCode.String),
+			new StringConcatenation(TypeCode.String, TypeCode.Object),
+			new StringConcatenation(TypeCode.Object, TypeCode.String)
 		);
 		static readonly OperatorMethod[] uncheckedAdditionOperators = Lift(
 			new LambdaBinaryOperatorMethod<int,     int>    ((a, b) => unchecked(a + b)),
@@ -797,21 +928,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			new LambdaBinaryOperatorMethod<float,   float>  ((a, b) => unchecked(a + b)),
 			new LambdaBinaryOperatorMethod<double,  double> ((a, b) => unchecked(a + b)),
 			new LambdaBinaryOperatorMethod<decimal, decimal>((a, b) => unchecked(a + b)),
-			new StringConcatenation(typeof(string), typeof(string)),
-			new StringConcatenation(typeof(string), typeof(object)),
-			new StringConcatenation(typeof(object), typeof(string))
+			new StringConcatenation(TypeCode.String, TypeCode.String),
+			new StringConcatenation(TypeCode.String, TypeCode.Object),
+			new StringConcatenation(TypeCode.Object, TypeCode.String)
 		);
 		// not in this list, but handled manually: enum addition, delegate combination
 		sealed class StringConcatenation : BinaryOperatorMethod
 		{
 			bool canEvaluateAtCompileTime;
 			
-			public StringConcatenation(Type p1, Type p2)
+			public StringConcatenation(TypeCode p1, TypeCode p2)
 			{
-				this.canEvaluateAtCompileTime = p1 == typeof(string) && p2 == typeof(string);
-				this.ReturnType = typeof(string).ToTypeReference();
-				this.Parameters.Add(new DefaultParameter(p1.ToTypeReference(), string.Empty));
-				this.Parameters.Add(new DefaultParameter(p2.ToTypeReference(), string.Empty));
+				this.canEvaluateAtCompileTime = p1 == TypeCode.String && p2 == TypeCode.String;
+				this.ReturnType = TypeCode.String.ToTypeReference();
+				this.Parameters.Add(MakeParameter(p1));
+				this.Parameters.Add(MakeParameter(p2));
 			}
 			
 			public override bool CanEvaluateAtCompileTime {
@@ -857,6 +988,95 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			new LambdaBinaryOperatorMethod<long,  int>((a, b) => a >> b),
 			new LambdaBinaryOperatorMethod<ulong, int>((a, b) => a >> b)
 		);
+		#endregion
+		
+		#region Equality operators
+		sealed class EqualityOperatorMethod : BinaryOperatorMethod
+		{
+			public readonly TypeCode Type;
+			public readonly bool Negate;
+			
+			public EqualityOperatorMethod(TypeCode type, bool negate)
+			{
+				this.Negate = negate;
+				this.Type = type;
+				this.ReturnType = TypeCode.Boolean.ToTypeReference();
+				this.Parameters.Add(MakeParameter(type));
+				this.Parameters.Add(MakeParameter(type));
+			}
+			
+			public override bool CanEvaluateAtCompileTime {
+				get { return Type != TypeCode.Object; }
+			}
+			
+			public override object Invoke(CSharpResolver resolver, object lhs, object rhs)
+			{
+				lhs = resolver.CSharpPrimitiveCast(Type, lhs);
+				rhs = resolver.CSharpPrimitiveCast(Type, rhs);
+				bool equal;
+				if (Type == TypeCode.Single) {
+					equal = (float)lhs == (float)rhs;
+				} else if (Type == TypeCode.Double) {
+					equal = (double)lhs == (double)rhs;
+				} else {
+					equal = object.Equals(lhs, rhs);
+				}
+				return equal ^ Negate;
+			}
+			
+			public override OperatorMethod Lift()
+			{
+				if (Type == TypeCode.Object || Type == TypeCode.String)
+					return null;
+				else
+					return new LiftedEqualityOperatorMethod(this);
+			}
+		}
+		
+		sealed class LiftedEqualityOperatorMethod : BinaryOperatorMethod, OverloadResolution.ILiftedOperator
+		{
+			readonly EqualityOperatorMethod baseMethod;
+			
+			public LiftedEqualityOperatorMethod(EqualityOperatorMethod baseMethod)
+			{
+				this.baseMethod = baseMethod;
+				this.ReturnType = baseMethod.ReturnType;
+				IParameter p = MakeNullableParameter(baseMethod.Parameters[0]);
+				this.Parameters.Add(p);
+				this.Parameters.Add(p);
+			}
+			
+			public override bool CanEvaluateAtCompileTime {
+				get { return baseMethod.CanEvaluateAtCompileTime; }
+			}
+			
+			public override object Invoke(CSharpResolver resolver, object lhs, object rhs)
+			{
+				if (lhs == null && rhs == null)
+					return !baseMethod.Negate; // ==: true; !=: false
+				if (lhs == null || rhs == null)
+					return baseMethod.Negate; // ==: false; !=: true
+				return baseMethod.Invoke(resolver, lhs, rhs);
+			}
+			
+			public IList<IParameter> NonLiftedParameters {
+				get { return baseMethod.Parameters; }
+			}
+		}
+		
+		// C# 4.0 spec: §7.10 Relational and type-testing operators
+		static readonly TypeCode[] equalityOperatorsFor = {
+			TypeCode.Int32, TypeCode.UInt32,
+			TypeCode.Int64, TypeCode.UInt64,
+			TypeCode.Single, TypeCode.Double,
+			TypeCode.Decimal,
+			TypeCode.Boolean,
+			TypeCode.String, TypeCode.Object
+		};
+		
+		static readonly OperatorMethod[] equalityOperators = Lift(equalityOperatorsFor.Select(c => new EqualityOperatorMethod(c, false)).ToArray());
+		static readonly OperatorMethod[] inequalityOperators = Lift(equalityOperatorsFor.Select(c => new EqualityOperatorMethod(c, true)).ToArray());
+		#endregion
 		
 		object GetUserBinaryOperatorCandidates()
 		{
@@ -915,6 +1135,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		object CSharpPrimitiveCast(TypeCode targetType, object input)
 		{
+			if (input == null)
+				return null;
 			if (IsCheckedContext)
 				return CSharpPrimitiveCastChecked(targetType, input);
 			else

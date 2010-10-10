@@ -147,24 +147,56 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
+		static readonly ITypeReference[] primitiveTypeReferences = {
+			SharedTypes.UnknownType, // TypeCode.Empty
+			new GetClassTypeReference("System.Object", 0),
+			new GetClassTypeReference("System.DBNull", 0),
+			new GetClassTypeReference("System.Boolean", 0),
+			new GetClassTypeReference("System.Char", 0),
+			new GetClassTypeReference("System.SByte", 0),
+			new GetClassTypeReference("System.Byte", 0),
+			new GetClassTypeReference("System.Int16", 0),
+			new GetClassTypeReference("System.UInt16", 0),
+			new GetClassTypeReference("System.Int32", 0),
+			new GetClassTypeReference("System.UInt32", 0),
+			new GetClassTypeReference("System.Int64", 0),
+			new GetClassTypeReference("System.UInt64", 0),
+			new GetClassTypeReference("System.Single", 0),
+			new GetClassTypeReference("System.Double", 0),
+			new GetClassTypeReference("System.Decimal", 0),
+			new GetClassTypeReference("System.DateTime", 0),
+			SharedTypes.UnknownType, // (TypeCode)17 has no enum value?
+			new GetClassTypeReference("System.String", 0)
+		};
+		
+		/// <summary>
+		/// Creates a reference to the specified type.
+		/// </summary>
+		/// <param name="typeCode">The type to be converted.</param>
+		/// <returns>Returns the type reference.</returns>
+		public static ITypeReference ToTypeReference(this TypeCode typeCode)
+		{
+			return primitiveTypeReferences[(int)typeCode];
+		}
+		
 		static readonly Dictionary<string, TypeCode> typeNameToCodeDict = new Dictionary<string, TypeCode> {
-			{ typeof(Boolean).FullName, TypeCode.Boolean },
-			{ typeof(Byte).FullName, TypeCode.Byte },
-			{ typeof(Char).FullName, TypeCode.Char },
-			{ typeof(DateTime).FullName, TypeCode.DateTime },
-			{ typeof(DBNull).FullName, TypeCode.DBNull },
-			{ typeof(Decimal).FullName, TypeCode.Decimal },
-			{ typeof(Double).FullName, TypeCode.Double },
-			{ typeof(Int16).FullName, TypeCode.Int16 },
-			{ typeof(Int32).FullName, TypeCode.Int32 },
-			{ typeof(Int64).FullName, TypeCode.Int64 },
-			{ typeof(Object).FullName, TypeCode.Object },
-			{ typeof(SByte).FullName, TypeCode.SByte },
-			{ typeof(Single).FullName, TypeCode.Single },
-			{ typeof(String).FullName, TypeCode.String },
-			{ typeof(UInt16).FullName, TypeCode.UInt16 },
-			{ typeof(UInt32).FullName, TypeCode.UInt32 },
-			{ typeof(UInt64).FullName, TypeCode.UInt64 }
+			{ "System.Object",   TypeCode.Object },
+			{ "System.DBNull",   TypeCode.DBNull },
+			{ "System.Boolean",  TypeCode.Boolean },
+			{ "System.Char",     TypeCode.Char },
+			{ "System.SByte",    TypeCode.SByte },
+			{ "System.Byte",     TypeCode.Byte },
+			{ "System.Int16",    TypeCode.Int16 },
+			{ "System.UInt16",   TypeCode.UInt16 },
+			{ "System.Int32",    TypeCode.Int32 },
+			{ "System.UInt32",   TypeCode.UInt32 },
+			{ "System.Int64",    TypeCode.Int64 },
+			{ "System.UInt64",   TypeCode.UInt64 },
+			{ "System.Single",   TypeCode.Single },
+			{ "System.Double",   TypeCode.Double },
+			{ "System.Decimal",  TypeCode.Decimal },
+			{ "System.DateTime", TypeCode.DateTime },
+			{ "System.String",   TypeCode.String }
 		};
 		
 		/// <summary>

@@ -129,7 +129,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			// C# 4.0 spec: §6.1.3
 			TypeCode constantType = ReflectionHelper.GetTypeCode(rr.Type);
-			if (constantType >= TypeCode.SByte && constantType <= TypeCode.Decimal && Convert.ToDecimal(rr.ConstantValue) == 0) {
+			if (constantType >= TypeCode.SByte && constantType <= TypeCode.Decimal && Convert.ToDouble(rr.ConstantValue) == 0) {
 				return NullableType.GetUnderlyingType(toType).IsEnum();
 			}
 			return false;

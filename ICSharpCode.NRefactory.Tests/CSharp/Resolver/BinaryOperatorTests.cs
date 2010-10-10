@@ -70,6 +70,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			AssertType(typeof(StringComparison?), resolver.ResolveBinaryOperator(
 				BinaryOperatorType.Add, MakeResult(typeof(int?)), MakeResult(typeof(StringComparison))));
+			
+			AssertType(typeof(long?), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Add, MakeResult(typeof(int?)), MakeResult(typeof(uint?))));
+			
+			AssertType(typeof(int?), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Add, MakeResult(typeof(ushort?)), MakeResult(typeof(ushort?))));
+			
+			Assert.IsTrue(resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Add, MakeConstant(null), MakeConstant(null)).IsError);
+			
+			AssertType(typeof(int?), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Add, MakeConstant(1), MakeConstant(null)));
 		}
 		
 		[Test]
@@ -122,7 +134,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				BinaryOperatorType.Subtract, MakeResult(typeof(int?)), MakeResult(typeof(StringComparison))).IsError);
 		}
 		
-		
 		[Test]
 		public void ShiftTest()
 		{
@@ -134,14 +145,80 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			AssertType(typeof(int?), resolver.ResolveBinaryOperator(
 				BinaryOperatorType.ShiftLeft, MakeResult(typeof(ushort?)), MakeConstant(1)));
+			
+			AssertType(typeof(int?), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.ShiftLeft, MakeConstant(null), MakeConstant(1)));
+			
+			AssertType(typeof(int?), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.ShiftLeft, MakeConstant(null), MakeConstant(null)));
 		}
 		
-		void Bla(X x, ushort? a) {
-			var y = x + x;
-			var z = a << 1;
-			y.ToString();
-			z.ToString();
+		[Test]
+		public void Equality()
+		{
+			AssertConstant(true, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Equality, MakeConstant(3), MakeConstant(3)));
+			
+			AssertConstant(true, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Equality, MakeConstant(3), MakeConstant(3.0)));
+			
+			AssertConstant(false, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Equality, MakeConstant(2.9), MakeConstant(3)));
+			
+			AssertConstant(false, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Equality, MakeConstant(double.NaN), MakeConstant(double.NaN)));
+			
+			AssertConstant(false, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Equality, MakeConstant("A"), MakeConstant("B")));
+			
+			AssertConstant(true, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Equality, MakeConstant("A"), MakeConstant("A")));
+			
+			AssertConstant(false, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Equality, MakeConstant(""), MakeConstant(null)));
+			
+			AssertConstant(true, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Equality, MakeConstant(null), MakeConstant(null)));
+			
+			AssertConstant(false, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Equality, MakeConstant(1), MakeConstant(null)));
+			
+			AssertConstant(false, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Equality, MakeConstant(null), MakeConstant('a')));
 		}
-		class X { public static implicit operator string(X x) { return null ; } }
+		
+		[Test]
+		public void Inequality()
+		{
+			AssertConstant(false, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.InEquality, MakeConstant(3), MakeConstant(3)));
+			
+			AssertConstant(false, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.InEquality, MakeConstant(3), MakeConstant(3.0)));
+			
+			AssertConstant(true, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.InEquality, MakeConstant(2.9), MakeConstant(3)));
+			
+			AssertConstant(true, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.InEquality, MakeConstant(double.NaN), MakeConstant(double.NaN)));
+			
+			AssertConstant(true, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.InEquality, MakeConstant("A"), MakeConstant("B")));
+			
+			AssertConstant(false, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.InEquality, MakeConstant("A"), MakeConstant("A")));
+			
+			AssertConstant(true, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.InEquality, MakeConstant(""), MakeConstant(null)));
+			
+			AssertConstant(false, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.InEquality, MakeConstant(null), MakeConstant(null)));
+			
+			AssertConstant(true, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.InEquality, MakeConstant(1), MakeConstant(null)));
+			
+			AssertConstant(true, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.InEquality, MakeConstant(null), MakeConstant('a')));
+		}
 	}
 }

@@ -13,15 +13,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	[ContractClass(typeof(IMemberContract))]
 	public interface IMember : IEntity
 	{
-		// redeclare IEntity.DeclaringTypeDefinition to clarify the documentation:
-		/// <summary>
-		/// Gets the type definition that contains the member. This property never returns null.
-		/// </summary>
-		new ITypeDefinition DeclaringTypeDefinition { get; }
-		
 		/// <summary>
 		/// Gets/Sets the declaring type (incl. type arguments, if any).
-		/// This property never returns null.
+		/// This property never returns null -- for top-level members, it returns SharedTypes.UnknownType.
 		/// If this is not a specialized member, the value returned is equal to <see cref="DeclaringTypeDefinition"/>.
 		/// </summary>
 		IType DeclaringType { get; }
@@ -67,13 +61,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	[ContractClassFor(typeof(IMember))]
 	abstract class IMemberContract : IEntityContract, IMember
 	{
-		ITypeDefinition IMember.DeclaringTypeDefinition {
-			get {
-				Contract.Ensures(Contract.Result<ITypeDefinition>() != null);
-				return null;
-			}
-		}
-		
 		IType IMember.DeclaringType {
 			get {
 				Contract.Ensures(Contract.Result<IType>() != null);
