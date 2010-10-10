@@ -515,42 +515,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return events;
 		}
 		
-		public override bool Equals(object obj)
+		// we use reference equality
+		bool IEquatable<IType>.Equals(IType other)
 		{
-			return Equals(obj as ITypeDefinition);
-		}
-		
-		public bool Equals(IType other)
-		{
-			return Equals(other as ITypeDefinition);
-		}
-		
-		public bool Equals(ITypeDefinition other)
-		{
-			if (other == null)
-				return false;
-			if (declaringTypeDefinition != null) {
-				return declaringTypeDefinition.Equals(other.DeclaringTypeDefinition)
-					&& this.Name == other.Name
-					&& this.TypeParameterCount == other.TypeParameterCount;
-			} else {
-				// We do not check the project content because assemblies might or might not
-				// be equivalent depending on compiler settings and runtime assembly
-				// redirection.
-				return other.DeclaringTypeDefinition == null
-					&& this.Namespace == other.Namespace
-					&& this.Name == other.Name
-					&& this.TypeParameterCount == other.TypeParameterCount;
-			}
-		}
-		
-		public override int GetHashCode()
-		{
-			if (declaringTypeDefinition != null) {
-				return declaringTypeDefinition.GetHashCode() ^ name.GetHashCode();
-			} else {
-				return ns.GetHashCode() ^ name.GetHashCode() ^ this.TypeParameterCount;
-			}
+			return this == other;
 		}
 		
 		public override string ToString()
