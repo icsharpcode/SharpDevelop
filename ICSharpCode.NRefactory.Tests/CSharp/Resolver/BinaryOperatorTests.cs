@@ -7,6 +7,9 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
+	// assign short name to the fake reflection type
+	using dynamic = ICSharpCode.NRefactory.TypeSystem.ReflectionHelper.Dynamic;
+	
 	[TestFixture]
 	public class BinaryOperatorTests : ResolverTestBase
 	{
@@ -87,11 +90,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void AdditionWithOverflow()
 		{
-			resolver.IsCheckedContext = false;
+			resolver.CheckForOverflow = false;
 			AssertConstant(int.MinValue, resolver.ResolveBinaryOperator(
 				BinaryOperatorType.Add, MakeConstant(int.MaxValue), MakeConstant(1)));
 			
-			resolver.IsCheckedContext = true;
+			resolver.CheckForOverflow = true;
 			AssertError(typeof(int), resolver.ResolveBinaryOperator(
 				BinaryOperatorType.Add, MakeConstant(int.MaxValue), MakeConstant(1)));
 		}
@@ -169,6 +172,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				BinaryOperatorType.Equality, MakeConstant(double.NaN), MakeConstant(double.NaN)));
 			
 			AssertConstant(false, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Equality, MakeConstant(float.NaN), MakeConstant(float.NaN)));
+			
+			AssertConstant(false, resolver.ResolveBinaryOperator(
 				BinaryOperatorType.Equality, MakeConstant("A"), MakeConstant("B")));
 			
 			AssertConstant(true, resolver.ResolveBinaryOperator(
@@ -203,6 +209,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				BinaryOperatorType.InEquality, MakeConstant(double.NaN), MakeConstant(double.NaN)));
 			
 			AssertConstant(true, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.InEquality, MakeConstant(float.NaN), MakeConstant(double.NaN)));
+			
+			AssertConstant(true, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.InEquality, MakeConstant(float.NaN), MakeConstant(float.NaN)));
+			
+			AssertConstant(true, resolver.ResolveBinaryOperator(
 				BinaryOperatorType.InEquality, MakeConstant("A"), MakeConstant("B")));
 			
 			AssertConstant(false, resolver.ResolveBinaryOperator(
@@ -219,6 +231,105 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			AssertConstant(true, resolver.ResolveBinaryOperator(
 				BinaryOperatorType.InEquality, MakeConstant(null), MakeConstant('a')));
+		}
+		
+		[Test]
+		public void EqualityEnum()
+		{
+			AssertConstant(false, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Equality, MakeConstant(0), MakeConstant(StringComparison.Ordinal)));
+			
+			AssertConstant(false, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Equality, MakeConstant(0), MakeConstant(StringComparison.Ordinal)));
+			
+			Assert.IsFalse(resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Equality, MakeConstant(StringComparison.Ordinal), MakeConstant(1)).IsCompileTimeConstant);
+		}
+		
+		[Test]
+		public void RelationalEnum()
+		{
+			AssertConstant(true, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.LessThan, MakeConstant(0), MakeConstant(StringComparison.Ordinal)));
+			
+			AssertError(typeof(bool), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.LessThanOrEqual, MakeConstant(1), MakeConstant(StringComparison.Ordinal)));
+			
+			AssertConstant(false, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.GreaterThan, MakeConstant(StringComparison.CurrentCultureIgnoreCase), MakeConstant(StringComparison.Ordinal)));
+		}
+		
+		[Test]
+		public void BitAnd()
+		{
+			AssertConstant(5, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.BitwiseAnd, MakeConstant(7), MakeConstant(13)));
+			
+			AssertType(typeof(int?), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.BitwiseAnd, MakeConstant(null), MakeConstant((short)13)));
+			
+			AssertType(typeof(long?), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.BitwiseAnd, MakeResult(typeof(uint?)), MakeConstant((short)13)));
+			
+			AssertType(typeof(uint?), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.BitwiseAnd, MakeResult(typeof(uint?)), MakeConstant((int)13)));
+			
+			AssertType(typeof(ulong?), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.BitwiseAnd, MakeResult(typeof(ulong?)), MakeConstant((long)13)));
+			
+			Assert.IsTrue(resolver.ResolveBinaryOperator(
+				BinaryOperatorType.BitwiseAnd, MakeResult(typeof(ulong?)), MakeConstant((short)13)).IsError);
+		}
+		
+		[Test]
+		public void BitXor()
+		{
+			AssertConstant(6L ^ 3, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.ExclusiveOr, MakeConstant(6L), MakeConstant(3)));
+			
+			AssertConstant(6UL ^ 3L, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.ExclusiveOr, MakeConstant(6UL), MakeConstant(3L)));
+			
+			AssertError(typeof(ulong), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.ExclusiveOr, MakeConstant(6UL), MakeConstant(-3L)));
+		}
+		
+		[Test]
+		public void BitwiseEnum()
+		{
+			AssertConstant(AttributeTargets.Field | AttributeTargets.Property, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.BitwiseOr, MakeConstant(AttributeTargets.Field), MakeConstant(AttributeTargets.Property)));
+			
+			AssertConstant(AttributeTargets.Field & AttributeTargets.All, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.BitwiseAnd, MakeConstant(AttributeTargets.Field), MakeConstant(AttributeTargets.All)));
+			
+			AssertConstant(AttributeTargets.Field & 0, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.BitwiseAnd, MakeConstant(AttributeTargets.Field), MakeConstant(0)));
+			
+			AssertConstant(0 | AttributeTargets.Field, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.BitwiseOr, MakeConstant(0), MakeConstant(AttributeTargets.Field)));
+		}
+		
+		[Test]
+		public void NullCoalescing()
+		{
+			AssertType(typeof(int), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.NullCoalescing, MakeResult(typeof(int?)), MakeResult(typeof(short))));
+			
+			AssertType(typeof(int?), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.NullCoalescing, MakeResult(typeof(int?)), MakeResult(typeof(short?))));
+			
+			AssertType(typeof(object), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.NullCoalescing, MakeResult(typeof(string)), MakeResult(typeof(object))));
+			
+			AssertError(typeof(string), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.NullCoalescing, MakeResult(typeof(string)), MakeResult(typeof(int))));
+			
+			AssertType(typeof(dynamic), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.NullCoalescing, MakeResult(typeof(dynamic)), MakeResult(typeof(string))));
+			
+			AssertType(typeof(dynamic), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.NullCoalescing, MakeResult(typeof(string)), MakeResult(typeof(dynamic))));
 		}
 	}
 }

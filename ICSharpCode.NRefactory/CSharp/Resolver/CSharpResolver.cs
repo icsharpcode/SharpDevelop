@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Gets/Sets whether the current context is <c>checked</c>.
 		/// </summary>
-		public bool IsCheckedContext { get; set; }
+		public bool CheckForOverflow { get; set; }
 		
 		public CSharpResolver(ITypeResolveContext context)
 		{
@@ -246,7 +246,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					methodGroup = unaryPlusOperators;
 					break;
 				case UnaryOperatorType.Minus:
-					methodGroup = IsCheckedContext ? checkedUnaryMinusOperators : uncheckedUnaryMinusOperators;
+					methodGroup = CheckForOverflow ? checkedUnaryMinusOperators : uncheckedUnaryMinusOperators;
 					break;
 				case UnaryOperatorType.Not:
 					methodGroup = logicalNegationOperator;
@@ -453,19 +453,23 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (lhs.Type == SharedTypes.Dynamic || rhs.Type == SharedTypes.Dynamic)
 				return DynamicResult;
 			
+			// Handle logical and/or exactly as bitwise and/or:
+			// - If the user overloads a bitwise operator, that implicitly creates the corresponding logical operator.
+			// - If both inputs are compile-time constants, it doesn't matter that we don't short-circuit.
+			// - If inputs aren't compile-time constants, we don't evaluate anything, so again it doesn't matter that we don't short-circuit
+			if (op == BinaryOperatorType.LogicalAnd) {
+				op = BinaryOperatorType.BitwiseAnd;
+			} else if (op == BinaryOperatorType.LogicalOr) {
+				op = BinaryOperatorType.BitwiseOr;
+			} else if (op == BinaryOperatorType.NullCoalescing) {
+				// null coalescing operator is not overloadable and needs to be handled separately
+				return ResolveNullCoalescingOperator(lhs, rhs);
+			}
+			
 			// C# 4.0 spec: §7.3.4 Binary operator overload resolution
 			string overloadableOperatorName = GetOverloadableOperatorName(op);
 			if (overloadableOperatorName == null) {
-				switch (op) {
-					case BinaryOperatorType.LogicalAnd:
-						throw new NotImplementedException();
-					case BinaryOperatorType.LogicalOr:
-						throw new NotImplementedException();
-					case BinaryOperatorType.NullCoalescing:
-						throw new NotImplementedException();
-					default:
-						throw new ArgumentException("Invalid value for BinaryOperatorType", "op");
-				}
+				throw new ArgumentException("Invalid value for BinaryOperatorType", "op");
 			}
 			
 			// If the type is nullable, get the underlying type:
@@ -499,16 +503,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			IEnumerable<OperatorMethod> methodGroup;
 			switch (op) {
 				case BinaryOperatorType.Multiply:
-					methodGroup = IsCheckedContext ? checkedMultiplicationOperators : uncheckedMultiplicationOperators;
+					methodGroup = CheckForOverflow ? checkedMultiplicationOperators : uncheckedMultiplicationOperators;
 					break;
 				case BinaryOperatorType.Divide:
-					methodGroup = IsCheckedContext ? checkedDivisionOperators : uncheckedDivisionOperators;
+					methodGroup = CheckForOverflow ? checkedDivisionOperators : uncheckedDivisionOperators;
 					break;
 				case BinaryOperatorType.Modulus:
-					methodGroup = IsCheckedContext ? checkedRemainderOperators : uncheckedRemainderOperators;
+					methodGroup = CheckForOverflow ? checkedRemainderOperators : uncheckedRemainderOperators;
 					break;
 				case BinaryOperatorType.Add:
-					methodGroup = IsCheckedContext ? checkedAdditionOperators : uncheckedAdditionOperators;
+					methodGroup = CheckForOverflow ? checkedAdditionOperators : uncheckedAdditionOperators;
 					{
 						Conversions conversions = new Conversions(context);
 						if (lhsType.IsEnum() && conversions.ImplicitConversion(rhsType, lhsType.GetEnumUnderlyingType(context))) {
@@ -528,16 +532,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 					break;
 				case BinaryOperatorType.Subtract:
-					methodGroup = IsCheckedContext ? checkedSubtractionOperators : uncheckedSubtractionOperators;
+					methodGroup = CheckForOverflow ? checkedSubtractionOperators : uncheckedSubtractionOperators;
 					{
 						Conversions conversions = new Conversions(context);
 						if (lhsType.IsEnum() && conversions.ImplicitConversion(rhsType, lhsType.GetEnumUnderlyingType(context))) {
 							// E operator –(E x, U y);
 							return HandleEnumAdditionOrSubtraction(isNullable, lhsType, op, lhs, rhs);
-						} else if (lhsType.IsEnum() && conversions.ImplicitConversion(rhsType, lhsType)) {
+						} else if (lhsType.IsEnum() && conversions.ImplicitConversion(rhs, lhs.Type)) {
 							// U operator –(E x, E y);
 							return HandleEnumSubtraction(isNullable, lhsType, lhs, rhs);
-						} else if (rhsType.IsEnum() && conversions.ImplicitConversion(lhsType, rhsType)) {
+						} else if (rhsType.IsEnum() && conversions.ImplicitConversion(lhs, rhs.Type)) {
 							// U operator –(E x, E y);
 							return HandleEnumSubtraction(isNullable, lhsType, lhs, rhs);
 						}
@@ -564,10 +568,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case BinaryOperatorType.GreaterThanOrEqual:
 					{
 						Conversions conversions = new Conversions(context);
-						if (lhsType.IsEnum() && conversions.ImplicitConversion(rhsType, lhsType)) {
+						if (lhsType.IsEnum() && conversions.ImplicitConversion(rhs, lhs.Type)) {
 							// bool operator op(E x, E y);
 							return HandleEnumComparison(op, lhsType, isNullable, lhs, rhs);
-						} else if (rhsType.IsEnum() && conversions.ImplicitConversion(lhsType, rhsType)) {
+						} else if (rhsType.IsEnum() && conversions.ImplicitConversion(lhs, rhs.Type)) {
 							// bool operator op(E x, E y);
 							return HandleEnumComparison(op, rhsType, isNullable, lhs, rhs);
 						}
@@ -579,9 +583,44 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 								methodGroup = inequalityOperators;
 								break;
 							case BinaryOperatorType.LessThan:
+								methodGroup = lessThanOperators;
+								break;
 							case BinaryOperatorType.GreaterThan:
+								methodGroup = greaterThanOperators;
+								break;
 							case BinaryOperatorType.LessThanOrEqual:
+								methodGroup = lessThanOrEqualOperators;
+								break;
 							case BinaryOperatorType.GreaterThanOrEqual:
+								methodGroup = greaterThanOrEqualOperators;
+								break;
+							default:
+								throw new InvalidOperationException();
+						}
+					}
+					break;
+				case BinaryOperatorType.BitwiseAnd:
+				case BinaryOperatorType.BitwiseOr:
+				case BinaryOperatorType.ExclusiveOr:
+					{
+						Conversions conversions = new Conversions(context);
+						if (lhsType.IsEnum() && conversions.ImplicitConversion(rhs, lhs.Type)) {
+							// E operator op(E x, E y);
+							return HandleEnumAdditionOrSubtraction(isNullable, lhsType, op, lhs, rhs);
+						} else if (rhsType.IsEnum() && conversions.ImplicitConversion(lhs, rhs.Type)) {
+							// E operator op(E x, E y);
+							return HandleEnumAdditionOrSubtraction(isNullable, rhsType, op, lhs, rhs);
+						}
+						switch (op) {
+							case BinaryOperatorType.BitwiseAnd:
+								methodGroup = bitwiseAndOperators;
+								break;
+							case BinaryOperatorType.BitwiseOr:
+								methodGroup = bitwiseOrOperators;
+								break;
+							case BinaryOperatorType.ExclusiveOr:
+								methodGroup = bitwiseXorOperators;
+								break;
 							default:
 								throw new InvalidOperationException();
 						}
@@ -654,13 +693,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		/// <summary>
-		/// Handle the case where an integral value is added to or subtracted from an enum value.
+		/// Handle the case where an integral value is added to or subtracted from an enum value,
+		/// or when two enum values of the same type are combined using a bitwise operator.
 		/// E operator +(E x, U y);
 		/// E operator –(E x, U y);
+		/// E operator &amp;(E x, E y);
+		/// E operator |(E x, E y);
+		/// E operator ^(E x, E y);
 		/// </summary>
 		ResolveResult HandleEnumAdditionOrSubtraction(bool isNullable, IType enumType, BinaryOperatorType op, ResolveResult lhs, ResolveResult rhs)
 		{
-			// lhsType is the enum
 			// evaluate as (E)((U)x op (U)y)
 			if (lhs.IsCompileTimeConstant && rhs.IsCompileTimeConstant && !isNullable) {
 				IType elementType = enumType.GetEnumUnderlyingType(context);
@@ -705,11 +747,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					targetType = TypeCode.Single;
 				} else if (lhsCode == TypeCode.UInt64 || rhsCode == TypeCode.UInt64) {
 					targetType = TypeCode.UInt64;
-					bindingError = IsSigned(lhsCode) || IsSigned(rhsCode);
+					bindingError = IsSigned(lhsCode, lhs) || IsSigned(rhsCode, rhs);
 				} else if (lhsCode == TypeCode.Int64 || rhsCode == TypeCode.Int64) {
 					targetType = TypeCode.Int64;
 				} else if (lhsCode == TypeCode.UInt32 || rhsCode == TypeCode.UInt32) {
-					targetType = (IsSigned(lhsCode) || IsSigned(rhsCode)) ? TypeCode.Int64 : TypeCode.UInt32;
+					targetType = (IsSigned(lhsCode, lhs) || IsSigned(rhsCode, rhs)) ? TypeCode.Int64 : TypeCode.UInt32;
 				} else {
 					targetType = TypeCode.Int32;
 				}
@@ -719,9 +761,29 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return !bindingError;
 		}
 		
-		bool IsSigned(TypeCode code)
+		bool IsSigned(TypeCode code, ResolveResult rr)
 		{
-			return code == TypeCode.SByte || code == TypeCode.Int16 || code == TypeCode.Int32 || code == TypeCode.Int64;
+			// Determine whether the rr with code==ReflectionHelper.GetTypeCode(NullableType.GetUnderlyingType(rr.Type))
+			// is a signed primitive type.
+			switch (code) {
+				case TypeCode.SByte:
+				case TypeCode.Int16:
+					return true;
+				case TypeCode.Int32:
+					// for int, consider implicit constant expression conversion
+					if (rr.IsCompileTimeConstant && rr.ConstantValue != null && (int)rr.ConstantValue >= 0)
+						return false;
+					else
+						return true;
+				case TypeCode.Int64:
+					// for long, consider implicit constant expression conversion
+					if (rr.IsCompileTimeConstant && rr.ConstantValue != null && (long)rr.ConstantValue >= 0)
+						return false;
+					else
+						return true;
+				default:
+					return false;
+			}
 		}
 		
 		ResolveResult CastTo(TypeCode targetType, bool isNullable, ResolveResult expression, bool allowNullableConstants)
@@ -1078,6 +1140,148 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		static readonly OperatorMethod[] inequalityOperators = Lift(equalityOperatorsFor.Select(c => new EqualityOperatorMethod(c, true)).ToArray());
 		#endregion
 		
+		#region Relational Operators
+		sealed class RelationalOperatorMethod<T1, T2> : BinaryOperatorMethod
+		{
+			readonly Func<T1, T2, bool> func;
+			
+			public RelationalOperatorMethod(Func<T1, T2, bool> func)
+			{
+				this.ReturnType = TypeCode.Boolean.ToTypeReference();
+				this.Parameters.Add(MakeParameter(Type.GetTypeCode(typeof(T1))));
+				this.Parameters.Add(MakeParameter(Type.GetTypeCode(typeof(T2))));
+				this.func = func;
+			}
+			
+			public override object Invoke(CSharpResolver resolver, object lhs, object rhs)
+			{
+				return func((T1)resolver.CSharpPrimitiveCast(Type.GetTypeCode(typeof(T1)), lhs),
+				            (T2)resolver.CSharpPrimitiveCast(Type.GetTypeCode(typeof(T2)), rhs));
+			}
+			
+			public override OperatorMethod Lift()
+			{
+				return new LiftedRelationalOperatorMethod(this);
+			}
+		}
+		
+		sealed class LiftedRelationalOperatorMethod : BinaryOperatorMethod, OverloadResolution.ILiftedOperator
+		{
+			readonly BinaryOperatorMethod baseMethod;
+			
+			public LiftedRelationalOperatorMethod(BinaryOperatorMethod baseMethod)
+			{
+				this.baseMethod = baseMethod;
+				this.ReturnType = baseMethod.ReturnType;
+				this.Parameters.Add(MakeNullableParameter(baseMethod.Parameters[0]));
+				this.Parameters.Add(MakeNullableParameter(baseMethod.Parameters[1]));
+			}
+			
+			public override bool CanEvaluateAtCompileTime {
+				get { return false; }
+			}
+			
+			public override object Invoke(CSharpResolver resolver, object lhs, object rhs)
+			{
+				if (lhs == null || rhs == null)
+					return false;
+				else
+					return baseMethod.Invoke(resolver, lhs, rhs);
+			}
+			
+			public IList<IParameter> NonLiftedParameters {
+				get { return baseMethod.Parameters; }
+			}
+		}
+		
+		static readonly OperatorMethod[] lessThanOperators = Lift(
+			new RelationalOperatorMethod<int, int>        ((a, b) => a < b),
+			new RelationalOperatorMethod<uint, uint>      ((a, b) => a < b),
+			new RelationalOperatorMethod<long, long>      ((a, b) => a < b),
+			new RelationalOperatorMethod<ulong, ulong>    ((a, b) => a < b),
+			new RelationalOperatorMethod<float, float>    ((a, b) => a < b),
+			new RelationalOperatorMethod<double, double>  ((a, b) => a < b),
+			new RelationalOperatorMethod<decimal, decimal>((a, b) => a < b)
+		);
+		
+		static readonly OperatorMethod[] lessThanOrEqualOperators = Lift(
+			new RelationalOperatorMethod<int, int>        ((a, b) => a <= b),
+			new RelationalOperatorMethod<uint, uint>      ((a, b) => a <= b),
+			new RelationalOperatorMethod<long, long>      ((a, b) => a <= b),
+			new RelationalOperatorMethod<ulong, ulong>    ((a, b) => a <= b),
+			new RelationalOperatorMethod<float, float>    ((a, b) => a <= b),
+			new RelationalOperatorMethod<double, double>  ((a, b) => a <= b),
+			new RelationalOperatorMethod<decimal, decimal>((a, b) => a <= b)
+		);
+		
+		static readonly OperatorMethod[] greaterThanOperators = Lift(
+			new RelationalOperatorMethod<int, int>        ((a, b) => a > b),
+			new RelationalOperatorMethod<uint, uint>      ((a, b) => a > b),
+			new RelationalOperatorMethod<long, long>      ((a, b) => a > b),
+			new RelationalOperatorMethod<ulong, ulong>    ((a, b) => a > b),
+			new RelationalOperatorMethod<float, float>    ((a, b) => a > b),
+			new RelationalOperatorMethod<double, double>  ((a, b) => a > b),
+			new RelationalOperatorMethod<decimal, decimal>((a, b) => a > b)
+		);
+		
+		static readonly OperatorMethod[] greaterThanOrEqualOperators = Lift(
+			new RelationalOperatorMethod<int, int>        ((a, b) => a >= b),
+			new RelationalOperatorMethod<uint, uint>      ((a, b) => a >= b),
+			new RelationalOperatorMethod<long, long>      ((a, b) => a >= b),
+			new RelationalOperatorMethod<ulong, ulong>    ((a, b) => a >= b),
+			new RelationalOperatorMethod<float, float>    ((a, b) => a >= b),
+			new RelationalOperatorMethod<double, double>  ((a, b) => a >= b),
+			new RelationalOperatorMethod<decimal, decimal>((a, b) => a >= b)
+		);
+		#endregion
+		
+		#region Bitwise operators
+		static readonly OperatorMethod[] bitwiseAndOperators = Lift(
+			new LambdaBinaryOperatorMethod<int, int>    ((a, b) => a & b),
+			new LambdaBinaryOperatorMethod<uint, uint>  ((a, b) => a & b),
+			new LambdaBinaryOperatorMethod<long, long>  ((a, b) => a & b),
+			new LambdaBinaryOperatorMethod<ulong, ulong>((a, b) => a & b),
+			new LambdaBinaryOperatorMethod<bool, bool>  ((a, b) => a & b)
+		);
+		
+		static readonly OperatorMethod[] bitwiseOrOperators = Lift(
+			new LambdaBinaryOperatorMethod<int, int>    ((a, b) => a | b),
+			new LambdaBinaryOperatorMethod<uint, uint>  ((a, b) => a | b),
+			new LambdaBinaryOperatorMethod<long, long>  ((a, b) => a | b),
+			new LambdaBinaryOperatorMethod<ulong, ulong>((a, b) => a | b),
+			new LambdaBinaryOperatorMethod<bool, bool>  ((a, b) => a | b)
+		);
+		// Note: the logic for the lifted bool? and bool? is wrong;
+		// we produce "true | null" = "null" when it should be true. However, this is irrelevant
+		// because bool? cannot be a compile-time type.
+		
+		static readonly OperatorMethod[] bitwiseXorOperators = Lift(
+			new LambdaBinaryOperatorMethod<int, int>    ((a, b) => a ^ b),
+			new LambdaBinaryOperatorMethod<uint, uint>  ((a, b) => a ^ b),
+			new LambdaBinaryOperatorMethod<long, long>  ((a, b) => a ^ b),
+			new LambdaBinaryOperatorMethod<ulong, ulong>((a, b) => a ^ b),
+			new LambdaBinaryOperatorMethod<bool, bool>  ((a, b) => a ^ b)
+		);
+		#endregion
+		
+		#region Null coalescing operator
+		ResolveResult ResolveNullCoalescingOperator(ResolveResult lhs, ResolveResult rhs)
+		{
+			Conversions conversions = new Conversions(context);
+			if (NullableType.IsNullable(lhs.Type)) {
+				IType a0 = NullableType.GetUnderlyingType(lhs.Type);
+				if (conversions.ImplicitConversion(rhs, a0))
+					return new ResolveResult(a0);
+			}
+			if (conversions.ImplicitConversion(rhs, lhs.Type))
+				return new ResolveResult(lhs.Type);
+			if (conversions.ImplicitConversion(lhs, rhs.Type))
+				return new ResolveResult(rhs.Type);
+			else
+				return new ErrorResolveResult(lhs.Type);
+		}
+		#endregion
+		
 		object GetUserBinaryOperatorCandidates()
 		{
 			// C# 4.0 spec: §7.3.5 Candidate user-defined operators
@@ -1117,6 +1321,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return new ResolveResult(targetType);
 		}
 		
+		object CSharpPrimitiveCast(TypeCode targetType, object input)
+		{
+			return Util.CSharpPrimitiveCast.Cast(targetType, input, this.CheckForOverflow);
+		}
+		
 		ResolveResult CheckErrorAndResolveCast(IType targetType, ResolveResult expression)
 		{
 			if (expression.IsError)
@@ -1124,409 +1333,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			else
 				return ResolveCast(targetType, expression);
 		}
-		
-		#region CSharpPrimitiveCast
-		/// <summary>
-		/// Performs a conversion between primitive types.
-		/// Unfortunately we cannot use Convert.ChangeType because it has different semantics
-		/// (e.g. rounding behavior for floats, overflow, etc.), so we write down every possible primitive C# cast
-		/// and let the compiler figure out the exact semantics.
-		/// And we have to do everything twice, once in a checked-block, once in an unchecked-block.
-		/// </summary>
-		object CSharpPrimitiveCast(TypeCode targetType, object input)
-		{
-			if (input == null)
-				return null;
-			if (IsCheckedContext)
-				return CSharpPrimitiveCastChecked(targetType, input);
-			else
-				return CSharpPrimitiveCastUnchecked(targetType, input);
-		}
-		
-		static object CSharpPrimitiveCastChecked(TypeCode targetType, object input)
-		{
-			checked {
-				TypeCode sourceType = Type.GetTypeCode(input.GetType());
-				if (sourceType == targetType)
-					return input;
-				switch (targetType) {
-					case TypeCode.Char:
-						switch (sourceType) {
-								case TypeCode.SByte:   return (char)(sbyte)input;
-								case TypeCode.Byte:    return (char)(byte)input;
-								case TypeCode.Int16:   return (char)(short)input;
-								case TypeCode.UInt16:  return (char)(ushort)input;
-								case TypeCode.Int32:   return (char)(int)input;
-								case TypeCode.UInt32:  return (char)(uint)input;
-								case TypeCode.Int64:   return (char)(long)input;
-								case TypeCode.UInt64:  return (char)(ulong)input;
-								case TypeCode.Single:  return (char)(float)input;
-								case TypeCode.Double:  return (char)(double)input;
-								case TypeCode.Decimal: return (char)(decimal)input;
-						}
-						break;
-					case TypeCode.SByte:
-						switch (sourceType) {
-								case TypeCode.Char:    return (sbyte)(char)input;
-								case TypeCode.Byte:    return (sbyte)(byte)input;
-								case TypeCode.Int16:   return (sbyte)(short)input;
-								case TypeCode.UInt16:  return (sbyte)(ushort)input;
-								case TypeCode.Int32:   return (sbyte)(int)input;
-								case TypeCode.UInt32:  return (sbyte)(uint)input;
-								case TypeCode.Int64:   return (sbyte)(long)input;
-								case TypeCode.UInt64:  return (sbyte)(ulong)input;
-								case TypeCode.Single:  return (sbyte)(float)input;
-								case TypeCode.Double:  return (sbyte)(double)input;
-								case TypeCode.Decimal: return (sbyte)(decimal)input;
-						}
-						break;
-					case TypeCode.Byte:
-						switch (sourceType) {
-								case TypeCode.Char:    return (byte)(char)input;
-								case TypeCode.SByte:   return (byte)(sbyte)input;
-								case TypeCode.Int16:   return (byte)(short)input;
-								case TypeCode.UInt16:  return (byte)(ushort)input;
-								case TypeCode.Int32:   return (byte)(int)input;
-								case TypeCode.UInt32:  return (byte)(uint)input;
-								case TypeCode.Int64:   return (byte)(long)input;
-								case TypeCode.UInt64:  return (byte)(ulong)input;
-								case TypeCode.Single:  return (byte)(float)input;
-								case TypeCode.Double:  return (byte)(double)input;
-								case TypeCode.Decimal: return (byte)(decimal)input;
-						}
-						break;
-					case TypeCode.Int16:
-						switch (sourceType) {
-								case TypeCode.Char:    return (short)(char)input;
-								case TypeCode.SByte:   return (short)(sbyte)input;
-								case TypeCode.Byte:    return (short)(byte)input;
-								case TypeCode.UInt16:  return (short)(ushort)input;
-								case TypeCode.Int32:   return (short)(int)input;
-								case TypeCode.UInt32:  return (short)(uint)input;
-								case TypeCode.Int64:   return (short)(long)input;
-								case TypeCode.UInt64:  return (short)(ulong)input;
-								case TypeCode.Single:  return (short)(float)input;
-								case TypeCode.Double:  return (short)(double)input;
-								case TypeCode.Decimal: return (short)(decimal)input;
-						}
-						break;
-					case TypeCode.UInt16:
-						switch (sourceType) {
-								case TypeCode.Char:    return (ushort)(char)input;
-								case TypeCode.SByte:   return (ushort)(sbyte)input;
-								case TypeCode.Byte:    return (ushort)(byte)input;
-								case TypeCode.Int16:   return (ushort)(short)input;
-								case TypeCode.Int32:   return (ushort)(int)input;
-								case TypeCode.UInt32:  return (ushort)(uint)input;
-								case TypeCode.Int64:   return (ushort)(long)input;
-								case TypeCode.UInt64:  return (ushort)(ulong)input;
-								case TypeCode.Single:  return (ushort)(float)input;
-								case TypeCode.Double:  return (ushort)(double)input;
-								case TypeCode.Decimal: return (ushort)(decimal)input;
-						}
-						break;
-					case TypeCode.Int32:
-						switch (sourceType) {
-								case TypeCode.Char:    return (int)(char)input;
-								case TypeCode.SByte:   return (int)(sbyte)input;
-								case TypeCode.Byte:    return (int)(byte)input;
-								case TypeCode.Int16:   return (int)(short)input;
-								case TypeCode.UInt16:  return (int)(ushort)input;
-								case TypeCode.UInt32:  return (int)(uint)input;
-								case TypeCode.Int64:   return (int)(long)input;
-								case TypeCode.UInt64:  return (int)(ulong)input;
-								case TypeCode.Single:  return (int)(float)input;
-								case TypeCode.Double:  return (int)(double)input;
-								case TypeCode.Decimal: return (int)(decimal)input;
-						}
-						break;
-					case TypeCode.UInt32:
-						switch (sourceType) {
-								case TypeCode.Char:    return (uint)(char)input;
-								case TypeCode.SByte:   return (uint)(sbyte)input;
-								case TypeCode.Byte:    return (uint)(byte)input;
-								case TypeCode.Int16:   return (uint)(short)input;
-								case TypeCode.UInt16:  return (uint)(ushort)input;
-								case TypeCode.Int32:   return (uint)(int)input;
-								case TypeCode.Int64:   return (uint)(long)input;
-								case TypeCode.UInt64:  return (uint)(ulong)input;
-								case TypeCode.Single:  return (uint)(float)input;
-								case TypeCode.Double:  return (uint)(double)input;
-								case TypeCode.Decimal: return (uint)(decimal)input;
-						}
-						break;
-					case TypeCode.Int64:
-						switch (sourceType) {
-								case TypeCode.Char:    return (long)(char)input;
-								case TypeCode.SByte:   return (long)(sbyte)input;
-								case TypeCode.Byte:    return (long)(byte)input;
-								case TypeCode.Int16:   return (long)(short)input;
-								case TypeCode.UInt16:  return (long)(ushort)input;
-								case TypeCode.Int32:   return (long)(int)input;
-								case TypeCode.UInt32:  return (long)(uint)input;
-								case TypeCode.UInt64:  return (long)(ulong)input;
-								case TypeCode.Single:  return (long)(float)input;
-								case TypeCode.Double:  return (long)(double)input;
-								case TypeCode.Decimal: return (long)(decimal)input;
-						}
-						break;
-					case TypeCode.UInt64:
-						switch (sourceType) {
-								case TypeCode.Char:    return (ulong)(char)input;
-								case TypeCode.SByte:   return (ulong)(sbyte)input;
-								case TypeCode.Byte:    return (ulong)(byte)input;
-								case TypeCode.Int16:   return (ulong)(short)input;
-								case TypeCode.UInt16:  return (ulong)(ushort)input;
-								case TypeCode.Int32:   return (ulong)(int)input;
-								case TypeCode.UInt32:  return (ulong)(uint)input;
-								case TypeCode.Int64:   return (ulong)(long)input;
-								case TypeCode.Single:  return (ulong)(float)input;
-								case TypeCode.Double:  return (ulong)(double)input;
-								case TypeCode.Decimal: return (ulong)(decimal)input;
-						}
-						break;
-					case TypeCode.Single:
-						switch (sourceType) {
-								case TypeCode.Char:    return (float)(char)input;
-								case TypeCode.SByte:   return (float)(sbyte)input;
-								case TypeCode.Byte:    return (float)(byte)input;
-								case TypeCode.Int16:   return (float)(short)input;
-								case TypeCode.UInt16:  return (float)(ushort)input;
-								case TypeCode.Int32:   return (float)(int)input;
-								case TypeCode.UInt32:  return (float)(uint)input;
-								case TypeCode.Int64:   return (float)(long)input;
-								case TypeCode.UInt64:  return (float)(ulong)input;
-								case TypeCode.Double:  return (float)(double)input;
-								case TypeCode.Decimal: return (float)(decimal)input;
-						}
-						break;
-					case TypeCode.Double:
-						switch (sourceType) {
-								case TypeCode.Char:    return (double)(char)input;
-								case TypeCode.SByte:   return (double)(sbyte)input;
-								case TypeCode.Byte:    return (double)(byte)input;
-								case TypeCode.Int16:   return (double)(short)input;
-								case TypeCode.UInt16:  return (double)(ushort)input;
-								case TypeCode.Int32:   return (double)(int)input;
-								case TypeCode.UInt32:  return (double)(uint)input;
-								case TypeCode.Int64:   return (double)(long)input;
-								case TypeCode.UInt64:  return (double)(ulong)input;
-								case TypeCode.Single:  return (double)(float)input;
-								case TypeCode.Decimal: return (double)(decimal)input;
-						}
-						break;
-					case TypeCode.Decimal:
-						switch (sourceType) {
-								case TypeCode.Char:    return (decimal)(char)input;
-								case TypeCode.SByte:   return (decimal)(sbyte)input;
-								case TypeCode.Byte:    return (decimal)(byte)input;
-								case TypeCode.Int16:   return (decimal)(short)input;
-								case TypeCode.UInt16:  return (decimal)(ushort)input;
-								case TypeCode.Int32:   return (decimal)(int)input;
-								case TypeCode.UInt32:  return (decimal)(uint)input;
-								case TypeCode.Int64:   return (decimal)(long)input;
-								case TypeCode.UInt64:  return (decimal)(ulong)input;
-								case TypeCode.Single:  return (decimal)(float)input;
-								case TypeCode.Double:  return (decimal)(double)input;
-						}
-						break;
-				}
-				throw new InvalidCastException("Cast from " + sourceType + " to " + targetType + "not supported.");
-			}
-		}
-		
-		static object CSharpPrimitiveCastUnchecked(TypeCode targetType, object input)
-		{
-			unchecked {
-				TypeCode sourceType = Type.GetTypeCode(input.GetType());
-				if (sourceType == targetType)
-					return input;
-				switch (targetType) {
-					case TypeCode.Char:
-						switch (sourceType) {
-								case TypeCode.SByte:   return (char)(sbyte)input;
-								case TypeCode.Byte:    return (char)(byte)input;
-								case TypeCode.Int16:   return (char)(short)input;
-								case TypeCode.UInt16:  return (char)(ushort)input;
-								case TypeCode.Int32:   return (char)(int)input;
-								case TypeCode.UInt32:  return (char)(uint)input;
-								case TypeCode.Int64:   return (char)(long)input;
-								case TypeCode.UInt64:  return (char)(ulong)input;
-								case TypeCode.Single:  return (char)(float)input;
-								case TypeCode.Double:  return (char)(double)input;
-								case TypeCode.Decimal: return (char)(decimal)input;
-						}
-						break;
-					case TypeCode.SByte:
-						switch (sourceType) {
-								case TypeCode.Char:    return (sbyte)(char)input;
-								case TypeCode.Byte:    return (sbyte)(byte)input;
-								case TypeCode.Int16:   return (sbyte)(short)input;
-								case TypeCode.UInt16:  return (sbyte)(ushort)input;
-								case TypeCode.Int32:   return (sbyte)(int)input;
-								case TypeCode.UInt32:  return (sbyte)(uint)input;
-								case TypeCode.Int64:   return (sbyte)(long)input;
-								case TypeCode.UInt64:  return (sbyte)(ulong)input;
-								case TypeCode.Single:  return (sbyte)(float)input;
-								case TypeCode.Double:  return (sbyte)(double)input;
-								case TypeCode.Decimal: return (sbyte)(decimal)input;
-						}
-						break;
-					case TypeCode.Byte:
-						switch (sourceType) {
-								case TypeCode.Char:    return (byte)(char)input;
-								case TypeCode.SByte:   return (byte)(sbyte)input;
-								case TypeCode.Int16:   return (byte)(short)input;
-								case TypeCode.UInt16:  return (byte)(ushort)input;
-								case TypeCode.Int32:   return (byte)(int)input;
-								case TypeCode.UInt32:  return (byte)(uint)input;
-								case TypeCode.Int64:   return (byte)(long)input;
-								case TypeCode.UInt64:  return (byte)(ulong)input;
-								case TypeCode.Single:  return (byte)(float)input;
-								case TypeCode.Double:  return (byte)(double)input;
-								case TypeCode.Decimal: return (byte)(decimal)input;
-						}
-						break;
-					case TypeCode.Int16:
-						switch (sourceType) {
-								case TypeCode.Char:    return (short)(char)input;
-								case TypeCode.SByte:   return (short)(sbyte)input;
-								case TypeCode.Byte:    return (short)(byte)input;
-								case TypeCode.UInt16:  return (short)(ushort)input;
-								case TypeCode.Int32:   return (short)(int)input;
-								case TypeCode.UInt32:  return (short)(uint)input;
-								case TypeCode.Int64:   return (short)(long)input;
-								case TypeCode.UInt64:  return (short)(ulong)input;
-								case TypeCode.Single:  return (short)(float)input;
-								case TypeCode.Double:  return (short)(double)input;
-								case TypeCode.Decimal: return (short)(decimal)input;
-						}
-						break;
-					case TypeCode.UInt16:
-						switch (sourceType) {
-								case TypeCode.Char:    return (ushort)(char)input;
-								case TypeCode.SByte:   return (ushort)(sbyte)input;
-								case TypeCode.Byte:    return (ushort)(byte)input;
-								case TypeCode.Int16:   return (ushort)(short)input;
-								case TypeCode.Int32:   return (ushort)(int)input;
-								case TypeCode.UInt32:  return (ushort)(uint)input;
-								case TypeCode.Int64:   return (ushort)(long)input;
-								case TypeCode.UInt64:  return (ushort)(ulong)input;
-								case TypeCode.Single:  return (ushort)(float)input;
-								case TypeCode.Double:  return (ushort)(double)input;
-								case TypeCode.Decimal: return (ushort)(decimal)input;
-						}
-						break;
-					case TypeCode.Int32:
-						switch (sourceType) {
-								case TypeCode.Char:    return (int)(char)input;
-								case TypeCode.SByte:   return (int)(sbyte)input;
-								case TypeCode.Byte:    return (int)(byte)input;
-								case TypeCode.Int16:   return (int)(short)input;
-								case TypeCode.UInt16:  return (int)(ushort)input;
-								case TypeCode.UInt32:  return (int)(uint)input;
-								case TypeCode.Int64:   return (int)(long)input;
-								case TypeCode.UInt64:  return (int)(ulong)input;
-								case TypeCode.Single:  return (int)(float)input;
-								case TypeCode.Double:  return (int)(double)input;
-								case TypeCode.Decimal: return (int)(decimal)input;
-						}
-						break;
-					case TypeCode.UInt32:
-						switch (sourceType) {
-								case TypeCode.Char:    return (uint)(char)input;
-								case TypeCode.SByte:   return (uint)(sbyte)input;
-								case TypeCode.Byte:    return (uint)(byte)input;
-								case TypeCode.Int16:   return (uint)(short)input;
-								case TypeCode.UInt16:  return (uint)(ushort)input;
-								case TypeCode.Int32:   return (uint)(int)input;
-								case TypeCode.Int64:   return (uint)(long)input;
-								case TypeCode.UInt64:  return (uint)(ulong)input;
-								case TypeCode.Single:  return (uint)(float)input;
-								case TypeCode.Double:  return (uint)(double)input;
-								case TypeCode.Decimal: return (uint)(decimal)input;
-						}
-						break;
-					case TypeCode.Int64:
-						switch (sourceType) {
-								case TypeCode.Char:    return (long)(char)input;
-								case TypeCode.SByte:   return (long)(sbyte)input;
-								case TypeCode.Byte:    return (long)(byte)input;
-								case TypeCode.Int16:   return (long)(short)input;
-								case TypeCode.UInt16:  return (long)(ushort)input;
-								case TypeCode.Int32:   return (long)(int)input;
-								case TypeCode.UInt32:  return (long)(uint)input;
-								case TypeCode.UInt64:  return (long)(ulong)input;
-								case TypeCode.Single:  return (long)(float)input;
-								case TypeCode.Double:  return (long)(double)input;
-								case TypeCode.Decimal: return (long)(decimal)input;
-						}
-						break;
-					case TypeCode.UInt64:
-						switch (sourceType) {
-								case TypeCode.Char:    return (ulong)(char)input;
-								case TypeCode.SByte:   return (ulong)(sbyte)input;
-								case TypeCode.Byte:    return (ulong)(byte)input;
-								case TypeCode.Int16:   return (ulong)(short)input;
-								case TypeCode.UInt16:  return (ulong)(ushort)input;
-								case TypeCode.Int32:   return (ulong)(int)input;
-								case TypeCode.UInt32:  return (ulong)(uint)input;
-								case TypeCode.Int64:   return (ulong)(long)input;
-								case TypeCode.Single:  return (ulong)(float)input;
-								case TypeCode.Double:  return (ulong)(double)input;
-								case TypeCode.Decimal: return (ulong)(decimal)input;
-						}
-						break;
-					case TypeCode.Single:
-						switch (sourceType) {
-								case TypeCode.Char:    return (float)(char)input;
-								case TypeCode.SByte:   return (float)(sbyte)input;
-								case TypeCode.Byte:    return (float)(byte)input;
-								case TypeCode.Int16:   return (float)(short)input;
-								case TypeCode.UInt16:  return (float)(ushort)input;
-								case TypeCode.Int32:   return (float)(int)input;
-								case TypeCode.UInt32:  return (float)(uint)input;
-								case TypeCode.Int64:   return (float)(long)input;
-								case TypeCode.UInt64:  return (float)(ulong)input;
-								case TypeCode.Double:  return (float)(double)input;
-								case TypeCode.Decimal: return (float)(decimal)input;
-						}
-						break;
-					case TypeCode.Double:
-						switch (sourceType) {
-								case TypeCode.Char:    return (double)(char)input;
-								case TypeCode.SByte:   return (double)(sbyte)input;
-								case TypeCode.Byte:    return (double)(byte)input;
-								case TypeCode.Int16:   return (double)(short)input;
-								case TypeCode.UInt16:  return (double)(ushort)input;
-								case TypeCode.Int32:   return (double)(int)input;
-								case TypeCode.UInt32:  return (double)(uint)input;
-								case TypeCode.Int64:   return (double)(long)input;
-								case TypeCode.UInt64:  return (double)(ulong)input;
-								case TypeCode.Single:  return (double)(float)input;
-								case TypeCode.Decimal: return (double)(decimal)input;
-						}
-						break;
-					case TypeCode.Decimal:
-						switch (sourceType) {
-								case TypeCode.Char:    return (decimal)(char)input;
-								case TypeCode.SByte:   return (decimal)(sbyte)input;
-								case TypeCode.Byte:    return (decimal)(byte)input;
-								case TypeCode.Int16:   return (decimal)(short)input;
-								case TypeCode.UInt16:  return (decimal)(ushort)input;
-								case TypeCode.Int32:   return (decimal)(int)input;
-								case TypeCode.UInt32:  return (decimal)(uint)input;
-								case TypeCode.Int64:   return (decimal)(long)input;
-								case TypeCode.UInt64:  return (decimal)(ulong)input;
-								case TypeCode.Single:  return (decimal)(float)input;
-								case TypeCode.Double:  return (decimal)(double)input;
-						}
-						break;
-				}
-				throw new InvalidCastException("Cast from " + sourceType + " to " + targetType + "not supported.");
-			}
-		}
-		#endregion
 		#endregion
 	}
 }

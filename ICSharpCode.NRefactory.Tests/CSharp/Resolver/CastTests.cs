@@ -35,10 +35,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		[Test]
 		public void OverflowingCast()
 		{
-			resolver.IsCheckedContext = false;
+			resolver.CheckForOverflow = false;
 			AssertConstant(uint.MaxValue, resolver.ResolveCast(ResolveType(typeof(uint)), MakeConstant(-1.6)));
-			resolver.IsCheckedContext = true;
+			resolver.CheckForOverflow = true;
 			AssertError(typeof(uint), resolver.ResolveCast(ResolveType(typeof(uint)), MakeConstant(-1.6)));
+		}
+		
+		[Test]
+		public void FailingStringCast()
+		{
+			AssertError(typeof(string), resolver.ResolveCast(ResolveType(typeof(string)), MakeConstant(1)));
 		}
 	}
 }

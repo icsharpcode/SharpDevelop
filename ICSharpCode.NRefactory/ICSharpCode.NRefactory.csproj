@@ -261,6 +261,7 @@
     <Compile Include="CSharp\Parser\mcs\literal.cs" />
     <Compile Include="Util\BitVector16.cs" />
     <Compile Include="Util\BusyManager.cs" />
+    <Compile Include="Util\CSharpPrimitiveCast.cs" />
     <Compile Include="Util\TreeTraversal.cs" />
   </ItemGroup>
   <ItemGroup>
