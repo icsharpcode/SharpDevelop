@@ -157,9 +157,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		public ExporterPage SinglePage {
+		public ISinglePage SinglePage {
 			get { return singlePage; }
 		}
+		
 		
 		public SectionBounds SectionBounds {
 			get { return sectionBounds; }

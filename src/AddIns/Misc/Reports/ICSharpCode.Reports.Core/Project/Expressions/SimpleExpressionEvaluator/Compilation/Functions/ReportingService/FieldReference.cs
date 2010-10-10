@@ -40,8 +40,7 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.ReportingService
 				if (item != null) {
 					retval = item.Value.ToString();
 				} else {
-					retval= String.Format(System.Globalization.CultureInfo.InvariantCulture,
-					                      "!! Can't find <{0}>  !! ",variable.VariableName);
+					retval = GlobalValues.UnkownFunctionMessage(variable.VariableName);
 				}
 				return retval;
 			}

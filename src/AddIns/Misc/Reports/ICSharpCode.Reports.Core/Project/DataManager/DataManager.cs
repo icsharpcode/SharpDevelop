@@ -64,7 +64,6 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 		
-		
 		#endregion
 		
 		

@@ -337,7 +337,6 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
-		
 		public  void BuildTree () 
 		{
 			this.BeginUpdate();
@@ -345,9 +344,11 @@ namespace ICSharpCode.Reports.Addin
 			SetSortColumns();
 			SetGroupColumns();
 			SetParameters();
+//			SetFunctions();
 			this.ExpandAll();
 			this.EndUpdate();
 		}
+		
 		
 		#endregion
 		
