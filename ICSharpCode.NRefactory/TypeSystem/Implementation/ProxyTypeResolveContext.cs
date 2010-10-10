@@ -53,5 +53,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			return target.Synchronize();
 		}
+		
+		/// <inheritdoc/>
+		public virtual object CacheToken {
+			// Don't forward this by default; we don't know what derived classes are doing;
+			// it might not be cache-safe.
+			get { return null; }
+		}
 	}
 }

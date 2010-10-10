@@ -1,0 +1,148 @@
+﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under MIT X11 license (for details please see \doc\license.txt)
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+
+namespace ICSharpCode.NRefactory.TypeSystem.Implementation
+{
+	/// <summary>
+	/// Represents multiple type resolve contexts.
+	/// </summary>
+	public class CompositeTypeResolveContext : ITypeResolveContext
+	{
+		/// <summary>
+		/// Creates a <see cref="CompositeTypeResolveContext"/> that combines the given resolve contexts.
+		/// If one of the input parameters is null, the other input parameter is returned directly.
+		/// If both input parameters are null, the function returns null.
+		/// </summary>
+		public static ITypeResolveContext Combine(ITypeResolveContext a, ITypeResolveContext b)
+		{
+			if (a == null)
+				return b;
+			if (b == null)
+				return a;
+			return new CompositeTypeResolveContext(new [] { a, b });
+		}
+		
+		readonly ITypeResolveContext[] children;
+		
+		/// <summary>
+		/// Creates a new <see cref="CompositeTypeResolveContext"/>
+		/// </summary>
+		public CompositeTypeResolveContext(IEnumerable<ITypeResolveContext> children)
+		{
+			if (children == null)
+				throw new ArgumentNullException("children");
+			this.children = children.ToArray();
+			foreach (ITypeResolveContext c in this.children) {
+				if (c == null)
+					throw new ArgumentException("children enumeration contains nulls");
+			}
+		}
+		
+		private CompositeTypeResolveContext(ITypeResolveContext[] children)
+		{
+			Debug.Assert(children != null);
+			this.children = children;
+		}
+		
+		/// <inheritdoc/>
+		public ITypeDefinition GetClass(string fullTypeName, int typeParameterCount, StringComparer nameComparer)
+		{
+			foreach (ITypeResolveContext context in children) {
+				ITypeDefinition d = context.GetClass(fullTypeName, typeParameterCount, nameComparer);
+				if (d != null)
+					return d;
+			}
+			return null;
+		}
+		
+		/// <inheritdoc/>
+		public IEnumerable<ITypeDefinition> GetClasses()
+		{
+			return children.SelectMany(c => c.GetClasses());
+		}
+		
+		/// <inheritdoc/>
+		public IEnumerable<ITypeDefinition> GetClasses(string nameSpace, StringComparer nameComparer)
+		{
+			return children.SelectMany(c => c.GetClasses(nameSpace, nameComparer));
+		}
+		
+		/// <inheritdoc/>
+		public IEnumerable<string> GetNamespaces()
+		{
+			return children.SelectMany(c => c.GetNamespaces()).Distinct();
+		}
+		
+		/// <inheritdoc/>
+		public virtual ISynchronizedTypeResolveContext Synchronize()
+		{
+			return Synchronize(new object());
+		}
+		
+		ISynchronizedTypeResolveContext Synchronize(object cacheToken)
+		{
+			ISynchronizedTypeResolveContext[] sync = new ISynchronizedTypeResolveContext[children.Length];
+			bool success = false;
+			try {
+				for (int i = 0; i < sync.Length; i++) {
+					sync[i] = children[i].Synchronize();
+					if (sync[i] == null)
+						throw new InvalidOperationException(children[i] + ".ToString() returned null");
+				}
+				ISynchronizedTypeResolveContext r = new CompositeSynchronizedTypeResolveContext(sync, cacheToken);
+				success = true;
+				return r;
+			} finally {
+				if (!success) {
+					// something went wrong, so immediately dispose the contexts we acquired
+					for (int i = 0; i < sync.Length; i++) {
+						if (sync[i] != null)
+							sync[i].Dispose();
+					}
+				}
+			}
+		}
+		
+		public virtual object CacheToken {
+			// We don't know if our input contexts are mutable, so, to be on the safe side,
+			// we don't implement caching here.
+			get { return null; }
+		}
+		
+		sealed class CompositeSynchronizedTypeResolveContext : CompositeTypeResolveContext, ISynchronizedTypeResolveContext
+		{
+			readonly object cacheToken;
+			
+			public CompositeSynchronizedTypeResolveContext(ISynchronizedTypeResolveContext[] children, object cacheToken)
+				: base(children)
+			{
+				Debug.Assert(cacheToken != null);
+				this.cacheToken = cacheToken;
+			}
+			
+			public void Dispose()
+			{
+				foreach (ISynchronizedTypeResolveContext element in children) {
+					element.Dispose();
+				}
+			}
+			
+			public override object CacheToken {
+				// I expect CompositeTypeResolveContext to be used for almost all resolver operations,
+				// so this is the only place where implementing cacheToken is really important.
+				get { return cacheToken; }
+			}
+			
+			public override ISynchronizedTypeResolveContext Synchronize()
+			{
+				// re-use the same cache token for nested synchronized contexts
+				return base.Synchronize(cacheToken);
+			}
+		}
+	}
+}

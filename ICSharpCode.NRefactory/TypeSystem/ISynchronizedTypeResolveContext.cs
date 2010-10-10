@@ -17,6 +17,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// A simple implementation might enter a ReaderWriterLock when the synchronized context
 	/// is created, and releases the lock when Dispose() is called.
 	/// However, implementations based on immutable data structures are also possible.
+	/// 
+	/// Calling Synchronize() on an already synchronized context is possible, but has no effect.
+	/// Only disposing the outermost ISynchronizedTypeResolveContext releases the lock.
 	/// </remarks>
 	public interface ISynchronizedTypeResolveContext : ITypeResolveContext, IDisposable
 	{

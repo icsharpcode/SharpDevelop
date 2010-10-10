@@ -5,60 +5,53 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	/// <summary>
 	/// Simple <see cref="IProjectContent"/> implementation that stores the list of classes/namespaces.
+	/// Synchronization is implemented using a <see cref="ReaderWriterLockSlim"/>.
 	/// </summary>
 	/// <remarks>
-	/// This is a decorator around <see cref="TypeStorage"/> that adds support for the IProjectContent interface
-	/// and for partial classes.
+	/// Compared with <see cref="TypeStorage"/>, this class adds support for the IProjectContent interface,
+	/// for partial classes, and for multi-threading.
 	/// </remarks>
-	public class SimpleProjectContent : ProxyTypeResolveContext, IProjectContent
+	public sealed class SimpleProjectContent : IProjectContent
 	{
-		readonly TypeStorage types;
+		// This class is sealed by design:
+		// the synchronization story doesn't mix well with someone trying to extend this class.
+		// If you wanted to derive from this: use delegation, not inheritance.
 		
-		#region Constructors
-		/// <summary>
-		/// Creates a new SimpleProjectContent.
-		/// </summary>
-		public SimpleProjectContent()
-			: this(new TypeStorage())
-		{
-		}
-		
-		/// <summary>
-		/// Creates a new SimpleProjectContent that reuses the specified type storage.
-		/// </summary>
-		protected SimpleProjectContent(TypeStorage types)
-			: base(types)
-		{
-			this.types = types;
-			this.assemblyAttributes = new List<IAttribute>();
-			this.readOnlyAssemblyAttributes = assemblyAttributes.AsReadOnly();
-		}
-		#endregion
+		readonly TypeStorage types = new TypeStorage();
+		readonly ReaderWriterLockSlim readerWriterLock = new ReaderWriterLockSlim();
 		
 		#region AssemblyAttributes
-		readonly List<IAttribute> assemblyAttributes;
-		readonly ReadOnlyCollection<IAttribute> readOnlyAssemblyAttributes;
+		readonly List<IAttribute> assemblyAttributes = new List<IAttribute>(); // mutable assembly attribute storage
+		
+		volatile IAttribute[] readOnlyAssemblyAttributes = {}; // volatile field with copy for reading threads
 		
 		/// <inheritdoc/>
-		public virtual IList<IAttribute> AssemblyAttributes {
+		public IList<IAttribute> AssemblyAttributes {
 			get { return readOnlyAssemblyAttributes; }
 		}
 		
-		void AddAssemblyAttributes(ICollection<IAttribute> attributes)
+		void AddRemoveAssemblyAttributes(ICollection<IAttribute> addedAttributes, ICollection<IAttribute> removedAttributes)
 		{
 			// API uses ICollection instead of IEnumerable to discourage users from evaluating
-			// the list inside the lock (this method is called inside the ReaderWriterLock)
-			assemblyAttributes.AddRange(attributes);
-		}
-		
-		void RemoveAssemblyAttributes(ICollection<IAttribute> attributes)
-		{
-			assemblyAttributes.RemoveAll(attributes.Contains);
+			// the list inside the lock (this method is called inside the write lock)
+			bool hasChanges = false;
+			if (removedAttributes != null && removedAttributes.Count > 0) {
+				if (assemblyAttributes.RemoveAll(removedAttributes.Contains) > 0)
+					hasChanges = true;
+			}
+			if (addedAttributes != null) {
+				assemblyAttributes.AddRange(addedAttributes);
+				hasChanges = true;
+			}
+			
+			if (hasChanges)
+				readOnlyAssemblyAttributes = assemblyAttributes.ToArray();
 		}
 		#endregion
 		
@@ -96,8 +89,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		                                 ICollection<IAttribute> oldAssemblyAttributes = null,
 		                                 ICollection<IAttribute> newAssemblyAttributes = null)
 		{
+			readerWriterLock.EnterWriteLock();
 			try {
-				types.ReadWriteLock.EnterWriteLock();
 				if (oldTypes != null) {
 					foreach (var element in oldTypes) {
 						RemoveType(element);
@@ -108,12 +101,93 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 						AddType(element);
 					}
 				}
-				if (oldAssemblyAttributes != null)
-					RemoveAssemblyAttributes(oldAssemblyAttributes);
-				if (newAssemblyAttributes != null)
-					AddAssemblyAttributes(newAssemblyAttributes);
+				AddRemoveAssemblyAttributes(oldAssemblyAttributes, newAssemblyAttributes);
 			} finally {
-				types.ReadWriteLock.ExitWriteLock();
+				readerWriterLock.ExitWriteLock();
+			}
+		}
+		#endregion
+		
+		#region IProjectContent implementation
+		public ITypeDefinition GetClass(string fullTypeName, int typeParameterCount, StringComparer nameComparer)
+		{
+			readerWriterLock.EnterReadLock();
+			try {
+				return types.GetClass(fullTypeName, typeParameterCount, nameComparer);
+			} finally {
+				readerWriterLock.ExitReadLock();
+			}
+		}
+		
+		public IEnumerable<ITypeDefinition> GetClasses()
+		{
+			readerWriterLock.EnterReadLock();
+			try {
+				// make a copy with ToArray() for thread-safe access
+				return types.GetClasses().ToArray();
+			} finally {
+				readerWriterLock.ExitReadLock();
+			}
+		}
+		
+		public IEnumerable<ITypeDefinition> GetClasses(string nameSpace, StringComparer nameComparer)
+		{
+			readerWriterLock.EnterReadLock();
+			try {
+				// make a copy with ToArray() for thread-safe access
+				return types.GetClasses(nameSpace, nameComparer).ToArray();
+			} finally {
+				readerWriterLock.ExitReadLock();
+			}
+		}
+		
+		public IEnumerable<string> GetNamespaces()
+		{
+			readerWriterLock.EnterReadLock();
+			try {
+				// make a copy with ToArray() for thread-safe access
+				return types.GetNamespaces().ToArray();
+			} finally {
+				readerWriterLock.ExitReadLock();
+			}
+		}
+		#endregion
+		
+		#region Synchronization
+		public object CacheToken {
+			get { return null; }
+		}
+		
+		public ISynchronizedTypeResolveContext Synchronize()
+		{
+			// don't acquire the lock on OutOfMemoryException etc.
+			ISynchronizedTypeResolveContext sync = new ReadWriteSynchronizedTypeResolveContext(types, readerWriterLock);
+			readerWriterLock.EnterReadLock();
+			return sync;
+		}
+		
+		sealed class ReadWriteSynchronizedTypeResolveContext : ProxyTypeResolveContext, ISynchronizedTypeResolveContext
+		{
+			ReaderWriterLockSlim readerWriterLock;
+			
+			public ReadWriteSynchronizedTypeResolveContext(ITypeResolveContext target, ReaderWriterLockSlim readerWriterLock)
+				: base(target)
+			{
+				this.readerWriterLock = readerWriterLock;
+			}
+			
+			public void Dispose()
+			{
+				if (readerWriterLock != null) {
+					readerWriterLock.ExitReadLock();
+					readerWriterLock = null;
+				}
+			}
+			
+			public override ISynchronizedTypeResolveContext Synchronize()
+			{
+				// nested Synchronize() calls don't need any locking
+				return new ReadWriteSynchronizedTypeResolveContext(target, null);
 			}
 		}
 		#endregion

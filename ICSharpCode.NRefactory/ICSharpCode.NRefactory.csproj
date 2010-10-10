@@ -179,7 +179,7 @@
     <Compile Include="TypeSystem\Implementation\DefaultProperty.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultTypeParameter.cs" />
     <Compile Include="TypeSystem\Implementation\GetClassTypeReference.cs" />
-    <Compile Include="TypeSystem\Implementation\AggregateTypeResolveContext.cs" />
+    <Compile Include="TypeSystem\Implementation\CompositeTypeResolveContext.cs" />
     <Compile Include="TypeSystem\Implementation\NestedTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\ProxyTypeResolveContext.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultTypeDefinition.cs" />
@@ -206,6 +206,7 @@
     <Compile Include="TypeSystem\ITypeResolveContext.cs" />
     <Compile Include="TypeSystem\NullableType.cs" />
     <Compile Include="TypeSystem\ParameterizedType.cs" />
+    <Compile Include="TypeSystem\ReflectionNameParseException.cs" />
     <Compile Include="TypeSystem\TypeVisitor.cs" />
     <Compile Include="TypeSystem\IVariable.cs" />
     <Compile Include="TypeSystem\PointerType.cs" />

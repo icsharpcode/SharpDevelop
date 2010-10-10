@@ -58,7 +58,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			ITypeDefinition c = Mscorlib.GetClass(typeof(IntPtr));
 			IMethod toPointer = c.Methods.Single(p => p.Name == "ToPointer");
-			Assert.AreEqual("System.Void*", toPointer.ReturnType.Resolve(ctx).DotNetName);
+			Assert.AreEqual("System.Void*", toPointer.ReturnType.Resolve(ctx).ReflectionName);
 			Assert.IsInstanceOf(typeof(PointerType), toPointer.ReturnType.Resolve(ctx));
 			Assert.AreEqual("System.Void", ((PointerType)toPointer.ReturnType.Resolve(ctx)).ElementType.FullName);
 		}
@@ -107,7 +107,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition c = Mscorlib.GetClass(typeof(Environment.SpecialFolder));
 			Assert.IsNotNull(c, "c is null");
 			Assert.AreEqual("System.Environment.SpecialFolder", c.FullName);
-			Assert.AreEqual("System.Environment+SpecialFolder", c.DotNetName);
+			Assert.AreEqual("System.Environment+SpecialFolder", c.ReflectionName);
 		}
 		
 		[Test]
@@ -135,7 +135,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var dictionaryRT = new ParameterizedType(dictionary, new[] { Mscorlib.GetClass(typeof(string)), Mscorlib.GetClass(typeof(int)) });
 			IProperty valueProperty = dictionaryRT.GetProperties(ctx).Single(p => p.Name == "Values");
 			IType parameterizedValueCollection = valueProperty.ReturnType.Resolve(ctx);
-			Assert.AreEqual("System.Collections.Generic.Dictionary`2+ValueCollection[[System.String],[System.Int32]]", parameterizedValueCollection.DotNetName);
+			Assert.AreEqual("System.Collections.Generic.Dictionary`2+ValueCollection[[System.String],[System.Int32]]", parameterizedValueCollection.ReflectionName);
 			Assert.AreSame(valueCollection, parameterizedValueCollection.GetDefinition());
 		}
 		

@@ -197,15 +197,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return this.ns; }
 		}
 		
-		public string DotNetName {
+		public string ReflectionName {
 			get {
 				if (declaringTypeDefinition != null) {
 					int tpCount = this.TypeParameterCount - declaringTypeDefinition.TypeParameterCount;
 					string combinedName;
 					if (tpCount > 0)
-						combinedName = declaringTypeDefinition.DotNetName + "+" + this.Name + "`" + tpCount.ToString(CultureInfo.InvariantCulture);
+						combinedName = declaringTypeDefinition.ReflectionName + "+" + this.Name + "`" + tpCount.ToString(CultureInfo.InvariantCulture);
 					else
-						combinedName = declaringTypeDefinition.DotNetName + "+" + this.Name;
+						combinedName = declaringTypeDefinition.ReflectionName + "+" + this.Name;
 					return combinedName;
 				} else {
 					int tpCount = this.TypeParameterCount;
@@ -523,7 +523,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public override string ToString()
 		{
-			return DotNetName;
+			return ReflectionName;
 		}
 		
 		/// <summary>

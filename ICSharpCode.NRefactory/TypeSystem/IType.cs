@@ -178,7 +178,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		string INamedElement.DotNetName {
+		string INamedElement.ReflectionName {
 			get {
 				Contract.Ensures(Contract.Result<string>() != null);
 				return null;

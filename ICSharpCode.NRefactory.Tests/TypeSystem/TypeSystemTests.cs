@@ -22,7 +22,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		[SetUpAttribute]
 		public void SetUp()
 		{
-			ctx = AggregateTypeResolveContext.Combine(testCasePC, CecilLoaderTests.Mscorlib);
+			ctx = CompositeTypeResolveContext.Combine(testCasePC, CecilLoaderTests.Mscorlib);
 		}
 		
 		ITypeDefinition GetClass(Type type)
@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(typeof(SimplePublicClass).Name, c.Name);
 			Assert.AreEqual(typeof(SimplePublicClass).FullName, c.FullName);
 			Assert.AreEqual(typeof(SimplePublicClass).Namespace, c.Namespace);
-			Assert.AreEqual(typeof(SimplePublicClass).FullName, c.DotNetName);
+			Assert.AreEqual(typeof(SimplePublicClass).FullName, c.ReflectionName);
 			
 			Assert.AreEqual(Accessibility.Public, c.Accessibility);
 			Assert.IsFalse(c.IsAbstract);
@@ -77,26 +77,26 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition testClass = testCasePC.GetClass(typeof(DynamicTest));
 			
 			IMethod m1 = testClass.Methods.Single(me => me.Name == "DynamicGenerics1");
-			Assert.AreEqual("System.Collections.Generic.List`1[[dynamic]]", m1.ReturnType.Resolve(ctx).DotNetName);
-			Assert.AreEqual("System.Action`3[[System.Object],[dynamic[]],[System.Object]]", m1.Parameters[0].Type.Resolve(ctx).DotNetName);
+			Assert.AreEqual("System.Collections.Generic.List`1[[dynamic]]", m1.ReturnType.Resolve(ctx).ReflectionName);
+			Assert.AreEqual("System.Action`3[[System.Object],[dynamic[]],[System.Object]]", m1.Parameters[0].Type.Resolve(ctx).ReflectionName);
 			
 			IMethod m2 = testClass.Methods.Single(me => me.Name == "DynamicGenerics2");
-			Assert.AreEqual("System.Action`3[[System.Object],[dynamic],[System.Object]]", m2.Parameters[0].Type.Resolve(ctx).DotNetName);
+			Assert.AreEqual("System.Action`3[[System.Object],[dynamic],[System.Object]]", m2.Parameters[0].Type.Resolve(ctx).ReflectionName);
 			
 			IMethod m3 = testClass.Methods.Single(me => me.Name == "DynamicGenerics3");
-			Assert.AreEqual("System.Action`3[[System.Int32],[dynamic],[System.Object]]", m3.Parameters[0].Type.Resolve(ctx).DotNetName);
+			Assert.AreEqual("System.Action`3[[System.Int32],[dynamic],[System.Object]]", m3.Parameters[0].Type.Resolve(ctx).ReflectionName);
 			
 			IMethod m4 = testClass.Methods.Single(me => me.Name == "DynamicGenerics4");
-			Assert.AreEqual("System.Action`3[[System.Int32[]],[dynamic],[System.Object]]", m4.Parameters[0].Type.Resolve(ctx).DotNetName);
+			Assert.AreEqual("System.Action`3[[System.Int32[]],[dynamic],[System.Object]]", m4.Parameters[0].Type.Resolve(ctx).ReflectionName);
 			
 			IMethod m5 = testClass.Methods.Single(me => me.Name == "DynamicGenerics5");
-			Assert.AreEqual("System.Action`3[[System.Int32*[]],[dynamic],[System.Object]]", m5.Parameters[0].Type.Resolve(ctx).DotNetName);
+			Assert.AreEqual("System.Action`3[[System.Int32*[]],[dynamic],[System.Object]]", m5.Parameters[0].Type.Resolve(ctx).ReflectionName);
 			
 			IMethod m6 = testClass.Methods.Single(me => me.Name == "DynamicGenerics6");
-			Assert.AreEqual("System.Action`3[[System.Object],[dynamic],[System.Object]]&", m6.Parameters[0].Type.Resolve(ctx).DotNetName);
+			Assert.AreEqual("System.Action`3[[System.Object],[dynamic],[System.Object]]&", m6.Parameters[0].Type.Resolve(ctx).ReflectionName);
 			
 			IMethod m7 = testClass.Methods.Single(me => me.Name == "DynamicGenerics7");
-			Assert.AreEqual("System.Action`3[[System.Int32[][,]],[dynamic],[System.Object]]", m7.Parameters[0].Type.Resolve(ctx).DotNetName);
+			Assert.AreEqual("System.Action`3[[System.Int32[][,]],[dynamic],[System.Object]]", m7.Parameters[0].Type.Resolve(ctx).ReflectionName);
 		}
 		
 		[Test]
@@ -117,7 +117,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual("System.Collections.Generic.IDictionary", crt.FullName);
 			Assert.AreEqual("System.String", crt.TypeArguments[0].FullName);
 			// ? for NUnit.TestAttribute (because that assembly isn't in ctx)
-			Assert.AreEqual("System.Collections.Generic.IList`1[[?]]", crt.TypeArguments[1].DotNetName);
+			Assert.AreEqual("System.Collections.Generic.IList`1[[?]]", crt.TypeArguments[1].ReflectionName);
 		}
 		
 		[Test]
@@ -140,7 +140,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreSame(m, m.TypeParameters[0].ParentMethod);
 			Assert.AreSame(m, m.TypeParameters[1].ParentMethod);
 			
-			Assert.AreEqual("System.IComparable`1[[``1]]", m.TypeParameters[0].Constraints[0].Resolve(ctx).DotNetName);
+			Assert.AreEqual("System.IComparable`1[[``1]]", m.TypeParameters[0].Constraints[0].Resolve(ctx).ReflectionName);
 			Assert.AreSame(m.TypeParameters[0], m.TypeParameters[1].Constraints[0].Resolve(ctx));
 		}
 		
@@ -202,8 +202,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			var e = testCasePC.GetClass(typeof(MyEnum));
 			Assert.AreEqual(ClassType.Enum, e.ClassType);
 			Assert.AreEqual(false, e.IsReferenceType);
-			Assert.AreEqual("System.Int16", e.BaseTypes[0].Resolve(ctx).DotNetName);
-			Assert.AreEqual(new[] { "System.Enum" }, e.GetBaseTypes(ctx).Select(t => t.DotNetName).ToArray());
+			Assert.AreEqual("System.Int16", e.BaseTypes[0].Resolve(ctx).ReflectionName);
+			Assert.AreEqual(new[] { "System.Enum" }, e.GetBaseTypes(ctx).Select(t => t.ReflectionName).ToArray());
 		}
 		
 		[Test]

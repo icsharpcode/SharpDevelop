@@ -178,7 +178,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				get { return string.Empty; }
 			}
 			
-			string INamedElement.DotNetName {
+			string INamedElement.ReflectionName {
 				get { return "operator"; }
 			}
 			

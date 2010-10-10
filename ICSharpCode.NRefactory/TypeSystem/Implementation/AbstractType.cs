@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return string.Empty; }
 		}
 		
-		public virtual string DotNetName {
+		public virtual string ReflectionName {
 			get { return this.FullName; }
 		}
 		
@@ -101,7 +101,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public override string ToString()
 		{
-			return this.DotNetName;
+			return this.ReflectionName;
 		}
 		
 		public virtual IType AcceptVisitor(TypeVisitor visitor)

@@ -28,8 +28,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return elementType.FullName + NameSuffix; }
 		}
 		
-		public override string DotNetName {
-			get { return elementType.DotNetName + NameSuffix; }
+		public override string ReflectionName {
+			get { return elementType.ReflectionName + NameSuffix; }
 		}
 		
 		public abstract string NameSuffix { get; }

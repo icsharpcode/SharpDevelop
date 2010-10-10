@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.TypeSystem
@@ -22,6 +23,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		public sealed class Dynamic {}
 		
+		#region ITypeResolveContext.GetClass(Type)
 		/// <summary>
 		/// Retrieves a class.
 		/// </summary>
@@ -55,7 +57,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return context.GetClass(name, typeParameterCount, StringComparer.Ordinal);
 			}
 		}
+		#endregion
 		
+		#region Type.ToTypeReference()
 		/// <summary>
 		/// Creates a reference to the specified type.
 		/// </summary>
@@ -90,7 +94,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					}
 					return SharedTypes.UnknownType;
 				} else {
-					ITypeDefinition c = (entity as ITypeDefinition) ?? (entity is IMember ? ((IMember)entity).DeclaringTypeDefinition : null);
+					ITypeDefinition c = (entity as ITypeDefinition) ?? (entity != null ? entity.DeclaringTypeDefinition : null);
 					if (c != null && type.GenericParameterPosition < c.TypeParameters.Count) {
 						if (c.TypeParameters[type.GenericParameterPosition].Name == type.Name) {
 							return c.TypeParameters[type.GenericParameterPosition];
@@ -113,7 +117,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return new GetClassTypeReference(name, typeParameterCount);
 			}
 		}
+		#endregion
 		
+		#region SplitTypeParameterCountFromReflectionName
 		/// <summary>
 		/// Removes the ` with type parameter count from the reflection name.
 		/// </summary>
@@ -146,7 +152,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					return reflectionName;
 			}
 		}
+		#endregion
 		
+		#region TypeCode.ToTypeReference()
 		static readonly ITypeReference[] primitiveTypeReferences = {
 			SharedTypes.UnknownType, // TypeCode.Empty
 			new GetClassTypeReference("System.Object", 0),
@@ -178,7 +186,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			return primitiveTypeReferences[(int)typeCode];
 		}
+		#endregion
 		
+		#region GetTypeCode
 		static readonly Dictionary<string, TypeCode> typeNameToCodeDict = new Dictionary<string, TypeCode> {
 			{ "System.Object",   TypeCode.Object },
 			{ "System.DBNull",   TypeCode.DBNull },
@@ -211,5 +221,180 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			else
 				return TypeCode.Empty;
 		}
+		#endregion
+		
+		#region ParseReflectionName
+		/// <summary>
+		/// Parses a reflection name into a type reference.
+		/// </summary>
+		public static ITypeReference ParseReflectionName(string reflectionTypeName, IEntity parentEntity = null)
+		{
+			int pos = 0;
+			ITypeReference r = ParseReflectionName(reflectionTypeName, ref pos, parentEntity);
+			if (pos < reflectionTypeName.Length)
+				throw new ReflectionNameParseException(pos, "Expected end of type name");
+			return r;
+		}
+		
+		static bool IsReflectionNameSpecialCharacter(char c)
+		{
+			switch (c) {
+				case '+':
+				case '`':
+				case '[':
+				case ']':
+				case ',':
+				case '*':
+				case '&':
+					return true;
+				default:
+					return false;
+			}
+		}
+		
+		static ITypeReference ParseReflectionName(string reflectionTypeName, ref int pos, IEntity entity)
+		{
+			if (pos == reflectionTypeName.Length)
+				throw new ReflectionNameParseException(pos, "Unexpected end");
+			if (reflectionTypeName[pos] == '`') {
+				// type parameter reference
+				pos++;
+				if (pos == reflectionTypeName.Length)
+					throw new ReflectionNameParseException(pos, "Unexpected end");
+				if (reflectionTypeName[pos] == '`') {
+					// method type parameter reference
+					pos++;
+					int index = ReadTypeParameterCount(reflectionTypeName, ref pos);
+					IMethod method = entity as IMethod;
+					if (method != null && index >= 0 && index < method.TypeParameters.Count)
+						return method.TypeParameters[index];
+					else
+						return SharedTypes.UnknownType;
+				} else {
+					// class type parameter reference
+					int index = ReadTypeParameterCount(reflectionTypeName, ref pos);
+					ITypeDefinition c = (entity as ITypeDefinition) ?? (entity != null ? entity.DeclaringTypeDefinition : null);
+					if (c != null && index >= 0 && index < c.TypeParameters.Count)
+						return c.TypeParameters[index];
+					else
+						return SharedTypes.UnknownType;
+				}
+			}
+			// not a type parameter reference: read the actual type name
+			int tpc;
+			string typeName = ReadTypeName(reflectionTypeName, ref pos, out tpc);
+			ITypeReference reference = new GetClassTypeReference(typeName, tpc);
+			// read type suffixes
+			while (pos < reflectionTypeName.Length) {
+				switch (reflectionTypeName[pos++]) {
+					case '+':
+						typeName = ReadTypeName(reflectionTypeName, ref pos, out tpc);
+						reference = new NestedTypeReference(reference, typeName, tpc);
+						break;
+					case '*':
+						reference = new PointerTypeReference(reference);
+						break;
+					case '&':
+						reference = new ByReferenceTypeReference(reference);
+						break;
+					case '[':
+						// this might be an array or a generic type
+						if (pos == reflectionTypeName.Length)
+							throw new ReflectionNameParseException(pos, "Unexpected end");
+						if (reflectionTypeName[pos] == '[') {
+							// it's a generic type
+							List<ITypeReference> typeArguments = new List<ITypeReference>(tpc);
+							pos++;
+							typeArguments.Add(ParseReflectionName(reflectionTypeName, ref pos, entity));
+							if (pos < reflectionTypeName.Length && reflectionTypeName[pos] == ']')
+								pos++;
+							else
+								throw new ReflectionNameParseException(pos, "Expected end of type argument");
+							
+							while (pos < reflectionTypeName.Length && reflectionTypeName[pos] == ',') {
+								pos++;
+								if (pos < reflectionTypeName.Length && reflectionTypeName[pos] == '[')
+									pos++;
+								else
+									throw new ReflectionNameParseException(pos, "Expected another type argument");
+								
+								typeArguments.Add(ParseReflectionName(reflectionTypeName, ref pos, entity));
+								
+								if (pos < reflectionTypeName.Length && reflectionTypeName[pos] == ']')
+									pos++;
+								else
+									throw new ReflectionNameParseException(pos, "Expected end of type argument");
+							}
+							
+							if (pos < reflectionTypeName.Length && reflectionTypeName[pos] == ']') {
+								pos++;
+								reference = new ParameterizedTypeReference(reference, typeArguments);
+							} else {
+								throw new ReflectionNameParseException(pos, "Expected end of generic type");
+							}
+						} else {
+							// it's an array
+							int dimensions = 1;
+							while (pos < reflectionTypeName.Length && reflectionTypeName[pos] == ',') {
+								dimensions++;
+								pos++;
+							}
+							if (pos < reflectionTypeName.Length && reflectionTypeName[pos] == ']') {
+								pos++; // end of array
+								reference = new ArrayTypeReference(reference, dimensions);
+							} else {
+								throw new ReflectionNameParseException(pos, "Expected array modifier");
+							}
+						}
+						break;
+					case ',':
+						// assembly qualified name, ignore everything up to the end/next ']'
+						while (pos < reflectionTypeName.Length && reflectionTypeName[pos] != ']')
+							pos++;
+						break;
+					default:
+						pos--; // reset pos to the character we couldn't read
+						if (reflectionTypeName[pos] == ']')
+							return reference; // return from a nested generic
+						else
+							throw new ReflectionNameParseException(pos, "Unexpected character: '" + reflectionTypeName[pos] + "'");
+				}
+			}
+			return reference;
+		}
+		
+		static string ReadTypeName(string reflectionTypeName, ref int pos, out int tpc)
+		{
+			int startPos = pos;
+			// skip the simple name portion:
+			while (pos < reflectionTypeName.Length && !IsReflectionNameSpecialCharacter(reflectionTypeName[pos]))
+				pos++;
+			if (pos == startPos)
+				throw new ReflectionNameParseException(pos, "Expected type name");
+			string typeName = reflectionTypeName.Substring(startPos, pos - startPos);
+			if (pos < reflectionTypeName.Length && reflectionTypeName[pos] == '`') {
+				pos++;
+				tpc = ReadTypeParameterCount(reflectionTypeName, ref pos);
+			} else {
+				tpc = 0;
+			}
+			return typeName;
+		}
+		
+		static int ReadTypeParameterCount(string reflectionTypeName, ref int pos)
+		{
+			int startPos = pos;
+			while (pos < reflectionTypeName.Length) {
+				char c = reflectionTypeName[pos];
+				if (c < '0' || c > '9')
+					break;
+				pos++;
+			}
+			int tpc;
+			if (!int.TryParse(reflectionTypeName.Substring(startPos, pos - startPos), out tpc))
+				throw new ReflectionNameParseException(pos, "Expected type parameter count");
+			return tpc;
+		}
+		#endregion
 	}
 }

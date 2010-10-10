@@ -10,16 +10,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	/// <summary>
 	/// Stores a set of types and allows resolving them.
-	/// Synchronization is implemented using a <see cref="ReaderWriterLockSlim"/>.
 	/// </summary>
+	/// <remarks>
+	/// Concurrent read accesses are thread-safe, but a write access concurrent to any other access is not safe.
+	/// </remarks>
 	public sealed class TypeStorage : ITypeResolveContext
 	{
-		ReaderWriterLockSlim readWriteLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-		
-		public ReaderWriterLockSlim ReadWriteLock {
-			get { return readWriteLock; }
-		}
-		
 		#region FullNameAndTypeParameterCount
 		struct FullNameAndTypeParameterCount
 		{
@@ -57,7 +53,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		#endregion
 		
 		#region Type Dictionary Storage
-		Dictionary<FullNameAndTypeParameterCount, ITypeDefinition>[] _typeDicts = {
+		volatile Dictionary<FullNameAndTypeParameterCount, ITypeDefinition>[] _typeDicts = {
 			new Dictionary<FullNameAndTypeParameterCount, ITypeDefinition>(FullNameAndTypeParameterCountComparer.Ordinal)
 		};
 		readonly object typeDictsLock = new object();
@@ -66,7 +62,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			// Gets the dictionary for the specified comparer, creating it if necessary.
 			// New dictionaries might be added during read accesses, so this method needs to be thread-safe,
-			// as we allow concurrent read-accesses without locking.
+			// as we allow concurrent read-accesses.
 			var typeDicts = this._typeDicts;
 			foreach (var dict in typeDicts) {
 				FullNameAndTypeParameterCountComparer comparer = (FullNameAndTypeParameterCountComparer)dict.Comparer;
@@ -74,38 +70,33 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					return dict;
 			}
 			
-			try {
-				// ensure we have a read-lock on the PC so that no concurrent modifications are attempted
-				readWriteLock.EnterReadLock();
-				// ensure that no other thread can try to lazy-create this (or another) dict
-				lock (typeDictsLock) {
-					typeDicts = this._typeDicts; // fetch fresh value after locking
-					// try looking for it again, maybe it was added while we were waiting for a lock
-					foreach (var dict in typeDicts) {
-						FullNameAndTypeParameterCountComparer comparer = (FullNameAndTypeParameterCountComparer)dict.Comparer;
-						if (comparer.NameComparer == nameComparer)
-							return dict;
-					}
-					
-					// now create new dict
-					var oldDict = typeDicts[0]; // Ordinal dict
-					var newDict = new Dictionary<FullNameAndTypeParameterCount, ITypeDefinition>(
-						oldDict.Count,
-						new FullNameAndTypeParameterCountComparer(nameComparer));
-					foreach (var pair in oldDict) {
-						// don't use Add() as there might be conflicts in the target language
-						newDict[pair.Key] = pair.Value;
-					}
-					
-					// add the new dict to the array of dicts
-					var newTypeDicts = new Dictionary<FullNameAndTypeParameterCount, ITypeDefinition>[typeDicts.Length + 1];
-					Array.Copy(typeDicts, 0, newTypeDicts, 0, typeDicts.Length);
-					newTypeDicts[typeDicts.Length] = newDict;
-					this._typeDicts = newTypeDicts;
-					return newDict;
+			// ensure that no other thread can try to lazy-create this (or another) dict
+			lock (typeDictsLock) {
+				typeDicts = this._typeDicts; // fetch fresh value after locking
+				// try looking for it again, maybe it was added while we were waiting for a lock
+				// (double-checked locking pattern)
+				foreach (var dict in typeDicts) {
+					FullNameAndTypeParameterCountComparer comparer = (FullNameAndTypeParameterCountComparer)dict.Comparer;
+					if (comparer.NameComparer == nameComparer)
+						return dict;
 				}
-			} finally {
-				readWriteLock.ExitReadLock();
+				
+				// now create new dict
+				var oldDict = typeDicts[0]; // Ordinal dict
+				var newDict = new Dictionary<FullNameAndTypeParameterCount, ITypeDefinition>(
+					oldDict.Count,
+					new FullNameAndTypeParameterCountComparer(nameComparer));
+				foreach (var pair in oldDict) {
+					// don't use Add() as there might be conflicts in the target language
+					newDict[pair.Key] = pair.Value;
+				}
+				
+				// add the new dict to the array of dicts
+				var newTypeDicts = new Dictionary<FullNameAndTypeParameterCount, ITypeDefinition>[typeDicts.Length + 1];
+				Array.Copy(typeDicts, 0, newTypeDicts, 0, typeDicts.Length);
+				newTypeDicts[typeDicts.Length] = newDict;
+				this._typeDicts = newTypeDicts;
+				return newDict;
 			}
 		}
 		#endregion
@@ -146,31 +137,21 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		#endregion
 		
 		#region Synchronize
-		/// <inheritdoc/>
+		/// <summary>
+		/// TypeStorage is mutable and does not provide any means for synchronization, so this method
+		/// always throws a <see cref="NotSupportedException"/>.
+		/// </summary>
 		public ISynchronizedTypeResolveContext Synchronize()
 		{
-			readWriteLock.EnterReadLock();
-			return new ReadWriteSynchronizedTypeResolveContext(this, readWriteLock);
+			throw new NotSupportedException();
 		}
 		
-		sealed class ReadWriteSynchronizedTypeResolveContext : ProxyTypeResolveContext, ISynchronizedTypeResolveContext
-		{
-			readonly ReaderWriterLockSlim readWriteLock;
-			bool disposed;
-			
-			public ReadWriteSynchronizedTypeResolveContext(ITypeResolveContext context, ReaderWriterLockSlim readWriteLock)
-				: base(context)
-			{
-				this.readWriteLock = readWriteLock;
-			}
-			
-			public void Dispose()
-			{
-				if (!disposed) {
-					disposed = true;
-					readWriteLock.ExitReadLock();
-				}
-			}
+		/// <inheritdoc/>
+		public object CacheToken {
+			// TypeStorage is mutable, so caching is a bad idea.
+			// We could provide a CacheToken if we update it on every modication, but
+			// that's not worth the effort as TypeStorage is rarely directly used in resolve operations.
+			get { return null; }
 		}
 		#endregion
 		
@@ -182,14 +163,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			if (fullName == null)
 				throw new ArgumentNullException("fullName");
-			try {
-				readWriteLock.EnterWriteLock();
-				var key = new FullNameAndTypeParameterCount(fullName, typeParameterCount);
-				foreach (var dict in _typeDicts) {
-					dict.Remove(key);
-				}
-			} finally {
-				readWriteLock.ExitWriteLock();
+			var key = new FullNameAndTypeParameterCount(fullName, typeParameterCount);
+			foreach (var dict in _typeDicts) {
+				dict.Remove(key);
 			}
 		}
 		#endregion
@@ -203,14 +179,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			if (typeDefinition == null)
 				throw new ArgumentNullException("typeDefinition");
-			try {
-				readWriteLock.EnterWriteLock();
-				var key = new FullNameAndTypeParameterCount(typeDefinition.FullName, typeDefinition.TypeParameterCount);
-				foreach (var dict in _typeDicts) {
-					dict[key] = typeDefinition;
-				}
-			} finally {
-				readWriteLock.ExitWriteLock();
+			var key = new FullNameAndTypeParameterCount(typeDefinition.FullName, typeDefinition.TypeParameterCount);
+			foreach (var dict in _typeDicts) {
+				dict[key] = typeDefinition;
 			}
 		}
 		#endregion

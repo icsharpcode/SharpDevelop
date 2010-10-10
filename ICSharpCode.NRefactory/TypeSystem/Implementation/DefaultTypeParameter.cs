@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return string.Empty; }
 		}
 		
-		public string DotNetName {
+		public string ReflectionName {
 			get {
 				if (parent is IMethod)
 					return "``" + index.ToString();

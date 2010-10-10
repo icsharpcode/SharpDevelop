@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// "System.Collections.Generic.List`1[[System.String]]" for List&lt;string&gt;
 		/// "System.Environment+SpecialFolder" for Environment.SpecialFolder
 		/// </returns>
-		string DotNetName {
+		string ReflectionName {
 			get;
 		}
 	}
@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		string INamedElement.DotNetName {
+		string INamedElement.ReflectionName {
 			get {
 				Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
 				return null;

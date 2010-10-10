@@ -25,6 +25,18 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
+			// TODO: caching idea: if these lookups are a performance problem and the same GetClassTypeReference
+			// is asked to resolve lots of times in a row, try the following:
+			// Give ITypeResolveContext a property "object CacheToken { get; }" which is non-null if the
+			// context supports caching, and returns the same object only as long as the context is unchanged.
+			
+			// Then store a thread-local array KeyValuePair<GetClassTypeReference, IType> with the last 5 (?) resolved
+			// types, and a thread-local reference to the cache token. Subsequent calls with the same cache token
+			// do a quick (reference equality) lookup in the array first.
+			// This should be faster than any ServiceContainer-based caches.
+			// It is worth an idea to make CacheToken implement IServiceContainer, so that other (more expensive)
+			// caches can be registered there, but I think it's troublesome as one ITypeResolveContext should be usable
+			// on multiple threads.
 			return context.GetClass(fullTypeName, typeParameterCount, StringComparer.Ordinal) ?? SharedTypes.UnknownType;
 		}
 		

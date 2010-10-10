@@ -237,13 +237,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			get { return declaringTypeDefinition.Namespace; }
 		}
 		
-		public virtual string DotNetName {
-			get { return this.DeclaringType.DotNetName + "." + this.Name; }
+		public virtual string ReflectionName {
+			get { return this.DeclaringType.ReflectionName + "." + this.Name; }
 		}
 		
 		public override string ToString()
 		{
-			return "[" + EntityType + " " + DotNetName + ":" + ReturnType + "]";
+			return "[" + EntityType + " " + ReflectionName + ":" + ReturnType + "]";
 		}
 		
 		public virtual void PrepareForInterning(IInterningProvider provider)

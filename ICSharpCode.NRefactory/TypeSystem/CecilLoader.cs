@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				TypeStorage typeStorage = new TypeStorage();
 				CecilProjectContent pc = new CecilProjectContent(typeStorage, assemblyDefinition.Name.FullName, assemblyAttributes.AsReadOnly());
 				
-				this.EarlyBindContext = AggregateTypeResolveContext.Combine(pc, this.EarlyBindContext);
+				this.EarlyBindContext = CompositeTypeResolveContext.Combine(pc, this.EarlyBindContext);
 				List<CecilTypeDefinition> types = new List<CecilTypeDefinition>();
 				foreach (ModuleDefinition module in assemblyDefinition.Modules) {
 					foreach (TypeDefinition td in module.Types) {

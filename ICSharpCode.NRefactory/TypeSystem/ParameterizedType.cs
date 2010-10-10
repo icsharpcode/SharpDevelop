@@ -115,15 +115,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			get { return genericType.Namespace;}
 		}
 		
-		public string DotNetName {
+		public string ReflectionName {
 			get {
-				StringBuilder b = new StringBuilder(genericType.DotNetName);
+				StringBuilder b = new StringBuilder(genericType.ReflectionName);
 				b.Append('[');
 				for (int i = 0; i < typeArguments.Length; i++) {
 					if (i > 0)
 						b.Append(',');
 					b.Append('[');
-					b.Append(typeArguments[i].DotNetName);
+					b.Append(typeArguments[i].ReflectionName);
 					b.Append(']');
 				}
 				b.Append(']');
@@ -133,7 +133,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		public override string ToString()
 		{
-			return DotNetName;
+			return ReflectionName;
 		}
 		
 		public ReadOnlyCollection<IType> TypeArguments {

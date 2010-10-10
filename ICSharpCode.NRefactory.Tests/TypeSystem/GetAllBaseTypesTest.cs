@@ -18,12 +18,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		IType[] GetAllBaseTypes(Type type)
 		{
-			return type.ToTypeReference().Resolve(context).GetAllBaseTypes(context).OrderBy(t => t.DotNetName).ToArray();
+			return type.ToTypeReference().Resolve(context).GetAllBaseTypes(context).OrderBy(t => t.ReflectionName).ToArray();
 		}
 		
 		IType[] GetTypes(params Type[] types)
 		{
-			return types.Select(t => t.ToTypeReference().Resolve(context)).OrderBy(t => t.DotNetName).ToArray();;
+			return types.Select(t => t.ToTypeReference().Resolve(context)).OrderBy(t => t.ReflectionName).ToArray();;
 		}
 		
 		[Test]
@@ -85,7 +85,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				mscorlib.GetClass(typeof(object))
 			};
 			Assert.AreEqual(expected,
-			                c.GetAllBaseTypes(context).OrderBy(t => t.DotNetName).ToArray());
+			                c.GetAllBaseTypes(context).OrderBy(t => t.ReflectionName).ToArray());
 		}
 		
 		[Test]
@@ -103,7 +103,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				mscorlib.GetClass(typeof(ValueType))
 			};
 			Assert.AreEqual(expected,
-			                s.GetAllBaseTypes(context).OrderBy(t => t.DotNetName).ToArray());
+			                s.GetAllBaseTypes(context).OrderBy(t => t.ReflectionName).ToArray());
 		}
 	}
 }

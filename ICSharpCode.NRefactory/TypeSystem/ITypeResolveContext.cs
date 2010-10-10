@@ -66,6 +66,22 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// However, implementations based on immutable data structures are also possible.
 		/// </remarks>
 		ISynchronizedTypeResolveContext Synchronize();
+		
+		/// <summary>
+		/// Returns an object if caching information based on this resolve context is allowed,
+		/// or null if caching is not allowed.
+		/// Whenever the resolve context changes in some way, this property must return a new object.
+		/// </summary>
+		/// <remarks>
+		/// This allows consumers to see whether their cache is still valid by comparing the current
+		/// CacheToken with the one they saw before.
+		/// 
+		/// For ISynchronizedTypeResolveContext, this property could be implemented as <c>return this;</c>.
+		/// However, it is a bad idea to use an object is large or that references a large object graph
+		/// -- consumers may store a reference to the cache token indefinately, possible extending the
+		/// lifetime of the ITypeResolveContext.
+		/// </remarks>
+		object CacheToken { get; }
 	}
 	
 	[ContractClassFor(typeof(ITypeResolveContext))]
@@ -103,6 +119,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			Contract.Ensures(Contract.Result<IEnumerable<ITypeDefinition>>() != null);
 			return null;
+		}
+		
+		object ITypeResolveContext.CacheToken {
+			get { return null; }
 		}
 	}
 }
