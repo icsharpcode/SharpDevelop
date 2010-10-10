@@ -48,6 +48,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets the full reflection name of the element.
 		/// </summary>
+		/// <remarks>
+		/// For types, the reflection name can be parsed back into a ITypeReference by using
+		/// <see cref="ReflectionHelper.ParseReflectionName"/>.
+		/// </remarks>
 		/// <returns>
 		/// "System.Int32[]" for int[]<br/>
 		/// "System.Int32[][,]" for C# int[,][]<br/>

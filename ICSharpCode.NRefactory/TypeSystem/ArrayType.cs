@@ -12,9 +12,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// </summary>
 	public class ArrayType : TypeWithElementType
 	{
-		int dimensions;
+		readonly int dimensions;
 		
-		public ArrayType(IType elementType, int dimensions) : base(elementType)
+		public ArrayType(IType elementType, int dimensions = 1) : base(elementType)
 		{
 			if (dimensions <= 0)
 				throw new ArgumentOutOfRangeException("dimensions", dimensions, "dimensions must be positive");
@@ -27,10 +27,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		public override string NameSuffix {
 			get {
-				if (dimensions == 0)
-					return "[]";
-				else
-					return "[" + new string(',', dimensions-1) + "]";
+				return "[" + new string(',', dimensions-1) + "]";
 			}
 		}
 		
@@ -83,7 +80,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		ITypeReference elementType;
 		int dimensions;
 		
-		public ArrayTypeReference(ITypeReference elementType, int dimensions)
+		public ArrayTypeReference(ITypeReference elementType, int dimensions = 1)
 		{
 			if (elementType == null)
 				throw new ArgumentNullException("elementType");

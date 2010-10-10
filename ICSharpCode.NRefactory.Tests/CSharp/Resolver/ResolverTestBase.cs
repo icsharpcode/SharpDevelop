@@ -13,6 +13,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	public abstract class ResolverTestBase
 	{
 		protected readonly IProjectContent mscorlib = CecilLoaderTests.Mscorlib;
+		protected readonly ITypeResolveContext context = CecilLoaderTests.Mscorlib;
 		protected CSharpResolver resolver;
 		
 		[SetUp]
@@ -23,7 +24,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		protected IType ResolveType(Type type)
 		{
-			IType t = type.ToTypeReference().Resolve(mscorlib);
+			IType t = type.ToTypeReference().Resolve(context);
 			if (t == SharedTypes.UnknownType)
 				throw new InvalidOperationException("Could not resolve type");
 			return t;
@@ -63,14 +64,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			Assert.IsFalse(rr.IsError, rr.ToString() + " is an error");
 			Assert.IsFalse(rr.IsCompileTimeConstant, rr.ToString() + " is a compile-time constant");
-			Assert.AreEqual(expectedType.ToTypeReference().Resolve(mscorlib), rr.Type);
+			Assert.AreEqual(expectedType.ToTypeReference().Resolve(context), rr.Type);
 		}
 		
 		protected void AssertError(Type expectedType, ResolveResult rr)
 		{
 			Assert.IsTrue(rr.IsError, rr.ToString() + " is not an error, but an error was expected");
 			Assert.IsFalse(rr.IsCompileTimeConstant, rr.ToString() + " is a compile-time constant");
-			Assert.AreEqual(expectedType.ToTypeReference().Resolve(mscorlib), rr.Type);
+			Assert.AreEqual(expectedType.ToTypeReference().Resolve(context), rr.Type);
 		}
 	}
 }

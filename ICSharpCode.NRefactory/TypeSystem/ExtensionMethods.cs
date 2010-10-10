@@ -125,12 +125,33 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets whether the type is an delegate type.
 		/// </summary>
+		/// <remarks>This method returns <c>false</c> for System.Delegate itself</remarks>
 		public static bool IsDelegate(this IType type)
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
 			ITypeDefinition def = type.GetDefinition();
 			return def != null && def.ClassType == ClassType.Delegate;
+		}
+		
+		/// <summary>
+		/// Gets the invoke method for a delegate type.
+		/// </summary>
+		/// <remarks>
+		/// Returns null if the type is not a delegate type; or if the invoke method could not be found.
+		/// </remarks>
+		public static IMethod GetDelegateInvokeMethod(this IType type)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			ITypeDefinition def = type.GetDefinition();
+			if (def != null && def.ClassType == ClassType.Delegate) {
+				foreach (IMethod method in def.Methods) {
+					if (method.Name == "Invoke")
+						return method;
+				}
+			}
+			return null;
 		}
 		#endregion
 	}

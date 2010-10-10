@@ -28,7 +28,7 @@ Null-Object pattern:
 	this allows code completion to work in the presence of minor semantic errors.
 
 FAQ:
-Q:	What is the difference between a type and a type definition?
+Q:	What is the difference between types and type definitions?
 
 A:	Basically, a type (IType) is any type in the .NET type system:
 		- an array (ArrayType)
@@ -45,7 +45,8 @@ A:	Basically, a type (IType) is any type in the .NET type system:
 	method. The GetDefinition() method will also return the underlying ITypeDefinition if given a parameterized type,
 	so "List<int>".GetDefinition() is "List<T>".
 
-Q:	What is the difference betweent type references and types?
+
+Q:	What is the difference between types and type references?
 	I've seen lots of duplicated classes (ArrayType vs. ArrayTypeReference, etc.)
 	
 	NRefactory has the concept of the "project content": every assembly/project is stored independently from other assemblies/projects.
@@ -62,6 +63,10 @@ Q:	What is the difference betweent type references and types?
 	Note that every type can also be used as type reference - the IType interface derives from ITypeReference.
 	Every IType simply returns itself when the Resolve()-method is called.
 	Types are often directly used as references when source and target of the reference are within the same assembly.
+	
+	Because an ArrayType must have an IType as element type, we also need the ArrayTypeReference to represent an array
+	of a type that's not yet resolved. When resolved, the ArrayTypeReference produces an array type:
+		new ArrayTypeReference(r).Resolve(context) = new ArrayType(r.Resolve(context))
 
 A:	If you've previously used the .NET Reflection API, the concept of type references is new to you.
 
@@ -80,6 +85,7 @@ A:	Please use:
 	And do you always test your code in a scenario where mscorlib isn't contained in the resolve context?
 	The approach suggested above will return SharedTypes.UnknownType when the type cannot be resolved, so you
 	don't run into the risk of getting NullReferenceExceptions.
+
 
 Q:	Is it thread-safe?
 
@@ -124,3 +130,8 @@ A:	This question is a bit difficult to answer.
 	The return value "syncContext" can then be used to access the type resolve context without further synchronization overhead.
 	Once the return value is disposed, the read-locks are released.
 
+
+Q:	What format do the .ToString() methods use?
+
+A:	They don't use any particular format. They're merely intended as a debugging aid.
+	Currently .ToString() usually matches .ReflectionName, but that may change in the future.

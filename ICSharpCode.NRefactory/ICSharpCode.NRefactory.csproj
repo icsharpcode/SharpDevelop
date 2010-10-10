@@ -144,6 +144,7 @@
     <Compile Include="CSharp\Resolver\Conversions.cs" />
     <Compile Include="CSharp\Resolver\CSharpResolver.cs" />
     <Compile Include="CSharp\Resolver\ErrorResolveResult.cs" />
+    <Compile Include="CSharp\Resolver\MemberLookup.cs" />
     <Compile Include="CSharp\Resolver\OverloadResolution.cs" />
     <Compile Include="CSharp\Resolver\OverloadResolutionErrors.cs" />
     <Compile Include="CSharp\Resolver\ResolveResult.cs" />

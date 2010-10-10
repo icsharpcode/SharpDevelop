@@ -148,7 +148,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
-		public void ParseReflectionNameSimpleTypes()
+		public void ParseReflectionName()
 		{
 			Assert.AreEqual("System.Int32", ReflectionHelper.ParseReflectionName("System.Int32").Resolve(context).ReflectionName);
 			Assert.AreEqual("System.Int32&", ReflectionHelper.ParseReflectionName("System.Int32&").Resolve(context).ReflectionName);
@@ -157,6 +157,123 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual("System.Action`1[[System.String]]", ReflectionHelper.ParseReflectionName("System.Action`1[[System.String]]").Resolve(context).ReflectionName);
 			Assert.AreEqual("System.Action`1[[System.String]]", ReflectionHelper.ParseReflectionName("System.Action`1[[System.String, mscorlib]]").Resolve(context).ReflectionName);
 			Assert.AreEqual("System.Int32[,,][,]", ReflectionHelper.ParseReflectionName(typeof(int[,][,,]).AssemblyQualifiedName).Resolve(context).ReflectionName);
+			Assert.AreEqual("System.Environment+SpecialFolder", ReflectionHelper.ParseReflectionName("System.Environment+SpecialFolder").Resolve(context).ReflectionName);
+		}
+		
+		[Test]
+		public void ParseOpenGenericReflectionName()
+		{
+			IMethod convertAll = context.GetClass(typeof(List<>)).Methods.Single(m => m.Name == "ConvertAll");
+			Assert.AreEqual("System.Converter`2[[?],[?]]", ReflectionHelper.ParseReflectionName("System.Converter`2[[`0],[``0]]").Resolve(context).ReflectionName);
+			Assert.AreEqual("System.Converter`2[[`0],[``0]]", ReflectionHelper.ParseReflectionName("System.Converter`2[[`0],[``0]]", convertAll).Resolve(context).ReflectionName);
+		}
+		
+		[Test, ExpectedException(typeof(ArgumentNullException))]
+		public void ParseNullReflectionName()
+		{
+			ReflectionHelper.ParseReflectionName(null);
+		}
+		
+		[Test, ExpectedException(typeof(ReflectionNameParseException))]
+		public void ParseInvalidReflectionName1()
+		{
+			ReflectionHelper.ParseReflectionName(string.Empty);
+		}
+		
+		[Test, ExpectedException(typeof(ReflectionNameParseException))]
+		public void ParseInvalidReflectionName2()
+		{
+			ReflectionHelper.ParseReflectionName("`");
+		}
+		
+		[Test, ExpectedException(typeof(ReflectionNameParseException))]
+		public void ParseInvalidReflectionName3()
+		{
+			ReflectionHelper.ParseReflectionName("``");
+		}
+		
+		[Test, ExpectedException(typeof(ReflectionNameParseException))]
+		public void ParseInvalidReflectionName4()
+		{
+			ReflectionHelper.ParseReflectionName("System.Action`A");
+		}
+		
+		[Test, ExpectedException(typeof(ReflectionNameParseException))]
+		public void ParseInvalidReflectionName5()
+		{
+			ReflectionHelper.ParseReflectionName("System.Environment+");
+		}
+		
+		[Test, ExpectedException(typeof(ReflectionNameParseException))]
+		public void ParseInvalidReflectionName5b()
+		{
+			ReflectionHelper.ParseReflectionName("System.Environment+`");
+		}
+		
+		[Test, ExpectedException(typeof(ReflectionNameParseException))]
+		public void ParseInvalidReflectionName6()
+		{
+			ReflectionHelper.ParseReflectionName("System.Int32[");
+		}
+		
+		[Test, ExpectedException(typeof(ReflectionNameParseException))]
+		public void ParseInvalidReflectionName7()
+		{
+			ReflectionHelper.ParseReflectionName("System.Int32[`]");
+		}
+		
+		[Test, ExpectedException(typeof(ReflectionNameParseException))]
+		public void ParseInvalidReflectionName8()
+		{
+			ReflectionHelper.ParseReflectionName("System.Int32[,");
+		}
+		
+		[Test, ExpectedException(typeof(ReflectionNameParseException))]
+		public void ParseInvalidReflectionName9()
+		{
+			ReflectionHelper.ParseReflectionName("System.Int32]");
+		}
+		
+		[Test, ExpectedException(typeof(ReflectionNameParseException))]
+		public void ParseInvalidReflectionName10()
+		{
+			ReflectionHelper.ParseReflectionName("System.Int32*a");
+		}
+		
+		[Test, ExpectedException(typeof(ReflectionNameParseException))]
+		public void ParseInvalidReflectionName11()
+		{
+			ReflectionHelper.ParseReflectionName("System.Action`1[[]]");
+		}
+		
+		[Test, ExpectedException(typeof(ReflectionNameParseException))]
+		public void ParseInvalidReflectionName12()
+		{
+			ReflectionHelper.ParseReflectionName("System.Action`1[[System.Int32]a]");
+		}
+		
+		[Test, ExpectedException(typeof(ReflectionNameParseException))]
+		public void ParseInvalidReflectionName13()
+		{
+			ReflectionHelper.ParseReflectionName("System.Action`1[[System.Int32],]");
+		}
+		
+		[Test, ExpectedException(typeof(ReflectionNameParseException))]
+		public void ParseInvalidReflectionName14()
+		{
+			ReflectionHelper.ParseReflectionName("System.Action`1[[System.Int32]");
+		}
+		
+		[Test, ExpectedException(typeof(ReflectionNameParseException))]
+		public void ParseInvalidReflectionName15()
+		{
+			ReflectionHelper.ParseReflectionName("System.Action`1[[System.Int32");
+		}
+		
+		[Test, ExpectedException(typeof(ReflectionNameParseException))]
+		public void ParseInvalidReflectionName16()
+		{
+			ReflectionHelper.ParseReflectionName("System.Action`1[[System.Int32],[System.String");
 		}
 	}
 }

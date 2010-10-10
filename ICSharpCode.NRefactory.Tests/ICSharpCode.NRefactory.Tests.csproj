@@ -47,6 +47,7 @@
     <Compile Include="CSharp\Resolver\BinaryOperatorTests.cs" />
     <Compile Include="CSharp\Resolver\CastTests.cs" />
     <Compile Include="CSharp\Resolver\ConversionsTest.cs" />
+    <Compile Include="CSharp\Resolver\OverloadResolutionTests.cs" />
     <Compile Include="CSharp\Resolver\ResolverTestBase.cs" />
     <Compile Include="CSharp\Resolver\UnaryOperatorTests.cs" />
     <Compile Include="FormattingTests\TestBraceStlye.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="TypeSystem\TypeSystemTests.cs" />
     <Compile Include="TypeSystem\TypeSystemTests.TestCase.cs" />
     <Compile Include="Untested.cs" />
+    <Compile Include="Util\CSharpPrimitiveCastTests.cs" />
     <Compile Include="Util\TreeTraversalTests.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -257,6 +257,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			AssertConstant(false, resolver.ResolveBinaryOperator(
 				BinaryOperatorType.GreaterThan, MakeConstant(StringComparison.CurrentCultureIgnoreCase), MakeConstant(StringComparison.Ordinal)));
+			
+			AssertType(typeof(bool), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.GreaterThan, MakeResult(typeof(StringComparison?)), MakeResult(typeof(StringComparison?))));
 		}
 		
 		[Test]
@@ -308,6 +311,32 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			AssertConstant(0 | AttributeTargets.Field, resolver.ResolveBinaryOperator(
 				BinaryOperatorType.BitwiseOr, MakeConstant(0), MakeConstant(AttributeTargets.Field)));
+		}
+		
+		[Test]
+		public void LogicalAnd()
+		{
+			AssertConstant(true, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.LogicalAnd, MakeConstant(true), MakeConstant(true)));
+			
+			AssertConstant(false, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.LogicalAnd, MakeConstant(false), MakeConstant(true)));
+			
+			AssertError(typeof(bool), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.LogicalAnd, MakeConstant(false), MakeResult(typeof(bool?))));
+		}
+		
+		[Test]
+		public void LogicalOr()
+		{
+			AssertConstant(true, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.LogicalOr, MakeConstant(false), MakeConstant(true)));
+			
+			AssertConstant(false, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.LogicalOr, MakeConstant(false), MakeConstant(false)));
+			
+			AssertError(typeof(bool), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.LogicalOr, MakeConstant(false), MakeResult(typeof(bool?))));
 		}
 		
 		[Test]

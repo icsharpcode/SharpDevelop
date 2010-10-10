@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
-			// TODO: caching idea: if these lookups are a performance problem and the same GetClassTypeReference
+			// TODO: PERF: caching idea: if these lookups are a performance problem and the same GetClassTypeReference
 			// is asked to resolve lots of times in a row, try the following:
 			// Give ITypeResolveContext a property "object CacheToken { get; }" which is non-null if the
 			// context supports caching, and returns the same object only as long as the context is unchanged.

@@ -9,15 +9,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	public enum OverloadResolutionErrors
 	{
 		None = 0,
-		
 		/// <summary>
 		/// Too many positional arguments (some could not be mapped to any parameter).
 		/// </summary>
-		TooManyPositionalArguments = 0x0002,
+		TooManyPositionalArguments = 0x0001,
 		/// <summary>
 		/// A named argument could not be mapped to any parameter
 		/// </summary>
-		NoParameterFoundForNamedArgument = 0x0004,
+		NoParameterFoundForNamedArgument = 0x0002,
+		/// <summary>
+		/// Type inference failed for a generic method.
+		/// </summary>
+		TypeInferenceFailed = 0x0004,
 		/// <summary>
 		/// No argument was mapped to a non-optional parameter
 		/// </summary>

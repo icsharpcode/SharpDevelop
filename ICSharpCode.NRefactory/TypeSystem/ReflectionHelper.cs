@@ -227,8 +227,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Parses a reflection name into a type reference.
 		/// </summary>
+		/// <param name="reflectionTypeName">The reflection name of the type.</param>
+		/// <param name="parentEntity">Parent entity, used to find the type parameters for open types.
+		/// If no entity is provided, type parameters are converted to <see cref="SharedTypes.UnknownType"/>.</param>
+		/// <exception cref="ReflectionNameParseException">The syntax of the reflection type name is invalid</exception>
+		/// <returns>A type reference that represents the reflection name.</returns>
 		public static ITypeReference ParseReflectionName(string reflectionTypeName, IEntity parentEntity = null)
 		{
+			if (reflectionTypeName == null)
+				throw new ArgumentNullException("reflectionTypeName");
 			int pos = 0;
 			ITypeReference r = ParseReflectionName(reflectionTypeName, ref pos, parentEntity);
 			if (pos < reflectionTypeName.Length)
@@ -343,7 +350,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 								pos++; // end of array
 								reference = new ArrayTypeReference(reference, dimensions);
 							} else {
-								throw new ReflectionNameParseException(pos, "Expected array modifier");
+								throw new ReflectionNameParseException(pos, "Invalid array modifier");
 							}
 						}
 						break;

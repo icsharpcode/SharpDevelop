@@ -77,7 +77,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult[] arguments;
 		string[] argumentNames;
 		Conversions conversions;
-		List<Candidate> candidates = new List<Candidate>();
+		//List<Candidate> candidates = new List<Candidate>();
 		Candidate bestCandidate;
 		Candidate bestCandidateAmbiguousWith;
 		
@@ -107,14 +107,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			Candidate c = new Candidate(member, false);
 			if (CalculateCandidate(c)) {
-				candidates.Add(c);
+				//candidates.Add(c);
 			}
 			
 			if (member.Parameters.Count > 0 && member.Parameters[member.Parameters.Count - 1].IsParams) {
 				Candidate expandedCandidate = new Candidate(member, true);
 				// consider expanded form only if it isn't obviously wrong
 				if (CalculateCandidate(expandedCandidate)) {
-					candidates.Add(expandedCandidate);
+					//candidates.Add(expandedCandidate);
 					
 					if (expandedCandidate.ErrorCount < c.ErrorCount)
 						return expandedCandidate.Errors;
@@ -144,7 +144,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (candidate.IsExpandedForm && i == candidate.Parameters.Count - 1) {
 					ArrayType arrayType = type as ArrayType;
 					if (arrayType != null && arrayType.Dimensions == 1)
-						type = arrayType;
+						type = arrayType.ElementType;
 					else
 						return false; // error: cannot unpack params-array. abort considering the expanded form for this candidate
 				}
@@ -405,6 +405,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public IParameterizedMember BestCandidateAmbiguousWith {
 			get { return bestCandidateAmbiguousWith != null ? bestCandidateAmbiguousWith.Member : null; }
+		}
+		
+		public bool BestCandidateIsExpandedForm {
+			get { return bestCandidate != null ? bestCandidate.IsExpandedForm : false; }
+		}
+		
+		public bool IsAmbiguous {
+			get { return bestCandidateAmbiguousWith != null; }
 		}
 	}
 }

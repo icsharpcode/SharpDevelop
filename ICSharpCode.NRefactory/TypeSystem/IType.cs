@@ -40,12 +40,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Calls ITypeVisitor.Visit for this type.
 		/// </summary>
+		/// <returns>The return value of the ITypeVisitor.Visit call</returns>
 		IType AcceptVisitor(TypeVisitor visitor);
 		
 		/// <summary>
 		/// Calls ITypeVisitor.Visit for all children of this type, and reconstructs this type with the children based
-		/// by the return values of the visit calls.
+		/// on the return values of the visit calls.
 		/// </summary>
+		/// <returns>A copy of this type, with all children replaced by the return value of the corresponding visitor call.
+		/// If the visitor returned the original types for all children (or if there are no children), returns <c>this</c>.
+		/// </returns>
 		IType VisitChildren(TypeVisitor visitor);
 		
 		/// <summary>
@@ -59,8 +63,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <remarks>
 		/// If the inner class is generic, this method produces <see cref="ParameterizedType"/>s that
 		/// parameterize each nested class with its own type parameters.
+		/// TODO: does this make sense? ConstructedType needs it, but maybe it would be better to build
+		/// those self-parameterized types only in ConstructedType?
 		/// </remarks>
 		IEnumerable<IType> GetNestedTypes(ITypeResolveContext context);
+		
+		// TODO: PERF maybe give GetMethods/GetProperties/etc a filter predicate
+		// that allows filtering the members pre-substitution?
+		// that could dramatically decrease the number of substitutions we have to perform
 		
 		/// <summary>
 		/// Gets all methods that can be called on this return type.

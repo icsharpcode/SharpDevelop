@@ -381,7 +381,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				this.baseMethod = baseMethod;
 				this.ReturnType = NullableType.Create(baseMethod.ReturnType);
-				this.Parameters.Add(new DefaultParameter(NullableType.Create(baseMethod.Parameters[0].Type), string.Empty));
+				this.Parameters.Add(MakeNullableParameter(baseMethod.Parameters[0]));
 			}
 			
 			public override object Invoke(CSharpResolver resolver, object input)
@@ -453,23 +453,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (lhs.Type == SharedTypes.Dynamic || rhs.Type == SharedTypes.Dynamic)
 				return DynamicResult;
 			
-			// Handle logical and/or exactly as bitwise and/or:
-			// - If the user overloads a bitwise operator, that implicitly creates the corresponding logical operator.
-			// - If both inputs are compile-time constants, it doesn't matter that we don't short-circuit.
-			// - If inputs aren't compile-time constants, we don't evaluate anything, so again it doesn't matter that we don't short-circuit
-			if (op == BinaryOperatorType.LogicalAnd) {
-				op = BinaryOperatorType.BitwiseAnd;
-			} else if (op == BinaryOperatorType.LogicalOr) {
-				op = BinaryOperatorType.BitwiseOr;
-			} else if (op == BinaryOperatorType.NullCoalescing) {
-				// null coalescing operator is not overloadable and needs to be handled separately
-				return ResolveNullCoalescingOperator(lhs, rhs);
-			}
-			
 			// C# 4.0 spec: §7.3.4 Binary operator overload resolution
 			string overloadableOperatorName = GetOverloadableOperatorName(op);
 			if (overloadableOperatorName == null) {
-				throw new ArgumentException("Invalid value for BinaryOperatorType", "op");
+				
+				// Handle logical and/or exactly as bitwise and/or:
+				// - If the user overloads a bitwise operator, that implicitly creates the corresponding logical operator.
+				// - If both inputs are compile-time constants, it doesn't matter that we don't short-circuit.
+				// - If inputs aren't compile-time constants, we don't evaluate anything, so again it doesn't matter that we don't short-circuit
+				if (op == BinaryOperatorType.LogicalAnd) {
+					overloadableOperatorName = GetOverloadableOperatorName(BinaryOperatorType.BitwiseAnd);
+				} else if (op == BinaryOperatorType.LogicalOr) {
+					overloadableOperatorName = GetOverloadableOperatorName(BinaryOperatorType.BitwiseOr);
+				} else if (op == BinaryOperatorType.NullCoalescing) {
+					// null coalescing operator is not overloadable and needs to be handled separately
+					return ResolveNullCoalescingOperator(lhs, rhs);
+				} else {
+					throw new ArgumentException("Invalid value for BinaryOperatorType", "op");
+				}
 			}
 			
 			// If the type is nullable, get the underlying type:
@@ -625,6 +626,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 								throw new InvalidOperationException();
 						}
 					}
+					break;
+				case BinaryOperatorType.LogicalAnd:
+					methodGroup = logicalAndOperator;
+					break;
+				case BinaryOperatorType.LogicalOr:
+					methodGroup = logicalOrOperator;
 					break;
 				default:
 					throw new InvalidOperationException();
@@ -896,10 +903,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public override object Invoke(CSharpResolver resolver, object lhs, object rhs)
 			{
-				if (lhs == null || rhs == null)
-					return null;
-				else
-					return baseMethod.Invoke(resolver, lhs, rhs);
+				throw new NotSupportedException(); // cannot use nullables at compile time
 			}
 			
 			public IList<IParameter> NonLiftedParameters {
@@ -1161,36 +1165,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public override OperatorMethod Lift()
 			{
-				return new LiftedRelationalOperatorMethod(this);
-			}
-		}
-		
-		sealed class LiftedRelationalOperatorMethod : BinaryOperatorMethod, OverloadResolution.ILiftedOperator
-		{
-			readonly BinaryOperatorMethod baseMethod;
-			
-			public LiftedRelationalOperatorMethod(BinaryOperatorMethod baseMethod)
-			{
-				this.baseMethod = baseMethod;
-				this.ReturnType = baseMethod.ReturnType;
-				this.Parameters.Add(MakeNullableParameter(baseMethod.Parameters[0]));
-				this.Parameters.Add(MakeNullableParameter(baseMethod.Parameters[1]));
-			}
-			
-			public override bool CanEvaluateAtCompileTime {
-				get { return false; }
-			}
-			
-			public override object Invoke(CSharpResolver resolver, object lhs, object rhs)
-			{
-				if (lhs == null || rhs == null)
-					return false;
-				else
-					return baseMethod.Invoke(resolver, lhs, rhs);
-			}
-			
-			public IList<IParameter> NonLiftedParameters {
-				get { return baseMethod.Parameters; }
+				return new LiftedBinaryOperatorMethod(this);
 			}
 		}
 		
@@ -1236,22 +1211,30 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Bitwise operators
+		static readonly OperatorMethod[] logicalAndOperator = {
+			new LambdaBinaryOperatorMethod<bool, bool>  ((a, b) => a & b)
+		};
+		
 		static readonly OperatorMethod[] bitwiseAndOperators = Lift(
 			new LambdaBinaryOperatorMethod<int, int>    ((a, b) => a & b),
 			new LambdaBinaryOperatorMethod<uint, uint>  ((a, b) => a & b),
 			new LambdaBinaryOperatorMethod<long, long>  ((a, b) => a & b),
 			new LambdaBinaryOperatorMethod<ulong, ulong>((a, b) => a & b),
-			new LambdaBinaryOperatorMethod<bool, bool>  ((a, b) => a & b)
+			logicalAndOperator[0]
 		);
+		
+		static readonly OperatorMethod[] logicalOrOperator = {
+			new LambdaBinaryOperatorMethod<bool, bool>  ((a, b) => a | b)
+		};
 		
 		static readonly OperatorMethod[] bitwiseOrOperators = Lift(
 			new LambdaBinaryOperatorMethod<int, int>    ((a, b) => a | b),
 			new LambdaBinaryOperatorMethod<uint, uint>  ((a, b) => a | b),
 			new LambdaBinaryOperatorMethod<long, long>  ((a, b) => a | b),
 			new LambdaBinaryOperatorMethod<ulong, ulong>((a, b) => a | b),
-			new LambdaBinaryOperatorMethod<bool, bool>  ((a, b) => a | b)
+			logicalOrOperator[0]
 		);
-		// Note: the logic for the lifted bool? and bool? is wrong;
+		// Note: the logic for the lifted bool? bitwise operators is wrong;
 		// we produce "true | null" = "null" when it should be true. However, this is irrelevant
 		// because bool? cannot be a compile-time type.
 		
