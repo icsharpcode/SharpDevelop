@@ -137,6 +137,16 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		#endregion
 
 		
+		
+		#region test
+		private void settest ()
+		{
+			
+		}
+		
+		#endregion
+		
+		
 		[TestFixtureSetUp]
 		public void Init()
 		{

@@ -171,13 +171,9 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		public string DBValue {
-			get{throw new NotImplementedException();}
-			set{throw new NotImplementedException();}
-		}
+		public string DBValue {get;set;}
 		
-		
-		
+	
 		public virtual string ImageFileName 
 		{
 			get {
