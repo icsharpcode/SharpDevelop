@@ -288,6 +288,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.AreEqual(1, BetterConversion(typeof(short), typeof(int), typeof(long)));
 			Assert.AreEqual(1, BetterConversion(typeof(short), typeof(int), typeof(uint)));
 			Assert.AreEqual(2, BetterConversion(typeof(ushort), typeof(uint), typeof(int)));
+			Assert.AreEqual(1, BetterConversion(typeof(char), typeof(short), typeof(int)));
+			Assert.AreEqual(1, BetterConversion(typeof(char), typeof(ushort), typeof(int)));
+			Assert.AreEqual(1, BetterConversion(typeof(sbyte), typeof(long), typeof(ulong)));
+			Assert.AreEqual(2, BetterConversion(typeof(byte), typeof(ushort), typeof(short)));
+			
+			Assert.AreEqual(1, BetterConversion(1, typeof(sbyte), typeof(byte)));
+			Assert.AreEqual(2, BetterConversion(1, typeof(ushort), typeof(sbyte)));
 		}
 		
 		[Test]
@@ -302,6 +309,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.AreEqual(2, BetterConversion(typeof(byte), typeof(ulong?), typeof(uint)));
 			Assert.AreEqual(0, BetterConversion(typeof(byte), typeof(ulong?), typeof(int)));
 			Assert.AreEqual(2, BetterConversion(typeof(ushort?), typeof(long?), typeof(int?)));
+			Assert.AreEqual(0, BetterConversion(typeof(sbyte), typeof(int?), typeof(uint?)));
 		}
 	}
 }

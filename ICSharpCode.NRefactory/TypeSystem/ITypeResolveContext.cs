@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
+using ICSharpCode.NRefactory.Utils;
+
 namespace ICSharpCode.NRefactory.TypeSystem
 {
 	/// <summary>
@@ -68,20 +70,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		ISynchronizedTypeResolveContext Synchronize();
 		
 		/// <summary>
-		/// Returns an object if caching information based on this resolve context is allowed,
+		/// Returns the cache manager associated with this resolve context,
 		/// or null if caching is not allowed.
-		/// Whenever the resolve context changes in some way, this property must return a new object.
+		/// Whenever the resolve context changes in some way, this property must return a new object to
+		/// ensure that old caches are cleared.
 		/// </summary>
-		/// <remarks>
-		/// This allows consumers to see whether their cache is still valid by comparing the current
-		/// CacheToken with the one they saw before.
-		/// 
-		/// For ISynchronizedTypeResolveContext, this property could be implemented as <c>return this;</c>.
-		/// However, it is a bad idea to use an object is large or that references a large object graph
-		/// -- consumers may store a reference to the cache token indefinately, possible extending the
-		/// lifetime of the ITypeResolveContext.
-		/// </remarks>
-		object CacheToken { get; }
+		CacheManager CacheManager { get; }
 	}
 	
 	[ContractClassFor(typeof(ITypeResolveContext))]
@@ -121,7 +115,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return null;
 		}
 		
-		object ITypeResolveContext.CacheToken {
+		Utils.CacheManager ITypeResolveContext.CacheManager {
 			get { return null; }
 		}
 	}

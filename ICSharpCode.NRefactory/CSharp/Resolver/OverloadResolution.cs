@@ -4,9 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
-using ICSharpCode.NRefactory.Util;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
@@ -233,8 +233,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		int BetterFunctionMember(Candidate c1, Candidate c2)
 		{
-			if (c1.ErrorCount < c2.ErrorCount) return 1;
-			if (c1.ErrorCount > c2.ErrorCount) return 2;
+			// prefer applicable members (part of heuristic that produces a best candidate even if none is applicable)
+			if (c1.ErrorCount == 0 && c2.ErrorCount > 0)
+				return 1;
+			if (c1.ErrorCount > 0 && c2.ErrorCount == 0)
+				return 2;
 			
 			// C# 4.0 spec: §7.5.3.2 Better function member
 			bool c1IsBetter = false;
@@ -261,6 +264,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return 1;
 			if (!c1IsBetter && c2IsBetter)
 				return 2;
+			
+			// prefer members with less errors (part of heuristic that produces a best candidate even if none is applicable)
+			if (c1.ErrorCount < c2.ErrorCount) return 1;
+			if (c1.ErrorCount > c2.ErrorCount) return 2;
+			
 			if (!c1IsBetter && !c2IsBetter) {
 				// we need the tie-breaking rules
 				

@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		/// <inheritdoc/>
-		public virtual object CacheToken {
+		public virtual Utils.CacheManager CacheManager {
 			// Don't forward this by default; we don't know what derived classes are doing;
 			// it might not be cache-safe.
 			get { return null; }

@@ -49,13 +49,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public override IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
 			List<IType> baseTypes = new List<IType>();
-			IType t = context.GetClass(typeof(Array));
+			// PERF: if profiling shows the GetClass(typeof()) here to be a problem, create
+			// a static cache for the ITypeDefinitions
+			ITypeDefinition t = context.GetClass(typeof(Array));
 			if (t != null)
 				baseTypes.Add(t);
 			if (dimensions == 1) { // single-dimensional arrays implement IList<T>
 				t = context.GetClass(typeof(IList<>));
 				if (t != null)
-					baseTypes.Add(t);
+					baseTypes.Add(new ParameterizedType(t, new[] { elementType }));
 			}
 			return baseTypes;
 		}

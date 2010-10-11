@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
+using ICSharpCode.NRefactory.Utils;
+
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	/// <summary>
@@ -81,10 +83,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		/// <inheritdoc/>
 		public virtual ISynchronizedTypeResolveContext Synchronize()
 		{
-			return Synchronize(new object());
+			return Synchronize(new CacheManager(), true);
 		}
 		
-		ISynchronizedTypeResolveContext Synchronize(object cacheToken)
+		ISynchronizedTypeResolveContext Synchronize(CacheManager cacheManager, bool isTopLevel)
 		{
 			ISynchronizedTypeResolveContext[] sync = new ISynchronizedTypeResolveContext[children.Length];
 			bool success = false;
@@ -94,7 +96,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					if (sync[i] == null)
 						throw new InvalidOperationException(children[i] + ".ToString() returned null");
 				}
-				ISynchronizedTypeResolveContext r = new CompositeSynchronizedTypeResolveContext(sync, cacheToken);
+				ISynchronizedTypeResolveContext r = new CompositeSynchronizedTypeResolveContext(sync, cacheManager, isTopLevel);
 				success = true;
 				return r;
 			} finally {
@@ -108,7 +110,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 		}
 		
-		public virtual object CacheToken {
+		public virtual CacheManager CacheManager {
 			// We don't know if our input contexts are mutable, so, to be on the safe side,
 			// we don't implement caching here.
 			get { return null; }
@@ -116,13 +118,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		sealed class CompositeSynchronizedTypeResolveContext : CompositeTypeResolveContext, ISynchronizedTypeResolveContext
 		{
-			readonly object cacheToken;
+			readonly CacheManager cacheManager;
+			readonly bool isTopLevel;
 			
-			public CompositeSynchronizedTypeResolveContext(ISynchronizedTypeResolveContext[] children, object cacheToken)
+			public CompositeSynchronizedTypeResolveContext(ISynchronizedTypeResolveContext[] children, CacheManager cacheManager, bool isTopLevel)
 				: base(children)
 			{
-				Debug.Assert(cacheToken != null);
-				this.cacheToken = cacheToken;
+				Debug.Assert(cacheManager != null);
+				this.cacheManager = cacheManager;
+				this.isTopLevel = isTopLevel;
 			}
 			
 			public void Dispose()
@@ -130,18 +134,23 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				foreach (ISynchronizedTypeResolveContext element in children) {
 					element.Dispose();
 				}
+				if (isTopLevel) {
+					// When the top-level synchronized block is closed, clear any cached data
+					// (the cache token isn't valid anymore)
+					cacheManager.Dispose();
+				}
 			}
 			
-			public override object CacheToken {
+			public override CacheManager CacheManager {
 				// I expect CompositeTypeResolveContext to be used for almost all resolver operations,
-				// so this is the only place where implementing cacheToken is really important.
-				get { return cacheToken; }
+				// so this is the only place where implementing CacheManager is really important.
+				get { return cacheManager; }
 			}
 			
 			public override ISynchronizedTypeResolveContext Synchronize()
 			{
 				// re-use the same cache token for nested synchronized contexts
-				return base.Synchronize(cacheToken);
+				return base.Synchronize(cacheManager, false);
 			}
 		}
 	}

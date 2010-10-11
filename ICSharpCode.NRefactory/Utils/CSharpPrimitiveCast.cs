@@ -3,7 +3,7 @@
 
 using System;
 
-namespace ICSharpCode.NRefactory.Util
+namespace ICSharpCode.NRefactory.Utils
 {
 	/// <summary>
 	/// Static helper method for converting between primitive types.

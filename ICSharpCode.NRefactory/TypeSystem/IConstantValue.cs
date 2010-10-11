@@ -23,6 +23,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// - string
 		/// - IType (for typeof-expressions)
 		/// and arrays of these values. Enum values are returned using the underlying primitive integer.
+		/// 
+		/// TODO: how do we represent errors (value not available?)
 		/// </summary>
 		object GetValue(ITypeResolveContext context);
 	}

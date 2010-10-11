@@ -20,18 +20,26 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return argumentTypes.Select(t => new ResolveResult(t.ToTypeReference().Resolve(context))).ToArray();
 		}
 		
-		DefaultMethod MakeMethod(params Type[] parameterTypes)
+		DefaultMethod MakeMethod(params object[] parameterTypesOrDefaultValues)
 		{
 			DefaultMethod m = new DefaultMethod(dummyClass, "Method");
-			foreach (var type in parameterTypes) {
-				m.Parameters.Add(new DefaultParameter(type.ToTypeReference(), string.Empty));
+			foreach (var typeOrDefaultValue in parameterTypesOrDefaultValues) {
+				Type type = typeOrDefaultValue as Type;
+				if (type != null)
+					m.Parameters.Add(new DefaultParameter(type.ToTypeReference(), string.Empty));
+				else if (Type.GetTypeCode(typeOrDefaultValue.GetType()) > TypeCode.Object)
+					m.Parameters.Add(new DefaultParameter(typeOrDefaultValue.GetType().ToTypeReference(), string.Empty) {
+					                 	DefaultValue = new SimpleConstantValue(typeOrDefaultValue.GetType().ToTypeReference(), typeOrDefaultValue)
+					                 });
+				else
+					throw new ArgumentException(typeOrDefaultValue.ToString());
 			}
 			return m;
 		}
 		
-		DefaultMethod MakeParamsMethod(params Type[] parameterTypes)
+		DefaultMethod MakeParamsMethod(params object[] parameterTypesOrDefaultValues)
 		{
-			DefaultMethod m = MakeMethod(parameterTypes);
+			DefaultMethod m = MakeMethod(parameterTypesOrDefaultValues);
 			((DefaultParameter)m.Parameters.Last()).IsParams = true;
 			return m;
 		}
@@ -101,6 +109,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			OverloadResolution r = new OverloadResolution(context, MakeArgumentList(typeof(int[,])));
 			Assert.AreEqual(OverloadResolutionErrors.ArgumentTypeMismatch, r.AddCandidate(MakeParamsMethod(typeof(int))));
 			Assert.IsFalse(r.BestCandidateIsExpandedForm);
+		}
+		
+		[Test]
+		public void PreferMethodWithoutOptionalParameters()
+		{
+			var m1 = MakeMethod();
+			var m2 = MakeMethod(1);
+			
+			OverloadResolution r = new OverloadResolution(context, MakeArgumentList());
+			Assert.AreEqual(OverloadResolutionErrors.None, r.AddCandidate(m1));
+			Assert.AreEqual(OverloadResolutionErrors.None, r.AddCandidate(m2));
+			Assert.IsFalse(r.IsAmbiguous);
+			Assert.AreSame(m1, r.BestCandidate);
 		}
 	}
 }

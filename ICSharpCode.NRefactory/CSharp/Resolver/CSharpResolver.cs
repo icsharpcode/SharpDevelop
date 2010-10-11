@@ -300,7 +300,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			switch (op) {
 				case UnaryOperatorType.Minus:
 					if (code == TypeCode.UInt32) {
-						IType targetType = context.GetClass(typeof(long)) ?? SharedTypes.UnknownType;
+						IType targetType = TypeCode.Int64.ToTypeReference().Resolve(context);
 						type = targetType;
 						if (isNullable) targetType = NullableType.Create(targetType, context);
 						return ResolveCast(targetType, expression);
@@ -309,7 +309,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case UnaryOperatorType.Plus:
 				case UnaryOperatorType.BitNot:
 					if (code >= TypeCode.Char && code <= TypeCode.UInt16) {
-						IType targetType = context.GetClass(typeof(int)) ?? SharedTypes.UnknownType;
+						IType targetType = TypeCode.Int32.ToTypeReference().Resolve(context);
 						type = targetType;
 						if (isNullable) targetType = NullableType.Create(targetType, context);
 						return ResolveCast(targetType, expression);
@@ -676,7 +676,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return rhs;
 				return ResolveBinaryOperator(op, lhs, rhs);
 			}
-			return new ResolveResult(context.GetClass(typeof(bool)) ?? SharedTypes.UnknownType);
+			return new ResolveResult(TypeCode.Boolean.ToTypeReference().Resolve(context));
 		}
 		
 		/// <summary>
@@ -1306,7 +1306,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		object CSharpPrimitiveCast(TypeCode targetType, object input)
 		{
-			return Util.CSharpPrimitiveCast.Cast(targetType, input, this.CheckForOverflow);
+			return Utils.CSharpPrimitiveCast.Cast(targetType, input, this.CheckForOverflow);
 		}
 		
 		ResolveResult CheckErrorAndResolveCast(IType targetType, ResolveResult expression)

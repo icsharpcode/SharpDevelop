@@ -63,8 +63,8 @@
     <Compile Include="TypeSystem\TypeSystemTests.cs" />
     <Compile Include="TypeSystem\TypeSystemTests.TestCase.cs" />
     <Compile Include="Untested.cs" />
-    <Compile Include="Util\CSharpPrimitiveCastTests.cs" />
-    <Compile Include="Util\TreeTraversalTests.cs" />
+    <Compile Include="Utils\CSharpPrimitiveCastTests.cs" />
+    <Compile Include="Utils\TreeTraversalTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ICSharpCode.NRefactory\ICSharpCode.NRefactory.csproj">
@@ -75,7 +75,7 @@
   <ItemGroup>
     <Folder Include="CSharp" />
     <Folder Include="CSharp\Resolver" />
-    <Folder Include="Util" />
+    <Folder Include="Utils" />
     <Folder Include="TypeSystem" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

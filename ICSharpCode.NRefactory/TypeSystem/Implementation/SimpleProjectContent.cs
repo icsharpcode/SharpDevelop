@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 
+using ICSharpCode.NRefactory.Utils;
+
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	/// <summary>
@@ -154,7 +156,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		#endregion
 		
 		#region Synchronization
-		public object CacheToken {
+		public CacheManager CacheManager {
 			get { return null; }
 		}
 		

@@ -261,14 +261,15 @@
     <Compile Include="CSharp\Parser\mcs\support.cs" />
     <Compile Include="CSharp\Parser\mcs\complete.cs" />
     <Compile Include="CSharp\Parser\mcs\literal.cs" />
-    <Compile Include="Util\BitVector16.cs" />
-    <Compile Include="Util\BusyManager.cs" />
-    <Compile Include="Util\CSharpPrimitiveCast.cs" />
-    <Compile Include="Util\TreeTraversal.cs" />
+    <Compile Include="Utils\BitVector16.cs" />
+    <Compile Include="Utils\BusyManager.cs" />
+    <Compile Include="Utils\CacheManager.cs" />
+    <Compile Include="Utils\CSharpPrimitiveCast.cs" />
+    <Compile Include="Utils\TreeTraversal.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\Resolver" />
-    <Folder Include="Util" />
+    <Folder Include="Utils" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

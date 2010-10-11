@@ -3,8 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using ICSharpCode.NRefactory.Util;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
@@ -90,7 +88,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		#endregion
 		
-		#region IsEnum / GetEnumUnderlyingType
+		#region IsEnum / IsDelegate
 		/// <summary>
 		/// Gets whether the type is an enumeration type.
 		/// </summary>
@@ -116,7 +114,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				if (def.BaseTypes.Count == 1)
 					return def.BaseTypes[0].Resolve(context);
 				else
-					return context.GetClass(typeof(int)) ?? SharedTypes.UnknownType;
+					return TypeCode.Int32.ToTypeReference().Resolve(context);
 			} else {
 				throw new ArgumentException("enumType must be an enum");
 			}

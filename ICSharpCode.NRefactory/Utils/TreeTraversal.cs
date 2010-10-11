@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ICSharpCode.NRefactory.Util
+namespace ICSharpCode.NRefactory.Utils
 {
 	/// <summary>
 	/// Static helper methods for traversing trees.

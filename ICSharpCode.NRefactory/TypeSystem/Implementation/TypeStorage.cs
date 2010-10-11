@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
+using ICSharpCode.NRefactory.Utils;
+
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
 	/// <summary>
@@ -147,7 +149,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		/// <inheritdoc/>
-		public object CacheToken {
+		public CacheManager CacheManager {
 			// TypeStorage is mutable, so caching is a bad idea.
 			// We could provide a CacheToken if we update it on every modication, but
 			// that's not worth the effort as TypeStorage is rarely directly used in resolve operations.

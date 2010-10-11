@@ -4,7 +4,7 @@
 using System;
 using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.Util
+namespace ICSharpCode.NRefactory.Utils
 {
 	[TestFixture]
 	public class CSharpPrimitiveCastTests
