@@ -81,6 +81,17 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		/// <inheritdoc/>
+		public string GetNamespace(string nameSpace, StringComparer nameComparer)
+		{
+			foreach (ITypeResolveContext context in children) {
+				string r = context.GetNamespace(nameSpace, nameComparer);
+				if (r != null)
+					return r;
+			}
+			return null;
+		}
+		
+		/// <inheritdoc/>
 		public virtual ISynchronizedTypeResolveContext Synchronize()
 		{
 			return Synchronize(new CacheManager(), true);

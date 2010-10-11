@@ -215,6 +215,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			foreach (IField f in e.Fields) {
 				Assert.IsTrue(f.IsStatic);
 				Assert.IsTrue(f.IsConst);
+				Assert.AreEqual(Accessibility.Public, f.Accessibility);
 				Assert.AreSame(e, f.ConstantValue.GetValueType(ctx));
 				Assert.AreEqual(typeof(short), f.ConstantValue.GetValue(ctx).GetType());
 			}
@@ -234,6 +235,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			Assert.AreEqual("CombinedFlags", e.Fields[4].Name);
 			Assert.AreEqual(0x30, e.Fields[4].ConstantValue.GetValue(ctx));
+		}
+		
+		[Test]
+		public void ParameterizedTypeGetNestedTypesFromBaseClassTest()
+		{
+			var d = typeof(Derived<string, int>).ToTypeReference().Resolve(ctx);
+			Assert.AreEqual(new[] { typeof(Base<>.Nested).FullName + "[[System.Int32]]" },
+			                d.GetNestedTypes(ctx).Select(n => n.ReflectionName).ToArray());
 		}
 	}
 }

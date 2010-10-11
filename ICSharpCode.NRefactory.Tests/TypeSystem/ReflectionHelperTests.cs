@@ -87,7 +87,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		[Test]
 		public void TestToTypeReferenceInnerClassInUnboundGenericType()
 		{
-			Assert.AreEqual("System.Collections.Generic.Dictionary`2+ValueCollection[[`0],[`1]]",
+			Assert.AreEqual("System.Collections.Generic.Dictionary`2+ValueCollection",
 			                typeof(Dictionary<,>.ValueCollection).ToTypeReference().Resolve(context).ReflectionName);
 		}
 		

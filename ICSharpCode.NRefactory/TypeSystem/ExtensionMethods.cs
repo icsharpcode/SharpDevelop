@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
@@ -50,6 +52,29 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			if (def != null)
 				activeTypeDefinitions.Pop();
+		}
+		#endregion
+		
+		#region GetAllBaseTypeDefinitions
+		/// <summary>
+		/// Gets all base type definitions.
+		/// </summary>
+		/// <remarks>
+		/// This is equivalent to type.GetAllBaseTypes().Select(t => t.GetDefinition()).Where(d => d != null).Distinct().
+		/// </remarks>
+		public static IEnumerable<ITypeDefinition> GetAllBaseTypeDefinitions(this ITypeDefinition type, ITypeResolveContext context)
+		{
+			HashSet<ITypeDefinition> typeDefinitions = new HashSet<ITypeDefinition>();
+			typeDefinitions.Add(type);
+			return TreeTraversal.PreOrder(type, t => t.GetBaseTypes(context).Select(b => b.GetDefinition()).Where(d => d != null && typeDefinitions.Add(d)));
+		}
+		
+		/// <summary>
+		/// Gets whether this type definition is derived from the base type defintiion.
+		/// </summary>
+		public static bool IsDerivedFrom(this ITypeDefinition type, ITypeDefinition baseType, ITypeResolveContext context)
+		{
+			return GetAllBaseTypeDefinitions(type, context).Contains(baseType);
 		}
 		#endregion
 		
@@ -150,6 +175,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 			}
 			return null;
+		}
+		#endregion
+		
+		#region InternalsVisibleTo
+		/// <summary>
+		/// Gets whether the internals of this project are visible to the other project
+		/// </summary>
+		public static bool InternalsVisibleTo(this IProjectContent projectContent, IProjectContent other, ITypeResolveContext context)
+		{
+			if (projectContent == other)
+				return true;
+			// TODO: implement support for [InternalsVisibleToAttribute]
+			// Make sure implementation doesn't hurt performance, e.g. don't resolve all assembly attributes whenever
+			// this method is called - it'll be called once per internal member during lookup operations
+			return false;
 		}
 		#endregion
 	}

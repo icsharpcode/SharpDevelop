@@ -55,4 +55,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		Flag2 = 0x20,
 		CombinedFlags = Flag1 | Flag2
 	}
+	
+	public class Base<T> {
+		public class Nested {}
+	}
+	public class Derived<A, B> : Base<B> {}
 }

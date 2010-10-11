@@ -2,6 +2,7 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 {
@@ -12,6 +13,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	{
 		string fullTypeName;
 		int typeParameterCount;
+		//volatile CachedResult v_cachedResult;
 		
 		public GetClassTypeReference(string fullTypeName, int typeParameterCount)
 		{
@@ -21,22 +23,47 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.typeParameterCount = typeParameterCount;
 		}
 		
+		/*
+		sealed class CachedResult
+		{
+			public readonly CacheManager CacheManager;
+			public readonly IType Result;
+			
+			public CachedResult(CacheManager cacheManager, IType result)
+			{
+				this.CacheManager = cacheManager;
+				this.Result = result;
+			}
+		}
+		 */
+		
 		public IType Resolve(ITypeResolveContext context)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
-			// TODO: PERF: caching idea: if these lookups are a performance problem and the same GetClassTypeReference
-			// is asked to resolve lots of times in a row, try the following:
-			// Give ITypeResolveContext a property "object CacheToken { get; }" which is non-null if the
-			// context supports caching, and returns the same object only as long as the context is unchanged.
 			
-			// Then store a thread-local array KeyValuePair<GetClassTypeReference, IType> with the last 5 (?) resolved
-			// types, and a thread-local reference to the cache token. Subsequent calls with the same cache token
-			// do a quick (reference equality) lookup in the array first.
-			// This should be faster than any ServiceContainer-based caches.
-			// It is worth an idea to make CacheToken implement IServiceContainer, so that other (more expensive)
-			// caches can be registered there, but I think it's troublesome as one ITypeResolveContext should be usable
-			// on multiple threads.
+			/*  TODO PERF: caching disabled until we measure how much of an advantage it is
+			 * (and whether other approaches like caching only the last N resolve calls in a thread-static cache would work better)
+			 * Maybe even make a distinction between the really common type references (e.g. primitiveTypeReferences) and
+			 * normal GetClassTypeReferences?
+			CacheManager cacheManager = context.CacheManager;
+			if (cacheManager != null) {
+				CachedResult result = this.v_cachedResult;
+				if (result != null && result.CacheManager == cacheManager)
+					return result.Result;
+				IType newResult = DoResolve(context);
+				this.v_cachedResult = new CachedResult(cacheManager, newResult);
+				cacheManager.Disposed += delegate { v_cachedResult = null; }; // maybe optimize this to use interface call instead of delegate?
+				return newResult;
+			} else {
+				return DoResolve(context);
+			}
+			
+		}
+		
+		IType DoResolve(ITypeResolveContext context)
+		{
+			 */
 			return context.GetClass(fullTypeName, typeParameterCount, StringComparer.Ordinal) ?? SharedTypes.UnknownType;
 		}
 		

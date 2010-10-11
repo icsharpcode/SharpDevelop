@@ -22,17 +22,39 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		readonly ITypeResolveContext context;
 		
-		/// <summary>
-		/// Gets/Sets whether the current context is <c>checked</c>.
-		/// </summary>
-		public bool CheckForOverflow { get; set; }
-		
+		#region Constructor
 		public CSharpResolver(ITypeResolveContext context)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
 			this.context = context;
 		}
+		#endregion
+		
+		#region Properties
+		/// <summary>
+		/// Gets/Sets whether the current context is <c>checked</c>.
+		/// </summary>
+		public bool CheckForOverflow { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets the current member definition that is used to look up identifiers as parameters
+		/// or type parameters.
+		/// </summary>
+		/// <remarks>Don't forget to also set CurrentTypeDefinition when setting CurrentMember;
+		/// setting one of the properties does not automatically set the other.</remarks>
+		public IMember CurrentMember { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets the current type definition that is used to look up identifiers as simple members.
+		/// </summary>
+		public ITypeDefinition CurrentTypeDefinition { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets the current using scope that is used to look up identifiers as class names.
+		/// </summary>
+		public UsingScope UsingScope { get; set; }
+		#endregion
 		
 		#region class OperatorMethod
 		static OperatorMethod[] Lift(params OperatorMethod[] methods)
@@ -1315,6 +1337,118 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return expression;
 			else
 				return ResolveCast(targetType, expression);
+		}
+		#endregion
+		
+		#region ResolveSimpleName
+		public ResolveResult ResolveSimpleName(string identifier, IList<IType> typeArguments)
+		{
+			// C# 4.0 spec: §7.6.2 Simple Names
+			// TODO: lookup in local variables, in parameters, etc.
+			
+			return LookupSimpleNameOrTypeName(identifier, typeArguments, false);
+		}
+		
+		public ResolveResult LookupSimpleNamespaceOrTypeName(string identifier, IList<IType> typeArguments)
+		{
+			return LookupSimpleNameOrTypeName(identifier, typeArguments, true);
+		}
+		
+		ResolveResult LookupSimpleNameOrTypeName(string identifier, IList<IType> typeArguments, bool typeOnly)
+		{
+			// C# 4.0 spec: §3.8 Namespace and type names; §7.6.2 Simple Names
+			
+			int k = typeArguments.Count;
+			
+			// look in type parameters of current method
+			if (k == 0) {
+				IMethod m = this.CurrentMember as IMethod;
+				if (m != null) {
+					foreach (ITypeParameter tp in m.TypeParameters) {
+						if (tp.Name == identifier)
+							return new TypeResolveResult(tp);
+					}
+				}
+			}
+			
+			// look in current type definitions
+			for (ITypeDefinition t = this.CurrentTypeDefinition; t != null; t = t.DeclaringTypeDefinition) {
+				if (k == 0) {
+					// look for type parameter with that name
+					foreach (ITypeParameter tp in t.TypeParameters) {
+						if (tp.Name == identifier)
+							return new TypeResolveResult(tp);
+					}
+				}
+				
+				if (typeOnly) {
+					// TODO: perform member lookup within the type t, restricted to finding types
+					
+				} else {
+					// TODO: perform member lookup within the type t
+				}
+			}
+			// look in current namespace definitions
+			for (UsingScope n = this.UsingScope; n != null; n = n.Parent) {
+				string fullName = NamespaceDeclaration.BuildQualifiedName(n.NamespaceName, identifier);
+				// first look for a namespace
+				if (k == 0) {
+					if (context.GetNamespace(fullName, StringComparer.Ordinal) != null) {
+						if (n.HasAlias(identifier))
+							return new AmbiguousTypeResolveResult(SharedTypes.UnknownType);
+						return new NamespaceResolveResult(fullName);
+					}
+				}
+				// then look for a type
+				ITypeDefinition def = context.GetClass(fullName, k, StringComparer.Ordinal);
+				if (def != null) {
+					IType result = def;
+					if (k != 0) {
+						result = new ParameterizedType(def, typeArguments);
+					}
+					if (n.HasAlias(identifier))
+						return new AmbiguousTypeResolveResult(result);
+					else
+						return new TypeResolveResult(result);
+				}
+				// then look for aliases:
+				if (k == 0) {
+					if (n.ExternAliases.Contains(identifier)) {
+						// TODO: implement extern alias support
+						throw new NotImplementedException();
+					}
+					foreach (var pair in n.UsingAliases) {
+						if (pair.Key == identifier) {
+							string ns = pair.Value.ResolveNamespace(context);
+							if (ns != null)
+								return new NamespaceResolveResult(ns);
+							else
+								return new TypeResolveResult(pair.Value.Resolve(context));
+						}
+					}
+				}
+				// finally, look in the imported namespaces:
+				IType firstResult = null;
+				foreach (var u in n.Usings) {
+					string ns = u.ResolveNamespace(context);
+					if (ns != null) {
+						fullName = NamespaceDeclaration.BuildQualifiedName(ns, identifier);
+						def = context.GetClass(ns, k, StringComparer.Ordinal);
+						if (firstResult == null) {
+							if (k == 0)
+								firstResult = def;
+							else
+								firstResult = new ParameterizedType(def, typeArguments);
+						} else {
+							return new AmbiguousTypeResolveResult(firstResult);
+						}
+					}
+				}
+				if (firstResult != null)
+					return new TypeResolveResult(firstResult);
+				// if we didn't find anything: repeat lookup with parent namespace
+			}
+			return ErrorResult;
 		}
 		#endregion
 	}

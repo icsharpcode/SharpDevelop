@@ -56,6 +56,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IEnumerable<string> GetNamespaces();
 		
 		/// <summary>
+		/// Gets a namespace.
+		/// </summary>
+		/// <param name="nameSpace">The full name of the namespace.</param>
+		/// <param name="nameComparer">The comparer to use.</param>
+		/// <returns>The full name of the namespace, if it exists; or null if the namespace does not exist.</returns>
+		/// <remarks>
+		/// For StringComparer.Ordinal, the return value is either null or the input namespace.
+		/// For other name comparers, this method returns the declared name of the namespace.
+		/// </remarks>
+		string GetNamespace(string nameSpace, StringComparer nameComparer);
+		
+		/// <summary>
 		/// Returns a <see cref="ISynchronizedTypeResolveContext"/> that
 		/// represents the same context as this instance, but cannot be modified
 		/// by other threads.
@@ -117,6 +129,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		Utils.CacheManager ITypeResolveContext.CacheManager {
 			get { return null; }
+		}
+		
+		string ITypeResolveContext.GetNamespace(string nameSpace, StringComparer nameComparer)
+		{
+			Contract.Requires(nameSpace != null);
+			Contract.Requires(nameComparer != null);
+			return null;
 		}
 	}
 }

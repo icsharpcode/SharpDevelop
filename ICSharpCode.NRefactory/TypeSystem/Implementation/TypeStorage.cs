@@ -136,6 +136,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			return GetClasses().Select(c => c.Namespace).Distinct();
 		}
+		
+		/// <inheritdoc/>
+		public string GetNamespace(string nameSpace, StringComparer nameComparer)
+		{
+			return GetNamespaces().FirstOrDefault(n => nameComparer.Equals(nameSpace, n));
+		}
 		#endregion
 		
 		#region Synchronize

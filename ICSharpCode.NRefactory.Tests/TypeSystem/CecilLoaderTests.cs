@@ -116,6 +116,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition c = Mscorlib.GetClass(typeof(void));
 			Assert.IsNotNull(c, "System.Void not found");
 			Assert.AreEqual(0, c.GetMethods(ctx).Count());
+			Assert.AreEqual(0, c.GetProperties(ctx).Count());
+			Assert.AreEqual(0, c.GetEvents(ctx).Count());
+			Assert.AreEqual(0, c.GetFields(ctx).Count());
 			Assert.AreEqual(
 				new string[] {
 					"[System.SerializableAttribute]",

@@ -41,6 +41,25 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		[Test]
+		public void ArrayOfString()
+		{
+			Assert.AreEqual(GetTypes(typeof(string[]), typeof(Array), typeof(object),
+			                         typeof(IList), typeof(ICollection), typeof(IEnumerable),
+			                         typeof(IList<string>), typeof(ICollection<string>), typeof(IEnumerable<string>),
+			                         typeof(IStructuralEquatable), typeof(IStructuralComparable), typeof(ICloneable)),
+			                GetAllBaseTypes(typeof(string[])));
+		}
+		
+		[Test]
+		public void MultidimensionalArrayOfString()
+		{
+			Assert.AreEqual(GetTypes(typeof(string[,]), typeof(Array), typeof(object),
+			                         typeof(IList), typeof(ICollection), typeof(IEnumerable),
+			                         typeof(IStructuralEquatable), typeof(IStructuralComparable), typeof(ICloneable)),
+			                GetAllBaseTypes(typeof(string[,])));
+		}
+		
+		[Test]
 		public void ClassDerivingFromItself()
 		{
 			// class C : C {}

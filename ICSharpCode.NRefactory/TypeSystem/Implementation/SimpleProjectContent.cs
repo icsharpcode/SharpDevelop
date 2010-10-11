@@ -153,6 +153,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				readerWriterLock.ExitReadLock();
 			}
 		}
+		
+		public string GetNamespace(string nameSpace, StringComparer nameComparer)
+		{
+			readerWriterLock.EnterReadLock();
+			try {
+				return types.GetNamespace(nameSpace, nameComparer);
+			} finally {
+				readerWriterLock.ExitReadLock();
+			}
+		}
 		#endregion
 		
 		#region Synchronization

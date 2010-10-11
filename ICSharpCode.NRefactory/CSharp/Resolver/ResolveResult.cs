@@ -36,5 +36,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public virtual bool IsError {
 			get { return false; }
 		}
+		
+		public override string ToString()
+		{
+			return "[" + GetType().Name + " " + type + "]";
+		}
 	}
 }
