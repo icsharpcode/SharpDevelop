@@ -21,6 +21,7 @@ namespace ICSharpCode.PythonBinding
 		PythonStandardModuleMethodResolver methodResolver;
 		PythonMemberResolver memberResolver;
 		PythonLocalVariableResolver localVariableResolver;
+		PythonMethodReturnValueResolver methodReturnValueResolver;
 		
 		List<IPythonResolver> resolvers = new List<IPythonResolver>();
 		
@@ -29,10 +30,12 @@ namespace ICSharpCode.PythonBinding
 			methodResolver = new PythonStandardModuleMethodResolver(standardModuleResolver);
 			localVariableResolver = new PythonLocalVariableResolver(classResolver);
 			memberResolver = new PythonMemberResolver(classResolver, localVariableResolver);
+			methodReturnValueResolver = new PythonMethodReturnValueResolver(memberResolver);
 			
 			resolvers.Add(importResolver);
 			resolvers.Add(classResolver);
 			resolvers.Add(standardModuleResolver);
+			resolvers.Add(methodReturnValueResolver);
 			resolvers.Add(memberResolver);
 			resolvers.Add(methodResolver);
 			resolvers.Add(selfResolver);

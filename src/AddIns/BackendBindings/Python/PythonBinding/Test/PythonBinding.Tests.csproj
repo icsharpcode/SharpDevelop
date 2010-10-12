@@ -370,6 +370,7 @@
     <Compile Include="Resolver\ResolveLocalClassInstanceTests.cs" />
     <Compile Include="Resolver\ResolveLocalVariableMethodTests.cs" />
     <Compile Include="Resolver\ResolveMethodFromUnknownImportAllTests.cs" />
+    <Compile Include="Resolver\ResolveMethodReturnValueTests.cs" />
     <Compile Include="Resolver\ResolveMethodWhenFromImportIsUnknownTests.cs" />
     <Compile Include="Resolver\ResolveMethodWhenImportIsUnknownTests.cs" />
     <Compile Include="Resolver\ResolveNullCtrlSpaceParseInfoTestFixture.cs" />

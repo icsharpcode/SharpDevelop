@@ -114,6 +114,7 @@
     <Compile Include="Src\PythonMethodDefinition.cs" />
     <Compile Include="Src\PythonMethodGroupResolveResult.cs" />
     <Compile Include="Src\PythonMethodOrClassBodyRegion.cs" />
+    <Compile Include="Src\PythonMethodReturnValueResolver.cs" />
     <Compile Include="Src\PythonModule.cs" />
     <Compile Include="Src\PythonModuleCompletionItems.cs" />
     <Compile Include="Src\PythonModuleCompletionItemsFactory.cs" />

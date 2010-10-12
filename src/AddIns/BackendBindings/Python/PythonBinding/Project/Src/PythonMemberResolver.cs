@@ -25,9 +25,14 @@ namespace ICSharpCode.PythonBinding
 		
 		public ResolveResult Resolve(PythonResolverContext resolverContext)
 		{
-			this.resolverContext = resolverContext;
-			IMember member = FindMember();
+			IMember member = FindMember(resolverContext);
 			return CreateResolveResult(member);
+		}
+		
+		public IMember FindMember(PythonResolverContext resolverContext)
+		{
+			this.resolverContext = resolverContext;
+			return FindMember();
 		}
 		
 		IMember FindMember()
