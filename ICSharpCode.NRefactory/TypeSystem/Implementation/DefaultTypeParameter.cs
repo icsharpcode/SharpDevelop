@@ -231,22 +231,23 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return c;
 		}
 		
-		public IEnumerable<IMethod> GetConstructors(ITypeResolveContext context)
+		public IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null)
 		{
 			if (HasDefaultConstructorConstraint || HasValueTypeConstraint) {
-				return new [] { DefaultMethod.CreateDefaultConstructor(GetDummyClassForTypeParameter()) };
-			} else {
-				return EmptyList<IMethod>.Instance;
+				DefaultMethod m = DefaultMethod.CreateDefaultConstructor(GetDummyClassForTypeParameter());
+				if (filter(m))
+					return new [] { m };
 			}
+			return EmptyList<IMethod>.Instance;
 		}
 		
-		public IEnumerable<IMethod> GetMethods(ITypeResolveContext context)
+		public IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
 		{
 			// TODO: get methods from constraints
 			IType objectType = context.GetClass("System.Object", 0, StringComparer.Ordinal);
 			IEnumerable<IMethod> objectMethods;
 			if (objectType != null)
-				objectMethods = objectType.GetMethods(context);
+				objectMethods = objectType.GetMethods(context, filter);
 			else
 				objectMethods = EmptyList<IMethod>.Instance;
 			
@@ -254,22 +255,22 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return objectMethods.Where(m => !m.IsStatic);
 		}
 		
-		public IEnumerable<IProperty> GetProperties(ITypeResolveContext context)
+		public IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null)
 		{
 			return EmptyList<IProperty>.Instance;
 		}
 		
-		public IEnumerable<IField> GetFields(ITypeResolveContext context)
+		public IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null)
 		{
 			return EmptyList<IField>.Instance;
 		}
 		
-		public IEnumerable<IEvent> GetEvents(ITypeResolveContext context)
+		public IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null)
 		{
 			return EmptyList<IEvent>.Instance;
 		}
 		
-		IEnumerable<IType> IType.GetNestedTypes(ITypeResolveContext context)
+		IEnumerable<IType> IType.GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null)
 		{
 			return EmptyList<IType>.Instance;
 		}

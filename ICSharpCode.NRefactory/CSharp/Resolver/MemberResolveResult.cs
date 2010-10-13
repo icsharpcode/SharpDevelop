@@ -7,13 +7,19 @@ using ICSharpCode.NRefactory.TypeSystem;
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	/// <summary>
-	/// Represents a reference which could point to a type or namespace.
+	/// Represents the result of a member invocation.
 	/// </summary>
-	public interface ITypeOrNamespaceReference : ITypeReference
+	public class MemberResolveResult : ResolveResult
 	{
-		/// <summary>
-		/// Returns the namespace that is referenced; or null if no such namespace is found.
-		/// </summary>
-		NamespaceResolveResult ResolveNamespace(ITypeResolveContext context);
+		readonly IMember member;
+		
+		public MemberResolveResult(IMember member, IType returnType) : base(returnType)
+		{
+			this.member = member;
+		}
+		
+		public IMember Member {
+			get { return member; }
+		}
 	}
 }

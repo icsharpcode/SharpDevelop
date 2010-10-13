@@ -147,6 +147,8 @@
     <Compile Include="CSharp\Resolver\ErrorResolveResult.cs" />
     <Compile Include="CSharp\Resolver\ITypeOrNamespaceReference.cs" />
     <Compile Include="CSharp\Resolver\MemberLookup.cs" />
+    <Compile Include="CSharp\Resolver\MemberResolveResult.cs" />
+    <Compile Include="CSharp\Resolver\MethodGroupResolveResult.cs" />
     <Compile Include="CSharp\Resolver\NamespaceResolveResult.cs" />
     <Compile Include="CSharp\Resolver\OverloadResolution.cs" />
     <Compile Include="CSharp\Resolver\OverloadResolutionErrors.cs" />
@@ -212,6 +214,7 @@
     <Compile Include="TypeSystem\ITypeResolveContext.cs" />
     <Compile Include="TypeSystem\NullableType.cs" />
     <Compile Include="TypeSystem\ParameterizedType.cs" />
+    <Compile Include="TypeSystem\ParameterListComparer.cs" />
     <Compile Include="TypeSystem\ReflectionNameParseException.cs" />
     <Compile Include="TypeSystem\TypeVisitor.cs" />
     <Compile Include="TypeSystem\IVariable.cs" />

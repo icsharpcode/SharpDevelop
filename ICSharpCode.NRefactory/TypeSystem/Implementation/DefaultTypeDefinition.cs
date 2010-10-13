@@ -377,11 +377,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return this;
 		}
 		
-		public virtual IEnumerable<IType> GetNestedTypes(ITypeResolveContext context)
+		public virtual IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null)
 		{
 			ITypeDefinition compound = GetCompoundClass();
 			if (compound != this)
-				return compound.GetNestedTypes(context);
+				return compound.GetNestedTypes(context, filter);
 			
 			List<IType> nestedTypes = new List<IType>();
 			using (var busyLock = BusyManager.Enter(this)) {
@@ -391,15 +391,12 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 						ITypeDefinition baseTypeDef = baseType.GetDefinition();
 						if (baseTypeDef != null && baseTypeDef.ClassType != ClassType.Interface) {
 							// get nested types from baseType (not baseTypeDef) so that generics work correctly
-							nestedTypes.AddRange(baseType.GetNestedTypes(context));
+							nestedTypes.AddRange(baseType.GetNestedTypes(context, filter));
 							break; // there is at most 1 non-interface base
 						}
 					}
 					foreach (ITypeDefinition innerClass in this.InnerClasses) {
-						if (innerClass.TypeParameterCount > 0) {
-							// Parameterize inner classes with their own type parameters, as per <remarks> on IType.GetNestedTypes.
-							nestedTypes.Add(new ParameterizedType(innerClass, innerClass.TypeParameters));
-						} else {
+						if (filter == null || filter(innerClass)) {
 							nestedTypes.Add(innerClass);
 						}
 					}
@@ -408,111 +405,149 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return nestedTypes;
 		}
 		
-		public virtual IEnumerable<IMethod> GetMethods(ITypeResolveContext context)
+		public virtual IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
 		{
 			ITypeDefinition compound = GetCompoundClass();
 			if (compound != this)
-				return compound.GetMethods(context);
+				return compound.GetMethods(context, filter);
 			
 			List<IMethod> methods = new List<IMethod>();
 			using (var busyLock = BusyManager.Enter(this)) {
 				if (busyLock.Success) {
-					foreach (var baseTypeRef in this.BaseTypes) {
-						IType baseType = baseTypeRef.Resolve(context);
+					int baseCount = 0;
+					foreach (var baseType in GetBaseTypes(context)) {
 						ITypeDefinition baseTypeDef = baseType.GetDefinition();
 						if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
-							methods.AddRange(baseType.GetMethods(context));
+							methods.AddRange(baseType.GetMethods(context, filter));
+							baseCount++;
 						}
 					}
-					methods.AddRange(this.Methods.Where(m => !m.IsConstructor));
+					if (baseCount > 1)
+						RemoveDuplicates(methods);
+					AddFilteredRange(methods, this.Methods.Where(m => !m.IsConstructor), filter);
 				}
 			}
 			return methods;
 		}
 		
-		public virtual IEnumerable<IMethod> GetConstructors(ITypeResolveContext context)
+		public virtual IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null)
 		{
 			ITypeDefinition compound = GetCompoundClass();
 			if (compound != this)
-				return compound.GetConstructors(context);
+				return compound.GetConstructors(context, filter);
 			
 			List<IMethod> methods = new List<IMethod>();
-			methods.AddRange(this.Methods.Where(m => m.IsConstructor && !m.IsStatic));
+			AddFilteredRange(methods, this.Methods.Where(m => m.IsConstructor && !m.IsStatic), filter);
 			
 			if (this.AddDefaultConstructorIfRequired) {
 				if (this.ClassType == ClassType.Class && methods.Count == 0
 				    || this.ClassType == ClassType.Enum || this.ClassType == ClassType.Struct)
 				{
-					methods.Add(DefaultMethod.CreateDefaultConstructor(this));
+					var m = DefaultMethod.CreateDefaultConstructor(this);
+					if (filter == null || filter(m))
+						methods.Add(m);
 				}
 			}
 			return methods;
 		}
 		
-		public virtual IEnumerable<IProperty> GetProperties(ITypeResolveContext context)
+		public virtual IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null)
 		{
 			ITypeDefinition compound = GetCompoundClass();
 			if (compound != this)
-				return compound.GetProperties(context);
+				return compound.GetProperties(context, filter);
 			
 			List<IProperty> properties = new List<IProperty>();
 			using (var busyLock = BusyManager.Enter(this)) {
 				if (busyLock.Success) {
-					foreach (var baseTypeRef in this.BaseTypes) {
-						IType baseType = baseTypeRef.Resolve(context);
+					int baseCount = 0;
+					foreach (var baseType in GetBaseTypes(context)) {
 						ITypeDefinition baseTypeDef = baseType.GetDefinition();
 						if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
-							properties.AddRange(baseType.GetProperties(context));
+							properties.AddRange(baseType.GetProperties(context, filter));
+							baseCount++;
 						}
 					}
-					properties.AddRange(this.Properties);
+					if (baseCount > 1)
+						RemoveDuplicates(properties);
+					AddFilteredRange(properties, this.Properties, filter);
 				}
 			}
 			return properties;
 		}
 		
-		public virtual IEnumerable<IField> GetFields(ITypeResolveContext context)
+		public virtual IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null)
 		{
 			ITypeDefinition compound = GetCompoundClass();
 			if (compound != this)
-				return compound.GetFields(context);
+				return compound.GetFields(context, filter);
 			
 			List<IField> fields = new List<IField>();
 			using (var busyLock = BusyManager.Enter(this)) {
 				if (busyLock.Success) {
-					foreach (var baseTypeRef in this.BaseTypes) {
-						IType baseType = baseTypeRef.Resolve(context);
+					int baseCount = 0;
+					foreach (var baseType in GetBaseTypes(context)) {
 						ITypeDefinition baseTypeDef = baseType.GetDefinition();
 						if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
-							fields.AddRange(baseType.GetFields(context));
+							fields.AddRange(baseType.GetFields(context, filter));
+							baseCount++;
 						}
 					}
-					fields.AddRange(this.Fields);
+					if (baseCount > 1)
+						RemoveDuplicates(fields);
+					AddFilteredRange(fields, this.Fields, filter);
 				}
 			}
 			return fields;
 		}
 		
-		public virtual IEnumerable<IEvent> GetEvents(ITypeResolveContext context)
+		public virtual IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null)
 		{
 			ITypeDefinition compound = GetCompoundClass();
 			if (compound != this)
-				return compound.GetEvents(context);
+				return compound.GetEvents(context, filter);
 			
 			List<IEvent> events = new List<IEvent>();
 			using (var busyLock = BusyManager.Enter(this)) {
 				if (busyLock.Success) {
-					foreach (var baseTypeRef in this.BaseTypes) {
-						IType baseType = baseTypeRef.Resolve(context);
+					int baseCount = 0;
+					foreach (var baseType in GetBaseTypes(context)) {
 						ITypeDefinition baseTypeDef = baseType.GetDefinition();
 						if (baseTypeDef != null && (baseTypeDef.ClassType != ClassType.Interface || this.ClassType == ClassType.Interface)) {
-							events.AddRange(baseType.GetEvents(context));
+							events.AddRange(baseType.GetEvents(context, filter));
+							baseCount++;
 						}
 					}
-					events.AddRange(this.Events);
+					if (baseCount > 1)
+						RemoveDuplicates(events);
+					AddFilteredRange(events, this.Events, filter);
 				}
 			}
 			return events;
+		}
+		
+		static void AddFilteredRange<T>(List<T> targetList, IEnumerable<T> sourceList, Predicate<T> filter) where T : class
+		{
+			if (filter == null) {
+				targetList.AddRange(sourceList);
+			} else {
+				foreach (T element in sourceList) {
+					if (filter(element))
+						targetList.Add(element);
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Removes duplicate members from the list.
+		/// This is necessary when the same member can be inherited twice due to multiple inheritance.
+		/// </summary>
+		static void RemoveDuplicates<T>(List<T> list) where T : class
+		{
+			if (list.Count > 1) {
+				HashSet<T> hash = new HashSet<T>();
+				list.RemoveAll(m => !hash.Add(m));
+			}
 		}
 		
 		// we use reference equality

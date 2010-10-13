@@ -158,7 +158,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return genericType.GetBaseTypes(context).Select(substitution.Apply);
 		}
 		
-		public IEnumerable<IType> GetNestedTypes(ITypeResolveContext context)
+		public IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null)
 		{
 			/*
 			class Base<T> {
@@ -172,17 +172,30 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Base.GetNestedTypes() = { Base`1+Nested<T2> } where T2 = copy of T in Base`1+Nested
 			 */
 			Substitution substitution = new Substitution(typeArguments);
-			List<IType> types = genericType.GetNestedTypes(context).ToList();
+			List<IType> types = genericType.GetNestedTypes(context, filter).ToList();
 			for (int i = 0; i < types.Count; i++) {
-				types[i] = types[i].AcceptVisitor(substitution);
+				ITypeDefinition def = types[i] as ITypeDefinition;
+				if (def != null && def.TypeParameterCount > 0) {
+					// (partially) parameterize the nested type definition
+					IType[] newTypeArgs = new IType[def.TypeParameterCount];
+					for (int j = 0; j < newTypeArgs.Length; j++) {
+						if (j < typeArguments.Length)
+							newTypeArgs[j] = typeArguments[i];
+						else
+							newTypeArgs[j] = def.TypeParameters[j];
+					}
+					types[i] = new ParameterizedType(def, newTypeArgs);
+				} else {
+					types[i] = types[i].AcceptVisitor(substitution);
+				}
 			}
 			return types;
 		}
 		
-		public IEnumerable<IMethod> GetMethods(ITypeResolveContext context)
+		public IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
 		{
 			Substitution substitution = new Substitution(typeArguments);
-			List<IMethod> methods = genericType.GetMethods(context).ToList();
+			List<IMethod> methods = genericType.GetMethods(context, filter).ToList();
 			for (int i = 0; i < methods.Count; i++) {
 				SpecializedMethod m = new SpecializedMethod(methods[i]);
 				m.SetDeclaringType(this);
@@ -192,10 +205,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return methods;
 		}
 		
-		public IEnumerable<IMethod> GetConstructors(ITypeResolveContext context)
+		public IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null)
 		{
 			Substitution substitution = new Substitution(typeArguments);
-			List<IMethod> methods = genericType.GetConstructors(context).ToList();
+			List<IMethod> methods = genericType.GetConstructors(context, filter).ToList();
 			for (int i = 0; i < methods.Count; i++) {
 				SpecializedMethod m = new SpecializedMethod(methods[i]);
 				m.SetDeclaringType(this);
@@ -205,10 +218,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return methods;
 		}
 		
-		public IEnumerable<IProperty> GetProperties(ITypeResolveContext context)
+		public IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null)
 		{
 			Substitution substitution = new Substitution(typeArguments);
-			List<IProperty> properties = genericType.GetProperties(context).ToList();
+			List<IProperty> properties = genericType.GetProperties(context, filter).ToList();
 			for (int i = 0; i < properties.Count; i++) {
 				SpecializedProperty p = new SpecializedProperty(properties[i]);
 				p.SetDeclaringType(this);
@@ -218,10 +231,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return properties;
 		}
 		
-		public IEnumerable<IField> GetFields(ITypeResolveContext context)
+		public IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null)
 		{
 			Substitution substitution = new Substitution(typeArguments);
-			List<IField> fields = genericType.GetFields(context).ToList();
+			List<IField> fields = genericType.GetFields(context, filter).ToList();
 			for (int i = 0; i < fields.Count; i++) {
 				SpecializedField f = new SpecializedField(fields[i]);
 				f.SetDeclaringType(this);
@@ -231,10 +244,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return fields;
 		}
 		
-		public IEnumerable<IEvent> GetEvents(ITypeResolveContext context)
+		public IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null)
 		{
 			Substitution substitution = new Substitution(typeArguments);
-			List<IEvent> events = genericType.GetEvents(context).ToList();
+			List<IEvent> events = genericType.GetEvents(context, filter).ToList();
 			for (int i = 0; i < events.Count; i++) {
 				SpecializedEvent e = new SpecializedEvent(events[i]);
 				e.SetDeclaringType(this);

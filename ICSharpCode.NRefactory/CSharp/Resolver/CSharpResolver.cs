@@ -1341,20 +1341,28 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region ResolveSimpleName
+		enum SimpleNameLookupMode
+		{
+			Expression,
+			Type,
+			TypeInUsingDeclaration
+		}
+		
 		public ResolveResult ResolveSimpleName(string identifier, IList<IType> typeArguments)
 		{
 			// C# 4.0 spec: §7.6.2 Simple Names
 			// TODO: lookup in local variables, in parameters, etc.
 			
-			return LookupSimpleNameOrTypeName(identifier, typeArguments, false);
+			return LookupSimpleNameOrTypeName(identifier, typeArguments, SimpleNameLookupMode.Expression);
 		}
 		
-		public ResolveResult LookupSimpleNamespaceOrTypeName(string identifier, IList<IType> typeArguments)
+		public ResolveResult LookupSimpleNamespaceOrTypeName(string identifier, IList<IType> typeArguments, bool isUsingDeclaration = false)
 		{
-			return LookupSimpleNameOrTypeName(identifier, typeArguments, true);
+			return LookupSimpleNameOrTypeName(identifier, typeArguments,
+			                                  isUsingDeclaration ? SimpleNameLookupMode.TypeInUsingDeclaration : SimpleNameLookupMode.Type);
 		}
 		
-		ResolveResult LookupSimpleNameOrTypeName(string identifier, IList<IType> typeArguments, bool typeOnly)
+		ResolveResult LookupSimpleNameOrTypeName(string identifier, IList<IType> typeArguments, SimpleNameLookupMode lookupMode)
 		{
 			// C# 4.0 spec: §3.8 Namespace and type names; §7.6.2 Simple Names
 			
@@ -1381,11 +1389,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				
-				if (typeOnly) {
-					// TODO: perform member lookup within the type t, restricted to finding types
+				if (lookupMode == SimpleNameLookupMode.Expression) {
+					// TODO: perform member lookup within the type t
 					
 				} else {
-					// TODO: perform member lookup within the type t
+					// TODO: perform member lookup within the type t, restricted to finding types
+					
 				}
 			}
 			// look in current namespace definitions
@@ -1415,38 +1424,63 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (k == 0) {
 					if (n.ExternAliases.Contains(identifier)) {
 						// TODO: implement extern alias support
-						throw new NotImplementedException();
+						return new NamespaceResolveResult(string.Empty);
 					}
-					foreach (var pair in n.UsingAliases) {
-						if (pair.Key == identifier) {
-							string ns = pair.Value.ResolveNamespace(context);
-							if (ns != null)
-								return new NamespaceResolveResult(ns);
-							else
-								return new TypeResolveResult(pair.Value.Resolve(context));
+					if (lookupMode != SimpleNameLookupMode.TypeInUsingDeclaration || n != this.UsingScope) {
+						foreach (var pair in n.UsingAliases) {
+							if (pair.Key == identifier) {
+								NamespaceResolveResult ns = pair.Value.ResolveNamespace(context);
+								if (ns != null)
+									return ns;
+								else
+									return new TypeResolveResult(pair.Value.Resolve(context));
+							}
 						}
 					}
 				}
 				// finally, look in the imported namespaces:
-				IType firstResult = null;
-				foreach (var u in n.Usings) {
-					string ns = u.ResolveNamespace(context);
-					if (ns != null) {
-						fullName = NamespaceDeclaration.BuildQualifiedName(ns, identifier);
-						def = context.GetClass(ns, k, StringComparer.Ordinal);
-						if (firstResult == null) {
-							if (k == 0)
-								firstResult = def;
-							else
-								firstResult = new ParameterizedType(def, typeArguments);
-						} else {
-							return new AmbiguousTypeResolveResult(firstResult);
+				if (lookupMode != SimpleNameLookupMode.TypeInUsingDeclaration || n != this.UsingScope) {
+					IType firstResult = null;
+					foreach (var u in n.Usings) {
+						NamespaceResolveResult ns = u.ResolveNamespace(context);
+						if (ns != null) {
+							fullName = NamespaceDeclaration.BuildQualifiedName(ns.NamespaceName, identifier);
+							def = context.GetClass(fullName, k, StringComparer.Ordinal);
+							if (firstResult == null) {
+								if (k == 0)
+									firstResult = def;
+								else
+									firstResult = new ParameterizedType(def, typeArguments);
+							} else {
+								return new AmbiguousTypeResolveResult(firstResult);
+							}
 						}
 					}
+					if (firstResult != null)
+						return new TypeResolveResult(firstResult);
 				}
-				if (firstResult != null)
-					return new TypeResolveResult(firstResult);
 				// if we didn't find anything: repeat lookup with parent namespace
+			}
+			return ErrorResult;
+		}
+		
+		/// <summary>
+		/// Looks up an alias (identifier in front of :: operator)
+		/// </summary>
+		public ResolveResult ResolveAlias(string identifier)
+		{
+			if (identifier == "global")
+				return new NamespaceResolveResult(string.Empty);
+			for (UsingScope n = this.UsingScope; n != null; n = n.Parent) {
+				if (n.ExternAliases.Contains(identifier)) {
+					// TODO: implement extern alias support
+					return new NamespaceResolveResult(string.Empty);
+				}
+				foreach (var pair in n.UsingAliases) {
+					if (pair.Key == identifier) {
+						return pair.Value.ResolveNamespace(context) ?? ErrorResult;
+					}
+				}
 			}
 			return ErrorResult;
 		}

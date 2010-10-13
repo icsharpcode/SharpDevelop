@@ -46,21 +46,54 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return a != null && elementType.Equals(a.elementType) && a.dimensions == dimensions;
 		}
 		
+		static readonly GetClassTypeReference systemArray = new GetClassTypeReference("System.Array", 0);
+		static readonly GetClassTypeReference listInterface = new GetClassTypeReference("System.Collections.Generic.IList", 1);
+		
 		public override IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
 			List<IType> baseTypes = new List<IType>();
-			// PERF: if profiling shows the GetClass(typeof()) here to be a problem, create
-			// a static cache for the ITypeDefinitions
-			ITypeDefinition t = context.GetClass(typeof(Array));
-			if (t != null)
+			IType t = systemArray.Resolve(context);
+			if (t != SharedTypes.UnknownType)
 				baseTypes.Add(t);
 			if (dimensions == 1) { // single-dimensional arrays implement IList<T>
-				t = context.GetClass(typeof(IList<>));
-				if (t != null)
-					baseTypes.Add(new ParameterizedType(t, new[] { elementType }));
+				ITypeDefinition def = listInterface.Resolve(context) as ITypeDefinition;
+				if (def != null)
+					baseTypes.Add(new ParameterizedType(def, new[] { elementType }));
 			}
 			return baseTypes;
 		}
+		
+		public override IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
+		{
+			return systemArray.Resolve(context).GetMethods(context, filter);
+		}
+		
+		public override IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null)
+		{
+			ITypeDefinition arrayDef = systemArray.Resolve(context) as ITypeDefinition;
+			if (arrayDef != null) {
+				foreach (IProperty p in arrayDef.GetProperties(context, filter)) {
+					yield return p;
+				}
+				DefaultProperty indexer = new DefaultProperty(arrayDef, "Items") {
+					ReturnType = elementType,
+					Accessibility = Accessibility.Public,
+					GetterAccessibility = Accessibility.Public,
+					SetterAccessibility = Accessibility.Public,
+					CanGet = true,
+					CanSet = true,
+					IsIndexer = true,
+					IsSynthetic = true
+				};
+				indexer.Freeze();
+				if (filter == null || filter(indexer)) {
+					yield return indexer;
+				}
+			}
+		}
+		
+		// Events, Fields: System.Array doesn't have any; so we can use the AbstractType default implementation
+		// that simply returns an empty list
 		
 		public override IType AcceptVisitor(TypeVisitor visitor)
 		{

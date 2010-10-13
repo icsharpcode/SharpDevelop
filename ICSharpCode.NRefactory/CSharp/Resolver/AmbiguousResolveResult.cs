@@ -19,4 +19,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			get { return true; }
 		}
 	}
+	
+	public class AmbiguousMemberResultResult : MemberResolveResult
+	{
+		public AmbiguousMemberResultResult(IMember member, IType returnType) : base(member, returnType)
+		{
+		}
+		
+		public override bool IsError {
+			get { return true; }
+		}
+	}
 }

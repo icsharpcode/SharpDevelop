@@ -60,44 +60,34 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets inner classes (including inherited inner classes).
 		/// </summary>
-		/// <remarks>
-		/// If the inner class is generic, this method produces <see cref="ParameterizedType"/>s that
-		/// parameterize each nested class with its own type parameters.
-		/// TODO: does this make sense? ConstructedType needs it, but maybe it would be better to build
-		/// those self-parameterized types only in ConstructedType?
-		/// </remarks>
-		IEnumerable<IType> GetNestedTypes(ITypeResolveContext context);
-		
-		// TODO: PERF maybe give GetMethods/GetProperties/etc a filter predicate
-		// that allows filtering the members pre-substitution?
-		// that could dramatically decrease the number of substitutions we have to perform
+		IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null);
 		
 		/// <summary>
 		/// Gets all methods that can be called on this return type.
 		/// </summary>
 		/// <remarks>The list does not include constructors.</remarks>
-		IEnumerable<IMethod> GetMethods(ITypeResolveContext context);
+		IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null);
 		
 		/// <summary>
 		/// Gets all instance constructors for this type.
 		/// </summary>
 		/// <remarks>This list does not include constructors in base classes or static constructors.</remarks>
-		IEnumerable<IMethod> GetConstructors(ITypeResolveContext context);
+		IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter = null);
 		
 		/// <summary>
 		/// Gets all properties that can be called on this return type.
 		/// </summary>
-		IEnumerable<IProperty> GetProperties(ITypeResolveContext context);
+		IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null);
 		
 		/// <summary>
 		/// Gets all fields that can be called on this return type.
 		/// </summary>
-		IEnumerable<IField> GetFields(ITypeResolveContext context);
+		IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter = null);
 		
 		/// <summary>
 		/// Gets all events that can be called on this return type.
 		/// </summary>
-		IEnumerable<IEvent> GetEvents(ITypeResolveContext context);
+		IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter = null);
 	}
 	
 	[ContractClassFor(typeof(IType))]
@@ -125,42 +115,42 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return null;
 		}
 		
-		IEnumerable<IType> IType.GetNestedTypes(ITypeResolveContext context)
+		IEnumerable<IType> IType.GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IList<IType>>() != null);
 			return null;
 		}
 
-		IEnumerable<IMethod> IType.GetMethods(ITypeResolveContext context)
+		IEnumerable<IMethod> IType.GetMethods(ITypeResolveContext context, Predicate<IMethod> filter)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IList<IMethod>>() != null);
 			return null;
 		}
 		
-		IEnumerable<IMethod> IType.GetConstructors(ITypeResolveContext context)
+		IEnumerable<IMethod> IType.GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IList<IMethod>>() != null);
 			return null;
 		}
 		
-		IEnumerable<IProperty> IType.GetProperties(ITypeResolveContext context)
+		IEnumerable<IProperty> IType.GetProperties(ITypeResolveContext context, Predicate<IProperty> filter)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IList<IProperty>>() != null);
 			return null;
 		}
 		
-		IEnumerable<IField> IType.GetFields(ITypeResolveContext context)
+		IEnumerable<IField> IType.GetFields(ITypeResolveContext context, Predicate<IField> filter)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IList<IField>>() != null);
 			return null;
 		}
 		
-		IEnumerable<IEvent> IType.GetEvents(ITypeResolveContext context)
+		IEnumerable<IEvent> IType.GetEvents(ITypeResolveContext context, Predicate<IEvent> filter)
 		{
 			Contract.Requires(context != null);
 			Contract.Ensures(Contract.Result<IList<IEvent>>() != null);

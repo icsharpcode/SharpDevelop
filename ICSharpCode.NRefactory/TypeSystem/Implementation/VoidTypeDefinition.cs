@@ -17,27 +17,27 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.IsSealed = true;
 		}
 		
-		public override IEnumerable<IMethod> GetConstructors(ITypeResolveContext context)
+		public override IEnumerable<IMethod> GetConstructors(ITypeResolveContext context, Predicate<IMethod> filter)
 		{
 			return EmptyList<IMethod>.Instance;
 		}
 		
-		public override IEnumerable<IEvent> GetEvents(ITypeResolveContext context)
+		public override IEnumerable<IEvent> GetEvents(ITypeResolveContext context, Predicate<IEvent> filter)
 		{
 			return EmptyList<IEvent>.Instance;
 		}
 		
-		public override IEnumerable<IField> GetFields(ITypeResolveContext context)
+		public override IEnumerable<IField> GetFields(ITypeResolveContext context, Predicate<IField> filter)
 		{
 			return EmptyList<IField>.Instance;
 		}
 		
-		public override IEnumerable<IMethod> GetMethods(ITypeResolveContext context)
+		public override IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter)
 		{
 			return EmptyList<IMethod>.Instance;
 		}
 		
-		public override IEnumerable<IProperty> GetProperties(ITypeResolveContext context)
+		public override IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter)
 		{
 			return EmptyList<IProperty>.Instance;
 		}
