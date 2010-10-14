@@ -4224,42 +4224,42 @@ IsTypeCast()) {
 				lexer.NextToken();
 
 #line  1825 "cs.ATG" 
-				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Plus)); 
+				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Plus) { StartLocation = t.Location }); 
 			} else if (la.kind == 5) {
 				lexer.NextToken();
 
 #line  1826 "cs.ATG" 
-				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Minus)); 
+				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Minus) { StartLocation = t.Location })); 
 			} else if (la.kind == 24) {
 				lexer.NextToken();
 
 #line  1827 "cs.ATG" 
-				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Not)); 
+				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Not) { StartLocation = t.Location })); 
 			} else if (la.kind == 27) {
 				lexer.NextToken();
 
 #line  1828 "cs.ATG" 
-				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.BitNot)); 
+				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.BitNot) { StartLocation = t.Location })); 
 			} else if (la.kind == 6) {
 				lexer.NextToken();
 
 #line  1829 "cs.ATG" 
-				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Dereference)); 
+				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Dereference) { StartLocation = t.Location })); 
 			} else if (la.kind == 31) {
 				lexer.NextToken();
 
 #line  1830 "cs.ATG" 
-				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Increment)); 
+				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Increment) { StartLocation = t.Location })); 
 			} else if (la.kind == 32) {
 				lexer.NextToken();
 
 #line  1831 "cs.ATG" 
-				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Decrement)); 
+				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Decrement) { StartLocation = t.Location })); 
 			} else if (la.kind == 28) {
 				lexer.NextToken();
 
 #line  1832 "cs.ATG" 
-				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.AddressOf)); 
+				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.AddressOf) { StartLocation = t.Location })); 
 			} else {
 				Expect(20);
 				Type(
@@ -4268,7 +4268,7 @@ out type);
 				Expect(21);
 
 #line  1838 "cs.ATG" 
-				expressions.Add(new CastExpression(type)); 
+				expressions.Add(new CastExpression(type) { StartLocation = t.Location })); 
 			}
 		}
 		if (
