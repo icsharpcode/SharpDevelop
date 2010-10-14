@@ -166,7 +166,7 @@
     <Content Include="Src\Lexer\VBNet\KeywordList.txt" />
     <Folder Include="Src\Parser" />
     <Folder Include="Src\Parser\CSharp" />
-    <Content Include="Src\Parser\CSharp\cs.ATG" />
+    <None Include="Src\Parser\CSharp\cs.ATG" />
     <Folder Include="Src\Parser\Frames" />
     <Content Include="Src\Parser\Frames\Scanner.frame" />
     <Content Include="Src\Parser\Frames\SharpCoco.exe" />
