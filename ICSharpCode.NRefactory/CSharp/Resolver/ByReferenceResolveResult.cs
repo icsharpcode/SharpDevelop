@@ -23,5 +23,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public IType ElementType {
 			get { return ((ByReferenceType)this.Type).ElementType; }
 		}
+		
+		public override string ToString()
+		{
+			return string.Format("[{0} {1} {2}]", GetType().Name, IsOut ? "out" : "ref", ElementType);
+		}
 	}
 }

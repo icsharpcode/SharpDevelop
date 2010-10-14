@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override string ToString()
 		{
-			return "[NamespaceResolveResult " + namespaceName + "]";
+			return string.Format("[{0} {1}]", GetType().Name, namespaceName);
 		}
 	}
 }

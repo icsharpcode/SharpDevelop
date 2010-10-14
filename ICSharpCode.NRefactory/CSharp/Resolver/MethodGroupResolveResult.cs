@@ -15,16 +15,27 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	public class MethodGroupResolveResult : ResolveResult
 	{
 		readonly ReadOnlyCollection<IMethod> methods;
+		readonly ReadOnlyCollection<IType> typeArguments;
 		
-		public MethodGroupResolveResult(IList<IMethod> methods) : base(SharedTypes.UnknownType)
+		public MethodGroupResolveResult(IList<IMethod> methods, IList<IType> typeArguments) : base(SharedTypes.UnknownType)
 		{
 			if (methods == null)
 				throw new ArgumentNullException("methods");
 			this.methods = new ReadOnlyCollection<IMethod>(methods);
+			this.typeArguments = new ReadOnlyCollection<IType>(typeArguments);
 		}
 		
 		public ReadOnlyCollection<IMethod> Methods {
 			get { return methods; }
+		}
+		
+		public ReadOnlyCollection<IType> TypeArguments {
+			get { return typeArguments; }
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("[{0} with {1} method(s)]", GetType().Name, methods.Count);
 		}
 	}
 }

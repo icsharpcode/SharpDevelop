@@ -15,11 +15,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public MemberResolveResult(IMember member, IType returnType) : base(returnType)
 		{
+			if (member == null)
+				throw new ArgumentNullException("member");
 			this.member = member;
 		}
 		
 		public IMember Member {
 			get { return member; }
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("[{0} {1}]", GetType().Name, member);
 		}
 	}
 }

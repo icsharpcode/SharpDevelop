@@ -155,6 +155,7 @@
     <Compile Include="CSharp\Resolver\ResolveResult.cs" />
     <Compile Include="CSharp\Resolver\SimpleTypeOrNamespaceReference.cs" />
     <Compile Include="CSharp\Resolver\TypeResolveResult.cs" />
+    <Compile Include="CSharp\Resolver\UnknownMemberResolveResult.cs" />
     <Compile Include="CSharp\Resolver\UsingScope.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeSystem\Accessibility.cs" />

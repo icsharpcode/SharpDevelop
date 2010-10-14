@@ -70,6 +70,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			get { return parent; }
 		}
 		
+		public IProjectContent ProjectContent {
+			get { return projectContent; }
+		}
+		
 		public DomRegion Region {
 			get { return region; }
 			set {

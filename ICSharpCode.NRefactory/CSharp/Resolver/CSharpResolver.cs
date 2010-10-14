@@ -1344,16 +1344,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		enum SimpleNameLookupMode
 		{
 			Expression,
+			InvocationTarget,
 			Type,
 			TypeInUsingDeclaration
 		}
 		
-		public ResolveResult ResolveSimpleName(string identifier, IList<IType> typeArguments)
+		public ResolveResult ResolveSimpleName(string identifier, IList<IType> typeArguments, bool isInvocationTarget = false)
 		{
 			// C# 4.0 spec: §7.6.2 Simple Names
 			// TODO: lookup in local variables, in parameters, etc.
 			
-			return LookupSimpleNameOrTypeName(identifier, typeArguments, SimpleNameLookupMode.Expression);
+			return LookupSimpleNameOrTypeName(identifier, typeArguments,
+			                                  isInvocationTarget ? SimpleNameLookupMode.InvocationTarget : SimpleNameLookupMode.Expression);
 		}
 		
 		public ResolveResult LookupSimpleNamespaceOrTypeName(string identifier, IList<IType> typeArguments, bool isUsingDeclaration = false)
@@ -1379,6 +1381,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			
+			MemberLookup lookup = new MemberLookup(context, this.CurrentTypeDefinition, this.UsingScope.ProjectContent);
 			// look in current type definitions
 			for (ITypeDefinition t = this.CurrentTypeDefinition; t != null; t = t.DeclaringTypeDefinition) {
 				if (k == 0) {
@@ -1389,12 +1392,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				
-				if (lookupMode == SimpleNameLookupMode.Expression) {
+				if (lookupMode == SimpleNameLookupMode.Expression || lookupMode == SimpleNameLookupMode.InvocationTarget) {
 					// TODO: perform member lookup within the type t
-					
+					ResolveResult r = lookup.Lookup(t, identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
+					if (!(r is UnknownMemberResolveResult))
+						return r;
 				} else {
 					// TODO: perform member lookup within the type t, restricted to finding types
-					
+					throw new NotImplementedException();
 				}
 			}
 			// look in current namespace definitions
@@ -1483,6 +1488,117 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			return ErrorResult;
+		}
+		#endregion
+		
+		#region ResolveMemberAccess
+		public ResolveResult ResolveMemberAccess(ResolveResult target, string identifier, IList<IType> typeArguments, bool isInvocationTarget = false)
+		{
+			// C# 4.0 spec: §7.6.4
+			
+			NamespaceResolveResult nrr = target as NamespaceResolveResult;
+			if (nrr != null) {
+				string fullName = NamespaceDeclaration.BuildQualifiedName(nrr.NamespaceName, identifier);
+				if (typeArguments.Count == 0) {
+					if (context.GetNamespace(fullName, StringComparer.Ordinal) != null)
+						return new NamespaceResolveResult(fullName);
+				}
+				ITypeDefinition def = context.GetClass(fullName, typeArguments.Count, StringComparer.Ordinal);
+				if (def != null)
+					return new TypeResolveResult(def);
+				return ErrorResult;
+			}
+			
+			if (target.Type == SharedTypes.Dynamic)
+				return DynamicResult;
+			
+			MemberLookup lookup = new MemberLookup(context, this.CurrentTypeDefinition, this.UsingScope.ProjectContent);
+			return lookup.Lookup(target.Type, identifier, typeArguments, isInvocationTarget);
+		}
+		#endregion
+		
+		#region ResolveInvocation
+		public ResolveResult ResolveInvocation(ResolveResult target, ResolveResult[] arguments, string[] argumentNames = null)
+		{
+			// C# 4.0 spec: §7.6.5
+			if (target.Type == SharedTypes.Dynamic)
+				return DynamicResult;
+			
+			MethodGroupResolveResult mgrr = target as MethodGroupResolveResult;
+			if (mgrr != null) {
+				throw new NotImplementedException();
+			}
+			UnknownMemberResolveResult umrr = target as UnknownMemberResolveResult;
+			if (umrr != null) {
+				return new UnknownMethodResolveResult(umrr.TargetType, umrr.MemberName, umrr.TypeArguments, CreateParameters(arguments, argumentNames));
+			}
+			IMethod invokeMethod = target.Type.GetDelegateInvokeMethod();
+			if (invokeMethod != null) {
+				return new ResolveResult(invokeMethod.ReturnType.Resolve(context));
+			}
+			return ErrorResult;
+		}
+		
+		static List<DefaultParameter> CreateParameters(ResolveResult[] arguments, string[] argumentNames)
+		{
+			List<DefaultParameter> list = new List<DefaultParameter>();
+			if (argumentNames == null) {
+				argumentNames = new string[arguments.Length];
+			} else {
+				if (argumentNames.Length != arguments.Length)
+					throw new ArgumentException();
+				argumentNames = (string[])argumentNames.Clone();
+			}
+			for (int i = 0; i < arguments.Length; i++) {
+				// invent argument names where necessary:
+				if (arguments[i] == null) {
+					string newArgumentName = GuessParameterName(arguments[i]);
+					if (argumentNames.Contains(newArgumentName)) {
+						// disambiguate argument name (e.g. add a number)
+						throw new NotImplementedException();
+					}
+					argumentNames[i] = newArgumentName;
+				}
+				
+				// create the parameter:
+				ByReferenceResolveResult brrr = arguments[i] as ByReferenceResolveResult;
+				if (brrr != null) {
+					list.Add(new DefaultParameter(arguments[i].Type, argumentNames[i]) {
+					         	IsRef = brrr.IsRef,
+					         	IsOut = brrr.IsOut
+					         });
+				} else {
+					// argument might be a lambda or delegate type, so we have to try to guess the delegate type
+					IType type = arguments[i].Type;
+					if (type == SharedTypes.Null || type == SharedTypes.UnknownType) {
+						list.Add(new DefaultParameter(TypeCode.Object.ToTypeReference(), argumentNames[i]));
+					} else {
+						list.Add(new DefaultParameter(type, argumentNames[i]));
+					}
+				}
+			}
+			return list;
+		}
+		
+		static string GuessParameterName(ResolveResult rr)
+		{
+			MemberResolveResult mrr = rr as MemberResolveResult;
+			if (mrr != null)
+				return mrr.Member.Name;
+			
+			UnknownMemberResolveResult umrr = rr as UnknownMemberResolveResult;
+			if (umrr != null)
+				return umrr.MemberName;
+			
+			MethodGroupResolveResult mgrr = rr as MethodGroupResolveResult;
+			if (mgrr != null && mgrr.Methods.Count > 0)
+				return mgrr.Methods[0].Name;
+			
+			if (!string.IsNullOrEmpty(rr.Type.Name)) {
+				return char.ToLower(rr.Type.Name[0]) + rr.Type.Name.Substring(1);
+			} else {
+				return "parameter";
+			}
 		}
 		#endregion
 	}

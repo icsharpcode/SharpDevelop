@@ -96,21 +96,23 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Performs a member lookup.
 		/// </summary>
-		public ResolveResult Lookup(IType type, string name, int typeParameterCount, bool isInvocation)
+		public ResolveResult Lookup(IType type, string name, IList<IType> typeArguments, bool isInvocation)
 		{
+			int typeArgumentCount = typeArguments.Count;
+			
 			List<IType> types = new List<IType>();
 			List<IMember> members = new List<IMember>();
 			if (!isInvocation) {
 				// Consider nested types only if it's not an invocation. The type parameter count must match in this case.
 				types.AddRange(type.GetNestedTypes(context,
-				                                   d => d.TypeParameterCount == typeParameterCount
+				                                   d => d.TypeParameterCount == typeArgumentCount
 				                                   && d.Name == name && IsAccessible(d, true)));
 			}
 			
 			ITypeDefinition typeDef = type.GetDefinition();
 			bool allowProtectedAccess = typeDef != null && typeDef.IsDerivedFrom(currentTypeDefinition, context);
 			
-			if (typeParameterCount == 0) {
+			if (typeArgumentCount == 0) {
 				Predicate<IMember> memberFilter = delegate(IMember member) {
 					return !member.IsOverride && member.Name == name && IsAccessible(member, allowProtectedAccess);
 				};
@@ -124,11 +126,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// No need to check for isInvocation/isInvocable here:
 				// we filter out all non-methods
 				Predicate<IMethod> memberFilter = delegate(IMethod method) {
-					return method.TypeParameters.Count == typeParameterCount
+					return method.TypeParameters.Count == typeArgumentCount
 						&& !method.IsOverride && method.Name == name && IsAccessible(method, allowProtectedAccess);
 				};
 				members.AddRange(type.GetMethods(context, memberFilter));
 			}
+			
+			// TODO: can't members also hide types?
 			
 			// remove types hidden by other types
 			for (int i = types.Count - 1; i >= 0; i--) {
@@ -196,20 +200,32 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			
-			if (types.Count == 1 && members.Count == 0)
-				return new TypeResolveResult(types[0]);
-			if (types.Count > 0)
-				return new AmbiguousTypeResolveResult(types[0]);
+			if (types.Count > 0) {
+				IType returnedType = types[0];
+				if (typeArguments.Count > 0) {
+					// parameterize the type if necessary
+					ITypeDefinition returnedTypeDef = returnedType as ITypeDefinition;
+					if (returnedTypeDef != null)
+						returnedType = new ParameterizedType(returnedTypeDef, typeArguments);
+				}
+				if (types.Count == 1 && members.Count == 0)
+					return new TypeResolveResult(types[0]);
+				else
+					return new AmbiguousTypeResolveResult(types[0]);
+			}
+			if (members.Count == 0)
+				return new UnknownMemberResolveResult(type, name, typeArguments);
 			IMember firstNonMethod = members.FirstOrDefault(m => !(m is IMethod));
 			if (members.Count == 1 && firstNonMethod != null)
 				return new MemberResolveResult(firstNonMethod, firstNonMethod.ReturnType.Resolve(context));
 			if (firstNonMethod == null)
-				return new MethodGroupResolveResult(members.ConvertAll(m => (IMethod)m));
+				return new MethodGroupResolveResult(members.ConvertAll(m => (IMethod)m), typeArguments);
 			return new AmbiguousMemberResultResult(firstNonMethod, firstNonMethod.ReturnType.Resolve(context));
 		}
 		
 		static bool IsNonInterfaceType(ITypeDefinition def)
 		{
+			// return type if def is neither an interface nor System.Object
 			return def.ClassType != ClassType.Interface && !(def.Name == "Object" && def.Namespace == "System" && def.TypeParameterCount == 0);
 		}
 		
