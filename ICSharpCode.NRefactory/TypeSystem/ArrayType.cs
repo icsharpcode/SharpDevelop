@@ -68,6 +68,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return systemArray.Resolve(context).GetMethods(context, filter);
 		}
 		
+		static readonly DefaultParameter indexerParam = new DefaultParameter(TypeCode.Int32.ToTypeReference(), string.Empty);
+		
 		public override IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null)
 		{
 			ITypeDefinition arrayDef = systemArray.Resolve(context) as ITypeDefinition;
@@ -85,6 +87,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					IsIndexer = true,
 					IsSynthetic = true
 				};
+				for (int i = 0; i < dimensions; i++) {
+					indexer.Parameters.Add(indexerParam);
+				}
 				indexer.Freeze();
 				if (filter == null || filter(indexer)) {
 					yield return indexer;
