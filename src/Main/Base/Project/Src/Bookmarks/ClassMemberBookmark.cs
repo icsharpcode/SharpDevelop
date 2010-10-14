@@ -54,6 +54,10 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 		}
 		
+		int IBookmark.ZOrder {
+			get { return -10; }
+		}
+		
 		bool IBookmark.CanDragDrop {
 			get { return false; }
 		}
@@ -106,6 +110,10 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public virtual void MouseUp(MouseButtonEventArgs e)
 		{
+		}
+		
+		int IBookmark.ZOrder {
+			get { return -10; }
 		}
 		
 		bool IBookmark.CanDragDrop {

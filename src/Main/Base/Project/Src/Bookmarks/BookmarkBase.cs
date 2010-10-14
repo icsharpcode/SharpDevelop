@@ -128,6 +128,10 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
+		public virtual int ZOrder {
+			get { return 0; }
+		}
+		
 		/// <summary>
 		/// Gets if the bookmark can be toggled off using the 'set/unset bookmark' command.
 		/// </summary>

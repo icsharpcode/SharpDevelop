@@ -79,8 +79,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				Dictionary<int, IBookmark> bookmarkDict = new Dictionary<int, IBookmark>();
 				foreach (IBookmark bm in manager.Bookmarks) {
 					int line = bm.LineNumber;
-					if (!bookmarkDict.ContainsKey(line))
-						bookmarkDict.Add(line, bm);
+					IBookmark existingBookmark;
+					if (!bookmarkDict.TryGetValue(line, out existingBookmark) || bm.ZOrder > existingBookmark.ZOrder)
+						bookmarkDict[line] = bm;
 				}
 				Size pixelSize = PixelSnapHelpers.GetPixelSize(this);
 				foreach (VisualLine line in textView.VisualLines) {
@@ -113,15 +114,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			base.OnMouseDown(e);
 			int line = GetLineFromMousePosition(e);
 			if (!e.Handled && line > 0) {
-				foreach (IBookmark bm in manager.Bookmarks) {
-					if (bm.LineNumber == line) {
-						bm.MouseDown(e);
-						if (e.Handled)
-							return;
+				IBookmark bm = GetBookmarkFromLine(line);
+				if (bm != null) {
+					bm.MouseDown(e);
+					if (!e.Handled) {
 						if (e.ChangedButton == MouseButton.Left && bm.CanDragDrop && CaptureMouse()) {
 							StartDragDrop(bm, e);
 							e.Handled = true;
-							return;
 						}
 					}
 				}
@@ -129,6 +128,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// don't allow selecting text through the IconBarMargin
 			if (e.ChangedButton == MouseButton.Left)
 				e.Handled = true;
+		}
+		
+		IBookmark GetBookmarkFromLine(int line)
+		{
+			IBookmark result = null;
+			foreach (IBookmark bm in manager.Bookmarks) {
+				if (bm.LineNumber == line) {
+					if (result == null || bm.ZOrder > result.ZOrder)
+						result = bm;
+				}
+			}
+			return result;
 		}
 		
 		protected override void OnLostMouseCapture(MouseEventArgs e)
@@ -206,12 +217,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				CancelDragDrop();
 			}
 			if (!e.Handled && line != 0) {
-				foreach (IBookmark bm in manager.Bookmarks) {
-					if (bm.LineNumber == line) {
-						bm.MouseUp(e);
-						if (e.Handled)
-							return;
-					}
+				IBookmark bm = GetBookmarkFromLine(line);
+				if (bm != null) {
+					bm.MouseUp(e);
+					if (e.Handled)
+						return;
 				}
 				if (e.ChangedButton == MouseButton.Left && TextView != null) {
 					// no bookmark on the line: create a new breakpoint

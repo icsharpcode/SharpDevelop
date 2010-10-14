@@ -68,6 +68,10 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
+		public override int ZOrder {
+			get { return 100; }
+		}
+		
 		public CurrentLineBookmark(FileName fileName, Location location) : base(fileName, location)
 		{
 			this.IsSaved = false;

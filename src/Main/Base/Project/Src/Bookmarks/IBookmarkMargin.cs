@@ -39,6 +39,11 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		IImage Image { get; }
 		
 		/// <summary>
+		/// Gets the Z-Order of the bookmark icon.
+		/// </summary>
+		int ZOrder { get; }
+		
+		/// <summary>
 		/// Handles the mouse down event.
 		/// </summary>
 		void MouseDown(MouseButtonEventArgs e);
