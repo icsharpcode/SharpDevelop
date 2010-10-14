@@ -275,7 +275,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			
 			List<DisplayBindingDescriptor> codons = DisplayBindingService.GetCodonsPerFileName(fileNames[0]).ToList();
 			for (int i = 1; i < fileNames.Length; i++) {
-				var codonsForThisFile = DisplayBindingService.GetCodonsPerFileName(fileNames[1]);
+				var codonsForThisFile = DisplayBindingService.GetCodonsPerFileName(fileNames[i]);
 				codons.RemoveAll(c => !codonsForThisFile.Contains(c));
 			}
 			if (codons.Count == 0)
