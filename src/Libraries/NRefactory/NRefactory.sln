@@ -9,6 +9,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactoryASTGenerator", "NRefactoryASTGenerator\NRefactoryASTGenerator.csproj", "{B22522AA-B5BF-4A58-AC6D-D4B45805521F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NRefactoryDemo", "..\..\..\samples\NRefactoryDemo\NRefactoryDemo.csproj", "{63199047-9D5D-474C-B3CC-62ABBB071B67}"
+       ProjectSection(ProjectDependencies) = postProject
+               {3A9AE6AA-BC07-4A2F-972C-581E3AE2F195} = {3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}
+       EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
