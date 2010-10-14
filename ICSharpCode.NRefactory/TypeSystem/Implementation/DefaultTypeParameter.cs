@@ -270,7 +270,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return EmptyList<IEvent>.Instance;
 		}
 		
-		IEnumerable<IType> IType.GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null)
+		IEnumerable<IType> IType.GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter)
 		{
 			return EmptyList<IType>.Instance;
 		}

@@ -147,7 +147,6 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				}
 				if (isTopLevel) {
 					// When the top-level synchronized block is closed, clear any cached data
-					// (the cache token isn't valid anymore)
 					cacheManager.Dispose();
 				}
 			}
@@ -160,7 +159,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			
 			public override ISynchronizedTypeResolveContext Synchronize()
 			{
-				// re-use the same cache token for nested synchronized contexts
+				// re-use the same cache manager for nested synchronized contexts
 				return base.Synchronize(cacheManager, false);
 			}
 		}

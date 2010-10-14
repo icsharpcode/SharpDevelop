@@ -58,7 +58,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		volatile Dictionary<FullNameAndTypeParameterCount, ITypeDefinition>[] _typeDicts = {
 			new Dictionary<FullNameAndTypeParameterCount, ITypeDefinition>(FullNameAndTypeParameterCountComparer.Ordinal)
 		};
-		readonly object typeDictsLock = new object();
+		readonly object dictsLock = new object();
 		
 		Dictionary<FullNameAndTypeParameterCount, ITypeDefinition> GetTypeDictionary(StringComparer nameComparer)
 		{
@@ -73,7 +73,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 			
 			// ensure that no other thread can try to lazy-create this (or another) dict
-			lock (typeDictsLock) {
+			lock (dictsLock) {
 				typeDicts = this._typeDicts; // fetch fresh value after locking
 				// try looking for it again, maybe it was added while we were waiting for a lock
 				// (double-checked locking pattern)
@@ -98,6 +98,58 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				Array.Copy(typeDicts, 0, newTypeDicts, 0, typeDicts.Length);
 				newTypeDicts[typeDicts.Length] = newDict;
 				this._typeDicts = newTypeDicts;
+				return newDict;
+			}
+		}
+		#endregion
+		
+		#region Namespace Storage
+		class NamespaceEntry
+		{
+			public readonly string Name;
+			public int ClassCount;
+			
+			public NamespaceEntry(string name)
+			{
+				this.Name = name;
+			}
+		}
+		
+		volatile Dictionary<string, NamespaceEntry>[] _namespaceDicts = {
+			new Dictionary<string, NamespaceEntry>(StringComparer.Ordinal)
+		};
+		
+		Dictionary<string, NamespaceEntry> GetNamespaceDictionary(StringComparer nameComparer)
+		{
+			// Gets the dictionary for the specified comparer, creating it if necessary.
+			// New dictionaries might be added during read accesses, so this method needs to be thread-safe,
+			// as we allow concurrent read-accesses.
+			var namespaceDicts = this._namespaceDicts;
+			foreach (var dict in namespaceDicts) {
+				if (dict.Comparer == nameComparer)
+					return dict;
+			}
+			
+			// ensure that no other thread can try to lazy-create this (or another) dict
+			lock (dictsLock) {
+				namespaceDicts = this._namespaceDicts; // fetch fresh value after locking
+				// try looking for it again, maybe it was added while we were waiting for a lock
+				// (double-checked locking pattern)
+				foreach (var dict in namespaceDicts) {
+					if (dict.Comparer == nameComparer)
+						return dict;
+				}
+				
+				// now create new dict
+				var newDict = _typeDicts[0].Values.GroupBy(c => c.Namespace, nameComparer)
+					.Select(g => new NamespaceEntry(g.Key) { ClassCount = g.Count() })
+					.ToDictionary(d => d.Name);
+				
+				// add the new dict to the array of dicts
+				var newNamespaceDicts = new Dictionary<string, NamespaceEntry>[namespaceDicts.Length + 1];
+				Array.Copy(namespaceDicts, 0, newNamespaceDicts, 0, namespaceDicts.Length);
+				newNamespaceDicts[namespaceDicts.Length] = newDict;
+				this._namespaceDicts = newNamespaceDicts;
 				return newDict;
 			}
 		}
@@ -128,19 +180,31 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		/// <inheritdoc/>
 		public IEnumerable<ITypeDefinition> GetClasses(string nameSpace, StringComparer nameComparer)
 		{
+			if (nameSpace == null)
+				throw new ArgumentNullException("nameSpace");
+			if (nameComparer == null)
+				throw new ArgumentNullException("nameComparer");
 			return GetClasses().Where(c => nameComparer.Equals(nameSpace, c.Namespace));
 		}
 		
 		/// <inheritdoc/>
 		public IEnumerable<string> GetNamespaces()
 		{
-			return GetClasses().Select(c => c.Namespace).Distinct();
+			return _namespaceDicts[0].Keys;
 		}
 		
 		/// <inheritdoc/>
 		public string GetNamespace(string nameSpace, StringComparer nameComparer)
 		{
-			return GetNamespaces().FirstOrDefault(n => nameComparer.Equals(nameSpace, n));
+			if (nameSpace == null)
+				throw new ArgumentNullException("nameSpace");
+			if (nameComparer == null)
+				throw new ArgumentNullException("nameComparer");
+			NamespaceEntry result;
+			if (GetNamespaceDictionary(nameComparer).TryGetValue(nameSpace, out result))
+				return result.Name;
+			else
+				return null;
 		}
 		#endregion
 		
@@ -167,13 +231,29 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		/// <summary>
 		/// Removes a type definition from this project content.
 		/// </summary>
-		public void RemoveType(string fullName, int typeParameterCount)
+		public void RemoveType(ITypeDefinition typeDefinition)
 		{
-			if (fullName == null)
-				throw new ArgumentNullException("fullName");
-			var key = new FullNameAndTypeParameterCount(fullName, typeParameterCount);
+			if (typeDefinition == null)
+				throw new ArgumentNullException("typeDefinition");
+			var key = new FullNameAndTypeParameterCount(typeDefinition.FullName, typeDefinition.TypeParameterCount);
+			bool wasRemoved = false;
 			foreach (var dict in _typeDicts) {
-				dict.Remove(key);
+				ITypeDefinition defInDict;
+				if (dict.TryGetValue(key, out defInDict)) {
+					if (defInDict == typeDefinition) {
+						wasRemoved = true;
+						dict.Remove(key);
+					}
+				}
+			}
+			if (wasRemoved) {
+				foreach (var dict in _namespaceDicts) {
+					NamespaceEntry ns;
+					if (dict.TryGetValue(typeDefinition.Namespace, out ns)) {
+						if (--ns.ClassCount == 0)
+							dict.Remove(typeDefinition.Namespace);
+					}
+				}
 			}
 		}
 		#endregion
@@ -188,8 +268,19 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			if (typeDefinition == null)
 				throw new ArgumentNullException("typeDefinition");
 			var key = new FullNameAndTypeParameterCount(typeDefinition.FullName, typeDefinition.TypeParameterCount);
+			bool isNew = !_typeDicts[0].ContainsKey(key);
 			foreach (var dict in _typeDicts) {
 				dict[key] = typeDefinition;
+			}
+			if (isNew) {
+				foreach (var dict in _namespaceDicts) {
+					NamespaceEntry ns;
+					if (dict.TryGetValue(typeDefinition.Namespace, out ns)) {
+						++ns.ClassCount;
+					} else {
+						dict.Add(typeDefinition.Namespace, new NamespaceEntry(typeDefinition.Namespace) { ClassCount = 1 });
+					}
+				}
 			}
 		}
 		#endregion
