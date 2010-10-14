@@ -408,10 +408,18 @@ TypeParameterList<List<TemplateDefinition> templates>
 
 /* 4.9.1 */
 TypeParameter<out TemplateDefinition template>
-	(. VarianceModifier modifier = VarianceModifier.Invariant; .)
+	(. VarianceModifier modifier = VarianceModifier.Invariant; Location startLocation = la.Location; .)
 =
-	[ "In" (. modifier = VarianceModifier.Contravariant; .) | "Out" (. modifier = VarianceModifier.Covariant; .) ] Identifier (. template = new TemplateDefinition(t.val, null) { VarianceModifier = modifier }; .)
-	[TypeParameterConstraints<template>]
+	(
+		[ "In" (. modifier = VarianceModifier.Contravariant; .) | "Out" (. modifier = VarianceModifier.Covariant; .) ] Identifier (. template = new TemplateDefinition(t.val, null) { VarianceModifier = modifier }; .)
+		[TypeParameterConstraints<template>]
+	)
+	(.
+		if (template != null) {
+			template.StartLocation = startLocation;
+			template.EndLocation = t.EndLocation;
+		}
+	.)
 .
 
 /* 4.9.2 */
@@ -434,11 +442,20 @@ TypeParameterConstraints<TemplateDefinition template>
 .
 
 TypeParameterConstraint<out TypeReference constraint>
-(. constraint = null; .)
-=	"Class"		(. constraint = TypeReference.ClassConstraint; .)
-|	"Structure"	(. constraint = TypeReference.StructConstraint; .)
-|	"New"		(. constraint = TypeReference.NewConstraint; .)
-|	TypeName<out constraint>
+	(. constraint = null; Location startLocation = la.Location; .)
+=
+	(
+		"Class"		(. constraint = TypeReference.ClassConstraint.Clone(); .)
+		| "Structure"	(. constraint = TypeReference.StructConstraint.Clone(); .)
+		| "New"		(. constraint = TypeReference.NewConstraint.Clone(); .)
+		| TypeName<out constraint>
+	)
+	(.
+		if (constraint != null) {
+			constraint.StartLocation = startLocation;
+			constraint.EndLocation = t.EndLocation;
+		}
+	.)
 .
 
 /* 6.4.2 */
