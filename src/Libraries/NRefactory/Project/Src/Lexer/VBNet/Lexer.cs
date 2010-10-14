@@ -444,9 +444,15 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			var queryOperators = new int[] { Tokens.From, Tokens.Aggregate, Tokens.Select, Tokens.Distinct,
 				Tokens.Where, Tokens.Order, Tokens.By, Tokens.Ascending, Tokens.Descending, Tokens.Take,
 				Tokens.Skip, Tokens.Let, Tokens.Group, Tokens.Into, Tokens.On, Tokens.While, Tokens.Join };
-			if ((queryOperators.Contains(prevTokenKind) || queryOperators.Contains(nextTokenKind))
-			    && ef.InContext(Context.Query))
-				return true;
+			if (ef.InContext(Context.Query)) {
+				// Distinct is special case
+				// fixes http://community.sharpdevelop.net/forums/p/12068/32893.aspx#32893
+				if (prevTokenKind == Tokens.Distinct && !queryOperators.Contains(nextTokenKind))
+					return false;
+				
+				if ((queryOperators.Contains(prevTokenKind) || queryOperators.Contains(nextTokenKind)))
+					return true;
+			}
 			
 			// 8th rule
 			// after binary operators (+, -, /, *, etc.) in an expression context
