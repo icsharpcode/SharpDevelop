@@ -252,10 +252,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					if (progressMonitor.CancellationToken.IsCancellationRequested)
 						return null;
 				}
-				
-				ITextBuffer content = finder.Create(itemFileName);
-				if (content != null) {
-					AddReferences(references, ownerClass, member, itemFileName, content.Text);
+				// Don't read files we don't have a parser for.
+				// This avoids loading huge files (e.g. sdps) when we have no intention of parsing them.
+				if (ParserService.GetParser(itemFileName) != null) {
+					ITextBuffer content = finder.Create(itemFileName);
+					if (content != null) {
+						AddReferences(references, ownerClass, member, itemFileName, content.Text);
+					}
 				}
 			}
 			
