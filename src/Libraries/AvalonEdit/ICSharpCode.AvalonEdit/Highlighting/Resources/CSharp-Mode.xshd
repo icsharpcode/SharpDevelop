@@ -10,7 +10,7 @@
 	<Color name="ReferenceTypes" foreground="Red" exampleText="object o;" />
 	<Color name="MethodCall" foreground="MidnightBlue" fontWeight="bold" exampleText="o.ToString();"/>
 	<Color name="NumberLiteral" foreground="DarkBlue" exampleText="3.1415f"/>
-	<Color name="ThisReference" fontWeight="bold" exampleText="this"/>
+	<Color name="ThisOrBaseReference" fontWeight="bold" exampleText="this.Do(); base.Do();"/>
 	<Color name="NullOrValueKeywords" fontWeight="bold" exampleText="if (value == null)"/>
 	<Color name="Keywords" fontWeight="bold" foreground="Blue" exampleText="if (a) {} else {}"/>
 	<Color name="GotoKeywords" foreground="Navy" exampleText="continue; return null;"/>
@@ -24,6 +24,8 @@
 	<Color name="Visibility" fontWeight="bold" foreground="Blue" exampleText="public override void ToString();"/>
 	<Color name="NamespaceKeywords" fontWeight="bold" foreground="Green" exampleText="namespace A.B { using System; }"/>
 	<Color name="GetSetAddRemove" foreground="SaddleBrown" exampleText="int Prop { get; set; }"/>
+	<Color name="TrueFalse" fontWeight="bold" foreground="DarkCyan" exampleText="b = false; a = true;" />
+	<Color name="TypeKeywords" fontWeight="bold" foreground="DarkCyan" exampleText="if (x is int) { a = x as int; type = typeof(int); size = sizeof(int); c = new object(); }"/>
 	
 	<RuleSet name="CommentMarkerSet">
 		<Keywords fontWeight="bold" foreground="Red">
@@ -107,22 +109,24 @@
 			@[\w\d_]+
 		</Rule>
 		
-		<Keywords fontWeight="bold" foreground="Black">
+		<Keywords color="ThisOrBaseReference">
 			<Word>this</Word>
 			<Word>base</Word>
 		</Keywords>
 		
-		<Keywords fontWeight="bold" foreground="DarkCyan">
+		<Keywords color="TypeKeywords">
 			<Word>as</Word>
 			<Word>is</Word>
 			<Word>new</Word>
 			<Word>sizeof</Word>
 			<Word>typeof</Word>
-			<Word>true</Word>
-			<Word>false</Word>
 			<Word>stackalloc</Word>
 		</Keywords>
 		
+		<Keywords color="TrueFalse">
+			<Word>true</Word>
+			<Word>false</Word>
+		</Keywords>
 		
 		<Keywords color="Keywords">
 			<Word>else</Word>
