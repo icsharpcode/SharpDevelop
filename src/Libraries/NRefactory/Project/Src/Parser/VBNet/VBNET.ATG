@@ -871,8 +871,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 					TypeReference = new TypeReference("System.Void", true),
 					Templates = templates,
 					HandlesClause = handlesClause,
-					InterfaceImplementations = implementsClause,
-					IsExtensionMethod = attributes.Any(section => section.Attributes.Any(a => a.Name.Contains("Extension")))
+					InterfaceImplementations = implementsClause
 				};
 				AddChild(methodDeclaration);
 			.)
@@ -980,8 +979,7 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 					EndLocation   = endLocation,
 					Templates     = templates,
 					HandlesClause = handlesClause,
-					InterfaceImplementations = implementsClause,
-					IsExtensionMethod = attributes.Any(section => section.Attributes.Any(a => a.Name.Contains("Extension")))
+					InterfaceImplementations = implementsClause
 				};
 				
 				AddChild(methodDeclaration);
