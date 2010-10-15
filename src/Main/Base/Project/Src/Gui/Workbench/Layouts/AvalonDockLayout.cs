@@ -229,8 +229,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			workbenchWindows.Add(window);
 			window.ViewContents.Add(content);
 			window.ViewContents.AddRange(content.SecondaryViewContents);
+			window.Show(dockingManager);
 			if (switchToOpenedView) {
-				window.Show(dockingManager);
 				window.Activate();
 			}
 			window.Closed += window_Closed;
