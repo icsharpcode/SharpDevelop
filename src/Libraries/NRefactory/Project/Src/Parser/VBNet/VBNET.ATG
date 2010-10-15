@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Text;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Parser.VB;
@@ -870,7 +871,8 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 					TypeReference = new TypeReference("System.Void", true),
 					Templates = templates,
 					HandlesClause = handlesClause,
-					InterfaceImplementations = implementsClause
+					InterfaceImplementations = implementsClause,
+					IsExtensionMethod = attributes.Any(section => section.Attributes.Any(a => a.Name.Contains("Extension")))
 				};
 				AddChild(methodDeclaration);
 			.)
@@ -978,7 +980,8 @@ StructureMemberDecl<ModifierList m, List<AttributeSection> attributes>
 					EndLocation   = endLocation,
 					Templates     = templates,
 					HandlesClause = handlesClause,
-					InterfaceImplementations = implementsClause
+					InterfaceImplementations = implementsClause,
+					IsExtensionMethod = attributes.Any(section => section.Attributes.Any(a => a.Name.Contains("Extension")))
 				};
 				
 				AddChild(methodDeclaration);
@@ -2685,15 +2688,17 @@ Argument<out Expression argumentexpr>
 
 /* 7.1. */
 TypeName<out TypeReference typeref>
-(. ArrayList rank = null; .)
+(. ArrayList rank = null; Location startLocation = la.Location; .)
 =
 	NonArrayTypeName<out typeref, false>
-	
-	
-	
 	ArrayTypeModifiers<out rank>
-	(.	if (rank != null && typeref != null) {
-			typeref.RankSpecifier = (int[])rank.ToArray(typeof(int));
+	(.
+		if (typeref != null) {
+			if (rank != null) {
+				typeref.RankSpecifier = (int[])rank.ToArray(typeof(int));
+			}
+			typeref.StartLocation = startLocation;
+			typeref.EndLocation = t.EndLocation;
 		}
 	.)
 .
