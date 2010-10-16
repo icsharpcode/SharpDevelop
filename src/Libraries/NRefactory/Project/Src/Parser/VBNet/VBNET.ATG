@@ -786,8 +786,9 @@ EnumMemberDecl<out FieldDeclaration f>
 		f.StartLocation = varDecl.StartLocation = t.Location;
 	.)
 	[ "=" Expr<out expr> (. varDecl.Initializer = expr; .) ]
+	(. f.EndLocation = varDecl.EndLocation = t.EndLocation; .)
 	EndOfStmt
-	.
+.
 
 ClassMemberDecl<ModifierList m, List<AttributeSection> attributes> =
 	StructureMemberDecl<m, attributes>
@@ -1699,7 +1700,7 @@ SimpleExpr<out Expression pexpr>
 				XmlOpenTag IdentifierOrKeyword<out name> XmlCloseTag
 				(. pexpr = new XmlMemberAccessExpression(pexpr, XmlAxisType.Element, name, true); .)
 				| IdentifierOrKeyword<out name>
-				(. pexpr = new MemberReferenceExpression(pexpr, name); .)
+				(. pexpr = new MemberReferenceExpression(pexpr, name) { StartLocation = startLocation, EndLocation = t.EndLocation }; .)
 			)
 			[ IF (la.kind == Tokens.OpenParenthesis && Peek(1).kind == Tokens.Of)
 					"(" "Of" TypeArgumentList<((MemberReferenceExpression)pexpr).TypeArguments> ")"
@@ -1758,7 +1759,7 @@ SimpleNonInvocationExpression<out Expression pexpr>
 			( "MyBase"										(. retExpr = new BaseReferenceExpression() { StartLocation = t.Location, EndLocation = t.EndLocation }; .)
 			| "MyClass"										(. retExpr = new ClassReferenceExpression() { StartLocation = t.Location, EndLocation = t.EndLocation }; .)
 			)
-			"." IdentifierOrKeyword<out name>				(. pexpr = new MemberReferenceExpression(retExpr, name); .)
+			"." IdentifierOrKeyword<out name>				(. pexpr = new MemberReferenceExpression(retExpr, name) { StartLocation = startLocation, EndLocation = t.EndLocation }; .)
 		|	"Global" "."
 			Identifier (. type = new TypeReference(t.val ?? ""); .)
 			/* fallback to "" is required if the token wasn't an identifier (->parser error but no exception) */
@@ -1786,9 +1787,9 @@ SimpleNonInvocationExpression<out Expression pexpr>
 			/* this form only occurs in WithStatements */
 			"." (
 				XmlOpenTag IdentifierOrKeyword<out name> XmlCloseTag
-				(. pexpr = new XmlMemberAccessExpression(null, XmlAxisType.Element, name, true); .)
+				(. pexpr = new XmlMemberAccessExpression(null, XmlAxisType.Element, name, true) { StartLocation = startLocation, EndLocation = t.EndLocation }; .)
 				| IdentifierOrKeyword<out name>
-				(. pexpr = new MemberReferenceExpression(null, name); .)
+				(. pexpr = new MemberReferenceExpression(null, name) { StartLocation = startLocation, EndLocation = t.EndLocation }; .)
 			) |
 			"!" IdentifierOrKeyword<out name> (. pexpr = new BinaryOperatorExpression(null, BinaryOperatorType.DictionaryAccess, new PrimitiveExpression(name, name) { StartLocation = t.Location, EndLocation = t.EndLocation }); .)
 			| (. XmlAxisType axisType = XmlAxisType.Element; bool isXmlIdentifier = false; .)
@@ -2979,7 +2980,15 @@ Block<out Statement stmt>
 		BlockStart(blockStmt);
 	.)
 	{	
-			IF (IsEndStmtAhead()) "End" EndOfStmt (. AddChild(new EndStatement()); .)
+			IF (IsEndStmtAhead())
+				(. Token first = la; .)
+				"End" EndOfStmt
+				(.
+					AddChild(new EndStatement() {
+						StartLocation = first.Location,
+						EndLocation = first.EndLocation }
+					);
+				.)
 			| Statement EndOfStmt
 /*	 	IF (!LeaveBlock()) { }*/
 	}
@@ -3319,7 +3328,10 @@ EmbeddedStatement<out Statement statement>
 			// a field reference expression that stands alone is a
 			// invocation expression without parantheses and arguments
 			if(expr is MemberReferenceExpression || expr is IdentifierExpression) {
+				Location endLocation = expr.EndLocation;
 				expr = new InvocationExpression(expr);
+				expr.StartLocation = startLoc;
+				expr.EndLocation = endLocation;
 			}
 			statement = new ExpressionStatement(expr);
 		.)
@@ -3354,11 +3366,11 @@ EmbeddedStatement<out Statement statement>
 SingleLineStatementList<List<Statement> list>
 (. Statement embeddedStatement = null; .)
 =
-	( "End" (. embeddedStatement = new EndStatement(); .)
+	( "End" (. embeddedStatement = new EndStatement() { StartLocation = t.Location, EndLocation = t.EndLocation }; .)
 	| EmbeddedStatement<out embeddedStatement> )
 	(. if (embeddedStatement != null) list.Add(embeddedStatement); .)
 	{	":" { ":" }
-		( "End" (. embeddedStatement = new EndStatement(); .)
+		( "End" (. embeddedStatement = new EndStatement() { StartLocation = t.Location, EndLocation = t.EndLocation }; .)
 		| EmbeddedStatement<out embeddedStatement> )
 		(. if (embeddedStatement != null) list.Add(embeddedStatement); .)
 	}
@@ -3388,6 +3400,7 @@ LoopControlVariable<out TypeReference type, out string name>
 OnErrorStatement<out OnErrorStatement stmt>
 	(.
 		stmt = null;
+		Location startLocation = la.Location;
 		GotoStatement goToStatement = null;
 	.)
 	=
@@ -3420,19 +3433,26 @@ OnErrorStatement<out OnErrorStatement stmt>
 			stmt = new OnErrorStatement(new ResumeStatement(true));
 		.)
 	)
+	(.
+		if (stmt != null) {
+			stmt.StartLocation = startLocation;
+			stmt.EndLocation = t.EndLocation;
+		}
+	.)
 	.
 
 /* 10.11 */
 GotoStatement<out GotoStatement goToStatement>
-	(.
-		string label = String.Empty;
-	.)
+	(. string label = String.Empty; Location startLocation = la.Location; .)
 	=
 	"GoTo" LabelName<out label>
 	(.
-		goToStatement = new GotoStatement(label);
+		goToStatement = new GotoStatement(label) {
+			StartLocation = startLocation,
+			EndLocation = t.EndLocation
+		};
 	.)
-	.
+.
 
 /* 10.1 */
 LabelName<out string name>
@@ -3451,11 +3471,15 @@ ReDimClause<out Expression expr>
 .
 
 ReDimClauseInternal<ref Expression expr>
-(. List<Expression> arguments; bool canBeNormal; bool canBeRedim; string name; .)
+(. List<Expression> arguments; bool canBeNormal; bool canBeRedim; string name; Location startLocation = la.Location; .)
 =
-	{	"." IdentifierOrKeyword<out name> (. expr = new MemberReferenceExpression(expr, name); .)
+	{ "." IdentifierOrKeyword<out name> (. expr = new MemberReferenceExpression(expr, name) { StartLocation = startLocation, EndLocation = t.EndLocation }; .)
 	|  IF (la.kind == Tokens.OpenParenthesis && Peek(1).kind == Tokens.Of)
 		InvocationExpression<ref expr>
+		(.
+			expr.StartLocation = startLocation;
+			expr.EndLocation = t.EndLocation;
+		.)
 	}
 	"("
 	NormalOrReDimArgumentList<out arguments, out canBeNormal, out canBeRedim>
