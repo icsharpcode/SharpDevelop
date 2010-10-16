@@ -13,11 +13,12 @@ using XmlEditor.Tests.Utils;
 namespace XmlEditor.Tests.Completion
 {
 	[TestFixture]
-	public class ElementCompletionWindowTestFixture
+	public class ElementCompletionWindowTests
 	{
 		MockTextEditor textEditor;
 		CodeCompletionKeyPressResult keyPressResult;
 		XmlSchemaCompletionCollection schemas;
+		XmlCodeCompletionBinding completionBinding;
 		
 		[SetUp]
 		public void Init()
@@ -34,20 +35,37 @@ namespace XmlEditor.Tests.Completion
 			
 			textEditor.Caret.Offset = 0;
 			
-			XmlCodeCompletionBinding completionBinding = new XmlCodeCompletionBinding(associations);
-			keyPressResult = completionBinding.HandleKeyPress(textEditor, '<');
+			completionBinding = new XmlCodeCompletionBinding(associations);
 		}
 		
 		[Test]
-		public void KeyPressResultIsCompletedAfterPressingEqualsSign()
+		public void HandleKeyPress_LessThanKeyPressed_KeyPressResultIsCompletedAfterPressingLessThanSign()
 		{
+			keyPressResult = completionBinding.HandleKeyPress(textEditor, '<');
 			Assert.AreEqual(CodeCompletionKeyPressResult.Completed, keyPressResult);
 		}
 		
 		[Test]
-		public void CompletionWindowWidthIsNotSetToMatchLongestNamespaceTextWidth()
+		public void HandleKeyPress_LessThanKeyPressed_CompletionWindowWidthIsNotSetToMatchLongestNamespaceTextWidth()
 		{
+			completionBinding.HandleKeyPress(textEditor, '<');
 			Assert.AreNotEqual(double.NaN, textEditor.CompletionWindowDisplayed.Width);
-		}		
+		}
+		
+		[Test]
+		public void HandleKeyPress_LessThanKeyPressedInsideRootHtmlElement_BodyElementExistsInChildCompletionItems()
+		{
+			textEditor.Document.Text = 
+				"<html><\r\n" +
+				"</html>";
+			textEditor.Caret.Offset = 6;
+			
+			completionBinding.HandleKeyPress(textEditor, '<');
+			ICompletionItem[] items = textEditor.CompletionItemsDisplayedToArray();
+			
+			XmlCompletionItem expectedItem = new XmlCompletionItem("body", XmlCompletionItemType.XmlElement);
+			
+			Assert.Contains(expectedItem, items);
+		}
 	}
 }

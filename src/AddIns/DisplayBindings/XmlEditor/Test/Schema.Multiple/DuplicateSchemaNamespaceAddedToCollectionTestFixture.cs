@@ -240,7 +240,7 @@ namespace XmlEditor.Tests.Schema.Multiple
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.AddElement(new QualifiedName("duplicate-foo-note", "foo"));
-			XmlCompletionItemCollection items = schemas.GetChildElementCompletion(path);
+			XmlCompletionItemCollection items = schemas.GetChildElementCompletion(path, null);
 			items.Sort();
 			
 			List<XmlCompletionItem> expectedItems = new List<XmlCompletionItem>();

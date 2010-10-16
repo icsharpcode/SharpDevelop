@@ -124,10 +124,10 @@ namespace ICSharpCode.XmlEditor
 			return schemas;
 		}
 		
-		public XmlCompletionItemCollection GetChildElementCompletion(XmlElementPath path)
+		public XmlCompletionItemCollection GetChildElementCompletion(XmlElementPath path, XmlSchemaCompletion defaultSchema)
 		{
 			XmlCompletionItemCollection items = new XmlCompletionItemCollection();
-			foreach (XmlSchemaCompletion schema in GetSchemas(path, null)) {
+			foreach (XmlSchemaCompletion schema in GetSchemas(path, defaultSchema)) {
 				items.AddRange(schema.GetChildElementCompletion(path));
 			}
 			return items;
@@ -143,12 +143,14 @@ namespace ICSharpCode.XmlEditor
 		{
 			XmlCompletionItemCollection items = new XmlCompletionItemCollection();
 			foreach (XmlElementPath path in pathsByNamespace) {
-				items.AddRange(GetChildElementCompletion(path));
+				items.AddRange(GetChildElementCompletion(path, defaultSchema));
 			}
 			
 			XmlNamespaceCollection namespaceWithoutPaths = pathsByNamespace.NamespacesWithoutPaths;
-			if (!IsDefaultSchemaNamespaceDefinedInPathsByNamespace(namespaceWithoutPaths, defaultSchema)) {
-				namespaceWithoutPaths.Add(defaultSchema.Namespace);
+			if (items.Count == 0) {
+				if (!IsDefaultSchemaNamespaceDefinedInPathsByNamespace(namespaceWithoutPaths, defaultSchema)) {
+					namespaceWithoutPaths.Add(defaultSchema.Namespace);
+				}
 			}
 			items.AddRange(GetRootElementCompletion(namespaceWithoutPaths));
 			return items;
