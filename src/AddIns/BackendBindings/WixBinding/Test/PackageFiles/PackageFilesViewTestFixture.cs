@@ -119,7 +119,7 @@ namespace WixBinding.Tests.PackageFiles
 				document.FileName = fileName;
 				packageFilesView.Write(document);
 				
-				Assert.AreEqual(fileName, fileUtilityFileSavedEventArgs.FileName);
+				Assert.AreEqual(fileName, fileUtilityFileSavedEventArgs.FileName.ToString());
 			} finally {
 				FileUtility.FileSaved -= FileUtilityFileSaved;
 			}
