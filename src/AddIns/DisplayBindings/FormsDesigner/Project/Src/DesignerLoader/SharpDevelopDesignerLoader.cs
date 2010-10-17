@@ -9,7 +9,6 @@ using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
 using System.Reflection;
 
-using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner.Services;
 
 namespace ICSharpCode.FormsDesigner
@@ -17,11 +16,12 @@ namespace ICSharpCode.FormsDesigner
 	/// <summary>
 	/// An abstract base class for CodeDOM designer loaders.
 	/// </summary>
-	public abstract class AbstractCodeDomDesignerLoader : CodeDomDesignerLoader
+	public class SharpDevelopDesignerLoader : CodeDomDesignerLoader
 	{
 		bool loading;
 		IDesignerLoaderHost designerLoaderHost = null;
 		ITypeResolutionService typeResolutionService = null;
+		readonly IDesignerLoader loader;
 		readonly IDesignerGenerator generator;
 		
 		public override bool Loading {
@@ -44,7 +44,7 @@ namespace ICSharpCode.FormsDesigner
 			get { return this.generator; }
 		}
 		
-		protected AbstractCodeDomDesignerLoader(IDesignerGenerator generator)
+		protected SharpDevelopDesignerLoader(IDesignerGenerator generator)
 		{
 			if (generator == null) {
 				throw new ArgumentNullException("generator", "Generator cannot be null");
@@ -102,20 +102,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected override void Initialize()
 		{
-			CodeDomLocalizationModel model = FormsDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.DefaultLocalizationModel;
-			
-			if (FormsDesigner.Gui.OptionPanels.LocalizationModelOptionsPanel.KeepLocalizationModel) {
-				// Try to find out the current localization model of the designed form
-				CodeDomLocalizationModel existingModel = this.GetCurrentLocalizationModelFromDesignedFile();
-				if (existingModel != CodeDomLocalizationModel.None) {
-					LoggingService.Debug("Determined existing localization model, using that: " + existingModel.ToString());
-					model = existingModel;
-				} else {
-					LoggingService.Debug("Could not determine existing localization model, using default: " + model.ToString());
-				}
-			} else {
-				LoggingService.Debug("Using default localization model: " + model.ToString());
-			}
+			CodeDomLocalizationModel model = loader.GetLocalizationModel();
 			
 			CodeDomLocalizationProvider localizationProvider = new CodeDomLocalizationProvider(designerLoaderHost, model);
 			IDesignerSerializationManager manager = (IDesignerSerializationManager)designerLoaderHost.GetService(typeof(IDesignerSerializationManager));
@@ -130,16 +117,6 @@ namespace ICSharpCode.FormsDesigner
 			} else {
 				LoggingService.Warn("Forms designer: Cannot add ComponentAdded handler for nested container setup because IComponentChangeService is unavailable");
 			}
-		}
-		
-		/// <summary>
-		/// When overridden in derived classes, this method should return the current
-		/// localization model of the designed file or None, if it cannot be determined.
-		/// </summary>
-		/// <returns>The default implementation always returns None.</returns>
-		protected virtual CodeDomLocalizationModel GetCurrentLocalizationModelFromDesignedFile()
-		{
-			return CodeDomLocalizationModel.None;
 		}
 		
 		protected override void OnEndLoad(bool successful, ICollection errors)
@@ -160,6 +137,16 @@ namespace ICSharpCode.FormsDesigner
 				LoggingService.Error("DesignerLoader.OnEndLoad error " + e.Message, e);
 				throw;
 			}
+		}
+		
+		protected override void Write(System.CodeDom.CodeCompileUnit unit)
+		{
+			loader.Write(unit);
+		}
+		
+		protected override System.CodeDom.CodeCompileUnit Parse()
+		{
+			return loader.Parse();
 		}
 	}
 }

@@ -8,9 +8,6 @@ using System.ComponentModel.Design;
 using System.IO;
 using System.Reflection;
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Dom;
-
 namespace ICSharpCode.FormsDesigner.Services
 {
 	public class TypeDiscoveryService : ITypeDiscoveryService

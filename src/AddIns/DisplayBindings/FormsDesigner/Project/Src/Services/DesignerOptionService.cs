@@ -5,23 +5,39 @@ using System;
 using System.Drawing;
 using System.Windows.Forms.Design;
 
-using ICSharpCode.Core;
-using ICSharpCode.FormsDesigner.Gui.OptionPanels;
-
 namespace ICSharpCode.FormsDesigner.Services
 {
-	public class SharpDevelopDesignerOptions : DesignerOptions
+	[Serializable]
+	public class SharpDevelopDesignerOptions
 	{
-		bool enableInSituEditing;
-		bool objectBoundSmartTagAutoShow;
-		bool useOptimizedCodeGeneration;
-
-		Size gridSize = Size.Empty;
-		bool showGrid;
-		bool snapToGrid;
-		bool useSnapLines;
-		bool useSmartTags;
+		// Gets or sets a value that enables or disables in-place editing for ToolStrip controls.
+		public bool EnableInSituEditing { get; set; }
+		// Obtains and shows whether smart tags are automatically opened.
+		public bool ObjectBoundSmartTagAutoShow { get; set; }
 		
+		// The component cache is a performance enhancement that is incompatible with certain designers.
+		// You can disable it with this property
+		public bool UseOptimizedCodeGeneration { get; set; }
+
+		// Obtains and shows the size of the standard design-mode grid square.
+		public Size GridSize { get; set; }
+		
+		// Obtains and shows whether the design mode surface grid is enabled.
+		public bool ShowGrid { get; set; }
+		
+		// Obtains and shows whether components should be aligned with the surface grid.
+		public bool SnapToGrid { get; set; }
+		
+		// Gets or sets a value that enables or disables snaplines in the designer.
+		public bool UseSnapLines { get; set; }
+		
+		// Gets or sets a value that enables or disables smart tags in the designer.
+		public bool UseSmartTags { get; set; }
+		
+		// Whether to include an underscore in the event handler name
+		public string EventHandlerNameFormat { get; set; }
+		
+		/*
 		public SharpDevelopDesignerOptions()
 		{
 			int w = PropertyService.Get("FormsDesigner.DesignerOptions.GridSizeWidth",  8);
@@ -38,76 +54,13 @@ namespace ICSharpCode.FormsDesigner.Services
 			this.objectBoundSmartTagAutoShow = GeneralOptionsPanel.SmartTagAutoShow;
 			this.useOptimizedCodeGeneration  = PropertyService.Get("FormsDesigner.DesignerOptions.UseOptimizedCodeGeneration", true);
 		}
-		
-		// Obtains and shows the size of the standard design-mode grid square.
-		public override Size GridSize { 
-			get { 
-				return gridSize;
-			}
-		}
-		
-		// Obtains and shows whether the design mode surface grid is enabled.
-		public override bool ShowGrid {
-			get { 
-				return showGrid;
-			}
-		}
-		
-		// Obtains and shows whether components should be aligned with the surface grid.
-		public override bool SnapToGrid {
-			get { 
-				return snapToGrid;
-			}
-		}
-		
-		// Gets or sets a value that enables or disables smart tags in the designer.
-		public override bool UseSmartTags {
-			get { 
-				return useSmartTags;
-			}
-		}
-		
-		// Gets or sets a value that enables or disables snaplines in the designer.
-		public override bool UseSnapLines {
-			get { 
-				return useSnapLines;
-			}
-		}
-
-		// Gets or sets a value that enables or disables in-place editing for ToolStrip controls.
-		public override bool EnableInSituEditing {
-			get { 
-				return enableInSituEditing;
-			}
-		}
-
-		// Obtains and shows whether smart tags are automatically opened.
-		public override bool ObjectBoundSmartTagAutoShow {
-			get { 
-				return objectBoundSmartTagAutoShow;
-			}
-		}
-
-		// The component cache is a performance enhancement that is incompatible with certain designers. 
-		// You can disable it with this property
-		public override bool UseOptimizedCodeGeneration {
-			get { 
-				return useOptimizedCodeGeneration;
-			}
-		}
+		 */
 	}
 
 	public class SharpDevelopDesignerOptionService : WindowsFormsDesignerOptionService
-	{		
-		public SharpDevelopDesignerOptionService()
+	{
+		public SharpDevelopDesignerOptionService(SharpDevelopDesignerOptions options)
 		{
-			ApplySharpDevelopSettings();
-		}
-
-		void ApplySharpDevelopSettings()
-		{
-			SharpDevelopDesignerOptions options = new SharpDevelopDesignerOptions();
-
 			this.Options.Properties.Find("GridSize", true).SetValue(this, options.GridSize);
 			this.Options.Properties.Find("EnableInSituEditing", true).SetValue(this, options.EnableInSituEditing);
 			this.Options.Properties.Find("ObjectBoundSmartTagAutoShow", true).SetValue(this, options.ObjectBoundSmartTagAutoShow);

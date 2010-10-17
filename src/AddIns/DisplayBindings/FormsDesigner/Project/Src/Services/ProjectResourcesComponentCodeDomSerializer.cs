@@ -9,9 +9,6 @@ using System.ComponentModel.Design.Serialization;
 using System.IO;
 using System.Reflection;
 
-using ICSharpCode.Core;
-using ICSharpCode.NRefactory.Visitors;
-
 namespace ICSharpCode.FormsDesigner.Services
 {
 	/// <summary>

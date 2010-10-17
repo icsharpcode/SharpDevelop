@@ -1,4 +1,4 @@
-<AddIn name        = "Forms Designer"
+﻿<AddIn name        = "Forms Designer"
        author      = "Mike Krueger"
        copyright   = "prj:///doc/copyright.txt"
        description = "Windows Forms Designer"
@@ -9,7 +9,7 @@
 	</Manifest>
 	
 	<Runtime>
-		<Import assembly = "FormsDesigner.dll"/>
+		<Import assembly = "FormsDesigner.AddIn.dll"/>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 	</Runtime>
 	

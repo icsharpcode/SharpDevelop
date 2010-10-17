@@ -10,12 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Resources.Tools;
 
-using ICSharpCode.Core;
-using ICSharpCode.EasyCodeDom;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
-
 namespace ICSharpCode.FormsDesigner.Services
 {
 	/// <summary>

@@ -604,11 +604,6 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		public ICollection GetCompatibleMethods(EventDescriptor edesc)
-		{
-			return generator.GetCompatibleMethods(edesc);
-		}
-		
 		void IsActiveViewContentChangedHandler(object sender, EventArgs e)
 		{
 			if (this.IsActiveViewContent) {

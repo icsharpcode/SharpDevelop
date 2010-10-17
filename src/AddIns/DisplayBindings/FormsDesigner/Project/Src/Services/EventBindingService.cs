@@ -4,16 +4,14 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-using ICSharpCode.FormsDesigner.Gui.OptionPanels;
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
 	public class EventBindingService : System.ComponentModel.Design.EventBindingService
 	{
-		readonly FormsDesignerViewContent formDesigner;
+		readonly IFormsDesigner formDesigner;
 		
-		public EventBindingService(FormsDesignerViewContent formDesigner, IServiceProvider provider) : base(provider)
+		public EventBindingService(IFormsDesigner formDesigner, IServiceProvider provider) : base(provider)
 		{
 			if (formDesigner == null)
 				throw new ArgumentNullException("formDesigner");
@@ -40,16 +38,17 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		string GetEventHandlerNameFormat()
 		{
-			if (GeneralOptionsPanel.GenerateVisualStudioStyleEventHandlers) {
-				return "{0}_{1}";
-			}
-			return "{0}{1}";
+//			if (formDesigner.SharpDevelopDesignerOptions.GenerateVisualStudioStyleEventHandlers) {
+//				return "{0}_{1}";
+//			}
+//			return "{0}{1}";
+			return formDesigner.DesignerOptions.EventHandlerNameFormat;
 		}
 
 		// sohuld look around in form class for compatiable methodes
 		protected override ICollection GetCompatibleMethods(EventDescriptor e)
 		{
-			return this.formDesigner.GetCompatibleMethods(e);
+			return this.formDesigner.Generator.GetCompatibleMethods(e);
 		}
 		
 		protected override bool ShowCode()

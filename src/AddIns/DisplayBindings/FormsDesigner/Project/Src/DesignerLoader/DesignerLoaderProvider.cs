@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel.Design.Serialization;
+/*
 using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.FormsDesigner
@@ -27,3 +28,4 @@ namespace ICSharpCode.FormsDesigner
 		}
 	}
 }
+*/

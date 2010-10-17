@@ -10,9 +10,7 @@ using System.Security.Permissions;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
-using ICSharpCode.Core;
 using ICSharpCode.FormsDesigner.Gui;
-using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.FormsDesigner.Services
 {

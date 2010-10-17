@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using System.Xml;
 
 using ICSharpCode.FormsDesigner.Services;
-using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.FormsDesigner
 {

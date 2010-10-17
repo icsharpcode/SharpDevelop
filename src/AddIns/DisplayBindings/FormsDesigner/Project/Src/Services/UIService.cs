@@ -7,13 +7,11 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
-
 namespace ICSharpCode.FormsDesigner.Services
 {
 	public class UIService : IUIService
 	{
+		IFormsDesigner designer;
 		IDictionary styles = new Hashtable();
 		
 		public IDictionary Styles {
@@ -22,8 +20,9 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 		}
 		
-		public UIService()
+		public UIService(IFormsDesigner designer)
 		{
+			this.designer = designer;
 			styles["DialogFont"]     = Control.DefaultFont;
 			styles["HighlightColor"] = Color.LightYellow;
 		}
@@ -48,7 +47,12 @@ namespace ICSharpCode.FormsDesigner.Services
 		#region Dialog functions
 		public IWin32Window GetDialogOwnerWindow()
 		{
-			return WorkbenchSingleton.MainWin32Window;
+			return new Win32Window { Handle = designer.GetDialogOwnerWindowHandle() };
+		}
+		
+		sealed class Win32Window : IWin32Window
+		{
+			public IntPtr Handle { get; set; }
 		}
 		
 		public DialogResult ShowDialog(Form form)
