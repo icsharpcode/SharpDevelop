@@ -161,6 +161,30 @@ End Class";
 			);
 		}
 		
+		[Test]
+		public void LineContinuationAfterAttributes()
+		{
+			string code = @"<TestFixture>
+Public Class TestContinuation
+    <Test>
+    Public Sub TestMethod
+        Assert.Fail
+    End Sub
+End Class";
+			
+			ILexer lexer = GenerateLexer(new StringReader(code));
+			
+			CheckTokens(
+				lexer, Tokens.LessThan, Tokens.Identifier, Tokens.GreaterThan,
+				Tokens.Public, Tokens.Class, Tokens.Identifier, Tokens.EOL,
+				Tokens.LessThan, Tokens.Identifier, Tokens.GreaterThan,
+				Tokens.Public, Tokens.Sub, Tokens.Identifier, Tokens.EOL,
+				Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.EOL,
+				Tokens.End, Tokens.Sub, Tokens.EOL,
+				Tokens.End, Tokens.Class
+			);
+		}
+		
 		#region Helpers
 		ILexer GenerateLexer(StringReader sr)
 		{
