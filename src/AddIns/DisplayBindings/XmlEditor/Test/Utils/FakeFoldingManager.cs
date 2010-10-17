@@ -24,5 +24,9 @@ namespace XmlEditor.Tests.Utils
 			NewFoldsPassedToUpdateFoldings.AddRange(newFoldings);
 			FirstErrorOffset = firstErrorOffset;
 		}
+		
+		public void Dispose()
+		{
+		}
 	}
 }

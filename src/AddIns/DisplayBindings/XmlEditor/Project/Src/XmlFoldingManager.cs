@@ -53,6 +53,7 @@ namespace ICSharpCode.XmlEditor
 		public void Dispose()
 		{
 			document.Changed -= DocumentChanged;
+			foldingManager.Dispose();
 		}
 		
 		public IList<FoldingRegion> GetFolds(ITextBuffer textBuffer)

@@ -546,9 +546,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 			}
 			iconBarManager.UpdateClassMemberBookmarks(parseInfo);
-			primaryTextEditor.UpdateParseInformation(parseInfo);
+			primaryTextEditor.UpdateParseInformationForFolding(parseInfo);
 			if (secondaryTextEditor != null)
-				secondaryTextEditor.UpdateParseInformation(parseInfo);
+				secondaryTextEditor.UpdateParseInformationForFolding(parseInfo);
 		}
 		
 		public void Dispose()

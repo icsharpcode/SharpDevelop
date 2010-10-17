@@ -71,7 +71,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (e.PropertyName == "HighlightBrackets")
 				HighlightBrackets(null, e);
 			else if (e.PropertyName == "EnableFolding")
-				UpdateParseInformation();
+				UpdateParseInformationForFolding();
 			else if (e.PropertyName == "HighlightSymbol") {
 				if (this.caretReferencesRenderer != null)
 					this.caretReferencesRenderer.ClearHighlight();
@@ -252,15 +252,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						toolTip.Closed += ToolTipClosed;
 					}
 					toolTip.PlacementTarget = this; // required for property inheritance
-									
+					
 					if(args.ContentToShow is string) {
-						toolTip.Content = new TextBlock 
+						toolTip.Content = new TextBlock
 						{
 							Text = args.ContentToShow as string,
 							TextWrapping = TextWrapping.Wrap
 						};
 					}
-					else 
+					else
 						toolTip.Content = args.ContentToShow;
 					
 					toolTip.IsOpen = true;
@@ -434,14 +434,26 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		
 		#region UpdateParseInformation - Folding
-		void UpdateParseInformation()
+		void UpdateParseInformationForFolding()
 		{
-			UpdateParseInformation(ParserService.GetExistingParseInformation(this.Adapter.FileName));
+			UpdateParseInformationForFolding(ParserService.GetExistingParseInformation(this.Adapter.FileName));
 		}
 		
-		public void UpdateParseInformation(ParseInformation parseInfo)
+		bool disableParseInformationFolding;
+		
+		public bool DisableParseInformationFolding {
+			get { return disableParseInformationFolding; }
+			set {
+				if (disableParseInformationFolding != value) {
+					disableParseInformationFolding = value;
+					UpdateParseInformationForFolding();
+				}
+			}
+		}
+		
+		public void UpdateParseInformationForFolding(ParseInformation parseInfo)
 		{
-			if (!CodeEditorOptions.Instance.EnableFolding)
+			if (!CodeEditorOptions.Instance.EnableFolding || disableParseInformationFolding)
 				parseInfo = null;
 			
 			IServiceContainer container = this.Adapter.GetService(typeof(IServiceContainer)) as IServiceContainer;
