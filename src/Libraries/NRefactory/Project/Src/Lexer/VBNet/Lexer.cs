@@ -446,9 +446,10 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				Tokens.Where, Tokens.Order, Tokens.By, Tokens.Ascending, Tokens.Descending, Tokens.Take,
 				Tokens.Skip, Tokens.Let, Tokens.Group, Tokens.Into, Tokens.On, Tokens.While, Tokens.Join };
 			if (ef.InContext(Context.Query)) {
-				// Distinct is special case
+				// Ascending, Descending, Distinct are special
 				// fixes http://community.sharpdevelop.net/forums/p/12068/32893.aspx#32893
-				if (prevTokenKind == Tokens.Distinct && !queryOperators.Contains(nextTokenKind))
+				var specialQueryOperators = new int[] { Tokens.Ascending, Tokens.Descending, Tokens.Distinct };
+				if (specialQueryOperators.Contains(prevTokenKind) && !queryOperators.Contains(nextTokenKind))
 					return false;
 				
 				if ((queryOperators.Contains(prevTokenKind) || queryOperators.Contains(nextTokenKind)))
