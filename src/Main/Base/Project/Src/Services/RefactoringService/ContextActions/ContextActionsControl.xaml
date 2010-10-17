@@ -53,6 +53,7 @@
 	
 	
 	<TreeView x:Name="TreeView" ItemsSource="{Binding}" BorderThickness="0"
+	          Loaded="TreeViewLoaded"
 	          ItemTemplate="{Binding Path=ItemTemplate, RelativeSource={RelativeSource AncestorType={x:Type local:ContextActionsControl}}}">
 		<TreeView.Background>
 			<LinearGradientBrush StartPoint="0,0" EndPoint="1,0">

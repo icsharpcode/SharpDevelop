@@ -33,6 +33,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			firstButton.Focus();
 		}
 		
+		void TreeViewLoaded(object sender, RoutedEventArgs e)
+		{
+			if (TreeView.IsVisible) {
+				this.Focus();
+			}
+		}
+
 		void ActionButtonClick(object sender, RoutedEventArgs e)
 		{
 			if (ActionExecuted != null)
