@@ -47,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			AvalonWorkbenchWindow.SetFocus(this, activeChild);
 		}
 		
-		internal static void SetFocus(ManagedContent m, IInputElement activeChild)
+		internal static void SetFocus(ManagedContent m, IInputElement activeChild, bool forceSetFocus = false)
 		{
 			if (activeChild != null) {
 				LoggingService.Debug(m.Title + " - Will move focus to: " + activeChild);
@@ -57,8 +57,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 						delegate {
 							// ensure that condition for FocusContent() is still fulfilled
 							// (necessary to avoid focus switching loops when changing layouts)
-							if (!(m.IsActiveContent && !m.IsKeyboardFocusWithin)) {
-								LoggingService.Debug(m.Title + " - not moving focus");
+							if (!forceSetFocus && !(m.IsActiveContent && !m.IsKeyboardFocusWithin)) {
+								LoggingService.Debug(m.Title + " - not moving focus (IsActiveContent=" + m.IsActiveContent + ", IsKeyboardFocusWithin=" + m.IsKeyboardFocusWithin + ")");
 								return;
 							}
 							LoggingService.Debug(m.Title + " - moving focus to: " + activeChild);
@@ -275,19 +275,52 @@ namespace ICSharpCode.SharpDevelop.Gui
 			viewContents.ForEach(vc => vc.Dispose());
 		}
 		
-		class TabControlWithoutShortcuts : TabControl
+		sealed class TabControlWithModifiedShortcuts : TabControl
 		{
+			readonly AvalonWorkbenchWindow parentWindow;
+			
+			public TabControlWithModifiedShortcuts(AvalonWorkbenchWindow parentWindow)
+			{
+				this.parentWindow = parentWindow;
+			}
+			
 			protected override void OnKeyDown(KeyEventArgs e)
 			{
 				// We don't call base.KeyDown to prevent the TabControl from handling Ctrl+Tab.
 				// Instead, we let the key press bubble up to the DocumentPane.
+			}
+			
+			protected override void OnPreviewKeyDown(KeyEventArgs e)
+			{
+				base.OnPreviewKeyDown(e);
+				if (e.Handled)
+					return;
+				
+				// However, we do want to handle Ctrl+PgUp / Ctrl+PgDown (SD-1735)
+				if ((e.Key == Key.PageUp || e.Key == Key.PageDown) && e.KeyboardDevice.Modifiers == ModifierKeys.Control) {
+					int index = this.SelectedIndex;
+					if (e.Key == Key.PageUp) {
+						if (++index >= this.Items.Count)
+							index = 0;
+					} else {
+						if (--index < 0)
+							index = this.Items.Count - 1;
+					}
+					this.SelectedIndex = index;
+					
+					IViewContent vc = parentWindow.ActiveViewContent;
+					if (vc != null)
+						SetFocus(parentWindow, vc.InitiallyFocusedControl as IInputElement, true);
+					
+					e.Handled = true;
+				}
 			}
 		}
 		
 		private void CreateViewTabControl()
 		{
 			if (viewTabControl == null) {
-				viewTabControl = new TabControlWithoutShortcuts();
+				viewTabControl = new TabControlWithModifiedShortcuts(this);
 				viewTabControl.TabStripPlacement = Dock.Bottom;
 				this.SetContent(viewTabControl);
 				
