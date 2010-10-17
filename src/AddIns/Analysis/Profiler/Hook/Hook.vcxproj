@@ -211,6 +211,7 @@
     <None Include="Callback.x64.asm" />
     <None Include="Hook.def" />
     <None Include="MetaData_Syntax_Info.txt" />
+    <None Include="Profiler.Rewriting.cpp" />
   </ItemGroup>
   <Import Condition="Exists('$(VCTargetsPath)\Microsoft.Cpp.targets')" Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

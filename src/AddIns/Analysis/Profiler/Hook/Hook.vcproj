@@ -292,6 +292,8 @@
 			<File
 				RelativePath="Profiler.cpp"></File>
 			<File
+				RelativePath="Profiler.Rewriting.cpp"></File>
+			<File
 				RelativePath="ProfilerMetaData.cpp"></File>
 			<File
 				RelativePath="SharedMemory.cpp"></File>
