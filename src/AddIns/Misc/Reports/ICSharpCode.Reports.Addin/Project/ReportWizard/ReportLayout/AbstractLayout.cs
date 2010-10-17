@@ -98,8 +98,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 			ICSharpCode.Reports.Core.BaseRowItem row = new ICSharpCode.Reports.Core.BaseRowItem();
 			AdjustContainer(parent,row);
-			
-			int defY = parent.Location.Y + GlobalValues.ControlMargins.Top;
+
+			int defY =  GlobalValues.ControlMargins.Top;
 			int ctrlWidth = CalculateControlWidth(row,colDetail);
 			int startX = parent.Location.X + GlobalValues.ControlMargins.Left;
 			
@@ -134,34 +134,18 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 		#endregion
-		/*
-		protected static ReportItemCollection AddItemsToSection (ICSharpCode.Reports.Core.BaseSection section,ReportItemCollection items)
-		{
-			int defY = section.Location.Y + GlobalValues.ControlMargins.Top;
-			int ctrlWidth = CalculateControlWidth(section,items);
-			int startX = section.Location.X + GlobalValues.ControlMargins.Left;
-			var vv = new ReportItemCollection();
-			foreach (var ir in items) {
-				Point np = new Point(startX,defY);
-				startX += ctrlWidth;
-				ir.Location = np;
-//				section.Items.Add(ir);
-				vv.Add(ir);
-			}
-			return vv;
-		}
-		*/
+		
 		
 		protected ReportItemCollection AddItemsToContainer (ReportItemCollection items)
 		{
-			int locationY = 10;
-			int locationX = this.ParentItem.Location.X + GlobalValues.ControlMargins.Left;
+			int locationX = GlobalValues.ControlMargins.Left;
+			
 			var minCtrlWidth = CalculateControlWidth(ParentItem,items);
 			
 			var col = new ReportItemCollection();
 			
 			foreach (var ir in items) {
-				ir.Location = new Point(locationX,locationY);
+				ir.Location = new Point(locationX,GlobalValues.ControlMargins.Top);
 				col.Add(ir);
 				locationX += minCtrlWidth;
 			}
@@ -184,13 +168,13 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			dataItem.ColumnName = ReportModel.ReportSettings.GroupColumnsCollection[0].ColumnName;
 			
 			dataItem.DataType = ReportModel.ReportSettings.GroupColumnsCollection[0].DataTypeName;
-			dataItem.Location = new Point (10,5);
+			dataItem.Location = new Point (GlobalValues.ControlMargins.Left,GlobalValues.ControlMargins.Top);
 			dataItem.Size = new Size (150,20);
 			dataItem.Text = ReportModel.ReportSettings.GroupColumnsCollection[0].ColumnName;
 			
 			ICSharpCode.Reports.Core.BaseGroupedRow groupHeader = new ICSharpCode.Reports.Core.BaseGroupedRow();
 			groupHeader.Location = headerLocation;
-			groupHeader.Size = new Size (300,30);
+			groupHeader.Size = new Size (300,dataItem.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
 			groupHeader.Items.Add(dataItem);
 			return groupHeader;
 		}

@@ -123,7 +123,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 						Rectangle sectionRectangle = new Rectangle(0,0,section.Size.Width,section.Size.Height);
 						
 						if (!sectionRectangle.Contains(desiredRectangle)) {
-							section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height);
+							section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
 						}
 						
 						list = StandardPrinter.ConvertPlainCollection(section.Items,offset);

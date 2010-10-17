@@ -25,7 +25,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		{
 			Rectangle textRect = layouter.Layout(graphics,row);
 			if (textRect.Height > row.Size.Height) {
-				row.Size = new Size(row.Size.Width,textRect.Height);
+				row.Size = new Size(row.Size.Width,textRect.Height + 5);
 			}
 		}
 		

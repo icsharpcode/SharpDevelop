@@ -112,11 +112,16 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected Point ConvertGroupChilds(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer, int defaultLeftPos, Point currentPosition)
 		{
+			Console.WriteLine("---start --ConvertStandardRow {0} - section {1}",simpleContainer.Size,section.Size);
 			PrepareContainerForConverting(section,simpleContainer);
 			Point curPos  = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
-			AfterConverting (mylist);
+			Console.WriteLine("---end   --ConvertStandardRow detail {0} - section {1}",simpleContainer.Size,section.Size);
+//			Console.WriteLine();
+//			Console.WriteLine();
+			AfterConverting (section,mylist);
 			return curPos;
 		}
+		
 		
 		protected  bool PageBreakAfterGroupChange(ISimpleContainer container)
 		{
@@ -179,7 +184,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		#endregion
 		
 		
-		protected void  SaveSize(Size size)
+		protected void  SaveSectionSize(Size size)
 		{
 			this.saveSize = size;
 		}
@@ -206,11 +211,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		protected void AfterConverting (ExporterCollection convertedList)
+		protected void AfterConverting (BaseSection section,ExporterCollection convertedList)
 		{
 			StandardPrinter.EvaluateRow(Evaluator,convertedList);
-//			section.Items[0].Size = base.RestoreSize;
-//			section.SectionOffset += section.Size.Height + 3 * GlobalValues.GapBetweenContainer;
+			section.Items[0].Size = RestoreSize;
 		}
 		
 		
@@ -219,7 +223,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			FillRow(simpleContainer);
 			PrepareContainerForConverting(section,simpleContainer);
 			Point curPos = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
-			AfterConverting (mylist);
+			AfterConverting (section,mylist);
 			return curPos;
 		}
 		

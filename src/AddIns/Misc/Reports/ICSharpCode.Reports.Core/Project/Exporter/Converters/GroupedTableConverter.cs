@@ -69,7 +69,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				simpleContainer.Location = new Point (simpleContainer.Location.X,simpleContainer.Location.Y);
 				simpleContainer.Parent = (BaseReportItem)this.table;
 				
-				base.SaveSize( new Size (simpleContainer.Size.Width,simpleContainer.Size.Height));
+				base.SaveSectionSize( new Size (simpleContainer.Size.Width,simpleContainer.Size.Height));
 				
 				if (PrintHelper.IsTextOnlyRow(simpleContainer) ) {
 					headerRow = simpleContainer;
@@ -136,7 +136,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				{
 					// No Grouping at all
 					
-					base.SaveSize(simpleContainer.Size);
+					base.SaveSectionSize(simpleContainer.Size);
 					simpleContainer =  table.Items[1] as ISimpleContainer;
 					
 					do {
@@ -191,7 +191,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				StandardPrinter.EvaluateRow(base.Evaluator,list);
 				
 				exportList.AddRange(list);
-				AfterConverting (list);
+				AfterConverting (section,list);
 				retVal =  new Point (leftPos,offset.Y + groupCollection[0].Size.Height + 20  + (3 *GlobalValues.GapBetweenContainer));
 			} else {
 				retVal = ConvertStandardRow(exportList,section,groupedRow[0],leftPos,offset);

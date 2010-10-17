@@ -58,40 +58,69 @@ namespace ICSharpCode.Reports.Core.Exporter
 			BaseSection section = parent as BaseSection;
 			
 			int defaultLeftPos = parent.Location.X;
-
+			
+			Size groupSize = Size.Empty;
+			Size childSize = Size.Empty;
+			
+			if (section.Items.IsGrouped)
+			{
+				groupSize = section.Items[0].Size;
+				childSize  = section.Items[1].Size;
+			}
+			
 			Rectangle pageBreakRect = Rectangle.Empty;
 			
 			do {
-				
+				base.SaveSectionSize(section.Size);
 				PrintHelper.AdjustSectionLocation (section);
 				section.Size = this.SectionBounds.DetailSectionRectangle.Size;
-				base.SaveSize(section.Items[0].Size);
 				
 				// did we have GroupedItems at all
-				if (section.Items.IsGrouped) {
-					
+				if (section.Items.IsGrouped)
+				{
 					// GetType child navigator
 					IDataNavigator childNavigator = base.DataNavigator.GetChildNavigator();
 					
 					base.Evaluator.SinglePage.IDataNavigator = childNavigator;
-					// Convert Grouping Header
 					
 					currentPosition = ConvertGroupHeader(exporterCollection,section,defaultLeftPos,currentPosition);
+					
+					section.Size = base.RestoreSize;
+					section.Items[0].Size = groupSize;
+					section.Items[1].Size = childSize;
 					
 					childNavigator.Reset();
 					childNavigator.MoveNext();
 					
+//					Console.WriteLine("-------------------after group");
+//
+//			Console.WriteLine ("section {0}",section.Size);
+//			Console.WriteLine ("group {0}",section.Items[0].Size);
+//			Console.WriteLine ("detail {0}",section.Items[1].Size);
+//			Console.WriteLine();
+					
 					//Convert children
 					if (childNavigator != null) {
 						StandardPrinter.AdjustBackColor(simpleContainer,GlobalValues.DefaultBackColor);
-						
-						do {
+						do
+						{
+							Console.WriteLine("-----------------childs");
+							
+//			Console.WriteLine ("section {0}",section.Size);
+//			Console.WriteLine ("group {0}",section.Items[0].Size);
+//			Console.WriteLine ("detail {0}",section.Items[1].Size);
+//			Console.WriteLine();
+							section.Size = base.RestoreSize;
+							section.Items[0].Size = groupSize;
+							section.Items[1].Size = childSize;
+							
+							
 							childNavigator.Fill(simpleContainer.Items);
 							
 							currentPosition = ConvertGroupChilds (exporterCollection,section,
 							                                      simpleContainer,defaultLeftPos,currentPosition);
 							pageBreakRect = PrintHelper.CalculatePageBreakRectangle((BaseReportItem)section.Items[1],currentPosition);
-							
+							section.Items[1].Size = base.RestoreSize;
 							if (PrintHelper.IsPageFull(pageBreakRect,base.SectionBounds )) {
 								currentPosition = ForcePageBreak (exporterCollection,section);
 							}
@@ -113,6 +142,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				{
 					// No Grouping at all
 					currentPosition = ConvertStandardRow (exporterCollection,section,simpleContainer,defaultLeftPos,currentPosition);
+					section.Size = base.RestoreSize;
 				}
 				
 				pageBreakRect = PrintHelper.CalculatePageBreakRectangle((BaseReportItem)section.Items[0],currentPosition);
@@ -138,7 +168,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			base.ForcePageBreak(exporterCollection,section);
 			return CalculateStartPosition();
 		}
-	
+		
 		
 		private Point CalculateStartPosition()
 		{
@@ -160,14 +190,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 				StandardPrinter.EvaluateRow(base.Evaluator,list);
 				
 				exportList.AddRange(list);
-				AfterConverting (list);
+				AfterConverting (section,list);
 				retVal =  new Point (leftPos,offset.Y + groupCollection[0].Size.Height + 20  + (3 *GlobalValues.GapBetweenContainer));
 			} else {
 				retVal = ConvertStandardRow(exportList,section,groupedRows[0],leftPos,offset);
 			}
 			return retVal;
 		}
-	
+		
 		
 		private static void ShouldDrawBorder (BaseSection section,ExporterCollection list)
 		{

@@ -39,17 +39,12 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			System.Collections.Generic.IEnumerable<BaseReportItem> canGrowShrinkCollection = from bt in container.Items where bt.CanGrow == true select bt;
 			
 			if (canGrowShrinkCollection.Count() > 0 ) {
-				
-				int bottomPadding = container.Size.Height - (container.Items[0].Location.Y + container.Items[0].Size.Height);
-				
 				Rectangle surroundingRec = FindSurroundingRectangle(graphics,canGrowShrinkCollection);
-				
 				desiredContainerRectangle = new Rectangle(container.Location.X,
 				                                          container.Location.Y,
 				                                          container.Size.Width,
-				                                          surroundingRec.Size.Height + bottomPadding );
+				                                          surroundingRec.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
 			}
-			
 			return desiredContainerRectangle;
 		}
 		
@@ -63,6 +58,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				throw new ArgumentNullException("section");
 			}
 		
+			Console.WriteLine("layouter for {0}",section.Name);
 			
 			IEnumerable<BaseReportItem> canGrowShrinkCollection = from bt in section.Items where bt.CanGrow == true select bt;
 			
@@ -73,17 +69,13 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 			
 			if (canGrowShrinkCollection.Count() > 0) {
 				
-				//Console.WriteLine ("xx layout section");
-				
-				int bottomPadding = section.Size.Height - (section.Items[0].Size.Height + section.Items[0].Location.Y);
-				
 				Rectangle surroundingRec = FindSurroundingRectangle(graphics,canGrowShrinkCollection);
 				
 				if (surroundingRec.Height > desiredSectionRectangle .Height) {
 					desiredSectionRectangle = new Rectangle(section.Location.X,
 					                                        section .Location.Y,
 					                                        section .Size.Width,
-					                                        surroundingRec.Size.Height + bottomPadding);
+					                                        surroundingRec.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom );
 				}
 			}
 			return desiredSectionRectangle;

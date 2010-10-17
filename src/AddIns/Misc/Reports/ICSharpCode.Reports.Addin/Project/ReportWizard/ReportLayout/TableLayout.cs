@@ -57,15 +57,17 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				insertLocation = new Point(margin.Left,insertLocation.Y + groupHeader.Size.Height + margin.Bottom + margin.Top);
 			}
 			
+			//Insert details allways
 			
 			ICSharpCode.Reports.Core.BaseRowItem detailRow = new ICSharpCode.Reports.Core.BaseRowItem();
 			AdjustContainer (ParentItem,detailRow);
 			
 			detailRow.Location = insertLocation;
+			detailRow.Size =  new Size(detailRow.Size.Width,30);
 
 			int defX = AbstractLayout.CalculateControlWidth(detailRow,reportItems);
 			
-			int startX = detailRow.Location.X + margin.Left;
+			int startX =  margin.Left;
 			
 			foreach (ICSharpCode.Reports.Core.BaseReportItem ir in this.reportItems)
 			{
@@ -76,26 +78,22 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				detailRow.Items.Add(ir);
 			}
 			
-			insertLocation = new Point(margin.Left,insertLocation.Y + detailRow.Size.Height + margin.Bottom + margin.Top);
-			
 			ParentItem.Items.Add (detailRow);
-			
-			ParentItem.Size = CalculateContainerSize(ParentItem,margin);
-
+			ParentItem.Size = CalculateContainerSize(ParentItem);
 			section.Size = new Size (section.Size.Width,ParentItem.Size.Height + margin.Top + margin.Bottom);
-			
 		}
 		
 		
-		private Size CalculateContainerSize(ISimpleContainer container,System.Drawing.Printing.Margins margin)
+		private Size CalculateContainerSize(ISimpleContainer container)
 		{
-			int h = margin.Top;
+			int h = GlobalValues.ControlMargins.Top;
 			
 			foreach (ICSharpCode.Reports.Core.BaseReportItem item  in container.Items)
 			{
-				h = h + item.Size.Height + margin.Bottom;
+				h = h + item.Size.Height + GlobalValues.ControlMargins.Bottom;
 			}
-			h 	= h + 3*margin.Bottom;
+			h 	= h + 3*GlobalValues.ControlMargins.Bottom;
+			
 			return new Size (container.Size.Width,h);
 		}
 	}
