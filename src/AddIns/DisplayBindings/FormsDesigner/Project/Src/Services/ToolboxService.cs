@@ -7,8 +7,6 @@ using System.Collections.Specialized;
 using System.ComponentModel.Design;
 using System.Drawing.Design;
 
-using ICSharpCode.Core;
-
 namespace ICSharpCode.FormsDesigner.Services
 {
 	public delegate void ToolboxEventHandler(object sender, ToolboxEventArgs tea);

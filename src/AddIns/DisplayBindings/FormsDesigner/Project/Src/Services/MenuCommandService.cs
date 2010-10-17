@@ -6,8 +6,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
-using ICSharpCode.Core.WinForms;
-using ICSharpCode.FormsDesigner.Commands;
 using CommandID = System.ComponentModel.Design.CommandID;
 using MenuCommand = System.ComponentModel.Design.MenuCommand;
 
@@ -16,9 +14,9 @@ namespace ICSharpCode.FormsDesigner.Services
 	class MenuCommandService : System.ComponentModel.Design.MenuCommandService
 	{
 		
-		FormsDesignerViewContent vc;
+		IFormsDesigner vc;
 		
-		public MenuCommandService(FormsDesignerViewContent vc, IServiceProvider serviceProvider) : base(serviceProvider)
+		public MenuCommandService(IFormsDesigner vc, IServiceProvider serviceProvider) : base(serviceProvider)
 		{
 			this.vc = vc;
 			this.InitializeGlobalCommands( );

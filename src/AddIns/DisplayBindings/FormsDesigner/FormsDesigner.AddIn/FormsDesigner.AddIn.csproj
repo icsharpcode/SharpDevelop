@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{53840EAB-984D-419F-A2A2-6D13C3F3D5B4}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.FormsDesigner</RootNamespace>
+    <AssemblyName>FormsDesigner.AddIn</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FormsDesigner.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Commands\FormsCommands.cs" />
+    <Compile Include="Commands\SideBarCommands.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="DesignerGenerator\AbstractDesignerGenerator.cs" />
+    <Compile Include="DesignerGenerator\CodeDOMGenerator.cs" />
+    <Compile Include="DesignerGenerator\CSharpDesignerGenerator.cs" />
+    <Compile Include="DesignerGenerator\VBNetDesignerGenerator.cs" />
+    <Compile Include="DesignerLoader\AbstractCodeDomDesignerLoader.cs" />
+    <Compile Include="DesignerLoader\NRefactoryDesignerLoader.cs" />
+    <Compile Include="DesignerSourceCodeStorage.cs" />
+    <Compile Include="DesignerViewContent.cs" />
+    <Compile Include="FormKeyHandler.cs" />
+    <Compile Include="ImageResourceEditorDialog.cs" />
+    <Compile Include="ImageResourceEditorDialog.Designer.cs">
+      <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OptionPanels\GeneralOptions.cs" />
+    <Compile Include="OptionPanels\GridOptions.cs" />
+    <Compile Include="OptionPanels\LocalizationModelOptionsPanel.cs" />
+    <Compile Include="SecondaryDisplayBinding.cs" />
+    <Compile Include="Services\DesignerResourceService.cs" />
+    <Compile Include="Services\HelpService.cs" />
+    <Compile Include="Services\ProjectResourceService.cs" />
+    <Compile Include="Services\ResourceStore.cs" />
+    <Compile Include="Toolbox\AddComponentsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Toolbox\ConfigureSideBarDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Toolbox\CustomComponentsSideTab.cs" />
+    <Compile Include="Toolbox\RenameCategoryDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Toolbox\SideTabDesigner.cs" />
+    <Compile Include="Toolbox\SideTabItemDesigner.cs" />
+    <Compile Include="Toolbox\ToolboxProvider.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Project\FormsDesigner.csproj">
+      <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
+      <Name>FormsDesigner</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Commands" />
+    <Folder Include="DesignerGenerator" />
+    <Folder Include="DesignerLoader" />
+    <Folder Include="Services" />
+    <Folder Include="OptionPanels" />
+    <Folder Include="Toolbox" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ImageResourceEditorDialog.resx">
+      <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionPanels\LocalizationModelOptionsPanel.resx">
+      <DependentUpon>LocalizationModelOptionsPanel.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

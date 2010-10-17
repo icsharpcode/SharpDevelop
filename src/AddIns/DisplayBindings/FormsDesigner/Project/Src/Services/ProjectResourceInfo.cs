@@ -6,8 +6,6 @@ using System.Collections;
 using System.IO;
 using System.Resources;
 
-using ICSharpCode.SharpDevelop;
-
 namespace ICSharpCode.FormsDesigner.Services
 {
 	/// <summary>

@@ -58,118 +58,37 @@
     <EmbeddedResource Include="Resources\RenameSidebarCategoryDialog.xfrm" />
     <EmbeddedResource Include="Resources\WindowsFormsGridOptions.xfrm" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\Commands\FormsCommands.cs" />
-    <Compile Include="Src\Commands\SideBarCommands.cs" />
-    <Compile Include="Src\DesignerGenerator\CodeDOMGenerator.cs" />
-    <Compile Include="Src\DesignerGenerator\CSharpDesignerGenerator.cs" />
-    <Compile Include="Src\DesignerGenerator\IDesignerGenerator.cs" />
-    <Compile Include="Src\DesignerLoader\AbstractCodeDomDesignerLoader.cs" />
-    <Compile Include="Src\DesignerLoader\NRefactoryDesignerLoader.cs" />
-    <Compile Include="Src\DesignerSourceCodeStorage.cs" />
-    <Compile Include="Src\Gui\ImageResourceEditorDialog.cs" />
-    <Compile Include="Src\Gui\ImageResourceEditorDialog.Designer.cs">
-      <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Src\Gui\OptionPanels\LocalizationModelOptionsPanel.cs" />
-    <Compile Include="Src\SecondaryDisplayBinding.cs" />
-    <Compile Include="Src\DesignerViewContent.cs" />
-    <Compile Include="Src\FormKeyHandler.cs" />
-    <Compile Include="Src\Gui\AddComponentsDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Src\DesignerAppDomainManager.cs" />
+    <Compile Include="Src\DesignerLoader\SharpDevelopDesignerLoader.cs" />
+    <Compile Include="Src\DesignerLoader\IDesignerLoader.cs" />
     <Compile Include="Src\Gui\ComponentLibraryLoader.cs" />
-    <Compile Include="Src\Gui\ConfigureSideBarDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\CustomComponentsSideTab.cs" />
-    <Compile Include="Src\Gui\OptionPanels\GridOptions.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\RenameCategoryDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\SideTabDesigner.cs" />
-    <Compile Include="Src\Gui\SideTabItemDesigner.cs" />
+    <Compile Include="Src\IDesignerGenerator.cs" />
+    <Compile Include="Src\IFormsDesigner.cs" />
+    <Compile Include="Src\LoggingService.cs" />
     <Compile Include="Src\Services\DefaultMemberRelationshipService.cs" />
     <Compile Include="Src\Services\DefaultServiceContainer.cs" />
     <Compile Include="Src\Services\DesignerOptionService.cs" />
-    <Compile Include="Src\Services\DesignerResourceService.cs" />
     <Compile Include="Src\Services\EventBindingService.cs" />
-    <Compile Include="Src\Services\HelpService.cs" />
     <Compile Include="Src\Services\ImageResourceEditor.cs" />
     <Compile Include="Src\Services\MenuCommandService.cs" />
     <Compile Include="Src\Services\ProjectResourceInfo.cs" />
     <Compile Include="Src\Services\ProjectResourcesComponentCodeDomSerializer.cs" />
-    <Compile Include="Src\Services\ProjectResourceService.cs" />
     <Compile Include="Src\Services\ProjectResourcesMemberCodeDomSerializer.cs" />
     <Compile Include="Src\Services\PropertyValueUIService.cs" />
-    <Compile Include="Src\Services\ResourceStore.cs" />
     <Compile Include="Src\Services\SharpDevelopSerializationProvider.cs" />
     <Compile Include="Src\Services\ToolboxService.cs" />
     <Compile Include="Src\Services\TypeResolutionService.cs" />
     <Compile Include="Src\Services\UIService.cs" />
     <Compile Include="Src\Services\XmlDesignerNameCreationService.cs" />
-    <Compile Include="Src\ToolboxProvider.cs" />
-    <None Include="FormsDesigner.addin">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <Compile Include="Src\DesignerGenerator\VBNetDesignerGenerator.cs" />
     <Compile Include="Src\DesignerLoader\DesignerLoaderProvider.cs" />
     <Compile Include="Src\DesignerLoader\FormsDesignerLoadException.cs" />
-    <Compile Include="Src\DesignerGenerator\AbstractDesignerGenerator.cs" />
     <Compile Include="Src\Services\TypeDiscoveryService.cs" />
     <Compile Include="Src\UndoRedo\UndoEngine.cs" />
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Src\Gui\OptionPanels\GeneralOptions.cs" />
     <EmbeddedResource Include="Resources\WindowsFormsGeneralOptions.xfrm" />
-    <EmbeddedResource Include="Src\Gui\ImageResourceEditorDialog.resx">
-      <DependentUpon>ImageResourceEditorDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Src\Gui\OptionPanels\LocalizationModelOptionsPanel.resx">
-      <DependentUpon>LocalizationModelOptionsPanel.cs</DependentUpon>
-    </EmbeddedResource>
     <Compile Include="Src\Services\DesignerSerializationService.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
-      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
-      <Name>ICSharpCode.AvalonEdit</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
-      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
-      <Name>ICSharpCode.SharpDevelop</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
-      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
-      <Name>ICSharpCode.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <Content Include="PostBuildEvent.proj" />
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
-      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
-      <Name>ICSharpCode.Core.WinForms</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
-      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
-      <Name>ICSharpCode.SharpDevelop.Dom</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
-      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
-      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
-  <Import Project="PostBuildEvent.proj" />
 </Project>

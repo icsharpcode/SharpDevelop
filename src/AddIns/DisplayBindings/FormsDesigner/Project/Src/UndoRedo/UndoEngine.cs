@@ -5,11 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 
-using ICSharpCode.SharpDevelop.Gui;
-
 namespace ICSharpCode.FormsDesigner.UndoRedo
 {
-	public class FormsDesignerUndoEngine : UndoEngine, IUndoHandler
+	public class FormsDesignerUndoEngine : UndoEngine
 	{		
 		Stack<UndoEngine.UndoUnit> undoStack = new Stack<UndoEngine.UndoUnit>();
 		Stack<UndoEngine.UndoUnit> redoStack = new Stack<UndoEngine.UndoUnit>();
@@ -18,7 +16,6 @@ namespace ICSharpCode.FormsDesigner.UndoRedo
 		{
 		}
 		
-		#region IUndoHandler
 		public bool EnableUndo {
 			get {
 				return undoStack.Count > 0;
@@ -48,7 +45,6 @@ namespace ICSharpCode.FormsDesigner.UndoRedo
 				undoStack.Push(unit);
 			}
 		}
-		#endregion
 		
 		protected override void AddUndoUnit(UndoEngine.UndoUnit unit)
 		{

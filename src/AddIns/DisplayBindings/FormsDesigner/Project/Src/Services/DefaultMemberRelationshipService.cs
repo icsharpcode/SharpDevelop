@@ -4,8 +4,6 @@
 using System;
 using System.ComponentModel.Design.Serialization;
 
-using ICSharpCode.Core;
-
 //#define WFDESIGN_LOG_MEMBERRELATIONSHIPSERVICE
 
 namespace ICSharpCode.FormsDesigner.Services

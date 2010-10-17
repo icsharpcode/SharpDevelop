@@ -50,8 +50,6 @@
 using System;
 using System.ComponentModel.Design;
 
-using ICSharpCode.Core;
-
 namespace ICSharpCode.FormsDesigner.Services
 {
 	public sealed class DefaultServiceContainer : ServiceContainer

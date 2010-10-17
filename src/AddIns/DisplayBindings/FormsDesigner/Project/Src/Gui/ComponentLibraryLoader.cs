@@ -10,6 +10,7 @@ using System.Xml;
 
 namespace ICSharpCode.FormsDesigner.Gui
 {
+	[Serializable]
 	public class ToolComponent
 	{
 		string fullName;
@@ -101,6 +102,8 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		public Assembly LoadAssembly()
 		{
+			if (!DesignerAppDomainManager.IsDesignerDomain)
+				throw new InvalidOperationException();
 			//ICSharpCode.Core.LoggingService.Debug("ToolComponent.LoadAssembly(): " + AssemblyName);
 			Assembly assembly;
 			if (HintPath != null) {
@@ -123,6 +126,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		}
 	}
 	
+	[Serializable]
 	public class Category
 	{
 		string    name;
@@ -174,6 +178,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		}
 	}
 	
+	[Serializable]
 	public class ComponentAssembly
 	{
 		string name;
@@ -329,7 +334,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 					}
 				}
 			} catch (Exception e) {
-				ICSharpCode.Core.LoggingService.Warn("ComponentLibraryLoader.LoadToolComponentLibrary: " + e.Message);
+				LoggingService.Warn("ComponentLibraryLoader.LoadToolComponentLibrary: " + e.Message);
 				return false;
 			}
 			return true;
@@ -359,7 +364,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 						b.MakeTransparent();
 					}
 				} catch (Exception e) {
-					ICSharpCode.Core.LoggingService.Warn("ComponentLibraryLoader.GetIcon: " + e.Message);
+					LoggingService.Warn("ComponentLibraryLoader.GetIcon: " + e.Message);
 				}
 			}
 			

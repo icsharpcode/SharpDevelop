@@ -9,11 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
 using Microsoft.Win32;
 
 namespace ICSharpCode.FormsDesigner.Services
@@ -74,12 +69,14 @@ namespace ICSharpCode.FormsDesigner.Services
 
 		
 		string formSourceFileName;
-		IProjectContent callingProject;
 		/// <summary>
 		/// Dictionary of file name -> hash of loaded assemblies for the currently designed document.
 		/// Used to detect changes in references assemblies.
 		/// </summary>
 		readonly Dictionary<string, string> loadedAssembliesForCurrentDocument = new Dictionary<string, string>(StringComparer.Ordinal);
+		
+		/*
+		IProjectContent callingProject;
 		
 		/// <summary>
 		/// Gets the project content of the project that created this TypeResolutionService.
@@ -98,7 +95,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				}
 				return callingProject;
 			}
-		}
+		}*/
 		
 		public TypeResolutionService()
 		{
@@ -109,6 +106,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			this.formSourceFileName = formSourceFileName;
 		}
 		
+		/*
 		static readonly Dictionary<IProjectContent, object> projectContentsCurrentlyLoadingAssembly = new Dictionary<IProjectContent, object>();
 		
 		/// <summary>
@@ -152,6 +150,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				return null;
 			}
 		}
+		*/
 		
 		static string GetHash(string fileName)
 		{
@@ -439,7 +438,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		public void ReferenceAssembly(AssemblyName name)
 		{
-			ICSharpCode.Core.LoggingService.Warn("TODO: Add Assembly reference : " + name);
+			LoggingService.Warn("TODO: Add Assembly reference : " + name);
 		}
 		
 		/// <summary>
