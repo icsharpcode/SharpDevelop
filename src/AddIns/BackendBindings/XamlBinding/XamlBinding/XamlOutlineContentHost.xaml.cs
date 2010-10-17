@@ -33,6 +33,8 @@ namespace ICSharpCode.XamlBinding
 		{
 			if (this.editor == null || !FileUtility.IsEqualFileName(this.editor.FileName, e.FileName))
 				return;
+			if (!e.IsPrimaryParseInfoForFile)
+				return;
 			
 			var cu = e.NewCompilationUnit as XamlCompilationUnit;
 			

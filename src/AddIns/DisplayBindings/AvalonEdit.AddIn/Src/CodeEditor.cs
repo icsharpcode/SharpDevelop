@@ -507,7 +507,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void ParserServiceParseInformationUpdated(object sender, ParseInformationEventArgs e)
 		{
-			if (e.FileName != this.FileName)
+			if (e.FileName != this.FileName || !e.IsPrimaryParseInfoForFile)
 				return;
 			this.VerifyAccess();
 			// When parse information is updated quickly in succession, only do a single update

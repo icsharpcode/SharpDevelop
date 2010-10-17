@@ -42,12 +42,17 @@ namespace ICSharpCode.SharpDevelop.Project
 				return currentProject;
 			
 			// Try all project's in the solution.
+			IProject linkedProject = null;
 			foreach (IProject project in Projects) {
-				if (project.IsFileInProject(fileName)) {
-					return project;
+				FileProjectItem file = project.FindFile(fileName);
+				if (file != null) {
+					if (file.IsLink)
+						linkedProject = project;
+					else
+						return project; // prefer projects with non-links over projects with links
 				}
 			}
-			return null;
+			return linkedProject;
 		}
 		
 		[Browsable(false)]

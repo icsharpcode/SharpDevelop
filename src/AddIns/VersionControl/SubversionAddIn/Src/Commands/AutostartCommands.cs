@@ -28,7 +28,7 @@ namespace ICSharpCode.Svn.Commands
 			ProjectService.SolutionCreated += SolutionCreated;
 			ProjectService.ProjectCreated += ProjectCreated;
 			
-			FileUtility.FileSaved += new FileNameEventHandler(FileSaved);
+			FileUtility.FileSaved += FileSaved;
 			AbstractProjectBrowserTreeNode.OnNewNode += TreeNodeCreated;
 		}
 		

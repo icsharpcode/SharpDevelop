@@ -682,7 +682,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public static event FileNameEventHandler FileLoaded;
-		public static event FileNameEventHandler FileSaved;
+		public static event EventHandler<FileNameEventArgs> FileLoaded;
+		public static event EventHandler<FileNameEventArgs> FileSaved;
 	}
 }
