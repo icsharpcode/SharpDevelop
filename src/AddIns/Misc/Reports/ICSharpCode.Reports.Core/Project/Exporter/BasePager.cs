@@ -94,10 +94,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			
 			ExporterCollection list = new ExporterCollection();
 			
-//			if (section.DrawBorder == true) {
-//				section.Items.Insert(0,CreateDebugItem(section));
-//			}
-			
 			if (section.Items.Count > 0) {
 				
 				Point offset = new Point(section.Location.X,section.SectionOffset);

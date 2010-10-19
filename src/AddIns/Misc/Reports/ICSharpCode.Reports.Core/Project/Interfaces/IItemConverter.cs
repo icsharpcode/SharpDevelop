@@ -34,6 +34,7 @@ namespace ICSharpCode.Reports.Core.Interfaces
 	
 	public interface IBaseConverter:IRenderer
 	{		
-		ExporterCollection Convert (BaseReportItem parent,BaseReportItem item);	
+		ExporterCollection Convert (BaseReportItem parent,BaseReportItem item);
+		Point CurrentPosition {get;set;}
 	}
 }

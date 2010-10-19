@@ -112,12 +112,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected Point ConvertGroupChilds(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer, int defaultLeftPos, Point currentPosition)
 		{
-			Console.WriteLine("---start --ConvertStandardRow {0} - section {1}",simpleContainer.Size,section.Size);
 			PrepareContainerForConverting(section,simpleContainer);
 			Point curPos  = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
-			Console.WriteLine("---end   --ConvertStandardRow detail {0} - section {1}",simpleContainer.Size,section.Size);
-//			Console.WriteLine();
-//			Console.WriteLine();
 			AfterConverting (section,mylist);
 			return curPos;
 		}
@@ -156,7 +152,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 			return new ExporterCollection();;
 		}
 		
+		public Point CurrentPosition {get;set;}
 		
+		#endregion
 		public Rectangle ParentRectangle {
 			get { return parentRectangle; }
 		}
@@ -181,7 +179,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		public Graphics Graphics {get;set;}
-		#endregion
+		
 		
 		
 		protected void  SaveSectionSize(Size size)
@@ -214,7 +212,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected void AfterConverting (BaseSection section,ExporterCollection convertedList)
 		{
 			StandardPrinter.EvaluateRow(Evaluator,convertedList);
-			section.Items[0].Size = RestoreSize;
 		}
 		
 		

@@ -103,8 +103,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 			base.SinglePage.Items.AddRange(convertedList);
 		}
 		
-				
-		protected  void BuildDetail (BaseSection section,IDataNavigator dataNavigator)
+		
+		
+		protected  Point BuildDetail (BaseSection section,IDataNavigator dataNavigator)		
 		{
 			ExporterCollection convertedList = new ExporterCollection();
 			
@@ -124,8 +125,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 					convertedList = baseConverter.Convert(section,item);
 					
 					base.SinglePage.Items.AddRange(convertedList);
+					return baseConverter.CurrentPosition;
 				}
 			}
+			return Point.Empty;
 		}
 		
 		
@@ -145,10 +148,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 			BaseSection section = base.ReportModel.DetailSection;
 
 			section.SectionOffset = base.SinglePage.SectionBounds.DetailStart.Y;
-			this.BuildDetail (section,dataNavigator);
+			var p = this.BuildDetail (section,dataNavigator);
 			
-			this.BuildReportFooter(SectionBounds.ReportFooterRectangle);
+			var r = new Rectangle (SectionBounds.ReportFooterRectangle.Left,p.Y,
+			                       SectionBounds.ReportFooterRectangle.Size.Width,
+			                       SectionBounds.ReportFooterRectangle.Size.Height);
+			this.BuildReportFooter(r);
+			
 			this.BuildPageFooter();
+			
 			//this is the last Page
 			this.AddPage(base.SinglePage);
 			base.FinishRendering(this.dataNavigator);
