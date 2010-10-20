@@ -16,7 +16,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 		readonly object addLock = new object();
 		
-		internal delegate ExporterCollection ConverterDelegate (BaseSection s);
+		//internal delegate ExporterCollection ConverterDelegate (BaseSection s);
 		
 		#region Constructor
 		
@@ -50,7 +50,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected override void BuildNewPage ()
 		{
 			base.BuildNewPage();
-			
 			this.BuildReportHeader();
 			this.BuildPageHeader();
 		}
