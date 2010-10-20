@@ -14,18 +14,21 @@ ICSharpCode.NRefactory.CSharp.Resolver:
 
 Null-Object pattern:
 	The NRefactory library makes extensive use of the null object pattern.
-	As a reult, NullReferenceExceptions should be very rare when working with this library.
-	In the type system, both ITypeReference and IType use SharedTypes.UnknownType to represent unknown types.
-	Unless the method is documented otherwise, no method or property returning a ITypeReference or IType will return null.
+	As a result, NullReferenceExceptions should be very rare when working with this library.
+	In the type system, both ITypeReference and IType use SharedTypes.UnknownType to represent
+	unknown types.
+	Unless the method is documented otherwise, no method or property returning a ITypeReference or
+	IType will return null.
 	When adding to this library, to try to keep such uses of null rare.
 	
 	Note that the null object pattern is not used for ITypeDefinition:
-	IProjectContent.GetClass() returns null when a type is not found. Take care to abort your operation or substitute UnknownType
-	instead of passing the null to code expecting an IType.
+	IProjectContent.GetClass() returns null when a type is not found. Take care to abort your
+	operation or substitute UnknownType instead of passing the null to code expecting an IType.
 	
-	The pattern also extends to the C# resolver, which always produces a ResolveResult, even in error cases.
-	Use ResolveResult.IsError to detect resolver errors. Also note that many resolver errors still have a meaningful type attached,
-	this allows code completion to work in the presence of minor semantic errors.
+	The pattern also extends to the C# resolver, which always produces a ResolveResult, even in
+	error cases. Use ResolveResult.IsError to detect resolver errors.
+	Also note that many resolver errors still have a meaningful type attached, this allows code
+	completion to work in the presence of minor semantic errors.
 
 FAQ:
 Q:	What is the difference between types and type definitions?
@@ -40,19 +43,25 @@ A:	Basically, a type (IType) is any type in the .NET type system:
 	
 	Type definitions are only classes, structs, enums and delegates.
 	Every type definition is a type, but not every type is a type definition.
-	NRefactory's ITypeDefinition derives from IType, so you can directly use any type definition as a type.
-	In the other direction, you could try to cast a type to ITypeDefinition, or you can call the GetDefinition()
-	method. The GetDefinition() method will also return the underlying ITypeDefinition if given a parameterized type,
-	so "List<int>".GetDefinition() is "List<T>".
+	NRefactory's ITypeDefinition derives from IType, so you can directly use any type definition
+	as a type.
+	In the other direction, you could try to cast a type to ITypeDefinition, or you can call the
+	GetDefinition() method. The GetDefinition() method will also return the underlying
+	ITypeDefinition if given a parameterized type, so "List<int>".GetDefinition() is "List<T>".
 
 
 Q:	What is the difference between types and type references?
 	I've seen lots of duplicated classes (ArrayType vs. ArrayTypeReference, etc.)
 	
-	NRefactory has the concept of the "project content": every assembly/project is stored independently from other assemblies/projects.
-	It is possible to load some source code into a project which contains the type reference "int[]" without having to load
-	mscorlib into NRefactory.
-	So inside the entities stored for the project, the array type is only referenced using an ITypeReference.
+A:	If you've previously used the .NET Reflection API, the concept of type references will be new
+	to you.
+	
+	NRefactory has the concept of the "project content": every assembly/project is stored
+	independently from other assemblies/projects.
+	It is possible to load some source code into a project which contains the type reference
+	"int[]" without having to load mscorlib into NRefactory.
+	So inside the entities stored for the project, the array type is only referenced using an
+	ITypeReference.
 	This interface has a single method:
 	    interface ITypeReference {
 	       IType Resolve(ITypeResolutionContext context);
@@ -60,15 +69,29 @@ Q:	What is the difference between types and type references?
 	By calling the Resolve()-method, you will get back the actual ArrayType.
 	At this point, you have to provide the type resolution context:
 	
-	Note that every type can also be used as type reference - the IType interface derives from ITypeReference.
+	Note that every type can also be used as type reference - the IType interface derives from
+	ITypeReference.
 	Every IType simply returns itself when the Resolve()-method is called.
-	Types are often directly used as references when source and target of the reference are within the same assembly.
+	Types are often directly used as references when source and target of the reference are within
+	the same assembly.
 	
-	Because an ArrayType must have an IType as element type, we also need the ArrayTypeReference to represent an array
-	of a type that's not yet resolved. When resolved, the ArrayTypeReference produces an array type:
+	Because an ArrayType must have an IType as element type, we also need the ArrayTypeReference
+	to represent an array of a type that's not yet resolved.
+	When resolved, the ArrayTypeReference produces an array type:
 		new ArrayTypeReference(r).Resolve(context) = new ArrayType(r.Resolve(context))
 
-A:	If you've previously used the .NET Reflection API, the concept of type references is new to you.
+
+Q:  What's in an ITypeResolveContext?
+
+A:  An ITypeResolveContext is an environment for looking up namespaces and types.
+	Usually, a resolve context will represent a set of projects.
+	Most of the time, that set will be the current project, plus the direct references of the
+	current project.
+	
+	Every project content on its own is a type resolve context (IProjectContent extends
+	ITypeResolveContext); but (with the exception of mscorlib) isn't useful for resolving types as
+	you also need the references.
+	To represent a set of projects, the class CompositeTypeResolveContext can be used.
 
 
 Q:	How do I get the IType or ITypeReference for a primitive type such as string or int?
@@ -77,14 +100,17 @@ A:	Please use:
 		TypeCode.Int32.ToTypeReference().Resolve(context)
 	Skip the Resolve() call if you only need the type reference.
 	
-	ReflectionHelper.ToTypeReference is very fast if given a TypeCode (it simply looks up an existing type reference in an array),
-	and your code will benefit from caching of the resolve result (once that gets implemented for these primitive type references).
+	ReflectionHelper.ToTypeReference is very fast if given a TypeCode (it simply looks up an
+	existing type reference in an array), and your code will benefit from caching of the resolve
+	result (once that gets implemented for these primitive type references).
 	
-	Avoid using "context.GetClass(typeof(int))" - this call involves Reflection on the System.Type being passed,
-	cannot benefit from any caching implemented in the future, and most importantly: it may return null.
-	And do you always test your code in a scenario where mscorlib isn't contained in the resolve context?
-	The approach suggested above will return SharedTypes.UnknownType when the type cannot be resolved, so you
-	don't run into the risk of getting NullReferenceExceptions.
+	Avoid using "context.GetClass(typeof(int))" - this call involves Reflection on the System.Type
+	being passed, cannot benefit from any caching implemented in the future, and most importantly:
+	it may return null.
+	And do you always test your code in a scenario where mscorlib isn't contained in the resolve
+	context?
+	The approach suggested above will return SharedTypes.UnknownType when the type cannot be
+	resolved, so you don't run into the risk of getting NullReferenceExceptions.
 
 
 Q:	Is it thread-safe?
@@ -93,22 +119,26 @@ A:	This question is a bit difficult to answer.
 	NRefactory was designed to be usable in a multi-threaded IDE.
 	But of course, this does not mean that everything is thread-safe.
 	
-	First off, there's no hidden static state, so any two operations working on independent data can be executed concurrently.
+	First off, there's no hidden static state, so any two operations working on independent data
+	can be executed concurrently.
 	[Actually, sometimes static state is used for caches, but those uses are thread-safe.]
 	TODO: what about the C# parser? gmcs is full of static state...
 	
-	Some instance methods may use hidden instance state, so it is not safe to e.g use an instance of the CSharp.Resolver.Conversions class
-	concurrently. Instead, you need to create an instance on every thread.
+	Some instance methods may use hidden instance state, so it is not safe to e.g use an instance
+	of the CSharp.Resolver.Conversions class concurrently.
+	Instead, you need to create an instance on every thread.
 	
-	In the case of project contents, it is desirable to be able to use them, and all the classes in that project content,
-	on multiple threads - for example to provide code completion in an IDE while a background thread parses more files and adds
-	them to the project content.
+	In the case of project contents, it is desirable to be able to use them, and all the classes in
+	that project content, on multiple threads - for example, to provide code completion in an IDE
+	while a background thread parses more files and adds them to the project content.
 	
-	For this reason, the entity interfaces (ITypeDefinition, IMember, etc.) are designed to be freezable. Once the Freeze() method is
-	called, an entity instance becomes immutable and thread-safe.
+	For this reason, the entity interfaces (ITypeDefinition, IMember, etc.) are designed to be
+	freezable. Once the Freeze() method is called, an entity instance becomes immutable and
+	thread-safe.
 	
 	Whether an ITypeResolveContext is thread-safe depends on the implementation:
-		TypeStorage: thread-safe for concurrent reads, but only if it's not written to (see XML documentation on TypeStorage)
+		TypeStorage: thread-safe for concurrent reads, but only if it's not written to
+				(see XML documentation on TypeStorage)
 		CecilProjectContent: immutable and thread-safe
 		SimpleProjectContent: fully thread-safe
 		CompositeTypeResolveContext: depends on the child contexts
@@ -117,19 +147,22 @@ A:	This question is a bit difficult to answer.
 	and loaded external assemblies (CecilProjectContent).
 	A CompositeTypeResolveContext representing such a set is thread-safe.
 	
-	Hoever, some algorithms can become confused if two GetClass() calls with same arguments produce different
-	results (e.g. because another thread updated a class definition).
-	Also, there's a performance problem: if you have a composite of 15 SimpleProjectContents and the resolve algorithm
-	requests 100 types, that's 1500 times entering and leaving the read-lock.
-	Moreoever, internal caches in the library are not used when passing a mutable ITypeResolveContext.
+	Hoever, some algorithms can become confused if two GetClass() calls with same arguments
+	produce different results (e.g. because another thread updated a class definition).
+	Also, there's a performance problem: if you have a composite of 15 SimpleProjectContents and
+	the resolve algorithm requests 100 types, that's 1500 times entering and leaving the read-lock.
+	Moreoever, internal caches in the library are not used when passing a mutable
+	ITypeResolveContext.
 	
 	The solution is to make the read lock more coarse-grained:
 		using (var syncContext = compositeTypeResolveContext.Synchronize()) {
 			resolver.ResolveStuff(syncContext);
 		}
 	On the call to Synchronize(), all 15 SimpleProjectContents are locked for reading.
-	The return value "syncContext" can then be used to access the type resolve context without further synchronization overhead.
-	It is guaranteed not to change (within the using block), so the library may cache some information. (TODO: give example of a cache)
+	The return value "syncContext" can then be used to access the type resolve context without
+	further synchronization overhead.
+	It is guaranteed not to change (within the using block), so the library may cache some
+	information. (TODO: give example of a cache)
 	Once the return value is disposed, the read-locks are released (and the caches are cleared).
 
 
@@ -139,16 +172,20 @@ A:	They don't use any particular format. They're merely intended as a debugging 
 	Currently .ToString() usually matches .ReflectionName, but that may change in the future.
 
 
-Q:	Why are there extension methods IType.IsEnum() and IType.IsDelegate(), but no IType.IsStruct() or IType.IsInterface()?
+Q:	Why are there extension methods IType.IsEnum() and IType.IsDelegate(), but no IType.IsStruct()'	or IType.IsInterface()?
 
-A:	Because if you're asking whether a type is a struct, it's very likely that you're asking the wrong question.
-	The distinction between class/struct/interface/enum/delegate is important in the world of type definitions, and there's
-	ITypeDefinition.ClassType to address this. But the distinction isn't so important in the world of types.
+A:	Because if you're asking whether a type is a struct, it's very likely that you're asking the
+	wrong question.
+	The distinction between class/struct/interface/enum/delegate is important in the world of type
+	definitions, and there's ITypeDefinition.ClassType to address this. But the distinction isn't
+	so important in the world of types.
 	
-	If whatever you are doing works with struct-types, then it likely will also work with enum-types, and also
-	with type parameters constraint to be a value-type.
+	If whatever you are doing works with struct-types, then it likely will also work with
+	enum-types, and also with type parameters constraint to be a value-type.
 	So instead of asking IsStruct(), you really should be asking: IType.IsReferenceType == false
 	
-	Enums and delegates are special because you can do special things with those types (e.g. subtract them from each other).
-	If you really need to know, you can do "type.GetDefinition() != null && type.GetDefinition().ClassType == WhatIWant" yourself,
-	but for the most part you should be fine with IsReferenceType, IsEnum and IsDelegate.
+	Enums and delegates are special because you can do special things with those types
+	(e.g. subtract them from each other).
+	If you really need to know, you can do
+		"type.GetDefinition() != null && type.GetDefinition().ClassType == WhatIWant"
+	yourself, but for the most part you should be fine with IsReferenceType, IsEnum and IsDelegate.
