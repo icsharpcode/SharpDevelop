@@ -185,7 +185,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		static ProjectResourceInfo GetProjectResourceFromPropertyReference(IDesignerSerializationManager manager, CodePropertyReferenceExpression propRefSource)
 		{
-			ProjectResourceService prs = manager.GetService(typeof(ProjectResourceService)) as ProjectResourceService;
+			IProjectResourceService prs = manager.GetService(typeof(IProjectResourceService)) as IProjectResourceService;
 			if (prs == null) {
 				throw new InvalidOperationException("The required ProjectResourceService is not available.");
 			}
@@ -195,11 +195,12 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		static void StoreResourceInfo(IComponent component, string propertyName, ProjectResourceInfo resourceInfo)
 		{
+			IProjectResourceService prs = manager.GetService(typeof(IProjectResourceService)) as IProjectResourceService;
 			var dictService = component.Site.GetService(typeof(IDictionaryService)) as IDictionaryService;
 			if (dictService == null) {
 				throw new InvalidOperationException("The required IDictionaryService is not available on component '" + component.ToString() + "'.");
 			}
-			dictService.SetValue(ProjectResourceService.ProjectResourceKey + propertyName, resourceInfo);
+			dictService.SetValue(prs.ProjectResourceKey + propertyName, resourceInfo);
 		}
 		
 		#region Default overrides redirecting to baseSerializer

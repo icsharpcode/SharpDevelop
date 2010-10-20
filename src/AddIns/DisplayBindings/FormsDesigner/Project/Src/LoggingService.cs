@@ -31,5 +31,15 @@ namespace ICSharpCode.FormsDesigner
 		{
 			throw new NotImplementedException();
 		}
+		
+		public static void DebugFormatted(string format, params object[] args)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public static void WarnFormatted(string format, params object[] args)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

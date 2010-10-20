@@ -79,9 +79,12 @@
     <Compile Include="OptionPanels\LocalizationModelOptionsPanel.cs" />
     <Compile Include="SecondaryDisplayBinding.cs" />
     <Compile Include="Services\DesignerResourceService.cs" />
+    <Compile Include="Services\DomTypeLocator.cs" />
     <Compile Include="Services\HelpService.cs" />
+    <Compile Include="Services\FormsMessageService.cs" />
     <Compile Include="Services\ProjectResourceService.cs" />
     <Compile Include="Services\ResourceStore.cs" />
+    <Compile Include="Services\UIService.cs" />
     <Compile Include="Toolbox\AddComponentsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -105,6 +108,11 @@
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
+      <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
+      <Name>ICSharpCode.SharpDevelop.Dom</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\Project\FormsDesigner.csproj">

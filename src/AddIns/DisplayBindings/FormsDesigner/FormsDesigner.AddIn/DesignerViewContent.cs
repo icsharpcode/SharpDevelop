@@ -263,6 +263,7 @@ namespace ICSharpCode.FormsDesigner
 			LoggingService.Info("Form Designer: BEGIN INITIALIZE");
 			
 			DefaultServiceContainer serviceContainer = new DefaultServiceContainer();
+			serviceContainer.AddService(typeof(IMessageService), new FormsMessageService());
 			serviceContainer.AddService(typeof(System.Windows.Forms.Design.IUIService), new UIService());
 			serviceContainer.AddService(typeof(System.Drawing.Design.IToolboxService), ToolboxProvider.ToolboxService);
 			
@@ -272,12 +273,12 @@ namespace ICSharpCode.FormsDesigner
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IResourceService), new DesignerResourceService(this.resourceStore));
 			AmbientProperties ambientProperties = new AmbientProperties();
 			serviceContainer.AddService(typeof(AmbientProperties), ambientProperties);
-			this.typeResolutionService = new TypeResolutionService(this.PrimaryFileName);
+			this.typeResolutionService = new TypeResolutionService(this.PrimaryFileName, serviceContainer, new DomTypeLocator(this.PrimaryFileName));
 			serviceContainer.AddService(typeof(ITypeResolutionService), this.typeResolutionService);
 			serviceContainer.AddService(typeof(DesignerOptionService), new SharpDevelopDesignerOptionService());
 			serviceContainer.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService());
 			serviceContainer.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
-			serviceContainer.AddService(typeof(ProjectResourceService), new ProjectResourceService(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent));
+			serviceContainer.AddService(typeof(IProjectResourceService), new ProjectResourceService(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent));
 			
 			// Provide the ImageResourceEditor for all Image and Icon properties
 			this.addedTypeDescriptionProviders.Add(typeof(Image), TypeDescriptor.AddAttributes(typeof(Image), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));

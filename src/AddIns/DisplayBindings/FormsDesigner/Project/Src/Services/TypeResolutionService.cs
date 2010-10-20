@@ -32,13 +32,12 @@ namespace ICSharpCode.FormsDesigner.Services
 		static TypeResolutionService()
 		{
 			ClearMixedAssembliesTemporaryFiles();
-			DesignerAssemblies.Add(ProjectContentRegistry.MscorlibAssembly);
-			DesignerAssemblies.Add(ProjectContentRegistry.SystemAssembly);
+			DesignerAssemblies.Add(typeof(object).Assembly);
+			DesignerAssemblies.Add(typeof(System.Uri).Assembly);
 			DesignerAssemblies.Add(typeof(System.Drawing.Point).Assembly);
 			DesignerAssemblies.Add(typeof(System.Windows.Forms.Design.AnchorEditor).Assembly);
 			RegisterVSDesignerWorkaround();
 			AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolveEventHandler;
-			
 		}
 		
 		[System.Runtime.InteropServices.DllImport("kernel32.dll")]
@@ -69,88 +68,25 @@ namespace ICSharpCode.FormsDesigner.Services
 
 		
 		string formSourceFileName;
+		ServiceContainer serviceContainer;
+		ITypeLocator typeLocator;
+		
 		/// <summary>
 		/// Dictionary of file name -> hash of loaded assemblies for the currently designed document.
 		/// Used to detect changes in references assemblies.
 		/// </summary>
 		readonly Dictionary<string, string> loadedAssembliesForCurrentDocument = new Dictionary<string, string>(StringComparer.Ordinal);
 		
-		/*
-		IProjectContent callingProject;
-		
-		/// <summary>
-		/// Gets the project content of the project that created this TypeResolutionService.
-		/// Returns null when no calling project was specified.
-		/// </summary>
-		public IProjectContent CallingProject {
-			get {
-				if (formSourceFileName != null) {
-					if (ProjectService.OpenSolution != null) {
-						IProject p = ProjectService.OpenSolution.FindProjectContainingFile(formSourceFileName);
-						if (p != null) {
-							callingProject = ParserService.GetProjectContent(p);
-						}
-					}
-					formSourceFileName = null;
-				}
-				return callingProject;
-			}
-		}*/
-		
 		public TypeResolutionService()
 		{
 		}
 		
-		public TypeResolutionService(string formSourceFileName)
+		public TypeResolutionService(string formSourceFileName, ServiceContainer serviceContainer, ITypeLocator typeLocator)
 		{
 			this.formSourceFileName = formSourceFileName;
+			this.serviceContainer = serviceContainer;
+			this.typeLocator = typeLocator;
 		}
-		
-		/*
-		static readonly Dictionary<IProjectContent, object> projectContentsCurrentlyLoadingAssembly = new Dictionary<IProjectContent, object>();
-		
-		/// <summary>
-		/// Loads the assembly represented by the project content. Returns null on failure.
-		/// </summary>
-		public Assembly LoadAssembly(IProjectContent pc)
-		{
-			// prevent StackOverflow when project contents have cyclic dependencies
-			// Very popular example of cyclic dependency: System <-> System.Xml (yes, really!)
-			if (projectContentsCurrentlyLoadingAssembly.ContainsKey(pc))
-				return null;
-			projectContentsCurrentlyLoadingAssembly.Add(pc, null);
-			
-			try {
-				// load dependencies of current assembly
-				foreach (IProjectContent rpc in pc.ReferencedContents) {
-					if (rpc is ParseProjectContent) {
-						LoadAssembly(rpc);
-					} else if (rpc is ReflectionProjectContent) {
-						ReflectionProjectContent rrpc = (ReflectionProjectContent)rpc;
-						if (rrpc.AssemblyFullName != typeof(object).FullName
-						    && !GacInterop.IsWithinGac(rrpc.AssemblyLocation))
-						{
-							LoadAssembly(rpc);
-						}
-					}
-				}
-			} finally {
-				projectContentsCurrentlyLoadingAssembly.Remove(pc);
-			}
-			
-			if (pc.Project != null) {
-				return LoadAssembly(((IProject)pc.Project).OutputAssemblyFullPath);
-			} else if (pc is ReflectionProjectContent) {
-				ReflectionProjectContent rpc = (ReflectionProjectContent)pc;
-				if (GacInterop.IsWithinGac(rpc.AssemblyLocation))
-					return LoadAssembly(new AssemblyName(rpc.AssemblyFullName), false);
-				else
-					return LoadAssembly(rpc.AssemblyLocation);
-			} else {
-				return null;
-			}
-		}
-		*/
 		
 		static string GetHash(string fileName)
 		{
@@ -191,6 +127,8 @@ namespace ICSharpCode.FormsDesigner.Services
 				}
 			}
 			
+			IMessageService messenger = serviceContainer.GetService(typeof(IMessageService)) as IMessageService;
+			
 			string hash = GetHash(fileName);
 			lock (assemblyDict) {
 				Assembly asm;
@@ -223,7 +161,7 @@ namespace ICSharpCode.FormsDesigner.Services
 								asm.LoadModule(Path.GetFileName(fileName), File.ReadAllBytes(fileName));
 							}
 						} catch (Exception ex) {
-							MessageService.ShowException(ex, "Error calling linker for netmodule");
+							messenger.ShowException(ex, "Error calling linker for netmodule");
 						}
 						try {
 							File.Delete(tempPath);
@@ -234,11 +172,8 @@ namespace ICSharpCode.FormsDesigner.Services
 						// The error might be caused by an assembly that is
 						// not even needed for the designer to load.
 						LoggingService.Error("Error loading assembly " + fileName, e);
-						WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
-						TaskService.BuildMessageViewCategory.AppendText(
-							StringParser.Parse("${res:FileUtilityService.ErrorWhileLoading}")
-							+ "\r\n" + fileName + "\r\n" + e.Message + "\r\n"
-						);
+						messenger.ShowOutputPad();
+						messenger.AppendTextToBuildMessages("${res:FileUtilityService.ErrorWhileLoading}\r\n" + fileName + "\r\n" + e.Message + "\r\n");
 						return null;
 					}
 				} catch (FileLoadException e) {
@@ -354,28 +289,27 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 			#endif
 			try {
-				
 				Type type = Type.GetType(name, false, ignoreCase);
 				
 				if (type == null) {
-					IProjectContent pc = this.CallingProject;
-					if (pc != null) {
-						// find assembly containing type by using SharpDevelop.Dom
-						IClass foundClass;
-						if (name.Contains("`")) {
-							int typeParameterCount;
-							int.TryParse(name.Substring(name.IndexOf('`') + 1), out typeParameterCount);
-							foundClass = pc.GetClass(name.Substring(0, name.IndexOf('`')).Replace('+', '.'), typeParameterCount);
-						} else {
-							foundClass = pc.GetClass(name.Replace('+', '.'), 0);
-						}
-						if (foundClass != null) {
-							Assembly assembly = LoadAssembly(foundClass.ProjectContent);
-							if (assembly != null) {
-								type = assembly.GetType(name, false, ignoreCase);
-							}
-						}
+					AssemblyInfo[] assemblies;
+					AssemblyInfo assemblyInfo = typeLocator.LocateType(name, out assemblies);
+					
+					foreach (AssemblyInfo a in assemblies) {
+						if (a.IsInGac)
+							LoadAssembly(new AssemblyName(a.FullNameOrPath), false);
+						else
+							LoadAssembly(a.FullNameOrPath);
 					}
+					
+					Assembly assembly;
+					if (assemblyInfo.IsInGac)
+						assembly = LoadAssembly(new AssemblyName(assemblyInfo.FullNameOrPath), false);
+					else
+						assembly = LoadAssembly(assemblyInfo.FullNameOrPath);
+					
+					if (assembly != null)
+						type = assembly.GetType(name, throwOnError, ignoreCase);
 				}
 				
 				// type lookup for typename, assembly, xyz style lookups

@@ -33,7 +33,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			if (typeof(Image).IsAssignableFrom(context.PropertyDescriptor.PropertyType) ||
 			    typeof(Icon).IsAssignableFrom(context.PropertyDescriptor.PropertyType)) {
 				
-				if (context.GetService(typeof(ProjectResourceService)) is ProjectResourceService) {
+				if (context.GetService(typeof(IProjectResourceService)) is IProjectResourceService) {
 					return UITypeEditorEditStyle.Modal;
 				}
 				
@@ -59,7 +59,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				}
 			}
 			
-			var prs = provider.GetService(typeof(ProjectResourceService)) as ProjectResourceService;
+			var prs = provider.GetService(typeof(IProjectResourceService)) as IProjectResourceService;
 			if (prs == null) {
 				return value;
 			}
@@ -74,7 +74,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				throw new InvalidOperationException("The required IDictionaryService is not available.");
 			}
 			
-			var projectResource = dictService.GetValue(ProjectResourceService.ProjectResourceKey + context.PropertyDescriptor.Name) as ProjectResourceInfo;
+			var projectResource = dictService.GetValue(prs.ProjectResourceKey + context.PropertyDescriptor.Name) as ProjectResourceInfo;
 			
 			IProject project = prs.ProjectContent.Project as IProject;
 			ImageResourceEditorDialog dialog;
@@ -95,7 +95,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				if (edsvc.ShowDialog(dialog) == DialogResult.OK) {
 					projectResource = dialog.SelectedProjectResource;
 					if (projectResource != null) {
-						dictService.SetValue(ProjectResourceService.ProjectResourceKey + context.PropertyDescriptor.Name, projectResource);
+						dictService.SetValue(prs.ProjectResourceKey + context.PropertyDescriptor.Name, projectResource);
 						
 						// Ensure the resource generator is turned on for the selected resource file.
 						if (project != null) {
@@ -114,7 +114,7 @@ namespace ICSharpCode.FormsDesigner.Services
 						
 						return projectResource.OriginalValue;
 					} else {
-						dictService.SetValue(ProjectResourceService.ProjectResourceKey + context.PropertyDescriptor.Name, null);
+						dictService.SetValue(prs.ProjectResourceKey + context.PropertyDescriptor.Name, null);
 						return dialog.SelectedResourceValue;
 					}
 				}

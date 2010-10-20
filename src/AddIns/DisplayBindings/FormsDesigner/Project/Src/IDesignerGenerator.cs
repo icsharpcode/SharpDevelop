@@ -32,5 +32,6 @@ namespace ICSharpCode.FormsDesigner
 		bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out string file, out int position);
 		ICollection GetCompatibleMethods(EventDescriptor edesc);
 		void NotifyFormRenamed(string newName);
+		CodeDomProvider CodeDomProvider { get; }
 	}
 }
