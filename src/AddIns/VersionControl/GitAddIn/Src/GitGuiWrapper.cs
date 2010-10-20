@@ -44,7 +44,7 @@ namespace ICSharpCode.GitAddIn
 		{
 			string path = GetPathFromRegistry("ProcPath");
 			if (path == null) {
-				using (var dlg = new ToolNotFoundDialog("${res:AddIns.Git.TortoiseGitRequired}", "http://code.google.com/p/tortoisegit/")) {
+				using (var dlg = new ToolNotFoundDialog(StringParser.Parse("${res:AddIns.Git.TortoiseGitRequired}"), "http://code.google.com/p/tortoisegit/")) {
 					dlg.ShowDialog(WorkbenchSingleton.MainWin32Window);
 				}
 			} else {
