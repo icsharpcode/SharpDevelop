@@ -358,9 +358,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			IViewContent content = ActiveViewContent;
 			if (content != null) {
-				if (this.DragEnabledArea != null) {
-					this.DragEnabledArea.ToolTip = content.PrimaryFileName;
-				}
+				this.InfoTip = content.PrimaryFileName;
 				
 				string newTitle = content.TitleName;
 				

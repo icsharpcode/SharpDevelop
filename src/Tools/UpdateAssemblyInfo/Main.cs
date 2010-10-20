@@ -1,9 +1,6 @@
-/*
- * Created by SharpDevelop.
- * User: Daniel Grunwald
- * Date: 21.07.2005
- * Time: 12:00
- */
+// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 using System;
 using System.Collections.Specialized;
 using System.Diagnostics;
@@ -267,7 +264,7 @@ namespace UpdateAssemblyInfo
 				Console.WriteLine("Build continues with revision number '0'...");
 				
 				revisionNumber = "0";
-				gitCommitHash = null;
+				gitCommitHash = "0000000000000000000000000000000000000000";
 			}
 			if (revisionNumber == null || revisionNumber.Length == 0) {
 				revisionNumber = "0";
