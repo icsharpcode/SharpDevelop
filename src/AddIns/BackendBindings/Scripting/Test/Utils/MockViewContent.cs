@@ -47,6 +47,12 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			}
 		}
 		
+		public bool CloseWithSolution {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		public ICollection<IViewContent> SecondaryViewContents {
 			get { return secondaryViewContents;	}
 		}

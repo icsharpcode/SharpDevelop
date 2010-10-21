@@ -141,6 +141,10 @@ namespace WixBinding.Tests.Utils
 			}
 		}
 		
+		public bool CloseWithSolution {
+			get { throw new NotImplementedException(); }
+		}
+		
 		public bool IsDirty {
 			get {
 				throw new NotImplementedException();

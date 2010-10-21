@@ -54,6 +54,10 @@ namespace ICSharpCode.Reports.Addin.Test.Designer
 			}
 		}
 		
+		public bool CloseWithSolution {
+			get { throw new NotImplementedException(); }
+		}
+		
 		public ICollection<IViewContent> SecondaryViewContents {
 			get { return secondaryViewContents;	}
 		}

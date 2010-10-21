@@ -113,6 +113,10 @@ namespace XmlEditor.Tests.Utils
 			}
 		}
 		
+		public bool CloseWithSolution {
+			get { throw new NotImplementedException(); }
+		}
+		
 		public System.Collections.Generic.ICollection<IViewContent> SecondaryViewContents {
 			get {
 				throw new NotImplementedException();

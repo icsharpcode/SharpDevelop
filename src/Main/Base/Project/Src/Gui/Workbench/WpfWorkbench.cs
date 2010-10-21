@@ -436,34 +436,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public bool CloseAllSolutionViews()
 		{
-			bool isSolutionWindow;
 			bool result = true;
 			
 			WorkbenchSingleton.AssertMainThread();
-			try
-			{
+			try {
 				closeAll = true;
-				foreach (IWorkbenchWindow window in this.WorkbenchWindowCollection.ToArray())
-				{
-					isSolutionWindow = false;
-					foreach (IViewContent content in window.ViewContents)
-					{
-						foreach (OpenedFile file in content.Files)
-						{
-							if (ProjectService.OpenSolution.FindProjectContainingFile(file.FileName) != null)
-							{
-								isSolutionWindow = true;
-								break;							
-							}
-						}
-					}
-					
-					if (isSolutionWindow)
-						result = window.CloseWindow(false) && result;
+				foreach (IWorkbenchWindow window in this.WorkbenchWindowCollection.ToArray()) {
+					if (window.ActiveViewContent != null && window.ActiveViewContent.CloseWithSolution)
+						result &= window.CloseWindow(false);
 				}
-			}
-			finally
-			{
+			} finally {
 				closeAll = false;
 				OnActiveWindowChanged(this, EventArgs.Empty);
 			}

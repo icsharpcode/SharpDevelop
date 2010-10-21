@@ -554,5 +554,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public virtual bool IsViewOnly {
 			get { return Files.Count == 0; }
 		}
+		
+		public virtual bool CloseWithSolution {
+			get {
+				var fileName = this.PrimaryFileName;
+				return fileName == null
+					|| Project.ProjectService.OpenSolution.FindProjectContainingFile(fileName) != null;
+			}
+		}
 	}
 }

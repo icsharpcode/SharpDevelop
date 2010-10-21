@@ -138,6 +138,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		bool IsViewOnly { get; }
 		
+		/// <summary>
+		/// Gets whether this view content should be closed when the solution is closed.
+		/// </summary>
+		bool CloseWithSolution { get; }
+		
 		#region Secondary view content support
 		/// <summary>
 		/// Gets the collection that stores the secondary view contents.

@@ -154,6 +154,12 @@ namespace ICSharpCode.SharpDevelop.Util
 			}
 		}
 		
+		bool IViewContent.CloseWithSolution {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
 		System.Collections.Generic.ICollection<IViewContent> IViewContent.SecondaryViewContents {
 			get {
 				throw new NotImplementedException();
