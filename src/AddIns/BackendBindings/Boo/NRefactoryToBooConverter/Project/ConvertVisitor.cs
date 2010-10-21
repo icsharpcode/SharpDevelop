@@ -162,15 +162,6 @@ namespace NRefactoryToBooConverter
 		
 		Dictionary<string, string> intrinsicTypeDictionary;
 		
-		class BooTypeSystemServices : Boo.Lang.Compiler.TypeSystem.TypeSystemServices
-		{
-			public System.Collections.Hashtable Primitives {
-				get {
-					return _primitives;
-				}
-			}
-		}
-		
 		string GetIntrinsicTypeName(string typeName)
 		{
 			if (settings.SimplifyTypeNames) {

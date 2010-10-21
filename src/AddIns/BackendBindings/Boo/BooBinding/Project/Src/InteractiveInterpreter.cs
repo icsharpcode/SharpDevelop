@@ -59,20 +59,20 @@ namespace Grunwald.BooBinding
 			if (interpreter == null) {
 				interpreter = new InteractiveInterpreter();
 				interpreter.RememberLastValue = true;
-				interpreter.Print = PrintLine;
+				//interpreter.Print = PrintLine; TODO reimplement print
 				interpreter.SetValue("cls", new Action(Clear));
 				
 				AddReference(typeof(WorkbenchSingleton).Assembly);
 				
-				interpreter.LoopEval("import System\n" +
-				                     "import System.Collections.Generic\n" +
-				                     "import System.IO\n" +
-				                     "import System.Text\n" +
-				                     "import System.Linq.Enumerable");
+				interpreter.Eval("import System\n" +
+				                 "import System.Collections.Generic\n" +
+				                 "import System.IO\n" +
+				                 "import System.Text\n" +
+				                 "import System.Linq.Enumerable");
 			}
 			processing = true;
 			try {
-				interpreter.LoopEval(command);
+				interpreter.Eval(command);
 			} catch (System.Reflection.TargetInvocationException ex) {
 				PrintLine(ex.InnerException);
 			}

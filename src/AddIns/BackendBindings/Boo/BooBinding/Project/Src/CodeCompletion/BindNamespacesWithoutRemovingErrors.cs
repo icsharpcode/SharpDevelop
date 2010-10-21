@@ -6,16 +6,17 @@ using Boo.Lang.Compiler.Steps;
 
 namespace Grunwald.BooBinding.CodeCompletion
 {
+	/*
 	/// <summary>
-	/// The Boo 'BindNamespaces' step will remove imports that cannot be resolved.
+	/// The Boo 'ResolveImports' step will remove imports that cannot be resolved.
 	/// However, we need to keep those imports available for use inside SharpDevelop.
 	/// </summary>
-	public class BindNamespacesWithoutRemovingErrors : BindNamespaces
+	public class ResolveImportsWithoutRemovingErrors : ResolveImports
 	{
 		public override void OnImport(Boo.Lang.Compiler.Ast.Import import)
 		{
 			base.OnImport(import);
 			ReplaceCurrentNode(import); // prevent removal of import
 		}
-	}
+	}*/
 }

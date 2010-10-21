@@ -30,7 +30,7 @@ namespace NRefactoryToBooConverter.Tests
 		[Test]
 		public void CastExpression()
 		{
-			TestExpr("(TargetType)var", "cast(TargetType, var)");
+			TestExpr("(TargetType)var", "(var cast TargetType)");
 		}
 		
 		[Test]
@@ -48,7 +48,7 @@ namespace NRefactoryToBooConverter.Tests
 		[Test]
 		public void CastExpressionComplexType()
 		{
-			TestExpr("(List<T>[,])var", "cast((List[of T], 2), var)");
+			TestExpr("(List<T>[,])var", "(var cast (List[of T], 2))");
 		}
 		
 		[Test]
@@ -228,19 +228,19 @@ namespace NRefactoryToBooConverter.Tests
 		[Test]
 		public void AnonymousMethod()
 		{
-			TestExpr("delegate { }", "def ():\n\tpass");
+			TestExpr("delegate { }", "{ return }");
 		}
 		
 		[Test]
 		public void AnonymousMethodWithEmptyParameterList()
 		{
-			TestExpr("delegate () { }", "def ():\n\tpass");
+			TestExpr("delegate () { }", "{ return }");
 		}
 		
 		[Test]
 		public void AnonymousMethodWithParameters()
 		{
-			TestExpr("delegate (int a, string b) { }", "def (a as System.Int32, b as System.String):\n\tpass");
+			TestExpr("delegate (int a, string b) { }", "{ a as System.Int32, b as System.String | return }");
 		}
 		
 		[Test]

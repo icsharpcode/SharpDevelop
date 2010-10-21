@@ -162,11 +162,10 @@ namespace Grunwald.BooBinding.CodeCompletion
 			compiler.Parameters.OutputWriter = new StringWriter();
 			compiler.Parameters.TraceLevel = System.Diagnostics.TraceLevel.Off;
 			
-			// Compile pipeline as of Boo 0.9.2:
+			// Compile pipeline as of Boo 0.9.4:
 			// Boo.Lang.Compiler.Pipelines.Parse:
-			//   Boo.Lang.Parser.BooParsingStep
+			//   Boo.Lang.Compiler.Steps.Parsing
 			// Boo.Lang.Compiler.Pipelines.ExpandMacros:
-			//   Boo.Lang.Compiler.Steps.InitializeTypeSystemServices
 			//   Boo.Lang.Compiler.Steps.PreErrorChecking
 			//   Boo.Lang.Compiler.Steps.MergePartialClasses
 			//   Boo.Lang.Compiler.Steps.InitializeNameResolutionService
@@ -174,7 +173,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			//   Boo.Lang.Compiler.Steps.TransformCallableDefinitions
 			//   Boo.Lang.Compiler.Steps.BindTypeDefinitions
 			//   Boo.Lang.Compiler.Steps.BindGenericParameters
-			//   Boo.Lang.Compiler.Steps.BindNamespaces
+			//   Boo.Lang.Compiler.Steps.ResolveImports
 			//   Boo.Lang.Compiler.Steps.BindBaseTypes
 			//   Boo.Lang.Compiler.Steps.MacroAndAttributeExpansion
 			// Boo.Lang.Compiler.Pipelines.ResolveExpressions:
@@ -182,7 +181,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			//   Boo.Lang.Compiler.Steps.IntroduceModuleClasses
 			//   Boo.Lang.Compiler.Steps.NormalizeStatementModifiers
 			//   Boo.Lang.Compiler.Steps.NormalizeTypeAndMemberDefinitions
-			//   Boo.Lang.Compiler.Steps.NormalizeOmittedExpressions
+			//   Boo.Lang.Compiler.Steps.NormalizeExpressions
 			//   Boo.Lang.Compiler.Steps.BindTypeDefinitions
 			//   Boo.Lang.Compiler.Steps.BindGenericParameters
 			//   Boo.Lang.Compiler.Steps.BindEnumMembers
@@ -195,10 +194,12 @@ namespace Grunwald.BooBinding.CodeCompletion
 			//   Boo.Lang.Compiler.Steps.ProcessInheritedAbstractMembers
 			//   Boo.Lang.Compiler.Steps.CheckMemberNames
 			//   Boo.Lang.Compiler.Steps.ProcessMethodBodiesWithDuckTyping
-			//   Boo.Lang.Compiler.Steps.PreProcessExtensionMethods
+			//   Boo.Lang.Compiler.Steps.ReifyTypes
+			//   Boo.Lang.Compiler.Steps.VerifyExtensionMethods
+			//   Boo.Lang.Compiler.Steps.TypeInference
 			// Boo.Lang.Compiler.Pipelines.Compile:
 			//   Boo.Lang.Compiler.Steps.ConstantFolding
-			//   Boo.Lang.Compiler.Steps.NormalizeLiterals
+			//   Boo.Lang.Compiler.Steps.CheckLiteralValues
 			//   Boo.Lang.Compiler.Steps.OptimizeIterationStatements
 			//   Boo.Lang.Compiler.Steps.BranchChecking
 			//   Boo.Lang.Compiler.Steps.CheckIdentifiers
@@ -206,8 +207,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			//   Boo.Lang.Compiler.Steps.CheckAttributesUsage
 			//   Boo.Lang.Compiler.Steps.ExpandDuckTypedExpressions
 			//   Boo.Lang.Compiler.Steps.ProcessAssignmentsToValueTypeMembers
-			//   Boo.Lang.Compiler.Steps.ExpandProperties
-			//   Boo.Lang.Compiler.Steps.RemoveDeadCode
+			//   Boo.Lang.Compiler.Steps.ExpandPropertiesAndEvents
 			//   Boo.Lang.Compiler.Steps.CheckMembersProtectionLevel
 			//   Boo.Lang.Compiler.Steps.NormalizeIterationStatements
 			//   Boo.Lang.Compiler.Steps.ProcessSharedLocals
@@ -216,6 +216,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			//   Boo.Lang.Compiler.Steps.ExpandVarArgsMethodInvocations
 			//   Boo.Lang.Compiler.Steps.InjectCallableConversions
 			//   Boo.Lang.Compiler.Steps.ImplementICallableOnCallableDefinitions
+			//   Boo.Lang.Compiler.Steps.RemoveDeadCode
 			//   Boo.Lang.Compiler.Steps.CheckNeverUsedMembers
 			// Boo.Lang.Compiler.Pipelines.CompileToMemory:
 			//   Boo.Lang.Compiler.Steps.EmitAssembly
@@ -224,7 +225,6 @@ namespace Grunwald.BooBinding.CodeCompletion
 			
 			
 			CompilerPipeline compilePipe = new Parse();
-			compilePipe.Add(new InitializeTypeSystemServices());
 			compilePipe.Add(new PreErrorChecking());
 			compilePipe.Add(new MergePartialClasses());
 			compilePipe.Add(new InitializeNameResolutionService());
@@ -232,13 +232,13 @@ namespace Grunwald.BooBinding.CodeCompletion
 			// TransformCallableDefinitions: not used for CC
 			compilePipe.Add(new BindTypeDefinitions());
 			compilePipe.Add(new BindGenericParameters());
-			compilePipe.Add(new BindNamespacesWithoutRemovingErrors());
+			compilePipe.Add(new ResolveImports());
 			compilePipe.Add(new BindBaseTypes());
 			compilePipe.Add(new MacroAndAttributeExpansion());
 			compilePipe.Add(new IntroduceModuleClasses());
 			
-			BooParsingStep parsingStep = (BooParsingStep)compilePipe[0];
-			parsingStep.TabSize = 1;
+			var parsingStep = compilePipe[0];
+			//compiler.Parameters.Environment.Provide<ParserSettings>().TabSize = 1;
 			
 			ConvertVisitor visitor = new ConvertVisitor(lineLength, projectContent);
 			visitor.Cu.FileName = fileName;
