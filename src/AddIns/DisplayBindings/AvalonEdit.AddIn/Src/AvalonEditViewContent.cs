@@ -126,13 +126,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		bool isLoading;
+		//bool isLoading;
 		
 		public override void Load(OpenedFile file, Stream stream)
 		{
 			if (file != PrimaryFile)
 				return;
-			isLoading = true;
+			//isLoading = true;
 			try {
 				BookmarksDetach();
 				codeEditor.PrimaryTextEditor.SyntaxHighlighting =
@@ -147,7 +147,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				codeEditor.FileName = FileName.Create(file.FileName);
 				BookmarksAttach();
 			} finally {
-				isLoading = false;
+				//isLoading = false;
 			}
 		}
 		
