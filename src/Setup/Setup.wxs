@@ -8,14 +8,14 @@
 	-->
 
 	<Product Id="*" 
-		Name="SharpDevelop 3.2"
+		Name="SharpDevelop 3.2.1"
 		Manufacturer="ic#code"
 		Language="1033"
 		Codepage="1252"
 		UpgradeCode="757486BE-1F27-4BED-9A3B-737906728F1C"
 		Version="3.2.$(var.PRODUCTBUILDVERSION)">
 
-		<Package Description="SharpDevelop 3.2.0.$(var.PRODUCTBUILDVERSION)"
+		<Package Description="SharpDevelop 3.2.1.$(var.PRODUCTBUILDVERSION)"
 			InstallerVersion="300"
 			Compressed="yes"/>
 		
@@ -141,7 +141,7 @@
 			each be a feature if the user wants to heavily customise the installation.
 		-->
 		<Feature Id="Complete"
-		         Title="SharpDevelop 3.2"
+		         Title="SharpDevelop 3.2.1"
 		         Description="Installs SharpDevelop and registers file associations"
 		         Level="1"
 		         ConfigurableDirectory="INSTALLDIR"
