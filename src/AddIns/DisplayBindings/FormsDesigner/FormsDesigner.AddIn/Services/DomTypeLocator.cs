@@ -117,7 +117,10 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			return null;
 		}
-		
+	}
+	
+	public class DomGacWrapper : IGacWrapper
+	{
 		public bool IsGacAssembly(string path)
 		{
 			return GacInterop.IsWithinGac(path);

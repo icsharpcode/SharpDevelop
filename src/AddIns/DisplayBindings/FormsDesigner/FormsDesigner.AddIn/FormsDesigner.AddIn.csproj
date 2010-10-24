@@ -82,6 +82,7 @@
     <Compile Include="Services\DomTypeLocator.cs" />
     <Compile Include="Services\HelpService.cs" />
     <Compile Include="Services\FormsMessageService.cs" />
+    <Compile Include="Services\ProjectResourceInfo.cs" />
     <Compile Include="Services\ProjectResourceService.cs" />
     <Compile Include="Services\ResourceStore.cs" />
     <Compile Include="Services\UIService.cs" />
@@ -100,6 +101,10 @@
     <Compile Include="Toolbox\ToolboxProvider.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>

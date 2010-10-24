@@ -47,8 +47,15 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			var dictService = component.Site.GetService(typeof(IDictionaryService)) as IDictionaryService;
 			if (dictService == null) return false;
+
 			
-			var resourceInfo = dictService.GetValue(ProjectResourceService.ProjectResourceKey + propDesc.Name) as ProjectResourceInfo;
+			var prs = manager.GetService(typeof(IProjectResourceService)) as IProjectResourceService;
+			if (prs == null) {
+				LoggingService.Warn("ProjectResourceService not found");
+				return false;
+			}
+			
+			var resourceInfo = dictService.GetValue(prs.ProjectResourceKey + propDesc.Name) as IProjectResourceInfo;
 			if (resourceInfo == null) return false;
 			
 			if (!Object.ReferenceEquals(resourceInfo.OriginalValue, propDesc.GetValue(value))) {
@@ -56,14 +63,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				return false;
 			}
 			
-			
 			// Find the generated file with the resource accessing class.
-			
-			var prs = manager.GetService(typeof(ProjectResourceService)) as ProjectResourceService;
-			if (prs == null) {
-				LoggingService.Warn("ProjectResourceService not found");
-				return false;
-			}
 			
 			IProject project = prs.ProjectContent.Project as IProject;
 			if (project == null) {

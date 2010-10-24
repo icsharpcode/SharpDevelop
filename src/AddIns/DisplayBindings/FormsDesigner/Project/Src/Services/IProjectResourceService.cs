@@ -10,7 +10,7 @@ namespace ICSharpCode.FormsDesigner.Services
 {
 	public interface IProjectResourceService
 	{
-		ProjectResourceInfo GetProjectResource(CodePropertyReferenceExpression propRef);
+		IProjectResourceInfo GetProjectResource(CodePropertyReferenceExpression propRef);
 		bool DesignerSupportsProjectResources { get; set; }
 		string ProjectResourceKey { get; set; }
 	}
@@ -20,5 +20,13 @@ namespace ICSharpCode.FormsDesigner.Services
 		void ShowOutputPad();
 		void AppendTextToBuildMessages(string text);
 		void ShowException(Exception ex, string message);
+		string CodeStatementToString(CodeStatement statement);
+	}
+	
+	public interface IProjectResourceInfo
+	{
+		string ResourceFile { get; }
+		string ResourceKey { get; }
+		object OriginalValue { get; }
 	}
 }

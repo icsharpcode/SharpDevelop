@@ -74,51 +74,9 @@ namespace ICSharpCode.FormsDesigner.Services
 				throw new InvalidOperationException("The required IDictionaryService is not available.");
 			}
 			
-			var projectResource = dictService.GetValue(prs.ProjectResourceKey + context.PropertyDescriptor.Name) as ProjectResourceInfo;
+			var projectResource = dictService.GetValue(prs.ProjectResourceKey + context.PropertyDescriptor.Name) as IProjectResourceInfo;
 			
-			IProject project = prs.ProjectContent.Project as IProject;
-			ImageResourceEditorDialog dialog;
 			
-			if (projectResource != null && Object.ReferenceEquals(projectResource.OriginalValue, value) && prs.DesignerSupportsProjectResources) {
-				dialog = new ImageResourceEditorDialog(project, context.PropertyDescriptor.PropertyType, projectResource);
-			} else {
-				if (context.PropertyDescriptor.PropertyType == typeof(Image)) {
-					dialog = new ImageResourceEditorDialog(project, value as Image, prs.DesignerSupportsProjectResources);
-				} else if (context.PropertyDescriptor.PropertyType == typeof(Icon)) {
-					dialog = new ImageResourceEditorDialog(project, value as Icon, prs.DesignerSupportsProjectResources);
-				} else {
-					throw new InvalidOperationException("ImageResourceEditor called on unsupported property type: " + context.PropertyDescriptor.PropertyType.ToString());
-				}
-			}
-			
-			using(dialog) {
-				if (edsvc.ShowDialog(dialog) == DialogResult.OK) {
-					projectResource = dialog.SelectedProjectResource;
-					if (projectResource != null) {
-						dictService.SetValue(prs.ProjectResourceKey + context.PropertyDescriptor.Name, projectResource);
-						
-						// Ensure the resource generator is turned on for the selected resource file.
-						if (project != null) {
-							FileProjectItem fpi = project.FindFile(projectResource.ResourceFile);
-							if (fpi == null) {
-								throw new InvalidOperationException("The selected resource file '" + projectResource.ResourceFile + "' was not found in the project.");
-							}
-							const string resourceGeneratorToolName = "ResXFileCodeGenerator";
-							const string publicResourceGeneratorToolName = "PublicResXFileCodeGenerator";
-							if (!String.Equals(resourceGeneratorToolName, fpi.CustomTool, StringComparison.Ordinal) &&
-							    !String.Equals(publicResourceGeneratorToolName, fpi.CustomTool, StringComparison.Ordinal)) {
-								fpi.CustomTool = resourceGeneratorToolName;
-							}
-							CustomToolsService.RunCustomTool(fpi, true);
-						}
-						
-						return projectResource.OriginalValue;
-					} else {
-						dictService.SetValue(prs.ProjectResourceKey + context.PropertyDescriptor.Name, null);
-						return dialog.SelectedResourceValue;
-					}
-				}
-			}
 			
 			return value;
 		}

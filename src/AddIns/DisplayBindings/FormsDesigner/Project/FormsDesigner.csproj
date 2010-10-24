@@ -73,7 +73,6 @@
     <Compile Include="Src\Services\IProjectResourceService.cs" />
     <Compile Include="Src\Services\ITypeLocator.cs" />
     <Compile Include="Src\Services\MenuCommandService.cs" />
-    <Compile Include="Src\Services\ProjectResourceInfo.cs" />
     <Compile Include="Src\Services\ProjectResourcesComponentCodeDomSerializer.cs" />
     <Compile Include="Src\Services\ProjectResourcesMemberCodeDomSerializer.cs" />
     <Compile Include="Src\Services\PropertyValueUIService.cs" />

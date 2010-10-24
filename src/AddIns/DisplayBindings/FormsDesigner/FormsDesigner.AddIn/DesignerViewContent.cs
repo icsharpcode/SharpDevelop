@@ -276,7 +276,7 @@ namespace ICSharpCode.FormsDesigner
 			this.typeResolutionService = new TypeResolutionService(this.PrimaryFileName, serviceContainer, new DomTypeLocator(this.PrimaryFileName));
 			serviceContainer.AddService(typeof(ITypeResolutionService), this.typeResolutionService);
 			serviceContainer.AddService(typeof(DesignerOptionService), new SharpDevelopDesignerOptionService());
-			serviceContainer.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService());
+			serviceContainer.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService(new DomGacWrapper()));
 			serviceContainer.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
 			serviceContainer.AddService(typeof(IProjectResourceService), new ProjectResourceService(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent));
 			

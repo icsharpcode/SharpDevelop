@@ -20,6 +20,10 @@ namespace ICSharpCode.FormsDesigner.Services
 	public interface ITypeLocator
 	{
 		AssemblyInfo LocateType(string name, out AssemblyInfo[] referencedAssemblies);
-		bool IsWithinGac(string path);
+	}
+	
+	public interface IGacWrapper
+	{
+		bool IsGacAssembly(string path);
 	}
 }

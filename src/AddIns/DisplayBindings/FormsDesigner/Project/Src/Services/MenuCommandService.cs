@@ -13,13 +13,12 @@ namespace ICSharpCode.FormsDesigner.Services
 {
 	class MenuCommandService : System.ComponentModel.Design.MenuCommandService
 	{
-		
 		IFormsDesigner vc;
 		
 		public MenuCommandService(IFormsDesigner vc, IServiceProvider serviceProvider) : base(serviceProvider)
 		{
 			this.vc = vc;
-			this.InitializeGlobalCommands( );
+			this.InitializeGlobalCommands();
 		}
 
 		private void InitializeGlobalCommands()

@@ -92,8 +92,10 @@ namespace ICSharpCode.FormsDesigner.Services
 				return false;
 			}
 			
+			IMessageService messenger = manager.GetService(typeof(IMessageService)) as IMessageService;
+			
 			LoggingService.Debug("Forms designer: deserializing a property assignment:");
-			LoggingService.Debug("-> " + CodeStatementToString(assignStatement));
+			LoggingService.Debug("-> " + messenger.CodeStatementToString(assignStatement));
 			
 			IComponent component = this.baseSerializer.Deserialize(manager, propRefTarget.TargetObject) as IComponent;
 			if (component == null) {
@@ -110,7 +112,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				throw new InvalidOperationException("Could not find the property descriptor for property '" + propRefTarget.PropertyName + "' on object '" + component.ToString() + "'.");
 			}
 			
-			ProjectResourceInfo resourceInfo = GetProjectResourceFromPropertyReference(manager, propRefSource);
+			IProjectResourceInfo resourceInfo = GetProjectResourceFromPropertyReference(manager, propRefSource);
 			if (resourceInfo == null) {
 				return false;
 			}
@@ -143,8 +145,10 @@ namespace ICSharpCode.FormsDesigner.Services
 				return false;
 			}
 			
+			IMessageService messenger = manager.GetService(typeof(IMessageService)) as IMessageService;
+			
 			LoggingService.Debug("Forms designer: deserializing a method invocation:");
-			LoggingService.Debug("-> " + CodeStatementToString(new CodeExpressionStatement(invokeExpression)));
+			LoggingService.Debug("-> " + messenger.CodeStatementToString(new CodeExpressionStatement(invokeExpression)));
 			
 			object extenderProvider = this.baseSerializer.Deserialize(manager, invokeExpression.Method.TargetObject);
 			if (extenderProvider == null) {
@@ -161,7 +165,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				return false;
 			}
 			
-			ProjectResourceInfo resourceInfo = GetProjectResourceFromPropertyReference(manager, propRefSource);
+			IProjectResourceInfo resourceInfo = GetProjectResourceFromPropertyReference(manager, propRefSource);
 			if (resourceInfo == null) {
 				return false;
 			}
@@ -183,7 +187,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			return true;
 		}
 		
-		static ProjectResourceInfo GetProjectResourceFromPropertyReference(IDesignerSerializationManager manager, CodePropertyReferenceExpression propRefSource)
+		static IProjectResourceInfo GetProjectResourceFromPropertyReference(IDesignerSerializationManager manager, CodePropertyReferenceExpression propRefSource)
 		{
 			IProjectResourceService prs = manager.GetService(typeof(IProjectResourceService)) as IProjectResourceService;
 			if (prs == null) {
@@ -193,9 +197,9 @@ namespace ICSharpCode.FormsDesigner.Services
 			return prs.GetProjectResource(propRefSource);
 		}
 		
-		static void StoreResourceInfo(IComponent component, string propertyName, ProjectResourceInfo resourceInfo)
+		static void StoreResourceInfo(IComponent component, string propertyName, IProjectResourceInfo resourceInfo)
 		{
-			IProjectResourceService prs = manager.GetService(typeof(IProjectResourceService)) as IProjectResourceService;
+			IProjectResourceService prs = component.Site.GetService(typeof(IProjectResourceService)) as IProjectResourceService;
 			var dictService = component.Site.GetService(typeof(IDictionaryService)) as IDictionaryService;
 			if (dictService == null) {
 				throw new InvalidOperationException("The required IDictionaryService is not available on component '" + component.ToString() + "'.");
@@ -239,14 +243,5 @@ namespace ICSharpCode.FormsDesigner.Services
 		}
 		
 		#endregion
-		
-		static string CodeStatementToString(CodeStatement statement)
-		{
-			CodeDomVerboseOutputGenerator outputGenerator = new CodeDomVerboseOutputGenerator();
-			using(StringWriter sw = new StringWriter(System.Globalization.CultureInfo.InvariantCulture)) {
-				outputGenerator.PublicGenerateCodeFromStatement(statement, sw, null);
-				return sw.ToString().TrimEnd();
-			}
-		}
 	}
 }
