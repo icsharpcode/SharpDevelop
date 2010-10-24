@@ -837,7 +837,7 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			{	"," /* multiple event declarations on single line */
 				/* our AST isn't built to handle this, so let's create multiple overlapping EventDeclarations */
 				/* commit the current EventDeclaration */
-				(. eventDecl.Name = qualident; eventDecl.EndLocation = t.EndLocation; BlockEnd(); .)
+				(. eventDecl.Name = qualident; eventDecl.EndLocation = t.EndLocation; compilationUnit.BlockEnd(); .)
 				/* create a new EventDeclaration for the next identifier */
 				(. eventDecl = new EventDeclaration {
 				      Modifier = eventDecl.Modifier,
@@ -845,8 +845,8 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 				      StartLocation = eventDecl.StartLocation,
 				      TypeReference = eventDecl.TypeReference.Clone()
 				   };
-				   AddChild(eventDecl);
-				   BlockStart(eventDecl);
+				   compilationUnit.AddChild(eventDecl);
+				   compilationUnit.BlockStart(eventDecl);
 				.)
 				Identifier (. qualident = t.val; .)
 				[ "=" Expr<out expr> (. eventDecl.Initializer = expr; .) ]

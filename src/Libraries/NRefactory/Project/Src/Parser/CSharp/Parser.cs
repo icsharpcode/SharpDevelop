@@ -1816,7 +1816,7 @@ out expr);
 					lexer.NextToken();
 
 #line  840 "cs.ATG" 
-					eventDecl.Name = qualident; eventDecl.EndLocation = t.EndLocation; BlockEnd(); 
+					eventDecl.Name = qualident; eventDecl.EndLocation = t.EndLocation; compilationUnit.BlockEnd(); 
 
 #line  842 "cs.ATG" 
 					eventDecl = new EventDeclaration {
@@ -1825,8 +1825,8 @@ out expr);
 					  StartLocation = eventDecl.StartLocation,
 					  TypeReference = eventDecl.TypeReference.Clone()
 					};
-					AddChild(eventDecl);
-					BlockStart(eventDecl);
+					compilationUnit.AddChild(eventDecl);
+					compilationUnit.BlockStart(eventDecl);
 					
 					Identifier();
 
