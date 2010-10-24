@@ -12,17 +12,19 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
+using ICSharpCode.FormsDesigner.Gui;
+using ICSharpCode.FormsDesigner.Gui.OptionPanels;
 using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.FormsDesigner.UndoRedo;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.FormsDesigner
 {
-	public class FormsDesignerViewContent : AbstractViewContentHandlingLoadErrors, IClipboardHandler, IUndoHandler, IHasPropertyContainer, IContextHelpProvider, IToolsHost, IFileDocumentProvider
+	public class FormsDesignerViewContent : AbstractViewContentHandlingLoadErrors, IClipboardHandler, IUndoHandler, IHasPropertyContainer, IContextHelpProvider, IToolsHost, IFileDocumentProvider, IFormsDesigner
 	{
 		readonly Control pleaseWaitLabel = new Label() {Text=StringParser.Parse("${res:Global.PleaseWait}"), TextAlign=ContentAlignment.MiddleCenter};
 		DesignSurface designSurface;
@@ -32,6 +34,7 @@ namespace ICSharpCode.FormsDesigner
 		readonly IDesignerLoaderProvider loaderProvider;
 		DesignerLoader loader;
 		readonly IDesignerGenerator generator;
+		readonly IDesignerSourceProvider sourceProvider;
 		readonly ResourceStore resourceStore;
 		FormsDesignerUndoEngine undoEngine;
 		TypeResolutionService typeResolutionService;
@@ -124,7 +127,7 @@ namespace ICSharpCode.FormsDesigner
 			ICSharpCode.SharpDevelop.Debugging.DebuggerService.DebugStarting += this.DebugStarting;
 		}
 		
-		public FormsDesignerViewContent(IViewContent primaryViewContent, IDesignerLoaderProvider loaderProvider, IDesignerGenerator generator)
+		public FormsDesignerViewContent(IViewContent primaryViewContent, IDesignerLoaderProvider loaderProvider, IDesignerGenerator generator, IDesignerSourceProvider sourceProvider)
 			: this(primaryViewContent)
 		{
 			if (loaderProvider == null)
@@ -133,8 +136,10 @@ namespace ICSharpCode.FormsDesigner
 				throw new ArgumentNullException("generator");
 			
 			this.loaderProvider = loaderProvider;
+			this.loaderProvider.ViewContent = this;
 			this.generator = generator;
-			this.generator.Attach(this);
+			this.sourceProvider = sourceProvider;
+			this.sourceProvider.Attach(this);
 			
 			this.Files.Add(this.primaryViewContent.PrimaryFile);
 		}
@@ -184,7 +189,7 @@ namespace ICSharpCode.FormsDesigner
 					
 					LoggingService.Debug("Forms designer: Determining designer source files for " + file.FileName);
 					OpenedFile newDesignerCodeFile;
-					IEnumerable<OpenedFile> sourceFiles = this.generator.GetSourceFiles(out newDesignerCodeFile);
+					IEnumerable<OpenedFile> sourceFiles = this.sourceProvider.GetSourceFiles(out newDesignerCodeFile);
 					if (sourceFiles == null || newDesignerCodeFile == null) {
 						throw new FormsDesignerLoadException("The designer source files could not be determined.");
 					}
@@ -262,9 +267,11 @@ namespace ICSharpCode.FormsDesigner
 		{
 			LoggingService.Info("Form Designer: BEGIN INITIALIZE");
 			
+			options = LoadOptions();
+			
 			DefaultServiceContainer serviceContainer = new DefaultServiceContainer();
 			serviceContainer.AddService(typeof(IMessageService), new FormsMessageService());
-			serviceContainer.AddService(typeof(System.Windows.Forms.Design.IUIService), new UIService());
+			serviceContainer.AddService(typeof(System.Windows.Forms.Design.IUIService), new UIService(this));
 			serviceContainer.AddService(typeof(System.Drawing.Design.IToolboxService), ToolboxProvider.ToolboxService);
 			
 			serviceContainer.AddService(typeof(IHelpService), new HelpService());
@@ -275,10 +282,11 @@ namespace ICSharpCode.FormsDesigner
 			serviceContainer.AddService(typeof(AmbientProperties), ambientProperties);
 			this.typeResolutionService = new TypeResolutionService(this.PrimaryFileName, serviceContainer, new DomTypeLocator(this.PrimaryFileName));
 			serviceContainer.AddService(typeof(ITypeResolutionService), this.typeResolutionService);
-			serviceContainer.AddService(typeof(DesignerOptionService), new SharpDevelopDesignerOptionService());
+			serviceContainer.AddService(typeof(DesignerOptionService), new SharpDevelopDesignerOptionService(options));
 			serviceContainer.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService(new DomGacWrapper()));
 			serviceContainer.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
 			serviceContainer.AddService(typeof(IProjectResourceService), new ProjectResourceService(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent));
+			serviceContainer.AddService(typeof(IImageResourceEditorDialogWrapper), new ImageResourceEditorDialogWrapper(ParserService.GetParseInformation(this.DesignerCodeFile.FileName).CompilationUnit.ProjectContent.Project as IProject));
 			
 			// Provide the ImageResourceEditor for all Image and Icon properties
 			this.addedTypeDescriptionProviders.Add(typeof(Image), TypeDescriptor.AddAttributes(typeof(Image), new EditorAttribute(typeof(ImageResourceEditor), typeof(System.Drawing.Design.UITypeEditor))));
@@ -294,11 +302,11 @@ namespace ICSharpCode.FormsDesigner
 			designSurface.Flushed += this.DesignerFlushed;
 			designSurface.Unloading += this.DesignerUnloading;
 			
-			serviceContainer.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(this, designSurface));
+			serviceContainer.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(new SharpDevelopCommandProvider(this), designSurface));
 			ICSharpCode.FormsDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormsDesigner.Services.EventBindingService(this, designSurface);
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
 			
-			this.loader = loaderProvider.CreateLoader(generator);
+			this.loader = new SharpDevelopDesignerLoader(generator, loaderProvider.CreateLoader(generator));
 			designSurface.BeginLoad(this.loader);
 			
 			if (!designSurface.IsLoaded) {
@@ -328,6 +336,28 @@ namespace ICSharpCode.FormsDesigner
 			hasUnmergedChanges = false;
 			
 			LoggingService.Info("Form Designer: END INITIALIZE");
+		}
+		
+		SharpDevelopDesignerOptions LoadOptions()
+		{
+			int w = PropertyService.Get("FormsDesigner.DesignerOptions.GridSizeWidth",  8);
+			int h = PropertyService.Get("FormsDesigner.DesignerOptions.GridSizeHeight", 8);
+			
+			SharpDevelopDesignerOptions options = new SharpDevelopDesignerOptions();
+			
+			options.GridSize = new Size(w, h);
+			
+			options.ShowGrid   = PropertyService.Get("FormsDesigner.DesignerOptions.ShowGrid", true);
+			options.SnapToGrid = PropertyService.Get("FormsDesigner.DesignerOptions.SnapToGrid", true);
+			
+			options.UseSmartTags = GeneralOptionsPanel.UseSmartTags;
+			options.UseSnapLines = PropertyService.Get("FormsDesigner.DesignerOptions.UseSnapLines", true);
+
+			options.EnableInSituEditing         = PropertyService.Get("FormsDesigner.DesignerOptions.EnableInSituEditing", true);
+			options.ObjectBoundSmartTagAutoShow = GeneralOptionsPanel.SmartTagAutoShow;
+			options.UseOptimizedCodeGeneration  = PropertyService.Get("FormsDesigner.DesignerOptions.UseOptimizedCodeGeneration", true);
+			
+			return options;
 		}
 		
 		bool hasUnmergedChanges;
@@ -660,7 +690,7 @@ namespace ICSharpCode.FormsDesigner
 				}
 				
 				if (this.generator != null) {
-					this.generator.Detach();
+					this.sourceProvider.Detach();
 				}
 				
 				this.resourceStore.Dispose();
@@ -941,5 +971,24 @@ namespace ICSharpCode.FormsDesigner
 		}
 		
 		#endregion
+		
+		public IDesignerGenerator Generator {
+			get {
+				return generator;
+			}
+		}
+		
+		SharpDevelopDesignerOptions options;
+		
+		public SharpDevelopDesignerOptions DesignerOptions {
+			get {
+				return options;
+			}
+		}
+		
+		public IntPtr GetDialogOwnerWindowHandle()
+		{
+			return WorkbenchSingleton.MainWin32Window.Handle;
+		}
 	}
 }

@@ -35,13 +35,14 @@
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DebugType>None</DebugType>
     <DebugSymbols>false</DebugSymbols>
+    <DefineConstants>FORMSDESIGNER_DLL</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>DEBUG</DefineConstants>
     <DebugType>Full</DebugType>
     <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>DEBUG, FORMSDESIGNER_DLL</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -53,6 +54,9 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\Src\EasyCodeDom.cs">
+      <Link>EasyCodeDom.cs</Link>
+    </Compile>
     <EmbeddedResource Include="Resources\AddSidebarComponentsDialog.xfrm" />
     <EmbeddedResource Include="Resources\ConfigureSidebarDialog.xfrm" />
     <EmbeddedResource Include="Resources\RenameSidebarCategoryDialog.xfrm" />
@@ -62,9 +66,11 @@
     <Compile Include="Src\DesignerLoader\SharpDevelopDesignerLoader.cs" />
     <Compile Include="Src\DesignerLoader\IDesignerLoader.cs" />
     <Compile Include="Src\Gui\ComponentLibraryLoader.cs" />
+    <Compile Include="Src\Gui\CustomComponentToolBoxItem.cs" />
     <Compile Include="Src\IDesignerGenerator.cs" />
     <Compile Include="Src\IFormsDesigner.cs" />
     <Compile Include="Src\LoggingService.cs" />
+    <Compile Include="Src\Services\AssemblyInfo.cs" />
     <Compile Include="Src\Services\DefaultMemberRelationshipService.cs" />
     <Compile Include="Src\Services\DefaultServiceContainer.cs" />
     <Compile Include="Src\Services\DesignerOptionService.cs" />
@@ -80,7 +86,6 @@
     <Compile Include="Src\Services\ToolboxService.cs" />
     <Compile Include="Src\Services\TypeResolutionService.cs" />
     <Compile Include="Src\Services\XmlDesignerNameCreationService.cs" />
-    <Compile Include="Src\DesignerLoader\DesignerLoaderProvider.cs" />
     <Compile Include="Src\DesignerLoader\FormsDesignerLoadException.cs" />
     <Compile Include="Src\Services\TypeDiscoveryService.cs" />
     <Compile Include="Src\UndoRedo\UndoEngine.cs" />

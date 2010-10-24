@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -12,8 +13,6 @@ namespace ICSharpCode.FormsDesigner.Services
 	{
 		string formSourceFileName;
 		IProjectContent callingProject;
-		
-		public System.ComponentModel.Design.ITypeResolutionService ParentService { get; set; }
 		
 		/// <summary>
 		/// Gets the project content of the project that created this TypeResolutionService.
@@ -41,7 +40,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		static readonly Dictionary<IProjectContent, object> projectContentsCurrentlyLoadingAssembly = new Dictionary<IProjectContent, object>();
 		
-		public string LocateType(string name, out string[] referencedAssemblies)
+		public AssemblyInfo LocateType(string name, out AssemblyInfo[] referencedAssemblies)
 		{
 			IProjectContent pc = CallingProject;
 			
@@ -56,30 +55,30 @@ namespace ICSharpCode.FormsDesigner.Services
 					foundClass = pc.GetClass(name.Replace('+', '.'), 0);
 				}
 				if (foundClass != null) {
-					string path = GetPathToAssembly(pc);
+					AssemblyInfo assembly = GetPathToAssembly(pc);
 					
-					if (string.IsNullOrEmpty(path)) {
-						referencedAssemblies = new string[0];
-						return "";
+					if (assembly == AssemblyInfo.Empty) {
+						referencedAssemblies = new AssemblyInfo[0];
+						return AssemblyInfo.Empty;
 					}
 					
-					List<string> assemblies = new List<string>();
+					List<AssemblyInfo> assemblies = new List<AssemblyInfo>();
 					
 					FindReferencedAssemblies(assemblies, pc);
 					
-					if (assemblies.Contains(path))
-						assemblies.Remove(path);
+					if (assemblies.Contains(assembly))
+						assemblies.Remove(assembly);
 					
 					referencedAssemblies = assemblies.ToArray();
-					return path;
+					return assembly;
 				}
 			}
 			
-			referencedAssemblies = new string[0];
-			return "";
+			referencedAssemblies = new AssemblyInfo[0];
+			return AssemblyInfo.Empty;
 		}
 		
-		void FindReferencedAssemblies(List<string> assemblies, IProjectContent pc)
+		void FindReferencedAssemblies(List<AssemblyInfo> assemblies, IProjectContent pc)
 		{
 			// prevent StackOverflow when project contents have cyclic dependencies
 			// Very popular example of cyclic dependency: System <-> System.Xml (yes, really!)
@@ -87,10 +86,10 @@ namespace ICSharpCode.FormsDesigner.Services
 				return;
 			projectContentsCurrentlyLoadingAssembly.Add(pc, null);
 			
-			string path = GetPathToAssembly(assemblies, pc);
+			AssemblyInfo assembly = GetPathToAssembly(pc);
 			
-			if (!string.IsNullOrEmpty(path) && !assemblies.Contains(path))
-				assemblies.Add(path);
+			if (!assemblies.Contains(assembly))
+				assemblies.Add(assembly);
 			
 			try {
 				// load dependencies of current assembly
@@ -108,14 +107,17 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 		}
 
-		string GetPathToAssembly(IProjectContent pc)
+		AssemblyInfo GetPathToAssembly(IProjectContent pc)
 		{
-			if (pc.Project != null)
-				return ((IProject)pc.Project).OutputAssemblyFullPath;
-			else if (pc is ReflectionProjectContent)
-				return ((ReflectionProjectContent)pc).AssemblyLocation;
+			bool isInGac = pc.Project == null && pc is ReflectionProjectContent;
+			string path = "";
 			
-			return null;
+			if (pc.Project != null)
+				path = ((IProject)pc.Project).OutputAssemblyFullPath;
+			else if (pc is ReflectionProjectContent)
+				path = ((ReflectionProjectContent)pc).AssemblyLocation;
+			
+			return new AssemblyInfo(path, isInGac);
 		}
 	}
 	

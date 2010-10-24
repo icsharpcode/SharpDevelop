@@ -10,6 +10,8 @@ using System.IO;
 using System.Linq;
 using System.Resources.Tools;
 
+using ICSharpCode.EasyCodeDom;
+
 namespace ICSharpCode.FormsDesigner.Services
 {
 	/// <summary>
@@ -47,7 +49,6 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			var dictService = component.Site.GetService(typeof(IDictionaryService)) as IDictionaryService;
 			if (dictService == null) return false;
-
 			
 			var prs = manager.GetService(typeof(IProjectResourceService)) as IProjectResourceService;
 			if (prs == null) {
@@ -64,47 +65,14 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 			
 			// Find the generated file with the resource accessing class.
-			
-			IProject project = prs.ProjectContent.Project as IProject;
-			if (project == null) {
-				LoggingService.Warn("Serializer cannot proceed because project is not an IProject");
+			string resourceClassFullyQualifiedName;
+			string resourcePropertyName;
+			if (!prs.FindResourceClassNames(resourceInfo, out resourceClassFullyQualifiedName, out resourcePropertyName))
 				return false;
-			}
-			
-			string resourceFileDirectory = Path.GetDirectoryName(resourceInfo.ResourceFile);
-			string resourceFileName = Path.GetFileName(resourceInfo.ResourceFile);
-			var items = project.Items
-				.OfType<FileProjectItem>()
-				.Where(
-					fpi =>
-					FileUtility.IsEqualFileName(Path.GetDirectoryName(fpi.FileName), resourceFileDirectory) &&
-					FileUtility.IsEqualFileName(fpi.DependentUpon, resourceFileName) &&
-					fpi.ItemType == ItemType.Compile &&
-					fpi.VirtualName.ToUpperInvariant().Contains("DESIGNER")
-				);
-			
-			if (items.Count() != 1) {
-				LoggingService.Info("Did not find exactly one possible file that contains the generated class for the resource file '" + resourceInfo.ResourceFile + "'. Ignoring this resource.");
-				return false;
-			}
-			
-			string resourceCodeFile = items.Single().FileName;
-			
-			// We expect a single class to be in this file.
-			IClass resourceClass = ParserService.GetParseInformation(resourceCodeFile).CompilationUnit.Classes.Single();
-			// Here we assume that VerifyResourceName is the same name transform that
-			// was used when generating the resource code file.
-			// This should be true as long as the code is generated using the
-			// custom tool in SharpDevelop or Visual Studio.
-			string resourcePropertyName = StronglyTypedResourceBuilder.VerifyResourceName(resourceInfo.ResourceKey, prs.ProjectContent.Language.CodeDomProvider ?? LanguageProperties.CSharp.CodeDomProvider);
-			if (resourcePropertyName == null) {
-				throw new InvalidOperationException("The resource name '" + resourceInfo.ResourceKey + "' could not be transformed to a name that is valid in the current programming language.");
-			}
-			
 			
 			// Now do the actual serialization.
 			
-			LoggingService.Debug("Serializing project resource: Component '" + component.ToString() + "', Property: '" + propDesc.Name + "', Resource class: '" + resourceClass.FullyQualifiedName + "', Resource property: '" + resourcePropertyName + "'");
+			LoggingService.Debug("Serializing project resource: Component '" + component.ToString() + "', Property: '" + propDesc.Name + "', Resource class: '" + resourceClassFullyQualifiedName + "', Resource property: '" + resourcePropertyName + "'");
 			
 			var targetObjectExpr = base.SerializeToExpression(manager, value);
 			if (targetObjectExpr == null) {
@@ -119,7 +87,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			var propRefSource =
 				Easy.Type(
-					new CodeTypeReference(resourceClass.FullyQualifiedName, CodeTypeReferenceOptions.GlobalReference)
+					new CodeTypeReference(resourceClassFullyQualifiedName, CodeTypeReferenceOptions.GlobalReference)
 				).Property(resourcePropertyName);
 			
 			var extAttr = propDesc.Attributes[typeof(ExtenderProvidedPropertyAttribute)] as ExtenderProvidedPropertyAttribute;

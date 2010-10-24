@@ -44,12 +44,16 @@ namespace ICSharpCode.FormsDesigner
 			get { return this.generator; }
 		}
 		
-		protected SharpDevelopDesignerLoader(IDesignerGenerator generator)
+		public SharpDevelopDesignerLoader(IDesignerGenerator generator, IDesignerLoader loader)
 		{
 			if (generator == null) {
 				throw new ArgumentNullException("generator", "Generator cannot be null");
 			}
+			if (loader == null)
+				throw new ArgumentNullException("loader");
+
 			this.generator = generator;
+			this.loader = loader;
 		}
 		
 		public override void Dispose()
@@ -147,6 +151,11 @@ namespace ICSharpCode.FormsDesigner
 		protected override System.CodeDom.CodeCompileUnit Parse()
 		{
 			return loader.Parse();
+		}
+		
+		protected override bool IsReloadNeeded()
+		{
+			return loader.IsReloadNeeded(base.IsReloadNeeded());
 		}
 	}
 }

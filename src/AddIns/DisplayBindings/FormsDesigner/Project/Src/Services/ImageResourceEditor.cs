@@ -76,9 +76,9 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			var projectResource = dictService.GetValue(prs.ProjectResourceKey + context.PropertyDescriptor.Name) as IProjectResourceInfo;
 			
+			var imageDialogWrapper = provider.GetService(typeof(IImageResourceEditorDialogWrapper)) as IImageResourceEditorDialogWrapper;
 			
-			
-			return value;
+			return imageDialogWrapper.GetValue(projectResource, value, prs, context, edsvc, dictService) ?? value;
 		}
 		
 		[PermissionSet(SecurityAction.LinkDemand, Name="FullTrust")]

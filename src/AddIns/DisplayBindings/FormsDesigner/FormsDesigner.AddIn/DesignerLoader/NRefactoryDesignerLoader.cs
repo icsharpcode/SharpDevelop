@@ -3,12 +3,12 @@
 
 using System;
 using System.CodeDom;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Ast;
@@ -22,16 +22,18 @@ namespace ICSharpCode.FormsDesigner
 	public class NRefactoryDesignerLoader : AbstractCodeDomDesignerLoader
 	{
 		SupportedLanguage    language;
+		FormsDesignerViewContent viewContent;
 		
-		protected override bool IsReloadNeeded()
+		public override bool IsReloadNeeded(bool value)
 		{
-			return base.IsReloadNeeded() || this.Generator.ViewContent.DesignerCodeFileContent != lastTextContent;
+			return base.IsReloadNeeded(value) || viewContent.DesignerCodeFileContent != lastTextContent;
 		}
 		
-		public NRefactoryDesignerLoader(SupportedLanguage language, IDesignerGenerator generator)
+		public NRefactoryDesignerLoader(SupportedLanguage language, IDesignerGenerator generator, FormsDesignerViewContent viewContent)
 			: base(generator)
 		{
 			this.language = language;
+			this.viewContent = viewContent;
 		}
 		
 		string lastTextContent;
@@ -72,13 +74,13 @@ namespace ICSharpCode.FormsDesigner
 		// - Create CodeDom objects for fields and InitializeComponents statements
 		// - If debug build and Ctrl pressed, output CodeDom to console
 		// - Return CodeDom objects to the .NET designer
-		protected override CodeCompileUnit Parse()
+		public override CodeCompileUnit Parse()
 		{
 			LoggingService.Debug("NRefactoryDesignerLoader.Parse()");
 			
-			lastTextContent = this.Generator.ViewContent.DesignerCodeFileContent;
+			lastTextContent = viewContent.DesignerCodeFileContent;
 			
-			ParseInformation parseInfo = ParserService.GetParseInformation(this.Generator.ViewContent.DesignerCodeFile.FileName);
+			ParseInformation parseInfo = ParserService.GetParseInformation(viewContent.DesignerCodeFile.FileName);
 			
 			IClass formClass;
 			bool isFirstClassInFile;
@@ -114,10 +116,10 @@ namespace ICSharpCode.FormsDesigner
 				if (found) continue;
 				
 				ITextBuffer fileContent;
-				if (FileUtility.IsEqualFileName(fileName, this.Generator.ViewContent.PrimaryFileName)) {
-					fileContent = this.Generator.ViewContent.PrimaryFileContent;
-				} else if (FileUtility.IsEqualFileName(fileName, this.Generator.ViewContent.DesignerCodeFile.FileName)) {
-					fileContent = new StringTextBuffer(this.Generator.ViewContent.DesignerCodeFileContent);
+				if (FileUtility.IsEqualFileName(fileName, viewContent.PrimaryFileName)) {
+					fileContent = viewContent.PrimaryFileContent;
+				} else if (FileUtility.IsEqualFileName(fileName, viewContent.DesignerCodeFile.FileName)) {
+					fileContent = new StringTextBuffer(viewContent.DesignerCodeFileContent);
 				} else {
 					fileContent = ParserService.GetParseableFileContent(fileName);
 				}
@@ -172,7 +174,7 @@ namespace ICSharpCode.FormsDesigner
 			if ((Control.ModifierKeys & Keys.Control) == Keys.Control) {
 				CodeDomVerboseOutputGenerator outputGenerator = new CodeDomVerboseOutputGenerator();
 				outputGenerator.GenerateCodeFromMember(visitor.codeCompileUnit.Namespaces[0].Types[0], Console.Out, null);
-				this.CodeDomProvider.GenerateCodeFromCompileUnit(visitor.codeCompileUnit, Console.Out, null);
+				this.Generator.CodeDomProvider.GenerateCodeFromCompileUnit(visitor.codeCompileUnit, Console.Out, null);
 			}
 			#endif
 			
@@ -262,13 +264,13 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		protected override void Write(CodeCompileUnit unit)
+		public override void Write(CodeCompileUnit unit)
 		{
 			LoggingService.Info("DesignerLoader.Write called");
 			// output generated CodeDOM to the console :
 			#if DEBUG
 			if ((Control.ModifierKeys & Keys.Control) == Keys.Control) {
-				this.CodeDomProvider.GenerateCodeFromCompileUnit(unit, Console.Out, null);
+				this.Generator.CodeDomProvider.GenerateCodeFromCompileUnit(unit, Console.Out, null);
 			}
 			#endif
 			try {
@@ -280,7 +282,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected override CodeDomLocalizationModel GetCurrentLocalizationModelFromDesignedFile()
 		{
-			ParseInformation parseInfo = ParserService.ParseFile(this.Generator.ViewContent.DesignerCodeFile.FileName, new StringTextBuffer(this.Generator.ViewContent.DesignerCodeFileContent));
+			ParseInformation parseInfo = ParserService.ParseFile(viewContent.DesignerCodeFile.FileName, new StringTextBuffer(viewContent.DesignerCodeFileContent));
 			
 			IClass formClass;
 			bool isFirstClassInFile;

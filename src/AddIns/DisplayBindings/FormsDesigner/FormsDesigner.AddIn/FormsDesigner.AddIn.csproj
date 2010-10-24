@@ -41,6 +41,7 @@
     </Reference>
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
@@ -64,11 +65,13 @@
     <Compile Include="DesignerGenerator\AbstractDesignerGenerator.cs" />
     <Compile Include="DesignerGenerator\CodeDOMGenerator.cs" />
     <Compile Include="DesignerGenerator\CSharpDesignerGenerator.cs" />
+    <Compile Include="DesignerGenerator\IDesignerSourceProvider.cs" />
     <Compile Include="DesignerGenerator\VBNetDesignerGenerator.cs" />
     <Compile Include="DesignerLoader\AbstractCodeDomDesignerLoader.cs" />
+    <Compile Include="DesignerLoader\DesignerLoaderProvider.cs" />
     <Compile Include="DesignerLoader\NRefactoryDesignerLoader.cs" />
     <Compile Include="DesignerSourceCodeStorage.cs" />
-    <Compile Include="DesignerViewContent.cs" />
+    <Compile Include="FormsDesignerViewContent.cs" />
     <Compile Include="FormKeyHandler.cs" />
     <Compile Include="ImageResourceEditorDialog.cs" />
     <Compile Include="ImageResourceEditorDialog.Designer.cs">
@@ -79,6 +82,7 @@
     <Compile Include="OptionPanels\LocalizationModelOptionsPanel.cs" />
     <Compile Include="SecondaryDisplayBinding.cs" />
     <Compile Include="Services\DesignerResourceService.cs" />
+    <Compile Include="Services\SharpDevelopCommandProvider.cs" />
     <Compile Include="Services\DomTypeLocator.cs" />
     <Compile Include="Services\HelpService.cs" />
     <Compile Include="Services\FormsMessageService.cs" />
@@ -101,6 +105,11 @@
     <Compile Include="Toolbox\ToolboxProvider.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\AvalonEdit\ICSharpCode.AvalonEdit\ICSharpCode.AvalonEdit.csproj">
+      <Project>{6C55B776-26D4-4DB3-A6AB-87E783B2F3D1}</Project>
+      <Name>ICSharpCode.AvalonEdit</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
       <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
       <Name>NRefactory</Name>
@@ -115,9 +124,19 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.WinForms\ICSharpCode.Core.WinForms.csproj">
+      <Project>{857CA1A3-FC88-4BE0-AB6A-D1EE772AB288}</Project>
+      <Name>ICSharpCode.Core.WinForms</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">
       <Project>{924EE450-603D-49C1-A8E5-4AFAA31CE6F3}</Project>
       <Name>ICSharpCode.SharpDevelop.Dom</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.SharpDevelop.Widgets\Project\ICSharpCode.SharpDevelop.Widgets.csproj">
+      <Project>{8035765F-D51F-4A0C-A746-2FD100E19419}</Project>
+      <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\Project\FormsDesigner.csproj">

@@ -5,6 +5,8 @@ using System;
 using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.FormsDesigner.Services
 {

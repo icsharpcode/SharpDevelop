@@ -2,14 +2,22 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel.Design.Serialization;
 
 namespace ICSharpCode.FormsDesigner
 {
 	/// <summary>
 	/// Description of AbstractCodeDomDesignerLoader.
 	/// </summary>
-	public class AbstractCodeDomDesignerLoader : IDesignerLoader
+	public abstract class AbstractCodeDomDesignerLoader : IDesignerLoader
 	{
+		protected AbstractCodeDomDesignerLoader(IDesignerGenerator generator)
+		{
+			this.Generator = generator;
+		}
+		
+		public IDesignerGenerator Generator { get; set; }
+		
 		/// <summary>
 		/// When overridden in derived classes, this method should return the current
 		/// localization model of the designed file or None, if it cannot be determined.
@@ -20,15 +28,9 @@ namespace ICSharpCode.FormsDesigner
 			return CodeDomLocalizationModel.None;
 		}
 		
-		System.CodeDom.CodeCompileUnit IDesignerLoader.Parse()
-		{
-			throw new NotImplementedException();
-		}
+		public abstract System.CodeDom.CodeCompileUnit Parse();
 		
-		void IDesignerLoader.Write(System.CodeDom.CodeCompileUnit unit)
-		{
-			throw new NotImplementedException();
-		}
+		public abstract void Write(System.CodeDom.CodeCompileUnit unit);
 		
 		CodeDomLocalizationModel IDesignerLoader.GetLocalizationModel()
 		{
@@ -38,15 +40,20 @@ namespace ICSharpCode.FormsDesigner
 				// Try to find out the current localization model of the designed form
 				CodeDomLocalizationModel existingModel = this.GetCurrentLocalizationModelFromDesignedFile();
 				if (existingModel != CodeDomLocalizationModel.None) {
-					LoggingService.Debug("Determined existing localization model, using that: " + existingModel.ToString());
+					Core.LoggingService.Debug("Determined existing localization model, using that: " + existingModel.ToString());
 					model = existingModel;
 				} else {
-					LoggingService.Debug("Could not determine existing localization model, using default: " + model.ToString());
+					Core.LoggingService.Debug("Could not determine existing localization model, using default: " + model.ToString());
 				}
 			} else {
-				LoggingService.Debug("Using default localization model: " + model.ToString());
+				Core.LoggingService.Debug("Using default localization model: " + model.ToString());
 			}
 			return model;
+		}
+		
+		public virtual bool IsReloadNeeded(bool value)
+		{
+			return value;
 		}
 	}
 }

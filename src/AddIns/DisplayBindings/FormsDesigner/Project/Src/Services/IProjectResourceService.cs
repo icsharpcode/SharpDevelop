@@ -3,6 +3,7 @@
 
 using System;
 using System.CodeDom;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 
@@ -12,7 +13,8 @@ namespace ICSharpCode.FormsDesigner.Services
 	{
 		IProjectResourceInfo GetProjectResource(CodePropertyReferenceExpression propRef);
 		bool DesignerSupportsProjectResources { get; set; }
-		string ProjectResourceKey { get; set; }
+		string ProjectResourceKey { get; }
+		bool FindResourceClassNames(IProjectResourceInfo resourceInfo, out string resourceClassFullyQualifiedName, out string resourcePropertyName);
 	}
 	
 	public interface IMessageService
@@ -28,5 +30,11 @@ namespace ICSharpCode.FormsDesigner.Services
 		string ResourceFile { get; }
 		string ResourceKey { get; }
 		object OriginalValue { get; }
+	}
+	
+	public interface ICommandProvider
+	{
+		void InitializeGlobalCommands(IMenuCommandService service);
+		void ShowContextMenu(CommandID menuID, int x, int y);
 	}
 }

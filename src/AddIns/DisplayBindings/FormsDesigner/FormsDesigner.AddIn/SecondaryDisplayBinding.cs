@@ -115,6 +115,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			IDesignerLoaderProvider loader;
 			IDesignerGenerator generator;
+			IDesignerSourceProvider sourceProvider;
 			
 			switch (fileExtension) {
 				case ".cs":
@@ -128,7 +129,10 @@ namespace ICSharpCode.FormsDesigner
 				default:
 					throw new ApplicationException("Cannot create content for " + fileExtension);
 			}
-			return new IViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator) };
+			
+			sourceProvider = (IDesignerSourceProvider)generator;
+			
+			return new IViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator, sourceProvider) };
 		}
 	}
 }

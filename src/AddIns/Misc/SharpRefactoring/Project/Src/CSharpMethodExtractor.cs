@@ -103,7 +103,7 @@ namespace SharpRefactoring
 			
 			var variablesList = (from list in ltv.Variables.Values from item in list select new Variable(item))
 				.Where(v => !(v.StartPos > end || v.EndPos < start) &&
-				       (HasReferencesInSelection(newMethod, v) || 
+				       (HasReferencesInSelection(newMethod, v) ||
 				        HasOccurrencesAfter(CSharpNameComparer, this.parentNode, end, v.Name, v.StartPos, v.EndPos)))
 				.Union(FromParameters(newMethod))
 				.Select(va => ResolveVariable(va));
@@ -194,7 +194,10 @@ namespace SharpRefactoring
 			if (variable.Type.Type == "var")
 				variable.Type = Dom.Refactoring.CodeGenerator.ConvertType(type, finder);
 			
-			variable.IsReferenceType = type.IsReferenceType == true;
+			if (type == null)
+				variable.IsReferenceType = false;
+			else
+				variable.IsReferenceType = type.IsReferenceType == true;
 			
 			return variable;
 		}

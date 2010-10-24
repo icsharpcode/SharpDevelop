@@ -10,9 +10,8 @@ namespace ICSharpCode.FormsDesigner
 	public interface IDesignerLoader
 	{
 		CodeCompileUnit Parse();
-		
 		void Write(CodeCompileUnit unit);
-		
 		CodeDomLocalizationModel GetLocalizationModel();
+		bool IsReloadNeeded(bool value);
 	}
 }

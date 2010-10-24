@@ -128,9 +128,9 @@
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\FormsDesigner\Project\FormsDesigner.csproj">
-      <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
-      <Name>FormsDesigner</Name>
+    <ProjectReference Include="..\..\FormsDesigner\FormsDesigner.AddIn\FormsDesigner.AddIn.csproj">
+      <Project>{53840EAB-984D-419F-A2A2-6D13C3F3D5B4}</Project>
+      <Name>FormsDesigner.AddIn</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\WpfDesign.Designer\Project\WpfDesign.Designer.csproj">

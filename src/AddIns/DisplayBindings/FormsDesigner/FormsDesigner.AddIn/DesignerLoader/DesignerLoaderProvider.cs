@@ -3,29 +3,32 @@
 
 using System;
 using System.ComponentModel.Design.Serialization;
-/*
+
 using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.FormsDesigner
 {
 	public interface IDesignerLoaderProvider
 	{
-		DesignerLoader CreateLoader(IDesignerGenerator generator);
+		IDesignerLoader CreateLoader(IDesignerGenerator generator);
+		FormsDesignerViewContent ViewContent { get; set; }
 	}
 	
 	public class NRefactoryDesignerLoaderProvider : IDesignerLoaderProvider
 	{
 		readonly SupportedLanguage language;
+		FormsDesignerViewContent viewContent;
+		
+		public FormsDesignerViewContent ViewContent { get; set; }
 		
 		public NRefactoryDesignerLoaderProvider(SupportedLanguage language)
 		{
 			this.language = language;
 		}
 		
-		public DesignerLoader CreateLoader(IDesignerGenerator generator)
+		public IDesignerLoader CreateLoader(IDesignerGenerator generator)
 		{
-			return new NRefactoryDesignerLoader(language, generator);
+			return new NRefactoryDesignerLoader(language, generator, ViewContent);
 		}
 	}
 }
-*/

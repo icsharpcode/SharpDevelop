@@ -7,6 +7,8 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
+using ICSharpCode.Core;
+
 namespace ICSharpCode.FormsDesigner.Services
 {
 	public class UIService : IUIService

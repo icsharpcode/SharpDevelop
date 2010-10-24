@@ -3,6 +3,7 @@
 
 using System;
 using System.Globalization;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.FormsDesigner.Services
 {

@@ -113,53 +113,9 @@ namespace ICSharpCode.FormsDesigner.Gui
 					// is not a design component
 					continue;
 				isDesignComponent:
-					this.Items.Add(new SideTabItemDesigner(c.Name, new CustomComponentToolBoxItem(c)));
+					this.Items.Add(new SideTabItemDesigner(c.Name, new CustomComponentToolBoxItem(c.CompilationUnit.FileName, c.FullyQualifiedName)));
 				}
 			}
-		}
-	}
-	
-	public class CustomComponentToolBoxItem : ToolboxItem
-	{
-		string className;
-		IProjectContent assemblyLocation;
-		Assembly usedAssembly = null;
-		
-		public CustomComponentToolBoxItem(IClass c)
-		{
-			className = c.FullyQualifiedName;
-			assemblyLocation = c.ProjectContent;
-			this.Bitmap = new ToolboxItem(typeof(Component)).Bitmap;
-			this.IsTransient = true;
-		}
-		
-		void Init(IDesignerHost host)
-		{
-			LoggingService.Debug("Initializing MyToolBoxItem: " + className);
-			if (host == null) throw new ArgumentNullException("host");
-			if (assemblyLocation != null) {
-				TypeResolutionService typeResolutionService = host.GetService(typeof(ITypeResolutionService)) as TypeResolutionService;
-				if (typeResolutionService == null) {
-					throw new InvalidOperationException("Cannot initialize CustomComponentToolBoxItem because the designer host does not provide a SharpDevelop TypeResolutionService.");
-				}
-				Assembly asm = typeResolutionService.LoadAssembly(assemblyLocation);
-				if (asm != null && usedAssembly != asm) {
-					Initialize(asm.GetType(className));
-					usedAssembly = asm;
-				}
-			}
-		}
-		
-		protected override IComponent[] CreateComponentsCore(IDesignerHost host)
-		{
-			Init(host);
-			return base.CreateComponentsCore(host);
-		}
-		
-		protected override IComponent[] CreateComponentsCore(IDesignerHost host, System.Collections.IDictionary defaultValues)
-		{
-			Init(host);
-			return base.CreateComponentsCore(host, defaultValues);
 		}
 	}
 }

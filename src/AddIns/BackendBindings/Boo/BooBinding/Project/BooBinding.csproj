@@ -134,6 +134,11 @@
       <Name>NRefactory</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\DisplayBindings\FormsDesigner\FormsDesigner.AddIn\FormsDesigner.AddIn.csproj">
+      <Project>{53840EAB-984D-419F-A2A2-6D13C3F3D5B4}</Project>
+      <Name>FormsDesigner.AddIn</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\NRefactoryToBooConverter\Project\NRefactoryToBooConverter.csproj">
       <Project>{DBCF20A1-BA13-4582-BFA9-74DE4D987B73}</Project>
       <Name>NRefactoryToBooConverter</Name>
@@ -150,11 +155,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="PostBuildEvent.proj" />
-    <ProjectReference Include="..\..\..\..\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj">
-      <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
-      <Name>FormsDesigner</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <Folder Include="Configuration" />
     <Folder Include="Resources" />
     <ProjectReference Include="..\..\..\..\..\Main\ICSharpCode.SharpDevelop.Dom\Project\ICSharpCode.SharpDevelop.Dom.csproj">

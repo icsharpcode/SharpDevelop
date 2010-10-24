@@ -20,7 +20,7 @@ using ReflectionLayer = ICSharpCode.SharpDevelop.Dom.ReflectionLayer;
 
 namespace ICSharpCode.FormsDesigner
 {
-	public abstract class AbstractDesignerGenerator : IDesignerGenerator
+	public abstract class AbstractDesignerGenerator : IDesignerGenerator, IDesignerSourceProvider
 	{
 		/// <summary>The currently open part of the class being designed.</summary>
 		IClass currentClassPart;
@@ -582,4 +582,8 @@ namespace ICSharpCode.FormsDesigner
 			return null;
 		}
 	}
+	
+		
+		
+
 }

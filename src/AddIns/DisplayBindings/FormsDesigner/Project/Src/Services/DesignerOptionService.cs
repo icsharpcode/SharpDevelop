@@ -36,25 +36,6 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		// Whether to include an underscore in the event handler name
 		public string EventHandlerNameFormat { get; set; }
-		
-		/*
-		public SharpDevelopDesignerOptions()
-		{
-			int w = PropertyService.Get("FormsDesigner.DesignerOptions.GridSizeWidth",  8);
-			int h = PropertyService.Get("FormsDesigner.DesignerOptions.GridSizeHeight", 8);
-			this.gridSize = new Size(w, h);
-			
-			this.showGrid   = PropertyService.Get("FormsDesigner.DesignerOptions.ShowGrid", true);
-			this.snapToGrid = PropertyService.Get("FormsDesigner.DesignerOptions.SnapToGrid", true);
-			
-			this.useSmartTags = GeneralOptionsPanel.UseSmartTags;
-			this.useSnapLines = PropertyService.Get("FormsDesigner.DesignerOptions.UseSnapLines", true);
-
-			this.enableInSituEditing         = PropertyService.Get("FormsDesigner.DesignerOptions.EnableInSituEditing", true);
-			this.objectBoundSmartTagAutoShow = GeneralOptionsPanel.SmartTagAutoShow;
-			this.useOptimizedCodeGeneration  = PropertyService.Get("FormsDesigner.DesignerOptions.UseOptimizedCodeGeneration", true);
-		}
-		 */
 	}
 
 	public class SharpDevelopDesignerOptionService : WindowsFormsDesignerOptionService

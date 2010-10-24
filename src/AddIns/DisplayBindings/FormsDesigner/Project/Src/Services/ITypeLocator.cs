@@ -2,20 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel;
+using System.ComponentModel.Design;
+using System.Windows.Forms.Design;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
-	public struct AssemblyInfo
-	{
-		public readonly string FullNameOrPath;
-		public readonly bool IsInGac;
-		
-		public AssemblyInfo(string fullNameOrPath, bool isInGac)
-		{
-			this.FullNameOrPath = fullNameOrPath;
-			this.IsInGac = isInGac;
-		}
-	}
+
 	
 	public interface ITypeLocator
 	{
@@ -25,5 +18,10 @@ namespace ICSharpCode.FormsDesigner.Services
 	public interface IGacWrapper
 	{
 		bool IsGacAssembly(string path);
+	}
+	
+	public interface IImageResourceEditorDialogWrapper
+	{
+		object GetValue(IProjectResourceInfo projectResource, object value, IProjectResourceService prs, ITypeDescriptorContext context, IWindowsFormsEditorService edsvc, IDictionaryService dictService);
 	}
 }

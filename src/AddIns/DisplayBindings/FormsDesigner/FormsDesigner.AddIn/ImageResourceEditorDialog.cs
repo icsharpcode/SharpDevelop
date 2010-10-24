@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Drawing;
 using System.Drawing.Design;
 using System.IO;
@@ -11,12 +12,13 @@ using System.Linq;
 using System.Resources;
 using System.Resources.Tools;
 using System.Windows.Forms;
-
+using System.Windows.Forms.Design;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -58,7 +60,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 			this.projectResourcesTreeView.Visible = designerSupportsProjectResources;
 		}
 		
-		public ImageResourceEditorDialog(IProject project, Type requiredResourceType, ProjectResourceInfo projectResource)
+		public ImageResourceEditorDialog(IProject project, Type requiredResourceType, IProjectResourceInfo projectResource)
 			: this(project, requiredResourceType, true)
 		{
 			if (projectResource == null)
@@ -214,7 +216,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 				return;
 			}
 			
-			ProjectResourceInfo selectedProjectResource = e.Argument as ProjectResourceInfo;
+			IProjectResourceInfo selectedProjectResource = e.Argument as IProjectResourceInfo;
 			
 			IProjectContent projectContent = ParserService.GetProjectContent(this.project);
 			
@@ -575,11 +577,19 @@ namespace ICSharpCode.FormsDesigner.Gui
 		#endregion
 	}
 	
-	public class ImageResourceEditorDialogWrapper
+	public class ImageResourceEditorDialogWrapper : IImageResourceEditorDialogWrapper
 	{
-		public object GetValue(IProjectResourceInfo projectResource, )
+		IProject project;
+		
+		public ImageResourceEditorDialogWrapper(IProject project)
 		{
-			IProject project = prs.ProjectContent.Project as IProject;
+			if (project == null)
+				throw new ArgumentNullException("project");
+			this.project = project;
+		}
+		
+		public object GetValue(IProjectResourceInfo projectResource, object value, IProjectResourceService prs, ITypeDescriptorContext context, IWindowsFormsEditorService edsvc, IDictionaryService dictService)
+		{
 			ImageResourceEditorDialog dialog;
 			
 			if (projectResource != null && object.ReferenceEquals(projectResource.OriginalValue, value) && prs.DesignerSupportsProjectResources) {

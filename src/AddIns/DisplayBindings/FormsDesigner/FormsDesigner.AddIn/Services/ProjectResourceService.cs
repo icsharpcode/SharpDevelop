@@ -1,15 +1,18 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.NRefactory;
 using System;
 using System.CodeDom;
 using System.IO;
 using System.Linq;
+using System.Resources.Tools;
+
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
@@ -170,6 +173,58 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 			IReturnType generatedCodeAttribute = generatedCodeAttributeClass.DefaultReturnType;
 			return @class.Attributes.Any(att => att.AttributeType.Equals(generatedCodeAttribute) && att.PositionalArguments.Count == 2 && String.Equals("System.Resources.Tools.StronglyTypedResourceBuilder", att.PositionalArguments[0] as string, StringComparison.Ordinal));
+		}
+		
+		IProjectResourceInfo IProjectResourceService.GetProjectResource(CodePropertyReferenceExpression propRef)
+		{
+			throw new NotImplementedException();
+		}
+		
+		public bool FindResourceClassNames(IProjectResourceInfo resourceInfo, out string resourceClassFullyQualifiedName, out string resourcePropertyName)
+		{
+			IProject project = ProjectContent.Project as IProject;
+			
+			resourceClassFullyQualifiedName = null;
+			resourcePropertyName = null;
+			
+			if (project == null) {
+				LoggingService.Warn("Serializer cannot proceed because project is not an IProject");
+				return false;
+			}
+			
+			string resourceFileDirectory = Path.GetDirectoryName(resourceInfo.ResourceFile);
+			string resourceFileName = Path.GetFileName(resourceInfo.ResourceFile);
+			var items = project.Items
+				.OfType<FileProjectItem>()
+				.Where(
+					fpi =>
+					FileUtility.IsEqualFileName(Path.GetDirectoryName(fpi.FileName), resourceFileDirectory) &&
+					FileUtility.IsEqualFileName(fpi.DependentUpon, resourceFileName) &&
+					fpi.ItemType == ItemType.Compile &&
+					fpi.VirtualName.ToUpperInvariant().Contains("DESIGNER")
+				);
+			
+			if (items.Count() != 1) {
+				LoggingService.Info("Did not find exactly one possible file that contains the generated class for the resource file '" + resourceInfo.ResourceFile + "'. Ignoring this resource.");
+				return false;
+			}
+			
+			string resourceCodeFile = items.Single().FileName;
+			
+			// We expect a single class to be in this file.
+			IClass resourceClass = ParserService.GetParseInformation(resourceCodeFile).CompilationUnit.Classes.Single();
+			// Here we assume that VerifyResourceName is the same name transform that
+			// was used when generating the resource code file.
+			// This should be true as long as the code is generated using the
+			// custom tool in SharpDevelop or Visual Studio.
+			resourceClassFullyQualifiedName = resourceClass.FullyQualifiedName;
+			resourcePropertyName = StronglyTypedResourceBuilder.VerifyResourceName(resourceInfo.ResourceKey, ProjectContent.Language.CodeDomProvider ?? LanguageProperties.CSharp.CodeDomProvider);
+			
+			if (resourcePropertyName == null) {
+				throw new InvalidOperationException("The resource name '" + resourceInfo.ResourceKey + "' could not be transformed to a name that is valid in the current programming language.");
+			}
+			
+			return true;
 		}
 	}
 }
