@@ -833,9 +833,26 @@ StructMemberDecl<ModifierList m, List<AttributeSection> attributes>
 			(. eventDecl.InterfaceImplementations.Add(new InterfaceImplementation(explicitInterface, qualident)); .)
 			
 		|	Identifier (. qualident = t.val; .)
+			[   "=" Expr<out expr> (. eventDecl.Initializer = expr; .) ]
+			{	"," /* multiple event declarations on single line */
+				/* our AST isn't built to handle this, so let's create multiple overlapping EventDeclarations */
+				/* commit the current EventDeclaration */
+				(. eventDecl.Name = qualident; eventDecl.EndLocation = t.EndLocation; BlockEnd(); .)
+				/* create a new EventDeclaration for the next identifier */
+				(. eventDecl = new EventDeclaration {
+				      Modifier = eventDecl.Modifier,
+				      Attributes = eventDecl.Attributes,
+				      StartLocation = eventDecl.StartLocation,
+				      TypeReference = eventDecl.TypeReference.Clone()
+				   };
+				   AddChild(eventDecl);
+				   BlockStart(eventDecl);
+				.)
+				Identifier (. qualident = t.val; .)
+				[ "=" Expr<out expr> (. eventDecl.Initializer = expr; .) ]
+			}
 		)
 		(. eventDecl.Name = qualident; eventDecl.EndLocation = t.EndLocation; .)
-		[   "=" Expr<out expr> (. eventDecl.Initializer = expr; .) ]
 		[	"{" (. eventDecl.BodyStart = t.Location; .)
 			EventAccessorDecls<out addBlock, out removeBlock> 
 			"}" (. eventDecl.BodyEnd   = t.EndLocation; .)

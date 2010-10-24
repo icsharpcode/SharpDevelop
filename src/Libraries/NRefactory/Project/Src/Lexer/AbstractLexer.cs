@@ -81,7 +81,7 @@ namespace ICSharpCode.NRefactory.Parser
 		{
 			++col;
 			int val = reader.Read();
-			if (recordRead)
+			if (recordRead && val >= 0)
 				recordedText.Append ((char)val);
 			if ((val == '\r' && reader.Peek() != '\n') || val == '\n') {
 				++line;
