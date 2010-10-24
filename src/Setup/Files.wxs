@@ -568,7 +568,7 @@
 									<File Source="..\..\data\resources\StringResources.pt-br.resources" Id="StringResources.pt_br.resources" Name="StringResources.pt-br.resources" />
 									<File Source="..\..\data\resources\StringResources.ro.resources" Id="StringResources.ro.resources" Name="StringResources.ro.resources" />
 									<File Source="..\..\data\resources\StringResources.se.resources" Id="StringResources.se.resources" Name="StringResources.se.resources" />
-									<File Id="StringResources.cn_gb.resources" Name="StringResources.cn-gb.resources" Source="..\..\data\resources\StringResources.cn-gb.resources" />
+									<File Id="StringResources.zh.resources" Name="StringResources.zh.resources" Source="..\..\data\resources\StringResources.zh.resources" />
 									<File Id="StringResources.pt.resources" Name="StringResources.pt.resources" Source="..\..\data\resources\StringResources.pt.resources" />
 									<File Id="StringResources.ru.resources" Name="StringResources.ru.resources" Source="..\..\data\resources\StringResources.ru.resources" />
 								</Component>

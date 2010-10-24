@@ -232,6 +232,9 @@ Descargue un complemento de Internet, luego haga clic en 'Instalar Complemento' 
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Mostrar Diagrama de Clase</value>
   </data>
+  <data name="AddIns.Git.TortoiseGitRequired" xml:space="preserve">
+    <value>TortoiseGit necesita ser instalado para ejecutar esta acción.</value>
+  </data>
   <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
     <value>Contenidos</value>
   </data>
@@ -518,6 +521,9 @@ Es necesario instalar el .NET Framework SDK para obtener el sistema de ayuda.</v
   <data name="AddIns.Profiler.Options.General.DataCollection.SizeOfStorageDescription" xml:space="preserve">
     <value>Tamaño de archivo de almacenamiento temporal:</value>
   </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.TrackEvents" xml:space="preserve">
+    <value>Rastrear eventos</value>
+  </data>
   <data name="AddIns.Profiler.Options.General.Title" xml:space="preserve">
     <value>General</value>
   </data>
@@ -692,6 +698,9 @@ Opcionalmente puede especificar un directorio de trabajo y argumentos de línea 
   </data>
   <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOperatorOverloads" xml:space="preserve">
     <value>Agregar sobrecargas de operador</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOtherMethod" xml:space="preserve">
+    <value>Agregar override de ${otherMethod}</value>
   </data>
   <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.SurroundWithRegion" xml:space="preserve">
     <value>Rodear con #region</value>
@@ -3465,7 +3474,7 @@ También puede escoger almacenar el parámetro de configuración en el archivo .
     <value>Reintentar</value>
   </data>
   <data name="Global.SelectAllButtonText" xml:space="preserve">
-    <value>Seleccionar Todo</value>
+    <value>Seleccion&amp;ar Todo</value>
   </data>
   <data name="Global.SmallIconToolTip" xml:space="preserve">
     <value>Iconos pequeños</value>
@@ -4030,8 +4039,23 @@ Por favor configure la ubicación del archivo ejecutable de NAnt en las opciones
   <data name="ICSharpCode.PythonBinding.PythonProjectFiles" xml:space="preserve">
     <value>Archivos de Proyecto Python</value>
   </data>
+  <data name="ICSharpCode.PythonBinding.SendLineToPythonConsole" xml:space="preserve">
+    <value>Enviar Línea a la Consola Python</value>
+  </data>
+  <data name="ICSharpCode.PythonBinding.SendSelectedTextToPythonConsole" xml:space="preserve">
+    <value>Enviar a la Consola Python</value>
+  </data>
   <data name="ICSharpCode.PythonBinding.UnknownTypeName" xml:space="preserve">
     <value>No se pudo encontrar el tipo '{0}'.¿Falta una referencia a un ensamblado?</value>
+  </data>
+  <data name="ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError" xml:space="preserve">
+    <value>El elemento seleccionado no es una clase o miembro sobrescribible, así que no se puede mostrar ningún símbolo derivado.</value>
+  </data>
+  <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
+    <value>Enviar Línea a la Consola Ruby</value>
+  </data>
+  <data name="ICSharpCode.RubyBinding.SendSelectedTextToRubyConsole" xml:space="preserve">
+    <value>Enviar a la Consola Ruby</value>
   </data>
   <data name="ICSharpCode.Services.FileUtilityService.CantLoadFileStandardText" xml:space="preserve">
     <value>No se puede cargar el archivo ${FileNameWithoutPath} en la ubicación ${Path}. revise los permisos y la existencia de ese archivo.</value>
@@ -4770,6 +4794,35 @@ Solamente letras, dígitos, espacio, '.' o '_' son permitidos.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Cargando ${Filename}...</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
+    <value>Convertir &amp;proyectos seleccionados a:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeTargetFrameworkLabel" xml:space="preserve">
+    <value>Cambiar framework de &amp;destino:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeVersionGroupBoxHeader" xml:space="preserve">
+    <value>Cambiar versión de proyectos seleccionados</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.CompilerVersion" xml:space="preserve">
+    <value>Versión del Compilador</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ConvertButton" xml:space="preserve">
+    <value>&amp;Convertir</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange" xml:space="preserve">
+    <value>&lt;no cambiar&gt;</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.TargetFramework" xml:space="preserve">
+    <value>Framework de Destino</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.Title" xml:space="preserve">
+    <value>Actualización de Proyecto</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription" xml:space="preserve">
+    <value>Esta solución fue creada usando una versión previa de SharpDevelop.
+Quizás quiera actualizarlo para poder usar nuevas características del lenguaje o del framework.
+</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError" xml:space="preserve">
     <value>El ambiente actual no se encontró.

@@ -4048,6 +4048,9 @@ Bitte stellen Sie den Pfad zur NAnt-Anwendung in den SharpDevelop-Optionen ein.<
   <data name="ICSharpCode.PythonBinding.UnknownTypeName" xml:space="preserve">
     <value>Konnte Typ '{0}' nicht finden. Fehlt eine Assembly-Referenz?</value>
   </data>
+  <data name="ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError" xml:space="preserve">
+    <value>Das gewählte Element ist keine Klasse oder überschreibbares Mitglied, daher können keine Symbole angezeigt werden.</value>
+  </data>
   <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
     <value>Zeile an Ruby Konsole senden</value>
   </data>
@@ -4820,6 +4823,9 @@ Grund: Der Wert zu dem zurückgesetzt werden soll ist ungültig weil sich eine a
   </data>
   <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.Title" xml:space="preserve">
     <value>Projekt-Update</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription" xml:space="preserve">
+    <value>Diese Projektmappe wurde mit einer vorherigen Version von SharpDevelop erstellt. Sie möchten sie vielleicht aktualisieren, um neue Sprach- und Framework-Features verwenden zu können.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError" xml:space="preserve">
     <value>Aktuelle Sprachumgebung nicht gefunden.

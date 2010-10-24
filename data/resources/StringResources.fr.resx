@@ -4044,6 +4044,9 @@ Configurez le chemin vers NAnt dans les options de SharpDevelop.</value>
   <data name="ICSharpCode.PythonBinding.UnknownTypeName" xml:space="preserve">
     <value>Impossible de trouver le type '{0}'. Manque-t-il uUne référence d'assembly ?</value>
   </data>
+  <data name="ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError" xml:space="preserve">
+    <value>L'élément sélectionné n'est ni une classe ni un membre surchargeable: aucun symbole dérivé n'est disponible.</value>
+  </data>
   <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
     <value>Envoyer cette ligne vers la console Ruby</value>
   </data>
@@ -4784,6 +4787,34 @@ Utilisez seulement des lettres, chiffres, espace, '.' ou '_'.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Chargement de ${Filename}...</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
+    <value>Convertir les projets sélectionnés vers:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeTargetFrameworkLabel" xml:space="preserve">
+    <value>Changer le framework cible:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeVersionGroupBoxHeader" xml:space="preserve">
+    <value>Changer la version des projets sélectionnés</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.CompilerVersion" xml:space="preserve">
+    <value>Version du compilateur</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ConvertButton" xml:space="preserve">
+    <value>&amp;Convertir</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange" xml:space="preserve">
+    <value>&lt;ne pas changer&gt;</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.TargetFramework" xml:space="preserve">
+    <value>Framework cible</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.Title" xml:space="preserve">
+    <value>Mettre à jour le projet</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription" xml:space="preserve">
+    <value>Cette solution a été créée par une précédente version de SharpDevelop.
+La mettre à jour vous permet d'utiliser de nouveaux languages, ou les évolutions du framework.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError" xml:space="preserve">
     <value>Ambiance actuelle introuvable.
@@ -7521,7 +7552,7 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
     <value>Refaire la dernière action annulée</value>
   </data>
   <data name="XML.MainMenu.EditMenu.SelectAll" xml:space="preserve">
-    <value>Sélectionner &amp;tout</value>
+    <value>Sélectionner tout</value>
   </data>
   <data name="XML.MainMenu.EditMenu.Undo" xml:space="preserve">
     <value>&amp;Défaire</value>

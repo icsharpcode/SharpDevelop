@@ -4211,7 +4211,7 @@ Please configure the NAnt executable's location in the SharpDevelop Options.</va
   <data name="ICSharpCode.PythonBinding.UnknownTypeName" xml:space="preserve">
     <value>Could not find type '{0}'. Are you missing an assembly reference?</value>
   </data>
-  <data name="ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursor" xml:space="preserve">
+  <data name="ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError" xml:space="preserve">
     <value>The selected element is not a class or overridable member, so no derived symbols can be shown.</value>
     <comment>Error message when using 'Search&gt;Find Derived Symbols' when it isn't applicable.</comment>
   </data>

@@ -3471,7 +3471,7 @@ Er kan worden gekozen voor opslag van de instellingen in het .user bestand inpla
     <value>Opnieuw</value>
   </data>
   <data name="Global.SelectAllButtonText" xml:space="preserve">
-    <value>Alles selecteren</value>
+    <value>&amp;Alles selecteren</value>
   </data>
   <data name="Global.SmallIconToolTip" xml:space="preserve">
     <value>Kleine pictogrammen</value>
@@ -4046,6 +4046,9 @@ Configureer a.u.b. in SharpDevelop opties de locatie van NAnt's uitvoerend besta
   </data>
   <data name="ICSharpCode.PythonBinding.UnknownTypeName" xml:space="preserve">
     <value>Kan type {0} niet vinden. Ontbreekt er een assembly referentie?</value>
+  </data>
+  <data name="ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError" xml:space="preserve">
+    <value>Het geselecteerd element is geen klasse of overschrijfbaar lid, waardoor geen afgeleide symbolen kunnen worden weergegeven.</value>
   </data>
   <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
     <value>Stuur regel naar Ruby console</value>
@@ -4785,6 +4788,33 @@ Alleen letters, getallen, spatie, '.' of '_' zijn toegestaan.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Laden van ${Filename}...</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
+    <value>Converteer geselecteerde &amp;projecten naar</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeTargetFrameworkLabel" xml:space="preserve">
+    <value>Wijzig doel framework</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeVersionGroupBoxHeader" xml:space="preserve">
+    <value>Versie van geselecteerde projecten wijzigen</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.CompilerVersion" xml:space="preserve">
+    <value>Compiler versie</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ConvertButton" xml:space="preserve">
+    <value>&amp;Converteren</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange" xml:space="preserve">
+    <value>&lt;niet wijzigen&gt;</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.TargetFramework" xml:space="preserve">
+    <value>Doel framework</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.Title" xml:space="preserve">
+    <value>Project opwaarderen</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription" xml:space="preserve">
+    <value>Deze oplossing werd met een vorige versie van SharpDevelop gemaakt. Door te upgraden kan gebruik gemaakt worden van nieuwe taal of framework mogelijkheden.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError" xml:space="preserve">
     <value>Momentele ambience niet gevonden.
