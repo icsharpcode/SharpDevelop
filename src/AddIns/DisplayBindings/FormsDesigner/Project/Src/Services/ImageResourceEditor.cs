@@ -51,7 +51,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			IComponent component = context.Instance as IComponent;
 			if (component == null || component.Site == null) {
-				LoggingService.Info("Editing of image properties on objects not implementing IComponent and components without Site is not supported by the ImageResourceEditor.");
+				FormsDesignerLoggingService.Info("Editing of image properties on objects not implementing IComponent and components without Site is not supported by the ImageResourceEditor.");
 				if (typeof(Icon).IsAssignableFrom(context.PropertyDescriptor.PropertyType)) {
 					return new IconEditor().EditValue(context, provider, value);
 				} else {

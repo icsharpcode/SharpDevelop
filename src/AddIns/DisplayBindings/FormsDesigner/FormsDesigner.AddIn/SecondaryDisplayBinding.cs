@@ -117,6 +117,8 @@ namespace ICSharpCode.FormsDesigner
 			IDesignerGenerator generator;
 			IDesignerSourceProvider sourceProvider;
 			
+			FormsDesignerLoggingService.Service = new FormsDesignerLoggingServiceImpl();
+			
 			switch (fileExtension) {
 				case ".cs":
 					loader    = new NRefactoryDesignerLoaderProvider(SupportedLanguage.CSharp);

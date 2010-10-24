@@ -26,7 +26,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		void Init(IDesignerHost host)
 		{
-			LoggingService.Debug("Initializing MyToolBoxItem: " + className);
+			FormsDesignerLoggingService.Debug("Initializing MyToolBoxItem: " + className);
 			if (host == null) throw new ArgumentNullException("host");
 			if (sourceFileName != null) {
 				TypeResolutionService typeResolutionService = host.GetService(typeof(ITypeResolutionService)) as TypeResolutionService;

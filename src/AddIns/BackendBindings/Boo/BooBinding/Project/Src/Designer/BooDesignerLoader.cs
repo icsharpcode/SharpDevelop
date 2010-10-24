@@ -19,20 +19,23 @@ namespace Grunwald.BooBinding.Designer
 {
 	public class BooDesignerLoader : AbstractCodeDomDesignerLoader
 	{
-		protected override bool IsReloadNeeded()
+		FormsDesignerViewContent viewContent;
+		
+		public override bool IsReloadNeeded(bool value)
 		{
-			return base.IsReloadNeeded() || this.Generator.ViewContent.DesignerCodeFileContent != lastTextContent;
+			return base.IsReloadNeeded(value) || viewContent.DesignerCodeFileContent != lastTextContent;
 		}
 		
-		public BooDesignerLoader(IDesignerGenerator generator)
+		public BooDesignerLoader(IDesignerGenerator generator, FormsDesignerViewContent viewContent)
 			: base(generator)
 		{
+			this.viewContent = viewContent;
 		}
 		
 		string lastTextContent;
 		Module parsedModule;
 		
-		protected override CodeCompileUnit Parse()
+		public override CodeCompileUnit Parse()
 		{
 			LoggingService.Debug("BooDesignerLoader.Parse()");
 			try {
@@ -48,7 +51,7 @@ namespace Grunwald.BooBinding.Designer
 		
 		CodeCompileUnit ParseForm()
 		{
-			ParseInformation parseInfo = ParserService.ParseFile(this.Generator.ViewContent.DesignerCodeFile.FileName, new StringTextBuffer(this.Generator.ViewContent.DesignerCodeFileContent));
+			ParseInformation parseInfo = ParserService.ParseFile(viewContent.DesignerCodeFile.FileName, new StringTextBuffer(viewContent.DesignerCodeFileContent));
 			Module module = ParseFormAsModule();
 			
 			#if DEBUG
@@ -74,15 +77,15 @@ namespace Grunwald.BooBinding.Designer
 			// The module is cached while loading so that
 			// determining the localization model and generating the CodeDOM
 			// does not require the code to be parsed twice.
-			if (this.parsedModule != null && lastTextContent == this.Generator.ViewContent.DesignerCodeFileContent) {
+			if (this.parsedModule != null && lastTextContent == viewContent.DesignerCodeFileContent) {
 				return this.parsedModule;
 			}
 			
-			lastTextContent = this.Generator.ViewContent.DesignerCodeFileContent;
+			lastTextContent = viewContent.DesignerCodeFileContent;
 			
-			ParseInformation parseInfo = ParserService.ParseFile(this.Generator.ViewContent.DesignerCodeFile.FileName, new StringTextBuffer(this.Generator.ViewContent.DesignerCodeFileContent));
+			ParseInformation parseInfo = ParserService.ParseFile(viewContent.DesignerCodeFile.FileName, new StringTextBuffer(viewContent.DesignerCodeFileContent));
 			// ensure that there are no syntax errors in the file:
-			Module mainModule = Parse(this.Generator.ViewContent.DesignerCodeFile.FileName, lastTextContent);
+			Module mainModule = Parse(viewContent.DesignerCodeFile.FileName, lastTextContent);
 			
 			IClass formClass;
 			bool isFirstClassInFile;
@@ -102,7 +105,7 @@ namespace Grunwald.BooBinding.Designer
 				throw new FormsDesignerLoadException("formClass.BaseClass returned null.");
 			cld.BaseTypes.Add(new SimpleTypeReference(formClass.BaseClass.FullyQualifiedName));
 			
-			System.Diagnostics.Debug.Assert(FileUtility.IsEqualFileName(initMethod.DeclaringType.CompilationUnit.FileName, this.Generator.ViewContent.DesignerCodeFile.FileName));
+			System.Diagnostics.Debug.Assert(FileUtility.IsEqualFileName(initMethod.DeclaringType.CompilationUnit.FileName, viewContent.DesignerCodeFile.FileName));
 			
 			foreach (IField f in formClass.Fields) {
 				Field field = new Field();
@@ -151,7 +154,7 @@ namespace Grunwald.BooBinding.Designer
 			return module;
 		}
 		
-		protected override void Write(CodeCompileUnit unit)
+		public override void Write(CodeCompileUnit unit)
 		{
 			LoggingService.Info("BooDesignerLoader.Write called");
 			try {

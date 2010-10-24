@@ -334,7 +334,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 					}
 				}
 			} catch (Exception e) {
-				LoggingService.Warn("ComponentLibraryLoader.LoadToolComponentLibrary: " + e.Message);
+				FormsDesignerLoggingService.Warn("ComponentLibraryLoader.LoadToolComponentLibrary: " + e.Message);
 				return false;
 			}
 			return true;
@@ -364,7 +364,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 						b.MakeTransparent();
 					}
 				} catch (Exception e) {
-					LoggingService.Warn("ComponentLibraryLoader.GetIcon: " + e.Message);
+					FormsDesignerLoggingService.Warn("ComponentLibraryLoader.GetIcon: " + e.Message);
 				}
 			}
 			

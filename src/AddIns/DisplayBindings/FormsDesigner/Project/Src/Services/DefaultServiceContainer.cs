@@ -69,9 +69,9 @@ namespace ICSharpCode.FormsDesigner.Services
 		{
 			object service = base.GetService(serviceType);
 			if (service == null) {
-				LoggingService.InfoFormatted("request missing service : {0} from Assembly {1} is not available.", serviceType, serviceType.Assembly.FullName);
+				FormsDesignerLoggingService.InfoFormatted("request missing service : {0} from Assembly {1} is not available.", serviceType, serviceType.Assembly.FullName);
 			} else {
-				LoggingService.DebugFormatted("get service : {0} from Assembly {1}.", serviceType, serviceType.Assembly.FullName);
+				FormsDesignerLoggingService.DebugFormatted("get service : {0} from Assembly {1}.", serviceType, serviceType.Assembly.FullName);
 			}
 			return service;
 		}

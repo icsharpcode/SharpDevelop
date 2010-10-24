@@ -33,7 +33,7 @@ namespace ICSharpCode.FormsDesigner.Services
 				baseType = typeof(object);
 			}
 			
-			LoggingService.Debug("TypeDiscoveryService.GetTypes for " + baseType.FullName
+			FormsDesignerLoggingService.Debug("TypeDiscoveryService.GetTypes for " + baseType.FullName
 			                     + "excludeGlobalTypes=" + excludeGlobalTypes.ToString());
 			//seek in all assemblies
 			//allow to work designers like columns editor in datagridview
@@ -50,7 +50,7 @@ namespace ICSharpCode.FormsDesigner.Services
 					// ignore assembly load errors
 				}
 			}
-			LoggingService.Debug("TypeDiscoveryService returns " + types.Count + " types");
+			FormsDesignerLoggingService.Debug("TypeDiscoveryService returns " + types.Count + " types");
 			
 			// TODO - Don't look in all assemblies.
 			// Should use the current project and its referenced assemblies

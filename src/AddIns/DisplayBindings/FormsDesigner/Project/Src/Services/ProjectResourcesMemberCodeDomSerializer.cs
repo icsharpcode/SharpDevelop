@@ -52,7 +52,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			var prs = manager.GetService(typeof(IProjectResourceService)) as IProjectResourceService;
 			if (prs == null) {
-				LoggingService.Warn("ProjectResourceService not found");
+				FormsDesignerLoggingService.Warn("ProjectResourceService not found");
 				return false;
 			}
 			
@@ -60,7 +60,7 @@ namespace ICSharpCode.FormsDesigner.Services
 			if (resourceInfo == null) return false;
 			
 			if (!Object.ReferenceEquals(resourceInfo.OriginalValue, propDesc.GetValue(value))) {
-				LoggingService.Info("Value of property '" + propDesc.Name + "' on component '" + value.ToString() + "' is not equal to stored project resource value. Ignoring this resource.");
+				FormsDesignerLoggingService.Info("Value of property '" + propDesc.Name + "' on component '" + value.ToString() + "' is not equal to stored project resource value. Ignoring this resource.");
 				return false;
 			}
 			
@@ -72,16 +72,16 @@ namespace ICSharpCode.FormsDesigner.Services
 			
 			// Now do the actual serialization.
 			
-			LoggingService.Debug("Serializing project resource: Component '" + component.ToString() + "', Property: '" + propDesc.Name + "', Resource class: '" + resourceClassFullyQualifiedName + "', Resource property: '" + resourcePropertyName + "'");
+			FormsDesignerLoggingService.Debug("Serializing project resource: Component '" + component.ToString() + "', Property: '" + propDesc.Name + "', Resource class: '" + resourceClassFullyQualifiedName + "', Resource property: '" + resourcePropertyName + "'");
 			
 			var targetObjectExpr = base.SerializeToExpression(manager, value);
 			if (targetObjectExpr == null) {
-				LoggingService.Info("Target object could not be serialized: " + value.ToString());
+				FormsDesignerLoggingService.Info("Target object could not be serialized: " + value.ToString());
 				return false;
 			}
 			
 			if (propDesc.SerializationVisibility == DesignerSerializationVisibility.Content) {
-				LoggingService.Debug("-> is a content property, ignoring this.");
+				FormsDesignerLoggingService.Debug("-> is a content property, ignoring this.");
 				return false;
 			}
 			

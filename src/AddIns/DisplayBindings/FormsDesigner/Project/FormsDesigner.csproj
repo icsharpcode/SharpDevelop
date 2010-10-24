@@ -65,11 +65,12 @@
     <Compile Include="Src\DesignerAppDomainManager.cs" />
     <Compile Include="Src\DesignerLoader\SharpDevelopDesignerLoader.cs" />
     <Compile Include="Src\DesignerLoader\IDesignerLoader.cs" />
+    <Compile Include="Src\FormsDesignerLoggingService.cs" />
     <Compile Include="Src\Gui\ComponentLibraryLoader.cs" />
     <Compile Include="Src\Gui\CustomComponentToolBoxItem.cs" />
     <Compile Include="Src\IDesignerGenerator.cs" />
     <Compile Include="Src\IFormsDesigner.cs" />
-    <Compile Include="Src\LoggingService.cs" />
+    <Compile Include="Src\IFormsDesignerLoggingService.cs" />
     <Compile Include="Src\Services\AssemblyInfo.cs" />
     <Compile Include="Src\Services\DefaultMemberRelationshipService.cs" />
     <Compile Include="Src\Services\DefaultServiceContainer.cs" />

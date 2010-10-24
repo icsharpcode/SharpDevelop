@@ -8,20 +8,27 @@
     <RootNamespace>ICSharpCode.FormsDesigner</RootNamespace>
     <AssemblyName>FormsDesigner.AddIn</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <OutputPath>..\..\..\..\..\AddIns\DisplayBindings\FormsDesigner\</OutputPath>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <PlatformTarget>x86</PlatformTarget>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>bin\Debug\</OutputPath>
-    <DebugSymbols>True</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>bin\Release\</OutputPath>
     <DebugSymbols>False</DebugSymbols>
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>
@@ -71,6 +78,7 @@
     <Compile Include="DesignerLoader\DesignerLoaderProvider.cs" />
     <Compile Include="DesignerLoader\NRefactoryDesignerLoader.cs" />
     <Compile Include="DesignerSourceCodeStorage.cs" />
+    <Compile Include="FormsDesignerLoggingServiceImpl.cs" />
     <Compile Include="FormsDesignerViewContent.cs" />
     <Compile Include="FormKeyHandler.cs" />
     <Compile Include="ImageResourceEditorDialog.cs" />

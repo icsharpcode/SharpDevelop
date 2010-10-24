@@ -17,7 +17,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		public override bool SupportsRelationship(MemberRelationship source, MemberRelationship relationship)
 		{
 			#if WFDESIGN_LOG_MEMBERRELATIONSHIPSERVICE
-			LoggingService.Debug("MemberRelationshipService: SupportsRelationship called, source=" + ToString(source) + ", relationship=" + ToString(relationship));
+			FormsDesignerLoggingService.Debug("MemberRelationshipService: SupportsRelationship called, source=" + ToString(source) + ", relationship=" + ToString(relationship));
 			#endif
 			return true;
 		}
@@ -25,9 +25,9 @@ namespace ICSharpCode.FormsDesigner.Services
 		#if WFDESIGN_LOG_MEMBERRELATIONSHIPSERVICE
 		protected override MemberRelationship GetRelationship(MemberRelationship source)
 		{
-			LoggingService.Debug("MemberRelationshipService: GetRelationship called, source=" + ToString(source));
+			FormsDesignerLoggingService.Debug("MemberRelationshipService: GetRelationship called, source=" + ToString(source));
 			var mrs = base.GetRelationship(source);
-			LoggingService.Debug("MemberRelationshipService: -> returning " + ToString(mrs));
+			FormsDesignerLoggingService.Debug("MemberRelationshipService: -> returning " + ToString(mrs));
 			return mrs;
 		}
 		

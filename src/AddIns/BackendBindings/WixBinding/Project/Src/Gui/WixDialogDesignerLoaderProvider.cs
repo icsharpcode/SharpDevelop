@@ -15,7 +15,7 @@ namespace ICSharpCode.WixBinding
 		{
 		}
 		
-		public DesignerLoader CreateLoader(IDesignerGenerator generator)
+		public IDesignerLoader CreateLoader(IDesignerGenerator generator)
 		{
 			return new WixDialogDesignerLoader(designer, generator as IWixDialogDesignerGenerator);
 		}
@@ -31,5 +31,7 @@ namespace ICSharpCode.WixBinding
 				designer = value;
 			}
 		}
+		
+		public FormsDesignerViewContent ViewContent { get; set; }
 	}
 }

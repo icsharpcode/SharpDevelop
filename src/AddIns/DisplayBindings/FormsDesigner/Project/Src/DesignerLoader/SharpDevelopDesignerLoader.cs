@@ -61,10 +61,10 @@ namespace ICSharpCode.FormsDesigner
 			try {
 				IComponentChangeService componentChangeService = (IComponentChangeService)this.GetService(typeof(IComponentChangeService));
 				if (componentChangeService != null) {
-					LoggingService.Debug("Forms designer: Removing ComponentAdded handler for nested container setup");
+					FormsDesignerLoggingService.Debug("Forms designer: Removing ComponentAdded handler for nested container setup");
 					componentChangeService.ComponentAdded -= ComponentContainerSetUp;
 				} else {
-					LoggingService.Info("Forms designer: Could not remove ComponentAdding handler because IComponentChangeService is no longer available");
+					FormsDesignerLoggingService.Info("Forms designer: Could not remove ComponentAdding handler because IComponentChangeService is no longer available");
 				}
 			} finally {
 				base.Dispose();
@@ -98,7 +98,7 @@ namespace ICSharpCode.FormsDesigner
 			if (nestedContainer != null) {
 				MethodInfo getServiceMethod = nestedContainer.GetType().GetMethod("GetService", BindingFlags.Instance | BindingFlags.NonPublic, null, new [] {typeof(Type)}, null);
 				if (getServiceMethod != null) {
-					LoggingService.Debug("Forms designer: Initializing nested service container of " + e.Component.ToString() + " using Reflection");
+					FormsDesignerLoggingService.Debug("Forms designer: Initializing nested service container of " + e.Component.ToString() + " using Reflection");
 					getServiceMethod.Invoke(nestedContainer, BindingFlags.InvokeMethod | BindingFlags.Instance | BindingFlags.NonPublic, null, new [] {typeof(IServiceContainer)}, null);
 				}
 			}
@@ -116,10 +116,10 @@ namespace ICSharpCode.FormsDesigner
 			
 			IComponentChangeService componentChangeService = (IComponentChangeService)this.GetService(typeof(IComponentChangeService));
 			if (componentChangeService != null) {
-				LoggingService.Debug("Forms designer: Adding ComponentAdded handler for nested container setup");
+				FormsDesignerLoggingService.Debug("Forms designer: Adding ComponentAdded handler for nested container setup");
 				componentChangeService.ComponentAdded += ComponentContainerSetUp;
 			} else {
-				LoggingService.Warn("Forms designer: Cannot add ComponentAdded handler for nested container setup because IComponentChangeService is unavailable");
+				FormsDesignerLoggingService.Warn("Forms designer: Cannot add ComponentAdded handler for nested container setup because IComponentChangeService is unavailable");
 			}
 		}
 		
@@ -132,13 +132,13 @@ namespace ICSharpCode.FormsDesigner
 			try {
 				base.OnEndLoad(successful, errors);
 			} catch(ExceptionCollection e) {
-				LoggingService.Error("DesignerLoader.OnEndLoad error " + e.Message, e);
+				FormsDesignerLoggingService.Error("DesignerLoader.OnEndLoad error " + e.Message, e);
 				foreach(Exception ine in e.Exceptions) {
-					LoggingService.Error("DesignerLoader.OnEndLoad error " + ine.Message, ine);
+					FormsDesignerLoggingService.Error("DesignerLoader.OnEndLoad error " + ine.Message, ine);
 				}
 				throw;
 			} catch(Exception e) {
-				LoggingService.Error("DesignerLoader.OnEndLoad error " + e.Message, e);
+				FormsDesignerLoggingService.Error("DesignerLoader.OnEndLoad error " + e.Message, e);
 				throw;
 			}
 		}

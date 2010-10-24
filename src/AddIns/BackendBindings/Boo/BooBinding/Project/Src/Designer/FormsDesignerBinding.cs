@@ -60,9 +60,11 @@ namespace Grunwald.BooBinding.Designer
 		{
 		}
 		
-		public System.ComponentModel.Design.Serialization.DesignerLoader CreateLoader(IDesignerGenerator generator)
+		public IDesignerLoader CreateLoader(IDesignerGenerator generator)
 		{
-			return new BooDesignerLoader(generator);
+			return new BooDesignerLoader(generator, ViewContent);
 		}
+		
+		public FormsDesignerViewContent ViewContent { get; set; }
 	}
 }

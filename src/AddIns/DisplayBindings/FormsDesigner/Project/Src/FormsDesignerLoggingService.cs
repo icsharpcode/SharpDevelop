@@ -5,41 +5,43 @@ using System;
 
 namespace ICSharpCode.FormsDesigner
 {
-	static class LoggingService
+	public class FormsDesignerLoggingService
 	{
+		public static IFormsDesignerLoggingService Service;
+		
 		public static void Debug(string message)
 		{
-			throw new NotImplementedException();
+			Service.Debug(message);
 		}
 		
 		public static void Info(string message)
 		{
-			throw new NotImplementedException();
+			Service.Info(message);
 		}
 		
 		public static void Warn(string message)
 		{
-			throw new NotImplementedException();
+			Service.Warn(message);
 		}
 		
 		public static void Error(Exception error)
 		{
-			throw new NotImplementedException();
+			Service.Error(error);
 		}
 		
 		public static void Error(string message, Exception error)
 		{
-			throw new NotImplementedException();
+			Service.Error(message, error);
 		}
 		
 		public static void DebugFormatted(string format, params object[] args)
 		{
-			throw new NotImplementedException();
+			Service.DebugFormatted(format, args);
 		}
 		
 		public static void WarnFormatted(string format, params object[] args)
 		{
-			throw new NotImplementedException();
+			Service.WarnFormatted(format, args);
 		}
 	}
 }
