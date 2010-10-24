@@ -524,7 +524,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public static void RunFindReferences(IMember member)
 		{
 			string memberName = member.DeclaringType.Name + "." + member.Name;
-			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}"))
+			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}", true))
 			{
 				FindReferencesAndRenameHelper.ShowAsSearchResults(StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
 				                                                                     new string[,] {{ "Name", memberName }}),
@@ -534,7 +534,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static void RunFindReferences(IClass c)
 		{
-			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}"))
+			using (AsynchronousWaitDialog monitor = AsynchronousWaitDialog.ShowWaitDialog("${res:SharpDevelop.Refactoring.FindReferences}", true))
 			{
 				FindReferencesAndRenameHelper.ShowAsSearchResults(
 					StringParser.Parse("${res:SharpDevelop.Refactoring.ReferencesTo}",
