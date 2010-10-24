@@ -23,6 +23,23 @@ namespace ICSharpCode.NRefactory.Tests.Ast
 		}
 		
 		[Test]
+		public void CSharpMultipleEventDeclarationTest()
+		{
+			TypeDeclaration t = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("class C { public event EventHandler A, B; }");
+			Assert.AreEqual(2, t.Children.Count);
+			
+			EventDeclaration ed = (EventDeclaration)t.Children[0];
+			Assert.AreEqual(Modifiers.Public, ed.Modifier);
+			Assert.AreEqual("EventHandler", ed.TypeReference.Type);
+			Assert.AreEqual("A", ed.Name);
+			
+			ed = (EventDeclaration)t.Children[1];
+			Assert.AreEqual(Modifiers.Public, ed.Modifier);
+			Assert.AreEqual("EventHandler", ed.TypeReference.Type);
+			Assert.AreEqual("B", ed.Name);
+		}
+		
+		[Test]
 		public void CSharpEventImplementingInterfaceDeclarationTest()
 		{
 			EventDeclaration ed = ParseUtilCSharp.ParseTypeMember<EventDeclaration>("event EventHandler MyInterface.MyEvent;");

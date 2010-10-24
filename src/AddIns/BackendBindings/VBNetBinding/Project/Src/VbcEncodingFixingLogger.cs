@@ -31,6 +31,8 @@ namespace ICSharpCode.VBNetBinding
 			
 			static string FixEncoding(string text)
 			{
+				if (text == null)
+					return text;
 				return Encoding.Default.GetString(ICSharpCode.SharpDevelop.Util.ProcessRunner.OemEncoding.GetBytes(text));
 			}
 			
