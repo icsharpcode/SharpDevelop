@@ -72,7 +72,11 @@ namespace ICSharpCode.FormsDesigner.Services
 
 		protected override bool ShowCode(IComponent component, EventDescriptor edesc, string methodName)
 		{
-			if (formDesigner != null) {
+			// There were reports of an ArgumentNullException caused by edesc==null.
+			// Looking at the .NET code calling this method, this can happen when there are two calls to ShowCode() before the Application.Idle
+			// event gets raised. In that case, ShowCode() already was called for the second set of arguments, and we can safely ignore
+			// the call with edesc==null.
+			if (formDesigner != null && edesc != null) {
 				formDesigner.ShowSourceCode(component, edesc, methodName);
 				return true;
 			}
