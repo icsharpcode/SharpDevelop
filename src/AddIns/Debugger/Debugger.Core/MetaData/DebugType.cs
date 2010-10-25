@@ -1299,6 +1299,7 @@ namespace Debugger.MetaData
 				foreach(PropertyProps prop in module.MetaData.EnumPropertyProps((uint)this.MetadataToken)) {
 					DebugPropertyInfo propInfo = new DebugPropertyInfo(
 						this,
+						prop.Name,
 						prop.GetterMethod != 0x06000000 ? GetMethod(prop.GetterMethod) : null,
 						prop.SetterMethod != 0x06000000 ? GetMethod(prop.SetterMethod) : null
 					);

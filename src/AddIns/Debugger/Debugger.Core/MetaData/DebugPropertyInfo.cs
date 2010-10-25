@@ -12,14 +12,16 @@ namespace Debugger.MetaData
 	public class DebugPropertyInfo : System.Reflection.PropertyInfo, IDebugMemberInfo, IOverloadable
 	{
 		DebugType declaringType;
+		string name;
 		MethodInfo getMethod;
 		MethodInfo setMethod;
 		
-		internal DebugPropertyInfo(DebugType declaringType, MethodInfo getMethod, MethodInfo setMethod)
+		internal DebugPropertyInfo(DebugType declaringType, string name, MethodInfo getMethod, MethodInfo setMethod)
 		{
 			if (getMethod == null && setMethod == null) throw new ArgumentNullException("Both getter and setter can not be null.");
 			
 			this.declaringType = declaringType;
+			this.name      = name;
 			this.getMethod = getMethod;
 			this.setMethod = setMethod;
 		}
@@ -56,9 +58,7 @@ namespace Debugger.MetaData
 		
 		/// <inheritdoc/>
 		public override string Name {
-			get {
-				return (getMethod ?? setMethod).Name.Remove(0,4);
-			}
+			get { return name; }
 		}
 		
 		/// <summary> Name including the declaring type, return type and parameters </summary>

@@ -10,6 +10,7 @@ namespace Debugger
 	{
 		public DebuggerException() {}
 		public DebuggerException(string message): base(message) {}
+		public DebuggerException(string message, params object[] args): base(string.Format(message, args)) {}
 		public DebuggerException(string message, System.Exception inner): base(message, inner) {}
 	}
 	
