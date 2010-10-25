@@ -21,11 +21,7 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage
 			p.ReportName = "SharpTestReport.srd";
 			p.ReportFileName =@"c:\testreports\SharpTestReport.srd";
 			p.ExecutionTime = new DateTime(2009,12,24,23,59,59);
-		
 			return p;
 		}
-		
-		
-		
 	}
 }

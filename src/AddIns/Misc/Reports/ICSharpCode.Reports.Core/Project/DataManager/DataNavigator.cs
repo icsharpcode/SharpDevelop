@@ -43,9 +43,10 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		public bool HasMoreData {
+		public bool HasMoreData
+		{
 			get {
-				if (this.CurrentRow < this.Count -1 ){
+				if (this.CurrentRow < store.IndexList.Count -1 ){
 					return true;
 				} else {
 					return false;
@@ -63,6 +64,7 @@ namespace ICSharpCode.Reports.Core
 		
 		
 		public bool IsSorted {get {return this.store.IsSorted;}}
+		
 		
 		public bool IsGrouped {get {return this.store.IsGrouped;}}
 	
@@ -106,33 +108,6 @@ namespace ICSharpCode.Reports.Core
 			}
 		}
 		
-	
-		/*
-		public int ChildListCount
-		{
-			get {
-				return BuildChildList().Count;
-			}
-		}
-		*/
-		
-		
-		// at the moment only tables are working
-		/*
-		public void FillChild (ReportItemCollection collection)
-		{
-			TableStrategy tableStrategy = store as TableStrategy;
-			foreach (var item in collection) {
-				IDataItem dataItem = item as IDataItem;
-				if (dataItem != null) {
-					CurrentItemsCollection currentItemsCollection = tableStrategy.FillDataRow(ce.Current.ListIndex);
-					CurrentItem s = currentItemsCollection.FirstOrDefault(x => x.ColumnName == dataItem.ColumnName);
-					dataItem.DBValue = s.Value.ToString();
-				}
-				
-			}
-		}
-		*/
 		
 		private IndexList BuildChildList()
 		{
@@ -147,6 +122,7 @@ namespace ICSharpCode.Reports.Core
 		
 		#endregion
 	
+		
 		#region Try make recursive with ChildNavigavtor
 		
 		public IDataNavigator GetChildNavigator()

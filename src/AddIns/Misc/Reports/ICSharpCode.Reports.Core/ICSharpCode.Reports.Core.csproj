@@ -138,12 +138,12 @@
     <Compile Include="Project\Exceptions\UnknownItemException.cs" />
     <Compile Include="Project\Exceptions\WrongColumnException.cs" />
     <Compile Include="Project\Exceptions\WrongSectionException.cs" />
+    <Compile Include="Project\Exporter\Converters\GroupedTableConverter.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService\FieldReference.cs" />
     <Compile Include="Project\Exporter\BasePager.cs" />
     <Compile Include="Project\Exporter\Converters\BaseConverter.cs" />
     <Compile Include="Project\Exporter\Converters\ConverterFactory.cs" />
     <Compile Include="Project\Exporter\Converters\GroupedRowConverter.cs" />
-    <Compile Include="Project\Exporter\Converters\TableConverter.cs" />
     <Compile Include="Project\Exporter\Decorators\IBaseStyleDecorator.cs" />
     <Compile Include="Project\Exporter\Decorators\ILineDecorator.cs" />
     <Compile Include="Project\Exporter\Decorators\Linedecorator.cs" />
@@ -272,7 +272,9 @@
     <Compile Include="Project\Printing\Graphics\RectangleShape.cs" />
     <Compile Include="Project\Printing\AbstractRenderer.cs" />
     <Compile Include="Project\Printing\RenderDataReport.cs" />
+    <Compile Include="Project\Printing\RendererFactory.cs" />
     <Compile Include="Project\Printing\RenderFormSheetReport.cs" />
+    <Compile Include="Project\Printing\RenderTable.cs" />
     <Compile Include="Project\Printing\ReportDocument.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -16,7 +16,8 @@ using ICSharpCode.Reports.Core.Interfaces;
 
 namespace ICSharpCode.Reports.Core
 {
-	public class BaseSection : BaseReportItem {
+	public class BaseSection : BaseReportItem,ISimpleContainer
+	{
 		
 		private bool pageBreakAfter;
 		private ReportItemCollection items;

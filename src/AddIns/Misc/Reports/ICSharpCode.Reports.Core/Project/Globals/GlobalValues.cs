@@ -95,12 +95,7 @@ namespace ICSharpCode.Reports.Core {
 		/// <summary>
 		/// The value on witch the Control is drawing bigger than the text inside
 		/// </summary>
-		/*
-		public static int EnlargeControl
-		{
-			get {return enlargeControl;}
-		}
-		*/
+		
 		
 		public static Margins ControlMargins 
 		{

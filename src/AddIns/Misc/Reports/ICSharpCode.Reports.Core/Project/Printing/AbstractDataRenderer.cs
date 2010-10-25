@@ -86,9 +86,7 @@ namespace ICSharpCode.Reports.Core
 						Rectangle r =  StandardPrinter.RenderContainer(row,Evaluator,currentPosition,rpea);
 						
 						
-						currentPosition =PrintHelper.ConvertRectangleToCurentPosition (r);
-						
-//						currentPosition = new Point(parent.Location.X + row.Location.X,currentPosition.Y);
+						currentPosition = PrintHelper.ConvertRectangleToCurentPosition (r);
 					
 						tableContainer.Location = saveLocation;
 						Console.WriteLine("----");

@@ -2,7 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Linq;
+
 using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Events;
@@ -53,7 +56,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		
 		#region PageBreak
 		
 		protected void BuildNewPage(ExporterCollection myList,BaseSection section)
@@ -68,6 +70,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			EventHelper.Raise<NewPageEventArgs>(PageFull,this,new NewPageEventArgs(items));
 		}
+		
 		
 		#endregion
 		
@@ -105,6 +108,41 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 	
+		#region Grouping
+		
+		protected Point ConvertGroupChilds(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer, int defaultLeftPos, Point currentPosition)
+		{
+			PrepareContainerForConverting(section,simpleContainer);
+			Point curPos  = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+			AfterConverting (section,mylist);
+			return curPos;
+		}
+		
+		
+		protected  bool PageBreakAfterGroupChange(ISimpleContainer container)
+		{
+			var groupedRows  = BaseConverter.FindGroups(container);
+			if (groupedRows.Count > 0) {
+				var groupedRow = groupedRows[0];
+				return groupedRow.PageBreakOnGroupChange;
+			}
+			return false;
+		}
+		
+		
+		protected static Collection<BaseGroupedRow> FindGroups (ISimpleContainer container)
+		{
+			return new Collection<BaseGroupedRow>(container.Items.OfType<BaseGroupedRow>().ToList());
+		}
+		
+		
+		protected virtual Point ForcePageBreak(ExporterCollection exporterCollection, BaseSection section)
+		{
+			BuildNewPage(exporterCollection,section);
+			return Point.Empty;
+		}
+		
+		#endregion
 		
 		#region IBaseConverter
 		
@@ -114,15 +152,18 @@ namespace ICSharpCode.Reports.Core.Exporter
 			return new ExporterCollection();;
 		}
 		
+		public Point CurrentPosition {get;set;}
 		
+		#endregion
 		public Rectangle ParentRectangle {
 			get { return parentRectangle; }
 		}
 		
 		
-		public ExporterPage SinglePage {
+		public ISinglePage SinglePage {
 			get { return singlePage; }
 		}
+		
 		
 		public SectionBounds SectionBounds {
 			get { return sectionBounds; }
@@ -138,9 +179,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		public Graphics Graphics {get;set;}
-		#endregion
 		
-		protected void  SaveSize(Size size)
+		
+		
+		protected void  SaveSectionSize(Size size)
 		{
 			this.saveSize = size;
 		}
@@ -158,13 +200,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		protected void FillRow (ISimpleContainer row)
-		{
-			DataNavigator.Fill(row.Items);
-		}
-		
-		
-		
 		protected	void PrepareContainerForConverting(BaseSection section,ISimpleContainer simpleContainer)
 		{
 			if (section != null) {
@@ -174,17 +209,39 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		private void LayoutRow (ISimpleContainer row)
+		protected void AfterConverting (BaseSection section,ExporterCollection convertedList)
 		{
-			PrintHelper.SetLayoutForRow(Graphics,Layouter,row);
+			StandardPrinter.EvaluateRow(Evaluator,convertedList);
 		}
 		
-	
+		
+		protected  Point ConvertStandardRow(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer, int defaultLeftPos, Point currentPosition)
+		{
+			FillRow(simpleContainer);
+			PrepareContainerForConverting(section,simpleContainer);
+			Point curPos = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+			AfterConverting (section,mylist);
+			return curPos;
+		}
+		
+		
 		protected static Point BaseConvert(ExporterCollection myList,ISimpleContainer container,int leftPos,Point curPos)
 		{
 			ExporterCollection ml = BaseConverter.ConvertItems (container, curPos);		
 			myList.AddRange(ml);
 			return new Point (leftPos,curPos.Y + container.Size.Height + (3 *GlobalValues.GapBetweenContainer));
+		}
+		
+		
+		private void FillRow (ISimpleContainer row)
+		{
+			DataNavigator.Fill(row.Items);
+		}
+		
+		
+		private void LayoutRow (ISimpleContainer row)
+		{
+			PrintHelper.SetLayoutForRow(Graphics,Layouter,row);
 		}
 	}
 }

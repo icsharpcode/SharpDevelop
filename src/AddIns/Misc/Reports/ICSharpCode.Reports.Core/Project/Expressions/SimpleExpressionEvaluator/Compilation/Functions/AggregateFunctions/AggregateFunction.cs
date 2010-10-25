@@ -126,7 +126,7 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.AggregateFunctions
         			}
         		} else {
         			string str = String.Format ("<{0}> not found in AggregateFunction",data.ToString());
-        			throw new FieldNotFoundException(str);
+//        			throw new FieldNotFoundException(str);
         		}
         	}
         	return list;

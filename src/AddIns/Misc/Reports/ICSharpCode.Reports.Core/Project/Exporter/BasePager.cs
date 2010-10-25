@@ -15,11 +15,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 	/// </summary>
 	public class BasePager:IReportCreator
 	{
-		private ExporterPage singlePage;
 		private PagesCollection pages;
-		private IReportModel reportModel;
 		private Graphics graphics;
-		private bool pageFull;
 		private readonly object pageLock = new object();
 		private ILayouter layouter;
 		
@@ -36,9 +33,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (layouter == null) {
 				throw new ArgumentNullException ("layouter");
 			}
-			this.reportModel = reportModel;
+			this.ReportModel = reportModel;
 			this.layouter = layouter;
-			this.graphics = CreateGraphicObject.FromSize(this.reportModel.ReportSettings.PageSize);
+			this.graphics = CreateGraphicObject.FromSize(this.ReportModel.ReportSettings.PageSize);
 		}
 		
 		#endregion
@@ -60,13 +57,13 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected ExporterPage InitNewPage ()
 		{
 			bool firstPage;
-			this.ReportModel.ReportSettings.LeftMargin = this.reportModel.ReportSettings.LeftMargin;
+			this.ReportModel.ReportSettings.LeftMargin = this.ReportModel.ReportSettings.LeftMargin;
 			if (this.Pages.Count == 0) {
 				firstPage = true;
 			} else {
 				firstPage = false;
 			}
-			SectionBounds sectionBounds  = new SectionBounds (this.reportModel.ReportSettings,firstPage);
+			SectionBounds sectionBounds  = new SectionBounds (this.ReportModel.ReportSettings,firstPage);
 			ExporterPage sp = ExporterPage.CreateInstance(sectionBounds,this.pages.Count + 1);
 			return sp;
 		}
@@ -74,10 +71,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected virtual void BuildNewPage ()
 		{
-			this.singlePage = this.InitNewPage();
-			PrintHelper.InitPage(this.singlePage,this.reportModel.ReportSettings);			
-			this.singlePage.CalculatePageBounds(this.ReportModel);
-			this.pageFull = false;
+			this.SinglePage = this.InitNewPage();
+			PrintHelper.InitPage(this.SinglePage,this.ReportModel.ReportSettings);			
+			this.SinglePage.CalculatePageBounds(this.ReportModel);
 		}
 		
 		#endregion
@@ -93,10 +89,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			PrintHelper.AdjustParent((BaseSection)section,section.Items);
 			
 			ExporterCollection list = new ExporterCollection();
-			
-//			if (section.DrawBorder == true) {
-//				section.Items.Insert(0,CreateDebugItem(section));
-//			}
 			
 			if (section.Items.Count > 0) {
 				
@@ -123,7 +115,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 						Rectangle sectionRectangle = new Rectangle(0,0,section.Size.Width,section.Size.Height);
 						
 						if (!sectionRectangle.Contains(desiredRectangle)) {
-							section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height);
+							section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
 						}
 						
 						list = StandardPrinter.ConvertPlainCollection(section.Items,offset);
@@ -183,32 +175,27 @@ namespace ICSharpCode.Reports.Core.Exporter
 		#endregion
 		
 		
-		protected void FinishRendering (IDataNavigator navigator)
+		#region After Converting, final step's
+		
+		protected  void FinishRendering (IDataNavigator dataNavigator)
 		{
 			if (this.Pages.Count == 0) {
 				return;
 			}
 			
-			// set values known only end of reportcreation
-			foreach (ExporterPage p in this.pages)
-			{
-				p.TotalPages = this.Pages.Count;
-			}
-
-			this.singlePage.IDataNavigator = navigator;
-			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade(this.singlePage);
+			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade(this.SinglePage);
 			
 			foreach (ExporterPage p in this.pages)
 			{
-				this.singlePage = p;
-//				evaluatorFacade.SinglePage = this.singlePage;
-//				evaluatorFacade.SinglePage.IDataNavigator = navigator;
+				p.TotalPages = this.Pages.Count;
+				p.IDataNavigator = dataNavigator;
+				evaluatorFacade.SinglePage = p;
 				EvaluateRecursive(evaluatorFacade,p.Items);
 			}
 		}
 		 
 		
-		private void EvaluateRecursive (IExpressionEvaluatorFacade evaluatorFassade,ExporterCollection items)
+		private static void EvaluateRecursive (IExpressionEvaluatorFacade evaluatorFassade,ExporterCollection items)
 		{
 			
 			foreach (BaseExportColumn be in items) {
@@ -222,6 +209,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 				ExportText et = be as ExportText;
 				if (et != null) {
 					try{
+						if (et.Text.StartsWith("=Globals!Page")) {
+							Console.WriteLine ("wxpression : {0}",evaluatorFassade.Evaluate(et.Text));
+						}
+						
 						et.Text = evaluatorFassade.Evaluate(et.Text);
 					}
 					catch (UnknownFunctionException ufe)
@@ -232,10 +223,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 					{
 						
 					}	
-					
 				}
 			}
 		}
+		
+		#endregion
 		
 		
 		#region Event's
@@ -272,19 +264,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 			get { return layouter; }
 		}
 		
-		public IReportModel ReportModel
-		{
-			get { return reportModel; }
-			set { reportModel = value; }
-		}
-		
-		
-		protected ExporterPage SinglePage
-		{
-			get { return singlePage; }
-			set { singlePage = value; }
-		}
-		
+		public IReportModel ReportModel {get;set;}
+
+		protected ExporterPage SinglePage {get;set;}
 		
 		public PagesCollection Pages
 		{
@@ -301,16 +283,16 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected SectionBounds SectionBounds
 		{
-			get { return singlePage.SectionBounds; }
+			get { return SinglePage.SectionBounds; }
 		}
 		
 		
-		protected bool PageFull
-		{
-			get { return pageFull; }
-			set { pageFull = value; }
-		}
-		
+//		protected bool PageFull
+//		{
+//			get { return pageFull; }
+//			set { pageFull = value; }
+//		}
+//		
 		
 		#endregion
 	}

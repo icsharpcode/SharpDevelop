@@ -165,10 +165,7 @@ namespace ICSharpCode.Reports.Addin
 		void DesignerLoading(object sender, EventArgs e)
 		{
 			LoggingService.Debug("Forms designer: DesignerLoader loading...");
-//			this.reloadPending = false;
 			this.unloading = false;
-//			this.UserContent = this.pleaseWaitLabel;
-			Application.DoEvents();
 		}
 		
 		
@@ -176,12 +173,10 @@ namespace ICSharpCode.Reports.Addin
 		{
 			// This method is called when the designer has loaded.
 			LoggingService.Debug("Report designer: DesignerLoader loaded, HasSucceeded=" + e.HasSucceeded.ToString());
-//			this.reloadPending = false;
 			this.unloading = false;
 			
 			if (e.HasSucceeded) {
 
-//				CreatePanel();
 				SetupDesignSurface();
 				this.IsFormsDesignerVisible = true;
 				generator.MergeFormChanges(null);
@@ -250,6 +245,7 @@ namespace ICSharpCode.Reports.Addin
 		}
 		#endregion
 
+		
 		private void MergeFormChanges()
 		{
 			System.Diagnostics.Trace.WriteLine("View:MergeFormChanges()");
@@ -303,7 +299,6 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		#endregion
-		
 		
 		
 		#region SelectionService
@@ -383,67 +378,6 @@ namespace ICSharpCode.Reports.Addin
 		
 		
 		
-		#region unload Designer
-		/*
-		void UnloadDesigner()
-		{
-			LoggingService.Debug("FormsDesigner unloading, setting ActiveDesignSurface to null");
-			designSurfaceManager.ActiveDesignSurface = null;
-			
-			bool savedIsDirty = (this.DesignerCodeFile == null) ? false : this.DesignerCodeFile.IsDirty;
-			this.UserContent = this.pleaseWaitLabel;
-			Application.DoEvents();
-			if (this.DesignerCodeFile != null) {
-				this.DesignerCodeFile.IsDirty = savedIsDirty;
-			}
-			
-			// We cannot dispose the design surface now because of SD2-451:
-			// When the switch to the source view was triggered by a double-click on an event
-			// in the PropertyPad, "InvalidOperationException: The container cannot be disposed
-			// at design time" is thrown.
-			// This is solved by calling dispose after the double-click event has been processed.
-			if (designSurface != null) {
-				designSurface.Loading -= this.DesignerLoading;
-				designSurface.Loaded -= this.DesignerLoaded;
-				designSurface.Flushed -= this.DesignerFlushed;
-				designSurface.Unloading -= this.DesingerUnloading;
-				
-				IComponentChangeService componentChangeService = designSurface.GetService(typeof(IComponentChangeService)) as IComponentChangeService;
-				if (componentChangeService != null) {
-					componentChangeService.ComponentChanged -= ComponentChanged;
-					componentChangeService.ComponentAdded   -= ComponentListChanged;
-					componentChangeService.ComponentRemoved -= ComponentListChanged;
-					componentChangeService.ComponentRename  -= ComponentListChanged;
-				}
-				if (this.Host != null) {
-					this.Host.TransactionClosed -= TransactionClose;
-				}
-				
-				ISelectionService selectionService = designSurface.GetService(typeof(ISelectionService)) as ISelectionService;
-				if (selectionService != null) {
-					selectionService.SelectionChanged -= SelectionChangedHandler;
-				}
-				
-				if (disposing) {
-					designSurface.Dispose();
-				} else {
-					WorkbenchSingleton.SafeThreadAsyncCall(designSurface.Dispose);
-				}
-				designSurface = null;
-			}
-			
-			this.typeResolutionService = null;
-			this.loader = null;
-			
-			foreach (KeyValuePair<Type, TypeDescriptionProvider> entry in this.addedTypeDescriptionProviders) {
-				TypeDescriptor.RemoveProvider(entry.Value, entry.Key);
-			}
-			this.addedTypeDescriptionProviders.Clear();
-		}
-		 */
-		#endregion
-		
-		
 		#region HasPropertyContainer implementation
 		
 		private void UpdatePropertyPad()
@@ -481,6 +415,7 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		#endregion
+		
 		
 		#region IUnDohandler
 		

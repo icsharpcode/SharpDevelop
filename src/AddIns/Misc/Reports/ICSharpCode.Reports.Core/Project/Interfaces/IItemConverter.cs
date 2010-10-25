@@ -6,22 +6,35 @@ using System.Drawing;
 using ICSharpCode.Reports.Core.BaseClasses;
 using ICSharpCode.Reports.Core.Events;
 using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core.Interfaces
 {
 	/// <summary>
 	/// Description of IItemConverter.
 	/// </summary>
-	public interface IBaseConverter
-	{		
-		ExporterCollection Convert (BaseReportItem parent,BaseReportItem item);	
+	/// 
+	public interface IRenderer
+	{
 		event EventHandler <NewPageEventArgs> PageFull;
 		event EventHandler<SectionRenderEventArgs> SectionRendering;
 		SectionBounds SectionBounds {get;}
 		IDataNavigator DataNavigator {get;}
 		Rectangle ParentRectangle {get;}
-		ExporterPage SinglePage {get;}
+		ISinglePage SinglePage {get;}
 		ILayouter Layouter {get;}
 		Graphics Graphics {get;set;}
+	}
+		
+	public interface IBaseRenderer
+	{
+		void Render(ISimpleContainer container,ReportPageEventArgs rpea,IExpressionEvaluatorFacade evaluator);
+	}
+		
+	
+	public interface IBaseConverter:IRenderer
+	{		
+		ExporterCollection Convert (BaseReportItem parent,BaseReportItem item);
+		Point CurrentPosition {get;set;}
 	}
 }

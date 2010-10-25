@@ -99,10 +99,10 @@ namespace ICSharpCode.Reports.Core
 		public override void Group ()
 		{
 			base.Group();
-			IndexList gl = new IndexList("group");
-			gl = this.BuildSortIndex (ReportSettings.GroupColumnsCollection);
-			ShowIndexList(gl);
-			BuildGroup(gl);
+			IndexList sortedIndexList = new IndexList("group");
+			sortedIndexList = this.BuildSortIndex (ReportSettings.GroupColumnsCollection);
+			ShowIndexList(sortedIndexList);
+			BuildGroup(sortedIndexList);
 			
 		}
 		

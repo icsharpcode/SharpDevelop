@@ -265,8 +265,8 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 						textItem.Text = evaluator.Evaluate(textItem.Text);
 					}
 				}
-			} catch (Exception e) {
-				throw e;
+			} catch (Exception) {
+				throw ;
 			}
 		}
 		

@@ -12,7 +12,8 @@ namespace ICSharpCode.Reports.Core
 	{
 		public BaseGroupedRow():base()
 		{
-			Console.WriteLine("Constr baseGroupedrow");
 		}
+		
+		public bool PageBreakOnGroupChange {get;set;}
 	}
 }

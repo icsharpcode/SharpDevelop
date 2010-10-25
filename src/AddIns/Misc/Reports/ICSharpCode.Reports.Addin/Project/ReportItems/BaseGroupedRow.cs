@@ -22,7 +22,8 @@ namespace ICSharpCode.Reports.Addin
 			TypeDescriptor.AddProvider(new GroupedRowTypeProvider(), typeof(BaseGroupedRow));
 		}
 		
-		
+		[Category("Behavior")]
+		public bool PageBreakOnGroupChange {get;set;}
 	}
 	
 	
@@ -78,15 +79,16 @@ namespace ICSharpCode.Reports.Addin
 			
 			prop = props.Find("Controls",true);
 			allProperties.Add(prop);
-			/*
-			prop = props.Find("Padding",true);
-			allProperties.Add(prop);
-			*/
+		
 			prop = props.Find("AlternateBackColor",true);
 			allProperties.Add(prop);
 			
 			prop = props.Find("ChangeBackColorEveryNRow",true);
 			allProperties.Add(prop);
+			
+			prop = props.Find("PageBreakOnGroupChange",true);
+			allProperties.Add(prop);
+			
 			
 			return new PropertyDescriptorCollection(allProperties.ToArray());
 		}

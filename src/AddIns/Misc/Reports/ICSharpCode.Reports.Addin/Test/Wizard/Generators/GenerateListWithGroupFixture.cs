@@ -99,7 +99,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		{
 			// TODO: Add tear down code.
 		}
-		
+		/*
 		private static ReportModel CreateModel (string reportName)
 		{
 			
@@ -120,6 +120,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 			
 			customizer.Set("Generator", structure);
 			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
+			
 			IReportGenerator generator = new GeneratePushDataReport(m,customizer);
 		
 			generator.GenerateReport();
@@ -136,7 +137,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 			return model;
 		}
 		
-		
+		*/
 		private static ReportStructure CreateReportStructure (string reportName)
 		{
 			ReportStructure structure = new ReportStructure();

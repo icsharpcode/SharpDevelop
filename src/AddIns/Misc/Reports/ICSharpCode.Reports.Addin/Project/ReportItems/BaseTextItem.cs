@@ -85,10 +85,8 @@ namespace ICSharpCode.Reports.Addin
 		[Browsable(true),
 		 Category("Appearance"),
 		 Description("String to format Number's Date's etc")]
-		
 		[DefaultValue("entry1")]
-
-[TypeConverter(typeof(FormatStringConverter))]
+		[TypeConverter(typeof(FormatStringConverter))]
 
 		public string FormatString {
 			get { return formatString; }
