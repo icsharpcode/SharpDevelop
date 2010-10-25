@@ -190,7 +190,12 @@ namespace Debugger
 		public void UnloadSymbols()
 		{
 			if (symReader != null) {
-				((ISymUnmanagedDispose)symReader).Destroy();
+				// The interface is not always supported, I did not manage to reproduce it, but the
+				// last callbacks in the user's log were UnloadClass and UnloadModule so I guess
+				// it has something to do with dynamic modules.
+				if (symReader is ISymUnmanagedDispose) {
+					((ISymUnmanagedDispose)symReader).Destroy();
+				}
 				symReader = null;
 			}
 		}
