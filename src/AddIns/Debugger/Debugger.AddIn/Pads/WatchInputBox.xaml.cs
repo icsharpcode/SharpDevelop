@@ -28,9 +28,7 @@ namespace Debugger.AddIn.Pads
 			// UI
 			text = StringParser.Parse(text);
 			this.Title = StringParser.Parse(caption);
-			AcceptButton.Content = StringParser.Parse("${res:Global.OKButtonText}");
-			CancelButton.Content = StringParser.Parse("${res:Global.CancelButtonText}");
-			this.ConsolePanel.Children.Add(console);
+			this.ConsolePanel.Content = console;
 			
 			// FIXME: for testing only
 			var language = LanguageProperties.CSharp;

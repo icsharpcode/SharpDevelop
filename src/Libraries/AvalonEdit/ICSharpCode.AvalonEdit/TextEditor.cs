@@ -355,6 +355,10 @@ namespace ICSharpCode.AvalonEdit
 		/// <summary>
 		/// Specifies whether the text editor uses word wrapping.
 		/// </summary>
+		/// <remarks>
+		/// Setting WordWrap=true has the same effect as setting HorizontalScrollBarVisibility=Disabled and will override the
+		/// HorizontalScrollBarVisibility setting.
+		/// </remarks>
 		public bool WordWrap {
 			get { return (bool)GetValue(WordWrapProperty); }
 			set { SetValue(WordWrapProperty, Boxes.Box(value)); }
@@ -997,6 +1001,34 @@ namespace ICSharpCode.AvalonEdit
 		}
 		#endregion
 		
+		#region ScrollBarVisibility
+		/// <summary>
+		/// Dependency property for <see cref="HorizontalScrollBarVisibility"/>
+		/// </summary>
+		public static readonly DependencyProperty HorizontalScrollBarVisibilityProperty = ScrollViewer.HorizontalScrollBarVisibilityProperty.AddOwner(typeof(TextEditor), new FrameworkPropertyMetadata(ScrollBarVisibility.Visible));
+		
+		/// <summary>
+		/// Gets/Sets the horizontal scroll bar visibility.
+		/// </summary>
+		public ScrollBarVisibility HorizontalScrollBarVisibility {
+			get { return (ScrollBarVisibility)GetValue(HorizontalScrollBarVisibilityProperty); }
+			set { SetValue(HorizontalScrollBarVisibilityProperty, value); }
+		}
+		
+		/// <summary>
+		/// Dependency property for <see cref="VerticalScrollBarVisibility"/>
+		/// </summary>
+		public static readonly DependencyProperty VerticalScrollBarVisibilityProperty = ScrollViewer.VerticalScrollBarVisibilityProperty.AddOwner(typeof(TextEditor), new FrameworkPropertyMetadata(ScrollBarVisibility.Visible));
+		
+		/// <summary>
+		/// Gets/Sets the vertical scroll bar visibility.
+		/// </summary>
+		public ScrollBarVisibility VerticalScrollBarVisibility {
+			get { return (ScrollBarVisibility)GetValue(VerticalScrollBarVisibilityProperty); }
+			set { SetValue(VerticalScrollBarVisibilityProperty, value); }
+		}
+		#endregion
+		
 		object IServiceProvider.GetService(Type serviceType)
 		{
 			return textArea.GetService(serviceType);
@@ -1050,15 +1082,6 @@ namespace ICSharpCode.AvalonEdit
 					}
 				}
 			}
-		}
-		
-		/// <summary>
-		/// Hides the scroll viewer.
-		/// </summary>
-		public void HideScrollBar()
-		{
-			scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
-			scrollViewer.VerticalScrollBarVisibility =  ScrollBarVisibility.Hidden;
 		}
 	}
 }

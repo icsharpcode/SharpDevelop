@@ -3,6 +3,7 @@
 
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit;
@@ -35,9 +36,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			};
 			
 			// hide scroll bar
-			this.console.editor.ApplyTemplate();
-			this.console.editor.HideScrollBar();
-			this.console.editor.TextArea.Focus();	
+			this.console.editor.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+			this.console.editor.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
+			this.Loaded += delegate { this.console.editor.TextArea.Focus(); };
 		}
 		
 		protected virtual void AbstractConsolePadTextEntered(object sender, TextCompositionEventArgs e)
