@@ -170,6 +170,11 @@ Public Class TestContinuation
     Public Sub TestMethod
         Assert.Fail
     End Sub
+    
+    <Test> _
+    Public Sub TestMethod2
+        Assert.Fail
+    End Sub
 End Class";
 			
 			ILexer lexer = GenerateLexer(new StringReader(code));
@@ -181,7 +186,29 @@ End Class";
 				Tokens.Public, Tokens.Sub, Tokens.Identifier, Tokens.EOL,
 				Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.EOL,
 				Tokens.End, Tokens.Sub, Tokens.EOL,
+				Tokens.LessThan, Tokens.Identifier, Tokens.GreaterThan,
+				Tokens.Public, Tokens.Sub, Tokens.Identifier, Tokens.EOL,
+				Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.EOL,
+				Tokens.End, Tokens.Sub, Tokens.EOL,
 				Tokens.End, Tokens.Class
+			);
+		}
+		
+		[Test]
+		public void NoILCAfterGlobalAttributes()
+		{
+			string code = "<Assembly: AssemblyTitle(\"My.UnitTests\")>" + Environment.NewLine +
+				"<Assembly: AssemblyDescription(\"\")>";
+			
+			ILexer lexer = GenerateLexer(new StringReader(code));
+			
+			CheckTokens(
+				lexer, Tokens.LessThan, Tokens.Assembly, Tokens.Colon,
+				Tokens.Identifier, Tokens.OpenParenthesis, Tokens.LiteralString,
+				Tokens.CloseParenthesis, Tokens.GreaterThan, Tokens.EOL,
+				Tokens.LessThan, Tokens.Assembly, Tokens.Colon,
+				Tokens.Identifier, Tokens.OpenParenthesis, Tokens.LiteralString,
+				Tokens.CloseParenthesis, Tokens.GreaterThan
 			);
 		}
 		

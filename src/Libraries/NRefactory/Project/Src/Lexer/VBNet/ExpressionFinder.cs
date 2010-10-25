@@ -125,6 +125,10 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			get { return isMissingModifier; }
 		}
 		
+		public bool WasNormalAttribute {
+			get { return wasNormalAttribute; }
+		}
+		
 		public int ActiveArgument {
 			get { return activeArgument; }
 		}
