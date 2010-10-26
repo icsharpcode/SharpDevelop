@@ -39,15 +39,15 @@ namespace ICSharpCode.UsageDataCollector
 		/// </summary>
 		/// <exception cref="IncompatibleDatabaseException">The database version is not compatible with this
 		/// version of the AnalyticsSessionWriter.</exception>
-		public UsageDataSessionWriter(string databaseFileName)
+		public UsageDataSessionWriter(string databaseFileName, Func<Guid> guidProvider = null)
 		{
 			SQLiteConnectionStringBuilder conn = new SQLiteConnectionStringBuilder();
-			conn.Add("Data Source", databaseFileName);
+			conn.DataSource = databaseFileName;
 			
 			connection = new SQLiteConnection(conn.ConnectionString);
 			connection.Open();
 			try {
-				InitializeTables();
+				InitializeTables(guidProvider ?? Guid.NewGuid);
 				
 				StartSession();
 			} catch {
@@ -92,12 +92,48 @@ namespace ICSharpCode.UsageDataCollector
 			}
 		}
 		
+		/// <summary>
+		/// Retrieves the user ID from the specified database.
+		/// </summary>
+		public static Guid? RetrieveUserId(string databaseFileName)
+		{
+			SQLiteConnectionStringBuilder conn = new SQLiteConnectionStringBuilder();
+			conn.DataSource = databaseFileName;
+			conn.FailIfMissing = true;
+			
+			try {
+				using (var connection = new SQLiteConnection(conn.ConnectionString)) {
+					connection.Open();
+					return RetrieveUserId(connection);
+				}
+			} catch (SQLiteException) {
+				return null;
+			}
+		}
+		
+		static Guid? RetrieveUserId(SQLiteConnection connection)
+		{
+			using (SQLiteCommand cmd = connection.CreateCommand()) {
+				cmd.CommandText = "SELECT value FROM Properties WHERE name = 'userID';";
+				string userID = (string)cmd.ExecuteScalar();
+				if (userID != null) {
+					try {
+						return new Guid(userID);
+					} catch (FormatException) {
+					} catch (OverflowException) {
+						// ignore incorrect GUIDs
+					}
+				}
+				return null;
+			}
+		}
+		
 		static readonly Version expectedDBVersion = new Version(1, 0, 1);
 		
 		/// <summary>
 		/// Creates or upgrades the database
 		/// </summary>
-		void InitializeTables()
+		void InitializeTables(Func<Guid> userIdProvider)
 		{
 			using (SQLiteTransaction transaction = this.connection.BeginTransaction()) {
 				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
@@ -120,10 +156,15 @@ namespace ICSharpCode.UsageDataCollector
 						throw new IncompatibleDatabaseException(expectedDBVersion, actualDBVersion);
 					}
 				}
+				if (RetrieveUserId(this.connection) == null) {
+					using (SQLiteCommand cmd = this.connection.CreateCommand()) {
+						cmd.CommandText = @"INSERT OR IGNORE INTO Properties (name, value) VALUES ('userID', ?);";
+						cmd.Parameters.Add(new SQLiteParameter { Value = userIdProvider().ToString() });
+						cmd.ExecuteNonQuery();
+					}
+				}
 				using (SQLiteCommand cmd = this.connection.CreateCommand()) {
 					cmd.CommandText = @"
-					INSERT OR IGNORE INTO Properties (name, value) VALUES ('userID', '" + Guid.NewGuid().ToString() + @"');
-					
 					CREATE TABLE IF NOT EXISTS Sessions (
 						id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 						startTime TEXT NOT NULL,
@@ -465,7 +506,7 @@ namespace ICSharpCode.UsageDataCollector
 			}
 		}
 	}
-	
+
 	/// <summary>
 	/// Represents a feature use that is currently being written.
 	/// </summary>
