@@ -110,8 +110,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 							start = end = null;
 						}
 					} else {
-						start = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.Offset);
-						end = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.EndOffset);
+						ISegment segment = textArea.Selection.SurroundingSegment;
+						start = textArea.Document.GetLineByOffset(segment.Offset);
+						end = textArea.Document.GetLineByOffset(segment.EndOffset);
+						// don't include the last line if no characters on it are selected
+						if (start != end && end.Offset == segment.EndOffset)
+							end = end.PreviousLine;
 					}
 					if (start != null) {
 						transformLine(textArea, start);
@@ -178,16 +182,32 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (textArea != null && textArea.Document != null) {
 				using (textArea.Document.RunUpdate()) {
 					if (textArea.Selection.IsMultiline(textArea.Document)) {
-						DocumentLine start = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.Offset);
-						DocumentLine end = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.EndOffset);
+						var segment = textArea.Selection.SurroundingSegment;
+						int oldSelectionStart = segment.Offset;
+						int oldCaretPos = textArea.Caret.Offset;
+						DocumentLine start = textArea.Document.GetLineByOffset(segment.Offset);
+						DocumentLine end = textArea.Document.GetLineByOffset(segment.EndOffset);
+						// don't include the last line if no characters on it are selected
+						if (start != end && end.Offset == segment.EndOffset)
+							end = end.PreviousLine;
+						DocumentLine current = start;
 						while (true) {
-							int offset = start.Offset;
+							int offset = current.Offset;
 							if (textArea.ReadOnlySectionProvider.CanInsert(offset))
 								textArea.Document.Insert(offset, textArea.Options.IndentationString);
-							if (start == end)
+							if (current == end)
 								break;
-							start = start.NextLine;
+							current = current.NextLine;
 						}
+						// Fix for http://community.sharpdevelop.net/forums/t/11909.aspx:
+						// The insertion at the first line will move the start of selection, so we change the selection
+						// to keep the old start offset if it started at the beginning of the line.
+						if (textArea.Selection.Segments.Count() == 1 && oldSelectionStart == start.Offset) {
+							textArea.Selection = new SimpleSelection(oldSelectionStart, textArea.Selection.SurroundingSegment.EndOffset);
+						}
+						// do the same to the caret:
+						if (oldCaretPos == start.Offset)
+							textArea.Caret.Offset = oldCaretPos;
 					} else {
 						string indentationString = textArea.Options.GetIndentationString(textArea.Caret.Column);
 						textArea.ReplaceSelectionWithText(indentationString);
