@@ -7,11 +7,11 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Threading;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -1065,7 +1065,25 @@ namespace ICSharpCode.AvalonEdit
 		{
 			const double MinimumScrollPercentage = 0.3;
 			
-			if (scrollViewer != null) {
+			TextView textView = textArea.TextView;
+			TextDocument document = textView.Document;
+			if (scrollViewer != null && document != null) {
+				IScrollInfo scrollInfo = textView;
+				if (!scrollInfo.CanHorizontallyScroll) {
+					// Word wrap is enabled. Ensure that we have up-to-date info about line height so that we scroll
+					// to the correct position.
+					// This avoids that the user has to repeat the ScrollTo() call several times when there are very long lines.
+					VisualLine vl = textView.GetOrConstructVisualLine(document.GetLineByNumber(line));
+					double remainingHeight = scrollViewer.ViewportHeight / 2;
+					while (remainingHeight > 0) {
+						DocumentLine prevLine = vl.FirstDocumentLine.PreviousLine;
+						if (prevLine == null)
+							break;
+						vl = textView.GetOrConstructVisualLine(prevLine);
+						remainingHeight -= vl.Height;
+					}
+				}
+				
 				Point p = textArea.TextView.GetVisualPosition(new TextViewPosition(line, Math.Max(1, column)), VisualYPosition.LineMiddle);
 				double verticalPos = p.Y - scrollViewer.ViewportHeight / 2;
 				if (Math.Abs(verticalPos - scrollViewer.VerticalOffset) > MinimumScrollPercentage * scrollViewer.ViewportHeight) {
