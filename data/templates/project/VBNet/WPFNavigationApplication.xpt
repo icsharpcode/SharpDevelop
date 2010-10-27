@@ -101,6 +101,7 @@ Namespace ${StandardNamespace}
 End Namespace]]></File>
 			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb" />
 			<File name="Properties\WPFAssemblyInfo.vb" src="WPFAssemblyInfo.vb" />
+			<File name="Properties\MyExtensions\MyWpfExtension.vb" src="MyWpfExtension.vb" />
 		</Files>
 	</Project>
 </Template>

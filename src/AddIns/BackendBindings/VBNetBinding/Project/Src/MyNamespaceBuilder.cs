@@ -15,6 +15,9 @@ namespace ICSharpCode.VBNetBinding
 		/// </summary>
 		public static void BuildNamespace(VBNetProject project, IProjectContent pc)
 		{
+			if ("custom".Equals(project.GetEvaluatedProperty("MyType"), StringComparison.OrdinalIgnoreCase))
+				return;
+			
 			ICompilationUnit cu = new DefaultCompilationUnit(pc);
 			//cu.FileName = "GeneratedMyNamespace.vb"; // leave FileName null - fixes SD2-854
 			string ns;

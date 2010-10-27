@@ -14,7 +14,7 @@ Imports System.Windows
 ' the NeutralResourceLanguage attribute below.  Update the "en-US" in
 ' the line below to match the UICulture setting in the project file.
 
-<Assembly: NeutralResourcesLanguage("en-US", UltimateResourceFallbackLocation.Satellite)>
+'<Assembly: NeutralResourcesLanguage("en-US", UltimateResourceFallbackLocation.Satellite)>
 
 ' themeDictionaryLocation = where theme specific resource dictionaries are located
 ' (used if a resource is not found in the page, 
