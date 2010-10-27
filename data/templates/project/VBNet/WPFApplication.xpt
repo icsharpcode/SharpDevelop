@@ -39,7 +39,7 @@
 		</PropertyGroup>
 		
 		<Files>
-			<File name="App.xaml" buildAction="ApplicationDefinition" language="XML"><![CDATA[<Application x:Class="${StandardNamespace}.App"
+			<File name="App.xaml" buildAction="ApplicationDefinition" language="XML"><![CDATA[<Application x:Class="App"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	StartupUri="Window1.xaml">
@@ -54,16 +54,14 @@ Imports System.Data
 Imports System.Xml
 Imports System.Configuration
 
-Namespace ${StandardNamespace}
-	''' <summary>
-	''' Interaction logic for App.xaml
-	''' </summary>
-	Public Partial Class App
-		Inherits Application
-		
-	End Class
-End Namespace]]></File>
-			<File name="Window1.xaml" buildAction="Page" language="XML"><![CDATA[<Window x:Class="${StandardNamespace}.Window1"
+''' <summary>
+''' Interaction logic for App.xaml
+''' </summary>
+Public Partial Class App
+	Inherits Application
+	
+End Class]]></File>
+			<File name="Window1.xaml" buildAction="Page" language="XML"><![CDATA[<Window x:Class="Window1"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	Title="${StandardNamespace}" Height="300" Width="300"
@@ -83,18 +81,16 @@ Imports System.Windows.Documents
 Imports System.Windows.Input
 Imports System.Windows.Media
 
-Namespace ${StandardNamespace}
-	''' <summary>
-	''' Interaction logic for Window1.xaml
-	''' </summary>
-	Public Partial Class Window1
-		Inherits Window
+''' <summary>
+''' Interaction logic for Window1.xaml
+''' </summary>
+Public Partial Class Window1
+	Inherits Window
 
-		Public Sub New()
-			InitializeComponent()
-		End Sub
-	End Class
-End Namespace]]></File>
+	Public Sub New()
+		InitializeComponent()
+	End Sub
+End Class]]></File>
 			<File name="Properties\WPFAssemblyInfo.vb" src="WPFAssemblyInfo.vb" />
 			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb" />
 			<File name="Properties\MyExtensions\MyWpfExtension.vb" src="MyWpfExtension.vb" />
