@@ -2,16 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Xml;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Xml;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.XamlBinding
