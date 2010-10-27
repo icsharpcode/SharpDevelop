@@ -7,8 +7,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Globalization;
+using System.Linq.Expressions;
 using System.Threading;
-
 using ICSharpCode.AvalonEdit.Utils;
 
 namespace ICSharpCode.AvalonEdit.Document
@@ -490,6 +490,10 @@ namespace ICSharpCode.AvalonEdit.Document
 				case OffsetChangeMappingType.Normal:
 					Replace(offset, length, text, null);
 					break;
+				case OffsetChangeMappingType.KeepAnchorBeforeInsertion:
+					Replace(offset, length, text, OffsetChangeMap.FromSingleElement(
+						new OffsetChangeMapEntry(offset, length, text.Length, false, true)));
+					break;
 				case OffsetChangeMappingType.RemoveAndInsert:
 					if (length == 0 || text.Length == 0) {
 						// only insertion or only removal?
@@ -514,7 +518,7 @@ namespace ICSharpCode.AvalonEdit.Document
 						OffsetChangeMapEntry entry = new OffsetChangeMapEntry(offset + length - 1, 1, 1 + text.Length - length);
 						Replace(offset, length, text, OffsetChangeMap.FromSingleElement(entry));
 					} else if (text.Length < length) {
-						OffsetChangeMapEntry entry = new OffsetChangeMapEntry(offset + text.Length, length - text.Length, 0, true);
+						OffsetChangeMapEntry entry = new OffsetChangeMapEntry(offset + text.Length, length - text.Length, 0, true, false);
 						Replace(offset, length, text, OffsetChangeMap.FromSingleElement(entry));
 					} else {
 						Replace(offset, length, text, OffsetChangeMap.Empty);

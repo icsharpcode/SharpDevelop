@@ -183,8 +183,6 @@ namespace ICSharpCode.AvalonEdit.Editing
 				using (textArea.Document.RunUpdate()) {
 					if (textArea.Selection.IsMultiline(textArea.Document)) {
 						var segment = textArea.Selection.SurroundingSegment;
-						int oldSelectionStart = segment.Offset;
-						int oldCaretPos = textArea.Caret.Offset;
 						DocumentLine start = textArea.Document.GetLineByOffset(segment.Offset);
 						DocumentLine end = textArea.Document.GetLineByOffset(segment.EndOffset);
 						// don't include the last line if no characters on it are selected
@@ -194,20 +192,11 @@ namespace ICSharpCode.AvalonEdit.Editing
 						while (true) {
 							int offset = current.Offset;
 							if (textArea.ReadOnlySectionProvider.CanInsert(offset))
-								textArea.Document.Insert(offset, textArea.Options.IndentationString);
+								textArea.Document.Replace(offset, 0, textArea.Options.IndentationString, OffsetChangeMappingType.KeepAnchorBeforeInsertion);
 							if (current == end)
 								break;
 							current = current.NextLine;
 						}
-						// Fix for http://community.sharpdevelop.net/forums/t/11909.aspx:
-						// The insertion at the first line will move the start of selection, so we change the selection
-						// to keep the old start offset if it started at the beginning of the line.
-						if (textArea.Selection.Segments.Count() == 1 && oldSelectionStart == start.Offset) {
-							textArea.Selection = new SimpleSelection(oldSelectionStart, textArea.Selection.SurroundingSegment.EndOffset);
-						}
-						// do the same to the caret:
-						if (oldCaretPos == start.Offset)
-							textArea.Caret.Offset = oldCaretPos;
 					} else {
 						string indentationString = textArea.Options.GetIndentationString(textArea.Caret.Column);
 						textArea.ReplaceSelectionWithText(indentationString);
