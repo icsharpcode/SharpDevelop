@@ -48,6 +48,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			base.FreezeInternal();
 		}
 		
+		/// <summary>
+		/// Creates a new root using scope.
+		/// </summary>
 		public UsingScope(IProjectContent projectContent)
 		{
 			if (projectContent == null)
@@ -55,6 +58,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.projectContent = projectContent;
 		}
 		
+		/// <summary>
+		/// Creates a new nested using scope.
+		/// </summary>
+		/// <param name="parent">The parent using scope.</param>
+		/// <param name="namespaceName">The full namespace name.</param>
 		public UsingScope(UsingScope parent, string namespaceName)
 		{
 			if (parent == null)

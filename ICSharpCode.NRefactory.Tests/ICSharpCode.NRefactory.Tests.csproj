@@ -49,6 +49,7 @@
     <Compile Include="CSharp\Resolver\ConversionsTest.cs" />
     <Compile Include="CSharp\Resolver\OverloadResolutionTests.cs" />
     <Compile Include="CSharp\Resolver\ResolverTestBase.cs" />
+    <Compile Include="CSharp\Resolver\SimpleNameLookupTests.cs" />
     <Compile Include="CSharp\Resolver\UnaryOperatorTests.cs" />
     <Compile Include="FormattingTests\TestBraceStlye.cs" />
     <Compile Include="FormattingTests\TestFormattingBugs.cs" />

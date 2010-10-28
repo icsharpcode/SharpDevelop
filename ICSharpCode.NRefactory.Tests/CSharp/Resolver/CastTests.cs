@@ -46,5 +46,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			AssertError(typeof(string), resolver.ResolveCast(ResolveType(typeof(string)), MakeConstant(1)));
 		}
+		
+		[Test]
+		public void OverflowingCastToEnum()
+		{
+			resolver.CheckForOverflow = true;
+			AssertError(typeof(StringComparison), resolver.ResolveCast(ResolveType(typeof(StringComparison)), MakeConstant(long.MaxValue)));
+		}
 	}
 }

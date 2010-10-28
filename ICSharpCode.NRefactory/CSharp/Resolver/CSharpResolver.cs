@@ -113,7 +113,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			ITypeDefinition IEntity.DeclaringTypeDefinition {
-				get { return null; }
+				get { throw new NotSupportedException(); }
 			}
 			
 			IType IMember.DeclaringType {
@@ -185,7 +185,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			IProjectContent IEntity.ProjectContent {
-				get { return null; }
+				get { throw new NotSupportedException(); }
 			}
 			
 			string INamedElement.FullName {
@@ -1381,7 +1381,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			
-			MemberLookup lookup = new MemberLookup(context, this.CurrentTypeDefinition, this.UsingScope.ProjectContent);
 			// look in current type definitions
 			for (ITypeDefinition t = this.CurrentTypeDefinition; t != null; t = t.DeclaringTypeDefinition) {
 				if (k == 0) {
@@ -1393,9 +1392,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				
 				if (lookupMode == SimpleNameLookupMode.Expression || lookupMode == SimpleNameLookupMode.InvocationTarget) {
-					// TODO: perform member lookup within the type t
+					MemberLookup lookup = new MemberLookup(context, t, t.ProjectContent);
 					ResolveResult r = lookup.Lookup(t, identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
-					if (!(r is UnknownMemberResolveResult))
+					if (!(r is UnknownMemberResolveResult)) // but do return AmbiguousMemberResolveResult
 						return r;
 				} else {
 					// TODO: perform member lookup within the type t, restricted to finding types
@@ -1512,7 +1511,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (target.Type == SharedTypes.Dynamic)
 				return DynamicResult;
 			
-			MemberLookup lookup = new MemberLookup(context, this.CurrentTypeDefinition, this.UsingScope.ProjectContent);
+			MemberLookup lookup = new MemberLookup(context, this.CurrentTypeDefinition, this.UsingScope != null ? this.UsingScope.ProjectContent : null);
 			return lookup.Lookup(target.Type, identifier, typeArguments, isInvocationTarget);
 		}
 		#endregion

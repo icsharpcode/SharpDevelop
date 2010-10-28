@@ -20,6 +20,31 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public virtual void SetUp()
 		{
 			resolver = new CSharpResolver(CecilLoaderTests.Mscorlib);
+			resolver.UsingScope = MakeUsingScope("");
+		}
+		
+		protected UsingScope MakeUsingScope(string namespaceName)
+		{
+			UsingScope u = new UsingScope(mscorlib);
+			if (!string.IsNullOrEmpty(namespaceName)) {
+				foreach (string element in namespaceName.Split('.')) {
+					u = new UsingScope(u, string.IsNullOrEmpty(u.NamespaceName) ? element : u.NamespaceName + "." + element);
+				}
+			}
+			return u;
+		}
+		
+		/// <summary>
+		/// Adds a using to the current top-level using scope.
+		/// </summary>
+		protected void AddUsing(string namespaceName)
+		{
+			string[] nameParts = namespaceName.Split('.');
+			ITypeOrNamespaceReference r = new SimpleTypeOrNamespaceReference(nameParts[0], new ITypeReference[0], resolver.CurrentTypeDefinition, resolver.UsingScope, true);
+			for (int i = 1; i < nameParts.Length; i++) {
+				throw new NotImplementedException();
+			}
+			resolver.UsingScope.Usings.Add(r);
 		}
 		
 		protected IType ResolveType(Type type)

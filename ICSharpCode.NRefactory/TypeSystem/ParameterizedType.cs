@@ -334,7 +334,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentNullException("typeArguments");
 			
 			ITypeReference[] typeArgs = typeArguments.ToArray();
-			if (genericType is ITypeDefinition && Array.TrueForAll(typeArgs, t => t is IType)) {
+			if (typeArgs.Length == 0) {
+				return genericType;
+			} else if (genericType is ITypeDefinition && Array.TrueForAll(typeArgs, t => t is IType)) {
 				IType[] ta = new IType[typeArgs.Length];
 				for (int i = 0; i < ta.Length; i++) {
 					ta[i] = (IType)typeArgs[i];

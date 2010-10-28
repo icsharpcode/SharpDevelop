@@ -11,7 +11,7 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	/// <summary>
-	/// Description of OverloadResolution.
+	/// C# overload resolution (C# 4.0 spec: §7.5).
 	/// </summary>
 	public class OverloadResolution
 	{
