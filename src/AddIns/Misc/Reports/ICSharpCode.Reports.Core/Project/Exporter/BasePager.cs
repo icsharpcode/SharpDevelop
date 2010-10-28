@@ -72,7 +72,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected virtual void BuildNewPage ()
 		{
 			this.SinglePage = this.InitNewPage();
-			PrintHelper.InitPage(this.SinglePage,this.ReportModel.ReportSettings);			
+			PrintHelper.InitPage(this.SinglePage,this.ReportModel.ReportSettings);
 			this.SinglePage.CalculatePageBounds(this.ReportModel);
 		}
 		
@@ -112,12 +112,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 					} else {
 
 						Rectangle desiredRectangle = layouter.Layout(this.graphics,section);
-						Rectangle sectionRectangle = new Rectangle(0,0,section.Size.Width,section.Size.Height);
-						
+						Rectangle sectionRectangle = new Rectangle(section.Location,section.Size);
 						if (!sectionRectangle.Contains(desiredRectangle)) {
 							section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
 						}
-						
 						list = StandardPrinter.ConvertPlainCollection(section.Items,offset);
 					}
 				}
@@ -197,8 +195,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		private static void EvaluateRecursive (IExpressionEvaluatorFacade evaluatorFassade,ExporterCollection items)
 		{
-			
 			foreach (BaseExportColumn be in items) {
+				
 				IExportContainer ec = be as IExportContainer;
 				if (ec != null)
 				{
@@ -207,25 +205,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 					}
 				}
 				ExportText et = be as ExportText;
+				
 				if (et != null) {
-					try{
-						if (et.Text.StartsWith("=Globals!Page")) {
-							Console.WriteLine ("wxpression : {0}",evaluatorFassade.Evaluate(et.Text));
-						}
-						
+					if (et.Text.StartsWith("=")) {
 						et.Text = evaluatorFassade.Evaluate(et.Text);
 					}
-					catch (UnknownFunctionException ufe)
-					{
-						et.Text = GlobalValues.UnkownFunctionMessage(ufe.Message);
-					}
-					finally 
-					{
-						
-					}	
 				}
 			}
 		}
+		
 		
 		#endregion
 		

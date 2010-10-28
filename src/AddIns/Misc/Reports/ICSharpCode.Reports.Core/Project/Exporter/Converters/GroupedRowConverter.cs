@@ -63,19 +63,19 @@ namespace ICSharpCode.Reports.Core.Exporter
 			Size groupSize = Size.Empty;
 			Size childSize = Size.Empty;
 			
-			Console.WriteLine("-------------------START");
-
-			Console.WriteLine ("section {0}",section.Size);
-		
-			Console.WriteLine();
+//			Console.WriteLine("-------------------START");
+//
+//			Console.WriteLine ("section {0}",section.Size);
+//		
+//			Console.WriteLine();
 			
 			
 			if (section.Items.IsGrouped)
 			{
 				groupSize = section.Items[0].Size;
 				childSize  = section.Items[1].Size;
-				Console.WriteLine ("group {0}",section.Items[0].Size);
-				Console.WriteLine ("detail {0}",section.Items[1].Size);
+//				Console.WriteLine ("group {0}",section.Items[0].Size);
+//				Console.WriteLine ("detail {0}",section.Items[1].Size);
 			}
 			
 			Rectangle pageBreakRect = Rectangle.Empty;
@@ -102,23 +102,23 @@ namespace ICSharpCode.Reports.Core.Exporter
 					childNavigator.Reset();
 					childNavigator.MoveNext();
 					
-					Console.WriteLine("-------------------after group");
-
-			Console.WriteLine ("section {0}",section.Size);
-			Console.WriteLine ("group {0}",section.Items[0].Size);
-			Console.WriteLine ("detail {0}",section.Items[1].Size);
-			Console.WriteLine();
+//					Console.WriteLine("-------------------after group");
+//
+//			Console.WriteLine ("section {0}",section.Size);
+//			Console.WriteLine ("group {0}",section.Items[0].Size);
+//			Console.WriteLine ("detail {0}",section.Items[1].Size);
+//			Console.WriteLine();
 					
 					//Convert children
 					if (childNavigator != null) {
 						StandardPrinter.AdjustBackColor(simpleContainer,GlobalValues.DefaultBackColor);
 						do
 						{
-							Console.WriteLine("-----------------childs");
-			Console.WriteLine ("section {0}",section.Size);
-			Console.WriteLine ("group {0}",section.Items[0].Size);
-			Console.WriteLine ("detail {0}",section.Items[1].Size);
-			Console.WriteLine();
+//							Console.WriteLine("-----------------childs");
+//			Console.WriteLine ("section {0}",section.Size);
+//			Console.WriteLine ("group {0}",section.Items[0].Size);
+//			Console.WriteLine ("detail {0}",section.Items[1].Size);
+//			Console.WriteLine();
 							section.Size = base.RestoreSize;
 							section.Items[0].Size = groupSize;
 							section.Items[1].Size = childSize;
@@ -151,9 +151,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 				{
 					// No Grouping at all
 					Size dd = section.Items[0].Size;
-					Console.WriteLine("---------NoGrouping");
-					Console.WriteLine ("section {0}",section.Size);
-					Console.WriteLine ("row {0}",dd);
+//					Console.WriteLine("---------NoGrouping");
+//					Console.WriteLine ("section {0}",section.Size);
+//					Console.WriteLine ("row {0}",dd);
 					base.CurrentPosition = ConvertStandardRow (exporterCollection,section,simpleContainer,defaultLeftPos,base.CurrentPosition);
 					section.Size = base.RestoreSize;
 					section.Items[0].Size = dd;

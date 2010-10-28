@@ -16,7 +16,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 		readonly object addLock = new object();
 		
-		//internal delegate ExporterCollection ConverterDelegate (BaseSection s);
 		
 		#region Constructor
 		
@@ -101,7 +100,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			ExporterCollection convertedList = convertedList = base.ConvertSection (base.ReportModel.PageFooter,this.dataNavigator.CurrentRow);
 			base.SinglePage.Items.AddRange(convertedList);
 		}
-		
 		
 		
 		protected  Point BuildDetail (BaseSection section,IDataNavigator dataNavigator)		
