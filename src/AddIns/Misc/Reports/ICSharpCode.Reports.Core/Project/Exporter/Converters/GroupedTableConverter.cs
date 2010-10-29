@@ -101,10 +101,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 								simpleContainer = table.Items[2] as ISimpleContainer;
 								
 								childNavigator.Fill(simpleContainer.Items);
-								
+								int p = base.CurrentPosition.Y;
 								base.CurrentPosition = ConvertGroupChilds (exporterCollection,
 								                                      section,
 								                                      simpleContainer,defaultLeftPos,base.CurrentPosition);
+									Console.WriteLine ("delta {0} - container {1}",base.CurrentPosition.Y - p,simpleContainer.Size);
 								pageBreakRect = PrintHelper.CalculatePageBreakRectangle((BaseReportItem)simpleContainer,base.CurrentPosition);
 								
 								if (PrintHelper.IsPageFull(pageBreakRect,base.SectionBounds))
@@ -137,7 +138,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 					
 					base.SaveSectionSize(simpleContainer.Size);
 					simpleContainer =  table.Items[1] as ISimpleContainer;
-					
+					Console.WriteLine("startconversion");
+					Size containerSize = simpleContainer.Size;
 					do {
 
 						PrintHelper.AdjustSectionLocation(section);
@@ -146,13 +148,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 						
 						if (PrintHelper.IsPageFull(pageBreakRect,base.SectionBounds))
 						{
-							base.CurrentPosition = base.ForcePageBreak(exporterCollection,section);
+							base.CurrentPosition = ForcePageBreak(exporterCollection,section);
 							base.CurrentPosition = ConvertStandardRow (exporterCollection,section,headerRow,defaultLeftPos,base.CurrentPosition);
 						}
-						
+						int p = base.CurrentPosition.Y;
 						base.CurrentPosition = ConvertStandardRow (exporterCollection,section,simpleContainer,defaultLeftPos,base.CurrentPosition);
-						
-						simpleContainer.Size = base.RestoreSize;
+						Console.WriteLine ("delta {0} - container {1}",base.CurrentPosition.Y - p,simpleContainer.Size);
+//						simpleContainer.Size = base.RestoreSize;
+						simpleContainer.Size = containerSize;
 					}
 					while (base.DataNavigator.MoveNext());
 					
@@ -172,7 +175,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			base.ForcePageBreak(exporterCollection, section);
 			return base.SectionBounds.ReportHeaderRectangle.Location;
 		}
-		//Copy from GroupedRow
+		
 		
 		private Point ConvertGroupHeader(ExporterCollection exportList,BaseSection section,int leftPos,Point offset)
 		{

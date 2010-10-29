@@ -129,7 +129,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 							base.CurrentPosition = ConvertGroupChilds (exporterCollection,section,
 							                                      simpleContainer,defaultLeftPos,base.CurrentPosition);
 							pageBreakRect = PrintHelper.CalculatePageBreakRectangle((BaseReportItem)section.Items[1],base.CurrentPosition);
-//							section.Items[1].Size = base.RestoreSize;
+
 							if (PrintHelper.IsPageFull(pageBreakRect,base.SectionBounds )) {
 								base.CurrentPosition = ForcePageBreak (exporterCollection,section);
 							}
