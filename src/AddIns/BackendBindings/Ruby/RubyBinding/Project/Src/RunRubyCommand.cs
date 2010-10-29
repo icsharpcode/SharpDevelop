@@ -66,7 +66,7 @@ namespace ICSharpCode.RubyBinding
 		{
 			// Get the Ruby script filename.
 			string rubyScriptFileName = Path.GetFileName(workbench.ActiveWorkbenchWindow.ActiveViewContent.PrimaryFileName);
-			string args = "-1.9 " + rubyScriptFileName;
+			string args = "--disable-gems " + rubyScriptFileName;
 			
 			if (Debug) {
 				return "-D " + args;

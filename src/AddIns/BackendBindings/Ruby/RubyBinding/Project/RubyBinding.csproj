@@ -60,9 +60,6 @@
     <Reference Include="Microsoft.Scripting.Core">
       <HintPath>..\..\IronRuby\bin\Microsoft.Scripting.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Scripting.Debugging">
-      <HintPath>..\..\IronRuby\bin\Microsoft.Scripting.Debugging.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>

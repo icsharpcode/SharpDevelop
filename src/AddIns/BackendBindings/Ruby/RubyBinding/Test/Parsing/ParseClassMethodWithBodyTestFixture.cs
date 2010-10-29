@@ -68,7 +68,7 @@ namespace RubyBinding.Tests.Parsing
 		public void MethodBodyRegion()
 		{
 			int startLine = 2;
-			int startColumn = 11; // IronRuby parser includes the as part of the method parameters
+			int startColumn = 11;
 			int endLine = 4;
 			int endColumn = 5;
 			DomRegion region = new DomRegion(startLine, startColumn, endLine, endColumn);
@@ -84,7 +84,7 @@ namespace RubyBinding.Tests.Parsing
 			int startLine = 2;
 			int startColumn = 2;
 			int endLine = 2;
-			int endColumn = 11; // IronRuby parser includes the as part of the method parameters
+			int endColumn = 11;
 			DomRegion region = new DomRegion(startLine, startColumn, endLine, endColumn);
 			Assert.AreEqual(region.ToString(), method.Region.ToString());
 		}

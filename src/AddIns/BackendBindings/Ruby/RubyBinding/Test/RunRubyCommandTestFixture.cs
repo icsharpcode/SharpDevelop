@@ -70,7 +70,7 @@ namespace RubyBinding.Tests
 		[Test]
 		public void ProcessInfoArgs()
 		{
-			Assert.AreEqual("-1.9 test.rb", debugger.ProcessStartInfo.Arguments);
+			Assert.AreEqual("--disable-gems test.rb", debugger.ProcessStartInfo.Arguments);
 		}
 		
 		[Test]
