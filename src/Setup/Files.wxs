@@ -1140,9 +1140,6 @@
 										<Component Guid="1428A68B-743C-481E-A6DE-2DD3984CC2EB" Id="RubyMicrosoftScriptingCoreDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.Core.dll" Name="Microsoft.Scripting.Core.dll" Id="RubyBinding.Microsoft.Scripting.Core.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Scripting.Core.dll" AssemblyManifest="RubyBinding.Microsoft.Scripting.Core.dll" />
 										</Component>
-										<Component Guid="52F58B6D-98F9-4BDD-9055-67AE84403A62" Id="RubyMicrosoftScriptingDebuggingDll" DiskId="1">
-											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.Debugging.dll" Name="Microsoft.Scripting.Debugging.dll" Id="RubyBinding.Microsoft.Scripting.Debugging.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Scripting.Debugging.dll" AssemblyManifest="RubyBinding.Microsoft.Scripting.Debugging.dll" />
-										</Component>
 										<Component Guid="3E1BAAE7-D366-43B4-88CE-8D2ED5731CC6" Id="RubyMicrosoftScriptingDll" DiskId="1">
 											<File Source="..\..\AddIns\AddIns\BackendBindings\RubyBinding\Microsoft.Scripting.dll" Name="Microsoft.Scripting.dll" Id="RubyBinding.Microsoft.Scripting.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="RubyBinding.Microsoft.Scripting.dll" AssemblyManifest="RubyBinding.Microsoft.Scripting.dll" />
 										</Component>
