@@ -421,7 +421,6 @@
 				<ComponentRef Id="PythonBindingSdTestRunnerPy"/>
 				
 				<ComponentRef Id="IrExe"/>
-				<ComponentRef Id="IrExeConfig"/>
 				<ComponentRef Id="IronRubyDll"/>
 				<ComponentRef Id="IronRubyLibrariesDll"/>
 				<ComponentRef Id="IronRubyLicenseApacheHtml"/>

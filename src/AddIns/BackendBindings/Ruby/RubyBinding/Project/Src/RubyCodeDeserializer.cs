@@ -52,9 +52,10 @@ namespace ICSharpCode.RubyBinding
 		
 		public object Deserialize(string name, MethodCall methodCall)
 		{
-			if (methodCall.Target is ArrayItemAccess) {
-				return DeserializeCreateArrayExpression(name, methodCall);
-			} else if ("new".Equals(methodCall.MethodName, StringComparison.InvariantCultureIgnoreCase)) {
+			if ("new".Equals(methodCall.MethodName, StringComparison.InvariantCultureIgnoreCase)) {
+				if (IsArrayCreation(methodCall)) {
+					return DeserializeCreateArrayExpression(name, methodCall);
+				}
 				return CreateInstance(name, methodCall);
 			} else if ("|".Equals(methodCall.MethodName)) {
 				return DeserializeBitwiseOr(methodCall);
@@ -62,11 +63,20 @@ namespace ICSharpCode.RubyBinding
 			return CreateInstance(name, methodCall);
 		}
 		
+		bool IsArrayCreation(MethodCall methodCall)
+		{
+			MethodCall targetMethodCall = methodCall.Target as MethodCall;
+			if (targetMethodCall != null) {
+				return targetMethodCall.MethodName == "[]";
+			}
+			return false;
+		}
+		
 		public static object Deserialize(StringConstructor stringConstructor)
 		{
 			if (stringConstructor.Parts.Count > 0) {
 				StringLiteral literal = stringConstructor.Parts[0] as StringLiteral;
-				MutableString mutableString = literal.GetMutableString(RubyEncoding.UTF8);
+				MutableString mutableString = literal.GetMutableString();
 				return mutableString.ConvertToString();
 			}
 			return String.Empty;
@@ -171,7 +181,7 @@ namespace ICSharpCode.RubyBinding
 		Type GetType(RubyControlFieldExpression field)
 		{
 			string typeName = field.FullMemberName;
-			if (!string.IsNullOrEmpty(typeName)) {
+			if (!String.IsNullOrEmpty(typeName)) {
 				return componentCreator.GetType(typeName);
 			}
 			return null;
@@ -184,8 +194,8 @@ namespace ICSharpCode.RubyBinding
 		/// </summary>
 		object DeserializeCreateArrayExpression(string name, MethodCall methodCall)
 		{
-			ArrayItemAccess arrayAccess = methodCall.Target as ArrayItemAccess;
-			ConstantVariable constantVariable = arrayAccess.Arguments.Expressions[0] as ConstantVariable;
+			MethodCall arrayCreationMethodCall = methodCall.Target as MethodCall;
+			ConstantVariable constantVariable = arrayCreationMethodCall.Arguments.Expressions[0] as ConstantVariable;
 			string arrayTypeName = RubyControlFieldExpression.GetQualifiedName(constantVariable);
 			
 			ArrayConstructor arrayConstructor = methodCall.Arguments.Expressions[0] as ArrayConstructor;
@@ -198,7 +208,7 @@ namespace ICSharpCode.RubyBinding
 				object instance = Deserialize(arrayItemExpression);
 				array.SetValue(instance, i);
 			}
-			return array;			
+			return array;
 		}
 		
 		object Deserialize(SelfReference selfRef)
