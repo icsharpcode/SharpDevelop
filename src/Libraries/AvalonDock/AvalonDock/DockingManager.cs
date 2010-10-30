@@ -1054,7 +1054,7 @@ namespace AvalonDock
         
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            bool isCtrlDown = Keyboard.Modifiers == ModifierKeys.Control;
+            bool isCtrlDown = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
             bool _navigatorWindowIsVisible = navigatorWindow != null ? navigatorWindow.IsVisible : false;
             Debug.WriteLine(string.Format("OnKeyDn {0} CtrlDn={1}", e.Key, isCtrlDown));
 
@@ -1078,7 +1078,7 @@ namespace AvalonDock
 
         protected override void OnKeyUp(KeyEventArgs e)
         {
-            bool isCtrlDown = Keyboard.Modifiers == ModifierKeys.Control;
+        	 bool isCtrlDown = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
             bool _navigatorWindowIsVisible = navigatorWindow != null ? navigatorWindow.IsVisible : false;
             Debug.WriteLine(string.Format("OnKeyUp {0} CtrlDn={1}", e.Key, isCtrlDown));
 
@@ -1087,6 +1087,7 @@ namespace AvalonDock
                 if (!_navigatorWindowIsVisible && e.Key == Key.Tab)
                 {
                     ShowNavigatorWindow();
+                    _navigatorWindowIsVisible = true;
                 }
 
                 if (_navigatorWindowIsVisible)

@@ -11,7 +11,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null) {
+			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null ||
+			   		WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count == 0) {
 				return;
 			}
 			int index = WorkbenchSingleton.Workbench.WorkbenchWindowCollection.IndexOf(WorkbenchSingleton.Workbench.ActiveWorkbenchWindow);
@@ -23,7 +24,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null) {
+			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null ||
+					WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count == 0) {
 				return;
 			}
 			int index = WorkbenchSingleton.Workbench.WorkbenchWindowCollection.IndexOf(WorkbenchSingleton.Workbench.ActiveWorkbenchWindow);
