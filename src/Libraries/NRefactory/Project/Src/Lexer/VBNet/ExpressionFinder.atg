@@ -1325,6 +1325,7 @@ AccessModifier =
 
 TypeModifier =
 	AccessModifier |
+	"MustInherit" |
 	"NotInheritable" |
 	"Shadows" |
 	"Partial"
@@ -1353,8 +1354,8 @@ MemberModifier =
 ParameterModifier =
 	"ByVal" |
 	"ByRef" |
-    "Optional" |
-    "ParamArray"
+	"Optional" |
+	"ParamArray"
 .
 
 END ExpressionFinder .
