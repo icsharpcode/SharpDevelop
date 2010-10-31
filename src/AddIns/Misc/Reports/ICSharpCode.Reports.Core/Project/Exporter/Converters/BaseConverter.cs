@@ -188,7 +188,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		protected Size RestoreSize
+		protected Size RestoreSectionSize
 		{
 			get {return this.saveSize;}
 		}
@@ -215,12 +215,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
+		
 		protected  Point ConvertStandardRow(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer, int defaultLeftPos, Point currentPosition)
 		{
+			var rowSize = simpleContainer.Size;
 			FillRow(simpleContainer);
 			PrepareContainerForConverting(section,simpleContainer);
 			Point curPos = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
 			AfterConverting (section,mylist);
+			simpleContainer.Size = rowSize;
 			return curPos;
 		}
 		
