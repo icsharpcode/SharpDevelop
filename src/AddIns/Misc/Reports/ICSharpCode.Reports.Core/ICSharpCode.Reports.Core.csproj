@@ -124,10 +124,8 @@
     </Compile>
     <Compile Include="Project\Dialogs\DefaultTextEditor.cs" />
     <Compile Include="Project\Dialogs\SortingCollectionEditor.cs" />
-    <Compile Include="Project\Events\GroupChangedEventArgs.cs" />
     <Compile Include="Project\Events\NewPageEventArgs.cs" />
     <Compile Include="Project\Events\ReportPageEventArgs.cs" />
-    <Compile Include="Project\Events\ReportParametersEventArgs.cs" />
     <Compile Include="Project\Exceptions\FieldNotFoundException.cs" />
     <Compile Include="Project\Exceptions\GroupLevelException.cs" />
     <Compile Include="Project\Exceptions\IllegalFileFormat.cs" />

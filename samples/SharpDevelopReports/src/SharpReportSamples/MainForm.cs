@@ -13,7 +13,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using ICSharpCode.Reports.Core;
-using ICSharpCode.Reports.Core.old_Exporter.ExportRenderer;
+using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
 
 namespace SharpReportSamples
 {

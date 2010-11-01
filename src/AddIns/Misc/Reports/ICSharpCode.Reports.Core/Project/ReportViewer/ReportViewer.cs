@@ -187,46 +187,36 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			
 		}
 		
-		private void PushPrinting (object sender, SectionRenderEventArgs e ) {
-			EventHelper.Raise<SectionRenderEventArgs>(SectionRendering,this,e);
-		}
 		
-		//testcode to handle sectionrenderevent
 		
-	
-		
-		/*
 		private void PushPrinting (object sender,SectionRenderEventArgs e)
 		{
-
-			switch (e.CurrentSection) {
-				case GlobalEnums.ReportSection.ReportHeader:
-					break;
-
-				case GlobalEnums.ReportSection.ReportPageHeader:
-					break;
-					
-				case GlobalEnums.ReportSection.ReportDetail:
-					BaseRowItem ri = e.Section.Items[0] as BaseRowItem;
-					if (ri != null) {
-						BaseDataItem r = (BaseDataItem)ri.Items.Find("Kategoriename");
-						if (r != null) {
-							r.DBValue = "xxxxxxx";
-						}
-					}
-					
-					break;
-				case GlobalEnums.ReportSection.ReportPageFooter:
-					break;
-					
-				case GlobalEnums.ReportSection.ReportFooter:
-					break;
-					
-				default:
-					break;
+			string sectionName = e.Section.Name;
+			
+			if (sectionName == ReportSectionNames.ReportHeader) {
+				Console.WriteLine("PushPrinting  :" + ReportSectionNames.ReportHeader);
+			} 
+			
+			else if (sectionName == ReportSectionNames.ReportPageHeader) {
+				Console.WriteLine("PushPrinting :" +ReportSectionNames .ReportPageHeader);
+			} 
+			
+			else if (sectionName == ReportSectionNames.ReportDetail){
+				Console.WriteLine("PushPrinting :" + ReportSectionNames.ReportDetail);
+			}
+			
+			else if (sectionName == ReportSectionNames.ReportPageFooter){
+				Console.WriteLine("PushPrinting :" + ReportSectionNames.ReportPageFooter);
+			}
+			
+			else if (sectionName == ReportSectionNames.ReportFooter){
+				Console.WriteLine("PushPrinting :" + ReportSectionNames.ReportFooter);
+			}
+			
+			else{
+				throw new WrongSectionException(sectionName);
 			}
 		}
-		 */
 		
 		#endregion
 		
