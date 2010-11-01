@@ -70,8 +70,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		class OperatorMethod : Immutable, IParameterizedMember
 		{
-			static readonly IParameter[] normalParameters = new IParameter[TypeCode.String + 1 - TypeCode.Object];
-			static readonly IParameter[] nullableParameters = new IParameter[TypeCode.Decimal + 1 - TypeCode.Boolean];
+			static readonly IParameter[] normalParameters = new IParameter[(int)(TypeCode.String + 1 - TypeCode.Object)];
+			static readonly IParameter[] nullableParameters = new IParameter[(int)(TypeCode.Decimal + 1 - TypeCode.Boolean)];
 			
 			static OperatorMethod()
 			{
