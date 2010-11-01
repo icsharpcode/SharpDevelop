@@ -40,7 +40,43 @@ namespace Mono.CSharp
 				member.Accept (this);
 			}
 		}
-
+		
+		protected void VisitNamespaceUsings (UsingsBag.Namespace nspace)
+		{
+			foreach (object u in nspace.usings) {
+				if (u is UsingsBag.Using) {
+					((UsingsBag.Using)u).Accept (this);
+				} else {
+					((UsingsBag.AliasUsing)u).Accept (this);
+				}
+			}
+		}
+		
+		protected void VisitNamespaceBody (UsingsBag.Namespace nspace)
+		{
+			foreach (object member in nspace.members) {
+				if (member is MemberCore) {
+					((MemberCore)member).Accept (this);
+				} else {
+					((UsingsBag.Namespace)member).Accept (this);
+				}
+			}
+		}
+		
+		public virtual void Visit (UsingsBag.Namespace nspace)
+		{
+			VisitNamespaceUsings (nspace);
+			VisitNamespaceBody (nspace);
+		}
+		
+		public virtual void Visit (UsingsBag.Using u)
+		{
+		}
+		
+		public virtual void Visit (UsingsBag.AliasUsing aliasUsing)
+		{
+		}
+		
 		public virtual void Visit (Class c)
 		{
 			VisitTypeContainer (c);
@@ -116,6 +152,11 @@ namespace Mono.CSharp
 		public virtual object Visit (Statement stmt)
 		{
 			Console.WriteLine ("unknown statement:" + stmt);
+			return null;
+		}
+
+		public virtual object Visit (BlockVariableDeclaration blockVariableDeclaration)
+		{
 			return null;
 		}
 
@@ -261,11 +302,6 @@ namespace Mono.CSharp
 		}
 
 		public virtual object Visit (Using usingStatement)
-		{
-			return null;
-		}
-
-		public virtual object Visit (UsingTemporary usingTemporaryStatement)
 		{
 			return null;
 		}

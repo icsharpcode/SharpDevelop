@@ -308,7 +308,7 @@ namespace Mono.CSharp {
 
 		public bool HasSecurityAttribute {
 			get {
-				PredefinedAttribute pa = PredefinedAttributes.Get.Security;
+				PredefinedAttribute pa = context.Compiler.PredefinedAttributes.Security;
 				return pa.IsDefined && TypeSpec.IsBaseClass (type, pa.Type, false);
 			}
 		}
@@ -337,7 +337,7 @@ namespace Mono.CSharp {
 
 		void ApplyModuleCharSet (ResolveContext rc)
 		{
-			if (Type != PredefinedAttributes.Get.DllImport)
+			if (Type != context.Compiler.PredefinedAttributes.DllImport)
 				return;
 
 			if (!RootContext.ToplevelTypes.HasDefaultCharSet)
@@ -353,7 +353,7 @@ namespace Mono.CSharp {
 				}
 			}
 
-			var char_set = Import.ImportType (typeof (CharSet));
+			var char_set = rc.Compiler.MetaImporter.ImportType (typeof (CharSet));	// TODO: typeof
 			NamedArguments.Add (new NamedArgument (CharSetEnumMember, loc,
 				Constant.CreateConstant (rc, char_set, RootContext.ToplevelTypes.DefaultCharSet, Location)));
  		}
@@ -443,10 +443,10 @@ namespace Mono.CSharp {
 
 				a.Resolve (ec);
 
-				Expression member = Expression.MemberLookup (ec, ec.CurrentType, Type, name, 0, false, loc);
+				Expression member = Expression.MemberLookup (ec, ec.CurrentType, Type, name, 0, MemberLookupRestrictions.ExactArity, loc);
 
 				if (member == null) {
-					member = Expression.MemberLookup (null, ec.CurrentType, Type, name, 0, false, loc);
+					member = Expression.MemberLookup (null, ec.CurrentType, Type, name, 0, MemberLookupRestrictions.ExactArity, loc);
 
 					if (member != null) {
 						// TODO: ec.Report.SymbolRelatedToPreviousError (member);
@@ -522,7 +522,7 @@ namespace Mono.CSharp {
 		public string GetValidTargets ()
 		{
 			StringBuilder sb = new StringBuilder ();
-			AttributeTargets targets = Type.GetAttributeUsage (PredefinedAttributes.Get.AttributeUsage).ValidOn;
+			AttributeTargets targets = Type.GetAttributeUsage (context.Compiler.PredefinedAttributes.AttributeUsage).ValidOn;
 
 			if ((targets & AttributeTargets.Assembly) != 0)
 				sb.Append ("assembly, ");
@@ -993,7 +993,7 @@ namespace Mono.CSharp {
 
 		public bool IsInternalMethodImplAttribute {
 			get {
-				if (Type != PredefinedAttributes.Get.MethodImpl)
+				if (Type != context.Compiler.PredefinedAttributes.MethodImpl)
 					return false;
 
 				MethodImplOptions options;
@@ -1048,15 +1048,15 @@ namespace Mono.CSharp {
 			if (ctor == null)
 				return;
 
-			AttributeUsageAttribute usage_attr = Type.GetAttributeUsage (PredefinedAttributes.Get.AttributeUsage);
+			var predefined = context.Compiler.PredefinedAttributes;
+
+			AttributeUsageAttribute usage_attr = Type.GetAttributeUsage (predefined.AttributeUsage);
 			if ((usage_attr.ValidOn & Target) == 0) {
 				Report.Error (592, Location, "The attribute `{0}' is not valid on this declaration type. " +
 					      "It is valid on `{1}' declarations only",
 					GetSignatureForError (), GetValidTargets ());
 				return;
 			}
-
-			var predefined = PredefinedAttributes.Get;
 
 			AttributeEncoder encoder = new AttributeEncoder (false);
 
@@ -1560,7 +1560,7 @@ namespace Mono.CSharp {
 
 		public static void VerifyModulesClsCompliance (CompilerContext ctx)
 		{
-			Module[] modules = GlobalRootNamespace.Instance.Modules;
+			Module[] modules = ctx.GlobalRootNamespace.Modules;
 			if (modules == null)
 				return;
 
@@ -1648,8 +1648,7 @@ namespace Mono.CSharp {
 		public readonly PredefinedAttribute Extension;
 
 		// New in .NET 4.0
-		public readonly PredefinedAttribute Dynamic;
-		public readonly PredefinedAttribute DynamicTransform;	// DynamicAttribute with transform arguments
+		public readonly PredefinedDynamicAttribute Dynamic;
 
 		//
 		// Optional types which are used as types and for member lookup
@@ -1659,9 +1658,7 @@ namespace Mono.CSharp {
 		public readonly PredefinedAttribute StructLayout;
 		public readonly PredefinedAttribute FieldOffset;
 
-		public static PredefinedAttributes Get = new PredefinedAttributes ();
-
-		private PredefinedAttributes ()
+		public PredefinedAttributes ()
 		{
 			ParamArray = new PredefinedAttribute ("System", "ParamArrayAttribute");
 			Out = new PredefinedAttribute ("System.Runtime.InteropServices", "OutAttribute");
@@ -1698,8 +1695,7 @@ namespace Mono.CSharp {
 
 			Extension = new PredefinedAttribute ("System.Runtime.CompilerServices", "ExtensionAttribute");
 
-			Dynamic = new PredefinedAttribute ("System.Runtime.CompilerServices", "DynamicAttribute");
-			DynamicTransform = new PredefinedAttribute ("System.Runtime.CompilerServices", "DynamicAttribute");
+			Dynamic = new PredefinedDynamicAttribute ("System.Runtime.CompilerServices", "DynamicAttribute");
 
 			DefaultMember = new PredefinedAttribute ("System.Reflection", "DefaultMemberAttribute");
 			DecimalConstant = new PredefinedAttribute ("System.Runtime.CompilerServices", "DecimalConstantAttribute");
@@ -1713,16 +1709,11 @@ namespace Mono.CSharp {
 				((PredefinedAttribute) fi.GetValue (this)).Initialize (ctx, true);
 			}
 		}
-
-		public static void Reset ()
-		{
-			Get = new PredefinedAttributes ();
-		}
 	}
 
 	public class PredefinedAttribute
 	{
-		TypeSpec type;
+		protected TypeSpec type;
 		CustomAttributeBuilder cab;
 		MethodSpec ctor;
 		readonly string ns, name;
@@ -1868,6 +1859,119 @@ namespace Mono.CSharp {
 
 		public TypeSpec Type {
 			get { return type; }
+		}
+	}
+
+	public class PredefinedDynamicAttribute : PredefinedAttribute
+	{
+		MethodSpec tctor;
+
+		public PredefinedDynamicAttribute (string ns, string name)
+			: base (ns, name)
+		{
+		}
+
+		public void EmitAttribute (FieldBuilder builder, TypeSpec type)
+		{
+			if (ResolveTransformationCtor ()) {
+				var cab = new CustomAttributeBuilder ((ConstructorInfo) tctor.GetMetaInfo (), new object[] { GetTransformationFlags (type) });
+				builder.SetCustomAttribute (cab);
+			}
+		}
+
+		public void EmitAttribute (ParameterBuilder builder, TypeSpec type)
+		{
+			if (ResolveTransformationCtor ()) {
+				var cab = new CustomAttributeBuilder ((ConstructorInfo) tctor.GetMetaInfo (), new object[] { GetTransformationFlags (type) });
+				builder.SetCustomAttribute (cab);
+			}
+		}
+
+		public void EmitAttribute (PropertyBuilder builder, TypeSpec type)
+		{
+			if (ResolveTransformationCtor ()) {
+				var cab = new CustomAttributeBuilder ((ConstructorInfo) tctor.GetMetaInfo (), new object[] { GetTransformationFlags (type) });
+				builder.SetCustomAttribute (cab);
+			}
+		}
+
+		public void EmitAttribute (TypeBuilder builder, TypeSpec type)
+		{
+			if (ResolveTransformationCtor ()) {
+				var cab = new CustomAttributeBuilder ((ConstructorInfo) tctor.GetMetaInfo (), new object[] { GetTransformationFlags (type) });
+				builder.SetCustomAttribute (cab);
+			}
+		}
+
+		//
+		// When any element of the type is a dynamic type
+		//
+		// This method builds a transformation array for dynamic types
+		// used in places where DynamicAttribute cannot be applied to.
+		// It uses bool flag when type is of dynamic type and each
+		// section always starts with "false" for some reason.
+		//
+		// LAMESPEC: This should be part of C# specification
+		// 
+		// Example: Func<dynamic, int, dynamic[]>
+		// Transformation: { false, true, false, false, true }
+		//
+		static bool[] GetTransformationFlags (TypeSpec t)
+		{
+			bool[] element;
+			var ac = t as ArrayContainer;
+			if (ac != null) {
+				element = GetTransformationFlags (ac.Element);
+				if (element == null)
+					return null;
+
+				bool[] res = new bool[element.Length + 1];
+				res[0] = false;
+				Array.Copy (element, 0, res, 1, element.Length);
+				return res;
+			}
+
+			if (t == null)
+				return null;
+
+			if (t.IsGeneric) {
+				List<bool> transform = null;
+				var targs = t.TypeArguments;
+				for (int i = 0; i < targs.Length; ++i) {
+					element = GetTransformationFlags (targs[i]);
+					if (element != null) {
+						if (transform == null) {
+							transform = new List<bool> ();
+							for (int ii = 0; ii <= i; ++ii)
+								transform.Add (false);
+						}
+
+						transform.AddRange (element);
+					} else if (transform != null) {
+						transform.Add (false);
+					}
+				}
+
+				if (transform != null)
+					return transform.ToArray ();
+			}
+
+			if (t == InternalType.Dynamic)
+				return new bool[] { true };
+
+			return null;
+		}
+
+		bool ResolveTransformationCtor ()
+		{
+			if (tctor != null)
+				return true;
+
+			if (!Resolve (false))
+				return false;
+
+			tctor = TypeManager.GetPredefinedConstructor (type, Location.Null, ArrayContainer.MakeType (TypeManager.bool_type));
+			return tctor != null;
 		}
 	}
 }

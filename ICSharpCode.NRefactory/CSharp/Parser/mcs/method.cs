@@ -307,7 +307,11 @@ namespace Mono.CSharp {
 			}
 
 			if ((state & StateFlags.PendingMakeMethod) != 0) {
-				metaInfo = ((MethodInfo) metaInfo).MakeGenericMethod (targs.Select (l => l.GetMetaInfo ()).ToArray ());
+				var sre_targs = new Type[targs.Length];
+				for (int i = 0; i < sre_targs.Length; ++i)
+					sre_targs[i] = targs[i].GetMetaInfo ();
+
+				metaInfo = ((MethodInfo) metaInfo).MakeGenericMethod (sre_targs);
 				state &= ~StateFlags.PendingMakeMethod;
 			}
 
@@ -357,7 +361,7 @@ namespace Mono.CSharp {
 			ms.returnType = inflator.Inflate (returnType);
 			ms.parameters = parameters.Inflate (inflator);
 			if (IsGeneric)
-				ms.constraints = TypeParameterSpec.InflateConstraints (inflator, GenericDefinition.TypeParameters);
+				ms.constraints = TypeParameterSpec.InflateConstraints (inflator, Constraints);
 
 			return ms;
 		}
@@ -407,7 +411,7 @@ namespace Mono.CSharp {
 			var ms = (MethodSpec) MemberwiseClone ();
 			if (decl != DeclaringType) {
 				// Gets back MethodInfo in case of metaInfo was inflated
-				ms.metaInfo = MemberCache.GetMember (DeclaringType.GetDefinition (), this).metaInfo;
+				ms.metaInfo = MemberCache.GetMember (TypeParameterMutator.GetMemberDeclaringType (DeclaringType), this).metaInfo;
 
 				ms.declaringType = decl;
 				ms.state |= StateFlags.PendingMetaInflate;
@@ -576,23 +580,16 @@ namespace Mono.CSharp {
 		public override void Emit ()
 		{
 			if ((ModFlags & Modifiers.COMPILER_GENERATED) != 0 && !Parent.IsCompilerGenerated)
-				PredefinedAttributes.Get.CompilerGenerated.EmitAttribute (MethodBuilder);
+				Compiler.PredefinedAttributes.CompilerGenerated.EmitAttribute (MethodBuilder);
 			if ((ModFlags & Modifiers.DEBUGGER_HIDDEN) != 0)
-				PredefinedAttributes.Get.DebuggerHidden.EmitAttribute (MethodBuilder);
+				Compiler.PredefinedAttributes.DebuggerHidden.EmitAttribute (MethodBuilder);
 
 			if (ReturnType == InternalType.Dynamic) {
 				return_attributes = new ReturnParameter (this, MethodBuilder, Location);
-				PredefinedAttributes.Get.Dynamic.EmitAttribute (return_attributes.Builder);
-			} else {
-				var trans_flags = TypeManager.HasDynamicTypeUsed (ReturnType);
-				if (trans_flags != null) {
-					var pa = PredefinedAttributes.Get.DynamicTransform;
-					if (pa.Constructor != null || pa.ResolveConstructor (Location, ArrayContainer.MakeType (TypeManager.bool_type))) {
-						return_attributes = new ReturnParameter (this, MethodBuilder, Location);
-						return_attributes.Builder.SetCustomAttribute (
-							new CustomAttributeBuilder (pa.Constructor, new object [] { trans_flags }));
-					}
-				}
+				Compiler.PredefinedAttributes.Dynamic.EmitAttribute (return_attributes.Builder);
+			} else if (ReturnType.HasDynamicElement) {
+				return_attributes = new ReturnParameter (this, MethodBuilder, Location);
+				Compiler.PredefinedAttributes.Dynamic.EmitAttribute (return_attributes.Builder, ReturnType);
 			}
 
 			if (OptAttributes != null)
@@ -670,7 +667,7 @@ namespace Mono.CSharp {
 				if (OptAttributes == null)
 					return null;
 
-				Attribute[] attrs = OptAttributes.SearchMulti (PredefinedAttributes.Get.Conditional);
+				Attribute[] attrs = OptAttributes.SearchMulti (Compiler.PredefinedAttributes.Conditional);
 				if (attrs == null)
 					return null;
 
@@ -765,7 +762,7 @@ namespace Mono.CSharp {
 			       FullNamedExpression return_type, Modifiers mod,
 			       MemberName name, ParametersCompiled parameters, Attributes attrs)
 			: base (parent, generic, return_type, mod,
-				parent.PartialContainer.Kind == MemberKind.Interface ? AllowedModifiersClass :
+				parent.PartialContainer.Kind == MemberKind.Interface ? AllowedModifiersInterface :
 				parent.PartialContainer.Kind == MemberKind.Struct ? AllowedModifiersStruct :
 				AllowedModifiersClass,
 				name, attrs, parameters)
@@ -1013,7 +1010,7 @@ namespace Mono.CSharp {
 				DefineTypeParameters ();
 			}
 
-			if (block != null && block.IsIterator && !(Parent is IteratorStorey)) {
+			if (block != null && block.IsIterator) {
 				//
 				// Current method is turned into automatically generated
 				// wrapper which creates an instance of iterator
@@ -1031,7 +1028,7 @@ namespace Mono.CSharp {
 						Report.Error (1109, Location, "`{0}': Extension methods cannot be defined in a nested class",
 							GetSignatureForError ());
 
-					PredefinedAttribute pa = PredefinedAttributes.Get.Extension;
+					PredefinedAttribute pa = Compiler.PredefinedAttributes.Extension;
 					if (!pa.IsDefined) {
 						Report.Error (1110, Location,
 							"`{0}': Extension methods cannot be declared without a reference to System.Core.dll assembly. Add the assembly reference or remove `this' modifer from the first parameter",
@@ -1121,7 +1118,7 @@ namespace Mono.CSharp {
 				base.Emit ();
 				
 				if ((ModFlags & Modifiers.METHOD_EXTENSION) != 0)
-					PredefinedAttributes.Get.Extension.EmitAttribute (MethodBuilder);
+					Compiler.PredefinedAttributes.Extension.EmitAttribute (MethodBuilder);
 			} catch {
 				Console.WriteLine ("Internal compiler error at {0}: exception caught while emitting {1}",
 						   Location, MethodBuilder);
@@ -1457,7 +1454,7 @@ namespace Mono.CSharp {
 			}
 
 			if ((ModFlags & Modifiers.DEBUGGER_HIDDEN) != 0)
-				PredefinedAttributes.Get.DebuggerHidden.EmitAttribute (ConstructorBuilder);
+				Compiler.PredefinedAttributes.DebuggerHidden.EmitAttribute (ConstructorBuilder);
 
 			if (OptAttributes != null)
 				OptAttributes.Emit ();
@@ -1482,7 +1479,7 @@ namespace Mono.CSharp {
 				// initializer, it must initialize all of the struct's fields.
 				if ((Parent.PartialContainer.Kind == MemberKind.Struct) &&
 					((ModFlags & Modifiers.STATIC) == 0) && (Initializer == null))
-					block.AddThisVariable (Parent, Location);
+					block.AddThisVariable (bc, Parent, Location);
 
 				if (block != null && (ModFlags & Modifiers.STATIC) == 0){
 					if (Parent.PartialContainer.Kind == MemberKind.Class && Initializer == null)
@@ -1494,12 +1491,12 @@ namespace Mono.CSharp {
 				}
 			}
 
-			parameters.ApplyAttributes (ConstructorBuilder);
+			parameters.ApplyAttributes (this, ConstructorBuilder);
 
 			SourceMethod source = SourceMethod.Create (Parent, ConstructorBuilder, block);
 
 			if (block != null) {
-				if (block.Resolve (null, bc, parameters, this)) {
+				if (block.Resolve (null, bc, this)) {
 					EmitContext ec = new EmitContext (this, ConstructorBuilder.GetILGenerator (), bc.ReturnType);
 					ec.With (EmitContext.Options.ConstructorScope, true);
 
@@ -1867,14 +1864,16 @@ namespace Mono.CSharp {
 			if (GenericMethod != null)
 				GenericMethod.EmitAttributes ();
 
-			method.ParameterInfo.ApplyAttributes (MethodBuilder);
+			var mc = (IMemberContext) method;
+
+			method.ParameterInfo.ApplyAttributes (mc, MethodBuilder);
 
 			SourceMethod source = SourceMethod.Create (parent, MethodBuilder, method.Block);
 
 			ToplevelBlock block = method.Block;
 			if (block != null) {
-				BlockContext bc = new BlockContext ((IMemberContext) method, block, method.ReturnType);
-				if (block.Resolve (null, bc, method.ParameterInfo, method)) {
+				BlockContext bc = new BlockContext (mc, block, method.ReturnType);
+				if (block.Resolve (null, bc, method)) {
 					EmitContext ec = method.CreateEmitContext (MethodBuilder.GetILGenerator ());
 					if (!ec.HasReturnLabel && bc.HasReturnLabel) {
 						ec.ReturnLabel = bc.ReturnLabel;
@@ -1943,11 +1942,8 @@ namespace Mono.CSharp {
 				MethodGroupExpr method_expr = MethodGroupExpr.CreatePredefined (base_dtor, base_type, Location);
 				method_expr.InstanceExpression = new BaseThis (base_type, Location);
 
-				ToplevelBlock new_block = new ToplevelBlock (Compiler, Block.StartLocation);
-				new_block.EndLocation = Block.EndLocation;
-
-				Block finaly_block = new ExplicitBlock (new_block, Location, Location);
-				Block try_block = new Block (new_block, block);
+				var try_block = new ExplicitBlock (block, block.StartLocation, block.EndLocation);
+				var finaly_block = new ExplicitBlock (block, Location, Location);
 
 				//
 				// 0-size arguments to avoid CS0250 error
@@ -1955,9 +1951,9 @@ namespace Mono.CSharp {
 				// debugger scope
 				//
 				finaly_block.AddStatement (new StatementExpression (new Invocation (method_expr, new Arguments (0))));
-				new_block.AddStatement (new TryFinally (try_block, finaly_block, Location));
 
-				block = new_block;
+				var tf = new TryFinally (try_block, finaly_block, Location);
+				block.WrapIntoDestructor (tf, try_block);
 			}
 
 			base.Emit ();
@@ -2107,23 +2103,16 @@ namespace Mono.CSharp {
 			method_data.Emit (parent);
 
 			if ((ModFlags & Modifiers.COMPILER_GENERATED) != 0 && !Parent.IsCompilerGenerated)
-				PredefinedAttributes.Get.CompilerGenerated.EmitAttribute (method_data.MethodBuilder);
+				Compiler.PredefinedAttributes.CompilerGenerated.EmitAttribute (method_data.MethodBuilder);
 			if (((ModFlags & Modifiers.DEBUGGER_HIDDEN) != 0))
-				PredefinedAttributes.Get.DebuggerHidden.EmitAttribute (method_data.MethodBuilder);
+				Compiler.PredefinedAttributes.DebuggerHidden.EmitAttribute (method_data.MethodBuilder);
 
 			if (ReturnType == InternalType.Dynamic) {
 				return_attributes = new ReturnParameter (this, method_data.MethodBuilder, Location);
-				PredefinedAttributes.Get.Dynamic.EmitAttribute (return_attributes.Builder);
-			} else {
-				var trans_flags = TypeManager.HasDynamicTypeUsed (ReturnType);
-				if (trans_flags != null) {
-					var pa = PredefinedAttributes.Get.DynamicTransform;
-					if (pa.Constructor != null || pa.ResolveConstructor (Location, ArrayContainer.MakeType (TypeManager.bool_type))) {
-						return_attributes = new ReturnParameter (this, method_data.MethodBuilder, Location);
-						return_attributes.Builder.SetCustomAttribute (
-							new CustomAttributeBuilder (pa.Constructor, new object [] { trans_flags }));
-					}
-				}
+				Compiler.PredefinedAttributes.Dynamic.EmitAttribute (return_attributes.Builder);
+			} else if (ReturnType.HasDynamicElement) {
+				return_attributes = new ReturnParameter (this, method_data.MethodBuilder, Location);
+				Compiler.PredefinedAttributes.Dynamic.EmitAttribute (return_attributes.Builder, ReturnType);
 			}
 
 			if (OptAttributes != null)
@@ -2290,7 +2279,7 @@ namespace Mono.CSharp {
 			if (!base.Define ())
 				return false;
 
-			if (block != null && block.IsIterator && !(Parent is IteratorStorey)) {
+			if (block != null && block.IsIterator) {
 				//
 				// Current method is turned into automatically generated
 				// wrapper which creates an instance of iterator

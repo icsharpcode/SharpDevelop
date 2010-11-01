@@ -66,6 +66,12 @@ namespace Mono.CSharp
 			}
 		}
 
+		public bool HasDynamicElement {
+			get {
+				return (state & StateFlags.HasDynamicElement) != 0;
+			}
+		}
+
 		public virtual IList<TypeSpec> Interfaces {
 			get {
 				return ifaces;
@@ -194,9 +200,12 @@ namespace Mono.CSharp
 			}
 		}
 
-		public virtual MemberCache MemberCacheTypes {
+		public MemberCache MemberCacheTypes {
 			get {
-				return MemberCache;
+				if (cache == null)
+					InitializeMemberCache (true);
+
+				return cache;
 			}
 		}	
 
@@ -289,13 +298,16 @@ namespace Mono.CSharp
 			return "<" + TypeManager.CSharpName (MemberDefinition.TypeParameters) + ">";
 		}
 
-		public bool ImplementsInterface (TypeSpec iface)
+		public bool ImplementsInterface (TypeSpec iface, bool variantly)
 		{
 			var t = this;
 			do {
 				if (t.Interfaces != null) {	// TODO: Try t.iface
 					foreach (TypeSpec i in t.Interfaces) {
-						if (i == iface || TypeSpecComparer.Variant.IsEqual (i, iface) || TypeSpecComparer.IsEqual (i, iface))
+						if (i == iface || TypeSpecComparer.IsEqual (i, iface))
+							return true;
+
+						if (variantly && TypeSpecComparer.Variant.IsEqual (i, iface))
 							return true;
 					}
 				}
@@ -308,14 +320,12 @@ namespace Mono.CSharp
 
 		protected virtual void InitializeMemberCache (bool onlyTypes)
 		{
-			//
-			// Not interested in members of nested private types
-			//
-			if (IsPrivate) {
-				cache = new MemberCache (0);
-			} else {
-				cache = MemberDefinition.LoadMembers (this);
-			}
+			MemberDefinition.LoadMembers (this, onlyTypes, ref cache);
+
+			if (onlyTypes)
+				state |= StateFlags.PendingMemberCacheMembers;
+			else
+				state &= ~StateFlags.PendingMemberCacheMembers;
 		}
 
 		//
@@ -366,7 +376,7 @@ namespace Mono.CSharp
 		public InflatedTypeSpec MakeGenericType (TypeSpec[] targs)
 		{
 			if (targs.Length == 0 && !IsNested)
-				throw new ArgumentException ("Empty type arguments");
+				throw new ArgumentException ("Empty type arguments for type " + GetSignatureForError ());
 
 			InflatedTypeSpec instance;
 
@@ -375,7 +385,8 @@ namespace Mono.CSharp
 
 			if (!inflated_instances.TryGetValue (targs, out instance)) {
 				if (GetDefinition () != this && !IsNested)
-					throw new InternalErrorException ("Only type definition or nested non-inflated types can be used to call MakeGenericType");
+					throw new InternalErrorException ("`{0}' must be type definition or nested non-inflated type to MakeGenericType",
+						GetSignatureForError ());
 
 				instance = new InflatedTypeSpec (this, declaringType, targs);
 				inflated_instances.Add (targs, instance);
@@ -411,6 +422,9 @@ namespace Mono.CSharp
 		public PredefinedTypeSpec (MemberKind kind, string ns, string name)
 			: base (kind, null, null, null, Modifiers.PUBLIC)
 		{
+			if (kind == MemberKind.Struct)
+				modifiers |= Modifiers.SEALED;
+
 			this.name = name;
 			this.ns = ns;
 		}
@@ -645,7 +659,7 @@ namespace Mono.CSharp
 				var targs_definition = target_type_def.TypeParameters;
 
 				if (!type1.IsInterface && !type1.IsDelegate) {
-					return TypeSpecComparer.Equals (t1_targs, t2_targs);
+					return false;
 				}
 
 				for (int i = 0; i < targs_definition.Length; ++i) {
@@ -803,7 +817,7 @@ namespace Mono.CSharp
 		{
 			if (a == b) {
 				// This also rejects dynamic == dynamic
-				return a.Kind != MemberKind.InternalCompilerType;
+				return a.Kind != MemberKind.InternalCompilerType || a == InternalType.Dynamic;
 			}
 
 			//
@@ -814,13 +828,33 @@ namespace Mono.CSharp
 			if (a == InternalType.Dynamic || b == InternalType.Dynamic)
 				return b == TypeManager.object_type || a == TypeManager.object_type;
 
-			if (a == null || !a.IsGeneric || b == null || !b.IsGeneric)
+			if (a == null)
+				return false;
+
+			if (a.IsArray) {
+				var a_a = (ArrayContainer) a;
+				var b_a = b as ArrayContainer;
+				if (b_a == null)
+					return false;
+
+				return IsEqual (a_a.Element, b_a.Element) && a_a.Rank == b_a.Rank;
+			}
+
+			if (!a.IsGeneric || b == null || !b.IsGeneric)
 				return false;
 
 			if (a.MemberDefinition != b.MemberDefinition)
 				return false;
 
-			return Equals (a.TypeArguments, b.TypeArguments);
+			do {
+				if (!Equals (a.TypeArguments, b.TypeArguments))
+					return false;
+
+				a = a.DeclaringType;
+				b = b.DeclaringType;
+			} while (a != null);
+
+			return true;
 		}
 	}
 
@@ -833,30 +867,31 @@ namespace Mono.CSharp
 		TypeSpec GetAttributeCoClass ();
 		string GetAttributeDefaultMember ();
 		AttributeUsageAttribute GetAttributeUsage (PredefinedAttribute pa);
-		MemberCache LoadMembers (TypeSpec declaringType);
+		void LoadMembers (TypeSpec declaringType, bool onlyTypes, ref MemberCache cache);
 	}
 
-	class InternalType : TypeSpec
+	class InternalType : TypeSpec, ITypeDefinition
 	{
 		public static readonly InternalType AnonymousMethod = new InternalType ("anonymous method");
 		public static readonly InternalType Arglist = new InternalType ("__arglist");
-		public static readonly InternalType Dynamic = new InternalType ("dynamic", typeof (object));
+		public static readonly InternalType Dynamic = new InternalType ("dynamic", null);
 		public static readonly InternalType MethodGroup = new InternalType ("method group");
-		public static readonly InternalType Null = new InternalType ("null", typeof (object));
+		public static readonly InternalType Null = new InternalType ("null");
 		public static readonly InternalType FakeInternalType = new InternalType ("<fake$type>");
 
 		readonly string name;
 
-		InternalType (string name, Type metaInfo)
+		InternalType (string name, MemberCache cache)
 			: this (name)
 		{
-			info = metaInfo;
+			this.cache = cache;
 		}
 
 		InternalType (string name)
 			: base (MemberKind.InternalCompilerType, null, null, null, Modifiers.PUBLIC)
 		{
 			this.name = name;
+			this.definition = this;
 			cache = MemberCache.Empty;
 
 			// Make all internal types CLS-compliant, non-obsolete
@@ -871,9 +906,39 @@ namespace Mono.CSharp
 			}
 		}
 
+		System.Reflection.Assembly IMemberDefinition.Assembly {
+			get {
+				throw new NotImplementedException ();
+			}
+		}
+
+		bool IMemberDefinition.IsImported {
+			get {
+				return false;
+			}
+		}
+
 		public override string Name {
 			get {
 				return name;
+			}
+		}
+
+		string ITypeDefinition.Namespace {
+			get {
+				return null;
+			}
+		}
+
+		int ITypeDefinition.TypeParametersCount {
+			get {
+				return 0;
+			}
+		}
+
+		TypeParameterSpec[] ITypeDefinition.TypeParameters {
+			get {
+				return null;
 			}
 		}
 
@@ -883,6 +948,53 @@ namespace Mono.CSharp
 		{
 			return name;
 		}
+
+		#region ITypeDefinition Members
+
+		TypeSpec ITypeDefinition.GetAttributeCoClass ()
+		{
+			return null;
+		}
+
+		string ITypeDefinition.GetAttributeDefaultMember ()
+		{
+			return null;
+		}
+
+		AttributeUsageAttribute ITypeDefinition.GetAttributeUsage (PredefinedAttribute pa)
+		{
+			return null;
+		}
+
+		void ITypeDefinition.LoadMembers (TypeSpec declaringType, bool onlyTypes, ref MemberCache cache)
+		{
+			throw new NotImplementedException ();
+		}
+
+		string[] IMemberDefinition.ConditionalConditions ()
+		{
+			return null;
+		}
+
+		ObsoleteAttribute IMemberDefinition.GetAttributeObsolete ()
+		{
+			return null;
+		}
+
+		bool IMemberDefinition.IsNotCLSCompliant ()
+		{
+			return false;
+		}
+
+		void IMemberDefinition.SetIsAssigned ()
+		{
+		}
+
+		void IMemberDefinition.SetIsUsed ()
+		{
+		}
+
+		#endregion
 	}
 
 	public abstract class ElementTypeSpec : TypeSpec, ITypeDefinition
@@ -891,6 +1003,8 @@ namespace Mono.CSharp
 			: base (kind, element.DeclaringType, null, info, element.Modifiers)
 		{
 			this.Element = element;
+			if (element == InternalType.Dynamic || element.HasDynamicElement)
+				state |= StateFlags.HasDynamicElement;
 
 			// Has to use its own type definition instead of just element definition to
 			// correctly identify itself for cases like x.MemberDefininition == predefined.MemberDefinition
@@ -972,9 +1086,9 @@ namespace Mono.CSharp
 			return Element.MemberDefinition.GetAttributeDefaultMember ();
 		}
 
-		public MemberCache LoadMembers (TypeSpec declaringType)
+		public void LoadMembers (TypeSpec declaringType, bool onlyTypes, ref MemberCache cache)
 		{
-			return Element.MemberDefinition.LoadMembers (declaringType);
+			Element.MemberDefinition.LoadMembers (declaringType, onlyTypes, ref cache);
 		}
 
 		public bool IsImported {

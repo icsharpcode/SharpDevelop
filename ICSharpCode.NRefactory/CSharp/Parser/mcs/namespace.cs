@@ -46,11 +46,11 @@ namespace Mono.CSharp {
 			referenced_assemblies = n;
 		}
 
-		public void ImportTypes (CompilerContext ctx)
+		public virtual void ImportTypes (CompilerContext ctx)
 		{
 			foreach (Assembly a in referenced_assemblies) {
 				try {
-					ImportAssembly (a);
+					ctx.MetaImporter.ImportAssembly (a, this);
 				} catch (TypeLoadException e) {
 					ctx.Report.Error (11, Location.Null, e.Message);
 				} catch (System.IO.FileNotFoundException) {
@@ -77,79 +77,22 @@ namespace Mono.CSharp {
 				GetNamespace (dotted_name, true);
 		}
 
-  		public void ImportAssembly (Assembly assembly)
-  		{
-			Type extension_type = null;
-			var all_attributes = CustomAttributeData.GetCustomAttributes (assembly);
-			foreach (var attr in all_attributes) {
-				var dt = attr.Constructor.DeclaringType;
-				if (dt.Name == "ExtensionAttribute" && dt.Namespace == "System.Runtime.CompilerServices") {
-					extension_type = dt;
-					break;
-				}
-			}
-
-			//
-			// This part tries to simulate loading of top-level
-			// types only, any missing dependencies are ignores here.
-			// Full error report is reported later when the type is
-			// actually used
-			//
-			Type[] all_types;
-			try {
-				all_types = assembly.GetTypes ();
-			} catch (ReflectionTypeLoadException e) {
-				all_types = e.Types;
-			}
-
-			Namespace ns = this;
-			string prev_namespace = null;
-			foreach (var t in all_types) {
-				if (t == null || t.IsNested)
-					continue;
-
-				if (t.Name[0] == '<')
-					continue;
-
-				var it = Import.CreateType (t, null);
-				if (it == null)
-					continue;
-
-				if (prev_namespace != t.Namespace) {
-					ns = t.Namespace == null ? this : GetNamespace (t.Namespace, true);
-					prev_namespace = t.Namespace;
-				}
-
-				ns.AddType (it);
-
-				if (it.IsStatic && extension_type != null && t.IsDefined (extension_type, false)) {
-					it.SetExtensionMethodContainer ();
-				}
-			}
-  		}
-
 		public override string GetSignatureForError ()
 		{
 			return alias_name + "::";
 		}
 	}
 
+	// TODO: It should go to AssemblyClass or AssemblySpec
 	public class GlobalRootNamespace : RootNamespace {
 		Module [] modules;
 		Dictionary<string, RootNamespace> root_namespaces;
 
-		public static GlobalRootNamespace Instance = new GlobalRootNamespace ();
-
-		GlobalRootNamespace ()
+		public GlobalRootNamespace ()
 			: base ("global")
 		{
 			root_namespaces = new Dictionary<string, RootNamespace> ();
 			root_namespaces.Add (alias_name, this);
-		}
-
-		public static void Reset ()
-		{
-			Instance = new GlobalRootNamespace ();
 		}
 
 		public Assembly [] Assemblies {
@@ -213,6 +156,18 @@ namespace Mono.CSharp {
 				return null;
 
 			return rn;
+		}
+
+		public override void ImportTypes (CompilerContext ctx)
+		{
+			base.ImportTypes (ctx);
+
+			if (modules != null) {
+				// 0 is this module
+				for (int i = 1; i < modules.Length; ++i) {
+					ctx.MetaImporter.ImportModule (modules[i], this);
+				}
+			}
 		}
 	}
 
@@ -433,6 +388,9 @@ namespace Mono.CSharp {
 			}
 
 			if (best == null)
+				return null;
+
+			if ((best.Modifiers & Modifiers.INTERNAL) != 0 && !TypeManager.IsThisOrFriendAssembly (CodeGen.Assembly.Builder, best.MemberDefinition.Assembly))
 				return null;
 
 			te = new TypeExpression (best, Location.Null);
@@ -745,9 +703,9 @@ namespace Mono.CSharp {
 				this.Location = loc;
 			}
 
-			public virtual FullNamedExpression Resolve (IMemberContext rc)
+			public virtual FullNamedExpression Resolve (IMemberContext rc, bool local)
 			{
-				FullNamedExpression fne = GlobalRootNamespace.Instance.GetRootNamespace (Alias);
+				FullNamedExpression fne = rc.Compiler.GlobalRootNamespace.GetRootNamespace (Alias);
 				if (fne == null) {
 					rc.Compiler.Report.Error (430, Location,
 						"The extern alias `{0}' was not specified in -reference option",
@@ -774,12 +732,12 @@ namespace Mono.CSharp {
 				this.value = name;
 			}
 
-			public override FullNamedExpression Resolve (IMemberContext rc)
+			public override FullNamedExpression Resolve (IMemberContext rc, bool local)
 			{
 				if (resolved != null || value == null)
 					return resolved;
 
-				if (rc == null)
+				if (local)
 					return null;
 
 				resolved = value.GetTypeExpression ().ResolveAsTypeStep (rc, false);
@@ -815,6 +773,7 @@ namespace Mono.CSharp {
 		public readonly DeclSpace SlaveDeclSpace;
 		static readonly Namespace [] empty_namespaces = new Namespace [0];
 		Namespace [] namespace_using_table;
+		CompilerContext ctx;
 
 		static List<NamespaceEntry> entries = new List<NamespaceEntry> ();
 
@@ -823,8 +782,10 @@ namespace Mono.CSharp {
 			entries = new List<NamespaceEntry> ();
 		}
 
-		public NamespaceEntry (NamespaceEntry parent, CompilationUnit file, string name)
+		// TODO: ctx should be a module
+		public NamespaceEntry (CompilerContext ctx, NamespaceEntry parent, CompilationUnit file, string name)
 		{
+			this.ctx = ctx;
 			this.parent = parent;
 			this.file = file;
 			entries.Add (this);
@@ -832,14 +793,15 @@ namespace Mono.CSharp {
 			if (parent != null)
 				ns = parent.NS.GetNamespace (name, true);
 			else if (name != null)
-				ns = GlobalRootNamespace.Instance.GetNamespace (name, true);
+				ns = Compiler.GlobalRootNamespace.GetNamespace (name, true);
 			else
-				ns = GlobalRootNamespace.Instance;
+				ns = Compiler.GlobalRootNamespace;
 			SlaveDeclSpace = new RootDeclSpace (this);
 		}
 
-		private NamespaceEntry (NamespaceEntry parent, CompilationUnit file, Namespace ns, bool slave)
+		private NamespaceEntry (CompilerContext ctx, NamespaceEntry parent, CompilationUnit file, Namespace ns, bool slave)
 		{
+			this.ctx = ctx;
 			this.parent = parent;
 			this.file = file;
 			this.IsImplicit = true;
@@ -922,7 +884,7 @@ namespace Mono.CSharp {
 		NamespaceEntry Doppelganger {
 			get {
 				if (!IsImplicit && doppelganger == null) {
-					doppelganger = new NamespaceEntry (ImplicitParent, file, ns, true);
+					doppelganger = new NamespaceEntry (ctx, ImplicitParent, file, ns, true);
 					doppelganger.using_aliases = using_aliases;
 				}
 				return doppelganger;
@@ -944,7 +906,7 @@ namespace Mono.CSharp {
 				if (implicit_parent == null) {
 					implicit_parent = (parent.NS == ns.Parent)
 						? parent
-						: new NamespaceEntry (parent, file, ns.Parent, false);
+						: new NamespaceEntry (ctx, parent, file, ns.Parent, false);
 				}
 				return implicit_parent;
 			}
@@ -1115,7 +1077,7 @@ namespace Mono.CSharp {
 
 				foreach (UsingAliasEntry ue in n.using_aliases) {
 					if (ue.Alias == name)
-						return ue.Resolve (Doppelganger);
+						return ue.Resolve (Doppelganger ?? this, Doppelganger == null);
 				}
 			}
 
@@ -1148,7 +1110,7 @@ namespace Mono.CSharp {
 							}
 						}
 
-						return ue.Resolve (Doppelganger);
+						return ue.Resolve (Doppelganger ?? this, Doppelganger == null);
 					}
 				}
 			}
@@ -1302,7 +1264,7 @@ namespace Mono.CSharp {
 		{
 			if (using_aliases != null) {
 				foreach (UsingAliasEntry ue in using_aliases)
-					ue.Resolve (Doppelganger);
+					ue.Resolve (Doppelganger, Doppelganger == null);
 			}
 
 			if (using_clauses != null) {
@@ -1334,7 +1296,7 @@ namespace Mono.CSharp {
 		#region IMemberContext Members
 
 		public CompilerContext Compiler {
-			get { return RootContext.ToplevelTypes.Compiler; }
+			get { return ctx; }
 		}
 
 		public TypeSpec CurrentType {

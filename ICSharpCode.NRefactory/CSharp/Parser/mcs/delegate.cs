@@ -22,10 +22,10 @@ namespace Mono.CSharp {
 	//
 	// Delegate container implementation
 	//
-	public class Delegate : TypeContainer
+	public class Delegate : TypeContainer, IParametersMember
 	{
- 		public FullNamedExpression ReturnType { get; private set; }
-		public readonly ParametersCompiled Parameters;
+ 		public FullNamedExpression ReturnType;
+		readonly ParametersCompiled parameters;
 
 		Constructor Constructor;
 		Method InvokeBuilder;
@@ -59,9 +59,23 @@ namespace Mono.CSharp {
 			ModFlags        = ModifiersExtensions.Check (AllowedModifiers, mod_flags,
 							   IsTopLevel ? Modifiers.INTERNAL :
 							   Modifiers.PRIVATE, name.Location, Report);
-			Parameters      = param_list;
+			parameters      = param_list;
 			spec = new TypeSpec (Kind, null, this, null, ModFlags | Modifiers.SEALED);
 		}
+
+		#region Properties
+		public TypeSpec MemberType {
+			get {
+				return ReturnType.Type;
+			}
+		}
+
+		public AParametersCollection Parameters {
+			get {
+				return parameters;
+			}
+		}
+		#endregion
 
 		public override void ApplyAttributeBuilder (Attribute a, MethodSpec ctor, byte[] cdata, PredefinedAttributes pa)
 		{
@@ -105,7 +119,7 @@ namespace Mono.CSharp {
 			// First, call the `out of band' special method for
 			// defining recursively any types we need:
 			//
-			var p = Parameters;
+			var p = parameters;
 
 			if (!p.Resolve (this))
 				return false;
@@ -170,14 +184,19 @@ namespace Mono.CSharp {
 			//
 			// BeginInvoke
 			//
-			Parameter[] compiled = new Parameter[Parameters.Count];
-			for (int i = 0; i < compiled.Length; ++i)
-				compiled[i] = new Parameter (new TypeExpression (Parameters.Types[i], Location),
-					Parameters.FixedParameters[i].Name,
-					Parameters.FixedParameters[i].ModFlags & (Parameter.Modifier.REF | Parameter.Modifier.OUT),
-					null, Location);
+			ParametersCompiled async_parameters;
+			if (Parameters.Count == 0) {
+				async_parameters = ParametersCompiled.EmptyReadOnlyParameters;
+			} else {
+				var compiled = new Parameter[Parameters.Count];
+				for (int i = 0; i < compiled.Length; ++i)
+					compiled[i] = new Parameter (new TypeExpression (Parameters.Types[i], Location),
+						Parameters.FixedParameters[i].Name,
+						Parameters.FixedParameters[i].ModFlags & (Parameter.Modifier.REF | Parameter.Modifier.OUT),
+						null, Location);
 
-			ParametersCompiled async_parameters = new ParametersCompiled (Compiler, compiled);
+				async_parameters = new ParametersCompiled (compiled);
+			}
 
 			async_parameters = ParametersCompiled.MergeGenerated (Compiler, async_parameters, false,
 				new Parameter[] {
@@ -217,7 +236,7 @@ namespace Mono.CSharp {
 
 				int param = 0;
 				for (int i = 0; i < Parameters.FixedParameters.Length; ++i) {
-					Parameter p = Parameters [i];
+					Parameter p = parameters [i];
 					if ((p.ModFlags & Parameter.Modifier.ISBYREF) == 0)
 						continue;
 
@@ -245,36 +264,30 @@ namespace Mono.CSharp {
 
 		public override void DefineConstants ()
 		{
-			if (!Parameters.IsEmpty && Parameters[Parameters.Count - 1].HasDefaultValue) {
-				var rc = new ResolveContext (this);
-				Parameters.ResolveDefaultValues (rc);
+			if (!Parameters.IsEmpty) {
+				parameters.ResolveDefaultValues (this);
 			}
 		}
 
 		public override void EmitType ()
 		{
-			if (ReturnType.Type == InternalType.Dynamic) {
-				return_attributes = new ReturnParameter (this, InvokeBuilder.MethodBuilder, Location);
-				PredefinedAttributes.Get.Dynamic.EmitAttribute (return_attributes.Builder);
-			} else {
-				var trans_flags = TypeManager.HasDynamicTypeUsed (ReturnType.Type);
-				if (trans_flags != null) {
-					var pa = PredefinedAttributes.Get.DynamicTransform;
-					if (pa.Constructor != null || pa.ResolveConstructor (Location, ArrayContainer.MakeType (TypeManager.bool_type))) {
-						return_attributes = new ReturnParameter (this, InvokeBuilder.MethodBuilder, Location);
-						return_attributes.Builder.SetCustomAttribute (
-							new CustomAttributeBuilder (pa.Constructor, new object [] { trans_flags }));
-					}
+			if (ReturnType.Type != null) {
+				if (ReturnType.Type == InternalType.Dynamic) {
+					return_attributes = new ReturnParameter (this, InvokeBuilder.MethodBuilder, Location);
+					Compiler.PredefinedAttributes.Dynamic.EmitAttribute (return_attributes.Builder);
+				} else if (ReturnType.Type.HasDynamicElement) {
+					return_attributes = new ReturnParameter (this, InvokeBuilder.MethodBuilder, Location);
+					Compiler.PredefinedAttributes.Dynamic.EmitAttribute (return_attributes.Builder, ReturnType.Type);
 				}
 			}
 
-			Parameters.ApplyAttributes (InvokeBuilder.MethodBuilder);
+			parameters.ApplyAttributes (this, InvokeBuilder.MethodBuilder);
 			
 			Constructor.ConstructorBuilder.SetImplementationFlags (MethodImplAttributes.Runtime);
 			InvokeBuilder.MethodBuilder.SetImplementationFlags (MethodImplAttributes.Runtime);
 
 			if (BeginInvokeBuilder != null) {
-				BeginInvokeBuilder.ParameterInfo.ApplyAttributes (BeginInvokeBuilder.MethodBuilder);
+				BeginInvokeBuilder.ParameterInfo.ApplyAttributes (this, BeginInvokeBuilder.MethodBuilder);
 
 				BeginInvokeBuilder.MethodBuilder.SetImplementationFlags (MethodImplAttributes.Runtime);
 				EndInvokeBuilder.MethodBuilder.SetImplementationFlags (MethodImplAttributes.Runtime);
@@ -315,7 +328,7 @@ namespace Mono.CSharp {
 				return false;
 			}
 
-			Parameters.VerifyClsCompliance (this);
+			parameters.VerifyClsCompliance (this);
 
 			if (!ReturnType.Type.IsCLSCompliant ()) {
 				Report.Warning (3002, 1, Location, "Return type of `{0}' is not CLS-compliant",
@@ -445,7 +458,7 @@ namespace Mono.CSharp {
 			var invoke_method = Delegate.GetInvokeMethod (ec.Compiler, type);
 
 			Arguments arguments = CreateDelegateMethodArguments (invoke_method.Parameters, invoke_method.Parameters.Types, loc);
-			method_group = method_group.OverloadResolve (ec, ref arguments, this, OverloadResolver.Restrictions.Covariant);
+			method_group = method_group.OverloadResolve (ec, ref arguments, this, OverloadResolver.Restrictions.CovariantDelegate);
 			if (method_group == null)
 				return null;
 
@@ -550,7 +563,7 @@ namespace Mono.CSharp {
 			var invoke = Delegate.GetInvokeMethod (ec.Compiler, target_type);
 
 			Arguments arguments = CreateDelegateMethodArguments (invoke.Parameters, invoke.Parameters.Types, mg.Location);
-			return mg.OverloadResolve (ec, ref arguments, null, OverloadResolver.Restrictions.Covariant | OverloadResolver.Restrictions.ProbingOnly) != null;
+			return mg.OverloadResolve (ec, ref arguments, null, OverloadResolver.Restrictions.CovariantDelegate | OverloadResolver.Restrictions.ProbingOnly) != null;
 		}
 
 		#region IErrorHandler Members

@@ -180,7 +180,7 @@ namespace Mono.CSharp {
 					Error_ValueCannotBeConverted (ec, loc, target_type, false);
 				}
 
-				return New.Constantify (target_type).Resolve (ec);
+				return New.Constantify (target_type, loc).Resolve (ec);
 			}
 		}
 
@@ -2032,7 +2032,7 @@ namespace Mono.CSharp {
 			}
 
 			// Exlude internal compiler types
-			if (targetType == InternalType.AnonymousMethod)
+			if (targetType.Kind == MemberKind.InternalCompilerType && targetType != InternalType.Dynamic && targetType != InternalType.Null)
 				return null;
 
 			if (!IsLiteral && !Convert.ImplicitStandardConversionExists (this, targetType))

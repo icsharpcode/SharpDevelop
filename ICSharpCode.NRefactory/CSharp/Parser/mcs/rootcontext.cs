@@ -248,6 +248,12 @@ namespace Mono.CSharp {
 			args[2] = TypeManager.enum_type.GetMetaInfo ();
 			args[3] = TypeManager.void_type.GetMetaInfo ();
 			set_corlib_type_builders.Invoke (CodeGen.Assembly.Builder, args);
+		}
+
+		static void HackCorlibEnums ()
+		{
+			if (StdLib)
+				return;
 
 			// Another Mono corlib HACK
 			// mono_class_layout_fields requires to have enums created
@@ -266,9 +272,9 @@ namespace Mono.CSharp {
 		//   methods, fields, etc) we need to "Define" them before we
 		//   can save the Assembly
 		// </remarks>
-		static public void CloseTypes ()
+		static public void CloseTypes (CompilerContext ctx)
 		{
-			HackCorlib ();
+			HackCorlibEnums ();
 
 			foreach (TypeContainer tc in root.Types){
 				tc.CloseType ();
@@ -282,8 +288,9 @@ namespace Mono.CSharp {
 			// If we have a <PrivateImplementationDetails> class, close it
 			//
 			if (helper_classes != null){
+				var cg = ctx.PredefinedAttributes.CompilerGenerated;
 				foreach (TypeBuilder type_builder in helper_classes) {
-					PredefinedAttributes.Get.CompilerGenerated.EmitAttribute (type_builder);
+					cg.EmitAttribute (type_builder);
 					type_builder.CreateType ();
 				}
 			}
@@ -327,6 +334,8 @@ namespace Mono.CSharp {
 		{
 			foreach (var tc in ToplevelTypes.Types)
 				tc.DefineConstants ();
+
+			HackCorlib ();
 
 			foreach (TypeContainer tc in ToplevelTypes.Types)
 				tc.EmitType ();

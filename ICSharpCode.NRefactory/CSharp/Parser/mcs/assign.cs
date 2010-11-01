@@ -301,7 +301,9 @@ namespace Mono.CSharp {
 		}
 
 		public Expression Source {
-			get { return source; }
+			get {
+				return source;
+			}
 		}
 
 		protected override Expression DoResolve (ResolveContext ec)
@@ -397,7 +399,8 @@ namespace Mono.CSharp {
 		}
 	}
 
-	public class SimpleAssign : Assign {
+	public class SimpleAssign : Assign
+	{
 		public SimpleAssign (Expression target, Expression source)
 			: this (target, source, target.Location)
 		{
@@ -437,19 +440,76 @@ namespace Mono.CSharp {
 		}
 	}
 
-	// This class implements fields and events class initializers
+	public class RuntimeExplicitAssign : Assign
+	{
+		public RuntimeExplicitAssign (Expression target, Expression source)
+			: base (target, source, target.Location)
+		{
+		}
+
+		protected override Expression ResolveConversions (ResolveContext ec)
+		{
+			source = Convert.ExplicitConversion (ec, source, target.Type, loc);
+			if (source != null)
+				return this;
+
+			return base.ResolveConversions (ec);
+		}
+	}
+
+	//
+	// Compiler generated assign
+	//
+	class CompilerAssign : Assign
+	{
+		public CompilerAssign (Expression target, Expression source, Location loc)
+			: base (target, source, loc)
+		{
+		}
+
+		public void UpdateSource (Expression source)
+		{
+			base.source = source;
+		}
+	}
+
+	//
+	// Implements fields and events class initializers
+	//
 	public class FieldInitializer : Assign
 	{
+		//
+		// Field initializers are tricky for partial classes. They have to
+		// share same constructor (block) for expression trees resolve but
+		// they have they own resolve scope
+		//
+		sealed class FieldInitializerContext : ResolveContext
+		{
+			ExplicitBlock ctor_block;
+
+			public FieldInitializerContext (IMemberContext mc, ResolveContext constructorContext)
+				: base (mc, Options.FieldInitializerScope | Options.ConstructorScope)
+			{
+				this.ctor_block = constructorContext.CurrentBlock.Explicit;
+			}
+
+			public override ExplicitBlock ConstructorBlock {
+				get {
+					return ctor_block;
+				}
+			}
+		}
+
 		//
 		// Keep resolved value because field initializers have their own rules
 		//
 		ExpressionStatement resolved;
-		IMemberContext rc;
+		IMemberContext mc;
 
-		public FieldInitializer (FieldSpec spec, Expression expression, IMemberContext rc)
+		public FieldInitializer (FieldSpec spec, Expression expression, IMemberContext mc)
 			: base (new FieldExpr (spec, expression.Location), expression, expression.Location)
 		{
-			this.rc = rc;
+			this.mc = mc;
 			if (!spec.IsStatic)
 				((FieldExpr)target).InstanceExpression = CompilerGeneratedThis.Instance;
 		}
@@ -461,19 +521,8 @@ namespace Mono.CSharp {
 				return null;
 
 			if (resolved == null) {
-				//
-				// Field initializers are tricky for partial classes. They have to
-				// share same constructor (block) but they have they own resolve scope.
-				//
-
-				IMemberContext old = ec.MemberContext;
-				ec.MemberContext = rc;
-
-				using (ec.Set (ResolveContext.Options.FieldInitializerScope)) {
-					resolved = base.DoResolve (ec) as ExpressionStatement;
-				}
-
-				ec.MemberContext = old;
+				var ctx = new FieldInitializerContext (mc, ec);
+				resolved = base.DoResolve (ctx) as ExpressionStatement;
 			}
 
 			return resolved;
@@ -617,30 +666,34 @@ namespace Mono.CSharp {
 
 			source = new Binary (op, left, right, true, loc);
 
-			if (target is DynamicMemberBinder) {
-				Arguments targs = ((DynamicMemberBinder) target).Arguments;
+			if (target is DynamicMemberAssignable) {
+				Arguments targs = ((DynamicMemberAssignable) target).Arguments;
 				source = source.Resolve (ec);
 
-				Arguments args = new Arguments (2);
+				Arguments args = new Arguments (targs.Count + 1);
 				args.AddRange (targs);
 				args.Add (new Argument (source));
-				source = new DynamicMemberBinder (ma.Name, args, loc).ResolveLValue (ec, right);
+				if (target is DynamicMemberBinder) {
+					source = new DynamicMemberBinder (ma.Name, CSharpBinderFlags.ValueFromCompoundAssignment, args, loc).Resolve (ec);
 
-				// Handles possible event addition/subtraction
-				if (op == Binary.Operator.Addition || op == Binary.Operator.Subtraction) {
-					args = new Arguments (2);
-					args.AddRange (targs);
-					args.Add (new Argument (right));
-					string method_prefix = op == Binary.Operator.Addition ?
-						Event.AEventAccessor.AddPrefix : Event.AEventAccessor.RemovePrefix;
+					// Handles possible event addition/subtraction
+					if (op == Binary.Operator.Addition || op == Binary.Operator.Subtraction) {
+						args = new Arguments (targs.Count + 1);
+						args.AddRange (targs);
+						args.Add (new Argument (right));
+						string method_prefix = op == Binary.Operator.Addition ?
+							Event.AEventAccessor.AddPrefix : Event.AEventAccessor.RemovePrefix;
 
-					var invoke = DynamicInvocation.CreateSpecialNameInvoke (
-						new MemberAccess (right, method_prefix + ma.Name, loc), args, loc).Resolve (ec);
+						var invoke = DynamicInvocation.CreateSpecialNameInvoke (
+							new MemberAccess (right, method_prefix + ma.Name, loc), args, loc).Resolve (ec);
 
-					args = new Arguments (1);
-					args.AddRange (targs);
-					source = new DynamicEventCompoundAssign (ma.Name, args,
-						(ExpressionStatement) source, (ExpressionStatement) invoke, loc).Resolve (ec);
+						args = new Arguments (targs.Count);
+						args.AddRange (targs);
+						source = new DynamicEventCompoundAssign (ma.Name, args,
+							(ExpressionStatement) source, (ExpressionStatement) invoke, loc).Resolve (ec);
+					}
+				} else {
+					source = new DynamicIndexBinder (CSharpBinderFlags.ValueFromCompoundAssignment, args, loc).Resolve (ec);
 				}
 
 				return source;
@@ -651,6 +704,14 @@ namespace Mono.CSharp {
 
 		protected override Expression ResolveConversions (ResolveContext ec)
 		{
+			//
+			// LAMESPEC: Under dynamic context no target conversion is happening
+			// This allows more natual dynamic behaviour but breaks compatibility
+			// with static binding
+			//
+			if (target is RuntimeValueExpression)
+				return this;
+
 			TypeSpec target_type = target.Type;
 
 			//
@@ -665,6 +726,9 @@ namespace Mono.CSharp {
 			// Otherwise, if the selected operator is a predefined operator
 			//
 			Binary b = source as Binary;
+			if (b == null && source is ReducedExpression)
+				b = ((ReducedExpression) source).OriginalExpression as Binary;
+
 			if (b != null) {
 				//
 				// 2a. the operator is a shift operator

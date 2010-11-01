@@ -514,7 +514,7 @@ namespace Mono.CSharp {
 			if (OptAttributes == null)
 				return null;
 
-			Attribute obsolete_attr = OptAttributes.Search (PredefinedAttributes.Get.Obsolete);
+			Attribute obsolete_attr = OptAttributes.Search (Compiler.PredefinedAttributes.Obsolete);
 			if (obsolete_attr == null)
 				return null;
 
@@ -603,11 +603,12 @@ namespace Mono.CSharp {
 					case Modifiers.PROTECTED | Modifiers.INTERNAL:
 						if (al == Modifiers.INTERNAL)
 							same_access_restrictions = TypeManager.IsThisOrFriendAssembly (Parent.Module.Assembly, p.Assembly);
-						else if (al == Modifiers.PROTECTED)
-							same_access_restrictions = mc.Parent.IsBaseTypeDefinition (p_parent);
 						else if (al == (Modifiers.PROTECTED | Modifiers.INTERNAL))
 							same_access_restrictions = mc.Parent.IsBaseTypeDefinition (p_parent) &&
 								TypeManager.IsThisOrFriendAssembly (Parent.Module.Assembly, p.Assembly);
+						else
+							goto case Modifiers.PROTECTED;
+
 						break;
 
 					case Modifiers.PRIVATE:
@@ -710,7 +711,7 @@ namespace Mono.CSharp {
 			caching_flags &= ~Flags.HasCompliantAttribute_Undetected;
 
 			if (OptAttributes != null) {
-				Attribute cls_attribute = OptAttributes.Search (PredefinedAttributes.Get.CLSCompliant);
+				Attribute cls_attribute = OptAttributes.Search (Compiler.PredefinedAttributes.CLSCompliant);
 				if (cls_attribute != null) {
 					caching_flags |= Flags.HasClsCompliantAttribute;
 					if (cls_attribute.GetClsCompliantAttributeValue ())
@@ -754,7 +755,7 @@ namespace Mono.CSharp {
 		{
 			if (HasClsCompliantAttribute) {
 				if (CodeGen.Assembly.ClsCompliantAttribute == null) {
-					Attribute a = OptAttributes.Search (PredefinedAttributes.Get.CLSCompliant);
+					Attribute a = OptAttributes.Search (Compiler.PredefinedAttributes.CLSCompliant);
 					if ((caching_flags & Flags.ClsCompliantAttributeFalse) != 0) {
 						Report.Warning (3021, 2, a.Location,
 							"`{0}' does not need a CLSCompliant attribute because the assembly is not marked as CLS-compliant",
@@ -768,7 +769,7 @@ namespace Mono.CSharp {
 				}
 
 				if (!IsExposedFromAssembly ()) {
-					Attribute a = OptAttributes.Search (PredefinedAttributes.Get.CLSCompliant);
+					Attribute a = OptAttributes.Search (Compiler.PredefinedAttributes.CLSCompliant);
 					Report.Warning (3019, 2, a.Location, "CLS compliance checking will not be performed on `{0}' because it is not visible from outside this assembly", GetSignatureForError ());
 					return false;
 				}
@@ -784,7 +785,7 @@ namespace Mono.CSharp {
 				}
 
 				if (Parent.Parent != null && !Parent.IsClsComplianceRequired ()) {
-					Attribute a = OptAttributes.Search (PredefinedAttributes.Get.CLSCompliant);
+					Attribute a = OptAttributes.Search (Compiler.PredefinedAttributes.CLSCompliant);
 					Report.Warning (3018, 1, a.Location, "`{0}' cannot be marked as CLS-compliant because it is a member of non CLS-compliant type `{1}'",
 						GetSignatureForError (), Parent.GetSignatureForError ());
 					return false;
@@ -900,6 +901,7 @@ namespace Mono.CSharp {
 			CLSCompliant_Undetected = 1 << 3,	// CLSCompliant attribute has not been detected yet
 			CLSCompliant = 1 << 4,		// Member is CLS Compliant
 
+			HasDynamicElement = 1 << 8,
 			IsAccessor = 1 << 9,		// Method is an accessor
 			IsGeneric = 1 << 10,		// Member contains type arguments
 
@@ -1187,8 +1189,6 @@ namespace Mono.CSharp {
 		//
 		public NamespaceEntry NamespaceEntry;
 
-		private Dictionary<string, FullNamedExpression> Cache = new Dictionary<string, FullNamedExpression> ();
-		
 		public readonly string Basename;
 		
 		protected Dictionary<string, MemberCore> defined_names;
@@ -1362,77 +1362,6 @@ namespace Mono.CSharp {
 			}
 
 			throw new NotImplementedException (check_attr.ToString ());
-		}
-
-		private TypeSpec LookupNestedTypeInHierarchy (string name, int arity)
-		{
-			// TODO: GenericMethod only
-			if (PartialContainer == null)
-				return null;
-
-			// Has any nested type
-			// Does not work, because base type can have
-			//if (PartialContainer.Types == null)
-			//	return null;
-
-			var container = PartialContainer.CurrentType;
-
-			// Is not Root container
-			if (container == null)
-				return null;
-
-			var	t = MemberCache.FindNestedType (container, name, arity);
-			if (t == null)
-				return null;
-
-			// FIXME: Breaks error reporting
-			if (!t.IsAccessible (CurrentType))
-				return null;
-
-			return t;
-		}
-
-		//
-		// Public function used to locate types.
-		//
-		// Set 'ignore_cs0104' to true if you want to ignore cs0104 errors.
-		//
-		// Returns: Type or null if they type can not be found.
-		//
-		public override FullNamedExpression LookupNamespaceOrType (string name, int arity, Location loc, bool ignore_cs0104)
-		{
-			FullNamedExpression e;
-			if (arity == 0 && Cache.TryGetValue (name, out e))
-				return e;
-
-			e = null;
-			int errors = Report.Errors;
-
-			if (arity == 0) {
-				TypeParameter[] tp = CurrentTypeParameters;
-				if (tp != null) {
-					TypeParameter tparam = TypeParameter.FindTypeParameter (tp, name);
-					if (tparam != null)
-						e = new TypeParameterExpr (tparam, Location.Null);
-				}
-			}
-
-			if (e == null) {
-				TypeSpec t = LookupNestedTypeInHierarchy (name, arity);
-
-				if (t != null)
-					e = new TypeExpression (t, Location.Null);
-				else if (Parent != null)
-					e = Parent.LookupNamespaceOrType (name, arity, loc, ignore_cs0104);
-				else
-					e = NamespaceEntry.LookupNamespaceOrType (name, arity, loc, ignore_cs0104);
-			}
-
-			// TODO MemberCache: How to cache arity stuff ?
-			if (errors == Report.Errors && arity == 0)
-				Cache [name] = e;
-			
-			return e;
 		}
 
 		public override Assembly Assembly {

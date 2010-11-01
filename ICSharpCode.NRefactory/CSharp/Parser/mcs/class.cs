@@ -170,6 +170,8 @@ namespace Mono.CSharp {
 
 		Dictionary<MethodSpec, Method> hoisted_base_call_proxies;
 
+		Dictionary<string, FullNamedExpression> Cache = new Dictionary<string, FullNamedExpression> ();
+
 		//
 		// Pointers to the default constructor and the default static constructor
 		//
@@ -182,7 +184,7 @@ namespace Mono.CSharp {
 		// This is an arbitrary choice.  We are interested in looking at _some_ non-static field,
 		// and the first one's as good as any.
 		//
-		FieldBase first_nonstatic_field = null;
+		FieldBase first_nonstatic_field;
 
 		//
 		// This one is computed after we can distinguish interfaces
@@ -215,6 +217,8 @@ namespace Mono.CSharp {
 		TypeSpec current_type;
 
 		List<TypeContainer> partial_parts;
+
+		public int DynamicSitesCounter;
 
 		/// <remarks>
 		///  The pending methods that need to be implemented
@@ -292,6 +296,12 @@ namespace Mono.CSharp {
 				return members_defined;
 			}
 		}
+		
+		public List<FullNamedExpression> TypeBaseExpressions {
+			get {
+				return type_bases;
+			}
+		}
 
 		#endregion
 
@@ -317,24 +327,24 @@ namespace Mono.CSharp {
 
 		public void AddConstant (Const constant)
 		{
+			orderedAllMembers.Add (constant);
 			if (!AddMember (constant))
 				return;
 			
 			if (constants == null)
 				constants = new List<MemberCore> ();
-			orderedAllMembers.Add (constant);
 			constants.Add (constant);
 		}
 
 		public TypeContainer AddTypeContainer (TypeContainer tc)
 		{
+			orderedAllMembers.Add (tc);
 			if (!AddMemberType (tc))
 				return tc;
 
 			if (types == null)
 				types = new List<TypeContainer> ();
 			
-			orderedAllMembers.Add (tc);
 			types.Add (tc);
 			return tc;
 		}
@@ -405,9 +415,10 @@ namespace Mono.CSharp {
 			RemoveMemberType (next_part);
 		}
 		
-		public void AddDelegate (Delegate d)
+		public virtual TypeSpec AddDelegate (Delegate d)
 		{
 			AddTypeContainer (d);
+			return null;
 		}
 
 		private void AddMemberToList (MemberCore mc, List<MemberCore> alist, bool isexplicit)
@@ -435,10 +446,10 @@ namespace Mono.CSharp {
 		
 		public void AddMethod (MethodOrOperator method)
 		{
+			orderedAllMembers.Add (method);
 			if (!AddToContainer (method, method.MemberName.Basename))
 				return;
 			
-			orderedAllMembers.Add (method);
 			if (methods == null)
 				methods = new List<MemberCore> ();
 
@@ -450,6 +461,7 @@ namespace Mono.CSharp {
 
 		public void AddConstructor (Constructor c)
 		{
+			orderedAllMembers.Add (c);
 			bool is_static = (c.ModFlags & Modifiers.STATIC) != 0;
 			if (!AddToContainer (c, is_static ?
 				ConstructorBuilder.ConstructorName : ConstructorBuilder.TypeConstructorName))
@@ -468,7 +480,6 @@ namespace Mono.CSharp {
 			} else {
 				if (c.ParameterInfo.IsEmpty)
 					default_constructor = c;
-				orderedAllMembers.Add (c);
 				if (instance_constructors == null)
 					instance_constructors = new List<Constructor> ();
 				
@@ -478,9 +489,9 @@ namespace Mono.CSharp {
 
 		public bool AddField (FieldBase field)
 		{
+			orderedAllMembers.Add (field);
 			if (!AddMember (field))
 				return false;
-			orderedAllMembers.Add (field);
 			if (fields == null)
 				fields = new List<FieldBase> ();
 
@@ -505,9 +516,9 @@ namespace Mono.CSharp {
 
 		public void AddProperty (Property prop)
 		{
+			orderedAllMembers.Add (prop);
 			if (!AddMember (prop))
 				return;
-			orderedAllMembers.Add (prop);
 			if (properties == null)
 				properties = new List<MemberCore> ();
 
@@ -519,9 +530,9 @@ namespace Mono.CSharp {
 
 		public void AddEvent (Event e)
 		{
+			orderedAllMembers.Add (e);
 			if (!AddMember (e))
 				return;
-			orderedAllMembers.Add (e);
 			if (events == null)
 				events = new List<MemberCore> ();
 
@@ -533,9 +544,9 @@ namespace Mono.CSharp {
 		/// </summary>
 		public void AddIndexer (Indexer i)
 		{
+			orderedAllMembers.Add (i);
 			if (indexers == null)
 				indexers = new List<MemberCore> ();
-			orderedAllMembers.Add (i);
 			if (i.IsExplicitImpl)
 				AddMemberToList (i, indexers, true);
 			else 
@@ -544,9 +555,9 @@ namespace Mono.CSharp {
 
 		public void AddOperator (Operator op)
 		{
+			orderedAllMembers.Add (op);
 			if (!AddMember (op))
 				return;
-			orderedAllMembers.Add (op);
 			if (operators == null)
 				operators = new List<MemberCore> ();
 
@@ -681,7 +692,7 @@ namespace Mono.CSharp {
 				if (OptAttributes == null)
 					return false;
 
-				return OptAttributes.Contains (PredefinedAttributes.Get.ComImport);
+				return OptAttributes.Contains (Compiler.PredefinedAttributes.ComImport);
 			}
 		}
 
@@ -795,7 +806,7 @@ namespace Mono.CSharp {
 			if (OptAttributes == null)
 				return null;
 
-			Attribute a = OptAttributes.Search (PredefinedAttributes.Get.CoClass);
+			Attribute a = OptAttributes.Search (Compiler.PredefinedAttributes.CoClass);
 			if (a == null)
 				return null;
 
@@ -849,12 +860,14 @@ namespace Mono.CSharp {
 					continue;
 
 				if (i == 0 && Kind == MemberKind.Class && !fne_resolved.Type.IsInterface) {
-					if (fne_resolved.Type == InternalType.Dynamic)
+					if (fne_resolved.Type == InternalType.Dynamic) {
 						Report.Error (1965, Location, "Class `{0}' cannot derive from the dynamic type",
 							GetSignatureForError ());
-					else
-						base_type = fne_resolved.Type;
 
+						continue;
+					}
+					
+					base_type = fne_resolved.Type;
 					base_class = fne_resolved;
 					continue;
 				}
@@ -1012,7 +1025,7 @@ namespace Mono.CSharp {
 			int type_size = Kind == MemberKind.Struct && first_nonstatic_field == null ? 1 : 0;
 
 			if (IsTopLevel) {
-				if (GlobalRootNamespace.Instance.IsNamespace (Name)) {
+				if (Compiler.GlobalRootNamespace.IsNamespace (Name)) {
 					Report.Error (519, Location, "`{0}' clashes with a predefined namespace", Name);
 					return false;
 				}
@@ -1067,7 +1080,15 @@ namespace Mono.CSharp {
 
 			if (proxy_method == null) {
 				string name = CompilerGeneratedClass.MakeName (method.Name, null, "BaseCallProxy", hoisted_base_call_proxies.Count);
-				var cloned_params = ParametersCompiled.CreateFullyResolved (method.Parameters.FixedParameters, method.Parameters.Types);
+				var base_parameters = new Parameter[method.Parameters.Count];
+				for (int i = 0; i < base_parameters.Length; ++i) {
+					var base_param = method.Parameters.FixedParameters[i];
+					base_parameters[i] = new Parameter (new TypeExpression (method.Parameters.Types[i], Location),
+						base_param.Name, base_param.ModFlags, null, Location);
+					base_parameters[i].Resolve (this, i);
+				}
+
+				var cloned_params = ParametersCompiled.CreateFullyResolved (base_parameters, method.Parameters.Types);
 				if (method.Parameters.HasArglist) {
 					cloned_params.FixedParameters[0] = new Parameter (null, "__arglist", Parameter.Modifier.NONE, null, Location);
 					cloned_params.Types[0] = TypeManager.runtime_argument_handle_type;
@@ -1224,9 +1245,8 @@ namespace Mono.CSharp {
 			if (instance_constructors != null) {
 				foreach (MethodCore m in instance_constructors) {
 					var p = m.ParameterInfo;
-					if (!p.IsEmpty && p[p.Count - 1].HasDefaultValue) {
-						var rc = new ResolveContext (m);
-						p.ResolveDefaultValues (rc);
+					if (!p.IsEmpty) {
+						p.ResolveDefaultValues (m);
 					}
 				}
 			}
@@ -1234,20 +1254,15 @@ namespace Mono.CSharp {
 			if (methods != null) {
 				foreach (MethodCore m in methods) {
 					var p = m.ParameterInfo;
-					if (!p.IsEmpty && (p[p.Count - 1].HasDefaultValue || (p.HasParams && p.Count > 1 && p[p.Count - 2].HasDefaultValue))) {
-						var rc = new ResolveContext (m);
-						p.ResolveDefaultValues (rc);
+					if (!p.IsEmpty) {
+						p.ResolveDefaultValues (m);
 					}
 				}
 			}
 
 			if (indexers != null) {
 				foreach (Indexer i in indexers) {
-					var p = i.ParameterInfo;
-					if (p[p.Count - 1].HasDefaultValue) {
-					    var rc = new ResolveContext (i);
-						p.ResolveDefaultValues (rc);
-					}
+					i.ParameterInfo.ResolveDefaultValues (i);
 				}
 			}
 
@@ -1532,25 +1547,6 @@ namespace Mono.CSharp {
 				}
 			}
 
-			if (!IsTopLevel) {
-				MemberSpec candidate;
-				var conflict_symbol = MemberCache.FindBaseMember (this, out candidate);
-				if (conflict_symbol == null && candidate == null) {
-					if ((ModFlags & Modifiers.NEW) != 0)
-						Report.Warning (109, 4, Location, "The member `{0}' does not hide an inherited member. The new keyword is not required",
-							GetSignatureForError ());
-				} else {
-					if ((ModFlags & Modifiers.NEW) == 0) {
-						if (candidate == null)
-							candidate = conflict_symbol;
-
-						Report.SymbolRelatedToPreviousError (candidate);
-						Report.Warning (108, 2, Location, "`{0}' hides inherited member `{1}'. Use the new keyword if hiding was intended",
-							GetSignatureForError (), candidate.GetSignatureForError ());
-					}
-				}
-			}
-
 			DefineContainerMembers (constants);
 			DefineContainerMembers (fields);
 
@@ -1641,7 +1637,7 @@ namespace Mono.CSharp {
 			if (!seen_normal_indexers)
 				return;
 
-			PredefinedAttribute pa = PredefinedAttributes.Get.DefaultMember;
+			PredefinedAttribute pa = Compiler.PredefinedAttributes.DefaultMember;
 			if (pa.Constructor == null &&
 				!pa.ResolveConstructor (Location, TypeManager.string_type))
 				return;
@@ -1739,7 +1735,7 @@ namespace Mono.CSharp {
 						if (f.OptAttributes != null || PartialContainer.HasStructLayout)
 							continue;
 						
-						Constant c = New.Constantify (f.MemberType);
+						Constant c = New.Constantify (f.MemberType, f.Location);
 						Report.Warning (649, 4, f.Location, "Field `{0}' is never assigned to, and will always have its default value `{1}'",
 							f.GetSignatureForError (), c == null ? "null" : c.AsString ());
 					}
@@ -1749,6 +1745,25 @@ namespace Mono.CSharp {
 
 		public override void Emit ()
 		{
+			if (!IsTopLevel) {
+				MemberSpec candidate;
+				var conflict_symbol = MemberCache.FindBaseMember (this, out candidate);
+				if (conflict_symbol == null && candidate == null) {
+					if ((ModFlags & Modifiers.NEW) != 0)
+						Report.Warning (109, 4, Location, "The member `{0}' does not hide an inherited member. The new keyword is not required",
+							GetSignatureForError ());
+				} else {
+					if ((ModFlags & Modifiers.NEW) == 0) {
+						if (candidate == null)
+							candidate = conflict_symbol;
+
+						Report.SymbolRelatedToPreviousError (candidate);
+						Report.Warning (108, 2, Location, "`{0}' hides inherited member `{1}'. Use the new keyword if hiding was intended",
+							GetSignatureForError (), candidate.GetSignatureForError ());
+					}
+				}
+			}
+
 			if (all_tp_builders != null) {
 				int current_starts_index = CurrentTypeParametersStartIndex;
 				for (int i = 0; i < all_tp_builders.Length; i++) {
@@ -1761,7 +1776,7 @@ namespace Mono.CSharp {
 			}
 
 			if ((ModFlags & Modifiers.COMPILER_GENERATED) != 0 && !Parent.IsCompilerGenerated)
-				PredefinedAttributes.Get.CompilerGenerated.EmitAttribute (TypeBuilder);
+				Compiler.PredefinedAttributes.CompilerGenerated.EmitAttribute (TypeBuilder);
 
 			base.Emit ();
 		}
@@ -2060,9 +2075,80 @@ namespace Mono.CSharp {
 			return false;
 		}
 
-		public MemberCache LoadMembers (TypeSpec declaringType)
+		public void LoadMembers (TypeSpec declaringType, bool onlyTypes, ref MemberCache cache)
 		{
 			throw new NotSupportedException ("Not supported for compiled definition " + GetSignatureForError ());
+		}
+
+		//
+		// Public function used to locate types.
+		//
+		// Set 'ignore_cs0104' to true if you want to ignore cs0104 errors.
+		//
+		// Returns: Type or null if they type can not be found.
+		//
+		public override FullNamedExpression LookupNamespaceOrType (string name, int arity, Location loc, bool ignore_cs0104)
+		{
+			FullNamedExpression e;
+			if (arity == 0 && Cache.TryGetValue (name, out e))
+				return e;
+
+			e = null;
+			int errors = Report.Errors;
+
+			if (arity == 0) {
+				TypeParameter[] tp = CurrentTypeParameters;
+				if (tp != null) {
+					TypeParameter tparam = TypeParameter.FindTypeParameter (tp, name);
+					if (tparam != null)
+						e = new TypeParameterExpr (tparam, Location.Null);
+				}
+			}
+
+			if (e == null) {
+				TypeSpec t = LookupNestedTypeInHierarchy (name, arity);
+
+				if (t != null)
+					e = new TypeExpression (t, Location.Null);
+				else if (Parent != null) {
+					e = Parent.LookupNamespaceOrType (name, arity, loc, ignore_cs0104);
+				} else
+					e = NamespaceEntry.LookupNamespaceOrType (name, arity, loc, ignore_cs0104);
+			}
+
+			// TODO MemberCache: How to cache arity stuff ?
+			if (errors == Report.Errors && arity == 0)
+				Cache[name] = e;
+
+			return e;
+		}
+
+		TypeSpec LookupNestedTypeInHierarchy (string name, int arity)
+		{
+			// TODO: GenericMethod only
+			if (PartialContainer == null)
+				return null;
+
+			// Has any nested type
+			// Does not work, because base type can have
+			//if (PartialContainer.Types == null)
+			//	return null;
+
+			var container = PartialContainer.CurrentType;
+
+			// Is not Root container
+			if (container == null)
+				return null;
+
+			var t = MemberCache.FindNestedType (container, name, arity);
+			if (t == null)
+				return null;
+
+			// FIXME: Breaks error reporting
+			if (!t.IsAccessible (CurrentType))
+				return null;
+
+			return t;
 		}
 
 		public void Mark_HasEquals ()
@@ -2414,14 +2500,10 @@ namespace Mono.CSharp {
 			base.Emit ();
 
 			if ((ModFlags & Modifiers.METHOD_EXTENSION) != 0)
-				PredefinedAttributes.Get.Extension.EmitAttribute (TypeBuilder);
+				Compiler.PredefinedAttributes.Extension.EmitAttribute (TypeBuilder);
 
-			var trans_flags = TypeManager.HasDynamicTypeUsed (base_type);
-			if (trans_flags != null) {
-				var pa = PredefinedAttributes.Get.DynamicTransform;
-				if (pa.Constructor != null || pa.ResolveConstructor (Location, ArrayContainer.MakeType (TypeManager.bool_type))) {
-					TypeBuilder.SetCustomAttribute (new CustomAttributeBuilder (pa.Constructor, new object[] { trans_flags }));
-				}
+			if (base_type != null && base_type.HasDynamicElement) {
+				Compiler.PredefinedAttributes.Dynamic.EmitAttribute (TypeBuilder, base_type);
 			}
 		}
 
@@ -2490,7 +2572,7 @@ namespace Mono.CSharp {
 			if (OptAttributes == null)
 				return null;
 
-			Attribute[] attrs = OptAttributes.SearchMulti (PredefinedAttributes.Get.Conditional);
+			Attribute[] attrs = OptAttributes.SearchMulti (Compiler.PredefinedAttributes.Conditional);
 			if (attrs == null)
 				return null;
 
@@ -2649,14 +2731,9 @@ namespace Mono.CSharp {
 				while (mt.IsPointer)
 					mt = TypeManager.GetElementType (mt);
 
-				if (mt.MemberDefinition == this) {
-					for (var p = Parent; p != null; p = p.Parent) {
-						if (p.Kind == MemberKind.Class) {
-							has_unmanaged_check_done = true;
-							return false;
-						}
-					}
-					continue;
+				if (mt.IsGenericOrParentIsGeneric || mt.IsGenericParameter) {
+					has_unmanaged_check_done = true;
+					return false;
 				}
 
 				if (TypeManager.IsUnmanagedType (mt))
@@ -2908,13 +2985,13 @@ namespace Mono.CSharp {
 
 				ObsoleteAttribute oa = base_member.GetAttributeObsolete ();
 				if (oa != null) {
-					if (OptAttributes == null || !OptAttributes.Contains (PredefinedAttributes.Get.Obsolete)) {
+					if (OptAttributes == null || !OptAttributes.Contains (Compiler.PredefinedAttributes.Obsolete)) {
 						Report.SymbolRelatedToPreviousError (base_member);
 						Report.Warning (672, 1, Location, "Member `{0}' overrides obsolete member `{1}'. Add the Obsolete attribute to `{0}'",
 							GetSignatureForError (), TypeManager.GetFullNameSignature (base_member));
 					}
 				} else {
-					if (OptAttributes != null && OptAttributes.Contains (PredefinedAttributes.Get.Obsolete)) {
+					if (OptAttributes != null && OptAttributes.Contains (Compiler.PredefinedAttributes.Obsolete)) {
 						Report.SymbolRelatedToPreviousError (base_member);
 						Report.Warning (809, 1, Location, "Obsolete member `{0}' overrides non-obsolete member `{1}'",
 							GetSignatureForError (), TypeManager.GetFullNameSignature (base_member));
@@ -2938,13 +3015,15 @@ namespace Mono.CSharp {
 			} else {
 				if ((ModFlags & Modifiers.NEW) == 0) {
 					ModFlags |= Modifiers.NEW;
-					Report.SymbolRelatedToPreviousError (base_member);
-					if (!IsInterface && (base_member.Modifiers & (Modifiers.ABSTRACT | Modifiers.VIRTUAL | Modifiers.OVERRIDE)) != 0) {
-						Report.Warning (114, 2, Location, "`{0}' hides inherited member `{1}'. To make the current member override that implementation, add the override keyword. Otherwise add the new keyword",
-							GetSignatureForError (), base_member.GetSignatureForError ());
-					} else {
-						Report.Warning (108, 2, Location, "`{0}' hides inherited member `{1}'. Use the new keyword if hiding was intended",
-							GetSignatureForError (), base_member.GetSignatureForError ());
+					if (!IsCompilerGenerated) {
+						Report.SymbolRelatedToPreviousError (base_member);
+						if (!IsInterface && (base_member.Modifiers & (Modifiers.ABSTRACT | Modifiers.VIRTUAL | Modifiers.OVERRIDE)) != 0) {
+							Report.Warning (114, 2, Location, "`{0}' hides inherited member `{1}'. To make the current member override that implementation, add the override keyword. Otherwise add the new keyword",
+								GetSignatureForError (), base_member.GetSignatureForError ());
+						} else {
+							Report.Warning (108, 2, Location, "`{0}' hides inherited member `{1}'. Use the new keyword if hiding was intended",
+								GetSignatureForError (), base_member.GetSignatureForError ());
+						}
 					}
 				}
 
