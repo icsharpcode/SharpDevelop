@@ -691,7 +691,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					return Accessibility.Public;
 				case MethodAttributes.FamANDAssem:
 					return Accessibility.ProtectedAndInternal;
-				case MethodAttributes.Assem:
+				case MethodAttributes.Assembly:
 					return Accessibility.Internal;
 				case MethodAttributes.Family:
 					return Accessibility.Protected;

@@ -250,7 +250,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				for (int i = 0; i < n; i++) {
 					for (int j = 0; j < n; j++) {
-						dependencyMatrix[i, j] = input.Occurs[j] && output.Occurs[i];
+						dependencyMatrix[i, j] |= input.Occurs[j] && output.Occurs[i];
 					}
 				}
 			}
