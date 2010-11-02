@@ -84,6 +84,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 		event EventHandler TitleNameChanged;
 		
 		/// <summary>
+		/// The tooltip that will be shown when you hover the mouse over the title
+		/// </summary>
+		string InfoTip {
+			get;
+		}
+
+		/// <summary>
+		/// Is called each time the info tip for the content has changed.
+		/// </summary>
+		event EventHandler InfoTipChanged;
+
+		/// <summary>
 		/// Saves the content to the location <code>fileName</code>
 		/// </summary>
 		/// <remarks>

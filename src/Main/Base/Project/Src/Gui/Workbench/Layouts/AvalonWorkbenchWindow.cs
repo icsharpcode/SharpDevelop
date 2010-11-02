@@ -135,8 +135,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void UpdateActiveViewContent()
 		{
-			UpdateTitle();
+			UpdateTitleAndInfoTip();
+			
 			IViewContent newActiveViewContent = this.ActiveViewContent;
+			if (newActiveViewContent != null)
+				IsLocked = newActiveViewContent.IsReadOnly;
+
 			if (oldActiveViewContent != newActiveViewContent && ActiveViewContentChanged != null) {
 				ActiveViewContentChanged(this, EventArgs.Empty);
 			}
@@ -262,7 +266,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			if (this.DragEnabledArea != null) {
 				this.DragEnabledArea.ContextMenu = MenuService.CreateContextMenu(this, contextMenuPath);
-				UpdateTitle(); // set tooltip
+				UpdateInfoTip(); // set tooltip
 			}
 		}
 		
@@ -347,6 +351,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 				UpdateTitle();
 			}
 		}
+
+		void OnInfoTipChanged(object sender, EventArgs e)
+		{
+			if (sender == ActiveViewContent) {
+				UpdateInfoTip();
+			}
+		}
 		
 		void OnIsDirtyChanged(object sender, EventArgs e)
 		{
@@ -354,36 +365,54 @@ namespace ICSharpCode.SharpDevelop.Gui
 			CommandManager.InvalidateRequerySuggested();
 		}
 		
+		void UpdateTitleAndInfoTip()
+		{
+			UpdateInfoTip();
+			UpdateTitle();
+		}
+		
+		void UpdateInfoTip()
+		{
+			IViewContent content = ActiveViewContent;
+			if (content != null)
+			{
+				string newInfoTip = content.InfoTip;
+
+				if (newInfoTip != this.InfoTip) {
+					this.InfoTip = newInfoTip;
+					if (DragEnabledArea != null)
+						DragEnabledArea.ToolTip = this.InfoTip;
+
+					OnInfoTipChanged();
+				}
+			}
+		}
+
 		void UpdateTitle()
 		{
 			IViewContent content = ActiveViewContent;
 			if (content != null) {
-				this.InfoTip = content.PrimaryFileName;
-				
 				string newTitle = content.TitleName;
-				
-				if (this.IsDirty) {
+				if (content.IsDirty)
 					newTitle += "*";
-				}
-				
-				IsLocked = content.IsReadOnly;
-				
 				if (newTitle != Title) {
 					Title = newTitle;
-					OnTitleChanged(EventArgs.Empty);
+					OnTitleChanged();
 				}
 			}
 		}
-		
+
+
 		void RegisterNewContent(IViewContent content)
 		{
 			Debug.Assert(content.WorkbenchWindow == null);
 			content.WorkbenchWindow = this;
 			
 			content.TabPageTextChanged += OnTabPageTextChanged;
-			content.TitleNameChanged   += OnTitleNameChanged;
-			content.IsDirtyChanged     += OnIsDirtyChanged;
-			
+			content.TitleNameChanged += OnTitleNameChanged;
+			content.InfoTipChanged += OnInfoTipChanged;
+			content.IsDirtyChanged += OnIsDirtyChanged;
+
 			this.dockLayout.Workbench.OnViewOpened(new ViewContentEventArgs(content));
 		}
 		
@@ -392,9 +421,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			content.WorkbenchWindow = null;
 			
 			content.TabPageTextChanged -= OnTabPageTextChanged;
-			content.TitleNameChanged   -= OnTitleNameChanged;
-			content.IsDirtyChanged     -= OnIsDirtyChanged;
-			
+			content.TitleNameChanged -= OnTitleNameChanged;
+			content.InfoTipChanged -= OnInfoTipChanged;
+			content.IsDirtyChanged -= OnIsDirtyChanged;
+
 			this.dockLayout.Workbench.OnViewClosed(new ViewContentEventArgs(content));
 		}
 		
@@ -466,16 +496,27 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 		}
-		
-		void OnTitleChanged(EventArgs e)
+
+		void OnTitleChanged()
 		{
-			if (TitleChanged != null) {
-				TitleChanged(this, e);
+			if (TitleChanged != null)
+			{
+				TitleChanged(this, EventArgs.Empty);
 			}
 		}
-		
+
 		public event EventHandler TitleChanged;
-		
+
+		void OnInfoTipChanged()
+		{
+			if (InfoTipChanged != null)
+			{
+				InfoTipChanged(this, EventArgs.Empty);
+			}
+		}
+
+		public event EventHandler InfoTipChanged;
+
 		public override string ToString()
 		{
 			return "[AvalonWorkbenchWindow: " + this.Title + "]";

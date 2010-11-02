@@ -89,6 +89,11 @@ namespace ICSharpCode.SharpDevelop.Util
 			add { }
 			remove { }
 		}
+
+		event EventHandler IViewContent.InfoTipChanged {
+			add { }
+			remove { }
+		}
 		
 		public event EventHandler Disposed;
 		
@@ -128,6 +133,10 @@ namespace ICSharpCode.SharpDevelop.Util
 			get {
 				throw new NotImplementedException();
 			}
+			set
+			{
+				throw new NotImplementedException();
+			}
 		}
 		
 		System.Collections.Generic.IList<OpenedFile> IViewContent.Files {
@@ -153,6 +162,16 @@ namespace ICSharpCode.SharpDevelop.Util
 				throw new NotImplementedException();
 			}
 		}
+
+		string IViewContent.InfoTip {
+			get {
+				throw new NotImplementedException();
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+
 		
 		bool IViewContent.CloseWithSolution {
 			get {
