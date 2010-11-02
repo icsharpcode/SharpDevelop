@@ -17,6 +17,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets the .NET value of the constant value.
 		/// Possible return values are:
+		/// - null
 		/// - primitive integers
 		/// - float/double
 		/// - bool

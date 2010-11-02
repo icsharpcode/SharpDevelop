@@ -279,6 +279,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							if (tp.HasValueTypeConstraint) {
 								if (typeArg.IsReferenceType != false)
 									ConstraintsValid = false;
+								if (NullableType.IsNullable(typeArg))
+									ConstraintsValid = false;
 							}
 							if (tp.HasDefaultConstructorConstraint) {
 								ITypeDefinition def = typeArg.GetDefinition();

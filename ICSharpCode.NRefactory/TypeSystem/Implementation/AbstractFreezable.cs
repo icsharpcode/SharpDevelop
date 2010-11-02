@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		protected static IList<T> CopyList<T>(IList<T> inputList)
 		{
-			if (inputList.Count == 0)
+			if (inputList == null || inputList.Count == 0)
 				return null;
 			else
 				return new List<T>(inputList);
