@@ -44,11 +44,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					return base.VisitTypeParameter(type);
 				}
 			}
-			
-			public IType Apply(IType type)
-			{
-				return type.AcceptVisitor(this);
-			}
 		}
 		
 		readonly ITypeDefinition genericType;
@@ -152,10 +147,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return this;
 		}
 		
+		/// <summary>
+		/// Substitutes the class type parameters in the <paramref name="type"/> with the
+		/// type arguments of this parameterized type.
+		/// </summary>
+		public IType SubstituteInType(IType type)
+		{
+			return type.AcceptVisitor(new Substitution(typeArguments));
+		}
+		
 		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
 			Substitution substitution = new Substitution(typeArguments);
-			return genericType.GetBaseTypes(context).Select(substitution.Apply);
+			return genericType.GetBaseTypes(context).Select(t => t.AcceptVisitor(substitution));
 		}
 		
 		public IEnumerable<IType> GetNestedTypes(ITypeResolveContext context, Predicate<ITypeDefinition> filter = null)

@@ -36,6 +36,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public bool HasUnmappedOptionalParameters;
 			
+			public IType[] InferredTypes;
+			
 			public IList<IParameter> Parameters { get { return Member.Parameters; } }
 			
 			public bool IsGenericMethod {
@@ -80,9 +82,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		//List<Candidate> candidates = new List<Candidate>();
 		Candidate bestCandidate;
 		Candidate bestCandidateAmbiguousWith;
+		IType[] explicitlyGivenTypeArguments;
 		
 		#region Constructor
-		public OverloadResolution(ITypeResolveContext context, ResolveResult[] arguments, string[] argumentNames = null)
+		public OverloadResolution(ITypeResolveContext context, ResolveResult[] arguments, string[] argumentNames = null, IType[] typeArguments = null)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
@@ -95,6 +98,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.context = context;
 			this.arguments = arguments;
 			this.argumentNames = argumentNames;
+			
+			// keep explicitlyGivenTypeArguments==null when no type arguments were specified
+			if (typeArguments != null && typeArguments.Length > 0)
+				this.explicitlyGivenTypeArguments = typeArguments;
+			
 			this.conversions = new Conversions(context);
 		}
 		#endregion
@@ -132,6 +140,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (!ResolveParameterTypes(candidate))
 				return false;
 			MapCorrespondingParameters(candidate);
+			RunTypeInference(candidate);
 			CheckApplicability(candidate);
 			ConsiderIfNewCandidateIsBest(candidate);
 			return true;
@@ -181,6 +190,120 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						candidate.AddError(OverloadResolutionErrors.NoParameterFoundForNamedArgument);
 				}
 			}
+		}
+		#endregion
+		
+		#region RunTypeInference
+		void RunTypeInference(Candidate candidate)
+		{
+			IMethod method = candidate.Member as IMethod;
+			if (method == null || method.TypeParameters.Count == 0) {
+				if (explicitlyGivenTypeArguments != null) {
+					// method does not expect type arguments, but was given some
+					candidate.AddError(OverloadResolutionErrors.WrongNumberOfTypeArguments);
+				}
+				return;
+			}
+			// The method is generic:
+			if (explicitlyGivenTypeArguments != null) {
+				if (explicitlyGivenTypeArguments.Length == method.TypeParameters.Count) {
+					candidate.InferredTypes = explicitlyGivenTypeArguments;
+				} else {
+					candidate.AddError(OverloadResolutionErrors.WrongNumberOfTypeArguments);
+					// wrong number of type arguments given, so truncate the list or pad with UnknownType
+					candidate.InferredTypes = new IType[method.TypeParameters.Count];
+					for (int i = 0; i < candidate.InferredTypes.Length; i++) {
+						if (i < explicitlyGivenTypeArguments.Length)
+							candidate.InferredTypes[i] = explicitlyGivenTypeArguments[i];
+						else
+							candidate.InferredTypes[i] = SharedTypes.UnknownType;
+					}
+				}
+			} else {
+				TypeInference ti = new TypeInference(context);
+				bool success;
+				candidate.InferredTypes = ti.InferTypeArguments(method.TypeParameters, arguments, candidate.ParameterTypes, out success);
+				if (!success)
+					candidate.AddError(OverloadResolutionErrors.TypeInferenceFailed);
+			}
+			// Now substitute in the formal parameters:
+			var substitution = new ConstraintValidatingSubstitution(candidate.InferredTypes, this);
+			for (int i = 0; i < candidate.ParameterTypes.Length; i++) {
+				candidate.ParameterTypes[i] = candidate.ParameterTypes[i].AcceptVisitor(substitution);
+			}
+			if (!substitution.ConstraintsValid)
+				candidate.AddError(OverloadResolutionErrors.ConstructedTypeDoesNotSatisfyContraint);
+		}
+		
+		sealed class ConstraintValidatingSubstitution : TypeVisitor
+		{
+			readonly IType[] typeArguments;
+			readonly OverloadResolution overloadResolution;
+			public bool ConstraintsValid = true;
+			
+			public ConstraintValidatingSubstitution(IType[] typeArguments, OverloadResolution overloadResolution)
+			{
+				this.typeArguments = typeArguments;
+				this.overloadResolution = overloadResolution;
+			}
+			
+			public override IType VisitTypeParameter(ITypeParameter type)
+			{
+				int index = type.Index;
+				if (type.ParentMethod != null) {
+					if (index >= 0 && index < typeArguments.Length)
+						return typeArguments[index];
+					else
+						return SharedTypes.UnknownType;
+				} else {
+					return base.VisitTypeParameter(type);
+				}
+			}
+			
+			public override IType VisitParameterizedType(ParameterizedType type)
+			{
+				IType newType = base.VisitParameterizedType(type);
+				if (newType != type && ConstraintsValid) {
+					// something was changed, so we need to validate the constraints
+					ParameterizedType newParameterizedType = newType as ParameterizedType;
+					if (newParameterizedType != null) {
+						// C# 4.0 spec: §4.4.4 Satisfying constraints
+						var typeParameters = newParameterizedType.GetDefinition().TypeParameters;
+						for (int i = 0; i < typeParameters.Count; i++) {
+							ITypeParameter tp = typeParameters[i];
+							IType typeArg = newParameterizedType.TypeArguments[i];
+							if (tp.HasReferenceTypeConstraint) {
+								if (typeArg.IsReferenceType != true)
+									ConstraintsValid = false;
+							}
+							if (tp.HasValueTypeConstraint) {
+								if (typeArg.IsReferenceType != false)
+									ConstraintsValid = false;
+							}
+							if (tp.HasDefaultConstructorConstraint) {
+								ITypeDefinition def = typeArg.GetDefinition();
+								if (def != null && def.IsAbstract)
+									ConstraintsValid = false;
+								ConstraintsValid &= typeArg.GetConstructors(
+									overloadResolution.context,
+									m => m.Parameters.Count == 0 && m.Accessibility == Accessibility.Public
+								).Any();
+							}
+							foreach (IType constraintType in tp.Constraints) {
+								IType c = newParameterizedType.SubstituteInType(constraintType);
+								ConstraintsValid &= overloadResolution.IsConstraintConvertible(typeArg, c);
+							}
+						}
+					}
+				}
+				return newType;
+			}
+		}
+		
+		bool IsConstraintConvertible(IType typeArg, IType constraintType)
+		{
+			// TODO: this isn't exactly correct; not all kinds of implicit conversions are allowed here
+			return conversions.ImplicitConversion(typeArg, constraintType);
 		}
 		#endregion
 		
@@ -421,6 +544,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public bool IsAmbiguous {
 			get { return bestCandidateAmbiguousWith != null; }
+		}
+		
+		public IList<IType> InferredTypeArguments {
+			get {
+				if (bestCandidate != null && bestCandidate.InferredTypes != null)
+					return Array.AsReadOnly(bestCandidate.InferredTypes);
+				else
+					return EmptyList<IType>.Instance;
+			}
 		}
 	}
 }
