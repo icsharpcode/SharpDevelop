@@ -415,7 +415,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				else if (files.Count > 0)
 					return files[0].FileName;
 				else
-					return "[Default Info Tip]";
+					return null;
 			}
 		}
 
