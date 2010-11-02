@@ -133,10 +133,6 @@ namespace ICSharpCode.SharpDevelop.Util
 			get {
 				throw new NotImplementedException();
 			}
-			set
-			{
-				throw new NotImplementedException();
-			}
 		}
 		
 		System.Collections.Generic.IList<OpenedFile> IViewContent.Files {
@@ -167,11 +163,7 @@ namespace ICSharpCode.SharpDevelop.Util
 			get {
 				throw new NotImplementedException();
 			}
-			set {
-				throw new NotImplementedException();
-			}
 		}
-
 		
 		bool IViewContent.CloseWithSolution {
 			get {

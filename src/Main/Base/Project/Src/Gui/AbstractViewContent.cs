@@ -408,20 +408,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		string infoTip;
 		LanguageDependentExtension infoTipLocalizeExtension;
 
-		string IViewContent.InfoTip
-		{
-			get
-			{
+		string IViewContent.InfoTip {
+			get {
 				if (infoTip != null)
 					return infoTip;
 				else if (files.Count > 0)
 					return files[0].FileName;
 				else
 					return "[Default Info Tip]";
-			}
-			set
-			{
-				this.InfoTip = value;
 			}
 		}
 

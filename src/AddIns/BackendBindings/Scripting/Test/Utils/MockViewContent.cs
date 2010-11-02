@@ -21,20 +21,24 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		{
 		}
 		
-		public event EventHandler TitleNameChanged;		
-		public event EventHandler TabPageTextChanged;				
-		public event EventHandler Disposed;		
+		public event EventHandler InfoTipChanged;
+		public event EventHandler TitleNameChanged;
+		public event EventHandler TabPageTextChanged;
+		public event EventHandler Disposed;
 		public event EventHandler IsDirtyChanged;
-								
+		
 		public string TitleName {
 			get {
 				throw new NotImplementedException();
 			}
-			set {
+		}
+		
+		public string InfoTip {
+			get {
 				throw new NotImplementedException();
 			}
 		}
-				
+		
 		public bool IsReadOnly {
 			get {
 				throw new NotImplementedException();
@@ -164,7 +168,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 				throw new NotImplementedException();
 			}
 		}
-				
+		
 		public void Save(OpenedFile file, System.IO.Stream stream)
 		{
 			throw new NotImplementedException();
@@ -194,11 +198,18 @@ namespace ICSharpCode.Scripting.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
-								
+		
 		protected virtual void OnTitleNameChanged(EventArgs e)
 		{
 			if (TitleNameChanged != null) {
 				TitleNameChanged(this, e);
+			}
+		}
+		
+		protected virtual void OnInfoTipChanged(EventArgs e)
+		{
+			if (InfoTipChanged != null) {
+				InfoTipChanged(this, e);
 			}
 		}
 		
