@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
 {
@@ -52,14 +51,16 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				fdiag.DefaultExt = GlobalValues.XsdExtension;
 				fdiag.Filter = GlobalValues.XsdFileFilter;
 				fdiag.Multiselect = false;
-				if (fdiag.ShowDialog() == DialogResult.OK) {
+				if (fdiag.ShowDialog() == DialogResult.OK)
+				{
 					string	fileName = fdiag.FileName;
 					this.txtPath.Text = fileName;
 					FillDataGrid(fileName);
+					base.EnableNext = true;
+					base.EnableFinish= true;
 				}
+				
 			}
-			base.EnableNext = true;
-			base.EnableFinish= true;
 		}
 		
 		
