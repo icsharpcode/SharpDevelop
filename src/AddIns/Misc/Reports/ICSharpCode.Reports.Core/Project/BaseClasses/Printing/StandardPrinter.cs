@@ -260,7 +260,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 					ExportText textItem = element as ExportText;
 					if (textItem != null) {
 						if (textItem.Text.StartsWith("=")) {
-							Console.WriteLine(textItem.Text);
+//							Console.WriteLine(textItem.Text);
 						}
 						textItem.Text = evaluator.Evaluate(textItem.Text);
 					}

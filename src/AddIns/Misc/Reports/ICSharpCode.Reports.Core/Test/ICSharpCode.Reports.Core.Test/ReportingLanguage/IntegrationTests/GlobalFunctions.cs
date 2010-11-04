@@ -96,11 +96,12 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		
 		
 		[Test]
-		[ExpectedException(typeof(UnknownFunctionException))]
-		public void Throw_On_UnknownFunction()
+		public void UnknownFunction_ErrorMessage()
 		{
+			
 			const string expression = "=TotalWrongFunction()";
-			Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo(this.singlePage.TotalPages.ToString()));
+			string s  = this.evaluator.Evaluate(expression);
+			Assert.That(s.Contains("TotalWrongFunction"));
 		}
 		
 		
@@ -109,7 +110,6 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 		{
 			this.singlePage = TestHelper.CreateSinglePage();
 			this.evaluator = new ExpressionEvaluatorFacade(this.singlePage);
-//			this.evaluator.SinglePage = this.singlePage;
 		}
 	}
 }

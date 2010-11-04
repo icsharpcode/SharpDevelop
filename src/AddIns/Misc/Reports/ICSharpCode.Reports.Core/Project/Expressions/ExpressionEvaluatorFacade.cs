@@ -43,7 +43,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 				}
 			} catch (Exception e) {
 				
-				Console.WriteLine("error");
+//				Console.WriteLine("error");
 				expression = e.Message;
 			}
 			

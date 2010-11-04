@@ -69,11 +69,11 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
         }
         
         [Test]
-		[ExpectedException(typeof(FieldNotFoundException))]
-		public void Throw_On_Unknown_Field ()
+		public void Unknown_Field_ErrorMessage ()
 		{
 			const string expression = "=count(unknown)";
-			Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo(this.aggregateCollection.Count));
+			string s  = this.evaluator.Evaluate(expression);
+			Assert.That(s.Contains("not found"));
 		}
 		
 		#endregion
@@ -120,14 +120,6 @@ namespace ICSharpCode.Reports.Core.Test.ReportingLanguage.IntegrationTests
 			            Is.EqualTo("1"));
 		}
 		
-		
-		[Test]
-		[ExpectedException(typeof(FieldNotFoundException))]
-		public void Throw_On_UnknownField ()
-		{
-			const string expression = "=max(Unknown)";
-			Assert.That(this.evaluator.Evaluate(expression), Is.EqualTo(this.aggregateCollection.Count.ToString()));
-		}
 		
 		#endregion
 
