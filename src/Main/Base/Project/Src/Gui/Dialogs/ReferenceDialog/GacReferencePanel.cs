@@ -3,13 +3,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-
+using Mono.Cecil;
 using ICSharpCode.Build.Tasks;
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -47,8 +49,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 
 		protected ListView listView;
 		CheckBox chooseSpecificVersionCheckBox;
+		TextBox filterTextBox;
+		Button searchButton;
+		ToolTip toolTip = new ToolTip();
+		ToolTip filterTextboxToolTip = new ToolTip();
 		ISelectReferenceDialog selectDialog;
 		ColumnSorter sorter;
+		BackgroundWorker worker;
+		List<ListViewItem> resultList = new List<ListViewItem>();
+		Dictionary<string, AssemblyDefinition> assembliesCache = new Dictionary<string, AssemblyDefinition>();
+		DefaultAssemblyResolver resolver = new DefaultAssemblyResolver();
 		
 		public GacReferencePanel(ISelectReferenceDialog selectDialog)
 		{
@@ -79,10 +89,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Dock = DockStyle.Fill;
 			this.Controls.Add(listView);
 			
+			Panel upperPanel = new Panel { Dock = DockStyle.Top, Height = 20 };
+			
 			chooseSpecificVersionCheckBox = new CheckBox();
-			chooseSpecificVersionCheckBox.Dock = DockStyle.Top;
+			chooseSpecificVersionCheckBox.Dock = DockStyle.Left;
 			chooseSpecificVersionCheckBox.Text = StringParser.Parse("${res:Dialog.SelectReferenceDialog.GacReferencePanel.ChooseSpecificAssemblyVersion}");
-			this.Controls.Add(chooseSpecificVersionCheckBox);
+			
 			chooseSpecificVersionCheckBox.CheckedChanged += delegate {
 				listView.Items.Clear();
 				if (chooseSpecificVersionCheckBox.Checked)
@@ -91,8 +103,159 @@ namespace ICSharpCode.SharpDevelop.Gui
 					listView.Items.AddRange(shortItemList);
 			};
 			
+			filterTextBox = new TextBox { Width = 100, Dock = DockStyle.Right };
+			searchButton = new Button { Dock = DockStyle.Right, Width = 50, Text = "Search" };
+			toolTip.SetToolTip(searchButton, searchButton.Text);
+			filterTextboxToolTip.SetToolTip(filterTextBox, "Search by type name");
+			searchButton.Click += searchButton_Click;
+			upperPanel.Controls.Add(chooseSpecificVersionCheckBox);
+			upperPanel.Controls.Add(filterTextBox);
+			upperPanel.Controls.Add(searchButton);
+			
+			this.Controls.Add(upperPanel);
+			
 			PrintCache();
+			
+			worker = new BackgroundWorker { WorkerSupportsCancellation = true, WorkerReportsProgress = true };
+			worker.DoWork += searchTask_DoWork;			
+			worker.RunWorkerCompleted += searchTask_RunWorkerCompleted;			
+			worker.ProgressChanged += searchTask_ProgressChanged;
 		}
+		
+		#region Search by types
+		
+		void searchTask_ProgressChanged(object sender, ProgressChangedEventArgs e)
+		{
+			searchButton.Text = string.Format("{0} %", e.ProgressPercentage);
+		}
+
+		void searchTask_DoWork(object sender, DoWorkEventArgs e)
+		{
+			e.Cancel = !SearchTypesName(
+				chooseSpecificVersionCheckBox.Checked ? fullItemList : shortItemList, filterTextBox.Text);
+		}
+
+		void searchButton_Click(object sender, EventArgs e)
+		{
+			string text;
+			if(!worker.IsBusy) {			
+				filterTextBox.ReadOnly = true;
+				worker.RunWorkerAsync();
+				text = "Cancel";
+			}
+			else {
+				worker.CancelAsync();
+				text = "Search";
+				filterTextBox.ReadOnly = false;
+			}
+			searchButton.Text = text;
+			this.toolTip.SetToolTip(searchButton, text);
+		}
+
+		void searchTask_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+		{
+			searchButton.Text = "Search"; this.toolTip.SetToolTip(searchButton, searchButton.Text);
+			filterTextBox.ReadOnly = false;
+			if (resultList != null && resultList.Count > 0) {
+				listView.Items.Clear();				
+				listView.Items.AddRange(resultList.ToArray());
+			}
+		}
+
+		/// <summary>
+		/// Search for type name.
+		/// </summary>
+		/// <param name="list">Array of items where to search.</param>
+		/// <param name="filter">Filter to search.</param>
+		/// <returns><c>true</c>, if call succeded, <c>false</c> otherwise.</returns>
+		bool SearchTypesName(ListViewItem[] list, string filter)
+		{
+			// return null if list is null
+			if (list == null) return false;
+			
+			// return if filter is empty
+			if (string.IsNullOrEmpty(filter)) {
+				resultList = list.ToList();
+				return true;
+			}
+			
+			// clear result
+			resultList.Clear();
+			
+			// scan the list
+			for (int i = 0; i < list.Length; ++i) {
+				ListViewItem item = list[i];
+				DomAssemblyName asm = item.Tag as DomAssemblyName;
+
+				// search path
+				if (asm.FullName.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0)
+					resultList.Add(item);
+				else {
+					if (worker.CancellationPending)
+					    return false;
+					
+					// search using Mono.Cecil the class/interface/structs names 
+					AssemblyDefinition currentAssembly;
+					if(!assembliesCache.ContainsKey(asm.FullName)) {	
+						try {
+							currentAssembly = resolver.Resolve(asm.FullName);
+						}
+						catch {
+							continue;
+						}
+						assembliesCache.Add(asm.FullName, currentAssembly);							
+					}
+					else
+						currentAssembly = assembliesCache[asm.FullName];
+					
+					// search types in modules
+					if (currentAssembly != null) {
+						foreach(var module in currentAssembly.Modules)
+							foreach (var type in module.Types) 
+								if (type.Name.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 && 
+								    !resultList.Contains(item))
+									resultList.Add(item);									
+					}
+					
+					// report
+					worker.ReportProgress((int)(((i * 1.0) / list.Length) * 100));
+				}
+			}
+						
+			return true;
+		}
+		
+		/// <summary>
+		/// Clear all resources used.
+		/// </summary>
+		new void Dispose()
+		{
+			// cancel the worker
+			if (worker != null && worker.IsBusy && !worker.CancellationPending)
+				worker.CancelAsync();			
+			worker = null;
+			
+			// clear all cached data
+			if (assembliesCache.Count > 0)
+				assembliesCache.Clear();
+			assembliesCache = null;
+			
+			if (resultList.Count > 0)
+				resultList.Clear();
+			resultList = null;
+			
+			selectDialog = null;
+			resolver = null;
+			
+			if (fullItemList.Length > 0)
+				Array.Clear(fullItemList, 0, fullItemList.Length);
+			fullItemList = null;
+			
+			// force a collection to reclam memory
+			GC.Collect();
+		}
+		
+		#endregion
 		
 		void columnClick(object sender, ColumnClickEventArgs e)
 		{
@@ -277,6 +440,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			List<DomAssemblyName> list = GacInterop.GetAssemblyList();
 			list.RemoveAll(name => name.ShortName.EndsWith(".resources", StringComparison.OrdinalIgnoreCase));
 			return list;
+		}
+		
+		protected override void Dispose(bool disposing)
+		{
+			Dispose();
+			
+			base.Dispose(disposing);
 		}
 	}
 }
