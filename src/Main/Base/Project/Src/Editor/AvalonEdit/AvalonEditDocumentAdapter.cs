@@ -330,26 +330,10 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 			
 			public ICSharpCode.SharpDevelop.Editor.AnchorMovementType MovementType {
 				get {
-					switch (anchor.MovementType) {
-						case ICSharpCode.AvalonEdit.Document.AnchorMovementType.AfterInsertion:
-							return ICSharpCode.SharpDevelop.Editor.AnchorMovementType.AfterInsertion;
-						case ICSharpCode.AvalonEdit.Document.AnchorMovementType.BeforeInsertion:
-							return ICSharpCode.SharpDevelop.Editor.AnchorMovementType.BeforeInsertion;
-						default:
-							throw new NotSupportedException();
-					}
+					return (ICSharpCode.SharpDevelop.Editor.AnchorMovementType)anchor.MovementType;
 				}
 				set {
-					switch (value) {
-						case ICSharpCode.SharpDevelop.Editor.AnchorMovementType.AfterInsertion:
-							anchor.MovementType = ICSharpCode.AvalonEdit.Document.AnchorMovementType.AfterInsertion;
-							break;
-						case ICSharpCode.SharpDevelop.Editor.AnchorMovementType.BeforeInsertion:
-							anchor.MovementType = ICSharpCode.AvalonEdit.Document.AnchorMovementType.BeforeInsertion;
-							break;
-						default:
-							throw new NotSupportedException();
-					}
+					anchor.MovementType = (ICSharpCode.AvalonEdit.Document.AnchorMovementType)value;
 				}
 			}
 			

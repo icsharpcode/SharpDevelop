@@ -5,10 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 using ICSharpCode.AvalonEdit.Xml;
 using ICSharpCode.SharpDevelop.Dom;
-using System.Text;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.XamlBinding
 {
@@ -134,6 +135,9 @@ namespace ICSharpCode.XamlBinding
 		}
 		
 		IClass AddClass(string className, AXmlElement element) {
+			if (projectContent.Language == LanguageProperties.VBNet && projectContent.Project is IProject)
+				className = ((IProject)projectContent.Project).RootNamespace + "." + className;
+			
 			DefaultClass c = new DefaultClass(CompilationUnit, className);
 			string modifierValue = (element.GetAttributeValue(CompletionDataHelper.XamlNamespace, "ClassModifier") ?? string.Empty).Trim();
 			

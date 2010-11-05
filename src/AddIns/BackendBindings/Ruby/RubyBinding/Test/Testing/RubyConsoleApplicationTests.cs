@@ -33,11 +33,11 @@ namespace RubyBinding.Tests.Testing
 		}
 		
 		[Test]
-		public void GetArguments_DebugIsTrue_ReturnsDebugOption()
+		public void GetArguments_DebugIsTrue_ReturnsDisableGemsAndDebugOption()
 		{
 			app.Debug = true;
 			string args = app.GetArguments();
-			string expectedCommandLine = "-D";
+			string expectedCommandLine = "--disable-gems -D";
 			
 			Assert.AreEqual(expectedCommandLine, args);
 		}
@@ -47,7 +47,7 @@ namespace RubyBinding.Tests.Testing
 		{
 			app.ScriptFileName = @"d:\projects\my ruby\test.rb";
 			string args = app.GetArguments();
-			string expectedCommandLine = "\"d:\\projects\\my ruby\\test.rb\"";
+			string expectedCommandLine = "--disable-gems \"d:\\projects\\my ruby\\test.rb\"";
 			
 			Assert.AreEqual(expectedCommandLine, args);
 		}
@@ -61,7 +61,7 @@ namespace RubyBinding.Tests.Testing
 			string args = app.GetArguments();
 			
 			string expectedCommandLine =
-				"-D \"d:\\projects\\my ruby\\test.rb\" -- responseFile.txt";
+				"--disable-gems -D \"d:\\projects\\my ruby\\test.rb\" -- responseFile.txt";
 			
 			Assert.AreEqual(expectedCommandLine, args);
 		}
@@ -80,7 +80,7 @@ namespace RubyBinding.Tests.Testing
 		{
 			app.Debug = true;
 			ProcessStartInfo startInfo = app.GetProcessStartInfo();
-			string expectedCommandLine = "-D";
+			string expectedCommandLine = "--disable-gems -D";
 			
 			Assert.AreEqual(expectedCommandLine, startInfo.Arguments);
 		}

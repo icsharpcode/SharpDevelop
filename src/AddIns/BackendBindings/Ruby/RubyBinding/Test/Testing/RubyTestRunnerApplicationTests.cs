@@ -52,6 +52,7 @@ namespace RubyBinding.Tests.Testing
 			ProcessStartInfo processStartInfo = GetProcessStartInfoFromTestRunnerApp(selectedTests);
 			
 			string expectedCommandLine = 
+				"--disable-gems " +
 				"\"-Ic:\\rubybinding\\TestRunner\" " +
 				"\"c:\\rubybinding\\TestRunner\\sdtest.rb\" " +
 				"--testcase=MyTests " +
@@ -77,6 +78,7 @@ namespace RubyBinding.Tests.Testing
 			ProcessStartInfo processStartInfo = GetProcessStartInfoFromTestRunnerApp(selectedTests);
 			
 			string expectedCommandLine = 
+				"--disable-gems " +
 				"\"-Ic:\\rubybinding\\TestRunner\" " +
 				"\"c:\\rubybinding\\TestRunner\\sdtest.rb\" " +
 				"--name=MyMethod " +
@@ -99,6 +101,7 @@ namespace RubyBinding.Tests.Testing
 			ProcessStartInfo processStartInfo = GetProcessStartInfoFromTestRunnerApp(selectedTests);
 			
 			string expectedCommandLine = 
+				"--disable-gems " +
 				"\"-Ic:\\rubybinding\\AddIns\\TestRunner\" " +
 				"\"c:\\rubybinding\\AddIns\\TestRunner\\sdtest.rb\" " +
 				"-- " +
@@ -117,6 +120,7 @@ namespace RubyBinding.Tests.Testing
 			ProcessStartInfo processStartInfo = GetProcessStartInfoFromTestRunnerApp(selectedTests);
 			
 			string expectedCommandLine = 
+				"--disable-gems " +
 				"\"-Ic:\\ruby\\lib\" " +
 				"\"-Ic:\\rubybinding\\TestRunner\" " +
 				"\"c:\\rubybinding\\TestRunner\\sdtest.rb\" " +
@@ -148,6 +152,7 @@ namespace RubyBinding.Tests.Testing
 			ProcessStartInfo processStartInfo = GetProcessStartInfoFromTestRunnerApp(tests);
 						
 			string expectedCommandLine = 
+				"--disable-gems " +
 				"\"-Ic:\\rubybinding\\TestRunner\" " +
 				"\"-Ic:\\projects\\rbproject\" " +
 				"\"c:\\rubybinding\\TestRunner\\sdtest.rb\" " +

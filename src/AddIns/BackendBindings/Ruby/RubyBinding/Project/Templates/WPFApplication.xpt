@@ -19,7 +19,7 @@
 			<OutputType>WinExe</OutputType>
 			<MainFile>Application.rb</MainFile>
 			<DebugInfo>True</DebugInfo>
-			<StartArguments>-1.9 -D Application.rb</StartArguments>
+			<StartArguments>--disable-gems -D Application.rb</StartArguments>
 			<StartWorkingDirectory>.\</StartWorkingDirectory>
 			<StartAction>Program</StartAction>
 			<StartProgram>${addinpath:ICSharpCode.RubyBinding}\ir.exe</StartProgram>
@@ -28,7 +28,7 @@
 		<PropertyGroup configuration="Release" escapeValue="false">
 			<OutputType>WinExe</OutputType>
 			<MainFile>Application.rb</MainFile>
-			<StartArguments>-1.9 Application.py</StartArguments>
+			<StartArguments>--disable-gems Application.py</StartArguments>
 			<StartWorkingDirectory>.\</StartWorkingDirectory>
 			<StartAction>Program</StartAction>
 			<StartProgram>${addinpath:ICSharpCode.RubyBinding}\ir.exe</StartProgram>

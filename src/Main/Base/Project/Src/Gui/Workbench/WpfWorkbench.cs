@@ -653,11 +653,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		#if DEBUG
-		bool toggle;
+		internal static bool enableFocusDebugOutput;
 		
 		void WpfWorkbench_PreviewGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
 		{
-			if (toggle) {
+			if (enableFocusDebugOutput) {
 				LoggingService.Debug("GotKeyboardFocus: oldFocus=" + e.OldFocus + ", newFocus=" + e.NewFocus);
 				if (e.NewFocus is IWorkbenchWindow)
 				{
@@ -667,7 +667,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void WpfWorkbench_PreviewLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
 		{
-			if (toggle) {
+			if (enableFocusDebugOutput) {
 				LoggingService.Debug("LostKeyboardFocus: oldFocus=" + e.OldFocus + ", newFocus=" + e.NewFocus);
 				if (e.NewFocus is IWorkbenchWindow)
 				{
@@ -679,7 +679,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			base.OnPreviewKeyDown(e);
 			if (!e.Handled && e.Key == Key.D && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
-				toggle = !toggle;
+				enableFocusDebugOutput = !enableFocusDebugOutput;
 				
 				StringWriter output = new StringWriter();
 				output.WriteLine("Keyboard.FocusedElement = " + GetElementName(Keyboard.FocusedElement));
@@ -717,7 +717,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		static string GetElementName(object element)
+		internal static string GetElementName(object element)
 		{
 			if (element == null)
 				return "<null>";

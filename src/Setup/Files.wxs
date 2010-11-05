@@ -1111,9 +1111,6 @@
 									<Component Guid="7CB6802E-BC09-4796-904C-45EEAD91A5CF" Id="IrExe" DiskId="1">
 										<File Source="..\..\AddIns\BackendBindings\RubyBinding\ir.exe" Name="ir.exe" Id="ir.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="ir.exe" AssemblyManifest="ir.exe" />
 									</Component>
-									<Component Guid="2F7C175B-7CCD-46D2-9B4E-A942CA14145B" Id="IrExeConfig" DiskId="1">
-										<File Source="..\..\AddIns\BackendBindings\RubyBinding\ir.exe.config" Name="ir.exe.config" Id="ir.exe.config" KeyPath="yes" />
-									</Component>
 									<Component Guid="1CE0CC65-3534-4357-BFB7-CB9F0C4E1495" Id="IronRubyDll" DiskId="1">
 										<File Source="..\..\AddIns\BackendBindings\RubyBinding\IronRuby.dll" Name="IronRuby.dll" Id="IronRuby.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="IronRuby.dll" AssemblyManifest="IronRuby.dll" />
 									</Component>

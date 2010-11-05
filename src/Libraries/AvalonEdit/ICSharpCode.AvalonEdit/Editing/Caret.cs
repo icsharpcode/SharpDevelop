@@ -145,7 +145,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			InvalidateVisualColumn();
 			if (storedCaretOffset >= 0) {
-				int newCaretOffset = e.GetNewOffset(storedCaretOffset, AnchorMovementType.AfterInsertion);
+				int newCaretOffset = e.GetNewOffset(storedCaretOffset, AnchorMovementType.Default);
 				TextDocument document = textArea.Document;
 				if (document != null) {
 					// keep visual column

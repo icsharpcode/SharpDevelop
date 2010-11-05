@@ -196,7 +196,10 @@ namespace AvalonDock
         {
             if (key == Key.Tab)
             {
-                MoveToNextContent();
+                if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
+                    MoveToPreviousContent();
+                else
+                    MoveToNextContent();
                 return true;
             }
             else if (key == Key.Down)

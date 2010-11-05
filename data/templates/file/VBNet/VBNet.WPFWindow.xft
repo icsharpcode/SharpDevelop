@@ -33,7 +33,7 @@
 		${Path}                     -> Full path of the file
 	 -->
 	<Files>
-		<File name="${FullName}" language="XML" buildAction="Page"><![CDATA[<Window x:Class="${StandardNamespace}.${ClassName}"
+		<File name="${FullName}" language="XML" buildAction="Page"><![CDATA[<Window x:Class="${ClassName}"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	Title="${StandardNamespace}" Height="300" Width="300">
@@ -52,16 +52,16 @@ Imports System.Windows.Documents
 Imports System.Windows.Input
 Imports System.Windows.Media
 
-Namespace ${StandardNamespace}
-	' <summary>
-	' Interaction logic for ${FileName}
-	' </summary>
-	Public Partial Class ${ClassName} Inherits Window
-		Public Sub New()
-			InitializeComponent()
-		End Sub
-	End Class
-End Namespace]]></File>
+''' <summary>
+''' Interaction logic for ${FileName}
+''' </summary>
+Public Partial Class ${ClassName}
+	Inherits Window
+	
+	Public Sub New()
+		InitializeComponent()
+	End Sub
+End Class]]></File>
 	</Files>
 	
 	<AdditionalOptions/>

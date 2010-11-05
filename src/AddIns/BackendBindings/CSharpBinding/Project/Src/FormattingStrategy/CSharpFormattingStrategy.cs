@@ -332,7 +332,9 @@ namespace CSharpBinding.FormattingStrategy
 								tag += ">";
 							}
 							if (!tag.StartsWith("/")) {
-								textArea.Document.Insert(textArea.Caret.Offset, "</" + tag.Substring(1));
+								int caretOffset = textArea.Caret.Offset;
+								textArea.Document.Insert(caretOffset, "</" + tag.Substring(1));
+								textArea.Caret.Offset = caretOffset;
 							}
 						}
 					}

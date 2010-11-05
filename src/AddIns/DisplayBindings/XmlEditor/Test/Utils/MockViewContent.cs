@@ -26,6 +26,15 @@ namespace XmlEditor.Tests.Utils
 			}
 		}
 		
+		public event EventHandler InfoTipChanged;
+		
+		protected virtual void OnInfoTipChanged(EventArgs e)
+		{
+			if (InfoTipChanged != null) {
+				InfoTipChanged(this, e);
+			}
+		}
+		
 		public event EventHandler Disposed;
 		
 		protected virtual void OnDisposed(EventArgs e)
@@ -72,6 +81,12 @@ namespace XmlEditor.Tests.Utils
 		}
 		
 		public string TitleName {
+			get {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public string InfoTip {
 			get {
 				throw new NotImplementedException();
 			}

@@ -67,6 +67,8 @@ namespace CheckFileHeaders
 					continue;
 				if (subdir.EndsWith("Debugger.Core\\Mono.Cecil"))
 					continue;
+				if (subdir.EndsWith("CSharpBinding\\Project\\Resources"))
+					continue;
 				if (Path.GetFullPath(subdir).EndsWith("src\\Tools"))
 					continue;
 				count += Run(subdir);

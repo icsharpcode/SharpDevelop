@@ -110,8 +110,12 @@ namespace ICSharpCode.AvalonEdit.Editing
 							start = end = null;
 						}
 					} else {
-						start = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.Offset);
-						end = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.EndOffset);
+						ISegment segment = textArea.Selection.SurroundingSegment;
+						start = textArea.Document.GetLineByOffset(segment.Offset);
+						end = textArea.Document.GetLineByOffset(segment.EndOffset);
+						// don't include the last line if no characters on it are selected
+						if (start != end && end.Offset == segment.EndOffset)
+							end = end.PreviousLine;
 					}
 					if (start != null) {
 						transformLine(textArea, start);
@@ -178,15 +182,20 @@ namespace ICSharpCode.AvalonEdit.Editing
 			if (textArea != null && textArea.Document != null) {
 				using (textArea.Document.RunUpdate()) {
 					if (textArea.Selection.IsMultiline(textArea.Document)) {
-						DocumentLine start = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.Offset);
-						DocumentLine end = textArea.Document.GetLineByOffset(textArea.Selection.SurroundingSegment.EndOffset);
+						var segment = textArea.Selection.SurroundingSegment;
+						DocumentLine start = textArea.Document.GetLineByOffset(segment.Offset);
+						DocumentLine end = textArea.Document.GetLineByOffset(segment.EndOffset);
+						// don't include the last line if no characters on it are selected
+						if (start != end && end.Offset == segment.EndOffset)
+							end = end.PreviousLine;
+						DocumentLine current = start;
 						while (true) {
-							int offset = start.Offset;
+							int offset = current.Offset;
 							if (textArea.ReadOnlySectionProvider.CanInsert(offset))
-								textArea.Document.Insert(offset, textArea.Options.IndentationString);
-							if (start == end)
+								textArea.Document.Replace(offset, 0, textArea.Options.IndentationString, OffsetChangeMappingType.KeepAnchorBeforeInsertion);
+							if (current == end)
 								break;
-							start = start.NextLine;
+							current = current.NextLine;
 						}
 					} else {
 						string indentationString = textArea.Options.GetIndentationString(textArea.Caret.Column);

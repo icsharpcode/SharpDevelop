@@ -547,15 +547,18 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				TextParagraphProperties paragraphProperties = CreateParagraphProperties(globalTextRunProperties);
 				
 				while (heightTree.GetIsCollapsed(documentLine)) {
-					documentLine = heightTree.GetLineByNumber(documentLine.LineNumber - 1);
+					documentLine = documentLine.PreviousLine;
 				}
 				
 				l = BuildVisualLine(documentLine,
 				                    globalTextRunProperties, paragraphProperties,
 				                    elementGenerators.ToArray(), lineTransformers.ToArray(),
 				                    lastAvailableSize);
-				l.VisualTop = heightTree.GetVisualPosition(documentLine);
 				allVisualLines.Add(l);
+				// update all visual top values (building the line might have changed visual top of other lines due to word wrapping)
+				foreach (var line in allVisualLines) {
+					line.VisualTop = heightTree.GetVisualPosition(line.FirstDocumentLine);
+				}
 			}
 			return l;
 		}
