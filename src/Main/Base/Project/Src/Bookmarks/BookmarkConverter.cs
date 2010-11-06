@@ -1,12 +1,13 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.NRefactory;
 using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Text;
+
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
@@ -25,8 +26,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			if (value is string) {
 				string[] v = ((string)value).Split('|');
-				if (v.Length != 8)
-					return null;
+				
 				FileName fileName = FileName.Create(v[1]);
 				int lineNumber = int.Parse(v[2], culture);
 				int columnNumber = int.Parse(v[3], culture);
@@ -75,6 +75,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				b.Append(bookmark.LineNumber);
 				b.Append('|');
 				b.Append(bookmark.ColumnNumber);
+				
 				if (bookmark is Debugging.BreakpointBookmark) {
 					Debugging.BreakpointBookmark bbm = (Debugging.BreakpointBookmark)bookmark;
 					b.Append('|');
@@ -86,6 +87,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 					b.Append('|');
 					b.Append(bbm.Condition);
 				}
+				
 				return b.ToString();
 			} else {
 				return base.ConvertTo(context, culture, value, destinationType);

@@ -5645,6 +5645,15 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   <data name="MainWindow.Windows.BookmarksLabel" xml:space="preserve">
     <value>Bookmarks</value>
   </data>
+  <data name="MainWindow.Windows.BookmarkPad.LineText" xml:space="preserve">
+    <value>{0} @line {1}</value>
+  </data>
+  <data name="MainWindow.Windows.BookmarkPad.LocationText" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="MainWindow.Windows.BookmarkPad.LanguageHeader" xml:space="preserve">
+    <value>Language</value>
+  </data>
   <data name="MainWindow.Windows.ClassBrowser.BackButton.ToolTip" xml:space="preserve">
     <value>Back</value>
   </data>
@@ -5774,6 +5783,9 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Trace" xml:space="preserve">
     <value>Trace</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.ConditionalColumnHeader" xml:space="preserve">
+    <value>Condition</value>
   </data>
   <data name="MainWindow.Windows.Debug.Console" xml:space="preserve">
     <value>Console</value>

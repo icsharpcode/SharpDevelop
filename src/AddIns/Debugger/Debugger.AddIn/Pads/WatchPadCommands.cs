@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows.Controls;
 using System.Windows.Forms;
 
 using Aga.Controls.Tree;
 using Debugger.AddIn.Pads;
+using Debugger.AddIn.Pads.Controls;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
@@ -14,6 +16,7 @@ using ICSharpCode.Core.WinForms;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui.Pads;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace Debugger.AddIn
 {
@@ -23,7 +26,6 @@ namespace Debugger.AddIn
 		{
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
-				TreeViewAdv ctrl = (TreeViewAdv)pad.Control;
 				
 				var inputWindow = new WatchInputBox(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.AddWatch}"), 
 				                                    StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.EnterExpression}"));
@@ -35,13 +37,17 @@ namespace Debugger.AddIn
 				string input = inputWindow.CommandText;
 				
 				if (!string.IsNullOrEmpty(input)) {
-					ctrl.BeginUpdate();
-					TextNode text = new TextNode(input, SupportedLanguage.CSharp);
-					TreeViewVarNode node = new TreeViewVarNode(pad.Process, ctrl, text);
+					// get language
+					if (ProjectService.CurrentProject == null) return; 
 					
-					pad.Watches.Add(text);
-					ctrl.Root.Children.Add(node);
-					ctrl.EndUpdate();
+					string language = ProjectService.CurrentProject.Language;	
+					
+					TextNode text = new TextNode(input,
+					                             language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp);
+					var list = (WatchList)pad.Control;
+					
+					if(!list.WatchItems.ContainsItem(text))
+						list.WatchItems.Add(text);
 				}
 				
 				pad.RefreshPad();
@@ -55,19 +61,14 @@ namespace Debugger.AddIn
 		{
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
-
-				TreeNodeAdv node = ((TreeViewAdv)pad.Control).SelectedNode;
+				var list = (WatchList)pad.Control;
+				
+				var node = list.SelectedNode;
 				
 				if (node == null)
 					return;
 				
-				while (node.Parent != ((TreeViewAdv)pad.Control).Root)
-				{
-					node = node.Parent;
-				}
-				
-				pad.Watches.RemoveAt(node.Index);
-				((TreeViewAdv)pad.Control).Root.Children.Remove(node);
+				list.WatchItems.Remove(node);
 				
 				((WatchPad)this.Owner).RefreshPad();
 			}
@@ -90,11 +91,23 @@ namespace Debugger.AddIn
 		{
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
-				
-				((TreeViewAdv)pad.Control).BeginUpdate();
-				pad.Watches.Clear();
-				((TreeViewAdv)pad.Control).Root.Children.Clear();
-				((TreeViewAdv)pad.Control).EndUpdate();
+				var list = (WatchList)pad.Control;
+				list.WatchItems.Clear();
+			}
+		}
+	}
+	
+	public class CopyToClipboardCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			if (this.Owner is WatchPad) {
+				WatchPad pad = (WatchPad)this.Owner;
+				var list = (WatchList)pad.Control;
+				if (list.SelectedNode is ExpressionNode) {
+					string text = ((ExpressionNode)list.SelectedNode).FullText;
+					ClipboardWrapper.SetText(text);
+				}
 			}
 		}
 	}

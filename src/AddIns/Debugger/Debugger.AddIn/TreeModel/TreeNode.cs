@@ -3,9 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
-using System.Windows.Media;
 using System.Linq;
+using System.Windows.Media;
 
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -58,7 +59,7 @@ namespace Debugger.AddIn.TreeModel
 		public virtual string Text
 		{
 			get { return text; }
-			protected set { text = value; }
+			set { text = value; }
 		}
 		
 		public virtual string Type {
@@ -77,6 +78,10 @@ namespace Debugger.AddIn.TreeModel
 		
 		public virtual bool HasChildNodes {
 			get { return childNodes != null; }
+		}
+		
+		public virtual bool CanSetText { 
+			get { return false; }
 		}
 		
 		public virtual IEnumerable<IVisualizerCommand> VisualizerCommands {
@@ -107,6 +112,10 @@ namespace Debugger.AddIn.TreeModel
 		public int CompareTo(TreeNode other)
 		{
 			return this.Name.CompareTo(other.Name);
+		}
+		
+		public virtual bool SetText(string newValue) { 
+			return false;
 		}
 	}
 }

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.Reflection;
@@ -26,7 +27,7 @@ namespace Debugger.AddIn.TreeModel
 	/// Node in the tree which can be defined by a debugger expression.
 	/// The expression will be lazily evaluated when needed.
 	/// </summary>
-	public class ExpressionNode: TreeNode, ISetText, IContextMenu
+	public class ExpressionNode: TreeNode, ISetText, INotifyPropertyChanged
 	{
 		bool evaluated;
 		
@@ -36,11 +37,16 @@ namespace Debugger.AddIn.TreeModel
 		
 		string fullText;
 		
+		public bool Evaluated { 
+			get { return evaluated; }
+			set { evaluated = value; }
+		}
+		
 		public Expression Expression {
 			get { return expression; }
 		}
 		
-		public bool CanSetText {
+		public override bool CanSetText {
 			get {
 				if (!evaluated) EvaluateExpression();
 				return canSetText;
@@ -54,10 +60,20 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
+		public string FullText { 
+			get { return fullText; }
+		}
+		
 		public override string Text {
 			get {
 				if (!evaluated) EvaluateExpression();
 				return base.Text;
+			}
+			set {
+				if (value != base.Text) {
+					base.Text = value;
+					NotifyPropertyChanged("Text");
+				}
 			}
 		}
 		
@@ -80,7 +96,7 @@ namespace Debugger.AddIn.TreeModel
 				if (!evaluated) EvaluateExpression();
 				return base.HasChildNodes;
 			}
-		}
+		}			
 		
 		/// <summary> Used to determine available VisualizerCommands </summary>
 		private DebugType expressionType;
@@ -269,7 +285,7 @@ namespace Debugger.AddIn.TreeModel
 			return size >= 7 && runs <= (size + 7) / 8;
 		}
 		
-		public bool SetText(string newText)
+		public override bool SetText(string newText)
 		{
 			Value val = null;
 			try {
@@ -343,19 +359,19 @@ namespace Debugger.AddIn.TreeModel
 			return DebuggerResourceService.GetImage("Icons.16x16." + name);
 		}
 		
-		public ContextMenuStrip GetContextMenu()
-		{
-			if (this.Error != null) return GetErrorContextMenu();
-			
-			ContextMenuStrip menu = new ContextMenuStrip();
-			
-			ToolStripMenuItem copyItem;
-			copyItem = new ToolStripMenuItem();
-			copyItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.CopyToClipboard");
-			copyItem.Checked = false;
-			copyItem.Click += delegate {
-				ClipboardWrapper.SetText(fullText);
-			};
+//		public ContextMenuStrip GetContextMenu()
+//		{
+//			if (this.Error != null) return GetErrorContextMenu();
+//			
+//			ContextMenuStrip menu = new ContextMenuStrip();
+//			
+//			ToolStripMenuItem copyItem;
+//			copyItem = new ToolStripMenuItem();
+//			copyItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.CopyToClipboard");
+//			copyItem.Checked = false;
+//			copyItem.Click += delegate {
+//				ClipboardWrapper.SetText(fullText);
+//			};
 			
 //			ToolStripMenuItem hexView;
 //			hexView = new ToolStripMenuItem();
@@ -371,13 +387,13 @@ namespace Debugger.AddIn.TreeModel
 //					WatchPad.Instance.RefreshPad();
 //			};
 			
-			menu.Items.AddRange(new ToolStripItem[] {
-			                    	copyItem,
-			                    	//hexView
-			                    });
-			
-			return menu;
-		}
+//			menu.Items.AddRange(new ToolStripItem[] {
+//			                    	copyItem,
+//			                    	//hexView
+//			                    });
+//			
+//			return menu;
+//		}
 		
 		public ContextMenuStrip GetErrorContextMenu()
 		{
@@ -401,6 +417,16 @@ namespace Debugger.AddIn.TreeModel
 		public static WindowsDebugger WindowsDebugger {
 			get {
 				return (WindowsDebugger)DebuggerService.CurrentDebugger;
+			}
+		}
+		
+		public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+		
+		private void NotifyPropertyChanged(string info)
+		{
+			if (PropertyChanged != null)
+			{
+				PropertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(info));
 			}
 		}
 	}

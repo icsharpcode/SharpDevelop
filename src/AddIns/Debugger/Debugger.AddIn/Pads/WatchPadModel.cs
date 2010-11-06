@@ -19,13 +19,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			this.Language = language;
 		}
 		
-		public bool CanSetText {
+		public override bool CanSetText {
 			get {
 				return true;
 			}
 		}
 		
-		public bool SetText(string text)
+		public new bool SetText(string text)
 		{
 			this.Text = text;
 			return true;
@@ -74,17 +74,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				MessageBox.Show("You can not set name to an empty string!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			else
 			{
-				if (((TreeViewVarNode)node).Content is ExpressionNode) {
-					WatchPad.Instance.Watches.RemoveAll(item => item.Name == ((ExpressionNode)((TreeViewVarNode)node).Content).Name);
-					((ExpressionNode)((TreeViewVarNode)node).Content).Name = value.ToString();
-				} else {
-					if (((TreeViewVarNode)node).Content is TextNode) {
-						WatchPad.Instance.Watches.RemoveAll(item => item.Name == ((TextNode)((TreeViewVarNode)node).Content).Name);
-						((TextNode)((TreeViewVarNode)node).Content).Name = value.ToString();
-					}
-				}
-				
-				WatchPad.Instance.Watches.Add(new TextNode(value as string, SupportedLanguage.CSharp));
+//				if (((TreeViewVarNode)node).Content is ExpressionNode) {
+//					WatchPad.Instance.Watches.RemoveAll(item => item.Name == ((ExpressionNode)((TreeViewVarNode)node).Content).Name);
+//					((ExpressionNode)((TreeViewVarNode)node).Content).Name = value.ToString();
+//				} else {
+//					if (((TreeViewVarNode)node).Content is TextNode) {
+//						WatchPad.Instance.Watches.RemoveAll(item => item.Name == ((TextNode)((TreeViewVarNode)node).Content).Name);
+//						((TextNode)((TreeViewVarNode)node).Content).Name = value.ToString();
+//					}
+//				}
+//				
+//				WatchPad.Instance.Watches.Add(new TextNode(value as string, SupportedLanguage.CSharp));
 			}
 		}
 		public override void MouseDown(TreeNodeAdvMouseEventArgs args)

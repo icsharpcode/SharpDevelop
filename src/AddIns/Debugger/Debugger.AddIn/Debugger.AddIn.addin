@@ -68,12 +68,12 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Pads">
-		<!--<Pad id    = "BreakPointsPad"
+		<Pad id    = "BreakPointsPad"
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.Breakpoints}"
 		     icon     = "PadIcons.BreakPoints"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.BreakPointsPad"
-		     defaultPosition = "Bottom, Hidden" />-->
+		     defaultPosition = "Bottom, Hidden" />
 		
 		<Pad id    = "CallStackPad"
 		     category = "Debugger"
@@ -129,15 +129,15 @@
 		<MenuItem id="AddWatch" label="${res:MainWindow.Windows.Debug.Watch.AddWatch}" class="Debugger.AddIn.AddWatchCommand" />
 		<MenuItem id="RemoveWatch" label="${res:MainWindow.Windows.Debug.Watch.RemoveWatch}" class="Debugger.AddIn.RemoveWatchCommand" />
 		<MenuItem id="ClearWatches" label="${res:MainWindow.Windows.Debug.Watch.RemoveAll}" class="Debugger.AddIn.ClearWatchesCommand" />
-		<MenuItem id="SelectLanguage" label="Select language" type="Menu">
-			<MenuItem id="Builder" class="Debugger.AddIn.WatchScriptingLanguageMenuBuilder" type="Builder" />
-		</MenuItem>
+		
 		<Condition name = "IsProcessRunning" isdebugging="True">
 			<Condition name = "IsProcessRunning" isdebugging="True" isprocessrunning="False">
 				<MenuItem id="Separator1" type="Separator" />
 				<MenuItem id="RefreshWatches" label="${res:MainWindow.Windows.Debug.Watch.Refresh}" class="Debugger.AddIn.RefreshWatchesCommand" />
 			</Condition>
 		</Condition>
+		<MenuItem id="Separator2" type="Separator" />
+		<MenuItem id="CopyToClipboard" label="${res:MainWindow.Windows.Debug.LocalVariables.CopyToClipboard}" class="Debugger.AddIn.CopyToClipboardCommand"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
@@ -164,5 +164,31 @@
 		<Class class="Debugger.AddIn.Visualizers.XmlVisualizerDescriptor" />
 		<Class class="Debugger.AddIn.Visualizers.ObjectGraphVisualizerDescriptor" />
 		<Class class="Debugger.AddIn.Visualizers.GridVisualizerDescriptor" />
+	</Path>
+
+	<Path name="/SharpDevelop/Pads/BreakpointPad/Toolbar">
+		<ToolbarItem id      = "GotoPrev"
+		             icon    = "Bookmarks.PrevBreakpoint"
+		             tooltip = "${res:MainWindow.Windows.BookmarkPad.GotoPrev.ToolTip}"
+		             class   = "ICSharpCode.SharpDevelop.Project.Commands.PrevBreakpointCommand"/>
+		<ToolbarItem id      = "GotoNext"
+		             icon    = "Bookmarks.NextBreakpoint"
+		             tooltip = "${res:MainWindow.Windows.BookmarkPad.GotoNext.ToolTip}"
+		             class   = "ICSharpCode.SharpDevelop.Project.Commands.NextBreakpointCommand"/>
+		<ToolbarItem id = "GotoInFolderSeparator" type = "Separator" />
+		<ToolbarItem id      = "DisableAllBreakpoints"
+		             icon    = "Bookmarks.DisableAllBreakpoints"
+		             tooltip = "${res:MainWindow.Windows.BookmarkPad.EnableDisableAll.ToolTip}"
+		             class   = "ICSharpCode.SharpDevelop.Bookmarks.EnableDisableAll"/>
+		<ToolbarItem id = "EnableDisableSeparator" type = "Separator" />
+		<ToolbarItem id      = "DeleteMark"
+		             icon    = "Icons.16x16.DeleteIcon"
+		             tooltip = "${res:MainWindow.Windows.BookmarkPad.DeleteMark.ToolTip}"
+		             class   = "ICSharpCode.SharpDevelop.Bookmarks.DeleteMark"/>
+		<ToolbarItem id = "EnableDisableSeparator" type = "Separator" />
+		<ToolbarItem id      = "DeleteAllBreakpoints"
+		             icon    = "Bookmarks.DeleteAllBreakpoints"
+		             tooltip = "${res:MainWindow.Windows.BookmarkPad.DeleteAllMarks.ToolTip}"
+		             class   = "ICSharpCode.SharpDevelop.Project.Commands.RemoveAllBreakpointsCommand"/>
 	</Path>
 </AddIn>

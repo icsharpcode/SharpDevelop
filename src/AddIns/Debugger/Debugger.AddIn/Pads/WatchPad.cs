@@ -3,29 +3,26 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Controls;
-using System.Windows.Forms;
-using System.Windows.Forms.Integration;
+using System.Windows;
+using System.Windows.Input;
 
-using Aga.Controls.Tree;
-using Aga.Controls.Tree.NodeControls;
 using Debugger;
 using Debugger.AddIn;
+using Debugger.AddIn.Pads.Controls;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
-using ICSharpCode.Core.WinForms;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
-using ICSharpCode.NRefactory.Ast;
-using ICSharpCode.NRefactory.Visitors;
+using ICSharpCode.SharpDevelop.Project;
 using Exception = System.Exception;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class WatchPad : DebuggerPad
 	{
-		TreeViewAdv watchList;
+		WatchList watchList;
 		Process debuggedProcess;
-		List<TextNode> watches;
+
 		static WatchPad instance;
 		
 		/// <remarks>Always check if Instance is null, might be null if pad is not opened!</remarks>
@@ -37,15 +34,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			instance = this;
 		}
-		
-		public List<TextNode> Watches {
-			get { return watches; }
-		}
-		
-		readonly TreeColumn nameColumn = new TreeColumn();
-		readonly TreeColumn valColumn  = new TreeColumn();
-		readonly TreeColumn typeColumn = new TreeColumn();
-		
+			
 		/// <remarks>
 		/// This is not used anywhere, but it is neccessary to be overridden in children of AbstractPadContent.
 		/// </remarks>
@@ -61,74 +50,51 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		protected override void InitializeComponents()
 		{
-			watchList = new TreeViewAdv();
-			watchList.Columns.Add(nameColumn);
-			watchList.Columns.Add(valColumn);
-			watchList.Columns.Add(typeColumn);
-			watchList.UseColumns = true;
-			watchList.SelectionMode = TreeSelectionMode.Single;
-			watchList.LoadOnDemand = true;
-			
-			NodeIcon iconControl = new ItemIcon();
-			iconControl.ParentColumn = nameColumn;
-			watchList.NodeControls.Add(iconControl);
-			
-			NodeTextBox nameControl = new WatchItemName();
-			nameControl.ParentColumn = nameColumn;
-			watchList.NodeControls.Add(nameControl);
-			
-			NodeTextBox textControl = new ItemText();
-			textControl.ParentColumn = valColumn;
-			watchList.NodeControls.Add(textControl);
-			
-			NodeTextBox typeControl = new ItemType();
-			typeControl.ParentColumn = typeColumn;
-			watchList.NodeControls.Add(typeControl);
-			
-			watchList.AutoRowHeight = true;
-			watchList.MouseDoubleClick += new MouseEventHandler(watchList_DoubleClick);
-			watchList.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/WatchPad/ContextMenu");
+			watchList = new WatchList();
+			watchList.MouseDoubleClick += watchList_DoubleClick;
+			watchList.ContextMenu = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/WatchPad/ContextMenu");
 			
 			watchList.AllowDrop = true;
-			watchList.DragEnter += new DragEventHandler(watchList_DragEnter);
-			watchList.DragDrop += new DragEventHandler(watchList_DragDrop);
-			watchList.KeyUp += new KeyEventHandler(watchList_KeyUp);
-			
-			watches = new List<TextNode>();
-			
-			ResourceService.LanguageChanged += delegate { OnLanguageChanged(); };
-			OnLanguageChanged();
+			watchList.DragEnter += watchList_DragOver;
+			watchList.Drop += watchList_Drop;
+			watchList.KeyUp += watchList_KeyUp;
 		}
 
 		void watchList_KeyUp(object sender, KeyEventArgs e)
 		{
-			if (e.KeyCode == Keys.Delete) {
+			if (e.Key == Key.Delete) {
 				RemoveWatchCommand cmd = new RemoveWatchCommand { Owner = this };
 				cmd.Run();
 			}
 		}
 		
-		void watchList_DragDrop(object sender, DragEventArgs e)
+		void watchList_Drop(object sender, DragEventArgs e)
 		{
-			watchList.BeginUpdate();
-			TextNode text = new TextNode(e.Data.GetData(DataFormats.StringFormat).ToString(), SupportedLanguage.CSharp);
-			TreeViewVarNode node = new TreeViewVarNode(this.debuggedProcess, this.watchList, text);
-			watches.Add(text);
-			watchList.Root.Children.Add(node);
-			watchList.EndUpdate();
+			if (ProjectService.CurrentProject == null) return;
+			if (e.Data == null) return;
+			if (!e.Data.GetDataPresent(DataFormats.StringFormat)) return;
+			if (string.IsNullOrEmpty(e.Data.GetData(DataFormats.StringFormat).ToString())) return;
 			
-			node.IsSelected = true;
+			string language = ProjectService.CurrentProject.Language;	
+			
+			// FIXME languages
+			TextNode text = new TextNode(e.Data.GetData(DataFormats.StringFormat).ToString(), 
+			                            language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp);
+
+			if (!watchList.WatchItems.Contains(text))
+				watchList.WatchItems.ContainsItem(text);
 			
 			this.RefreshPad();
 		}
 
-		void watchList_DragEnter(object sender, DragEventArgs e)
+		void watchList_DragOver(object sender, DragEventArgs e)
 		{
 			if(e.Data.GetDataPresent(DataFormats.StringFormat)) {
-				e.Effect = DragDropEffects.Copy;
+				e.Effects = DragDropEffects.Copy;
 			}
 			else {
-				e.Effect = DragDropEffects.None;
+				e.Effects = DragDropEffects.None;
+				e.Handled = true;
 			}
 		}
 		
@@ -143,23 +109,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void ResetPad(object sender, EventArgs e)
 		{
-			watchList.BeginUpdate();
-			watchList.Root.Children.Clear();
+			string language = ProjectService.CurrentProject.Language;	
 			
-			foreach (TextNode text in watches)
-				watchList.Root.Children.Add(new TreeViewVarNode(this.debuggedProcess, this.watchList, text));
+			// rebuild list
+			var nodes = new List<TreeNode>();
+			foreach (var nod in watchList.WatchItems)
+				nodes.Add(new TextNode(nod.Name, 
+				                       language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp));
 			
-			watchList.EndUpdate();
-		}
-		
-		void OnLanguageChanged()
-		{
-			nameColumn.Header = ResourceService.GetString("Global.Name");
-			nameColumn.Width = 250;
-			valColumn.Header  = ResourceService.GetString("Dialog.HighlightingEditor.Properties.Value");
-			valColumn.Width = 300;
-			typeColumn.Header = ResourceService.GetString("ResourceEditor.ResourceEdit.TypeColumn");
-			typeColumn.Width = 250;
+			watchList.WatchItems.Clear();					
+			foreach (var nod in nodes)
+				watchList.WatchItems.Add(nod);
 		}
 		
 		protected override void SelectProcess(Process process)
@@ -188,30 +148,31 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			using(new PrintTimes("Watch Pad refresh")) {
 				try {
-					watchList.BeginUpdate();
 					Utils.DoEvents(debuggedProcess);
-					List<TreeViewVarNode> nodes = new List<TreeViewVarNode>();
+					List<TreeNode> nodes = new List<TreeNode>();
 					
-					foreach (var nod in watches) {
+					foreach (var nod in watchList.WatchItems) {
 						try {
 							LoggingService.Info("Evaluating: " + (string.IsNullOrEmpty(nod.Name) ? "is null or empty!" : nod.Name));
 							var nodExpression = debugger.GetExpression(nod.Name);
 							//Value val = ExpressionEvaluator.Evaluate(nod.Name, nod.Language, debuggedProcess.SelectedStackFrame);
 							ExpressionNode valNode = new ExpressionNode(null, nod.Name, nodExpression);
-							nodes.Add(new TreeViewVarNode(debuggedProcess, watchList, valNode));
-						} catch (GetValueException) {
+							nodes.Add(valNode);
+						} 
+						catch (GetValueException) {
 							string error = String.Format(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.InvalidExpression}"), nod.Name);
 							ErrorInfoNode infoNode = new ErrorInfoNode(nod.Name, error);
-							nodes.Add(new TreeViewVarNode(debuggedProcess, watchList, infoNode));
+							nodes.Add(infoNode);
 						}
 					}
 					
-					watchList.Root.Children.Clear();
-					
-					foreach (TreeViewVarNode nod in nodes)
-						watchList.Root.Children.Add(nod);
-				} catch(AbortedBecauseDebuggeeResumedException) {
-				} catch(Exception ex) {
+					// rebuild list
+					watchList.WatchItems.Clear();					
+					foreach (var nod in nodes)
+						watchList.WatchItems.Add(nod);
+				} 
+				catch(AbortedBecauseDebuggeeResumedException) { } 
+				catch(Exception ex) {
 					if (debuggedProcess == null || debuggedProcess.HasExited) {
 						// Process unexpectedly exited
 					} else {
@@ -219,8 +180,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					}
 				}
 			}
-			
-			watchList.EndUpdate();
 		}
 	}
 }

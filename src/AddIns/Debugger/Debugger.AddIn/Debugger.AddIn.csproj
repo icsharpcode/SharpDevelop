@@ -91,6 +91,14 @@
       <DependentUpon>CallStackPad.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Pads\Controls\ConditionCell.xaml.cs">
+      <DependentUpon>ConditionCell.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pads\Controls\Converters.cs" />
+    <Compile Include="Pads\Controls\TreeListView.cs" />
+    <Compile Include="Pads\Controls\WatchList.xaml.cs">
+      <DependentUpon>WatchList.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pads\WatchInputBox.xaml.cs">
       <DependentUpon>WatchInputBox.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -336,6 +344,8 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Pads\CallStackPad.xaml" />
+    <Page Include="Pads\Controls\ConditionCell.xaml" />
+    <Page Include="Pads\Controls\WatchList.xaml" />
     <Page Include="Pads\WatchInputBox.xaml" />
     <Page Include="Service\EditBreakpointScriptWindow.xaml" />
     <Page Include="Visualizers\Graph\Drawing\NodeControlResources.xaml" />
@@ -358,6 +368,7 @@
       <Name>ICSharpCode.Core.WinForms</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Folder Include="Pads\Controls" />
     <Folder Include="Visualizers\Graph" />
     <Folder Include="Visualizers\Graph\Drawing" />
     <Folder Include="Visualizers\Graph\Layout" />

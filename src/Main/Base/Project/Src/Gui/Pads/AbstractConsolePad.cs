@@ -262,6 +262,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		internal ITextEditor editorAdapter;
 		internal BeginReadOnlySectionProvider readOnlyRegion;
 		
+		public event TextCompositionEventHandler TextAreaTextEntered;
+		public event KeyEventHandler TextAreaPreviewKeyDown;
+		
 		public ConsoleControl()
 		{
 			this.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
@@ -279,6 +282,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Children.Add(editor);
 			
 			editor.TextArea.ReadOnlySectionProvider = readOnlyRegion = new BeginReadOnlySectionProvider();
+			
+			editor.TextArea.TextEntered += new TextCompositionEventHandler(editor_TextArea_TextEntered);
+			editor.TextArea.PreviewKeyDown += new KeyEventHandler(editor_TextArea_PreviewKeyDown);
 		}
 		
 		public ITextEditor TextEditor {
@@ -313,6 +319,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			readOnlyRegion.EndOffset = editor.Document.TextLength;
 		}
 		
+		/// <summary>
+		/// Hides the scroll bar.
+		/// </summary>
+		public void HideScrollBar()
+		{
+			this.editor.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
+			this.editor.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+		}
+		
 		public int CommandOffset {
 			get { return readOnlyRegion.EndOffset; }
 		}
@@ -327,6 +342,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 			set {
 				editor.Document.Replace(new TextSegment() { StartOffset = readOnlyRegion.EndOffset, EndOffset = editor.Document.TextLength }, value);
 			}
+		}
+		
+		void editor_TextArea_TextEntered(object sender, TextCompositionEventArgs e)
+		{
+			TextCompositionEventHandler handler = TextAreaTextEntered;
+			
+			if (handler != null)
+				handler(this, e);
+		}
+		
+		void editor_TextArea_PreviewKeyDown(object sender, KeyEventArgs e)
+		{
+			KeyEventHandler handler = TextAreaPreviewKeyDown;
+			
+			if (handler != null)
+				handler(this, e);
 		}
 	}
 	

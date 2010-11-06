@@ -4,8 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Linq;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Debugging;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
@@ -35,8 +37,10 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	
 	public abstract class AbstractDeleteMarkClass : AbstractMenuCommand
 	{
-		protected void deleteBookMark (BookmarkNode node) {
-			ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.RemoveMark(node.Bookmark);
+		protected void deleteBookMark (SDBookmark bookmark) {
+			if (bookmark == null) return;
+			if (bookmark is SDMarkerBookmark) return;
+			ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.RemoveMark(bookmark);
 		}
 	}
 	
@@ -47,22 +51,13 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	{
 		public override void Run()
 		{
-			IEnumerable<TreeNode> nodes = ((BookmarkPadBase)Owner).AllNodes;
-			foreach(TreeNode innerNode in nodes) {
-				BookmarkFolderNode folderNode =  innerNode as BookmarkFolderNode;
-				// Its problebly not the most effecient way of doing it, but it works.
-				if (folderNode != null) {
-					for (int i = folderNode.Nodes.Count - 1; i >= 0 ; i--)
-					{
-						if (folderNode.Nodes[i] is BookmarkNode) {
-							deleteBookMark(folderNode.Nodes[i] as BookmarkNode);
-						}
-					}
-				}
-			}
+			var result = BookmarkManager.Bookmarks
+				.Where(b => !(b is SDMarkerBookmark))
+				.Select(b => b);
+			foreach (var b in result.ToArray())
+				BookmarkManager.RemoveMark(b);
 		}
 	}
-	
 	
 	/// <summary>
 	/// Deletes the currently selected <see cref="BookmarkNode" /> or <see cref="BookmarkFolderNode" />
@@ -71,21 +66,10 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	{
 		public override void Run()
 		{
-			TreeNode node = ((BookmarkPadBase)Owner).CurrentNode;
+			var node = ((BookmarkPadBase)Owner).CurrentItem;
 			if (node == null) return;
-			if (node is BookmarkNode) {
-				deleteBookMark(node as BookmarkNode);
-			}
-			if (node is BookmarkFolderNode) {
-				BookmarkFolderNode folderNode = node as BookmarkFolderNode;
-				// We have to start from the top of the array to prevent reordering.
-				for (int i = folderNode.Nodes.Count - 1; i >= 0 ; i--)
-				{
-					if (folderNode.Nodes[i] is BookmarkNode) {
-						deleteBookMark(folderNode.Nodes[i] as BookmarkNode);
-					}
-				}
-			}
+			
+			deleteBookMark(node.Mark as SDBookmark);			
 		}
 	}
 	

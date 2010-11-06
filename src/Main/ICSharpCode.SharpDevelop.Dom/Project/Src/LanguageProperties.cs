@@ -243,6 +243,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return "[" + base.ToString() + "]";
 		}
 		
+		public static LanguageProperties GetLanguage(string language)
+		{
+			switch(language)
+			{
+				case "VBNet":
+				case "VB":
+					return LanguageProperties.VBNet;
+				default:
+					return LanguageProperties.CSharp;
+			}
+		}
+		
 		#region CSharpProperties
 		internal sealed class CSharpProperties : LanguageProperties
 		{
