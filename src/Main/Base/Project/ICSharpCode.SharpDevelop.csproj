@@ -92,7 +92,9 @@
     <Compile Include="..\..\ICSharpCode.SharpDevelop.BuildWorker\ExtendedBinaryReader.cs">
       <Link>Src\Project\MSBuildEngine\ExtendedBinaryReader.cs</Link>
     </Compile>
-    <Compile Include="Src\Bookmarks\Pad\Controls\ListViewPad.xaml.cs" />
+    <Compile Include="Src\Bookmarks\Pad\Controls\ListViewPad.xaml.cs">
+      <DependentUpon>ListViewPad.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Src\Commands\SharpDevelopRoutedCommands.cs" />
     <Compile Include="Src\Editor\AddInHighlightingResource.cs" />
     <Compile Include="Src\Editor\AvalonEdit\AvalonEditDocumentAdapter.cs" />

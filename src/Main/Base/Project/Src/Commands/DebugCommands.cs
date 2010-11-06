@@ -137,42 +137,6 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		}
 	}
 	
-	public abstract class NextPrevBreakpointCommand : AbstractMenuCommand
-	{
-		public void Run(ListViewPadItemModel nextItem)
-		{
-			var bookmarkBase = (BookmarkPadBase)Owner;	
-			
-			if (nextItem == null) return;
-			
-			// get next bookmark						
-			int line = (nextItem.Mark as SDBookmark).LineNumber;
-			
-			var bookmarks = DebuggerService.Breakpoints;
-			var bookmark = bookmarks.FirstOrDefault(b => b.LineNumber == line);
-			if (bookmark == null && bookmarks.Count > 0) {
-				bookmark = bookmarks[0]; // jump around to first bookmark
-			}
-			if (bookmark != null) {
-				FileService.JumpToFilePosition(bookmark.FileName, bookmark.LineNumber, bookmark.ColumnNumber);
-			}	
-
-			// select in tree
-			bookmarkBase.SelectItem(nextItem);
-		}
-	}
-	
-	public sealed class NextBreakpointCommand : NextPrevBreakpointCommand
-	{
-		public override void Run()
-		{
-			var bookmarkBase = (BookmarkPadBase)Owner;			
-			var nextItem = bookmarkBase.NextItem;
-			
-			base.Run(nextItem);
-		}
-	}
-	
 	public class DeleteBreakpointCommand : AbstractMenuCommand
 	{
 		public override void Run()
@@ -183,17 +147,6 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (item.Mark is BreakpointBookmark) {
 				BookmarkManager.RemoveMark(item.Mark);
 			}
-		}
-	}
-	
-	public sealed class PrevBreakpointCommand : NextPrevBreakpointCommand
-	{
-		public override void Run()
-		{
-			var bookmarkBase = (BookmarkPadBase)Owner;			
-			var prevItem = bookmarkBase.PrevItem;
-			
-			base.Run(prevItem);	
 		}
 	}
 	

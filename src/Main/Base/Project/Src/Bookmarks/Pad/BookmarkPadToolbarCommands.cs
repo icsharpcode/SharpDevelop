@@ -3,34 +3,73 @@
 
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using System.Linq;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Bookmarks.Pad.Controls;
 using ICSharpCode.SharpDevelop.Debugging;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	#region Goto Commands
-	/*
-	public class GotoNext : AbstractEditActionMenuCommand
+	public abstract class NextPrevBookmarkPadCommand : AbstractMenuCommand
 	{
-		public override IEditAction EditAction {
-			get {
-				return new ICSharpCode.TextEditor.Actions.GotoNextBookmark(PrevBookmark.AcceptOnlyStandardBookmarks);
+		public void Run(ListViewPadItemModel item)
+		{
+			var bookmarkBase = (BookmarkPadBase)Owner;	
+			
+			if (item == null) return;
+			
+			// get next bookmark						
+			int line = (item.Mark as SDBookmark).LineNumber;
+			
+			SDBookmark bookmark;
+			if (item.Mark is BreakpointBookmark) {
+				var bookmarks = DebuggerService.Breakpoints;
+				bookmark = bookmarks.FirstOrDefault(b => b.LineNumber == line);
+				if (bookmark == null && bookmarks.Count > 0) {
+					bookmark = bookmarks[0]; // jump around to first bookmark
+				}
 			}
+			else {
+				var bookmarks = BookmarkManager.Bookmarks;
+				bookmark = bookmarks.FirstOrDefault(b => b.LineNumber == line);
+				if (bookmark == null && bookmarks.Count > 0) {
+					bookmark = bookmarks[0]; // jump around to first bookmark
+				}
+			}			
+			
+			if (bookmark != null) {
+				FileService.JumpToFilePosition(bookmark.FileName, bookmark.LineNumber, bookmark.ColumnNumber);
+			}	
+
+			// select in tree
+			bookmarkBase.SelectItem(item);
 		}
 	}
 	
-	public class GotoPrev : AbstractEditActionMenuCommand
+	public sealed class NextBookmarkPadCommand : NextPrevBookmarkPadCommand
 	{
-		public override IEditAction EditAction {
-			get {
-				return new ICSharpCode.TextEditor.Actions.GotoPrevBookmark(PrevBookmark.AcceptOnlyStandardBookmarks);
-			}
+		public override void Run()
+		{
+			var bookmarkBase = (BookmarkPadBase)Owner;			
+			var nextItem = bookmarkBase.NextItem;
+			
+			base.Run(nextItem);
 		}
 	}
-	*/
+	
+	public sealed class PrevBookmarkPadCommand : NextPrevBookmarkPadCommand
+	{
+		public override void Run()
+		{
+			var bookmarkBase = (BookmarkPadBase)Owner;			
+			var prevItem = bookmarkBase.PrevItem;
+			
+			base.Run(prevItem);	
+		}
+	}
 	#endregion Goto Commands
 	
 	#region Delete BookMark(s) commands

@@ -38,6 +38,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks.Pad.Controls
 		
 		public ListViewPadItemModel CurrentItem {
 			get {
+				if (MyListView.SelectedItem == null && MyListView.Items.Count > 0)
+					this.MyListView.SelectedItem	= MyListView.Items[0];
+				
 				return MyListView.SelectedItem as ListViewPadItemModel;
 			}
 			set {
@@ -53,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks.Pad.Controls
 				foreach (var line in ItemCollection) {
 					if (found)
 						return line;
-					if (line == MyListView.SelectedItem  as ListViewPadItemModel)
+					if (line == CurrentItem)
 						found = true;
 				}
 				
@@ -68,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks.Pad.Controls
 				foreach (var line in ItemCollection) {
 					if (found)
 						return prev;
-					if (line == MyListView.SelectedItem as ListViewPadItemModel) {
+					if (line == CurrentItem) {
 						found = true;
 					}
 					else {

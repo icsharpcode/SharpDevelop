@@ -972,11 +972,11 @@
 		<ToolbarItem id      = "GotoPrev"
 		             icon    = "Bookmarks.PrevBreakpoint"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.GotoPrev.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Project.Commands.PrevBreakpointCommand"/>
+		             class   = "ICSharpCode.SharpDevelop.Bookmarks.PrevBookmarkPadCommand"/>
 		<ToolbarItem id      = "GotoNext"
 		             icon    = "Bookmarks.NextBreakpoint"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.GotoNext.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Project.Commands.NextBreakpointCommand"/>
+		             class   = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmarkPadCommand"/>
 		<ToolbarItem id = "GotoInFolderSeparator" type = "Separator" />
 		<ToolbarItem id      = "DisableAllBreakpoints"
 		             icon    = "Bookmarks.DisableAllBreakpoints"
@@ -986,7 +986,7 @@
 		<ToolbarItem id      = "DeleteMark"
 		             icon    = "Icons.16x16.DeleteIcon"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.DeleteMark.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Bookmarks.DeleteBreakpointCommand"/>
+		             class   = "ICSharpCode.SharpDevelop.Project.Commands.DeleteBreakpointCommand"/>
 		<ToolbarItem id = "EnableDisableSeparator" type = "Separator" />
 		<ToolbarItem id      = "DeleteAllBreakpoints"
 		             icon    = "Bookmarks.DeleteAllBreakpoints"
@@ -1948,11 +1948,11 @@
 		<ToolbarItem id      = "GotoPrev"
 		             icon    = "Bookmarks.GotoPrev"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.GotoPrev.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Bookmarks.GotoPrev"/>
+		             class   = "ICSharpCode.SharpDevelop.Bookmarks.PrevBookmarkPadCommand"/>
 		<ToolbarItem id      = "GotoNext"
 		             icon    = "Bookmarks.GotoNext"
 		             tooltip = "${res:MainWindow.Windows.BookmarkPad.GotoNext.ToolTip}"
-		             class   = "ICSharpCode.SharpDevelop.Bookmarks.GotoNext"/>
+		             class   = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmarkPadCommand"/>
 		<ToolbarItem id = "GotoInFolderSeparator" type = "Separator" />
 		<ToolbarItem id      = "EnableDisableAll"
 		             icon    = "Bookmarks.EnableDisableAll"
