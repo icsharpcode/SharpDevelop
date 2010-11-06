@@ -2,8 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Xml;
 using System.Collections.Generic;
+using System.Xml;
 
 namespace ICSharpCode.SettingsEditor
 {
@@ -32,6 +32,11 @@ namespace ICSharpCode.SettingsEditor
 			}
 		}
 		
+		/// <summary>
+		/// VB "My" namespace integration
+		/// </summary>
+		public bool UseMySettingsClassName { get; set; }
+		
 		public List<SettingsEntry> Entries {
 			get { return entries; }
 		}
@@ -46,6 +51,7 @@ namespace ICSharpCode.SettingsEditor
 		{
 			generatedClassNamespace = settingsFile.GetAttribute("GeneratedClassNamespace");
 			generatedClassName = settingsFile.GetAttribute("GeneratedClassName");
+			this.UseMySettingsClassName = "true".Equals(settingsFile.GetAttribute("UseMySettingsClassName"), StringComparison.OrdinalIgnoreCase);
 			
 			XmlElement settings = settingsFile["Settings"];
 			
@@ -62,6 +68,8 @@ namespace ICSharpCode.SettingsEditor
 			writer.WriteAttributeString("CurrentProfile", "(Default)");
 			writer.WriteAttributeString("GeneratedClassNamespace", generatedClassNamespace);
 			writer.WriteAttributeString("GeneratedClassName", generatedClassName);
+			if (this.UseMySettingsClassName)
+				writer.WriteAttributeString("UseMySettingsClassName", "true");
 			
 			writer.WriteStartElement("Profiles");
 			writer.WriteStartElement("Profile");

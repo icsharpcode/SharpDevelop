@@ -13,8 +13,8 @@
 	<Files>
 		<File name="${FullName}" language="ResourceFiles" Generator="SettingsSingleFileGenerator"><![CDATA[<?xml version='1.0' encoding='utf-8'?>
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="${StandardNamespace}" GeneratedClassName="${ClassName}">
-  <Profiles />
-  <Settings />
+	<Profiles />
+	<Settings />
 </SettingsFile>
 ]]>		</File>
 	</Files>

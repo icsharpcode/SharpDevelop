@@ -816,6 +816,7 @@
 											<File Source="..\..\data\templates\project\VBNet\Service.xpt" Name="Service.xpt" Id="VBNetService.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\SharedAddin.xpt" Id="VBNetSharedAddin.xpt" Name="SharedAddin.xpt" />
 											<File Source="..\..\data\templates\project\VBNet\SharpDevelopAddin.xpt" Id="VBNetSharpDevelopAddin.xpt" Name="SharpDevelopAddin.xpt" />
+											<File Id="MySettings.settings" Name="MySettings.settings" Source="..\..\data\templates\project\VBNet\MySettings.settings" />
 										</Component>
 									</Directory>
 									<Component Guid="73EAC135-57B6-46C0-9F24-70A347B9AAC8" Id="ExampleProjectTemplate" DiskId="1">

@@ -12,6 +12,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -144,6 +145,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			WorkbenchSingleton.AssertMainThread();
 			CodeDomProvider provider = project.LanguageProperties.CodeDomProvider;
 			CodeGeneratorOptions options = new CodeDOMGeneratorUtility().CreateCodeGeneratorOptions;
+			
+			if (project.LanguageProperties == LanguageProperties.VBNet) {
+				// the root namespace is implicit in VB
+				foreach (CodeNamespace ns in ccu.Namespaces) {
+					if (string.Equals(ns.Name, project.RootNamespace, StringComparison.OrdinalIgnoreCase)) {
+						ns.Name = string.Empty;
+					} else if (ns.Name.StartsWith(project.RootNamespace + ".", StringComparison.OrdinalIgnoreCase)) {
+						ns.Name = ns.Name.Substring(project.RootNamespace.Length + 1);
+					}
+				}
+			}
 			
 			string codeOutput;
 			using (StringWriter writer = new StringWriter()) {

@@ -5,13 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
-using System.Xml;
 using System.Text;
+using System.Xml;
 using System.Xml.Linq;
+
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -127,27 +126,35 @@ namespace ICSharpCode.SettingsEditor
 		void UpdateAppConfig(XDocument appConfigDoc)
 		{
 			var entries = view.GetAllEntries();
+			var userEntries = entries.Where(e => e.Scope == SettingScope.User);
+			var appEntries = entries.Where(e => e.Scope == SettingScope.Application);
+			
 			XElement configuration = appConfigDoc.Root;
 			XElement configSections = configuration.Element("configSections");
 			if (configSections == null) {
 				configSections = configuration.AddFirstWithIndentation(new XElement("configSections"));
 			}
-			RegisterAppConfigSection(configSections, entries);
+			RegisterAppConfigSection(configSections, userEntries.Any(), appEntries.Any());
 			XElement userSettings = configuration.Element("userSettings");
-			if (userSettings == null) {
+			if (userSettings == null && userEntries.Any()) {
 				userSettings = configuration.AddWithIndentation(new XElement("userSettings"));
 			}
-			UpdateSettings(userSettings, entries.Where(e => e.Scope == SettingScope.User));
+			if (userSettings != null) {
+				UpdateSettings(userSettings, userEntries);
+			}
+			
 			XElement appSettings = configuration.Element("applicationSettings");
-			if (appSettings == null) {
+			if (appSettings == null && appEntries.Any()) {
 				appSettings = configuration.AddWithIndentation(new XElement("applicationSettings"));
 			}
-			UpdateSettings(appSettings, entries.Where(e => e.Scope == SettingScope.Application));
+			if (appSettings != null) {
+				UpdateSettings(appSettings, appEntries);
+			}
 		}
 		
-		void RegisterAppConfigSection(XElement configSections, IEnumerable<SettingsEntry> entries)
+		void RegisterAppConfigSection(XElement configSections, bool hasUserEntries, bool hasAppEntries)
 		{
-			if (entries.Any(e => e.Scope == SettingScope.User)) {
+			if (hasUserEntries) {
 				XElement userSettings = configSections.Elements("sectionGroup").FirstOrDefault(e => (string)e.Attribute("name") == "userSettings");
 				if (userSettings == null) {
 					userSettings = configSections.AddWithIndentation(new XElement("sectionGroup", new XAttribute("name", "userSettings")));
@@ -155,7 +162,7 @@ namespace ICSharpCode.SettingsEditor
 				}
 				RegisterAppConfigSectionInGroup(userSettings, SettingScope.User);
 			}
-			if (entries.Any(e => e.Scope == SettingScope.Application)) {
+			if (hasAppEntries) {
 				XElement appSettings = configSections.Elements("sectionGroup").FirstOrDefault(e => (string)e.Attribute("name") == "applicationSettings");
 				if (appSettings == null) {
 					appSettings = configSections.AddWithIndentation(new XElement("sectionGroup", new XAttribute("name", "applicationSettings")));

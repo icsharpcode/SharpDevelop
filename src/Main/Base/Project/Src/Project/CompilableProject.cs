@@ -1,18 +1,16 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using System.Xml.Linq;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project.Converter;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Xml.Linq;
+
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Debugging;
-using ICSharpCode.SharpDevelop.Internal.Templates;
+using ICSharpCode.SharpDevelop.Project.Converter;
 using ICSharpCode.SharpDevelop.Util;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -611,6 +609,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			bool createAppConfig = newFramework.RequiresAppConfigEntry && (this.OutputType != OutputType.Library && this.OutputType != OutputType.Module);
 			
 			string appConfigFileName = GetAppConfigFile(this, createAppConfig);
+			if (appConfigFileName == null)
+				return;
 			
 			using (FakeXmlViewContent xml = new FakeXmlViewContent(appConfigFileName)) {
 				if (xml.Document != null) {
