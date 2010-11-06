@@ -1330,6 +1330,7 @@
 									<Component Id="SettingsEditorFiles" Guid="4A12129A-6BB5-4CC7-A105-C1F6FDF345F2" DiskId="1">
 										<File Id="SettingsEditor.dll" Name="SettingsEditor.dll" Source="..\..\AddIns\DisplayBindings\SettingsEditor\SettingsEditor.dll" KeyPath="yes" />
 										<File Id="SettingsEditor.addin" Name="SettingsEditor.addin" Source="..\..\AddIns\DisplayBindings\SettingsEditor\SettingsEditor.addin" />
+										<File Id="EmptySettingsFile.xft" Name="EmptySettingsFile.xft" Source="..\..\AddIns\DisplayBindings\SettingsEditor\EmptySettingsFile.xft" />
 									</Component>
 								</Directory>
 							</Directory>

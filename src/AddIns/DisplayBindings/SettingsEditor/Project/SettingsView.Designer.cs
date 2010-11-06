@@ -33,12 +33,12 @@ namespace ICSharpCode.SettingsEditor
 		{
 			this.components = new System.ComponentModel.Container();
 			this.grid = new System.Windows.Forms.DataGridView();
-			this.bindingSource = new System.Windows.Forms.BindingSource(this.components);
-			this.label1 = new System.Windows.Forms.Label();
 			this.NameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.TypeColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
 			this.ScopeColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
 			this.ValueColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.bindingSource = new System.Windows.Forms.BindingSource(this.components);
+			this.label1 = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.bindingSource)).BeginInit();
 			this.SuspendLayout();
@@ -63,20 +63,6 @@ namespace ICSharpCode.SettingsEditor
 			this.grid.TabIndex = 0;
 			this.grid.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.GridDataError);
 			this.grid.SelectionChanged += new System.EventHandler(this.GridSelectionChanged);
-			// 
-			// bindingSource
-			// 
-			this.bindingSource.DataSource = typeof(ICSharpCode.SettingsEditor.SettingsEntry);
-			this.bindingSource.AddingNew += new System.ComponentModel.AddingNewEventHandler(this.BindingSourceAddingNew);
-			// 
-			// label1
-			// 
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(4, 9);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(292, 13);
-			this.label1.TabIndex = 1;
-			this.label1.Text = "SettingsView prototype. Code generation not implemented!";
 			// 
 			// NameColumn
 			// 
@@ -110,6 +96,20 @@ namespace ICSharpCode.SettingsEditor
 			this.ValueColumn.HeaderText = "Value";
 			this.ValueColumn.MinimumWidth = 50;
 			this.ValueColumn.Name = "ValueColumn";
+			// 
+			// bindingSource
+			// 
+			this.bindingSource.DataSource = typeof(ICSharpCode.SettingsEditor.SettingsEntry);
+			this.bindingSource.AddingNew += new System.ComponentModel.AddingNewEventHandler(this.BindingSourceAddingNew);
+			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(4, 9);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(307, 13);
+			this.label1.TabIndex = 1;
+			this.label1.Text = "SettingsView prototype. app.config generation not implemented!";
 			// 
 			// SettingsView
 			// 
