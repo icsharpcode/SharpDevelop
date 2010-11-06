@@ -4500,6 +4500,9 @@ has been changed externally do you want to reload it?</value>
   <data name="ICSharpCode.SharpDevelop.ExceptionBox.Title" xml:space="preserve">
     <value>Unhandled exception has occured</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Debugging.SavedString" xml:space="preserve">
+    <value>Saved</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.CantDeserializeFormError" xml:space="preserve">
     <value>Can't deserialize form. Possible reason: Initialize component method was changed manually.</value>
   </data>

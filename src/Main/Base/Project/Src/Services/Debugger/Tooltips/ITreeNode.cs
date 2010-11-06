@@ -16,6 +16,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		string Text { get; }
 		
+		bool CanSetText { get; }
+		
 		string Type { get; }
 		
 		ImageSource ImageSource { get; }
@@ -27,5 +29,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		IEnumerable<IVisualizerCommand> VisualizerCommands { get; }
 		
 		bool HasVisualizerCommands { get; }
+		
+		bool SetText(string newValue);
 	}
 }

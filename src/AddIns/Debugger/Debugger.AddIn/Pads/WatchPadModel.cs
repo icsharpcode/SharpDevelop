@@ -19,13 +19,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			this.Language = language;
 		}
 		
-		public bool CanSetText {
+		public new bool CanSetText {
 			get {
 				return true;
 			}
 		}
 		
-		public bool SetText(string text)
+		public new bool SetText(string text)
 		{
 			this.Text = text;
 			return true;

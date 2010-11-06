@@ -1,12 +1,14 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.NRefactory;
 using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Text;
+
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
+using Services.Debugger.Tooltips;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
@@ -25,8 +27,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			if (value is string) {
 				string[] v = ((string)value).Split('|');
-				if (v.Length != 8)
-					return null;
+				
 				FileName fileName = FileName.Create(v[1]);
 				int lineNumber = int.Parse(v[2], culture);
 				int columnNumber = int.Parse(v[3], culture);
@@ -49,6 +50,14 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 						bbm.IsEnabled = bool.Parse(v[4]);
 						bookmark = bbm;
 						break;
+					case "PinBookmark":
+						var pin = new PinBookmark(fileName, new Location(columnNumber, lineNumber));
+						for (int i = 4; i < v.Length; i+=2) {
+							pin.SavedNodes.Add(new Tuple<string, string>(v[i], v[i+1]));
+						}
+						
+						bookmark = pin;
+						break;
 					default:
 						bookmark = new SDBookmark(fileName, new Location(columnNumber, lineNumber));
 						break;
@@ -67,7 +76,10 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				if (bookmark is Debugging.BreakpointBookmark) {
 					b.Append("Breakpoint");
 				} else {
-					b.Append("Bookmark");
+					if (bookmark is PinBookmark)
+						b.Append("PinBookmark");	
+					else
+						b.Append("Bookmark");
 				}
 				b.Append('|');
 				b.Append(bookmark.FileName);
@@ -75,6 +87,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				b.Append(bookmark.LineNumber);
 				b.Append('|');
 				b.Append(bookmark.ColumnNumber);
+				
 				if (bookmark is Debugging.BreakpointBookmark) {
 					Debugging.BreakpointBookmark bbm = (Debugging.BreakpointBookmark)bookmark;
 					b.Append('|');
@@ -85,6 +98,16 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 					b.Append(bbm.ScriptLanguage);
 					b.Append('|');
 					b.Append(bbm.Condition);
+				}
+				
+				if (bookmark is PinBookmark) {
+					var pin = (PinBookmark)bookmark;
+					b.Append(pin.Comment);
+					foreach(var node in pin.Nodes) {
+						b.Append(node.Name);
+						b.Append('|');
+						b.Append(node.Text);
+					}						
 				}
 				return b.ToString();
 			} else {

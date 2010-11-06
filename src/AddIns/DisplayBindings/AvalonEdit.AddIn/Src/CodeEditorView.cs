@@ -13,6 +13,8 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
+
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.AddIn.Snippets;
 using ICSharpCode.AvalonEdit.Editing;
@@ -234,6 +236,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					if (!(args.ContentToShow is UIElement)) {
 						throw new NotSupportedException("Content to show in Popup must be UIElement: " + args.ContentToShow);
 					}
+					contentToShowITooltip.LogicalPosition = args.LogicalPosition;
 					if (popup == null) {
 						popup = CreatePopup();
 					}
@@ -321,6 +324,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			popup = new Popup();
 			popup.Closed += PopupClosed;
+			popup.AllowsTransparency = true;
 			popup.PlacementTarget = this; // required for property inheritance
 			popup.Placement = PlacementMode.Absolute;
 			popup.StaysOpen = true;

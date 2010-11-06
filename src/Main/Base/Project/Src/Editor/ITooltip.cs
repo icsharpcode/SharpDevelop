@@ -3,6 +3,7 @@
 
 using System;
 using System.Windows;
+using ICSharpCode.NRefactory;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -12,6 +13,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 	/// </summary>
 	public interface ITooltip
 	{
+		/// <summary>
+		/// Gets or sets the logical location within the document.
+		/// </summary>
+		Location LogicalPosition { get; set; }
+		
 		/// <summary>
 		/// If true, this ITooltip will be displayed in a WPF Popup.
 		/// Otherwise it will be displayed in a WPF Tooltip.

@@ -343,6 +343,8 @@ Bookmarks.UnhealthyBreakpoint                     = Bookmarks\UnhealthyBreakpoin
 Bookmarks.UnhealthyBreakpointConditional          = Bookmarks\UnhealthyBreakpointConditional.png
 Bookmarks.CurrentLine                             = Bookmarks\CurrentLine.png
 
+Bookmarks.Pin									  = Bookmarks\Pin.png
+
 #backend icons
 C#.ProjectIcon                                    = backendicons\CSharp\SmallProject.png
 C#.FileIcon                                       = backendicons\CSharp\SmallFile.png

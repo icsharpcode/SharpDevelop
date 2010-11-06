@@ -17,11 +17,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	/// </summary>
 	public class DebuggerPopup : Popup
 	{
-		private DebuggerTooltipControl contentControl;
+		internal DebuggerTooltipControl contentControl;
 
-		public DebuggerPopup(DebuggerTooltipControl parentControl)
+		public DebuggerPopup(DebuggerTooltipControl parentControl, bool showPinControl)
 		{
-			this.contentControl = new DebuggerTooltipControl(parentControl);
+			this.contentControl = new DebuggerTooltipControl(parentControl, showPinControl);
 			this.contentControl.containingPopup = this;
 			this.Child = this.contentControl;
 			this.IsLeaf = false;
@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 
 			//this.contentControl.Focusable = true;
 			//Keyboard.Focus(this.contentControl);
-			//this.AllowsTransparency = true;
+			this.AllowsTransparency = true;
 			//this.PopupAnimation = PopupAnimation.Slide;
 		}
 

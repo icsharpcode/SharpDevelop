@@ -317,6 +317,10 @@
     <Compile Include="Src\Services\Debugger\Tooltips\ITreeNode.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\IVisualizerCommand.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\LazyItemsControl.cs" />
+    <Compile Include="Src\Services\Debugger\Tooltips\PinBookmark.cs" />
+    <Compile Include="Src\Services\Debugger\Tooltips\PinCloseControl.xaml.cs">
+      <DependentUpon>PinCloseControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Src\Services\Debugger\Tooltips\VirtualizingIEnumerable.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\VisualizerPicker.cs" />
     <Compile Include="Src\Services\DisplayBinding\ExternalProcessDisplayBinding.cs" />
@@ -817,6 +821,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\Services\Debugger\Tooltips\PinCloseControl.xaml" />
+    <Page Include="Src\Services\Debugger\Tooltips\PinControlsDictionary.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsBulbControl.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsControl.xaml" />
     <Page Include="Src\Services\RefactoringService\ContextActions\ContextActionsHeaderedControl.xaml" />
