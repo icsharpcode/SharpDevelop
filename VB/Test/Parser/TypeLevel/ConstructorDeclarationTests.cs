@@ -10,47 +10,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class ConstructorDeclarationTests
 	{
-		#region C#
-		[Test]
-		public void CSharpConstructorDeclarationTest1()
-		{
-			ConstructorDeclaration cd = ParseUtilCSharp.ParseTypeMember<ConstructorDeclaration>("MyClass() {}");
-			Assert.IsTrue(cd.ConstructorInitializer.IsNull);
-		}
-		
-		[Test]
-		public void CSharpConstructorDeclarationTest2()
-		{
-			ConstructorDeclaration cd = ParseUtilCSharp.ParseTypeMember<ConstructorDeclaration>("MyClass() : this(5) {}");
-			Assert.AreEqual(ConstructorInitializerType.This, cd.ConstructorInitializer.ConstructorInitializerType);
-			Assert.AreEqual(1, cd.ConstructorInitializer.Arguments.Count);
-		}
-		
-		[Test]
-		public void CSharpConstructorDeclarationTest3()
-		{
-			ConstructorDeclaration cd = ParseUtilCSharp.ParseTypeMember<ConstructorDeclaration>("MyClass() : base(1, 2, 3) {}");
-			Assert.AreEqual(ConstructorInitializerType.Base, cd.ConstructorInitializer.ConstructorInitializerType);
-			Assert.AreEqual(3, cd.ConstructorInitializer.Arguments.Count);
-		}
-		
-		[Test]
-		public void CSharpStaticConstructorDeclarationTest1()
-		{
-			ConstructorDeclaration cd = ParseUtilCSharp.ParseTypeMember<ConstructorDeclaration>("static MyClass() {}");
-			Assert.IsTrue(cd.ConstructorInitializer.IsNull);
-			Assert.AreEqual(Modifiers.Static, cd.Modifier);
-		}
-		
-		[Test]
-		public void CSharpExternStaticConstructorDeclarationTest()
-		{
-			ConstructorDeclaration cd = ParseUtilCSharp.ParseTypeMember<ConstructorDeclaration>("extern static MyClass();");
-			Assert.IsTrue(cd.ConstructorInitializer.IsNull);
-			Assert.AreEqual(Modifiers.Static | Modifiers.Extern, cd.Modifier);
-		}
-		#endregion
-		
 		#region VB.NET
 		[Test]
 		public void VBNetConstructorDeclarationTest1()

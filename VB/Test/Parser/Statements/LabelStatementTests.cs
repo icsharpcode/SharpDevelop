@@ -12,21 +12,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class LabelStatementTests
 	{
-		#region C#
-		[Test]
-		public void CSharpLabelStatementTest()
-		{
-			LabelStatement labelStmt = ParseUtilCSharp.ParseStatement<LabelStatement>("myLabel: ; ");
-			Assert.AreEqual("myLabel", labelStmt.Label);
-		}
-		[Test]
-		public void CSharpLabel2StatementTest()
-		{
-			LabelStatement labelStmt = ParseUtilCSharp.ParseStatement<LabelStatement>("yield: ; ");
-			Assert.AreEqual("yield", labelStmt.Label);
-		}
-		#endregion
-		
 		#region VB.NET
 		[Test]
 		public void VBNetLabelStatementTest()

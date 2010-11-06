@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 using NUnit.Framework;
-using VBParser = ICSharpCode.NRefactory.VB.Parser;
+using ICSharpCode.NRefactory.VB.Parser;
 
 namespace ICSharpCode.NRefactory.VB.Tests.Lexer
 {
@@ -560,7 +560,7 @@ exit Global
 			do {
 				t = lexer.NextToken();
 				p.InformToken(t);
-			} while (t.Kind != VBParser.Tokens.EOF);
+			} while (t.Kind != Tokens.EOF);
 			
 			Console.WriteLine(p.Output);
 			

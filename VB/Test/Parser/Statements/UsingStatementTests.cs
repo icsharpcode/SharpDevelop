@@ -12,15 +12,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class UsingStatementTests
 	{
-		#region C#
-		[Test]
-		public void CSharpUsingStatementTest()
-		{
-			UsingStatement usingStmt = ParseUtilCSharp.ParseStatement<UsingStatement>("using (MyVar var = new MyVar()) { } ");
-			// TODO : Extend test.
-		}
-		#endregion
-		
 		#region VB.NET
 		[Test]
 		public void VBNetUsingStatementTest()

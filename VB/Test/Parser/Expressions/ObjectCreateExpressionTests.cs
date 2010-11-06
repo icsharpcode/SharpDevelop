@@ -23,7 +23,12 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 			}
 		}
 		
-		#region VB.NET
+		Expression CheckPropertyInitializationExpression(Expression e, string name)
+		{
+			Assert.IsInstanceOf(typeof(MemberInitializerExpression), e);
+			Assert.AreEqual(name, ((MemberInitializerExpression)e).Name);
+			return ((MemberInitializerExpression)e).Expression;
+		}
 		
 		[Test]
 		public void VBNetAnonymousType()
@@ -105,7 +110,5 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 			Assert.AreEqual(1, oce.CreateType.GenericTypes.Count);
 			Assert.AreEqual("System.Int32", oce.CreateType.GenericTypes[0].Type);
 		}
-		
-		#endregion
 	}
 }

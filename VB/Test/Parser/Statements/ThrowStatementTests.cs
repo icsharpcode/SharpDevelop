@@ -12,22 +12,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class ThrowStatementTests
 	{
-		#region C#
-		[Test]
-		public void CSharpEmptyThrowStatementTest()
-		{
-			ThrowStatement throwStmt = ParseUtilCSharp.ParseStatement<ThrowStatement>("throw;");
-			Assert.IsTrue(throwStmt.Expression.IsNull);
-		}
-		
-		[Test]
-		public void CSharpThrowStatementTest()
-		{
-			ThrowStatement throwStmt = ParseUtilCSharp.ParseStatement<ThrowStatement>("throw new Exception();");
-			Assert.IsTrue(throwStmt.Expression is ObjectCreateExpression);
-		}
-		#endregion
-		
 		#region VB.NET
 			// TODO
 		#endregion 

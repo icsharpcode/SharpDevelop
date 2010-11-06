@@ -12,14 +12,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class BreakStatementTests
 	{
-		#region C#
-		[Test]
-		public void CSharpBreakStatementTest()
-		{
-			BreakStatement breakStmt = ParseUtilCSharp.ParseStatement<BreakStatement>("break;");
-		}
-		#endregion
-		
 		#region VB.NET
 			// No VB.NET representation
 		#endregion

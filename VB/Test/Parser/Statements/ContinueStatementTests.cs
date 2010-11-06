@@ -12,14 +12,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class ContinueStatementTests
 	{
-		#region C#
-		[Test]
-		public void CSharpContinueStatementTest()
-		{
-			ContinueStatement continueStmt = ParseUtilCSharp.ParseStatement<ContinueStatement>("continue;");
-		}
-		#endregion
-		
 		#region VB.NET
 			// No VB.NET representation
 		#endregion

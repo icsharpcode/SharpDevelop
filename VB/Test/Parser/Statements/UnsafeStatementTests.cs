@@ -12,15 +12,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class UnsafeStatementTests
 	{
-		#region C#
-		[Test]
-		public void CSharpUnsafeStatementTest()
-		{
-			UnsafeStatement unsafeStatement = ParseUtilCSharp.ParseStatement<UnsafeStatement>("unsafe { }");
-			Assert.IsFalse(unsafeStatement.Block.IsNull);
-		}
-		#endregion
-		
 		#region VB.NET
 			// No VB.NET representation
 		#endregion

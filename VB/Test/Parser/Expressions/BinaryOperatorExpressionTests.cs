@@ -14,14 +14,11 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	public class BinaryOperatorExpressionTests
 	{
 		void OperatorPrecedenceTest(string strongOperator, BinaryOperatorType strongOperatorType,
-		                            string weakOperator, BinaryOperatorType weakOperatorType, bool vb)
+		                            string weakOperator, BinaryOperatorType weakOperatorType)
 		{
 			string program = "a " + weakOperator + " b " + strongOperator + " c";
 			BinaryOperatorExpression boe;
-			if (vb)
-				boe = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>(program);
-			else
-				boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>(program);
+			boe = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>(program);
 			Assert.AreEqual(weakOperatorType, boe.Op);
 			Assert.IsTrue(boe.Left is IdentifierExpression);
 			boe = (BinaryOperatorExpression)boe.Right;
@@ -30,10 +27,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 			Assert.IsTrue(boe.Right is IdentifierExpression);
 			
 			program = "a " + strongOperator + " b " + weakOperator + " c";
-			if (vb)
-				boe = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>(program);
-			else
-				boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>(program);
+			boe = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>(program);
 			Assert.AreEqual(weakOperatorType, boe.Op);
 			Assert.IsTrue(boe.Right is IdentifierExpression);
 			boe = (BinaryOperatorExpression)boe.Left;
@@ -43,14 +37,11 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		}
 		
 		void SameOperatorPrecedenceTest(string firstOperator, BinaryOperatorType firstOperatorType,
-		                                string secondOperator, BinaryOperatorType secondOperatorType, bool vb)
+		                                string secondOperator, BinaryOperatorType secondOperatorType)
 		{
 			string program = "a " + secondOperator + " b " + firstOperator + " c";
 			BinaryOperatorExpression boe;
-			if (vb)
-				boe = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>(program);
-			else
-				boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>(program);
+			boe = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>(program);
 			Assert.AreEqual(firstOperatorType, boe.Op);
 			Assert.IsTrue(boe.Right is IdentifierExpression);
 			boe = (BinaryOperatorExpression)boe.Left;
@@ -59,10 +50,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 			Assert.IsTrue(boe.Right is IdentifierExpression);
 			
 			program = "a " + firstOperator + " b " + secondOperator + " c";
-			if (vb)
-				boe = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>(program);
-			else
-				boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>(program);
+			boe = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>(program);
 			Assert.AreEqual(secondOperatorType, boe.Op);
 			Assert.IsTrue(boe.Right is IdentifierExpression);
 			boe = (BinaryOperatorExpression)boe.Left;
@@ -84,29 +72,29 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBOperatorPrecedenceTest()
 		{
-			OperatorPrecedenceTest("^", BinaryOperatorType.Power, "*", BinaryOperatorType.Multiply, true);
-			SameOperatorPrecedenceTest("*", BinaryOperatorType.Multiply, "/", BinaryOperatorType.Divide, true);
-			OperatorPrecedenceTest("/", BinaryOperatorType.Divide, "\\", BinaryOperatorType.DivideInteger, true);
-			OperatorPrecedenceTest("\\", BinaryOperatorType.DivideInteger, "Mod", BinaryOperatorType.Modulus, true);
-			OperatorPrecedenceTest("Mod", BinaryOperatorType.Modulus, "+", BinaryOperatorType.Add, true);
-			SameOperatorPrecedenceTest("+", BinaryOperatorType.Add, "-", BinaryOperatorType.Subtract, true);
-			OperatorPrecedenceTest("-", BinaryOperatorType.Subtract, "&", BinaryOperatorType.Concat, true);
-			OperatorPrecedenceTest("&", BinaryOperatorType.Concat, "<<", BinaryOperatorType.ShiftLeft, true);
-			SameOperatorPrecedenceTest("<<", BinaryOperatorType.ShiftLeft, ">>", BinaryOperatorType.ShiftRight, true);
-			OperatorPrecedenceTest("<<", BinaryOperatorType.ShiftLeft, "=", BinaryOperatorType.Equality, true);
-			SameOperatorPrecedenceTest("<>", BinaryOperatorType.InEquality, "=", BinaryOperatorType.Equality, true);
-			SameOperatorPrecedenceTest("<", BinaryOperatorType.LessThan, "=", BinaryOperatorType.Equality, true);
-			SameOperatorPrecedenceTest("<=", BinaryOperatorType.LessThanOrEqual, "=", BinaryOperatorType.Equality, true);
-			SameOperatorPrecedenceTest(">", BinaryOperatorType.GreaterThan, "=", BinaryOperatorType.Equality, true);
-			SameOperatorPrecedenceTest(">=", BinaryOperatorType.GreaterThanOrEqual, "=", BinaryOperatorType.Equality, true);
-			SameOperatorPrecedenceTest("Like", BinaryOperatorType.Like, "=", BinaryOperatorType.Equality, true);
-			SameOperatorPrecedenceTest("Is", BinaryOperatorType.ReferenceEquality, "=", BinaryOperatorType.Equality, true);
-			SameOperatorPrecedenceTest("IsNot", BinaryOperatorType.ReferenceInequality, "=", BinaryOperatorType.Equality, true);
-			OperatorPrecedenceTest("=", BinaryOperatorType.Equality, "And", BinaryOperatorType.BitwiseAnd, true);
-			SameOperatorPrecedenceTest("And", BinaryOperatorType.BitwiseAnd, "AndAlso", BinaryOperatorType.LogicalAnd, true);
-			OperatorPrecedenceTest("And", BinaryOperatorType.BitwiseAnd, "Or", BinaryOperatorType.BitwiseOr, true);
-			SameOperatorPrecedenceTest("Or", BinaryOperatorType.BitwiseOr, "OrElse", BinaryOperatorType.LogicalOr, true);
-			SameOperatorPrecedenceTest("Or", BinaryOperatorType.BitwiseOr, "Xor", BinaryOperatorType.ExclusiveOr, true);
+			OperatorPrecedenceTest("^", BinaryOperatorType.Power, "*", BinaryOperatorType.Multiply);
+			SameOperatorPrecedenceTest("*", BinaryOperatorType.Multiply, "/", BinaryOperatorType.Divide);
+			OperatorPrecedenceTest("/", BinaryOperatorType.Divide, "\\", BinaryOperatorType.DivideInteger);
+			OperatorPrecedenceTest("\\", BinaryOperatorType.DivideInteger, "Mod", BinaryOperatorType.Modulus);
+			OperatorPrecedenceTest("Mod", BinaryOperatorType.Modulus, "+", BinaryOperatorType.Add);
+			SameOperatorPrecedenceTest("+", BinaryOperatorType.Add, "-", BinaryOperatorType.Subtract);
+			OperatorPrecedenceTest("-", BinaryOperatorType.Subtract, "&", BinaryOperatorType.Concat);
+			OperatorPrecedenceTest("&", BinaryOperatorType.Concat, "<<", BinaryOperatorType.ShiftLeft);
+			SameOperatorPrecedenceTest("<<", BinaryOperatorType.ShiftLeft, ">>", BinaryOperatorType.ShiftRight);
+			OperatorPrecedenceTest("<<", BinaryOperatorType.ShiftLeft, "=", BinaryOperatorType.Equality);
+			SameOperatorPrecedenceTest("<>", BinaryOperatorType.InEquality, "=", BinaryOperatorType.Equality);
+			SameOperatorPrecedenceTest("<", BinaryOperatorType.LessThan, "=", BinaryOperatorType.Equality);
+			SameOperatorPrecedenceTest("<=", BinaryOperatorType.LessThanOrEqual, "=", BinaryOperatorType.Equality);
+			SameOperatorPrecedenceTest(">", BinaryOperatorType.GreaterThan, "=", BinaryOperatorType.Equality);
+			SameOperatorPrecedenceTest(">=", BinaryOperatorType.GreaterThanOrEqual, "=", BinaryOperatorType.Equality);
+			SameOperatorPrecedenceTest("Like", BinaryOperatorType.Like, "=", BinaryOperatorType.Equality);
+			SameOperatorPrecedenceTest("Is", BinaryOperatorType.ReferenceEquality, "=", BinaryOperatorType.Equality);
+			SameOperatorPrecedenceTest("IsNot", BinaryOperatorType.ReferenceInequality, "=", BinaryOperatorType.Equality);
+			OperatorPrecedenceTest("=", BinaryOperatorType.Equality, "And", BinaryOperatorType.BitwiseAnd);
+			SameOperatorPrecedenceTest("And", BinaryOperatorType.BitwiseAnd, "AndAlso", BinaryOperatorType.LogicalAnd);
+			OperatorPrecedenceTest("And", BinaryOperatorType.BitwiseAnd, "Or", BinaryOperatorType.BitwiseOr);
+			SameOperatorPrecedenceTest("Or", BinaryOperatorType.BitwiseOr, "OrElse", BinaryOperatorType.LogicalOr);
+			SameOperatorPrecedenceTest("Or", BinaryOperatorType.BitwiseOr, "Xor", BinaryOperatorType.ExclusiveOr);
 		}
 		
 		[Test]
@@ -285,9 +273,9 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		
 		string AddInteger<T>(string input, int number) where T : Expression
 		{
-			Expression e = ParseUtilCSharp.ParseExpression<T>(input);
+			Expression e = ParseUtilVBNet.ParseExpression<T>(input);
 			e = Expression.AddInteger(e, number);
-			CSharpOutputVisitor v = new CSharpOutputVisitor();
+			VBNetOutputVisitor v = new VBNetOutputVisitor();
 			e.AcceptVisitor(v, null);
 			return v.Text;
 		}

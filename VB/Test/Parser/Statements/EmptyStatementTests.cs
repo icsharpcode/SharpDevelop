@@ -12,17 +12,8 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class EmptyStatementTests
 	{
-		#region C#
-		[Test]
-		public void CSharpEmptyStatementTest()
-		{
-			EmptyStatement emptyStmt = ParseUtilCSharp.ParseStatement<EmptyStatement>(";");
-		}
-		#endregion
-		
 		#region VB.NET
 			// No VB.NET representation
 		#endregion
-		
 	}
 }

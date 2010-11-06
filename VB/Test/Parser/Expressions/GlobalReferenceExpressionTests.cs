@@ -13,28 +13,11 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	public class GlobalReferenceExpressionTests
 	{
 		[Test]
-		public void CSharpGlobalReferenceExpressionTest()
-		{
-			TypeReferenceExpression tre = ParseUtilCSharp.ParseExpression<TypeReferenceExpression>("global::System");
-			Assert.IsTrue(tre.TypeReference.IsGlobal);
-			Assert.AreEqual("System", tre.TypeReference.Type);
-		}
-		
-		[Test]
 		public void VBNetGlobalReferenceExpressionTest()
 		{
 			TypeReferenceExpression tre = ParseUtilVBNet.ParseExpression<TypeReferenceExpression>("Global.System");
 			Assert.IsTrue(tre.TypeReference.IsGlobal);
 			Assert.AreEqual("System", tre.TypeReference.Type);
-		}
-		
-		[Test]
-		public void CSharpGlobalTypeDeclaration()
-		{
-			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("global::System.String a;");
-			TypeReference typeRef = lvd.GetTypeForVariable(0);
-			Assert.IsTrue(typeRef.IsGlobal);
-			Assert.AreEqual("System.String", typeRef.Type);
 		}
 		
 		[Test]

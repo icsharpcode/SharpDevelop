@@ -948,12 +948,12 @@ End Using";
 		#region Helpers
 		ILexer GenerateLexer(StringReader sr)
 		{
-			return ParserFactory.CreateLexer(SupportedLanguage.VBNet, sr);
+			return ParserFactory.CreateLexer(sr);
 		}
 		
 		ILexer GenerateLexerForSnippet(StringReader sr, SnippetType type)
 		{
-			var lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, sr);
+			var lexer = ParserFactory.CreateLexer(sr);
 			lexer.SetInitialContext(type);
 			return lexer;
 		}

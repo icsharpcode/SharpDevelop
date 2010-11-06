@@ -12,16 +12,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class SwitchStatementTests
 	{
-		#region C#
-		[Test]
-		public void CSharpSwitchStatementTest()
-		{
-			SwitchStatement switchStmt = ParseUtilCSharp.ParseStatement<SwitchStatement>("switch (a) { case 4: case 5: break; case 6: break; default: break; }");
-			Assert.AreEqual("a", ((IdentifierExpression)switchStmt.SwitchExpression).Identifier);
-			// TODO: Extend test
-		}
-		#endregion
-		
 		#region VB.NET
 		[Test]
 		public void VBSwitchStatementTest()

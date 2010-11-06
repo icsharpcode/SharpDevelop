@@ -12,10 +12,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class ClassReferenceExpressionTests
 	{
-		#region C#
-			// No C# representation
-		#endregion
-		
 		#region VB.NET
 		[Test]
 		public void VBNetClassReferenceExpressionTest1()

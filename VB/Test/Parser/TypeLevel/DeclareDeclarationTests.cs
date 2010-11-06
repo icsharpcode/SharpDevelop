@@ -10,10 +10,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class DeclareDeclarationTests
 	{
-		#region C#
-		// No C# representation
-		#endregion
-		
 		#region VB.NET
 		[Test]
 		public void VBNetDeclareDeclarationTest()

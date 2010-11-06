@@ -5,7 +5,7 @@ using NUnit.Framework;
 using ICSharpCode.NRefactory.VB.Parser;
 using ICSharpCode.NRefactory.VB.PrettyPrinter;
 
-namespace ICSharpCode.NRefactory.VB.Tests.Lexer
+namespace ICSharpCode.NRefactory.Tests.VB.Lexer
 {
 	[TestFixture]
 	public sealed class LexerTests

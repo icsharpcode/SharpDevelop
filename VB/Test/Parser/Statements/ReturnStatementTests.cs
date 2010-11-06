@@ -12,30 +12,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class ReturnStatementTests
 	{
-		#region C#
-		[Test]
-		public void CSharpEmptyReturnStatementTest()
-		{
-			ReturnStatement returnStatement = ParseUtilCSharp.ParseStatement<ReturnStatement>("return;");
-			Assert.IsTrue(returnStatement.Expression.IsNull);
-		}
-		
-		[Test]
-		public void CSharpReturnStatementTest()
-		{
-			ReturnStatement returnStatement = ParseUtilCSharp.ParseStatement<ReturnStatement>("return 5;");
-			Assert.IsFalse(returnStatement.Expression.IsNull);
-			Assert.IsTrue(returnStatement.Expression is PrimitiveExpression);
-		}
-		[Test]
-		public void CSharpReturnStatementTest1()
-		{
-			ReturnStatement returnStatement = ParseUtilCSharp.ParseStatement<ReturnStatement>("return yield;");
-			Assert.IsFalse(returnStatement.Expression.IsNull);
-			Assert.IsTrue(returnStatement.Expression is IdentifierExpression);
-		}
-		#endregion
-		
 		#region VB.NET
 		[Test]
 		public void VBNetEmptyReturnStatementTest()

@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetWrongUsingTest()
 		{
 			string program = "Imports\n";
-			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(new StringReader(program));
 			parser.Parse();
 			Assert.IsTrue(parser.Errors.Count > 0);
 			UsingDeclaration u = (UsingDeclaration)parser.CompilationUnit.Children[0];
@@ -74,7 +74,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetWrongUsing2Test()
 		{
 			string program = "Imports ,\n";
-			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(new StringReader(program));
 			parser.Parse();
 			Assert.IsTrue(parser.Errors.Count > 0);
 			UsingDeclaration u = (UsingDeclaration)parser.CompilationUnit.Children[0];
@@ -88,7 +88,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		{
 			string program = "Imports System\n" +
 				"Imports My.Name.Space\n";
-			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(new StringReader(program));
 			parser.Parse();
 			
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
@@ -101,7 +101,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 			string program = "Imports TESTME=System\n" +
 				"Imports myAlias=My.Name.Space\n" +
 				"Imports StringCollection = System.Collections.Generic.List(Of string)\n";
-			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(new StringReader(program));
 			parser.Parse();
 			
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
@@ -112,7 +112,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetComplexUsingAliasDeclarationTest()
 		{
 			string program = "Imports NS1, AL=NS2, NS3, AL2=NS4, NS5\n";
-			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(new StringReader(program));
 			parser.Parse();
 			
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
@@ -123,7 +123,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetXmlNamespaceUsingTest()
 		{
 			string program = "Imports <xmlns=\"http://icsharpcode.net/sharpdevelop/avalonedit\">";
-			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(new StringReader(program));
 			parser.Parse();
 			
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
@@ -144,7 +144,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetXmlNamespaceWithPrefixUsingTest()
 		{
 			string program = "Imports <xmlns:avalonedit=\"http://icsharpcode.net/sharpdevelop/avalonedit\">";
-			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(new StringReader(program));
 			parser.Parse();
 			
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
@@ -165,7 +165,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetXmlNamespaceSingleQuotedUsingTest()
 		{
 			string program = "Imports <xmlns='http://icsharpcode.net/sharpdevelop/avalonedit'>";
-			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(new StringReader(program));
 			parser.Parse();
 			
 			Assert.AreEqual("", parser.Errors.ErrorOutput);

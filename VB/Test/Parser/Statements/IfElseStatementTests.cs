@@ -12,49 +12,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class IfElseStatementTests
 	{
-		#region C#
-		[Test]
-		public void CSharpSimpleIfStatementTest()
-		{
-			IfElseStatement ifElseStatement = ParseUtilCSharp.ParseStatement<IfElseStatement>("if (true) { }");
-			Assert.IsFalse(ifElseStatement.Condition.IsNull);
-			Assert.IsTrue(ifElseStatement.TrueStatement.Count == 1, "true count != 1:" + ifElseStatement.TrueStatement.Count);
-			Assert.IsTrue(ifElseStatement.FalseStatement.Count == 0, "false count != 0:" + ifElseStatement.FalseStatement.Count);
-			
-			Assert.IsTrue(ifElseStatement.TrueStatement[0] is BlockStatement);
-		}
-		
-		[Test]
-		public void CSharpSimpleIfElseStatementTest()
-		{
-			IfElseStatement ifElseStatement = ParseUtilCSharp.ParseStatement<IfElseStatement>("if (true) { } else { }");
-			Assert.IsFalse(ifElseStatement.Condition.IsNull);
-			Assert.IsTrue(ifElseStatement.TrueStatement.Count == 1, "true count != 1:" + ifElseStatement.TrueStatement.Count);
-			Assert.IsTrue(ifElseStatement.FalseStatement.Count == 1, "false count != 1:" + ifElseStatement.FalseStatement.Count);
-			
-			Assert.IsTrue(ifElseStatement.TrueStatement[0] is BlockStatement, "Statement was: " + ifElseStatement.TrueStatement[0]);
-			Assert.IsTrue(ifElseStatement.FalseStatement[0] is BlockStatement, "Statement was: " + ifElseStatement.FalseStatement[0]);
-		}
-		
-		
-		[Test]
-		public void CSharpIfElseIfStatementTest()
-		{
-			IfElseStatement ifElseStatement = ParseUtilCSharp.ParseStatement<IfElseStatement>("if (1) { } else if (2) { } else if (3) { } else { }");
-			Assert.IsFalse(ifElseStatement.Condition.IsNull);
-			Assert.IsTrue(ifElseStatement.ElseIfSections.Count == 2, "elseif section count != 2:" + ifElseStatement.ElseIfSections.Count);
-			Assert.IsTrue(ifElseStatement.TrueStatement.Count == 1, "true count != 1:" + ifElseStatement.TrueStatement.Count);
-			Assert.IsTrue(ifElseStatement.FalseStatement.Count == 1, "false count != 1:" + ifElseStatement.FalseStatement.Count);
-			
-			Assert.IsTrue(ifElseStatement.TrueStatement[0] is BlockStatement, "Statement was: " + ifElseStatement.TrueStatement[0]);
-			Assert.IsTrue(ifElseStatement.FalseStatement[0] is BlockStatement, "Statement was: " + ifElseStatement.FalseStatement[0]);
-			Assert.IsTrue(ifElseStatement.ElseIfSections[0].EmbeddedStatement is BlockStatement, "Statement was: " + ifElseStatement.ElseIfSections[0].EmbeddedStatement);
-			Assert.IsTrue(ifElseStatement.ElseIfSections[1].EmbeddedStatement is BlockStatement, "Statement was: " + ifElseStatement.ElseIfSections[1].EmbeddedStatement);
-			Assert.AreEqual(2, (ifElseStatement.ElseIfSections[0].Condition as PrimitiveExpression).Value);
-			Assert.AreEqual(3, (ifElseStatement.ElseIfSections[1].Condition as PrimitiveExpression).Value);
-		}
-		#endregion
-		
 		#region VB.NET
 		[Test]
 		public void VBNetSimpleIfStatementTest()

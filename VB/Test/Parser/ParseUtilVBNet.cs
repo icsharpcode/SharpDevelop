@@ -18,7 +18,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		
 		public static T ParseGlobal<T>(string program, bool expectErrors) where T : INode
 		{
-			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(new StringReader(program));
 			parser.Parse();
 			
 			if (expectErrors)
@@ -76,7 +76,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		
 		public static T ParseExpression<T>(string expr, bool expectErrors) where T : INode
 		{
-			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(expr));
+			IParser parser = ParserFactory.CreateParser(new StringReader(expr));
 			INode parsedExpression = parser.ParseExpression();
 			if (expectErrors)
 				Assert.IsFalse(parser.Errors.ErrorOutput.Length == 0, "Expected errors, but operation completed successfully");

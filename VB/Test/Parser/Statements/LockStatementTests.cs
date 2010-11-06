@@ -12,15 +12,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class LockStatementTests
 	{
-		#region C#
-		[Test]
-		public void CSharpLockStatementTest()
-		{
-			LockStatement lockStmt = ParseUtilCSharp.ParseStatement<LockStatement>("lock (myObj) {}");
-			// TODO : Extend test.
-		}
-		#endregion
-		
 		#region VB.NET
 			// No VB.NET representation
 		#endregion

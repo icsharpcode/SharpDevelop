@@ -12,15 +12,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class FixedStatementTests
 	{
-		#region C#
-		[Test]
-		public void CSharpFixedStatementTest()
-		{
-			FixedStatement fixedStmt = ParseUtilCSharp.ParseStatement<FixedStatement>("fixed (int* ptr = &myIntArr) { }");
-			// TODO : Extend test.
-		}
-		#endregion
-		
 		#region VB.NET
 			// No VB.NET representation
 		#endregion	

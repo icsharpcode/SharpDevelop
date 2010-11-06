@@ -10,19 +10,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class FieldDeclarationTests
 	{
-		#region C#
-		[Test]
-		public void CSharpSimpleFieldDeclarationTest()
-		{
-			FieldDeclaration fd = ParseUtilCSharp.ParseTypeMember<FieldDeclaration>("int[,,,] myField;");
-			Assert.AreEqual("System.Int32", fd.TypeReference.Type);
-			Assert.AreEqual(new int[] { 3 } , fd.TypeReference.RankSpecifier);
-			Assert.AreEqual(1, fd.Fields.Count);
-			
-			Assert.AreEqual("myField", ((VariableDeclaration)fd.Fields[0]).Name);
-		}
-		#endregion
-		
 		#region VB.NET
 		[Test]
 		public void VBNetSimpleFieldDeclarationTest()

@@ -12,15 +12,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class ForeachStatementTests
 	{
-		#region C#
-		[Test]
-		public void CSharpForeachStatementTest()
-		{
-			ForeachStatement foreachStmt = ParseUtilCSharp.ParseStatement<ForeachStatement>("foreach (int i in myColl) {} ");
-			// TODO : Extend test.
-		}
-		#endregion
-		
 		#region VB.NET
 		[Test]
 		public void VBNetForeachStatementTest()
