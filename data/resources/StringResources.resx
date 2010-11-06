@@ -4297,6 +4297,12 @@ you have write permission in that path and file. (maybe a write protection probl
   <data name="ICSharpCode.SharpDevelop.CodeGenerator.ToString.Hint" xml:space="preserve">
     <value>Choose Properties to include in the description</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.Debug.RemoveAllBreakPoints" xml:space="preserve">
+    <value>Do you want to remove all breakpoints?</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.Debug.RemoveAllBreakPointsCaption" xml:space="preserve">
+    <value>Remove breakpoints</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Commands.CharpConvertProjectToVB" xml:space="preserve">
     <value>From C# to VB.NET</value>
   </data>
@@ -7877,6 +7883,10 @@ The resources files have been renamed/moved accordingly.</value>
   <data name="XML.MainMenu.DebugMenu.ToggleBreakpoint" xml:space="preserve">
     <value>Toggle Breakpoint</value>
     <comment>Set/remove breakpoint on current line</comment>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.RemoveAllBreakpoints" xml:space="preserve">
+    <value>Remove all breakpoints</value>
+    <comment>Remove all breakpoints</comment>
   </data>
   <data name="XML.MainMenu.EditMenu" xml:space="preserve">
     <value>&amp;Edit</value>

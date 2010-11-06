@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	{
 		protected void deleteBookMark (SDBookmark bookmark) {
 			if (bookmark == null) return;
-			if (bookmark is SDMarkerBookmark) return;
+			if (bookmark is BreakpointBookmark) return;
 			ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.RemoveMark(bookmark);
 		}
 	}

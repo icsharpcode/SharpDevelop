@@ -173,6 +173,19 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		}
 	}
 	
+	public class DeleteBreakpointCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			var bookmarkBase = (BookmarkPadBase)Owner;			
+			var item = bookmarkBase.CurrentItem;
+			
+			if (item.Mark is BreakpointBookmark) {
+				BookmarkManager.RemoveMark(item.Mark);
+			}
+		}
+	}
+	
 	public sealed class PrevBreakpointCommand : NextPrevBreakpointCommand
 	{
 		public override void Run()
