@@ -5,14 +5,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Documents;
 using System.Windows.Forms;
+using System.Windows.Media;
+using System.Xml;
+using System.Xml.Linq;
+
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
@@ -347,7 +351,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 		
 		/// <summary>
-		/// Takes at most <param name="length" /> first characters from string. 
+		/// Takes at most <param name="length" /> first characters from string.
 		/// String can be null.
 		/// </summary>
 		public static string TakeStart(this string s, int length)
@@ -358,7 +362,7 @@ namespace ICSharpCode.SharpDevelop
 		}
 
 		/// <summary>
-		/// Takes at most <param name="length" /> first characters from string, and appends '...' if string is longer. 
+		/// Takes at most <param name="length" /> first characters from string, and appends '...' if string is longer.
 		/// String can be null.
 		/// </summary>
 		public static string TakeStartEllipsis(this string s, int length)
@@ -497,6 +501,82 @@ namespace ICSharpCode.SharpDevelop
 		public static bool IsEmpty(ExpressionResult expr)
 		{
 			return expr.Region.IsEmpty;
+		}
+		
+		public static void WriteTo(this Stream sourceStream, Stream targetStream)
+		{
+			byte[] buffer = new byte[4096];
+			int bytes;
+			while ((bytes = sourceStream.Read(buffer, 0, buffer.Length)) > 0)
+				targetStream.Write(buffer, 0, bytes);
+		}
+		
+		public static XElement FormatXml(this XElement element, int indentationLevel)
+		{
+			StringWriter sw = new StringWriter();
+			using (XmlTextWriter xmlW = new XmlTextWriter(sw)) {
+				if (EditorControlService.GlobalOptions.ConvertTabsToSpaces) {
+					xmlW.IndentChar = ' ';
+					xmlW.Indentation = EditorControlService.GlobalOptions.IndentationSize;
+				} else {
+					xmlW.Indentation = 1;
+					xmlW.IndentChar = '\t';
+				}
+				xmlW.Formatting = Formatting.Indented;
+				element.WriteTo(xmlW);
+			}
+			string xmlText = sw.ToString();
+			xmlText = xmlText.Replace(sw.NewLine, sw.NewLine + GetIndentation(indentationLevel));
+			return XElement.Parse(xmlText, LoadOptions.PreserveWhitespace);
+		}
+		
+		static string GetIndentation(int level)
+		{
+			StringBuilder indentation = new StringBuilder();
+			for (int i = 0; i < level; i++) {
+				indentation.Append(EditorControlService.GlobalOptions.IndentationString);
+			}
+			return indentation.ToString();
+		}
+		
+		public static XElement AddWithIndentation(this XElement element, XElement newContent)
+		{
+			int indentationLevel = 0;
+			XElement tmp = element;
+			while (tmp != null) {
+				tmp = tmp.Parent;
+				indentationLevel++;
+			}
+			if (!element.Nodes().Any()) {
+				element.Add(new XText(Environment.NewLine + GetIndentation(indentationLevel - 1)));
+			}
+			XText whitespace = element.Nodes().Last() as XText;
+			if (whitespace != null && string.IsNullOrWhiteSpace(whitespace.Value)) {
+				whitespace.AddBeforeSelf(new XText(Environment.NewLine + GetIndentation(indentationLevel)));
+				whitespace.AddBeforeSelf(newContent = FormatXml(newContent, indentationLevel));
+			} else {
+				element.Add(new XText(Environment.NewLine + GetIndentation(indentationLevel)));
+				element.Add(newContent = FormatXml(newContent, indentationLevel));
+			}
+			return newContent;
+		}
+		
+		public static XElement AddFirstWithIndentation(this XElement element, XElement newContent)
+		{
+			int indentationLevel = 0;
+			StringBuilder indentation = new StringBuilder();
+			XElement tmp = element;
+			while (tmp != null) {
+				tmp = tmp.Parent;
+				indentationLevel++;
+				indentation.Append(EditorControlService.GlobalOptions.IndentationString);
+			}
+			if (!element.Nodes().Any()) {
+				element.Add(new XText(Environment.NewLine + GetIndentation(indentationLevel - 1)));
+			}
+			element.AddFirst(newContent = FormatXml(newContent, indentationLevel));
+			element.AddFirst(new XText(Environment.NewLine + indentation.ToString()));
+			return newContent;
 		}
 	}
 }

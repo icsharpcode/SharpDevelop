@@ -580,31 +580,37 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		public static FileName GetAppConfigFile(IProject project, bool createIfNotExists)
+		{
+			FileName appConfigFileName = Core.FileName.Create(Path.Combine(project.Directory, "app.config"));
+			
+			if (!File.Exists(appConfigFileName)) {
+				if (createIfNotExists) {
+					File.WriteAllText(appConfigFileName,
+					                  "<?xml version=\"1.0\"?>" + Environment.NewLine +
+					                  "<configuration>" + Environment.NewLine
+					                  + "</configuration>");
+				} else {
+					return null;
+				}
+			}
+			
+			if (!project.IsFileInProject(appConfigFileName)) {
+				FileProjectItem fpi = new FileProjectItem(project, ItemType.None, "app.config");
+				ProjectService.AddProjectItem(project, fpi);
+				FileService.FireFileCreated(appConfigFileName, false);
+				ProjectBrowserPad.RefreshViewAsync();
+			}
+			return appConfigFileName;
+		}
+		
 		void UpdateAppConfig(TargetFramework newFramework)
 		{
 			// When changing the target framework, update any existing app.config
 			// Also, for applications (not libraries), create an app.config is it is required for the target framework
 			bool createAppConfig = newFramework.RequiresAppConfigEntry && (this.OutputType != OutputType.Library && this.OutputType != OutputType.Module);
 			
-			string appConfigFileName = Path.Combine(this.Directory, "app.config");
-			
-			if (!File.Exists(appConfigFileName)) {
-				if (createAppConfig) {
-					File.WriteAllText(appConfigFileName,
-					                  "<?xml version=\"1.0\"?>" + Environment.NewLine +
-					                  "<configuration>" + Environment.NewLine
-					                  + "</configuration>");
-				} else {
-					return;
-				}
-			}
-			
-			if (!IsFileInProject(appConfigFileName)) {
-				FileProjectItem fpi = new FileProjectItem(this, ItemType.None, "app.config");
-				ProjectService.AddProjectItem(this, fpi);
-				FileService.FireFileCreated(appConfigFileName, false);
-				ProjectBrowserPad.RefreshViewAsync();
-			}
+			string appConfigFileName = GetAppConfigFile(this, createAppConfig);
 			
 			using (FakeXmlViewContent xml = new FakeXmlViewContent(appConfigFileName)) {
 				if (xml.Document != null) {
@@ -616,13 +622,12 @@ namespace ICSharpCode.SharpDevelop.Project
 							// <configSections> must be first element
 							configuration.Elements().First().AddAfterSelf(startup);
 						} else {
-							configuration.AddFirst(startup);
+							startup = configuration.AddFirstWithIndentation(startup);
 						}
 					}
 					XElement supportedRuntime = startup.Element("supportedRuntime");
 					if (supportedRuntime == null) {
-						supportedRuntime = new XElement("supportedRuntime");
-						startup.AddFirst(supportedRuntime);
+						supportedRuntime = startup.AddFirstWithIndentation(new XElement("supportedRuntime"));
 					}
 					supportedRuntime.SetAttributeValue("version", newFramework.SupportedRuntimeVersion);
 					supportedRuntime.SetAttributeValue("sku", newFramework.SupportedSku);

@@ -23,6 +23,15 @@ namespace ICSharpCode.SettingsEditor
 			set { generatedClassName = value ?? ""; }
 		}
 		
+		public string GeneratedFullClassName {
+			get {
+				if (string.IsNullOrEmpty(generatedClassNamespace))
+					return generatedClassName;
+				else
+					return generatedClassNamespace + "." + generatedClassName;
+			}
+		}
+		
 		public List<SettingsEntry> Entries {
 			get { return entries; }
 		}

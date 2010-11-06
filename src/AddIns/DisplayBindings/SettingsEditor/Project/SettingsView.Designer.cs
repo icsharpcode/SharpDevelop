@@ -38,16 +38,12 @@ namespace ICSharpCode.SettingsEditor
 			this.ScopeColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
 			this.ValueColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.bindingSource = new System.Windows.Forms.BindingSource(this.components);
-			this.label1 = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.bindingSource)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// grid
 			// 
-			this.grid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
 			this.grid.AutoGenerateColumns = false;
 			this.grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			this.grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -56,10 +52,11 @@ namespace ICSharpCode.SettingsEditor
 									this.ScopeColumn,
 									this.ValueColumn});
 			this.grid.DataSource = this.bindingSource;
+			this.grid.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.grid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
-			this.grid.Location = new System.Drawing.Point(3, 38);
+			this.grid.Location = new System.Drawing.Point(0, 0);
 			this.grid.Name = "grid";
-			this.grid.Size = new System.Drawing.Size(480, 321);
+			this.grid.Size = new System.Drawing.Size(486, 362);
 			this.grid.TabIndex = 0;
 			this.grid.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.GridDataError);
 			this.grid.SelectionChanged += new System.EventHandler(this.GridSelectionChanged);
@@ -102,34 +99,22 @@ namespace ICSharpCode.SettingsEditor
 			this.bindingSource.DataSource = typeof(ICSharpCode.SettingsEditor.SettingsEntry);
 			this.bindingSource.AddingNew += new System.ComponentModel.AddingNewEventHandler(this.BindingSourceAddingNew);
 			// 
-			// label1
-			// 
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(4, 9);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(307, 13);
-			this.label1.TabIndex = 1;
-			this.label1.Text = "SettingsView prototype. app.config generation not implemented!";
-			// 
 			// SettingsView
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.Controls.Add(this.label1);
 			this.Controls.Add(this.grid);
 			this.Name = "SettingsView";
 			this.Size = new System.Drawing.Size(486, 362);
 			((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.bindingSource)).EndInit();
 			this.ResumeLayout(false);
-			this.PerformLayout();
 		}
 		private System.Windows.Forms.DataGridViewComboBoxColumn TypeColumn;
 		private System.Windows.Forms.DataGridViewComboBoxColumn ScopeColumn;
 		private System.Windows.Forms.DataGridViewTextBoxColumn ValueColumn;
 		private System.Windows.Forms.DataGridViewTextBoxColumn NameColumn;
 		private System.Windows.Forms.BindingSource bindingSource;
-		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.DataGridView grid;
 	}
 }
