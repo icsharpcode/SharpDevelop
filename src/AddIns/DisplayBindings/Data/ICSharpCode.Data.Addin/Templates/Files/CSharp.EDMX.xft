@@ -2,33 +2,27 @@
 <Template author="Philipp Maihart" version="1.0">
 	
 	<Config
-		  name        = "Entity Framework Data Model"
-		  icon        = "Icons.32x32.XMLFileIcon"
-		  category    = "C#"
-		  defaultname = "Model${Number}.edmx"
-		  language    = "C#" />
-	 
+		name        = "Entity Framework Data Model"
+		icon        = "Icons.32x32.XMLFileIcon"
+		category    = "C#"
+		defaultname = "Model${Number}.edmx"
+		language    = "C#" />
+	
 	<Description>Entity Framework Data Model</Description>
-
-  <References>
-    <Reference include="System.Data">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference include="System.Data.Entity">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference include="System.Runtime.Serialization">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference include="System.Security">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference include="System.XML">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-  </References>
-
-  <!-- 
+	
+	<References>
+		<Reference include="System.Data" />
+		<Reference include="System.Data.Entity">
+			<RequiredTargetFramework>3.5</RequiredTargetFramework>
+		</Reference>
+		<Reference include="System.Runtime.Serialization">
+			<RequiredTargetFramework>3.0</RequiredTargetFramework>
+		</Reference>
+		<Reference include="System.Security" />
+		<Reference include="System.Xml" />
+	</References>
+	
+	<!--
 	Special new file templates:
 		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
 		${FullName}                 -> Full generated path name
@@ -38,8 +32,8 @@
 		${Path}                     -> Full path of the file
 	 -->
 	<Files>
-    <File name="${FullName}" language="XML" buildAction="EntityDeploy" Generator="EntityModelCodeGenerator">
-      <![CDATA[<?xml version="1.0" encoding="utf-8"?>
+		<File name="${FullName}" language="XML" buildAction="EntityDeploy" Generator="EntityModelCodeGenerator">
+			<![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
   <!-- EF Runtime content -->
   <edmx:Runtime>
@@ -52,8 +46,7 @@
   </edmx:Runtime>
   <DesignerViews />
 </edmx:Edmx>]]>
-    </File>
-    <File name="${FileNameWithoutExtension}.Designer.cs" language="C#" DependentUpon="${FileName}" SubType="Code"><![CDATA[${StandardHeader.C#}]]></File>
+		</File>
 	</Files>
 	
 	<AdditionalOptions/>
