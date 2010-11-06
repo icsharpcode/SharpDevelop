@@ -8324,6 +8324,18 @@ Error while starting:
   <data name="XML.MainMenu.ToolsMenu.RegularExpressionToolkit" xml:space="preserve">
     <value>Regular Expressions Toolkit</value>
   </data>
+  <data name="XML.MainMenu.ToolsMenu.RegularExpressionToolkit" xml:space="preserve">
+    <value>Regular Expressions Toolkit</value>
+  </data>
+  <data name="XML.MainMenu.ToolsMenu.SpellChecker" xml:space="preserve">
+    <value>Spell Checker</value>
+  </data>
+  <data name="XML.MainMenu.ToolsMenu.SpellCheckerSetLanguange" xml:space="preserve">
+    <value>Set languange</value>
+  </data>
+  <data name="XML.MainMenu.ToolsMenu.SpellCheckerCheckFile" xml:space="preserve">
+    <value>Check current file</value>
+  </data>
   <data name="XML.MainMenu.ViewMenu" xml:space="preserve">
     <value>&amp;View</value>
   </data>

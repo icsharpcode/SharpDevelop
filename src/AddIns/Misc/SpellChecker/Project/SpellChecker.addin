@@ -1,0 +1,33 @@
+﻿<AddIn name        = "Spell checker"
+       author      = "Eusebiu Marcu"
+       copyright   = "prj:///doc/copyright.txt"
+       description = "Spell checker using hunspell/NHunspell"
+       addInManagerHidden = "preinstalled">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.SpellChecker"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly="SpellChecker.dll"/>
+	</Runtime>
+
+	<Path name = "/Workspace/Tools">
+		<MenuItem id = "SpellChecker"
+		          label = "${res:XML.MainMenu.ToolsMenu.SpellChecker}" type="Menu"
+		          icon="Icons.16x16.SpellChecker">
+			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.Editor.ITextEditorProvider" action="Disable">
+				<MenuItem id = "SetLanguage"
+			          label = "${res:XML.MainMenu.ToolsMenu.SpellCheckerSetLanguange}"
+			          class = "ICSharpCode.SpellChecker.Commands.SetLanguangeCommand"
+				/>
+				<MenuItem id = "CheckFile"
+					label = "${res:XML.MainMenu.ToolsMenu.SpellCheckerCheckFile}"
+					class = "ICSharpCode.SpellChecker.Commands.CheckFileCommand"
+					icon="Icons.16x16.SpellChecker"
+					shortcut="Ctrl|Shift|S"
+				/>
+			</Condition>
+		</MenuItem>	
+	</Path>	
+</AddIn>

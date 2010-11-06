@@ -232,7 +232,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void TextAreaContextMenuOpening(object sender, ContextMenuEventArgs e)
 		{
 			ITextEditor adapter = GetAdapterFromSender(sender);
-			MenuService.ShowContextMenu(sender as UIElement, adapter, contextMenuPath);
+			ContextMenu = MenuService.ShowContextMenu(sender as UIElement, adapter, contextMenuPath);
 		}
 		
 		void TextAreaMouseRightButtonDown(object sender, MouseButtonEventArgs e)
