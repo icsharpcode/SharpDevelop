@@ -1,2 +1,9 @@
 /lib/*.dll
 /ICSharpCode.NRefactory.Tests/PartCover/*
+/VB/Project/Parser/Frames/trace.txt
+/VB/NRefactoryASTGenerator/bin/*
+/VB/NRefactoryASTGenerator/obj/*
+/VB/Project/bin/*
+/VB/Project/obj/*
+/VB/Test/bin/*
+/VB/Test/obj/*
