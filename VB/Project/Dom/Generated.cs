@@ -455,20 +455,6 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 		}
 	}
 	
-	public class BreakStatement : Statement {
-		
-		public BreakStatement() {
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitBreakStatement(this, data);
-		}
-		
-		public override string ToString() {
-			return "[BreakStatement]";
-		}
-	}
-	
 	public class CaseLabel : AbstractNode {
 		
 		Expression label;
@@ -676,60 +662,6 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 		public override string ToString() {
 			return string.Format("[CatchClause TypeReference={0} VariableName={1} StatementBlock={2} Condition={3}]" +
 					"", TypeReference, VariableName, StatementBlock, Condition);
-		}
-	}
-	
-	public class CheckedExpression : Expression {
-		
-		Expression expression;
-		
-		public Expression Expression {
-			get {
-				return expression;
-			}
-			set {
-				expression = value ?? Expression.Null;
-				if (!expression.IsNull) expression.Parent = this;
-			}
-		}
-		
-		public CheckedExpression(Expression expression) {
-			Expression = expression;
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitCheckedExpression(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[CheckedExpression Expression={0}]", Expression);
-		}
-	}
-	
-	public class CheckedStatement : Statement {
-		
-		Statement block;
-		
-		public Statement Block {
-			get {
-				return block;
-			}
-			set {
-				block = value ?? Statement.Null;
-				if (!block.IsNull) block.Parent = this;
-			}
-		}
-		
-		public CheckedStatement(Statement block) {
-			Block = block;
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitCheckedStatement(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[CheckedStatement Block={0}]", Block);
 		}
 	}
 	
@@ -1256,47 +1188,6 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 		}
 	}
 	
-	public class DestructorDeclaration : AttributedNode {
-		
-		string name;
-		
-		BlockStatement body;
-		
-		public string Name {
-			get {
-				return name;
-			}
-			set {
-				name = value ?? "";
-			}
-		}
-		
-		public BlockStatement Body {
-			get {
-				return body;
-			}
-			set {
-				body = value ?? BlockStatement.Null;
-				if (!body.IsNull) body.Parent = this;
-			}
-		}
-		
-		public DestructorDeclaration(string name, Modifiers modifier, List<AttributeSection> attributes) {
-			Name = name;
-			Modifier = modifier;
-			Attributes = attributes;
-			body = BlockStatement.Null;
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitDestructorDeclaration(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[DestructorDeclaration Name={0} Body={1} Attributes={2} Modifier={3}]", Name, Body, GetCollectionString(Attributes), Modifier);
-		}
-	}
-	
 	public class DirectionExpression : Expression {
 		
 		FieldDirection fieldDirection;
@@ -1414,20 +1305,6 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 		
 		public override string ToString() {
 			return string.Format("[ElseIfSection Condition={0} EmbeddedStatement={1}]", Condition, EmbeddedStatement);
-		}
-	}
-	
-	public class EmptyStatement : Statement {
-		
-		public EmptyStatement() {
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitEmptyStatement(this, data);
-		}
-		
-		public override string ToString() {
-			return "[EmptyStatement]";
 		}
 	}
 	
@@ -1665,6 +1542,12 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			initializer = Expression.Null;
 		}
 		
+		public bool HasAddRegion {
+			get {
+				return !addRegion.IsNull;
+			}
+		}
+		
 		public bool HasRemoveRegion {
 			get {
 				return !removeRegion.IsNull;
@@ -1674,12 +1557,6 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 		public bool HasRaiseRegion {
 			get {
 				return !raiseRegion.IsNull;
-			}
-		}
-		
-		public bool HasAddRegion {
-			get {
-				return !addRegion.IsNull;
 			}
 		}
 		
@@ -2011,34 +1888,6 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 		}
 	}
 	
-	public class FixedStatement : StatementWithEmbeddedStatement {
-		
-		Statement pointerDeclaration;
-		
-		public Statement PointerDeclaration {
-			get {
-				return pointerDeclaration;
-			}
-			set {
-				pointerDeclaration = value ?? Statement.Null;
-				if (!pointerDeclaration.IsNull) pointerDeclaration.Parent = this;
-			}
-		}
-		
-		public FixedStatement(Statement pointerDeclaration, Statement embeddedStatement) {
-			PointerDeclaration = pointerDeclaration;
-			EmbeddedStatement = embeddedStatement;
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitFixedStatement(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[FixedStatement PointerDeclaration={0} EmbeddedStatement={1}]", PointerDeclaration, EmbeddedStatement);
-		}
-	}
-	
 	public class ForeachStatement : StatementWithEmbeddedStatement {
 		
 		TypeReference typeReference;
@@ -2218,91 +2067,6 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 		}
 	}
 	
-	public class ForStatement : StatementWithEmbeddedStatement {
-		
-		List<Statement> initializers;
-		
-		Expression condition;
-		
-		List<Statement> iterator;
-		
-		public List<Statement> Initializers {
-			get {
-				return initializers;
-			}
-			set {
-				initializers = value ?? new List<Statement>();
-			}
-		}
-		
-		public Expression Condition {
-			get {
-				return condition;
-			}
-			set {
-				condition = value ?? Expression.Null;
-				if (!condition.IsNull) condition.Parent = this;
-			}
-		}
-		
-		public List<Statement> Iterator {
-			get {
-				return iterator;
-			}
-			set {
-				iterator = value ?? new List<Statement>();
-			}
-		}
-		
-		public ForStatement(List<Statement> initializers, Expression condition, List<Statement> iterator, Statement embeddedStatement) {
-			Initializers = initializers;
-			Condition = condition;
-			Iterator = iterator;
-			EmbeddedStatement = embeddedStatement;
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitForStatement(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[ForStatement Initializers={0} Condition={1} Iterator={2} EmbeddedStatement={3}]", GetCollectionString(Initializers), Condition, GetCollectionString(Iterator), EmbeddedStatement);
-		}
-	}
-	
-	public class GotoCaseStatement : Statement {
-		
-		Expression expression;
-		
-		public Expression Expression {
-			get {
-				return expression;
-			}
-			set {
-				expression = value ?? Expression.Null;
-				if (!expression.IsNull) expression.Parent = this;
-			}
-		}
-		
-		public GotoCaseStatement(Expression expression) {
-			Expression = expression;
-		}
-		
-		public bool IsDefaultCase {
-			get {
-				return expression.IsNull;
-			}
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitGotoCaseStatement(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[GotoCaseStatement Expression={0}]", Expression);
-		}
-	}
-	
 	public class GotoStatement : Statement {
 		
 		string label;
@@ -2428,6 +2192,12 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 				if (trueStatement != null) trueStatement.Parent = this;
 			}
 		
+		public bool HasElseIfSections {
+			get {
+				return elseIfSections.Count > 0;
+			}
+		}
+		
 		public bool HasElseStatements {
 			get {
 				return falseStatement.Count > 0;
@@ -2443,12 +2213,6 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 				if (falseStatement != null) falseStatement.Parent = this;
 			}
 		
-		public bool HasElseIfSections {
-			get {
-				return elseIfSections.Count > 0;
-			}
-		}
-		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
 			return visitor.VisitIfElseStatement(this, data);
 		}
@@ -2456,45 +2220,6 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 		public override string ToString() {
 			return string.Format("[IfElseStatement Condition={0} TrueStatement={1} FalseStatement={2} ElseIfSection" +
 					"s={3}]", Condition, GetCollectionString(TrueStatement), GetCollectionString(FalseStatement), GetCollectionString(ElseIfSections));
-		}
-	}
-	
-	public class IndexerExpression : Expression {
-		
-		Expression targetObject;
-		
-		List<Expression> indexes;
-		
-		public Expression TargetObject {
-			get {
-				return targetObject;
-			}
-			set {
-				targetObject = value ?? Expression.Null;
-				if (!targetObject.IsNull) targetObject.Parent = this;
-			}
-		}
-		
-		public List<Expression> Indexes {
-			get {
-				return indexes;
-			}
-			set {
-				indexes = value ?? new List<Expression>();
-			}
-		}
-		
-		public IndexerExpression(Expression targetObject, List<Expression> indexes) {
-			TargetObject = targetObject;
-			Indexes = indexes;
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitIndexerExpression(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[IndexerExpression TargetObject={0} Indexes={1}]", TargetObject, GetCollectionString(Indexes));
 		}
 	}
 	
@@ -3294,57 +3019,6 @@ public Location ExtendedEndLocation { get; set; }
 		}
 	}
 	
-	public class PointerReferenceExpression : Expression {
-		
-		Expression targetObject;
-		
-		string memberName;
-		
-		List<TypeReference> typeArguments;
-		
-		public Expression TargetObject {
-			get {
-				return targetObject;
-			}
-			set {
-				targetObject = value ?? Expression.Null;
-				if (!targetObject.IsNull) targetObject.Parent = this;
-			}
-		}
-		
-		public string MemberName {
-			get {
-				return memberName;
-			}
-			set {
-				memberName = value ?? "";
-			}
-		}
-		
-		public List<TypeReference> TypeArguments {
-			get {
-				return typeArguments;
-			}
-			set {
-				typeArguments = value ?? new List<TypeReference>();
-			}
-		}
-		
-		public PointerReferenceExpression(Expression targetObject, string memberName) {
-			TargetObject = targetObject;
-			MemberName = memberName;
-			typeArguments = new List<TypeReference>();
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitPointerReferenceExpression(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[PointerReferenceExpression TargetObject={0} MemberName={1} TypeArguments={2}]", TargetObject, MemberName, GetCollectionString(TypeArguments));
-		}
-	}
-	
 	public class PropertyDeclaration : MemberNode {
 		
 		Location bodyStart;
@@ -3417,6 +3091,30 @@ public Location ExtendedEndLocation { get; set; }
 			initializer = Expression.Null;
 		}
 		
+		public bool IsReadOnly {
+			get {
+				return HasGetRegion && !HasSetRegion;
+			}
+		}
+		
+		public bool HasGetRegion {
+			get {
+				return !getRegion.IsNull;
+			}
+		}
+		
+		public bool IsWriteOnly {
+			get {
+				return !HasGetRegion && HasSetRegion;
+			}
+		}
+		
+		public bool IsIndexer {
+			get {
+				return (Modifier & Modifiers.Default) != 0;
+			}
+		}
+		
 
 		internal PropertyDeclaration(string name, TypeReference typeReference, Modifiers modifier, List<AttributeSection> attributes) : this(modifier, attributes, name, null)
 		{
@@ -3432,30 +3130,6 @@ public Location ExtendedEndLocation { get; set; }
 		public bool HasSetRegion {
 			get {
 				return !setRegion.IsNull;
-			}
-		}
-		
-		public bool IsReadOnly {
-			get {
-				return HasGetRegion && !HasSetRegion;
-			}
-		}
-		
-		public bool HasGetRegion {
-			get {
-				return !getRegion.IsNull;
-			}
-		}
-		
-		public bool IsIndexer {
-			get {
-				return (Modifier & Modifiers.Default) != 0;
-			}
-		}
-		
-		public bool IsWriteOnly {
-			get {
-				return !HasGetRegion && HasSetRegion;
 			}
 		}
 		
@@ -3598,62 +3272,19 @@ public Location ExtendedEndLocation { get; set; }
 	
 	public class QueryExpression : Expression {
 		
-		QueryExpressionFromClause fromClause;
+		List<QueryExpressionClause> clauses;
 		
-		bool isQueryContinuation;
-		
-		List<QueryExpressionClause> middleClauses;
-		
-		QueryExpressionClause selectOrGroupClause;
-		
-		public QueryExpressionFromClause FromClause {
+		public List<QueryExpressionClause> Clauses {
 			get {
-				return fromClause;
+				return clauses;
 			}
 			set {
-				fromClause = value ?? QueryExpressionFromClause.Null;
-				if (!fromClause.IsNull) fromClause.Parent = this;
-			}
-		}
-		
-		public bool IsQueryContinuation {
-			get {
-				return isQueryContinuation;
-			}
-			set {
-				isQueryContinuation = value;
-			}
-		}
-		
-		public List<QueryExpressionClause> MiddleClauses {
-			get {
-				return middleClauses;
-			}
-			set {
-				middleClauses = value ?? new List<QueryExpressionClause>();
-			}
-		}
-		
-		public QueryExpressionClause SelectOrGroupClause {
-			get {
-				return selectOrGroupClause;
-			}
-			set {
-				selectOrGroupClause = value ?? QueryExpressionClause.Null;
-				if (!selectOrGroupClause.IsNull) selectOrGroupClause.Parent = this;
+				clauses = value ?? new List<QueryExpressionClause>();
 			}
 		}
 		
 		public QueryExpression() {
-			fromClause = QueryExpressionFromClause.Null;
-			middleClauses = new List<QueryExpressionClause>();
-			selectOrGroupClause = QueryExpressionClause.Null;
-		}
-		
-		public new static QueryExpression Null {
-			get {
-				return NullQueryExpression.Instance;
-			}
+			clauses = new List<QueryExpressionClause>();
 		}
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
@@ -3661,27 +3292,7 @@ public Location ExtendedEndLocation { get; set; }
 		}
 		
 		public override string ToString() {
-			return string.Format("[QueryExpression FromClause={0} IsQueryContinuation={1} MiddleClauses={2} SelectO" +
-					"rGroupClause={3}]", FromClause, IsQueryContinuation, GetCollectionString(MiddleClauses), SelectOrGroupClause);
-		}
-	}
-	
-	internal sealed class NullQueryExpression : QueryExpression {
-		
-		internal static NullQueryExpression Instance = new NullQueryExpression();
-		
-		public override bool IsNull {
-			get {
-				return true;
-			}
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return null;
-		}
-		
-		public override string ToString() {
-			return "[NullQueryExpression]";
+			return string.Format("[QueryExpression Clauses={0}]", GetCollectionString(Clauses));
 		}
 	}
 	
@@ -4371,32 +3982,6 @@ public Location ExtendedEndLocation { get; set; }
 		}
 	}
 	
-	public class QueryExpressionVB : Expression {
-		
-		List<QueryExpressionClause> clauses;
-		
-		public List<QueryExpressionClause> Clauses {
-			get {
-				return clauses;
-			}
-			set {
-				clauses = value ?? new List<QueryExpressionClause>();
-			}
-		}
-		
-		public QueryExpressionVB() {
-			clauses = new List<QueryExpressionClause>();
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitQueryExpressionVB(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[QueryExpressionVB Clauses={0}]", GetCollectionString(Clauses));
-		}
-	}
-	
 	public class QueryExpressionWhereClause : QueryExpressionClause {
 		
 		Expression condition;
@@ -4606,73 +4191,6 @@ public Location ExtendedEndLocation { get; set; }
 		
 		public override string ToString() {
 			return string.Format("[ReturnStatement Expression={0}]", Expression);
-		}
-	}
-	
-	public class SizeOfExpression : Expression {
-		
-		TypeReference typeReference;
-		
-		public TypeReference TypeReference {
-			get {
-				return typeReference;
-			}
-			set {
-				typeReference = value ?? TypeReference.Null;
-				if (!typeReference.IsNull) typeReference.Parent = this;
-			}
-		}
-		
-		public SizeOfExpression(TypeReference typeReference) {
-			TypeReference = typeReference;
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitSizeOfExpression(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[SizeOfExpression TypeReference={0}]", TypeReference);
-		}
-	}
-	
-	public class StackAllocExpression : Expression {
-		
-		TypeReference typeReference;
-		
-		Expression expression;
-		
-		public TypeReference TypeReference {
-			get {
-				return typeReference;
-			}
-			set {
-				typeReference = value ?? TypeReference.Null;
-				if (!typeReference.IsNull) typeReference.Parent = this;
-			}
-		}
-		
-		public Expression Expression {
-			get {
-				return expression;
-			}
-			set {
-				expression = value ?? Expression.Null;
-				if (!expression.IsNull) expression.Parent = this;
-			}
-		}
-		
-		public StackAllocExpression(TypeReference typeReference, Expression expression) {
-			TypeReference = typeReference;
-			Expression = expression;
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitStackAllocExpression(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[StackAllocExpression TypeReference={0} Expression={1}]", TypeReference, Expression);
 		}
 	}
 	
@@ -5122,87 +4640,6 @@ public Location ExtendedEndLocation { get; set; }
 		}
 	}
 	
-	public class UncheckedExpression : Expression {
-		
-		Expression expression;
-		
-		public Expression Expression {
-			get {
-				return expression;
-			}
-			set {
-				expression = value ?? Expression.Null;
-				if (!expression.IsNull) expression.Parent = this;
-			}
-		}
-		
-		public UncheckedExpression(Expression expression) {
-			Expression = expression;
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitUncheckedExpression(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[UncheckedExpression Expression={0}]", Expression);
-		}
-	}
-	
-	public class UncheckedStatement : Statement {
-		
-		Statement block;
-		
-		public Statement Block {
-			get {
-				return block;
-			}
-			set {
-				block = value ?? Statement.Null;
-				if (!block.IsNull) block.Parent = this;
-			}
-		}
-		
-		public UncheckedStatement(Statement block) {
-			Block = block;
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitUncheckedStatement(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[UncheckedStatement Block={0}]", Block);
-		}
-	}
-	
-	public class UnsafeStatement : Statement {
-		
-		Statement block;
-		
-		public Statement Block {
-			get {
-				return block;
-			}
-			set {
-				block = value ?? Statement.Null;
-				if (!block.IsNull) block.Parent = this;
-			}
-		}
-		
-		public UnsafeStatement(Statement block) {
-			Block = block;
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitUnsafeStatement(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[UnsafeStatement Block={0}]", Block);
-		}
-	}
-	
 	public class Using : AbstractNode {
 		
 		string name;
@@ -5297,9 +4734,9 @@ public Location ExtendedEndLocation { get; set; }
 		
 public UsingDeclaration(string xmlNamespace, string prefix) { usings = new List<Using>(1); usings.Add(new Using(xmlNamespace, prefix)); }
 		
-public UsingDeclaration(string @namespace, TypeReference alias) { usings = new List<Using>(1); usings.Add(new Using(@namespace, alias)); }
-		
 public UsingDeclaration(string @namespace) : this(@namespace, TypeReference.Null) {}
+		
+public UsingDeclaration(string @namespace, TypeReference alias) { usings = new List<Using>(1); usings.Add(new Using(@namespace, alias)); }
 		
 		public override object AcceptVisitor(IAstVisitor visitor, object data) {
 			return visitor.VisitUsingDeclaration(this, data);
@@ -5761,45 +5198,6 @@ public UsingDeclaration(string @namespace) : this(@namespace, TypeReference.Null
 		public override string ToString() {
 			return string.Format("[XmlMemberAccessExpression TargetObject={0} AxisType={1} IsXmlIdentifier={2} Iden" +
 					"tifier={3}]", TargetObject, AxisType, IsXmlIdentifier, Identifier);
-		}
-	}
-	
-	public class YieldStatement : Statement {
-		
-		Statement statement;
-		
-		public Statement Statement {
-			get {
-				return statement;
-			}
-			set {
-				statement = value ?? Statement.Null;
-				if (!statement.IsNull) statement.Parent = this;
-			}
-		}
-		
-		public YieldStatement(Statement statement) {
-			Statement = statement;
-		}
-		
-		public bool IsYieldBreak {
-			get {
-				return statement is BreakStatement;
-			}
-		}
-		
-		public bool IsYieldReturn {
-			get {
-				return statement is ReturnStatement;
-			}
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitYieldStatement(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[YieldStatement Statement={0}]", Statement);
 		}
 	}
 }

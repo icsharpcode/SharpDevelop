@@ -35,17 +35,11 @@ namespace ICSharpCode.NRefactory.VB {
 		
 		object VisitBlockStatement(BlockStatement blockStatement, object data);
 		
-		object VisitBreakStatement(BreakStatement breakStatement, object data);
-		
 		object VisitCaseLabel(CaseLabel caseLabel, object data);
 		
 		object VisitCastExpression(CastExpression castExpression, object data);
 		
 		object VisitCatchClause(CatchClause catchClause, object data);
-		
-		object VisitCheckedExpression(CheckedExpression checkedExpression, object data);
-		
-		object VisitCheckedStatement(CheckedStatement checkedStatement, object data);
 		
 		object VisitClassReferenceExpression(ClassReferenceExpression classReferenceExpression, object data);
 		
@@ -69,15 +63,11 @@ namespace ICSharpCode.NRefactory.VB {
 		
 		object VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data);
 		
-		object VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data);
-		
 		object VisitDirectionExpression(DirectionExpression directionExpression, object data);
 		
 		object VisitDoLoopStatement(DoLoopStatement doLoopStatement, object data);
 		
 		object VisitElseIfSection(ElseIfSection elseIfSection, object data);
-		
-		object VisitEmptyStatement(EmptyStatement emptyStatement, object data);
 		
 		object VisitEndStatement(EndStatement endStatement, object data);
 		
@@ -103,23 +93,15 @@ namespace ICSharpCode.NRefactory.VB {
 		
 		object VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data);
 		
-		object VisitFixedStatement(FixedStatement fixedStatement, object data);
-		
 		object VisitForeachStatement(ForeachStatement foreachStatement, object data);
 		
 		object VisitForNextStatement(ForNextStatement forNextStatement, object data);
-		
-		object VisitForStatement(ForStatement forStatement, object data);
-		
-		object VisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data);
 		
 		object VisitGotoStatement(GotoStatement gotoStatement, object data);
 		
 		object VisitIdentifierExpression(IdentifierExpression identifierExpression, object data);
 		
 		object VisitIfElseStatement(IfElseStatement ifElseStatement, object data);
-		
-		object VisitIndexerExpression(IndexerExpression indexerExpression, object data);
 		
 		object VisitInnerClassTypeReference(InnerClassTypeReference innerClassTypeReference, object data);
 		
@@ -156,8 +138,6 @@ namespace ICSharpCode.NRefactory.VB {
 		object VisitParameterDeclarationExpression(ParameterDeclarationExpression parameterDeclarationExpression, object data);
 		
 		object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data);
-		
-		object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data);
 		
 		object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data);
 		
@@ -201,8 +181,6 @@ namespace ICSharpCode.NRefactory.VB {
 		
 		object VisitQueryExpressionSelectVBClause(QueryExpressionSelectVBClause queryExpressionSelectVBClause, object data);
 		
-		object VisitQueryExpressionVB(QueryExpressionVB queryExpressionVB, object data);
-		
 		object VisitQueryExpressionWhereClause(QueryExpressionWhereClause queryExpressionWhereClause, object data);
 		
 		object VisitRaiseEventStatement(RaiseEventStatement raiseEventStatement, object data);
@@ -214,10 +192,6 @@ namespace ICSharpCode.NRefactory.VB {
 		object VisitResumeStatement(ResumeStatement resumeStatement, object data);
 		
 		object VisitReturnStatement(ReturnStatement returnStatement, object data);
-		
-		object VisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data);
-		
-		object VisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data);
 		
 		object VisitStopStatement(StopStatement stopStatement, object data);
 		
@@ -245,12 +219,6 @@ namespace ICSharpCode.NRefactory.VB {
 		
 		object VisitUnaryOperatorExpression(UnaryOperatorExpression unaryOperatorExpression, object data);
 		
-		object VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data);
-		
-		object VisitUncheckedStatement(UncheckedStatement uncheckedStatement, object data);
-		
-		object VisitUnsafeStatement(UnsafeStatement unsafeStatement, object data);
-		
 		object VisitUsing(Using @using, object data);
 		
 		object VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data);
@@ -272,7 +240,5 @@ namespace ICSharpCode.NRefactory.VB {
 		object VisitXmlEmbeddedExpression(XmlEmbeddedExpression xmlEmbeddedExpression, object data);
 		
 		object VisitXmlMemberAccessExpression(XmlMemberAccessExpression xmlMemberAccessExpression, object data);
-		
-		object VisitYieldStatement(YieldStatement yieldStatement, object data);
 	}
 }

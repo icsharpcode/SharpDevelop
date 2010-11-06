@@ -118,14 +118,6 @@ namespace NRefactoryASTGenerator.Ast
 		public MemberReferenceExpression(Expression targetObject, string memberName) {}
 	}
 	
-	class PointerReferenceExpression : Expression {
-		Expression targetObject;
-		string     memberName;
-		List<TypeReference> typeArguments;
-		
-		public PointerReferenceExpression(Expression targetObject, string memberName) {}
-	}
-	
 	class IdentifierExpression : Expression {
 		string identifier;
 		List<TypeReference> typeArguments;
@@ -185,12 +177,6 @@ namespace NRefactoryASTGenerator.Ast
 		TypeReference returnType;
 	}
 	
-	class CheckedExpression : Expression {
-		Expression expression;
-		
-		public CheckedExpression(Expression expression) {}
-	}
-	
 	class ConditionalExpression : Expression {
 		Expression condition;
 		Expression trueExpression;
@@ -215,32 +201,6 @@ namespace NRefactoryASTGenerator.Ast
 		public DirectionExpression(FieldDirection fieldDirection, Expression expression) {}
 	}
 	
-	class IndexerExpression : Expression {
-		Expression       targetObject;
-		List<Expression> indexes;
-		
-		public IndexerExpression(Expression targetObject, List<Expression> indexes) {}
-	}
-	
-	class SizeOfExpression : Expression {
-		TypeReference typeReference;
-		
-		public SizeOfExpression(TypeReference typeReference) {}
-	}
-	
-	class StackAllocExpression : Expression {
-		TypeReference typeReference;
-		Expression    expression;
-		
-		public StackAllocExpression(TypeReference typeReference, Expression expression) {}
-	}
-	
-	class UncheckedExpression : Expression {
-		Expression expression;
-		
-		public UncheckedExpression(Expression expression) {}
-	}
-	
 	class AddressOfExpression : Expression {
 		Expression expression;
 		
@@ -256,25 +216,7 @@ namespace NRefactoryASTGenerator.Ast
 		public TypeOfIsExpression(Expression expression, TypeReference typeReference) {}
 	}
 	
-	[ImplementNullable(NullableImplementation.Shadow)]
 	class QueryExpression : Expression {
-		
-		/// <remarks>
-		/// Either from or aggregate clause.
-		/// </remarks>
-		QueryExpressionFromClause fromClause;
-		
-		bool isQueryContinuation;
-		
-		List<QueryExpressionClause> middleClauses;
-		
-		/// <remarks>
-		/// C# only.
-		/// </remarks>
-		QueryExpressionClause selectOrGroupClause;
-	}
-	
-	class QueryExpressionVB : Expression {
 		List<QueryExpressionClause> clauses;
 	}
 	

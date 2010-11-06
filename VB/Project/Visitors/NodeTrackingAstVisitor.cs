@@ -101,13 +101,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return result;
 		}
 		
-		public sealed override object VisitBreakStatement(BreakStatement breakStatement, object data) {
-			this.BeginVisit(breakStatement);
-			object result = this.TrackedVisitBreakStatement(breakStatement, data);
-			this.EndVisit(breakStatement);
-			return result;
-		}
-		
 		public sealed override object VisitCaseLabel(CaseLabel caseLabel, object data) {
 			this.BeginVisit(caseLabel);
 			object result = this.TrackedVisitCaseLabel(caseLabel, data);
@@ -126,20 +119,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			this.BeginVisit(catchClause);
 			object result = this.TrackedVisitCatchClause(catchClause, data);
 			this.EndVisit(catchClause);
-			return result;
-		}
-		
-		public sealed override object VisitCheckedExpression(CheckedExpression checkedExpression, object data) {
-			this.BeginVisit(checkedExpression);
-			object result = this.TrackedVisitCheckedExpression(checkedExpression, data);
-			this.EndVisit(checkedExpression);
-			return result;
-		}
-		
-		public sealed override object VisitCheckedStatement(CheckedStatement checkedStatement, object data) {
-			this.BeginVisit(checkedStatement);
-			object result = this.TrackedVisitCheckedStatement(checkedStatement, data);
-			this.EndVisit(checkedStatement);
 			return result;
 		}
 		
@@ -220,13 +199,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return result;
 		}
 		
-		public sealed override object VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data) {
-			this.BeginVisit(destructorDeclaration);
-			object result = this.TrackedVisitDestructorDeclaration(destructorDeclaration, data);
-			this.EndVisit(destructorDeclaration);
-			return result;
-		}
-		
 		public sealed override object VisitDirectionExpression(DirectionExpression directionExpression, object data) {
 			this.BeginVisit(directionExpression);
 			object result = this.TrackedVisitDirectionExpression(directionExpression, data);
@@ -245,13 +217,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			this.BeginVisit(elseIfSection);
 			object result = this.TrackedVisitElseIfSection(elseIfSection, data);
 			this.EndVisit(elseIfSection);
-			return result;
-		}
-		
-		public sealed override object VisitEmptyStatement(EmptyStatement emptyStatement, object data) {
-			this.BeginVisit(emptyStatement);
-			object result = this.TrackedVisitEmptyStatement(emptyStatement, data);
-			this.EndVisit(emptyStatement);
 			return result;
 		}
 		
@@ -339,13 +304,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return result;
 		}
 		
-		public sealed override object VisitFixedStatement(FixedStatement fixedStatement, object data) {
-			this.BeginVisit(fixedStatement);
-			object result = this.TrackedVisitFixedStatement(fixedStatement, data);
-			this.EndVisit(fixedStatement);
-			return result;
-		}
-		
 		public sealed override object VisitForeachStatement(ForeachStatement foreachStatement, object data) {
 			this.BeginVisit(foreachStatement);
 			object result = this.TrackedVisitForeachStatement(foreachStatement, data);
@@ -357,20 +315,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			this.BeginVisit(forNextStatement);
 			object result = this.TrackedVisitForNextStatement(forNextStatement, data);
 			this.EndVisit(forNextStatement);
-			return result;
-		}
-		
-		public sealed override object VisitForStatement(ForStatement forStatement, object data) {
-			this.BeginVisit(forStatement);
-			object result = this.TrackedVisitForStatement(forStatement, data);
-			this.EndVisit(forStatement);
-			return result;
-		}
-		
-		public sealed override object VisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data) {
-			this.BeginVisit(gotoCaseStatement);
-			object result = this.TrackedVisitGotoCaseStatement(gotoCaseStatement, data);
-			this.EndVisit(gotoCaseStatement);
 			return result;
 		}
 		
@@ -392,13 +336,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			this.BeginVisit(ifElseStatement);
 			object result = this.TrackedVisitIfElseStatement(ifElseStatement, data);
 			this.EndVisit(ifElseStatement);
-			return result;
-		}
-		
-		public sealed override object VisitIndexerExpression(IndexerExpression indexerExpression, object data) {
-			this.BeginVisit(indexerExpression);
-			object result = this.TrackedVisitIndexerExpression(indexerExpression, data);
-			this.EndVisit(indexerExpression);
 			return result;
 		}
 		
@@ -525,13 +462,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			this.BeginVisit(parenthesizedExpression);
 			object result = this.TrackedVisitParenthesizedExpression(parenthesizedExpression, data);
 			this.EndVisit(parenthesizedExpression);
-			return result;
-		}
-		
-		public sealed override object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data) {
-			this.BeginVisit(pointerReferenceExpression);
-			object result = this.TrackedVisitPointerReferenceExpression(pointerReferenceExpression, data);
-			this.EndVisit(pointerReferenceExpression);
 			return result;
 		}
 		
@@ -682,13 +612,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return result;
 		}
 		
-		public sealed override object VisitQueryExpressionVB(QueryExpressionVB queryExpressionVB, object data) {
-			this.BeginVisit(queryExpressionVB);
-			object result = this.TrackedVisitQueryExpressionVB(queryExpressionVB, data);
-			this.EndVisit(queryExpressionVB);
-			return result;
-		}
-		
 		public sealed override object VisitQueryExpressionWhereClause(QueryExpressionWhereClause queryExpressionWhereClause, object data) {
 			this.BeginVisit(queryExpressionWhereClause);
 			object result = this.TrackedVisitQueryExpressionWhereClause(queryExpressionWhereClause, data);
@@ -728,20 +651,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			this.BeginVisit(returnStatement);
 			object result = this.TrackedVisitReturnStatement(returnStatement, data);
 			this.EndVisit(returnStatement);
-			return result;
-		}
-		
-		public sealed override object VisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data) {
-			this.BeginVisit(sizeOfExpression);
-			object result = this.TrackedVisitSizeOfExpression(sizeOfExpression, data);
-			this.EndVisit(sizeOfExpression);
-			return result;
-		}
-		
-		public sealed override object VisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data) {
-			this.BeginVisit(stackAllocExpression);
-			object result = this.TrackedVisitStackAllocExpression(stackAllocExpression, data);
-			this.EndVisit(stackAllocExpression);
 			return result;
 		}
 		
@@ -836,27 +745,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return result;
 		}
 		
-		public sealed override object VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data) {
-			this.BeginVisit(uncheckedExpression);
-			object result = this.TrackedVisitUncheckedExpression(uncheckedExpression, data);
-			this.EndVisit(uncheckedExpression);
-			return result;
-		}
-		
-		public sealed override object VisitUncheckedStatement(UncheckedStatement uncheckedStatement, object data) {
-			this.BeginVisit(uncheckedStatement);
-			object result = this.TrackedVisitUncheckedStatement(uncheckedStatement, data);
-			this.EndVisit(uncheckedStatement);
-			return result;
-		}
-		
-		public sealed override object VisitUnsafeStatement(UnsafeStatement unsafeStatement, object data) {
-			this.BeginVisit(unsafeStatement);
-			object result = this.TrackedVisitUnsafeStatement(unsafeStatement, data);
-			this.EndVisit(unsafeStatement);
-			return result;
-		}
-		
 		public sealed override object VisitUsing(Using @using, object data) {
 			this.BeginVisit(@using);
 			object result = this.TrackedVisitUsing(@using, data);
@@ -934,13 +822,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return result;
 		}
 		
-		public sealed override object VisitYieldStatement(YieldStatement yieldStatement, object data) {
-			this.BeginVisit(yieldStatement);
-			object result = this.TrackedVisitYieldStatement(yieldStatement, data);
-			this.EndVisit(yieldStatement);
-			return result;
-		}
-		
 		public virtual object TrackedVisitAddHandlerStatement(AddHandlerStatement addHandlerStatement, object data) {
 			return base.VisitAddHandlerStatement(addHandlerStatement, data);
 		}
@@ -981,10 +862,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return base.VisitBlockStatement(blockStatement, data);
 		}
 		
-		public virtual object TrackedVisitBreakStatement(BreakStatement breakStatement, object data) {
-			return base.VisitBreakStatement(breakStatement, data);
-		}
-		
 		public virtual object TrackedVisitCaseLabel(CaseLabel caseLabel, object data) {
 			return base.VisitCaseLabel(caseLabel, data);
 		}
@@ -995,14 +872,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 		
 		public virtual object TrackedVisitCatchClause(CatchClause catchClause, object data) {
 			return base.VisitCatchClause(catchClause, data);
-		}
-		
-		public virtual object TrackedVisitCheckedExpression(CheckedExpression checkedExpression, object data) {
-			return base.VisitCheckedExpression(checkedExpression, data);
-		}
-		
-		public virtual object TrackedVisitCheckedStatement(CheckedStatement checkedStatement, object data) {
-			return base.VisitCheckedStatement(checkedStatement, data);
 		}
 		
 		public virtual object TrackedVisitClassReferenceExpression(ClassReferenceExpression classReferenceExpression, object data) {
@@ -1049,10 +918,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return base.VisitDelegateDeclaration(delegateDeclaration, data);
 		}
 		
-		public virtual object TrackedVisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data) {
-			return base.VisitDestructorDeclaration(destructorDeclaration, data);
-		}
-		
 		public virtual object TrackedVisitDirectionExpression(DirectionExpression directionExpression, object data) {
 			return base.VisitDirectionExpression(directionExpression, data);
 		}
@@ -1063,10 +928,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 		
 		public virtual object TrackedVisitElseIfSection(ElseIfSection elseIfSection, object data) {
 			return base.VisitElseIfSection(elseIfSection, data);
-		}
-		
-		public virtual object TrackedVisitEmptyStatement(EmptyStatement emptyStatement, object data) {
-			return base.VisitEmptyStatement(emptyStatement, data);
 		}
 		
 		public virtual object TrackedVisitEndStatement(EndStatement endStatement, object data) {
@@ -1117,24 +978,12 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return base.VisitFieldDeclaration(fieldDeclaration, data);
 		}
 		
-		public virtual object TrackedVisitFixedStatement(FixedStatement fixedStatement, object data) {
-			return base.VisitFixedStatement(fixedStatement, data);
-		}
-		
 		public virtual object TrackedVisitForeachStatement(ForeachStatement foreachStatement, object data) {
 			return base.VisitForeachStatement(foreachStatement, data);
 		}
 		
 		public virtual object TrackedVisitForNextStatement(ForNextStatement forNextStatement, object data) {
 			return base.VisitForNextStatement(forNextStatement, data);
-		}
-		
-		public virtual object TrackedVisitForStatement(ForStatement forStatement, object data) {
-			return base.VisitForStatement(forStatement, data);
-		}
-		
-		public virtual object TrackedVisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data) {
-			return base.VisitGotoCaseStatement(gotoCaseStatement, data);
 		}
 		
 		public virtual object TrackedVisitGotoStatement(GotoStatement gotoStatement, object data) {
@@ -1147,10 +996,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 		
 		public virtual object TrackedVisitIfElseStatement(IfElseStatement ifElseStatement, object data) {
 			return base.VisitIfElseStatement(ifElseStatement, data);
-		}
-		
-		public virtual object TrackedVisitIndexerExpression(IndexerExpression indexerExpression, object data) {
-			return base.VisitIndexerExpression(indexerExpression, data);
 		}
 		
 		public virtual object TrackedVisitInnerClassTypeReference(InnerClassTypeReference innerClassTypeReference, object data) {
@@ -1223,10 +1068,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 		
 		public virtual object TrackedVisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data) {
 			return base.VisitParenthesizedExpression(parenthesizedExpression, data);
-		}
-		
-		public virtual object TrackedVisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data) {
-			return base.VisitPointerReferenceExpression(pointerReferenceExpression, data);
 		}
 		
 		public virtual object TrackedVisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data) {
@@ -1313,10 +1154,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return base.VisitQueryExpressionSelectVBClause(queryExpressionSelectVBClause, data);
 		}
 		
-		public virtual object TrackedVisitQueryExpressionVB(QueryExpressionVB queryExpressionVB, object data) {
-			return base.VisitQueryExpressionVB(queryExpressionVB, data);
-		}
-		
 		public virtual object TrackedVisitQueryExpressionWhereClause(QueryExpressionWhereClause queryExpressionWhereClause, object data) {
 			return base.VisitQueryExpressionWhereClause(queryExpressionWhereClause, data);
 		}
@@ -1339,14 +1176,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 		
 		public virtual object TrackedVisitReturnStatement(ReturnStatement returnStatement, object data) {
 			return base.VisitReturnStatement(returnStatement, data);
-		}
-		
-		public virtual object TrackedVisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data) {
-			return base.VisitSizeOfExpression(sizeOfExpression, data);
-		}
-		
-		public virtual object TrackedVisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data) {
-			return base.VisitStackAllocExpression(stackAllocExpression, data);
 		}
 		
 		public virtual object TrackedVisitStopStatement(StopStatement stopStatement, object data) {
@@ -1401,18 +1230,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return base.VisitUnaryOperatorExpression(unaryOperatorExpression, data);
 		}
 		
-		public virtual object TrackedVisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data) {
-			return base.VisitUncheckedExpression(uncheckedExpression, data);
-		}
-		
-		public virtual object TrackedVisitUncheckedStatement(UncheckedStatement uncheckedStatement, object data) {
-			return base.VisitUncheckedStatement(uncheckedStatement, data);
-		}
-		
-		public virtual object TrackedVisitUnsafeStatement(UnsafeStatement unsafeStatement, object data) {
-			return base.VisitUnsafeStatement(unsafeStatement, data);
-		}
-		
 		public virtual object TrackedVisitUsing(Using @using, object data) {
 			return base.VisitUsing(@using, data);
 		}
@@ -1455,10 +1272,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 		
 		public virtual object TrackedVisitXmlMemberAccessExpression(XmlMemberAccessExpression xmlMemberAccessExpression, object data) {
 			return base.VisitXmlMemberAccessExpression(xmlMemberAccessExpression, data);
-		}
-		
-		public virtual object TrackedVisitYieldStatement(YieldStatement yieldStatement, object data) {
-			return base.VisitYieldStatement(yieldStatement, data);
 		}
 	}
 }

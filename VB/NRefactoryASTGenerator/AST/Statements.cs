@@ -17,8 +17,6 @@ namespace NRefactoryASTGenerator.Ast
 	[CustomImplementation, HasChildren]
 	class BlockStatement : Statement {}
 	
-	class BreakStatement : Statement {}
-	
 	enum ContinueType {}
 	
 	class ContinueStatement : Statement {
@@ -47,14 +45,6 @@ namespace NRefactoryASTGenerator.Ast
 		
 		public ForeachStatement(TypeReference typeReference, string variableName, Expression expression, Statement embeddedStatement) {}
 		public ForeachStatement(TypeReference typeReference, string variableName, Expression expression, Statement embeddedStatement, Expression nextExpression) {}
-	}
-	
-	class ForStatement : StatementWithEmbeddedStatement {
-		List<Statement> initializers;
-		Expression      condition;
-		List<Statement> iterator;
-		
-		public ForStatement(List<Statement> initializers, Expression condition, List<Statement> iterator, Statement embeddedStatement) {}
 	}
 	
 	class GotoStatement : Statement {
@@ -178,51 +168,10 @@ namespace NRefactoryASTGenerator.Ast
 		public CatchClause(Statement statementBlock) {}
 	}
 	
-	class CheckedStatement : Statement {
-		Statement block;
-		
-		public CheckedStatement(Statement block) {}
-	}
-	
-	class EmptyStatement : Statement {}
-	
-	class FixedStatement : StatementWithEmbeddedStatement {
-		Statement pointerDeclaration;
-		
-		public FixedStatement(Statement pointerDeclaration, Statement embeddedStatement) {}
-	}
-	
-	[IncludeBoolProperty("IsDefaultCase", "return expression.IsNull;")]
-	class GotoCaseStatement : Statement {
-		Expression expression;
-		
-		public GotoCaseStatement(Expression expression) {}
-	}
-	
-	class UncheckedStatement : Statement {
-		Statement block;
-		
-		public UncheckedStatement(Statement block) {}
-	}
-	
-	class UnsafeStatement : Statement {
-		Statement block;
-		
-		public UnsafeStatement(Statement block) {}
-	}
-	
 	class UsingStatement : StatementWithEmbeddedStatement {
 		Statement resourceAcquisition;
 		
 		public UsingStatement(Statement resourceAcquisition, Statement embeddedStatement) {}
-	}
-	
-	[IncludeBoolProperty("IsYieldReturn", "return statement is ReturnStatement;")]
-	[IncludeBoolProperty("IsYieldBreak",  "return statement is BreakStatement;")]
-	class YieldStatement : Statement {
-		Statement statement;
-		
-		public YieldStatement(Statement statement) {}
 	}
 	
 	class AddHandlerStatement : Statement {

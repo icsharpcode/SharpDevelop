@@ -12,8 +12,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class AddressOfExpressionTests
 	{
-		#region VB.NET
-		
 		[Test]
 		public void SimpleAddressOfExpressionTest()
 		{
@@ -43,7 +41,5 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 			Assert.AreEqual("t", ((MemberReferenceExpression)ae.Expression).MemberName, "t");
 			Assert.IsInstanceOf(typeof(ThisReferenceExpression), ((MemberReferenceExpression)ae.Expression).TargetObject);
 		}
-		
-		#endregion
 	}
 }

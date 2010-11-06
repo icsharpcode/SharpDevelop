@@ -12,10 +12,8 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class ArrayCreateExpressionTests
 	{
-		#region VB.NET
-		
 		[Test]
-		public void VBNetArrayCreateExpressionTest1()
+		public void ArrayCreateExpressionTest1()
 		{
 			ArrayCreateExpression ace = ParseUtilVBNet.ParseExpression<ArrayCreateExpression>("new Integer() {1, 2, 3, 4}");
 			
@@ -25,7 +23,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		}
 		
 		[Test]
-		public void VBNetArrayCreateExpressionTest2()
+		public void ArrayCreateExpressionTest2()
 		{
 			ArrayCreateExpression ace = ParseUtilVBNet.ParseExpression<ArrayCreateExpression>("New Integer(0 To 5){0, 1, 2, 3, 4, 5}");
 			
@@ -34,6 +32,5 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 			Assert.AreEqual(5, (ace.Arguments[0] as PrimitiveExpression).Value);
 			Assert.AreEqual(new int[] {0}, ace.CreateType.RankSpecifier);
 		}
-		#endregion
 	}
 }

@@ -211,14 +211,6 @@ namespace NRefactoryASTGenerator.Ast
 		public PropertySetRegion(BlockStatement block, List<AttributeSection> attributes) : base(block, attributes) {}
 	}
 	
-	class DestructorDeclaration : AttributedNode
-	{
-		string         name;
-		BlockStatement body;
-		
-		public DestructorDeclaration(string name, Modifiers modifier, List<AttributeSection> attributes) : base(modifier, attributes) {}
-	}
-	
 	enum CharsetModifier { None }
 	
 	class DeclareDeclaration : ParametrizedNode

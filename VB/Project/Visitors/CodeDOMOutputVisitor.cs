@@ -489,15 +489,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			return declStmt;
 		}
 		
-		public override object VisitEmptyStatement(EmptyStatement emptyStatement, object data)
-		{
-			CodeSnippetStatement emptyStmt = new CodeSnippetStatement();
-			
-			AddStmt(emptyStmt);
-			
-			return emptyStmt;
-		}
-		
 		public override object VisitReturnStatement(ReturnStatement returnStatement, object data)
 		{
 			CodeMethodReturnStatement returnStmt;
@@ -722,86 +713,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 
 			return forLoop;
 		}
-
-		public override object VisitForStatement(ForStatement forStatement, object data)
-		{
-			CodeIterationStatement forLoop = new CodeIterationStatement();
-			breakableStack.Push(new Breakable());
-
-			codeStack.Push(NullStmtCollection);
-
-			if (forStatement.Initializers.Count > 0)
-			{
-				if (forStatement.Initializers.Count > 1)
-				{
-					throw new NotSupportedException("CodeDom does not support Multiple For-Loop Initializer Statements");
-				}
-
-				foreach (object o in forStatement.Initializers)
-				{
-					if (o is Expression)
-					{
-						forLoop.InitStatement = new CodeExpressionStatement((CodeExpression)((Expression)o).AcceptVisitor(this, data));
-					}
-					if (o is Statement)
-					{
-						forLoop.InitStatement = (CodeStatement)((Statement)o).AcceptVisitor(this, data);
-					}
-				}
-			}
-			else
-			{
-				// RG: need to handle empty InitStatement
-				forLoop.InitStatement = new CodeExpressionStatement(new CodeSnippetExpression());
-			}
-			
-			if (forStatement.Condition == null) {
-				forLoop.TestExpression = new CodePrimitiveExpression(true);
-			} else {
-				forLoop.TestExpression = (CodeExpression)forStatement.Condition.AcceptVisitor(this, data);
-			}
-			
-			codeStack.Push(forLoop.Statements);
-			forStatement.EmbeddedStatement.AcceptVisitor(this, data);
-			codeStack.Pop();
-
-			if (forStatement.Iterator.Count > 0)
-			{
-				if (forStatement.Initializers.Count > 1)
-				{
-					throw new NotSupportedException("CodeDom does not support Multiple For-Loop Iterator Statements");
-				}
-
-				foreach (Statement stmt in forStatement.Iterator)
-				{
-					forLoop.IncrementStatement = (CodeStatement)stmt.AcceptVisitor(this, data);
-				}
-			}
-			else
-			{
-				// RG: need to handle empty IncrementStatement
-				forLoop.IncrementStatement = new CodeExpressionStatement(new CodeSnippetExpression());
-			}
-
-			codeStack.Pop();
-
-			Breakable breakable = breakableStack.Pop();
-
-			if (breakable.IsContinue)
-			{
-				forLoop.Statements.Add(new CodeSnippetStatement());
-				forLoop.Statements.Add(new CodeLabeledStatement("continue" + breakable.Id, new CodeExpressionStatement(new CodeSnippetExpression())));
-			}
-
-			AddStmt(forLoop);
-
-			if (breakable.IsBreak)
-			{
-				AddStmt(new CodeLabeledStatement("break" + breakable.Id, new CodeExpressionStatement(new CodeSnippetExpression())));
-			}
-			
-			return forLoop;
-		}
 		
 		public override object VisitLabelStatement(LabelStatement labelStatement, object data)
 		{
@@ -939,8 +850,8 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 					{
 						INode stmt = section.Children[i];
 
-						if (i == section.Children.Count - 1 && stmt is BreakStatement)
-							break;
+//						if (i == section.Children.Count - 1 && stmt is BreakStatement)
+//							break;
 
 						stmt.AcceptVisitor(this, data);
 					}
@@ -958,8 +869,8 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 				{
 					INode stmt = defaultSection.Children[i];
 
-					if (i == defaultSection.Children.Count - 1 && stmt is BreakStatement)
-						break;
+//					if (i == defaultSection.Children.Count - 1 && stmt is BreakStatement)
+//						break;
 
 					stmt.AcceptVisitor(this, data);
 				}
@@ -1026,11 +937,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			AddStmt(throwStmt);
 			
 			return throwStmt;
-		}
-		
-		public override object VisitFixedStatement(FixedStatement fixedStatement, object data)
-		{
-			throw new NotSupportedException("CodeDom does not support Fixed Statement");
 		}
 		
 		#region Expressions
@@ -1437,11 +1343,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			return new CodeCastExpression(typeRef, (CodeExpression)castExpression.Expression.AcceptVisitor(this, data));
 		}
 		
-		public override object VisitIndexerExpression(IndexerExpression indexerExpression, object data)
-		{
-			return new CodeIndexerExpression((CodeExpression)indexerExpression.TargetObject.AcceptVisitor(this, data), GetExpressionList(indexerExpression.Indexes));
-		}
-		
 		public override object VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, object data)
 		{
 			return new CodeThisReferenceExpression();
@@ -1475,59 +1376,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			parameters.Add(parameter);
 
 			return parameter;
-		}
-
-		public override object VisitBreakStatement(BreakStatement breakStatement, object data)
-		{
-			// RG:
-			// break;
-			//
-			// emulate with:
-			//      goto break1;
-			//
-			Breakable breakable = breakableStack.Peek();
-
-			breakable.IsBreak = true;
-
-			CodeGotoStatement breakStmt = new CodeGotoStatement("break" + breakable.Id);
-
-			AddStmt(breakStmt);
-
-			return breakStmt;
-		}
-
-		public override object VisitContinueStatement(ContinueStatement continueStatement, object data)
-		{
-			// RG:
-			// continue;
-			//
-			// emulate with:
-			//      goto continue1;
-			//
-			Breakable breakable = breakableStack.Peek();
-
-			// Is continuable?
-			if (!breakable.AllowContinue)
-			{
-				// walk stack to find first continuable item
-				Breakable[] stack = breakableStack.ToArray();
-				foreach (Breakable b in stack)
-				{
-					if (b.AllowContinue)
-					{
-						breakable = b;
-						break;
-					}
-				}
-			}
-
-			breakable.IsContinue = true;
-
-			CodeGotoStatement continueStmt = new CodeGotoStatement("continue" + breakable.Id);
-
-			AddStmt(continueStmt);
-
-			return continueStmt;
 		}
 
 		bool IsField(string reflectionTypeName, string fieldName)

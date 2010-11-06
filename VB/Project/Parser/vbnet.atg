@@ -2289,7 +2289,7 @@ FunctionLambdaExpression<out LambdaExpression lambda>
 
 QueryExpr<out Expression expr>
 	(.
-		QueryExpressionVB qexpr = new QueryExpressionVB();
+		QueryExpression qexpr = new QueryExpression();
 		qexpr.StartLocation = la.Location;
 		expr = qexpr;
 	.) =

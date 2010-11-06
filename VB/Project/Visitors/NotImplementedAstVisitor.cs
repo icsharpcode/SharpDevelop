@@ -58,10 +58,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			throw new global::System.NotImplementedException("BlockStatement");
 		}
 		
-		public virtual object VisitBreakStatement(BreakStatement breakStatement, object data) {
-			throw new global::System.NotImplementedException("BreakStatement");
-		}
-		
 		public virtual object VisitCaseLabel(CaseLabel caseLabel, object data) {
 			throw new global::System.NotImplementedException("CaseLabel");
 		}
@@ -72,14 +68,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 		
 		public virtual object VisitCatchClause(CatchClause catchClause, object data) {
 			throw new global::System.NotImplementedException("CatchClause");
-		}
-		
-		public virtual object VisitCheckedExpression(CheckedExpression checkedExpression, object data) {
-			throw new global::System.NotImplementedException("CheckedExpression");
-		}
-		
-		public virtual object VisitCheckedStatement(CheckedStatement checkedStatement, object data) {
-			throw new global::System.NotImplementedException("CheckedStatement");
 		}
 		
 		public virtual object VisitClassReferenceExpression(ClassReferenceExpression classReferenceExpression, object data) {
@@ -126,10 +114,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			throw new global::System.NotImplementedException("DelegateDeclaration");
 		}
 		
-		public virtual object VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data) {
-			throw new global::System.NotImplementedException("DestructorDeclaration");
-		}
-		
 		public virtual object VisitDirectionExpression(DirectionExpression directionExpression, object data) {
 			throw new global::System.NotImplementedException("DirectionExpression");
 		}
@@ -140,10 +124,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 		
 		public virtual object VisitElseIfSection(ElseIfSection elseIfSection, object data) {
 			throw new global::System.NotImplementedException("ElseIfSection");
-		}
-		
-		public virtual object VisitEmptyStatement(EmptyStatement emptyStatement, object data) {
-			throw new global::System.NotImplementedException("EmptyStatement");
 		}
 		
 		public virtual object VisitEndStatement(EndStatement endStatement, object data) {
@@ -194,24 +174,12 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			throw new global::System.NotImplementedException("FieldDeclaration");
 		}
 		
-		public virtual object VisitFixedStatement(FixedStatement fixedStatement, object data) {
-			throw new global::System.NotImplementedException("FixedStatement");
-		}
-		
 		public virtual object VisitForeachStatement(ForeachStatement foreachStatement, object data) {
 			throw new global::System.NotImplementedException("ForeachStatement");
 		}
 		
 		public virtual object VisitForNextStatement(ForNextStatement forNextStatement, object data) {
 			throw new global::System.NotImplementedException("ForNextStatement");
-		}
-		
-		public virtual object VisitForStatement(ForStatement forStatement, object data) {
-			throw new global::System.NotImplementedException("ForStatement");
-		}
-		
-		public virtual object VisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data) {
-			throw new global::System.NotImplementedException("GotoCaseStatement");
 		}
 		
 		public virtual object VisitGotoStatement(GotoStatement gotoStatement, object data) {
@@ -224,10 +192,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 		
 		public virtual object VisitIfElseStatement(IfElseStatement ifElseStatement, object data) {
 			throw new global::System.NotImplementedException("IfElseStatement");
-		}
-		
-		public virtual object VisitIndexerExpression(IndexerExpression indexerExpression, object data) {
-			throw new global::System.NotImplementedException("IndexerExpression");
 		}
 		
 		public virtual object VisitInnerClassTypeReference(InnerClassTypeReference innerClassTypeReference, object data) {
@@ -300,10 +264,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 		
 		public virtual object VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data) {
 			throw new global::System.NotImplementedException("ParenthesizedExpression");
-		}
-		
-		public virtual object VisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data) {
-			throw new global::System.NotImplementedException("PointerReferenceExpression");
 		}
 		
 		public virtual object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data) {
@@ -390,10 +350,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			throw new global::System.NotImplementedException("QueryExpressionSelectVBClause");
 		}
 		
-		public virtual object VisitQueryExpressionVB(QueryExpressionVB queryExpressionVB, object data) {
-			throw new global::System.NotImplementedException("QueryExpressionVB");
-		}
-		
 		public virtual object VisitQueryExpressionWhereClause(QueryExpressionWhereClause queryExpressionWhereClause, object data) {
 			throw new global::System.NotImplementedException("QueryExpressionWhereClause");
 		}
@@ -416,14 +372,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 		
 		public virtual object VisitReturnStatement(ReturnStatement returnStatement, object data) {
 			throw new global::System.NotImplementedException("ReturnStatement");
-		}
-		
-		public virtual object VisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data) {
-			throw new global::System.NotImplementedException("SizeOfExpression");
-		}
-		
-		public virtual object VisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data) {
-			throw new global::System.NotImplementedException("StackAllocExpression");
 		}
 		
 		public virtual object VisitStopStatement(StopStatement stopStatement, object data) {
@@ -478,18 +426,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			throw new global::System.NotImplementedException("UnaryOperatorExpression");
 		}
 		
-		public virtual object VisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data) {
-			throw new global::System.NotImplementedException("UncheckedExpression");
-		}
-		
-		public virtual object VisitUncheckedStatement(UncheckedStatement uncheckedStatement, object data) {
-			throw new global::System.NotImplementedException("UncheckedStatement");
-		}
-		
-		public virtual object VisitUnsafeStatement(UnsafeStatement unsafeStatement, object data) {
-			throw new global::System.NotImplementedException("UnsafeStatement");
-		}
-		
 		public virtual object VisitUsing(Using @using, object data) {
 			throw new global::System.NotImplementedException("Using");
 		}
@@ -532,10 +468,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 		
 		public virtual object VisitXmlMemberAccessExpression(XmlMemberAccessExpression xmlMemberAccessExpression, object data) {
 			throw new global::System.NotImplementedException("XmlMemberAccessExpression");
-		}
-		
-		public virtual object VisitYieldStatement(YieldStatement yieldStatement, object data) {
-			throw new global::System.NotImplementedException("YieldStatement");
 		}
 	}
 }

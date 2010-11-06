@@ -99,7 +99,7 @@ namespace ICSharpCode.NRefactory.VB.Parser
 				vbToken = "<unknown>";
 			}
 			
-			return string.Format("[Token {1} Location={2} EndLocation={3} val={4}]",
+			return string.Format("[Token {0} Location={1} EndLocation={2} val={3}]",
 			                     vbToken, Location, EndLocation, val);
 		}
 	}

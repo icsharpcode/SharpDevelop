@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using NUnit.Framework;
+using ICSharpCode.NRefactory.VB;
 using ICSharpCode.NRefactory.VB.Parser;
 using ICSharpCode.NRefactory.VB.PrettyPrinter;
 

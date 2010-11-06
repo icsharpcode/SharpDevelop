@@ -12,8 +12,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class ExpressionStatementTests
 	{
-		#region VB.NET
-			// TODO
-		#endregion 
+		// TODO : Create ExpressionStatementTests
 	}
 }

@@ -12,8 +12,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class AssignmentExpressionTests
 	{
-		#region VB.NET
-		void VBNetTestAssignmentExpression(string program, AssignmentOperatorType op)
+		void TestAssignmentExpression(string program, AssignmentOperatorType op)
 		{
 			ExpressionStatement se = ParseUtilVBNet.ParseStatement<ExpressionStatement>(program);
 			AssignmentExpression ae = se.Expression as AssignmentExpression;
@@ -24,52 +23,51 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		}
 
 		[Test]
-		public void VBNetAssignTest()
+		public void AssignTest()
 		{
-			VBNetTestAssignmentExpression("a = b", AssignmentOperatorType.Assign);
+			TestAssignmentExpression("a = b", AssignmentOperatorType.Assign);
 		}
 		
 		[Test]
-		public void VBNetAddTest()
+		public void AddTest()
 		{
-			VBNetTestAssignmentExpression("a += b", AssignmentOperatorType.Add);
+			TestAssignmentExpression("a += b", AssignmentOperatorType.Add);
 		}
 		
 		[Test]
-		public void VBNetSubtractTest()
+		public void SubtractTest()
 		{
-			VBNetTestAssignmentExpression("a -= b", AssignmentOperatorType.Subtract);
+			TestAssignmentExpression("a -= b", AssignmentOperatorType.Subtract);
 		}
 		
 		[Test]
-		public void VBNetMultiplyTest()
+		public void MultiplyTest()
 		{
-			VBNetTestAssignmentExpression("a *= b", AssignmentOperatorType.Multiply);
+			TestAssignmentExpression("a *= b", AssignmentOperatorType.Multiply);
 		}
 		
 		[Test]
-		public void VBNetDivideTest()
+		public void DivideTest()
 		{
-			VBNetTestAssignmentExpression("a /= b", AssignmentOperatorType.Divide);
+			TestAssignmentExpression("a /= b", AssignmentOperatorType.Divide);
 		}
 		
 		[Test]
-		public void VBNetExclusiveOrTest()
+		public void ExclusiveOrTest()
 		{
-			VBNetTestAssignmentExpression("a ^= b", AssignmentOperatorType.Power);
+			TestAssignmentExpression("a ^= b", AssignmentOperatorType.Power);
 		}
 		
 		[Test]
-		public void VBNetStringConcatTest()
+		public void StringConcatTest()
 		{
-			VBNetTestAssignmentExpression("a &= b", AssignmentOperatorType.ConcatString);
+			TestAssignmentExpression("a &= b", AssignmentOperatorType.ConcatString);
 		}
 
 		[Test]
-		public void VBNetModulusTest()
+		public void ModulusTest()
 		{
-			VBNetTestAssignmentExpression("a \\= b", AssignmentOperatorType.DivideInteger);
+			TestAssignmentExpression("a \\= b", AssignmentOperatorType.DivideInteger);
 		}
-		#endregion
 	}
 }

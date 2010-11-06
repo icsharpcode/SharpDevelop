@@ -97,6 +97,7 @@ namespace NRefactoryASTGenerator
 				writer.WriteLine("using System;");
 				writer.WriteLine("using System.IO;");
 				writer.WriteLine("using NUnit.Framework;");
+				writer.WriteLine("using ICSharpCode.NRefactory.VB;");
 				writer.WriteLine("using ICSharpCode.NRefactory.VB.Parser;");
 				writer.WriteLine("using ICSharpCode.NRefactory.VB.PrettyPrinter;");
 				writer.WriteLine();

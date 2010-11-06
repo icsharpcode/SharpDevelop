@@ -155,12 +155,13 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 		
 		public override object VisitQueryExpressionFromClause(QueryExpressionFromClause fromClause, object data)
 		{
-			QueryExpression parent = fromClause.Parent as QueryExpression;
-			foreach (CollectionRangeVariable variable in fromClause.Sources) {
-				AddVariable(variable.Type, variable.Identifier,
-				            variable.StartLocation, CurrentEndLocation,
-				            false, true, variable.Expression, null, parent != null && parent.IsQueryContinuation);
-			}
+			// TODO : reimplement this!
+//			QueryExpression parent = fromClause.Parent as QueryExpression;
+//			foreach (CollectionRangeVariable variable in fromClause.Sources) {
+//				AddVariable(variable.Type, variable.Identifier,
+//				            variable.StartLocation, CurrentEndLocation,
+//				            false, true, variable.Expression, null, parent != null && parent.IsQueryContinuation);
+//			}
 
 			return base.VisitQueryExpressionFromClause(fromClause, data);
 		}
@@ -208,32 +209,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 				
 				base.VisitForNextStatement(forNextStatement, data);
 				
-				endLocationStack.Pop();
-				return null;
-			}
-		}
-		
-		public override object VisitFixedStatement(FixedStatement fixedStatement, object data)
-		{
-			// uses LocalVariableDeclaration, we just have to put the end location on the stack
-			if (fixedStatement.EmbeddedStatement.EndLocation.IsEmpty) {
-				return base.VisitFixedStatement(fixedStatement, data);
-			} else {
-				endLocationStack.Push(fixedStatement.EmbeddedStatement.EndLocation);
-				base.VisitFixedStatement(fixedStatement, data);
-				endLocationStack.Pop();
-				return null;
-			}
-		}
-		
-		public override object VisitForStatement(ForStatement forStatement, object data)
-		{
-			// uses LocalVariableDeclaration, we just have to put the end location on the stack
-			if (forStatement.EmbeddedStatement.EndLocation.IsEmpty) {
-				return base.VisitForStatement(forStatement, data);
-			} else {
-				endLocationStack.Push(forStatement.EmbeddedStatement.EndLocation);
-				base.VisitForStatement(forStatement, data);
 				endLocationStack.Pop();
 				return null;
 			}

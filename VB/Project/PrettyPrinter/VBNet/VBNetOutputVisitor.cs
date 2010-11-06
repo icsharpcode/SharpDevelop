@@ -997,51 +997,6 @@ namespace ICSharpCode.NRefactory.VB.PrettyPrinter
 			return null;
 		}
 		
-		public override object TrackedVisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data)
-		{
-			outputFormatter.Indent();
-			outputFormatter.PrintText("Protected Overrides Sub Finalize()");
-			outputFormatter.NewLine();
-			
-			++outputFormatter.IndentationLevel;
-			exitTokenStack.Push(Tokens.Sub);
-			
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.Try);
-			outputFormatter.NewLine();
-			
-			++outputFormatter.IndentationLevel;
-			TrackedVisit(destructorDeclaration.Body, data);
-			--outputFormatter.IndentationLevel;
-			
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.Finally);
-			outputFormatter.NewLine();
-			
-			++outputFormatter.IndentationLevel;
-			outputFormatter.Indent();
-			outputFormatter.PrintText("MyBase.Finalize()");
-			outputFormatter.NewLine();
-			--outputFormatter.IndentationLevel;
-			
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.End);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.Try);
-			outputFormatter.NewLine();
-			
-			exitTokenStack.Pop();
-			--outputFormatter.IndentationLevel;
-			
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.End);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.Sub);
-			outputFormatter.NewLine();
-			
-			return null;
-		}
-		
 		public override object TrackedVisitOperatorDeclaration(OperatorDeclaration operatorDeclaration, object data)
 		{
 			VisitAttributes(operatorDeclaration.Attributes, data);
@@ -1397,20 +1352,6 @@ namespace ICSharpCode.NRefactory.VB.PrettyPrinter
 			return null;
 		}
 		
-		public override object TrackedVisitEmptyStatement(EmptyStatement emptyStatement, object data)
-		{
-			outputFormatter.NewLine();
-			return null;
-		}
-		
-		public override object TrackedVisitYieldStatement(YieldStatement yieldStatement, object data)
-		{
-			UnsupportedNode(yieldStatement);
-			outputFormatter.PrintText("yield ");
-			TrackedVisit(yieldStatement.Statement, data);
-			return null;
-		}
-		
 		public override object TrackedVisitReturnStatement(ReturnStatement returnStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Return);
@@ -1460,40 +1401,6 @@ namespace ICSharpCode.NRefactory.VB.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.Then);
 			outputFormatter.NewLine();
 			PrintIndentedBlock(elseIfSection.EmbeddedStatement);
-			return null;
-		}
-		
-		public override object TrackedVisitForStatement(ForStatement forStatement, object data)
-		{
-			// Is converted to {initializer} while <Condition> {Embedded} {Iterators} end while
-			exitTokenStack.Push(Tokens.While);
-			bool isFirstLine = true;
-			foreach (INode node in forStatement.Initializers) {
-				if (!isFirstLine)
-					outputFormatter.Indent();
-				isFirstLine = false;
-				TrackedVisit(node, data);
-				outputFormatter.NewLine();
-			}
-			if (!isFirstLine)
-				outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.While);
-			outputFormatter.Space();
-			if (forStatement.Condition.IsNull) {
-				outputFormatter.PrintToken(Tokens.True);
-			} else {
-				TrackedVisit(forStatement.Condition, data);
-			}
-			outputFormatter.NewLine();
-			
-			PrintIndentedBlock(forStatement.EmbeddedStatement);
-			PrintIndentedBlock(forStatement.Iterator);
-			
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.End);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.While);
-			exitTokenStack.Pop();
 			return null;
 		}
 		
@@ -1590,16 +1497,6 @@ namespace ICSharpCode.NRefactory.VB.PrettyPrinter
 			return null;
 		}
 		
-		public override object TrackedVisitBreakStatement(BreakStatement breakStatement, object data)
-		{
-			outputFormatter.PrintToken(Tokens.Exit);
-			if (exitTokenStack.Count > 0) {
-				outputFormatter.Space();
-				outputFormatter.PrintToken(exitTokenStack.Peek());
-			}
-			return null;
-		}
-		
 		public override object TrackedVisitStopStatement(StopStatement stopStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Stop);
@@ -1641,17 +1538,6 @@ namespace ICSharpCode.NRefactory.VB.PrettyPrinter
 				default:
 					outputFormatter.PrintToken(exitTokenStack.Peek());
 					break;
-			}
-			return null;
-		}
-		
-		public override object TrackedVisitGotoCaseStatement(GotoCaseStatement gotoCaseStatement, object data)
-		{
-			outputFormatter.PrintText("goto case ");
-			if (gotoCaseStatement.IsDefaultCase) {
-				outputFormatter.PrintText("default");
-			} else {
-				TrackedVisit(gotoCaseStatement.Expression, null);
 			}
 			return null;
 		}
@@ -1875,30 +1761,6 @@ namespace ICSharpCode.NRefactory.VB.PrettyPrinter
 				TrackedVisit(throwStatement.Expression, data);
 			}
 			return null;
-		}
-		
-		public override object TrackedVisitFixedStatement(FixedStatement fixedStatement, object data)
-		{
-			UnsupportedNode(fixedStatement);
-			return TrackedVisit(fixedStatement.EmbeddedStatement, data);
-		}
-		
-		public override object TrackedVisitUnsafeStatement(UnsafeStatement unsafeStatement, object data)
-		{
-			UnsupportedNode(unsafeStatement);
-			return TrackedVisit(unsafeStatement.Block, data);
-		}
-		
-		public override object TrackedVisitCheckedStatement(CheckedStatement checkedStatement, object data)
-		{
-			UnsupportedNode(checkedStatement);
-			return TrackedVisit(checkedStatement.Block, data);
-		}
-		
-		public override object TrackedVisitUncheckedStatement(UncheckedStatement uncheckedStatement, object data)
-		{
-			UnsupportedNode(uncheckedStatement);
-			return TrackedVisit(uncheckedStatement.Block, data);
 		}
 		
 		public override object TrackedVisitExitStatement(ExitStatement exitStatement, object data)
@@ -2441,38 +2303,6 @@ namespace ICSharpCode.NRefactory.VB.PrettyPrinter
 			return null;
 		}
 		
-		public override object TrackedVisitSizeOfExpression(SizeOfExpression sizeOfExpression, object data)
-		{
-			if (!sizeOfExpression.TypeReference.IsArrayType && sizeOfExpression.TypeReference.PointerNestingLevel == 0) {
-				switch (sizeOfExpression.TypeReference.Type) {
-					case "System.Byte":
-					case "System.SByte":
-						outputFormatter.PrintText("1");
-						return null;
-					case "System.Char":
-					case "System.Int16":
-					case "System.UInt16":
-						outputFormatter.PrintText("2");
-						return null;
-					case "System.Single":
-					case "System.Int32":
-					case "System.UInt32":
-						outputFormatter.PrintText("4");
-						return null;
-					case "System.Double":
-					case "System.Int64":
-					case "System.UInt64":
-						outputFormatter.PrintText("8");
-						return null;
-				}
-			}
-			UnsupportedNode(sizeOfExpression);
-			outputFormatter.PrintText("sizeof(");
-			TrackedVisit(sizeOfExpression.TypeReference, data);
-			outputFormatter.PrintText(")");
-			return null;
-		}
-		
 		public override object TrackedVisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.GetType);
@@ -2512,28 +2342,6 @@ namespace ICSharpCode.NRefactory.VB.PrettyPrinter
 		public override object TrackedVisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
 			OutputAnonymousMethodWithStatementBody(anonymousMethodExpression.Parameters, anonymousMethodExpression.Body);
-			return null;
-		}
-		
-		public override object TrackedVisitCheckedExpression(CheckedExpression checkedExpression, object data)
-		{
-			UnsupportedNode(checkedExpression);
-			return TrackedVisit(checkedExpression.Expression, data);
-		}
-		
-		public override object TrackedVisitUncheckedExpression(UncheckedExpression uncheckedExpression, object data)
-		{
-			UnsupportedNode(uncheckedExpression);
-			return TrackedVisit(uncheckedExpression.Expression, data);
-		}
-		
-		public override object TrackedVisitPointerReferenceExpression(PointerReferenceExpression pointerReferenceExpression, object data)
-		{
-			UnsupportedNode(pointerReferenceExpression);
-			TrackedVisit(pointerReferenceExpression.TargetObject, data);
-			outputFormatter.PrintText(".");
-			outputFormatter.PrintIdentifier(pointerReferenceExpression.MemberName);
-			PrintTypeArguments(pointerReferenceExpression.TypeArguments);
 			return null;
 		}
 		
@@ -2611,22 +2419,6 @@ namespace ICSharpCode.NRefactory.VB.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.Comma);
 			outputFormatter.Space();
 			TrackedVisit(castExpression.CastTo, null);
-			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			return null;
-		}
-		
-		public override object TrackedVisitStackAllocExpression(StackAllocExpression stackAllocExpression, object data)
-		{
-			UnsupportedNode(stackAllocExpression);
-			outputFormatter.PrintText("stackalloc");
-			return null;
-		}
-		
-		public override object TrackedVisitIndexerExpression(IndexerExpression indexerExpression, object data)
-		{
-			TrackedVisit(indexerExpression.TargetObject, data);
-			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			AppendCommaSeparatedList(indexerExpression.Indexes);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
 		}
@@ -3011,7 +2803,7 @@ namespace ICSharpCode.NRefactory.VB.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.Function);
 		}
 		
-		public override object TrackedVisitQueryExpressionVB(QueryExpressionVB queryExpression, object data)
+		public override object TrackedVisitQueryExpression(QueryExpression queryExpression, object data)
 		{
 			outputFormatter.IndentationLevel++;
 			for (int i = 0; i < queryExpression.Clauses.Count; i++) {

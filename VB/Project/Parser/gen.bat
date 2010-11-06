@@ -4,11 +4,11 @@ echo Generating with #Coco
 
 cd Frames
 
-copy ..\VBNet\VBNET.ATG
-SharpCoco -namespace ICSharpCode.NRefactory.VB.Parser VBNET.ATG
-move Parser.cs ..\VBNet
+copy ..\vbnet.atg
+SharpCoco -namespace ICSharpCode.NRefactory.VB.Parser vbnet.atg
+move Parser.cs ..
 
-del VBNET.ATG
+del vbnet.atg
 
 pause
 cd ..

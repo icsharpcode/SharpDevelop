@@ -12,8 +12,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class ContinueStatementTests
 	{
-		#region VB.NET
-			// No VB.NET representation
-		#endregion
+		// TODO : add ContinueStatementTests
 	}
 }
