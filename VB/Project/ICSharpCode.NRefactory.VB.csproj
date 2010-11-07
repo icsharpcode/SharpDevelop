@@ -91,9 +91,6 @@
     <Compile Include="Parser\Parser.cs">
       <DependentUpon>vb.atg</DependentUpon>
     </Compile>
-    <None Include="Parser\trace.txt">
-      <DependentUpon>vb.atg</DependentUpon>
-    </None>
     <Compile Include="Parser\VBParser.cs" />
     <Compile Include="PrettyPrinter\AbstractOutputFormatter.cs" />
     <Compile Include="PrettyPrinter\AbstractPrettyPrintOptions.cs" />

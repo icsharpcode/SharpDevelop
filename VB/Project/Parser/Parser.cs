@@ -654,12 +654,12 @@ partial class VBParser
 
 	void TypeParameter(out TemplateDefinition template) {
 		VarianceModifier modifier = VarianceModifier.Invariant; Location startLocation = la.Location;
-		if (la.kind == 138 || la.kind == 178) {
+		if (la.kind == 138 || (la.kind == Tokens.Out && IsIdentifierToken(Peek(1)))) {
 			if (la.kind == 138) {
 				Get();
 				modifier = VarianceModifier.Contravariant;
 			} else {
-				Get();
+				Expect(178);
 				modifier = VarianceModifier.Covariant;
 			}
 		}
@@ -2076,7 +2076,7 @@ partial class VBParser
 				Get();
 				NormalOrReDimArgumentList(out arguments, out canBeNormal, out canBeReDim);
 				Expect(38);
-				if (la.kind == 35 || la.kind == 37) {
+				if (la.kind == 35 || (la.kind == Tokens.OpenParenthesis)) {
 					if (la.kind == Tokens.OpenParenthesis) {
 						ArrayTypeModifiers(out dimensions);
 						CollectionInitializer(out initializer);
@@ -2876,7 +2876,7 @@ partial class VBParser
 			}
 			case 57: {
 				Get();
-				Expr(out expr);
+				SimpleExpr(out expr);
 				pexpr = new AddressOfExpression(expr);
 				break;
 			}
@@ -3664,7 +3664,6 @@ partial class VBParser
 	void SubLambdaExpression(out LambdaExpression lambda) {
 		lambda = new LambdaExpression();
 		lambda.ReturnType = new TypeReference("System.Void", true);
-		Expression inner = null;
 		Statement statement = null;
 		lambda.StartLocation = la.Location;
 
@@ -3674,18 +3673,11 @@ partial class VBParser
 			FormalParameterList(lambda.Parameters);
 		}
 		Expect(38);
-		if (StartOf(42)) {
-			if (StartOf(24)) {
-				Expr(out inner);
-				lambda.ExpressionBody = inner;
-					lambda.EndLocation = t.EndLocation; // la.Location?
+		if (StartOf(1)) {
+			EmbeddedStatement(out statement);
+			lambda.StatementBody = statement;
+				lambda.EndLocation = t.EndLocation;
 
-			} else {
-				EmbeddedStatement(out statement);
-				lambda.StatementBody = statement;
-					lambda.EndLocation = t.EndLocation;
-
-			}
 		} else if (la.kind == 1) {
 			Get();
 			Block(out statement);
@@ -3715,18 +3707,11 @@ partial class VBParser
 			TypeName(out typeRef);
 			lambda.ReturnType = typeRef;
 		}
-		if (StartOf(42)) {
-			if (StartOf(24)) {
-				Expr(out inner);
-				lambda.ExpressionBody = inner;
-					lambda.EndLocation = t.EndLocation; // la.Location?
+		if (StartOf(24)) {
+			Expr(out inner);
+			lambda.ExpressionBody = inner;
+				lambda.EndLocation = t.EndLocation; // la.Location?
 
-			} else {
-				EmbeddedStatement(out statement);
-				lambda.StatementBody = statement;
-					lambda.EndLocation = t.EndLocation;
-
-			}
 		} else if (la.kind == 1) {
 			Get();
 			Block(out statement);
@@ -3739,11 +3724,8 @@ partial class VBParser
 	}
 
 	void EmbeddedStatement(out Statement statement) {
-		Statement embeddedStatement = null;
 		statement = null;
-		Expression expr = null;
 		string name = String.Empty;
-		List<Expression> p = null;
 		Location startLocation = la.Location;
 
 		if (la.kind == 120) {
@@ -3757,284 +3739,33 @@ partial class VBParser
 		} else if (la.kind == 195) {
 			ReturnStatement(out statement);
 		} else if (la.kind == 211) {
-			Get();
-			Expr(out expr);
-			EndOfStmt();
-			Block(out embeddedStatement);
-			Expect(113);
-			Expect(211);
-			statement = new LockStatement(expr, embeddedStatement);
+			SyncLockStatement(out statement);
 		} else if (la.kind == 189) {
-			Get();
-			Identifier();
-			name = t.val;
-			if (la.kind == 37) {
-				Get();
-				if (StartOf(43)) {
-					ArgumentList(out p);
-				}
-				Expect(38);
-			}
-			statement = new RaiseEventStatement(name, p);
-
+			RaiseEventStatement(out statement);
 		} else if (la.kind == 233) {
 			WithStatement(out statement);
 		} else if (la.kind == 56) {
-			Get();
-			Expression handlerExpr = null;
-			Expr(out expr);
-			Expect(22);
-			Expr(out handlerExpr);
-			statement = new AddHandlerStatement(expr, handlerExpr);
-
+			AddHandlerStatement(out statement);
 		} else if (la.kind == 193) {
-			Get();
-			Expression handlerExpr = null;
-			Expr(out expr);
-			Expect(22);
-			Expr(out handlerExpr);
-			statement = new RemoveHandlerStatement(expr, handlerExpr);
-
+			RemoveHandlerStatement(out statement);
 		} else if (la.kind == 231) {
-			Get();
-			Expr(out expr);
-			EndOfStmt();
-			Block(out embeddedStatement);
-			Expect(113);
-			Expect(231);
-			statement = new DoLoopStatement(expr, embeddedStatement, ConditionType.While, ConditionPosition.Start);
-
+			WhileStatement(out statement);
 		} else if (la.kind == 108) {
-			Get();
-			ConditionType conditionType = ConditionType.None;
-
-			if (la.kind == 224 || la.kind == 231) {
-				WhileOrUntil(out conditionType);
-				Expr(out expr);
-				EndOfStmt();
-				Block(out embeddedStatement);
-				Expect(152);
-				statement = new DoLoopStatement(expr, 
-					                                embeddedStatement, 
-					                                conditionType == ConditionType.While ? ConditionType.DoWhile : conditionType, 
-					                                ConditionPosition.Start);
-
-			} else if (la.kind == 1 || la.kind == 21) {
-				EndOfStmt();
-				Block(out embeddedStatement);
-				Expect(152);
-				if (la.kind == 224 || la.kind == 231) {
-					WhileOrUntil(out conditionType);
-					Expr(out expr);
-				}
-				statement = new DoLoopStatement(expr, embeddedStatement, conditionType, ConditionPosition.End);
-
-			} else SynErr(295);
+			DoLoopStatement(out statement);
 		} else if (la.kind == 124) {
-			Get();
-			Expression group = null;
-					TypeReference typeReference;
-					string        typeName;
-
-			if (la.kind == 110) {
-				Get();
-				LoopControlVariable(out typeReference, out typeName);
-				Expect(138);
-				Expr(out group);
-				EndOfStmt();
-				Block(out embeddedStatement);
-				Expect(163);
-				if (StartOf(24)) {
-					Expr(out expr);
-				}
-				statement = new ForeachStatement(typeReference, 
-					                                 typeName,
-					                                 group, 
-					                                 embeddedStatement, 
-					                                 expr);
-					statement.StartLocation = startLocation;
-					statement.EndLocation   = t.EndLocation;
-					
-
-			} else if (StartOf(44)) {
-				Expression start = null;
-					Expression end = null;
-					Expression step = null;
-					Expression variableExpr = null;
-					Expression nextExpr = null;
-					List<Expression> nextExpressions = null;
-
-				if (IsLoopVariableDeclaration()) {
-					LoopControlVariable(out typeReference, out typeName);
-				} else {
-					typeReference = null; typeName = null;
-					SimpleExpr(out variableExpr);
-				}
-				Expect(20);
-				Expr(out start);
-				Expect(216);
-				Expr(out end);
-				if (la.kind == 205) {
-					Get();
-					Expr(out step);
-				}
-				EndOfStmt();
-				Block(out embeddedStatement);
-				Expect(163);
-				if (StartOf(24)) {
-					Expr(out nextExpr);
-					nextExpressions = new List<Expression>();
-						nextExpressions.Add(nextExpr);
-
-					while (la.kind == 22) {
-						Get();
-						Expr(out nextExpr);
-						nextExpressions.Add(nextExpr);
-					}
-				}
-				statement = new ForNextStatement {
-						TypeReference = typeReference,
-						VariableName = typeName, 
-						LoopVariableExpression = variableExpr,
-						Start = start, 
-						End = end, 
-						Step = step, 
-						EmbeddedStatement = embeddedStatement, 
-						NextExpressions = nextExpressions
-					};
-
-			} else SynErr(296);
+			ForStatement(out statement);
 		} else if (la.kind == 118) {
-			Get();
-			Expr(out expr);
-			statement = new ErrorStatement(expr);
+			ErrorStatement(out statement);
 		} else if (la.kind == 191) {
-			Get();
-			bool isPreserve = false;
-			if (la.kind == 184) {
-				Get();
-				isPreserve = true;
-			}
-			ReDimClause(out expr);
-			ReDimStatement reDimStatement = new ReDimStatement(isPreserve);
-				statement = reDimStatement;
-				SafeAdd(reDimStatement, reDimStatement.ReDimClauses, expr as InvocationExpression);
-
-			while (la.kind == 22) {
-				Get();
-				ReDimClause(out expr);
-				SafeAdd(reDimStatement, reDimStatement.ReDimClauses, expr as InvocationExpression);
-			}
+			ReDimStatement(out statement);
 		} else if (la.kind == 117) {
-			Get();
-			Expr(out expr);
-			EraseStatement eraseStatement = new EraseStatement();
-				if (expr != null) { SafeAdd(eraseStatement, eraseStatement.Expressions, expr);}
-
-			while (la.kind == 22) {
-				Get();
-				Expr(out expr);
-				if (expr != null) { SafeAdd(eraseStatement, eraseStatement.Expressions, expr); }
-			}
-			statement = eraseStatement;
+			EraseStatement(out statement);
 		} else if (la.kind == 206) {
-			Get();
-			statement = new StopStatement();
-		} else if (la.kind == Tokens.If) {
-			Expect(135);
-			Location ifStartLocation = t.Location;
-			Expr(out expr);
-			if (la.kind == 214) {
-				Get();
-			}
-			if (la.kind == 1 || la.kind == 21) {
-				EndOfStmt();
-				Block(out embeddedStatement);
-				IfElseStatement ifStatement = new IfElseStatement(expr, embeddedStatement);
-					ifStatement.StartLocation = ifStartLocation;
-					Location elseIfStart;
-
-				while (la.kind == 111 || la.kind == 112) {
-					if (IsElseIf()) {
-						Expect(111);
-						elseIfStart = t.Location;
-						Expect(135);
-					} else {
-						Get();
-						elseIfStart = t.Location;
-					}
-					Expression condition = null; Statement block = null;
-					Expr(out condition);
-					if (la.kind == 214) {
-						Get();
-					}
-					EndOfStmt();
-					Block(out block);
-					ElseIfSection elseIfSection = new ElseIfSection(condition, block);
-						elseIfSection.StartLocation = elseIfStart;
-						elseIfSection.EndLocation = t.Location;
-						elseIfSection.Parent = ifStatement;
-						ifStatement.ElseIfSections.Add(elseIfSection);
-
-				}
-				if (la.kind == 111) {
-					Get();
-					if (la.kind == 1 || la.kind == 21) {
-						EndOfStmt();
-					}
-					Block(out embeddedStatement);
-					ifStatement.FalseStatement.Add(embeddedStatement);
-
-				}
-				Expect(113);
-				Expect(135);
-				ifStatement.EndLocation = t.Location;
-					statement = ifStatement;
-
-			} else if (StartOf(45)) {
-				IfElseStatement ifStatement = new IfElseStatement(expr);
-					ifStatement.StartLocation = ifStartLocation;
-
-				SingleLineStatementList(ifStatement.TrueStatement);
-				if (la.kind == 111) {
-					Get();
-					if (StartOf(45)) {
-						SingleLineStatementList(ifStatement.FalseStatement);
-					}
-				}
-				ifStatement.EndLocation = t.Location; statement = ifStatement;
-			} else SynErr(297);
+			StopStatement(out statement);
+		} else if (la.kind == 135) {
+			IfStatement(out statement);
 		} else if (la.kind == 197) {
-			Get();
-			if (la.kind == 74) {
-				Get();
-			}
-			Expr(out expr);
-			EndOfStmt();
-			List<SwitchSection> selectSections = new List<SwitchSection>();
-				Statement block = null;
-
-			while (la.kind == 74) {
-				List<CaseLabel> caseClauses = null; Location caseLocation = la.Location;
-				Get();
-				CaseClauses(out caseClauses);
-				if (IsNotStatementSeparator()) {
-					Expect(21);
-				}
-				EndOfStmt();
-				SwitchSection selectSection = new SwitchSection(caseClauses);
-					selectSection.StartLocation = caseLocation;
-
-				Block(out block);
-				selectSection.Children = block.Children;
-					selectSection.EndLocation = t.EndLocation;
-					selectSections.Add(selectSection);
-
-			}
-			statement = new SwitchStatement(expr, selectSections);
-
-			Expect(113);
-			Expect(197);
+			SelectStatement(out statement);
 		} else if (la.kind == 171) {
 			OnErrorStatement onErrorStatement = null;
 			OnErrorStatement(out onErrorStatement);
@@ -4044,63 +3775,16 @@ partial class VBParser
 			GotoStatement(out goToStatement);
 			statement = goToStatement;
 		} else if (la.kind == 194) {
-			ResumeStatement resumeStatement = null;
-			ResumeStatement(out resumeStatement);
-			statement = resumeStatement;
-		} else if (StartOf(44)) {
-			Expression val = null;
-				AssignmentOperatorType op;
-				Location startLoc = la.Location;
-				
-				bool mustBeAssignment = la.kind == Tokens.Plus  || la.kind == Tokens.Minus ||
-				                        la.kind == Tokens.Not   || la.kind == Tokens.Times;
-
-			SimpleExpr(out expr);
-			if (StartOf(46)) {
-				AssignmentOperator(out op);
-				Expr(out val);
-				expr = new AssignmentExpression(expr, op, val);
-					expr.StartLocation = startLoc;
-					expr.EndLocation = t.EndLocation;
-
-			} else if (StartOf(47)) {
-				if (mustBeAssignment) Error("error in assignment.");
-			} else SynErr(298);
-			if(expr is MemberReferenceExpression || expr is IdentifierExpression) {
-					Location endLocation = expr.EndLocation;
-					expr = new InvocationExpression(expr);
-					expr.StartLocation = startLoc;
-					expr.EndLocation = endLocation;
-				}
-				statement = new ExpressionStatement(expr);
-
+			ResumeStatement(out statement);
+		} else if (StartOf(42)) {
+			ExpressionStatement(out statement);
 		} else if (la.kind == 73) {
-			Get();
-			SimpleExpr(out expr);
-			statement = new ExpressionStatement(expr);
+			InvocationStatement(out statement);
 		} else if (la.kind == 226) {
-			Get();
-			Statement block; 
-			if (Peek(1).kind == Tokens.As) {
-				LocalVariableDeclaration resourceAquisition = new LocalVariableDeclaration(Modifiers.None);
-				VariableDeclarator(resourceAquisition.Variables);
-				while (la.kind == 22) {
-					Get();
-					VariableDeclarator(resourceAquisition.Variables);
-				}
-				Block(out block);
-				statement = new UsingStatement(resourceAquisition, block);
-
-			} else if (StartOf(24)) {
-				Expr(out expr);
-				Block(out block);
-				statement = new UsingStatement(new ExpressionStatement(expr), block);
-			} else SynErr(299);
-			Expect(113);
-			Expect(226);
-		} else if (StartOf(48)) {
+			UsingStatement(out statement);
+		} else if (StartOf(43)) {
 			LocalDeclarationStatement(out statement);
-		} else SynErr(300);
+		} else SynErr(295);
 		if (statement != null) {
 				statement.StartLocation = startLocation;
 				statement.EndLocation = t.EndLocation;
@@ -4118,7 +3802,7 @@ partial class VBParser
 		} else if (la.kind == 58) {
 			AggregateQueryOperator(out aggregateClause);
 			middleClauses.Add(aggregateClause);
-		} else SynErr(301);
+		} else SynErr(296);
 	}
 
 	void QueryOperator(List<QueryExpressionClause> middleClauses) {
@@ -4157,7 +3841,7 @@ partial class VBParser
 		} else if (la.kind == 133) {
 			GroupByQueryOperator(out groupByClause);
 			middleClauses.Add(groupByClause);
-		} else SynErr(302);
+		} else SynErr(297);
 	}
 
 	void FromQueryOperator(out QueryExpressionFromClause fromClause) {
@@ -4257,7 +3941,7 @@ partial class VBParser
 				Get();
 				partitionClause.PartitionType = QueryExpressionPartitionType.SkipWhile;
 			}
-		} else SynErr(303);
+		} else SynErr(298);
 		Expr(out expr);
 		partitionClause.Expression = expr;
 			partitionClause.EndLocation = t.EndLocation;
@@ -4460,7 +4144,7 @@ partial class VBParser
 
 		} else if (StartOf(24)) {
 			Expr(out argumentexpr);
-		} else SynErr(304);
+		} else SynErr(299);
 	}
 
 	void QualIdentAndTypeArguments(out TypeReference typeref, bool canBeUnbound) {
@@ -4478,7 +4162,7 @@ partial class VBParser
 				}
 			} else if (StartOf(9)) {
 				TypeArgumentList(typeref.GenericTypes);
-			} else SynErr(305);
+			} else SynErr(300);
 			Expect(38);
 		}
 	}
@@ -4524,7 +4208,7 @@ partial class VBParser
 					Get();
 				} else if (la.kind == 20) {
 					Get();
-				} else SynErr(306);
+				} else SynErr(301);
 			}
 			Expr(out expr);
 			if (expr != null) {
@@ -4541,10 +4225,10 @@ partial class VBParser
 						Get();
 					} else if (la.kind == 20) {
 						Get();
-					} else SynErr(307);
+					} else SynErr(302);
 				} else if (StartOf(24)) {
 					if (nameFound) Error("no positional argument after named argument");
-				} else SynErr(308);
+				} else SynErr(303);
 				Expr(out expr);
 				if (expr != null) { if(name == "") positional.Add(expr);
 					else { named.Add(new NamedArgumentExpression(name, expr) { StartLocation = startLocation, EndLocation = t.EndLocation }); name = ""; }
@@ -4568,7 +4252,7 @@ partial class VBParser
 		} else if (la.kind == 182) {
 			Get();
 			m.Add(ParameterModifiers.Params);
-		} else SynErr(309);
+		} else SynErr(304);
 	}
 
 	void Statement() {
@@ -4585,7 +4269,7 @@ partial class VBParser
 		} else if (StartOf(1)) {
 			EmbeddedStatement(out stmt);
 			AddChild(stmt);
-		} else SynErr(310);
+		} else SynErr(305);
 		if (stmt != null) {
 				stmt.StartLocation = startPos;
 				stmt.EndLocation = t.Location;
@@ -4602,7 +4286,7 @@ partial class VBParser
 		} else if (la.kind == 5) {
 			Get();
 			name = t.val;
-		} else SynErr(311);
+		} else SynErr(306);
 	}
 
 	void LocalDeclarationStatement(out Statement statement) {
@@ -4686,7 +4370,7 @@ partial class VBParser
 			exitType = ExitType.Select;
 			break;
 		}
-		default: SynErr(312); break;
+		default: SynErr(307); break;
 		}
 		statement = new ExitStatement(exitType);
 	}
@@ -4750,6 +4434,32 @@ partial class VBParser
 		statement = new ReturnStatement(expr);
 	}
 
+	void SyncLockStatement(out Statement statement) {
+		Expression expr; Statement embeddedStatement;
+		Expect(211);
+		Expr(out expr);
+		EndOfStmt();
+		Block(out embeddedStatement);
+		Expect(113);
+		Expect(211);
+		statement = new LockStatement(expr, embeddedStatement);
+	}
+
+	void RaiseEventStatement(out Statement statement) {
+		List<Expression> arguments = null;
+		Expect(189);
+		Identifier();
+		string name = t.val;
+		if (la.kind == 37) {
+			Get();
+			if (StartOf(44)) {
+				ArgumentList(out arguments);
+			}
+			Expect(38);
+		}
+		statement = new RaiseEventStatement(name, arguments);
+	}
+
 	void WithStatement(out Statement withStatement) {
 		Statement blockStmt = null;
 		Expression expr = null;
@@ -4769,80 +4479,287 @@ partial class VBParser
 		withStatement.EndLocation = t.Location;
 	}
 
-	void WhileOrUntil(out ConditionType conditionType) {
-		conditionType = ConditionType.None;
-		if (la.kind == 231) {
-			Get();
-			conditionType = ConditionType.While;
-		} else if (la.kind == 224) {
-			Get();
-			conditionType = ConditionType.Until;
-		} else SynErr(313);
+	void AddHandlerStatement(out Statement statement) {
+		Expression expr = null;
+		Expect(56);
+		Expression handlerExpr = null;
+		Expr(out expr);
+		Expect(22);
+		Expr(out handlerExpr);
+		statement = new AddHandlerStatement(expr, handlerExpr);
 	}
 
-	void LoopControlVariable(out TypeReference type, out string name) {
-		ArrayList arrayModifiers = null;
-		type = null;
+	void RemoveHandlerStatement(out Statement statement) {
+		Expression expr = null;
+		Expect(193);
+		Expression handlerExpr = null;
+		Expr(out expr);
+		Expect(22);
+		Expr(out handlerExpr);
+		statement = new RemoveHandlerStatement(expr, handlerExpr);
+	}
 
-		Qualident(out name);
-		if (IsDims()) {
-			ArrayTypeModifiers(out arrayModifiers);
-		}
-		if (la.kind == 63) {
+	void WhileStatement(out Statement statement) {
+		Expression expr = null; Statement embeddedStatement;
+		Expect(231);
+		Expr(out expr);
+		EndOfStmt();
+		Block(out embeddedStatement);
+		Expect(113);
+		Expect(231);
+		statement = new DoLoopStatement(expr, embeddedStatement, ConditionType.While, ConditionPosition.Start);
+	}
+
+	void DoLoopStatement(out Statement statement) {
+		Expression expr = null; Statement embeddedStatement; statement = null;
+		Expect(108);
+		ConditionType conditionType = ConditionType.None;
+		if (la.kind == 224 || la.kind == 231) {
+			WhileOrUntil(out conditionType);
+			Expr(out expr);
+			EndOfStmt();
+			Block(out embeddedStatement);
+			Expect(152);
+			statement = new DoLoopStatement(expr, 
+				                                embeddedStatement, 
+				                                conditionType == ConditionType.While ? ConditionType.DoWhile : conditionType, 
+				                                ConditionPosition.Start);
+
+		} else if (la.kind == 1 || la.kind == 21) {
+			EndOfStmt();
+			Block(out embeddedStatement);
+			Expect(152);
+			if (la.kind == 224 || la.kind == 231) {
+				WhileOrUntil(out conditionType);
+				Expr(out expr);
+			}
+			statement = new DoLoopStatement(expr, embeddedStatement, conditionType, ConditionPosition.End);
+		} else SynErr(308);
+	}
+
+	void ForStatement(out Statement statement) {
+		Expression expr = null; Statement embeddedStatement; statement = null; Location startLocation = la.Location;
+		Expect(124);
+		Expression group = null;
+				TypeReference typeReference;
+				string        typeName;
+
+		if (la.kind == 110) {
 			Get();
-			TypeName(out type);
-			if (name.IndexOf('.') > 0) { Error("No type def for 'for each' member indexer allowed."); }
-		}
-		if (type != null) {
-				if(type.RankSpecifier != null && arrayModifiers != null) {
-					Error("array rank only allowed one time");
-				} else if (arrayModifiers != null) {
-					type.RankSpecifier = (int[])arrayModifiers.ToArray(typeof(int));
+			LoopControlVariable(out typeReference, out typeName);
+			Expect(138);
+			Expr(out group);
+			EndOfStmt();
+			Block(out embeddedStatement);
+			Expect(163);
+			if (StartOf(24)) {
+				Expr(out expr);
+			}
+			statement = new ForeachStatement(typeReference, 
+				                                 typeName,
+				                                 group, 
+				                                 embeddedStatement, 
+				                                 expr);
+				statement.StartLocation = startLocation;
+				statement.EndLocation   = t.EndLocation;
+				
+
+		} else if (StartOf(42)) {
+			Expression start = null;
+				Expression end = null;
+				Expression step = null;
+				Expression variableExpr = null;
+				Expression nextExpr = null;
+				List<Expression> nextExpressions = null;
+
+			if (IsLoopVariableDeclaration()) {
+				LoopControlVariable(out typeReference, out typeName);
+			} else {
+				typeReference = null; typeName = null;
+				SimpleExpr(out variableExpr);
+			}
+			Expect(20);
+			Expr(out start);
+			Expect(216);
+			Expr(out end);
+			if (la.kind == 205) {
+				Get();
+				Expr(out step);
+			}
+			EndOfStmt();
+			Block(out embeddedStatement);
+			Expect(163);
+			if (StartOf(24)) {
+				Expr(out nextExpr);
+				nextExpressions = new List<Expression>();
+					nextExpressions.Add(nextExpr);
+
+				while (la.kind == 22) {
+					Get();
+					Expr(out nextExpr);
+					nextExpressions.Add(nextExpr);
 				}
 			}
+			statement = new ForNextStatement {
+					TypeReference = typeReference,
+					VariableName = typeName, 
+					LoopVariableExpression = variableExpr,
+					Start = start, 
+					End = end, 
+					Step = step, 
+					EmbeddedStatement = embeddedStatement, 
+					NextExpressions = nextExpressions
+				};
 
+		} else SynErr(309);
 	}
 
-	void ReDimClause(out Expression expr) {
-		SimpleNonInvocationExpression(out expr);
-		ReDimClauseInternal(ref expr);
+	void ErrorStatement(out Statement statement) {
+		Expression expr = null;
+		Expect(118);
+		Expr(out expr);
+		statement = new ErrorStatement(expr);
 	}
 
-	void SingleLineStatementList(List<Statement> list) {
-		Statement embeddedStatement = null;
-		if (la.kind == 113) {
-			Get();
-			embeddedStatement = new EndStatement() { StartLocation = t.Location, EndLocation = t.EndLocation };
-		} else if (StartOf(1)) {
-			EmbeddedStatement(out embeddedStatement);
-		} else SynErr(314);
-		if (embeddedStatement != null) list.Add(embeddedStatement);
-		while (la.kind == 21) {
-			Get();
-			while (la.kind == 21) {
-				Get();
-			}
-			if (la.kind == 113) {
-				Get();
-				embeddedStatement = new EndStatement() { StartLocation = t.Location, EndLocation = t.EndLocation };
-			} else if (StartOf(1)) {
-				EmbeddedStatement(out embeddedStatement);
-			} else SynErr(315);
-			if (embeddedStatement != null) list.Add(embeddedStatement);
+	void ReDimStatement(out Statement statement) {
+		Expression expr = null;
+		Expect(191);
+		bool isPreserve = false;
+		if (la.kind == 184) {
+			Expect(184);
+			isPreserve = true;
 		}
-	}
+		ReDimClause(out expr);
+		ReDimStatement reDimStatement = new ReDimStatement(isPreserve);
+			statement = reDimStatement;
+			SafeAdd(reDimStatement, reDimStatement.ReDimClauses, expr as InvocationExpression);
 
-	void CaseClauses(out List<CaseLabel> caseClauses) {
-		caseClauses = new List<CaseLabel>();
-		CaseLabel caseClause = null;
-
-		CaseClause(out caseClause);
-		if (caseClause != null) { caseClauses.Add(caseClause); }
 		while (la.kind == 22) {
 			Get();
-			CaseClause(out caseClause);
-			if (caseClause != null) { caseClauses.Add(caseClause); }
+			ReDimClause(out expr);
+			SafeAdd(reDimStatement, reDimStatement.ReDimClauses, expr as InvocationExpression);
 		}
+	}
+
+	void EraseStatement(out Statement statement) {
+		Expression expr = null;
+		Expect(117);
+		Expr(out expr);
+		EraseStatement eraseStatement = new EraseStatement();
+			if (expr != null) { SafeAdd(eraseStatement, eraseStatement.Expressions, expr);}
+
+		while (la.kind == 22) {
+			Get();
+			Expr(out expr);
+			if (expr != null) { SafeAdd(eraseStatement, eraseStatement.Expressions, expr); }
+		}
+		statement = eraseStatement;
+	}
+
+	void StopStatement(out Statement statement) {
+		Expect(206);
+		statement = new StopStatement();
+	}
+
+	void IfStatement(out Statement statement) {
+		Expression expr = null; Statement embeddedStatement; statement = null;
+		Expect(135);
+		Location ifStartLocation = t.Location;
+		Expr(out expr);
+		if (la.kind == 214) {
+			Get();
+		}
+		if (la.kind == 1 || la.kind == 21) {
+			EndOfStmt();
+			Block(out embeddedStatement);
+			IfElseStatement ifStatement = new IfElseStatement(expr, embeddedStatement);
+				ifStatement.StartLocation = ifStartLocation;
+				Location elseIfStart;
+
+			while (la.kind == 112 || (IsElseIf())) {
+				if (IsElseIf()) {
+					Expect(111);
+					elseIfStart = t.Location;
+					Expect(135);
+				} else {
+					Get();
+					elseIfStart = t.Location;
+				}
+				Expression condition = null; Statement block = null;
+				Expr(out condition);
+				if (la.kind == 214) {
+					Get();
+				}
+				EndOfStmt();
+				Block(out block);
+				ElseIfSection elseIfSection = new ElseIfSection(condition, block);
+					elseIfSection.StartLocation = elseIfStart;
+					elseIfSection.EndLocation = t.Location;
+					elseIfSection.Parent = ifStatement;
+					ifStatement.ElseIfSections.Add(elseIfSection);
+
+			}
+			if (la.kind == 111) {
+				Get();
+				if (la.kind == 1 || la.kind == 21) {
+					EndOfStmt();
+				}
+				Block(out embeddedStatement);
+				ifStatement.FalseStatement.Add(embeddedStatement);
+
+			}
+			Expect(113);
+			Expect(135);
+			ifStatement.EndLocation = t.Location;
+				statement = ifStatement;
+
+		} else if (StartOf(45)) {
+			IfElseStatement ifStatement = new IfElseStatement(expr);
+				ifStatement.StartLocation = ifStartLocation;
+
+			SingleLineStatementList(ifStatement.TrueStatement);
+			if (la.kind == 111) {
+				Get();
+				if (StartOf(45)) {
+					SingleLineStatementList(ifStatement.FalseStatement);
+				}
+			}
+			ifStatement.EndLocation = t.Location; statement = ifStatement;
+		} else SynErr(310);
+	}
+
+	void SelectStatement(out Statement statement) {
+		Expression expr = null;
+		Expect(197);
+		if (la.kind == 74) {
+			Get();
+		}
+		Expr(out expr);
+		EndOfStmt();
+		List<SwitchSection> selectSections = new List<SwitchSection>();
+			Statement block = null;
+
+		while (la.kind == 74) {
+			List<CaseLabel> caseClauses = null; Location caseLocation = la.Location;
+			Get();
+			CaseClauses(out caseClauses);
+			if (IsNotStatementSeparator()) {
+				Expect(21);
+			}
+			EndOfStmt();
+			SwitchSection selectSection = new SwitchSection(caseClauses);
+				selectSection.StartLocation = caseLocation;
+
+			Block(out block);
+			selectSection.Children = block.Children;
+				selectSection.EndLocation = t.EndLocation;
+				selectSections.Add(selectSection);
+
+		}
+		statement = new SwitchStatement(expr, selectSections);
+
+		Expect(113);
+		Expect(197);
 	}
 
 	void OnErrorStatement(out OnErrorStatement stmt) {
@@ -4881,7 +4798,7 @@ partial class VBParser
 			Expect(163);
 			stmt = new OnErrorStatement(new ResumeStatement(true));
 
-		} else SynErr(316);
+		} else SynErr(311);
 		if (stmt != null) {
 				stmt.StartLocation = startLocation;
 				stmt.EndLocation = t.EndLocation;
@@ -4902,12 +4819,12 @@ partial class VBParser
 
 	}
 
-	void ResumeStatement(out ResumeStatement resumeStatement) {
+	void ResumeStatement(out Statement resumeStatement) {
 		resumeStatement = null;
 		string label = string.Empty;
 
 		Expect(194);
-		if (StartOf(49)) {
+		if (StartOf(46)) {
 			if (la.kind == 163) {
 				Get();
 				resumeStatement = new ResumeStatement(true);
@@ -4918,9 +4835,144 @@ partial class VBParser
 		}
 	}
 
+	void ExpressionStatement(out Statement statement) {
+		Expression expr = null;
+		Expression val = null;
+			AssignmentOperatorType op;
+			Location startLoc = la.Location;
+			
+			bool mustBeAssignment = la.kind == Tokens.Plus  || la.kind == Tokens.Minus ||
+			                        la.kind == Tokens.Not   || la.kind == Tokens.Times;
+
+		SimpleExpr(out expr);
+		if (StartOf(47)) {
+			AssignmentOperator(out op);
+			Expr(out val);
+			expr = new AssignmentExpression(expr, op, val);
+				expr.StartLocation = startLoc;
+				expr.EndLocation = t.EndLocation;
+
+		} else if (la.kind == 1 || la.kind == 21 || la.kind == 111) {
+			if (mustBeAssignment) Error("error in assignment.");
+		} else SynErr(312);
+		if(expr is MemberReferenceExpression || expr is IdentifierExpression) {
+				Location endLocation = expr.EndLocation;
+				expr = new InvocationExpression(expr);
+				expr.StartLocation = startLoc;
+				expr.EndLocation = endLocation;
+			}
+			statement = new ExpressionStatement(expr);
+
+	}
+
+	void InvocationStatement(out Statement statement) {
+		Expression expr = null;
+		Expect(73);
+		SimpleExpr(out expr);
+		statement = new ExpressionStatement(expr);
+	}
+
+	void UsingStatement(out Statement statement) {
+		Expression expr = null; Statement block; statement = null;
+		Expect(226);
+		if (Peek(1).kind == Tokens.As) {
+			LocalVariableDeclaration resourceAquisition = 
+			new LocalVariableDeclaration(Modifiers.None);
+			VariableDeclarator(resourceAquisition.Variables);
+			while (la.kind == 22) {
+				Get();
+				VariableDeclarator(resourceAquisition.Variables);
+			}
+			Block(out block);
+			statement = new UsingStatement(resourceAquisition, block);
+		} else if (StartOf(24)) {
+			Expr(out expr);
+			Block(out block);
+			statement = new UsingStatement(new ExpressionStatement(expr), block);
+		} else SynErr(313);
+		Expect(113);
+		Expect(226);
+	}
+
+	void WhileOrUntil(out ConditionType conditionType) {
+		conditionType = ConditionType.None;
+		if (la.kind == 231) {
+			Get();
+			conditionType = ConditionType.While;
+		} else if (la.kind == 224) {
+			Get();
+			conditionType = ConditionType.Until;
+		} else SynErr(314);
+	}
+
+	void LoopControlVariable(out TypeReference type, out string name) {
+		ArrayList arrayModifiers = null;
+		type = null;
+
+		Qualident(out name);
+		if (IsDims()) {
+			ArrayTypeModifiers(out arrayModifiers);
+		}
+		if (la.kind == 63) {
+			Get();
+			TypeName(out type);
+			if (name.IndexOf('.') > 0) { Error("No type def for 'for each' member indexer allowed."); }
+		}
+		if (type != null) {
+				if(type.RankSpecifier != null && arrayModifiers != null) {
+					Error("array rank only allowed one time");
+				} else if (arrayModifiers != null) {
+					type.RankSpecifier = (int[])arrayModifiers.ToArray(typeof(int));
+				}
+			}
+
+	}
+
+	void ReDimClause(out Expression expr) {
+		SimpleNonInvocationExpression(out expr);
+		ReDimClauseInternal(ref expr);
+	}
+
+	void SingleLineStatementList(List<Statement> list) {
+		Statement embeddedStatement = null;
+		if (la.kind == 113) {
+			Get();
+			embeddedStatement = new EndStatement() { StartLocation = t.Location, EndLocation = t.EndLocation };
+		} else if (StartOf(1)) {
+			EmbeddedStatement(out embeddedStatement);
+		} else SynErr(315);
+		if (embeddedStatement != null) list.Add(embeddedStatement);
+		while (la.kind == 21) {
+			Get();
+			while (la.kind == 21) {
+				Get();
+			}
+			if (la.kind == 113) {
+				Get();
+				embeddedStatement = new EndStatement() { StartLocation = t.Location, EndLocation = t.EndLocation };
+			} else if (StartOf(1)) {
+				EmbeddedStatement(out embeddedStatement);
+			} else SynErr(316);
+			if (embeddedStatement != null) list.Add(embeddedStatement);
+		}
+	}
+
+	void CaseClauses(out List<CaseLabel> caseClauses) {
+		caseClauses = new List<CaseLabel>();
+		CaseLabel caseClause = null;
+
+		CaseClause(out caseClause);
+		if (caseClause != null) { caseClauses.Add(caseClause); }
+		while (la.kind == 22) {
+			Get();
+			CaseClause(out caseClause);
+			if (caseClause != null) { caseClauses.Add(caseClause); }
+		}
+	}
+
 	void ReDimClauseInternal(ref Expression expr) {
 		List<Expression> arguments; bool canBeNormal; bool canBeRedim; string name; Location startLocation = la.Location;
-		while (la.kind == 26 || la.kind == 37) {
+		while (la.kind == 26 || (la.kind == Tokens.OpenParenthesis && Peek(1).kind == Tokens.Of)) {
 			if (la.kind == 26) {
 				Get();
 				IdentifierOrKeyword(out name);
@@ -4954,7 +5006,7 @@ partial class VBParser
 		if (la.kind == 111) {
 			Get();
 			caseClause = new CaseLabel();
-		} else if (StartOf(50)) {
+		} else if (StartOf(48)) {
 			if (la.kind == 144) {
 				Get();
 			}
@@ -5061,7 +5113,7 @@ partial class VBParser
 		new BitArray(new int[] {0, 256, 0, -1602223552, 805306368, 1589117120, 262528, 3072}),
 		new BitArray(new int[] {0, 0, 1048576, 524416, 134234112, 0, 131072, 0}),
 		new BitArray(new int[] {-66123780, 1174405164, -51384097, 1175465247, -1030969178, 17106228, -97448432, 67}),
-		new BitArray(new int[] {-55298, -142606339, -1051937, 1467137823, -958420554, -1593340636, -426434, 4807}),
+		new BitArray(new int[] {1014958078, -956301272, -1051937, 1467137823, -1030969162, -1593504476, -21406146, 711}),
 		new BitArray(new int[] {-66123780, 1174405164, -51384097, -972018401, -1030969178, 17106228, -97186288, 67}),
 		new BitArray(new int[] {0, 0, 0, 536870912, 1, 436207616, 0, 0}),
 		new BitArray(new int[] {0, 256, 0, 536870912, 0, 436207616, 64, 0}),
@@ -5080,14 +5132,12 @@ partial class VBParser
 		new BitArray(new int[] {-2050, -1, -1, -1, -1, -1, -1, -1}),
 		new BitArray(new int[] {1048576, 3968, 0, 0, 4390912, 0, 0, 0}),
 		new BitArray(new int[] {-66123780, 1174405164, -51384097, 1175465247, -1030969178, 17106212, -97448432, 67}),
-		new BitArray(new int[] {-66123780, 1191182380, -1051937, -680509665, -1030969162, -1593504460, -21144002, 711}),
-		new BitArray(new int[] {-61929476, 1174405228, -51384097, -972018401, -1030969178, 17106228, -97186288, 67}),
 		new BitArray(new int[] {1007618044, 1174405160, -51384097, 1175465247, -1030969178, 17106212, -97448432, 67}),
-		new BitArray(new int[] {1007618044, 1191182376, -1051937, 1467105055, -1030969162, -1593504476, -21406146, 711}),
-		new BitArray(new int[] {1048576, 8372224, 0, 0, 0, 0, 0, 0}),
-		new BitArray(new int[] {-55298, 2004877309, -1051937, 1467137823, -958420554, -1593340636, -426434, 4807}),
 		new BitArray(new int[] {4, 1140850688, 25165903, 1108347652, 821280, 17105920, -2144331776, 65}),
+		new BitArray(new int[] {-61929476, 1174405228, -51384097, -972018401, -1030969178, 17106228, -97186288, 67}),
+		new BitArray(new int[] {1007618044, 1191182376, -1051937, 1467105055, -1030969162, -1593504476, -21406146, 711}),
 		new BitArray(new int[] {36, 1140850688, 8388687, 1108347140, 821280, 17105928, -2144335872, 65}),
+		new BitArray(new int[] {1048576, 8372224, 0, 0, 0, 0, 0, 0}),
 		new BitArray(new int[] {1048576, 3968, 0, 0, 65536, 0, 0, 0})
 
 	};
@@ -5396,27 +5446,27 @@ partial class VBParser
 			case 293: return "invalid SubLambdaExpression";
 			case 294: return "invalid FunctionLambdaExpression";
 			case 295: return "invalid EmbeddedStatement";
-			case 296: return "invalid EmbeddedStatement";
-			case 297: return "invalid EmbeddedStatement";
-			case 298: return "invalid EmbeddedStatement";
-			case 299: return "invalid EmbeddedStatement";
-			case 300: return "invalid EmbeddedStatement";
-			case 301: return "invalid FromOrAggregateQueryOperator";
-			case 302: return "invalid QueryOperator";
-			case 303: return "invalid PartitionQueryOperator";
-			case 304: return "invalid Argument";
-			case 305: return "invalid QualIdentAndTypeArguments";
-			case 306: return "invalid AttributeArguments";
-			case 307: return "invalid AttributeArguments";
-			case 308: return "invalid AttributeArguments";
-			case 309: return "invalid ParameterModifier";
-			case 310: return "invalid Statement";
-			case 311: return "invalid LabelName";
-			case 312: return "invalid ExitStatement";
-			case 313: return "invalid WhileOrUntil";
-			case 314: return "invalid SingleLineStatementList";
+			case 296: return "invalid FromOrAggregateQueryOperator";
+			case 297: return "invalid QueryOperator";
+			case 298: return "invalid PartitionQueryOperator";
+			case 299: return "invalid Argument";
+			case 300: return "invalid QualIdentAndTypeArguments";
+			case 301: return "invalid AttributeArguments";
+			case 302: return "invalid AttributeArguments";
+			case 303: return "invalid AttributeArguments";
+			case 304: return "invalid ParameterModifier";
+			case 305: return "invalid Statement";
+			case 306: return "invalid LabelName";
+			case 307: return "invalid ExitStatement";
+			case 308: return "invalid DoLoopStatement";
+			case 309: return "invalid ForStatement";
+			case 310: return "invalid IfStatement";
+			case 311: return "invalid OnErrorStatement";
+			case 312: return "invalid ExpressionStatement";
+			case 313: return "invalid UsingStatement";
+			case 314: return "invalid WhileOrUntil";
 			case 315: return "invalid SingleLineStatementList";
-			case 316: return "invalid OnErrorStatement";
+			case 316: return "invalid SingleLineStatementList";
 			case 317: return "invalid CaseClause";
 			case 318: return "invalid CaseClause";
 
