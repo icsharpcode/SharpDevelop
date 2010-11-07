@@ -3423,9 +3423,11 @@ UsingStatement<out Statement statement>
 			new LocalVariableDeclaration(Modifiers.None); .)
 		VariableDeclarator<resourceAquisition.Variables>
 		{ "," VariableDeclarator<resourceAquisition.Variables> }
+		EndOfStmt
 		Block<out block>
 		(. statement = new UsingStatement(resourceAquisition, block); .)
 	|	Expr<out expr>
+		EndOfStmt
 		Block<out block>
 		(. statement = new UsingStatement(new ExpressionStatement(expr), block); .)
 	)

@@ -12,9 +12,8 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class UsingStatementTests
 	{
-		#region VB.NET
 		[Test]
-		public void VBNetUsingStatementTest()
+		public void UsingStatement()
 		{
 			string usingText = @"
 Using nf As New System.Drawing.Font(""Arial"", 12.0F, FontStyle.Bold)
@@ -25,7 +24,7 @@ End Using";
 			// TODO : Extend test.
 		}
 		[Test]
-		public void VBNetUsingStatementTest2()
+		public void UsingStatement2()
 		{
 			string usingText = @"
 Using nf As Font = New Font()
@@ -35,7 +34,7 @@ End Using";
 			// TODO : Extend test.
 		}
 		[Test]
-		public void VBNetUsingStatementTest3()
+		public void UsingStatement3()
 		{
 			string usingText = @"
 Using nf As New Font(), nf2 As New List(Of Font)(), nf3 = Nothing
@@ -44,6 +43,5 @@ End Using";
 			UsingStatement usingStmt = ParseUtil.ParseStatement<UsingStatement>(usingText);
 			// TODO : Extend test.
 		}
-		#endregion
 	}
 }

@@ -4883,10 +4883,12 @@ partial class VBParser
 				Get();
 				VariableDeclarator(resourceAquisition.Variables);
 			}
+			EndOfStmt();
 			Block(out block);
 			statement = new UsingStatement(resourceAquisition, block);
 		} else if (StartOf(24)) {
 			Expr(out expr);
+			EndOfStmt();
 			Block(out block);
 			statement = new UsingStatement(new ExpressionStatement(expr), block);
 		} else SynErr(313);
@@ -5113,7 +5115,7 @@ partial class VBParser
 		new BitArray(new int[] {0, 256, 0, -1602223552, 805306368, 1589117120, 262528, 3072}),
 		new BitArray(new int[] {0, 0, 1048576, 524416, 134234112, 0, 131072, 0}),
 		new BitArray(new int[] {-66123780, 1174405164, -51384097, 1175465247, -1030969178, 17106228, -97448432, 67}),
-		new BitArray(new int[] {1014958078, -956301272, -1051937, 1467137823, -1030969162, -1593504476, -21406146, 711}),
+		new BitArray(new int[] {7340034, -2147483648, 0, 32768, 0, 0, 0, 0}),
 		new BitArray(new int[] {-66123780, 1174405164, -51384097, -972018401, -1030969178, 17106228, -97186288, 67}),
 		new BitArray(new int[] {0, 0, 0, 536870912, 1, 436207616, 0, 0}),
 		new BitArray(new int[] {0, 256, 0, 536870912, 0, 436207616, 64, 0}),
