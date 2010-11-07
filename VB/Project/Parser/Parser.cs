@@ -18,7 +18,7 @@ namespace ICSharpCode.NRefactory.VB.Parser {
 // Parser
 // ----------------------------------------------------------------------------
 //! A Coco/R Parser
-partial class Parser
+partial class VBParser
 {
 	public const int _EOF = 0;
 	public const int _EOL = 1;
@@ -3751,70 +3751,11 @@ partial class Parser
 		Location startLocation = la.Location;
 
 		if (la.kind == 120) {
-			Get();
-			ExitType exitType = ExitType.None;
-			switch (la.kind) {
-			case 210: {
-				Get();
-				exitType = ExitType.Sub;
-				break;
-			}
-			case 127: {
-				Get();
-				exitType = ExitType.Function;
-				break;
-			}
-			case 186: {
-				Get();
-				exitType = ExitType.Property;
-				break;
-			}
-			case 108: {
-				Get();
-				exitType = ExitType.Do;
-				break;
-			}
-			case 124: {
-				Get();
-				exitType = ExitType.For;
-				break;
-			}
-			case 218: {
-				Get();
-				exitType = ExitType.Try;
-				break;
-			}
-			case 231: {
-				Get();
-				exitType = ExitType.While;
-				break;
-			}
-			case 197: {
-				Get();
-				exitType = ExitType.Select;
-				break;
-			}
-			default: SynErr(295); break;
-			}
-			statement = new ExitStatement(exitType);
+			ExitStatement(out statement);
 		} else if (la.kind == 218) {
 			TryStatement(out statement);
 		} else if (la.kind == 89) {
-			Get();
-			ContinueType continueType = ContinueType.None;
-			if (la.kind == 108 || la.kind == 124 || la.kind == 231) {
-				if (la.kind == 108) {
-					Get();
-					continueType = ContinueType.Do;
-				} else if (la.kind == 124) {
-					Get();
-					continueType = ContinueType.For;
-				} else {
-					Get();
-					continueType = ContinueType.While;
-				}
-			}
-			statement = new ContinueStatement(continueType);
+			ContinueStatement(out statement);
 		} else if (la.kind == 215) {
 			Get();
 			if (StartOf(24)) {
@@ -3900,7 +3841,7 @@ partial class Parser
 				}
 				statement = new DoLoopStatement(expr, embeddedStatement, conditionType, ConditionPosition.End);
 
-			} else SynErr(296);
+			} else SynErr(295);
 		} else if (la.kind == 124) {
 			Get();
 			Expression group = null;
@@ -3974,7 +3915,7 @@ partial class Parser
 						NextExpressions = nextExpressions
 					};
 
-			} else SynErr(297);
+			} else SynErr(296);
 		} else if (la.kind == 118) {
 			Get();
 			Expr(out expr);
@@ -4074,7 +4015,7 @@ partial class Parser
 					}
 				}
 				ifStatement.EndLocation = t.Location; statement = ifStatement;
-			} else SynErr(298);
+			} else SynErr(297);
 		} else if (la.kind == 197) {
 			Get();
 			if (la.kind == 74) {
@@ -4136,7 +4077,7 @@ partial class Parser
 
 			} else if (StartOf(47)) {
 				if (mustBeAssignment) Error("error in assignment.");
-			} else SynErr(299);
+			} else SynErr(298);
 			if(expr is MemberReferenceExpression || expr is IdentifierExpression) {
 					Location endLocation = expr.EndLocation;
 					expr = new InvocationExpression(expr);
@@ -4166,12 +4107,12 @@ partial class Parser
 				Expr(out expr);
 				Block(out block);
 				statement = new UsingStatement(new ExpressionStatement(expr), block);
-			} else SynErr(300);
+			} else SynErr(299);
 			Expect(113);
 			Expect(226);
 		} else if (StartOf(48)) {
 			LocalDeclarationStatement(out statement);
-		} else SynErr(301);
+		} else SynErr(300);
 		if (statement != null) {
 				statement.StartLocation = startLocation;
 				statement.EndLocation = t.EndLocation;
@@ -4189,7 +4130,7 @@ partial class Parser
 		} else if (la.kind == 58) {
 			AggregateQueryOperator(out aggregateClause);
 			middleClauses.Add(aggregateClause);
-		} else SynErr(302);
+		} else SynErr(301);
 	}
 
 	void QueryOperator(List<QueryExpressionClause> middleClauses) {
@@ -4228,7 +4169,7 @@ partial class Parser
 		} else if (la.kind == 133) {
 			GroupByQueryOperator(out groupByClause);
 			middleClauses.Add(groupByClause);
-		} else SynErr(303);
+		} else SynErr(302);
 	}
 
 	void FromQueryOperator(out QueryExpressionFromClause fromClause) {
@@ -4328,7 +4269,7 @@ partial class Parser
 				Get();
 				partitionClause.PartitionType = QueryExpressionPartitionType.SkipWhile;
 			}
-		} else SynErr(304);
+		} else SynErr(303);
 		Expr(out expr);
 		partitionClause.Expression = expr;
 			partitionClause.EndLocation = t.EndLocation;
@@ -4531,7 +4472,7 @@ partial class Parser
 
 		} else if (StartOf(24)) {
 			Expr(out argumentexpr);
-		} else SynErr(305);
+		} else SynErr(304);
 	}
 
 	void QualIdentAndTypeArguments(out TypeReference typeref, bool canBeUnbound) {
@@ -4549,7 +4490,7 @@ partial class Parser
 				}
 			} else if (StartOf(9)) {
 				TypeArgumentList(typeref.GenericTypes);
-			} else SynErr(306);
+			} else SynErr(305);
 			Expect(38);
 		}
 	}
@@ -4595,7 +4536,7 @@ partial class Parser
 					Get();
 				} else if (la.kind == 20) {
 					Get();
-				} else SynErr(307);
+				} else SynErr(306);
 			}
 			Expr(out expr);
 			if (expr != null) {
@@ -4612,10 +4553,10 @@ partial class Parser
 						Get();
 					} else if (la.kind == 20) {
 						Get();
-					} else SynErr(308);
+					} else SynErr(307);
 				} else if (StartOf(24)) {
 					if (nameFound) Error("no positional argument after named argument");
-				} else SynErr(309);
+				} else SynErr(308);
 				Expr(out expr);
 				if (expr != null) { if(name == "") positional.Add(expr);
 					else { named.Add(new NamedArgumentExpression(name, expr) { StartLocation = startLocation, EndLocation = t.EndLocation }); name = ""; }
@@ -4639,7 +4580,7 @@ partial class Parser
 		} else if (la.kind == 182) {
 			Get();
 			m.Add(ParameterModifiers.Params);
-		} else SynErr(310);
+		} else SynErr(309);
 	}
 
 	void Statement() {
@@ -4656,7 +4597,7 @@ partial class Parser
 		} else if (StartOf(1)) {
 			EmbeddedStatement(out stmt);
 			AddChild(stmt);
-		} else SynErr(311);
+		} else SynErr(310);
 		if (stmt != null) {
 				stmt.StartLocation = startPos;
 				stmt.EndLocation = t.Location;
@@ -4673,7 +4614,7 @@ partial class Parser
 		} else if (la.kind == 5) {
 			Get();
 			name = t.val;
-		} else SynErr(312);
+		} else SynErr(311);
 	}
 
 	void LocalDeclarationStatement(out Statement statement) {
@@ -4713,6 +4654,55 @@ partial class Parser
 
 	}
 
+	void ExitStatement(out Statement statement) {
+		Expect(120);
+		ExitType exitType = ExitType.None;
+		switch (la.kind) {
+		case 210: {
+			Get();
+			exitType = ExitType.Sub;
+			break;
+		}
+		case 127: {
+			Get();
+			exitType = ExitType.Function;
+			break;
+		}
+		case 186: {
+			Get();
+			exitType = ExitType.Property;
+			break;
+		}
+		case 108: {
+			Get();
+			exitType = ExitType.Do;
+			break;
+		}
+		case 124: {
+			Get();
+			exitType = ExitType.For;
+			break;
+		}
+		case 218: {
+			Get();
+			exitType = ExitType.Try;
+			break;
+		}
+		case 231: {
+			Get();
+			exitType = ExitType.While;
+			break;
+		}
+		case 197: {
+			Get();
+			exitType = ExitType.Select;
+			break;
+		}
+		default: SynErr(312); break;
+		}
+		statement = new ExitStatement(exitType);
+	}
+
 	void TryStatement(out Statement tryStatement) {
 		Statement blockStmt = null, finallyStmt = null;List<CatchClause> catchClauses = null;
 
@@ -4731,6 +4721,24 @@ partial class Parser
 		Expect(218);
 		tryStatement = new TryCatchStatement(blockStmt, catchClauses, finallyStmt);
 
+	}
+
+	void ContinueStatement(out Statement statement) {
+		Expect(89);
+		ContinueType continueType = ContinueType.None;
+		if (la.kind == 108 || la.kind == 124 || la.kind == 231) {
+			if (la.kind == 108) {
+				Get();
+				continueType = ContinueType.Do;
+			} else if (la.kind == 124) {
+				Get();
+				continueType = ContinueType.For;
+			} else {
+				Get();
+				continueType = ContinueType.While;
+			}
+		}
+		statement = new ContinueStatement(continueType);
 	}
 
 	void WithStatement(out Statement withStatement) {
@@ -5076,8 +5084,8 @@ partial class Parser
 		new BitArray(new int[] {1048576, 3968, 0, 0, 65536, 0, 0, 0})
 
 	};
-	
-	protected override void SynErr(int line, int col, int errorNumber)
+
+	void SynErr(int line, int col, int errorNumber)
 	{
 		this.Errors.Error(line, col, GetMessage(errorNumber));
 	}
@@ -5386,18 +5394,18 @@ partial class Parser
 			case 298: return "invalid EmbeddedStatement";
 			case 299: return "invalid EmbeddedStatement";
 			case 300: return "invalid EmbeddedStatement";
-			case 301: return "invalid EmbeddedStatement";
-			case 302: return "invalid FromOrAggregateQueryOperator";
-			case 303: return "invalid QueryOperator";
-			case 304: return "invalid PartitionQueryOperator";
-			case 305: return "invalid Argument";
-			case 306: return "invalid QualIdentAndTypeArguments";
+			case 301: return "invalid FromOrAggregateQueryOperator";
+			case 302: return "invalid QueryOperator";
+			case 303: return "invalid PartitionQueryOperator";
+			case 304: return "invalid Argument";
+			case 305: return "invalid QualIdentAndTypeArguments";
+			case 306: return "invalid AttributeArguments";
 			case 307: return "invalid AttributeArguments";
 			case 308: return "invalid AttributeArguments";
-			case 309: return "invalid AttributeArguments";
-			case 310: return "invalid ParameterModifier";
-			case 311: return "invalid Statement";
-			case 312: return "invalid LabelName";
+			case 309: return "invalid ParameterModifier";
+			case 310: return "invalid Statement";
+			case 311: return "invalid LabelName";
+			case 312: return "invalid ExitStatement";
 			case 313: return "invalid WhileOrUntil";
 			case 314: return "invalid SingleLineStatementList";
 			case 315: return "invalid SingleLineStatementList";

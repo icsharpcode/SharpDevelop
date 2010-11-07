@@ -120,16 +120,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			return base.VisitLocalVariableDeclaration(localVariableDeclaration, data);
 		}
 		
-		public override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
-		{
-			foreach (ParameterDeclarationExpression p in anonymousMethodExpression.Parameters) {
-				AddVariable(p.TypeReference, p.ParameterName,
-				            anonymousMethodExpression.StartLocation, anonymousMethodExpression.EndLocation,
-				            false, false, null, null, false);
-			}
-			return base.VisitAnonymousMethodExpression(anonymousMethodExpression, data);
-		}
-		
 		public override object VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
 		{
 			foreach (ParameterDeclarationExpression p in lambdaExpression.Parameters) {

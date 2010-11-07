@@ -23,18 +23,18 @@ namespace ICSharpCode.NRefactory.VB
 			return new ICSharpCode.NRefactory.VB.Parser.Lexer(textReader, state);
 		}
 		
-		public static IParser CreateParser(TextReader textReader)
+		public static VBParser CreateParser(TextReader textReader)
 		{
 			Parser.ILexer lexer = CreateLexer(textReader);
-			return new ICSharpCode.NRefactory.VB.Parser.Parser(lexer);
+			return new ICSharpCode.NRefactory.VB.Parser.VBParser(lexer);
 		}
 		
-		public static IParser CreateParser(string fileName)
+		public static VBParser CreateParser(string fileName)
 		{
 			return CreateParser(fileName, Encoding.UTF8);
 		}
 		
-		public static IParser CreateParser(string fileName, Encoding encoding)
+		public static VBParser CreateParser(string fileName, Encoding encoding)
 		{
 			string ext = Path.GetExtension(fileName);
 			if (ext.Equals(".vb", StringComparison.OrdinalIgnoreCase))

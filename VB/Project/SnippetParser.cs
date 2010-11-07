@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.VB
 		/// </summary>
 		public INode Parse(string code)
 		{
-			IParser parser = ParserFactory.CreateParser(new StringReader(code));
+			VBParser parser = ParserFactory.CreateParser(new StringReader(code));
 			parser.Parse();
 			this.Errors = parser.Errors;
 			this.Specials = parser.Lexer.SpecialTracker.RetrieveSpecials();

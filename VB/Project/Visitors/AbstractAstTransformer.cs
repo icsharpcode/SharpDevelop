@@ -60,27 +60,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return null;
 		}
 		
-		public virtual object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data) {
-			Debug.Assert((anonymousMethodExpression != null));
-			Debug.Assert((anonymousMethodExpression.Parameters != null));
-			Debug.Assert((anonymousMethodExpression.Body != null));
-			for (int i = 0; i < anonymousMethodExpression.Parameters.Count; i++) {
-				ParameterDeclarationExpression o = anonymousMethodExpression.Parameters[i];
-				Debug.Assert(o != null);
-				nodeStack.Push(o);
-				o.AcceptVisitor(this, data);
-				o = (ParameterDeclarationExpression)nodeStack.Pop();
-				if (o == null)
-					anonymousMethodExpression.Parameters.RemoveAt(i--);
-				else
-					anonymousMethodExpression.Parameters[i] = o;
-			}
-			nodeStack.Push(anonymousMethodExpression.Body);
-			anonymousMethodExpression.Body.AcceptVisitor(this, data);
-			anonymousMethodExpression.Body = ((BlockStatement)(nodeStack.Pop()));
-			return null;
-		}
-		
 		public virtual object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data) {
 			Debug.Assert((arrayCreateExpression != null));
 			Debug.Assert((arrayCreateExpression.CreateType != null));

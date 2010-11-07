@@ -12,13 +12,21 @@ using ICSharpCode.NRefactory.VB.Visitors;
 
 namespace ICSharpCode.NRefactory.VB.Parser
 {
-	internal sealed partial class Parser : AbstractParser
+	public partial class VBParser
 	{
 		Lexer lexer;
 		Stack<INode> blockStack;
+		CompilationUnit compilationUnit;
+		int errDist = MinErrDist;
+		bool parseMethodContents = true;
 		
-		public Parser(ILexer lexer) : base(lexer)
+		const int    MinErrDist   = 2;
+		const string ErrMsgFormat = "-- line {0} col {1}: {2}";  // 0=line, 1=column, 2=text
+		
+		public VBParser(ILexer lexer)
 		{
+			this.errors = lexer.Errors;
+			errors.SynErr = new ErrorCodeProc(SynErr);
 			this.lexer = (Lexer)lexer;
 			this.blockStack = new Stack<INode>();
 		}
@@ -42,7 +50,7 @@ namespace ICSharpCode.NRefactory.VB.Parser
 			}
 		}
 		
-		private StringBuilder qualidentBuilder = new StringBuilder();
+		StringBuilder qualidentBuilder = new StringBuilder();
 
 		Token t
 		{
@@ -78,19 +86,19 @@ namespace ICSharpCode.NRefactory.VB.Parser
 			errDist = 0;
 		}
 
-		public override void Parse()
+		public void Parse()
 		{
 			ParseRoot();
 			compilationUnit.AcceptVisitor(new SetParentVisitor(), null);
 		}
 		
-		public override TypeReference ParseTypeReference ()
+		public TypeReference ParseTypeReference ()
 		{
 			// TODO
 			return null;
 		}
 		
-		public override Expression ParseExpression()
+		public Expression ParseExpression()
 		{
 			lexer.SetInitialContext(SnippetType.Expression);
 			lexer.NextToken();
@@ -107,7 +115,7 @@ namespace ICSharpCode.NRefactory.VB.Parser
 			return expr;
 		}
 		
-		public override BlockStatement ParseBlock()
+		public BlockStatement ParseBlock()
 		{
 			lexer.NextToken();
 			compilationUnit = new CompilationUnit();
@@ -127,9 +135,9 @@ namespace ICSharpCode.NRefactory.VB.Parser
 			return st as BlockStatement;
 		}
 		
-		public override List<INode> ParseTypeMembers()
+		public List<INode> ParseTypeMembers()
 		{
-			lexer.NextToken();			
+			lexer.NextToken();
 			TypeDeclaration newType = new TypeDeclaration(Modifiers.None, null);
 			BlockStart(newType);
 			ClassBody(newType);
@@ -137,12 +145,6 @@ namespace ICSharpCode.NRefactory.VB.Parser
 			Expect(Tokens.EOF);
 			newType.AcceptVisitor(new SetParentVisitor(), null);
 			return newType.Children;
-		}
-
-		bool LeaveBlock()
-		{
-			int peek = Peek(1).kind;
-			return Tokens.BlockSucc[la.kind] && (la.kind != Tokens.End || peek == Tokens.EOL || peek == Tokens.Colon);
 		}
 
 		/* True, if "." is followed by an ident */
@@ -383,5 +385,71 @@ namespace ICSharpCode.NRefactory.VB.Parser
 				item.Parent = parent;
 			}
 		}
+		
+
+		
+		public bool ParseMethodBodies {
+			get {
+				return parseMethodContents;
+			}
+			set {
+				parseMethodContents = value;
+			}
+		}
+		
+		public ILexer Lexer {
+			get {
+				return lexer;
+			}
+		}
+		
+		public Errors Errors {
+			get {
+				return errors;
+			}
+		}
+		
+		public CompilationUnit CompilationUnit {
+			get {
+				return compilationUnit;
+			}
+		}
+		
+		void SynErr(int n)
+		{
+			if (errDist >= MinErrDist) {
+				errors.SynErr(lexer.LookAhead.line, lexer.LookAhead.col, n);
+			}
+			errDist = 0;
+		}
+		
+		void SemErr(string msg)
+		{
+			if (errDist >= MinErrDist) {
+				errors.Error(lexer.Token.line, lexer.Token.col, msg);
+			}
+			errDist = 0;
+		}
+		
+		void Expect(int n)
+		{
+			if (lexer.LookAhead.kind == n) {
+				lexer.NextToken();
+			} else {
+				SynErr(n);
+			}
+		}
+		
+		#region System.IDisposable interface implementation
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1063:ImplementIDisposableCorrectly")]
+		public void Dispose()
+		{
+			errors = null;
+			if (lexer != null) {
+				lexer.Dispose();
+			}
+			lexer = null;
+		}
+		#endregion
 	}
 }

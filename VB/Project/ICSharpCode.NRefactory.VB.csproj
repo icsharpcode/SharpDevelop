@@ -85,16 +85,16 @@
     <Compile Include="Location.cs" />
     <Compile Include="OperatorPrecedence.cs" />
     <Compile Include="ParserFactory.cs" />
-    <Compile Include="Parser\AbstractParser.cs" />
     <Compile Include="Parser\Errors.cs" />
-    <Compile Include="Parser\IParser.cs" />
     <Compile Include="Parser\ModifierList.cs" />
     <Compile Include="Parser\ParamModifierList.cs" />
-    <Compile Include="Parser\Parser.cs" />
+    <Compile Include="Parser\Parser.cs">
+      <DependentUpon>vb.atg</DependentUpon>
+    </Compile>
     <None Include="Parser\trace.txt">
       <DependentUpon>vb.atg</DependentUpon>
     </None>
-    <Compile Include="Parser\VBNetParser.cs" />
+    <Compile Include="Parser\VBParser.cs" />
     <Compile Include="PrettyPrinter\AbstractOutputFormatter.cs" />
     <Compile Include="PrettyPrinter\AbstractPrettyPrintOptions.cs" />
     <Compile Include="PrettyPrinter\IOutputAstVisitor.cs" />
@@ -123,7 +123,6 @@
     <Folder Include="Lexer" />
     <Folder Include="Lexer\Special" />
     <Folder Include="Parser" />
-    <Folder Include="Parser\Frames" />
     <Folder Include="PrettyPrinter" />
     <Folder Include="PrettyPrinter\VBNet" />
     <Folder Include="Visitors" />
@@ -143,17 +142,13 @@
     <None Include="Lexer\PushParser.frame">
       <DependentUpon>ExpressionFinder.atg</DependentUpon>
     </None>
-    <None Include="Parser\Frames\Parser.frame" />
-    <None Include="Parser\Frames\Scanner.frame" />
-    <None Include="Parser\Frames\SharpCoco.exe" />
-    <None Include="Parser\Frames\trace.txt" />
-    <None Include="Parser\gen.bat" />
-    <None Include="Parser\Parser.frame" />
+    <None Include="Parser\Parser.frame">
+      <DependentUpon>vb.atg</DependentUpon>
+    </None>
     <None Include="Parser\vb.atg">
       <CustomToolNamespace>ICSharpCode.NRefactory.VB.Parser</CustomToolNamespace>
       <Generator>CocoParserGenerator</Generator>
     </None>
-    <None Include="Parser\vbnet.atg" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

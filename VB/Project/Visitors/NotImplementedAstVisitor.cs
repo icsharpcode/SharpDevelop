@@ -26,10 +26,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			throw new global::System.NotImplementedException("AddressOfExpression");
 		}
 		
-		public virtual object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data) {
-			throw new global::System.NotImplementedException("AnonymousMethodExpression");
-		}
-		
 		public virtual object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data) {
 			throw new global::System.NotImplementedException("ArrayCreateExpression");
 		}

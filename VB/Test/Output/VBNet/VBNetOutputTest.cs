@@ -3,10 +3,11 @@
 
 using System;
 using System.IO;
-using NUnit.Framework;
 using ICSharpCode.NRefactory.VB.Dom;
-using ICSharpCode.NRefactory.VB.Visitors;
+using ICSharpCode.NRefactory.VB.Parser;
 using ICSharpCode.NRefactory.VB.PrettyPrinter;
+using ICSharpCode.NRefactory.VB.Visitors;
+using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.VB.Tests.PrettyPrinter
 {
@@ -15,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.PrettyPrinter
 	{
 		void TestProgram(string program)
 		{
-			IParser parser = ParserFactory.CreateParser(new StringReader(program));
+			VBParser parser = ParserFactory.CreateParser(new StringReader(program));
 			parser.Parse();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			VBNetOutputVisitor outputVisitor = new VBNetOutputVisitor();
@@ -46,7 +47,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.PrettyPrinter
 		
 		void TestExpression(string expression)
 		{
-			IParser parser = ParserFactory.CreateParser(new StringReader(expression));
+			VBParser parser = ParserFactory.CreateParser(new StringReader(expression));
 			Expression e = parser.ParseExpression();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			VBNetOutputVisitor outputVisitor = new VBNetOutputVisitor();

@@ -45,13 +45,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return result;
 		}
 		
-		public sealed override object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data) {
-			this.BeginVisit(anonymousMethodExpression);
-			object result = this.TrackedVisitAnonymousMethodExpression(anonymousMethodExpression, data);
-			this.EndVisit(anonymousMethodExpression);
-			return result;
-		}
-		
 		public sealed override object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data) {
 			this.BeginVisit(arrayCreateExpression);
 			object result = this.TrackedVisitArrayCreateExpression(arrayCreateExpression, data);
@@ -828,10 +821,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 		
 		public virtual object TrackedVisitAddressOfExpression(AddressOfExpression addressOfExpression, object data) {
 			return base.VisitAddressOfExpression(addressOfExpression, data);
-		}
-		
-		public virtual object TrackedVisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data) {
-			return base.VisitAnonymousMethodExpression(anonymousMethodExpression, data);
 		}
 		
 		public virtual object TrackedVisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data) {

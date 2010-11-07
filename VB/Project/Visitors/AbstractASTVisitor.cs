@@ -31,17 +31,6 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 			return addressOfExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-		public virtual object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data) {
-			Debug.Assert((anonymousMethodExpression != null));
-			Debug.Assert((anonymousMethodExpression.Parameters != null));
-			Debug.Assert((anonymousMethodExpression.Body != null));
-			foreach (ParameterDeclarationExpression o in anonymousMethodExpression.Parameters) {
-				Debug.Assert(o != null);
-				o.AcceptVisitor(this, data);
-			}
-			return anonymousMethodExpression.Body.AcceptVisitor(this, data);
-		}
-		
 		public virtual object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data) {
 			Debug.Assert((arrayCreateExpression != null));
 			Debug.Assert((arrayCreateExpression.CreateType != null));

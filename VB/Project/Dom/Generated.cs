@@ -80,56 +80,6 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 		}
 	}
 	
-	public class AnonymousMethodExpression : Expression {
-		
-		List<ParameterDeclarationExpression> parameters;
-		
-		BlockStatement body;
-		
-		bool hasParameterList;
-		
-		public List<ParameterDeclarationExpression> Parameters {
-			get {
-				return parameters;
-			}
-			set {
-				parameters = value ?? new List<ParameterDeclarationExpression>();
-			}
-		}
-		
-		public BlockStatement Body {
-			get {
-				return body;
-			}
-			set {
-				body = value ?? BlockStatement.Null;
-				if (!body.IsNull) body.Parent = this;
-			}
-		}
-		
-		public bool HasParameterList {
-			get {
-				return hasParameterList;
-			}
-			set {
-				hasParameterList = value;
-			}
-		}
-		
-		public AnonymousMethodExpression() {
-			parameters = new List<ParameterDeclarationExpression>();
-			body = BlockStatement.Null;
-		}
-		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
-			return visitor.VisitAnonymousMethodExpression(this, data);
-		}
-		
-		public override string ToString() {
-			return string.Format("[AnonymousMethodExpression Parameters={0} Body={1} HasParameterList={2}]", GetCollectionString(Parameters), Body, HasParameterList);
-		}
-	}
-	
 	public class ArrayCreateExpression : Expression {
 		
 		TypeReference createType;
@@ -2192,15 +2142,15 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 				if (trueStatement != null) trueStatement.Parent = this;
 			}
 		
-		public bool HasElseIfSections {
-			get {
-				return elseIfSections.Count > 0;
-			}
-		}
-		
 		public bool HasElseStatements {
 			get {
 				return falseStatement.Count > 0;
+			}
+		}
+		
+		public bool HasElseIfSections {
+			get {
+				return elseIfSections.Count > 0;
 			}
 		}
 		
@@ -5083,15 +5033,15 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			attributes = new List<XmlExpression>();
 		}
 		
-		public bool NameIsExpression {
-			get {
-				return !nameExpression.IsNull;
-			}
-		}
-		
 		public bool IsExpression {
 			get {
 				return !content.IsNull;
+			}
+		}
+		
+		public bool NameIsExpression {
+			get {
+				return !nameExpression.IsNull;
 			}
 		}
 		

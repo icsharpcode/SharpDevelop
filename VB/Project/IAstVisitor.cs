@@ -19,8 +19,6 @@ namespace ICSharpCode.NRefactory.VB {
 		
 		object VisitAddressOfExpression(AddressOfExpression addressOfExpression, object data);
 		
-		object VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data);
-		
 		object VisitArrayCreateExpression(ArrayCreateExpression arrayCreateExpression, object data);
 		
 		object VisitAssignmentExpression(AssignmentExpression assignmentExpression, object data);

@@ -79,7 +79,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetInvalidOptionDeclarationTest()
 		{
 			string program = "Option\n";
-			IParser parser = ParserFactory.CreateParser(new StringReader(program));
+			VBParser parser = ParserFactory.CreateParser(new StringReader(program));
 			parser.Parse();
 			Assert.IsFalse(parser.Errors.ErrorOutput.Length == 0, "Expected errors, but operation completed successfully");
 		}

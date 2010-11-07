@@ -8,7 +8,7 @@ namespace ICSharpCode.NRefactory.VB.Parser
 	internal class ParamModifierList
 	{
 		ParameterModifiers cur;
-		Parser   parser;
+		VBParser   parser;
 		
 		public ParameterModifiers Modifier {
 			get {
@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Parser
 			}
 		}
 		
-		public ParamModifierList(Parser parser)
+		public ParamModifierList(VBParser parser)
 		{
 			this.parser = parser;
 			cur         = ParameterModifiers.None;
