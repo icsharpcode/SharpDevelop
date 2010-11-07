@@ -12,8 +12,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class LockStatementTests
 	{
-		#region VB.NET
-			// No VB.NET representation
-		#endregion
+		// TODO : write some tests on SyncLock
 	}
 }

@@ -12,8 +12,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class ThrowStatementTests
 	{
-		#region VB.NET
-			// TODO
-		#endregion 
+		// TODO : ThrowStatementTests
 	}
 }

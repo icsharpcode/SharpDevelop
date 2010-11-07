@@ -16,6 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void AddHandlerTest()
 		{
 			AddHandlerStatement addHandlerStatement = ParseUtil.ParseStatement<AddHandlerStatement>("AddHandler Obj.Ev_Event, AddressOf EventHandler");
+			// TODO : extend tests
 		}
 	}
 }

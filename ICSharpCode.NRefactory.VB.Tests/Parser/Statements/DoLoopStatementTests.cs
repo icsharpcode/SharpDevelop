@@ -12,8 +12,6 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class DoLoopStatementTests
 	{
-		#region VB.NET
-			// TODO
-		#endregion 
+		// TODO write some DoLoopStatement tests
 	}
 }
