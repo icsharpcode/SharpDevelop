@@ -8336,6 +8336,15 @@ Error while starting:
   <data name="XML.MainMenu.ToolsMenu.SpellCheckerCheckFile" xml:space="preserve">
     <value>Check current file</value>
   </data>
+  <data name="XML.MainMenu.ToolsMenu.SpellChecker.Dictionaries" xml:space="preserve">
+    <value>OpenOffice dictionaries</value>
+  </data>
+  <data name="XML.MainMenu.ToolsMenu.SpellChecker.SetDefault" xml:space="preserve">
+    <value>Set default</value>
+  </data>
+  <data name="XML.MainMenu.ToolsMenu.SpellChecker.InstalledDictionaries" xml:space="preserve">
+    <value>Installed dictionaries:</value>
+  </data>  
   <data name="XML.MainMenu.ViewMenu" xml:space="preserve">
     <value>&amp;View</value>
   </data>
