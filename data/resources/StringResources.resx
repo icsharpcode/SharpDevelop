@@ -6381,14 +6381,11 @@ Removed the end part of the original message ", reason '${Message}'" since this 
     <value>Delete all web references</value>
     <comment>Title of the dialog box when the user tries to remove all web references.</comment>
   </data>
-  <data name="ReflectorAddIn.OpenReflectorCommand" xml:space="preserve">
-    <value>Open .NET Reflector</value>
-  </data>
-  <data name="ReflectorAddIn.ReflectorDoesNotExist" xml:space="preserve">
-    <value>Reflector could not be found at the specified location, or SharpDevelop does not have sufficient rights to access it.</value>
-  </data>
   <data name="ReflectorAddIn.ReflectorPathNotSet" xml:space="preserve">
     <value>The path to Reflector has not been set yet.</value>
+  </data>
+  <data name="ReflectorAddIn.ReflectorChangePath" xml:space="preserve">
+    <value>Change Reflector path.</value>
   </data>
   <data name="ReflectorAddIn.ReflectorRemotingFailed" xml:space="preserve">
     <value>Failed to connect to Reflector.</value>
@@ -6401,6 +6398,17 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   </data>
   <data name="ReflectorAddIn.SetReflectorPathDialogTitle" xml:space="preserve">
     <value>Set path to Reflector</value>
+  </data>
+  <data name="ReflectorAddIn.IdeOptions.ReflectorFoundInPath" xml:space="preserve">
+    <value>Reflector was found in the following directory:</value>
+  </data>
+  <data name="ReflectorAddIn.IdeOptions.ReflectorTitle" xml:space="preserve">
+    <value>Reflector</value>
+    <comment>Title of Reflector path choosing groupbox</comment>
+  </data>
+  <data name="ReflectorAddIn.IdeOptions.FindReflectorPath" xml:space="preserve">
+    <value>Select Reflector path</value>
+    <comment>Button to select the Reflector path</comment>
   </data>
   <data name="RegExpTk.MainDialog.Assemblies" xml:space="preserve">
     <value>Assemblies (*.dll)|*.dll</value>
