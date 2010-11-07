@@ -18,6 +18,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 		private BaseReportItem parent;
 		
+	
+		
 		public GroupedRowConverter(IDataNavigator dataNavigator,
 		                           ExporterPage singlePage, ILayouter layouter):base(dataNavigator,singlePage,layouter)
 		{
@@ -102,13 +104,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 							section.Items[0].Size = groupSize;
 							section.Items[1].Size = childSize;
 							
-							
 							childNavigator.Fill(simpleContainer.Items);
-//							int p = base.CurrentPosition.Y;
 							
 							base.CurrentPosition = ConvertGroupChilds (exporterCollection,section,
 							                                      simpleContainer,defaultLeftPos,base.CurrentPosition);
-//							Console.WriteLine (" childs delta {0} - container {1}",base.CurrentPosition.Y - p,simpleContainer.Size);	
 							
 							pageBreakRect = PrintHelper.CalculatePageBreakRectangle((BaseReportItem)section.Items[1],base.CurrentPosition);
 
@@ -134,11 +133,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 					// No Grouping at all, the first item in section.items is the DetailRow
 					Size containerSize = section.Items[0].Size;
 
-//					int p = base.CurrentPosition.Y;
-					
+					base.FireRowRendering(simpleContainer);
 					base.CurrentPosition = ConvertStandardRow (exporterCollection,section,simpleContainer,defaultLeftPos,base.CurrentPosition);
 					
-//					Console.WriteLine ("delta {0} - container {1}",base.CurrentPosition.Y - p,simpleContainer.Size);
 					section.Size = base.RestoreSectionSize;
 					section.Items[0].Size = containerSize;
 				}
@@ -193,6 +190,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				AfterConverting (section,list);
 				retVal =  new Point (leftPos,offset.Y + groupCollection[0].Size.Height + 20  + (3 *GlobalValues.GapBetweenContainer));
 			} else {
+				base.FireGroupHeaderRendering(groupedRows[0]);
 				rowSize = groupedRows[0].Size;
 				retVal = ConvertStandardRow(exportList,section,groupedRows[0],leftPos,offset);
 				groupedRows[0].Size = rowSize;

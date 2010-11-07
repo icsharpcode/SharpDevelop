@@ -8,38 +8,50 @@ namespace ICSharpCode.Reports.Core {
 	/// Description of SectionRenderEventArgs.
 	/// </summary>
 	
+	
+	public class GroupHeaderEventArgs: EventArgs
+	{
+		public GroupHeaderEventArgs (BaseGroupedRow groupHeader)
+		{
+			GroupHeader = groupHeader;
+		}
+		
+		public BaseGroupedRow GroupHeader {get; private set;}
+		
+	}
+	
+	
+	public class RowRenderEventArgs : EventArgs
+	{
+		public RowRenderEventArgs (BaseRowItem row)
+		{
+			Row = row;	
+		}
+		
+		BaseRowItem Row {get;set;}
+	}
+	
+	
+	
 	public class SectionRenderEventArgs:SectionEventArgs{
-		private int pageNumber;
-		private int rowNumber;
-		private BaseSection currentSection;
+		
 		
 		public SectionRenderEventArgs(BaseSection section,
 		                              int pageNumber,int rowNumber,
 		                              BaseSection currentSection):base(section){
 		                             
-			this.pageNumber = pageNumber;
-			this.currentSection = currentSection;
-			this.rowNumber = rowNumber;
+			this.PageNumber = pageNumber;
+			this.CurrentSection = currentSection;
+			this.RowNumber = rowNumber;
 		}
 		
-		public int PageNumber {
-			get {
-				return pageNumber;
-			}
-		}
+		public int PageNumber {get; private set;}
 		
 		
-		public int RowNumber {
-			get {
-				return rowNumber;
-			}
-		}
+		public int RowNumber {get; private set;}
 		
 		
-		public BaseSection CurrentSection {
-			get {
-				return currentSection;
-			}
-		}
+		public BaseSection CurrentSection {get; private set;}
+		
 	}
 }

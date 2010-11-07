@@ -116,6 +116,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 					
 					
 					baseConverter.SectionRendering += OnSectionRendering;
+					baseConverter.GroupHeaderRendering += OnGroupHeaderRendering;
+					baseConverter.RowRendering += OnRowRendering;
+					
 					baseConverter.Graphics = base.Graphics;
 					baseConverter.PageFull += new EventHandler<NewPageEventArgs>(OnPageFull);
 					
@@ -131,10 +134,23 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		void OnSectionRendering (object sender,SectionRenderEventArgs e)
 		{
+//			Console.WriteLine("Datapagebuilder : OnSectionRendering");
 			base.FireSectionRenderEvent(e.Section,e.RowNumber);
 		}
+		
+		
+		void OnGroupHeaderRendering (object sender, GroupHeaderEventArgs ghea)
+		{
 			
-			
+//			Console.WriteLine("Datapagebuilder : OnGroupHeaderRendering");
+			base.FireGroupHeaderEvent(ghea);
+		}
+		
+		void OnRowRendering (object sender,RowRenderEventArgs rrea)
+		{
+//				Console.WriteLine("Datapagebuilder : OnRowRendering");
+				base.FireRowRenderEvent(rrea);
+		}
 		#endregion
 		
 		private void WritePages ()

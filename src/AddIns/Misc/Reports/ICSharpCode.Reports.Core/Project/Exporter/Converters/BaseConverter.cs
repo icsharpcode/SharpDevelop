@@ -32,8 +32,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 	
 		public event EventHandler <NewPageEventArgs> PageFull;
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
-		
-		
+		public event EventHandler<GroupHeaderEventArgs> GroupHeaderRendering;
+		public event EventHandler<RowRenderEventArgs> RowRendering;
 
 		public BaseConverter(IDataNavigator dataNavigator,ExporterPage singlePage,
 		                     ILayouter layouter)
@@ -74,6 +74,24 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		#endregion
 		
+		protected void FireRowRendering (ISimpleContainer detailRow)
+		{
+			BaseRowItem row = detailRow as BaseRowItem;
+			if (row == null) {
+				throw new ArgumentException("row");
+			}
+			RowRenderEventArgs rrea = new RowRenderEventArgs(row);
+			EventHelper.Raise<RowRenderEventArgs>(RowRendering,this,rrea);
+		}
+		
+		
+		protected void FireGroupHeaderRendering (BaseGroupedRow groupHeader)
+		{
+			GroupHeaderEventArgs ghea = new GroupHeaderEventArgs(groupHeader);
+			EventHelper.Raise<GroupHeaderEventArgs>(GroupHeaderRendering,this,ghea);
+		}
+			
+		
 		
 		protected void FireSectionRendering (BaseSection section)
 		{
@@ -113,6 +131,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected Point ConvertGroupChilds(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer, int defaultLeftPos, Point currentPosition)
 		{
 			PrepareContainerForConverting(section,simpleContainer);
+			FireRowRendering(simpleContainer);
 			Point curPos  = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
 			AfterConverting (section,mylist);
 			return curPos;
@@ -155,6 +174,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		public Point CurrentPosition {get;set;}
 		
 		#endregion
+		
 		public Rectangle ParentRectangle {
 			get { return parentRectangle; }
 		}
@@ -202,9 +222,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected	void PrepareContainerForConverting(BaseSection section,ISimpleContainer simpleContainer)
 		{
-			if (section != null) {
-				FireSectionRendering(section);
-			}
+			FireSectionRendering(section);
 			LayoutRow(simpleContainer);
 		}
 		

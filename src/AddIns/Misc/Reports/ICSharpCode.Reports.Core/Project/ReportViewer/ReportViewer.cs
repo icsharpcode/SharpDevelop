@@ -166,6 +166,8 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			ILayouter layouter = new Layouter();
 			IReportCreator reportCreator = DataPageBuilder.CreateInstance(reportModel,data,layouter);
 			reportCreator.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
+			reportCreator.GroupHeaderRendering += new EventHandler<GroupHeaderEventArgs>(GroupHeaderRendering);
+			reportCreator.RowRendering += new EventHandler<RowRenderEventArgs>(RowRendering);
 			reportCreator.PageCreated += OnPageCreated;
 			reportCreator.BuildExportList();
 			ShowCompleted();
@@ -192,7 +194,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		private void PushPrinting (object sender,SectionRenderEventArgs e)
 		{
 			string sectionName = e.Section.Name;
-			
+			/*
 			if (sectionName == ReportSectionNames.ReportHeader) {
 				Console.WriteLine("PushPrinting  :" + ReportSectionNames.ReportHeader);
 			} 
@@ -216,6 +218,22 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			else{
 				throw new WrongSectionException(sectionName);
 			}
+			*/
+		}
+		
+		
+		private void GroupHeaderRendering (object sender, GroupHeaderEventArgs ghea)
+		{
+			Console.WriteLine();
+			Console.WriteLine("ReportViewer - GroupHeaderRendering  :");
+//			BaseGroupedRow v = ghea.GroupHeader;
+//			v.BackColor = System.Drawing.Color.Red;
+			
+		}
+		
+		private void RowRendering (object sender,RowRenderEventArgs rrea)
+		{
+			Console.WriteLine("ReportViewer - RowRendering  :");
 		}
 		
 		#endregion

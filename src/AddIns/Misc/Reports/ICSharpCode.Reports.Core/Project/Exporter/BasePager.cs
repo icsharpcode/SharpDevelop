@@ -22,6 +22,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		public event EventHandler<PageCreatedEventArgs> PageCreated;
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
+		public event EventHandler<GroupHeaderEventArgs> GroupHeaderRendering;
+		public event EventHandler<RowRenderEventArgs> RowRendering;
 		
 		#region Constructor
 		
@@ -220,6 +222,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		#region Event's
 		
+		
 		protected void FireSectionRenderEvent (BaseSection section,int currentRow)
 		{
 			SectionRenderEventArgs ea =
@@ -232,7 +235,17 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
+		protected void FireGroupHeaderEvent (GroupHeaderEventArgs ghea)
+		{
+			EventHelper.Raise<GroupHeaderEventArgs>(GroupHeaderRendering,this,ghea);
+			
+		}
 		
+		protected void FireRowRenderEvent (RowRenderEventArgs rrea)
+		{
+			EventHelper.Raise<RowRenderEventArgs>(RowRendering,this,rrea);
+		}
+			
 		protected void FirePageCreated(ExporterPage page)
 		{
 			EventHelper.Raise<PageCreatedEventArgs>(PageCreated,this,

@@ -104,7 +104,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 								containerSize = simpleContainer.Size;
 								
 								childNavigator.Fill(simpleContainer.Items);
-//								int p = base.CurrentPosition.Y;
+
 								base.CurrentPosition = ConvertGroupChilds (exporterCollection,
 								                                      section,
 								                                      simpleContainer,defaultLeftPos,base.CurrentPosition);
@@ -158,9 +158,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 						if (PrintHelper.IsPageFull(pageBreakRect,base.SectionBounds))
 						{
 							base.CurrentPosition = ForcePageBreak(exporterCollection,section);
+							
 							base.CurrentPosition = ConvertStandardRow (exporterCollection,section,headerRow,defaultLeftPos,base.CurrentPosition);
 						}
 //						int p = base.CurrentPosition.Y;
+						base.FireRowRendering(simpleContainer);
 						base.CurrentPosition = ConvertStandardRow (exporterCollection,section,simpleContainer,defaultLeftPos,base.CurrentPosition);
 //						Console.WriteLine ("delta {0} - container {1}",base.CurrentPosition.Y - p,simpleContainer.Size);
 
@@ -211,6 +213,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				
 			} else {
 				rowSize = groupedRow[0].Size;
+				base.FireGroupHeaderRendering(groupedRow[0]);
 				retVal = ConvertStandardRow(exportList,section,groupedRow[0],leftPos,offset);
 				groupedRow[0].Size = rowSize;
 			}
