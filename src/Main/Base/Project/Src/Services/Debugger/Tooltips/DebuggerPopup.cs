@@ -9,6 +9,7 @@ using System.Windows.Input;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using Services.Debugger.Tooltips;
 
 namespace ICSharpCode.SharpDevelop.Debugging
 {
@@ -33,6 +34,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			this.AllowsTransparency = true;
 			//this.PopupAnimation = PopupAnimation.Slide;
 		}
+		
+		public PinBookmark Mark { get; set; }
 
 		// attempt to propagate shortcuts to main windows when Popup is focusable (needed for keyboard scrolling + editing)
 		/*void DebuggerPopup_KeyDown(object sender, KeyEventArgs e)

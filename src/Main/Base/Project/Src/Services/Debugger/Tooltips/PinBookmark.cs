@@ -11,7 +11,6 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
-using ICSharpCode.SharpDevelop.Editor;
 
 namespace Services.Debugger.Tooltips
 {
@@ -19,22 +18,26 @@ namespace Services.Debugger.Tooltips
 	{
 		string tooltip;
 		
-		public DebuggerPopup Popup {	get; set; }
+		public event NotifyCollectionChangedEventHandler CollectionChanged;
 		
 		public static readonly IImage PinImage = new ResourceServiceImage("Bookmarks.Pin");
 		
 		public PinBookmark(FileName fileName, Location location) : base(fileName, location)
 		{
 			Nodes = new ObservableCollection<ITreeNode>();
+			SavedNodes = new List<Tuple<string, string>>();
 			Nodes.CollectionChanged += new NotifyCollectionChangedEventHandler(Nodes_CollectionChanged);
 			IsVisibleInBookmarkPad = false;
 		}
+		
+		//TODO this should not be here but onto pinning surface of the code editor
+		public DebuggerPopup Popup { get; set; }
 
 		void Nodes_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			if (e.Action == NotifyCollectionChangedAction.Add ||
-			   e.Action == NotifyCollectionChangedAction.Remove)
-				Popup.contentControl.ItemsSource = Nodes;
+			var handler = CollectionChanged;
+			if (handler != null)
+				handler.Invoke(this, e);
 		}
 		
 		public ObservableCollection<ITreeNode> Nodes { get; set; }

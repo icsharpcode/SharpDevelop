@@ -110,11 +110,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
-		public string Comment {
-			get { return CommentTextBox.Text; }
-			set { CommentTextBox.Text = value; }
-		}
-
 		/// <summary>
 		/// Position within the document
 		/// </summary>
@@ -201,6 +196,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				if (this.containingPopup != null) {
 					this.containingPopup.IsLeaf = false;
 				}
+				this.childPopup.contentControl.LogicalPosition = LogicalPosition;
 				this.childPopup.IsLeaf = true;
 				this.childPopup.HorizontalOffset = buttonPos.X + ChildPopupOpenXOffet;
 				this.childPopup.VerticalOffset = buttonPos.Y + ChildPopupOpenYOffet;
@@ -244,17 +240,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
-		void TextBox_LostFocus(object sender, RoutedEventArgs e)
-		{
-			// set new value
-			var textBox = (TextBox)sender;
-			var node = ((FrameworkElement)sender).DataContext as ITreeNode;
-			SaveNewValue(node, textBox.Text);
-		}
-		
 		void SaveNewValue(ITreeNode node, string newValue)
 		{
-			if(node != null && node.SetText(newValue)) {				
+			if(node != null && node.SetText(newValue)) {
 				// show adorner
 				var adornerLayer = AdornerLayer.GetAdornerLayer(dataGrid);
 				var adorners = adornerLayer.GetAdorners(dataGrid);
@@ -268,57 +256,77 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		void PinButton_Checked(object sender, RoutedEventArgs e)
 		{
 			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;
-			ToggleButton button = (ToggleButton)sender;
+			ToggleButton button = (ToggleButton)e.OriginalSource;
 			
 			if (provider != null) {
 				ITextEditor editor = provider.TextEditor;
-				if (!string.IsNullOrEmpty(editor.FileName)) {
+				if (!string.IsNullOrEmpty(editor.FileName)) {					
 					
-					var pin = new PinBookmark(editor.FileName, LogicalPosition);
-					if (!BookmarkManager.Bookmarks.Contains(pin)) {
+					var location = LogicalPosition;
+					
+					var pin = BookmarkManager.Bookmarks.Find(b => b is PinBookmark && 
+					                               b.FileName == editor.FileName &&
+					                               b.Location.Line == location.Line) as PinBookmark;
+					bool found = false;
+					if (pin == null) {
+						pin = new PinBookmark(editor.FileName, location);
+					}
+					else {
+						found = true;
+					}
+					
+					var popup = pin.Popup;
+					if (!found) {
+						// TODO set the pin inside the code editor pinning surface
 						// show pinned DebuggerPopup
-						if (pin.Popup == null) {
-							pin.Popup = new DebuggerPopup(this, true);
-							pin.Popup.Placement = PlacementMode.Absolute;
-							Rect rect = new Rect(this.DesiredSize);
-							var point = this.PointToScreen(rect.TopRight);
-							pin.Popup.HorizontalOffset = point.X + 150;
-							pin.Popup.VerticalOffset = point.Y - 20;
-							pin.Popup.Open();
+						if (popup == null) {
+							popup = new DebuggerPopup(null, true);
 						}
-						pin.Nodes.Add(button.DataContext as ITreeNode);
+						popup.Mark = pin;
+						popup.Placement = PlacementMode.Absolute;
+						Rect rect = new Rect(this.DesiredSize);
+						var point = this.PointToScreen(rect.TopRight);
+						popup.HorizontalOffset = 650;
+						popup.StaysOpen = true;
+						popup.VerticalOffset = point.Y - 50;
+						pin.Popup = popup;
+						pin.Nodes.Add((ITreeNode)button.DataContext);
 						
 						BookmarkManager.ToggleBookmark(
 							editor, 
-							LogicalPosition.Line, 
-							b => b.CanToggle && b is PinBookmark,
-							location => pin);
+							location.Line, 
+							b => b is PinBookmark,
+							l => pin);
+						
+						popup.Open();
 					}
 					else
 					{
-						pin.Nodes.Add(button.DataContext as ITreeNode);
+						popup = pin.Popup;
+						pin.Nodes.Add((ITreeNode)button.DataContext);
 					}
+					
+					popup.ItemsSource = pin.Nodes;
 				}
 			}
 		}
 		
 		void PinButton_Unchecked(object sender, RoutedEventArgs e)
 		{
-			if (!showPinControl)
-				return;
-			
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;
+			// remove from pinned DebuggerPopup
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;			
 			if (provider != null) {
 				ITextEditor editor = provider.TextEditor;
 				if (!string.IsNullOrEmpty(editor.FileName)) {
-					// remove from pinned DebuggerPopup
-					var pin = new PinBookmark(editor.FileName, LogicalPosition);
-					if (!BookmarkManager.Bookmarks.Contains(pin)) 
-						return;
-					ToggleButton button = (ToggleButton)sender;
-					pin.Nodes.Remove(button.DataContext as ITreeNode);
+					var pin = BookmarkManager.Bookmarks.Find(b => b is PinBookmark && 
+					                               b.FileName == editor.FileName &&
+					                               b.Location.Line == LogicalPosition.Line) as PinBookmark;
+					
+					ToggleButton button = (ToggleButton)e.OriginalSource;
+					pin.Nodes.Remove((ITreeNode)button.DataContext);
+					pin.Popup.ItemsSource = pin.Nodes;
 				}
-			}
+			}				
 		}
 		
 		public void ShowComment(bool show)
@@ -339,6 +347,20 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			Storyboard board = new Storyboard();
 			board.Children.Add(animation);			
 			board.Begin(this);
+		}
+		
+		public string Comment {
+			get { return CommentTextBox.Text; }
+			set { CommentTextBox.Text = value; }
+		}
+		
+		public event EventHandler CommentChanged;
+		
+		void CommentTextBox_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			var handler = CommentChanged;
+			if(handler != null)
+				handler(this, EventArgs.Empty);
 		}
 		
 		class SavedAdorner : Adorner

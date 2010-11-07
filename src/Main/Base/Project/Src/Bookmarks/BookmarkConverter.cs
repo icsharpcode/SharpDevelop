@@ -31,33 +31,36 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				FileName fileName = FileName.Create(v[1]);
 				int lineNumber = int.Parse(v[2], culture);
 				int columnNumber = int.Parse(v[3], culture);
-				Debugging.BreakpointAction action = Debugging.BreakpointAction.Break;
-				string scriptLanguage = "";
-				string script = "";
-				if (v[0] == "Breakpoint") {
-					action = (Debugging.BreakpointAction)Enum.Parse(typeof(Debugging.BreakpointAction), v[5]);
-					scriptLanguage = v[6];
-					script = v[7];
-				}
 				if (lineNumber < 0)
 					return null;
 				if (columnNumber < 0)
 					return null;
+				
 				SDBookmark bookmark;
 				switch (v[0]) {
 					case "Breakpoint":
+						Debugging.BreakpointAction action = Debugging.BreakpointAction.Break;
+						string scriptLanguage = "";
+						string script = "";
+						action = (Debugging.BreakpointAction)Enum.Parse(typeof(Debugging.BreakpointAction), v[5]);
+						scriptLanguage = v[6];
+						script = v[7];
 						var bbm = new Debugging.BreakpointBookmark(fileName, new Location(columnNumber, lineNumber), action, scriptLanguage, script);
 						bbm.IsEnabled = bool.Parse(v[4]);
 						bookmark = bbm;
+						bbm.Action = action;
+						bbm.ScriptLanguage = scriptLanguage;
+						bbm.Condition = script;
 						break;
-					case "PinBookmark":
-						var pin = new PinBookmark(fileName, new Location(columnNumber, lineNumber));
-						for (int i = 4; i < v.Length; i+=2) {
-							pin.SavedNodes.Add(new Tuple<string, string>(v[i], v[i+1]));
-						}
-						
-						bookmark = pin;
-						break;
+//					case "PinBookmark":
+//						var pin = new PinBookmark(fileName, new Location(columnNumber, lineNumber));
+//						pin.Comment = v[3];
+//						for (int i = 4; i < v.Length; i+=2) {
+//							pin.SavedNodes.Add(new Tuple<string, string>(v[i], v[i+1]));
+//						}
+//						
+//						bookmark = pin;
+//						break;
 					default:
 						bookmark = new SDBookmark(fileName, new Location(columnNumber, lineNumber));
 						break;
@@ -100,15 +103,16 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 					b.Append(bbm.Condition);
 				}
 				
-				if (bookmark is PinBookmark) {
-					var pin = (PinBookmark)bookmark;
-					b.Append(pin.Comment);
-					foreach(var node in pin.Nodes) {
-						b.Append(node.Name);
-						b.Append('|');
-						b.Append(node.Text);
-					}						
-				}
+//				if (bookmark is PinBookmark) {
+//					var pin = (PinBookmark)bookmark;
+//					b.Append(pin.Comment ?? string.Empty);
+//					foreach(var node in pin.Nodes) {
+//						b.Append('|');
+//						b.Append(node.Name);
+//						b.Append('|');
+//						b.Append(node.Text);
+//					}						
+//				}
 				return b.ToString();
 			} else {
 				return base.ConvertTo(context, culture, value, destinationType);

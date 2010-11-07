@@ -230,9 +230,8 @@
                         				Style="{StaticResource TextStyle}"
                         				IsEnabled="{Binding CanSetText}"
                         				KeyUp="TextBox_KeyUp"
-                        				LostFocus="TextBox_LostFocus"
                         				Margin="4 0"
-                        				Text="{Binding Path=Text, Mode=OneWay}"/>
+                        				Text="{Binding Path=Text}"/>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -263,7 +262,7 @@
 			
         	<!--	commentTextbox		-->
 			<Border Name="BorderComment" Background="White" BorderThickness="1,0,1,1" BorderBrush="Black" Height="0" MaxHeight="50">
-        		<TextBox Name="CommentTextBox" Margin="3" Height="34"/>
+        		<TextBox Name="CommentTextBox" Margin="3" Height="34" TextChanged="CommentTextBox_TextChanged"/>
 			</Border>
         </StackPanel>
 			<Canvas MinWidth="25" Background="Transparent" Grid.Column="1" Name="PinControlCanvas" Visibility="Collapsed">
