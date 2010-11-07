@@ -6381,6 +6381,12 @@ Removed the end part of the original message ", reason '${Message}'" since this 
     <value>Delete all web references</value>
     <comment>Title of the dialog box when the user tries to remove all web references.</comment>
   </data>
+  <data name="ReflectorAddIn.OpenReflectorCommand" xml:space="preserve">
+    <value>Open .NET Reflector</value>
+  </data>
+  <data name="ReflectorAddIn.ReflectorDoesNotExist" xml:space="preserve">
+    <value>Reflector could not be found at the specified location, or SharpDevelop does not have sufficient rights to access it.</value>
+  </data>
   <data name="ReflectorAddIn.ReflectorPathNotSet" xml:space="preserve">
     <value>The path to Reflector has not been set yet.</value>
   </data>
