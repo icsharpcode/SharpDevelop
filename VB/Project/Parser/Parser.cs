@@ -3669,13 +3669,11 @@ partial class VBParser
 		lambda.StartLocation = la.Location;
 
 		Expect(210);
-		if (la.kind == 37) {
-			Get();
-			if (StartOf(7)) {
-				FormalParameterList(lambda.Parameters);
-			}
-			Expect(38);
+		Expect(37);
+		if (StartOf(7)) {
+			FormalParameterList(lambda.Parameters);
 		}
+		Expect(38);
 		if (StartOf(42)) {
 			if (StartOf(24)) {
 				Expr(out inner);
@@ -3707,13 +3705,11 @@ partial class VBParser
 		lambda.StartLocation = la.Location;
 
 		Expect(127);
-		if (la.kind == 37) {
-			Get();
-			if (StartOf(7)) {
-				FormalParameterList(lambda.Parameters);
-			}
-			Expect(38);
+		Expect(37);
+		if (StartOf(7)) {
+			FormalParameterList(lambda.Parameters);
 		}
+		Expect(38);
 		if (la.kind == 63) {
 			Get();
 			TypeName(out typeRef);
@@ -3757,17 +3753,9 @@ partial class VBParser
 		} else if (la.kind == 89) {
 			ContinueStatement(out statement);
 		} else if (la.kind == 215) {
-			Get();
-			if (StartOf(24)) {
-				Expr(out expr);
-			}
-			statement = new ThrowStatement(expr);
+			ThrowStatement(out statement);
 		} else if (la.kind == 195) {
-			Get();
-			if (StartOf(24)) {
-				Expr(out expr);
-			}
-			statement = new ReturnStatement(expr);
+			ReturnStatement(out statement);
 		} else if (la.kind == 211) {
 			Get();
 			Expr(out expr);
@@ -4606,7 +4594,7 @@ partial class VBParser
 	}
 
 	void LabelName(out string name) {
-		name = String.Empty;
+		name = string.Empty;
 
 		if (StartOf(5)) {
 			Identifier();
@@ -4704,13 +4692,17 @@ partial class VBParser
 	}
 
 	void TryStatement(out Statement tryStatement) {
-		Statement blockStmt = null, finallyStmt = null;List<CatchClause> catchClauses = null;
+		Statement blockStmt = null;
+		Statement finallyStmt = null;
+		CatchClause clause = null;
+		List<CatchClause> catchClauses = new List<CatchClause>();
 
 		Expect(218);
 		EndOfStmt();
 		Block(out blockStmt);
-		if (la.kind == 75 || la.kind == 113 || la.kind == 123) {
-			CatchClauses(out catchClauses);
+		while (la.kind == 75) {
+			CatchClause(out clause);
+			if (clause != null) catchClauses.Add(clause);
 		}
 		if (la.kind == 123) {
 			Get();
@@ -4720,7 +4712,6 @@ partial class VBParser
 		Expect(113);
 		Expect(218);
 		tryStatement = new TryCatchStatement(blockStmt, catchClauses, finallyStmt);
-
 	}
 
 	void ContinueStatement(out Statement statement) {
@@ -4739,6 +4730,24 @@ partial class VBParser
 			}
 		}
 		statement = new ContinueStatement(continueType);
+	}
+
+	void ThrowStatement(out Statement statement) {
+		Expression expr = null;
+		Expect(215);
+		if (StartOf(24)) {
+			Expr(out expr);
+		}
+		statement = new ThrowStatement(expr);
+	}
+
+	void ReturnStatement(out Statement statement) {
+		Expression expr = null;
+		Expect(195);
+		if (StartOf(24)) {
+			Expr(out expr);
+		}
+		statement = new ReturnStatement(expr);
 	}
 
 	void WithStatement(out Statement withStatement) {
@@ -4881,7 +4890,9 @@ partial class VBParser
 	}
 
 	void GotoStatement(out GotoStatement goToStatement) {
-		string label = String.Empty; Location startLocation = la.Location;
+		string label = string.Empty;
+		Location startLocation = la.Location;
+
 		Expect(132);
 		LabelName(out label);
 		goToStatement = new GotoStatement(label) {
@@ -4893,19 +4904,18 @@ partial class VBParser
 
 	void ResumeStatement(out ResumeStatement resumeStatement) {
 		resumeStatement = null;
-		string label = String.Empty;
+		string label = string.Empty;
 
-		if (IsResumeNext()) {
-			Expect(194);
-			Expect(163);
-			resumeStatement = new ResumeStatement(true);
-		} else if (la.kind == 194) {
-			Get();
-			if (StartOf(49)) {
+		Expect(194);
+		if (StartOf(49)) {
+			if (la.kind == 163) {
+				Get();
+				resumeStatement = new ResumeStatement(true);
+			} else {
 				LabelName(out label);
+				resumeStatement = new ResumeStatement(label);
 			}
-			resumeStatement = new ResumeStatement(label);
-		} else SynErr(317);
+		}
 	}
 
 	void ReDimClauseInternal(ref Expression expr) {
@@ -4979,7 +4989,7 @@ partial class VBParser
 				op = BinaryOperatorType.InEquality;
 				break;
 			}
-			default: SynErr(318); break;
+			default: SynErr(317); break;
 			}
 			Expr(out expr);
 			caseClause = new CaseLabel(op, expr);
@@ -4992,34 +5002,31 @@ partial class VBParser
 			}
 			caseClause = new CaseLabel(expr, sexpr);
 
-		} else SynErr(319);
+		} else SynErr(318);
 	}
 
-	void CatchClauses(out List<CatchClause> catchClauses) {
-		catchClauses = new List<CatchClause>();
+	void CatchClause(out CatchClause catchClause) {
 		TypeReference type = null;
 		Statement blockStmt = null;
 		Expression expr = null;
 		string name = String.Empty;
 
-		while (la.kind == 75) {
-			Get();
-			if (StartOf(5)) {
-				Identifier();
-				name = t.val;
-				if (la.kind == 63) {
-					Get();
-					TypeName(out type);
-				}
-			}
-			if (la.kind == 229) {
+		Expect(75);
+		if (StartOf(5)) {
+			Identifier();
+			name = t.val;
+			if (la.kind == 63) {
 				Get();
-				Expr(out expr);
+				TypeName(out type);
 			}
-			EndOfStmt();
-			Block(out blockStmt);
-			catchClauses.Add(new CatchClause(type, name, blockStmt, expr));
 		}
+		if (la.kind == 229) {
+			Get();
+			Expr(out expr);
+		}
+		EndOfStmt();
+		Block(out blockStmt);
+		catchClause = new CatchClause(type, name, blockStmt, expr);
 	}
 
 
@@ -5080,11 +5087,11 @@ partial class VBParser
 		new BitArray(new int[] {1048576, 8372224, 0, 0, 0, 0, 0, 0}),
 		new BitArray(new int[] {-55298, 2004877309, -1051937, 1467137823, -958420554, -1593340636, -426434, 4807}),
 		new BitArray(new int[] {4, 1140850688, 25165903, 1108347652, 821280, 17105920, -2144331776, 65}),
-		new BitArray(new int[] {36, 1140850688, 8388687, 1108347140, 821280, 17105920, -2144335872, 65}),
+		new BitArray(new int[] {36, 1140850688, 8388687, 1108347140, 821280, 17105928, -2144335872, 65}),
 		new BitArray(new int[] {1048576, 3968, 0, 0, 65536, 0, 0, 0})
 
 	};
-
+	
 	void SynErr(int line, int col, int errorNumber)
 	{
 		this.Errors.Error(line, col, GetMessage(errorNumber));
@@ -5410,9 +5417,8 @@ partial class VBParser
 			case 314: return "invalid SingleLineStatementList";
 			case 315: return "invalid SingleLineStatementList";
 			case 316: return "invalid OnErrorStatement";
-			case 317: return "invalid ResumeStatement";
+			case 317: return "invalid CaseClause";
 			case 318: return "invalid CaseClause";
-			case 319: return "invalid CaseClause";
 
 			default: return "error " + errorNumber;
 		}

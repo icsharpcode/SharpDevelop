@@ -1664,7 +1664,7 @@ Expr<out Expression expr>
 	=
 	(
 		  IF ( IsQueryExpression() )
-		  QueryExpr<out expr>
+		  GREEDY QueryExpr<out expr>
 		| LambdaExpr<out expr>
 		| DisjunctionExpr<out expr>
 	)
@@ -2225,10 +2225,10 @@ SubLambdaExpression<out LambdaExpression lambda>
 		lambda.StartLocation = la.Location;
 	.)
 =
-	"Sub" [ "(" [ FormalParameterList<lambda.Parameters> ] ")" ]
+	"Sub" "(" [ FormalParameterList<lambda.Parameters> ] ")"
 	(
 		(
-			Expr<out inner>
+			GREEDY Expr<out inner>
 			(.
 				lambda.ExpressionBody = inner;
 				lambda.EndLocation = t.EndLocation; // la.Location?
@@ -2260,11 +2260,11 @@ FunctionLambdaExpression<out LambdaExpression lambda>
 		lambda.StartLocation = la.Location;
 	.)
 =
-	"Function" [ "(" [ FormalParameterList<lambda.Parameters> ] ")" ]
+	"Function" "(" [ FormalParameterList<lambda.Parameters> ] ")"
 	[ "As" TypeName<out typeRef> (. lambda.ReturnType = typeRef; .) ]
 	(
 		(
-			Expr<out inner>
+			GREEDY Expr<out inner>
 			(.
 				lambda.ExpressionBody = inner;
 				lambda.EndLocation = t.EndLocation; // la.Location?
@@ -3073,10 +3073,8 @@ EmbeddedStatement<out Statement statement>
 	( ExitStatement<out statement>
 	| TryStatement<out statement>
 	| ContinueStatement<out statement>
-	| /* 10.10.1.3 */
-	"Throw" [ Expr<out expr> ]				(. statement = new ThrowStatement(expr); .)
-	| /* 10.11 */
-	"Return" [ Expr<out expr> ] 			(. statement = new ReturnStatement(expr); .)
+	| ThrowStatement<out statement>
+	| ReturnStatement<out statement>
 	| /* 10.4 */
 	"SyncLock" Expr<out expr> EndOfStmt Block<out embeddedStatement>
 	"End" "SyncLock" 						(. statement = new LockStatement(expr, embeddedStatement); .)
@@ -3372,6 +3370,18 @@ ContinueStatement<out Statement statement> =
 	(. statement = new ContinueStatement(continueType); .)
 .
 
+ThrowStatement<out Statement statement>
+(. Expression expr = null; .)
+=
+	"Throw" [ Expr<out expr> ] (. statement = new ThrowStatement(expr); .)
+.
+
+ReturnStatement<out Statement statement>
+(. Expression expr = null; .)
+=
+	"Return" [ Expr<out expr> ] (. statement = new ReturnStatement(expr); .)
+.
+
 SingleLineStatementList<.List<Statement> list.>
 (. Statement embeddedStatement = null; .)
 =
@@ -3452,8 +3462,11 @@ OnErrorStatement<out OnErrorStatement stmt>
 
 /* 10.11 */
 GotoStatement<out GotoStatement goToStatement>
-	(. string label = String.Empty; Location startLocation = la.Location; .)
-	=
+(.
+	string label = string.Empty;
+	Location startLocation = la.Location;
+.)
+=
 	"GoTo" LabelName<out label>
 	(.
 		goToStatement = new GotoStatement(label) {
@@ -3466,11 +3479,11 @@ GotoStatement<out GotoStatement goToStatement>
 /* 10.1 */
 LabelName<out string name>
 	(.
-		name = String.Empty;
+		name = string.Empty;
 	.) =
-	Identifier 				(. name = t.val; .)
+	Identifier 		(. name = t.val; .)
 	| LiteralInteger	(. name = t.val; .)
-	.
+.
 
 /* 12.12.1 */
 ReDimClause<out Expression expr>
@@ -3505,14 +3518,15 @@ ReDimClauseInternal<ref Expression expr>
 
 /* 10.10.2.3 */
 ResumeStatement<out ResumeStatement resumeStatement>
-	(.
-		resumeStatement = null;
-		string label = String.Empty;
-	.) =
-	IF(IsResumeNext())
-	"Resume" "Next" 					(. resumeStatement = new ResumeStatement(true); .)
-	| "Resume" [ LabelName<out label> ]	(. resumeStatement = new ResumeStatement(label); .)
-	.
+(.
+	resumeStatement = null;
+	string label = string.Empty;
+.)
+=
+	"Resume"
+	[ "Next" (. resumeStatement = new ResumeStatement(true); .)
+	|  LabelName<out label>  (. resumeStatement = new ResumeStatement(label); .) ]
+.
 
 /* 18.8.2 */
 CaseClauses<.out List<CaseLabel> caseClauses.>
@@ -3583,37 +3597,37 @@ WithStatement<out Statement withStatement>
 	
 /* 10.10.1 */
 TryStatement<out Statement tryStatement>
-	(.
-		Statement blockStmt = null, finallyStmt = null;List<CatchClause> catchClauses = null;
-	.) =
+(.
+	Statement blockStmt = null;
+	Statement finallyStmt = null;
+	CatchClause clause = null;
+	List<CatchClause> catchClauses = new List<CatchClause>();
+.)
+=
 	"Try" EndOfStmt
-	Block<out blockStmt>
-	[CatchClauses<out catchClauses>]
-	["Finally" EndOfStmt Block<out finallyStmt> ]
+		Block<out blockStmt>
+		{ CatchClause<out clause> (. if (clause != null) catchClauses.Add(clause); .) }
+		["Finally" EndOfStmt Block<out finallyStmt> ]
 	"End" "Try"
-	(.
-		tryStatement = new TryCatchStatement(blockStmt, catchClauses, finallyStmt);
-	.)
-	.
+	(. tryStatement = new TryCatchStatement(blockStmt, catchClauses, finallyStmt); .)
+.
 
 /* 10.10.1.2 */
-CatchClauses<.out List<CatchClause> catchClauses.>
-	(.
-		catchClauses = new List<CatchClause>();
-		TypeReference type = null;
-		Statement blockStmt = null;
-		Expression expr = null;
-		string name = String.Empty;
-	.) =
-	{
-		"Catch"
-		[ Identifier (. name = t.val; .) ["As" TypeName<out type>] ]
-		[ "When" Expr<out expr> ]
-		EndOfStmt
-		Block<out blockStmt>
-		(. catchClauses.Add(new CatchClause(type, name, blockStmt, expr)); .)
-	}
-	.
+CatchClause<out CatchClause catchClause>
+(.
+	TypeReference type = null;
+	Statement blockStmt = null;
+	Expression expr = null;
+	string name = String.Empty;
+.)
+=
+	"Catch"
+	[ Identifier (. name = t.val; .) ["As" TypeName<out type>] ]
+	[ "When" Expr<out expr> ]
+	EndOfStmt
+	Block<out blockStmt>
+	(. catchClause = new CatchClause(type, name, blockStmt, expr); .)
+.
 
 /* 4.7 */
 Qualident<out string qualident>
@@ -3667,12 +3681,9 @@ IdentifierForFieldDeclaration =
 .
 
 /* 2.2 */
-
-IdentifierOrKeyword<out string name>
-=
+IdentifierOrKeyword<out string name> =
 	ANY (. name = t.val;  .)
 .
-
 
 /* 7.3 */
 PrimitiveTypeName<out string type>
@@ -3694,19 +3705,19 @@ PrimitiveTypeName<out string type>
 	| "SByte"		(. type = "System.SByte"; .)
 	.
 
-ParameterModifier<ParamModifierList m>
-	= "ByVal"			(. m.Add(ParameterModifiers.In); .)
+ParameterModifier<ParamModifierList m> =
+	"ByVal"			(. m.Add(ParameterModifiers.In); .)
 	| "ByRef"			(. m.Add(ParameterModifiers.Ref); .)
 	| "Optional"		(. m.Add(ParameterModifiers.Optional); .)
-	| "ParamArray"		(. m.Add(ParameterModifiers.Params); .)
-	.
+	| "ParamArray"	(. m.Add(ParameterModifiers.Params); .)
+.
 
-TypeModifier<ModifierList m>
-=	  "Public"			(. m.Add(Modifiers.Public, t.Location); .)
-	| "Protected"		(. m.Add(Modifiers.Protected, t.Location); .)
-	| "Friend"			(. m.Add(Modifiers.Internal, t.Location); .)
+TypeModifier<ModifierList m> =
+	  "Public"				(. m.Add(Modifiers.Public, t.Location); .)
+	| "Protected"			(. m.Add(Modifiers.Protected, t.Location); .)
+	| "Friend"				(. m.Add(Modifiers.Internal, t.Location); .)
 	| "Private"			(. m.Add(Modifiers.Private, t.Location); .)
-	| "Shared"			(. m.Add(Modifiers.Static, t.Location); .)
+	| "Shared"				(. m.Add(Modifiers.Static, t.Location); .)
 	| "Shadows"			(. m.Add(Modifiers.New, t.Location); .)
 	| "MustInherit"		(. m.Add(Modifiers.Abstract, t.Location); .)
 	| "NotInheritable"	(. m.Add(Modifiers.Sealed, t.Location); .)
@@ -3737,12 +3748,12 @@ MemberModifier<ModifierList m> =
 
 PropertyAccessorAccessModifier<out Modifiers m> =
 	(. m = Modifiers.None; .)
-	{(
+	{
 		"Public"    (. m |= Modifiers.Public; .)
 	 |  "Protected" (. m |= Modifiers.Protected; .)
 	 |  "Friend"    (. m |= Modifiers.Internal; .)
 	 |  "Private"   (. m |= Modifiers.Private; .)
-	)}
+	}
 .
 
 END VB .
