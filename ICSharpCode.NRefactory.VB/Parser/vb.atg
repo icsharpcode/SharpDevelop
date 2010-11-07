@@ -21,7 +21,7 @@ TOKENS
 	LiteralInteger
 	LiteralDouble
 	LiteralSingle
-	LiteralDecimal 
+	LiteralDecimal
 	LiteralDate
 	XmlOpenTag
 	XmlCloseTag
@@ -54,7 +54,7 @@ TOKENS
 	"}"
 	"("
 	")"
-	">" 
+	">"
 	"<"
 	"<>"
 	">="

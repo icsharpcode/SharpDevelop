@@ -45,7 +45,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework">
-      <HintPath>..\..\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\lib\nunit.framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -145,10 +145,9 @@
     <Folder Include="Output\VBNet" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Project\ICSharpCode.NRefactory.VB.csproj">
+    <ProjectReference Include="..\ICSharpCode.NRefactory.VB\ICSharpCode.NRefactory.VB.csproj">
       <Project>{7B82B671-419F-45F4-B778-D9286F996EFA}</Project>
       <Name>ICSharpCode.NRefactory.VB</Name>
-      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

@@ -20,8 +20,8 @@ namespace NRefactoryASTGenerator
 		
 		public static void Main(string[] args)
 		{
-			string directory = "../../../Project/Dom/";
-			string visitorsDir = "../../../Project/Visitors/";
+			string directory = "../../../ICSharpCode.NRefactory.VB/Dom/";
+			string visitorsDir = "../../../ICSharpCode.NRefactory.VB/Visitors/";
 			
 			Debug.WriteLine("AST Generator running...");
 			if (!File.Exists(directory + "INode.cs")) {
