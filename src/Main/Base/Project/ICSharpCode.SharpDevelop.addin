@@ -2092,7 +2092,7 @@
 		          label = "${res:XML.MainMenu.EditMenu.Copy}"
 		          type = "Item"
 		          icon = "Icons.16x16.CopyIcon"
-		          class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
+		          command = "Copy"/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Pads/CommonConsole/ToolBar">
