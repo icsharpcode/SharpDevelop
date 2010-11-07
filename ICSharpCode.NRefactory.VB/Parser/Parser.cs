@@ -4830,9 +4830,9 @@ partial class VBParser
 				resumeStatement = new ResumeStatement(true);
 			} else {
 				LabelName(out label);
-				resumeStatement = new ResumeStatement(label);
 			}
 		}
+		resumeStatement = new ResumeStatement(label);
 	}
 
 	void ExpressionStatement(out Statement statement) {

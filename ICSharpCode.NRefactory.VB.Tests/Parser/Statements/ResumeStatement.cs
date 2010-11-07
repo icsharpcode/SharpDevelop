@@ -12,12 +12,12 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class ResumeStatementTests
 	{
-		#region VB.NET
 		[Test]
-		public void VBNetResumeStatementTest()
+		public void ResumeStatementTest()
 		{
 			ResumeStatement resumeStatement = ParseUtil.ParseStatement<ResumeStatement>("Resume");
 		}
-		#endregion
+		
+		// TODO : write some more
 	}
 }

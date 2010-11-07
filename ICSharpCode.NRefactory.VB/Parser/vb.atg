@@ -3574,8 +3574,9 @@ ResumeStatement<out Statement resumeStatement>
 .)
 =
 	"Resume"
-	[ "Next" (. resumeStatement = new ResumeStatement(true); .)
-	|  LabelName<out label>  (. resumeStatement = new ResumeStatement(label); .) ]
+	[ "Next" (. resumeStatement = new ResumeStatement(true); .) | LabelName<out label> ]
+	// if only "Resume" is present label is ""
+	(. resumeStatement = new ResumeStatement(label); .)
 .
 
 /* 18.8.2 */
