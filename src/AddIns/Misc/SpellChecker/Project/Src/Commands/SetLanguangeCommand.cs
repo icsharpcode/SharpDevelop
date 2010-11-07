@@ -19,6 +19,7 @@ namespace ICSharpCode.SpellChecker.Commands
 		public override void Run()
 		{
 			SetLanguageWindow window = new SetLanguageWindow();
+			window.Owner = ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWindow;
 			window.ShowDialog();
 		}
 	}
