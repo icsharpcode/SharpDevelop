@@ -12,17 +12,15 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	[TestFixture]
 	public class LambdaExpressionTests
 	{
-		#region VB.NET
-		
-		static LambdaExpression ParseVBNet(string program)
+		static LambdaExpression Parse(string program)
 		{
 			return ParseUtil.ParseExpression<LambdaExpression>(program);
 		}
 		
 		[Test]
-		public void VBNetLambdaWithParameters()
+		public void LambdaWithParameters()
 		{
-			LambdaExpression e = ParseVBNet("Function(x As Boolean) x Or True");
+			LambdaExpression e = Parse("Function(x As Boolean) x Or True");
 			Assert.AreEqual(1, e.Parameters.Count);
 			Assert.AreEqual("x", e.Parameters[0].ParameterName);
 			Assert.AreEqual("System.Boolean", e.Parameters[0].TypeReference.Type);
@@ -31,38 +29,27 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		}
 
 		[Test]
-		public void VBNetLambdaWithoutParameters()
+		public void LambdaWithoutParameters()
 		{
-			LambdaExpression e = ParseVBNet("Function x Or True");
+			LambdaExpression e = Parse("Function() x Or True");
 			Assert.AreEqual(0, e.Parameters.Count);
 			Assert.IsTrue(e.ExpressionBody is BinaryOperatorExpression);
 			Assert.IsTrue(e.ReturnType.IsNull, "ReturnType");
 		}
 		
 		[Test]
-		public void VBNetNestedLambda()
+		public void NestedLambda()
 		{
-			LambdaExpression e = ParseVBNet("Function(x As Boolean) Function(y As Boolean) x And y");
+			LambdaExpression e = Parse("Function(x As Boolean) Function(y As Boolean) x And y");
 			Assert.AreEqual(1, e.Parameters.Count);
 			Assert.IsTrue(e.ExpressionBody is LambdaExpression);
 			Assert.IsTrue(e.ReturnType.IsNull, "ReturnType");
 		}
 		
 		[Test]
-		public void VBNetSubLambda()
+		public void SubLambda()
 		{
-			LambdaExpression e = ParseVBNet("Sub(x As Integer) Console.WriteLine(x)");
-			Assert.AreEqual(1, e.Parameters.Count);
-			Assert.IsTrue(e.ExpressionBody is InvocationExpression);
-			Assert.IsNotNull(e.ReturnType);
-			Assert.AreEqual("System.Void", e.ReturnType.Type);
-			Assert.IsTrue(e.ReturnType.IsKeyword);
-		}
-		
-		[Test]
-		public void VBNetSubWithStatementLambda()
-		{
-			LambdaExpression e = ParseVBNet("Sub(x As Integer) Call Console.WriteLine(x)");
+			LambdaExpression e = Parse("Sub(x As Integer) Console.WriteLine(x)");
 			Assert.AreEqual(1, e.Parameters.Count);
 			Assert.IsTrue(e.StatementBody is ExpressionStatement);
 			Assert.IsNotNull(e.ReturnType);
@@ -71,9 +58,20 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		}
 		
 		[Test]
-		public void VBNetMultilineSubLambda()
+		public void SubWithStatementLambda()
 		{
-			LambdaExpression e = ParseVBNet("Sub(x As Integer)\n" +
+			LambdaExpression e = Parse("Sub(x As Integer) Call Console.WriteLine(x)");
+			Assert.AreEqual(1, e.Parameters.Count);
+			Assert.IsTrue(e.StatementBody is ExpressionStatement);
+			Assert.IsNotNull(e.ReturnType);
+			Assert.AreEqual("System.Void", e.ReturnType.Type);
+			Assert.IsTrue(e.ReturnType.IsKeyword);
+		}
+		
+		[Test]
+		public void MultilineSubLambda()
+		{
+			LambdaExpression e = Parse("Sub(x As Integer)\n" +
 			                                "	For i As Integer = 0 To x\n" +
 			                                "		Console.WriteLine(i)\n" +
 			                                "	Next\n" +
@@ -91,9 +89,9 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		}
 		
 		[Test]
-		public void VBNetMultilineFunctionLambda()
+		public void MultilineFunctionLambda()
 		{
-			LambdaExpression e = ParseVBNet("Function(x As Integer)\n" +
+			LambdaExpression e = Parse("Function(x As Integer)\n" +
 			                                "	Dim prod As Integer = 1\n" +
 			                                "	For i As Integer = 1 To x\n" +
 			                                "		prod = prod * i\n" +
@@ -113,9 +111,9 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		}
 		
 		[Test]
-		public void VBNetMultilineFunctionWithReturnTypeLambda()
+		public void MultilineFunctionWithReturnTypeLambda()
 		{
-			LambdaExpression e = ParseVBNet("Function(x As Integer) As Integer\n" +
+			LambdaExpression e = Parse("Function(x As Integer) As Integer\n" +
 			                                "	Dim prod As Integer = 1\n" +
 			                                "	For i As Integer = 1 To x\n" +
 			                                "		prod = prod * i\n" +
@@ -135,6 +133,5 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 			Assert.IsTrue(b.Children[1] is ForNextStatement);
 			Assert.IsTrue(b.Children[2] is ReturnStatement);
 		}
-		#endregion
 	}
 }
