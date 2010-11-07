@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	{
 		void RunTest(string expression, int expectedCount, Action<QueryExpression> constraint, params Type[] expectedTypes)
 		{
-			var expr = ParseUtilVBNet.ParseExpression<QueryExpression>(expression);
+			var expr = ParseUtil.ParseExpression<QueryExpression>(expression);
 			
 			Assert.AreEqual(expectedCount, expr.Clauses.Count);
 			

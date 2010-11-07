@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetLocalVariableDeclarationTest()
 		{
-			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a As Integer = 5");
+			LocalVariableDeclaration lvd = ParseUtil.ParseStatement<LocalVariableDeclaration>("Dim a As Integer = 5");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			Assert.AreEqual("a", lvd.Variables[0].Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
@@ -27,7 +27,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetLocalVariableNamedOverrideDeclarationTest()
 		{
-			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim override As Integer = 5");
+			LocalVariableDeclaration lvd = ParseUtil.ParseStatement<LocalVariableDeclaration>("Dim override As Integer = 5");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			Assert.AreEqual("override", lvd.Variables[0].Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetLocalArrayDeclarationWithInitializationTest()
 		{
-			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a(10) As Integer");
+			LocalVariableDeclaration lvd = ParseUtil.ParseStatement<LocalVariableDeclaration>("Dim a(10) As Integer");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			Assert.AreEqual("a", lvd.Variables[0].Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetLocalArrayDeclarationWithInitializationAndLowerBoundTest()
 		{
 			// VB.NET allows only "0" as lower bound
-			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a(0 To 10) As Integer");
+			LocalVariableDeclaration lvd = ParseUtil.ParseStatement<LocalVariableDeclaration>("Dim a(0 To 10) As Integer");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			Assert.AreEqual("a", lvd.Variables[0].Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
@@ -69,7 +69,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetLocalArrayDeclarationTest()
 		{
-			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a() As Integer");
+			LocalVariableDeclaration lvd = ParseUtil.ParseStatement<LocalVariableDeclaration>("Dim a() As Integer");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			Assert.AreEqual("a", lvd.Variables[0].Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
@@ -80,7 +80,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetLocalJaggedArrayDeclarationTest()
 		{
-			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a(10)() As Integer");
+			LocalVariableDeclaration lvd = ParseUtil.ParseStatement<LocalVariableDeclaration>("Dim a(10)() As Integer");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			Assert.AreEqual("a", lvd.Variables[0].Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
@@ -95,7 +95,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetComplexGenericLocalVariableDeclarationTest()
 		{
-			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim where As Generic(Of Printable, G(Of Printable()))");
+			LocalVariableDeclaration lvd = ParseUtil.ParseStatement<LocalVariableDeclaration>("Dim where As Generic(Of Printable, G(Of Printable()))");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			Assert.AreEqual("where", lvd.Variables[0].Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
@@ -111,7 +111,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetGenericWithArrayLocalVariableDeclarationTest1()
 		{
-			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a As G(Of Integer)()");
+			LocalVariableDeclaration lvd = ParseUtil.ParseStatement<LocalVariableDeclaration>("Dim a As G(Of Integer)()");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			TypeReference type = lvd.GetTypeForVariable(0);
 			Assert.AreEqual("G", type.Type);
@@ -125,7 +125,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetGenericWithArrayLocalVariableDeclarationTest2()
 		{
-			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a As G(Of Integer())");
+			LocalVariableDeclaration lvd = ParseUtil.ParseStatement<LocalVariableDeclaration>("Dim a As G(Of Integer())");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			TypeReference type = lvd.GetTypeForVariable(0);
 			Assert.AreEqual("G", type.Type);
@@ -140,7 +140,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetGenericLocalVariableDeclarationTest2()
 		{
-			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a As G(Of G(Of Integer))");
+			LocalVariableDeclaration lvd = ParseUtil.ParseStatement<LocalVariableDeclaration>("Dim a As G(Of G(Of Integer))");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			TypeReference type = lvd.GetTypeForVariable(0);
 			Assert.AreEqual("G", type.Type);
@@ -153,7 +153,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetGenericLocalVariableDeclarationTest()
 		{
-			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a As G(Of Integer)");
+			LocalVariableDeclaration lvd = ParseUtil.ParseStatement<LocalVariableDeclaration>("Dim a As G(Of Integer)");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			TypeReference type = lvd.GetTypeForVariable(0);
 			Assert.AreEqual("G", type.Type);
@@ -164,7 +164,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetGenericLocalVariableInitializationTest()
 		{
-			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a As New G(Of Integer)");
+			LocalVariableDeclaration lvd = ParseUtil.ParseStatement<LocalVariableDeclaration>("Dim a As New G(Of Integer)");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			TypeReference type = lvd.GetTypeForVariable(0);
 			Assert.AreEqual("G", type.Type);
@@ -176,7 +176,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetNestedGenericLocalVariableDeclarationTest()
 		{
-			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a as MyType(of string).InnerClass(of integer).InnerInnerClass");
+			LocalVariableDeclaration lvd = ParseUtil.ParseStatement<LocalVariableDeclaration>("Dim a as MyType(of string).InnerClass(of integer).InnerInnerClass");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			InnerClassTypeReference ic = (InnerClassTypeReference)lvd.GetTypeForVariable(0);
 			Assert.AreEqual("InnerInnerClass", ic.Type);
@@ -193,7 +193,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetDimInSingleLineIf()
 		{
-			IfElseStatement ifes = ParseUtilVBNet.ParseStatement<IfElseStatement>("If a Then Dim b As String");
+			IfElseStatement ifes = ParseUtil.ParseStatement<IfElseStatement>("If a Then Dim b As String");
 			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ifes.TrueStatement[0];
 			Assert.AreEqual(1, lvd.Variables.Count);
 			TypeReference type = lvd.GetTypeForVariable(0);

@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetStrictOptionDeclarationTest()
 		{
 			string program = "Option Strict On\n";
-			OptionDeclaration opDec = ParseUtilVBNet.ParseGlobal<OptionDeclaration>(program);
+			OptionDeclaration opDec = ParseUtil.ParseGlobal<OptionDeclaration>(program);
 			Assert.AreEqual(OptionType.Strict, opDec.OptionType);
 			Assert.IsTrue(opDec.OptionValue);
 		}
@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetExplicitOptionDeclarationTest()
 		{
 			string program = "Option Explicit Off\n";
-			OptionDeclaration opDec = ParseUtilVBNet.ParseGlobal<OptionDeclaration>(program);
+			OptionDeclaration opDec = ParseUtil.ParseGlobal<OptionDeclaration>(program);
 			Assert.AreEqual(OptionType.Explicit, opDec.OptionType);
 			Assert.IsFalse(opDec.OptionValue, "Off option value excepted!");
 		}
@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetCompareBinaryOptionDeclarationTest()
 		{
 			string program = "Option Compare Binary\n";
-			OptionDeclaration opDec = ParseUtilVBNet.ParseGlobal<OptionDeclaration>(program);
+			OptionDeclaration opDec = ParseUtil.ParseGlobal<OptionDeclaration>(program);
 			Assert.AreEqual(OptionType.CompareBinary, opDec.OptionType);
 			Assert.IsTrue(opDec.OptionValue);
 		}
@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetCompareTextOptionDeclarationTest()
 		{
 			string program = "Option Compare Text\n";
-			OptionDeclaration opDec = ParseUtilVBNet.ParseGlobal<OptionDeclaration>(program);
+			OptionDeclaration opDec = ParseUtil.ParseGlobal<OptionDeclaration>(program);
 			Assert.AreEqual(OptionType.CompareText, opDec.OptionType);
 			Assert.IsTrue(opDec.OptionValue);
 		}
@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetInferOnOptionDeclarationTest()
 		{
 			string program = "Option Infer On\n";
-			OptionDeclaration opDec = ParseUtilVBNet.ParseGlobal<OptionDeclaration>(program);
+			OptionDeclaration opDec = ParseUtil.ParseGlobal<OptionDeclaration>(program);
 			Assert.AreEqual(OptionType.Infer, opDec.OptionType);
 			Assert.IsTrue(opDec.OptionValue);
 		}
@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetInferOffOptionDeclarationTest()
 		{
 			string program = "Option Infer\n";
-			OptionDeclaration opDec = ParseUtilVBNet.ParseGlobal<OptionDeclaration>(program);
+			OptionDeclaration opDec = ParseUtil.ParseGlobal<OptionDeclaration>(program);
 			Assert.AreEqual(OptionType.Infer, opDec.OptionType);
 			Assert.IsTrue(opDec.OptionValue);
 		}
@@ -70,7 +70,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetInferOptionDeclarationTest()
 		{
 			string program = "Option Infer\n";
-			OptionDeclaration opDec = ParseUtilVBNet.ParseGlobal<OptionDeclaration>(program);
+			OptionDeclaration opDec = ParseUtil.ParseGlobal<OptionDeclaration>(program);
 			Assert.AreEqual(OptionType.Infer, opDec.OptionType);
 			Assert.IsTrue(opDec.OptionValue);
 		}

@@ -21,7 +21,7 @@ Using nf As New System.Drawing.Font(""Arial"", 12.0F, FontStyle.Bold)
         c.Font = nf
         c.Text = ""This is 12-point Arial bold""
 End Using";
-			UsingStatement usingStmt = ParseUtilVBNet.ParseStatement<UsingStatement>(usingText);
+			UsingStatement usingStmt = ParseUtil.ParseStatement<UsingStatement>(usingText);
 			// TODO : Extend test.
 		}
 		[Test]
@@ -31,7 +31,7 @@ End Using";
 Using nf As Font = New Font()
 	Bla(nf)
 End Using";
-			UsingStatement usingStmt = ParseUtilVBNet.ParseStatement<UsingStatement>(usingText);
+			UsingStatement usingStmt = ParseUtil.ParseStatement<UsingStatement>(usingText);
 			// TODO : Extend test.
 		}
 		[Test]
@@ -41,7 +41,7 @@ End Using";
 Using nf As New Font(), nf2 As New List(Of Font)(), nf3 = Nothing
 	Bla(nf)
 End Using";
-			UsingStatement usingStmt = ParseUtilVBNet.ParseStatement<UsingStatement>(usingText);
+			UsingStatement usingStmt = ParseUtil.ParseStatement<UsingStatement>(usingText);
 			// TODO : Extend test.
 		}
 		#endregion

@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void ArrayCreateExpressionTest1()
 		{
-			ArrayCreateExpression ace = ParseUtilVBNet.ParseExpression<ArrayCreateExpression>("new Integer() {1, 2, 3, 4}");
+			ArrayCreateExpression ace = ParseUtil.ParseExpression<ArrayCreateExpression>("new Integer() {1, 2, 3, 4}");
 			
 			Assert.AreEqual("System.Int32", ace.CreateType.Type);
 			Assert.AreEqual(0, ace.Arguments.Count);
@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void ArrayCreateExpressionTest2()
 		{
-			ArrayCreateExpression ace = ParseUtilVBNet.ParseExpression<ArrayCreateExpression>("New Integer(0 To 5){0, 1, 2, 3, 4, 5}");
+			ArrayCreateExpression ace = ParseUtil.ParseExpression<ArrayCreateExpression>("New Integer(0 To 5){0, 1, 2, 3, 4, 5}");
 			
 			Assert.AreEqual("System.Int32", ace.CreateType.Type);
 			Assert.AreEqual(1, ace.Arguments.Count);

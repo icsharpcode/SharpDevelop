@@ -18,7 +18,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		{
 			string program = "a " + weakOperator + " b " + strongOperator + " c";
 			BinaryOperatorExpression boe;
-			boe = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>(program);
+			boe = ParseUtil.ParseExpression<BinaryOperatorExpression>(program);
 			Assert.AreEqual(weakOperatorType, boe.Op);
 			Assert.IsTrue(boe.Left is IdentifierExpression);
 			boe = (BinaryOperatorExpression)boe.Right;
@@ -27,7 +27,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 			Assert.IsTrue(boe.Right is IdentifierExpression);
 			
 			program = "a " + strongOperator + " b " + weakOperator + " c";
-			boe = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>(program);
+			boe = ParseUtil.ParseExpression<BinaryOperatorExpression>(program);
 			Assert.AreEqual(weakOperatorType, boe.Op);
 			Assert.IsTrue(boe.Right is IdentifierExpression);
 			boe = (BinaryOperatorExpression)boe.Left;
@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		{
 			string program = "a " + secondOperator + " b " + firstOperator + " c";
 			BinaryOperatorExpression boe;
-			boe = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>(program);
+			boe = ParseUtil.ParseExpression<BinaryOperatorExpression>(program);
 			Assert.AreEqual(firstOperatorType, boe.Op);
 			Assert.IsTrue(boe.Right is IdentifierExpression);
 			boe = (BinaryOperatorExpression)boe.Left;
@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 			Assert.IsTrue(boe.Right is IdentifierExpression);
 			
 			program = "a " + firstOperator + " b " + secondOperator + " c";
-			boe = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>(program);
+			boe = ParseUtil.ParseExpression<BinaryOperatorExpression>(program);
 			Assert.AreEqual(secondOperatorType, boe.Op);
 			Assert.IsTrue(boe.Right is IdentifierExpression);
 			boe = (BinaryOperatorExpression)boe.Left;
@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		#region VB.NET
 		void VBNetTestBinaryOperatorExpressionTest(string program, BinaryOperatorType op)
 		{
-			BinaryOperatorExpression boe = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>(program);
+			BinaryOperatorExpression boe = ParseUtil.ParseExpression<BinaryOperatorExpression>(program);
 			Assert.AreEqual(op, boe.Op);
 			
 			Assert.IsTrue(boe.Left is IdentifierExpression);
@@ -249,7 +249,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetDictionaryAccess()
 		{
-			BinaryOperatorExpression boe = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>("a!b");
+			BinaryOperatorExpression boe = ParseUtil.ParseExpression<BinaryOperatorExpression>("a!b");
 			Assert.AreEqual(BinaryOperatorType.DictionaryAccess, boe.Op);
 			Assert.IsTrue(boe.Left is IdentifierExpression);
 			Assert.IsTrue(boe.Right is PrimitiveExpression);
@@ -258,7 +258,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetWithDictionaryAccess()
 		{
-			BinaryOperatorExpression boe = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>("!b");
+			BinaryOperatorExpression boe = ParseUtil.ParseExpression<BinaryOperatorExpression>("!b");
 			Assert.AreEqual(BinaryOperatorType.DictionaryAccess, boe.Op);
 			Assert.IsTrue(boe.Left.IsNull);
 			Assert.IsTrue(boe.Right is PrimitiveExpression);
@@ -273,7 +273,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		
 		string AddInteger<T>(string input, int number) where T : Expression
 		{
-			Expression e = ParseUtilVBNet.ParseExpression<T>(input);
+			Expression e = ParseUtil.ParseExpression<T>(input);
 			e = Expression.AddInteger(e, number);
 			VBNetOutputVisitor v = new VBNetOutputVisitor();
 			e.AcceptVisitor(v, null);

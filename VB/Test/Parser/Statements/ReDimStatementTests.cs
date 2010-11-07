@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetReDimStatementTest()
 		{
-			ReDimStatement reDimStatement = ParseUtilVBNet.ParseStatement<ReDimStatement>("ReDim Preserve MyArray(15)");
+			ReDimStatement reDimStatement = ParseUtil.ParseStatement<ReDimStatement>("ReDim Preserve MyArray(15)");
 			Assert.AreEqual(1, reDimStatement.ReDimClauses.Count);
 			Assert.AreSame(reDimStatement, reDimStatement.ReDimClauses[0].Parent);
 		}
@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetReDimStatementTest2()
 		{
-			ReDimStatement reDimStatement = ParseUtilVBNet.ParseStatement<ReDimStatement>("ReDim calCheckData(channelNum, lambdaNum).ShiftFromLastFullCalPixels(CalCheckPeak.HighWavelength)");
+			ReDimStatement reDimStatement = ParseUtil.ParseStatement<ReDimStatement>("ReDim calCheckData(channelNum, lambdaNum).ShiftFromLastFullCalPixels(CalCheckPeak.HighWavelength)");
 		}
 		
 		[Test]
@@ -71,7 +71,7 @@ Class X
 		ReDim SomeType(Of Integer).IntArray(0 To 10, 10, 0 To 20)
 	End Sub
 End Class";
-			TypeDeclaration typeDeclaration = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			TypeDeclaration typeDeclaration = ParseUtil.ParseGlobal<TypeDeclaration>(program);
 		}
 	}
 }

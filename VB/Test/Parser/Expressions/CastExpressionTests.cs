@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		#region VB.NET
 		void TestSpecializedCast(string castExpression, Type castType)
 		{
-			CastExpression ce = ParseUtilVBNet.ParseExpression<CastExpression>(castExpression);
+			CastExpression ce = ParseUtil.ParseExpression<CastExpression>(castExpression);
 			Assert.AreEqual(castType.FullName, ce.CastTo.Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 			Assert.AreEqual(CastType.PrimitiveConversion, ce.CastType);
@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleCastExpression()
 		{
-			CastExpression ce = ParseUtilVBNet.ParseExpression<CastExpression>("CType(o, MyObject)");
+			CastExpression ce = ParseUtil.ParseExpression<CastExpression>("CType(o, MyObject)");
 			Assert.AreEqual("MyObject", ce.CastTo.Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 			Assert.AreEqual(CastType.Conversion, ce.CastType);
@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetGenericCastExpression()
 		{
-			CastExpression ce = ParseUtilVBNet.ParseExpression<CastExpression>("CType(o, List(of T))");
+			CastExpression ce = ParseUtil.ParseExpression<CastExpression>("CType(o, List(of T))");
 			Assert.AreEqual("List", ce.CastTo.Type);
 			Assert.AreEqual("T", ce.CastTo.GenericTypes[0].Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleDirectCastExpression()
 		{
-			CastExpression ce = ParseUtilVBNet.ParseExpression<CastExpression>("DirectCast(o, MyObject)");
+			CastExpression ce = ParseUtil.ParseExpression<CastExpression>("DirectCast(o, MyObject)");
 			Assert.AreEqual("MyObject", ce.CastTo.Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 			Assert.AreEqual(CastType.Cast, ce.CastType);
@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetGenericDirectCastExpression()
 		{
-			CastExpression ce = ParseUtilVBNet.ParseExpression<CastExpression>("DirectCast(o, List(of T))");
+			CastExpression ce = ParseUtil.ParseExpression<CastExpression>("DirectCast(o, List(of T))");
 			Assert.AreEqual("List", ce.CastTo.Type);
 			Assert.AreEqual("T", ce.CastTo.GenericTypes[0].Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
@@ -63,7 +63,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleTryCastExpression()
 		{
-			CastExpression ce = ParseUtilVBNet.ParseExpression<CastExpression>("TryCast(o, MyObject)");
+			CastExpression ce = ParseUtil.ParseExpression<CastExpression>("TryCast(o, MyObject)");
 			Assert.AreEqual("MyObject", ce.CastTo.Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 			Assert.AreEqual(CastType.TryCast, ce.CastType);
@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetGenericTryCastExpression()
 		{
-			CastExpression ce = ParseUtilVBNet.ParseExpression<CastExpression>("TryCast(o, List(of T))");
+			CastExpression ce = ParseUtil.ParseExpression<CastExpression>("TryCast(o, List(of T))");
 			Assert.AreEqual("List", ce.CastTo.Type);
 			Assert.AreEqual("T", ce.CastTo.GenericTypes[0].Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);

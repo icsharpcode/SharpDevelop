@@ -17,7 +17,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetConditionalExpressionTest()
 		{
-			ConditionalExpression ce = ParseUtilVBNet.ParseExpression<ConditionalExpression>("If(x IsNot Nothing, x.Test, \"nothing\")");
+			ConditionalExpression ce = ParseUtil.ParseExpression<ConditionalExpression>("If(x IsNot Nothing, x.Test, \"nothing\")");
 			
 			Assert.IsTrue(ce.Condition is BinaryOperatorExpression);
 			Assert.IsTrue(ce.TrueExpression is MemberReferenceExpression);

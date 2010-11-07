@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleElementReferenceTest()
 		{
-			XmlMemberAccessExpression xmae = ParseUtilVBNet.ParseExpression<XmlMemberAccessExpression>("xml.<ns:MyElement>");
+			XmlMemberAccessExpression xmae = ParseUtil.ParseExpression<XmlMemberAccessExpression>("xml.<ns:MyElement>");
 			Assert.AreEqual("ns:MyElement", xmae.Identifier);
 			Assert.IsTrue(xmae.IsXmlIdentifier);
 			Assert.AreEqual(XmlAxisType.Element, xmae.AxisType);
@@ -27,7 +27,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleAttributeReferenceTest()
 		{
-			XmlMemberAccessExpression xmae = ParseUtilVBNet.ParseExpression<XmlMemberAccessExpression>("xml.@attribute");
+			XmlMemberAccessExpression xmae = ParseUtil.ParseExpression<XmlMemberAccessExpression>("xml.@attribute");
 			Assert.AreEqual("attribute", xmae.Identifier);
 			Assert.IsFalse(xmae.IsXmlIdentifier);
 			Assert.AreEqual(XmlAxisType.Attribute, xmae.AxisType);
@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetXmlNameAttributeReferenceTest()
 		{
-			XmlMemberAccessExpression xmae = ParseUtilVBNet.ParseExpression<XmlMemberAccessExpression>("xml.@<ns:attribute>");
+			XmlMemberAccessExpression xmae = ParseUtil.ParseExpression<XmlMemberAccessExpression>("xml.@<ns:attribute>");
 			Assert.AreEqual("ns:attribute", xmae.Identifier);
 			Assert.IsTrue(xmae.IsXmlIdentifier);
 			Assert.AreEqual(XmlAxisType.Attribute, xmae.AxisType);
@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleDescendentsReferenceTest()
 		{
-			XmlMemberAccessExpression xmae = ParseUtilVBNet.ParseExpression<XmlMemberAccessExpression>("xml...<ns:Element>");
+			XmlMemberAccessExpression xmae = ParseUtil.ParseExpression<XmlMemberAccessExpression>("xml...<ns:Element>");
 			Assert.AreEqual("ns:Element", xmae.Identifier);
 			Assert.IsTrue(xmae.IsXmlIdentifier);
 			Assert.AreEqual(XmlAxisType.Descendents, xmae.AxisType);
@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleElementReferenceWithDotTest()
 		{
-			XmlMemberAccessExpression xmae = ParseUtilVBNet.ParseExpression<XmlMemberAccessExpression>(".<ns:MyElement>");
+			XmlMemberAccessExpression xmae = ParseUtil.ParseExpression<XmlMemberAccessExpression>(".<ns:MyElement>");
 			Assert.AreEqual("ns:MyElement", xmae.Identifier);
 			Assert.IsTrue(xmae.IsXmlIdentifier);
 			Assert.AreEqual(XmlAxisType.Element, xmae.AxisType);
@@ -70,7 +70,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleAttributeReferenceWithDotTest()
 		{
-			XmlMemberAccessExpression xmae = ParseUtilVBNet.ParseExpression<XmlMemberAccessExpression>(".@attribute");
+			XmlMemberAccessExpression xmae = ParseUtil.ParseExpression<XmlMemberAccessExpression>(".@attribute");
 			Assert.AreEqual("attribute", xmae.Identifier);
 			Assert.IsFalse(xmae.IsXmlIdentifier);
 			Assert.AreEqual(XmlAxisType.Attribute, xmae.AxisType);
@@ -80,7 +80,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetXmlNameAttributeReferenceWithDotTest()
 		{
-			XmlMemberAccessExpression xmae = ParseUtilVBNet.ParseExpression<XmlMemberAccessExpression>(".@<ns:attribute>");
+			XmlMemberAccessExpression xmae = ParseUtil.ParseExpression<XmlMemberAccessExpression>(".@<ns:attribute>");
 			Assert.AreEqual("ns:attribute", xmae.Identifier);
 			Assert.IsTrue(xmae.IsXmlIdentifier);
 			Assert.AreEqual(XmlAxisType.Attribute, xmae.AxisType);
@@ -90,7 +90,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleDescendentsReferenceWithDotTest()
 		{
-			XmlMemberAccessExpression xmae = ParseUtilVBNet.ParseExpression<XmlMemberAccessExpression>("...<ns:Element>");
+			XmlMemberAccessExpression xmae = ParseUtil.ParseExpression<XmlMemberAccessExpression>("...<ns:Element>");
 			Assert.AreEqual("ns:Element", xmae.Identifier);
 			Assert.IsTrue(xmae.IsXmlIdentifier);
 			Assert.AreEqual(XmlAxisType.Descendents, xmae.AxisType);

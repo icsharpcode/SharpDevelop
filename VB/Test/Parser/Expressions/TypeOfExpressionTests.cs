@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBSimpleTypeOfExpressionTest()
 		{
-			TypeOfExpression toe = ParseUtilVBNet.ParseExpression<TypeOfExpression>("GetType(MyNamespace.N1.MyType)");
+			TypeOfExpression toe = ParseUtil.ParseExpression<TypeOfExpression>("GetType(MyNamespace.N1.MyType)");
 			Assert.AreEqual("MyNamespace.N1.MyType", toe.TypeReference.Type);
 		}
 		
@@ -24,28 +24,28 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBGlobalTypeOfExpressionTest()
 		{
-			TypeOfExpression toe = ParseUtilVBNet.ParseExpression<TypeOfExpression>("GetType(Global.System.Console)");
+			TypeOfExpression toe = ParseUtil.ParseExpression<TypeOfExpression>("GetType(Global.System.Console)");
 			Assert.AreEqual("System.Console", toe.TypeReference.Type);
 		}
 		
 		[Test]
 		public void VBPrimitiveTypeOfExpressionTest()
 		{
-			TypeOfExpression toe = ParseUtilVBNet.ParseExpression<TypeOfExpression>("GetType(integer)");
+			TypeOfExpression toe = ParseUtil.ParseExpression<TypeOfExpression>("GetType(integer)");
 			Assert.AreEqual("System.Int32", toe.TypeReference.Type);
 		}
 		
 		[Test]
 		public void VBVoidTypeOfExpressionTest()
 		{
-			TypeOfExpression toe = ParseUtilVBNet.ParseExpression<TypeOfExpression>("GetType(void)");
+			TypeOfExpression toe = ParseUtil.ParseExpression<TypeOfExpression>("GetType(void)");
 			Assert.AreEqual("void", toe.TypeReference.Type);
 		}
 		
 		[Test]
 		public void VBArrayTypeOfExpressionTest()
 		{
-			TypeOfExpression toe = ParseUtilVBNet.ParseExpression<TypeOfExpression>("GetType(MyType())");
+			TypeOfExpression toe = ParseUtil.ParseExpression<TypeOfExpression>("GetType(MyType())");
 			Assert.AreEqual("MyType", toe.TypeReference.Type);
 			Assert.AreEqual(new int[] {0}, toe.TypeReference.RankSpecifier);
 		}
@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBGenericTypeOfExpressionTest()
 		{
-			TypeOfExpression toe = ParseUtilVBNet.ParseExpression<TypeOfExpression>("GetType(MyNamespace.N1.MyType(Of string))");
+			TypeOfExpression toe = ParseUtil.ParseExpression<TypeOfExpression>("GetType(MyNamespace.N1.MyType(Of string))");
 			Assert.AreEqual("MyNamespace.N1.MyType", toe.TypeReference.Type);
 			Assert.AreEqual("System.String", toe.TypeReference.GenericTypes[0].Type);
 		}
@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBUnboundTypeOfExpressionTest()
 		{
-			TypeOfExpression toe = ParseUtilVBNet.ParseExpression<TypeOfExpression>("GetType(MyType(Of ,))");
+			TypeOfExpression toe = ParseUtil.ParseExpression<TypeOfExpression>("GetType(MyType(Of ,))");
 			Assert.AreEqual("MyType", toe.TypeReference.Type);
 			Assert.IsTrue(toe.TypeReference.GenericTypes[0].IsNull);
 			Assert.IsTrue(toe.TypeReference.GenericTypes[1].IsNull);
@@ -70,7 +70,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNestedGenericTypeOfExpressionTest()
 		{
-			TypeOfExpression toe = ParseUtilVBNet.ParseExpression<TypeOfExpression>("GetType(MyType(Of string).InnerClass(of integer).InnerInnerClass)");
+			TypeOfExpression toe = ParseUtil.ParseExpression<TypeOfExpression>("GetType(MyType(Of string).InnerClass(of integer).InnerInnerClass)");
 			InnerClassTypeReference ic = (InnerClassTypeReference)toe.TypeReference;
 			Assert.AreEqual("InnerInnerClass", ic.Type);
 			Assert.AreEqual(0, ic.GenericTypes.Count);

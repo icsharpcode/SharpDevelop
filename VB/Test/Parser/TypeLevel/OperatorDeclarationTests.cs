@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 					Return v
 				End Operator";
 			
-			OperatorDeclaration od = ParseUtilVBNet.ParseTypeMember<OperatorDeclaration>(programm);
+			OperatorDeclaration od = ParseUtil.ParseTypeMember<OperatorDeclaration>(programm);
 			Assert.IsFalse(od.IsConversionOperator);
 			Assert.AreEqual(1, od.Parameters.Count);
 			Assert.AreEqual(ConversionType.None, od.ConversionType);

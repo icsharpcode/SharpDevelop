@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetErrorStatementTest()
 		{
-			ErrorStatement errorStatement = ParseUtilVBNet.ParseStatement<ErrorStatement>("Error a");
+			ErrorStatement errorStatement = ParseUtil.ParseStatement<ErrorStatement>("Error a");
 		}
 		#endregion
 	}

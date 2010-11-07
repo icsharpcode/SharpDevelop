@@ -16,24 +16,24 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetIdentifierExpressionTest1()
 		{
-			IdentifierExpression ie = ParseUtilVBNet.ParseExpression<IdentifierExpression>("MyIdentifier");
+			IdentifierExpression ie = ParseUtil.ParseExpression<IdentifierExpression>("MyIdentifier");
 			Assert.AreEqual("MyIdentifier", ie.Identifier);
 		}
 		
 		[Test]
 		public void VBNetIdentifierExpressionTest2()
 		{
-			IdentifierExpression ie = ParseUtilVBNet.ParseExpression<IdentifierExpression>("[Public]");
+			IdentifierExpression ie = ParseUtil.ParseExpression<IdentifierExpression>("[Public]");
 			Assert.AreEqual("Public", ie.Identifier);
 		}
 		
 		[Test]
 		public void VBNetContextKeywordsTest()
 		{
-			Assert.AreEqual("Assembly", ParseUtilVBNet.ParseExpression<IdentifierExpression>("Assembly").Identifier);
-			Assert.AreEqual("Custom", ParseUtilVBNet.ParseExpression<IdentifierExpression>("Custom").Identifier);
-			Assert.AreEqual("Off", ParseUtilVBNet.ParseExpression<IdentifierExpression>("Off").Identifier);
-			Assert.AreEqual("Explicit", ParseUtilVBNet.ParseExpression<IdentifierExpression>("Explicit").Identifier);
+			Assert.AreEqual("Assembly", ParseUtil.ParseExpression<IdentifierExpression>("Assembly").Identifier);
+			Assert.AreEqual("Custom", ParseUtil.ParseExpression<IdentifierExpression>("Custom").Identifier);
+			Assert.AreEqual("Off", ParseUtil.ParseExpression<IdentifierExpression>("Off").Identifier);
+			Assert.AreEqual("Explicit", ParseUtil.ParseExpression<IdentifierExpression>("Explicit").Identifier);
 		}
 		#endregion
 	}

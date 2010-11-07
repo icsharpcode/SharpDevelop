@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetPrimitiveParenthesizedExpression()
 		{
-			ParenthesizedExpression p = ParseUtilVBNet.ParseExpression<ParenthesizedExpression>("((1))");
+			ParenthesizedExpression p = ParseUtil.ParseExpression<ParenthesizedExpression>("((1))");
 			Assert.IsTrue(p.Expression is ParenthesizedExpression);
 			p = p.Expression as ParenthesizedExpression;;
 			Assert.IsTrue(p.Expression is PrimitiveExpression);

@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleFieldReferenceExpressionTest()
 		{
-			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("myTargetObject.myField");
+			MemberReferenceExpression fre = ParseUtil.ParseExpression<MemberReferenceExpression>("myTargetObject.myField");
 			Assert.AreEqual("myField", fre.MemberName);
 			Assert.IsTrue(fre.TargetObject is IdentifierExpression);
 			Assert.AreEqual("myTargetObject", ((IdentifierExpression)fre.TargetObject).Identifier);
@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetFieldReferenceExpressionWithoutTargetTest()
 		{
-			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>(".myField");
+			MemberReferenceExpression fre = ParseUtil.ParseExpression<MemberReferenceExpression>(".myField");
 			Assert.AreEqual("myField", fre.MemberName);
 			Assert.IsTrue(fre.TargetObject.IsNull);
 		}
@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetGenericFieldReferenceExpressionTest()
 		{
-			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("SomeClass(of string).myField");
+			MemberReferenceExpression fre = ParseUtil.ParseExpression<MemberReferenceExpression>("SomeClass(of string).myField");
 			Assert.AreEqual("myField", fre.MemberName);
 			Assert.IsInstanceOf(typeof(IdentifierExpression), fre.TargetObject);
 			TypeReference tr = ((IdentifierExpression)fre.TargetObject).TypeArguments[0];
@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetFullNamespaceGenericFieldReferenceExpressionTest()
 		{
-			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("System.Subnamespace.SomeClass(of string).myField");
+			MemberReferenceExpression fre = ParseUtil.ParseExpression<MemberReferenceExpression>("System.Subnamespace.SomeClass(of string).myField");
 			Assert.AreEqual("myField", fre.MemberName);
 			Assert.IsInstanceOf(typeof(MemberReferenceExpression), fre.TargetObject);
 			
@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetGlobalFullNamespaceGenericFieldReferenceExpressionTest()
 		{
-			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("Global.System.Subnamespace.SomeClass(of string).myField");
+			MemberReferenceExpression fre = ParseUtil.ParseExpression<MemberReferenceExpression>("Global.System.Subnamespace.SomeClass(of string).myField");
 			Assert.AreEqual("myField", fre.MemberName);
 			Assert.IsInstanceOf(typeof(MemberReferenceExpression), fre.TargetObject);
 			MemberReferenceExpression inner = (MemberReferenceExpression)fre.TargetObject;
@@ -69,7 +69,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetNestedGenericFieldReferenceExpressionTest()
 		{
-			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("MyType(of string).InnerClass(of integer).myField");
+			MemberReferenceExpression fre = ParseUtil.ParseExpression<MemberReferenceExpression>("MyType(of string).InnerClass(of integer).myField");
 			Assert.AreEqual("myField", fre.MemberName);
 			Assert.IsInstanceOf(typeof(MemberReferenceExpression), fre.TargetObject);
 			

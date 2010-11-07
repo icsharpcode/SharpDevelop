@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetLabelStatementTest()
 		{
-			MethodDeclaration method = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>("Sub Test \n myLabel: Console.WriteLine() \n End Sub");
+			MethodDeclaration method = ParseUtil.ParseTypeMember<MethodDeclaration>("Sub Test \n myLabel: Console.WriteLine() \n End Sub");
 			Assert.AreEqual(2, method.Body.Children.Count);
 			LabelStatement labelStmt = (LabelStatement)method.Body.Children[0];
 			Assert.AreEqual("myLabel", labelStmt.Label);

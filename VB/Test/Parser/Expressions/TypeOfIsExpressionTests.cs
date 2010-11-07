@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleTypeOfIsExpression()
 		{
-			TypeOfIsExpression ce = ParseUtilVBNet.ParseExpression<TypeOfIsExpression>("TypeOf o Is MyObject");
+			TypeOfIsExpression ce = ParseUtil.ParseExpression<TypeOfIsExpression>("TypeOf o Is MyObject");
 			Assert.AreEqual("MyObject", ce.TypeReference.Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 		}
@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetGenericTypeOfIsExpression()
 		{
-			TypeOfIsExpression ce = ParseUtilVBNet.ParseExpression<TypeOfIsExpression>("TypeOf o Is List(of T)");
+			TypeOfIsExpression ce = ParseUtil.ParseExpression<TypeOfIsExpression>("TypeOf o Is List(of T)");
 			Assert.AreEqual("List", ce.TypeReference.Type);
 			Assert.AreEqual("T", ce.TypeReference.GenericTypes[0].Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);

@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void SimpleAddressOfExpressionTest()
 		{
-			AddressOfExpression ae = ParseUtilVBNet.ParseExpression<AddressOfExpression>("AddressOf t");
+			AddressOfExpression ae = ParseUtil.ParseExpression<AddressOfExpression>("AddressOf t");
 			Assert.IsNotNull(ae);
 			Assert.IsInstanceOf(typeof(IdentifierExpression), ae.Expression);
 			Assert.AreEqual("t", ((IdentifierExpression)ae.Expression).Identifier, "t");
@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void GenericAddressOfExpressionTest()
 		{
-			AddressOfExpression ae = ParseUtilVBNet.ParseExpression<AddressOfExpression>("AddressOf t(Of X)");
+			AddressOfExpression ae = ParseUtil.ParseExpression<AddressOfExpression>("AddressOf t(Of X)");
 			Assert.IsNotNull(ae);
 			Assert.IsInstanceOf(typeof(IdentifierExpression), ae.Expression);
 			Assert.AreEqual("t", ((IdentifierExpression)ae.Expression).Identifier, "t");
@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void MemberReferenceAddressOfExpressionTest()
 		{
-			AddressOfExpression ae = ParseUtilVBNet.ParseExpression<AddressOfExpression>("AddressOf Me.t(Of X)");
+			AddressOfExpression ae = ParseUtil.ParseExpression<AddressOfExpression>("AddressOf Me.t(Of X)");
 			Assert.IsNotNull(ae);
 			Assert.IsInstanceOf(typeof(MemberReferenceExpression), ae.Expression);
 			Assert.AreEqual("t", ((MemberReferenceExpression)ae.Expression).MemberName, "t");

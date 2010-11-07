@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleCommentTest()
 		{
-			XmlContentExpression content = ParseUtilVBNet.ParseExpression<XmlContentExpression>("<!-- test -->");
+			XmlContentExpression content = ParseUtil.ParseExpression<XmlContentExpression>("<!-- test -->");
 			Assert.AreEqual(XmlContentType.Comment, content.Type);
 			Assert.AreEqual(" test ", content.Content);
 			Assert.AreEqual(new Location(1,1), content.StartLocation);
@@ -26,7 +26,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimplePreprocessingInstructionTest()
 		{
-			XmlContentExpression content = ParseUtilVBNet.ParseExpression<XmlContentExpression>("<?xml version='1.0'?>");
+			XmlContentExpression content = ParseUtil.ParseExpression<XmlContentExpression>("<?xml version='1.0'?>");
 			Assert.AreEqual(XmlContentType.ProcessingInstruction, content.Type);
 			Assert.AreEqual("xml version='1.0'", content.Content);
 			Assert.AreEqual(new Location(1,1), content.StartLocation);
@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleCDataTest()
 		{
-			XmlContentExpression content = ParseUtilVBNet.ParseExpression<XmlContentExpression>("<![CDATA[<simple> <cdata>]]>");
+			XmlContentExpression content = ParseUtil.ParseExpression<XmlContentExpression>("<![CDATA[<simple> <cdata>]]>");
 			Assert.AreEqual(XmlContentType.CData, content.Type);
 			Assert.AreEqual("<simple> <cdata>", content.Content);
 			Assert.AreEqual(new Location(1,1), content.StartLocation);
@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleEmptyElementTest()
 		{
-			XmlElementExpression element = ParseUtilVBNet.ParseExpression<XmlElementExpression>("<Test />");
+			XmlElementExpression element = ParseUtil.ParseExpression<XmlElementExpression>("<Test />");
 			Assert.IsFalse(element.NameIsExpression);
 			Assert.AreEqual("Test", element.XmlName);
 			Assert.IsEmpty(element.Attributes);
@@ -58,7 +58,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleEmptyElementWithAttributeTest()
 		{
-			XmlElementExpression element = ParseUtilVBNet.ParseExpression<XmlElementExpression>("<Test id='0' />");
+			XmlElementExpression element = ParseUtil.ParseExpression<XmlElementExpression>("<Test id='0' />");
 			Assert.IsFalse(element.NameIsExpression);
 			Assert.AreEqual("Test", element.XmlName);
 			Assert.IsNotEmpty(element.Attributes);
@@ -79,7 +79,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleEmptyElementWithAttributesTest()
 		{
-			XmlElementExpression element = ParseUtilVBNet.ParseExpression<XmlElementExpression>("<Test id='0' name=<%= name %> <%= contentData %> />");			Assert.IsFalse(element.NameIsExpression);
+			XmlElementExpression element = ParseUtil.ParseExpression<XmlElementExpression>("<Test id='0' name=<%= name %> <%= contentData %> />");			Assert.IsFalse(element.NameIsExpression);
 			Assert.AreEqual("Test", element.XmlName);
 			Assert.IsNotEmpty(element.Attributes);
 			Assert.AreEqual(3, element.Attributes.Count);
@@ -129,7 +129,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetElementWithAttributeTest()
 		{
-			XmlElementExpression element = ParseUtilVBNet.ParseExpression<XmlElementExpression>("<Test id='0'>\n" +
+			XmlElementExpression element = ParseUtil.ParseExpression<XmlElementExpression>("<Test id='0'>\n" +
 			                                                                                    "	<Item />\n" +
 			                                                                                    "	<Item />\n" +
 			                                                                                    "</Test>");
@@ -164,7 +164,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetElementWithMixedContentTest()
 		{
-			XmlElementExpression element = ParseUtilVBNet.ParseExpression<XmlElementExpression>("<Test id='0'>\n" +
+			XmlElementExpression element = ParseUtil.ParseExpression<XmlElementExpression>("<Test id='0'>\n" +
 			                                                                                    "	<!-- test -->\n" +
 			                                                                                    "	<Item />\n" +
 			                                                                                    "	<Item />\n" +
@@ -205,7 +205,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetElementWithMixedContentTest2()
 		{
-			XmlElementExpression element = ParseUtilVBNet.ParseExpression<XmlElementExpression>("<Test>  aaaa	</Test>");
+			XmlElementExpression element = ParseUtil.ParseExpression<XmlElementExpression>("<Test>  aaaa	</Test>");
 			Assert.IsFalse(element.NameIsExpression);
 			Assert.AreEqual("Test", element.XmlName);
 			
@@ -218,7 +218,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetProcessingInstructionAndCommentAtEndTest()
 		{
-			XmlDocumentExpression document = ParseUtilVBNet.ParseExpression<XmlDocumentExpression>("<Test />\n" +
+			XmlDocumentExpression document = ParseUtil.ParseExpression<XmlDocumentExpression>("<Test />\n" +
 			                                                                                       "<!-- test -->\n" +
 			                                                                                       "<?target some text?>");
 			Assert.IsNotEmpty(document.Expressions);

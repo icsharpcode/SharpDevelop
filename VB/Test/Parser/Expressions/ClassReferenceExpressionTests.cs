@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetClassReferenceExpressionTest1()
 		{
-			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("MyClass.myField");
+			MemberReferenceExpression fre = ParseUtil.ParseExpression<MemberReferenceExpression>("MyClass.myField");
 			Assert.IsTrue(fre.TargetObject is ClassReferenceExpression);
 		}
 		#endregion

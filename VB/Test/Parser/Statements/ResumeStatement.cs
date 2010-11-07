@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetResumeStatementTest()
 		{
-			ResumeStatement resumeStatement = ParseUtilVBNet.ParseStatement<ResumeStatement>("Resume");
+			ResumeStatement resumeStatement = ParseUtil.ParseStatement<ResumeStatement>("Resume");
 		}
 		#endregion
 	}

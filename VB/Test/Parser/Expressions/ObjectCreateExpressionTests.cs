@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetAnonymousType()
 		{
-			ObjectCreateExpression oce = ParseUtilVBNet.ParseExpression<ObjectCreateExpression>(
+			ObjectCreateExpression oce = ParseUtil.ParseExpression<ObjectCreateExpression>(
 				"New With {.Id = 1, .Name= \"Bill Gates\" }");
 			
 			Assert.IsTrue(oce.CreateType.IsNull);
@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetAnonymousTypeWithoutProperty()
 		{
-			ObjectCreateExpression oce = ParseUtilVBNet.ParseExpression<ObjectCreateExpression>("New With { c }");
+			ObjectCreateExpression oce = ParseUtil.ParseExpression<ObjectCreateExpression>("New With { c }");
 			
 			Assert.IsTrue(oce.CreateType.IsNull);
 			Assert.AreEqual(0, oce.Parameters.Count);
@@ -60,7 +60,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleObjectCreateExpressionTest()
 		{
-			CheckSimpleObjectCreateExpression(ParseUtilVBNet.ParseExpression<ObjectCreateExpression>("New MyObject(1, 2, 3)"));
+			CheckSimpleObjectCreateExpression(ParseUtil.ParseExpression<ObjectCreateExpression>("New MyObject(1, 2, 3)"));
 		}
 		
 		[Test]
@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		{
 			// this test was written because this bug caused the AbstractASTVisitor to crash
 			
-			InvocationExpression expr = ParseUtilVBNet.ParseExpression<InvocationExpression>("WriteLine(New SomeGenericType(Of Integer, )())", true);
+			InvocationExpression expr = ParseUtil.ParseExpression<InvocationExpression>("WriteLine(New SomeGenericType(Of Integer, )())", true);
 			Assert.IsTrue(expr.TargetObject is IdentifierExpression);
 			Assert.AreEqual("WriteLine", ((IdentifierExpression)expr.TargetObject).Identifier);
 			Assert.AreEqual(1, expr.Arguments.Count); // here a second null parameter was added incorrectly
@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetMemberInitializationTest()
 		{
-			ObjectCreateExpression oce = ParseUtilVBNet.ParseExpression<ObjectCreateExpression>("new Contact() With { .FirstName = \"Bill\", .LastName = \"Gates\" }");
+			ObjectCreateExpression oce = ParseUtil.ParseExpression<ObjectCreateExpression>("new Contact() With { .FirstName = \"Bill\", .LastName = \"Gates\" }");
 			Assert.AreEqual(2, oce.ObjectInitializer.CreateExpressions.Count);
 			
 			Assert.AreEqual("FirstName", ((MemberInitializerExpression)oce.ObjectInitializer.CreateExpressions[0]).Name);
@@ -96,7 +96,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetNullableObjectCreateExpressionTest()
 		{
-			ObjectCreateExpression oce = ParseUtilVBNet.ParseExpression<ObjectCreateExpression>("New Integer?");
+			ObjectCreateExpression oce = ParseUtil.ParseExpression<ObjectCreateExpression>("New Integer?");
 			Assert.AreEqual("System.Nullable", oce.CreateType.Type);
 			Assert.AreEqual(1, oce.CreateType.GenericTypes.Count);
 			Assert.AreEqual("System.Int32", oce.CreateType.GenericTypes[0].Type);
@@ -105,7 +105,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetNullableObjectArrayCreateExpressionTest()
 		{
-			ObjectCreateExpression oce = ParseUtilVBNet.ParseExpression<ObjectCreateExpression>("New Integer?()");
+			ObjectCreateExpression oce = ParseUtil.ParseExpression<ObjectCreateExpression>("New Integer?()");
 			Assert.AreEqual("System.Nullable", oce.CreateType.Type);
 			Assert.AreEqual(1, oce.CreateType.GenericTypes.Count);
 			Assert.AreEqual("System.Int32", oce.CreateType.GenericTypes[0].Type);

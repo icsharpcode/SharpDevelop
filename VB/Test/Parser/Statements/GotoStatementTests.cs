@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetGotoStatementTest()
 		{
-			GotoStatement gotoStmt = ParseUtilVBNet.ParseStatement<GotoStatement>("GoTo myLabel");
+			GotoStatement gotoStmt = ParseUtil.ParseStatement<GotoStatement>("GoTo myLabel");
 			Assert.AreEqual("myLabel", gotoStmt.Label);
 		}
 		#endregion

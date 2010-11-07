@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleGetSetPropertyDeclarationTest()
 		{
-			PropertyDeclaration pd = ParseUtilVBNet.ParseTypeMember<PropertyDeclaration>("Property MyProperty As Integer \n Get \n End Get \n Set \n End Set\nEnd Property");
+			PropertyDeclaration pd = ParseUtil.ParseTypeMember<PropertyDeclaration>("Property MyProperty As Integer \n Get \n End Get \n Set \n End Set\nEnd Property");
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.IsTrue(pd.HasGetRegion);
 			Assert.IsTrue(pd.HasSetRegion);
@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleGetPropertyDeclarationTest()
 		{
-			PropertyDeclaration pd = ParseUtilVBNet.ParseTypeMember<PropertyDeclaration>("ReadOnly Property MyProperty \nGet\nEnd Get\nEnd Property");
+			PropertyDeclaration pd = ParseUtil.ParseTypeMember<PropertyDeclaration>("ReadOnly Property MyProperty \nGet\nEnd Get\nEnd Property");
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.IsTrue(pd.HasGetRegion);
 			Assert.IsFalse(pd.HasSetRegion);
@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleSetPropertyDeclarationTest()
 		{
-			PropertyDeclaration pd = ParseUtilVBNet.ParseTypeMember<PropertyDeclaration>("WriteOnly Property MyProperty \n Set\nEnd Set\nEnd Property ");
+			PropertyDeclaration pd = ParseUtil.ParseTypeMember<PropertyDeclaration>("WriteOnly Property MyProperty \n Set\nEnd Set\nEnd Property ");
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.IsFalse(pd.HasGetRegion);
 			Assert.IsTrue(pd.HasSetRegion);
@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetAutoPropertyTest()
 		{
-			PropertyDeclaration pd = ParseUtilVBNet.ParseTypeMember<PropertyDeclaration>("Property MyProperty");
+			PropertyDeclaration pd = ParseUtil.ParseTypeMember<PropertyDeclaration>("Property MyProperty");
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.IsTrue(pd.HasGetRegion);
 			Assert.IsTrue(pd.HasSetRegion);
@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetReadOnlyAutoPropertyTest()
 		{
-			PropertyDeclaration pd = ParseUtilVBNet.ParseTypeMember<PropertyDeclaration>("ReadOnly Property MyProperty");
+			PropertyDeclaration pd = ParseUtil.ParseTypeMember<PropertyDeclaration>("ReadOnly Property MyProperty");
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.IsTrue(pd.HasGetRegion);
 			Assert.IsFalse(pd.HasSetRegion);
@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetWriteOnlyAutoPropertyTest()
 		{
-			PropertyDeclaration pd = ParseUtilVBNet.ParseTypeMember<PropertyDeclaration>("WriteOnly Property MyProperty");
+			PropertyDeclaration pd = ParseUtil.ParseTypeMember<PropertyDeclaration>("WriteOnly Property MyProperty");
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.IsFalse(pd.HasGetRegion);
 			Assert.IsTrue(pd.HasSetRegion);
@@ -74,7 +74,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleInitializerAutoPropertyTest()
 		{
-			PropertyDeclaration pd = ParseUtilVBNet.ParseTypeMember<PropertyDeclaration>("Property MyProperty = 5");
+			PropertyDeclaration pd = ParseUtil.ParseTypeMember<PropertyDeclaration>("Property MyProperty = 5");
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.IsTrue(pd.HasGetRegion);
 			Assert.IsTrue(pd.HasSetRegion);
@@ -84,7 +84,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleInitializerAutoPropertyWithTypeTest()
 		{
-			PropertyDeclaration pd = ParseUtilVBNet.ParseTypeMember<PropertyDeclaration>("Property MyProperty As Integer = 5");
+			PropertyDeclaration pd = ParseUtil.ParseTypeMember<PropertyDeclaration>("Property MyProperty As Integer = 5");
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.AreEqual("System.Int32", pd.TypeReference.Type);
 			Assert.IsTrue(pd.HasGetRegion);
@@ -95,7 +95,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleObjectInitializerAutoPropertyTest()
 		{
-			PropertyDeclaration pd = ParseUtilVBNet.ParseTypeMember<PropertyDeclaration>("Property MyProperty As New List");
+			PropertyDeclaration pd = ParseUtil.ParseTypeMember<PropertyDeclaration>("Property MyProperty As New List");
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.AreEqual("List", pd.TypeReference.Type);
 			Assert.IsTrue(pd.HasGetRegion);

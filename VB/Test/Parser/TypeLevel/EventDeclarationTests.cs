@@ -14,7 +14,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleEventDeclarationTest()
 		{
-			EventDeclaration ed = ParseUtilVBNet.ParseTypeMember<EventDeclaration>("event MyEvent(x as Integer)");
+			EventDeclaration ed = ParseUtil.ParseTypeMember<EventDeclaration>("event MyEvent(x as Integer)");
 			Assert.AreEqual(1, ed.Parameters.Count);
 			Assert.AreEqual("MyEvent", ed.Name);
 			Assert.IsFalse(ed.HasAddRegion);

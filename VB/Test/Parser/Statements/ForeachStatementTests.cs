@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetForeachStatementTest()
 		{
-			ForeachStatement foreachStmt = ParseUtilVBNet.ParseStatement<ForeachStatement>("For Each i As Integer In myColl : Next");
+			ForeachStatement foreachStmt = ParseUtil.ParseStatement<ForeachStatement>("For Each i As Integer In myColl : Next");
 			// TODO : Extend test.
 		}
 		#endregion

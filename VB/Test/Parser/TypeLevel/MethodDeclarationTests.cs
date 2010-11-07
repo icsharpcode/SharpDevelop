@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetDefiningPartialMethodDeclarationTest()
 		{
-			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(@"Partial Sub MyMethod()
+			MethodDeclaration md = ParseUtil.ParseTypeMember<MethodDeclaration>(@"Partial Sub MyMethod()
 			                                                                         End Sub");
 			Assert.AreEqual(0, md.Parameters.Count);
 			Assert.AreEqual("MyMethod", md.Name);
@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 				OtherMethod()
 			end sub";
 			
-			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(program);
+			MethodDeclaration md = ParseUtil.ParseTypeMember<MethodDeclaration>(program);
 			Assert.AreEqual(Modifiers.Public | Modifiers.Static, md.Modifier);
 			Assert.AreEqual(2, md.StartLocation.Line, "StartLocation.Y");
 			Assert.AreEqual(2, md.EndLocation.Line, "EndLocation.Y");
@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 				return 1
 			end function";
 			
-			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(program);
+			MethodDeclaration md = ParseUtil.ParseTypeMember<MethodDeclaration>(program);
 			Assert.AreEqual(Modifiers.Public, md.Modifier);
 			Assert.AreEqual(2, md.StartLocation.Line, "StartLocation.Y");
 			Assert.AreEqual(2, md.StartLocation.Column, "StartLocation.X");
@@ -58,7 +58,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 				OtherMethod()
 			end Sub";
 			
-			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(program);
+			MethodDeclaration md = ParseUtil.ParseTypeMember<MethodDeclaration>(program);
 			Assert.AreEqual(Modifiers.Public, md.Modifier);
 			Assert.AreEqual(2, md.StartLocation.Line, "StartLocation.Y");
 			Assert.AreEqual(2, md.StartLocation.Column, "StartLocation.X");
@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetGenericFunctionMethodDeclarationTest()
 		{
-			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>("function MyMethod(Of T)(a As T) As Double\nEnd Function");
+			MethodDeclaration md = ParseUtil.ParseTypeMember<MethodDeclaration>("function MyMethod(Of T)(a As T) As Double\nEnd Function");
 			Assert.AreEqual("System.Double", md.TypeReference.Type);
 			Assert.AreEqual(1, md.Parameters.Count);
 			Assert.AreEqual("T", ((ParameterDeclarationExpression)md.Parameters[0]).TypeReference.Type);
@@ -81,7 +81,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetGenericMethodDeclarationTest()
 		{
-			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>("Function MyMethod(Of T)(a As T) As T\nEnd Function ");
+			MethodDeclaration md = ParseUtil.ParseTypeMember<MethodDeclaration>("Function MyMethod(Of T)(a As T) As T\nEnd Function ");
 			Assert.AreEqual("T", md.TypeReference.Type);
 			Assert.AreEqual(1, md.Parameters.Count);
 			Assert.AreEqual("T", ((ParameterDeclarationExpression)md.Parameters[0]).TypeReference.Type);
@@ -95,7 +95,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetGenericMethodDeclarationWithConstraintTest()
 		{
 			string program = "Function MyMethod(Of T As { ISomeInterface })(a As T) As T\n End Function";
-			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(program);
+			MethodDeclaration md = ParseUtil.ParseTypeMember<MethodDeclaration>(program);
 			Assert.AreEqual("T", md.TypeReference.Type);
 			Assert.AreEqual(1, md.Parameters.Count);
 			Assert.AreEqual("T", ((ParameterDeclarationExpression)md.Parameters[0]).TypeReference.Type);
@@ -110,7 +110,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetExtensionMethodDeclaration()
 		{
-			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(
+			MethodDeclaration md = ParseUtil.ParseTypeMember<MethodDeclaration>(
 				@"<Extension> _
 				Sub Print(s As String)
 					Console.WriteLine(s)
@@ -131,7 +131,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 			const string program = @"Interface MyInterface
 				Function MyMethod(Of T As {ISomeInterface})(a As T) As T
 				End Interface";
-			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			TypeDeclaration td = ParseUtil.ParseGlobal<TypeDeclaration>(program);
 			MethodDeclaration md = (MethodDeclaration)td.Children[0];
 			Assert.AreEqual("T", md.TypeReference.Type);
 			Assert.AreEqual(1, md.Parameters.Count);
@@ -151,7 +151,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	Sub MyMethod(Of T As {ISomeInterface})(a as T)
 End Interface
 ";
-			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			TypeDeclaration td = ParseUtil.ParseGlobal<TypeDeclaration>(program);
 			MethodDeclaration md = (MethodDeclaration)td.Children[0];
 			Assert.AreEqual("System.Void", md.TypeReference.Type);
 			Assert.AreEqual(1, md.Parameters.Count);
@@ -167,17 +167,17 @@ End Interface
 		[Test]
 		public void VBNetMethodWithHandlesClause()
 		{
-			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(
+			MethodDeclaration md = ParseUtil.ParseTypeMember<MethodDeclaration>(
 				@"Public Sub MyMethod(sender As Object, e As EventArgs) Handles x.y
 			End Sub");
 			Assert.AreEqual(new string[] { "x.y" }, md.HandlesClause.ToArray());
 			
-			md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(
+			md = ParseUtil.ParseTypeMember<MethodDeclaration>(
 				@"Public Sub MyMethod() Handles Me.FormClosing
 			End Sub");
 			Assert.AreEqual(new string[] { "Me.FormClosing" }, md.HandlesClause.ToArray());
 			
-			md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(
+			md = ParseUtil.ParseTypeMember<MethodDeclaration>(
 				@"Public Sub MyMethod() Handles MyBase.Event, Button1.Click
 			End Sub");
 			Assert.AreEqual(new string[] { "MyBase.Event", "Button1.Click" }, md.HandlesClause.ToArray());
@@ -190,7 +190,7 @@ End Interface
 				Func! = CSingle(Param&)
 			End Function";
 			
-			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(program);
+			MethodDeclaration md = ParseUtil.ParseTypeMember<MethodDeclaration>(program);
 			Assert.AreEqual(Modifiers.Public, md.Modifier);
 		}
 		

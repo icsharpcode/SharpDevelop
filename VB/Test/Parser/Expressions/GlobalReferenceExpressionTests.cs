@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetGlobalReferenceExpressionTest()
 		{
-			TypeReferenceExpression tre = ParseUtilVBNet.ParseExpression<TypeReferenceExpression>("Global.System");
+			TypeReferenceExpression tre = ParseUtil.ParseExpression<TypeReferenceExpression>("Global.System");
 			Assert.IsTrue(tre.TypeReference.IsGlobal);
 			Assert.AreEqual("System", tre.TypeReference.Type);
 		}
@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetGlobalTypeDeclaration()
 		{
-			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a As Global.System.String");
+			LocalVariableDeclaration lvd = ParseUtil.ParseStatement<LocalVariableDeclaration>("Dim a As Global.System.String");
 			TypeReference typeRef = lvd.GetTypeForVariable(0);
 			Assert.IsTrue(typeRef.IsGlobal);
 			Assert.AreEqual("System.String", typeRef.Type);

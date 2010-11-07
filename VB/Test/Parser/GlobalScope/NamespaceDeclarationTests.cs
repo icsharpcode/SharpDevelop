@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		{
 			string program = "Namespace TestNamespace" + Environment.NewLine +
 			                 "End Namespace" +Environment.NewLine;
-			NamespaceDeclaration ns = ParseUtilVBNet.ParseGlobal<NamespaceDeclaration>(program);
+			NamespaceDeclaration ns = ParseUtil.ParseGlobal<NamespaceDeclaration>(program);
 			Assert.AreEqual("TestNamespace", ns.Name);
 		}
 		
@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 			                 "    End Namespace\n" +
 			                 "End Namespace\n";
 			
-			NamespaceDeclaration ns = ParseUtilVBNet.ParseGlobal<NamespaceDeclaration>(program);
+			NamespaceDeclaration ns = ParseUtil.ParseGlobal<NamespaceDeclaration>(program);
 			
 			Assert.AreEqual("N1", ns.Name);
 			

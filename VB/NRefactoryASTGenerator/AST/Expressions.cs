@@ -163,12 +163,6 @@ namespace NRefactoryASTGenerator.Ast
 		public UnaryOperatorExpression(Expression expression, UnaryOperatorType op) {}
 	}
 	
-	class AnonymousMethodExpression : Expression {
-		List<ParameterDeclarationExpression> parameters;
-		BlockStatement body;
-		bool hasParameterList;
-	}
-	
 	[IncludeMember("public Location ExtendedEndLocation { get; set; }")]
 	class LambdaExpression : Expression {
 		List<ParameterDeclarationExpression> parameters;

@@ -14,7 +14,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleFieldDeclarationTest()
 		{
-			FieldDeclaration fd = ParseUtilVBNet.ParseTypeMember<FieldDeclaration>("myField As Integer(,,,)");
+			FieldDeclaration fd = ParseUtil.ParseTypeMember<FieldDeclaration>("myField As Integer(,,,)");
 			Assert.AreEqual(1, fd.Fields.Count);
 			
 			Assert.AreEqual("System.Int32", ((VariableDeclaration)fd.Fields[0]).TypeReference.Type);
@@ -26,7 +26,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetMultiFieldDeclarationTest()
 		{
-			FieldDeclaration fd = ParseUtilVBNet.ParseTypeMember<FieldDeclaration>("a, b As String");
+			FieldDeclaration fd = ParseUtil.ParseTypeMember<FieldDeclaration>("a, b As String");
 			Assert.AreEqual(2, fd.Fields.Count);
 			
 			Assert.AreEqual("System.String", ((VariableDeclaration)fd.Fields[0]).TypeReference.Type);
@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetMultiFieldsOnSingleLineTest()
 		{
 			string program = "Class TestClass : Dim a : Dim b : End Class";
-			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			TypeDeclaration td = ParseUtil.ParseGlobal<TypeDeclaration>(program);
 			
 			Assert.AreEqual(2, td.Children.Count);
 			Assert.IsTrue(td.Children[0] is FieldDeclaration);
@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetMultiFieldDeclarationTest2()
 		{
-			FieldDeclaration fd = ParseUtilVBNet.ParseTypeMember<FieldDeclaration>("Dim a, b() As String");
+			FieldDeclaration fd = ParseUtil.ParseTypeMember<FieldDeclaration>("Dim a, b() As String");
 			Assert.AreEqual(2, fd.Fields.Count);
 			
 			Assert.AreEqual("System.String", ((VariableDeclaration)fd.Fields[0]).TypeReference.Type);
@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetMultiFieldDeclarationTest3()
 		{
-			FieldDeclaration fd = ParseUtilVBNet.ParseTypeMember<FieldDeclaration>("Dim a(), b As String");
+			FieldDeclaration fd = ParseUtil.ParseTypeMember<FieldDeclaration>("Dim a(), b As String");
 			Assert.AreEqual(2, fd.Fields.Count);
 			
 			Assert.AreEqual("System.String", ((VariableDeclaration)fd.Fields[0]).TypeReference.Type);

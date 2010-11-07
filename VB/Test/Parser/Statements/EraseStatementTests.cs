@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetEraseStatementTest()
 		{
-			EraseStatement eraseStatement = ParseUtilVBNet.ParseStatement<EraseStatement>("Erase a, b, c");
+			EraseStatement eraseStatement = ParseUtil.ParseStatement<EraseStatement>("Erase a, b, c");
 		}
 		#endregion
 	}

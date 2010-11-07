@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void SimpleVBNetDelegateDeclarationTest()
 		{
 			string program = "Public Delegate Sub MyDelegate(ByVal a As Integer, ByVal secondParam As Integer, ByVal lastParam As MyObj)\n";
-			TestDelegateDeclaration(ParseUtilVBNet.ParseGlobal<DelegateDeclaration>(program));
+			TestDelegateDeclaration(ParseUtil.ParseGlobal<DelegateDeclaration>(program));
 		}
 		#endregion
 	}

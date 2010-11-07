@@ -16,14 +16,14 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetEmptyReturnStatementTest()
 		{
-			ReturnStatement returnStatement = ParseUtilVBNet.ParseStatement<ReturnStatement>("Return");
+			ReturnStatement returnStatement = ParseUtil.ParseStatement<ReturnStatement>("Return");
 			Assert.IsTrue(returnStatement.Expression.IsNull);
 		}
 		
 		[Test]
 		public void VBNetReturnStatementTest()
 		{
-			ReturnStatement returnStatement = ParseUtilVBNet.ParseStatement<ReturnStatement>("Return 5");
+			ReturnStatement returnStatement = ParseUtil.ParseStatement<ReturnStatement>("Return 5");
 			Assert.IsFalse(returnStatement.Expression.IsNull);
 			Assert.IsTrue(returnStatement.Expression is PrimitiveExpression);
 		}

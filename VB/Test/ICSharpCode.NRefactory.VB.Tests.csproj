@@ -117,7 +117,7 @@
     <Compile Include="Parser\Statements\UsingStatementTests.cs" />
     <Compile Include="Parser\Expressions\ClassReferenceExpressionTests.cs" />
     <Compile Include="Parser\Expressions\TypeOfIsExpressionTests.cs" />
-    <Compile Include="Parser\ParseUtilVBNet.cs" />
+    <Compile Include="Parser\ParseUtil.cs" />
     <Compile Include="Parser\GlobalScope\OptionDeclarationTests.cs" />
     <Compile Include="Parser\TypeLevel\DeclareDeclarationTests.cs" />
     <Compile Include="Parser\Statements\AddHandlerStatementTests.cs" />
@@ -134,7 +134,6 @@
     <Compile Include="Parser\Statements\WithStatementTests.cs" />
     <Compile Include="Output\CodeDOM\CodeDOMPrimitiveExpressionTest.cs" />
     <Compile Include="Output\CodeDOM\CodeDOMParenthesizedExpressionTest.cs" />
-    <Compile Include="Parser\Expressions\AnonymousMethodTests.cs" />
     <Compile Include="Output\CodeDOM\InvocationExpressionTest.cs" />
     <Compile Include="Parser\Expressions\TypeReferenceExpressionTests.cs" />
     <Compile Include="Parser\Expressions\GlobalReferenceExpressionTests.cs" />

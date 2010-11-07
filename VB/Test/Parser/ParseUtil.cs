@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.VB.Tests.Dom
 {
-	public class ParseUtilVBNet
+	public class ParseUtil
 	{
 		public static T ParseGlobal<T>(string program) where T : INode
 		{

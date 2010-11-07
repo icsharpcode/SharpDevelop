@@ -6,7 +6,7 @@ using ICSharpCode.NRefactory.VB;
 using ICSharpCode.NRefactory.VB.Parser;
 using ICSharpCode.NRefactory.VB.PrettyPrinter;
 
-namespace ICSharpCode.NRefactory.Tests.VB.Lexer
+namespace ICSharpCode.NRefactory.VB.Tests.Lexer
 {
 	[TestFixture]
 	public sealed class LexerTests

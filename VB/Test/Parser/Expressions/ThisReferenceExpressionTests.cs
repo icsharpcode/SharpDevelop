@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetThisReferenceExpressionTest1()
 		{
-			ThisReferenceExpression ie = ParseUtilVBNet.ParseExpression<ThisReferenceExpression>("Me");
+			ThisReferenceExpression ie = ParseUtil.ParseExpression<ThisReferenceExpression>("Me");
 		}
 		#endregion
 	}

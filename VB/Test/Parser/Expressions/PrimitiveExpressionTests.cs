@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void PrimitiveExpression1Test()
 		{
-			InvocationExpression ie = ParseUtilVBNet.ParseExpression<InvocationExpression>("546.ToString()");
+			InvocationExpression ie = ParseUtil.ParseExpression<InvocationExpression>("546.ToString()");
 		}
 		#endregion
 	}

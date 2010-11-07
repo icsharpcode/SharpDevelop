@@ -91,6 +91,9 @@
     <Compile Include="Parser\ModifierList.cs" />
     <Compile Include="Parser\ParamModifierList.cs" />
     <Compile Include="Parser\Parser.cs" />
+    <None Include="Parser\trace.txt">
+      <DependentUpon>vb.atg</DependentUpon>
+    </None>
     <Compile Include="Parser\VBNetParser.cs" />
     <Compile Include="PrettyPrinter\AbstractOutputFormatter.cs" />
     <Compile Include="PrettyPrinter\AbstractPrettyPrintOptions.cs" />
@@ -145,6 +148,11 @@
     <None Include="Parser\Frames\SharpCoco.exe" />
     <None Include="Parser\Frames\trace.txt" />
     <None Include="Parser\gen.bat" />
+    <None Include="Parser\Parser.frame" />
+    <None Include="Parser\vb.atg">
+      <CustomToolNamespace>ICSharpCode.NRefactory.VB.Parser</CustomToolNamespace>
+      <Generator>CocoParserGenerator</Generator>
+    </None>
     <None Include="Parser\vbnet.atg" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

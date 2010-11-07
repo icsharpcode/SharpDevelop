@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBIntReferenceExpression()
 		{
-			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("inTeGer.MaxValue");
+			MemberReferenceExpression fre = ParseUtil.ParseExpression<MemberReferenceExpression>("inTeGer.MaxValue");
 			Assert.AreEqual("MaxValue", fre.MemberName);
 			Assert.AreEqual("System.Int32", ((TypeReferenceExpression)fre.TargetObject).TypeReference.Type);
 		}
@@ -24,14 +24,14 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBStandaloneIntReferenceExpression()
 		{
-			TypeReferenceExpression tre = ParseUtilVBNet.ParseExpression<TypeReferenceExpression>("inTeGer");
+			TypeReferenceExpression tre = ParseUtil.ParseExpression<TypeReferenceExpression>("inTeGer");
 			Assert.AreEqual("System.Int32", tre.TypeReference.Type);
 		}
 		
 		[Test]
 		public void VBObjectReferenceExpression()
 		{
-			MemberReferenceExpression fre = ParseUtilVBNet.ParseExpression<MemberReferenceExpression>("Object.ReferenceEquals");
+			MemberReferenceExpression fre = ParseUtil.ParseExpression<MemberReferenceExpression>("Object.ReferenceEquals");
 			Assert.AreEqual("ReferenceEquals", fre.MemberName);
 			Assert.AreEqual("System.Object", ((TypeReferenceExpression)fre.TargetObject).TypeReference.Type);
 		}
@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBStandaloneObjectReferenceExpression()
 		{
-			TypeReferenceExpression tre = ParseUtilVBNet.ParseExpression<TypeReferenceExpression>("obJect");
+			TypeReferenceExpression tre = ParseUtil.ParseExpression<TypeReferenceExpression>("obJect");
 			Assert.AreEqual("System.Object", tre.TypeReference.Type);
 		}
 		#endregion

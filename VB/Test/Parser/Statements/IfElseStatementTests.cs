@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleIfStatementTest()
 		{
-			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN END");
+			IfElseStatement ifElseStatement = ParseUtil.ParseStatement<IfElseStatement>("If True THEN END");
 			Assert.IsFalse(ifElseStatement.Condition.IsNull);
 			Assert.IsTrue(ifElseStatement.TrueStatement.Count == 1, "true count != 1:" + ifElseStatement.TrueStatement.Count);
 			Assert.IsTrue(ifElseStatement.FalseStatement.Count == 0, "false count != 0:" + ifElseStatement.FalseStatement.Count);
@@ -26,7 +26,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleIfStatementTest2()
 		{
-			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN\n END\n END IF");
+			IfElseStatement ifElseStatement = ParseUtil.ParseStatement<IfElseStatement>("If True THEN\n END\n END IF");
 			Assert.IsFalse(ifElseStatement.Condition.IsNull);
 			Assert.IsTrue(ifElseStatement.TrueStatement.Count == 1, "true count != 1:" + ifElseStatement.TrueStatement.Count);
 			Assert.IsTrue(ifElseStatement.FalseStatement.Count == 0, "false count != 0:" + ifElseStatement.FalseStatement.Count);
@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetIfStatementLocationTest()
 		{
-			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN\n" +
+			IfElseStatement ifElseStatement = ParseUtil.ParseStatement<IfElseStatement>("If True THEN\n" +
 			                                                                                 "DoIt()\n" +
 			                                                                                 "ElseIf False Then\n" +
 			                                                                                 "DoIt()\n" +
@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetElseIfStatementTest()
 		{
-			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN\n" +
+			IfElseStatement ifElseStatement = ParseUtil.ParseStatement<IfElseStatement>("If True THEN\n" +
 			                                                                                 "END\n" +
 			                                                                                 "ElseIf False Then\n" +
 			                                                                                 "Stop\n" +
@@ -70,7 +70,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetElse_IfStatementTest()
 		{
-			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN\n" +
+			IfElseStatement ifElseStatement = ParseUtil.ParseStatement<IfElseStatement>("If True THEN\n" +
 			                                                                                 "END\n" +
 			                                                                                 "Else If False Then\n" +
 			                                                                                 "Stop\n" +
@@ -86,7 +86,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetMultiStatementIfStatementTest()
 		{
-			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN Stop : b");
+			IfElseStatement ifElseStatement = ParseUtil.ParseStatement<IfElseStatement>("If True THEN Stop : b");
 			Assert.IsFalse(ifElseStatement.Condition.IsNull);
 			Assert.AreEqual(2, ifElseStatement.TrueStatement.Count, "true count");
 			Assert.AreEqual(0, ifElseStatement.FalseStatement.Count, "false count");
@@ -97,7 +97,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetMultiStatementIfStatementWithEndStatementTest()
 		{
-			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN Stop : End : b");
+			IfElseStatement ifElseStatement = ParseUtil.ParseStatement<IfElseStatement>("If True THEN Stop : End : b");
 			Assert.IsFalse(ifElseStatement.Condition.IsNull);
 			Assert.AreEqual(3, ifElseStatement.TrueStatement.Count, "true count");
 			Assert.AreEqual(0, ifElseStatement.FalseStatement.Count, "false count");
@@ -110,7 +110,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetIfWithEmptyElseTest()
 		{
-			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN a Else");
+			IfElseStatement ifElseStatement = ParseUtil.ParseStatement<IfElseStatement>("If True THEN a Else");
 			Assert.IsFalse(ifElseStatement.Condition.IsNull);
 			Assert.AreEqual(1, ifElseStatement.TrueStatement.Count, "true count");
 			Assert.AreEqual(0, ifElseStatement.FalseStatement.Count, "false count");
@@ -119,7 +119,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetIfWithMultipleColons()
 		{
-			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN a : : b");
+			IfElseStatement ifElseStatement = ParseUtil.ParseStatement<IfElseStatement>("If True THEN a : : b");
 			Assert.IsFalse(ifElseStatement.Condition.IsNull);
 			Assert.AreEqual(2, ifElseStatement.TrueStatement.Count, "true count");
 			Assert.AreEqual(0, ifElseStatement.FalseStatement.Count, "false count");
@@ -129,7 +129,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetIfWithSingleLineElse()
 		{
 			// This isn't legal according to the VB spec, but the MS VB compiler seems to allow it.
-			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN\n" +
+			IfElseStatement ifElseStatement = ParseUtil.ParseStatement<IfElseStatement>("If True THEN\n" +
 			                                                                                 " x()\n" +
 			                                                                                 "Else y()\n" +
 			                                                                                 "End If");

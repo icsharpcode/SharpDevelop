@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		
 		static LambdaExpression ParseVBNet(string program)
 		{
-			return ParseUtilVBNet.ParseExpression<LambdaExpression>(program);
+			return ParseUtil.ParseExpression<LambdaExpression>(program);
 		}
 		
 		[Test]

@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetRaiseEventStatementTest()
 		{
-			RaiseEventStatement raiseEventStatement = ParseUtilVBNet.ParseStatement<RaiseEventStatement>("RaiseEvent MyEvent(a, 5, (6))");
+			RaiseEventStatement raiseEventStatement = ParseUtil.ParseStatement<RaiseEventStatement>("RaiseEvent MyEvent(a, 5, (6))");
 		}
 		#endregion
 	}

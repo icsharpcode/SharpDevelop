@@ -14,7 +14,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	{
 		void TestAssignmentExpression(string program, AssignmentOperatorType op)
 		{
-			ExpressionStatement se = ParseUtilVBNet.ParseStatement<ExpressionStatement>(program);
+			ExpressionStatement se = ParseUtil.ParseStatement<ExpressionStatement>(program);
 			AssignmentExpression ae = se.Expression as AssignmentExpression;
 			Assert.AreEqual(op, ae.Op);
 			

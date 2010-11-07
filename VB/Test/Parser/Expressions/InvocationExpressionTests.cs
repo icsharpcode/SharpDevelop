@@ -46,32 +46,32 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetSimpleInvocationExpressionTest()
 		{
-			CheckSimpleInvoke(ParseUtilVBNet.ParseExpression<InvocationExpression>("myMethod()"));
+			CheckSimpleInvoke(ParseUtil.ParseExpression<InvocationExpression>("myMethod()"));
 		}
 		
 		[Test]
 		public void VBNetGenericInvocationExpressionTest()
 		{
-			CheckGenericInvoke(ParseUtilVBNet.ParseExpression<InvocationExpression>("myMethod(Of Char)(\"a\"c)"));
+			CheckGenericInvoke(ParseUtil.ParseExpression<InvocationExpression>("myMethod(Of Char)(\"a\"c)"));
 		}
 		
 		[Test]
 		public void VBNetGenericInvocation2ExpressionTest()
 		{
-			CheckGenericInvoke2(ParseUtilVBNet.ParseExpression<InvocationExpression>("myMethod(Of T, Boolean)()"));
+			CheckGenericInvoke2(ParseUtil.ParseExpression<InvocationExpression>("myMethod(Of T, Boolean)()"));
 		}
 		
 		[Test]
 		public void PrimitiveExpression1Test()
 		{
-			InvocationExpression ie = ParseUtilVBNet.ParseExpression<InvocationExpression>("546.ToString()");
+			InvocationExpression ie = ParseUtil.ParseExpression<InvocationExpression>("546.ToString()");
 			Assert.AreEqual(0, ie.Arguments.Count);
 		}
 		
 		[Test]
 		public void VBInvocationOnGenericType()
 		{
-			InvocationExpression expr = ParseUtilVBNet.ParseExpression<InvocationExpression>("A(Of T).Foo()");
+			InvocationExpression expr = ParseUtil.ParseExpression<InvocationExpression>("A(Of T).Foo()");
 			MemberReferenceExpression mre = (MemberReferenceExpression)expr.TargetObject;
 			Assert.AreEqual("Foo", mre.MemberName);
 			IdentifierExpression tre = (IdentifierExpression)mre.TargetObject;
@@ -82,7 +82,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBInvocationOnInnerClassInGenericType()
 		{
-			InvocationExpression expr = ParseUtilVBNet.ParseExpression<InvocationExpression>("A(Of T).B.Foo()");
+			InvocationExpression expr = ParseUtil.ParseExpression<InvocationExpression>("A(Of T).B.Foo()");
 			MemberReferenceExpression mre = (MemberReferenceExpression)expr.TargetObject;
 			Assert.AreEqual("Foo", mre.MemberName);
 			MemberReferenceExpression mre2 = (MemberReferenceExpression)mre.TargetObject;
@@ -95,7 +95,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBInvocationOnGenericInnerClassInGenericType()
 		{
-			InvocationExpression expr = ParseUtilVBNet.ParseExpression<InvocationExpression>("A(Of T).B.C(Of U).Foo()");
+			InvocationExpression expr = ParseUtil.ParseExpression<InvocationExpression>("A(Of T).B.C(Of U).Foo()");
 			MemberReferenceExpression mre = (MemberReferenceExpression)expr.TargetObject;
 			Assert.AreEqual("Foo", mre.MemberName);
 			

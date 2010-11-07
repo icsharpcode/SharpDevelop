@@ -16,14 +16,14 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		{
 			string program = @"Sub New()
 								End Sub";
-			ConstructorDeclaration cd = ParseUtilVBNet.ParseTypeMember<ConstructorDeclaration>(program);
+			ConstructorDeclaration cd = ParseUtil.ParseTypeMember<ConstructorDeclaration>(program);
 			Assert.IsTrue(cd.ConstructorInitializer.IsNull);
 		}
 		
 		[Test]
 		public void VBNetConstructorDeclarationTest2()
 		{
-			ConstructorDeclaration cd = ParseUtilVBNet.ParseTypeMember<ConstructorDeclaration>("Sub New(x As Integer, Optional y As String) \nEnd Sub");
+			ConstructorDeclaration cd = ParseUtil.ParseTypeMember<ConstructorDeclaration>("Sub New(x As Integer, Optional y As String) \nEnd Sub");
 			Assert.AreEqual(2, cd.Parameters.Count);
 			Assert.AreEqual("System.Int32", cd.Parameters[0].TypeReference.Type);
 			Assert.AreEqual("System.String", cd.Parameters[1].TypeReference.Type);

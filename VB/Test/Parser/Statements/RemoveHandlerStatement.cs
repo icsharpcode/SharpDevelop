@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetRemoveHandlerTest()
 		{
-			RemoveHandlerStatement removeHandlerStatement = ParseUtilVBNet.ParseStatement<RemoveHandlerStatement>("RemoveHandler MyHandler, AddressOf MyMethod");
+			RemoveHandlerStatement removeHandlerStatement = ParseUtil.ParseStatement<RemoveHandlerStatement>("RemoveHandler MyHandler, AddressOf MyMethod");
 		}
 		#endregion
 	}

@@ -101,7 +101,7 @@ namespace NRefactoryASTGenerator
 				writer.WriteLine("using ICSharpCode.NRefactory.VB.Parser;");
 				writer.WriteLine("using ICSharpCode.NRefactory.VB.PrettyPrinter;");
 				writer.WriteLine();
-				writer.WriteLine("namespace ICSharpCode.NRefactory.Tests.VB.Lexer");
+				writer.WriteLine("namespace ICSharpCode.NRefactory.VB.Tests.Lexer");
 				writer.WriteLine("{");
 				writer.WriteLine("\t[TestFixture]");
 				writer.WriteLine("\tpublic sealed class LexerTests");

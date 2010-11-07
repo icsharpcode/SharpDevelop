@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetDeclareDeclarationTest()
 		{
 			string program = "Declare Ansi Function GetUserName Lib \"advapi32.dll\" Alias \"GetUserNameA\" (ByVal lpBuffer As String, ByRef nSize As Integer) As Integer\n";
-			DeclareDeclaration dd = ParseUtilVBNet.ParseTypeMember<DeclareDeclaration>(program);
+			DeclareDeclaration dd = ParseUtil.ParseTypeMember<DeclareDeclaration>(program);
 			Assert.AreEqual("System.Int32", dd.TypeReference.Type);
 			Assert.AreEqual("GetUserName", dd.Name);
 			Assert.AreEqual("advapi32.dll", dd.Library);

@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
             End If
         End RaiseEvent
     End Event";
-			EventDeclaration customEventDecl = ParseUtilVBNet.ParseTypeMember<EventDeclaration>(code);
+			EventDeclaration customEventDecl = ParseUtil.ParseTypeMember<EventDeclaration>(code);
 			Assert.IsNotNull(customEventDecl);
 			Assert.AreEqual("TestEvent", customEventDecl.Name);
 		}

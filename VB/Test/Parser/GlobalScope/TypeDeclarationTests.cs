@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		{
 			string program = "Class TestClass\n" +
 				"End Class\n";
-			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			TypeDeclaration td = ParseUtil.ParseGlobal<TypeDeclaration>(program);
 			
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(ClassType.Class, td.Type);
@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetMissingBaseClassTest()
 		{
 			// SD2-1499: test that this invalid code doesn't crash
-			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>("public class test inherits", true);
+			TypeDeclaration td = ParseUtil.ParseGlobal<TypeDeclaration>("public class test inherits", true);
 			Assert.AreEqual(0, td.BaseTypes.Count);
 		}
 		
@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		{
 			string program = "Enum TestEnum As Byte\n" +
 				"End Enum\n";
-			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			TypeDeclaration td = ParseUtil.ParseGlobal<TypeDeclaration>(program);
 			
 			Assert.AreEqual("TestEnum", td.Name);
 			Assert.AreEqual(ClassType.Enum, td.Type);
@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetEnumOnSingleLine()
 		{
 			string program = "Enum TestEnum : A : B = 1 : C : End Enum";
-			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			TypeDeclaration td = ParseUtil.ParseGlobal<TypeDeclaration>(program);
 			
 			Assert.AreEqual("TestEnum", td.Name);
 			Assert.AreEqual(ClassType.Enum, td.Type);
@@ -63,7 +63,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetEnumOnSingleLine2()
 		{
 			string program = "Enum TestEnum : A : : B = 1 :: C : End Enum";
-			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			TypeDeclaration td = ParseUtil.ParseGlobal<TypeDeclaration>(program);
 			
 			Assert.AreEqual("TestEnum", td.Name);
 			Assert.AreEqual(ClassType.Enum, td.Type);
@@ -76,7 +76,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		{
 			string program = "Enum TestEnum As System.UInt16\n" +
 				"End Enum\n";
-			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			TypeDeclaration td = ParseUtil.ParseGlobal<TypeDeclaration>(program);
 			
 			Assert.AreEqual("TestEnum", td.Name);
 			Assert.AreEqual(ClassType.Enum, td.Type);
@@ -89,7 +89,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		{
 			string program = "Class TestClass\n" +
 				"End Class";
-			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			TypeDeclaration td = ParseUtil.ParseGlobal<TypeDeclaration>(program);
 			
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(ClassType.Class, td.Type);
@@ -103,7 +103,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 			string program = "Class TestClass\n" +
 				" : \n" +
 				"End Class";
-			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			TypeDeclaration td = ParseUtil.ParseGlobal<TypeDeclaration>(program);
 			
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(ClassType.Class, td.Type);
@@ -114,7 +114,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		{
 			string program = "Partial Class TestClass\n" +
 				"End Class\n";
-			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			TypeDeclaration td = ParseUtil.ParseGlobal<TypeDeclaration>(program);
 			
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(ClassType.Class, td.Type);
@@ -125,7 +125,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		public void VBNetPartialPublicClass()
 		{
 			string program = "Partial Public Class TestClass\nEnd Class\n";
-			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			TypeDeclaration td = ParseUtil.ParseGlobal<TypeDeclaration>(program);
 			
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(ClassType.Class, td.Type);
@@ -140,7 +140,7 @@ Public Class Test(Of T)
 
 End Class
 ";
-			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(declr);
+			TypeDeclaration td = ParseUtil.ParseGlobal<TypeDeclaration>(declr);
 			
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("Test", td.Name);
@@ -158,7 +158,7 @@ Public Class Test(Of T As IMyInterface)
 
 End Class
 ";
-			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(declr);
+			TypeDeclaration td = ParseUtil.ParseGlobal<TypeDeclaration>(declr);
 			
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("Test", td.Name);
@@ -177,7 +177,7 @@ Public Class Generic(Of T As MyNamespace.IMyInterface, S As {G(Of T()), IAnother
 
 End Class
 ";
-			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(declr);
+			TypeDeclaration td = ParseUtil.ParseGlobal<TypeDeclaration>(declr);
 			
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("Generic", td.Name);

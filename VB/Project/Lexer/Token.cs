@@ -56,6 +56,11 @@ namespace ICSharpCode.NRefactory.VB.Parser
 			}
 		}
 		
+		public Token()
+			: this(0, 1, 1)
+		{
+		}
+		
 		public Token(int kind, int col, int line) : this (kind, col, line, null)
 		{
 		}

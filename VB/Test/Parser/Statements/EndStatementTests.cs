@@ -16,13 +16,13 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetEndStatementTest()
 		{
-			EndStatement endStatement = ParseUtilVBNet.ParseStatement<EndStatement>("End");
+			EndStatement endStatement = ParseUtil.ParseStatement<EndStatement>("End");
 		}
 		
 		[Test]
 		public void VBNetEndStatementInIfThenTest2()
 		{
-			IfElseStatement endStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("IF a THEN End");
+			IfElseStatement endStatement = ParseUtil.ParseStatement<IfElseStatement>("IF a THEN End");
 		}
 		#endregion
 	}

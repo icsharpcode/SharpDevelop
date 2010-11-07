@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		#region VB.NET
 		void VBNetTestUnaryOperatorExpressionTest(string program, UnaryOperatorType op)
 		{
-			UnaryOperatorExpression uoe = ParseUtilVBNet.ParseExpression<UnaryOperatorExpression>(program);
+			UnaryOperatorExpression uoe = ParseUtil.ParseExpression<UnaryOperatorExpression>(program);
 			Assert.AreEqual(op, uoe.Op);
 			
 			Assert.IsTrue(uoe.Expression is IdentifierExpression);
@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetInEqualsNotTest()
 		{
-			BinaryOperatorExpression e = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>("b <> Not a");
+			BinaryOperatorExpression e = ParseUtil.ParseExpression<BinaryOperatorExpression>("b <> Not a");
 			Assert.AreEqual(BinaryOperatorType.InEquality, e.Op);
 			UnaryOperatorExpression ue = (UnaryOperatorExpression)e.Right;
 			Assert.AreEqual(UnaryOperatorType.Not, ue.Op);
@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetNotEqualTest()
 		{
-			UnaryOperatorExpression e = ParseUtilVBNet.ParseExpression<UnaryOperatorExpression>("Not a = b");
+			UnaryOperatorExpression e = ParseUtil.ParseExpression<UnaryOperatorExpression>("Not a = b");
 			Assert.AreEqual(UnaryOperatorType.Not, e.Op);
 			BinaryOperatorExpression boe = (BinaryOperatorExpression)e.Expression;
 			Assert.AreEqual(BinaryOperatorType.Equality, boe.Op);

@@ -24,7 +24,7 @@ Public Structure MyUnion
 	
 End Structure 'MyUnion
 ";
-			TypeDeclaration decl = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			TypeDeclaration decl = ParseUtil.ParseGlobal<TypeDeclaration>(program);
 			Assert.AreEqual("StructLayout", decl.Attributes[0].Attributes[0].Name);
 		}
 		
@@ -40,7 +40,7 @@ Public Module MyExtra
 	
 End Module
 ";
-			TypeDeclaration decl = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			TypeDeclaration decl = ParseUtil.ParseGlobal<TypeDeclaration>(program);
 			Assert.AreEqual("HideModule", decl.Attributes[0].Attributes[0].Name);
 		}
 		
@@ -51,7 +51,7 @@ End Module
 Public Class Form1
 	
 End Class";
-			TypeDeclaration decl = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			TypeDeclaration decl = ParseUtil.ParseGlobal<TypeDeclaration>(program);
 			Assert.AreEqual("Microsoft.VisualBasic.CompilerServices.DesignerGenerated", decl.Attributes[0].Attributes[0].Name);
 		}
 		
@@ -59,7 +59,7 @@ End Class";
 		public void AssemblyAttribute()
 		{
 			string program = @"<assembly: System.Attribute()>";
-			AttributeSection decl = ParseUtilVBNet.ParseGlobal<AttributeSection>(program);
+			AttributeSection decl = ParseUtil.ParseGlobal<AttributeSection>(program);
 			Assert.AreEqual(new Location(1, 1), decl.StartLocation);
 			Assert.AreEqual("assembly", decl.AttributeTarget);
 		}
@@ -68,7 +68,7 @@ End Class";
 		public void ModuleAttributeTargetEscaped()
 		{
 			// check that this doesn't crash the parser:
-			ParseUtilVBNet.ParseGlobal<AttributeSection>("<[Module]: SuppressMessageAttribute>", true);
+			ParseUtil.ParseGlobal<AttributeSection>("<[Module]: SuppressMessageAttribute>", true);
 		}
 	}
 }
