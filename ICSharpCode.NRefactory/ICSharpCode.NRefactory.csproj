@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
     <ProjectGuid>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</ProjectGuid>
@@ -151,6 +151,7 @@
     <Compile Include="CSharp\Parser\mcs\MonoSymbolWriter.cs" />
     <Compile Include="CSharp\Parser\mcs\outline.cs" />
     <Compile Include="CSharp\Parser\mcs\roottypes.cs" />
+    <Compile Include="CSharp\Resolver\AliasNamespaceReference.cs" />
     <Compile Include="CSharp\Resolver\AmbiguousResolveResult.cs" />
     <Compile Include="CSharp\Resolver\ByReferenceResolveResult.cs" />
     <Compile Include="CSharp\Resolver\ConstantResolveResult.cs" />
@@ -160,6 +161,7 @@
     <Compile Include="CSharp\Resolver\ITypeOrNamespaceReference.cs" />
     <Compile Include="CSharp\Resolver\MemberLookup.cs" />
     <Compile Include="CSharp\Resolver\MemberResolveResult.cs" />
+    <Compile Include="CSharp\Resolver\MemberTypeOrNamespaceReference.cs" />
     <Compile Include="CSharp\Resolver\MethodGroupResolveResult.cs" />
     <Compile Include="CSharp\Resolver\NamespaceResolveResult.cs" />
     <Compile Include="CSharp\Resolver\OverloadResolution.cs" />
@@ -287,6 +289,7 @@
     <Compile Include="Utils\BusyManager.cs" />
     <Compile Include="Utils\CacheManager.cs" />
     <Compile Include="Utils\CSharpPrimitiveCast.cs" />
+    <Compile Include="Utils\EmptyList.cs" />
     <Compile Include="Utils\TreeTraversal.cs" />
     <Compile Include="CSharp\Dom\ComposedType.cs" />
     <Compile Include="CSharp\Dom\Expressions\DirectionExpression.cs" />

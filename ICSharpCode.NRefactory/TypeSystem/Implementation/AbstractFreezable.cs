@@ -90,9 +90,4 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				return new ReadOnlyCollection<ITypeReference>(list.ToArray());
 		}
 	}
-	
-	static class EmptyList<T>
-	{
-		public static readonly ReadOnlyCollection<T> Instance = new ReadOnlyCollection<T>(new T[0]);
-	}
 }

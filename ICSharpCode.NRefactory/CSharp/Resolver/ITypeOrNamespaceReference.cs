@@ -12,6 +12,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	public interface ITypeOrNamespaceReference : ITypeReference
 	{
 		/// <summary>
+		/// Resolves the reference and returns the ResolveResult.
+		/// </summary>
+		ResolveResult DoResolve(ITypeResolveContext context);
+		
+		/// <summary>
 		/// Returns the namespace that is referenced; or null if no such namespace is found.
 		/// </summary>
 		NamespaceResolveResult ResolveNamespace(ITypeResolveContext context);

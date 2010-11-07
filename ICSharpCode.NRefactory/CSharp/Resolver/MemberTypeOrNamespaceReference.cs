@@ -8,29 +8,34 @@ using ICSharpCode.NRefactory.TypeSystem;
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	/// <summary>
-	/// Represents a simple C# name. (a single non-qualified identifier with an optional list of type arguments)
+	/// Reference to a qualified type or namespace name.
 	/// </summary>
-	public sealed class SimpleTypeOrNamespaceReference : ITypeOrNamespaceReference
+	public sealed class MemberTypeOrNamespaceReference : ITypeOrNamespaceReference
 	{
+		readonly ITypeOrNamespaceReference target;
 		readonly ITypeDefinition parentTypeDefinition;
 		readonly UsingScope parentUsingScope;
 		readonly string identifier;
 		readonly IList<ITypeReference> typeArguments;
-		readonly bool isInUsingDeclaration;
 		
-		public SimpleTypeOrNamespaceReference(string identifier, IList<ITypeReference> typeArguments, ITypeDefinition parentTypeDefinition, UsingScope parentUsingScope, bool isInUsingDeclaration = false)
+		public MemberTypeOrNamespaceReference(ITypeOrNamespaceReference target, string identifier, IList<ITypeReference> typeArguments, ITypeDefinition parentTypeDefinition, UsingScope parentUsingScope)
 		{
+			if (target == null)
+				throw new ArgumentNullException("target");
 			if (identifier == null)
 				throw new ArgumentNullException("identifier");
+			this.target = target;
 			this.identifier = identifier;
 			this.typeArguments = typeArguments ?? EmptyList<ITypeReference>.Instance;
 			this.parentTypeDefinition = parentTypeDefinition;
 			this.parentUsingScope = parentUsingScope;
-			this.isInUsingDeclaration = isInUsingDeclaration;
 		}
 		
 		public ResolveResult DoResolve(ITypeResolveContext context)
 		{
+			ResolveResult targetRR = target.DoResolve(context);
+			if (targetRR.IsError)
+				return targetRR;
 			CSharpResolver r = new CSharpResolver(context);
 			r.CurrentTypeDefinition = parentTypeDefinition != null ? parentTypeDefinition.GetCompoundClass() : null;
 			r.UsingScope = parentUsingScope;
@@ -38,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			for (int i = 0; i < typeArgs.Length; i++) {
 				typeArgs[i] = typeArguments[i].Resolve(context);
 			}
-			return r.LookupSimpleNamespaceOrTypeName(identifier, typeArgs, isInUsingDeclaration);
+			return r.ResolveMemberAccess(targetRR, identifier, typeArgs, false);
 		}
 		
 		public NamespaceResolveResult ResolveNamespace(ITypeResolveContext context)
