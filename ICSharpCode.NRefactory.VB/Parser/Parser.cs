@@ -2964,7 +2964,9 @@ partial class VBParser
 		List<Expression> parameters = null;
 		Expect(37);
 		Location start = t.Location;
-		ArgumentList(out parameters);
+		if (StartOf(24)) {
+			ArgumentList(out parameters);
+		}
 		Expect(38);
 		pexpr = new InvocationExpression(pexpr, parameters);
 
@@ -3354,15 +3356,11 @@ partial class VBParser
 		arguments = new List<Expression>();
 		Expression expr = null;
 
-		if (StartOf(24)) {
-			Argument(out expr);
-		}
+		Argument(out expr);
 		while (la.kind == 22) {
 			Get();
 			arguments.Add(expr ?? Expression.Null); expr = null;
-			if (StartOf(24)) {
-				Argument(out expr);
-			}
+			Argument(out expr);
 			if (expr == null) expr = Expression.Null;
 		}
 		if (expr != null) arguments.Add(expr);
@@ -4452,7 +4450,7 @@ partial class VBParser
 		string name = t.val;
 		if (la.kind == 37) {
 			Get();
-			if (StartOf(44)) {
+			if (StartOf(24)) {
 				ArgumentList(out arguments);
 			}
 			Expect(38);
@@ -4713,14 +4711,14 @@ partial class VBParser
 			ifStatement.EndLocation = t.Location;
 				statement = ifStatement;
 
-		} else if (StartOf(45)) {
+		} else if (StartOf(44)) {
 			IfElseStatement ifStatement = new IfElseStatement(expr);
 				ifStatement.StartLocation = ifStartLocation;
 
 			SingleLineStatementList(ifStatement.TrueStatement);
 			if (la.kind == 111) {
 				Get();
-				if (StartOf(45)) {
+				if (StartOf(44)) {
 					SingleLineStatementList(ifStatement.FalseStatement);
 				}
 			}
@@ -4824,7 +4822,7 @@ partial class VBParser
 		string label = string.Empty;
 
 		Expect(194);
-		if (StartOf(46)) {
+		if (StartOf(45)) {
 			if (la.kind == 163) {
 				Get();
 				resumeStatement = new ResumeStatement(true);
@@ -4845,7 +4843,7 @@ partial class VBParser
 			                        la.kind == Tokens.Not   || la.kind == Tokens.Times;
 
 		SimpleExpr(out expr);
-		if (StartOf(47)) {
+		if (StartOf(46)) {
 			AssignmentOperator(out op);
 			Expr(out val);
 			expr = new AssignmentExpression(expr, op, val);
@@ -5008,7 +5006,7 @@ partial class VBParser
 		if (la.kind == 111) {
 			Get();
 			caseClause = new CaseLabel();
-		} else if (StartOf(48)) {
+		} else if (StartOf(47)) {
 			if (la.kind == 144) {
 				Get();
 			}
@@ -5136,7 +5134,6 @@ partial class VBParser
 		new BitArray(new int[] {-66123780, 1174405164, -51384097, 1175465247, -1030969178, 17106212, -97448432, 67}),
 		new BitArray(new int[] {1007618044, 1174405160, -51384097, 1175465247, -1030969178, 17106212, -97448432, 67}),
 		new BitArray(new int[] {4, 1140850688, 25165903, 1108347652, 821280, 17105920, -2144331776, 65}),
-		new BitArray(new int[] {-61929476, 1174405228, -51384097, -972018401, -1030969178, 17106228, -97186288, 67}),
 		new BitArray(new int[] {1007618044, 1191182376, -1051937, 1467105055, -1030969162, -1593504476, -21406146, 711}),
 		new BitArray(new int[] {36, 1140850688, 8388687, 1108347140, 821280, 17105928, -2144335872, 65}),
 		new BitArray(new int[] {1048576, 8372224, 0, 0, 0, 0, 0, 0}),

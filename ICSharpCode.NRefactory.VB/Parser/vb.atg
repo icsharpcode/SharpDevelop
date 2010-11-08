@@ -1928,7 +1928,7 @@ InvocationExpression<ref Expression pexpr>
 (. List<Expression> parameters = null; .)
 =
 	"(" (. Location start = t.Location; .)
-	ArgumentList<out parameters>
+	[ ArgumentList<out parameters> ]
 	")"
 	(.
 		pexpr = new InvocationExpression(pexpr, parameters);
@@ -2620,9 +2620,9 @@ ArgumentList<.out List<Expression> arguments.>
 		arguments = new List<Expression>();
 		Expression expr = null;
 	.) =
-	[ Argument<out expr> ]
+	Argument<out expr>
 	{ "," (. arguments.Add(expr ?? Expression.Null); expr = null; .)
-		[ Argument<out expr> ]
+		Argument<out expr>
 		(. if (expr == null) expr = Expression.Null; .)
 	}
 	(. if (expr != null) arguments.Add(expr); .)
@@ -3296,7 +3296,6 @@ StopStatement<out Statement statement> =
 IfStatement<out Statement statement>
 (. Expression expr = null; Statement embeddedStatement; statement = null; .)
 =
-	IF (la.kind == Tokens.If) 
 	"If" (. Location ifStartLocation = t.Location; .) Expr<out expr> [ "Then" ] 
 	(	
 		/* multiline if statement */
