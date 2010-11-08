@@ -105,7 +105,7 @@ Namespace My
 			MyBase.New(AuthenticationMode.Windows)
 			Me.IsSingleInstance = False
 			Me.EnableVisualStyles = True
-			Me.SaveMySettingsOnExit = False ' MySettings are not supported in SharpDevelop.
+			Me.SaveMySettingsOnExit = True
 			Me.ShutDownStyle = ShutdownMode.AfterMainFormCloses
 		End Sub
 		
@@ -116,6 +116,7 @@ Namespace My
 End Namespace
 ]]></File>
 			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb"/>
+			<File name="Properties\Settings.settings" src="MySettings.settings" Generator="SettingsSingleFileGenerator"/>
 		</Files>
 	</Project>
 </Template>

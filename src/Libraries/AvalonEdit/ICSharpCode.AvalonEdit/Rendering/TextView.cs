@@ -56,6 +56,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			layers = new UIElementCollection(this, this);
 			InsertLayer(textLayer, KnownLayer.Text, LayerInsertionPosition.Replace);
 		}
+
 		#endregion
 		
 		#region Document Property
@@ -688,7 +689,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			double heightTreeHeight = this.DocumentHeight;
 			TextEditorOptions options = this.Options;
 			if (options.AllowScrollBelowDocument) {
-				heightTreeHeight = Math.Max(heightTreeHeight, Math.Min(heightTreeHeight - 50, scrollOffset.Y) + scrollViewport.Height);
+				if (!double.IsInfinity(scrollViewport.Height)) {
+					heightTreeHeight = Math.Max(heightTreeHeight, Math.Min(heightTreeHeight - 50, scrollOffset.Y) + scrollViewport.Height);
+				}
 			}
 			
 			SetScrollData(availableSize,
@@ -1525,6 +1528,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			};
 			RaiseEvent(args2);
 		}
+
+		
 		#endregion
 		
 		/// <summary>

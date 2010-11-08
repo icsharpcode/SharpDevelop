@@ -1,12 +1,13 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Gui;
 using System;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
+using ReflectorAddIn.Windows;
 
 namespace ReflectorAddIn
 {
@@ -31,19 +32,31 @@ namespace ReflectorAddIn
 			}
 			
 			if (askReason != null) {
-				using(SetReflectorPathDialog dialog = new SetReflectorPathDialog(path, askReason)) {
-					
-					if (dialog.ShowDialog(WorkbenchSingleton.MainWin32Window) != DialogResult.OK || !File.Exists(dialog.SelectedFile)) {
-						return null;
-					}
-					
-					path = dialog.SelectedFile;
-					PropertyService.Set(ReflectorExePathPropertyName, path);
-					
-				}
+				SetReflectorPath dialog = new SetReflectorPath(path, askReason);
+				dialog.Owner = WorkbenchSingleton.MainWindow;
+				bool? result = dialog.ShowDialog();
+				if (!result.HasValue || !result.Value || !File.Exists(dialog.SelectedFile))
+					return null;
+				
+				path = dialog.SelectedFile;
+				PropertyService.Set(ReflectorExePathPropertyName, path);
 			}
 			
 			return path;
+		}
+		
+		internal static void OpenReflectorExeFullPathInteractiver() {
+			string path = PropertyService.Get(ReflectorExePathPropertyName);
+			string askReason = null;
+			
+			SetReflectorPath dialog = new SetReflectorPath(path, askReason);
+			dialog.Owner = WorkbenchSingleton.MainWindow;
+			
+			bool? result = dialog.ShowDialog();
+			if (!result.HasValue || !result.Value || !File.Exists(dialog.SelectedFile))
+				return;
+			
+			PropertyService.Set(ReflectorExePathPropertyName, dialog.SelectedFile);
 		}
 	}
 }

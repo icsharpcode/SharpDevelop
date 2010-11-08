@@ -8,7 +8,6 @@ using System.Text;
 
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
-using Services.Debugger.Tooltips;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
@@ -103,16 +102,6 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 					b.Append(bbm.Condition);
 				}
 				
-//				if (bookmark is PinBookmark) {
-//					var pin = (PinBookmark)bookmark;
-//					b.Append(pin.Comment ?? string.Empty);
-//					foreach(var node in pin.Nodes) {
-//						b.Append('|');
-//						b.Append(node.Name);
-//						b.Append('|');
-//						b.Append(node.Text);
-//					}						
-//				}
 				return b.ToString();
 			} else {
 				return base.ConvertTo(context, culture, value, destinationType);

@@ -2,7 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Bookmarks.Pad.Controls;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -30,6 +36,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			build.Run();
 		}
 	}
+	
 	public class ExecuteWithoutDebugger : Execute
 	{
 		public override void Run()
@@ -109,6 +116,27 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				if (!string.IsNullOrEmpty(editor.FileName)) {
 					DebuggerService.ToggleBreakpointAt(editor, editor.Caret.Line);
 				}
+			}
+		}
+	}
+	
+	public class RemoveAllBreakpointsCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			BookmarkManager.RemoveAll(b => b is BreakpointBookmark);
+		}
+	}
+	
+	public class DeleteBreakpointCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			var bookmarkBase = (BookmarkPadBase)Owner;			
+			var item = bookmarkBase.CurrentItem;
+			
+			if (item.Mark is BreakpointBookmark) {
+				BookmarkManager.RemoveMark(item.Mark);
 			}
 		}
 	}

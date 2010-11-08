@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window
+	x:Class="ReflectorAddIn.Windows.SetReflectorPath" 
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+	xmlns:core="http://icsharpcode.net/sharpdevelop/core" xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+	WindowStartupLocation="CenterOwner"
+	Style="{x:Static core:GlobalStyles.DialogWindowStyle}"
+	ResizeMode="NoResize"
+	WindowStyle="ToolWindow"
+	ShowInTaskbar="False"
+	SizeToContent="Height"
+	Width="446">
+	<Window.Resources>
+		<Style
+			x:Key="LinkButton"
+			TargetType="Button" BasedOn="{x:Static core:GlobalStyles.ButtonStyle}">
+			<Setter
+				Property="Template">
+				<Setter.Value>
+					<ControlTemplate
+						TargetType="Button">
+						<ControlTemplate.Resources>
+							<Style
+								TargetType="{x:Type TextBlock}">
+								<Setter
+									Property="TextDecorations"
+									Value="Underline" />
+							</Style>
+						</ControlTemplate.Resources>
+						<ContentPresenter />
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+			<Setter
+				Property="Foreground"
+				Value="Blue" />
+			<Setter
+				Property="Cursor"
+				Value="Hand" />
+			<Style.Triggers>
+				<Trigger
+					Property="IsMouseOver"
+					Value="true">
+					<Setter
+						Property="Foreground"
+						Value="Red" />
+				</Trigger>
+			</Style.Triggers>
+		</Style>
+	</Window.Resources>
+	<StackPanel>
+		<widgets:StackPanelWithSpacing>
+			<TextBlock
+				Margin="12,12,12,0"
+				HorizontalAlignment="Left"
+				TextWrapping="Wrap"
+				Name="txtReason"/>
+			<TextBlock
+				Margin="12"
+				TextWrapping="Wrap"
+				HorizontalAlignment="Left"
+				Name="txtReflectorExplanation"
+				Text="{core:Localize ReflectorAddIn.SetReflectorPathDialog.ReflectorInfo}"/>
+			<Button Margin="20,0,0,15"
+				Name="OpenReflectorPageButton"
+				Content="http://reflector.red-gate.com/Download.aspx"
+				Style="{StaticResource LinkButton}"
+				Click="OpenReflectorPageButton_Click" />
+			<GroupBox Margin="12,0,0,15"
+				Header="{core:Localize ReflectorAddIn.SetReflectorPathDialog.PathToReflectorExe}">
+				<widgets:StackPanelWithSpacing
+					Orientation="Horizontal">
+					<TextBox
+						IsReadOnly="True"
+						Name="slePath"
+						Width="310"
+						Height="20" />
+					<Button Margin="15,0,0,0"
+						HorizontalAlignment="Right"
+						Name="BrowseButton"
+					    Style="{x:Static core:GlobalStyles.ButtonStyle}"
+						Content="{core:Localize Global.BrowseButtonText}"
+						Click="BrowseButton_Click" />
+				</widgets:StackPanelWithSpacing>
+			</GroupBox>
+			<widgets:UniformGridWithSpacing
+				Columns="2"
+				Margin="0,0,12,12"
+				HorizontalAlignment="Right">
+				<Button
+					Name="OkButton"
+					IsDefault="True"
+					Content="{core:Localize Global.OKButtonText}"
+					Style="{x:Static core:GlobalStyles.ButtonStyle}"
+					Click="OkButton_Click"/>
+				<Button
+					Name="CancelButton"
+					IsCancel="True"
+					Content="{core:Localize Global.CancelButtonText}"
+					Click="CancelButton_Click"
+					Style="{x:Static core:GlobalStyles.ButtonStyle}" />
+			</widgets:UniformGridWithSpacing>
+		</widgets:StackPanelWithSpacing>
+	</StackPanel>
+</Window>

@@ -342,6 +342,10 @@ Bookmarks.DisabledBreakpoint                      = Bookmarks\DisabledBreakpoint
 Bookmarks.UnhealthyBreakpoint                     = Bookmarks\UnhealthyBreakpoint.png
 Bookmarks.UnhealthyBreakpointConditional          = Bookmarks\UnhealthyBreakpointConditional.png
 Bookmarks.CurrentLine                             = Bookmarks\CurrentLine.png
+Bookmarks.DeleteAllBreakpoints                    = Bookmarks\DeleteAllBreakpoints.png
+Bookmarks.DisableAllBreakpoints                   = Bookmarks\DisableAllBreakpoints.png
+Bookmarks.NextBreakpoint                   		  = Bookmarks\NextBreakpoint.png
+Bookmarks.PrevBreakpoint		                  = Bookmarks\PrevBreakpoint.png
 
 Bookmarks.Pin									  = Bookmarks\Pin.png
 

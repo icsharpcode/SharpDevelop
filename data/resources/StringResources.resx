@@ -5645,6 +5645,14 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   <data name="MainWindow.Windows.BookmarkPad.GotoPrev.ToolTip" xml:space="preserve">
     <value>Goto previous bookmark</value>
   </data>
+  <data name="MainWindow.Windows.BookmarkPad.LineText" xml:space="preserve">
+    <value>{0} @line {1}</value>
+    <comment>format string for displaying "filename @line #" in the bookmarks pad</comment>
+  </data>
+  <data name="MainWindow.Windows.BookmarkPad.LocationText" xml:space="preserve">
+    <value>Location</value>
+    <comment>Column title for the bookmark location</comment>
+  </data>
   <data name="MainWindow.Windows.BookmarksLabel" xml:space="preserve">
     <value>Bookmarks</value>
   </data>
@@ -5753,6 +5761,10 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Condition" xml:space="preserve">
     <value>Conditional</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.ConditionalColumnHeader" xml:space="preserve">
+    <value>Condition</value>
+    <comment>column title for a conditional breakpoint's condition</comment>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Continue" xml:space="preserve">
     <value>Continue</value>
@@ -6383,6 +6395,17 @@ Removed the end part of the original message ", reason '${Message}'" since this 
   <data name="ProjectComponent.RemoveAllWebReferences.Title" xml:space="preserve">
     <value>Delete all web references</value>
     <comment>Title of the dialog box when the user tries to remove all web references.</comment>
+  </data>
+  <data name="ReflectorAddIn.IdeOptions.FindReflectorPath" xml:space="preserve">
+    <value>Select Reflector path</value>
+    <comment>Button to select the Reflector path</comment>
+  </data>
+  <data name="ReflectorAddIn.IdeOptions.ReflectorFoundInPath" xml:space="preserve">
+    <value>Reflector was found in the following directory:</value>
+  </data>
+  <data name="ReflectorAddIn.IdeOptions.ReflectorTitle" xml:space="preserve">
+    <value>Reflector</value>
+    <comment>Title of Reflector path option panel</comment>
   </data>
   <data name="ReflectorAddIn.OpenReflectorCommand" xml:space="preserve">
     <value>Open .NET Reflector</value>
@@ -7834,6 +7857,10 @@ The resources files have been renamed/moved accordingly.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.ProcessRunning" xml:space="preserve">
     <value>Can not perform action because process is running.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.RemoveAllBreakpoints" xml:space="preserve">
+    <value>Remove all breakpoints</value>
+    <comment>Main menu command for removing all breakpoints + tooltip for the corresponding toolbar button (in the breakpoints pad)</comment>
   </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
     <value>Run &amp;without debugger</value>

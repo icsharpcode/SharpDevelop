@@ -30,5 +30,10 @@
 	<Path name = "/SharpDevelop/Pads/ClassBrowser/ClassContextMenu">
 		<MenuItem id="Reflector" type="Item" label="${res:ReflectorAddIn.OpenReflectorCommand}" class="ReflectorAddIn.TextEditorContextMenuCommand"/>
 	</Path>
-	
+	<!-- Options panel -->
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+		<OptionPanel id    = "ChangeReflectorPathOptionPanel"
+		             label = "${res:ReflectorAddIn.IdeOptions.ReflectorTitle}"
+		             class = "ReflectorAddIn.OptionPanels.ChangeReflectorPath"/>
+	</Path>
 </AddIn>

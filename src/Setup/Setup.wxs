@@ -345,6 +345,7 @@
 				<ComponentRef Id="IconEditorAddInFiles"/>
 				<ComponentRef Id="IconEditorExe"/>
 				<ComponentRef Id="ResourceEditorFiles"/>
+				<ComponentRef Id="SettingsEditorFiles"/>
 				<ComponentRef Id="ClassDiagramResources"/>
 				<ComponentRef Id="ClassDiagramAddInFiles"/>
 				<ComponentRef Id="ClassCanvasDll"/>
