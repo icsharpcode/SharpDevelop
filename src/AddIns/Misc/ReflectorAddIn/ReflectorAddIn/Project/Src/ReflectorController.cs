@@ -1,15 +1,13 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.SharpDevelop.Dom;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.Remoting;
-using System.Text;
 using System.Threading;
-using System.Windows.Forms;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ReflectorAddIn

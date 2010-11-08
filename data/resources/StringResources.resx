@@ -6399,6 +6399,17 @@ Removed the end part of the original message ", reason '${Message}'" since this 
     <value>Delete all web references</value>
     <comment>Title of the dialog box when the user tries to remove all web references.</comment>
   </data>
+  <data name="ReflectorAddIn.IdeOptions.FindReflectorPath" xml:space="preserve">
+    <value>Select Reflector path</value>
+    <comment>Button to select the Reflector path</comment>
+  </data>
+  <data name="ReflectorAddIn.IdeOptions.ReflectorFoundInPath" xml:space="preserve">
+    <value>Reflector was found in the following directory:</value>
+  </data>
+  <data name="ReflectorAddIn.IdeOptions.ReflectorTitle" xml:space="preserve">
+    <value>Reflector</value>
+    <comment>Title of Reflector path option panel</comment>
+  </data>
   <data name="ReflectorAddIn.OpenReflectorCommand" xml:space="preserve">
     <value>Open .NET Reflector</value>
   </data>
