@@ -21,4 +21,3 @@ using System.Reflection;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: System.CLSCompliant(true)]

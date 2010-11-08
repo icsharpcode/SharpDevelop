@@ -22,7 +22,10 @@ namespace ReflectorAddIn.Windows
 			
 			this.Title = ResourceService.GetString("ReflectorAddIn.SetReflectorPathDialogTitle");
 			
-			this.txtReason.Text = reason;
+			if (reason != null)
+				this.txtReason.Text = reason;
+			else
+				this.txtReason.Visibility = Visibility.Collapsed;
 			if (!String.IsNullOrEmpty(oldPath)) {
 				this.slePath.Text = oldPath;
 			}

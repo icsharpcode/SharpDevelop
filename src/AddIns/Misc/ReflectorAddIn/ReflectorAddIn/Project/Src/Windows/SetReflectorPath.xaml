@@ -9,7 +9,7 @@
 	ResizeMode="NoResize"
 	WindowStyle="ToolWindow"
 	ShowInTaskbar="False"
-	Height="230"
+	SizeToContent="Height"
 	Width="446">
 	<Window.Resources>
 		<Style
@@ -84,22 +84,23 @@
 						Click="BrowseButton_Click" />
 				</widgets:StackPanelWithSpacing>
 			</GroupBox>
-			<widgets:StackPanelWithSpacing
-				Orientation="Horizontal"
+			<widgets:UniformGridWithSpacing
+				Columns="2"
+				Margin="0,0,12,12"
 				HorizontalAlignment="Right">
 				<Button
 					Name="OkButton"
-					IsDefault="False"
+					IsDefault="True"
 					Content="{core:Localize Global.OKButtonText}"
 					Style="{x:Static core:GlobalStyles.ButtonStyle}"
 					Click="OkButton_Click"/>
 				<Button
 					Name="CancelButton"
-					IsDefault="False"
+					IsCancel="True"
 					Content="{core:Localize Global.CancelButtonText}"
 					Click="CancelButton_Click"
 					Style="{x:Static core:GlobalStyles.ButtonStyle}" />
-			</widgets:StackPanelWithSpacing>
+			</widgets:UniformGridWithSpacing>
 		</widgets:StackPanelWithSpacing>
 	</StackPanel>
 </Window>

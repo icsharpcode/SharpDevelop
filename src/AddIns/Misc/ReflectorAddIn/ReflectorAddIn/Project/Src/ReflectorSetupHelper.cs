@@ -33,6 +33,7 @@ namespace ReflectorAddIn
 			
 			if (askReason != null) {
 				SetReflectorPath dialog = new SetReflectorPath(path, askReason);
+				dialog.Owner = WorkbenchSingleton.MainWindow;
 				bool? result = dialog.ShowDialog();
 				if (!result.HasValue || !result.Value || !File.Exists(dialog.SelectedFile))
 					return null;
@@ -46,9 +47,10 @@ namespace ReflectorAddIn
 		
 		internal static void OpenReflectorExeFullPathInteractiver() {
 			string path = PropertyService.Get(ReflectorExePathPropertyName);
-			string askReason = ResourceService.GetString("ReflectorAddIn.ReflectorChangePath");
+			string askReason = null;
 			
 			SetReflectorPath dialog = new SetReflectorPath(path, askReason);
+			dialog.Owner = WorkbenchSingleton.MainWindow;
 			
 			bool? result = dialog.ShowDialog();
 			if (!result.HasValue || !result.Value || !File.Exists(dialog.SelectedFile))
