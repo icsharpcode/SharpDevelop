@@ -12,7 +12,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 	/// <summary>
 	/// Ensures that all nodes have the Parent property correctly set.
 	/// </summary>
-	public class CheckParentVisitor : NodeTrackingAstVisitor
+	public class CheckParentVisitor : NodeTrackingDomVisitor
 	{
 		Stack<INode> nodeStack = new Stack<INode>();
 		

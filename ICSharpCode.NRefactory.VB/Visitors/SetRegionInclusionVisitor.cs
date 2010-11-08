@@ -13,7 +13,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 	/// Parsers don't do this by default:
 	/// e.g. "a.Foo()" is InvocationExpression, its region includes only the "()" and it has a child MemberReferenceExpression, with region ".Foo".
 	/// </summary>
-	public class SetRegionInclusionVisitor : NodeTrackingAstVisitor
+	public class SetRegionInclusionVisitor : NodeTrackingDomVisitor
 	{
 		Stack<INode> parentNodes = new Stack<INode>();
 		

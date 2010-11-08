@@ -9,9 +9,9 @@ namespace ICSharpCode.NRefactory.VB.Parser
 	public class SavepointEventArgs : EventArgs
 	{
 		public Location SavepointLocation { get; private set; }
-		public LexerMemento State { get; private set; }
+		public VBLexerMemento State { get; private set; }
 		
-		public SavepointEventArgs(Location savepointLocation, LexerMemento state)
+		public SavepointEventArgs(Location savepointLocation, VBLexerMemento state)
 		{
 			this.SavepointLocation = savepointLocation;
 			this.State = state;

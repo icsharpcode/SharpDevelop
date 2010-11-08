@@ -90,7 +90,7 @@ namespace ICSharpCode.NRefactory.VB.Dom
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data)
+		public override object AcceptVisitor(IDomVisitor visitor, object data)
 		{
 			return null;
 		}

@@ -10,7 +10,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 	/// <summary>
 	/// Prefixes the names of the specified fields with the prefix and replaces the use.
 	/// </summary>
-	public class PrefixFieldsVisitor : AbstractAstVisitor
+	public class PrefixFieldsVisitor : AbstractDomVisitor
 	{
 		List<VariableDeclaration> fields;
 		List<string> curBlock = new List<string>();

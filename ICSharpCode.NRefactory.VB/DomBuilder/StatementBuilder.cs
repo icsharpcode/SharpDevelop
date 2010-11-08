@@ -8,7 +8,7 @@ using ICSharpCode.NRefactory.VB.Dom;
 namespace ICSharpCode.NRefactory.VB.DomBuilder
 {
 	/// <summary>
-	/// Extension methods for NRefactory.Ast.Expression.
+	/// Extension methods for NRefactory.Dom.Expression.
 	/// </summary>
 	public static class StatementBuilder
 	{

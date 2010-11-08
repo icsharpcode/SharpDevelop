@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.VB.Tests.Dom
 {
-	public class LocationAssignmentCheckVisitor : NodeTrackingAstVisitor
+	public class LocationAssignmentCheckVisitor : NodeTrackingDomVisitor
 	{
 		protected override void BeginVisit(INode node)
 		{

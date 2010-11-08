@@ -14,9 +14,9 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 	
 	
 	/// <summary>
-	/// IAstVisitor implementation that always throws NotImplementedExceptions.
+	/// IDomVisitor implementation that always throws NotImplementedExceptions.
 	/// </summary>
-	public class NotImplementedAstVisitor : IAstVisitor {
+	public class NotImplementedDomVisitor : IDomVisitor {
 		
 		public virtual object VisitAddHandlerStatement(AddHandlerStatement addHandlerStatement, object data) {
 			throw new global::System.NotImplementedException("AddHandlerStatement");

@@ -35,9 +35,9 @@ namespace ICSharpCode.NRefactory.VB.Dom
 			children.Add(childNode);
 		}
 		
-		public abstract object AcceptVisitor(IAstVisitor visitor, object data);
+		public abstract object AcceptVisitor(IDomVisitor visitor, object data);
 		
-		public virtual object AcceptChildren(IAstVisitor visitor, object data)
+		public virtual object AcceptChildren(IDomVisitor visitor, object data)
 		{
 			foreach (INode child in children) {
 				Debug.Assert(child != null);

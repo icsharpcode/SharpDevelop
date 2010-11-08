@@ -13,7 +13,7 @@ namespace ICSharpCode.NRefactory.VB {
 	using ICSharpCode.NRefactory.VB.Dom;
 	
 	
-	public interface IAstVisitor {
+	public interface IDomVisitor {
 		
 		object VisitAddHandlerStatement(AddHandlerStatement addHandlerStatement, object data);
 		

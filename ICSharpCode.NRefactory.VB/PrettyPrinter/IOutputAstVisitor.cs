@@ -7,10 +7,7 @@ using ICSharpCode.NRefactory.VB.Dom;
 
 namespace ICSharpCode.NRefactory.VB.PrettyPrinter
 {
-	/// <summary>
-	/// Description of IOutputASTVisitor.
-	/// </summary>
-	public interface IOutputAstVisitor : IAstVisitor
+	public interface IOutputDomVisitor : IDomVisitor
 	{
 		event Action<INode> BeforeNodeVisit;
 		event Action<INode> AfterNodeVisit;
@@ -30,6 +27,7 @@ namespace ICSharpCode.NRefactory.VB.PrettyPrinter
 			get;
 		}
 	}
+	
 	public interface IOutputFormatter
 	{
 		int IndentationLevel {

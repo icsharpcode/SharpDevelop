@@ -11,14 +11,14 @@ namespace ICSharpCode.NRefactory.VB.Tests.Lexer
 	[TestFixture]
 	public sealed class LiteralsTests
 	{
-		ILexer GenerateLexer(StringReader sr)
+		VBLexer GenerateLexer(StringReader sr)
 		{
 			return ParserFactory.CreateLexer(sr);
 		}
 		
 		Token GetSingleToken(string text)
 		{
-			ILexer lexer = GenerateLexer(new StringReader(text));
+			VBLexer lexer = GenerateLexer(new StringReader(text));
 			Token t = lexer.NextToken();
 			Assert.AreEqual(Tokens.EOL, lexer.NextToken().Kind, "Tokens.EOL");
 			Assert.AreEqual(Tokens.EOF, lexer.NextToken().Kind, "Tokens.EOF");
@@ -100,7 +100,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Lexer
 		[Test]
 		public void TestIncompleteHexadecimal()
 		{
-			ILexer lexer = GenerateLexer(new StringReader("&H\r\nabc"));
+			VBLexer lexer = GenerateLexer(new StringReader("&H\r\nabc"));
 			Token t = lexer.NextToken();
 			Assert.AreEqual(Tokens.LiteralInteger, t.Kind);
 			Assert.AreEqual(0, (int)t.LiteralValue);

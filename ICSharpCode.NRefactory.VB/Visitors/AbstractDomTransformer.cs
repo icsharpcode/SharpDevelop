@@ -16,15 +16,15 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 	
 	
 	/// <summary>
-	/// The AbstractAstTransformer will iterate through the whole AST,
-	/// just like the AbstractAstVisitor. However, the AbstractAstTransformer allows
-	/// you to modify the AST at the same time: It does not use 'foreach' internally,
+	/// The AbstractDomTransformer will iterate through the whole Dom,
+	/// just like the AbstractDomVisitor. However, the AbstractDomTransformer allows
+	/// you to modify the Dom at the same time: It does not use 'foreach' internally,
 	/// so you can add members to collections of parents of the current node (but
 	/// you cannot insert or delete items as that will make the index used invalid).
 	/// You can use the methods ReplaceCurrentNode and RemoveCurrentNode to replace
 	/// or remove the current node, totally independent from the type of the parent node.
 	/// </summary>
-	public abstract class AbstractAstTransformer : IAstVisitor {
+	public abstract class AbstractDomTransformer : IDomVisitor {
 		
 		private Stack<INode> nodeStack = new Stack<INode>();
 		

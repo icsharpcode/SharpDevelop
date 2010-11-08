@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.VB.Dom
 			this.StringValue = stringValue;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data)
+		public override object AcceptVisitor(IDomVisitor visitor, object data)
 		{
 			return visitor.VisitPrimitiveExpression(this, data);
 		}

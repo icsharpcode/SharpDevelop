@@ -113,7 +113,7 @@ namespace ICSharpCode.NRefactory.VB
 			
 			public object UserData { get; set; }
 			
-			public object AcceptChildren(IAstVisitor visitor, object data)
+			public object AcceptChildren(IDomVisitor visitor, object data)
 			{
 				foreach (INode n in nodes) {
 					n.AcceptVisitor(visitor, data);
@@ -121,7 +121,7 @@ namespace ICSharpCode.NRefactory.VB
 				return null;
 			}
 			
-			public object AcceptVisitor(IAstVisitor visitor, object data)
+			public object AcceptVisitor(IDomVisitor visitor, object data)
 			{
 				return AcceptChildren(visitor, data);
 			}

@@ -14,7 +14,7 @@ namespace ICSharpCode.NRefactory.VB.Parser
 {
 	public partial class VBParser
 	{
-		Lexer lexer;
+		VBLexer lexer;
 		Stack<INode> blockStack;
 		CompilationUnit compilationUnit;
 		int errDist = MinErrDist;
@@ -23,11 +23,11 @@ namespace ICSharpCode.NRefactory.VB.Parser
 		const int    MinErrDist   = 2;
 		const string ErrMsgFormat = "-- line {0} col {1}: {2}";  // 0=line, 1=column, 2=text
 		
-		public VBParser(ILexer lexer)
+		public VBParser(VBLexer lexer)
 		{
 			this.errors = lexer.Errors;
 			errors.SynErr = new ErrorCodeProc(SynErr);
-			this.lexer = (Lexer)lexer;
+			this.lexer = (VBLexer)lexer;
 			this.blockStack = new Stack<INode>();
 		}
 		
@@ -397,7 +397,7 @@ namespace ICSharpCode.NRefactory.VB.Parser
 			}
 		}
 		
-		public ILexer Lexer {
+		public VBLexer Lexer {
 			get {
 				return lexer;
 			}

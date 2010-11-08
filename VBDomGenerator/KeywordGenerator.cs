@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace NRefactoryASTGenerator
+namespace VBDomGenerator
 {
 	static class KeywordGenerator
 	{
@@ -106,7 +106,7 @@ namespace NRefactoryASTGenerator
 				writer.WriteLine("\t[TestFixture]");
 				writer.WriteLine("\tpublic sealed class LexerTests");
 				writer.WriteLine("\t{");
-				writer.WriteLine("\t\tILexer GenerateLexer(StringReader sr)");
+				writer.WriteLine("\t\tVBLexer GenerateLexer(StringReader sr)");
 				writer.WriteLine("\t\t{");
 				writer.WriteLine("\t\t\treturn ParserFactory.CreateLexer(sr);");
 				writer.WriteLine("\t\t}");
@@ -115,7 +115,7 @@ namespace NRefactoryASTGenerator
 					writer.WriteLine("\t\t[Test]");
 					writer.WriteLine("\t\tpublic void Test{0}()", specialChars.Keys.ElementAt(i));
 					writer.WriteLine("\t\t{");
-					writer.WriteLine("\t\t\tILexer lexer = GenerateLexer(new StringReader({0}));", specialChars.Values.ElementAt(i));
+					writer.WriteLine("\t\t\tVBLexer lexer = GenerateLexer(new StringReader({0}));", specialChars.Values.ElementAt(i));
 					writer.WriteLine("\t\t\tAssert.AreEqual(Tokens.{0}, lexer.NextToken().Kind);", specialChars.Keys.ElementAt(i));
 					writer.WriteLine("\t\t}");
 				}
@@ -126,7 +126,7 @@ namespace NRefactoryASTGenerator
 					writer.WriteLine("\t\t[Test]");
 					writer.WriteLine("\t\tpublic void Test{0}()", UpperCaseFirst(keyword));
 					writer.WriteLine("\t\t{");
-					writer.WriteLine("\t\t\tILexer lexer = GenerateLexer(new StringReader(\"{0}\"));", keyword);
+					writer.WriteLine("\t\t\tVBLexer lexer = GenerateLexer(new StringReader(\"{0}\"));", keyword);
 					writer.WriteLine("\t\t\tAssert.AreEqual(Tokens.{0}, lexer.NextToken().Kind);", UpperCaseFirst(keyword));
 					writer.WriteLine("\t\t}");
 				}

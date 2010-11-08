@@ -11,7 +11,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Lexer
 	[TestFixture]
 	public class LexerPositionTests
 	{
-		ILexer GenerateLexer(string s)
+		VBLexer GenerateLexer(string s)
 		{
 			return ParserFactory.CreateLexer(new StringReader(s));
 		}
@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Lexer
 		[Test]
 		public void TestNewLine()
 		{
-			ILexer l = GenerateLexer("public\nstatic");
+			VBLexer l = GenerateLexer("public\nstatic");
 			Token t = l.NextToken();
 			Assert.AreEqual(Tokens.Public, t.Kind);
 			Assert.AreEqual(new Location(1, 1), t.Location);
@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Lexer
 		[Test]
 		public void TestCarriageReturnNewLine()
 		{
-			ILexer l = GenerateLexer("public\r\nstatic");
+			VBLexer l = GenerateLexer("public\r\nstatic");
 			Token t = l.NextToken();
 			Assert.AreEqual(Tokens.Public, t.Kind);
 			Assert.AreEqual(new Location(1, 1), t.Location);
@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Lexer
 		[Test]
 		public void TestPositionOfEOF1()
 		{
-			ILexer l = GenerateLexer("public");
+			VBLexer l = GenerateLexer("public");
 			l.NextToken(); // public
 			Token t = l.NextToken();
 			Assert.AreEqual(Tokens.EOL, t.Kind);
@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Lexer
 		[Test]
 		public void TestPositionOfEOF2()
 		{
-			ILexer l = GenerateLexer("public _\n ");
+			VBLexer l = GenerateLexer("public _\n ");
 			l.NextToken(); // public
 			Token t = l.NextToken();
 			Assert.AreEqual(Tokens.EOL, t.Kind);

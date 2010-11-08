@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace NRefactoryASTGenerator.Ast
+namespace VBDomGenerator.Dom
 {
 	class VariableDeclaration : AbstractNode
 	{

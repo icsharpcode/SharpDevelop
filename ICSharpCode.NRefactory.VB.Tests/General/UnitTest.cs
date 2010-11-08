@@ -58,10 +58,10 @@ namespace ICSharpCode.NRefactory.VB.Tests
 //		}
 		
 		[Test]
-		public void TestIAstVisitor()
+		public void TestIDomVisitor()
 		{
 			Type[] allTypes = typeof(AbstractNode).Assembly.GetTypes();
-			Type visitor = typeof(IAstVisitor);
+			Type visitor = typeof(IDomVisitor);
 			
 			foreach (Type type in allTypes) {
 				if (type.IsClass && !type.IsAbstract && !type.IsNested && type.GetInterface(typeof(INode).FullName) != null && !type.Name.StartsWith("Null")) {
@@ -79,10 +79,10 @@ namespace ICSharpCode.NRefactory.VB.Tests
 		}
 		
 		[Test]
-		public void TestAbstractASTVisitorVisitor()
+		public void TestAbstractDomVisitorVisitor()
 		{
 			Type[] allTypes = typeof(AbstractNode).Assembly.GetTypes();
-			Type visitor = typeof(AbstractAstVisitor);
+			Type visitor = typeof(AbstractDomVisitor);
 			
 			foreach (Type type in allTypes) {
 				if (type.IsClass && !type.IsAbstract && !type.IsNested && type.GetInterface(typeof(INode).FullName) != null && !type.Name.StartsWith("Null")) {

@@ -13,19 +13,19 @@ namespace ICSharpCode.NRefactory.VB
 	/// </summary>
 	public static class ParserFactory
 	{
-		public static Parser.ILexer CreateLexer(TextReader textReader)
+		public static VBLexer CreateLexer(TextReader textReader)
 		{
-			return new ICSharpCode.NRefactory.VB.Parser.Lexer(textReader);
+			return new ICSharpCode.NRefactory.VB.Parser.VBLexer(textReader);
 		}
 		
-		public static Parser.ILexer CreateLexer(TextReader textReader, LexerMemento state)
+		public static VBLexer CreateLexer(TextReader textReader, VBLexerMemento state)
 		{
-			return new ICSharpCode.NRefactory.VB.Parser.Lexer(textReader, state);
+			return new ICSharpCode.NRefactory.VB.Parser.VBLexer(textReader, state);
 		}
 		
 		public static VBParser CreateParser(TextReader textReader)
 		{
-			Parser.ILexer lexer = CreateLexer(textReader);
+			Parser.VBLexer lexer = CreateLexer(textReader);
 			return new ICSharpCode.NRefactory.VB.Parser.VBParser(lexer);
 		}
 		

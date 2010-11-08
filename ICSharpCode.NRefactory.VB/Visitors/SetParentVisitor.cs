@@ -10,7 +10,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 	/// <summary>
 	/// Sets the parent property on all nodes in the tree.
 	/// </summary>
-	public class SetParentVisitor : NodeTrackingAstVisitor
+	public class SetParentVisitor : NodeTrackingDomVisitor
 	{
 		Stack<INode> nodeStack = new Stack<INode>();
 		

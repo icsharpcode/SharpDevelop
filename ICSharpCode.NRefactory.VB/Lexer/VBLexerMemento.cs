@@ -6,8 +6,11 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.VB.Parser
 {
-	public sealed class VBLexerMemento : LexerMemento
+	public sealed class VBLexerMemento
 	{
+		public int Line { get; set; }
+		public int Column { get; set; }
+		public int PrevTokenKind { get; set; }
 		public bool LineEnd { get; set; }
 		public bool IsAtLineBegin { get; set; }
 		public bool MisreadExclamationMarkAsTypeCharacter { get; set; }

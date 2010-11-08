@@ -55,17 +55,14 @@
     <Compile Include="Dom\INullable.cs" />
     <Compile Include="Dom\TypeReference.cs" />
     <Compile Include="EnvironmentInformationProvider.cs" />
-    <Compile Include="IAstVisitor.cs" />
-    <Compile Include="Lexer\AbstractLexer.cs" />
+    <Compile Include="IDomVisitor.cs" />
     <Compile Include="Lexer\Block.cs" />
     <Compile Include="Lexer\ExpressionFinder.cs" />
     <Compile Include="Lexer\ExpressionFinderState.cs" />
     <Compile Include="Lexer\Extensions.cs" />
-    <Compile Include="Lexer\ILexer.cs" />
     <Compile Include="Lexer\Keywords.cs" />
     <Compile Include="Lexer\LATextReader.cs" />
-    <Compile Include="Lexer\Lexer.cs" />
-    <Compile Include="Lexer\LexerMemento.cs" />
+    <Compile Include="Lexer\VBLexer.cs" />
     <Compile Include="Lexer\LookupTable.cs" />
     <Compile Include="Lexer\Parser.cs">
       <DependentUpon>ExpressionFinder.atg</DependentUpon>
@@ -101,13 +98,13 @@
     <Compile Include="PrettyPrinter\VBNet\VBNetPrettyPrintOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SnippetParser.cs" />
-    <Compile Include="Visitors\AbstractAstTransformer.cs" />
-    <Compile Include="Visitors\AbstractASTVisitor.cs" />
+    <Compile Include="Visitors\AbstractDomTransformer.cs" />
+    <Compile Include="Visitors\AbstractDomVisitor.cs" />
     <Compile Include="Visitors\CodeDOMOutputVisitor.cs" />
     <Compile Include="Visitors\CodeDOMVerboseOutputGenerator.cs" />
     <Compile Include="Visitors\LookupTableVisitor.cs" />
-    <Compile Include="Visitors\NodeTrackingAstVisitor.cs" />
-    <Compile Include="Visitors\NotImplementedAstVisitor.cs" />
+    <Compile Include="Visitors\NodeTrackingDomVisitor.cs" />
+    <Compile Include="Visitors\NotImplementedDomVisitor.cs" />
     <Compile Include="Visitors\PrefixFieldsVisitor.cs" />
     <Compile Include="Visitors\RenameIdentifierVisitor.cs" />
     <Compile Include="Visitors\SetParentVisitor.cs" />

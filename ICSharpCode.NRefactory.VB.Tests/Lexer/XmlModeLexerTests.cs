@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Lexer
 		[Test]
 		public void TagWithContent()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement("Dim x = <Test>Hello World</Test>")));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement("Dim x = <Test>Hello World</Test>")));
 			
 			CheckHead(lexer);
 			
@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Lexer
 		[Test]
 		public void HtmlText()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement("Dim x = <div><h1>Title</h1>" +
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement("Dim x = <div><h1>Title</h1>" +
 			                                                            "<p>test test <br /> test</p></div>")));
 			
 			CheckHead(lexer);
@@ -96,7 +96,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Lexer
 		[Test]
 		public void XmlLiteralsExample1()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement("Dim xml = <menu>\n" +
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement("Dim xml = <menu>\n" +
 			                                                            "              <course name=\"appetizer\">\n" +
 			                                                            "                  <dish>Shrimp Cocktail</dish>\n" +
 			                                                            "                  <dish>Escargot</dish>\n" +
@@ -176,7 +176,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Lexer
 		[Test]
 		public void SimpleXmlWithComments()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(@"Dim x = <?xml version=""1.0""?> <!-- Test file -->
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(@"Dim x = <?xml version=""1.0""?> <!-- Test file -->
 			                                                                      <Test>
 			                                                                        <!-- Test data -->
 			                                                                        <Data />
@@ -198,7 +198,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Lexer
 		[Test]
 		public void SimpleEmptyTag()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement("Dim x = <Test />")));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement("Dim x = <Test />")));
 			
 			CheckHead(lexer);
 			
@@ -211,7 +211,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Lexer
 		[Test]
 		public void SimpleTag()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement("Dim x = <Test></Test>")));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement("Dim x = <Test></Test>")));
 			
 			CheckHead(lexer);
 			
@@ -241,7 +241,7 @@ Class TestClass
 	End Sub
 End Class";
 			
-			ILexer lexer = GenerateLexer(new StringReader(code));
+			VBLexer lexer = GenerateLexer(new StringReader(code));
 			
 			CheckTokens(lexer, Tokens.Imports, Tokens.Identifier, Tokens.EOL,
 			            Tokens.Imports, Tokens.Identifier, Tokens.Dot, Tokens.Identifier, Tokens.EOL,
@@ -300,7 +300,7 @@ namespace DefaultNamespace
 			</template>
 			";
 			
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(xml)));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(xml)));
 			
 			CheckHead(lexer);
 			
@@ -346,7 +346,7 @@ namespace DefaultNamespace
                       </course>
                   </menu>";
 			
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(code)));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(code)));
 			
 			CheckHead(lexer);
 			
@@ -382,7 +382,7 @@ namespace DefaultNamespace
                                <name><%= MyName %></name>
                            </>";
 			
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(code)));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(code)));
 			
 			CheckHead(lexer);
 			
@@ -404,7 +404,7 @@ For Each item In childAxis
     Console.WriteLine(item.@name)
 Next";
 			
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(code)));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(code)));
 			
 			CheckHead(lexer);
 			
@@ -423,7 +423,7 @@ Next";
 		[Test]
 		public void GetXmlNamespace()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement("Dim name = GetXmlNamespace(x)")));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement("Dim name = GetXmlNamespace(x)")));
 			
 			CheckHead(lexer);
 			
@@ -436,7 +436,7 @@ Next";
 		[Test]
 		public void GetXmlNamespace2()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement("Dim name = GetXmlNamespace(db-name)")));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement("Dim name = GetXmlNamespace(db-name)")));
 			
 			CheckHead(lexer);
 			
@@ -450,7 +450,7 @@ Next";
 		[Test]
 		public void XmlInSelect()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement("Dim data = From x In list Select <test>x</test>")));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement("Dim data = From x In list Select <test>x</test>")));
 			
 			CheckHead(lexer);
 			
@@ -465,7 +465,7 @@ Next";
 		[Test]
 		public void IfExpressionTest()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement("Dim name = If(a <> 2, 4, 8)")));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement("Dim name = If(a <> 2, 4, 8)")));
 			
 			CheckHead(lexer);
 			
@@ -479,7 +479,7 @@ Next";
 		[Test]
 		public void IfStatementTest()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement("If a <> 2 Then Return")));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement("If a <> 2 Then Return")));
 			
 			CheckHead(lexer);
 			
@@ -493,7 +493,7 @@ Next";
 		[Test]
 		public void Bug1()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(@"Dim xml = <!-- test -->")));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(@"Dim xml = <!-- test -->")));
 			
 			CheckHead(lexer);
 			
@@ -505,7 +505,7 @@ Next";
 		[Test]
 		public void Bug2()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(@"Dim xml = <?xml?><Data /><!-- test -->")));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(@"Dim xml = <?xml?><Data /><!-- test -->")));
 			
 			CheckHead(lexer);
 			
@@ -519,7 +519,7 @@ Next";
 		[Test]
 		public void Bug3()
 		{
-			ILexer lexer = GenerateLexerForSnippet(new StringReader("New String() {}"), SnippetType.Expression);
+			VBLexer lexer = GenerateLexerForSnippet(new StringReader("New String() {}"), SnippetType.Expression);
 			
 			CheckTokens(lexer, Tokens.New, Tokens.String, Tokens.OpenParenthesis,
 			            Tokens.CloseParenthesis, Tokens.OpenCurlyBrace, Tokens.CloseCurlyBrace);
@@ -528,7 +528,7 @@ Next";
 		[Test]
 		public void Bug4()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(@"Dim x = From kvp As KeyValuePair(Of String, DataGridViewCellStyle) In styleCache.CellStyleCache _
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(@"Dim x = From kvp As KeyValuePair(Of String, DataGridViewCellStyle) In styleCache.CellStyleCache _
                             Select includeStyle(kvp.Key, kvp.Value)")));
 			
 			CheckHead(lexer);
@@ -545,7 +545,7 @@ Next";
 		[Test]
 		public void LessThanCheck()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(@"Dim xml = <!-- test --><Data")));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(@"Dim xml = <!-- test --><Data")));
 			
 			CheckHead(lexer);
 			
@@ -560,7 +560,7 @@ Next";
 		[Test]
 		public void MethodInvocation()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement("DoSomething(<Test />, True)")));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement("DoSomething(<Test />, True)")));
 			
 			CheckHead(lexer);
 			
@@ -574,7 +574,7 @@ Next";
 		[Test]
 		public void AddHandlerStatement()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement("AddHandler <Test />, True")));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement("AddHandler <Test />, True")));
 			
 			CheckHead(lexer);
 			
@@ -587,7 +587,7 @@ Next";
 		[Test]
 		public void AddHandlerStatement2()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement("AddHandler <x />, <y />")));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement("AddHandler <x />, <y />")));
 			
 			CheckHead(lexer);
 			
@@ -601,7 +601,7 @@ Next";
 		[Test]
 		public void RemoveHandlerStatement()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement("RemoveHandler <x />, <Data>5</Data>")));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement("RemoveHandler <x />, <Data>5</Data>")));
 			
 			CheckHead(lexer);
 			
@@ -617,7 +617,7 @@ Next";
 		[Test]
 		public void ErrorHandlingStatement()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement("On Error Resume Next\n" +
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement("On Error Resume Next\n" +
 			                                                            "On Error GoTo -1\n" +
 			                                                            "On Error GoTo 0\n" +
 			                                                            "On Error GoTo Test\n" +
@@ -652,7 +652,7 @@ Next <Test />, <Test />
 For Each <Test /> In <Test />
 Next <Test />";
 			
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
 			
 			CheckHead(lexer);
 			
@@ -676,7 +676,7 @@ Next <Test />";
 			string statement = @"While <Test />
 End While";
 			
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
 			
 			CheckHead(lexer);
 			
@@ -693,7 +693,7 @@ End While";
 			string statement = @"Do While <Test />
 Loop";
 			
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
 			
 			CheckHead(lexer);
 			
@@ -710,7 +710,7 @@ Loop";
 			string statement = @"Do
 Loop While <Test />";
 			
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
 			
 			CheckHead(lexer);
 			
@@ -727,7 +727,7 @@ Loop While <Test />";
 			string statement = @"Do Until <Test />
 Loop";
 			
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
 			
 			CheckHead(lexer);
 			
@@ -744,7 +744,7 @@ Loop";
 			string statement = @"Do
 Loop Until <Test />";
 			
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
 			
 			CheckHead(lexer);
 			
@@ -764,7 +764,7 @@ ElseIf <Test></Test> Then
 Else
 End If";
 			
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
 			
 			CheckHead(lexer);
 			
@@ -786,7 +786,7 @@ End If";
 	Case Else
 End Select";
 			
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
 			
 			CheckHead(lexer);
 			
@@ -810,7 +810,7 @@ End Select";
 	Finally
 End Try";
 			
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
 			
 			CheckHead(lexer);
 			
@@ -828,7 +828,7 @@ End Try";
 		[Test]
 		public void ThrowStatement()
 		{
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement("Throw <Test />")));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement("Throw <Test />")));
 			
 			CheckHead(lexer);
 			
@@ -859,7 +859,7 @@ Return
 Return 5
 Return <Test />";
 			
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
 			
 			CheckHead(lexer);
 			
@@ -893,7 +893,7 @@ Return <Test />";
 Erase <Test />, <Test />
 ReDim Preserve <Test />";
 			
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
 			
 			CheckHead(lexer);
 			
@@ -912,7 +912,7 @@ ReDim Preserve <Test />";
 			string statement = @"Using <Test />
 End Using";
 			
-			ILexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
+			VBLexer lexer = GenerateLexer(new StringReader(TestStatement(statement)));
 			
 			CheckHead(lexer);
 			
@@ -930,7 +930,7 @@ End Using";
                             Localizer.GetString(""Month"" & initParameters.SelectedDate.FirstDayOfPreviousMonth.Month) & "" "" &
                             initParameters.SelectedDate.FirstDayOfPreviousMonth.Year, .Value = New Date(2010, initParameters.SelectedDate.FirstDayOfPreviousMonth.Month, 1)}";
 			
-			ILexer lexer = GenerateLexerForSnippet(new StringReader(code), SnippetType.Expression);
+			VBLexer lexer = GenerateLexerForSnippet(new StringReader(code), SnippetType.Expression);
 			
 			CheckTokens(lexer, Tokens.New, Tokens.Identifier, Tokens.Dot, Tokens.Identifier,
 			            Tokens.With, Tokens.OpenCurlyBrace, Tokens.Dot, Tokens.Identifier, Tokens.Assign,
@@ -946,12 +946,12 @@ End Using";
 		#endregion
 		
 		#region Helpers
-		ILexer GenerateLexer(StringReader sr)
+		VBLexer GenerateLexer(StringReader sr)
 		{
 			return ParserFactory.CreateLexer(sr);
 		}
 		
-		ILexer GenerateLexerForSnippet(StringReader sr, SnippetType type)
+		VBLexer GenerateLexerForSnippet(StringReader sr, SnippetType type)
 		{
 			var lexer = ParserFactory.CreateLexer(sr);
 			lexer.SetInitialContext(type);
@@ -967,18 +967,18 @@ End Using";
 				"End Class";
 		}
 		
-		void CheckFoot(ILexer lexer)
+		void CheckFoot(VBLexer lexer)
 		{
 			CheckTokens(lexer, Tokens.EOL, Tokens.End, Tokens.Sub, Tokens.EOL, Tokens.End, Tokens.Class);
 		}
 		
-		void CheckHead(ILexer lexer)
+		void CheckHead(VBLexer lexer)
 		{
 			CheckTokens(lexer, Tokens.Class, Tokens.Identifier, Tokens.EOL,
 			            Tokens.Sub, Tokens.Identifier, Tokens.EOL);
 		}
 		
-		void CheckTokens(ILexer lexer, params int[] tokens)
+		void CheckTokens(VBLexer lexer, params int[] tokens)
 		{
 			for (int i = 0; i < tokens.Length; i++) {
 				int token = tokens[i];

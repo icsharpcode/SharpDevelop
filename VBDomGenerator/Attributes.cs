@@ -6,7 +6,7 @@ using System.CodeDom;
 using System.Reflection;
 using ICSharpCode.EasyCodeDom;
 
-namespace NRefactoryASTGenerator
+namespace VBDomGenerator
 {
 	public enum NullableImplementation
 	{
@@ -146,7 +146,7 @@ namespace NRefactoryASTGenerator
 				CodeMemberMethod method = new CodeMemberMethod();
 				method.Name = "AcceptVisitor";
 				method.Attributes = MemberAttributes.Public | MemberAttributes.Override;
-				method.Parameters.Add(new CodeParameterDeclarationExpression("IAstVisitor", "visitor"));
+				method.Parameters.Add(new CodeParameterDeclarationExpression("IDomVisitor", "visitor"));
 				method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(object), "data"));
 				method.ReturnType = new CodeTypeReference(typeof(object));
 				method.Statements.Add(new CodeMethodReturnStatement(new CodePrimitiveExpression(null)));

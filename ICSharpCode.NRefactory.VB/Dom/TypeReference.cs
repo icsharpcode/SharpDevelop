@@ -290,7 +290,7 @@ namespace ICSharpCode.NRefactory.VB.Dom
 		protected TypeReference()
 		{}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data)
+		public override object AcceptVisitor(IDomVisitor visitor, object data)
 		{
 			return visitor.VisitTypeReference(this, data);
 		}
@@ -360,7 +360,7 @@ namespace ICSharpCode.NRefactory.VB.Dom
 		{
 			return this;
 		}
-		public override object AcceptVisitor(IAstVisitor visitor, object data)
+		public override object AcceptVisitor(IDomVisitor visitor, object data)
 		{
 			return null;
 		}
@@ -399,7 +399,7 @@ namespace ICSharpCode.NRefactory.VB.Dom
 			this.baseType = outerClass;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data)
+		public override object AcceptVisitor(IDomVisitor visitor, object data)
 		{
 			return visitor.VisitInnerClassTypeReference(this, data);
 		}

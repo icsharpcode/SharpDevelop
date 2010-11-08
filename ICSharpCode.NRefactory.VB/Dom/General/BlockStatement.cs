@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.VB.Dom
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data)
+		public override object AcceptVisitor(IDomVisitor visitor, object data)
 		{
 			return visitor.VisitBlockStatement(this, data);
 		}
@@ -37,11 +37,11 @@ namespace ICSharpCode.NRefactory.VB.Dom
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data)
+		public override object AcceptVisitor(IDomVisitor visitor, object data)
 		{
 			return data;
 		}
-		public override object AcceptChildren(IAstVisitor visitor, object data)
+		public override object AcceptChildren(IDomVisitor visitor, object data)
 		{
 			return data;
 		}

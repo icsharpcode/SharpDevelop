@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Dom
 		[Test]
 		public void VBNetInvalidTypeArgumentListObjectCreateExpressionTest()
 		{
-			// this test was written because this bug caused the AbstractASTVisitor to crash
+			// this test was written because this bug caused the AbstractDomVisitor to crash
 			
 			InvocationExpression expr = ParseUtil.ParseExpression<InvocationExpression>("WriteLine(New SomeGenericType(Of Integer, )())", true);
 			Assert.IsTrue(expr.TargetObject is IdentifierExpression);

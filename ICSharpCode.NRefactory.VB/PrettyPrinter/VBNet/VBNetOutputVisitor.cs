@@ -15,7 +15,7 @@ using ICSharpCode.NRefactory.VB.Visitors;
 
 namespace ICSharpCode.NRefactory.VB.PrettyPrinter
 {
-	public sealed class VBNetOutputVisitor : NodeTrackingAstVisitor, IOutputAstVisitor
+	public sealed class VBNetOutputVisitor : NodeTrackingDomVisitor, IOutputDomVisitor
 	{
 		Errors                  errors             = new Errors();
 		VBNetOutputFormatter    outputFormatter;
@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.VB.PrettyPrinter
 			}
 		}
 		
-		AbstractPrettyPrintOptions IOutputAstVisitor.Options {
+		AbstractPrettyPrintOptions IOutputDomVisitor.Options {
 			get { return prettyPrintOptions; }
 		}
 		
@@ -89,7 +89,7 @@ namespace ICSharpCode.NRefactory.VB.PrettyPrinter
 			Error(node.GetType().Name + " is unsupported", node.StartLocation);
 		}
 		
-		#region ICSharpCode.NRefactory.Parser.IASTVisitor interface implementation
+		#region ICSharpCode.NRefactory.Parser.IDomVisitor interface implementation
 		public override object TrackedVisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
 			compilationUnit.AcceptChildren(this, data);

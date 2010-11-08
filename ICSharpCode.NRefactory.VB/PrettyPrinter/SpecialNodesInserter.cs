@@ -131,7 +131,7 @@ namespace ICSharpCode.NRefactory.VB.PrettyPrinter
 		/// Make sure to call Finish() (or Dispose()) on the returned SpecialNodesInserter
 		/// when the output is finished.
 		/// </summary>
-		public static SpecialNodesInserter Install(IEnumerable<ISpecial> specials, IOutputAstVisitor outputVisitor)
+		public static SpecialNodesInserter Install(IEnumerable<ISpecial> specials, IOutputDomVisitor outputVisitor)
 		{
 			SpecialNodesInserter sni = new SpecialNodesInserter(specials, new SpecialOutputVisitor(outputVisitor.OutputFormatter));
 			outputVisitor.BeforeNodeVisit += sni.AcceptNodeStart;

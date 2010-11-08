@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.VB.Dom
 			get { return true; }
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data)
+		public override object AcceptVisitor(IDomVisitor visitor, object data)
 		{
 			return data;
 		}

@@ -6,7 +6,7 @@ using ICSharpCode.NRefactory.VB.Dom;
 
 namespace ICSharpCode.NRefactory.VB.Visitors
 {
-	class RenameIdentifierVisitor : AbstractAstVisitor
+	class RenameIdentifierVisitor : AbstractDomVisitor
 	{
 		protected StringComparer nameComparer;
 		protected string from, to;

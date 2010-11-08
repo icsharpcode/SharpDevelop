@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.VB.Dom
 		/// <param name="visitor">The visitor to accept</param>
 		/// <param name="data">Additional data for the visitor</param>
 		/// <returns>The paremeter <paramref name="data"/></returns>
-		object AcceptChildren(IAstVisitor visitor, object data);
+		object AcceptChildren(IDomVisitor visitor, object data);
 		
 		/// <summary>
 		/// Accept the visitor
@@ -46,6 +46,6 @@ namespace ICSharpCode.NRefactory.VB.Dom
 		/// <param name="visitor">The visitor to accept</param>
 		/// <param name="data">Additional data for the visitor</param>
 		/// <returns>The value the visitor returns after the visit</returns>
-		object AcceptVisitor(IAstVisitor visitor, object data);
+		object AcceptVisitor(IDomVisitor visitor, object data);
 	}
 }

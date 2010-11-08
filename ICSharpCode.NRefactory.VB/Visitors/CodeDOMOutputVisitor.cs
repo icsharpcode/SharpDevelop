@@ -12,7 +12,7 @@ using ICSharpCode.NRefactory.VB.Dom;
 
 namespace ICSharpCode.NRefactory.VB.Visitors
 {
-	public class CodeDomVisitor : AbstractAstVisitor
+	public class CodeDomVisitor : AbstractDomVisitor
 	{
 		Stack<CodeNamespace>  namespaceDeclarations = new Stack<CodeNamespace>();
 		Stack<CodeTypeDeclaration> typeDeclarations = new Stack<CodeTypeDeclaration>();
@@ -174,7 +174,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 			return attr;
 		}
 		
-		#region ICSharpCode.SharpRefactory.Parser.IASTVisitor interface implementation
+		#region ICSharpCode.SharpRefactory.Parser.IDomVisitor interface implementation
 		public override object VisitCompilationUnit(CompilationUnit compilationUnit, object data)
 		{
 			if (compilationUnit == null) {

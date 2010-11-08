@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 	using ICSharpCode.NRefactory.VB.Dom;
 	
 	
-	public abstract class AbstractAstVisitor : IAstVisitor {
+	public abstract class AbstractDomVisitor : IDomVisitor {
 		
 		public virtual object VisitAddHandlerStatement(AddHandlerStatement addHandlerStatement, object data) {
 			Debug.Assert((addHandlerStatement != null));

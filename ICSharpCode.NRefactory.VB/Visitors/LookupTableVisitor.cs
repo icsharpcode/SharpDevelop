@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors
 		
 	}
 	
-	public sealed class LookupTableVisitor : AbstractAstVisitor
+	public sealed class LookupTableVisitor : AbstractDomVisitor
 	{
 		Dictionary<string, List<LocalLookupVariable>> variables;
 		

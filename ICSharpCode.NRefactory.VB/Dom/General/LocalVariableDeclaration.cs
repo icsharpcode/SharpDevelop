@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory.VB.Dom
 			return null;
 		}
 				
-		public override object AcceptVisitor(IAstVisitor visitor, object data)
+		public override object AcceptVisitor(IDomVisitor visitor, object data)
 		{
 			return visitor.VisitLocalVariableDeclaration(this, data);
 		}

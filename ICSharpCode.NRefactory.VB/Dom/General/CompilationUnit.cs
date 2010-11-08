@@ -11,7 +11,7 @@ namespace ICSharpCode.NRefactory.VB.Dom
 		// Children in C#: UsingAliasDeclaration, UsingDeclaration, AttributeSection, NamespaceDeclaration
 		// Children in VB: OptionStatements, ImportsStatement, AttributeSection, NamespaceDeclaration
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data)
+		public override object AcceptVisitor(IDomVisitor visitor, object data)
 		{
 			return visitor.VisitCompilationUnit(this, data);
 		}

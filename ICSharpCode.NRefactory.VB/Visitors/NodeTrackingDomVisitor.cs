@@ -14,8 +14,8 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 	
 	
 	/// <summary>
-	/// The NodeTrackingAstVisitor will iterate through the whole AST,
-	/// just like the AbstractAstVisitor, and calls the virtual methods
+	/// The NodeTrackingDomVisitor will iterate through the whole Dom,
+	/// just like the AbstractDomVisitor, and calls the virtual methods
 	/// BeginVisit and EndVisit for each node being visited.
 	/// </summary>
 	/// <remarks>
@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.VB.Visitors {
 	/// you want to visit child nodes using the default visiting behaviour,
 	/// use base.TrackedVisit(parentNode, data).
 	/// </remarks>
-	public abstract class NodeTrackingAstVisitor : AbstractAstVisitor {
+	public abstract class NodeTrackingDomVisitor : AbstractDomVisitor {
 		
 		protected virtual void BeginVisit(INode node) {
 		}

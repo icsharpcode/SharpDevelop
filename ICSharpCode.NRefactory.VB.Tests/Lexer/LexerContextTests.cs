@@ -554,7 +554,7 @@ exit Global
 		void RunTest(string code, string expectedOutput)
 		{
 			ExpressionFinder p = new ExpressionFinder();
-			ILexer lexer = ParserFactory.CreateLexer(new StringReader(code));
+			VBLexer lexer = ParserFactory.CreateLexer(new StringReader(code));
 			Token t;
 			
 			do {

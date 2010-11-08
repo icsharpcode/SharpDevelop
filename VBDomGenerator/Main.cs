@@ -7,10 +7,10 @@ using System.CodeDom;
 using System.Diagnostics;
 using System.Reflection;
 using System.IO;
-using NRefactoryASTGenerator.Ast;
+using VBDomGenerator.Dom;
 using ICSharpCode.EasyCodeDom;
 
-namespace NRefactoryASTGenerator
+namespace VBDomGenerator
 {
 	class MainClass
 	{
@@ -23,12 +23,12 @@ namespace NRefactoryASTGenerator
 			string directory = "../../../ICSharpCode.NRefactory.VB/Dom/";
 			string visitorsDir = "../../../ICSharpCode.NRefactory.VB/Visitors/";
 			
-			Debug.WriteLine("AST Generator running...");
+			Debug.WriteLine("DOM Generator running...");
 			if (!File.Exists(directory + "INode.cs")) {
 				Debug.WriteLine("did not find output directory");
 				return;
 			}
-			if (!File.Exists(visitorsDir + "AbstractAstTransformer.cs")) {
+			if (!File.Exists(visitorsDir + "AbstractDomTransformer.cs")) {
 				Debug.WriteLine("did not find visitor output directory");
 				return;
 			}
@@ -65,7 +65,7 @@ namespace NRefactoryASTGenerator
 						CodeMemberMethod method = new CodeMemberMethod();
 						method.Name = "AcceptVisitor";
 						method.Attributes = MemberAttributes.Public | MemberAttributes.Override;
-						method.Parameters.Add(new CodeParameterDeclarationExpression("IAstVisitor", "visitor"));
+						method.Parameters.Add(new CodeParameterDeclarationExpression("IDomVisitor", "visitor"));
 						method.Parameters.Add(new CodeParameterDeclarationExpression(typeof(object), "data"));
 						method.ReturnType = new CodeTypeReference(typeof(object));
 						CodeExpression ex = new CodeVariableReferenceExpression("visitor");
@@ -98,11 +98,11 @@ namespace NRefactoryASTGenerator
 			cns = ccu.AddNamespace("ICSharpCode.NRefactory.VB");
 			cns.AddImport("System");
 			cns.AddImport("ICSharpCode.NRefactory.VB.Dom");
-			cns.Types.Add(CreateAstVisitorInterface(nodeTypes));
+			cns.Types.Add(CreateDomVisitorInterface(nodeTypes));
 			
 			using (StringWriter writer = new StringWriter()) {
 				new Microsoft.CSharp.CSharpCodeProvider().GenerateCodeFromCompileUnit(ccu, writer, settings);
-				File.WriteAllText(visitorsDir + "../IAstVisitor.cs", NormalizeNewLines(writer));
+				File.WriteAllText(visitorsDir + "../IDomVisitor.cs", NormalizeNewLines(writer));
 			}
 			
 			ccu = new CodeCompileUnit();
@@ -111,11 +111,11 @@ namespace NRefactoryASTGenerator
 			cns.AddImport("System.Collections.Generic");
 			cns.AddImport("System.Diagnostics");
 			cns.AddImport("ICSharpCode.NRefactory.VB.Dom");
-			cns.Types.Add(CreateAstVisitorClass(nodeTypes, false));
+			cns.Types.Add(CreateDomVisitorClass(nodeTypes, false));
 			
 			using (StringWriter writer = new StringWriter()) {
 				new Microsoft.CSharp.CSharpCodeProvider().GenerateCodeFromCompileUnit(ccu, writer, settings);
-				File.WriteAllText(visitorsDir + "AbstractAstVisitor.cs", NormalizeNewLines(writer));
+				File.WriteAllText(visitorsDir + "AbstractDomVisitor.cs", NormalizeNewLines(writer));
 			}
 			
 			ccu = new CodeCompileUnit();
@@ -124,38 +124,38 @@ namespace NRefactoryASTGenerator
 			cns.AddImport("System.Collections.Generic");
 			cns.AddImport("System.Diagnostics");
 			cns.AddImport("ICSharpCode.NRefactory.VB.Dom");
-			cns.Types.Add(CreateAstVisitorClass(nodeTypes, true));
+			cns.Types.Add(CreateDomVisitorClass(nodeTypes, true));
 			
 			using (StringWriter writer = new StringWriter()) {
 				new Microsoft.CSharp.CSharpCodeProvider().GenerateCodeFromCompileUnit(ccu, writer, settings);
-				File.WriteAllText(visitorsDir + "AbstractAstTransformer.cs", NormalizeNewLines(writer));
+				File.WriteAllText(visitorsDir + "AbstractDomTransformer.cs", NormalizeNewLines(writer));
 			}
 			
 			ccu = new CodeCompileUnit();
 			cns = ccu.AddNamespace("ICSharpCode.NRefactory.VB.Visitors");
 			cns.AddImport("System");
 			cns.AddImport("ICSharpCode.NRefactory.VB.Dom");
-			cns.Types.Add(CreateNodeTrackingAstVisitorClass(nodeTypes));
+			cns.Types.Add(CreateNodeTrackingDomVisitorClass(nodeTypes));
 			
 			using (StringWriter writer = new StringWriter()) {
 				new Microsoft.CSharp.CSharpCodeProvider().GenerateCodeFromCompileUnit(ccu, writer, settings);
 				// CodeDom cannot output "sealed", so we need to use this hack:
-				File.WriteAllText(visitorsDir + "NodeTrackingAstVisitor.cs",
+				File.WriteAllText(visitorsDir + "NodeTrackingDomVisitor.cs",
 				                  NormalizeNewLines(writer).Replace("public override object", "public sealed override object"));
 			}
 			
-			//NotImplementedAstVisitor
+			//NotImplementedDomVisitor
 			ccu = new CodeCompileUnit();
 			cns = ccu.AddNamespace("ICSharpCode.NRefactory.VB.Visitors");
 			cns.AddImport("System");
 			cns.AddImport("ICSharpCode.NRefactory.VB.Dom");
-			cns.Types.Add(CreateNotImplementedAstVisitorClass(nodeTypes));
+			cns.Types.Add(CreateNotImplementedDomVisitorClass(nodeTypes));
 			
 			using (StringWriter writer = new StringWriter()) {
 				new Microsoft.CSharp.CSharpCodeProvider().GenerateCodeFromCompileUnit(ccu, writer, settings);
-				File.WriteAllText(visitorsDir + "NotImplementedAstVisitor.cs", NormalizeNewLines(writer));
+				File.WriteAllText(visitorsDir + "NotImplementedDomVisitor.cs", NormalizeNewLines(writer));
 			}
-			Debug.WriteLine("AST Generator done!");
+			Debug.WriteLine("DOM Generator done!");
 			
 			Debug.WriteLine("start keyword list generation...");
 			
@@ -169,9 +169,9 @@ namespace NRefactoryASTGenerator
 			return string.Join(Environment.NewLine, writer.ToString().Split(lineEndings, StringSplitOptions.None));
 		}
 		
-		static CodeTypeDeclaration CreateAstVisitorInterface(List<Type> nodeTypes)
+		static CodeTypeDeclaration CreateDomVisitorInterface(List<Type> nodeTypes)
 		{
-			CodeTypeDeclaration td = new CodeTypeDeclaration("IAstVisitor");
+			CodeTypeDeclaration td = new CodeTypeDeclaration("IDomVisitor");
 			td.IsInterface = true;
 			
 			foreach (Type t in nodeTypes) {
@@ -184,17 +184,17 @@ namespace NRefactoryASTGenerator
 			return td;
 		}
 		
-		static CodeTypeDeclaration CreateAstVisitorClass(List<Type> nodeTypes, bool transformer)
+		static CodeTypeDeclaration CreateDomVisitorClass(List<Type> nodeTypes, bool transformer)
 		{
-			CodeTypeDeclaration td = new CodeTypeDeclaration(transformer ? "AbstractAstTransformer" : "AbstractAstVisitor");
+			CodeTypeDeclaration td = new CodeTypeDeclaration(transformer ? "AbstractDomTransformer" : "AbstractDomVisitor");
 			td.TypeAttributes = TypeAttributes.Public | TypeAttributes.Abstract;
-			td.BaseTypes.Add(new CodeTypeReference("IAstVisitor"));
+			td.BaseTypes.Add(new CodeTypeReference("IDomVisitor"));
 			
 			if (transformer) {
 				string comment =
-					"The AbstractAstTransformer will iterate through the whole AST,\n " +
-					"just like the AbstractAstVisitor. However, the AbstractAstTransformer allows\n " +
-					"you to modify the AST at the same time: It does not use 'foreach' internally,\n " +
+					"The AbstractDomTransformer will iterate through the whole Dom,\n " +
+					"just like the AbstractDomVisitor. However, the AbstractDomTransformer allows\n " +
+					"you to modify the Dom at the same time: It does not use 'foreach' internally,\n " +
 					"so you can add members to collections of parents of the current node (but\n " +
 					"you cannot insert or delete items as that will make the index used invalid).\n " +
 					"You can use the methods ReplaceCurrentNode and RemoveCurrentNode to replace\n " +
@@ -493,7 +493,7 @@ namespace NRefactoryASTGenerator
 					tr.TypeArguments.Add(ConvertType(subType));
 				}
 				return tr;
-			} else if (type.FullName.StartsWith("NRefactory") || type.FullName.StartsWith("System.Collections")) {
+			} else if (type.FullName.StartsWith("VBDom") || type.FullName.StartsWith("System.Collections")) {
 				if (type.Name == "Attribute")
 					return new CodeTypeReference("ICSharpCode.NRefactory.VB.Dom.Attribute");
 				return new CodeTypeReference(type.Name);
@@ -502,15 +502,15 @@ namespace NRefactoryASTGenerator
 			}
 		}
 		
-		static CodeTypeDeclaration CreateNodeTrackingAstVisitorClass(List<Type> nodeTypes)
+		static CodeTypeDeclaration CreateNodeTrackingDomVisitorClass(List<Type> nodeTypes)
 		{
-			CodeTypeDeclaration td = new CodeTypeDeclaration("NodeTrackingAstVisitor");
+			CodeTypeDeclaration td = new CodeTypeDeclaration("NodeTrackingDomVisitor");
 			td.TypeAttributes = TypeAttributes.Public | TypeAttributes.Class | TypeAttributes.Abstract;
-			td.BaseTypes.Add(new CodeTypeReference("AbstractAstVisitor"));
+			td.BaseTypes.Add(new CodeTypeReference("AbstractDomVisitor"));
 			
 			string comment = "<summary>\n " +
-				"The NodeTrackingAstVisitor will iterate through the whole AST,\n " +
-				"just like the AbstractAstVisitor, and calls the virtual methods\n " +
+				"The NodeTrackingDomVisitor will iterate through the whole Dom,\n " +
+				"just like the AbstractDomVisitor, and calls the virtual methods\n " +
 				"BeginVisit and EndVisit for each node being visited.\n " +
 				"</summary>";
 			td.Comments.Add(new CodeCommentStatement(comment, true));
@@ -562,14 +562,14 @@ namespace NRefactoryASTGenerator
 			return td;
 		}
 		
-		static CodeTypeDeclaration CreateNotImplementedAstVisitorClass(List<Type> nodeTypes)
+		static CodeTypeDeclaration CreateNotImplementedDomVisitorClass(List<Type> nodeTypes)
 		{
-			CodeTypeDeclaration td = new CodeTypeDeclaration("NotImplementedAstVisitor");
+			CodeTypeDeclaration td = new CodeTypeDeclaration("NotImplementedDomVisitor");
 			td.TypeAttributes = TypeAttributes.Public | TypeAttributes.Class;
-			td.BaseTypes.Add(new CodeTypeReference("IAstVisitor"));
+			td.BaseTypes.Add(new CodeTypeReference("IDomVisitor"));
 			
 			string comment = "<summary>\n " +
-				"IAstVisitor implementation that always throws NotImplementedExceptions.\n " +
+				"IDomVisitor implementation that always throws NotImplementedExceptions.\n " +
 				"</summary>";
 			td.Comments.Add(new CodeCommentStatement(comment, true));
 			

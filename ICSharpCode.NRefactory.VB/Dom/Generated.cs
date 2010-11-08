@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			HandlerExpression = handlerExpression;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitAddHandlerStatement(this, data);
 		}
 		
@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			Expression = expression;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitAddressOfExpression(this, data);
 		}
 		
@@ -141,7 +141,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitArrayCreateExpression(this, data);
 		}
 		
@@ -193,7 +193,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			Right = right;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitAssignmentExpression(this, data);
 		}
 		
@@ -249,7 +249,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			NamedArguments = namedArguments;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitAttribute(this, data);
 		}
 		
@@ -325,7 +325,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			attributes = new List<Attribute>();
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitAttributeSection(this, data);
 		}
 		
@@ -339,7 +339,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 		public BaseReferenceExpression() {
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitBaseReferenceExpression(this, data);
 		}
 		
@@ -396,7 +396,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			Right = right;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitBinaryOperatorExpression(this, data);
 		}
 		
@@ -469,7 +469,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitCaseLabel(this, data);
 		}
 		
@@ -526,7 +526,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			CastType = castType;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitCastExpression(this, data);
 		}
 		
@@ -605,7 +605,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			condition = Expression.Null;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitCatchClause(this, data);
 		}
 		
@@ -620,7 +620,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 		public ClassReferenceExpression() {
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitClassReferenceExpression(this, data);
 		}
 		
@@ -656,7 +656,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitCollectionInitializerExpression(this, data);
 		}
 		
@@ -675,7 +675,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return null;
 		}
 		
@@ -739,7 +739,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitCollectionRangeVariable(this, data);
 		}
 		
@@ -758,7 +758,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return null;
 		}
 		
@@ -817,7 +817,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			FalseExpression = falseExpression;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitConditionalExpression(this, data);
 		}
 		
@@ -870,7 +870,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			body = BlockStatement.Null;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitConstructorDeclaration(this, data);
 		}
 		
@@ -920,7 +920,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitConstructorInitializer(this, data);
 		}
 		
@@ -939,7 +939,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return null;
 		}
 		
@@ -968,7 +968,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			ContinueType = continueType;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitContinueStatement(this, data);
 		}
 		
@@ -1035,7 +1035,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			Charset = charset;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitDeclareDeclaration(this, data);
 		}
 		
@@ -1063,7 +1063,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			TypeReference = typeReference;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitDefaultValueExpression(this, data);
 		}
 		
@@ -1128,7 +1128,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			templates = new List<TemplateDefinition>();
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitDelegateDeclaration(this, data);
 		}
 		
@@ -1168,7 +1168,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			Expression = expression;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitDirectionExpression(this, data);
 		}
 		
@@ -1220,7 +1220,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			ConditionPosition = conditionPosition;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitDoLoopStatement(this, data);
 		}
 		
@@ -1249,7 +1249,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			EmbeddedStatement = embeddedStatement;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitElseIfSection(this, data);
 		}
 		
@@ -1263,7 +1263,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 		public EndStatement() {
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitEndStatement(this, data);
 		}
 		
@@ -1293,7 +1293,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			Expressions = expressions;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitEraseStatement(this, data);
 		}
 		
@@ -1320,7 +1320,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			Expression = expression;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitErrorStatement(this, data);
 		}
 		
@@ -1341,7 +1341,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitEventAddRegion(this, data);
 		}
 		
@@ -1364,7 +1364,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return null;
 		}
 		
@@ -1510,7 +1510,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitEventDeclaration(this, data);
 		}
 		
@@ -1533,7 +1533,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitEventRaiseRegion(this, data);
 		}
 		
@@ -1556,7 +1556,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return null;
 		}
 		
@@ -1577,7 +1577,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitEventRemoveRegion(this, data);
 		}
 		
@@ -1600,7 +1600,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return null;
 		}
 		
@@ -1626,7 +1626,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			ExitType = exitType;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitExitStatement(this, data);
 		}
 		
@@ -1690,7 +1690,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitExpressionRangeVariable(this, data);
 		}
 		
@@ -1709,7 +1709,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return null;
 		}
 		
@@ -1736,7 +1736,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			Expression = expression;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitExpressionStatement(this, data);
 		}
 		
@@ -1762,7 +1762,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			name = "";
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitExternAliasDirective(this, data);
 		}
 		
@@ -1829,7 +1829,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			return null;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitFieldDeclaration(this, data);
 		}
 		
@@ -1903,7 +1903,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			NextExpression = nextExpression;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitForeachStatement(this, data);
 		}
 		
@@ -2007,7 +2007,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			loopVariableExpression = Expression.Null;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitForNextStatement(this, data);
 		}
 		
@@ -2034,7 +2034,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			Label = label;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitGotoStatement(this, data);
 		}
 		
@@ -2072,7 +2072,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			typeArguments = new List<TypeReference>();
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitIdentifierExpression(this, data);
 		}
 		
@@ -2163,7 +2163,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 				if (falseStatement != null) falseStatement.Parent = this;
 			}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitIfElseStatement(this, data);
 		}
 		
@@ -2203,7 +2203,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			MemberName = memberName;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitInterfaceImplementation(this, data);
 		}
 		
@@ -2247,7 +2247,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			Arguments = arguments;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitInvocationExpression(this, data);
 		}
 		
@@ -2273,7 +2273,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 			Label = label;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitLabelStatement(this, data);
 		}
 		
@@ -2340,7 +2340,7 @@ namespace ICSharpCode.NRefactory.VB.Dom {
 		
 public Location ExtendedEndLocation { get; set; }
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitLambdaExpression(this, data);
 		}
 		
@@ -2369,7 +2369,7 @@ public Location ExtendedEndLocation { get; set; }
 			EmbeddedStatement = embeddedStatement;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitLockStatement(this, data);
 		}
 		
@@ -2424,7 +2424,7 @@ public Location ExtendedEndLocation { get; set; }
 			Expression = expression;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitMemberInitializerExpression(this, data);
 		}
 		
@@ -2515,7 +2515,7 @@ public Location ExtendedEndLocation { get; set; }
 			typeArguments = new List<TypeReference>();
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitMemberReferenceExpression(this, data);
 		}
 		
@@ -2577,7 +2577,7 @@ public Location ExtendedEndLocation { get; set; }
 			templates = new List<TemplateDefinition>();
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitMethodDeclaration(this, data);
 		}
 		
@@ -2623,7 +2623,7 @@ public Location ExtendedEndLocation { get; set; }
 			Expression = expression;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitNamedArgumentExpression(this, data);
 		}
 		
@@ -2649,7 +2649,7 @@ public Location ExtendedEndLocation { get; set; }
 			Name = name;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitNamespaceDeclaration(this, data);
 		}
 		
@@ -2707,7 +2707,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitObjectCreateExpression(this, data);
 		}
 		
@@ -2722,7 +2722,7 @@ public Location ExtendedEndLocation { get; set; }
 			EmbeddedStatement = embeddedStatement;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitOnErrorStatement(this, data);
 		}
 		
@@ -2764,7 +2764,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitOperatorDeclaration(this, data);
 		}
 		
@@ -2804,7 +2804,7 @@ public Location ExtendedEndLocation { get; set; }
 			OptionValue = optionValue;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitOptionDeclaration(this, data);
 		}
 		
@@ -2895,7 +2895,7 @@ public Location ExtendedEndLocation { get; set; }
 			attributes = new List<AttributeSection>();
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitParameterDeclarationExpression(this, data);
 		}
 		
@@ -2960,7 +2960,7 @@ public Location ExtendedEndLocation { get; set; }
 			Expression = expression;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitParenthesizedExpression(this, data);
 		}
 		
@@ -3083,7 +3083,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitPropertyDeclaration(this, data);
 		}
 		
@@ -3106,7 +3106,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitPropertyGetRegion(this, data);
 		}
 		
@@ -3129,7 +3129,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return null;
 		}
 		
@@ -3188,7 +3188,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitPropertySetRegion(this, data);
 		}
 		
@@ -3211,7 +3211,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return null;
 		}
 		
@@ -3237,7 +3237,7 @@ public Location ExtendedEndLocation { get; set; }
 			clauses = new List<QueryExpressionClause>();
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitQueryExpression(this, data);
 		}
 		
@@ -3288,7 +3288,7 @@ public Location ExtendedEndLocation { get; set; }
 			intoVariables = new List<ExpressionRangeVariable>();
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitQueryExpressionAggregateClause(this, data);
 		}
 		
@@ -3325,7 +3325,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return null;
 		}
 		
@@ -3339,7 +3339,7 @@ public Location ExtendedEndLocation { get; set; }
 		public QueryExpressionDistinctClause() {
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitQueryExpressionDistinctClause(this, data);
 		}
 		
@@ -3371,7 +3371,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitQueryExpressionFromClause(this, data);
 		}
 		
@@ -3390,7 +3390,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return null;
 		}
 		
@@ -3430,7 +3430,7 @@ public Location ExtendedEndLocation { get; set; }
 			groupBy = Expression.Null;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitQueryExpressionGroupClause(this, data);
 		}
 		
@@ -3469,7 +3469,7 @@ public Location ExtendedEndLocation { get; set; }
 			intoVariables = new List<ExpressionRangeVariable>();
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitQueryExpressionGroupJoinVBClause(this, data);
 		}
 		
@@ -3519,7 +3519,7 @@ public Location ExtendedEndLocation { get; set; }
 			intoVariables = new List<ExpressionRangeVariable>();
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitQueryExpressionGroupVBClause(this, data);
 		}
 		
@@ -3585,7 +3585,7 @@ public Location ExtendedEndLocation { get; set; }
 			intoIdentifier = "";
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitQueryExpressionJoinClause(this, data);
 		}
 		
@@ -3626,7 +3626,7 @@ public Location ExtendedEndLocation { get; set; }
 			rightSide = Expression.Null;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitQueryExpressionJoinConditionVB(this, data);
 		}
 		
@@ -3684,7 +3684,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitQueryExpressionJoinVBClause(this, data);
 		}
 		
@@ -3703,7 +3703,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return null;
 		}
 		
@@ -3742,7 +3742,7 @@ public Location ExtendedEndLocation { get; set; }
 			expression = Expression.Null;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitQueryExpressionLetClause(this, data);
 		}
 		
@@ -3768,7 +3768,7 @@ public Location ExtendedEndLocation { get; set; }
 			variables = new List<ExpressionRangeVariable>();
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitQueryExpressionLetVBClause(this, data);
 		}
 		
@@ -3794,7 +3794,7 @@ public Location ExtendedEndLocation { get; set; }
 			orderings = new List<QueryExpressionOrdering>();
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitQueryExpressionOrderClause(this, data);
 		}
 		
@@ -3832,7 +3832,7 @@ public Location ExtendedEndLocation { get; set; }
 			criteria = Expression.Null;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitQueryExpressionOrdering(this, data);
 		}
 		
@@ -3870,7 +3870,7 @@ public Location ExtendedEndLocation { get; set; }
 			expression = Expression.Null;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitQueryExpressionPartitionVBClause(this, data);
 		}
 		
@@ -3897,7 +3897,7 @@ public Location ExtendedEndLocation { get; set; }
 			projection = Expression.Null;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitQueryExpressionSelectClause(this, data);
 		}
 		
@@ -3923,7 +3923,7 @@ public Location ExtendedEndLocation { get; set; }
 			variables = new List<ExpressionRangeVariable>();
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitQueryExpressionSelectVBClause(this, data);
 		}
 		
@@ -3950,7 +3950,7 @@ public Location ExtendedEndLocation { get; set; }
 			condition = Expression.Null;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitQueryExpressionWhereClause(this, data);
 		}
 		
@@ -3988,7 +3988,7 @@ public Location ExtendedEndLocation { get; set; }
 			Arguments = arguments;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitRaiseEventStatement(this, data);
 		}
 		
@@ -4026,7 +4026,7 @@ public Location ExtendedEndLocation { get; set; }
 			reDimClauses = new List<InvocationExpression>();
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitReDimStatement(this, data);
 		}
 		
@@ -4066,7 +4066,7 @@ public Location ExtendedEndLocation { get; set; }
 			HandlerExpression = handlerExpression;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitRemoveHandlerStatement(this, data);
 		}
 		
@@ -4108,7 +4108,7 @@ public Location ExtendedEndLocation { get; set; }
 			LabelName = labelName;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitResumeStatement(this, data);
 		}
 		
@@ -4135,7 +4135,7 @@ public Location ExtendedEndLocation { get; set; }
 			Expression = expression;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitReturnStatement(this, data);
 		}
 		
@@ -4149,7 +4149,7 @@ public Location ExtendedEndLocation { get; set; }
 		public StopStatement() {
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitStopStatement(this, data);
 		}
 		
@@ -4179,7 +4179,7 @@ public Location ExtendedEndLocation { get; set; }
 			SwitchLabels = switchLabels;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitSwitchSection(this, data);
 		}
 		
@@ -4218,7 +4218,7 @@ public Location ExtendedEndLocation { get; set; }
 			SwitchSections = switchSections;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitSwitchStatement(this, data);
 		}
 		
@@ -4273,7 +4273,7 @@ public Location ExtendedEndLocation { get; set; }
 			bases = new List<TypeReference>();
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitTemplateDefinition(this, data);
 		}
 		
@@ -4288,7 +4288,7 @@ public Location ExtendedEndLocation { get; set; }
 		public ThisReferenceExpression() {
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitThisReferenceExpression(this, data);
 		}
 		
@@ -4315,7 +4315,7 @@ public Location ExtendedEndLocation { get; set; }
 			Expression = expression;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitThrowStatement(this, data);
 		}
 		
@@ -4367,7 +4367,7 @@ public Location ExtendedEndLocation { get; set; }
 			FinallyBlock = finallyBlock;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitTryCatchStatement(this, data);
 		}
 		
@@ -4442,7 +4442,7 @@ public Location ExtendedEndLocation { get; set; }
 			bodyStartLocation = Location.Empty;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitTypeDeclaration(this, data);
 		}
 		
@@ -4470,7 +4470,7 @@ public Location ExtendedEndLocation { get; set; }
 			TypeReference = typeReference;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitTypeOfExpression(this, data);
 		}
 		
@@ -4510,7 +4510,7 @@ public Location ExtendedEndLocation { get; set; }
 			TypeReference = typeReference;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitTypeOfIsExpression(this, data);
 		}
 		
@@ -4537,7 +4537,7 @@ public Location ExtendedEndLocation { get; set; }
 			TypeReference = typeReference;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitTypeReferenceExpression(this, data);
 		}
 		
@@ -4581,7 +4581,7 @@ public Location ExtendedEndLocation { get; set; }
 			Op = op;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitUnaryOperatorExpression(this, data);
 		}
 		
@@ -4656,7 +4656,7 @@ public Location ExtendedEndLocation { get; set; }
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitUsing(this, data);
 		}
 		
@@ -4688,7 +4688,7 @@ public UsingDeclaration(string @namespace) : this(@namespace, TypeReference.Null
 		
 public UsingDeclaration(string @namespace, TypeReference alias) { usings = new List<Using>(1); usings.Add(new Using(@namespace, alias)); }
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitUsingDeclaration(this, data);
 		}
 		
@@ -4716,7 +4716,7 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			EmbeddedStatement = embeddedStatement;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitUsingStatement(this, data);
 		}
 		
@@ -4795,7 +4795,7 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			fixedArrayInitialization = Expression.Null;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitVariableDeclaration(this, data);
 		}
 		
@@ -4836,7 +4836,7 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			body = BlockStatement.Null;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitWithStatement(this, data);
 		}
 		
@@ -4904,7 +4904,7 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitXmlAttributeExpression(this, data);
 		}
 		
@@ -4943,7 +4943,7 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			Type = type;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitXmlContentExpression(this, data);
 		}
 		
@@ -4969,7 +4969,7 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			expressions = new List<XmlExpression>();
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitXmlDocumentExpression(this, data);
 		}
 		
@@ -5045,7 +5045,7 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			}
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitXmlElementExpression(this, data);
 		}
 		
@@ -5072,7 +5072,7 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			inlineVBExpression = Expression.Null;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitXmlEmbeddedExpression(this, data);
 		}
 		
@@ -5141,7 +5141,7 @@ public UsingDeclaration(string @namespace, TypeReference alias) { usings = new L
 			IsXmlIdentifier = isXmlIdentifier;
 		}
 		
-		public override object AcceptVisitor(IAstVisitor visitor, object data) {
+		public override object AcceptVisitor(IDomVisitor visitor, object data) {
 			return visitor.VisitXmlMemberAccessExpression(this, data);
 		}
 		

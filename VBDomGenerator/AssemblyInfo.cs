@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 // change them to the information which is associated with the assembly
 // you compile.
 
-[assembly: AssemblyTitle("NRefactory AST Generator")]
+[assembly: AssemblyTitle("VB Dom Generator")]
 [assembly: AssemblyDescription("Parser and refactoring library for C# and VB.NET")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ic#code")]

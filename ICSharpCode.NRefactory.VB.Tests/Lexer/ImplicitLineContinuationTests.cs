@@ -26,7 +26,7 @@ namespace ICSharpCode.NRefactory.VB.Tests.Lexer
     End Sub
 End Module";
 			
-			ILexer lexer = GenerateLexer(new StringReader(code));
+			VBLexer lexer = GenerateLexer(new StringReader(code));
 			
 			CheckTokens(lexer, Tokens.Module, Tokens.Identifier, Tokens.EOL,
 			            Tokens.Sub, Tokens.Identifier, Tokens.OpenParenthesis,
@@ -54,7 +54,7 @@ End Module";
 	End Sub
 End Module";
 			
-			ILexer lexer = GenerateLexer(new StringReader(code));
+			VBLexer lexer = GenerateLexer(new StringReader(code));
 			
 			CheckTokens(lexer, Tokens.Module, Tokens.Identifier, Tokens.EOL,
 			            Tokens.Sub, Tokens.Identifier, Tokens.EOL,
@@ -78,7 +78,7 @@ End Module";
 	End Sub
 End Module";
 			
-			ILexer lexer = GenerateLexer(new StringReader(code));
+			VBLexer lexer = GenerateLexer(new StringReader(code));
 			
 			CheckTokens(lexer, Tokens.Module, Tokens.Identifier, Tokens.EOL,
 			            Tokens.Sub, Tokens.Identifier, Tokens.EOL,
@@ -97,7 +97,7 @@ End Module";
 	End Sub
 End Module";
 			
-			ILexer lexer = GenerateLexer(new StringReader(code));
+			VBLexer lexer = GenerateLexer(new StringReader(code));
 			
 			CheckTokens(lexer, Tokens.Module, Tokens.Identifier, Tokens.EOL,
 			            Tokens.Sub, Tokens.Identifier, Tokens.EOL,
@@ -120,7 +120,7 @@ End Module";
 	End Sub
 End Module";
 			
-			ILexer lexer = GenerateLexer(new StringReader(code));
+			VBLexer lexer = GenerateLexer(new StringReader(code));
 			
 			CheckTokens(lexer, Tokens.Module, Tokens.Identifier, Tokens.EOL,
 			            Tokens.Sub, Tokens.Identifier, Tokens.EOL,
@@ -145,7 +145,7 @@ End Module";
   End Sub
 End Class";
 			
-			ILexer lexer = GenerateLexer(new StringReader(code));
+			VBLexer lexer = GenerateLexer(new StringReader(code));
 			
 			CheckTokens(
 				lexer, Tokens.Class, Tokens.Identifier, Tokens.EOL,
@@ -175,7 +175,7 @@ Public Class TestContinuation
     End Sub
 End Class";
 			
-			ILexer lexer = GenerateLexer(new StringReader(code));
+			VBLexer lexer = GenerateLexer(new StringReader(code));
 			
 			CheckTokens(
 				lexer, Tokens.LessThan, Tokens.Identifier, Tokens.GreaterThan,
@@ -198,7 +198,7 @@ End Class";
 			string code = "<Assembly: AssemblyTitle(\"My.UnitTests\")>" + Environment.NewLine +
 				"<Assembly: AssemblyDescription(\"\")>";
 			
-			ILexer lexer = GenerateLexer(new StringReader(code));
+			VBLexer lexer = GenerateLexer(new StringReader(code));
 			
 			CheckTokens(
 				lexer, Tokens.LessThan, Tokens.Assembly, Tokens.Colon,
@@ -211,12 +211,12 @@ End Class";
 		}
 		
 		#region Helpers
-		ILexer GenerateLexer(StringReader sr)
+		VBLexer GenerateLexer(StringReader sr)
 		{
 			return ParserFactory.CreateLexer(sr);
 		}
 		
-		void CheckTokens(ILexer lexer, params int[] tokens)
+		void CheckTokens(VBLexer lexer, params int[] tokens)
 		{
 			for (int i = 0; i < tokens.Length; i++) {
 				int token = tokens[i];
