@@ -33,7 +33,7 @@
 						Width="Auto"
 						DisplayMemberBinding="{Binding Path=Location}" />
 					<GridViewColumn
-						Header="{core:Localize MainWindow.Windows.BookmarkPad.LanguageHeader}"
+						Header="{core:Localize MainWindow.Windows.Debug.CallStack.Language}"
 						Width="Auto"
 						DisplayMemberBinding="{Binding Path=Language, UpdateSourceTrigger=PropertyChanged}" />
 				</GridView>

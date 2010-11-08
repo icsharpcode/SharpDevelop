@@ -90,11 +90,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	{
 		public override void Run()
 		{
-			var result = BookmarkManager.Bookmarks
-				.Where(b => !(b is SDMarkerBookmark))
-				.Select(b => b);
-			foreach (var b in result.ToArray())
-				BookmarkManager.RemoveMark(b);
+			BookmarkManager.RemoveAll(b => !(b is BreakpointBookmark));
 		}
 	}
 	

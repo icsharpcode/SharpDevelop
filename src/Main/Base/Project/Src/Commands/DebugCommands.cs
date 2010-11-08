@@ -124,16 +124,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			if (DebuggerService.Breakpoints.Count <= 0) return;
-			
-			if(System.Windows.Forms.MessageBox.Show(
-				StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.Debug.RemoveAllBreakPoints}"),
-				StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.Debug.RemoveAllBreakPointsCaption}"),
-				System.Windows.Forms.MessageBoxButtons.YesNo, 
-				System.Windows.Forms.MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
-			{
-				BookmarkManager.RemoveAll(b => b is BreakpointBookmark);
-			}
+			BookmarkManager.RemoveAll(b => b is BreakpointBookmark);
 		}
 	}
 	

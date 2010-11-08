@@ -990,7 +990,7 @@
 		<ToolbarItem id = "EnableDisableSeparator" type = "Separator" />
 		<ToolbarItem id      = "DeleteAllBreakpoints"
 		             icon    = "Bookmarks.DeleteAllBreakpoints"
-		             tooltip = "${res:MainWindow.Windows.BookmarkPad.DeleteAllMarks.ToolTip}"
+		             tooltip = "${res:XML.MainMenu.DebugMenu.RemoveAllBreakpoints}"
 		             class   = "ICSharpCode.SharpDevelop.Project.Commands.RemoveAllBreakpointsCommand"/>
 	</Path>
 	<!-- end toolbars -->
