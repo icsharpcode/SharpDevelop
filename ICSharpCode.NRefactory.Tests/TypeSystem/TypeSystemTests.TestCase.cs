@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public TypeTestAttribute(int a1, Type a2, Type a3) {}
 	}
 	
-	public class DynamicTest
+	public unsafe class DynamicTest
 	{
 		public dynamic SimpleProperty { get; set; }
 		

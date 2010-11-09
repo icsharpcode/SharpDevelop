@@ -11,7 +11,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	using dynamic = ICSharpCode.NRefactory.TypeSystem.ReflectionHelper.Dynamic;
 	
 	[TestFixture]
-	public class UnaryOperatorTests : ResolverTestBase
+	public unsafe class UnaryOperatorTests : ResolverTestBase
 	{
 		[Test]
 		public void TestAddressOf()

@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			ITypeDefinition c = Mscorlib.GetClass(typeof(IntPtr));
 			IMethod toPointer = c.Methods.Single(p => p.Name == "ToPointer");
 			Assert.AreEqual("System.Void*", toPointer.ReturnType.Resolve(ctx).ReflectionName);
-			Assert.IsInstanceOf(typeof(PointerType), toPointer.ReturnType.Resolve(ctx));
+			Assert.IsTrue (toPointer.ReturnType.Resolve(ctx) is PointerType);
 			Assert.AreEqual("System.Void", ((PointerType)toPointer.ReturnType.Resolve(ctx)).ElementType.FullName);
 		}
 		

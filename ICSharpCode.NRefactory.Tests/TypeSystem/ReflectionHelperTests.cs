@@ -10,14 +10,14 @@ using NUnit.Framework;
 namespace ICSharpCode.NRefactory.TypeSystem
 {
 	[TestFixture]
-	public class ReflectionHelperTests
+	public unsafe class ReflectionHelperTests
 	{
 		ITypeResolveContext context = CecilLoaderTests.Mscorlib;
 		
 		void TestGetClass(Type type)
 		{
 			ITypeDefinition t = CecilLoaderTests.Mscorlib.GetClass(type);
-			Assert.NotNull(t, type.FullName);
+			Assert.IsNotNull(t, type.FullName);
 			Assert.AreEqual(type.FullName, t.ReflectionName);
 		}
 		
