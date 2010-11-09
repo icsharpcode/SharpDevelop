@@ -27,11 +27,24 @@ namespace Services.Debugger.Tooltips
 			if (editor == null)
 				return;
 			
-			_editor = editor;
+			_editor = editor;			
+			CreatePins(_editor);
 			
+			base.Attach(editor);
+		}
+		
+		public override void Detach()
+		{
+			ClosePins(_editor);
+			
+			base.Detach();
+		}
+		
+		public static void CreatePins(ITextEditor editor)
+		{
 			// load pins
 			var pins = BookmarkManager.Bookmarks.FindAll(
-				b => b is PinBookmark && b.FileName == _editor.FileName);
+				b => b is PinBookmark && b.FileName == editor.FileName);
 			
 			foreach (var bookmark in pins) {
 				var pin = (PinBookmark)bookmark;
@@ -40,8 +53,7 @@ namespace Services.Debugger.Tooltips
 				pin.Popup.VerticalOffset = pin.SavedPopupPosition.Y;
 				pin.Popup.contentControl.pinCloseControl.Mark = pin;
 				
-				var nodes = new ObservableCollection<ITreeNode>();
-				
+				var nodes = new ObservableCollection<ITreeNode>();				
 				foreach (var tuple in pin.SavedNodes) {
 					var node = new TreeNode();
 					node.IconImage = 
@@ -59,15 +71,13 @@ namespace Services.Debugger.Tooltips
 				pin.Nodes = nodes;
 				pin.Popup.Open();
 			}
-			
-			base.Attach(editor);
 		}
 		
-		public override void Detach()
+		public static void ClosePins(ITextEditor editor)
 		{
 			// save pins
 			var pins = BookmarkManager.Bookmarks.FindAll(
-				b => b is PinBookmark && b.FileName == _editor.FileName);
+				b => b is PinBookmark && b.FileName == editor.FileName);
 			
 			foreach (var bookmark in pins) {
 				var pin = (PinBookmark)bookmark;
@@ -77,10 +87,17 @@ namespace Services.Debugger.Tooltips
 				 	Y = pin.Popup.VerticalOffset
 				};
 				
+				// nodes
+				foreach (var node in pin.Nodes) {
+					pin.SavedNodes.Add(
+						new Tuple<string, string, string>(
+							"Icons.16x16.Field",
+							node.Name,
+							node.Text));
+				}
+				
 				pin.Popup.CloseSelfAndChildren();
 			}
-			
-			base.Detach();
 		}
 	}
 }

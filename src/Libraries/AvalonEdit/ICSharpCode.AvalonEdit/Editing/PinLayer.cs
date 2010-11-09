@@ -14,7 +14,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 	/// <summary>
 	/// Pin layer class. This class handles the pinning and unpinning operations.
 	/// </summary>
-	public class PinLayer : Layer, IWeakEventListener
+	public class PinLayer : Layer
 	{
 		private Canvas pinningSurface;
 		
@@ -25,23 +25,13 @@ namespace ICSharpCode.AvalonEdit.Editing
 		public PinLayer(TextArea textArea) : base(textArea.TextView, KnownLayer.Pins)
 		{
 			pinningSurface = new Canvas();
-			pinningSurface.Background = Brushes.Red;
-			
-			pinningSurface.HorizontalAlignment = HorizontalAlignment.Stretch;
-			pinningSurface.VerticalAlignment = VerticalAlignment.Stretch;
-			
-			TextViewWeakEventManager.VisualLinesChanged.AddListener(textArea.TextView, this);
+			this.AddVisualChild(pinningSurface);
+			textView.VisualLinesChanged += new EventHandler(textView_VisualLinesChanged);	
 		}
-		
-		bool IWeakEventListener.ReceiveWeakEvent(Type managerType, object sender, EventArgs e)
+
+		void textView_VisualLinesChanged(object sender, EventArgs e)
 		{
-			if (managerType == typeof(TextViewWeakEventManager.VisualLinesChanged))
-			{
-				pinningSurface.InvalidateVisual();
-				InvalidateVisual();
-				return true;
-			}
-			return false;
+			Console.WriteLine(textView.HorizontalOffset + " " + textView.VerticalOffset);
 		}
 		
 		/// <summary>
@@ -52,8 +42,6 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			if (element == null)
 				throw new NullReferenceException("Element is null!");
-			
-			element.Placement = PlacementMode.Absolute;
 			
 			pinningSurface.SetValue(Canvas.TopProperty, element.VerticalOffset);
 			pinningSurface.SetValue(Canvas.LeftProperty, element.HorizontalOffset);
@@ -68,7 +56,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 		{
 			if (element == null)
 				throw new NullReferenceException("Element is null!");
-			
+
 			pinningSurface.Children.Remove(element);
 		}
 	}

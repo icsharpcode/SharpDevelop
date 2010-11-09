@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			
 			//this.KeyDown += new KeyEventHandler(DebuggerPopup_KeyDown);
 
-			//this.contentControl.Focusable = true;
+			this.contentControl.Focusable = true;
 			//Keyboard.Focus(this.contentControl);
 			this.AllowsTransparency = true;
 			//this.PopupAnimation = PopupAnimation.Slide;
@@ -115,8 +115,10 @@ namespace ICSharpCode.SharpDevelop.Debugging
 
 		public void CloseSelfAndChildren()
 		{
-			this.contentControl.CloseChildPopups();
-			this.IsOpen = false;
+			if (this.IsOpen) {
+				this.contentControl.CloseChildPopups();
+				this.IsOpen = false;
+			}
 		}
 		
 		protected override void OnMouseEnter(System.Windows.Input.MouseEventArgs e)

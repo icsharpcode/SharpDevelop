@@ -65,7 +65,7 @@
         <LanguageBinding
             id="Pin"
             class="Services.Debugger.Tooltips.PinningBinding"
-            extensions=".cs;.vb" />
+            extensions="" />
     </Path>
 	
 	<Path name = "/SharpDevelop/Workbench/FileFilter">

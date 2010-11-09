@@ -71,7 +71,7 @@ namespace Services.Debugger.Tooltips
 				throw new ArgumentNullException("Node is null");
 			
 			foreach (var currentNode in mark.Nodes) {
-				if (node.Name == currentNode.Name)
+				if (node.Name.Trim() == currentNode.Name.Trim())
 					return true;
 			}
 			
@@ -86,7 +86,7 @@ namespace Services.Debugger.Tooltips
 				throw new ArgumentNullException("Node is null");
 			
 			foreach (var currentNode in mark.Nodes) {
-				if (node.Name == currentNode.Name) {
+				if (node.Name.Trim() == currentNode.Name.Trim()) {
 					mark.Nodes.Remove(currentNode);
 					return;
 				}

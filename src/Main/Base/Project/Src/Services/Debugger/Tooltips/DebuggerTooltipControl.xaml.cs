@@ -89,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 							b.Location.Line == LogicalPosition.Line &&
 							b.FileName == editor.FileName) as PinBookmark;
 			
-			if (pin != null) {						
+			if (pin != null) {
 				foreach (var node in this.itemsSource) {
 					if (pin.ContainsNode(node))
 						node.IsChecked = true;
@@ -106,15 +106,20 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		private DebuggerPopup childPopup { get; set; }
 		private DebuggerTooltipControl parentControl { get; set; }
 		internal DebuggerPopup containingPopup { get; set; }
+		
+		#region Source
+		
 		private LazyItemsControl<ITreeNode> lazyGrid;
 		private IEnumerable<ITreeNode> itemsSource;
 		
-		public void SetItemsSource(IEnumerable<ITreeNode> value)
+		public IEnumerable<ITreeNode> ItemSource { get { return itemsSource; } }
+		
+		public void SetItemsSource(IEnumerable<ITreeNode> source)
 		{
-			this.itemsSource = value;
+			this.itemsSource = source;
 				
 			this.lazyGrid = new LazyItemsControl<ITreeNode>(this.dataGrid, InitialItemsCount);
-			lazyGrid.ItemsSource = new VirtualizingIEnumerable<ITreeNode>(value);
+			lazyGrid.ItemsSource = new VirtualizingIEnumerable<ITreeNode>(source);
 			this.dataGrid.AddHandler(ScrollViewer.ScrollChangedEvent, new ScrollChangedEventHandler(handleScroll));
 
 			if (this.lazyGrid.ItemsSourceTotalCount != null) {
@@ -123,6 +128,22 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					this.lazyGrid.ItemsSourceTotalCount.Value <= VisibleItemsCount ? Visibility.Collapsed : Visibility.Visible;
 			}
 		}
+		
+		void DebuggerService_DebugStarted(object sender, EventArgs e)
+		{
+//			// refresh values
+//			ToolTipRequestEventArgs args = new ToolTipRequestEventArgs(editor);
+//			args.LogicalPosition = this.LogicalPosition;
+//			DebuggerService.HandleToolTipRequest(args);
+//			
+//			if (args.ContentToShow is ITooltip) {
+//				var source = ((ITooltip)args.ContentToShow).ItemSource;
+//				itemsSource = source;
+//				lazyGrid.ItemsSource = new VirtualizingIEnumerable<ITreeNode>(source);
+//			}
+		}
+			
+		#endregion
 
 		/// <inheritdoc/>
 		public bool ShowAsPopup { get { return true; } }	
@@ -315,23 +336,24 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				if (pin == null) {
 					pin = new PinBookmark(editor.FileName, LogicalPosition);
 					// show pinned DebuggerPopup
-					pin.Popup = new DebuggerPopup(null, true);
-					pin.Popup.contentControl.LogicalPosition = LogicalPosition;
-					pin.Popup.contentControl.pinCloseControl.Mark = pin;
-					Rect rect = new Rect(this.DesiredSize);
-					var point = this.PointToScreen(rect.TopRight);
-					pin.Popup.HorizontalOffset = 650;
-					pin.Popup.VerticalOffset = point.Y - 50;
-					pin.SavedPopupPosition = new Point { X = pin.Popup.HorizontalOffset, Y = pin.Popup.VerticalOffset };
-					pin.Nodes.Add(node);
+					if (pin.Popup == null) {
+						pin.Popup = new DebuggerPopup(null, true);
+						pin.Popup.contentControl.LogicalPosition = LogicalPosition;
+						pin.Popup.contentControl.pinCloseControl.Mark = pin;
+						Rect rect = new Rect(this.DesiredSize);
+						var point = this.PointToScreen(rect.TopRight);
+						pin.Popup.HorizontalOffset = 500;
+						pin.Popup.VerticalOffset = point.Y - 150;
+						pin.SavedPopupPosition = new Point { X = pin.Popup.HorizontalOffset, Y = pin.Popup.VerticalOffset };
+						pin.Nodes.Add(node);
+					}					
 					
-					// actions
+					// do actions
 					pin.Popup.Open();
 					BookmarkManager.AddMark(pin);
 				}
 				else
 				{
-					
 					if (!pin.ContainsNode(node))
 						pin.Nodes.Add(node);
 				}

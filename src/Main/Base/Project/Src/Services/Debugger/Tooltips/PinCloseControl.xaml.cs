@@ -12,6 +12,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
@@ -34,20 +35,29 @@ namespace Services.Debugger.Tooltips
 			InitializeComponent();
 						
 			this.toolTipControl = parent;
-			
-			DebuggerService.DebugStopped += new EventHandler(DebuggerService_DebugStopped);
-			DebuggerService.DebugStarted += new EventHandler(DebuggerService_DebugStarted);
 			this.toolTipControl.CommentChanged += delegate { Mark.Comment = this.toolTipControl.Comment; };
+			BookmarkManager.Removed += new BookmarkEventHandler(BookmarkManager_Removed);
+			Loaded += new RoutedEventHandler(OnLoaded);
 		}
 
-		void DebuggerService_DebugStarted(object sender, EventArgs e)
+		void OnLoaded(object sender, RoutedEventArgs e)
 		{
-			//this.toolTipControl.containingPopup.Open();
+			if (!string.IsNullOrEmpty(Mark.Comment))
+				toolTipControl.Comment = Mark.Comment;
 		}
 
-		void DebuggerService_DebugStopped(object sender, EventArgs e)
+		void BookmarkManager_Removed(object sender, BookmarkEventArgs e)
 		{
-			this.toolTipControl.containingPopup.CloseSelfAndChildren();
+			// if the bookmark was removed from pressing the button, return
+			if (UnpinButton.IsChecked.GetValueOrDefault(false))
+				return;
+			
+			if (e.Bookmark is PinBookmark) {
+				var pin = (PinBookmark)e.Bookmark;
+				if (pin.Location == Mark.Location && pin.FileName == Mark.FileName) {
+					this.toolTipControl.containingPopup.CloseSelfAndChildren();
+				}							
+			}
 		}
 		
 		void Unpin()

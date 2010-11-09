@@ -2,8 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
+
 using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Debugging;
 
 namespace ICSharpCode.SharpDevelop.Editor
 {
@@ -32,6 +35,12 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// because of mouse click on some SharpDevelop GUI element.</param>
 		/// <returns>True if Close succeeded (that is, can close). False otherwise.</returns>
 		bool Close(bool mouseClick);
+		
+		/// <summary>
+		/// Sets the item source.
+		/// </summary>
+		/// <param name="source">Source of items</param>
+		IEnumerable<ITreeNode> ItemSource { get; }
 		
 		/// <summary>
 		/// Occurs when this tooltip decides to close.
