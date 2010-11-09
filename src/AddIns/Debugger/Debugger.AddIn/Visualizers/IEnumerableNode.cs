@@ -1,12 +1,11 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
-using Debugger.MetaData;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Debugger.AddIn.Visualizers.Utils;
+using Debugger.MetaData;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.SharpDevelop.Debugging;
 
 namespace Debugger.AddIn.TreeModel
 {

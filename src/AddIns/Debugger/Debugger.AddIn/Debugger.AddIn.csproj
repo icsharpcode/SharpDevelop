@@ -247,7 +247,6 @@
     </Compile>
     <Compile Include="Pads\DebuggerPad.cs" />
     <Compile Include="Pads\RunningThreadsPad.Menu.cs" />
-    <Compile Include="TreeModel\TreeNode.cs" />
     <Compile Include="TreeModel\Adapters\TreeViewVarNode.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -30,6 +30,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		bool HasVisualizerCommands { get; }
 		
+		bool IsChecked { get; set; }
+		
 		bool SetText(string newValue);
 	}
 }

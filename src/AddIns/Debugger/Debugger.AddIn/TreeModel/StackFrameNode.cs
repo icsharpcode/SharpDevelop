@@ -4,6 +4,7 @@
 using Debugger.MetaData;
 using System.Collections.Generic;
 using ICSharpCode.NRefactory.Ast;
+using ICSharpCode.SharpDevelop.Debugging;
 
 namespace Debugger.AddIn.TreeModel
 {

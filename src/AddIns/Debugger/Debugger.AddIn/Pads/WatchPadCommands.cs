@@ -17,6 +17,7 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui.Pads;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Debugging;
 
 namespace Debugger.AddIn
 {

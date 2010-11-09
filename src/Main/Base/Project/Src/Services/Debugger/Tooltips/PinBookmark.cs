@@ -5,12 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Windows;
 
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace Services.Debugger.Tooltips
 {
@@ -18,31 +20,32 @@ namespace Services.Debugger.Tooltips
 	{
 		string tooltip;
 		
-		public event NotifyCollectionChangedEventHandler CollectionChanged;
+		public DebuggerPopup Popup {	get; set; }
 		
 		public static readonly IImage PinImage = new ResourceServiceImage("Bookmarks.Pin");
 		
 		public PinBookmark(FileName fileName, Location location) : base(fileName, location)
 		{
 			Nodes = new ObservableCollection<ITreeNode>();
-			SavedNodes = new List<Tuple<string, string>>();
 			Nodes.CollectionChanged += new NotifyCollectionChangedEventHandler(Nodes_CollectionChanged);
 			IsVisibleInBookmarkPad = false;
 		}
-		
-		//TODO this should not be here but onto pinning surface of the code editor
-		public DebuggerPopup Popup { get; set; }
 
 		void Nodes_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			var handler = CollectionChanged;
-			if (handler != null)
-				handler.Invoke(this, e);
+			if (e.Action == NotifyCollectionChangedAction.Add ||
+			   e.Action == NotifyCollectionChangedAction.Remove)
+				Popup.contentControl.SetItemsSource(Nodes);
 		}
+		
+		public Point SavedPopupPosition { get; set; }
 		
 		public ObservableCollection<ITreeNode> Nodes { get; set; }
 		
-		public List<Tuple<string, string>> SavedNodes { get; set; }
+		/// <summary>
+		/// Image, Name, Text
+		/// </summary>
+		public List<Tuple<string, string, string>> SavedNodes { get; set; }
 		
 		public string Comment { get; set; }
 		
@@ -56,5 +59,38 @@ namespace Services.Debugger.Tooltips
 			get { return tooltip; }
 			set { tooltip = value; }
 		}		   
+	}
+	
+	public static class PinBookmarkExtensions
+	{
+		public static bool ContainsNode(this PinBookmark mark, ITreeNode node)
+		{
+			if (mark == null)
+				throw new ArgumentNullException("mark is null");
+			if (node == null)
+				throw new ArgumentNullException("Node is null");
+			
+			foreach (var currentNode in mark.Nodes) {
+				if (node.Name == currentNode.Name)
+					return true;
+			}
+			
+			return false;
+		}
+		
+		public static void RemoveNode(this PinBookmark mark, ITreeNode node)
+		{
+			if (mark == null)
+				throw new ArgumentNullException("mark is null");
+			if (node == null)
+				throw new ArgumentNullException("Node is null");
+			
+			foreach (var currentNode in mark.Nodes) {
+				if (node.Name == currentNode.Name) {
+					mark.Nodes.Remove(currentNode);
+					return;
+				}
+			}
+		}
 	}
 }

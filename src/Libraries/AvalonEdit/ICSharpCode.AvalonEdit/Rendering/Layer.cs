@@ -11,11 +11,23 @@ namespace ICSharpCode.AvalonEdit.Rendering
 	/// <summary>
 	/// Base class for known layers.
 	/// </summary>
-	class Layer : UIElement
+	public class Layer : UIElement
 	{
+		/// <summary>
+		/// Text view.
+		/// </summary>
 		protected readonly TextView textView;
+		
+		/// <summary>
+		/// Known layer.
+		/// </summary>
 		protected readonly KnownLayer knownLayer;
 		
+		/// <summary>
+		/// Constructor for base layer class.
+		/// </summary>
+		/// <param name="textView">Text view</param>
+		/// <param name="knownLayer">Known layer.</param>
 		public Layer(TextView textView, KnownLayer knownLayer)
 		{
 			Debug.Assert(textView != null);
@@ -24,16 +36,30 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			this.Focusable = false;
 		}
 		
+		/// <summary>
+		/// HitTestCore method.
+		/// </summary>
+		/// <param name="hitTestParameters">Hit test parameters.</param>
+		/// <returns>A GeometryHitTestResult.</returns>
 		protected override GeometryHitTestResult HitTestCore(GeometryHitTestParameters hitTestParameters)
 		{
 			return null;
 		}
 		
+		/// <summary>
+		/// HitTestCore method.
+		/// </summary>
+		/// <param name="hitTestParameters">Hit test parameters.</param>
+		/// <returns>A HitTestResult.</returns>
 		protected override HitTestResult HitTestCore(PointHitTestParameters hitTestParameters)
 		{
 			return null;
 		}
 		
+		/// <summary>
+		/// Override for Render.
+		/// </summary>
+		/// <param name="drawingContext">Drawing context.</param>
 		protected override void OnRender(DrawingContext drawingContext)
 		{
 			base.OnRender(drawingContext);

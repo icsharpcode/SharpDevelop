@@ -5,9 +5,11 @@ using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Text;
+using System.Windows;
 
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
+using Services.Debugger.Tooltips;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
@@ -34,7 +36,6 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 					return null;
 				if (columnNumber < 0)
 					return null;
-				
 				SDBookmark bookmark;
 				switch (v[0]) {
 					case "Breakpoint":
@@ -44,22 +45,33 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 						action = (Debugging.BreakpointAction)Enum.Parse(typeof(Debugging.BreakpointAction), v[5]);
 						scriptLanguage = v[6];
 						script = v[7];
+					
 						var bbm = new Debugging.BreakpointBookmark(fileName, new Location(columnNumber, lineNumber), action, scriptLanguage, script);
 						bbm.IsEnabled = bool.Parse(v[4]);
-						bookmark = bbm;
 						bbm.Action = action;
 						bbm.ScriptLanguage = scriptLanguage;
 						bbm.Condition = script;
+						bookmark = bbm;
 						break;
-//					case "PinBookmark":
-//						var pin = new PinBookmark(fileName, new Location(columnNumber, lineNumber));
-//						pin.Comment = v[3];
-//						for (int i = 4; i < v.Length; i+=2) {
-//							pin.SavedNodes.Add(new Tuple<string, string>(v[i], v[i+1]));
-//						}
-//						
-//						bookmark = pin;
-//						break;
+					case "PinBookmark":
+						var pin = new PinBookmark(fileName, new Location(columnNumber, lineNumber));
+						pin.Comment = v[4];
+						// pop-up position
+						pin.SavedPopupPosition = 
+							new Point
+							{ 
+								X = int.Parse(v[5], culture),
+								Y = int.Parse(v[6], culture)
+							};
+								
+						// pop-up nodes
+						pin.SavedNodes = new System.Collections.Generic.List<Tuple<string, string, string>>();
+						for (int i = 7; i < v.Length; i+=3) {
+							pin.SavedNodes.Add(new Tuple<string, string, string>(v[i], v[i+1], v[i+2]));
+						}
+						
+						bookmark = pin;
+						break;
 					default:
 						bookmark = new SDBookmark(fileName, new Location(columnNumber, lineNumber));
 						break;
@@ -102,6 +114,27 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 					b.Append(bbm.Condition);
 				}
 				
+				if (bookmark is PinBookmark) {
+					var pin = (PinBookmark)bookmark;
+					b.Append('|');
+					b.Append(pin.Comment ?? string.Empty);
+					
+					// popup position
+					b.Append('|');
+					b.Append(pin.Popup.HorizontalOffset);
+					b.Append('|');
+					b.Append(pin.Popup.VerticalOffset);
+					b.Append('|');
+					
+					//popup nodes
+					foreach(var node in pin.Nodes) {
+						b.Append("");
+						b.Append('|');
+						b.Append(node.Name);
+						b.Append('|');
+						b.Append(node.Text);
+					}						
+				}
 				return b.ToString();
 			} else {
 				return base.ConvertTo(context, culture, value, destinationType);

@@ -27,19 +27,25 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	/// </summary>
 	public partial class DebuggerTooltipControl : UserControl, ITooltip
 	{
+		public const double MINIMUM_OPACITY = .3d;
+		
 		private readonly double ChildPopupOpenXOffet = 16;
 		private readonly double ChildPopupOpenYOffet = 15;
 		private readonly int InitialItemsCount = 12;
-		private readonly int VisibleItemsCount = 11;
+		private readonly int VisibleItemsCount = 11;		
+		private readonly ITextEditor editor;
 		
-		bool showPinControl;
-		PinCloseControl pinCloseControl;
+		#region Contructors
 
 		public DebuggerTooltipControl(bool showPinControl = false)
 		{
 			InitializeComponent();
 			
 			this.showPinControl = showPinControl;
+			
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;			
+			if (provider != null) 
+				editor = provider.TextEditor;
 			
 			// show pin close control
 			if (this.showPinControl) {
@@ -49,10 +55,13 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				pinCloseControl.Visibility = Visibility.Visible;
 				PinControlCanvas.Visibility = Visibility.Visible;
 				PinControlCanvas.Children.Add(pinCloseControl);
+				this.Opacity = MINIMUM_OPACITY;
 			}
 			else {
 				PinControlCanvas.Visibility = Visibility.Collapsed;
 			}
+			
+			Loaded += new RoutedEventHandler(OnLoaded);
 		}
 
 		public DebuggerTooltipControl(ITreeNode node)
@@ -63,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		public DebuggerTooltipControl(IEnumerable<ITreeNode> nodes)
 			: this()
 		{
-			this.ItemsSource = nodes;
+			this.itemsSource = nodes;
 		}
 
 		public DebuggerTooltipControl(DebuggerTooltipControl parentControl, bool showPinControl = false)
@@ -71,49 +80,103 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			this.parentControl = parentControl;
 		}
-
-		public event RoutedEventHandler Closed;
-		protected void OnClosed()
+		
+		private void OnLoaded(object sender, RoutedEventArgs e)
 		{
-			if (this.Closed != null) {
-				this.Closed(this, new RoutedEventArgs());
-			}
-		}
-
-		private LazyItemsControl<ITreeNode> lazyGrid;
-
-		private IEnumerable<ITreeNode> itemsSource;
-		public IEnumerable<ITreeNode> ItemsSource
-		{
-			get { return this.itemsSource; }
-			set
-			{
-				this.itemsSource = value;
-				this.lazyGrid = new LazyItemsControl<ITreeNode>(this.dataGrid, InitialItemsCount);
-				lazyGrid.ItemsSource = new VirtualizingIEnumerable<ITreeNode>(value);
-				this.dataGrid.AddHandler(ScrollViewer.ScrollChangedEvent, new ScrollChangedEventHandler(handleScroll));
-
-				if (this.lazyGrid.ItemsSourceTotalCount != null) {
-					// hide up/down buttons if too few items
-					btnUp.Visibility = btnDown.Visibility =
-						this.lazyGrid.ItemsSourceTotalCount.Value <= VisibleItemsCount ? Visibility.Collapsed : Visibility.Visible;
+			// verify if at the line of the root there's a pin bookmark
+			var pin = BookmarkManager.Bookmarks.Find(
+							b => b is PinBookmark &&
+							b.Location.Line == LogicalPosition.Line &&
+							b.FileName == editor.FileName) as PinBookmark;
+			
+			if (pin != null) {						
+				foreach (var node in this.itemsSource) {
+					if (pin.ContainsNode(node))
+						node.IsChecked = true;
 				}
+			}
+			
+			SetItemsSource(this.itemsSource);
+		}
+		
+		#endregion
+		
+		private bool showPinControl;
+		internal PinCloseControl pinCloseControl;
+		private DebuggerPopup childPopup { get; set; }
+		private DebuggerTooltipControl parentControl { get; set; }
+		internal DebuggerPopup containingPopup { get; set; }
+		private LazyItemsControl<ITreeNode> lazyGrid;
+		private IEnumerable<ITreeNode> itemsSource;
+		
+		public void SetItemsSource(IEnumerable<ITreeNode> value)
+		{
+			this.itemsSource = value;
+				
+			this.lazyGrid = new LazyItemsControl<ITreeNode>(this.dataGrid, InitialItemsCount);
+			lazyGrid.ItemsSource = new VirtualizingIEnumerable<ITreeNode>(value);
+			this.dataGrid.AddHandler(ScrollViewer.ScrollChangedEvent, new ScrollChangedEventHandler(handleScroll));
+
+			if (this.lazyGrid.ItemsSourceTotalCount != null) {
+				// hide up/down buttons if too few items
+				btnUp.Visibility = btnDown.Visibility =
+					this.lazyGrid.ItemsSourceTotalCount.Value <= VisibleItemsCount ? Visibility.Collapsed : Visibility.Visible;
 			}
 		}
 
 		/// <inheritdoc/>
-		public bool ShowAsPopup
-		{
-			get
-			{
-				return true;
-			}
-		}
-		
+		public bool ShowAsPopup { get { return true; } }	
+
 		/// <summary>
 		/// Position within the document
 		/// </summary>
-		public Location LogicalPosition { get; set; }
+		public Location LogicalPosition { get; set; }		
+
+		#region Expander
+
+		bool isChildExpanded
+		{
+			get
+			{
+				return this.childPopup != null && this.childPopup.IsOpen;
+			}
+		}
+
+		private ToggleButton expandedButton;
+		
+		private void btnExpander_Click(object sender, RoutedEventArgs e)
+		{
+			var clickedButton = (ToggleButton)e.OriginalSource;
+			var clickedNode = (ITreeNode)clickedButton.DataContext;
+			// use device independent units, because child popup Left/Top are in independent units 
+			Point buttonPos = clickedButton.PointToScreen(new Point(0, 0)).TransformFromDevice(clickedButton);
+
+			if (clickedButton.IsChecked.GetValueOrDefault(false)) {
+				CloseChildPopups();
+				this.expandedButton = clickedButton;
+
+				// open child Popup
+				if (this.childPopup == null) {
+					this.childPopup = new DebuggerPopup(this, showPinControl);
+					this.childPopup.Placement = PlacementMode.Absolute;
+					this.childPopup.contentControl.LogicalPosition = LogicalPosition;
+				}
+				if (this.containingPopup != null) {
+					this.containingPopup.IsLeaf = false;
+				}
+				this.childPopup.IsLeaf = true;
+				this.childPopup.HorizontalOffset = buttonPos.X + ChildPopupOpenXOffet;
+				this.childPopup.VerticalOffset = buttonPos.Y + ChildPopupOpenYOffet;
+				this.childPopup.SetItemsSource(clickedNode.ChildNodes);
+				this.childPopup.Open();
+			} else {
+				CloseChildPopups();
+			}
+		}
+		
+		#endregion
+		
+		#region Close
 		
 		/// <inheritdoc/>
 		public bool Close(bool mouseClick)
@@ -125,20 +188,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				return false;
 			}
 		}
-
-		DebuggerPopup childPopup { get; set; }
-		DebuggerTooltipControl parentControl { get; set; }
-		internal DebuggerPopup containingPopup { get; set; }
-
-		bool isChildExpanded
-		{
-			get
-			{
-				return this.childPopup != null && this.childPopup.IsOpen;
-			}
-		}
-
-		private ToggleButton expandedButton;
 
 		/// <summary>
 		/// Closes the child popup of this control, if it exists.
@@ -176,36 +225,18 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				}
 			}
 		}
-
-		private void btnExpander_Click(object sender, RoutedEventArgs e)
+		
+		public event RoutedEventHandler Closed;
+		protected void OnClosed()
 		{
-			var clickedButton = (ToggleButton)e.OriginalSource;
-			var clickedNode = (ITreeNode)clickedButton.DataContext;
-			// use device independent units, because child popup Left/Top are in independent units 
-			Point buttonPos = clickedButton.PointToScreen(new Point(0, 0)).TransformFromDevice(clickedButton);
-
-			if (clickedButton.IsChecked.GetValueOrDefault(false)) {
-				CloseChildPopups();
-				this.expandedButton = clickedButton;
-
-				// open child Popup
-				if (this.childPopup == null) {
-					this.childPopup = new DebuggerPopup(this, showPinControl);
-					this.childPopup.Placement = PlacementMode.Absolute;
-				}
-				if (this.containingPopup != null) {
-					this.containingPopup.IsLeaf = false;
-				}
-				this.childPopup.contentControl.LogicalPosition = LogicalPosition;
-				this.childPopup.IsLeaf = true;
-				this.childPopup.HorizontalOffset = buttonPos.X + ChildPopupOpenXOffet;
-				this.childPopup.VerticalOffset = buttonPos.Y + ChildPopupOpenYOffet;
-				this.childPopup.ItemsSource = clickedNode.ChildNodes;
-				this.childPopup.Open();
-			} else {
-				CloseChildPopups();
+			if (this.Closed != null) {
+				this.Closed(this, new RoutedEventArgs());
 			}
 		}
+
+		#endregion
+		
+		#region Scrolling
 
 		private void handleScroll(object sender, ScrollChangedEventArgs e)
 		{
@@ -223,6 +254,10 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			this.lazyGrid.ScrollViewer.ScrollDown(1);
 		}
 		
+		#endregion
+		
+		#region Edit value in tooltip
+		
 		void TextBox_KeyUp(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Escape) {
@@ -233,16 +268,24 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			if (e.Key == Key.Enter) {
 				dataGrid.Focus();
 				// set new value
-				var textBox = (TextBox)sender;				
+				var textBox = (TextBox)e.OriginalSource;				
 				var newValue = textBox.Text;
 				var node = ((FrameworkElement)sender).DataContext as ITreeNode;
 				SaveNewValue(node, textBox.Text);
 			}
 		}
 		
+		void TextBox_LostFocus(object sender, RoutedEventArgs e)
+		{
+			var textBox = (TextBox)e.OriginalSource;				
+			var newValue = textBox.Text;
+			var node = ((FrameworkElement)sender).DataContext as ITreeNode;
+			SaveNewValue(node, textBox.Text);
+		}
+		
 		void SaveNewValue(ITreeNode node, string newValue)
 		{
-			if(node != null && node.SetText(newValue)) {
+			if(node != null && node.SetText(newValue)) {				
 				// show adorner
 				var adornerLayer = AdornerLayer.GetAdornerLayer(dataGrid);
 				var adorners = adornerLayer.GetAdorners(dataGrid);
@@ -253,80 +296,79 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
+		#endregion
+		
+		#region Pining checked/unchecked
+		
 		void PinButton_Checked(object sender, RoutedEventArgs e)
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;
-			ToggleButton button = (ToggleButton)e.OriginalSource;
+			var node = (ITreeNode)(((ToggleButton)(e.OriginalSource)).DataContext);
 			
-			if (provider != null) {
-				ITextEditor editor = provider.TextEditor;
-				if (!string.IsNullOrEmpty(editor.FileName)) {					
+			if (!string.IsNullOrEmpty(editor.FileName)) {
+				
+				// verify if at the line of the root there's a pin bookmark
+				var pin = BookmarkManager.Bookmarks.Find(
+								b => b is PinBookmark &&
+								b.LineNumber == LogicalPosition.Line &&
+								b.FileName == editor.FileName) as PinBookmark;
+				
+				if (pin == null) {
+					pin = new PinBookmark(editor.FileName, LogicalPosition);
+					// show pinned DebuggerPopup
+					pin.Popup = new DebuggerPopup(null, true);
+					pin.Popup.contentControl.LogicalPosition = LogicalPosition;
+					pin.Popup.contentControl.pinCloseControl.Mark = pin;
+					Rect rect = new Rect(this.DesiredSize);
+					var point = this.PointToScreen(rect.TopRight);
+					pin.Popup.HorizontalOffset = 650;
+					pin.Popup.VerticalOffset = point.Y - 50;
+					pin.SavedPopupPosition = new Point { X = pin.Popup.HorizontalOffset, Y = pin.Popup.VerticalOffset };
+					pin.Nodes.Add(node);
 					
-					var location = LogicalPosition;
-					
-					var pin = BookmarkManager.Bookmarks.Find(b => b is PinBookmark && 
-					                               b.FileName == editor.FileName &&
-					                               b.Location.Line == location.Line) as PinBookmark;
-					bool found = false;
-					if (pin == null) {
-						pin = new PinBookmark(editor.FileName, location);
-					}
-					else {
-						found = true;
-					}
-					
-					var popup = pin.Popup;
-					if (!found) {
-						// TODO set the pin inside the code editor pinning surface
-						// show pinned DebuggerPopup
-						if (popup == null) {
-							popup = new DebuggerPopup(null, true);
-						}
-						popup.Mark = pin;
-						popup.Placement = PlacementMode.Absolute;
-						Rect rect = new Rect(this.DesiredSize);
-						var point = this.PointToScreen(rect.TopRight);
-						popup.HorizontalOffset = 650;
-						popup.StaysOpen = true;
-						popup.VerticalOffset = point.Y - 50;
-						pin.Popup = popup;
-						pin.Nodes.Add((ITreeNode)button.DataContext);
-						
-						BookmarkManager.ToggleBookmark(
-							editor, 
-							location.Line, 
-							b => b is PinBookmark,
-							l => pin);
-						
-						popup.Open();
-					}
-					else
-					{
-						popup = pin.Popup;
-						pin.Nodes.Add((ITreeNode)button.DataContext);
-					}
-					
-					popup.ItemsSource = pin.Nodes;
+					// actions
+					pin.Popup.Open();
+					BookmarkManager.AddMark(pin);
 				}
-			}
+				else
+				{
+					
+					if (!pin.ContainsNode(node))
+						pin.Nodes.Add(node);
+				}
+			}			
 		}
 		
 		void PinButton_Unchecked(object sender, RoutedEventArgs e)
 		{
-			// remove from pinned DebuggerPopup
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;			
-			if (provider != null) {
-				ITextEditor editor = provider.TextEditor;
-				if (!string.IsNullOrEmpty(editor.FileName)) {
-					var pin = BookmarkManager.Bookmarks.Find(b => b is PinBookmark && 
-					                               b.FileName == editor.FileName &&
-					                               b.Location.Line == LogicalPosition.Line) as PinBookmark;
+			if (!string.IsNullOrEmpty(editor.FileName)) {
+				// remove from pinned DebuggerPopup
+				var pin = BookmarkManager.Bookmarks.Find(
+										b => b is PinBookmark &&
+										b.LineNumber == LogicalPosition.Line &&
+										b.FileName == editor.FileName) as PinBookmark;
+				if (pin == null) return;
+				
+				ToggleButton button = (ToggleButton)e.OriginalSource;
+				pin.RemoveNode((ITreeNode)button.DataContext);
+				
+				// remove if no more data pins are available
+				if (pin.Nodes.Count == 0) {
+					pin.Popup.CloseSelfAndChildren();
 					
-					ToggleButton button = (ToggleButton)e.OriginalSource;
-					pin.Nodes.Remove((ITreeNode)button.DataContext);
-					pin.Popup.ItemsSource = pin.Nodes;
+					BookmarkManager.RemoveMark(pin);
 				}
-			}				
+			}
+		}
+		
+		#endregion
+		
+		#region Comment
+		
+		public event EventHandler CommentChanged;
+		
+		public string Comment {
+			get { return CommentTextBox.Text; }
+			set { CommentTextBox.Text = value; }
 		}
 		
 		public void ShowComment(bool show)
@@ -349,19 +391,16 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			board.Begin(this);
 		}
 		
-		public string Comment {
-			get { return CommentTextBox.Text; }
-			set { CommentTextBox.Text = value; }
-		}
-		
-		public event EventHandler CommentChanged;
-		
 		void CommentTextBox_TextChanged(object sender, TextChangedEventArgs e)
 		{
 			var handler = CommentChanged;
-			if(handler != null)
+			if (handler != null)
 				handler(this, EventArgs.Empty);
 		}
+		
+		#endregion
+		
+		#region Saved Adorner
 		
 		class SavedAdorner : Adorner
 		{	
@@ -407,5 +446,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				board.Begin(this);
 			}
 		}
+		
+		#endregion
 	}
 }
