@@ -141,39 +141,6 @@
 					</Setter.Value>
 				</Setter>
 			</Style>
-			<Style
-				TargetType="{x:Type TextBox}"
-				x:Key="TextStyle">
-				<Setter
-					Property="OverridesDefaultStyle"
-					Value="True" />
-				<Setter
-					Property="VerticalAlignment"
-					Value="Top" />
-				<Setter
-					Property="KeyboardNavigation.TabNavigation"
-					Value="None" />
-				<Setter
-					Property="FocusVisualStyle"
-					Value="{x:Null}" />
-				<Setter
-					Property="Template">
-					<Setter.Value>
-						<ControlTemplate
-							TargetType="{x:Type TextBoxBase}">
-							<Border
-								Name="Border"
-								Background="Transparent"
-								BorderBrush="Transparent"
-								BorderThickness="0">
-								<ScrollViewer
-									Margin="0"
-									Name="PART_ContentHost" />
-							</Border>
-						</ControlTemplate>
-					</Setter.Value>
-				</Setter>
-			</Style>
 		</ResourceDictionary>
 	</UserControl.Resources>
 	<Grid
@@ -400,27 +367,6 @@
 				Style="{StaticResource downButtonStyle}"
 				Content="v"
 				Click="BtnDown_Click"></RepeatButton>
-			<!--	commentTextbox		-->
-			<Border
-				Name="BorderComment"
-				Background="White"
-				BorderThickness="1,0,1,1"
-				BorderBrush="Black"
-				Height="0"
-				MaxHeight="50">
-				<TextBox
-					Name="CommentTextBox"
-					TextChanged="CommentTextBox_TextChanged"
-					Margin="3"/>
-			</Border>
 		</StackPanel>
-		<Canvas
-			MinWidth="25"
-			Background="Transparent"
-			Grid.Column="1"
-			Name="PinControlCanvas"
-			Visibility="Collapsed">
-			<!--	Pin close control	-->
-		</Canvas>
 	</Grid>
 </UserControl>

@@ -148,4 +148,38 @@
         </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
+
+	<Style
+		TargetType="{x:Type TextBox}"
+		x:Key="TextStyle">
+		<Setter
+			Property="OverridesDefaultStyle"
+			Value="True" />
+		<Setter
+			Property="VerticalAlignment"
+			Value="Top" />
+		<Setter
+			Property="KeyboardNavigation.TabNavigation"
+			Value="None" />
+		<Setter
+			Property="FocusVisualStyle"
+			Value="{x:Null}" />
+		<Setter
+			Property="Template">
+			<Setter.Value>
+				<ControlTemplate
+					TargetType="{x:Type TextBoxBase}">
+					<Border
+						Name="Border"
+						Background="Transparent"
+						BorderBrush="Transparent"
+						BorderThickness="0">
+						<ScrollViewer
+							Margin="0"
+							Name="PART_ContentHost" />
+					</Border>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
 </ResourceDictionary>

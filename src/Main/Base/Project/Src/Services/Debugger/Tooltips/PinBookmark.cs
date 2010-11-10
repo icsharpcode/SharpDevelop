@@ -12,7 +12,6 @@ using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
-using ICSharpCode.SharpDevelop.Editor;
 
 namespace Services.Debugger.Tooltips
 {
@@ -20,7 +19,7 @@ namespace Services.Debugger.Tooltips
 	{
 		string tooltip;
 		
-		public DebuggerPopup Popup {	get; set; }
+		public PinDebuggerControl Popup {	get; set; }
 		
 		public static readonly IImage PinImage = new ResourceServiceImage("Bookmarks.Pin");
 		
@@ -35,7 +34,7 @@ namespace Services.Debugger.Tooltips
 		{
 			if (e.Action == NotifyCollectionChangedAction.Add ||
 			   e.Action == NotifyCollectionChangedAction.Remove)
-				Popup.contentControl.SetItemsSource(Nodes);
+				Popup.ItemsSource = Nodes;
 		}
 		
 		public Point SavedPopupPosition { get; set; }

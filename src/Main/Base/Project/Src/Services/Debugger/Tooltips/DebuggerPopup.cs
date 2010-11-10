@@ -3,10 +3,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 
-using ICSharpCode.AvalonEdit;
-using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Debugging
@@ -16,23 +17,20 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	/// </summary>
 	public class DebuggerPopup : Popup
 	{
-		private bool showPinControl;
-		
 		internal DebuggerTooltipControl contentControl;
 
-		public DebuggerPopup(DebuggerTooltipControl parentControl, bool showPinControl)
+		public DebuggerPopup(DebuggerTooltipControl parentControl)
 		{
-			this.showPinControl = showPinControl;
-			this.contentControl = new DebuggerTooltipControl(parentControl, showPinControl);
+			this.contentControl = new DebuggerTooltipControl(parentControl);
 			this.contentControl.containingPopup = this;
 			this.Child = this.contentControl;
 			this.IsLeaf = false;
 			
 			//this.KeyDown += new KeyEventHandler(DebuggerPopup_KeyDown);
 
-			this.contentControl.Focusable = true;
+			//this.contentControl.Focusable = true;
 			//Keyboard.Focus(this.contentControl);
-			this.AllowsTransparency = true;
+			//this.AllowsTransparency = true;
 			//this.PopupAnimation = PopupAnimation.Slide;
 		}
 
@@ -62,9 +60,10 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			return args.Handled;
 		}*/
 
-		public void SetItemsSource(IEnumerable<ITreeNode> value)
+		public IEnumerable<ITreeNode> ItemsSource
 		{
-			this.contentControl.SetItemsSource(value);
+			get { return this.contentControl.ItemsSource; }
+			set { this.contentControl.SetItemsSource(value); }
 		}
 
 		private bool isLeaf;
@@ -85,58 +84,17 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			if (isLeaf) {
 				this.contentControl.CloseOnLostFocus();
 			}
-			
-			// unpin from surface
-			if (this.showPinControl) {
-				var provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;
-				if(provider != null) {
-					var editor = (TextEditor)provider.TextEditor.GetService(typeof(TextEditor));
-					editor.TextArea.PinningLayer.Unpin(this);
-				}
-			}
 		}
 
 		public void Open()
 		{
-			if (this.IsOpen) 
-				return;
-			
-			// pin onto surface
-			if (this.showPinControl) {
-				var provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;
-				if(provider != null) {
-					var editor = (TextEditor)provider.TextEditor.GetService(typeof(TextEditor));
-					editor.TextArea.PinningLayer.Pin(this);
-				}
-			}
-			
 			this.IsOpen = true;
 		}
 
 		public void CloseSelfAndChildren()
 		{
-			if (this.IsOpen) {
-				this.contentControl.CloseChildPopups();
-				this.IsOpen = false;
-			}
-		}
-		
-		protected override void OnMouseEnter(System.Windows.Input.MouseEventArgs e)
-		{
-			if (showPinControl) {
-				Child.Opacity = 1d;
-			}
-			
-			base.OnMouseEnter(e);
-		}
-		
-		protected override void OnMouseLeave(System.Windows.Input.MouseEventArgs e)
-		{
-			if (showPinControl) {
-				Child.Opacity = DebuggerTooltipControl.MINIMUM_OPACITY;
-			}
-			
-			base.OnMouseLeave(e);
+			this.contentControl.CloseChildPopups();
+			this.IsOpen = false;
 		}
 	}
 }

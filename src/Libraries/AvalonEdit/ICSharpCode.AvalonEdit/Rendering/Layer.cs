@@ -3,7 +3,7 @@
 
 using System;
 using System.Diagnostics;
-using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace ICSharpCode.AvalonEdit.Rendering
@@ -11,7 +11,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 	/// <summary>
 	/// Base class for known layers.
 	/// </summary>
-	public class Layer : UIElement
+	public class Layer : Canvas
 	{
 		/// <summary>
 		/// Text view.

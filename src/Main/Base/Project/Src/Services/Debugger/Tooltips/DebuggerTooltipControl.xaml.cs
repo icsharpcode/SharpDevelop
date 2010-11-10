@@ -4,9 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -27,46 +29,25 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	/// </summary>
 	public partial class DebuggerTooltipControl : UserControl, ITooltip
 	{
-		public const double MINIMUM_OPACITY = .3d;
-		
 		private readonly double ChildPopupOpenXOffet = 16;
 		private readonly double ChildPopupOpenYOffet = 15;
 		private readonly int InitialItemsCount = 12;
-		private readonly int VisibleItemsCount = 11;		
-		private readonly ITextEditor editor;
+		private readonly int VisibleItemsCount = 11;
 		
-		#region Contructors
+		private readonly ITextEditor editor;
 
-		public DebuggerTooltipControl(bool showPinControl = false)
+		public DebuggerTooltipControl()
 		{
 			InitializeComponent();
-			
-			this.showPinControl = showPinControl;
-			
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;			
-			if (provider != null) 
-				editor = provider.TextEditor;
-			
-			// show pin close control
-			if (this.showPinControl) {
-				dataGrid.Columns[5].Visibility = Visibility.Collapsed;
-				
-				pinCloseControl = new PinCloseControl(this);
-				pinCloseControl.Visibility = Visibility.Visible;
-				PinControlCanvas.Visibility = Visibility.Visible;
-				PinControlCanvas.Children.Add(pinCloseControl);
-				this.Opacity = MINIMUM_OPACITY;
-			}
-			else {
-				PinControlCanvas.Visibility = Visibility.Collapsed;
-			}
-			
-			Loaded += new RoutedEventHandler(OnLoaded);
 		}
 
 		public DebuggerTooltipControl(ITreeNode node)
 			: this(new ITreeNode[] { node })
 		{
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+			editor = provider.TextEditor;
+			
+			Loaded += new RoutedEventHandler(OnLoaded);
 		}
 
 		public DebuggerTooltipControl(IEnumerable<ITreeNode> nodes)
@@ -75,8 +56,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			this.itemsSource = nodes;
 		}
 
-		public DebuggerTooltipControl(DebuggerTooltipControl parentControl, bool showPinControl = false)
-			: this(showPinControl)
+		public DebuggerTooltipControl(DebuggerTooltipControl parentControl)
+			: this()
 		{
 			this.parentControl = parentControl;
 		}
@@ -98,26 +79,26 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			
 			SetItemsSource(this.itemsSource);
 		}
-		
-		#endregion
-		
-		private bool showPinControl;
-		internal PinCloseControl pinCloseControl;
-		private DebuggerPopup childPopup { get; set; }
-		private DebuggerTooltipControl parentControl { get; set; }
-		internal DebuggerPopup containingPopup { get; set; }
-		
-		#region Source
-		
+
+		public event RoutedEventHandler Closed;
+		protected void OnClosed()
+		{
+			if (this.Closed != null) {
+				this.Closed(this, new RoutedEventArgs());
+			}
+		}
+
 		private LazyItemsControl<ITreeNode> lazyGrid;
-		private IEnumerable<ITreeNode> itemsSource;
+
+		IEnumerable<ITreeNode> itemsSource;
 		
-		public IEnumerable<ITreeNode> ItemSource { get { return itemsSource; } }
+		public IEnumerable<ITreeNode> ItemsSource {
+			get { return this.itemsSource; }
+		}
 		
 		public void SetItemsSource(IEnumerable<ITreeNode> source)
 		{
 			this.itemsSource = source;
-				
 			this.lazyGrid = new LazyItemsControl<ITreeNode>(this.dataGrid, InitialItemsCount);
 			lazyGrid.ItemsSource = new VirtualizingIEnumerable<ITreeNode>(source);
 			this.dataGrid.AddHandler(ScrollViewer.ScrollChangedEvent, new ScrollChangedEventHandler(handleScroll));
@@ -129,76 +110,17 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
-		void DebuggerService_DebugStarted(object sender, EventArgs e)
-		{
-//			// refresh values
-//			ToolTipRequestEventArgs args = new ToolTipRequestEventArgs(editor);
-//			args.LogicalPosition = this.LogicalPosition;
-//			DebuggerService.HandleToolTipRequest(args);
-//			
-//			if (args.ContentToShow is ITooltip) {
-//				var source = ((ITooltip)args.ContentToShow).ItemSource;
-//				itemsSource = source;
-//				lazyGrid.ItemsSource = new VirtualizingIEnumerable<ITreeNode>(source);
-//			}
-		}
-			
-		#endregion
+		public Location LogicalPosition { get; set; }
 
 		/// <inheritdoc/>
-		public bool ShowAsPopup { get { return true; } }	
-
-		/// <summary>
-		/// Position within the document
-		/// </summary>
-		public Location LogicalPosition { get; set; }		
-
-		#region Expander
-
-		bool isChildExpanded
+		public bool ShowAsPopup
 		{
 			get
 			{
-				return this.childPopup != null && this.childPopup.IsOpen;
+				return true;
 			}
 		}
 
-		private ToggleButton expandedButton;
-		
-		private void btnExpander_Click(object sender, RoutedEventArgs e)
-		{
-			var clickedButton = (ToggleButton)e.OriginalSource;
-			var clickedNode = (ITreeNode)clickedButton.DataContext;
-			// use device independent units, because child popup Left/Top are in independent units 
-			Point buttonPos = clickedButton.PointToScreen(new Point(0, 0)).TransformFromDevice(clickedButton);
-
-			if (clickedButton.IsChecked.GetValueOrDefault(false)) {
-				CloseChildPopups();
-				this.expandedButton = clickedButton;
-
-				// open child Popup
-				if (this.childPopup == null) {
-					this.childPopup = new DebuggerPopup(this, showPinControl);
-					this.childPopup.Placement = PlacementMode.Absolute;
-					this.childPopup.contentControl.LogicalPosition = LogicalPosition;
-				}
-				if (this.containingPopup != null) {
-					this.containingPopup.IsLeaf = false;
-				}
-				this.childPopup.IsLeaf = true;
-				this.childPopup.HorizontalOffset = buttonPos.X + ChildPopupOpenXOffet;
-				this.childPopup.VerticalOffset = buttonPos.Y + ChildPopupOpenYOffet;
-				this.childPopup.SetItemsSource(clickedNode.ChildNodes);
-				this.childPopup.Open();
-			} else {
-				CloseChildPopups();
-			}
-		}
-		
-		#endregion
-		
-		#region Close
-		
 		/// <inheritdoc/>
 		public bool Close(bool mouseClick)
 		{
@@ -209,6 +131,20 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				return false;
 			}
 		}
+
+		DebuggerPopup childPopup { get; set; }
+		DebuggerTooltipControl parentControl { get; set; }
+		internal DebuggerPopup containingPopup { get; set; }
+
+		bool isChildExpanded
+		{
+			get
+			{
+				return this.childPopup != null && this.childPopup.IsOpen;
+			}
+		}
+
+		private ToggleButton expandedButton;
 
 		/// <summary>
 		/// Closes the child popup of this control, if it exists.
@@ -246,18 +182,36 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				}
 			}
 		}
-		
-		public event RoutedEventHandler Closed;
-		protected void OnClosed()
+
+		private void btnExpander_Click(object sender, RoutedEventArgs e)
 		{
-			if (this.Closed != null) {
-				this.Closed(this, new RoutedEventArgs());
+			var clickedButton = (ToggleButton)e.OriginalSource;
+			var clickedNode = (ITreeNode)clickedButton.DataContext;
+			// use device independent units, because child popup Left/Top are in independent units 
+			Point buttonPos = clickedButton.PointToScreen(new Point(0, 0)).TransformFromDevice(clickedButton);
+
+			if (clickedButton.IsChecked.GetValueOrDefault(false)) {
+				CloseChildPopups();
+				this.expandedButton = clickedButton;
+
+				// open child Popup
+				if (this.childPopup == null) {
+					this.childPopup = new DebuggerPopup(this);
+					this.childPopup.Placement = PlacementMode.Absolute;
+					this.childPopup.contentControl.LogicalPosition = LogicalPosition;
+				}
+				if (this.containingPopup != null) {
+					this.containingPopup.IsLeaf = false;
+				}
+				this.childPopup.IsLeaf = true;
+				this.childPopup.HorizontalOffset = buttonPos.X + ChildPopupOpenXOffet;
+				this.childPopup.VerticalOffset = buttonPos.Y + ChildPopupOpenYOffet;
+				this.childPopup.ItemsSource = clickedNode.ChildNodes;
+				this.childPopup.Open();
+			} else {
+				CloseChildPopups();
 			}
 		}
-
-		#endregion
-		
-		#region Scrolling
 
 		private void handleScroll(object sender, ScrollChangedEventArgs e)
 		{
@@ -274,8 +228,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			this.lazyGrid.ScrollViewer.ScrollDown(1);
 		}
-		
-		#endregion
 		
 		#region Edit value in tooltip
 		
@@ -337,14 +289,12 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					pin = new PinBookmark(editor.FileName, LogicalPosition);
 					// show pinned DebuggerPopup
 					if (pin.Popup == null) {
-						pin.Popup = new DebuggerPopup(null, true);
-						pin.Popup.contentControl.LogicalPosition = LogicalPosition;
-						pin.Popup.contentControl.pinCloseControl.Mark = pin;
+						pin.Popup = new PinDebuggerControl();
+						pin.Popup.Mark = pin;
 						Rect rect = new Rect(this.DesiredSize);
 						var point = this.PointToScreen(rect.TopRight);
-						pin.Popup.HorizontalOffset = 500;
-						pin.Popup.VerticalOffset = point.Y - 150;
-						pin.SavedPopupPosition = new Point { X = pin.Popup.HorizontalOffset, Y = pin.Popup.VerticalOffset };
+						pin.Popup.Tag = new Point { X = 500, Y = point.Y - 150 };
+						pin.SavedPopupPosition = (Point)pin.Popup.Tag;
 						pin.Nodes.Add(node);
 					}					
 					
@@ -361,7 +311,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		}
 		
 		void PinButton_Unchecked(object sender, RoutedEventArgs e)
-		{
+		{		
 			if (!string.IsNullOrEmpty(editor.FileName)) {
 				// remove from pinned DebuggerPopup
 				var pin = BookmarkManager.Bookmarks.Find(
@@ -375,49 +325,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				
 				// remove if no more data pins are available
 				if (pin.Nodes.Count == 0) {
-					pin.Popup.CloseSelfAndChildren();
+					pin.Popup.Close();
 					
 					BookmarkManager.RemoveMark(pin);
 				}
 			}
-		}
-		
-		#endregion
-		
-		#region Comment
-		
-		public event EventHandler CommentChanged;
-		
-		public string Comment {
-			get { return CommentTextBox.Text; }
-			set { CommentTextBox.Text = value; }
-		}
-		
-		public void ShowComment(bool show)
-		{
-			if(show && BorderComment.Height != 0)
-				return;
-			if(!show && BorderComment.Height != 40)
-				return;
-			
-			DoubleAnimation animation = new DoubleAnimation(); 
-			animation.From = show ? 0 : 40;
-			animation.To = show ? 40 : 0;
-			
-			animation.Duration = new Duration(TimeSpan.FromMilliseconds(300));
-			animation.SetValue(Storyboard.TargetProperty, BorderComment);
-			animation.SetValue(Storyboard.TargetPropertyProperty, new PropertyPath(Border.HeightProperty));
-			                   
-			Storyboard board = new Storyboard();
-			board.Children.Add(animation);			
-			board.Begin(this);
-		}
-		
-		void CommentTextBox_TextChanged(object sender, TextChangedEventArgs e)
-		{
-			var handler = CommentChanged;
-			if (handler != null)
-				handler(this, EventArgs.Empty);
 		}
 		
 		#endregion

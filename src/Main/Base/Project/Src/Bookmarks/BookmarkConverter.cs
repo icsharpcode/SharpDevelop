@@ -121,9 +121,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 					
 					// popup position
 					b.Append('|');
-					b.Append(pin.Popup.HorizontalOffset);
+					b.Append(pin.SavedPopupPosition.X);
 					b.Append('|');
-					b.Append(pin.Popup.VerticalOffset);
+					b.Append(pin.SavedPopupPosition.Y);
 					b.Append('|');
 					
 					//popup nodes
