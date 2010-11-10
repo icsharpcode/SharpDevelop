@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public interface IDomVisitor<T, S>
 	{
-		S VisitCompilationUnit (CompilationUnit unit, T data);
+			S VisitCompilationUnit (CompilationUnit unit, T data);
 		
 		#region General scope
 		S VisitAttribute (Attribute attribute, T data);
@@ -46,6 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		S VisitIdentifier (Identifier identifier, T data);
 		S VisitParameterDeclarationExpression (ParameterDeclarationExpression parameterDeclarationExpression, T data);
 		S VisitConstraint (Constraint constraint, T data);
+		S VisitComposedType (ComposedType composedType, T data);
 		#endregion
 		
 		#region Type members
@@ -105,6 +106,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		S VisitIdentifierExpression (IdentifierExpression identifierExpression, T data);
 		S VisitIndexerExpression (IndexerExpression indexerExpression, T data);
 		S VisitInvocationExpression (InvocationExpression invocationExpression, T data);
+		S VisitDirectionExpression (DirectionExpression directionExpression, T data);
 		S VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, T data);
 		S VisitNullReferenceExpression (NullReferenceExpression nullReferenceExpression, T data);
 		S VisitObjectCreateExpression (ObjectCreateExpression objectCreateExpression, T data);

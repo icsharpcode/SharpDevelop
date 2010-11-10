@@ -477,5 +477,15 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return VisitChildren (argListExpression, data);
 		}
+		
+		public virtual S VisitComposedType (ComposedType composedType, T data)
+		{
+			return VisitChildren (composedType, data);
+		}
+		
+		public virtual S VisitDirectionExpression (DirectionExpression directionExpression, T data)
+		{
+			return VisitChildren (directionExpression, data);
+		}
 	}
 }
