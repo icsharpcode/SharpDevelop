@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 >
-	  <LinearGradientBrush x:Key="OrangeBrushKey" EndPoint="0,1" StartPoint="0,0">
+	 <LinearGradientBrush x:Key="OrangeBrushKey" EndPoint="0,1" StartPoint="0,0">
         <LinearGradientBrush.GradientStops>
           <GradientStop Offset="0" Color="White" />
           <GradientStop Offset="0.5" Color="Orange" />
@@ -36,8 +36,8 @@
       <ControlTemplate x:Key="CloseButtonTemplate" TargetType="Button">          
         <Border Width="16" Height="16" Name="TheBorder" CornerRadius="2,2,0,0" BorderThickness="1" BorderBrush="Black" Background="{StaticResource SilverPressedBrushKey}">              
           <Canvas>
-            <Line X1="3" X2="11" Y1="3" Y2="11" Stroke="Black" StrokeThickness="2"/>
-            <Line X1="3" X2="11" Y1="11" Y2="3" Stroke="Black" StrokeThickness="2"/>
+            <Line X1="3.5" X2="10.5" Y1="3.5" Y2="10.5" Stroke="Black" StrokeThickness="2"/>
+            <Line X1="3.5" X2="10.5" Y1="10.5" Y2="3.5" Stroke="Black" StrokeThickness="2"/>
           </Canvas>
         </Border>        
         <ControlTemplate.Triggers>
@@ -99,10 +99,10 @@
       <ControlTemplate x:Key="CommentButtonTemplate" TargetType="ToggleButton">          
         <Border Width="16" Height="16" Name="TheBorder" CornerRadius="0,0,2,2" BorderThickness="1" BorderBrush="Black" Background="{StaticResource SilverPressedBrushKey}">              
           <Canvas Name="TheCanvas">
-            <Line X1="2" Y1="3" X2="8" Y2="7" Stroke="Black" StrokeThickness="2"/>
-            <Line X1="7" Y1="6" X2="12" Y2="3" Stroke="Black" StrokeThickness="2"/>
-            <Line X1="2" Y1="8" X2="8" Y2="12" Stroke="Black" StrokeThickness="2"/>
-            <Line X1="8" Y1="11" X2="12" Y2="8" Stroke="Black" StrokeThickness="2"/>
+            <Line X1="3" Y1="3" X2="7" Y2="7.5" Stroke="Black" StrokeThickness="1"/>
+            <Line X1="7" Y1="7.4" X2="11" Y2="3" Stroke="Black" StrokeThickness="1"/>
+            <Line X1="3" Y1="7.5" X2="7" Y2="12" Stroke="Black" StrokeThickness="1"/>
+            <Line X1="7" Y1="12" X2="11" Y2="7.5" Stroke="Black" StrokeThickness="1"/>
           </Canvas>
         </Border>        
         <ControlTemplate.Triggers>

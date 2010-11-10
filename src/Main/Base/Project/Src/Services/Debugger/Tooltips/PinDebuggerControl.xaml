@@ -151,10 +151,19 @@
 		</StackPanel>
 
 		<local:PinCloseControl 
+			VerticalAlignment="Center"
 			Background="Transparent"
 			Grid.Column="1"
 			Margin="5,0,0,0"
-			x:Name="PinCloseControl"/>
+			x:Name="PinCloseControl">
+			<local:PinCloseControl.Effect>
+				<DropShadowEffect
+					ShadowDepth="5"
+					Direction="330"
+					Color="Black"
+					Opacity="0.5"/>
+			</local:PinCloseControl.Effect>
+		</local:PinCloseControl>
 
 	</Grid>
 </UserControl>
