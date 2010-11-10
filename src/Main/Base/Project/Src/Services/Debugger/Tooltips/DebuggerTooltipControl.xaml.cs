@@ -33,8 +33,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		private readonly double ChildPopupOpenYOffet = 15;
 		private readonly int InitialItemsCount = 12;
 		private readonly int VisibleItemsCount = 11;
-		
-		private readonly ITextEditor editor;
 
 		public DebuggerTooltipControl()
 		{
@@ -44,9 +42,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		public DebuggerTooltipControl(ITreeNode node)
 			: this(new ITreeNode[] { node })
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-			editor = provider.TextEditor;
-			
 			Loaded += new RoutedEventHandler(OnLoaded);
 		}
 
@@ -64,11 +59,15 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		private void OnLoaded(object sender, RoutedEventArgs e)
 		{
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+			var editor = provider.TextEditor;
+			if (editor == null) return;
+			
 			// verify if at the line of the root there's a pin bookmark
 			var pin = BookmarkManager.Bookmarks.Find(
-							b => b is PinBookmark &&
-							b.Location.Line == LogicalPosition.Line &&
-							b.FileName == editor.FileName) as PinBookmark;
+				b => b is PinBookmark &&
+				b.Location.Line == LogicalPosition.Line &&
+				b.FileName == editor.FileName) as PinBookmark;
 			
 			if (pin != null) {
 				foreach (var node in this.itemsSource) {
@@ -187,7 +186,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		{
 			var clickedButton = (ToggleButton)e.OriginalSource;
 			var clickedNode = (ITreeNode)clickedButton.DataContext;
-			// use device independent units, because child popup Left/Top are in independent units 
+			// use device independent units, because child popup Left/Top are in independent units
 			Point buttonPos = clickedButton.PointToScreen(new Point(0, 0)).TransformFromDevice(clickedButton);
 
 			if (clickedButton.IsChecked.GetValueOrDefault(false)) {
@@ -241,7 +240,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			if (e.Key == Key.Enter) {
 				dataGrid.Focus();
 				// set new value
-				var textBox = (TextBox)e.OriginalSource;				
+				var textBox = (TextBox)e.OriginalSource;
 				var newValue = textBox.Text;
 				var node = ((FrameworkElement)sender).DataContext as ITreeNode;
 				SaveNewValue(node, textBox.Text);
@@ -250,7 +249,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		void TextBox_LostFocus(object sender, RoutedEventArgs e)
 		{
-			var textBox = (TextBox)e.OriginalSource;				
+			var textBox = (TextBox)e.OriginalSource;
 			var newValue = textBox.Text;
 			var node = ((FrameworkElement)sender).DataContext as ITreeNode;
 			SaveNewValue(node, textBox.Text);
@@ -258,14 +257,14 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		void SaveNewValue(ITreeNode node, string newValue)
 		{
-			if(node != null && node.SetText(newValue)) {				
+			if(node != null && node.SetText(newValue)) {
 				// show adorner
 				var adornerLayer = AdornerLayer.GetAdornerLayer(dataGrid);
 				var adorners = adornerLayer.GetAdorners(dataGrid);
 				if (adorners != null && adorners.Length != 0)
 					adornerLayer.Remove(adorners[0]);
-				SavedAdorner adorner = new SavedAdorner(dataGrid);						
-				adornerLayer.Add(adorner);	
+				SavedAdorner adorner = new SavedAdorner(dataGrid);
+				adornerLayer.Add(adorner);
 			}
 		}
 		
@@ -275,15 +274,18 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		void PinButton_Checked(object sender, RoutedEventArgs e)
 		{
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+			var editor = provider.TextEditor;
+			if (editor == null) return;
 			var node = (ITreeNode)(((ToggleButton)(e.OriginalSource)).DataContext);
 			
 			if (!string.IsNullOrEmpty(editor.FileName)) {
 				
 				// verify if at the line of the root there's a pin bookmark
 				var pin = BookmarkManager.Bookmarks.Find(
-								b => b is PinBookmark &&
-								b.LineNumber == LogicalPosition.Line &&
-								b.FileName == editor.FileName) as PinBookmark;
+					b => b is PinBookmark &&
+					b.LineNumber == LogicalPosition.Line &&
+					b.FileName == editor.FileName) as PinBookmark;
 				
 				if (pin == null) {
 					pin = new PinBookmark(editor.FileName, LogicalPosition);
@@ -293,10 +295,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 						pin.Popup.Mark = pin;
 						Rect rect = new Rect(this.DesiredSize);
 						var point = this.PointToScreen(rect.TopRight);
-						pin.Popup.Tag = new Point { X = 500, Y = point.Y - 150 };
-						pin.SavedPopupPosition = (Point)pin.Popup.Tag;
+						pin.Popup.Location = new Point { X = 500, Y = point.Y - 150 };
 						pin.Nodes.Add(node);
-					}					
+					}
 					
 					// do actions
 					pin.Popup.Open();
@@ -307,17 +308,21 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					if (!pin.ContainsNode(node))
 						pin.Nodes.Add(node);
 				}
-			}			
+			}
 		}
 		
 		void PinButton_Unchecked(object sender, RoutedEventArgs e)
-		{		
+		{
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+			var editor = provider.TextEditor;
+			if (editor == null) return;
+			
 			if (!string.IsNullOrEmpty(editor.FileName)) {
 				// remove from pinned DebuggerPopup
 				var pin = BookmarkManager.Bookmarks.Find(
-										b => b is PinBookmark &&
-										b.LineNumber == LogicalPosition.Line &&
-										b.FileName == editor.FileName) as PinBookmark;
+					b => b is PinBookmark &&
+					b.LineNumber == LogicalPosition.Line &&
+					b.FileName == editor.FileName) as PinBookmark;
 				if (pin == null) return;
 				
 				ToggleButton button = (ToggleButton)e.OriginalSource;
@@ -337,8 +342,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		#region Saved Adorner
 		
 		class SavedAdorner : Adorner
-		{	
-			public SavedAdorner(UIElement adornedElement) : base(adornedElement) 
+		{
+			public SavedAdorner(UIElement adornedElement) : base(adornedElement)
 			{
 				Loaded += delegate { Show(); };
 			}
@@ -349,33 +354,33 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				
 				// Some arbitrary drawing implements.
 				var formatedText = new FormattedText(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Debugging.SavedString}"),
-				                                     CultureInfo.CurrentCulture, 
+				                                     CultureInfo.CurrentCulture,
 				                                     FlowDirection.LeftToRight,
-				                                     new Typeface(new FontFamily("Arial"), 
-				                                                  FontStyles.Normal, 
+				                                     new Typeface(new FontFamily("Arial"),
+				                                                  FontStyles.Normal,
 				                                                  FontWeights.Black,
 				                                                  FontStretches.Expanded),
 				                                     8d,
 				                                     Brushes.Black);
 				
 				
-				drawingContext.DrawText(formatedText, 
+				drawingContext.DrawText(formatedText,
 				                        new Point(adornedElementRect.TopRight.X - formatedText.Width - 2,
 				                                  adornedElementRect.TopRight.Y));
 			}
 			
 			private void Show()
 			{
-				DoubleAnimation animation = new DoubleAnimation(); 
+				DoubleAnimation animation = new DoubleAnimation();
 				animation.From = 1;
-				animation.To = 0;				
+				animation.To = 0;
 				
 				animation.Duration = new Duration(TimeSpan.FromSeconds(2));
 				animation.SetValue(Storyboard.TargetProperty, this);
 				animation.SetValue(Storyboard.TargetPropertyProperty, new PropertyPath(Rectangle.OpacityProperty));
-				                   
+				
 				Storyboard board = new Storyboard();
-				board.Children.Add(animation);			
+				board.Children.Add(animation);
 				
 				board.Begin(this);
 			}

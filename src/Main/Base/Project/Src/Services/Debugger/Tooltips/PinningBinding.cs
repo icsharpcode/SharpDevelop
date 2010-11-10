@@ -5,7 +5,9 @@ using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 
+using Editor.AvalonEdit;
 using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -20,12 +22,20 @@ namespace Services.Debugger.Tooltips
 		public PinningBinding()
 		{}
 		
-		public override void Attach(ITextEditor editor) 
+		public override void Attach(ITextEditor editor)
 		{
 			if (editor == null)
 				return;
 			
-			_editor = editor;			
+			var textEditor = editor.GetService(typeof(TextEditor)) as TextEditor;
+			if (textEditor != null) {
+				textEditor.TextArea.TextView.InsertLayer(
+					new PinLayer(textEditor.TextArea),
+					KnownLayer.Caret,
+					LayerInsertionPosition.Above);
+			}
+			
+			_editor = editor;
 			CreatePins(_editor);
 			
 			base.Attach(editor);
@@ -47,30 +57,26 @@ namespace Services.Debugger.Tooltips
 			foreach (var bookmark in pins) {
 				var pin = (PinBookmark)bookmark;
 				pin.Popup = new PinDebuggerControl();
-				pin.Popup.Tag = new Point { X = pin.SavedPopupPosition.X, Y = pin.SavedPopupPosition.Y };
 				pin.Popup.Mark = pin;
+				pin.Popup.Location = pin.PopupPosition;
 				
-				var nodes = new ObservableCollection<ITreeNode>();				
+				var nodes = new ObservableCollection<ITreeNode>();
 				foreach (var tuple in pin.SavedNodes) {
 					var node = new TreeNode();
-					node.IconImage = 
+					node.IconImage =
 						new ResourceServiceImage(
 							!string.IsNullOrEmpty(tuple.Item1) ? tuple.Item1 : "Icons.16x16.Field");
 					node.Name = tuple.Item2;
 					node.Text = tuple.Item3;
-					
 					nodes.Add(node);
 				}
 				
 				pin.SavedNodes.Clear();
-				
 				pin.Popup.ItemsSource = nodes;
 				pin.Nodes = nodes;
 				pin.Popup.Open();
 				
-				var textEditor = editor.GetService(typeof(TextEditor)) as TextEditor;
-				if (textEditor != null)
-					textEditor.TextArea.PinningLayer.Pin(pin.Popup);
+				GetPinlayer(editor).Pin(pin.Popup);
 			}
 		}
 		
@@ -82,7 +88,7 @@ namespace Services.Debugger.Tooltips
 			
 			foreach (var bookmark in pins) {
 				var pin = (PinBookmark)bookmark;
-				pin.SavedPopupPosition = (Point)pin.Popup.Tag;
+				pin.PopupPosition = (Point)pin.Popup.Location;
 				
 				// nodes
 				foreach (var node in pin.Nodes) {
@@ -94,11 +100,20 @@ namespace Services.Debugger.Tooltips
 				}
 				
 				pin.Popup.Close();
-				var textEditor = editor.GetService(typeof(TextEditor)) as TextEditor;
-				if (textEditor != null)
-					textEditor.TextArea.PinningLayer.Unpin(pin.Popup);
+				GetPinlayer(editor).Unpin(pin.Popup);
 				pin.Popup = null;
 			}
+		}
+		
+		public static PinLayer GetPinlayer(ITextEditor editor) {
+			var textEditor = editor.GetService(typeof(TextEditor)) as TextEditor;
+			if (textEditor != null) {
+				foreach(var layer in textEditor.TextArea.TextView.Layers)
+					if(((Layer)layer).LayerType == KnownLayer.DataPins)
+						return (PinLayer)layer;
+			}
+			
+			return null;
 		}
 	}
 }

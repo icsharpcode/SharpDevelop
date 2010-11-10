@@ -36,7 +36,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <summary>
 		/// This layer contains the data pins
 		/// </summary>
-		Pins		
+		DataPins		
 	}
 	
 	/// <summary>

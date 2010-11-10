@@ -37,7 +37,7 @@ namespace Services.Debugger.Tooltips
 				Popup.ItemsSource = Nodes;
 		}
 		
-		public Point SavedPopupPosition { get; set; }
+		public Point PopupPosition { get; set; }		
 		
 		public ObservableCollection<ITreeNode> Nodes { get; set; }
 		

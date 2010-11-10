@@ -3,12 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 
-using ICSharpCode.AvalonEdit;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
@@ -18,9 +19,9 @@ namespace Services.Debugger.Tooltips
 {
 	public partial class PinDebuggerControl : UserControl
 	{
-		private const int InitialItemsCount = 12;		
+		private const int InitialItemsCount = 12;
 		private const double MINIMUM_OPACITY = .3d;
-				
+		
 		public PinDebuggerControl()
 		{
 			InitializeComponent();
@@ -29,8 +30,8 @@ namespace Services.Debugger.Tooltips
 			this.PinCloseControl.Closed += PinCloseControl_Closed;
 			this.PinCloseControl.ShowingComment += PinCloseControl_ShowingComment;
 			this.PinCloseControl.PinningChanged += PinCloseControl_PinningChanged;
-			this.Focusable = true;
 			BookmarkManager.Removed += BookmarkManager_Removed;
+			this.Tag = GenerateId();
 		}
 		
 		#region Properties
@@ -51,11 +52,13 @@ namespace Services.Debugger.Tooltips
 			}
 		}
 		
+		public Point Location { get; set; }
+		
 		#endregion
 		
 		public void Open()
 		{
-			Pin();			
+			Pin();
 		}
 		
 		public void Close()
@@ -63,6 +66,15 @@ namespace Services.Debugger.Tooltips
 			Unpin();
 		}
 
+		private Guid GenerateId()
+		{
+			RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+			byte[] data = new byte[16];
+			rng.GetBytes(data);
+			
+			return new Guid(data);
+		}
+		
 		void PinCloseControl_Closed(object sender, EventArgs e)
 		{
 			BookmarkManager.RemoveMark(Mark);
@@ -78,7 +90,7 @@ namespace Services.Debugger.Tooltips
 			else {
 				if(BookmarkManager.Bookmarks.Contains(Mark))
 					BookmarkManager.RemoveMark(Mark);
-			
+				
 				BookmarkManager.AddMark(Mark);
 			}
 		}
@@ -98,31 +110,29 @@ namespace Services.Debugger.Tooltips
 				var pin = (PinBookmark)e.Bookmark;
 				if (pin.Location == Mark.Location && pin.FileName == Mark.FileName) {
 					Close();
-				}							
+				}
 			}
 		}
 
 		void OnLoaded(object sender, RoutedEventArgs e)
 		{
 			this.CommentTextBox.Text = Mark.Comment;
-		}			
+		}
 		
 		void Pin()
 		{
 			var provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;
-				if(provider != null) {
-					var editor = (TextEditor)provider.TextEditor.GetService(typeof(TextEditor));
-					editor.TextArea.PinningLayer.Pin(this);
-				}
+			if(provider != null) {
+				PinningBinding.GetPinlayer(provider.TextEditor).Pin(this);
+			}
 		}
 		
 		void Unpin()
 		{
 			var provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;
-				if(provider != null) {
-					var editor = (TextEditor)provider.TextEditor.GetService(typeof(TextEditor));
-					editor.TextArea.PinningLayer.Unpin(this);
-				}
+			if(provider != null) {
+				PinningBinding.GetPinlayer(provider.TextEditor).Unpin(this);
+			}
 		}
 		
 		#region Comment
@@ -134,16 +144,16 @@ namespace Services.Debugger.Tooltips
 			if(!show && BorderComment.Height != 40)
 				return;
 			
-			DoubleAnimation animation = new DoubleAnimation(); 
+			DoubleAnimation animation = new DoubleAnimation();
 			animation.From = show ? 0 : 40;
 			animation.To = show ? 40 : 0;
 			
 			animation.Duration = new Duration(TimeSpan.FromMilliseconds(300));
 			animation.SetValue(Storyboard.TargetProperty, BorderComment);
 			animation.SetValue(Storyboard.TargetPropertyProperty, new PropertyPath(Border.HeightProperty));
-			                   
+			
 			Storyboard board = new Storyboard();
-			board.Children.Add(animation);			
+			board.Children.Add(animation);
 			board.Begin(this);
 		}
 		
@@ -153,7 +163,7 @@ namespace Services.Debugger.Tooltips
 		}
 		
 		#endregion
-				
+		
 		protected override void OnMouseEnter(System.Windows.Input.MouseEventArgs e)
 		{
 			Opacity = 1d;

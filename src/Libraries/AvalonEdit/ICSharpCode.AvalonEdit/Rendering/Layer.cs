@@ -37,6 +37,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		}
 		
 		/// <summary>
+		/// Gets layer type
+		/// </summary>
+		public KnownLayer LayerType { get { return knownLayer; } }
+		
+		/// <summary>
 		/// HitTestCore method.
 		/// </summary>
 		/// <param name="hitTestParameters">Hit test parameters.</param>

@@ -71,15 +71,8 @@ namespace ICSharpCode.AvalonEdit.Editing
 			
 			this.DefaultInputHandler = new TextAreaDefaultInputHandler(this);
 			this.ActiveInputHandler = this.DefaultInputHandler;
-			PinningLayer = new PinLayer(this);
-			textView.InsertLayer(PinningLayer, KnownLayer.Caret, LayerInsertionPosition.Above);
 		}
 		#endregion
-		
-		/// <summary>
-		/// Gets the pinning layer.
-		/// </summary>
-		public PinLayer PinningLayer { get; private set; }
 		
 		#region InputHandler management
 		/// <summary>
