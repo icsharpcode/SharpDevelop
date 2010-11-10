@@ -77,7 +77,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			item.Location = p;
 		}
 		
-	
+		
 		protected static void AdjustContainer (ISimpleContainer parent,
 		                                       ICSharpCode.Reports.Core.BaseReportItem item)
 		{
@@ -92,9 +92,9 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		#region HeaderColumns
 		
-		protected static ICSharpCode.Reports.Core.BaseRowItem CreateRowWithTextColumns(ISimpleContainer parent,ReportItemCollection items)
+		protected ICSharpCode.Reports.Core.BaseRowItem CreateRowWithTextColumns(ISimpleContainer parent)
 		{
-			ReportItemCollection colDetail = AbstractLayout.HeaderColumnsFromReportItems(items);
+			ReportItemCollection colDetail = AbstractLayout.HeaderColumnsFromReportItems(ReportItems);
 			
 			ICSharpCode.Reports.Core.BaseRowItem row = new ICSharpCode.Reports.Core.BaseRowItem();
 			AdjustContainer(parent,row);
@@ -136,15 +136,15 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		#endregion
 		
 		
-		protected ReportItemCollection AddItemsToContainer (ReportItemCollection items)
+		protected ReportItemCollection AddItemsToContainer ()
 		{
 			int locationX = GlobalValues.ControlMargins.Left;
 			
-			var minCtrlWidth = CalculateControlWidth(ParentItem,items);
+			var minCtrlWidth = CalculateControlWidth(ParentItem,ReportItems);
 			
 			var col = new ReportItemCollection();
 			
-			foreach (var ir in items) {
+			foreach (var ir in ReportItems) {
 				ir.Location = new Point(locationX,GlobalValues.ControlMargins.Top);
 				col.Add(ir);
 				locationX += minCtrlWidth;
@@ -155,7 +155,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		protected static int CalculateControlWidth(ISimpleContainer row, ReportItemCollection colDetail)
 		{
-			 return row.Size.Width / colDetail.Count;
+			return row.Size.Width / colDetail.Count;
 		}
 		
 		
@@ -179,12 +179,31 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			return groupHeader;
 		}
 		
+		
+		protected ICSharpCode.Reports.Core.GroupFooter CreateFooter (Point footerLocation)
+		{
+			ICSharpCode.Reports.Core.GroupFooter groupFooter = new ICSharpCode.Reports.Core.GroupFooter();
+			groupFooter.Location = footerLocation;
+			groupFooter.Size = new Size (300,30);
+//			groupFooter.Items.Add(dataItem);
+			return groupFooter;
+		}
+		
+		
+		protected void ConfigureDetails (Point detailLocation,Size detailSize)
+		{
+			ParentItem.Location = detailLocation;
+			ParentItem.Size = detailSize;
+		}
+			
 		#endregion
 		
 		protected ReportModel ReportModel {get; private set;}
-	
+		
 		
 		protected ISimpleContainer ParentItem {get;set;}
+		
+		protected ReportItemCollection ReportItems {get;set;}
 		
 	}
 }

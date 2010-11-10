@@ -22,6 +22,7 @@ namespace ICSharpCode.Reports.Addin
 			TypeDescriptor.AddProvider(new GroupedRowTypeProvider(), typeof(BaseGroupedRow));
 		}
 		
+		
 		[Category("Behavior")]
 		public bool PageBreakOnGroupChange {get;set;}
 	}
