@@ -88,9 +88,12 @@ namespace Services.Debugger.Tooltips
 			
 			foreach (var bookmark in pins) {
 				var pin = (PinBookmark)bookmark;
-				pin.PopupPosition = (Point)pin.Popup.Location;
+				pin.PopupPosition = pin.Popup.Location;
 				
 				// nodes
+				if (pin.SavedNodes == null)
+					pin.SavedNodes = new System.Collections.Generic.List<Tuple<string, string, string>>();
+				
 				foreach (var node in pin.Nodes) {
 					pin.SavedNodes.Add(
 						new Tuple<string, string, string>(
@@ -99,7 +102,6 @@ namespace Services.Debugger.Tooltips
 							node.Text));
 				}
 				
-				pin.Popup.Close();
 				GetPinlayer(editor).Unpin(pin.Popup);
 				pin.Popup = null;
 			}
