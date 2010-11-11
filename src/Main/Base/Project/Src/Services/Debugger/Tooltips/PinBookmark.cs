@@ -49,7 +49,16 @@ namespace Services.Debugger.Tooltips
 		public string Tooltip {
 			get { return tooltip; }
 			set { tooltip = value; }
-		}		   
+		}		
+
+		public override bool CanDragDrop {
+			get { return true; }
+		}
+		
+		public override void Drop(int lineNumber)
+		{
+			this.Location = new Location(ColumnNumber, lineNumber);
+		}		
 	}
 	
 	public static class PinBookmarkExtensions
@@ -62,7 +71,7 @@ namespace Services.Debugger.Tooltips
 				throw new ArgumentNullException("Node is null");
 			
 			foreach (var currentNode in mark.Nodes) {
-				if (node.Name.Trim() == currentNode.Name.Trim())
+				if (node.FullName.Trim() == currentNode.FullName.Trim())
 					return true;
 			}
 			
@@ -77,7 +86,7 @@ namespace Services.Debugger.Tooltips
 				throw new ArgumentNullException("Node is null");
 			
 			foreach (var currentNode in mark.Nodes) {
-				if (node.Name.Trim() == currentNode.Name.Trim()) {
+				if (node.FullName.Trim() == currentNode.FullName.Trim()) {
 					mark.Nodes.Remove(currentNode);
 					return;
 				}

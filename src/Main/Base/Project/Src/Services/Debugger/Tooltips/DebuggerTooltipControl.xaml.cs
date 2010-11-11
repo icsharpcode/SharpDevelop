@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				if (pin != null) {
 					foreach (var node in this.itemsSource) {
 						if (pin.ContainsNode(node))
-							node.IsChecked = true;
+							node.IsPinned = true;
 					}
 				}
 			}

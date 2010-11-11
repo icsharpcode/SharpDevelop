@@ -75,10 +75,10 @@
 		<Border Width="16" Height="16" Name="TheBorder" CornerRadius="0" BorderThickness="1" BorderBrush="Black" Background="{StaticResource SilverPressedBrushKey}">
 			<Canvas Name="TheCanvas">
 				<Line X1="4" X2="10" Y1="2" Y2="2" Stroke="Black" StrokeThickness="1"/>
-				<Line X1="10" X2="10" Y1="3" Y2="9" Stroke="Black" StrokeThickness="1"/>
-				<Line X1="2" X2="12" Y1="9" Y2="9" Stroke="Black" StrokeThickness="1"/>
-				<Rectangle Fill="Black" Width="3" Height="6" Canvas.Left="3" Canvas.Top="3"/>
-				<Line X1="7" X2="7" Y1="10" Y2="13" Stroke="Black" StrokeThickness="1"/>
+				<Line X1="9" X2="9" Y1="2" Y2="8" Stroke="Black" StrokeThickness="1"/>
+				<Line X1="2" X2="12" Y1="8" Y2="8" Stroke="Black" StrokeThickness="1"/>
+				<Rectangle Fill="Black" Width="2" Height="5" Canvas.Left="4" Canvas.Top="3"/>
+				<Line X1="7" X2="7" Y1="9" Y2="12" Stroke="Black" StrokeThickness="1"/>
 			</Canvas>
 		</Border>
 		<ControlTemplate.Triggers>
@@ -126,11 +126,11 @@
 	<ControlTemplate x:Key="PinTooltipButtonTemplate" TargetType="ToggleButton">
 		<Border Width="16" Height="16" Name="TheBorder" CornerRadius="2" BorderBrush="Transparent" BorderThickness="1" Background="Transparent">
 			<Canvas RenderTransform="{StaticResource Rotate}" Name="TheCanvas">
-				<Line X1="4" X2="10" Y1="2" Y2="2" Name="Line1" Stroke="Silver" StrokeThickness="1"/>
-				<Line X1="10" X2="10" Y1="3" Y2="9" Name="Line2" Stroke="Silver" StrokeThickness="1"/>
-				<Line X1="2" X2="12" Y1="9" Y2="9" Name="Line3" Stroke="Silver" StrokeThickness="1"/>
-				<Rectangle Width="3" Height="6"  Name="Rectangle" Fill="Silver" Canvas.Left="3" Canvas.Top="3"/>
-				<Line X1="7" X2="7" Y1="10" Y2="13"  Name="Line4" Stroke="Silver" StrokeThickness="1"/>
+				<Line X1="4" X2="10" Y1="2" Y2="2" Stroke="Silver" StrokeThickness="1" Name="Line1"/>
+				<Line X1="9" X2="9" Y1="2" Y2="8" Stroke="Silver" StrokeThickness="1" Name="Line2"/>
+				<Line X1="2" X2="12" Y1="8" Y2="8" Stroke="Silver" StrokeThickness="1" Name="Line3"/>
+				<Rectangle Fill="Silver" Width="2" Height="7" Canvas.Left="4" Canvas.Top="2" Name="Rectangle"/>
+				<Line X1="7" X2="7" Y1="9" Y2="12" Stroke="Silver" StrokeThickness="1" Name="Line4"/>
 			</Canvas>
 		</Border>
 		<ControlTemplate.Triggers>
@@ -158,7 +158,10 @@
 			Value="True" />
 		<Setter
 			Property="VerticalAlignment"
-			Value="Top" />
+			Value="Center" />
+		<Setter
+			Property="FontFamily" Value="Khmer UI" />
+		<Setter Property="FontSize" Value="12" />
 		<Setter
 			Property="KeyboardNavigation.TabNavigation"
 			Value="None" />
@@ -182,6 +185,13 @@
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
+	</Style>
+	
+	<Style TargetType="TextBlock" x:Key="TextBlockStyle">
+		<Setter Property="Margin" Value="4 0" />
+		<Setter
+			Property="FontFamily" Value="Khmer UI" />
+		<Setter Property="FontSize" Value="12" />
 	</Style>
 	
 	<Style x:Key="PinThumbStyle" TargetType="Thumb">

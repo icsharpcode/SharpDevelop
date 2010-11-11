@@ -101,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
-		public bool IsChecked { get; set; }
+		public bool IsPinned { get; set; }
 		
 		public TreeNode()
 		{

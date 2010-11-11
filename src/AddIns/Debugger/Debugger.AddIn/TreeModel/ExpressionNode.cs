@@ -31,7 +31,7 @@ namespace Debugger.AddIn.TreeModel
 		Expression expression;
 		bool canSetText;
 		GetValueException error;
-		
+		string fullName;
 		string fullText;
 		
 		public bool Evaluated { 
@@ -78,6 +78,9 @@ namespace Debugger.AddIn.TreeModel
 			get {
 				if (!evaluated) EvaluateExpression();
 				
+				if(!string.IsNullOrEmpty(fullName))
+					return fullName;
+				
 				if (expression is MemberReferenceExpression) {
 					var memberExpression = (MemberReferenceExpression)expression;
 					
@@ -111,15 +114,21 @@ namespace Debugger.AddIn.TreeModel
 						}
 					}
 					
+					if (currentExpression is ThisReferenceExpression) {
+						stack.Push("this");
+					}
+					
 					// create fullname
 					StringBuilder sb = new StringBuilder();
 					while(stack.Count > 0)
 						sb.Append(stack.Pop());
 							
-					return sb.ToString();
+					fullName = sb.ToString();
+					return fullName;
 				}
 				
-				return Name.Trim();
+				fullName = Name.Trim();
+				return fullName;
 			}
 		}
 		

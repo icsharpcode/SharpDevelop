@@ -144,7 +144,7 @@
 								BorderBrush="#FFDDDDDD"
 								BorderThickness="0 0 1 0">
 								<TextBlock
-									Margin="6 0"
+									Style="{StaticResource TextBlockStyle}"
 									Text="{Binding Path=Name, Mode=OneWay}"
 									VerticalAlignment="Top"></TextBlock>
 							</Border>
@@ -183,7 +183,6 @@
 								Style="{StaticResource TextStyle}"
 								IsEnabled="{Binding CanSetText}"
 								KeyUp="TextBox_KeyUp"
-								Margin="4 0"
 								Text="{Binding Path=Text}" />
 						</DataTemplate>
 					</DataGridTemplateColumn.CellTemplate>
@@ -193,7 +192,7 @@
 					<DataGridTemplateColumn.CellTemplate>
 						<DataTemplate>
 							<ToggleButton
-								IsChecked="{Binding IsChecked}"
+								IsChecked="{Binding IsPinned}"
 								DataContext="{Binding}"
 								Visibility="Collapsed"
 								Name="PinButton"

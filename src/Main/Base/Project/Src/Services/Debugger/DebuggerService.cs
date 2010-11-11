@@ -30,6 +30,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			
 			BookmarkManager.Added   += BookmarkAdded;
 			BookmarkManager.Removed += BookmarkRemoved;
+			
+			IsDebuggerRunning = false;
 		}
 		
 		static void GetDescriptors()
@@ -80,6 +82,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
+		public static bool IsDebuggerRunning { get; set; }
+		
 		/// <summary>
 		/// Returns true if debugger is already loaded.
 		/// </summary>
@@ -109,9 +113,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		}
 		
 		static void OnDebugStarted(object sender, EventArgs e)
-		{
+		{		
 			if (DebugStarted != null)
 				DebugStarted(null, e);
+			
+			IsDebuggerRunning = true;
 		}
 		
 		static void OnDebugStopped(object sender, EventArgs e)
@@ -124,6 +130,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			LayoutConfiguration.CurrentLayoutName = oldLayoutConfiguration;
 			if (DebugStopped != null)
 				DebugStopped(null, e);
+			
+			IsDebuggerRunning = false;
 		}
 		
 		static MessageViewCategory debugCategory = null;

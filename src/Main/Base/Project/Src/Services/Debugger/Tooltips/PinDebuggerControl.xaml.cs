@@ -10,6 +10,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
+using System.Windows.Shapes;
 
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
@@ -32,14 +33,16 @@ namespace Services.Debugger.Tooltips
 		{
 			InitializeComponent();
 			
-			if (!DebuggerService.IsDebuggerLoaded)
+			if (!DebuggerService.IsDebuggerRunning)
 				Opacity = MINIMUM_OPACITY;
+			PinCloseControl.Opacity = 0;
 			
 			Loaded += OnLoaded;
 			this.PinCloseControl.Closed += PinCloseControl_Closed;
 			this.PinCloseControl.ShowingComment += PinCloseControl_ShowingComment;
 			this.PinCloseControl.PinningChanged += PinCloseControl_PinningChanged;
 			BookmarkManager.Removed += BookmarkManager_Removed;
+			DebuggerService.DebugStarted += delegate { Opacity = 1d; };
 		}
 		
 		#region Properties
@@ -214,18 +217,20 @@ namespace Services.Debugger.Tooltips
 		
 		#endregion
 		
-		protected override void OnMouseEnter(System.Windows.Input.MouseEventArgs e)
+		void AnimateCloseControls(bool show)
 		{
-			Opacity = 1d;
-			Cursor = Cursors.Arrow;
-			base.OnMouseEnter(e);
-		}
-		
-		protected override void OnMouseLeave(System.Windows.Input.MouseEventArgs e)
-		{
-			Opacity = MINIMUM_OPACITY;
-			Cursor = Cursors.IBeam;
-			base.OnMouseLeave(e);
+			DoubleAnimation animation = new DoubleAnimation();
+			animation.From = show ? 0 : 1;
+			animation.To = show ? 1 : 0;
+			animation.BeginTime = new TimeSpan(0, 0, show ? 0 : 1);
+			animation.Duration = new Duration(TimeSpan.FromMilliseconds(500));
+			animation.SetValue(Storyboard.TargetProperty, this.PinCloseControl);
+			animation.SetValue(Storyboard.TargetPropertyProperty, new PropertyPath(Rectangle.OpacityProperty));
+			
+			Storyboard board = new Storyboard();
+			board.Children.Add(animation);
+			
+			board.Begin(this);
 		}
 		
 		void RefreshContentImage_MouseDown(object sender, MouseButtonEventArgs e)
@@ -233,10 +238,38 @@ namespace Services.Debugger.Tooltips
 			// refresh content			
 			ITreeNode node = ((Image)sender).DataContext as ITreeNode;
 			
-			if (!DebuggerService.IsDebuggerLoaded)
+			if (!DebuggerService.IsDebuggerRunning)
 				return;
 			
 			
+		}
+		
+		protected override void OnMouseEnter(System.Windows.Input.MouseEventArgs e)
+		{
+			AnimateCloseControls(true);			
+			Opacity = 1d;
+			Cursor = Cursors.Arrow;
+			base.OnMouseEnter(e);
+		}
+		
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
+			Opacity = 1d;
+			Cursor = Cursors.Arrow;
+			base.OnMouseMove(e);
+		}
+		
+		protected override void OnMouseLeave(System.Windows.Input.MouseEventArgs e)
+		{
+			if (DebuggerService.IsDebuggerRunning) 
+				Opacity = 1;
+			else
+				Opacity = MINIMUM_OPACITY;
+			
+			AnimateCloseControls(false);
+				
+			Cursor = Cursors.IBeam;
+			base.OnMouseLeave(e);
 		}
 	}
 }

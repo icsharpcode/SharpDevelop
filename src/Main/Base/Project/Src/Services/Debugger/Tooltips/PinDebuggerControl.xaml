@@ -156,14 +156,13 @@
 							<!-- Name -->
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
-									<Border IsEnabled="False"
-									        BorderBrush="#FFDDDDDD"
-									        BorderThickness="0 0 1 0">
+									<Border
+										BorderBrush="#FFDDDDDD"
+										BorderThickness="0 0 1 0">
 										<TextBlock
-											FontFamily="Arial"
-											Margin="6 0"
+											Style="{StaticResource TextBlockStyle}"
 											Text="{Binding Path=FullName, Mode=OneWay}"
-											VerticalAlignment="Top"></TextBlock>
+											VerticalAlignment="Center"></TextBlock>
 									</Border>
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>
@@ -177,7 +176,6 @@
 									<TextBox
 										Style="{StaticResource TextStyle}"
 										IsEnabled="false"
-										Margin="4 0"
 										Text="{Binding Path=Text}" />
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>
