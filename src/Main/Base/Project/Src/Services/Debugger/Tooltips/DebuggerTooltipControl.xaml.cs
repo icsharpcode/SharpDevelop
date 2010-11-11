@@ -308,6 +308,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 					if (!pin.ContainsNode(node))
 						pin.Nodes.Add(node);
 				}
+				
+				pin.Popup.ItemsSource = pin.Nodes;
 			}
 		}
 		
@@ -327,7 +329,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				
 				ToggleButton button = (ToggleButton)e.OriginalSource;
 				pin.RemoveNode((ITreeNode)button.DataContext);
-				
+				pin.Popup.ItemsSource = pin.Nodes;
 				// remove if no more data pins are available
 				if (pin.Nodes.Count == 0) {
 					pin.Popup.Close();

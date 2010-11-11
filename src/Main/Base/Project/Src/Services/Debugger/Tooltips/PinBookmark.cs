@@ -26,15 +26,7 @@ namespace Services.Debugger.Tooltips
 		public PinBookmark(FileName fileName, Location location) : base(fileName, location)
 		{
 			Nodes = new ObservableCollection<ITreeNode>();
-			Nodes.CollectionChanged += new NotifyCollectionChangedEventHandler(Nodes_CollectionChanged);
 			IsVisibleInBookmarkPad = false;
-		}
-
-		void Nodes_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			if (e.Action == NotifyCollectionChangedAction.Add ||
-			   e.Action == NotifyCollectionChangedAction.Remove)
-				Popup.ItemsSource = Nodes;
 		}
 		
 		public Point PopupPosition { get; set; }		
