@@ -14,6 +14,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	{
 		string Name { get; }
 		
+		string FullName { get; }
+		
 		string Text { get; }
 		
 		bool CanSetText { get; }

@@ -111,13 +111,6 @@ namespace Editor.AvalonEdit
 			
 			Canvas.SetLeft(currnetThumb, left);
 			Canvas.SetTop(currnetThumb, top);
-			
-			var pinControl = TryFindChild<PinDebuggerControl>(currnetThumb);
-			if (pinControl != null) {
-				pinControl.Location = new Point { X = left, Y = top };
-				pinControl.Mark.PopupPosition = pinControl.Location;
-				pinControl.Opacity = 1d;
-			}
 		}
 		
 		void currentThumb_DragCompleted(object sender, DragCompletedEventArgs e)
@@ -126,8 +119,13 @@ namespace Editor.AvalonEdit
 			currnetThumb.Cursor = Cursors.Arrow;
 			
 			var pinControl = TryFindChild<PinDebuggerControl>(currnetThumb);
-			if (pinControl != null)
+			if (pinControl != null) {
+				double left = Canvas.GetLeft(currnetThumb);
+				double top = Canvas.GetTop(currnetThumb);
 				pinControl.Opacity = 1d;
+				pinControl.Location = new Point { X = left, Y = top };
+				pinControl.Mark.PopupPosition = pinControl.Location;
+			}
 		}
 
 		void currentThumb_DragStarted(object sender, DragStartedEventArgs e)

@@ -29,20 +29,26 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	/// </summary>
 	public partial class DebuggerTooltipControl : UserControl, ITooltip
 	{
-		private readonly double ChildPopupOpenXOffet = 16;
-		private readonly double ChildPopupOpenYOffet = 15;
-		private readonly int InitialItemsCount = 12;
-		private readonly int VisibleItemsCount = 11;
-
+		private const double ChildPopupOpenXOffet = 16;
+		private const double ChildPopupOpenYOffet = 15;
+		private const int InitialItemsCount = 12;
+		private const int VisibleItemsCount = 11;
+		
+		private bool showPins = true;
+		private LazyItemsControl<ITreeNode> lazyGrid;
+		private IEnumerable<ITreeNode> itemsSource;
+		
 		public DebuggerTooltipControl()
 		{
 			InitializeComponent();
+			
+			Loaded += new RoutedEventHandler(OnLoaded);
 		}
 
 		public DebuggerTooltipControl(ITreeNode node)
 			: this(new ITreeNode[] { node })
 		{
-			Loaded += new RoutedEventHandler(OnLoaded);
+			
 		}
 
 		public DebuggerTooltipControl(IEnumerable<ITreeNode> nodes)
@@ -51,31 +57,36 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			this.itemsSource = nodes;
 		}
 
-		public DebuggerTooltipControl(DebuggerTooltipControl parentControl)
+		public DebuggerTooltipControl(DebuggerTooltipControl parentControl, bool showPins = true)
 			: this()
 		{
 			this.parentControl = parentControl;
+			this.showPins = showPins;
 		}
 		
 		private void OnLoaded(object sender, RoutedEventArgs e)
 		{
-			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-			var editor = provider.TextEditor;
-			if (editor == null) return;
-			
-			// verify if at the line of the root there's a pin bookmark
-			var pin = BookmarkManager.Bookmarks.Find(
-				b => b is PinBookmark &&
-				b.Location.Line == LogicalPosition.Line &&
-				b.FileName == editor.FileName) as PinBookmark;
-			
-			if (pin != null) {
-				foreach (var node in this.itemsSource) {
-					if (pin.ContainsNode(node))
-						node.IsChecked = true;
+			if (showPins) {
+				ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+				var editor = provider.TextEditor;
+				if (editor == null) return;
+				
+				// verify if at the line of the root there's a pin bookmark
+				var pin = BookmarkManager.Bookmarks.Find(
+					b => b is PinBookmark &&
+					b.Location.Line == LogicalPosition.Line &&
+					b.FileName == editor.FileName) as PinBookmark;
+				
+				if (pin != null) {
+					foreach (var node in this.itemsSource) {
+						if (pin.ContainsNode(node))
+							node.IsChecked = true;
+					}
 				}
 			}
-			
+			else {
+				dataGrid.Columns[5].Visibility = Visibility.Collapsed;
+			}
 			SetItemsSource(this.itemsSource);
 		}
 
@@ -86,10 +97,6 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				this.Closed(this, new RoutedEventArgs());
 			}
 		}
-
-		private LazyItemsControl<ITreeNode> lazyGrid;
-
-		IEnumerable<ITreeNode> itemsSource;
 		
 		public IEnumerable<ITreeNode> ItemsSource {
 			get { return this.itemsSource; }
@@ -131,8 +138,8 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 
-		DebuggerPopup childPopup { get; set; }
-		DebuggerTooltipControl parentControl { get; set; }
+		private DebuggerPopup childPopup { get; set; }
+		private DebuggerTooltipControl parentControl { get; set; }
 		internal DebuggerPopup containingPopup { get; set; }
 
 		bool isChildExpanded

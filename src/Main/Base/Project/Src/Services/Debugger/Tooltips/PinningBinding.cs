@@ -66,7 +66,7 @@ namespace Services.Debugger.Tooltips
 					node.IconImage =
 						new ResourceServiceImage(
 							!string.IsNullOrEmpty(tuple.Item1) ? tuple.Item1 : "Icons.16x16.Field");
-					node.Name = tuple.Item2;
+					node.FullName = tuple.Item2;
 					node.Text = tuple.Item3;
 					nodes.Add(node);
 				}
@@ -98,7 +98,7 @@ namespace Services.Debugger.Tooltips
 					pin.SavedNodes.Add(
 						new Tuple<string, string, string>(
 							"Icons.16x16.Field",
-							node.Name,
+							node.FullName,
 							node.Text));
 				}
 				

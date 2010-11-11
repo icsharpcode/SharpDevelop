@@ -56,6 +56,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			set { name = value; }
 		}
 		
+		public virtual string FullName {
+			get { return name; }
+			set { name = value; }
+		}
+		
 		public virtual string Text
 		{
 			get { return text; }

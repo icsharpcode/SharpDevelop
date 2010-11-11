@@ -19,9 +19,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	{
 		internal DebuggerTooltipControl contentControl;
 
-		public DebuggerPopup(DebuggerTooltipControl parentControl)
+		public DebuggerPopup(DebuggerTooltipControl parentControl, bool showPins = true)
 		{
-			this.contentControl = new DebuggerTooltipControl(parentControl);
+			this.contentControl = new DebuggerTooltipControl(parentControl, showPins);
 			this.contentControl.containingPopup = this;
 			this.Child = this.contentControl;
 			this.IsLeaf = false;

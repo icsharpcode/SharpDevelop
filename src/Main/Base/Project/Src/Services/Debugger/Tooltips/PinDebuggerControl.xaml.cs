@@ -7,9 +7,11 @@ using System.Security.Cryptography;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
@@ -19,8 +21,12 @@ namespace Services.Debugger.Tooltips
 {
 	public partial class PinDebuggerControl : UserControl
 	{
+		private const double ChildPopupOpenXOffet = 16;
+		private const double ChildPopupOpenYOffet = 15;
 		private const int InitialItemsCount = 12;
 		private const double MINIMUM_OPACITY = .3d;
+		
+		private DebuggerPopup childPopup;
 		
 		public PinDebuggerControl()
 		{
@@ -40,17 +46,25 @@ namespace Services.Debugger.Tooltips
 		
 		public PinBookmark Mark { get; set; }
 		
+		private LazyItemsControl<ITreeNode> lazyExpandersGrid;
 		private LazyItemsControl<ITreeNode> lazyGrid;
+		private LazyItemsControl<ITreeNode> lazyImagesGrid;
 
 		private IEnumerable<ITreeNode> itemsSource;
 		public IEnumerable<ITreeNode> ItemsSource
 		{
-			get { return this.itemsSource; }
 			set
 			{
-				this.itemsSource = value;
-				this.lazyGrid = new LazyItemsControl<ITreeNode>(this.dataGrid, InitialItemsCount);
-				lazyGrid.ItemsSource = new VirtualizingIEnumerable<ITreeNode>(value);
+				itemsSource = value;
+				var items = new VirtualizingIEnumerable<ITreeNode>(value);
+				lazyExpandersGrid = new LazyItemsControl<ITreeNode>(this.ExpandersGrid, InitialItemsCount);
+				lazyExpandersGrid.ItemsSource = items;
+				
+				lazyGrid = new LazyItemsControl<ITreeNode>(this.dataGrid, InitialItemsCount);
+				lazyGrid.ItemsSource = items;
+				
+				lazyImagesGrid = new LazyItemsControl<ITreeNode>(this.ImagesGrid, InitialItemsCount);
+				lazyImagesGrid.ItemsSource = items;
 			}
 		}
 		
@@ -66,6 +80,49 @@ namespace Services.Debugger.Tooltips
 		public void Close()
 		{
 			Unpin();
+		}
+		
+		private ToggleButton expandedButton;
+
+		/// <summary>
+		/// Closes the child popup of this control, if it exists.
+		/// </summary>
+		void CloseChildPopups()
+		{
+			if (this.expandedButton != null) {
+				this.expandedButton.IsChecked = false;
+				this.expandedButton = null;
+				// nice simple example of indirect recursion
+				this.childPopup.CloseSelfAndChildren();
+			}
+		}
+
+		void btnExpander_Click(object sender, RoutedEventArgs e)
+		{
+			var clickedButton = (ToggleButton)e.OriginalSource;
+			var clickedNode = (ITreeNode)clickedButton.DataContext;
+			// use device independent units, because child popup Left/Top are in independent units
+			Point buttonPos = clickedButton.PointToScreen(new Point(0, 0)).TransformFromDevice(clickedButton);
+
+			if (clickedButton.IsChecked.GetValueOrDefault(false)) {
+				CloseChildPopups();
+				this.expandedButton = clickedButton;
+
+				// open child Popup
+				if (this.childPopup == null) {
+					this.childPopup = new DebuggerPopup(null, false);
+					this.childPopup.PlacementTarget = this;
+					this.childPopup.Placement = PlacementMode.Absolute;
+				}
+				
+				this.childPopup.IsLeaf = true;
+				this.childPopup.HorizontalOffset = buttonPos.X + ChildPopupOpenXOffet;
+				this.childPopup.VerticalOffset = buttonPos.Y + ChildPopupOpenYOffet;
+				this.childPopup.ItemsSource = clickedNode.ChildNodes;
+				this.childPopup.Open();
+			} else {
+				CloseChildPopups();
+			}
 		}
 		
 		void PinCloseControl_Closed(object sender, EventArgs e)
@@ -169,6 +226,17 @@ namespace Services.Debugger.Tooltips
 			Opacity = MINIMUM_OPACITY;
 			Cursor = Cursors.IBeam;
 			base.OnMouseLeave(e);
+		}
+		
+		void RefreshContentImage_MouseDown(object sender, MouseButtonEventArgs e)
+		{
+			// refresh content			
+			ITreeNode node = ((Image)sender).DataContext as ITreeNode;
+			
+			if (!DebuggerService.IsDebuggerLoaded)
+				return;
+			
+			
 		}
 	}
 }

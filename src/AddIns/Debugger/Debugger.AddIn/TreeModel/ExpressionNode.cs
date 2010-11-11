@@ -7,8 +7,8 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Forms;
-
 using Debugger.AddIn.Visualizers;
 using Debugger.MetaData;
 using ICSharpCode.Core;
@@ -71,6 +71,55 @@ namespace Debugger.AddIn.TreeModel
 					base.Text = value;
 					NotifyPropertyChanged("Text");
 				}
+			}
+		}
+		
+		public override string FullName { 
+			get {
+				if (!evaluated) EvaluateExpression();
+				
+				if (expression is MemberReferenceExpression) {
+					var memberExpression = (MemberReferenceExpression)expression;
+					
+					Expression currentExpression = memberExpression;
+					Stack<string> stack = new Stack<string>();
+					while (currentExpression is MemberReferenceExpression)
+					{
+						var exp = (MemberReferenceExpression)currentExpression;
+						stack.Push(exp.MemberName);
+						stack.Push(".");
+						
+						currentExpression = exp.TargetObject;
+					}
+					
+					if (currentExpression is CastExpression) {
+						var castExpression = (CastExpression)currentExpression;		
+						currentExpression = castExpression.Expression;
+													
+						if (currentExpression is IdentifierExpression) {
+							var identifierExpression = (IdentifierExpression)castExpression.Expression;
+							stack.Push(identifierExpression.Identifier);
+						}
+						
+						while (currentExpression is MemberReferenceExpression)
+						{
+							var exp = (MemberReferenceExpression)currentExpression;
+							stack.Push(exp.MemberName);
+							stack.Push(".");
+							
+							currentExpression = exp.TargetObject;
+						}
+					}
+					
+					// create fullname
+					StringBuilder sb = new StringBuilder();
+					while(stack.Count > 0)
+						sb.Append(stack.Pop());
+							
+					return sb.ToString();
+				}
+				
+				return Name.Trim();
 			}
 		}
 		
@@ -284,6 +333,8 @@ namespace Debugger.AddIn.TreeModel
 		
 		public override bool SetText(string newText)
 		{
+			string fullName = FullName;
+			
 			Value val = null;
 			try {
 				val = this.Expression.Evaluate(WindowsDebugger.DebuggedProcess);

@@ -124,13 +124,13 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 					b.Append(pin.PopupPosition.X);
 					b.Append('|');
 					b.Append(pin.PopupPosition.Y);
-					b.Append('|');
-					
+										
 					//popup nodes
 					foreach(var node in pin.Nodes) {
+						b.Append('|');
 						b.Append(""); // image
 						b.Append('|');
-						b.Append(node.Name);
+						b.Append(node.FullName);
 						b.Append('|');
 						b.Append(node.Text);
 					}						
