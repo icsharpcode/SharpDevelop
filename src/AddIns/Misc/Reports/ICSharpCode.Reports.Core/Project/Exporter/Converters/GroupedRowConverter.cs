@@ -117,6 +117,18 @@ namespace ICSharpCode.Reports.Core.Exporter
 						}
 						while ( childNavigator.MoveNext());
 						
+						// GroupFooter
+						
+						var footers = BaseConverter.FindGroupFooter(section);
+						if (footers.Count > 0) {
+//							base.FireGroupHeaderRendering(groupedRows[0]);
+							Size rowSize = footers[0].Size;
+							base.CurrentPosition = ConvertStandardRow(exporterCollection,section,(ISimpleContainer)footers[0],defaultLeftPos,base.CurrentPosition);
+							footers[0].Size = rowSize;
+						}
+						
+						
+						
 						if (PageBreakAfterGroupChange(section) ) {
 							
 							if ( base.DataNavigator.HasMoreData)
@@ -177,7 +189,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			var retVal = Point.Empty;
 			var rowSize = Size.Empty;
 			ReportItemCollection groupCollection = null;
-			var groupedRows  = BaseConverter.FindGroups(section);
+			var groupedRows  = BaseConverter.FindGroupHeader(section);
 			if (groupedRows.Count == 0) {
 				groupCollection = section.Items.ExtractGroupedColumns();
 				base.DataNavigator.Fill(groupCollection);

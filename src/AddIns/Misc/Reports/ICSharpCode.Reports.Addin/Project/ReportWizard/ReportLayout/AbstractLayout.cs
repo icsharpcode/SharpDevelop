@@ -185,7 +185,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			ICSharpCode.Reports.Core.GroupFooter groupFooter = new ICSharpCode.Reports.Core.GroupFooter();
 			groupFooter.Location = footerLocation;
 			groupFooter.Size = new Size (300,30);
-//			groupFooter.Items.Add(dataItem);
 			return groupFooter;
 		}
 		

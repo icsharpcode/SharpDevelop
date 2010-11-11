@@ -140,7 +140,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected  bool PageBreakAfterGroupChange(ISimpleContainer container)
 		{
-			var groupedRows  = BaseConverter.FindGroups(container);
+			var groupedRows  = BaseConverter.FindGroupHeader(container);
 			if (groupedRows.Count > 0) {
 				var groupedRow = groupedRows[0];
 				return groupedRow.PageBreakOnGroupChange;
@@ -149,9 +149,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		protected static Collection<BaseGroupedRow> FindGroups (ISimpleContainer container)
+		protected static Collection<BaseGroupedRow> FindGroupHeader (ISimpleContainer container)
 		{
 			return new Collection<BaseGroupedRow>(container.Items.OfType<BaseGroupedRow>().ToList());
+		}
+		
+		
+		protected static Collection<GroupFooter> FindGroupFooter (ISimpleContainer container)
+		{
+			return new Collection<GroupFooter>(container.Items.OfType<GroupFooter>().ToList());
 		}
 		
 		
