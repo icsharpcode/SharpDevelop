@@ -26,12 +26,14 @@ namespace Services.Debugger.Tooltips
 		{
 			InitializeComponent();
 			
+			if (!DebuggerService.IsDebuggerLoaded)
+				Opacity = MINIMUM_OPACITY;
+			
 			Loaded += OnLoaded;
 			this.PinCloseControl.Closed += PinCloseControl_Closed;
 			this.PinCloseControl.ShowingComment += PinCloseControl_ShowingComment;
 			this.PinCloseControl.PinningChanged += PinCloseControl_PinningChanged;
 			BookmarkManager.Removed += BookmarkManager_Removed;
-			this.Tag = GenerateId();
 		}
 		
 		#region Properties
@@ -64,15 +66,6 @@ namespace Services.Debugger.Tooltips
 		public void Close()
 		{
 			Unpin();
-		}
-
-		private Guid GenerateId()
-		{
-			RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-			byte[] data = new byte[16];
-			rng.GetBytes(data);
-			
-			return new Guid(data);
 		}
 		
 		void PinCloseControl_Closed(object sender, EventArgs e)
