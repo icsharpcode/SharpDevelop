@@ -1,7 +1,9 @@
 <UserControl x:Class="Services.Debugger.Tooltips.PinDebuggerControl"
-	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:local="clr-namespace:Services.Debugger.Tooltips"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:local="clr-namespace:Services.Debugger.Tooltips"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	
+>
 	<UserControl.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -11,86 +13,87 @@
 		</ResourceDictionary>
 	</UserControl.Resources>
 	<Grid>
+		<Grid.Resources>
+			<Style x:Key="CellStyle"
+			       TargetType="{x:Type DataGridCell}">
+				<Setter
+					Property="Focusable"
+					Value="false" />
+				<!-- Focusable=true blocks shortcuts if cell is focused -->
+				<Setter
+					Property="BorderThickness"
+					Value="0" />
+				<Style.Triggers>
+					<Trigger
+						Property="IsSelected"
+						Value="True">
+						<!-- disable selection highlight -->
+						<Setter
+							Property="Foreground"
+							Value="Black" />
+						<Setter
+							Property="Background"
+							Value="{x:Null}" />
+					</Trigger>
+				</Style.Triggers>
+			</Style>
+			
+			<Style x:Key="RowStyle"
+			       TargetType="{x:Type DataGridRow}">
+				<Setter
+					Property="Background"
+					Value="Transparent"></Setter>
+				<Style.Triggers>
+					<Trigger
+						Property="IsMouseOver"
+						Value="True">
+						<Setter
+							Property="Background"
+							Value="#FFE2F6FE" />
+					</Trigger>
+				</Style.Triggers>
+			</Style>
+			
+			<Style x:Key="DataGridStyle" TargetType="DataGrid">
+				<Setter Property="IsEnabled" Value="False"/>
+				<Setter Property="Focusable" Value="False"/>
+				<Setter Property="VerticalScrollBarVisibility" Value="Disabled"/>
+				<Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
+				<Setter Property="GridLinesVisibility" Value="None"/>
+				<Setter Property="RowHeight" Value="18"/>
+				<Setter Property="MaxHeight" Value="202"/>
+				<Setter Property="MinWidth" Value="100"/>
+				<Setter Property="MinHeight" Value="20" />
+				<Setter Property="SelectionMode" Value="Single"/>
+				<Setter Property="SelectionUnit" Value="FullRow"/>
+				<Setter Property="AutoGenerateColumns" Value="False"/>
+				<Setter Property="CanUserAddRows" Value="False"/>
+				<Setter Property="HeadersVisibility" Value="None"/>
+				<Setter Property="BorderBrush" Value="Gray"/>
+				<Setter Property="BorderThickness" Value="1"/>
+				<Setter Property="CellStyle" Value="{StaticResource CellStyle}"/>
+				<Setter Property="RowStyle" Value="{StaticResource RowStyle}"/>
+				<Style.Triggers>
+					<Trigger Property="IsEnabled" Value="False">
+						<Setter Property="Foreground" Value="Black"/>
+						<Setter Property="Background" Value="#FFE2F6FE"/>
+					</Trigger>
+					<Trigger Property="IsMouseOver" Value="True">
+						<Setter Property="Cursor" Value="Arrow"/>
+					</Trigger>
+				</Style.Triggers>
+			</Style>
+		</Grid.Resources>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="Auto"/>
 			<ColumnDefinition Width="Auto"/>
 		</Grid.ColumnDefinitions>
 		<StackPanel>
 			<DataGrid
-				VerticalScrollBarVisibility="Disabled"
-				HorizontalScrollBarVisibility="Disabled"
-				GridLinesVisibility="None"
-				RowHeight="18"
-				MaxHeight="202"
-				SelectionMode="Single"
-				SelectionUnit="FullRow"
+				Style="{StaticResource DataGridStyle}"
 				ItemsSource="{Binding}"
 				Name="dataGrid"
-				AutoGenerateColumns="False"
-				CanUserAddRows="False"
-				HeadersVisibility="None"
-				BorderBrush="Gray"
-				BorderThickness="1">
-				<DataGrid.Background>
-					<!-- Control backgound -->
-					<LinearGradientBrush
-						StartPoint="0,-0.03"
-						EndPoint="0,1">
-						<GradientStop
-							Color="White" />
-						<GradientStop
-							Color="#FFFAFCFE"
-							Offset="0.983" />
-						<GradientStop
-							Color="#FFECF7FC"
-							Offset="0.07" />
-						<GradientStop
-							Color="#FFEEF7FA"
-							Offset="0.436" />
-					</LinearGradientBrush>
-				</DataGrid.Background>
-				<DataGrid.RowStyle>
-					<Style
-						TargetType="{x:Type DataGridRow}">
-						<Setter
-							Property="Background"
-							Value="Transparent"></Setter>
-						<Style.Triggers>
-							<Trigger
-								Property="IsMouseOver"
-								Value="True">
-								<Setter
-									Property="Background"
-									Value="#FFE2F6FE" />
-							</Trigger>
-						</Style.Triggers>
-					</Style>
-				</DataGrid.RowStyle>
-				<DataGrid.CellStyle>
-					<Style
-						TargetType="{x:Type DataGridCell}">
-						<Setter
-							Property="Focusable"
-							Value="false" />
-						<!-- Focusable=true blocks shortcuts if cell is focused -->
-						<Setter
-							Property="BorderThickness"
-							Value="0" />
-						<Style.Triggers>
-							<Trigger
-								Property="IsSelected"
-								Value="True">
-								<!-- disable selection highlight -->
-								<Setter
-									Property="Foreground"
-									Value="Black" />
-								<Setter
-									Property="Background"
-									Value="{x:Null}" />
-							</Trigger>
-						</Style.Triggers>
-					</Style>
-				</DataGrid.CellStyle>
+			>
 				<DataGrid.Columns>
 					<!-- Icon -->
 					<DataGridTemplateColumn>
@@ -118,7 +121,7 @@
 							</DataTemplate>
 						</DataGridTemplateColumn.CellTemplate>
 					</DataGridTemplateColumn>
-
+					
 					<DataGridTemplateColumn
 						MinWidth="20"
 						Header="Text">
@@ -135,12 +138,12 @@
 					</DataGridTemplateColumn>
 				</DataGrid.Columns>
 			</DataGrid>
-		<!--	comment textbox	-->
-		<Border
+			<!--	comment textbox	-->
+			<Border
 				Name="BorderComment"
 				Background="White"
 				BorderThickness="1,0,1,1"
-				BorderBrush="Black"
+				BorderBrush="Gray"
 				Height="0"
 				MaxHeight="50">
 				<TextBox
@@ -149,8 +152,9 @@
 					Margin="3"/>
 			</Border>
 		</StackPanel>
-
-		<local:PinCloseControl 
+		
+		<local:PinCloseControl
+			
 			VerticalAlignment="Center"
 			Background="Transparent"
 			Grid.Column="1"
@@ -164,6 +168,6 @@
 					Opacity="0.5"/>
 			</local:PinCloseControl.Effect>
 		</local:PinCloseControl>
-
+	
 	</Grid>
 </UserControl>
