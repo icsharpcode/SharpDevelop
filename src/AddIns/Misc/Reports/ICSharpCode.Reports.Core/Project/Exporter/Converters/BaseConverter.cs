@@ -128,6 +128,17 @@ namespace ICSharpCode.Reports.Core.Exporter
 	
 		#region Grouping
 		
+		protected void ConvertGroupFooter (BaseSection section,ISimpleContainer container,ExporterCollection exporterCollection,int left)
+		{
+			var footers = BaseConverter.FindGroupFooter(container);
+			if (footers.Count > 0) {
+//							base.FireGroupHeaderRendering(groupedRows[0]);
+				Size rowSize = footers[0].Size;
+				CurrentPosition = ConvertStandardRow(exporterCollection,section,(ISimpleContainer)footers[0],left,CurrentPosition);
+				footers[0].Size = rowSize;
+			}
+		}
+		
 		protected Point ConvertGroupChilds(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer, int defaultLeftPos, Point currentPosition)
 		{
 			PrepareContainerForConverting(section,simpleContainer);
@@ -138,7 +149,20 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		protected  bool PageBreakAfterGroupChange(ISimpleContainer container)
+		protected void ExPageBreakAfterGroupChange(BaseSection section,ISimpleContainer container,ExporterCollection exporterCollection)
+		{
+			
+			if (PageBreakAfterGroupChange(section) ) {
+				
+				if (DataNavigator.HasMoreData)
+				{
+					CurrentPosition = ForcePageBreak (exporterCollection,section);
+				}
+			}
+		}
+		
+		
+		private  bool PageBreakAfterGroupChange(ISimpleContainer container)
 		{
 			var groupedRows  = BaseConverter.FindGroupHeader(container);
 			if (groupedRows.Count > 0) {

@@ -118,24 +118,17 @@ namespace ICSharpCode.Reports.Core.Exporter
 						while ( childNavigator.MoveNext());
 						
 						// GroupFooter
+						base.ConvertGroupFooter(section,section,exporterCollection,defaultLeftPos);
 						
-						var footers = BaseConverter.FindGroupFooter(section);
-						if (footers.Count > 0) {
-//							base.FireGroupHeaderRendering(groupedRows[0]);
-							Size rowSize = footers[0].Size;
-							base.CurrentPosition = ConvertStandardRow(exporterCollection,section,(ISimpleContainer)footers[0],defaultLeftPos,base.CurrentPosition);
-							footers[0].Size = rowSize;
-						}
+						base.ExPageBreakAfterGroupChange(section,section,exporterCollection);
 						
-						
-						
-						if (PageBreakAfterGroupChange(section) ) {
-							
-							if ( base.DataNavigator.HasMoreData)
-							{
-								base.CurrentPosition = ForcePageBreak (exporterCollection,section);
-							}
-						}
+//						if (PageBreakAfterGroupChange(section) ) {
+//							
+//							if ( base.DataNavigator.HasMoreData)
+//							{
+//								base.CurrentPosition = ForcePageBreak (exporterCollection,section);
+//							}
+//						}
 						
 						base.Evaluator.SinglePage.IDataNavigator = base.DataNavigator;
 					}
