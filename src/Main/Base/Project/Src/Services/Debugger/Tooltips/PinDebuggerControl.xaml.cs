@@ -71,6 +71,9 @@ namespace Services.Debugger.Tooltips
 			}
 		}
 		
+		/// <summary>
+		/// Relative position of the pin with respect to the screen.
+		/// </summary>
 		public Point Location { get; set; }
 		
 		#endregion

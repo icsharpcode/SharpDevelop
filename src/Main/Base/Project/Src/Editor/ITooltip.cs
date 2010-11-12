@@ -37,12 +37,6 @@ namespace ICSharpCode.SharpDevelop.Editor
 		bool Close(bool mouseClick);
 		
 		/// <summary>
-		/// Sets the source.
-		/// </summary>
-		/// <param name="source">The source.</param>
-		void SetItemsSource(IEnumerable<ITreeNode> source);
-		
-		/// <summary>
 		/// Occurs when this tooltip decides to close.
 		/// </summary>
 		event RoutedEventHandler Closed;

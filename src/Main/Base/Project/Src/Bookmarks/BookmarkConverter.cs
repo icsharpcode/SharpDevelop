@@ -56,12 +56,11 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 					case "PinBookmark":
 						var pin = new PinBookmark(fileName, new Location(columnNumber, lineNumber));
 						pin.Comment = v[4];
-						// pop-up position
-						pin.PopupPosition = 
+						pin.PinPosition = 
 							new Point
 							{ 
-								X = int.Parse(v[5], culture),
-								Y = int.Parse(v[6], culture)
+								X = double.Parse(v[5], culture),
+								Y = double.Parse(v[6], culture)
 							};
 								
 						// pop-up nodes
@@ -121,9 +120,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 					
 					// popup position
 					b.Append('|');
-					b.Append(pin.PopupPosition.X);
+					b.Append(pin.PinPosition.Value.X);
 					b.Append('|');
-					b.Append(pin.PopupPosition.Y);
+					b.Append(pin.PinPosition.Value.Y);
 										
 					//popup nodes
 					foreach(var node in pin.Nodes) {

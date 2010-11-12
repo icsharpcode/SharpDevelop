@@ -58,7 +58,6 @@ namespace Services.Debugger.Tooltips
 				var pin = (PinBookmark)bookmark;
 				pin.Popup = new PinDebuggerControl();
 				pin.Popup.Mark = pin;
-				pin.Popup.Location = pin.PopupPosition;
 				
 				var nodes = new ObservableCollection<ITreeNode>();
 				foreach (var tuple in pin.SavedNodes) {
@@ -88,7 +87,8 @@ namespace Services.Debugger.Tooltips
 			
 			foreach (var bookmark in pins) {
 				var pin = (PinBookmark)bookmark;
-				pin.PopupPosition = pin.Popup.Location;
+				if (!pin.PinPosition.HasValue)
+					pin.PinPosition = pin.Popup.Location;
 				
 				// nodes
 				if (pin.SavedNodes == null)

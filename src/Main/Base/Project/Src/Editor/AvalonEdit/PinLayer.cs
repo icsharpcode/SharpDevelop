@@ -46,8 +46,28 @@ namespace Editor.AvalonEdit
 				throw new NullReferenceException("Element is null!");
 			
 			Thumb currentThumb = new Thumb();
-			Canvas.SetTop(currentThumb, element.Location.Y);
-			Canvas.SetLeft(currentThumb, element.Location.X);
+			// check for saved position
+			if (!element.Mark.PinPosition.HasValue) {
+				// this is satisfied when pinning the first time
+				element.Mark.PinPosition = new Point {
+					X = element.Location.X + textView.HorizontalOffset,
+					Y = element.Location.Y + textView.VerticalOffset
+				};
+				
+				Canvas.SetTop(currentThumb, element.Location.Y);
+				Canvas.SetLeft(currentThumb, element.Location.X);
+			}
+			else {
+				// this is satisfied when loading the pins - so we might have hidden pins
+				element.Location = new Point {
+					X = element.Mark.PinPosition.Value.X - textView.HorizontalOffset,
+					Y = element.Mark.PinPosition.Value.Y - textView.VerticalOffset
+				};				
+				
+				Canvas.SetTop(currentThumb, element.Mark.PinPosition.Value.Y);
+				Canvas.SetLeft(currentThumb, element.Mark.PinPosition.Value.X);
+			}
+				
 			currentThumb.Style = element.TryFindResource("PinThumbStyle") as Style;
 			currentThumb.ApplyTemplate();
 			currentThumb.DragDelta += onDragDelta;
@@ -85,6 +105,7 @@ namespace Editor.AvalonEdit
 				PinDebuggerControl pinControl = TryFindChild<PinDebuggerControl>(currentThumb);
 				if (pinControl != null)
 				{
+					// update relative location
 					Point location = pinControl.Location;
 					location.X -= textView.HorizontalOffset;
 					location.Y += verticalOffset - textView.VerticalOffset;
@@ -93,7 +114,10 @@ namespace Editor.AvalonEdit
 					Canvas.SetTop(currentThumb, location.Y);
 					
 					pinControl.Location = location;
-					pinControl.Mark.PopupPosition = location;
+					pinControl.Mark.PinPosition = new Point {
+						X = location.X + textView.HorizontalOffset,
+						Y = location.Y + textView.VerticalOffset,
+					};
 				}
 			}
 			
@@ -124,7 +148,14 @@ namespace Editor.AvalonEdit
 				double top = Canvas.GetTop(currnetThumb);
 				pinControl.Opacity = 1d;
 				pinControl.Location = new Point { X = left, Y = top };
-				pinControl.Mark.PopupPosition = pinControl.Location;
+				
+				// pin's position is with respect to the layer.
+				pinControl.Mark.PinPosition =
+					new Point
+					{
+						X = textView.HorizontalOffset + left,
+						Y = textView.VerticalOffset + top
+					};
 			}
 		}
 

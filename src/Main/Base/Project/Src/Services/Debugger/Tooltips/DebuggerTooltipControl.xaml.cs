@@ -4,11 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -54,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		public DebuggerTooltipControl(IEnumerable<ITreeNode> nodes)
 			: this()
 		{
-			this.itemsSource = nodes;
+			this.ItemsSource = nodes;
 		}
 
 		public DebuggerTooltipControl(DebuggerTooltipControl parentControl, bool showPins = true)
@@ -66,28 +64,9 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		private void OnLoaded(object sender, RoutedEventArgs e)
 		{
-			if (showPins) {
-				ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
-				var editor = provider.TextEditor;
-				if (editor == null) return;
-				
-				// verify if at the line of the root there's a pin bookmark
-				var pin = BookmarkManager.Bookmarks.Find(
-					b => b is PinBookmark &&
-					b.Location.Line == LogicalPosition.Line &&
-					b.FileName == editor.FileName) as PinBookmark;
-				
-				if (pin != null) {
-					foreach (var node in this.itemsSource) {
-						if (pin.ContainsNode(node))
-							node.IsPinned = true;
-					}
-				}
-			}
-			else {
+			if (!showPins) {
 				dataGrid.Columns[5].Visibility = Visibility.Collapsed;
 			}
-			SetItemsSource(this.itemsSource);
 		}
 
 		public event RoutedEventHandler Closed;
@@ -100,19 +79,40 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		public IEnumerable<ITreeNode> ItemsSource {
 			get { return this.itemsSource; }
-		}
-		
-		public void SetItemsSource(IEnumerable<ITreeNode> source)
-		{
-			this.itemsSource = source;
-			this.lazyGrid = new LazyItemsControl<ITreeNode>(this.dataGrid, InitialItemsCount);
-			lazyGrid.ItemsSource = new VirtualizingIEnumerable<ITreeNode>(source);
-			this.dataGrid.AddHandler(ScrollViewer.ScrollChangedEvent, new ScrollChangedEventHandler(handleScroll));
+			set{
+				this.itemsSource = value;
+				this.lazyGrid = new LazyItemsControl<ITreeNode>(this.dataGrid, InitialItemsCount);
+				
+				// HACK for updating the pinns in tooltip
+				var observable = new List<ITreeNode>();
+				this.itemsSource.ForEach(item => observable.Add(item));
+				
+				// verify if at the line of the root there's a pin bookmark
+				ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveViewContent as ITextEditorProvider;
+				var editor = provider.TextEditor;
+				if (editor != null) {
+					var pin = BookmarkManager.Bookmarks.Find(
+						b => b is PinBookmark &&
+						b.Location.Line == LogicalPosition.Line &&
+						b.FileName == editor.FileName) as PinBookmark;
+					
+					if (pin != null) {					
+						observable.ForEach(item => { // TODO: find a way not to use "observable"
+						                   	if (pin.ContainsNode(item))
+						                   	    item.IsPinned = true;
+						                   	});
+					}
+				}
+				
+				var source = new VirtualizingIEnumerable<ITreeNode>(observable);
+				lazyGrid.ItemsSource = source;
+				this.dataGrid.AddHandler(ScrollViewer.ScrollChangedEvent, new ScrollChangedEventHandler(handleScroll));
 
-			if (this.lazyGrid.ItemsSourceTotalCount != null) {
-				// hide up/down buttons if too few items
-				btnUp.Visibility = btnDown.Visibility =
-					this.lazyGrid.ItemsSourceTotalCount.Value <= VisibleItemsCount ? Visibility.Collapsed : Visibility.Visible;
+				if (this.lazyGrid.ItemsSourceTotalCount != null) {
+					// hide up/down buttons if too few items
+					btnUp.Visibility = btnDown.Visibility =
+						this.lazyGrid.ItemsSourceTotalCount.Value <= VisibleItemsCount ? Visibility.Collapsed : Visibility.Visible;
+				}
 			}
 		}
 		

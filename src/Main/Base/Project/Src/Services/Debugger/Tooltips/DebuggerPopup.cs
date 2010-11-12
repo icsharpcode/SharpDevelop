@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		public IEnumerable<ITreeNode> ItemsSource
 		{
 			get { return this.contentControl.ItemsSource; }
-			set { this.contentControl.SetItemsSource(value); }
+			set { this.contentControl.ItemsSource = value; }
 		}
 
 		private bool isLeaf;

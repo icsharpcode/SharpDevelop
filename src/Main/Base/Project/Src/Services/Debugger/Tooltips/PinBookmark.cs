@@ -29,8 +29,14 @@ namespace Services.Debugger.Tooltips
 			IsVisibleInBookmarkPad = false;
 		}
 		
-		public Point PopupPosition { get; set; }		
+		/// <summary>
+		/// Pin's position relative to the layer BUT ABSOLUTE TO THE SCREEN.
+		/// </summary>
+		public Nullable<Point> PinPosition { get; set; }		
 		
+		/// <summary>
+		/// Nodes inside the pin control.
+		/// </summary>
 		public ObservableCollection<ITreeNode> Nodes { get; set; }
 		
 		/// <summary>
