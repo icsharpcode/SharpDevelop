@@ -93,8 +93,10 @@ namespace ICSharpCode.VBNetBinding
 					
 					result = ef.FindExpression(editor.Document.Text, index);
 					LoggingService.Debug("CC: After dot, result=" + result + ", context=" + result.Context);
-					ShowCompletion(result, editor, ch);
-					return CodeCompletionKeyPressResult.Completed;
+					if (ShowCompletion(result, editor, ch))
+						return CodeCompletionKeyPressResult.Completed;
+					else
+						return CodeCompletionKeyPressResult.None;
 				case '@':
 					if (editor.Caret.Offset > 0 && editor.Document.GetCharAt(editor.Caret.Offset - 1) == '.')
 						return CodeCompletionKeyPressResult.None;
@@ -172,11 +174,12 @@ namespace ICSharpCode.VBNetBinding
 			return false;
 		}
 
-		static void ShowCompletion(ExpressionResult result, ITextEditor editor, char ch)
+		static bool ShowCompletion(ExpressionResult result, ITextEditor editor, char ch)
 		{
 			VBNetCompletionItemList list = CompletionDataHelper.GenerateCompletionData(result, editor, ch);
 			list.Editor = editor;
 			list.Window = editor.ShowCompletionWindow(list);
+			return list.Items.Any();
 		}
 		
 		#region Helpers

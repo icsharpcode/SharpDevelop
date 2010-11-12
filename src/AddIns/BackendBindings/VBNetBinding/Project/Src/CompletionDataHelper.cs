@@ -65,10 +65,10 @@ namespace ICSharpCode.VBNetBinding
 							rr = new MemberResolveResult(rr.CallingClass, rr.CallingMember, singleMethod);
 					}
 					
-					data = rr.GetCompletionData(info.CompilationUnit.ProjectContent, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces)
-						?? new NRefactoryResolver(LanguageProperties.VBNet)
-						.CtrlSpace(editor.Caret.Line, editor.Caret.Column, info, editor.Document.Text,
-						           expressionResult.Context, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces);
+					if (rr is IntegerLiteralResolveResult && pressedKey == '.')
+						return result;
+					
+					data = rr.GetCompletionData(info.CompilationUnit.ProjectContent, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces) ?? new List<ICompletionEntry>();
 					
 					resolvedType = rr.ResolvedType;
 				}
