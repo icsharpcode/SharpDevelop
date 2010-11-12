@@ -1617,5 +1617,41 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		#endregion
+		
+		#region ResolveSizeOf
+		/// <summary>
+		/// Resolves 'sizeof(type)'.
+		/// </summary>
+		public ResolveResult ResolveSizeOf(IType type)
+		{
+			IType int32 = TypeCode.Int32.ToTypeReference().Resolve(context);
+			int size;
+			switch (ReflectionHelper.GetTypeCode(type)) {
+				case TypeCode.Boolean:
+				case TypeCode.SByte:
+				case TypeCode.Byte:
+					size = 1;
+					break;
+				case TypeCode.Char:
+				case TypeCode.Int16:
+				case TypeCode.UInt16:
+					size = 2;
+					break;
+				case TypeCode.Int32:
+				case TypeCode.UInt32:
+				case TypeCode.Single:
+					size = 4;
+					break;
+				case TypeCode.Int64:
+				case TypeCode.UInt64:
+				case TypeCode.Double:
+					size = 8;
+					break;
+				default:
+					return new ResolveResult(int32);
+			}
+			return new ConstantResolveResult(int32, size);
+		}
+		#endregion
 	}
 }
