@@ -260,7 +260,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// C# 4.0 spec: §7.6.9 Postfix increment and decrement operators
 					// C# 4.0 spec: §7.7.5 Prefix increment and decrement operators
 					TypeCode code = ReflectionHelper.GetTypeCode(type);
-					if ((code >= TypeCode.SByte && code <= TypeCode.Decimal) || type.IsEnum())
+					if ((code >= TypeCode.SByte && code <= TypeCode.Decimal) || type.IsEnum() || type is PointerType)
 						return new ResolveResult(expression.Type);
 					else
 						return new ErrorResolveResult(expression.Type);
@@ -550,6 +550,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						} else if (rhsType.IsDelegate() && conversions.ImplicitConversion(lhsType, rhsType)) {
 							return new ResolveResult(rhsType);
 						}
+						if (lhsType is PointerType && IsInteger(ReflectionHelper.GetTypeCode(rhsType))) {
+							return new ResolveResult(lhsType);
+						} else if (rhsType is PointerType && IsInteger(ReflectionHelper.GetTypeCode(lhsType))) {
+							return new ResolveResult(rhsType);
+						}
 						if (lhsType == SharedTypes.Null && rhsType == SharedTypes.Null)
 							return new ErrorResolveResult(SharedTypes.Null);
 					}
@@ -572,6 +577,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							return new ResolveResult(lhsType);
 						} else if (rhsType.IsDelegate() && conversions.ImplicitConversion(lhsType, rhsType)) {
 							return new ResolveResult(rhsType);
+						}
+						if (lhsType is PointerType && IsInteger(ReflectionHelper.GetTypeCode(rhsType))) {
+							return new ResolveResult(lhsType);
+						} else if (lhsType is PointerType && lhsType.Equals(rhsType)) {
+							return new ResolveResult(TypeCode.Int64.ToTypeReference().Resolve(context));
 						}
 						if (lhsType == SharedTypes.Null && rhsType == SharedTypes.Null)
 							return new ErrorResolveResult(SharedTypes.Null);
@@ -597,6 +607,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						} else if (rhsType.IsEnum() && conversions.ImplicitConversion(lhs, rhs.Type)) {
 							// bool operator op(E x, E y);
 							return HandleEnumComparison(op, rhsType, isNullable, lhs, rhs);
+						} else if (lhsType is PointerType && rhsType is PointerType) {
+							return new ResolveResult(TypeCode.Boolean.ToTypeReference().Resolve(context));
 						}
 						switch (op) {
 							case BinaryOperatorType.Equality:
@@ -813,6 +825,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				default:
 					return false;
 			}
+		}
+		
+		static bool IsInteger(TypeCode code)
+		{
+			return code >= TypeCode.SByte && code <= TypeCode.UInt64;
 		}
 		
 		ResolveResult CastTo(TypeCode targetType, bool isNullable, ResolveResult expression, bool allowNullableConstants)

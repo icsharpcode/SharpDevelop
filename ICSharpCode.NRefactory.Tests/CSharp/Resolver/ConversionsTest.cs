@@ -14,7 +14,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	using dynamic = ICSharpCode.NRefactory.TypeSystem.ReflectionHelper.Dynamic;
 	
 	[TestFixture]
-	public class ConversionsTest
+	public unsafe class ConversionsTest
 	{
 		IProjectContent mscorlib = CecilLoaderTests.Mscorlib;
 		Conversions conversions = new Conversions(CecilLoaderTests.Mscorlib);
@@ -178,6 +178,27 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.IsTrue(ImplicitConversion(typeof(Func<IEnumerable, IList>), typeof(Func<ICollection, ICollection>)));
 			Assert.IsFalse(ImplicitConversion(typeof(Func<ICollection, ICollection>), typeof(Func<IEnumerable, IList>)));
 			Assert.IsFalse(ImplicitConversion(typeof(Func<IList, IEnumerable>), typeof(Func<ICollection, ICollection>)));
+		}
+		
+		[Test]
+		public void PointerConversion()
+		{
+			Assert.IsTrue(ImplicitConversion(typeof(Null), typeof(int*)));
+			Assert.IsTrue(ImplicitConversion(typeof(int*), typeof(void*)));
+		}
+		
+		[Test]
+		public void NoConversionFromPointerTypeToObject()
+		{
+			Assert.IsFalse(ImplicitConversion(typeof(int*), typeof(object)));
+			Assert.IsFalse(ImplicitConversion(typeof(int*), typeof(dynamic)));
+		}
+		
+		[Test, Ignore]
+		public void TypeParameterConversions()
+		{
+			// TODO: write tests for conversions of type parameters
+			throw new NotImplementedException();
 		}
 		
 		bool IntegerLiteralConversion(object value, Type to)

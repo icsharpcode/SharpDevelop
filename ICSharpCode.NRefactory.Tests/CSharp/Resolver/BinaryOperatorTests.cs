@@ -11,7 +11,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	using dynamic = ICSharpCode.NRefactory.TypeSystem.ReflectionHelper.Dynamic;
 	
 	[TestFixture]
-	public class BinaryOperatorTests : ResolverTestBase
+	public unsafe class BinaryOperatorTests : ResolverTestBase
 	{
 		[Test]
 		public void Multiplication()
@@ -85,6 +85,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			AssertType(typeof(int?), resolver.ResolveBinaryOperator(
 				BinaryOperatorType.Add, MakeConstant(1), MakeConstant(null)));
+			
+			AssertType(typeof(int*), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Add, MakeResult(typeof(int*)), MakeConstant(1)));
+			
+			AssertType(typeof(byte*), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Add, MakeResult(typeof(long)), MakeResult(typeof(byte*))));
 		}
 		
 		[Test]
@@ -135,6 +141,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			Assert.IsTrue(resolver.ResolveBinaryOperator(
 				BinaryOperatorType.Subtract, MakeResult(typeof(int?)), MakeResult(typeof(StringComparison))).IsError);
+			
+			AssertType(typeof(byte*), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Subtract, MakeResult(typeof(byte*)), MakeResult(typeof(uint))));
+			
+			AssertType(typeof(long), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Subtract, MakeResult(typeof(byte*)), MakeResult(typeof(byte*))));
 		}
 		
 		[Test]
@@ -191,6 +203,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			AssertConstant(false, resolver.ResolveBinaryOperator(
 				BinaryOperatorType.Equality, MakeConstant(null), MakeConstant('a')));
+			
+			AssertType(typeof(bool), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.Equality, MakeResult(typeof(int*)), MakeResult(typeof(uint*))));
 		}
 		
 		[Test]
@@ -231,6 +246,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			AssertConstant(true, resolver.ResolveBinaryOperator(
 				BinaryOperatorType.InEquality, MakeConstant(null), MakeConstant('a')));
+			
+			AssertType(typeof(bool), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.InEquality, MakeResult(typeof(int*)), MakeResult(typeof(uint*))));
 		}
 		
 		[Test]
@@ -244,6 +262,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			Assert.IsFalse(resolver.ResolveBinaryOperator(
 				BinaryOperatorType.Equality, MakeConstant(StringComparison.Ordinal), MakeConstant(1)).IsCompileTimeConstant);
+		}
+		
+		[Test]
+		public void RelationalOperators()
+		{
+			AssertConstant(false, resolver.ResolveBinaryOperator(
+				BinaryOperatorType.LessThan, MakeConstant(0), MakeConstant(0)));
+			
+			AssertType(typeof(bool), resolver.ResolveBinaryOperator(
+				BinaryOperatorType.LessThan, MakeResult(typeof(int*)), MakeResult(typeof(uint*))));
 		}
 		
 		[Test]

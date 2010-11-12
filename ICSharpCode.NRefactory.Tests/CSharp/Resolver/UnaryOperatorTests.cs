@@ -40,6 +40,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			AssertType(typeof(TypeCode?), resolver.ResolveUnaryOperator(UnaryOperatorType.PostIncrement, MakeResult(typeof(TypeCode?))));
 			AssertType(typeof(dynamic), resolver.ResolveUnaryOperator(UnaryOperatorType.PostIncrement, MakeResult(typeof(dynamic))));
 			AssertError(typeof(object), resolver.ResolveUnaryOperator(UnaryOperatorType.Increment, MakeResult(typeof(object))));
+			
+			AssertType(typeof(int*), resolver.ResolveUnaryOperator(UnaryOperatorType.Increment, MakeResult(typeof(int*))));
+			AssertType(typeof(uint*), resolver.ResolveUnaryOperator(UnaryOperatorType.PostDecrement, MakeResult(typeof(uint*))));
 		}
 		
 		[Test]

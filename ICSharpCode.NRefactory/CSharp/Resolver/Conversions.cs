@@ -56,6 +56,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return true;
 			if (ImplicitDynamicConversion(fromType, toType))
 				return true;
+			if (ImplicitPointerConversion(fromType, toType))
+				return true;
 			return false;
 		}
 		#endregion
@@ -298,6 +300,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						return val >= 0;
 				}
 			}
+			return false;
+		}
+		#endregion
+		
+		#region ImplicitPointerConversion
+		bool ImplicitPointerConversion(IType fromType, IType toType)
+		{
+			// C# 4.0 spec: §18.4 Pointer conversions
+			if (fromType is PointerType && toType is PointerType && toType.ReflectionName == "System.Void*")
+				return true;
+			if (fromType == SharedTypes.Null && toType is PointerType)
+				return true;
 			return false;
 		}
 		#endregion
