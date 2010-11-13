@@ -52,6 +52,10 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		
 		static string FindSHFB()
 		{
+			string envVar = Environment.GetEnvironmentVariable("SHFBROOT");
+			if (!string.IsNullOrEmpty(envVar)) {
+				return Path.Combine(envVar, "SandcastleBuilderGUI.exe");
+			}
 			foreach (string registryKey in registryKeys) {
 				string fileName = FindSHFB(registryKey);
 				if (fileName != null) {
