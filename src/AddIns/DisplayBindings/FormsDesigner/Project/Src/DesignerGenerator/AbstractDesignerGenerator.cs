@@ -474,7 +474,7 @@ namespace ICSharpCode.FormsDesigner
 			LoggingService.Debug("Forms designer: AbstractDesignerGenerator.InsertComponentEvent: eventMethodName=" + eventMethodName);
 			
 			foreach (IMethod method in completeClass.Methods) {
-				if (method.Name == eventMethodName) {
+				if (CompareMethodNames(method.Name, eventMethodName)) {
 					file = method.DeclaringType.CompilationUnit.FileName;
 					OpenedFile openedFile = FileService.GetOpenedFile(file);
 					IDocument doc;
@@ -511,6 +511,11 @@ namespace ICSharpCode.FormsDesigner
 			this.viewContent.PrimaryFile.MakeDirty();
 			
 			return true;
+		}
+		
+		protected virtual bool CompareMethodNames(string strA, string strB)
+		{
+			return strA == strB;
 		}
 		
 		/// <summary>
