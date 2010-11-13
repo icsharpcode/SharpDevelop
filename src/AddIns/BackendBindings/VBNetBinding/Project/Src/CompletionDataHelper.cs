@@ -37,7 +37,7 @@ namespace ICSharpCode.VBNetBinding
 				if (expressionResult.Context == ExpressionContext.Importable
 				    && string.IsNullOrWhiteSpace(expressionResult.Expression)) {
 					expressionResult.Expression = "Global";
-				} else if (pressedKey != '.') {
+				} else if (pressedKey == '\0') {
 					int idx = string.IsNullOrWhiteSpace(expressionResult.Expression)
 						? -1
 						: expressionResult.Expression.LastIndexOf('.');
