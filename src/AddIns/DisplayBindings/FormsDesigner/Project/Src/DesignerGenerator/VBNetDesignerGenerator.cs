@@ -70,7 +70,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected override bool CompareMethodNames(string strA, string strB)
 		{
-			return String.Compare(strA, strB, StringComparison.InvariantCultureIgnoreCase) == 0;
+			return String.Equals(strA, strB, StringComparison.OrdinalIgnoreCase);
 		}
 	}
 }

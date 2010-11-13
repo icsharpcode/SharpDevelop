@@ -40,10 +40,11 @@
 			<Begin>@/</Begin>
 			<End>/</End>
 		</Span>
-		<!-- regex rule must be in front of any keywords -->
-		<Rule color="Regex">
-			/\S+/
-		</Rule>
+		<Span color="Regex">
+			<!-- this is a span (not a rule) because " within a regex doesn't start a string literal -->
+			<Begin>/\S+/</Begin>
+			<End></End> <!-- end immediately after Begin -->
+		</Span>
 		<Keywords foreground="Black" fontWeight="bold">
 			<Word>self</Word>
 			<Word>super</Word>
