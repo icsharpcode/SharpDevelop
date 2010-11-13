@@ -125,6 +125,10 @@ namespace ICSharpCode.VBNetBinding
 								return CodeCompletionKeyPressResult.None;
 							if (IsTypeCharacter(ch, prevChar))
 								return CodeCompletionKeyPressResult.None;
+							if (prevChar == '_') {
+								result.Expression = '_' + result.Expression;
+								result.Region = new DomRegion(result.Region.BeginLine, result.Region.BeginColumn - 1, result.Region.EndLine, result.Region.EndColumn);
+							}
 							LoggingService.Debug("CC: Beginning to type a word, result=" + result + ", context=" + result.Context);
 							ShowCompletion(result, editor, ch);
 							return CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion;

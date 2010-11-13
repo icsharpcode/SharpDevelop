@@ -95,13 +95,20 @@ namespace ICSharpCode.VBNetBinding
 			
 			AddSpecialItems(ref result, info, resolvedType, m, expressionResult, editor);
 			
+			char prevChar;
+			
 			if (pressedKey == '\0') { // ctrl+space
-				char prevChar =  editor.Caret.Offset > 0 ? editor.Document.GetCharAt(editor.Caret.Offset - 1) : '\0';
+				prevChar = editor.Caret.Offset > 0 ? editor.Document.GetCharAt(editor.Caret.Offset - 1) : '\0';
 				word = char.IsLetterOrDigit(prevChar) || prevChar == '_' ? editor.GetWordBeforeCaret() : "";
 				
 				if (!string.IsNullOrWhiteSpace(word))
 					result.PreselectionLength = word.Length;
 			}
+			
+			prevChar =  editor.Caret.Offset > 0 ? editor.Document.GetCharAt(editor.Caret.Offset - 1) : '\0';
+			
+			if (prevChar == '_')
+				result.PreselectionLength++;
 			
 			result.SortItems();
 			
