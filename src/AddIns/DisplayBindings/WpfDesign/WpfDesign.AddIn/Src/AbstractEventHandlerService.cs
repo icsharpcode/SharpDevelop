@@ -36,7 +36,7 @@ namespace ICSharpCode.WpfDesign.AddIn
 		IProject FindProjectContainingFile()
 		{
 			if (ProjectService.OpenSolution != null) {
-				ProjectService.OpenSolution.FindProjectContainingFile(viewContent.PrimaryFileName);
+				return ProjectService.OpenSolution.FindProjectContainingFile(viewContent.PrimaryFileName);
 			}
 			return null;
 		}
