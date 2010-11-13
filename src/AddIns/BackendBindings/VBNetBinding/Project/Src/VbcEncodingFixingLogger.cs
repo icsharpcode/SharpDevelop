@@ -57,6 +57,8 @@ namespace ICSharpCode.VBNetBinding
 			StreamReader lastFile;
 			int lastLine;
 			
+			// fixes SD-1746 - VB compiler errors are shown in incorrect column if the line contains tabs
+			// (http://bugtracker.sharpdevelop.net/issue/ViewIssue.aspx?id=1746&PROJID=4)
 			int FixColumn(string fileName, int line, int column)
 			{
 				if (!File.Exists(fileName) || line < 1 || column < 1)
