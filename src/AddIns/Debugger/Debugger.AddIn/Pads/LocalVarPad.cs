@@ -68,13 +68,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				localVarList.WatchItems.Clear();
 				return;
 			}
-			
+			localVarList.WatchItems.Clear();
 			using(new PrintTimes("Local Variables refresh")) {
 				try {
 					Utils.DoEvents(debuggedProcess);
 					foreach (var item in new StackFrameNode(debuggedProcess.SelectedStackFrame).ChildNodes) {
-						if (!localVarList.WatchItems.ContainsItem(item))
-							localVarList.WatchItems.Add(item);
+						localVarList.WatchItems.Add(item);
 					}
 				} 
 				catch(AbortedBecauseDebuggeeResumedException) { } 
