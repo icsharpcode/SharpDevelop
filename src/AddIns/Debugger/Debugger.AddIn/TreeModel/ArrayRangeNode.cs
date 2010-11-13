@@ -85,7 +85,11 @@ namespace Debugger.AddIn.TreeModel
 			// The whole array is small - just add all elements as childs
 			if (bounds.TotalElementCount <= MaxElementCount) {
 				foreach(int[] indices in bounds.Indices) {
-					yield return new ExpressionNode(ExpressionNode.GetImageForArrayIndexer(), GetName(indices), arrayTarget.AppendIndexer(indices));
+					string imageName;
+					var image = ExpressionNode.GetImageForArrayIndexer(out imageName);
+					var expression = new ExpressionNode(image, GetName(indices), arrayTarget.AppendIndexer(indices));
+					expression.ImageName = imageName;
+					yield return expression;
 				}
 				yield break;
 			}

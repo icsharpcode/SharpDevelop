@@ -19,7 +19,7 @@ namespace Services.Debugger.Tooltips
 	{
 		string tooltip;
 		
-		public PinDebuggerControl Popup {	get; set; }
+		public IPinDebuggerControl Popup {	get; set; }
 		
 		public static readonly IImage PinImage = new ResourceServiceImage("Bookmarks.Pin");
 		
@@ -56,7 +56,7 @@ namespace Services.Debugger.Tooltips
 			get { return tooltip; }
 			set { tooltip = value; }
 		}		
-
+		
 		public override bool CanDragDrop {
 			get { return true; }
 		}
@@ -77,7 +77,7 @@ namespace Services.Debugger.Tooltips
 				throw new ArgumentNullException("Node is null");
 			
 			foreach (var currentNode in mark.Nodes) {
-				if (node.FullName.Trim() == currentNode.FullName.Trim())
+				if (node.FullName == currentNode.FullName)
 					return true;
 			}
 			
@@ -92,7 +92,7 @@ namespace Services.Debugger.Tooltips
 				throw new ArgumentNullException("Node is null");
 			
 			foreach (var currentNode in mark.Nodes) {
-				if (node.FullName.Trim() == currentNode.FullName.Trim()) {
+				if (node.FullName == currentNode.FullName) {
 					mark.Nodes.Remove(currentNode);
 					return;
 				}

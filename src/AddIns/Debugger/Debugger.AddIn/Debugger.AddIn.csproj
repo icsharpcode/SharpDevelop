@@ -79,9 +79,6 @@
     <Reference Include="WindowsBase">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="WindowsFormsIntegration">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
     <Reference Include="WindowsFormsIntegration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
@@ -155,7 +152,26 @@
       <DependentUpon>EditBreakpointScriptWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Tooltips\DebuggerPopup.cs" />
+    <Compile Include="Tooltips\DebuggerTooltipControl.xaml.cs">
+      <DependentUpon>DebuggerTooltipControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tooltips\LazyItemsControl.cs" />
+    <Compile Include="Tooltips\PinCloseControl.xaml.cs">
+      <DependentUpon>PinCloseControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tooltips\PinDebuggerControl.xaml.cs">
+      <DependentUpon>PinDebuggerControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tooltips\PinLayer.cs" />
+    <Compile Include="Tooltips\PinningBinding.cs" />
+    <Compile Include="Tooltips\VirtualizingIEnumerable.cs" />
+    <Compile Include="Tooltips\VisualizerPicker.cs">
+      <DependentUpon>VisualizerPicker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TreeModel\DebuggerResourceService.cs" />
+    <Compile Include="TreeModel\SavedTreeNode.cs" />
+    <Compile Include="TreeModel\TreeNode.cs" />
     <Compile Include="Visualizers\Commands\ExpressionVisualizerCommand.cs" />
     <Compile Include="Visualizers\Commands\GridVisualizerCommand.cs" />
     <Compile Include="Visualizers\Commands\IVisualizerDescriptor.cs" />
@@ -298,6 +314,7 @@
     <Compile Include="Visualizers\PresentationBindings\EnumViewModel.cs" />
     <Compile Include="Visualizers\PresentationBindings\ViewModelBase.cs" />
     <None Include="COPYING" />
+    <None Include="Tooltips\magnifier.png" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Debugger.AddIn.addin">
@@ -347,6 +364,11 @@
     <Page Include="Pads\Controls\WatchList.xaml" />
     <Page Include="Pads\WatchInputBox.xaml" />
     <Page Include="Service\EditBreakpointScriptWindow.xaml" />
+    <Page Include="Tooltips\DebuggerTooltipControl.xaml" />
+    <Page Include="Tooltips\PinCloseControl.xaml" />
+    <Page Include="Tooltips\PinControlsDictionary.xaml" />
+    <Page Include="Tooltips\PinDebuggerControl.xaml" />
+    <Page Include="Tooltips\VisualizerPicker.xaml" />
     <Page Include="Visualizers\Graph\Drawing\NodeControlResources.xaml" />
     <Page Include="Visualizers\Graph\Drawing\PositionedGraphNodeControl.xaml" />
     <Page Include="Visualizers\Graph\ObjectGraphControl.xaml" />
@@ -368,6 +390,7 @@
       <Private>False</Private>
     </ProjectReference>
     <Folder Include="Pads\Controls" />
+    <Folder Include="Tooltips" />
     <Folder Include="Visualizers\Graph" />
     <Folder Include="Visualizers\Graph\Drawing" />
     <Folder Include="Visualizers\Graph\Layout" />

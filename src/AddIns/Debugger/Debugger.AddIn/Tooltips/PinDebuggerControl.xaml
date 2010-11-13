@@ -1,6 +1,6 @@
-<UserControl x:Class="Services.Debugger.Tooltips.PinDebuggerControl"
+<UserControl x:Class="Debugger.AddIn.Tooltips.PinDebuggerControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:local="clr-namespace:Services.Debugger.Tooltips"
+             xmlns:local="clr-namespace:Debugger.AddIn.Tooltips"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 >

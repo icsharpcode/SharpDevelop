@@ -127,7 +127,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 					//popup nodes
 					foreach(var node in pin.Nodes) {
 						b.Append('|');
-						b.Append(""); // image
+						b.Append(node.ImageName);
 						b.Append('|');
 						b.Append(node.FullName);
 						b.Append('|');

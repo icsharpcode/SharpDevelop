@@ -10,11 +10,13 @@ namespace ICSharpCode.SharpDevelop.Debugging
 	/// <summary>
 	/// Node that can be bound to <see cref="DebuggerTooltipControl" />.
 	/// </summary>
-	public interface ITreeNode
+	public interface ITreeNode : IComparable<ITreeNode>
 	{
 		string Name { get; }
 		
 		string FullName { get; }
+		
+		string ImageName { get; }
 		
 		string Text { get; }
 		

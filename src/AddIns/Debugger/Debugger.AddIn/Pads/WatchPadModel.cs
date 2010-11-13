@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		public new bool SetText(string text)
+		public override bool SetText(string text)
 		{
 			this.Text = text;
 			return true;

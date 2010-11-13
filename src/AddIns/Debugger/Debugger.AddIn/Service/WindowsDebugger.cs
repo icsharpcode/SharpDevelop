@@ -11,7 +11,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using Debugger;
-using Debugger.AddIn;
+using Debugger.AddIn.Tooltips;
 using Debugger.AddIn.TreeModel;
 using Debugger.Interop.CorPublish;
 using ICSharpCode.Core;
@@ -404,8 +404,32 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			try {
 				var tooltipExpression = GetExpression(variableName);
-				ExpressionNode expressionNode = new ExpressionNode(ExpressionNode.GetImageForLocalVariable(), variableName, tooltipExpression);
+				string imageName;
+				var image = ExpressionNode.GetImageForLocalVariable(out imageName);
+				ExpressionNode expressionNode = new ExpressionNode(image, variableName, tooltipExpression);
+				expressionNode.ImageName = imageName;
 				return new DebuggerTooltipControl(expressionNode);
+			} catch (GetValueException) {
+				return null;
+			}
+		}
+		
+		public ITreeNode GetNode(string variable, string currentImageName = null) 
+		{
+			try {
+				var expression = GetExpression(variable);
+				string imageName;
+				IImage image;
+				if (string.IsNullOrEmpty(currentImageName)) {
+					image = ExpressionNode.GetImageForLocalVariable(out imageName);
+				}
+				else {
+					image = new ResourceServiceImage(currentImageName);
+					imageName = currentImageName;
+				}
+				ExpressionNode expressionNode = new ExpressionNode(image, variable, expression);
+				expressionNode.ImageName = imageName;
+				return expressionNode;
 			} catch (GetValueException) {
 				return null;
 			}

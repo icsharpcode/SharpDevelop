@@ -7,7 +7,7 @@ using Debugger.AddIn.Pads.Controls;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using Exception = System.Exception;
-using TreeNode = ICSharpCode.SharpDevelop.Debugging.TreeNode;
+using TreeNode = Debugger.AddIn.TreeModel.TreeNode;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {

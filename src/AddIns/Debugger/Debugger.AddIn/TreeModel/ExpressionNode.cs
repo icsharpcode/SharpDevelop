@@ -16,7 +16,7 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
-using TreeNode = ICSharpCode.SharpDevelop.Debugging.TreeNode;
+using TreeNode = Debugger.AddIn.TreeModel.TreeNode;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -34,7 +34,7 @@ namespace Debugger.AddIn.TreeModel
 		string fullName;
 		string fullText;
 		
-		public bool Evaluated { 
+		public bool Evaluated {
 			get { return evaluated; }
 			set { evaluated = value; }
 		}
@@ -57,7 +57,7 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		public string FullText { 
+		public string FullText {
 			get { return fullText; }
 		}
 		
@@ -74,18 +74,35 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
-		public override string FullName { 
+		public override string FullName {
 			get {
 				if (!evaluated) EvaluateExpression();
 				
-				if(!string.IsNullOrEmpty(fullName))
-					return fullName;
+				return GetFullName() ?? Name.Trim();
+			}
+		}
+		
+		private string GetFullName()
+		{
+			// TODO : do this better
+			if (expression is MemberReferenceExpression) {
+				var memberExpression = (MemberReferenceExpression)expression;
 				
-				if (expression is MemberReferenceExpression) {
-					var memberExpression = (MemberReferenceExpression)expression;
+				Expression currentExpression = memberExpression;
+				Stack<string> stack = new Stack<string>();
+				while (currentExpression is MemberReferenceExpression)
+				{
+					var exp = (MemberReferenceExpression)currentExpression;
+					stack.Push(exp.MemberName);
+					stack.Push(".");
 					
-					Expression currentExpression = memberExpression;
-					Stack<string> stack = new Stack<string>();
+					currentExpression = exp.TargetObject;
+				}
+				
+				if (currentExpression is CastExpression) {
+					var castExpression = (CastExpression)currentExpression;
+					currentExpression = castExpression.Expression;
+					
 					while (currentExpression is MemberReferenceExpression)
 					{
 						var exp = (MemberReferenceExpression)currentExpression;
@@ -94,42 +111,27 @@ namespace Debugger.AddIn.TreeModel
 						
 						currentExpression = exp.TargetObject;
 					}
-					
-					if (currentExpression is CastExpression) {
-						var castExpression = (CastExpression)currentExpression;		
-						currentExpression = castExpression.Expression;
-													
-						if (currentExpression is IdentifierExpression) {
-							var identifierExpression = (IdentifierExpression)castExpression.Expression;
-							stack.Push(identifierExpression.Identifier);
-						}
-						
-						while (currentExpression is MemberReferenceExpression)
-						{
-							var exp = (MemberReferenceExpression)currentExpression;
-							stack.Push(exp.MemberName);
-							stack.Push(".");
-							
-							currentExpression = exp.TargetObject;
-						}
-					}
-					
-					if (currentExpression is ThisReferenceExpression) {
-						stack.Push("this");
-					}
-					
-					// create fullname
-					StringBuilder sb = new StringBuilder();
-					while(stack.Count > 0)
-						sb.Append(stack.Pop());
-							
-					fullName = sb.ToString();
-					return fullName;
 				}
 				
-				fullName = Name.Trim();
+				if (currentExpression is IdentifierExpression) {
+					var identifierExpression = (IdentifierExpression)currentExpression;
+					stack.Push(identifierExpression.Identifier);
+				}
+				
+				if (currentExpression is ThisReferenceExpression) {
+					stack.Push("this");
+				}
+				
+				// create fullname
+				StringBuilder sb = new StringBuilder();
+				while(stack.Count > 0)
+					sb.Append(stack.Pop());
+				
+				fullName = sb.ToString();
 				return fullName;
 			}
+			
+			return null;
 		}
 		
 		public override string Type {
@@ -151,7 +153,7 @@ namespace Debugger.AddIn.TreeModel
 				if (!evaluated) EvaluateExpression();
 				return base.HasChildNodes;
 			}
-		}			
+		}
 		
 		/// <summary> Used to determine available VisualizerCommands </summary>
 		private DebugType expressionType;
@@ -282,7 +284,7 @@ namespace Debugger.AddIn.TreeModel
 				.Replace("\a", "\\a")
 				.Replace("\f", "\\f")
 				.Replace("\v", "\\v")
-				.Replace("\"", "\\\"");  
+				.Replace("\"", "\\\"");
 		}
 		
 		string FormatInteger(object i)
@@ -373,27 +375,31 @@ namespace Debugger.AddIn.TreeModel
 			return false;
 		}
 		
-		public static IImage GetImageForThis()
+		public static IImage GetImageForThis(out string imageName)
 		{
-			return DebuggerResourceService.GetImage("Icons.16x16.Parameter");
+			imageName = "Icons.16x16.Parameter";
+			return DebuggerResourceService.GetImage(imageName);
 		}
 		
-		public static IImage GetImageForParameter()
+		public static IImage GetImageForParameter(out string imageName)
 		{
-			return DebuggerResourceService.GetImage("Icons.16x16.Parameter");
+			imageName = "Icons.16x16.Parameter";
+			return DebuggerResourceService.GetImage(imageName);
 		}
 		
-		public static IImage GetImageForLocalVariable()
+		public static IImage GetImageForLocalVariable(out string imageName)
 		{
-			return DebuggerResourceService.GetImage("Icons.16x16.Local");
+			imageName = "Icons.16x16.Local";
+			return DebuggerResourceService.GetImage(imageName);
 		}
 		
-		public static IImage GetImageForArrayIndexer()
+		public static IImage GetImageForArrayIndexer(out string imageName)
 		{
-			return DebuggerResourceService.GetImage("Icons.16x16.Field");
+			imageName = "Icons.16x16.Field";
+			return DebuggerResourceService.GetImage(imageName);
 		}
 		
-		public static IImage GetImageForMember(IDebugMemberInfo memberInfo)
+		public static IImage GetImageForMember(IDebugMemberInfo memberInfo, out string imageName)
 		{
 			string name = string.Empty;
 			if (memberInfo.IsPublic) {
@@ -413,15 +419,17 @@ namespace Debugger.AddIn.TreeModel
 			} else {
 				throw new DebuggerException("Unknown member type " + memberInfo.GetType().FullName);
 			}
-			return DebuggerResourceService.GetImage("Icons.16x16." + name);
+			
+			imageName = "Icons.16x16." + name;
+			return DebuggerResourceService.GetImage(imageName);
 		}
 		
 //		public ContextMenuStrip GetContextMenu()
 //		{
 //			if (this.Error != null) return GetErrorContextMenu();
-//			
+//
 //			ContextMenuStrip menu = new ContextMenuStrip();
-//			
+//
 //			ToolStripMenuItem copyItem;
 //			copyItem = new ToolStripMenuItem();
 //			copyItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.CopyToClipboard");
@@ -429,7 +437,7 @@ namespace Debugger.AddIn.TreeModel
 //			copyItem.Click += delegate {
 //				ClipboardWrapper.SetText(fullText);
 //			};
-			
+		
 //			ToolStripMenuItem hexView;
 //			hexView = new ToolStripMenuItem();
 //			hexView.Text = ResourceService.GetString("MainWindow.Windows.Debug.LocalVariables.ShowInHexadecimal");
@@ -443,12 +451,12 @@ namespace Debugger.AddIn.TreeModel
 //				if (WatchPad.Instance != null)
 //					WatchPad.Instance.RefreshPad();
 //			};
-			
+		
 //			menu.Items.AddRange(new ToolStripItem[] {
 //			                    	copyItem,
 //			                    	//hexView
 //			                    });
-//			
+//
 //			return menu;
 //		}
 		

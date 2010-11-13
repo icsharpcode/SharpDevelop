@@ -8,9 +8,10 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop.Debugging
+namespace Debugger.AddIn.Tooltips
 {
 	/// <summary>
 	/// Popup containing <see cref="DebuggerTooltipControl"></see>.

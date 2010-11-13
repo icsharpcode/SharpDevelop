@@ -61,13 +61,6 @@
 		                class = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.BrowserDisplayBinding"/>
 	</Path>
 	
-	<Path name="/SharpDevelop/Workbench/LanguageBindings">
-        <LanguageBinding
-            id="Pin"
-            class="Services.Debugger.Tooltips.PinningBinding"
-            extensions="" />
-    </Path>
-	
 	<Path name = "/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id         = "AllFiles"
 		            name       = "${res:SharpDevelop.FileFilter.AllFiles}"

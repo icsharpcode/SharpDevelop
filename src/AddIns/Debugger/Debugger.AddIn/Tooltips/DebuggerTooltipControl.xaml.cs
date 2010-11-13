@@ -15,12 +15,14 @@ using System.Windows.Shapes;
 
 using ICSharpCode.Core;
 using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 using Services.Debugger.Tooltips;
 
-namespace ICSharpCode.SharpDevelop.Debugging
+namespace Debugger.AddIn.Tooltips
 {
 	/// <summary>
 	/// Default Control used as content of SharpDevelop debugger tooltips.
@@ -307,6 +309,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 						var point = this.PointToScreen(rect.TopRight);
 						pin.Popup.Location = new Point { X = 500, Y = point.Y - 150 };
 						pin.Nodes.Add(node);
+						pin.Popup.ItemsSource = pin.Nodes;
 					}
 					
 					// do actions
@@ -315,11 +318,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				}
 				else
 				{
-					if (!pin.ContainsNode(node))
+					if (!pin.ContainsNode(node)) {
 						pin.Nodes.Add(node);
+						pin.Popup.ItemsSource = pin.Nodes;
+					}
 				}
-				
-				pin.Popup.ItemsSource = pin.Nodes;
 			}
 		}
 		
