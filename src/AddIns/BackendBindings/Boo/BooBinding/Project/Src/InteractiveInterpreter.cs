@@ -3,7 +3,9 @@
 
 using System;
 using System.Reflection;
+using Boo.Lang.Compiler;
 using Boo.Lang.Interpreter;
+using Boo.Lang.Interpreter.Builtins;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace Grunwald.BooBinding
@@ -72,7 +74,12 @@ namespace Grunwald.BooBinding
 			}
 			processing = true;
 			try {
-				interpreter.Eval(command);
+				CompilerContext results = interpreter.Eval(command);
+				if (results.Errors.Count > 0) {
+					PrintLine("ERROR: " + results.Errors[0].Message);
+				} else if (interpreter.LastValue != null) {
+					PrintLine(ReprModule.repr(interpreter.LastValue));
+				}
 			} catch (System.Reflection.TargetInvocationException ex) {
 				PrintLine(ex.InnerException);
 			}
