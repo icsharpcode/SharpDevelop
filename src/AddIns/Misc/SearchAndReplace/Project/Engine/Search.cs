@@ -145,7 +145,7 @@ namespace SearchAndReplace
 			if (documentIterator.MoveForward()) {
 				info = documentIterator.Current;
 				// document is valid for searching -> set iterator & fileName
-				if (info != null && info.EndOffset >= 0 && info.EndOffset < info.Document.TextLength) {
+				if (info != null && info.EndOffset >= 0 && info.EndOffset <= info.Document.TextLength) {
 					textIterator = textIteratorBuilder.BuildTextIterator(info);
 				} else {
 					textIterator = null;

@@ -432,7 +432,8 @@ namespace SearchAndReplace
 					SearchReplaceManager.MarkAll(startOffset, endOffset - startOffset, monitor);
 				else if (action == 2)
 					SearchReplaceManager.ReplaceAll(startOffset, endOffset - startOffset, monitor);
-				textEditor.Select(startOffset, endOffset - startOffset);
+				
+				textEditor.Select(startOffset, textEditor.SelectionLength);
 			} finally {
 				ignoreSelectionChanges = false;
 			}
