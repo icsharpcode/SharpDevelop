@@ -695,72 +695,72 @@
 											<File Source="..\..\data\templates\file\SharpDevelop\ExampleView.xft" Id="ExampleView.xft" Name="ExampleView.xft" />
 										</Component>
 									</Directory>
-									<Directory Id="VBNetFileTemplatesFolder" Name="VBNet">
-										<Component Id="VBNetTemplatesFileCategorySortOrderXml" Guid="420F6EAA-8F64-4837-BDE4-034E7C40F112" DiskId="1">
-											<File Id="VBNetFileTemplateFileCategorySortOrder.xml" Name="FileCategorySortOrder.xml" Source="..\..\data\templates\file\VBNet\FileCategorySortOrder.xml" KeyPath="yes" />
+									<Directory Id="VBFileTemplatesFolder" Name="VB">
+										<Component Id="VBTemplatesFileCategorySortOrderXml" Guid="420F6EAA-8F64-4837-BDE4-034E7C40F112" DiskId="1">
+											<File Id="VBFileTemplateFileCategorySortOrder.xml" Name="FileCategorySortOrder.xml" Source="..\..\data\templates\file\VB\FileCategorySortOrder.xml" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetEmptyFileTemplate" Guid="92D5B825-D5A1-4164-959D-0D1DBE4ADE0D" DiskId="1">
-											<File Id="VBNet.Empty.xft" Name="VBNet.Empty.xft" Source="..\..\data\templates\file\VBNet\VBNet.Empty.xft" KeyPath="yes" />
+										<Component Id="VBEmptyFileTemplate" Guid="92D5B825-D5A1-4164-959D-0D1DBE4ADE0D" DiskId="1">
+											<File Id="VB.Empty.xft" Name="VB.Empty.xft" Source="..\..\data\templates\file\VB\VB.Empty.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetEmptyClassFileTemplate" Guid="B1875095-14EF-459E-8546-A281019EBBCE" DiskId="1">
-											<File Id="VBNet.EmptyClass.xft" Name="VBNet.EmptyClass.xft" Source="..\..\data\templates\file\VBNet\VBNet.EmptyClass.xft" KeyPath="yes" />
+										<Component Id="VBEmptyClassFileTemplate" Guid="B1875095-14EF-459E-8546-A281019EBBCE" DiskId="1">
+											<File Id="VB.EmptyClass.xft" Name="VB.EmptyClass.xft" Source="..\..\data\templates\file\VB\VB.EmptyClass.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetFormFileTemplate" Guid="8DD19254-4E5E-4119-A3A8-7F0608B02B8C" DiskId="1">
-											<File Id="VBNet.VBNet.Forms.Form.xft" Name="VBNet.Forms.Form.xft" Source="..\..\data\templates\file\VBNet\VBNet.Forms.Form.xft" KeyPath="yes" />
+										<Component Id="VBFormFileTemplate" Guid="8DD19254-4E5E-4119-A3A8-7F0608B02B8C" DiskId="1">
+											<File Id="VB.VB.Forms.Form.xft" Name="VB.Forms.Form.xft" Source="..\..\data\templates\file\VB\VB.Forms.Form.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetUserControlFileTemplate" Guid="BCBD5075-D39A-4D86-900F-EAACFD7644C4" DiskId="1">
-											<File Id="VBNet.VBNet.Forms.UserControl.xft" Name="VBNet.Forms.UserControl.xft" Source="..\..\data\templates\file\VBNet\VBNet.Forms.UserControl.xft" KeyPath="yes" />
+										<Component Id="VBUserControlFileTemplate" Guid="BCBD5075-D39A-4D86-900F-EAACFD7644C4" DiskId="1">
+											<File Id="VB.VB.Forms.UserControl.xft" Name="VB.Forms.UserControl.xft" Source="..\..\data\templates\file\VB\VB.Forms.UserControl.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetInterfaceFileTemplate" Guid="18F3CE0E-A859-48E4-A3E7-1666E8CE012E" DiskId="1">
-											<File Id="VBNet.VBNet.Interface.xft" Name="VBNet.Interface.xft" Source="..\..\data\templates\file\VBNet\VBNet.Interface.xft" KeyPath="yes" />
+										<Component Id="VBInterfaceFileTemplate" Guid="18F3CE0E-A859-48E4-A3E7-1666E8CE012E" DiskId="1">
+											<File Id="VB.VB.Interface.xft" Name="VB.Interface.xft" Source="..\..\data\templates\file\VB\VB.Interface.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetModuleFileTemplate" Guid="1ACB5E8A-CC5E-4673-A68E-A7F52DCB9DB7" DiskId="1">
-											<File Id="VBNet.VBNet.Module.xft" Name="VBNet.Module.xft" Source="..\..\data\templates\file\VBNet\VBNet.Module.xft" KeyPath="yes" />
+										<Component Id="VBModuleFileTemplate" Guid="1ACB5E8A-CC5E-4673-A68E-A7F52DCB9DB7" DiskId="1">
+											<File Id="VB.VB.Module.xft" Name="VB.Module.xft" Source="..\..\data\templates\file\VB\VB.Module.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetMyExtensionClassFileTemplate" Guid="EB4D7763-0491-4888-A288-07A3539CD36B" DiskId="1">
-											<File Id="VBNet.MyExtensionClass.xft" Name="VBNet.MyExtensionClass.xft" Source="..\..\data\templates\file\VBNet\VBNet.MyExtensionClass.xft" KeyPath="yes" />
+										<Component Id="VBMyExtensionClassFileTemplate" Guid="EB4D7763-0491-4888-A288-07A3539CD36B" DiskId="1">
+											<File Id="VB.MyExtensionClass.xft" Name="VB.MyExtensionClass.xft" Source="..\..\data\templates\file\VB\VB.MyExtensionClass.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetPatternsSingletonFileTemplate" Guid="4912461E-4703-4F3B-9DDB-73D1A720FA48" DiskId="1">
-											<File Id="VBNet.Patterns.Singleton.xft" Name="VBNet.Patterns.Singleton.xft" Source="..\..\data\templates\file\VBNet\VBNet.Patterns.Singleton.xft" KeyPath="yes" />
+										<Component Id="VBPatternsSingletonFileTemplate" Guid="4912461E-4703-4F3B-9DDB-73D1A720FA48" DiskId="1">
+											<File Id="VB.Patterns.Singleton.xft" Name="VB.Patterns.Singleton.xft" Source="..\..\data\templates\file\VB\VB.Patterns.Singleton.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetUnitTestFileTemplate" Guid="D5D60A9C-FE68-450F-9C65-6FE13741734C" DiskId="1">
-											<File Id="VBNet.UnitTest.xft" Name="VBNet.UnitTest.xft" Source="..\..\data\templates\file\VBNet\VBNet.UnitTest.xft" KeyPath="yes" />
+										<Component Id="VBUnitTestFileTemplate" Guid="D5D60A9C-FE68-450F-9C65-6FE13741734C" DiskId="1">
+											<File Id="VB.UnitTest.xft" Name="VB.UnitTest.xft" Source="..\..\data\templates\file\VB\VB.UnitTest.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetExceptionFileTemplate" Guid="907F9938-D226-40C9-A0FF-A4D7744E5B17" DiskId="1">
-											<File Id="VBNet.Exception.xft" Name="VBNet.Exception.xft" Source="..\..\data\templates\file\VBNet\VBNet.Exception.xft" KeyPath="yes" />
+										<Component Id="VBExceptionFileTemplate" Guid="907F9938-D226-40C9-A0FF-A4D7744E5B17" DiskId="1">
+											<File Id="VB.Exception.xft" Name="VB.Exception.xft" Source="..\..\data\templates\file\VB\VB.Exception.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetStructureFileTemplate" Guid="BC352A19-6F6C-4532-B0CF-4D1244C3FA63" DiskId="1">
-											<File Id="VBNet.Structure.xft" Name="VBNet.Structure.xft" Source="..\..\data\templates\file\VBNet\VBNet.Structure.xft" KeyPath="yes" />
+										<Component Id="VBStructureFileTemplate" Guid="BC352A19-6F6C-4532-B0CF-4D1244C3FA63" DiskId="1">
+											<File Id="VB.Structure.xft" Name="VB.Structure.xft" Source="..\..\data\templates\file\VB\VB.Structure.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetWebControlFileTemplate" Guid="9BF5162E-D3DD-46BC-A845-249733B4B37E" DiskId="1">
-											<File Id="VBNet.Web.WebControl.xft" Name="VBNet.Web.WebControl.xft" Source="..\..\data\templates\file\VBNet\VBNet.Web.WebControl.xft" KeyPath="yes" />
+										<Component Id="VBWebControlFileTemplate" Guid="9BF5162E-D3DD-46BC-A845-249733B4B37E" DiskId="1">
+											<File Id="VB.Web.WebControl.xft" Name="VB.Web.WebControl.xft" Source="..\..\data\templates\file\VB\VB.Web.WebControl.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetWebFormFileTemplate" Guid="AFC4CC3D-55E6-47A5-8DB1-97DCE34BFE3B" DiskId="1">
-											<File Id="VBNet.Web.WebForm.xft" Name="VBNet.Web.WebForm.xft" Source="..\..\data\templates\file\VBNet\VBNet.Web.WebForm.xft" KeyPath="yes" />
+										<Component Id="VBWebFormFileTemplate" Guid="AFC4CC3D-55E6-47A5-8DB1-97DCE34BFE3B" DiskId="1">
+											<File Id="VB.Web.WebForm.xft" Name="VB.Web.WebForm.xft" Source="..\..\data\templates\file\VB\VB.Web.WebForm.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetWebHandlerFileTemplate" Guid="445D6E1E-4280-4E61-A01E-D12D65C33303" DiskId="1">
-											<File Id="VBNet.Web.WebHandler.xft" Name="VBNet.Web.WebHandler.xft" Source="..\..\data\templates\file\VBNet\VBNet.Web.WebHandler.xft" KeyPath="yes" />
+										<Component Id="VBWebHandlerFileTemplate" Guid="445D6E1E-4280-4E61-A01E-D12D65C33303" DiskId="1">
+											<File Id="VB.Web.WebHandler.xft" Name="VB.Web.WebHandler.xft" Source="..\..\data\templates\file\VB\VB.Web.WebHandler.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetWebServiceFileTemplate" Guid="E920D1F5-60EB-4FFC-9E78-8CD4C65AD02C" DiskId="1">
-											<File Id="VBNet.Web.WebService.xft" Name="VBNet.Web.WebService.xft" Source="..\..\data\templates\file\VBNet\VBNet.Web.WebService.xft" KeyPath="yes" />
+										<Component Id="VBWebServiceFileTemplate" Guid="E920D1F5-60EB-4FFC-9E78-8CD4C65AD02C" DiskId="1">
+											<File Id="VB.Web.WebService.xft" Name="VB.Web.WebService.xft" Source="..\..\data\templates\file\VB\VB.Web.WebService.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetWPFFlowDocumentFileTemplate" Guid="CA1F4A0A-C925-4A70-A399-6B88E6013DF7" DiskId="1">
-											<File Id="VBNet.WPFFlowDocument.xft" Name="VBNet.WPFFlowDocument.xft" Source="..\..\data\templates\file\VBNet\VBNet.WPFFlowDocument.xft" KeyPath="yes" />
+										<Component Id="VBWPFFlowDocumentFileTemplate" Guid="CA1F4A0A-C925-4A70-A399-6B88E6013DF7" DiskId="1">
+											<File Id="VB.WPFFlowDocument.xft" Name="VB.WPFFlowDocument.xft" Source="..\..\data\templates\file\VB\VB.WPFFlowDocument.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetWPFPageFileTemplate" Guid="B6FDFB3C-52C7-43FC-A6DE-F2637E6FD5E0" DiskId="1">
-											<File Id="VBNet.WPFPage.xft" Name="VBNet.WPFPage.xft" Source="..\..\data\templates\file\VBNet\VBNet.WPFPage.xft" KeyPath="yes" />
+										<Component Id="VBWPFPageFileTemplate" Guid="B6FDFB3C-52C7-43FC-A6DE-F2637E6FD5E0" DiskId="1">
+											<File Id="VB.WPFPage.xft" Name="VB.WPFPage.xft" Source="..\..\data\templates\file\VB\VB.WPFPage.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetWPFPageFunctionFileTemplate" Guid="EE8BA0D0-5503-4FF6-AA84-BA60BE43B68A" DiskId="1">
-											<File Id="VBNet.WPFPageFunction.xft" Name="VBNet.WPFPageFunction.xft" Source="..\..\data\templates\file\VBNet\VBNet.WPFPageFunction.xft" KeyPath="yes" />
+										<Component Id="VBWPFPageFunctionFileTemplate" Guid="EE8BA0D0-5503-4FF6-AA84-BA60BE43B68A" DiskId="1">
+											<File Id="VB.WPFPageFunction.xft" Name="VB.WPFPageFunction.xft" Source="..\..\data\templates\file\VB\VB.WPFPageFunction.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetWPFResourceDictionaryFileTemplate" Guid="8A5ECBA7-9052-4648-84F4-6ECC73B37A12" DiskId="1">
-											<File Id="VBNet.WPFResourceDictionary.xft" Name="VBNet.WPFResourceDictionary.xft" Source="..\..\data\templates\file\VBNet\VBNet.WPFResourceDictionary.xft" KeyPath="yes" />
+										<Component Id="VBWPFResourceDictionaryFileTemplate" Guid="8A5ECBA7-9052-4648-84F4-6ECC73B37A12" DiskId="1">
+											<File Id="VB.WPFResourceDictionary.xft" Name="VB.WPFResourceDictionary.xft" Source="..\..\data\templates\file\VB\VB.WPFResourceDictionary.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetWPFUserControlFileTemplate" Guid="B00822BB-A76E-4B63-9926-A5FB7FAF3835" DiskId="1">
-											<File Id="VBNet.WPFUserControl.xft" Name="VBNet.WPFUserControl.xft" Source="..\..\data\templates\file\VBNet\VBNet.WPFUserControl.xft" KeyPath="yes" />
+										<Component Id="VBWPFUserControlFileTemplate" Guid="B00822BB-A76E-4B63-9926-A5FB7FAF3835" DiskId="1">
+											<File Id="VB.WPFUserControl.xft" Name="VB.WPFUserControl.xft" Source="..\..\data\templates\file\VB\VB.WPFUserControl.xft" KeyPath="yes" />
 										</Component>
-										<Component Id="VBNetWPFWindowFileTemplate" Guid="43DEB1E6-4A14-4F78-BEC0-BC20F30876D4" DiskId="1">
-											<File Id="VBNet.WPFWindow.xft" Name="VBNet.WPFWindow.xft" Source="..\..\data\templates\file\VBNet\VBNet.WPFWindow.xft" KeyPath="yes" />
+										<Component Id="VBWPFWindowFileTemplate" Guid="43DEB1E6-4A14-4F78-BEC0-BC20F30876D4" DiskId="1">
+											<File Id="VB.WPFWindow.xft" Name="VB.WPFWindow.xft" Source="..\..\data\templates\file\VB\VB.WPFWindow.xft" KeyPath="yes" />
 										</Component>
 									</Directory>
 								</Directory>
@@ -803,20 +803,20 @@
 											<File Source="..\..\data\templates\project\Misc\BlankSolution.xpt" Id="BlankSolution.xpt" Name="BlankSolution.xpt" />
 										</Component>
 									</Directory>
-									<Directory Id="VBNetProjectTemplatesFolder" Name="VBNet">
-										<Component Guid="56C1A294-4C66-49AE-B5B4-2EA43E9FD028" Id="VBNetProjectTemplates" DiskId="1">
-											<File Source="..\..\data\templates\project\VBNet\SharpDevelopMacro.xpt" Id="VBNetSharpDevelopMacro.xpt" Name="SharpDevelopMacro.xpt" />
-											<File Source="..\..\data\templates\project\VBNet\ConsoleProject.xpt" Id="VBNetConsoleProject.xpt" Name="ConsoleProject.xpt" />
-											<File Source="..\..\data\templates\project\VBNet\ControlLibrary.xpt" Id="VBNetControlLibrary.xpt" Name="ControlLibrary.xpt" />
-											<File Source="..\..\data\templates\project\VBNet\DefaultAssemblyInfo.vb" Id="VBNetDefaultAssemblyInfo.vb" Name="DefaultAssemblyInfo.vb" />
-											<File Source="..\..\data\templates\project\VBNet\EmptyProject.xpt" Id="VBNetEmptyProject.xpt" Name="EmptyProject.xpt" />
-											<File Source="..\..\data\templates\project\VBNet\FormsProject.xpt" Id="VBNetFormsProject.xpt" Name="FormsProject.xpt" />
-											<File Source="..\..\data\templates\project\VBNet\Library.xpt" Name="Library.xpt" Id="VBNetLibrary.xpt" />
-											<File Source="..\..\data\templates\project\VBNet\ProjectCategorySortOrder.xml" Id="VBNetProjectCategorySortOrder.xml" Name="ProjectCategorySortOrder.xml" />
-											<File Source="..\..\data\templates\project\VBNet\Service.xpt" Name="Service.xpt" Id="VBNetService.xpt" />
-											<File Source="..\..\data\templates\project\VBNet\SharedAddin.xpt" Id="VBNetSharedAddin.xpt" Name="SharedAddin.xpt" />
-											<File Source="..\..\data\templates\project\VBNet\SharpDevelopAddin.xpt" Id="VBNetSharpDevelopAddin.xpt" Name="SharpDevelopAddin.xpt" />
-											<File Id="MySettings.settings" Name="MySettings.settings" Source="..\..\data\templates\project\VBNet\MySettings.settings" />
+									<Directory Id="VBProjectTemplatesFolder" Name="VB">
+										<Component Guid="56C1A294-4C66-49AE-B5B4-2EA43E9FD028" Id="VBProjectTemplates" DiskId="1">
+											<File Source="..\..\data\templates\project\VB\SharpDevelopMacro.xpt" Id="VBSharpDevelopMacro.xpt" Name="SharpDevelopMacro.xpt" />
+											<File Source="..\..\data\templates\project\VB\ConsoleProject.xpt" Id="VBConsoleProject.xpt" Name="ConsoleProject.xpt" />
+											<File Source="..\..\data\templates\project\VB\ControlLibrary.xpt" Id="VBControlLibrary.xpt" Name="ControlLibrary.xpt" />
+											<File Source="..\..\data\templates\project\VB\DefaultAssemblyInfo.vb" Id="VBDefaultAssemblyInfo.vb" Name="DefaultAssemblyInfo.vb" />
+											<File Source="..\..\data\templates\project\VB\EmptyProject.xpt" Id="VBEmptyProject.xpt" Name="EmptyProject.xpt" />
+											<File Source="..\..\data\templates\project\VB\FormsProject.xpt" Id="VBFormsProject.xpt" Name="FormsProject.xpt" />
+											<File Source="..\..\data\templates\project\VB\Library.xpt" Name="Library.xpt" Id="VBLibrary.xpt" />
+											<File Source="..\..\data\templates\project\VB\ProjectCategorySortOrder.xml" Id="VBProjectCategorySortOrder.xml" Name="ProjectCategorySortOrder.xml" />
+											<File Source="..\..\data\templates\project\VB\Service.xpt" Name="Service.xpt" Id="VBService.xpt" />
+											<File Source="..\..\data\templates\project\VB\SharedAddin.xpt" Id="VBSharedAddin.xpt" Name="SharedAddin.xpt" />
+											<File Source="..\..\data\templates\project\VB\SharpDevelopAddin.xpt" Id="VBSharpDevelopAddin.xpt" Name="SharpDevelopAddin.xpt" />
+											<File Id="MySettings.settings" Name="MySettings.settings" Source="..\..\data\templates\project\VB\MySettings.settings" />
 										</Component>
 									</Directory>
 									<Component Guid="73EAC135-57B6-46C0-9F24-70A347B9AAC8" Id="ExampleProjectTemplate" DiskId="1">

@@ -4,7 +4,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.WinFXApplication.Name}</Name>
-		<Category>VBNet</Category>
+		<Category>VB</Category>
 		<Subcategory>WPF</Subcategory>
 		<Icon>VBNet.Project.Form</Icon>
 		<Description>${res:Templates.Project.WinFXApplication.Description}</Description>

@@ -1,0 +1,169 @@
+<Template originator = "Siegfried Pammer">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>Silverlight Application</Name>
+		<Category>VB</Category>
+		<Subcategory>Silverlight</Subcategory>
+		<Icon>VBNet.Project.Form</Icon>
+		<Description>Default Silverlight Application</Description>
+		<SupportedTargetFrameworks>v4.0</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "MainPage.xaml"/>
+	</Actions>
+	
+	<Project language = "VBNet">
+		
+		<ProjectItems>
+			<Reference Include="System.Windows" />
+		    <Reference Include="mscorlib" />
+		    <Reference Include="system" />
+		    <Reference Include="System.Core" />
+		    <Reference Include="System.Net" />
+		    <Reference Include="System.Xml" />
+		    <Reference Include="System.Windows.Browser" />
+		</ProjectItems>
+		
+		<PropertyGroup>
+			<ProjectTypeGuids>{A1591282-1198-4647-A2B1-27E5FF5F6F3B};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+			<OutputType>Library</OutputType>
+		    <AppDesignerFolder>Properties</AppDesignerFolder>
+		    <RootNamespace>${StandardNamespace}</RootNamespace>
+		    <AssemblyName>${StandardNamespace}</AssemblyName>
+		    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+		    <SilverlightApplication>true</SilverlightApplication>
+		    <SupportedCultures>
+		    </SupportedCultures>
+		    <XapOutputs>true</XapOutputs>
+		    <GenerateSilverlightManifest>true</GenerateSilverlightManifest>
+		    <XapFilename>${StandardNamespace}.xap</XapFilename>
+		    <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
+		    <SilverlightAppEntry>${StandardNamespace}.App</SilverlightAppEntry>
+		    <TestPageFileName>TestPage.html</TestPageFileName>
+		    <CreateTestPage>true</CreateTestPage>
+		    <ValidateXaml>true</ValidateXaml>
+		    <UsePlatformExtensions>false</UsePlatformExtensions>
+		    <ThrowErrorsInValidation>true</ThrowErrorsInValidation>			
+			<NoStdLib>true</NoStdLib>
+		    <NoConfig>true</NoConfig>			
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Debug" escapeValue="false">
+			<DefineConstants>DEBUG;TRACE;SILVERLIGHT</DefineConstants>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Release" escapeValue="false">
+			<DefineConstants>TRACE;SILVERLIGHT</DefineConstants>
+		</PropertyGroup>
+		
+		<Imports clear="True">
+			<Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v4.0\Microsoft.Silverlight.CSharp.targets" />
+		</Imports>		
+		
+		<Files>
+		
+			<File name="App.xaml" buildAction="ApplicationDefinition" language="XML"><![CDATA[<Application xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+             x:Class="App"
+             >
+    <Application.Resources>
+        
+    </Application.Resources>
+</Application>]]></File>
+
+			<File name="App.xaml.vb" SubType="Code" DependentUpon="App.xaml"><![CDATA[${StandardHeader.VBNET}
+Imports System
+Imports System.Collections.Generic
+Imports System.Linq
+Imports System.Net
+Imports System.Windows
+Imports System.Windows.Controls
+Imports System.Windows.Documents
+Imports System.Windows.Input
+Imports System.Windows.Media
+Imports System.Windows.Media.Animation
+Imports System.Windows.Shapes
+
+Public Partial Class App
+	Inherits Application
+	Public Sub New()
+		AddHandler Me.Startup, AddressOf Me.Application_Startup
+		AddHandler Me.[Exit], AddressOf Me.Application_Exit
+		AddHandler Me.UnhandledException, AddressOf Me.Application_UnhandledException
+
+		InitializeComponent()
+	End Sub
+
+	Private Sub Application_Startup(sender As Object, e As StartupEventArgs)
+		Me.RootVisual = New MainPage()
+	End Sub
+
+	Private Sub Application_Exit(sender As Object, e As EventArgs)
+
+	End Sub
+
+	Private Sub Application_UnhandledException(sender As Object, e As ApplicationUnhandledExceptionEventArgs)
+		If Not System.Diagnostics.Debugger.IsAttached Then
+			e.Handled = True
+			Deployment.Current.Dispatcher.BeginInvoke(Function() Do
+				ReportErrorToDOM(e)
+			End Function)
+		End If
+	End Sub
+
+	Private Sub ReportErrorToDOM(e As ApplicationUnhandledExceptionEventArgs)
+		Try
+			Dim errorMsg As String = e.ExceptionObject.Message + e.ExceptionObject.StackTrace
+			errorMsg = errorMsg.Replace(""""C, "'"C).Replace(vbCr & vbLf, "\n")
+
+			System.Windows.Browser.HtmlPage.Window.Eval("throw new Error(""Unhandled Error in Silverlight Application " & errorMsg & """);")
+		Catch generatedExceptionName As Exception
+		End Try
+	End Sub
+End Class
+]]></File>
+
+			<File name="MainPage.xaml" buildAction="Page" language="XML"><![CDATA[<UserControl x:Class="MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    Width="400" Height="300">
+    <Grid x:Name="LayoutRoot" Background="White">
+
+    </Grid>
+</UserControl>]]></File>
+
+			<File name="MainPage.xaml.vb" SubType="Code" DependentUpon="MainPage.xaml"><![CDATA[${StandardHeader.VBNET}
+Imports System.Collections.Generic
+Imports System.Linq
+Imports System.Net
+Imports System.Windows
+Imports System.Windows.Controls
+Imports System.Windows.Documents
+Imports System.Windows.Input
+Imports System.Windows.Media
+Imports System.Windows.Media.Animation
+Imports System.Windows.Shapes
+
+Public Partial Class MainPage
+	Inherits UserControl
+	Public Sub New()
+		InitializeComponent()
+	End Sub
+End Class
+]]></File>
+
+			<File name="Properties\AppManifest.xml"><![CDATA[<Deployment xmlns="http://schemas.microsoft.com/client/2007/deployment"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+>
+    <Deployment.Parts>
+    </Deployment.Parts>
+</Deployment>]]></File>
+			
+			<File name="Properties\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb" />
+			
+		</Files>
+	</Project>
+</Template>

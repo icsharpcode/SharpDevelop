@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.UserControlLibrary.Name}</Name>
-		<Category>VBNet</Category>
+		<Category>VB</Category>
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>VBNet.Project.ControlLibrary</Icon>
 		<Description>${res:Templates.Project.UserControlLibrary.Description}</Description>

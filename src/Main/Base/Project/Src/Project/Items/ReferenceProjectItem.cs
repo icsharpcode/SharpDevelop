@@ -122,10 +122,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		                   Description="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Version.Description}")]
 		public virtual Version Version {
 			get {
-				if (this.AssemblyName.Version == null)
-					return null;
-				else
-					return new Version(this.AssemblyName.Version);
+				return this.AssemblyName.Version;
 			}
 		}
 		

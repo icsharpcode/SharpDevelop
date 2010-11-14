@@ -280,7 +280,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					ListViewItem lowestVersion = item;
 					foreach (ListViewItem item2 in fullItemList) {
 						if (item2.Text == item.Text) {
-							if (new Version(item2.SubItems[1].Text) < new Version(((DomAssemblyName)lowestVersion.Tag).Version)) {
+							if (new Version(item2.SubItems[1].Text) < ((DomAssemblyName)lowestVersion.Tag).Version) {
 								lowestVersion = item2;
 							}
 						}
@@ -310,7 +310,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			List<ListViewItem> itemList = new List<ListViewItem>();
 			// Create full item list
 			foreach (DomAssemblyName asm in cacheContent) {
-				ListViewItem item = new ListViewItem(new string[] {asm.ShortName, asm.Version});
+				ListViewItem item = new ListViewItem(new string[] {asm.ShortName, asm.Version.ToString()});
 				item.Tag = asm;
 				itemList.Add(item);
 			}
@@ -323,13 +323,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 				bool isDuplicate = false;
 				for (int j = 0; j < itemList.Count; j++) {
 					if (string.Equals(asm.ShortName, itemList[j].Text, StringComparison.OrdinalIgnoreCase)) {
-						itemList[j].SubItems[1].Text += "/" + asm.Version;
+						itemList[j].SubItems[1].Text += "/" + asm.Version.ToString();
 						isDuplicate = true;
 						break;
 					}
 				}
 				if (!isDuplicate) {
-					ListViewItem item = new ListViewItem(new string[] {asm.ShortName, asm.Version});
+					ListViewItem item = new ListViewItem(new string[] {asm.ShortName, asm.Version.ToString()});
 					item.Tag = asm;
 					itemList.Add(item);
 				}

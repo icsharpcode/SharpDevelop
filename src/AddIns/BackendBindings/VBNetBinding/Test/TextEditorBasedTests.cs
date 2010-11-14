@@ -18,10 +18,15 @@ namespace ICSharpCode.VBNetBinding.Tests
 			this.textEditor = new MockTextEditor();
 		}
 		
-		protected void TestCtrlSpace(string fileHeader, string fileFooter, bool expected, Action<ICompletionItemList> constraint)
+		protected void TestCtrlSpace(string file, bool expected, Action<ICompletionItemList> constraint)
 		{
-			this.textEditor.Document.Text = fileHeader + fileFooter;
-			this.textEditor.Caret.Offset = fileHeader.Length;
+			int insertionPoint = file.IndexOf('|');
+			
+			if (insertionPoint < 0)
+				Assert.Fail("insertionPoint not found in text!");
+			
+			this.textEditor.Document.Text = file.Replace("|", "");
+			this.textEditor.Caret.Offset = insertionPoint;
 			this.textEditor.CreateParseInformation();
 			
 			bool invoked = new VBNetCompletionBinding().CtrlSpace(textEditor);
@@ -33,10 +38,15 @@ namespace ICSharpCode.VBNetBinding.Tests
 			constraint(list);
 		}
 		
-		protected void TestKeyPress(string fileHeader, string fileFooter, char keyPressed, CodeCompletionKeyPressResult keyPressResult, Action<ICompletionItemList> constraint)
+		protected void TestKeyPress(string file, char keyPressed, CodeCompletionKeyPressResult keyPressResult, Action<ICompletionItemList> constraint)
 		{
-			this.textEditor.Document.Text = fileHeader + fileFooter;
-			this.textEditor.Caret.Offset = fileHeader.Length;
+			int insertionPoint = file.IndexOf('|');
+			
+			if (insertionPoint < 0)
+				Assert.Fail("insertionPoint not found in text!");
+			
+			this.textEditor.Document.Text = file.Replace("|", "");
+			this.textEditor.Caret.Offset = insertionPoint;
 			this.textEditor.CreateParseInformation();
 			
 			CodeCompletionKeyPressResult result = new VBNetCompletionBinding().HandleKeyPress(textEditor, keyPressed);
@@ -48,10 +58,15 @@ namespace ICSharpCode.VBNetBinding.Tests
 			constraint(list);
 		}
 		
-		protected void TestTextInsert(string fileHeader, string fileFooter, char completionChar, ICompletionItemList list, ICompletionItem item, string expectedOutput, int expectedOffset)
+		protected void TestTextInsert(string file, char completionChar, ICompletionItemList list, ICompletionItem item, string expectedOutput, int expectedOffset)
 		{
-			this.textEditor.Document.Text = fileHeader + fileFooter;
-			this.textEditor.Caret.Offset = fileHeader.Length;
+			int insertionPoint = file.IndexOf('|');
+			
+			if (insertionPoint < 0)
+				Assert.Fail("insertionPoint not found in text!");
+			
+			this.textEditor.Document.Text = file.Replace("|", "");
+			this.textEditor.Caret.Offset = insertionPoint;
 			this.textEditor.CreateParseInformation();
 			
 			CompletionContext context = new CompletionContext() {
@@ -66,10 +81,10 @@ namespace ICSharpCode.VBNetBinding.Tests
 			if (!context.CompletionCharHandled && context.CompletionChar != '\n')
 				this.textEditor.Document.Insert(this.textEditor.Caret.Offset, completionChar + "");
 			
-			string insertedText = this.textEditor.Document.GetText(fileHeader.Length, this.textEditor.Document.TextLength - fileHeader.Length - fileFooter.Length);
+			string insertedText = this.textEditor.Document.GetText(insertionPoint, this.textEditor.Document.TextLength - file.Length + 1);
 			
 			Assert.AreEqual(expectedOutput, insertedText);
-			Assert.AreEqual(fileHeader.Length + expectedOffset, textEditor.Caret.Offset);
+			Assert.AreEqual(insertionPoint + expectedOffset, textEditor.Caret.Offset);
 		}
 	}
 }

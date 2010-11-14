@@ -160,5 +160,43 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			return StringParser.Parse(question, new string[,] {{"FileName", Text}});
 		}
+
+		public virtual AbstractProjectBrowserTreeNode GetNodeByRelativePath(string relativePath)
+		{
+
+			if (relativePath == Text)
+				return this;
+
+			string[] targets = relativePath.Trim('/', '\\').Split('/', '\\');
+			if (targets[0] != Text)
+				return null;
+
+			if (!this.IsExpanded)
+			{
+				// the targetNode is not expanded so it's as deep as we can go
+				//LoggingService.DebugFormatted("target node '{0};{1}' is not expanded.", targetNode, targetNode.Text);
+				return this;
+			}
+
+			string currentPath = relativePath.Trim('/', '\\').RemoveStart(targets[0]).Trim('/', '\\');
+			//LoggingService.Debug("entering depth loop...");
+			//LoggingService.DebugFormatted(@"\- looking for '{0}'", relativePath);
+			//LoggingService.DebugFormatted(@"\- starting at '{0}'", targetNode != null ? targetNode.Text : "null");
+
+			//LoggingService.Debug("-- looking for: "+target);
+			foreach (AbstractProjectBrowserTreeNode node in this.Nodes)
+			{
+				if (node == null)
+				{
+					// can happen when the node is currently expanding
+					continue;
+				}
+				AbstractProjectBrowserTreeNode tempNode = node.GetNodeByRelativePath(currentPath);
+				if (tempNode != null)
+					return tempNode;
+			}
+
+			return null;
+		}
 	}
 }

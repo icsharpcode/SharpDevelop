@@ -584,8 +584,8 @@ TypeWithRestriction<out TypeReference type, bool allowNullable, bool canBeUnboun
 .)
 =
 	( ClassType<out type, canBeUnbound>
-	| SimpleType<out name> (. type = new TypeReference(name, true); .)
-	| "void" "*"                         (. pointer = 1; type = new TypeReference("System.Void", true); .)
+	| SimpleType<out name> (. type = new TypeReference(name, true); type.StartLocation = startPos; type.EndLocation = t.EndLocation; .)
+	| "void" "*"                         (. pointer = 1; type = new TypeReference("System.Void", true); type.StartLocation = startPos; type.EndLocation = t.EndLocation; .)
 	)                                    (. List<int> r = new List<int>(); .)
 	
 	[ IF (allowNullable && la.kind == Tokens.Question) NullableQuestionMark<ref type> ]
@@ -708,8 +708,8 @@ ClassType<out TypeReference typeRef, bool canBeUnbound>
 (. TypeReference r; typeRef = null; .)
 =
 	TypeName<out r, canBeUnbound> (. typeRef = r; .)
-	| "object"                    (. typeRef = new TypeReference("System.Object", true); typeRef.StartLocation = t.Location; .)
-	| "string"                    (. typeRef = new TypeReference("System.String", true); typeRef.StartLocation = t.Location; .)
+	| "object"                    (. typeRef = new TypeReference("System.Object", true); typeRef.StartLocation = t.Location; typeRef.EndLocation = t.EndLocation; .)
+	| "string"                    (. typeRef = new TypeReference("System.String", true); typeRef.StartLocation = t.Location; typeRef.EndLocation = t.EndLocation; .)
 .
 
 IntegralType<out string name>          (. name = ""; .)
@@ -2344,7 +2344,7 @@ TypeName<out TypeReference typeRef, bool canBeUnbound>
 		[TypeArgumentList<out typeArguments, canBeUnbound>]
 		(. typeRef = new InnerClassTypeReference(typeRef, qualident, typeArguments); .)
 	}
-	(. typeRef.StartLocation = startLocation; .)
+	(. typeRef.StartLocation = startLocation; typeRef.EndLocation = t.EndLocation; .)
 .
 
 

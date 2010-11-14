@@ -202,6 +202,19 @@ End Class", "Test2", ExpressionContext.Default);
 	End Sub
 End Class", "Double", ExpressionContext.MethodBody);
 		}
+		
+		[Test]
+		public void FindExpressionAfterWordBegin()
+		{
+			Find(@"Class MainClass
+	Dim test As Integer
+	Sub Main()
+		If Me.test i| Then
+		
+		End If
+	End Sub
+End Class", "i", ExpressionContext.Default);
+		}
 		#endregion
 		
 		#region Context Tests

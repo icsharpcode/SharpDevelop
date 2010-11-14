@@ -26,11 +26,19 @@ namespace ICSharpCode.WpfDesign.AddIn
 		
 		protected IProjectContent GetProjectContent()
 		{
-			IProject p = ProjectService.OpenSolution.FindProjectContainingFile(viewContent.PrimaryFileName);
+			IProject p = FindProjectContainingFile();
 			if (p != null)
 				return ParserService.GetProjectContent(p) ?? ParserService.DefaultProjectContent;
 			else
 				return ParserService.DefaultProjectContent;
+		}
+		
+		IProject FindProjectContainingFile()
+		{
+			if (ProjectService.OpenSolution != null) {
+				return ProjectService.OpenSolution.FindProjectContainingFile(viewContent.PrimaryFileName);
+			}
+			return null;
 		}
 		
 		protected IClass GetDesignedClass()

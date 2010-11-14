@@ -12,7 +12,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public sealed class DomAssemblyName : IEquatable<DomAssemblyName>
 	{
 		readonly string fullAssemblyName;
-		readonly string shortName, version, culture, publicKeyToken;
+		readonly string shortName, culture, publicKeyToken;
+		readonly Version version;
 		
 		public DomAssemblyName(string fullAssemblyName)
 		{
@@ -25,7 +26,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (pos > 0) {
 					switch (val.Substring(0, pos)) {
 						case "Version":
-							version = val.Substring(pos + 1);
+							string versionText = val.Substring(pos + 1);
+							Version.TryParse(versionText, out version);
 							break;
 						case "Culture":
 							culture = val.Substring(pos + 1);
@@ -46,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get { return shortName; }
 		}
 		
-		public string Version {
+		public Version Version {
 			get { return version; }
 		}
 		

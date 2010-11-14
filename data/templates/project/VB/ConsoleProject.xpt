@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.ConsoleProject.Name}</Name>
-		<Category>VBNet</Category>
+		<Category>VB</Category>
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>VBNet.Project.DOSProject</Icon>
 		<Description>${res:Templates.Project.ConsoleProject.Description}</Description>

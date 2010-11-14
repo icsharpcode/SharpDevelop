@@ -17,7 +17,7 @@ namespace ICSharpCode.VBNetBinding.Tests
 		[Test]
 		public void TestEmptyFile()
 		{
-			TestKeyPress("", "", 'o', CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion,
+			TestKeyPress("|", 'o', CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion,
 			             list => {
 			             	Assert.IsTrue(list.Items.Any());
 			             	Assert.IsTrue(list.Items.All(item => item.Image == ClassBrowserIconService.Keyword));
@@ -32,7 +32,7 @@ namespace ICSharpCode.VBNetBinding.Tests
 		[Test]
 		public void TestOptions()
 		{
-			TestKeyPress("Option", "\n", ' ', CodeCompletionKeyPressResult.EatKey,
+			TestKeyPress("Option|\n", ' ', CodeCompletionKeyPressResult.EatKey,
 			             list => {
 			             	Assert.IsTrue(list.Items.Any());
 			             	Assert.IsTrue(list.Items.All(item => item.Image == ClassBrowserIconService.Keyword));
@@ -45,7 +45,7 @@ namespace ICSharpCode.VBNetBinding.Tests
 		[Test]
 		public void TestOptionCompare()
 		{
-			TestKeyPress("Option Compare", "\n", ' ', CodeCompletionKeyPressResult.EatKey,
+			TestKeyPress("Option Compare|\n", ' ', CodeCompletionKeyPressResult.EatKey,
 			             list => {
 			             	Assert.IsTrue(list.Items.Any());
 			             	Assert.IsTrue(list.Items.All(item => item.Image == ClassBrowserIconService.Keyword));
@@ -59,7 +59,7 @@ namespace ICSharpCode.VBNetBinding.Tests
 		public void TestOnOffOptions()
 		{
 			foreach (string option in new[] { "Infer", "Strict", "Explicit" }) {
-				TestKeyPress(string.Format("Option {0} ", option), "\n", 'o', CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion,
+				TestKeyPress(string.Format("Option {0} |\n", option), 'o', CodeCompletionKeyPressResult.CompletedIncludeKeyInCompletion,
 				             list => {
 				             	Assert.IsTrue(list.Items.Any());
 				             	Assert.IsTrue(list.Items.All(item => item.Image == ClassBrowserIconService.Keyword));
@@ -76,6 +76,48 @@ namespace ICSharpCode.VBNetBinding.Tests
 			
 			foreach (string element in expected)
 				Assert.Contains(element, items);
+		}
+		
+		[Test]
+		public void TestDotAfterDigit()
+		{
+			string text = @"Module Test
+	Public Function fn() As Double
+      Dim f As Double
+      f = 1|
+   End Function
+End Module";
+			
+			TestKeyPress(text, '.', CodeCompletionKeyPressResult.None, list => Assert.IsFalse(list.Items.Any()));
+		}
+		
+		[Test]
+		public void TestDotAfterIdentifier()
+		{
+			string text = @"Module Test
+	Public Function fn(x As Double) As Double
+	      Dim f As Double
+	      f = x|
+   End Function
+End Module";
+			
+			TestKeyPress(text, '.', CodeCompletionKeyPressResult.Completed, list => Assert.IsTrue(list.Items.Any()));
+		}
+		
+		[Test]
+		public void TestWithBlockCtrlSpace()
+		{
+			string text = @"Module Test
+	Sub Test2(a As Exception)
+		With a
+			|
+		End With
+	End Sub
+End Module";
+			
+			// TODO seems to be wrong!
+			
+			TestCtrlSpace(text, true, list => Assert.IsFalse(list.Items.Any(i => i.Text == "InnerException")));
 		}
 	}
 }

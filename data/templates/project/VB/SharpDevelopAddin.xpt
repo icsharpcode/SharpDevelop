@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.SharpDevelopAddin.Name}</Name>
-		<Category>VBNet</Category>
+		<Category>VB</Category>
 		<Subcategory>SharpDevelop</Subcategory>
 		<Icon>VBNet.Project.ControlLibrary</Icon>
 		<Description>${res:Templates.Project.SharpDevelopAddin.Description}</Description>
