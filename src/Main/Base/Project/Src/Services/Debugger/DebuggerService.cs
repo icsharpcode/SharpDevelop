@@ -271,7 +271,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				}
 				if (toolTipText != null) {
 					if (debuggerCanShowValue && currentDebugger != null) {
-						e.SetToolTip(currentDebugger.GetTooltipControl(expressionResult.Expression));
+						object toolTip = currentDebugger.GetTooltipControl(expressionResult.Expression);
+						if (toolTip != null)
+							e.SetToolTip(toolTip);
+						else
+							e.SetToolTip(toolTipText);
 					} else {
 						e.SetToolTip(toolTipText);
 					}
