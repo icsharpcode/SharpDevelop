@@ -53,7 +53,7 @@ namespace ICSharpCode.VBNetBinding
 				
 				var rr = resolver.Resolve(expressionResult, info, editor.Document.Text);
 				
-				if (rr == null || !rr.IsValid) {
+				if (rr == null || !rr.IsValid || (pressedKey != '.' && !completingDotExpression)) {
 					if (((BitArray)expressionResult.Tag)[Tokens.Identifier])
 						data = new NRefactoryResolver(LanguageProperties.VBNet)
 							.CtrlSpace(editor.Caret.Line, editor.Caret.Column, info, editor.Document.Text, expressionResult.Context,
