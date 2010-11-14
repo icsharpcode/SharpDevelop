@@ -324,7 +324,7 @@ namespace Debugger.AddIn.Tooltips
 				return;
 			
 			var resultNode = currentDebugger.GetNode(node.FullName, node.ImageName);
-			if (resultNode == null) 
+			if (resultNode == null)
 				return;
 			// HACK for updating the pins in tooltip
 			var observable = new ObservableCollection<ITreeNode>();

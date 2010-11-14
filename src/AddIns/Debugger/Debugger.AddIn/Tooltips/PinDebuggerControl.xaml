@@ -234,6 +234,10 @@
 				Height="0"
 				MaxHeight="50">
 				<TextBox
+					FontFamily="Khmer UI"
+					BorderBrush="Gray"
+					BorderThickness="1"
+					FontSize="12"
 					Name="CommentTextBox"
 					TextChanged="CommentTextBox_TextChanged"
 					Margin="3"/>
