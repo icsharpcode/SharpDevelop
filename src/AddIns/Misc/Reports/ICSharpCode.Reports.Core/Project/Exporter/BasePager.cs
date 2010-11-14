@@ -23,6 +23,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		public event EventHandler<PageCreatedEventArgs> PageCreated;
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
 		public event EventHandler<GroupHeaderEventArgs> GroupHeaderRendering;
+		public event EventHandler<GroupFooterEventArgs> GroupFooterRendering;
+		
 		public event EventHandler<RowRenderEventArgs> RowRendering;
 		
 		#region Constructor
@@ -241,6 +243,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 			
 		}
 		
+		
+		protected void FireGroupFooterEvent (GroupFooterEventArgs gfea)
+		{
+			
+			EventHelper.Raise<GroupFooterEventArgs>(GroupFooterRendering,this,gfea);
+		}
+		
+		
 		protected void FireRowRenderEvent (RowRenderEventArgs rrea)
 		{
 			EventHelper.Raise<RowRenderEventArgs>(RowRendering,this,rrea);
@@ -286,14 +296,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			get { return SinglePage.SectionBounds; }
 		}
-		
-		
-//		protected bool PageFull
-//		{
-//			get { return pageFull; }
-//			set { pageFull = value; }
-//		}
-//		
 		
 		#endregion
 	}

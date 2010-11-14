@@ -167,6 +167,8 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 			IReportCreator reportCreator = DataPageBuilder.CreateInstance(reportModel,data,layouter);
 			reportCreator.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
 			reportCreator.GroupHeaderRendering += new EventHandler<GroupHeaderEventArgs>(GroupHeaderRendering);
+			reportCreator.GroupFooterRendering += GroupFooterRendering;
+			
 			reportCreator.RowRendering += new EventHandler<RowRenderEventArgs>(RowRendering);
 			reportCreator.PageCreated += OnPageCreated;
 			reportCreator.BuildExportList();
@@ -224,12 +226,22 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		private void GroupHeaderRendering (object sender, GroupHeaderEventArgs ghea)
 		{
-			Console.WriteLine();
 			Console.WriteLine("ReportViewer - GroupHeaderRendering  :");
 //			BaseGroupedRow v = ghea.GroupHeader;
 //			v.BackColor = System.Drawing.Color.Red;
-			
 		}
+		
+		
+		private void GroupFooterRendering ( object sender, GroupFooterEventArgs gfea)
+		{
+//			Console.WriteLine();
+			Console.WriteLine("ReportViewer - GroupFooterRendering  :");
+//			var v = gfea.GroupFooter;
+//			v.BackColor = System.Drawing.Color.Red;
+//			BaseTextItem i = (BaseTextItem)v.Items[0];
+//			i.Text ="neuer text";
+		}
+		
 		
 		private void RowRendering (object sender,RowRenderEventArgs rrea)
 		{

@@ -117,6 +117,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 					
 					baseConverter.SectionRendering += OnSectionRendering;
 					baseConverter.GroupHeaderRendering += OnGroupHeaderRendering;
+					baseConverter.GroupFooterRendering += OnGroupFooterRendering;
 					baseConverter.RowRendering += OnRowRendering;
 					
 					baseConverter.Graphics = base.Graphics;
@@ -145,6 +146,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 //			Console.WriteLine("Datapagebuilder : OnGroupHeaderRendering");
 			base.FireGroupHeaderEvent(ghea);
 		}
+		
+		
+		void OnGroupFooterRendering (object sender, GroupFooterEventArgs gfea)
+		{
+//			Console.WriteLine ("DatapageBuilder : OnGroupFooterEvent");
+			base.FireGroupFooterEvent(gfea);
+		}
+		
 		
 		void OnRowRendering (object sender,RowRenderEventArgs rrea)
 		{

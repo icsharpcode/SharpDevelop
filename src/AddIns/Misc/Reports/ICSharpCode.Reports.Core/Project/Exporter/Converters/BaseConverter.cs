@@ -33,6 +33,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		public event EventHandler <NewPageEventArgs> PageFull;
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
 		public event EventHandler<GroupHeaderEventArgs> GroupHeaderRendering;
+		public event EventHandler<GroupFooterEventArgs> GroupFooterRendering;
 		public event EventHandler<RowRenderEventArgs> RowRendering;
 
 		public BaseConverter(IDataNavigator dataNavigator,ExporterPage singlePage,
@@ -92,6 +93,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 			
 		
+		protected void FireGroupFooterRendering (GroupFooter groupFooter)
+		{
+			GroupFooterEventArgs gfea = new GroupFooterEventArgs(groupFooter);
+			EventHelper.Raise<GroupFooterEventArgs>(GroupFooterRendering,this,gfea);
+		}
+		
 		
 		protected void FireSectionRendering (BaseSection section)
 		{
@@ -128,31 +135,31 @@ namespace ICSharpCode.Reports.Core.Exporter
 	
 		#region Grouping
 		
-		protected void ConvertGroupFooter (BaseSection section,ISimpleContainer container,ExporterCollection exporterCollection,int left)
+		protected void ConvertGroupFooter (BaseSection section,ISimpleContainer container,ExporterCollection exporterCollection)
 		{
 			var footers = BaseConverter.FindGroupFooter(container);
 			if (footers.Count > 0) {
-//							base.FireGroupHeaderRendering(groupedRows[0]);
+				FireGroupFooterRendering(footers[0]);
 				Size rowSize = footers[0].Size;
-				CurrentPosition = ConvertStandardRow(exporterCollection,section,(ISimpleContainer)footers[0],left,CurrentPosition);
+				CurrentPosition = ConvertStandardRow(exporterCollection,section,(ISimpleContainer)footers[0]);
 				footers[0].Size = rowSize;
 			}
 		}
 		
-		protected Point ConvertGroupChilds(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer, int defaultLeftPos, Point currentPosition)
+		protected Point ConvertGroupChilds(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer)
 		{
 			PrepareContainerForConverting(section,simpleContainer);
 			FireRowRendering(simpleContainer);
-			Point curPos  = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+			Point curPos  = BaseConvert(mylist,simpleContainer,DefaultLeftPosition,CurrentPosition);
 			AfterConverting (section,mylist);
 			return curPos;
 		}
 		
 		
-		protected void ExPageBreakAfterGroupChange(BaseSection section,ISimpleContainer container,ExporterCollection exporterCollection)
+		protected void PageBreakAfterGroupChange(BaseSection section,ISimpleContainer container,ExporterCollection exporterCollection)
 		{
 			
-			if (PageBreakAfterGroupChange(section) ) {
+			if (CheckPageBreakAfterGroupChange(section) ) {
 				
 				if (DataNavigator.HasMoreData)
 				{
@@ -162,7 +169,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		private  bool PageBreakAfterGroupChange(ISimpleContainer container)
+		private  bool CheckPageBreakAfterGroupChange(ISimpleContainer container)
 		{
 			var groupedRows  = BaseConverter.FindGroupHeader(container);
 			if (groupedRows.Count > 0) {
@@ -249,6 +256,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			get {return this.evaluator;}
 		}
 		
+		protected int DefaultLeftPosition {get;set;}
 		
 		protected	void PrepareContainerForConverting(BaseSection section,ISimpleContainer simpleContainer)
 		{
@@ -264,12 +272,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		
 		
-		protected  Point ConvertStandardRow(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer, int defaultLeftPos, Point currentPosition)
+		protected  Point ConvertStandardRow(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer)
 		{
 			var rowSize = simpleContainer.Size;
 			FillRow(simpleContainer);
 			PrepareContainerForConverting(section,simpleContainer);
-			Point curPos = BaseConverter.BaseConvert(mylist,simpleContainer,defaultLeftPos,currentPosition);
+			Point curPos = BaseConvert(mylist,simpleContainer,DefaultLeftPosition,CurrentPosition);
 			AfterConverting (section,mylist);
 			simpleContainer.Size = rowSize;
 			return curPos;

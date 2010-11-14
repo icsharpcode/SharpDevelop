@@ -16,6 +16,7 @@ namespace ICSharpCode.Reports.Core
 		event EventHandler<PageCreatedEventArgs> PageCreated;
 		event EventHandler<SectionRenderEventArgs> SectionRendering;
 		event EventHandler<GroupHeaderEventArgs> GroupHeaderRendering;
+		event EventHandler<GroupFooterEventArgs> GroupFooterRendering;
 		event EventHandler<RowRenderEventArgs> RowRendering;
 	}
 }

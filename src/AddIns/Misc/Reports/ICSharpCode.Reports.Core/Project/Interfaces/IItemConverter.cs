@@ -39,5 +39,6 @@ namespace ICSharpCode.Reports.Core.Interfaces
 		Point CurrentPosition {get;set;}
 		event EventHandler<GroupHeaderEventArgs> GroupHeaderRendering;
 		event EventHandler<RowRenderEventArgs> RowRendering;
+		event EventHandler<GroupFooterEventArgs> GroupFooterRendering;
 	}
 }

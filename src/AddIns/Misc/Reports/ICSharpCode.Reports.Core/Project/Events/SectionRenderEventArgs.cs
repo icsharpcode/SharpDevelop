@@ -8,6 +8,19 @@ namespace ICSharpCode.Reports.Core {
 	/// Description of SectionRenderEventArgs.
 	/// </summary>
 	
+	public class GroupFooterEventArgs: EventArgs
+	{
+		public GroupFooterEventArgs (GroupFooter groupFooter)
+		{
+			GroupFooter = groupFooter;
+		}
+		
+		public GroupFooter GroupFooter {get; private set;}
+		
+	}
+	
+	
+	
 	
 	public class GroupHeaderEventArgs: EventArgs
 	{
