@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.WindowsService.Name}</Name>
-		<Category>VBNet</Category>
+		<Category>VB</Category>
 		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>VBNet.Project.ServiceProject</Icon>
 		<Description>${res:Templates.Project.WindowsService.Description}</Description>
