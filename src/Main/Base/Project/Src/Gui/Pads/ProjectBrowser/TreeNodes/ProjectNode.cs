@@ -140,6 +140,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Delete()
 		{
 			ProjectService.RemoveSolutionFolder(Project.IdGuid);
+			Project.Dispose();
 			ProjectService.SaveSolution();
 		}
 		
