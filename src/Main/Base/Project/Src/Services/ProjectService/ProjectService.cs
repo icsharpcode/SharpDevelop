@@ -624,9 +624,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static void HandleRemovedSolutionFolder(ISolutionFolder folder)
 		{
-			if (folder is IProject) {
-				OpenSolution.RemoveProjectConfigurations(folder.IdGuid);
-				ParserService.RemoveProjectContentForRemovedProject((IProject)folder);
+			IProject project = folder as IProject;
+			if (project != null) {
+				OpenSolution.RemoveProjectConfigurations(project.IdGuid);
+				ParserService.RemoveProjectContentForRemovedProject(project);
+				project.Dispose();
 			}
 			if (folder is ISolutionFolderContainer) {
 				// recurse into child folders that were also removed
