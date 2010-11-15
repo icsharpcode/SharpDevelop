@@ -49,14 +49,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 			
 			BaseSection section = table.Parent as BaseSection;
 			
-			base.CurrentPosition = new Point(PrintHelper.DrawingAreaRelativeToParent(this.table.Parent,this.table).Location.X,
-			                                 base.SectionBounds.DetailStart.Y);
-//			int defaultLeftPos = base.CurrentPosition.X;
-			base.DefaultLeftPosition = base.CurrentPosition.X;
+			ISimpleContainer headerRow = null;
 			Point dataAreaStart = new Point(table.Items[0].Location.X,table.Items[0].Location.Y + base.CurrentPosition.Y);
 			
-			ISimpleContainer headerRow = null;
-			Rectangle pageBreakRect = Rectangle.Empty;
+			base.CurrentPosition = new Point(PrintHelper.DrawingAreaRelativeToParent(this.table.Parent,this.table).Location.X,
+			                                 base.SectionBounds.DetailStart.Y);
+
+			base.DefaultLeftPosition = base.CurrentPosition.X;
+			
 			this.table.Items.SortByLocation();
 			
 			// Header
@@ -115,7 +115,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 							
 							// GroupFooter
 							base.ConvertGroupFooter(section,table,exporterCollection);
-							base.PageBreakAfterGroupChange(section,table,exporterCollection);
+							base.PageBreakAfterGroupChange(section,exporterCollection);
 							
 							base.Evaluator.SinglePage.IDataNavigator = base.DataNavigator;
 						}
@@ -198,7 +198,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				StandardPrinter.EvaluateRow(base.Evaluator,list);
 				
 				exportList.AddRange(list);
-				AfterConverting (section,list);
+				AfterConverting (list);
 				retVal =  new Point (base.DefaultLeftPosition,offset.Y + groupCollection[0].Size.Height + 20  + (3 *GlobalValues.GapBetweenContainer));
 				
 				

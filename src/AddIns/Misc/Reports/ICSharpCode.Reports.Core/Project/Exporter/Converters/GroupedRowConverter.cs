@@ -70,7 +70,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 				childSize  = section.Items[1].Size;
 			}
 			
-			Rectangle pageBreakRect = Rectangle.Empty;
 			
 			do {
 				base.SaveSectionSize(section.Size);
@@ -115,7 +114,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 						// GroupFooter
 						base.ConvertGroupFooter(section,section,exporterCollection);
 						
-						base.PageBreakAfterGroupChange(section,section,exporterCollection);
+						base.PageBreakAfterGroupChange(section,exporterCollection);
 						
 						base.Evaluator.SinglePage.IDataNavigator = base.DataNavigator;
 					}
@@ -183,7 +182,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				StandardPrinter.EvaluateRow(base.Evaluator,list);
 				
 				exportList.AddRange(list);
-				AfterConverting (section,list);
+				AfterConverting (list);
 				retVal =  new Point (DefaultLeftPosition,offset.Y + groupCollection[0].Size.Height + 20  + (3 *GlobalValues.GapBetweenContainer));
 			} else {
 				base.FireGroupHeaderRendering(groupedRows[0]);
