@@ -2,16 +2,13 @@
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
 using System;
-using System.Collections;
 using System.Windows.Controls;
 using System.Windows.Input;
+
 using Debugger;
-using Debugger.AddIn;
-using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.NRefactory;
 using ICSharpCode.NRefactory.Visitors;
-using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;

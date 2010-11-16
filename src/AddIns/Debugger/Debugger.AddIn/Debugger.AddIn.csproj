@@ -58,6 +58,7 @@
     <StartProgram>..\..\..\..\bin\SharpDevelop.exe</StartProgram>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
@@ -95,6 +96,10 @@
       <DependentUpon>ConditionCell.xaml</DependentUpon>
     </Compile>
     <Compile Include="Pads\Controls\Converters.cs" />
+    <Compile Include="Pads\Controls\SimpleListViewControl.xaml.cs">
+      <DependentUpon>SimpleListViewControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Pads\Controls\TreeListView.cs" />
     <Compile Include="Pads\Controls\WatchList.xaml.cs">
       <DependentUpon>WatchList.xaml</DependentUpon>
@@ -345,6 +350,7 @@
   <ItemGroup>
     <Page Include="Pads\CallStackPad.xaml" />
     <Page Include="Pads\Controls\ConditionCell.xaml" />
+    <Page Include="Pads\Controls\SimpleListViewControl.xaml" />
     <Page Include="Pads\Controls\WatchList.xaml" />
     <Page Include="Pads\WatchInputBox.xaml" />
     <Page Include="Service\EditBreakpointScriptWindow.xaml" />
