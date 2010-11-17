@@ -481,7 +481,7 @@ namespace ICSharpCode.VBNetBinding
 			
 			string text = lineSeg.Text;
 			
-			if (StripComment(text).Trim(' ', '\t', '\r', '\n').EndsWith("_", StringComparison.OrdinalIgnoreCase))
+			if (text.TrimComments().Trim(' ', '\t', '\r', '\n').EndsWith("_", StringComparison.OrdinalIgnoreCase))
 				return true;
 			else
 				return false;
@@ -513,11 +513,6 @@ namespace ICSharpCode.VBNetBinding
 			bool match = statement.EndStatement.IndexOf(token.Value, StringComparison.OrdinalIgnoreCase) != -1;
 			
 			return empty && match;
-		}
-		
-		static string StripComment(string text)
-		{
-			return Regex.Replace(text, "'.*$", "", RegexOptions.Singleline).Trim();
 		}
 		
 		static bool IsInsideDocumentationComment(ITextEditor editor, IDocumentLine curLine, int cursorOffset)
@@ -623,10 +618,10 @@ namespace ICSharpCode.VBNetBinding
 		
 		static int GetLastVisualLine(int line, ITextEditor area)
 		{
-			string text = StripComment(area.Document.GetLine(line).Text);
+			string text = area.Document.GetLine(line).Text.TrimComments();
 			while (text.EndsWith("_", StringComparison.Ordinal)) {
 				line++;
-				text = StripComment(area.Document.GetLine(line).Text);
+				text = area.Document.GetLine(line).Text.TrimComments();
 			}
 			return line;
 		}
@@ -754,7 +749,7 @@ namespace ICSharpCode.VBNetBinding
 			for (int i = begin; i <= end; i++) {
 				IDocumentLine curLine = editor.Document.GetLine(i);
 				string lineText = curLine.Text.Trim(' ', '\t', '\r', '\n');
-				string noComments = StripComment(lineText).TrimEnd(' ', '\t', '\r', '\n');
+				string noComments = lineText.TrimComments().TrimEnd(' ', '\t', '\r', '\n');
 				
 				if (i < selBegin || i > selEnd) {
 					indentation.PopOrDefault();
