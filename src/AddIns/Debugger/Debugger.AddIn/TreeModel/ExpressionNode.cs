@@ -78,60 +78,8 @@ namespace Debugger.AddIn.TreeModel
 			get {
 				if (!evaluated) EvaluateExpression();
 				
-				return GetFullName() ?? Name.Trim();
+				return this.expression.PrettyPrint() ?? Name.Trim();
 			}
-		}
-		
-		private string GetFullName()
-		{
-			// TODO : do this better
-			if (expression is MemberReferenceExpression) {
-				var memberExpression = (MemberReferenceExpression)expression;
-				
-				Expression currentExpression = memberExpression;
-				Stack<string> stack = new Stack<string>();
-				while (currentExpression is MemberReferenceExpression)
-				{
-					var exp = (MemberReferenceExpression)currentExpression;
-					stack.Push(exp.MemberName);
-					stack.Push(".");
-					
-					currentExpression = exp.TargetObject;
-				}
-				
-				if (currentExpression is CastExpression) {
-					var castExpression = (CastExpression)currentExpression;
-					currentExpression = castExpression.Expression;
-					
-					while (currentExpression is MemberReferenceExpression)
-					{
-						var exp = (MemberReferenceExpression)currentExpression;
-						stack.Push(exp.MemberName);
-						stack.Push(".");
-						
-						currentExpression = exp.TargetObject;
-					}
-				}
-				
-				if (currentExpression is IdentifierExpression) {
-					var identifierExpression = (IdentifierExpression)currentExpression;
-					stack.Push(identifierExpression.Identifier);
-				}
-				
-				if (currentExpression is ThisReferenceExpression) {
-					stack.Push("this");
-				}
-				
-				// create fullname
-				StringBuilder sb = new StringBuilder();
-				while(stack.Count > 0)
-					sb.Append(stack.Pop());
-				
-				fullName = sb.ToString();
-				return fullName;
-			}
-			
-			return null;
 		}
 		
 		public override string Type {
