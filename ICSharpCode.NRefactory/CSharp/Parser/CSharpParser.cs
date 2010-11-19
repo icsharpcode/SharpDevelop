@@ -2259,12 +2259,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			// TODO: can we optimize this to avoid the text->stream->text roundtrip?
 			using (MemoryStream stream = new MemoryStream ()) {
-				using (StreamWriter w = new StreamWriter(stream, Encoding.UTF8)) {
-					char[] buffer = new char[2048];
-					int read;
-					while ((read = reader.ReadBlock(buffer, 0, buffer.Length)) > 0)
-						w.Write(buffer, 0, read);
-				}
+				StreamWriter w = new StreamWriter(stream, Encoding.UTF8);
+				char[] buffer = new char[2048];
+				int read;
+				while ((read = reader.ReadBlock(buffer, 0, buffer.Length)) > 0)
+					w.Write(buffer, 0, read);
+				w.Flush(); // we can't close the StreamWriter because that would also close the MemoryStream
 				stream.Position = 0;
 				return Parse(stream);
 			}

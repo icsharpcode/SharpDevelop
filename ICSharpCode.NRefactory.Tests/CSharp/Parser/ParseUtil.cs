@@ -13,6 +13,23 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 	/// </summary>
 	public class ParseUtilCSharp
 	{
+		public static T ParseGlobal<T>(string code, bool expectErrors = false) where T : INode
+		{
+			CSharpParser parser = new CSharpParser();
+			CompilationUnit cu = parser.Parse(new StringReader(code));
+			
+			// TODO check for parser errors
+			/*if (expectErrors)
+				Assert.IsTrue(parser.Errors.ErrorOutput.Length > 0, "There were errors expected, but parser finished without errors.");
+			else
+				Assert.AreEqual("", parser.Errors.ErrorOutput);*/
+			
+			INode node = cu.Children.Single();
+			Type type = typeof(T);
+			Assert.IsTrue(type.IsAssignableFrom(node.GetType()), String.Format("Parsed node was {0} instead of {1} ({2})", node.GetType(), type, node));
+			return (T)node;
+		}
+		
 		public static T ParseStatement<T>(string stmt, bool expectErrors = false) where T : INode
 		{
 			Assert.Ignore("ParseExpression not yet implemented");

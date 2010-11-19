@@ -19,6 +19,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	{
 		static readonly ResolveResult ErrorResult = new ErrorResolveResult(SharedTypes.UnknownType);
 		static readonly ResolveResult DynamicResult = new ResolveResult(SharedTypes.Dynamic);
+		static readonly ResolveResult NullResult = new ResolveResult(SharedTypes.Null);
 		
 		readonly ITypeResolveContext context;
 		
@@ -32,6 +33,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Properties
+		/// <summary>
+		/// Gets the type resolve context used by the resolver.
+		/// </summary>
+		public ITypeResolveContext Context {
+			get { return context; }
+		}
+		
 		/// <summary>
 		/// Gets/Sets whether the current context is <c>checked</c>.
 		/// </summary>
@@ -1555,6 +1563,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return ErrorResult;
 		}
 		
+		public ResolveResult ResolveIndexer(ResolveResult target, ResolveResult[] arguments, string[] argumentNames = null)
+		{
+			throw new NotImplementedException();
+		}
+		
 		static List<DefaultParameter> CreateParameters(ResolveResult[] arguments, string[] argumentNames)
 		{
 			List<DefaultParameter> list = new List<DefaultParameter>();
@@ -1653,5 +1666,77 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return new ConstantResolveResult(int32, size);
 		}
 		#endregion
+		
+		#region This/Base
+		/// <summary>
+		/// Resolves 'this'.
+		/// </summary>
+		public ResolveResult ResolveThisReference()
+		{
+			ITypeDefinition t = CurrentTypeDefinition;
+			if (t != null) {
+				return new ResolveResult(t);
+			}
+			return ErrorResult;
+		}
+		
+		/// <summary>
+		/// Resolves 'base'.
+		/// </summary>
+		public ResolveResult ResolveBaseReference()
+		{
+			ITypeDefinition t = CurrentTypeDefinition;
+			if (t != null) {
+				foreach (IType baseType in t.GetBaseTypes(context)) {
+					ITypeDefinition baseTypeDef = baseType.GetDefinition();
+					if (baseTypeDef != null && baseTypeDef.ClassType != ClassType.Interface) {
+						return new ResolveResult(baseType);
+					}
+				}
+			}
+			return ErrorResult;
+		}
+		#endregion
+		
+		#region ResolveConditional
+		public ResolveResult ResolveConditional(ResolveResult trueExpression, ResolveResult falseExpression)
+		{
+			// C# 4.0 spec §7.14: Conditional operator
+			Conversions c = new Conversions(context);
+			bool isValid;
+			IType resultType;
+			if (HasType(trueExpression) && HasType(falseExpression)) {
+				bool t2f = c.ImplicitConversion(trueExpression.Type, falseExpression.Type);
+				bool f2t = c.ImplicitConversion(falseExpression.Type, trueExpression.Type);
+				resultType = (f2t && !t2f) ? falseExpression.Type : trueExpression.Type;
+				isValid = (t2f != f2t) || (t2f && f2t && c.IdentityConversion(trueExpression.Type, falseExpression.Type));
+			} else if (HasType(trueExpression)) {
+				resultType = trueExpression.Type;
+				isValid = c.ImplicitConversion(falseExpression, resultType);
+			} else if (HasType(falseExpression)) {
+				resultType = falseExpression.Type;
+				isValid = c.ImplicitConversion(trueExpression, resultType);
+			} else {
+				return ErrorResult;
+			}
+			return isValid ? new ResolveResult(resultType) : new ErrorResolveResult(resultType);
+		}
+		
+		bool HasType(ResolveResult r)
+		{
+			return r.Type != SharedTypes.UnknownType && r.Type != SharedTypes.Null;
+		}
+		#endregion
+		
+		public ResolveResult ResolvePrimitive(object value)
+		{
+			if (value == null) {
+				return NullResult;
+			} else {
+				TypeCode typeCode = Type.GetTypeCode(value.GetType());
+				IType type = typeCode.ToTypeReference().Resolve(context);
+				return new ConstantResolveResult(type, value);
+			}
+		}
 	}
 }

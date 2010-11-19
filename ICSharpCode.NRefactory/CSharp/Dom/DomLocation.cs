@@ -1,4 +1,4 @@
-//
+﻿//
 // DomLocation.cs
 //
 // Author:
@@ -63,14 +63,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override bool Equals (object other)
 		{
-			if (!(other is DomLocation)) 
+			if (!(other is DomLocation))
 				return false;
 			return (DomLocation)other == this;
 		}
 		
 		public override int GetHashCode ()
 		{
-			return Line + Column * 5000;
+			unchecked {
+				return Line + Column * 5000;
+			}
 		}
 		
 		public bool Equals (DomLocation other)
@@ -97,7 +99,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (invariantString.ToUpper () == "EMPTY")
 				return DomLocation.Empty;
 			string[] splits = invariantString.Split (',', '/');
-			if (splits.Length == 2) 
+			if (splits.Length == 2)
 				return new DomLocation (Int32.Parse (splits[0]), Int32.Parse (splits[1]));
 			return DomLocation.Empty;
 		}

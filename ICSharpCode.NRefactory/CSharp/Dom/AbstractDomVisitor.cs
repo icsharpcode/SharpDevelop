@@ -1,4 +1,4 @@
-// 
+﻿// 
 // IDomVisitor.cs
 //  
 // Author:
@@ -28,7 +28,7 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class AbtractDomVisitor<T, S> : IDomVisitor<T, S>
+	public abstract class AbstractDomVisitor<T, S> : IDomVisitor<T, S>
 	{
 		protected S VisitChildren (INode node, T data)
 		{

@@ -84,6 +84,7 @@
     <Compile Include="CSharp\Parser\Expression\TypeOfExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\TypeReferenceExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\UnaryOperatorExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\GeneralScope\AttributeSectionTests.cs" />
     <Compile Include="CSharp\Parser\ParseUtil.cs" />
     <Compile Include="CSharp\Resolver\BinaryOperatorTests.cs" />
     <Compile Include="CSharp\Resolver\CastTests.cs" />
@@ -117,6 +118,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\Parser\Expression" />
+    <Folder Include="CSharp\Parser\GeneralScope" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
