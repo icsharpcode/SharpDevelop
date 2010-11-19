@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TypeDeclaration.cs
 //  
 // Author:
@@ -47,6 +47,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		// TODO: rename to TypeParameters, more specific return type
 		public IEnumerable<INode> TypeArguments {
 			get {
 				return GetChildrenByRole (Roles.TypeArgument).Cast<INode> ();

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // INode.cs
 //  
 // Author:
@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -33,6 +34,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		INode Parent { 
 			get;
 			set;
+		}
+		
+		IEnumerable<INode> Children {
+			get;
 		}
 		
 		int Role {

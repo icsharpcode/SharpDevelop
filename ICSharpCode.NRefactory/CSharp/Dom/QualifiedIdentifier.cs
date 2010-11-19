@@ -1,4 +1,4 @@
-// 
+﻿// 
 // QualifiedIdentifier.cs
 //  
 // Author:
@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace ICSharpCode.NRefactory.CSharp
@@ -40,6 +42,12 @@ namespace ICSharpCode.NRefactory.CSharp
 					builder.Append (identifier.Name);
 				}
 				return builder.ToString ();
+			}
+		}
+		
+		public IEnumerable<Identifier> NameParts {
+			get { 
+				return GetChildrenByRole (Roles.Identifier).Cast<Identifier>();
 			}
 		}
 		

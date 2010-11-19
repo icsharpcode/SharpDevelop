@@ -12,7 +12,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	{
 		EntityType EntityType { get; }
 		
+		/// <summary>
+		/// Gets the complete entity region (including header+body)
+		/// </summary>
 		DomRegion Region { get; }
+		
+		/// <summary>
+		/// Gets the entity body region.
+		/// </summary>
 		DomRegion BodyRegion { get; }
 		
 		/// <summary>

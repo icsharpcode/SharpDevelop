@@ -1732,6 +1732,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		#region ResolvePrimitive
 		public ResolveResult ResolvePrimitive(object value)
 		{
 			if (value == null) {
@@ -1742,5 +1743,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return new ConstantResolveResult(type, value);
 			}
 		}
+		#endregion
 	}
 }

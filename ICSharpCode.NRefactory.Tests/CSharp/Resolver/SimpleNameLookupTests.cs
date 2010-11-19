@@ -2,6 +2,8 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.TypeSystem;
 
@@ -101,6 +103,37 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public void AliasOperatorOnNamespace()
 		{
 			Assert.IsTrue(resolver.ResolveAlias("System").IsError);
+		}
+		
+		[Test]
+		public void FindClassInCurrentNamespace()
+		{
+			resolver.UsingScope = MakeUsingScope("System.Collections");
+			TypeResolveResult trr = (TypeResolveResult)resolver.ResolveSimpleName("String", new IType[0]);
+			Assert.AreEqual("System.String", trr.Type.FullName);
+		}
+		
+		[Test]
+		public void FindNeighborNamespace()
+		{
+			resolver.UsingScope = MakeUsingScope("System.Collections");
+			NamespaceResolveResult nrr = (NamespaceResolveResult)resolver.ResolveSimpleName("Text", new IType[0]);
+			Assert.AreEqual("System.Text", nrr.NamespaceName);
+		}
+		
+		[Test]
+		public void FindTypeParameters()
+		{
+			resolver.UsingScope = MakeUsingScope("System.Collections.Generic");
+			resolver.CurrentTypeDefinition = context.GetClass(typeof(List<>));
+			resolver.CurrentMember = resolver.CurrentTypeDefinition.Methods.Single(m => m.Name == "ConvertAll");
+			
+			TypeResolveResult trr;
+			trr = (TypeResolveResult)resolver.ResolveSimpleName("TOutput", new IType[0]);
+			Assert.AreSame(((IMethod)resolver.CurrentMember).TypeParameters[0], trr.Type);
+			
+			trr = (TypeResolveResult)resolver.ResolveSimpleName("T", new IType[0]);
+			Assert.AreSame(resolver.CurrentTypeDefinition.TypeParameters[0], trr.Type);
 		}
 	}
 }

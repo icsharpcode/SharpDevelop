@@ -61,11 +61,13 @@ namespace Mono.CSharp
 
 			public int GetHashCode (char[] obj)
 			{
-				int h = 0;
-				for (int i = 0; i < length; ++i)
-					h = (h << 5) - h + obj [i];
-
-				return h;
+				unchecked {
+					int h = 0;
+					for (int i = 0; i < length; ++i)
+						h = (h << 5) - h + obj [i];
+	
+					return h;
+				}
 			}
 		}
 
