@@ -2,6 +2,7 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 using NUnit.Framework;
 
@@ -35,16 +36,29 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		/// <summary>
-		/// Adds a using to the current top-level using scope.
+		/// Adds a using to the current using scope.
 		/// </summary>
 		protected void AddUsing(string namespaceName)
+		{
+			resolver.UsingScope.Usings.Add(MakeReference(namespaceName));
+		}
+		
+		/// <summary>
+		/// Adds a using alias to the current using scope.
+		/// </summary>
+		protected void AddUsingAlias(string alias, string target)
+		{
+			resolver.UsingScope.UsingAliases.Add(new KeyValuePair<string, ITypeOrNamespaceReference>(alias, MakeReference(target)));
+		}
+		
+		protected ITypeOrNamespaceReference MakeReference(string namespaceName)
 		{
 			string[] nameParts = namespaceName.Split('.');
 			ITypeOrNamespaceReference r = new SimpleTypeOrNamespaceReference(nameParts[0], new ITypeReference[0], resolver.CurrentTypeDefinition, resolver.UsingScope, true);
 			for (int i = 1; i < nameParts.Length; i++) {
 				r = new MemberTypeOrNamespaceReference(r, nameParts[i], new ITypeReference[0], resolver.CurrentTypeDefinition, resolver.UsingScope);
 			}
-			resolver.UsingScope.Usings.Add(r);
+			return r;
 		}
 		
 		protected IType ResolveType(Type type)

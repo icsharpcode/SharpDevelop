@@ -48,5 +48,59 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			TypeResolveResult trr = (TypeResolveResult)resolver.ResolveSimpleName("String", new IType[0]);
 			Assert.AreEqual("System.String", trr.Type.FullName);
 		}
+		
+		[Test]
+		public void GlobalIsUnknownIdentifier()
+		{
+			Assert.IsTrue(resolver.ResolveSimpleName("global", new IType[0]).IsError);
+		}
+		
+		[Test]
+		public void GlobalIsAlias()
+		{
+			NamespaceResolveResult nrr = (NamespaceResolveResult)resolver.ResolveAlias("global");
+			Assert.AreEqual("", nrr.NamespaceName);
+		}
+		
+		[Test]
+		public void AliasToImportedType()
+		{
+			AddUsing("System");
+			AddUsingAlias("x", "String");
+			TypeResolveResult trr = (TypeResolveResult)resolver.ResolveSimpleName("x", new IType[0]);
+			// Unknown type (as String isn't looked up in System)
+			Assert.AreSame(SharedTypes.UnknownType, trr.Type);
+		}
+		
+		[Test]
+		public void AliasToImportedType2()
+		{
+			AddUsing("System");
+			resolver.UsingScope = new UsingScope(resolver.UsingScope, "SomeNamespace");
+			AddUsingAlias("x", "String");
+			TypeResolveResult trr = (TypeResolveResult)resolver.ResolveSimpleName("x", new IType[0]);
+			Assert.AreEqual("System.String", trr.Type.FullName);
+		}
+		
+		[Test]
+		public void AliasOperatorOnTypeAlias()
+		{
+			AddUsingAlias("x", "System.String");
+			Assert.IsTrue(resolver.ResolveAlias("x").IsError);
+		}
+		
+		[Test]
+		public void AliasOperatorOnNamespaceAlias()
+		{
+			AddUsingAlias("x", "System.Collections.Generic");
+			NamespaceResolveResult nrr = (NamespaceResolveResult)resolver.ResolveAlias("x");
+			Assert.AreEqual("System.Collections.Generic", nrr.NamespaceName);
+		}
+		
+		[Test]
+		public void AliasOperatorOnNamespace()
+		{
+			Assert.IsTrue(resolver.ResolveAlias("System").IsError);
+		}
 	}
 }

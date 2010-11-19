@@ -27,9 +27,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		WrongNumberOfTypeArguments = 0x0008,
 		/// <summary>
 		/// After substituting type parameters with the inferred types; a constructed type within the formal parameters
-		/// does not satisfy its contraint.
+		/// does not satisfy its constraint.
 		/// </summary>
-		ConstructedTypeDoesNotSatisfyContraint = 0x0010,
+		ConstructedTypeDoesNotSatisfyConstraint = 0x0010,
 		/// <summary>
 		/// No argument was mapped to a non-optional parameter
 		/// </summary>

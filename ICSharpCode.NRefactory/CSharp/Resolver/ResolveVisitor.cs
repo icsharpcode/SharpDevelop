@@ -161,7 +161,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitDirectionExpression(DirectionExpression directionExpression, object data)
 		{
 			ResolveResult rr = Resolve(directionExpression.Expression);
-			return new ResolveResult(new ByReferenceType(rr.Type));
+			return new ByReferenceResolveResult(rr.Type, directionExpression.FieldDirection == FieldDirection.Out);
 		}
 		
 		public override ResolveResult VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)

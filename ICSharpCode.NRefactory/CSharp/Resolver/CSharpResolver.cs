@@ -1452,8 +1452,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				// then look for aliases:
 				if (k == 0) {
 					if (n.ExternAliases.Contains(identifier)) {
-						// TODO: implement extern alias support
-						return new NamespaceResolveResult(string.Empty);
+						return ResolveExternAlias(identifier);
 					}
 					if (lookupMode != SimpleNameLookupMode.TypeInUsingDeclaration || n != this.UsingScope) {
 						foreach (var pair in n.UsingAliases) {
@@ -1502,8 +1501,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return new NamespaceResolveResult(string.Empty);
 			for (UsingScope n = this.UsingScope; n != null; n = n.Parent) {
 				if (n.ExternAliases.Contains(identifier)) {
-					// TODO: implement extern alias support
-					return new NamespaceResolveResult(string.Empty);
+					return ResolveExternAlias(identifier);
 				}
 				foreach (var pair in n.UsingAliases) {
 					if (pair.Key == identifier) {
@@ -1512,6 +1510,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			return ErrorResult;
+		}
+		
+		ResolveResult ResolveExternAlias(string alias)
+		{
+			// TODO: implement extern alias support
+			return new NamespaceResolveResult(string.Empty);
 		}
 		#endregion
 		
@@ -1667,7 +1671,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
-		#region This/Base
+		#region Resolve This/Base Reference
 		/// <summary>
 		/// Resolves 'this'.
 		/// </summary>

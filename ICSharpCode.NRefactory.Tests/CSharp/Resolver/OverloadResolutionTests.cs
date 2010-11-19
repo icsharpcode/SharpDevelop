@@ -165,19 +165,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			OverloadResolution o;
 			o = new OverloadResolution(context, new ResolveResult[0], typeArguments: new[] { typeof(int).ToTypeReference().Resolve(context) });
 			Assert.AreEqual(OverloadResolutionErrors.None, o.AddCandidate(m1));
-			Assert.AreEqual(OverloadResolutionErrors.ConstructedTypeDoesNotSatisfyContraint, o.AddCandidate(m2));
+			Assert.AreEqual(OverloadResolutionErrors.ConstructedTypeDoesNotSatisfyConstraint, o.AddCandidate(m2));
 			Assert.AreSame(m1, o.BestCandidate);
 			
 			// Call: Foo<string>();
 			o = new OverloadResolution(context, new ResolveResult[0], typeArguments: new[] { typeof(string).ToTypeReference().Resolve(context) });
-			Assert.AreEqual(OverloadResolutionErrors.ConstructedTypeDoesNotSatisfyContraint, o.AddCandidate(m1));
+			Assert.AreEqual(OverloadResolutionErrors.ConstructedTypeDoesNotSatisfyConstraint, o.AddCandidate(m1));
 			Assert.AreEqual(OverloadResolutionErrors.None, o.AddCandidate(m2));
 			Assert.AreSame(m2, o.BestCandidate);
 			
 			// Call: Foo<int?>();
 			o = new OverloadResolution(context, new ResolveResult[0], typeArguments: new[] { typeof(int?).ToTypeReference().Resolve(context) });
-			Assert.AreEqual(OverloadResolutionErrors.ConstructedTypeDoesNotSatisfyContraint, o.AddCandidate(m1));
-			Assert.AreEqual(OverloadResolutionErrors.ConstructedTypeDoesNotSatisfyContraint, o.AddCandidate(m2));
+			Assert.AreEqual(OverloadResolutionErrors.ConstructedTypeDoesNotSatisfyConstraint, o.AddCandidate(m1));
+			Assert.AreEqual(OverloadResolutionErrors.ConstructedTypeDoesNotSatisfyConstraint, o.AddCandidate(m2));
 			Assert.AreEqual(OverloadResolutionErrors.None, o.AddCandidate(m3));
 			Assert.AreSame(m3, o.BestCandidate);
 		}

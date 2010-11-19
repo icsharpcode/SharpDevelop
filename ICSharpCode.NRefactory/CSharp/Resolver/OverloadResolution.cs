@@ -232,7 +232,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				candidate.ParameterTypes[i] = candidate.ParameterTypes[i].AcceptVisitor(substitution);
 			}
 			if (!substitution.ConstraintsValid)
-				candidate.AddError(OverloadResolutionErrors.ConstructedTypeDoesNotSatisfyContraint);
+				candidate.AddError(OverloadResolutionErrors.ConstructedTypeDoesNotSatisfyConstraint);
 		}
 		
 		sealed class ConstraintValidatingSubstitution : TypeVisitor

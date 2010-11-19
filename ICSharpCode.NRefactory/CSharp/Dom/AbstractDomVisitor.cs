@@ -32,10 +32,10 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		protected S VisitChildren (INode node, T data)
 		{
-			INode child = node.FirstChild as INode;
+			INode child = node.FirstChild;
 			while (child != null) {
 				child.AcceptVisitor (this, data);
-				child = child.NextSibling as INode;
+				child = child.NextSibling;
 			}
 			return default (S);
 		}
