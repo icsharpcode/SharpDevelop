@@ -36,12 +36,14 @@ namespace ICSharpCode.Reports.Core {
 	
 	public class RowRenderEventArgs : EventArgs
 	{
-		public RowRenderEventArgs (BaseRowItem row)
+		public RowRenderEventArgs (BaseRowItem row,object rowData)
 		{
 			Row = row;	
+			RowData = rowData;
 		}
 		
-		BaseRowItem Row {get;set;}
+		public BaseRowItem Row {get; private set;}
+		public object RowData {get; private set;}
 	}
 	
 	

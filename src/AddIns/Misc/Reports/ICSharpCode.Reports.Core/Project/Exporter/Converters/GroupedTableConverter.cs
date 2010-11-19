@@ -105,7 +105,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 								
 								childNavigator.Fill(simpleContainer.Items);
 
-								base.CurrentPosition = ConvertGroupChilds (exporterCollection,section,table);						                                           
+								base.CurrentPosition = ConvertGroupChilds (exporterCollection,section,simpleContainer,childNavigator);						                                           
 								                                          
 								simpleContainer.Size = containerSize;
 								CheckForPageBreak(section,simpleContainer,headerRow,exporterCollection);
@@ -135,7 +135,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 						PrintHelper.AdjustSectionLocation(section);
 						CheckForPageBreak(section,simpleContainer,headerRow,exporterCollection);
-						base.FireRowRendering(simpleContainer);
+						base.FireRowRendering(simpleContainer,base.DataNavigator);
 						base.CurrentPosition = ConvertStandardRow (exporterCollection,section,simpleContainer);
 						simpleContainer.Size = containerSize;
 						section.Size = base.RestoreSectionSize;

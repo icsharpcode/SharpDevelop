@@ -72,13 +72,13 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		#region Events
 		
-		protected void FireRowRendering (ISimpleContainer detailRow)
+		protected void FireRowRendering (ISimpleContainer detailRow,IDataNavigator currentNavigator)
 		{
 			BaseRowItem row = detailRow as BaseRowItem;
 			if (row == null) {
 				throw new ArgumentException("row");
 			}
-			RowRenderEventArgs rrea = new RowRenderEventArgs(row);
+			RowRenderEventArgs rrea = new RowRenderEventArgs(row,currentNavigator.Current);
 			EventHelper.Raise<RowRenderEventArgs>(RowRendering,this,rrea);
 		}
 		
@@ -144,10 +144,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 			}
 		}
 		
-		protected Point ConvertGroupChilds(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer)
+		protected Point ConvertGroupChilds(ExporterCollection mylist, BaseSection section,
+		                                   ISimpleContainer simpleContainer,IDataNavigator currentNavigator)
 		{
 			PrepareContainerForConverting(section,simpleContainer);
-			FireRowRendering(simpleContainer);
+			FireRowRendering(simpleContainer,currentNavigator);
 			Point curPos  = BaseConvert(mylist,simpleContainer,DefaultLeftPosition,CurrentPosition);
 			AfterConverting (mylist);
 			return curPos;

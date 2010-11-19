@@ -104,10 +104,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 							
 							childNavigator.Fill(simpleContainer.Items);
 							
-							base.CurrentPosition = ConvertGroupChilds (exporterCollection,section,simpleContainer);
-							                                    
+							base.CurrentPosition = ConvertGroupChilds (exporterCollection,section,simpleContainer,childNavigator);                                 
 							CheckForPageBreak(section,exporterCollection);
-
 						}
 						while ( childNavigator.MoveNext());
 						
@@ -124,7 +122,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 					// No Grouping at all, the first item in section.items is the DetailRow
 					Size containerSize = section.Items[0].Size;
 
-					base.FireRowRendering(simpleContainer);
+					base.FireRowRendering(simpleContainer,base.DataNavigator);
 					base.CurrentPosition = ConvertStandardRow (exporterCollection,section,simpleContainer);
 					
 					section.Size = base.RestoreSectionSize;

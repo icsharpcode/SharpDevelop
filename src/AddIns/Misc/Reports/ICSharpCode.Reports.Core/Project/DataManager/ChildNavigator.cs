@@ -71,7 +71,8 @@ namespace ICSharpCode.Reports.Core
 		public object Current {
 			get {
 				TableStrategy t = this.store as TableStrategy;
-				return t.myCurrent(enumerator.Current.ListIndex);
+//				return t.myCurrent(enumerator.Current.ListIndex);
+				return t.myCurrent(this.indexList[CurrentRow].ListIndex);
 			}
 		}
 		
