@@ -35,6 +35,7 @@ namespace ICSharpCode.NRefactory.Demo
 			foreach (var element in cu.Children) {
 				csharpTreeView.Nodes.Add(MakeTreeNode(element));
 			}
+			SelectCurrentNode(csharpTreeView.Nodes);
 		}
 		
 		TreeNode MakeTreeNode(INode node)
@@ -88,17 +89,41 @@ namespace ICSharpCode.NRefactory.Demo
 			return role.ToString();
 		}
 		
+		bool SelectCurrentNode(TreeNodeCollection c)
+		{
+			int selectionStart = csharpCodeTextBox.SelectionStart;
+			int selectionEnd = selectionStart + csharpCodeTextBox.SelectionLength;
+			foreach (TreeNode t in c) {
+				INode node = t.Tag as INode;
+				if (node != null
+				    && selectionStart >= GetOffset(csharpCodeTextBox, node.StartLocation)
+				    && selectionEnd <= GetOffset(csharpCodeTextBox, node.EndLocation))
+				{
+					t.Expand();
+					if (!SelectCurrentNode(t.Nodes))
+						csharpTreeView.SelectedNode = t;
+					return true;
+				}
+			}
+			return false;
+		}
+		
 		void CSharpGenerateCodeButtonClick(object sender, EventArgs e)
 		{
 			throw new NotImplementedException();
+		}
+		
+		int GetOffset(TextBox textBox, DomLocation location)
+		{
+			return textBox.GetFirstCharIndexFromLine(location.Line - 1) + location.Column - 1;
 		}
 		
 		void CSharpTreeViewAfterSelect(object sender, TreeViewEventArgs e)
 		{
 			INode node = e.Node.Tag as INode;
 			if (node != null) {
-				int startOffset = csharpCodeTextBox.GetFirstCharIndexFromLine(node.StartLocation.Line - 1) + node.StartLocation.Column - 1;
-				int endOffset = csharpCodeTextBox.GetFirstCharIndexFromLine(node.EndLocation.Line - 1) + node.EndLocation.Column - 1;
+				int startOffset = GetOffset(csharpCodeTextBox, node.StartLocation);
+				int endOffset = GetOffset(csharpCodeTextBox, node.EndLocation);
 				csharpCodeTextBox.Select(startOffset, endOffset - startOffset);
 			}
 		}
