@@ -1,4 +1,4 @@
-// 
+﻿// 
 // BinaryOperatorExpression.cs
 //  
 // Author:
@@ -38,6 +38,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		public BinaryOperatorType BinaryOperatorType {
 			get;
 			set;
+		}
+		
+		[ObsoleteAttribute]
+		public BinaryOperatorType Op {
+			get { return this.BinaryOperatorType; }
 		}
 		
 		public CSharpTokenNode Operator {

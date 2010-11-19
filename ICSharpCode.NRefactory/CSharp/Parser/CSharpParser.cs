@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpParser.cs
 //  
 // Author:
@@ -2248,14 +2248,33 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			#endregion
 		}
-		public CompilationUnit Parse (string fileName, string text)
+		
+		public DomLocation StartLocation {
+			get { return new DomLocation(1, 1); }
+			// TODO: add support for setting the start location when parsing parts of files (e.g. for ASP.NET)
+			set { throw new NotImplementedException(); }
+		}
+		
+		public CompilationUnit Parse (TextReader reader)
+		{
+			// TODO: can we optimize this to avoid the text->stream->text roundtrip?
+			using (MemoryStream stream = new MemoryStream ()) {
+				using (StreamWriter w = new StreamWriter(stream, Encoding.UTF8)) {
+					char[] buffer = new char[2048];
+					int read;
+					while ((read = reader.ReadBlock(buffer, 0, buffer.Length)) > 0)
+						w.Write(buffer, 0, read);
+				}
+				stream.Position = 0;
+				return Parse(stream);
+			}
+		}
+		
+		public CompilationUnit Parse (Stream stream)
 		{
 			lock (CompilerCallableEntryPoint.parseLock) {
-				CompilerCompilationUnit top;
-				using (Stream stream = new MemoryStream (Encoding.UTF8.GetBytes (text))) {
-					top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, fileName, Console.Out);
-				}
-	
+				CompilerCompilationUnit top = CompilerCallableEntryPoint.ParseFile (new string[] { "-v", "-unsafe"}, stream, "parsed.cs", Console.Out);
+				
 				if (top == null)
 					return null;
 				CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
@@ -2263,5 +2282,40 @@ namespace ICSharpCode.NRefactory.CSharp
 				return conversionVisitor.Unit;
 			}
 		}
+		
+		public List<INode> ParseTypeMembers(TextReader reader)
+		{
+			// TODO: add support for type members
+			throw new NotImplementedException();
+		}
+		
+		public BlockStatement ParseBlock(TextReader reader)
+		{
+			// TODO: add support for parsing statement blocks
+			throw new NotImplementedException();
+		}
+		
+		public INode ParseTypeReference(TextReader reader)
+		{
+			// TODO: add support for parsing type references
+			throw new NotImplementedException();
+		}
+		
+		public INode ParseExpression(TextReader reader)
+		{
+			// TODO: add support for parsing expressions
+			throw new NotImplementedException();
+		}
+		
+		/// <summary>
+		/// Parses a file snippet; guessing what the code snippet represents (compilation unit, type members, block, type reference, expression).
+		/// </summary>
+		public INode ParseSnippet(TextReader reader)
+		{
+			// TODO: add support for parsing a part of a file
+			throw new NotImplementedException();
+		}
+		
+		// TODO: add API for retrieving parser errors/warning
 	}
 }

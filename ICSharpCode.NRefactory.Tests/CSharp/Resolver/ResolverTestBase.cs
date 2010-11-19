@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			string[] nameParts = namespaceName.Split('.');
 			ITypeOrNamespaceReference r = new SimpleTypeOrNamespaceReference(nameParts[0], new ITypeReference[0], resolver.CurrentTypeDefinition, resolver.UsingScope, true);
 			for (int i = 1; i < nameParts.Length; i++) {
-				throw new NotImplementedException();
+				r = new MemberTypeOrNamespaceReference(r, nameParts[i], new ITypeReference[0], resolver.CurrentTypeDefinition, resolver.UsingScope);
 			}
 			resolver.UsingScope.Usings.Add(r);
 		}

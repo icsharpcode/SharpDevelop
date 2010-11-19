@@ -58,6 +58,33 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CSharp\Parser\Expression\AliasReferenceExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\AnonymousMethodTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\ArrayObjectCreateExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\AssignmentExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\BaseReferenceExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\BinaryOperatorExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\CastExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\CheckedExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\ConditionalExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\DefaultValueExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\IdentifierExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\IndexerExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\InvocationExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\IsExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\LambdaExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\MemberReferenceExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\ParenthesizedExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\PointerReferenceExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\PrimitiveExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\QueryExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\SizeOfExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\StackAllocExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\ThisReferenceExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\TypeOfExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\TypeReferenceExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\Expression\UnaryOperatorExpressionTests.cs" />
+    <Compile Include="CSharp\Parser\ParseUtil.cs" />
     <Compile Include="CSharp\Resolver\BinaryOperatorTests.cs" />
     <Compile Include="CSharp\Resolver\CastTests.cs" />
     <Compile Include="CSharp\Resolver\ConversionsTest.cs" />
@@ -89,7 +116,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="CSharp\" />
+    <Folder Include="CSharp\Parser\Expression" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

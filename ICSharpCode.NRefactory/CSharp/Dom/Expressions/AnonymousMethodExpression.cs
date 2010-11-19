@@ -1,4 +1,4 @@
-// 
+﻿// 
 // AnonymousMethodExpression.cs
 //  
 // Author:
@@ -36,6 +36,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			get {
 				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclarationExpression>();
 			}
+		}
+		
+		public IEnumerable<ParameterDeclarationExpression> Parameters { 
+			// TODO: Arguments or Parameters ???
+			get {
+				return this.Arguments;
+			}
+		}
+		
+		public bool HasParameterList {
+			get { throw new NotImplementedException(); }
 		}
 		
 		public BlockStatement Body {
