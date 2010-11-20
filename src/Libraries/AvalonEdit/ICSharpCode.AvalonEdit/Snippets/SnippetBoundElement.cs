@@ -35,13 +35,17 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		public override void Insert(InsertionContext context)
 		{
 			if (targetElement != null) {
-				int start = context.InsertionPosition;
+				TextAnchor start = context.Document.CreateAnchor(context.InsertionPosition);
+				start.MovementType = AnchorMovementType.BeforeInsertion;
+				start.SurviveDeletion = true;
 				string inputText = targetElement.Text;
 				if (inputText != null) {
 					context.InsertText(ConvertText(inputText));
 				}
-				int end = context.InsertionPosition;
-				AnchorSegment segment = new AnchorSegment(context.Document, start, end - start);
+				TextAnchor end = context.Document.CreateAnchor(context.InsertionPosition);
+				end.MovementType = AnchorMovementType.BeforeInsertion;
+				end.SurviveDeletion = true;
+				AnchorSegment segment = new AnchorSegment(start, end);
 				context.RegisterActiveElement(this, new BoundActiveElement(context, targetElement, this, segment));
 			}
 		}
@@ -91,10 +95,14 @@ namespace ICSharpCode.AvalonEdit.Snippets
 				int offset = segment.Offset;
 				int length = segment.Length;
 				string text = boundElement.ConvertText(targetElement.Text);
-				context.Document.Replace(offset, length, text);
-				if (length == 0) {
-					// replacing an empty anchor segment with text won't enlarge it, so we have to recreate it
-					segment = new AnchorSegment(context.Document, offset, text.Length);
+				if (length != text.Length || text != context.Document.GetText(offset, length)) {
+					// Call replace only if we're actually changing something.
+					// Without this check, we would generate an empty undo group when the user pressed undo.
+					context.Document.Replace(offset, length, text);
+					if (length == 0) {
+						// replacing an empty anchor segment with text won't enlarge it, so we have to recreate it
+						segment = new AnchorSegment(context.Document, offset, text.Length);
+					}
 				}
 			}
 		}

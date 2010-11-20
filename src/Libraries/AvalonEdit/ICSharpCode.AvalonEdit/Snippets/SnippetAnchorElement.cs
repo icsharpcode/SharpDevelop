@@ -27,9 +27,11 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		/// <inheritdoc />
 		public override void Insert(InsertionContext context)
 		{
-			int start = context.InsertionPosition;
-			AnchorSegment segment = new AnchorSegment(context.Document, start, 0);
-			context.RegisterActiveElement(this, new AnchorElement(segment, "", Name, context));
+			TextAnchor start = context.Document.CreateAnchor(context.InsertionPosition);
+			start.MovementType = AnchorMovementType.BeforeInsertion;
+			start.SurviveDeletion = true;
+			AnchorSegment segment = new AnchorSegment(start, start);
+			context.RegisterActiveElement(this, new AnchorElement(segment, Name, context));
 		}
 	}
 	
@@ -54,11 +56,10 @@ namespace ICSharpCode.AvalonEdit.Snippets
 		/// <summary>
 		/// Creates a new AnchorElement.
 		/// </summary>
-		public AnchorElement(AnchorSegment segment, string text, string name, InsertionContext context)
+		public AnchorElement(AnchorSegment segment, string name, InsertionContext context)
 		{
 			this.segment = segment;
 			this.context = context;
-			this.Text = text;
 			this.Name = name;
 		}
 		
