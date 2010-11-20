@@ -22,9 +22,8 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 			
 			Debug.Assert(numops > 0 , "UndoOperationGroup : numops should be > 0");
-			if (numops > stack.Count) {
-				numops = stack.Count;
-			}
+			Debug.Assert(numops <= stack.Count);
+			
 			undolist = new IUndoableOperation[numops];
 			for (int i = 0; i < numops; ++i) {
 				undolist[i] = stack.PopBack();

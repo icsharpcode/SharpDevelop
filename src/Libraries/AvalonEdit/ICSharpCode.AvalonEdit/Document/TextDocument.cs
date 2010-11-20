@@ -98,7 +98,6 @@ namespace ICSharpCode.AvalonEdit.Document
 			
 			anchorTree = new TextAnchorTree(this);
 			undoStack = new UndoStack();
-			undoStack.AttachToDocument(this);
 			FireChangeEvents();
 		}
 		
@@ -354,6 +353,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				throw new InvalidOperationException("Cannot change document within another document change.");
 			beginUpdateCount++;
 			if (beginUpdateCount == 1) {
+				undoStack.StartUndoGroup();
 				if (UpdateStarted != null)
 					UpdateStarted(this, EventArgs.Empty);
 			}
@@ -374,6 +374,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				// fire change events inside the change group - event handlers might add additional
 				// document changes to the change group
 				FireChangeEvents();
+				undoStack.EndUndoGroup();
 				beginUpdateCount = 0;
 				if (UpdateFinished != null)
 					UpdateFinished(this, EventArgs.Empty);
@@ -589,6 +590,8 @@ namespace ICSharpCode.AvalonEdit.Document
 			// fire DocumentChanging event
 			if (Changing != null)
 				Changing(this, args);
+			
+			undoStack.Push(this, args);
 			
 			cachedText = null; // reset cache of complete document text
 			fireTextChanged = true;
