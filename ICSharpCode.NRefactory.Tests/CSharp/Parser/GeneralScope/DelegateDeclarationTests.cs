@@ -57,5 +57,21 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			Assert.AreEqual(1, dd.Templates[0].Bases.Count);
 			Assert.AreEqual("ICloneable", dd.Templates[0].Bases[0].Type);*/ throw new NotImplementedException();
 		}
+		
+		[Test]
+		public void DelegateDeclarationInNamespace()
+		{
+			string program = "namespace N { delegate void MyDelegate(); }";
+			NamespaceDeclaration nd = ParseUtilCSharp.ParseGlobal<NamespaceDeclaration>(program);
+			Assert.AreEqual("MyDelegate", ((DelegateDeclaration)nd.Members.Single()).Name);
+		}
+		
+		[Test, Ignore("inner classes not yet implemented")]
+		public void DelegateDeclarationInClass()
+		{
+			string program = "class Outer { delegate void Inner(); }";
+			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
+			Assert.AreEqual("Inner", ((DelegateDeclaration)td.Members.Single()).Name);
+		}
 	}
 }

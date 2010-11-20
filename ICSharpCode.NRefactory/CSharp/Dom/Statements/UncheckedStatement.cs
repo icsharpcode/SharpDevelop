@@ -1,4 +1,4 @@
-// 
+﻿// 
 // UncheckedStatement.cs
 //  
 // Author:
@@ -31,8 +31,8 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class UncheckedStatement : AbstractNode
 	{
-		public INode EmbeddedStatement {
-			get { return (INode)GetChildByRole (Roles.EmbeddedStatement); }
+		public BlockStatement Block {
+			get { return (BlockStatement)GetChildByRole (Roles.Body); }
 		}
 		
 		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // GotoStatement.cs
 //  
 // Author:
@@ -40,7 +40,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public string Label {
-			get { return ((Identifier)LabelExpression).Name; }
+			get { 
+				Identifier i = this.LabelExpression as Identifier;
+				return i != null ? i.Name : null;
+			}
 		}
 
 		public INode LabelExpression {

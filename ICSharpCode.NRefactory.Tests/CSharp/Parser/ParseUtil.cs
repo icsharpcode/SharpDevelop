@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		
 		public static T ParseStatement<T>(string stmt, bool expectErrors = false) where T : INode
 		{
-			Assert.Ignore("ParseExpression not yet implemented");
+			Assert.Ignore("ParseStatement not yet implemented");
 			
 			CSharpParser parser = new CSharpParser();
 			BlockStatement parsedBlock = parser.ParseBlock(new StringReader(stmt));

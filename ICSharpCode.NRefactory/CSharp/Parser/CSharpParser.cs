@@ -1133,7 +1133,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				var result = new UncheckedStatement ();
 				result.AddChild (new CSharpTokenNode (Convert (uncheckedStatement.loc), "unchecked".Length), UncheckedStatement.Roles.Keyword);
-				result.AddChild ((INode)uncheckedStatement.Block.Accept (this), UncheckedStatement.Roles.EmbeddedStatement);
+				result.AddChild ((INode)uncheckedStatement.Block.Accept (this), UncheckedStatement.Roles.Body);
 				return result;
 			}
 			
@@ -1142,7 +1142,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				var result = new CheckedStatement ();
 				result.AddChild (new CSharpTokenNode (Convert (checkedStatement.loc), "checked".Length), CheckedStatement.Roles.Keyword);
-				result.AddChild ((INode)checkedStatement.Block.Accept (this), CheckedStatement.Roles.EmbeddedStatement);
+				result.AddChild ((INode)checkedStatement.Block.Accept (this), CheckedStatement.Roles.Body);
 				return result;
 			}
 			

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // YieldStatement.cs
 //  
 // Author:
@@ -34,6 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public const int YieldKeywordRole = 100;
 		public const int ReturnKeywordRole = 101;
 		public const int BreakKeywordRole = 102;
+		
 		public INode Expression {
 			get { return GetChildByRole (Roles.Expression); }
 		}
