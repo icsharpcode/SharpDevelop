@@ -3,12 +3,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using ICSharpCode.NRefactory.CSharp;
+using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.Demo
 {
@@ -25,17 +31,26 @@ namespace ICSharpCode.NRefactory.Demo
 			InitializeComponent();
 			
 			CSharpParseButtonClick(null, null);
+			resolveButton.UseWaitCursor = true;
+			ThreadPool.QueueUserWorkItem(
+				delegate {
+					builtInLibs.Value.ToString();
+					BeginInvoke(new Action(delegate { resolveButton.UseWaitCursor = false; }));
+				});
 		}
+		
+		CompilationUnit compilationUnit;
 		
 		void CSharpParseButtonClick(object sender, EventArgs e)
 		{
 			CSharpParser parser = new CSharpParser();
-			CompilationUnit cu = parser.Parse(new StringReader(csharpCodeTextBox.Text));
+			compilationUnit = parser.Parse(new StringReader(csharpCodeTextBox.Text));
 			csharpTreeView.Nodes.Clear();
-			foreach (var element in cu.Children) {
+			foreach (var element in compilationUnit.Children) {
 				csharpTreeView.Nodes.Add(MakeTreeNode(element));
 			}
 			SelectCurrentNode(csharpTreeView.Nodes);
+			resolveButton.Enabled = true;
 		}
 		
 		TreeNode MakeTreeNode(INode node)
@@ -76,7 +91,7 @@ namespace ICSharpCode.NRefactory.Demo
 		string DecodeRole(int role, Type type)
 		{
 			if (type != null) {
-				foreach (FieldInfo field in type.GetFields(BindingFlags.Public | BindingFlags.Static)) {
+				foreach (FieldInfo field in type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)) {
 					if (field.FieldType == typeof(int) && (int)field.GetValue(null) == role)
 						return field.Name;
 				}
@@ -99,9 +114,17 @@ namespace ICSharpCode.NRefactory.Demo
 				    && selectionStart >= GetOffset(csharpCodeTextBox, node.StartLocation)
 				    && selectionEnd <= GetOffset(csharpCodeTextBox, node.EndLocation))
 				{
-					t.Expand();
-					if (!SelectCurrentNode(t.Nodes))
+					if (selectionStart == selectionEnd
+					    && (selectionStart == GetOffset(csharpCodeTextBox, node.StartLocation)
+					        || selectionStart == GetOffset(csharpCodeTextBox, node.EndLocation)))
+					{
+						// caret is on border of this node; don't expand
 						csharpTreeView.SelectedNode = t;
+					} else {
+						t.Expand();
+						if (!SelectCurrentNode(t.Nodes))
+							csharpTreeView.SelectedNode = t;
+					}
 					return true;
 				}
 			}
@@ -125,6 +148,64 @@ namespace ICSharpCode.NRefactory.Demo
 				int startOffset = GetOffset(csharpCodeTextBox, node.StartLocation);
 				int endOffset = GetOffset(csharpCodeTextBox, node.EndLocation);
 				csharpCodeTextBox.Select(startOffset, endOffset - startOffset);
+			}
+		}
+		
+		Lazy<IList<IProjectContent>> builtInLibs = new Lazy<IList<IProjectContent>>(
+			delegate {
+				Assembly[] assemblies = {
+					typeof(object).Assembly, // mscorlib
+					typeof(Uri).Assembly, // System.dll
+					typeof(System.Linq.Enumerable).Assembly, // System.Core.dll
+//					typeof(System.Xml.XmlDocument).Assembly, // System.Xml.dll
+//					typeof(System.Drawing.Bitmap).Assembly, // System.Drawing.dll
+//					typeof(Form).Assembly, // System.Windows.Forms.dll
+					typeof(ICSharpCode.NRefactory.TypeSystem.IProjectContent).Assembly,
+				};
+				IProjectContent[] projectContents = new IProjectContent[assemblies.Length];
+				Stopwatch total = Stopwatch.StartNew();
+				Parallel.For(
+					0, assemblies.Length,
+					delegate (int i) {
+						Stopwatch w = Stopwatch.StartNew();
+						CecilLoader loader = new CecilLoader();
+						projectContents[i] = loader.LoadAssemblyFile(assemblies[i].Location);
+						Debug.WriteLine(Path.GetFileName(assemblies[i].Location) + ": " + w.Elapsed);
+					});
+				Debug.WriteLine("Total: " + total.Elapsed);
+				return projectContents;
+			});
+		
+		void ResolveButtonClick(object sender, EventArgs e)
+		{
+			resolveButton.Enabled = false;
+			SimpleProjectContent project = new SimpleProjectContent();
+			TypeSystemConvertVisitor convertVisitor = new TypeSystemConvertVisitor(project, "dummy.cs");
+			convertVisitor.VisitCompilationUnit(compilationUnit, null);
+			project.UpdateProjectContent(null, convertVisitor.ParsedFile.TopLevelTypeDefinitions, null, null);
+			
+			List<ITypeResolveContext> projects = new List<ITypeResolveContext>();
+			projects.Add(project);
+			projects.AddRange(builtInLibs.Value);
+			ITypeResolveContext context = new CompositeTypeResolveContext(projects);
+			
+			CSharpResolver resolver = new CSharpResolver(context);
+			
+			ResolveVisitor visitor = new ResolveVisitor(resolver, convertVisitor.ParsedFile);
+			visitor.VisitCompilationUnit(compilationUnit, null);
+			ShowResolveResultsInTree(csharpTreeView.Nodes, visitor);
+		}
+		
+		void ShowResolveResultsInTree(TreeNodeCollection c, ResolveVisitor v)
+		{
+			foreach (TreeNode t in c) {
+				INode node = t.Tag as INode;
+				if (node != null) {
+					ResolveResult rr = v.GetResolveResult(node);
+					if (rr != null)
+						t.Text += " " + rr.ToString();
+				}
+				ShowResolveResultsInTree(t.Nodes, v);
 			}
 		}
 	}

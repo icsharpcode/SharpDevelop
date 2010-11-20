@@ -14,26 +14,41 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class TypeSystemConvertVisitor : AbstractDomVisitor<object, IEntity>
 	{
-		readonly string fileName;
+		readonly ParsedFile parsedFile;
 		UsingScope usingScope;
 		DefaultTypeDefinition currentTypeDefinition;
 		
 		public TypeSystemConvertVisitor(IProjectContent pc, string fileName)
 		{
-			this.usingScope = new UsingScope(pc);
-			this.fileName = fileName;
+			this.parsedFile = new ParsedFile(fileName, new UsingScope(pc));
+			this.usingScope = parsedFile.RootUsingScope;
+		}
+		
+		public ParsedFile ParsedFile {
+			get { return parsedFile; }
 		}
 		
 		DomRegion MakeRegion(DomLocation start, DomLocation end)
 		{
-			return new DomRegion(fileName, start.Line, start.Column, end.Line, end.Column);
+			return new DomRegion(parsedFile.FileName, start.Line, start.Column, end.Line, end.Column);
 		}
 		
 		// TODO: extern aliases
 		
 		public override IEntity VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			ITypeOrNamespaceReference r = null;
+			foreach (Identifier identifier in usingDeclaration.NameIdentifier.NameParts) {
+				if (r == null) {
+					// TODO: alias?
+					r = new SimpleTypeOrNamespaceReference(identifier.Name, null, currentTypeDefinition, usingScope, true);
+				} else {
+					r = new MemberTypeOrNamespaceReference(r, identifier.Name, null, currentTypeDefinition, usingScope);
+				}
+			}
+			if (r != null)
+				usingScope.Usings.Add(r);
+			return null;
 		}
 		
 		public override IEntity VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration, object data)
@@ -43,11 +58,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override IEntity VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
 		{
+			DomRegion region = MakeRegion(namespaceDeclaration.StartLocation, namespaceDeclaration.EndLocation);
 			UsingScope previousUsingScope = usingScope;
 			foreach (Identifier ident in namespaceDeclaration.NameIdentifier.NameParts) {
 				usingScope = new UsingScope(usingScope, NamespaceDeclaration.BuildQualifiedName(usingScope.NamespaceName, ident.Name));
+				usingScope.Region = region;
 			}
 			base.VisitNamespaceDeclaration(namespaceDeclaration, data);
+			parsedFile.UsingScopes.Add(usingScope); // add after visiting children so that nested scopes come first
 			usingScope = previousUsingScope;
 			return null;
 		}
@@ -56,10 +74,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		DefaultTypeDefinition CreateTypeDefinition(string name)
 		{
-			if (currentTypeDefinition != null)
+			if (currentTypeDefinition != null) {
 				return new DefaultTypeDefinition(currentTypeDefinition, name);
-			else
-				return new DefaultTypeDefinition(usingScope.ProjectContent, usingScope.NamespaceName, name);
+			} else {
+				DefaultTypeDefinition newType = new DefaultTypeDefinition(usingScope.ProjectContent, usingScope.NamespaceName, name);
+				parsedFile.TopLevelTypeDefinitions.Add(newType);
+				return newType;
+			}
 		}
 		
 		public override IEntity VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
@@ -90,7 +111,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		void ConvertAttributes(IList<IAttribute> outputList, IEnumerable<AttributeSection> attributes)
 		{
-			throw new NotImplementedException();
+			foreach (AttributeSection section in attributes) {
+				throw new NotImplementedException();
+			}
 		}
 	}
 }

@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public abstract class AbstractDomVisitor<T, S> : IDomVisitor<T, S>
 	{
-		protected S VisitChildren (INode node, T data)
+		protected virtual S VisitChildren (INode node, T data)
 		{
 			INode child = node.FirstChild;
 			while (child != null) {

@@ -156,6 +156,7 @@
     <Compile Include="CSharp\Parser\mcs\MonoSymbolWriter.cs" />
     <Compile Include="CSharp\Parser\mcs\outline.cs" />
     <Compile Include="CSharp\Parser\mcs\roottypes.cs" />
+    <Compile Include="CSharp\Parser\ParsedFile.cs" />
     <Compile Include="CSharp\Parser\TypeSystemConvertVisitor.cs" />
     <Compile Include="CSharp\Resolver\AliasNamespaceReference.cs" />
     <Compile Include="CSharp\Resolver\AmbiguousResolveResult.cs" />
@@ -211,6 +212,7 @@
     <Compile Include="TypeSystem\Implementation\DefaultTypeParameter.cs" />
     <Compile Include="TypeSystem\Implementation\GetClassTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\CompositeTypeResolveContext.cs" />
+    <Compile Include="TypeSystem\Implementation\MethodTypeParameterSubstitution.cs" />
     <Compile Include="TypeSystem\Implementation\NestedTypeReference.cs" />
     <Compile Include="TypeSystem\Implementation\ProxyTypeResolveContext.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultTypeDefinition.cs" />

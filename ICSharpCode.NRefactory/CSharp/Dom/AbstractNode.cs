@@ -1,4 +1,4 @@
-// 
+﻿// 
 // AbstractNode.cs
 //  
 // Author:
@@ -175,7 +175,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public void InsertChildBefore (INode nextSibling, INode child, int role)
 		{
-			if (FirstChild == null || nextSibling == null) {
+			if (nextSibling == null) {
 				AddChild (child, role);
 				return;
 			}
@@ -187,6 +187,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (nextSibling.PrevSibling != null) {
 				child.PrevSibling = nextSibling.PrevSibling;
 				nextSibling.PrevSibling.NextSibling = child;
+			} else if (this.FirstChild == nextSibling) {
+				this.FirstChild = child;
 			}
 			nextSibling.PrevSibling = child;
 		}

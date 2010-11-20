@@ -16,6 +16,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	{
 		static readonly ResolveResult errorResult = new ErrorResolveResult(SharedTypes.UnknownType);
 		readonly CSharpResolver resolver;
+		readonly ParsedFile parsedFile;
 		readonly Dictionary<INode, ResolveResult> cache = new Dictionary<INode, ResolveResult>();
 		
 		/// <summary>
@@ -23,11 +24,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public bool FullyResolveSubExpressions { get; set; }
 		
-		public ResolveVisitor(CSharpResolver resolver)
+		public ResolveVisitor(CSharpResolver resolver, ParsedFile parsedFile)
 		{
 			if (resolver == null)
 				throw new ArgumentNullException("resolver");
 			this.resolver = resolver;
+			this.parsedFile = parsedFile;
 			this.FullyResolveSubExpressions = true;
 		}
 		
@@ -40,7 +42,70 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return result;
 		}
 		
-		#region Checked / Unchecked
+		public ResolveResult GetResolveResult(INode node)
+		{
+			ResolveResult result;
+			if (cache.TryGetValue(node, out result))
+				return result;
+			else
+				return null;
+		}
+		
+		#region Track UsingScope
+		public override ResolveResult VisitCompilationUnit(CompilationUnit unit, object data)
+		{
+			UsingScope previousUsingScope = resolver.UsingScope;
+			try {
+				if (parsedFile != null)
+					resolver.UsingScope = parsedFile.RootUsingScope;
+				return base.VisitCompilationUnit(unit, data);
+			} finally {
+				resolver.UsingScope = previousUsingScope;
+			}
+		}
+		
+		public override ResolveResult VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
+		{
+			UsingScope previousUsingScope = resolver.UsingScope;
+			try {
+				if (parsedFile != null) {
+					resolver.UsingScope = parsedFile.GetUsingScope(namespaceDeclaration.StartLocation);
+				}
+				return base.VisitNamespaceDeclaration(namespaceDeclaration, data);
+			} finally {
+				resolver.UsingScope = previousUsingScope;
+			}
+		}
+		#endregion
+		
+		#region Track CurrentTypeDefinition
+		public override ResolveResult VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
+		{
+			ITypeDefinition previousTypeDefinition = resolver.CurrentTypeDefinition;
+			try {
+				if (resolver.CurrentTypeDefinition != null) {
+					foreach (ITypeDefinition innerClass in resolver.CurrentTypeDefinition.InnerClasses) {
+						if (innerClass.Region.IsInside(typeDeclaration.StartLocation.Line, typeDeclaration.StartLocation.Column)) {
+							resolver.CurrentTypeDefinition = innerClass;
+							break;
+						}
+					}
+				} else if (parsedFile != null) {
+					resolver.CurrentTypeDefinition = parsedFile.GetTopLevelTypeDefinition(typeDeclaration.StartLocation);
+				}
+				return base.VisitTypeDeclaration(typeDeclaration, data);
+			} finally {
+				resolver.CurrentTypeDefinition = previousTypeDefinition;
+			}
+		}
+		
+		public override ResolveResult VisitEnumDeclaration(EnumDeclaration enumDeclaration, object data)
+		{
+			return VisitTypeDeclaration(enumDeclaration, data);
+		}
+		#endregion
+		
+		#region Track CheckForOverflow
 		public override ResolveResult VisitCheckedExpression(CheckedExpression checkedExpression, object data)
 		{
 			bool oldCheckForOverflow = resolver.CheckForOverflow;
@@ -86,6 +151,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		#region VisitChildren
+		protected override ResolveResult VisitChildren(INode node, object data)
+		{
+			// this method is used to iterate through all children
+			if (FullyResolveSubExpressions) {
+				INode child = node.FirstChild;
+				while (child != null) {
+					ResolveResult rr = child.AcceptVisitor (this, data);
+					if (rr != null)
+						cache[child] = rr;
+					child = child.NextSibling;
+				}
+			}
+			return null;
+		}
+		#endregion
+		
+		#region Visit Expressions
 		static bool IsTargetOfInvocation(INode node)
 		{
 			InvocationExpression ie = node.Parent as InvocationExpression;
@@ -167,7 +250,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			// TODO: type arguments?
-			return resolver.ResolveSimpleName(identifierExpression.Identifier.Name, null,
+			return resolver.ResolveSimpleName(identifierExpression.Identifier.Name, EmptyList<IType>.Instance,
 			                                  IsTargetOfInvocation(identifierExpression));
 		}
 		
@@ -209,7 +292,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override ResolveResult VisitMemberReferenceExpression(MemberReferenceExpression memberReferenceExpression, object data)
 		{
-			throw new NotImplementedException();
+			ResolveResult target = Resolve(memberReferenceExpression.Target);
+			List<INode> typeArgumentNodes = memberReferenceExpression.TypeArguments.ToList();
+			// TODO: type arguments?
+			return resolver.ResolveMemberAccess(target, memberReferenceExpression.MemberName,
+			                                    EmptyList<IType>.Instance,
+			                                    IsTargetOfInvocation(memberReferenceExpression));
 		}
 		
 		public override ResolveResult VisitNullReferenceExpression(NullReferenceExpression nullReferenceExpression, object data)
@@ -268,5 +356,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			ResolveResult expr = Resolve(unaryOperatorExpression.Expression);
 			return resolver.ResolveUnaryOperator(unaryOperatorExpression.UnaryOperatorType, expr);
 		}
+		#endregion
 	}
 }

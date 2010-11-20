@@ -45,6 +45,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		#region IsAccessible
+		public bool AllowProtectedAccess(IType targetType)
+		{
+			ITypeDefinition typeDef = targetType.GetDefinition();
+			return typeDef != null && typeDef.IsDerivedFrom(currentTypeDefinition, context);
+		}
+		
 		/// <summary>
 		/// Gets whether <paramref name="entity"/> is accessible in the current class.
 		/// </summary>
@@ -109,8 +115,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				                                   && d.Name == name && IsAccessible(d, true)));
 			}
 			
-			ITypeDefinition typeDef = type.GetDefinition();
-			bool allowProtectedAccess = typeDef != null && typeDef.IsDerivedFrom(currentTypeDefinition, context);
+			bool allowProtectedAccess = AllowProtectedAccess(type);
 			
 			if (typeArgumentCount == 0) {
 				Predicate<IMember> memberFilter = delegate(IMember member) {
@@ -121,7 +126,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				members.AddRange(type.GetFields(context, memberFilter));
 				members.AddRange(type.GetEvents(context, memberFilter));
 				if (isInvocation)
-					members.RemoveAll(m => IsInvocable(m, context));
+					members.RemoveAll(m => !IsInvocable(m, context));
 			} else {
 				// No need to check for isInvocation/isInvocable here:
 				// we filter out all non-methods

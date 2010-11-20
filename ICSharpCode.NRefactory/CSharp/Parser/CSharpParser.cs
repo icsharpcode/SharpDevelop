@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (nspace.Name != null) {
 					nDecl = new NamespaceDeclaration ();
 					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.NamespaceLocation), "namespace".Length), NamespaceDeclaration.Roles.Keyword);
-					nDecl.AddChild (new Identifier (nspace.Name.Name, Convert (nspace.Name.Location)), NamespaceDeclaration.Roles.Identifier);
+					nDecl.AddChild (ConvertMemberName (nspace.Name), NamespaceDeclaration.Roles.Identifier);
 					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.OpenBrace), 1), NamespaceDeclaration.Roles.LBrace);
 					AddToNamespace (nDecl);
 					namespaceStack.Push (nDecl);
@@ -94,7 +94,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				UsingDeclaration ud = new UsingDeclaration ();
 				ud.AddChild (new CSharpTokenNode (Convert (u.UsingLocation), "using".Length), UsingDeclaration.Roles.Keyword);
-				ud.AddChild (new Identifier (u.NSpace.Name, Convert (u.NSpace.Location)), UsingDeclaration.Roles.Identifier);
+				ud.AddChild (ConvertMemberName (u.NSpace), UsingAliasDeclaration.Roles.Identifier);
 				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingDeclaration.Roles.Semicolon);
 				AddToNamespace (ud);
 			}
@@ -105,9 +105,19 @@ namespace ICSharpCode.NRefactory.CSharp
 				ud.AddChild (new CSharpTokenNode (Convert (u.UsingLocation), "using".Length), UsingAliasDeclaration.Roles.Keyword);
 				ud.AddChild (new Identifier (u.Identifier.Value, Convert (u.Identifier.Location)), UsingAliasDeclaration.AliasRole);
 				ud.AddChild (new CSharpTokenNode (Convert (u.AssignLocation), 1), UsingAliasDeclaration.Roles.Assign);
-				ud.AddChild (new Identifier (u.Nspace.Name, Convert (u.Nspace.Location)), UsingAliasDeclaration.Roles.Identifier);
+				ud.AddChild (ConvertMemberName (u.Nspace), UsingAliasDeclaration.Roles.Identifier);
 				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingAliasDeclaration.Roles.Semicolon);
 				AddToNamespace (ud);
+			}
+			
+			QualifiedIdentifier ConvertMemberName (MemberName memberName)
+			{
+				QualifiedIdentifier qi = new QualifiedIdentifier();
+				while (memberName != null) {
+					qi.InsertChildBefore (qi.FirstChild, new Identifier (memberName.Name, Convert (memberName.Location)), QualifiedIdentifier.Roles.Identifier);
+					memberName = memberName.Left;
+				}
+				return qi;
 			}
 			
 			public override void Visit (MemberCore member)
@@ -1323,7 +1333,7 @@ namespace ICSharpCode.NRefactory.CSharp
 
 			public override object Visit (LocalVariableReference localVariableReference)
 			{
-				return new Identifier (localVariableReference.Name, Convert (localVariableReference.Location));;
+				return new Identifier (localVariableReference.Name, Convert (localVariableReference.Location));
 			}
 
 			public override object Visit (MemberAccess memberAccess)

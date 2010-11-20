@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ExpressionStatement.cs
 //  
 // Author:
@@ -31,6 +31,12 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class ExpressionStatement : AbstractNode
 	{
+		public INode Expression {
+			get {
+				return GetChildByRole(Roles.Expression);
+			}
+		}
+		
 		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitExpressionStatement (this, data);

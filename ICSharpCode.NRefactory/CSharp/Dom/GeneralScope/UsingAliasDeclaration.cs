@@ -1,4 +1,4 @@
-// 
+﻿// 
 // UsingAliasDeclaration.cs
 //  
 // Author:
@@ -35,13 +35,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public string Alias {
 			get {
-				return AliasIdentifier.QualifiedName;
+				return AliasIdentifier.Name;
 			}
 		}
 		
-		public QualifiedIdentifier AliasIdentifier {
+		public Identifier AliasIdentifier {
 			get {
-				return (QualifiedIdentifier)GetChildByRole (AliasRole);
+				return (Identifier)GetChildByRole (AliasRole);
 			}
 		}
 		

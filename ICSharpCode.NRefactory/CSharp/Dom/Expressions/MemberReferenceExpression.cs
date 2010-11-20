@@ -1,4 +1,4 @@
-// 
+﻿// 
 // MemberReferenceExpression.cs
 //  
 // Author:
@@ -37,9 +37,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildByRole (Roles.TargetExpression); }
 		}
 		
-		public INode Identifier {
+		public Identifier Identifier {
 			get {
-				return (INode)GetChildByRole (Roles.Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier);
+			}
+		}
+		
+		public string MemberName {
+			get {
+				return this.Identifier.Name;
 			}
 		}
 		

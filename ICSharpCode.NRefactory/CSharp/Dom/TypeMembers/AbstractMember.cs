@@ -1,4 +1,4 @@
-// 
+﻿// 
 // AbstractMember.cs
 //  
 // Author:
@@ -56,7 +56,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public string Name {
 			get {
-				return NameIdentifier.Name;
+				Identifier nameIdentifier = this.NameIdentifier;
+				return nameIdentifier != null ? nameIdentifier.Name : null;
 			}
 		}
 	}

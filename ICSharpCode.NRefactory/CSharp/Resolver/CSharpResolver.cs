@@ -1377,6 +1377,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public ResolveResult ResolveSimpleName(string identifier, IList<IType> typeArguments, bool isInvocationTarget = false)
 		{
 			// C# 4.0 spec: §7.6.2 Simple Names
+			
+			if (identifier == null)
+				throw new ArgumentNullException("identifier");
+			if (typeArguments == null)
+				throw new ArgumentNullException("typeArguments");
+			
 			// TODO: lookup in local variables, in parameters, etc.
 			
 			return LookupSimpleNameOrTypeName(identifier, typeArguments,
@@ -1385,6 +1391,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public ResolveResult LookupSimpleNamespaceOrTypeName(string identifier, IList<IType> typeArguments, bool isUsingDeclaration = false)
 		{
+			if (identifier == null)
+				throw new ArgumentNullException("identifier");
+			if (typeArguments == null)
+				throw new ArgumentNullException("typeArguments");
+			
 			return LookupSimpleNameOrTypeName(identifier, typeArguments,
 			                                  isUsingDeclaration ? SimpleNameLookupMode.TypeInUsingDeclaration : SimpleNameLookupMode.Type);
 		}
@@ -1540,8 +1551,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (target.Type == SharedTypes.Dynamic)
 				return DynamicResult;
 			
-			MemberLookup lookup = new MemberLookup(context, this.CurrentTypeDefinition, this.UsingScope != null ? this.UsingScope.ProjectContent : null);
+			MemberLookup lookup = CreateMemberLookup();
 			return lookup.Lookup(target.Type, identifier, typeArguments, isInvocationTarget);
+		}
+		
+		MemberLookup CreateMemberLookup()
+		{
+			return new MemberLookup(context, this.CurrentTypeDefinition, this.UsingScope != null ? this.UsingScope.ProjectContent : null);
 		}
 		#endregion
 		
@@ -1554,7 +1570,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			MethodGroupResolveResult mgrr = target as MethodGroupResolveResult;
 			if (mgrr != null) {
-				throw new NotImplementedException();
+				OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, mgrr.TypeArguments.ToArray());
+				foreach (IMethod method in mgrr.Methods) {
+					// TODO: grouping by class definition?
+					or.AddCandidate(method);
+				}
+				// TODO: extension methods?
+				IType returnType = or.BestCandidate.ReturnType.Resolve(context);
+				returnType = returnType.AcceptVisitor(new MethodTypeParameterSubstitution(or.InferredTypeArguments));
+				return new MemberResolveResult(or.BestCandidate, returnType);
 			}
 			UnknownMemberResolveResult umrr = target as UnknownMemberResolveResult;
 			if (umrr != null) {
@@ -1565,11 +1589,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return new ResolveResult(invokeMethod.ReturnType.Resolve(context));
 			}
 			return ErrorResult;
-		}
-		
-		public ResolveResult ResolveIndexer(ResolveResult target, ResolveResult[] arguments, string[] argumentNames = null)
-		{
-			throw new NotImplementedException();
 		}
 		
 		static List<DefaultParameter> CreateParameters(ResolveResult[] arguments, string[] argumentNames)
@@ -1584,7 +1603,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			for (int i = 0; i < arguments.Length; i++) {
 				// invent argument names where necessary:
-				if (arguments[i] == null) {
+				if (argumentNames[i] == null) {
 					string newArgumentName = GuessParameterName(arguments[i]);
 					if (argumentNames.Contains(newArgumentName)) {
 						// disambiguate argument name (e.g. add a number)
@@ -1631,6 +1650,29 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return char.ToLower(rr.Type.Name[0]) + rr.Type.Name.Substring(1);
 			} else {
 				return "parameter";
+			}
+		}
+		#endregion
+		
+		#region ResolveIndexer
+		public ResolveResult ResolveIndexer(ResolveResult target, ResolveResult[] arguments, string[] argumentNames = null)
+		{
+			if (target.Type == SharedTypes.Dynamic)
+				return DynamicResult;
+			
+			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, new IType[0]);
+			MemberLookup lookup = CreateMemberLookup();
+			bool allowProtectedAccess = lookup.AllowProtectedAccess(target.Type);
+			var indexers = target.Type.GetProperties(context, p => p.IsIndexer && lookup.IsAccessible(p, allowProtectedAccess));
+			// TODO: filter indexers hiding other indexers?
+			foreach (IProperty p in indexers) {
+				// TODO: grouping by class definition?
+				or.AddCandidate(p);
+			}
+			if (or.BestCandidate != null) {
+				return new MemberResolveResult(or.BestCandidate, or.BestCandidate.ReturnType.Resolve(context));
+			} else {
+				return ErrorResult;
 			}
 		}
 		#endregion

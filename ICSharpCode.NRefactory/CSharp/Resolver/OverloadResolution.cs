@@ -235,29 +235,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				candidate.AddError(OverloadResolutionErrors.ConstructedTypeDoesNotSatisfyConstraint);
 		}
 		
-		sealed class ConstraintValidatingSubstitution : TypeVisitor
+		sealed class ConstraintValidatingSubstitution : MethodTypeParameterSubstitution
 		{
-			readonly IType[] typeArguments;
 			readonly OverloadResolution overloadResolution;
 			public bool ConstraintsValid = true;
 			
 			public ConstraintValidatingSubstitution(IType[] typeArguments, OverloadResolution overloadResolution)
+				: base(typeArguments)
 			{
-				this.typeArguments = typeArguments;
 				this.overloadResolution = overloadResolution;
-			}
-			
-			public override IType VisitTypeParameter(ITypeParameter type)
-			{
-				int index = type.Index;
-				if (type.ParentMethod != null) {
-					if (index >= 0 && index < typeArguments.Length)
-						return typeArguments[index];
-					else
-						return SharedTypes.UnknownType;
-				} else {
-					return base.VisitTypeParameter(type);
-				}
 			}
 			
 			public override IType VisitParameterizedType(ParameterizedType type)

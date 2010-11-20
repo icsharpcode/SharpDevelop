@@ -78,17 +78,17 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		/// <remarks>
-		/// Returns true, if the given coordinates (row, column) are in the region.
+		/// Returns true, if the given coordinates (line, column) are in the region.
 		/// This method assumes that for an unknown end the end line is == -1
 		/// </remarks>
-		public bool IsInside(int row, int column)
+		public bool IsInside(int line, int column)
 		{
 			if (IsEmpty)
 				return false;
-			return row >= BeginLine &&
-				(row <= EndLine   || EndLine == -1) &&
-				(row != BeginLine || column >= BeginColumn) &&
-				(row != EndLine   || column <= EndColumn);
+			return line >= BeginLine &&
+				(line <= EndLine   || EndLine == -1) &&
+				(line != BeginLine || column >= BeginColumn) &&
+				(line != EndLine   || column <= EndColumn);
 		}
 		
 		public override string ToString()
