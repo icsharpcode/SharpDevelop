@@ -49,6 +49,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return visitor.VisitConstructorDeclaration (this, data);
 		}
+		
+		public IEnumerable<ParameterDeclaration> Parameters {
+			get {
+				return GetChildrenByRole (Roles.Argument).Cast<ParameterDeclaration>();
+			}
+		}
 	}
 	
 	public enum ConstructorInitializerType {
@@ -63,9 +69,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
-		public IEnumerable<ParameterDeclaration> Arguments { 
+		public IEnumerable<INode> Arguments { 
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration>();
+				return base.GetChildrenByRole (Roles.Argument);
 			}
 		}
 		

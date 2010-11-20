@@ -35,6 +35,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public ResolveResult Resolve(INode node)
 		{
+			if (node == null)
+				return errorResult;
 			ResolveResult result;
 			if (!cache.TryGetValue(node, out result)) {
 				result = cache[node] = node.AcceptVisitor(this, null) ?? errorResult;
@@ -102,6 +104,85 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			} finally {
 				resolver.CurrentTypeDefinition = previousTypeDefinition;
 			}
+		}
+		#endregion
+		
+		#region Track CurrentMember
+		public override ResolveResult VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
+		{
+			if (FullyResolveSubExpressions) {
+				ResolveType(fieldDeclaration.ReturnType);
+				foreach (AttributeSection attr in fieldDeclaration.Attributes)
+					Resolve(attr);
+			}
+			if (fieldDeclaration.Variables.Count() == 1) {
+				return Resolve(fieldDeclaration.Variables.Single());
+			} else {
+				foreach (VariableInitializer vi in fieldDeclaration.Variables)
+					Resolve(vi);
+				return null;
+			}
+		}
+		
+		public override ResolveResult VisitVariableInitializer(VariableInitializer variableInitializer, object data)
+		{
+			if (variableInitializer.Parent is FieldDeclaration) {
+				try {
+					if (resolver.CurrentTypeDefinition != null) {
+						resolver.CurrentMember = resolver.CurrentTypeDefinition.Fields.FirstOrDefault(f => f.Region.IsInside(variableInitializer.StartLocation));
+					}
+					
+					if (FullyResolveSubExpressions)
+						Resolve(variableInitializer.Initializer);
+					
+					if (resolver.CurrentMember != null)
+						return new MemberResolveResult(resolver.CurrentMember, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
+					else
+						return errorResult;
+				} finally{
+					resolver.CurrentMember = null;
+				}
+			} else {
+				return base.VisitVariableInitializer(variableInitializer, data);
+			}
+		}
+		
+		ResolveResult VisitMethodMember(AbstractMemberBase member, object data)
+		{
+			try {
+				if (resolver.CurrentTypeDefinition != null) {
+					resolver.CurrentMember = resolver.CurrentTypeDefinition.Methods.FirstOrDefault(m => m.Region.IsInside(member.StartLocation));
+				}
+				
+				VisitChildren(member, data);
+				
+				if (resolver.CurrentMember != null)
+					return new MemberResolveResult(resolver.CurrentMember, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
+				else
+					return errorResult;
+			} finally {
+				resolver.CurrentMember = null;
+			}
+		}
+		
+		public override ResolveResult VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
+		{
+			return VisitMethodMember(methodDeclaration, data);
+		}
+		
+		public override ResolveResult VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration, object data)
+		{
+			return VisitMethodMember(operatorDeclaration, data);
+		}
+		
+		public override ResolveResult VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
+		{
+			return VisitMethodMember(constructorDeclaration, data);
+		}
+		
+		public override ResolveResult VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data)
+		{
+			return VisitMethodMember(destructorDeclaration, data);
 		}
 		#endregion
 		
@@ -365,5 +446,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return resolver.ResolveUnaryOperator(unaryOperatorExpression.UnaryOperatorType, expr);
 		}
 		#endregion
+		
+		public override ResolveResult VisitParameterDeclaration(ParameterDeclaration parameterDeclaration, object data)
+		{
+			if (FullyResolveSubExpressions) {
+				ResolveType(parameterDeclaration.Type);
+				Resolve(parameterDeclaration.DefaultExpression);
+			}
+			IParameterizedMember pm = resolver.CurrentMember as IParameterizedMember;
+			if (pm != null) {
+				foreach (IParameter p in pm.Parameters) {
+					if (p.Name == parameterDeclaration.Name) {
+						return new VariableResolveResult(p, p.Type.Resolve(resolver.Context));
+					}
+				}
+			}
+			return errorResult;
+		}
 	}
 }

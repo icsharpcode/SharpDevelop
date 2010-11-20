@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -18,6 +20,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		readonly ParsedFile parsedFile;
 		UsingScope usingScope;
 		DefaultTypeDefinition currentTypeDefinition;
+		DefaultMethod currentMethod;
 		
 		public TypeSystemConvertVisitor(IProjectContent pc, string fileName)
 		{
@@ -32,6 +35,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		DomRegion MakeRegion(DomLocation start, DomLocation end)
 		{
 			return new DomRegion(parsedFile.FileName, start.Line, start.Column, end.Line, end.Column);
+		}
+		
+		DomRegion MakeRegion(INode node)
+		{
+			if (node == null)
+				return DomRegion.Empty;
+			else
+				return MakeRegion(node.StartLocation, node.EndLocation);
 		}
 		
 		#region Using Declarations
@@ -62,7 +73,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		#region Namespace Declaration
 		public override IEntity VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
 		{
-			DomRegion region = MakeRegion(namespaceDeclaration.StartLocation, namespaceDeclaration.EndLocation);
+			DomRegion region = MakeRegion(namespaceDeclaration);
 			UsingScope previousUsingScope = usingScope;
 			foreach (Identifier ident in namespaceDeclaration.NameIdentifier.NameParts) {
 				usingScope = new UsingScope(usingScope, NamespaceDeclaration.BuildQualifiedName(usingScope.NamespaceName, ident.Name));
@@ -95,7 +106,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			var td = currentTypeDefinition = CreateTypeDefinition(typeDeclaration.Name);
 			td.ClassType = typeDeclaration.ClassType;
-			td.Region = MakeRegion(typeDeclaration.StartLocation, typeDeclaration.EndLocation);
+			td.Region = MakeRegion(typeDeclaration);
 			td.BodyRegion = MakeRegion(typeDeclaration.LBrace.StartLocation, typeDeclaration.RBrace.EndLocation);
 			td.AddDefaultConstructorIfRequired = true;
 			
@@ -106,7 +117,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			else if (td.ClassType == ClassType.Enum || td.ClassType == ClassType.Struct)
 				td.IsSealed = true; // enums/structs are implicitly sealed
 			
-			//TODO ConvertTypeParameters(td.TypeParameters, typeDeclaration.TypeArguments, typeDeclaration.Constraints, td);
+			//TODO ConvertTypeParameters(td.TypeParameters, typeDeclaration.TypeParameters, typeDeclaration.Constraints);
 			
 			// TODO: base type references?
 			
@@ -122,7 +133,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			var td = CreateTypeDefinition(delegateDeclaration.Name);
 			td.ClassType = ClassType.Delegate;
-			td.Region = MakeRegion(delegateDeclaration.StartLocation, delegateDeclaration.EndLocation);
+			td.Region = MakeRegion(delegateDeclaration);
 			td.BaseTypes.Add(multicastDelegateReference);
 			
 			ConvertAttributes(td.Attributes, delegateDeclaration.Attributes);
@@ -200,6 +211,141 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		#endregion
 		
+		#region Fields
+		public override IEntity VisitFieldDeclaration(FieldDeclaration fieldDeclaration, object data)
+		{
+			bool isSingleField = fieldDeclaration.Variables.Count() == 1;
+			Modifiers modifiers = fieldDeclaration.Modifiers;
+			DefaultField field = null;
+			foreach (VariableInitializer vi in fieldDeclaration.Variables) {
+				field = new DefaultField(currentTypeDefinition, vi.Name);
+				
+				field.Region = isSingleField ? MakeRegion(fieldDeclaration) : MakeRegion(vi);
+				field.BodyRegion = MakeRegion(vi);
+				ConvertAttributes(field.Attributes, fieldDeclaration.Attributes);
+				
+				ApplyModifiers(field, modifiers);
+				field.IsVolatile = (modifiers & Modifiers.Volatile) != 0;
+				field.IsReadOnly = (modifiers & Modifiers.Readonly) != 0;
+				
+				field.ReturnType = ConvertType(fieldDeclaration.ReturnType);
+				if ((modifiers & Modifiers.Fixed) != 0) {
+					field.ReturnType = PointerTypeReference.Create(field.ReturnType);
+				}
+				
+				if ((modifiers & Modifiers.Const) != 0) {
+					field.ConstantValue = ConvertConstantValue(field.ReturnType, vi.Initializer);
+				}
+				
+				currentTypeDefinition.Fields.Add(field);
+			}
+			return isSingleField ? field : null;
+		}
+		#endregion
+		
+		#region Methods
+		public override IEntity VisitMethodDeclaration(MethodDeclaration methodDeclaration, object data)
+		{
+			DefaultMethod m = new DefaultMethod(currentTypeDefinition, methodDeclaration.Name);
+			currentMethod = m; // required for resolving type parameters
+			m.Region = MakeRegion(methodDeclaration);
+			m.BodyRegion = MakeRegion(methodDeclaration.Body);
+			
+			
+			//TODO ConvertTypeParameters(m.TypeParameters, methodDeclaration.TypeParameters, methodDeclaration.Constraints);
+			m.ReturnType = ConvertType(methodDeclaration.ReturnType);
+			ConvertAttributes(m.Attributes, methodDeclaration.Attributes.Where(s => s.AttributeTarget != AttributeTarget.Return));
+			ConvertAttributes(m.ReturnTypeAttributes, methodDeclaration.Attributes.Where(s => s.AttributeTarget == AttributeTarget.Return));
+			
+			ApplyModifiers(m, methodDeclaration.Modifiers);
+			m.IsExtensionMethod = methodDeclaration.IsExtensionMethod;
+			
+			ConvertParameters(m.Parameters, methodDeclaration.Parameters);
+			if (methodDeclaration.PrivateImplementationType != null) {
+				m.Accessibility = Accessibility.None;
+				m.InterfaceImplementations.Add(ConvertInterfaceImplementation(methodDeclaration.PrivateImplementationType, m.Name));
+			}
+			
+			currentTypeDefinition.Methods.Add(m);
+			currentMethod = null;
+			return m;
+		}
+		
+		DefaultExplicitInterfaceImplementation ConvertInterfaceImplementation(INode interfaceType, string memberName)
+		{
+			return new DefaultExplicitInterfaceImplementation(ConvertType(interfaceType), memberName);
+		}
+		#endregion
+		
+		#region Operators
+		public override IEntity VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration, object data)
+		{
+			DefaultMethod m = new DefaultMethod(currentTypeDefinition, operatorDeclaration.Name);
+			m.EntityType = EntityType.Operator;
+			m.Region = MakeRegion(operatorDeclaration);
+			m.BodyRegion = MakeRegion(operatorDeclaration.Body);
+			
+			m.ReturnType = ConvertType(operatorDeclaration.ReturnType);
+			ConvertAttributes(m.Attributes, operatorDeclaration.Attributes.Where(s => s.AttributeTarget != AttributeTarget.Return));
+			ConvertAttributes(m.ReturnTypeAttributes, operatorDeclaration.Attributes.Where(s => s.AttributeTarget == AttributeTarget.Return));
+			
+			ApplyModifiers(m, operatorDeclaration.Modifiers);
+			
+			ConvertParameters(m.Parameters, operatorDeclaration.Parameters);
+			
+			currentTypeDefinition.Methods.Add(m);
+			return m;
+		}
+		#endregion
+		
+		#region Constructors
+		public override IEntity VisitConstructorDeclaration(ConstructorDeclaration constructorDeclaration, object data)
+		{
+			Modifiers modifiers = constructorDeclaration.Modifiers;
+			bool isStatic = (modifiers & Modifiers.Static) != 0;
+			DefaultMethod ctor = new DefaultMethod(currentTypeDefinition, isStatic ? ".cctor" : ".ctor");
+			ctor.EntityType = EntityType.Constructor;
+			ctor.Region = MakeRegion(constructorDeclaration);
+			if (constructorDeclaration.Initializer != null) {
+				ctor.BodyRegion = MakeRegion(constructorDeclaration.Initializer.StartLocation, constructorDeclaration.EndLocation);
+			} else {
+				ctor.BodyRegion = MakeRegion(constructorDeclaration.Body);
+			}
+			ctor.ReturnType = currentTypeDefinition;
+			
+			ConvertAttributes(ctor.Attributes, constructorDeclaration.Attributes);
+			ConvertParameters(ctor.Parameters, constructorDeclaration.Parameters);
+			
+			if (isStatic)
+				ctor.IsStatic = true;
+			else
+				ApplyModifiers(ctor, modifiers);
+			
+			currentTypeDefinition.Methods.Add(ctor);
+			return ctor;
+		}
+		#endregion
+		
+		#region Destructors
+		static readonly GetClassTypeReference voidReference = new GetClassTypeReference("System.Void", 0);
+		
+		public override IEntity VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data)
+		{
+			DefaultMethod dtor = new DefaultMethod(currentTypeDefinition, "Finalize");
+			dtor.EntityType = EntityType.Destructor;
+			dtor.Region = MakeRegion(destructorDeclaration);
+			dtor.BodyRegion = MakeRegion(destructorDeclaration.Body);
+			dtor.Accessibility = Accessibility.Protected;
+			dtor.IsOverride = true;
+			dtor.ReturnType = voidReference;
+			
+			ConvertAttributes(dtor.Attributes, destructorDeclaration.Attributes);
+			
+			currentTypeDefinition.Methods.Add(dtor);
+			return dtor;
+		}
+		#endregion
+		
 		#region Modifiers
 		static void ApplyModifiers(DefaultTypeDefinition td, Modifiers modifiers)
 		{
@@ -207,6 +353,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			td.IsAbstract = (modifiers & (Modifiers.Abstract | Modifiers.Static)) != 0;
 			td.IsSealed = (modifiers & (Modifiers.Sealed | Modifiers.Static)) != 0;
 			td.IsShadowing = (modifiers & Modifiers.New) != 0;
+		}
+		
+		static void ApplyModifiers(TypeSystem.Implementation.AbstractMember m, Modifiers modifiers)
+		{
+			m.Accessibility = GetAccessibility(modifiers) ?? Accessibility.Private;
+			m.IsAbstract = (modifiers & Modifiers.Abstract) != 0;
+			m.IsOverride = (modifiers & Modifiers.Override) != 0;
+			m.IsSealed = (modifiers & Modifiers.Sealed) != 0;
+			m.IsShadowing = (modifiers & Modifiers.New) != 0;
+			m.IsStatic = (modifiers & Modifiers.Static) != 0;
+			m.IsVirtual = (modifiers & Modifiers.Virtual) != 0;
 		}
 		
 		static Accessibility? GetAccessibility(Modifiers modifiers)
@@ -233,6 +390,47 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			foreach (AttributeSection section in attributes) {
 				throw new NotImplementedException();
+			}
+		}
+		#endregion
+		
+		#region Types
+		ITypeReference ConvertType(INode node)
+		{
+			return SharedTypes.UnknownType;
+		}
+		#endregion
+		
+		#region Constant Values
+		IConstantValue ConvertConstantValue(ITypeReference targetType, INode expression)
+		{
+			return new SimpleConstantValue(targetType, null);
+		}
+		#endregion
+		
+		#region Parameters
+		void ConvertParameters(IList<IParameter> outputList, IEnumerable<ParameterDeclaration> parameters)
+		{
+			foreach (ParameterDeclaration pd in parameters) {
+				DefaultParameter p = new DefaultParameter(ConvertType(pd.Type), pd.Name);
+				p.Region = MakeRegion(pd);
+				ConvertAttributes(p.Attributes, pd.Attributes);
+				switch (pd.ParameterModifier) {
+					case ParameterModifier.Ref:
+						p.IsRef = true;
+						p.Type = ByReferenceTypeReference.Create(p.Type);
+						break;
+					case ParameterModifier.Out:
+						p.IsOut = true;
+						p.Type = ByReferenceTypeReference.Create(p.Type);
+						break;
+					case ParameterModifier.Params:
+						p.IsParams = true;
+						break;
+				}
+				if (pd.DefaultExpression != null)
+					p.DefaultValue = ConvertConstantValue(p.Type, pd.DefaultExpression);
+				outputList.Add(p);
 			}
 		}
 		#endregion

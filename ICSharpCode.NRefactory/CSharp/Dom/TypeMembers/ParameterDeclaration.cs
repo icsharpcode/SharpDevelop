@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -64,6 +66,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public INode Type {
 			get { return GetChildByRole (Roles.ReturnType); }
+		}
+		
+		public IEnumerable<AttributeSection> Attributes {
+			get {
+				return base.GetChildrenByRole (Roles.Attribute).Cast <AttributeSection>();
+			}
 		}
 		
 		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)

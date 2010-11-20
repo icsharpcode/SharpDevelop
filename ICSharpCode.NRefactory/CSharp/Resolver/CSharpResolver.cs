@@ -1383,7 +1383,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (typeArguments == null)
 				throw new ArgumentNullException("typeArguments");
 			
-			// TODO: lookup in local variables, in parameters, etc.
+			IParameterizedMember parameterizedMember = this.CurrentMember as IParameterizedMember;
+			if (parameterizedMember != null && typeArguments.Count == 0) {
+				foreach (IParameter p in parameterizedMember.Parameters) {
+					if (p.Name == identifier) {
+						return new VariableResolveResult(p, p.Type.Resolve(context));
+					}
+				}
+			}
+			
+			// TODO: lookup in local variables, etc.
 			
 			return LookupSimpleNameOrTypeName(identifier, typeArguments,
 			                                  isInvocationTarget ? SimpleNameLookupMode.InvocationTarget : SimpleNameLookupMode.Expression);

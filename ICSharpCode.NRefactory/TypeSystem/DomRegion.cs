@@ -3,6 +3,7 @@
 
 using System;
 using System.Globalization;
+using ICSharpCode.NRefactory.CSharp;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
@@ -89,6 +90,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				(line <= EndLine   || EndLine == -1) &&
 				(line != BeginLine || column >= BeginColumn) &&
 				(line != EndLine   || column <= EndColumn);
+		}
+		
+		public bool IsInside(DomLocation location)
+		{
+			return IsInside(location.Line, location.Column);
 		}
 		
 		public override string ToString()
