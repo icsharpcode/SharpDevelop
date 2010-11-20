@@ -9,14 +9,15 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 	[TestFixture, Ignore]
 	public class TypeOfExpressionTests
 	{
-		/* TODO
 		[Test]
 		public void CSharpSimpleTypeOfExpressionTest()
 		{
-			TypeOfExpression toe = ParseUtilCSharp.ParseExpression<TypeOfExpression>("typeof(MyNamespace.N1.MyType)");
-			Assert.AreEqual("MyNamespace.N1.MyType", toe.TypeReference.Type);
+			//TypeOfExpression toe = ParseUtilCSharp.ParseExpression<TypeOfExpression>("typeof(MyNamespace.N1.MyType)");
+			//Assert.AreEqual("MyNamespace.N1.MyType", toe.TypeReference.Type);
+			throw new NotImplementedException();
 		}
 		
+		/* TODO
 		[Test]
 		public void CSharpGlobalTypeOfExpressionTest()
 		{

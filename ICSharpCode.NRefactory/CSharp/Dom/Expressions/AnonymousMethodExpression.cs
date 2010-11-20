@@ -32,13 +32,13 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class AnonymousMethodExpression : AbstractNode
 	{
-		public IEnumerable<ParameterDeclarationExpression> Arguments { 
+		public IEnumerable<ParameterDeclaration> Arguments { 
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclarationExpression>();
+				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration>();
 			}
 		}
 		
-		public IEnumerable<ParameterDeclarationExpression> Parameters { 
+		public IEnumerable<ParameterDeclaration> Parameters { 
 			// TODO: Arguments or Parameters ???
 			get {
 				return this.Arguments;

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // LambdaExpression.cs
 //  
 // Author:
@@ -31,9 +31,9 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class LambdaExpression : AbstractNode
 	{
-		public IEnumerable<ParameterDeclarationExpression> Arguments { 
+		public IEnumerable<ParameterDeclaration> Arguments { 
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclarationExpression>();
+				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration>();
 			}
 		}
 		

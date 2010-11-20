@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
@@ -50,6 +51,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			get {
 				return (QualifiedIdentifier)GetChildByRole (Roles.Identifier);
 			}
+		}
+		
+		public IEnumerable<INode> Members {
+			get { return GetChildrenByRole(Roles.Member); }
 		}
 		
 		public static string BuildQualifiedName (string name1, string name2)

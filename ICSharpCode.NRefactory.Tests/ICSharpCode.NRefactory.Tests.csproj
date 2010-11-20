@@ -58,6 +58,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CSharp\Parser\GeneralScope\DelegateDeclarationTests.cs" />
+    <Compile Include="CSharp\Parser\GeneralScope\NamespaceDeclarationTests.cs" />
+    <Compile Include="CSharp\Parser\GeneralScope\TypeDeclarationTests.cs" />
+    <Compile Include="CSharp\Parser\GeneralScope\UsingDeclarationTests.cs" />
+    <Compile Include="CSharp\Parser\TypeSystemConvertVisitorTests.cs" />
     <Compile Include="CSharp\Parser\Expression\AliasReferenceExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\AnonymousMethodTests.cs" />
     <Compile Include="CSharp\Parser\Expression\ArrayObjectCreateExpressionTests.cs" />

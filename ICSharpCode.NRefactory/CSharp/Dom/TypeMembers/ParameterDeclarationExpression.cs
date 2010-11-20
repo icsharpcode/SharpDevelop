@@ -1,6 +1,6 @@
-// 
+﻿// 
 // ParameterDeclarationExpression.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		This
 	}
 	
-	public class ParameterDeclarationExpression : AbstractNode
+	public class ParameterDeclaration : AbstractNode
 	{
 		public ParameterModifier ParameterModifier {
 			get;
@@ -49,6 +49,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public string Name {
+			get {
+				Identifier i = this.Identifier;
+				return i != null ? i.Name : null;
+			}
+		}
+		
 		public INode DefaultExpression {
 			get {
 				return (INode)GetChildByRole (Roles.Expression);
@@ -57,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
-			return visitor.VisitParameterDeclarationExpression (this, data);
+			return visitor.VisitParameterDeclaration (this, data);
 		}
 	}
 }

@@ -18,11 +18,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			CSharpParser parser = new CSharpParser();
 			CompilationUnit cu = parser.Parse(new StringReader(code));
 			
-			// TODO check for parser errors
-			/*if (expectErrors)
-				Assert.IsTrue(parser.Errors.ErrorOutput.Length > 0, "There were errors expected, but parser finished without errors.");
-			else
-				Assert.AreEqual("", parser.Errors.ErrorOutput);*/
+			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
 			
 			INode node = cu.Children.Single();
 			Type type = typeof(T);
@@ -37,11 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			CSharpParser parser = new CSharpParser();
 			BlockStatement parsedBlock = parser.ParseBlock(new StringReader(stmt));
 			
-			// TODO check for parser errors
-			/*if (expectErrors)
-				Assert.IsTrue(parser.Errors.ErrorOutput.Length > 0, "There were errors expected, but parser finished without errors.");
-			else
-				Assert.AreEqual("", parser.Errors.ErrorOutput);*/
+			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
 			
 			Assert.AreEqual(1, parsedBlock.Children.Count());
 			INode statement = parsedBlock.Children.First();
@@ -57,11 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			CSharpParser parser = new CSharpParser();
 			INode parsedExpression = parser.ParseExpression(new StringReader(expr));
 			
-			// TODO check for parser errors
-			/*if (expectErrors)
-				Assert.IsTrue(parser.Errors.ErrorOutput.Length > 0, "There were errors expected, but parser finished without errors.");
-			else
-				Assert.AreEqual("", parser.Errors.ErrorOutput);*/
+			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
 			
 			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(parsedExpression.GetType()), String.Format("Parsed expression was {0} instead of {1} ({2})", parsedExpression.GetType(), type, parsedExpression));

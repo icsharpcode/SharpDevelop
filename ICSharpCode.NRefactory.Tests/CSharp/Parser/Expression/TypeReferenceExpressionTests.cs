@@ -9,15 +9,16 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 	[TestFixture, Ignore]
 	public class TypeReferenceExpressionTests
 	{
-		/* TODO
 		[Test]
 		public void GlobalTypeReferenceExpression()
 		{
-			TypeReferenceExpression tr = ParseUtilCSharp.ParseExpression<TypeReferenceExpression>("global::System");
+			/*TypeReferenceExpression tr = ParseUtilCSharp.ParseExpression<TypeReferenceExpression>("global::System");
 			Assert.AreEqual("System", tr.TypeReference.Type);
-			Assert.IsTrue(tr.TypeReference.IsGlobal);
+			Assert.IsTrue(tr.TypeReference.IsGlobal);*/
+			throw new NotImplementedException();
 		}
 		
+		/* TODO
 		[Test]
 		public void GlobalTypeReferenceExpressionWithoutTypeName()
 		{

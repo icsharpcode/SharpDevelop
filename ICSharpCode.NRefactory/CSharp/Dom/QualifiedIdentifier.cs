@@ -36,10 +36,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		public string QualifiedName {
 			get {
 				StringBuilder builder = new StringBuilder ();
+				int i = 0;
 				foreach (Identifier identifier in GetChildrenByRole (Roles.Identifier)) {
-					if (builder.Length > 0)
-						builder.Append ('.');
+					if (i > 0) {
+						if (i == 1 && HasDoubleColon)
+							builder.Append ("::");
+						else
+							builder.Append ('.');
+					}
 					builder.Append (identifier.Name);
+					i++;
 				}
 				return builder.ToString ();
 			}
@@ -49,6 +55,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { 
 				return GetChildrenByRole (Roles.Identifier).Cast<Identifier>();
 			}
+		}
+		
+		public bool HasDoubleColon {
+			get { return false; } // TODO
 		}
 		
 		public QualifiedIdentifier ()

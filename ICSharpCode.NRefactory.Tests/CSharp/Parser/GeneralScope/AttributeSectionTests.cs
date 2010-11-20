@@ -17,7 +17,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 [someprefix::DesignerGenerated()]
 public class Form1 {
 }";
-			// TODO This test checks that [global] attributes are incorrectly applies to the following type???
+			// TODO This old NRefactory test checked that [global] attributes are incorrectly applied to the following type???
 			
 			//TypeDeclaration decl = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
 			//Assert.AreEqual("Microsoft.VisualBasic.CompilerServices.DesignerGenerated", decl.Attributes.First().Attributes.Single().Name);
@@ -52,7 +52,7 @@ public class Form1 {
 			string program = @"[module: System.Attribute()]";
 			AttributeSection decl = ParseUtilCSharp.ParseGlobal<AttributeSection>(program);
 			Assert.AreEqual(new DomLocation(1, 1), decl.StartLocation);
-			Assert.AreEqual("module", decl.AttributeTarget);
+			Assert.AreEqual(AttributeTarget.Module, decl.AttributeTarget);
 		}
 		
 		[Test]
@@ -62,7 +62,7 @@ public class Form1 {
 			TypeDeclaration type = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
 			AttributeSection decl = type.Attributes.Single();
 			Assert.AreEqual(new DomLocation(1, 1), decl.StartLocation);
-			Assert.AreEqual("type", decl.AttributeTarget);
+			Assert.AreEqual(AttributeTarget.Type, decl.AttributeTarget);
 		}
 	}
 }

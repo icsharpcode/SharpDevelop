@@ -75,10 +75,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		ITypeResolveContext context;
-		ResolveResult[] arguments;
-		string[] argumentNames;
-		Conversions conversions;
+		readonly ITypeResolveContext context;
+		readonly ResolveResult[] arguments;
+		readonly string[] argumentNames;
+		readonly Conversions conversions;
 		//List<Candidate> candidates = new List<Candidate>();
 		Candidate bestCandidate;
 		Candidate bestCandidateAmbiguousWith;
@@ -360,7 +360,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					c1IsBetter = true;
 				} else if (p1 < 0 && p2 >= 0) {
 					c2IsBetter = true;
-				} else {
+				} else if (p1 >= 0 && p2 >= 0) {
 					switch (conversions.BetterConversion(arguments[i], c1.ParameterTypes[p1], c2.ParameterTypes[p2])) {
 						case 1:
 							c1IsBetter = true;

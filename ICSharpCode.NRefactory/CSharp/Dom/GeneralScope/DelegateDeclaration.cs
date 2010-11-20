@@ -51,10 +51,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		// Todo: Arguments should not be nodes, instead it should be expressions, change when it's implemented.
-		public IEnumerable<INode> Arguments { 
+		// TODO: call this Parameters or Arguments?
+		public IEnumerable<ParameterDeclaration> Parameters {
+			get { return this.Arguments; }
+		}
+		
+		public IEnumerable<ParameterDeclaration> Arguments { 
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <INode>();
+				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration>();
 			}
 		}
 		

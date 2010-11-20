@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ConstructorDeclaration.cs
 //  
 // Author:
@@ -63,9 +63,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
-		public IEnumerable<ParameterDeclarationExpression> Arguments { 
+		public IEnumerable<ParameterDeclaration> Arguments { 
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclarationExpression>();
+				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration>();
 			}
 		}
 		
