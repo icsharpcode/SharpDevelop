@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TypeOfIsExpression.cs
 //  
 // Author:
@@ -30,8 +30,8 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class IsExpression : AbstractNode
 	{
-		public FullTypeName TypeReference {
-			get { return (FullTypeName)GetChildByRole (Roles.ReturnType); }
+		public INode TypeReference {
+			get { return GetChildByRole (Roles.ReturnType); }
 		}
 		
 		public INode Expression {

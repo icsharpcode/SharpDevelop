@@ -217,5 +217,10 @@ namespace ICSharpCode.NRefactory.Demo
 				csharpCodeTextBox.SelectAll();
 			}
 		}
+		
+		void CsharpCodeTextBoxTextChanged(object sender, EventArgs e)
+		{
+			resolveButton.Enabled = false;
+		}
 	}
 }

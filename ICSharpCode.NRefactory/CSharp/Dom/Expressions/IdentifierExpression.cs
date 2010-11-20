@@ -1,4 +1,4 @@
-// 
+﻿// 
 // IdentifierExpression.cs
 //  
 // Author:
@@ -31,9 +31,16 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class IdentifierExpression : AbstractNode
 	{
-		public Identifier Identifier {
+		public Identifier IdentifierToken {
 			get {
 				return (Identifier)GetChildByRole (Roles.Identifier);
+			}
+		}
+		
+		public string Identifier {
+			get {
+				Identifier i = this.IdentifierToken;
+				return i != null ? i.Name : null;
 			}
 		}
 		

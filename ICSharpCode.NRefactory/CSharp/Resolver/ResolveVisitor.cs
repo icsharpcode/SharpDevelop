@@ -71,7 +71,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (parsedFile != null) {
 					resolver.UsingScope = parsedFile.GetUsingScope(namespaceDeclaration.StartLocation);
 				}
-				return base.VisitNamespaceDeclaration(namespaceDeclaration, data);
+				base.VisitNamespaceDeclaration(namespaceDeclaration, data);
+				return new NamespaceResolveResult(resolver.UsingScope.NamespaceName);
 			} finally {
 				resolver.UsingScope = previousUsingScope;
 			}
@@ -83,17 +84,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			ITypeDefinition previousTypeDefinition = resolver.CurrentTypeDefinition;
 			try {
+				ITypeDefinition newTypeDefinition = null;
 				if (resolver.CurrentTypeDefinition != null) {
 					foreach (ITypeDefinition innerClass in resolver.CurrentTypeDefinition.InnerClasses) {
 						if (innerClass.Region.IsInside(typeDeclaration.StartLocation.Line, typeDeclaration.StartLocation.Column)) {
-							resolver.CurrentTypeDefinition = innerClass;
+							newTypeDefinition = innerClass;
 							break;
 						}
 					}
 				} else if (parsedFile != null) {
-					resolver.CurrentTypeDefinition = parsedFile.GetTopLevelTypeDefinition(typeDeclaration.StartLocation);
+					newTypeDefinition = parsedFile.GetTopLevelTypeDefinition(typeDeclaration.StartLocation);
 				}
-				return base.VisitTypeDeclaration(typeDeclaration, data);
+				if (newTypeDefinition != null)
+					resolver.CurrentTypeDefinition = newTypeDefinition;
+				base.VisitTypeDeclaration(typeDeclaration, data);
+				return newTypeDefinition != null ? new TypeResolveResult(newTypeDefinition) : errorResult;
 			} finally {
 				resolver.CurrentTypeDefinition = previousTypeDefinition;
 			}
@@ -245,7 +250,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitIdentifierExpression(IdentifierExpression identifierExpression, object data)
 		{
 			// TODO: type arguments?
-			return resolver.ResolveSimpleName(identifierExpression.Identifier.Name, EmptyList<IType>.Instance,
+			return resolver.ResolveSimpleName(identifierExpression.Identifier, EmptyList<IType>.Instance,
 			                                  IsTargetOfInvocation(identifierExpression));
 		}
 		
@@ -278,8 +283,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override ResolveResult VisitIsExpression(IsExpression isExpression, object data)
 		{
-			if (FullyResolveSubExpressions)
+			if (FullyResolveSubExpressions) {
+				Resolve(isExpression.Expression);
 				ResolveType(isExpression.TypeReference);
+			}
 			return new ResolveResult(TypeCode.Boolean.ToTypeReference().Resolve(resolver.Context));
 		}
 		

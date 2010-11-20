@@ -12,7 +12,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		void CheckIdentifier(string sourceCode, string identifier)
 		{
 			IdentifierExpression ident = ParseUtilCSharp.ParseExpression<IdentifierExpression>(sourceCode);
-			Assert.AreEqual(identifier, ident.Identifier.Name);
+			Assert.AreEqual(identifier, ident.Identifier);
 		}
 		
 		[Test]
