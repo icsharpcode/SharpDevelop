@@ -10,7 +10,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 	public class ArrayObjectCreateExpressionTests
 	{
 		[Test]
-		public void CSharpArrayCreateExpressionTest1()
+		public void ArrayCreateExpressionTest1()
 		{
 			/*
 			ArrayCreateExpression ace = ParseUtilCSharp.ParseExpression<ArrayCreateExpression>("new int[5]");
@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpImplicitlyTypedArrayCreateExpression()
+		public void ImplicitlyTypedArrayCreateExpression()
 		{
 			/*
 			ArrayCreateExpression ace = ParseUtilCSharp.ParseExpression<ArrayCreateExpression>("new[] { 1, 10, 100, 1000 }");

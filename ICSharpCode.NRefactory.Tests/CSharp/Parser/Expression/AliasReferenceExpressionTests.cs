@@ -12,7 +12,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 	public class AliasReferenceExpressionTests
 	{
 		[Test, Ignore]
-		public void CSharpGlobalReferenceExpressionTest()
+		public void GlobalReferenceExpressionTest()
 		{
 			CSharpParser parser = new CSharpParser();
 			parser.ParseTypeReference(new StringReader("global::System"));
@@ -22,7 +22,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test, Ignore]
-		public void CSharpGlobalTypeDeclaration()
+		public void GlobalTypeDeclaration()
 		{
 			VariableDeclarationStatement lvd = ParseUtilCSharp.ParseStatement<VariableDeclarationStatement>("global::System.String a;");
 			//TypeReference typeRef = lvd.GetTypeForVariable(0);

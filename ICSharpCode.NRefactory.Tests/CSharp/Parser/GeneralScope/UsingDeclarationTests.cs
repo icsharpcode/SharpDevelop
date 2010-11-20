@@ -13,7 +13,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 	{
 		[Test]
 		[Ignore("error reporting not yet implemented")]
-		public void CSharpWrongUsingTest()
+		public void WrongUsingTest()
 		{
 			string program = "using\n";
 			CSharpParser parser = new CSharpParser();
@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		}
 		
 		[Test]
-		public void CSharpDeclarationTest()
+		public void DeclarationTest()
 		{
 			string program = "using System;\n" +
 				"using My.Name.Space;\n";
@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		}
 		
 		[Test]
-		public void CSharpUsingAliasDeclarationTest()
+		public void UsingAliasDeclarationTest()
 		{
 			string program = "using TESTME=System;\n" +
 				"using myAlias=My.Name.Space;\n" +
@@ -75,7 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		
 		[Test]
 		[Ignore("'::' not yet implemented")]
-		public void CSharpUsingWithAliasing()
+		public void UsingWithAliasing()
 		{
 			string program = "using global::System;\n" +
 				"using myAlias=global::My.Name.Space;\n" +

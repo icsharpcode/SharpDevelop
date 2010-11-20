@@ -1,4 +1,4 @@
-// 
+﻿// 
 // OperatorDeclaration.cs
 //  
 // Author:
@@ -71,11 +71,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		public const int OperatorTypeRole = 101;
 		
 		public OperatorType OperatorType {
-			get;
-			set;
-		}
-		
-		public string OverloadOperator {
 			get;
 			set;
 		}

@@ -58,7 +58,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test, Ignore]
-		public void CSharpGenericMethodReference()
+		public void GenericMethodReference()
 		{
 			IdentifierExpression ident = ParseUtilCSharp.ParseExpression<IdentifierExpression>("M<int>");
 			Assert.AreEqual("M", ident.Identifier);
@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test, Ignore]
-		public void CSharpGenericMethodReference2()
+		public void GenericMethodReference2()
 		{
 			IdentifierExpression ident = ParseUtilCSharp.ParseExpression<IdentifierExpression>("TargetMethod<string>");
 			Assert.AreEqual("TargetMethod", ident.Identifier);

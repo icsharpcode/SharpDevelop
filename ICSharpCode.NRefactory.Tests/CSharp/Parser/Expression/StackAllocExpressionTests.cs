@@ -10,7 +10,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 	public class StackAllocExpressionTests
 	{
 		[Test, Ignore]
-		public void CSharpStackAllocExpressionTest()
+		public void StackAllocExpressionTest()
 		{
 			var sae = ParseUtilCSharp.ParseExpression<StackAllocExpression>("stackalloc int[100]");
 			throw new NotImplementedException(); // TODO: verify type + length expression

@@ -11,7 +11,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 	{
 		/*
 		[Test]
-		public void CSharpSimpleCastExpression()
+		public void SimpleCastExpression()
 		{
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(MyObject)o");
 			Assert.AreEqual("MyObject", ce.CastTo.Type);
@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpArrayCastExpression()
+		public void ArrayCastExpression()
 		{
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(MyType[])o");
 			Assert.AreEqual("MyType", ce.CastTo.Type);
@@ -93,7 +93,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpCastMemberReferenceOnParenthesizedExpression()
+		public void CastMemberReferenceOnParenthesizedExpression()
 		{
 			// yes, we really wanted to evaluate .Member on expr and THEN cast the result to MyType
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(MyType)(expr).Member");
@@ -103,7 +103,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpTryCastParenthesizedExpression()
+		public void TryCastParenthesizedExpression()
 		{
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(o) as string");
 			Assert.AreEqual("System.String", ce.CastTo.ToString());
@@ -112,7 +112,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpCastNegation()
+		public void CastNegation()
 		{
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(uint)-negativeValue");
 			Assert.AreEqual("System.UInt32", ce.CastTo.ToString());
@@ -122,7 +122,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		*/
 		
 		[Test]
-		public void CSharpSubtractionIsNotCast()
+		public void SubtractionIsNotCast()
 		{
 			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>("(BigInt)-negativeValue");
 			Assert.IsTrue(boe.Left is ParenthesizedExpression);
@@ -130,7 +130,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpIntMaxValueToBigInt()
+		public void IntMaxValueToBigInt()
 		{
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(BigInt)int.MaxValue");
 			Assert.AreEqual("BigInt", ce.CastTo.ToString());

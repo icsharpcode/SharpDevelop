@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		}
 		
 		[Test, Ignore]
-		public void CSharpDelegateWithoutNameDeclarationTest()
+		public void DelegateWithoutNameDeclarationTest()
 		{
 			string program = "public delegate void(int a, int secondParam, MyObj lastParam);\n";
 			DelegateDeclaration dd = ParseUtilCSharp.ParseGlobal<DelegateDeclaration>(program, true);
@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		}
 		
 		[Test, Ignore]
-		public void CSharpGenericDelegateDeclarationTest()
+		public void GenericDelegateDeclarationTest()
 		{
 			string program = "public delegate T CreateObject<T>() where T : ICloneable;\n";
 			DelegateDeclaration dd = ParseUtilCSharp.ParseGlobal<DelegateDeclaration>(program);

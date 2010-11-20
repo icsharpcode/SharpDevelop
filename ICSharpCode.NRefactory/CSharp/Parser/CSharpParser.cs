@@ -2292,7 +2292,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public List<INode> ParseTypeMembers(TextReader reader)
+		public List<AbstractMemberBase> ParseTypeMembers(TextReader reader)
 		{
 			// TODO: add support for type members
 			throw new NotImplementedException();

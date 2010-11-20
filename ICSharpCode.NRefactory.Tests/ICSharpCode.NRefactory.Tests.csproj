@@ -81,6 +81,14 @@
     <Compile Include="CSharp\Parser\Statements\VariableDeclarationStatementTests.cs" />
     <Compile Include="CSharp\Parser\Statements\WhileStatementTests.cs" />
     <Compile Include="CSharp\Parser\Statements\YieldStatementTests.cs" />
+    <Compile Include="CSharp\Parser\TypeMembers\ConstructorDeclarationTests.cs" />
+    <Compile Include="CSharp\Parser\TypeMembers\DestructorDeclarationTests.cs" />
+    <Compile Include="CSharp\Parser\TypeMembers\EventDeclarationTests.cs" />
+    <Compile Include="CSharp\Parser\TypeMembers\FieldDeclarationTests.cs" />
+    <Compile Include="CSharp\Parser\TypeMembers\IndexerDeclarationTests.cs" />
+    <Compile Include="CSharp\Parser\TypeMembers\MethodDeclarationTests.cs" />
+    <Compile Include="CSharp\Parser\TypeMembers\OperatorDeclarationTests.cs" />
+    <Compile Include="CSharp\Parser\TypeMembers\PropertyDeclarationTests.cs" />
     <Compile Include="CSharp\Parser\TypeSystemConvertVisitorTests.cs" />
     <Compile Include="CSharp\Parser\Expression\AliasReferenceExpressionTests.cs" />
     <Compile Include="CSharp\Parser\Expression\AnonymousMethodTests.cs" />
@@ -144,6 +152,7 @@
   <ItemGroup>
     <Folder Include="CSharp\Parser\Expression" />
     <Folder Include="CSharp\Parser\GeneralScope" />
+    <Folder Include="CSharp\Parser\TypeMembers" />
     <Folder Include="CSharp\Parser\Statements" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

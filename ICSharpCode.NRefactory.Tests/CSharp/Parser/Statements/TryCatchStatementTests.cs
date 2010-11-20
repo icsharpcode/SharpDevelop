@@ -11,7 +11,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 	public class TryCatchStatementTests
 	{
 		[Test]
-		public void CSharpSimpleTryCatchStatementTest()
+		public void SimpleTryCatchStatementTest()
 		{
 			TryCatchStatement tryCatchStatement = ParseUtilCSharp.ParseStatement<TryCatchStatement>("try { } catch { } ");
 			Assert.IsNull(tryCatchStatement.FinallyBlock);
@@ -22,7 +22,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		
 		/* TODO port tests
 		[Test]
-		public void CSharpSimpleTryCatchStatementTest2()
+		public void SimpleTryCatchStatementTest2()
 		{
 			TryCatchStatement tryCatchStatement = ParseUtilCSharp.ParseStatement<TryCatchStatement>("try { } catch (Exception e) { } ");
 			Assert.IsTrue(tryCatchStatement.FinallyBlock.IsNull);
@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		}
 		
 		[Test]
-		public void CSharpSimpleTryCatchFinallyStatementTest()
+		public void SimpleTryCatchFinallyStatementTest()
 		{
 			TryCatchStatement tryCatchStatement = ParseUtilCSharp.ParseStatement<TryCatchStatement>("try { } catch (Exception) { } catch { } finally { } ");
 			Assert.IsFalse(tryCatchStatement.FinallyBlock.IsNull);

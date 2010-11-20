@@ -10,7 +10,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 	public class ConditionalExpressionTests
 	{
 		[Test]
-		public void CSharpConditionalExpressionTest()
+		public void ConditionalExpressionTest()
 		{
 			ConditionalExpression ce = ParseUtilCSharp.ParseExpression<ConditionalExpression>("a == b ? a() : a.B");
 			
@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpConditionalIsExpressionTest()
+		public void ConditionalIsExpressionTest()
 		{
 			// (as is b?) ERROR (conflict with nullables, SD-419)
 			ConditionalExpression ce = ParseUtilCSharp.ParseExpression<ConditionalExpression>("a is b ? a() : a.B");
@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpConditionalIsWithNullableExpressionTest()
+		public void ConditionalIsWithNullableExpressionTest()
 		{
 			ConditionalExpression ce = ParseUtilCSharp.ParseExpression<ConditionalExpression>("a is b? ? a() : a.B");
 			
@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpConditionalIsExpressionTest2()
+		public void ConditionalIsExpressionTest2()
 		{
 			ConditionalExpression ce = ParseUtilCSharp.ParseExpression<ConditionalExpression>("a is b ? (a()) : a.B");
 			
@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpConditionalExpressionNegativeValue()
+		public void ConditionalExpressionNegativeValue()
 		{
 			ConditionalExpression ce = ParseUtilCSharp.ParseExpression<ConditionalExpression>("isNegative ? -1 : 1");
 			
@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		
 		
 		[Test]
-		public void CSharpConditionalIsWithNegativeValue()
+		public void ConditionalIsWithNegativeValue()
 		{
 			ConditionalExpression ce = ParseUtilCSharp.ParseExpression<ConditionalExpression>("a is b ? -1 : 1");
 			
@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpConditionalIsWithExplicitPositiveValue()
+		public void ConditionalIsWithExplicitPositiveValue()
 		{
 			ConditionalExpression ce = ParseUtilCSharp.ParseExpression<ConditionalExpression>("a is b ? +1 : 1");
 			
@@ -82,7 +82,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpRepeatedConditionalExpr()
+		public void RepeatedConditionalExpr()
 		{
 			ConditionalExpression ce = ParseUtilCSharp.ParseExpression<ConditionalExpression>("a ? b : c ? d : e");
 			
@@ -92,7 +92,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpNestedConditionalExpr()
+		public void NestedConditionalExpr()
 		{
 			ConditionalExpression ce = ParseUtilCSharp.ParseExpression<ConditionalExpression>("a ? b ? c : d : e");
 			

@@ -11,7 +11,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 	public class PrimitiveExpressionTests
 	{
 		[Test]
-		public void CSharpHexIntegerTest1()
+		public void HexIntegerTest1()
 		{
 			InvocationExpression invExpr = ParseUtilCSharp.ParseExpression<InvocationExpression>("0xAFFE.ToString()");
 			Assert.AreEqual(0, invExpr.Arguments.Count());
@@ -34,13 +34,13 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpDoubleTest1()
+		public void DoubleTest1()
 		{
 			CheckLiteral(".5e-06", .5e-06);
 		}
 		
 		[Test]
-		public void CSharpCharTest1()
+		public void CharTest1()
 		{
 			CheckLiteral("'\\u0356'", '\u0356');
 		}
@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpStringTest1()
+		public void StringTest1()
 		{
 			CheckLiteral("\"\\n\\t\\u0005 Hello World !!!\"", "\n\t\u0005 Hello World !!!");
 		}

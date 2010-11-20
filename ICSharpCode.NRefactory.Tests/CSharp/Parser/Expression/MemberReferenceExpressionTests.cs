@@ -10,7 +10,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 	public class MemberReferenceExpressionTests
 	{
 		[Test]
-		public void CSharpSimpleFieldReferenceExpressionTest()
+		public void SimpleFieldReferenceExpressionTest()
 		{
 			MemberReferenceExpression fre = ParseUtilCSharp.ParseExpression<MemberReferenceExpression>("myTargetObject.myField");
 			//Assert.AreEqual("myField", fre.MemberName);
@@ -21,7 +21,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		
 		/* TODO port unit tests
 		[Test]
-		public void CSharpGenericFieldReferenceExpressionTest()
+		public void GenericFieldReferenceExpressionTest()
 		{
 			MemberReferenceExpression fre = ParseUtilCSharp.ParseExpression<MemberReferenceExpression>("SomeClass<string>.myField");
 			Assert.AreEqual("myField", fre.MemberName);
@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpFullNamespaceGenericFieldReferenceExpressionTest()
+		public void FullNamespaceGenericFieldReferenceExpressionTest()
 		{
 			MemberReferenceExpression fre = ParseUtilCSharp.ParseExpression<MemberReferenceExpression>("Namespace.Subnamespace.SomeClass<string>.myField");
 			Assert.AreEqual("myField", fre.MemberName);
@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpGlobalFullNamespaceGenericFieldReferenceExpressionTest()
+		public void GlobalFullNamespaceGenericFieldReferenceExpressionTest()
 		{
 			MemberReferenceExpression fre = ParseUtilCSharp.ParseExpression<MemberReferenceExpression>("global::Namespace.Subnamespace.SomeClass<string>.myField");
 			Assert.AreEqual("myField", fre.MemberName);
@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpNestedGenericFieldReferenceExpressionTest()
+		public void NestedGenericFieldReferenceExpressionTest()
 		{
 			MemberReferenceExpression fre = ParseUtilCSharp.ParseExpression<MemberReferenceExpression>("MyType<string>.InnerClass<int>.myField");
 			Assert.AreEqual("myField", fre.MemberName);

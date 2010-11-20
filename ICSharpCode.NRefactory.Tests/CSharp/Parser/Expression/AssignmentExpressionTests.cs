@@ -9,7 +9,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 	[TestFixture]
 	public class AssignmentExpressionTests
 	{
-		void CSharpTestAssignmentExpression(string program, AssignmentOperatorType op)
+		void TestAssignmentExpression(string program, AssignmentOperatorType op)
 		{
 			AssignmentExpression ae = ParseUtilCSharp.ParseExpression<AssignmentExpression>(program);
 			
@@ -20,69 +20,69 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpAssignTest()
+		public void AssignTest()
 		{
-			CSharpTestAssignmentExpression("a = b", AssignmentOperatorType.Assign);
+			TestAssignmentExpression("a = b", AssignmentOperatorType.Assign);
 		}
 		
 		[Test]
-		public void CSharpAddTest()
+		public void AddTest()
 		{
-			CSharpTestAssignmentExpression("a += b", AssignmentOperatorType.Add);
+			TestAssignmentExpression("a += b", AssignmentOperatorType.Add);
 		}
 		
 		[Test]
-		public void CSharpSubtractTest()
+		public void SubtractTest()
 		{
-			CSharpTestAssignmentExpression("a -= b", AssignmentOperatorType.Subtract);
+			TestAssignmentExpression("a -= b", AssignmentOperatorType.Subtract);
 		}
 		
 		[Test]
-		public void CSharpMultiplyTest()
+		public void MultiplyTest()
 		{
-			CSharpTestAssignmentExpression("a *= b", AssignmentOperatorType.Multiply);
+			TestAssignmentExpression("a *= b", AssignmentOperatorType.Multiply);
 		}
 		
 		[Test]
-		public void CSharpDivideTest()
+		public void DivideTest()
 		{
-			CSharpTestAssignmentExpression("a /= b", AssignmentOperatorType.Divide);
+			TestAssignmentExpression("a /= b", AssignmentOperatorType.Divide);
 		}
 		
 		[Test]
-		public void CSharpModulusTest()
+		public void ModulusTest()
 		{
-			CSharpTestAssignmentExpression("a %= b", AssignmentOperatorType.Modulus);
+			TestAssignmentExpression("a %= b", AssignmentOperatorType.Modulus);
 		}
 		
 		[Test]
-		public void CSharpShiftLeftTest()
+		public void ShiftLeftTest()
 		{
-			CSharpTestAssignmentExpression("a <<= b", AssignmentOperatorType.ShiftLeft);
+			TestAssignmentExpression("a <<= b", AssignmentOperatorType.ShiftLeft);
 		}
 		
 		[Test]
-		public void CSharpShiftRightTest()
+		public void ShiftRightTest()
 		{
-			CSharpTestAssignmentExpression("a >>= b", AssignmentOperatorType.ShiftRight);
+			TestAssignmentExpression("a >>= b", AssignmentOperatorType.ShiftRight);
 		}
 		
 		[Test]
-		public void CSharpBitwiseAndTest()
+		public void BitwiseAndTest()
 		{
-			CSharpTestAssignmentExpression("a &= b", AssignmentOperatorType.BitwiseAnd);
+			TestAssignmentExpression("a &= b", AssignmentOperatorType.BitwiseAnd);
 		}
 		
 		[Test]
-		public void CSharpBitwiseOrTest()
+		public void BitwiseOrTest()
 		{
-			CSharpTestAssignmentExpression("a |= b", AssignmentOperatorType.BitwiseOr);
+			TestAssignmentExpression("a |= b", AssignmentOperatorType.BitwiseOr);
 		}
 		
 		[Test]
-		public void CSharpExclusiveOrTest()
+		public void ExclusiveOrTest()
 		{
-			CSharpTestAssignmentExpression("a ^= b", AssignmentOperatorType.ExclusiveOr);
+			TestAssignmentExpression("a ^= b", AssignmentOperatorType.ExclusiveOr);
 		}
 	}
 }

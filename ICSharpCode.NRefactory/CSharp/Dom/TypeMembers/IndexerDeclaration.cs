@@ -33,6 +33,11 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class IndexerDeclaration : PropertyDeclaration
 	{
+		// TODO: Parameters or Arguments?
+		public IEnumerable<ParameterDeclaration> Parameters { 
+			get { return this.Arguments; }
+		}
+		
 		public IEnumerable<ParameterDeclaration> Arguments { 
 			get {
 				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration>();

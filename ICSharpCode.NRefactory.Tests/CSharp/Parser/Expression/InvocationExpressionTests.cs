@@ -11,7 +11,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 	public class InvocationExpressionTests
 	{
 		[Test]
-		public void CSharpSimpleInvocationExpressionTest()
+		public void SimpleInvocationExpressionTest()
 		{
 			var ie = ParseUtilCSharp.ParseExpression<InvocationExpression>("myMethod()");
 			Assert.AreEqual(0, ie.Arguments.Count());
@@ -21,7 +21,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		
 		/* TODO port unit tests to new DOM
 		[Test]
-		public void CSharpGenericInvocationExpressionTest()
+		public void GenericInvocationExpressionTest()
 		{
 			var expr = ParseUtilCSharp.ParseExpression<InvocationExpression>("myMethod<char>('a')");
 			Assert.AreEqual(1, expr.Arguments.Count());
@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpGenericInvocation2ExpressionTest()
+		public void GenericInvocation2ExpressionTest()
 		{
 			var expr = ParseUtilCSharp.ParseExpression<InvocationExpression>("myMethod<T,bool>()");
 			Assert.AreEqual(0, expr.Arguments.Count);
@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpAmbiguousGrammarGenericMethodCall()
+		public void AmbiguousGrammarGenericMethodCall()
 		{
 			InvocationExpression ie = ParseUtilCSharp.ParseExpression<InvocationExpression>("F(G<A,B>(7))");
 			Assert.IsTrue(ie.TargetObject is IdentifierExpression);
@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpAmbiguousGrammarNotAGenericMethodCall()
+		public void AmbiguousGrammarNotAGenericMethodCall()
 		{
 			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>("F<A>+y");
 			Assert.AreEqual(BinaryOperatorType.GreaterThan, boe.Op);
@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpInvalidNestedInvocationExpressionTest()
+		public void InvalidNestedInvocationExpressionTest()
 		{
 			// this test was written because this bug caused the AbstractASTVisitor to crash
 			

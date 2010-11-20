@@ -10,7 +10,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 	public class FixedStatementTests
 	{
 		[Test]
-		public void CSharpFixedStatementTest()
+		public void FixedStatementTest()
 		{
 			FixedStatement fixedStmt = ParseUtilCSharp.ParseStatement<FixedStatement>("fixed (int* ptr = &myIntArr) { }");
 			// TODO : Extend test.

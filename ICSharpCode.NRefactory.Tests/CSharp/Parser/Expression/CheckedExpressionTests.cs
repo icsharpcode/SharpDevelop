@@ -10,14 +10,14 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 	public class CheckedExpressionTests
 	{
 		[Test]
-		public void CSharpCheckedExpressionTest()
+		public void CheckedExpressionTest()
 		{
 			CheckedExpression ce = ParseUtilCSharp.ParseExpression<CheckedExpression>("checked(a)");
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 		}
 		
 		[Test]
-		public void CSharpUncheckedExpressionTest()
+		public void UncheckedExpressionTest()
 		{
 			UncheckedExpression ce = ParseUtilCSharp.ParseExpression<UncheckedExpression>("unchecked(a)");
 			Assert.IsTrue(ce.Expression is IdentifierExpression);

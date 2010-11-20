@@ -55,5 +55,21 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			Assert.IsTrue(type.IsAssignableFrom(parsedExpression.GetType()), String.Format("Parsed expression was {0} instead of {1} ({2})", parsedExpression.GetType(), type, parsedExpression));
 			return (T)parsedExpression;
 		}
+		
+		public static T ParseTypeMember<T>(string expr, bool expectErrors = false) where T : AbstractMemberBase
+		{
+			Assert.Ignore("ParseTypeMember not yet implemented");
+			
+			CSharpParser parser = new CSharpParser();
+			var members = parser.ParseTypeMembers(new StringReader(expr));
+			
+			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
+			
+			Assert.AreEqual(1, members.Count);
+			AbstractMemberBase m = members[0];
+			Type type = typeof(T);
+			Assert.IsTrue(type.IsAssignableFrom(m.GetType()), String.Format("Parsed member was {0} instead of {1} ({2})", m.GetType(), type, m));
+			return (T)m;
+		}
 	}
 }

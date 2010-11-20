@@ -11,7 +11,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 	public class IndexerExpressionTests
 	{
 		[Test]
-		public void CSharpIndexerExpressionTest()
+		public void IndexerExpressionTest()
 		{
 			IndexerExpression ie = ParseUtilCSharp.ParseExpression<IndexerExpression>("field[1, \"Hello\", 'a']");
 			Assert.IsTrue(ie.Target is IdentifierExpression);

@@ -40,6 +40,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			get;
 		}
 		
+		INode GetChildByRole (int role);
+		
 		int Role {
 			get;
 			set;

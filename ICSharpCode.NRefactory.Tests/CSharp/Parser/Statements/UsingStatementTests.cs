@@ -9,8 +9,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 	[TestFixture]
 	public class UsingStatementTests
 	{
-			[Test]
-		public void CSharpUsingStatementTest()
+		[Test]
+		public void UsingStatementTest()
 		{
 			UsingStatement usingStmt = ParseUtilCSharp.ParseStatement<UsingStatement>("using (MyVar var = new MyVar()) { } ");
 			// TODO : Extend test.

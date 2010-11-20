@@ -10,7 +10,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 	public class PointerReferenceExpressionTests
 	{
 		[Test, Ignore("where did PointerReferenceExpression.MemberName go?")]
-		public void CSharpPointerReferenceExpressionTest()
+		public void PointerReferenceExpressionTest()
 		{
 			PointerReferenceExpression pre = ParseUtilCSharp.ParseExpression<PointerReferenceExpression>("myObj.field->b");
 			Assert.IsTrue(pre.Target is MemberReferenceExpression);

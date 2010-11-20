@@ -11,14 +11,14 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 	public class BlockStatementTests
 	{
 		[Test]
-		public void CSharpBlockStatementTest()
+		public void BlockStatementTest()
 		{
 			BlockStatement blockStmt = ParseUtilCSharp.ParseStatement<BlockStatement>("{}");
 			Assert.AreEqual(0, blockStmt.Statements.Count());
 		}
 		
 		[Test]
-		public void CSharpComplexBlockStatementPositionTest()
+		public void ComplexBlockStatementPositionTest()
 		{
 			string code = @"{
 	WebClient wc = new WebClient();

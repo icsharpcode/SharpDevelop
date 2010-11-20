@@ -32,6 +32,11 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class MethodDeclaration : AbstractMember
 	{
+		// TODO: Parameters or Arguments?
+		public IEnumerable<INode> TypeParameters {
+			get { return this.TypeArguments; }
+		}
+		
 		public IEnumerable<INode> TypeArguments {
 			get { return GetChildrenByRole (Roles.TypeArgument).Cast<INode> (); }
 		}
@@ -42,9 +47,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public IEnumerable<ParameterDeclaration> Parameters { 
+			get {
+				return this.Arguments;
+			}
+		}
+		
 		public IEnumerable<ParameterDeclaration> Arguments { 
 			get {
 				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration> ();
+			}
+		}
+		
+		public bool IsExtensionMethod {
+			get {
+				ParameterDeclaration pd = (ParameterDeclaration)GetChildByRole (Roles.Argument);
+				return pd != null && pd.ParameterModifier == ParameterModifier.This;
 			}
 		}
 		

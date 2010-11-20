@@ -10,7 +10,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 	public class ParenthesizedExpressionTests
 	{
 		[Test]
-		public void CSharpPrimitiveParenthesizedExpression()
+		public void PrimitiveParenthesizedExpression()
 		{
 			ParenthesizedExpression p = ParseUtilCSharp.ParseExpression<ParenthesizedExpression>("((1))");
 			Assert.IsTrue(p.Expression is ParenthesizedExpression);

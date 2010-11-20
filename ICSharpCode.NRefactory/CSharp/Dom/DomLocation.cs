@@ -33,32 +33,28 @@ namespace ICSharpCode.NRefactory.CSharp
 	[Serializable]
 	public struct DomLocation : IComparable<DomLocation>, IEquatable<DomLocation>
 	{
+		public static readonly DomLocation Empty = new DomLocation(0, 0);
+		
+		readonly int line, column;
+		
+		public DomLocation (int line, int column)
+		{
+			this.line   = line;
+			this.column = column;
+		}
+		
 		public bool IsEmpty {
 			get {
-				return Line < 0;
+				return Line <= 0;
 			}
 		}
 		
 		public int Line {
-			get;
-			set;
+			get { return line; }
 		}
-
+		
 		public int Column {
-			get;
-			set;
-		}
-		
-		public static DomLocation Empty {
-			get {
-				return new DomLocation (-1, -1);
-			}
-		}
-		
-		public DomLocation (int line, int column) : this ()
-		{
-			this.Line   = line;
-			this.Column = column;
+			get { return column; }
 		}
 		
 		public override bool Equals (object other)
@@ -71,7 +67,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override int GetHashCode ()
 		{
 			unchecked {
-				return Line + Column * 5000;
+				return line + column * 5000;
 			}
 		}
 		
@@ -91,12 +87,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override string ToString ()
 		{
-			return String.Format ("[DomLocation: Line={0}, Column={1}]", Line, Column);
+			return String.Format ("(Line {0}, Column {1})", Line, Column);
 		}
 
 		public static DomLocation FromInvariantString (string invariantString)
 		{
-			if (invariantString.ToUpper () == "EMPTY")
+			if (string.Equals(invariantString, "EMPTY", StringComparison.OrdinalIgnoreCase))
 				return DomLocation.Empty;
 			string[] splits = invariantString.Split (',', '/');
 			if (splits.Length == 2)
@@ -108,26 +104,26 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			if (IsEmpty)
 				return "Empty";
-			return String.Format ("{0}/{1}", Line, Column);
+			return String.Format ("{0}/{1}", line, column);
 		}
 		
 		public static bool operator==(DomLocation left, DomLocation right)
 		{
-			return left.Line == right.Line && left.Column == right.Column;
+			return left.line == right.line && left.column == right.column;
 		}
 		
 		public static bool operator!=(DomLocation left, DomLocation right)
 		{
-			return left.Line != right.Line || left.Column != right.Column;
+			return left.line != right.line || left.column != right.column;
 		}
 		
 		public static bool operator<(DomLocation left, DomLocation right)
 		{
-			return left.Line < right.Line || left.Line == right.Line && left.Column < right.Column;
+			return left.line < right.line || left.line == right.line && left.column < right.column;
 		}
 		public static bool operator>(DomLocation left, DomLocation right)
 		{
-			return left.Line > right.Line || left.Line == right.Line && left.Column > right.Column;
+			return left.line > right.line || left.line == right.line && left.column > right.column;
 		}
 		public static bool operator<=(DomLocation left, DomLocation right)
 		{

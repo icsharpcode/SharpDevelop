@@ -10,7 +10,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 	public class EmptyStatementTests
 	{
 		[Test]
-		public void CSharpEmptyStatementTest()
+		public void EmptyStatementTest()
 		{
 			EmptyStatement emptyStmt = ParseUtilCSharp.ParseStatement<EmptyStatement>(";");
 		}

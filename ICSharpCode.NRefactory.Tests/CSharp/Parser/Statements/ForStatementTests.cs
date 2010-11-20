@@ -11,14 +11,14 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 	public class ForStatementTests
 	{
 		[Test]
-		public void CSharpForeachStatementTest()
+		public void ForeachStatementTest()
 		{
 			ForeachStatement foreachStmt = ParseUtilCSharp.ParseStatement<ForeachStatement>("foreach (int i in myColl) {} ");
 			// TODO : Extend test.
 		}
 		
 		[Test]
-		public void CSharpEmptyForStatementTest()
+		public void EmptyForStatementTest()
 		{
 			ForStatement forStmt = ParseUtilCSharp.ParseStatement<ForStatement>("for (;;) ;");
 			Assert.AreEqual(0, forStmt.Initializers.Count());
@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		}
 		
 		[Test]
-		public void CSharpForStatementTest()
+		public void ForStatementTest()
 		{
 			ForStatement forStmt = ParseUtilCSharp.ParseStatement<ForStatement>("for (int i = 5; i < 6; ++i) {} ");
 			// TODO : Extend test.

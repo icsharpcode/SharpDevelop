@@ -10,7 +10,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 	public class BaseReferenceExpressionTests
 	{
 		[Test]
-		public void CSharpBaseReferenceExpressionTest1()
+		public void BaseReferenceExpressionTest1()
 		{
 			MemberReferenceExpression fre = ParseUtilCSharp.ParseExpression<MemberReferenceExpression>("base.myField");
 			Assert.IsTrue(fre.Target is BaseReferenceExpression);

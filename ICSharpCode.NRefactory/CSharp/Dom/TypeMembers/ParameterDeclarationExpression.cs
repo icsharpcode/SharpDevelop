@@ -62,6 +62,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public INode Type {
+			get { return GetChildByRole (Roles.ReturnType); }
+		}
+		
 		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitParameterDeclaration (this, data);

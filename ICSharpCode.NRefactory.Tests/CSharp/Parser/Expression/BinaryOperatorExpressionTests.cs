@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpOperatorPrecedenceTest()
+		public void OperatorPrecedenceTest()
 		{
 			SameOperatorPrecedenceTest("*", BinaryOperatorType.Multiply, "/", BinaryOperatorType.Divide, false);
 			SameOperatorPrecedenceTest("*", BinaryOperatorType.Multiply, "%", BinaryOperatorType.Modulus, false);
@@ -75,7 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		#endregion
 		
-		void CSharpTestBinaryOperatorExpressionTest(string program, BinaryOperatorType op)
+		void TestBinaryOperatorExpressionTest(string program, BinaryOperatorType op)
 		{
 			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>(program);
 			Assert.AreEqual(op, boe.BinaryOperatorType);
@@ -86,7 +86,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpSubtractionLeftToRight()
+		public void SubtractionLeftToRight()
 		{
 			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>("a - b - c");
 			Assert.IsTrue(boe.Right is IdentifierExpression);
@@ -94,7 +94,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpNullCoalescingRightToLeft()
+		public void NullCoalescingRightToLeft()
 		{
 			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>("a ?? b ?? c");
 			Assert.IsTrue(boe.Left is IdentifierExpression);
@@ -102,122 +102,122 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpBitwiseAndTest()
+		public void BitwiseAndTest()
 		{
-			CSharpTestBinaryOperatorExpressionTest("a & b", BinaryOperatorType.BitwiseAnd);
+			TestBinaryOperatorExpressionTest("a & b", BinaryOperatorType.BitwiseAnd);
 		}
 		
 		[Test]
-		public void CSharpBitwiseOrTest()
+		public void BitwiseOrTest()
 		{
-			CSharpTestBinaryOperatorExpressionTest("a | b", BinaryOperatorType.BitwiseOr);
+			TestBinaryOperatorExpressionTest("a | b", BinaryOperatorType.BitwiseOr);
 		}
 		
 		[Test]
-		public void CSharpLogicalAndTest()
+		public void LogicalAndTest()
 		{
-			CSharpTestBinaryOperatorExpressionTest("a && b", BinaryOperatorType.LogicalAnd);
+			TestBinaryOperatorExpressionTest("a && b", BinaryOperatorType.LogicalAnd);
 		}
 		
 		[Test]
-		public void CSharpLogicalOrTest()
+		public void LogicalOrTest()
 		{
-			CSharpTestBinaryOperatorExpressionTest("a || b", BinaryOperatorType.LogicalOr);
+			TestBinaryOperatorExpressionTest("a || b", BinaryOperatorType.LogicalOr);
 		}
 		
 		[Test]
-		public void CSharpExclusiveOrTest()
+		public void ExclusiveOrTest()
 		{
-			CSharpTestBinaryOperatorExpressionTest("a ^ b", BinaryOperatorType.ExclusiveOr);
+			TestBinaryOperatorExpressionTest("a ^ b", BinaryOperatorType.ExclusiveOr);
 		}
 		
 		
 		[Test]
-		public void CSharpGreaterThanTest()
+		public void GreaterThanTest()
 		{
-			CSharpTestBinaryOperatorExpressionTest("a > b", BinaryOperatorType.GreaterThan);
+			TestBinaryOperatorExpressionTest("a > b", BinaryOperatorType.GreaterThan);
 		}
 		
 		[Test]
-		public void CSharpGreaterThanOrEqualTest()
+		public void GreaterThanOrEqualTest()
 		{
-			CSharpTestBinaryOperatorExpressionTest("a >= b", BinaryOperatorType.GreaterThanOrEqual);
+			TestBinaryOperatorExpressionTest("a >= b", BinaryOperatorType.GreaterThanOrEqual);
 		}
 		
 		[Test]
-		public void CSharpEqualityTest()
+		public void EqualityTest()
 		{
-			CSharpTestBinaryOperatorExpressionTest("a == b", BinaryOperatorType.Equality);
+			TestBinaryOperatorExpressionTest("a == b", BinaryOperatorType.Equality);
 		}
 		
 		[Test]
-		public void CSharpInEqualityTest()
+		public void InEqualityTest()
 		{
-			CSharpTestBinaryOperatorExpressionTest("a != b", BinaryOperatorType.InEquality);
+			TestBinaryOperatorExpressionTest("a != b", BinaryOperatorType.InEquality);
 		}
 		
 		[Test]
-		public void CSharpLessThanTest()
+		public void LessThanTest()
 		{
-			CSharpTestBinaryOperatorExpressionTest("a < b", BinaryOperatorType.LessThan);
+			TestBinaryOperatorExpressionTest("a < b", BinaryOperatorType.LessThan);
 		}
 		
 		[Test]
-		public void CSharpLessThanOrEqualTest()
+		public void LessThanOrEqualTest()
 		{
-			CSharpTestBinaryOperatorExpressionTest("a <= b", BinaryOperatorType.LessThanOrEqual);
+			TestBinaryOperatorExpressionTest("a <= b", BinaryOperatorType.LessThanOrEqual);
 		}
 		
 		[Test]
-		public void CSharpAddTest()
+		public void AddTest()
 		{
-			CSharpTestBinaryOperatorExpressionTest("a + b", BinaryOperatorType.Add);
+			TestBinaryOperatorExpressionTest("a + b", BinaryOperatorType.Add);
 		}
 		
 		[Test]
-		public void CSharpSubtractTest()
+		public void SubtractTest()
 		{
-			CSharpTestBinaryOperatorExpressionTest("a - b", BinaryOperatorType.Subtract);
+			TestBinaryOperatorExpressionTest("a - b", BinaryOperatorType.Subtract);
 		}
 		
 		[Test]
-		public void CSharpMultiplyTest()
+		public void MultiplyTest()
 		{
-			CSharpTestBinaryOperatorExpressionTest("a * b", BinaryOperatorType.Multiply);
+			TestBinaryOperatorExpressionTest("a * b", BinaryOperatorType.Multiply);
 		}
 		
 		[Test]
-		public void CSharpDivideTest()
+		public void DivideTest()
 		{
-			CSharpTestBinaryOperatorExpressionTest("a / b", BinaryOperatorType.Divide);
+			TestBinaryOperatorExpressionTest("a / b", BinaryOperatorType.Divide);
 		}
 		
 		[Test]
-		public void CSharpModulusTest()
+		public void ModulusTest()
 		{
-			CSharpTestBinaryOperatorExpressionTest("a % b", BinaryOperatorType.Modulus);
+			TestBinaryOperatorExpressionTest("a % b", BinaryOperatorType.Modulus);
 		}
 		
 		[Test]
-		public void CSharpShiftLeftTest()
+		public void ShiftLeftTest()
 		{
-			CSharpTestBinaryOperatorExpressionTest("a << b", BinaryOperatorType.ShiftLeft);
+			TestBinaryOperatorExpressionTest("a << b", BinaryOperatorType.ShiftLeft);
 		}
 		
 		[Test]
-		public void CSharpShiftRightTest()
+		public void ShiftRightTest()
 		{
-			CSharpTestBinaryOperatorExpressionTest("a >> b", BinaryOperatorType.ShiftRight);
+			TestBinaryOperatorExpressionTest("a >> b", BinaryOperatorType.ShiftRight);
 		}
 		
 		[Test]
-		public void CSharpNullCoalescingTest()
+		public void NullCoalescingTest()
 		{
-			CSharpTestBinaryOperatorExpressionTest("a ?? b", BinaryOperatorType.NullCoalescing);
+			TestBinaryOperatorExpressionTest("a ?? b", BinaryOperatorType.NullCoalescing);
 		}
 		
 		[Test]
-		public void CSharpLessThanOrGreaterTest()
+		public void LessThanOrGreaterTest()
 		{
 			const string expr = "i1 < 0 || i1 > (Count - 1)";
 			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>(expr);

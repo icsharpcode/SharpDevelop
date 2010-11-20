@@ -9,7 +9,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 	[TestFixture]
 	public class UnaryOperatorExpressionTests
 	{
-		void CSharpTestUnaryOperatorExpressionTest(string program, UnaryOperatorType op)
+		void TestUnaryOperatorExpressionTest(string program, UnaryOperatorType op)
 		{
 			UnaryOperatorExpression uoe = ParseUtilCSharp.ParseExpression<UnaryOperatorExpression>(program);
 			Assert.AreEqual(op, uoe.UnaryOperatorType);
@@ -18,67 +18,67 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpNotTest()
+		public void NotTest()
 		{
-			CSharpTestUnaryOperatorExpressionTest("!a", UnaryOperatorType.Not);
+			TestUnaryOperatorExpressionTest("!a", UnaryOperatorType.Not);
 		}
 		
 		[Test]
-		public void CSharpBitNotTest()
+		public void BitNotTest()
 		{
-			CSharpTestUnaryOperatorExpressionTest("~a", UnaryOperatorType.BitNot);
+			TestUnaryOperatorExpressionTest("~a", UnaryOperatorType.BitNot);
 		}
 		
 		[Test]
-		public void CSharpMinusTest()
+		public void MinusTest()
 		{
-			CSharpTestUnaryOperatorExpressionTest("-a", UnaryOperatorType.Minus);
+			TestUnaryOperatorExpressionTest("-a", UnaryOperatorType.Minus);
 		}
 		
 		[Test]
-		public void CSharpPlusTest()
+		public void PlusTest()
 		{
-			CSharpTestUnaryOperatorExpressionTest("+a", UnaryOperatorType.Plus);
+			TestUnaryOperatorExpressionTest("+a", UnaryOperatorType.Plus);
 		}
 		
 		[Test]
-		public void CSharpIncrementTest()
+		public void IncrementTest()
 		{
-			CSharpTestUnaryOperatorExpressionTest("++a", UnaryOperatorType.Increment);
+			TestUnaryOperatorExpressionTest("++a", UnaryOperatorType.Increment);
 		}
 		
 		[Test]
-		public void CSharpDecrementTest()
+		public void DecrementTest()
 		{
-			CSharpTestUnaryOperatorExpressionTest("--a", UnaryOperatorType.Decrement);
+			TestUnaryOperatorExpressionTest("--a", UnaryOperatorType.Decrement);
 		}
 		
 		[Test]
-		public void CSharpPostIncrementTest()
+		public void PostIncrementTest()
 		{
-			CSharpTestUnaryOperatorExpressionTest("a++", UnaryOperatorType.PostIncrement);
+			TestUnaryOperatorExpressionTest("a++", UnaryOperatorType.PostIncrement);
 		}
 		
 		[Test]
-		public void CSharpPostDecrementTest()
+		public void PostDecrementTest()
 		{
-			CSharpTestUnaryOperatorExpressionTest("a--", UnaryOperatorType.PostDecrement);
+			TestUnaryOperatorExpressionTest("a--", UnaryOperatorType.PostDecrement);
 		}
 		
 		[Test]
-		public void CSharpStarTest()
+		public void StarTest()
 		{
-			CSharpTestUnaryOperatorExpressionTest("*a", UnaryOperatorType.Dereference);
+			TestUnaryOperatorExpressionTest("*a", UnaryOperatorType.Dereference);
 		}
 		
 		[Test]
-		public void CSharpBitWiseAndTest()
+		public void BitWiseAndTest()
 		{
-			CSharpTestUnaryOperatorExpressionTest("&a", UnaryOperatorType.AddressOf);
+			TestUnaryOperatorExpressionTest("&a", UnaryOperatorType.AddressOf);
 		}
 		
 		[Test]
-		public void CSharpDereferenceAfterCast()
+		public void DereferenceAfterCast()
 		{
 			UnaryOperatorExpression uoe = ParseUtilCSharp.ParseExpression<UnaryOperatorExpression>("*((SomeType*) &w)");
 			Assert.AreEqual(UnaryOperatorType.Dereference, uoe.UnaryOperatorType);

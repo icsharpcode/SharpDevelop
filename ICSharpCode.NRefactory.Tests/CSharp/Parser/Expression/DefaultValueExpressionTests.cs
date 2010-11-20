@@ -10,7 +10,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 	public class DefaultValueExpressionTests
 	{
 		[Test]
-		public void CSharpSimpleDefaultValue()
+		public void SimpleDefaultValue()
 		{
 			DefaultValueExpression toe = ParseUtilCSharp.ParseExpression<DefaultValueExpression>("default(T)");
 			Assert.AreEqual("T", toe.TypeReference.Identifier.Name);
@@ -18,7 +18,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		
 		/*
 		[Test]
-		public void CSharpFullQualifiedDefaultValue()
+		public void FullQualifiedDefaultValue()
 		{
 			DefaultValueExpression toe = ParseUtilCSharp.ParseExpression<DefaultValueExpression>("default(global::MyNamespace.N1.MyType)");
 			Assert.IsTrue(toe.TypeReference.IsGlobal);
@@ -26,7 +26,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpGenericDefaultValue()
+		public void GenericDefaultValue()
 		{
 			DefaultValueExpression toe = ParseUtilCSharp.ParseExpression<DefaultValueExpression>("default(MyNamespace.N1.MyType<string>)");
 			Assert.AreEqual("MyNamespace.N1.MyType", toe.TypeReference.Type);
@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpDefaultValueAsIntializer()
+		public void DefaultValueAsIntializer()
 		{
 			// This test is failing because we need a resolver for the "default:" / "default(" conflict.
 			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("T a = default(T);");
@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		}
 		
 		[Test]
-		public void CSharpDefaultValueInReturnStatement()
+		public void DefaultValueInReturnStatement()
 		{
 			ReturnStatement rs = ParseUtilCSharp.ParseStatement<ReturnStatement>("return default(T);");
 			DefaultValueExpression dve = (DefaultValueExpression)rs.Expression;
