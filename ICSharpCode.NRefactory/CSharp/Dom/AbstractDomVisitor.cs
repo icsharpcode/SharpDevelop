@@ -77,15 +77,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public virtual S VisitTypeDeclaration (TypeDeclaration typeDeclaration, T data) 
 		{
-			foreach (INode node in typeDeclaration.GetChildrenByRole (TypeDeclaration.Roles.Member)) {
-				node.AcceptVisitor (this, data);
-			}
-			return default (S);
-		}
-		
-		public virtual S VisitEnumDeclaration (EnumDeclaration enumDeclaration, T data) 
-		{
-			return VisitChildren (enumDeclaration, data);
+			return VisitChildren (typeDeclaration, data);
 		}
 		
 		public virtual S VisitEnumMemberDeclaration (EnumMemberDeclaration enumMemberDeclaration, T data) 

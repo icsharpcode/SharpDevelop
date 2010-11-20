@@ -599,12 +599,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				modifierTable[Mono.CSharp.Modifiers.STATIC] = Modifiers.Static;
 				modifierTable[Mono.CSharp.Modifiers.OVERRIDE] = Modifiers.Override;
 				modifierTable[Mono.CSharp.Modifiers.READONLY] = Modifiers.Readonly;
-//				modifierTable[Mono.CSharp.Modifiers.] = Modifiers.Const;
+				//modifierTable[Mono.CSharp.Modifiers.] = Modifiers.Const;
 				modifierTable[Mono.CSharp.Modifiers.PARTIAL] = Modifiers.Partial;
 				modifierTable[Mono.CSharp.Modifiers.EXTERN] = Modifiers.Extern;
 				modifierTable[Mono.CSharp.Modifiers.VOLATILE] = Modifiers.Volatile;
 				modifierTable[Mono.CSharp.Modifiers.UNSAFE] = Modifiers.Unsafe;
-				modifierTable[Mono.CSharp.Modifiers.OVERRIDE] = Modifiers.Overloads;
 			}
 			
 			void AddModifiers (AbstractNode parent, LocationsBag.MemberLocations location)

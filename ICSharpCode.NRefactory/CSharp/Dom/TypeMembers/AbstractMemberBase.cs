@@ -1,4 +1,4 @@
-// 
+﻿// 
 // AbstractMemberBase.cs
 //  
 // Author:
@@ -33,9 +33,19 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public abstract class AbstractMemberBase : AbstractNode
 	{
-		public IEnumerable<INode> Modifiers { 
+		public IEnumerable<CSharpModifierToken> ModifierTokens { 
 			get {
-				return base.GetChildrenByRole (Roles.Modifier);
+				return base.GetChildrenByRole (Roles.Modifier).Cast <CSharpModifierToken>();
+			}
+		}
+		
+		public Modifiers Modifiers {
+			get {
+				Modifiers m = 0;
+				foreach (CSharpModifierToken t in this.ModifierTokens) {
+					m |= t.Modifier;
+				}
+				return m;
 			}
 		}
 		

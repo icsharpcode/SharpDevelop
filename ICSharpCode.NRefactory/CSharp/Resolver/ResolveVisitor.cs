@@ -98,11 +98,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				resolver.CurrentTypeDefinition = previousTypeDefinition;
 			}
 		}
-		
-		public override ResolveResult VisitEnumDeclaration(EnumDeclaration enumDeclaration, object data)
-		{
-			return VisitTypeDeclaration(enumDeclaration, data);
-		}
 		#endregion
 		
 		#region Track CheckForOverflow
@@ -254,28 +249,31 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			                                  IsTargetOfInvocation(identifierExpression));
 		}
 		
+		ResolveResult[] GetArguments(IEnumerable<INode> argumentExpressions, out string[] argumentNames)
+		{
+			argumentNames = null; // TODO: add support for named arguments
+			ResolveResult[] arguments = new ResolveResult[argumentExpressions.Count()];
+			int i = 0;
+			foreach (INode argument in argumentExpressions) {
+				arguments[i++] = Resolve(argument);
+			}
+			return arguments;
+		}
+		
 		public override ResolveResult VisitIndexerExpression(IndexerExpression indexerExpression, object data)
 		{
 			ResolveResult target = Resolve(indexerExpression.Target);
-			// TODO: add support for named arguments
-			var argumentExpressions = indexerExpression.Arguments.ToList();
-			ResolveResult[] arguments = new ResolveResult[argumentExpressions.Count];
-			for (int i = 0; i < arguments.Length; i++) {
-				arguments[i] = Resolve(argumentExpressions[i]);
-			}
-			return resolver.ResolveIndexer(target, arguments);
+			string[] argumentNames;
+			ResolveResult[] arguments = GetArguments(indexerExpression.Arguments, out argumentNames);
+			return resolver.ResolveIndexer(target, arguments, argumentNames);
 		}
 		
 		public override ResolveResult VisitInvocationExpression(InvocationExpression invocationExpression, object data)
 		{
 			ResolveResult target = Resolve(invocationExpression.Target);
-			// TODO: add support for named arguments
-			var argumentExpressions = invocationExpression.Arguments.ToList();
-			ResolveResult[] arguments = new ResolveResult[argumentExpressions.Count];
-			for (int i = 0; i < arguments.Length; i++) {
-				arguments[i] = Resolve(argumentExpressions[i]);
-			}
-			return resolver.ResolveInvocation(target, arguments);
+			string[] argumentNames;
+			ResolveResult[] arguments = GetArguments(invocationExpression.Arguments, out argumentNames);
+			return resolver.ResolveInvocation(target, arguments, argumentNames);
 		}
 		
 		public override ResolveResult VisitIsExpression(IsExpression isExpression, object data)
@@ -307,7 +305,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override ResolveResult VisitObjectCreateExpression(ObjectCreateExpression objectCreateExpression, object data)
 		{
-			throw new NotImplementedException();
+			IType type = ResolveType(objectCreateExpression.Type);
+			string[] argumentNames;
+			ResolveResult[] arguments = GetArguments(objectCreateExpression.Arguments, out argumentNames);
+			return resolver.ResolveObjectCreation(type, arguments, argumentNames);
 		}
 		
 		public override ResolveResult VisitParenthesizedExpression(ParenthesizedExpression parenthesizedExpression, object data)

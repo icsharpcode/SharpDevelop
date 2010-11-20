@@ -299,6 +299,7 @@
     <Compile Include="Utils\CacheManager.cs" />
     <Compile Include="Utils\CSharpPrimitiveCast.cs" />
     <Compile Include="Utils\EmptyList.cs" />
+    <Compile Include="Utils\ExtensionMethods.cs" />
     <Compile Include="Utils\TreeTraversal.cs" />
     <Compile Include="CSharp\Dom\ComposedType.cs" />
     <Compile Include="CSharp\Dom\Expressions\DirectionExpression.cs" />

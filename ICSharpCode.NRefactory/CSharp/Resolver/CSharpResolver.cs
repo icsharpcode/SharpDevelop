@@ -1677,6 +1677,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		#region ResolveObjectCreation
+		public ResolveResult ResolveObjectCreation(IType type, ResolveResult[] arguments, string[] argumentNames = null)
+		{
+			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, new IType[0]);
+			MemberLookup lookup = CreateMemberLookup();
+			bool allowProtectedAccess = lookup.AllowProtectedAccess(type);
+			var constructors = type.GetConstructors(context, m => lookup.IsAccessible(m, allowProtectedAccess));
+			foreach (IMethod ctor in constructors) {
+				or.AddCandidate(ctor);
+			}
+			if (or.BestCandidate != null) {
+				return new MemberResolveResult(or.BestCandidate, type);
+			} else {
+				return new ErrorResolveResult(type);
+			}
+		}
+		#endregion
+		
 		#region ResolveSizeOf
 		/// <summary>
 		/// Resolves 'sizeof(type)'.

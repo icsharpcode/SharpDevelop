@@ -1,4 +1,4 @@
-// 
+﻿// 
 // DelegateDeclaration.cs
 //  
 // Author:
@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class DelegateDeclaration : AbstractNode
+	public class DelegateDeclaration : AbstractMemberBase
 	{
 		public string Name {
 			get {
@@ -55,18 +55,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		public IEnumerable<INode> Arguments { 
 			get {
 				return base.GetChildrenByRole (Roles.Argument).Cast <INode>();
-			}
-		}
-		
-		public IEnumerable<AttributeSection> Attributes { 
-			get {
-				return base.GetChildrenByRole (Roles.Attribute).Cast <AttributeSection>();
-			}
-		}
-		
-		public IEnumerable<INode> Modifiers { 
-			get {
-				return base.GetChildrenByRole (Roles.Modifier);
 			}
 		}
 		

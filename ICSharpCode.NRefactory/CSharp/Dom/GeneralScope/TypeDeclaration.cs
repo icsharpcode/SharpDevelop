@@ -47,6 +47,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public IEnumerable<AbstractMemberBase> Members {
+			get {
+				return GetChildrenByRole (Roles.Member).Cast<AbstractMemberBase> ();
+			}
+		}
+		
 		// TODO: rename to TypeParameters, more specific return type
 		public IEnumerable<INode> TypeArguments {
 			get {

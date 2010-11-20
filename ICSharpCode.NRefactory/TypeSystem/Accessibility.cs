@@ -35,10 +35,12 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// The entity is accessible both everywhere in the project content, and in all derived classes.
 		/// </summary>
+		/// <remarks>This corresponds to C# 'protected internal'.</remarks>
 		ProtectedOrInternal,
 		/// <summary>
 		/// The entity is accessible in derived classes within the same project content.
 		/// </summary>
+		/// <remarks>C# does not support this accessibility.</remarks>
 		ProtectedAndInternal,
 	}
 }

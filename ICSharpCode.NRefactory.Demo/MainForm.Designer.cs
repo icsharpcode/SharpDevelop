@@ -106,6 +106,7 @@ namespace ICSharpCode.NRefactory.Demo
 			this.csharpCodeTextBox.Text = "using System;\r\nclass Test\r\n{\r\n    public void Main(string[] args)\r\n    {\r\n       " +
 			"  Console.WriteLine(\"Hello, World\");\r\n    }\r\n}";
 			this.csharpCodeTextBox.WordWrap = false;
+			this.csharpCodeTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CSharpCodeTextBoxKeyDown);
 			// 
 			// resolveButton
 			// 

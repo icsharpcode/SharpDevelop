@@ -1,4 +1,4 @@
-// 
+﻿// 
 // EnumDeclaration.cs
 //  
 // Author:
@@ -31,36 +31,8 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class EnumDeclaration : TypeDeclaration
+	public class EnumMemberDeclaration : AbstractMemberBase
 	{
-		const int EnumMemberDeclarationRole = 100;
-		
-		public IEnumerable<EnumMemberDeclaration> Members { 
-			get {
-				return base.GetChildrenByRole (EnumMemberDeclarationRole).Cast <EnumMemberDeclaration>();
-			}
-		}
-		
-		public override ClassType ClassType {
-			get {
-				return ClassType.Enum;
-			}
-		}
-		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
-		{
-			return visitor.VisitEnumDeclaration (this, data);
-		}
-	}
-	
-	public class EnumMemberDeclaration : AbstractNode
-	{
-		public IEnumerable<AttributeSection> Attributes { 
-			get {
-				return base.GetChildrenByRole (Roles.Attribute).Cast <AttributeSection>();
-			}
-		}
-		
 		public string Name {
 			get {
 				return NameIdentifier.Name;

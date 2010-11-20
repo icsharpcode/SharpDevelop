@@ -30,6 +30,7 @@ namespace ICSharpCode.NRefactory.Demo
 			//
 			InitializeComponent();
 			
+			csharpCodeTextBox.SelectAll();
 			CSharpParseButtonClick(null, null);
 			resolveButton.UseWaitCursor = true;
 			ThreadPool.QueueUserWorkItem(
@@ -206,6 +207,14 @@ namespace ICSharpCode.NRefactory.Demo
 						t.Text += " " + rr.ToString();
 				}
 				ShowResolveResultsInTree(t.Nodes, v);
+			}
+		}
+		
+		void CSharpCodeTextBoxKeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.Control && e.KeyCode == Keys.A) {
+				e.Handled = true;
+				csharpCodeTextBox.SelectAll();
 			}
 		}
 	}

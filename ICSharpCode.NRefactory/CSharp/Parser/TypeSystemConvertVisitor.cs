@@ -6,11 +6,12 @@ using System.Collections.Generic;
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
 	/// <summary>
-	/// Produces type and member declarations.
+	/// Produces type and member definitions from the DOM.
 	/// </summary>
 	public class TypeSystemConvertVisitor : AbstractDomVisitor<object, IEntity>
 	{
@@ -33,6 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return new DomRegion(parsedFile.FileName, start.Line, start.Column, end.Line, end.Column);
 		}
 		
+		#region Using Declarations
 		// TODO: extern aliases
 		
 		public override IEntity VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
@@ -55,7 +57,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			throw new NotImplementedException();
 		}
+		#endregion
 		
+		#region Namespace Declaration
 		public override IEntity VisitNamespaceDeclaration(NamespaceDeclaration namespaceDeclaration, object data)
 		{
 			DomRegion region = MakeRegion(namespaceDeclaration.StartLocation, namespaceDeclaration.EndLocation);
@@ -69,18 +73,22 @@ namespace ICSharpCode.NRefactory.CSharp
 			usingScope = previousUsingScope;
 			return null;
 		}
+		#endregion
 		
 		// TODO: assembly attributes
 		
+		#region Type Definitions
 		DefaultTypeDefinition CreateTypeDefinition(string name)
 		{
+			DefaultTypeDefinition newType;
 			if (currentTypeDefinition != null) {
-				return new DefaultTypeDefinition(currentTypeDefinition, name);
+				newType = new DefaultTypeDefinition(currentTypeDefinition, name);
+				currentTypeDefinition.InnerClasses.Add(newType);
 			} else {
-				DefaultTypeDefinition newType = new DefaultTypeDefinition(usingScope.ProjectContent, usingScope.NamespaceName, name);
+				newType = new DefaultTypeDefinition(usingScope.ProjectContent, usingScope.NamespaceName, name);
 				parsedFile.TopLevelTypeDefinitions.Add(newType);
-				return newType;
 			}
+			return newType;
 		}
 		
 		public override IEntity VisitTypeDeclaration(TypeDeclaration typeDeclaration, object data)
@@ -92,28 +100,141 @@ namespace ICSharpCode.NRefactory.CSharp
 			td.AddDefaultConstructorIfRequired = true;
 			
 			ConvertAttributes(td.Attributes, typeDeclaration.Attributes);
-			// TODO: modifiers
+			ApplyModifiers(td, typeDeclaration.Modifiers);
+			if (td.ClassType == ClassType.Interface)
+				td.IsAbstract = true; // interfaces are implicitly abstract
+			else if (td.ClassType == ClassType.Enum || td.ClassType == ClassType.Struct)
+				td.IsSealed = true; // enums/structs are implicitly sealed
 			
-			//ConvertTypeParameters(td.TypeParameters, typeDeclaration.TypeArguments, typeDeclaration.Constraints, td);
+			//TODO ConvertTypeParameters(td.TypeParameters, typeDeclaration.TypeArguments, typeDeclaration.Constraints, td);
 			
 			// TODO: base type references?
 			
-			// TODO: members
+			foreach (AbstractMemberBase member in typeDeclaration.Members) {
+				member.AcceptVisitor(this, data);
+			}
 			
 			currentTypeDefinition = (DefaultTypeDefinition)currentTypeDefinition.DeclaringTypeDefinition;
 			return td;
 		}
 		
-		public override IEntity VisitEnumDeclaration(EnumDeclaration enumDeclaration, object data)
+		public override IEntity VisitDelegateDeclaration(DelegateDeclaration delegateDeclaration, object data)
 		{
-			return VisitTypeDeclaration(enumDeclaration, data);
+			var td = CreateTypeDefinition(delegateDeclaration.Name);
+			td.ClassType = ClassType.Delegate;
+			td.Region = MakeRegion(delegateDeclaration.StartLocation, delegateDeclaration.EndLocation);
+			td.BaseTypes.Add(multicastDelegateReference);
+			
+			ConvertAttributes(td.Attributes, delegateDeclaration.Attributes);
+			ApplyModifiers(td, delegateDeclaration.Modifiers);
+			td.IsSealed = true; // delegates are implicitly sealed
+			
+			// TODO: convert return type, convert parameters
+			AddDefaultMethodsToDelegate(td, SharedTypes.UnknownType, EmptyList<IParameter>.Instance);
+			
+			return td;
 		}
 		
+		static readonly ITypeReference multicastDelegateReference = typeof(MulticastDelegate).ToTypeReference();
+		static readonly IParameter delegateObjectParameter = MakeParameter(TypeCode.Object.ToTypeReference(), "object");
+		static readonly IParameter delegateIntPtrMethodParameter = MakeParameter(typeof(IntPtr).ToTypeReference(), "method");
+		static readonly IParameter delegateAsyncCallbackParameter = MakeParameter(typeof(AsyncCallback).ToTypeReference(), "callback");
+		static readonly IParameter delegateResultParameter = MakeParameter(typeof(IAsyncResult).ToTypeReference(), "result");
+		
+		static IParameter MakeParameter(ITypeReference type, string name)
+		{
+			DefaultParameter p = new DefaultParameter(type, name);
+			p.Freeze();
+			return p;
+		}
+		
+		/// <summary>
+		/// Adds the 'Invoke', 'BeginInvoke', 'EndInvoke' methods, and a constructor, to the <see cref="delegateType"/>.
+		/// </summary>
+		public static void AddDefaultMethodsToDelegate(DefaultTypeDefinition delegateType, ITypeReference returnType, IEnumerable<IParameter> parameters)
+		{
+			if (delegateType == null)
+				throw new ArgumentNullException("delegateType");
+			if (returnType == null)
+				throw new ArgumentNullException("returnType");
+			if (parameters == null)
+				throw new ArgumentNullException("parameters");
+			
+			DomRegion region = new DomRegion(delegateType.Region.FileName, delegateType.Region.BeginLine, delegateType.Region.BeginColumn);
+			
+			DefaultMethod invoke = new DefaultMethod(delegateType, "Invoke");
+			invoke.Accessibility = Accessibility.Public;
+			invoke.IsSynthetic = true;
+			invoke.Parameters.AddRange(parameters);
+			invoke.ReturnType = returnType;
+			invoke.Region = region;
+			delegateType.Methods.Add(invoke);
+			
+			DefaultMethod beginInvoke = new DefaultMethod(delegateType, "BeginInvoke");
+			beginInvoke.Accessibility = Accessibility.Public;
+			beginInvoke.IsSynthetic = true;
+			beginInvoke.Parameters.AddRange(invoke.Parameters);
+			beginInvoke.Parameters.Add(delegateAsyncCallbackParameter);
+			beginInvoke.Parameters.Add(delegateObjectParameter);
+			beginInvoke.ReturnType = delegateResultParameter.Type;
+			beginInvoke.Region = region;
+			delegateType.Methods.Add(beginInvoke);
+			
+			DefaultMethod endInvoke = new DefaultMethod(delegateType, "EndInvoke");
+			endInvoke.Accessibility = Accessibility.Public;
+			endInvoke.IsSynthetic = true;
+			endInvoke.Parameters.Add(delegateResultParameter);
+			endInvoke.ReturnType = invoke.ReturnType;
+			endInvoke.Region = region;
+			delegateType.Methods.Add(endInvoke);
+			
+			DefaultMethod ctor = new DefaultMethod(delegateType, ".ctor");
+			ctor.EntityType = EntityType.Constructor;
+			ctor.Accessibility = Accessibility.Public;
+			ctor.IsSynthetic = true;
+			ctor.Parameters.Add(delegateObjectParameter);
+			ctor.Parameters.Add(delegateIntPtrMethodParameter);
+			ctor.ReturnType = delegateType;
+			ctor.Region = region;
+			delegateType.Methods.Add(ctor);
+		}
+		#endregion
+		
+		#region Modifiers
+		static void ApplyModifiers(DefaultTypeDefinition td, Modifiers modifiers)
+		{
+			td.Accessibility = GetAccessibility(modifiers) ?? (td.DeclaringTypeDefinition != null ? Accessibility.Private : Accessibility.Internal);
+			td.IsAbstract = (modifiers & (Modifiers.Abstract | Modifiers.Static)) != 0;
+			td.IsSealed = (modifiers & (Modifiers.Sealed | Modifiers.Static)) != 0;
+			td.IsShadowing = (modifiers & Modifiers.New) != 0;
+		}
+		
+		static Accessibility? GetAccessibility(Modifiers modifiers)
+		{
+			switch (modifiers & Modifiers.VisibilityMask) {
+				case Modifiers.Private:
+					return Accessibility.Private;
+				case Modifiers.Internal:
+					return Accessibility.Internal;
+				case Modifiers.Protected | Modifiers.Internal:
+					return Accessibility.ProtectedOrInternal;
+				case Modifiers.Protected:
+					return Accessibility.Protected;
+				case Modifiers.Public:
+					return Accessibility.Public;
+				default:
+					return null;
+			}
+		}
+		#endregion
+		
+		#region Attributes
 		void ConvertAttributes(IList<IAttribute> outputList, IEnumerable<AttributeSection> attributes)
 		{
 			foreach (AttributeSection section in attributes) {
 				throw new NotImplementedException();
 			}
 		}
+		#endregion
 	}
 }
