@@ -28,15 +28,12 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		
 		public static T ParseStatement<T>(string stmt, bool expectErrors = false) where T : INode
 		{
-			Assert.Ignore("ParseStatement not yet implemented");
-			
 			CSharpParser parser = new CSharpParser();
-			BlockStatement parsedBlock = parser.ParseBlock(new StringReader(stmt));
+			var statements = parser.ParseStatements(new StringReader(stmt));
 			
 			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
 			
-			Assert.AreEqual(1, parsedBlock.Children.Count());
-			INode statement = parsedBlock.Children.First();
+			INode statement = statements.Single();
 			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(statement.GetType()), String.Format("Parsed statement was {0} instead of {1} ({2})", statement.GetType(), type, statement));
 			return (T)statement;
@@ -44,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		
 		public static T ParseExpression<T>(string expr, bool expectErrors = false) where T : INode
 		{
-			Assert.Ignore("ParseExpression not yet implemented");
+			if (expectErrors) Assert.Ignore("errors not yet implemented");
 			
 			CSharpParser parser = new CSharpParser();
 			INode parsedExpression = parser.ParseExpression(new StringReader(expr));
@@ -58,15 +55,14 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 		
 		public static T ParseTypeMember<T>(string expr, bool expectErrors = false) where T : AbstractMemberBase
 		{
-			Assert.Ignore("ParseTypeMember not yet implemented");
+			if (expectErrors) Assert.Ignore("errors not yet implemented");
 			
 			CSharpParser parser = new CSharpParser();
 			var members = parser.ParseTypeMembers(new StringReader(expr));
 			
 			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
 			
-			Assert.AreEqual(1, members.Count);
-			AbstractMemberBase m = members[0];
+			AbstractMemberBase m = members.Single();
 			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(m.GetType()), String.Format("Parsed member was {0} instead of {1} ({2})", m.GetType(), type, m));
 			return (T)m;

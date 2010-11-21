@@ -2,6 +2,7 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
+using System.Linq;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
@@ -12,14 +13,16 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		[Test]
 		public void LabelStatementTest()
 		{
-			LabelStatement labelStmt = ParseUtilCSharp.ParseStatement<LabelStatement>("myLabel: ; ");
+			BlockStatement block = ParseUtilCSharp.ParseStatement<BlockStatement>("{ myLabel: ; }");
+			LabelStatement labelStmt = (LabelStatement)block.Statements.First();
 			Assert.AreEqual("myLabel", labelStmt.Label);
 		}
 		
 		[Test]
 		public void Label2StatementTest()
 		{
-			LabelStatement labelStmt = ParseUtilCSharp.ParseStatement<LabelStatement>("yield: ; ");
+			BlockStatement block = ParseUtilCSharp.ParseStatement<BlockStatement>("{ yield: ; }");
+			LabelStatement labelStmt = (LabelStatement)block.Statements.First();
 			Assert.AreEqual("yield", labelStmt.Label);
 		}
 	}

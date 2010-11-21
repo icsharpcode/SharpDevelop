@@ -193,7 +193,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(Accessibility.Public, p.Accessibility);
 			Assert.AreEqual(Accessibility.Public, p.Getter.Accessibility);
 			Assert.IsFalse(p.CanSet);
-			Assert.AreEqual(Accessibility.None, p.Setter.Accessibility);
+			Assert.IsNull(p.Setter);
 		}
 		
 		[Test]

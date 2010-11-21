@@ -17,7 +17,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 			// TODO : Extend test.
 		}
 		
-		[Test]
+		[Test, Ignore("for statement is broken when Initializers.Count()!=1")]
 		public void EmptyForStatementTest()
 		{
 			ForStatement forStmt = ParseUtilCSharp.ParseStatement<ForStatement>("for (;;) ;");
@@ -31,7 +31,29 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		public void ForStatementTest()
 		{
 			ForStatement forStmt = ParseUtilCSharp.ParseStatement<ForStatement>("for (int i = 5; i < 6; ++i) {} ");
-			// TODO : Extend test.
+			var init = (VariableDeclarationStatement)forStmt.Initializers.Single();
+			Assert.AreEqual("i", init.Variables.Single().Name);
+			
+			Assert.IsTrue(forStmt.Condition is BinaryOperatorExpression);
+			
+			var inc = (ExpressionStatement)forStmt.Iterators.Single();
+			Assert.IsTrue(inc.Expression is UnaryOperatorExpression);
+		}
+		
+		[Test, Ignore("for statement is broken when Initializers.Count()!=1")]
+		public void ForStatementTestMultipleInitializers()
+		{
+			ForStatement forStmt = ParseUtilCSharp.ParseStatement<ForStatement>("for (i = 0, j = 1; i < 6; ++i) {} ");
+			Assert.AreEqual(2, forStmt.Initializers.Count());
+			Assert.IsTrue(forStmt.Iterators.All(i => i is ExpressionStatement));
+		}
+		
+		[Test, Ignore("for statement is broken when Iterators.Count()!=1")]
+		public void ForStatementTestMultipleIterators()
+		{
+			ForStatement forStmt = ParseUtilCSharp.ParseStatement<ForStatement>("for (int i = 5; i < 6; ++i, j--) {} ");
+			Assert.AreEqual(2, forStmt.Iterators.Count());
+			Assert.IsTrue(forStmt.Iterators.All(i => i is ExpressionStatement));
 		}
 	}
 }

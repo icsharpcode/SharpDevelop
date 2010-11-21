@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public bool HasParameterList {
-			get { throw new NotImplementedException(); }
+			get { return GetChildByRole (Roles.LPar) != null; }
 		}
 		
 		public BlockStatement Body {

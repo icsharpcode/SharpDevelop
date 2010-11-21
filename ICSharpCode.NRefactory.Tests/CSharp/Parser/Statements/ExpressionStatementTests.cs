@@ -12,8 +12,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		[Test]
 		public void StatementExpressionTest()
 		{
-			ExpressionStatement stmtExprStmt = ParseUtilCSharp.ParseStatement<ExpressionStatement>("my.Obj.PropCall;");
-			Assert.IsTrue(stmtExprStmt.Expression is MemberReferenceExpression);
+			ExpressionStatement stmtExprStmt = ParseUtilCSharp.ParseStatement<ExpressionStatement>("a = my.Obj.PropCall;");
+			Assert.IsTrue(stmtExprStmt.Expression is AssignmentExpression);
 		}
 		
 		[Test]

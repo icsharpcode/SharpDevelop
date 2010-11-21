@@ -1624,7 +1624,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				var location = LocationsBag.GetLocations (conditionalExpression);
 				
 				result.AddChild (new CSharpTokenNode (Convert (conditionalExpression.Location), 1), ConditionalExpression.Roles.QuestionMark);
-				result.AddChild ((INode)conditionalExpression.TrueExpr.Accept (this), ConditionalExpression.FalseExpressionRole);
+				result.AddChild ((INode)conditionalExpression.TrueExpr.Accept (this), ConditionalExpression.TrueExpressionRole);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ConditionalExpression.Roles.Colon);
 				result.AddChild ((INode)conditionalExpression.FalseExpr.Accept (this), ConditionalExpression.FalseExpressionRole);
@@ -2292,16 +2292,26 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public List<AbstractMemberBase> ParseTypeMembers(TextReader reader)
+		public IEnumerable<AbstractMemberBase> ParseTypeMembers(TextReader reader)
 		{
-			// TODO: add support for type members
-			throw new NotImplementedException();
+			string code = "class MyClass { " + reader.ReadToEnd() + "}";
+			var cu = Parse(new StringReader(code));
+			var td = cu.Children.FirstOrDefault() as TypeDeclaration;
+			if (td != null)
+				return td.Members;
+			else
+				return EmptyList<AbstractMemberBase>.Instance;
 		}
 		
-		public BlockStatement ParseBlock(TextReader reader)
+		public IEnumerable<INode> ParseStatements(TextReader reader)
 		{
-			// TODO: add support for parsing statement blocks
-			throw new NotImplementedException();
+			string code = "void M() { " + reader.ReadToEnd() + "}";
+			var members = ParseTypeMembers(new StringReader(code));
+			var method = members.FirstOrDefault() as MethodDeclaration;
+			if (method != null && method.Body != null)
+				return method.Body.Statements;
+			else
+				return EmptyList<INode>.Instance;
 		}
 		
 		public INode ParseTypeReference(TextReader reader)
@@ -2312,8 +2322,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public INode ParseExpression(TextReader reader)
 		{
-			// TODO: add support for parsing expressions
-			throw new NotImplementedException();
+			var es = ParseStatements(new StringReader("tmp = " + reader.ReadToEnd() + ";")).FirstOrDefault() as ExpressionStatement;
+			if (es != null) {
+				AssignmentExpression ae = es.Expression as AssignmentExpression;
+				if (ae != null)
+					return ae.Right;
+			}
+			return null;
 		}
 		
 		/// <summary>

@@ -20,9 +20,9 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		[Test]
 		public void CheckedStatementAndExpressionTest()
 		{
-			CheckedStatement checkedStatement = ParseUtilCSharp.ParseStatement<CheckedStatement>("checked { checked(++i); }");
+			CheckedStatement checkedStatement = ParseUtilCSharp.ParseStatement<CheckedStatement>("checked { checked(++i).ToString(); }");
 			ExpressionStatement es = (ExpressionStatement)checkedStatement.Block.Statements.Single();
-			CheckedExpression ce = (CheckedExpression)es.Expression;
+			CheckedExpression ce = (CheckedExpression)((MemberReferenceExpression)((InvocationExpression)es.Expression).Target).Target;
 			Assert.IsTrue(ce.Expression is UnaryOperatorExpression);
 		}
 		
@@ -36,9 +36,9 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		[Test]
 		public void UncheckedStatementAndExpressionTest()
 		{
-			UncheckedStatement uncheckedStatement = ParseUtilCSharp.ParseStatement<UncheckedStatement>("unchecked { unchecked(++i); }");
+			UncheckedStatement uncheckedStatement = ParseUtilCSharp.ParseStatement<UncheckedStatement>("unchecked { unchecked(++i).ToString(); }");
 			ExpressionStatement es = (ExpressionStatement)uncheckedStatement.Block.Statements.Single();
-			CheckedExpression ce = (CheckedExpression)es.Expression;
+			UncheckedExpression ce = (UncheckedExpression)((MemberReferenceExpression)((InvocationExpression)es.Expression).Target).Target;
 			Assert.IsTrue(ce.Expression is UnaryOperatorExpression);
 		}
 	}
