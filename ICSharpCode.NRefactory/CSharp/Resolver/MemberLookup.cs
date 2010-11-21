@@ -54,9 +54,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Gets whether <paramref name="entity"/> is accessible in the current class.
 		/// </summary>
-		/// <param name="member">The entity to test</param>
+		/// <param name="entity">The entity to test</param>
 		/// <param name="allowProtectedAccess">Whether protected access is allowed.
-		/// True if the type of the reference is derived from the current class.</returns>
+		/// True if the type of the reference is derived from the current class.</param>
 		public bool IsAccessible(IEntity entity, bool allowProtectedAccess)
 		{
 			if (entity == null)

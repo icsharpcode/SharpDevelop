@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Gets/Sets the declaring type (incl. type arguments, if any).
 		/// This property never returns null -- for top-level members, it returns SharedTypes.UnknownType.
-		/// If this is not a specialized member, the value returned is equal to <see cref="DeclaringTypeDefinition"/>.
+		/// If this is not a specialized member, the value returned is equal to <see cref="IEntity.DeclaringTypeDefinition"/>.
 		/// </summary>
 		IType DeclaringType { get; }
 		

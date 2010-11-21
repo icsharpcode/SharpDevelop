@@ -1,4 +1,4 @@
-// 
+﻿// 
 // UnaryOperatorExpression.cs
 //  
 // Author:
@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		PostDecrement,
 		/// <summary>Dereferencing (*a)</summary>
 		Dereference,
-		/// <summary>Get address (&a)</summary>
+		/// <summary>Get address (&amp;a)</summary>
 		AddressOf
 	}
 	

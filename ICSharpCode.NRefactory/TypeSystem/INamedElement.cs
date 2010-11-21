@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// </summary>
 		/// <remarks>
 		/// For types, the reflection name can be parsed back into a ITypeReference by using
-		/// <see cref="ReflectionHelper.ParseReflectionName"/>.
+		/// <see cref="ReflectionHelper.ParseReflectionName(string,IEntity)"/>.
 		/// </remarks>
 		/// <returns>
 		/// "System.Int32[]" for int[]<br/>

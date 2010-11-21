@@ -172,7 +172,8 @@ A:	They don't use any particular format. They're merely intended as a debugging 
 	Currently .ToString() usually matches .ReflectionName, but that may change in the future.
 
 
-Q:	Why are there extension methods IType.IsEnum() and IType.IsDelegate(), but no IType.IsStruct()'	or IType.IsInterface()?
+Q:	Why are there extension methods IType.IsEnum() and IType.IsDelegate(), but no IType.IsStruct()
+	or IType.IsInterface()?
 
 A:	Because if you're asking whether a type is a struct, it's very likely that you're asking the
 	wrong question.
@@ -181,7 +182,7 @@ A:	Because if you're asking whether a type is a struct, it's very likely that yo
 	so important in the world of types.
 	
 	If whatever you are doing works with struct-types, then it likely will also work with
-	enum-types, and also with type parameters constraint to be a value-type.
+	enum-types, and also with type parameters with a value-type constraint.
 	So instead of asking IsStruct(), you really should be asking: IType.IsReferenceType == false
 	
 	Enums and delegates are special because you can do special things with those types

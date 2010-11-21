@@ -11,7 +11,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// <summary>
 	/// Contains logic that determines whether an implicit conversion exists between two types.
 	/// </summary>
-	public class Conversions
+	public class Conversions : IConversions
 	{
 		readonly ITypeResolveContext context;
 		readonly IType objectType;
@@ -163,7 +163,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region ImplicitReferenceConversion
-		bool ImplicitReferenceConversion(IType fromType, IType toType)
+		public bool ImplicitReferenceConversion(IType fromType, IType toType)
 		{
 			// C# 4.0 spec: §6.1.6
 			

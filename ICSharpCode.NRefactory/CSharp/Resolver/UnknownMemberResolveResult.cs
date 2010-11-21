@@ -65,9 +65,32 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public ReadOnlyCollection<IParameter> Parameters {
 			get { return parameters; }
 		}
+	}
+	
+	/// <summary>
+	/// Represents an unknown identifier.
+	/// </summary>
+	public class UnknownIdentifierResolveResult : ResolveResult
+	{
+		readonly string identifier;
+		
+		public UnknownIdentifierResolveResult(string identifier)
+			: base(SharedTypes.UnknownType)
+		{
+			this.identifier = identifier;
+		}
+		
+		public string Identifier {
+			get { return identifier; }
+		}
 		
 		public override bool IsError {
 			get { return true; }
+		}
+		
+		public override string ToString()
+		{
+			return string.Format("[{0} {1}]", GetType().Name, identifier);
 		}
 	}
 }

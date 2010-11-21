@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
@@ -22,13 +23,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		static readonly ResolveResult NullResult = new ResolveResult(SharedTypes.Null);
 		
 		readonly ITypeResolveContext context;
+		internal readonly CancellationToken cancellationToken;
 		
 		#region Constructor
-		public CSharpResolver(ITypeResolveContext context)
+		public CSharpResolver(ITypeResolveContext context, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
 			this.context = context;
+			this.cancellationToken = cancellationToken;
 		}
 		#endregion
 		
@@ -335,6 +338,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region ResolveUnaryOperator method
 		public ResolveResult ResolveUnaryOperator(UnaryOperatorType op, ResolveResult expression)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
+			
 			if (expression.Type == SharedTypes.Dynamic)
 				return DynamicResult;
 			
@@ -584,6 +589,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region ResolveBinaryOperator method
 		public ResolveResult ResolveBinaryOperator(BinaryOperatorType op, ResolveResult lhs, ResolveResult rhs)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
+			
 			if (lhs.Type == SharedTypes.Dynamic || rhs.Type == SharedTypes.Dynamic)
 				return DynamicResult;
 			
@@ -1427,6 +1434,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region ResolveCast
 		public ResolveResult ResolveCast(IType targetType, ResolveResult expression)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
+			
 			// C# 4.0 spec: §7.7.6 Cast expressions
 			if (expression.IsCompileTimeConstant) {
 				TypeCode code = ReflectionHelper.GetTypeCode(targetType);
@@ -1504,8 +1513,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			
-			return LookupSimpleNameOrTypeName(identifier, typeArguments,
-			                                  isInvocationTarget ? SimpleNameLookupMode.InvocationTarget : SimpleNameLookupMode.Expression);
+			ResolveResult rr = LookupSimpleNameOrTypeName(
+				identifier, typeArguments,
+				isInvocationTarget ? SimpleNameLookupMode.InvocationTarget : SimpleNameLookupMode.Expression);
+			if (rr == ErrorResult && typeArguments.Count == 0)
+				rr = new UnknownIdentifierResolveResult(identifier);
+			return rr;
 		}
 		
 		public ResolveResult LookupSimpleNamespaceOrTypeName(string identifier, IList<IType> typeArguments, bool isUsingDeclaration = false)
@@ -1522,6 +1535,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		ResolveResult LookupSimpleNameOrTypeName(string identifier, IList<IType> typeArguments, SimpleNameLookupMode lookupMode)
 		{
 			// C# 4.0 spec: §3.8 Namespace and type names; §7.6.2 Simple Names
+			
+			cancellationToken.ThrowIfCancellationRequested();
 			
 			int k = typeArguments.Count;
 			
@@ -1629,6 +1644,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (identifier == "global")
 				return new NamespaceResolveResult(string.Empty);
+			
 			for (UsingScope n = this.UsingScope; n != null; n = n.Parent) {
 				if (n.ExternAliases.Contains(identifier)) {
 					return ResolveExternAlias(identifier);
@@ -1653,6 +1669,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public ResolveResult ResolveMemberAccess(ResolveResult target, string identifier, IList<IType> typeArguments, bool isInvocationTarget = false)
 		{
 			// C# 4.0 spec: §7.6.4
+			
+			cancellationToken.ThrowIfCancellationRequested();
 			
 			NamespaceResolveResult nrr = target as NamespaceResolveResult;
 			if (nrr != null) {
@@ -1684,6 +1702,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public ResolveResult ResolveInvocation(ResolveResult target, ResolveResult[] arguments, string[] argumentNames = null)
 		{
 			// C# 4.0 spec: §7.6.5
+			
+			cancellationToken.ThrowIfCancellationRequested();
+			
 			if (target.Type == SharedTypes.Dynamic)
 				return DynamicResult;
 			
@@ -1702,6 +1723,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			UnknownMemberResolveResult umrr = target as UnknownMemberResolveResult;
 			if (umrr != null) {
 				return new UnknownMethodResolveResult(umrr.TargetType, umrr.MemberName, umrr.TypeArguments, CreateParameters(arguments, argumentNames));
+			}
+			UnknownIdentifierResolveResult uirr = target as UnknownIdentifierResolveResult;
+			if (uirr != null && CurrentTypeDefinition != null) {
+				return new UnknownMethodResolveResult(CurrentTypeDefinition, uirr.Identifier, EmptyList<IType>.Instance, CreateParameters(arguments, argumentNames));
 			}
 			IMethod invokeMethod = target.Type.GetDelegateInvokeMethod();
 			if (invokeMethod != null) {
@@ -1795,6 +1820,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region ResolveIndexer
 		public ResolveResult ResolveIndexer(ResolveResult target, ResolveResult[] arguments, string[] argumentNames = null)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
+			
 			if (target.Type == SharedTypes.Dynamic)
 				return DynamicResult;
 			
@@ -1818,6 +1845,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region ResolveObjectCreation
 		public ResolveResult ResolveObjectCreation(IType type, ResolveResult[] arguments, string[] argumentNames = null)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
+			
 			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, new IType[0]);
 			MemberLookup lookup = CreateMemberLookup();
 			bool allowProtectedAccess = lookup.AllowProtectedAccess(type);
@@ -1904,6 +1933,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public ResolveResult ResolveConditional(ResolveResult trueExpression, ResolveResult falseExpression)
 		{
 			// C# 4.0 spec §7.14: Conditional operator
+			
+			cancellationToken.ThrowIfCancellationRequested();
+			
 			Conversions c = new Conversions(context);
 			bool isValid;
 			IType resultType;

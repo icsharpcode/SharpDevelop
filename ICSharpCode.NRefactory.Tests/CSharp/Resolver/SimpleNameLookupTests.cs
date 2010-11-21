@@ -52,6 +52,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		[Test]
+		public void UnknownIdentifierTest()
+		{
+			UnknownIdentifierResolveResult uirr = (UnknownIdentifierResolveResult)resolver.ResolveSimpleName("xyz", new IType[0]);
+			Assert.IsTrue(uirr.IsError);
+			Assert.AreEqual("xyz", uirr.Identifier);
+		}
+		
+		[Test]
 		public void GlobalIsUnknownIdentifier()
 		{
 			Assert.IsTrue(resolver.ResolveSimpleName("global", new IType[0]).IsError);
