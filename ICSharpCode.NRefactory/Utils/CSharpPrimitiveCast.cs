@@ -407,7 +407,7 @@ namespace ICSharpCode.NRefactory.Utils
 						}
 						break;
 				}
-				throw new InvalidCastException("Cast from " + sourceType + " to " + targetType + "not supported.");
+				throw new InvalidCastException("Cast from " + sourceType + " to " + targetType + " not supported.");
 			}
 		}
 	}

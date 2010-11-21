@@ -3,8 +3,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -22,10 +22,34 @@ namespace ICSharpCode.NRefactory.CSharp
 		DefaultTypeDefinition currentTypeDefinition;
 		DefaultMethod currentMethod;
 		
+		/// <summary>
+		/// Creates a new TypeSystemConvertVisitor.
+		/// </summary>
+		/// <param name="pc">The parent project content (used as owner for the types being created).</param>
+		/// <param name="fileName">The file name (used for DomRegions).</param>
 		public TypeSystemConvertVisitor(IProjectContent pc, string fileName)
 		{
+			if (pc == null)
+				throw new ArgumentNullException("pc");
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
 			this.parsedFile = new ParsedFile(fileName, new UsingScope(pc));
 			this.usingScope = parsedFile.RootUsingScope;
+		}
+		
+		/// <summary>
+		/// Creates a new TypeSystemConvertVisitor and initializes it with a given context.
+		/// </summary>
+		/// <param name="parsedFile">The parsed file to which members should be added.</param>
+		/// <param name="currentUsingScope">The current using scope.</param>
+		/// <param name="currentTypeDefinition">The current type definition.</param>
+		public TypeSystemConvertVisitor(ParsedFile parsedFile, UsingScope currentUsingScope = null, DefaultTypeDefinition currentTypeDefinition = null)
+		{
+			if (parsedFile == null)
+				throw new ArgumentNullException("parsedFile");
+			this.parsedFile = parsedFile;
+			this.usingScope = currentUsingScope ?? parsedFile.RootUsingScope;
+			this.currentTypeDefinition = currentTypeDefinition;
 		}
 		
 		public ParsedFile ParsedFile {
@@ -240,6 +264,25 @@ namespace ICSharpCode.NRefactory.CSharp
 				currentTypeDefinition.Fields.Add(field);
 			}
 			return isSingleField ? field : null;
+		}
+		
+		public override IEntity VisitEnumMemberDeclaration(EnumMemberDeclaration enumMemberDeclaration, object data)
+		{
+			DefaultField field = new DefaultField(currentTypeDefinition, enumMemberDeclaration.Name);
+			field.Region = field.BodyRegion = MakeRegion(enumMemberDeclaration);
+			ConvertAttributes(field.Attributes, enumMemberDeclaration.Attributes);
+			
+			field.ReturnType = currentTypeDefinition;
+			field.Accessibility = Accessibility.Public;
+			field.IsStatic = true;
+			if (enumMemberDeclaration.Initializer != null) {
+				field.ConstantValue = ConvertConstantValue(currentTypeDefinition, enumMemberDeclaration.Initializer);
+			} else {
+				throw new NotImplementedException();
+			}
+			
+			currentTypeDefinition.Fields.Add(field);
+			return field;
 		}
 		#endregion
 		

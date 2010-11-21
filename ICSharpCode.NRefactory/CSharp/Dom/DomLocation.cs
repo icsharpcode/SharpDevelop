@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public bool IsEmpty {
 			get {
-				return Line <= 0;
+				return line <= 0;
 			}
 		}
 		
