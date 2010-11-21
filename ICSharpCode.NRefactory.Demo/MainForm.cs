@@ -56,6 +56,16 @@ namespace ICSharpCode.NRefactory.Demo
 		
 		TreeNode MakeTreeNode(INode node)
 		{
+			TreeNode t = new TreeNode(GetNodeTitle(node));
+			t.Tag = node;
+			foreach (INode child in node.Children) {
+				t.Nodes.Add(MakeTreeNode(child));
+			}
+			return t;
+		}
+		
+		string GetNodeTitle(INode node)
+		{
 			StringBuilder b = new StringBuilder();
 			b.Append(DecodeRole(node.Role, node.Parent != null ? node.Parent.GetType() : null));
 			b.Append(": ");
@@ -81,12 +91,7 @@ namespace ICSharpCode.NRefactory.Demo
 			}
 			if (hasProperties)
 				b.Append(")");
-			TreeNode t = new TreeNode(b.ToString());
-			t.Tag = node;
-			foreach (INode child in node.Children) {
-				t.Nodes.Add(MakeTreeNode(child));
-			}
-			return t;
+			return b.ToString();
 		}
 		
 		string DecodeRole(int role, Type type)
@@ -179,7 +184,6 @@ namespace ICSharpCode.NRefactory.Demo
 		
 		void ResolveButtonClick(object sender, EventArgs e)
 		{
-			resolveButton.Enabled = false;
 			SimpleProjectContent project = new SimpleProjectContent();
 			TypeSystemConvertVisitor convertVisitor = new TypeSystemConvertVisitor(project, "dummy.cs");
 			convertVisitor.VisitCompilationUnit(compilationUnit, null);
@@ -192,9 +196,15 @@ namespace ICSharpCode.NRefactory.Demo
 			
 			CSharpResolver resolver = new CSharpResolver(context);
 			
-			ResolveVisitor visitor = new ResolveVisitor(resolver, convertVisitor.ParsedFile);
-			visitor.VisitCompilationUnit(compilationUnit, null);
+			IResolveVisitorNavigator navigator = null;
+			if (csharpTreeView.SelectedNode != null) {
+				navigator = new NodeListResolveVisitorNavigator(new[] { (INode)csharpTreeView.SelectedNode.Tag });
+			}
+			ResolveVisitor visitor = new ResolveVisitor(resolver, convertVisitor.ParsedFile, navigator);
+			visitor.Scan(compilationUnit);
+			csharpTreeView.BeginUpdate();
 			ShowResolveResultsInTree(csharpTreeView.Nodes, visitor);
+			csharpTreeView.EndUpdate();
 		}
 		
 		void ShowResolveResultsInTree(TreeNodeCollection c, ResolveVisitor v)
@@ -204,7 +214,9 @@ namespace ICSharpCode.NRefactory.Demo
 				if (node != null) {
 					ResolveResult rr = v.GetResolveResult(node);
 					if (rr != null)
-						t.Text += " " + rr.ToString();
+						t.Text = GetNodeTitle(node) + " " + rr.ToString();
+					else
+						t.Text = GetNodeTitle(node);
 				}
 				ShowResolveResultsInTree(t.Nodes, v);
 			}
