@@ -274,7 +274,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			ExporterCollection ml = BaseConverter.ConvertItems (container, curPos);		
 			myList.AddRange(ml);
-			return new Point (leftPos,curPos.Y + container.Size.Height + (3 *GlobalValues.GapBetweenContainer));
+//			return new Point (leftPos,curPos.Y + container.Size.Height + (3 *GlobalValues.GapBetweenContainer));
+			return new Point (leftPos,curPos.Y + container.Size.Height);
 		}
 		
 		
