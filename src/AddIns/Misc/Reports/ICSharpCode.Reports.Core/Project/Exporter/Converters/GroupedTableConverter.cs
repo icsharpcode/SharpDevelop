@@ -74,7 +74,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				
 				if (PrintHelper.IsTextOnlyRow(simpleContainer) ) {
 					headerRow = simpleContainer;
-					
+					base.PrepareContainerForConverting(section,headerRow);
 					base.CurrentPosition = BaseConvert(exporterCollection,headerRow,base.DefaultLeftPosition,base.CurrentPosition);
 				}
 
@@ -90,6 +90,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 						
 						base.Evaluator.SinglePage.IDataNavigator = childNavigator;
 						// Convert Grouping Header
+						
 						base.CurrentPosition = ConvertGroupHeader(exporterCollection,section,base.CurrentPosition);
 						
 						childNavigator.Reset();

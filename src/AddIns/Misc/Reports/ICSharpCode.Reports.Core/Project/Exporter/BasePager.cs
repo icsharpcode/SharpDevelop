@@ -16,9 +16,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 	public class BasePager:IReportCreator
 	{
 		private PagesCollection pages;
-		private Graphics graphics;
+//		private Graphics graphics;
 		private readonly object pageLock = new object();
-		private ILayouter layouter;
+//		private ILayouter layouter;
 		
 		public event EventHandler<PageCreatedEventArgs> PageCreated;
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
@@ -38,8 +38,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 				throw new ArgumentNullException ("layouter");
 			}
 			this.ReportModel = reportModel;
-			this.layouter = layouter;
-			this.graphics = CreateGraphicObject.FromSize(this.ReportModel.ReportSettings.PageSize);
+			this.Layouter = layouter;
+			this.Graphics = CreateGraphicObject.FromSize(this.ReportModel.ReportSettings.PageSize);
 		}
 		
 		#endregion
@@ -98,6 +98,13 @@ namespace ICSharpCode.Reports.Core.Exporter
 				
 				Point offset = new Point(section.Location.X,section.SectionOffset);
 				
+				// Call layouter only once per section
+				Rectangle desiredRectangle = Layouter.Layout(this.Graphics,section);
+				Rectangle sectionRectangle = new Rectangle(section.Location,section.Size);
+				if (!sectionRectangle.Contains(desiredRectangle)) {
+					section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
+				}
+				
 				foreach (BaseReportItem item in section.Items) {
 					
 					ISimpleContainer container = item as ISimpleContainer;
@@ -105,8 +112,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 					if (container != null) {
 
 						ExportContainer exportContainer = StandardPrinter.ConvertToContainer(container,offset);
-			          
-			          StandardPrinter.AdjustBackColor (container);
+						
+						StandardPrinter.AdjustBackColor (container);
 						
 						ExporterCollection clist = StandardPrinter.ConvertPlainCollection(container.Items,offset);
 						
@@ -115,11 +122,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 						
 					} else {
 
-						Rectangle desiredRectangle = layouter.Layout(this.graphics,section);
-						Rectangle sectionRectangle = new Rectangle(section.Location,section.Size);
-						if (!sectionRectangle.Contains(desiredRectangle)) {
-							section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
-						}
+//						Rectangle desiredRectangle = layouter.Layout(this.graphics,section);
+//						Rectangle sectionRectangle = new Rectangle(section.Location,section.Size);
+//						if (!sectionRectangle.Contains(desiredRectangle)) {
+//							section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
+//						}
 						list = StandardPrinter.ConvertPlainCollection(section.Items,offset);
 					}
 				}
@@ -266,14 +273,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		#region Property's
 		
-		protected Graphics Graphics {
-			get { return graphics; }
-		}
+		protected Graphics Graphics {get; private set;}
 		
-		
-		public ILayouter Layouter {
-			get { return layouter; }
-		}
+		public ILayouter Layouter {get; private set;}
 		
 		public IReportModel ReportModel {get;set;}
 
