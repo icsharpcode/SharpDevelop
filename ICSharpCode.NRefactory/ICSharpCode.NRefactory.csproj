@@ -172,6 +172,7 @@
     <Compile Include="CSharp\Resolver\MemberTypeOrNamespaceReference.cs" />
     <Compile Include="CSharp\Resolver\MethodGroupResolveResult.cs" />
     <Compile Include="CSharp\Resolver\NamespaceResolveResult.cs" />
+    <Compile Include="CSharp\Resolver\NodeListResolveVisitorNavigator.cs" />
     <Compile Include="CSharp\Resolver\OverloadResolution.cs" />
     <Compile Include="CSharp\Resolver\OverloadResolutionErrors.cs" />
     <Compile Include="CSharp\Resolver\ResolveResult.cs" />

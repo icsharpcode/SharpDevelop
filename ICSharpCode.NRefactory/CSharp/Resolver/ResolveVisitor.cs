@@ -3,8 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
@@ -16,22 +16,51 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// <remarks>
 	/// The ResolveVisitor does two jobs at the same time: it tracks the resolve context (properties on CSharpResolver)
 	/// and it resolves the expressions visited.
-	/// To allow using the context tracking without having to resolve every expression in the file (e.g.
+	/// To allow using the context tracking without having to resolve every expression in the file (e.g. when you want to resolve
+	/// only a single node deep within the DOM), you can use the <see cref="IResolveVisitorNavigator"/> interface.
+	/// The navigator allows you to switch the between scanning mode and resolving mode.
+	/// In scanning mode, the context is tracked (local variables registered etc.), but nodes are not resolved.
+	/// While scanning, the navigator will get asked about every node that the resolve visitor is about to enter.
+	/// This allows the navigator whether to keep scanning, whether switch to resolving mode, or whether to completely skip the
+	/// subtree rooted at that node.
+	/// 
+	/// In resolving mode, the context is tracked and nodes will be resolved.
+	/// The resolve visitor may decide that it needs to resolve other nodes as well in order to resolve the current node.
+	/// In this case, those nodes will be resolved automatically, without asking the navigator interface.
+	/// For child nodes that are not essential to resolving, the resolve visitor will switch back to scanning mode (and thus will
+	/// ask the navigator for further instructions).
+	/// 
+	/// Moreover, there is the <c>ResolveAll</c> mode - it works similar to resolving mode, but will not switch back to scanning mode.
+	/// The whole subtree will be resolved without notifying the navigator.
 	/// </remarks>
 	public class ResolveVisitor : AbstractDomVisitor<object, ResolveResult>
 	{
 		static readonly ResolveResult errorResult = new ErrorResolveResult(SharedTypes.UnknownType);
-		readonly CSharpResolver resolver;
+		CSharpResolver resolver;
 		readonly ParsedFile parsedFile;
 		readonly Dictionary<INode, ResolveResult> cache = new Dictionary<INode, ResolveResult>();
 		
 		readonly IResolveVisitorNavigator navigator;
 		ResolveVisitorNavigationMode mode = ResolveVisitorNavigationMode.Scan;
 		
-		bool resolverEnabled {
-			get { return mode != ResolveVisitorNavigationMode.Scan; }
-		}
-		
+		#region Constructor
+		/// <summary>
+		/// Creates a new ResolveVisitor instance.
+		/// </summary>
+		/// <param name="resolver">
+		/// The CSharpResolver, describing the initial resolve context.
+		/// If you visit a whole CompilationUnit with the resolve visitor, you can simply pass
+		/// <c>new CSharpResolver(typeResolveContext)</c> without setting up the context.
+		/// If you only visit a subtree, you need to pass a CSharpResolver initialized to the context for that subtree.
+		/// </param>
+		/// <param name="parsedFile">
+		/// Result of the <see cref="TypeSystemConvertVisitor"/> for the file being passed. This is used for setting up the context on the resolver.
+		/// You may pass <c>null</c> if you are only visiting a part of a method body and have already set up the context in the <paramref name="resolver"/>.
+		/// </param>
+		/// <param name="navigator">
+		/// The navigator, which controls where the resolve visitor will switch between scanning mode and resolving mode.
+		/// If you pass <c>null</c>, then <c>ResolveAll</c> mode will be used.
+		/// </param>
 		public ResolveVisitor(CSharpResolver resolver, ParsedFile parsedFile, IResolveVisitorNavigator navigator = null)
 		{
 			if (resolver == null)
@@ -42,14 +71,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (navigator == null)
 				mode = ResolveVisitorNavigationMode.ResolveAll;
 		}
+		#endregion
 		
 		#region Scan / Resolve
-		public void Scan(INode node, object data = null)
+		bool resolverEnabled {
+			get { return mode != ResolveVisitorNavigationMode.Scan; }
+		}
+		
+		public void Scan(INode node)
 		{
 			if (node == null)
 				return;
 			if (mode == ResolveVisitorNavigationMode.ResolveAll) {
-				Resolve(node, data);
+				Resolve(node);
 			} else {
 				ResolveVisitorNavigationMode oldMode = mode;
 				mode = navigator.Scan(node);
@@ -57,11 +91,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					case ResolveVisitorNavigationMode.Skip:
 						break;
 					case ResolveVisitorNavigationMode.Scan:
-						node.AcceptVisitor(this, data);
+						node.AcceptVisitor(this, null);
 						break;
 					case ResolveVisitorNavigationMode.Resolve:
 					case ResolveVisitorNavigationMode.ResolveAll:
-						Resolve(node, data);
+						Resolve(node);
 						break;
 					default:
 						throw new Exception("Invalid value for ResolveVisitorNavigationMode");
@@ -70,7 +104,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public ResolveResult Resolve(INode node, object data = null)
+		public ResolveResult Resolve(INode node)
 		{
 			if (node == null)
 				return errorResult;
@@ -79,7 +113,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				mode = ResolveVisitorNavigationMode.Resolve;
 			ResolveResult result;
 			if (!cache.TryGetValue(node, out result)) {
-				result = cache[node] = node.AcceptVisitor(this, data) ?? errorResult;
+				result = cache[node] = node.AcceptVisitor(this, null) ?? errorResult;
 			}
 			if (wasScan)
 				mode = ResolveVisitorNavigationMode.Scan;
@@ -100,6 +134,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		/// <summary>
+		/// Gets the cached resolve result for the specified node.
+		/// Returns <c>null</c> if no cached result was found (e.g. if the node was not visited; or if it was visited in scanning mode).
+		/// </summary>
 		public ResolveResult GetResolveResult(INode node)
 		{
 			ResolveResult result;
@@ -169,7 +207,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			int initializerCount = fieldDeclaration.Variables.Count();
 			ResolveResult result = null;
-			foreach (INode node in fieldDeclaration.Children) {
+			for (INode node = fieldDeclaration.FirstChild; node != null; node = node.NextSibling) {
 				if (node.Role == FieldDeclaration.Roles.Initializer) {
 					if (resolver.CurrentTypeDefinition != null) {
 						resolver.CurrentMember = resolver.CurrentTypeDefinition.Fields.FirstOrDefault(f => f.Region.IsInside(node.StartLocation));
@@ -256,15 +294,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					resolver.CurrentMember = resolver.CurrentTypeDefinition.Properties.FirstOrDefault(p => p.Region.IsInside(propertyDeclaration.StartLocation));
 				}
 				
-				foreach (INode node in propertyDeclaration.Children) {
+				for (INode node = propertyDeclaration.FirstChild; node != null; node = node.NextSibling) {
 					if (node.Role == PropertyDeclaration.PropertySetRole && resolver.CurrentMember != null) {
 						resolver.PushBlock();
-						try {
-							resolver.AddVariable(resolver.CurrentMember.ReturnType, "value");
-							Scan(node);
-						} finally {
-							resolver.PopBlock();
-						}
+						resolver.AddVariable(resolver.CurrentMember.ReturnType, "value");
+						Scan(node);
+						resolver.PopBlock();
 					} else {
 						Scan(node);
 					}
@@ -281,6 +316,49 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
 		{
 			return VisitPropertyDeclaration(indexerDeclaration, data);
+		}
+		
+		public override ResolveResult VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
+		{
+			try {
+				if (resolver.CurrentTypeDefinition != null) {
+					resolver.CurrentMember = resolver.CurrentTypeDefinition.Events.FirstOrDefault(e => e.Region.IsInside(eventDeclaration.StartLocation));
+				}
+				
+				if (resolver.CurrentMember != null) {
+					resolver.PushBlock();
+					resolver.AddVariable(resolver.CurrentMember.ReturnType, "value");
+					ScanChildren(eventDeclaration);
+					resolver.PopBlock();
+				} else {
+					ScanChildren(eventDeclaration);
+				}
+				
+				if (resolverEnabled && resolver.CurrentMember != null)
+					return new MemberResolveResult(resolver.CurrentMember, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
+				else
+					return errorResult;
+			} finally {
+				resolver.CurrentMember = null;
+			}
+		}
+		
+		public override ResolveResult VisitParameterDeclaration(ParameterDeclaration parameterDeclaration, object data)
+		{
+			ScanChildren(parameterDeclaration);
+			if (resolverEnabled) {
+				IParameterizedMember pm = resolver.CurrentMember as IParameterizedMember;
+				if (pm != null) {
+					foreach (IParameter p in pm.Parameters) {
+						if (p.Name == parameterDeclaration.Name) {
+							return new VariableResolveResult(p, p.Type.Resolve(resolver.Context));
+						}
+					}
+				}
+				return errorResult;
+			} else {
+				return null;
+			}
 		}
 		#endregion
 		
@@ -620,6 +698,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		#region Local Variable Scopes
 		public override ResolveResult VisitBlockStatement(BlockStatement blockStatement, object data)
 		{
 			resolver.PushBlock();
@@ -628,43 +707,118 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return null;
 		}
 		
+		public override ResolveResult VisitUsingStatement(UsingStatement usingStatement, object data)
+		{
+			resolver.PushBlock();
+			ScanChildren(usingStatement);
+			resolver.PopBlock();
+			return null;
+		}
+		
+		public override ResolveResult VisitForStatement(ForStatement forStatement, object data)
+		{
+			resolver.PushBlock();
+			ScanChildren(forStatement);
+			resolver.PopBlock();
+			return null;
+		}
+		#endregion
+		
+		#region VariableDeclarationStatement
 		public override ResolveResult VisitVariableDeclarationStatement(VariableDeclarationStatement variableDeclarationStatement, object data)
 		{
-			IType type = ResolveType(variableDeclarationStatement.ReturnType);
-			if (variableDeclarationStatement.Variables.Count() == 1) {
-				if (type == SharedTypes.UnknownType && IsVar(variableDeclarationStatement.ReturnType)) {
-					ResolveResult rr = Resolve(variableDeclarationStatement.Variables.Single().Initializer);
-					type = rr.Type;
+			bool isConst = (variableDeclarationStatement.Modifiers & Modifiers.Const) != 0;
+			VariableInitializer firstInitializer = variableDeclarationStatement.Variables.FirstOrDefault();
+			ITypeReference type = MakeTypeReference(variableDeclarationStatement.ReturnType, firstInitializer != null ? firstInitializer.Initializer : null);
+			
+			int initializerCount = variableDeclarationStatement.Variables.Count();
+			ResolveResult result = null;
+			for (INode node = variableDeclarationStatement.FirstChild; node != null; node = node.NextSibling) {
+				if (node.Role == FieldDeclaration.Roles.Initializer) {
+					VariableInitializer vi = (VariableInitializer)node;
+					
+					IConstantValue cv = null;
+					if (isConst)
+						throw new NotImplementedException();
+					resolver.AddVariable(type, vi.Name, cv);
+					
+					if (resolverEnabled && initializerCount == 1) {
+						result = Resolve(node);
+					} else {
+						Scan(node);
+					}
+				} else {
+					Scan(node);
 				}
-				return Resolve(variableDeclarationStatement.Variables.Single(), type);
+			}
+			return result;
+		}
+		#endregion
+		
+		#region Local Variable Type Inference
+		/// <summary>
+		/// Creates a type reference for the specified type node.
+		/// If the type node is 'var', performs type inference on the initializer expression.
+		/// </summary>
+		ITypeReference MakeTypeReference(INode type, INode initializerExpression)
+		{
+			if (initializerExpression != null && IsVar(type)) {
+				return new VarTypeReference(this, resolver.Clone(), initializerExpression);
 			} else {
-				foreach (VariableInitializer vi in variableDeclarationStatement.Variables)
-					Resolve(vi, type);
-				return null;
+				return SharedTypes.UnknownType; // TODO
 			}
 		}
 		
-		bool IsVar(INode returnType)
+		static bool IsVar(INode returnType)
 		{
 			return returnType is IdentifierExpression && ((IdentifierExpression)returnType).Identifier == "var";
 		}
 		
-		public override ResolveResult VisitParameterDeclaration(ParameterDeclaration parameterDeclaration, object data)
+		sealed class VarTypeReference : ITypeReference
 		{
-			ScanChildren(parameterDeclaration);
-			if (resolverEnabled) {
-				IParameterizedMember pm = resolver.CurrentMember as IParameterizedMember;
-				if (pm != null) {
-					foreach (IParameter p in pm.Parameters) {
-						if (p.Name == parameterDeclaration.Name) {
-							return new VariableResolveResult(p, p.Type.Resolve(resolver.Context));
-						}
-					}
+			ResolveVisitor visitor;
+			CSharpResolver storedContext;
+			INode initializerExpression;
+			
+			IType result;
+			
+			public VarTypeReference(ResolveVisitor visitor, CSharpResolver storedContext, INode initializerExpression)
+			{
+				this.visitor = visitor;
+				this.storedContext = storedContext;
+				this.initializerExpression = initializerExpression;
+			}
+			
+			public IType Resolve(ITypeResolveContext context)
+			{
+				if (visitor == null)
+					return result ?? SharedTypes.UnknownType;
+				
+				var oldMode = visitor.mode;
+				var oldResolver = visitor.resolver;
+				try {
+					visitor.mode = ResolveVisitorNavigationMode.Resolve;
+					visitor.resolver = storedContext;
+					
+					return result = visitor.Resolve(initializerExpression).Type;
+				} finally {
+					visitor.mode = oldMode;
+					visitor.resolver = oldResolver;
+					
+					visitor = null;
+					storedContext = null;
+					initializerExpression = null;
 				}
-				return errorResult;
-			} else {
-				return null;
+			}
+			
+			public override string ToString()
+			{
+				if (visitor == null)
+					return "var=" + result;
+				else
+					return "var (not yet resolved)";
 			}
 		}
+		#endregion
 	}
 }

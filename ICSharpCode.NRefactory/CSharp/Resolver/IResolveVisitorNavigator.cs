@@ -5,11 +5,19 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
+	/// <summary>
+	/// Allows controlling which nodes are resolved by the resolve visitor.
+	/// </summary>
+	/// <seealso cref="ResolveVisitor"/>
 	public interface IResolveVisitorNavigator
 	{
 		ResolveVisitorNavigationMode Scan(INode node);
 	}
 	
+	/// <summary>
+	/// Represents the operation mode of the resolve visitor.
+	/// </summary>
+	/// <seealso cref="ResolveVisitor"/>
 	public enum ResolveVisitorNavigationMode
 	{
 		/// <summary>
