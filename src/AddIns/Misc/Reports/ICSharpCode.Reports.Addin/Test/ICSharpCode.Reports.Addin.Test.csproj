@@ -69,8 +69,8 @@
     <Compile Include="Wizard\Generators\GenerateListWithGroupFixture.cs" />
     <Compile Include="Wizard\Generators\GeneratePlainReportFixture_2.cs" />
     <Compile Include="Wizard\Generators\GenerateTableReportFixture.cs" />
+    <Compile Include="Wizard\Generators\GenerateTableWithGrouping.cs" />
     <Compile Include="Wizard\Generators\GeneratorFactoryFixture.cs" />
-    <Compile Include="Wizard\Generators\GenertaeTableWithgroupFixture.cs" />
     <Compile Include="Wizard\Generators\ReportGenerationHelper.cs" />
     <Compile Include="Wizard\ReportStructureFixture.cs" />
   </ItemGroup>
