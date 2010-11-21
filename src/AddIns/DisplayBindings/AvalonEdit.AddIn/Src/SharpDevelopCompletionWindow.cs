@@ -70,6 +70,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (itemList == null)
 				throw new ArgumentNullException("itemList");
 			
+			if(CodeCompletionOptions.EnableCodeCompletion == false)
+			{
+				throw new InvalidOperationException("trying to construct SharpDevelopCompletionWindow while EnableCodeCompletion = false");
+			}
+			
 			if (!itemList.ContainsAllAvailableItems) {
 				// If more items are available (Ctrl+Space wasn't pressed), show this hint
 				this.EmptyText = StringParser.Parse("${res:ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow.EmptyText}");
