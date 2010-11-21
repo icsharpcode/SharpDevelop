@@ -1,6 +1,6 @@
-// 
+﻿// 
 // VariableDeclarationStatement.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -33,8 +33,18 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class VariableDeclarationStatement : AbstractNode
 	{
-		public IEnumerable<INode> Modifiers {
+		public IEnumerable<INode> ModifierTokens {
 			get { return base.GetChildrenByRole (Roles.Modifier); }
+		}
+		
+		public Modifiers Modifiers {
+			get {
+				Modifiers m = 0;
+				foreach (CSharpModifierToken t in this.ModifierTokens) {
+					m |= t.Modifier;
+				}
+				return m;
+			}
 		}
 		
 		public INode ReturnType {

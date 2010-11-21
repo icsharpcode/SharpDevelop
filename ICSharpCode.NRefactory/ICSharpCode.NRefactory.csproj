@@ -165,6 +165,7 @@
     <Compile Include="CSharp\Resolver\Conversions.cs" />
     <Compile Include="CSharp\Resolver\CSharpResolver.cs" />
     <Compile Include="CSharp\Resolver\ErrorResolveResult.cs" />
+    <Compile Include="CSharp\Resolver\IResolveVisitorNavigator.cs" />
     <Compile Include="CSharp\Resolver\ITypeOrNamespaceReference.cs" />
     <Compile Include="CSharp\Resolver\MemberLookup.cs" />
     <Compile Include="CSharp\Resolver\MemberResolveResult.cs" />

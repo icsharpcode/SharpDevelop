@@ -136,13 +136,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Adds a new variable to the current block.
 		/// </summary>
-		public void AddVariable(ITypeReference type, string name, IConstantValue constantValue = null)
+		public IVariable AddVariable(ITypeReference type, string name, IConstantValue constantValue = null)
 		{
 			if (type == null)
 				throw new ArgumentNullException("type");
 			if (name == null)
 				throw new ArgumentNullException("name");
-			localVariableStack = new LocalVariable(localVariableStack, type, name, constantValue);
+			return localVariableStack = new LocalVariable(localVariableStack, type, name, constantValue);
 		}
 		
 		/// <summary>
@@ -1726,7 +1726,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					string newArgumentName = GuessParameterName(arguments[i]);
 					if (argumentNames.Contains(newArgumentName)) {
 						// disambiguate argument name (e.g. add a number)
-						throw new NotImplementedException();
+						int num = 1;
+						string newName;
+						do {
+							newName = newArgumentName + num.ToString();
+							num++;
+						} while(argumentNames.Contains(newArgumentName));
+						newArgumentName = newName;
 					}
 					argumentNames[i] = newArgumentName;
 				}
@@ -1765,11 +1771,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (mgrr != null && mgrr.Methods.Count > 0)
 				return mgrr.Methods[0].Name;
 			
-			if (!string.IsNullOrEmpty(rr.Type.Name)) {
-				return char.ToLower(rr.Type.Name[0]) + rr.Type.Name.Substring(1);
+			VariableResolveResult vrr = rr as VariableResolveResult;
+			if (vrr != null)
+				return MakeParameterName(vrr.Variable.Name);
+			
+			if (rr.Type != SharedTypes.UnknownType && !string.IsNullOrEmpty(rr.Type.Name)) {
+				return MakeParameterName(rr.Type.Name);
 			} else {
 				return "parameter";
 			}
+		}
+		
+		static string MakeParameterName(string variableName)
+		{
+			if (string.IsNullOrEmpty(variableName))
+				return "parameter";
+			if (variableName.Length > 1 && variableName[0] == '_')
+				variableName = variableName.Substring(1);
+			return char.ToLower(variableName[0]) + variableName.Substring(1);
 		}
 		#endregion
 		
