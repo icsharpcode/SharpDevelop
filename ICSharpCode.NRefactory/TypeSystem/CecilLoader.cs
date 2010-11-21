@@ -308,6 +308,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
+		void AddAttributes(MethodDefinition accessorMethod, DefaultAccessor targetAccessor)
+		{
+			if (accessorMethod.HasCustomAttributes) {
+				foreach (var cecilAttribute in accessorMethod.CustomAttributes) {
+					targetAccessor.Attributes.Add(ReadAttribute(cecilAttribute));
+				}
+			}
+		}
+		
 		static readonly DefaultAttribute serializableAttribute = new DefaultAttribute(typeof(SerializableAttribute).ToTypeReference());
 		
 		void AddAttributes(TypeDefinition typeDefinition, ITypeDefinition targetEntity)
@@ -617,7 +626,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 						if (defaultMemberName != null) {
 							foreach (DefaultProperty p in this.Properties) {
 								if (p.Name == defaultMemberName) {
-									p.IsIndexer = true;
+									p.EntityType = EntityType.Indexer;
 								}
 							}
 						}
@@ -843,13 +852,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			TranslateModifiers(property.GetMethod ?? property.SetMethod, p);
 			p.ReturnType = ReadTypeReference(property.PropertyType, typeAttributes: property, entity: p);
 			
-			p.CanGet = property.GetMethod != null && IsVisible(property.GetMethod.Attributes);
-			p.CanSet = property.SetMethod != null && IsVisible(property.SetMethod.Attributes);
-			
-			if (p.CanGet)
-				p.GetterAccessibility = GetAccessibility(property.GetMethod.Attributes);
-			if (p.CanSet)
-				p.SetterAccessibility = GetAccessibility(property.SetMethod.Attributes);
+			p.Getter = ReadAccessor(property.GetMethod);
+			p.Setter = ReadAccessor(property.SetMethod);
 			
 			if (property.HasParameters) {
 				foreach (ParameterDefinition par in property.Parameters) {
@@ -859,6 +863,23 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			AddAttributes(property, p);
 			
 			return p;
+		}
+		
+		IAccessor ReadAccessor(MethodDefinition accessorMethod)
+		{
+			if (accessorMethod != null && IsVisible(accessorMethod.Attributes)) {
+				Accessibility accessibility = GetAccessibility(accessorMethod.Attributes);
+				if (accessorMethod.HasCustomAttributes) {
+					DefaultAccessor a = new DefaultAccessor();
+					a.Accessibility = accessibility;
+					AddAttributes(accessorMethod, a);
+					return a;
+				} else {
+					return DefaultAccessor.GetFromAccessibility(accessibility);
+				}
+			} else {
+				return null;
+			}
 		}
 		#endregion
 		
@@ -874,16 +895,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			TranslateModifiers(ev.AddMethod, e);
 			e.ReturnType = ReadTypeReference(ev.EventType, typeAttributes: ev, entity: e);
 			
-			e.CanAdd = ev.AddMethod != null && IsVisible(ev.AddMethod.Attributes);
-			e.CanRemove = ev.RemoveMethod != null && IsVisible(ev.RemoveMethod.Attributes);
-			e.CanInvoke = ev.InvokeMethod != null && IsVisible(ev.InvokeMethod.Attributes);
-			
-			if (e.CanAdd)
-				e.AddAccessibility = GetAccessibility(ev.AddMethod.Attributes);
-			if (e.CanRemove)
-				e.RemoveAccessibility = GetAccessibility(ev.RemoveMethod.Attributes);
-			if (e.CanInvoke)
-				e.InvokeAccessibility = GetAccessibility(ev.InvokeMethod.Attributes);
+			e.AddAccessor = ReadAccessor(ev.AddMethod);
+			e.RemoveAccessor = ReadAccessor(ev.RemoveMethod);
+			e.InvokeAccessor = ReadAccessor(ev.InvokeMethod);
 			
 			AddAttributes(ev, e);
 			

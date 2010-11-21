@@ -280,7 +280,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		#region Operators
 		public override IEntity VisitOperatorDeclaration(OperatorDeclaration operatorDeclaration, object data)
 		{
-			DefaultMethod m = new DefaultMethod(currentTypeDefinition, operatorDeclaration.Name);
+			DefaultMethod m = new DefaultMethod(currentTypeDefinition, OperatorDeclaration.GetName(operatorDeclaration.OperatorType));
 			m.EntityType = EntityType.Operator;
 			m.Region = MakeRegion(operatorDeclaration);
 			m.BodyRegion = MakeRegion(operatorDeclaration.Body);
@@ -343,6 +343,73 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			currentTypeDefinition.Methods.Add(dtor);
 			return dtor;
+		}
+		#endregion
+		
+		#region Properties / Indexers
+		public override IEntity VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
+		{
+			DefaultProperty p = new DefaultProperty(currentTypeDefinition, propertyDeclaration.Name);
+			HandlePropertyOrIndexer(p, propertyDeclaration);
+			currentTypeDefinition.Properties.Add(p);
+			return p;
+		}
+		
+		void HandlePropertyOrIndexer(DefaultProperty p, PropertyDeclaration propertyDeclaration)
+		{
+			p.Region = MakeRegion(propertyDeclaration);
+			p.BodyRegion = MakeRegion(propertyDeclaration.LBrace.StartLocation, propertyDeclaration.RBrace.EndLocation);
+			ApplyModifiers(p, propertyDeclaration.Modifiers);
+			p.ReturnType = ConvertType(propertyDeclaration.ReturnType);
+			ConvertAttributes(p.Attributes, propertyDeclaration.Attributes);
+			if (propertyDeclaration.PrivateImplementationType != null) {
+				p.Accessibility = Accessibility.None;
+				p.InterfaceImplementations.Add(ConvertInterfaceImplementation(propertyDeclaration.PrivateImplementationType, p.Name));
+			}
+			p.Getter = ConvertAccessor(propertyDeclaration.GetAccessor, p.Accessibility);
+			p.Setter = ConvertAccessor(propertyDeclaration.SetAccessor, p.Accessibility);
+		}
+		
+		public override IEntity VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
+		{
+			DefaultProperty p = new DefaultProperty(currentTypeDefinition, "Items");
+			p.EntityType = EntityType.Indexer;
+			HandlePropertyOrIndexer(p, indexerDeclaration);
+			ConvertParameters(p.Parameters, indexerDeclaration.Parameters);
+			currentTypeDefinition.Properties.Add(p);
+			return p;
+		}
+		
+		IAccessor ConvertAccessor(Accessor accessor, Accessibility defaultAccessibility)
+		{
+			DefaultAccessor a = new DefaultAccessor();
+			a.Accessibility = GetAccessibility(accessor.Modifiers) ?? defaultAccessibility;
+			a.Region = MakeRegion(accessor);
+			ConvertAttributes(a.Attributes, accessor.Attributes);
+			return a;
+		}
+		#endregion
+		
+		#region Events
+		public override IEntity VisitEventDeclaration(EventDeclaration eventDeclaration, object data)
+		{
+			DefaultEvent e = new DefaultEvent(currentTypeDefinition, eventDeclaration.Name);
+			e.Region = MakeRegion(eventDeclaration);
+			e.BodyRegion = MakeRegion(eventDeclaration.LBrace.StartLocation, eventDeclaration.RBrace.EndLocation);
+			ApplyModifiers(e, eventDeclaration.Modifiers);
+			e.ReturnType = ConvertType(eventDeclaration.ReturnType);
+			ConvertAttributes(e.Attributes, eventDeclaration.Attributes);
+			
+			if (eventDeclaration.PrivateImplementationType != null) {
+				e.Accessibility = Accessibility.None;
+				e.InterfaceImplementations.Add(ConvertInterfaceImplementation(eventDeclaration.PrivateImplementationType, e.Name));
+			}
+			
+			e.AddAccessor = ConvertAccessor(eventDeclaration.AddAccessor, e.Accessibility);
+			e.RemoveAccessor = ConvertAccessor(eventDeclaration.RemoveAccessor, e.Accessibility);
+			
+			currentTypeDefinition.Events.Add(e);
+			return e;
 		}
 		#endregion
 		

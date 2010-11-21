@@ -64,6 +64,110 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public UsingScope UsingScope { get; set; }
 		#endregion
 		
+		#region Local Variable Management
+		sealed class LocalVariable : IVariable
+		{
+			// We store the local variable in a linked list
+			// and provide a stack-like API.
+			// The beginning of a stack frame is marked by a dummy local variable
+			// with type==null and name==null.
+			
+			// This data structure is used to allow efficient cloning of the resolver with its local variable context.
+			
+			internal readonly LocalVariable prev;
+			internal readonly ITypeReference type;
+			internal readonly string name;
+			internal readonly IConstantValue constantValue;
+			
+			public LocalVariable(LocalVariable prev, ITypeReference type, string name, IConstantValue constantValue)
+			{
+				this.prev = prev;
+				this.type = type;
+				this.name = name;
+				this.constantValue = constantValue;
+			}
+			
+			public string Name {
+				get { return name; }
+			}
+			public ITypeReference Type {
+				get { return type; }
+			}
+			public bool IsConst {
+				get { return constantValue != null; }
+			}
+			public IConstantValue ConstantValue {
+				get { return constantValue; }
+			}
+			
+			public override string ToString()
+			{
+				if (name == null)
+					return "<Start of Block>";
+				else
+					return name + ":" + type;
+			}
+		}
+		
+		LocalVariable localVariableStack;
+		
+		/// <summary>
+		/// Opens a new scope for local variables.
+		/// </summary>
+		public void PushBlock()
+		{
+			localVariableStack = new LocalVariable(localVariableStack, null, null, null);
+		}
+		
+		/// <summary>
+		/// Closes the current scope for local variables; removing all variables in that scope.
+		/// </summary>
+		public void PopBlock()
+		{
+			LocalVariable removedVar;
+			do {
+				removedVar = localVariableStack;
+				if (removedVar == null)
+					throw new InvalidOperationException("Cannot execute PopBlock() without corresponding PushBlock()");
+				localVariableStack = removedVar.prev;
+			} while (removedVar.name != null);
+		}
+		
+		/// <summary>
+		/// Adds a new variable to the current block.
+		/// </summary>
+		public void AddVariable(ITypeReference type, string name, IConstantValue constantValue = null)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			if (name == null)
+				throw new ArgumentNullException("name");
+			localVariableStack = new LocalVariable(localVariableStack, type, name, constantValue);
+		}
+		
+		/// <summary>
+		/// Gets all currently visible local variables.
+		/// </summary>
+		public IEnumerable<IVariable> LocalVariables {
+			get {
+				for (LocalVariable v = localVariableStack; v != null; v = v.prev) {
+					if (v.name != null)
+						yield return v;
+				}
+			}
+		}
+		#endregion
+		
+		#region Clone
+		/// <summary>
+		/// Creates a copy of this CSharp resolver.
+		/// </summary>
+		public CSharpResolver Clone()
+		{
+			return (CSharpResolver)MemberwiseClone();
+		}
+		#endregion
+		
 		#region class OperatorMethod
 		static OperatorMethod[] Lift(params OperatorMethod[] methods)
 		{
@@ -1383,16 +1487,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (typeArguments == null)
 				throw new ArgumentNullException("typeArguments");
 			
-			IParameterizedMember parameterizedMember = this.CurrentMember as IParameterizedMember;
-			if (parameterizedMember != null && typeArguments.Count == 0) {
-				foreach (IParameter p in parameterizedMember.Parameters) {
-					if (p.Name == identifier) {
-						return new VariableResolveResult(p, p.Type.Resolve(context));
+			if (typeArguments.Count == 0) {
+				foreach (IVariable v in this.LocalVariables) {
+					if (v.Name == identifier) {
+						object constantValue = v.IsConst ? v.ConstantValue.GetValue(context) : null;
+						return new VariableResolveResult(v, v.Type.Resolve(context), constantValue);
+					}
+				}
+				IParameterizedMember parameterizedMember = this.CurrentMember as IParameterizedMember;
+				if (parameterizedMember != null) {
+					foreach (IParameter p in parameterizedMember.Parameters) {
+						if (p.Name == identifier) {
+							return new VariableResolveResult(p, p.Type.Resolve(context));
+						}
 					}
 				}
 			}
-			
-			// TODO: lookup in local variables, etc.
 			
 			return LookupSimpleNameOrTypeName(identifier, typeArguments,
 			                                  isInvocationTarget ? SimpleNameLookupMode.InvocationTarget : SimpleNameLookupMode.Expression);

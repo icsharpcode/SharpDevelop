@@ -184,6 +184,43 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			return VisitMethodMember(destructorDeclaration, data);
 		}
+		
+		public override ResolveResult VisitPropertyDeclaration(PropertyDeclaration propertyDeclaration, object data)
+		{
+			try {
+				if (resolver.CurrentTypeDefinition != null) {
+					resolver.CurrentMember = resolver.CurrentTypeDefinition.Properties.FirstOrDefault(p => p.Region.IsInside(propertyDeclaration.StartLocation));
+				}
+				
+				if (FullyResolveSubExpressions) {
+					ResolveType(propertyDeclaration.ReturnType);
+					foreach (INode node in propertyDeclaration.GetChildrenByRole(IndexerDeclaration.Roles.Argument))
+						Resolve(node);
+					if (propertyDeclaration.GetAccessor != null)
+						VisitAccessorDeclaration(propertyDeclaration.GetAccessor, data);
+					if (propertyDeclaration.SetAccessor != null && resolver.CurrentMember != null) {
+						resolver.PushBlock();
+						try {
+							resolver.AddVariable(resolver.CurrentMember.ReturnType, "value");
+							VisitAccessorDeclaration(propertyDeclaration.SetAccessor, data);
+						} finally {
+							resolver.PopBlock();
+						}
+					}
+				}
+				if (resolver.CurrentMember != null)
+					return new MemberResolveResult(resolver.CurrentMember, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
+				else
+					return errorResult;
+			} finally {
+				resolver.CurrentMember = null;
+			}
+		}
+		
+		public override ResolveResult VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
+		{
+			return VisitPropertyDeclaration(indexerDeclaration, data);
+		}
 		#endregion
 		
 		#region Track CheckForOverflow
@@ -446,6 +483,16 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return resolver.ResolveUnaryOperator(unaryOperatorExpression.UnaryOperatorType, expr);
 		}
 		#endregion
+		
+		public override ResolveResult VisitBlockStatement(BlockStatement blockStatement, object data)
+		{
+			resolver.PushBlock();
+			try {
+				return base.VisitBlockStatement(blockStatement, data);
+			} finally {
+				resolver.PopBlock();
+			}
+		}
 		
 		public override ResolveResult VisitParameterDeclaration(ParameterDeclaration parameterDeclaration, object data)
 		{

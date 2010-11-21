@@ -12,13 +12,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	public class VariableResolveResult : ResolveResult
 	{
 		readonly IVariable variable;
+		readonly object constantValue;
 		
-		public VariableResolveResult(IVariable variable, IType type)
+		public VariableResolveResult(IVariable variable, IType type, object constantValue = null)
 			: base(type)
 		{
 			if (variable == null)
 				throw new ArgumentNullException("variable");
 			this.variable = variable;
+			this.constantValue = constantValue;
 		}
 		
 		public IVariable Variable {
@@ -27,6 +29,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public bool IsParameter {
 			get { return variable is IParameter; }
+		}
+		
+		public override bool IsCompileTimeConstant {
+			get { return variable.IsConst; }
+		}
+		
+		public override object ConstantValue {
+			get { return constantValue; }
 		}
 		
 		public override string ToString()

@@ -184,5 +184,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			}
 			return b.ToString();
 		}
+		
+		bool IVariable.IsConst {
+			get { return false; }
+		}
+		
+		IConstantValue IVariable.ConstantValue {
+			get { return null; }
+		}
 	}
 }

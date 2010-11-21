@@ -29,6 +29,8 @@ using System;
 namespace ICSharpCode.NRefactory.CSharp
 {
 	public enum OperatorType {
+		// Numeric values must match those in Mono.CSharp.Operator.OpType !!
+		
 		// Unary operators
 		LogicalNot,
 		OnesComplement,
@@ -86,6 +88,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitOperatorDeclaration (this, data);
+		}
+		
+		public static string GetName(OperatorType type) 
+		{
+			return Mono.CSharp.Operator.GetMetadataName((Mono.CSharp.Operator.OpType)type);
 		}
 	}
 }

@@ -78,13 +78,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					yield return p;
 				}
 				DefaultProperty indexer = new DefaultProperty(arrayDef, "Items") {
+					EntityType = EntityType.Indexer,
 					ReturnType = elementType,
 					Accessibility = Accessibility.Public,
-					GetterAccessibility = Accessibility.Public,
-					SetterAccessibility = Accessibility.Public,
-					CanGet = true,
-					CanSet = true,
-					IsIndexer = true,
+					Getter = DefaultAccessor.GetFromAccessibility(Accessibility.Public),
+					Setter = DefaultAccessor.GetFromAccessibility(Accessibility.Public),
 					IsSynthetic = true
 				};
 				for (int i = 0; i < dimensions; i++) {

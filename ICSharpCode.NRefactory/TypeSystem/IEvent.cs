@@ -12,8 +12,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		bool CanRemove { get; }
 		bool CanInvoke { get; }
 		
-		Accessibility AddAccessibility { get; }
-		Accessibility RemoveAccessibility { get; }
-		Accessibility InvokeAccessibility { get; }
+		IAccessor AddAccessor { get; }
+		IAccessor RemoveAccessor { get; }
+		IAccessor InvokeAccessor { get; }
 	}
 }

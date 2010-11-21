@@ -21,6 +21,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets the type of the variable.
 		/// </summary>
 		ITypeReference Type { get; }
+		
+		/// <summary>
+		/// Gets whether this field is a constant (C#-like const).
+		/// </summary>
+		bool IsConst { get; }
+		
+		/// <summary>
+		/// If this field is a constant, retrieves the value.
+		/// </summary>
+		IConstantValue ConstantValue { get; }
 	}
 	
 	[ContractClassFor(typeof(IVariable))]
@@ -38,6 +48,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				Contract.Ensures(Contract.Result<ITypeReference>() != null);
 				return null;
 			}
+		}
+		
+		bool IVariable.IsConst {
+			get {
+				IVariable @this = this;
+				Contract.Ensures(Contract.Result<bool>() == (@this.ConstantValue != null));
+				return false;
+			}
+		}
+		
+		IConstantValue IVariable.ConstantValue {
+			get { return null; }
 		}
 	}
 }

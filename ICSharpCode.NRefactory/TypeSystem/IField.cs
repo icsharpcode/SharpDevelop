@@ -18,11 +18,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		new string Name { get; } // solve ambiguity between INamedElement.Name and IVariable.Name
 		
 		/// <summary>
-		/// Gets whether this field is a constant (C#-like const).
-		/// </summary>
-		bool IsConst { get; }
-		
-		/// <summary>
 		/// Gets whether this field is readonly.
 		/// </summary>
 		bool IsReadOnly { get; }
@@ -31,11 +26,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets whether this field is volatile.
 		/// </summary>
 		bool IsVolatile { get; }
-		
-		/// <summary>
-		/// If this field is a constant, retrieves the value.
-		/// </summary>
-		IConstantValue ConstantValue { get; }
 	}
 	
 	[ContractClassFor(typeof(IField))]
@@ -48,14 +38,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 		}
 		
-		bool IField.IsConst {
-			get {
-				IField @this = this;
-				Contract.Ensures(Contract.Result<bool>() == (@this.ConstantValue != null));
-				return false;
-			}
-		}
-		
 		bool IField.IsReadOnly {
 			get { return false; }
 		}
@@ -64,15 +46,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			get { return false; }
 		}
 		
-		IConstantValue IField.ConstantValue {
-			get { return null; }
-		}
 		
 		string IVariable.Name {
 			get { return null;  }
 		}
 		
 		ITypeReference IVariable.Type {
+			get { return null; }
+		}
+		
+		bool IVariable.IsConst {
+			get { return false; }
+		}
+		
+		IConstantValue IVariable.ConstantValue {
 			get { return null; }
 		}
 	}

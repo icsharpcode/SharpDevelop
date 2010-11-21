@@ -10,13 +10,15 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// </summary>
 	public class DefaultEvent : AbstractMember, IEvent
 	{
-		Accessibility addAccessibility;
-		Accessibility removeAccessibility;
-		Accessibility invokeAccessibility;
+		IAccessor addAccessor, removeAccessor, invokeAccessor;
 		
-		const ushort FlagCanAdd    = 0x1000;
-		const ushort FlagCanRemove = 0x2000;
-		const ushort FlagCanInvoke  = 0x4000;
+		protected override void FreezeInternal()
+		{
+			base.FreezeInternal();
+			if (addAccessor != null)    addAccessor.Freeze();
+			if (removeAccessor != null) removeAccessor.Freeze();
+			if (invokeAccessor != null) invokeAccessor.Freeze();
+		}
 		
 		public DefaultEvent(ITypeDefinition declaringTypeDefinition, string name)
 			: base(declaringTypeDefinition, name, EntityType.Event)
@@ -29,59 +31,44 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		protected DefaultEvent(IEvent ev)
 			: base(ev)
 		{
-			this.CanAdd = ev.CanAdd;
-			this.addAccessibility = ev.AddAccessibility;
-			this.CanRemove = ev.CanRemove;
-			this.removeAccessibility = ev.RemoveAccessibility;
-			this.CanInvoke = ev.CanInvoke;
-			this.invokeAccessibility = ev.InvokeAccessibility;
+			this.addAccessor = ev.AddAccessor;
+			this.removeAccessor = ev.RemoveAccessor;
+			this.invokeAccessor = ev.InvokeAccessor;
 		}
 		
 		public bool CanAdd {
-			get { return flags[FlagCanAdd]; }
-			set {
-				CheckBeforeMutation();
-				flags[FlagCanAdd] = value;
-			}
+			get { return addAccessor != null; }
 		}
 		
 		public bool CanRemove {
-			get { return flags[FlagCanRemove]; }
-			set {
-				CheckBeforeMutation();
-				flags[FlagCanRemove] = value;
-			}
+			get { return removeAccessor != null; }
 		}
 		
 		public bool CanInvoke {
-			get { return flags[FlagCanInvoke]; }
+			get { return invokeAccessor != null; }
+		}
+		
+		public IAccessor AddAccessor{
+			get { return addAccessor; }
 			set {
 				CheckBeforeMutation();
-				flags[FlagCanInvoke] = value;
+				addAccessor = value;
 			}
 		}
 		
-		public Accessibility AddAccessibility {
-			get { return addAccessibility; }
+		public IAccessor RemoveAccessor {
+			get { return removeAccessor; }
 			set {
 				CheckBeforeMutation();
-				addAccessibility = value;
+				removeAccessor = value;
 			}
 		}
 		
-		public Accessibility RemoveAccessibility {
-			get { return removeAccessibility; }
+		public IAccessor InvokeAccessor {
+			get { return invokeAccessor; }
 			set {
 				CheckBeforeMutation();
-				removeAccessibility = value;
-			}
-		}
-		
-		public Accessibility InvokeAccessibility {
-			get { return invokeAccessibility; }
-			set {
-				CheckBeforeMutation();
-				invokeAccessibility = value;
+				invokeAccessor = value;
 			}
 		}
 	}

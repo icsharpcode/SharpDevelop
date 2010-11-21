@@ -13,8 +13,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		bool CanGet { get; }
 		bool CanSet { get; }
 		
-		Accessibility GetterAccessibility { get; }
-		Accessibility SetterAccessibility { get; }
+		IAccessor Getter { get; }
+		IAccessor Setter { get; }
 		
 		bool IsIndexer { get; }
 	}

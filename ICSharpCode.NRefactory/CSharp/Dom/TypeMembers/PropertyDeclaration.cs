@@ -1,4 +1,4 @@
-// 
+﻿// 
 // PropertyDeclaration.cs
 //  
 // Author:
@@ -30,7 +30,7 @@ using ICSharpCode.NRefactory.TypeSystem;
 namespace ICSharpCode.NRefactory.CSharp
 {
 	
-	public class Accessor : AbstractMember
+	public class Accessor : AbstractMemberBase
 	{
 		public DomLocation Location {
 			get;

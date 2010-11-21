@@ -11,17 +11,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// </summary>
 	public class DefaultProperty : AbstractMember, IProperty
 	{
-		Accessibility getterAccessibility;
-		Accessibility setterAccessibility;
+		IAccessor getter, setter;
 		IList<IParameter> parameters;
-		
-		const ushort FlagIsIndexer = 0x1000;
-		const ushort FlagCanGet    = 0x2000;
-		const ushort FlagCanSet    = 0x4000;
 		
 		protected override void FreezeInternal()
 		{
 			parameters = FreezeList(parameters);
+			if (getter != null) getter.Freeze();
+			if (setter != null) setter.Freeze();
 			base.FreezeInternal();
 		}
 		
@@ -32,12 +29,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		protected DefaultProperty(IProperty p) : base(p)
 		{
-			this.getterAccessibility = p.GetterAccessibility;
-			this.setterAccessibility = p.SetterAccessibility;
+			this.getter = p.Getter;
+			this.setter = p.Setter;
 			this.parameters = CopyList(p.Parameters);
-			this.IsIndexer = p.IsIndexer;
-			this.CanGet = p.CanGet;
-			this.CanSet = p.CanSet;
 		}
 		
 		public override void PrepareForInterning(IInterningProvider provider)
@@ -47,11 +41,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public bool IsIndexer {
-			get { return flags[FlagIsIndexer]; }
-			set {
-				CheckBeforeMutation();
-				flags[FlagIsIndexer] = value;
-			}
+			get { return this.EntityType == EntityType.Indexer; }
 		}
 		
 		public IList<IParameter> Parameters {
@@ -63,34 +53,26 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public bool CanGet {
-			get { return flags[FlagCanGet]; }
-			set {
-				CheckBeforeMutation();
-				flags[FlagCanGet] = value;
-			}
+			get { return getter != null; }
 		}
 		
 		public bool CanSet {
-			get { return flags[FlagCanSet]; }
+			get { return setter != null; }
+		}
+		
+		public IAccessor Getter{
+			get { return getter; }
 			set {
 				CheckBeforeMutation();
-				flags[FlagCanSet] = value;
+				getter = value;
 			}
 		}
 		
-		public Accessibility GetterAccessibility {
-			get { return getterAccessibility; }
+		public IAccessor Setter {
+			get { return setter; }
 			set {
 				CheckBeforeMutation();
-				getterAccessibility = value;
-			}
-		}
-		
-		public Accessibility SetterAccessibility {
-			get { return setterAccessibility; }
-			set {
-				CheckBeforeMutation();
-				setterAccessibility = value;
+				setter = value;
 			}
 		}
 	}

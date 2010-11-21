@@ -168,8 +168,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.IsTrue(p.CanGet);
 			Assert.IsTrue(p.CanSet);
 			Assert.AreEqual(Accessibility.Public, p.Accessibility);
-			Assert.AreEqual(Accessibility.Public, p.GetterAccessibility);
-			Assert.AreEqual(Accessibility.Protected, p.SetterAccessibility);
+			Assert.AreEqual(Accessibility.Public, p.Getter.Accessibility);
+			Assert.AreEqual(Accessibility.Protected, p.Setter.Accessibility);
 		}
 		
 		[Test]
@@ -180,8 +180,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.IsTrue(p.CanGet);
 			Assert.IsTrue(p.CanSet);
 			Assert.AreEqual(Accessibility.Public, p.Accessibility);
-			Assert.AreEqual(Accessibility.Public, p.GetterAccessibility);
-			Assert.AreEqual(Accessibility.Private, p.SetterAccessibility);
+			Assert.AreEqual(Accessibility.Public, p.Getter.Accessibility);
+			Assert.AreEqual(Accessibility.Private, p.Setter.Accessibility);
 		}
 		
 		[Test]
@@ -191,9 +191,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			IProperty p = testClass.Properties.Single(pr => pr.IsIndexer);
 			Assert.IsTrue(p.CanGet);
 			Assert.AreEqual(Accessibility.Public, p.Accessibility);
-			Assert.AreEqual(Accessibility.Public, p.GetterAccessibility);
+			Assert.AreEqual(Accessibility.Public, p.Getter.Accessibility);
 			Assert.IsFalse(p.CanSet);
-			Assert.AreEqual(Accessibility.None, p.SetterAccessibility);
+			Assert.AreEqual(Accessibility.None, p.Setter.Accessibility);
 		}
 		
 		[Test]
