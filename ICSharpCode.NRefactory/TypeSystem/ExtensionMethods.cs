@@ -192,5 +192,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return false;
 		}
 		#endregion
+		
+		#region GetAllClasses
+		/// <summary>
+		/// Gets all classes, including nested classes.
+		/// </summary>
+		public static IEnumerable<ITypeDefinition> GetAllClasses(this ITypeResolveContext context)
+		{
+			return TreeTraversal.PreOrder(context.GetClasses(), t => t.InnerClasses);
+		}
+		#endregion
 	}
 }

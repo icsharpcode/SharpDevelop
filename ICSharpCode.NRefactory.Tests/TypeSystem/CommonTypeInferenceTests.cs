@@ -5,6 +5,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq;
+
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using NUnit.Framework;
 
@@ -29,6 +31,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		IType[] CommonBaseTypes(params Type[] types)
 		{
 			return cti.CommonBaseTypes(Resolve(types)).OrderBy(r => r.ReflectionName).ToArray();
+		}
+		
+		IType[] CommonSubTypes(params Type[] types)
+		{
+			return cti.CommonSubTypes(Resolve(types)).OrderBy(r => r.ReflectionName).ToArray();
 		}
 		
 		[Test]
@@ -69,6 +76,38 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(
 				Resolve(typeof(ICloneable), typeof(IComparable)),
 				CommonBaseTypes(typeof(string), typeof(Version)));
+		}
+		
+		[Test]
+		public void CommonSubTypeClonableComparable()
+		{
+			Assert.AreEqual(
+				Resolve(typeof(string), typeof(Version)),
+				CommonSubTypes(typeof(ICloneable), typeof(IComparable)));
+		}
+		
+		[Test]
+		public void EnumerableOfStringAndVersion()
+		{
+			Assert.AreEqual(
+				Resolve(typeof(IEnumerable<ICloneable>), typeof(IEnumerable<IComparable>)),
+				CommonBaseTypes(typeof(IList<string>), typeof(IList<Version>)));
+		}
+		
+		[Test]
+		public void CommonSubTypeIEnumerableClonableIEnumerableComparable()
+		{
+			Assert.AreEqual(
+				Resolve(typeof(IEnumerable<string>), typeof(IEnumerable<Version>)),
+				CommonSubTypes(typeof(IEnumerable<ICloneable>), typeof(IEnumerable<IComparable>)));
+		}
+		
+		[Test, Ignore("currently implementation is broken for anything nontrivial...")]
+		public void CommonSubTypeIEnumerableClonableIEnumerableComparableList()
+		{
+			Assert.AreEqual(
+				Resolve(typeof(List<string>), typeof(List<Version>)),
+				CommonSubTypes(typeof(IEnumerable<ICloneable>), typeof(IEnumerable<IComparable>), typeof(IList)));
 		}
 	}
 }

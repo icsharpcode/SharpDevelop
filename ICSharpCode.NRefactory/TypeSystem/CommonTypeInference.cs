@@ -18,31 +18,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	/// </summary>
 	public sealed class CommonTypeInference
 	{
-		// The algorithm used is loosely based an extended version of the corresponding Java algorithm.
-		// The Java specifiction calls this 'lub' (least upper bound), and is defined only in one direction
-		// (for the other direction, Java uses intersection types).
-		// 
-		// An improved algorithm for Java is presented in:
-		//    Daniel Smith and Robert Cartwright. Java Type Inference Is Broken: Can We
-		//    Fix It? In OOPSLA ’08: Proceedings of the 23rd ACM SIGPLAN conference
-		//    on Object-oriented programming systems languages and applications pages 505–524,
-		//    New York, NY, USA, 2008.
-		// 
-		// The algorithm used here is losely based on that, although of course there are major differences:
-		// C# does not have any equivalent to Java's 'recursive types'
-		// (e.g. Comparable<? extends Comparable<? extends ...>>, nested infinitely),
-		// so a large part of the problematic cases disappear.
-		// 
-		// However, C# also does not have any kind of intersection or union types.
-		// This means we have to find an approximation to such types, for which there might
-		// not be a unique solution.
+		// Note: I'm pretty sure this is wrong in some rare cases, and incomplete in others;
+		// but it should be good enough 99% of the time.
 		
-		// We use the term Union(T,S) to denote a type X for which T <: X and S <: X.
-		// X is a common base type of T and S.
+		// We use the term CommonBaseTypes(T,S) to denote the set { X | T <: X and S <: X }.
 		// (if we had union types, the union "T|S" would be the most specific possible type X).
 		
-		// We use the term Intersect(T,S) to denote a type X for which X <: T and X <: S.
-		// X is a common subtype of T and S.
+		// We use the term CommonSubTypes(T,S) to denote the set { X | X <: T and X <: S }.
 		// (if we had intersection types, the intersection "T|S" would be the least specific possible type X).
 		
 		// Some examples to show the possible common base types:
@@ -135,7 +117,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				if (pt != null) {
 					TP[] tp = new TP[pt.TypeParameterCount];
 					for (int i = 0; i < tp.Length; i++) {
-						tp[i] = new TP(pt.GetDefinition().TypeParameters[i]);
+						tp[i] = new TP(pt.GetDefinition().TypeParameters[i], false);
 						tp[i].Bounds.Add(pt.TypeArguments[i]);
 					}
 					dict[pt.GetDefinition()] = tp;
@@ -170,34 +152,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			foreach (var pair in dict) {
 				Debug.WriteLine("CommonBaseTypes: " + pair.Key);
 				Debug.Indent();
-				IType[][] typeArguments = new IType[pair.Value.Length][];
-				bool error = false;
-				for (int i = 0; i < pair.Value.Length; i++) {
-					var tp = pair.Value[i];
-					Debug.WriteLine("Fixing " + tp);
-					Debug.Indent();
-					switch (tp.Variance) {
-						case VarianceModifier.Covariant:
-							typeArguments[i] = CommonBaseTypes(tp.Bounds.ToArray(), true).ToArray();
-							break;
-						case VarianceModifier.Contravariant:
-							typeArguments[i] = CommonSubTypes(tp.Bounds.ToArray(), true).ToArray();
-							break;
-						default: // Invariant
-							if (tp.Bounds.Count == 1)
-								typeArguments[i] = new IType[] { tp.Bounds.Single() };
-							break;
-					}
-					Debug.Unindent();
-					if (typeArguments[i] == null || typeArguments[i].Length == 0) {
-						Debug.WriteLine("  -> error");
-						error = true;
-						break;
-					} else {
-						Debug.WriteLine("  -> " + string.Join(",", typeArguments[i].AsEnumerable()));
-					}
-				}
-				if (!error) {
+				IType[][] typeArguments = Fix(pair.Value);
+				if (typeArguments != null) {
 					foreach (IType[] ta in AllCombinations(typeArguments)) {
 						IType result = new ParameterizedType(pair.Key, ta);
 						Debug.WriteLine("Result: " + result);
@@ -229,6 +185,38 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			
 			return potentialTypes;
+		}
+		
+		IType[][] Fix(TP[] tps)
+		{
+			IType[][] typeArguments = new IType[tps.Length][];
+			bool error = false;
+			for (int i = 0; i < tps.Length; i++) {
+				var tp = tps[i];
+				Debug.WriteLine("Fixing " + tp);
+				Debug.Indent();
+				switch (tp.Variance) {
+					case VarianceModifier.Covariant:
+						typeArguments[i] = CommonBaseTypes(tp.Bounds.ToArray(), true).ToArray();
+						break;
+					case VarianceModifier.Contravariant:
+						typeArguments[i] = CommonSubTypes(tp.Bounds.ToArray(), true).ToArray();
+						break;
+					default: // Invariant
+						if (tp.Bounds.Count == 1)
+							typeArguments[i] = new IType[] { tp.Bounds.Single() };
+						break;
+				}
+				Debug.Unindent();
+				if (typeArguments[i] == null || typeArguments[i].Length == 0) {
+					Debug.WriteLine("  -> error");
+					error = true;
+					break;
+				} else {
+					Debug.WriteLine("  -> " + string.Join(",", typeArguments[i].AsEnumerable()));
+				}
+			}
+			return error ? null : typeArguments;
 		}
 		
 		/// <summary>
@@ -289,19 +277,112 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (potentialCommonSubType != null)
 				return new[] { potentialCommonSubType };
 			
+			ITypeDefinition[] inputTypeDefinitions = new ITypeDefinition[inputTypes.Count];
+			for (int i = 0; i < inputTypeDefinitions.Length; i++) {
+				inputTypeDefinitions[i] = inputTypes[i].GetDefinition();
+				if (inputTypeDefinitions[i] == null) {
+					// if there's any array or pointer type, we cannot find a common subtype
+					return EmptyList<IType>.Instance;
+				}
+			}
+			
+			// Debug output: input values
+			Debug.WriteLine("CommonSubTypes input = {");
+			Debug.Indent();
+			foreach (IType type in inputTypes)
+				Debug.WriteLine(type);
+			Debug.Unindent();
+			Debug.WriteLine("}");
+			
 			// Now we're left with the open-ended quest to find a type that derives from all input types.
+			List<ITypeDefinition> candidateTypeDefs = new List<ITypeDefinition>();
+			foreach (ITypeDefinition d in context.GetAllClasses()) {
+				bool ok = true;
+				// first check whether the type is derived from all input types
+				foreach (ITypeDefinition inputTypeDef in inputTypeDefinitions) {
+					if (!d.IsDerivedFrom(inputTypeDef, context)) {
+						ok = false;
+						break;
+					}
+				}
+				if (!ok)
+					continue;
+				// then check that the type isn't redundant (derives from existing candidate)
+				foreach (ITypeDefinition oldCandidate in candidateTypeDefs) {
+					if (d.IsDerivedFrom(oldCandidate, context)) {
+						ok = false;
+						break;
+					}
+				}
+				if (!ok)
+					continue;
+				// remove all existing candidates that are made redundant by the new type
+				candidateTypeDefs.RemoveAll(oldCandidate => oldCandidate.IsDerivedFrom(d, context));
+				candidateTypeDefs.Add(d); // add new candidate
+			}
 			
+			HashSet<IType> potentialTypes = new HashSet<IType>();
+			foreach (var candidate in candidateTypeDefs) {
+				if (candidate.TypeParameterCount == 0) {
+					potentialTypes.Add(candidate);
+					continue;
+				}
+				Debug.WriteLine("  Considering " + candidate);
+				TP[] tp = new TP[candidate.TypeParameterCount];
+				for (int i = 0; i < tp.Length; i++) {
+					tp[i] = new TP(candidate.TypeParameters[i], true);
+				}
+				// self-parameterize the candidate
+				IType parameterizedCandidate = new ParameterizedType(candidate, candidate.TypeParameters);
+				foreach (var candidateBase in parameterizedCandidate.GetAllBaseTypes(context).OfType<ParameterizedType>()) {
+					for (int i = 0; i < inputTypeDefinitions.Length; i++) {
+						if (candidateBase.GetDefinition() == inputTypeDefinitions[i]) {
+							ParameterizedType pt = inputTypes[i] as ParameterizedType;
+							if (pt != null && pt.TypeParameterCount == candidateBase.TypeParameterCount) {
+								// HACK: only handle the trivial case
+								// what actually needs to be done here is very much like C# type inference,
+								// so I should probably restructure the code to reuse C#'s MakeLowerBoundInference etc.
+								for (int j = 0; j < Math.Min(pt.TypeParameterCount, candidate.TypeParameterCount); j++) {
+									if (candidateBase.TypeArguments[j] == candidate.TypeParameters[j]) {
+										tp[j].Bounds.Add(pt.TypeArguments[j]);
+									}
+								}
+							}
+						}
+					}
+				}
+				Debug.Indent();
+				var typeArguments = Fix(tp);
+				if (typeArguments != null) {
+					foreach (IType[] ta in AllCombinations(typeArguments)) {
+						IType result = new ParameterizedType(candidate, ta);
+						Debug.WriteLine("Result: " + result);
+						potentialTypes.Add(result);
+					}
+				}
+				Debug.Unindent();
+			}
 			
-			return new IType[0];
+			return potentialTypes;
 		}
 		
 		sealed class TP
 		{
 			public readonly VarianceModifier Variance;
 			
-			public TP(ITypeParameter tp)
+			public TP(ITypeParameter tp, bool negative)
 			{
 				this.Variance = tp.Variance;
+				if (negative) {
+					switch (tp.Variance) {
+						case VarianceModifier.Covariant:
+							this.Variance = VarianceModifier.Contravariant;
+							break;
+						case VarianceModifier.Contravariant:
+							this.Variance = VarianceModifier.Covariant;
+							break;
+					}
+				}
 			}
 			
 			public readonly HashSet<IType> Bounds = new HashSet<IType>();
