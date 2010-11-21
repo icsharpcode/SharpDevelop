@@ -370,8 +370,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		#endregion
 		
 		#region Destructors
-		static readonly GetClassTypeReference voidReference = new GetClassTypeReference("System.Void", 0);
-		
 		public override IEntity VisitDestructorDeclaration(DestructorDeclaration destructorDeclaration, object data)
 		{
 			DefaultMethod dtor = new DefaultMethod(currentTypeDefinition, "Finalize");
@@ -505,8 +503,21 @@ namespace ICSharpCode.NRefactory.CSharp
 		#endregion
 		
 		#region Types
-		ITypeReference ConvertType(INode node)
+		static readonly GetClassTypeReference voidReference = new GetClassTypeReference("System.Void", 0);
+		
+		internal static ITypeReference ConvertType(INode node)
 		{
+			FullTypeName f = node as FullTypeName;
+			if (f != null) {
+				switch (f.Identifier.Name) {
+					case "String":
+						return TypeCode.String.ToTypeReference();
+					case "Int32":
+						return TypeCode.Int32.ToTypeReference();
+					case "Void":
+						return voidReference;
+				}
+			}
 			return SharedTypes.UnknownType;
 		}
 		#endregion

@@ -89,6 +89,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				mode = navigator.Scan(node);
 				switch (mode) {
 					case ResolveVisitorNavigationMode.Skip:
+						if (node is VariableDeclarationStatement) {
+							// Enforce scanning of variable declarations.
+							goto case ResolveVisitorNavigationMode.Scan;
+						}
 						break;
 					case ResolveVisitorNavigationMode.Scan:
 						node.AcceptVisitor(this, null);
@@ -940,7 +944,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (initializerExpression != null && IsVar(type)) {
 				return new VarTypeReference(this, resolver.Clone(), initializerExpression, isForEach);
 			} else {
-				return SharedTypes.UnknownType; // TODO
+				return TypeSystemConvertVisitor.ConvertType(type);
 			}
 		}
 		

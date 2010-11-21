@@ -186,25 +186,26 @@ namespace ICSharpCode.NRefactory.Demo
 		{
 			SimpleProjectContent project = new SimpleProjectContent();
 			TypeSystemConvertVisitor convertVisitor = new TypeSystemConvertVisitor(project, "dummy.cs");
-			convertVisitor.VisitCompilationUnit(compilationUnit, null);
+			compilationUnit.AcceptVisitor(convertVisitor, null);
 			project.UpdateProjectContent(null, convertVisitor.ParsedFile.TopLevelTypeDefinitions, null, null);
 			
 			List<ITypeResolveContext> projects = new List<ITypeResolveContext>();
 			projects.Add(project);
 			projects.AddRange(builtInLibs.Value);
-			ITypeResolveContext context = new CompositeTypeResolveContext(projects);
 			
-			CSharpResolver resolver = new CSharpResolver(context);
-			
-			IResolveVisitorNavigator navigator = null;
-			if (csharpTreeView.SelectedNode != null) {
-				navigator = new NodeListResolveVisitorNavigator(new[] { (INode)csharpTreeView.SelectedNode.Tag });
+			using (var context = new CompositeTypeResolveContext(projects).Synchronize()) {
+				CSharpResolver resolver = new CSharpResolver(context);
+				
+				IResolveVisitorNavigator navigator = null;
+				if (csharpTreeView.SelectedNode != null) {
+					navigator = new NodeListResolveVisitorNavigator(new[] { (INode)csharpTreeView.SelectedNode.Tag });
+				}
+				ResolveVisitor visitor = new ResolveVisitor(resolver, convertVisitor.ParsedFile, navigator);
+				visitor.Scan(compilationUnit);
+				csharpTreeView.BeginUpdate();
+				ShowResolveResultsInTree(csharpTreeView.Nodes, visitor);
+				csharpTreeView.EndUpdate();
 			}
-			ResolveVisitor visitor = new ResolveVisitor(resolver, convertVisitor.ParsedFile, navigator);
-			visitor.Scan(compilationUnit);
-			csharpTreeView.BeginUpdate();
-			ShowResolveResultsInTree(csharpTreeView.Nodes, visitor);
-			csharpTreeView.EndUpdate();
 		}
 		
 		void ShowResolveResultsInTree(TreeNodeCollection c, ResolveVisitor v)

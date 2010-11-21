@@ -135,5 +135,37 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			trr = (TypeResolveResult)resolver.ResolveSimpleName("T", new IType[0]);
 			Assert.AreSame(resolver.CurrentTypeDefinition.TypeParameters[0], trr.Type);
 		}
+		
+		[Test]
+		public void SimpleParameter()
+		{
+			string program = @"class A {
+	void Method(string a) {
+		string b = $a$;
+	}
+}
+";
+			VariableResolveResult result = Resolve<VariableResolveResult>(program);
+			Assert.AreEqual("a", result.Variable.Name);
+			Assert.IsTrue(result.IsParameter);
+			Assert.AreEqual("System.String", result.Type.FullName);
+		}
+		
+		[Test]
+		public void SimpleLocalVariable()
+		{
+			string program = @"class A {
+	void Method() {
+		string a;
+		string b = $a$;
+	}
+}
+";
+			VariableResolveResult result = Resolve<VariableResolveResult>(program);
+			Assert.AreEqual("a", result.Variable.Name);
+			Assert.IsFalse(result.IsParameter);
+			
+			Assert.AreEqual("System.String", result.Type.FullName);
+		}
 	}
 }

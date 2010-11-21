@@ -33,10 +33,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public ResolveVisitorNavigationMode Scan(INode node)
 		{
 			ResolveVisitorNavigationMode mode;
-			if (dict.TryGetValue(node, out mode))
+			if (dict.TryGetValue(node, out mode)) {
 				return mode;
-			else
+			} else {
 				return ResolveVisitorNavigationMode.Skip;
+			}
 		}
 	}
 }

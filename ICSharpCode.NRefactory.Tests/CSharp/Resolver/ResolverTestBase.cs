@@ -3,7 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+using ICSharpCode.NRefactory.CSharp.Parser;
 using ICSharpCode.NRefactory.TypeSystem;
+using ICSharpCode.NRefactory.TypeSystem.Implementation;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
@@ -14,19 +19,22 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	public abstract class ResolverTestBase
 	{
 		protected readonly IProjectContent mscorlib = CecilLoaderTests.Mscorlib;
-		protected readonly ITypeResolveContext context = CecilLoaderTests.Mscorlib;
+		protected SimpleProjectContent project;
+		protected ITypeResolveContext context;
 		protected CSharpResolver resolver;
 		
 		[SetUp]
 		public virtual void SetUp()
 		{
-			resolver = new CSharpResolver(CecilLoaderTests.Mscorlib);
+			project = new SimpleProjectContent();
+			context = new CompositeTypeResolveContext(new [] { project, mscorlib });
+			resolver = new CSharpResolver(context);
 			resolver.UsingScope = MakeUsingScope("");
 		}
 		
 		protected UsingScope MakeUsingScope(string namespaceName)
 		{
-			UsingScope u = new UsingScope(mscorlib);
+			UsingScope u = new UsingScope(project);
 			if (!string.IsNullOrEmpty(namespaceName)) {
 				foreach (string element in namespaceName.Split('.')) {
 					u = new UsingScope(u, string.IsNullOrEmpty(u.NamespaceName) ? element : u.NamespaceName + "." + element);
@@ -111,6 +119,84 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.IsTrue(rr.IsError, rr.ToString() + " is not an error, but an error was expected");
 			Assert.IsFalse(rr.IsCompileTimeConstant, rr.ToString() + " is a compile-time constant");
 			Assert.AreEqual(expectedType.ToTypeReference().Resolve(context), rr.Type);
+		}
+		
+		IEnumerable<DomLocation> FindDollarSigns(string code)
+		{
+			int line = 1;
+			int col = 1;
+			foreach (char c in code) {
+				if (c == '$') {
+					yield return new DomLocation(line, col);
+				} else if (c == '\n') {
+					line++;
+					col = 1;
+				} else {
+					col++;
+				}
+			}
+		}
+		
+		protected ResolveResult Resolve(string code)
+		{
+			CompilationUnit cu = new CSharpParser().Parse(new StringReader(code.Replace("$", "")));
+			
+			DomLocation[] dollars = FindDollarSigns(code).ToArray();
+			Assert.AreEqual(2, dollars.Length, "Expected 2 dollar signs marking start+end of desired node");
+			
+			UsingScope rootUsingScope = resolver.UsingScope;
+			while (rootUsingScope.Parent != null)
+				rootUsingScope = rootUsingScope.Parent;
+			
+			ParsedFile parsedFile = new ParsedFile("test.cs", rootUsingScope);
+			TypeSystemConvertVisitor convertVisitor = new TypeSystemConvertVisitor(parsedFile, resolver.UsingScope, null);
+			cu.AcceptVisitor(convertVisitor, null);
+			project.UpdateProjectContent(null, convertVisitor.ParsedFile.TopLevelTypeDefinitions, null, null);
+			
+			FindNodeVisitor fnv = new FindNodeVisitor(dollars[0], dollars[1]);
+			cu.AcceptVisitor(fnv, null);
+			Assert.IsNotNull(fnv.ResultNode, "Did not find DOM node at the specified location");
+			
+			var navigator = new NodeListResolveVisitorNavigator(new[] { fnv.ResultNode });
+			ResolveResult rr;
+			using (var context = this.context.Synchronize()) {
+				ResolveVisitor rv = new ResolveVisitor(new CSharpResolver(context), convertVisitor.ParsedFile, navigator);
+				rv.Scan(cu);
+				rr = rv.GetResolveResult(fnv.ResultNode);
+			}
+			Assert.IsNotNull(rr, "ResolveResult is null - did something go wrong while navigating to the target node?");
+			return rr;
+		}
+		
+		protected T Resolve<T>(string code) where T : ResolveResult
+		{
+			ResolveResult rr = Resolve(code);
+			Assert.IsInstanceOf(typeof(T), rr);
+			return (T)rr;
+		}
+		
+		sealed class FindNodeVisitor : AbstractDomVisitor<object, object>
+		{
+			readonly DomLocation start;
+			readonly DomLocation end;
+			public INode ResultNode;
+			
+			public FindNodeVisitor(DomLocation start, DomLocation end)
+			{
+				this.start = start;
+				this.end = end;
+			}
+			
+			protected override object VisitChildren(INode node, object data)
+			{
+				if (node.StartLocation == start && node.EndLocation == end) {
+					if (ResultNode != null)
+						throw new InvalidOperationException("found multiple nodes with same start+end");
+					return ResultNode = node;
+				} else {
+					return base.VisitChildren(node, data);
+				}
+			}
 		}
 	}
 }
