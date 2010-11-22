@@ -313,7 +313,7 @@ namespace CSharpBinding.FormattingStrategy
 				case '>':
 					if (IsInsideDocumentationComment(textArea, curLine, cursorOffset)) {
 						curLineText = curLine.Text;
-						int column = textArea.Caret.Offset - curLine.Offset;
+						int column = cursorOffset - curLine.Offset;
 						int index = Math.Min(column - 1, curLineText.Length - 1);
 						
 						while (index >= 0 && curLineText[index] != '<') {
@@ -332,9 +332,7 @@ namespace CSharpBinding.FormattingStrategy
 								tag += ">";
 							}
 							if (!tag.StartsWith("/")) {
-								int caretOffset = textArea.Caret.Offset;
-								textArea.Document.Insert(caretOffset, "</" + tag.Substring(1));
-								textArea.Caret.Offset = caretOffset;
+								textArea.Document.Insert(cursorOffset, "</" + tag.Substring(1), AnchorMovementType.BeforeInsertion);
 							}
 						}
 					}
