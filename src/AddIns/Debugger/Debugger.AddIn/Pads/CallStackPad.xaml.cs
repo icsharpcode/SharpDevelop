@@ -32,6 +32,22 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		ContextMenu CreateMenu()
 		{
+			MenuItem extMethodsItem = new MenuItem();
+			extMethodsItem.Header = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowExternalMethods");
+			extMethodsItem.IsChecked = DebuggingOptions.Instance.ShowExternalMethods;
+			extMethodsItem.Click += delegate {
+				extMethodsItem.IsChecked = DebuggingOptions.Instance.ShowExternalMethods = !DebuggingOptions.Instance.ShowExternalMethods;
+				RefreshPad();
+			};
+			
+			MenuItem moduleItem = new MenuItem();
+			moduleItem.Header = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowModuleNames");
+			moduleItem.IsChecked = DebuggingOptions.Instance.ShowModuleNames;
+			moduleItem.Click += delegate {
+				moduleItem.IsChecked = DebuggingOptions.Instance.ShowModuleNames = !DebuggingOptions.Instance.ShowModuleNames;
+				RefreshPad();
+			};
+			
 			MenuItem argNamesItem = new MenuItem();
 			argNamesItem.Header = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowArgumentNames");
 			argNamesItem.IsChecked = DebuggingOptions.Instance.ShowArgumentNames;
@@ -48,19 +64,22 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				RefreshPad();
 			};
 			
-			MenuItem extMethodsItem = new MenuItem();
-			extMethodsItem.Header = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowExternalMethods");
-			extMethodsItem.IsChecked = DebuggingOptions.Instance.ShowExternalMethods;
-			extMethodsItem.Click += delegate {
-				extMethodsItem.IsChecked = DebuggingOptions.Instance.ShowExternalMethods = !DebuggingOptions.Instance.ShowExternalMethods;
+			MenuItem lineItem = new MenuItem();
+			lineItem.Header = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowLineNumber");
+			lineItem.IsChecked = DebuggingOptions.Instance.ShowLineNumbers;
+			lineItem.Click += delegate {
+				lineItem.IsChecked = DebuggingOptions.Instance.ShowLineNumbers = !DebuggingOptions.Instance.ShowLineNumbers;
 				RefreshPad();
 			};
 			
 			return new ContextMenu() {
 				Items = {
+					extMethodsItem,
+					new Separator(),
+					moduleItem,
 					argNamesItem,
 					argValuesItem,
-					extMethodsItem
+					lineItem
 				}
 			};
 		}
@@ -164,12 +183,21 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		string GetFullName(StackFrame frame)
+		internal static string GetFullName(StackFrame frame)
 		{
 			bool showArgumentNames = DebuggingOptions.Instance.ShowArgumentNames;
 			bool showArgumentValues = DebuggingOptions.Instance.ShowArgumentValues;
+			bool showLineNumber = DebuggingOptions.Instance.ShowLineNumbers;
+			bool showModuleNames = DebuggingOptions.Instance.ShowModuleNames;
 			
 			StringBuilder name = new StringBuilder();
+			
+			// show modules names
+			if (showModuleNames) {
+				name.Append(frame.MethodInfo.DebugModule.ToString());
+				name.Append("!");
+			}
+			
 			name.Append(frame.MethodInfo.DeclaringType.Name);
 			name.Append('.');
 			name.Append(frame.MethodInfo.Name);
@@ -209,6 +237,18 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				}
 				name.Append(")");
 			}
+			
+			// line number
+			if (showLineNumber) {
+				var segmentCode = frame.GetSegmentForOffet(0);
+				if (segmentCode != null) {
+					name.Append(ResourceService.GetString("MainWindow.Windows.Debug.CallStack.LineString"));
+					name.Append(segmentCode.StartLine.ToString());
+					name.Append("->");
+					name.Append(frame.NextStatement.StartLine.ToString());
+				}
+			}
+			
 			return name.ToString();
 		}
 	}
