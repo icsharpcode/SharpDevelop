@@ -23,6 +23,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		public bool ShowArgumentNames;
 		public bool ShowArgumentValues;
 		public bool ShowExternalMethods;
+		public bool ShowLineNumbers;
+		public bool ShowModuleNames;
 		
 		// Properties for the DebuggerExceptionForm
 		public FormWindowState DebuggerEventWindowState = FormWindowState.Normal;
