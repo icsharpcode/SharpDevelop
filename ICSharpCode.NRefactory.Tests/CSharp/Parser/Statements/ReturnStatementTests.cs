@@ -13,7 +13,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		public void EmptyReturnStatementTest()
 		{
 			ReturnStatement returnStatement = ParseUtilCSharp.ParseStatement<ReturnStatement>("return;");
-			Assert.IsNull(returnStatement.Expression);
+			Assert.IsTrue(returnStatement.Expression.IsNull);
 		}
 		
 		[Test]

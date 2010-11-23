@@ -14,7 +14,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		public void CheckedStatementTest()
 		{
 			CheckedStatement checkedStatement = ParseUtilCSharp.ParseStatement<CheckedStatement>("checked { }");
-			Assert.IsNotNull(checkedStatement.Block);
+			Assert.IsFalse(checkedStatement.Block.IsNull);
 		}
 		
 		[Test]
@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		public void UncheckedStatementTest()
 		{
 			UncheckedStatement uncheckedStatement = ParseUtilCSharp.ParseStatement<UncheckedStatement>("unchecked { }");
-			Assert.IsNotNull(uncheckedStatement.Block);
+			Assert.IsFalse(uncheckedStatement.Block.IsNull);
 		}
 		
 		[Test]

@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 			IfElseStatement ifElseStatement = ParseUtilCSharp.ParseStatement<IfElseStatement>("if (true) { }");
 			Assert.IsTrue(ifElseStatement.Condition is PrimitiveExpression);
 			Assert.IsTrue(ifElseStatement.TrueEmbeddedStatement is BlockStatement);
-			Assert.IsNull(ifElseStatement.FalseEmbeddedStatement);
+			Assert.IsTrue(ifElseStatement.FalseEmbeddedStatement.IsNull);
 		}
 		
 		[Test]

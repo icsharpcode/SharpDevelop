@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		public void SimplePartialClassTypeDeclarationTest()
 		{
 			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("partial class MyClass { }");
-			Assert.IsNotNull(td);
+			Assert.IsFalse(td.IsNull);
 			Assert.AreEqual(ClassType.Class, td.ClassType);
 			Assert.AreEqual("MyClass", td.Name);
 			Assert.AreEqual(Modifiers.Partial, td.Modifiers);
@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		public void NestedClassesTest()
 		{
 			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("class MyClass { partial class P1 {} public partial class P2 {} static class P3 {} internal static class P4 {} }");
-			Assert.IsNotNull(td);
+			Assert.IsFalse(td.IsNull);
 			Assert.AreEqual(ClassType.Class, td.ClassType);
 			Assert.AreEqual("MyClass", td.Name);
 			Assert.AreEqual(Modifiers.Partial, ((TypeDeclaration)td.Members.ElementAt(0)).Modifiers);
@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		public void SimpleStaticClassTypeDeclarationTest()
 		{
 			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("static class MyClass { }");
-			Assert.IsNotNull(td);
+			Assert.IsFalse(td.IsNull);
 			Assert.AreEqual(ClassType.Class, td.ClassType);
 			Assert.AreEqual("MyClass", td.Name);
 			Assert.AreEqual(Modifiers.Static, td.Modifiers);

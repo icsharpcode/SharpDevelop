@@ -14,7 +14,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 		public void ConstructorDeclarationTest1()
 		{
 			ConstructorDeclaration cd = ParseUtilCSharp.ParseTypeMember<ConstructorDeclaration>("MyClass() {}");
-			Assert.IsNull(cd.Initializer);
+			Assert.IsTrue(cd.Initializer.IsNull);
 		}
 		
 		[Test, Ignore("Constructor initializer is broken")]
@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 		public void StaticConstructorDeclarationTest1()
 		{
 			ConstructorDeclaration cd = ParseUtilCSharp.ParseTypeMember<ConstructorDeclaration>("static MyClass() {}");
-			Assert.IsNull(cd.Initializer);
+			Assert.IsTrue(cd.Initializer.IsNull);
 			Assert.AreEqual(Modifiers.Static, cd.Modifiers);
 		}
 		
@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 		public void ExternStaticConstructorDeclarationTest()
 		{
 			ConstructorDeclaration cd = ParseUtilCSharp.ParseTypeMember<ConstructorDeclaration>("extern static MyClass();");
-			Assert.IsNull(cd.Initializer);
+			Assert.IsTrue(cd.Initializer.IsNull);
 			Assert.AreEqual(Modifiers.Static | Modifiers.Extern, cd.Modifiers);
 		}
 	}

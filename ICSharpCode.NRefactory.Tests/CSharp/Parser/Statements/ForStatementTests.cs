@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 			ForStatement forStmt = ParseUtilCSharp.ParseStatement<ForStatement>("for (;;) ;");
 			Assert.AreEqual(0, forStmt.Initializers.Count());
 			Assert.AreEqual(0, forStmt.Iterators.Count());
-			Assert.IsNull(forStmt.Condition);
+			Assert.IsTrue(forStmt.Condition.IsNull);
 			Assert.IsTrue(forStmt.EmbeddedStatement is EmptyStatement);
 		}
 		

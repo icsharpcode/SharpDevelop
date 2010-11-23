@@ -7,8 +7,12 @@ using ICSharpCode.NRefactory.TypeSystem;
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	/// <summary>
-	/// Looks up an alias (identifier in front of :: operator)
+	/// Looks up an alias (identifier in front of :: operator).
 	/// </summary>
+	/// <remarks>
+	/// The member lookup performed by the :: operator is handled
+	/// by <see cref="MemberTypeOrNamespaceReference"/>.
+	/// </remarks>
 	public class AliasNamespaceReference : ITypeOrNamespaceReference
 	{
 		readonly UsingScope parentUsingScope;

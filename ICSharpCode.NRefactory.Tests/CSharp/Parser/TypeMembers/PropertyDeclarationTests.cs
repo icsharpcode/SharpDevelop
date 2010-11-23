@@ -16,8 +16,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 		{
 			PropertyDeclaration pd = ParseUtilCSharp.ParseTypeMember<PropertyDeclaration>("int MyProperty { get {} set {} } ");
 			Assert.AreEqual("MyProperty", pd.Name);
-			Assert.IsNotNull(pd.GetAccessor);
-			Assert.IsNotNull(pd.SetAccessor);
+			Assert.IsFalse(pd.GetAccessor.IsNull);
+			Assert.IsFalse(pd.SetAccessor.IsNull);
 		}
 		
 		[Test]
@@ -25,8 +25,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 		{
 			PropertyDeclaration pd = ParseUtilCSharp.ParseTypeMember<PropertyDeclaration>("int MyProperty { private get {} protected internal set {} } ");
 			Assert.AreEqual("MyProperty", pd.Name);
-			Assert.IsNotNull(pd.GetAccessor);
-			Assert.IsNotNull(pd.SetAccessor);
+			Assert.IsFalse(pd.GetAccessor.IsNull);
+			Assert.IsFalse(pd.SetAccessor.IsNull);
 		}
 		
 		[Test]
@@ -34,8 +34,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 		{
 			PropertyDeclaration pd = ParseUtilCSharp.ParseTypeMember<PropertyDeclaration>("int MyProperty { get {} } ");
 			Assert.AreEqual("MyProperty", pd.Name);
-			Assert.IsNotNull(pd.GetAccessor);
-			Assert.IsNull(pd.SetAccessor);
+			Assert.IsFalse(pd.GetAccessor.IsNull);
+			Assert.IsTrue(pd.SetAccessor.IsNull);
 		}
 		
 		[Test]
@@ -43,8 +43,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 		{
 			PropertyDeclaration pd = ParseUtilCSharp.ParseTypeMember<PropertyDeclaration>("int MyProperty { set {} } ");
 			Assert.AreEqual("MyProperty", pd.Name);
-			Assert.IsNull(pd.GetAccessor);
-			Assert.IsNotNull(pd.SetAccessor);
+			Assert.IsTrue(pd.GetAccessor.IsNull);
+			Assert.IsFalse(pd.SetAccessor.IsNull);
 		}
 		
 		[Test]
@@ -71,8 +71,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 		{
 			PropertyDeclaration pd = ParseUtilCSharp.ParseTypeMember<PropertyDeclaration>("int MyInterface.MyProperty { get {} } ");
 			Assert.AreEqual("MyProperty", pd.Name);
-			Assert.IsNotNull(pd.GetAccessor);
-			Assert.IsNull(pd.SetAccessor);
+			Assert.IsFalse(pd.GetAccessor.IsNull);
+			Assert.IsTrue(pd.SetAccessor.IsNull);
 			
 			Assert.AreEqual("MyInterface", pd.PrivateImplementationType);
 		}
@@ -82,8 +82,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 		{
 			PropertyDeclaration pd = ParseUtilCSharp.ParseTypeMember<PropertyDeclaration>("int MyInterface<string>.MyProperty { get {} } ");
 			Assert.AreEqual("MyProperty", pd.Name);
-			Assert.IsNotNull(pd.GetAccessor);
-			Assert.IsNull(pd.SetAccessor);
+			Assert.IsFalse(pd.GetAccessor.IsNull);
+			Assert.IsTrue(pd.SetAccessor.IsNull);
 			
 			throw new NotImplementedException();
 			//Assert.AreEqual("MyInterface", pd.InterfaceImplementations[0].InterfaceType.Type);

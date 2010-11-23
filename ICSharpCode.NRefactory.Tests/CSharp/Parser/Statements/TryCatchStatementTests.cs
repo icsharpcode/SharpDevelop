@@ -14,7 +14,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		public void SimpleTryCatchStatementTest()
 		{
 			TryCatchStatement tryCatchStatement = ParseUtilCSharp.ParseStatement<TryCatchStatement>("try { } catch { } ");
-			Assert.IsNull(tryCatchStatement.FinallyBlock);
+			Assert.IsTrue(tryCatchStatement.FinallyBlock.IsNull);
 			Assert.AreEqual(1, tryCatchStatement.CatchClauses.Count());
 			Assert.IsNull(tryCatchStatement.CatchClauses.Single().ReturnType);
 			Assert.IsNull(tryCatchStatement.CatchClauses.Single().VariableName);

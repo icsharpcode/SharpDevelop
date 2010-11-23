@@ -54,17 +54,17 @@ namespace ICSharpCode.NRefactory.Demo
 			resolveButton.Enabled = true;
 		}
 		
-		TreeNode MakeTreeNode(INode node)
+		TreeNode MakeTreeNode(DomNode node)
 		{
 			TreeNode t = new TreeNode(GetNodeTitle(node));
 			t.Tag = node;
-			foreach (INode child in node.Children) {
+			foreach (DomNode child in node.Children) {
 				t.Nodes.Add(MakeTreeNode(child));
 			}
 			return t;
 		}
 		
-		string GetNodeTitle(INode node)
+		string GetNodeTitle(DomNode node)
 		{
 			StringBuilder b = new StringBuilder();
 			b.Append(DecodeRole(node.Role, node.Parent != null ? node.Parent.GetType() : null));
@@ -102,7 +102,7 @@ namespace ICSharpCode.NRefactory.Demo
 						return field.Name;
 				}
 			}
-			foreach (FieldInfo field in typeof(AbstractNode.Roles).GetFields(BindingFlags.Public | BindingFlags.Static)) {
+			foreach (FieldInfo field in typeof(DomNode.Roles).GetFields(BindingFlags.Public | BindingFlags.Static)) {
 				if (field.FieldType == typeof(int) && (int)field.GetValue(null) == role)
 					return field.Name;
 			}
@@ -115,7 +115,7 @@ namespace ICSharpCode.NRefactory.Demo
 			int selectionStart = csharpCodeTextBox.SelectionStart;
 			int selectionEnd = selectionStart + csharpCodeTextBox.SelectionLength;
 			foreach (TreeNode t in c) {
-				INode node = t.Tag as INode;
+				DomNode node = t.Tag as DomNode;
 				if (node != null
 				    && selectionStart >= GetOffset(csharpCodeTextBox, node.StartLocation)
 				    && selectionEnd <= GetOffset(csharpCodeTextBox, node.EndLocation))
@@ -149,7 +149,7 @@ namespace ICSharpCode.NRefactory.Demo
 		
 		void CSharpTreeViewAfterSelect(object sender, TreeViewEventArgs e)
 		{
-			INode node = e.Node.Tag as INode;
+			DomNode node = e.Node.Tag as DomNode;
 			if (node != null) {
 				int startOffset = GetOffset(csharpCodeTextBox, node.StartLocation);
 				int endOffset = GetOffset(csharpCodeTextBox, node.EndLocation);
@@ -198,7 +198,7 @@ namespace ICSharpCode.NRefactory.Demo
 				
 				IResolveVisitorNavigator navigator = null;
 				if (csharpTreeView.SelectedNode != null) {
-					navigator = new NodeListResolveVisitorNavigator(new[] { (INode)csharpTreeView.SelectedNode.Tag });
+					navigator = new NodeListResolveVisitorNavigator(new[] { (DomNode)csharpTreeView.SelectedNode.Tag });
 				}
 				ResolveVisitor visitor = new ResolveVisitor(resolver, convertVisitor.ParsedFile, navigator);
 				visitor.Scan(compilationUnit);
@@ -211,7 +211,7 @@ namespace ICSharpCode.NRefactory.Demo
 		void ShowResolveResultsInTree(TreeNodeCollection c, ResolveVisitor v)
 		{
 			foreach (TreeNode t in c) {
-				INode node = t.Tag as INode;
+				DomNode node = t.Tag as DomNode;
 				if (node != null) {
 					ResolveResult rr = v.GetResolveResult(node);
 					if (rr != null)

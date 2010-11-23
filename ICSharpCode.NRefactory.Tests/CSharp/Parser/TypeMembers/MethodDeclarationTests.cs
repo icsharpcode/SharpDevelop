@@ -26,7 +26,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 			Assert.AreEqual("System.Void", md.ReturnType);
 			Assert.AreEqual(0, md.Parameters.Count());
 			Assert.IsFalse(md.IsExtensionMethod);
-			Assert.IsNull(md.Body);
+			Assert.IsTrue(md.Body.IsNull);
 			Assert.AreEqual(Modifiers.Abstract, md.Modifiers);
 		}
 		
@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 			Assert.AreEqual("System.Void", md.ReturnType);
 			Assert.AreEqual(0, md.Parameters.Count());
 			Assert.IsFalse(md.IsExtensionMethod);
-			Assert.IsNull(md.Body);
+			Assert.IsTrue(md.Body.IsNull);
 			Assert.AreEqual(Modifiers.Partial, md.Modifiers);
 		}
 		
@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 			Assert.AreEqual("System.Void", md.ReturnType);
 			Assert.AreEqual(0, md.Parameters.Count());
 			Assert.IsFalse(md.IsExtensionMethod);
-			Assert.IsNotNull(md.Body);
+			Assert.IsFalse(md.Body.IsNull);
 			Assert.AreEqual(Modifiers.Partial, md.Modifiers);
 		}
 		

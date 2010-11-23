@@ -13,7 +13,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		public void EmptyThrowStatementTest()
 		{
 			ThrowStatement throwStmt = ParseUtilCSharp.ParseStatement<ThrowStatement>("throw;");
-			Assert.IsNull(throwStmt.Expression);
+			Assert.IsTrue(throwStmt.Expression.IsNull);
 		}
 		
 		[Test]

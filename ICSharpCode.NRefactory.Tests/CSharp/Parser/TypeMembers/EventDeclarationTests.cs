@@ -17,8 +17,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 			//Assert.AreEqual("System.EventHandler", ed.TypeReference.Type);
 			Assert.Ignore(); // check type
 			
-			Assert.IsNull(ed.AddAccessor);
-			Assert.IsNull(ed.RemoveAccessor);
+			Assert.IsTrue(ed.AddAccessor.IsNull);
+			Assert.IsTrue(ed.RemoveAccessor.IsNull);
 		}
 		
 		/* TODO Port tests

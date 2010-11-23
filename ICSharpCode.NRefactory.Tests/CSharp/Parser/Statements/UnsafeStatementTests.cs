@@ -13,7 +13,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		public void UnsafeStatementTest()
 		{
 			UnsafeStatement unsafeStatement = ParseUtilCSharp.ParseStatement<UnsafeStatement>("unsafe { }");
-			Assert.IsNotNull(unsafeStatement.Block);
+			Assert.IsFalse(unsafeStatement.Block.IsNull);
 		}
 	}
 }
