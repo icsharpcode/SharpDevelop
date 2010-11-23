@@ -8030,6 +8030,9 @@ The resources files have been renamed/moved accordingly.</value>
     <value>Open new buffer</value>
   </data>
   <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+    <value>&amp;Project...</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>&amp;Solution...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">

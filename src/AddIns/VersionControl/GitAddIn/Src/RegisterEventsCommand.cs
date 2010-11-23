@@ -14,21 +14,45 @@ namespace ICSharpCode.GitAddIn
 	{
 		public override void Run()
 		{
-			FileService.FileCreated += (sender, args) => {
-				Git.Add(args.FileName,
-				        exitcode => WorkbenchSingleton.SafeThreadAsyncCall(ClearStatusCacheAndEnqueueFile, args.FileName)
-				       );
+			FileService.FileCreated += (sender, e) => {
+				AddFile(e.FileName);
 			};
-			FileService.FileRemoved += (sender, args) => {
-				if (GitStatusCache.GetFileStatus(args.FileName) == GitStatus.Added) {
-					Git.Remove(args.FileName, true,
-					           exitcode => WorkbenchSingleton.SafeThreadAsyncCall(ClearStatusCacheAndEnqueueFile, args.FileName));
-				}
+			FileService.FileCopied += (sender, e) => {
+				AddFile(e.TargetFile);
+			};
+			FileService.FileRemoved += (sender, e) => {
+				RemoveFile(e.FileName);
+			};
+			FileService.FileRenamed += (sender, e) => {
+				RenameFile(e.SourceFile, e.TargetFile);
 			};
 			FileUtility.FileSaved += (sender, e) => {
 				ClearStatusCacheAndEnqueueFile(e.FileName);
 			};
 			AbstractProjectBrowserTreeNode.OnNewNode += TreeNodeCreated;
+		}
+		
+		void AddFile(string fileName)
+		{
+			Git.Add(fileName,
+				exitcode => WorkbenchSingleton.SafeThreadAsyncCall(ClearStatusCacheAndEnqueueFile, fileName)
+			);
+		}
+		
+		void RemoveFile(string fileName)
+		{
+			if (GitStatusCache.GetFileStatus(fileName) == GitStatus.Added) {
+				Git.Remove(fileName, true,
+					exitcode => WorkbenchSingleton.SafeThreadAsyncCall(ClearStatusCacheAndEnqueueFile, fileName));
+			}
+		}
+		
+		void RenameFile(string sourceFileName, string targetFileName)
+		{
+			Git.Add(targetFileName,
+				exitcode => WorkbenchSingleton.SafeThreadAsyncCall(RemoveFile, sourceFileName)
+			);
+			WorkbenchSingleton.SafeThreadAsyncCall(ClearStatusCacheAndEnqueueFile, targetFileName);
 		}
 		
 		void TreeNodeCreated(object sender, TreeViewEventArgs e)

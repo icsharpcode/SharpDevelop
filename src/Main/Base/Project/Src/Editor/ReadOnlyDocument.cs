@@ -18,6 +18,8 @@ namespace ICSharpCode.SharpDevelop.Editor
 		
 		public ReadOnlyDocument(ITextBuffer textBuffer)
 		{
+			if (textBuffer == null)
+				throw new ArgumentNullException("textBuffer");
 			// ensure that underlying buffer is immutable
 			this.textBuffer = textBuffer.CreateSnapshot();
 			List<int> lines = new List<int>();
@@ -168,17 +170,22 @@ namespace ICSharpCode.SharpDevelop.Editor
 			get { return textBuffer.TextLength; }
 		}
 		
-		public void Insert(int offset, string text)
+		void IDocument.Insert(int offset, string text)
 		{
 			throw new NotSupportedException();
 		}
 		
-		public void Remove(int offset, int length)
+		void IDocument.Insert(int offset, string text, AnchorMovementType defaultAnchorMovementType)
 		{
 			throw new NotSupportedException();
 		}
 		
-		public void Replace(int offset, int length, string newText)
+		void IDocument.Remove(int offset, int length)
+		{
+			throw new NotSupportedException();
+		}
+		
+		void IDocument.Replace(int offset, int length, string newText)
 		{
 			throw new NotSupportedException();
 		}

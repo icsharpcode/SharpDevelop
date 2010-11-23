@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -609,13 +610,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		DragDropEffects GetEffect(IDataObject data)
 		{
-			if (data != null && data.GetDataPresent(DataFormats.FileDrop)) {
-				string[] files = (string[])data.GetData(DataFormats.FileDrop);
-				foreach (string file in files) {
-					if (File.Exists(file)) {
-						return DragDropEffects.Link;
+			try {
+				if (data != null && data.GetDataPresent(DataFormats.FileDrop)) {
+					string[] files = (string[])data.GetData(DataFormats.FileDrop);
+					foreach (string file in files) {
+						if (File.Exists(file)) {
+							return DragDropEffects.Link;
+						}
 					}
 				}
+			} catch (COMException) {
+				// Ignore errors getting the data (e.g. happens when dragging attachments out of Thunderbird)
 			}
 			return DragDropEffects.None;
 		}

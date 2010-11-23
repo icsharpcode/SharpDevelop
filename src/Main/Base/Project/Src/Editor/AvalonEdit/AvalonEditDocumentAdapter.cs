@@ -112,12 +112,22 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		
 		public int PositionToOffset(int line, int column)
 		{
-			return document.GetOffset(new TextLocation(line, column));
+			try {
+				return document.GetOffset(new TextLocation(line, column));
+			} catch (ArgumentOutOfRangeException e) {
+				// for UDC: re-throw exception so that stack trace identifies the caller (instead of the adapter)
+				throw new ArgumentOutOfRangeException(e.ParamName, e.ActualValue, e.Message);
+			}
 		}
 		
 		public Location OffsetToPosition(int offset)
 		{
-			return ToLocation(document.GetLocation(offset));
+			try {
+				return ToLocation(document.GetLocation(offset));
+			} catch (ArgumentOutOfRangeException e) {
+				// for UDC: re-throw exception so that stack trace identifies the caller (instead of the adapter)
+				throw new ArgumentOutOfRangeException(e.ParamName, e.ActualValue, e.Message);
+			}
 		}
 		
 		public static Location ToLocation(TextLocation position)
@@ -135,12 +145,26 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 			document.Insert(offset, text);
 		}
 		
+		public void Insert(int offset, string text, AnchorMovementType defaultAnchorMovementType)
+		{
+			if (defaultAnchorMovementType == AnchorMovementType.BeforeInsertion) {
+				document.Replace(offset, 0, text, OffsetChangeMappingType.KeepAnchorBeforeInsertion);
+			} else {
+				document.Insert(offset, text);
+			}
+		}
+		
 		public void Remove(int offset, int length)
 		{
 			document.Remove(offset, length);
 		}
 		
 		public void Replace(int offset, int length, string newText)
+		{
+			document.Replace(offset, length, newText);
+		}
+		
+		public void Replace(int offset, int length, string newText, AnchorMovementType defaultAnchorMovementType)
 		{
 			document.Replace(offset, length, newText);
 		}

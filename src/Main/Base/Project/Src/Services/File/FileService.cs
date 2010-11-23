@@ -146,9 +146,14 @@ namespace ICSharpCode.SharpDevelop
 			
 			if (openedFileDict[oldName] != file)
 				throw new ArgumentException("file must be registered as oldName");
-			if (openedFileDict.ContainsKey(newName))
-				throw new ArgumentException("there already is a file with the newName");
-			
+			if (openedFileDict.ContainsKey(newName)) {
+				OpenedFile oldFile = openedFileDict[newName];
+				if (oldFile.CurrentView != null) {
+					oldFile.CurrentView.WorkbenchWindow.CloseWindow(true);
+				} else {
+					throw new ArgumentException("there already is a file with the newName");
+				}
+			}
 			openedFileDict.Remove(oldName);
 			openedFileDict[newName] = file;
 		}

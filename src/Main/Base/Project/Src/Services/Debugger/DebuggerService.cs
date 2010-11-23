@@ -89,6 +89,15 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
+		static bool debuggerStarted;
+		
+		/// <summary>
+		/// Gets whether the debugger is currently active.
+		/// </summary>
+		public static bool IsDebuggerStarted {
+			get { return debuggerStarted; }
+		}
+		
 		public static event EventHandler DebugStarting;
 		public static event EventHandler DebugStarted;
 		public static event EventHandler DebugStopped;
@@ -110,12 +119,14 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		
 		static void OnDebugStarted(object sender, EventArgs e)
 		{
+			debuggerStarted = true;
 			if (DebugStarted != null)
 				DebugStarted(null, e);
 		}
 		
 		static void OnDebugStopped(object sender, EventArgs e)
 		{
+			debuggerStarted = false;
 			if (debugFeature != null)
 				debugFeature.EndTracking();
 			
@@ -271,7 +282,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 				}
 				if (toolTipText != null) {
 					if (debuggerCanShowValue && currentDebugger != null) {
-						e.SetToolTip(currentDebugger.GetTooltipControl(expressionResult.Expression));
+						object toolTip = currentDebugger.GetTooltipControl(expressionResult.Expression);
+						if (toolTip != null)
+							e.SetToolTip(toolTip);
+						else
+							e.SetToolTip(toolTipText);
 					} else {
 						e.SetToolTip(toolTipText);
 					}

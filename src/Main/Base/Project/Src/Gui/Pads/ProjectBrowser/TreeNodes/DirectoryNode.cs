@@ -828,13 +828,15 @@ namespace ICSharpCode.SharpDevelop.Project
 					CopyDirectoryHere(directoryNode, effect == DragDropEffects.Move);
 				} else if (dataObject.GetDataPresent(DataFormats.FileDrop)) {
 					string[] files = (string[])dataObject.GetData(DataFormats.FileDrop);
-					foreach (string fileName in files) {
-						if (System.IO.Directory.Exists(fileName)) {
-							if (!FileUtility.IsBaseDirectory(fileName, Directory)) {
-								CopyDirectoryHere(fileName, false);
+					if (files != null) {
+						foreach (string fileName in files) {
+							if (System.IO.Directory.Exists(fileName)) {
+								if (!FileUtility.IsBaseDirectory(fileName, Directory)) {
+									CopyDirectoryHere(fileName, false);
+								}
+							} else {
+								CopyFileHere(fileName, false);
 							}
-						} else {
-							CopyFileHere(fileName, false);
 						}
 					}
 				}

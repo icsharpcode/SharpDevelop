@@ -230,9 +230,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			foreach (AbstractProjectBrowserTreeNode node in Nodes)
 			{
-				AbstractProjectBrowserTreeNode returnedNode = node.GetNodeByRelativePath(relativePath);
-				if (returnedNode != null)
-					return returnedNode;
+				if (node != null) {
+					AbstractProjectBrowserTreeNode returnedNode = node.GetNodeByRelativePath(relativePath);
+					if (returnedNode != null)
+						return returnedNode;
+				}
 			}
 
 			return this;
