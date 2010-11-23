@@ -5747,6 +5747,9 @@ Unable to find 'WelcomeDialogId' in Dialogs.wxs</comment>
   <data name="MainWindow.Windows.Debug.CallStack.ShowModuleNames" xml:space="preserve">
     <value>Show module names</value>
   </data>
+  <data name="MainWindow.Windows.Debug.CallStack.Module" xml:space="preserve">
+    <value>Module</value>
+  </data>
   <data name="MainWindow.Windows.Debug.CallStack.LineString" xml:space="preserve">
     <value> Line </value>
   </data>
