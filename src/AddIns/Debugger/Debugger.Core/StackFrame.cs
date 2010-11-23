@@ -139,7 +139,7 @@ namespace Debugger
 			}
 		}
 		
-		public SourcecodeSegment GetSegmentForOffet(int offset)
+		SourcecodeSegment GetSegmentForOffet(int offset)
 		{
 			return SourcecodeSegment.Resolve(this.MethodInfo.DebugModule, corFunction, offset);
 		}

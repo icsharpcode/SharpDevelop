@@ -28,6 +28,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			InitializeComponent();
 			
 			view.ContextMenu = CreateMenu();
+			
+			((GridView)view.View).Columns[0].Width = DebuggingOptions.Instance.ShowModuleNames ? 100d : 0d;
+			((GridView)view.View).Columns[2].Width = DebuggingOptions.Instance.ShowLineNumbers ? 50d : 0d;
 		}
 		
 		ContextMenu CreateMenu()
@@ -45,6 +48,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			moduleItem.IsChecked = DebuggingOptions.Instance.ShowModuleNames;
 			moduleItem.Click += delegate {
 				moduleItem.IsChecked = DebuggingOptions.Instance.ShowModuleNames = !DebuggingOptions.Instance.ShowModuleNames;
+				((GridView)view.View).Columns[0].Width = DebuggingOptions.Instance.ShowModuleNames ? 100d : 0d;
 				RefreshPad();
 			};
 			
@@ -69,6 +73,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			lineItem.IsChecked = DebuggingOptions.Instance.ShowLineNumbers;
 			lineItem.Click += delegate {
 				lineItem.IsChecked = DebuggingOptions.Instance.ShowLineNumbers = !DebuggingOptions.Instance.ShowLineNumbers;
+				((GridView)view.View).Columns[2].Width = DebuggingOptions.Instance.ShowLineNumbers ? 50d : 0d;
 				RefreshPad();
 			};
 			
@@ -166,14 +171,34 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			foreach (StackFrame frame in debuggedProcess.SelectedThread.GetCallstack(100)) {
 				CallStackItem item;
+				
+				// line number
+				string lineNumber = string.Empty;
+				if (DebuggingOptions.Instance.ShowLineNumbers) {
+					if (frame.NextStatement != null)
+						lineNumber = frame.NextStatement.StartLine.ToString();
+				}
+				
+				// show modules names
+				string moduleName = string.Empty;
+				if (DebuggingOptions.Instance.ShowModuleNames) {
+					moduleName = frame.MethodInfo.DebugModule.ToString();
+				}
+				
 				if (frame.HasSymbols || showExternalMethods) {
 					// Show the method in the list
-					item = new CallStackItem() { Name = GetFullName(frame), Language = "" };
+					
+					item = new CallStackItem() {
+						Name = GetFullName(frame), Language = "", Line = lineNumber, ModuleName = moduleName
+					};
 					lastItemIsExternalMethod = false;
 				} else {
 					// Show [External methods] in the list
 					if (lastItemIsExternalMethod) continue;
-					item = new CallStackItem() { Name = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ExternalMethods"), Language = "" };
+					item = new CallStackItem() {
+						Name = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ExternalMethods"),
+						Language = ""
+					};
 					lastItemIsExternalMethod = true;
 				}
 				item.Frame = frame;
@@ -192,13 +217,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			StringBuilder name = new StringBuilder();
 			
-			// show modules names
-			if (showModuleNames) {
-				name.Append(frame.MethodInfo.DebugModule.ToString());
-				name.Append("!");
-			}
-			
-			name.Append(frame.MethodInfo.DeclaringType.Name);
+			name.Append(frame.MethodInfo.DeclaringType.FullName);
 			name.Append('.');
 			name.Append(frame.MethodInfo.Name);
 			if (showArgumentNames || showArgumentValues) {
@@ -238,17 +257,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				name.Append(")");
 			}
 			
-			// line number
-			if (showLineNumber) {
-				var segmentCode = frame.GetSegmentForOffet(0);
-				if (segmentCode != null) {
-					name.Append(ResourceService.GetString("MainWindow.Windows.Debug.CallStack.LineString"));
-					name.Append(segmentCode.StartLine.ToString());
-					name.Append("->");
-					name.Append(frame.NextStatement.StartLine.ToString());
-				}
-			}
-			
 			return name.ToString();
 		}
 	}
@@ -258,6 +266,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		public string Name { get; set; }
 		public string Language { get; set; }
 		public StackFrame Frame { get; set; }
+		public string Line { get; set; }
+		public string ModuleName { get; set; }
 		
 		public Brush FontColor {
 			get { return Frame == null || Frame.HasSymbols ? Brushes.Black : Brushes.Gray; }
