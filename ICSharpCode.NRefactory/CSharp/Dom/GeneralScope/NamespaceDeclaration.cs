@@ -1,4 +1,4 @@
-﻿// 
+// 
 // NamespaceDeclaration.cs
 //  
 // Author:
@@ -26,12 +26,17 @@
 
 using System;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class NamespaceDeclaration : AbstractNode
+	public class NamespaceDeclaration : DomNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public string Name {
 			get {
 				return NameIdentifier.QualifiedName;
@@ -47,13 +52,25 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public CSharpTokenNode LBrace {
+			get {
+				return (CSharpTokenNode)GetChildByRole (Roles.LBrace) ?? CSharpTokenNode.Null;
+			}
+		}
+		
+		public CSharpTokenNode RBrace {
+			get {
+				return (CSharpTokenNode)GetChildByRole (Roles.RBrace) ?? CSharpTokenNode.Null;
+			}
+		}
+		
 		public QualifiedIdentifier NameIdentifier {
 			get {
 				return (QualifiedIdentifier)GetChildByRole (Roles.Identifier);
 			}
 		}
 		
-		public IEnumerable<INode> Members {
+		public IEnumerable<DomNode> Members {
 			get { return GetChildrenByRole(Roles.Member); }
 		}
 		
@@ -66,7 +83,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return name1 + "." + name2;
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitNamespaceDeclaration (this, data);
 		}

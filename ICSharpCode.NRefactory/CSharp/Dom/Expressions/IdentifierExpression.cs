@@ -1,4 +1,4 @@
-﻿// 
+// 
 // IdentifierExpression.cs
 //  
 // Author:
@@ -25,26 +25,31 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class IdentifierExpression : AbstractNode
+	public class IdentifierExpression : DomNode
 	{
-		public Identifier IdentifierToken {
+		public override NodeType NodeType {
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
+				return NodeType.Expression;
+			}
+		}
+		
+		public  Identifier IdentifierToken {
+			get {
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? ICSharpCode.NRefactory.CSharp.Identifier.Null;
 			}
 		}
 		
 		public string Identifier {
 			get {
 				Identifier i = this.IdentifierToken;
-				return i != null ? i.Name : null;
+				return !i.IsNull ? i.Name : null;
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitIdentifierExpression (this, data);
 		}

@@ -11,7 +11,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// <seealso cref="ResolveVisitor"/>
 	public interface IResolveVisitorNavigator
 	{
-		ResolveVisitorNavigationMode Scan(INode node);
+		ResolveVisitorNavigationMode Scan(DomNode node);
 	}
 	
 	/// <summary>

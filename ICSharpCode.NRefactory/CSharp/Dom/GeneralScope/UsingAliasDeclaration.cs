@@ -1,4 +1,4 @@
-﻿// 
+// 
 // UsingAliasDeclaration.cs
 //  
 // Author:
@@ -30,22 +30,27 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class UsingAliasDeclaration : UsingDeclaration
 	{
-		public const int Assignment      = 103;
-		public const int AliasRole       = 104;
+		public const int AliasRole       = 100;
+		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
 		
 		public string Alias {
 			get {
-				return AliasIdentifier.Name;
+				return AliasIdentifier.QualifiedName;
 			}
 		}
 		
-		public Identifier AliasIdentifier {
+		public QualifiedIdentifier AliasIdentifier {
 			get {
-				return (Identifier)GetChildByRole (AliasRole);
+				return (QualifiedIdentifier)GetChildByRole (AliasRole);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitUsingAliasDeclaration (this, data);
 		}

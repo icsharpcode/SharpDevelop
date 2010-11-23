@@ -26,17 +26,22 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class SwitchStatement : AbstractNode
+	public class SwitchStatement : DomNode
 	{
 		public const int SwitchSectionRole = 100;
 		
-		public INode Expression {
-			get { return GetChildByRole (Roles.Expression); }
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
+		public DomNode Expression {
+			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
 		}
 		
 		public IEnumerable<SwitchSection> SwitchSections {
@@ -44,54 +49,69 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
+		
 		public CSharpTokenNode LBrace {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LBrace); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LBrace) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode RBrace {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RBrace); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RBrace) ?? CSharpTokenNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitSwitchStatement (this, data);
 		}
 	}
 	
-	public class SwitchSection : AbstractNode
+	public class SwitchSection : DomNode
 	{
 		public const int CaseLabelRole = 100;
+		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
 		
 		public IEnumerable<CaseLabel> CaseLabels {
 			get { return GetChildrenByRole (CaseLabelRole).Cast<CaseLabel> (); }
 		}
 		
-		public IEnumerable<INode> Statements {
+		public IEnumerable<DomNode> Statements {
 			get {
-				BlockStatement block = (BlockStatement)GetChildByRole (Roles.Body);
-				return block.Statements;
+				var body = GetChildByRole (Roles.Body);
+				if (body is BlockStatement)
+					return ((BlockStatement)body).Statements;
+				return new DomNode[] { body };
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitSwitchSection (this, data);
 		}
 	}
 	
-	public class CaseLabel : AbstractNode
+	public class CaseLabel : DomNode
 	{
-		public INode Expression {
-			get { return GetChildByRole (Roles.Expression); }
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public DomNode Expression {
+			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
+		}
+		
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitCaseLabel (this, data);
 		}

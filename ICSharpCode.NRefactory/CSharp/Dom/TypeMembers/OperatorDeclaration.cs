@@ -1,4 +1,4 @@
-﻿// 
+// 
 // OperatorDeclaration.cs
 //  
 // Author:
@@ -29,8 +29,6 @@ using System;
 namespace ICSharpCode.NRefactory.CSharp
 {
 	public enum OperatorType {
-		// Numeric values must match those in Mono.CSharp.Operator.OpType !!
-		
 		// Unary operators
 		LogicalNot,
 		OnesComplement,
@@ -77,6 +75,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
+		public string OverloadOperator {
+			get;
+			set;
+		}
+		
 		public CSharpTokenNode OperatorKeyword {
 			get { return (CSharpTokenNode)GetChildByRole (OperatorKeywordRole); }
 		}
@@ -85,14 +88,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return (CSharpTokenNode)GetChildByRole (OperatorTypeRole); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
-		{
-			return visitor.VisitOperatorDeclaration (this, data);
-		}
-		
-		public static string GetName(OperatorType type) 
+		public static string GetName(OperatorType type)
 		{
 			return Mono.CSharp.Operator.GetMetadataName((Mono.CSharp.Operator.OpType)type);
+		}
+		
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitOperatorDeclaration (this, data);
 		}
 	}
 }

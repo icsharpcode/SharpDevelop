@@ -25,12 +25,32 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class Identifier : AbstractNode
+	public class Identifier : DomNode
 	{
+		public static readonly new Identifier Null = new NullIdentifier ();
+		class NullIdentifier : Identifier
+		{
+			public override bool IsNull {
+				get {
+					return true;
+				}
+			}
+			
+			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+			{
+				return default (S);
+			}
+		}
+		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public string Name {
 			get;
 			set;
@@ -65,7 +85,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.startLocation = location;
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitIdentifier (this, data);
 		}

@@ -25,12 +25,17 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class VariableInitializer : AbstractNode
+	public class VariableInitializer : DomNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+
 		public string Name {
 			get {
 				return NameIdentifier.Name;
@@ -39,17 +44,22 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public Identifier NameIdentifier {
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
 			}
 		}
 		
-		public INode Initializer {
+		public CSharpTokenNode Assign {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Assign) ?? CSharpTokenNode.Null; }
+		}
+		
+		
+		public DomNode Initializer {
 			get {
-				return GetChildByRole (Roles.Initializer);
+				return GetChildByRole (Roles.Initializer) ?? DomNode.Null;
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitVariableInitializer (this, data);
 		}

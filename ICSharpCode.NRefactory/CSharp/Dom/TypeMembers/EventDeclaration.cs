@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -36,29 +35,29 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public CSharpTokenNode LBrace {
 			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBrace);
+				return (CSharpTokenNode)GetChildByRole (Roles.LBrace) ?? CSharpTokenNode.Null;
 			}
 		}
 		
 		public CSharpTokenNode RBrace {
 			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBrace);
+				return (CSharpTokenNode)GetChildByRole (Roles.RBrace) ?? CSharpTokenNode.Null;
 			}
 		}
 		
 		public Accessor AddAccessor {
 			get {
-				return (Accessor)GetChildByRole (EventAddRole);
+				return (Accessor)GetChildByRole (EventAddRole) ?? Accessor.Null;
 			}
 		}
 		
 		public Accessor RemoveAccessor {
 			get {
-				return (Accessor)GetChildByRole (EventRemoveRole);
+				return (Accessor)GetChildByRole (EventRemoveRole) ?? Accessor.Null;
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitEventDeclaration (this, data);
 		}

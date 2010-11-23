@@ -25,25 +25,30 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class FixedStatement : AbstractNode
+	public class FixedStatement : DomNode
 	{
 		public const int PointerDeclarationRole = 100;
 		public const int FixedKeywordRole = 101;
 		public const int DeclaratorRole = 102;
 		
-		public INode EmbeddedStatement {
-			get { return (INode)GetChildByRole (Roles.EmbeddedStatement); }
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
+		public DomNode EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement) ?? DomNode.Null; }
 		}
 		
-		public INode PointerDeclaration {
-			get { return GetChildByRole (PointerDeclarationRole); }
+		public DomNode PointerDeclaration {
+			get { return GetChildByRole (PointerDeclarationRole) ?? DomNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitFixedStatement (this, data);
 		}

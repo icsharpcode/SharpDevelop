@@ -25,39 +25,44 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
 	/// <summary>
 	/// cond ? true : false
 	/// </summary>
-	public class ConditionalExpression : AbstractNode
+	public class ConditionalExpression : DomNode
 	{
 		public const int TrueExpressionRole = 100;
 		public const int FalseExpressionRole = 101;
 		
-		public INode TrueExpression {
-			get { return GetChildByRole (TrueExpressionRole); }
-		}
-		
-		public INode FalseExpression {
-			get { return GetChildByRole (FalseExpressionRole); }
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
 		}
 
-		public INode Condition {
-			get { return GetChildByRole (Roles.Condition); }
+		public DomNode TrueExpression {
+			get { return GetChildByRole (TrueExpressionRole) ?? DomNode.Null; }
+		}
+		
+		public DomNode FalseExpression {
+			get { return GetChildByRole (FalseExpressionRole) ?? DomNode.Null; }
+		}
+
+		public DomNode Condition {
+			get { return GetChildByRole (Roles.Condition) ?? DomNode.Null; }
 		}
 		
 		public CSharpTokenNode QuestionMark {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.QuestionMark); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.QuestionMark) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode Colon {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Colon); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Colon) ?? CSharpTokenNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitConditionalExpression (this, data);
 		}

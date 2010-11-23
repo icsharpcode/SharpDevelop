@@ -1,4 +1,4 @@
-﻿// 
+// 
 // MethodDeclaration.cs
 //  
 // Author:
@@ -32,13 +32,8 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class MethodDeclaration : AbstractMember
 	{
-		// TODO: Parameters or Arguments?
-		public IEnumerable<INode> TypeParameters {
-			get { return this.TypeArguments; }
-		}
-		
-		public IEnumerable<INode> TypeArguments {
-			get { return GetChildrenByRole (Roles.TypeArgument).Cast<INode> (); }
+		public IEnumerable<DomNode> TypeParameters {
+			get { return GetChildrenByRole (Roles.TypeArgument); }
 		}
 		
 		public IEnumerable<Constraint> Constraints { 
@@ -49,13 +44,21 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public IEnumerable<ParameterDeclaration> Parameters { 
 			get {
-				return this.Arguments;
+				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration> ();
 			}
 		}
 		
-		public IEnumerable<ParameterDeclaration> Arguments { 
+		public CSharpTokenNode LPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
+		}
+		
+		public CSharpTokenNode RPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		}
+		
+		public BlockStatement Body {
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration> ();
+				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
 			}
 		}
 		
@@ -66,23 +69,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
-		}
 		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
-		}
-		
-		public BlockStatement Body {
-			get {
-				return (BlockStatement)GetChildByRole (Roles.Body);
-			}
-		}
-		
-		
-		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitMethodDeclaration (this, data);
 		}

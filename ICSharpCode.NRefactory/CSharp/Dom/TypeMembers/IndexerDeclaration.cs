@@ -1,4 +1,4 @@
-﻿// 
+// 
 // IndexerDeclaration.cs
 //  
 // Author:
@@ -26,19 +26,13 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
 	public class IndexerDeclaration : PropertyDeclaration
 	{
-		// TODO: Parameters or Arguments?
 		public IEnumerable<ParameterDeclaration> Parameters { 
-			get { return this.Arguments; }
-		}
-		
-		public IEnumerable<ParameterDeclaration> Arguments { 
 			get {
 				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration>();
 			}
@@ -46,18 +40,18 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public CSharpTokenNode LBracket {
 			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBracket);
+				return (CSharpTokenNode)GetChildByRole (Roles.LBracket) ?? CSharpTokenNode.Null;
 			}
 		}
 		
 		public CSharpTokenNode RBracket {
 			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBracket);
+				return (CSharpTokenNode)GetChildByRole (Roles.RBracket) ?? CSharpTokenNode.Null;
 			}
 		}
 		
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitIndexerDeclaration (this, data);
 		}

@@ -24,16 +24,74 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class CompilationUnit : AbstractNode 
+	public class CompilationUnit : DomNode 
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public CompilationUnit ()
 		{
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public DomNode GetNodeAt (int line, int column)
+		{
+			return GetNodeAt (new DomLocation (line, column));
+		}
+		
+		public DomNode GetNodeAt (DomLocation location)
+		{
+			DomNode node = this;
+			while (node.FirstChild != null) {
+				var child = node.FirstChild;
+				while (child != null) {
+					if (child.StartLocation <= location && location < child.EndLocation) {
+						node = child;
+						break;
+					}
+					child = child.NextSibling;
+				}
+				// found no better child node - therefore the parent is the right one.
+				if (child == null)
+					break;
+			}
+			return node;
+		}
+		
+		public IEnumerable<DomNode> GetNodesBetween (int startLine, int startColumn, int endLine, int endColumn)
+		{
+			return GetNodesBetween (new DomLocation (startLine, startColumn), new DomLocation (endLine, endColumn));
+		}
+		
+		public IEnumerable<DomNode> GetNodesBetween (DomLocation start, DomLocation end)
+		{
+			DomNode node = this;
+			while (node != null) {
+				DomNode next;
+				if (start <= node.StartLocation && node.EndLocation < end) {
+					yield return node;
+					next = node.NextSibling;
+				} else {
+					if (node.EndLocation < start) {
+						next = node.NextSibling; 
+					} else {
+						next = node.FirstChild;
+					}
+				}
+				
+				if (next != null && next.StartLocation > end)
+					yield break;
+				node = next;
+			}
+		}
+		
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitCompilationUnit (this, data);
 		}

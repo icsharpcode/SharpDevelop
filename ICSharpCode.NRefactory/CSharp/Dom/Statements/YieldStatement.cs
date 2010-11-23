@@ -1,4 +1,4 @@
-﻿// 
+// 
 // YieldStatement.cs
 //  
 // Author:
@@ -25,21 +25,26 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class YieldStatement : AbstractNode
+	public class YieldStatement : DomNode
 	{
 		public const int YieldKeywordRole = 100;
 		public const int ReturnKeywordRole = 101;
 		public const int BreakKeywordRole = 102;
 		
-		public INode Expression {
-			get { return GetChildByRole (Roles.Expression); }
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
+		public DomNode Expression {
+			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitYieldStatement (this, data);
 		}

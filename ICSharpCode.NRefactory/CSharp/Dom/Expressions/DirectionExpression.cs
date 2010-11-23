@@ -35,8 +35,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		Ref
 	}
 	
-	public class DirectionExpression  : AbstractNode
-	{	
+	public class DirectionExpression  : DomNode
+	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+		
 		public FieldDirection FieldDirection {
 			get;
 			set;
@@ -44,14 +50,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		
 		public CSharpTokenNode Keyword {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null; }
 		}
 		
-		public INode Expression {
-			get { return GetChildByRole (Roles.Expression); }
+		public DomNode Expression {
+			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitDirectionExpression (this, data);
 		}

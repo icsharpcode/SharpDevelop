@@ -1,4 +1,4 @@
-﻿// 
+// 
 // BinaryOperatorExpression.cs
 //  
 // Author:
@@ -25,39 +25,39 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class BinaryOperatorExpression : AbstractNode
+	public class BinaryOperatorExpression : DomNode
 	{
 		public const int LeftExpressionRole = 100;
 		public const int RightExpressionRole = 101;
 		public const int OperatorRole = 102;
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public BinaryOperatorType BinaryOperatorType {
 			get;
 			set;
 		}
 		
-		[ObsoleteAttribute]
-		public BinaryOperatorType Op {
-			get { return this.BinaryOperatorType; }
-		}
-		
 		public CSharpTokenNode Operator {
-			get { return (CSharpTokenNode)GetChildByRole (OperatorRole); }
+			get { return (CSharpTokenNode)GetChildByRole (OperatorRole) ?? CSharpTokenNode.Null; }
 		}
 		
-		public INode Left {
-			get { return GetChildByRole (LeftExpressionRole); }
+		public DomNode Left {
+			get { return GetChildByRole (LeftExpressionRole) ?? DomNode.Null; }
 		}
 		
-		public INode Right {
-			get { return GetChildByRole (RightExpressionRole); }
+		public DomNode Right {
+			get { return GetChildByRole (RightExpressionRole) ?? DomNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitBinaryOperatorExpression (this, data);
 		}

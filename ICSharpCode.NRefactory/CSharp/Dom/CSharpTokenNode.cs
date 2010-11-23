@@ -24,11 +24,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class CSharpTokenNode : AbstractNode
+	public class CSharpTokenNode : DomNode
 	{
+		public static new readonly CSharpTokenNode Null = new NullCSharpTokenNode ();
+		class NullCSharpTokenNode : CSharpTokenNode
+		{
+			public override bool IsNull {
+				get {
+					return true;
+				}
+			}
+			
+			public NullCSharpTokenNode () : base (DomLocation.Empty, 0)
+			{
+			}
+			
+			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+			{
+				return default (S);
+			}
+		}
+		
+		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Token;
+			}
+		}
+		
 		DomLocation startLocation;
 		public override DomLocation StartLocation {
 			get {
@@ -49,7 +74,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.tokenLength = tokenLength;
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return default (S);
 		}

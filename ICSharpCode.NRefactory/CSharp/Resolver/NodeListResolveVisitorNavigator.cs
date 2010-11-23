@@ -12,25 +12,25 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// </summary>
 	public sealed class NodeListResolveVisitorNavigator : IResolveVisitorNavigator
 	{
-		readonly Dictionary<INode, ResolveVisitorNavigationMode> dict = new Dictionary<INode, ResolveVisitorNavigationMode>();
+		readonly Dictionary<DomNode, ResolveVisitorNavigationMode> dict = new Dictionary<DomNode, ResolveVisitorNavigationMode>();
 		
 		/// <summary>
 		/// Creates a new NodeListResolveVisitorNavigator that resolves the specified nodes.
 		/// </summary>
-		public NodeListResolveVisitorNavigator(IEnumerable<INode> nodes)
+		public NodeListResolveVisitorNavigator(IEnumerable<DomNode> nodes)
 		{
 			if (nodes == null)
 				throw new ArgumentNullException("nodes");
-			foreach (INode node in nodes) {
+			foreach (var node in nodes) {
 				dict[node] = ResolveVisitorNavigationMode.Resolve;
-				for (INode ancestor = node.Parent; ancestor != null && !dict.ContainsKey(ancestor); ancestor = ancestor.Parent) {
+				for (var ancestor = node.Parent; ancestor != null && !dict.ContainsKey(ancestor); ancestor = ancestor.Parent) {
 					dict.Add(ancestor, ResolveVisitorNavigationMode.Scan);
 				}
 			}
 		}
 		
 		/// <inheritdoc/>
-		public ResolveVisitorNavigationMode Scan(INode node)
+		public ResolveVisitorNavigationMode Scan(DomNode node)
 		{
 			ResolveVisitorNavigationMode mode;
 			if (dict.TryGetValue(node, out mode)) {

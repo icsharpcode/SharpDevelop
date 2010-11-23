@@ -26,7 +26,6 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
@@ -37,11 +36,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public BlockStatement Body {
 			get {
-				return (BlockStatement)GetChildByRole (Roles.Body);
+				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitDestructorDeclaration (this, data);
 		}

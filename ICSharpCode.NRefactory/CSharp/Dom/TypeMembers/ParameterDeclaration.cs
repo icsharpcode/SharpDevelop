@@ -38,8 +38,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		This
 	}
 	
-	public class ParameterDeclaration : AbstractNode
+	public class ParameterDeclaration : DomNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public ParameterModifier ParameterModifier {
 			get;
 			set;
@@ -47,7 +53,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public Identifier Identifier {
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
 			}
 		}
 		
@@ -58,14 +64,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public INode DefaultExpression {
+		public DomNode DefaultExpression {
 			get {
-				return (INode)GetChildByRole (Roles.Expression);
+				return GetChildByRole (Roles.Expression) ?? DomNode.Null;
 			}
 		}
 		
-		public INode Type {
-			get { return GetChildByRole (Roles.ReturnType); }
+		public DomNode Type {
+			get { return GetChildByRole (Roles.ReturnType) ?? DomNode.Null; }
 		}
 		
 		public IEnumerable<AttributeSection> Attributes {
@@ -74,7 +80,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitParameterDeclaration (this, data);
 		}

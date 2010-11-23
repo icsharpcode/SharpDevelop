@@ -25,19 +25,25 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
+
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class ArrayObjectCreateExpression : ObjectCreateExpression
+	public class ArrayCreateExpression : ObjectCreateExpression
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public CSharpTokenNode Rank {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
-			return visitor.VisitArrayObjectCreateExpression (this, data);
+			return visitor.VisitArrayCreateExpression (this, data);
 		}
 	}
 }

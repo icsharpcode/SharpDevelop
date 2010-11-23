@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// Produces type and member definitions from the DOM.
 	/// </summary>
-	public class TypeSystemConvertVisitor : AbstractDomVisitor<object, IEntity>
+	public class TypeSystemConvertVisitor : DomVisitor<object, IEntity>
 	{
 		readonly ParsedFile parsedFile;
 		UsingScope usingScope;
@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return new DomRegion(parsedFile.FileName, start.Line, start.Column, end.Line, end.Column);
 		}
 		
-		DomRegion MakeRegion(INode node)
+		DomRegion MakeRegion(DomNode node)
 		{
 			if (node == null)
 				return DomRegion.Empty;
@@ -314,7 +314,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return m;
 		}
 		
-		DefaultExplicitInterfaceImplementation ConvertInterfaceImplementation(INode interfaceType, string memberName)
+		DefaultExplicitInterfaceImplementation ConvertInterfaceImplementation(DomNode interfaceType, string memberName)
 		{
 			return new DefaultExplicitInterfaceImplementation(ConvertType(interfaceType), memberName);
 		}
@@ -505,7 +505,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		#region Types
 		static readonly GetClassTypeReference voidReference = new GetClassTypeReference("System.Void", 0);
 		
-		internal static ITypeReference ConvertType(INode node)
+		internal static ITypeReference ConvertType(DomNode node)
 		{
 			FullTypeName f = node as FullTypeName;
 			if (f != null) {
@@ -523,7 +523,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		#endregion
 		
 		#region Constant Values
-		IConstantValue ConvertConstantValue(ITypeReference targetType, INode expression)
+		IConstantValue ConvertConstantValue(ITypeReference targetType, DomNode expression)
 		{
 			return new SimpleConstantValue(targetType, null);
 		}

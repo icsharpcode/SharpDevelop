@@ -1,10 +1,10 @@
-﻿// 
-// INode.cs
+// 
+// ArrayInitializerExpression.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,60 +23,23 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
-{
-	public interface INode
+{ 
+	public class ArrayInitializerExpression : DomNode
 	{
-		INode Parent { 
-			get;
-			set;
-		}
-		
-		IEnumerable<INode> Children {
-			get;
-		}
-		
-		INode GetChildByRole (int role);
-		
-		int Role {
-			get;
-			set;
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
 		}
 		
 		
-		INode NextSibling {
-			get;
-			set;
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitArrayInitializerExpression (this, data);
 		}
-		
-		INode PrevSibling {
-			get;
-			set;
-		}
-		
-		INode FirstChild {
-			get;
-			set;
-		}
-		
-		INode LastChild {
-			get;
-			set;
-		}
-		
-		DomLocation StartLocation {
-			get;
-		}
-		
-		DomLocation EndLocation {
-			get;
-		}
-		
-		
-		S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data);
 	}
 }
+

@@ -1,5 +1,5 @@
 // 
-// AbstractMember.cs
+// NodeType.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -28,35 +28,15 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class AbstractMember : AbstractMemberBase
+	public enum NodeType
 	{
-		const int PrivateImplementationTypeRole = 100;
+		Unknown,
 		
-		public DomNode ReturnType {
-			get {
-				return GetChildByRole (Roles.ReturnType) ?? DomNode.Null;
-			}
-		}
-		
-		/// <summary>
-		/// Only supported on members that can be declared in an interface.
-		/// </summary>
-		public DomNode PrivateImplementationType {
-			get {
-				return GetChildByRole (PrivateImplementationTypeRole) ?? DomNode.Null;
-			}
-		}
-		
-		public Identifier NameIdentifier {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
-			}
-		}
-		
-		public string Name {
-			get {
-				return NameIdentifier.Name;
-			}
-		}
+		Type,
+		Member,
+		Statement,
+		Expression,
+		Token
 	}
+
 }

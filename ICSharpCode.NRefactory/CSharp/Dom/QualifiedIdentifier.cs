@@ -1,4 +1,4 @@
-﻿// 
+// 
 // QualifiedIdentifier.cs
 //  
 // Author:
@@ -25,27 +25,27 @@
 // THE SOFTWARE.
 
 using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class QualifiedIdentifier : AbstractNode
+	public class QualifiedIdentifier : DomNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public string QualifiedName {
 			get {
 				StringBuilder builder = new StringBuilder ();
-				int i = 0;
 				foreach (Identifier identifier in GetChildrenByRole (Roles.Identifier)) {
-					if (i > 0) {
-						if (i == 1 && HasDoubleColon)
-							builder.Append ("::");
-						else
-							builder.Append ('.');
-					}
+					if (builder.Length > 0)
+						builder.Append ('.');
 					builder.Append (identifier.Name);
-					i++;
 				}
 				return builder.ToString ();
 			}
@@ -63,6 +63,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public QualifiedIdentifier ()
 		{
+		}
+		
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		{
+			return default (S);
 		}
 	}
 }

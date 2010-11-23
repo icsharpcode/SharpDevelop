@@ -26,30 +26,36 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class Constraint : AbstractNode
+	public class Constraint : DomNode
 	{
+		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public CSharpTokenNode WhereKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null; }
 		}
 		
 		public Identifier TypeParameter {
-			get { return (Identifier)GetChildByRole (Roles.Identifier); }
+			get { return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null; }
 		}
 		
 		public CSharpTokenNode Colon {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Colon); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Colon) ?? CSharpTokenNode.Null; }
 		}
 		
-		public IEnumerable<INode> TypeArguments {
-			get { return GetChildrenByRole (Roles.TypeArgument).Cast<INode> (); }
+		public IEnumerable<DomNode> TypeParameters {
+			get { return GetChildrenByRole (Roles.TypeArgument); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitConstraint (this, data);
 		}

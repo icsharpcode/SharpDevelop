@@ -1,4 +1,4 @@
-﻿// 
+// 
 // LambdaExpression.cs
 //  
 // Author:
@@ -29,9 +29,15 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class LambdaExpression : AbstractNode
+	public class LambdaExpression : DomNode
 	{
-		public IEnumerable<ParameterDeclaration> Arguments { 
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
+		public IEnumerable<ParameterDeclaration> Parameters { 
 			get {
 				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration>();
 			}
@@ -39,23 +45,23 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public BlockStatement Body {
 			get {
-				return (BlockStatement)GetChildByRole (Roles.Body);
+				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
 			}
 		}
 		
 		public CSharpTokenNode Arrow {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Assign); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Assign) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitLambdaExpression (this, data);
 		}

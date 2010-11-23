@@ -1,4 +1,4 @@
-﻿// 
+// 
 // GotoStatement.cs
 //  
 // Author:
@@ -25,32 +25,34 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class GotoStatement : AbstractNode
+	public class GotoStatement : DomNode
 	{
 		public const int DefaultKeywordRole = 100;
 		public const int CaseKeywordRole = 101;
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
 		public GotoType GotoType {
 			get;
 			set;
 		}
 		
 		public string Label {
-			get { 
-				Identifier i = this.LabelExpression as Identifier;
-				return i != null ? i.Name : null;
-			}
+			get { return ((Identifier)LabelExpression).Name; }
 		}
 
-		public INode LabelExpression {
-			get { return GetChildByRole (Roles.Expression); }
+		public DomNode LabelExpression {
+			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitGotoStatement (this, data);
 		}

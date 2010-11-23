@@ -1,4 +1,4 @@
-﻿// 
+// 
 // EnumDeclaration.cs
 //  
 // Author:
@@ -26,13 +26,53 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
+using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class EnumMemberDeclaration : AbstractMemberBase
+	public class EnumDeclaration : TypeDeclaration
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Type;
+			}
+		}
+		
+		const int EnumMemberDeclarationRole = 100;
+		
+		public IEnumerable<EnumMemberDeclaration> Members { 
+			get {
+				return base.GetChildrenByRole (EnumMemberDeclarationRole).Cast <EnumMemberDeclaration>();
+			}
+		}
+		
+		public override ClassType ClassType {
+			get {
+				return ClassType.Enum;
+			}
+		}
+		
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitEnumDeclaration (this, data);
+		}
+	}
+	
+	public class EnumMemberDeclaration : DomNode
+	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Member;
+			}
+		}
+		
+		public IEnumerable<AttributeSection> Attributes { 
+			get {
+				return base.GetChildrenByRole (Roles.Attribute).Cast <AttributeSection>();
+			}
+		}
+		
 		public string Name {
 			get {
 				return NameIdentifier.Name;
@@ -41,17 +81,17 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public Identifier NameIdentifier {
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
 			}
 		}
 		
-		public INode Initializer {
+		public DomNode Initializer {
 			get {
-				return GetChildByRole (Roles.Initializer);
+				return GetChildByRole (Roles.Initializer) ?? DomNode.Null;
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitEnumMemberDeclaration (this, data);
 		}

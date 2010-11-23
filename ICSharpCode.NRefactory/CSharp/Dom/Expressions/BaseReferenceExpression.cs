@@ -25,12 +25,17 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class BaseReferenceExpression : AbstractNode
+	public class BaseReferenceExpression : DomNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public DomLocation Location {
 			get;
 			set;
@@ -47,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitBaseReferenceExpression (this, data);
 		}

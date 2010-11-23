@@ -25,29 +25,34 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class CastExpression : AbstractNode
+	public class CastExpression : DomNode
 	{
-		public INode CastTo {
-			get { return (INode)GetChildByRole (Roles.ReturnType); }
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
+		public DomNode CastTo {
+			get { return GetChildByRole (Roles.ReturnType) ?? DomNode.Null; }
 		}
 		
-		public INode Expression {
-			get { return GetChildByRole (Roles.Expression); }
+		public DomNode Expression {
+			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
 		}
 		
 		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitCastExpression (this, data);
 		}

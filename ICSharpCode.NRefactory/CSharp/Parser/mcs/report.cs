@@ -12,7 +12,6 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 
 namespace Mono.CSharp {
 
@@ -59,10 +58,11 @@ namespace Mono.CSharp {
 			219, 251, 252, 253, 278, 282,
 			402, 414, 419, 420, 429, 436, 440, 458, 464, 465, 467, 469, 472,
 			612, 618, 626, 628, 642, 649, 652, 658, 659, 660, 661, 665, 672, 675, 693,
+			728,
 			809,
 			1030, 1058, 1066,
 			1522, 1570, 1571, 1572, 1573, 1574, 1580, 1581, 1584, 1587, 1589, 1590, 1591, 1592,
-			1616, 1633, 1634, 1635, 1685, 1690, 1691, 1692, 1695, 1696, 1699,
+			1607, 1616, 1633, 1634, 1635, 1685, 1690, 1691, 1692, 1695, 1696, 1699,
 			1700, 1709, 1717, 1718, 1720,
 			1901, 1981,
 			2002, 2023, 2029,
@@ -186,8 +186,15 @@ namespace Mono.CSharp {
 
 			if (mc != null) {
 				SymbolRelatedToPreviousError (mc);
-			} else if (ms.MemberDefinition != null) {
-				SymbolRelatedToPreviousError (ms.MemberDefinition.Assembly.Location, "");
+			} else {
+				if (ms.DeclaringType != null)
+					ms = ms.DeclaringType;
+
+				var imported_type = ms.MemberDefinition as ImportedTypeDefinition;
+				if (imported_type != null) {
+					var iad = imported_type.DeclaringAssembly as ImportedAssemblyDefinition;
+					SymbolRelatedToPreviousError (iad.Location, "");
+				}
 			}
 		}
 
@@ -906,7 +913,7 @@ namespace Mono.CSharp {
 			
 			for (int i = 0; i < t.FrameCount; i++) {
 				StackFrame f = t.GetFrame (i);
-				MethodBase mb = f.GetMethod ();
+				var mb = f.GetMethod ();
 				
 				if (!foundUserCode && mb.ReflectedType == typeof (Report))
 					continue;
@@ -921,7 +928,7 @@ namespace Mono.CSharp {
 				sb.AppendFormat ("{0}.{1} (", mb.ReflectedType.Name, mb.Name);
 				
 				bool first = true;
-				foreach (ParameterInfo pi in mb.GetParameters ()) {
+				foreach (var pi in mb.GetParameters ()) {
 					if (!first)
 						sb.Append (", ");
 					first = false;

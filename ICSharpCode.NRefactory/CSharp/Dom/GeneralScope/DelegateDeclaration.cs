@@ -1,4 +1,4 @@
-﻿// 
+// 
 // DelegateDeclaration.cs
 //  
 // Author:
@@ -26,13 +26,18 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
 	public class DelegateDeclaration : AbstractMemberBase
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Type;
+			}
+		}
+		
 		public string Name {
 			get {
 				return NameIdentifier.Name;
@@ -41,28 +46,37 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public Identifier NameIdentifier {
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
 			}
 		}
 		
-		public INode ReturnType {
+		public DomNode ReturnType {
 			get {
-				return (INode)GetChildByRole (Roles.ReturnType);
+				return GetChildByRole (Roles.ReturnType) ?? DomNode.Null;
 			}
 		}
 		
-		// TODO: call this Parameters or Arguments?
-		public IEnumerable<ParameterDeclaration> Parameters {
-			get { return this.Arguments; }
-		}
-		
-		public IEnumerable<ParameterDeclaration> Arguments { 
+		public IEnumerable<ParameterDeclaration> Parameters { 
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration>();
+				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration> ();
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public CSharpTokenNode LPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
+		}
+		
+		public CSharpTokenNode RPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		}
+		
+		public IEnumerable<AttributeSection> Attributes { 
+			get {
+				return base.GetChildrenByRole (Roles.Attribute).Cast <AttributeSection>();
+			}
+		}
+		
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitDelegateDeclaration (this, data);
 		}

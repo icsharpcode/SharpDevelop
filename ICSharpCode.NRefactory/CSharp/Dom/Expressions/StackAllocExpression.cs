@@ -25,43 +25,48 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class StackAllocExpression : AbstractNode
+	public class StackAllocExpression : DomNode
 	{
 		public const int StackAllocKeywordRole = 100;
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public FullTypeName Type {
 			get {
-				return (FullTypeName)GetChildByRole (Roles.ReturnType);
+				return (FullTypeName)GetChildByRole (Roles.ReturnType) ?? FullTypeName.Null;
 			}
 		}
 		
-		public INode CountExpression {
-			get { return (INode)GetChildByRole (Roles.Expression); }
+		public DomNode CountExpression {
+			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
 		}
 		
 		public CSharpTokenNode StackAllocKeyword {
 			get {
-				return (CSharpTokenNode)GetChildByRole (StackAllocKeywordRole);
+				return (CSharpTokenNode)GetChildByRole (StackAllocKeywordRole) ?? CSharpTokenNode.Null;
 			}
 		}
 		
 		public CSharpTokenNode LBracket {
 			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBracket);
+				return (CSharpTokenNode)GetChildByRole (Roles.LBracket) ?? CSharpTokenNode.Null;
 			}
 		}
 		
 		public CSharpTokenNode RBracket {
 			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBracket);
+				return (CSharpTokenNode)GetChildByRole (Roles.RBracket) ?? CSharpTokenNode.Null;
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitStackAllocExpression (this, data);
 		}

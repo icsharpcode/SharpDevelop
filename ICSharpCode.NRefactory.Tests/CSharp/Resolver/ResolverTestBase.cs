@@ -175,11 +175,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return (T)rr;
 		}
 		
-		sealed class FindNodeVisitor : AbstractDomVisitor<object, object>
+		sealed class FindNodeVisitor : DomVisitor<object, object>
 		{
 			readonly DomLocation start;
 			readonly DomLocation end;
-			public INode ResultNode;
+			public DomNode ResultNode;
 			
 			public FindNodeVisitor(DomLocation start, DomLocation end)
 			{
@@ -187,7 +187,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				this.end = end;
 			}
 			
-			protected override object VisitChildren(INode node, object data)
+			protected override object VisitChildren(DomNode node, object data)
 			{
 				if (node.StartLocation == start && node.EndLocation == end) {
 					if (ResultNode != null)

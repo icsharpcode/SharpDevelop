@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
     <ProjectGuid>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</ProjectGuid>
@@ -36,18 +36,16 @@
     <DefineConstants>TRACE;FULL_AST</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugType>Full</DebugType>
+    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>None</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <WarningLevel>4</WarningLevel>
-    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Cecil">
@@ -61,15 +59,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CSharp\Dom\AbstractNode.cs" />
-    <Compile Include="CSharp\Dom\AbstractDomVisitor.cs" />
     <Compile Include="CSharp\Dom\CompilationUnit.cs" />
     <Compile Include="CSharp\Dom\CSharpModifierToken.cs" />
     <Compile Include="CSharp\Dom\CSharpTokenNode.cs" />
     <Compile Include="CSharp\Dom\DomLocation.cs" />
     <Compile Include="CSharp\Dom\Expressions\AnonymousMethodExpression.cs" />
     <Compile Include="CSharp\Dom\Expressions\ArgListExpression.cs" />
-    <Compile Include="CSharp\Dom\Expressions\ArrayObjectCreateExpression.cs" />
     <Compile Include="CSharp\Dom\Expressions\AsExpression.cs" />
     <Compile Include="CSharp\Dom\Expressions\AssignmentExpression.cs" />
     <Compile Include="CSharp\Dom\Expressions\BaseReferenceExpression.cs" />
@@ -107,8 +102,6 @@
     <Compile Include="CSharp\Dom\GeneralScope\UsingAliasDeclaration.cs" />
     <Compile Include="CSharp\Dom\GeneralScope\UsingDeclaration.cs" />
     <Compile Include="CSharp\Dom\Identifier.cs" />
-    <Compile Include="CSharp\Dom\IDomVisitor.cs" />
-    <Compile Include="CSharp\Dom\INode.cs" />
     <Compile Include="CSharp\Dom\Modifiers.cs" />
     <Compile Include="CSharp\Dom\QualifiedIdentifier.cs" />
     <Compile Include="CSharp\Dom\Statements\BlockStatement.cs" />
@@ -311,6 +304,13 @@
     <Compile Include="Utils\TreeTraversal.cs" />
     <Compile Include="CSharp\Dom\ComposedType.cs" />
     <Compile Include="CSharp\Dom\Expressions\DirectionExpression.cs" />
+    <Compile Include="CSharp\Dom\Expressions\ArrayCreateExpression.cs" />
+    <Compile Include="CSharp\Dom\Expressions\ArrayInitializerExpression.cs" />
+    <Compile Include="CSharp\Dom\DomNode.cs" />
+    <Compile Include="CSharp\Dom\DomVisitor.cs" />
+    <Compile Include="CSharp\Dom\NodeType.cs" />
+    <Compile Include="CSharp\Dom\TypeMembers\Accessor.cs" />
+    <Compile Include="CSharp\Parser\mcs\assembly.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />

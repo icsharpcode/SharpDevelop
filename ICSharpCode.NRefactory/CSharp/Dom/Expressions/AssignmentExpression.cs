@@ -1,4 +1,4 @@
-﻿// 
+// 
 // AssignmentExpression.cs
 //  
 // Author:
@@ -25,12 +25,17 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class AssignmentExpression : AbstractNode
+	public class AssignmentExpression : DomNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public const int LeftExpressionRole = 100;
 		public const int RightExpressionRole = 101;
 		public const int OperatorRole = 102;
@@ -40,20 +45,20 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
-		public INode Left {
-			get { return GetChildByRole (LeftExpressionRole); }
+		public DomNode Left {
+			get { return GetChildByRole (LeftExpressionRole) ?? DomNode.Null; }
 		}
 		
-		public INode Right {
-			get { return GetChildByRole (RightExpressionRole); }
+		public DomNode Right {
+			get { return GetChildByRole (RightExpressionRole) ?? DomNode.Null; }
 		}
 		
 		public CSharpTokenNode Operator {
-			get { return (CSharpTokenNode)GetChildByRole (OperatorRole); }
+			get { return (CSharpTokenNode)GetChildByRole (OperatorRole) ?? CSharpTokenNode.Null; }
 		}
 	
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitAssignmentExpression (this, data);
 		}
@@ -75,12 +80,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>left %= right</summary>
 		Modulus,
 		
-		/// <summary>left &lt;&lt;= right</summary>
+		/// <summary>left <<= right</summary>
 		ShiftLeft,
 		/// <summary>left >>= right</summary>
 		ShiftRight,
 		
-		/// <summary>left &amp;= right</summary>
+		/// <summary>left &= right</summary>
 		BitwiseAnd,
 		/// <summary>left |= right</summary>
 		BitwiseOr,

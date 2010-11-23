@@ -1,4 +1,4 @@
-﻿// 
+// 
 // UncheckedStatement.cs
 //  
 // Author:
@@ -25,17 +25,23 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class UncheckedStatement : AbstractNode
+	public class UncheckedStatement : DomNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
 		public BlockStatement Block {
-			get { return (BlockStatement)GetChildByRole (Roles.Body); }
+			get { return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitUncheckedStatement (this, data);
 		}

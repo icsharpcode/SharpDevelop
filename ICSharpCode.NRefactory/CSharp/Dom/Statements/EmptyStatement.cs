@@ -25,12 +25,17 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class EmptyStatement : AbstractNode
+	public class EmptyStatement : DomNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
 		public DomLocation Location {
 			get;
 			set;
@@ -41,13 +46,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				return Location;
 			}
 		}
+		
 		public override DomLocation EndLocation {
 			get {
-				return new DomLocation (Location.Line, Location.Column + 1);
+				return new DomLocation (Location.Line, Location.Column);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitEmptyStatement (this, data);
 		}

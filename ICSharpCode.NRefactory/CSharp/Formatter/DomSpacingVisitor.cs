@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 /*
 using System;
-using MonoDevelop.CSharp.Dom;
+using ICSharpCode.NRefactory.CSharp;
 using System.Text;
 using MonoDevelop.Projects.Dom;
 using Mono.TextEditor;
@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public override object VisitCompilationUnit (MonoDevelop.CSharp.Dom.CompilationUnit unit, object data)
+		public override object VisitCompilatioICSharpCode.NRefactory.CSharparp.Dom.CompilationUnit unit, object data)
 		{
 			base.VisitCompilationUnit (unit, data);
 			if (AutoAcceptChanges)
@@ -436,7 +436,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return base.VisitUsingStatement (usingStatement, data);
 		}
 		
-		public override object VisitSwitchStatement (MonoDevelop.CSharp.Dom.SwitchStatement switchStatement, object data)
+		public override object VisitSwiICSharpCode.NRefactory.CSharplop.CSharp.Dom.SwitchStatement switchStatement, object data)
 		{
 			ForceSpacesBefore (switchStatement.LPar, policy.SwitchParentheses);
 			

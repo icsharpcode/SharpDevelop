@@ -1,4 +1,4 @@
-﻿// 
+// 
 // TypeDeclaration.cs
 //  
 // Author:
@@ -35,6 +35,12 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		public const int TypeKeyword      = 100;
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Type;
+			}
+		}
+		
 		public Identifier NameIdentifier {
 			get {
 				return (Identifier)GetChildByRole (Roles.Identifier);
@@ -47,16 +53,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public IEnumerable<AbstractMemberBase> Members {
+		public IEnumerable<DomNode> TypeParameters {
 			get {
-				return GetChildrenByRole (Roles.Member).Cast<AbstractMemberBase> ();
-			}
-		}
-		
-		// TODO: rename to TypeParameters, more specific return type
-		public IEnumerable<INode> TypeArguments {
-			get {
-				return GetChildrenByRole (Roles.TypeArgument).Cast<INode> ();
+				return GetChildrenByRole (Roles.TypeArgument);
 			}
 		}
 		
@@ -68,13 +67,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public CSharpTokenNode LBrace {
 			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBrace);
+				return (CSharpTokenNode)GetChildByRole (Roles.LBrace) ?? CSharpTokenNode.Null;
 			}
 		}
 		
 		public CSharpTokenNode RBrace {
 			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBrace);
+				return (CSharpTokenNode)GetChildByRole (Roles.RBrace) ?? CSharpTokenNode.Null;
 			}
 		}
 		
@@ -83,7 +82,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public IEnumerable<AbstractMemberBase> Members {
+			get {
+				return GetChildrenByRole (Roles.Member).Cast<AbstractMemberBase> ();
+			}
+		}
+		
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitTypeDeclaration (this, data);
 		}

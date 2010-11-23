@@ -25,17 +25,22 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class ContinueStatement : AbstractNode
+	public class ContinueStatement : DomNode
 	{
-		public INode ContinueKeyword {
-			get { return GetChildByRole (Roles.Keyword); }
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
+		public CSharpTokenNode ContinueKeyword {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitContinueStatement (this, data);
 		}

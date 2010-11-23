@@ -24,25 +24,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class FullTypeName : AbstractNode
+	public class FullTypeName : DomNode
 	{
+		public static readonly new FullTypeName Null = new NullFullTypeName ();
+		class NullFullTypeName : FullTypeName
+		{
+			public override bool IsNull {
+				get {
+					return true;
+				}
+			}
+			
+			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+			{
+				return default (S);
+			}
+		}
+		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public Identifier Identifier {
 			get {
 				return (Identifier)GetChildByRole (Roles.Identifier);
 			}
 		}
 			
-		public IEnumerable<INode> TypeArguments {
-			get { return GetChildrenByRole (Roles.TypeArgument).Cast<INode> (); }
+		public IEnumerable<DomNode> TypeArguments {
+			get { return GetChildrenByRole (Roles.TypeArgument) ?? new DomNode[0]; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitFullTypeName (this, data);
 		}

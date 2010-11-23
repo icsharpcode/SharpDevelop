@@ -25,38 +25,43 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class ForStatement : AbstractNode
+	public class ForStatement : DomNode
 	{
-		public INode EmbeddedStatement {
-			get { return (INode)GetChildByRole (Roles.EmbeddedStatement); }
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
+		public DomNode EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement) ?? DomNode.Null; }
 		}
 		
-		public INode Condition {
-			get { return GetChildByRole (Roles.Condition); }
+		public DomNode Condition {
+			get { return GetChildByRole (Roles.Condition) ?? DomNode.Null; }
 		}
 		
-		public IEnumerable<INode> Initializers {
+		public IEnumerable<DomNode> Initializers {
 			get { return GetChildrenByRole (Roles.Initializer); }
 		}
 		
-		public IEnumerable<INode> Iterators {
+		public IEnumerable<DomNode> Iterators {
 			get { return GetChildrenByRole (Roles.Iterator); }
 		}
 		
 		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitForStatement (this, data);
 		}

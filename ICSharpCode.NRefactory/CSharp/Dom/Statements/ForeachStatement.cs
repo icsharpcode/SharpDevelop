@@ -25,33 +25,38 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class ForeachStatement : AbstractNode
+	public class ForeachStatement : DomNode
 	{
 		public const int ForEachKeywordRole = 100;
 		public const int InKeywordRole = 101;
-			
-		public INode EmbeddedStatement {
-			get { return (INode)GetChildByRole (Roles.EmbeddedStatement); }
+		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
+		public DomNode EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement) ?? DomNode.Null; }
 		}
 		
-		public INode Expression {
-			get { return GetChildByRole (Roles.Initializer); }
+		public DomNode Expression {
+			get { return GetChildByRole (Roles.Initializer) ?? DomNode.Null; }
 		}
 		
-		public INode VariableType {
-			get { return (INode)GetChildByRole (Roles.ReturnType); }
+		public DomNode VariableType {
+			get { return GetChildByRole (Roles.ReturnType) ?? DomNode.Null; }
 		}
 		
 		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public string VariableName {
@@ -62,11 +67,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public Identifier VariableNameIdentifier {
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitForeachStatement (this, data);
 		}

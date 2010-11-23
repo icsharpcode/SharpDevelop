@@ -26,13 +26,18 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class Attribute : AbstractNode
+	public class Attribute : DomNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+
 		public string Name {
 			get {
 				return NameIdentifier.QualifiedName;
@@ -46,13 +51,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		// Todo: Arguments should not be nodes, instead it should be expressions, change when it's implemented.
-		public IEnumerable<INode> Arguments { 
+		public IEnumerable<DomNode> Arguments { 
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <INode>();
+				return base.GetChildrenByRole (Roles.Argument);
 			}
 		}
 
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitAttribute (this, data);
 		}

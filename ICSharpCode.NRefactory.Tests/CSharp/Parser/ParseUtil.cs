@@ -13,38 +13,38 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 	/// </summary>
 	public class ParseUtilCSharp
 	{
-		public static T ParseGlobal<T>(string code, bool expectErrors = false) where T : INode
+		public static T ParseGlobal<T>(string code, bool expectErrors = false) where T : DomNode
 		{
 			CSharpParser parser = new CSharpParser();
 			CompilationUnit cu = parser.Parse(new StringReader(code));
 			
 			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
 			
-			INode node = cu.Children.Single();
+			DomNode node = cu.Children.Single();
 			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(node.GetType()), String.Format("Parsed node was {0} instead of {1} ({2})", node.GetType(), type, node));
 			return (T)node;
 		}
 		
-		public static T ParseStatement<T>(string stmt, bool expectErrors = false) where T : INode
+		public static T ParseStatement<T>(string stmt, bool expectErrors = false) where T : DomNode
 		{
 			CSharpParser parser = new CSharpParser();
 			var statements = parser.ParseStatements(new StringReader(stmt));
 			
 			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
 			
-			INode statement = statements.Single();
+			DomNode statement = statements.Single();
 			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(statement.GetType()), String.Format("Parsed statement was {0} instead of {1} ({2})", statement.GetType(), type, statement));
 			return (T)statement;
 		}
 		
-		public static T ParseExpression<T>(string expr, bool expectErrors = false) where T : INode
+		public static T ParseExpression<T>(string expr, bool expectErrors = false) where T : DomNode
 		{
 			if (expectErrors) Assert.Ignore("errors not yet implemented");
 			
 			CSharpParser parser = new CSharpParser();
-			INode parsedExpression = parser.ParseExpression(new StringReader(expr));
+			DomNode parsedExpression = parser.ParseExpression(new StringReader(expr));
 			
 			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
 			

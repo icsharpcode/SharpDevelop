@@ -13,7 +13,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 using System.Reflection.Emit;
 
 namespace Mono.CSharp {
@@ -89,7 +88,7 @@ namespace Mono.CSharp {
 			return ImplicitReferenceConversionExists (MyEmptyExpr, arg_type) || ExplicitReferenceConversionExists (array.Element, arg_type);
 		}
 
-		static Expression ImplicitTypeParameterConversion (Expression expr, TypeSpec target_type)
+		public static Expression ImplicitTypeParameterConversion (Expression expr, TypeSpec target_type)
 		{
 			var expr_type = (TypeParameterSpec) expr.Type;
 
@@ -1726,14 +1725,14 @@ namespace Mono.CSharp {
 			//
 			if (source_type.IsInterface) {
 				if (!target_type.IsSealed || target_type.ImplementsInterface (source_type, true)) {
-					if (target_type.IsClass)
-						return source == null ? EmptyExpression.Null : new ClassCast (source, target_type);
+					if (source == null)
+						return EmptyExpression.Null;
 
 					//
 					// Unboxing conversion from any interface-type to any non-nullable-value-type that
 					// implements the interface-type
 					//
-					return source == null ? EmptyExpression.Null : new UnboxCast (source, target_type);
+					return target_is_value_type ? new UnboxCast (source, target_type) : (Expression) new ClassCast (source, target_type);
 				}
 
 				//

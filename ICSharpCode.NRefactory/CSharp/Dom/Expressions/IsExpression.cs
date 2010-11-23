@@ -1,4 +1,4 @@
-﻿// 
+// 
 // TypeOfIsExpression.cs
 //  
 // Author:
@@ -24,21 +24,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class IsExpression : AbstractNode
+	public class IsExpression : DomNode
 	{
-		public INode TypeReference {
-			get { return GetChildByRole (Roles.ReturnType); }
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
+		public FullTypeName TypeReference {
+			get { return (FullTypeName)GetChildByRole (Roles.ReturnType) ?? FullTypeName.Null; }
 		}
 		
-		public INode Expression {
-			get { return GetChildByRole (Roles.Expression); }
+		public DomNode Expression {
+			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitIsExpression (this, data);
 		}

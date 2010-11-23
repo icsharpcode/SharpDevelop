@@ -26,7 +26,6 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
@@ -34,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class FieldDeclaration : AbstractMember
 	{
 		public CSharpTokenNode Semicolon {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Semicolon); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Semicolon) ?? CSharpTokenNode.Null; }
 		}
 		
 		public IEnumerable<VariableInitializer> Variables { 
@@ -43,7 +42,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitFieldDeclaration (this, data);
 		}

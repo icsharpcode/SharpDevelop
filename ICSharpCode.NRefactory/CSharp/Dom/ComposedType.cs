@@ -27,15 +27,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class ComposedType : AbstractNode
+	public class ComposedType : DomNode
 	{
 		public const int NullableRole  = 100;
 		public const int PointerRole   = 101;
 		public const int ArraySpecRole = 102;
 		
-		public INode BaseType {
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
+		public DomNode BaseType {
 			get {
 				return GetChildByRole (Roles.ReturnType);
 			}
@@ -45,13 +52,18 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return GetChildrenByRole (ArraySpecRole).Cast<ArraySpecifier> () ?? new ArraySpecifier[0]; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitComposedType (this, data);
 		}
 		
-		public class ArraySpecifier : AbstractNode
+		public class ArraySpecifier : DomNode
 		{
+			public override NodeType NodeType {
+				get {
+					return NodeType.Unknown;
+				}
+			}
 			
 			public CSharpTokenNode LBracket {
 				get { return (CSharpTokenNode)GetChildByRole (Roles.LBracket); }
@@ -62,7 +74,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		
 			
-			public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 			{
 				return default (S);
 			}

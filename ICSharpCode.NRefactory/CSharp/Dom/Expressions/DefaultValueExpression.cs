@@ -27,13 +27,19 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class DefaultValueExpression : AbstractNode
+	public class DefaultValueExpression : DomNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public FullTypeName TypeReference {
-			get { return (FullTypeName)GetChildByRole (Roles.ReturnType); }
+			get { return (FullTypeName)GetChildByRole (Roles.ReturnType) ?? FullTypeName.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitDefaultValueExpression (this, data);
 		}

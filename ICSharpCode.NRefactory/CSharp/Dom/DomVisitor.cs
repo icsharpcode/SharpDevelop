@@ -1,5 +1,5 @@
-﻿// 
-// IDomVisitor.cs
+// 
+// DomVisitor.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -28,11 +28,11 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class AbstractDomVisitor<T, S> : IDomVisitor<T, S>
+	public abstract class DomVisitor<T, S>
 	{
-		protected virtual S VisitChildren (INode node, T data)
+		protected virtual S VisitChildren (DomNode node, T data)
 		{
-			INode child = node.FirstChild;
+			var child = node.FirstChild;
 			while (child != null) {
 				child.AcceptVisitor (this, data);
 				child = child.NextSibling;
@@ -51,6 +51,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public virtual S VisitIdentifier (Identifier identifier, T data)
+		{
+			return default (S);
+		}
+		
+		public virtual S VisitComposedType (ComposedType composedType, T data)
 		{
 			return default (S);
 		}
@@ -77,7 +82,15 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public virtual S VisitTypeDeclaration (TypeDeclaration typeDeclaration, T data) 
 		{
-			return VisitChildren (typeDeclaration, data);
+			foreach (var node in typeDeclaration.GetChildrenByRole (TypeDeclaration.Roles.Member)) {
+				node.AcceptVisitor (this, data);
+			}
+			return default (S);
+		}
+		
+		public virtual S VisitEnumDeclaration (EnumDeclaration enumDeclaration, T data) 
+		{
+			return VisitChildren (enumDeclaration, data);
 		}
 		
 		public virtual S VisitEnumMemberDeclaration (EnumMemberDeclaration enumMemberDeclaration, T data) 
@@ -345,6 +358,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (invocationExpression, data);
 		}
 		
+		public virtual S VisitDirectionExpression (DirectionExpression directionExpression, T data)
+		{
+			return VisitChildren (directionExpression, data);
+		}
+		
 		public virtual S VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, T data) 
 		{
 			return VisitChildren (memberReferenceExpression, data);
@@ -360,7 +378,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (objectCreateExpression, data);
 		}
 		
-		public virtual S VisitArrayObjectCreateExpression (ArrayObjectCreateExpression arrayObjectCreateExpression, T data) 
+		public virtual S VisitArrayCreateExpression (ArrayCreateExpression arrayObjectCreateExpression, T data) 
 		{
 			return VisitChildren (arrayObjectCreateExpression, data);
 		}
@@ -470,14 +488,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (argListExpression, data);
 		}
 		
-		public virtual S VisitComposedType (ComposedType composedType, T data)
+		public S VisitArrayInitializerExpression (ArrayInitializerExpression arrayInitializerExpression, T data)
 		{
-			return VisitChildren (composedType, data);
-		}
-		
-		public virtual S VisitDirectionExpression (DirectionExpression directionExpression, T data)
-		{
-			return VisitChildren (directionExpression, data);
+			return VisitChildren (arrayInitializerExpression, data);
 		}
 	}
 }

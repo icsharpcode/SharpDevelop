@@ -25,19 +25,24 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class BreakStatement : AbstractNode
+	public class BreakStatement : DomNode
 	{
-		public INode BreakKeyword {
+		public override NodeType NodeType {
 			get {
-				return GetChildByRole (Roles.Keyword);
+				return NodeType.Statement;
+			}
+		}
+
+		public CSharpTokenNode BreakKeyword {
+			get {
+				return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null;
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitBreakStatement (this, data);
 		}

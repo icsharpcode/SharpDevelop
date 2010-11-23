@@ -25,21 +25,26 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class LabelStatement : AbstractNode
+	public class LabelStatement : DomNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
 		public string Label {
 			get { return LabelIdentifier.Name; }
 		}
 
 		public Identifier LabelIdentifier {
-			get { return (Identifier)GetChildByRole (Roles.Identifier); }
+			get { return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitLabelStatement (this, data);
 		}

@@ -12,7 +12,6 @@
 // Copyright 2004-2008 Novell, Inc
 //
 using System;
-using System.Reflection;
 using System.Reflection.Emit;
 
 namespace Mono.CSharp {
@@ -361,7 +360,13 @@ namespace Mono.CSharp {
 			if (target_object.NodeType == System.Linq.Expressions.ExpressionType.Block)
 				return target_object;
 
-			var source_object = System.Linq.Expressions.Expression.Convert (source.MakeExpression (ctx), target_object.Type);
+			System.Linq.Expressions.UnaryExpression source_object;
+			if (ctx.HasSet (BuilderContext.Options.CheckedScope)) {
+				source_object = System.Linq.Expressions.Expression.ConvertChecked (source.MakeExpression (ctx), target_object.Type);
+			} else {
+				source_object = System.Linq.Expressions.Expression.Convert (source.MakeExpression (ctx), target_object.Type);
+			}
+
 			return System.Linq.Expressions.Expression.Assign (target_object, source_object);
 		}
 #endif
@@ -449,11 +454,8 @@ namespace Mono.CSharp {
 
 		protected override Expression ResolveConversions (ResolveContext ec)
 		{
-			source = Convert.ExplicitConversion (ec, source, target.Type, loc);
-			if (source != null)
-				return this;
-
-			return base.ResolveConversions (ec);
+			source = EmptyCast.Create (source, target.Type);
+			return this;
 		}
 	}
 
@@ -673,8 +675,18 @@ namespace Mono.CSharp {
 				Arguments args = new Arguments (targs.Count + 1);
 				args.AddRange (targs);
 				args.Add (new Argument (source));
+
+				var binder_flags = CSharpBinderFlags.ValueFromCompoundAssignment;
+
+				//
+				// Compound assignment does target conversion using additional method
+				// call, set checked context as the binary operation can overflow
+				//
+				if (ec.HasSet (ResolveContext.Options.CheckedScope))
+					binder_flags |= CSharpBinderFlags.CheckedContext;
+
 				if (target is DynamicMemberBinder) {
-					source = new DynamicMemberBinder (ma.Name, CSharpBinderFlags.ValueFromCompoundAssignment, args, loc).Resolve (ec);
+					source = new DynamicMemberBinder (ma.Name, binder_flags, args, loc).Resolve (ec);
 
 					// Handles possible event addition/subtraction
 					if (op == Binary.Operator.Addition || op == Binary.Operator.Subtraction) {
@@ -693,7 +705,7 @@ namespace Mono.CSharp {
 							(ExpressionStatement) source, (ExpressionStatement) invoke, loc).Resolve (ec);
 					}
 				} else {
-					source = new DynamicIndexBinder (CSharpBinderFlags.ValueFromCompoundAssignment, args, loc).Resolve (ec);
+					source = new DynamicIndexBinder (binder_flags, args, loc).Resolve (ec);
 				}
 
 				return source;

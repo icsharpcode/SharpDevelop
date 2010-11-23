@@ -26,30 +26,36 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
+
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class InvocationExpression : AbstractNode
+	public class InvocationExpression : DomNode
 	{
-		public INode Target {
-			get { return GetChildByRole (Roles.TargetExpression); }
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
+		public DomNode Target {
+			get { return GetChildByRole (Roles.TargetExpression) ?? DomNode.Null; }
 		}
 		
-		public IEnumerable<INode> Arguments {
-			get { return GetChildrenByRole (Roles.Argument).Cast<INode> (); }
+		public IEnumerable<DomNode> Arguments {
+			get { return GetChildrenByRole (Roles.Argument); }
 		}
 		
 		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitInvocationExpression (this, data);
 		}

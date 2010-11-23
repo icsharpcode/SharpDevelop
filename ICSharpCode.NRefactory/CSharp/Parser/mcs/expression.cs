@@ -70,8 +70,7 @@ namespace Mono.CSharp {
 
 		public override SLE.Expression MakeExpression (BuilderContext ctx)
 		{
-			var method = oper.GetMetaInfo () as MethodInfo;
-			return SLE.Expression.Call (method, Arguments.MakeExpression (arguments, ctx));
+			return SLE.Expression.Call ((MethodInfo) oper.GetMetaInfo (), Arguments.MakeExpression (arguments, ctx));
 		}
 	}
 
@@ -278,7 +277,7 @@ namespace Mono.CSharp {
 			throw new Exception ("Can not constant fold: " + Oper.ToString());
 		}
 		
-		protected Expression ResolveOperator (ResolveContext ec, Expression expr)
+		protected virtual Expression ResolveOperator (ResolveContext ec, Expression expr)
 		{
 			eclass = ExprClass.Value;
 
@@ -2868,7 +2867,65 @@ namespace Mono.CSharp {
 					return null;
 				}
 
-				Arguments args = new Arguments (2);
+				Arguments args;
+
+				//
+				// Special handling for logical boolean operators which require rhs not to be
+				// evaluated based on lhs value
+				//
+				if ((oper & Operator.LogicalMask) != 0) {
+					Expression cond_left, cond_right, expr;
+
+					args = new Arguments (2);
+
+					if (lt == InternalType.Dynamic) {
+						LocalVariable temp = LocalVariable.CreateCompilerGenerated (lt, ec.CurrentBlock, loc);
+
+						var cond_args = new Arguments (1);
+						cond_args.Add (new Argument (new SimpleAssign (temp.CreateReferenceExpression (ec, loc), left).Resolve (ec)));
+
+						//
+						// dynamic && bool => IsFalse (temp = left) ? temp : temp && right;
+						// dynamic || bool => IsTrue (temp = left) ? temp : temp || right;
+						//
+						left = temp.CreateReferenceExpression (ec, loc);
+						if (oper == Operator.LogicalAnd) {
+							expr = DynamicUnaryConversion.CreateIsFalse (cond_args, loc);
+							cond_left = left;
+						} else {
+							expr = DynamicUnaryConversion.CreateIsTrue (cond_args, loc);
+							cond_left = left;
+						}
+
+						args.Add (new Argument (left));
+						args.Add (new Argument (right));
+						cond_right = new DynamicExpressionStatement (this, args, loc);
+					} else {
+						LocalVariable temp = LocalVariable.CreateCompilerGenerated (TypeManager.bool_type, ec.CurrentBlock, loc);
+
+						args.Add (new Argument (temp.CreateReferenceExpression (ec, loc).Resolve (ec)));
+						args.Add (new Argument (right));
+						right = new DynamicExpressionStatement (this, args, loc);
+
+						//
+						// bool && dynamic => (temp = left) ? temp && right : temp;
+						// bool || dynamic => (temp = left) ? temp : temp || right;
+						//
+						if (oper == Operator.LogicalAnd) {
+							cond_left = right;
+							cond_right = temp.CreateReferenceExpression (ec, loc);
+						} else {
+							cond_left = temp.CreateReferenceExpression (ec, loc);
+							cond_right = right;
+						}
+
+						expr = new BooleanExpression (new SimpleAssign (temp.CreateReferenceExpression (ec, loc), left));
+					}
+
+					return new Conditional (expr, cond_left, cond_right, loc).Resolve (ec);
+				}
+
+				args = new Arguments (2);
 				args.Add (new Argument (left));
 				args.Add (new Argument (right));
 				return new DynamicExpressionStatement (this, args, loc).Resolve (ec);
@@ -3091,7 +3148,7 @@ namespace Mono.CSharp {
 				} else if (lenum) {
 					underlying_type = EnumSpec.GetUnderlyingType (ltype);
 					expr = Convert.ImplicitConversion (ec, right, ltype, right.Location);
-					if (expr == null) {
+					if (expr == null || expr is EnumConstant) {
 						expr = Convert.ImplicitConversion (ec, right, underlying_type, right.Location);
 						if (expr == null)
 							return null;
@@ -3491,6 +3548,9 @@ namespace Mono.CSharp {
 			var rlifted = (state & State.RightNullLifted) != 0;
 			if ((Oper & Operator.EqualityMask) != 0) {
 				var parameters = oper_method.Parameters;
+				// LAMESPEC: No idea why this is not allowed
+				if ((left is Nullable.Unwrap || right is Nullable.Unwrap) && parameters.Types [0] != parameters.Types [1])
+					return null;
 
 				// Binary operation was lifted but we have found a user operator
 				// which requires value-type argument, we downgrade ourself back to
@@ -4370,7 +4430,7 @@ namespace Mono.CSharp {
 			if (expr.Type == InternalType.Dynamic) {
 				Arguments args = new Arguments (1);
 				args.Add (new Argument (expr));
-				return new DynamicUnaryConversion ("IsTrue", args, loc).Resolve (ec);
+				return DynamicUnaryConversion.CreateIsTrue (args, loc).Resolve (ec);
 			}
 
 			type = TypeManager.bool_type;
@@ -4395,6 +4455,19 @@ namespace Mono.CSharp {
 			return visitor.Visit (this);
 		}
 	}
+
+	public class BooleanExpressionFalse : Unary
+	{
+		public BooleanExpressionFalse (Expression expr)
+			: base (Operator.LogicalNot, expr, expr.Location)
+		{
+		}
+
+		protected override Expression ResolveOperator (ResolveContext ec, Expression expr)
+		{
+			return GetOperatorFalse (ec, expr, loc) ?? base.ResolveOperator (ec, expr);
+		}
+	}
 	
 	/// <summary>
 	///   Implements the ternary conditional operator (?:)
@@ -4402,7 +4475,7 @@ namespace Mono.CSharp {
 	public class Conditional : Expression {
 		Expression expr, true_expr, false_expr;
 
-		public Conditional (BooleanExpression expr, Expression true_expr, Expression false_expr, Location loc)
+		public Conditional (Expression expr, Expression true_expr, Expression false_expr, Location loc)
 		{
 			this.expr = expr;
 			this.true_expr = true_expr;
@@ -4538,6 +4611,9 @@ namespace Mono.CSharp {
 
 		#region Abstract
 		public abstract HoistedVariable GetHoistedVariable (AnonymousExpression ae);
+
+		public abstract bool IsLockedByStatement { get; set; }
+
 		public abstract bool IsFixed { get; }
 		public abstract bool IsRef { get; }
 		public abstract string Name { get; }
@@ -4565,19 +4641,15 @@ namespace Mono.CSharp {
 			Variable.EmitAddressOf (ec);
 		}
 
-		public HoistedVariable GetHoistedVariable (ResolveContext rc)
+		public override Expression DoResolveLValue (ResolveContext rc, Expression right_side)
 		{
-			return GetHoistedVariable (rc.CurrentAnonymousMethod);
-		}
+			if (IsLockedByStatement) {
+				rc.Report.Warning (728, 2, loc,
+					"Possibly incorrect assignment to `{0}' which is the argument to a using or lock statement",
+					Name);
+			}
 
-		public HoistedVariable GetHoistedVariable (EmitContext ec)
-		{
-			return GetHoistedVariable (ec.CurrentAnonymousMethod);
-		}
-
-		public override string GetSignatureForError ()
-		{
-			return Name;
+			return this;
 		}
 
 		public override void Emit (EmitContext ec)
@@ -4676,6 +4748,22 @@ namespace Mono.CSharp {
 			}
 		}
 
+
+		public HoistedVariable GetHoistedVariable (ResolveContext rc)
+		{
+			return GetHoistedVariable (rc.CurrentAnonymousMethod);
+		}
+
+		public HoistedVariable GetHoistedVariable (EmitContext ec)
+		{
+			return GetHoistedVariable (ec.CurrentAnonymousMethod);
+		}
+
+		public override string GetSignatureForError ()
+		{
+			return Name;
+		}
+
 		public bool IsHoisted {
 			get { return GetHoistedVariable ((AnonymousExpression) null) != null; }
 		}
@@ -4703,11 +4791,24 @@ namespace Mono.CSharp {
 			return local_info.HoistedVariant;
 		}
 
+		#region Properties
+
 		//		
 		// A local variable is always fixed
 		//
 		public override bool IsFixed {
-			get { return true; }
+			get {
+				return true;
+			}
+		}
+
+		public override bool IsLockedByStatement {
+			get {
+				return local_info.IsLocked;
+			}
+			set {
+				local_info.IsLocked = value;
+			}
 		}
 
 		public override bool IsRef {
@@ -4717,6 +4818,8 @@ namespace Mono.CSharp {
 		public override string Name {
 			get { return local_info.Name; }
 		}
+
+		#endregion
 
 		public bool VerifyAssigned (ResolveContext ec)
 		{
@@ -4740,7 +4843,7 @@ namespace Mono.CSharp {
 			return CreateExpressionFactoryCall (ec, "Constant", arg);
 		}
 
-		Expression DoResolveBase (ResolveContext ec)
+		void DoResolveBase (ResolveContext ec)
 		{
 			VerifyAssigned (ec);
 
@@ -4760,14 +4863,14 @@ namespace Mono.CSharp {
 
 			eclass = ExprClass.Variable;
 			type = local_info.Type;
-			return this;
 		}
 
 		protected override Expression DoResolve (ResolveContext ec)
 		{
 			local_info.SetIsUsed ();
 
-			return DoResolveBase (ec);
+			DoResolveBase (ec);
+			return this;
 		}
 
 		public override Expression DoResolveLValue (ResolveContext ec, Expression right_side)
@@ -4795,7 +4898,9 @@ namespace Mono.CSharp {
 				VariableInfo.SetAssigned (ec);
 			}
 
-			return DoResolveBase (ec);
+			DoResolveBase (ec);
+
+			return base.DoResolveLValue (ec, right_side);
 		}
 
 		public override int GetHashCode ()
@@ -4847,6 +4952,15 @@ namespace Mono.CSharp {
 		}
 
 		#region Properties
+
+		public override bool IsLockedByStatement {
+			get {
+				return pi.IsLocked;
+			}
+			set	{
+				pi.IsLocked = value;
+			}
+		}
 
 		public override bool IsRef {
 			get { return (pi.Parameter.ModFlags & Parameter.Modifier.ISBYREF) != 0; }
@@ -5009,13 +5123,13 @@ namespace Mono.CSharp {
 			return this;
 		}
 
-		override public Expression DoResolveLValue (ResolveContext ec, Expression right_side)
+		public override Expression DoResolveLValue (ResolveContext ec, Expression right_side)
 		{
 			if (!DoResolveBase (ec))
 				return null;
 
 			SetAssigned (ec);
-			return this;
+			return base.DoResolveLValue (ec, right_side);
 		}
 
 		static public void EmitLdArg (EmitContext ec, int x)
@@ -5117,40 +5231,44 @@ namespace Mono.CSharp {
 				arguments.Resolve (ec, out dynamic_arg);
 
 			TypeSpec expr_type = member_expr.Type;
+			if (expr_type == InternalType.Dynamic)
+				return DoResolveDynamic (ec, member_expr);
+
 			mg = member_expr as MethodGroupExpr;
+			Expression invoke = null;
 
-			bool dynamic_member = expr_type == InternalType.Dynamic;
-
-			if (!dynamic_member) {
-				Expression invoke = null;
-
-				if (mg == null) {
-					if (expr_type != null && TypeManager.IsDelegateType (expr_type)) {
-						invoke = new DelegateInvocation (member_expr, arguments, loc);
-						invoke = invoke.Resolve (ec);
-						if (invoke == null || !dynamic_arg)
-							return invoke;
-					} else {
-						MemberExpr me = member_expr as MemberExpr;
-						if (me == null) {
-							member_expr.Error_UnexpectedKind (ec, ResolveFlags.MethodGroup, loc);
-							return null;
-						}
-
-						ec.Report.Error (1955, loc, "The member `{0}' cannot be used as method or delegate",
-								member_expr.GetSignatureForError ());
+			if (mg == null) {
+				if (expr_type != null && TypeManager.IsDelegateType (expr_type)) {
+					invoke = new DelegateInvocation (member_expr, arguments, loc);
+					invoke = invoke.Resolve (ec);
+					if (invoke == null || !dynamic_arg)
+						return invoke;
+				} else {
+					if (member_expr is RuntimeValueExpression) {
+						ec.Report.Error (Report.RuntimeErrorId, loc, "Cannot invoke a non-delegate type `{0}'",
+							member_expr.Type.GetSignatureForError ()); ;
 						return null;
 					}
-				}
 
-				if (invoke == null) {
-					mg = DoResolveOverload (ec);
-					if (mg == null)
+					MemberExpr me = member_expr as MemberExpr;
+					if (me == null) {
+						member_expr.Error_UnexpectedKind (ec, ResolveFlags.MethodGroup, loc);
 						return null;
+					}
+
+					ec.Report.Error (1955, loc, "The member `{0}' cannot be used as method or delegate",
+							member_expr.GetSignatureForError ());
+					return null;
 				}
 			}
 
-			if (dynamic_arg || dynamic_member)
+			if (invoke == null) {
+				mg = DoResolveOverload (ec);
+				if (mg == null)
+					return null;
+			}
+
+			if (dynamic_arg)
 				return DoResolveDynamic (ec, member_expr);
 
 			var method = mg.BestCandidate;
@@ -5166,14 +5284,11 @@ namespace Mono.CSharp {
 
 			IsSpecialMethodInvocation (ec, method, loc);
 			
-			if (mg.InstanceExpression != null)
-				mg.InstanceExpression.CheckMarshalByRefAccess (ec);
-
 			eclass = ExprClass.Value;
 			return this;
 		}
 
-		Expression DoResolveDynamic (ResolveContext ec, Expression memberExpr)
+		protected virtual Expression DoResolveDynamic (ResolveContext ec, Expression memberExpr)
 		{
 			Arguments args;
 			DynamicMemberBinder dmb = memberExpr as DynamicMemberBinder;
@@ -5208,7 +5323,12 @@ namespace Mono.CSharp {
 					if (left_type != null) {
 						args.Insert (0, new Argument (new TypeOf (left_type, loc).Resolve (ec), Argument.AType.DynamicTypeName));
 					} else {
-						args.Insert (0, new Argument (ma.LeftExpression.Resolve (ec)));
+						//
+						// Any value type has to be pass as by-ref to get back the same
+						// instance on which the member was called
+						//
+						var mod = TypeManager.IsValueType (ma.LeftExpression.Type) ? Argument.AType.Ref : Argument.AType.None;
+						args.Insert (0, new Argument (ma.LeftExpression.Resolve (ec), mod));
 					}
 				} else {	// is SimpleName
 					if (ec.IsStatic) {
@@ -5614,7 +5734,11 @@ namespace Mono.CSharp {
 
 			var tparam = type as TypeParameterSpec;
 			if (tparam != null) {
-				if (!tparam.HasSpecialConstructor && !tparam.HasSpecialStruct) {
+				//
+				// Check whether the type of type parameter can be constructed. BaseType can be a struct for method overrides
+				// where type parameter constraint is inflated to struct
+				//
+				if ((tparam.SpecialConstraint & (SpecialConstraint.Struct | SpecialConstraint.Constructor)) == 0 && !tparam.BaseType.IsStruct) {
 					ec.Report.Error (304, loc,
 						"Cannot create an instance of the variable type `{0}' because it does not have the new() constraint",
 						TypeManager.CSharpName (type));
@@ -5958,6 +6082,11 @@ namespace Mono.CSharp {
 		public override void Emit (EmitContext ec)
 		{
 			throw new InternalErrorException ("Missing Resolve call");
+		}
+		
+		public override object Accept (StructuralVisitor visitor)
+		{
+			return visitor.Visit (this);
 		}
 	}
 
@@ -6476,7 +6605,7 @@ namespace Mono.CSharp {
 			
 			byte [] data = MakeByteBlob ();
 
-			fb = RootContext.MakeStaticData (data);
+			fb = ec.CurrentTypeDefinition.Module.Module.MakeStaticData (data);
 
 			ec.Emit (OpCodes.Dup);
 			ec.Emit (OpCodes.Ldtoken, fb);
@@ -6705,7 +6834,7 @@ namespace Mono.CSharp {
 		}
 	}	
 	
-	public sealed class CompilerGeneratedThis : This
+	sealed class CompilerGeneratedThis : This
 	{
 		public static This Instance = new CompilerGeneratedThis ();
 
@@ -6774,6 +6903,14 @@ namespace Mono.CSharp {
 			get { return "this"; }
 		}
 
+		public override bool IsLockedByStatement {
+			get {
+				return false;
+			}
+			set {
+			}
+		}
+
 		public override bool IsRef {
 			get { return type.IsStruct; }
 		}
@@ -6791,6 +6928,14 @@ namespace Mono.CSharp {
 		}
 
 		#endregion
+
+		public void CheckStructThisDefiniteAssignment (ResolveContext rc)
+		{
+			if (variable_info != null && !variable_info.IsAssigned (rc)) {
+				rc.Report.Error (188, loc,
+					"The `this' object cannot be used before all of its fields are assigned to");
+			}
+		}
 
 		protected virtual void Error_ThisNotAvailable (ResolveContext ec)
 		{
@@ -6838,8 +6983,12 @@ namespace Mono.CSharp {
 
 		public virtual void ResolveBase (ResolveContext ec)
 		{
+			eclass = ExprClass.Variable;
+			type = ec.CurrentType;
+
 			if (!IsThisAvailable (ec, false)) {
 				Error_ThisNotAvailable (ec);
+				return;
 			}
 
 			var block = ec.CurrentBlock;
@@ -6851,22 +7000,6 @@ namespace Mono.CSharp {
 				if (am != null && ec.IsVariableCapturingRequired) {
 					am.SetHasThisAccess ();
 				}
-			}
-
-			eclass = ExprClass.Variable;
-			type = ec.CurrentType;
-		}
-
-		//
-		// Called from Invocation to check if the invocation is correct
-		//
-		public override void CheckMarshalByRefAccess (ResolveContext ec)
-		{
-			if ((variable_info != null) && !(TypeManager.IsStruct (type) && ec.OmitStructFlowAnalysis) &&
-			    !variable_info.IsAssigned (ec)) {
-				ec.Report.Error (188, loc,
-					"The `this' object cannot be used before all of its fields are assigned to");
-				variable_info.SetAssigned (ec);
 			}
 		}
 
@@ -6883,6 +7016,11 @@ namespace Mono.CSharp {
 		protected override Expression DoResolve (ResolveContext ec)
 		{
 			ResolveBase (ec);
+
+			if (variable_info != null && type.IsStruct) {
+				CheckStructThisDefiniteAssignment (ec);
+			}
+
 			return this;
 		}
 
@@ -6893,7 +7031,7 @@ namespace Mono.CSharp {
 			if (variable_info != null)
 				variable_info.SetAssigned (ec);
 
-			if (ec.CurrentType.IsClass){
+			if (type.IsClass){
 				if (right_side == EmptyExpression.UnaryAddress)
 					ec.Report.Error (459, loc, "Cannot take the address of `this' because it is read-only");
 				else if (right_side == EmptyExpression.OutAccess.Instance)
@@ -7084,7 +7222,15 @@ namespace Mono.CSharp {
 
 		protected override Expression DoResolve (ResolveContext ec)
 		{
-			TypeExpr texpr = QueriedType.ResolveAsTypeTerminal (ec, false);
+			TypeExpr texpr;
+
+			//
+			// Pointer types are allowed without explicit unsafe, they are just tokens
+			//
+			using (ec.Set (ResolveContext.Options.UnsafeScope)) {
+				texpr = QueriedType.ResolveAsTypeTerminal (ec, false);
+			}
+
 			if (texpr == null)
 				return null;
 
@@ -7092,8 +7238,6 @@ namespace Mono.CSharp {
 
 			if (typearg == TypeManager.void_type && !(QueriedType is TypeExpression)) {
 				ec.Report.Error (673, loc, "System.Void cannot be used from C#. Use typeof (void) to get the void type object");
-			} else if (typearg.IsPointer && !ec.IsUnsafe){
-				UnsafeError (ec, loc);
 			} else if (texpr is DynamicTypeExpr) {
 				ec.Report.Error (1962, QueriedType.Location,
 					"The typeof operator cannot be used on the dynamic type");
@@ -7474,7 +7618,7 @@ namespace Mono.CSharp {
 		public override FullNamedExpression ResolveAsTypeStep (IMemberContext ec, bool silent)
 		{
 			if (alias == GlobalAlias) {
-				expr = ec.Compiler.GlobalRootNamespace;
+				expr = ec.CurrentMemberDefinition.Module.GlobalRootNamespace;
 				return base.ResolveAsTypeStep (ec, silent);
 			}
 
@@ -7623,7 +7767,7 @@ namespace Mono.CSharp {
 							expr = expr.Resolve (rc);
 						}
 					} else if (expr is TypeParameterExpr) {
-						expr.Error_UnexpectedKind (rc, flags, expr.Location);
+						expr.Error_UnexpectedKind (rc, flags, sn.Location);
 						expr = null;
 					}
 				} else {
@@ -7654,7 +7798,7 @@ namespace Mono.CSharp {
 			if (expr_type == InternalType.Dynamic) {
 				me = expr as MemberExpr;
 				if (me != null)
-					me.ResolveInstanceExpression (rc);
+					me.ResolveInstanceExpression (rc, null);
 
 				Arguments args = new Arguments (1);
 				args.Add (new Argument (expr));
@@ -7694,7 +7838,7 @@ namespace Mono.CSharp {
 								emg.SetTypeArguments (rc, targs);
 							}
 
-							// TODO: Should it really skip the checks bellow
+							// TODO: it should really skip the checks bellow
 							return emg.Resolve (rc);
 						}
 					}
@@ -7832,7 +7976,7 @@ namespace Mono.CSharp {
 					break;
 				}
 
-				if (nested.IsAccessible (rc.CurrentType ?? InternalType.FakeInternalType))
+				if (nested.IsAccessible (rc.CurrentType))
 					break;
 
 				// Keep looking after inaccessible candidate
@@ -7875,6 +8019,7 @@ namespace Mono.CSharp {
 		protected override void Error_TypeDoesNotContainDefinition (ResolveContext ec, TypeSpec type, string name)
 		{
 			if (RootContext.Version > LanguageVersion.ISO_2 && !ec.Compiler.IsRuntimeBinder && MethodGroupExpr.IsExtensionMethodArgument (expr)) {
+				ec.Report.SymbolRelatedToPreviousError (type);
 				ec.Report.Error (1061, loc,
 					"Type `{0}' does not contain a definition for `{1}' and no extension method `{1}' of type `{0}' could be found (are you missing a using directive or an assembly reference?)",
 					type.GetSignatureForError (), name);
@@ -8343,9 +8488,7 @@ namespace Mono.CSharp {
 		public SLE.Expression MakeAssignExpression (BuilderContext ctx, Expression source)
 		{
 #if NET_4_0
-			return SLE.Expression.ArrayAccess (
-				ea.Expr.MakeExpression (ctx),
-				Arguments.MakeExpression (ea.Arguments, ctx));
+			return SLE.Expression.ArrayAccess (ea.Expr.MakeExpression (ctx), MakeExpressionArguments (ctx));
 #else
 			throw new NotImplementedException ();
 #endif
@@ -8353,9 +8496,14 @@ namespace Mono.CSharp {
 
 		public override SLE.Expression MakeExpression (BuilderContext ctx)
 		{
-			return SLE.Expression.ArrayIndex (
-				ea.Expr.MakeExpression (ctx),
-				Arguments.MakeExpression (ea.Arguments, ctx));
+			return SLE.Expression.ArrayIndex (ea.Expr.MakeExpression (ctx), MakeExpressionArguments (ctx));
+		}
+
+		SLE.Expression[] MakeExpressionArguments (BuilderContext ctx)
+		{
+			using (ctx.With (BuilderContext.Options.AllCheckStateFlags, true)) {
+				return Arguments.MakeExpression (ea.Arguments, ctx);
+			}
 		}
 	}
 
@@ -8530,7 +8678,7 @@ namespace Mono.CSharp {
 				return new DynamicIndexBinder (args, loc);
 			}
 
-			ResolveInstanceExpression (rc);
+			ResolveInstanceExpression (rc, right_side);
 			CheckProtectedMemberAccess (rc, best_candidate);
 			return this;
 		}
@@ -9647,7 +9795,7 @@ namespace Mono.CSharp {
 
 		AnonymousTypeClass CreateAnonymousType (ResolveContext ec, IList<AnonymousTypeParameter> parameters)
 		{
-			AnonymousTypeClass type = parent.Module.Compiled.GetAnonymousType (parameters);
+			AnonymousTypeClass type = parent.Module.GetAnonymousType (parameters);
 			if (type != null)
 				return type;
 
@@ -9663,7 +9811,7 @@ namespace Mono.CSharp {
 			if (ec.Report.Errors == 0)
 				type.CloseType ();
 
-			parent.Module.Compiled.AddAnonymousType (type);
+			parent.Module.AddAnonymousType (type);
 			return type;
 		}
 

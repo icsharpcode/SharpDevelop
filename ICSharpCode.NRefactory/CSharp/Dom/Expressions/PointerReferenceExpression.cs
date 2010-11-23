@@ -26,7 +26,6 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
@@ -36,8 +35,14 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class PointerReferenceExpression : MemberReferenceExpression
 	{
-		public INode Expression {
-			get { return GetChildByRole (Roles.TargetExpression); }
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
+		public DomNode Expression {
+			get { return GetChildByRole (Roles.TargetExpression) ?? DomNode.Null; }
 		}
 		
 		public string Dim {
@@ -45,7 +50,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitPointerReferenceExpression (this, data);
 		}

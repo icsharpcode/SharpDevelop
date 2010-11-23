@@ -25,32 +25,53 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class BlockStatement : AbstractNode
+	public class BlockStatement : DomNode
 	{
+		public static readonly new BlockStatement Null = new NullBlockStatement ();
+		class NullBlockStatement : BlockStatement
+		{
+			public override bool IsNull {
+				get {
+					return true;
+				}
+			}
+			
+			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+			{
+				return default (S);
+			}
+		}
+		
+		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
 		public CSharpTokenNode LBrace {
 			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBrace);
+				return (CSharpTokenNode)GetChildByRole (Roles.LBrace) ?? CSharpTokenNode.Null;
 			}
 		}
 		
 		public CSharpTokenNode RBrace {
 			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBrace);
+				return (CSharpTokenNode)GetChildByRole (Roles.RBrace) ?? CSharpTokenNode.Null;
 			}
 		}
 		
-		public IEnumerable<INode> Statements {
+		public IEnumerable<DomNode> Statements {
 			get {
 				return GetChildrenByRole (Roles.Statement);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitBlockStatement (this, data);
 		}

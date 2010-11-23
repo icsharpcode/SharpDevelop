@@ -1,4 +1,4 @@
-﻿// 
+// 
 // ConstructorDeclaration.cs
 //  
 // Author:
@@ -26,7 +26,6 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
@@ -35,25 +34,33 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		public BlockStatement Body {
 			get {
-				return (BlockStatement)GetChildByRole (Roles.Body);
+				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
 			}
+		}
+		
+		public IEnumerable<ParameterDeclaration> Parameters { 
+			get {
+				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration> ();
+			}
+		}
+		
+		public CSharpTokenNode LPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
+		}
+		
+		public CSharpTokenNode RPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public ConstructorInitializer Initializer {
 			get {
-				return (ConstructorInitializer)base.GetChildByRole (Roles.Initializer);
+				return (ConstructorInitializer)base.GetChildByRole (Roles.Initializer) ?? ConstructorInitializer.Null;
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitConstructorDeclaration (this, data);
-		}
-		
-		public IEnumerable<ParameterDeclaration> Parameters {
-			get {
-				return GetChildrenByRole (Roles.Argument).Cast<ParameterDeclaration>();
-			}
 		}
 	}
 	
@@ -62,20 +69,47 @@ namespace ICSharpCode.NRefactory.CSharp
 		This
 	}
 	
-	public class ConstructorInitializer : AbstractNode
+	public class ConstructorInitializer : DomNode
 	{
+		public static readonly new ConstructorInitializer Null = new NullConstructorInitializer ();
+		class NullConstructorInitializer : ConstructorInitializer
+		{
+			public override NodeType NodeType {
+				get {
+					return NodeType.Unknown;
+				}
+			}
+			
+			public override bool IsNull {
+				get {
+					return true;
+				}
+			}
+			
+			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+			{
+				return default (S);
+			}
+		}
+		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public ConstructorInitializerType ConstructorInitializerType {
 			get;
 			set;
 		}
 		
-		public IEnumerable<INode> Arguments { 
+		public IEnumerable<DomNode> Arguments { 
 			get {
 				return base.GetChildrenByRole (Roles.Argument);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitConstructorInitializer (this, data);
 		}

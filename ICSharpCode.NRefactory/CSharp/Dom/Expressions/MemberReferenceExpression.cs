@@ -1,4 +1,4 @@
-﻿// 
+// 
 // MemberReferenceExpression.cs
 //  
 // Author:
@@ -26,34 +26,39 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class MemberReferenceExpression : AbstractNode
+	public class MemberReferenceExpression : DomNode
 	{
-		public INode Target {
-			get { return GetChildByRole (Roles.TargetExpression); }
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
+		public DomNode Target {
+			get { return GetChildByRole (Roles.TargetExpression) ?? DomNode.Null; }
 		}
 		
 		public Identifier Identifier {
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
 			}
 		}
-		
+
 		public string MemberName {
 			get {
 				return this.Identifier.Name;
 			}
 		}
 		
-		public IEnumerable<INode> TypeArguments {
-			get { return GetChildrenByRole (Roles.TypeArgument).Cast<INode> (); }
+		public IEnumerable<DomNode> TypeArguments {
+			get { return GetChildrenByRole (Roles.TypeArgument); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitMemberReferenceExpression (this, data);
 		}

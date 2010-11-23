@@ -1,4 +1,4 @@
-﻿// 
+// 
 // AnonymousMethodExpression.cs
 //  
 // Author:
@@ -30,32 +30,42 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class AnonymousMethodExpression : AbstractNode
+	public class AnonymousMethodExpression : DomNode
 	{
-		public IEnumerable<ParameterDeclaration> Arguments { 
+		public override NodeType NodeType {
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration>();
+				return NodeType.Expression;
 			}
+		}
+		
+		// used to make a difference between delegate {} and delegate () {} 
+		public bool HasParameterList {
+			get {
+				return GetChildByRole (Roles.LPar) != null;
+			}
+		}
+		
+		public CSharpTokenNode LPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
+		}
+		
+		public CSharpTokenNode RPar {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public IEnumerable<ParameterDeclaration> Parameters { 
-			// TODO: Arguments or Parameters ???
 			get {
-				return this.Arguments;
+				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration> ();
 			}
-		}
-		
-		public bool HasParameterList {
-			get { return GetChildByRole (Roles.LPar) != null; }
 		}
 		
 		public BlockStatement Body {
 			get {
-				return (BlockStatement)GetChildByRole (Roles.Body);
+				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitAnonymousMethodExpression (this, data);
 		}

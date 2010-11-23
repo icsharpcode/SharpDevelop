@@ -1,4 +1,4 @@
-﻿// 
+// 
 // AttributeSection.cs
 //  
 // Author:
@@ -26,14 +26,19 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class AttributeSection : AbstractNode
+	public class AttributeSection : DomNode
 	{
 		const int TargetRole = 101;
+		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
 		
 		public AttributeTarget AttributeTarget {
 			get;
@@ -41,14 +46,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 
 		public Identifier TargetIdentifier {
-			get { return (Identifier)GetChildByRole (TargetRole); }
+			get { return (Identifier)GetChildByRole (TargetRole) ?? Identifier.Null; }
 		}
 
 		public IEnumerable<Attribute> Attributes {
 			get { return base.GetChildrenByRole (Roles.Attribute).Cast<Attribute> (); }
 		}
 
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitAttributeSection (this, data);
 		}

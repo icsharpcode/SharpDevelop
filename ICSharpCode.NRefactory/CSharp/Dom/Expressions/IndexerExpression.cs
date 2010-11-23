@@ -26,34 +26,39 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class IndexerExpression : AbstractNode
+	public class IndexerExpression : DomNode
 	{
-		public INode Target {
-			get { return (INode)GetChildByRole (Roles.TargetExpression); }
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
+		public DomNode Target {
+			get { return GetChildByRole (Roles.TargetExpression); }
 		}
 		
 		public CSharpTokenNode LBracket {
 			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBracket);
+				return (CSharpTokenNode)GetChildByRole (Roles.LBracket) ?? CSharpTokenNode.Null;
 			}
 		}
 		
 		public CSharpTokenNode RBracket {
 			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBracket);
+				return (CSharpTokenNode)GetChildByRole (Roles.RBracket) ?? CSharpTokenNode.Null;
 			}
 		}
 		
-		public IEnumerable<INode> Arguments {
+		public IEnumerable<DomNode> Arguments {
 			get { return GetChildrenByRole (Roles.Argument); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitIndexerExpression (this, data);
 		}

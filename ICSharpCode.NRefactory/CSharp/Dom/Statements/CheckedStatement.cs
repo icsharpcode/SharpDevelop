@@ -1,4 +1,4 @@
-﻿// 
+// 
 // CheckedStatement.cs
 //  
 // Author:
@@ -25,17 +25,22 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class CheckedStatement : AbstractNode
+	public class CheckedStatement : DomNode
 	{
-		public BlockStatement Block {
-			get { return (BlockStatement)GetChildByRole (Roles.Body); }
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public BlockStatement Block {
+			get { return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null; }
+		}
+		
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitCheckedStatement (this, data);
 		}

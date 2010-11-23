@@ -1,4 +1,4 @@
-﻿// 
+// 
 // UnaryOperatorExpression.cs
 //  
 // Author:
@@ -25,24 +25,29 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class UnaryOperatorExpression : AbstractNode
+	public class UnaryOperatorExpression : DomNode
 	{
 		public const int Operator = 100;
 		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public UnaryOperatorType UnaryOperatorType {
 			get;
 			set;
 		}
 		
-		public INode Expression {
-			get { return GetChildByRole (Roles.Expression); }
+		public DomNode Expression {
+			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitUnaryOperatorExpression (this, data);
 		}
@@ -68,7 +73,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		PostDecrement,
 		/// <summary>Dereferencing (*a)</summary>
 		Dereference,
-		/// <summary>Get address (&amp;a)</summary>
+		/// <summary>Get address (&a)</summary>
 		AddressOf
 	}
 	

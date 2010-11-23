@@ -25,13 +25,18 @@
 // THE SOFTWARE.
 
 using System;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class NullReferenceExpression : AbstractNode
+	public class NullReferenceExpression : DomNode
 	{
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitNullReferenceExpression (this, data);
 		}

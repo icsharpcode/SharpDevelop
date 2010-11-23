@@ -1,4 +1,4 @@
-﻿// 
+// 
 // AbstractMemberBase.cs
 //  
 // Author:
@@ -26,14 +26,19 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class AbstractMemberBase : AbstractNode
+	public abstract class AbstractMemberBase : DomNode
 	{
-		public IEnumerable<CSharpModifierToken> ModifierTokens { 
+		public override NodeType NodeType {
+			get {
+				return NodeType.Member;
+			}
+		}
+		
+		public IEnumerable<CSharpModifierToken> ModifierTokens {
 			get {
 				return base.GetChildrenByRole (Roles.Modifier).Cast <CSharpModifierToken>();
 			}

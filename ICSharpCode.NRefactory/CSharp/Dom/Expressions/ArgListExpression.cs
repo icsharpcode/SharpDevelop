@@ -24,7 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using ICSharpCode.NRefactory.TypeSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,30 +33,36 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// Represents the undocumented __arglist keyword.
 	/// </summary>
-	public class ArgListExpression : AbstractNode
+	public class ArgListExpression : DomNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Expression;
+			}
+		}
+
 		public bool IsAccess { // access is __arglist, otherwise it's __arlist (a1, a2, ..., an)
 			get;
 			set;
 		}
 		
 		public CSharpTokenNode Keyword {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
 		}
 		
 		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
+			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
 		}
 		
-		public IEnumerable<INode> Arguments {
-			get { return GetChildrenByRole (Roles.Argument).Cast<INode> (); }
+		public IEnumerable<DomNode> Arguments {
+			get { return GetChildrenByRole (Roles.Argument); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitArgListExpression (this, data);
 		}

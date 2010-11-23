@@ -1,10 +1,10 @@
 // 
-// AbstractMember.cs
+// PropertyDeclaration.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,35 +28,37 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class AbstractMember : AbstractMemberBase
+	public class Accessor : AbstractMember
 	{
-		const int PrivateImplementationTypeRole = 100;
-		
-		public DomNode ReturnType {
-			get {
-				return GetChildByRole (Roles.ReturnType) ?? DomNode.Null;
+		public static readonly new Accessor Null = new NullAccessor ();
+		class NullAccessor : Accessor
+		{
+			public override bool IsNull {
+				get {
+					return true;
+				}
+			}
+			
+			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+			{
+				return default (S);
 			}
 		}
 		
-		/// <summary>
-		/// Only supported on members that can be declared in an interface.
-		/// </summary>
-		public DomNode PrivateImplementationType {
+		public DomLocation Location {
+			get;
+			set;
+		}
+		
+		public BlockStatement Body {
 			get {
-				return GetChildByRole (PrivateImplementationTypeRole) ?? DomNode.Null;
+				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
 			}
 		}
 		
-		public Identifier NameIdentifier {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
-			}
-		}
-		
-		public string Name {
-			get {
-				return NameIdentifier.Name;
-			}
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		{
+			return visitor.VisitAccessorDeclaration (this, data);
 		}
 	}
 }

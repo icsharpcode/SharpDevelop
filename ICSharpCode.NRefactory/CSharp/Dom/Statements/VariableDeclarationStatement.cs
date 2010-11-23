@@ -1,6 +1,6 @@
-﻿// 
+// 
 // VariableDeclarationStatement.cs
-//
+//  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -26,15 +26,22 @@
 
 using System;
 using System.Linq;
-using ICSharpCode.NRefactory.TypeSystem;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class VariableDeclarationStatement : AbstractNode
+	public class VariableDeclarationStatement : DomNode
 	{
-		public IEnumerable<INode> ModifierTokens {
-			get { return base.GetChildrenByRole (Roles.Modifier); }
+		public override NodeType NodeType {
+			get {
+				return NodeType.Statement;
+			}
+		}
+
+		public IEnumerable<CSharpModifierToken> ModifierTokens {
+			get {
+				return base.GetChildrenByRole (Roles.Modifier).Cast <CSharpModifierToken>();
+			}
 		}
 		
 		public Modifiers Modifiers {
@@ -47,15 +54,19 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public INode ReturnType {
-			get { return (INode)GetChildByRole (Roles.ReturnType); }
+		public DomNode ReturnType {
+			get { return GetChildByRole (Roles.ReturnType) ?? DomNode.Null; }
 		}
 		
 		public IEnumerable<VariableInitializer> Variables {
 			get { return base.GetChildrenByRole (Roles.Initializer).Cast<VariableInitializer> (); }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public CSharpTokenNode Semicolon {
+			get { return (CSharpTokenNode)GetChildByRole (Roles.Semicolon) ?? CSharpTokenNode.Null; }
+		}
+		
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitVariableDeclarationStatement (this, data);
 		}

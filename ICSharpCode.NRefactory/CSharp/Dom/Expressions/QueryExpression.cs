@@ -27,18 +27,23 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class QueryExpressionFromClause : AbstractNode
+	public class QueryExpressionFromClause : DomNode
 	{
 		public const int FromKeywordRole = 100;
 		public const int InKeywordRole = 101;
 		
-		public INode Type {
+		public override NodeType NodeType {
 			get {
-				return (INode)GetChildByRole (Roles.ReturnType);
+				return NodeType.Expression;
+			}
+		}
+
+		public DomNode Type {
+			get {
+				return GetChildByRole (Roles.ReturnType) ?? DomNode.Null;
 			}
 		}
 		
@@ -50,15 +55,15 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public Identifier QueryIdentifier {
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? ICSharpCode.NRefactory.CSharp.Identifier.Null;
 			}
 		}
 		
-		public INode Expression {
-			get { return GetChildByRole (Roles.Expression); }
+		public DomNode Expression {
+			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionFromClause (this, data);
 		}
@@ -93,13 +98,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		
-		public INode OnExpression {
+		public DomNode OnExpression {
 			get {
 				return GetChildByRole (OnExpressionRole);
 			}
 		}
 		
-		public INode EqualsExpression {
+		public DomNode EqualsExpression {
 			get {
 				return GetChildByRole (EqualsExpressionRole);
 			}
@@ -117,21 +122,26 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public INode InExpression {
+		public DomNode InExpression {
 			get {
-				return (INode)GetChildByRole (Roles.Expression);
+				return GetChildByRole (Roles.Expression);
 			}
 		}
-
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionJoinClause (this, data);
 		}
 	}
 	
-	public class QueryExpressionGroupClause : AbstractNode
+	public class QueryExpressionGroupClause : DomNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public const int ProjectionExpressionRole = 100;
 		public const int GroupByExpressionRole    = 101;
 		
@@ -146,26 +156,32 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return (CSharpTokenNode)GetChildByRole (ByKeywordRole); }
 		}
 		
-		public INode Projection {
+		public DomNode Projection {
 			get {
 				return GetChildByRole (ProjectionExpressionRole);
 			}
 		}
 		
-		public INode GroupBy {
+		public DomNode GroupBy {
 			get {
 				return GetChildByRole (GroupByExpressionRole);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionGroupClause (this, data);
 		}
 	}
 	
-	public class QueryExpressionLetClause : AbstractNode 
+	public class QueryExpressionLetClause : DomNode 
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public string Identifier {
 			get {
 				return QueryIdentifier.Name;
@@ -178,7 +194,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public INode Expression {
+		public DomNode Expression {
 			get {
 				return GetChildByRole (Roles.Expression);
 			}
@@ -188,28 +204,34 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
-		public INode Assign {
+		public DomNode Assign {
 			get {
-				return (INode)GetChildByRole (Roles.Assign);
+				return GetChildByRole (Roles.Assign);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionLetClause (this, data);
 		}
 	}
 	
-	public class QueryExpressionOrderClause : AbstractNode
+	public class QueryExpressionOrderClause : DomNode
 	{
 		public const int OrderingRole = 100;
+		
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
 		
 		public bool OrderAscending {
 			get;
 			set;
 		}
 		
-		public INode Expression {
+		public DomNode Expression {
 			get {
 				return GetChildByRole (Roles.Expression);
 			}
@@ -219,27 +241,32 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
-		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionOrderClause (this, data);
 		}
 	}
 	
-	public class QueryExpressionOrdering : AbstractNode
+	public class QueryExpressionOrdering : DomNode
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public QueryExpressionOrderingDirection Direction {
 			get;
 			set;
 		}
 		
-		public INode Criteria {
+		public DomNode Criteria {
 			get {
 				return GetChildByRole (Roles.Expression);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionOrdering (this, data);
 		}
@@ -252,40 +279,53 @@ namespace ICSharpCode.NRefactory.CSharp
 		Descending
 	}
 	
-	public class QueryExpressionSelectClause : AbstractNode 
+	public class QueryExpressionSelectClause : DomNode 
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public CSharpTokenNode SelectKeyword {
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
-		public INode Projection {
+		public DomNode Projection {
 			get {
-				return (INode)GetChildByRole (Roles.Expression);
+				return GetChildByRole (Roles.Expression);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionSelectClause (this, data);
 		}
 	}
 	
-	public class QueryExpressionWhereClause : AbstractNode 
+	public class QueryExpressionWhereClause : DomNode 
 	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
 		public CSharpTokenNode WhereKeyword {
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
-		public INode Condition {
+		public DomNode Condition {
 			get {
-				return (INode)GetChildByRole (Roles.Condition);
+				return GetChildByRole (Roles.Condition);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (IDomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionWhereClause (this, data);
 		}
+		
 	}
 	
 }
