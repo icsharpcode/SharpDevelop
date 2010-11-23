@@ -11,7 +11,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 	/// <summary>
 	/// Base class for known layers.
 	/// </summary>
-	public class Layer : Canvas
+	class Layer : Canvas
 	{
 		/// <summary>
 		/// Text view.

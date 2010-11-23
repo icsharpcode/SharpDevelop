@@ -5,35 +5,33 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop.Refactoring;
-using Services.Debugger.Tooltips;
 
 namespace Debugger.AddIn.Tooltips
 {
 	/// <summary>
 	/// Pin layer class. This class handles the pinning and unpinning operations.
 	/// </summary>
-	public class PinLayer : Layer
+	public class PinLayer : Canvas
 	{
-		private Canvas pinningSurface;
-		
 		private double verticalOffset = 0;
+		private double horizontalOffset = 0;
+		
+		private TextView textView;
 		
 		/// <summary>
 		/// PinLayer constructor.
 		/// </summary>
 		/// <param name="textArea">Text area for this layer.</param>
-		public PinLayer(TextArea textArea) : base(textArea.TextView, KnownLayer.DataPins)
+		public PinLayer(TextArea textArea)
 		{
-			pinningSurface = new Canvas();
-			this.Children.Add(pinningSurface);
-			textView.VisualLinesChanged += new EventHandler(textView_VisualLinesChanged);
+			textView = textArea.TextView;
+			textView.VisualLinesChanged += textView_VisualLinesChanged;
 		}
 		
 		/// <summary>
@@ -62,12 +60,12 @@ namespace Debugger.AddIn.Tooltips
 				element.Location = new Point {
 					X = element.Mark.PinPosition.Value.X - textView.HorizontalOffset,
 					Y = element.Mark.PinPosition.Value.Y - textView.VerticalOffset
-				};				
+				};
 				
 				Canvas.SetTop(currentThumb, element.Mark.PinPosition.Value.Y);
 				Canvas.SetLeft(currentThumb, element.Mark.PinPosition.Value.X);
 			}
-				
+			
 			currentThumb.Style = element.TryFindResource("PinThumbStyle") as Style;
 			currentThumb.ApplyTemplate();
 			currentThumb.DragDelta += onDragDelta;
@@ -76,7 +74,7 @@ namespace Debugger.AddIn.Tooltips
 			
 			var container = TryFindChild<StackPanel>(currentThumb);
 			container.Children.Add(element);
-			pinningSurface.Children.Add(currentThumb);
+			this.Children.Add(currentThumb);
 		}
 		
 		/// <summary>
@@ -88,11 +86,11 @@ namespace Debugger.AddIn.Tooltips
 			if (element == null)
 				throw new NullReferenceException("Element is null!");
 			
-			foreach (var thumb in this.pinningSurface.Children) {
+			foreach (var thumb in this.Children) {
 				PinDebuggerControl pinControl = TryFindChild<PinDebuggerControl>((DependencyObject)thumb);
 				if (pinControl != null && pinControl == element)
 				{
-					pinningSurface.Children.Remove((UIElement)thumb);
+					this.Children.Remove((UIElement)thumb);
 					element.Close();
 					break;
 				}
@@ -101,14 +99,14 @@ namespace Debugger.AddIn.Tooltips
 		
 		void textView_VisualLinesChanged(object sender, EventArgs e)
 		{
-			foreach (var ctrl in this.pinningSurface.Children) {
+			foreach (var ctrl in this.Children) {
 				var currentThumb = ctrl as Thumb;
 				PinDebuggerControl pinControl = TryFindChild<PinDebuggerControl>(currentThumb);
 				if (pinControl != null)
 				{
 					// update relative location
 					Point location = pinControl.Location;
-					location.X -= textView.HorizontalOffset;
+					location.X += horizontalOffset - textView.HorizontalOffset;
 					location.Y += verticalOffset - textView.VerticalOffset;
 					
 					Canvas.SetLeft(currentThumb, location.X);
@@ -123,6 +121,7 @@ namespace Debugger.AddIn.Tooltips
 			}
 			
 			verticalOffset = textView.VerticalOffset;
+			horizontalOffset = textView.HorizontalOffset;
 		}
 		
 		#region Mouse move
@@ -153,10 +152,10 @@ namespace Debugger.AddIn.Tooltips
 				// pin's position is with respect to the layer.
 				pinControl.Mark.PinPosition =
 					new Point
-					{
-						X = textView.HorizontalOffset + left,
-						Y = textView.VerticalOffset + top
-					};
+				{
+					X = textView.HorizontalOffset + left,
+					Y = textView.VerticalOffset + top
+				};
 			}
 		}
 

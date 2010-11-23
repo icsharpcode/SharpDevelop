@@ -73,7 +73,6 @@ namespace Debugger.AddIn.Tooltips
 				pin.SavedNodes.Clear();
 				pin.Popup.ItemsSource = nodes;
 				pin.Nodes = nodes;
-				pin.Popup.Open();
 				
 				pinLayer.Pin((PinDebuggerControl)pin.Popup);
 			}
@@ -110,9 +109,7 @@ namespace Debugger.AddIn.Tooltips
 		public static PinLayer GetPinlayer(ITextEditor editor) {
 			var textEditor = editor.GetService(typeof(TextEditor)) as TextEditor;
 			if (textEditor != null) {
-				foreach(var layer in textEditor.TextArea.TextView.Layers)
-					if(((Layer)layer).LayerType == KnownLayer.DataPins)
-						return (PinLayer)layer;
+				return textEditor.TextArea.TextView.Layers[3] as PinLayer;
 			}
 			
 			return null;

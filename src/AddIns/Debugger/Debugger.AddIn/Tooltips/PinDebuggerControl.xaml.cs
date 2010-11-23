@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.ComponentModel;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -12,7 +11,6 @@ using System.Windows.Input;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
-using Debugger.AddIn.TreeModel;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
@@ -113,7 +111,9 @@ namespace Debugger.AddIn.Tooltips
 		{
 			var provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;
 			if(provider != null) {
-				PinningBinding.GetPinlayer(provider.TextEditor).Pin(this);
+				var pinLayer = PinningBinding.GetPinlayer(provider.TextEditor);
+				if (pinLayer != null)
+					pinLayer.Pin(this);
 			}
 		}
 		
@@ -121,7 +121,9 @@ namespace Debugger.AddIn.Tooltips
 		{
 			var provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;
 			if(provider != null) {
-				PinningBinding.GetPinlayer(provider.TextEditor).Unpin(this);
+				var pinLayer = PinningBinding.GetPinlayer(provider.TextEditor);
+				if (pinLayer != null)
+					pinLayer.Unpin(this);
 			}
 		}
 		
