@@ -40,12 +40,9 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		}
 		
 		public int CurrentOffset {
-			get {				
+			get {
 				if (textEditor != null) {
-					if (textEditor.SelectionLength > 0)
-						currentOffset = textEditor.SelectionStart;
-					else
-						currentOffset = textEditor.Caret.Offset;
+					return textEditor.Caret.Offset;
 				}
 				return currentOffset;
 			}
