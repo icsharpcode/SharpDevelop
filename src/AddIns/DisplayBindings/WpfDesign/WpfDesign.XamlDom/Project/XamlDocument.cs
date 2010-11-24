@@ -44,22 +44,24 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// type descriptor context needs to resolve an XML namespace.</param>
 		internal ITypeDescriptorContext GetTypeDescriptorContext(XamlObject containingObject)
 		{
-			return new DummyTypeDescriptorContext(this, containingObject);
+			IServiceProvider serviceProvider;
+			if (containingObject != null) {
+				if (containingObject.OwnerDocument != this)
+					throw new ArgumentException("Containing object must belong to the document!");
+				serviceProvider = containingObject.ServiceProvider;
+			} else {
+				serviceProvider = this.ServiceProvider;
+			}
+			return new DummyTypeDescriptorContext(serviceProvider);
 		}
 		
 		sealed class DummyTypeDescriptorContext : ITypeDescriptorContext
 		{
-			IServiceProvider baseServiceProvider;
+			readonly IServiceProvider baseServiceProvider;
 			
-			public DummyTypeDescriptorContext(XamlDocument document, XamlObject containingObject)
+			public DummyTypeDescriptorContext(IServiceProvider serviceProvider)
 			{
-				if (containingObject != null) {
-					if (containingObject.OwnerDocument != document)
-						throw new ArgumentException("Containing object must belong to the document!");
-					baseServiceProvider = containingObject.ServiceProvider;
-				} else {
-					baseServiceProvider = document.ServiceProvider;
-				}
+				this.baseServiceProvider = serviceProvider;
 			}
 			
 			public IContainer Container {
@@ -67,7 +69,7 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			}
 			
 			public object Instance {
-				get { return null; }
+				get; set;
 			}
 			
 			public PropertyDescriptor PropertyDescriptor {
@@ -157,10 +159,11 @@ namespace ICSharpCode.WpfDesign.XamlDom
 			
 			Type elementType = instance.GetType();
 			TypeConverter c = TypeDescriptor.GetConverter(instance);
-			bool hasStringConverter = c.CanConvertTo(typeof(string)) && c.CanConvertFrom(typeof(string));
-			
+			var ctx = new DummyTypeDescriptorContext(this.ServiceProvider);
+			ctx.Instance = instance;
+			bool hasStringConverter = c.CanConvertTo(ctx, typeof(string)) && c.CanConvertFrom(typeof(string));
 			if (forProperty != null && hasStringConverter) {
-				return new XamlTextValue(this, c.ConvertToInvariantString(instance));
+				return new XamlTextValue(this, c.ConvertToInvariantString(ctx, instance));
 			}
 			
 			
