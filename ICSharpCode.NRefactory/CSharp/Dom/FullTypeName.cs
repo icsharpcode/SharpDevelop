@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 			
 		public IEnumerable<DomNode> TypeArguments {
-			get { return GetChildrenByRole (Roles.TypeArgument) ?? new DomNode[0]; }
+			get { return GetChildrenByRole (Roles.TypeParameter) ?? new DomNode[0]; }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

@@ -286,7 +286,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override void Visit (EnumMember em)
 			{
-				FieldDeclaration newField = new FieldDeclaration ();
+				EnumMemberDeclaration newField = new EnumMemberDeclaration ();
 				VariableInitializer variable = new VariableInitializer ();
 				
 				variable.AddChild (new Identifier (em.Name, Convert (em.Location)), DomNode.Roles.Identifier);
@@ -1718,7 +1718,7 @@ namespace ICSharpCode.NRefactory.CSharp
 							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ParameterDeclaration.Roles.Assign);
 						parameterDeclarationExpression.AddChild ((DomNode)p.DefaultValue.Accept (this), ParameterDeclaration.Roles.Expression);
 					}
-					parent.AddChild (parameterDeclarationExpression, InvocationExpression.Roles.Argument);
+					parent.AddChild (parameterDeclarationExpression, InvocationExpression.Roles.Parameter);
 				}
 			}
 			
@@ -1729,7 +1729,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				for (int i = 0; i < typeArguments.Count; i++) {
 					if (location != null && i > 0 && i - 1 < location.Count)
 						parent.AddChild (new CSharpTokenNode (Convert (location[i - 1]), 1), InvocationExpression.Roles.Comma);
-					parent.AddChild ((DomNode)typeArguments.Args[i].Accept (this), InvocationExpression.Roles.TypeArgument);
+					parent.AddChild ((DomNode)typeArguments.Args[i].Accept (this), InvocationExpression.Roles.TypeParameter);
 				}
 			}
 			
@@ -1740,7 +1740,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				for (int i = 0; i < typeArguments.Count; i++) {
 					if (location != null && i > 0 && i - 1 < location.Count)
 						parent.AddChild (new CSharpTokenNode (Convert (location[i - 1]), 1), InvocationExpression.Roles.Comma);
-					parent.AddChild ((DomNode)typeArguments.Args[i].Accept (this), InvocationExpression.Roles.TypeArgument);
+					parent.AddChild ((DomNode)typeArguments.Args[i].Accept (this), InvocationExpression.Roles.TypeParameter);
 				}
 			}
 			
@@ -1756,7 +1756,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					parent.AddChild (new Identifier (c.TypeParameter.Value, Convert (c.TypeParameter.Location)), InvocationExpression.Roles.Identifier);
 					parent.AddChild (new CSharpTokenNode (Convert (location[1]), 1), InvocationExpression.Roles.Colon);
 					foreach (var expr in c.ConstraintExpressions)
-						parent.AddChild ((DomNode)expr.Accept (this), InvocationExpression.Roles.TypeArgument);
+						parent.AddChild ((DomNode)expr.Accept (this), InvocationExpression.Roles.TypeParameter);
 				}
 			}
 			
@@ -1777,9 +1777,9 @@ namespace ICSharpCode.NRefactory.CSharp
 							direction.AddChild (new CSharpTokenNode (Convert (argLocation[0]), "123".Length), InvocationExpression.Roles.Keyword);
 						direction.AddChild ((DomNode)arg.Expr.Accept (this), InvocationExpression.Roles.Expression);
 						
-						parent.AddChild (direction, InvocationExpression.Roles.Argument);
+						parent.AddChild (direction, InvocationExpression.Roles.Parameter);
 					} else {
-						parent.AddChild ((DomNode)arg.Expr.Accept (this), InvocationExpression.Roles.Argument);
+						parent.AddChild ((DomNode)arg.Expr.Accept (this), InvocationExpression.Roles.Parameter);
 					}
 					if (commaLocations != null && i > 0) {
 						int idx = commaLocations.Count - i;

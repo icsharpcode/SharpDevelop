@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 // 
 // NamespaceDeclaration.cs
 //  
@@ -23,9 +24,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
-using System;
-using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -82,6 +80,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return name1;
 			return name1 + "." + name2;
 		}
+		
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{

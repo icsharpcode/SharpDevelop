@@ -24,9 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -34,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		public IEnumerable<ParameterDeclaration> Parameters { 
 			get {
-				return base.GetChildrenByRole (Roles.Argument).Cast <ParameterDeclaration>();
+				return base.GetChildrenByRole (Roles.Parameter).Cast <ParameterDeclaration>();
 			}
 		}
 		

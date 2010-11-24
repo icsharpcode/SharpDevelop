@@ -24,8 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-
 namespace ICSharpCode.NRefactory.CSharp
 {
 	public class CheckedStatement : DomNode
@@ -35,10 +33,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				return NodeType.Statement;
 			}
 		}
-		
+
 		public BlockStatement Block {
 			get { return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null; }
 		}
+		
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{

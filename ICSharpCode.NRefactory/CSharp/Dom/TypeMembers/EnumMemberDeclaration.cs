@@ -1,10 +1,10 @@
 // 
-// EnumDeclaration.cs
+// EnumMemberDeclaration.cs
 //  
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,56 +23,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 using System;
-using System.Linq;
-using System.Collections.Generic;
-using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class EnumDeclaration : TypeDeclaration
+	public class EnumMemberDeclaration : AbstractMemberBase
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Type;
-			}
-		}
-		
-		const int EnumMemberDeclarationRole = 100;
-		
-		public IEnumerable<EnumMemberDeclaration> Members { 
-			get {
-				return base.GetChildrenByRole (EnumMemberDeclarationRole).Cast <EnumMemberDeclaration>();
-			}
-		}
-		
-		public override ClassType ClassType {
-			get {
-				return ClassType.Enum;
-			}
-		}
-		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
-		{
-			return visitor.VisitEnumDeclaration (this, data);
-		}
-	}
-	
-	public class EnumMemberDeclaration : DomNode
-	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Member;
-			}
-		}
-		
-		public IEnumerable<AttributeSection> Attributes { 
-			get {
-				return base.GetChildrenByRole (Roles.Attribute).Cast <AttributeSection>();
-			}
-		}
-		
 		public string Name {
 			get {
 				return NameIdentifier.Name;
@@ -97,3 +53,4 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 	}
 }
+

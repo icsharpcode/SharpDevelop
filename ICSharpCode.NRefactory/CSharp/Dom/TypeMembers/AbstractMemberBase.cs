@@ -24,9 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -37,7 +36,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return NodeType.Member;
 			}
 		}
-		
+
 		public IEnumerable<CSharpModifierToken> ModifierTokens {
 			get {
 				return base.GetChildrenByRole (Roles.Modifier).Cast <CSharpModifierToken>();

@@ -24,10 +24,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
+using System.Collections.Generic;
 using System.Linq;
 using ICSharpCode.NRefactory.TypeSystem;
-using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -55,7 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public IEnumerable<DomNode> TypeParameters {
 			get {
-				return GetChildrenByRole (Roles.TypeArgument);
+				return GetChildrenByRole (Roles.TypeParameter);
 			}
 		}
 		

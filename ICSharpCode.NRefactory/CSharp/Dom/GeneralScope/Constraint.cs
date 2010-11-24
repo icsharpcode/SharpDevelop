@@ -24,8 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Linq;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
@@ -52,7 +50,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public IEnumerable<DomNode> TypeParameters {
-			get { return GetChildrenByRole (Roles.TypeArgument); }
+			get { return GetChildrenByRole (Roles.TypeParameter); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
