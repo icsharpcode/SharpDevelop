@@ -229,6 +229,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public const int TypeParameter = 64;
 			public const int Constraint = 65;
+			
+			public const int Comment = 66;
 		}
 	}
 }

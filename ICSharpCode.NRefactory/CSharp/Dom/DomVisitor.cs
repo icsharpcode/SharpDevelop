@@ -45,6 +45,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (unit, data);
 		}
 		
+		public virtual S VisitComment (Comment comment, T data)
+		{
+			return default (S);
+		}
+		
 		public virtual S VisitFullTypeName (FullTypeName fullTypeName, T data)
 		{
 			return default (S);

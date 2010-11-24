@@ -2328,6 +2328,44 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { throw new NotImplementedException(); }
 		}
 		
+		void InsertComment (DomNode node, Comment comment)
+		{
+			if (node.EndLocation < comment.StartLocation) {
+				node.AddChild (comment);
+				return;
+			}
+			
+			foreach (var child in node.Children) {
+				if (child.StartLocation < comment.StartLocation && comment.StartLocation < child.EndLocation) {
+					InsertComment (child, comment);
+					return;
+				}
+				if (comment.StartLocation < child.StartLocation) {
+					node.InsertChildBefore (child, comment, DomNode.Roles.Comment);
+					return;
+				}
+			}
+			
+			node.AddChild (comment);
+		}
+		
+		void InsertComments (CompilerCompilationUnit top, ConversionVisitor conversionVisitor)
+		{
+			foreach (var special in top.SpecialsBag.Specials) {
+				var comment = special as SpecialsBag.Comment;
+				
+				if (comment != null) {
+					var type  = (CommentType)comment.CommentType;
+					var start =  new DomLocation (comment.Line, comment.Col);
+					var end =  new DomLocation (comment.EndLine, comment.EndCol);
+					var domComment = new Comment (type, start, end);
+					domComment.StartsLine = comment.StartsLine;
+					domComment.Content = comment.Content;
+					InsertComment (conversionVisitor.Unit, domComment);
+				}
+			}
+		}
+		
 		public CompilationUnit Parse (TextReader reader)
 		{
 			// TODO: can we optimize this to avoid the text->stream->text roundtrip?
@@ -2352,6 +2390,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					return null;
 				CSharpParser.ConversionVisitor conversionVisitor = new ConversionVisitor (top.LocationsBag);
 				top.UsingsBag.Global.Accept (conversionVisitor);
+				InsertComments (top, conversionVisitor);
 				return conversionVisitor.Unit;
 			}
 		}

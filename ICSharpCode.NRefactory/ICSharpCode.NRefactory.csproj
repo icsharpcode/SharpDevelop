@@ -311,6 +311,7 @@
     <Compile Include="CSharp\Dom\TypeMembers\Accessor.cs" />
     <Compile Include="CSharp\Parser\mcs\assembly.cs" />
     <Compile Include="CSharp\Dom\TypeMembers\EnumMemberDeclaration.cs" />
+    <Compile Include="CSharp\Dom\GeneralScope\Comment.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />
