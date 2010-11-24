@@ -73,7 +73,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (nspace.Name != null) {
 					nDecl = new NamespaceDeclaration ();
 					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.NamespaceLocation), "namespace".Length), NamespaceDeclaration.Roles.Keyword);
-					nDecl.AddChild (new Identifier (nspace.Name.Name, Convert (nspace.Name.Location)), NamespaceDeclaration.Roles.Identifier);
+					nDecl.AddChild (ConvertMemberName (nspace.Name), NamespaceDeclaration.Roles.Identifier);
 					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.OpenBrace), 1), NamespaceDeclaration.Roles.LBrace);
 					AddToNamespace (nDecl);
 					namespaceStack.Push (nDecl);
@@ -95,9 +95,19 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				UsingDeclaration ud = new UsingDeclaration ();
 				ud.AddChild (new CSharpTokenNode (Convert (u.UsingLocation), "using".Length), UsingDeclaration.Roles.Keyword);
-				ud.AddChild (new Identifier (u.NSpace.Name, Convert (u.NSpace.Location)), UsingDeclaration.Roles.Identifier);
+				ud.AddChild (ConvertMemberName (u.NSpace), UsingAliasDeclaration.Roles.Identifier);
 				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingDeclaration.Roles.Semicolon);
 				AddToNamespace (ud);
+			}
+			
+			QualifiedIdentifier ConvertMemberName (MemberName memberName)
+			{
+				QualifiedIdentifier qi = new QualifiedIdentifier();
+				while (memberName != null) {
+					qi.InsertChildBefore (qi.FirstChild, new Identifier (memberName.Name, Convert (memberName.Location)), QualifiedIdentifier.Roles.Identifier);
+					memberName = memberName.Left;
+				}
+				return qi;
 			}
 			
 			public override void Visit (UsingsBag.AliasUsing u)
@@ -128,7 +138,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddModifiers (newType, location);
 				if (location != null)
 					newType.AddChild (new CSharpTokenNode (Convert (location[0]), "class".Length), TypeDeclaration.TypeKeyword);
-				newType.AddChild (new Identifier (c.Name, Convert (c.MemberName.Location)), DomNode.Roles.Identifier);
+				newType.AddChild (new Identifier (c.Basename, Convert (c.MemberName.Location)), DomNode.Roles.Identifier);
 				if (c.MemberName.TypeArguments != null)  {
 					var typeArgLocation = LocationsBag.GetLocations (c.MemberName);
 					if (typeArgLocation != null)
@@ -157,7 +167,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddModifiers (newType, location);
 				if (location != null)
 					newType.AddChild (new CSharpTokenNode (Convert (location[0]), "struct".Length), TypeDeclaration.TypeKeyword);
-				newType.AddChild (new Identifier (s.Name, Convert (s.MemberName.Location)), DomNode.Roles.Identifier);
+				newType.AddChild (new Identifier (s.Basename, Convert (s.MemberName.Location)), DomNode.Roles.Identifier);
 				if (s.MemberName.TypeArguments != null)  {
 					var typeArgLocation = LocationsBag.GetLocations (s.MemberName);
 					if (typeArgLocation != null)
@@ -186,7 +196,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddModifiers (newType, location);
 				if (location != null)
 					newType.AddChild (new CSharpTokenNode (Convert (location[0]), "interface".Length), TypeDeclaration.TypeKeyword);
-				newType.AddChild (new Identifier (i.Name, Convert (i.MemberName.Location)), DomNode.Roles.Identifier);
+				newType.AddChild (new Identifier (i.Basename, Convert (i.MemberName.Location)), DomNode.Roles.Identifier);
 				if (i.MemberName.TypeArguments != null)  {
 					var typeArgLocation = LocationsBag.GetLocations (i.MemberName);
 					if (typeArgLocation != null)
@@ -263,7 +273,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				AddModifiers (newType, location);
 				if (location != null)
 					newType.AddChild (new CSharpTokenNode (Convert (location[0]), "enum".Length), TypeDeclaration.TypeKeyword);
-				newType.AddChild (new Identifier (e.Name, Convert (e.MemberName.Location)), DomNode.Roles.Identifier);
+				newType.AddChild (new Identifier (e.Basename, Convert (e.MemberName.Location)), DomNode.Roles.Identifier);
 				if (location != null && location.Count > 1)
 					newType.AddChild (new CSharpTokenNode (Convert (location[1]), 1), DomNode.Roles.LBrace);
 				typeStack.Push (newType);
@@ -595,7 +605,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				modifierTable[Mono.CSharp.Modifiers.EXTERN] = Modifiers.Extern;
 				modifierTable[Mono.CSharp.Modifiers.VOLATILE] = Modifiers.Volatile;
 				modifierTable[Mono.CSharp.Modifiers.UNSAFE] = Modifiers.Unsafe;
-				modifierTable[Mono.CSharp.Modifiers.OVERRIDE] = Modifiers.Override;
 			}
 			
 			void AddModifiers (DomNode parent, LocationsBag.MemberLocations location)
@@ -1659,7 +1668,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				var location = LocationsBag.GetLocations (conditionalExpression);
 				
 				result.AddChild (new CSharpTokenNode (Convert (conditionalExpression.Location), 1), ConditionalExpression.Roles.QuestionMark);
-				result.AddChild ((DomNode)conditionalExpression.TrueExpr.Accept (this), ConditionalExpression.FalseExpressionRole);
+				result.AddChild ((DomNode)conditionalExpression.TrueExpr.Accept (this), ConditionalExpression.TrueExpressionRole);
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), ConditionalExpression.Roles.Colon);
 				result.AddChild ((DomNode)conditionalExpression.FalseExpr.Accept (this), ConditionalExpression.FalseExpressionRole);
