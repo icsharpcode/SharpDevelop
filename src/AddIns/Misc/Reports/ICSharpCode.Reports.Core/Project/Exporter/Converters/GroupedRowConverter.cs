@@ -18,8 +18,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 
 		private BaseReportItem parent;
 		
-	
-		
 		public GroupedRowConverter(IDataNavigator dataNavigator,
 		                           ExporterPage singlePage, ILayouter layouter):base(dataNavigator,singlePage,layouter)
 		{
@@ -44,7 +42,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (PrintHelper.IsTextOnlyRow(simpleContainer)) {
 				ExporterCollection myList = new ExporterCollection();
 
-				BaseConvert (myList,simpleContainer,parent.Location.X,
+				ConvertContainer (myList,simpleContainer,parent.Location.X,
 				             new Point(base.SectionBounds.DetailStart.X,base.SectionBounds.DetailStart.Y));
 				
 				return myList;

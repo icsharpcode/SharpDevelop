@@ -16,10 +16,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 	public class BasePager:IReportCreator
 	{
 		private PagesCollection pages;
-//		private Graphics graphics;
 		private readonly object pageLock = new object();
-//		private ILayouter layouter;
-		
+
 		public event EventHandler<PageCreatedEventArgs> PageCreated;
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
 		public event EventHandler<GroupHeaderEventArgs> GroupHeaderRendering;
@@ -121,12 +119,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 						list.Add(exportContainer);
 						
 					} else {
-
-//						Rectangle desiredRectangle = layouter.Layout(this.graphics,section);
-//						Rectangle sectionRectangle = new Rectangle(section.Location,section.Size);
-//						if (!sectionRectangle.Contains(desiredRectangle)) {
-//							section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
-//						}
 						list = StandardPrinter.ConvertPlainCollection(section.Items,offset);
 					}
 				}

@@ -149,7 +149,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			PrepareContainerForConverting(section,simpleContainer);
 			FireRowRendering(simpleContainer,currentNavigator);
-			Point curPos  = BaseConvert(mylist,simpleContainer,DefaultLeftPosition,CurrentPosition);
+			Point curPos  = ConvertContainer(mylist,simpleContainer,DefaultLeftPosition,CurrentPosition);
 			AfterConverting (mylist);
 			return curPos;
 		}
@@ -263,18 +263,17 @@ namespace ICSharpCode.Reports.Core.Exporter
 			var rowSize = simpleContainer.Size;
 			FillRow(simpleContainer);
 			PrepareContainerForConverting(section,simpleContainer);
-			Point curPos = BaseConvert(mylist,simpleContainer,DefaultLeftPosition,CurrentPosition);
+			Point curPos = ConvertContainer(mylist,simpleContainer,DefaultLeftPosition,CurrentPosition);
 			AfterConverting (mylist);
 			simpleContainer.Size = rowSize;
 			return curPos;
 		}
 		
 		
-		protected static Point BaseConvert(ExporterCollection myList,ISimpleContainer container,int leftPos,Point curPos)
+		public static Point ConvertContainer(ExporterCollection myList,ISimpleContainer container,int leftPos,Point curPos)
 		{
 			ExporterCollection ml = BaseConverter.ConvertItems (container, curPos);		
 			myList.AddRange(ml);
-//			return new Point (leftPos,curPos.Y + container.Size.Height + (3 *GlobalValues.GapBetweenContainer));
 			return new Point (leftPos,curPos.Y + container.Size.Height);
 		}
 		

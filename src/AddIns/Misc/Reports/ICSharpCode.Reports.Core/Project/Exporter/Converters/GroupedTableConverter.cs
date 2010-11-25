@@ -75,7 +75,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				if (PrintHelper.IsTextOnlyRow(simpleContainer) ) {
 					headerRow = simpleContainer;
 					base.PrepareContainerForConverting(section,headerRow);
-					base.CurrentPosition = BaseConvert(exporterCollection,headerRow,base.DefaultLeftPosition,base.CurrentPosition);
+					base.CurrentPosition = ConvertContainer(exporterCollection,headerRow,base.DefaultLeftPosition,base.CurrentPosition);
 				}
 
 				BaseGroupedRow row = table.Items[1] as BaseGroupedRow;

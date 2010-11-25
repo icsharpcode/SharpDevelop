@@ -13,6 +13,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 	{
 		IDataManager dataManager;
 		IDataNavigator dataNavigator;
+		Point positionAfterDetail;
 
 		readonly object addLock = new object();
 		
@@ -88,8 +89,32 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected override void BuildReportFooter (Rectangle footerRectangle)
 		{
-			base.ReportModel.ReportFooter.SectionOffset = footerRectangle.Top;
-			ExporterCollection convertedList = base.ConvertSection (base.ReportModel.ReportFooter,this.dataNavigator.CurrentRow);
+			bool pageBreak = false;
+			
+			base.ReportModel.ReportFooter.SectionOffset = footerRectangle.Top + GlobalValues.GapBetweenContainer;
+			
+			if (!PrintHelper.IsRoomForFooter(base.SectionBounds,base.ReportModel.ReportFooter.Location)) {
+				PageBreak();
+				base.ReportModel.ReportFooter.SectionOffset = SectionBounds.DetailStart.Y;
+				pageBreak = true;
+			}
+			
+			ExporterCollection convertedList = new ExporterCollection();
+			var section = base.ReportModel.DetailSection;
+			var table = section.Items[0] as BaseTableItem;
+			if (table != null) {
+				if (pageBreak) {
+					// Print the HeaderRow
+					var headerRow = table.Items[0];
+					
+
+					var curPos = BaseConverter.ConvertContainer(convertedList,(ISimpleContainer)headerRow,SectionBounds.PageHeaderRectangle.Left,SectionBounds.PageHeaderRectangle.Location);
+					base.SinglePage.Items.AddRange(convertedList);
+					base.ReportModel.ReportFooter.SectionOffset = curPos.Y + GlobalValues.GapBetweenContainer;
+				}
+			}
+			//allways print the reportFooter
+			convertedList = base.ConvertSection (base.ReportModel.ReportFooter,this.dataNavigator.CurrentRow);
 			base.SinglePage.Items.AddRange(convertedList);
 		}
 		
@@ -113,8 +138,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				                                                                base.Layouter);
 				
 				if (baseConverter != null) {
-					
-					
+			
 					baseConverter.SectionRendering += OnSectionRendering;
 					baseConverter.GroupHeaderRendering += OnGroupHeaderRendering;
 					baseConverter.GroupFooterRendering += OnGroupFooterRendering;
@@ -162,6 +186,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		#endregion
 		
+		
 		private void WritePages ()
 		{
 			this.dataNavigator = this.dataManager.GetNavigator;
@@ -191,7 +216,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			this.AddPage(base.SinglePage);
 			this.BuildNewPage ();
 		}
-		
 		
 		
 		#region Public Methodes
