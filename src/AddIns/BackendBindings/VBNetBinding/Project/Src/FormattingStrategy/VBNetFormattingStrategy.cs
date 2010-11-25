@@ -134,7 +134,7 @@ namespace ICSharpCode.VBNetBinding
 			IDocumentLine currentLine = editor.Document.GetLine(lineNr);
 			IDocumentLine lineAbove = lineNr > 1 ? editor.Document.GetLine(lineNr - 1) : null;
 			
-			string curLineText = editor.Document.Text;
+			string curLineText = currentLine == null ? "" : currentLine.Text;
 			string lineAboveText = lineAbove == null ? "" : lineAbove.Text;
 			
 			if (ch == '\'') {
@@ -186,14 +186,16 @@ namespace ICSharpCode.VBNetBinding
 					if (index > 0) {
 						StringBuilder commentBuilder = new StringBuilder("");
 						for (int i = index; i < curLineText.Length && i < column && !Char.IsWhiteSpace(curLineText[i]); ++i) {
-							commentBuilder.Append(curLineText[ i]);
+							commentBuilder.Append(curLineText[i]);
 						}
 						string tag = commentBuilder.ToString().Trim();
 						if (!tag.EndsWith(">", StringComparison.OrdinalIgnoreCase)) {
 							tag += ">";
 						}
 						if (!tag.StartsWith("/", StringComparison.OrdinalIgnoreCase)) {
-							editor.Document.Insert(editor.Caret.Offset, "</" + tag.Substring(1));
+							string endTag = "</" + tag.Substring(1);
+							editor.Document.Insert(editor.Caret.Offset, endTag);
+							editor.Caret.Offset -= endTag.Length;
 						}
 					}
 				}
