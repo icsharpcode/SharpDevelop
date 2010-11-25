@@ -141,8 +141,12 @@ namespace ICSharpCode.VBNetBinding
 				InsertDocumentationComments(editor, lineNr, cursorOffset);
 			}
 			
-			if (ch == '\n' && lineAboveText != null)
-			{
+			if (ch == '\n' && lineAboveText != null) {
+				if (IsInsideDocumentationComment(editor, lineAbove, lineAbove.EndOffset)) {
+					editor.Document.Insert(cursorOffset, "''' ");
+					return;
+				}
+				
 				string textToReplace = lineAboveText.TrimLine();
 				
 				if (doCasing)
@@ -153,12 +157,10 @@ namespace ICSharpCode.VBNetBinding
 				
 				if (IsInString(lineAboveText)) {
 					if (IsFinishedString(curLineText)) {
-						editor.Document.Insert(lineAbove.Offset + lineAbove.Length,
-						                       "\" & _");
+						editor.Document.Insert(lineAbove.EndOffset, "\" & _");
 						editor.Document.Insert(currentLine.Offset, "\"");
 					} else {
-						editor.Document.Insert(lineAbove.Offset + lineAbove.Length,
-						                       "\"");
+						editor.Document.Insert(lineAbove.EndOffset, "\"");
 					}
 				} else {
 					string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, lineAbove.Offset);
@@ -170,11 +172,8 @@ namespace ICSharpCode.VBNetBinding
 				}
 				
 				IndentLines(editor, lineNr - 1, lineNr);
-			}
-			else if(ch == '>')
-			{
-				if (IsInsideDocumentationComment(editor, currentLine, cursorOffset))
-				{
+			} else if(ch == '>') {
+				if (IsInsideDocumentationComment(editor, currentLine, cursorOffset)) {
 					int column = editor.Caret.Offset - currentLine.Offset;
 					int index = Math.Min(column - 1, curLineText.Length - 1);
 					
@@ -507,13 +506,10 @@ namespace ICSharpCode.VBNetBinding
 		{
 			for (int i = curLine.Offset; i < cursorOffset; ++i) {
 				char ch = editor.Document.GetCharAt(i);
-				if (ch == '"') {
+				if (ch == '"')
 					return false;
-				}
 				if (ch == '\'' && i + 2 < cursorOffset && editor.Document.GetCharAt(i + 1) == '\'' && editor.Document.GetCharAt(i + 2) == '\'')
-				{
 					return true;
-				}
 			}
 			return false;
 		}
@@ -736,7 +732,7 @@ namespace ICSharpCode.VBNetBinding
 			
 			for (int i = begin; i <= end; i++) {
 				IDocumentLine curLine = editor.Document.GetLine(i);
-				string lineText = curLine.Text.Trim(' ', '\t', '\r', '\n');
+				string lineText = curLine.Text.TrimStart(' ', '\t', '\r', '\n');
 				string noComments = lineText.TrimComments().TrimEnd(' ', '\t', '\r', '\n');
 				
 				if (i < selBegin || i > selEnd) {
