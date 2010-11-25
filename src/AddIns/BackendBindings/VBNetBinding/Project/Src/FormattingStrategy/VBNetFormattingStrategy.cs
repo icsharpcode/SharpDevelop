@@ -142,7 +142,7 @@ namespace ICSharpCode.VBNetBinding
 			}
 			
 			if (ch == '\n' && lineAboveText != null) {
-				if (IsInsideDocumentationComment(editor, lineAbove, lineAbove.EndOffset)) {
+				if (LanguageUtils.IsInsideDocumentationComment(editor, lineAbove, lineAbove.EndOffset)) {
 					editor.Document.Insert(cursorOffset, "''' ");
 					return;
 				}
@@ -173,7 +173,7 @@ namespace ICSharpCode.VBNetBinding
 				
 				IndentLines(editor, lineNr - 1, lineNr);
 			} else if(ch == '>') {
-				if (IsInsideDocumentationComment(editor, currentLine, cursorOffset)) {
+				if (LanguageUtils.IsInsideDocumentationComment(editor, currentLine, cursorOffset)) {
 					int column = editor.Caret.Offset - currentLine.Offset;
 					int index = Math.Min(column - 1, curLineText.Length - 1);
 					
@@ -500,18 +500,6 @@ namespace ICSharpCode.VBNetBinding
 			bool match = statement.EndStatement.IndexOf(token.Value, StringComparison.OrdinalIgnoreCase) != -1;
 			
 			return empty && match;
-		}
-		
-		static bool IsInsideDocumentationComment(ITextEditor editor, IDocumentLine curLine, int cursorOffset)
-		{
-			for (int i = curLine.Offset; i < cursorOffset; ++i) {
-				char ch = editor.Document.GetCharAt(i);
-				if (ch == '"')
-					return false;
-				if (ch == '\'' && i + 2 < cursorOffset && editor.Document.GetCharAt(i + 1) == '\'' && editor.Document.GetCharAt(i + 2) == '\'')
-					return true;
-			}
-			return false;
 		}
 		
 		public override void IndentLines(ITextEditor editor, int begin, int end)

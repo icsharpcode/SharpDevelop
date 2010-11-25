@@ -3,6 +3,7 @@
 
 using System;
 using System.Text.RegularExpressions;
+using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.VBNetBinding
 {
@@ -36,6 +37,24 @@ namespace ICSharpCode.VBNetBinding
 			}
 			// remove comments
 			return TrimComments(line);
+		}
+		
+		public static bool IsInsideDocumentationComment(ITextEditor editor)
+		{
+			return IsInsideDocumentationComment(editor, editor.Document.GetLineForOffset(editor.Caret.Offset), editor.Caret.Offset);
+		}
+		
+		public static bool IsInsideDocumentationComment(ITextEditor editor, IDocumentLine curLine, int cursorOffset)
+		{
+			for (int i = curLine.Offset; i < cursorOffset; ++i) {
+				char ch = editor.Document.GetCharAt(i);
+				if (ch == '"')
+					return false;
+				if (ch == '\'' && i + 2 < cursorOffset && editor.Document.GetCharAt(i + 1) == '\'' &&
+				    editor.Document.GetCharAt(i + 2) == '\'')
+					return true;
+			}
+			return false;
 		}
 	}
 }
