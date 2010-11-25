@@ -7,21 +7,34 @@ namespace ICSharpCode.VBNetBinding
 {
 	public static class LanguageUtils
 	{
-		public static string TrimComments(this string argument)
+		public static string TrimComments(this string line)
 		{
-			if (string.IsNullOrEmpty(argument))
+			if (string.IsNullOrEmpty(line))
 				return string.Empty;
 			
 			bool inStr = false;
 			
-			for (int i = 0; i < argument.Length; i++) {
-				if (argument[i] == '"')
+			for (int i = 0; i < line.Length; i++) {
+				if (line[i] == '"')
 					inStr = !inStr;
-				if (argument[i] == '\'' && !inStr)
-					return argument.Substring(0, i).Trim();
+				if (line[i] == '\'' && !inStr)
+					return line.Substring(0, i).Trim();
 			}
 			
-			return argument;
+			return line;
+		}
+		
+		public static string TrimLine(this string line)
+		{
+			if (string.IsNullOrEmpty(line))
+				return string.Empty;
+			// remove string content
+			MatchCollection matches = Regex.Matches(line, "\"[^\"]*?\"", RegexOptions.Singleline);
+			foreach (Match match in matches) {
+				line = line.Remove(match.Index, match.Length).Insert(match.Index, new string('-', match.Length));
+			}
+			// remove comments
+			return TrimComments(line);
 		}
 	}
 }

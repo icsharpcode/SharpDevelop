@@ -145,7 +145,7 @@ namespace ICSharpCode.VBNetBinding
 		{
 			IDocumentLine line = document.GetLineForOffset(offset);
 			
-			string interestingText = VBNetFormattingStrategy.TrimLine(line.Text).Trim(' ', '\t');
+			string interestingText = line.Text.TrimLine().Trim(' ', '\t');
 			
 			//LoggingService.Debug("text: '" + interestingText + "'");
 			

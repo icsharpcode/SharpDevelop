@@ -143,7 +143,7 @@ namespace ICSharpCode.VBNetBinding
 			
 			if (ch == '\n' && lineAboveText != null)
 			{
-				string textToReplace = TrimLine(lineAboveText);
+				string textToReplace = lineAboveText.TrimLine();
 				
 				if (doCasing)
 					DoCasingOnLine(lineAbove, textToReplace, editor);
@@ -199,18 +199,6 @@ namespace ICSharpCode.VBNetBinding
 					}
 				}
 			}
-		}
-
-		internal static string TrimLine(string lineText)
-		{
-			string textToReplace = lineText;
-			// remove string content
-			MatchCollection strmatches = Regex.Matches(lineText, "\"[^\"]*?\"", RegexOptions.Singleline);
-			foreach (Match match in strmatches) {
-				textToReplace = textToReplace.Remove(match.Index, match.Length).Insert(match.Index, new String('-', match.Length));
-			}
-			// remove comments
-			return Regex.Replace(textToReplace, "'.*$", "", RegexOptions.Singleline);
 		}
 
 		void DoInsertionOnLine(string terminator, IDocumentLine currentLine, IDocumentLine lineAbove, string textToReplace, ITextEditor editor, int lineNr)
