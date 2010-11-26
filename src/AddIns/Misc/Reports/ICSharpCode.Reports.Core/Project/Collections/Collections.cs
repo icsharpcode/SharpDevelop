@@ -152,8 +152,7 @@ namespace ICSharpCode.Reports.Core{
 		public bool IsGrouped
 		{
 			get {
-				return (this[0] is GroupHeader)|| (this[0] is BaseGroupItem) ;
-				//return CreateGroupedList().Count > 0;
+				return (this[0] is GroupHeader) ;
 			}
 		}
 		
@@ -175,28 +174,9 @@ namespace ICSharpCode.Reports.Core{
 		}
 		
 		
-		private Collection<BaseGroupItem> old_CreateGroupedList ()
-		{
-			Collection<BaseGroupItem> inheritedReportItems = null;
-			foreach (BaseReportItem element in this) {
-				ISimpleContainer container = element as ISimpleContainer;
-				if (container == null) {
-					inheritedReportItems = new Collection<BaseGroupItem>(this.OfType<BaseGroupItem>().ToList());
-					break;
-				} else {
-					inheritedReportItems = new Collection<BaseGroupItem>(container.Items.OfType<BaseGroupItem>().ToList());
-					break;
-					
-				}
-			}
-			return inheritedReportItems;
-		}
-		
-		
 		public ReportItemCollection ExtractGroupedColumns ()
 		{
 			Collection<BaseDataItem> inheritedReportItems = CreateGroupedList();
-//			Collection<BaseGroupItem> inheritedReportItems = CreateGroupedList();
 			ReportItemCollection r = new ReportItemCollection();
 			r.AddRange(inheritedReportItems);
 			return r;

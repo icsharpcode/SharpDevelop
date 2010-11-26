@@ -23,7 +23,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 	{
 		
 		private Size saveSize;
-		private IExpressionEvaluatorFacade evaluator;
+		
 	
 		public event EventHandler <NewPageEventArgs> PageFull;
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;

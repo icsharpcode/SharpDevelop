@@ -145,8 +145,7 @@
     <Compile Include="Project\ReportItems\BaseDataItem.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Project\ReportItems\BaseGroupFooter.cs" />
-    <Compile Include="Project\ReportItems\BaseGroupItem.cs" />
+    <Compile Include="Project\ReportItems\GroupFooter.cs" />
     <Compile Include="Project\ReportItems\BaseImageItem.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -171,7 +170,7 @@
     <Compile Include="Project\ReportItems\ErrorItem.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Project\ReportItems\BaseGroupeHeader.cs" />
+    <Compile Include="Project\ReportItems\GroupHeader.cs" />
     <Compile Include="Project\ReportItems\RectangleItemTypeProvider.cs" />
     <Compile Include="Project\ReportManagers\BaseManager.cs" />
     <Compile Include="Project\ReportManagers\StandartPreviewManager.cs" />

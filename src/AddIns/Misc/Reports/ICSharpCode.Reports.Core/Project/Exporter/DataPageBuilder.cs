@@ -13,8 +13,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 	{
 		IDataManager dataManager;
 		IDataNavigator dataNavigator;
-		Point positionAfterDetail;
-
+		
 		readonly object addLock = new object();
 		
 		
