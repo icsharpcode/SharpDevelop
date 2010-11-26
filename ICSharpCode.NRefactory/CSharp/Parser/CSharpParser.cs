@@ -1741,7 +1741,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				if (typeArguments == null)
 					return;
-				for (int i = 0; i < typeArguments.Count; i++) {
+				for (int i = 0; i < typeArguments.Args.Count; i++) {
 					if (location != null && i > 0 && i - 1 < location.Count)
 						parent.AddChild (new CSharpTokenNode (Convert (location[i - 1]), 1), InvocationExpression.Roles.Comma);
 					parent.AddChild ((DomNode)typeArguments.Args[i].Accept (this), InvocationExpression.Roles.TypeParameter);
