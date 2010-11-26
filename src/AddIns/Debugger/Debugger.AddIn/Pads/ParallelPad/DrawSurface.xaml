@@ -43,7 +43,7 @@
 					<TextBlock
 						Canvas.Top="2"
 						Canvas.Left="1"
-						Text="100%"
+						Text="Reset"
 						FontSize="9"
 						Foreground="LightGray" />
 				</Canvas>
@@ -127,6 +127,10 @@
 			<local:ParallelStacksGraphLayout 
 				x:Name="ParallelStacksLayout"
 				LayoutAlgorithmType = "Tree"
+				IsAnimationEnabled="False"
+				EdgeRoutingAlgorithmType="Automatic"
+				EdgeRoutingConstraint="Automatic"
+				OverlapRemovalConstraint="Automatic"
 				OverlapRemovalAlgorithmType = "FSA"/>
 		</Canvas>
 	</Grid>

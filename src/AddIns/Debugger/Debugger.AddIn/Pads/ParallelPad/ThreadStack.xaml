@@ -78,16 +78,26 @@
 						</Style.Triggers>
 					</Style>
 				</DataGrid.CellStyle>
+				<DataGrid.RowStyle>
+                    <Style TargetType="{x:Type DataGridRow}">
+                        <Setter Property="Background" Value="White"></Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="LightGray" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
 				<DataGrid.Columns>
 					<DataGridTemplateColumn>
 						<DataGridTemplateColumn.CellTemplate>
 							<DataTemplate>
 								<Border BorderBrush="Gray" BorderThickness="0,1,1,0" Width="25" Height="22">
-									<Image VerticalAlignment="Center" HorizontalAlignment="Center"
+									<Image VerticalAlignment="Center" Margin="0,-5,0,0" Width="14" Height="14" HorizontalAlignment="Center"
 										Source="{Binding Image}" />
 								</Border>
 							</DataTemplate>
-						</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn.CellTemplate>    
 					</DataGridTemplateColumn>
 					<DataGridTemplateColumn
 						Width="Auto">

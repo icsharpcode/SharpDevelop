@@ -10,6 +10,11 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
+using ICSharpCode.Core.Presentation;
+using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Gui.Pads;
+using ICSharpCode.SharpDevelop.Services;
+
 namespace Debugger.AddIn.Pads.ParallelPad
 {
 	public partial class ThreadStack : UserControl
@@ -20,14 +25,19 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			DependencyProperty.Register("IsSelected", typeof(bool), typeof(ThreadStack),
 			                            new FrameworkPropertyMetadata());
 		
+		
+		public event EventHandler FrameSelected;
+		
 		private ObservableCollection<ExpandoObject> itemCollection = new ObservableCollection<ExpandoObject>();
+		
+		private ToolTip toolTip = new ToolTip();
 		
 		public ThreadStack()
 		{
 			InitializeComponent();
+			ToolTip = toolTip;
+			ToolTipOpening += new ToolTipEventHandler(OnToolTipOpening);
 		}
-		
-		internal bool IsAdded { get; set; }
 		
 		public Process Process { get; set; }
 		
@@ -71,7 +81,14 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			}
 		}
 		
-		private void SelectParent(bool isSelected)
+		public void ClearImages()
+		{
+			foreach(dynamic item in itemCollection) {
+				item.Image = null;
+			}
+		}
+		
+		void SelectParent(bool isSelected)
 		{
 			var ts = this.ThreadStackParent;
 			while(ts != null) {
@@ -99,9 +116,18 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		
 		void SelectFrame(uint threadId, ExpandoObject selectedItem)
 		{
+			if (selectedItem == null)
+				return;
+			
 			var thread = Process.Threads.Find(t => t.ID == threadId);
 			if (thread == null)
 				return;
+
+			if (FrameSelected != null)
+				FrameSelected(this, EventArgs.Empty);
+			
+			this.IsSelected = true;
+			
 			dynamic obj = selectedItem;
 			Process.SelectedThread = thread;
 			foreach(var frame in thread.Callstack)
@@ -109,11 +135,11 @@ namespace Debugger.AddIn.Pads.ParallelPad
 				if (frame.GetMethodName() == obj.MethodName)
 				{
 					Process.SelectedThread.SelectedStackFrame = frame;
+					obj.Image = PresentationResourceService.GetImage("Bookmarks.CurrentLine").Source;
+					((WindowsDebugger)DebuggerService.CurrentDebugger).JumpToCurrentLine();
 					break;
 				}
 			}
-			
-			Process.OnPaused();
 		}
 		
 		void Datagrid_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
@@ -138,7 +164,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 				MenuItem m = new MenuItem();
 				m.IsCheckable = true;
 				m.IsChecked = id == Process.SelectedThread.ID;
-				m.Checked += delegate(object sender, RoutedEventArgs e) {
+				m.Click += delegate(object sender, RoutedEventArgs e) {
 					var menuItem = e.OriginalSource as MenuItem;
 					SelectFrame((uint)menuItem.Tag, item);
 				};
@@ -149,6 +175,37 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			}
 			
 			return menu;
+		}
+		
+		void OnToolTipOpening(object sender, ToolTipEventArgs e)
+		{
+			StackPanel panel = new StackPanel();
+			
+			dynamic selectedItem = datagrid.SelectedItem;
+			if (selectedItem == null) {
+				panel.Children.Add(new TextBlock { Text = "No item selected" });
+				this.toolTip.Content = panel;
+				return;
+			}
+			
+			foreach(var thread in Process.Threads)
+			{
+				if (ThreadIds.Contains(thread.ID))
+				{
+					foreach (var frame in thread.Callstack)
+					{
+						if (selectedItem.MethodName == frame.GetMethodName())
+						{
+							// TODO : get method parameter values
+							TextBlock tb = new TextBlock();
+							tb.Text = thread.ID + ": " + CallStackPadContent.GetFullName(frame);
+							panel.Children.Add(tb);
+						}
+					}
+				}
+			}
+			
+			this.toolTip.Content = panel;
 		}
 	}
 }

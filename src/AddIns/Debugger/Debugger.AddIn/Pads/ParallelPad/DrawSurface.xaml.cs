@@ -32,7 +32,6 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		public void SetGraph(ParallelStacksGraph graph)
 		{
 			this.ParallelStacksLayout.Graph = graph;
-			this.ParallelStacksLayout.Relayout();
 		}
 
 		#region Pan
@@ -50,10 +49,10 @@ namespace Debugger.AddIn.Pads.ParallelPad
 
 		void DrawSurface_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
 		{
+			drawingSurface.ReleaseMouseCapture();
 			if (e.OriginalSource is Slider || e.OriginalSource is Button)
 				return;
 			
-			drawingSurface.ReleaseMouseCapture();
 			this.PreviewMouseMove -= DrawSurface_PreviewMouseMove;
 			Cursor = Cursors.Arrow;
 		}
@@ -67,10 +66,11 @@ namespace Debugger.AddIn.Pads.ParallelPad
 				if (e.OriginalSource is Slider || e.OriginalSource is Button)
 					return;
 				
-				Cursor = Cursors.ScrollAll;
-				Vector v = dragStartedPoint - e.GetPosition(drawingSurface);
-				translate.X = v.X / 5;
-				translate.Y = v.Y / 5;				
+				Cursor = Cursors.SizeAll;
+				var point = e.GetPosition(drawingSurface);
+				Vector v = dragStartedPoint - point;
+				translate.X += v.X / 200;
+				translate.Y += v.Y / 200;				
 				e.Handled = true;
 			}
 		}
@@ -98,6 +98,9 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		void Reset_Click(object sender, RoutedEventArgs e)
 		{
 			this.SliderControl.Value = 5;
+			
+			translate.X = 0;
+			translate.Y = 0;
 		}
 		
 		#endregion

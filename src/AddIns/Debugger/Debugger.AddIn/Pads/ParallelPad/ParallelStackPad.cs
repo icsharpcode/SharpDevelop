@@ -12,6 +12,7 @@ using System.Windows.Media;
 
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui.Pads;
 using ICSharpCode.SharpDevelop.Services;
@@ -68,7 +69,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 				return;
 			}
 			
-			using(new PrintTimes("Threads refresh")) {
+			using(new PrintTimes("Parallel stack refresh")) {
 				try {
 					OnReset(null, EventArgs.Empty);
 					// create all simple ThreadStacks
@@ -90,11 +91,13 @@ namespace Debugger.AddIn.Pads.ParallelPad
 						throw;
 					}
 				}
-				
+			}
+			
+			using(new PrintTimes("Graph refresh")) {
 				// paint the ThreadStaks
 				graph = new ParallelStacksGraph();
 				foreach (var stack in this.currentThreadStacks)
-				{		
+				{
 					if (stack == null)
 						continue;
 					if (stack.ThreadStackParent != null &&
@@ -105,13 +108,14 @@ namespace Debugger.AddIn.Pads.ParallelPad
 					
 					// add the children
 					AddChildren(stack);
-				}				
+				}
 				
 				surface.SetGraph(graph);
 			}
 		}
 		
 		ParallelStacksGraph graph;
+		
 		void AddChildren(ThreadStack parent)
 		{
 			if(parent.ThreadStackChildren == null || parent.ThreadStackChildren.Length == 0)
@@ -245,6 +249,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 					commonParent.ThreadIds = threadIds;
 					commonParent.ItemCollection = parentItems.ToObservable();
 					commonParent.Process = debuggedProcess;
+					commonParent.FrameSelected += threadStack_FrameSelected;
 					commonParent.IsSelected = commonParent.ThreadIds.Contains(debuggedProcess.SelectedThread.ID);
 					// add new children
 					foreach (var stack in listOfCurrentStacks) {
@@ -283,6 +288,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 				return;
 			
 			ThreadStack threadStack = new ThreadStack();
+			threadStack.FrameSelected += threadStack_FrameSelected;
 			threadStack.ThreadIds = new List<uint>();
 			threadStack.ThreadIds.Add(thread.ID);
 			threadStack.Process = debuggedProcess;
@@ -291,6 +297,14 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			threadStack.ItemCollection = items;
 			if (debuggedProcess.SelectedThread != null)
 				threadStack.IsSelected = threadStack.ThreadIds.Contains(debuggedProcess.SelectedThread.ID);
+		}
+
+		void threadStack_FrameSelected(object sender, EventArgs e)
+		{
+			foreach (var ts in this.currentThreadStacks) {
+				ts.IsSelected = false;
+				ts.ClearImages();
+			}
 		}
 		
 		private ObservableCollection<ExpandoObject> CreateItems(Thread thread)
@@ -315,7 +329,14 @@ namespace Debugger.AddIn.Pads.ParallelPad
 					lastItemIsExternalMethod = true;
 				}
 				
-				obj.Image = null;
+				if (thread.SelectedStackFrame != null &&
+				    thread.ID == debuggedProcess.SelectedThread.ID &&
+				    thread.SelectedStackFrame.IP == frame.IP &&
+				    thread.SelectedStackFrame.GetMethodName() == frame.GetMethodName())
+					obj.Image = PresentationResourceService.GetImage("Bookmarks.CurrentLine").Source;
+				else
+					obj.Image = null;
+				
 				obj.MethodName = fullName;
 				
 				result.Add(obj);
@@ -331,6 +352,9 @@ namespace Debugger.AddIn.Pads.ParallelPad
 	{
 		internal static string GetMethodName(this StackFrame frame)
 		{
+			if (frame == null)
+				return null;
+			
 			StringBuilder name = new StringBuilder();
 			name.Append(frame.MethodInfo.DeclaringType.FullName);
 			name.Append('.');

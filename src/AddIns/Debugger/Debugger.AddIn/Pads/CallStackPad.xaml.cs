@@ -164,13 +164,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		string GetFullName(StackFrame frame)
+		internal static string GetFullName(StackFrame frame)
 		{
 			bool showArgumentNames = DebuggingOptions.Instance.ShowArgumentNames;
 			bool showArgumentValues = DebuggingOptions.Instance.ShowArgumentValues;
 			
 			StringBuilder name = new StringBuilder();
-			name.Append(frame.MethodInfo.DeclaringType.Name);
+			name.Append(frame.MethodInfo.DeclaringType.FullName);
 			name.Append('.');
 			name.Append(frame.MethodInfo.Name);
 			if (showArgumentNames || showArgumentValues) {
