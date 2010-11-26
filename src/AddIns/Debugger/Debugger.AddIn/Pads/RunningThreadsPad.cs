@@ -3,7 +3,6 @@
 
 using System;
 using System.Dynamic;
-using System.Threading;
 using System.Windows;
 using System.Windows.Data;
 
@@ -133,15 +132,16 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			thread.NameChanged += delegate {
 				RefreshItem(obj);
 			};
-			thread.Exited += delegate {
-				RemoveThread(obj);
-			};
+			thread.Exited += (s, e) => RemoveThread(e.Thread);
 		}
 		
 		void RefreshItem(ExpandoObject obj)
 		{
 			dynamic item = obj;
 			var thread = item.Tag as Thread;
+			
+			if (thread == null)
+				return;
 			
 			item.ID = thread.ID;
 			item.Tag = thread;
@@ -156,19 +156,19 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			
 			switch (thread.Priority) {
-				case ThreadPriority.Highest:
+				case System.Threading.ThreadPriority.Highest:
 					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Highest");
 					break;
-				case ThreadPriority.AboveNormal:
+				case System.Threading.ThreadPriority.AboveNormal:
 					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.AboveNormal");
 					break;
-				case ThreadPriority.Normal:
+				case System.Threading.ThreadPriority.Normal:
 					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Normal");
 					break;
-				case ThreadPriority.BelowNormal:
+				case System.Threading.ThreadPriority.BelowNormal:
 					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.BelowNormal");
 					break;
-				case ThreadPriority.Lowest:
+				case System.Threading.ThreadPriority.Lowest:
 					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Lowest");
 					break;
 				default:
@@ -180,6 +180,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void RemoveThread(Thread thread)
 		{
+			if (thread == null || thread.HasExited)
+				return;
+			
 			foreach (dynamic item in runningThreadsList.ItemCollection) {
 				if (thread.ID == item.ID) {
 					runningThreadsList.ItemCollection.Remove(item);

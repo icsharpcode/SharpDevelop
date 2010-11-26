@@ -17,6 +17,20 @@ namespace Debugger
 			set { selected = value; }
 		}
 		
+		public Thread Find(Predicate<Thread> predicate)
+		{
+			if (predicate == null)
+				return null;
+			
+			foreach (var thread in this)
+			{
+				if (predicate(thread))
+					return thread;
+			}
+			
+			return null;
+		}
+		
 		internal bool Contains(ICorDebugThread corThread)
 		{
 			foreach(Thread thread in this) {

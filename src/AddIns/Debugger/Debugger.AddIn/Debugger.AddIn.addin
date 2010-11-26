@@ -123,6 +123,13 @@
 		     icon     = "PadIcons.LocalVariables"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.ObjectGraphPad"
 		     defaultPosition = "Bottom, Hidden" />
+	
+		<Pad id    = "ParallelStacksPad"
+		     category = "Debugger"
+		     title    = "${res:MainWindow.Windows.Debug.ParallelStack}"
+		     icon     = "PadIcons.Parallel"
+		     class = "Debugger.AddIn.Pads.ParallelPad.ParallelStackPad"
+		     defaultPosition = "Bottom, Hidden" />
 	</Path>
 	
 	<Path name ="/SharpDevelop/Pads/WatchPad/ContextMenu">

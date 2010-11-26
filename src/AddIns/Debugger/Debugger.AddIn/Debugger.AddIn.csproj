@@ -58,6 +58,15 @@
     <StartProgram>..\..\..\..\bin\SharpDevelop.exe</StartProgram>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GraphSharp">
+      <HintPath>..\..\..\Libraries\GraphSharp\GraphSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="GraphSharp.Controls">
+      <HintPath>..\..\..\Libraries\GraphSharp\GraphSharp.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Contracts">
+      <HintPath>..\..\..\Libraries\GraphSharp\Microsoft.Contracts.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -67,6 +76,9 @@
     </Reference>
     <Reference Include="PresentationFramework.Aero">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="QuickGraph">
+      <HintPath>..\..\..\Libraries\GraphSharp\QuickGraph.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -103,6 +115,16 @@
     <Compile Include="Pads\Controls\TreeListView.cs" />
     <Compile Include="Pads\Controls\WatchList.xaml.cs">
       <DependentUpon>WatchList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pads\ParallelPad\DrawSurface.xaml.cs">
+      <DependentUpon>DrawSurface.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Pads\ParallelPad\ParallelStackPad.cs" />
+    <Compile Include="Pads\ParallelPad\ParallelStacksGraph.cs" />
+    <Compile Include="Pads\ParallelPad\ThreadStack.xaml.cs">
+      <DependentUpon>ThreadStack.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Pads\WatchInputBox.xaml.cs">
       <DependentUpon>WatchInputBox.xaml</DependentUpon>
@@ -352,6 +374,8 @@
     <Page Include="Pads\Controls\ConditionCell.xaml" />
     <Page Include="Pads\Controls\SimpleListViewControl.xaml" />
     <Page Include="Pads\Controls\WatchList.xaml" />
+    <Page Include="Pads\ParallelPad\DrawSurface.xaml" />
+    <Page Include="Pads\ParallelPad\ThreadStack.xaml" />
     <Page Include="Pads\WatchInputBox.xaml" />
     <Page Include="Service\EditBreakpointScriptWindow.xaml" />
     <Page Include="Visualizers\Graph\Drawing\NodeControlResources.xaml" />
@@ -375,6 +399,7 @@
       <Private>False</Private>
     </ProjectReference>
     <Folder Include="Pads\Controls" />
+    <Folder Include="Pads\ParallelPad" />
     <Folder Include="Visualizers\Graph" />
     <Folder Include="Visualizers\Graph\Drawing" />
     <Folder Include="Visualizers\Graph\Layout" />
