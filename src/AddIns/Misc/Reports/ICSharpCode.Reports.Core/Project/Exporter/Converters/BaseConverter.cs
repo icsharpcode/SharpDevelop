@@ -83,7 +83,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		protected void FireGroupHeaderRendering (BaseGroupedRow groupHeader)
+		protected void FireGroupHeaderRendering (GroupHeader groupHeader)
 		{
 			GroupHeaderEventArgs ghea = new GroupHeaderEventArgs(groupHeader);
 			EventHelper.Raise<GroupHeaderEventArgs>(GroupHeaderRendering,this,ghea);
@@ -179,9 +179,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		protected static Collection<BaseGroupedRow> FindGroupHeader (ISimpleContainer container)
+		protected static Collection<GroupHeader> FindGroupHeader (ISimpleContainer container)
 		{
-			return new Collection<BaseGroupedRow>(container.Items.OfType<BaseGroupedRow>().ToList());
+			return new Collection<GroupHeader>(container.Items.OfType<GroupHeader>().ToList());
 		}
 		
 		

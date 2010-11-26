@@ -29,7 +29,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		{
 			ICSharpCode.Reports.Core.BaseTableItem table = CreateContainer();
 			//GroupHeader
-			var c =  new Collection<ICSharpCode.Reports.Core.BaseGroupedRow>(table.Items.OfType<ICSharpCode.Reports.Core.BaseGroupedRow>().ToList());
+			var c =  new Collection<ICSharpCode.Reports.Core.GroupHeader>(table.Items.OfType<ICSharpCode.Reports.Core.GroupHeader>().ToList());
 			Assert.That(c.Count,Is.GreaterThanOrEqualTo(1));
 		}
 		

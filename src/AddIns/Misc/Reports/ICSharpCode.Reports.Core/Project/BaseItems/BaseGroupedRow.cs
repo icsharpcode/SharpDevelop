@@ -8,9 +8,9 @@ namespace ICSharpCode.Reports.Core
 	/// <summary>
 	/// Description of BaseGroupeRow.
 	/// </summary>
-	public class BaseGroupedRow:BaseRowItem
+	public class GroupHeader:BaseRowItem
 	{
-		public BaseGroupedRow():base()
+		public GroupHeader():base()
 		{
 		}
 		

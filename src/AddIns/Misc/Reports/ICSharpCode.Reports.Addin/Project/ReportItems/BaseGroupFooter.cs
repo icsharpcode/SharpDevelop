@@ -13,7 +13,7 @@ namespace ICSharpCode.Reports.Addin
 	/// <summary>
 	/// Description of BaseGroupFooter.
 	/// </summary>
-	public class GroupFooter:BaseGroupedRow
+	public class GroupFooter:GroupHeader
 	{
 		public GroupFooter()
 		{

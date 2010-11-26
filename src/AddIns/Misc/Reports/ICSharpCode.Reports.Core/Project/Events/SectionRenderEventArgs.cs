@@ -24,12 +24,12 @@ namespace ICSharpCode.Reports.Core {
 	
 	public class GroupHeaderEventArgs: EventArgs
 	{
-		public GroupHeaderEventArgs (BaseGroupedRow groupHeader)
+		public GroupHeaderEventArgs (GroupHeader groupHeader)
 		{
 			GroupHeader = groupHeader;
 		}
 		
-		public BaseGroupedRow GroupHeader {get; private set;}
+		public GroupHeader GroupHeader {get; private set;}
 		
 	}
 	

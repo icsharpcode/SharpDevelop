@@ -78,7 +78,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 					base.CurrentPosition = ConvertContainer(exporterCollection,headerRow,base.DefaultLeftPosition,base.CurrentPosition);
 				}
 
-				BaseGroupedRow row = table.Items[1] as BaseGroupedRow;
+				GroupHeader row = table.Items[1] as GroupHeader;
 				
 				if (row != null) {
 					
@@ -187,7 +187,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			var rowSize = Size.Empty;
 			ReportItemCollection groupCollection = null;
 			
-			var groupedRow  = new Collection<BaseGroupedRow>(table.Items.OfType<BaseGroupedRow>().ToList());
+			var groupedRow  = new Collection<GroupHeader>(table.Items.OfType<GroupHeader>().ToList());
 			
 			if (groupedRow.Count == 0) {
 				
