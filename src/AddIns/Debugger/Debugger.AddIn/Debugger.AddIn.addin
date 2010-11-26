@@ -14,7 +14,14 @@
 			<ConditionEvaluator name = "IsBreakpointActive" class="Debugger.AddIn.IsActiveBreakpointCondition" />
 		</Import>
 		<Import assembly="Debugger.Core.dll"/>
-	</Runtime>
+	</Runtime>	
+		
+	<Path name="/SharpDevelop/Workbench/LanguageBindings">
+        <LanguageBinding
+            id="Pin"
+            class="Debugger.AddIn.Tooltips.PinningBinding"
+            extensions="" />
+    </Path>
 	
 	<Path name="/SharpDevelop/Services/DebuggerService/Debugger">
 		<Debugger id="DefaultDebugger"

@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 using Debugger.AddIn.TreeModel;
+using ICSharpCode.SharpDevelop.Debugging;
 
 namespace Debugger.AddIn.Pads.Controls
 {

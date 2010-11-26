@@ -5,7 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
 
-namespace ICSharpCode.SharpDevelop.Debugging
+using ICSharpCode.SharpDevelop;
+
+namespace Debugger.AddIn.Tooltips
 {
 	/// <summary>
 	/// ItemsControl wrapper that takes VirtualizingIEnumerable as source,

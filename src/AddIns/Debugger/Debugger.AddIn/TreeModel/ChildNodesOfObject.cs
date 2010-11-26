@@ -11,6 +11,7 @@ using ICSharpCode.Core;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Services;
+using ICSharpCode.SharpDevelop.Debugging;
 
 namespace Debugger.AddIn.TreeModel
 {
@@ -84,7 +85,11 @@ namespace Debugger.AddIn.TreeModel
 		{
 			List<TreeNode> nodes = new List<TreeNode>();
 			foreach(MemberInfo memberInfo in members) {
-				nodes.Add(new ExpressionNode(ExpressionNode.GetImageForMember((IDebugMemberInfo)memberInfo), memberInfo.Name, expression.AppendMemberReference((IDebugMemberInfo)memberInfo)));
+				string imageName;
+				var image = ExpressionNode.GetImageForMember((IDebugMemberInfo)memberInfo, out imageName);
+				var exp = new ExpressionNode(image, memberInfo.Name, expression.AppendMemberReference((IDebugMemberInfo)memberInfo));
+				exp.ImageName = imageName;
+				nodes.Add(exp);
 			}
 			nodes.Sort();
 			return nodes;
@@ -113,7 +118,11 @@ namespace Debugger.AddIn.TreeModel
 				yield return new TreeNode(null, "(empty)", null, null, null);
 			} else {
 				for(int i = 0; i < count; i++) {
-					yield return new ExpressionNode(ExpressionNode.GetImageForArrayIndexer(), "[" + i + "]", targetObject.AppendIndexer(i));
+					string imageName;
+					var image = ExpressionNode.GetImageForArrayIndexer(out imageName);
+					var expression = new ExpressionNode(image, "[" + i + "]", targetObject.AppendIndexer(i));
+					expression.ImageName = imageName;
+					yield return expression;
 				}
 			}
 		}

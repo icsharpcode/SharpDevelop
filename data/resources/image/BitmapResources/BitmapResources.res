@@ -226,6 +226,7 @@ Icons.16x16.OpenFileIcon                          = BitmapResources-data\Icons.1
 Icons.16x16.HtmlElements.FieldSetElement          = BitmapResources-data\Icons.16x16.HtmlElements.FieldSetElement.png
 Icons.16x16.SplitWindow                           = BitmapResources-data\Icons.16x16.SplitWindow.png
 Icons.16x16.DeleteHistory                         = BitmapResources-data\Icons.16x16.DeleteHistory.png
+Icons.16x16.Refresh                         	  = BitmapResources-data\Icons.16x16.Refresh.png
 
 #pad icons
 PadIcons.ErrorList                                = PadIcons\ErrorList.png
@@ -346,6 +347,8 @@ Bookmarks.DeleteAllBreakpoints                    = Bookmarks\DeleteAllBreakpoin
 Bookmarks.DisableAllBreakpoints                   = Bookmarks\DisableAllBreakpoints.png
 Bookmarks.NextBreakpoint                   		  = Bookmarks\NextBreakpoint.png
 Bookmarks.PrevBreakpoint		                  = Bookmarks\PrevBreakpoint.png
+
+Bookmarks.Pin									  = Bookmarks\Pin.png
 
 #backend icons
 C#.ProjectIcon                                    = backendicons\CSharp\SmallProject.png

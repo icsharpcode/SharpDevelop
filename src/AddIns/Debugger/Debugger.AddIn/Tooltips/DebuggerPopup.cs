@@ -8,20 +8,22 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
 using ICSharpCode.Core;
+using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.SharpDevelop.Debugging
+namespace Debugger.AddIn.Tooltips
 {
 	/// <summary>
 	/// Popup containing <see cref="DebuggerTooltipControl"></see>.
 	/// </summary>
 	public class DebuggerPopup : Popup
 	{
-		private DebuggerTooltipControl contentControl;
+		internal DebuggerTooltipControl contentControl;
 
-		public DebuggerPopup(DebuggerTooltipControl parentControl)
+		public DebuggerPopup(DebuggerTooltipControl parentControl, Location logicalPosition, bool showPins = true)
 		{
-			this.contentControl = new DebuggerTooltipControl(parentControl);
+			this.contentControl = new DebuggerTooltipControl(parentControl, logicalPosition, showPins);
 			this.contentControl.containingPopup = this;
 			this.Child = this.contentControl;
 			this.IsLeaf = false;
@@ -63,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		public IEnumerable<ITreeNode> ItemsSource
 		{
 			get { return this.contentControl.ItemsSource; }
-			set { this.contentControl.ItemsSource = value; }
+			set { this.contentControl.SetItemsSource(value); }
 		}
 
 		private bool isLeaf;

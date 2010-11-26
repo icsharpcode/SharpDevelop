@@ -17,10 +17,11 @@ namespace Debugger.AddIn.TreeModel
 	/// A node in the variable tree.
 	/// The node is imutable.
 	/// </summary>
-	public class TreeNode: IComparable<TreeNode>, ITreeNode
+	public class TreeNode : ITreeNode
 	{
 		IImage iconImage = null;
 		string name  = string.Empty;
+		string imageName = string.Empty;
 		string text  = string.Empty;
 		string type  = string.Empty;
 		IEnumerable<TreeNode> childNodes = null;
@@ -52,6 +53,16 @@ namespace Debugger.AddIn.TreeModel
 		}
 		
 		public string Name {
+			get { return name; }
+			set { name = value; }
+		}
+		
+		public string ImageName {
+			get { return imageName; }
+			set { imageName = value; }
+		} 
+		
+		public virtual string FullName { 
 			get { return name; }
 			set { name = value; }
 		}
@@ -96,6 +107,8 @@ namespace Debugger.AddIn.TreeModel
 			}
 		}
 		
+		public bool IsPinned { get; set; }
+		
 		public TreeNode()
 		{
 		}
@@ -109,9 +122,9 @@ namespace Debugger.AddIn.TreeModel
 			this.childNodes = childNodes;
 		}
 		
-		public int CompareTo(TreeNode other)
+		public int CompareTo(ITreeNode other)
 		{
-			return this.Name.CompareTo(other.Name);
+			return this.FullName.CompareTo(other.FullName);
 		}
 		
 		public virtual bool SetText(string newValue) { 

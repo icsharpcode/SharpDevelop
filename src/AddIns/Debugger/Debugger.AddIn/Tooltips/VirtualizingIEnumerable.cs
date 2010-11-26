@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace ICSharpCode.SharpDevelop.Debugging
+namespace Debugger.AddIn.Tooltips
 {
 	/// <summary>
 	/// A wrapper around IEnumerable&lt;T&gt; with AddNextItems method for pulling additional items 

@@ -1,13 +1,15 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
-using ICSharpCode.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
 
-namespace ICSharpCode.SharpDevelop.Debugging
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Debugging;
+
+namespace Debugger.AddIn.Tooltips
 {
 	/// <summary>
 	/// Control displaying and executing <see cref="IVisualizerCommand">visualizer commands</see>.

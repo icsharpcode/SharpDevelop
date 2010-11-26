@@ -5,6 +5,7 @@ using Debugger.Interop.CorDebug;
 using System;
 using System.Collections.Generic;
 using Debugger.MetaData;
+using ICSharpCode.SharpDevelop.Debugging;
 
 namespace Debugger.AddIn.TreeModel
 {

@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Aga.Controls.Tree;
 using Aga.Controls.Tree.NodeControls;
 using ICSharpCode.Core;
+using TreeNode = Debugger.AddIn.TreeModel.TreeNode;
 
 namespace Debugger.AddIn.TreeModel
 {

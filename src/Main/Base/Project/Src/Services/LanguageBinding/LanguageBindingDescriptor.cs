@@ -24,6 +24,9 @@ namespace ICSharpCode.SharpDevelop
 		
 		internal bool CanAttach(ITextEditor editor)
 		{
+			if (Extensions == null || Extensions.Length == 0)
+				return true;
+			
 			if (!string.IsNullOrEmpty(editor.FileName)) {
 				string extension = Path.GetExtension(editor.FileName).ToLowerInvariant();
 				foreach (var ext in Extensions) {
