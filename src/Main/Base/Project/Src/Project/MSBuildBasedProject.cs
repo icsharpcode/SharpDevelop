@@ -98,6 +98,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override int MinimumSolutionVersion {
 			get {
 				lock (SyncRoot) {
+					// This property is called by CSharpProject.StartBuild (and other derived StartBuild methods),
+					// so it's important that we throw an ObjectDisposedException for disposed projects.
+					// The build engine will handle this exception (occurs when unloading a project while a build is running)
+					if (projectFile == null)
+						throw new ObjectDisposedException("MSBuildBasedProject");
 					if (string.IsNullOrEmpty(projectFile.ToolsVersion) || projectFile.ToolsVersion == "2.0") {
 						return Solution.SolutionVersionVS2005;
 					} else if (projectFile.ToolsVersion == "3.0" || projectFile.ToolsVersion == "3.5") {
