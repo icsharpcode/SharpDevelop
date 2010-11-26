@@ -657,27 +657,26 @@ namespace ICSharpCode.SharpDevelop.Gui
 			#endif
 		}
 		
+		[Conditional("DEBUG")]
+		internal static void FocusDebug(string format, params object[] args)
+		{
+			#if DEBUG
+			if (enableFocusDebugOutput)
+				LoggingService.DebugFormatted(format, args);
+			#endif
+		}
+		
 		#if DEBUG
-		internal static bool enableFocusDebugOutput;
+		static bool enableFocusDebugOutput;
 		
 		void WpfWorkbench_PreviewGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
 		{
-			if (enableFocusDebugOutput) {
-				LoggingService.Debug("GotKeyboardFocus: oldFocus=" + e.OldFocus + ", newFocus=" + e.NewFocus);
-				if (e.NewFocus is IWorkbenchWindow)
-				{
-				}
-			}
+			FocusDebug("GotKeyboardFocus: oldFocus={0}, newFocus={1}", e.OldFocus, e.NewFocus);
 		}
 		
 		void WpfWorkbench_PreviewLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
 		{
-			if (enableFocusDebugOutput) {
-				LoggingService.Debug("LostKeyboardFocus: oldFocus=" + e.OldFocus + ", newFocus=" + e.NewFocus);
-				if (e.NewFocus is IWorkbenchWindow)
-				{
-				}
-			}
+			FocusDebug("LostKeyboardFocus: oldFocus={0}, newFocus={1}", e.OldFocus, e.NewFocus);
 		}
 		
 		protected override void OnPreviewKeyDown(KeyEventArgs e)
@@ -693,10 +692,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				output.WriteLine("ActiveWorkbenchWindow = " + GetElementName(this.ActiveWorkbenchWindow));
 				((AvalonDockLayout)workbenchLayout).WriteState(output);
 				LoggingService.Debug(output.ToString());
-			}
-			if (!e.Handled && e.Key == Key.L && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
-				this.UseLayoutRounding = !this.UseLayoutRounding;
-				this.StatusBar.SetMessage("UseLayoutRounding=" + this.UseLayoutRounding);
+				e.Handled = true;
 			}
 			if (!e.Handled && e.Key == Key.F && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
 				if (TextOptions.GetTextFormattingMode(this) == TextFormattingMode.Display)
@@ -721,6 +717,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				this.StatusBar.SetMessage("TextRenderingMode=" + TextOptions.GetTextRenderingMode(this));
 			}
 		}
+		#endif
 		
 		internal static string GetElementName(object element)
 		{
@@ -729,6 +726,5 @@ namespace ICSharpCode.SharpDevelop.Gui
 			else
 				return element.GetType().FullName + ": " + element.ToString();
 		}
-		#endif
 	}
 }

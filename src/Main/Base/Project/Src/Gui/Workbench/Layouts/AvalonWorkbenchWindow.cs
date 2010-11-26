@@ -38,33 +38,37 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected override void FocusContent()
 		{
-			if (!(IsActiveContent && !IsKeyboardFocusWithin))
+			WpfWorkbench.FocusDebug("{0}.FocusContent() IsActiveContent={1} IsKeyboardFocusWithin={2} Keyboard.FocusedElement={3}",
+			                        Title, IsActiveContent, IsKeyboardFocusWithin, Keyboard.FocusedElement);
+			if (!(IsActiveContent && !IsKeyboardFocusWithin)) {
 				return;
-			IInputElement activeChild = CustomFocusManager.GetFocusedChild(this);
-			if (activeChild == null && ActiveViewContent != null) {
-				activeChild = ActiveViewContent.InitiallyFocusedControl as IInputElement;
 			}
-			AvalonWorkbenchWindow.SetFocus(this, activeChild);
+			IInputElement activeChild = CustomFocusManager.GetFocusedChild(this);
+			WpfWorkbench.FocusDebug("{0}.FocusContent() - Will move focus (activeChild={1})", this.Title, activeChild);
+			// use lambda for fetching the active child - this is necessary because the ActiveViewContent might change until the background
+			// action is called
+			AvalonWorkbenchWindow.SetFocus(this, () => activeChild ?? (ActiveViewContent != null ? ActiveViewContent.InitiallyFocusedControl as IInputElement : null));
 		}
 		
-		internal static void SetFocus(ManagedContent m, IInputElement activeChild, bool forceSetFocus = false)
+		internal static void SetFocus(ManagedContent m, Func<IInputElement> activeChildFunc, bool forceSetFocus = false)
 		{
-			if (activeChild != null) {
-				LoggingService.Debug(m.Title + " - Will move focus to: " + activeChild);
-				m.Dispatcher.BeginInvoke(
-					DispatcherPriority.Background,
-					new Action(
-						delegate {
-							// ensure that condition for FocusContent() is still fulfilled
-							// (necessary to avoid focus switching loops when changing layouts)
-							if (!forceSetFocus && !(m.IsActiveContent && !m.IsKeyboardFocusWithin)) {
-								LoggingService.Debug(m.Title + " - not moving focus (IsActiveContent=" + m.IsActiveContent + ", IsKeyboardFocusWithin=" + m.IsKeyboardFocusWithin + ")");
-								return;
-							}
-							LoggingService.Debug(m.Title + " - moving focus to: " + activeChild);
+			m.Dispatcher.BeginInvoke(
+				DispatcherPriority.Background,
+				new Action(
+					delegate {
+						// ensure that condition for FocusContent() is still fulfilled
+						// (necessary to avoid focus switching loops when changing layouts)
+						if (!forceSetFocus && !(m.IsActiveContent && !m.IsKeyboardFocusWithin)) {
+							WpfWorkbench.FocusDebug("{0} - not moving focus (IsActiveContent={1}, IsKeyboardFocusWithin={2})",
+							                        m.Title, m.IsActiveContent, m.IsKeyboardFocusWithin);
+							return;
+						}
+						IInputElement activeChild = activeChildFunc();
+						WpfWorkbench.FocusDebug("{0} - moving focus to: {1}", m.Title, activeChild != null ? activeChild.ToString() : "<null>");
+						if (activeChild != null) {
 							Keyboard.Focus(activeChild);
-						}));
-			}
+						}
+					}));
 		}
 		
 		public bool IsDisposed { get { return false; } }
@@ -314,7 +318,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					
 					IViewContent vc = parentWindow.ActiveViewContent;
 					if (vc != null)
-						SetFocus(parentWindow, vc.InitiallyFocusedControl as IInputElement, true);
+						SetFocus(parentWindow, () => vc.InitiallyFocusedControl as IInputElement, true);
 					
 					e.Handled = true;
 				}
