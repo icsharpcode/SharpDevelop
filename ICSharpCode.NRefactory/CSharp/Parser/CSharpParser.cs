@@ -1744,10 +1744,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				for (int i = 0; i < typeArguments.Count; i++) {
 					if (location != null && i > 0 && i - 1 < location.Count)
 						parent.AddChild (new CSharpTokenNode (Convert (location[i - 1]), 1), InvocationExpression.Roles.Comma);
-					DomNode arg = (DomNode)typeArguments.Args[i];
+					var arg = typeArguments.Args[i];
 					if (arg == null)
 						continue;
-					parent.AddChild (arg.Accept (this), InvocationExpression.Roles.TypeParameter);
+					parent.AddChild ((DomNode)arg.Accept (this), InvocationExpression.Roles.TypeParameter);
 				}
 			}
 			
@@ -1758,10 +1758,10 @@ namespace ICSharpCode.NRefactory.CSharp
 				for (int i = 0; i < typeArguments.Count; i++) {
 					if (location != null && i > 0 && i - 1 < location.Count)
 						parent.AddChild (new CSharpTokenNode (Convert (location[i - 1]), 1), InvocationExpression.Roles.Comma);
-					DomNode arg = (DomNode)typeArguments.Args[i];
+					var arg = typeArguments.Args[i];
 					if (arg == null)
 						continue;
-					parent.AddChild (arg.Accept (this), InvocationExpression.Roles.TypeParameter);
+					parent.AddChild ((DomNode)arg.Accept (this), InvocationExpression.Roles.TypeParameter);
 				}
 			}
 			
