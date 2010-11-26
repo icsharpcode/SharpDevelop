@@ -396,6 +396,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (e.Handled)
 				return;
 			
+			// disable all code completion bindings when CC is disabled
+			if (!CodeCompletionOptions.EnableCodeCompletion)
+				return;
+			
 			ITextEditor adapter = GetAdapterFromSender(sender);
 			
 			foreach (char c in e.Text) {
@@ -471,6 +475,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			if (CompletionWindow != null)
 				CompletionWindow.Close();
+			
+			// disable all code completion bindings when CC is disabled
+			if (!CodeCompletionOptions.EnableCodeCompletion)
+				return;
+			
 			CodeEditorView textEditor = GetTextEditorFromSender(sender);
 			foreach (ICodeCompletionBinding cc in CodeCompletionBindings) {
 				if (cc.CtrlSpace(textEditor.Adapter)) {
