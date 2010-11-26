@@ -3,7 +3,6 @@
 
 using System;
 using System.Dynamic;
-using System.Threading;
 using System.Windows;
 using System.Windows.Data;
 
@@ -11,6 +10,8 @@ using Debugger;
 using Debugger.AddIn.Pads.Controls;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Services;
 using Exception = System.Exception;
 using Thread = Debugger.Thread;
 
@@ -113,8 +114,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (debuggedProcess.IsPaused) {
 				if (debuggedProcess != null) {
 					dynamic obj = runningThreadsList.SelectedItems[0];
-					debuggedProcess.SelectedThread = (Thread)(obj.Tag);
-					debuggedProcess.OnPaused(); // Force refresh of pads
+					Thread thread = (Thread)(obj.Tag);
+					debuggedProcess.SelectedThread = thread;
+					debuggedProcess.OnPaused();
 				}
 			} else {
 				MessageService.ShowMessage("${res:MainWindow.Windows.Debug.Threads.CannotSwitchWhileRunning}", "${res:MainWindow.Windows.Debug.Threads.ThreadSwitch}");
@@ -123,6 +125,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void AddThread(Thread thread)
 		{
+			if (thread == null) return;
+			
 			// remove the object if exists
 			RemoveThread(thread);
 			
@@ -133,16 +137,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			thread.NameChanged += delegate {
 				RefreshItem(obj);
 			};
-			thread.Exited += delegate {
-				RemoveThread(obj);
-			};
+			thread.Exited += (s, e) => RemoveThread(e.Thread);
 		}
 		
 		void RefreshItem(ExpandoObject obj)
 		{
 			dynamic item = obj;
+			
+			if (item == null) return;			
 			var thread = item.Tag as Thread;
 			
+			if (thread == null) return;
 			item.ID = thread.ID;
 			item.Tag = thread;
 			StackFrame location = null;
@@ -156,19 +161,19 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			
 			switch (thread.Priority) {
-				case ThreadPriority.Highest:
+				case System.Threading.ThreadPriority.Highest:
 					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Highest");
 					break;
-				case ThreadPriority.AboveNormal:
+				case System.Threading.ThreadPriority.AboveNormal:
 					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.AboveNormal");
 					break;
-				case ThreadPriority.Normal:
+				case System.Threading.ThreadPriority.Normal:
 					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Normal");
 					break;
-				case ThreadPriority.BelowNormal:
+				case System.Threading.ThreadPriority.BelowNormal:
 					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.BelowNormal");
 					break;
-				case ThreadPriority.Lowest:
+				case System.Threading.ThreadPriority.Lowest:
 					item.Priority = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Lowest");
 					break;
 				default:
@@ -180,6 +185,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void RemoveThread(Thread thread)
 		{
+			if (thread == null)
+				return;
+			
 			foreach (dynamic item in runningThreadsList.ItemCollection) {
 				if (thread.ID == item.ID) {
 					runningThreadsList.ItemCollection.Remove(item);
