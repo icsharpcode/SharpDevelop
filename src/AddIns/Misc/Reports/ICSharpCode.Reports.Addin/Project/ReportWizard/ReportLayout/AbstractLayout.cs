@@ -140,7 +140,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		{
 			int locationX = GlobalValues.ControlMargins.Left;
 			
-			var minCtrlWidth = CalculateControlWidth(ParentItem,ReportItems);
+			var minCtrlWidth = CalculateControlWidth(Container,ReportItems);
 			
 			var col = new ReportItemCollection();
 			
@@ -191,8 +191,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		protected void ConfigureDetails (Point detailLocation,Size detailSize)
 		{
-			ParentItem.Location = detailLocation;
-			ParentItem.Size = detailSize;
+			Container.Location = detailLocation;
+			Container.Size = detailSize;
 		}
 			
 		#endregion
@@ -200,7 +200,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		protected ReportModel ReportModel {get; private set;}
 		
 		
-		protected ISimpleContainer ParentItem {get;set;}
+		protected ISimpleContainer Container {get;set;}
 		
 		protected ReportItemCollection ReportItems {get;set;}
 		

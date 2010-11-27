@@ -40,12 +40,12 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			ICSharpCode.Reports.Core.BaseRowItem detailRow = new ICSharpCode.Reports.Core.BaseRowItem();
 			
 			table.Name = "Table1";
-			base.ParentItem = table;
+			base.Container = table;
 			AdjustContainer(base.ReportModel.DetailSection,table);
 			base.ReportModel.DetailSection.Items.Add(table);
 			
-			ICSharpCode.Reports.Core.BaseRowItem headerRow = CreateRowWithTextColumns(ParentItem);
-			ParentItem.Items.Add (headerRow);
+			ICSharpCode.Reports.Core.BaseRowItem headerRow = CreateRowWithTextColumns(Container);
+			Container.Items.Add (headerRow);
 			
 			Point insertLocation =  new Point (margin.Left,headerRow.Location.Y + headerRow.Size.Height + margin.Bottom + margin.Top);
 			
@@ -54,32 +54,32 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				
 				//Groupheader
 				var groupHeader = base.CreateGroupHeader(insertLocation);
-				ParentItem.Items.Add(groupHeader);
+				Container.Items.Add(groupHeader);
 				insertLocation = new Point(margin.Left,insertLocation.Y + groupHeader.Size.Height + margin.Bottom + margin.Top);
 				
 				//Detail
 				CreateDetail(detailRow,insertLocation);
-				ParentItem.Items.Add (detailRow);
+				Container.Items.Add (detailRow);
 				
 				// GroupFooter
 				var groupFooter = base.CreateFooter(new Point(margin.Left,130));
-				ParentItem.Items.Add(groupFooter);
+				Container.Items.Add(groupFooter);
 
 			}
 			else
 			{
 				CreateDetail(detailRow,insertLocation);
-				ParentItem.Items.Add (detailRow);
+				Container.Items.Add (detailRow);
 			}
 			
 			CalculateContainerSize();
-			section.Size = new Size (section.Size.Width,ParentItem.Size.Height + margin.Top + margin.Bottom);
+			section.Size = new Size (section.Size.Width,Container.Size.Height + margin.Top + margin.Bottom);
 		}
 		
 		
 		void CreateDetail (ICSharpCode.Reports.Core.BaseRowItem detailRow,Point insertLocation)
 		{
-			AdjustContainer (ParentItem,detailRow);
+			AdjustContainer (Container,detailRow);
 			detailRow.Location = insertLocation;
 			detailRow.Size =  new Size(detailRow.Size.Width,30);
 			int defX = AbstractLayout.CalculateControlWidth(detailRow,ReportItems);
@@ -101,12 +101,12 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		{
 			int h = GlobalValues.ControlMargins.Top;
 			
-			foreach (ICSharpCode.Reports.Core.BaseReportItem item  in ParentItem.Items)
+			foreach (ICSharpCode.Reports.Core.BaseReportItem item  in Container.Items)
 			{
 				h = h + item.Size.Height + GlobalValues.ControlMargins.Bottom;
 			}
 			h 	= h + 3*GlobalValues.ControlMargins.Bottom;
-			ParentItem.Size =  new Size (ParentItem.Size.Width,h);
+			Container.Size =  new Size (Container.Size.Width,h);
 		}
 	}
 }
