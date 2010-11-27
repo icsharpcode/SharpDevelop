@@ -229,6 +229,66 @@ Faça o download de um AddIn através da Internet, depois pressione 'Instalar Ad
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Formato de ficheiro desconhecido:</value>
   </data>
+  <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
+    <value>Ver Diagrama de Classes</value>
+  </data>
+  <data name="AddIns.Git.TortoiseGitRequired" xml:space="preserve">
+    <value>Necessita instalar o TortoiseGit para executar esta acção</value>
+  </data>
+  <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
+    <value>Conteúdo</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
+    <value>Mostrar Conteúdo</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplaySearchCommand" xml:space="preserve">
+    <value>Procurar</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
+    <value>Biblioteca de Ajuda</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
+    <value>Mode de Ajuda</value>
+  </data>
+  <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
+    <value>Catálogos de Ajuda instalados.</value>
+  </data>
+  <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
+    <value>Visualizador de Ajuda da Microsoft</value>
+  </data>
+  <data name="AddIns.HelpViewer.OfflineFeatureRequestMsg" xml:space="preserve">
+    <value>Prentende utilizar uma funcionalidade Local no modo de Ajuda Na Internet. Deve mudar o modo para utilizar esta funcionalidade.</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
+    <value>Procurar</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchLookForLabel" xml:space="preserve">
+    <value>Procurar por:</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchPadTitle" xml:space="preserve">
+    <value>Procurar</value>
+  </data>
+  <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
+    <value>Mostrar Ajuda</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
+    <value>Utilizar ajuda externa</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
+    <value>Eu quero usar ajuda local</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOnlineHelpLabel" xml:space="preserve">
+    <value>Eu quero usar ajuda na internet</value>
+  </data>
+  <data name="AddIns.HexEditor.DefaultBytesPerLine" xml:space="preserve">
+    <value>Numéro de bytes por linha</value>
+  </data>
+  <data name="AddIns.HexEditor.Display" xml:space="preserve">
+    <value>Ver</value>
+  </data>
+  <data name="AddIns.HexEditor.Display.Elements" xml:space="preserve">
+    <value>Elementos</value>
+  </data>
   <data name="AddIns.HtmlHelp2.AddToFavorites" xml:space="preserve">
     <value>Adicionar para favoritos de Ajuda</value>
   </data>
@@ -5245,18 +5305,6 @@ Vá a 'Opções -&gt; Estilo Visual' e altere o ambiente de linguagem actual.</v
   <data name="SharpDevelop.Solution.AllKnownProjectFormats" xml:space="preserve">
     <value>Todos os formatos conhecidos de projecto</value>
   </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion7" xml:space="preserve">
-    <value>Encontrado projecto Visual Studio.NET. Devo converter o mesmo numa Solução Formato 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion8" xml:space="preserve">
-    <value>Encontrado Projecto Visual Studio.NET 2003. Devo converter o mesmo numa Solução Formato 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportCmbx" xml:space="preserve">
-    <value>Deve o combine SharpDevelop 1.x ser convertido numa solução SharpDevelop 2.x?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportPrjx" xml:space="preserve">
-    <value>Deve o projecto SharpDevelop 1.x ser convertido num projecto SharpDevelop 2.x?</value>
-  </data>
   <data name="SharpDevelop.Solution.ImportResourceWarning" xml:space="preserve">
     <value>Havia ficheiros de recursos no projecto.
 SharpDevelop 2 compila os recursos de forma diferente: o nome do recurso não é só o nome do ficheiro, mas é prefixado à raiz do espaço de nomeação e ao nome da pasta.
@@ -6253,7 +6301,7 @@ Os ficheiros de recursos foram renomeados/movidos em conformidade.</value>
   <data name="XML.MainMenu.FileMenu.New.File.Description" xml:space="preserve">
     <value>Abrir um novo buffer</value>
   </data>
-  <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+  <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>&amp;Solução…</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">

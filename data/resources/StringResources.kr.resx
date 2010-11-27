@@ -5745,18 +5745,6 @@ Windows Forms 구성 요소가 아무 것도 사용가능하지 않습니다. �
   <data name="SharpDevelop.Solution.CannotSave.UnauthorizedAccessException" xml:space="preserve">
     <value>{0}을(를) 저장할 수 없습니다:\n{1}\n\n이 파일에 쓰기가 가능한지 확인하십시오.</value>
   </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion7" xml:space="preserve">
-    <value>Visual Studio.NET 프로젝트가 발견되었습니다. 솔루션 형식 9.00 (Visual Studio 2005)으로 변환하겠습니까?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion8" xml:space="preserve">
-    <value>Visual Studio.NET 2003 프로젝트가 발견되었습니다. 솔루션 형식 9.00 (Visual Studio 2005)으로 변환하겠습니까?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportCmbx" xml:space="preserve">
-    <value>ShaprDevelop 1.x 컴바인을 SharpDevelop 2.x 솔루션으로 변환하겠습니까?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportPrjx" xml:space="preserve">
-    <value>SharpProject 1.x 프로젝트 파일을 SharpProject 2.x 프로젝트로 변환하겠습니까?</value>
-  </data>
   <data name="SharpDevelop.Solution.ImportResourceWarning" xml:space="preserve">
     <value>이 프로젝트에 리소스 파일이 있었습니다.
 SharpDevelop 2는 리소스를 다른 방법으로 컴파일합니다: 리소스 이름이 단순히 파일 이름이 아니라, 루트 네임스페이스와 디렉터리 이름이 앞에 붙어 있습니다.
@@ -6804,7 +6792,7 @@ SharpDevelop 2는 리소스를 다른 방법으로 컴파일합니다: 리소스
   <data name="XML.MainMenu.FileMenu.New.File.Description" xml:space="preserve">
     <value>새 버퍼를 엽니다.</value>
   </data>
-  <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+  <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>솔루션(&amp;S)...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">

@@ -5363,6 +5363,12 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="MainWindow.Windows.BookmarkPad.GotoPrev.ToolTip" xml:space="preserve">
     <value>Aller au marque-page précédent</value>
   </data>
+  <data name="MainWindow.Windows.BookmarkPad.LineText" xml:space="preserve">
+    <value>{0} @ligne {1}</value>
+  </data>
+  <data name="MainWindow.Windows.BookmarkPad.LocationText" xml:space="preserve">
+    <value>Emplacement</value>
+  </data>
   <data name="MainWindow.Windows.BookmarksLabel" xml:space="preserve">
     <value>Marque-pages</value>
   </data>
@@ -5470,6 +5476,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Condition" xml:space="preserve">
     <value>Conditionnel</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.ConditionalColumnHeader" xml:space="preserve">
+    <value>Condition</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Continue" xml:space="preserve">
     <value>Continuer</value>
@@ -6057,6 +6066,15 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="ProjectComponent.RemoveAllWebReferences.Title" xml:space="preserve">
     <value>Supprimer toutes les références web</value>
   </data>
+  <data name="ReflectorAddIn.IdeOptions.FindReflectorPath" xml:space="preserve">
+    <value>Sélectionner l'emplacement de Reflector</value>
+  </data>
+  <data name="ReflectorAddIn.IdeOptions.ReflectorFoundInPath" xml:space="preserve">
+    <value>Reflector introuvable à l'emplacement suivant:</value>
+  </data>
+  <data name="ReflectorAddIn.IdeOptions.ReflectorTitle" xml:space="preserve">
+    <value>Reflector</value>
+  </data>
   <data name="ReflectorAddIn.OpenReflectorCommand" xml:space="preserve">
     <value>Ouvrir Reflector .NET</value>
   </data>
@@ -6483,6 +6501,10 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="SharpDevelop.Solution.AllKnownProjectFormats" xml:space="preserve">
     <value>Formats de projet connus</value>
   </data>
+  <data name="SharpDevelop.Solution.CannotLoadOldSolution" xml:space="preserve">
+    <value>Cette version de SharpDevelop ne peut pas charger des projets créés avec Visual Studio 2003.
+Essayez SD3.2 pour une conversion; ou créez un nouveau projet et ajoutez les fichiers existant.</value>
+  </data>
   <data name="SharpDevelop.Solution.CannotSave.IOException" xml:space="preserve">
     <value>Impossible de sauvegarder {0}:\n{1}</value>
   </data>
@@ -6491,18 +6513,6 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="SharpDevelop.Solution.CannotSave.UnauthorizedAccessException" xml:space="preserve">
     <value>Impossible de sauvegarder {0}:\n{1}\n\nAssurez vous que le fichier est accessible en écriture.</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion7" xml:space="preserve">
-    <value>Un projet VS.NET trouvé. Doit-il être converti en solution VS.NET 2005 (format de solution 9.00)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion8" xml:space="preserve">
-    <value>Un projet VS.NET 2003 trouvé. Doit-il être converti en solution VS.NET 2005 (format de solution 9.00)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportCmbx" xml:space="preserve">
-    <value>Cette solution SharpDevelop 1.x doit-elle être convertie en solution SharpDevelop 2.x?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportPrjx" xml:space="preserve">
-    <value>Ce projet SharpDevelop 1.x doit-il être converti en projet SharpDevelop 2.x?</value>
   </data>
   <data name="SharpDevelop.Solution.ImportResourceWarning" xml:space="preserve">
     <value>Il y avait des fichiers de resources dans le projet.
@@ -7428,6 +7438,9 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
   <data name="XML.MainMenu.DebugMenu.Error.ProcessRunning" xml:space="preserve">
     <value>Impossible de réaliser l'action car une tâche est en cours.</value>
   </data>
+  <data name="XML.MainMenu.DebugMenu.RemoveAllBreakpoints" xml:space="preserve">
+    <value>Supprimer tous les points d'arrêt</value>
+  </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
     <value>Exécuter &amp;sans débogueur</value>
   </data>
@@ -7597,6 +7610,9 @@ Les fichiers de resources ont été renommés/déplacés en conséquence.</value
     <value>Ouvrir un nouveau buffer</value>
   </data>
   <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+    <value>&amp;Projet...</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>&amp;Solution...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">

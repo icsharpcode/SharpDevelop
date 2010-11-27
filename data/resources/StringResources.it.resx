@@ -4305,18 +4305,6 @@ Vai a 'Opzioni-&gt;Stile visuale' e cambia l'attuale ambiente di linguaggio.</va
   <data name="SharpDevelop.Solution.AllKnownProjectFormats" xml:space="preserve">
     <value>Tutti i formati di progetto conosciuti</value>
   </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion7" xml:space="preserve">
-    <value>Trovato progetto Visual Studio.NET. Vuoi convertirlo nel formato 9.0 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion8" xml:space="preserve">
-    <value>Trovato un progetto Visual Studio.NET 2003. Vuoi convertirlo nel formato 9.0 (Visua Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportCmbx" xml:space="preserve">
-    <value>Si deve convertire la combinazione SharpDevelop 1.x in una soluzione SharpDevelop 2.x ?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportPrjx" xml:space="preserve">
-    <value>Si deve convertire il progetto versione 1.x alla versione 2.x?</value>
-  </data>
   <data name="SharpDevelop.Solution.ImportResourceWarning" xml:space="preserve">
     <value>C'erano dei file di riorsa nel progetto.
 SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è solo il nome del file, ma è prefissato con il nome del namespace radice e della cartella.</value>
@@ -5210,7 +5198,7 @@ SharpDevelop 2 compila le risorse differentemente: il nome della risorsa non è 
   <data name="XML.MainMenu.FileMenu.New.File.Description" xml:space="preserve">
     <value>Apri nuovo buffer</value>
   </data>
-  <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+  <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>&amp;Soluzione...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">
