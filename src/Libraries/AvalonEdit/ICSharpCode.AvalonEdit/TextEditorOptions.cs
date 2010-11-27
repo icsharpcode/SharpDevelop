@@ -268,13 +268,13 @@ namespace ICSharpCode.AvalonEdit
 			}
 		}
 		
-		double wordWrapIndentation = 100;
+		double wordWrapIndentation = 0;
 		
 		/// <summary>
 		/// Gets/Sets the indentation used for all lines except the first when word-wrapping.
 		/// The default value is 0.
 		/// </summary>
-		[DefaultValue(100)]
+		[DefaultValue(0.0)]
 		public virtual double WordWrapIndentation {
 			get { return wordWrapIndentation; }
 			set {
