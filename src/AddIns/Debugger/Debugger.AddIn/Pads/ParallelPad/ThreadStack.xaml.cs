@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,21 +26,27 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			DependencyProperty.Register("IsSelected", typeof(bool), typeof(ThreadStack),
 			                            new FrameworkPropertyMetadata());
 		
-		
 		public event EventHandler FrameSelected;
 		
 		private ObservableCollection<ExpandoObject> itemCollection = new ObservableCollection<ExpandoObject>();
 		
 		private ToolTip toolTip = new ToolTip();
+		private List<uint> threadIds = new List<uint>();
 		
 		public ThreadStack()
 		{
 			InitializeComponent();
-			ToolTip = toolTip;
-			ToolTipOpening += new ToolTipEventHandler(OnToolTipOpening);
+			datagrid.ToolTip = toolTip;
+			datagrid.ToolTipOpening += OnToolTipOpening;
+			datagrid.PreviewMouseMove += new MouseEventHandler(datagrid_PreviewMouseMove);
+			datagrid.MouseLeave += delegate { toolTip.IsOpen = false; };
 		}
 		
+		#region Public Properties
+		
 		public Process Process { get; set; }
+		
+		public int Level { get; set; }
 		
 		public bool IsSelected {
 			get { return (bool)GetValue(IsSelectedProperty); }
@@ -61,9 +68,13 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		
 		public ThreadStack ThreadStackParent { get; set; }
 		
-		public ThreadStack[] ThreadStackChildren { get; set; }
+		public List<ThreadStack> ThreadStackChildren { get; set; }
 		
-		public List<uint> ThreadIds { get; set; }
+		public List<uint> ThreadIds {
+			get {
+				return threadIds;
+			}
+		}
 		
 		public ObservableCollection<ExpandoObject> ItemCollection {
 			get {
@@ -73,12 +84,21 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			set {
 				itemCollection = value;
 				this.datagrid.ItemsSource = itemCollection;
-				
-				if (ThreadIds.Count > 1)
-					this.HeaderText.Text = ThreadIds.Count.ToString() + " Threads";
-				else
-					this.HeaderText.Text = "1 Thread";
 			}
+		}
+		
+		#endregion
+		
+		#region Public Methods
+		
+		public void UpdateThreadIds(params uint[] threadIds)
+		{
+			this.threadIds.AddRange(threadIds);
+			
+			if (this.threadIds.Count > 1)
+				this.HeaderText.Text = this.threadIds.Count.ToString() + " Threads";
+			else
+				this.HeaderText.Text = "1 Thread";
 		}
 		
 		public void ClearImages()
@@ -88,7 +108,11 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			}
 		}
 		
-		void SelectParent(bool isSelected)
+		#endregion
+		
+		#region Private Methods
+		
+		private void SelectParent(bool isSelected)
 		{
 			var ts = this.ThreadStackParent;
 			while(ts != null) {
@@ -97,7 +121,24 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			}
 		}
 		
-		void Datagrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+		void datagrid_PreviewMouseMove(object sender, MouseEventArgs e)
+		{
+			var result = VisualTreeHelper.HitTest(this, e.GetPosition(this));
+			if (result != null)
+			{
+				var row = TryFindParent<DataGridRow>(result.VisualHit);
+				if (row != null)
+				{
+					datagrid.SelectedItem = row.DataContext;
+					if (toolTip.IsOpen)
+						toolTip.IsOpen = false;
+					toolTip.IsOpen = true;
+					e.Handled = true;
+				}
+			}
+		}
+		
+		private void Datagrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
 			if (Process.IsRunning) return;
 			
@@ -114,7 +155,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			}
 		}
 		
-		void SelectFrame(uint threadId, ExpandoObject selectedItem)
+		private void SelectFrame(uint threadId, ExpandoObject selectedItem)
 		{
 			if (selectedItem == null)
 				return;
@@ -142,7 +183,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			}
 		}
 		
-		void Datagrid_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+		private void Datagrid_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
 		{
 			if (Process.IsRunning) return;
 			
@@ -154,7 +195,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			datagrid.ContextMenu.IsOpen = true;
 		}
 		
-		ContextMenu CreateContextMenu(ExpandoObject item)
+		private ContextMenu CreateContextMenu(ExpandoObject item)
 		{
 			dynamic obj = item;
 			
@@ -177,7 +218,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			return menu;
 		}
 		
-		void OnToolTipOpening(object sender, ToolTipEventArgs e)
+		private void OnToolTipOpening(object sender, ToolTipEventArgs e)
 		{
 			StackPanel panel = new StackPanel();
 			
@@ -196,7 +237,6 @@ namespace Debugger.AddIn.Pads.ParallelPad
 					{
 						if (selectedItem.MethodName == frame.GetMethodName())
 						{
-							// TODO : get method parameter values
 							TextBlock tb = new TextBlock();
 							tb.Text = thread.ID + ": " + CallStackPadContent.GetFullName(frame);
 							panel.Children.Add(tb);
@@ -207,5 +247,53 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			
 			this.toolTip.Content = panel;
 		}
+		
+		#endregion
+		
+		#region Static Methods
+		
+		private static T TryFindParent<T>(DependencyObject child) where T : DependencyObject
+		{
+			if (child is T) return child as T;
+
+			DependencyObject parentObject = GetParentObject(child);
+			if (parentObject == null) return null;
+
+			var parent = parentObject as T;
+			if (parent != null && parent is T)
+			{
+				return parent;
+			}
+			else
+			{
+				return TryFindParent<T>(parentObject);
+			}
+		}
+
+		private static DependencyObject GetParentObject(DependencyObject child)
+		{
+			if (child == null) return null;
+
+			ContentElement contentElement = child as ContentElement;
+			if (contentElement != null)
+			{
+				DependencyObject parent = ContentOperations.GetParent(contentElement);
+				if (parent != null) return parent;
+
+				FrameworkContentElement fce = contentElement as FrameworkContentElement;
+				return fce != null ? fce.Parent : null;
+			}
+
+			FrameworkElement frameworkElement = child as FrameworkElement;
+			if (frameworkElement != null)
+			{
+				DependencyObject parent = frameworkElement.Parent;
+				if (parent != null) return parent;
+			}
+
+			return VisualTreeHelper.GetParent(child);
+		}
+		
+		#endregion
 	}
 }

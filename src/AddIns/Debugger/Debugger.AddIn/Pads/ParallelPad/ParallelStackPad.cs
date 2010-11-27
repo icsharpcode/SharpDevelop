@@ -23,8 +23,10 @@ namespace Debugger.AddIn.Pads.ParallelPad
 	{
 		private DrawSurface surface;
 		private Process debuggedProcess;
-		
+		private ParallelStacksGraph graph;
 		private List<ThreadStack> currentThreadStacks = new List<ThreadStack>();
+		
+		#region Overrides
 		
 		protected override void InitializeComponents()
 		{
@@ -50,16 +52,6 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			DebuggerService.DebugStarted += OnReset;
 			DebuggerService.DebugStopped += OnReset;
 			
-			RefreshPad();
-		}
-
-		void OnReset(object sender, EventArgs e)
-		{
-			currentThreadStacks.Clear();
-		}
-
-		void debuggedProcess_Paused(object sender, ProcessEventArgs e)
-		{
 			RefreshPad();
 		}
 		
@@ -101,7 +93,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 					if (stack == null)
 						continue;
 					if (stack.ThreadStackParent != null &&
-					    (stack.ThreadStackChildren == null || stack.ThreadStackChildren.Length == 0))
+					    (stack.ThreadStackChildren == null || stack.ThreadStackChildren.Count == 0))
 						continue;
 					
 					graph.AddVertex(stack);
@@ -113,12 +105,24 @@ namespace Debugger.AddIn.Pads.ParallelPad
 				surface.SetGraph(graph);
 			}
 		}
+
+		#endregion
 		
-		ParallelStacksGraph graph;
+		#region Private Methods
 		
-		void AddChildren(ThreadStack parent)
+		private void OnReset(object sender, EventArgs e)
 		{
-			if(parent.ThreadStackChildren == null || parent.ThreadStackChildren.Length == 0)
+			currentThreadStacks.Clear();
+		}
+
+		private void debuggedProcess_Paused(object sender, ProcessEventArgs e)
+		{
+			RefreshPad();
+		}
+		
+		private void AddChildren(ThreadStack parent)
+		{
+			if(parent.ThreadStackChildren == null || parent.ThreadStackChildren.Count == 0)
 				return;
 			
 			foreach (var ts in parent.ThreadStackChildren)
@@ -128,7 +132,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 				graph.AddVertex(ts);
 				graph.AddEdge(new ParallelStacksEdge(parent, ts));
 				
-				if (ts.ThreadStackChildren == null || ts.ThreadStackChildren.Length == 0)
+				if (ts.ThreadStackChildren == null || ts.ThreadStackChildren.Count == 0)
 					continue;
 				
 				AddChildren(ts);
@@ -160,7 +164,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 				foreach (var stack in currentThreadStacks) {
 					int count = stack.ItemCollection.Count;
 					dynamic frame = stack.ItemCollection[count - 1];
-					string fullname = frame.MethodName;
+					string fullname = frame.MethodName + stack.Level.ToString();
 					
 					if (!commonFrameThreads.ContainsKey(fullname))
 						commonFrameThreads.Add(fullname, new List<ThreadStack>());
@@ -217,7 +221,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 					// remove last [frameIndex] and create a new ThreadStack as the parent of what remained in the children
 					var threadIds = new List<uint>();
 					var parentItems = new Stack<ExpandoObject>();
-					int j = 0;
+
 					while (frameIndex > 0) {
 						for (int i = 0 ; i < listOfCurrentStacks.Count; ++i) {
 							var stack = listOfCurrentStacks[i];
@@ -229,24 +233,31 @@ namespace Debugger.AddIn.Pads.ParallelPad
 							#endif
 							if (i == 0)
 								parentItems.Push(stack.ItemCollection[indexToRemove]);
-							if (i == j)
-								threadIds.AddRange(stack.ThreadIds);
 							
 							stack.ItemCollection.RemoveAt(indexToRemove);
 						}
-						j++;
+						
 						frameIndex--;
 					}
+					
+					// update thread ids
+					for (int i = 0 ; i < listOfCurrentStacks.Count; ++i)
+						threadIds.AddRange(listOfCurrentStacks[i].ThreadIds);
+					
 					// remove stacks with no items
 					for (int i = listOfCurrentStacks.Count - 1; i >= 0; --i) {
 						var stack = listOfCurrentStacks[i];
 						if (stack.ItemCollection.Count == 0)
 							listOfCurrentStacks.Remove(stack);
 					}
+
+					// increase the Level
+					for (int i = 0 ; i < listOfCurrentStacks.Count; ++i)
+						listOfCurrentStacks[i].Level++;
 					
 					// create new parent stack
 					ThreadStack commonParent = new ThreadStack();
-					commonParent.ThreadIds = threadIds;
+					commonParent.UpdateThreadIds(threadIds.ToArray());
 					commonParent.ItemCollection = parentItems.ToObservable();
 					commonParent.Process = debuggedProcess;
 					commonParent.FrameSelected += threadStack_FrameSelected;
@@ -259,15 +270,48 @@ namespace Debugger.AddIn.Pads.ParallelPad
 							continue;
 						}
 						dynamic item = stack.ItemCollection[stack.ItemCollection.Count - 1];
-						stack.ThreadStackParent = commonParent;
-						string currentName = item.MethodName;
-						var newList = new List<ThreadStack>();
-						newList.Add(stack);
+						// add the parent to the parent
+						if (stack.ThreadStackParent != null) {
+							// remove stack from it's parent because it will have the commonParent as parent
+							stack.ThreadStackParent.ThreadStackChildren.Remove(stack);
+							commonParent.ThreadStackParent = stack.ThreadStackParent;
+							commonParent.ThreadStackParent.ThreadStackChildren.Add(commonParent);
+							// set level
+							commonParent.Level = stack.Level - 1;
+						}
 						
-						commonFrameThreads.Add(currentName, newList);
+						// update thread ids
+						var parent = commonParent.ThreadStackParent;
+						if (parent != null) {
+							if (parent.ThreadIds != null)
+							{
+								var list = new List<uint>();
+								foreach (uint id in commonParent.ThreadIds) {
+									if (!parent.ThreadIds.Contains(id)) {
+										list.Add(id);
+									}
+								}
+								
+								parent.UpdateThreadIds(list.ToArray());
+							}
+						}
+						
+						stack.ThreadStackParent = commonParent;
+						string currentName = item.MethodName + stack.Level.ToString();;
+						
+						// add name or add to list
+						if (!commonFrameThreads.ContainsKey(currentName)) {
+							var newList = new List<ThreadStack>();
+							newList.Add(stack);
+							commonFrameThreads.Add(currentName, newList);
+						}
+						else {
+							var list = commonFrameThreads[currentName];
+							list.Add(stack);
+						}
 					}
 					
-					commonParent.ThreadStackChildren = listOfCurrentStacks.ToArray();
+					commonParent.ThreadStackChildren = listOfCurrentStacks.Clone();
 					commonFrameThreads[frameName].Clear();
 					commonFrameThreads[frameName].Add(commonParent);
 					currentThreadStacks.Add(commonParent);
@@ -289,8 +333,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			
 			ThreadStack threadStack = new ThreadStack();
 			threadStack.FrameSelected += threadStack_FrameSelected;
-			threadStack.ThreadIds = new List<uint>();
-			threadStack.ThreadIds.Add(thread.ID);
+			threadStack.UpdateThreadIds(thread.ID);
 			threadStack.Process = debuggedProcess;
 			currentThreadStacks.Add(threadStack);
 			
@@ -299,7 +342,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 				threadStack.IsSelected = threadStack.ThreadIds.Contains(debuggedProcess.SelectedThread.ID);
 		}
 
-		void threadStack_FrameSelected(object sender, EventArgs e)
+		private void threadStack_FrameSelected(object sender, EventArgs e)
 		{
 			foreach (var ts in this.currentThreadStacks) {
 				ts.IsSelected = false;
@@ -346,6 +389,8 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			
 			return result;
 		}
+		
+		#endregion
 	}
 	
 	internal static class StackFrameExtensions
@@ -366,6 +411,18 @@ namespace Debugger.AddIn.Pads.ParallelPad
 	
 	internal static class ParallelStackExtensions
 	{
+		internal static List<T> Clone<T>(this List<T> listToClone)
+		{
+			if (listToClone == null)
+				return null;
+			
+			List<T> result = new List<T>();
+			foreach (var item in listToClone)
+				result.Add(item);
+			
+			return result;
+		}
+		
 		internal static ObservableCollection<T> ToObservable<T>(this Stack<T> stack)
 		{
 			if (stack == null)
