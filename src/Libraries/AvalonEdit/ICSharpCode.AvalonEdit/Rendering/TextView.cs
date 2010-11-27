@@ -544,7 +544,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			VisualLine l = GetVisualLine(documentLine.LineNumber);
 			if (l == null) {
 				TextRunProperties globalTextRunProperties = CreateGlobalTextRunProperties();
-				TextParagraphProperties paragraphProperties = CreateParagraphProperties(globalTextRunProperties);
+				VisualLineTextParagraphProperties paragraphProperties = CreateParagraphProperties(globalTextRunProperties);
 				
 				while (heightTree.GetIsCollapsed(documentLine)) {
 					documentLine = documentLine.PreviousLine;
@@ -710,7 +710,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		double CreateAndMeasureVisualLines(Size availableSize)
 		{
 			TextRunProperties globalTextRunProperties = CreateGlobalTextRunProperties();
-			TextParagraphProperties paragraphProperties = CreateParagraphProperties(globalTextRunProperties);
+			VisualLineTextParagraphProperties paragraphProperties = CreateParagraphProperties(globalTextRunProperties);
 			
 			Debug.WriteLine("Measure availableSize=" + availableSize + ", scrollOffset=" + scrollOffset);
 			var firstLineInView = heightTree.GetLineByVisualPosition(scrollOffset.Y);
@@ -786,7 +786,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			};
 		}
 		
-		TextParagraphProperties CreateParagraphProperties(TextRunProperties defaultTextRunProperties)
+		VisualLineTextParagraphProperties CreateParagraphProperties(TextRunProperties defaultTextRunProperties)
 		{
 			return new VisualLineTextParagraphProperties {
 				defaultTextRunProperties = defaultTextRunProperties,
@@ -797,7 +797,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		VisualLine BuildVisualLine(DocumentLine documentLine,
 		                           TextRunProperties globalTextRunProperties,
-		                           TextParagraphProperties paragraphProperties,
+		                           VisualLineTextParagraphProperties paragraphProperties,
 		                           VisualLineElementGenerator[] elementGeneratorsArray,
 		                           IVisualLineTransformer[] lineTransformersArray,
 		                           Size availableSize)
@@ -829,6 +829,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			int textOffset = 0;
 			TextLineBreak lastLineBreak = null;
 			var textLines = new List<TextLine>();
+			paragraphProperties.indent = 0;
+			paragraphProperties.firstLineInParagraph = true;
 			while (textOffset <= visualLine.VisualLength) {
 				TextLine textLine = formatter.FormatLine(
 					textSource,
@@ -840,11 +842,51 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				textLines.Add(textLine);
 				textOffset += textLine.Length;
 				
+				// exit loop so that we don't do the indentation calculation if there's only a single line
+				if (textOffset >= visualLine.VisualLength)
+					break;
+				
+				if (paragraphProperties.firstLineInParagraph) {
+					paragraphProperties.firstLineInParagraph = false;
+					
+					TextEditorOptions options = this.Options;
+					double indentation = 0;
+					if (options.InheritWordWrapIndentation) {
+						// determine indentation for next line:
+						int indentVisualColumn = GetIndentationVisualColumn(visualLine);
+						if (indentVisualColumn > 0 && indentVisualColumn < textOffset) {
+							indentation = textLine.GetDistanceFromCharacterHit(new CharacterHit(indentVisualColumn, 0));
+						}
+					}
+					indentation += options.WordWrapIndentation;
+					// apply the calculated indentation unless it's more than half of the text editor size:
+					if (indentation > 0 && indentation * 2 < availableSize.Width)
+						paragraphProperties.indent = indentation;
+				}
 				lastLineBreak = textLine.GetTextLineBreak();
 			}
 			visualLine.SetTextLines(textLines);
 			heightTree.SetHeight(visualLine.FirstDocumentLine, visualLine.Height);
 			return visualLine;
+		}
+		
+		static int GetIndentationVisualColumn(VisualLine visualLine)
+		{
+			if (visualLine.Elements.Count == 0)
+				return 0;
+			int column = 0;
+			int elementIndex = 0;
+			VisualLineElement element = visualLine.Elements[elementIndex];
+			while (element.IsWhitespace(column)) {
+				column++;
+				if (column == element.VisualColumn + element.VisualLength) {
+					elementIndex++;
+					if (elementIndex == visualLine.Elements.Count)
+						break;
+					element = visualLine.Elements[elementIndex];
+				}
+			}
+			return column;
 		}
 		#endregion
 		
