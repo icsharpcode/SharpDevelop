@@ -336,6 +336,7 @@ namespace ICSharpCode.FormsDesigner
 			hasUnmergedChanges = true;
 			this.DesignerCodeFile.MakeDirty();
 			this.resourceStore.MarkResourceFilesAsDirty();
+			System.Windows.Input.CommandManager.InvalidateRequerySuggested();
 		}
 		
 		bool shouldUpdateSelectableObjects = false;
@@ -686,6 +687,7 @@ namespace ICSharpCode.FormsDesigner
 			object[] selArray = new object[selection.Count];
 			selection.CopyTo(selArray, 0);
 			propertyContainer.SelectedObjects = selArray;
+			System.Windows.Input.CommandManager.InvalidateRequerySuggested();
 		}
 		
 		protected void UpdatePropertyPad()
