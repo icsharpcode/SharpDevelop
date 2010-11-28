@@ -778,12 +778,13 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		TextRunProperties CreateGlobalTextRunProperties()
 		{
-			return new GlobalTextRunProperties {
-				typeface = this.CreateTypeface(),
-				fontRenderingEmSize = FontSize,
-				foregroundBrush = (Brush)GetValue(Control.ForegroundProperty),
-				cultureInfo = CultureInfo.CurrentCulture
-			};
+			var p = new GlobalTextRunProperties();
+			p.typeface = this.CreateTypeface();
+			p.fontRenderingEmSize = FontSize;
+			p.foregroundBrush = (Brush)GetValue(Control.ForegroundProperty);
+			ExtensionMethods.CheckIsFrozen(p.foregroundBrush);
+			p.cultureInfo = CultureInfo.CurrentCulture;
+			return p;
 		}
 		
 		VisualLineTextParagraphProperties CreateParagraphProperties(TextRunProperties defaultTextRunProperties)
