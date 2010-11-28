@@ -158,6 +158,7 @@
 		</ComplexCondition>
 	</Path>
 	
+	<!-- Disabled because booish is broken on .NET 4.0 (SD-1766)
 	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id       = "BooIshPad"
 		     category = "Main"
@@ -167,4 +168,5 @@
 		     class    = "Grunwald.BooBinding.InteractiveInterpreterPad"
 		     defaultPosition = "Bottom, Hidden" />
 	</Path>
+	-->
 </AddIn>

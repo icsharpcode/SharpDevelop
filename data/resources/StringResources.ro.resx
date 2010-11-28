@@ -3402,18 +3402,6 @@ Toate modificările se vor pierde.</value>
   <data name="SharpDevelop.Solution.AllKnownProjectFormats" xml:space="preserve">
     <value>Toate formatele de proiect cunoscute</value>
   </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion7" xml:space="preserve">
-    <value>Proiectul este în format Visual Studio.NET. Doriţi convertirea lui în Solution Format 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion8" xml:space="preserve">
-    <value>Proiectul este în format Visual Studio.NET 2003. Doriţi convertirea lui în Solution Format 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportCmbx" xml:space="preserve">
-    <value>Combinaţia SharpDevelop 1.x ar trebui convertită într-o soluţie SharpDevelop 2.x?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportPrjx" xml:space="preserve">
-    <value>Proiectul SharpDevelop 1.x ar trebui convertit într-un proiect SharpDevelop 2.x?</value>
-  </data>
   <data name="SharpDevelop.Solution.ImportResourceWarningErrorText" xml:space="preserve">
     <value>Următoarele fişiere nu pot fi redenumite/mutate automat:</value>
   </data>
@@ -4191,7 +4179,7 @@ Toate modificările se vor pierde.</value>
   <data name="XML.MainMenu.FileMenu.New.File.Description" xml:space="preserve">
     <value>Deschidere memorie tampon nouă</value>
   </data>
-  <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+  <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>&amp;Soluţie...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">

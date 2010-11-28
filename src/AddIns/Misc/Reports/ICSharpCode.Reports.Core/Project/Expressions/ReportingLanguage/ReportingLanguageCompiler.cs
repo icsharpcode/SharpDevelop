@@ -17,7 +17,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 	/// </summary>
 	public class ReportingLanguageCompiler:SimpleExpressionLanguageCompiler
 	{
-		private IPageInfo singlePage;
+//		private IPageInfo singlePage;
 		private ReportingLanguage reportingLanguage;
 		private Compiler compiler;
 		
@@ -97,9 +97,6 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 					return CompileExpressionNode(factory, astNode.ChildNodes[2]);
 				case "FieldsSectionStmt" :
 					//return CompileExpressionNode (factory,astNode.ChildNodes[2]);
-					object o0 =astNode.ChildNodes[0].Token.Text;
-					object o1 =astNode.ChildNodes[1].Token.Text;
-					object o2 =astNode.ChildNodes[2].Token.Text;
 					IExpression l = CompileExpressionNode(factory, astNode.ChildNodes[2]);
 					return factory.CreateFunction(astNode.ChildNodes[0].Token.Text,
 					                              l);
@@ -187,122 +184,7 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		}
 		
 		
-		
-		// don't call base
-		protected  IExpression old_CompileExpressionNode(IExpressionNodeFactory factory,ParseTreeNode astNode)
-//		protected override IExpression old_CompileExpressionNode(IExpressionNodeFactory factory,ParseTreeNode astNode)
-		{
-			switch (astNode.Term.Name)
-			{
-				case "Number":
-					var num = TypeNormalizer.EnsureType<double>(astNode.Token.Value);
-					return factory.CreateLiteral(num);
-				case "String":
-					var str = TypeNormalizer.EnsureType<string>(astNode.Token.Value);
-					return factory.CreateLiteral(str);
-				case "Boolean":
-					var bln = TypeNormalizer.EnsureType<bool>(astNode.Token.Value);
-					return factory.CreateLiteral(bln);
-				case "Identifier":
-					var variable = astNode.Token.Value;
-					if (variable != null)
-						return factory.CreateVariable(variable.ToString());
-					break;
-				case "Symbol" :
-					var str_1 = TypeNormalizer.EnsureType<string>(astNode.Token.Value);
-					return factory.CreateLiteral(str_1);
-				case "UserSectionStmt":
-					return factory.CreateFunction(astNode.ChildNodes[2].Token.Text,null);
-				case "GlobalSectionStmt" :
-					return factory.CreateLiteral(this.SinglePage.EvaluatePropertyPath(astNode.ChildNodes[2].Token.Text));
-				case "ParameterSectionStmt" :
-					return CompileExpressionNode(factory, astNode.ChildNodes[2]);
-					
-				case "ParExpr" :
-					return CompileExpressionNode(factory, astNode.ChildNodes[0]);
-					
-				case "BinExpr":
-					if (astNode.ChildNodes.Count == 3 &&
-					    astNode.ChildNodes[1].Term is SymbolTerminal)
-					{
-						IExpression left = CompileExpressionNode(factory, astNode.ChildNodes[0]);
-						IExpression right = CompileExpressionNode(factory, astNode.ChildNodes[2]);
-						return factory.CreateBinaryOperator(astNode.ChildNodes[1].Term.Name, left, right);
-					}
-					if (astNode.ChildNodes.Count == 2 &&
-					    astNode.ChildNodes[0].Term is SymbolTerminal)
-					{
-						IExpression arg = CompileExpressionNode(factory, astNode.ChildNodes[1]);
-						return factory.CreateUnaryOperator(astNode.ChildNodes[0].Term.Name, arg);
-					}
-					if (astNode.ChildNodes.Count == 2 &&
-					    astNode.ChildNodes[1].Term is SymbolTerminal)
-					{
-						IExpression arg = CompileExpressionNode(factory, astNode.ChildNodes[0]);
-						return factory.CreateUnaryOperator(astNode.ChildNodes[1].Term.Name, arg);
-					}
-					break;
-					
-				case "QualifiedName":
-					var parts = new List<string>();
-
-					if (astNode.ChildNodes.Count == 2)
-						return new QualifiedName(new[] {astNode.ChildNodes[1].Token.ValueString});
-					/*
-                    //Condition ought to be impossible
-                    if (astNode.ChildNodes.Count != 3 )
-                        throw new Exception("Malformed QualifiedName - should have 3 child nodes");
-					 */
-					if (astNode.ChildNodes.Count == 1) {
-						return CompileExpressionNode(factory, astNode.ChildNodes[0]);
-					}
-					SimpleExpressionLanguageCompiler.ExtractQualifiedName(astNode, parts);
-					
-					return new QualifiedName(parts.ToArray());
-					
-				case "FunctionExpression":
-					string functionName = (astNode.ChildNodes[0].ChildNodes[0].Token.ValueString);
-				
-					var args = new IExpression[astNode.ChildNodes[0].ChildNodes[0].ChildNodes.Count];
-					for (int i = 0; i < astNode.ChildNodes[0].ChildNodes[0].ChildNodes.Count;i++)
-					{
-						args[i] = CompileExpressionNode(factory, astNode.ChildNodes[1].ChildNodes[i]);
-					}
-
-					return factory.CreateFunction(functionName, args);
-					
-					
-				case "IfThen":
-					IExpression condition = CompileExpressionNode(factory,astNode.ChildNodes[1].ChildNodes[0]);
-					IExpression trueExpr = CompileExpressionNode(factory, astNode.ChildNodes[3]);
-					IExpression falseExpr = null;
-					if (astNode.ChildNodes.Count == 6)
-						falseExpr = CompileExpressionNode(factory, astNode.ChildNodes[5]);
-					var func = new IfThen();
-					if (falseExpr != null)
-						func.AcceptArguments(condition, trueExpr, falseExpr);
-					else
-						func.AcceptArguments(condition, trueExpr);
-					return func;
-					
-					/*
-                case "ArrayExpression":
-                    IExpression context = CompileExpressionNode(factory, astNode.ChildNodes[0]);
-                    IExpression index = CompileExpressionNode(factory, astNode.ChildNodes[1]);
-                    var indexer = new ItemAtIndex();
-                    indexer.AcceptArguments(context, index);
-                    return indexer;
-				
-					 */
-			}
-			return null;
-		}
-		
-		
-		public IPageInfo SinglePage {
-			get { return singlePage; }
-			set { singlePage = value; }
-		}
-		
+		public IPageInfo SinglePage {get;set;}
+			
 	}
 }

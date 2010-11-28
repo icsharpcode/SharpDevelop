@@ -37,14 +37,9 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 			}
 
 			sectionBounds.MeasureReportHeader(reportModel.ReportHeader);
-
-			//PageHeader
 			this.sectionBounds.MeasurePageHeader(reportModel.PageHeader);
-
-			//PageFooter
+		
 			this.sectionBounds.MeasurePageFooter(reportModel.PageFooter);
-
-			//ReportFooter
 
 			this.sectionBounds.MeasureReportFooter(reportModel.ReportFooter);
 

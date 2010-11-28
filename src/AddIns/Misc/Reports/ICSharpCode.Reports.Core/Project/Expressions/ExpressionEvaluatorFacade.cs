@@ -33,13 +33,20 @@ namespace ICSharpCode.Reports.Expressions.ReportingLanguage
 		
 		public string Evaluate (string expression)
 		{
-			if (CanEvaluate(expression)) {
-				IExpression compiled = compiler.CompileExpression<string>(expression);
-				this.context.ContextObject = this.SinglePage;
-				if (compiled != null) {
-					return (compiled.Evaluate(context)).ToString();
+			try {
+				if (CanEvaluate(expression)) {
+					IExpression compiled = compiler.CompileExpression<string>(expression);
+					this.context.ContextObject = this.SinglePage;
+					if (compiled != null) {
+						return (compiled.Evaluate(context)).ToString();
+					}
 				}
+			} catch (Exception e) {
+				
+//				Console.WriteLine("error");
+				expression = e.Message;
 			}
+			
 			return expression;
 		}
 		

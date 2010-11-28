@@ -646,7 +646,7 @@
     <value>Více</value>
   </data>
   <data name="ComponentInspector.ErrorDialog.ReportAsBugButton" xml:space="preserve">
-    <value>Bughlášení</value>
+    <value>Nahlásit chybu</value>
   </data>
   <data name="ComponentInspector.EventLogList.ClearAllMenuItem" xml:space="preserve">
     <value>Vymazat &amp;vše</value>
@@ -1433,7 +1433,7 @@ Není-li barva pro začátek/konec nabídnuta, je použita barva pro obsah.</val
   <data name="Dialog.HighlightingEditor.Spans.Explanation" xml:space="preserve">
     <value>Intervaly jsou sekvencemi znaků určenými počátečním a ideálně také ukončovacím řetězcem (nebo může být ukončen koncem řádku), které jsou odděleny výchozí zvýrazňovací barvou.
 
-Dále, interval může být přiřazen pojmenované sadě pravidel, která povoluje komplexní formátování uvnitř intervalu (HTML značky nebo XML komentáře, např).</value>
+Interval může být dále přiřazen pojmenované sadě pravidel, která povoluje komplexní formátování uvnitř intervalu (např. značky HTML nebo komentáře XML).</value>
   </data>
   <data name="Dialog.HighlightingEditor.Spans.Spans" xml:space="preserve">
     <value>Definované intervaly:</value>
@@ -3438,7 +3438,7 @@ vaše oprávnění zápisu do složky či souboru. (může jít o problém ochra
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand.ResetToDefaultsQuestion" xml:space="preserve">
     <value>Určitě chcete obnovit výchozí rozložení oken?
-Pozn: Tato akce neovlivní uživatelsky definovaná rozložení oken.</value>
+Pozn.: Tato akce neovlivní uživatelsky definovaná rozložení oken.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Commands.Convert" xml:space="preserve">
     <value>Převést</value>
@@ -5421,18 +5421,6 @@ Například: Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNe
   <data name="SharpDevelop.Solution.AllKnownProjectFormats" xml:space="preserve">
     <value>Všechny známé formáty projektů</value>
   </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion7" xml:space="preserve">
-    <value>Našel jsem projekt Visual Studio.NET. Mám ho převést na soubor řešení verze 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion8" xml:space="preserve">
-    <value>Našel jsem projekt Visual Studio.NET 2003. Mám ho převést na soubor řešení verze 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportCmbx" xml:space="preserve">
-    <value>Má být sdružení SharpDevelopu 1.x převedeno na řešení Sharpdevelopu 2.x?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportPrjx" xml:space="preserve">
-    <value>Má být Projekt SharpDevelopu 1.x převeden na Projekt Sharpdevelopu 2.x?</value>
-  </data>
   <data name="SharpDevelop.Solution.ImportResourceWarning" xml:space="preserve">
     <value>V tomto projektu byly soubory resources.
 SharpDevelop 2 překládá soubory resources jinak: jméno resource je zde prefixován kořenovým prostorem jmen a jménem adresáře.
@@ -5593,7 +5581,7 @@ Soubory resources byly přejmenovány/přesunuty, aby tomu odpovídaly.</value>
     <value>Pro spuštění Sestav SharpDevelop musíte mít nainstalovanou alespoň jednu tiskárnu.</value>
   </data>
   <data name="SharpReport.Error.NoReport" xml:space="preserve">
-    <value>Tohle není platná sestava vyvtořená Sestavami SharpDevelop.</value>
+    <value>Tohle není platná sestava vytvořená Sestavami SharpDevelop.</value>
   </data>
   <data name="SharpReport.Error.WrongFileFormat" xml:space="preserve">
     <value>Nemohu načíst soubor, je poškozený (špatně naformátovaný)</value>
@@ -5872,7 +5860,7 @@ Soubory resources byly přejmenovány/přesunuty, aby tomu odpovídaly.</value>
     <value>Konfigurační element</value>
   </data>
   <data name="Templates.File.ConfigurationElementCollection.Description" xml:space="preserve">
-    <value>Vytvoří třidu dědící od ConfigurationElementCollection.</value>
+    <value>Vytvoří třídu dědící od ConfigurationElementCollection.</value>
   </data>
   <data name="Templates.File.ConfigurationElementCollection.Name" xml:space="preserve">
     <value>Kolekce konfiguračních elementů</value>
@@ -6169,7 +6157,7 @@ Soubory resources byly přejmenovány/přesunuty, aby tomu odpovídaly.</value>
     <value>Šablona projektu pro rychlé vytvoření AddInu pro SharpDevelop</value>
   </data>
   <data name="Templates.Project.SharpDevelopAddin.Name" xml:space="preserve">
-    <value>AddIn Sharpdevelopu</value>
+    <value>AddIn SharpDevelopu</value>
   </data>
   <data name="Templates.Project.SharpDevelopMacro.Description" xml:space="preserve">
     <value>Vytvoří položku v menu "Nástroje", která získá z editoru vybraný text a může ho libovolně modifikovat.</value>
@@ -6301,7 +6289,7 @@ Soubory resources byly přejmenovány/přesunuty, aby tomu odpovídaly.</value>
     <value>Nelze provést protože se neladí žádný proces.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.ProcessPaused" xml:space="preserve">
-    <value>Nelze provést protože je proces zapauzován.</value>
+    <value>Nelze provést, protože je proces pozastaven.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.ProcessRunning" xml:space="preserve">
     <value>Nelze provést protože proces běží.</value>
@@ -6468,7 +6456,7 @@ Soubory resources byly přejmenovány/přesunuty, aby tomu odpovídaly.</value>
   <data name="XML.MainMenu.FileMenu.New.File.Description" xml:space="preserve">
     <value>Otevře nový soubor</value>
   </data>
-  <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+  <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>&amp;Řešení...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">

@@ -77,6 +77,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				}
 			}
 			
+			public override bool IsWhitespace(int visualColumn)
+			{
+				return true;
+			}
+			
 			public override bool HandlesLineBorders {
 				get { return true; }
 			}

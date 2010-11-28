@@ -15,12 +15,13 @@ namespace ICSharpCode.Reports.Addin
 	/// Description of GroupedRow.
 	/// </summary>
 	[Designer(typeof(ICSharpCode.Reports.Addin.Designer.GroupedRowDesigner))]
-	public class BaseGroupedRow:BaseRowItem
+	public class GroupHeader:BaseRowItem
 	{
-		public BaseGroupedRow()
+		public GroupHeader()
 		{
-			TypeDescriptor.AddProvider(new GroupedRowTypeProvider(), typeof(BaseGroupedRow));
+			TypeDescriptor.AddProvider(new GroupedRowTypeProvider(), typeof(GroupHeader));
 		}
+		
 		
 		[Category("Behavior")]
 		public bool PageBreakOnGroupChange {get;set;}

@@ -3,6 +3,9 @@
 
 using System;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
+using System.Linq;
+
 using ICSharpCode.Reports.Addin.ReportWizard;
 using ICSharpCode.Reports.Core;
 using NUnit.Framework;
@@ -21,68 +24,45 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		
 	
 		[Test]
-		public void PageDetail_First_Item_Should_GroupedRow()
+		public void PageDetail_Should_Contains_GroupedHeader()
 		{
-			ICSharpCode.Reports.Core.BaseSection s = this.reportModel.DetailSection;
-			BaseReportItem item = s.Items[0];
-			Assert.That(item,Is.InstanceOf(typeof(ICSharpCode.Reports.Core.BaseGroupedRow)));
+			ICSharpCode.Reports.Core.BaseSection section = this.reportModel.DetailSection;
+			
+			//GroupHeader
+			var c =  new Collection<ICSharpCode.Reports.Core.GroupHeader>(section.Items.OfType<ICSharpCode.Reports.Core.GroupHeader>().ToList());
+			Assert.That(c.Count,Is.GreaterThanOrEqualTo(1));
 		}
 		
 		
 		[Test]
-		public void GroupHeader_Should_Contain_DataItem()
+		public void Section_Should_Contain_DataRow()
 		{
-				ICSharpCode.Reports.Core.BaseSection s = this.reportModel.DetailSection;
-				ICSharpCode.Reports.Core.BaseGroupedRow groupedRow = (ICSharpCode.Reports.Core.BaseGroupedRow)s.Items[0];
-				var item = groupedRow.Items[0];
-				Assert.That(item,Is.InstanceOf(typeof(ICSharpCode.Reports.Core.BaseDataItem)));
+			ICSharpCode.Reports.Core.BaseSection section = this.reportModel.DetailSection;
+			//DatatRow
+			var c =  new Collection<ICSharpCode.Reports.Core.BaseRowItem>(section.Items.OfType<ICSharpCode.Reports.Core.BaseRowItem>().ToList());
+			Assert.That(c.Count,Is.GreaterThanOrEqualTo(1));
+		}
+		
+	
+		[Test]
+		public void DataRow_Should_Contain_GroupFooter()
+		{
+			ICSharpCode.Reports.Core.BaseSection section = this.reportModel.DetailSection;
+			
+			//GroupFooter
+			var c =  new Collection<ICSharpCode.Reports.Core.GroupFooter>(section.Items.OfType<ICSharpCode.Reports.Core.GroupFooter>().ToList());
+			Assert.That(c.Count,Is.GreaterThanOrEqualTo(1));
 		}
 		
 		
 		[Test]
-		public void PageDetail_Second_Item_Should_Row()
+		public void PageDetail_Should_Contain_Three_Items()
 		{
-			ICSharpCode.Reports.Core.BaseSection s = this.reportModel.DetailSection;
-			BaseReportItem item = s.Items[1];
-			Assert.That(item,Is.InstanceOf(typeof(ICSharpCode.Reports.Core.BaseRowItem)));
+			ICSharpCode.Reports.Core.BaseSection section = this.reportModel.DetailSection;
+			Assert.That(section.Items.Count.Equals(3));
 		}
 		
 		
-		[Test]
-		public void DataRow_Should_Contain_DataItem()
-		{
-				ICSharpCode.Reports.Core.BaseSection s = this.reportModel.DetailSection;
-				ICSharpCode.Reports.Core.BaseRowItem dataRow = (ICSharpCode.Reports.Core.BaseRowItem)s.Items[1];
-				var item = dataRow.Items[0];
-				Assert.That(item,Is.InstanceOf(typeof(ICSharpCode.Reports.Core.BaseDataItem)));
-		}
-		
-		
-		[Test]
-		public void PageDetail_Should_Contain_Two_items()
-		{
-			ICSharpCode.Reports.Core.BaseSection s = this.reportModel.DetailSection;
-			Assert.That(s.Items.Count.Equals(2));
-		}
-		
-		
-		[Test]
-		public void PageDetail_First_Item_Should_Contain_GroupedRow()
-		{
-			ICSharpCode.Reports.Core.BaseSection s = this.reportModel.DetailSection;
-			Assert.That(s.Items.Count.Equals(2));
-		}
-		
-		
-		[Test]
-		public void PageDetail_Row_Should_Contain_DataItems()
-		{
-			ICSharpCode.Reports.Core.BaseSection s = this.reportModel.DetailSection;
-			ICSharpCode.Reports.Core.BaseRowItem rowItem = (ICSharpCode.Reports.Core.BaseRowItem)s.Items[0];
-			Assert.IsTrue(rowItem.Items.Count > 0);	
-			BaseReportItem item = rowItem.Items[0];
-			Assert.That(item,Is.InstanceOf(typeof(ICSharpCode.Reports.Core.BaseDataItem)));
-		}
 		
 		
 		#region Setup/Teardown
@@ -99,45 +79,7 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		{
 			// TODO: Add tear down code.
 		}
-		/*
-		private static ReportModel CreateModel (string reportName)
-		{
-			
-			ReportStructure structure = CreateReportStructure(reportName);
-			
-			AvailableFieldsCollection abstractColumns = new AvailableFieldsCollection();
-			AbstractColumn a1 = new AbstractColumn("Field1",typeof(System.String));
-			structure.AvailableFieldsCollection.Add(a1);
-			
-			ICSharpCode.Reports.Core.BaseDataItem bri = new ICSharpCode.Reports.Core.BaseDataItem();
-			bri.Name ="Field1";
-			structure.ReportItemCollection.Add(bri);
-			
-			structure.Grouping = "group";
-			
-			ReportModel m = structure.CreateAndFillReportModel();
-			ICSharpCode.Core.Properties customizer = new ICSharpCode.Core.Properties();
-			
-			customizer.Set("Generator", structure);
-			customizer.Set("ReportLayout",GlobalEnums.ReportLayout.ListLayout);
-			
-			IReportGenerator generator = new GeneratePushDataReport(m,customizer);
-		
-			generator.GenerateReport();
-			
-			ReportLoader rl = new ReportLoader();
-			object root = rl.Load(generator.XmlReport.DocumentElement);
-			ReportModel model = root as ReportModel;
-			if (model != null) {
-				model.ReportSettings.FileName = GlobalValues.PlainFileName;
-				FilePathConverter.AdjustReportName(model);
-			} else {
-				throw new InvalidReportModelException();
-			}
-			return model;
-		}
-		
-		*/
+	
 		private static ReportStructure CreateReportStructure (string reportName)
 		{
 			ReportStructure structure = new ReportStructure();

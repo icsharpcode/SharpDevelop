@@ -118,6 +118,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				else
 					return -1;
 			}
+			
+			public override bool IsWhitespace(int visualColumn)
+			{
+				return true;
+			}
 		}
 		
 		sealed class TabTextElement : VisualLineElement
@@ -147,6 +152,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 					return base.GetNextCaretPosition(visualColumn, direction, mode);
 				else
 					return -1;
+			}
+			
+			public override bool IsWhitespace(int visualColumn)
+			{
+				return true;
 			}
 		}
 		

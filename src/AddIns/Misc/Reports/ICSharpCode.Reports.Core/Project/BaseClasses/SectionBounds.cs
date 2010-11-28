@@ -38,8 +38,8 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 		
 		bool firstPage;
 		bool landscape;
-//		int gap = 1;
 		Rectangle printableArea;
+		
 		
 		#region Constructor
 	
@@ -103,19 +103,19 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 		}
 		
 		
-		//Test
-		public void  MeasurePageFooter (IReportItem section) 
+	
+		public void  MeasurePageFooter (IReportItem section)
 		{
 			if (section == null) {
 				throw new ArgumentNullException("section");
 			}
-			
 			this.pageFooterRectangle =  new Rectangle(this.printableArea.Location.X,
 			                                          this.marginBounds.Bottom  - section.Size.Height,
 			                                          this.marginBounds.Width,
 			                                          section.Size.Height);
-			                                         
+			
 		}
+		
 		
 		//Test
 		public void MeasureReportFooter (IReportItem section)
@@ -224,18 +224,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses
 			}
 		}
 		
-		/// <summary>
-		/// gap between two Sections
-		/// </summary>
-		
-		
-//		public int Gap
-//		{
-//			get {
-//				return gap;
-//			}
-//		}
-		
+	
 		public Rectangle DetailSectionRectangle {get;set;}
 		
 		

@@ -38,6 +38,11 @@ namespace ICSharpCode.VBNetBinding
 		
 		public CodeCompletionKeyPressResult HandleKeyPress(ITextEditor editor, char ch)
 		{
+			if (LanguageUtils.IsInsideDocumentationComment(editor) && ch == '<') {
+				new CommentCompletionItemProvider().ShowCompletion(editor);
+				return CodeCompletionKeyPressResult.Completed;
+			}
+			
 			if (IsInComment(editor) || IsInString(editor))
 				return CodeCompletionKeyPressResult.None;
 			

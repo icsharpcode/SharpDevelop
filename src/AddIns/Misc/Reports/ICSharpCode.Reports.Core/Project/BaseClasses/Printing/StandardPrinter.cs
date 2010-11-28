@@ -259,9 +259,9 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				foreach (BaseExportColumn element in row) {
 					ExportText textItem = element as ExportText;
 					if (textItem != null) {
-						if (textItem.Text.StartsWith("=")) {
-							Console.WriteLine(textItem.Text);
-						}
+//						if (textItem.Text.StartsWith("=",StringComparison.InvariantCulture)) {
+////							Console.WriteLine(textItem.Text);
+//						}
 						textItem.Text = evaluator.Evaluate(textItem.Text);
 					}
 				}

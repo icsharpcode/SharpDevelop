@@ -56,23 +56,9 @@ namespace ICSharpCode.VBNetBinding
 				    && directive.Arg.StartsWith("region", StringComparison.OrdinalIgnoreCase)
 				    && regionStartDirectives.Any()) {
 					ICSharpCode.NRefactory.PreprocessingDirective start = regionStartDirectives.Pop();
-					cu.FoldingRegions.Add(new FoldingRegion(TrimComment(start.Arg).Trim('"'), DomRegion.FromLocation(start.StartPosition, directive.EndPosition)));
+					cu.FoldingRegions.Add(new FoldingRegion(start.Arg.TrimComments().Trim('"'), DomRegion.FromLocation(start.StartPosition, directive.EndPosition)));
 				}
 			}
-		}
-		
-		static string TrimComment(string argument)
-		{
-			bool inStr = false;
-			
-			for (int i = 0; i < argument.Length; i++) {
-				if (argument[i] == '"')
-					inStr = !inStr;
-				if (argument[i] == '\'' && !inStr)
-					return argument.Substring(0, i).Trim();
-			}
-			
-			return argument;
 		}
 		
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ICSharpCode.SharpDevelop.ITextBuffer fileContent)

@@ -201,6 +201,14 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		}
 		
 		/// <summary>
+		/// Gets whether the specified offset in this element is considered whitespace.
+		/// </summary>
+		public virtual bool IsWhitespace(int visualColumn)
+		{
+			return false;
+		}
+		
+		/// <summary>
 		/// Gets whether the <see cref="GetNextCaretPosition"/> implementation handles line borders.
 		/// If this property returns false, the caller of GetNextCaretPosition should handle the line
 		/// borders (i.e. place caret stops at the start and end of the line).

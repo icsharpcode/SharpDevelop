@@ -14,12 +14,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 
 	public class TableLayout: AbstractLayout
 	{
-		ReportItemCollection reportItems;
-		
 		
 		public TableLayout(ReportModel reportModel,ReportItemCollection reportItemCollection):base(reportModel)
 		{
-			this.reportItems = reportItemCollection;
+			ReportItems = reportItemCollection;
 		}
 		
 	
@@ -39,62 +37,76 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			System.Drawing.Printing.Margins margin = GlobalValues.ControlMargins;
 			
 			ICSharpCode.Reports.Core.BaseTableItem table = new ICSharpCode.Reports.Core.BaseTableItem();
+			ICSharpCode.Reports.Core.BaseRowItem detailRow = new ICSharpCode.Reports.Core.BaseRowItem();
+			
 			table.Name = "Table1";
+			base.Container = table;
 			AdjustContainer(base.ReportModel.DetailSection,table);
 			base.ReportModel.DetailSection.Items.Add(table);
 			
-			base.ParentItem = table;
-			
-			ICSharpCode.Reports.Core.BaseRowItem headerRow = CreateRowWithTextColumns(ParentItem,  this.reportItems);
-			ParentItem.Items.Add (headerRow);                                                                 
+			ICSharpCode.Reports.Core.BaseRowItem headerRow = CreateRowWithTextColumns(Container);
+			Container.Items.Add (headerRow);
 			
 			Point insertLocation =  new Point (margin.Left,headerRow.Location.Y + headerRow.Size.Height + margin.Bottom + margin.Top);
 			
 			
-			if (base.ReportModel.ReportSettings.GroupColumnsCollection.Count > 0) {                 
+			if (base.ReportModel.ReportSettings.GroupColumnsCollection.Count > 0) {
+				
+				//Groupheader
 				var groupHeader = base.CreateGroupHeader(insertLocation);
-				ParentItem.Items.Add(groupHeader);
+				Container.Items.Add(groupHeader);
 				insertLocation = new Point(margin.Left,insertLocation.Y + groupHeader.Size.Height + margin.Bottom + margin.Top);
+				
+				//Detail
+				CreateDetail(detailRow,insertLocation);
+				Container.Items.Add (detailRow);
+				
+				// GroupFooter
+				var groupFooter = base.CreateFooter(new Point(margin.Left,130));
+				Container.Items.Add(groupFooter);
+
+			}
+			else
+			{
+				CreateDetail(detailRow,insertLocation);
+				Container.Items.Add (detailRow);
 			}
 			
-			//Insert details allways
-			
-			ICSharpCode.Reports.Core.BaseRowItem detailRow = new ICSharpCode.Reports.Core.BaseRowItem();
-			AdjustContainer (ParentItem,detailRow);
-			
+			CalculateContainerSize();
+			section.Size = new Size (section.Size.Width,Container.Size.Height + margin.Top + margin.Bottom);
+		}
+		
+		
+		void CreateDetail (ICSharpCode.Reports.Core.BaseRowItem detailRow,Point insertLocation)
+		{
+			AdjustContainer (Container,detailRow);
 			detailRow.Location = insertLocation;
 			detailRow.Size =  new Size(detailRow.Size.Width,30);
-
-			int defX = AbstractLayout.CalculateControlWidth(detailRow,reportItems);
+			int defX = AbstractLayout.CalculateControlWidth(detailRow,ReportItems);
 			
-			int startX =  margin.Left;
+			int startX =  GlobalValues.ControlMargins.Left;
 			
-			foreach (ICSharpCode.Reports.Core.BaseReportItem ir in this.reportItems)
+			foreach (ICSharpCode.Reports.Core.BaseReportItem ir in ReportItems)
 			{
-				Point np = new Point(startX,margin.Top);
+				Point np = new Point(startX,GlobalValues.ControlMargins.Top);
 				startX += defX;
 				ir.Location = np;
 				ir.Parent = detailRow;
 				detailRow.Items.Add(ir);
 			}
-			
-			ParentItem.Items.Add (detailRow);
-			ParentItem.Size = CalculateContainerSize(ParentItem);
-			section.Size = new Size (section.Size.Width,ParentItem.Size.Height + margin.Top + margin.Bottom);
 		}
 		
 		
-		private Size CalculateContainerSize(ISimpleContainer container)
+		private void CalculateContainerSize()
 		{
 			int h = GlobalValues.ControlMargins.Top;
 			
-			foreach (ICSharpCode.Reports.Core.BaseReportItem item  in container.Items)
+			foreach (ICSharpCode.Reports.Core.BaseReportItem item  in Container.Items)
 			{
 				h = h + item.Size.Height + GlobalValues.ControlMargins.Bottom;
 			}
 			h 	= h + 3*GlobalValues.ControlMargins.Bottom;
-			
-			return new Size (container.Size.Width,h);
+			Container.Size =  new Size (Container.Size.Width,h);
 		}
 	}
 }

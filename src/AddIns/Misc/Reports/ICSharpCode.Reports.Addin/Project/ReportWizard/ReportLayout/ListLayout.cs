@@ -15,15 +15,12 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	public class ListLayout : AbstractLayout
 	{
 		
-		ReportItemCollection reportItems;
-		
-		
 		public ListLayout(ReportModel reportModel,ReportItemCollection reportItemCollection):base(reportModel)
 		{
-			this.reportItems = reportItemCollection;
+			base.ReportItems = reportItemCollection;
 			ICSharpCode.Reports.Core.BaseRowItem row = new ICSharpCode.Reports.Core.BaseRowItem();
 			AdjustContainer(base.ReportModel.DetailSection,row);
-			base.ParentItem = row;
+			base.Container = row;
 		}
 		
 		
@@ -33,9 +30,9 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		public override void CreatePageHeader()
 		{
 			base.CreatePageHeader();
-			ICSharpCode.Reports.Core.BaseRowItem row = CreateRowWithTextColumns(base.ReportModel.PageHeader,
-			                                                                    this.reportItems);
-			AdjustContainer(ParentItem,row);
+			ICSharpCode.Reports.Core.BaseRowItem row = CreateRowWithTextColumns(base.ReportModel.PageHeader);
+			                                                                   
+			AdjustContainer(Container,row);
 			base.ReportModel.PageHeader.Items.Add(row);
 		}
 		
@@ -45,23 +42,43 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			if (section == null) {
 				throw new ArgumentNullException("section");
 			}
-			
+			Size detailSize = Size.Empty;
+			Size itemSize = Size.Empty;
+			Point rowLoction = Point.Empty;
 			if (base.ReportModel.ReportSettings.GroupColumnsCollection.Count > 0)
 			{
 				
 				var groupheader = base.CreateGroupHeader(new Point (GlobalValues.ControlMargins.Left,GlobalValues.ControlMargins.Top));
-				
 				base.ReportModel.DetailSection.Items.Add(groupheader);
 				
-				ParentItem.Location = new Point(ParentItem.Location.X,50);
-				ParentItem.Size = new Size(ParentItem.Size.Width,40);
-				section.Size = new Size(section.Size.Width,90);
+				// Detail
+				itemSize = CreateDetail();
+				detailSize = new Size(Container.Size.Width,itemSize.Height  + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
+
+				
+				// GroupFooter
+				var groupFooter = base.CreateFooter(new Point(GlobalValues.ControlMargins.Left,80));
+				base.ReportModel.DetailSection.Items.Add(groupFooter);
+				section.Size = new Size(section.Size.Width,125);
+				rowLoction = new Point (Container.Location.X,45);
 			}
-			
-			var items = base.AddItemsToContainer(this.reportItems);
-			ParentItem.Items.AddRange(items);
-			ParentItem.Size = new Size(ParentItem.Size.Width,items[0].Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
-			section.Items.Add(ParentItem as BaseReportItem);
+			else
+			{
+				itemSize = CreateDetail();
+				detailSize = new Size(Container.Size.Width,itemSize.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
+				section.Size = new Size(section.Size.Width,Container.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
+				rowLoction = new Point(Container.Location.X,GlobalValues.ControlMargins.Top);
+			}
+			base.ConfigureDetails (rowLoction,detailSize);
+			section.Items.Add(Container as BaseReportItem);
+		}
+		
+		
+		Size CreateDetail()
+		{
+			var items = base.AddItemsToContainer();
+			Container.Items.AddRange(items);
+			return items[0].Size;
 		}
 		
 		#endregion

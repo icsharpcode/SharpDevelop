@@ -58,6 +58,13 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		}
 		
 		/// <inheritdoc/>
+		public override bool IsWhitespace(int visualColumn)
+		{
+			int offset = visualColumn - this.VisualColumn + parentVisualLine.FirstDocumentLine.Offset + this.RelativeTextOffset;
+			return char.IsWhiteSpace(parentVisualLine.Document.GetCharAt(offset));
+		}
+		
+		/// <inheritdoc/>
 		public override TextSpan<CultureSpecificCharacterBufferRange> GetPrecedingText(int visualColumnLimit, ITextRunConstructionContext context)
 		{
 			if (context == null)

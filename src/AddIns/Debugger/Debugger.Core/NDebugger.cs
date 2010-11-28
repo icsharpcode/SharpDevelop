@@ -212,8 +212,10 @@ namespace Debugger
 			}
 			
 			// Detach all processes.
-			while (this.Processes.Count > 0) {
-				Process process = this.Processes[0];
+			for (int i = 0; i < this.Processes.Count; ++i) {
+				Process process = this.Processes[i];
+				if (process == null || process.HasExited) 
+					continue;
 				process.Detach();
 			}
 		}

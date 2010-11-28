@@ -16,12 +16,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 	public class BasePager:IReportCreator
 	{
 		private PagesCollection pages;
-		private Graphics graphics;
 		private readonly object pageLock = new object();
-		private ILayouter layouter;
-		
+
 		public event EventHandler<PageCreatedEventArgs> PageCreated;
 		public event EventHandler<SectionRenderEventArgs> SectionRendering;
+		public event EventHandler<GroupHeaderEventArgs> GroupHeaderRendering;
+		public event EventHandler<GroupFooterEventArgs> GroupFooterRendering;
+		
+		public event EventHandler<RowRenderEventArgs> RowRendering;
 		
 		#region Constructor
 		
@@ -34,8 +36,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 				throw new ArgumentNullException ("layouter");
 			}
 			this.ReportModel = reportModel;
-			this.layouter = layouter;
-			this.graphics = CreateGraphicObject.FromSize(this.ReportModel.ReportSettings.PageSize);
+			this.Layouter = layouter;
+			this.Graphics = CreateGraphicObject.FromSize(this.ReportModel.ReportSettings.PageSize);
 		}
 		
 		#endregion
@@ -72,7 +74,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected virtual void BuildNewPage ()
 		{
 			this.SinglePage = this.InitNewPage();
-			PrintHelper.InitPage(this.SinglePage,this.ReportModel.ReportSettings);			
+			PrintHelper.InitPage(this.SinglePage,this.ReportModel.ReportSettings);
 			this.SinglePage.CalculatePageBounds(this.ReportModel);
 		}
 		
@@ -94,6 +96,13 @@ namespace ICSharpCode.Reports.Core.Exporter
 				
 				Point offset = new Point(section.Location.X,section.SectionOffset);
 				
+				// Call layouter only once per section
+				Rectangle desiredRectangle = Layouter.Layout(this.Graphics,section);
+				Rectangle sectionRectangle = new Rectangle(section.Location,section.Size);
+				if (!sectionRectangle.Contains(desiredRectangle)) {
+					section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
+				}
+				
 				foreach (BaseReportItem item in section.Items) {
 					
 					ISimpleContainer container = item as ISimpleContainer;
@@ -101,8 +110,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 					if (container != null) {
 
 						ExportContainer exportContainer = StandardPrinter.ConvertToContainer(container,offset);
-			          
-			          StandardPrinter.AdjustBackColor (container);
+						
+						StandardPrinter.AdjustBackColor (container);
 						
 						ExporterCollection clist = StandardPrinter.ConvertPlainCollection(container.Items,offset);
 						
@@ -110,14 +119,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 						list.Add(exportContainer);
 						
 					} else {
-
-						Rectangle desiredRectangle = layouter.Layout(this.graphics,section);
-						Rectangle sectionRectangle = new Rectangle(0,0,section.Size.Width,section.Size.Height);
-						
-						if (!sectionRectangle.Contains(desiredRectangle)) {
-							section.Size = new Size(section.Size.Width,desiredRectangle.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom);
-						}
-						
 						list = StandardPrinter.ConvertPlainCollection(section.Items,offset);
 					}
 				}
@@ -197,8 +198,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		private static void EvaluateRecursive (IExpressionEvaluatorFacade evaluatorFassade,ExporterCollection items)
 		{
-			
 			foreach (BaseExportColumn be in items) {
+				
 				IExportContainer ec = be as IExportContainer;
 				if (ec != null)
 				{
@@ -207,30 +208,21 @@ namespace ICSharpCode.Reports.Core.Exporter
 					}
 				}
 				ExportText et = be as ExportText;
+				
 				if (et != null) {
-					try{
-						if (et.Text.StartsWith("=Globals!Page")) {
-							Console.WriteLine ("wxpression : {0}",evaluatorFassade.Evaluate(et.Text));
-						}
-						
+					if (et.Text.StartsWith("=")) {
 						et.Text = evaluatorFassade.Evaluate(et.Text);
 					}
-					catch (UnknownFunctionException ufe)
-					{
-						et.Text = GlobalValues.UnkownFunctionMessage(ufe.Message);
-					}
-					finally 
-					{
-						
-					}	
 				}
 			}
 		}
+		
 		
 		#endregion
 		
 		
 		#region Event's
+		
 		
 		protected void FireSectionRenderEvent (BaseSection section,int currentRow)
 		{
@@ -244,7 +236,25 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
+		protected void FireGroupHeaderEvent (GroupHeaderEventArgs ghea)
+		{
+			EventHelper.Raise<GroupHeaderEventArgs>(GroupHeaderRendering,this,ghea);
+			
+		}
 		
+		
+		protected void FireGroupFooterEvent (GroupFooterEventArgs gfea)
+		{
+			
+			EventHelper.Raise<GroupFooterEventArgs>(GroupFooterRendering,this,gfea);
+		}
+		
+		
+		protected void FireRowRenderEvent (RowRenderEventArgs rrea)
+		{
+			EventHelper.Raise<RowRenderEventArgs>(RowRendering,this,rrea);
+		}
+			
 		protected void FirePageCreated(ExporterPage page)
 		{
 			EventHelper.Raise<PageCreatedEventArgs>(PageCreated,this,
@@ -255,14 +265,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		#region Property's
 		
-		protected Graphics Graphics {
-			get { return graphics; }
-		}
+		protected Graphics Graphics {get; private set;}
 		
-		
-		public ILayouter Layouter {
-			get { return layouter; }
-		}
+		public ILayouter Layouter {get; private set;}
 		
 		public IReportModel ReportModel {get;set;}
 
@@ -285,14 +290,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			get { return SinglePage.SectionBounds; }
 		}
-		
-		
-//		protected bool PageFull
-//		{
-//			get { return pageFull; }
-//			set { pageFull = value; }
-//		}
-//		
 		
 		#endregion
 	}

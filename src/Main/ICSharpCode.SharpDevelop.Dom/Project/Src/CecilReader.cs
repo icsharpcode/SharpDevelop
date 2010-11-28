@@ -505,7 +505,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 					} else if (method.Overrides.Count > 0) {
 						m |= ModifierEnum.Override;
 					} else if (method.IsVirtual) {
-						m |= ModifierEnum.Virtual;
+						if (method.IsNewSlot)
+							m |= ModifierEnum.Virtual;
+						else
+							m |= ModifierEnum.Override;
 					}
 				}
 				

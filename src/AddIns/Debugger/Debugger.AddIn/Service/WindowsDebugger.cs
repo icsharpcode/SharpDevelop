@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using Debugger;
 using Debugger.AddIn.Tooltips;
 using Debugger.AddIn.TreeModel;
+using Debugger.Interop;
 using Debugger.Interop.CorPublish;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
@@ -362,10 +363,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public bool IsManaged(int processId)
 		{
-			if (corPublish == null) {
-				corPublish = new CorpubPublishClass();
-				Debugger.Interop.TrackedComObjects.Track(corPublish);
-			}
+			corPublish = new CorpubPublishClass();
+			Debugger.Interop.TrackedComObjects.Track(corPublish);
 			
 			ICorPublishProcess process = corPublish.GetProcess((uint)processId);
 			if (process != null) {

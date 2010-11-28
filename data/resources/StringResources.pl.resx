@@ -5153,18 +5153,6 @@ Idź do 'Opcje-&gt;Styl wizualny' i zmień atmosferę bieżącego języka.</valu
   <data name="SharpDevelop.Solution.AllKnownProjectFormats" xml:space="preserve">
     <value>Wszystkie znane formaty projektów</value>
   </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion7" xml:space="preserve">
-    <value>Znaleziono Projekt Visual Studio.NET. Czy przekonwertować go do Solution Format 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion8" xml:space="preserve">
-    <value>Znaleziono Projekt Visual Studio.NET 2003. Czy przekonwertować go do Solution Format 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportCmbx" xml:space="preserve">
-    <value>Czy zestaw SharpDevelop 1.x ma zostać przekonwertowany do rozwiązania SharpDevelop 2.x?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportPrjx" xml:space="preserve">
-    <value>Czy projekt SharpDevelop 1.x ma zostać przekonwertowany do projektu SharpDevelop 2.x?</value>
-  </data>
   <data name="SharpDevelop.Solution.ImportResourceWarning" xml:space="preserve">
     <value>Projekt zawierał pliki zasobów.
 SharpDevelop 2 kompiluje zasoby inaczej: nazwa zasobu nie jest tylko nazwą pliku, ale jest poprzedzona główną przestrzenią nazw i nazwą katalogu.
@@ -6119,7 +6107,7 @@ Pliki zasobów zostały odpowiednio nazwane/przeniesione.</value>
   <data name="XML.MainMenu.FileMenu.New.File.Description" xml:space="preserve">
     <value>Otwórz nowy bufor</value>
   </data>
-  <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+  <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>&amp;Rozwiązanie...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">

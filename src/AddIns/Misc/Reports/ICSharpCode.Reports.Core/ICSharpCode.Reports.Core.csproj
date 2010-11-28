@@ -89,8 +89,8 @@
     <Compile Include="Project\BaseClasses\SinglePage.cs" />
     <Compile Include="Project\BaseClasses\SectionBounds.cs" />
     <Compile Include="Project\BaseClasses\SortColumn.cs" />
-    <Compile Include="Project\BaseItems\BaseGroupedRow.cs" />
-    <Compile Include="Project\BaseItems\BaseGroupItem.cs" />
+    <Compile Include="Project\BaseItems\GroupHeader.cs" />
+    <Compile Include="Project\BaseItems\GroupFooter.cs" />
     <Compile Include="Project\BaseItems\BaseTextItem.cs" />
     <Compile Include="Project\BaseItems\BaseGraphicItem.cs" />
     <Compile Include="Project\BaseItems\BaseReportItem.cs" />
@@ -124,10 +124,8 @@
     </Compile>
     <Compile Include="Project\Dialogs\DefaultTextEditor.cs" />
     <Compile Include="Project\Dialogs\SortingCollectionEditor.cs" />
-    <Compile Include="Project\Events\GroupChangedEventArgs.cs" />
     <Compile Include="Project\Events\NewPageEventArgs.cs" />
     <Compile Include="Project\Events\ReportPageEventArgs.cs" />
-    <Compile Include="Project\Events\ReportParametersEventArgs.cs" />
     <Compile Include="Project\Exceptions\FieldNotFoundException.cs" />
     <Compile Include="Project\Exceptions\GroupLevelException.cs" />
     <Compile Include="Project\Exceptions\IllegalFileFormat.cs" />

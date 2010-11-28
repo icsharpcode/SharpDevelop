@@ -44,7 +44,7 @@ namespace ICSharpCode.Reports.Core {
 	}
 	
 	/// <summary>
-	/// This Event is fiered after an Item is printed
+	/// This Event is fired after an Item is printed
 	/// </summary>
 	public class AfterPrintEventArgs : System.EventArgs {
 		PointF locationAfterPrint;

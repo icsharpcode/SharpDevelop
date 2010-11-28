@@ -94,6 +94,10 @@ namespace ICSharpCode.FormsDesigner
 			
 			gen.CurrentClassPart = c;
 			int line = gen.GetEventHandlerInsertionLine(c);
+			if (line > document.TotalNumberOfLines) {
+				lineNumber = document.TotalNumberOfLines;
+				return;
+			}
 			
 			int offset = document.GetLine(line).Offset;
 			

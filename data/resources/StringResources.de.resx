@@ -5375,6 +5375,12 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="MainWindow.Windows.BookmarkPad.GotoPrev.ToolTip" xml:space="preserve">
     <value>Gehe zu vorhergehendem Lesezeichen</value>
   </data>
+  <data name="MainWindow.Windows.BookmarkPad.LineText" xml:space="preserve">
+    <value>{0} @Zeile {1}</value>
+  </data>
+  <data name="MainWindow.Windows.BookmarkPad.LocationText" xml:space="preserve">
+    <value>Ort</value>
+  </data>
   <data name="MainWindow.Windows.BookmarksLabel" xml:space="preserve">
     <value>Lesezeichen</value>
   </data>
@@ -5482,6 +5488,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Condition" xml:space="preserve">
     <value>Bedingt</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.ConditionalColumnHeader" xml:space="preserve">
+    <value>Bedingung</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Continue" xml:space="preserve">
     <value>Fortsetzen</value>
@@ -6068,6 +6077,15 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ProjectComponent.RemoveAllWebReferences.Title" xml:space="preserve">
     <value>Alle Webreferenzen löschen</value>
   </data>
+  <data name="ReflectorAddIn.IdeOptions.FindReflectorPath" xml:space="preserve">
+    <value>Pfad zu Reflector auswählen</value>
+  </data>
+  <data name="ReflectorAddIn.IdeOptions.ReflectorFoundInPath" xml:space="preserve">
+    <value>Reflector wurde im folgenden Verzeichnis gefunden:</value>
+  </data>
+  <data name="ReflectorAddIn.IdeOptions.ReflectorTitle" xml:space="preserve">
+    <value>Reflector</value>
+  </data>
   <data name="ReflectorAddIn.OpenReflectorCommand" xml:space="preserve">
     <value>.NET Reflector öffnen</value>
   </data>
@@ -6495,6 +6513,10 @@ Bitte einen anderen verwenden.</value>
   <data name="SharpDevelop.Solution.AllKnownProjectFormats" xml:space="preserve">
     <value>Alle bekannten Projektformate</value>
   </data>
+  <data name="SharpDevelop.Solution.CannotLoadOldSolution" xml:space="preserve">
+    <value>Diese Version von SharpDevelop kann keine Projekte, die mit Visual Studio .NET 2003 (oder früher) erstellt wurden.
+Versuchen Sie das Projekt mit SharpDevelop 3.2 zu konvertieren, oder erstellen Sie ein neues Projekt und fügen Sie ihm die existierenden Quellcodedateien hinzu.</value>
+  </data>
   <data name="SharpDevelop.Solution.CannotSave.IOException" xml:space="preserve">
     <value>Konnte {0} nicht speichern:
 {1}</value>
@@ -6507,18 +6529,6 @@ Bitte einen anderen verwenden.</value>
 {1}
 
 Stellen Sie sicher, dass die Datei schreibbar ist.</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion7" xml:space="preserve">
-    <value>Visual Studio.NET-Projekt gefunden. Soll es in das Solution Format 9.00 (Visual Studio 2005) umgewandelt werden?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion8" xml:space="preserve">
-    <value>Visual Studio.NET 2003-Projekt gefunden. Soll es in das Solution Format 9.00 (Visual Studio 2005) umgewandelt werden?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportCmbx" xml:space="preserve">
-    <value>Soll das SharpDevelop 1.x Combine in eine Sharpevelop 2.x Projektmappe konvertiert werden?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportPrjx" xml:space="preserve">
-    <value>Soll das SharpDevelop 1.x Projekt in ein Sharpevelop 2.x Projekt konvertiert werden?</value>
   </data>
   <data name="SharpDevelop.Solution.ImportResourceWarning" xml:space="preserve">
     <value>Das Projekt enthält Ressourcendateien.
@@ -7442,6 +7452,9 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
   <data name="XML.MainMenu.DebugMenu.Error.ProcessRunning" xml:space="preserve">
     <value>Kann Aktion nicht ausführen, da Prozess ausgeführt wird.</value>
   </data>
+  <data name="XML.MainMenu.DebugMenu.RemoveAllBreakpoints" xml:space="preserve">
+    <value>Alle Haltepunkte entfernen</value>
+  </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
     <value>&amp;Ohne Debugger ausführen</value>
   </data>
@@ -7611,7 +7624,10 @@ SharpDevelop 2 kompiliert Ressourcendateien anders: der Ressourcenname ist nicht
     <value>Öffnet neues Fenster</value>
   </data>
   <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
-    <value>&amp;Projektmappe...</value>
+    <value>&amp;Projekt...</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
+    <value>Projekt&amp;mappe...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">
     <value>&amp;Öffnen</value>

@@ -267,5 +267,42 @@ namespace ICSharpCode.AvalonEdit
 				}
 			}
 		}
+		
+		double wordWrapIndentation = 0;
+		
+		/// <summary>
+		/// Gets/Sets the indentation used for all lines except the first when word-wrapping.
+		/// The default value is 0.
+		/// </summary>
+		[DefaultValue(0.0)]
+		public virtual double WordWrapIndentation {
+			get { return wordWrapIndentation; }
+			set {
+				if (double.IsNaN(value) || double.IsInfinity(value))
+					throw new ArgumentOutOfRangeException("value", value, "value must not be NaN/infinity");
+				if (value != wordWrapIndentation) {
+					wordWrapIndentation = value;
+					OnPropertyChanged("WordWrapIndentation");
+				}
+			}
+		}
+		
+		bool inheritWordWrapIndentation = true;
+		
+		/// <summary>
+		/// Gets/Sets whether the indentation is inherited from the first line when word-wrapping.
+		/// The default value is true.
+		/// </summary>
+		/// <remarks>When combined with <see cref="WordWrapIndentation"/>, the inherited indentation is added to the word wrap indentation.</remarks>
+		[DefaultValue(true)]
+		public virtual bool InheritWordWrapIndentation {
+			get { return inheritWordWrapIndentation; }
+			set {
+				if (value != inheritWordWrapIndentation) {
+					inheritWordWrapIndentation = value;
+					OnPropertyChanged("InheritWordWrapIndentation");
+				}
+			}
+		}
 	}
 }

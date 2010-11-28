@@ -134,16 +134,20 @@ namespace ICSharpCode.VBNetBinding
 			IDocumentLine currentLine = editor.Document.GetLine(lineNr);
 			IDocumentLine lineAbove = lineNr > 1 ? editor.Document.GetLine(lineNr - 1) : null;
 			
-			string curLineText = editor.Document.Text;
+			string curLineText = currentLine == null ? "" : currentLine.Text;
 			string lineAboveText = lineAbove == null ? "" : lineAbove.Text;
 			
 			if (ch == '\'') {
 				InsertDocumentationComments(editor, lineNr, cursorOffset);
 			}
 			
-			if (ch == '\n' && lineAboveText != null)
-			{
-				string textToReplace = TrimLine(lineAboveText);
+			if (ch == '\n' && lineAboveText != null) {
+				if (LanguageUtils.IsInsideDocumentationComment(editor, lineAbove, lineAbove.EndOffset)) {
+					editor.Document.Insert(cursorOffset, "''' ");
+					return;
+				}
+				
+				string textToReplace = lineAboveText.TrimLine();
 				
 				if (doCasing)
 					DoCasingOnLine(lineAbove, textToReplace, editor);
@@ -153,12 +157,10 @@ namespace ICSharpCode.VBNetBinding
 				
 				if (IsInString(lineAboveText)) {
 					if (IsFinishedString(curLineText)) {
-						editor.Document.Insert(lineAbove.Offset + lineAbove.Length,
-						                       "\" & _");
+						editor.Document.Insert(lineAbove.EndOffset, "\" & _");
 						editor.Document.Insert(currentLine.Offset, "\"");
 					} else {
-						editor.Document.Insert(lineAbove.Offset + lineAbove.Length,
-						                       "\"");
+						editor.Document.Insert(lineAbove.EndOffset, "\"");
 					}
 				} else {
 					string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, lineAbove.Offset);
@@ -170,11 +172,8 @@ namespace ICSharpCode.VBNetBinding
 				}
 				
 				IndentLines(editor, lineNr - 1, lineNr);
-			}
-			else if(ch == '>')
-			{
-				if (IsInsideDocumentationComment(editor, currentLine, cursorOffset))
-				{
+			} else if(ch == '>') {
+				if (LanguageUtils.IsInsideDocumentationComment(editor, currentLine, cursorOffset)) {
 					int column = editor.Caret.Offset - currentLine.Offset;
 					int index = Math.Min(column - 1, curLineText.Length - 1);
 					
@@ -187,30 +186,20 @@ namespace ICSharpCode.VBNetBinding
 					if (index > 0) {
 						StringBuilder commentBuilder = new StringBuilder("");
 						for (int i = index; i < curLineText.Length && i < column && !Char.IsWhiteSpace(curLineText[i]); ++i) {
-							commentBuilder.Append(curLineText[ i]);
+							commentBuilder.Append(curLineText[i]);
 						}
 						string tag = commentBuilder.ToString().Trim();
 						if (!tag.EndsWith(">", StringComparison.OrdinalIgnoreCase)) {
 							tag += ">";
 						}
 						if (!tag.StartsWith("/", StringComparison.OrdinalIgnoreCase)) {
-							editor.Document.Insert(editor.Caret.Offset, "</" + tag.Substring(1));
+							string endTag = "</" + tag.Substring(1);
+							editor.Document.Insert(editor.Caret.Offset, endTag);
+							editor.Caret.Offset -= endTag.Length;
 						}
 					}
 				}
 			}
-		}
-
-		internal static string TrimLine(string lineText)
-		{
-			string textToReplace = lineText;
-			// remove string content
-			MatchCollection strmatches = Regex.Matches(lineText, "\"[^\"]*?\"", RegexOptions.Singleline);
-			foreach (Match match in strmatches) {
-				textToReplace = textToReplace.Remove(match.Index, match.Length).Insert(match.Index, new String('-', match.Length));
-			}
-			// remove comments
-			return Regex.Replace(textToReplace, "'.*$", "", RegexOptions.Singleline);
 		}
 
 		void DoInsertionOnLine(string terminator, IDocumentLine currentLine, IDocumentLine lineAbove, string textToReplace, ITextEditor editor, int lineNr)
@@ -481,7 +470,7 @@ namespace ICSharpCode.VBNetBinding
 			
 			string text = lineSeg.Text;
 			
-			if (StripComment(text).Trim(' ', '\t', '\r', '\n').EndsWith("_", StringComparison.OrdinalIgnoreCase))
+			if (text.TrimComments().Trim(' ', '\t', '\r', '\n').EndsWith("_", StringComparison.OrdinalIgnoreCase))
 				return true;
 			else
 				return false;
@@ -513,26 +502,6 @@ namespace ICSharpCode.VBNetBinding
 			bool match = statement.EndStatement.IndexOf(token.Value, StringComparison.OrdinalIgnoreCase) != -1;
 			
 			return empty && match;
-		}
-		
-		static string StripComment(string text)
-		{
-			return Regex.Replace(text, "'.*$", "", RegexOptions.Singleline).Trim();
-		}
-		
-		static bool IsInsideDocumentationComment(ITextEditor editor, IDocumentLine curLine, int cursorOffset)
-		{
-			for (int i = curLine.Offset; i < cursorOffset; ++i) {
-				char ch = editor.Document.GetCharAt(i);
-				if (ch == '"') {
-					return false;
-				}
-				if (ch == '\'' && i + 2 < cursorOffset && editor.Document.GetCharAt(i + 1) == '\'' && editor.Document.GetCharAt(i + 2) == '\'')
-				{
-					return true;
-				}
-			}
-			return false;
 		}
 		
 		public override void IndentLines(ITextEditor editor, int begin, int end)
@@ -623,10 +592,10 @@ namespace ICSharpCode.VBNetBinding
 		
 		static int GetLastVisualLine(int line, ITextEditor area)
 		{
-			string text = StripComment(area.Document.GetLine(line).Text);
+			string text = area.Document.GetLine(line).Text.TrimComments();
 			while (text.EndsWith("_", StringComparison.Ordinal)) {
 				line++;
-				text = StripComment(area.Document.GetLine(line).Text);
+				text = area.Document.GetLine(line).Text.TrimComments();
 			}
 			return line;
 		}
@@ -753,8 +722,8 @@ namespace ICSharpCode.VBNetBinding
 			
 			for (int i = begin; i <= end; i++) {
 				IDocumentLine curLine = editor.Document.GetLine(i);
-				string lineText = curLine.Text.Trim(' ', '\t', '\r', '\n');
-				string noComments = StripComment(lineText).TrimEnd(' ', '\t', '\r', '\n');
+				string lineText = curLine.Text.TrimStart(' ', '\t', '\r', '\n');
+				string noComments = lineText.TrimComments().TrimEnd(' ', '\t', '\r', '\n');
 				
 				if (i < selBegin || i > selEnd) {
 					indentation.PopOrDefault();

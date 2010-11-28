@@ -25,8 +25,8 @@ namespace ICSharpCode.Reports.Core
 		ISinglePage singlePage;
 		ILayouter layouter;
 		ReportPageEventArgs reportPageEventArgs;
-	BaseSection currentSection;
-	
+		BaseSection currentSection;
+		
 		public RenderTable(IDataNavigator datanavigator,Rectangle parentRectangle,ISinglePage singlePage,ILayouter layouter,BaseSection section)
 		{
 			this.dataNavigator = datanavigator;
@@ -35,7 +35,7 @@ namespace ICSharpCode.Reports.Core
 			this.singlePage = singlePage;
 			this.layouter = layouter;
 			this.currentSection = section;
-	
+			
 		}
 		
 		
@@ -66,54 +66,54 @@ namespace ICSharpCode.Reports.Core
 			
 //			foreach (BaseRowItem row in table.Items)
 //			{
-				rs = simpleContainer.Size;
-				PrintHelper.AdjustParent(table as BaseReportItem,table.Items);
-				
+			rs = simpleContainer.Size;
+			PrintHelper.AdjustParent(table as BaseReportItem,table.Items);
+			
 //				if (PrintHelper.IsTextOnlyRow(simpleContainer) )
 //				{
-					
-					PrintHelper.SetLayoutForRow(ReportPageEventArgs.PrintPageEventArgs.Graphics,Layouter,simpleContainer);
-					
-					var r =  StandardPrinter.RenderContainer(simpleContainer,evaluator,currentPosition,ReportPageEventArgs);
-					
-					currentPosition = PrintHelper.ConvertRectangleToCurentPosition (r);
-					
-					table.Location = saveLocation;
+			
+			PrintHelper.SetLayoutForRow(ReportPageEventArgs.PrintPageEventArgs.Graphics,Layouter,simpleContainer);
+			
+			var r =  StandardPrinter.RenderContainer(simpleContainer,evaluator,currentPosition,ReportPageEventArgs);
+			
+			currentPosition = PrintHelper.ConvertRectangleToCurentPosition (r);
+			
+			table.Location = saveLocation;
 //				}
 //				else {
-				//---------------	
-				simpleContainer = table.Items[1] as ISimpleContainer;
-					
-					int adjust = simpleContainer.Location.Y - saveLocation.Y;
-					simpleContainer.Location = new Point(simpleContainer.Location.X,simpleContainer.Location.Y - adjust - 3 * GlobalValues.GapBetweenContainer);
-					rs = simpleContainer.Size;
-					
-					do {
-						
-						pageBreakRect = PrintHelper.CalculatePageBreakRectangle((BaseReportItem)table,currentPosition);
-						
-						if (PrintHelper.IsPageFull(pageBreakRect,this.SectionBounds)) {
-							Console.WriteLine("PageBreak - PageFull");
-							table.Location = saveLocation;
-							AbstractRenderer.PageBreak(ReportPageEventArgs);
-							return;
-						}
-						
-						this.dataNavigator.Fill(simpleContainer.Items);
-						
-						PrintHelper.SetLayoutForRow(ReportPageEventArgs.PrintPageEventArgs.Graphics,Layouter,simpleContainer);
-						
-						r =  StandardPrinter.RenderContainer(simpleContainer,evaluator,currentPosition,ReportPageEventArgs);
-						
-						currentPosition = PrintHelper.ConvertRectangleToCurentPosition (r);
+			//---------------
+			simpleContainer = table.Items[1] as ISimpleContainer;
+			
+			int adjust = simpleContainer.Location.Y - saveLocation.Y;
+			simpleContainer.Location = new Point(simpleContainer.Location.X,simpleContainer.Location.Y - adjust - 3 * GlobalValues.GapBetweenContainer);
+			rs = simpleContainer.Size;
+			
+			do {
+				
+				pageBreakRect = PrintHelper.CalculatePageBreakRectangle((BaseReportItem)table,currentPosition);
+				
+				if (PrintHelper.IsPageFull(pageBreakRect,this.SectionBounds)) {
+					Console.WriteLine("PageBreak - PageFull");
+					table.Location = saveLocation;
+					AbstractRenderer.PageBreak(ReportPageEventArgs);
+					return;
+				}
+				
+				this.dataNavigator.Fill(simpleContainer.Items);
+				
+				PrintHelper.SetLayoutForRow(ReportPageEventArgs.PrintPageEventArgs.Graphics,Layouter,simpleContainer);
+				
+				r =  StandardPrinter.RenderContainer(simpleContainer,evaluator,currentPosition,ReportPageEventArgs);
+				
+				currentPosition = PrintHelper.ConvertRectangleToCurentPosition (r);
 
-						simpleContainer.Size = rs;
-					}
-					while (this.dataNavigator.MoveNext());
-					//-----
+				simpleContainer.Size = rs;
+			}
+			while (this.dataNavigator.MoveNext());
+			//-----
 //				}
 		}
-				
+		
 		
 
 		
@@ -214,7 +214,7 @@ namespace ICSharpCode.Reports.Core
 		
 		public ILayouter Layouter {
 			get {
-			return this.layouter;
+				return this.layouter;
 			}
 		}
 		
@@ -225,6 +225,6 @@ namespace ICSharpCode.Reports.Core
 			get { return reportPageEventArgs; }
 			set { reportPageEventArgs = value; }
 		}
-			
+		
 	}
 }

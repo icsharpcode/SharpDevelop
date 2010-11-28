@@ -18,6 +18,7 @@ namespace ICSharpCode.Reports.Core.Interfaces
 	{
 		event EventHandler <NewPageEventArgs> PageFull;
 		event EventHandler<SectionRenderEventArgs> SectionRendering;
+		
 		SectionBounds SectionBounds {get;}
 		IDataNavigator DataNavigator {get;}
 		Rectangle ParentRectangle {get;}
@@ -36,5 +37,8 @@ namespace ICSharpCode.Reports.Core.Interfaces
 	{		
 		ExporterCollection Convert (BaseReportItem parent,BaseReportItem item);
 		Point CurrentPosition {get;set;}
+		event EventHandler<GroupHeaderEventArgs> GroupHeaderRendering;
+		event EventHandler<RowRenderEventArgs> RowRendering;
+		event EventHandler<GroupFooterEventArgs> GroupFooterRendering;
 	}
 }

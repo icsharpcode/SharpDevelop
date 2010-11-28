@@ -68,6 +68,7 @@
     </Compile>
     <Compile Include="Src\FormattingStrategy\VBIndentationStrategy.cs" />
     <Compile Include="Src\FormattingStrategy\VBStatement.cs" />
+    <Compile Include="Src\LanguageUtils.cs" />
     <Compile Include="Src\OptionPanels\ProjectImportsOptions.xaml.cs">
       <DependentUpon>ProjectImportsOptions.xaml</DependentUpon>
       <SubType>Code</SubType>
