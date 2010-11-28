@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public const long FileMagic = 0x11635233ED2F428C;
 		public const long IndexFileMagic = 0x11635233ED2F427D;
-		public const short FileVersion = 27;
+		public const short FileVersion = 28;
 		
 		ProjectContentRegistry registry;
 		string cacheDirectory;
