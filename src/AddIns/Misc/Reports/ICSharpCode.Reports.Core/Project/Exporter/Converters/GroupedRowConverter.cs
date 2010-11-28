@@ -102,7 +102,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 							section.Items[1].Size = childSize;
 							Console.WriteLine("\tFillRow");
 							childNavigator.Fill(simpleContainer.Items);
-							base.CurrentPosition = ConvertGroupChilds (exporterCollection,section,simpleContainer,childNavigator);   
+							base.CurrentPosition = ConvertGroupChilds (exporterCollection,section,simpleContainer);   
 							FireRowRendering(simpleContainer,childNavigator);
 							CheckForPageBreak(section,exporterCollection);
 								Console.WriteLine("");

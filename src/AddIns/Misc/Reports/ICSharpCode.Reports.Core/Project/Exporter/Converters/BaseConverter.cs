@@ -149,7 +149,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		protected Point ConvertGroupChilds(ExporterCollection mylist, BaseSection section,
-		                                   ISimpleContainer simpleContainer,IDataNavigator currentNavigator)
+		                                   ISimpleContainer simpleContainer)
 		{
 			PrepareContainerForConverting(section,simpleContainer);
 			Point curPos  = ConvertContainer(mylist,simpleContainer,DefaultLeftPosition,CurrentPosition);

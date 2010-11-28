@@ -106,7 +106,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 								
 								childNavigator.Fill(simpleContainer.Items);
 
-								base.CurrentPosition = ConvertGroupChilds (exporterCollection,section,simpleContainer,childNavigator);						                                           
+								base.CurrentPosition = ConvertGroupChilds (exporterCollection,section,simpleContainer);						                                           
 								                                          
 								simpleContainer.Size = containerSize;
 								CheckForPageBreak(section,simpleContainer,headerRow,exporterCollection);
