@@ -59,12 +59,13 @@ namespace CSharpBinding
 			bool inString = false;
 			bool inChar = false;
 			bool verbatim = false;
+			int result = 0;
 			for(int i = linestart; i < offset; i++) {
 				switch (document.GetCharAt(i)) {
 					case '/':
 						if (!inString && !inChar && i + 1 < document.TextLength) {
 							if (document.GetCharAt(i + 1) == '/') {
-								return 1;
+								result = 1;
 							}
 						}
 						break;
@@ -92,7 +93,8 @@ namespace CSharpBinding
 						break;
 				}
 			}
-			return (inString || inChar) ? 2 : 0;
+			
+			return (inString || inChar) ? 2 : result;
 		}
 		#endregion
 		
@@ -112,8 +114,8 @@ namespace CSharpBinding
 			// we need to know where offset is - in a string/comment or in normal code?
 			// ignore cases where offset is in a block comment
 			int starttype = GetStartType(document, linestart, offset + 1);
-			if (starttype != 0) {
-				return -1; // start position is in a comment/string
+			if (starttype == 1) {
+				return -1; // start position is in a comment
 			}
 			
 			// I don't see any possibility to parse a C# document backwards...
