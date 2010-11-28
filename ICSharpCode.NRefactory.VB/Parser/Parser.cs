@@ -2964,9 +2964,7 @@ partial class VBParser
 		List<Expression> parameters = null;
 		Expect(37);
 		Location start = t.Location;
-		if (StartOf(24)) {
-			ArgumentList(out parameters);
-		}
+		ArgumentList(out parameters);
 		Expect(38);
 		pexpr = new InvocationExpression(pexpr, parameters);
 
@@ -3356,11 +3354,15 @@ partial class VBParser
 		arguments = new List<Expression>();
 		Expression expr = null;
 
-		Argument(out expr);
+		if (StartOf(24)) {
+			Argument(out expr);
+		}
 		while (la.kind == 22) {
 			Get();
 			arguments.Add(expr ?? Expression.Null); expr = null;
-			Argument(out expr);
+			if (StartOf(24)) {
+				Argument(out expr);
+			}
 			if (expr == null) expr = Expression.Null;
 		}
 		if (expr != null) arguments.Add(expr);
@@ -4450,9 +4452,7 @@ partial class VBParser
 		string name = t.val;
 		if (la.kind == 37) {
 			Get();
-			if (StartOf(24)) {
-				ArgumentList(out arguments);
-			}
+			ArgumentList(out arguments);
 			Expect(38);
 		}
 		statement = new RaiseEventStatement(name, arguments);

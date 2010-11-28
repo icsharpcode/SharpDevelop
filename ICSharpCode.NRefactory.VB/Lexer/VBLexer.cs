@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.VB.Parser
 		
 		public VBLexer(TextReader reader)
 		{
-			reader = new LATextReader(reader);
+			this.reader = new LATextReader(reader);
 			ef = new ExpressionFinder();
 		}
 		

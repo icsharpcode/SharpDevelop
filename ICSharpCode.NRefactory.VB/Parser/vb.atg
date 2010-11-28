@@ -1928,7 +1928,7 @@ InvocationExpression<ref Expression pexpr>
 (. List<Expression> parameters = null; .)
 =
 	"(" (. Location start = t.Location; .)
-	[ ArgumentList<out parameters> ]
+	ArgumentList<out parameters>
 	")"
 	(.
 		pexpr = new InvocationExpression(pexpr, parameters);
@@ -2620,9 +2620,9 @@ ArgumentList<.out List<Expression> arguments.>
 		arguments = new List<Expression>();
 		Expression expr = null;
 	.) =
-	Argument<out expr>
+	[ Argument<out expr> ]
 	{ "," (. arguments.Add(expr ?? Expression.Null); expr = null; .)
-		Argument<out expr>
+		[ Argument<out expr> ]
 		(. if (expr == null) expr = Expression.Null; .)
 	}
 	(. if (expr != null) arguments.Add(expr); .)
@@ -3135,7 +3135,7 @@ RaiseEventStatement<out Statement statement>
 (. List<Expression> arguments = null; .)
 =
 	"RaiseEvent" Identifier (. string name = t.val; .)
-	[ "(" [ ArgumentList<out arguments> ] ")" ]
+	[ "(" ArgumentList<out arguments> ")" ]
 	(. statement = new RaiseEventStatement(name, arguments); .)
 .
 
