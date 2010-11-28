@@ -33,6 +33,8 @@
 				<TextBlock
 					VerticalAlignment="Center"
 					x:Name="HeaderText"
+					FontFamily="Khmer UI"
+					FontSize="12"
 					Margin="2"
 					HorizontalAlignment="Center" />
 			</Border>

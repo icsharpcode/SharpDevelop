@@ -123,15 +123,22 @@
 				Click="Reset_Click"
 				Template="{StaticResource ButtonTemplate}" />
 		</Canvas>
-		<Canvas x:Name="drawingSurface" Grid.Column="1">
-			<local:ParallelStacksGraphLayout 
-				x:Name="ParallelStacksLayout"
-				LayoutAlgorithmType = "Tree"
-				IsAnimationEnabled="False"
-				EdgeRoutingAlgorithmType="Automatic"
-				EdgeRoutingConstraint="Automatic"
-				OverlapRemovalConstraint="Automatic"
-				OverlapRemovalAlgorithmType = "FSA"/>
-		</Canvas>
+		<Grid
+			x:Name="drawingSurface"
+			Grid.Column="1">
+			<Grid
+				VerticalAlignment="Center"
+				HorizontalAlignment="Center">
+				<local:ParallelStacksGraphLayout
+					x:Name="ParallelStacksLayout"
+					ShowAllStates="False"
+					LayoutAlgorithmType="Tree"
+					IsAnimationEnabled="False"
+					EdgeRoutingAlgorithmType="Automatic"
+					EdgeRoutingConstraint="Automatic"
+					OverlapRemovalConstraint="Automatic"
+					OverlapRemovalAlgorithmType="FSA" />
+			</Grid>
+		</Grid>
 	</Grid>
 </UserControl>
