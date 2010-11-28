@@ -441,6 +441,7 @@ namespace ICSharpCode.SharpDevelop
 		public override void CloseIfAllViewsClosed()
 		{
 			if (registeredViews.Count == 0) {
+				bool wasDirty = this.IsDirty;
 				FileService.OpenedFileClosed(this);
 				
 				FileClosed.RaiseEvent(this, EventArgs.Empty);
@@ -448,6 +449,15 @@ namespace ICSharpCode.SharpDevelop
 				if (fileChangeWatcher != null) {
 					fileChangeWatcher.Dispose();
 					fileChangeWatcher = null;
+				}
+				
+				if (wasDirty) {
+					// We discarded some information when closing the file,
+					// so we need to re-parse it.
+					if (File.Exists(this.FileName))
+						ParserService.BeginParse(this.FileName);
+					else
+						ParserService.ClearParseInformation(this.FileName);
 				}
 			}
 		}
