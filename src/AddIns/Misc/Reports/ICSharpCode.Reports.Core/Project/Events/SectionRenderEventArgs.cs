@@ -8,38 +8,65 @@ namespace ICSharpCode.Reports.Core {
 	/// Description of SectionRenderEventArgs.
 	/// </summary>
 	
+	public class GroupFooterEventArgs: EventArgs
+	{
+		public GroupFooterEventArgs (GroupFooter groupFooter)
+		{
+			GroupFooter = groupFooter;
+		}
+		
+		public GroupFooter GroupFooter {get; private set;}
+		
+	}
+	
+	
+	
+	
+	public class GroupHeaderEventArgs: EventArgs
+	{
+		public GroupHeaderEventArgs (GroupHeader groupHeader)
+		{
+			GroupHeader = groupHeader;
+		}
+		
+		public GroupHeader GroupHeader {get; private set;}
+		
+	}
+	
+	
+	public class RowRenderEventArgs : EventArgs
+	{
+		public RowRenderEventArgs (BaseRowItem row,object rowData)
+		{
+			Row = row;	
+			RowData = rowData;
+		}
+		
+		public BaseRowItem Row {get; private set;}
+		public object RowData {get; private set;}
+	}
+	
+	
+	
 	public class SectionRenderEventArgs:SectionEventArgs{
-		private int pageNumber;
-		private int rowNumber;
-		private BaseSection currentSection;
+		
 		
 		public SectionRenderEventArgs(BaseSection section,
 		                              int pageNumber,int rowNumber,
 		                              BaseSection currentSection):base(section){
 		                             
-			this.pageNumber = pageNumber;
-			this.currentSection = currentSection;
-			this.rowNumber = rowNumber;
+			this.PageNumber = pageNumber;
+			this.CurrentSection = currentSection;
+			this.RowNumber = rowNumber;
 		}
 		
-		public int PageNumber {
-			get {
-				return pageNumber;
-			}
-		}
+		public int PageNumber {get; private set;}
 		
 		
-		public int RowNumber {
-			get {
-				return rowNumber;
-			}
-		}
+		public int RowNumber {get; private set;}
 		
 		
-		public BaseSection CurrentSection {
-			get {
-				return currentSection;
-			}
-		}
+		public BaseSection CurrentSection {get; private set;}
+		
 	}
 }

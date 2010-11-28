@@ -19,7 +19,7 @@ namespace ICSharpCode.Reports.Core
 	public class BaseSection : BaseReportItem,ISimpleContainer
 	{
 		
-		private bool pageBreakAfter;
+//		private bool pageBreakAfter;
 		private ReportItemCollection items;
 		
 		public event EventHandler<SectionEventArgs> SectionPrinting;
@@ -120,13 +120,6 @@ namespace ICSharpCode.Reports.Core
 		public  int SectionMargin {get;set;}
 	
 		
-		public override System.Drawing.Point Location
-		{
-			get { return base.Location; }
-			set { base.Location = value; }
-		}
-		
-	
 		public ReportItemCollection Items
 		{
 			get {
@@ -138,17 +131,8 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 	
-		public virtual bool PageBreakAfter 
-		{
-			get {
-				return pageBreakAfter;
-			}
-			set {
-				pageBreakAfter = value;
-			}
-		}
-		
-		
+		public virtual bool PageBreakAfter {get;set;}
+	
 		#endregion
 		
 		#region System.IDisposable interface implementation

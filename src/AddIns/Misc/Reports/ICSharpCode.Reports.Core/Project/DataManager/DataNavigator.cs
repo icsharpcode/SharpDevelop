@@ -107,7 +107,7 @@ namespace ICSharpCode.Reports.Core
 				return ((ind != null) && (ind.Count > 0));
 			}
 		}
-		
+	
 		
 		private IndexList BuildChildList()
 		{

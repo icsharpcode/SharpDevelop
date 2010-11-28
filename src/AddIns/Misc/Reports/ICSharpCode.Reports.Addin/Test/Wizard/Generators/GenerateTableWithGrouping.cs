@@ -8,6 +8,8 @@
  */
 
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using ICSharpCode.Reports.Addin.ReportWizard;
 using ICSharpCode.Reports.Core;
 using NUnit.Framework;
@@ -23,40 +25,48 @@ namespace ICSharpCode.Reports.Addin.Test.Wizard.Generators
 		
 		
 		[Test]
-		public void PageDetail_First_Item_Should_Table()
+		public void Table_Should_Contains_GroupedHeader()
 		{
-			ICSharpCode.Reports.Core.BaseSection s = this.reportModel.DetailSection;
-			var item = s.Items[0];
-			Assert.That(item,Is.InstanceOf(typeof(ICSharpCode.Reports.Core.BaseTableItem)));
+			ICSharpCode.Reports.Core.BaseTableItem table = CreateContainer();
+			//GroupHeader
+			var c =  new Collection<ICSharpCode.Reports.Core.GroupHeader>(table.Items.OfType<ICSharpCode.Reports.Core.GroupHeader>().ToList());
+			Assert.That(c.Count,Is.GreaterThanOrEqualTo(1));
 		}
 		
 		
 		[Test]
-		public void Table_Should_Contain_Three_Rows()
+		public void Table_Should_Contain_DataRow()
 		{
-			ICSharpCode.Reports.Core.BaseSection s = this.reportModel.DetailSection;
-			ICSharpCode.Reports.Core.BaseTableItem table = s.Items[0] as ICSharpCode.Reports.Core.BaseTableItem;
-			Assert.That(table.Items.Count,Is.GreaterThanOrEqualTo(3));
+			ICSharpCode.Reports.Core.BaseTableItem table = CreateContainer();
+			//DataRow
+			var c =  new Collection<ICSharpCode.Reports.Core.BaseRowItem>(table.Items.OfType<ICSharpCode.Reports.Core.BaseRowItem>().ToList());
+			Assert.That(c.Count,Is.GreaterThanOrEqualTo(1));
 		}
 		
 		
 		[Test]
-		public void Table_FirstItem_Should_Row ()
+		public void Table_Should_Contain_GroupFooter()
 		{
-			ICSharpCode.Reports.Core.BaseSection s = this.reportModel.DetailSection;
-			ICSharpCode.Reports.Core.BaseTableItem table = s.Items[0] as ICSharpCode.Reports.Core.BaseTableItem;
-			var row = table.Items[0];
-			Assert.That(row,Is.InstanceOf(typeof(ICSharpCode.Reports.Core.BaseRowItem)));
+			ICSharpCode.Reports.Core.BaseTableItem table = CreateContainer();
+			//GroupFooter
+			var c =  new Collection<ICSharpCode.Reports.Core.GroupFooter>(table.Items.OfType<ICSharpCode.Reports.Core.GroupFooter>().ToList());
+			Assert.That(c.Count,Is.GreaterThanOrEqualTo(1));
 		}
 		
 		
 		[Test]
-		public void Table_SecondItem_Should_GroupRow ()
+		public void PageDetail_Should_Contain_Four_Items()
 		{
-			ICSharpCode.Reports.Core.BaseSection s = this.reportModel.DetailSection;
-			ICSharpCode.Reports.Core.BaseTableItem table = s.Items[0] as ICSharpCode.Reports.Core.BaseTableItem;
-			var row = table.Items[1];
-			Assert.That(row,Is.InstanceOf(typeof(ICSharpCode.Reports.Core.BaseGroupedRow)));
+			ICSharpCode.Reports.Core.BaseTableItem table = CreateContainer();
+			Assert.That(table.Items.Count.Equals(4));
+		}
+		
+		
+		private ICSharpCode.Reports.Core.BaseTableItem CreateContainer ()
+		{
+			ICSharpCode.Reports.Core.BaseSection section = this.reportModel.DetailSection;
+			ICSharpCode.Reports.Core.BaseTableItem table = section.Items[0] as ICSharpCode.Reports.Core.BaseTableItem;
+			return table;
 		}
 		
 		#region setup / TearDown

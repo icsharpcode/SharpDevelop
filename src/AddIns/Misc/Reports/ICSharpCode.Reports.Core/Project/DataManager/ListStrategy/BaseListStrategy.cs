@@ -110,7 +110,7 @@ namespace ICSharpCode.Reports.Core {
 				}
 				compVal = v;
 			}
-			ShowIndexList(IndexList);
+//			ShowIndexList(IndexList);
 		}
 		
 		
@@ -133,6 +133,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		protected  static void ShowIndexList (IndexList list)
 		{
+			
 			foreach (BaseComparer element in list) {
 				string s = String.Format("{0} ",element.ObjectArray[0]);
 				GroupComparer gc = element as GroupComparer;

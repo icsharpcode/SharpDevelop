@@ -101,7 +101,7 @@ namespace ICSharpCode.Reports.Core
 			base.Group();
 			IndexList sortedIndexList = new IndexList("group");
 			sortedIndexList = this.BuildSortIndex (ReportSettings.GroupColumnsCollection);
-			ShowIndexList(sortedIndexList);
+//			ShowIndexList(sortedIndexList);
 			BuildGroup(sortedIndexList);
 			
 		}
