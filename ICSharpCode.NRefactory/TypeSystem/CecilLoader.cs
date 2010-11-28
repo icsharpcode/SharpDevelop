@@ -719,12 +719,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				m.IsAbstract = true;
 			} else {
 				m.Accessibility = GetAccessibility(method.Attributes);
-				if (method.IsAbstract)
+				if (method.IsAbstract) {
 					m.IsAbstract = true;
-				else if (method.IsFinal)
+					m.IsOverride = !method.IsNewSlot;
+				} else if (method.IsFinal) {
 					m.IsSealed = true;
-				else if (method.IsVirtual)
-					m.IsVirtual = true;
+					m.IsOverride = !method.IsNewSlot;
+				} else if (method.IsVirtual) {
+					if (method.IsNewSlot)
+						m.IsVirtual = true;
+					else
+						m.IsOverride = true;
+				}
 				m.IsStatic = method.IsStatic;
 			}
 		}
