@@ -1,10 +1,2 @@
 /lib/*.dll
 /ICSharpCode.NRefactory.Tests/PartCover/*
-/ICSharpCode.NRefactory.VB/Parser/Frames/trace.txt
-/VBDomGenerator/bin/*
-/VBDomGenerator/obj/*
-/ICSharpCode.NRefactory.VB/bin/*
-/ICSharpCode.NRefactory.VB/obj/*
-/ICSharpCode.NRefactory.VB.Tests/bin/*
-/ICSharpCode.NRefactory.VB.Tests/obj/*
-/ICSharpCode.NRefactory.VB/Parser/trace.txt
