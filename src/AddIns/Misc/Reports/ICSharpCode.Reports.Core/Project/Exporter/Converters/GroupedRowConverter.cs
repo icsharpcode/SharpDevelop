@@ -96,14 +96,16 @@ namespace ICSharpCode.Reports.Core.Exporter
 						StandardPrinter.AdjustBackColor(simpleContainer,GlobalValues.DefaultBackColor);
 						do
 						{
+							Console.WriteLine("");
 							section.Size = base.RestoreSectionSize;
 							section.Items[0].Size = groupSize;
 							section.Items[1].Size = childSize;
-							
+							Console.WriteLine("\tFillRow");
 							childNavigator.Fill(simpleContainer.Items);
-							
-							base.CurrentPosition = ConvertGroupChilds (exporterCollection,section,simpleContainer,childNavigator);                                 
+							base.CurrentPosition = ConvertGroupChilds (exporterCollection,section,simpleContainer,childNavigator);   
+							FireRowRendering(simpleContainer,childNavigator);
 							CheckForPageBreak(section,exporterCollection);
+								Console.WriteLine("");
 						}
 						while ( childNavigator.MoveNext());
 						
@@ -118,13 +120,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 				else
 				{
 					// No Grouping at all, the first item in section.items is the DetailRow
+					Console.WriteLine("");
 					Size containerSize = section.Items[0].Size;
-
-					base.FireRowRendering(simpleContainer,base.DataNavigator);
+					base.FillRow(simpleContainer);
+				
 					base.CurrentPosition = ConvertStandardRow (exporterCollection,section,simpleContainer);
-					
+					base.FireRowRendering(simpleContainer,base.DataNavigator);
 					section.Size = base.RestoreSectionSize;
 					section.Items[0].Size = containerSize;
+					Console.WriteLine("");
 				}
 				CheckForPageBreak (section,exporterCollection);
 				ShouldDrawBorder (section,exporterCollection);
@@ -181,9 +185,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 				AfterConverting (list);
 				retVal =  new Point (DefaultLeftPosition,offset.Y + groupCollection[0].Size.Height + 20  + (3 *GlobalValues.GapBetweenContainer));
 			} else {
-				base.FireGroupHeaderRendering(groupedRows[0]);
+				FillRow(groupedRows[0]);
 				rowSize = groupedRows[0].Size;
 				retVal = ConvertStandardRow(exportList,section,groupedRows[0]);
+				base.FireGroupHeaderRendering(groupedRows[0]);
 				groupedRows[0].Size = rowSize;
 			}
 			return retVal;

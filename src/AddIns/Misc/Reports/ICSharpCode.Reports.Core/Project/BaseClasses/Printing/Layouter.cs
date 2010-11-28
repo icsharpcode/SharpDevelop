@@ -33,7 +33,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				return Rectangle.Empty;
 			}
 			
-			Console.WriteLine("layouter for container <{0}>",container.ToString());
+			Console.WriteLine("\tlayouter for container <{0}>",container.ToString());
 			
 			Rectangle desiredContainerRectangle = new Rectangle (container.Location,container.Size);
 			
@@ -58,7 +58,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 //				                                       
 //				Console.WriteLine("Diff {0} - {1} dif  {2}",desiredContainerRectangle,r1,desiredContainerRectangle.Height - r1.Height);
 			}
-			Console.WriteLine("   Container : {0} - DesiredContainerRectangle {1} ",container.Size,desiredContainerRectangle.Size);
+			Console.WriteLine("\tContainer : {0} - DesiredContainerRectangle {1} ",container.Size,desiredContainerRectangle.Size);
 			return desiredContainerRectangle;
 		}
 		
@@ -72,7 +72,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				throw new ArgumentNullException("section");
 			}
 		
-			Console.WriteLine("layouter for section <{0}>",section.Name);
+			Console.WriteLine("\tlayouter for section <{0}>",section.Name);
 			
 			IEnumerable<BaseReportItem> canGrowShrinkCollection = from bt in section.Items where bt.CanGrow == true select bt;
 			
@@ -86,18 +86,14 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				Rectangle surroundingRec = FindSurroundingRectangle(graphics,canGrowShrinkCollection);
 				
 				if (surroundingRec.Height > desiredSectionRectangle .Height) {
-//					desiredSectionRectangle = new Rectangle(section.Location.X,
-//					                                        section .Location.Y,
-//					                                        section .Size.Width,
-//					                                        surroundingRec.Size.Height + GlobalValues.ControlMargins.Top + GlobalValues.ControlMargins.Bottom );
-				
+					
 					desiredSectionRectangle = new Rectangle(section.Location.X,
 					                                        section .Location.Y,
 					                                        section .Size.Width,
 					                                        surroundingRec.Size.Height);
 				}
 			}
-			Console.WriteLine("   Section : {0} - DesiredContainerRectangle {1} ",section.Size,desiredSectionRectangle.Size);
+			Console.WriteLine("\tSection : {0} - DesiredContainerRectangle {1} ",section.Size,desiredSectionRectangle.Size);
 			return desiredSectionRectangle;
 		}
 		
