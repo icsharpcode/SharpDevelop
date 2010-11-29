@@ -530,7 +530,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				obj.IsRunningStackFrame = true;
 			}
 			else {
-				if (selectedFrame != null && frame.GetMethodName() == selectedFrame.GetMethodName())
+				if (selectedFrame != null && frame.Thread.ID == selectedFrame.Thread.ID &&
+				    frame.GetMethodName() == selectedFrame.GetMethodName())
 					obj.Image = PresentationResourceService.GetImage("Icons.48x48.CurrentFrame").Source;
 				else
 					obj.Image = null;

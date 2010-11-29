@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace Debugger.AddIn.Pads.ParallelPad
 {
@@ -53,7 +54,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		
 		void DrawSurface_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
-			if (e.OriginalSource is Slider || e.OriginalSource is Button)
+			if (e.OriginalSource is Shape || e.OriginalSource is TextBlock)
 				return;
 			
 			dragStartedPoint = e.GetPosition(drawingSurface);
@@ -65,7 +66,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		void DrawSurface_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
 		{
 			drawingSurface.ReleaseMouseCapture();
-			if (e.OriginalSource is Slider || e.OriginalSource is Button)
+			if (e.OriginalSource is Shape || e.OriginalSource is TextBlock)
 				return;
 			
 			this.PreviewMouseMove -= DrawSurface_PreviewMouseMove;
@@ -78,9 +79,6 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			
 			if (e.LeftButton == MouseButtonState.Pressed)
 			{
-				if (e.OriginalSource is Slider || e.OriginalSource is Button)
-					return;
-				
 				Cursor = Cursors.SizeAll;
 				var point = e.GetPosition(drawingSurface);
 				Vector v = point - dragStartedPoint;
