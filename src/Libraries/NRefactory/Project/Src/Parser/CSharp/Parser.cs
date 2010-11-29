@@ -1356,12 +1356,12 @@ out r, canBeUnbound);
 			lexer.NextToken();
 
 #line  711 "cs.ATG" 
-			typeRef = new TypeReference("System.Object", true); typeRef.StartLocation = t.Location; 
+			typeRef = new TypeReference("System.Object", true); typeRef.StartLocation = t.Location; typeRef.EndLocation = t.EndLocation; 
 		} else if (la.kind == 108) {
 			lexer.NextToken();
 
 #line  712 "cs.ATG" 
-			typeRef = new TypeReference("System.String", true); typeRef.StartLocation = t.Location; 
+			typeRef = new TypeReference("System.String", true); typeRef.StartLocation = t.Location; typeRef.EndLocation = t.EndLocation; 
 		} else SynErr(157);
 	}
 
@@ -1424,7 +1424,7 @@ out typeArguments, canBeUnbound);
 		}
 
 #line  2347 "cs.ATG" 
-		typeRef.StartLocation = startLocation; 
+		typeRef.StartLocation = startLocation; typeRef.EndLocation = t.EndLocation; 
 	}
 
 	void MemberModifiers(
@@ -2503,13 +2503,13 @@ out type, canBeUnbound);
 out name);
 
 #line  587 "cs.ATG" 
-			type = new TypeReference(name, true); 
+			type = new TypeReference(name, true); type.StartLocation = startPos; type.EndLocation = t.EndLocation; 
 		} else if (la.kind == 123) {
 			lexer.NextToken();
 			Expect(6);
 
 #line  588 "cs.ATG" 
-			pointer = 1; type = new TypeReference("System.Void", true); 
+			pointer = 1; type = new TypeReference("System.Void", true); type.StartLocation = startPos; type.EndLocation = t.EndLocation; 
 		} else SynErr(176);
 
 #line  589 "cs.ATG" 

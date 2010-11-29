@@ -56,7 +56,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 						a.PositionalArguments.Add(GetValue(pc, member, argument));
 					}
 					foreach (CustomAttributeNamedArgument entry in att.Properties) {
-						a.NamedArguments.Add(entry.Name, GetValue(pc, member, entry.Argument));
+						// some obfuscated assemblies may contain duplicate named arguments; we'll have to ignore those
+						if (!a.NamedArguments.ContainsKey(entry.Name))
+							a.NamedArguments.Add(entry.Name, GetValue(pc, member, entry.Argument));
 					}
 				} catch (InvalidOperationException) {
 					// Workaround for Cecil bug. (some types cannot be resolved)
@@ -503,7 +505,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 					} else if (method.Overrides.Count > 0) {
 						m |= ModifierEnum.Override;
 					} else if (method.IsVirtual) {
-						m |= ModifierEnum.Virtual;
+						if (method.IsNewSlot)
+							m |= ModifierEnum.Virtual;
+						else
+							m |= ModifierEnum.Override;
 					}
 				}
 				

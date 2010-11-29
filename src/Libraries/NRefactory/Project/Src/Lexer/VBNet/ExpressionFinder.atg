@@ -424,8 +424,8 @@ SubOrFunctionDeclaration =
 	("Sub" | "Function")
 	(. PushContext(Context.Identifier, la, t); .) (.OnEachPossiblePath: SetIdentifierExpected(la); .) ANY (. PopContext(); .)
 	{ "(" [ ( "Of" GenericTypeParameterDeclaration | ParameterList ) ] ")" }
-	[ ( "Implements" | "Handles" ) [ ( "Me" | "MyClass" | "MyBase" ) "." ] TypeName ]
 	[ "As" (. PushContext(Context.Type, la, t); .) TypeName (. PopContext(); .) ]
+	[ ( "Implements" | "Handles" ) [ ( "Me" | "MyClass" | "MyBase" ) "." ] TypeName ]
 	StatementTerminatorAndBlock
 	"End" ("Sub" | "Function") StatementTerminator
 .
@@ -1325,6 +1325,7 @@ AccessModifier =
 
 TypeModifier =
 	AccessModifier |
+	"MustInherit" |
 	"NotInheritable" |
 	"Shadows" |
 	"Partial"
@@ -1353,8 +1354,8 @@ MemberModifier =
 ParameterModifier =
 	"ByVal" |
 	"ByRef" |
-    "Optional" |
-    "ParamArray"
+	"Optional" |
+	"ParamArray"
 .
 
 END ExpressionFinder .

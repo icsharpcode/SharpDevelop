@@ -53,8 +53,7 @@
 	<Files>
 		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
 <% if (ConditionalClass) { %>#if TEST
-<% } %>
-using System;
+<% } %>using System;
 using NUnit.Framework;
 
 namespace ${StandardNamespace}

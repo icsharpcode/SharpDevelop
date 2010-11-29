@@ -232,6 +232,72 @@ For å installere, last ned et tillegg fra internett, deretter klikk 'Installer 
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Vis klassediagram</value>
   </data>
+  <data name="AddIns.Git.TortoiseGitRequired" xml:space="preserve">
+    <value>TortoiseGit må være installert for å utføre denne handlingen.</value>
+  </data>
+  <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
+    <value>Innhold</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
+    <value>Vis innhold</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplaySearchCommand" xml:space="preserve">
+    <value>Søk</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
+    <value>Hjelpebibliotek</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
+    <value>Hjelpemodus</value>
+  </data>
+  <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
+    <value>Installerte hjelp-kataloger</value>
+  </data>
+  <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
+    <value>Microsoft Hjelp-viser</value>
+  </data>
+  <data name="AddIns.HelpViewer.OfflineFeatureRequestMsg" xml:space="preserve">
+    <value>Du forespurte en offline funksjon mens programmet et i online hjelpemodus. Du må endre modusen for å bruke denne funksjonen.</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
+    <value>Søk</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchLookForLabel" xml:space="preserve">
+    <value>Let etter:</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchPadTitle" xml:space="preserve">
+    <value>Søk</value>
+  </data>
+  <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
+    <value>Vis hjelp</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
+    <value>Bruk ekstern hjelp</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
+    <value>Jeg vil bruke lokal hjelp</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOnlineHelpLabel" xml:space="preserve">
+    <value>Jeg vil bruke online hjelp</value>
+  </data>
+  <data name="AddIns.HexEditor.DefaultBytesPerLine" xml:space="preserve">
+    <value>Antall bytes per linje</value>
+  </data>
+  <data name="AddIns.HexEditor.Display" xml:space="preserve">
+    <value>Vis</value>
+  </data>
+  <data name="AddIns.HexEditor.Display.Elements" xml:space="preserve">
+    <value>Elementer</value>
+  </data>
+  <data name="AddIns.HexEditor.Display.Elements.Data" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="AddIns.HexEditor.Display.Elements.Offset" xml:space="preserve">
+    <value>Forskyving</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem" xml:space="preserve">
+    <value>Numerisk system</value>
+  </data>
   <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
     <value>Utvid til full bredde</value>
   </data>
@@ -401,8 +467,197 @@ Du må installere .NET Framework SDK for å få tilgang til hjelpesystemet.</val
   <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
     <value>Bruk aktivt prosjektspråk</value>
   </data>
+  <data name="AddIns.Profiler.Commands.FindCallsOfSelected.TabTitle" xml:space="preserve">
+    <value>Resultat</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.SetAsRoot.TabTitle" xml:space="preserve">
+    <value>Flettede noder</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.ShowFunctions.TabTitle" xml:space="preserve">
+    <value>Alle funksjoner for {0}</value>
+  </data>
+  <data name="AddIns.Profiler.DatabaseTooNewError" xml:space="preserve">
+    <value>Den valgte SharpDevelop profilsesjonen ble opprettet av en nyere versjon av SharpDevelop og kan derfor ikke åpnes.</value>
+  </data>
+  <data name="AddIns.Profiler.FileExtensionDescription" xml:space="preserve">
+    <value>SharpDevelop profilsesjon</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.FileNotFound" xml:space="preserve">
+    <value>Prosjektet kan ikke startes fordi den kjørbare filen finnes ikke. Vennligst påse at prosjektet og alle avhengigheter er bygget korrekt!</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.NoStartableProjectFound" xml:space="preserve">
+    <value>Ingen startbare prosjekter ble funnet. Avbryter...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.NoStartableProjectWantToProfileStartupProject" xml:space="preserve">
+    <value>Dette prosjektet kan ikke startes. Vil du profilere løsningens oppstartsprosjekt istedet?</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.PreparingForAnalysis" xml:space="preserve">
+    <value>Forbereder analyse...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.RegisterFailed" xml:space="preserve">
+    <value>Kunne ikke registrere profilereren i COM registeret. Kan ikke starte profilering!</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.UnregisterFailed" xml:space="preserve">
+    <value>Kunne ikke avregistrere profilereren fra COM registeret!</value>
+  </data>
+  <data name="AddIns.Profiler.MessageViewCategory" xml:space="preserve">
+    <value>Profiler</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.CombineRecursiveCalls" xml:space="preserve">
+    <value>Kombiner rekursive kall.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.DoNotProfileNetInternals" xml:space="preserve">
+    <value>Ikke profiler interne .NET kall.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.EnableDC" xml:space="preserve">
+    <value>Samle data kun ved slutten av sesjonen.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.EnableDCAtStartup" xml:space="preserve">
+    <value>Start datainnsamling med en gang sesjonen er startet.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.Header" xml:space="preserve">
+    <value>Datasamling</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.SizeOfStorageDescription" xml:space="preserve">
+    <value>Størrelse på midlertidig lagringsfil:</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.TrackEvents" xml:space="preserve">
+    <value>Spor hendelser</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.Title" xml:space="preserve">
+    <value>Generelt</value>
+  </data>
+  <data name="AddIns.Profiler.Options.Title" xml:space="preserve">
+    <value>Profilering</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileCurrentProject" xml:space="preserve">
+    <value>Profiler dette prosjektet</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutable" xml:space="preserve">
+    <value>Velg kjørbar fil å profilere</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutable.ErrorMessage" xml:space="preserve">
+    <value>Ugyldige data, vennligst prøv igjen!</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.CmdLineArgsText" xml:space="preserve">
+    <value>Kommandolinjeargumenter:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.DescriptionText" xml:space="preserve">
+    <value>Velg banen til den kjørbare filen du vil profilere. Du kan også (valgfritt) spesifisere en arbeidskatalog og kommandolinjeargumenter.</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.ExePathText" xml:space="preserve">
+    <value>Bane til kjørbar fil:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.StartText" xml:space="preserve">
+    <value>Start profilering</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.Title" xml:space="preserve">
+    <value>Profiler kjørbar fil</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutableForm.WorkingDirText" xml:space="preserve">
+    <value>Arbeidskatalog:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.CollectData" xml:space="preserve">
+    <value>Samle data</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.Shutdown" xml:space="preserve">
+    <value>Slå av</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.Title" xml:space="preserve">
+    <value>Kontrollvindu for profilering</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CallCountColumnText" xml:space="preserve">
+    <value>Antall kall</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CallsText" xml:space="preserve">
+    <value>Kall:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ClearQueryHistoryText" xml:space="preserve">
+    <value>Slett spørringshistorikk</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.CopySelectedData" xml:space="preserve">
+    <value>Kopier merkede data</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.CopyStacktrace" xml:space="preserve">
+    <value>Kopier stakksporing</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.FindCallsOfSelected" xml:space="preserve">
+    <value>Finn kall til valgte funksjoner</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.GoToDefinition" xml:space="preserve">
+    <value>Gå til definisjon</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.SetAsRoot" xml:space="preserve">
+    <value>Sett som rot/Flett</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ContextMenu.ShowFunctions" xml:space="preserve">
+    <value>Vis funksjoner</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CpuCyclesText" xml:space="preserve">
+    <value>Prosessorsykluser:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ExecuteQueryText" xml:space="preserve">
+    <value>Utfør spørring</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ExpandHotPathSubtreeText" xml:space="preserve">
+    <value>Utvid valgte aktive bane</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.NameColumnText" xml:space="preserve">
+    <value>Navn</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.OverviewTabText" xml:space="preserve">
+    <value>Oversikt</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.QueryHistoryText" xml:space="preserve">
+    <value>Spørringshistorikk</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.SearchLabelText" xml:space="preserve">
+    <value>Søk:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ShowQueryBarText" xml:space="preserve">
+    <value>Vis spørringspanel</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimePercentageOfParentColumnText" xml:space="preserve">
+    <value>% av forelder</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentColumnText" xml:space="preserve">
+    <value>Tidsbruk</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentPerCallColumnText" xml:space="preserve">
+    <value>Tidsbruk/kall</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentSelfColumnText" xml:space="preserve">
+    <value>Tidsbruk (egen)</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentSelfPerCallColumnText" xml:space="preserve">
+    <value>Tidsbruk (egen)/kall</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeText" xml:space="preserve">
+    <value>Tid:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.Title" xml:space="preserve">
+    <value>Profileringssesjon-analyse</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.Top20TabText" xml:space="preserve">
+    <value>Topp 20</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.WaitBarText" xml:space="preserve">
+    <value>Oppdaterer visningen, vennligst vent...</value>
+  </data>
+  <data name="AddIns.Profiler.UnitTests.RunWithProfiler" xml:space="preserve">
+    <value>Kjør med profilering</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Lag metode</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsBreakError" xml:space="preserve">
+    <value>Den merkede koden inneholder en break-kommando uten den ytre løkken. Vennligst endre utvalget!</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsContinueError" xml:space="preserve">
+    <value>Den merkede koden inneholder en continue-kommando uten den ytre løkken. Vennligst endre utvalget!</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ExtractMethod.ContainsGotoError" xml:space="preserve">
+    <value>Den merkede koden inneholder en goto-kommando, men ikke merkelappen. Vennligst endre utvalget!</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod.EnterName" xml:space="preserve">
     <value>Skriv inn et navn på den nye metoden</value>
@@ -415,6 +670,51 @@ Du må installere .NET Framework SDK for å få tilgang til hjelpesystemet.</val
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethodNotSupported" xml:space="preserve">
     <value>Metode-uttrekk støttes ikke i {0}!</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor" xml:space="preserve">
+    <value>Sett inn konstruktør</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.AddCheckForNullLabel" xml:space="preserve">
+    <value>Legg til null-sjekk</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.AddRangeCheckLabel" xml:space="preserve">
+    <value>Legg til fra/til-sjekk</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.Description" xml:space="preserve">
+    <value>Velg alle felter du vil bruke for å lage konstruktøren:</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.VariableLabel" xml:space="preserve">
+    <value>Variabel</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.IntroduceMethod" xml:space="preserve">
+    <value>Introduser metode {0} i {1}</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods" xml:space="preserve">
+    <value>Overstyr Equals() og GetHashCode()</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddInterface" xml:space="preserve">
+    <value>Legg til interface {0}</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOperatorOverloads" xml:space="preserve">
+    <value>Legg til overloads for operatører</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOtherMethod" xml:space="preserve">
+    <value>Legg til overstyring av ${otherMethod}</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.SurroundWithRegion" xml:space="preserve">
+    <value>Omring med #region</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideToStringMethod" xml:space="preserve">
+    <value>Overstyr ToString()</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideToStringMethod.Description" xml:space="preserve">
+    <value>Velg feltene du vil bruke i ToString()-implementeringen:</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ResolveAttribute" xml:space="preserve">
+    <value>Løs opp attributt: {0}</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ResolveExtensionMethod" xml:space="preserve">
+    <value>Løs opp utvidelsesmetode {0}</value>
   </data>
   <data name="AddIns.SourceAnalysis.CheckWithStyleCop" xml:space="preserve">
     <value>Sjekk med StyleCop</value>
@@ -557,6 +857,112 @@ Du må lagre disse filene før du utfører denne handlingen.</value>
   </data>
   <data name="AddIns.Subversion.UpdateToRevision" xml:space="preserve">
     <value>Oppdater til revisjon</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.AcceptConfirmation" xml:space="preserve">
+    <value>Takk for at du deltar! Hvis du ombestemmer deg kan du skru av dette i alternativene til SharpDevelop.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.AcceptRadioButton" xml:space="preserve">
+    <value>Jeg vil gjerne bidra - samle inn og last opp bruksdata.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.DeclineConfirmation" xml:space="preserve">
+    <value>Du kan skru på dette senere i alternativene for SharpDevelop.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.DeclineRadioButton" xml:space="preserve">
+    <value>Jeg vil ikke bidra.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.Introduction" xml:space="preserve">
+    <value>Vi trenger din hjelp! For å forbedre SharpDevelop i framtiden trenger vi å vite hvilke funksjoner som brukes mest. 
+SharpDevelop kan samle inn denne informasjonen og laste den opp automatisk.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.PrivacyStatement" xml:space="preserve">
+    <value>Retningslinjer for personvern</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.ShowCollectedData" xml:space="preserve">
+    <value>Vis oppsamlede data</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.Title" xml:space="preserve">
+    <value>Oppsamler for bruksdata</value>
+  </data>
+  <data name="AddIns.VBNetBinding.CodeCompletion.QuestionmarkEqualsItem.Description" xml:space="preserve">
+    <value>La SharpDevelop finne typen basert på initialiseringen.</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
+    <value>Rediger tabellkolonner og rader</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle" xml:space="preserve">
+    <value>Trekk ut egenskaper som stil</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ErrorNoSelection" xml:space="preserve">
+    <value>Ingen gyldige elementer valgt!</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.PropertyColumn" xml:space="preserve">
+    <value>Navn på egenskap/hendelse</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ReplaceQuestion" xml:space="preserve">
+    <value>Den valgte kontrollen har allerede en tilordnet stil. Vil du erstatte denne med den nye stilen?</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.StyleName" xml:space="preserve">
+    <value>Stilnavn:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ValueColumn" xml:space="preserve">
+    <value>Egenskapsverdi</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.GroupInto" xml:space="preserve">
+    <value>Grupper til</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.RemoveMargin" xml:space="preserve">
+    <value>Fjern margin</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.RemoveUnnecessaryAttributes" xml:space="preserve">
+    <value>Fjern unødvendige attributter</value>
+  </data>
+  <data name="AddIns.XamlBinding.NewEventHandlerItem" xml:space="preserve">
+    <value>&lt;ny hendelsesfunksjon&gt;</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.CodeCompletionGroupLabel" xml:space="preserve">
+    <value>Kodefullføring</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.EventColor" xml:space="preserve">
+    <value>Farge for hendelser:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.EventHandlerNamePattern" xml:space="preserve">
+    <value>Navnemaske for hendelsesfunksjon</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.HighlightingDescription" xml:space="preserve">
+    <value>Velg fargene som skal brukes i XAML-fargekodingen:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.HighlightingGroupLabel" xml:space="preserve">
+    <value>Fargekoding</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.IgnoredElementColor" xml:space="preserve">
+    <value>Farge for ignorerte elementer:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.NamespaceDeclarationColor" xml:space="preserve">
+    <value>Farge for XML-navneromdeklarasjoner:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.PropertyColor" xml:space="preserve">
+    <value>Farge for egenskaper:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.SwitchToCodeViewAfterInsertion" xml:space="preserve">
+    <value>Bytt til kode etter innsetting av en ny hendelsesfunksjon</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.Title" xml:space="preserve">
+    <value>XAML</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.UseExtensionCompletion" xml:space="preserve">
+    <value>Bruk fullføring av markup utvidelse</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.UseHighlighting" xml:space="preserve">
+    <value>Bruk avansert fargekoding</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss" xml:space="preserve">
+    <value>Filen kan ikke lagres med den nåværende kodingen ${encoding} uten tap av data.</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss.Continue" xml:space="preserve">
+    <value>Fortsett</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss.UseUTF8" xml:space="preserve">
+    <value>Lagre som UTF-8</value>
   </data>
   <data name="BackendBindings.ExecutionManager.CantExecuteDLLError" xml:space="preserve">
     <value>Prosjektet er konfigurert som en DLL og ingen kjøringskommando er spesifisert. Du kan spesifisere en kjøringskommando i prosjektinnstillingene.</value>
@@ -1724,6 +2130,12 @@ I tillegg kan et spenn tilordnes et navngitt regelsett som tillater kompleks for
   <data name="Dialog.Options.CodeTemplate.Description" xml:space="preserve">
     <value>Beskrivelse</value>
   </data>
+  <data name="Dialog.Options.CodeTemplate.EditGroupDialog.Text" xml:space="preserve">
+    <value>Vennligst skriv listen med filetternavn som en semikolon-separert liste. (Eksempel: .h;.c;.cpp)</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.EditGroupLabel" xml:space="preserve">
+    <value>Rediger utvidelser</value>
+  </data>
   <data name="Dialog.Options.CodeTemplate.EditTemplateDialog.DescriptionLabel" xml:space="preserve">
     <value>&amp;Beskrivelse</value>
   </data>
@@ -1735,6 +2147,9 @@ I tillegg kan et spenn tilordnes et navngitt regelsett som tillater kompleks for
   </data>
   <data name="Dialog.Options.CodeTemplate.ExtensionsLabel" xml:space="preserve">
     <value>&amp;Filtyper</value>
+  </data>
+  <data name="Dialog.Options.CodeTemplate.Keyword" xml:space="preserve">
+    <value>Nøkkelord-knytning</value>
   </data>
   <data name="Dialog.Options.CodeTemplate.PressTabToInsertTemplate" xml:space="preserve">
     <value>Trykk Tab for å sette inn denne kodemalen</value>
@@ -2075,6 +2490,9 @@ I tillegg kan et spenn tilordnes et navngitt regelsett som tillater kompleks for
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.CreateBackupCopyCheckBox" xml:space="preserve">
     <value>Bruk &amp;temp-fil for lagring</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.DefaultFileEncoding" xml:space="preserve">
+    <value>Standard fil-koding:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.DetectExternalChanges" xml:space="preserve">
     <value>Overvåk eksterne endringer av filer</value>
   </data>
@@ -2088,7 +2506,7 @@ I tillegg kan et spenn tilordnes et navngitt regelsett som tillater kompleks for
     <value>&amp;Les inn brukerspesifikke innstillinger med dokumentet</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.MacintoshRadioButton" xml:space="preserve">
-    <value>Macintosh</value>
+    <value>Macintosh (CR)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.PanelName" xml:space="preserve">
     <value>Åpne/Lagre</value>
@@ -2097,13 +2515,13 @@ I tillegg kan et spenn tilordnes et navngitt regelsett som tillater kompleks for
     <value>Lagre</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.UnixRadioButton" xml:space="preserve">
-    <value>Unix</value>
+    <value>Unix (LF)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.UseRecycleBin" xml:space="preserve">
     <value>Send slettede filer til papirkurven</value>
   </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.WindowsRadioButton" xml:space="preserve">
-    <value>Windows</value>
+    <value>Windows (CRLF)</value>
   </data>
   <data name="Dialog.Options.IDEOptions.OutputPanel.Format" xml:space="preserve">
     <value>Format</value>
@@ -2216,6 +2634,9 @@ I tillegg kan et spenn tilordnes et navngitt regelsett som tillater kompleks for
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.ConvertTabsToSpacesCheckBox" xml:space="preserve">
     <value>&amp;Konverter tabulator til mellomrom</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CtrlClickGotoDefinition" xml:space="preserve">
+    <value>Bruk Ctrl+Klikk for "Gå til definisjon"</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CurlyBracketCheckBox" xml:space="preserve">
     <value>A&amp;utomatiske krøllparenteser</value>
   </data>
@@ -2260,6 +2681,9 @@ I tillegg kan et spenn tilordnes et navngitt regelsett som tillater kompleks for
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.TemplateInsertCheckBox" xml:space="preserve">
     <value>&amp;Automatisk innsetting av maler</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.UseSmartIndent" xml:space="preserve">
+    <value>Bruk smarte innrykk</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName" xml:space="preserve">
     <value>Kodefullføring</value>
@@ -2313,7 +2737,10 @@ I tillegg kan et spenn tilordnes et navngitt regelsett som tillater kompleks for
     <value>Vis markørlinje</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox" xml:space="preserve">
-    <value>Vis &amp;linjeslutt markører</value>
+    <value>Vis &amp;linjeslutt-markører</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox" xml:space="preserve">
+    <value>Fargekode symboler</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox" xml:space="preserve">
     <value>Uthev &amp;matchende parentes</value>
@@ -2443,6 +2870,18 @@ I tillegg kan et spenn tilordnes et navngitt regelsett som tillater kompleks for
   </data>
   <data name="Dialog.ProjectOptions.ApplicationSettings.LocalizedStringFileLabel" xml:space="preserve">
     <value>Språkfil:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.ApplicationSettings.Manifest" xml:space="preserve">
+    <value>Applikasjons-&amp;manifest:</value>
+  </data>
+  <data name="Dialog.ProjectOptions.ApplicationSettings.Manifest.DoNotEmbedManifest" xml:space="preserve">
+    <value>Ikke bygg inn manifest</value>
+  </data>
+  <data name="Dialog.ProjectOptions.ApplicationSettings.Manifest.EmbedDefault" xml:space="preserve">
+    <value>Bygg inn standard manifest</value>
+  </data>
+  <data name="Dialog.ProjectOptions.ApplicationSettings.Manifest.ManifestFiles" xml:space="preserve">
+    <value>Manifest-filer</value>
   </data>
   <data name="Dialog.ProjectOptions.ApplicationSettings.OutputName" xml:space="preserve">
     <value>Resultatnavn:</value>
@@ -2762,6 +3201,18 @@ Du kan også velge å lagre innstillingen i .user-filen istedet for i prosjektfi
   <data name="Dialog.Refactoring.ExtractInterface.SelectPublicMembers" xml:space="preserve">
     <value>Velg public medlemmer</value>
   </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.CreateNew" xml:space="preserve">
+    <value>Lag ny klasse:</value>
+  </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.Description" xml:space="preserve">
+    <value>Metoden kan ikke opprettes direkte, fordi det ikke er tilgjengelig noen kildekode for klassen. Vennligst velg en statisk klasse hvor metoden kan lages som en utvidelsesmetode.</value>
+  </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.Title" xml:space="preserve">
+    <value>Introduser metode</value>
+  </data>
+  <data name="Dialog.Refactoring.IntroduceMethod.UseExisting" xml:space="preserve">
+    <value>Bruk eksisterende klasse:</value>
+  </data>
   <data name="Dialog.SelectReferenceDialog.BrowserTabPage" xml:space="preserve">
     <value>.NET samlingsutforsker</value>
   </data>
@@ -2927,6 +3378,18 @@ Du kan også velge å lagre innstillingen i .user-filen istedet for i prosjektfi
   <data name="Global.Folder" xml:space="preserve">
     <value>Mappe</value>
   </data>
+  <data name="Global.FontStyle" xml:space="preserve">
+    <value>Skriftstil</value>
+  </data>
+  <data name="Global.FontStyle.CustomColor" xml:space="preserve">
+    <value>Egendefinert</value>
+  </data>
+  <data name="Global.FontStyle.SelectFont" xml:space="preserve">
+    <value>Velg skrifttype</value>
+  </data>
+  <data name="Global.FontStyle.Underline" xml:space="preserve">
+    <value>Understrek</value>
+  </data>
   <data name="Global.HelpButtonText" xml:space="preserve">
     <value>&amp;Hjelp</value>
   </data>
@@ -3006,7 +3469,7 @@ Du kan også velge å lagre innstillingen i .user-filen istedet for i prosjektfi
     <value>Prøv igjen</value>
   </data>
   <data name="Global.SelectAllButtonText" xml:space="preserve">
-    <value>Velg alle</value>
+    <value>Velg &amp;alle</value>
   </data>
   <data name="Global.SmallIconToolTip" xml:space="preserve">
     <value>Små ikoner</value>
@@ -3035,6 +3498,9 @@ Du kan også velge å lagre innstillingen i .user-filen istedet for i prosjektfi
   <data name="Gui.ProjectBrowser.Open" xml:space="preserve">
     <value>Åpne</value>
   </data>
+  <data name="Gui.ProjectBrowser.OpenFolderInExplorer" xml:space="preserve">
+    <value>Åpne katalog i Utforsker</value>
+  </data>
   <data name="Gui.ProjectBrowser.OpenWith" xml:space="preserve">
     <value>Åpne med...</value>
   </data>
@@ -3058,6 +3524,9 @@ Du kan også velge å lagre innstillingen i .user-filen istedet for i prosjektfi
   </data>
   <data name="Gui.ProjectBrowser.OpenWith.Bindings.TextEditor" xml:space="preserve">
     <value>Tekst editor</value>
+  </data>
+  <data name="Gui.ProjectBrowser.OpenWith.Bindings.TextEditorWithEncoding" xml:space="preserve">
+    <value>Tekstredigering (velg koding)</value>
   </data>
   <data name="Gui.ProjectBrowser.OpenWith.Bindings.WebBrowser" xml:space="preserve">
     <value>Innebygd nettleser</value>
@@ -3172,6 +3641,9 @@ Du kan også velge å lagre innstillingen i .user-filen istedet for i prosjektfi
   </data>
   <data name="Hornung.ResourceToolkit.ValueLabel" xml:space="preserve">
     <value>Ressursverdi:</value>
+  </data>
+  <data name="ICSharpCode.AvalonEdit.AddIn.SharpDevelopCompletionWindow.EmptyText" xml:space="preserve">
+    <value>Trykk Ctrl+mellomrom for å vise elementer fra alle navnerom</value>
   </data>
   <data name="ICSharpCode.BooInterpreter" xml:space="preserve">
     <value>Boo tolker</value>
@@ -3367,6 +3839,45 @@ Hvis NCover er installert, vennligst oppgi plasseringen til applikasjonen i inns
   <data name="ICSharpCode.Core.Services.ErrorDialogs.ShowExceptionButton" xml:space="preserve">
     <value>Vis feil</value>
   </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.AdditionalOptions" xml:space="preserve">
+    <value>Tilleggsinnstillinger</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker" xml:space="preserve">
+    <value>Linker</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.AdditionalLibs" xml:space="preserve">
+    <value>Link ytterligere filer</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.AddModule" xml:space="preserve">
+    <value>Link spesifikke .NET moduler</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.GenerateDebugInfo" xml:space="preserve">
+    <value>Lag debuggings-informasjon</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.Library" xml:space="preserve">
+    <value>Plassering for bibliotekfiler</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Linker.ManagedResourceFile" xml:space="preserve">
+    <value>Bygg inn .NET ressursfil</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor" xml:space="preserve">
+    <value>Preprosessor</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Definitions" xml:space="preserve">
+    <value>Definer følgende preprosessor-symboler</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Includes" xml:space="preserve">
+    <value>Plassering for header-filer</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.UndefineAll" xml:space="preserve">
+    <value>Avdefiner alle definerte preprosessorsymboler</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.Preprocessor.Undefinitions" xml:space="preserve">
+    <value>Avdefiner følgende preprosessorsymboler</value>
+  </data>
+  <data name="ICSharpCode.CppBinding.ProjectOptions.SymbolLabel" xml:space="preserve">
+    <value>Symbol</value>
+  </data>
   <data name="ICSharpCode.FiletypeRegisterer.BinaryResourceFilesFileAssozisation" xml:space="preserve">
     <value>.NET ressursfil (binær)</value>
   </data>
@@ -3509,6 +4020,39 @@ Vennligst konfigurer plasseringen til NAnt programmet i innstillingene for Sharp
   </data>
   <data name="ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesMenuLabel" xml:space="preserve">
     <value>Sett inn PInvoke signaturer...</value>
+  </data>
+  <data name="ICSharpCode.PythonBinding.ConvertCSharpProjectToPythonProject" xml:space="preserve">
+    <value>Fra C# til Python</value>
+  </data>
+  <data name="ICSharpCode.PythonBinding.ConvertVBNetProjectToPythonProject" xml:space="preserve">
+    <value>Fra VB.NET til Python</value>
+  </data>
+  <data name="ICSharpCode.PythonBinding.PythonConsole" xml:space="preserve">
+    <value>Python-konsoll</value>
+  </data>
+  <data name="ICSharpCode.PythonBinding.PythonFiles" xml:space="preserve">
+    <value>Python-filer</value>
+  </data>
+  <data name="ICSharpCode.PythonBinding.PythonProjectFiles" xml:space="preserve">
+    <value>Python-prosjektfiler</value>
+  </data>
+  <data name="ICSharpCode.PythonBinding.SendLineToPythonConsole" xml:space="preserve">
+    <value>Send linje til Python-konsoll</value>
+  </data>
+  <data name="ICSharpCode.PythonBinding.SendSelectedTextToPythonConsole" xml:space="preserve">
+    <value>Send til Python-konsoll</value>
+  </data>
+  <data name="ICSharpCode.PythonBinding.UnknownTypeName" xml:space="preserve">
+    <value>Kunne ikke finne type '{0}'. Mangler du en assembly-referanse?</value>
+  </data>
+  <data name="ICSharpCode.Refactoring.NoClassOrOverridableSymbolUnderCursorError" xml:space="preserve">
+    <value>Det valgte elementet er ikke en klasse eller et overstyrbart medlem, så ingen symboler kan vises.</value>
+  </data>
+  <data name="ICSharpCode.RubyBinding.SendLineToRubyConsole" xml:space="preserve">
+    <value>Send linje til Ruby-konsoll</value>
+  </data>
+  <data name="ICSharpCode.RubyBinding.SendSelectedTextToRubyConsole" xml:space="preserve">
+    <value>Send til Ruby-konsoll</value>
   </data>
   <data name="ICSharpCode.Services.FileUtilityService.CantLoadFileStandardText" xml:space="preserve">
     <value>Kan ikke lese filen ${FileNameWithoutPath} i ${Path}. Sjekk at filen eksisterer og at du har leserettigheter til den.</value>
@@ -3713,6 +4257,9 @@ Merk: Dette påvirker ikke egendefinerte oppsett.</value>
   <data name="ICSharpCode.SharpDevelop.Commands.SaveFileAs.FileSavedCaption" xml:space="preserve">
     <value>Filen er lagret</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Commands.TabStrip.NavigateToFileInProjectBrowser" xml:space="preserve">
+    <value>Naviger til fil i prosjekt-utforsker</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Commands.VBConvertProjectToCSharp" xml:space="preserve">
     <value>fra VB.NET til C#</value>
   </data>
@@ -3871,6 +4418,9 @@ Merk: Dette påvirker ikke egendefinerte oppsett.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GeneralOptionsPanel.PanelName" xml:space="preserve">
     <value>Generelt</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GenerateVisualStudioStyleEventHandlers" xml:space="preserve">
+    <value>Generer Visual Studio-lignende hendelsesfunksjoner</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.GridPropertiesGroupBox" xml:space="preserve">
     <value>Egenskaper for rutenett</value>
@@ -4048,7 +4598,7 @@ Ingen Windows Forms komponenter vil være tilgjengelig, vennligst konfigurer sid
 Sjekk om du har tilstrekkelige rettigheter.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.IllegalProjectNameError" xml:space="preserve">
-    <value>Ugyldig prosjektnavn.
+    <value>Ulovlig prosjektnavn.
 Bare bokstaver, tall, mellomrom, '.' eller '_' er tillatt.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.ProjectNameMustNotEndWithDot" xml:space="preserve">
@@ -4056,6 +4606,9 @@ Bare bokstaver, tall, mellomrom, '.' eller '_' er tillatt.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.ProjectNameMustStartWithLetter" xml:space="preserve">
     <value>Ugyldig prosjektnavn: prosjektnavnet må starte med en bokstav.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.SpecifyValidLocation" xml:space="preserve">
+    <value>Du må spesifisere en gyldig absolutt bane som prosjekplassering.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.RegisterFiletypesPanel.CaptionLabel" xml:space="preserve">
     <value>&amp;Velg filtypene du vil assosiere med SharpDevelop:</value>
@@ -4086,6 +4639,9 @@ Bare bokstaver, tall, mellomrom, '.' eller '_' er tillatt.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.SortOptionsDialog.SortDirectionGroupBox.Descending" xml:space="preserve">
     <value>S&amp;ynkende</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.ToolNotFoundDialog.Title" xml:space="preserve">
+    <value>Verktøy ikke funnet</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Gui.Dialogs.UserCredentialsDialog.DialogTitle" xml:space="preserve">
     <value>Kredentialer for oppdaging</value>
@@ -4149,6 +4705,9 @@ Bare bokstaver, tall, mellomrom, '.' eller '_' er tillatt.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomToolNamespace.Description" xml:space="preserve">
     <value>Angir navnerommet hvor det egendefinerte verktøyet plasserer resultatet sitt.</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.FileName.Description" xml:space="preserve">
+    <value>Full bane til filen.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.LogicalName" xml:space="preserve">
     <value>Logisk navn</value>
@@ -4222,11 +4781,41 @@ Bare bokstaver, tall, mellomrom, '.' eller '_' er tillatt.</value>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteProjectQuestion" xml:space="preserve">
     <value>Prosjektfilen ${projectLocation} finnes fra før. Vil du overskrive den eksisterende filen?</value>
   </data>
+  <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion" xml:space="preserve">
+    <value>Filen(e) ${fileNames} eksisterer allerede, vil du overskrive?</value>
+  </data>
   <data name="ICSharpCode.SharpDevelop.Internal.Templates.ProjectDescriptor.OverwriteQuestion.InfoName" xml:space="preserve">
-    <value>Filen finnes fra før</value>
+    <value>Filen(e) finnes fra før</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.LoadingFile" xml:space="preserve">
     <value>Laster ${Filename}...</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeCompilerVersionLabel" xml:space="preserve">
+    <value>Konverter valgte &amp;prosjekter til:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeTargetFrameworkLabel" xml:space="preserve">
+    <value>Endre mål-rammeverk:</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ChangeVersionGroupBoxHeader" xml:space="preserve">
+    <value>Endre versjon på valgte prosjekter</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.CompilerVersion" xml:space="preserve">
+    <value>Kompilator-versjon</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.ConvertButton" xml:space="preserve">
+    <value>Konverter</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.DoNotChange" xml:space="preserve">
+    <value>&lt;ikke endre&gt;</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.TargetFramework" xml:space="preserve">
+    <value>Målrammeverk</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.Title" xml:space="preserve">
+    <value>Prosjektoppgradering</value>
+  </data>
+  <data name="ICSharpCode.SharpDevelop.Project.UpgradeView.UpgradeFromPreviousVersionDescription" xml:space="preserve">
+    <value>Denne løsningen ble opprettet med en tidligere versjon av SharpDevelop. Du bør kanskje oppgradere den slik at du kan bruke nye funksjoner i språk eller rammeverk.</value>
   </data>
   <data name="ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError" xml:space="preserve">
     <value>Aktivt miljø finnes ikke.
@@ -4236,13 +4825,16 @@ Gå til 'Alternativer -&gt; Visuell stil' og endre språkmiljø.</value>
     <value>Alle er markert.</value>
   </data>
   <data name="ICSharpCode.TextEditor.Document.SearchReplaceManager.ReplaceAllDone" xml:space="preserve">
-    <value>Alle er erstattet.</value>
+    <value>${Count} erstatninger utført.</value>
   </data>
   <data name="ICSharpCode.UnitTesting.AllTestsTreeNode.Text" xml:space="preserve">
     <value>Alle tester</value>
   </data>
   <data name="ICSharpCode.UnitTesting.CodeCoverage" xml:space="preserve">
     <value>Kodedekning</value>
+  </data>
+  <data name="ICSharpCode.UnitTesting.OptionsPanel.CreateXmlOutputFile" xml:space="preserve">
+    <value>Lag XML resultatfil</value>
   </data>
   <data name="ICSharpCode.UnitTesting.OptionsPanel.LabelEachTest" xml:space="preserve">
     <value>Navngi hver test</value>
@@ -4273,6 +4865,15 @@ Gå til 'Alternativer -&gt; Visuell stil' og endre språkmiljø.</value>
   </data>
   <data name="ICSharpCode.UnitTesting.RunWithDebugger" xml:space="preserve">
     <value>Kjør med feilsøking</value>
+  </data>
+  <data name="ICSharpCode.UnitTesting.StatusBarProgressLabel" xml:space="preserve">
+    <value>Tester ${Name}...</value>
+  </data>
+  <data name="ICSharpCode.UnitTesting.TestMenu" xml:space="preserve">
+    <value>&amp;Test</value>
+  </data>
+  <data name="ICSharpCode.UnitTesting.TestRunnerNotFoundMessageFormat" xml:space="preserve">
+    <value>Kan ikke kjøre enhetstester. Filen '{0}' finnes ikke.</value>
   </data>
   <data name="ICSharpCode.WixBinding.AddCompilerExtensionsDialog.Title" xml:space="preserve">
     <value>Legg til utvidelser</value>
@@ -4502,6 +5103,36 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ICSharpCode.WixBinding.WixVisualStudioExtensionTitle" xml:space="preserve">
     <value>Visual Studio utvidelse</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Copy" xml:space="preserve">
+    <value>Kopier</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Cut" xml:space="preserve">
+    <value>Klipp ut</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Outline" xml:space="preserve">
+    <value>Oversikt</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Paste" xml:space="preserve">
+    <value>Lim inn</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Properties" xml:space="preserve">
+    <value>Egenskaper</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Redo" xml:space="preserve">
+    <value>Gjenta</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Remove" xml:space="preserve">
+    <value>Fjern</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Tools" xml:space="preserve">
+    <value>Verktøy</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.Undo" xml:space="preserve">
+    <value>Angre</value>
+  </data>
+  <data name="ICSharpCode.WPFDesigner.ContextMenu.ViewXAML" xml:space="preserve">
+    <value>Vis XAML</value>
   </data>
   <data name="ICSharpCode.XmlEditor.AddAttributeDialog.CustomAttributeLabel" xml:space="preserve">
     <value>Egendefinert:</value>
@@ -4891,7 +5522,7 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
     <value>ved {0} i {1}:linje {2}</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.Message" xml:space="preserve">
-    <value>Feilen {0} oppståd i program under feilsøking:</value>
+    <value>En feil av type {0} oppstod:\n{1}</value>
   </data>
   <data name="MainWindow.Windows.Debug.ExceptionForm.ShowExceptionDetails" xml:space="preserve">
     <value>Vis feildetaljer</value>
@@ -4988,6 +5619,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.Debug.Modules.VersionColumn" xml:space="preserve">
     <value>Versjon</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ObjectGraph" xml:space="preserve">
+    <value>Objektgraf</value>
   </data>
   <data name="MainWindow.Windows.Debug.RunToCursor" xml:space="preserve">
     <value>Kjør til markør</value>
@@ -5111,6 +5745,12 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="MainWindow.Windows.HelpScoutLabel" xml:space="preserve">
     <value>Hjelp</value>
+  </data>
+  <data name="MainWindow.Windows.OutlinePad" xml:space="preserve">
+    <value>Oversikt</value>
+  </data>
+  <data name="MainWindow.Windows.OutlinePad.NoContentAvailable" xml:space="preserve">
+    <value>Det er ikke noe oversiktsinnhold tilgjengelig for dokumentet.</value>
   </data>
   <data name="MainWindow.Windows.OutputWindow" xml:space="preserve">
     <value>Resultat</value>
@@ -5313,6 +5953,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="ProjectComponent.ContextMenu.Clean" xml:space="preserve">
     <value>Rens</value>
   </data>
+  <data name="ProjectComponent.ContextMenu.CollapseAll" xml:space="preserve">
+    <value>Kollaps alle</value>
+  </data>
   <data name="ProjectComponent.ContextMenu.Delete.Question" xml:space="preserve">
     <value>Slette '${FileName}' permanent?</value>
   </data>
@@ -5354,6 +5997,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="ProjectComponent.ContextMenu.GenerateDocumentation.ProjectNeedsToBeCompiled2" xml:space="preserve">
     <value>XML dokumentasjons filen eksisterer ikke, du må kompilere prosjektet.</value>
+  </data>
+  <data name="ProjectComponent.ContextMenu.GenerateDocumentation.SHFBNotFound" xml:space="preserve">
+    <value>Generering av dokumentasjon fra XML-kommentarer krever at 'Sandcastle Help File Builder' er installert.</value>
   </data>
   <data name="ProjectComponent.ContextMenu.HtmlExport" xml:space="preserve">
     <value>HTML eksport</value>
@@ -5691,6 +6337,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="SharpDevelop.HexEditor.StreamAdded" xml:space="preserve">
     <value>Strøm lagt til!</value>
   </data>
+  <data name="SharpDevelop.Refactoring.BaseClassesOf" xml:space="preserve">
+    <value>Baseklasser for ${Name}</value>
+  </data>
   <data name="SharpDevelop.Refactoring.CannotPerformOperationBecauseOfSyntaxErrors" xml:space="preserve">
     <value>Handlingen kan ikke utføres fordi kildekoden din inneholder feil:</value>
   </data>
@@ -5702,6 +6351,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="SharpDevelop.Refactoring.ClassesDerivingFrom" xml:space="preserve">
     <value>Klasser som er derivert fra ${Name}</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ConvertToAutomaticProperty" xml:space="preserve">
+    <value>Konverter til automatisk egenskap</value>
   </data>
   <data name="SharpDevelop.Refactoring.CreateChangedEvent" xml:space="preserve">
     <value>Lag endret-hendelse</value>
@@ -5721,11 +6373,20 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="SharpDevelop.Refactoring.DeclaringType" xml:space="preserve">
     <value>Deklarerende type</value>
   </data>
+  <data name="SharpDevelop.Refactoring.ExpandAutomaticProperty" xml:space="preserve">
+    <value>Utvid automatisk egenskap</value>
+  </data>
   <data name="SharpDevelop.Refactoring.ExtractInterfaceCommand" xml:space="preserve">
     <value>Trekk ut interface</value>
   </data>
+  <data name="SharpDevelop.Refactoring.FindBaseClassesCommand" xml:space="preserve">
+    <value>Finn baseklasser</value>
+  </data>
   <data name="SharpDevelop.Refactoring.FindDerivedClassesCommand" xml:space="preserve">
     <value>Finn &amp;deriverte klasser</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.FindDerivedClassesOrOverridesCommand" xml:space="preserve">
+    <value>Finn deriverte symboler</value>
   </data>
   <data name="SharpDevelop.Refactoring.FindingReferences" xml:space="preserve">
     <value>Finner referanser...</value>
@@ -5747,6 +6408,9 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="SharpDevelop.Refactoring.GoToProperty" xml:space="preserve">
     <value>Gå til egenskap</value>
+  </data>
+  <data name="SharpDevelop.Refactoring.ImplementAbstractClass" xml:space="preserve">
+    <value>Implementer abstrakt klasse</value>
   </data>
   <data name="SharpDevelop.Refactoring.ImplementInterface" xml:space="preserve">
     <value>Implementer grensesnitt</value>
@@ -5828,18 +6492,6 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   </data>
   <data name="SharpDevelop.Solution.CannotSave.UnauthorizedAccessException" xml:space="preserve">
     <value>Kunne ikke lagre {0}:\n{1}\n\nSjekk at filen er skrivbar.</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion7" xml:space="preserve">
-    <value>Fant Visual Studio .NET prosjekt. Skal jeg konvertere det til Solution Format 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion8" xml:space="preserve">
-    <value>Fant Visual Studio .NET 2003 prosjekt. Skal jeg konvertere det til Solution Format 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportCmbx" xml:space="preserve">
-    <value>Skal SharpDevelop 1.x løsningen konverteres til en SharpDevelop 2.x løsning?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportPrjx" xml:space="preserve">
-    <value>Skal SharpDevelop 1.x prosjektet konverteres til et SharpDevelop 2.x prosjekt?</value>
   </data>
   <data name="SharpDevelop.Solution.ImportResourceWarning" xml:space="preserve">
     <value>Det var ressursfiler i prosjektet. 
@@ -6046,11 +6698,17 @@ SharpDevelop 2 kompilerer ressurser annerledes: ressursnavnet er ikke bare filna
   <data name="SharpReport.ReportViewer.LastPageMessage" xml:space="preserve">
     <value>Siste side</value>
   </data>
+  <data name="SharpReport.ReportViewer.NextPage" xml:space="preserve">
+    <value>Neste</value>
+  </data>
   <data name="SharpReport.ReportViewer.PagesCreatedMessage" xml:space="preserve">
     <value>Opprettede sider</value>
   </data>
   <data name="SharpReport.ReportViewer.PdfFileMessage" xml:space="preserve">
     <value>Lag PDF fil</value>
+  </data>
+  <data name="SharpReport.ReportViewer.PreviousPage" xml:space="preserve">
+    <value>Forrige</value>
   </data>
   <data name="SharpReport.ReportViewer.ZoomMessage" xml:space="preserve">
     <value>Skaler</value>
@@ -6301,6 +6959,9 @@ SharpDevelop 2 kompilerer ressurser annerledes: ressursnavnet er ikke bare filna
   <data name="Templates.File.EmptyFile.Name" xml:space="preserve">
     <value>Tom fil</value>
   </data>
+  <data name="Templates.File.Exception.Name" xml:space="preserve">
+    <value>Feil</value>
+  </data>
   <data name="Templates.File.GtkSharpWindow.Description" xml:space="preserve">
     <value>Et vindu for en Gtk# applikasjon</value>
   </data>
@@ -6400,6 +7061,12 @@ SharpDevelop 2 kompilerer ressurser annerledes: ressursnavnet er ikke bare filna
   <data name="Templates.File.Struct.Name" xml:space="preserve">
     <value>Struct</value>
   </data>
+  <data name="Templates.File.Structure.Description" xml:space="preserve">
+    <value>En strukturdeklarasjon som inkluderer implementasjoner av Equals() og GetHashCode().</value>
+  </data>
+  <data name="Templates.File.Structure.Name" xml:space="preserve">
+    <value>Struktur</value>
+  </data>
   <data name="Templates.File.Text.EmptyText.Name" xml:space="preserve">
     <value>Tom tekstfil</value>
   </data>
@@ -6423,6 +7090,9 @@ SharpDevelop 2 kompilerer ressurser annerledes: ressursnavnet er ikke bare filna
   </data>
   <data name="Templates.File.WebForm.Name" xml:space="preserve">
     <value>ASP.NET webside</value>
+  </data>
+  <data name="Templates.File.WebHandler.Name" xml:space="preserve">
+    <value>ASP.NET Web Handler</value>
   </data>
   <data name="Templates.File.WebService.Description" xml:space="preserve">
     <value>Komponentskall for ASMX webtjeneste.</value>
@@ -6538,6 +7208,12 @@ SharpDevelop 2 kompilerer ressurser annerledes: ressursnavnet er ikke bare filna
   <data name="Templates.Project.ConsoleProject.Name" xml:space="preserve">
     <value>Konsollapplikasjon</value>
   </data>
+  <data name="Templates.Project.ConsoleProject.Unmanaged.Description" xml:space="preserve">
+    <value>Et prosjekt som lager en kommandolinjeapplikasjon i ikke-håndtert (native) kode.</value>
+  </data>
+  <data name="Templates.Project.ConsoleProject.Unmanaged.Name" xml:space="preserve">
+    <value>Native konsollprosjekt</value>
+  </data>
   <data name="Templates.Project.Direct3DApplication.Description" xml:space="preserve">
     <value>Et prosjekt for å lage en applikasjon med Direct3D grensesnitt.</value>
   </data>
@@ -6585,6 +7261,12 @@ SharpDevelop 2 kompilerer ressurser annerledes: ressursnavnet er ikke bare filna
   </data>
   <data name="Templates.Project.SharpDevelopMacro.Name" xml:space="preserve">
     <value>Verktøymeny oppføring</value>
+  </data>
+  <data name="Templates.Project.SilverlightApplication.Description" xml:space="preserve">
+    <value>Et prosjekt som lager en Silverlight-applikasjon.</value>
+  </data>
+  <data name="Templates.Project.SilverlightApplication.Name" xml:space="preserve">
+    <value>Silverlight-applikasjon</value>
   </data>
   <data name="Templates.Project.SysTrayIcon.Description" xml:space="preserve">
     <value>Et prosjekt som lager en applikasjon med et ikon i varslingsområdet på oppgavelinjen.</value>
@@ -6639,6 +7321,9 @@ SharpDevelop 2 kompilerer ressurser annerledes: ressursnavnet er ikke bare filna
   </data>
   <data name="XML.FormsDesigner.SideBar.CustomizeSidebar" xml:space="preserve">
     <value>Konfigurer sidepanel...</value>
+  </data>
+  <data name="XML.MainMenu.Analysis" xml:space="preserve">
+    <value>&amp;Analyse</value>
   </data>
   <data name="XML.MainMenu.BuildMenu" xml:space="preserve">
     <value>Bygg</value>
@@ -6705,6 +7390,12 @@ SharpDevelop 2 kompilerer ressurser annerledes: ressursnavnet er ikke bare filna
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.BadAssembly" xml:space="preserve">
     <value>Kan ikke lese versjonen av .NET rammeverket. Sjekk at programmet er en .NET samling.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.CannotAttachToProcess" xml:space="preserve">
+    <value>Kan ikke knytte til prosess.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.CannotStartProcess" xml:space="preserve">
+    <value>Kan ikke starte prosess.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Error.Debugging" xml:space="preserve">
     <value>Kan ikke utføre handlingen fordi en prosess er under feilsøking.</value>
@@ -6809,10 +7500,10 @@ SharpDevelop 2 kompilerer ressurser annerledes: ressursnavnet er ikke bare filna
     <value>Til små bokstaver</value>
   </data>
   <data name="XML.MainMenu.EditMenu.FormatMenu.RlWs" xml:space="preserve">
-    <value>Fjern ledende blank</value>
+    <value>Fjern tomrom fra start</value>
   </data>
   <data name="XML.MainMenu.EditMenu.FormatMenu.RtWs" xml:space="preserve">
-    <value>Fjern blank slutt</value>
+    <value>Fjern tomrom fra slutt</value>
   </data>
   <data name="XML.MainMenu.EditMenu.FormatMenu.SortLines" xml:space="preserve">
     <value>Sorter linjer...</value>
@@ -6892,7 +7583,7 @@ SharpDevelop 2 kompilerer ressurser annerledes: ressursnavnet er ikke bare filna
   <data name="XML.MainMenu.FileMenu.New.File.Description" xml:space="preserve">
     <value>Lag ny fil</value>
   </data>
-  <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+  <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>&amp;Prosjekt...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">
@@ -6939,6 +7630,9 @@ SharpDevelop 2 kompilerer ressurser annerledes: ressursnavnet er ikke bare filna
   </data>
   <data name="XML.MainMenu.FileMenu.SaveAs" xml:space="preserve">
     <value>Lagre &amp;som...</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.SaveWithEncoding" xml:space="preserve">
+    <value>Lagre med koding...</value>
   </data>
   <data name="XML.MainMenu.FormatMenu" xml:space="preserve">
     <value>F&amp;ormat</value>
@@ -7102,6 +7796,9 @@ SharpDevelop 2 kompilerer ressurser annerledes: ressursnavnet er ikke bare filna
   <data name="XML.MainMenu.RunMenu.BuildProject.Description" xml:space="preserve">
     <value>Bygger det aktive prosjektet.</value>
   </data>
+  <data name="XML.MainMenu.RunMenu.BuildSolution.Description" xml:space="preserve">
+    <value>Bygger alle prosjekter i denne løsningen.</value>
+  </data>
   <data name="XML.MainMenu.RunMenu.Compile.Description" xml:space="preserve">
     <value>Bygger det aktive prosjektet eller dokumentet (når ingen prosjekt er åpne) (lagrer automatisk)</value>
   </data>
@@ -7136,7 +7833,7 @@ SharpDevelop 2 kompilerer ressurser annerledes: ressursnavnet er ikke bare filna
     <value>Finn neste som utvalg</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.Goto" xml:space="preserve">
-    <value>&amp;Gå til linje...</value>
+    <value>&amp;Gå til...</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.GotoBrace" xml:space="preserve">
     <value>Gå til &amp;matchende parentes</value>

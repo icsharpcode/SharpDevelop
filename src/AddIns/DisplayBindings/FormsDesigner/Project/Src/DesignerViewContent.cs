@@ -336,6 +336,7 @@ namespace ICSharpCode.FormsDesigner
 			hasUnmergedChanges = true;
 			this.DesignerCodeFile.MakeDirty();
 			this.resourceStore.MarkResourceFilesAsDirty();
+			System.Windows.Input.CommandManager.InvalidateRequerySuggested();
 		}
 		
 		bool shouldUpdateSelectableObjects = false;
@@ -481,8 +482,28 @@ namespace ICSharpCode.FormsDesigner
 		}
 		
 		internal new Control UserContent {
-			get { return base.UserContent as Control; }
-			set { base.UserContent = value; }
+			get {
+				SDWindowsFormsHost host = base.UserContent as SDWindowsFormsHost;
+				return host != null ? host.Child : null;
+			}
+			set {
+				SDWindowsFormsHost host = base.UserContent as SDWindowsFormsHost;
+				if (value == null) {
+					base.UserContent = null;
+					if (host != null)
+						host.Dispose();
+					return;
+				}
+				if (host != null && host.Child == value)
+					return;
+				if (host == null) {
+					host = new SDWindowsFormsHost(true);
+					host.ServiceObject = this;
+					host.DisposeChild = false;
+				}
+				host.Child = value;
+				base.UserContent = host;
+			}
 		}
 		
 		void DesignerLoading(object sender, EventArgs e)
@@ -686,6 +707,7 @@ namespace ICSharpCode.FormsDesigner
 			object[] selArray = new object[selection.Count];
 			selection.CopyTo(selArray, 0);
 			propertyContainer.SelectedObjects = selArray;
+			System.Windows.Input.CommandManager.InvalidateRequerySuggested();
 		}
 		
 		protected void UpdatePropertyPad()

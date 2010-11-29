@@ -65,7 +65,10 @@ namespace ICSharpCode.SharpDevelop.Dom.ReflectionLayer
 			} else if (methodBase.IsAbstract) {
 				modifiers |= ModifierEnum.Abstract;
 			} else if (methodBase.IsVirtual) {
-				modifiers |= ModifierEnum.Virtual;
+				if ((methodBase.Attributes & MethodAttributes.NewSlot) != 0)
+					modifiers |= ModifierEnum.Virtual;
+				else
+					modifiers |= ModifierEnum.Override;
 			}
 			
 			this.Modifiers = modifiers;

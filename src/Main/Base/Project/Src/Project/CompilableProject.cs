@@ -612,7 +612,12 @@ namespace ICSharpCode.SharpDevelop.Project
 					XElement startup = configuration.Element("startup");
 					if (startup == null) {
 						startup = new XElement("startup");
-						configuration.AddFirst(startup);
+						if (configuration.HasElements && configuration.Elements().First().Name == "configSections") {
+							// <configSections> must be first element
+							configuration.Elements().First().AddAfterSelf(startup);
+						} else {
+							configuration.AddFirst(startup);
+						}
 					}
 					XElement supportedRuntime = startup.Element("supportedRuntime");
 					if (supportedRuntime == null) {

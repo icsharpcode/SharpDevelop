@@ -16,28 +16,37 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// </summary>
 	public class SDWindowsFormsHost : WindowsFormsHost
 	{
-		public SDWindowsFormsHost()
+		/// <summary>
+		/// Creates a new SDWindowsFormsHost instance.
+		/// </summary>
+		/// <param name="processShortcutsInWPF">
+		/// Determines whether the shortcuts for the default actions (Cut,Copy,Paste,Undo, etc.)
+		/// are processed by the WPF command system.
+		/// The default value is false. Pass true only if WinForms does not handle those shortcuts by itself.
+		/// See SD-1671 and SD-1737.
+		/// </param>
+		public SDWindowsFormsHost(bool processShortcutsInWPF = false)
 		{
 			this.DisposeChild = true;
-			CreateBindings();
+			CreateBindings(processShortcutsInWPF);
 		}
 		
 		#region Binding
-		void CreateBindings()
+		void CreateBindings(bool processShortcutsInWPF)
 		{
-			AddBinding(ApplicationCommands.Copy, (IClipboardHandler c) => c.Copy(), c => c.EnableCopy);
-			AddBinding(ApplicationCommands.Cut, (IClipboardHandler c) => c.Cut(), c => c.EnableCut);
-			AddBinding(ApplicationCommands.Paste, (IClipboardHandler c) => c.Paste(), c => c.EnablePaste);
-			AddBinding(ApplicationCommands.Delete, (IClipboardHandler c) => c.Delete(), c => c.EnableDelete);
-			AddBinding(ApplicationCommands.SelectAll, (IClipboardHandler c) => c.SelectAll(), c => c.EnableSelectAll);
-			AddBinding(ApplicationCommands.Help, (IContextHelpProvider h) => h.ShowHelp(), h => true);
-			AddBinding(ApplicationCommands.Undo, (IUndoHandler u) => u.Undo(), u => u.EnableUndo);
-			AddBinding(ApplicationCommands.Redo, (IUndoHandler u) => u.Redo(), u => u.EnableRedo);
-			AddBinding(ApplicationCommands.Print, (IPrintable p) => WindowsFormsPrinting.Print(p), p => true);
-			AddBinding(ApplicationCommands.PrintPreview, (IPrintable p) => WindowsFormsPrinting.PrintPreview(p), p => true);
+			AddBinding(processShortcutsInWPF, ApplicationCommands.Copy, (IClipboardHandler c) => c.Copy(), c => c.EnableCopy);
+			AddBinding(processShortcutsInWPF, ApplicationCommands.Cut, (IClipboardHandler c) => c.Cut(), c => c.EnableCut);
+			AddBinding(processShortcutsInWPF, ApplicationCommands.Paste, (IClipboardHandler c) => c.Paste(), c => c.EnablePaste);
+			AddBinding(processShortcutsInWPF, ApplicationCommands.Delete, (IClipboardHandler c) => c.Delete(), c => c.EnableDelete);
+			AddBinding(processShortcutsInWPF, ApplicationCommands.SelectAll, (IClipboardHandler c) => c.SelectAll(), c => c.EnableSelectAll);
+			AddBinding(processShortcutsInWPF, ApplicationCommands.Help, (IContextHelpProvider h) => h.ShowHelp(), h => true);
+			AddBinding(processShortcutsInWPF, ApplicationCommands.Undo, (IUndoHandler u) => u.Undo(), u => u.EnableUndo);
+			AddBinding(processShortcutsInWPF, ApplicationCommands.Redo, (IUndoHandler u) => u.Redo(), u => u.EnableRedo);
+			AddBinding(processShortcutsInWPF, ApplicationCommands.Print, (IPrintable p) => WindowsFormsPrinting.Print(p), p => true);
+			AddBinding(processShortcutsInWPF, ApplicationCommands.PrintPreview, (IPrintable p) => WindowsFormsPrinting.PrintPreview(p), p => true);
 		}
 		
-		void AddBinding<T>(ICommand command, Action<T> execute, Predicate<T> canExecute) where T : class
+		void AddBinding<T>(bool processShortcutsInWPF, ICommand command, Action<T> execute, Predicate<T> canExecute) where T : class
 		{
 			ExecutedRoutedEventHandler onExecuted = (sender, e) => {
 				if (e.Command == command) {
@@ -58,12 +67,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 			};
-			//this.CommandBindings.Add(new CommandBinding(command, onExecuted, onCanExecute));
-			// Don't use this.CommandBindings because CommandBindings with built-in shortcuts would handle the key press
-			// before WinForms gets to see it. Using the events ensures that the command gets executed only when the user
-			// clicks on the menu/toolbar item. (this fixes SD2-1671)
-			CommandManager.AddCanExecuteHandler(this, onCanExecute);
-			CommandManager.AddExecutedHandler(this, onExecuted);
+			if (processShortcutsInWPF) {
+				this.CommandBindings.Add(new CommandBinding(command, onExecuted, onCanExecute));
+			} else {
+				// Don't use this.CommandBindings because CommandBindings with built-in shortcuts would handle the key press
+				// before WinForms gets to see it. Using the events ensures that the command gets executed only when the user
+				// clicks on the menu/toolbar item. (this fixes SD2-1671)
+				CommandManager.AddCanExecuteHandler(this, onCanExecute);
+				CommandManager.AddExecutedHandler(this, onExecuted);
+			}
 		}
 		#endregion
 		

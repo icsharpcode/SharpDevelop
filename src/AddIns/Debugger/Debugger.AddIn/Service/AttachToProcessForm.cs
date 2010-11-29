@@ -57,6 +57,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			Process currentProcess = Process.GetCurrentProcess();			
 			foreach (Process process in Process.GetProcesses()) {
 				try {
+					if (process.HasExited) continue;
 					// Prevent attaching to our own process.
 					if (currentProcess.Id != process.Id) {
 						ProcessListViewItem item = new ProcessListViewItem(process, debugger);

@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -609,13 +610,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		DragDropEffects GetEffect(IDataObject data)
 		{
-			if (data != null && data.GetDataPresent(DataFormats.FileDrop)) {
-				string[] files = (string[])data.GetData(DataFormats.FileDrop);
-				foreach (string file in files) {
-					if (File.Exists(file)) {
-						return DragDropEffects.Link;
+			try {
+				if (data != null && data.GetDataPresent(DataFormats.FileDrop)) {
+					string[] files = (string[])data.GetData(DataFormats.FileDrop);
+					foreach (string file in files) {
+						if (File.Exists(file)) {
+							return DragDropEffects.Link;
+						}
 					}
 				}
+			} catch (COMException) {
+				// Ignore errors getting the data (e.g. happens when dragging attachments out of Thunderbird)
 			}
 			return DragDropEffects.None;
 		}
@@ -652,34 +657,33 @@ namespace ICSharpCode.SharpDevelop.Gui
 			#endif
 		}
 		
+		[Conditional("DEBUG")]
+		internal static void FocusDebug(string format, params object[] args)
+		{
+			#if DEBUG
+			if (enableFocusDebugOutput)
+				LoggingService.DebugFormatted(format, args);
+			#endif
+		}
+		
 		#if DEBUG
-		bool toggle;
+		static bool enableFocusDebugOutput;
 		
 		void WpfWorkbench_PreviewGotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
 		{
-			if (toggle) {
-				LoggingService.Debug("GotKeyboardFocus: oldFocus=" + e.OldFocus + ", newFocus=" + e.NewFocus);
-				if (e.NewFocus is IWorkbenchWindow)
-				{
-				}
-			}
+			FocusDebug("GotKeyboardFocus: oldFocus={0}, newFocus={1}", e.OldFocus, e.NewFocus);
 		}
 		
 		void WpfWorkbench_PreviewLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
 		{
-			if (toggle) {
-				LoggingService.Debug("LostKeyboardFocus: oldFocus=" + e.OldFocus + ", newFocus=" + e.NewFocus);
-				if (e.NewFocus is IWorkbenchWindow)
-				{
-				}
-			}
+			FocusDebug("LostKeyboardFocus: oldFocus={0}, newFocus={1}", e.OldFocus, e.NewFocus);
 		}
 		
 		protected override void OnPreviewKeyDown(KeyEventArgs e)
 		{
 			base.OnPreviewKeyDown(e);
 			if (!e.Handled && e.Key == Key.D && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
-				toggle = !toggle;
+				enableFocusDebugOutput = !enableFocusDebugOutput;
 				
 				StringWriter output = new StringWriter();
 				output.WriteLine("Keyboard.FocusedElement = " + GetElementName(Keyboard.FocusedElement));
@@ -688,10 +692,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				output.WriteLine("ActiveWorkbenchWindow = " + GetElementName(this.ActiveWorkbenchWindow));
 				((AvalonDockLayout)workbenchLayout).WriteState(output);
 				LoggingService.Debug(output.ToString());
-			}
-			if (!e.Handled && e.Key == Key.L && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
-				this.UseLayoutRounding = !this.UseLayoutRounding;
-				this.StatusBar.SetMessage("UseLayoutRounding=" + this.UseLayoutRounding);
+				e.Handled = true;
 			}
 			if (!e.Handled && e.Key == Key.F && e.KeyboardDevice.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift | ModifierKeys.Alt)) {
 				if (TextOptions.GetTextFormattingMode(this) == TextFormattingMode.Display)
@@ -716,14 +717,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 				this.StatusBar.SetMessage("TextRenderingMode=" + TextOptions.GetTextRenderingMode(this));
 			}
 		}
+		#endif
 		
-		static string GetElementName(object element)
+		internal static string GetElementName(object element)
 		{
 			if (element == null)
 				return "<null>";
 			else
 				return element.GetType().FullName + ": " + element.ToString();
 		}
-		#endif
 	}
 }

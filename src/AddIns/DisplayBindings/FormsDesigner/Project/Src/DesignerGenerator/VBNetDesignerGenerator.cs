@@ -67,5 +67,10 @@ namespace ICSharpCode.FormsDesigner
 			}
 			return v.Text;
 		}
+		
+		protected override bool CompareMethodNames(string strA, string strB)
+		{
+			return String.Equals(strA, strB, StringComparison.OrdinalIgnoreCase);
+		}
 	}
 }

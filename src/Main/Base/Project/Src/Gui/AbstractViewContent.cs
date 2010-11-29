@@ -348,18 +348,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		string IViewContent.TitleName {
 			get {
-				if (titleName != null)
+				if (titleName != null) {
 					return titleName;
-				else if (files.Count > 0)
+				} else if (files.Count > 0) {
 					return Path.GetFileName(files[0].FileName);
-				else
+				} else {
 					return "[Default Title]";
+				}
 			}
 		}
 		
 		public string TitleName {
 			get { return titleName; }
-			protected set {
+			set {
 				if (titleNameLocalizeExtension != null) {
 					titleNameLocalizeExtension.PropertyChanged -= OnTitleNameLocalizationChanged;
 					titleNameLocalizeExtension = null;
@@ -388,6 +389,72 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (titleName != value) {
 				titleName = value;
 				OnTitleNameChanged(EventArgs.Empty);
+			}
+		}
+		#endregion
+
+
+		#region InfoTip
+		public event EventHandler InfoTipChanged;
+
+		void OnInfoTipChanged()
+		{
+			if (InfoTipChanged != null)
+			{
+				InfoTipChanged(this, EventArgs.Empty);
+			}
+		}
+
+		string infoTip;
+		LanguageDependentExtension infoTipLocalizeExtension;
+
+		string IViewContent.InfoTip {
+			get {
+				if (infoTip != null)
+					return infoTip;
+				else if (files.Count > 0)
+					return files[0].FileName;
+				else
+					return null;
+			}
+		}
+
+		public string InfoTip
+		{
+			get { return infoTip; }
+			set
+			{
+				if (infoTipLocalizeExtension != null)
+				{
+					infoTipLocalizeExtension.PropertyChanged -= OnInfoTipLocalizationChanged;
+					infoTipLocalizeExtension = null;
+				}
+				if (infoTip != value)
+				{
+					infoTip = value;
+					OnInfoTipChanged();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Sets a localized info tip that will update automatically when the language changes.
+		/// </summary>
+		/// <param name="text">The input to the string parser which will localize info tip.</param>
+		protected void SetLocalizedInfoTip(string text)
+		{
+			infoTipLocalizeExtension = new StringParseExtension(text) { UsesAccessors = false };
+			infoTipLocalizeExtension.PropertyChanged += OnInfoTipLocalizationChanged;
+			OnInfoTipLocalizationChanged(null, null);
+		}
+
+		void OnInfoTipLocalizationChanged(object sender, EventArgs e)
+		{
+			string value = infoTipLocalizeExtension.Value;
+			if (infoTip != value)
+			{
+				infoTip = value;
+				OnInfoTipChanged();
 			}
 		}
 		#endregion

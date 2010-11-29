@@ -8,7 +8,7 @@
 	-->
 
 	<Product Id="*" 
-		Name="SharpDevelop 4.0 Beta 4"
+		Name="SharpDevelop 4.0"
 		Manufacturer="ic#code"
 		Language="1033"
 		Codepage="1252"
@@ -274,28 +274,7 @@
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplate"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFileElementClass"/>				
 				<ComponentRef Id="CSharpRecentFilesCollectionTemplateRecentFilesCollectionClass"/>				
-				<ComponentRef Id="VBNetTemplatesFileCategorySortOrderXml"/>
-				<ComponentRef Id="VBNetExceptionFileTemplate"/>
-				<ComponentRef Id="VBNetEmptyFileTemplate"/>
-				<ComponentRef Id="VBNetEmptyClassFileTemplate"/>
-				<ComponentRef Id="VBNetFormFileTemplate"/>
-				<ComponentRef Id="VBNetUserControlFileTemplate"/>
-				<ComponentRef Id="VBNetInterfaceFileTemplate"/>
-				<ComponentRef Id="VBNetModuleFileTemplate"/>
-				<ComponentRef Id="VBNetMyExtensionClassFileTemplate"/>
-				<ComponentRef Id="VBNetPatternsSingletonFileTemplate"/>
-				<ComponentRef Id="VBNetUnitTestFileTemplate"/>				
-				<ComponentRef Id="VBNetStructureFileTemplate"/>
-				<ComponentRef Id="VBNetWebControlFileTemplate"/>
-				<ComponentRef Id="VBNetWebFormFileTemplate"/>
-				<ComponentRef Id="VBNetWebHandlerFileTemplate"/>
-				<ComponentRef Id="VBNetWebServiceFileTemplate"/>
-				<ComponentRef Id="VBNetWPFFlowDocumentFileTemplate"/>
-				<ComponentRef Id="VBNetWPFPageFileTemplate"/>
-				<ComponentRef Id="VBNetWPFPageFunctionFileTemplate"/>
-				<ComponentRef Id="VBNetWPFResourceDictionaryFileTemplate"/>
-				<ComponentRef Id="VBNetWPFUserControlFileTemplate"/>
-				<ComponentRef Id="VBNetWPFWindowFileTemplate"/>
+				<ComponentRef Id="VBFileTemplates"/>
 				<ComponentRef Id="EmptyHTMLFileTemplate"/>
 				<ComponentRef Id="EmptyMsBuildFileTemplate"/>
 				<ComponentRef Id="EmptyResourceFileTemplate"/>
@@ -308,7 +287,7 @@
 				<ComponentRef Id="CSharpStructTemplate"/>
 				<ComponentRef Id="CSharpConfigurationFileTemplates"/>
 				<ComponentRef Id="MiscProjectTemplates"/>
-				<ComponentRef Id="VBNetProjectTemplates"/>
+				<ComponentRef Id="VBProjectTemplates"/>
 				<ComponentRef Id="ExampleProjectTemplate"/>
 				<ComponentRef Id="ICSharpCode.SharpDevelop.addin"/>
 				<ComponentRef Id="BooBindingAddin"/>
@@ -421,7 +400,6 @@
 				<ComponentRef Id="PythonBindingSdTestRunnerPy"/>
 				
 				<ComponentRef Id="IrExe"/>
-				<ComponentRef Id="IrExeConfig"/>
 				<ComponentRef Id="IronRubyDll"/>
 				<ComponentRef Id="IronRubyLibrariesDll"/>
 				<ComponentRef Id="IronRubyLicenseApacheHtml"/>

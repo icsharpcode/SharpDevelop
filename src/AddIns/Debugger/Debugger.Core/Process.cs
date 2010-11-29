@@ -3,10 +3,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+
+using Debugger.Interop;
 using Debugger.Interop.CorDebug;
 using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
-using System.Runtime.InteropServices;
 
 namespace Debugger
 {
@@ -400,6 +402,7 @@ namespace Debugger
 				corProcess.Stop(uint.MaxValue);
 				NotifyPaused(PausedReason.ForcedBreak);
 			}
+			
 			// This is necessary for detach
 			foreach(Stepper s in this.Steppers) {
 				if (s.CorStepper.IsActive() == 1) {
@@ -407,8 +410,21 @@ namespace Debugger
 				}
 			}
 			this.Steppers.Clear();
+			
 			corProcess.Detach();
-			NotifyHasExited();			
+			
+			// modules			
+			foreach(Module m in this.Modules)
+			{
+				m.Dispose();
+			}
+			
+			this.modules.Clear();
+			
+			// threads
+			this.threads.Clear();
+			
+			NotifyHasExited();	
 		}
 		
 		public void Continue()

@@ -57,7 +57,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void codeEditor_Document_UndoStack_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			PrimaryFile.IsDirty = !codeEditor.Document.UndoStack.IsOriginalFile;
+			if (!isLoading)
+				PrimaryFile.IsDirty = !codeEditor.Document.UndoStack.IsOriginalFile;
 		}
 		
 		void PrimaryFile_IsDirtyChanged(object sender, EventArgs e)
@@ -126,13 +127,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		//bool isLoading;
+		bool isLoading;
 		
 		public override void Load(OpenedFile file, Stream stream)
 		{
 			if (file != PrimaryFile)
 				return;
-			//isLoading = true;
+			isLoading = true;
 			try {
 				BookmarksDetach();
 				codeEditor.PrimaryTextEditor.SyntaxHighlighting =
@@ -143,11 +144,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				}
 				
 				codeEditor.Load(stream);
+				// Load() causes the undo stack to think stuff changed, so re-mark the file as original if necessary
+				if (!this.PrimaryFile.IsDirty) {
+					codeEditor.Document.UndoStack.MarkAsOriginalFile();
+				}
+				
 				// we set the file name after loading because this will place the fold markers etc.
 				codeEditor.FileName = FileName.Create(file.FileName);
 				BookmarksAttach();
 			} finally {
-				//isLoading = false;
+				isLoading = false;
 			}
 		}
 		

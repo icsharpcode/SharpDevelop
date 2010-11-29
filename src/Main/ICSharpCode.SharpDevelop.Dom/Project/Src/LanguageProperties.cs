@@ -358,6 +358,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
+			public override bool SupportsExtensionMethods {
+				get { return true; }
+			}
+			
+			public override bool SearchExtensionsInClasses {
+				get { return true; }
+			}
+			
 			public override bool IsClassWithImplicitlyStaticMembers(IClass c)
 			{
 				return c.ClassType == ClassType.Module;

@@ -22,34 +22,26 @@
 	 -->
 	<Files>
 		<File name="${Path}/${FileNameWithoutExtension}.vb" DependentUpon="${FileName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
-using System;
-using System.Web.Services;
+Imports System
+Imports System.Web.Services
 
-namespace ${StandardNamespace}
-{
-	/// <summary>
-	/// Description of ${ClassName}
-	/// </summary>
-	[WebService
- 	 (	Name = "${ClassName}",
-  		Description = "${ClassName}",
-  		Namespace = "http://www.${ClassName}.example"
- 	 )
-	]
-	public class ${ClassName} : WebService
-	{
-		public ${ClassName}()
-		{
-		}
+''' <summary>
+''' Description of ${ClassName}
+''' </summary>
+<WebService(Name := "${ClassName}", Description := "${ClassName}", Namespace := "http://www.${ClassName}.example")>
+Public Class ${ClassName}
+	Inherits WebService
+	
+	Public Sub New()
 		
-		[WebMethod]
-		public string Status()
-		{
-			string s = string.Format("Time: {0}", DateTime.Now);
-			return s;
-		}
-	}
-}
+	End Sub
+	
+	<WebMethod> _
+	Public Function Status() As String
+		Dim s As String = String.Format("Time: {0}", DateTime.Now)
+		Return s
+	End Function
+End Class
 ]]></File>
 		<File name="${FullName}"><![CDATA[
 <%@ WebService  Class="${StandardNamespace}.${ClassName}" Language="VB" %>

@@ -20,7 +20,7 @@
 	<Path name="/SharpDevelop/UnitTesting/TestFrameworks">
 		<TestFramework id="nunit"
 			class="ICSharpCode.UnitTesting.NUnitTestFramework"
-			supportedProjects=".csproj;.vbproj" />
+			supportedProjects=".csproj;.vbproj;.booproj" />
 	</Path>
 	
 	<Path name="/SharpDevelop/Workbench/Pads">

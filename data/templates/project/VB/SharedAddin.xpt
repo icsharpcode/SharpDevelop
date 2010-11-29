@@ -10,7 +10,7 @@
 		-->
 
 		<Name>${res:Templates.Project.SharedAddin.Name}</Name>
-		<Category>VBNet</Category>
+		<Category>VB</Category>
 		<Icon>VBNet.Project.Library</Icon>
 		<Description>${res:Templates.Project.SharedAddin.Description}</Description>
 		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>

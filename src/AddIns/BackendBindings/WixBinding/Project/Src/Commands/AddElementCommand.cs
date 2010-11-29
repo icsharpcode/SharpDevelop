@@ -22,6 +22,7 @@ namespace ICSharpCode.WixBinding
 		}
 		
 		public AddElementCommand(string name, IWorkbench workbench)
+			: base(name)
 		{
 			this.name = name;
 			this.workbench = workbench;

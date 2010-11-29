@@ -5364,6 +5364,12 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="MainWindow.Windows.BookmarkPad.GotoPrev.ToolTip" xml:space="preserve">
     <value>Ga naar vorige bladwijzer</value>
   </data>
+  <data name="MainWindow.Windows.BookmarkPad.LineText" xml:space="preserve">
+    <value>{0} @regel {1}</value>
+  </data>
+  <data name="MainWindow.Windows.BookmarkPad.LocationText" xml:space="preserve">
+    <value>Locatie</value>
+  </data>
   <data name="MainWindow.Windows.BookmarksLabel" xml:space="preserve">
     <value>Bladwijzers</value>
   </data>
@@ -5471,6 +5477,9 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Condition" xml:space="preserve">
     <value>Voorwaardelijk</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.ConditionalColumnHeader" xml:space="preserve">
+    <value>Voorwaarde</value>
   </data>
   <data name="MainWindow.Windows.Debug.Conditional.Breakpoints.Continue" xml:space="preserve">
     <value>Vervolgen</value>
@@ -6057,6 +6066,15 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="ProjectComponent.RemoveAllWebReferences.Title" xml:space="preserve">
     <value>Verwijder alle web referenties</value>
   </data>
+  <data name="ReflectorAddIn.IdeOptions.FindReflectorPath" xml:space="preserve">
+    <value>Selecteer Reflector psd</value>
+  </data>
+  <data name="ReflectorAddIn.IdeOptions.ReflectorFoundInPath" xml:space="preserve">
+    <value>Reflector werd in volgende directorie gevonden:</value>
+  </data>
+  <data name="ReflectorAddIn.IdeOptions.ReflectorTitle" xml:space="preserve">
+    <value>Reflector</value>
+  </data>
   <data name="ReflectorAddIn.OpenReflectorCommand" xml:space="preserve">
     <value>Open .NET Reflector</value>
   </data>
@@ -6483,6 +6501,10 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   <data name="SharpDevelop.Solution.AllKnownProjectFormats" xml:space="preserve">
     <value>Alle bekende Project formaten</value>
   </data>
+  <data name="SharpDevelop.Solution.CannotLoadOldSolution" xml:space="preserve">
+    <value>Deze versie van SharpDevelop kan projecten die gemaakt zijn met Visual Studio .NET 2003 (of ouder) niet laden.
+Probeer te converteren met SharpDevelop 3.2 of maak een nieuw project en voeg de bestaande broncode bestanden hier aan toe.</value>
+  </data>
   <data name="SharpDevelop.Solution.CannotSave.IOException" xml:space="preserve">
     <value>Kan {0} niet opslaan:\n{1}</value>
   </data>
@@ -6491,18 +6513,6 @@ Microsoft.Tools.WindowsInstallerXml.Extenties.NetFxCompiler, WixNetFxExtentie</v
   </data>
   <data name="SharpDevelop.Solution.CannotSave.UnauthorizedAccessException" xml:space="preserve">
     <value>Kan {0} niet opslaan:\n{1}\n\nVerzeker u er van dat het bestand schrijfbaar is.</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion7" xml:space="preserve">
-    <value>Vond Visual Studio.NET Project. Wilt u dit overzetten naar Oplossing Formaat 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion8" xml:space="preserve">
-    <value>Vond Visual Studio.NET 2003 project. Wilt u dit overzetten naar Oplossing Formaat 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportCmbx" xml:space="preserve">
-    <value>Dient de  SharDevelop 1.x combine te worden overgezet naar een SharpDevelop 2.x  Oplossing?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportPrjx" xml:space="preserve">
-    <value>Dient het SharpDevelop 1.x project te worden overgezet naar een SharpDevelop 2.x project?</value>
   </data>
   <data name="SharpDevelop.Solution.ImportResourceWarning" xml:space="preserve">
     <value>Het project bevatte hulpbron bestanden.
@@ -7429,6 +7439,9 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
   <data name="XML.MainMenu.DebugMenu.Error.ProcessRunning" xml:space="preserve">
     <value>Kan actie niet uitvoeren omdat proces loopt.</value>
   </data>
+  <data name="XML.MainMenu.DebugMenu.RemoveAllBreakpoints" xml:space="preserve">
+    <value>Verwijder alle breekpunten</value>
+  </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
     <value>Uitvoeren &amp;zonder foutopsporing</value>
   </data>
@@ -7598,6 +7611,9 @@ De hulpbron bestanden zijn hernoemd/verplaatst op de beschreven wijze.</value>
     <value>Nieuwe buffer openen</value>
   </data>
   <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+    <value>&amp;Project...</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>&amp;Oplossing...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">

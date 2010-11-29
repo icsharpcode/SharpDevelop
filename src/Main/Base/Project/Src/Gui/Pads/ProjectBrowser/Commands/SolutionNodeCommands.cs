@@ -14,7 +14,9 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
+			TreeNode node = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
+			while (node != null && !(node is ISolutionFolderNode))
+				node = node.Parent;
 			ISolutionFolderNode solutionFolderNode = node as ISolutionFolderNode;
 			if (node != null) {
 				using (NewProjectDialog npdlg = new NewProjectDialog(false)) {

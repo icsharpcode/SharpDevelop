@@ -143,8 +143,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						if (snippet != null) {
 							snippet.TrackUsage("CustomTabCommand");
 							
-							editor.Adapter.Document.Remove(wordStart, editor.CaretOffset - wordStart);
-							snippet.CreateAvalonEditSnippet(editor.Adapter).Insert(editor.TextArea);
+							using (editor.Document.RunUpdate()) {
+								editor.Adapter.Document.Remove(wordStart, editor.CaretOffset - wordStart);
+								snippet.CreateAvalonEditSnippet(editor.Adapter).Insert(editor.TextArea);
+							}
 							return;
 						}
 					}

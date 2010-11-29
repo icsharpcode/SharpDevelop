@@ -685,6 +685,33 @@ Voce precisa instalar o .Net Framework SDK para acessar o sistema de ajuda.</val
   <data name="AddIns.SharpRefactoring.IntroduceMethod" xml:space="preserve">
     <value>Introduzir método {0} em {1}</value>
   </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods" xml:space="preserve">
+    <value>Sobrepôe Equals() e GetHashCode()</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddInterface" xml:space="preserve">
+    <value>Adiciona interface {0}</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOperatorOverloads" xml:space="preserve">
+    <value>Adiciona operador de sobrecarga</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddOtherMethod" xml:space="preserve">
+    <value>Adiciona ${otherMethod} sobrecarregado</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.SurroundWithRegion" xml:space="preserve">
+    <value>Envolve com #region</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideToStringMethod" xml:space="preserve">
+    <value>Sobrecarrega ToString()</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideToStringMethod.Description" xml:space="preserve">
+    <value>Selecionar os campos que voce quer usar na implementação de ToString():</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ResolveAttribute" xml:space="preserve">
+    <value>Resolver atributos: {0}</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.ResolveExtensionMethod" xml:space="preserve">
+    <value>Resolver metodo extensão {0}</value>
+  </data>
   <data name="AddIns.SourceAnalysis.CheckWithStyleCop" xml:space="preserve">
     <value>Verificar com StyleCop</value>
   </data>
@@ -693,6 +720,15 @@ Voce precisa instalar o .Net Framework SDK para acessar o sistema de ajuda.</val
   </data>
   <data name="AddIns.Subversion.BranchOrTag" xml:space="preserve">
     <value>Branch/tag</value>
+  </data>
+  <data name="AddIns.Subversion.CannotCopyError" xml:space="preserve">
+    <value>O arquivo/diretorio não pode ser copiado porque está no status subversion '{0}'.</value>
+  </data>
+  <data name="AddIns.Subversion.CannotMoveError" xml:space="preserve">
+    <value>O arquivo/diretorio não pode ser movido porque está no status subversion '{0}'.</value>
+  </data>
+  <data name="AddIns.Subversion.CannotRemoveError" xml:space="preserve">
+    <value>O arquivo/diretorio não pode ser removido porque seu status subversion é "{0}'.</value>
   </data>
   <data name="AddIns.Subversion.CheckForModifications" xml:space="preserve">
     <value>Verifica modificações</value>
@@ -709,17 +745,32 @@ Voce precisa instalar o .Net Framework SDK para acessar o sistema de ajuda.</val
   <data name="AddIns.Subversion.CreatePatch" xml:space="preserve">
     <value>Criar correção</value>
   </data>
+  <data name="AddIns.Subversion.DeleteDirectory" xml:space="preserve">
+    <value>Apagar diretorio</value>
+  </data>
   <data name="AddIns.Subversion.Diff" xml:space="preserve">
     <value>Diferença</value>
   </data>
   <data name="AddIns.Subversion.EditConflicts" xml:space="preserve">
     <value>Editar conflitos</value>
   </data>
+  <data name="AddIns.Subversion.ErrorDelete" xml:space="preserve">
+    <value>Erro ao apagar ${File}</value>
+  </data>
   <data name="AddIns.Subversion.Export" xml:space="preserve">
     <value>Exportar</value>
   </data>
+  <data name="AddIns.Subversion.ForceDelete" xml:space="preserve">
+    <value>Forçar apagar</value>
+  </data>
   <data name="AddIns.Subversion.History" xml:space="preserve">
     <value>Historico</value>
+  </data>
+  <data name="AddIns.Subversion.ItemRemovedFromIgnoreList" xml:space="preserve">
+    <value>'{0} foi removido da lista ignorar.</value>
+  </data>
+  <data name="AddIns.Subversion.KeepOldSolution" xml:space="preserve">
+    <value>Manter a solução antiga aberta</value>
   </data>
   <data name="AddIns.Subversion.Lock" xml:space="preserve">
     <value>Obter trava</value>
@@ -748,11 +799,20 @@ Voce precisa instalar o .Net Framework SDK para acessar o sistema de ajuda.</val
   <data name="AddIns.Subversion.Options.UseHistoryDisplayBinding" xml:space="preserve">
     <value>Exibir aba do &amp;historico para arquivos de versão controlada</value>
   </data>
+  <data name="AddIns.Subversion.ReloadSolution" xml:space="preserve">
+    <value>Recarregar solução</value>
+  </data>
+  <data name="AddIns.Subversion.ReloadSolutionAfterProjectChanges" xml:space="preserve">
+    <value>SharpDevelop verificou que a operação de controle de versão mudou os arquivos do projeto.</value>
+  </data>
   <data name="AddIns.Subversion.Relocate" xml:space="preserve">
     <value>Realocar</value>
   </data>
   <data name="AddIns.Subversion.RemoveFromIgnoreList" xml:space="preserve">
     <value>Remover da lista ignore.</value>
+  </data>
+  <data name="AddIns.Subversion.RemoveMovedFile" xml:space="preserve">
+    <value>O arquivo foi apenas movido para esse local. Voce quer realmente remove-lo?</value>
   </data>
   <data name="AddIns.Subversion.RepositoryBrowser" xml:space="preserve">
     <value>Repositorio do browser</value>
@@ -760,11 +820,20 @@ Voce precisa instalar o .Net Framework SDK para acessar o sistema de ajuda.</val
   <data name="AddIns.Subversion.Revert" xml:space="preserve">
     <value>Reverter</value>
   </data>
+  <data name="AddIns.Subversion.RevertLocalModifications" xml:space="preserve">
+    <value>O arquivo foi modificado. Voce quer realmente remove-lo?</value>
+  </data>
   <data name="AddIns.Subversion.RevisionGraph" xml:space="preserve">
     <value>Gráfico de revisão</value>
   </data>
+  <data name="AddIns.Subversion.SaveFiles" xml:space="preserve">
+    <value>Salvar arquivos</value>
+  </data>
   <data name="AddIns.Subversion.ShowLog" xml:space="preserve">
     <value>Mostra o log</value>
+  </data>
+  <data name="AddIns.Subversion.SVNRequiresSavingFiles" xml:space="preserve">
+    <value>A operação de controle de versão pode afetar arquivos modificados e não alterados. Voce tem que salvar esses arquivos antes de executar a operação.</value>
   </data>
   <data name="AddIns.Subversion.Switch" xml:space="preserve">
     <value>Mudar</value>
@@ -777,6 +846,108 @@ Voce precisa instalar o .Net Framework SDK para acessar o sistema de ajuda.</val
   </data>
   <data name="AddIns.Subversion.UpdateToRevision" xml:space="preserve">
     <value>Atualizar a revisão</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.AcceptConfirmation" xml:space="preserve">
+    <value>Obrigado por sua participação! Voce pode selecionar a opção mais tarde usando as opções do SharpDevelop.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.AcceptRadioButton" xml:space="preserve">
+    <value>Eu gostaria de participar - coletar e enviar dados de uso.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.DeclineConfirmation" xml:space="preserve">
+    <value>Voce ainda pode selecionar essa opção mais tarde usando as opções do SharpDevelop.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.DeclineRadioButton" xml:space="preserve">
+    <value>Eu não desejo participar</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.Introduction" xml:space="preserve">
+    <value>Precisamos da sua ajuda! Para melhorar o SharpDevelop no futuro, gostariamos que saber quais facilidades são mais utilizadas. SharpDevelop pode coletar essa informação e envia-la automaticamente.</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.PrivacyStatement" xml:space="preserve">
+    <value>Regras de Privacidade</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.ShowCollectedData" xml:space="preserve">
+    <value>Mostra dados coletados</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.Title" xml:space="preserve">
+    <value>Coletor de Dados Usados</value>
+  </data>
+  <data name="AddIns.VBNetBinding.CodeCompletion.QuestionmarkEqualsItem.Description" xml:space="preserve">
+    <value>Permite que o SharpDevelop descubra o tipo baseado no inicializados.</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.EditGridColumnsAndRows" xml:space="preserve">
+    <value>Editar grid de colunas e linhas</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle" xml:space="preserve">
+    <value>Extrair propriedades como estilo</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ErrorNoSelection" xml:space="preserve">
+    <value>Nenhum elemento valido selecionado!</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.PropertyColumn" xml:space="preserve">
+    <value>Nome de Propriedade/Evento</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ReplaceQuestion" xml:space="preserve">
+    <value>O controle selecionado já possui um estilo assinalado. Voce quer trocar esse estilo com o estilo mais recente criado?</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.StyleName" xml:space="preserve">
+    <value>Nome do estilo:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.ExtractPropertiesAsStyle.ValueColumn" xml:space="preserve">
+    <value>Valor da Propriedade</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.GroupInto" xml:space="preserve">
+    <value>Agrupar dentro</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.RemoveMargin" xml:space="preserve">
+    <value>Remover margem</value>
+  </data>
+  <data name="AddIns.XamlBinding.Menu.RemoveUnnecessaryAttributes" xml:space="preserve">
+    <value>Remover atributos desnecessarios</value>
+  </data>
+  <data name="AddIns.XamlBinding.NewEventHandlerItem" xml:space="preserve">
+    <value>&lt;novo manipulador de eventos&gt;</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.CodeCompletionGroupLabel" xml:space="preserve">
+    <value>Conclusâo de codigo</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.EventColor" xml:space="preserve">
+    <value>Cor do evento:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.EventHandlerNamePattern" xml:space="preserve">
+    <value>Nome padrão do manipulador de eventos:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.HighlightingDescription" xml:space="preserve">
+    <value>Selecionar as cores que devem ser usadas pelo XAML:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.HighlightingGroupLabel" xml:space="preserve">
+    <value>Destaque</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.IgnoredElementColor" xml:space="preserve">
+    <value>Cor do elemento ignorado:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.NamespaceDeclarationColor" xml:space="preserve">
+    <value>Declaração da cor do namespace XML:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.PropertyColor" xml:space="preserve">
+    <value>Cor da Propriedade:</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.SwitchToCodeViewAfterInsertion" xml:space="preserve">
+    <value>Chaveia para codigo após a inserção do novo manipulador de evento</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.Title" xml:space="preserve">
+    <value>XAML</value>
+  </data>
+  <data name="AddIns.XamlBinding.Options.UseExtensionCompletion" xml:space="preserve">
+    <value>Usar a extensão de conclusão de marcação</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss" xml:space="preserve">
+    <value>O arquivo não pode ser salvo com a codificação corrente ${encoding} sem perder dados</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss.Continue" xml:space="preserve">
+    <value>Continuar</value>
+  </data>
+  <data name="AvalonEdit.FileEncoding.EncodingCausesDataLoss.UseUTF8" xml:space="preserve">
+    <value>Salvar como UTF-8</value>
   </data>
   <data name="BackendBindings.ExecutionManager.CantExecuteDLLError" xml:space="preserve">
     <value>Projeto está configurado como DLL e nenhuma linha de comando foi especificada. Você pode especificar uma linha de comando em Projeto &gt; Opções.</value>
@@ -1960,6 +2131,9 @@ Além disso, um span pode definir um rule set nomedo que permite uma formataçã
   <data name="Dialog.Options.CodeTemplate.ExtensionsLabel" xml:space="preserve">
     <value>E&amp;xtensões</value>
   </data>
+  <data name="Dialog.Options.CodeTemplate.Keyword" xml:space="preserve">
+    <value>Mapeamento de palavra chave</value>
+  </data>
   <data name="Dialog.Options.CodeTemplate.PressTabToInsertTemplate" xml:space="preserve">
     <value>Pressione Tab para inserir esse código padrão.</value>
   </data>
@@ -2299,6 +2473,9 @@ Além disso, um span pode definir um rule set nomedo que permite uma formataçã
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.CreateBackupCopyCheckBox" xml:space="preserve">
     <value>Sempre cri&amp;ar cópia de segurança</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.LoadSaveOptions.DefaultFileEncoding" xml:space="preserve">
+    <value>Codificação padrão de arquivo:</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.LoadSaveOptions.DetectExternalChanges" xml:space="preserve">
     <value>&amp;Detectar mudanças externas nos arquivos</value>
   </data>
@@ -2437,6 +2614,9 @@ Além disso, um span pode definir um rule set nomedo que permite uma formataçã
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.ConvertTabsToSpacesCheckBox" xml:space="preserve">
     <value>C&amp;onverter Tabulações para Espaços</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CtrlClickGotoDefinition" xml:space="preserve">
+    <value>Usar Ctrl+Click para "Ir para Definição"</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.CurlyBracketCheckBox" xml:space="preserve">
     <value>A&amp;uto inserir chaves</value>
   </data>
@@ -2481,6 +2661,9 @@ Além disso, um span pode definir um rule set nomedo que permite uma formataçã
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.TemplateInsertCheckBox" xml:space="preserve">
     <value>Inserção &amp;automática de modelo</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.TextEditor.Behaviour.UseSmartIndent" xml:space="preserve">
+    <value>Usar indentação inteligente</value>
   </data>
   <data name="Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName" xml:space="preserve">
     <value>Assistente de Código</value>
@@ -5330,18 +5513,6 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   <data name="SharpDevelop.Solution.AllKnownProjectFormats" xml:space="preserve">
     <value>Todos formatos de projeto conhecidos</value>
   </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion7" xml:space="preserve">
-    <value>Encontrado projeto Visual Studio .Net. Devo converte-lo para o Formato de Solução 9.0 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion8" xml:space="preserve">
-    <value>Encontrado projeto Visual Studio .Net 2003. Devo converte-lo para o Formato de Solução 9.00 (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportCmbx" xml:space="preserve">
-    <value>Deve o SharpDevelop combinado 1.x ser convertido para a solução do SharpDevelop 2.x?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportPrjx" xml:space="preserve">
-    <value>Deve o projeto SharpDevelop 1.x ser convertido para o projeto do SharpDevelop 2.x?</value>
-  </data>
   <data name="SharpDevelop.Solution.ImportResourceWarning" xml:space="preserve">
     <value>Os arquivos de recursos foram renomeados/movidos de acordo.</value>
   </data>
@@ -6098,6 +6269,9 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   <data name="XML.MainMenu.BuildMenu.SetConfiguration" xml:space="preserve">
     <value>Setar configuração</value>
   </data>
+  <data name="XML.MainMenu.BuildMenu.SetPlatform" xml:space="preserve">
+    <value>Ajusta plataforma</value>
+  </data>
   <data name="XML.MainMenu.DebugMenu" xml:space="preserve">
     <value>&amp;Depurar</value>
   </data>
@@ -6116,6 +6290,9 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   <data name="XML.MainMenu.DebugMenu.Continue.Description" xml:space="preserve">
     <value>Continuar a execução do processo.</value>
   </data>
+  <data name="XML.MainMenu.DebugMenu.Detach" xml:space="preserve">
+    <value>Desconecta</value>
+  </data>
   <data name="XML.MainMenu.DebugMenu.Error.BadAssembly" xml:space="preserve">
     <value>Não é possível obter a versão do .NET Framework do programa. Verifique se o programa é um assembly gerenciado.</value>
   </data>
@@ -6125,8 +6302,20 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   <data name="XML.MainMenu.DebugMenu.Error.CannotStartProcess" xml:space="preserve">
     <value>Não pode iniciar o processo.</value>
   </data>
+  <data name="XML.MainMenu.DebugMenu.Error.Debugging" xml:space="preserve">
+    <value>Não pode executar ação porque algum processo está sendo depurado.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.KernelDebuggerEnabled" xml:space="preserve">
+    <value>Não pode iniciar o depurador do SharpDevelop porque o depurador de kernel está ligado. Para desligar o depurador de kernel, remova a opção "/debug" do arquivo Boot.ini e reinicie o seu computador.</value>
+  </data>
   <data name="XML.MainMenu.DebugMenu.Error.Net10NotSupported" xml:space="preserve">
     <value>Não é suportado depurar programas do .Net Framework 1.0.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.NotDebugging" xml:space="preserve">
+    <value>Não pode executar a ação porque nenhum processo está sendo depurado.</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.Error.ProcessRunning" xml:space="preserve">
+    <value>Não pode executar a ação porque o processo está rodando.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.RunWithoutDebug" xml:space="preserve">
     <value>Executar &amp;sem depuração</value>
@@ -6135,13 +6324,22 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
     <value>Executar o programa sem o depurador anexado.</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.StepInto" xml:space="preserve">
+    <value>Executa dentro</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.StepInto.Description" xml:space="preserve">
     <value>Etapa dentro</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.StepOut" xml:space="preserve">
-    <value>Etapa fora</value>
+    <value>Executa fora</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.StepOut.Description" xml:space="preserve">
+    <value>Executa fora</value>
+  </data>
+  <data name="XML.MainMenu.DebugMenu.StepOver" xml:space="preserve">
+    <value>Executa sobre</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.StepOver.Description" xml:space="preserve">
-    <value>Etapa sobre</value>
+    <value>Executa sobre</value>
   </data>
   <data name="XML.MainMenu.DebugMenu.Stop" xml:space="preserve">
     <value>Parar processo</value>
@@ -6287,7 +6485,7 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   <data name="XML.MainMenu.FileMenu.New.File.Description" xml:space="preserve">
     <value>Abrir novo buffer</value>
   </data>
-  <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+  <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>&amp;Solução...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">
@@ -6334,6 +6532,9 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   </data>
   <data name="XML.MainMenu.FileMenu.SaveAs" xml:space="preserve">
     <value>Salvar &amp;como...</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.SaveWithEncoding" xml:space="preserve">
+    <value>Salva com codificação de caracteres...</value>
   </data>
   <data name="XML.MainMenu.FormatMenu" xml:space="preserve">
     <value>&amp;Formatar</value>
@@ -6452,6 +6653,9 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   <data name="XML.MainMenu.HelpMenu.About" xml:space="preserve">
     <value>&amp;Sobre...</value>
   </data>
+  <data name="XML.MainMenu.HelpMenu.ContextHelp" xml:space="preserve">
+    <value>Ajuda contextual</value>
+  </data>
   <data name="XML.MainMenu.HelpMenu.DynamicHelp" xml:space="preserve">
     <value>Ajuda &amp;Dinâmica</value>
   </data>
@@ -6494,6 +6698,9 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   <data name="XML.MainMenu.RunMenu.BuildProject.Description" xml:space="preserve">
     <value>Compila o projeto atual</value>
   </data>
+  <data name="XML.MainMenu.RunMenu.BuildSolution.Description" xml:space="preserve">
+    <value>Monta os projetos na solução atual.</value>
+  </data>
   <data name="XML.MainMenu.RunMenu.Compile.Description" xml:space="preserve">
     <value>Compilar projeto atual ou buffer (quando nenhum projeto estiver aberto) (salvamento automático)</value>
   </data>
@@ -6532,6 +6739,9 @@ Use somente letras, dígitos, espaço, "." ou "_" são permitidos.</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.GotoBrace" xml:space="preserve">
     <value>Ir para &amp;chave ('{','}')</value>
+  </data>
+  <data name="XML.MainMenu.SearchMenu.IncrementalSearch" xml:space="preserve">
+    <value>Pesquisa incremental</value>
   </data>
   <data name="XML.MainMenu.SearchMenu.NextBookmark" xml:space="preserve">
     <value>Próxima marca</value>

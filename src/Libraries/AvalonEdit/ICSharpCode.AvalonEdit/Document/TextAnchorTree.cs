@@ -61,7 +61,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		}
 		
 		#region Insert Text
-		void InsertText(int offset, int length)
+		void InsertText(int offset, int length, bool defaultAnchorMovementIsBeforeInsertion)
 		{
 			if (length == 0 || root == null || offset > root.totalLength)
 				return;
@@ -69,7 +69,7 @@ namespace ICSharpCode.AvalonEdit.Document
 			// find the range of nodes that are placed exactly at offset
 			// beginNode is inclusive, endNode is exclusive
 			if (offset == root.totalLength) {
-				PerformInsertText(FindActualBeginNode(root.RightMost), null, length);
+				PerformInsertText(FindActualBeginNode(root.RightMost), null, length, defaultAnchorMovementIsBeforeInsertion);
 			} else {
 				TextAnchorNode endNode = FindNode(ref offset);
 				Debug.Assert(endNode.length > 0);
@@ -79,7 +79,7 @@ namespace ICSharpCode.AvalonEdit.Document
 					endNode.length += length;
 					UpdateAugmentedData(endNode);
 				} else {
-					PerformInsertText(FindActualBeginNode(endNode.Predecessor), endNode, length);
+					PerformInsertText(FindActualBeginNode(endNode.Predecessor), endNode, length, defaultAnchorMovementIsBeforeInsertion);
 				}
 			}
 			DeleteMarkedNodes();
@@ -99,7 +99,7 @@ namespace ICSharpCode.AvalonEdit.Document
 		
 		// Sorts the nodes in the range [beginNode, endNode) by MovementType
 		// and inserts the length between the BeforeInsertion and the AfterInsertion nodes.
-		void PerformInsertText(TextAnchorNode beginNode, TextAnchorNode endNode, int length)
+		void PerformInsertText(TextAnchorNode beginNode, TextAnchorNode endNode, int length, bool defaultAnchorMovementIsBeforeInsertion)
 		{
 			Debug.Assert(beginNode != null);
 			// endNode may be null at the end of the anchor tree
@@ -114,10 +114,13 @@ namespace ICSharpCode.AvalonEdit.Document
 				if (anchor == null) {
 					// afterInsert.Add(temp);
 					MarkNodeForDelete(temp);
-				} else if (anchor.MovementType == AnchorMovementType.AfterInsertion) {
-					// afterInsert.Add(temp);
-				} else {
+				} else if (defaultAnchorMovementIsBeforeInsertion
+				           ? anchor.MovementType != AnchorMovementType.AfterInsertion
+				           : anchor.MovementType == AnchorMovementType.BeforeInsertion)
+				{
 					beforeInsert.Add(temp);
+//				} else {
+//					afterInsert.Add(temp);
 				}
 				temp = temp.Successor;
 			}
@@ -182,7 +185,7 @@ namespace ICSharpCode.AvalonEdit.Document
 				// Thus, we handle this case on a separate code path
 				// (the code below looks like it does something similar, but it can only split
 				// the set of deletion survivors, not all nodes at an offset)
-				InsertText(entry.Offset, entry.InsertionLength);
+				InsertText(entry.Offset, entry.InsertionLength, entry.DefaultAnchorMovementIsBeforeInsertion);
 				return;
 			}
 			// When handling a replacing text change, we need to:
@@ -244,7 +247,7 @@ namespace ICSharpCode.AvalonEdit.Document
 					// survivors - from firstDeletionSurvivor (inclusive) to node (exclusive).
 					// This ensures that nodes immediately before or after the replaced segment
 					// stay where they are (independent from their MovementType)
-					PerformInsertText(firstDeletionSurvivor, node, entry.InsertionLength);
+					PerformInsertText(firstDeletionSurvivor, node, entry.InsertionLength, entry.DefaultAnchorMovementIsBeforeInsertion);
 				} else if (node != null) {
 					// No deletion survivors:
 					// just perform the insertion

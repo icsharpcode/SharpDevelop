@@ -7,8 +7,9 @@ using System.CodeDom.Compiler;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.RegularExpressions;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
@@ -293,7 +294,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		static bool initialized;
-		static List<CustomToolRun> toolRuns = new List<CustomToolRun>();
+		static Queue<CustomToolRun> toolRuns = new Queue<CustomToolRun>();
 		static Dictionary<string, CustomToolDescriptor> toolDict;
 		static List<CustomToolDescriptor> customToolList;
 		static CustomToolRun activeToolRun;
@@ -390,9 +391,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			WorkbenchSingleton.AssertMainThread();
 			
 			string fileName = baseItem.FileName;
-			if (toolRuns.Exists(delegate(CustomToolRun run) {
-			                    	return FileUtility.IsEqualFileName(run.file, fileName);
-			                    }))
+			if (toolRuns.Any(run => FileUtility.IsEqualFileName(run.file, fileName)))
 			{
 				// file already in queue, do not enqueue it again
 				return;
@@ -439,7 +438,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		static void RunCustomTool(CustomToolRun run)
 		{
 			if (activeToolRun != null) {
-				toolRuns.Add(run);
+				toolRuns.Enqueue(run);
 			} else {
 				try {
 					run.customTool.GenerateCode(run.baseItem, run.context);
@@ -462,9 +461,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			WorkbenchSingleton.SafeThreadAsyncCall(
 				delegate {
 					activeToolRun = null;
-					CustomToolRun nextRun = toolRuns[0];
-					toolRuns.RemoveAt(0);
-					RunCustomTool(nextRun);
+					if(toolRuns.Count > 0) {
+						CustomToolRun nextRun = toolRuns.Dequeue();
+						if(nextRun != null) {						
+							RunCustomTool(nextRun);
+						}
+					}
 				});
 		}
 	}

@@ -330,5 +330,21 @@ namespace ICSharpCode.SharpDevelop.Project
 				FileService.RemoveFile(fileNode.FileName, false);
 			}
 		}
+
+		public override AbstractProjectBrowserTreeNode GetNodeByRelativePath(string relativePath)
+		{
+			if (relativePath == Text)
+				return this;
+
+			foreach (AbstractProjectBrowserTreeNode node in Nodes)
+			{
+				AbstractProjectBrowserTreeNode returnedNode = node.GetNodeByRelativePath(relativePath);
+				if (returnedNode != null)
+					return returnedNode;
+			}
+
+			return this;
+
+		}
 	}
 }

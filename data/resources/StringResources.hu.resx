@@ -4637,18 +4637,6 @@ Válassza a 'Beállítások-&gt;Látványstílus' menüpontot és változtasson 
   <data name="SharpDevelop.Solution.AllKnownProjectFormats" xml:space="preserve">
     <value>Minden ismert projekt formátum</value>
   </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion7" xml:space="preserve">
-    <value>Visual Studio.NET Projekt felismerve. Átalakítható 9.00 Megoldás Formátumra (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ConvertSolutionVersion8" xml:space="preserve">
-    <value>Visual Studio.NET 2003 Projekt felismerve. Átalakítható 9.00 Megoldás Formátumra (Visual Studio 2005)?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportCmbx" xml:space="preserve">
-    <value>A SharpDevelop 1.x összeállítás átalakítható SharpDevelop 2.x Megoldássá?</value>
-  </data>
-  <data name="SharpDevelop.Solution.ImportPrjx" xml:space="preserve">
-    <value>A SharpDevelop 1.x projektet átalakítása SharpDevelop 2.x projektre?</value>
-  </data>
   <data name="SharpDevelop.Solution.ImportResourceWarning" xml:space="preserve">
     <value>Erőforrás fájlok vannak a projektben.
 SharpDevelop 2 másként fordítja az erőforrásokat: az erőforrás neve nem csak a fájl neve; prefixként tartalmazza a kezdő névteret és a könyvtár nevét is.
@@ -5579,7 +5567,7 @@ Az erőforrás fájlok mozgatása/átnevezése megtörtént.</value>
   <data name="XML.MainMenu.FileMenu.New.File.Description" xml:space="preserve">
     <value>Új puffer nyitása</value>
   </data>
-  <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+  <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>&amp;Megoldás...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.Open" xml:space="preserve">

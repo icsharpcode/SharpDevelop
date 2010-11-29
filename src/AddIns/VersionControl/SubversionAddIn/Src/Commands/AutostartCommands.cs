@@ -314,6 +314,8 @@ namespace ICSharpCode.Svn.Commands
 			if (!AddInOptions.AutomaticallyRenameFiles) return;
 			string fullSource = Path.GetFullPath(e.SourceFile);
 			if (!CanBeVersionControlledFile(fullSource)) return;
+			string fullTarget = Path.GetFullPath(e.TargetFile);
+			if (!CanBeVersionControlledFile(fullTarget)) return;
 			try {
 				using (SvnClientWrapper client = new SvnClientWrapper()) {
 					SvnMessageView.HandleNotifications(client);
@@ -335,9 +337,7 @@ namespace ICSharpCode.Svn.Commands
 							return;
 					}
 					e.OperationAlreadyDone = true;
-					client.Copy(fullSource,
-					            Path.GetFullPath(e.TargetFile)
-					           );
+					client.Copy(fullSource, fullTarget);
 				}
 			} catch (Exception ex) {
 				MessageService.ShowError("File renamed exception: " + ex);

@@ -37,7 +37,7 @@ namespace ICSharpCode.VBNetBinding
 				if (expressionResult.Context == ExpressionContext.Importable
 				    && string.IsNullOrWhiteSpace(expressionResult.Expression)) {
 					expressionResult.Expression = "Global";
-				} else if (pressedKey != '.') {
+				} else if (pressedKey == '\0') {
 					int idx = string.IsNullOrWhiteSpace(expressionResult.Expression)
 						? -1
 						: expressionResult.Expression.LastIndexOf('.');
@@ -53,7 +53,7 @@ namespace ICSharpCode.VBNetBinding
 				
 				var rr = resolver.Resolve(expressionResult, info, editor.Document.Text);
 				
-				if (rr == null || !rr.IsValid) {
+				if (rr == null || !rr.IsValid || (pressedKey != '.' && !completingDotExpression)) {
 					if (((BitArray)expressionResult.Tag)[Tokens.Identifier])
 						data = new NRefactoryResolver(LanguageProperties.VBNet)
 							.CtrlSpace(editor.Caret.Line, editor.Caret.Column, info, editor.Document.Text, expressionResult.Context,
@@ -65,10 +65,10 @@ namespace ICSharpCode.VBNetBinding
 							rr = new MemberResolveResult(rr.CallingClass, rr.CallingMember, singleMethod);
 					}
 					
-					data = rr.GetCompletionData(info.CompilationUnit.ProjectContent, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces)
-						?? new NRefactoryResolver(LanguageProperties.VBNet)
-						.CtrlSpace(editor.Caret.Line, editor.Caret.Column, info, editor.Document.Text,
-						           expressionResult.Context, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces);
+					if (rr is IntegerLiteralResolveResult && pressedKey == '.')
+						return result;
+					
+					data = rr.GetCompletionData(info.CompilationUnit.ProjectContent, ((NRefactoryCompletionItemList)result).ContainsItemsFromAllNamespaces) ?? new List<ICompletionEntry>();
 					
 					resolvedType = rr.ResolvedType;
 				}
@@ -95,13 +95,20 @@ namespace ICSharpCode.VBNetBinding
 			
 			AddSpecialItems(ref result, info, resolvedType, m, expressionResult, editor);
 			
+			char prevChar;
+			
 			if (pressedKey == '\0') { // ctrl+space
-				char prevChar =  editor.Caret.Offset > 0 ? editor.Document.GetCharAt(editor.Caret.Offset - 1) : '\0';
+				prevChar = editor.Caret.Offset > 0 ? editor.Document.GetCharAt(editor.Caret.Offset - 1) : '\0';
 				word = char.IsLetterOrDigit(prevChar) || prevChar == '_' ? editor.GetWordBeforeCaret() : "";
 				
 				if (!string.IsNullOrWhiteSpace(word))
 					result.PreselectionLength = word.Length;
 			}
+			
+			prevChar =  editor.Caret.Offset > 0 ? editor.Document.GetCharAt(editor.Caret.Offset - 1) : '\0';
+			
+			if (prevChar == '_')
+				result.PreselectionLength++;
 			
 			result.SortItems();
 			

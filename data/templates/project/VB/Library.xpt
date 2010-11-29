@@ -6,7 +6,7 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.ClassLibrary.Name}</Name>
-		<Category>VBNet</Category>
+		<Category>VB</Category>
 		<Icon>VBNet.Project.Library</Icon>
 		<Description>${res:Templates.Project.ClassLibrary.Description}</Description>
 		<SupportedTargetFrameworks>v2.0;v3.5Client</SupportedTargetFrameworks>

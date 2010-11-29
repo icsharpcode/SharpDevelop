@@ -22,14 +22,14 @@
 		
 		<PropertyGroup configuration="Debug" escapeValue="false">
 			<DebugInfo>True</DebugInfo>
-			<StartArguments>-1.9 -D Program.rb</StartArguments>
+			<StartArguments>--disable-gems -D Program.rb</StartArguments>
 			<StartWorkingDirectory>.\</StartWorkingDirectory>
 			<StartAction>Program</StartAction>
 			<StartProgram>${addinpath:ICSharpCode.RubyBinding}\ir.exe</StartProgram>
 		</PropertyGroup>
 
 		<PropertyGroup configuration="Release" escapeValue="false">
-			<StartArguments>-1.9 Program.rb</StartArguments>
+			<StartArguments>--disable-gems Program.rb</StartArguments>
 			<StartWorkingDirectory>.\</StartWorkingDirectory>
 			<StartAction>Program</StartAction>
 			<StartProgram>${addinpath:ICSharpCode.RubyBinding}\ir.exe</StartProgram>

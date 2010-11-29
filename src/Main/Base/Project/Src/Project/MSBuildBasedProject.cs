@@ -98,6 +98,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override int MinimumSolutionVersion {
 			get {
 				lock (SyncRoot) {
+					// This property is called by CSharpProject.StartBuild (and other derived StartBuild methods),
+					// so it's important that we throw an ObjectDisposedException for disposed projects.
+					// The build engine will handle this exception (occurs when unloading a project while a build is running)
+					if (projectFile == null)
+						throw new ObjectDisposedException("MSBuildBasedProject");
 					if (string.IsNullOrEmpty(projectFile.ToolsVersion) || projectFile.ToolsVersion == "2.0") {
 						return Solution.SolutionVersionVS2005;
 					} else if (projectFile.ToolsVersion == "3.0" || projectFile.ToolsVersion == "3.5") {
@@ -839,16 +844,48 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 				}
 			}
-			foreach (var propertyGroup in targetProject.PropertyGroups) {
-				if (propertyGroup.Condition == groupCondition) {
-					propertyGroup.AddProperty(propertyName, newValue);
-					return;
-				}
+			
+			var matchedPropertyGroup = FindPropertyGroup(targetProject, groupCondition, position);
+			if (matchedPropertyGroup != null) {
+				matchedPropertyGroup.AddProperty(propertyName, newValue);
+				return;
 			}
 			
-			var newGroup = targetProject.AddPropertyGroup();
+			var newGroup = AddNewPropertyGroup(targetProject, position);
 			newGroup.Condition = groupCondition;
 			newGroup.AddProperty(propertyName, newValue);
+		}
+		
+		ProjectPropertyGroupElement FindPropertyGroup(ProjectRootElement targetProject, string groupCondition, PropertyPosition position)
+		{
+			ProjectPropertyGroupElement matchedPropertyGroup = null;
+			foreach (var projectItem in targetProject.Children) {
+				ProjectPropertyGroupElement propertyGroup = projectItem as ProjectPropertyGroupElement;
+				if (propertyGroup != null) {
+					if (propertyGroup.Condition == groupCondition) {
+						matchedPropertyGroup = propertyGroup;
+						if (position != PropertyPosition.UseExistingOrCreateAfterLastImport) {
+							return matchedPropertyGroup;
+						}
+					}
+				}
+				if (position == PropertyPosition.UseExistingOrCreateAfterLastImport) {
+					if (projectItem is ProjectImportElement) {
+						matchedPropertyGroup = null;
+					}
+				}
+			}
+			return matchedPropertyGroup;
+		}
+		
+		ProjectPropertyGroupElement AddNewPropertyGroup(ProjectRootElement targetProject, PropertyPosition position)
+		{
+			if (position == PropertyPosition.UseExistingOrCreateAfterLastImport) {
+				var propertyGroup = targetProject.CreatePropertyGroupElement();
+				targetProject.AppendChild(propertyGroup);
+				return propertyGroup;
+			}
+			return targetProject.AddPropertyGroup();
 		}
 		
 		/// <summary>

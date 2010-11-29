@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop
 		void UpdateEnabled()
 		{
 			bool newEnabled = textEditor.Options.UnderlineErrors;
-			if (DebuggerService.IsDebuggerLoaded && DebuggerService.CurrentDebugger.IsDebugging)
+			if (DebuggerService.IsDebuggerStarted)
 				newEnabled = false;
 			
 			if (isEnabled != newEnabled) {

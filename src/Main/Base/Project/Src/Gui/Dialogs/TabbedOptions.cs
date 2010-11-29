@@ -25,7 +25,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				throw new ArgumentNullException("dialogPanelDescriptors");
 			foreach (IOptionPanelDescriptor descriptor in dialogPanelDescriptors) {
 				if (descriptor != null) {
-					this.Items.Add(new OptionTabPage(this, descriptor));
+					if (descriptor.HasOptionPanel) {
+						this.Items.Add(new OptionTabPage(this, descriptor));
+					}
 					if (descriptor.ChildOptionPanelDescriptors != null) {
 						AddOptionPanels(descriptor.ChildOptionPanelDescriptors);
 					}

@@ -286,7 +286,7 @@ namespace ICSharpCode.RubyBinding
 
 			MethodCall clrMemberMethodCall = methodCall.Target as MethodCall;
 			SymbolLiteral literal = clrMemberMethodCall.Arguments.Expressions[1] as SymbolLiteral;
-			MutableString mutableString = literal.GetMutableString(RubyEncoding.UTF8);
+			MutableString mutableString = literal.GetMutableString();
 			string methodBeingCalledByClrMemberMethod = mutableString.ConvertToString();
 
 			// Remove two members since these are 'clr_member' and 'call'.

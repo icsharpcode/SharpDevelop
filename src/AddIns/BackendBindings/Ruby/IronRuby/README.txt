@@ -7,12 +7,15 @@ Authors:
   Dino Viehland, and everyone else from the community who reports bugs, 
   builds libraries, and helps enrich IronRuby.
 
-Project Contact: Jimmy Schementi <jimmy@schementi.com>
+Project Contacts: 
+  Jimmy Schementi <jschementi@gmail.com>
+  Miguel de Icaza <miguel@gnome.org>
+  Tomas Matousek <tomas_matousek@hotmail.com>
 
 == About
 
 IronRuby is a Open Source implementation of the Ruby programming language
-(http://www.ruby-lang.org) for .NET, heavily relying on Microsoft's 
+(http://www.ruby-lang.org) for .NET, heavily relying on the 
 Dynamic Language Runtime (http://dlr.codeplex.com).
 
 The project's #1 goal is to be a true Ruby implementation, meaning it runs
@@ -34,7 +37,6 @@ Will run rubyfile.rb with the IronRuby compiler.
 
   /bin                IronRuby binaries, ir.exe, iirb, irake, igem, iri, irdoc, etc.
   /lib                Ruby standard library, including RubyGems
-  /silverlight        Silverlight binaries and scripts
   CHANGELOG.txt       Changes for each release
   RELEASE.txt         Release notes
   LICENSE.Ruby.txt    Ruby license

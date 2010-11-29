@@ -1,0 +1,443 @@
+﻿<?xml version="1.0"?>
+<Template originator = "Siegfried Pammer">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.WebPage.Name}</Name>
+		<Category>VB</Category>
+		<Subcategory>ASP.NET</Subcategory>
+		<Icon>VBNet.Project.Form</Icon>
+		<Description>${res:Templates.Project.WebPage.Description}</Description>
+		<SupportedTargetFrameworks>v2.0</SupportedTargetFrameworks>
+	</TemplateConfiguration>
+
+	<!-- Actions -->
+	<Actions>
+		<Open filename = ".\Default.aspx"/>
+		<Open filename = ".\Default.aspx.vb"/>
+	</Actions>
+
+	<Project language="VBNet">
+		<ProjectItems>
+			<Reference Include="System" />
+			<Reference Include="System.Data" />
+			<Reference Include="System.Xml" />
+			<Reference Include="System.Web" />
+			<Reference Include="System.Drawing" />
+			<Reference Include="System.Web.Services" />
+		</ProjectItems>
+		
+		<PropertyGroup>
+			<OutputType>Library</OutputType>
+			<ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Debug">
+			<OutputPath>bin\</OutputPath>
+		</PropertyGroup>
+		
+		<PropertyGroup configuration="Release">
+			<OutputPath>bin\</OutputPath>
+		</PropertyGroup>
+	<Files>
+<!--*************************************************************************-->
+		<File name=".\Default.aspx.vb" DependentUpon="Default.aspx"><![CDATA[${StandardHeader.VBNET}Imports System.Collections
+Imports System.ComponentModel
+Imports System.Data
+Imports System.Drawing
+Imports System.Web
+Imports System.Web.SessionState
+Imports System.Web.UI
+Imports System.Web.UI.WebControls
+Imports System.Web.UI.HtmlControls
+
+''' <summary>
+''' Description of Default.
+''' </summary>
+Public Class [Default]
+	Inherits Page
+	'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	#Region "Data"
+
+	Protected _Button_Ok As HtmlInputButton
+	Protected _Input_Name As HtmlInputText
+
+	#End Region
+	'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	#Region "Page Init & Exit (Open/Close DB connections here...)"
+
+	Protected Sub PageInit(sender As Object, e As EventArgs)
+	End Sub
+	'----------------------------------------------------------------------
+	Protected Sub PageExit(sender As Object, e As EventArgs)
+	End Sub
+
+	#End Region
+	'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	#Region "Page Load"
+	Private Sub Page_Load(sender As Object, e As EventArgs)
+		Response.Write("Hello #Develop<br>")
+		'------------------------------------------------------------------
+		If IsPostBack Then
+		End If
+		'------------------------------------------------------------------
+	End Sub
+	#End Region
+	'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	#Region "Click_Button_OK"
+
+	'----------------------------------------------------------------------
+	Protected Sub Click_Button_Ok(sender As Object, e As EventArgs)
+		Response.Write(_Button_Ok.Value & " was cklicked!<br>")
+	End Sub
+
+	#End Region
+	'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	#Region "Changed_Input_Name"
+
+	'----------------------------------------------------------------------
+	Protected Sub Changed_Input_Name(sender As Object, e As EventArgs)
+		Response.Write(_Input_Name.Value & " has changed!<br>")
+	End Sub
+
+	#End Region
+	'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	#Region "More..."
+	#End Region
+	'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	#Region "Initialize Component"
+
+	Protected Overrides Sub OnInit(e As EventArgs)
+		InitializeComponent()
+		MyBase.OnInit(e)
+	End Sub
+	'----------------------------------------------------------------------
+	Private Sub InitializeComponent()
+		AddHandler Me.Load, New System.EventHandler(AddressOf Page_Load)
+		AddHandler Me.Init, New System.EventHandler(AddressOf PageInit)
+		AddHandler Me.Unload, New System.EventHandler(AddressOf PageExit)
+
+		AddHandler _Button_Ok.ServerClick, New EventHandler(AddressOf Click_Button_Ok)
+		AddHandler _Input_Name.ServerChange, New EventHandler(AddressOf Changed_Input_Name)
+	End Sub
+	#End Region
+	'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+End Class
+]]></File>
+<File name=".\AssemblyInfo.vb" src="DefaultAssemblyInfo.vb" />
+		<File name="Global.asax" language="HTML">
+			<![CDATA[<%@ Application Codebehind="Global.vb"
+	Inherits="${StandardNamespace}.Global"
+%>
+]]></File>
+		<File name=".\Global.asax.vb" DependentUpon="Global.asax">
+			<![CDATA[Imports System.Collections
+Imports System.ComponentModel
+Imports System.Web
+Imports System.Web.SessionState
+
+''' <summary>
+''' Summary description for Global.
+''' </summary>
+Public Class [Global]
+	Inherits HttpApplication
+	'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	#Region "global"
+	''' <summary>
+	''' Required designer variable.
+	''' </summary>
+	'Private components As System.ComponentModel.IContainer = Nothing
+
+	Public Sub New()
+		InitializeComponent()
+	End Sub
+
+	#End Region
+	'<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+	Protected Sub Application_Start(sender As [Object], e As EventArgs)
+
+	End Sub
+
+	Protected Sub Session_Start(sender As [Object], e As EventArgs)
+
+	End Sub
+
+	Protected Sub Application_BeginRequest(sender As [Object], e As EventArgs)
+
+	End Sub
+
+	Protected Sub Application_EndRequest(sender As [Object], e As EventArgs)
+
+	End Sub
+
+	Protected Sub Application_AuthenticateRequest(sender As [Object], e As EventArgs)
+
+	End Sub
+
+	Protected Sub Application_Error(sender As [Object], e As EventArgs)
+
+	End Sub
+
+	Protected Sub Session_End(sender As [Object], e As EventArgs)
+
+	End Sub
+
+	Protected Sub Application_End(sender As [Object], e As EventArgs)
+
+	End Sub
+
+	#Region "Web Form Designer generated code"
+	''' <summary>
+	''' Required method for Designer support - do not modify
+	''' the contents of this method with the code editor.
+	''' </summary>
+	Private Sub InitializeComponent()
+
+	End Sub
+	#End Region
+End Class
+]]></File>
+		<File name="Default.aspx" language="HTML"><![CDATA[<%@ Page
+	Language           = "VB"
+	AutoEventWireup    = "false"
+	Inherits           = "${StandardNamespace}.Default"
+	ValidateRequest    = "false"
+	EnableSessionState = "false"
+%>
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>${ProjectName}</title>
+
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta http-equiv="CACHE-CONTROL" content="NO-CACHE" />
+		<meta http-equiv="PRAGMA" content="NO-CACHE" />
+
+		<link href="${StandardNamespace}.css" type="text/css" rel="stylesheet" />
+		
+	</head>
+	<body>
+		<form id="Form1" method="post" runat="server">
+		<!-- Site Code goes here! -->
+			<table>
+
+				<tr>
+					<td colspan="2">
+						Table
+					</td>
+				</tr>
+
+				<tr>
+				<td>
+						Name:
+					</td>
+					<td>
+						<input id="_Input_Name" runat="server" />
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan="2">
+						<input id="_Button_No" type="submit" value="Oh No!" runat="server" />
+						<input id="_Button_Ok" type="submit" value="Ok" runat="server" />
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan="2" align="center">
+						<a href="?" >Click Here</a>
+					</td>
+				</tr>
+
+			</table>
+
+		</form>
+	</body>
+</html>
+]]></File>
+<!--*************************************************************************-->
+		<File name="${StandardNamespace}.css" language="HTML">
+			<![CDATA[/*----------------------------------------------*/
+BODY
+{	font-family: Verdana, Arial;
+	font-weight: normal;
+	font-size:   11px;
+	color:		 Black;
+	background-color: #F0F0F0;
+}
+/*----------------------------------------------*/
+TABLE
+{	font-size:		 11px;
+	background-color: #000000;
+	border-width:	 1px;
+	border-color:     #000000;
+	border-collapse: collapse;
+	margin: 0;
+}
+/*----------------------------------------------*/
+TD
+{	background-color: #FFFFFF;
+	border-color:	  #FF0000;
+	border-width:	  0px;
+	padding: 		  4;
+	margin:  		  0;
+}
+/*----------------------------------------------*/
+DIV
+{	width:120px;
+	height:120px;
+	border:solid 1px black;
+	padding:8px;
+	background-color:#F0F0FF;
+}
+/*----------------------------------------------*/
+SELECT
+{	font-family: Verdana;
+	font-weight: normal;
+	font-size:   11px;
+	color:		  #000000;
+	background-color: #FFFFFF;
+}
+/*----------------------------------------------*/
+INPUT
+{	font-family: Verdana;
+	font-weight: normal;
+	font-size:   11px;
+	color:		  #000000;
+}
+/*----------------------------------------------*/
+TEXTAREA
+{	font-family: Verdana;
+	font-weight: normal;
+	font-size:   11px;
+	color:		  #000000;
+	background-color: #FFFFFF;
+}
+/*----------------------------------------------*/
+A
+{	FONT-WEIGHT: 	 normal;
+	COLOR:		 	 #004080;
+	font-style:	 	 normal;
+	text-decoration: none;
+}
+
+A:hover
+{	FONT-WEIGHT: bold;
+	COLOR: 		 #FF5357;
+}
+/*----------------------------------------------*/
+]]></File>
+<!--*************************************************************************-->
+		<File name="Web.config" language="XML"><![CDATA[<configuration>
+
+  <system.web>
+
+    <!--  DYNAMIC DEBUG COMPILATION
+          Set compilation debug="true" to enable ASPX debugging.  Otherwise, setting this value to
+          false will improve runtime performance of this application.
+          Set compilation debug="true" to insert debugging symbols (.pdb information)
+          into the compiled page. Because this creates a larger file that executes
+          more slowly, you should set this value to true only when debugging and to
+          false at all other times. For more information, refer to the documentation about
+          debugging ASP.NET files.
+    -->
+    <compilation
+         defaultLanguage="c#"
+         debug="true"
+    />
+
+    <!--  CUSTOM ERROR MESSAGES
+          Set customErrors mode="On" or "RemoteOnly" to enable custom error messages, "Off" to disable.
+          Add <error> tags for each of the errors you want to handle.
+
+          "On" Always display custom (friendly) messages.
+          "Off" Always display detailed ASP.NET error information.
+          "RemoteOnly" Display custom (friendly) messages only to users not running
+           on the local Web server. This setting is recommended for security purposes, so
+           that you do not display application detail information to remote clients.
+    -->
+    <customErrors mode="RemoteOnly" />
+
+    <!--  AUTHENTICATION
+          This section sets the authentication policies of the application. Possible modes are "Windows",
+          "Forms", "Passport" and "None"
+
+          "None" No authentication is performed.
+          "Windows" IIS performs authentication (Basic, Digest, or Integrated Windows) according to
+           its settings for the application. Anonymous access must be disabled in IIS.
+          "Forms" You provide a custom form (Web page) for users to enter their credentials, and then
+           you authenticate them in your application. A user credential token is stored in a cookie.
+          "Passport" Authentication is performed via a centralized authentication service provided
+           by Microsoft that offers a single logon and core profile services for member sites.
+    -->
+    <authentication mode="None" />
+
+	<!--  AUTHORIZATION
+          This section sets the authorization policies of the application. You can allow or deny access
+          to application resources by user or role. Wildcards: "*" mean everyone, "?" means anonymous
+          (unauthenticated) users.
+    -->
+
+    <authorization>
+        <allow users="*" /> <!-- Allow all users -->
+            <!--  <allow     users="[comma separated list of users]"
+                             roles="[comma separated list of roles]"/>
+                  <deny      users="[comma separated list of users]"
+                             roles="[comma separated list of roles]"/>
+            -->
+    </authorization>
+
+    <!--  APPLICATION-LEVEL TRACE LOGGING
+          Application-level tracing enables trace log output for every page within an application.
+          Set trace enabled="true" to enable application trace logging.  If pageOutput="true", the
+          trace information will be displayed at the bottom of each page.  Otherwise, you can view the
+          application trace log by browsing the "trace.axd" page from your web application
+          root.
+    -->
+    <trace
+        enabled="false"
+        requestLimit="10"
+        pageOutput="false"
+        traceMode="SortByTime"
+		localOnly="true"
+    />
+
+    <!--  SESSION STATE SETTINGS
+          By default ASP.NET uses cookies to identify which requests belong to a particular session.
+          If cookies are not available, a session can be tracked by adding a session identifier to the URL.
+          To disable cookies, set sessionState cookieless="true".
+    -->
+    <sessionState
+            mode="InProc"
+            cookieless="true"
+            timeout="20"
+    />
+
+    <!--  GLOBALIZATION
+          This section sets the globalization settings of the application.
+    -->
+    <globalization
+            requestEncoding="utf-8"
+            responseEncoding="utf-8"
+   />
+
+ </system.web>
+ 
+ 	<appSettings>
+ 
+ 		<add key="SqlConnectionString"
+		     value="Server=localhost; Database=; Uid=root; Pwd=;"
+		/>
+
+ 	</appSettings>
+
+</configuration>
+
+]]></File>
+<!--*************************************************************************-->
+		</Files>
+	</Project>
+</Template>

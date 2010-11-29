@@ -1,6 +1,7 @@
 ﻿<SyntaxDefinition name="Boo" extensions=".boo" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
 	<Color name="Comment" foreground="Green" />
 	<Color name="String" foreground="Blue" />
+	<Color name="Regex" foreground="#FFFF6600" />
 	<RuleSet>
 		<Span color="Comment" multiline="true">
 			<Begin>"""</Begin>
@@ -35,13 +36,14 @@
 				<Span begin="\\" end="." />
 			</RuleSet>
 		</Span>
-		<Span foreground="#FFFF6600" multiline="true">
+		<Span color="Regex" multiline="true">
 			<Begin>@/</Begin>
 			<End>/</End>
 		</Span>
-		<Span foreground="#FFFF6600">
-			<Begin>/(?!(\ ))</Begin>
-			<End>/</End>
+		<Span color="Regex">
+			<!-- this is a span (not a rule) because " within a regex doesn't start a string literal -->
+			<Begin>/\S+/</Begin>
+			<End></End> <!-- end immediately after Begin -->
 		</Span>
 		<Keywords foreground="Black" fontWeight="bold">
 			<Word>self</Word>

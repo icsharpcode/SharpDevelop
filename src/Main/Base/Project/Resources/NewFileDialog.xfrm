@@ -113,7 +113,6 @@
                 <TabIndex value="1" />
                 <HotTracking value="True" />
                 <Location value="0, 23" />
-                <Scrollable value="False" />
                 <Dock value="Fill" />
                 <Size value="174, 267" />
                 <HideSelection value="False" />

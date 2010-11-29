@@ -4,6 +4,7 @@
 	xmlns:editing="clr-namespace:ICSharpCode.AvalonEdit.Editing"
 >
 	<Style TargetType="{x:Type AvalonEdit:TextEditor}">
+		<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
 		<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />
 		<Setter Property="FlowDirection" Value="LeftToRight"/> <!-- AvalonEdit does not support RTL, so ensure we use LTR by default -->
 		<Setter Property="Template">
