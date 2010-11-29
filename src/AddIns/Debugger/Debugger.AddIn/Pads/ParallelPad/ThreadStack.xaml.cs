@@ -79,7 +79,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			}
 		}
 		
-		public ThreadStack ThreadStackParent { get; set; }
+		public List<ThreadStack> ThreadStackParents { get; set; }
 		
 		public List<ThreadStack> ThreadStackChildren { get; set; }
 		
@@ -134,11 +134,12 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		
 		private void SelectParent(bool isSelected)
 		{
-			var ts = this.ThreadStackParent;
-			while(ts != null) {
-				ts.IsSelected = isSelected;
-				ts = ts.ThreadStackParent;
-			}
+			if (this.ThreadStackParents == null || this.ThreadStackParents.Count == 0)
+				return;
+			
+			foreach (var ts in this.ThreadStackParents)
+				if (ts != null)
+					ts.IsSelected = isSelected;
 		}
 		
 		void datagrid_PreviewMouseMove(object sender, MouseEventArgs e)

@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			get { return base.Owner; }
 			set {
 				if (!(value is ParallelStackPad))
-					throw new Exception("Owner has to be a AbstractConsolePad");
+					throw new Exception("Owner has to be a ParallelStackPad");
 				pad = value as ParallelStackPad;
 				base.Owner = value;
 			}

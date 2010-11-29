@@ -66,7 +66,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (debuggedProcess == null || debuggedProcess.IsRunning) {
 				return;
 			}
-			OnReset(null, EventArgs.Empty);
+			
+			currentThreadStacks.Clear();
 			
 			if (ParallelStacksView == ParallelStacksView.Threads)
 			{
@@ -124,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				using(new PrintTimes("Graph refresh")) {
 					// paint the ThreadStaks
 					graph = new ParallelStacksGraph();
-					foreach (var stack in this.currentThreadStacks.FindAll(ts => ts.ThreadStackParent == null))
+					foreach (var stack in this.currentThreadStacks.FindAll(ts => ts.ThreadStackParents == null ))
 					{
 						graph.AddVertex(stack);
 						
@@ -190,6 +191,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		private void OnReset(object sender, EventArgs e)
 		{
 			currentThreadStacks.Clear();
+			selectedFrame = null;
 		}
 
 		private void debuggedProcess_Paused(object sender, ProcessEventArgs e)
@@ -349,22 +351,24 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 						}
 						dynamic item = stack.ItemCollection[stack.ItemCollection.Count - 1];
 						// add the parent to the parent
-						if (stack.ThreadStackParent != null) {
+						if (stack.ThreadStackParents != null) {
 							// remove stack from it's parent because it will have the commonParent as parent
-							stack.ThreadStackParent.ThreadStackChildren.Remove(stack);
-							commonParent.ThreadStackParent = stack.ThreadStackParent;
-							commonParent.ThreadStackParent.ThreadStackChildren.Add(commonParent);
+							stack.ThreadStackParents[0].ThreadStackChildren.Remove(stack);
+							commonParent.ThreadStackParents = stack.ThreadStackParents.Clone();
+							commonParent.ThreadStackParents[0].ThreadStackChildren.Add(commonParent);
 							// set level
 							commonParent.Level = stack.Level - 1;
 						}
+						else
+							stack.ThreadStackParents = new List<ThreadStack>();
 						
 						// update thread ids
-						var parent = commonParent.ThreadStackParent;
-						if (parent != null) {
-							parent.UpdateThreadIds(commonParent.ThreadIds.ToArray());
+						if (commonParent.ThreadStackParents != null) {
+							commonParent.ThreadStackParents[0].UpdateThreadIds(commonParent.ThreadIds.ToArray());
 						}
 						
-						stack.ThreadStackParent = commonParent;
+						stack.ThreadStackParents.Clear();
+						stack.ThreadStackParents.Add(commonParent);
 						string currentName = item.MethodName + stack.Level.ToString();;
 						
 						// add name or add to list
@@ -420,6 +424,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			common.UpdateThreadIds(selectedFrame.Thread.ID);
 			common.Process = debuggedProcess;
 			common.ThreadStackChildren = new List<ThreadStack>();
+			common.ThreadStackParents = new List<ThreadStack>();
 			
 			// for all thread stacks, split them in 2 :
 			// one that invokes the method frame, second that get's invoked by current method frame
@@ -432,9 +437,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					topStack.StackSelected += OnThreadStackSelected;
 					topStack.FrameSelected += OnFrameSelected;
 					topStack.UpdateThreadIds(tuple.Item3.ToArray());
-					common.UpdateThreadIds(tuple.Item3.ToArray());
 					topStack.Process = debuggedProcess;
-					topStack.ThreadStackParent = common;
+					topStack.ThreadStackParents = new List<ThreadStack>();
+					topStack.ThreadStackParents.Add(common);
 					
 					currentThreadStacks.Add(topStack);
 					common.ThreadStackChildren.Add(topStack);
@@ -451,7 +456,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					bottomStack.Process = debuggedProcess;
 					bottomStack.ThreadStackChildren = new List<ThreadStack>();
 					bottomStack.ThreadStackChildren.Add(common);
-					
+					common.UpdateThreadIds(tuple.Item3.ToArray());
+					common.ThreadStackParents.Add(bottomStack);
 					currentThreadStacks.Add(bottomStack);
 				}
 			}
@@ -539,7 +545,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		private void OnThreadStackSelected(object sender, EventArgs e)
 		{
 			foreach (var ts in this.currentThreadStacks) {
-				ts.IsSelected = false;
+				if (ts.IsSelected)
+					ts.IsSelected = false;
 				ts.ClearImages();
 			}
 		}
