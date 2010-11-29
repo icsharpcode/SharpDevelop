@@ -33,8 +33,8 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				return Rectangle.Empty;
 			}
 			
-			Console.WriteLine("\tlayouter for container <{0}>",container.ToString());
-			
+//			Console.WriteLine("\tlayouter for container <{0}>",container.ToString());
+			Console.WriteLine("\tLayouter for Container");
 			Rectangle desiredContainerRectangle = new Rectangle (container.Location,container.Size);
 			
 			System.Collections.Generic.IEnumerable<BaseReportItem> canGrowShrinkCollection = from bt in container.Items where bt.CanGrow == true select bt;
@@ -58,7 +58,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 //				                                       
 //				Console.WriteLine("Diff {0} - {1} dif  {2}",desiredContainerRectangle,r1,desiredContainerRectangle.Height - r1.Height);
 			}
-			Console.WriteLine("\tContainer : {0} - DesiredContainerRectangle {1} ",container.Size,desiredContainerRectangle.Size);
+//			Console.WriteLine("\tContainer : {0} - DesiredContainerRectangle {1} ",container.Size,desiredContainerRectangle.Size);
 			return desiredContainerRectangle;
 		}
 		
@@ -72,8 +72,8 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 				throw new ArgumentNullException("section");
 			}
 		
-			Console.WriteLine("\tlayouter for section <{0}>",section.Name);
-			
+//				Console.WriteLine("\tLayouter for Container");Console.WriteLine("\tlayouter for section <{0}>",section.Name);
+				Console.WriteLine("\tLayouter for Section");
 			IEnumerable<BaseReportItem> canGrowShrinkCollection = from bt in section.Items where bt.CanGrow == true select bt;
 			
 			Rectangle desiredSectionRectangle = new Rectangle(section.Location.X,
@@ -93,7 +93,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 					                                        surroundingRec.Size.Height);
 				}
 			}
-			Console.WriteLine("\tSection : {0} - DesiredContainerRectangle {1} ",section.Size,desiredSectionRectangle.Size);
+//			Console.WriteLine("\tSection : {0} - DesiredContainerRectangle {1} ",section.Size,desiredSectionRectangle.Size);
 			return desiredSectionRectangle;
 		}
 		

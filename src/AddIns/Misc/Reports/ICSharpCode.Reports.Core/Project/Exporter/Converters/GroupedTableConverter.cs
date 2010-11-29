@@ -138,8 +138,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 						PrintHelper.AdjustSectionLocation(section);
 						CheckForPageBreak(section,simpleContainer,headerRow,exporterCollection);
 						FillRow(simpleContainer);
-						base.CurrentPosition = ConvertStandardRow (exporterCollection,section,simpleContainer);
+						base.PrepareContainerForConverting(section,simpleContainer);
 						FireRowRendering(simpleContainer,base.DataNavigator);
+						base.CurrentPosition = ConvertStandardRow (exporterCollection,section,simpleContainer);
+//						FireRowRendering(simpleContainer,base.DataNavigator);
 						simpleContainer.Size = containerSize;
 						section.Size = base.RestoreSectionSize;
 						Console.WriteLine("");

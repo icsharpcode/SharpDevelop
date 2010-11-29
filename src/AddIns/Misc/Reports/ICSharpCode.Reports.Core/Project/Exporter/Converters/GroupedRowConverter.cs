@@ -123,9 +123,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 					Console.WriteLine("");
 					Size containerSize = section.Items[0].Size;
 					base.FillRow(simpleContainer);
-				
+					base.PrepareContainerForConverting(section,simpleContainer);
+					FireRowRendering(simpleContainer,base.DataNavigator);
 					base.CurrentPosition = ConvertStandardRow (exporterCollection,section,simpleContainer);
-					base.FireRowRendering(simpleContainer,base.DataNavigator);
+//					base.FireRowRendering(simpleContainer,base.DataNavigator);
 					section.Size = base.RestoreSectionSize;
 					section.Items[0].Size = containerSize;
 					Console.WriteLine("");

@@ -247,21 +247,23 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
+		protected	void PrepareContainerForConverting(BaseSection section,ISimpleContainer simpleContainer)
+		{
+			Console.WriteLine("\tPrepareContainerForConverting");
+			FireSectionRendering(section);
+			LayoutRow(simpleContainer);
+		}
+		
+		
 		protected  Point ConvertStandardRow(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer)
 		{
+			Console.WriteLine("\tConvertStandardRow");
 			var rowSize = simpleContainer.Size;
-			PrepareContainerForConverting(section,simpleContainer);
+//			PrepareContainerForConverting(section,simpleContainer);
 			Point curPos = ConvertContainer(mylist,simpleContainer,DefaultLeftPosition,CurrentPosition);
 			AfterConverting (mylist);
 			simpleContainer.Size = rowSize;
 			return curPos;
-		}
-		
-		
-		protected	void PrepareContainerForConverting(BaseSection section,ISimpleContainer simpleContainer)
-		{
-			FireSectionRendering(section);
-			LayoutRow(simpleContainer);
 		}
 		
 		
