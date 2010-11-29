@@ -12,7 +12,7 @@ using ICSharpCode.NRefactory.VB.Visitors;
 
 namespace ICSharpCode.NRefactory.VB.Parser
 {
-	public partial class VBParser
+	public partial class VBParser : IDisposable
 	{
 		VBLexer lexer;
 		Stack<INode> blockStack;
