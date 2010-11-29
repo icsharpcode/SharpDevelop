@@ -11,6 +11,9 @@ ICSharpCode.NRefactory.CSharp.Dom:
 
 ICSharpCode.NRefactory.CSharp.Resolver:
 	Semantic analysis for C#
+	
+ICSharpCode.NRefactory.VB.Dom:
+	Abstract Syntax Tree for VB
 
 Null-Object pattern:
 	The NRefactory library makes extensive use of the null object pattern.
