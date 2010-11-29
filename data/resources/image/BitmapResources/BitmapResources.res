@@ -37,6 +37,10 @@ ProjectBrowser.WebReferenceFolder.Closed = ProjectBrowserIcons\WebReferenceFolde
 ProjectBrowser.WebReferenceFolder.Open   = ProjectBrowserIcons\WebReferenceFolder.Open.png
 ProjectBrowser.WebReference              = ProjectBrowserIcons\WebReference.png
 
+#Parallel Stacks pad
+ParallelStacks.MethodView   		     = PadIcons\MethodView.png
+ParallelStacks.ZoomControl  		     = PadIcons\ZoomControl.png
+
 #Output pad
 
 OutputPad.Toolbar.ClearOutputWindow = OutputPadIcons\ClearOutputWindow.png
@@ -226,6 +230,7 @@ Icons.16x16.OpenFileIcon                          = BitmapResources-data\Icons.1
 Icons.16x16.HtmlElements.FieldSetElement          = BitmapResources-data\Icons.16x16.HtmlElements.FieldSetElement.png
 Icons.16x16.SplitWindow                           = BitmapResources-data\Icons.16x16.SplitWindow.png
 Icons.16x16.DeleteHistory                         = BitmapResources-data\Icons.16x16.DeleteHistory.png
+Icons.48x48.CurrentFrame 						  = BitmapResources-data\Icons.48x48.CurrentFrame.png
 
 #pad icons
 PadIcons.ErrorList                                = PadIcons\ErrorList.png

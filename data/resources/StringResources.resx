@@ -5935,7 +5935,13 @@ Shows the full callstack of the error.</comment>
     <value>Object Graph</value>
   </data>
   <data name="MainWindow.Windows.Debug.ParallelStack" xml:space="preserve">
-    <value>Parallel Stack</value>
+    <value>Parallel Stacks</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ToggleMethodView" xml:space="preserve">
+    <value>Toggle Method View</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.HideZoomControl" xml:space="preserve">
+    <value>Show/Hide Zoom Control</value>
   </data>
   <data name="MainWindow.Windows.Debug.RunToCursor" xml:space="preserve">
     <value>Run to cursor</value>

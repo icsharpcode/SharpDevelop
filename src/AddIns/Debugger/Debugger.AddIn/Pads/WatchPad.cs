@@ -35,15 +35,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			instance = this;
 		}
 			
-		/// <remarks>
-		/// This is not used anywhere, but it is neccessary to be overridden in children of AbstractPadContent.
-		/// </remarks>
-		public override object Control {
-			get {
-				return watchList;
-			}
-		}
-		
 		public Process Process {
 			get { return debuggedProcess; }
 		}
@@ -58,6 +49,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			watchList.DragEnter += watchList_DragOver;
 			watchList.Drop += watchList_Drop;
 			watchList.KeyUp += watchList_KeyUp;
+			
+			panel.Children.Add(watchList);
 		}
 
 		void watchList_KeyUp(object sender, KeyEventArgs e)

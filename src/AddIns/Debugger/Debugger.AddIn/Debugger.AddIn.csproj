@@ -104,6 +104,9 @@
       <DependentUpon>CallStackPad.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Pads\Commands\ParallelStacksViewCommands.cs" />
+    <Compile Include="Pads\Commands\SelectLanguageCommand.cs" />
+    <Compile Include="Pads\Commands\WatchPadCommands.cs" />
     <Compile Include="Pads\Controls\ConditionCell.xaml.cs">
       <DependentUpon>ConditionCell.xaml</DependentUpon>
     </Compile>
@@ -150,8 +153,6 @@
       <DependentUpon>DebuggingSymbolsPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Pads\ObjectGraphPad.cs" />
-    <Compile Include="Pads\SelectLanguageCommand.cs" />
-    <Compile Include="Pads\WatchPadCommands.cs" />
     <Compile Include="Pads\BreakPointsPad.cs" />
     <Compile Include="Pads\ConsolePad.cs">
       <SubType>UserControl</SubType>
@@ -398,6 +399,7 @@
       <Name>ICSharpCode.Core.WinForms</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Folder Include="Pads\Commands" />
     <Folder Include="Pads\Controls" />
     <Folder Include="Pads\ParallelPad" />
     <Folder Include="Visualizers\Graph" />

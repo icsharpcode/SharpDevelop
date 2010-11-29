@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Dynamic;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,12 +11,24 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 using ICSharpCode.Core.Presentation;
-using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui.Pads;
-using ICSharpCode.SharpDevelop.Services;
 
 namespace Debugger.AddIn.Pads.ParallelPad
 {
+	public class FrameSelectedEventArgs : EventArgs
+	{
+		public StackFrame Item {
+			get;
+			private set;
+		}
+		
+		public FrameSelectedEventArgs(StackFrame item)
+		{
+			Item = item;
+		}
+	}
+	
 	public partial class ThreadStack : UserControl
 	{
 		public static SolidColorBrush SelectedBrush = new SolidColorBrush(Color.FromRgb(84, 169, 255));
@@ -26,7 +37,9 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			DependencyProperty.Register("IsSelected", typeof(bool), typeof(ThreadStack),
 			                            new FrameworkPropertyMetadata());
 		
-		public event EventHandler FrameSelected;
+		public event EventHandler StackSelected;
+		
+		public event EventHandler<FrameSelectedEventArgs> FrameSelected;
 		
 		private ObservableCollection<ExpandoObject> itemCollection = new ObservableCollection<ExpandoObject>();
 		
@@ -93,7 +106,13 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		
 		public void UpdateThreadIds(params uint[] threadIds)
 		{
-			this.threadIds.AddRange(threadIds);
+			var list = new List<uint>();
+			foreach (uint id in threadIds) {
+				if (!this.threadIds.Contains(id)) {
+					list.Add(id);
+				}
+			}
+			this.threadIds.AddRange(list);
 			
 			if (this.threadIds.Count > 1)
 				this.HeaderText.Text = this.threadIds.Count.ToString() + " Threads";
@@ -104,7 +123,8 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		public void ClearImages()
 		{
 			foreach(dynamic item in itemCollection) {
-				item.Image = null;
+				if (!item.IsRunningStackFrame)
+					item.Image = null;
 			}
 		}
 		
@@ -164,20 +184,29 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			if (thread == null)
 				return;
 
-			if (FrameSelected != null)
-				FrameSelected(this, EventArgs.Empty);
+			if (StackSelected != null)
+				StackSelected(this, EventArgs.Empty);
 			
 			this.IsSelected = true;
 			
 			dynamic obj = selectedItem;
-			Process.SelectedThread = thread;
+			
 			foreach(var frame in thread.Callstack)
 			{
 				if (frame.GetMethodName() == obj.MethodName)
 				{
-					Process.SelectedThread.SelectedStackFrame = frame;
-					obj.Image = PresentationResourceService.GetImage("Bookmarks.CurrentLine").Source;
-					((WindowsDebugger)DebuggerService.CurrentDebugger).JumpToCurrentLine();
+					if (!obj.IsRunningStackFrame)
+						obj.Image = PresentationResourceService.GetImage("Icons.48x48.CurrentFrame").Source;
+					
+					SourcecodeSegment nextStatement = frame.NextStatement;
+					if (nextStatement != null) {
+						FileService.JumpToFilePosition(
+							nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn);
+					}
+					
+					if (FrameSelected != null)
+						FrameSelected(this, new FrameSelectedEventArgs(frame));
+					
 					break;
 				}
 			}

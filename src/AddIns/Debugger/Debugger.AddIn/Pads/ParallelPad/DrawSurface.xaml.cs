@@ -32,6 +32,21 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		public void SetGraph(ParallelStacksGraph graph)
 		{
 			this.ParallelStacksLayout.Graph = graph;
+		
+			if (graph == null)
+				this.ParallelStacksLayout.CancelLayout();
+			else
+				this.ParallelStacksLayout.Relayout();
+		}
+		
+		public bool IsZoomControlVisible {
+			get { return ZoomControl.Visibility == Visibility.Visible; }
+			set {
+				if (value)
+					ZoomControl.Visibility = Visibility.Visible;
+				else
+					ZoomControl.Visibility = Visibility.Hidden;
+			}
 		}
 
 		#region Pan
@@ -68,7 +83,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 				
 				Cursor = Cursors.SizeAll;
 				var point = e.GetPosition(drawingSurface);
-				Vector v = dragStartedPoint - point;
+				Vector v = point - dragStartedPoint;
 				translate.X += v.X / 200;
 				translate.Y += v.Y / 200;				
 				e.Handled = true;

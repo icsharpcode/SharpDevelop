@@ -33,13 +33,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		protected override void InitializeComponents()
 		{
 			objectGraphControl = new ObjectGraphControl();
+			panel.Children.Add(objectGraphControl);
 		}
 		
-		public override object Control {
-			get {
-				return objectGraphControl;
-			}
-		}
 		
 		public override void RefreshPad()
 		{

@@ -128,7 +128,7 @@
 		     category = "Debugger"
 		     title    = "${res:MainWindow.Windows.Debug.ParallelStack}"
 		     icon     = "PadIcons.Parallel"
-		     class = "Debugger.AddIn.Pads.ParallelPad.ParallelStackPad"
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.ParallelStackPad"
 		     defaultPosition = "Bottom, Hidden" />
 	</Path>
 	
@@ -164,6 +164,24 @@
 		<Include id="StandardCommands" path="/SharpDevelop/Pads/CommonConsole/ToolBar" />
 		<ToolbarItem class="ICSharpCode.SharpDevelop.Gui.Pads.SelectLanguageCommand"
 		             type="ComboBox" id="SelectLanguageCommand" />
+	</Path>
+	
+	<Path name="/SharpDevelop/Pads/ParallelStacksPad/ToolBar">
+		<ToolbarItem id="View" type="ComboBox" class="ICSharpCode.SharpDevelop.Gui.Pads.ParallelStacksViewCommand"/>
+		<ToolbarItem id="Separator" type="Separator"/>
+		<ToolbarItem 
+			id="MethodView"
+			type="CheckBox" 
+			tooltip="${res:MainWindow.Windows.Debug.ToggleMethodView}"
+			icon="ParallelStacks.MethodView"
+			class="ICSharpCode.SharpDevelop.Gui.Pads.ToggleMethodViewCommand"/>
+		<ToolbarItem 
+			id="ZoomControl"
+			type="CheckBox" 
+			tooltip="${res:MainWindow.Windows.Debug.HideZoomControl}"
+			icon="ParallelStacks.ZoomControl"
+			class="ICSharpCode.SharpDevelop.Gui.Pads.ShowZoomControlCommand"/>
+		/>
 	</Path>
 	
 	<Path name="/SharpDevelop/Services/DebuggerService/Visualizers">

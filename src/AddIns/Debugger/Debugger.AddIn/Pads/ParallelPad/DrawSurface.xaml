@@ -79,11 +79,11 @@
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition
-				Width="40" />
+				Width="Auto" />
 			<ColumnDefinition
 				Width="*" />
 		</Grid.ColumnDefinitions>
-		<Canvas
+		<Canvas x:Name="ZoomControl" Width="40" Visibility="Hidden"
 			Margin="3,3">
 			<TextBlock
 				Foreground="LightGray"

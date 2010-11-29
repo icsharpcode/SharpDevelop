@@ -26,15 +26,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			get { return instance; }
 		}
 		
-		/// <remarks>
-		/// This is not used anywhere, but it is neccessary to be overridden in children of AbstractPadContent.
-		/// </remarks>
-		public override object Control {
-			get {
-				return localVarList;
-			}
-		}
-		
 		public Process Process {
 			get { return debuggedProcess; }
 		}
@@ -42,6 +33,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		protected override void InitializeComponents()
 		{
 			localVarList = new WatchList();
+			panel.Children.Add(localVarList);
 		}
 		
 		protected override void SelectProcess(Process process)

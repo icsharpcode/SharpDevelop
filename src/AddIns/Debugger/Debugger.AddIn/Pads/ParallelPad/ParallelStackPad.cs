@@ -10,33 +10,39 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
+using Debugger;
+using Debugger.AddIn.Pads.ParallelPad;
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui.Pads;
-using ICSharpCode.SharpDevelop.Services;
 
-namespace Debugger.AddIn.Pads.ParallelPad
+namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
+	public enum ParallelStacksView
+	{
+		Threads,
+		Tasks
+	}
+	
 	public class ParallelStackPad : DebuggerPad
 	{
 		private DrawSurface surface;
 		private Process debuggedProcess;
 		private ParallelStacksGraph graph;
 		private List<ThreadStack> currentThreadStacks = new List<ThreadStack>();
+		private ParallelStacksView parallelStacksView;
+		private StackFrame selectedFrame;
+		private bool isMethodView;
 		
 		#region Overrides
 		
 		protected override void InitializeComponents()
 		{
 			surface = new DrawSurface();
-		}
-		
-		public override object Control {
-			get {
-				return surface;
-			}
+			
+			panel.Children.Add(surface);
 		}
 		
 		protected override void SelectProcess(Process process)
@@ -60,52 +66,123 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			if (debuggedProcess == null || debuggedProcess.IsRunning) {
 				return;
 			}
+			OnReset(null, EventArgs.Empty);
 			
-			using(new PrintTimes("Parallel stack refresh")) {
-				try {
-					OnReset(null, EventArgs.Empty);
-					// create all simple ThreadStacks
-					foreach (Thread thread in debuggedProcess.Threads) {
-						if (debuggedProcess.IsPaused) {
-							Utils.DoEvents(debuggedProcess);
-						}
-						
-						CreateThreadStack(thread);
-					}
-					
-					CreateCommonStacks();
-				}
-				catch(AbortedBecauseDebuggeeResumedException) { }
-				catch(System.Exception) {
-					if (debuggedProcess == null || debuggedProcess.HasExited) {
-						// Process unexpectedly exited
-					} else {
-						throw;
-					}
-				}
-			}
-			
-			using(new PrintTimes("Graph refresh")) {
-				// paint the ThreadStaks
-				graph = new ParallelStacksGraph();
-				foreach (var stack in this.currentThreadStacks)
+			if (ParallelStacksView == ParallelStacksView.Threads)
+			{
+				if (isMethodView)
 				{
-					if (stack == null)
-						continue;
-					if (stack.ThreadStackParent != null &&
-					    (stack.ThreadStackChildren == null || stack.ThreadStackChildren.Count == 0))
-						continue;
-					
-					graph.AddVertex(stack);
-					
-					// add the children
-					AddChildren(stack);
+					// build method view for threads
+					using(new PrintTimes("Parallel stack - method view + threads refresh")) {
+						try {
+							// create all simple ThreadStacks
+							foreach (Thread thread in debuggedProcess.Threads) {
+								if (debuggedProcess.IsPaused) {
+									Utils.DoEvents(debuggedProcess);
+								}
+								CreateThreadStack(thread);
+							}
+							
+							CreateMethodViewStacks();
+						}
+						catch(AbortedBecauseDebuggeeResumedException) { }
+						catch(System.Exception) {
+							if (debuggedProcess == null || debuggedProcess.HasExited) {
+								// Process unexpectedly exited
+							} else {
+								throw;
+							}
+						}
+					}
+				}
+				else
+				{
+					// normal view
+					using(new PrintTimes("Parallel stack - threads refresh")) {
+						try {
+							// create all simple ThreadStacks
+							foreach (Thread thread in debuggedProcess.Threads) {
+								if (debuggedProcess.IsPaused) {
+									Utils.DoEvents(debuggedProcess);
+								}
+								CreateThreadStack(thread);
+							}
+							
+							CreateCommonStacks();
+						}
+						catch(AbortedBecauseDebuggeeResumedException) { }
+						catch(System.Exception) {
+							if (debuggedProcess == null || debuggedProcess.HasExited) {
+								// Process unexpectedly exited
+							} else {
+								throw;
+							}
+						}
+					}
 				}
 				
-				surface.SetGraph(graph);
+				using(new PrintTimes("Graph refresh")) {
+					// paint the ThreadStaks
+					graph = new ParallelStacksGraph();
+					foreach (var stack in this.currentThreadStacks.FindAll(ts => ts.ThreadStackParent == null))
+					{
+						graph.AddVertex(stack);
+						
+						// add the children
+						AddChildren(stack);
+					}
+					
+					surface.SetGraph(graph);
+				}
+			}
+			else
+			{
+				MessageBox.Show(
+					"Not yet supported", "Tasks view", MessageBoxButton.OK, MessageBoxImage.Information);
+				
+				// TODO : hadle tasks here
+				if (isMethodView)
+				{
+					// build method view for tasks
+				}
+				else
+				{
+					// normal
+				}
+				surface.SetGraph(new ParallelStacksGraph());
 			}
 		}
+		
+		protected override ToolBar BuildToolBar()
+		{
+			return ToolBarService.CreateToolBar(this, "/SharpDevelop/Pads/ParallelStacksPad/ToolBar");
+		}
 
+		#endregion
+		
+		#region Public Properties
+		
+		public ParallelStacksView ParallelStacksView {
+			get { return parallelStacksView; }
+			set {
+				parallelStacksView = value;
+				RefreshPad();
+			}
+		}
+		
+		public bool IsMethodView {
+			get { return isMethodView; }
+			set {
+				isMethodView = value;
+				RefreshPad();
+			}
+		}
+		
+		public bool IsZoomControlVisible {
+			get { return surface.IsZoomControlVisible; }
+			set { surface.IsZoomControlVisible = value; }
+		}
+		
 		#endregion
 		
 		#region Private Methods
@@ -260,7 +337,8 @@ namespace Debugger.AddIn.Pads.ParallelPad
 					commonParent.UpdateThreadIds(threadIds.ToArray());
 					commonParent.ItemCollection = parentItems.ToObservable();
 					commonParent.Process = debuggedProcess;
-					commonParent.FrameSelected += threadStack_FrameSelected;
+					commonParent.StackSelected += OnThreadStackSelected;
+					commonParent.FrameSelected += OnFrameSelected;
 					commonParent.IsSelected = commonParent.ThreadIds.Contains(debuggedProcess.SelectedThread.ID);
 					// add new children
 					foreach (var stack in listOfCurrentStacks) {
@@ -283,17 +361,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 						// update thread ids
 						var parent = commonParent.ThreadStackParent;
 						if (parent != null) {
-							if (parent.ThreadIds != null)
-							{
-								var list = new List<uint>();
-								foreach (uint id in commonParent.ThreadIds) {
-									if (!parent.ThreadIds.Contains(id)) {
-										list.Add(id);
-									}
-								}
-								
-								parent.UpdateThreadIds(list.ToArray());
-							}
+							parent.UpdateThreadIds(commonParent.ThreadIds.ToArray());
 						}
 						
 						stack.ThreadStackParent = commonParent;
@@ -324,6 +392,73 @@ namespace Debugger.AddIn.Pads.ParallelPad
 					break;
 			}
 		}
+
+		private void CreateMethodViewStacks()
+		{
+			var list = 
+				new List<Tuple<ObservableCollection<ExpandoObject>, ObservableCollection<ExpandoObject>, List<uint>>>();
+			
+			// find all threadstacks that contains the selected frame
+			for (int i = currentThreadStacks.Count - 1; i >= 0; --i) {
+				var tuple = currentThreadStacks[i].ItemCollection.SplitStack(selectedFrame, currentThreadStacks[i].ThreadIds);
+				if (tuple != null)
+					list.Add(tuple);
+			}
+			
+			currentThreadStacks.Clear();
+			
+			// common
+			ThreadStack common = new ThreadStack();
+			var observ = new ObservableCollection<ExpandoObject>();
+			bool dummy = false;
+			dynamic obj = CreateItem(selectedFrame, selectedFrame.Thread, ref dummy);
+			obj.Image = PresentationResourceService.GetImage("Icons.48x48.CurrentFrame").Source;
+			observ.Add(obj);
+			common.ItemCollection = observ;
+			common.StackSelected += OnThreadStackSelected;
+			common.FrameSelected += OnFrameSelected;
+			common.UpdateThreadIds(selectedFrame.Thread.ID);
+			common.Process = debuggedProcess;
+			common.ThreadStackChildren = new List<ThreadStack>();
+			
+			// for all thread stacks, split them in 2 :
+			// one that invokes the method frame, second that get's invoked by current method frame
+			foreach (var tuple in list) {
+				// add top
+				if (tuple.Item1.Count > 0)
+				{
+					ThreadStack topStack = new ThreadStack();
+					topStack.ItemCollection = tuple.Item1;
+					topStack.StackSelected += OnThreadStackSelected;
+					topStack.FrameSelected += OnFrameSelected;
+					topStack.UpdateThreadIds(tuple.Item3.ToArray());
+					common.UpdateThreadIds(tuple.Item3.ToArray());
+					topStack.Process = debuggedProcess;
+					topStack.ThreadStackParent = common;
+					
+					currentThreadStacks.Add(topStack);
+					common.ThreadStackChildren.Add(topStack);
+				}
+				
+				// add bottom
+				if(tuple.Item2.Count > 0)
+				{
+					ThreadStack bottomStack = new ThreadStack();
+					bottomStack.ItemCollection = tuple.Item2;
+					bottomStack.StackSelected += OnThreadStackSelected;
+					bottomStack.FrameSelected += OnFrameSelected;
+					bottomStack.UpdateThreadIds(tuple.Item3.ToArray());
+					bottomStack.Process = debuggedProcess;
+					bottomStack.ThreadStackChildren = new List<ThreadStack>();
+					bottomStack.ThreadStackChildren.Add(common);
+					
+					currentThreadStacks.Add(bottomStack);
+				}
+			}
+			
+			currentThreadStacks.Add(common);
+			common.IsSelected = true;
+		}
 		
 		private void CreateThreadStack(Thread thread)
 		{
@@ -332,22 +467,19 @@ namespace Debugger.AddIn.Pads.ParallelPad
 				return;
 			
 			ThreadStack threadStack = new ThreadStack();
-			threadStack.FrameSelected += threadStack_FrameSelected;
+			threadStack.StackSelected += OnThreadStackSelected;
+			threadStack.FrameSelected += OnFrameSelected;
 			threadStack.UpdateThreadIds(thread.ID);
 			threadStack.Process = debuggedProcess;
-			currentThreadStacks.Add(threadStack);
-			
 			threadStack.ItemCollection = items;
-			if (debuggedProcess.SelectedThread != null)
+			
+			if (debuggedProcess.SelectedThread != null) {
 				threadStack.IsSelected = threadStack.ThreadIds.Contains(debuggedProcess.SelectedThread.ID);
-		}
-
-		private void threadStack_FrameSelected(object sender, EventArgs e)
-		{
-			foreach (var ts in this.currentThreadStacks) {
-				ts.IsSelected = false;
-				ts.ClearImages();
+				if (selectedFrame == null)
+					selectedFrame = debuggedProcess.SelectedStackFrame;
 			}
+			
+			currentThreadStacks.Add(threadStack);
 		}
 		
 		private ObservableCollection<ExpandoObject> CreateItems(Thread thread)
@@ -355,39 +487,69 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			bool lastItemIsExternalMethod = false;
 			var result = new ObservableCollection<ExpandoObject>();
 			foreach (StackFrame frame in thread.GetCallstack(100)) {
-				dynamic obj = new ExpandoObject();
-				string fullName;
-				if (frame.HasSymbols) {
-					// Show the method in the list
-					fullName = frame.GetMethodName();
-					lastItemIsExternalMethod = false;
-					obj.FontWeight = FontWeights.Normal;
-					obj.Foreground = Brushes.Black;
-				} else {
-					// Show [External methods] in the list
-					if (lastItemIsExternalMethod) continue;
-					fullName = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ExternalMethods").Trim();
-					obj.FontWeight = FontWeights.Normal;
-					obj.Foreground = Brushes.Gray;
-					lastItemIsExternalMethod = true;
-				}
-				
-				if (thread.SelectedStackFrame != null &&
-				    thread.ID == debuggedProcess.SelectedThread.ID &&
-				    thread.SelectedStackFrame.IP == frame.IP &&
-				    thread.SelectedStackFrame.GetMethodName() == frame.GetMethodName())
-					obj.Image = PresentationResourceService.GetImage("Bookmarks.CurrentLine").Source;
-				else
-					obj.Image = null;
-				
-				obj.MethodName = fullName;
-				
-				result.Add(obj);
+				dynamic obj = CreateItem(frame, thread, ref lastItemIsExternalMethod);
+				if (obj != null)
+					result.Add(obj);
 			}
 			
 			Utils.DoEvents(debuggedProcess);
 			
 			return result;
+		}
+		
+		private ExpandoObject CreateItem(StackFrame frame, Thread thread, ref bool lastItemIsExternalMethod)
+		{
+			dynamic obj = new ExpandoObject();
+			string fullName;
+			if (frame.HasSymbols) {
+				// Show the method in the list
+				fullName = frame.GetMethodName();
+				lastItemIsExternalMethod = false;
+				obj.FontWeight = FontWeights.Normal;
+				obj.Foreground = Brushes.Black;
+			} else {
+				// Show [External methods] in the list
+				if (lastItemIsExternalMethod) return null;
+				fullName = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ExternalMethods").Trim();
+				obj.FontWeight = FontWeights.Normal;
+				obj.Foreground = Brushes.Gray;
+				lastItemIsExternalMethod = true;
+			}
+			
+			if (thread.SelectedStackFrame != null &&
+			    thread.ID == debuggedProcess.SelectedThread.ID &&
+			    thread.SelectedStackFrame.IP == frame.IP &&
+			    thread.SelectedStackFrame.GetMethodName() == frame.GetMethodName()) {
+				obj.Image = PresentationResourceService.GetImage("Bookmarks.CurrentLine").Source;
+				obj.IsRunningStackFrame = true;
+			}
+			else {
+				if (selectedFrame != null && frame.GetMethodName() == selectedFrame.GetMethodName())
+					obj.Image = PresentationResourceService.GetImage("Icons.48x48.CurrentFrame").Source;
+				else
+					obj.Image = null;
+				obj.IsRunningStackFrame = false;
+			}
+			
+			obj.MethodName = fullName;
+			
+			return obj;
+		}
+
+		private void OnThreadStackSelected(object sender, EventArgs e)
+		{
+			foreach (var ts in this.currentThreadStacks) {
+				ts.IsSelected = false;
+				ts.ClearImages();
+			}
+		}
+		
+		private void OnFrameSelected(object sender, FrameSelectedEventArgs e)
+		{
+			selectedFrame = e.Item;
+			
+			if (isMethodView)
+				RefreshPad();
 		}
 		
 		#endregion
@@ -433,6 +595,35 @@ namespace Debugger.AddIn.Pads.ParallelPad
 				result.Add(stack.Pop());
 			
 			return result;
+		}
+		
+		internal static Tuple<ObservableCollection<T>, ObservableCollection<T>, List<uint>>
+			SplitStack<T>(this ObservableCollection<T> source, StackFrame frame, List<uint> threadIds)
+		{
+			var bottom = new ObservableCollection<T>();
+			var top = new ObservableCollection<T>();
+			
+			int found = 0;
+			
+			foreach (dynamic item in source)
+			{
+				if (item.MethodName == frame.GetMethodName())
+					found = 1;
+				
+				if (found >= 1) {
+					if(found > 1)
+						bottom.Add(item);
+					
+					found++;
+				}
+				else
+					top.Add(item);
+			}
+			
+			var result =
+				new Tuple<ObservableCollection<T>, ObservableCollection<T>, List<uint>>(top, bottom, threadIds);
+			
+			return found > 1 ? result : null;
 		}
 	}
 }
