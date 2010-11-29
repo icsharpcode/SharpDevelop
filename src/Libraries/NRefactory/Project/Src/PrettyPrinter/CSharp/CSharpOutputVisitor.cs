@@ -1956,12 +1956,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			else
 				TrackVisit(forNextStatement.LoopVariableExpression, data);
 			outputFormatter.Space();
-			PrimitiveExpression pe = forNextStatement.Step as PrimitiveExpression;
+			Expression stepExpr = forNextStatement.Step;
+			while (stepExpr is ParenthesizedExpression)
+				stepExpr = ((ParenthesizedExpression)stepExpr).Expression;
+			PrimitiveExpression pe = stepExpr as PrimitiveExpression;
 			if ((pe == null || !(pe.Value is int) || ((int)pe.Value) >= 0)
-			    && !(forNextStatement.Step is UnaryOperatorExpression))
+			    && !(stepExpr is UnaryOperatorExpression))
 				outputFormatter.PrintToken(Tokens.LessEqual);
 			else {
-				if (forNextStatement.Step is UnaryOperatorExpression && ((UnaryOperatorExpression)forNextStatement.Step).Op == UnaryOperatorType.Plus)
+				if (stepExpr is UnaryOperatorExpression && ((UnaryOperatorExpression)stepExpr).Op == UnaryOperatorType.Plus)
 					outputFormatter.PrintToken(Tokens.LessEqual);
 				else
 					outputFormatter.PrintToken(Tokens.GreaterEqual);
