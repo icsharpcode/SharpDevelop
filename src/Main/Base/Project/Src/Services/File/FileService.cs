@@ -394,37 +394,48 @@ namespace ICSharpCode.SharpDevelop
 		public static void RemoveFile(string fileName, bool isDirectory)
 		{
 			FileCancelEventArgs eargs = new FileCancelEventArgs(fileName, isDirectory);
+			
 			OnFileRemoving(eargs);
+			
 			if (eargs.Cancel)
 				return;
-			if (!eargs.OperationAlreadyDone) {
-				if (isDirectory) {
-					try {
-						if (Directory.Exists(fileName)) {
-							if (DeleteToRecycleBin)
-								NativeMethods.DeleteToRecycleBin(fileName);
-							else
-								Directory.Delete(fileName, true);
-						}
-					} catch (Exception e) {
-						MessageService.ShowException(e, "Can't remove directory " + fileName);
-//					return;
+			
+			try
+			{
+				if (!eargs.OperationAlreadyDone)
+				{
+					if (isDirectory)
+					{
+							if (Directory.Exists(fileName))
+							{
+								if (DeleteToRecycleBin)
+									NativeMethods.DeleteToRecycleBin(fileName);
+								else
+									Directory.Delete(fileName, true);
+							}
 					}
-				} else {
-					try {
-						if (File.Exists(fileName)) {
+					else
+					{
+						if (File.Exists(fileName))
+						{
 							if (DeleteToRecycleBin)
 								NativeMethods.DeleteToRecycleBin(fileName);
 							else
 								File.Delete(fileName);
 						}
-					} catch (Exception e) {
-						MessageService.ShowException(e, "Can't remove file " + fileName);
-//					return;
 					}
 				}
+					
+				OnFileRemoved(new FileEventArgs(fileName, isDirectory));
 			}
-			OnFileRemoved(new FileEventArgs(fileName, isDirectory));
+			catch (IOException)
+			{
+				MessageService.ShowError("Can't remove " + fileName);
+			}
+			catch (Exception e)
+			{
+				MessageService.ShowException(e, "Can't remove " + fileName);
+			}
 		}
 		
 		/// <summary>
