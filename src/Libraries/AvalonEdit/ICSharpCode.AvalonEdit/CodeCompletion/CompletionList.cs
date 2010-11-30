@@ -342,7 +342,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			
 			// search by substring, if filtering (i.e. new behavior) turned on
 			if (IsFiltering) {
-				if (itemText.IndexOf(query, StringComparison.InvariantCulture) >= )
+				if (itemText.IndexOf(query, StringComparison.InvariantCulture) >= 0)
 					return 3;
 				if (itemText.IndexOf(query, StringComparison.InvariantCultureIgnoreCase) >= 0)
 					return 2;
