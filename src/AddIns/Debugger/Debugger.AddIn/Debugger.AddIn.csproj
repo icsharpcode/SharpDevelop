@@ -319,7 +319,6 @@
     <Compile Include="Visualizers\PresentationBindings\EnumViewModel.cs" />
     <Compile Include="Visualizers\PresentationBindings\ViewModelBase.cs" />
     <None Include="COPYING" />
-    <None Include="Tooltips\magnifier.png" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Debugger.AddIn.addin">
