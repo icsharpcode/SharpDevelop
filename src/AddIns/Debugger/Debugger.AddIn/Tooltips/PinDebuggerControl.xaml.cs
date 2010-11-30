@@ -167,7 +167,7 @@ namespace Debugger.AddIn.Tooltips
 		
 		#endregion
 		
-		#region Expand buton
+		#region Expand button
 		
 		private ToggleButton expandedButton;
 
@@ -185,6 +185,9 @@ namespace Debugger.AddIn.Tooltips
 		
 		void BtnExpander_Checked(object sender, RoutedEventArgs e)
 		{
+			if (!DebuggerService.IsDebuggerStarted)
+				return;
+			
 			var clickedButton = (ToggleButton)e.OriginalSource;
 			var clickedNode = (ITreeNode)clickedButton.DataContext;
 			// use device independent units, because child popup Left/Top are in independent units
@@ -319,11 +322,11 @@ namespace Debugger.AddIn.Tooltips
 		
 		void RefreshContentImage_MouseDown(object sender, MouseButtonEventArgs e)
 		{
-			// refresh content
-			ITreeNode node = ((Image)sender).DataContext as ITreeNode;
-			
 			if (!DebuggerService.IsDebuggerStarted)
 				return;
+			
+			// refresh content
+			ITreeNode node = ((Image)sender).DataContext as ITreeNode;
 			
 			var resultNode = currentDebugger.GetNode(node.FullName, node.ImageName);
 			if (resultNode == null)

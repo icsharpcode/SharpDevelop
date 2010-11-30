@@ -31,7 +31,6 @@ namespace Debugger.AddIn.TreeModel
 		Expression expression;
 		bool canSetText;
 		GetValueException error;
-		string fullName;
 		string fullText;
 		
 		public bool Evaluated {
