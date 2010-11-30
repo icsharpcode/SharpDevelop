@@ -4,6 +4,13 @@
 	Width="Auto"
 	Height="Auto"
 	Background="Transparent">
+	<UserControl.Resources>
+		<LinearGradientBrush x:Key="RowBackground" StartPoint="0.5,0" EndPoint="0.5,1">
+			<GradientStop Color="#F7F7F7" Offset="0.2"/>
+			<GradientStop Color="#EAEAEA" Offset=".5"/>
+			<GradientStop Color="#E5E5E5" Offset=".8"/>
+		</LinearGradientBrush>
+	</UserControl.Resources>
 	<Border
 		x:Name="BorderParent"
 		BorderBrush="Black"
@@ -38,7 +45,7 @@
 					Margin="2"
 					HorizontalAlignment="Center" />
 			</Border>
-			<DataGrid 
+			<DataGrid
 				Background="Transparent"
 				Margin="5,0,5,5"
 				x:Name="datagrid"
@@ -81,25 +88,25 @@
 					</Style>
 				</DataGrid.CellStyle>
 				<DataGrid.RowStyle>
-                    <Style TargetType="{x:Type DataGridRow}">
-                        <Setter Property="Background" Value="White"></Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="LightGray" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </DataGrid.RowStyle>
+					<Style TargetType="{x:Type DataGridRow}">
+						<Setter Property="Background" Value="White"></Setter>
+						<Style.Triggers>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter Property="Background" Value="{StaticResource RowBackground}" />
+							</Trigger>
+						</Style.Triggers>
+					</Style>
+				</DataGrid.RowStyle>
 				<DataGrid.Columns>
 					<DataGridTemplateColumn>
 						<DataGridTemplateColumn.CellTemplate>
 							<DataTemplate>
 								<Border BorderBrush="Gray" BorderThickness="0,1,1,0" Width="25" Height="22">
 									<Image VerticalAlignment="Center" Margin="0,-5,0,0" Width="14" Height="14" HorizontalAlignment="Center"
-										Source="{Binding Image}" />
+									       Source="{Binding Image}" />
 								</Border>
 							</DataTemplate>
-						</DataGridTemplateColumn.CellTemplate>    
+						</DataGridTemplateColumn.CellTemplate>
 					</DataGridTemplateColumn>
 					<DataGridTemplateColumn
 						Width="Auto">
@@ -107,12 +114,12 @@
 							<DataTemplate>
 								<Border BorderBrush="Gray" BorderThickness="0,1,0,0">
 									<TextBlock Margin="5,0,10,0"
-									    VerticalAlignment="Center"
-										FontFamily="Khmer UI"
-										FontSize="12"
-										Text="{Binding Path=MethodName}"
-										FontWeight="{Binding Path=FontWeight}"
-										Foreground="{Binding Path=Foreground}"
+									           VerticalAlignment="Center"
+									           FontFamily="Khmer UI"
+									           FontSize="12"
+									           Text="{Binding Path=MethodName}"
+									           FontWeight="{Binding Path=FontWeight}"
+									           Foreground="{Binding Path=Foreground}"
 									/>
 								</Border>
 							</DataTemplate>

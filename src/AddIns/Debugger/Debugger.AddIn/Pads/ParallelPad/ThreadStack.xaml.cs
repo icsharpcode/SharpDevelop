@@ -151,9 +151,6 @@ namespace Debugger.AddIn.Pads.ParallelPad
 				if (row != null)
 				{
 					datagrid.SelectedItem = row.DataContext;
-					if (toolTip.IsOpen)
-						toolTip.IsOpen = false;
-					toolTip.IsOpen = true;
 					e.Handled = true;
 				}
 			}

@@ -36,8 +36,10 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		
 			if (graph == null)
 				this.ParallelStacksLayout.CancelLayout();
-			else
+			else {
 				this.ParallelStacksLayout.Relayout();
+				this.ParallelStacksLayout.Relayout();
+			}
 		}
 		
 		public bool IsZoomControlVisible {
