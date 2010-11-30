@@ -48,8 +48,6 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			toolTip.Placement = PlacementMode.Right;
 			toolTip.Closed += toolTip_Closed;
 			
-			completionList.InsertionRequested += completionList_InsertionRequested;
-			completionList.SelectionChanged += completionList_SelectionChanged;
 			AttachEvents();
 		}
 		
@@ -98,6 +96,8 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		
 		void AttachEvents()
 		{
+			this.completionList.InsertionRequested += completionList_InsertionRequested;
+			this.completionList.SelectionChanged += completionList_SelectionChanged;
 			this.TextArea.Caret.PositionChanged += CaretPositionChanged;
 			this.TextArea.MouseWheel += textArea_MouseWheel;
 			this.TextArea.PreviewTextInput += textArea_PreviewTextInput;
@@ -106,6 +106,8 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		/// <inheritdoc/>
 		protected override void DetachEvents()
 		{
+			this.completionList.InsertionRequested -= completionList_InsertionRequested;
+			this.completionList.SelectionChanged -= completionList_SelectionChanged;
 			this.TextArea.Caret.PositionChanged -= CaretPositionChanged;
 			this.TextArea.MouseWheel -= textArea_MouseWheel;
 			this.TextArea.PreviewTextInput -= textArea_PreviewTextInput;
