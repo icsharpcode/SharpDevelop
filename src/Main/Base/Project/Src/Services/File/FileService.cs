@@ -394,30 +394,20 @@ namespace ICSharpCode.SharpDevelop
 		public static void RemoveFile(string fileName, bool isDirectory)
 		{
 			FileCancelEventArgs eargs = new FileCancelEventArgs(fileName, isDirectory);
-			
 			OnFileRemoving(eargs);
-			
 			if (eargs.Cancel)
 				return;
-			
-			try
-			{
-				if (!eargs.OperationAlreadyDone)
-				{
-					if (isDirectory)
-					{
-							if (Directory.Exists(fileName))
-							{
-								if (DeleteToRecycleBin)
-									NativeMethods.DeleteToRecycleBin(fileName);
-								else
-									Directory.Delete(fileName, true);
-							}
-					}
-					else
-					{
-						if (File.Exists(fileName))
-						{
+			try {
+				if (!eargs.OperationAlreadyDone) {
+					if (isDirectory) {
+						if (Directory.Exists(fileName)) {
+							if (DeleteToRecycleBin)
+								NativeMethods.DeleteToRecycleBin(fileName);
+							else
+								Directory.Delete(fileName, true);
+						}
+					} else {
+						if (File.Exists(fileName)) {
 							if (DeleteToRecycleBin)
 								NativeMethods.DeleteToRecycleBin(fileName);
 							else
@@ -425,15 +415,10 @@ namespace ICSharpCode.SharpDevelop
 						}
 					}
 				}
-					
 				OnFileRemoved(new FileEventArgs(fileName, isDirectory));
-			}
-			catch (IOException)
-			{
+			} catch (IOException) {
 				MessageService.ShowError("Can't remove " + fileName);
-			}
-			catch (Exception e)
-			{
+			} catch (Exception e) {
 				MessageService.ShowException(e, "Can't remove " + fileName);
 			}
 		}
