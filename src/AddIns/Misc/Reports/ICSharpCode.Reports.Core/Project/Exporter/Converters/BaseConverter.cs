@@ -136,25 +136,16 @@ namespace ICSharpCode.Reports.Core.Exporter
 	
 		#region Grouping
 		
-		protected void ConvertGroupFooter (BaseSection section,ISimpleContainer container,ExporterCollection exporterCollection)
+		protected void ConvertGroupFooter (ISimpleContainer container,ExporterCollection exporterCollection)
 		{
 			var footers = BaseConverter.FindGroupFooter(container);
 			if (footers.Count > 0) {
 				
 				Size rowSize = footers[0].Size;
-				CurrentPosition = ConvertStandardRow(exporterCollection,section,(ISimpleContainer)footers[0]);
+				CurrentPosition = ConvertStandardRow(exporterCollection,(ISimpleContainer)footers[0]);
 				FireGroupFooterRendering(footers[0]);
 				footers[0].Size = rowSize;
 			}
-		}
-		
-		protected Point ConvertGroupChilds(ExporterCollection mylist, BaseSection section,
-		                                   ISimpleContainer simpleContainer)
-		{
-			PrepareContainerForConverting(section,simpleContainer);
-			Point curPos  = ConvertContainer(mylist,simpleContainer,DefaultLeftPosition,CurrentPosition);
-			AfterConverting (mylist);
-			return curPos;
 		}
 		
 		
@@ -255,11 +246,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		protected  Point ConvertStandardRow(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer)
+		protected  Point ConvertStandardRow(ExporterCollection mylist,  ISimpleContainer simpleContainer)
 		{
 			Console.WriteLine("\tConvertStandardRow");
 			var rowSize = simpleContainer.Size;
-//			PrepareContainerForConverting(section,simpleContainer);
+
 			Point curPos = ConvertContainer(mylist,simpleContainer,DefaultLeftPosition,CurrentPosition);
 			AfterConverting (mylist);
 			simpleContainer.Size = rowSize;
@@ -281,10 +272,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		protected  void FillRow (ISimpleContainer row)
+		protected static  void FillRow (ISimpleContainer row,IDataNavigator currentNavigator)
 		{
 			Console.WriteLine("\tFillRow");
-			DataNavigator.Fill(row.Items);
+			//DataNavigator.Fill(row.Items);
+			currentNavigator.Fill(row.Items);
 		}
 		
 		
