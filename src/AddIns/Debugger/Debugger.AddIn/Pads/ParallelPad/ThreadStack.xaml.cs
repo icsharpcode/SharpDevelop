@@ -247,6 +247,9 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		
 		private void OnToolTipOpening(object sender, ToolTipEventArgs e)
 		{
+			if (Process.IsRunning)
+				return;
+			
 			StackPanel panel = new StackPanel();
 			
 			dynamic selectedItem = datagrid.SelectedItem;

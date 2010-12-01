@@ -8,26 +8,23 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
+using Microsoft.Windows.Themes;
+
 namespace Debugger.AddIn.Pads.ParallelPad
 {
 	public partial class DrawSurface : UserControl
 	{
-		Point dragStartedPoint;
-		
-		TransformGroup group = new TransformGroup();
-		ScaleTransform zoom = new ScaleTransform();
-		TranslateTransform translate = new TranslateTransform();
+		private Point dragStartedPoint;		
+		private ScaleTransform zoom = new ScaleTransform();
 		
 		public DrawSurface()
 		{
 			InitializeComponent();
 		
-			group.Children.Add(zoom);
-			group.Children.Add(translate);			
-			drawingSurface.RenderTransform = group;
+			ContentControl.LayoutTransform = zoom;
 			
-			this.MouseLeftButtonDown += DrawSurface_PreviewMouseLeftButtonDown;
-			this.MouseLeftButtonUp += DrawSurface_MouseLeftButtonUp;
+			this.PreviewMouseLeftButtonDown += DrawSurface_PreviewMouseLeftButtonDown;
+			this.PreviewMouseLeftButtonUp += DrawSurface_MouseLeftButtonUp;
 		}
 		
 		public void SetGraph(ParallelStacksGraph graph)
@@ -56,7 +53,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		
 		void DrawSurface_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
 		{
-			if (e.OriginalSource is Shape || e.OriginalSource is TextBlock)
+			if (e.OriginalSource is TextBlock || e.OriginalSource is Shape || e.OriginalSource is ScrollChrome)
 				return;
 			
 			dragStartedPoint = e.GetPosition(drawingSurface);
@@ -77,6 +74,9 @@ namespace Debugger.AddIn.Pads.ParallelPad
 
 		void DrawSurface_PreviewMouseMove(object sender, MouseEventArgs e)
 		{
+			if (e.OriginalSource is TextBlock || e.OriginalSource is Shape || e.OriginalSource is ScrollChrome)
+				return;
+			
 			if (!drawingSurface.IsMouseCaptured) return;
 			
 			if (e.LeftButton == MouseButtonState.Pressed)
@@ -84,8 +84,10 @@ namespace Debugger.AddIn.Pads.ParallelPad
 				Cursor = Cursors.SizeAll;
 				var point = e.GetPosition(drawingSurface);
 				Vector v = point - dragStartedPoint;
-				translate.X += v.X / 200;
-				translate.Y += v.Y / 200;				
+				ContentControl.Margin = new Thickness(
+					ContentControl.Margin.Left + v.X / 80,
+					ContentControl.Margin.Top + v.Y / 80, 0, 0);
+				
 				e.Handled = true;
 			}
 		}
@@ -113,9 +115,6 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		void Reset_Click(object sender, RoutedEventArgs e)
 		{
 			this.SliderControl.Value = 5;
-			
-			translate.X = 0;
-			translate.Y = 0;
 		}
 		
 		#endregion

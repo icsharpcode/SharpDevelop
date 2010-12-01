@@ -71,77 +71,39 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			if (ParallelStacksView == ParallelStacksView.Threads)
 			{
+				using(new PrintTimes("Parallel stack - method view + threads refresh")) {
+					try {
+						// create all simple ThreadStacks
+						foreach (Thread thread in debuggedProcess.Threads) {
+							if (debuggedProcess.IsPaused) {
+								Utils.DoEvents(debuggedProcess);
+							}
+							CreateThreadStack(thread);
+						}
+					}
+					catch(AbortedBecauseDebuggeeResumedException) { }
+					catch(System.Exception) {
+						if (debuggedProcess == null || debuggedProcess.HasExited) {
+							// Process unexpectedly exited
+						} else {
+							throw;
+						}
+					}
+				}
+				
 				if (isMethodView)
 				{
 					// build method view for threads
-					using(new PrintTimes("Parallel stack - method view + threads refresh")) {
-						try {
-							// create all simple ThreadStacks
-							foreach (Thread thread in debuggedProcess.Threads) {
-								if (debuggedProcess.IsPaused) {
-									Utils.DoEvents(debuggedProcess);
-								}
-								CreateThreadStack(thread);
-							}
-							
-							CreateMethodViewStacks();
-						}
-						catch(AbortedBecauseDebuggeeResumedException) { }
-						catch(System.Exception) {
-							if (debuggedProcess == null || debuggedProcess.HasExited) {
-								// Process unexpectedly exited
-							} else {
-								throw;
-							}
-						}
-					}
+					CreateMethodViewStacks();
 				}
 				else
 				{
 					// normal view
-					using(new PrintTimes("Parallel stack - threads refresh")) {
-						try {
-							// create all simple ThreadStacks
-							foreach (Thread thread in debuggedProcess.Threads) {
-								if (debuggedProcess.IsPaused) {
-									Utils.DoEvents(debuggedProcess);
-								}
-								CreateThreadStack(thread);
-							}
-							
-							CreateCommonStacks();
-						}
-						catch(AbortedBecauseDebuggeeResumedException) { }
-						catch(System.Exception) {
-							if (debuggedProcess == null || debuggedProcess.HasExited) {
-								// Process unexpectedly exited
-							} else {
-								throw;
-							}
-						}
-					}
-				}
-				
-				using(new PrintTimes("Graph refresh")) {
-					// paint the ThreadStaks
-					graph = new ParallelStacksGraph();
-					foreach (var stack in this.currentThreadStacks.FindAll(ts => ts.ThreadStackParents == null ))
-					{
-						graph.AddVertex(stack);
-						
-						// add the children
-						AddChildren(stack);
-					}
-					
-					surface.SetGraph(graph);
+					CreateCommonStacks();
 				}
 			}
 			else
 			{
-				MessageBox.Show(
-					"Not yet supported", "Tasks view", MessageBoxButton.OK, MessageBoxImage.Information);
-				
-				// TODO : hadle tasks here
 				if (isMethodView)
 				{
 					// build method view for tasks
@@ -150,7 +112,20 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				{
 					// normal
 				}
-				surface.SetGraph(new ParallelStacksGraph());
+			}
+			
+			using(new PrintTimes("Graph refresh")) {
+				// paint the ThreadStaks
+				graph = new ParallelStacksGraph();
+				foreach (var stack in this.currentThreadStacks.FindAll(ts => ts.ThreadStackParents == null ))
+				{
+					graph.AddVertex(stack);
+					
+					// add the children
+					AddChildren(stack);
+				}
+				
+				surface.SetGraph(graph);
 			}
 		}
 		
@@ -399,7 +374,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 
 		private void CreateMethodViewStacks()
 		{
-			var list = 
+			var list =
 				new List<Tuple<ObservableCollection<ExpandoObject>, ObservableCollection<ExpandoObject>, List<uint>>>();
 			
 			// find all threadstacks that contains the selected frame

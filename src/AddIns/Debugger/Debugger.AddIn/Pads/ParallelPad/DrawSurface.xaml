@@ -123,10 +123,13 @@
 				Click="Reset_Click"
 				Template="{StaticResource ButtonTemplate}" />
 		</Canvas>
-		<Grid
+		<ScrollViewer
 			x:Name="drawingSurface"
+			HorizontalScrollBarVisibility="Auto"
+			VerticalScrollBarVisibility="Auto"
 			Grid.Column="1">
 			<Grid
+				x:Name="ContentControl"
 				VerticalAlignment="Center"
 				HorizontalAlignment="Center">
 				<local:ParallelStacksGraphLayout
@@ -139,6 +142,6 @@
 					OverlapRemovalConstraint="Automatic"
 					OverlapRemovalAlgorithmType="FSA" />
 			</Grid>
-		</Grid>
+		</ScrollViewer>
 	</Grid>
 </UserControl>
