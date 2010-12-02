@@ -14,13 +14,13 @@ namespace Debugger.AddIn.Pads.ParallelPad
 {
 	public partial class DrawSurface : UserControl
 	{
-		private Point dragStartedPoint;		
+		private Point dragStartedPoint;
 		private ScaleTransform zoom = new ScaleTransform();
 		
 		public DrawSurface()
 		{
 			InitializeComponent();
-		
+			
 			ContentControl.LayoutTransform = zoom;
 			
 			this.PreviewMouseLeftButtonDown += DrawSurface_PreviewMouseLeftButtonDown;
@@ -30,13 +30,11 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		public void SetGraph(ParallelStacksGraph graph)
 		{
 			this.ParallelStacksLayout.Graph = graph;
-		
+			
 			if (graph == null)
 				this.ParallelStacksLayout.CancelLayout();
-			else {
+			else
 				this.ParallelStacksLayout.Relayout();
-				this.ParallelStacksLayout.Relayout();
-			}
 		}
 		
 		public bool IsZoomControlVisible {

@@ -25,6 +25,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 	{
 		public ParallelStacksGraphLayout()
 		{
+			// TODO : Replace the current tree layout with EfficientSugiyama layout when Direction is available for this type of layout
 			var par = new SimpleTreeLayoutParameters();
 			par.LayerGap = 30;
 			par.VertexGap = 50;

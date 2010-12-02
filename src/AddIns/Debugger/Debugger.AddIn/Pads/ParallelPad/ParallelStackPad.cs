@@ -69,28 +69,26 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			currentThreadStacks.Clear();
 			
-			if (ParallelStacksView == ParallelStacksView.Threads)
-			{
-				using(new PrintTimes("Parallel stack - method view + threads refresh")) {
-					try {
-						// create all simple ThreadStacks
-						foreach (Thread thread in debuggedProcess.Threads) {
-							if (debuggedProcess.IsPaused) {
-								Utils.DoEvents(debuggedProcess);
-							}
-							CreateThreadStack(thread);
+			using(new PrintTimes("Parallel stack - method view + threads refresh")) {
+				try {
+					// create all simple ThreadStacks
+					foreach (Thread thread in debuggedProcess.Threads) {
+						if (debuggedProcess.IsPaused) {
+							Utils.DoEvents(debuggedProcess);
 						}
-					}
-					catch(AbortedBecauseDebuggeeResumedException) { }
-					catch(System.Exception) {
-						if (debuggedProcess == null || debuggedProcess.HasExited) {
-							// Process unexpectedly exited
-						} else {
-							throw;
-						}
+						CreateThreadStack(thread);
 					}
 				}
-				
+				catch(AbortedBecauseDebuggeeResumedException) { }
+				catch(System.Exception) {
+					if (debuggedProcess == null || debuggedProcess.HasExited) {
+						// Process unexpectedly exited
+					} else {
+						throw;
+					}
+				}
+			}
+			using(new PrintTimes("Parallel stack - run algorithm")) {
 				if (isMethodView)
 				{
 					// build method view for threads
@@ -100,17 +98,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				{
 					// normal view
 					CreateCommonStacks();
-				}
-			}
-			else
-			{
-				if (isMethodView)
-				{
-					// build method view for tasks
-				}
-				else
-				{
-					// normal
 				}
 			}
 			
@@ -390,7 +377,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			ThreadStack common = new ThreadStack();
 			var observ = new ObservableCollection<ExpandoObject>();
 			bool dummy = false;
-			dynamic obj = CreateItem(selectedFrame, selectedFrame.Thread, ref dummy);
+			dynamic obj;
+				if (parallelStacksView == ParallelStacksView.Threads)
+				obj = CreateItemForThread(selectedFrame, selectedFrame.Thread, ref dummy);
+			else
+				obj = CreateItemForTask(selectedFrame, selectedFrame.Thread, ref dummy);
+			
 			obj.Image = PresentationResourceService.GetImage("Icons.48x48.CurrentFrame").Source;
 			observ.Add(obj);
 			common.ItemCollection = observ;
@@ -468,7 +460,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			bool lastItemIsExternalMethod = false;
 			var result = new ObservableCollection<ExpandoObject>();
 			foreach (StackFrame frame in thread.GetCallstack(100)) {
-				dynamic obj = CreateItem(frame, thread, ref lastItemIsExternalMethod);
+				dynamic obj;
+				if (parallelStacksView == ParallelStacksView.Threads)
+					obj = CreateItemForThread(frame, thread, ref lastItemIsExternalMethod);
+				else
+					obj = CreateItemForTask(frame, thread, ref lastItemIsExternalMethod);
+				
 				if (obj != null)
 					result.Add(obj);
 			}
@@ -478,7 +475,47 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			return result;
 		}
 		
-		private ExpandoObject CreateItem(StackFrame frame, Thread thread, ref bool lastItemIsExternalMethod)
+		private ExpandoObject CreateItemForThread(StackFrame frame, Thread thread, ref bool lastItemIsExternalMethod)
+		{
+			dynamic obj = new ExpandoObject();
+			string fullName;
+			if (frame.HasSymbols) {
+				// Show the method in the list
+				fullName = frame.GetMethodName();
+				lastItemIsExternalMethod = false;
+				obj.FontWeight = FontWeights.Normal;
+				obj.Foreground = Brushes.Black;
+			} else {
+				// Show [External methods] in the list
+				if (lastItemIsExternalMethod) return null;
+				fullName = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ExternalMethods").Trim();
+				obj.FontWeight = FontWeights.Normal;
+				obj.Foreground = Brushes.Gray;
+				lastItemIsExternalMethod = true;
+			}
+			
+			if (thread.SelectedStackFrame != null &&
+			    thread.ID == debuggedProcess.SelectedThread.ID &&
+			    thread.SelectedStackFrame.IP == frame.IP &&
+			    thread.SelectedStackFrame.GetMethodName() == frame.GetMethodName()) {
+				obj.Image = PresentationResourceService.GetImage("Bookmarks.CurrentLine").Source;
+				obj.IsRunningStackFrame = true;
+			}
+			else {
+				if (selectedFrame != null && frame.Thread.ID == selectedFrame.Thread.ID &&
+				    frame.GetMethodName() == selectedFrame.GetMethodName())
+					obj.Image = PresentationResourceService.GetImage("Icons.48x48.CurrentFrame").Source;
+				else
+					obj.Image = null;
+				obj.IsRunningStackFrame = false;
+			}
+			
+			obj.MethodName = fullName;
+			
+			return obj;
+		}
+		
+		private ExpandoObject CreateItemForTask(StackFrame frame, Thread thread, ref bool lastItemIsExternalMethod)
 		{
 			dynamic obj = new ExpandoObject();
 			string fullName;
