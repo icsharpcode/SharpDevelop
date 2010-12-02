@@ -125,6 +125,7 @@
     </Compile>
     <Compile Include="Pads\ParallelPad\ParallelStackPad.cs" />
     <Compile Include="Pads\ParallelPad\ParallelStacksGraph.cs" />
+    <Compile Include="Pads\ParallelPad\SelectedFrameBookmark.cs" />
     <Compile Include="Pads\ParallelPad\ThreadStack.xaml.cs">
       <DependentUpon>ThreadStack.xaml</DependentUpon>
       <SubType>Code</SubType>

@@ -13,9 +13,13 @@ using System.Windows.Media;
 using Debugger;
 using Debugger.AddIn.Pads.ParallelPad;
 using Debugger.AddIn.TreeModel;
+using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.Core;
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.NRefactory;
+using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui.Pads;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
@@ -154,6 +158,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			currentThreadStacks.Clear();
 			selectedFrame = null;
+			
+			// remove all
+			BookmarkManager.RemoveAll(b => b is SelectedFrameBookmark);
 		}
 
 		private void debuggedProcess_Paused(object sender, ProcessEventArgs e)
@@ -436,7 +443,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		private void CreateThreadStack(Thread thread)
 		{
 			var items = CreateItems(thread);
-			if (items.Count == 0)
+			if (items == null || items.Count == 0)
 				return;
 			
 			ThreadStack threadStack = new ThreadStack();
@@ -555,9 +562,21 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			return obj;
 		}
 
+		private void ToggleSelectedFrameBookmark(Location location)
+		{
+			// remove all
+			BookmarkManager.RemoveAll(b => b is SelectedFrameBookmark);
+			
+			ITextEditorProvider provider = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorProvider;
+			if (provider != null) {
+				ITextEditor editor = provider.TextEditor;
+				BookmarkManager.AddMark(new SelectedFrameBookmark(editor.FileName, location));
+			}
+		}
+		
 		private void OnThreadStackSelected(object sender, EventArgs e)
 		{
-			foreach (var ts in this.currentThreadStacks) {
+			foreach (var ts in this.currentThreadStacks.FindAll(ts => ts.ThreadStackChildren == null)) {
 				if (ts.IsSelected)
 					ts.IsSelected = false;
 				ts.ClearImages();
@@ -567,6 +586,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		private void OnFrameSelected(object sender, FrameSelectedEventArgs e)
 		{
 			selectedFrame = e.Item;
+			
+			ToggleSelectedFrameBookmark(e.Location);
 			
 			if (isMethodView)
 				RefreshPad();

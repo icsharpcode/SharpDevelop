@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui.Pads;
 
@@ -23,9 +24,15 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			private set;
 		}
 		
-		public FrameSelectedEventArgs(StackFrame item)
+		public Location Location {
+			get;
+			private set;
+		}
+		
+		public FrameSelectedEventArgs(StackFrame item, Location location)
 		{
 			Item = item;
+			Location = location;
 		}
 	}
 	
@@ -198,12 +205,13 @@ namespace Debugger.AddIn.Pads.ParallelPad
 					
 					SourcecodeSegment nextStatement = frame.NextStatement;
 					if (nextStatement != null) {
+						var location = new Location(nextStatement.StartColumn, nextStatement.StartLine);
 						FileService.JumpToFilePosition(
-							nextStatement.Filename, nextStatement.StartLine, nextStatement.StartColumn);
+							nextStatement.Filename, location.Line, location.Column);
+						
+						if (FrameSelected != null)
+							FrameSelected(this, new FrameSelectedEventArgs(frame, location));
 					}
-					
-					if (FrameSelected != null)
-						FrameSelected(this, new FrameSelectedEventArgs(frame));
 					
 					break;
 				}
