@@ -78,7 +78,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (row == null) {
 				throw new ArgumentException("row");
 			}
-			Console.WriteLine("\tFireRowRendering");
+//			Console.WriteLine("\tFireRowRendering");
 			RowRenderEventArgs rrea = new RowRenderEventArgs(row,currentNavigator.Current);
 			EventHelper.Raise<RowRenderEventArgs>(RowRendering,this,rrea);
 		}
@@ -86,7 +86,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected void FireGroupHeaderRendering (GroupHeader groupHeader)
 		{
-			Console.WriteLine("\tFireGroupHeaderRendering");
+//			Console.WriteLine("\tFireGroupHeaderRendering");
 			GroupHeaderEventArgs ghea = new GroupHeaderEventArgs(groupHeader);
 			EventHelper.Raise<GroupHeaderEventArgs>(GroupHeaderRendering,this,ghea);
 		}
@@ -94,7 +94,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected void FireGroupFooterRendering (GroupFooter groupFooter)
 		{
-			Console.WriteLine("\tFireGroupFooterRendering");
+//			Console.WriteLine("\tFireGroupFooterRendering");
 			GroupFooterEventArgs gfea = new GroupFooterEventArgs(groupFooter);
 			EventHelper.Raise<GroupFooterEventArgs>(GroupFooterRendering,this,gfea);
 		}
@@ -240,7 +240,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected	void PrepareContainerForConverting(BaseSection section,ISimpleContainer simpleContainer)
 		{
-			Console.WriteLine("\tPrepareContainerForConverting");
 			FireSectionRendering(section);
 			LayoutRow(simpleContainer);
 		}
@@ -248,7 +247,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected  Point ConvertStandardRow(ExporterCollection mylist,  ISimpleContainer simpleContainer)
 		{
-			Console.WriteLine("\tConvertStandardRow");
 			var rowSize = simpleContainer.Size;
 
 			Point curPos = ConvertContainer(mylist,simpleContainer,DefaultLeftPosition,CurrentPosition);
@@ -274,8 +272,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected static  void FillRow (ISimpleContainer row,IDataNavigator currentNavigator)
 		{
-			Console.WriteLine("\tFillRow");
-			//DataNavigator.Fill(row.Items);
 			currentNavigator.Fill(row.Items);
 		}
 		

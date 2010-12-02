@@ -38,7 +38,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			ExporterCollection mylist = base.Convert(parent,item);
 			this.table = (BaseTableItem)item ;
 			this.table.Parent = parent;
-			this.table.DataNavigator = base.DataNavigator;
+//			this.table.DataNavigator = base.DataNavigator;
 			return ConvertInternal(mylist);
 		}
 		
@@ -142,10 +142,9 @@ eportViewer - RowRendering  :
 					simpleContainer =  table.Items[1] as ISimpleContainer;				
 					base.SaveSectionSize(section.Size);
 					containerSize = simpleContainer.Size;
-						Console.WriteLine("datasection - NO grouping");
+						
 					do {
 
-							Console.WriteLine("");
 						PrintHelper.AdjustSectionLocation(section);
 						CheckForPageBreak(section,simpleContainer,headerRow,exporterCollection);
 						
@@ -156,11 +155,8 @@ eportViewer - RowRendering  :
 						base.CurrentPosition = ConvertStandardRow (exporterCollection,simpleContainer);
 						simpleContainer.Size = containerSize;
 						section.Size = base.RestoreSectionSize;
-						Console.WriteLine("");
 					}
 					while (base.DataNavigator.MoveNext());
-					Console.WriteLine("");
-					Console.WriteLine("END of datasection - NO grouping");
 					base.DataNavigator.Reset();
 					base.DataNavigator.MoveNext();
 					SectionBounds.ReportFooterRectangle =  new Rectangle(SectionBounds.ReportFooterRectangle.Left,

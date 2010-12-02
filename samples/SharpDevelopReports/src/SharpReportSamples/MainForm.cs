@@ -291,7 +291,7 @@ namespace SharpReportSamples
 			ReportModel model = ReportEngine.LoadReportModel(fileName);
 			IDataManager dataManager = DataManager.CreateInstance(eLog.EventLog,model.ReportSettings);
 			
-			this.previewControl1.SectionRendering += PushPrinting;
+//			this.previewControl1.SectionRendering += PushPrinting;
 			
 			this.previewControl1.PreviewLayoutChanged += delegate (object sender, EventArgs e)
 		

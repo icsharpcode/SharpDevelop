@@ -96,7 +96,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 						StandardPrinter.AdjustBackColor(simpleContainer,GlobalValues.DefaultBackColor);
 						do
 						{
-							Console.WriteLine("");
 							section.Size = base.RestoreSectionSize;
 							section.Items[0].Size = groupSize;
 							section.Items[1].Size = childSize;
@@ -121,16 +120,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 				else
 				{
 					// No Grouping at all, the first item in section.items is the DetailRow
-					Console.WriteLine("");
+					
 					Size containerSize = section.Items[0].Size;
 					FillRow(simpleContainer,base.DataNavigator);
 					base.PrepareContainerForConverting(section,simpleContainer);
 					FireRowRendering(simpleContainer,base.DataNavigator);
 					base.CurrentPosition = ConvertStandardRow (exporterCollection,simpleContainer);
-//					base.FireRowRendering(simpleContainer,base.DataNavigator);
 					section.Size = base.RestoreSectionSize;
 					section.Items[0].Size = containerSize;
-					Console.WriteLine("");
 				}
 				CheckForPageBreak (section,exporterCollection);
 				ShouldDrawBorder (section,exporterCollection);
