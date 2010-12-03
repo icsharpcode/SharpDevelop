@@ -109,8 +109,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			ClearVisualLines();
 			if (newValue != null) {
 				TextDocumentWeakEventManager.Changing.AddListener(newValue, this);
-				heightTree = new HeightTree(newValue, FontSize + 3);
 				formatter = TextFormatterFactory.Create(this);
+				heightTree = new HeightTree(newValue, DefaultLineHeight); // measuring DefaultLineHeight depends on formatter
 				cachedElements = new TextViewCachedElements();
 			}
 			InvalidateMeasure(DispatcherPriority.Normal);
@@ -1115,12 +1115,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		void IScrollInfo.LineUp()
 		{
-			((IScrollInfo)this).SetVerticalOffset(scrollOffset.Y - FontSize);
+			((IScrollInfo)this).SetVerticalOffset(scrollOffset.Y - DefaultLineHeight);
 		}
 		
 		void IScrollInfo.LineDown()
 		{
-			((IScrollInfo)this).SetVerticalOffset(scrollOffset.Y + FontSize);
+			((IScrollInfo)this).SetVerticalOffset(scrollOffset.Y + DefaultLineHeight);
 		}
 		
 		void IScrollInfo.LineLeft()
@@ -1156,14 +1156,14 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		void IScrollInfo.MouseWheelUp()
 		{
 			((IScrollInfo)this).SetVerticalOffset(
-				scrollOffset.Y - (SystemParameters.WheelScrollLines * FontSize));
+				scrollOffset.Y - (SystemParameters.WheelScrollLines * DefaultLineHeight));
 			OnScrollChange();
 		}
 		
 		void IScrollInfo.MouseWheelDown()
 		{
 			((IScrollInfo)this).SetVerticalOffset(
-				scrollOffset.Y + (SystemParameters.WheelScrollLines * FontSize));
+				scrollOffset.Y + (SystemParameters.WheelScrollLines * DefaultLineHeight));
 			OnScrollChange();
 		}
 		
@@ -1181,10 +1181,50 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			OnScrollChange();
 		}
 		
+		double wideSpaceWidth; // Width of an 'x'. Used as basis for the tab width, and for scrolling.
+		double defaultLineHeight; // Height of a line containing 'x'. Used for scrolling.
+		
 		double WideSpaceWidth {
 			get {
-				return FontSize / 2;
+				if (wideSpaceWidth == 0) {
+					MeasureWideSpaceWidthAndDefaultLineHeight();
+				}
+				return wideSpaceWidth;
 			}
+		}
+		
+		double DefaultLineHeight {
+			get {
+				if (defaultLineHeight == 0) {
+					MeasureWideSpaceWidthAndDefaultLineHeight();
+				}
+				return defaultLineHeight;
+			}
+		}
+		
+		void MeasureWideSpaceWidthAndDefaultLineHeight()
+		{
+			if (formatter != null) {
+				var textRunProperties = CreateGlobalTextRunProperties();
+				using (var line = formatter.FormatLine(
+					new SimpleTextSource("x", textRunProperties),
+					0, 32000,
+					new VisualLineTextParagraphProperties { defaultTextRunProperties = textRunProperties },
+					null))
+				{
+					wideSpaceWidth = Math.Max(1, line.WidthIncludingTrailingWhitespace);
+					defaultLineHeight = line.Height;
+				}
+			} else {
+				wideSpaceWidth = FontSize / 2;
+				defaultLineHeight = FontSize + 3;
+			}
+		}
+		
+		void InvalidateWideSpaceWidthAndDefaultLineHeight()
+		{
+			wideSpaceWidth = 0;
+			defaultLineHeight = 0;
 		}
 		
 		static double ValidateVisualOffset(double offset)
@@ -1613,6 +1653,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (TextFormatterFactory.PropertyChangeAffectsTextFormatter(e.Property)) {
 				RecreateCachedElements();
 				RecreateTextFormatter();
+				InvalidateWideSpaceWidthAndDefaultLineHeight();
 			}
 			if (e.Property == Control.ForegroundProperty
 			    || e.Property == Control.FontFamilyProperty
@@ -1622,6 +1663,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			    || e.Property == Control.FontWeightProperty)
 			{
 				RecreateCachedElements();
+				InvalidateWideSpaceWidthAndDefaultLineHeight();
 				Redraw();
 			}
 		}
