@@ -111,7 +111,7 @@ namespace Debugger.AddIn.Pads.ParallelPad
 		
 		#region Public Methods
 		
-		public void UpdateThreadIds(params uint[] threadIds)
+		public void UpdateThreadIds(bool isTask, params uint[] threadIds)
 		{
 			var list = new List<uint>();
 			foreach (uint id in threadIds) {
@@ -121,10 +121,13 @@ namespace Debugger.AddIn.Pads.ParallelPad
 			}
 			this.threadIds.AddRange(list);
 			
-			if (this.threadIds.Count > 1)
-				this.HeaderText.Text = this.threadIds.Count.ToString() + " Threads";
-			else
-				this.HeaderText.Text = "1 Thread";
+			if (this.threadIds.Count > 1) {
+				string suffix = isTask ? " Tasks" : " Threads";
+				this.HeaderText.Text = this.threadIds.Count.ToString() + suffix;
+			}
+			else {
+				this.HeaderText.Text = isTask ? "1 Task" : "1 Thread";
+			}
 		}
 		
 		public void ClearImages()
