@@ -1,6 +1,8 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
+    <SetupProductMajorVersion>$INSERTMAJORVERSION$</SetupProductMajorVersion>
     <SetupProductBuildVersion>$INSERTREVISION$</SetupProductBuildVersion>
-    <DefineConstants>PRODUCTBUILDVERSION=$(SetupProductBuildVersion)</DefineConstants>
+    <SetupProductDisplayVersion>$INSERTMAJORVERSION$ $INSERTVERSIONNAME$</SetupProductDisplayVersion>
+    <DefineConstants>PRODUCTMAJORVERSION=$(SetupProductMajorVersion);PRODUCTBUILDVERSION=$(SetupProductBuildVersion);PRODUCTDISPLAYVERSION=$(SetupProductDisplayVersion)</DefineConstants>
   </PropertyGroup>
 </Project>
