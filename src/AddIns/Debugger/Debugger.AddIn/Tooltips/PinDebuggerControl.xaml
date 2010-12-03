@@ -1,9 +1,7 @@
 <UserControl x:Class="Debugger.AddIn.Tooltips.PinDebuggerControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:local="clr-namespace:Debugger.AddIn.Tooltips"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:core="http://icsharpcode.net/sharpdevelop/core"
->
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 	<UserControl.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
@@ -198,27 +196,7 @@
 						<DataGridTemplateColumn>
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
-									<Border
-										Name="ImageBorder"
-										CornerRadius="7"
-										BorderBrush="Transparent"
-										BorderThickness="1"
-										Height="14"
-										Width="14">
-										<Image Width="9" Height="9" Margin="2 2"
-										       x:Name="RefreshContentImage"
-										       MouseDown="RefreshContentImage_MouseDown"
-										       Tag="{Binding}"
-										       Source="{core:GetBitmap Icons.16x16.Refresh}"/>
-									</Border>
-									<DataTemplate.Triggers>
-										<Trigger Property="IsMouseOver" Value="true">
-											<Setter
-												TargetName="ImageBorder"
-												Property="BorderBrush"
-												Value="Gray" />
-										</Trigger>
-									</DataTemplate.Triggers>
+									<Button Click="Button_Click" Template="{StaticResource RefreshButton}"/>
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>
 						</DataGridTemplateColumn>

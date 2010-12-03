@@ -286,9 +286,37 @@ namespace Debugger.AddIn.Tooltips
 			}
 		}
 
-		void OnLoaded(object sender, RoutedEventArgs e)
+		private void OnLoaded(object sender, RoutedEventArgs e)
 		{
 			this.CommentTextBox.Text = Mark.Comment;
+		}
+		
+		private void Button_Click(object sender, RoutedEventArgs e)
+		{
+			if (!DebuggerService.IsDebuggerStarted)
+				return;
+			
+			// refresh content
+			ITreeNode node = ((FrameworkElement)e.OriginalSource).DataContext as ITreeNode;
+			
+			var resultNode = currentDebugger.GetNode(node.FullName, node.ImageName);
+			if (resultNode == null)
+				return;
+			// HACK for updating the pins in tooltip
+			var observable = new ObservableCollection<ITreeNode>();
+			var source = lazyGrid.ItemsSource;
+			source.ForEach(item => {
+			               	if (item.CompareTo(node) == 0)
+			               		observable.Add(resultNode);
+			               	else
+			               		observable.Add(item);
+			               });
+			
+			Mark.Nodes = observable;
+			// update UI
+			var newSource = new VirtualizingIEnumerable<ITreeNode>(observable);
+			lazyGrid.ItemsSource = newSource;
+			lazyExpandersGrid.ItemsSource = newSource;
 		}
 		
 		#region Comment
@@ -319,34 +347,6 @@ namespace Debugger.AddIn.Tooltips
 		}
 		
 		#endregion
-		
-		void RefreshContentImage_MouseDown(object sender, MouseButtonEventArgs e)
-		{
-			if (!DebuggerService.IsDebuggerStarted)
-				return;
-			
-			// refresh content
-			ITreeNode node = ((Image)sender).DataContext as ITreeNode;
-			
-			var resultNode = currentDebugger.GetNode(node.FullName, node.ImageName);
-			if (resultNode == null)
-				return;
-			// HACK for updating the pins in tooltip
-			var observable = new ObservableCollection<ITreeNode>();
-			var source = lazyGrid.ItemsSource;
-			source.ForEach(item => {
-			               	if (item.CompareTo(node) == 0)
-			               		observable.Add(resultNode);
-			               	else
-			               		observable.Add(item);
-			               });
-			
-			Mark.Nodes = observable;
-			// update UI
-			var newSource = new VirtualizingIEnumerable<ITreeNode>(observable);
-			lazyGrid.ItemsSource = newSource;
-			lazyExpandersGrid.ItemsSource = newSource;
-		}
 		
 		#region Overrides
 		
