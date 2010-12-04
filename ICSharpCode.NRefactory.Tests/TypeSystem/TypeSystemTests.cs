@@ -69,6 +69,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			ITypeDefinition testClass = testCasePC.GetClass(typeof(DynamicTest));
 			Assert.AreSame(SharedTypes.Dynamic, testClass.Properties.Single().ReturnType.Resolve(ctx));
+			Assert.AreEqual(0, testClass.Properties.Single().Attributes.Count);
 		}
 		
 		[Test]
@@ -97,6 +98,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			IMethod m7 = testClass.Methods.Single(me => me.Name == "DynamicGenerics7");
 			Assert.AreEqual("System.Action`3[[System.Int32[][,]],[dynamic],[System.Object]]", m7.Parameters[0].Type.Resolve(ctx).ReflectionName);
+		}
+		
+		[Test]
+		public void DynamicParameterHasNoAttributes()
+		{
+			ITypeDefinition testClass = testCasePC.GetClass(typeof(DynamicTest));
+			IMethod m1 = testClass.Methods.Single(me => me.Name == "DynamicGenerics1");
+			Assert.AreEqual(0, m1.Parameters[0].Attributes.Count);
 		}
 		
 		[Test]

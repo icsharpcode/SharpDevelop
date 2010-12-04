@@ -271,12 +271,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return new GetClassTypeReference(name, typeParameterCount);
 		}
 		
+		static readonly string DynamicAttributeFullName = typeof(DynamicAttribute).FullName;
+		
 		static bool HasDynamicAttribute(ICustomAttributeProvider attributeProvider, int typeIndex)
 		{
 			if (attributeProvider == null || !attributeProvider.HasCustomAttributes)
 				return false;
 			foreach (CustomAttribute a in attributeProvider.CustomAttributes) {
-				if (a.Constructor.DeclaringType.FullName == typeof(DynamicAttribute).FullName) {
+				if (a.Constructor.DeclaringType.FullName == DynamicAttributeFullName) {
 					if (a.ConstructorArguments.Count == 1) {
 						CustomAttributeArgument[] values = a.ConstructorArguments[0].Value as CustomAttributeArgument[];
 						if (values != null && typeIndex < values.Length && values[typeIndex].Value is bool)
@@ -293,27 +295,21 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		void AddAttributes(ICustomAttributeProvider customAttributeProvider, IEntity targetEntity)
 		{
 			if (customAttributeProvider.HasCustomAttributes) {
-				foreach (var cecilAttribute in customAttributeProvider.CustomAttributes) {
-					targetEntity.Attributes.Add(ReadAttribute(cecilAttribute));
-				}
+				AddCustomAttributes(customAttributeProvider.CustomAttributes, targetEntity.Attributes);
 			}
 		}
 		
 		void AddAttributes(ParameterDefinition parameter, DefaultParameter targetParameter)
 		{
 			if (parameter.HasCustomAttributes) {
-				foreach (var cecilAttribute in parameter.CustomAttributes) {
-					targetParameter.Attributes.Add(ReadAttribute(cecilAttribute));
-				}
+				AddCustomAttributes(parameter.CustomAttributes, targetParameter.Attributes);
 			}
 		}
 		
 		void AddAttributes(MethodDefinition accessorMethod, DefaultAccessor targetAccessor)
 		{
 			if (accessorMethod.HasCustomAttributes) {
-				foreach (var cecilAttribute in accessorMethod.CustomAttributes) {
-					targetAccessor.Attributes.Add(ReadAttribute(cecilAttribute));
-				}
+				AddCustomAttributes(accessorMethod.CustomAttributes, targetAccessor.Attributes);
 			}
 		}
 		
@@ -371,8 +367,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			#endregion
 			
 			if (typeDefinition.HasCustomAttributes) {
-				foreach (var cecilAttribute in typeDefinition.CustomAttributes) {
-					targetEntity.Attributes.Add(ReadAttribute(cecilAttribute));
+				AddCustomAttributes(typeDefinition.CustomAttributes, targetEntity.Attributes);
+			}
+		}
+		
+		void AddCustomAttributes(Mono.Collections.Generic.Collection<CustomAttribute> attributes, IList<IAttribute> targetCollection)
+		{
+			foreach (var cecilAttribute in attributes) {
+				if (cecilAttribute.AttributeType.FullName != DynamicAttributeFullName) {
+					targetCollection.Add(ReadAttribute(cecilAttribute));
 				}
 			}
 		}
@@ -412,6 +415,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			ITypeReference type = ReadTypeReference(arg.Type);
 			object value = arg.Value;
+			CustomAttributeArgument[] array = value as CustomAttributeArgument[];
+			if (array != null) {
+				// TODO: write unit test for this
+				// TODO: are multi-dimensional arrays possible as well?
+				throw new NotImplementedException();
+			}
+			
 			TypeReference valueType = value as TypeReference;
 			if (valueType != null)
 				value = ReadTypeReference(valueType);
