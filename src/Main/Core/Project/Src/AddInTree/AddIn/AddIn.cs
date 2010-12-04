@@ -227,6 +227,7 @@ namespace ICSharpCode.Core
 							}
 							string fileName = Path.Combine(hintPath, reader.GetAttribute(0));
 							XmlReaderSettings xrs = new XmlReaderSettings();
+							xrs.NameTable = reader.NameTable; // share the name table
 							xrs.ConformanceLevel = ConformanceLevel.Fragment;
 							using (XmlReader includeReader = XmlTextReader.Create(fileName, xrs)) {
 								SetupAddIn(includeReader, addIn, Path.GetDirectoryName(fileName));
@@ -260,16 +261,13 @@ namespace ICSharpCode.Core
 			return paths[pathName];
 		}
 		
-		public static AddIn Load(TextReader textReader)
+		public static AddIn Load(TextReader textReader, string hintPath = null, XmlNameTable nameTable = null)
 		{
-			return Load(textReader, null);
-		}
-		
-		public static AddIn Load(TextReader textReader, string hintPath)
-		{
+			if (nameTable == null)
+				nameTable = new NameTable();
 			try {
 				AddIn addIn = new AddIn();
-				using (XmlTextReader reader = new XmlTextReader(textReader)) {
+				using (XmlTextReader reader = new XmlTextReader(textReader, nameTable)) {
 					while (reader.Read()){
 						if (reader.IsStartElement()) {
 							switch (reader.LocalName) {
@@ -289,14 +287,16 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public static AddIn Load(string fileName)
+		public static AddIn Load(string fileName, XmlNameTable nameTable = null)
 		{
 			try {
 				using (TextReader textReader = File.OpenText(fileName)) {
-					AddIn addIn = Load(textReader, Path.GetDirectoryName(fileName));
+					AddIn addIn = Load(textReader, Path.GetDirectoryName(fileName), nameTable);
 					addIn.addInFileName = fileName;
 					return addIn;
 				}
+			} catch (AddInLoadException) {
+				throw;
 			} catch (Exception e) {
 				throw new AddInLoadException("Can't load " + fileName, e);
 			}
