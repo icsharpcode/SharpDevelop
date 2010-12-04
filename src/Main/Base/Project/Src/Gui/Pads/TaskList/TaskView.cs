@@ -106,6 +106,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.Columns.Add(file);
 			this.Columns.Add(path);
 			
+			this.HideSelection = false;
 			this.FullRowSelect = true;
 			this.AutoArrange = true;
 			this.Alignment   = ListViewAlignment.Left;

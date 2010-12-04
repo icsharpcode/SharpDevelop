@@ -32,6 +32,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		protected override void InitializeComponents()
 		{
 			runningThreadsList = new ListView();
+			runningThreadsList.HideSelection = false;
 			runningThreadsList.FullRowSelect = true;
 			runningThreadsList.AutoArrange = true;
 			runningThreadsList.Alignment   = ListViewAlignment.Left;
