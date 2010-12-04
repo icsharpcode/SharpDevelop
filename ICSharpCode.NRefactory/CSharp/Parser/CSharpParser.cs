@@ -260,7 +260,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (namespaceStack.Count > 0) {
 					namespaceStack.Peek ().AddChild (child, NamespaceDeclaration.Roles.Member);
 				} else {
-					unit.AddChild (child);
+					unit.AddChild (child, CompilationUnit.Roles.Member);
 				}	
 			}
 			
@@ -2224,7 +2224,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				
 				NewAnonymousType aType = l.Expr as NewAnonymousType;
 				AnonymousTypeParameter param = ((AnonymousTypeParameter)aType.Parameters[1]);
-				result.AddChild (new Identifier (param.Name, Convert (param.Location)));
+				result.AddChild (new Identifier (param.Name, Convert (param.Location)), Identifier.Roles.Identifier);
 				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), QueryExpressionWhereClause.Roles.Assign);
@@ -2250,7 +2250,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), "join".Length), QueryExpressionJoinClause.JoinKeywordRole);
 				
-				result.AddChild (new Identifier (join.JoinVariable.Name, Convert (join.JoinVariable.Location)));
+				result.AddChild (new Identifier (join.JoinVariable.Name, Convert (join.JoinVariable.Location)), Identifier.Roles.Identifier);
 				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[1]), "in".Length), QueryExpressionJoinClause.InKeywordRole);
@@ -2275,7 +2275,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), "join".Length), QueryExpressionJoinClause.JoinKeywordRole);
 				
-				result.AddChild (new Identifier (groupJoin.JoinVariable.Name, Convert (groupJoin.JoinVariable.Location)));
+				result.AddChild (new Identifier (groupJoin.JoinVariable.Name, Convert (groupJoin.JoinVariable.Location)), Identifier.Roles.Identifier);
 				
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[1]), "in".Length), QueryExpressionJoinClause.InKeywordRole);
@@ -2293,7 +2293,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[4]), "into".Length), QueryExpressionJoinClause.IntoKeywordRole);
 				
-				result.AddChild (new Identifier (groupJoin.JoinVariable.Name, Convert (groupJoin.JoinVariable.Location)));
+				result.AddChild (new Identifier (groupJoin.JoinVariable.Name, Convert (groupJoin.JoinVariable.Location)), Identifier.Roles.Identifier);
 				return result;
 			}
 			
@@ -2352,7 +2352,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void InsertComment (DomNode node, Comment comment)
 		{
 			if (node.EndLocation < comment.StartLocation) {
-				node.AddChild (comment);
+				node.AddChild (comment, DomNode.Roles.Comment);
 				return;
 			}
 			
@@ -2367,7 +2367,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			node.AddChild (comment);
+			node.AddChild (comment, DomNode.Roles.Comment);
 		}
 		
 		void InsertComments (CompilerCompilationUnit top, ConversionVisitor conversionVisitor)

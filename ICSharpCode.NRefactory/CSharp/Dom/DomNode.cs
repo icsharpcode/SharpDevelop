@@ -1,6 +1,6 @@
-// 
+﻿// 
 // AstNode.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -26,13 +26,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
 	public abstract class DomNode
 	{
+		#region Null
 		public static readonly DomNode Null = new NullAstNode ();
-		class NullAstNode : DomNode
+		sealed class NullAstNode : DomNode
 		{
 			public override NodeType NodeType {
 				get {
@@ -51,6 +53,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				return default (S);
 			}
 		}
+		#endregion
+		
+		DomNode parent;
+		DomNode prevSibling;
+		DomNode nextSibling;
+		DomNode firstChild;
+		DomNode lastChild;
+		int role;
 		
 		public abstract NodeType NodeType {
 			get;
@@ -63,8 +73,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public virtual DomLocation StartLocation {
-			get { 
-				var child = FirstChild;
+			get {
+				var child = firstChild;
 				if (child == null)
 					return DomLocation.Empty;
 				return child.StartLocation;
@@ -72,8 +82,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public virtual DomLocation EndLocation {
-			get { 
-				var child = LastChild;
+			get {
+				var child = lastChild;
 				if (child == null)
 					return DomLocation.Empty;
 				return child.EndLocation;
@@ -81,77 +91,57 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public DomNode Parent {
-			get;
-			set;
+			get { return parent; }
 		}
 		
 		public int Role {
-			get;
-			set;
+			get { return role; }
 		}
 		
 		public DomNode NextSibling {
-			get;
-			set;
+			get { return nextSibling; }
 		}
 		
 		public DomNode PrevSibling {
-			get;
-			set;
+			get { return prevSibling; }
 		}
 		
 		public DomNode FirstChild {
-			get;
-			set;
+			get { return firstChild; }
 		}
 		
 		public DomNode LastChild {
-			get;
-			set;
+			get { return lastChild; }
 		}
 		
 		public IEnumerable<DomNode> Children {
 			get {
-				var cur = FirstChild;
+				var cur = firstChild;
 				while (cur != null) {
 					yield return cur;
-					cur = cur.NextSibling;
+					cur = cur.nextSibling;
 				}
 			}
 		}
 		
 		public DomNode GetChildByRole (int role)
 		{
-			var cur = FirstChild;
+			var cur = firstChild;
 			while (cur != null) {
-				if (cur.Role == role)
+				if (cur.role == role)
 					return cur;
-				cur = cur.NextSibling;
+				cur = cur.nextSibling;
 			}
 			return null;
 		}
 		
 		public IEnumerable<DomNode> GetChildrenByRole (int role)
 		{
-			var cur = FirstChild;
+			var cur = firstChild;
 			while (cur != null) {
-				if (cur.Role == role)
+				if (cur.role == role)
 					yield return cur;
-				cur = cur.NextSibling;
-			}
-		}
-		
-		public void AddChild (DomNode child)
-		{
-			if (child == null)
-				return;
-			child.Parent = this;
-			if (FirstChild == null) {
-				LastChild = FirstChild = child;
-			} else {
-				LastChild.NextSibling = child;
-				child.PrevSibling = LastChild;
-				LastChild = child;
+				cur = cur.nextSibling;
 			}
 		}
 		
@@ -159,29 +149,108 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			if (child == null)
 				return;
-			child.Role = role;
-			AddChild (child);
+			if (child.parent != null)
+				throw new ArgumentException ("Node is already used in another tree.", "child");
+			child.parent = this;
+			child.role = role;
+			if (firstChild == null) {
+				lastChild = firstChild = child;
+			} else {
+				lastChild.nextSibling = child;
+				child.prevSibling = lastChild;
+				lastChild = child;
+			}
 		}
 		
 		public void InsertChildBefore (DomNode nextSibling, DomNode child, int role)
 		{
-			if (child == null)
-				return;
-			
-			if (FirstChild == null || nextSibling == null) {
+			if (nextSibling == null) {
 				AddChild (child, role);
 				return;
 			}
-			child.Parent = this;
-			child.Role = role;
 			
-			child.NextSibling = nextSibling;
+			if (child == null)
+				return;
+			if (child.parent != null)
+				throw new ArgumentException ("Node is already used in another tree.", "child");
+			if (nextSibling.parent != this)
+				throw new ArgumentException ("NextSibling is not a child of this node.", "nextSibling");
 			
-			if (nextSibling.PrevSibling != null) {
-				child.PrevSibling = nextSibling.PrevSibling;
-				nextSibling.PrevSibling.NextSibling = child;
+			child.parent = this;
+			child.role = role;
+			child.nextSibling = nextSibling;
+			child.prevSibling = nextSibling.prevSibling;
+			
+			if (nextSibling.prevSibling != null) {
+				Debug.Assert(nextSibling.prevSibling.nextSibling == nextSibling);
+				nextSibling.prevSibling.nextSibling = child;
+			} else {
+				Debug.Assert(firstChild == nextSibling);
+				firstChild = child;
 			}
-			nextSibling.PrevSibling = child;
+			nextSibling.prevSibling = child;
+		}
+		
+		/// <summary>
+		/// Removes this node from its parent.
+		/// </summary>
+		public void Remove()
+		{
+			if (parent != null) {
+				if (prevSibling != null) {
+					Debug.Assert(prevSibling.nextSibling == this);
+					prevSibling.nextSibling = nextSibling;
+				} else {
+					Debug.Assert(parent.firstChild == this);
+					parent.firstChild = nextSibling;
+				}
+				if (nextSibling != null) {
+					Debug.Assert(nextSibling.prevSibling == this);
+					nextSibling.prevSibling = prevSibling;
+				} else {
+					Debug.Assert(parent.lastChild == this);
+					parent.lastChild = prevSibling;
+				}
+				parent = null;
+				prevSibling = null;
+				nextSibling = null;
+			}
+		}
+		
+		/// <summary>
+		/// Replaces this node with the new node.
+		/// </summary>
+		public void Replace(DomNode newNode)
+		{
+			if (newNode == null) {
+				Remove();
+				return;
+			}
+			if (newNode.parent != null)
+				throw new ArgumentException ("Node is already used in another tree.", "newNode");
+			newNode.parent = parent;
+			newNode.role = role;
+			newNode.prevSibling = prevSibling;
+			newNode.nextSibling = nextSibling;
+			if (parent != null) {
+				if (prevSibling != null) {
+					Debug.Assert(prevSibling.nextSibling == this);
+					prevSibling.nextSibling = newNode;
+				} else {
+					Debug.Assert(parent.firstChild == this);
+					parent.firstChild = newNode;
+				}
+				if (nextSibling != null) {
+					Debug.Assert(nextSibling.prevSibling == this);
+					nextSibling.prevSibling = newNode;
+				} else {
+					Debug.Assert(parent.lastChild == this);
+					parent.lastChild = newNode;
+				}
+				parent = null;
+				prevSibling = null;
+				nextSibling = null;
+			}
 		}
 		
 		public abstract S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data);
@@ -205,7 +274,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public const int TargetExpression = 14;
 			public const int Member = 15;
 			
-			// some pre defined constants for most used punctuation 
+			// some pre defined constants for most used punctuation
 			
 			public const int LPar = 50; // (
 			public const int RPar = 51; // )
