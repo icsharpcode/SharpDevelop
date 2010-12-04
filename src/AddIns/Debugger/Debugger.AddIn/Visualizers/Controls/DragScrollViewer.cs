@@ -19,6 +19,9 @@ namespace Debugger.AddIn.Visualizers.Controls
 
 		public DragScrollViewer() : base()
 		{
+			this.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+			this.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+			
 			this.PreviewMouseDown += new System.Windows.Input.MouseButtonEventHandler(DragScrollViewer_PreviewMouseDown);
 			this.PreviewMouseMove += new System.Windows.Input.MouseEventHandler(DragScrollViewer_PreviewMouseMove);
 			this.PreviewMouseUp += new System.Windows.Input.MouseButtonEventHandler(DragScrollViewer_PreviewMouseUp);

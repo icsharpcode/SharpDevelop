@@ -216,7 +216,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			bool showModuleNames = DebuggingOptions.Instance.ShowModuleNames;
 			
 			StringBuilder name = new StringBuilder();
-			
 			name.Append(frame.MethodInfo.DeclaringType.FullName);
 			name.Append('.');
 			name.Append(frame.MethodInfo.Name);

@@ -17,15 +17,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		SimpleListViewControl  loadedModulesList;
 		Process debuggedProcess;
 		
-		public override object Control {
-			get {
-				return loadedModulesList;
-			}
-		}
-
 		protected override void InitializeComponents()
 		{
 			loadedModulesList = new SimpleListViewControl();
+			panel.Children.Add(loadedModulesList);
 			RedrawContent();
 			ResourceService.LanguageChanged += delegate { RedrawContent(); };
 		}

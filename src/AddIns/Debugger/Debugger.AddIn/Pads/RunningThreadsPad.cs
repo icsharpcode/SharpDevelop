@@ -22,17 +22,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		SimpleListViewControl  runningThreadsList;
 		Process debuggedProcess;
 		
-		public override object Control {
-			get {
-				return runningThreadsList;
-			}
-		}
-		
 		protected override void InitializeComponents()
 		{
 			runningThreadsList = new SimpleListViewControl();
 			runningThreadsList.ContextMenu = CreateContextMenuStrip();
 			runningThreadsList.ItemActivated += RunningThreadsListItemActivate;
+			panel.Children.Add(runningThreadsList);
 			
 			RedrawContent();
 			ResourceService.LanguageChanged += delegate { RedrawContent(); };
@@ -147,7 +142,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (item == null) return;			
 			var thread = item.Tag as Thread;
 			
-			if (thread == null) return;
+			if (thread == null)
+				return;
+			
 			item.ID = thread.ID;
 			item.Tag = thread;
 			StackFrame location = null;

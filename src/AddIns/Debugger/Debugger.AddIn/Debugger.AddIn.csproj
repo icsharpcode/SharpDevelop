@@ -58,6 +58,15 @@
     <StartProgram>..\..\..\..\bin\SharpDevelop.exe</StartProgram>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="GraphSharp">
+      <HintPath>..\..\..\Libraries\GraphSharp\GraphSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="GraphSharp.Controls">
+      <HintPath>..\..\..\Libraries\GraphSharp\GraphSharp.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Contracts">
+      <HintPath>..\..\..\Libraries\GraphSharp\Microsoft.Contracts.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
@@ -67,6 +76,9 @@
     </Reference>
     <Reference Include="PresentationFramework.Aero">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="QuickGraph">
+      <HintPath>..\..\..\Libraries\GraphSharp\QuickGraph.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -89,6 +101,9 @@
       <DependentUpon>CallStackPad.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Pads\Commands\ParallelStacksViewCommands.cs" />
+    <Compile Include="Pads\Commands\SelectLanguageCommand.cs" />
+    <Compile Include="Pads\Commands\WatchPadCommands.cs" />
     <Compile Include="Pads\Controls\ConditionCell.xaml.cs">
       <DependentUpon>ConditionCell.xaml</DependentUpon>
     </Compile>
@@ -100,6 +115,17 @@
     <Compile Include="Pads\Controls\TreeListView.cs" />
     <Compile Include="Pads\Controls\WatchList.xaml.cs">
       <DependentUpon>WatchList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pads\ParallelPad\DrawSurface.xaml.cs">
+      <DependentUpon>DrawSurface.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Pads\ParallelPad\ParallelStackPad.cs" />
+    <Compile Include="Pads\ParallelPad\ParallelStacksGraph.cs" />
+    <Compile Include="Pads\ParallelPad\SelectedFrameBookmark.cs" />
+    <Compile Include="Pads\ParallelPad\ThreadStack.xaml.cs">
+      <DependentUpon>ThreadStack.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Pads\WatchInputBox.xaml.cs">
       <DependentUpon>WatchInputBox.xaml</DependentUpon>
@@ -125,8 +151,6 @@
       <DependentUpon>DebuggingSymbolsPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Pads\ObjectGraphPad.cs" />
-    <Compile Include="Pads\SelectLanguageCommand.cs" />
-    <Compile Include="Pads\WatchPadCommands.cs" />
     <Compile Include="Pads\BreakPointsPad.cs" />
     <Compile Include="Pads\ConsolePad.cs">
       <SubType>UserControl</SubType>
@@ -367,6 +391,8 @@
     <Page Include="Pads\Controls\ConditionCell.xaml" />
     <Page Include="Pads\Controls\SimpleListViewControl.xaml" />
     <Page Include="Pads\Controls\WatchList.xaml" />
+    <Page Include="Pads\ParallelPad\DrawSurface.xaml" />
+    <Page Include="Pads\ParallelPad\ThreadStack.xaml" />
     <Page Include="Pads\WatchInputBox.xaml" />
     <Page Include="Service\EditBreakpointScriptWindow.xaml" />
     <Page Include="Tooltips\DebuggerTooltipControl.xaml" />
@@ -394,7 +420,9 @@
       <Name>ICSharpCode.Core.WinForms</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Folder Include="Pads\Commands" />
     <Folder Include="Pads\Controls" />
+    <Folder Include="Pads\ParallelPad" />
     <Folder Include="Tooltips" />
     <Folder Include="Visualizers\Graph" />
     <Folder Include="Visualizers\Graph\Drawing" />

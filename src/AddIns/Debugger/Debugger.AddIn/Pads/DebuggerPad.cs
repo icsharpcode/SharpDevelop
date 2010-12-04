@@ -1,18 +1,38 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the BSD license (for details please see \src\AddIns\Debugger\Debugger.AddIn\license.txt)
 
+using System.Windows.Controls;
 using Debugger;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Services;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
-	public abstract class DebuggerPad: AbstractPadContent
+	public abstract class DebuggerPad : AbstractPadContent
 	{
+		protected DockPanel panel;
+		ToolBar toolbar;
 		protected WindowsDebugger debugger;
+		
+		public override object Control {
+			get {
+				return panel;
+			}
+		}
 		
 		public DebuggerPad()
 		{
+			// UI
+			this.panel = new DockPanel();
+			this.toolbar = BuildToolBar();
+			
+			if (this.toolbar != null) {
+				this.toolbar.SetValue(DockPanel.DockProperty, Dock.Top);
+			
+				this.panel.Children.Add(toolbar);
+			}
+			
+			// logic
 			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
 			
 			InitializeComponents();
@@ -36,6 +56,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		public virtual void RefreshPad()
 		{
 			
+		}
+		
+		protected virtual ToolBar BuildToolBar()
+		{
+			return null;
 		}
 	}
 }
