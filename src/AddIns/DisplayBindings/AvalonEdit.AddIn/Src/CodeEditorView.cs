@@ -57,8 +57,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.MouseLeave += TextEditorMouseLeave;
 			this.TextArea.TextView.MouseDown += TextViewMouseDown;
 			this.TextArea.Caret.PositionChanged += HighlightBrackets;
+			this.TextArea.TextView.VisualLinesChanged += CodeEditorView_VisualLinesChanged;
 			
 			SetupTabSnippetHandler();
+		}
+
+		void CodeEditorView_VisualLinesChanged(object sender, EventArgs e)
+		{
+			// hide tooltip
+			if (this.toolTip != null)
+				this.toolTip.IsOpen = false;
 		}
 		
 		protected override string FileName {
