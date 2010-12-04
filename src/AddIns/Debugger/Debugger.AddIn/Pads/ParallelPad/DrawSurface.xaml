@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <UserControl
 	x:Class="Debugger.AddIn.Pads.ParallelPad.DrawSurface" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:Debugger.AddIn.Pads.ParallelPad"
+	xmlns:visControls="clr-namespace:Debugger.AddIn.Visualizers.Controls"
 	Background="White">
 	<UserControl.Resources>
 		<LinearGradientBrush
@@ -123,10 +124,9 @@
 				Click="Reset_Click"
 				Template="{StaticResource ButtonTemplate}" />
 		</Canvas>
-		<ScrollViewer
-			x:Name="drawingSurface"
-			HorizontalScrollBarVisibility="Auto"
-			VerticalScrollBarVisibility="Auto"
+		
+		<visControls:DragScrollViewer
+			x:Name="drawingSurface"			
 			Grid.Column="1">
 			<Grid
 				x:Name="ContentControl"
@@ -142,6 +142,6 @@
 					OverlapRemovalConstraint="Automatic"
 					OverlapRemovalAlgorithmType="FSA" />
 			</Grid>
-		</ScrollViewer>
+		</visControls:DragScrollViewer>
 	</Grid>
 </UserControl>

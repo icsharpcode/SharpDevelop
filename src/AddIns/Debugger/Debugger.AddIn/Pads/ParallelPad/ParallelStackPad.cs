@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			currentThreadStacks.Clear();
 			
-			using(new PrintTimes("Parallel stack - create stacks refresh")) {
+			using(new PrintTimes("Create stacks")) {
 				try {
 					// create all simple ThreadStacks
 					foreach (Thread thread in debuggedProcess.Threads) {
@@ -94,7 +94,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					}
 				}
 			}
-			using(new PrintTimes("Parallel stack - run algorithm")) {
+			using(new PrintTimes("Run algorithm")) {
 				if (isMethodView)
 				{
 					// build method view for threads
