@@ -107,10 +107,12 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		public static void ToggleBookmark(ITextEditor editor, int line,
 		                                  Predicate<SDBookmark> canToggle,
-		                                  Func<Location, SDBookmark> bookmarkFactory)
+		                                  Func<Location, SDBookmark> bookmarkFactory,
+		                                  Type bookmarkType)
 		{
 			foreach (SDBookmark bookmark in GetBookmarks(new FileName(editor.FileName))) {
-				if (canToggle(bookmark) && bookmark.LineNumber == line) {
+				if (canToggle(bookmark) && bookmark.LineNumber == line && 
+				    bookmark.GetType().UnderlyingSystemType == bookmarkType) {
 					BookmarkManager.RemoveMark(bookmark);
 					return;
 				}

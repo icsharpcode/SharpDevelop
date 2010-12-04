@@ -42,7 +42,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			BookmarkManager.ToggleBookmark(editor, editor.Caret.Line, 
 			                               b => b.CanToggle,
-			                               location => new SDBookmark(editor.FileName, location));
+			                               location => new SDBookmark(editor.FileName, location),
+			                               typeof(SDBookmark));
 		}
 	}
 	
