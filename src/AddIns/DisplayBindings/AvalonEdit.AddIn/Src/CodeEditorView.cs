@@ -34,7 +34,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// There can be two CodeEditorView instances in a single CodeEditor if split-view
 	/// is enabled.
 	/// </summary>
-	public class CodeEditorView : SharpDevelopTextEditor
+	public class CodeEditorView : SharpDevelopTextEditor, IDisposable
 	{
 		public ITextEditor Adapter { get; set; }
 		
@@ -59,6 +59,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.TextArea.Caret.PositionChanged += HighlightBrackets;
 			
 			SetupTabSnippetHandler();
+		}
+		
+		public virtual void Dispose()
+		{
+			contextActionsRenderer.Dispose();
 		}
 		
 		protected override string FileName {
