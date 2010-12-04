@@ -227,8 +227,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			BookmarkManager.ToggleBookmark(
 				editor, lineNumber,
 				b => b.CanToggle && b is BreakpointBookmark,
-				location => new BreakpointBookmark(editor.FileName, location, BreakpointAction.Break, "", ""),
-				typeof(BreakpointBookmark));
+				location => new BreakpointBookmark(editor.FileName, location, BreakpointAction.Break, "", ""));
 		}
 		
 		/* TODO: reimplement this stuff

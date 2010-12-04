@@ -41,13 +41,11 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		protected override void Run(ITextEditor editor, IBookmarkMargin bookmarkMargin)
 		{
 			BookmarkManager.ToggleBookmark(editor, editor.Caret.Line, 
-			                               b => b.CanToggle,
-			                               location => new SDBookmark(editor.FileName, location),
-			                               typeof(SDBookmark));
+			                               b => b.CanToggle && b.GetType() == typeof(SDBookmark),
+			                               location => new SDBookmark(editor.FileName, location));
 		}
 	}
-	
-	public class PrevBookmark : BookmarkMenuCommand
+		public class PrevBookmark : BookmarkMenuCommand
 	{
 		protected override void Run(ITextEditor editor, IBookmarkMargin bookmarkMargin)
 		{
