@@ -1,198 +1,158 @@
 <?xml version="1.0"?>
 <!-- syntaxdefinition for PHP 2001 by Chad Smith & Mike Krueger -->
-
-<SyntaxDefinition name ="PHP" extensions = ".php">
+<!-- converted to AvalonEdit format by Siegfried Pammer in 2010 -->
+<SyntaxDefinition name ="PHP" extensions = ".php" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+	<Color name="Comment" foreground="Green" exampleText="// comment" />
+	<Color name="String" foreground="Blue" exampleText="$text = &quot;Hello, World!&quot;" />
+	<Color name="NumberLiteral" foreground="DarkBlue" exampleText="3.1415" />
+	<Color name="Punctuation" foreground="DarkGreen" exampleText="a(b + c)" />
+	<Color name="FunctionCall" foreground="MidnightBlue" fontWeight="bold" exampleText="abs(num);"/>
+	<Color name="AccessKeywords" foreground="Black" fontWeight="bold" exampleText="global $database;" />
+	<Color name="OperatorKeywords" foreground="DarkCyan" fontWeight="bold" exampleText="if (x === false and y === false) { }" />
+	<Color name="SelectionStatements" foreground="Blue" fontWeight="bold" exampleText="if (true) { } else { }" />
+	<Color name="IterationStatements" foreground="Blue" fontWeight="bold" exampleText="while (true) { }" />
+	<Color name="JumpStatements" foreground="Navy" fontWeight="bold" exampleText="if (x == 5) continue;" />
+	<Color name="ControlStatements" foreground="Teal" fontWeight="bold" exampleText="include(&quot;test.php&quot;);" />
+	<Color name="ValueTypes" foreground="Red" fontWeight="bold" exampleText="int test = 5;" />
+	<Color name="OtherTypes" foreground="Red" exampleText="object test = null;" />
+	<Color name="AccessModifiers" foreground="Blue" fontWeight="bold" exampleText="public function test() {}" />
+	<RuleSet>
+		<Span color="Comment">
+			<Begin>\#</Begin>
+		</Span>
+		
+		<Span color="Comment">
+			<Begin>//</Begin>
+		</Span>
+		
+		<Span color="Comment" multiline="true">
+			<Begin>/\*</Begin>
+			<End>\*/</End>
+		</Span>
+		
+		<!-- Digits -->
+		<Rule color="NumberLiteral">
+			\b0[xX][0-9a-fA-F]+  # hex number
+		|
+			\b0[0-9]+ # octal number
+		|
+			(	\b\d+(\.[0-9]+)?   #number with optional floating point
+			|	\.[0-9]+           #or just starting with floating point
+			)
+			([eE][+-]?[0-9]+)? # optional exponent
+		</Rule>
+		
+		<Rule color="Punctuation">
+			[?,.:;()\[\]{}+\-/%*&lt;&gt;&amp;^!|~@]+
+		</Rule>
+		
+		<!-- Mark previous rule-->
+		<Rule color="FunctionCall">
+		\b
+		[\d\w_]+  # an identifier
+		(?=\s*\() # followed by (
+		</Rule>
+		
+		<Span color="String" multiline="true">
+			<Begin>'</Begin>
+			<End>'</End>
+			<RuleSet>
+				<!-- span for escape sequences -->
+				<Span begin="\\" end="."/>
+			</RuleSet>
+		</Span>
+		
+		<Span color="String" multiline="true">
+			<Begin>"</Begin>
+			<End>"</End>
+			<RuleSet>
+				<!-- span for escape sequences -->
+				<Span begin="\\" end="."/>
+			</RuleSet>
+		</Span>
+		
+		<!-- heredoc syntax -->
+		<Span color="String" multiline="true">
+			<Begin>&lt;&lt;&lt;\"?[\d\w_]+\"?$</Begin>
+		 	<End>^[\d\w_]+;</End>
+		</Span>
 	
-	<Digits name ="Digits" bold ="false" italic ="false" color ="DarkBlue"/>
+		<!-- nowdoc syntax -->
+		<Span color="String" multiline="true">
+			<Begin>&lt;&lt;&lt;\'[\d\w_]+\'$</Begin>
+			<End>^[\d\w_]+;</End>
+		</Span>
 	
-	<RuleSets>
-		<RuleSet ignorecase = "false">
-			<Delimiters>~!%^*()-+=|\#/{}[]:;"'&lt;&gt; , .?</Delimiters>
-			
-			<Span name ="PreprocessorDirectives" bold="false" italic = "false" color = "Green" stopateol ="true">
-				<Begin>#</Begin>
-			</Span>
-			
-			<Span name ="LINECOMMENT" rule = "DocumentSet" bold ="false" italic ="true" color ="SlateGray" stopateol ="true">
-				<Begin>///</Begin>
-			</Span>
-			
-			<Span name ="LINECOMMENT" rule = "TestSet" bold ="false" italic ="true" color ="SlateGray" stopateol ="true">
-				<Begin>//@!/@</Begin>
-			</Span>
-			
-			<Span name ="BLOCKCOMMENT" rule = "TestSet" bold ="false" italic ="true" color ="SlateGray" stopateol ="false">
-				<Begin>/*</Begin>
-				<End>*/</End>
-			</Span>
-			
-			<Span name ="STRING" bold ="false" italic ="false" color ="Magenta" stopateol ="true" escapecharacter="\">
-				<Begin>"</Begin>
-				<End>"</End>
-			</Span>
-			
-			<Span name ="MORELINEDSTRING" bold ="false" italic ="false" color ="Magenta" stopateol ="false" escapecharacter="\">
-				<Begin>@@"</Begin>
-				<End>"</End>
-			</Span>
-			
-			<Span name ="CHAR" bold ="false" italic ="false" color ="Magenta" stopateol ="true" escapecharacter="\">
-				<Begin>'</Begin>
-				<End>'</End>
-			</Span>
-			
-			<MarkPrevious bold ="true" italic ="false" color ="MidnightBlue">(</MarkPrevious>
-			
-			<KeyWords name ="Punctuation" bold ="false" italic ="false" color ="DarkGreen">
-				<Key word =  "?" />
-				<Key word =  "," />
-				<Key word =  "." />
-				<Key word =  "(" />
-				<Key word =  ")" />
-				<Key word =  "[" />
-				<Key word =  "]" />
-				<Key word =  "{" />
-				<Key word =  "}" />
-				<Key word =  "+" />
-				<Key word =  "-" />
-				<Key word =  "/" />
-				<Key word =  "%" />
-				<Key word =  "*" />
-				<Key word =  "&lt;" />
-				<Key word =  "&gt;" />
-				<Key word =  "^" />
-				<Key word =  "!" />
-				<Key word =  "|" />
-			</KeyWords>
-			
-			<KeyWords name ="AccessKeywords" bold="true" italic = "false" color = "Black">
-				<Key word =  "global" />
-				<Key word =  "my" />
-			</KeyWords>
-			
-			<KeyWords name ="OperatorKeywords" bold="true" italic = "false" color = "DarkCyan">
-				<Key word =  "and" />
-				<Key word =  "or" />
-				<Key word =  "new" />
-				<Key word =  "xor" />
-				<Key word =  "true" />
-				<Key word =  "false" />
-			</KeyWords>
-			
-			
-			<KeyWords name ="SelectionStatements" bold="true" italic = "false" color = "Blue">
-				<Key word =  "else" />
-				<Key word =  "if" />
-				<Key word =  "switch" />
-				<Key word =  "case" />
-				<Key word =  "endif" />
-				<Key word =  "elseif" />
-			</KeyWords>
-			
-			<KeyWords name ="IterationStatements" bold="true" italic = "false" color = "Blue">
-				<Key word =  "do" />
-				<Key word =  "for" />
-				<Key word =  "foreach" />
-				<Key word =  "while" />
-				<Key word =  "endwhile" />
-				<Key word =  "exit" />
-			</KeyWords>
-			
-			<KeyWords name ="JumpStatements" bold="false" italic = "false" color = "Navy">
-				<Key word =  "break" />
-				<Key word =  "continue" />
-				<Key word =  "default" />
-				<Key word =  "goto" />
-				<Key word =  "return" />
-			</KeyWords>
-			
-			<KeyWords name ="ExceptionHandlingStatements" bold="true" italic = "false" color = "Teal">
-			<Key word =  "require" />
-				<Key word =  "include" />
-				<Key word =  "function" />
-				<Key word =  "return" />
-				<Key word =  "old_function" />
-			</KeyWords>
-			
-			<KeyWords name ="ValueTypes" bold="true" italic = "false" color = "Red">
-				<Key word =  "int" />
-				<Key word =  "integer" />
-				<Key word =  "real" />
-				<Key word =  "double" />
-				<Key word =  "float" />
-				<Key word =  "string" />
-				<Key word =  "array" />
-				<Key word =  "object" />
-			</KeyWords>
-			
-			<KeyWords name ="ReferenceTypes" bold="false" italic = "false" color = "Red">
-				<Key word =  "class" />
-				<Key word =  "new" />
-			</KeyWords>
-			
-			<KeyWords name ="Void" bold="false" italic = "false" color = "Red">
-				<Key word =  "void" />
-			</KeyWords>
-			
-			<KeyWords name ="AccessModifiers" bold="true" italic = "false" color = "Blue">
-				<Key word =  "public" />
-				<Key word =  "private" />
-			</KeyWords>
-			
-			<KeyWords name ="GetSet" bold="false" italic = "false" color = "SaddleBrown">
-				<Key word =  "get" />
-				<Key word =  "set" />
-			</KeyWords>
-			
-			<KeyWords name ="Literals" bold="true" italic = "false" color = "Black">
-				<Key word =  "null" />
-				<Key word =  "value" />
-			</KeyWords>
-			
-			<KeyWords name ="Statements" bold="true" italic = "false" color = "DarkBlue">
-				<Key word =  "var" />
-				<Key word =  "extends" />
-				<Key word =  "list" />
-				<Key word =  "each" />
-				<Key word =  "PHP_SELF" />
-			</KeyWords>
-		</RuleSet>
-			
-		<RuleSet name ="TestSet" ignorecase = "true">
-			<Delimiters>~!@%^*()-+=|\#/{}[]:;"'&lt;&gt; , .?</Delimiters>
-			<KeyWords name ="Testword" bold="true" italic = "true" color = "Red">
-				<Key word =  "TODO" />
-			</KeyWords>
-		</RuleSet>
+		<Keywords color="AccessKeywords">
+			<Word>global</Word>
+			<Word>my</Word>
+			<Word>var</Word>
+		</Keywords>
 		
-		<RuleSet name ="DocumentSet" ignorecase = "false">
-			<Delimiters>~!@%^*()-+=|\#/{}[]:;"'&lt;&gt; , .?</Delimiters>
-			
-			<Span name ="XMLTAG" rule = "XMLDocuSet" bold ="false" italic ="true" color ="Gray" stopateol ="true">
-				<Begin>&lt;</Begin>
-				<End>&gt;</End>
-			</Span>
-			
-			<KeyWords name ="Testword" bold="true" italic = "true" color = "Red">
-				<Key word =  "TODO" />
-			</KeyWords>
-		</RuleSet>
-		
-		<RuleSet name ="XMLDocuSet" ignorecase = "false">
-			<Delimiters>~!@%^*()-+=|\#/{}[]:;"'&lt;&gt; , .?</Delimiters>
-		
-			<Span name ="STRING" bold ="true" italic ="true" color ="Silver" stopateol ="true">
-				<Begin>"</Begin>
-				<End>"</End>
-			</Span>
-		
-		
-			<KeyWords name ="Punctuation" bold ="true" italic ="true" color ="Gray">
-				<Key word =  "/" />
-				<Key word =  "|" />
-				<Key word =  "=" />
-			</KeyWords>
-		</RuleSet>
-	</RuleSets>
+		<Keywords color="OperatorKeywords">
+			<Word>and</Word>
+			<Word>or</Word>
+			<Word>new</Word>
+			<Word>clone</Word>
+			<Word>instanceof</Word>
+			<Word>xor</Word>
+			<Word>true</Word>
+			<Word>false</Word>
+		</Keywords>
+	
+		<Keywords color="SelectionStatements">
+			<Word>else</Word>
+			<Word>else</Word>
+			<Word>switch</Word>
+			<Word>case</Word>
+			<Word>endif</Word>
+			<Word>elseif</Word>
+		</Keywords>
+	
+		<Keywords color="IterationStatements">
+			<Word>do</Word>
+			<Word>for</Word>
+			<Word>foreach</Word>
+			<Word>while</Word>
+			<Word>endwhile</Word>
+			<Word>exit</Word>
+		</Keywords>
+	
+		<Keywords color="JumpStatements">
+			<Word>break</Word>
+			<Word>continue</Word>
+			<Word>default</Word>
+			<Word>goto</Word>
+			<Word>return</Word>
+		</Keywords>
+	
+		<Keywords color="ControlStatements">
+			<Word>require</Word>
+			<Word>include</Word>
+			<Word>require</Word>
+			<Word>include</Word>
+			<Word>function</Word>
+		</Keywords>
+	
+		<Keywords color="ValueTypes">
+			<Word>int</Word>
+			<Word>integer</Word>
+			<Word>real</Word>
+			<Word>double</Word>
+			<Word>float</Word>
+			<Word>string</Word>
+			<Word>array</Word>
+			<Word>object</Word>
+		</Keywords>
+	
+		<Keywords color="OtherTypes">
+			<Word>class</Word>
+			<Word>void</Word>
+		</Keywords>
+	
+		<Keywords color="AccessModifiers">
+			<Word>public</Word>
+			<Word>private</Word>
+		</Keywords>
+	</RuleSet>
 </SyntaxDefinition>
-

@@ -53,6 +53,33 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
+		/// Shows an exception.
+		/// </summary>
+		public static void ShowHandledException(Exception ex)
+		{
+			ShowHandledException(ex, null);
+		}
+
+		/// <summary>
+		/// Shows an exception.
+		/// </summary>
+		public static void ShowHandledException(Exception ex, string message)
+		{
+			LoggingService.Error(message, ex);
+			LoggingService.Warn("Stack trace of last exception log:\n" + Environment.StackTrace);
+			message = GetMessage(message, ex);
+			ServiceManager.Instance.MessageService.ShowError(message);
+		}
+		
+		static string GetMessage(string message, Exception ex)
+		{
+			if (message == null) {
+				return ex.Message;
+			}
+			return message + "\r\n\r\n" + ex.Message;
+		}
+		
+		/// <summary>
 		/// Shows a warning message.
 		/// </summary>
 		public static void ShowWarning(string message)

@@ -34,7 +34,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// There can be two CodeEditorView instances in a single CodeEditor if split-view
 	/// is enabled.
 	/// </summary>
-	public class CodeEditorView : SharpDevelopTextEditor
+	public class CodeEditorView : SharpDevelopTextEditor, IDisposable
 	{
 		public ITextEditor Adapter { get; set; }
 		
@@ -67,6 +67,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// hide tooltip
 			if (this.toolTip != null)
 				this.toolTip.IsOpen = false;
+		}
+		
+		public virtual void Dispose()
+		{
+			contextActionsRenderer.Dispose();
 		}
 		
 		protected override string FileName {
