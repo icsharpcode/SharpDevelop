@@ -7,12 +7,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
+using ICSharpCode.NRefactory.Utils;
 using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.TypeSystem
 {
-	/* Not a real unit test
+	//* Not a real unit test
 	[TestFixture]
 	public class TestInterningProvider : IInterningProvider
 	{
@@ -143,6 +146,19 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			foreach (var element in stats) {
 				Console.WriteLine(element.Type + ": " + element.PostCount + "/" + element.PreCount);
 			}
+			Console.WriteLine(stats.Sum(r => r.PostCount * SizeOf(r.Type)) / 1024 + " KB / "
+			                  + stats.Sum(r => r.PreCount * SizeOf(r.Type)) / 1024 + " KB");
 		}
-	}*/
+		
+		static int SizeOf(Type t)
+		{
+			if (t == typeof(string))
+				return 16;
+			long start = GC.GetTotalMemory(true);
+			object o = FormatterServices.GetUninitializedObject(t);
+			long stop = GC.GetTotalMemory(true);
+			GC.KeepAlive(o);
+			return (int)Math.Max(8, stop - start);
+		}
+	}//*/
 }

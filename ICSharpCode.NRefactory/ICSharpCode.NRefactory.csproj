@@ -14,7 +14,7 @@
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <NoStdLib>False</NoStdLib>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <NoWarn>1591</NoWarn>
+    <NoWarn>1591,0618</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -176,6 +176,8 @@
     <Compile Include="CSharp\Resolver\UnknownMemberResolveResult.cs" />
     <Compile Include="CSharp\Resolver\UsingScope.cs" />
     <Compile Include="CSharp\Resolver\VariableResolveResult.cs" />
+    <Compile Include="Documentation\BinaryDocumentationProvider.cs" />
+    <Compile Include="Documentation\XmlDocumentationProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TypeSystem\Accessibility.cs" />
     <Compile Include="TypeSystem\ArrayType.cs" />
@@ -190,6 +192,7 @@
     <Compile Include="TypeSystem\IAttribute.cs" />
     <Compile Include="TypeSystem\IConstantValue.cs" />
     <Compile Include="TypeSystem\IConversions.cs" />
+    <Compile Include="TypeSystem\IDocumentationProvider.cs" />
     <Compile Include="TypeSystem\IEntity.cs" />
     <Compile Include="TypeSystem\IEvent.cs" />
     <Compile Include="TypeSystem\IExplicitInterfaceImplementation.cs" />
@@ -315,6 +318,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />
+    <Folder Include="Documentation" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

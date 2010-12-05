@@ -1,4 +1,4 @@
-// 
+﻿// 
 // DelegateDeclaration.cs
 //  
 // Author:
@@ -67,12 +67,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public CSharpTokenNode RPar {
 			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public IEnumerable<AttributeSection> Attributes { 
-			get {
-				return base.GetChildrenByRole (Roles.Attribute).Cast <AttributeSection>();
-			}
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

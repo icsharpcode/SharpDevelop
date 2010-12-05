@@ -5,7 +5,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq;
 
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using NUnit.Framework;

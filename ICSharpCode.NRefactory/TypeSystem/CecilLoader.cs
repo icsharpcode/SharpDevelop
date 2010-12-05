@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -32,6 +33,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Specifies whether to include internal members. The default is false.
 		/// </summary>
 		public bool IncludeInternalMembers { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets the documentation provider that is used to retrive the XML documentation for all members.
+		/// </summary>
+		public IDocumentationProvider DocumentationProvider { get; set; }
 		#endregion
 		
 		#region Load From AssemblyDefinition
@@ -46,7 +52,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					assemblyAttributes.Add(ReadAttribute(attr));
 				}
 				TypeStorage typeStorage = new TypeStorage();
-				CecilProjectContent pc = new CecilProjectContent(typeStorage, assemblyDefinition.Name.FullName, assemblyAttributes.AsReadOnly());
+				CecilProjectContent pc = new CecilProjectContent(typeStorage, assemblyDefinition.Name.FullName, assemblyAttributes.AsReadOnly(), this.DocumentationProvider);
 				
 				this.EarlyBindContext = CompositeTypeResolveContext.Combine(pc, this.EarlyBindContext);
 				List<CecilTypeDefinition> types = new List<CecilTypeDefinition>();
@@ -96,16 +102,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region IProjectContent implementation
-		sealed class CecilProjectContent : ProxyTypeResolveContext, IProjectContent, ISynchronizedTypeResolveContext
+		sealed class CecilProjectContent : ProxyTypeResolveContext, IProjectContent, ISynchronizedTypeResolveContext, IDocumentationProvider
 		{
 			readonly string assemblyName;
 			readonly ReadOnlyCollection<IAttribute> assemblyAttributes;
+			readonly IDocumentationProvider documentationProvider;
 			
-			public CecilProjectContent(TypeStorage types, string assemblyName, ReadOnlyCollection<IAttribute> assemblyAttributes)
+			public CecilProjectContent(TypeStorage types, string assemblyName, ReadOnlyCollection<IAttribute> assemblyAttributes, IDocumentationProvider documentationProvider)
 				: base(types)
 			{
+				Debug.Assert(assemblyName != null);
+				Debug.Assert(assemblyAttributes != null);
 				this.assemblyName = assemblyName;
 				this.assemblyAttributes = assemblyAttributes;
+				this.documentationProvider = documentationProvider;
 			}
 			
 			public IList<IAttribute> AssemblyAttributes {
@@ -125,6 +135,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			public void Dispose()
 			{
+				// Disposibng the synchronization context has no effect
+			}
+			
+			string IDocumentationProvider.GetDocumentation(IEntity entity)
+			{
+				if (documentationProvider != null)
+					return documentationProvider.GetDocumentation(entity);
+				else
+					return null;
 			}
 		}
 		#endregion

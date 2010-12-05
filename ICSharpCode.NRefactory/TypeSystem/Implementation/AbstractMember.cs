@@ -12,6 +12,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// </summary>
 	public abstract class AbstractMember : AbstractFreezable, IMember, ISupportsInterning
 	{
+		// possible optimizations to reduce the memory usage of AbstractMember:
+		// - put 'bool isFrozen' into flags
+		// - store regions in more compact form (e.g. assume both file names are identical; use ushort for columns)
+		
 		ITypeDefinition declaringTypeDefinition;
 		ITypeReference returnType = SharedTypes.UnknownType;
 		IList<IAttribute> attributes;
@@ -162,7 +166,17 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		}
 		
 		public virtual string Documentation {
-			get { return null; }
+			get {
+				// To save memory, we don't store the documentation provider within the member,
+				// but simply use our declaring type definition as documentation provider.
+				// If that fails, we try if the project content is a documentation provider:
+				IDocumentationProvider provider = declaringTypeDefinition as IDocumentationProvider
+					?? declaringTypeDefinition.ProjectContent as IDocumentationProvider;
+				if (provider != null)
+					return provider.GetDocumentation(this);
+				else
+					return null;
+			}
 		}
 		
 		public Accessibility Accessibility {

@@ -37,6 +37,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public override void PrepareForInterning(IInterningProvider provider)
 		{
 			base.PrepareForInterning(provider);
+			getter = provider.Intern(getter);
+			setter = provider.Intern(setter);
 			parameters = provider.InternList(parameters);
 		}
 		
