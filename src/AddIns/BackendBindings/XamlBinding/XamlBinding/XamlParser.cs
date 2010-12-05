@@ -91,8 +91,8 @@ namespace ICSharpCode.XamlBinding
 
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, ITextBuffer fileContent)
 		{
-			//using (new DebugTimerObject("background parser")) {
-			//	Core.LoggingService.Info("file: " + fileName);
+			ICompilationUnit compilationUnit;
+			
 			using (ParseAndLock(fileContent)) {
 				var document = parser.LastDocument;
 				
@@ -101,9 +101,9 @@ namespace ICSharpCode.XamlBinding
 				
 				document.AcceptVisitor(visitor);
 				
-				return visitor.CompilationUnit;
+				compilationUnit = visitor.CompilationUnit;
 			}
-			//}
+			
 			// During project load all XAML files are parsed
 			// most of them are not opened, thus fileContent.Version is null.
 			// We can clear the parser data, because the file will be reparsed
@@ -119,6 +119,8 @@ namespace ICSharpCode.XamlBinding
 				}
 				parser.Lock.ExitWriteLock();
 			}
+			
+			return compilationUnit;
 		}
 		
 		/// <summary>

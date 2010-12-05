@@ -175,6 +175,10 @@ namespace ICSharpCode.AvalonEdit.Xml
 			}
 		}
 		
+		/// <summary>
+		/// Clears the parser data.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">No write lock is held by the current thread.</exception>
 		public void Clear()
 		{
 			if (!Lock.IsWriteLockHeld)
