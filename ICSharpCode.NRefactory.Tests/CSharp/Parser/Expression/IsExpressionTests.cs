@@ -20,27 +20,26 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			Assert.IsTrue(ce.Expression is IdentifierExpression);*/
 		}
 		
-		[Test, Ignore]
+		[Test]
 		public void NullableIsExpression()
 		{
-			/* TODO
-			TypeOfIsExpression ce = ParseUtilCSharp.ParseExpression<TypeOfIsExpression>("o is int?");
-			Assert.AreEqual("System.Nullable", ce.TypeReference.Type);
-			Assert.AreEqual("System.Int32", ce.TypeReference.GenericTypes[0].Type);
-			Assert.IsTrue(ce.Expression is IdentifierExpression);*/
+			IsExpression ce = ParseUtilCSharp.ParseExpression<IsExpression>("o is int?");
+			ComposedType type = (ComposedType)ce.TypeReference;
+			Assert.IsTrue(type.HasNullableSpecifier);
+			Assert.AreEqual("int", ((PrimitiveType)type.BaseType).Keyword);
+			Assert.IsTrue(ce.Expression is IdentifierExpression);
 		}
 		
-		[Test, Ignore]
+		[Test]
 		public void NullableIsExpressionInBinaryOperatorExpression()
 		{
-		/* TODO
 			BinaryOperatorExpression boe;
 			boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>("o is int? == true");
-			TypeOfIsExpression ce = (TypeOfIsExpression)boe.Left;
-			Assert.AreEqual("System.Nullable", ce.TypeReference.Type);
-			Assert.AreEqual("System.Int32", ce.TypeReference.GenericTypes[0].Type);
+			IsExpression ce = (IsExpression)boe.Left;
+			ComposedType type = (ComposedType)ce.TypeReference;
+			Assert.IsTrue(type.HasNullableSpecifier);
+			Assert.AreEqual("int", ((PrimitiveType)type.BaseType).Keyword);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
-			*/
 		}
 	}
 }

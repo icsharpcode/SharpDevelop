@@ -32,13 +32,28 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class SimpleType : DomNode
 	{
+		public const int AliasRole = 100;
+		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Type;
 			}
 		}
 		
-		// TODO: add alias
+		/// <summary>
+		/// Gets whether this simple type is qualified with an alias
+		/// </summary>
+		public bool IsQualifiedWithAlias {
+			get {
+				return GetChildByRole (AliasRole) != null;
+			}
+		}
+		
+		public Identifier AliasIdentifier {
+			get {
+				return (Identifier)GetChildByRole (AliasRole) ?? CSharp.Identifier.Null;
+			}
+		}
 		
 		public Identifier IdentifierToken {
 			get {
@@ -50,7 +65,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return IdentifierToken.Name; }
 		}
 		
-		// TODO: add type arguments
+		public IEnumerable<DomNode> TypeArguments {
+			get {
+				return GetChildrenByRole (Roles.TypeArgument);
+			}
+		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{

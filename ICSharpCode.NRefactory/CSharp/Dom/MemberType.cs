@@ -52,7 +52,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return IdentifierToken.Name; }
 		}
 		
-		// TODO: add type arguments
+		public IEnumerable<DomNode> TypeArguments {
+			get {
+				return GetChildrenByRole (Roles.TypeArgument);
+			}
+		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{

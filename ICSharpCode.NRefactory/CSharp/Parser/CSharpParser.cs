@@ -1,6 +1,6 @@
 ﻿// 
 // CSharpParser.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -73,7 +73,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (nspace.Name != null) {
 					nDecl = new NamespaceDeclaration ();
 					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.NamespaceLocation), "namespace".Length), NamespaceDeclaration.Roles.Keyword);
-					nDecl.AddChild (ConvertMemberName (nspace.Name), NamespaceDeclaration.Roles.Identifier);
+					nDecl.AddChild (ConvertNamespaceName (nspace.Name), NamespaceDeclaration.Roles.Identifier);
 					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.OpenBrace), 1), NamespaceDeclaration.Roles.LBrace);
 					AddToNamespace (nDecl);
 					namespaceStack.Push (nDecl);
@@ -86,21 +86,12 @@ namespace ICSharpCode.NRefactory.CSharp
 					nDecl.AddChild (new CSharpTokenNode (Convert (nspace.CloseBrace), 1), NamespaceDeclaration.Roles.RBrace);
 					if (!nspace.OptSemicolon.IsNull)
 						nDecl.AddChild (new CSharpTokenNode (Convert (nspace.OptSemicolon), 1), NamespaceDeclaration.Roles.Semicolon);
-				
+					
 					namespaceStack.Pop ();
 				}
 			}
 			
-			public override void Visit (UsingsBag.Using u)
-			{
-				UsingDeclaration ud = new UsingDeclaration ();
-				ud.AddChild (new CSharpTokenNode (Convert (u.UsingLocation), "using".Length), UsingDeclaration.Roles.Keyword);
-				ud.AddChild (ConvertMemberName (u.NSpace), UsingAliasDeclaration.Roles.Identifier);
-				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingDeclaration.Roles.Semicolon);
-				AddToNamespace (ud);
-			}
-			
-			QualifiedIdentifier ConvertMemberName (MemberName memberName)
+			QualifiedIdentifier ConvertNamespaceName (MemberName memberName)
 			{
 				QualifiedIdentifier qi = new QualifiedIdentifier();
 				while (memberName != null) {
@@ -110,15 +101,47 @@ namespace ICSharpCode.NRefactory.CSharp
 				return qi;
 			}
 			
+			public override void Visit (UsingsBag.Using u)
+			{
+				UsingDeclaration ud = new UsingDeclaration ();
+				ud.AddChild (new CSharpTokenNode (Convert (u.UsingLocation), "using".Length), UsingDeclaration.Roles.Keyword);
+				ud.AddChild (ConvertImport (u.NSpace), UsingDeclaration.ImportRole);
+				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingDeclaration.Roles.Semicolon);
+				AddToNamespace (ud);
+			}
+			
 			public override void Visit (UsingsBag.AliasUsing u)
 			{
 				UsingAliasDeclaration ud = new UsingAliasDeclaration ();
 				ud.AddChild (new CSharpTokenNode (Convert (u.UsingLocation), "using".Length), UsingAliasDeclaration.Roles.Keyword);
 				ud.AddChild (new Identifier (u.Identifier.Value, Convert (u.Identifier.Location)), UsingAliasDeclaration.AliasRole);
 				ud.AddChild (new CSharpTokenNode (Convert (u.AssignLocation), 1), UsingAliasDeclaration.Roles.Assign);
-				ud.AddChild (new Identifier (u.Nspace.Name, Convert (u.Nspace.Location)), UsingAliasDeclaration.Roles.Identifier);
+				ud.AddChild (ConvertImport (u.Nspace), UsingAliasDeclaration.ImportRole);
 				ud.AddChild (new CSharpTokenNode (Convert (u.SemicolonLocation), 1), UsingAliasDeclaration.Roles.Semicolon);
 				AddToNamespace (ud);
+			}
+			
+			DomNode ConvertImport (MemberName memberName)
+			{
+				if (memberName.IsDoubleColon && memberName.Left != null) {
+					// left::name
+					SimpleType t = new SimpleType();
+					t.AddChild (new Identifier (memberName.Left.Name, Convert(memberName.Location)), SimpleType.AliasRole);
+					t.AddChild (new Identifier (memberName.Name, Convert(memberName.Location)), SimpleType.Roles.Identifier);
+					// TODO type arguments
+					return t;
+				} else if (memberName.Left != null) {
+					// left.name
+					MemberType t = new MemberType();
+					t.AddChild (ConvertImport (memberName.Left), MemberType.Roles.TargetExpression);
+					t.AddChild (new Identifier (memberName.Name, Convert(memberName.Location)), MemberType.Roles.Identifier);
+					return t;
+				} else {
+					SimpleType t = new SimpleType();
+					t.AddChild (new Identifier (memberName.Name, Convert(memberName.Location)), SimpleType.Roles.Identifier);
+					// TODO type arguments
+					return t;
+				}
 			}
 			
 			public override void Visit (MemberCore member)
@@ -133,7 +156,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				TypeDeclaration newType = new TypeDeclaration ();
 				newType.ClassType = ClassType.Class;
-				 
+				
 				var location = LocationsBag.GetMemberLocation (c);
 				AddModifiers (newType, location);
 				if (location != null)
@@ -235,7 +258,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						newDelegate.AddChild (new CSharpTokenNode (Convert (typeArgLocation[1]), 1), MemberReferenceExpression.Roles.RChevron);
 					AddConstraints (newDelegate, d);
 				}
-				if (location != null) 
+				if (location != null)
 					newDelegate.AddChild (new CSharpTokenNode (Convert (location[1]), 1), DelegateDeclaration.Roles.LPar);
 				AddParameter (newDelegate, d.Parameters);
 				
@@ -261,7 +284,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					namespaceStack.Peek ().AddChild (child, NamespaceDeclaration.Roles.Member);
 				} else {
 					unit.AddChild (child, CompilationUnit.Roles.Member);
-				}	
+				}
 			}
 			
 			public override void Visit (Mono.CSharp.Enum e)
@@ -580,7 +603,7 @@ namespace ICSharpCode.NRefactory.CSharp
 //					if (m.Block is ToplevelBlock) {
 //						newMethod.AddChild (bodyBlock.FirstChild.NextSibling, MethodDeclaration.Roles.Body);
 //					} else {
-						newMethod.AddChild (bodyBlock, MethodDeclaration.Roles.Body);
+					newMethod.AddChild (bodyBlock, MethodDeclaration.Roles.Body);
 //					}
 				}
 				typeStack.Peek ().AddChild (newMethod, TypeDeclaration.Roles.Member);
@@ -669,11 +692,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				var location = LocationsBag.GetMemberLocation (c);
 				AddModifiers (newConstructor, location);
 				newConstructor.AddChild (new Identifier (c.MemberName.Name, Convert (c.MemberName.Location)), DomNode.Roles.Identifier);
-				if (location != null) 
+				if (location != null)
 					newConstructor.AddChild (new CSharpTokenNode (Convert (location[0]), 1), MethodDeclaration.Roles.LPar);
 				
 				AddParameter (newConstructor, c.ParameterInfo);
-				if (location != null) 
+				if (location != null)
 					newConstructor.AddChild (new CSharpTokenNode (Convert (location[1]), 1), MethodDeclaration.Roles.RPar);
 				
 				if (c.Block != null)
@@ -860,7 +883,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				// indicates an error
 				return new EmptyStatement ();
 			}
-		
+			
 			
 			public override object Visit (If ifStatement)
 			{
@@ -924,7 +947,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			void AddStatementOrList (ForStatement forStatement, Statement init, int role)
 			{
-				if (init == null) 
+				if (init == null)
 					return;
 				if (init is StatementList) {
 					foreach (var stmt in ((StatementList)init).Statements) {
@@ -1027,7 +1050,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.AddChild (new CSharpTokenNode (Convert (gotoCase.loc), "goto".Length), GotoStatement.Roles.Keyword);
 				
 				var location = LocationsBag.GetLocations (gotoCase);
-				if (location != null) 
+				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), "case".Length), GotoStatement.CaseKeywordRole);
 				result.AddChild ((DomNode)gotoCase.Expr.Accept (this), GotoStatement.Roles.Expression);
 				if (location != null)
@@ -1104,7 +1127,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				foreach (Statement stmt in blockStatement.Statements) {
 					if (stmt == null)
 						continue;
-/*					if (curLocal < localVariables.Count && IsLower (localVariables[curLocal].Location, stmt.loc)) {
+					/*					if (curLocal < localVariables.Count && IsLower (localVariables[curLocal].Location, stmt.loc)) {
 						result.AddChild (CreateVariableDeclaration (localVariables[curLocal]), AstNode.Roles.Statement);
 						curLocal++;
 					}*/
@@ -1256,7 +1279,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return result;
 			}
 			
-			CatchClause ConvertCatch (Catch ctch) 
+			CatchClause ConvertCatch (Catch ctch)
 			{
 				CatchClause result = new CatchClause ();
 				var location = LocationsBag.GetLocations (ctch);
@@ -1380,10 +1403,12 @@ namespace ICSharpCode.NRefactory.CSharp
 				var result = new PrimitiveType ();
 				if (typeExpression.Type == TypeManager.void_type) {
 					result.Keyword = "void";
-				} else if (typeExpression.Type == TypeManager.object_type) {
-					result.Keyword = "object";
+				} else if (typeExpression.Type == TypeManager.string_type) {
+					result.Keyword = "string";
 				} else if (typeExpression.Type == TypeManager.int32_type) {
 					result.Keyword = "int";
+				} else if (typeExpression.Type == TypeManager.object_type) {
+					result.Keyword = "object";
 				} else {
 					throw new NotImplementedException();
 				}
@@ -1693,15 +1718,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.AddChild ((DomNode)conditionalExpression.FalseExpr.Accept (this), ConditionalExpression.FalseExpressionRole);
 				return result;
 			}
-		
+			
 			void AddParameter (DomNode parent, Mono.CSharp.AParametersCollection parameters)
 			{
 				if (parameters == null)
 					return;
 				var paramLocation = LocationsBag.GetLocations (parameters);
-			
+				
 				for (int i = 0; i < parameters.Count; i++) {
-					if (paramLocation != null && i > 0 && i - 1 < paramLocation.Count) 
+					if (paramLocation != null && i > 0 && i - 1 < paramLocation.Count)
 						parent.AddChild (new CSharpTokenNode (Convert (paramLocation[i - 1]), 1), ParameterDeclaration.Roles.Comma);
 					var p = (Parameter)parameters.FixedParameters[i];
 					var location = LocationsBag.GetLocations (p);
@@ -1812,7 +1837,7 @@ namespace ICSharpCode.NRefactory.CSharp
 							parent.AddChild (new CSharpTokenNode (Convert (commaLocations[idx]), 1), InvocationExpression.Roles.Comma);
 					}
 				}
-				if (commaLocations != null && commaLocations.Count > args.Count) 
+				if (commaLocations != null && commaLocations.Count > args.Count)
 					parent.AddChild (new CSharpTokenNode (Convert (commaLocations[0]), 1), InvocationExpression.Roles.Comma);
 			}
 			
@@ -1846,7 +1871,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), ObjectCreateExpression.Roles.RPar);
 				
-				// TODO: Collection initializer ? 
+				// TODO: Collection initializer ?
 				
 				return result;
 			}
@@ -1995,7 +2020,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			{
 				IndexerExpression result = new IndexerExpression ();
 				var location = LocationsBag.GetLocations (elementAccessExpression);
-				 
+				
 				result.AddChild ((DomNode)elementAccessExpression.Expr.Accept (this), IndexerExpression.Roles.TargetExpression);
 				result.AddChild (new CSharpTokenNode (Convert (elementAccessExpression.Location), 1), TypeOfExpression.Roles.LBracket);
 				AddArguments (result, location, elementAccessExpression.Arguments);
@@ -2178,7 +2203,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override object Visit (Mono.CSharp.Linq.SelectMany selectMany)
 			{
 				var result = new QueryExpressionFromClause ();
-// TODO:
+				// TODO:
 //				Mono.CSharp.Linq.Cast cast = selectMany.Expr as Mono.CSharp.Linq.Cast;
 				var location = LocationsBag.GetLocations (selectMany);
 				if (location != null)
@@ -2307,7 +2332,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.OrderAscending = true;
 				result.AddChild ((DomNode)orderByAscending.Expr.Accept (this), QueryExpressionWhereClause.Roles.Expression);
 				var location = LocationsBag.GetLocations (orderByAscending);
-				if (location != null) 
+				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), "ascending".Length), QueryExpressionWhereClause.Roles.Keyword);
 				return result;
 			}
@@ -2329,7 +2354,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				result.OrderAscending = true;
 				result.AddChild ((DomNode)thenByAscending.Expr.Accept (this), QueryExpressionWhereClause.Roles.Expression);
 				var location = LocationsBag.GetLocations (thenByAscending);
-				if (location != null) 
+				if (location != null)
 					result.AddChild (new CSharpTokenNode (Convert (location[0]), "ascending".Length), QueryExpressionWhereClause.Roles.Keyword);
 				return result;
 			}
@@ -2346,7 +2371,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			#endregion
 		}
-			
+		
 		public DomLocation StartLocation {
 			get { return new DomLocation(1, 1); }
 			// TODO: add support for setting the start location when parsing parts of files (e.g. for ASP.NET)

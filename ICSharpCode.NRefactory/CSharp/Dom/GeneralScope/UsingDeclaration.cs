@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Text;
 
 namespace ICSharpCode.NRefactory.CSharp
@@ -42,12 +43,32 @@ namespace ICSharpCode.NRefactory.CSharp
 		public string Namespace {
 			get {
 				StringBuilder b = new StringBuilder();
-				SimpleType t = this.Import as SimpleType;
-				if (t == null)
+				if (AppendName(b, this.Import))
+					return b.ToString();
+				else
 					return null;
-				b.Append(t.Identifier);
-				return b.ToString();
 			}
+		}
+		
+		static bool AppendName(StringBuilder b, DomNode import)
+		{
+			MemberType m = import as MemberType;
+			if (m != null && !m.TypeArguments.Any()) {
+				AppendName(b, m.Target);
+				b.Append('.');
+				b.Append(m.Identifier);
+				return true;
+			}
+			SimpleType t = import as SimpleType;
+			if (t != null && !t.TypeArguments.Any()) {
+				if (t.IsQualifiedWithAlias) {
+					b.Append(t.AliasIdentifier.Name);
+					b.Append("::");
+				}
+				b.Append(t.Identifier);
+				return true;
+			}
+			return false;
 		}
 		
 		public DomNode Import {

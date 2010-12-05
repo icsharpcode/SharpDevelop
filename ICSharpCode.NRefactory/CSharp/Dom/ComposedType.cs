@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ComposedType.cs
 //  
 // Author:
@@ -26,7 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Text;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -48,8 +48,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public IEnumerable<ArraySpecifier> Compositions {
-			get { return GetChildrenByRole (ArraySpecRole).Cast<ArraySpecifier> () ?? new ArraySpecifier[0]; }
+		public bool HasNullableSpecifier {
+			get { return GetChildByRole(NullableRole) != null; }
+		}
+		
+		public int PointerRank {
+			get { return GetChildrenByRole(PointerRole).Count(); }
+		}
+		
+		public IEnumerable<ArraySpecifier> ArraySpecifiers {
+			get { return GetChildrenByRole (ArraySpecRole).Cast<ArraySpecifier> (); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
@@ -57,6 +65,21 @@ namespace ICSharpCode.NRefactory.CSharp
 			return visitor.VisitComposedType (this, data);
 		}
 		
+		public override string ToString()
+		{
+			StringBuilder b = new StringBuilder();
+			b.Append(BaseType.ToString());
+			if (this.HasNullableSpecifier)
+				b.Append('?');
+			b.Append('*', this.PointerRank);
+			foreach (var arraySpecifier in this.ArraySpecifiers) {
+				b.Append('[');
+				b.Append(',', arraySpecifier.Rank);
+				b.Append(']');
+			}
+			return b.ToString();
+		}
+
 		public class ArraySpecifier : DomNode
 		{
 			public override NodeType NodeType {
@@ -69,10 +92,13 @@ namespace ICSharpCode.NRefactory.CSharp
 				get { return (CSharpTokenNode)GetChildByRole (Roles.LBracket); }
 			}
 			
+			public int Rank {
+				get { return GetChildrenByRole(Roles.Comma).Count(); }
+			}
+			
 			public CSharpTokenNode RBracket {
 				get { return (CSharpTokenNode)GetChildByRole (Roles.RBracket); }
 			}
-		
 			
 			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 			{
