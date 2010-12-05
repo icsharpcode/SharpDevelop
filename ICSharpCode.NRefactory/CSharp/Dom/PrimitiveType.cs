@@ -1,10 +1,10 @@
 ﻿// 
-// StackAllocExpression.cs
-//  
+// FullTypeName.cs
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,50 +23,37 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class StackAllocExpression : DomNode
+	public class PrimitiveType : DomNode
 	{
-		public const int StackAllocKeywordRole = 100;
-		
 		public override NodeType NodeType {
 			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public DomNode Type {
-			get {
-				return GetChildByRole (Roles.ReturnType) ?? DomNode.Null;
+				return NodeType.Type;
 			}
 		}
 		
-		public DomNode CountExpression {
-			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
-		}
-		
-		public CSharpTokenNode StackAllocKeyword {
+		public CSharpTokenNode TypeKeyword {
 			get {
-				return (CSharpTokenNode)GetChildByRole (StackAllocKeywordRole) ?? CSharpTokenNode.Null;
+				return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null;
 			}
 		}
 		
-		public CSharpTokenNode LBracket {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBracket) ?? CSharpTokenNode.Null;
-			}
-		}
-		
-		public CSharpTokenNode RBracket {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBracket) ?? CSharpTokenNode.Null;
-			}
-		}
+		public string Keyword { get; set; }
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
-			return visitor.VisitStackAllocExpression (this, data);
+			return visitor.VisitPrimitiveType (this, data);
+		}
+		
+		public override string ToString()
+		{
+			return Keyword ?? base.ToString();
 		}
 	}
 }
+

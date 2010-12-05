@@ -75,14 +75,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override IEntity VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
 			ITypeOrNamespaceReference r = null;
-			foreach (Identifier identifier in usingDeclaration.NameIdentifier.NameParts) {
+			/*foreach (Identifier identifier in usingDeclaration.NameIdentifier.NameParts) {
 				if (r == null) {
 					// TODO: alias?
 					r = new SimpleTypeOrNamespaceReference(identifier.Name, null, currentTypeDefinition, usingScope, true);
 				} else {
 					r = new MemberTypeOrNamespaceReference(r, identifier.Name, null, currentTypeDefinition, usingScope);
 				}
-			}
+			}*/throw new NotImplementedException();
 			if (r != null)
 				usingScope.Usings.Add(r);
 			return null;
@@ -507,14 +507,16 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		internal static ITypeReference ConvertType(DomNode node)
 		{
-			FullTypeName f = node as FullTypeName;
+			PrimitiveType f = node as PrimitiveType;
 			if (f != null) {
-				switch (f.Identifier.Name) {
-					case "String":
+				switch (f.Keyword) {
+					case "string":
 						return TypeCode.String.ToTypeReference();
-					case "Int32":
+					case "int":
 						return TypeCode.Int32.ToTypeReference();
-					case "Void":
+					case "uint":
+						return TypeCode.UInt32.ToTypeReference();
+					case "void":
 						return voidReference;
 				}
 			}

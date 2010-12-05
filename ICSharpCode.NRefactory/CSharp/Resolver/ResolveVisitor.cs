@@ -1043,24 +1043,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Using Declaration
 		public override ResolveResult VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 		
 		public override ResolveResult VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 		#endregion
 		
 		#region Type References
-		public override ResolveResult VisitFullTypeName(FullTypeName fullTypeName, object data)
+		public override ResolveResult VisitPrimitiveType(PrimitiveType primitiveType, object data)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 		
 		public override ResolveResult VisitComposedType(ComposedType composedType, object data)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 		#endregion
 		

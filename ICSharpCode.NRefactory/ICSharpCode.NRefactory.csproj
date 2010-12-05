@@ -91,7 +91,8 @@
     <Compile Include="CSharp\Dom\Expressions\TypeOfExpression.cs" />
     <Compile Include="CSharp\Dom\Expressions\UnaryOperatorExpression.cs" />
     <Compile Include="CSharp\Dom\Expressions\UncheckedExpression.cs" />
-    <Compile Include="CSharp\Dom\FullTypeName.cs" />
+    <Compile Include="CSharp\Dom\MemberType.cs" />
+    <Compile Include="CSharp\Dom\PrimitiveType.cs" />
     <Compile Include="CSharp\Dom\GeneralScope\Attribute.cs" />
     <Compile Include="CSharp\Dom\GeneralScope\AttributeSection.cs" />
     <Compile Include="CSharp\Dom\GeneralScope\Constraint.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="CSharp\Dom\Identifier.cs" />
     <Compile Include="CSharp\Dom\Modifiers.cs" />
     <Compile Include="CSharp\Dom\QualifiedIdentifier.cs" />
+    <Compile Include="CSharp\Dom\SimpleType.cs" />
     <Compile Include="CSharp\Dom\Statements\BlockStatement.cs" />
     <Compile Include="CSharp\Dom\Statements\BreakStatement.cs" />
     <Compile Include="CSharp\Dom\Statements\CheckedStatement.cs" />

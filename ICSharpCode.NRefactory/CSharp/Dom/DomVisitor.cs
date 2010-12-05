@@ -1,6 +1,6 @@
-// 
+﻿// 
 // DomVisitor.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -50,105 +50,112 @@ namespace ICSharpCode.NRefactory.CSharp
 			return default (S);
 		}
 		
-		public virtual S VisitFullTypeName (FullTypeName fullTypeName, T data)
-		{
-			return default (S);
-		}
-		
 		public virtual S VisitIdentifier (Identifier identifier, T data)
 		{
 			return default (S);
 		}
 		
-		public virtual S VisitComposedType (ComposedType composedType, T data)
+		public virtual S VisitPrimitiveType (PrimitiveType primitiveType, T data)
 		{
-			return default (S);
+			return VisitChildren (primitiveType, data);
 		}
 		
-		public virtual S VisitAttribute (Attribute attribute, T data) 
+		public virtual S VisitComposedType (ComposedType composedType, T data)
+		{
+			return VisitChildren (composedType, data);
+		}
+		
+		public virtual S VisitSimpleType(SimpleType simpleType, T data)
+		{
+			return VisitChildren (simpleType, data);
+		}
+		
+		public virtual S VisitMemberType(MemberType memberType, T data)
+		{
+			return VisitChildren (memberType, data);
+		}
+		
+		public virtual S VisitAttribute (Attribute attribute, T data)
 		{
 			return VisitChildren (attribute, data);
 		}
 		
-		public virtual S VisitAttributeSection (AttributeSection attributeSection, T data) 
+		public virtual S VisitAttributeSection (AttributeSection attributeSection, T data)
 		{
 			return VisitChildren (attributeSection, data);
 		}
 		
-		public virtual S VisitDelegateDeclaration (DelegateDeclaration delegateDeclaration, T data) 
+		public virtual S VisitDelegateDeclaration (DelegateDeclaration delegateDeclaration, T data)
 		{
 			return VisitChildren (delegateDeclaration, data);
 		}
 		
-		public virtual S VisitNamespaceDeclaration (NamespaceDeclaration namespaceDeclaration, T data) 
+		public virtual S VisitNamespaceDeclaration (NamespaceDeclaration namespaceDeclaration, T data)
 		{
 			return VisitChildren (namespaceDeclaration, data);
 		}
 		
-		public virtual S VisitTypeDeclaration (TypeDeclaration typeDeclaration, T data) 
+		public virtual S VisitTypeDeclaration (TypeDeclaration typeDeclaration, T data)
 		{
-			foreach (var node in typeDeclaration.GetChildrenByRole (TypeDeclaration.Roles.Member)) {
-				node.AcceptVisitor (this, data);
-			}
-			return default (S);
+			return VisitChildren (typeDeclaration, data);
 		}
 		
-		public virtual S VisitEnumMemberDeclaration (EnumMemberDeclaration enumMemberDeclaration, T data) 
+		public virtual S VisitEnumMemberDeclaration (EnumMemberDeclaration enumMemberDeclaration, T data)
 		{
 			return VisitChildren (enumMemberDeclaration, data);
 		}
 		
-		public virtual S VisitUsingDeclaration (UsingDeclaration usingDeclaration, T data) 
+		public virtual S VisitUsingDeclaration (UsingDeclaration usingDeclaration, T data)
 		{
 			return VisitChildren (usingDeclaration, data);
 		}
 		
-		public virtual S VisitUsingAliasDeclaration (UsingAliasDeclaration usingDeclaration, T data) 
+		public virtual S VisitUsingAliasDeclaration (UsingAliasDeclaration usingDeclaration, T data)
 		{
 			return VisitChildren (usingDeclaration, data);
 		}
 		
-		public virtual S VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration, T data) 
+		public virtual S VisitConstructorDeclaration (ConstructorDeclaration constructorDeclaration, T data)
 		{
 			return VisitChildren (constructorDeclaration, data);
 		}
 		
-		public virtual S VisitConstructorInitializer (ConstructorInitializer constructorInitializer, T data) 
+		public virtual S VisitConstructorInitializer (ConstructorInitializer constructorInitializer, T data)
 		{
 			return VisitChildren (constructorInitializer, data);
 		}
 		
-		public virtual S VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration, T data) 
+		public virtual S VisitDestructorDeclaration (DestructorDeclaration destructorDeclaration, T data)
 		{
 			return VisitChildren (destructorDeclaration, data);
 		}
 		
-		public virtual S VisitEventDeclaration (EventDeclaration eventDeclaration, T data) 
+		public virtual S VisitEventDeclaration (EventDeclaration eventDeclaration, T data)
 		{
 			return VisitChildren (eventDeclaration, data);
 		}
 		
-		public virtual S VisitFieldDeclaration (FieldDeclaration fieldDeclaration, T data) 
+		public virtual S VisitFieldDeclaration (FieldDeclaration fieldDeclaration, T data)
 		{
 			return VisitChildren (fieldDeclaration, data);
 		}
 		
-		public virtual S VisitIndexerDeclaration (IndexerDeclaration indexerDeclaration, T data) 
+		public virtual S VisitIndexerDeclaration (IndexerDeclaration indexerDeclaration, T data)
 		{
 			return VisitChildren (indexerDeclaration, data);
 		}
 		
-		public virtual S VisitMethodDeclaration (MethodDeclaration methodDeclaration, T data) 
+		public virtual S VisitMethodDeclaration (MethodDeclaration methodDeclaration, T data)
 		{
 			return VisitChildren (methodDeclaration, data);
 		}
 		
-		public virtual S VisitOperatorDeclaration (OperatorDeclaration operatorDeclaration, T data) 
+		public virtual S VisitOperatorDeclaration (OperatorDeclaration operatorDeclaration, T data)
 		{
 			return VisitChildren (operatorDeclaration, data);
 		}
 		
-		public virtual S VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, T data) 
+		public virtual S VisitPropertyDeclaration (PropertyDeclaration propertyDeclaration, T data)
 		{
 			return VisitChildren (propertyDeclaration, data);
 		}
@@ -158,7 +165,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (accessorDeclaration, data);
 		}
 		
-		public virtual S VisitVariableInitializer (VariableInitializer variableInitializer, T data) 
+		public virtual S VisitVariableInitializer (VariableInitializer variableInitializer, T data)
 		{
 			return VisitChildren (variableInitializer, data);
 		}
@@ -173,7 +180,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (constraint, data);
 		}
 		
-		public virtual S VisitBlockStatement (BlockStatement blockStatement, T data) 
+		public virtual S VisitBlockStatement (BlockStatement blockStatement, T data)
 		{
 			return VisitChildren (blockStatement, data);
 		}
@@ -183,177 +190,177 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (expressionStatement, data);
 		}
 		
-		public virtual S VisitBreakStatement (BreakStatement breakStatement, T data) 
+		public virtual S VisitBreakStatement (BreakStatement breakStatement, T data)
 		{
 			return VisitChildren (breakStatement, data);
 		}
 		
-		public virtual S VisitCheckedStatement (CheckedStatement checkedStatement, T data) 
+		public virtual S VisitCheckedStatement (CheckedStatement checkedStatement, T data)
 		{
 			return VisitChildren (checkedStatement, data);
 		}
 		
-		public virtual S VisitContinueStatement (ContinueStatement continueStatement, T data) 
+		public virtual S VisitContinueStatement (ContinueStatement continueStatement, T data)
 		{
 			return VisitChildren (continueStatement, data);
 		}
 		
-		public virtual S VisitEmptyStatement (EmptyStatement emptyStatement, T data) 
+		public virtual S VisitEmptyStatement (EmptyStatement emptyStatement, T data)
 		{
 			return VisitChildren (emptyStatement, data);
 		}
 		
-		public virtual S VisitFixedStatement (FixedStatement fixedStatement, T data) 
+		public virtual S VisitFixedStatement (FixedStatement fixedStatement, T data)
 		{
 			return VisitChildren (fixedStatement, data);
 		}
 		
-		public virtual S VisitForeachStatement (ForeachStatement foreachStatement, T data) 
+		public virtual S VisitForeachStatement (ForeachStatement foreachStatement, T data)
 		{
 			return VisitChildren (foreachStatement, data);
 		}
 		
-		public virtual S VisitForStatement (ForStatement forStatement, T data) 
+		public virtual S VisitForStatement (ForStatement forStatement, T data)
 		{
 			return VisitChildren (forStatement, data);
 		}
 		
-		public virtual S VisitGotoStatement (GotoStatement gotoStatement, T data) 
+		public virtual S VisitGotoStatement (GotoStatement gotoStatement, T data)
 		{
 			return VisitChildren (gotoStatement, data);
 		}
 		
-		public virtual S VisitIfElseStatement (IfElseStatement ifElseStatement, T data) 
+		public virtual S VisitIfElseStatement (IfElseStatement ifElseStatement, T data)
 		{
 			return VisitChildren (ifElseStatement, data);
 		}
 		
-		public virtual S VisitLabelStatement (LabelStatement labelStatement, T data) 
+		public virtual S VisitLabelStatement (LabelStatement labelStatement, T data)
 		{
 			return VisitChildren (labelStatement, data);
 		}
 		
-		public virtual S VisitLockStatement (LockStatement lockStatement, T data) 
+		public virtual S VisitLockStatement (LockStatement lockStatement, T data)
 		{
 			return VisitChildren (lockStatement, data);
 		}
 		
-		public virtual S VisitReturnStatement (ReturnStatement returnStatement, T data) 
+		public virtual S VisitReturnStatement (ReturnStatement returnStatement, T data)
 		{
 			return VisitChildren (returnStatement, data);
 		}
 		
-		public virtual S VisitSwitchStatement (SwitchStatement switchStatement, T data) 
+		public virtual S VisitSwitchStatement (SwitchStatement switchStatement, T data)
 		{
 			return VisitChildren (switchStatement, data);
 		}
 		
-		public virtual S VisitSwitchSection (SwitchSection switchSection, T data) 
+		public virtual S VisitSwitchSection (SwitchSection switchSection, T data)
 		{
 			return VisitChildren (switchSection, data);
 		}
 		
-		public virtual S VisitCaseLabel (CaseLabel caseLabel, T data) 
+		public virtual S VisitCaseLabel (CaseLabel caseLabel, T data)
 		{
 			return VisitChildren (caseLabel, data);
 		}
 		
-		public virtual S VisitThrowStatement (ThrowStatement throwStatement, T data) 
+		public virtual S VisitThrowStatement (ThrowStatement throwStatement, T data)
 		{
 			return VisitChildren (throwStatement, data);
 		}
 		
-		public virtual S VisitTryCatchStatement (TryCatchStatement tryCatchStatement, T data) 
+		public virtual S VisitTryCatchStatement (TryCatchStatement tryCatchStatement, T data)
 		{
 			return VisitChildren (tryCatchStatement, data);
 		}
 		
-		public virtual S VisitCatchClause (CatchClause catchClause, T data) 
+		public virtual S VisitCatchClause (CatchClause catchClause, T data)
 		{
 			return VisitChildren (catchClause, data);
 		}
 		
-		public virtual S VisitUncheckedStatement (UncheckedStatement uncheckedStatement, T data) 
+		public virtual S VisitUncheckedStatement (UncheckedStatement uncheckedStatement, T data)
 		{
 			return VisitChildren (uncheckedStatement, data);
 		}
 		
-		public virtual S VisitUnsafeStatement (UnsafeStatement unsafeStatement, T data) 
+		public virtual S VisitUnsafeStatement (UnsafeStatement unsafeStatement, T data)
 		{
 			return VisitChildren (unsafeStatement, data);
 		}
 		
-		public virtual S VisitUsingStatement (UsingStatement usingStatement, T data) 
+		public virtual S VisitUsingStatement (UsingStatement usingStatement, T data)
 		{
 			return VisitChildren (usingStatement, data);
 		}
 		
-		public virtual S VisitVariableDeclarationStatement (VariableDeclarationStatement variableDeclarationStatement, T data) 
+		public virtual S VisitVariableDeclarationStatement (VariableDeclarationStatement variableDeclarationStatement, T data)
 		{
 			return VisitChildren (variableDeclarationStatement, data);
 		}
 		
-		public virtual S VisitWhileStatement (WhileStatement whileStatement, T data) 
+		public virtual S VisitWhileStatement (WhileStatement whileStatement, T data)
 		{
 			return VisitChildren (whileStatement, data);
 		}
 		
-		public virtual S VisitYieldStatement (YieldStatement yieldStatement, T data) 
+		public virtual S VisitYieldStatement (YieldStatement yieldStatement, T data)
 		{
 			return VisitChildren (yieldStatement, data);
 		}
 		
-		public virtual S VisitAnonymousMethodExpression (AnonymousMethodExpression anonymousMethodExpression, T data) 
+		public virtual S VisitAnonymousMethodExpression (AnonymousMethodExpression anonymousMethodExpression, T data)
 		{
 			return VisitChildren (anonymousMethodExpression, data);
 		}
 		
-		public virtual S VisitLambdaExpression (LambdaExpression lambdaExpression, T data) 
+		public virtual S VisitLambdaExpression (LambdaExpression lambdaExpression, T data)
 		{
 			return VisitChildren (lambdaExpression, data);
 		}
 		
-		public virtual S VisitAssignmentExpression (AssignmentExpression assignmentExpression, T data) 
+		public virtual S VisitAssignmentExpression (AssignmentExpression assignmentExpression, T data)
 		{
 			return VisitChildren (assignmentExpression, data);
 		}
 		
-		public virtual S VisitBaseReferenceExpression (BaseReferenceExpression baseReferenceExpression, T data) 
+		public virtual S VisitBaseReferenceExpression (BaseReferenceExpression baseReferenceExpression, T data)
 		{
 			return VisitChildren (baseReferenceExpression, data);
 		}
 		
-		public virtual S VisitBinaryOperatorExpression (BinaryOperatorExpression binaryOperatorExpression, T data) 
+		public virtual S VisitBinaryOperatorExpression (BinaryOperatorExpression binaryOperatorExpression, T data)
 		{
 			return VisitChildren (binaryOperatorExpression, data);
 		}
 		
-		public virtual S VisitCastExpression (CastExpression castExpression, T data) 
+		public virtual S VisitCastExpression (CastExpression castExpression, T data)
 		{
 			return VisitChildren (castExpression, data);
 		}
 		
-		public virtual S VisitCheckedExpression (CheckedExpression checkedExpression, T data) 
+		public virtual S VisitCheckedExpression (CheckedExpression checkedExpression, T data)
 		{
 			return VisitChildren (checkedExpression, data);
 		}
 		
-		public virtual S VisitConditionalExpression (ConditionalExpression conditionalExpression, T data) 
+		public virtual S VisitConditionalExpression (ConditionalExpression conditionalExpression, T data)
 		{
 			return VisitChildren (conditionalExpression, data);
 		}
 		
-		public virtual S VisitIdentifierExpression (IdentifierExpression identifierExpression, T data) 
+		public virtual S VisitIdentifierExpression (IdentifierExpression identifierExpression, T data)
 		{
 			return VisitChildren (identifierExpression, data);
 		}
 		
-		public virtual S VisitIndexerExpression (IndexerExpression indexerExpression, T data) 
+		public virtual S VisitIndexerExpression (IndexerExpression indexerExpression, T data)
 		{
 			return VisitChildren (indexerExpression, data);
 		}
 		
-		public virtual S VisitInvocationExpression (InvocationExpression invocationExpression, T data) 
+		public virtual S VisitInvocationExpression (InvocationExpression invocationExpression, T data)
 		{
 			return VisitChildren (invocationExpression, data);
 		}
@@ -363,107 +370,107 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (directionExpression, data);
 		}
 		
-		public virtual S VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, T data) 
+		public virtual S VisitMemberReferenceExpression (MemberReferenceExpression memberReferenceExpression, T data)
 		{
 			return VisitChildren (memberReferenceExpression, data);
 		}
 		
-		public virtual S VisitNullReferenceExpression (NullReferenceExpression nullReferenceExpression, T data) 
+		public virtual S VisitNullReferenceExpression (NullReferenceExpression nullReferenceExpression, T data)
 		{
 			return VisitChildren (nullReferenceExpression, data);
 		}
 		
-		public virtual S VisitObjectCreateExpression (ObjectCreateExpression objectCreateExpression, T data) 
+		public virtual S VisitObjectCreateExpression (ObjectCreateExpression objectCreateExpression, T data)
 		{
 			return VisitChildren (objectCreateExpression, data);
 		}
 		
-		public virtual S VisitArrayCreateExpression (ArrayCreateExpression arrayObjectCreateExpression, T data) 
+		public virtual S VisitArrayCreateExpression (ArrayCreateExpression arrayObjectCreateExpression, T data)
 		{
 			return VisitChildren (arrayObjectCreateExpression, data);
 		}
 		
-		public virtual S VisitParenthesizedExpression (ParenthesizedExpression parenthesizedExpression, T data) 
+		public virtual S VisitParenthesizedExpression (ParenthesizedExpression parenthesizedExpression, T data)
 		{
 			return VisitChildren (parenthesizedExpression, data);
 		}
 		
-		public virtual S VisitPointerReferenceExpression (PointerReferenceExpression pointerReferenceExpression, T data) 
+		public virtual S VisitPointerReferenceExpression (PointerReferenceExpression pointerReferenceExpression, T data)
 		{
 			return VisitChildren (pointerReferenceExpression, data);
 		}
 		
-		public virtual S VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, T data) 
+		public virtual S VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, T data)
 		{
 			return VisitChildren (primitiveExpression, data);
 		}
 		
-		public virtual S VisitSizeOfExpression (SizeOfExpression sizeOfExpression, T data) 
+		public virtual S VisitSizeOfExpression (SizeOfExpression sizeOfExpression, T data)
 		{
 			return VisitChildren (sizeOfExpression, data);
 		}
 		
-		public virtual S VisitStackAllocExpression (StackAllocExpression stackAllocExpression, T data) 
+		public virtual S VisitStackAllocExpression (StackAllocExpression stackAllocExpression, T data)
 		{
 			return VisitChildren (stackAllocExpression, data);
 		}
 		
-		public virtual S VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, T data) 
+		public virtual S VisitThisReferenceExpression(ThisReferenceExpression thisReferenceExpression, T data)
 		{
 			return VisitChildren (thisReferenceExpression, data);
 		}
 		
-		public virtual S VisitTypeOfExpression (TypeOfExpression typeOfExpression, T data) 
+		public virtual S VisitTypeOfExpression (TypeOfExpression typeOfExpression, T data)
 		{
 			return VisitChildren (typeOfExpression, data);
 		}
 		
-		public virtual S VisitUnaryOperatorExpression (UnaryOperatorExpression unaryOperatorExpression, T data) 
+		public virtual S VisitUnaryOperatorExpression (UnaryOperatorExpression unaryOperatorExpression, T data)
 		{
 			return VisitChildren (unaryOperatorExpression, data);
 		}
 		
-		public virtual S VisitUncheckedExpression (UncheckedExpression uncheckedExpression, T data) 
+		public virtual S VisitUncheckedExpression (UncheckedExpression uncheckedExpression, T data)
 		{
 			return VisitChildren (uncheckedExpression, data);
 		}
 		
-		public virtual S VisitQueryExpressionFromClause (QueryExpressionFromClause queryExpressionFromClause, T data) 
+		public virtual S VisitQueryExpressionFromClause (QueryExpressionFromClause queryExpressionFromClause, T data)
 		{
 			return VisitChildren (queryExpressionFromClause, data);
 		}
 		
-		public virtual S VisitQueryExpressionWhereClause (QueryExpressionWhereClause queryExpressionWhereClause, T data) 
+		public virtual S VisitQueryExpressionWhereClause (QueryExpressionWhereClause queryExpressionWhereClause, T data)
 		{
 			return VisitChildren (queryExpressionWhereClause, data);
 		}
 		
-		public virtual S VisitQueryExpressionJoinClause (QueryExpressionJoinClause queryExpressionJoinClause, T data) 
+		public virtual S VisitQueryExpressionJoinClause (QueryExpressionJoinClause queryExpressionJoinClause, T data)
 		{
 			return VisitChildren (queryExpressionJoinClause, data);
 		}
 		
-		public virtual S VisitQueryExpressionGroupClause (QueryExpressionGroupClause queryExpressionGroupClause, T data) 
+		public virtual S VisitQueryExpressionGroupClause (QueryExpressionGroupClause queryExpressionGroupClause, T data)
 		{
 			return VisitChildren (queryExpressionGroupClause, data);
 		}
 		
-		public virtual S VisitQueryExpressionLetClause (QueryExpressionLetClause queryExpressionLetClause, T data) 
+		public virtual S VisitQueryExpressionLetClause (QueryExpressionLetClause queryExpressionLetClause, T data)
 		{
 			return VisitChildren (queryExpressionLetClause, data);
 		}
 		
-		public virtual S VisitQueryExpressionOrderClause (QueryExpressionOrderClause queryExpressionOrderClause, T data) 
+		public virtual S VisitQueryExpressionOrderClause (QueryExpressionOrderClause queryExpressionOrderClause, T data)
 		{
 			return VisitChildren (queryExpressionOrderClause, data);
 		}
 		
-		public virtual S VisitQueryExpressionOrdering (QueryExpressionOrdering queryExpressionOrdering, T data) 
+		public virtual S VisitQueryExpressionOrdering (QueryExpressionOrdering queryExpressionOrdering, T data)
 		{
 			return VisitChildren (queryExpressionOrdering, data);
 		}
 		
-		public virtual S VisitQueryExpressionSelectClause (QueryExpressionSelectClause queryExpressionSelectClause, T data) 
+		public virtual S VisitQueryExpressionSelectClause (QueryExpressionSelectClause queryExpressionSelectClause, T data)
 		{
 			return VisitChildren (queryExpressionSelectClause, data);
 		}
@@ -488,7 +495,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (argListExpression, data);
 		}
 		
-		public S VisitArrayInitializerExpression (ArrayInitializerExpression arrayInitializerExpression, T data)
+		public virtual S VisitArrayInitializerExpression (ArrayInitializerExpression arrayInitializerExpression, T data)
 		{
 			return VisitChildren (arrayInitializerExpression, data);
 		}

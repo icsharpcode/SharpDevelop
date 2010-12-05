@@ -74,7 +74,6 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 		}
 		
 		[Test]
-		[Ignore("'::' not yet implemented")]
 		public void UsingWithAliasing()
 		{
 			string program = "using global::System;\n" +
@@ -95,7 +94,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			UsingAliasDeclaration uad = (UsingAliasDeclaration)cu.Children.ElementAt(1);
 			Assert.AreEqual("myAlias", uad.Alias);
 			Assert.AreEqual("global::My.Name.Space", uad.Namespace);
-			Assert.IsTrue(uad.NameIdentifier.HasDoubleColon);
+			//Assert.IsTrue(uad.NameIdentifier.HasDoubleColon);
 			
 			Assert.IsTrue(cu.Children.ElementAt(2) is UsingDeclaration);
 			Assert.IsFalse(cu.Children.ElementAt(2) is UsingAliasDeclaration);

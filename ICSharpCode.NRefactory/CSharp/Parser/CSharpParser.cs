@@ -1377,15 +1377,19 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			public override object Visit (TypeExpression typeExpression)
 			{
-				var result = new FullTypeName ();
-				if (typeExpression.Type != null) {
-					result.AddChild (new Identifier (typeExpression.Type.Name, Convert (typeExpression.Location)), FullTypeName.Roles.Identifier);
+				var result = new PrimitiveType ();
+				if (typeExpression.Type == TypeManager.void_type) {
+					result.Keyword = "void";
+				} else if (typeExpression.Type == TypeManager.object_type) {
+					result.Keyword = "object";
+				} else if (typeExpression.Type == TypeManager.int32_type) {
+					result.Keyword = "int";
+				} else {
+					throw new NotImplementedException();
 				}
-//				if (!string.IsNullOrEmpty (typeExpression.)) {
-//					result.AddChild (new Identifier (typeExpression.Namespace + "." + typeExpression.Name, Convert (typeExpression.Location)));
-//				} else {
-//					result.AddChild (new Identifier (typeExpression.Name, Convert (typeExpression.Location)));
-//				}
+				if (result.Keyword != null) {
+					result.AddChild (new CSharpTokenNode (Convert (typeExpression.Location), result.Keyword.Length), PrimitiveType.Roles.Keyword);
+				}
 				return result;
 			}
 
@@ -1420,14 +1424,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override object Visit (SimpleName simpleName)
 			{
 				var result = new IdentifierExpression ();
-				result.AddChild (new Identifier (simpleName.Name, Convert (simpleName.Location)), FullTypeName.Roles.Identifier);
+				result.AddChild (new Identifier (simpleName.Name, Convert (simpleName.Location)), IdentifierExpression.Roles.Identifier);
 				if (simpleName.TypeArguments != null)  {
 					var location = LocationsBag.GetLocations (simpleName);
 					if (location != null)
-						result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), FullTypeName.Roles.LChevron);
+						result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), IdentifierExpression.Roles.LChevron);
 //					AddTypeArguments (result, location, simpleName.TypeArguments);
 					if (location != null && location.Count > 1)
-						result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), FullTypeName.Roles.RChevron);
+						result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), IdentifierExpression.Roles.RChevron);
 				}
 				return result;
 			}

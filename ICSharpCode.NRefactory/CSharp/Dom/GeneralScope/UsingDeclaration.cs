@@ -1,6 +1,6 @@
-// 
+﻿// 
 // UsingDeclaration.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -24,10 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Text;
+
 namespace ICSharpCode.NRefactory.CSharp
 {
 	public class UsingDeclaration : DomNode
 	{
+		public const int ImportRole = 100;
+		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Unknown;
@@ -36,13 +41,18 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public string Namespace {
 			get {
-				return NameIdentifier.QualifiedName;
+				StringBuilder b = new StringBuilder();
+				SimpleType t = this.Import as SimpleType;
+				if (t == null)
+					return null;
+				b.Append(t.Identifier);
+				return b.ToString();
 			}
 		}
 		
-		public QualifiedIdentifier NameIdentifier {
+		public DomNode Import {
 			get {
-				return (QualifiedIdentifier)GetChildByRole (Roles.Identifier);
+				return GetChildByRole (ImportRole) ?? DomNode.Null;
 			}
 		}
 		

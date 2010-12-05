@@ -1,6 +1,6 @@
-// 
+﻿// 
 // FullTypeName.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -23,50 +23,46 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class FullTypeName : DomNode
+	public class MemberType : DomNode
 	{
-		public static readonly new FullTypeName Null = new NullFullTypeName ();
-		class NullFullTypeName : FullTypeName
-		{
-			public override bool IsNull {
-				get {
-					return true;
-				}
-			}
-			
-			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
-			{
-				return default (S);
-			}
-		}
-		
 		public override NodeType NodeType {
 			get {
-				return NodeType.Unknown;
+				return NodeType.Type;
 			}
 		}
 		
-		public Identifier Identifier {
+		public DomNode Target {
+			get { return GetChildByRole(Roles.TargetExpression) ?? DomNode.Null; }
+		}
+		
+		public Identifier IdentifierToken {
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier);
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? CSharp.Identifier.Null;
 			}
 		}
-			
-		public IEnumerable<DomNode> TypeArguments {
-			get { return GetChildrenByRole (Roles.TypeParameter) ?? new DomNode[0]; }
+		
+		public string Identifier {
+			get { return IdentifierToken.Name; }
 		}
+		
+		// TODO: add type arguments
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
-			return visitor.VisitFullTypeName (this, data);
+			return visitor.VisitMemberType (this, data);
 		}
 		
+		public override string ToString()
+		{
+			return Identifier ?? base.ToString();
+		}
 	}
 }
 

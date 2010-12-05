@@ -1,4 +1,4 @@
-// 
+﻿// 
 // TypeOfIsExpression.cs
 //  
 // Author:
@@ -34,8 +34,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		public FullTypeName TypeReference {
-			get { return (FullTypeName)GetChildByRole (Roles.ReturnType) ?? FullTypeName.Null; }
+		public DomNode TypeReference {
+			get { return GetChildByRole (Roles.ReturnType) ?? DomNode.Null; }
 		}
 		
 		public DomNode Expression {

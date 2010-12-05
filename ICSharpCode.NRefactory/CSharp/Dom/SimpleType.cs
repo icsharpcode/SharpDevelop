@@ -1,10 +1,10 @@
 ﻿// 
-// StackAllocExpression.cs
-//  
+// FullTypeName.cs
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
-// Copyright (c) 2009 Novell, Inc (http://www.novell.com)
+// Copyright (c) 2010 Novell, Inc (http://www.novell.com)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,49 +24,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class StackAllocExpression : DomNode
+	public class SimpleType : DomNode
 	{
-		public const int StackAllocKeywordRole = 100;
-		
 		public override NodeType NodeType {
 			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public DomNode Type {
-			get {
-				return GetChildByRole (Roles.ReturnType) ?? DomNode.Null;
+				return NodeType.Type;
 			}
 		}
 		
-		public DomNode CountExpression {
-			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
-		}
+		// TODO: add alias
 		
-		public CSharpTokenNode StackAllocKeyword {
+		public Identifier IdentifierToken {
 			get {
-				return (CSharpTokenNode)GetChildByRole (StackAllocKeywordRole) ?? CSharpTokenNode.Null;
+				return (Identifier)GetChildByRole (Roles.Identifier) ?? CSharp.Identifier.Null;
 			}
 		}
 		
-		public CSharpTokenNode LBracket {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBracket) ?? CSharpTokenNode.Null;
-			}
+		public string Identifier {
+			get { return IdentifierToken.Name; }
 		}
 		
-		public CSharpTokenNode RBracket {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBracket) ?? CSharpTokenNode.Null;
-			}
-		}
+		// TODO: add type arguments
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
-			return visitor.VisitStackAllocExpression (this, data);
+			return visitor.VisitSimpleType (this, data);
+		}
+		
+		public override string ToString()
+		{
+			return Identifier ?? base.ToString();
 		}
 	}
 }
+
