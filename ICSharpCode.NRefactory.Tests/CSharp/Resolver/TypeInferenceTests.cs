@@ -6,13 +6,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-using ICSharpCode.NRefactory.CSharp.Resolver;
+using ICSharpCode.NRefactory.TypeSystem;
 using NUnit.Framework;
 
-namespace ICSharpCode.NRefactory.TypeSystem
+namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	[TestFixture]
-	public class CommonTypeInferenceTests
+	public class TypeInferenceTests
 	{
 		CommonTypeInference cti = new CommonTypeInference(CecilLoaderTests.Mscorlib, new Conversions(CecilLoaderTests.Mscorlib));
 		
