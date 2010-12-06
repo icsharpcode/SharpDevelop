@@ -12,6 +12,15 @@ namespace SharpRefactoring.ContextActions
 	/// </summary>
 	public abstract class ParamCheck : ContextAction
 	{
+		public override bool IsAvailable(EditorContext context)
+		{
+			var paramAtCaret = GetParameterAtCaret(context.CurrentSymbol);
+			if (paramAtCaret == null)
+				return false;
+			
+			return IsAvailable(paramAtCaret.ResolvedType);
+		}
+		
 		public LocalResolveResult GetParameterAtCaret(ResolveResult symbol)
 		{
 			LocalResolveResult param = symbol as LocalResolveResult;
@@ -21,16 +30,8 @@ namespace SharpRefactoring.ContextActions
 				return null;
 			if (!param.IsParameter)
 				return null;
+			// FIXME must be parameter definition, and method with body (not interface or abstract)
 			return param;
-		}
-		
-		public override bool IsAvailable(EditorContext context)
-		{
-			var paramAtCaret = GetParameterAtCaret(context.CurrentSymbol);
-			if (paramAtCaret == null)
-				return false;
-			
-			return IsAvailable(paramAtCaret.ResolvedType);
 		}
 			
 		public override void Execute(EditorContext context)

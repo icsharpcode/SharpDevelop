@@ -54,12 +54,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 	}
 	
-	
+	/// <summary>
+	/// Returned by <see cref="ContextActionsService.GetAvailableActions()"></see>.
+	/// </summary>
 	public class EditorActionsProvider
 	{
 		ITextEditor editor { get; set; }
 		IList<IContextActionsProvider> providers { get; set; }
-		EditorContext context { get; set; }
+		public EditorContext EditorContext { get; set; }
 		
 		public EditorActionsProvider(ITextEditor editor, IList<IContextActionsProvider> providers)
 		{
@@ -70,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.editor = editor;
 			this.providers = providers;
 			ParserService.ParseCurrentViewContent();
-			this.context = new EditorContext(editor);
+			this.EditorContext = new EditorContext(editor);
 		}
 		
 		public IEnumerable<IContextAction> GetVisibleActions()

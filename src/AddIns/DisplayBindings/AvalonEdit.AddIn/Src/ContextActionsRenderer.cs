@@ -107,10 +107,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.popup.ViewModel = popupVM;
 			this.popup.OpenAtLineStart(this.Editor);
 		}
+		
+		EditorActionsProvider lastActions;
 
 		ContextActionsBulbViewModel BuildPopupViewModel(ITextEditor editor)
 		{
 			var actionsProvider = ContextActionsService.Instance.GetAvailableActions(editor);
+			this.lastActions = actionsProvider;
 			return new ContextActionsBulbViewModel(actionsProvider);
 		}
 
@@ -130,6 +133,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.popup.IsDropdownOpen = false;
 			this.popup.IsHiddenActionsExpanded = false;
 			this.popup.ViewModel = null;
+			if (this.lastActions != null) {
+				// Clear the context to prevent memory leaks in case some users kept long-lived references to EditorContext
+				this.lastActions.EditorContext.Clear();
+				this.lastActions = null;
+			}
 		}
 		
 		void WorkbenchSingleton_Workbench_ViewClosed(object sender, ViewContentEventArgs e)
@@ -139,6 +147,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (e.Content.PrimaryFileName == this.Editor.FileName) {
 					WorkbenchSingleton.Workbench.ViewClosed -= WorkbenchSingleton_Workbench_ViewClosed;
 					WorkbenchSingleton.Workbench.ActiveViewContentChanged -= WorkbenchSingleton_Workbench_ActiveViewContentChanged;
+					ClosePopup();
 				}
 			} catch {}
 		}

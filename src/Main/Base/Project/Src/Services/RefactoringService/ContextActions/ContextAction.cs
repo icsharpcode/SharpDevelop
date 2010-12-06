@@ -19,17 +19,19 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public abstract void Execute(EditorContext context);
 		
+		public EditorContext Context { get; private set; }
+		
 		public IEnumerable<IContextAction> GetAvailableActions(EditorContext context)
 		{
+			// re-initialize the context
 			this.Context = context;
 			if (this.IsAvailable(context))
 				yield return this;
 		}
 		
-		public EditorContext Context { get; private set; }
-		
 		public void Execute()
 		{
+			// context was re-initialized in GetAvailableActions
 			Execute(this.Context);
 		}
 	}
