@@ -10,7 +10,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Default implementation of <see cref="IAccessor"/>.
 	/// </summary>
-	public sealed class DefaultAccessor : AbstractFreezable, IAccessor
+	public sealed class DefaultAccessor : AbstractFreezable, IAccessor, ISupportsInterning
 	{
 		static readonly DefaultAccessor[] defaultAccessors = CreateDefaultAccessors();
 		
@@ -73,6 +73,22 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 					attributes = new List<IAttribute>();
 				return attributes;
 			}
+		}
+		
+		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
+		{
+			attributes = provider.InternList(attributes);
+		}
+		
+		int ISupportsInterning.GetHashCodeForInterning()
+		{
+			return (attributes != null ? attributes.GetHashCode() : 0) ^ region.GetHashCode() ^ (int)accessibility;
+		}
+		
+		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
+		{
+			DefaultAccessor a = other as DefaultAccessor;
+			return a != null && (attributes == a.attributes && accessibility == a.accessibility && region == a.region);
 		}
 	}
 }

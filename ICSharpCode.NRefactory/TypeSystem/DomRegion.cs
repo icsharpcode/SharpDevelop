@@ -113,7 +113,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		public override int GetHashCode()
 		{
 			unchecked {
-				return BeginColumn + 1100009 * BeginLine + 1200007 * BeginColumn + 1300021 * EndColumn;
+				int hashCode = fileName != null ? fileName.GetHashCode() : 0;
+				hashCode ^= BeginColumn + 1100009 * BeginLine + 1200007 * BeginColumn + 1300021 * EndColumn;
+				return hashCode;
 			}
 		}
 		
