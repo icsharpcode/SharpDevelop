@@ -72,8 +72,8 @@ namespace SharpRefactoring.ContextActions
 			var identifier = assignment.Left as IdentifierExpression;
 			if (identifier == null)
 				return null;
-			if (assignment.Right is ObjectCreateExpression)
-				// // don't offer action for "a = new Foo()"
+			if (!ExpressionCanBeNull(assignment.Right))
+				// don't offer action where it makes no sense
 				return null;
 			return identifier.Identifier;
 		}
@@ -85,11 +85,22 @@ namespace SharpRefactoring.ContextActions
 			if (declaration.Variables.Count != 1)
 				return null;
 			VariableDeclaration varDecl = declaration.Variables[0];
-			if (!varDecl.Initializer.IsNull &&
-			    // don't offer action for "var a = new Foo()"
-			    !(varDecl.Initializer is ObjectCreateExpression))
-				return varDecl.Name;
-			return null;
+			if (!ExpressionCanBeNull(varDecl.Initializer))
+				// don't offer action where it makes no sense
+				return null;
+			return varDecl.Name;
+		}
+		
+		bool ExpressionCanBeNull(Expression expr)
+		{
+			if (expr == null) return false;
+			if (expr.IsNull) return false;
+			if (expr is PrimitiveExpression) return false;
+			if (expr is IdentifierExpression) return true;
+			if (expr is MemberReferenceExpression) return true;
+			if (expr is InvocationExpression) return true;
+			if (expr is CastExpression && ((CastExpression)expr).CastType == CastType.TryCast) return true;
+			return false;
 		}
 		
 		CodeGenerator GetCodeGenerator(EditorContext context)
