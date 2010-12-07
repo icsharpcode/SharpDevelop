@@ -43,7 +43,7 @@ namespace Debugger.Tests {
 			DebugType type1b = process.SelectedStackFrame.GetLocalVariableValue("one").Type;
 			ObjectDump("SameDomainEqual", type1 == type1b);
 			process.Continue();
-			ObjectDump("AppDomainName", process.SelectedStackFrame.GetLocalVariableValue("appDomainName").AsString);
+			ObjectDump("AppDomainName", process.SelectedStackFrame.GetLocalVariableValue("appDomainName").AsString());
 			DebugType type2 = process.SelectedStackFrame.GetLocalVariableValue("two").Type;
 			ObjectDump("OtherDomainEqual", type1 == type2);
 			ObjectDump("AppDomainsEqual", type1.AppDomain == type2.AppDomain);

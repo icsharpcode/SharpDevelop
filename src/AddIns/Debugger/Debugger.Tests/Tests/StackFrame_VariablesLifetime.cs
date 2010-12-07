@@ -97,26 +97,22 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:21,4-21,40</DebuggingPaused>
     <argument>
       <Value
-        AsString="1"
         PrimitiveValue="1"
         Type="System.Int32" />
     </argument>
     <local>
       <Value
-        AsString="2"
         PrimitiveValue="2"
         Type="System.Int32" />
     </local>
     <_x0040_class>
       <Value
-        AsString="3"
         PrimitiveValue="3"
         Type="System.Int32" />
     </_x0040_class>
     <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:30,4-30,40</DebuggingPaused>
     <argument>
       <Value
-        AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
@@ -124,7 +120,6 @@ namespace Debugger.Tests {
     </argument>
     <local>
       <Value
-        AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
@@ -132,7 +127,6 @@ namespace Debugger.Tests {
     </local>
     <_x0040_class>
       <Value
-        AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
@@ -140,14 +134,12 @@ namespace Debugger.Tests {
     </_x0040_class>
     <localInSubFunction>
       <Value
-        AsString="4"
         PrimitiveValue="4"
         Type="System.Int32" />
     </localInSubFunction>
     <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:23,4-23,40</DebuggingPaused>
     <argument>
       <Value
-        AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
@@ -155,7 +147,6 @@ namespace Debugger.Tests {
     </argument>
     <local>
       <Value
-        AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
@@ -163,7 +154,6 @@ namespace Debugger.Tests {
     </local>
     <_x0040_class>
       <Value
-        AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
@@ -171,7 +161,6 @@ namespace Debugger.Tests {
     </_x0040_class>
     <localInSubFunction>
       <Value
-        AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
@@ -180,7 +169,6 @@ namespace Debugger.Tests {
     <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:30,4-30,40</DebuggingPaused>
     <argument>
       <Value
-        AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
@@ -188,7 +176,6 @@ namespace Debugger.Tests {
     </argument>
     <local>
       <Value
-        AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
@@ -196,7 +183,6 @@ namespace Debugger.Tests {
     </local>
     <_x0040_class>
       <Value
-        AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
@@ -204,7 +190,6 @@ namespace Debugger.Tests {
     </_x0040_class>
     <localInSubFunction>
       <Value
-        AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
@@ -212,14 +197,12 @@ namespace Debugger.Tests {
     </localInSubFunction>
     <localInSubFunction_x0028_new_x0029_>
       <Value
-        AsString="4"
         PrimitiveValue="4"
         Type="System.Int32" />
     </localInSubFunction_x0028_new_x0029_>
     <DebuggingPaused>Break StackFrame_VariablesLifetime.cs:15,4-15,40</DebuggingPaused>
     <argument>
       <Value
-        AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
@@ -227,7 +210,6 @@ namespace Debugger.Tests {
     </argument>
     <local>
       <Value
-        AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
@@ -235,7 +217,6 @@ namespace Debugger.Tests {
     </local>
     <_x0040_class>
       <Value
-        AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
@@ -243,7 +224,6 @@ namespace Debugger.Tests {
     </_x0040_class>
     <localInSubFunction>
       <Value
-        AsString="{Exception: Value is no longer valid}"
         IsInvalid="True"
         IsReference="{Exception: Value is no longer valid}"
         PrimitiveValue="{Exception: Value is no longer valid}"
