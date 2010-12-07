@@ -32,12 +32,12 @@ namespace SharpRefactoring.ContextActions
 			var ifStatement = GenerateAstToInsert(cache.VariableName);
 			
 			var editor = context.Editor;
-			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, editor.Document.GetLineStartOffset(cache.ElementRegion.GetStart()));
-			string code = cache.CodeGenerator.GenerateCode(ifStatement, indent);
-			int insertOffset = editor.Document.GetLineEndOffset(cache.ElementRegion.GetEnd());
+			var doc = editor.Document;
+			
 			using (var undoGroup = editor.Document.OpenUndoGroup()) {
-				editor.Document.Insert(insertOffset, code);
-				var caretPos = editor.Document.Text.IndexOf(caretMarker, insertOffset);
+				editor.InsertCodeAfter(cache.Element, ifStatement);
+				// set caret to the position of the special marker
+				var caretPos = doc.Text.IndexOf(caretMarker, doc.GetLineEndOffset(cache.Element.EndLocation));
 				editor.Caret.Offset = caretPos;
 				editor.Document.RemoveRestOfLine(caretPos);
 			}
@@ -46,6 +46,7 @@ namespace SharpRefactoring.ContextActions
 		AbstractNode GenerateAstToInsert(string variableName)
 		{
 			var block = new BlockStatement();
+			// mark the place where to put caret
 			block.AddChild(new ExpressionStatement(new IdentifierExpression(caretMarker)));
 			return new IfElseStatement(
 				new BinaryOperatorExpression(new IdentifierExpression(variableName), BinaryOperatorType.InEquality, new PrimitiveExpression(null)),

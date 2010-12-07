@@ -29,13 +29,7 @@ namespace SharpRefactoring.ContextActions
 			var cache = context.GetCached<CheckAssignmentCache>();
 			
 			var ifStatement = GenerateAstToInsert(cache.VariableName);
-
-			var editor = context.Editor;
-			string indent = DocumentUtilitites.GetWhitespaceAfter(editor.Document, editor.Document.GetLineStartOffset(cache.ElementRegion.GetStart()));
-			string code = cache.CodeGenerator.GenerateCode(ifStatement, indent);
-			int insertOffset = editor.Document.GetLineEndOffset(cache.ElementRegion.GetEnd());
-			editor.Document.Insert(insertOffset, code);
-			editor.Caret.Offset = insertOffset + code.Length - 1;
+			context.Editor.InsertCodeAfter(cache.Element, ifStatement, true);
 		}
 		
 		AbstractNode GenerateAstToInsert(string variableName)

@@ -19,7 +19,8 @@ namespace SharpRefactoring.ContextActions
 		{
 			this.VariableName = GetVariableName(context);
 			this.CodeGenerator = GetCodeGenerator(context);
-			this.ElementRegion = GetStatementRegion(context);
+			this.Element = GetElement(context);
+			this.ElementRegion = (Element == null) ? DomRegion.Empty : DomRegion.FromLocation(Element.StartLocation, Element.EndLocation);
 		}
 		
 		public bool IsActionAvailable
@@ -33,13 +34,17 @@ namespace SharpRefactoring.ContextActions
 		
 		public CodeGenerator CodeGenerator { get; private set; }
 		
+		/// <summary>
+		/// Either AssignmentExpression or LocalVariableDeclaration.
+		/// </summary>
+		public AbstractNode Element { get; private set; }
+		
 		public DomRegion ElementRegion { get; private set; }
 		
 		protected string GetVariableName(EditorContext context)
 		{
 			// a = Foo()      : AssignmentExpression.Left == IdentifierExpression(*identifier*)
 			// var a = Foo()  : VariableDeclaration(*name*).Initializer != empty
-			
 			var variableName = GetVariableNameFromAssignment(context.GetContainingElement<AssignmentExpression>());
 			if (variableName != null)
 				return variableName;
@@ -50,19 +55,18 @@ namespace SharpRefactoring.ContextActions
 			return null;
 		}
 		
-		protected DomRegion GetStatementRegion(EditorContext context)
+		protected AbstractNode GetElement(EditorContext context)
 		{
 			// a = Foo()      : AssignmentExpression.Left == IdentifierExpression(*identifier*)
 			// var a = Foo()  : VariableDeclaration(*name*).Initializer != empty
-			
 			var assignment = context.GetContainingElement<AssignmentExpression>();
 			if (assignment != null)
-				return DomRegion.FromLocation(assignment.StartLocation, assignment.EndLocation);
+				return assignment;
 			var declaration = context.GetContainingElement<LocalVariableDeclaration>();
 			if (declaration != null)
-				return DomRegion.FromLocation(declaration.StartLocation, declaration.EndLocation);
+				return declaration;
 			
-			return DomRegion.Empty;
+			return null;
 		}
 		
 		string GetVariableNameFromAssignment(AssignmentExpression assignment)
