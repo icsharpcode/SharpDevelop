@@ -33,7 +33,7 @@ namespace Debugger
 		public string Message {
 			get {
 				Value message = exception.GetMemberValue("_message");
-				return message.IsNull ? string.Empty : message.AsString;
+				return message.IsNull ? string.Empty : message.AsString();
 			}
 		}
 		
@@ -86,7 +86,7 @@ namespace Debugger
 			// Note that evaluation is not possible after a stackoverflow exception
 			Value stackTrace = exception.GetMemberValue("StackTrace");
 			if (!stackTrace.IsNull) {
-				sb.Append(stackTrace.AsString);
+				sb.Append(stackTrace.AsString());
 				sb.AppendLine();
 			}
 			return sb.ToString();

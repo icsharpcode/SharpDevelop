@@ -114,7 +114,7 @@ namespace Debugger
 		public bool IsInvalid {
 			get {
 				return corValue_pauseSession != this.Process.PauseSession &&
-				       !(corValue is ICorDebugHandleValue);
+					!(corValue is ICorDebugHandleValue);
 			}
 		}
 		
@@ -149,12 +149,23 @@ namespace Debugger
 		}
 		
 		/// <summary> Gets a string representation of the value </summary>
-		public string AsString {
-			get {
-				if (this.IsNull) return "null";
-				if (this.Type.IsPrimitive) return PrimitiveValue.ToString();
-				if (this.Type.FullName == typeof(string).FullName) return PrimitiveValue.ToString();
-				return "{" + this.Type.FullName + "}";
+		/// <param name="maxLength">
+		/// The maximum length of the result string.
+		/// </param>
+		public string AsString(int maxLength = int.MaxValue)
+		{
+			if (this.IsNull) return "null";
+			if (this.Type.IsPrimitive || this.Type.FullName == typeof(string).FullName) {
+				string text = PrimitiveValue.ToString();
+				if (text != null && text.Length > maxLength)
+					text = text.Substring(0, Math.Max(0, maxLength - 3)) + "...";
+				return text;
+			} else {
+				string name = this.Type.FullName;
+				if (name != null && name.Length > maxLength)
+					return "{" + name.Substring(0, Math.Max(0, maxLength - 5)) + "...}";
+				else
+					return "{" + name + "}";
 			}
 		}
 		
@@ -251,7 +262,7 @@ namespace Debugger
 		/// 
 		/// If setting of a value fails, NotSupportedException is thrown.
 		/// </summary>
-		public object PrimitiveValue { 
+		public object PrimitiveValue {
 			get {
 				if (this.Type.FullName == typeof(string).FullName) {
 					if (this.IsNull) return null;
@@ -302,7 +313,7 @@ namespace Debugger
 		/// eg new object[4,5] returns 2
 		/// </summary>
 		/// <returns> 0 for non-arrays </returns>
-		public int ArrayRank { 
+		public int ArrayRank {
 			get {
 				if (!this.Type.IsArray) return 0;
 				return (int)CorArrayValue.GetRank();
@@ -476,7 +487,7 @@ namespace Debugger
 			ICorDebugFrame curFrame = null;
 			if (process.IsPaused &&
 			    process.SelectedThread != null &&
-			    process.SelectedThread.MostRecentStackFrame != null && 
+			    process.SelectedThread.MostRecentStackFrame != null &&
 			    process.SelectedThread.MostRecentStackFrame.CorILFrame != null)
 			{
 				curFrame = process.SelectedThread.MostRecentStackFrame.CorILFrame;
@@ -600,14 +611,14 @@ namespace Debugger
 		}
 		
 		/// <summary> Invoke the ToString() method </summary>
-		public string InvokeToString()
+		public string InvokeToString(int maxLength = int.MaxValue)
 		{
-			if (this.Type.IsPrimitive) return AsString;
-			if (this.Type.FullName == typeof(string).FullName) return AsString;
+			if (this.Type.IsPrimitive) return AsString(maxLength);
+			if (this.Type.FullName == typeof(string).FullName) return AsString(maxLength);
 			if (this.Type.IsPointer) return "0x" + this.PointerAddress.ToString("X");
 			// if (!IsObject) // Can invoke on primitives
 			DebugMethodInfo methodInfo = (DebugMethodInfo)this.AppDomain.ObjectType.GetMethod("ToString", new DebugType[] {});
-			return Eval.InvokeMethod(methodInfo, this, new Value[] {}).AsString;
+			return Eval.InvokeMethod(methodInfo, this, new Value[] {}).AsString(maxLength);
 		}
 		
 		#region Convenience overload methods
@@ -636,9 +647,7 @@ namespace Debugger
 		
 		public override string ToString()
 		{
-			return this.AsString;
+			return this.AsString();
 		}
 	}
-	
-
 }

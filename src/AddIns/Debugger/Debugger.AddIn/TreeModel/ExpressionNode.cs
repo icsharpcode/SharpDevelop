@@ -195,7 +195,7 @@ namespace Debugger.AddIn.TreeModel
 					return;
 				}
 			} else {
-				fullText = val.AsString;
+				fullText = val.AsString();
 			}
 			
 			this.Text = (fullText.Length > 256) ? fullText.Substring(0, 256) + "..." : fullText;

@@ -186,9 +186,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					}
 					if (showArgumentValues) {
 						try {
-							argValue = frame.GetArgumentValue(i).AsString;
-							if (argValue != null && argValue.Length > 100)
-								argValue = argValue.Substring(0, 100) + "...";
+							argValue = frame.GetArgumentValue(i).AsString(100);
 						} catch { }
 					}
 					if (parameterName != null && argValue != null) {
