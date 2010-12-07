@@ -66,10 +66,6 @@
       <HintPath>..\..\..\Libraries\GraphSharp\GraphSharp.Controls.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.Contracts">
-      <HintPath>..\..\..\Libraries\GraphSharp\Microsoft.Contracts.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>

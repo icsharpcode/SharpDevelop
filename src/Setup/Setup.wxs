@@ -197,6 +197,9 @@
 				<ComponentRef Id="ICSharpCodeSharpDevelopBuildWorker40Exe"/>
 				<ComponentRef Id="AgaControlsDll"/>
 				<ComponentRef Id="log4netDll"/>
+				<ComponentRef Id="GraphSharpDll"/>
+				<ComponentRef Id="GraphSharpControlsDll"/>
+				<ComponentRef Id="QuickGraphDll"/>
 				<ComponentRef Id="MonoCecilDll"/>
 				<ComponentRef Id="AvalonDockDll"/>
 				<ComponentRef Id="ICSharpCodeCorePresentationDll"/>
