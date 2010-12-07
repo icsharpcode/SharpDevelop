@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.AddIn.Options;
@@ -10,6 +11,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -127,10 +129,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		List<Reference> GetReferencesInCurrentFile(ResolveResult resolveResult)
 		{
-			var references = RefactoringService.FindReferencesLocal(resolveResult, Editor.FileName, null);
-			if (references == null || references.Count == 0)
-				return null;
-			return references;
+			var cancellationTokenSource = new CancellationTokenSource();
+			using (new Timer(
+				delegate {
+					LoggingService.Debug("Aborting GetReferencesInCurrentFile due to timeout");
+					cancellationTokenSource.Cancel();
+				}, null, 200, Timeout.Infinite)) 
+			{
+				var progressMonitor = new DummyProgressMonitor();
+				progressMonitor.CancellationToken = cancellationTokenSource.Token;
+				var references = RefactoringService.FindReferencesLocal(resolveResult, Editor.FileName, progressMonitor);
+				if (references == null || references.Count == 0)
+					return null;
+				return references;
+			}
 		}
 		
 		/// <summary>
