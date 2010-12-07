@@ -62,11 +62,24 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <remarks>
 		/// This is equivalent to type.GetAllBaseTypes().Select(t => t.GetDefinition()).Where(d => d != null).Distinct().
 		/// </remarks>
-		public static IEnumerable<ITypeDefinition> GetAllBaseTypeDefinitions(this ITypeDefinition type, ITypeResolveContext context)
+		public static IEnumerable<ITypeDefinition> GetAllBaseTypeDefinitions(this IType type, ITypeResolveContext context)
 		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			if (context == null)
+				throw new ArgumentNullException("context");
+			
 			HashSet<ITypeDefinition> typeDefinitions = new HashSet<ITypeDefinition>();
-			typeDefinitions.Add(type);
-			return TreeTraversal.PreOrder(type, t => t.GetBaseTypes(context).Select(b => b.GetDefinition()).Where(d => d != null && typeDefinitions.Add(d)));
+			Func<IType, IEnumerable<ITypeDefinition>> recursion =
+				t => t.GetBaseTypes(context).Select(b => b.GetDefinition()).Where(d => d != null && typeDefinitions.Add(d));
+			
+			ITypeDefinition typeDef = type as ITypeDefinition;
+			if (typeDef != null) {
+				typeDefinitions.Add(typeDef);
+				return TreeTraversal.PreOrder<ITypeDefinition>(typeDef, recursion);
+			} else {
+				return TreeTraversal.PreOrder<ITypeDefinition>(recursion(type), recursion);
+			}
 		}
 		
 		/// <summary>

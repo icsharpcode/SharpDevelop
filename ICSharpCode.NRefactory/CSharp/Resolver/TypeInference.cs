@@ -10,6 +10,18 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
+	public enum TypeInferenceAlgorithm
+	{
+		/// <summary>
+		/// C# 4.0 type inference.
+		/// </summary>
+		CSharp40,
+		/// <summary>
+		/// Improved algorithm (not part of any specification) using FindTypeInBounds.
+		/// </summary>
+		Improved
+	}
+	
 	/// <summary>
 	/// Implements C# 4.0 Type Inference (§7.5.2).
 	/// </summary>
@@ -24,6 +36,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				throw new ArgumentNullException("context");
 			this.context = context;
 		}
+		#endregion
+		
+		#region Properties
+		/// <summary>
+		/// Gets/Sets the type inference algorithm used.
+		/// </summary>
+		public TypeInferenceAlgorithm Algorithm { get; set; }
 		#endregion
 		
 		TP[] typeParameters;
@@ -373,6 +392,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		#region MakeExplicitParameterTypeInference (§7.5.2.7)
 		void MakeExplicitParameterTypeInference(ResolveResult e, IType t)
 		{
 			// C# 4.0 spec: §7.5.2.7 Explicit parameter type inferences
@@ -387,11 +407,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}*/
 		}
+		#endregion
 		
-		#region MakeExactInference
+		#region MakeExactInference (§7.5.2.8)
 		/// <summary>
 		/// Make exact inference from U to V.
-		/// C# 4.0 spec: 7.5.2.8 Exact inferences
+		/// C# 4.0 spec: §7.5.2.8 Exact inferences
 		/// </summary>
 		void MakeExactInference(IType U, IType V)
 		{
@@ -446,7 +467,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
-		#region MakeLowerBoundInference
+		#region MakeLowerBoundInference (§7.5.2.9)
 		/// <summary>
 		/// Make lower bound inference from U to V.
 		/// C# 4.0 spec: §7.5.2.9 Lower-bound inferences
@@ -529,7 +550,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
-		#region MakeUpperBoundInference
+		#region MakeUpperBoundInference (§7.5.2.10)
 		/// <summary>
 		/// Make upper bound inference from U to V.
 		/// C# 4.0 spec: §7.5.2.10 Upper-bound inferences
@@ -740,13 +761,81 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Finds a type that satisfies the given lower and upper bounds.
 		/// </summary>
-		public IType FindTypeInBounds(IEnumerable<IType> lowerBounds, IEnumerable<IType> upperBounds)
+		public IType FindTypeInBounds(IList<IType> lowerBounds, IList<IType> upperBounds)
 		{
 			if (lowerBounds == null)
 				throw new ArgumentNullException("lowerBounds");
 			if (upperBounds == null)
 				throw new ArgumentNullException("upperBounds");
-			throw new NotImplementedException();
+			
+			// Finds a type X so that "LB <: X <: UB"
+			
+			List<ITypeDefinition> candidateTypeDefinitions;
+			if (lowerBounds.Count > 0) {
+				// Find candidates by using the lower bounds:
+				var hashSet = new HashSet<ITypeDefinition>(lowerBounds[0].GetAllBaseTypeDefinitions(context));
+				for (int i = 1; i < lowerBounds.Count; i++) {
+					hashSet.IntersectWith(lowerBounds[i].GetAllBaseTypeDefinitions(context));
+				}
+				candidateTypeDefinitions = hashSet.ToList();
+			} else {
+				// Find candidates by looking at all classes in the project:
+				candidateTypeDefinitions = context.GetAllClasses().ToList();
+			}
+			
+			// Now filter out candidates that violate the upper bounds:
+			foreach (IType ub in upperBounds) {
+				ITypeDefinition ubDef = ub.GetDefinition();
+				if (ubDef != null) {
+					candidateTypeDefinitions.RemoveAll(c => !c.IsDerivedFrom(ubDef, context));
+				}
+			}
+			
+			List<IType> candidateTypes = new List<IType>();
+			foreach (ITypeDefinition candidateDef in candidateTypeDefinitions) {
+				// determine the type parameters for the candidate:
+				IType candidate;
+				if (candidateDef.TypeParameterCount == 0) {
+					candidate = candidateDef;
+				} else {
+					bool success;
+					IType[] result = InferTypeArgumentsFromBounds(
+						candidateDef.TypeParameters,
+						new ParameterizedType(candidateDef, candidateDef.TypeParameters),
+						lowerBounds, upperBounds,
+						out success);
+					if (success) {
+						candidate = new ParameterizedType(candidateDef, result);
+					} else {
+						continue;
+					}
+				}
+				
+				if (lowerBounds.Count > 0) {
+					// if there were lower bounds, we aim for the most specific candidate:
+					
+					// if this candidate isn't made redundant by an existing, more specific candidate:
+					if (!candidateTypes.Any(c => c.GetDefinition().IsDerivedFrom(candidateDef, context))) {
+						// remove all existing candidates made redundant by this candidate:
+						candidateTypes.RemoveAll(c => candidateDef.IsDerivedFrom(c.GetDefinition(), context));
+						// add new candidate
+						candidateTypes.Add(candidate);
+					}
+				} else {
+					// if there only were upper bounds, we aim for the least specific candidate:
+					
+					// if this candidate isn't made redundant by an existing, less specific candidate:
+					if (!candidateTypes.Any(c => candidateDef.IsDerivedFrom(c.GetDefinition(), context))) {
+						// remove all existing candidates made redundant by this candidate:
+						candidateTypes.RemoveAll(c => c.GetDefinition().IsDerivedFrom(candidateDef, context));
+						// add new candidate
+						candidateTypes.Add(candidate);
+					}
+				}
+			}
+			// return any of the candidates (prefer non-interfaces)
+			return candidateTypes.FirstOrDefault(c => c.GetDefinition().ClassType != ClassType.Interface)
+				?? candidateTypes.FirstOrDefault() ?? SharedTypes.UnknownType;
 		}
 		#endregion
 		
