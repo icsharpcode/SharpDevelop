@@ -21,7 +21,6 @@ namespace ICSharpCode.Reports.Core {
 	public class ReportEngine : IDisposable
 	{
 		private PreviewControl previewControl;
-//		private IDataManager dataMan;
 		
 		/// <summary>
 		/// This event is fired before a Section is Rendered, you can use

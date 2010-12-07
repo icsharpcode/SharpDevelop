@@ -23,7 +23,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 	public partial class PreviewControl
 	{
 		public event EventHandler <EventArgs> PreviewLayoutChanged;
-//		public event EventHandler<SectionRenderEventArgs> SectionRendering;
+
 		
 		private float zoom;
 		

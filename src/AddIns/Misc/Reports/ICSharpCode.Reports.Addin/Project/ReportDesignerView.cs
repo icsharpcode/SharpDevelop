@@ -12,6 +12,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Addin.Designer;
+using ICSharpCode.Reports.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -556,13 +557,48 @@ namespace ICSharpCode.Reports.Addin
 		
 		
 		#region IPrintable
+		private void ccc()
+		{
+			/*
+				ReportModel model = loader.CreateRenderableModel();
+			IReportCreator creator = ReportEngine.CreatePageBuilder(model,eventLogger.EventLog,null);
+			//creator.SectionRendering += PushPrinting;
+			creator.BuildExportList();
+			using (PdfRenderer pdfRenderer = PdfRenderer.CreateInstance(creator,SelectFilename(),true))
+			{
+				pdfRenderer.Start();
+				pdfRenderer.RenderOutput();
+				pdfRenderer.End();
+			}
+		*/
+		
+			
+			var model = loader.CreateRenderableModel();
+			switch (model.DataModel) {
+					case GlobalEnums.PushPullModel.FormSheet : {
+						//cmd = new FormsSheetPreviewCommand (model,control);
+						break;
+					}
+					case GlobalEnums.PushPullModel.PullData:{
+						//cmd = new PullModelPreviewCommand(model,control);					
+						break;
+					}
+					case GlobalEnums.PushPullModel.PushData:{
+						//cmd = new PushModelPreviewCommand(model,control);						
+						break;
+					}
+				default:
+					throw new InvalidReportModelException();
+			}
+		}
+		
 		
 		public System.Drawing.Printing.PrintDocument PrintDocument {
 			get {
+				ccc();
 				ICSharpCode.Reports.Core.ReportModel model = this.loader.CreateRenderableModel();
 				StandartPreviewManager reportManager = new StandartPreviewManager();
 				ICSharpCode.Reports.Core.AbstractRenderer r = reportManager.CreateRenderer (model);
-				r.ReportDocument.PrintController = new ICSharpCode.Reports.Core.ExtendedPrintController(new System.Drawing.Printing.PreviewPrintController());
 				return r.ReportDocument;
 			}
 		}

@@ -101,9 +101,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 							section.Items[1].Size = childSize;
 						
 							FillRow(simpleContainer,childNavigator);
+							FireRowRendering(simpleContainer,childNavigator);
 							PrepareContainerForConverting(section,simpleContainer);
  
-							FireRowRendering(simpleContainer,childNavigator);
+//							FireRowRendering(simpleContainer,childNavigator);
 							base.CurrentPosition = ConvertStandardRow(exporterCollection,simpleContainer);
 							CheckForPageBreak(section,exporterCollection);
 						}
@@ -123,8 +124,9 @@ namespace ICSharpCode.Reports.Core.Exporter
 					
 					Size containerSize = section.Items[0].Size;
 					FillRow(simpleContainer,base.DataNavigator);
-					base.PrepareContainerForConverting(section,simpleContainer);
 					FireRowRendering(simpleContainer,base.DataNavigator);
+					base.PrepareContainerForConverting(section,simpleContainer);
+//					FireRowRendering(simpleContainer,base.DataNavigator);
 					base.CurrentPosition = ConvertStandardRow (exporterCollection,simpleContainer);
 					section.Size = base.RestoreSectionSize;
 					section.Items[0].Size = containerSize;

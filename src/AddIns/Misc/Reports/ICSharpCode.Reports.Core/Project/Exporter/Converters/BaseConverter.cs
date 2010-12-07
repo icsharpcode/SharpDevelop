@@ -240,6 +240,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected	void PrepareContainerForConverting(BaseSection section,ISimpleContainer simpleContainer)
 		{
+			Console.WriteLine("\tPrepareContainerForConverting");
+			
 			FireSectionRendering(section);
 			LayoutRow(simpleContainer);
 		}
@@ -248,11 +250,13 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected  Point ConvertStandardRow(ExporterCollection mylist,  ISimpleContainer simpleContainer)
 		{
 			var rowSize = simpleContainer.Size;
-
+Console.WriteLine("ConvertStandardRow");
 			Point curPos = ConvertContainer(mylist,simpleContainer,DefaultLeftPosition,CurrentPosition);
 			AfterConverting (mylist);
 			simpleContainer.Size = rowSize;
+			Console.WriteLine("");
 			return curPos;
+			
 		}
 		
 		
@@ -272,6 +276,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected static  void FillRow (ISimpleContainer row,IDataNavigator currentNavigator)
 		{
+			Console.WriteLine("\tFillrow");
 			currentNavigator.Fill(row.Items);
 		}
 		

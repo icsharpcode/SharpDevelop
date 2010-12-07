@@ -97,14 +97,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 						childNavigator.MoveNext();
 
 /*
-       FillRow
-       PrepareContainerForConverting
-       Layouter for Container
-       FireRowRendering
-eportViewer - RowRendering  :
-       ConvertStandardRow
-
-	*/					
+---- GroupTableConverter.cs Zeile 151:
+FillRow(simpleContainer,base.DataNavigator);
+FireRowRendering(simpleContainer,base.DataNavigator);
+base.PrepareContainerForConverting(section,simpleContainer);
+----
+*/	
 						//Convert children
 						if (childNavigator != null) {
 							do
@@ -114,9 +112,9 @@ eportViewer - RowRendering  :
 								containerSize = simpleContainer.Size;
 								
 								FillRow(simpleContainer,childNavigator);
-								PrepareContainerForConverting(section,simpleContainer);								
+//								PrepareContainerForConverting(section,simpleContainer);								
 								FireRowRendering(simpleContainer,childNavigator);
-								
+								PrepareContainerForConverting(section,simpleContainer);		
 								base.CurrentPosition = ConvertStandardRow(exporterCollection,simpleContainer);
 								
 								simpleContainer.Size = containerSize;
@@ -149,9 +147,10 @@ eportViewer - RowRendering  :
 						CheckForPageBreak(section,simpleContainer,headerRow,exporterCollection);
 						
 						FillRow(simpleContainer,base.DataNavigator);
+//						base.PrepareContainerForConverting(section,simpleContainer);
+						FireRowRendering(simpleContainer,base.DataNavigator);
 						base.PrepareContainerForConverting(section,simpleContainer);
 						
-						FireRowRendering(simpleContainer,base.DataNavigator);
 						base.CurrentPosition = ConvertStandardRow (exporterCollection,simpleContainer);
 						simpleContainer.Size = containerSize;
 						section.Size = base.RestoreSectionSize;
