@@ -152,8 +152,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 					bracketHighlighter.SetHighlight(new BracketSearchResult(0, 1, 7, 1));
 				})
 			{
-				Foreground = Colors.Blue,
-				Background = Colors.Blue
+				Foreground = BracketHighlightRenderer.DefaultBorder,
+				Background = BracketHighlightRenderer.DefaultBackground
 			};
 			bracketHighlight = new CustomizedHighlightingItem(customizationList, bracketHighlight, null, canSetFont: false);
 			if (language != null)

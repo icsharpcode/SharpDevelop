@@ -19,9 +19,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		Brush backgroundBrush;
 		TextView textView;
 		
-		// 255 - x is needed to produce the inverse Alpha value for subtraction.
-		static readonly Color transparencyBack = Color.FromArgb(255 - 22, 0, 0, 0);
-		static readonly Color transparencyFore = Color.FromArgb(255 - 52, 0, 0, 0);
+		public static readonly Color DefaultBackground = Color.FromArgb(22, 0, 0, 255);
+		public static readonly Color DefaultBorder = Color.FromArgb(52, 0, 0, 255);
 		
 		public const string BracketHighlight = "Bracket highlight";
 		
@@ -45,13 +44,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 
 		void UpdateColors(Color background, Color foreground)
 		{
-			Color border = Color.Subtract(foreground, transparencyFore);
-			Color back = Color.Subtract(background, transparencyBack);
-			
-			this.borderPen = new Pen(new SolidColorBrush(border), 1);
+			this.borderPen = new Pen(new SolidColorBrush(foreground), 1);
 			this.borderPen.Freeze();
 
-			this.backgroundBrush = new SolidColorBrush(back);
+			this.backgroundBrush = new SolidColorBrush(background);
 			this.backgroundBrush.Freeze();
 		}
 		
@@ -83,7 +79,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public static void ApplyCustomizationsToRendering(BracketHighlightRenderer renderer, IEnumerable<CustomizedHighlightingColor> customizations)
 		{
-			renderer.UpdateColors(Colors.Blue, Colors.Blue);
+			renderer.UpdateColors(DefaultBackground, DefaultBorder);
 			foreach (CustomizedHighlightingColor color in customizations) {
 				if (color.Name == BracketHighlight) {
 					renderer.UpdateColors(color.Background ?? Colors.Blue, color.Foreground ?? Colors.Blue);
