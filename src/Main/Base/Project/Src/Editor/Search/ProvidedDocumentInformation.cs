@@ -15,6 +15,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 		ITextBuffer textBuffer;
 		FileName fileName;
 		int currentOffset;
+		bool documentCreatedFromTextBuffer;
 		
 		public FileName FileName {
 			get {
@@ -35,8 +36,8 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			}
 		}
 		
-		public bool IsDocumentCreated {
-			get { return document != null; }
+		public bool IsDocumentCreatedFromTextBuffer {
+			get { return documentCreatedFromTextBuffer; }
 		}
 		
 		public int CurrentOffset {
@@ -109,6 +110,7 @@ namespace ICSharpCode.SharpDevelop.Editor.Search
 			this.textBuffer    = textBuffer;
 			this.fileName      = FileName.Create(fileName);
 			this.endOffset = this.currentOffset = currentOffset;
+			documentCreatedFromTextBuffer = true;
 		}
 	}
 }
