@@ -301,5 +301,10 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			return this == other;
 		}
+		
+		public override string ToString()
+		{
+			return this.ReflectionName;
+		}
 	}
 }

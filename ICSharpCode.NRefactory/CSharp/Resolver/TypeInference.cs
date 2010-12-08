@@ -15,19 +15,29 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// C# 4.0 type inference.
 		/// </summary>
-		CSharp40,
+		CSharp4,
 		/// <summary>
-		/// Improved algorithm (not part of any specification) using FindTypeInBounds.
+		/// Improved algorithm (not part of any specification) using FindTypeInBounds for fixing.
 		/// </summary>
-		Improved
+		Improved,
+		/// <summary>
+		/// Improved algorithm (not part of any specification) using FindTypeInBounds for fixing;
+		/// uses <see cref="IntersectionType"/> to report all results (in case of ambiguities).
+		/// </summary>
+		ImprovedReturnAllResults
 	}
 	
 	/// <summary>
 	/// Implements C# 4.0 Type Inference (§7.5.2).
 	/// </summary>
-	public class TypeInference
+	public sealed class TypeInference
 	{
 		readonly ITypeResolveContext context;
+		TypeInferenceAlgorithm algorithm = TypeInferenceAlgorithm.CSharp4;
+		
+		// determines the maximum generic nesting level; necessary to avoid infinite recursion in 'Improved' mode.
+		const int maxNestingLevel = 5;
+		int nestingLevel;
 		
 		#region Constructor
 		public TypeInference(ITypeResolveContext context)
@@ -42,7 +52,18 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Gets/Sets the type inference algorithm used.
 		/// </summary>
-		public TypeInferenceAlgorithm Algorithm { get; set; }
+		public TypeInferenceAlgorithm Algorithm {
+			get { return algorithm; }
+			set { algorithm = value; }
+		}
+		
+		TypeInference CreateNestedInstance()
+		{
+			TypeInference c = new TypeInference(context);
+			c.algorithm = algorithm;
+			c.nestingLevel = nestingLevel + 1;
+			return c;
+		}
 		#endregion
 		
 		TP[] typeParameters;
@@ -594,7 +615,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					for (int i = 0; i < uniqueBaseType.TypeParameterCount; i++) {
 						IType Ui = pU.TypeArguments[i];
 						IType Vi = uniqueBaseType.TypeArguments[i];
-						if (Vi.IsReferenceType == true) {
+						if (Ui.IsReferenceType == true) {
 							// look for variance
 							ITypeParameter Xi = pU.GetDefinition().TypeParameters[i];
 							switch (Xi.Variance) {
@@ -619,20 +640,37 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
-		#region Fixing
+		#region Fixing (§7.5.2.11)
 		bool Fix(TP tp)
 		{
-			Log("Trying to fix " + tp);
+			Log(" Trying to fix " + tp);
 			Debug.Assert(!tp.IsFixed);
-			Log("  Lower bounds: ", tp.LowerBounds);
-			Log("  Upper bounds: ", tp.UpperBounds);
+			if (algorithm == TypeInferenceAlgorithm.Improved) {
+				// Fix using FindTypeInBounds
+				Debug.Indent();
+				var types = CreateNestedInstance().FindTypesInBounds(tp.LowerBounds.ToArray(), tp.UpperBounds.ToArray());
+				Debug.Unindent();
+				tp.FixedTo = types.FirstOrDefault();
+				Log("  T was fixed to " + tp.FixedTo);
+				return types.Count == 1;
+			} else if (algorithm == TypeInferenceAlgorithm.ImprovedReturnAllResults) {
+				// Fix using FindTypeInBounds
+				Debug.Indent();
+				tp.FixedTo = CreateNestedInstance().FindTypeInBounds(tp.LowerBounds.ToArray(), tp.UpperBounds.ToArray());
+				Debug.Unindent();
+				Log("  T was fixed to " + tp.FixedTo);
+				return tp.FixedTo != SharedTypes.UnknownType;
+			}
+			// Fix using C# 4.0 §7.5.2.11
+			Log("    Lower bounds: ", tp.LowerBounds);
+			Log("    Upper bounds: ", tp.UpperBounds);
 			Conversions conversions = new Conversions(context);
 			IEnumerable<IType> candidates = tp.LowerBounds.Union(tp.UpperBounds);
 			// keep only the candidates that are within all bounds
 			candidates = candidates.Where(c => tp.LowerBounds.All(b => conversions.ImplicitConversion(b, c)));
 			candidates = candidates.Where(c => tp.UpperBounds.All(b => conversions.ImplicitConversion(c, b)));
 			candidates = candidates.ToList(); // evaluate the query only once
-			Log("  Candidates: ", candidates);
+			Log("    Candidates: ", candidates);
 			IType solution = null;
 			foreach (var c in candidates) {
 				if (candidates.All(o => conversions.ImplicitConversion(c, o))) {
@@ -768,7 +806,32 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (upperBounds == null)
 				throw new ArgumentNullException("upperBounds");
 			
+			IList<IType> result = FindTypesInBounds(lowerBounds, upperBounds);
+			
+			if (algorithm == TypeInferenceAlgorithm.ImprovedReturnAllResults) {
+				return IntersectionType.Create(result);
+			} else {
+				// return any of the candidates (prefer non-interfaces)
+				return result.FirstOrDefault(c => c.GetDefinition().ClassType != ClassType.Interface)
+					?? result.FirstOrDefault() ?? SharedTypes.UnknownType;
+			}
+		}
+		
+		IList<IType> FindTypesInBounds(IList<IType> lowerBounds, IList<IType> upperBounds)
+		{
+			// If there's only a single type; return that single type.
+			// If both inputs are empty, return the empty list.
+			if (lowerBounds.Count == 0 && upperBounds.Count <= 1)
+				return upperBounds;
+			if (upperBounds.Count == 0 && lowerBounds.Count <= 1)
+				return lowerBounds;
+			if (nestingLevel > maxNestingLevel)
+				return EmptyList<IType>.Instance;
+			
 			// Finds a type X so that "LB <: X <: UB"
+			Log("FindTypesInBound, LowerBounds=", lowerBounds);
+			Log("FindTypesInBound, UpperBounds=", upperBounds);
+			Debug.Indent();
 			
 			List<ITypeDefinition> candidateTypeDefinitions;
 			if (lowerBounds.Count > 0) {
@@ -798,6 +861,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (candidateDef.TypeParameterCount == 0) {
 					candidate = candidateDef;
 				} else {
+					Log("Inferring arguments for candidate type definition: " + candidateDef);
 					bool success;
 					IType[] result = InferTypeArgumentsFromBounds(
 						candidateDef.TypeParameters,
@@ -807,9 +871,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					if (success) {
 						candidate = new ParameterizedType(candidateDef, result);
 					} else {
+						Log("Inference failed; ignoring candidate");
 						continue;
 					}
 				}
+				Log("Candidate type: " + candidate);
 				
 				if (lowerBounds.Count > 0) {
 					// if there were lower bounds, we aim for the most specific candidate:
@@ -833,9 +899,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 			}
-			// return any of the candidates (prefer non-interfaces)
-			return candidateTypes.FirstOrDefault(c => c.GetDefinition().ClassType != ClassType.Interface)
-				?? candidateTypes.FirstOrDefault() ?? SharedTypes.UnknownType;
+			Debug.Unindent();
+			return candidateTypes;
 		}
 		#endregion
 		
