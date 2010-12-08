@@ -60,12 +60,11 @@
   <ItemGroup>
     <Reference Include="GraphSharp">
       <HintPath>..\..\..\Libraries\GraphSharp\GraphSharp.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="GraphSharp.Controls">
       <HintPath>..\..\..\Libraries\GraphSharp\GraphSharp.Controls.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Contracts">
-      <HintPath>..\..\..\Libraries\GraphSharp\Microsoft.Contracts.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="PresentationCore">
@@ -79,6 +78,7 @@
     </Reference>
     <Reference Include="QuickGraph">
       <HintPath>..\..\..\Libraries\GraphSharp\QuickGraph.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">

@@ -183,6 +183,24 @@
 							<Component Id="log4netDll" Guid="0CE6ECAC-3C96-419E-9EA9-01F95C2C17BC" DiskId="1">
 								<File Source="..\..\bin\log4net.dll" Name="log4net.dll" Id="log4net.dll" Assembly=".net" AssemblyApplication="log4net.dll" AssemblyManifest="log4net.dll" KeyPath="yes" />
 							</Component>
+							<Component Id="GraphSharpDll" Guid="f0095de3-7fdb-4a63-961f-6b3b9f8a754f" DiskId="1">
+								<File Source="..\..\bin\GraphSharp.dll" Name="GraphSharp.dll" Id="GraphSharp.dll" Assembly=".net" AssemblyApplication="GraphSharp.dll" AssemblyManifest="GraphSharp.dll" KeyPath="yes" />
+							</Component>
+							<Component Id="GraphSharpControlsDll" Guid="8c7d8646-b2f4-4285-8880-5d86a1aea4f3" DiskId="1">
+								<File Source="..\..\bin\GraphSharp.Controls.dll" Name="GraphSharp.Controls.dll" Id="GraphSharp.Controls.dll" Assembly=".net" AssemblyApplication="GraphSharp.Controls.dll" AssemblyManifest="GraphSharp.Controls.dll" KeyPath="yes" />
+							</Component>
+							<Component Id="QuickGraphDll" Guid="f0893d49-6690-4cb7-ac7a-2931a8146134" DiskId="1">
+								<File Source="..\..\bin\QuickGraph.dll" Name="QuickGraph.dll" Id="QuickGraph.dll" Assembly=".net" AssemblyApplication="QuickGraph.dll" AssemblyManifest="QuickGraph.dll" KeyPath="yes" />
+							</Component>
+							<Component Id="GraphSharpContractsDll" Guid="a0a8f6a4-3caa-4095-a9e2-fa25ce239b13" DiskId="1">
+								<File Source="..\..\bin\GraphSharp.Contracts.dll" Name="GraphSharp.Contracts.dll" Id="GraphSharp.Contracts.dll" Assembly=".net" AssemblyApplication="GraphSharp.Contracts.dll" AssemblyManifest="GraphSharp.Contracts.dll" KeyPath="yes" />
+							</Component>
+							<Component Id="MicrosoftContractsDll" Guid="fce77701-43d5-41a2-92fa-636050893a54" DiskId="1">
+								<File Source="..\..\bin\Microsoft.Contracts.dll" Name="Microsoft.Contracts.dll" Id="Microsoft.Contracts.dll" Assembly=".net" AssemblyApplication="Microsoft.Contracts.dll" AssemblyManifest="Microsoft.Contracts.dll" KeyPath="yes" />
+							</Component>
+							<Component Id="WPFExtensionsDll" Guid="932d7d54-773c-4132-ba0a-31f0d4590ee5" DiskId="1">
+								<File Source="..\..\bin\WPFExtensions.dll" Name="WPFExtensions.dll" Id="WPFExtensions.dll" Assembly=".net" AssemblyApplication="WPFExtensions.dll" AssemblyManifest="WPFExtensions.dll" KeyPath="yes" />
+							</Component>
 							<Component Id="MonoCecilDll" Guid="F714FD47-9E0A-488F-8F44-11C0220721E3" DiskId="1">
 								<File Source="..\..\bin\Mono.Cecil.dll" Id="Mono.Cecil.dll" Name="Mono.Cecil.dll" Assembly=".net" AssemblyApplication="Mono.Cecil.dll" AssemblyManifest="Mono.Cecil.dll" KeyPath="yes" />
 							</Component>
