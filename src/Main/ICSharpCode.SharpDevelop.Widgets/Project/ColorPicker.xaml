@@ -1,9 +1,7 @@
-﻿<UserControl x:Class="ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor.ColorPicker"
+﻿<UserControl x:Class="ICSharpCode.SharpDevelop.Widgets.ColorPicker"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:Controls="clr-namespace:ICSharpCode.WpfDesign.Designer.Controls"
-             xmlns:BrushEditor="clr-namespace:ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor"
-             xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
+             xmlns:widgets="clr-namespace:ICSharpCode.SharpDevelop.Widgets"
              x:Name="this"
              Padding="5"
              Width="373">
@@ -55,7 +53,7 @@
 			</Border>
 			
 			<DockPanel Margin="0 3 0 0">
-				<BrushEditor:HexTextBox Text="{Binding Hex, ElementName=this, UpdateSourceTrigger=PropertyChanged}"
+				<widgets:HexTextBox Text="{Binding Hex, ElementName=this, UpdateSourceTrigger=PropertyChanged}"
 					Width="70"
 					Margin="5 0 0 0"
 					DockPanel.Dock="Right" />
@@ -143,7 +141,7 @@
 		
 		<Border Margin="10 0 0 0"
 		        DockPanel.Dock="Right">
-			<BrushEditor:Picker Orientation="Vertical"
+			<widgets:Picker Orientation="Vertical"
 				Value="{Binding H, ElementName=this}"
 				Minimum="360"
 				Maximum="0"
@@ -180,15 +178,15 @@
 					      Data="M 0 0 L -5 5 L 0 10 Z"
 					      Fill="Black" />
 				</Grid>
-			</BrushEditor:Picker>
+			</widgets:Picker>
 		</Border>
 		
 		<Border BorderBrush="Black"
 		        BorderThickness="1">
-			<BrushEditor:Picker Value="{Binding S, ElementName=this}"
+			<widgets:Picker Value="{Binding S, ElementName=this}"
 				Marker="{Binding ElementName=point}"
 				ClipToBounds="True">
-				<BrushEditor:Picker Orientation="Vertical"
+				<widgets:Picker Orientation="Vertical"
 					Value="{Binding V, ElementName=this}"
 					Minimum="100"
 					Maximum="0"
@@ -225,8 +223,8 @@
 						         Margin="1"
 						         IsHitTestVisible="False" />
 					</Grid>
-				</BrushEditor:Picker>
-			</BrushEditor:Picker>
+				</widgets:Picker>
+			</widgets:Picker>
 		</Border>
 	
 	</DockPanel>
