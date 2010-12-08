@@ -2,8 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Media;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop.Editor;
@@ -16,6 +18,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		Pen borderPen;
 		Brush backgroundBrush;
 		TextView textView;
+		
+		// 255 - x is needed to produce the inverse Alpha value for subtraction.
+		static readonly Color transparencyBack = Color.FromArgb(255 - 22, 0, 0, 0);
+		static readonly Color transparencyFore = Color.FromArgb(255 - 52, 0, 0, 0);
+		
+		public const string BracketHighlight = "Bracket highlight";
 		
 		public void SetHighlight(BracketSearchResult result)
 		{
@@ -30,15 +38,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (textView == null)
 				throw new ArgumentNullException("textView");
 			
-			this.borderPen = new Pen(new SolidColorBrush(Color.FromArgb(52, 0, 0, 255)), 1);
-			this.borderPen.Freeze();
-			
-			this.backgroundBrush = new SolidColorBrush(Color.FromArgb(22, 0, 0, 255));
-			this.backgroundBrush.Freeze();
-			
 			this.textView = textView;
 			
 			this.textView.BackgroundRenderers.Add(this);
+		}
+
+		void UpdateColors(Color background, Color foreground)
+		{
+			Color border = Color.Subtract(foreground, transparencyFore);
+			Color back = Color.Subtract(background, transparencyBack);
+			
+			this.borderPen = new Pen(new SolidColorBrush(border), 1);
+			this.borderPen.Freeze();
+
+			this.backgroundBrush = new SolidColorBrush(back);
+			this.backgroundBrush.Freeze();
 		}
 		
 		public KnownLayer Layer {
@@ -64,6 +78,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			Geometry geometry = builder.CreateGeometry();
 			if (geometry != null) {
 				drawingContext.DrawGeometry(backgroundBrush, borderPen, geometry);
+			}
+		}
+		
+		public static void ApplyCustomizationsToRendering(BracketHighlightRenderer renderer, IEnumerable<CustomizedHighlightingColor> customizations)
+		{
+			renderer.UpdateColors(Colors.Blue, Colors.Blue);
+			foreach (CustomizedHighlightingColor color in customizations) {
+				if (color.Name == BracketHighlight) {
+					renderer.UpdateColors(color.Background ?? Colors.Blue, color.Foreground ?? Colors.Blue);
+				}
 			}
 		}
 	}
