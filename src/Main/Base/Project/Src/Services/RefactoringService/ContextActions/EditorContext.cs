@@ -104,6 +104,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 //			DebugLog();
 		}
 		
+		public ResolveResult ResolveExpression(Expression expression)
+		{
+			ExpressionResult expr = GetExpressionAt(this.Editor, expression.EndLocation.Line, expression.EndLocation.Column);
+			return ResolveExpression(expr, this.Editor, expression.EndLocation.Line, expression.EndLocation.Column);
+		}
+		
 		/// <summary>
 		/// Do not call from your Context actions - used by SharpDevelop.
 		/// Sets contents of editor context to null to prevent memory leaks. Used in case users implementing IContextActionProvider
@@ -236,10 +242,15 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 
 		ExpressionResult GetExpressionAtCaret(ITextEditor editor)
 		{
-			ExpressionResult expr = ParserService.FindFullExpression(CaretLine, CaretColumn, editor.Document, editor.FileName);
+			return GetExpressionAt(editor, this.CaretLine, this.CaretColumn);
+		}
+		
+		ExpressionResult GetExpressionAt(ITextEditor editor, int caretLine, int caretColumn)
+		{
+			ExpressionResult expr = ParserService.FindFullExpression(caretLine, caretColumn, editor.Document, editor.FileName);
 			// if no expression, look one character back (works better with method calls - Foo()(*caret*))
-			if (string.IsNullOrWhiteSpace(expr.Expression) && CaretColumn > 1)
-				expr = ParserService.FindFullExpression(CaretLine, CaretColumn - 1, editor.Document, editor.FileName);
+			if (string.IsNullOrWhiteSpace(expr.Expression) && caretColumn > 1)
+				expr = ParserService.FindFullExpression(caretLine, caretColumn - 1, editor.Document, editor.FileName);
 			return expr;
 		}
 		

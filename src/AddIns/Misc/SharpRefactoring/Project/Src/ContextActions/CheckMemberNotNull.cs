@@ -46,6 +46,16 @@ namespace SharpRefactoring.ContextActions
 				//this.targetExpr is IdentifierExpression;		// "don't offer the action for just a.b, only for a.b.c"
 		}
 		
+		public override void Execute(EditorContext context)
+		{
+			var conditionExpr = BuildCondition(this.targetExpr);
+			if (conditionExpr == null)
+				return;
+			var ifExpr = new IfElseStatement(conditionExpr, new BlockStatement());
+			
+			context.Editor.InsertCodeBefore(this.currentExpr, ifExpr);
+		}
+		
 		/// <summary>
 		/// Gets "a.b" from "a.b.c"
 		/// </summary>
@@ -55,16 +65,6 @@ namespace SharpRefactoring.ContextActions
 				return ((MemberReferenceExpression)memberReferenceExpr).TargetObject;
 			}
 			return null;
-		}
-		
-		public override void Execute(EditorContext context)
-		{
-			var conditionExpr = BuildCondition(this.targetExpr);
-			if (conditionExpr == null)
-				return;
-			var ifExpr = new IfElseStatement(conditionExpr, new BlockStatement());
-			
-			context.Editor.InsertCodeBefore(this.currentExpr, ifExpr);
 		}
 		
 		/// <summary>
