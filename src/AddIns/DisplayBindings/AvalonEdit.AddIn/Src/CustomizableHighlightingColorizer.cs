@@ -22,6 +22,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	{
 		public const string DefaultTextAndBackground = "Default text/background";
 		public const string SelectedText = "Selected text";
+		public const string NonPrintableCharacters = "Non-printable characters";
 		
 		public static void ApplyCustomizationsToDefaultElements(TextEditor textEditor, IEnumerable<CustomizedHighlightingColor> customizations)
 		{
@@ -30,8 +31,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textEditor.TextArea.ClearValue(TextArea.SelectionBorderProperty);
 			textEditor.TextArea.ClearValue(TextArea.SelectionBrushProperty);
 			textEditor.TextArea.ClearValue(TextArea.SelectionForegroundProperty);
+			textEditor.TextArea.TextView.ClearValue(TextView.NonPrintableCharacterBrushProperty);
 			bool assignedDefaultText = false;
 			bool assignedSelectedText = false;
+			bool assignedNonPrintableCharacter = false;
 			foreach (CustomizedHighlightingColor color in customizations) {
 				switch (color.Name) {
 					case DefaultTextAndBackground:
@@ -54,13 +57,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 							pen.Freeze();
 							textEditor.TextArea.SelectionBorder = pen;
 							SolidColorBrush back = new SolidColorBrush(color.Background.Value);
-							back.Opacity = 0.7;
+							back.Opacity = 0.7; // TODO : remove this constant, let the use choose the opacity.
 							back.Freeze();
 							textEditor.TextArea.SelectionBrush = back;
 						}
 						if (color.Foreground != null) {
 							textEditor.TextArea.SelectionForeground = CreateFrozenBrush(color.Foreground.Value);
 						}
+						break;
+					case NonPrintableCharacters:
+						if (assignedNonPrintableCharacter)
+							continue;
+						assignedNonPrintableCharacter = true;
+						
+						if (color.Foreground != null)
+							textEditor.TextArea.TextView.NonPrintableCharacterBrush = CreateFrozenBrush(color.Foreground.Value);
 						break;
 				}
 			}

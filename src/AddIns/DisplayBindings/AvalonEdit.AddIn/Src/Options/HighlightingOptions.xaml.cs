@@ -139,6 +139,21 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			selectedText.PropertyChanged += item_PropertyChanged;
 			listBox.Items.Add(selectedText);
 			
+			// Create entry for "Non-printable characters"
+			IHighlightingItem nonPrintChars = new SimpleHighlightingItem(
+				CustomizableHighlightingColorizer.NonPrintableCharacters,
+				ta => {
+					ta.Document.Text = "	    \r \r\n \n";
+				})
+			{
+				Foreground = Colors.LightGray
+			};
+			nonPrintChars = new CustomizedHighlightingItem(customizationList, nonPrintChars, null, canSetFont: false, canSetBackground: false);
+			if (language != null)
+				nonPrintChars = new CustomizedHighlightingItem(customizationList, nonPrintChars, language, canSetFont: false);
+			nonPrintChars.PropertyChanged += item_PropertyChanged;
+			listBox.Items.Add(nonPrintChars);
+			
 			// Create entry for "Bracket highlight"
 			IHighlightingItem bracketHighlight = new SimpleHighlightingItem(
 				BracketHighlightRenderer.BracketHighlight,
@@ -157,7 +172,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			};
 			bracketHighlight = new CustomizedHighlightingItem(customizationList, bracketHighlight, null, canSetFont: false);
 			if (language != null)
-				selectedText = new CustomizedHighlightingItem(customizationList, bracketHighlight, language, canSetFont: false);
+				bracketHighlight = new CustomizedHighlightingItem(customizationList, bracketHighlight, language, canSetFont: false);
 			bracketHighlight.PropertyChanged += item_PropertyChanged;
 			listBox.Items.Add(bracketHighlight);
 		}
@@ -203,6 +218,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 						textView.LineTransformers.Add(colorizer);
 					}
 					textEditor.Select(0, 0);
+					bracketHighlighter.SetHighlight(null);
 					item.ShowExample(textEditor.TextArea);
 				}
 			}

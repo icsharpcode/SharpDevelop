@@ -88,9 +88,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			char c = CurrentContext.Document.GetCharAt(offset);
 			if (ShowSpaces && c == ' ') {
-				return new SpaceTextElement(CurrentContext.TextView.cachedElements.GetSimpleLightGrayText("\u00B7", CurrentContext));
+				return new SpaceTextElement(CurrentContext.TextView.cachedElements.GetTextForNonPrintableCharacter("\u00B7", CurrentContext));
 			} else if (ShowTabs && c == '\t') {
-				return new TabTextElement(CurrentContext.TextView.cachedElements.GetSimpleLightGrayText("\u00BB", CurrentContext));
+				return new TabTextElement(CurrentContext.TextView.cachedElements.GetTextForNonPrintableCharacter("\u00BB", CurrentContext));
 			} else if (ShowBoxForControlCharacters && char.IsControl(c)) {
 				var p = new VisualLineElementTextRunProperties(CurrentContext.GlobalTextRunProperties);
 				p.SetForegroundBrush(Brushes.White);

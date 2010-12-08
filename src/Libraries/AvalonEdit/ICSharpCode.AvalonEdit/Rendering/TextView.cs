@@ -366,6 +366,17 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		}
 		#endregion
 		
+		#region Brushes
+		public static readonly DependencyProperty NonPrintableCharacterBrushProperty =
+			DependencyProperty.Register("NonPrintableCharacterBrush", typeof(Brush), typeof(TextView),
+			                            new FrameworkPropertyMetadata(Brushes.LightGray));
+		
+		public Brush NonPrintableCharacterBrush {
+			get { return (Brush)GetValue(NonPrintableCharacterBrushProperty); }
+			set { SetValue(NonPrintableCharacterBrushProperty, value); }
+		}
+		#endregion
+		
 		#region Redraw methods / VisualLine invalidation
 		/// <summary>
 		/// Causes the text editor to regenerate all visual lines.
@@ -1660,7 +1671,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			    || e.Property == Control.FontSizeProperty
 			    || e.Property == Control.FontStretchProperty
 			    || e.Property == Control.FontStyleProperty
-			    || e.Property == Control.FontWeightProperty)
+			    || e.Property == Control.FontWeightProperty
+			    || e.Property == TextView.NonPrintableCharacterBrushProperty)
 			{
 				RecreateCachedElements();
 				InvalidateWideSpaceWidthAndDefaultLineHeight();
