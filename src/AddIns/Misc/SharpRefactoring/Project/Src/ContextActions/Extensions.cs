@@ -48,21 +48,6 @@ namespace SharpRefactoring.ContextActions
 			}
 		}
 		
-		public static Location GetStart(this DomRegion region)
-		{
-			return new Location(region.BeginColumn, region.BeginLine);
-		}
-		
-		public static Location GetEnd(this DomRegion region)
-		{
-			return new Location(region.EndColumn, region.EndLine);
-		}
-		
-		public static int PositionToOffset(this IDocument document, Location location)
-		{
-			return document.PositionToOffset(location.Line, location.Column);
-		}
-		
 		/// <summary>
 		/// Gets offset for the start of line at which given location is.
 		/// </summary>

@@ -100,7 +100,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.CurrentMemberAST = GetCurrentMemberAST(editor);
 			
 			this.CurrentElement = FindInnermostNode(this.CurrentMemberAST, new Location(CaretColumn, CaretLine));
-			
 //			DebugLog();
 		}
 		

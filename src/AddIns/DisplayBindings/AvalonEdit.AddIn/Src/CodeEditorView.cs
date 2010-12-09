@@ -387,18 +387,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		}
 		#endregion
 		
-		#region Expand selection
+		#region CTRL+W extend selection
 		protected override void OnKeyUp(KeyEventArgs e)
 		{
 			base.OnKeyUp(e);
 			if (e.Handled) return;
 			if (e.Key == Key.W && Keyboard.Modifiers.HasFlag(ModifierKeys.Control)) {
 				// Select AST Node
-				var editorLang = EditorContext.GetEditorLanguage(this.Adapter); if (editorLang == null) return;
+				var editorLang = EditorContext.GetEditorLanguage(this.Adapter);
+				if (editorLang == null) return;
 				var parser = ParserFactory.CreateParser(editorLang.Value, new StringReader(this.Text));
 				parser.ParseMethodBodies = true;
+				parser.Lexer.SkipAllComments = false; // f
 				parser.Parse();
-				var parsedCU = parser.CompilationUnit; if (parsedCU == null) return;
+				var parsedCU = parser.CompilationUnit;
+				if (parsedCU == null) return;
 				//var caretLocation = new Location(this.Adapter.Caret.Column, this.Adapter.Caret.Line);
 				var selectionStart = this.Adapter.Document.OffsetToPosition(this.SelectionStart);
 				var selectionEnd = this.Adapter.Document.OffsetToPosition(this.SelectionStart + this.SelectionLength);
@@ -409,22 +412,56 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				Ast.INode currentNode = parsedCU.Children.Select(
 					n => EditorContext.FindInnermostNodeContainingSelection(n, selectionStart, selectionEnd)).Where(n => n != null).FirstOrDefault();
 				if (currentNode == null) return;
-				
+
+				// whole node already selected -> expand selection
 				if (currentNode.StartLocation == selectionStart && currentNode.EndLocation == selectionEnd) {
-					// if whole node already selected, expand selection to parent
-					currentNode = currentNode.Parent;
-					if (currentNode == null)
-						return;
+					var commentsBlankLines = parser.Lexer.SpecialTracker.CurrentSpecials;
+					
+					// if there is a comment block immediately before selection, or behind selection on the same line, add it to selection
+					var comments = commentsBlankLines.Where(s => s is Comment).Cast<Comment>().ToList();
+					int commentIndex = comments.FindIndex(c => c.EndPosition.Line == currentNode.StartLocation.Line);
+					if (commentIndex >= 0 && IsWhitespaceBetween(this.Adapter.Document, comments[commentIndex].EndPosition, selectionStart)) {
+						while (commentIndex >= 0 && comments[commentIndex].EndPosition.Line == selectionStart.Line)
+						{
+							var comment = comments[commentIndex];
+							selectionStart = comment.StartPosition;
+							if (comment.CommentStartsLine)
+								selectionStart.Column = 1;
+							commentIndex--;
+						}
+					}
+					else {
+						// if the extended selection would contain blank lines, extend the selection only to the blank lines/comments on both sides (use siblings)
+						//   if the selection contains blank lines or comments on both sides, dont do this
+						
+						
+						var parent = currentNode.Parent;
+						if (parent == null)
+							return;
+						selectionStart = parent.StartLocation;
+						selectionEnd = parent.EndLocation;
+					}
+				} else {
+					// select current node
+					selectionStart = currentNode.StartLocation;
+					selectionEnd = currentNode.EndLocation;
 				}
 				int startOffset, endOffset;
 				try {
-					startOffset = this.Adapter.Document.PositionToOffset(currentNode.StartLocation.Line, currentNode.StartLocation.Column);
-					endOffset = this.Adapter.Document.PositionToOffset(currentNode.EndLocation.Line, currentNode.EndLocation.Column);
+					startOffset = this.Adapter.Document.PositionToOffset(selectionStart);
+					endOffset = this.Adapter.Document.PositionToOffset(selectionEnd);
 				} catch(ArgumentOutOfRangeException) {
 					return;
 				}
 				this.Select(startOffset, endOffset - startOffset);
 			}
+		}
+		
+		bool IsWhitespaceBetween(IDocument document, Location startPos, Location endPos)
+		{
+			int startOffset = document.PositionToOffset(startPos);
+			int endOffset = document.PositionToOffset(endPos);
+			return string.IsNullOrWhiteSpace(document.GetText(startOffset, endOffset - startOffset));
 		}
 		#endregion
 		

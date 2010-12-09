@@ -18,6 +18,7 @@ using System.Xml;
 using System.Xml.Linq;
 
 using ICSharpCode.Core.Presentation;
+using ICSharpCode.NRefactory;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -578,5 +579,22 @@ namespace ICSharpCode.SharpDevelop
 			element.AddFirst(new XText(Environment.NewLine + indentation.ToString()));
 			return newContent;
 		}
+		
+#region Dom, AST, Editor, Document		
+		public static Location GetStart(this DomRegion region)
+		{
+			return new Location(region.BeginColumn, region.BeginLine);
+		}
+		
+		public static Location GetEnd(this DomRegion region)
+		{
+			return new Location(region.EndColumn, region.EndLine);
+		}
+		
+		public static int PositionToOffset(this IDocument document, Location location)
+		{
+			return document.PositionToOffset(location.Line, location.Column);
+		}
+#endregion		
 	}
 }
