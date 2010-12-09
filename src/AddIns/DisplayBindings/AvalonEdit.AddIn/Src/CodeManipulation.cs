@@ -21,6 +21,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	{
 		enum MoveStatementDirection { Up, Down };
 		
+		class Selection
+		{
+			public Location Start { get; set; }
+			public Location End { get; set; }
+		}
+		
 		public static void MoveStatementUp(ITextEditor editor)
 		{
 			MoveStatement(editor, MoveStatementDirection.Up);
@@ -37,7 +43,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		static void MoveStatement(ITextEditor editor, MoveStatementDirection direction)
 		{
 			// Find the Statement or Definition containing caret -> Extend selection to Statement or Definition
-			INode currentStatement = ExtendSelection(editor, new Type[] { typeof(Statement) });
+			INode currentStatement = ExtendSelection(editor, new Type[] {
+			                                         	typeof(Statement),
+			                                         	typeof(MemberNode),
+			                                         	typeof(FieldDeclaration),
+			                                         	typeof(ConstructorDeclaration),
+			                                         	typeof(DestructorDeclaration) });
 			if (currentStatement == null)
 				return;
 			// Take its sibling
@@ -114,22 +125,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// whole node already selected -> expand selection
 			if (currentNode.StartLocation == selectionStart && currentNode.EndLocation == selectionEnd) {
 				
-				// if there is a comment block immediately before selection, or behind selection on the same line, add it to selection
-				var comments = commentsBlankLines.Where(s => s is Comment).Cast<Comment>().ToList();
-				int commentIndex = comments.FindIndex(c => c.EndPosition.Line == selectionStart.Line);
-				if (commentIndex >= 0 && IsWhitespaceBetween(editor.Document, comments[commentIndex].EndPosition, selectionStart)) {
-					while (commentIndex >= 0 && comments[commentIndex].EndPosition.Line == selectionStart.Line)
-					{
-						var comment = comments[commentIndex];
-						// Move selection start to include comment
-						selectionStart = comment.StartPosition;
-						if (comment.CommentStartsLine)
-							selectionStart.Column = 1;
-						// selected node stays the same
-						selectedResultNode = currentNode;
-						
-						commentIndex--;
-					}
+				// selected node stays the same
+				var selectionExtendedToComments = ExtendSelectionToComments(editor.Document, selectionStart, selectionEnd, commentsBlankLines);
+				if (selectionExtendedToComments != null) {
+					// Can be extended to comments -> extend
+					selectionStart = selectionExtendedToComments.Start;
+					selectionEnd = selectionExtendedToComments.End;
 				}
 				else {
 					var parent = GetInterestingParent(currentNode, interestingNodeTypes);
@@ -171,6 +172,31 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			editor.Select(startOffset, endOffset - startOffset);
 			return selectedResultNode;
+		}
+		
+		/// <summary>
+		/// If there is a comment block immediately before selection, or behind selection on the same line, add it to selection.
+		/// </summary>
+		static Selection ExtendSelectionToComments(IDocument document, Location selectionStart, Location selectionEnd, IList<ISpecial> commentsBlankLines)
+		{
+			var comments = commentsBlankLines.Where(s => s is Comment).Cast<Comment>().ToList();
+			int commentIndex = comments.FindIndex(c => c.EndPosition.Line == selectionStart.Line);
+			if (commentIndex >= 0 && IsWhitespaceBetween(document, comments[commentIndex].EndPosition, selectionStart)) {
+				var extendedSelection = new Selection { Start = selectionStart, End = selectionEnd };
+				while (commentIndex >= 0 && comments[commentIndex].EndPosition.Line == extendedSelection.Start.Line)
+				{
+					var comment = comments[commentIndex];
+					// Move selection start to include comment
+					extendedSelection.Start = comment.StartPosition;
+					if (comment.CommentStartsLine)
+						extendedSelection.Start = new Location(1, extendedSelection.Start.Line);
+					
+					commentIndex--;
+				}
+				return extendedSelection;
+			} else {
+				return null;
+			}
 		}
 		
 		/// <summary>
