@@ -470,9 +470,13 @@ namespace ICSharpCode.AvalonEdit
 			TextEditor editor = (TextEditor)d;
 			var leftMargins = editor.TextArea.LeftMargins;
 			if ((bool)e.NewValue) {
-				leftMargins.Insert(0, new LineNumberMargin());
-				leftMargins.Insert(1, DottedLineMargin.Create());
-				leftMargins[0].SetValue(Control.ForegroundProperty, editor.LineNumbersForeground);
+				var lineNumbers = new LineNumberMargin();
+				leftMargins.Insert(0, lineNumbers);
+				leftMargins.Insert(1, DottedLineMargin.Create(editor));
+				lineNumbers.SetBinding(Control.ForegroundProperty,
+				                       new Binding("LineNumbersForeground") {
+				                       	Source = editor
+				                       });
 			} else {
 				for (int i = 0; i < leftMargins.Count; i++) {
 					if (leftMargins[i] is LineNumberMargin) {
