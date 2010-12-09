@@ -395,6 +395,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (e.Key == Key.W && Keyboard.Modifiers.HasFlag(ModifierKeys.Control)) {
 				CodeManipulation.ExtendSelection(this.Adapter);
 			}
+			if (e.SystemKey == Key.Up && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
+				// Left Alt + Up (probably will have different shortcut)
+				CodeManipulation.MoveStatementUp(this.Adapter);
+			}
+			if (e.SystemKey == Key.Down && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
+				// Left Alt + Down (probably will have different shortcut)
+				CodeManipulation.MoveStatementDown(this.Adapter);
+			}
 		}
 		#endregion
 		

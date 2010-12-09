@@ -595,6 +595,17 @@ namespace ICSharpCode.SharpDevelop
 		{
 			return document.PositionToOffset(location.Line, location.Column);
 		}
+		
+		public static string GetText(this IDocument document, Location startPos, Location endPos)
+		{
+			int startOffset = document.PositionToOffset(startPos);
+			return document.GetText(startOffset, document.PositionToOffset(endPos) - startOffset);
+		}
+		
+		public static void ClearSelection(this ITextEditor editor)
+		{
+			editor.Select(editor.Document.PositionToOffset(editor.Caret.Position), 0);
+		}
 #endregion		
 	}
 }
