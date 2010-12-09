@@ -94,7 +94,7 @@
     <Compile Include="Src\CodeEditorView.cs" />
     <Compile Include="Src\ContextActionsRenderer.cs" />
     <Compile Include="Src\ExpressionHighlightRenderer.cs" />
-    <Compile Include="Src\ExtendSelection.cs" />
+    <Compile Include="Src\CodeManipulation.cs" />
     <Compile Include="Src\NewLineConsistencyCheck.cs" />
     <Compile Include="Src\SharpDevelopTextEditor.cs" />
     <Compile Include="Src\Commands\FoldingCommands.cs" />

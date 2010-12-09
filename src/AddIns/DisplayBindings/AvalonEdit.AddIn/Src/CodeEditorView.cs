@@ -393,7 +393,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			base.OnKeyUp(e);
 			if (e.Handled) return;
 			if (e.Key == Key.W && Keyboard.Modifiers.HasFlag(ModifierKeys.Control)) {
-				ExtendSelection.Run(this.Adapter);
+				CodeManipulation.ExtendSelection(this.Adapter);
 			}
 		}
 		#endregion
