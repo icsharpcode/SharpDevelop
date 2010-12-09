@@ -436,6 +436,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						
 						
 						var parent = currentNode.Parent;
+						// it can happen that parent region exactly matches child region - in this case we need to advance even to the next parent
+						// bc otherwise the selection would never move
+						while (parent != null && parent.StartLocation == selectionStart && parent.EndLocation == selectionEnd) {
+							parent = parent.Parent;
+						}
 						if (parent == null)
 							return;
 						selectionStart = parent.StartLocation;
