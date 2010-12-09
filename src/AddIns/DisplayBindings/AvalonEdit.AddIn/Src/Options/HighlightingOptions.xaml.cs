@@ -154,6 +154,24 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			nonPrintChars.PropertyChanged += item_PropertyChanged;
 			listBox.Items.Add(nonPrintChars);
 			
+			// Create entry for "Line numbers"
+			IHighlightingItem lineNumbers = new SimpleHighlightingItem(
+				CustomizableHighlightingColorizer.LineNumbers,
+				ta => {
+					ta.Document.Text = "These are just" + Environment.NewLine +
+						"multiple" + Environment.NewLine +
+						"lines of" + Environment.NewLine +
+						"text";
+				})
+			{
+				Foreground = Colors.Gray
+			};
+			lineNumbers = new CustomizedHighlightingItem(customizationList, lineNumbers, null, canSetFont: false, canSetBackground: false);
+			if (language != null)
+				lineNumbers = new CustomizedHighlightingItem(customizationList, lineNumbers, language, canSetFont: false);
+			lineNumbers.PropertyChanged += item_PropertyChanged;
+			listBox.Items.Add(lineNumbers);
+			
 			// Create entry for "Bracket highlight"
 			IHighlightingItem bracketHighlight = new SimpleHighlightingItem(
 				BracketHighlightRenderer.BracketHighlight,

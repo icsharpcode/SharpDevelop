@@ -9,7 +9,6 @@
 	</ResourceDictionary.MergedDictionaries>
 	
 	<Style TargetType="{x:Type editing:LineNumberMargin}">
-		<Setter Property="TextBlock.Foreground" Value="Gray"/>
 		<Setter Property="Control.Cursor" Value="/ICSharpCode.AvalonEdit;component/themes/RightArrow.cur"/>
 	</Style>
 </ResourceDictionary>

@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
-
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -23,18 +23,22 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public const string DefaultTextAndBackground = "Default text/background";
 		public const string SelectedText = "Selected text";
 		public const string NonPrintableCharacters = "Non-printable characters";
+		public const string LineNumbers = "Line numbers";
 		
 		public static void ApplyCustomizationsToDefaultElements(TextEditor textEditor, IEnumerable<CustomizedHighlightingColor> customizations)
 		{
 			textEditor.ClearValue(TextEditor.BackgroundProperty);
 			textEditor.ClearValue(TextEditor.ForegroundProperty);
+			textEditor.ClearValue(TextEditor.LineNumbersForegroundProperty);
 			textEditor.TextArea.ClearValue(TextArea.SelectionBorderProperty);
 			textEditor.TextArea.ClearValue(TextArea.SelectionBrushProperty);
 			textEditor.TextArea.ClearValue(TextArea.SelectionForegroundProperty);
 			textEditor.TextArea.TextView.ClearValue(TextView.NonPrintableCharacterBrushProperty);
+			
 			bool assignedDefaultText = false;
 			bool assignedSelectedText = false;
 			bool assignedNonPrintableCharacter = false;
+			bool assignedLineNumbers = false;
 			foreach (CustomizedHighlightingColor color in customizations) {
 				switch (color.Name) {
 					case DefaultTextAndBackground:
@@ -72,6 +76,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						
 						if (color.Foreground != null)
 							textEditor.TextArea.TextView.NonPrintableCharacterBrush = CreateFrozenBrush(color.Foreground.Value);
+						break;
+					case LineNumbers:
+						if (assignedLineNumbers)
+							continue;
+						assignedLineNumbers = true;
+						
+						if (color.Foreground != null)
+							textEditor.LineNumbersForeground = CreateFrozenBrush(color.Foreground.Value);
 						break;
 				}
 			}

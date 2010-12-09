@@ -367,10 +367,16 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		#endregion
 		
 		#region Brushes
+		/// <summary>
+		/// NonPrintableCharacterBrush dependency property.
+		/// </summary>
 		public static readonly DependencyProperty NonPrintableCharacterBrushProperty =
 			DependencyProperty.Register("NonPrintableCharacterBrush", typeof(Brush), typeof(TextView),
 			                            new FrameworkPropertyMetadata(Brushes.LightGray));
 		
+		/// <summary>
+		/// Gets/sets the Brush used for displaying non-printable characters.
+		/// </summary>
 		public Brush NonPrintableCharacterBrush {
 			get { return (Brush)GetValue(NonPrintableCharacterBrushProperty); }
 			set { SetValue(NonPrintableCharacterBrushProperty, value); }
