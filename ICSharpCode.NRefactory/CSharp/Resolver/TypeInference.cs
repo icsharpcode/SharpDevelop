@@ -645,52 +645,17 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			Log(" Trying to fix " + tp);
 			Debug.Assert(!tp.IsFixed);
-			if (algorithm == TypeInferenceAlgorithm.Improved) {
-				// Fix using FindTypeInBounds
-				Debug.Indent();
-				var types = CreateNestedInstance().FindTypesInBounds(tp.LowerBounds.ToArray(), tp.UpperBounds.ToArray());
-				Debug.Unindent();
-				tp.FixedTo = types.FirstOrDefault();
-				Log("  T was fixed to " + tp.FixedTo);
-				return types.Count == 1;
-			} else if (algorithm == TypeInferenceAlgorithm.ImprovedReturnAllResults) {
-				// Fix using FindTypeInBounds
-				Debug.Indent();
-				tp.FixedTo = CreateNestedInstance().FindTypeInBounds(tp.LowerBounds.ToArray(), tp.UpperBounds.ToArray());
-				Debug.Unindent();
-				Log("  T was fixed to " + tp.FixedTo);
-				return tp.FixedTo != SharedTypes.UnknownType;
-			}
-			// Fix using C# 4.0 §7.5.2.11
-			Log("    Lower bounds: ", tp.LowerBounds);
-			Log("    Upper bounds: ", tp.UpperBounds);
-			Conversions conversions = new Conversions(context);
-			IEnumerable<IType> candidates = tp.LowerBounds.Union(tp.UpperBounds);
-			// keep only the candidates that are within all bounds
-			candidates = candidates.Where(c => tp.LowerBounds.All(b => conversions.ImplicitConversion(b, c)));
-			candidates = candidates.Where(c => tp.UpperBounds.All(b => conversions.ImplicitConversion(c, b)));
-			candidates = candidates.ToList(); // evaluate the query only once
-			Log("    Candidates: ", candidates);
-			IType solution = null;
-			foreach (var c in candidates) {
-				if (candidates.All(o => conversions.ImplicitConversion(c, o))) {
-					if (solution == null) {
-						solution = c;
-					} else {
-						Log("  " + tp + " could not be fixed (has several solutions), picking " + solution + " (also available: " + c + ")");
-						tp.FixedTo = solution;
-						return false; // solution is not unique
-					}
-				}
-			}
-			if (solution != null) {
-				Log("  " + tp + " was fixed to " + solution);
-				tp.FixedTo = solution;
-				return true;
+			Debug.Indent();
+			var types = CreateNestedInstance().FindTypesInBounds(tp.LowerBounds.ToArray(), tp.UpperBounds.ToArray());
+			Debug.Unindent();
+			if (algorithm == TypeInferenceAlgorithm.ImprovedReturnAllResults) {
+				tp.FixedTo = IntersectionType.Create(types);
+				Log("  T was fixed " + (types.Count >= 1 ? "successfully" : "(with errors)") + " to " + tp.FixedTo);
+				return types.Count >= 1;
 			} else {
-				Log("  " + tp + " could not be fixed (no viable candidates), picking first candidate: " + solution);
-				tp.FixedTo = candidates.FirstOrDefault();
-				return false;
+				tp.FixedTo = GetFirstTypePreferNonInterfaces(types);
+				Log("  T was fixed " + (types.Count == 1 ? "successfully" : "(with errors)") + " to " + tp.FixedTo);
+				return types.Count == 1;
 			}
 		}
 		#endregion
@@ -812,9 +777,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return IntersectionType.Create(result);
 			} else {
 				// return any of the candidates (prefer non-interfaces)
-				return result.FirstOrDefault(c => c.GetDefinition().ClassType != ClassType.Interface)
-					?? result.FirstOrDefault() ?? SharedTypes.UnknownType;
+				return GetFirstTypePreferNonInterfaces(result);
 			}
+		}
+		
+		static IType GetFirstTypePreferNonInterfaces(IList<IType> result)
+		{
+			return result.FirstOrDefault(c => c.GetDefinition().ClassType != ClassType.Interface)
+				?? result.FirstOrDefault() ?? SharedTypes.UnknownType;
 		}
 		
 		IList<IType> FindTypesInBounds(IList<IType> lowerBounds, IList<IType> upperBounds)
@@ -833,6 +803,27 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Log("FindTypesInBound, UpperBounds=", upperBounds);
 			Debug.Indent();
 			
+			// First try the Fixing algorithm from the C# spec (§7.5.2.11)
+			Conversions conversions = new Conversions(context);
+			List<IType> candidateTypes = lowerBounds.Union(upperBounds)
+				.Where(c => lowerBounds.All(b => conversions.ImplicitConversion(b, c)))
+				.Where(c => upperBounds.All(b => conversions.ImplicitConversion(c, b)))
+				.ToList(); // evaluate the query only once
+			
+			candidateTypes = candidateTypes.Where(
+				c => candidateTypes.All(o => conversions.ImplicitConversion(c, o))
+			).ToList();
+			// If the specified algorithm produces a single candidate, we return
+			// that candidate.
+			// We also return the whole candidate list if we're not using the improved
+			// algorithm.
+			if (candidateTypes.Count == 1 || !(algorithm == TypeInferenceAlgorithm.Improved || algorithm == TypeInferenceAlgorithm.ImprovedReturnAllResults))
+			{
+				return candidateTypes;
+			}
+			candidateTypes.Clear();
+			
+			// Now try the improved algorithm
 			List<ITypeDefinition> candidateTypeDefinitions;
 			if (lowerBounds.Count > 0) {
 				// Find candidates by using the lower bounds:
@@ -854,7 +845,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}
 			
-			List<IType> candidateTypes = new List<IType>();
 			foreach (ITypeDefinition candidateDef in candidateTypeDefinitions) {
 				// determine the type parameters for the candidate:
 				IType candidate;

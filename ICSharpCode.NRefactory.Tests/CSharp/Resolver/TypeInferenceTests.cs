@@ -107,7 +107,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				FindAllTypesInBounds(Resolve(typeof(List<List<string>>), typeof(List<List<object>>))));
 		}
 		
-		[Test, Ignore("Primitive types are not yet supported")]
+		[Test]
 		public void ShortAndInt()
 		{
 			Assert.AreEqual(
