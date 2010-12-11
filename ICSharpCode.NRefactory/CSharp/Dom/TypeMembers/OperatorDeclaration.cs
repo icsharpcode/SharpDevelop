@@ -1,4 +1,4 @@
-// 
+﻿// 
 // OperatorDeclaration.cs
 //  
 // Author:
@@ -68,8 +68,9 @@ namespace ICSharpCode.NRefactory.CSharp
 	
 	public class OperatorDeclaration : AbstractMember
 	{
-		public const int OperatorKeywordRole = 100;
-		public const int OperatorTypeRole = 101;
+		// AbstractMember.PrivateImplementationTypeRole is 100
+		public const int OperatorKeywordRole = 101;
+		public const int OperatorTypeRole = 102;
 		
 		public OperatorType OperatorType {
 			get;

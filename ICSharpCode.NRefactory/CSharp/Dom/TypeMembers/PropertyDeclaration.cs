@@ -1,4 +1,4 @@
-// 
+﻿// 
 // PropertyDeclaration.cs
 //  
 // Author:
@@ -28,8 +28,9 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class PropertyDeclaration : AbstractMember
 	{
-		public const int PropertyGetRole = 100;
-		public const int PropertySetRole = 101;
+		// AbstractMember.PrivateImplementationTypeRole is 100
+		public const int PropertyGetRole = 101;
+		public const int PropertySetRole = 102;
 		
 		public CSharpTokenNode LBrace {
 			get {

@@ -175,5 +175,42 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			Assert.AreEqual("System.String", result.Type.FullName);
 		}
+		
+		[Test]
+		public void UnknownTypeTest()
+		{
+			string program = @"class A {
+	void Method($StringBuilder$ b) {
+	}
+}
+";
+			UnknownIdentifierResolveResult result = Resolve<UnknownIdentifierResolveResult>(program);
+			Assert.AreEqual("StringBuilder", result.Identifier);
+			
+			Assert.AreSame(SharedTypes.UnknownType, result.Type);
+		}
+		
+		[Test, Ignore("not yet implemented (depends on distuishing types and expressions)")]
+		public void PropertyNameAmbiguousWithTypeName()
+		{
+			string program = @"class A {
+	public Color Color { get; set; }
+	
+	void Method() {
+		$
+	}
+}
+class Color { public static readonly Color Empty = null; }
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program.Replace("$", "$Color$ c;"));
+			Assert.AreEqual("Color", trr.Type.Name);
+			
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program.Replace("$", "x = $Color$;"));
+			Assert.AreEqual("Color", mrr.Member.Name);
+			
+			Resolve<MemberResolveResult>(program.Replace("$", "$Color$ = Color.Empty;"));
+			Resolve<TypeResolveResult>(program.Replace("$", "Color = $Color$.Empty;"));
+			Resolve<MemberResolveResult>(program.Replace("$", "x = $Color$.ToString();"));
+		}
 	}
 }

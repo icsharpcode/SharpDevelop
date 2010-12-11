@@ -1,4 +1,4 @@
-// 
+﻿// 
 // AbstractMember.cs
 //  
 // Author:
@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public abstract class AbstractMember : AbstractMemberBase
 	{
-		const int PrivateImplementationTypeRole = 100;
+		public const int PrivateImplementationTypeRole = 100;
 		
 		public DomNode ReturnType {
 			get {

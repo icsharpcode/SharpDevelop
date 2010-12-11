@@ -3,8 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-
 using ICSharpCode.NRefactory.CSharp.Resolver;
 using ICSharpCode.NRefactory.TypeSystem;
 using ICSharpCode.NRefactory.TypeSystem.Implementation;
@@ -74,23 +74,18 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override IEntity VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
-			ITypeOrNamespaceReference r = null;
-			/*foreach (Identifier identifier in usingDeclaration.NameIdentifier.NameParts) {
-				if (r == null) {
-					// TODO: alias?
-					r = new SimpleTypeOrNamespaceReference(identifier.Name, null, currentTypeDefinition, usingScope, true);
-				} else {
-					r = new MemberTypeOrNamespaceReference(r, identifier.Name, null, currentTypeDefinition, usingScope);
-				}
-			}*/throw new NotImplementedException();
-			if (r != null)
-				usingScope.Usings.Add(r);
+			ITypeOrNamespaceReference u = ConvertType(usingDeclaration.Import, true) as ITypeOrNamespaceReference;
+			if (u != null)
+				usingScope.Usings.Add(u);
 			return null;
 		}
 		
 		public override IEntity VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			ITypeOrNamespaceReference u = ConvertType(usingDeclaration.Import, true) as ITypeOrNamespaceReference;
+			if (u != null)
+				usingScope.UsingAliases.Add(new KeyValuePair<string, ITypeOrNamespaceReference>(usingDeclaration.Alias, u));
+			return null;
 		}
 		#endregion
 		
@@ -275,7 +270,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			field.ReturnType = currentTypeDefinition;
 			field.Accessibility = Accessibility.Public;
 			field.IsStatic = true;
-			if (enumMemberDeclaration.Initializer != null) {
+			if (!enumMemberDeclaration.Initializer.IsNull) {
 				field.ConstantValue = ConvertConstantValue(currentTypeDefinition, enumMemberDeclaration.Initializer);
 			} else {
 				throw new NotImplementedException();
@@ -304,7 +299,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			m.IsExtensionMethod = methodDeclaration.IsExtensionMethod;
 			
 			ConvertParameters(m.Parameters, methodDeclaration.Parameters);
-			if (methodDeclaration.PrivateImplementationType != null) {
+			if (!methodDeclaration.PrivateImplementationType.IsNull) {
 				m.Accessibility = Accessibility.None;
 				m.InterfaceImplementations.Add(ConvertInterfaceImplementation(methodDeclaration.PrivateImplementationType, m.Name));
 			}
@@ -349,7 +344,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			DefaultMethod ctor = new DefaultMethod(currentTypeDefinition, isStatic ? ".cctor" : ".ctor");
 			ctor.EntityType = EntityType.Constructor;
 			ctor.Region = MakeRegion(constructorDeclaration);
-			if (constructorDeclaration.Initializer != null) {
+			if (!constructorDeclaration.Initializer.IsNull) {
 				ctor.BodyRegion = MakeRegion(constructorDeclaration.Initializer.StartLocation, constructorDeclaration.EndLocation);
 			} else {
 				ctor.BodyRegion = MakeRegion(constructorDeclaration.Body);
@@ -403,7 +398,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			ApplyModifiers(p, propertyDeclaration.Modifiers);
 			p.ReturnType = ConvertType(propertyDeclaration.ReturnType);
 			ConvertAttributes(p.Attributes, propertyDeclaration.Attributes);
-			if (propertyDeclaration.PrivateImplementationType != null) {
+			if (!propertyDeclaration.PrivateImplementationType.IsNull) {
 				p.Accessibility = Accessibility.None;
 				p.InterfaceImplementations.Add(ConvertInterfaceImplementation(propertyDeclaration.PrivateImplementationType, p.Name));
 			}
@@ -441,7 +436,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			e.ReturnType = ConvertType(eventDeclaration.ReturnType);
 			ConvertAttributes(e.Attributes, eventDeclaration.Attributes);
 			
-			if (eventDeclaration.PrivateImplementationType != null) {
+			if (!eventDeclaration.PrivateImplementationType.IsNull) {
 				e.Accessibility = Accessibility.None;
 				e.InterfaceImplementations.Add(ConvertInterfaceImplementation(eventDeclaration.PrivateImplementationType, e.Name));
 			}
@@ -505,21 +500,96 @@ namespace ICSharpCode.NRefactory.CSharp
 		#region Types
 		static readonly GetClassTypeReference voidReference = new GetClassTypeReference("System.Void", 0);
 		
-		internal static ITypeReference ConvertType(DomNode node)
+		ITypeReference ConvertType(DomNode node, bool isInUsingDeclaration = false)
 		{
-			PrimitiveType f = node as PrimitiveType;
-			if (f != null) {
-				switch (f.Keyword) {
+			return ConvertType(node, currentTypeDefinition, currentMethod, usingScope, isInUsingDeclaration);
+		}
+		
+		internal static ITypeReference ConvertType(DomNode node, ITypeDefinition parentTypeDefinition, IMethod parentMethodDefinition, UsingScope parentUsingScope, bool isInUsingDeclaration)
+		{
+			SimpleType s = node as SimpleType;
+			if (s != null) {
+				List<ITypeReference> typeArguments = new List<ITypeReference>();
+				foreach (var ta in s.TypeArguments) {
+					typeArguments.Add(ConvertType(ta, parentTypeDefinition, parentMethodDefinition, parentUsingScope, isInUsingDeclaration));
+				}
+				if (s.IsQualifiedWithAlias) {
+					AliasNamespaceReference ar = new AliasNamespaceReference(s.AliasIdentifier.Name, parentUsingScope);
+					return new MemberTypeOrNamespaceReference(ar, s.Identifier, typeArguments, parentTypeDefinition, parentUsingScope);
+				} else {
+					if (typeArguments.Count == 0 && parentMethodDefinition != null) {
+						// SimpleTypeOrNamespaceReference doesn't support method type parameters,
+						// so we directly handle them here.
+						foreach (ITypeParameter tp in parentMethodDefinition.TypeParameters) {
+							if (tp.Name == s.Identifier)
+								return tp;
+						}
+					}
+					return new SimpleTypeOrNamespaceReference(s.Identifier, typeArguments, parentTypeDefinition, parentUsingScope, isInUsingDeclaration);
+				}
+			}
+			PrimitiveType p = node as PrimitiveType;
+			if (p != null) {
+				switch (p.Keyword) {
 					case "string":
 						return TypeCode.String.ToTypeReference();
 					case "int":
 						return TypeCode.Int32.ToTypeReference();
 					case "uint":
 						return TypeCode.UInt32.ToTypeReference();
+					case "object":
+						return TypeCode.Object.ToTypeReference();
+					case "bool":
+						return TypeCode.Boolean.ToTypeReference();
+					case "sbyte":
+						return TypeCode.SByte.ToTypeReference();
+					case "byte":
+						return TypeCode.Byte.ToTypeReference();
+					case "short":
+						return TypeCode.Int16.ToTypeReference();
+					case "ushort":
+						return TypeCode.UInt16.ToTypeReference();
+					case "long":
+						return TypeCode.Int64.ToTypeReference();
+					case "ulong":
+						return TypeCode.UInt64.ToTypeReference();
+					case "float":
+						return TypeCode.Single.ToTypeReference();
+					case "double":
+						return TypeCode.Double.ToTypeReference();
+					case "decimal":
+						return TypeCode.Decimal.ToTypeReference();
 					case "void":
 						return voidReference;
+					default:
+						return SharedTypes.UnknownType;
 				}
 			}
+			MemberType m = node as MemberType;
+			if (m != null) {
+				ITypeOrNamespaceReference t = ConvertType(m.Target, parentTypeDefinition, parentMethodDefinition, parentUsingScope, isInUsingDeclaration) as ITypeOrNamespaceReference;
+				if (t == null)
+					return SharedTypes.UnknownType;
+				List<ITypeReference> typeArguments = new List<ITypeReference>();
+				foreach (var ta in m.TypeArguments) {
+					typeArguments.Add(ConvertType(ta, parentTypeDefinition, parentMethodDefinition, parentUsingScope, isInUsingDeclaration));
+				}
+				return new MemberTypeOrNamespaceReference(t, m.Identifier, typeArguments, parentTypeDefinition, parentUsingScope);
+			}
+			ComposedType c = node as ComposedType;
+			if (c != null) {
+				ITypeReference t = ConvertType(c.BaseType, parentTypeDefinition, parentMethodDefinition, parentUsingScope, isInUsingDeclaration);
+				if (c.HasNullableSpecifier) {
+					t = NullableType.Create(t);
+				}
+				for (int i = 0; i < c.PointerRank; i++) {
+					t = PointerTypeReference.Create(t);
+				}
+				foreach (var a in c.ArraySpecifiers.Reverse()) {
+					t = ArrayTypeReference.Create(t, a.Dimensions);
+				}
+			}
+			Debug.WriteLine("Unknown node used as type: " + node);
 			return SharedTypes.UnknownType;
 		}
 		#endregion

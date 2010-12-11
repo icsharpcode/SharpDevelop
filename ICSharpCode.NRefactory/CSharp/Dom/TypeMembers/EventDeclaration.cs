@@ -1,4 +1,4 @@
-// 
+﻿// 
 // EventDeclaration.cs
 //  
 // Author:
@@ -28,8 +28,9 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class EventDeclaration : AbstractMember
 	{
-		public const int EventAddRole = 100;
-		public const int EventRemoveRole = 101;
+		// AbstractMember.PrivateImplementationTypeRole is 100
+		public const int EventAddRole = 101;
+		public const int EventRemoveRole = 102;
 		
 		public CSharpTokenNode LBrace {
 			get {

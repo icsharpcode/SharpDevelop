@@ -945,8 +945,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (initializerExpression != null && IsVar(type)) {
 				return new VarTypeReference(this, resolver.Clone(), initializerExpression, isForEach);
 			} else {
-				return TypeSystemConvertVisitor.ConvertType(type);
+				return MakeTypeReference(type);
 			}
+		}
+		
+		ITypeReference MakeTypeReference(DomNode type)
+		{
+			return TypeSystemConvertVisitor.ConvertType(type, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.UsingScope, false);
 		}
 		
 		static bool IsVar(DomNode returnType)
@@ -1055,12 +1060,26 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Type References
 		public override ResolveResult VisitPrimitiveType(PrimitiveType primitiveType, object data)
 		{
-			return null;
+			ScanChildren(primitiveType);
+			return new TypeResolveResult(MakeTypeReference(primitiveType).Resolve(resolver.Context));
+		}
+		
+		public override ResolveResult VisitSimpleType(SimpleType simpleType, object data)
+		{
+			ScanChildren(simpleType);
+			return new TypeResolveResult(MakeTypeReference(simpleType).Resolve(resolver.Context));
+		}
+		
+		public override ResolveResult VisitMemberType(MemberType memberType, object data)
+		{
+			ScanChildren(memberType);
+			return new TypeResolveResult(MakeTypeReference(memberType).Resolve(resolver.Context));
 		}
 		
 		public override ResolveResult VisitComposedType(ComposedType composedType, object data)
 		{
-			return null;
+			ScanChildren(composedType);
+			return new TypeResolveResult(MakeTypeReference(composedType).Resolve(resolver.Context));
 		}
 		#endregion
 		

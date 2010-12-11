@@ -74,7 +74,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			b.Append('*', this.PointerRank);
 			foreach (var arraySpecifier in this.ArraySpecifiers) {
 				b.Append('[');
-				b.Append(',', arraySpecifier.Rank);
+				b.Append(',', arraySpecifier.Dimensions - 1);
 				b.Append(']');
 			}
 			return b.ToString();
@@ -92,8 +92,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				get { return (CSharpTokenNode)GetChildByRole (Roles.LBracket); }
 			}
 			
-			public int Rank {
-				get { return GetChildrenByRole(Roles.Comma).Count(); }
+			public int Dimensions {
+				get { return 1 + GetChildrenByRole(Roles.Comma).Count(); }
 			}
 			
 			public CSharpTokenNode RBracket {
