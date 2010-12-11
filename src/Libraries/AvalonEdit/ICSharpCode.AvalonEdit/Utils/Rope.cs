@@ -407,7 +407,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 		}
 		
 		#region Caches / Changed event
-		struct RopeCacheEntry
+		internal struct RopeCacheEntry
 		{
 			internal readonly RopeNode<T> node;
 			internal readonly int nodeStartIndex;
@@ -451,7 +451,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 				if (unchecked((uint)index >= (uint)this.Length)) {
 					throw new ArgumentOutOfRangeException("index", index, "0 <= index < " + this.Length.ToString(CultureInfo.InvariantCulture));
 				}
-				RopeCacheEntry entry = FindNodeUsingCache(index).Peek();
+				RopeCacheEntry entry = FindNodeUsingCache(index).UnsafePeek();
 				return entry.node.contents[index - entry.nodeStartIndex];
 			}
 			set {
@@ -500,7 +500,7 @@ namespace ICSharpCode.AvalonEdit.Utils
 			}
 		}
 		
-		ImmutableStack<RopeCacheEntry> FindNodeUsingCache(int index)
+		internal ImmutableStack<RopeCacheEntry> FindNodeUsingCache(int index)
 		{
 			Debug.Assert(index >= 0 && index < this.Length);
 			
@@ -511,10 +511,10 @@ namespace ICSharpCode.AvalonEdit.Utils
 			if (stack == null) {
 				stack = ImmutableStack<RopeCacheEntry>.Empty.Push(new RopeCacheEntry(root, 0));
 			}
-			while (!stack.Peek().IsInside(index))
+			while (!stack.UnsafePeek().IsInside(index))
 				stack = stack.Pop();
 			while (true) {
-				RopeCacheEntry entry = stack.Peek();
+				RopeCacheEntry entry = stack.UnsafePeek();
 				// check if we've reached a leaf or function node
 				if (entry.node.height == 0) {
 					if (entry.node.contents == null) {
@@ -622,9 +622,10 @@ namespace ICSharpCode.AvalonEdit.Utils
 		/// </remarks>
 		public int IndexOf(T item)
 		{
+			var comparer = EqualityComparer<T>.Default;
 			int index = 0;
 			foreach (T element in this) {
-				if (object.Equals(item, element))
+				if (comparer.Equals(item, element))
 					return index;
 				index++;
 			}
