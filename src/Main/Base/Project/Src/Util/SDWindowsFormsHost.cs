@@ -207,12 +207,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </remarks>
 		public bool DisposeChild { get; set; }
 		
+		public bool IsDisposed { get; private set; }
+		
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing && !this.DisposeChild && Child != null) {
 				// prevent child from being disposed
 				Child = null;
 			}
+			IsDisposed = disposing;
 			base.Dispose(disposing);
 		}
 	}
