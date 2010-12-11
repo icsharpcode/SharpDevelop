@@ -123,16 +123,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			DomNode ConvertImport (MemberName memberName)
 			{
-				if (memberName.IsDoubleColon && memberName.Left != null) {
-					// left::name
-					SimpleType t = new SimpleType();
-					t.AddChild (new Identifier (memberName.Left.Name, Convert(memberName.Location)), SimpleType.AliasRole);
-					t.AddChild (new Identifier (memberName.Name, Convert(memberName.Location)), SimpleType.Roles.Identifier);
-					// TODO type arguments
-					return t;
-				} else if (memberName.Left != null) {
+				if (memberName.Left != null) {
 					// left.name
 					MemberType t = new MemberType();
+					t.IsDoubleColon = memberName.IsDoubleColon;
 					t.AddChild (ConvertImport (memberName.Left), MemberType.Roles.TargetExpression);
 					t.AddChild (new Identifier (memberName.Name, Convert(memberName.Location)), MemberType.Roles.Identifier);
 					return t;

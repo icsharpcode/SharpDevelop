@@ -32,26 +32,9 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class SimpleType : DomNode
 	{
-		public const int AliasRole = 100;
-		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Type;
-			}
-		}
-		
-		/// <summary>
-		/// Gets whether this simple type is qualified with an alias
-		/// </summary>
-		public bool IsQualifiedWithAlias {
-			get {
-				return GetChildByRole (AliasRole) != null;
-			}
-		}
-		
-		public Identifier AliasIdentifier {
-			get {
-				return (Identifier)GetChildByRole (AliasRole) ?? CSharp.Identifier.Null;
 			}
 		}
 		

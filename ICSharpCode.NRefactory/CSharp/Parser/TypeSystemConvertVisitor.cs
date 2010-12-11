@@ -513,20 +513,15 @@ namespace ICSharpCode.NRefactory.CSharp
 				foreach (var ta in s.TypeArguments) {
 					typeArguments.Add(ConvertType(ta, parentTypeDefinition, parentMethodDefinition, parentUsingScope, isInUsingDeclaration));
 				}
-				if (s.IsQualifiedWithAlias) {
-					AliasNamespaceReference ar = new AliasNamespaceReference(s.AliasIdentifier.Name, parentUsingScope);
-					return new MemberTypeOrNamespaceReference(ar, s.Identifier, typeArguments, parentTypeDefinition, parentUsingScope);
-				} else {
-					if (typeArguments.Count == 0 && parentMethodDefinition != null) {
-						// SimpleTypeOrNamespaceReference doesn't support method type parameters,
-						// so we directly handle them here.
-						foreach (ITypeParameter tp in parentMethodDefinition.TypeParameters) {
-							if (tp.Name == s.Identifier)
-								return tp;
-						}
+				if (typeArguments.Count == 0 && parentMethodDefinition != null) {
+					// SimpleTypeOrNamespaceReference doesn't support method type parameters,
+					// so we directly handle them here.
+					foreach (ITypeParameter tp in parentMethodDefinition.TypeParameters) {
+						if (tp.Name == s.Identifier)
+							return tp;
 					}
-					return new SimpleTypeOrNamespaceReference(s.Identifier, typeArguments, parentTypeDefinition, parentUsingScope, isInUsingDeclaration);
 				}
+				return new SimpleTypeOrNamespaceReference(s.Identifier, typeArguments, parentTypeDefinition, parentUsingScope, isInUsingDeclaration);
 			}
 			PrimitiveType p = node as PrimitiveType;
 			if (p != null) {
@@ -567,7 +562,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			MemberType m = node as MemberType;
 			if (m != null) {
-				ITypeOrNamespaceReference t = ConvertType(m.Target, parentTypeDefinition, parentMethodDefinition, parentUsingScope, isInUsingDeclaration) as ITypeOrNamespaceReference;
+				ITypeOrNamespaceReference t;
+				if (m.IsDoubleColon) {
+					SimpleType st = m.Target as SimpleType;
+					if (st != null) {
+						t = new AliasNamespaceReference(st.Identifier, parentUsingScope);
+					} else {
+						t = null;
+					}
+				} else {
+					t = ConvertType(m.Target, parentTypeDefinition, parentMethodDefinition, parentUsingScope, isInUsingDeclaration) as ITypeOrNamespaceReference;
+				}
 				if (t == null)
 					return SharedTypes.UnknownType;
 				List<ITypeReference> typeArguments = new List<ITypeReference>();

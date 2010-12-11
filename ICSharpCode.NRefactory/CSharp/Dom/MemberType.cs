@@ -38,6 +38,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public bool IsDoubleColon { get; set; }
+		
 		public DomNode Target {
 			get { return GetChildByRole(Roles.TargetExpression) ?? DomNode.Null; }
 		}

@@ -55,16 +55,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			MemberType m = import as MemberType;
 			if (m != null && !m.TypeArguments.Any()) {
 				AppendName(b, m.Target);
-				b.Append('.');
+				if (m.IsDoubleColon)
+					b.Append("::");
+				else
+					b.Append('.');
 				b.Append(m.Identifier);
 				return true;
 			}
 			SimpleType t = import as SimpleType;
 			if (t != null && !t.TypeArguments.Any()) {
-				if (t.IsQualifiedWithAlias) {
-					b.Append(t.AliasIdentifier.Name);
-					b.Append("::");
-				}
 				b.Append(t.Identifier);
 				return true;
 			}
