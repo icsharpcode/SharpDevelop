@@ -97,15 +97,8 @@ namespace ICSharpCode.AvalonEdit.Xml
 		/// <summary> Create new parser </summary>
 		public AXmlParser()
 		{
-			this.UnknownEntityReferenceIsError = true;
-			this.TrackedSegments = new TrackedSegmentCollection();
 			this.Lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-			
-			this.userDocument = new AXmlDocument() { Parser = this };
-			this.userDocument.Document = this.userDocument;
-			// Track the document
-			this.TrackedSegments.AddParsedObject(this.userDocument, null);
-			this.userDocument.IsCached = false;
+			ClearInternal();
 		}
 		
 		/// <summary> Throws exception if condition is false </summary>
@@ -180,6 +173,29 @@ namespace ICSharpCode.AvalonEdit.Xml
 				
 				return userDocument;
 			}
+		}
+		
+		/// <summary>
+		/// Clears the parser data.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">No write lock is held by the current thread.</exception>
+		public void Clear()
+		{
+			if (!Lock.IsWriteLockHeld)
+				throw new InvalidOperationException("Write lock needed!");
+			
+			ClearInternal();
+		}
+		
+		void ClearInternal()
+		{
+			this.UnknownEntityReferenceIsError = true;
+			this.TrackedSegments = new TrackedSegmentCollection();
+			this.userDocument = new AXmlDocument() { Parser = this };
+			this.userDocument.Document = this.userDocument;
+			// Track the document
+			this.TrackedSegments.AddParsedObject(this.userDocument, null);
+			this.userDocument.IsCached = false;
 		}
 	}
 }

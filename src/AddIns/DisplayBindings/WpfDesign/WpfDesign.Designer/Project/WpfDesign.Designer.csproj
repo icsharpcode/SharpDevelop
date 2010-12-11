@@ -165,10 +165,6 @@
     <Compile Include="PropertyGrid\Editors\BrushEditor\BrushTypeEditor.xaml.cs">
       <DependentUpon>BrushTypeEditor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PropertyGrid\Editors\BrushEditor\ColorHelper.cs" />
-    <Compile Include="PropertyGrid\Editors\BrushEditor\ColorPicker.xaml.cs">
-      <DependentUpon>ColorPicker.xaml</DependentUpon>
-    </Compile>
     <Compile Include="PropertyGrid\Editors\BrushEditor\GradientBrushEditor.xaml.cs">
       <DependentUpon>GradientBrushEditor.xaml</DependentUpon>
     </Compile>
@@ -176,7 +172,6 @@
       <DependentUpon>GradientSlider.xaml</DependentUpon>
     </Compile>
     <Compile Include="PropertyGrid\Editors\BrushEditor\NormalizedPanel.cs" />
-    <Compile Include="PropertyGrid\Editors\BrushEditor\Picker.cs" />
     <Compile Include="PropertyGrid\Editors\BrushEditor\SolidBrushEditor.xaml.cs">
       <DependentUpon>SolidBrushEditor.xaml</DependentUpon>
     </Compile>
@@ -276,10 +271,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="PropertyGrid\Editors\BrushEditor\BrushTypeEditor.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="PropertyGrid\Editors\BrushEditor\ColorPicker.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

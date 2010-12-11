@@ -10,11 +10,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Xml;
-
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.AvalonEdit.AddIn.Options
@@ -29,8 +31,12 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			InitializeComponent();
 			textEditor.Document.UndoStack.SizeLimit = 0;
 			textEditor.Options = CodeEditorOptions.Instance;
+			bracketHighlighter = new BracketHighlightRenderer(textEditor.TextArea.TextView);
+			
 			CodeEditorOptions.Instance.BindToTextEditor(textEditor);
 		}
+		
+		BracketHighlightRenderer bracketHighlighter;
 		
 		List<CustomizedHighlightingColor> customizationList;
 		
@@ -132,6 +138,61 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 				selectedText = new CustomizedHighlightingItem(customizationList, selectedText, language, canSetFont: false);
 			selectedText.PropertyChanged += item_PropertyChanged;
 			listBox.Items.Add(selectedText);
+			
+			// Create entry for "Non-printable characters"
+			IHighlightingItem nonPrintChars = new SimpleHighlightingItem(
+				CustomizableHighlightingColorizer.NonPrintableCharacters,
+				ta => {
+					ta.Document.Text = "	    \r \r\n \n";
+				})
+			{
+				Foreground = Colors.LightGray
+			};
+			nonPrintChars = new CustomizedHighlightingItem(customizationList, nonPrintChars, null, canSetFont: false, canSetBackground: false);
+			if (language != null)
+				nonPrintChars = new CustomizedHighlightingItem(customizationList, nonPrintChars, language, canSetFont: false);
+			nonPrintChars.PropertyChanged += item_PropertyChanged;
+			listBox.Items.Add(nonPrintChars);
+			
+			// Create entry for "Line numbers"
+			IHighlightingItem lineNumbers = new SimpleHighlightingItem(
+				CustomizableHighlightingColorizer.LineNumbers,
+				ta => {
+					ta.Document.Text = "These are just" + Environment.NewLine +
+						"multiple" + Environment.NewLine +
+						"lines of" + Environment.NewLine +
+						"text";
+				})
+			{
+				Foreground = Colors.Gray
+			};
+			lineNumbers = new CustomizedHighlightingItem(customizationList, lineNumbers, null, canSetFont: false, canSetBackground: false);
+			if (language != null)
+				lineNumbers = new CustomizedHighlightingItem(customizationList, lineNumbers, language, canSetFont: false);
+			lineNumbers.PropertyChanged += item_PropertyChanged;
+			listBox.Items.Add(lineNumbers);
+			
+			// Create entry for "Bracket highlight"
+			IHighlightingItem bracketHighlight = new SimpleHighlightingItem(
+				BracketHighlightRenderer.BracketHighlight,
+				ta => {
+					ta.Document.Text = "(simple) example";
+					XshdSyntaxDefinition xshd = (XshdSyntaxDefinition)languageComboBox.SelectedItem;
+					if (xshd == null)
+						return;
+					var customizationsForCurrentLanguage = customizationList.Where(c => c.Language == null || c.Language == xshd.Name);
+					BracketHighlightRenderer.ApplyCustomizationsToRendering(bracketHighlighter, customizationsForCurrentLanguage);
+					bracketHighlighter.SetHighlight(new BracketSearchResult(0, 1, 7, 1));
+				})
+			{
+				Foreground = BracketHighlightRenderer.DefaultBorder,
+				Background = BracketHighlightRenderer.DefaultBackground
+			};
+			bracketHighlight = new CustomizedHighlightingItem(customizationList, bracketHighlight, null, canSetFont: false);
+			if (language != null)
+				bracketHighlight = new CustomizedHighlightingItem(customizationList, bracketHighlight, language, canSetFont: false);
+			bracketHighlight.PropertyChanged += item_PropertyChanged;
+			listBox.Items.Add(bracketHighlight);
 		}
 
 		void item_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -175,6 +236,7 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 						textView.LineTransformers.Add(colorizer);
 					}
 					textEditor.Select(0, 0);
+					bracketHighlighter.SetHighlight(null);
 					item.ShowExample(textEditor.TextArea);
 				}
 			}

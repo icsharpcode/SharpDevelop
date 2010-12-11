@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,6 +12,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
+using System.Windows.Media;
 using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
@@ -449,7 +451,7 @@ namespace ICSharpCode.AvalonEdit
 		
 		#region ShowLineNumbers
 		/// <summary>
-		/// IsReadOnly dependency property.
+		/// ShowLineNumbers dependency property.
 		/// </summary>
 		public static readonly DependencyProperty ShowLineNumbersProperty =
 			DependencyProperty.Register("ShowLineNumbers", typeof(bool), typeof(TextEditor),
@@ -468,8 +470,13 @@ namespace ICSharpCode.AvalonEdit
 			TextEditor editor = (TextEditor)d;
 			var leftMargins = editor.TextArea.LeftMargins;
 			if ((bool)e.NewValue) {
-				leftMargins.Insert(0, new LineNumberMargin());
-				leftMargins.Insert(1, DottedLineMargin.Create());
+				var lineNumbers = new LineNumberMargin();
+				leftMargins.Insert(0, lineNumbers);
+				leftMargins.Insert(1, DottedLineMargin.Create(editor));
+				lineNumbers.SetBinding(Control.ForegroundProperty,
+				                       new Binding("LineNumbersForeground") {
+				                       	Source = editor
+				                       });
 			} else {
 				for (int i = 0; i < leftMargins.Count; i++) {
 					if (leftMargins[i] is LineNumberMargin) {
@@ -480,6 +487,33 @@ namespace ICSharpCode.AvalonEdit
 						break;
 					}
 				}
+			}
+		}
+		#endregion
+		
+		#region LineNumbersForeground
+		/// <summary>
+		/// LineNumbersForeground dependency property.
+		/// </summary>
+		public static readonly DependencyProperty LineNumbersForegroundProperty =
+			DependencyProperty.Register("LineNumbersForeground", typeof(Brush), typeof(TextEditor),
+			                            new FrameworkPropertyMetadata(Brushes.Gray, OnLineNumbersForegroundChanged));
+		
+		/// <summary>
+		/// Gets/sets the Brush used for displaying the foreground color of line numbers.
+		/// </summary>
+		public Brush LineNumbersForeground {
+			get { return (Brush)GetValue(LineNumbersForegroundProperty); }
+			set { SetValue(LineNumbersForegroundProperty, value); }
+		}
+		
+		static void OnLineNumbersForegroundChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			TextEditor editor = (TextEditor)d;
+			var lineNumberMargin = editor.TextArea.LeftMargins.FirstOrDefault(margin => margin is LineNumberMargin) as LineNumberMargin;;
+			
+			if (lineNumberMargin != null) {
+				lineNumberMargin.SetValue(Control.ForegroundProperty, e.NewValue);
 			}
 		}
 		#endregion

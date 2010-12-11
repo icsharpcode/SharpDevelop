@@ -232,7 +232,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					}
 					if (showArgumentValues) {
 						try {
-							argValue = frame.GetArgumentValue(i).AsString;
+							argValue = frame.GetArgumentValue(i).AsString(100);
 						} catch { }
 					}
 					if (parameterName != null && argValue != null) {

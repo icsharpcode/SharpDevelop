@@ -382,7 +382,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			try {
 				Value val = GetValueFromName(variableName);
 				if (val == null) return null;
-				return val.AsString;
+				return val.AsString();
 			} catch (GetValueException) {
 				return null;
 			}

@@ -1,14 +1,12 @@
-﻿<UserControl
-	x:Class="ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor.SolidBrushEditor"
+﻿<UserControl	x:Class="ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor.SolidBrushEditor"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:BrushEditor="clr-namespace:ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor"
+	xmlns:widgets="http://icsharpcode.net/sharpdevelop/widgets"
 	x:Name="this"
-	Height="284"
->
+	Height="284">
 	<TabControl>
 		<TabItem Header="Color Picker">
-			<BrushEditor:ColorPicker Color="{Binding Color, ElementName=this}" />
+			<widgets:ColorPicker Color="{Binding Color, ElementName=this}" />
 		</TabItem>
 		<TabItem Header="Color List">
 			<ListBox ItemsSource="{Binding AvailableColors}"

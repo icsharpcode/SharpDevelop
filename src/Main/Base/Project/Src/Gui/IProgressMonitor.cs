@@ -120,15 +120,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public OperationStatus Status { get; set; }
 		
-		public CancellationToken CancellationToken {
-			get { return CancellationToken.None; }
-		}
+		public CancellationToken CancellationToken { get; set; }
 		
 		public double Progress { get; set; }
 		
 		public IProgressMonitor CreateSubTask(double workAmount)
 		{
-			return new DummyProgressMonitor();
+			return new DummyProgressMonitor() { CancellationToken = this.CancellationToken };
 		}
 		
 		public void Dispose()

@@ -88,11 +88,11 @@ namespace Debugger.AddIn.Visualizers.Utils
 			// value.InvokeMethod is nice for instance methods.
 			// what about MethodInfo.Invoke() ?
 			// also, there could be an overload that takes 1 parameter instead of array
-			string defaultHashCode = Eval.InvokeMethod(DebuggerHelpers.hashCodeMethod, null, new Value[]{value}).AsString;
+			Value defaultHashCode = Eval.InvokeMethod(DebuggerHelpers.hashCodeMethod, null, new Value[]{value});
 			
 			//MethodInfo method = value.Type.GetMember("GetHashCode", BindingFlags.Method | BindingFlags.IncludeSuperType) as MethodInfo;
 			//string hashCode = value.InvokeMethod(method, null).AsString;
-			return int.Parse(defaultHashCode);
+			return (int)defaultHashCode.PrimitiveValue;
 		}
 		
 		public static Value EvalPermanentReference(this Expression expr)

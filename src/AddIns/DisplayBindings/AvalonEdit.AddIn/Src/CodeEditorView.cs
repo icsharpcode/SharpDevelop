@@ -36,7 +36,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// There can be two CodeEditorView instances in a single CodeEditor if split-view
 	/// is enabled.
 	/// </summary>
-	public class CodeEditorView : SharpDevelopTextEditor
+	public class CodeEditorView : SharpDevelopTextEditor, IDisposable
 	{
 		public ITextEditor Adapter { get; set; }
 		
@@ -48,19 +48,32 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Help, OnHelpExecuted));
 			
-			UpdateCustomizedHighlighting();
-			
 			this.bracketRenderer = new BracketHighlightRenderer(this.TextArea.TextView);
 			this.caretReferencesRenderer = new CaretReferencesRenderer(this);
 			this.contextActionsRenderer = new ContextActionsRenderer(this);
+			
+			UpdateCustomizedHighlighting();
 			
 			this.MouseHover += TextEditorMouseHover;
 			this.MouseHoverStopped += TextEditorMouseHoverStopped;
 			this.MouseLeave += TextEditorMouseLeave;
 			this.TextArea.TextView.MouseDown += TextViewMouseDown;
 			this.TextArea.Caret.PositionChanged += HighlightBrackets;
+			this.TextArea.TextView.VisualLinesChanged += CodeEditorView_VisualLinesChanged;
 			
 			SetupTabSnippetHandler();
+		}
+
+		void CodeEditorView_VisualLinesChanged(object sender, EventArgs e)
+		{
+			// hide tooltip
+			if (this.toolTip != null)
+				this.toolTip.IsOpen = false;
+		}
+		
+		public virtual void Dispose()
+		{
+			contextActionsRenderer.Dispose();
 		}
 		
 		protected override string FileName {
@@ -491,6 +504,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			string language = this.SyntaxHighlighting != null ? this.SyntaxHighlighting.Name : null;
 			CustomizableHighlightingColorizer.ApplyCustomizationsToDefaultElements(this, FetchCustomizations(language));
+			BracketHighlightRenderer.ApplyCustomizationsToRendering(this.bracketRenderer, FetchCustomizations(language));
 			this.TextArea.TextView.Redraw(); // manually redraw if default elements didn't change but customized highlightings did
 		}
 		

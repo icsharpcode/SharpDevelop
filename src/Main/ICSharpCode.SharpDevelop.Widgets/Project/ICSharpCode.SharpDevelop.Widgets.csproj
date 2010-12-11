@@ -63,6 +63,10 @@
       <Link>Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CollapsiblePanel.cs" />
+    <Compile Include="ColorHelper.cs" />
+    <Compile Include="ColorPicker.xaml.cs">
+      <DependentUpon>ColorPicker.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="DragListener.cs" />
     <Compile Include="ListViewSorting\AbstractListViewParseableColumnComparer.cs" />
@@ -76,6 +80,7 @@
     <Compile Include="NumericUpDown.cs">
       <DependentUpon>NumericUpDown.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Picker.cs" />
     <Compile Include="RadioButtonGroup.cs" />
     <Compile Include="Resources\BitmapResources.cs" />
     <Compile Include="SideBar\SideBar.cs">
@@ -99,6 +104,10 @@
     <EmbeddedResource Include="Resources\Icons.16x16.SortDescending.png" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="ColorPicker.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="NumericUpDown.xaml" />
     <Page Include="themes\generic.xaml" />
     <Page Include="ZoomScrollViewer.xaml" />
