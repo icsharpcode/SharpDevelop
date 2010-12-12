@@ -50,15 +50,15 @@ namespace ICSharpCode.Reports.Addin
 			AbstractPreviewCommand cmd = null;
 			switch (model.DataModel) {
 					case GlobalEnums.PushPullModel.FormSheet : {
-						cmd = new FormsSheetPreviewCommand (model,control);
+						cmd = new FormSheetToReportViewerCommand (model,control);
 						break;
 					}
 					case GlobalEnums.PushPullModel.PullData:{
-						cmd = new PullModelPreviewCommand(model,control);					
+						cmd = new PullModelToReportViewerCommand(model,control);					
 						break;
 					}
 					case GlobalEnums.PushPullModel.PushData:{
-						cmd = new PushModelPreviewCommand(model,control);						
+						cmd = new PushModelToReportViewerCommand(model,control);						
 						break;
 					}
 				default:

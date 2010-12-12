@@ -5,14 +5,20 @@ using System;
 using System.Collections;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
+using System.Data;
 using System.Drawing.Design;
+using System.Drawing.Printing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Reports.Addin.Commands;
 using ICSharpCode.Reports.Addin.Designer;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
+using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -557,52 +563,51 @@ namespace ICSharpCode.Reports.Addin
 		
 		
 		#region IPrintable
-		private void ccc()
+		
+		
+		public PrintDocument PrintDocument
 		{
-			/*
-				ReportModel model = loader.CreateRenderableModel();
-			IReportCreator creator = ReportEngine.CreatePageBuilder(model,eventLogger.EventLog,null);
-			//creator.SectionRendering += PushPrinting;
-			creator.BuildExportList();
-			using (PdfRenderer pdfRenderer = PdfRenderer.CreateInstance(creator,SelectFilename(),true))
-			{
-				pdfRenderer.Start();
-				pdfRenderer.RenderOutput();
-				pdfRenderer.End();
-			}
-		*/
-		
-			
-			var model = loader.CreateRenderableModel();
-			switch (model.DataModel) {
-					case GlobalEnums.PushPullModel.FormSheet : {
-						//cmd = new FormsSheetPreviewCommand (model,control);
-						break;
-					}
-					case GlobalEnums.PushPullModel.PullData:{
-						//cmd = new PullModelPreviewCommand(model,control);					
-						break;
-					}
-					case GlobalEnums.PushPullModel.PushData:{
-						//cmd = new PushModelPreviewCommand(model,control);						
-						break;
-					}
-				default:
-					throw new InvalidReportModelException();
-			}
-		}
-		
-		
-		public System.Drawing.Printing.PrintDocument PrintDocument {
 			get {
-				ccc();
-				ICSharpCode.Reports.Core.ReportModel model = this.loader.CreateRenderableModel();
-				StandartPreviewManager reportManager = new StandartPreviewManager();
-				ICSharpCode.Reports.Core.AbstractRenderer r = reportManager.CreateRenderer (model);
-				return r.ReportDocument;
+				ReportModel model = loader.CreateRenderableModel();
+				IReportCreator reportCreator = null;
+				Layouter layouter = new Layouter();
+				var  c = new CollectParametersCommand(model);
+			c.Run();
+				switch (model.DataModel) {
+						case GlobalEnums.PushPullModel.FormSheet :
+						{
+							reportCreator = FormPageBuilder.CreateInstance(model,layouter);
+							break;
+						}
+						case GlobalEnums.PushPullModel.PullData:
+						{
+							
+							IDataManager dataManager = DataManagerFactory.CreateDataManager(model,(ReportParameters)null);
+							reportCreator = DataPageBuilder.CreateInstance(model,dataManager,layouter);
+							break;
+						}
+						case GlobalEnums.PushPullModel.PushData:{
+							ICSharpCode.Reports.Addin.Commands.DataSetFromXsdCommand cmd =
+								new ICSharpCode.Reports.Addin.Commands.DataSetFromXsdCommand();
+							cmd.Run();
+							DataSet ds = cmd.DataSet;
+							IDataManager dataManager = DataManagerFactory.CreateDataManager(model,ds.Tables[0]);
+							reportCreator = DataPageBuilder.CreateInstance(model,dataManager,layouter);
+							break;
+						}
+					default:
+						throw new InvalidReportModelException();
+				}
+				
+				reportCreator.BuildExportList();
+				PrintRenderer printer = PrintRenderer.CreateInstance(reportCreator.Pages);
+				printer.Start();
+				printer.RenderOutput();
+				printer.End();
+				return printer.PrintDocument;
 			}
 		}
-		
+	
 		#endregion
 		
 		
