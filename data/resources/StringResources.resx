@@ -3583,6 +3583,9 @@ You can also choose to store the setting in the .user-file instead of the projec
   <data name="Global.YesToAll" xml:space="preserve">
     <value>Yes to All</value>
   </data>
+  <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
+    <value>Collapse all nodes</value>
+  </data>
   <data name="Gui.ProjectBrowser.FileInUseError" xml:space="preserve">
     <value>File or directory name is already in use, choose a different one.</value>
   </data>

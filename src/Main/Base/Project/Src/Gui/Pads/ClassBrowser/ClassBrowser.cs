@@ -172,6 +172,16 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			UpdateToolbars();
 		}
 		
+		public void CollapseAll() 
+		{
+			if (this.classBrowserTreeView == null) return;
+			if (this.classBrowserTreeView.Nodes == null || this.classBrowserTreeView.Nodes.Count == 0) return;
+			
+			foreach(TreeNode node in this.classBrowserTreeView.Nodes) {
+				node.Collapse(false);
+			}
+		}
+		
 		void ClassBrowserTreeViewAfterSelect(object sender, TreeViewEventArgs e)
 		{
 			if (navigateBack) {

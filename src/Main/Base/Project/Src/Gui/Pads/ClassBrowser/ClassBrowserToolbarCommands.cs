@@ -34,6 +34,17 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 		}
 	}
 	
+	public class ClassBrowserCollapseAll : AbstractMenuCommand
+	{
+		public override bool IsEnabled {
+			get { return true; }
+		}
+		public override void Run()
+		{
+			ClassBrowserPad.Instance.CollapseAll();
+		}
+	}
+	
 	#region Class browser filter
 	public class SelectClassBrowserFilter : AbstractMenuCommand
 	{

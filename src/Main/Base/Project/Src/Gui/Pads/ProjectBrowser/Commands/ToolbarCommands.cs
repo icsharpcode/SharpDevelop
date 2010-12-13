@@ -37,4 +37,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
 		}
 	}
+	
+	public class CollapseAllProjectBrowser : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			ProjectBrowserPad.Instance.ProjectBrowserControl.ExpandOrCollapseAll(false);
+		}
+	}
 }

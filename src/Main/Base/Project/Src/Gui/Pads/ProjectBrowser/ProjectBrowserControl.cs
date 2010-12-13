@@ -485,5 +485,22 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.ResumeLayout(false);
 		}
 		#endregion
+		
+		public void ExpandOrCollapseAll(bool expand)
+		{
+			if (this.treeView == null) return;
+			if (this.treeView.Nodes == null || this.treeView.Nodes.Count == 0) return;
+			
+			foreach(TreeNode node in this.treeView.Nodes) {
+				if (expand) {
+					node.ExpandAll();
+				}
+				else {
+					node.Collapse(false);
+				}
+			}
+			
+			this.treeView.Nodes[0].Expand();
+		}
 	}
 }
