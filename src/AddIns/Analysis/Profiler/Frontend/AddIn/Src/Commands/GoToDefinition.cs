@@ -26,7 +26,7 @@ namespace ICSharpCode.Profiler.AddIn.Commands
 					IEntity member = GetMemberFromName(c, selectedItem.MethodName, selectedItem.Parameters);
 					FilePosition position = c.ProjectContent.GetPosition(member ?? c);
 					if (!position.IsEmpty && !string.IsNullOrEmpty(position.FileName)) {
-						FileService.JumpToFilePosition(position.FileName, position.Line - 1, position.Column - 1);
+						FileService.JumpToFilePosition(position.FileName, position.Line, position.Column);
 					}
 				}
 			}
