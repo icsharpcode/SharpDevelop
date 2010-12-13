@@ -20,26 +20,32 @@ namespace ICSharpCode.AvalonEdit.Folding
 	/// </summary>
 	public class FoldingManager : IWeakEventListener
 	{
-		internal readonly TextView textView;
 		internal readonly TextDocument document;
 		
+		internal readonly List<TextView> textViews = new List<TextView>();
 		readonly TextSegmentCollection<FoldingSection> foldings;
 		
 		#region Constructor
 		/// <summary>
 		/// Creates a new FoldingManager instance.
 		/// </summary>
-		public FoldingManager(TextView textView, TextDocument document)
+		public FoldingManager(TextDocument document)
 		{
-			if (textView == null)
-				throw new ArgumentNullException("textView");
 			if (document == null)
 				throw new ArgumentNullException("document");
-			this.textView = textView;
 			this.document = document;
 			this.foldings = new TextSegmentCollection<FoldingSection>();
 			document.VerifyAccess();
 			TextDocumentWeakEventManager.Changed.AddListener(document, this);
+		}
+		
+		/// <summary>
+		/// Creates a new FoldingManager instance.
+		/// </summary>
+		[Obsolete("Use the (TextDocument) constructor instead.")]
+		public FoldingManager(TextView textView, TextDocument document)
+			: this(document)
+		{
 		}
 		#endregion
 		
@@ -73,6 +79,57 @@ namespace ICSharpCode.AvalonEdit.Folding
 		}
 		#endregion
 		
+		#region Manage TextViews
+		internal void AddToTextView(TextView textView)
+		{
+			if (textView == null || textViews.Contains(textView))
+				throw new ArgumentException();
+			textViews.Add(textView);
+			foreach (FoldingSection fs in foldings) {
+				if (fs.collapsedSections != null) {
+					Array.Resize(ref fs.collapsedSections, textViews.Count);
+					fs.collapsedSections[fs.collapsedSections.Length - 1] = fs.CollapseSection(textView);
+				}
+			}
+		}
+		
+		internal void RemoveFromTextView(TextView textView)
+		{
+			int pos = textViews.IndexOf(textView);
+			if (pos < 0)
+				throw new ArgumentException();
+			foreach (FoldingSection fs in foldings) {
+				if (fs.collapsedSections != null) {
+					CollapsedLineSection[] c = new CollapsedLineSection[textViews.Count];
+					Array.Copy(fs.collapsedSections, 0, c, 0, pos);
+					Array.Copy(fs.collapsedSections, pos + 1, c, pos, c.Length - pos);
+					fs.collapsedSections = c;
+				}
+			}
+		}
+		
+		internal CollapsedLineSection[] CollapseLines(DocumentLine start, DocumentLine end)
+		{
+			CollapsedLineSection[] c = new CollapsedLineSection[textViews.Count];
+			for (int i = 0; i < c.Length; i++) {
+				c[i] = textViews[i].CollapseLines(start, end);
+			}
+			return c;
+		}
+		
+		internal void Redraw()
+		{
+			foreach (TextView textView in textViews)
+				textView.Redraw();
+		}
+		
+		internal void Redraw(FoldingSection fs)
+		{
+			foreach (TextView textView in textViews)
+				textView.Redraw(fs);
+		}
+		#endregion
+		
 		#region Create / Remove / Clear
 		/// <summary>
 		/// Creates a folding for the specified text section.
@@ -83,7 +140,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 				throw new ArgumentException("startOffset must be less than endOffset");
 			FoldingSection fs = new FoldingSection(this, startOffset, endOffset);
 			foldings.Add(fs);
-			textView.Redraw(fs, DispatcherPriority.Normal);
+			Redraw(fs);
 			return fs;
 		}
 		
@@ -96,7 +153,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 				throw new ArgumentNullException("fs");
 			fs.IsFolded = false;
 			foldings.Remove(fs);
-			textView.Redraw(fs, DispatcherPriority.Normal);
+			Redraw(fs);
 		}
 		
 		/// <summary>
@@ -108,7 +165,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 			foreach (FoldingSection s in foldings)
 				s.IsFolded = false;
 			foldings.Clear();
-			textView.Redraw();
+			Redraw();
 		}
 		#endregion
 		
@@ -264,7 +321,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 			FoldingMargin margin;
 			FoldingElementGenerator generator;
 			
-			public FoldingManagerInstallation(TextArea textArea) : base(textArea.TextView, textArea.Document)
+			public FoldingManagerInstallation(TextArea textArea) : base(textArea.Document)
 			{
 				this.textArea = textArea;
 				margin = new FoldingMargin() { FoldingManager = this };

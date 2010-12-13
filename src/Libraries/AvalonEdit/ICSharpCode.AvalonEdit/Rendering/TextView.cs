@@ -406,7 +406,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <summary>
 		/// Causes the text editor to regenerate the specified visual line.
 		/// </summary>
-		public void Redraw(VisualLine visualLine, DispatcherPriority redrawPriority)
+		public void Redraw(VisualLine visualLine, DispatcherPriority redrawPriority = DispatcherPriority.Normal)
 		{
 			VerifyAccess();
 			if (allVisualLines.Remove(visualLine)) {
@@ -419,7 +419,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <summary>
 		/// Causes the text editor to redraw all lines overlapping with the specified segment.
 		/// </summary>
-		public void Redraw(int offset, int length, DispatcherPriority redrawPriority)
+		public void Redraw(int offset, int length, DispatcherPriority redrawPriority = DispatcherPriority.Normal)
 		{
 			VerifyAccess();
 			bool removedLine = false;
@@ -464,7 +464,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// Causes the text editor to redraw all lines overlapping with the specified segment.
 		/// Does nothing if segment is null.
 		/// </summary>
-		public void Redraw(ISegment segment, DispatcherPriority redrawPriority)
+		public void Redraw(ISegment segment, DispatcherPriority redrawPriority = DispatcherPriority.Normal)
 		{
 			if (segment != null) {
 				Redraw(segment.Offset, segment.Length, redrawPriority);
