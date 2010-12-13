@@ -570,29 +570,26 @@ namespace ICSharpCode.Reports.Addin
 			get {
 				ReportModel model = loader.CreateRenderableModel();
 				IReportCreator reportCreator = null;
-				Layouter layouter = new Layouter();
-				var  c = new CollectParametersCommand(model);
-			c.Run();
+				var  paramCmd = new CollectParametersCommand(model);
+				paramCmd.Run();
 				switch (model.DataModel) {
 						case GlobalEnums.PushPullModel.FormSheet :
 						{
-							reportCreator = FormPageBuilder.CreateInstance(model,layouter);
+							reportCreator = FormPageBuilder.CreateInstance(model);
 							break;
 						}
 						case GlobalEnums.PushPullModel.PullData:
 						{
-							
 							IDataManager dataManager = DataManagerFactory.CreateDataManager(model,(ReportParameters)null);
-							reportCreator = DataPageBuilder.CreateInstance(model,dataManager,layouter);
+							reportCreator = DataPageBuilder.CreateInstance(model,dataManager);
 							break;
 						}
 						case GlobalEnums.PushPullModel.PushData:{
-							ICSharpCode.Reports.Addin.Commands.DataSetFromXsdCommand cmd =
-								new ICSharpCode.Reports.Addin.Commands.DataSetFromXsdCommand();
+							var cmd = new ICSharpCode.Reports.Addin.Commands.DataSetFromXsdCommand();
 							cmd.Run();
 							DataSet ds = cmd.DataSet;
 							IDataManager dataManager = DataManagerFactory.CreateDataManager(model,ds.Tables[0]);
-							reportCreator = DataPageBuilder.CreateInstance(model,dataManager,layouter);
+							reportCreator = DataPageBuilder.CreateInstance(model,dataManager);
 							break;
 						}
 					default:

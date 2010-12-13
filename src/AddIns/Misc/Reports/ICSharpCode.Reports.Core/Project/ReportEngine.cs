@@ -469,13 +469,12 @@ namespace ICSharpCode.Reports.Core {
 			
 			IReportModel reportModel = LoadReportModel (fileName);
 			IReportCreator builder = null;
-			Layouter layouter = new Layouter();
 			if (reportModel.DataModel == GlobalEnums.PushPullModel.FormSheet) {
-				builder = FormPageBuilder.CreateInstance(reportModel,layouter);
+				builder = FormPageBuilder.CreateInstance(reportModel);
 			} else {
 				CheckForParameters(reportModel,reportParameters);
 				IDataManager dataMan  = DataManagerFactory.CreateDataManager(reportModel,reportParameters);
-				builder = DataPageBuilder.CreateInstance(reportModel, dataMan,layouter);
+				builder = DataPageBuilder.CreateInstance(reportModel, dataMan);
 			}
 			return builder;
 		}
@@ -493,8 +492,7 @@ namespace ICSharpCode.Reports.Core {
 				throw new ArgumentNullException("reportModel");
 			}
 			IDataManager dataMan  = DataManagerFactory.CreateDataManager(reportModel,(ReportParameters)null);
-			Layouter layouter = new Layouter();
-			IReportCreator builder = DataPageBuilder.CreateInstance(reportModel, dataMan,layouter);
+			IReportCreator builder = DataPageBuilder.CreateInstance(reportModel, dataMan);
 			return builder;
 		}
 		
@@ -543,8 +541,7 @@ namespace ICSharpCode.Reports.Core {
 			IDataManager dataMan  = DataManager.CreateInstance(dataTable,reportModel.ReportSettings);
 			if (dataMan != null)
 			{
-				Layouter layouter = new Layouter();
-				return DataPageBuilder.CreateInstance(reportModel, dataMan,layouter);
+				return DataPageBuilder.CreateInstance(reportModel, dataMan);
 			} else {
 				throw new MissingDataManagerException();
 			}
@@ -571,8 +568,7 @@ namespace ICSharpCode.Reports.Core {
 			ReportEngine.CheckForParameters(reportModel,reportParameters);
 			IDataManager dataMan  = DataManager.CreateInstance(list,reportModel.ReportSettings);
 			if (dataMan != null) {
-				Layouter layouter = new Layouter();
-				return DataPageBuilder.CreateInstance(reportModel,dataMan,layouter);
+				return DataPageBuilder.CreateInstance(reportModel,dataMan);
 			} else {
 				throw new MissingDataManagerException();
 			}

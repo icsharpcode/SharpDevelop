@@ -151,9 +151,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		private void RunFormSheet (ReportModel reportModel)
 		{
-			
-			Layouter layouter = new Layouter();
-			IReportCreator reportCreator = FormPageBuilder.CreateInstance(reportModel,layouter);
+			IReportCreator reportCreator = FormPageBuilder.CreateInstance(reportModel);
 			reportCreator.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
 			reportCreator.PageCreated += OnPageCreated;
 			reportCreator.BuildExportList();
@@ -163,8 +161,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		private void RunDataReport (ReportModel reportModel,IDataManager data)
 		{
-			ILayouter layouter = new Layouter();
-			IReportCreator reportCreator = DataPageBuilder.CreateInstance(reportModel,data,layouter);
+			IReportCreator reportCreator = DataPageBuilder.CreateInstance(reportModel,data);
 			reportCreator.SectionRendering += new EventHandler<SectionRenderEventArgs>(PushPrinting);
 			reportCreator.GroupHeaderRendering += new EventHandler<GroupHeaderEventArgs>(GroupHeaderRendering);
 			reportCreator.GroupFooterRendering += GroupFooterRendering;
@@ -195,7 +192,7 @@ namespace ICSharpCode.Reports.Core.ReportViewer
 		
 		private void PushPrinting (object sender,SectionRenderEventArgs e)
 		{
-			string sectionName = e.Section.Name;
+//			string sectionName = e.Section.Name;
 			/*
 			if (sectionName == ReportSectionNames.ReportHeader) {
 				Console.WriteLine("PushPrinting  :" + ReportSectionNames.ReportHeader);

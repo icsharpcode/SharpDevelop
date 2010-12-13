@@ -16,18 +16,17 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		#region Constructure
 		
-		public static FormPageBuilder CreateInstance(IReportModel reportModel,ILayouter layouter)
+		public static FormPageBuilder CreateInstance(IReportModel reportModel)
 		{
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
 			}
-			
-			FormPageBuilder instance = new FormPageBuilder(reportModel,layouter);
+			FormPageBuilder instance = new FormPageBuilder(reportModel);
 			return instance;
 		}
 		
 		
-		private FormPageBuilder(IReportModel reportModel,ILayouter layouter):base(reportModel,layouter)
+		private FormPageBuilder(IReportModel reportModel):base(reportModel)
 		{
 		}
 		
