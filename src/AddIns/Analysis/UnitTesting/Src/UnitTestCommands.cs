@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
@@ -96,6 +97,22 @@ namespace ICSharpCode.UnitTesting
 				fileService.OpenFile(filePosition.FileName);
 			} else {
 				fileService.JumpToFilePosition(filePosition.FileName, filePosition.Line - 1, filePosition.Column - 1);
+			}
+		}
+	}
+	
+	public class CollapseAllTestsCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			if (!(this.Owner is TreeView))
+				return;
+			
+			var treeView = (TreeView)this.Owner;
+			treeView.CollapseAll();
+			
+			if (treeView.Nodes.Count > 0) {
+				treeView.Nodes[0].Expand();
 			}
 		}
 	}

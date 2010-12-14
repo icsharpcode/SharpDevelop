@@ -177,9 +177,7 @@ namespace ICSharpCode.SharpDevelop.Gui.ClassBrowser
 			if (this.classBrowserTreeView == null) return;
 			if (this.classBrowserTreeView.Nodes == null || this.classBrowserTreeView.Nodes.Count == 0) return;
 			
-			foreach(TreeNode node in this.classBrowserTreeView.Nodes) {
-				node.Collapse(false);
-			}
+			this.classBrowserTreeView.CollapseAll();
 		}
 		
 		void ClassBrowserTreeViewAfterSelect(object sender, TreeViewEventArgs e)

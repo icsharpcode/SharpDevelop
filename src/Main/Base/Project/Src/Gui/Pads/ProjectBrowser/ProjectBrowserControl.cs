@@ -491,13 +491,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (this.treeView == null) return;
 			if (this.treeView.Nodes == null || this.treeView.Nodes.Count == 0) return;
 			
-			foreach(TreeNode node in this.treeView.Nodes) {
-				if (expand) {
-					node.ExpandAll();
-				}
-				else {
-					node.Collapse(false);
-				}
+			if (expand) {
+				this.treeView.ExpandAll();
+			}
+			else {
+				this.treeView.CollapseAll();
 			}
 			
 			this.treeView.Nodes[0].Expand();
