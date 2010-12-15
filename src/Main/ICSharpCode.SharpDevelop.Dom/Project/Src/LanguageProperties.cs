@@ -228,6 +228,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			return member.IsStatic == showStatic;
 		}
+		
+		public virtual bool ShowMemberInOverrideCompletion(IMember member)
+		{
+			return true;
+		}
 		#endregion
 		
 		/// <summary>
@@ -319,6 +324,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 						return false;
 				}
 				return true;
+			}
+			
+			public override bool ShowMemberInOverrideCompletion(IMember member)
+			{
+				IMethod method = member as IMethod;
+				
+				if (method != null) {
+					if (method.Name == "Finalize" && method.Parameters.Count == 0)
+						return false;
+				}
+				
+				return base.ShowMemberInOverrideCompletion(member);
 			}
 		}
 		#endregion
