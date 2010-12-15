@@ -387,9 +387,9 @@ namespace ICSharpCode.XamlBinding
 				string word = context.Editor.GetWordBeforeCaretExtended();
 				if (context.PressedKey != '.' && context.PressedKey != '=' && !word.EndsWith(".") && completionList.PreselectionLength == 0)
 					completionList.PreselectionLength = word.Length;
-				context.Editor.ShowCompletionWindow(completionList);
 				var insightList = CompletionDataHelper.CreateMarkupExtensionInsight(context);
 				context.Editor.ShowInsightWindow(insightList);
+				context.Editor.ShowCompletionWindow(completionList);
 				return completionList.Items.Any() || insightList.Any();
 			}
 			
