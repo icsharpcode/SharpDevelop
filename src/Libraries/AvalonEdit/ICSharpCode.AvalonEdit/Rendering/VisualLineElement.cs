@@ -60,7 +60,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <see cref="VisualLineElementTextRunProperties"/> will affect only this
 		/// <see cref="VisualLineElement"/>.
 		/// </summary>
-		public VisualLineElementTextRunProperties TextRunProperties { get; set; }
+		public VisualLineElementTextRunProperties TextRunProperties { get; private set; }
 		
 		internal void SetTextRunProperties(VisualLineElementTextRunProperties p)
 		{
