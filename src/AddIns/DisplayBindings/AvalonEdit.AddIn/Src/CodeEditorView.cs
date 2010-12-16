@@ -14,7 +14,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-
+using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.AddIn.Snippets;
 using ICSharpCode.AvalonEdit.Editing;
@@ -26,6 +26,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.Commands;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
 using Ast = ICSharpCode.NRefactory.Ast;
 
@@ -449,6 +450,22 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// the adapter sets the caret position and takes care of scrolling
 			this.Adapter.JumpTo(line, column);
 			this.Focus();
+			
+			Dispatcher.Invoke(DispatcherPriority.Background, (Action)DisplayFocusHighlight);
+		}
+		
+		void DisplayFocusHighlight()
+		{
+			TextArea textArea = Adapter.GetService(typeof(TextArea)) as TextArea;
+			
+			if (textArea == null)
+				return;
+			
+			AdornerLayer layer = AdornerLayer.GetAdornerLayer(textArea.TextView);
+			FocusHighlightAdorner adorner = new FocusHighlightAdorner(textArea.TextView, textArea.Caret.CalculateCaretRectangle().Location - textArea.TextView.ScrollOffset - new Vector(3, 6.75));
+			layer.Add(adorner);
+			
+			WorkbenchSingleton.CallLater(TimeSpan.FromSeconds(1), (Action)(() => layer.Remove(adorner)));
 		}
 		
 		#region UpdateParseInformation - Folding
