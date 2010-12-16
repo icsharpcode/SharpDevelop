@@ -451,7 +451,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.Adapter.JumpTo(line, column);
 			this.Focus();
 			
-			Dispatcher.Invoke(DispatcherPriority.Background, (Action)DisplayFocusHighlight);
+			if (CodeEditorOptions.Instance.HighlightFocus)
+				Dispatcher.Invoke(DispatcherPriority.Background, (Action)DisplayFocusHighlight);
 		}
 		
 		void DisplayFocusHighlight()

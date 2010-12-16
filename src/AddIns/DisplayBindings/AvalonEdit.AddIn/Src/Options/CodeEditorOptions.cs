@@ -144,6 +144,19 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			}
 		}
 		
+		bool highlightFocus = true;
+		
+		[DefaultValue(true)]
+		public bool HighlightFocus {
+			get { return highlightFocus; }
+			set {
+				if (highlightFocus != value) {
+					highlightFocus = value;
+					OnPropertyChanged("HighlightFocus");
+				}
+			}
+		}
+		
 		bool useSmartIndentation = true;
 		
 		[DefaultValue(true)]

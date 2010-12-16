@@ -24,6 +24,9 @@
 				<CheckBox
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.HighlightSymbol}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox}" />
+				<CheckBox
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.HighlightFocus}"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.HighlightFocusCheckBox}" />
 			</widgets:StackPanelWithSpacing>
 		</GroupBox>
 	</StackPanel>
