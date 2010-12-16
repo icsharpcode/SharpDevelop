@@ -56,8 +56,6 @@ namespace AvalonDock
         {
             Window.ShowInTaskbarProperty.OverrideMetadata(typeof(FloatingWindow), new FrameworkPropertyMetadata(false));
             Window.WindowStyleProperty.OverrideMetadata(typeof(FloatingWindow), new FrameworkPropertyMetadata(WindowStyle.ToolWindow));
-
-            //DefaultStyleKeyProperty.OverrideMetadata(typeof(FloatingWindow), new FrameworkPropertyMetadata(typeof(FloatingWindow)));
         }
 
 
@@ -142,56 +140,6 @@ namespace AvalonDock
         }
         #endregion
 
-        
-
-        //#region HostedPane
-
-        ///// <summary>
-        ///// HostedPane Read-Only Dependency Property
-        ///// </summary>
-        //private static readonly DependencyPropertyKey HostedPanePropertyKey
-        //    = DependencyProperty.RegisterReadOnly("HostedPane", typeof(Pane), typeof(FloatingWindow),
-        //        new FrameworkPropertyMetadata((Pane)null,
-        //            new PropertyChangedCallback(OnHostedPaneChanged)));
-
-        //public static readonly DependencyProperty HostedPaneProperty
-        //    = HostedPanePropertyKey.DependencyProperty;
-
-        ///// <summary>
-        ///// Gets the HostedPane property.  This dependency property 
-        ///// indicates the hosted pane contained into the floating window (an hosted pane can be of type <see cref="FloatingDocumentPane"/> or type <see cref="FloatingDockablePane"/>.
-        ///// </summary>
-        //public Pane HostedPane
-        //{
-        //    get { return (Pane)GetValue(HostedPaneProperty); }
-        //}
-
-        ///// <summary>
-        ///// Provides a secure method for setting the HostedPane property.  
-        ///// This dependency property indicates the hosted pane contained into the floating window (an hosted pane can be of type <see cref="FloatingDocumentPane"/> or type <see cref="FloatingDockablePane"/>.
-        ///// </summary>
-        ///// <param name="value">The new value for the property.</param>
-        //protected void SetHostedPane(Pane value)
-        //{
-        //    SetValue(HostedPanePropertyKey, value);
-        //}
-
-        ///// <summary>
-        ///// Handles changes to the HostedPane property.
-        ///// </summary>
-        //private static void OnHostedPaneChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        //{
-        //    ((FloatingWindow)d).OnHostedPaneChanged(e);
-        //}
-
-        ///// <summary>
-        ///// Provides derived classes an opportunity to handle changes to the HostedPane property.
-        ///// </summary>
-        //protected virtual void OnHostedPaneChanged(DependencyPropertyChangedEventArgs e)
-        //{
-        //}
-
-        //#endregion
 
         protected override void OnInitialized(EventArgs e)
         {
@@ -594,8 +542,6 @@ namespace AvalonDock
             
         }
         #endregion
-
-
 
         internal void CheckContents()
         {
