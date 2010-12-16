@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="ICSharpCode.AvalonEdit.AddIn.FocusHighlight"
+﻿<UserControl x:Class="ICSharpCode.AvalonEdit.AddIn.CaretHighlight"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 	<Grid HorizontalAlignment="Left" VerticalAlignment="Top">

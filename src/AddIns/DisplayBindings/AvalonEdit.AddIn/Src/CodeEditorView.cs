@@ -451,11 +451,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.Adapter.JumpTo(line, column);
 			this.Focus();
 			
-			if (CodeEditorOptions.Instance.HighlightFocus)
-				Dispatcher.Invoke(DispatcherPriority.Background, (Action)DisplayFocusHighlight);
+			if (CodeEditorOptions.Instance.EnableAnimations)
+				Dispatcher.Invoke(DispatcherPriority.Background, (Action)DisplayCaretHighlightAnimation);
 		}
 		
-		void DisplayFocusHighlight()
+		void DisplayCaretHighlightAnimation()
 		{
 			TextArea textArea = Adapter.GetService(typeof(TextArea)) as TextArea;
 			
@@ -463,7 +463,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return;
 			
 			AdornerLayer layer = AdornerLayer.GetAdornerLayer(textArea.TextView);
-			FocusHighlightAdorner adorner = new FocusHighlightAdorner(textArea.TextView, textArea.Caret.CalculateCaretRectangle().Location - textArea.TextView.ScrollOffset - new Vector(3, 6.75));
+			CaretHighlightAdorner adorner = new CaretHighlightAdorner(textArea.TextView, textArea.Caret.CalculateCaretRectangle().Location - textArea.TextView.ScrollOffset - new Vector(3, 6.75));
 			layer.Add(adorner);
 			
 			WorkbenchSingleton.CallLater(TimeSpan.FromSeconds(1), (Action)(() => layer.Remove(adorner)));

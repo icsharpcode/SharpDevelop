@@ -144,15 +144,15 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			}
 		}
 		
-		bool highlightFocus = true;
+		bool enableAnimations = true;
 		
 		[DefaultValue(true)]
-		public bool HighlightFocus {
-			get { return highlightFocus; }
+		public bool EnableAnimations {
+			get { return enableAnimations; }
 			set {
-				if (highlightFocus != value) {
-					highlightFocus = value;
-					OnPropertyChanged("HighlightFocus");
+				if (enableAnimations != value) {
+					enableAnimations = value;
+					OnPropertyChanged("EnableAnimations");
 				}
 			}
 		}

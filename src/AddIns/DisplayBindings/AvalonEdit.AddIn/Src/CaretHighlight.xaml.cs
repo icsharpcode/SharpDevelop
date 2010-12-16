@@ -14,11 +14,11 @@ using System.Windows.Media;
 namespace ICSharpCode.AvalonEdit.AddIn
 {
 	/// <summary>
-	/// Interaction logic for FocusHighlight.xaml
+	/// Interaction logic for CaretHighlight.xaml
 	/// </summary>
-	public partial class FocusHighlight : UserControl
+	public partial class CaretHighlight : UserControl
 	{
-		public FocusHighlight()
+		public CaretHighlight()
 		{
 			InitializeComponent();
 		}

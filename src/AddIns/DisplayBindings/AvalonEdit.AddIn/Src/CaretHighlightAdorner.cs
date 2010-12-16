@@ -11,16 +11,16 @@ using System.Windows.Threading;
 namespace ICSharpCode.AvalonEdit.AddIn
 {
 	/// <summary>
-	/// Description of FocusHighlightAdorner.
+	/// Description of CaretHighlightAdorner.
 	/// </summary>
-	public class FocusHighlightAdorner : Adorner
+	public class CaretHighlightAdorner : Adorner
 	{
-		FocusHighlight highlight;
+		CaretHighlight highlight;
 		
-		public FocusHighlightAdorner(UIElement adornedElement, Point origin)
+		public CaretHighlightAdorner(UIElement adornedElement, Point origin)
 			: base(adornedElement)
 		{
-			this.Highlight = new FocusHighlight() {
+			this.Highlight = new CaretHighlight() {
 				RenderTransform = new TranslateTransform(origin.X, origin.Y),
 			};
 		}
@@ -28,7 +28,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// <summary>
 		/// Gets/sets the visual child.
 		/// </summary>
-		protected FocusHighlight Highlight {
+		protected CaretHighlight Highlight {
 			get { return highlight; }
 			set {
 				RemoveVisualChild(highlight);

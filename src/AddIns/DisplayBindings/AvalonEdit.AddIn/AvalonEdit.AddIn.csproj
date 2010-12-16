@@ -94,11 +94,11 @@
     <Compile Include="Src\CodeEditorView.cs" />
     <Compile Include="Src\ContextActionsRenderer.cs" />
     <Compile Include="Src\ExpressionHighlightRenderer.cs" />
-    <Compile Include="Src\FocusHighlight.xaml.cs">
-      <DependentUpon>FocusHighlight.xaml</DependentUpon>
+    <Compile Include="Src\CaretHighlight.xaml.cs">
+      <DependentUpon>CaretHighlight.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Src\FocusHighlightAdorner.cs" />
+    <Compile Include="Src\CaretHighlightAdorner.cs" />
     <Compile Include="Src\NewLineConsistencyCheck.cs" />
     <Compile Include="Src\SharpDevelopTextEditor.cs" />
     <Compile Include="Src\Commands\FoldingCommands.cs" />
@@ -165,7 +165,7 @@
     <EmbeddedResource Include="Resources\ReverseIncrementalSearchCursor.cur" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Src\FocusHighlight.xaml" />
+    <Page Include="Src\CaretHighlight.xaml" />
     <Page Include="Src\SharpDevelopCompletionWindow.xaml">
       <DependentUpon>SharpDevelopCompletionWindow.cs</DependentUpon>
     </Page>

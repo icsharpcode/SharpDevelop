@@ -25,8 +25,8 @@
 					IsChecked="{core:OptionBinding local:CodeEditorOptions.HighlightSymbol}"
 					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.HighlightSymbolCheckBox}" />
 				<CheckBox
-					IsChecked="{core:OptionBinding local:CodeEditorOptions.HighlightFocus}"
-					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.HighlightFocusCheckBox}" />
+					IsChecked="{core:OptionBinding local:CodeEditorOptions.EnableAnimations}"
+					Content="{core:Localize Dialog.Options.IDEOptions.TextEditor.Markers.EnableAnimationsCheckBox}" />
 			</widgets:StackPanelWithSpacing>
 		</GroupBox>
 	</StackPanel>
