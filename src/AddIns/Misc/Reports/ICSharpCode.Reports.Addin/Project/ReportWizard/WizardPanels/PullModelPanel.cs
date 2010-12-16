@@ -123,6 +123,9 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
             if (e.Data.GetFormats().Length > 0)
             {
                 string draggedFormat = e.Data.GetFormats()[0];
+                
+                String str = String.Format("drag {0}",draggedFormat);
+                System.Diagnostics.Trace.WriteLine(str);
 
                 Type draggedType = null;
 

@@ -22,6 +22,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		public LayoutPanelControl()
 		{
 			InitializeComponent();
+			groupBox2.Text = "Select GroupValue";
 		}
 		
 		
@@ -49,6 +50,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			}
 		}
 		
+		
 		public GlobalEnums.ReportLayout ReportLayout {
 			get {
 				GetLayout();
@@ -61,7 +63,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		void CheckBox1CheckedChanged(object sender, System.EventArgs e)
 		{
-			comboBox1.Visible = checkBox1.Checked;
+			//comboBox1.Visible = checkBox1.Checked;
+			this.groupBox2.Visible = checkBox1.Checked;
 		}
 		
 		
