@@ -187,5 +187,82 @@ class A {
 			Assert.AreEqual("System.String", result.GetMethodIfSingleOverload().Parameters[0].ReturnType.FullyQualifiedName);
 		}
 		 */
+		
+		[Test]
+		public void TestOverloadingByRef()
+		{
+			string program = @"using System;
+class Program {
+	public static void Main() {
+		int a = 42;
+		T(a);
+		T(ref a);
+	}
+	static void T(int x) {}
+	static void T(ref int y) {}
+}";
+			
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "T(a)");
+			Assert.IsFalse(((IMethod)mrr.Member).Parameters[0].IsRef);
+			
+			mrr = Resolve<MemberResolveResult>(program, "T(ref a)");
+			Assert.IsTrue(((IMethod)mrr.Member).Parameters[0].IsRef);
+		}
+		
+		[Test, Ignore("Type references not supported in parser")]
+		public void AddedOverload()
+		{
+			string program = @"class BaseClass {
+	static void Main(DerivedClass d) {
+		$d.Test(3)$;
+	}
+	public void Test(int a) { }
+}
+class DerivedClass : BaseClass {
+	public void Test(object a) { }
+}";
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("DerivedClass.Test", mrr.Member.FullName);
+		}
+		
+		[Test, Ignore("Type references not supported in parser")]
+		public void AddedNonApplicableOverload()
+		{
+			string program = @"class BaseClass {
+	static void Main(DerivedClass d) {
+		$d.Test(3)$;
+	}
+	public void Test(int a) { }
+}
+class DerivedClass : BaseClass {
+	public void Test(string a) { }
+}";
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("BaseClass.Test", mrr.Member.FullName);
+			
+			mrr = Resolve<MemberResolveResult>(program.Replace("(3)", "(\"3\")"));
+			Assert.AreEqual("DerivedClass.Test", mrr.Member.FullName);
+		}
+		
+		[Test, Ignore("Type references not supported in parser")]
+		public void OverrideShadowed()
+		{
+			string program = @"using System;
+class BaseClass {
+	static void Main() {
+		$new DerivedClass().Test(3)$;
+	}
+	public virtual void Test(int a) { }
+}
+class MiddleClass : BaseClass {
+	public void Test(object a) { }
+}
+class DerivedClass : MiddleClass {
+	public override void Test(int a) { }
+}";
+			
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("MiddleClass.Test", mrr.Member.FullName);
+		}
 	}
 }

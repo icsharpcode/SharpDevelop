@@ -1,16 +1,17 @@
-﻿// Copyright (c) 2010 AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
+﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
+
 using ICSharpCode.NRefactory.TypeSystem;
+using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
 	[TestFixture]
-	public class SimpleNameLookupTests : ResolverTestBase
+	public class NameLookupTests : ResolverTestBase
 	{
 		[Test]
 		public void SimpleNameLookupWithoutContext()
@@ -429,6 +430,326 @@ namespace A.B {
 ";
 			TypeResolveResult trr = Resolve<TypeResolveResult>(program);
 			Assert.AreEqual("A.B.C", trr.Type.FullName);
+		}
+		
+		[Test]
+		public void ShortMaxValueTest()
+		{
+			string program = @"using System;
+class TestClass {
+	object a = $short.MaxValue$;
+}
+";
+			MemberResolveResult rr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("System.Int16", rr.Type.FullName);
+			Assert.AreEqual("System.Int16.MaxValue", rr.Member.FullName);
+			Assert.AreEqual(short.MaxValue, rr.ConstantValue);
+		}
+		
+		[Test, Ignore("Parser produces incorrect positions for :: operator")]
+		public void ClassWithSameNameAsNamespace()
+		{
+			string program = @"using System; namespace XX {
+	class Test {
+		static void X() {
+			a = $;
+		}
+	}
+	class XX {
+		public static void Test() {}
+	} }";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program.Replace("$", "$XX$"));
+			Assert.AreEqual("XX.XX", trr.Type.FullName);
+			
+			NamespaceResolveResult nrr = Resolve<NamespaceResolveResult>(program.Replace("$", "$global::XX$.T"));
+			Assert.AreEqual("XX", nrr.NamespaceName);
+			
+			trr = Resolve<TypeResolveResult>(program.Replace("$", "$global::XX.XX$"));
+			Assert.AreEqual("XX.XX", trr.Type.FullName);
+			
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program.Replace("$", "$XX.Test()$"));
+			Assert.AreEqual("XX.XX.Test", mrr.Member.FullName);
+		}
+		
+		[Test]
+		public void ClassNameLookup1()
+		{
+			string program = @"namespace MainNamespace {
+	using Test.Subnamespace;
+	class Program {
+		static void M($Test.TheClass$ c) {}
+	}
+}
+
+namespace Test { public class TheClass { } }
+namespace Test.Subnamespace {
+	public class Test { public class TheClass { } }
+}
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("Test.Subnamespace.Test.TheClass", trr.Type.FullName);
+		}
+		
+		[Test]
+		public void ClassNameLookup2()
+		{
+			string program = @"using Test.Subnamespace;
+namespace MainNamespace {
+	class Program {
+		static void M($Test.TheClass$ c) {}
+	}
+}
+
+namespace Test { public class TheClass { } }
+namespace Test.Subnamespace {
+	public class Test { public class TheClass { } }
+}
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("Test.TheClass", trr.Type.FullName);
+		}
+		
+		[Test]
+		public void ClassNameLookup3()
+		{
+			string program = @"namespace MainNamespace {
+	using Test.Subnamespace;
+	class Program {
+		static void M($Test$ c) {}
+	}
+}
+
+namespace Test { public class TheClass { } }
+namespace Test.Subnamespace {
+	public class Test { public class TheClass { } }
+}
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("Test.Subnamespace.Test", trr.Type.FullName);
+		}
+		
+		[Test]
+		public void ClassNameLookup4()
+		{
+			string program = @"using Test.Subnamespace;
+namespace MainNamespace {
+	class Program {
+		static void M($Test$ c) {}
+	}
+}
+
+namespace Test { public class TheClass { } }
+namespace Test.Subnamespace {
+	public class Test { public class TheClass { } }
+}
+";
+			NamespaceResolveResult nrr = Resolve<NamespaceResolveResult>(program);
+			Assert.AreEqual("Test", nrr.NamespaceName);
+		}
+		
+		[Test]
+		public void ClassNameLookup5()
+		{
+			string program = @"namespace MainNamespace {
+	using A;
+	
+	class M {
+		void X($Test$ a) {}
+	}
+	namespace Test { class B {} }
+}
+
+namespace A {
+	class Test {}
+}";
+			NamespaceResolveResult nrr = Resolve<NamespaceResolveResult>(program);
+			Assert.AreEqual("MainNamespace.Test", nrr.NamespaceName);
+		}
+		
+		[Test, Ignore("Fails because parser does not support base type references")]
+		public void InvocableRule()
+		{
+			string program = @"using System;
+	class DerivedClass : BaseClass {
+		static void X() {
+			a = $;
+		}
+		private static new int Test;
+	}
+	class BaseClass {
+		public static string Test() {}
+	}";
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program.Replace("$", "$BaseClass.Test()$"));
+			Assert.AreEqual("BaseClass.Test", mrr.Member.FullName);
+			
+			mrr = Resolve<MemberResolveResult>(program.Replace("$", "$Test$"));
+			Assert.AreEqual("DerivedClass.Test", mrr.Member.FullName);
+			
+			mrr = Resolve<MemberResolveResult>(program.Replace("$", "$DerivedClass.Test$"));
+			Assert.AreEqual("DerivedClass.Test", mrr.Member.FullName);
+			
+			// returns BaseClass.Test because DerivedClass.Test is not invocable
+			mrr = Resolve<MemberResolveResult>(program.Replace("$", "$DerivedClass.Test()$"));
+			Assert.AreEqual("BaseClass.Test", mrr.Member.FullName);
+		}
+		
+		[Test, Ignore("Fails because parser does not support base type references")]
+		public void InvocableRule2()
+		{
+			string program = @"using System;
+	class DerivedClass : BaseClass {
+		static void X() {
+			a = $;
+		}
+		private static new int Test;
+	}
+	delegate string SomeDelegate();
+	class BaseClass {
+		public static SomeDelegate Test;
+	}";
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program.Replace("$", "$BaseClass.Test$()"));
+			Assert.AreEqual("BaseClass.Test", mrr.Member.FullName);
+			
+			mrr = Resolve<MemberResolveResult>(program.Replace("$", "$Test$"));
+			Assert.AreEqual("DerivedClass.Test", mrr.Member.FullName);
+			
+			mrr = Resolve<MemberResolveResult>(program.Replace("$", "$DerivedClass.Test$"));
+			Assert.AreEqual("DerivedClass.Test", mrr.Member.FullName);
+			
+			// returns BaseClass.Test because DerivedClass.Test is not invocable
+			mrr = Resolve<MemberResolveResult>(program.Replace("$", "$DerivedClass.Test$()"));
+			Assert.AreEqual("BaseClass.Test", mrr.Member.FullName);
+		}
+		
+		[Test, Ignore("Fails because parser does not support base type references")]
+		public void AccessibleRule()
+		{
+			string program = @"using System;
+	class BaseClass {
+		static void X() {
+			a = $DerivedClass.Test$;
+		}
+		public static int Test;
+	}
+	class DerivedClass : BaseClass {
+		private static new int Test;
+	}
+	";
+			// returns BaseClass.Test because DerivedClass.Test is not accessible
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("BaseClass.Test", mrr.Member.FullName);
+		}
+		
+		[Test]
+		public void FieldHidingProperty()
+		{
+			string program = @"using System;
+	class DerivedClass : BaseClass {
+		static void X() {
+			a = $Test$;
+		}
+		public static new int Test;
+	}
+	class BaseClass {
+		public static int Test { get { return 0; } }
+	}
+	";
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("DerivedClass.Test", mrr.Member.FullName);
+		}
+		
+		[Test]
+		public void PropertyHidingField()
+		{
+			string program = @"using System;
+	class DerivedClass : BaseClass {
+		static void X() {
+			a = $Test$;
+		}
+		public static new int Test { get { return 0; } }
+	}
+	class BaseClass {
+		public static int Test;
+	}
+	";
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("DerivedClass.Test", mrr.Member.FullName);
+		}
+		
+		[Test, Ignore("Parser doesn't support inheritance")]
+		public void SD_1487()
+		{
+			string program = @"using System;
+class C2 : C1 {
+	public static void M() {
+		a = $;
+	}
+}
+class C1 {
+	protected static int Field;
+}";
+			MemberResolveResult mrr;
+			mrr = Resolve<MemberResolveResult>(program.Replace("$", "$Field$"));
+			Assert.AreEqual("C1.Field", mrr.Member.FullName);
+			
+			mrr = Resolve<MemberResolveResult>(program.Replace("$", "$C1.Field$"));
+			Assert.AreEqual("C1.Field", mrr.Member.FullName);
+			
+			mrr = Resolve<MemberResolveResult>(program.Replace("$", "$C2.Field$"));
+			Assert.AreEqual("C1.Field", mrr.Member.FullName);
+		}
+		
+		[Test]
+		public void NullableValue()
+		{
+			string program = @"using System;
+class Test {
+	public static void M(int? a) {
+		$a.Value$.ToString();
+	}
+}";
+			MemberResolveResult rr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("System.Nullable.Value", rr.Member.FullName);
+			Assert.AreEqual("System.Int32", rr.Member.ReturnType.Resolve(context).FullName);
+		}
+		
+		[Test, Ignore("Parser doesn't support inheritance")]
+		public void MethodHidesEvent()
+		{
+			// see SD-1542
+			string program = @"using System;
+class Test : Form {
+	public Test() {
+		a = $base.KeyDown$;
+	}
+	void KeyDown(object sender, EventArgs e) {}
+}
+class Form {
+	public event EventHandler KeyDown;
+}";
+			var mrr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("Form.KeyDown", mrr.Member.FullName);
+			
+			var mgrr = Resolve<MethodGroupResolveResult>(program.Replace("base", "this"));
+			Assert.AreEqual("Test.KeyDown", mgrr.Methods.Single().FullName);
+		}
+		
+		[Test, Ignore("partial classes not yet supported")]
+		public void ProtectedMemberVisibleWhenBaseTypeReferenceIsInOtherPart()
+		{
+			string program = @"using System;
+partial class A {
+	void M1() {
+		$x$ = 0;
+	}
+}
+partial class A : B { }
+class B
+{
+	protected int x;
+}";
+			var mrr = Resolve<MemberResolveResult>(program);
+			Assert.AreEqual("B.x", mrr.Member.FullName);
 		}
 	}
 }
