@@ -221,6 +221,7 @@
     <Compile Include="TypeSystem\Implementation\ProxyTypeResolveContext.cs" />
     <Compile Include="TypeSystem\Implementation\DefaultTypeDefinition.cs" />
     <Compile Include="TypeSystem\Implementation\SimpleConstantValue.cs" />
+    <Compile Include="TypeSystem\Implementation\SimpleInterningProvider.cs" />
     <Compile Include="TypeSystem\Implementation\SimpleProjectContent.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializedEvent.cs" />
     <Compile Include="TypeSystem\Implementation\SpecializedField.cs" />

@@ -38,6 +38,11 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Gets/Sets the documentation provider that is used to retrive the XML documentation for all members.
 		/// </summary>
 		public IDocumentationProvider DocumentationProvider { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets the interning provider.
+		/// </summary>
+		public IInterningProvider InterningProvider { get; set; }
 		#endregion
 		
 		#region Load From AssemblyDefinition
@@ -47,12 +52,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentNullException("assemblyDefinition");
 			ITypeResolveContext oldEarlyBindContext = this.EarlyBindContext;
 			try {
-				List<IAttribute> assemblyAttributes = new List<IAttribute>();
+				IList<IAttribute> assemblyAttributes = new List<IAttribute>();
 				foreach (var attr in assemblyDefinition.CustomAttributes) {
 					assemblyAttributes.Add(ReadAttribute(attr));
 				}
+				if (this.InterningProvider != null)
+					assemblyAttributes = this.InterningProvider.InternList(assemblyAttributes);
+				else
+					assemblyAttributes = new ReadOnlyCollection<IAttribute>(assemblyAttributes);
 				TypeStorage typeStorage = new TypeStorage();
-				CecilProjectContent pc = new CecilProjectContent(typeStorage, assemblyDefinition.Name.FullName, assemblyAttributes.AsReadOnly(), this.DocumentationProvider);
+				CecilProjectContent pc = new CecilProjectContent(typeStorage, assemblyDefinition.Name.FullName, assemblyAttributes, this.DocumentationProvider);
 				
 				this.EarlyBindContext = CompositeTypeResolveContext.Combine(pc, this.EarlyBindContext);
 				List<CecilTypeDefinition> types = new List<CecilTypeDefinition>();
@@ -105,10 +114,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		sealed class CecilProjectContent : ProxyTypeResolveContext, IProjectContent, ISynchronizedTypeResolveContext, IDocumentationProvider
 		{
 			readonly string assemblyName;
-			readonly ReadOnlyCollection<IAttribute> assemblyAttributes;
+			readonly IList<IAttribute> assemblyAttributes;
 			readonly IDocumentationProvider documentationProvider;
 			
-			public CecilProjectContent(TypeStorage types, string assemblyName, ReadOnlyCollection<IAttribute> assemblyAttributes, IDocumentationProvider documentationProvider)
+			public CecilProjectContent(TypeStorage types, string assemblyName, IList<IAttribute> assemblyAttributes, IDocumentationProvider documentationProvider)
 				: base(types)
 			{
 				Debug.Assert(assemblyName != null);
@@ -710,6 +719,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 			}
 			
+			if (this.InterningProvider != null)
+				m = this.InterningProvider.Intern(m);
 			return m;
 		}
 		
@@ -830,6 +841,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				f.IsVolatile = true;
 			}
 			
+			if (this.InterningProvider != null)
+				f = this.InterningProvider.Intern(f);
 			return f;
 		}
 		
@@ -897,6 +910,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			AddAttributes(property, p);
 			
+			if (this.InterningProvider != null)
+				p = this.InterningProvider.Intern(p);
 			return p;
 		}
 		
@@ -936,6 +951,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			AddAttributes(ev, e);
 			
+			if (this.InterningProvider != null)
+				e = this.InterningProvider.Intern(e);
 			return e;
 		}
 		#endregion
