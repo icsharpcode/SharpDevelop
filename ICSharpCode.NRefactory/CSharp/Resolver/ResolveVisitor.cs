@@ -250,7 +250,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					foreach (IVariable v in resolver.LocalVariables) {
 						if (v.Name == identifier) {
 							object constantValue = v.IsConst ? v.ConstantValue.GetValue(resolver.Context) : null;
-							return new VariableResolveResult(v, v.Type.Resolve(resolver.Context), constantValue);
+							return new LocalResolveResult(v, v.Type.Resolve(resolver.Context), constantValue);
 						}
 					}
 				}
@@ -368,7 +368,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (pm != null) {
 					foreach (IParameter p in pm.Parameters) {
 						if (p.Name == parameterDeclaration.Name) {
-							return new VariableResolveResult(p, p.Type.Resolve(resolver.Context));
+							return new LocalResolveResult(p, p.Type.Resolve(resolver.Context));
 						}
 					}
 				}

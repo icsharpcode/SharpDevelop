@@ -9,12 +9,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// <summary>
 	/// Represents a local variable.
 	/// </summary>
-	public class VariableResolveResult : ResolveResult
+	public class LocalResolveResult : ResolveResult
 	{
 		readonly IVariable variable;
 		readonly object constantValue;
 		
-		public VariableResolveResult(IVariable variable, IType type, object constantValue = null)
+		public LocalResolveResult(IVariable variable, IType type, object constantValue = null)
 			: base(type)
 		{
 			if (variable == null)

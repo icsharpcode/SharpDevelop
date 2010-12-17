@@ -1500,14 +1500,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				foreach (IVariable v in this.LocalVariables) {
 					if (v.Name == identifier) {
 						object constantValue = v.IsConst ? v.ConstantValue.GetValue(context) : null;
-						return new VariableResolveResult(v, v.Type.Resolve(context), constantValue);
+						return new LocalResolveResult(v, v.Type.Resolve(context), constantValue);
 					}
 				}
 				IParameterizedMember parameterizedMember = this.CurrentMember as IParameterizedMember;
 				if (parameterizedMember != null) {
 					foreach (IParameter p in parameterizedMember.Parameters) {
 						if (p.Name == identifier) {
-							return new VariableResolveResult(p, p.Type.Resolve(context));
+							return new LocalResolveResult(p, p.Type.Resolve(context));
 						}
 					}
 				}
@@ -1795,7 +1795,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (mgrr != null && mgrr.Methods.Count > 0)
 				return mgrr.Methods[0].Name;
 			
-			VariableResolveResult vrr = rr as VariableResolveResult;
+			LocalResolveResult vrr = rr as LocalResolveResult;
 			if (vrr != null)
 				return MakeParameterName(vrr.Variable.Name);
 			

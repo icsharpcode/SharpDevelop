@@ -153,7 +153,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	}
 }
 ";
-			VariableResolveResult result = Resolve<VariableResolveResult>(program);
+			LocalResolveResult result = Resolve<LocalResolveResult>(program);
 			Assert.AreEqual("a", result.Variable.Name);
 			Assert.IsTrue(result.IsParameter);
 			Assert.AreEqual("System.String", result.Type.FullName);
@@ -169,7 +169,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	}
 }
 ";
-			VariableResolveResult result = Resolve<VariableResolveResult>(program);
+			LocalResolveResult result = Resolve<LocalResolveResult>(program);
 			Assert.AreEqual("a", result.Variable.Name);
 			Assert.IsFalse(result.IsParameter);
 			
@@ -224,7 +224,7 @@ class Color { public static readonly Color Empty = null; }
 	}
 }
 ";
-			VariableResolveResult result = Resolve<VariableResolveResult>(program);
+			LocalResolveResult result = Resolve<LocalResolveResult>(program);
 			Assert.AreEqual("System.String", result.Type.FullName);
 			Assert.AreEqual("value", result.Variable.Name);
 		}
@@ -241,7 +241,7 @@ class Color { public static readonly Color Empty = null; }
 	}
 }
 ";
-			VariableResolveResult result = Resolve<VariableResolveResult>(program);
+			LocalResolveResult result = Resolve<LocalResolveResult>(program);
 			Assert.AreEqual("System.EventHandler", result.Type.FullName);
 			Assert.AreEqual("value", result.Variable.Name);
 		}
@@ -257,7 +257,7 @@ class Color { public static readonly Color Empty = null; }
 	}
 }
 ";
-			VariableResolveResult result = Resolve<VariableResolveResult>(program);
+			LocalResolveResult result = Resolve<LocalResolveResult>(program);
 			Assert.AreEqual("System.String", result.Type.FullName);
 			Assert.AreEqual("value", result.Variable.Name);
 		}
@@ -273,7 +273,7 @@ class A {
 		};
 	} }
 ";
-			VariableResolveResult result = Resolve<VariableResolveResult>(program);
+			LocalResolveResult result = Resolve<LocalResolveResult>(program);
 			Assert.AreEqual("System.EventArgs", result.Type.FullName);
 			Assert.AreEqual("e", result.Variable.Name);
 		}
@@ -305,11 +305,130 @@ class TestClass {
 	}
 }
 ";
-			VariableResolveResult lr = Resolve<VariableResolveResult>(program.Replace("$1$", "$i$").Replace("$2$", "i"));
+			LocalResolveResult lr = Resolve<LocalResolveResult>(program.Replace("$1$", "$i$").Replace("$2$", "i"));
 			Assert.AreEqual("System.Int32", lr.Type.ReflectionName);
 			
-			lr = Resolve<VariableResolveResult>(program.Replace("$1$", "i").Replace("$2$", "$i$"));
+			lr = Resolve<LocalResolveResult>(program.Replace("$1$", "i").Replace("$2$", "$i$"));
 			Assert.AreEqual("System.Int64", lr.Type.ReflectionName);
+		}
+		
+		[Test]
+		public void NamespacePreferenceTest()
+		{
+			// Classes in the current namespace are preferred over classes from
+			// imported namespaces
+			string program = @"using System;
+namespace Testnamespace {
+class A {
+	$Activator$ a;
+}
+
+class Activator {
+	
+}
+}
+";
+			var result = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("Testnamespace.Activator", result.Type.FullName);
+		}
+		
+		[Test]
+		public void ParentNamespaceTypeLookup()
+		{
+			string program = @"using System;
+namespace Root {
+  class Alpha {}
+}
+namespace Root.Child {
+  class Beta {
+    $Alpha$ a;
+  }
+}
+";
+			var result = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("Root.Alpha", result.Type.FullName);
+		}
+		
+		[Test, Ignore("type references not implemented")]
+		public void ImportAliasTest()
+		{
+			string program = @"using COL = System.Collections;
+class TestClass {
+	COL.ArrayList ff;
+}
+";
+			TypeResolveResult type = Resolve<TypeResolveResult>(program, "COL.ArrayList");
+			Assert.IsNotNull(type, "COL.ArrayList should resolve to a type");
+			Assert.AreEqual("System.Collections.ArrayList", type.Type.FullName, "TypeResolveResult");
+			
+			MemberResolveResult member = Resolve<MemberResolveResult>(program, "ff");
+			Assert.AreEqual("System.Collections.ArrayList", member.Type.FullName, "the full type should be resolved");
+		}
+		
+		[Test]
+		public void ImportAliasNamespaceResolveTest()
+		{
+			NamespaceResolveResult ns;
+			string program = "using COL = System.Collections;\r\nclass A {\r\n$.ArrayList a;\r\n}\r\n";
+			ns = Resolve<NamespaceResolveResult>(program.Replace("$", "$COL$"));
+			Assert.AreEqual("System.Collections", ns.NamespaceName, "COL");
+			ns = Resolve<NamespaceResolveResult>(program.Replace("$", "$COL.Generic$"));
+			Assert.AreEqual("System.Collections.Generic", ns.NamespaceName, "COL.Generic");
+		}
+		
+		[Test, Ignore("Cannot resolve type references")]
+		public void ImportAliasClassResolveTest()
+		{
+			string program = @"using COL = System.Collections.ArrayList;
+class TestClass {
+	void Test() {
+		COL a = new COL();
+		
+	}
+}
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program.Replace("COL a", "$COL$ a"));
+			Assert.AreEqual("System.Collections.ArrayList", trr.Type.FullName, "COL");
+			ResolveResult rr = Resolve<ResolveResult>(program.Replace("new COL()", "$new COL()$"));
+			Assert.AreEqual("System.Collections.ArrayList", rr.Type.FullName, "a");
+		}
+		
+		[Test]
+		public void ResolveNamespaceSD_863()
+		{
+			string program = @"using System;
+namespace A.C { class D {} }
+namespace A.B.C { class D {} }
+namespace A.B {
+	class TestClass {
+		void Test() {
+			C.D x;
+		}
+	}
+}
+";
+			NamespaceResolveResult nrr = Resolve<NamespaceResolveResult>(program.Replace("C.D", "$C$.D"));
+			Assert.AreEqual("A.B.C", nrr.NamespaceName, "nrr.Name");
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program.Replace("C.D", "$C.D$"));
+			Assert.AreEqual("A.B.C.D", trr.Type.FullName);
+		}
+		
+		[Test, Ignore("Broken due to parser returning incorrect positions")]
+		public void ResolveTypeSD_863()
+		{
+			string program = @"using System;
+namespace A { class C {} }
+namespace A.B {
+	class C {}
+	class TestClass {
+		void Test() {
+			$C$ a;
+		}
+	}
+}
+";
+			TypeResolveResult trr = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("A.B.C", trr.Type.FullName);
 		}
 	}
 }
