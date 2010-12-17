@@ -593,6 +593,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				foreach (var a in c.ArraySpecifiers.Reverse()) {
 					t = ArrayTypeReference.Create(t, a.Dimensions);
 				}
+				return t;
 			}
 			Debug.WriteLine("Unknown node used as type: " + node);
 			return SharedTypes.UnknownType;

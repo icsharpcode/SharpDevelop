@@ -27,6 +27,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.typeArguments = new ReadOnlyCollection<IType>(typeArguments.ToArray());
 		}
 		
+		/// <summary>
+		/// The type on which the method is being called.
+		/// </summary>
 		public IType TargetType {
 			get { return targetType; }
 		}

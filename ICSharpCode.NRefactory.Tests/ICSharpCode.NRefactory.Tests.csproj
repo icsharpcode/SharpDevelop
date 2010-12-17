@@ -120,6 +120,8 @@
     <Compile Include="CSharp\Parser\ParseUtil.cs" />
     <Compile Include="CSharp\Resolver\BinaryOperatorTests.cs" />
     <Compile Include="CSharp\Resolver\CastTests.cs" />
+    <Compile Include="CSharp\Resolver\InvocationTests.cs" />
+    <Compile Include="CSharp\Resolver\ObjectCreationTests.cs" />
     <Compile Include="CSharp\Resolver\TypeInferenceTests.cs" />
     <Compile Include="CSharp\Resolver\ConversionsTest.cs" />
     <Compile Include="CSharp\Resolver\OverloadResolutionTests.cs" />
