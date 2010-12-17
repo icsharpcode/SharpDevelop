@@ -16,8 +16,8 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		readonly IProjectContent projectContent;
 		readonly ITypeDefinition declaringTypeDefinition;
 		
-		readonly string ns;
-		readonly string name;
+		string ns;
+		string name;
 		
 		IList<ITypeReference> baseTypes;
 		IList<ITypeParameter> typeParameters;
@@ -100,6 +100,17 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 				if (baseTypes == null)
 					baseTypes = new List<ITypeReference>();
 				return baseTypes;
+			}
+		}
+		
+		public void ApplyInterningProvider(IInterningProvider provider)
+		{
+			if (provider != null) {
+				ns = provider.Intern(ns);
+				name = provider.Intern(name);
+				baseTypes = provider.InternList(baseTypes);
+				typeParameters = provider.InternList(typeParameters);
+				attributes = provider.InternList(attributes);
 			}
 		}
 		

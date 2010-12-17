@@ -47,14 +47,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			if (context == null)
 				throw new ArgumentNullException("context");
 			
-			ITypeDefinition nullable = context.GetClass("System.Nullable", 1, StringComparer.Ordinal);
+			ITypeDefinition nullable = context.GetClass("System", "Nullable", 1, StringComparer.Ordinal);
 			if (nullable != null)
 				return new ParameterizedType(nullable, new [] { elementType });
 			else
 				return SharedTypes.UnknownType;
 		}
 		
-		static readonly ITypeReference NullableReference = new GetClassTypeReference("System.Nullable", 1);
+		static readonly ITypeReference NullableReference = new GetClassTypeReference("System", "Nullable", 1);
 		
 		/// <summary>
 		/// Creates a nullable type reference.

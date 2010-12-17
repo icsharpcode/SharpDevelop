@@ -27,7 +27,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		ITypeDefinition GetClass(Type type)
 		{
-			return testCasePC.GetClass(type.FullName, type.GetGenericArguments().Length, StringComparer.Ordinal);
+			return testCasePC.GetClass(type);
 		}
 		
 		[Test]

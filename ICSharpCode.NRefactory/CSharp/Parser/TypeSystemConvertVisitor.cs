@@ -373,7 +373,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			dtor.BodyRegion = MakeRegion(destructorDeclaration.Body);
 			dtor.Accessibility = Accessibility.Protected;
 			dtor.IsOverride = true;
-			dtor.ReturnType = voidReference;
+			dtor.ReturnType = ReflectionHelper.VoidReference;
 			
 			ConvertAttributes(dtor.Attributes, destructorDeclaration.Attributes);
 			
@@ -498,8 +498,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		#endregion
 		
 		#region Types
-		static readonly GetClassTypeReference voidReference = new GetClassTypeReference("System.Void", 0);
-		
 		ITypeReference ConvertType(DomNode node, bool isInUsingDeclaration = false)
 		{
 			return ConvertType(node, currentTypeDefinition, currentMethod, usingScope, isInUsingDeclaration);
@@ -555,7 +553,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					case "decimal":
 						return TypeCode.Decimal.ToTypeReference();
 					case "void":
-						return voidReference;
+						return ReflectionHelper.VoidReference;
 					default:
 						return SharedTypes.UnknownType;
 				}

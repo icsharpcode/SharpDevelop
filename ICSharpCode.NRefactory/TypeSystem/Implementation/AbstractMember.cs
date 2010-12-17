@@ -10,7 +10,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// <summary>
 	/// Base class for <see cref="IMember"/> implementations.
 	/// </summary>
-	public abstract class AbstractMember : AbstractFreezable, IMember, ISupportsInterning
+	public abstract class AbstractMember : AbstractFreezable, IMember
 	{
 		// possible optimizations to reduce the memory usage of AbstractMember:
 		// - put 'bool isFrozen' into flags
@@ -260,22 +260,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			return "[" + EntityType + " " + ReflectionName + ":" + ReturnType + "]";
 		}
 		
-		public virtual void PrepareForInterning(IInterningProvider provider)
+		public virtual void ApplyInterningProvider(IInterningProvider provider)
 		{
-			returnType = provider.Intern(returnType);
-			attributes = provider.InternList(attributes);
-			interfaceImplementations = provider.InternList(interfaceImplementations);
-			name = provider.Intern(name);
-		}
-		
-		int ISupportsInterning.GetHashCodeForInterning()
-		{
-			return GetHashCode();
-		}
-		
-		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
-		{
-			return this == other;
+			if (provider != null) {
+				returnType = provider.Intern(returnType);
+				attributes = provider.InternList(attributes);
+				interfaceImplementations = provider.InternList(interfaceImplementations);
+				name = provider.Intern(name);
+			}
 		}
 	}
 }

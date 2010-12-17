@@ -46,8 +46,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return a != null && elementType.Equals(a.elementType) && a.dimensions == dimensions;
 		}
 		
-		static readonly GetClassTypeReference systemArray = new GetClassTypeReference("System.Array", 0);
-		static readonly GetClassTypeReference listInterface = new GetClassTypeReference("System.Collections.Generic.IList", 1);
+		static readonly GetClassTypeReference systemArray = new GetClassTypeReference("System", "Array", 0);
+		static readonly GetClassTypeReference listInterface = new GetClassTypeReference("System.Collections.Generic", "IList", 1);
 		
 		public override IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{

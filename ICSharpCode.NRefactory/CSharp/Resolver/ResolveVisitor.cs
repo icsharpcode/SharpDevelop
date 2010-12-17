@@ -718,7 +718,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return resolver.ResolveThisReference();
 		}
 		
-		static readonly GetClassTypeReference systemType = new GetClassTypeReference("System.Type", 0);
+		static readonly GetClassTypeReference systemType = new GetClassTypeReference("System", "Type", 0);
 		
 		public override ResolveResult VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 		{

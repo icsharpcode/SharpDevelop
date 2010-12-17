@@ -1573,9 +1573,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			// look in current namespace definitions
 			for (UsingScope n = this.UsingScope; n != null; n = n.Parent) {
-				string fullName = NamespaceDeclaration.BuildQualifiedName(n.NamespaceName, identifier);
 				// first look for a namespace
 				if (k == 0) {
+					string fullName = NamespaceDeclaration.BuildQualifiedName(n.NamespaceName, identifier);
 					if (context.GetNamespace(fullName, StringComparer.Ordinal) != null) {
 						if (n.HasAlias(identifier))
 							return new AmbiguousTypeResolveResult(SharedTypes.UnknownType);
@@ -1583,7 +1583,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				// then look for a type
-				ITypeDefinition def = context.GetClass(fullName, k, StringComparer.Ordinal);
+				ITypeDefinition def = context.GetClass(n.NamespaceName, identifier, k, StringComparer.Ordinal);
 				if (def != null) {
 					IType result = def;
 					if (k != 0) {
@@ -1617,8 +1617,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					foreach (var u in n.Usings) {
 						NamespaceResolveResult ns = u.ResolveNamespace(context);
 						if (ns != null) {
-							fullName = NamespaceDeclaration.BuildQualifiedName(ns.NamespaceName, identifier);
-							def = context.GetClass(fullName, k, StringComparer.Ordinal);
+							def = context.GetClass(ns.NamespaceName, identifier, k, StringComparer.Ordinal);
 							if (firstResult == null) {
 								if (k == 0)
 									firstResult = def;
@@ -1674,12 +1673,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			NamespaceResolveResult nrr = target as NamespaceResolveResult;
 			if (nrr != null) {
-				string fullName = NamespaceDeclaration.BuildQualifiedName(nrr.NamespaceName, identifier);
 				if (typeArguments.Count == 0) {
+					string fullName = NamespaceDeclaration.BuildQualifiedName(nrr.NamespaceName, identifier);
 					if (context.GetNamespace(fullName, StringComparer.Ordinal) != null)
 						return new NamespaceResolveResult(fullName);
 				}
-				ITypeDefinition def = context.GetClass(fullName, typeArguments.Count, StringComparer.Ordinal);
+				ITypeDefinition def = context.GetClass(nrr.NamespaceName, identifier, typeArguments.Count, StringComparer.Ordinal);
 				if (def != null)
 					return new TypeResolveResult(def);
 				return ErrorResult;

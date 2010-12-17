@@ -34,12 +34,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.parameters = CopyList(p.Parameters);
 		}
 		
-		public override void PrepareForInterning(IInterningProvider provider)
+		public override void ApplyInterningProvider(IInterningProvider provider)
 		{
-			base.PrepareForInterning(provider);
-			getter = provider.Intern(getter);
-			setter = provider.Intern(setter);
-			parameters = provider.InternList(parameters);
+			base.ApplyInterningProvider(provider);
+			if (provider != null) {
+				getter = provider.Intern(getter);
+				setter = provider.Intern(setter);
+				parameters = provider.InternList(parameters);
+			}
 		}
 		
 		public bool IsIndexer {

@@ -42,12 +42,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.IsExtensionMethod = method.IsExtensionMethod;
 		}
 		
-		public override void PrepareForInterning(IInterningProvider provider)
+		public override void ApplyInterningProvider(IInterningProvider provider)
 		{
-			base.PrepareForInterning(provider);
-			returnTypeAttributes = provider.InternList(returnTypeAttributes);
-			typeParameters = provider.InternList(typeParameters);
-			parameters = provider.InternList(parameters);
+			base.ApplyInterningProvider(provider);
+			if (provider != null) {
+				returnTypeAttributes = provider.InternList(returnTypeAttributes);
+				typeParameters = provider.InternList(typeParameters);
+				parameters = provider.InternList(parameters);
+			}
 		}
 		
 		public IList<IAttribute> ReturnTypeAttributes {

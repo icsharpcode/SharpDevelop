@@ -244,7 +244,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		public IEnumerable<IMethod> GetMethods(ITypeResolveContext context, Predicate<IMethod> filter = null)
 		{
 			// TODO: get methods from constraints
-			IType objectType = context.GetClass("System.Object", 0, StringComparer.Ordinal);
+			IType objectType = context.GetClass("System", "Object", 0, StringComparer.Ordinal);
 			IEnumerable<IMethod> objectMethods;
 			if (objectType != null)
 				objectMethods = objectType.GetMethods(context, filter);
@@ -277,7 +277,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		public IEnumerable<IType> GetBaseTypes(ITypeResolveContext context)
 		{
-			IType defaultBaseType = context.GetClass(HasValueTypeConstraint ? "System.ValueType" : "System.Object", 0, StringComparer.Ordinal);
+			IType defaultBaseType = context.GetClass("System", HasValueTypeConstraint ? "ValueType" : "Object", 0, StringComparer.Ordinal);
 			if (defaultBaseType != null)
 				yield return defaultBaseType;
 			

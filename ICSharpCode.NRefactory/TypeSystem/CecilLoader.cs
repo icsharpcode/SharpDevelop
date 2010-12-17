@@ -260,43 +260,31 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					}
 					return SharedTypes.UnknownType;
 				}
+			} else if (type.IsNested) {
+				ITypeReference typeRef = CreateType(type.DeclaringType, entity, typeAttributes, ref typeIndex);
+				int partTypeParameterCount;
+				string namepart = ReflectionHelper.SplitTypeParameterCountFromReflectionName(type.Name, out partTypeParameterCount);
+				return new NestedTypeReference(typeRef, namepart, partTypeParameterCount);
 			} else {
-				string name = type.FullName;
+				string ns = type.Namespace ?? string.Empty;
+				string name = type.Name;
 				if (name == null)
-					throw new InvalidOperationException("type.FullName returned null. Type: " + type.ToString());
+					throw new InvalidOperationException("type.Name returned null. Type: " + type.ToString());
 				
-				if (name.IndexOf('/') > 0) {
-					string[] nameparts = name.Split('/');
-					ITypeReference typeRef = GetSimpleType(nameparts[0]);
-					for (int i = 1; i < nameparts.Length; i++) {
-						int partTypeParameterCount;
-						string namepart = ReflectionHelper.SplitTypeParameterCountFromReflectionName(nameparts[i], out partTypeParameterCount);
-						typeRef = new NestedTypeReference(typeRef, namepart, partTypeParameterCount);
-					}
-					return typeRef;
-				} else if (name == "System.Object" && HasDynamicAttribute(typeAttributes, typeIndex)) {
+				if (name == "Object" && ns == "System" && HasDynamicAttribute(typeAttributes, typeIndex)) {
 					return SharedTypes.Dynamic;
 				} else {
-					return GetSimpleType(name);
+					int typeParameterCount;
+					name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(name, out typeParameterCount);
+					var earlyBindContext = this.EarlyBindContext;
+					if (earlyBindContext != null) {
+						IType c = earlyBindContext.GetClass(ns, name, typeParameterCount, StringComparer.Ordinal);
+						if (c != null)
+							return c;
+					}
+					return new GetClassTypeReference(ns, name, typeParameterCount);
 				}
 			}
-		}
-		
-		/// <summary>
-		/// Gets a type reference for a reflection name.
-		/// This method does not handle nested types -- it can be only used with top-level types.
-		/// </summary>
-		ITypeReference GetSimpleType(string reflectionName)
-		{
-			int typeParameterCount;
-			string name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(reflectionName, out typeParameterCount);
-			var earlyBindContext = this.EarlyBindContext;
-			if (earlyBindContext != null) {
-				IType c = earlyBindContext.GetClass(name, typeParameterCount, StringComparer.Ordinal);
-				if (c != null)
-					return c;
-			}
-			return new GetClassTypeReference(name, typeParameterCount);
 		}
 		
 		static readonly string DynamicAttributeFullName = typeof(DynamicAttribute).FullName;
@@ -526,6 +514,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				
 				this.typeDefinition = null;
 				Freeze(); // freeze after initialization
+				ApplyInterningProvider(loader.InterningProvider);
 			}
 			
 			void InitNestedTypes(CecilLoader loader)
@@ -650,23 +639,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					}
 				}
 				if (typeDefinition.HasProperties) {
+					string defaultMemberName = null;
+					var defaultMemberAttribute = typeDefinition.CustomAttributes.FirstOrDefault(
+						a => a.AttributeType.FullName == typeof(System.Reflection.DefaultMemberAttribute).FullName);
+					if (defaultMemberAttribute != null && defaultMemberAttribute.ConstructorArguments.Count == 1) {
+						defaultMemberName = defaultMemberAttribute.ConstructorArguments[0].Value as string;
+					}
 					foreach (PropertyDefinition property in typeDefinition.Properties) {
 						bool getterVisible = property.GetMethod != null && loader.IsVisible(property.GetMethod.Attributes);
 						bool setterVisible = property.SetMethod != null && loader.IsVisible(property.SetMethod.Attributes);
 						if (getterVisible || setterVisible) {
-							this.Properties.Add(loader.ReadProperty(property, this));
-						}
-					}
-					var defaultMemberAttribute = typeDefinition.CustomAttributes.FirstOrDefault(
-						a => a.AttributeType.FullName == typeof(System.Reflection.DefaultMemberAttribute).FullName);
-					if (defaultMemberAttribute != null && defaultMemberAttribute.ConstructorArguments.Count == 1) {
-						string defaultMemberName = defaultMemberAttribute.ConstructorArguments[0].Value as string;
-						if (defaultMemberName != null) {
-							foreach (DefaultProperty p in this.Properties) {
-								if (p.Name == defaultMemberName) {
-									p.EntityType = EntityType.Indexer;
-								}
-							}
+							EntityType type = property.Name == defaultMemberName ? EntityType.Indexer : EntityType.Property;
+							this.Properties.Add(loader.ReadProperty(property, this, type));
 						}
 					}
 				}
@@ -682,7 +666,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Method
-		IMethod ReadMethod(MethodDefinition method, ITypeDefinition parentType, EntityType methodType)
+		public IMethod ReadMethod(MethodDefinition method, ITypeDefinition parentType, EntityType methodType = EntityType.Method)
 		{
 			DefaultMethod m = new DefaultMethod(parentType, method.Name);
 			m.EntityType = methodType;
@@ -719,8 +703,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 			}
 			
-			if (this.InterningProvider != null)
-				m = this.InterningProvider.Intern(m);
+			FinishReadMember(m);
 			return m;
 		}
 		
@@ -841,8 +824,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				f.IsVolatile = true;
 			}
 			
-			if (this.InterningProvider != null)
-				f = this.InterningProvider.Intern(f);
+			FinishReadMember(f);
 			return f;
 		}
 		
@@ -890,13 +872,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Property
-		public IProperty ReadProperty(PropertyDefinition property, ITypeDefinition parentType)
+		public IProperty ReadProperty(PropertyDefinition property, ITypeDefinition parentType, EntityType propertyType = EntityType.Property)
 		{
 			if (property == null)
 				throw new ArgumentNullException("property");
 			if (parentType == null)
 				throw new ArgumentNullException("parentType");
 			DefaultProperty p = new DefaultProperty(parentType, property.Name);
+			p.EntityType = propertyType;
 			TranslateModifiers(property.GetMethod ?? property.SetMethod, p);
 			p.ReturnType = ReadTypeReference(property.PropertyType, typeAttributes: property, entity: p);
 			
@@ -910,8 +893,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			AddAttributes(property, p);
 			
-			if (this.InterningProvider != null)
-				p = this.InterningProvider.Intern(p);
+			FinishReadMember(p);
 			return p;
 		}
 		
@@ -951,10 +933,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			AddAttributes(ev, e);
 			
-			if (this.InterningProvider != null)
-				e = this.InterningProvider.Intern(e);
+			FinishReadMember(e);
 			return e;
 		}
 		#endregion
+		
+		void FinishReadMember(AbstractMember member)
+		{
+			member.Freeze();
+			member.ApplyInterningProvider(this.InterningProvider);
+		}
 	}
 }
