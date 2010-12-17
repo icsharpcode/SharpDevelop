@@ -1,4 +1,4 @@
-// 
+﻿// 
 // PropertyDeclaration.cs
 //  
 // Author:
@@ -26,7 +26,7 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class Accessor : AbstractMember
+	public class Accessor : AbstractMemberBase
 	{
 		public static readonly new Accessor Null = new NullAccessor ();
 		class NullAccessor : Accessor

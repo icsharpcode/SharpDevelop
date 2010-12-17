@@ -121,6 +121,7 @@
     <Compile Include="CSharp\Resolver\BinaryOperatorTests.cs" />
     <Compile Include="CSharp\Resolver\CastTests.cs" />
     <Compile Include="CSharp\Resolver\InvocationTests.cs" />
+    <Compile Include="CSharp\Resolver\MemberLookupTests.cs" />
     <Compile Include="CSharp\Resolver\ObjectCreationTests.cs" />
     <Compile Include="CSharp\Resolver\TypeInferenceTests.cs" />
     <Compile Include="CSharp\Resolver\ConversionsTest.cs" />

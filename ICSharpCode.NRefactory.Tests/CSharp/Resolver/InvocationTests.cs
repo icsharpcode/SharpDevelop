@@ -137,6 +137,33 @@ class A {
 			Assert.AreEqual("System.Void", Resolve(program).Type.ReflectionName);
 		}
 		
+		[Test, Ignore("Type references cannot be resolved")]
+		public void DelegateCallTest()
+		{
+			string program = @"using System;
+class A {
+	void Method(ModuleResolveEventHandler eh) {
+		$eh(this, new ResolveEventArgs())$;
+	}
+}
+";
+			Assert.AreEqual("System.Reflection.Module", Resolve(program).Type.ReflectionName);
+		}
+		
+		[Test, Ignore("Type references cannot be resolved")]
+		public void DelegateReturnedFromMethodCallTest()
+		{
+			string program = @"using System;
+class A {
+	void Method() {
+		$GetHandler()(abc)$;
+	}
+	abstract Predicate<string> GetHandler();
+}
+";
+			Assert.AreEqual("System.Boolean", Resolve(program).Type.ReflectionName);
+		}
+		
 		/* TODO
 		[Test]
 		public void MethodGroupResolveTest()

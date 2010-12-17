@@ -222,7 +222,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return new UnknownMemberResolveResult(type, name, typeArguments);
 			IMember firstNonMethod = members.FirstOrDefault(m => !(m is IMethod));
 			if (members.Count == 1 && firstNonMethod != null)
-				return new MemberResolveResult(firstNonMethod, firstNonMethod.ReturnType.Resolve(context));
+				return new MemberResolveResult(firstNonMethod, context);
 			if (firstNonMethod == null)
 				return new MethodGroupResolveResult(members.ConvertAll(m => (IMethod)m), typeArguments);
 			return new AmbiguousMemberResultResult(firstNonMethod, firstNonMethod.ReturnType.Resolve(context));

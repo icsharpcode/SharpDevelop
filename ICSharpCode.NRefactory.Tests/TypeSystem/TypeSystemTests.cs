@@ -253,5 +253,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.AreEqual(new[] { typeof(Base<>.Nested).FullName + "[[System.Int32]]" },
 			                d.GetNestedTypes(ctx).Select(n => n.ReflectionName).ToArray());
 		}
+		
+		[Test]
+		public void DefaultConstructorAddedToStruct()
+		{
+			var ctors = typeof(MyStructWithCtor).ToTypeReference().Resolve(ctx).GetConstructors(ctx);
+			Assert.AreEqual(2, ctors.Count());
+			Assert.IsFalse(ctors.Any(c => c.IsStatic));
+		}
 	}
 }

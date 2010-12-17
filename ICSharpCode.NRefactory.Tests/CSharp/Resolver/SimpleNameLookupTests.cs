@@ -212,5 +212,104 @@ class Color { public static readonly Color Empty = null; }
 			Resolve<TypeResolveResult>(program.Replace("$", "Color = $Color$.Empty;"));
 			Resolve<MemberResolveResult>(program.Replace("$", "x = $Color$.ToString();"));
 		}
+		
+		[Test]
+		public void ValueInsideSetterTest()
+		{
+			string program = @"class A {
+	public string Property {
+		set {
+			var a = $value$;
+		}
+	}
+}
+";
+			VariableResolveResult result = Resolve<VariableResolveResult>(program);
+			Assert.AreEqual("System.String", result.Type.FullName);
+			Assert.AreEqual("value", result.Variable.Name);
+		}
+		
+		[Test, Ignore("type references not supported")]
+		public void ValueInsideEventTest()
+		{
+			string program = @"using System; class A {
+	public event EventHandler Ev {
+		add {
+			var a = $value$;
+		}
+		remove {}
+	}
+}
+";
+			VariableResolveResult result = Resolve<VariableResolveResult>(program);
+			Assert.AreEqual("System.EventHandler", result.Type.FullName);
+			Assert.AreEqual("value", result.Variable.Name);
+		}
+		
+		[Test]
+		public void ValueInsideIndexerSetterTest()
+		{
+			string program = @"using System; class A {
+	public string this[int arg] {
+		set {
+			var a = $value$;
+		}
+	}
+}
+";
+			VariableResolveResult result = Resolve<VariableResolveResult>(program);
+			Assert.AreEqual("System.String", result.Type.FullName);
+			Assert.AreEqual("value", result.Variable.Name);
+		}
+		
+		[Test, Ignore("type references not supported")]
+		public void AnonymousMethodParameters()
+		{
+			string program = @"using System;
+class A {
+	void Method() {
+		SomeEvent += delegate(object sender, EventArgs e) {
+			$e$.ToString();
+		};
+	} }
+";
+			VariableResolveResult result = Resolve<VariableResolveResult>(program);
+			Assert.AreEqual("System.EventArgs", result.Type.FullName);
+			Assert.AreEqual("e", result.Variable.Name);
+		}
+		
+		[Test]
+		public void DefaultTypeCSharp()
+		{
+			string program = @"class A {
+	void Method() {
+		$int$ a;
+	} }
+";
+			TypeResolveResult result = Resolve<TypeResolveResult>(program);
+			Assert.AreEqual("System.Int32", result.Type.FullName);
+		}
+		
+		[Test]
+		public void LoopVariableScopeTest()
+		{
+			string program = @"using System;
+class TestClass {
+	void Test() {
+		for (int i = 0; i < 10; i++) {
+			$1$.ToString();
+		}
+		for (long i = 0; i < 10; i++) {
+			$2$.ToString();
+		}
+	}
+}
+";
+			VariableResolveResult lr = Resolve<VariableResolveResult>(program.Replace("$1$", "$i$").Replace("$2$", "i"));
+			Assert.AreEqual("System.Int32", lr.Type.ReflectionName);
+			
+			lr = Resolve<VariableResolveResult>(program.Replace("$1$", "i").Replace("$2$", "$i$"));
+			Assert.AreEqual("System.Int64", lr.Type.ReflectionName);
+		}
 	}
 }

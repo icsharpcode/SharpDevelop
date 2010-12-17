@@ -60,4 +60,9 @@ namespace ICSharpCode.NRefactory.TypeSystem.TestCase
 		public class Nested {}
 	}
 	public class Derived<A, B> : Base<B> {}
+	
+	public struct MyStructWithCtor
+	{
+		public MyStructWithCtor(int a) {}
+	}
 }

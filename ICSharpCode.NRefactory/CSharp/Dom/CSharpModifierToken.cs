@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CSharpModifierToken.cs
 //  
 // Author:
@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		static CSharpModifierToken ()
 		{
 			lengthTable[Modifiers.New] = "new".Length;
-			lengthTable[Modifiers.Public] = "new".Length;
+			lengthTable[Modifiers.Public] = "public".Length;
 			lengthTable[Modifiers.Protected] = "protected".Length;
 			lengthTable[Modifiers.Private] = "private".Length;
 			lengthTable[Modifiers.Internal] = "internal".Length;

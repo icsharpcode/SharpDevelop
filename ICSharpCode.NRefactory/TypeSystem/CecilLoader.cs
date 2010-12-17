@@ -819,6 +819,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			AddAttributes(field, f);
 			
+			f.ReturnType = ReadTypeReference(field.FieldType, typeAttributes: field, entity: f);
 			RequiredModifierType modreq = field.FieldType as RequiredModifierType;
 			if (modreq != null && modreq.ModifierType.FullName == typeof(IsVolatile).FullName) {
 				f.IsVolatile = true;

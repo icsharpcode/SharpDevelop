@@ -1403,6 +1403,26 @@ namespace ICSharpCode.NRefactory.CSharp
 					result.Keyword = "int";
 				} else if (typeExpression.Type == TypeManager.object_type) {
 					result.Keyword = "object";
+				} else if (typeExpression.Type == TypeManager.float_type) {
+					result.Keyword = "float";
+				} else if (typeExpression.Type == TypeManager.double_type) {
+					result.Keyword = "double";
+				} else if (typeExpression.Type == TypeManager.int64_type) {
+					result.Keyword = "long";
+				} else if (typeExpression.Type == TypeManager.byte_type) {
+					result.Keyword = "byte";
+				} else if (typeExpression.Type == TypeManager.uint32_type) {
+					result.Keyword = "uint";
+				} else if (typeExpression.Type == TypeManager.uint64_type) {
+					result.Keyword = "ulong";
+				} else if (typeExpression.Type == TypeManager.short_type) {
+					result.Keyword = "short";
+				} else if (typeExpression.Type == TypeManager.ushort_type) {
+					result.Keyword = "ushort";
+				} else if (typeExpression.Type == TypeManager.sbyte_type) {
+					result.Keyword = "sbyte";
+				} else if (typeExpression.Type == TypeManager.decimal_type) {
+					result.Keyword = "decimal";
 				} else {
 					throw new NotImplementedException();
 				}

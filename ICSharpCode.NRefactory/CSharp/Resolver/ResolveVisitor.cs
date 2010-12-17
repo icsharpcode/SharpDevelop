@@ -270,7 +270,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ScanChildren(member);
 				
 				if (resolverEnabled && resolver.CurrentMember != null)
-					return new MemberResolveResult(resolver.CurrentMember, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
+					return new MemberResolveResult(resolver.CurrentMember, resolver.Context);
 				else
 					return errorResult;
 			} finally {
@@ -317,7 +317,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				if (resolverEnabled && resolver.CurrentMember != null)
-					return new MemberResolveResult(resolver.CurrentMember, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
+					return new MemberResolveResult(resolver.CurrentMember, resolver.Context);
 				else
 					return errorResult;
 			} finally {
@@ -352,7 +352,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				
 				if (resolverEnabled && resolver.CurrentMember != null)
-					return new MemberResolveResult(resolver.CurrentMember, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
+					return new MemberResolveResult(resolver.CurrentMember, resolver.Context);
 				else
 					return errorResult;
 			} finally {
@@ -388,7 +388,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ScanChildren(enumMemberDeclaration);
 				
 				if (resolverEnabled && resolver.CurrentMember != null)
-					return new MemberResolveResult(resolver.CurrentMember, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
+					return new MemberResolveResult(resolver.CurrentMember, resolver.Context);
 				else
 					return errorResult;
 			} finally {
@@ -1132,16 +1132,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override ResolveResult VisitConstraint(Constraint constraint, object data)
 		{
+			ScanChildren(constraint);
 			return null;
 		}
 		
 		public override ResolveResult VisitConstructorInitializer(ConstructorInitializer constructorInitializer, object data)
 		{
+			ScanChildren(constructorInitializer);
 			return null;
 		}
 		
 		public override ResolveResult VisitAccessorDeclaration(Accessor accessorDeclaration, object data)
 		{
+			ScanChildren(accessorDeclaration);
 			return null;
 		}
 	}
