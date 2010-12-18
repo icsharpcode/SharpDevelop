@@ -13,8 +13,8 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Threading;
+
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.AddIn.Snippets;
 using ICSharpCode.AvalonEdit.Editing;
@@ -463,7 +463,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return;
 			
 			AdornerLayer layer = AdornerLayer.GetAdornerLayer(textArea.TextView);
-			CaretHighlightAdorner adorner = new CaretHighlightAdorner(textArea.TextView, textArea.Caret.CalculateCaretRectangle().Location - textArea.TextView.ScrollOffset - new Vector(3, 6.75));
+			CaretHighlightAdorner adorner = new CaretHighlightAdorner(textArea);
 			layer.Add(adorner);
 			
 			WorkbenchSingleton.CallLater(TimeSpan.FromSeconds(1), (Action)(() => layer.Remove(adorner)));

@@ -3,10 +3,12 @@
 
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Threading;
+
+using ICSharpCode.AvalonEdit.Editing;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -15,71 +17,37 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// </summary>
 	public class CaretHighlightAdorner : Adorner
 	{
-		CaretHighlight highlight;
+		const double SizeFactor = 0.5;
 		
-		public CaretHighlightAdorner(UIElement adornedElement, Point origin)
-			: base(adornedElement)
+		Rect min, max;
+		Pen blackPen;
+		
+		public CaretHighlightAdorner(TextArea textArea)
+			: base(textArea.TextView)
 		{
-			this.Highlight = new CaretHighlight() {
-				RenderTransform = new TranslateTransform(origin.X, origin.Y),
-			};
+			Rect caret = textArea.Caret.CalculateCaretRectangle();
+			
+			this.min = caret;
+			this.max = new Rect(caret.Location, new Size(caret.Width + Math.Max(caret.Width, caret.Height) * SizeFactor, caret.Height + Math.Max(caret.Width, caret.Height) * SizeFactor));
+			
+			Vector centerOffset = new Vector(caret.Width / 2, caret.Height / 2);
+			
+			min.Offset(-textArea.TextView.ScrollOffset);
+			max.Offset(-textArea.TextView.ScrollOffset);
+			
+			max.Offset(-centerOffset);
+			
+			blackPen = new Pen(TextBlock.GetForeground(textArea.TextView).Clone(), 1);
 		}
 		
-		/// <summary>
-		/// Gets/sets the visual child.
-		/// </summary>
-		protected CaretHighlight Highlight {
-			get { return highlight; }
-			set {
-				RemoveVisualChild(highlight);
-				highlight = value;
-				AddVisualChild(highlight);
-				InvalidateMeasure();
-			}
-		}
-
-		/// <summary>
-		/// Gets the visual child.
-		/// </summary>
-		protected override Visual GetVisualChild(int index)
+		protected override void OnRender(DrawingContext drawingContext)
 		{
-			if (index == 0 && highlight != null)
-				return highlight;
-			else
-				throw new ArgumentOutOfRangeException("index");
-		}
-
-		/// <summary>
-		/// Gets the number of visual children.
-		/// </summary>
-		protected override int VisualChildrenCount {
-			get { return highlight != null ? 1 : 0; }
-		}
-
-		/// <summary>
-		/// Measure the visual child.
-		/// </summary>
-		protected override Size MeasureOverride(Size availableSize)
-		{
-			if (highlight != null) {
-				highlight.Measure(availableSize);
-				return availableSize;
-			} else {
-				return base.MeasureOverride(availableSize);
-			}
-		}
-
-		/// <summary>
-		/// Arrange the visual child.
-		/// </summary>
-		protected override Size ArrangeOverride(Size finalSize)
-		{
-			if (highlight != null) {
-				highlight.Arrange(new Rect(new Point(0, 0), finalSize));
-				return finalSize;
-			} else {
-				return base.ArrangeOverride(finalSize);
-			}
+			var geometry = new RectangleGeometry(max, 2, 2);
+			
+			geometry.BeginAnimation(RectangleGeometry.RectProperty, new RectAnimation(max, min, new Duration(TimeSpan.FromMilliseconds(400))) { AutoReverse = true });
+			blackPen.Brush.BeginAnimation(Brush.OpacityProperty, new DoubleAnimation(1, 0, new Duration(TimeSpan.FromMilliseconds(600))) { BeginTime = TimeSpan.FromMilliseconds(200), AutoReverse = true });
+			
+			drawingContext.DrawGeometry(null, blackPen, geometry);
 		}
 	}
 }
