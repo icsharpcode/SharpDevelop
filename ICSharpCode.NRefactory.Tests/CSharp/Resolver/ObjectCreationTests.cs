@@ -10,7 +10,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	[TestFixture]
 	public class ObjectCreationTests : ResolverTestBase
 	{
-		[Test, Ignore("Resolving type references is not implemented")]
+		[Test]
 		public void GenericObjectCreation()
 		{
 			string program = @"using System.Collections.Generic;
@@ -21,9 +21,9 @@ class A {
 }
 ";
 			MemberResolveResult result = Resolve<MemberResolveResult>(program);
-			Assert.AreEqual("System.Collections.Generic.List.#ctor", result.Member.FullName);
+			Assert.AreEqual("System.Collections.Generic.List..ctor", result.Member.FullName);
 			
-			Assert.AreEqual("System.Collections.Generic.List`1{System.String}", result.Type.ReflectionName);
+			Assert.AreEqual("System.Collections.Generic.List`1[[System.String]]", result.Type.ReflectionName);
 		}
 		
 		[Test]
@@ -53,7 +53,7 @@ class A {
 			Assert.AreSame(SharedTypes.UnknownType, result.Type);
 		}
 		
-		[Test, Ignore("Resolving type references is not implemented")]
+		[Test]
 		public void CTorOverloadLookupTest()
 		{
 			string program = @"class A {
@@ -84,7 +84,7 @@ class A {
 			Assert.AreEqual("dblVal", m.Parameters[0].Name, "new A(11.1) parameter");
 		}
 		
-		[Test, Ignore("Resolving type references is not implemented")]
+		[Test]
 		public void DefaultCTorOverloadLookupTest()
 		{
 			string program = @"class A {
@@ -123,13 +123,13 @@ class C : B {
 }
 ";
 			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "base(b)");
-			Assert.AreEqual("A.#ctor", mrr.Member.FullName);
+			Assert.AreEqual("A..ctor", mrr.Member.FullName);
 			
 			mrr = Resolve<MemberResolveResult>(program, "base(c)");
-			Assert.AreEqual("B.#ctor", mrr.Member.FullName);
+			Assert.AreEqual("B..ctor", mrr.Member.FullName);
 			
 			mrr = Resolve<MemberResolveResult>(program, "this(0)");
-			Assert.AreEqual("C.#ctor", mrr.Member.FullName);
+			Assert.AreEqual("C..ctor", mrr.Member.FullName);
 		}
 	}
 }

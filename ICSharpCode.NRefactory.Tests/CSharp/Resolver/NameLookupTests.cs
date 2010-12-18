@@ -263,7 +263,7 @@ class Color { public static readonly Color Empty = null; }
 			Assert.AreEqual("value", result.Variable.Name);
 		}
 		
-		[Test, Ignore("type references not supported")]
+		[Test, Ignore("Anonymous method parameters not supported by parser")]
 		public void AnonymousMethodParameters()
 		{
 			string program = @"using System;
