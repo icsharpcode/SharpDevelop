@@ -184,8 +184,8 @@
 			             class   = "ICSharpCode.SharpDevelop.Project.Commands.RefreshProjectBrowser"/>
 			<ToolbarItem id = "PropertySeparator" type = "Separator"/>
 			<ToolbarItem id      = "Collapse"
-			             icon    = "ProjectBrowser.Toolbar.Collapse"
-			             tooltip = "${res:ProjectBrowser.Toolbar.CollapseAll}"
+			             icon    = "Icons.16x16.Assembly"
+			             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
 			             class   = "ICSharpCode.SharpDevelop.Project.Commands.CollapseAllProjectBrowser"/>
 		</Condition>
 	</Path>
@@ -775,8 +775,8 @@
 		</ToolbarItem>
 		<ToolbarItem id = "NavigationSeparator" type  = "Separator"/>
 		<ToolbarItem id      = "Collapse"
-		             icon    = "ProjectBrowser.Toolbar.Collapse"
-		             tooltip = "${res:ProjectBrowser.Toolbar.CollapseAll}"
+		             icon    = "Icons.16x16.Assembly"
+		             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserCollapseAll"/>
 	</Path>
 	

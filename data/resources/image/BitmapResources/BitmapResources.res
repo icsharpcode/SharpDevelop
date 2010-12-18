@@ -29,7 +29,6 @@ ProjectBrowser.MissingSolution        = ProjectBrowserIcons\MissingSolution.png
 ProjectBrowser.Solution               = ProjectBrowserIcons\Solution.png
 ProjectBrowser.Toolbar.Refresh         = ProjectBrowserIcons\Toolbar.Refresh.png
 ProjectBrowser.Toolbar.ShowHiddenFiles = ProjectBrowserIcons\Toolbar.ShowHiddenFiles.png
-ProjectBrowser.Toolbar.Collapse		  = ProjectBrowserIcons\Toolbar.Collapse.png
 ProjectBrowser.SolutionFolder.Closed = ProjectBrowserIcons\SolutionFolder.Closed.png
 ProjectBrowser.SolutionFolder.Open   = ProjectBrowserIcons\SolutionFolder.Open.png
 ProjectBrowser.SolutionFolder.CreateNew   = ProjectBrowserIcons\SolutionFolder.CreateNew.png
