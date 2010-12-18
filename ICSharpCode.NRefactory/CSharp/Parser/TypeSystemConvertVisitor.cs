@@ -521,6 +521,24 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				return new SimpleTypeOrNamespaceReference(s.Identifier, typeArguments, parentTypeDefinition, parentUsingScope, isInUsingDeclaration);
 			}
+			IdentifierExpression ident = node as IdentifierExpression;
+			if (ident != null) {
+				// TODO: get rid of this code once the parser produces SimpleType instead of IdentifierExpression
+				List<ITypeReference> typeArguments = new List<ITypeReference>();
+				foreach (var ta in ident.TypeArguments) {
+					typeArguments.Add(ConvertType(ta, parentTypeDefinition, parentMethodDefinition, parentUsingScope, isInUsingDeclaration));
+				}
+				if (typeArguments.Count == 0 && parentMethodDefinition != null) {
+					// SimpleTypeOrNamespaceReference doesn't support method type parameters,
+					// so we directly handle them here.
+					foreach (ITypeParameter tp in parentMethodDefinition.TypeParameters) {
+						if (tp.Name == s.Identifier)
+							return tp;
+					}
+				}
+				return new SimpleTypeOrNamespaceReference(ident.Identifier, typeArguments, parentTypeDefinition, parentUsingScope, isInUsingDeclaration);
+			}
+			
 			PrimitiveType p = node as PrimitiveType;
 			if (p != null) {
 				switch (p.Keyword) {

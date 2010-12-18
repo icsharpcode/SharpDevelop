@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.AreSame(SharedTypes.UnknownType, result.Type);
 		}
 		
-		[Test, Ignore("Resolving type references is not implemented")]
+		[Test, Ignore("Inheritance not supported in parser")]
 		public void OverriddenMethodCall()
 		{
 			string program = @"class A {
@@ -70,7 +70,7 @@ class B : A {
 			Assert.AreEqual("B.GetRandomNumber", result.Member.FullName);
 		}
 		
-		[Test, Ignore("Resolving type references is not implemented")]
+		[Test, Ignore("Inheritance not supported in parser")]
 		public void OverriddenMethodCall2()
 		{
 			string program = @"class A {
@@ -122,7 +122,7 @@ class A {
 			Assert.AreEqual("System.Void", Resolve(program).Type.ReflectionName);
 		}
 		
-		[Test, Ignore("Type references cannot be resolved")]
+		[Test]
 		public void EventCallTest()
 		{
 			string program = @"using System;
@@ -137,10 +137,10 @@ class A {
 			Assert.AreEqual("System.Void", Resolve(program).Type.ReflectionName);
 		}
 		
-		[Test, Ignore("Type references cannot be resolved")]
+		[Test]
 		public void DelegateCallTest()
 		{
-			string program = @"using System;
+			string program = @"using System; using System.Reflection;
 class A {
 	void Method(ModuleResolveEventHandler eh) {
 		$eh(this, new ResolveEventArgs())$;
@@ -150,7 +150,7 @@ class A {
 			Assert.AreEqual("System.Reflection.Module", Resolve(program).Type.ReflectionName);
 		}
 		
-		[Test, Ignore("Type references cannot be resolved")]
+		[Test]
 		public void DelegateReturnedFromMethodCallTest()
 		{
 			string program = @"using System;
@@ -209,7 +209,7 @@ class Program {
 			Assert.IsTrue(((IMethod)mrr.Member).Parameters[0].IsRef);
 		}
 		
-		[Test, Ignore("Type references not supported in parser")]
+		[Test, Ignore("Inheritance not supported in parser")]
 		public void AddedOverload()
 		{
 			string program = @"class BaseClass {
@@ -225,7 +225,7 @@ class DerivedClass : BaseClass {
 			Assert.AreEqual("DerivedClass.Test", mrr.Member.FullName);
 		}
 		
-		[Test, Ignore("Type references not supported in parser")]
+		[Test, Ignore("Inheritance not supported in parser")]
 		public void AddedNonApplicableOverload()
 		{
 			string program = @"class BaseClass {
@@ -244,7 +244,7 @@ class DerivedClass : BaseClass {
 			Assert.AreEqual("DerivedClass.Test", mrr.Member.FullName);
 		}
 		
-		[Test, Ignore("Type references not supported in parser")]
+		[Test, Ignore("Inheritance not supported in parser")]
 		public void OverrideShadowed()
 		{
 			string program = @"using System;

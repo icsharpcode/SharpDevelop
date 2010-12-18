@@ -464,7 +464,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		IType ResolveType(DomNode node)
 		{
-			return SharedTypes.UnknownType;
+			return MakeTypeReference(node).Resolve(resolver.Context);
 		}
 		
 		public override ResolveResult VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)

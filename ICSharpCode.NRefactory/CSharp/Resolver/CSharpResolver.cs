@@ -1561,15 +1561,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				
+				MemberLookup lookup = new MemberLookup(context, t, t.ProjectContent);
+				ResolveResult r;
 				if (lookupMode == SimpleNameLookupMode.Expression || lookupMode == SimpleNameLookupMode.InvocationTarget) {
-					MemberLookup lookup = new MemberLookup(context, t, t.ProjectContent);
-					ResolveResult r = lookup.Lookup(t, identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
-					if (!(r is UnknownMemberResolveResult)) // but do return AmbiguousMemberResolveResult
-						return r;
+					r = lookup.Lookup(t, identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
 				} else {
-					// TODO: perform member lookup within the type t, restricted to finding types
-					throw new NotImplementedException();
+					r = lookup.LookupType(t, identifier, typeArguments);
 				}
+				if (!(r is UnknownMemberResolveResult)) // but do return AmbiguousMemberResolveResult
+					return r;
 			}
 			// look in current namespace definitions
 			for (UsingScope n = this.UsingScope; n != null; n = n.Parent) {

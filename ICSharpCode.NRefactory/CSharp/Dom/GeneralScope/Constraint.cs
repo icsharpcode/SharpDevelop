@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Constraint.cs
 //  
 // Author:
@@ -30,6 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class Constraint : DomNode
 	{
+		public const int BaseTypeRole = 100;
 		
 		public override NodeType NodeType {
 			get {
@@ -49,8 +50,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Colon) ?? CSharpTokenNode.Null; }
 		}
 		
-		public IEnumerable<DomNode> TypeParameters {
-			get { return GetChildrenByRole (Roles.TypeParameter); }
+		public IEnumerable<DomNode> BaseTypes {
+			get { return GetChildrenByRole (BaseTypeRole); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

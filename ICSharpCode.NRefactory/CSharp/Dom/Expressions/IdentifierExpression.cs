@@ -1,3 +1,4 @@
+﻿using System.Collections.Generic;
 // 
 // IdentifierExpression.cs
 //  
@@ -44,6 +45,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			get {
 				Identifier i = this.IdentifierToken;
 				return !i.IsNull ? i.Name : null;
+			}
+		}
+		
+		public IEnumerable<DomNode> TypeArguments {
+			get {
+				return GetChildrenByRole (Roles.TypeArgument);
 			}
 		}
 		

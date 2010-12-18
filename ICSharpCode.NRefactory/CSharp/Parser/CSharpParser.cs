@@ -1468,7 +1468,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					var location = LocationsBag.GetLocations (simpleName);
 					if (location != null)
 						result.AddChild (new CSharpTokenNode (Convert (location[0]), 1), IdentifierExpression.Roles.LChevron);
-//					AddTypeArguments (result, location, simpleName.TypeArguments);
+					AddTypeArguments (result, location, simpleName.TypeArguments);
 					if (location != null && location.Count > 1)
 						result.AddChild (new CSharpTokenNode (Convert (location[1]), 1), IdentifierExpression.Roles.RChevron);
 				}
@@ -1790,7 +1790,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					var arg = typeArguments.Args[i];
 					if (arg == null)
 						continue;
-					parent.AddChild ((DomNode)arg.Accept (this), InvocationExpression.Roles.TypeParameter);
+					parent.AddChild ((DomNode)arg.Accept (this), InvocationExpression.Roles.TypeArgument);
 				}
 			}
 			
@@ -1804,7 +1804,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					var arg = typeArguments.Args[i];
 					if (arg == null)
 						continue;
-					parent.AddChild ((DomNode)arg.Accept (this), InvocationExpression.Roles.TypeParameter);
+					parent.AddChild ((DomNode)arg.Accept (this), InvocationExpression.Roles.TypeArgument);
 				}
 			}
 			
@@ -1818,9 +1818,9 @@ namespace ICSharpCode.NRefactory.CSharp
 					var constraint = new Constraint ();
 					parent.AddChild (new CSharpTokenNode (Convert (location[0]), "where".Length), InvocationExpression.Roles.Keyword);
 					parent.AddChild (new Identifier (c.TypeParameter.Value, Convert (c.TypeParameter.Location)), InvocationExpression.Roles.Identifier);
-					parent.AddChild (new CSharpTokenNode (Convert (location[1]), 1), InvocationExpression.Roles.Colon);
+					parent.AddChild (new CSharpTokenNode (Convert (location[1]), 1), Constraint.Roles.Colon);
 					foreach (var expr in c.ConstraintExpressions)
-						parent.AddChild ((DomNode)expr.Accept (this), InvocationExpression.Roles.TypeParameter);
+						parent.AddChild ((DomNode)expr.Accept (this), Constraint.BaseTypeRole);
 				}
 			}
 			

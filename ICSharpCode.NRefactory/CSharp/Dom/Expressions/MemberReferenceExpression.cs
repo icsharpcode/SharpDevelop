@@ -1,4 +1,4 @@
-// 
+﻿// 
 // MemberReferenceExpression.cs
 //  
 // Author:
@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public IEnumerable<DomNode> TypeArguments {
-			get { return GetChildrenByRole (Roles.TypeParameter); }
+			get { return GetChildrenByRole (Roles.TypeArgument); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
