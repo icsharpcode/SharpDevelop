@@ -320,7 +320,9 @@ namespace ICSharpCode.AvalonEdit.Editing
 			public RestoreCaretAndSelectionUndoAction(TextArea textArea)
 			{
 				this.textAreaReference = new WeakReference(textArea);
-				this.caretPosition = textArea.Caret.Position;
+				// Just save the old caret position, no need to validate here.
+				// If we restore it, we'll validate it anyways.
+				this.caretPosition = textArea.Caret.NonValidatedPosition;
 				this.selection = textArea.Selection;
 			}
 			
@@ -379,7 +381,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 				if (value == null)
 					throw new ArgumentNullException("value");
 				if (!object.Equals(selection, value)) {
-					Debug.WriteLine("Selection change from " + selection + " to " + value);
+					//Debug.WriteLine("Selection change from " + selection + " to " + value);
 					if (textView != null) {
 						ISegment oldSegment = selection.SurroundingSegment;
 						ISegment newSegment = value.SurroundingSegment;
