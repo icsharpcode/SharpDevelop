@@ -152,7 +152,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				if (def.BaseTypes.Count == 1)
 					return def.BaseTypes[0].Resolve(context);
 				else
-					return TypeCode.Int32.ToTypeReference().Resolve(context);
+					return KnownTypeReference.Int32.Resolve(context);
 			} else {
 				throw new ArgumentException("enumType must be an enum");
 			}

@@ -16,6 +16,13 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// </summary>
 	public sealed class SimpleInterningProvider : IInterningProvider
 	{
+		public SimpleInterningProvider()
+		{
+			// Intern the well-known types first; so that they are used when possible.
+			foreach (ITypeReference r in KnownTypeReference.AllKnownTypeReferences)
+				Intern(r);
+		}
+		
 		sealed class ReferenceComparer : IEqualityComparer<object>
 		{
 			public readonly static ReferenceComparer Instance = new ReferenceComparer();

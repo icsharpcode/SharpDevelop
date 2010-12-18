@@ -330,6 +330,9 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		}
 		
 		static readonly DefaultAttribute serializableAttribute = new DefaultAttribute(typeof(SerializableAttribute).ToTypeReference());
+		static readonly ITypeReference structLayoutAttributeTypeRef = typeof(StructLayoutAttribute).ToTypeReference();
+		static readonly ITypeReference layoutKindTypeRef = typeof(LayoutKind).ToTypeReference();
+		static readonly ITypeReference charSetTypeRef = typeof(CharSet).ToTypeReference();
 		
 		void AddAttributes(TypeDefinition typeDefinition, ITypeDefinition targetEntity)
 		{
@@ -361,22 +364,22 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					break;
 			}
 			if (layoutKind != LayoutKind.Auto || charSet != CharSet.Ansi || typeDefinition.PackingSize > 0 || typeDefinition.ClassSize > 0) {
-				DefaultAttribute structLayout = new DefaultAttribute(typeof(StructLayoutAttribute).ToTypeReference());
-				structLayout.PositionalArguments.Add(new SimpleConstantValue(typeof(LayoutKind).ToTypeReference(), (int)layoutKind));
+				DefaultAttribute structLayout = new DefaultAttribute(structLayoutAttributeTypeRef);
+				structLayout.PositionalArguments.Add(new SimpleConstantValue(layoutKindTypeRef, (int)layoutKind));
 				if (charSet != CharSet.Ansi) {
 					structLayout.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(
 						"CharSet",
-						new SimpleConstantValue(typeof(CharSet).ToTypeReference(), (int)charSet)));
+						new SimpleConstantValue(charSetTypeRef, (int)charSet)));
 				}
 				if (typeDefinition.PackingSize > 0) {
 					structLayout.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(
 						"Pack",
-						new SimpleConstantValue(typeof(int).ToTypeReference(), (int)typeDefinition.PackingSize)));
+						new SimpleConstantValue(KnownTypeReference.Int32, (int)typeDefinition.PackingSize)));
 				}
 				if (typeDefinition.ClassSize > 0) {
 					structLayout.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(
 						"Size",
-						new SimpleConstantValue(typeof(int).ToTypeReference(), (int)typeDefinition.ClassSize)));
+						new SimpleConstantValue(KnownTypeReference.Int32, (int)typeDefinition.ClassSize)));
 				}
 				targetEntity.Attributes.Add(structLayout);
 			}

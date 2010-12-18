@@ -21,7 +21,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (context == null)
 				throw new ArgumentNullException("context");
 			this.context = context;
-			this.objectType = TypeCode.Object.ToTypeReference().Resolve(context);
+			this.objectType = KnownTypeReference.Object.Resolve(context);
 			this.dynamicErasure = new DynamicErasure(this);
 		}
 		

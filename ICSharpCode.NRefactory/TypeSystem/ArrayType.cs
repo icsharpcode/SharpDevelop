@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			return systemArray.Resolve(context).GetMethods(context, filter);
 		}
 		
-		static readonly DefaultParameter indexerParam = new DefaultParameter(TypeCode.Int32.ToTypeReference(), string.Empty);
+		static readonly DefaultParameter indexerParam = new DefaultParameter(KnownTypeReference.Int32, string.Empty);
 		
 		public override IEnumerable<IProperty> GetProperties(ITypeResolveContext context, Predicate<IProperty> filter = null)
 		{

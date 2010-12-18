@@ -243,6 +243,7 @@
     <Compile Include="TypeSystem\ITypeParameter.cs" />
     <Compile Include="TypeSystem\ITypeReference.cs" />
     <Compile Include="TypeSystem\ITypeResolveContext.cs" />
+    <Compile Include="TypeSystem\KnownTypeReference.cs" />
     <Compile Include="TypeSystem\NullableType.cs" />
     <Compile Include="TypeSystem\ParameterizedType.cs" />
     <Compile Include="TypeSystem\ParameterListComparer.cs" />

@@ -439,7 +439,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			switch (op) {
 				case UnaryOperatorType.Minus:
 					if (code == TypeCode.UInt32) {
-						IType targetType = TypeCode.Int64.ToTypeReference().Resolve(context);
+						IType targetType = KnownTypeReference.Int64.Resolve(context);
 						type = targetType;
 						if (isNullable) targetType = NullableType.Create(targetType, context);
 						return ResolveCast(targetType, expression);
@@ -448,7 +448,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case UnaryOperatorType.Plus:
 				case UnaryOperatorType.BitNot:
 					if (code >= TypeCode.Char && code <= TypeCode.UInt16) {
-						IType targetType = TypeCode.Int32.ToTypeReference().Resolve(context);
+						IType targetType = KnownTypeReference.Int32.Resolve(context);
 						type = targetType;
 						if (isNullable) targetType = NullableType.Create(targetType, context);
 						return ResolveCast(targetType, expression);
@@ -700,7 +700,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						if (lhsType is PointerType && IsInteger(ReflectionHelper.GetTypeCode(rhsType))) {
 							return new ResolveResult(lhsType);
 						} else if (lhsType is PointerType && lhsType.Equals(rhsType)) {
-							return new ResolveResult(TypeCode.Int64.ToTypeReference().Resolve(context));
+							return new ResolveResult(KnownTypeReference.Int64.Resolve(context));
 						}
 						if (lhsType == SharedTypes.Null && rhsType == SharedTypes.Null)
 							return new ErrorResolveResult(SharedTypes.Null);
@@ -727,7 +727,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							// bool operator op(E x, E y);
 							return HandleEnumComparison(op, rhsType, isNullable, lhs, rhs);
 						} else if (lhsType is PointerType && rhsType is PointerType) {
-							return new ResolveResult(TypeCode.Boolean.ToTypeReference().Resolve(context));
+							return new ResolveResult(KnownTypeReference.Boolean.Resolve(context));
 						}
 						switch (op) {
 							case BinaryOperatorType.Equality:
@@ -829,7 +829,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return rhs;
 				return ResolveBinaryOperator(op, lhs, rhs);
 			}
-			return new ResolveResult(TypeCode.Boolean.ToTypeReference().Resolve(context));
+			return new ResolveResult(KnownTypeReference.Boolean.Resolve(context));
 		}
 		
 		/// <summary>
@@ -1164,7 +1164,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			public StringConcatenation(TypeCode p1, TypeCode p2)
 			{
 				this.canEvaluateAtCompileTime = p1 == TypeCode.String && p2 == TypeCode.String;
-				this.ReturnType = TypeCode.String.ToTypeReference();
+				this.ReturnType = KnownTypeReference.String;
 				this.Parameters.Add(MakeParameter(p1));
 				this.Parameters.Add(MakeParameter(p2));
 			}
@@ -1224,7 +1224,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				this.Negate = negate;
 				this.Type = type;
-				this.ReturnType = TypeCode.Boolean.ToTypeReference();
+				this.ReturnType = KnownTypeReference.Boolean;
 				this.Parameters.Add(MakeParameter(type));
 				this.Parameters.Add(MakeParameter(type));
 			}
@@ -1309,7 +1309,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public RelationalOperatorMethod(Func<T1, T2, bool> func)
 			{
-				this.ReturnType = TypeCode.Boolean.ToTypeReference();
+				this.ReturnType = KnownTypeReference.Boolean;
 				this.Parameters.Add(MakeParameter(Type.GetTypeCode(typeof(T1))));
 				this.Parameters.Add(MakeParameter(Type.GetTypeCode(typeof(T2))));
 				this.func = func;
@@ -1772,7 +1772,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// argument might be a lambda or delegate type, so we have to try to guess the delegate type
 					IType type = arguments[i].Type;
 					if (type == SharedTypes.Null || type == SharedTypes.UnknownType) {
-						list.Add(new DefaultParameter(TypeCode.Object.ToTypeReference(), argumentNames[i]));
+						list.Add(new DefaultParameter(KnownTypeReference.Object, argumentNames[i]));
 					} else {
 						list.Add(new DefaultParameter(type, argumentNames[i]));
 					}
@@ -1867,7 +1867,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public ResolveResult ResolveSizeOf(IType type)
 		{
-			IType int32 = TypeCode.Int32.ToTypeReference().Resolve(context);
+			IType int32 = KnownTypeReference.Int32.Resolve(context);
 			int size;
 			switch (ReflectionHelper.GetTypeCode(type)) {
 				case TypeCode.Boolean:

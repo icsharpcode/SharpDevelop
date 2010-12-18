@@ -155,31 +155,26 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region TypeCode.ToTypeReference()
-		/// <summary>
-		/// Gets a type reference pointing to the <c>void</c> type.
-		/// </summary>
-		public static readonly ITypeReference VoidReference = new GetClassTypeReference("System", "Void", 0);
-		
 		static readonly ITypeReference[] primitiveTypeReferences = {
 			SharedTypes.UnknownType, // TypeCode.Empty
-			new GetClassTypeReference("System", "Object", 0),
+			KnownTypeReference.Object,
 			new GetClassTypeReference("System", "DBNull", 0),
-			new GetClassTypeReference("System", "Boolean", 0),
-			new GetClassTypeReference("System", "Char", 0),
-			new GetClassTypeReference("System", "SByte", 0),
-			new GetClassTypeReference("System", "Byte", 0),
-			new GetClassTypeReference("System", "Int16", 0),
-			new GetClassTypeReference("System", "UInt16", 0),
-			new GetClassTypeReference("System", "Int32", 0),
-			new GetClassTypeReference("System", "UInt32", 0),
-			new GetClassTypeReference("System", "Int64", 0),
-			new GetClassTypeReference("System", "UInt64", 0),
-			new GetClassTypeReference("System", "Single", 0),
-			new GetClassTypeReference("System", "Double", 0),
+			KnownTypeReference.Boolean,
+			KnownTypeReference.Char,
+			KnownTypeReference.SByte,
+			KnownTypeReference.Byte,
+			KnownTypeReference.Int16,
+			KnownTypeReference.UInt16,
+			KnownTypeReference.Int32,
+			KnownTypeReference.UInt32,
+			KnownTypeReference.Int64,
+			KnownTypeReference.UInt64,
+			KnownTypeReference.Single,
+			KnownTypeReference.Double,
 			new GetClassTypeReference("System", "Decimal", 0),
 			new GetClassTypeReference("System", "DateTime", 0),
 			SharedTypes.UnknownType, // (TypeCode)17 has no enum value?
-			new GetClassTypeReference("System", "String", 0)
+			KnownTypeReference.String
 		};
 		
 		/// <summary>

@@ -623,7 +623,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitIsExpression(IsExpression isExpression, object data)
 		{
 			ScanChildren(isExpression);
-			return new ResolveResult(TypeCode.Boolean.ToTypeReference().Resolve(resolver.Context));
+			return new ResolveResult(KnownTypeReference.Boolean.Resolve(resolver.Context));
 		}
 		
 		public override ResolveResult VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
@@ -779,6 +779,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			resolver.PushBlock();
 			ITypeReference type = MakeTypeReference(foreachStatement.VariableType, foreachStatement.Expression, true);
+			resolver.AddVariable(type, foreachStatement.VariableName);
 			ScanChildren(foreachStatement);
 			resolver.PopBlock();
 			return null;
@@ -1015,7 +1016,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 								return pt.TypeArguments[0];
 							}
 						} else if (baseTypeDef.Namespace == "System.Collections" && baseTypeDef.TypeParameterCount == 0) {
-							return TypeCode.Object.ToTypeReference().Resolve(storedContext.Context);
+							return KnownTypeReference.Object.Resolve(storedContext.Context);
 						}
 					}
 				}

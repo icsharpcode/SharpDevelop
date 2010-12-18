@@ -166,7 +166,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		static readonly ITypeReference multicastDelegateReference = typeof(MulticastDelegate).ToTypeReference();
-		static readonly IParameter delegateObjectParameter = MakeParameter(TypeCode.Object.ToTypeReference(), "object");
+		static readonly IParameter delegateObjectParameter = MakeParameter(KnownTypeReference.Object, "object");
 		static readonly IParameter delegateIntPtrMethodParameter = MakeParameter(typeof(IntPtr).ToTypeReference(), "method");
 		static readonly IParameter delegateAsyncCallbackParameter = MakeParameter(typeof(AsyncCallback).ToTypeReference(), "callback");
 		static readonly IParameter delegateResultParameter = MakeParameter(typeof(IAsyncResult).ToTypeReference(), "result");
@@ -373,7 +373,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			dtor.BodyRegion = MakeRegion(destructorDeclaration.Body);
 			dtor.Accessibility = Accessibility.Protected;
 			dtor.IsOverride = true;
-			dtor.ReturnType = ReflectionHelper.VoidReference;
+			dtor.ReturnType = KnownTypeReference.Void;
 			
 			ConvertAttributes(dtor.Attributes, destructorDeclaration.Attributes);
 			
@@ -525,35 +525,37 @@ namespace ICSharpCode.NRefactory.CSharp
 			if (p != null) {
 				switch (p.Keyword) {
 					case "string":
-						return TypeCode.String.ToTypeReference();
+						return KnownTypeReference.String;
 					case "int":
-						return TypeCode.Int32.ToTypeReference();
+						return KnownTypeReference.Int32;
 					case "uint":
-						return TypeCode.UInt32.ToTypeReference();
+						return KnownTypeReference.UInt32;
 					case "object":
-						return TypeCode.Object.ToTypeReference();
+						return KnownTypeReference.Object;
 					case "bool":
-						return TypeCode.Boolean.ToTypeReference();
+						return KnownTypeReference.Boolean;
 					case "sbyte":
-						return TypeCode.SByte.ToTypeReference();
+						return KnownTypeReference.SByte;
 					case "byte":
-						return TypeCode.Byte.ToTypeReference();
+						return KnownTypeReference.Byte;
 					case "short":
-						return TypeCode.Int16.ToTypeReference();
+						return KnownTypeReference.Int16;
 					case "ushort":
-						return TypeCode.UInt16.ToTypeReference();
+						return KnownTypeReference.UInt16;
 					case "long":
-						return TypeCode.Int64.ToTypeReference();
+						return KnownTypeReference.Int64;
 					case "ulong":
-						return TypeCode.UInt64.ToTypeReference();
+						return KnownTypeReference.UInt64;
 					case "float":
-						return TypeCode.Single.ToTypeReference();
+						return KnownTypeReference.Single;
 					case "double":
-						return TypeCode.Double.ToTypeReference();
+						return KnownTypeReference.Double;
 					case "decimal":
-						return TypeCode.Decimal.ToTypeReference();
+						return ReflectionHelper.ToTypeReference(TypeCode.Decimal);
+					case "char":
+						return KnownTypeReference.Char;
 					case "void":
-						return ReflectionHelper.VoidReference;
+						return KnownTypeReference.Void;
 					default:
 						return SharedTypes.UnknownType;
 				}
@@ -601,6 +603,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		#region Constant Values
 		IConstantValue ConvertConstantValue(ITypeReference targetType, DomNode expression)
 		{
+			// TODO: implement ConvertConstantValue
 			return new SimpleConstantValue(targetType, null);
 		}
 		#endregion
@@ -625,7 +628,7 @@ namespace ICSharpCode.NRefactory.CSharp
 						p.IsParams = true;
 						break;
 				}
-				if (pd.DefaultExpression != null)
+				if (!pd.DefaultExpression.IsNull)
 					p.DefaultValue = ConvertConstantValue(p.Type, pd.DefaultExpression);
 				outputList.Add(p);
 			}

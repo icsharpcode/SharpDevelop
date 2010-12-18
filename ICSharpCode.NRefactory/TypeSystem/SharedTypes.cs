@@ -48,7 +48,6 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		 * would have to return true even though these are two distinct definitions.
 		 */
 		
-		
 		/// <summary>
 		/// Type representing resolve errors.
 		/// </summary>

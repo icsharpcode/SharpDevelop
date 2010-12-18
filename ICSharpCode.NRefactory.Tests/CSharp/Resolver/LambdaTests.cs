@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
-	[TestFixture, Ignore("Lambda support not yet implemented")]
+	[TestFixture, Ignore("Lambdas are not yet implemented")]
 	public class LambdaTests : ResolverTestBase
 	{
 		[Test]
