@@ -564,7 +564,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				TextRunProperties globalTextRunProperties = CreateGlobalTextRunProperties();
 				VisualLineTextParagraphProperties paragraphProperties = CreateParagraphProperties(globalTextRunProperties);
 				
-				while (heightTree.GetIsCollapsed(documentLine)) {
+				while (heightTree.GetIsCollapsed(documentLine.LineNumber)) {
 					documentLine = documentLine.PreviousLine;
 				}
 				
@@ -823,7 +823,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		                           IVisualLineTransformer[] lineTransformersArray,
 		                           Size availableSize)
 		{
-			if (heightTree.GetIsCollapsed(documentLine))
+			if (heightTree.GetIsCollapsed(documentLine.LineNumber))
 				throw new InvalidOperationException("Trying to build visual line from collapsed line");
 			
 			Debug.WriteLine("Building line " + documentLine.LineNumber);
@@ -839,7 +839,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			
 			#if DEBUG
 			for (int i = visualLine.FirstDocumentLine.LineNumber + 1; i <= visualLine.LastDocumentLine.LineNumber; i++) {
-				if (!heightTree.GetIsCollapsed(document.GetLineByNumber(i)))
+				if (!heightTree.GetIsCollapsed(i))
 					throw new InvalidOperationException("Line " + i + " was skipped by a VisualLineElementGenerator, but it is not collapsed.");
 			}
 			#endif
