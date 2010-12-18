@@ -192,20 +192,10 @@ namespace ICSharpCode.Reports.Addin
 				LoggingService.Debug("FormsDesigner loaded, setting ActiveDesignSurface to " + this.designSurface.ToString());
 				designSurfaceManager.ActiveDesignSurface = this.designSurface;
 				this.UpdatePropertyPad();
-			} else {
-				// This method can not only be called during initialization,
-				// but also when the designer reloads itself because of
-				// a language change.
-				// When a load error occurs there, we are not somewhere
-				// below the Load method which handles load errors.
-				// That is why we create an error text box here anyway.
-				
-				
-//				TextBox errorTextBox = new TextBox() { Multiline=true, ScrollBars=ScrollBars.Both, ReadOnly=true, BackColor=SystemColors.Window, Dock=DockStyle.Fill };
-//				errorTextBox.Text = String.Concat(this.LoadErrorHeaderText, FormatLoadErrors(designSurface));
-//				this.UserContent = errorTextBox;
 			}
 		}
+		
+		
 		
 		private void CreatePanel ()
 		{
@@ -227,10 +217,6 @@ namespace ICSharpCode.Reports.Addin
 		{
 			LoggingService.Debug("Forms designer: DesignerLoader unloading...");
 			this.unloading = true;
-//			if (!this.disposing) {
-//				this.UserContent = this.pleaseWaitLabel;
-//				Application.DoEvents();
-//			}
 		}
 		
 		
@@ -291,7 +277,6 @@ namespace ICSharpCode.Reports.Addin
 			this.MakeDirty();
 			ReportExplorerPad explorerPad = CheckReportExplorer();
 			IComponentChangeService change = Host.GetService(typeof(IComponentChangeService)) as IComponentChangeService;
-//			change.OnComponentChanged(explorerPad.ReportModel.ReportSettings.SortColumnsCollection, null, null, null);
 			change.OnComponentChanged(explorerPad, null, null, null);
 		}
 		

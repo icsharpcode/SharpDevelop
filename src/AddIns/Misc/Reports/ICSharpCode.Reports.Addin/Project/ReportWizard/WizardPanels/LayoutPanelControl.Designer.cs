@@ -57,7 +57,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			// groupBox2
 			// 
 			this.groupBox2.Controls.Add(this.comboBox1);
-			this.groupBox2.Location = new System.Drawing.Point(64, 146);
+			this.groupBox2.Location = new System.Drawing.Point(55, 146);
 			this.groupBox2.Name = "groupBox2";
 			this.groupBox2.Size = new System.Drawing.Size(200, 64);
 			this.groupBox2.TabIndex = 6;

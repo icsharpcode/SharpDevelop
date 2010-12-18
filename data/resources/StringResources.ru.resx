@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AddInManager.About" xml:space="preserve">
-    <value>О Менеджере Надстроек</value>
+    <value>О Менеджере Плагинов</value>
   </data>
   <data name="AddInManager.ActionCancelDeinstallation" xml:space="preserve">
     <value>Отменить удаление</value>
@@ -145,68 +145,68 @@
     <value>Обновить</value>
   </data>
   <data name="AddInManager.AddInDependencyFailed" xml:space="preserve">
-    <value>Для работы этого AddInа требуется другой AddIn. Установите его чтобы включить этот.</value>
+    <value>Для работы этого плагина нужен другой плагин. Установите его, чтобы включить этот.</value>
   </data>
   <data name="AddInManager.AddInDisabled" xml:space="preserve">
     <value>Отключен</value>
   </data>
   <data name="AddInManager.AddInEnabled" xml:space="preserve">
-    <value>Надстройка будет включена после перезапуска SharpDevelop</value>
+    <value>Плагин станет доступным после перезапуска SharpDevelop</value>
   </data>
   <data name="AddInManager.AddInInstalled" xml:space="preserve">
-    <value>Надстройка будет установлена после перезапуска SharpDevelop</value>
+    <value>Плагин будет установлен после перезапуска SharpDevelop</value>
   </data>
   <data name="AddInManager.AddInInstalledTwice" xml:space="preserve">
-    <value>Надстройка установлена дважды. Пожалуйста, удалите одну копию.</value>
+    <value>Установлены две копии плагина. Пожалуйста, удалите одну из копий.</value>
   </data>
   <data name="AddInManager.AddInMustHaveIdentity" xml:space="preserve">
-    <value>Эта Надстройка должна иметь &lt;Identity&gt; для использовании в Менеджере Надстроек</value>
+    <value>У этого плагина должен быть &lt;Identity&gt; для использовании в Менеджере Плагинов</value>
   </data>
   <data name="AddInManager.AddInRemoved" xml:space="preserve">
-    <value>Надстройка будет удалена после перезапуска SharpDevelop</value>
+    <value>Плагин будет удален после перезапуска SharpDevelop</value>
   </data>
   <data name="AddInManager.AddInUpdated" xml:space="preserve">
-    <value>Надстройка будет обновлена после перезапуска SharpDevelop</value>
+    <value>Плагин будет обновлен после перезапуска SharpDevelop</value>
   </data>
   <data name="AddInManager.AddInWillBeDisabled" xml:space="preserve">
-    <value>Надстройка будет отключена после перезапуска SharpDevelop</value>
+    <value>Плагин станет недоступным после перезапуска SharpDevelop</value>
   </data>
   <data name="AddInManager.CannotDisableAddInManager" xml:space="preserve">
-    <value>Вы не можете отключить Менеджер Надстроек. Он необходим для переподключения Надстроек!</value>
+    <value>Вы не можете отключить Менеджер Плагинов. Он необходим для переподключения Плагинов!</value>
   </data>
   <data name="AddInManager.CannotInstallIntoApplicationDirectory" xml:space="preserve">
-    <value>Надстройки внутри папки ${ProductName} не нужно устанавливать, они предустанавливаются автоматически.</value>
+    <value>Нельзя устанавливать плагины внутри папки ${ProductName}, так как они будут считаться предустановленными.</value>
   </data>
   <data name="AddInManager.DescriptionCancelDeinstallation" xml:space="preserve">
-    <value>Отменяет удаление выделеных Надстроек.</value>
+    <value>Отменяет удаление выделеных плагинов.</value>
   </data>
   <data name="AddInManager.DescriptionCancelInstall" xml:space="preserve">
-    <value>Отменяет установку выделенных Надстроек.</value>
+    <value>Отменяет установку выделенных плагинов.</value>
   </data>
   <data name="AddInManager.DescriptionCancelUpdate" xml:space="preserve">
-    <value>Отменяет обновление выделенных Надстроек.</value>
+    <value>Отменяет обновление выделенных плагинов.</value>
   </data>
   <data name="AddInManager.DescriptionDisable" xml:space="preserve">
-    <value>Выключает выбранные Надстройки</value>
+    <value>Отключает выбранные плагины.</value>
   </data>
   <data name="AddInManager.DescriptionEnable" xml:space="preserve">
-    <value>Включает выбранные Надстройки</value>
+    <value>Включает выбранные плагины.</value>
   </data>
   <data name="AddInManager.DescriptionInconsistentSelection" xml:space="preserve">
-    <value>Неправильное выделение, пожалуйста выделите Надстройки с одинаковым статусом.</value>
+    <value>Неправильное выделение, пожалуйста, выделите плагины с одинаковым статусом.</value>
   </data>
   <data name="AddInManager.FileAssociation" xml:space="preserve">
-    <value>Пакет установки Надстройки</value>
+    <value>Установочный пакет плагина</value>
   </data>
   <data name="AddInManager.FileFilter" xml:space="preserve">
-    <value>Надстройки SharpDevelop|*.addin;*.sdaddin|Все файлы|*.*</value>
+    <value>Плагины SharpDevelop|*.addin;*.sdaddin|Все файлы|*.*</value>
   </data>
   <data name="AddInManager.InstallButton" xml:space="preserve">
-    <value>Установить Надстройку</value>
+    <value>Установить плагин</value>
   </data>
   <data name="AddInManager.NoAddInsInstalled" xml:space="preserve">
-    <value>У вас нет установленных Надстроек.
-Вы можете скачать их из Интернета, потом нажать 'Установить Надстройку' и выбрать скачаный файл, чтобы установить его.</value>
+    <value>У Вас не установлено ни одного плагина.
+Скачайте их из Интернета, нажмите 'Установить плагин' и выберите скачаный файл, чтобы установить его.</value>
   </data>
   <data name="AddInManager.OpenWebsite" xml:space="preserve">
     <value>Открыть Web-сайт</value>
@@ -215,16 +215,16 @@
     <value>Опции</value>
   </data>
   <data name="AddInManager.RequiredBy" xml:space="preserve">
-    <value>Надстройки необходимы для:</value>
+    <value>Плагины необходимы для работы:</value>
   </data>
   <data name="AddInManager.RequiredDependencies" xml:space="preserve">
-    <value>Необходимые зависимости:</value>
+    <value>Требуемые для работы плагины:</value>
   </data>
   <data name="AddInManager.ShowPreinstalledAddIns" xml:space="preserve">
-    <value>Показать предустановленные Надстройки</value>
+    <value>Показать предустановленные плагины</value>
   </data>
   <data name="AddInManager.Title" xml:space="preserve">
-    <value>Менеджер Надстроек</value>
+    <value>Менеджер Плагинов</value>
   </data>
   <data name="AddInManager.UnknownFileFormat" xml:space="preserve">
     <value>Неизвестный формат файла:</value>

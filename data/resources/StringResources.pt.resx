@@ -289,6 +289,18 @@ Faça o download de um AddIn através da Internet, depois pressione 'Instalar Ad
   <data name="AddIns.HexEditor.Display.Elements" xml:space="preserve">
     <value>Elementos</value>
   </data>
+  <data name="AddIns.HexEditor.Display.Elements.Data" xml:space="preserve">
+    <value>Dados</value>
+  </data>
+  <data name="AddIns.HexEditor.Display.Elements.Offset" xml:space="preserve">
+    <value>Deslocamento</value>
+  </data>
+  <data name="AddIns.HexEditor.NumeralSystem" xml:space="preserve">
+    <value>Sistema numérico</value>
+  </data>
+  <data name="AddIns.HexEditor.SizeToFit" xml:space="preserve">
+    <value>Escalar para caber na largura actual</value>
+  </data>
   <data name="AddIns.HtmlHelp2.AddToFavorites" xml:space="preserve">
     <value>Adicionar para favoritos de Ajuda</value>
   </data>
@@ -454,6 +466,33 @@ Precisa de instalar o .NET Framework SDK para utilizar o sistema de ajuda.</valu
   </data>
   <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
     <value>Utilizar a linguagem de projecto actual</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.FindCallsOfSelected.TabTitle" xml:space="preserve">
+    <value>Resultado</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.SetAsRoot.TabTitle" xml:space="preserve">
+    <value>Nós Juntos</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.ShowFunctions.TabTitle" xml:space="preserve">
+    <value>Todas as funções para {0}</value>
+  </data>
+  <data name="AddIns.Profiler.DatabaseTooNewError" xml:space="preserve">
+    <value>O perfil de sessão SharpDevelop seleccionado foi criado por uma versão mais recente de SharpDevelop e assim não pode ser aberto.</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.FileNotFound" xml:space="preserve">
+    <value>Este projecto não pode ser iniciado porque o ficheiro executável não foi encontrado, assegure-se, por favor,de que o projecto e todas as suas dependências são construídas correctamente!</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.NoStartableProjectFound" xml:space="preserve">
+    <value>Nenhum projecto iniciável foi encontrado. Abortar...</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.CpuCyclesText" xml:space="preserve">
+    <value>Ciclos CPU:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.ExecuteQueryText" xml:space="preserve">
+    <value>Executar inquérito</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.NameColumnText" xml:space="preserve">
+    <value>Nome</value>
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Extrair method</value>

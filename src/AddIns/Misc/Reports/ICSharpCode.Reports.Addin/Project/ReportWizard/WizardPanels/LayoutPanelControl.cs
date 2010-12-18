@@ -5,6 +5,8 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+
+using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
@@ -22,7 +24,11 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		public LayoutPanelControl()
 		{
 			InitializeComponent();
-			groupBox2.Text = "Select GroupValue";
+			groupBox1.Text = ResourceService.GetString("SharpReport.Wizard.Layout.ReportLayout");
+			radioListLayout.Text = ResourceService.GetString("SharpReport.Wizard.Layout.ListLayout");
+			radioTableLayout.Text = ResourceService.GetString("SharpReport.Wizard.Layout.TableLayout");
+			groupBox2.Text = ResourceService.GetString("SharpReport.Wizard.Layout.Column");
+			checkBox1.Text = ResourceService.GetString("SharpReport.Wizard.Layout.Grouping");
 		}
 		
 		
