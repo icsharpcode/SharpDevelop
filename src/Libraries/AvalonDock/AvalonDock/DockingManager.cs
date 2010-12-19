@@ -1915,7 +1915,8 @@ namespace AvalonDock
             //refresh arrangements traversing bottom-up visual tree
             FrameworkElement parentElement = pane.Parent as FrameworkElement;
 
-            while (parentElement != null)
+            // Daniel Grunwald 2010/12/19: stop at 'this' to fix SD-1786
+            while (parentElement != null && parentElement != this)
             {
                 parentElement.InvalidateMeasure();
                 parentElement = parentElement.Parent as FrameworkElement;
