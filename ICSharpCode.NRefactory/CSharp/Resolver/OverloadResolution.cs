@@ -522,6 +522,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
+		public bool FoundApplicableCandidate {
+			get { return bestCandidate != null && bestCandidate.Errors == OverloadResolutionErrors.None; }
+		}
+		
 		public IParameterizedMember BestCandidateAmbiguousWith {
 			get { return bestCandidateAmbiguousWith != null ? bestCandidateAmbiguousWith.Member : null; }
 		}

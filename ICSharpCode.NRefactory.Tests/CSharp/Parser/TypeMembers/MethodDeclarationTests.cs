@@ -250,6 +250,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 			Assert.AreEqual("s", md.Parameters[0].ParameterName);
 			Assert.AreEqual("System.String", md.Parameters[0].TypeReference.Type);
 		}
+		 */
 		
 		[Test]
 		public void VoidExtensionMethodTest()
@@ -258,11 +259,13 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 				"public static void Print(this string s) { Console.WriteLine(s); }"
 			);
 			Assert.AreEqual("Print", md.Name);
+			Assert.AreEqual("s", md.Parameters.First().Name);
+			Assert.AreEqual(ParameterModifier.This, md.Parameters.First().ParameterModifier);
+			Assert.AreEqual("string", ((PrimitiveType)md.Parameters.First().Type).Keyword);
 			Assert.IsTrue(md.IsExtensionMethod);
-			Assert.AreEqual("s", md.Parameters[0].ParameterName);
-			Assert.AreEqual("System.String", md.Parameters[0].TypeReference.Type);
 		}
 		
+		/* TODO
 		[Test]
 		public void MethodWithEmptyAssignmentErrorInBody()
 		{

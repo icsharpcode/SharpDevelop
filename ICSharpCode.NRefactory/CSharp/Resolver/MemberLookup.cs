@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		#region IsAccessible
-		public bool AllowProtectedAccess(IType targetType)
+		public bool IsProtectedAccessAllowed(IType targetType)
 		{
 			ITypeDefinition typeDef = targetType.GetDefinition();
 			return typeDef != null && typeDef.IsDerivedFrom(currentTypeDefinition, context);
@@ -164,7 +164,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				types.AddRange(type.GetNestedTypes(context, typeFilter));
 			}
 			
-			bool allowProtectedAccess = AllowProtectedAccess(type);
+			bool allowProtectedAccess = IsProtectedAccessAllowed(type);
 			
 			if (typeArgumentCount == 0) {
 				Predicate<IMember> memberFilter = delegate(IMember member) {
@@ -248,7 +248,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (members.Count == 1 && firstNonMethod != null)
 				return new MemberResolveResult(firstNonMethod, context);
 			if (firstNonMethod == null)
-				return new MethodGroupResolveResult(members.ConvertAll(m => (IMethod)m), typeArguments);
+				return new MethodGroupResolveResult(type, name, members.ConvertAll(m => (IMethod)m), typeArguments);
 			return new AmbiguousMemberResultResult(firstNonMethod, firstNonMethod.ReturnType.Resolve(context));
 		}
 

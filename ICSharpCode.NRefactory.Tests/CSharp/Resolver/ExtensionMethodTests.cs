@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
-	[TestFixture, Ignore("Extension method support not yet implemented")]
+	[TestFixture]
 	public class ExtensionMethodTests : ResolverTestBase
 	{
 		[Test]

@@ -16,13 +16,33 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	{
 		readonly ReadOnlyCollection<IMethod> methods;
 		readonly ReadOnlyCollection<IType> typeArguments;
+		readonly IType targetType;
+		readonly string methodName;
 		
-		public MethodGroupResolveResult(IList<IMethod> methods, IList<IType> typeArguments) : base(SharedTypes.UnknownType)
+		/// <summary>
+		/// List of extension methods, used to avoid re-calculating it in ResolveInvocation() when it was already
+		/// calculated by ResolveMemberAccess().
+		/// </summary>
+		internal List<List<IMethod>> ExtensionMethods;
+		
+		public MethodGroupResolveResult(IType targetType, string methodName, IList<IMethod> methods, IList<IType> typeArguments) : base(SharedTypes.UnknownType)
 		{
+			if (targetType == null)
+				throw new ArgumentNullException("targetType");
 			if (methods == null)
 				throw new ArgumentNullException("methods");
+			this.targetType = targetType;
+			this.methodName = methodName;
 			this.methods = new ReadOnlyCollection<IMethod>(methods);
-			this.typeArguments = new ReadOnlyCollection<IType>(typeArguments);
+			this.typeArguments = typeArguments != null ? new ReadOnlyCollection<IType>(typeArguments) : EmptyList<IType>.Instance;
+		}
+		
+		public IType TargetType {
+			get { return targetType; }
+		}
+		
+		public string MethodName {
+			get { return methodName; }
 		}
 		
 		public ReadOnlyCollection<IMethod> Methods {

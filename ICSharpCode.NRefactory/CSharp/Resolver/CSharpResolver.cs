@@ -1688,12 +1688,76 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return DynamicResult;
 			
 			MemberLookup lookup = CreateMemberLookup();
-			return lookup.Lookup(target.Type, identifier, typeArguments, isInvocationTarget);
+			ResolveResult result = lookup.Lookup(target.Type, identifier, typeArguments, isInvocationTarget);
+			if (result is UnknownMemberResolveResult) {
+				var extensionMethods = GetExtensionMethods(target.Type, identifier, typeArguments.Count);
+				if (extensionMethods.Count > 0) {
+					return new MethodGroupResolveResult(target.Type, identifier, EmptyList<IMethod>.Instance, typeArguments) {
+						ExtensionMethods = extensionMethods
+					};
+				}
+			}
+			return result;
 		}
 		
 		MemberLookup CreateMemberLookup()
 		{
 			return new MemberLookup(context, this.CurrentTypeDefinition, this.UsingScope != null ? this.UsingScope.ProjectContent : null);
+		}
+		#endregion
+		
+		#region GetExtensionMethods
+		/// <summary>
+		/// Gets the extension methods that are called 'name', and can be called with 'typeArgumentCount' explicit type arguments;
+		/// and are applicable with a first argument type of 'targetType'.
+		/// </summary>
+		List<List<IMethod>> GetExtensionMethods(IType targetType, string name, int typeArgumentCount)
+		{
+			List<List<IMethod>> extensionMethodGroups = new List<List<IMethod>>();
+			foreach (var inputGroup in GetAllExtensionMethods()) {
+				List<IMethod> outputGroup = new List<IMethod>();
+				foreach (var method in inputGroup) {
+					if (method.Name == name && (typeArgumentCount == 0 || method.TypeParameters.Count == typeArgumentCount)) {
+						// TODO: verify targetType
+						outputGroup.Add(method);
+					}
+				}
+				if (outputGroup.Count > 0)
+					extensionMethodGroups.Add(outputGroup);
+			}
+			return extensionMethodGroups;
+		}
+		
+		List<List<IMethod>> GetAllExtensionMethods()
+		{
+			// TODO: maybe cache the result?
+			List<List<IMethod>> extensionMethodGroups = new List<List<IMethod>>();
+			List<IMethod> m;
+			for (UsingScope scope = this.UsingScope; scope != null; scope = scope.Parent) {
+				m = GetExtensionMethods(scope.NamespaceName).ToList();
+				if (m.Count > 0)
+					extensionMethodGroups.Add(m);
+				
+				m = (
+					from u in scope.Usings
+					select u.ResolveNamespace(context) into ns
+					where ns != null
+					select ns.NamespaceName
+				).Distinct().SelectMany(ns => GetExtensionMethods(ns)).ToList();
+				if (m.Count > 0)
+					extensionMethodGroups.Add(m);
+			}
+			return extensionMethodGroups;
+		}
+		
+		IEnumerable<IMethod> GetExtensionMethods(string namespaceName)
+		{
+			return
+				from c in context.GetClasses(namespaceName, StringComparer.Ordinal)
+				where c.IsStatic
+				from m in c.Methods
+				where (m.IsExtensionMethod)
+				select m;
 		}
 		#endregion
 		
@@ -1709,15 +1773,57 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			MethodGroupResolveResult mgrr = target as MethodGroupResolveResult;
 			if (mgrr != null) {
-				OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, mgrr.TypeArguments.ToArray());
+				var typeArgumentArray = mgrr.TypeArguments.ToArray();
+				OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, typeArgumentArray);
 				foreach (IMethod method in mgrr.Methods) {
 					// TODO: grouping by class definition?
 					or.AddCandidate(method);
 				}
-				// TODO: extension methods?
-				IType returnType = or.BestCandidate.ReturnType.Resolve(context);
-				returnType = returnType.AcceptVisitor(new MethodTypeParameterSubstitution(or.InferredTypeArguments));
-				return new MemberResolveResult(or.BestCandidate, returnType);
+				if (!or.FoundApplicableCandidate) {
+					// No applicable match found, so let's try extension methods.
+					
+					var extensionMethods = mgrr.ExtensionMethods;
+					// Look in extension methods pre-calcalculated by ResolveMemberAccess if possible;
+					// otherwise call GetExtensionMethods().
+					if (extensionMethods == null)
+						extensionMethods = GetExtensionMethods(mgrr.TargetType, mgrr.MethodName, mgrr.TypeArguments.Count);
+					
+					if (extensionMethods.Count > 0) {
+						ResolveResult[] extArguments = new ResolveResult[arguments.Length + 1];
+						extArguments[0] = new ResolveResult(mgrr.TargetType);
+						arguments.CopyTo(extArguments, 1);
+						string[] extArgumentNames = null;
+						if (argumentNames != null) {
+							extArgumentNames = new string[argumentNames.Length + 1];
+							argumentNames.CopyTo(extArgumentNames, 1);
+						}
+						var extOr = new OverloadResolution(context, extArguments, extArgumentNames, typeArgumentArray);
+						
+						foreach (var g in extensionMethods) {
+							foreach (var m in g) {
+								extOr.AddCandidate(m);
+							}
+							if (extOr.FoundApplicableCandidate)
+								break;
+						}
+						// For the lack of a better comparison function (the one within OverloadResolution
+						// cannot be used as it depends on the argument set):
+						if (extOr.FoundApplicableCandidate || or.BestCandidate == null) {
+							// Consider an extension method result better than the normal result only
+							// if it's applicable; or if there is no normal result.
+							or = extOr;
+						}
+					}
+				}
+				if (or.BestCandidate != null) {
+					IType returnType = or.BestCandidate.ReturnType.Resolve(context);
+					returnType = returnType.AcceptVisitor(new MethodTypeParameterSubstitution(or.InferredTypeArguments));
+					return new MemberResolveResult(or.BestCandidate, returnType);
+				} else {
+					// No candidate found at all (not even an inapplicable one).
+					// This can happen with empty method groups (as sometimes used with extension methods)
+					return new UnknownMethodResolveResult(mgrr.TargetType, mgrr.MethodName, mgrr.TypeArguments, CreateParameters(arguments, argumentNames));
+				}
 			}
 			UnknownMemberResolveResult umrr = target as UnknownMemberResolveResult;
 			if (umrr != null) {
@@ -1826,7 +1932,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, new IType[0]);
 			MemberLookup lookup = CreateMemberLookup();
-			bool allowProtectedAccess = lookup.AllowProtectedAccess(target.Type);
+			bool allowProtectedAccess = lookup.IsProtectedAccessAllowed(target.Type);
 			var indexers = target.Type.GetProperties(context, p => p.IsIndexer && lookup.IsAccessible(p, allowProtectedAccess));
 			// TODO: filter indexers hiding other indexers?
 			foreach (IProperty p in indexers) {
@@ -1848,7 +1954,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, new IType[0]);
 			MemberLookup lookup = CreateMemberLookup();
-			bool allowProtectedAccess = lookup.AllowProtectedAccess(type);
+			bool allowProtectedAccess = lookup.IsProtectedAccessAllowed(type);
 			var constructors = type.GetConstructors(context, m => lookup.IsAccessible(m, allowProtectedAccess));
 			foreach (IMethod ctor in constructors) {
 				or.AddCandidate(ctor);

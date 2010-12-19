@@ -1762,10 +1762,12 @@ namespace ICSharpCode.NRefactory.CSharp
 						if (location != null)
 							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "params".Length), ParameterDeclaration.Roles.Keyword);
 						break;
-					case Parameter.Modifier.This:
-						parameterDeclarationExpression.ParameterModifier = ParameterModifier.This;
-						if (location != null)
-							parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "this".Length), ParameterDeclaration.Roles.Keyword);
+					default:
+						if (p.HasExtensionMethodModifier) {
+							parameterDeclarationExpression.ParameterModifier = ParameterModifier.This;
+							if (location != null)
+								parameterDeclarationExpression.AddChild (new CSharpTokenNode (Convert (location[0]), "this".Length), ParameterDeclaration.Roles.Keyword);
+						}
 						break;
 					}
 					if (p.TypeExpression != null) // lambdas may have no types (a, b) => ...
