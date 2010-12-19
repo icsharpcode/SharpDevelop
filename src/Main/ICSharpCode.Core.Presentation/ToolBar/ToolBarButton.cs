@@ -2,8 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace ICSharpCode.Core.Presentation
@@ -15,8 +17,9 @@ namespace ICSharpCode.Core.Presentation
 	{
 		readonly Codon codon;
 		readonly object caller;
+		readonly string inputGestureText;
 		
-		public ToolBarButton(Codon codon, object caller, bool createCommand)
+		public ToolBarButton(UIElement inputBindingOwner, Codon codon, object caller, bool createCommand)
 		{
 			ToolTipService.SetShowOnDisabled(this, true);
 			
@@ -31,6 +34,11 @@ namespace ICSharpCode.Core.Presentation
 				this.Content = image;
 			} else {
 				this.Content = codon.Id;
+			}
+			if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
+				KeyGesture kg = MenuService.ParseShortcut(codon.Properties["shortcut"]);
+				MenuCommand.AddGestureToInputBindingOwner(inputBindingOwner, kg, this.Command, GetFeatureName());
+				this.inputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
 			}
 			UpdateText();
 			
@@ -59,7 +67,10 @@ namespace ICSharpCode.Core.Presentation
 		public void UpdateText()
 		{
 			if (codon.Properties.Contains("tooltip")) {
-				this.ToolTip = StringParser.Parse(codon.Properties["tooltip"]);
+				string toolTip = StringParser.Parse(codon.Properties["tooltip"]);
+				if (!string.IsNullOrEmpty(inputGestureText))
+					toolTip = toolTip + " (" + inputGestureText + ")";
+				this.ToolTip = toolTip;
 			}
 		}
 		

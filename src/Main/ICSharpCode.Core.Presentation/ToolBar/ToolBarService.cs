@@ -24,16 +24,16 @@ namespace ICSharpCode.Core.Presentation
 			MenuService.UpdateStatus(toolBarItems);
 		}
 		
-		public static IList CreateToolBarItems(object owner, string addInTreePath)
+		public static IList CreateToolBarItems(UIElement inputBindingOwner, object owner, string addInTreePath)
 		{
-			return CreateToolBarItems(AddInTree.BuildItems<ToolbarItemDescriptor>(addInTreePath, owner, false));
+			return CreateToolBarItems(inputBindingOwner, AddInTree.BuildItems<ToolbarItemDescriptor>(addInTreePath, owner, false));
 		}
 		
-		static IList CreateToolBarItems(IEnumerable descriptors)
+		static IList CreateToolBarItems(UIElement inputBindingOwner, IEnumerable descriptors)
 		{
 			ArrayList result = new ArrayList();
 			foreach (ToolbarItemDescriptor descriptor in descriptors) {
-				object item = CreateToolBarItemFromDescriptor(descriptor);
+				object item = CreateToolBarItemFromDescriptor(inputBindingOwner, descriptor);
 				IMenuItemBuilder submenuBuilder = item as IMenuItemBuilder;
 				if (submenuBuilder != null) {
 					result.AddRange(submenuBuilder.BuildItems(descriptor.Codon, descriptor.Caller));
@@ -44,7 +44,7 @@ namespace ICSharpCode.Core.Presentation
 			return result;
 		}
 		
-		static object CreateToolBarItemFromDescriptor(ToolbarItemDescriptor descriptor)
+		static object CreateToolBarItemFromDescriptor(UIElement inputBindingOwner, ToolbarItemDescriptor descriptor)
 		{
 			Codon codon = descriptor.Codon;
 			object caller = descriptor.Caller;
@@ -58,7 +58,7 @@ namespace ICSharpCode.Core.Presentation
 				case "CheckBox":
 					return new ToolBarCheckBox(codon, caller);
 				case "Item":
-					return new ToolBarButton(codon, caller, createCommand);
+					return new ToolBarButton(inputBindingOwner, codon, caller, createCommand);
 				case "ComboBox":
 					return new ToolBarComboBox(codon, caller);
 				case "TextBox":
@@ -84,11 +84,11 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		static ToolBar CreateToolBar(object owner, AddInTreeNode treeNode)
+		static ToolBar CreateToolBar(UIElement inputBindingOwner, object owner, AddInTreeNode treeNode)
 		{
 			ToolBar tb = new CoreToolBar();
 			ToolBarTray.SetIsLocked(tb, true);
-			tb.ItemsSource = CreateToolBarItems(treeNode.BuildChildItems<ToolbarItemDescriptor>(owner));
+			tb.ItemsSource = CreateToolBarItems(inputBindingOwner, treeNode.BuildChildItems<ToolbarItemDescriptor>(owner));
 			UpdateStatus(tb.ItemsSource); // setting Visible is only possible after the items have been added
 			return tb;
 		}
@@ -110,12 +110,12 @@ namespace ICSharpCode.Core.Presentation
 			}
 		}
 		
-		public static ToolBar CreateToolBar(object owner, string addInTreePath)
+		public static ToolBar CreateToolBar(UIElement inputBindingOwner, object owner, string addInTreePath)
 		{
-			return CreateToolBar(owner, AddInTree.GetTreeNode(addInTreePath));
+			return CreateToolBar(inputBindingOwner, owner, AddInTree.GetTreeNode(addInTreePath));
 		}
 		
-		public static ToolBar[] CreateToolBars(object owner, string addInTreePath)
+		public static ToolBar[] CreateToolBars(UIElement inputBindingOwner, object owner, string addInTreePath)
 		{
 			AddInTreeNode treeNode;
 			try {
@@ -125,7 +125,7 @@ namespace ICSharpCode.Core.Presentation
 			}
 			List<ToolBar> toolBars = new List<ToolBar>();
 			foreach (AddInTreeNode childNode in treeNode.ChildNodes.Values) {
-				toolBars.Add(CreateToolBar(owner, childNode));
+				toolBars.Add(CreateToolBar(inputBindingOwner, owner, childNode));
 			}
 			return toolBars.ToArray();
 		}

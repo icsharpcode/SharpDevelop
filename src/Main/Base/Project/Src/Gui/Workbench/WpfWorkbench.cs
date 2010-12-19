@@ -96,7 +96,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			mainMenu.ItemsSource = MenuService.CreateMenuItems(this, this, mainMenuPath, activationMethod: "MainMenu", immediatelyExpandMenuBuildersForShortcuts: true);
 			
-			toolBars = ToolBarService.CreateToolBars(this, "/SharpDevelop/Workbench/ToolBar");
+			toolBars = ToolBarService.CreateToolBars(this, this, "/SharpDevelop/Workbench/ToolBar");
 			foreach (ToolBar tb in toolBars) {
 				DockPanel.SetDock(tb, Dock.Top);
 				dockPanel.Children.Insert(1, tb);

@@ -126,32 +126,36 @@ namespace ICSharpCode.Core.Presentation
 		{
 			this.ActivationMethod = activationMethod;
 			this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
+			
 			if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
 				KeyGesture kg = MenuService.ParseShortcut(codon.Properties["shortcut"]);
-				if (inputBindingOwner != null) {
-					var shortcutCommand = this.Command;
-					string featureName = GetFeatureName();
-					// wrap the shortcut command so that it can report to UDC with
-					// different activation method
-					if (shortcutCommand != null && !string.IsNullOrEmpty(featureName))
-						shortcutCommand = new ShortcutCommandWrapper(shortcutCommand, featureName);
-					// try to find an existing input binding which conflicts with this shortcut
-					var existingInputBinding =
-						(from InputBinding b in inputBindingOwner.InputBindings
-						 let gesture = b.Gesture as KeyGesture
-						 where gesture != null
-						 && gesture.Key == kg.Key
-						 && gesture.Modifiers == kg.Modifiers
-						 select b
-						).FirstOrDefault();
-					if (existingInputBinding != null) {
-						// modify the existing input binding to allow calling both commands
-						existingInputBinding.Command = new AmbiguousCommandWrapper(existingInputBinding.Command, shortcutCommand);
-					} else {
-						inputBindingOwner.InputBindings.Add(new InputBinding(shortcutCommand, kg));
-					}
-				}
+				AddGestureToInputBindingOwner(inputBindingOwner, kg, this.Command, GetFeatureName());
 				this.InputGestureText = kg.GetDisplayStringForCulture(Thread.CurrentThread.CurrentUICulture);
+			}
+		}
+		
+		internal static void AddGestureToInputBindingOwner(UIElement inputBindingOwner, KeyGesture kg, System.Windows.Input.ICommand shortcutCommand, string featureName)
+		{
+			if (inputBindingOwner != null && kg != null && shortcutCommand != null) {
+				// wrap the shortcut command so that it can report to UDC with
+				// different activation method
+				if (!string.IsNullOrEmpty(featureName))
+					shortcutCommand = new ShortcutCommandWrapper(shortcutCommand, featureName);
+				// try to find an existing input binding which conflicts with this shortcut
+				var existingInputBinding =
+					(from InputBinding b in inputBindingOwner.InputBindings
+					 let gesture = b.Gesture as KeyGesture
+					 where gesture != null
+					 && gesture.Key == kg.Key
+					 && gesture.Modifiers == kg.Modifiers
+					 select b
+					).FirstOrDefault();
+				if (existingInputBinding != null) {
+					// modify the existing input binding to allow calling both commands
+					existingInputBinding.Command = new AmbiguousCommandWrapper(existingInputBinding.Command, shortcutCommand);
+				} else {
+					inputBindingOwner.InputBindings.Add(new InputBinding(shortcutCommand, kg));
+				}
 			}
 		}
 		

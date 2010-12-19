@@ -30,6 +30,9 @@ namespace ICSharpCode.Core
 	/// Command class that is run when item is clicked; or class that manages
 	/// the ComboBox/DropDownButton. Required for everything except "Separator".
 	/// </attribute>
+	/// <attribute name="shortcut" use="optional">
+	/// Shortcut that activates the command (e.g. "Control|S").
+	/// </attribute>
 	/// <usage>Any toolbar strip paths, e.g. /SharpDevelop/Workbench/ToolBar</usage>
 	/// <children childTypes="MenuItem">A drop down button has menu items as sub elements.</children>
 	/// <returns>
