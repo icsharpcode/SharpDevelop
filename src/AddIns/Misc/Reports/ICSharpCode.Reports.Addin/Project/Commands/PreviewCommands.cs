@@ -2,13 +2,8 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Globalization;
-using System.Windows.Forms;
-
 using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.Reports.Core.ReportViewer;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Reports.Addin.Commands
@@ -16,8 +11,6 @@ namespace ICSharpCode.Reports.Addin.Commands
 	
 	public class AbstractPreviewCommand :AbstractCommand
 	{
-		ReportModel model;
-		ICSharpCode.Reports.Core.ReportViewer.PreviewControl reportViewer;
 		
 		public AbstractPreviewCommand(ReportModel model, ICSharpCode.Reports.Core.ReportViewer.PreviewControl reportViewer)
 		{
@@ -28,31 +21,29 @@ namespace ICSharpCode.Reports.Addin.Commands
 				throw new ArgumentNullException("reportViewer");
 			}
 			
-			this.model = model;
-			this.reportViewer = reportViewer;
+			this.Model = model;
+			this.ReportViewer = reportViewer;
 		}
 		
 		
 		public override void Run()
 		{
-			CollectParametersCommand sql = new CollectParametersCommand(model);
-			sql.Run();
+			CollectParametersCommand cmd = new CollectParametersCommand(Model);
+			cmd.Run();
 		}
 		
 		
-		public ICSharpCode.Reports.Core.ReportViewer.PreviewControl ReportViewer {
-			get { return reportViewer; }
-		}
+		public ICSharpCode.Reports.Core.ReportViewer.PreviewControl ReportViewer {get;private set;}
 		
-		public ReportModel Model {
-			get { return this.model; }
-		}
+		
+		public ReportModel Model {get;private set;}
+		
 	}
 	
 	
-	public class AsyncFormsSheetPreviewCommand:AbstractPreviewCommand
+	public class FormSheetToReportViewerCommand:AbstractPreviewCommand
 	{
-		public AsyncFormsSheetPreviewCommand(ReportModel model,
+		public FormSheetToReportViewerCommand(ReportModel model,
 		                                     ICSharpCode.Reports.Core.ReportViewer.PreviewControl reportViewer):base (model,reportViewer)
 		{
 		}
@@ -65,10 +56,10 @@ namespace ICSharpCode.Reports.Addin.Commands
 	}
 	
 	
-	public class AsyncPullModelPreviewCommand:AbstractPreviewCommand
+	public class PullModelToReportViewerCommand:AbstractPreviewCommand
 	{
 		
-		public AsyncPullModelPreviewCommand(ReportModel model, ICSharpCode.Reports.Core.ReportViewer.PreviewControl reportViewer):base (model,reportViewer)
+		public PullModelToReportViewerCommand(ReportModel model, ICSharpCode.Reports.Core.ReportViewer.PreviewControl reportViewer):base (model,reportViewer)
 		{
 		}
 		
@@ -81,9 +72,9 @@ namespace ICSharpCode.Reports.Addin.Commands
 	}
 	
 	
-	public class AsyncPushModelPreviewCommand:AbstractPreviewCommand
+	public class PushModelToReportViewerCommand:AbstractPreviewCommand
 	{
-		public AsyncPushModelPreviewCommand(ReportModel model, ICSharpCode.Reports.Core.ReportViewer.PreviewControl reportViewer):base (model,reportViewer)
+		public PushModelToReportViewerCommand(ReportModel model, ICSharpCode.Reports.Core.ReportViewer.PreviewControl reportViewer):base (model,reportViewer)
 		{
 		}
 		

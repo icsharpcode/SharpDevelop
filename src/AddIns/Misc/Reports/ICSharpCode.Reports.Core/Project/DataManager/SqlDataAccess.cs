@@ -14,7 +14,7 @@ namespace ICSharpCode.Reports.Core
 	/// </summary>
 	/// 
 	
-	public class SqlDataAccessStrategy:IDataAccessStrategy
+	internal class SqlDataAccessStrategy:IDataAccessStrategy
 	{
 		private ConnectionObject  connectionObject;
 		private ReportSettings reportSettings;

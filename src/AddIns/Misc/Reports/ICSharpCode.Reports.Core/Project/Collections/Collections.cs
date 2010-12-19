@@ -143,7 +143,6 @@ namespace ICSharpCode.Reports.Core{
 		
 		protected override void RemoveItem(int index)
 		{
-			BaseReportItem item = this[index];
 			base.RemoveItem(index);
 		}
 	

@@ -28,7 +28,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		private System.Windows.Forms.Label label3;
 		private bool firstDrag;
 		private string connectionString;
-		private CommandType commandType;
+//		private CommandType commandType;
 		private ReportStructure reportStructure;
 		private Properties customizer;		
 		private IDatabaseObjectBase currentNode;
@@ -60,7 +60,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			base.EnableCancel = true;
 			this.firstDrag = true;
 			base.IsLastPanel = false;
-			commandType = CommandType.Text;
+			//commandType = CommandType.Text;
 			this.txtSqlString.Enabled = false;
 
             this.databasesTreeHost = new ElementHost() { Dock = DockStyle.Fill };
@@ -90,12 +90,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			}
 			
 			if (message == DialogMessage.Next) {
-				
-				
-				commandType = CommandType.Text;
-				
 				customizer.Set("SqlString", this.txtSqlString.Text.Trim());
-				reportStructure.CommandType = commandType;
+				//reportStructure.CommandType = commandType;
 				reportStructure.SqlString = this.txtSqlString.Text.Trim();
 				reportStructure.ConnectionString = connectionString;
 				base.EnableFinish = true;
@@ -123,6 +119,9 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
             if (e.Data.GetFormats().Length > 0)
             {
                 string draggedFormat = e.Data.GetFormats()[0];
+                
+                String str = String.Format("drag {0}",draggedFormat);
+                System.Diagnostics.Trace.WriteLine(str);
 
                 Type draggedType = null;
 
@@ -173,9 +172,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
                     // we insert Select * from.... otherwise we have to scan
                     //the whole string for incorrect columnNames
                     this.txtSqlString.Clear();
-                    //					AbstractSharpQuerySchemaClass tbl = (AbstractSharpQuerySchemaClass)this.currentNode.SchemaClass;
                     this.txtSqlString.Text = "SELECT * FROM " + (draggedObject as ICSharpCode.Data.Core.Interfaces.ITable).Name;
-
+                    reportStructure.CommandType = CommandType.Text;
                     break;
 
                 case NodeType.ColumnImage:
@@ -184,9 +182,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
                     {
                         this.txtSqlString.AppendText("SELECT ");
                         this.txtSqlString.AppendText(colName);
-
                     }
-                    //FxCop : http://msdn.microsoft.com/library/bb386042(VS.100).aspx
+            
                     else if (this.txtSqlString.Text.ToUpper(CultureInfo.InvariantCulture).IndexOf("where", StringComparison.OrdinalIgnoreCase) > 0)
                     {
                         this.txtSqlString.AppendText(colName + " = ?");
@@ -196,6 +193,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
                         this.txtSqlString.AppendText(", ");
                         this.txtSqlString.AppendText(colName);
                     }
+                    reportStructure.CommandType = CommandType.Text;
                     break;
 
                 case NodeType.ProcedureImage:
@@ -204,7 +202,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
                     // we can't use the dragobject because it returns an string like 'EXECUTE ProcName'
                     IProcedure procedure = draggedObject as IProcedure;
                     this.txtSqlString.Text = "EXECUTE " + procedure.Name;
-
+                   reportStructure.CommandType = CommandType.StoredProcedure;
 //                    reportStructure.SharpQueryProcedure = new SharpQueryProcedure(new SharpQuery.Connection.OLEDBConnectionWrapper(this.connectionString), procedure.Parent.Name, procedure.SchemaName, string.Empty, procedure.Name);
                     break;
 

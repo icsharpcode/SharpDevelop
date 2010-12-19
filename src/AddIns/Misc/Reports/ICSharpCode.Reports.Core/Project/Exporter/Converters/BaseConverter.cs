@@ -78,7 +78,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (row == null) {
 				throw new ArgumentException("row");
 			}
-			Console.WriteLine("\tFireRowRendering");
+//			Console.WriteLine("\tFireRowRendering");
 			RowRenderEventArgs rrea = new RowRenderEventArgs(row,currentNavigator.Current);
 			EventHelper.Raise<RowRenderEventArgs>(RowRendering,this,rrea);
 		}
@@ -86,7 +86,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected void FireGroupHeaderRendering (GroupHeader groupHeader)
 		{
-			Console.WriteLine("\tFireGroupHeaderRendering");
+//			Console.WriteLine("\tFireGroupHeaderRendering");
 			GroupHeaderEventArgs ghea = new GroupHeaderEventArgs(groupHeader);
 			EventHelper.Raise<GroupHeaderEventArgs>(GroupHeaderRendering,this,ghea);
 		}
@@ -94,7 +94,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		protected void FireGroupFooterRendering (GroupFooter groupFooter)
 		{
-			Console.WriteLine("\tFireGroupFooterRendering");
+//			Console.WriteLine("\tFireGroupFooterRendering");
 			GroupFooterEventArgs gfea = new GroupFooterEventArgs(groupFooter);
 			EventHelper.Raise<GroupFooterEventArgs>(GroupFooterRendering,this,gfea);
 		}
@@ -136,25 +136,16 @@ namespace ICSharpCode.Reports.Core.Exporter
 	
 		#region Grouping
 		
-		protected void ConvertGroupFooter (BaseSection section,ISimpleContainer container,ExporterCollection exporterCollection)
+		protected void ConvertGroupFooter (ISimpleContainer container,ExporterCollection exporterCollection)
 		{
 			var footers = BaseConverter.FindGroupFooter(container);
 			if (footers.Count > 0) {
 				
 				Size rowSize = footers[0].Size;
-				CurrentPosition = ConvertStandardRow(exporterCollection,section,(ISimpleContainer)footers[0]);
+				CurrentPosition = ConvertStandardRow(exporterCollection,(ISimpleContainer)footers[0]);
 				FireGroupFooterRendering(footers[0]);
 				footers[0].Size = rowSize;
 			}
-		}
-		
-		protected Point ConvertGroupChilds(ExporterCollection mylist, BaseSection section,
-		                                   ISimpleContainer simpleContainer)
-		{
-			PrepareContainerForConverting(section,simpleContainer);
-			Point curPos  = ConvertContainer(mylist,simpleContainer,DefaultLeftPosition,CurrentPosition);
-			AfterConverting (mylist);
-			return curPos;
 		}
 		
 		
@@ -247,21 +238,25 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		protected  Point ConvertStandardRow(ExporterCollection mylist, BaseSection section, ISimpleContainer simpleContainer)
+		protected	void PrepareContainerForConverting(BaseSection section,ISimpleContainer simpleContainer)
 		{
-			var rowSize = simpleContainer.Size;
-			PrepareContainerForConverting(section,simpleContainer);
-			Point curPos = ConvertContainer(mylist,simpleContainer,DefaultLeftPosition,CurrentPosition);
-			AfterConverting (mylist);
-			simpleContainer.Size = rowSize;
-			return curPos;
+			Console.WriteLine("\tPrepareContainerForConverting");
+			
+			FireSectionRendering(section);
+			LayoutRow(simpleContainer);
 		}
 		
 		
-		protected	void PrepareContainerForConverting(BaseSection section,ISimpleContainer simpleContainer)
+		protected  Point ConvertStandardRow(ExporterCollection mylist,  ISimpleContainer simpleContainer)
 		{
-			FireSectionRendering(section);
-			LayoutRow(simpleContainer);
+			var rowSize = simpleContainer.Size;
+Console.WriteLine("ConvertStandardRow");
+			Point curPos = ConvertContainer(mylist,simpleContainer,DefaultLeftPosition,CurrentPosition);
+			AfterConverting (mylist);
+			simpleContainer.Size = rowSize;
+			Console.WriteLine("");
+			return curPos;
+			
 		}
 		
 		
@@ -279,10 +274,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 		}
 		
 		
-		protected  void FillRow (ISimpleContainer row)
+		protected static  void FillRow (ISimpleContainer row,IDataNavigator currentNavigator)
 		{
-			Console.WriteLine("\tFillRow");
-			DataNavigator.Fill(row.Items);
+			Console.WriteLine("\tFillrow");
+			currentNavigator.Fill(row.Items);
 		}
 		
 		

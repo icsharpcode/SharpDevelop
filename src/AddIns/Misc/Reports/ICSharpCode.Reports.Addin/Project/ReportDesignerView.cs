@@ -5,13 +5,20 @@ using System;
 using System.Collections;
 using System.ComponentModel.Design;
 using System.ComponentModel.Design.Serialization;
+using System.Data;
 using System.Drawing.Design;
+using System.Drawing.Printing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
+using ICSharpCode.Reports.Addin.Commands;
 using ICSharpCode.Reports.Addin.Designer;
+using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.BaseClasses.Printing;
+using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -185,20 +192,10 @@ namespace ICSharpCode.Reports.Addin
 				LoggingService.Debug("FormsDesigner loaded, setting ActiveDesignSurface to " + this.designSurface.ToString());
 				designSurfaceManager.ActiveDesignSurface = this.designSurface;
 				this.UpdatePropertyPad();
-			} else {
-				// This method can not only be called during initialization,
-				// but also when the designer reloads itself because of
-				// a language change.
-				// When a load error occurs there, we are not somewhere
-				// below the Load method which handles load errors.
-				// That is why we create an error text box here anyway.
-				
-				
-//				TextBox errorTextBox = new TextBox() { Multiline=true, ScrollBars=ScrollBars.Both, ReadOnly=true, BackColor=SystemColors.Window, Dock=DockStyle.Fill };
-//				errorTextBox.Text = String.Concat(this.LoadErrorHeaderText, FormatLoadErrors(designSurface));
-//				this.UserContent = errorTextBox;
 			}
 		}
+		
+		
 		
 		private void CreatePanel ()
 		{
@@ -220,10 +217,6 @@ namespace ICSharpCode.Reports.Addin
 		{
 			LoggingService.Debug("Forms designer: DesignerLoader unloading...");
 			this.unloading = true;
-//			if (!this.disposing) {
-//				this.UserContent = this.pleaseWaitLabel;
-//				Application.DoEvents();
-//			}
 		}
 		
 		
@@ -284,7 +277,6 @@ namespace ICSharpCode.Reports.Addin
 			this.MakeDirty();
 			ReportExplorerPad explorerPad = CheckReportExplorer();
 			IComponentChangeService change = Host.GetService(typeof(IComponentChangeService)) as IComponentChangeService;
-//			change.OnComponentChanged(explorerPad.ReportModel.ReportSettings.SortColumnsCollection, null, null, null);
 			change.OnComponentChanged(explorerPad, null, null, null);
 		}
 		
@@ -557,16 +549,47 @@ namespace ICSharpCode.Reports.Addin
 		
 		#region IPrintable
 		
-		public System.Drawing.Printing.PrintDocument PrintDocument {
+		
+		public PrintDocument PrintDocument
+		{
 			get {
-				ICSharpCode.Reports.Core.ReportModel model = this.loader.CreateRenderableModel();
-				StandartPreviewManager reportManager = new StandartPreviewManager();
-				ICSharpCode.Reports.Core.AbstractRenderer r = reportManager.CreateRenderer (model);
-				r.ReportDocument.PrintController = new ICSharpCode.Reports.Core.ExtendedPrintController(new System.Drawing.Printing.PreviewPrintController());
-				return r.ReportDocument;
+				ReportModel model = loader.CreateRenderableModel();
+				IReportCreator reportCreator = null;
+				var  paramCmd = new CollectParametersCommand(model);
+				paramCmd.Run();
+				switch (model.DataModel) {
+						case GlobalEnums.PushPullModel.FormSheet :
+						{
+							reportCreator = FormPageBuilder.CreateInstance(model);
+							break;
+						}
+						case GlobalEnums.PushPullModel.PullData:
+						{
+							IDataManager dataManager = DataManagerFactory.CreateDataManager(model,(ReportParameters)null);
+							reportCreator = DataPageBuilder.CreateInstance(model,dataManager);
+							break;
+						}
+						case GlobalEnums.PushPullModel.PushData:{
+							var cmd = new ICSharpCode.Reports.Addin.Commands.DataSetFromXsdCommand();
+							cmd.Run();
+							DataSet ds = cmd.DataSet;
+							IDataManager dataManager = DataManagerFactory.CreateDataManager(model,ds.Tables[0]);
+							reportCreator = DataPageBuilder.CreateInstance(model,dataManager);
+							break;
+						}
+					default:
+						throw new InvalidReportModelException();
+				}
+				
+				reportCreator.BuildExportList();
+				PrintRenderer printer = PrintRenderer.CreateInstance(reportCreator.Pages);
+				printer.Start();
+				printer.RenderOutput();
+				printer.End();
+				return printer.PrintDocument;
 			}
 		}
-		
+	
 		#endregion
 		
 		

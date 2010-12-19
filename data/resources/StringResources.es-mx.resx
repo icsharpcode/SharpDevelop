@@ -6505,6 +6505,10 @@ Microsoft.Tools.WindowsInstallerXml.Extensions.NetFxCompiler, WixNetFxExtension<
   <data name="SharpDevelop.Solution.AllKnownProjectFormats" xml:space="preserve">
     <value>Todos los formatos de proyecto conocidos</value>
   </data>
+  <data name="SharpDevelop.Solution.CannotLoadOldSolution" xml:space="preserve">
+    <value>Esta versión de SharpDevelop no puede cargar proyectos creados usando Visual Studio .NET 2003 (o anterior).
+Intente usar SharpDevelop 3.2 para la converisón; o cree un nuevo proyecto y agregue los archivos fuente existentes.</value>
+  </data>
   <data name="SharpDevelop.Solution.CannotSave.IOException" xml:space="preserve">
     <value>No se pudo guardar {0}:\n{1}</value>
   </data>
@@ -7608,6 +7612,9 @@ Los archivos de recursos han sido renombrados/movidos convenientemente.</value>
   </data>
   <data name="XML.MainMenu.FileMenu.New.File.Description" xml:space="preserve">
     <value>Abrir nuevo búfer</value>
+  </data>
+  <data name="XML.MainMenu.FileMenu.New.Project" xml:space="preserve">
+    <value>&amp;Proyecto...</value>
   </data>
   <data name="XML.MainMenu.FileMenu.New.Solution" xml:space="preserve">
     <value>&amp;Solución...</value>
