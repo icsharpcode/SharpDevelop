@@ -50,6 +50,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		#endregion
 		
+		
 		#region Fill data
 		
 		private DataSet FillGrid() 
@@ -62,7 +63,23 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			                      model.ReportSettings.CommandText);
 			DataSet dataSet = ResultPanel.CreateDataSet ();
 			
-			this.txtSqlString.Text = model.ReportSettings.CommandText;
+			
+			switch (model.ReportSettings.CommandType) {
+				case CommandType.Text:
+						this.txtSqlString.Text = model.ReportSettings.CommandText;
+						dataSet = BuildFromSqlString();
+					break;
+				case CommandType.StoredProcedure:
+					MessageService.ShowError("Stored Procedures are not suppurted at the moment");
+					break;
+				case CommandType.TableDirect:
+					MessageService.ShowError("TableDirect is not suppurted at the moment");
+					break;
+				default:
+					throw new Exception("Invalid value for CommandType");
+			}
+			
+			
 			if (model.ReportSettings.CommandType == CommandType.StoredProcedure){
 				/*
 				if (reportStructure.SharpQueryProcedure == null) {
@@ -81,10 +98,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			}
 			
 			// from here we create from an SqlString like "Select...."
-			if (model.ReportSettings.CommandType == CommandType.Text){
-				this.txtSqlString.Text = model.ReportSettings.CommandText;
-				dataSet = BuildFromSqlString();
-			}
+//			if (model.ReportSettings.CommandType == CommandType.Text){
+//				this.txtSqlString.Text = model.ReportSettings.CommandText;
+//				dataSet = BuildFromSqlString();
+//			}
 			return dataSet;
 		}
 		
@@ -247,6 +264,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		#endregion
 		
+		
 		#region overrides
 		
 		public override bool ReceiveDialogMessage(DialogMessage message)
@@ -257,9 +275,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			}
 			if (message == DialogMessage.Activated) 
 			{
-				this.model = reportStructure.CreateAndFillReportModel();
-				this.resultDataSet =  FillGrid();
-				SetupGrid ();
+				ShowData();
 				base.EnableNext = true;
 				base.EnableFinish = true;
 				
@@ -278,6 +294,17 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				base.EnableFinish = true;
 			}
 			return true;
+		}
+		
+		
+		void ShowData()
+		{
+			this.model = reportStructure.CreateAndFillReportModel();
+			this.resultDataSet =  FillGrid();
+			if (resultDataSet.Tables.Count > 0) {
+				SetupGrid ();
+			}
+			
 		}
 		
 		
