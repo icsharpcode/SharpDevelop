@@ -119,7 +119,7 @@
 							        BorderBrush="DarkGray"
                                     Height="18">
 								<DockPanel LastChildFill="True">
-                                    <Button DockPanel.Dock="Right" Style="{StaticResource PaneHeaderCommandStyle}" Command="ad:ManagedContentCommands.Close" CommandTarget="{TemplateBinding SelectedItem}"
+                                    <Button x:Name="btnClose" DockPanel.Dock="Right" Style="{StaticResource PaneHeaderCommandStyle}" Command="ad:ManagedContentCommands.Close" CommandTarget="{TemplateBinding SelectedItem}"
                                             ToolTip="{x:Static adRes:Resources.DockablePaneCommands_Close}"
                                                 Width="15" Height="15" Margin="2,0,2,0" VerticalAlignment="Center">
                                         <ad:ImageEx Source="/AvalonDock;component/resources/Images/PinClose.png" Width="13" />
@@ -181,6 +181,9 @@
 							<Setter Property="Background" Value="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DockablePaneTitleBackgroundSelected}}}" TargetName="PART_Header"/>
 							<Setter Property="Foreground" Value="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DockablePaneTitleForegroundSelected}}}" TargetName="paneTitle"/>
 						</DataTrigger>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self},  Path=SelectedItem.IsCloseable}" Value="false">
+                            <Setter Property="Visibility" TargetName="btnClose" Value="Collapsed"/>
+                        </DataTrigger>                        
 						<Trigger Property ="ShowHeader" Value="False">
 							<Setter Property="Visibility" Value="Collapsed" TargetName="PART_Header"/>
                             <Setter Property="BorderThickness" Value="0" TargetName="intContentBorder"/>
@@ -204,8 +207,13 @@
 			</Setter.Value>
 		</Setter>
 	</Style>
-    
-	<!--DocumentTabItemStyle-->
+
+    <!-- FloatingDockablePane -->
+    <Style x:Key="{x:Type ad:FloatingDockablePane}" TargetType="{x:Type ad:FloatingDockablePane}" BasedOn="{StaticResource {x:Type ad:DockablePane}}">
+
+    </Style>
+
+    <!--DocumentTabItemStyle-->
     <Style x:Key="DocumentTabItemStyle" TargetType="{x:Type ad:ManagedContent}">
         <Setter Property="Background"
                 Value="Transparent"/>

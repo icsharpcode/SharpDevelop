@@ -419,14 +419,15 @@ namespace AvalonDock
         { 
             if (Items.Count == 0)
             {
-                bool isMainDocPaneToBeClose = IsMainDocumentPane.HasValue &&
+                bool isMainDocPaneToBeClosed = IsMainDocumentPane.HasValue &&
                     IsMainDocumentPane.Value;
 
-                if (isMainDocPaneToBeClose)
+                if (isMainDocPaneToBeClosed)
                 {
                     DockingManager manager = GetManager();
                     DocumentPane candidateNewMainDocPane = manager.FindAnotherLogicalChildContained<DocumentPane>(this);
-                    if (candidateNewMainDocPane != null)
+                    if (candidateNewMainDocPane != null && 
+                        candidateNewMainDocPane.GetManager() == this.GetManager())
                     {
                         ResizingPanel containerPanel = Parent as ResizingPanel;
                         if (containerPanel != null)

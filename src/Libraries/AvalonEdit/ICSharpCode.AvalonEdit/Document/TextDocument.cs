@@ -155,6 +155,12 @@ namespace ICSharpCode.AvalonEdit.Document
 			return GetText(segment.Offset, segment.Length);
 		}
 		
+		int ITextSource.IndexOfAny(char[] anyOf, int startIndex, int count)
+		{
+			DebugVerifyAccess(); // frequently called (NewLineFinder), so must be fast in release builds
+			return rope.IndexOfAny(anyOf, startIndex, count);
+		}
+		
 		/// <inheritdoc/>
 		public char GetCharAt(int offset)
 		{

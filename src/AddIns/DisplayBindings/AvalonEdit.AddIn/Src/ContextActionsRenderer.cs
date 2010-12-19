@@ -31,7 +31,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// Delays the available actions resolution so that it does not get called too often when user holds an arrow.
 		/// </summary>
 		DispatcherTimer delayMoveTimer;
-		const int delayMoveMilliseconds = 100;
+		const int delayMoveMilliseconds = 500;
 		
 		public bool IsEnabled
 		{

@@ -186,6 +186,9 @@ namespace AvalonDock
             DockableContents.MoveCurrentTo(null);
 
             Loaded += new RoutedEventHandler(NavigatorWindow_Loaded);
+
+            if (Documents.IsEmpty)
+                MoveToOtherList();
         }
         
         #endregion
@@ -220,35 +223,6 @@ namespace AvalonDock
 
             return false;
         }
-
-        //protected override void OnPreviewKeyDown(KeyEventArgs e)
-        //{
-        //    if (e.Key == Key.Tab)
-        //    {
-        //        e.Handled = true;
-        //        MoveToNextContent();
-        //    }
-        //    else
-        //        Hide();
-
-        //    base.OnKeyDown(e);
-        //}
-
-        //protected override void OnPreviewKeyUp(KeyEventArgs e)
-        //{
-        //    if (e.Key == Key.Tab)
-        //    {
-        //        e.Handled = true;
-        //    }
-        //    else
-        //    {
-        //        var docSelected = (Documents.CurrentItem as NavigatorWindowDocumentItem).ItemContent as DocumentContent;
-        //        docSelected.Activate();
-        //        Hide();
-        //    }
-
-        //    base.OnPreviewKeyUp(e);
-        //}
 
         internal static bool IsKeyHandled(Key key)
         {

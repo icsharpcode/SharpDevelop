@@ -182,6 +182,11 @@
 			             icon    = "ProjectBrowser.Toolbar.Refresh"
 			             tooltip = "${res:AddIns.HtmlHelp2.Refresh}"
 			             class   = "ICSharpCode.SharpDevelop.Project.Commands.RefreshProjectBrowser"/>
+			<ToolbarItem id = "PropertySeparator" type = "Separator"/>
+			<ToolbarItem id      = "Collapse"
+			             icon    = "Icons.16x16.Assembly"
+			             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
+			             class   = "ICSharpCode.SharpDevelop.Project.Commands.CollapseAllProjectBrowser"/>
 		</Condition>
 	</Path>
 	
@@ -768,6 +773,11 @@
 			          label = "${res:MainWindow.Windows.ClassBrowser.ClassViewSettings.ShowOtherMembers.Label}"
 			          class = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ShowOtherMembers"/>
 		</ToolbarItem>
+		<ToolbarItem id = "NavigationSeparator" type  = "Separator"/>
+		<ToolbarItem id      = "Collapse"
+		             icon    = "Icons.16x16.Assembly"
+		             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
+		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowser.ClassBrowserCollapseAll"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ClassBrowser/Searchbar">

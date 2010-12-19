@@ -110,8 +110,10 @@ namespace ICSharpCode.AvalonEdit.Document
 		/// </summary>
 		public int GetNewOffset(int offset, AnchorMovementType movementType)
 		{
-			foreach (OffsetChangeMapEntry entry in this) {
-				offset = entry.GetNewOffset(offset, movementType);
+			IList<OffsetChangeMapEntry> items = this.Items;
+			int count = items.Count;
+			for (int i = 0; i < count; i++) {
+				offset = items[i].GetNewOffset(offset, movementType);
 			}
 			return offset;
 		}

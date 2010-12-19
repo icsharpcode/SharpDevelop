@@ -44,6 +44,15 @@ namespace ICSharpCode.AvalonEdit.Document
 		char GetCharAt(int offset);
 		
 		/// <summary>
+		/// Gets the index of the first occurrence of any character in the specified array.
+		/// </summary>
+		/// <param name="anyOf"></param>
+		/// <param name="startIndex">Start index of the search.</param>
+		/// <param name="count">Length of the area to search.</param>
+		/// <returns>The first index where any character was found; or -1 if no occurrence was found.</returns>
+		int IndexOfAny(char[] anyOf, int startIndex, int count);
+		
+		/// <summary>
 		/// Retrieves the text for a portion of the document.
 		/// </summary>
 		/// <exception cref="ArgumentOutOfRangeException">offset or length is outside the valid range.</exception>
@@ -148,6 +157,14 @@ namespace ICSharpCode.AvalonEdit.Document
 		{
 			return CreateSnapshot().CreateReader();
 		}
+		
+		/// <inheritdoc/>
+		public int IndexOfAny(char[] anyOf, int startIndex, int count)
+		{
+			int offset = viewedSegment.Offset;
+			int result = baseTextSource.IndexOfAny(anyOf, startIndex + offset, count);
+			return result >= 0 ? result - offset : result;
+		}
 	}
 	
 	/// <summary>
@@ -211,6 +228,12 @@ namespace ICSharpCode.AvalonEdit.Document
 		public ITextSource CreateSnapshot(int offset, int length)
 		{
 			return new StringTextSource(text.Substring(offset, length));
+		}
+		
+		/// <inheritdoc/>
+		public int IndexOfAny(char[] anyOf, int startIndex, int count)
+		{
+			return text.IndexOfAny(anyOf, startIndex, count);
 		}
 	}
 	
@@ -286,6 +309,12 @@ namespace ICSharpCode.AvalonEdit.Document
 		public ITextSource CreateSnapshot(int offset, int length)
 		{
 			return new RopeTextSource(rope.GetRange(offset, length));
+		}
+		
+		/// <inheritdoc/>
+		public int IndexOfAny(char[] anyOf, int startIndex, int count)
+		{
+			return rope.IndexOfAny(anyOf, startIndex, count);
 		}
 	}
 }

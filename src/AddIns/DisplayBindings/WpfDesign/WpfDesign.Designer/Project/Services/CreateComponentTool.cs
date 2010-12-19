@@ -79,7 +79,9 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 						if (AddItemWithDefaultSize(result.ModelHit, createdItem, e.GetPosition(result.ModelHit.View))) {
 							moveLogic = new MoveLogic(createdItem);
 							createPoint = p;
+							// We'll keep the ChangeGroup open as long as the moveLogic is active.
 						} else {
+							// Abort the ChangeGroup created by the CreateItem() call.
 							changeGroup.Abort();
 						}
 					}
@@ -169,7 +171,9 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 					if (behavior != null) {
 						DesignItem createdItem = CreateItem(designPanel.Context);
 						
-						new CreateComponentMouseGesture(result.ModelHit, createdItem).Start(designPanel, e);
+						new CreateComponentMouseGesture(result.ModelHit, createdItem, changeGroup).Start(designPanel, e);
+						// CreateComponentMouseGesture now is responsible for the changeGroup created by CreateItem()
+						changeGroup = null;
 					}
 				}
 			}
@@ -181,12 +185,14 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 		DesignItem createdItem;
 		PlacementOperation operation;
 		DesignItem container;
+		ChangeGroup changeGroup;
 		
-		public CreateComponentMouseGesture(DesignItem clickedOn, DesignItem createdItem)
+		public CreateComponentMouseGesture(DesignItem clickedOn, DesignItem createdItem, ChangeGroup changeGroup)
 		{
 			this.container = clickedOn;
 			this.createdItem = createdItem;
 			this.positionRelativeTo = clickedOn.View;
+			this.changeGroup = changeGroup;
 		}
 		
 //		GrayOutDesignerExceptActiveArea grayOut;
@@ -236,6 +242,10 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			} else {
 				CreateComponentTool.AddItemWithDefaultSize(container, createdItem, e.GetPosition(positionRelativeTo));
 			}
+			if (changeGroup != null) {
+				changeGroup.Commit();
+				changeGroup = null;
+			}
 			base.OnMouseUp(sender, e);
 		}
 		
@@ -244,6 +254,10 @@ namespace ICSharpCode.WpfDesign.Designer.Services
 			if (operation != null) {
 				operation.Abort();
 				operation = null;
+			}
+			if (changeGroup != null) {
+				changeGroup.Abort();
+				changeGroup = null;
 			}
 			if (services.Tool.CurrentTool is CreateComponentTool) {
 				services.Tool.CurrentTool = services.Tool.PointerTool;

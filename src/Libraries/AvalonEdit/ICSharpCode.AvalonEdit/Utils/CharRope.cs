@@ -93,16 +93,22 @@ namespace ICSharpCode.AvalonEdit.Utils
 		
 		internal static RopeNode<char> InitFromString(string text)
 		{
-			char[] arr = text.ToCharArray();
-			return RopeNode<char>.CreateFromArray(arr, 0, arr.Length);
-			/*
 			if (text.Length == 0) {
 				return RopeNode<char>.emptyRopeNode;
 			}
 			RopeNode<char> node = RopeNode<char>.CreateNodes(text.Length);
-			// TODO: store data
+			FillNode(node, text, 0);
 			return node;
-			 */
+		}
+		
+		static void FillNode(RopeNode<char> node, string text, int start)
+		{
+			if (node.contents != null) {
+				text.CopyTo(start, node.contents, 0, node.length);
+			} else {
+				FillNode(node.left, text, start);
+				FillNode(node.right, text, start + node.left.length);
+			}
 		}
 		
 		internal static void WriteTo(this RopeNode<char> node, int index, StringBuilder output, int count)
@@ -127,6 +133,40 @@ namespace ICSharpCode.AvalonEdit.Utils
 					node.right.WriteTo(0, output, count - amountInLeft);
 				}
 			}
+		}
+		
+		/// <summary>
+		/// Gets the index of the first occurrence of any element in the specified array.
+		/// </summary>
+		/// <param name="rope">The target rope.</param>
+		/// <param name="anyOf">Array of characters being searched.</param>
+		/// <param name="startIndex">Start index of the search.</param>
+		/// <param name="length">Length of the area to search.</param>
+		/// <returns>The first index where any character was found; or -1 if no occurrence was found.</returns>
+		public static int IndexOfAny(this Rope<char> rope, char[] anyOf, int startIndex, int length)
+		{
+			if (rope == null)
+				throw new ArgumentNullException("rope");
+			if (anyOf == null)
+				throw new ArgumentNullException("anyOf");
+			rope.VerifyRange(startIndex, length);
+			
+			while (length > 0) {
+				var entry = rope.FindNodeUsingCache(startIndex).UnsafePeek();
+				char[] contents = entry.node.contents;
+				int startWithinNode = startIndex - entry.nodeStartIndex;
+				int nodeLength = Math.Min(entry.node.length, startWithinNode + length);
+				for (int i = startIndex - entry.nodeStartIndex; i < nodeLength; i++) {
+					char element = contents[i];
+					foreach (char needle in anyOf) {
+						if (element == needle)
+							return entry.nodeStartIndex + i;
+					}
+				}
+				length -= nodeLength - startWithinNode;
+				startIndex = entry.nodeStartIndex + nodeLength;
+			}
+			return -1;
 		}
 	}
 }

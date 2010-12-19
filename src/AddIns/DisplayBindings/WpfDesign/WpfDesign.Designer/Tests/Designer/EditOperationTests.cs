@@ -1,16 +1,41 @@
 ﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
+using System;
+using System.Threading;
 using System.Windows;
-using NUnit.Framework;
+
 using ICSharpCode.WpfDesign.Designer.Xaml;
 using ICSharpCode.WpfDesign.XamlDom;
+using NUnit.Framework;
 
 namespace ICSharpCode.WpfDesign.Tests.Designer
 {
 	[TestFixture]
 	public class EditOperationTests : ModelTestHelper
 	{
+		Mutex mutex;
+		
+		[TestFixtureSetUp]
+		public void FixtureSetUp()
+		{
+			// Avoid test failure on build server when unit tests for several branches are run concurrently.
+			bool createdNew;
+			mutex = new Mutex(true, "ClipboardUnitTest", out createdNew);
+			if (!createdNew) {
+				if (!mutex.WaitOne(10000)) {
+					throw new Exception("Could not acquire mutex");
+				}
+			}
+		}
+		
+		[TestFixtureTearDown]
+		public void FixtureTearDown()
+		{
+			mutex.ReleaseMutex();
+			mutex.Dispose();
+		}
+		
 		[Test]
 		public void Cut()
 		{

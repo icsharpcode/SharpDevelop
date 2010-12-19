@@ -48,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 			LanguageProperties language = c.ProjectContent.Language;
 			OverrideCompletionItemList result = new OverrideCompletionItemList();
 			foreach (IMember m in GetOverridableMembers(c)) {
-				if (language.ShowMember(m, false)) {
+				if (language.ShowMemberInOverrideCompletion(m)) {
 					result.Items.Add(new OverrideCompletionItem(m));
 				}
 			}

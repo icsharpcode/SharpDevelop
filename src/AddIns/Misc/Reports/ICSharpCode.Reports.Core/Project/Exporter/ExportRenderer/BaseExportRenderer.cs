@@ -11,6 +11,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer{
 	/// </summary>
 	/// 
 	public class BaseExportRenderer{
+		
 		PagesCollection pages;
 		
 		public BaseExportRenderer ()
@@ -46,6 +47,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer{
 		{
 		}
 		
+		
 		public virtual void RenderOutput ()
 		{
 		}
@@ -53,6 +55,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer{
 		public virtual void End ()
 		{
 		}
+		
 		
 		public PagesCollection Pages 
 		{

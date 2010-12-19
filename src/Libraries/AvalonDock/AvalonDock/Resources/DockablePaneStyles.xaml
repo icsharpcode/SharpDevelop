@@ -229,4 +229,9 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <!-- FloatingDockablePane -->
+    <Style x:Key="{x:Type ad:FloatingDockablePane}" TargetType="{x:Type ad:FloatingDockablePane}" BasedOn="{StaticResource {x:Type ad:DockablePane}}">
+
+    </Style>
 </ResourceDictionary>

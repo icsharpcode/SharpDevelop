@@ -19,17 +19,17 @@
 	
 	<Path name="/SharpDevelop/UnitTesting/TestFrameworks">
 		<TestFramework id="nunit"
-			class="ICSharpCode.UnitTesting.NUnitTestFramework"
-			supportedProjects=".csproj;.vbproj;.booproj" />
+		               class="ICSharpCode.UnitTesting.NUnitTestFramework"
+		               supportedProjects=".csproj;.vbproj;.booproj" />
 	</Path>
 	
 	<Path name="/SharpDevelop/Workbench/Pads">
 		<Pad id="UnitTestingPad"
-			category="Tools"
-			title="${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}"
-			icon="PadIcons.NUnitTest"
-			class="ICSharpCode.UnitTesting.UnitTestsPad"
-			defaultPosition="Right, Hidden" />
+		     category="Tools"
+		     title="${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}"
+		     icon="PadIcons.NUnitTest"
+		     class="ICSharpCode.UnitTesting.UnitTestsPad"
+		     defaultPosition="Right, Hidden" />
 	</Path>
 	
 	<Path name="/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu">
@@ -51,9 +51,9 @@
 						</Not>
 					</And>
 					<MenuItem id="RunInPad"
-						label="${res:ICSharpCode.UnitTesting.RunInTestPad}"
-						icon="PadIcons.NUnitTest"
-						class="ICSharpCode.UnitTesting.RunTestInPadCommand"/>
+					          label="${res:ICSharpCode.UnitTesting.RunInTestPad}"
+					          icon="PadIcons.NUnitTest"
+					          class="ICSharpCode.UnitTesting.RunTestInPadCommand"/>
 				</ComplexCondition>
 				<Include id="CommonTestCommands" path="/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands"/>
 			</MenuItem>
@@ -71,9 +71,9 @@
 						</Not>
 					</And>
 					<MenuItem id="RunInPad"
-						label="${res:ICSharpCode.UnitTesting.RunInTestPad}"
-						icon="PadIcons.NUnitTest"
-						class="ICSharpCode.UnitTesting.RunTestInPadCommand"/>
+					          label="${res:ICSharpCode.UnitTesting.RunInTestPad}"
+					          icon="PadIcons.NUnitTest"
+					          class="ICSharpCode.UnitTesting.RunTestInPadCommand"/>
 				</ComplexCondition>
 				<Include id="CommonTestCommands" path="/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands"/>
 			</MenuItem>
@@ -89,9 +89,9 @@
 				</Not>
 			</And>
 			<MenuItem id="RunWithDebugger"
-				label="${res:ICSharpCode.UnitTesting.RunWithDebugger}"
-				icon="Icons.16x16.RunProgramIcon"
-				class="ICSharpCode.UnitTesting.RunTestWithDebuggerCommand"/>
+			          label="${res:ICSharpCode.UnitTesting.RunWithDebugger}"
+			          icon="Icons.16x16.RunProgramIcon"
+			          class="ICSharpCode.UnitTesting.RunTestWithDebuggerCommand"/>
 		</ComplexCondition>
 	</Path>
 	
@@ -104,14 +104,14 @@
 				</Not>
 			</And>
 			<ToolbarItem id="RunAll"
-				icon="Icons.16x16.RunAllIcon"
-				tooltip="${res:NUnitPad.NUnitPadContent.RunAllTests}"
-				class="ICSharpCode.UnitTesting.RunAllTestsInPadCommand"/>
+			             icon="Icons.16x16.RunAllIcon"
+			             tooltip="${res:NUnitPad.NUnitPadContent.RunAllTests}"
+			             class="ICSharpCode.UnitTesting.RunAllTestsInPadCommand"/>
 			<ToolbarItem id="Run"
-				insertafter="RunAll"
-				icon="Icons.16x16.RunProgramIcon"
-				tooltip="${res:NUnitPad.NUnitPadContent.RunItem}"
-				class="ICSharpCode.UnitTesting.RunTestInPadCommand"/>
+			             insertafter="RunAll"
+			             icon="Icons.16x16.RunProgramIcon"
+			             tooltip="${res:NUnitPad.NUnitPadContent.RunItem}"
+			             class="ICSharpCode.UnitTesting.RunTestInPadCommand"/>
 		</ComplexCondition>
 		<ComplexCondition action="Disable">
 			<And>
@@ -119,16 +119,21 @@
 				<Condition name="RunningTests"/>
 			</And>
 			<ToolbarItem id="Stop"
-				icon="Icons.16x16.Debug.StopProcess"
-				tooltip="${res:NUnitPad.NUnitPadContent.StopTests}"
-				class="ICSharpCode.UnitTesting.StopTestsCommand"/>
+			             icon="Icons.16x16.Debug.StopProcess"
+			             tooltip="${res:NUnitPad.NUnitPadContent.StopTests}"
+			             class="ICSharpCode.UnitTesting.StopTestsCommand"/>
 		</ComplexCondition>
 		<Condition name = "SolutionOpen" action="Disable">
 			<ToolbarItem id="Separator2" type="Separator"/>
 			<ToolbarItem id="AddNUnitReference"
-				icon="Icons.16x16.Reference"
-				tooltip="${res:NUnitPad.NUnitPadContent.ReferenceItem}"
-				class="ICSharpCode.UnitTesting.AddNUnitReferenceCommand"/>
+			             icon="Icons.16x16.Reference"
+			             tooltip="${res:NUnitPad.NUnitPadContent.ReferenceItem}"
+			             class="ICSharpCode.UnitTesting.AddNUnitReferenceCommand"/>
+			<ToolbarItem id = "CollapseSeparator" type = "Separator"/>
+			<ToolbarItem id      = "Collapse"
+			             icon    = "Icons.16x16.Assembly"
+			             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
+			             class   = "ICSharpCode.UnitTesting.CollapseAllTestsCommand"/>
 		</Condition>
 	</Path>
 	
@@ -141,9 +146,9 @@
 				</Not>
 			</And>
 			<MenuItem id="Run"
-				icon="Icons.16x16.RunProgramIcon"
-				label="${res:NUnitPad.NUnitPadContent.RunTestsContextMenuLabel}"
-				class="ICSharpCode.UnitTesting.RunTestInPadCommand"/>
+			          icon="Icons.16x16.RunProgramIcon"
+			          label="${res:NUnitPad.NUnitPadContent.RunTestsContextMenuLabel}"
+			          class="ICSharpCode.UnitTesting.RunTestInPadCommand"/>
 		</ComplexCondition>
 		<Include id="CommonTestCommands" path="/SharpDevelop/Pads/UnitTestsPad/CommonTestCommands"/>
 		<ComplexCondition action="Disable">
@@ -152,14 +157,14 @@
 				<Condition name="RunningTests"/>
 			</And>
 			<MenuItem id="Stop"
-				icon="Icons.16x16.Debug.StopProcess"
-				label="${res:NUnitPad.NUnitPadContent.StopTests}"
-				class="ICSharpCode.UnitTesting.StopTestsCommand"/>
+			          icon="Icons.16x16.Debug.StopProcess"
+			          label="${res:NUnitPad.NUnitPadContent.StopTests}"
+			          class="ICSharpCode.UnitTesting.StopTestsCommand"/>
 		</ComplexCondition>
 		<Condition name="Ownerstate" ownerstate="SourceCodeItemSelected" action="Disable">
 			<MenuItem id="GotoDefinition"
-				label="${res:NUnitPad.NUnitPadContent.GotoDefinitionContextMenuLabel}"
-				class="ICSharpCode.UnitTesting.GotoDefinitionCommand"/>
+			          label="${res:NUnitPad.NUnitPadContent.GotoDefinitionContextMenuLabel}"
+			          class="ICSharpCode.UnitTesting.GotoDefinitionCommand"/>
 		</Condition>
 	</Path>
 	
@@ -173,9 +178,9 @@
 					</Not>
 				</And>
 				<MenuItem id="RunAll"
-					icon="Icons.16x16.RunAllIcon"
-					label="${res:NUnitPad.NUnitPadContent.RunAllTests}"
-					class="ICSharpCode.UnitTesting.RunAllTestsInPadCommand"/>
+				          icon="Icons.16x16.RunAllIcon"
+				          label="${res:NUnitPad.NUnitPadContent.RunAllTests}"
+				          class="ICSharpCode.UnitTesting.RunAllTestsInPadCommand"/>
 			</ComplexCondition>
 			<ComplexCondition action="Disable">
 				<And>
@@ -186,9 +191,9 @@
 					</Not>
 				</And>
 				<MenuItem id="RunProjectTests"
-					icon="Icons.16x16.RunProgramIcon"
-					label="${res:ICSharpCode.UnitTesting.RunProjectTests}"
-					class="ICSharpCode.UnitTesting.RunProjectTestsInPadCommand"/>
+				          icon="Icons.16x16.RunProgramIcon"
+				          label="${res:ICSharpCode.UnitTesting.RunProjectTests}"
+				          class="ICSharpCode.UnitTesting.RunProjectTestsInPadCommand"/>
 			</ComplexCondition>
 			<ComplexCondition action="Disable">
 				<And>
@@ -196,16 +201,16 @@
 					<Condition name="RunningTests"/>
 				</And>
 				<MenuItem id="Stop"
-					icon="Icons.16x16.Debug.StopProcess"
-					label="${res:NUnitPad.NUnitPadContent.StopTests}"
-					class="ICSharpCode.UnitTesting.StopTestsCommand"/>
+				          icon="Icons.16x16.Debug.StopProcess"
+				          label="${res:NUnitPad.NUnitPadContent.StopTests}"
+				          class="ICSharpCode.UnitTesting.StopTestsCommand"/>
 			</ComplexCondition>
 		</MenuItem>
 	</Path>
 	
 	<Path name="/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<OptionPanel id="UnitTestingOptionsPanel"
-			label="${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}"
-			class="ICSharpCode.UnitTesting.UnitTestingOptionsPanel"/>
+		             label="${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}"
+		             class="ICSharpCode.UnitTesting.UnitTestingOptionsPanel"/>
 	</Path>
 </AddIn>

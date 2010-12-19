@@ -11,30 +11,14 @@ namespace ICSharpCode.SharpDevelop
 	public static class LanguageBindingService
 	{
 		const string languageBindingPath = "/SharpDevelop/Workbench/LanguageBindings";
-		static readonly List<LanguageBindingDescriptor> bindings;
-		
-		static LanguageBindingService()
-		{
-			bindings = AddInTree.BuildItems<LanguageBindingDescriptor>(languageBindingPath, null, false);
-		}
 		
 		/// <summary>
 		/// Creates the binding for the specified text editor. This method never returns null.
 		/// </summary>
 		public static ILanguageBinding CreateBinding(ITextEditor editor)
 		{
-			return new AggregatedLanguageBinding(FindMatchingBindings(editor));
-		}
-		
-		static ILanguageBinding[] FindMatchingBindings(ITextEditor editor)
-		{
-			List<ILanguageBinding> matches = new List<ILanguageBinding>();
-			foreach (var binding in bindings) {
-				if (binding.CanAttach(editor))
-					matches.Add(binding.CreateBinding(editor));
-			}
-			
-			return matches.ToArray();
+			var bindings = AddInTree.BuildItems<ILanguageBinding>(languageBindingPath, editor, false);
+			return new AggregatedLanguageBinding(bindings);
 		}
 	}
 }

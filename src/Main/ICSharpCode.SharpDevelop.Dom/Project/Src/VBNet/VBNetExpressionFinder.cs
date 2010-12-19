@@ -208,7 +208,7 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 			lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new StringReader(text));
 			Token t;
 			
-			Block block = null;
+			Block block = Block.Default;
 			
 			var expressionDelimiters = new[] { Tokens.EOL, Tokens.Colon, Tokens.Dot, Tokens.TripleDot, Tokens.DotAt };
 			
@@ -216,9 +216,9 @@ namespace ICSharpCode.SharpDevelop.Dom.VBNet
 				t = lexer.NextToken();
 				p.InformToken(t);
 				
-				if (block == null && t.EndLocation > targetPosition)
+				if (block == Block.Default && t.EndLocation > targetPosition)
 					block = p.CurrentBlock;
-				if (block != null && (block.isClosed || expressionDelimiters.Contains(t.Kind) && block == p.CurrentBlock))
+				if (block != Block.Default && (block.isClosed || expressionDelimiters.Contains(t.Kind) && block == p.CurrentBlock))
 					break;
 				if (t.Kind == Tokens.EOF)
 					break;

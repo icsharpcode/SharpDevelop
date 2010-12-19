@@ -59,7 +59,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void ButtonClick(object sender, RoutedEventArgs e)
 		{
-			var control = new Widgets.ColorPicker();
+			var control = new Widgets.ColorPicker() {
+				Background = SystemColors.ControlBrush
+			};
 			Popup popup = new Popup() {
 				Child = control,
 				Placement = PlacementMode.Bottom,

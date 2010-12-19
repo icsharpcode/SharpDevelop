@@ -34,11 +34,17 @@ namespace MSHelpSystem.Controls
 
 			client.DownloadStringCompleted += (_, e) =>
 			{
-				LoggingService.Debug(string.Format("Help 3.0: title \"{0}\"", Title));
-				var children = XElement.Parse(e.Result);
-				Children     = children.Elements("topic")
-					.Select(link => new TocEntry(link.Attribute("id").Value) { Title = link.Element("title").Value })
-					.ToArray();
+				try {
+					LoggingService.Debug(string.Format("Help 3.0: title \"{0}\"", Title));
+					var children = XElement.Parse(e.Result);
+					Children     = children.Elements("topic")
+						.Select(link => new TocEntry(link.Attribute("id").Value) { Title = link.Element("title").Value })
+						.ToArray();
+				} catch (TargetInvocationException ex) {
+					// Exception when fetching e.Result:
+					LoggingService.Warn(ex);
+					this.children = defaultChild;
+				}
 				client.Dispose();
 			};
 			RaisePropertyChanged("Children");

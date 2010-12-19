@@ -494,8 +494,13 @@ namespace ICSharpCode.FormsDesigner
 						host.Dispose();
 					return;
 				}
-				if (host != null && host.Child == value)
-					return;
+				if (host != null) {
+					if (host.IsDisposed) {
+						host = null;
+					} else if (host.Child == value) {
+						return;
+					}
+				}
 				if (host == null) {
 					host = new SDWindowsFormsHost(true);
 					host.ServiceObject = this;
