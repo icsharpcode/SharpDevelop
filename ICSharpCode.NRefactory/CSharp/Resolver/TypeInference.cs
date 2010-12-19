@@ -33,6 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	public sealed class TypeInference
 	{
 		readonly ITypeResolveContext context;
+		readonly Conversions conversions;
 		TypeInferenceAlgorithm algorithm = TypeInferenceAlgorithm.CSharp4;
 		
 		// determines the maximum generic nesting level; necessary to avoid infinite recursion in 'Improved' mode.
@@ -40,11 +41,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		int nestingLevel;
 		
 		#region Constructor
-		public TypeInference(ITypeResolveContext context)
+		public TypeInference(ITypeResolveContext context, Conversions conversions = null)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
 			this.context = context;
+			this.conversions = conversions ?? new Conversions(context);
 		}
 		#endregion
 		
@@ -59,7 +61,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		TypeInference CreateNestedInstance()
 		{
-			TypeInference c = new TypeInference(context);
+			TypeInference c = new TypeInference(context, conversions);
 			c.algorithm = algorithm;
 			c.nestingLevel = nestingLevel + 1;
 			return c;
@@ -804,7 +806,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Debug.Indent();
 			
 			// First try the Fixing algorithm from the C# spec (§7.5.2.11)
-			Conversions conversions = new Conversions(context);
 			List<IType> candidateTypes = lowerBounds.Union(upperBounds)
 				.Where(c => lowerBounds.All(b => conversions.ImplicitConversion(b, c)))
 				.Where(c => upperBounds.All(b => conversions.ImplicitConversion(c, b)))

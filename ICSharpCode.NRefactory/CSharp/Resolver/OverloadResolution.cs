@@ -220,7 +220,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 			} else {
-				TypeInference ti = new TypeInference(context);
+				TypeInference ti = new TypeInference(context, conversions);
 				bool success;
 				candidate.InferredTypes = ti.InferTypeArguments(method.TypeParameters, arguments, candidate.ParameterTypes, out success);
 				if (!success)

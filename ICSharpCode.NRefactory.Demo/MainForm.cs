@@ -72,7 +72,9 @@ namespace ICSharpCode.NRefactory.Demo
 			b.Append(node.GetType().Name);
 			bool hasProperties = false;
 			foreach (PropertyInfo p in node.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)) {
-				if (p.PropertyType == typeof(string) || p.PropertyType.IsEnum) {
+				if (p.Name == "NodeType" || p.Name == "IsNull")
+					continue;
+				if (p.PropertyType == typeof(string) || p.PropertyType.IsEnum || p.PropertyType == typeof(bool)) {
 					if (!hasProperties) {
 						hasProperties = true;
 						b.Append(" (");
