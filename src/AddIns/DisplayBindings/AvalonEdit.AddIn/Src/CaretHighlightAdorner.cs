@@ -13,41 +13,33 @@ using ICSharpCode.AvalonEdit.Editing;
 namespace ICSharpCode.AvalonEdit.AddIn
 {
 	/// <summary>
-	/// Description of CaretHighlightAdorner.
+	/// Animated rectangle around the caret.
 	/// </summary>
-	public class CaretHighlightAdorner : Adorner
+	sealed class CaretHighlightAdorner : Adorner
 	{
-		const double SizeFactor = 0.5;
-		
-		Rect min, max;
-		Pen blackPen;
+		Pen pen;
+		RectangleGeometry geometry;
 		
 		public CaretHighlightAdorner(TextArea textArea)
 			: base(textArea.TextView)
 		{
-			Rect caret = textArea.Caret.CalculateCaretRectangle();
-			
-			this.min = caret;
-			this.max = new Rect(caret.Location, new Size(caret.Width + Math.Max(caret.Width, caret.Height) * SizeFactor, caret.Height + Math.Max(caret.Width, caret.Height) * SizeFactor));
-			
-			Vector centerOffset = new Vector(caret.Width / 2, caret.Height / 2);
-			
+			Rect min = textArea.Caret.CalculateCaretRectangle();
 			min.Offset(-textArea.TextView.ScrollOffset);
-			max.Offset(-textArea.TextView.ScrollOffset);
 			
-			max.Offset(-centerOffset);
+			Rect max = min;
+			double size = Math.Max(min.Width, min.Height) * 0.25;
+			max.Inflate(size, size);
 			
-			blackPen = new Pen(TextBlock.GetForeground(textArea.TextView).Clone(), 1);
+			pen = new Pen(TextBlock.GetForeground(textArea.TextView).Clone(), 1);
+			
+			geometry = new RectangleGeometry(min, 2, 2);
+			geometry.BeginAnimation(RectangleGeometry.RectProperty, new RectAnimation(min, max, new Duration(TimeSpan.FromMilliseconds(300))) { AutoReverse = true });
+			pen.Brush.BeginAnimation(Brush.OpacityProperty, new DoubleAnimation(1, 0, new Duration(TimeSpan.FromMilliseconds(200))) { BeginTime = TimeSpan.FromMilliseconds(450) });
 		}
 		
 		protected override void OnRender(DrawingContext drawingContext)
 		{
-			var geometry = new RectangleGeometry(max, 2, 2);
-			
-			geometry.BeginAnimation(RectangleGeometry.RectProperty, new RectAnimation(max, min, new Duration(TimeSpan.FromMilliseconds(400))) { AutoReverse = true });
-			blackPen.Brush.BeginAnimation(Brush.OpacityProperty, new DoubleAnimation(1, 0, new Duration(TimeSpan.FromMilliseconds(600))) { BeginTime = TimeSpan.FromMilliseconds(200), AutoReverse = true });
-			
-			drawingContext.DrawGeometry(null, blackPen, geometry);
+			drawingContext.DrawGeometry(null, pen, geometry);
 		}
 	}
 }
