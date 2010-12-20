@@ -194,10 +194,6 @@ int CProfiler::SetInjectionCode(IMetaDataImport *metaData, byte *buffer, int *si
 			buffer[(*size)++] = 0x14; //ldnull
 			break;
 		case 2: // Windows Forms
-			buffer[(*size)++] = 0x14; //ldnull
-			buffer[(*size)++] = 0x14; //ldnull
-			break;
-		/*
 			hr = metaData->FindTypeDefByName(L"System.Windows.Forms.Control", nullptr, &controlType);
 			
 			if (!SUCCEEDED(hr) || controlType == 0) {
@@ -234,7 +230,7 @@ int CProfiler::SetInjectionCode(IMetaDataImport *metaData, byte *buffer, int *si
 			buffer[(*size)++] = 0x6F; //callvirt
 			*(mdMethodDef*)(&buffer[*size]) = getTextToken;
 			*size += sizeof(getTextToken);
-			break;*/
+			break;
 		case 3: // WPF
 			buffer[(*size)++] = 0x14; //ldnull
 			buffer[(*size)++] = 0x14; //ldnull
@@ -317,6 +313,42 @@ STDMETHODIMP CProfiler::ModuleLoadFinished(ModuleID moduleID, HRESULT /*hrStatus
 	
 	IMetaDataEmit *pIMetaDataEmit = nullptr;
 	IMetaDataAssemblyImport *asmMetaData = nullptr;
+	
+	WCHAR moduleName[NAME_BUFFER_SIZE];
+	WCHAR assemblyName[NAME_BUFFER_SIZE];
+	
+	AssemblyID assemblyID;
+	
+	ULONG actualLen = 0;
+	
+	hr = pICorProfilerInfo->GetModuleInfo(moduleID, nullptr, NAME_BUFFER_SIZE, &actualLen, moduleName, &assemblyID);
+	
+	if (!SUCCEEDED(hr))
+		goto CLEANUP;
+	
+	hr = pICorProfilerInfo->GetAssemblyInfo(assemblyID, NAME_BUFFER_SIZE, &actualLen, assemblyName, nullptr, nullptr);
+	
+	if (!SUCCEEDED(hr))
+		goto CLEANUP;
+	
+	DebugWriteLine(L"\n----------------- Module Load finished -----------------\n");
+	DebugWriteLine(L"Module Name: '%s'\n", moduleName);
+	DebugWriteLine(L"Assembly Name: '%s'\n", assemblyName);
+	DebugWriteLine(L"--------------------------------------------------------\n");
+	
+	bool found = false;
+	
+	for (int i = 0; i < ASSEMBLY_INJECTION_NAME_LIST_LENGTH; i++) {
+		if (wcscmp(assemblyInjectionNameList[i], assemblyName) == 0) {
+			found = true;
+			break;
+		}
+	}
+	
+	if (!found) {
+		DebugWriteLine(L"Assembly Name '%s' not found in list!\n", assemblyName);
+		goto CLEANUP;
+	}
 	
 	hr = pICorProfilerInfo->GetModuleMetaData(moduleID, ofRead | ofWrite, IID_IMetaDataEmit, (LPUNKNOWN *) &pIMetaDataEmit);
 		
