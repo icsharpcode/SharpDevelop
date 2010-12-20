@@ -110,8 +110,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			ClearVisualLines();
 			if (newValue != null) {
 				TextDocumentWeakEventManager.Changing.AddListener(newValue, this);
-				heightTree = new HeightTree(newValue, FontSize + 3);
 				formatter = TextFormatterFactory.Create(this);
+				heightTree = new HeightTree(newValue, DefaultLineHeight); // measuring DefaultLineHeight depends on formatter
 				cachedElements = new TextViewCachedElements();
 			}
 			InvalidateMeasure(DispatcherPriority.Normal);
@@ -367,6 +367,23 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		}
 		#endregion
 		
+		#region Brushes
+		/// <summary>
+		/// NonPrintableCharacterBrush dependency property.
+		/// </summary>
+		public static readonly DependencyProperty NonPrintableCharacterBrushProperty =
+			DependencyProperty.Register("NonPrintableCharacterBrush", typeof(Brush), typeof(TextView),
+			                            new FrameworkPropertyMetadata(Brushes.LightGray));
+		
+		/// <summary>
+		/// Gets/sets the Brush used for displaying non-printable characters.
+		/// </summary>
+		public Brush NonPrintableCharacterBrush {
+			get { return (Brush)GetValue(NonPrintableCharacterBrushProperty); }
+			set { SetValue(NonPrintableCharacterBrushProperty, value); }
+		}
+		#endregion
+		
 		#region Redraw methods / VisualLine invalidation
 		/// <summary>
 		/// Causes the text editor to regenerate all visual lines.
@@ -389,7 +406,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <summary>
 		/// Causes the text editor to regenerate the specified visual line.
 		/// </summary>
-		public void Redraw(VisualLine visualLine, DispatcherPriority redrawPriority)
+		public void Redraw(VisualLine visualLine, DispatcherPriority redrawPriority = DispatcherPriority.Normal)
 		{
 			VerifyAccess();
 			if (allVisualLines.Remove(visualLine)) {
@@ -402,7 +419,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// <summary>
 		/// Causes the text editor to redraw all lines overlapping with the specified segment.
 		/// </summary>
-		public void Redraw(int offset, int length, DispatcherPriority redrawPriority)
+		public void Redraw(int offset, int length, DispatcherPriority redrawPriority = DispatcherPriority.Normal)
 		{
 			VerifyAccess();
 			bool removedLine = false;
@@ -447,7 +464,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		/// Causes the text editor to redraw all lines overlapping with the specified segment.
 		/// Does nothing if segment is null.
 		/// </summary>
-		public void Redraw(ISegment segment, DispatcherPriority redrawPriority)
+		public void Redraw(ISegment segment, DispatcherPriority redrawPriority = DispatcherPriority.Normal)
 		{
 			if (segment != null) {
 				Redraw(segment.Offset, segment.Length, redrawPriority);
@@ -547,7 +564,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				TextRunProperties globalTextRunProperties = CreateGlobalTextRunProperties();
 				VisualLineTextParagraphProperties paragraphProperties = CreateParagraphProperties(globalTextRunProperties);
 				
-				while (heightTree.GetIsCollapsed(documentLine)) {
+				while (heightTree.GetIsCollapsed(documentLine.LineNumber)) {
 					documentLine = documentLine.PreviousLine;
 				}
 				
@@ -806,7 +823,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		                           IVisualLineTransformer[] lineTransformersArray,
 		                           Size availableSize)
 		{
-			if (heightTree.GetIsCollapsed(documentLine))
+			if (heightTree.GetIsCollapsed(documentLine.LineNumber))
 				throw new InvalidOperationException("Trying to build visual line from collapsed line");
 			
 			Debug.WriteLine("Building line " + documentLine.LineNumber);
@@ -822,7 +839,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			
 			#if DEBUG
 			for (int i = visualLine.FirstDocumentLine.LineNumber + 1; i <= visualLine.LastDocumentLine.LineNumber; i++) {
-				if (!heightTree.GetIsCollapsed(document.GetLineByNumber(i)))
+				if (!heightTree.GetIsCollapsed(i))
 					throw new InvalidOperationException("Line " + i + " was skipped by a VisualLineElementGenerator, but it is not collapsed.");
 			}
 			#endif
@@ -1118,12 +1135,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		void IScrollInfo.LineUp()
 		{
-			((IScrollInfo)this).SetVerticalOffset(scrollOffset.Y - FontSize);
+			((IScrollInfo)this).SetVerticalOffset(scrollOffset.Y - DefaultLineHeight);
 		}
 		
 		void IScrollInfo.LineDown()
 		{
-			((IScrollInfo)this).SetVerticalOffset(scrollOffset.Y + FontSize);
+			((IScrollInfo)this).SetVerticalOffset(scrollOffset.Y + DefaultLineHeight);
 		}
 		
 		void IScrollInfo.LineLeft()
@@ -1159,14 +1176,14 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		void IScrollInfo.MouseWheelUp()
 		{
 			((IScrollInfo)this).SetVerticalOffset(
-				scrollOffset.Y - (SystemParameters.WheelScrollLines * FontSize));
+				scrollOffset.Y - (SystemParameters.WheelScrollLines * DefaultLineHeight));
 			OnScrollChange();
 		}
 		
 		void IScrollInfo.MouseWheelDown()
 		{
 			((IScrollInfo)this).SetVerticalOffset(
-				scrollOffset.Y + (SystemParameters.WheelScrollLines * FontSize));
+				scrollOffset.Y + (SystemParameters.WheelScrollLines * DefaultLineHeight));
 			OnScrollChange();
 		}
 		
@@ -1184,10 +1201,50 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			OnScrollChange();
 		}
 		
+		double wideSpaceWidth; // Width of an 'x'. Used as basis for the tab width, and for scrolling.
+		double defaultLineHeight; // Height of a line containing 'x'. Used for scrolling.
+		
 		double WideSpaceWidth {
 			get {
-				return FontSize / 2;
+				if (wideSpaceWidth == 0) {
+					MeasureWideSpaceWidthAndDefaultLineHeight();
+				}
+				return wideSpaceWidth;
 			}
+		}
+		
+		double DefaultLineHeight {
+			get {
+				if (defaultLineHeight == 0) {
+					MeasureWideSpaceWidthAndDefaultLineHeight();
+				}
+				return defaultLineHeight;
+			}
+		}
+		
+		void MeasureWideSpaceWidthAndDefaultLineHeight()
+		{
+			if (formatter != null) {
+				var textRunProperties = CreateGlobalTextRunProperties();
+				using (var line = formatter.FormatLine(
+					new SimpleTextSource("x", textRunProperties),
+					0, 32000,
+					new VisualLineTextParagraphProperties { defaultTextRunProperties = textRunProperties },
+					null))
+				{
+					wideSpaceWidth = Math.Max(1, line.WidthIncludingTrailingWhitespace);
+					defaultLineHeight = line.Height;
+				}
+			} else {
+				wideSpaceWidth = FontSize / 2;
+				defaultLineHeight = FontSize + 3;
+			}
+		}
+		
+		void InvalidateWideSpaceWidthAndDefaultLineHeight()
+		{
+			wideSpaceWidth = 0;
+			defaultLineHeight = 0;
 		}
 		
 		static double ValidateVisualOffset(double offset)
@@ -1618,15 +1675,18 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (TextFormatterFactory.PropertyChangeAffectsTextFormatter(e.Property)) {
 				RecreateCachedElements();
 				RecreateTextFormatter();
+				InvalidateWideSpaceWidthAndDefaultLineHeight();
 			}
 			if (e.Property == Control.ForegroundProperty
 			    || e.Property == Control.FontFamilyProperty
 			    || e.Property == Control.FontSizeProperty
 			    || e.Property == Control.FontStretchProperty
 			    || e.Property == Control.FontStyleProperty
-			    || e.Property == Control.FontWeightProperty)
+			    || e.Property == Control.FontWeightProperty
+			    || e.Property == TextView.NonPrintableCharacterBrushProperty)
 			{
 				RecreateCachedElements();
+				InvalidateWideSpaceWidthAndDefaultLineHeight();
 				Redraw();
 			}
 		}

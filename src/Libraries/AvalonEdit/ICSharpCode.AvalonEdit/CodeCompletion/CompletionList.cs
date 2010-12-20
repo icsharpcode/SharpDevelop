@@ -326,31 +326,31 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			//		-1 = no match
 			if (query == itemText)
 				return 8;
-			if (string.Equals(itemText, query, StringComparison.OrdinalIgnoreCase))
+			if (string.Equals(itemText, query, StringComparison.InvariantCultureIgnoreCase))
 				return 7;
 			
-			if (itemText.StartsWith(query, StringComparison.Ordinal))
+			if (itemText.StartsWith(query, StringComparison.InvariantCulture))
 				return 6;
-			if (itemText.StartsWith(query, StringComparison.OrdinalIgnoreCase))
+			if (itemText.StartsWith(query, StringComparison.InvariantCultureIgnoreCase))
 				return 5;
 			
 			bool? camelCaseMatch = null;
 			if (query.Length <= 2) {
 				camelCaseMatch = CamelCaseMatch(itemText, query);
-				if (camelCaseMatch.GetValueOrDefault(false)) return 4;
+				if (camelCaseMatch == true) return 4;
 			}
 			
 			// search by substring, if filtering (i.e. new behavior) turned on
 			if (IsFiltering) {
-				if (itemText.Contains(query))
+				if (itemText.IndexOf(query, StringComparison.InvariantCulture) >= 0)
 					return 3;
-				if (itemText.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0)
+				if (itemText.IndexOf(query, StringComparison.InvariantCultureIgnoreCase) >= 0)
 					return 2;
 			}
 				
 			if (!camelCaseMatch.HasValue)
 				camelCaseMatch = CamelCaseMatch(itemText, query);
-			if (camelCaseMatch.GetValueOrDefault(false))
+			if (camelCaseMatch == true)
 				return 1;
 			
 			return -1;

@@ -645,7 +645,7 @@ namespace AvalonDock
                     Height = 0.0;
                     animTimer.Stop();
                     if (!IsClosed)
-                        ClosePane();
+                        Close();
                     IsClosing = false;
                 }
             };
@@ -900,12 +900,20 @@ namespace AvalonDock
                     if (!fl.IsVisible)
                         continue;
 
+                    //Issue 11545, thx to SrdjanPolic
                     Rect flRect = new Rect(
-                        PointFromScreen(new Point(fl.Left, fl.Top)), 
-                        PointFromScreen(new Point(fl.Left + fl.Width, fl.Top + fl.Height)));
+                    PointFromScreen(new Point(fl.Left, fl.Top)),
+                    PointFromScreen(new Point(fl.Left + fl.RestoreBounds.Width, fl.Top + fl.RestoreBounds.Height)));
 
-                    if (flRect.IntersectsWith(wndRect))
+                    if (flRect.IntersectsWith(wndRect) && fl.AllowsTransparency == false)
                         otherRects.Add(Rect.Intersect(flRect, wndRect));
+
+                    //Rect flRect = new Rect(
+                    //    PointFromScreen(new Point(fl.Left, fl.Top)), 
+                    //    PointFromScreen(new Point(fl.Left + fl.Width, fl.Top + fl.Height)));
+
+                    //if (flRect.IntersectsWith(wndRect))
+                    //    otherRects.Add(Rect.Intersect(flRect, wndRect));
                 }
 
                 IntPtr hDestRegn = InteropHelper.CreateRectRgn(

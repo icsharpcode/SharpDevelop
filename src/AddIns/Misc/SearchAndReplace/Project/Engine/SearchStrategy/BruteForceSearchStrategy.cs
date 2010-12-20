@@ -54,7 +54,10 @@ namespace SearchAndReplace
 		
 		int InternalFindNext(ITextIterator textIterator, int offset, int length)
 		{
-			while (textIterator.MoveAhead(1) && TextSelection.IsInsideRange(textIterator.Position, offset, length)) {
+			while (textIterator.MoveAhead(1)) {
+				if (textIterator.Position >= offset + length) {
+					textIterator.Position = offset;
+				}
 				if (SearchOptions.MatchCase ? MatchCaseSensitive(textIterator.Document, textIterator.Position, searchPattern) : MatchCaseInsensitive(textIterator.Document, textIterator.Position, searchPattern)) {
 					if (!SearchOptions.MatchWholeWord || IsWholeWordAt(textIterator.Document, textIterator.Position, searchPattern.Length)) {
 						if (TextSelection.IsInsideRange(textIterator.Position + searchPattern.Length - 1, offset, length)) {

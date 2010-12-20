@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Media;
 
-namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
+namespace ICSharpCode.SharpDevelop.Widgets
 {
 	public static class ColorHelper
 	{

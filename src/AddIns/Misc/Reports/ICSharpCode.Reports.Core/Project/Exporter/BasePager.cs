@@ -27,16 +27,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		#region Constructor
 		
-		public BasePager(IReportModel reportModel,ILayouter layouter)
+		public BasePager(IReportModel reportModel)
 		{
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
 			}
-			if (layouter == null) {
-				throw new ArgumentNullException ("layouter");
-			}
+		
 			this.ReportModel = reportModel;
-			this.Layouter = layouter;
+			//this.Layouter = layouter;
+			this.Layouter = new Layouter();
 			this.Graphics = CreateGraphicObject.FromSize(this.ReportModel.ReportSettings.PageSize);
 		}
 		
@@ -210,7 +209,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 				ExportText et = be as ExportText;
 				
 				if (et != null) {
-					if (et.Text.StartsWith("=")) {
+					if (et.Text.StartsWith("=",StringComparison.InvariantCulture)) {
 						et.Text = evaluatorFassade.Evaluate(et.Text);
 					}
 				}

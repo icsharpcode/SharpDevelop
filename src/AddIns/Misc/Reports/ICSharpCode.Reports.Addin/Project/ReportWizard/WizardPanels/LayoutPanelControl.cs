@@ -5,6 +5,8 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+
+using ICSharpCode.Core;
 using ICSharpCode.Reports.Core;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
@@ -22,6 +24,11 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		public LayoutPanelControl()
 		{
 			InitializeComponent();
+			groupBox1.Text = ResourceService.GetString("SharpReport.Wizard.Layout.ReportLayout");
+			radioListLayout.Text = ResourceService.GetString("SharpReport.Wizard.Layout.ListLayout");
+			radioTableLayout.Text = ResourceService.GetString("SharpReport.Wizard.Layout.TableLayout");
+			groupBox2.Text = ResourceService.GetString("SharpReport.Wizard.Layout.Column");
+			checkBox1.Text = ResourceService.GetString("SharpReport.Wizard.Layout.Grouping");
 		}
 		
 		
@@ -49,6 +56,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			}
 		}
 		
+		
 		public GlobalEnums.ReportLayout ReportLayout {
 			get {
 				GetLayout();
@@ -61,7 +69,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		void CheckBox1CheckedChanged(object sender, System.EventArgs e)
 		{
-			comboBox1.Visible = checkBox1.Checked;
+			//comboBox1.Visible = checkBox1.Checked;
+			this.groupBox2.Visible = checkBox1.Checked;
 		}
 		
 		

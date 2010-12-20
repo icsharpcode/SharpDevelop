@@ -260,7 +260,7 @@ namespace ICSharpCode.Core
 		/// </summary>
 		/// <param name="addIns">
 		/// The list of AddIns to add. (use <see cref="AddIn"/> instances
-		/// created by <see cref="AddIn.Load(TextReader)"/>).
+		/// created by <see cref="AddIn.Load(TextReader,string,XmlNameTable)"/>).
 		/// </param>
 		public static void AddExternalAddIns(IList<AddIn> addIns)
 		{

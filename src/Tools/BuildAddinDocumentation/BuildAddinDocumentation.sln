@@ -1,5 +1,7 @@
-﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.0.0.783
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+# SharpDevelop 4.0.0.7002
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildAddinDocumentation", "BuildAddinDocumentation.csproj", "{211887B2-E9E4-45A4-BE16-6CEA4A7E00F2}"
 EndProject
 Global

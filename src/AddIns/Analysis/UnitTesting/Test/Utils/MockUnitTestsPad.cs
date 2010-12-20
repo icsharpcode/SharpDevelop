@@ -68,5 +68,7 @@ namespace UnitTesting.Tests.Utils
 		{
 			testProjects.Add(testProject);
 		}
+		
+		public void CollapseAll() { }
 	}
 }

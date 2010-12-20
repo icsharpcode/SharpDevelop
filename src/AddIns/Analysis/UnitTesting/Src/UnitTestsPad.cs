@@ -121,6 +121,17 @@ namespace ICSharpCode.UnitTesting
 		}
 		
 		/// <summary>
+		/// Collapses all nodes.
+		/// </summary>
+		public void CollapseAll()
+		{
+			if (treeView == null || treeView.Nodes == null || treeView.Nodes.Count == 0)
+				return;
+			
+			treeView.CollapseAll();
+		}
+		
+		/// <summary>
 		/// Called when a solution has been loaded.
 		/// </summary>
 		protected void SolutionLoaded(Solution solution)

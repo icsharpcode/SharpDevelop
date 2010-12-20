@@ -130,7 +130,7 @@ namespace ICSharpCode.Reports.Core {
 		#endregion
 		
 		#region Debug Code
-		
+		/*
 		protected  static void ShowIndexList (IndexList list)
 		{
 			
@@ -151,7 +151,7 @@ namespace ICSharpCode.Reports.Core {
 				}
 			}
 		}
-		
+		*/
 		#endregion
 		
 		public  virtual void Reset()

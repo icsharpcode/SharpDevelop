@@ -369,11 +369,13 @@
     <Compile Include="Resolver\ResolveImportsTestFixture.cs" />
     <Compile Include="Resolver\ResolveLocalClassInstanceTests.cs" />
     <Compile Include="Resolver\ResolveLocalVariableMethodTests.cs" />
+    <Compile Include="Resolver\ResolveMemberWhenFieldHasNoReturnTypeTests.cs" />
     <Compile Include="Resolver\ResolveMethodFromUnknownImportAllTests.cs" />
     <Compile Include="Resolver\ResolveMethodReturnValueTests.cs" />
     <Compile Include="Resolver\ResolveMethodWhenFromImportIsUnknownTests.cs" />
     <Compile Include="Resolver\ResolveMethodWhenImportIsUnknownTests.cs" />
     <Compile Include="Resolver\ResolveNullCtrlSpaceParseInfoTestFixture.cs" />
+    <Compile Include="Resolver\ResolveRandomRandintTests.cs" />
     <Compile Include="Resolver\ResolverContextDottedImportedNameMatchTests.cs" />
     <Compile Include="Resolver\ResolverContextGetModulesThatImportEverythingTests.cs" />
     <Compile Include="Resolver\ResolverContextGetModuleForNameImportedAsDifferentNameTestFixture.cs" />

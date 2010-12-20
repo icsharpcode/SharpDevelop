@@ -96,21 +96,22 @@ namespace ICSharpCode.Reports.Core.Exporter
 						StandardPrinter.AdjustBackColor(simpleContainer,GlobalValues.DefaultBackColor);
 						do
 						{
-							Console.WriteLine("");
 							section.Size = base.RestoreSectionSize;
 							section.Items[0].Size = groupSize;
 							section.Items[1].Size = childSize;
-							Console.WriteLine("\tFillRow");
-							childNavigator.Fill(simpleContainer.Items);
-							base.CurrentPosition = ConvertGroupChilds (exporterCollection,section,simpleContainer);   
+						
+							FillRow(simpleContainer,childNavigator);
 							FireRowRendering(simpleContainer,childNavigator);
+							PrepareContainerForConverting(section,simpleContainer);
+ 
+//							FireRowRendering(simpleContainer,childNavigator);
+							base.CurrentPosition = ConvertStandardRow(exporterCollection,simpleContainer);
 							CheckForPageBreak(section,exporterCollection);
-								Console.WriteLine("");
 						}
 						while ( childNavigator.MoveNext());
 						
 						// GroupFooter
-						base.ConvertGroupFooter(section,section,exporterCollection);
+						base.ConvertGroupFooter(section,exporterCollection);
 						
 						base.PageBreakAfterGroupChange(section,exporterCollection);
 						
@@ -120,15 +121,15 @@ namespace ICSharpCode.Reports.Core.Exporter
 				else
 				{
 					// No Grouping at all, the first item in section.items is the DetailRow
-					Console.WriteLine("");
+					
 					Size containerSize = section.Items[0].Size;
-					base.FillRow(simpleContainer);
-				
-					base.CurrentPosition = ConvertStandardRow (exporterCollection,section,simpleContainer);
-					base.FireRowRendering(simpleContainer,base.DataNavigator);
+					FillRow(simpleContainer,base.DataNavigator);
+					FireRowRendering(simpleContainer,base.DataNavigator);
+					base.PrepareContainerForConverting(section,simpleContainer);
+//					FireRowRendering(simpleContainer,base.DataNavigator);
+					base.CurrentPosition = ConvertStandardRow (exporterCollection,simpleContainer);
 					section.Size = base.RestoreSectionSize;
 					section.Items[0].Size = containerSize;
-					Console.WriteLine("");
 				}
 				CheckForPageBreak (section,exporterCollection);
 				ShouldDrawBorder (section,exporterCollection);
@@ -185,10 +186,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 				AfterConverting (list);
 				retVal =  new Point (DefaultLeftPosition,offset.Y + groupCollection[0].Size.Height + 20  + (3 *GlobalValues.GapBetweenContainer));
 			} else {
-				FillRow(groupedRows[0]);
+				FillRow(groupedRows[0],base.DataNavigator);
 				rowSize = groupedRows[0].Size;
-				retVal = ConvertStandardRow(exportList,section,groupedRows[0]);
 				base.FireGroupHeaderRendering(groupedRows[0]);
+				retVal = ConvertStandardRow(exportList,groupedRows[0]);
+				
 				groupedRows[0].Size = rowSize;
 			}
 			return retVal;

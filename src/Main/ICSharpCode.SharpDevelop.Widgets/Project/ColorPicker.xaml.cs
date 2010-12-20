@@ -16,7 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
 
-namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
+namespace ICSharpCode.SharpDevelop.Widgets
 {
 	public partial class ColorPicker
 	{

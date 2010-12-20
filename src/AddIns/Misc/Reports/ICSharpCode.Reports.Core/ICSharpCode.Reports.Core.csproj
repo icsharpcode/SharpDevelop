@@ -252,7 +252,6 @@
     <Compile Include="Project\Globals\UnitConverter.cs" />
     <Compile Include="Project\Interfaces\IDataAccessStrategy.cs" />
     <Compile Include="Project\Interfaces\IDataViewStrategy.cs" />
-    <Compile Include="Project\Interfaces\IHierarchyInterfaces.cs" />
     <Compile Include="Project\Interfaces\IItemConverter.cs" />
     <Compile Include="Project\Interfaces\ILayouter.cs" />
     <Compile Include="Project\Interfaces\IReportItem.cs" />
@@ -260,7 +259,6 @@
     <Compile Include="Project\Interfaces\IReportModel.cs" />
     <Compile Include="Project\Interfaces\ISinglePage.cs" />
     <Compile Include="Project\IReportCreator.cs" />
-    <Compile Include="Project\Printing\ExtendedPrintController.cs" />
     <Compile Include="Project\Printing\Graphics\BaseLine.cs" />
     <Compile Include="Project\Printing\Graphics\BaseShape.cs" />
     <Compile Include="Project\Printing\Graphics\Border.cs" />

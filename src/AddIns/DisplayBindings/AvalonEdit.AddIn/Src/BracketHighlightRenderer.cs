@@ -2,8 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Media;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop.Editor;
@@ -16,6 +18,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		Pen borderPen;
 		Brush backgroundBrush;
 		TextView textView;
+		
+		public static readonly Color DefaultBackground = Color.FromArgb(22, 0, 0, 255);
+		public static readonly Color DefaultBorder = Color.FromArgb(52, 0, 0, 255);
+		
+		public const string BracketHighlight = "Bracket highlight";
 		
 		public void SetHighlight(BracketSearchResult result)
 		{
@@ -30,15 +37,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (textView == null)
 				throw new ArgumentNullException("textView");
 			
-			this.borderPen = new Pen(new SolidColorBrush(Color.FromArgb(52, 0, 0, 255)), 1);
-			this.borderPen.Freeze();
-			
-			this.backgroundBrush = new SolidColorBrush(Color.FromArgb(22, 0, 0, 255));
-			this.backgroundBrush.Freeze();
-			
 			this.textView = textView;
 			
 			this.textView.BackgroundRenderers.Add(this);
+		}
+
+		void UpdateColors(Color background, Color foreground)
+		{
+			this.borderPen = new Pen(new SolidColorBrush(foreground), 1);
+			this.borderPen.Freeze();
+
+			this.backgroundBrush = new SolidColorBrush(background);
+			this.backgroundBrush.Freeze();
 		}
 		
 		public KnownLayer Layer {
@@ -64,6 +74,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			Geometry geometry = builder.CreateGeometry();
 			if (geometry != null) {
 				drawingContext.DrawGeometry(backgroundBrush, borderPen, geometry);
+			}
+		}
+		
+		public static void ApplyCustomizationsToRendering(BracketHighlightRenderer renderer, IEnumerable<CustomizedHighlightingColor> customizations)
+		{
+			renderer.UpdateColors(DefaultBackground, DefaultBorder);
+			foreach (CustomizedHighlightingColor color in customizations) {
+				if (color.Name == BracketHighlight) {
+					renderer.UpdateColors(color.Background ?? Colors.Blue, color.Foreground ?? Colors.Blue);
+				}
 			}
 		}
 	}

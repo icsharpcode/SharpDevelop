@@ -99,6 +99,8 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				if (ext.Equals(extension, StringComparison.OrdinalIgnoreCase)) {
 					if (binding == null) {
 						binding = (ICodeCompletionBinding)codon.AddIn.CreateObject(codon.Properties["class"]);
+						if (binding == null)
+							break;
 					}
 					return binding.HandleKeyPress(editor, ch);
 				}
@@ -113,6 +115,8 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				if (ext.Equals(extension, StringComparison.OrdinalIgnoreCase)) {
 					if (binding == null) {
 						binding = (ICodeCompletionBinding)codon.AddIn.CreateObject(codon.Properties["class"]);
+						if (binding == null)
+							break;
 					}
 					return binding.CtrlSpace(editor);
 				}

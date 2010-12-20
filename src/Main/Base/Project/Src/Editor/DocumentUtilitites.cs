@@ -265,6 +265,19 @@ namespace ICSharpCode.SharpDevelop.Editor
 			{
 				return GetTextSource(textBuffer.CreateSnapshot(offset, length));
 			}
+			
+			public int IndexOfAny(char[] anyOf, int startIndex, int count)
+			{
+				int endIndex = startIndex + count;
+				for (int i = startIndex; i < endIndex; i++) {
+					char c = textBuffer.GetCharAt(i);
+					foreach (char d in anyOf) {
+						if (c == d)
+							return i;
+					}
+				}
+				return -1;
+			}
 		}
 		#endregion
 	}

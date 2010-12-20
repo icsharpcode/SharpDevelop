@@ -32,8 +32,8 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
-    <Reference Include="ICSharpCode.Reports.Core">
-      <HintPath>..\..\..\..\AddIns\AddIns\Misc\SharpDevelopReports\ICSharpCode.Reports.Core.dll</HintPath>
+    <Reference Include="Irony">
+      <HintPath>..\..\..\..\src\AddIns\Misc\Reports\Irony\obj\Debug\Irony.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -70,5 +70,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\src\AddIns\Misc\Reports\ICSharpCode.Reports.Core\ICSharpCode.Reports.Core.csproj">
+      <Project>{4B2239FF-8FD6-431D-9D22-1B8049BA6917}</Project>
+      <Name>ICSharpCode.Reports.Core</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

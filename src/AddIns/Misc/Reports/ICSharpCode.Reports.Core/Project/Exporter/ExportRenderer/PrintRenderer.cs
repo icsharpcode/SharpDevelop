@@ -10,7 +10,7 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer{
 	/// Description of PrintRenderer.
 	/// </summary>
 	public class PrintRenderer:BaseExportRenderer,IDisposable{
-		PrintDocument doc;
+
 		int currentPage;
 		PrinterSettings printerSettings;
 		
@@ -43,11 +43,14 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer{
 		
 		private PrintRenderer(PagesCollection pages):base(pages)
 		{
-			doc = new PrintDocument();
+			this.PrintDocument = new PrintDocument();
+			this.PrintDocument.PrinterSettings = new PrinterSettings();
+			
+			
 //			doc.QueryPageSettings += new QueryPageSettingsEventHandler(OnQueryPage);
-			doc.BeginPrint += new PrintEventHandler(OnBeginPrint);
-			doc.EndPrint += new PrintEventHandler(OnEndPrint);
-			doc.PrintPage += new PrintPageEventHandler(OnPrintPage);
+			this.PrintDocument.BeginPrint += new PrintEventHandler(OnBeginPrint);
+			this.PrintDocument.EndPrint += new PrintEventHandler(OnEndPrint);
+			this.PrintDocument.PrintPage += new PrintPageEventHandler(OnPrintPage);
 		}
 		
 		#endregion
@@ -87,10 +90,10 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer{
 		{
 			base.RenderOutput();
 			if (this.printerSettings != null) {
-				doc.PrinterSettings = this.printerSettings;
+				this.PrintDocument.PrinterSettings = this.printerSettings;
 			}
-			doc.Print();
 		}
+		
 		
 		public override void End()
 		{
@@ -98,10 +101,13 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer{
 		}
 		
 		
+		public PrintDocument PrintDocument {get;private set;}
+		
 		internal PrinterSettings PrinterSettings 
 		{
 			set { printerSettings = value; }
 		}
+		
 		
 		#region IDisposable
 		
@@ -116,10 +122,10 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer{
 			if (disposing)
 			{
 				// free managed resources
-				if (this.doc != null)
+				if (this.PrintDocument != null)
 				{
-					doc.Dispose();
-					doc = null;
+					this.PrintDocument.Dispose();
+					this.PrintDocument = null;
 				}
 			}
 		}

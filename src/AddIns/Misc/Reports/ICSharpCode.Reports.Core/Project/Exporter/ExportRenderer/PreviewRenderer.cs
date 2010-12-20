@@ -11,10 +11,8 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 	/// </summary>
 	
 	
-	public class PreviewRenderer:BaseExportRenderer
+	internal class PreviewRenderer:BaseExportRenderer
 	{
-		Graphics graphics;
-		ExporterPage page;
 		
 		#region Constructor
 		
@@ -29,23 +27,18 @@ namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 	
 		public override void RenderOutput(){
 			base.RenderOutput();
-			if (this.graphics != null) {
-				BaseExportRenderer.DrawItems(this.graphics,this.page.Items);
+			if (this.Graphics != null) {
+				BaseExportRenderer.DrawItems(this.Graphics,this.Page.Items);
 			} else {
 				return;
 			}
 		}
 		
 	
-		public Graphics Graphics {
-			get { return this.graphics;}
-			set { this.graphics = value;}
-		}
+		public Graphics Graphics {get;set;}
+			
 		
-		public ExporterPage Page {
-			get {return this.page;}
-			set { page = value; }
-		}
+		public ExporterPage Page {get;set;}
 		
 	}
 }

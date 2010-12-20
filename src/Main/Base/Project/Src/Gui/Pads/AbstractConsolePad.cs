@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected virtual ToolBar BuildToolBar()
 		{
-			return ToolBarService.CreateToolBar(this, toolBarTreePath);
+			return ToolBarService.CreateToolBar(panel, this, toolBarTreePath);
 		}
 		
 		public virtual ITextEditor TextEditor {

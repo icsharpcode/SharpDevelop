@@ -5556,6 +5556,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="MainWindow.Windows.Debug.ExceptionHistory.Time" xml:space="preserve">
     <value>Heure</value>
   </data>
+  <data name="MainWindow.Windows.Debug.HideZoomControl" xml:space="preserve">
+    <value>Afficher/Cacher le zoom</value>
+  </data>
   <data name="MainWindow.Windows.Debug.Local" xml:space="preserve">
     <value>Local</value>
   </data>
@@ -5631,6 +5634,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   <data name="MainWindow.Windows.Debug.ObjectGraph" xml:space="preserve">
     <value>Graphe d'objet</value>
   </data>
+  <data name="MainWindow.Windows.Debug.ParallelStack" xml:space="preserve">
+    <value>Visualiser les processus</value>
+  </data>
   <data name="MainWindow.Windows.Debug.RunToCursor" xml:space="preserve">
     <value>Exécuter jusqu'au curseur</value>
   </data>
@@ -5678,6 +5684,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="MainWindow.Windows.Debug.Threads.ThreadSwitch" xml:space="preserve">
     <value>Changement de thread</value>
+  </data>
+  <data name="MainWindow.Windows.Debug.ToggleMethodView" xml:space="preserve">
+    <value>Basculer vers la vue "par méthodes"</value>
   </data>
   <data name="MainWindow.Windows.Debug.Watch" xml:space="preserve">
     <value>Espions</value>
@@ -5924,6 +5933,9 @@ Soit ils n'existent pas, soit le document Wix n'est pas pour WiX 3.0 et l'espace
   </data>
   <data name="OpenFileTabEventHandler.FileContainingFolderInExplorer" xml:space="preserve">
     <value>Ouvrir le répertoire dans l'explorateur</value>
+  </data>
+  <data name="ProjectBrowser.Toolbar.CollapseAll" xml:space="preserve">
+    <value>Réduire tous les noeuds</value>
   </data>
   <data name="ProjectComponent.ContextMenu.AddExistingFiles" xml:space="preserve">
     <value>Ajouter fichiers existants</value>

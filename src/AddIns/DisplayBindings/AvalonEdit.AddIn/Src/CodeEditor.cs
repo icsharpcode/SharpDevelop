@@ -217,10 +217,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				TextCopied(this, e);
 		}
 
-		protected virtual void DisposeTextEditor(TextEditor textEditor)
+		protected virtual void DisposeTextEditor(CodeEditorView textEditor)
 		{
 			// detach IconBarMargin from IconBarManager
 			textEditor.TextArea.LeftMargins.OfType<IconBarMargin>().Single().TextView = null;
+			textEditor.Dispose();
 		}
 		
 		void textEditor_GotFocus(object sender, RoutedEventArgs e)
@@ -332,9 +333,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				// remove secondary editor
 				this.Children.Remove(secondaryTextEditor);
 				this.Children.Remove(gridSplitter);
+				secondaryTextEditorAdapter.Language.Detach();
 				DisposeTextEditor(secondaryTextEditor);
 				secondaryTextEditor = null;
-				secondaryTextEditorAdapter.Language.Detach();
 				secondaryTextEditorAdapter = null;
 				gridSplitter = null;
 				this.RowDefinitions.RemoveAt(this.RowDefinitions.Count - 1);
@@ -574,6 +575,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (errorPainter != null)
 				errorPainter.Dispose();
 			this.Document = null;
+			DisposeTextEditor(primaryTextEditor);
+			if (secondaryTextEditor != null)
+				DisposeTextEditor(secondaryTextEditor);
 		}
 	}
 }

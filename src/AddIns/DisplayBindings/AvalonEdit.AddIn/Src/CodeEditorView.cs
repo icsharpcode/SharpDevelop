@@ -13,7 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
+using System.Windows.Threading;
 
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.AddIn.Snippets;
@@ -26,6 +26,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Editor.Commands;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Refactoring;
 using Ast = ICSharpCode.NRefactory.Ast;
 
@@ -36,7 +37,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// There can be two CodeEditorView instances in a single CodeEditor if split-view
 	/// is enabled.
 	/// </summary>
-	public class CodeEditorView : SharpDevelopTextEditor
+	public class CodeEditorView : SharpDevelopTextEditor, IDisposable
 	{
 		public ITextEditor Adapter { get; set; }
 		
@@ -48,19 +49,32 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Help, OnHelpExecuted));
 			
-			UpdateCustomizedHighlighting();
-			
 			this.bracketRenderer = new BracketHighlightRenderer(this.TextArea.TextView);
 			this.caretReferencesRenderer = new CaretReferencesRenderer(this);
 			this.contextActionsRenderer = new ContextActionsRenderer(this);
+			
+			UpdateCustomizedHighlighting();
 			
 			this.MouseHover += TextEditorMouseHover;
 			this.MouseHoverStopped += TextEditorMouseHoverStopped;
 			this.MouseLeave += TextEditorMouseLeave;
 			this.TextArea.TextView.MouseDown += TextViewMouseDown;
 			this.TextArea.Caret.PositionChanged += HighlightBrackets;
+			this.TextArea.TextView.VisualLinesChanged += CodeEditorView_VisualLinesChanged;
 			
 			SetupTabSnippetHandler();
+		}
+
+		void CodeEditorView_VisualLinesChanged(object sender, EventArgs e)
+		{
+			// hide tooltip
+			if (this.toolTip != null)
+				this.toolTip.IsOpen = false;
+		}
+		
+		public virtual void Dispose()
+		{
+			contextActionsRenderer.Dispose();
 		}
 		
 		protected override string FileName {
@@ -414,6 +428,23 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			// the adapter sets the caret position and takes care of scrolling
 			this.Adapter.JumpTo(line, column);
 			this.Focus();
+			
+			if (CodeEditorOptions.Instance.EnableAnimations)
+				Dispatcher.Invoke(DispatcherPriority.Background, (Action)DisplayCaretHighlightAnimation);
+		}
+		
+		void DisplayCaretHighlightAnimation()
+		{
+			TextArea textArea = Adapter.GetService(typeof(TextArea)) as TextArea;
+			
+			if (textArea == null)
+				return;
+			
+			AdornerLayer layer = AdornerLayer.GetAdornerLayer(textArea.TextView);
+			CaretHighlightAdorner adorner = new CaretHighlightAdorner(textArea);
+			layer.Add(adorner);
+			
+			WorkbenchSingleton.CallLater(TimeSpan.FromSeconds(1), (Action)(() => layer.Remove(adorner)));
 		}
 		
 		#region UpdateParseInformation - Folding
@@ -469,6 +500,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			string language = this.SyntaxHighlighting != null ? this.SyntaxHighlighting.Name : null;
 			CustomizableHighlightingColorizer.ApplyCustomizationsToDefaultElements(this, FetchCustomizations(language));
+			BracketHighlightRenderer.ApplyCustomizationsToRendering(this.bracketRenderer, FetchCustomizations(language));
 			this.TextArea.TextView.Redraw(); // manually redraw if default elements didn't change but customized highlightings did
 		}
 		

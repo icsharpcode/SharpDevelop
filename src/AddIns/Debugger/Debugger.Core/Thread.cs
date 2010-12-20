@@ -156,7 +156,7 @@ namespace Debugger
 				if (runtimeValue.IsNull) return string.Empty;
 				Value runtimeName = runtimeValue.GetMemberValue("m_Name");
 				if (runtimeName.IsNull) return string.Empty;
-				return runtimeName.AsString.ToString();
+				return runtimeName.AsString(100);
 			}
 		}
 		

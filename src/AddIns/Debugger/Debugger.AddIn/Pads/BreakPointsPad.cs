@@ -47,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		protected override ToolBar CreateToolBar()
 		{
-			ToolBar toolbar = ToolBarService.CreateToolBar(this, "/SharpDevelop/Pads/BreakpointPad/Toolbar");
+			ToolBar toolbar = ToolBarService.CreateToolBar(myPanel, this, "/SharpDevelop/Pads/BreakpointPad/Toolbar");
 			toolbar.SetValue(Grid.RowProperty, 0);
 			return toolbar;
 		}

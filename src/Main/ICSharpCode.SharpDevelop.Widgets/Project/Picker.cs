@@ -12,7 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Data;
 
-namespace ICSharpCode.WpfDesign.Designer.PropertyGrid.Editors.BrushEditor
+namespace ICSharpCode.SharpDevelop.Widgets
 {
 	public class Picker : Grid
 	{

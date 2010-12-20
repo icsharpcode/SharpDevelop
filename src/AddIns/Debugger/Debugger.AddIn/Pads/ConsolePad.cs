@@ -141,7 +141,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		protected override ToolBar BuildToolBar()
 		{
-			return ToolBarService.CreateToolBar(this, debuggerConsoleToolBarTreePath);
+			return ToolBarService.CreateToolBar(console, this, debuggerConsoleToolBarTreePath);
 		}
 	}
 }

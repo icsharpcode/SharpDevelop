@@ -9,8 +9,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
 using ICSharpCode.Core;
+using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using ICSharpCode.SharpDevelop.Internal.Templates;
@@ -505,14 +505,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 				ScriptRunner scriptRunner = new ScriptRunner();
-				
-				foreach (FileDescriptionTemplate newfile in item.Template.FileDescriptionTemplates) {
-					if (!String.IsNullOrEmpty(newfile.BinaryFileName)) {
-						SaveFile(newfile, null, newfile.BinaryFileName);
-					} else {
-						SaveFile(newfile, scriptRunner.CompileScript(item.Template, newfile), null);
-					}
+				foreach (FileDescriptionTemplate newFile in item.Template.FileDescriptionTemplates) {
+					FileOperationResult result = FileUtility.ObservedSave(
+						() => {
+							if (!String.IsNullOrEmpty(newFile.BinaryFileName)) {
+								SaveFile(newFile, null, newFile.BinaryFileName);
+							} else {
+								SaveFile(newFile, scriptRunner.CompileScript(item.Template, newFile), null);
+							}
+						}, StringParser.Parse(newFile.Name)
+					);
+					if (result != FileOperationResult.OK)
+						return;
 				}
+				
 				DialogResult = DialogResult.OK;
 				
 				// raise FileCreated event for the new files.

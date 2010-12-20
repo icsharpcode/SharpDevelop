@@ -124,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		protected override ToolBar BuildToolBar()
 		{
-			return ToolBarService.CreateToolBar(this, "/SharpDevelop/Pads/ParallelStacksPad/ToolBar");
+			return ToolBarService.CreateToolBar(panel, this, "/SharpDevelop/Pads/ParallelStacksPad/ToolBar");
 		}
 
 		#endregion

@@ -76,11 +76,10 @@ namespace NUnit.ConsoleRunner
                     ? package.Settings["RuntimeFramework"]
                     : "Default");
 
-            TestRunner testRunner = new DefaultTestRunnerFactory().MakeTestRunner(package);
+			using (TestRunner testRunner = new DefaultTestRunnerFactory().MakeTestRunner(package))
+			{
             testRunner.Load(package);
 
-            try
-			{
 				if (testRunner.Test == null)
 				{
 					testRunner.Unload();
@@ -191,10 +190,6 @@ namespace NUnit.ConsoleRunner
 				}
             
 				return returnCode;
-			}
-			finally
-			{
-				testRunner.Unload();
 			}
 		}
 

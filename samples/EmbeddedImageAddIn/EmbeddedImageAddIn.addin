@@ -1,0 +1,20 @@
+﻿<AddIn name        = "EmbeddedImageAddIn"
+       author      = "Daniel Grunwald"
+       description = "Allows embedding images in source code comments">
+	
+	<Manifest>
+		<Identity name = "SharpDevelop.Samples.EmbeddedImageAddIn"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "EmbeddedImageAddIn.dll"/>
+	</Runtime>
+	
+	<Path name="/SharpDevelop/Workbench/LanguageBindings">
+		<Class id="EmbeddedImage" class="EmbeddedImageAddIn.EmbeddedImageLanguageBinding"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/Workbench/MainMenu/Edit/Insert">
+		<MenuItem id="EmbeddedImage" class="EmbeddedImageAddIn.InsertImageCommand" label="Insert Image..."/>
+	</Path>
+</AddIn>

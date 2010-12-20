@@ -414,7 +414,10 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property ="CanAutohide" Value="False">
                             <Setter Property="Visibility" Value="Collapsed" TargetName="btnPinAutoHide"/>
-                        </Trigger>                         
+                        </Trigger>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self},  Path=SelectedItem.IsCloseable}" Value="false">
+                            <Setter Property="Visibility" TargetName="PART_CloseButton" Value="Collapsed"/>
+                        </DataTrigger>
                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self},  Path=SelectedItem.State}" Value="AutoHide">
                             <Setter Property="LayoutTransform" TargetName="btnPinAutoHide">
                                 <Setter.Value>
@@ -428,6 +431,36 @@
         </Setter>
     </Style>
 
+    <!-- FloatingDockablePane -->
+    <Style x:Key="{x:Type ad:FloatingDockablePane}" TargetType="{x:Type ad:FloatingDockablePane}" >
+        <Setter Property="Background" Value="{DynamicResource {ComponentResourceKey {x:Type ad:DockingManager}, {x:Static ad:AvalonDockBrushes.DefaultBackgroundBrush}}}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ad:DockablePane}">
+                    <Border Focusable="False"
+                            Background="{TemplateBinding Background}">
+
+                            <Border Background="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedItem.Background}"   
+                                    >
+                                <ContentPresenter 
+                                        x:Name="PART_SelectedContent"
+                                        Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedItem.Content}"
+								        KeyboardNavigation.TabNavigation="Local"
+								        KeyboardNavigation.DirectionalNavigation="Contained"
+								        KeyboardNavigation.TabIndex="1"
+                                        />
+                            </Border>
+
+                    </Border>
+                    <ControlTemplate.Triggers>
+
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+    </Style>
+    
     <!--DocumentTabItemStyle-->
     <Style x:Key="DocumentTabItemStyle" TargetType="{x:Type ad:ManagedContent}">
         <Setter Property="Template">

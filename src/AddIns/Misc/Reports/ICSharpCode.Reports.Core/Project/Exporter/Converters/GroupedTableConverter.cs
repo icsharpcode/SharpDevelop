@@ -38,7 +38,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			ExporterCollection mylist = base.Convert(parent,item);
 			this.table = (BaseTableItem)item ;
 			this.table.Parent = parent;
-			this.table.DataNavigator = base.DataNavigator;
+//			this.table.DataNavigator = base.DataNavigator;
 			return ConvertInternal(mylist);
 		}
 		
@@ -95,7 +95,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 						
 						childNavigator.Reset();
 						childNavigator.MoveNext();
-						
+
+/*
+---- GroupTableConverter.cs Zeile 151:
+FillRow(simpleContainer,base.DataNavigator);
+FireRowRendering(simpleContainer,base.DataNavigator);
+base.PrepareContainerForConverting(section,simpleContainer);
+----
+*/	
 						//Convert children
 						if (childNavigator != null) {
 							do
@@ -104,10 +111,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 								simpleContainer = table.Items[2] as ISimpleContainer;
 								containerSize = simpleContainer.Size;
 								
-								childNavigator.Fill(simpleContainer.Items);
-
-								base.CurrentPosition = ConvertGroupChilds (exporterCollection,section,simpleContainer);						                                           
-								                                          
+								FillRow(simpleContainer,childNavigator);
+//								PrepareContainerForConverting(section,simpleContainer);								
+								FireRowRendering(simpleContainer,childNavigator);
+								PrepareContainerForConverting(section,simpleContainer);		
+								base.CurrentPosition = ConvertStandardRow(exporterCollection,simpleContainer);
+								
 								simpleContainer.Size = containerSize;
 								CheckForPageBreak(section,simpleContainer,headerRow,exporterCollection);
 
@@ -115,7 +124,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 							while ( childNavigator.MoveNext());
 							
 							// GroupFooter
-							base.ConvertGroupFooter(section,table,exporterCollection);
+							base.ConvertGroupFooter(table,exporterCollection);
 							base.PageBreakAfterGroupChange(section,exporterCollection);
 							
 							base.Evaluator.SinglePage.IDataNavigator = base.DataNavigator;
@@ -131,22 +140,22 @@ namespace ICSharpCode.Reports.Core.Exporter
 					simpleContainer =  table.Items[1] as ISimpleContainer;				
 					base.SaveSectionSize(section.Size);
 					containerSize = simpleContainer.Size;
-						Console.WriteLine("datasection - NO grouping");
+						
 					do {
 
-							Console.WriteLine("");
 						PrintHelper.AdjustSectionLocation(section);
 						CheckForPageBreak(section,simpleContainer,headerRow,exporterCollection);
-						FillRow(simpleContainer);
-						base.CurrentPosition = ConvertStandardRow (exporterCollection,section,simpleContainer);
+						
+						FillRow(simpleContainer,base.DataNavigator);
+//						base.PrepareContainerForConverting(section,simpleContainer);
 						FireRowRendering(simpleContainer,base.DataNavigator);
+						base.PrepareContainerForConverting(section,simpleContainer);
+						
+						base.CurrentPosition = ConvertStandardRow (exporterCollection,simpleContainer);
 						simpleContainer.Size = containerSize;
 						section.Size = base.RestoreSectionSize;
-						Console.WriteLine("");
 					}
 					while (base.DataNavigator.MoveNext());
-					Console.WriteLine("");
-					Console.WriteLine("END of datasection - NO grouping");
 					base.DataNavigator.Reset();
 					base.DataNavigator.MoveNext();
 					SectionBounds.ReportFooterRectangle =  new Rectangle(SectionBounds.ReportFooterRectangle.Left,
@@ -168,7 +177,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			{
 				base.CurrentPosition = ForcePageBreak(exporterCollection,section);
 				
-				base.CurrentPosition = ConvertStandardRow (exporterCollection,section,headerRow);
+				base.CurrentPosition = ConvertStandardRow (exporterCollection,headerRow);
 			}
 
 		}
@@ -208,9 +217,11 @@ namespace ICSharpCode.Reports.Core.Exporter
 				
 				
 			} else {
+				
 				rowSize = groupedRow[0].Size;
+				FillRow(groupedRow[0],base.DataNavigator);
 				base.FireGroupHeaderRendering(groupedRow[0]);
-				retVal = ConvertStandardRow(exportList,section,groupedRow[0]);
+				retVal = ConvertStandardRow(exportList,groupedRow[0]);
 				groupedRow[0].Size = rowSize;
 			}
 			return retVal;

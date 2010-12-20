@@ -1,236 +1,195 @@
 <?xml version="1.0"?>
-<!-- syntaxdefinition for C/C++ 2001 by Andrea Paatz and Mike Krueger 
-	this should be rewritten to xshd v2.0 syntax to handle c++/cli keywords with whitespaces properly -->
-
-<SyntaxDefinition name = "C++" extensions = ".c;.h;.cc;.cpp;.hpp">
-	
-	<Properties>
-		<Property name="LineComment" value="//"/>
-	</Properties>
-	
-	<Digits name = "Digits" bold = "false" italic = "false" color = "DarkBlue"/>
-	
-	<RuleSets>
-		<RuleSet ignorecase = "false">
-			<Delimiters>~!%^*()-+=|\#/{}[]:;"'&lt;&gt; , .?</Delimiters>
-		
-			<Span name = "PreprocessorDirectives" bold="false" italic="false" color="Green" stopateol = "true">
-				<Begin>#</Begin>
-			</Span>
-			
-			<Span name = "LineComment" bold = "false" italic = "false" color = "Green" stopateol = "true">
-				<Begin>//</Begin>
-			</Span>
-			
-			<Span name = "BlockComment" bold = "false" italic = "false" color = "Green" stopateol = "false">
-				<Begin>/*</Begin>
-				<End>*/</End>
-			</Span>
-			
-			<Span name = "String" bold = "false" italic = "false" color = "Magenta" stopateol = "true" escapecharacter="\">
-				<Begin>"</Begin>
-				<End>"</End>
-			</Span>
-			
-			<Span name = "Char" bold = "false" italic = "false" color = "Magenta" stopateol = "true" escapecharacter="\">
-				<Begin>&apos;</Begin>
-				<End>&apos;</End>
-			</Span>
-			
-			<MarkPrevious bold = "true" italic = "false" color = "MidnightBlue">(</MarkPrevious>
-			
-			<KeyWords name = "Punctuation" bold = "false" italic = "false" color = "DarkGreen">
-				<Key word = "?" />
-				<Key word = "," />
-				<Key word = "." />
-				<Key word = ";" />
-				<Key word = "(" />
-				<Key word = ")" />
-				<Key word = "[" />
-				<Key word = "]" />
-				<Key word = "{" />
-				<Key word = "}" />
-				<Key word = "+" />
-				<Key word = "-" />
-				<Key word = "/" />
-				<Key word = "%" />
-				<Key word = "*" />
-				<Key word = "&lt;" />
-				<Key word = "&gt;" />
-				<Key word = "^" />
-				<Key word = "=" />
-				<Key word = "~" />
-				<Key word = "!" />
-				<Key word = "|" />
-				<Key word = "&amp;" />
-			</KeyWords>
-			
-			<KeyWords name = "ManagedKeyWords" bold="true" italic="false" color="Black">
-				<Key word = "__abstract" />
-				<Key word = "__box" />
-				<Key word = "__delegate" />
-				<Key word = "__gc" />
-				<Key word = "__identifier" />
-				<Key word = "__nogc" />
-				<Key word = "__pin" />
-				<Key word = "__property" />
-				<Key word = "__sealed" />
-				<Key word = "__try_cast" />
-				<Key word = "__typeof" />
-				<Key word = "__value" />
-				
-				
-				<Key word = "__event" />
-				<Key word = "__hook" />
-				<Key word = "__raise" />
-				<Key word = "__unhook" />
-				
-				<Key word = "__interface" />
-			
-				<!-- c++/cli new syntax managed keywords //-->
-				<Key word = "ref class" />
-				<Key word = "ref struct" />
-				<Key word = "value class" />
-				<Key word = "value struct" />
-				<Key word = "interface class" />
-				<Key word = "interface struct" />
-				<Key word = "enum class" />
-				<Key word = "enum struct" />
-				
-				<Key word = "delegate" />
-				<Key word = "event" />
-				<Key word = "property" />
-				
-				<Key word = "abstract" />
-				<Key word = "override" />
-				<Key word = "sealed" />
-				
-				<Key word = "generic" />
-				<Key word = "where" />
-				
-				<Key word = "finally" />
-				<Key word = "for each" />
-				<Key word = "gcnew" />
-				<Key word = "in" />
-				<Key word = "initonly" />
-				<Key word = "literal" />
-				<Key word = "nullptr" />
-			</KeyWords>
-			
-			<KeyWords name = "AccessKeywords" bold="true" italic="false" color="Black">
-				<Key word = "this" />
-			</KeyWords>
-			
-			<KeyWords name = "OperatorKeywords" bold="true" italic="false" color="DarkCyan">
-				<Key word = "and" />
-				<Key word = "and_eq" />
-				
-				<Key word = "bitand" />
-				<Key word = "bitor" />
-				
-				<Key word = "new" />
-				<Key word = "not" />
-				<Key word = "not_eq" />
-				<Key word = "or" />
-				<Key word = "or_eq" />
-				<Key word = "xor" />
-				<Key word = "xor_eq" />
-			</KeyWords>
-			
-			<KeyWords name = "NameSpaces" bold="true" italic="false" color="Green">
-				<Key word = "using" />
-				<Key word = "namespace" />
-			</KeyWords>
-			
-			<KeyWords name = "Friends" bold="false" italic="false" color="Brown">
-				<Key word = "friend" />
-			</KeyWords>
-			
-			<KeyWords name = "AccessModifiers" bold="true" italic="false" color="Blue">
-				<Key word = "private" />
-				<Key word = "protected" />
-				<Key word = "public" />
-			
-				<Key word = "const" />
-				<Key word = "volatile" />
-				
-				<Key word = "static" />
-			</KeyWords>
-			
-			<KeyWords name = "Types" bold="false" italic="false" color="Red">
-				<Key word = "bool" />
-				<Key word = "char" />
-				<Key word = "unsigned" />
-				<Key word = "union" />
-				<Key word = "virtual" />
-				<Key word = "double" />
-				<Key word = "float" />
-				<Key word = "short" />
-				<Key word = "signed" />
-				<Key word = "void" />
-				<Key word = "class" />
-				
-				<Key word = "enum" />
-				<Key word = "struct" />
-			</KeyWords>
-			
-			<KeyWords name = "Literals" bold="true" italic="false" color="Black">
-				<Key word = "false" />
-				<Key word = "true" />
-			</KeyWords>
-			
-			<KeyWords name = "IterationStatements" bold="true" italic="false" color="Blue">
-				<Key word = "do" />
-				<Key word = "for" />
-				<Key word = "while" />
-			</KeyWords>
-			
-			<KeyWords name = "JumpStatements" bold="false" italic="false" color="Navy">
-				<Key word = "break" />
-				<Key word = "continue" />
-				<Key word = "goto" />
-				<Key word = "return" />
-			</KeyWords>
-			
-			<KeyWords name = "ExceptionHandlingStatements" bold="true" italic="false" color="Teal">
-				<Key word = "catch" />
-				<Key word = "throw" />
-				<Key word = "try" />
-			</KeyWords>
-			
-			<KeyWords name = "SelectionStatements" bold="true" italic="false" color="Blue">
-				<Key word = "case" />
-				<Key word = "else" />
-				<Key word = "if" />
-				<Key word = "switch" />
-				<Key word = "default" />
-			</KeyWords>
-			
-			<KeyWords name = "KEYWORD1" bold="true" italic="false" color="Blue">
-				<Key word = "asm" />
-				<Key word = "auto" />
-				<Key word = "compl" />
-				<Key word = "mutable" />
-				<Key word = "const_cast" />
-				<Key word = "delete" />
-				<Key word = "dynamic_cast" />
-				<Key word = "explicit" />
-				<Key word = "export" />
-				<Key word = "extern" />
-				<Key word = "inline" />
-				<Key word = "int" />
-				<Key word = "long" />
-				<Key word = "operator" />
-				<Key word = "register" />
-				<Key word = "reinterpret_cast" />
-				<Key word = "sizeof" />
-				<Key word = "static_cast" />
-				<Key word = "template" />
-				<Key word = "typedef" />
-				<Key word = "typeid" />
-				<Key word = "typename" />
-			</KeyWords>
-		</RuleSet>
-	</RuleSets>
+<!-- syntaxdefinition for C/C++ 2001 by Andrea Paatz and Mike Krueger -->
+<!-- converted to AvalonEdit format by Siegfried Pammer in 2010 -->
+<SyntaxDefinition name="C++" extensions=".c;.h;.cc;.cpp;.hpp" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+	<Color name="Comment" foreground="Green" />
+	<Color name="Character" foreground="Fuchsia" />
+	<Color name="String" foreground="Fuchsia" />
+	<Color name="Preprocessor" foreground="Green" />
+	<Color name="Punctuation" foreground="DarkGreen" />
+	<Color name="MethodName" foreground="MidnightBlue" fontWeight="bold" />
+	<Color name="Digits" foreground="DarkBlue" />
+	<Color name="CompoundKeywords" foreground="Black" fontWeight="bold" />
+	<Color name="This" foreground="Black" fontWeight="bold" />
+	<Color name="Operators" foreground="#FF008B8B" fontWeight="bold" />
+	<Color name="Namespace" foreground="#FF008000" fontWeight="bold" />
+	<Color name="Friend" foreground="#FFA52A2A" />
+	<Color name="Modifiers" foreground="#FF0000FF" fontWeight="bold" />
+	<Color name="TypeKeywords" foreground="#FFFF0000" />
+	<Color name="BooleanConstants" foreground="#FF000000" fontWeight="bold" />
+	<Color name="Keywords" foreground="#FF0000FF" fontWeight="bold" />
+	<Color name="LoopKeywords" foreground="#FF0000FF" fontWeight="bold" />
+	<Color name="JumpKeywords" foreground="#FF000080" />
+	<Color name="ExceptionHandling" foreground="#FF008080" fontWeight="bold" />
+	<Color name="ControlFlow" foreground="#FF0000FF" fontWeight="bold" />
+	<RuleSet ignoreCase="false">
+		<Rule color="Punctuation">
+		[?,.;()\[\]{}+\-/%*&lt;&gt;^=~!&amp;]+
+		</Rule>
+		<Keywords color="CompoundKeywords">
+			<Word>__abstract</Word>
+			<Word>__box</Word>
+			<Word>__delegate</Word>
+			<Word>__gc</Word>
+			<Word>__identifier</Word>
+			<Word>__nogc</Word>
+			<Word>__pin</Word>
+			<Word>__property</Word>
+			<Word>__sealed</Word>
+			<Word>__try_cast</Word>
+			<Word>__typeof</Word>
+			<Word>__value</Word>
+			<Word>__event</Word>
+			<Word>__hook</Word>
+			<Word>__raise</Word>
+			<Word>__unhook</Word>
+			<Word>__interface</Word>
+			<Word>ref class</Word>
+			<Word>ref struct</Word>
+			<Word>value class</Word>
+			<Word>value struct</Word>
+			<Word>interface class</Word>
+			<Word>interface struct</Word>
+			<Word>enum class</Word>
+			<Word>enum struct</Word>
+			<Word>delegate</Word>
+			<Word>event</Word>
+			<Word>property</Word>
+			<Word>abstract</Word>
+			<Word>override</Word>
+			<Word>sealed</Word>
+			<Word>generic</Word>
+			<Word>where</Word>
+			<Word>finally</Word>
+			<Word>for each</Word>
+			<Word>gcnew</Word>
+			<Word>in</Word>
+			<Word>initonly</Word>
+			<Word>literal</Word>
+			<Word>nullptr</Word>
+		</Keywords>
+		<Keywords color="This">
+			<Word>this</Word>
+		</Keywords>
+		<Keywords color="Operators">
+			<Word>and</Word>
+			<Word>and_eq</Word>
+			<Word>bitand</Word>
+			<Word>bitor</Word>
+			<Word>new</Word>
+			<Word>not</Word>
+			<Word>not_eq</Word>
+			<Word>or</Word>
+			<Word>or_eq</Word>
+			<Word>xor</Word>
+			<Word>xor_eq</Word>
+		</Keywords>
+		<Keywords color="Namespace">
+			<Word>using</Word>
+			<Word>namespace</Word>
+		</Keywords>
+		<Keywords color="Friend">
+			<Word>friend</Word>
+		</Keywords>
+		<Keywords color="Modifiers">
+			<Word>private</Word>
+			<Word>protected</Word>
+			<Word>public</Word>
+			<Word>const</Word>
+			<Word>volatile</Word>
+			<Word>static</Word>
+		</Keywords>
+		<Keywords color="TypeKeywords">
+			<Word>bool</Word>
+			<Word>char</Word>
+			<Word>unsigned</Word>
+			<Word>union</Word>
+			<Word>virtual</Word>
+			<Word>double</Word>
+			<Word>float</Word>
+			<Word>short</Word>
+			<Word>signed</Word>
+			<Word>void</Word>
+			<Word>class</Word>
+			<Word>enum</Word>
+			<Word>struct</Word>
+		</Keywords>
+		<Keywords color="BooleanConstants">
+			<Word>false</Word>
+			<Word>true</Word>
+		</Keywords>
+		<Keywords color="LoopKeywords">
+			<Word>do</Word>
+			<Word>for</Word>
+			<Word>while</Word>
+		</Keywords>
+		<Keywords color="JumpKeywords">
+			<Word>break</Word>
+			<Word>continue</Word>
+			<Word>goto</Word>
+			<Word>return</Word>
+		</Keywords>
+		<Keywords color="ExceptionHandling">
+			<Word>catch</Word>
+			<Word>throw</Word>
+			<Word>try</Word>
+		</Keywords>
+		<Keywords color="ControlFlow">
+			<Word>case</Word>
+			<Word>else</Word>
+			<Word>if</Word>
+			<Word>switch</Word>
+			<Word>default</Word>
+		</Keywords>
+		<Keywords color="Keywords">
+			<Word>asm</Word>
+			<Word>auto</Word>
+			<Word>compl</Word>
+			<Word>mutable</Word>
+			<Word>const_cast</Word>
+			<Word>delete</Word>
+			<Word>dynamic_cast</Word>
+			<Word>explicit</Word>
+			<Word>export</Word>
+			<Word>extern</Word>
+			<Word>inline</Word>
+			<Word>int</Word>
+			<Word>long</Word>
+			<Word>operator</Word>
+			<Word>register</Word>
+			<Word>reinterpret_cast</Word>
+			<Word>sizeof</Word>
+			<Word>static_cast</Word>
+			<Word>template</Word>
+			<Word>typedef</Word>
+			<Word>typeid</Word>
+			<Word>typename</Word>
+		</Keywords>
+		<Span color="Preprocessor">
+			<Begin>\#</Begin>
+		</Span>
+		<Span color="Comment">
+			<Begin>//</Begin>
+		</Span>
+		<Span color="Comment" multiline="true">
+			<Begin>/\*</Begin>
+			<End>\*/</End>
+		</Span>
+		<Span color="String">
+			<Begin>"</Begin>
+			<End>"</End>
+			<RuleSet>
+				<Span begin="\\" end="." />
+			</RuleSet>
+		</Span>
+		<Span color="Character">
+			<Begin>'</Begin>
+			<End>'</End>
+			<RuleSet>
+				<Span begin="\\" end="." />
+			</RuleSet>
+		</Span>
+		<Rule color="MethodName">[\d\w_]+(?=(\s*\())</Rule>
+		<Rule color="Digits">\b0[xX][0-9a-fA-F]+|(\b\d+(\.[0-9]+)?|\.[0-9]+)([eE][+-]?[0-9]+)?</Rule>
+	</RuleSet>
 </SyntaxDefinition>
-

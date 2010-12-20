@@ -232,11 +232,68 @@
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Sınıf Şemasını Göster</value>
   </data>
+  <data name="AddIns.Git.TortoiseGitRequired" xml:space="preserve">
+    <value>Bu işlemi gerçekleştirebilmek için TortoiseGit yüklü olmalıdır.</value>
+  </data>
+  <data name="AddIns.HelpViewer.ContentsPadTitle" xml:space="preserve">
+    <value>İçerikler</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplayContentsCommand" xml:space="preserve">
+    <value>İçeriği Göster</value>
+  </data>
+  <data name="AddIns.HelpViewer.DisplaySearchCommand" xml:space="preserve">
+    <value>Arama</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpLibraryRootTitle" xml:space="preserve">
+    <value>Yardım Kütüphanesi</value>
+  </data>
+  <data name="AddIns.HelpViewer.HelpModeLabel" xml:space="preserve">
+    <value>Yardım Modu</value>
+  </data>
+  <data name="AddIns.HelpViewer.InstalledHelpCatalogsLabel" xml:space="preserve">
+    <value>Yüklü Yardım Katalogları</value>
+  </data>
+  <data name="AddIns.HelpViewer.MicrosoftHelpViewerTitle" xml:space="preserve">
+    <value>Microsoft Yardım Görüntüleyici</value>
+  </data>
+  <data name="AddIns.HelpViewer.OfflineFeatureRequestMsg" xml:space="preserve">
+    <value>Çevrimiçi yardım modunda çevrimdışı bir özellik kullanmaya çalıştın. Bu özelliği kullanabilmek için yardım modunu değiştirmelisin.</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchDoSearchButton" xml:space="preserve">
+    <value>Ara</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchLookForLabel" xml:space="preserve">
+    <value>Ne için:</value>
+  </data>
+  <data name="AddIns.HelpViewer.SearchPadTitle" xml:space="preserve">
+    <value>Arama</value>
+  </data>
+  <data name="AddIns.HelpViewer.ShowErrorHelpTitle" xml:space="preserve">
+    <value>Yardımı Göster</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseExternalHelp" xml:space="preserve">
+    <value>Harici yardımı kullan</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOfflineHelpLabel" xml:space="preserve">
+    <value>Yerel yardımı kullanmak istiyorum</value>
+  </data>
+  <data name="AddIns.HelpViewer.UseOnlineHelpLabel" xml:space="preserve">
+    <value>Çevrimiçi yardımı kullanmak istiyorum</value>
+  </data>
   <data name="AddIns.HexEditor.DefaultBytesPerLine" xml:space="preserve">
     <value>Tek satırdaki bayt</value>
   </data>
   <data name="AddIns.HexEditor.Display" xml:space="preserve">
     <value>Gösterim</value>
+  </data>
+  <data name="AddIns.HexEditor.Display.Elements" xml:space="preserve">
+    <value>Nesneler</value>
+  </data>
+  <data name="AddIns.HexEditor.Display.Elements.Data" xml:space="preserve">
+    <value>Veri</value>
+  </data>
+  <data name="AddIns.HexEditor.Display.Elements.Offset" xml:space="preserve">
+    <value>Ofset</value>
   </data>
   <data name="AddIns.HexEditor.NumeralSystem" xml:space="preserve">
     <value>Sayısal sistem</value>
@@ -410,6 +467,87 @@ Yardım sistemini elde edebilmek için .NET Framework SDK 'yı yüklemelisiniz.<
   <data name="AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch" xml:space="preserve">
     <value>Şu anki proje dilini kullan</value>
   </data>
+  <data name="AddIns.Profiler.Commands.FindCallsOfSelected.TabTitle" xml:space="preserve">
+    <value>Sonuçlar</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.SetAsRoot.TabTitle" xml:space="preserve">
+    <value>Birleşik Parçalar</value>
+  </data>
+  <data name="AddIns.Profiler.Commands.ShowFunctions.TabTitle" xml:space="preserve">
+    <value>{0} için olan tüm fonksiyonlar</value>
+  </data>
+  <data name="AddIns.Profiler.DatabaseTooNewError" xml:space="preserve">
+    <value>Seçili SharpDevelop profil oturumu yeni bir SharpDevelop sürümü ile oluşturulmuş ve açılamıyor.</value>
+  </data>
+  <data name="AddIns.Profiler.FileExtensionDescription" xml:space="preserve">
+    <value>SharpDevelop Profil Oturumu</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.FileNotFound" xml:space="preserve">
+    <value>Çalıştırılabilir dosya bulunamadığı için proje başlatılamadı, lütfen projenin kendisinin ve tüm bağlantılarının doğruluğundan emin olunuz.</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.NoStartableProjectFound" xml:space="preserve">
+    <value>Açılabilir bir proje bulunamadı. İptal ediliyor...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.PreparingForAnalysis" xml:space="preserve">
+    <value>Analiz için hazırlanıyor...</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.RegisterFailed" xml:space="preserve">
+    <value>COM kayıt istemcisine profil kaydı girilemedi. Profilleme başlatılamıyor.</value>
+  </data>
+  <data name="AddIns.Profiler.Messages.UnregisterFailed" xml:space="preserve">
+    <value>COM kayıt istemcisinden profil kaydı silinemedi!</value>
+  </data>
+  <data name="AddIns.Profiler.MessageViewCategory" xml:space="preserve">
+    <value>Profil</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.CombineRecursiveCalls" xml:space="preserve">
+    <value>Yinelenen çağrıları birleştir.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.DoNotProfileNetInternals" xml:space="preserve">
+    <value>İç .NET çağrılarını profilleme.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.EnableDC" xml:space="preserve">
+    <value>Verileri sadece bu oturumun sonunda derle.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.EnableDCAtStartup" xml:space="preserve">
+    <value>Verilerin derlenmesini hemen oturum açılınca başlat.</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.Header" xml:space="preserve">
+    <value>Veri Koleksiyonu</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.SizeOfStorageDescription" xml:space="preserve">
+    <value>Geçici depolama dosyasının boyutu:</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.DataCollection.TrackEvents" xml:space="preserve">
+    <value>Olayları takip et</value>
+  </data>
+  <data name="AddIns.Profiler.Options.General.Title" xml:space="preserve">
+    <value>Genel</value>
+  </data>
+  <data name="AddIns.Profiler.Options.Title" xml:space="preserve">
+    <value>Profilleme</value>
+  </data>
+  <data name="AddIns.Profiler.ProfileExecutable.ErrorMessage" xml:space="preserve">
+    <value>Veri geçersiz, lütfen tekrar deneyin.</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.CollectData" xml:space="preserve">
+    <value>Veri topla</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilerControlWindow.Shutdown" xml:space="preserve">
+    <value>Kapat</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.NameColumnText" xml:space="preserve">
+    <value>Ad</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.SearchLabelText" xml:space="preserve">
+    <value>Ara:</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeSpentColumnText" xml:space="preserve">
+    <value>Geçen süre</value>
+  </data>
+  <data name="AddIns.Profiler.ProfilingView.TimeText" xml:space="preserve">
+    <value>Süre:</value>
+  </data>
   <data name="AddIns.SharpRefactoring.ExtractMethod" xml:space="preserve">
     <value>Çıkartma yöntemi</value>
   </data>
@@ -424,6 +562,12 @@ Yardım sistemini elde edebilmek için .NET Framework SDK 'yı yüklemelisiniz.<
   </data>
   <data name="AddIns.SharpRefactoring.ExtractMethodNotSupported" xml:space="preserve">
     <value>{0} içinden çıkarım yöntemi desteklenmemektedir!</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.InsertCtor.VariableLabel" xml:space="preserve">
+    <value>Değişken</value>
+  </data>
+  <data name="AddIns.SharpRefactoring.OverrideEqualsGetHashCodeMethods.AddInterface" xml:space="preserve">
+    <value>Arayüz ekle {0}</value>
   </data>
   <data name="AddIns.SourceAnalysis.CheckWithStyleCop" xml:space="preserve">
     <value>StyleCop ile Kontrol Et</value>
@@ -529,6 +673,9 @@ Yardım sistemini elde edebilmek için .NET Framework SDK 'yı yüklemelisiniz.<
   </data>
   <data name="AddIns.Subversion.UpdateToRevision" xml:space="preserve">
     <value>Kontrolü yenile</value>
+  </data>
+  <data name="AddIns.UsageDataCollector.AcceptConfirmation" xml:space="preserve">
+    <value>Katılımınız için teşekkürler. İstediğiniz zaman SharpDevelop seçeneklerini kullanarak çıkabilirsiniz.</value>
   </data>
   <data name="AddIns.UsageDataCollector.AcceptRadioButton" xml:space="preserve">
     <value>Katılmak istiyorum. Kullanım bilgilerini topla ve gönder</value>

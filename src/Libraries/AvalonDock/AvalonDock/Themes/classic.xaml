@@ -111,7 +111,7 @@
 							    BorderBrush="DarkGray"
                                 Height="18">
 								<DockPanel LastChildFill="True">
-                                    <Button DockPanel.Dock="Right" Style="{StaticResource PaneHeaderCommandStyle}" Command="ad:ManagedContentCommands.Close" CommandTarget="{TemplateBinding SelectedItem}"
+                                    <Button x:Name="btnClose" DockPanel.Dock="Right" Style="{StaticResource PaneHeaderCommandStyle}" Command="ad:ManagedContentCommands.Close" CommandTarget="{TemplateBinding SelectedItem}"
                                             Width="15" Height="15" Margin="2,0,2,0" VerticalAlignment="Center">
 										<!--<ad:AlignedImage>-->
                                         <ad:ImageEx x:Name="IMG_Close" Source="/AvalonDock;component/resources/Images/Classic/PinClose.png" Width="13" />
@@ -185,6 +185,9 @@
 						<Trigger Property ="ShowTabs" Value="False">
 							<Setter Property="Visibility" Value="Collapsed" TargetName="PART_Tabs"/>
 						</Trigger>
+                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self},  Path=SelectedItem.IsCloseable}" Value="false">
+                            <Setter Property="Visibility" TargetName="btnClose" Value="Collapsed"/>
+                        </DataTrigger>                        
 						<Trigger Property ="HasSingleItem" Value="True">
 							<Setter Property="Visibility" Value="Collapsed" TargetName="PART_Tabs"/>
 							<Setter Property="Visibility" Value="Collapsed" TargetName="paneTabsPanel"/>
@@ -202,6 +205,11 @@
 		</Setter>
 	</Style>
 
+    <!-- FloatingDockablePane -->
+    <Style x:Key="{x:Type ad:FloatingDockablePane}" TargetType="{x:Type ad:FloatingDockablePane}" BasedOn="{StaticResource {x:Type ad:DockablePane}}">
+
+    </Style>
+    
     <!--DocumentTabItemStyle-->
     <Style x:Key="DocumentTabItemStyle" TargetType="{x:Type ad:ManagedContent}">
         <Setter Property="Background"

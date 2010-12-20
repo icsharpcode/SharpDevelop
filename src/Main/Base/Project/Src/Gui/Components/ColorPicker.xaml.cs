@@ -2,14 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
+
+using Widgets = ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -60,14 +59,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void ButtonClick(object sender, RoutedEventArgs e)
 		{
-			e.Handled = true;
-			using (SharpDevelopColorDialog dlg = new SharpDevelopColorDialog()) {
-				dlg.WpfColor = this.Value;
-				if (dlg.ShowWpfDialog() == true) {
-					// use SetCurrentValue instead of SetValue so that two-way data binding can be used
-					SetCurrentValue(ValueProperty, dlg.WpfColor);
+			var control = new Widgets.ColorPicker() {
+				Background = SystemColors.ControlBrush
+			};
+			Popup popup = new Popup() {
+				Child = control,
+				Placement = PlacementMode.Bottom,
+				PlacementTarget = this,
+				IsOpen = true,
+				StaysOpen = false
+			};
+			
+			control.SetBinding(
+				Widgets.ColorPicker.ColorProperty,
+				new Binding("Value") {
+					Source = this,
+					Mode = BindingMode.TwoWay
 				}
-			}
+			);
 		}
 	}
 }

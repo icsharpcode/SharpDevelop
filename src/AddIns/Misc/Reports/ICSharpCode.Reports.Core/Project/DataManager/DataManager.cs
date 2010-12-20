@@ -191,23 +191,7 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 		
-		/*
-		private void CheckReportColumns()
-		{
-			
-			if (this.reportSettings.SortColumnCollection.Count > 0) {
-				if (this.dataViewStrategy.AvailableFields.Count > 0) {
-					foreach (SortColumn col in this.reportSettings.SortColumnCollection) {
-						string colName = col.ColumnName;
-						AbstractColumn c = this.dataViewStrategy.AvailableFields.Find (colName);
-						if (c == null) {
-							throw new WrongColumnException(col.ColumnName);
-						}
-					}
-				}
-			}
-		}
-		*/
+		
 		#endregion
 		
 		
@@ -245,23 +229,6 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 		
-		/*
-		public IndexList ChildRows
-		{
-			get {
-				return this.dataViewStrategy.ChildRows;
-			}
-		}
-		
-
-	
-		public bool IsGrouped
-		{
-			get {
-				return this.dataViewStrategy.IsGrouped;
-			}
-		}
-		*/
 		
 		public bool IsSorted
 		{
@@ -270,17 +237,11 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 		
-		/*
-		public bool IsFiltered
-		{
-			get {
-				return this.dataViewStrategy.IsFiltered;
-			}
-		}
-		*/
+	
 		#endregion
 		
 		#region System.IDisposable interface implementation
+		
 		public void Dispose() {
 			this.Dispose(true);
 			GC.SuppressFinalize(this);

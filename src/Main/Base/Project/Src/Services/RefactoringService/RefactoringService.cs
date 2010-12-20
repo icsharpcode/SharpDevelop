@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
@@ -228,6 +229,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				if (progressMonitor != null) progressMonitor.ShowingDialog = false;
 				return null;
 			}
+			
+			CancellationToken ct = progressMonitor != null ? progressMonitor.CancellationToken : CancellationToken.None;
+			
 			List<ProjectItem> files;
 			if (!string.IsNullOrEmpty(fileName)) {
 				// search just in given file
@@ -249,7 +253,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				
 				if (progressMonitor != null) {
 					progressMonitor.Progress += 1.0 / files.Count;
-					if (progressMonitor.CancellationToken.IsCancellationRequested)
+					if (ct.IsCancellationRequested)
 						return null;
 				}
 				// Don't read files we don't have a parser for.
@@ -257,7 +261,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				if (ParserService.GetParser(itemFileName) != null) {
 					ITextBuffer content = finder.Create(itemFileName);
 					if (content != null) {
-						AddReferences(references, ownerClass, member, itemFileName, content.Text);
+						try {
+							AddReferences(references, ownerClass, member, itemFileName, content.Text, ct);
+						} catch (OperationCanceledException ex) {
+							if (ex.CancellationToken == ct)
+								return null;
+							else
+								throw;
+						}
 					}
 				}
 			}
@@ -270,7 +281,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		static void AddReferences(List<Reference> list,
 		                          IClass parentClass, IMember member,
-		                          string fileName, string fileContent)
+		                          string fileName, string fileContent,
+		                          CancellationToken cancellationToken)
 		{
 			TextFinder textFinder; // the class used to find the position to resolve
 			if (member == null) {
@@ -292,6 +304,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			TextFinderMatch match = new TextFinderMatch(-1, 0);
 			
 			while (true) {
+				cancellationToken.ThrowIfCancellationRequested();
 				match = textFinder.Find(fileContentForFinder, match.Position + 1);
 				if (match.Position < 0)
 					break;
@@ -307,6 +320,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				if (expr.Expression != null) {
 					Point position = GetPosition(fileContent, match.ResolvePosition);
 				repeatResolve:
+					cancellationToken.ThrowIfCancellationRequested();
 					// TODO: Optimize by re-using the same resolver if multiple expressions were
 					// found in this file (the resolver should parse all methods at once)
 					ResolveResult rr = ParserService.Resolve(expr, position.Y, position.X, fileName, fileContent);

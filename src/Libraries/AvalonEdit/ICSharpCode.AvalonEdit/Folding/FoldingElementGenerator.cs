@@ -2,11 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.TextFormatting;
-
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 
@@ -15,21 +15,57 @@ namespace ICSharpCode.AvalonEdit.Folding
 	/// <summary>
 	/// A <see cref="VisualLineElementGenerator"/> that produces line elements for folded <see cref="FoldingSection"/>s.
 	/// </summary>
-	public class FoldingElementGenerator : VisualLineElementGenerator
+	public sealed class FoldingElementGenerator : VisualLineElementGenerator, ITextViewConnect
 	{
+		readonly List<TextView> textViews = new List<TextView>();
+		FoldingManager foldingManager;
+		
+		#region FoldingManager property / connecting with TextView
 		/// <summary>
 		/// Gets/Sets the folding manager from which the foldings should be shown.
 		/// </summary>
-		public FoldingManager FoldingManager { get; set; }
+		public FoldingManager FoldingManager {
+			get {
+				return foldingManager;
+			}
+			set {
+				if (foldingManager != value) {
+					if (foldingManager != null) {
+						foreach (TextView v in textViews)
+							foldingManager.RemoveFromTextView(v);
+					}
+					foldingManager = value;
+					if (foldingManager != null) {
+						foreach (TextView v in textViews)
+							foldingManager.AddToTextView(v);
+					}
+				}
+			}
+		}
+		
+		void ITextViewConnect.AddToTextView(TextView textView)
+		{
+			textViews.Add(textView);
+			if (foldingManager != null)
+				foldingManager.AddToTextView(textView);
+		}
+		
+		void ITextViewConnect.RemoveFromTextView(TextView textView)
+		{
+			textViews.Remove(textView);
+			if (foldingManager != null)
+				foldingManager.RemoveFromTextView(textView);
+		}
+		#endregion
 		
 		/// <inheritdoc/>
 		public override void StartGeneration(ITextRunConstructionContext context)
 		{
 			base.StartGeneration(context);
-			if (FoldingManager != null) {
-				if (context.TextView != FoldingManager.textView)
+			if (foldingManager != null) {
+				if (!foldingManager.textViews.Contains(context.TextView))
 					throw new ArgumentException("Invalid TextView");
-				if (context.Document != FoldingManager.document)
+				if (context.Document != foldingManager.document)
 					throw new ArgumentException("Invalid document");
 			}
 		}
@@ -37,8 +73,8 @@ namespace ICSharpCode.AvalonEdit.Folding
 		/// <inheritdoc/>
 		public override int GetFirstInterestedOffset(int startOffset)
 		{
-			if (FoldingManager != null)
-				return FoldingManager.GetNextFoldedFoldingStart(startOffset);
+			if (foldingManager != null)
+				return foldingManager.GetNextFoldedFoldingStart(startOffset);
 			else
 				return -1;
 		}
@@ -46,11 +82,11 @@ namespace ICSharpCode.AvalonEdit.Folding
 		/// <inheritdoc/>
 		public override VisualLineElement ConstructElement(int offset)
 		{
-			if (FoldingManager == null)
+			if (foldingManager == null)
 				return null;
 			int foldedUntil = -1;
 			FoldingSection foldingSection = null;
-			foreach (FoldingSection fs in FoldingManager.GetFoldingsAt(offset)) {
+			foreach (FoldingSection fs in foldingManager.GetFoldingsAt(offset)) {
 				if (fs.IsFolded) {
 					if (fs.EndOffset > foldedUntil) {
 						foldedUntil = fs.EndOffset;

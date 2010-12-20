@@ -24,14 +24,13 @@ namespace BuildAddinDocumentation
 			List<XmlElement> doozers = new List<XmlElement>();
 			List<XmlElement> conditions = new List<XmlElement>();
 			
-			if (!ReadXmlDocu(srcDir + "Main\\Core\\Project", doozers, conditions))
-				return;
-			if (!ReadXmlDocu(srcDir + "Main\\Base\\Project", doozers, conditions))
+			if (!ReadXmlDocu(srcDir + "Main\\Base\\Project\\ICSharpCode.SharpDevelop.csproj", doozers, conditions))
 				return;
 			
 			// build normal SharpDevelop:
 			ProcessStartInfo info = new ProcessStartInfo("cmd", "/c debugbuild.bat");
-			info.WorkingDirectory = srcDir;
+			info.WorkingDirectory = Path.GetFullPath(Path.Combine(srcDir, ".."));
+			Debug.WriteLine(info.WorkingDirectory + ">" + info.FileName + " " + info.Arguments);
 			Process p = Process.Start(info);
 			if (!p.WaitForExit(60000)) {
 				Debug.WriteLine("msbuild did not exit");
@@ -44,7 +43,10 @@ namespace BuildAddinDocumentation
 			
 			sdVersion = FileVersionInfo.GetVersionInfo(Path.GetFullPath(Path.Combine(srcDir, "..\\bin\\SharpDevelop.exe")));
 			
-			//sdVersion = FileVersionInfo.GetVersionInfo(Path.GetFullPath(Path.Combine(srcDir, "..\\bin\\ICSharpCode.Core.dll")));
+			XmlDocument coreDoc = new XmlDocument();
+			coreDoc.Load(srcDir + "..\\bin\\ICSharpCode.Core.xml");
+			ReadXmlDocu(coreDoc, doozers, conditions);
+			
 			Comparison<XmlElement> comparison = delegate(XmlElement a, XmlElement b) {
 				string shortNameA = a.GetAttribute("name").Substring(a.GetAttribute("name").LastIndexOf('.') + 1);
 				string shortNameB = b.GetAttribute("name").Substring(b.GetAttribute("name").LastIndexOf('.') + 1);
@@ -314,9 +316,14 @@ namespace BuildAddinDocumentation
 			html.WriteLine("</body></html>");
 		}
 		
-		static bool ReadXmlDocu(string projectFolder, List<XmlElement> doozers, List<XmlElement> conditions)
+		static bool ReadXmlDocu(string projectFileName, List<XmlElement> doozers, List<XmlElement> conditions)
 		{
-			XmlDocument doc = GetXmlDocu(Path.GetFullPath(projectFolder));
+			XmlDocument doc = GetXmlDocu(Path.GetFullPath(projectFileName));
+			return ReadXmlDocu(doc, doozers, conditions);
+		}
+		
+		static bool ReadXmlDocu(XmlDocument doc, List<XmlElement> doozers, List<XmlElement> conditions)
+		{
 			if (doc == null) return false;
 			foreach (XmlNode node in doc.DocumentElement["members"]) {
 				XmlElement member = node as XmlElement;
@@ -332,16 +339,16 @@ namespace BuildAddinDocumentation
 			return true;
 		}
 		
-		static XmlDocument GetXmlDocu(string projectFolder)
+		static XmlDocument GetXmlDocu(string projectFileName)
 		{
 			string docFile = Path.GetFullPath("doc.xml");
 			if (File.Exists(docFile))
 				File.Delete(docFile);
-			string args = "\"/p:DocumentationFile=" + docFile +  "\" \"/p:NoWarn=1591 1573 1574 1572 419\"";
-			string msbuild = Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location), "..\\v3.5\\msbuild.exe");
+			string args = Path.GetFileName(projectFileName) + " \"/p:DocumentationFile=" + docFile +  "\" \"/p:NoWarn=1591 1573 1574 1572 419\"";
+			string msbuild = Path.Combine(Path.GetDirectoryName(typeof(object).Assembly.Location), "msbuild.exe");
 			ProcessStartInfo info = new ProcessStartInfo(msbuild, args);
-			Debug.WriteLine(projectFolder + ">" + msbuild + " " + args);
-			info.WorkingDirectory = projectFolder;
+			info.WorkingDirectory = Path.GetDirectoryName(projectFileName);
+			Debug.WriteLine(info.WorkingDirectory + ">" + info.FileName + " " + info.Arguments);
 			Process p = Process.Start(info);
 			if (!p.WaitForExit(60000)) {
 				Debug.WriteLine("msbuild did not exit");

@@ -29,5 +29,7 @@ namespace ICSharpCode.UnitTesting
 		{
 			return null;
 		}
+		
+		public void CollapseAll() { }
 	}
 }

@@ -114,6 +114,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		/// </summary>
 		/// <param name="line">The line to highlight.</param>
 		/// <returns>A <see cref="HighlightedLine"/> line object that represents the highlighted sections.</returns>
+		[ObsoleteAttribute("Use the (int lineNumber) overload instead")]
 		public HighlightedLine HighlightLine(DocumentLine line)
 		{
 			if (!document.Lines.Contains(line))

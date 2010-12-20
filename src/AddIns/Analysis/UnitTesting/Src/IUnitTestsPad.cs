@@ -12,6 +12,7 @@ namespace ICSharpCode.UnitTesting
 		void BringToFront();
 		void ResetTestResults();
 		IProject[] GetProjects();
-		TestProject GetTestProject(IProject project);
+		TestProject GetTestProject(IProject project);		
+		void CollapseAll();
 	}
 }

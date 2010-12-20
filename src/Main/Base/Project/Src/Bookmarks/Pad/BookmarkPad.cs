@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		protected override ToolBar CreateToolBar()
 		{
-			ToolBar toolbar = ToolBarService.CreateToolBar(this, "/SharpDevelop/Pads/BookmarkPad/Toolbar");
+			ToolBar toolbar = ToolBarService.CreateToolBar(myPanel, this, "/SharpDevelop/Pads/BookmarkPad/Toolbar");
 			toolbar.SetValue(Grid.RowProperty, 0);
 			return toolbar;
 		}

@@ -151,7 +151,11 @@ namespace ICSharpCode.Core
 			if (reader.HasAttributes) {
 				for (int i = 0; i < reader.AttributeCount; i++) {
 					reader.MoveToAttribute(i);
-					properties[reader.Name] = reader.Value;
+					// some values are frequently repeated (e.g. type="MenuItem"),
+					// so we also use the NameTable for attribute values
+					// (XmlReader itself only uses it for attribute names)
+					string val = reader.NameTable.Add(reader.Value);
+					properties[reader.Name] = val;
 				}
 				reader.MoveToElement(); //Moves the reader back to the element node.
 			}

@@ -19,8 +19,8 @@ namespace ICSharpCode.Reports.Core.Exporter
 		
 		#region Constructor
 		
-		
-		public static IReportCreator CreateInstance(IReportModel reportModel, IDataManager dataManager,ILayouter layouter)
+		public static IReportCreator CreateInstance(IReportModel reportModel, IDataManager dataManager)
+//		public static IReportCreator CreateInstance(IReportModel reportModel, IDataManager dataManager,ILayouter layouter)
 		{
 			if (reportModel == null) {
 				throw new ArgumentNullException("reportModel");
@@ -28,15 +28,12 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (dataManager == null) {
 				throw new ArgumentNullException("dataManager");
 			}
-			if (layouter == null) {
-				throw new ArgumentNullException("layouter");
-			}
-			DataPageBuilder instance = new DataPageBuilder(reportModel,dataManager,layouter);
+			DataPageBuilder instance = new DataPageBuilder(reportModel,dataManager);
 			return instance;
 		}
 		
 		
-		private DataPageBuilder (IReportModel reportModel,IDataManager dataManager,ILayouter layouter):base(reportModel,layouter) 
+		private DataPageBuilder (IReportModel reportModel,IDataManager dataManager):base(reportModel) 
 		{
 			this.dataManager = dataManager;
 		}

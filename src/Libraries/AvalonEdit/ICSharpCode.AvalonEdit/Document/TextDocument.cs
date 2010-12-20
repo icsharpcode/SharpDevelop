@@ -155,6 +155,12 @@ namespace ICSharpCode.AvalonEdit.Document
 			return GetText(segment.Offset, segment.Length);
 		}
 		
+		int ITextSource.IndexOfAny(char[] anyOf, int startIndex, int count)
+		{
+			DebugVerifyAccess(); // frequently called (NewLineFinder), so must be fast in release builds
+			return rope.IndexOfAny(anyOf, startIndex, count);
+		}
+		
 		/// <inheritdoc/>
 		public char GetCharAt(int offset)
 		{
@@ -722,13 +728,23 @@ namespace ICSharpCode.AvalonEdit.Document
 			}
 		}
 		
-		readonly UndoStack undoStack;
+		UndoStack undoStack;
 		
 		/// <summary>
 		/// Gets the <see cref="UndoStack"/> of the document.
 		/// </summary>
+		/// <remarks>This property can also be used to set the undo stack, e.g. for sharing a common undo stack between multiple documents.</remarks>
 		public UndoStack UndoStack {
 			get { return undoStack; }
+			set {
+				if (value == null)
+					throw new ArgumentNullException();
+				if (value != undoStack) {
+					undoStack.ClearAll(); // first clear old undo stack, so that it can't be used to perform unexpected changes on this document
+					// ClearAll() will also throw an exception when it's not safe to replace the undo stack (e.g. update is currently in progress)
+					undoStack = value;
+				}
+			}
 		}
 		
 		/// <summary>

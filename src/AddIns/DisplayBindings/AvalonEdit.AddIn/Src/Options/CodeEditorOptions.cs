@@ -144,6 +144,19 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			}
 		}
 		
+		bool enableAnimations = true;
+		
+		[DefaultValue(true)]
+		public bool EnableAnimations {
+			get { return enableAnimations; }
+			set {
+				if (enableAnimations != value) {
+					enableAnimations = value;
+					OnPropertyChanged("EnableAnimations");
+				}
+			}
+		}
+		
 		bool useSmartIndentation = true;
 		
 		[DefaultValue(true)]

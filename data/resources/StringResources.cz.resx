@@ -231,6 +231,9 @@
   <data name="AddIns.ClassDiagram.ShowClassDiagram" xml:space="preserve">
     <value>Ukázat diagram třídy</value>
   </data>
+  <data name="AddIns.Git.TortoiseGitRequired" xml:space="preserve">
+    <value>Pro spuštění tohoto příkazu musí být nainstalován TortoiseGit.</value>
+  </data>
   <data name="AddIns.HtmlHelp2.AddToFavorites" xml:space="preserve">
     <value>Přidat nápovědu k Oblíbeným.</value>
   </data>
@@ -1504,6 +1507,9 @@ Chcete přidat nový soubor do projektu ${CurrentProjectName}?</value>
   </data>
   <data name="Dialog.NewFile.FillOutFirstMessage" xml:space="preserve">
     <value>K vytvoření tohoto souboru je nutné vyplnit některé dodatečné vlastnosti.</value>
+  </data>
+  <data name="Dialog.NewFile.ReadOnlyProjectWarning" xml:space="preserve">
+    <value>Označený soubor {0} má nastaveny atributy pouze ke čtení. Soubor nebude do projektu vložen.</value>
   </data>
   <data name="Dialog.NewFile.TemplateText" xml:space="preserve">
     <value>Š&amp;ablony:</value>
@@ -6855,7 +6861,6 @@ Došlo k chybě při spuštění:</value>
     <value>Odkomentovat oblast</value>
   </data>
   <data name="_Internal.Bogus.Translation.Test1" xml:space="preserve">
-    <value>Tento resource není používán. Jeho účelem je testování kvality překladu a obsahuje 
-zlom řádku</value>
+    <value>Tento zdroj není používán. Jeho účelem je testování kvality překladu a konce řádku</value>
   </data>
 </root>
