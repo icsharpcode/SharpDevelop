@@ -106,9 +106,12 @@ namespace ICSharpCode.Profiler.AddIn.Views
 			Dispatcher.Invoke(
 				(Action)(
 					() => {
-						WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
-						TaskService.ClearExceptCommentTasks();
-						TaskService.AddRange(errors.Select(error => new Task(null, error.ErrorText, error.Column, error.Line, (error.IsWarning) ? TaskType.Warning : TaskType.Error)));
+						var tasks = errors.Select(error => new Task(null, error.ErrorText, error.Column, error.Line, (error.IsWarning) ? TaskType.Warning : TaskType.Error)).ToList();
+						if (tasks.Count > 0) {
+							WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+							TaskService.ClearExceptCommentTasks();
+							TaskService.AddRange(tasks);
+						}
 					}
 				)
 			);
