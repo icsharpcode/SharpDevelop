@@ -2,11 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+
+using ICSharpCode.AvalonEdit.AddIn.MyersDiff;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
@@ -58,41 +61,70 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			changeList.Clear();
 			
-//			Stream baseFileStream = GetBaseVersion();
-//			byte[] baseFile = new byte[baseFileStream.Length];
-//			
-//			ReadAll(baseFileStream, baseFile);
-//			
-//			Stream currentFileStream = GetCurrentVersion();
-//			byte[] currentFile = new byte[currentFileStream.Length];
+			Stream baseFileStream = GetBaseVersion();
+			string baseFile = ReadAll(baseFileStream);
 			
-			ReadAll(currentFileStream, currentFile);
+			Stream currentFileStream = GetCurrentVersion();
+			string currentFile = ReadAll(currentFileStream);
 			
-//			MyersDiff diff = new MyersDiff(new RawText(baseFile), new RawText(currentFile));
+			List<int> baseFileOffsets = CalculateLineOffsets(baseFile);
+			List<int> currentFileOffsets = CalculateLineOffsets(currentFile);
 			
-//			if (diff == null)
+			MyersDiff.MyersDiff diff = new MyersDiff.MyersDiff(new StringSequence(baseFile), new StringSequence(currentFile));
+			
+			if (diff == null)
 				changeList.InsertRange(0, document.TotalNumberOfLines + 1, new LineChangeInfo(ChangeType.None, ""));
-//			else {
-//				changeList.Add(new LineChangeInfo(ChangeType.None, ""));
-//				int lastEnd = 0;
-//				foreach (Edit edit in diff.GetEdits()) {
-//					changeList.InsertRange(changeList.Count, edit.BeginB - lastEnd, new LineChangeInfo(ChangeType.None, ""));
-//					changeList.InsertRange(changeList.Count, edit.EndB - edit.BeginB, new LineChangeInfo(edit.EditType, ""));
-//					lastEnd = edit.EndB;
-//				}
-//				changeList.InsertRange(changeList.Count, document.TotalNumberOfLines - lastEnd, new LineChangeInfo(ChangeType.None, ""));
-//			}
+			else {
+				changeList.Add(new LineChangeInfo(ChangeType.None, ""));
+				int lastEndLine = 0;
+				foreach (Edit edit in diff.GetEdits()) {
+					int beginLine = OffsetToLineNumber(currentFileOffsets, edit.BeginB);
+					int endLine = OffsetToLineNumber(currentFileOffsets, edit.EndB);
+					changeList.InsertRange(changeList.Count, beginLine - lastEndLine, new LineChangeInfo(ChangeType.None, ""));
+					changeList.InsertRange(changeList.Count, endLine - beginLine, new LineChangeInfo(edit.EditType, ""));
+					lastEndLine = endLine;
+				}
+				changeList.InsertRange(changeList.Count, document.TotalNumberOfLines - lastEndLine, new LineChangeInfo(ChangeType.None, ""));
+			}
 			
 			OnChangeOccurred(EventArgs.Empty);
 		}
-
-		void ReadAll(Stream stream, byte[] buffer)
+		
+		List<int> CalculateLineOffsets(string fileContent)
 		{
-			int offset = 0;
-			int readBytes = 0;
+			List<int> offsets = new List<int>();
 			
-			while ((readBytes = stream.Read(buffer, offset, buffer.Length - offset)) > 0)
-				offset += readBytes;
+			int current = 0;
+			offsets.Add(current);
+			
+			while ((current = fileContent.IndexOfAny(new[] { '\r', '\n' }, current + 1)) != -1) {
+				switch (fileContent[current]) {
+					case '\r':
+						if (current + 1 < fileContent.Length && fileContent[current + 1] != '\n')
+							offsets.Add(current + 1);
+						break;
+					case '\n':
+						offsets.Add(current + 1);
+						break;
+				}
+			}
+			
+			return offsets;
+		}
+		
+		int OffsetToLineNumber(List<int> lineOffsets, int offset)
+		{
+			int lineNumber = lineOffsets.BinarySearch(offset);
+			if (lineNumber < 0)
+				lineNumber = (~lineNumber) - 1;
+			return lineNumber + 1;
+		}
+		
+		string ReadAll(Stream stream)
+		{
+			using (StreamReader reader = new StreamReader(stream)) {
+				return reader.ReadToEnd();
+			}
 		}
 		
 		Stream GetBaseVersion()
@@ -123,8 +155,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void UndoStackPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (textDocument.UndoStack.IsOriginalFile)
-				SetupInitialFileState();
+//			if (textDocument.UndoStack.IsOriginalFile)
+//				SetupInitialFileState();
 		}
 		
 		void ILineTracker.BeforeRemoveLine(DocumentLine line)
@@ -137,7 +169,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 //			lineBefore.DeletedLinesAfterThisLine
 //				+= (textDocument.GetText(line.Offset, line.Length)
 //				    + Environment.NewLine + info.DeletedLinesAfterThisLine);
-//			
+//
 //			Debug.Assert(lineBefore.DeletedLinesAfterThisLine.EndsWith(Environment.NewLine));
 			
 			changeList[index - 1] = lineBefore;

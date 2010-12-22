@@ -50,7 +50,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 								drawingContext.DrawRectangle(Brushes.Blue, null, rect);
 								break;
 							case ChangeType.Unsaved:
-								drawingContext.DrawRectangle(Brushes., null, rect);
+								drawingContext.DrawRectangle(Brushes.Yellow, null, rect);
 								break;
 							default:
 								throw new Exception("Invalid value for ChangeType");
