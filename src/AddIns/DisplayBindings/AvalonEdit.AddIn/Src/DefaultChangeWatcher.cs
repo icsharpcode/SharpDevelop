@@ -64,13 +64,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			Stream baseFileStream = GetBaseVersion();
 			string baseFile = ReadAll(baseFileStream);
 			
-			Stream currentFileStream = GetCurrentVersion();
-			string currentFile = ReadAll(currentFileStream);
-			
-			List<int> baseFileOffsets = CalculateLineOffsets(baseFile);
-			List<int> currentFileOffsets = CalculateLineOffsets(currentFile);
-			
-			MyersDiff.MyersDiff diff = new MyersDiff.MyersDiff(new StringSequence(baseFile), new StringSequence(currentFile));
+			MyersDiff.MyersDiff diff = new MyersDiff.MyersDiff(
+				new StringSequence(baseFile),
+				new StringSequence(textDocument.Text)
+			);
 			
 			if (diff == null)
 				changeList.InsertRange(0, document.TotalNumberOfLines + 1, new LineChangeInfo(ChangeType.None, ""));
@@ -78,46 +75,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				changeList.Add(new LineChangeInfo(ChangeType.None, ""));
 				int lastEndLine = 0;
 				foreach (Edit edit in diff.GetEdits()) {
-					int beginLine = OffsetToLineNumber(currentFileOffsets, edit.BeginB);
-					int endLine = OffsetToLineNumber(currentFileOffsets, edit.EndB);
+					int beginLine = textDocument.GetLineByOffset(edit.BeginB).LineNumber;
+					int endLine = textDocument.GetLineByOffset(edit.EndB).LineNumber;
 					changeList.InsertRange(changeList.Count, beginLine - lastEndLine, new LineChangeInfo(ChangeType.None, ""));
 					changeList.InsertRange(changeList.Count, endLine - beginLine, new LineChangeInfo(edit.EditType, ""));
 					lastEndLine = endLine;
 				}
-				changeList.InsertRange(changeList.Count, document.TotalNumberOfLines - lastEndLine, new LineChangeInfo(ChangeType.None, ""));
+				changeList.InsertRange(changeList.Count, textDocument.LineCount - lastEndLine, new LineChangeInfo(ChangeType.None, ""));
 			}
 			
 			OnChangeOccurred(EventArgs.Empty);
-		}
-		
-		List<int> CalculateLineOffsets(string fileContent)
-		{
-			List<int> offsets = new List<int>();
-			
-			int current = 0;
-			offsets.Add(current);
-			
-			while ((current = fileContent.IndexOfAny(new[] { '\r', '\n' }, current + 1)) != -1) {
-				switch (fileContent[current]) {
-					case '\r':
-						if (current + 1 < fileContent.Length && fileContent[current + 1] != '\n')
-							offsets.Add(current + 1);
-						break;
-					case '\n':
-						offsets.Add(current + 1);
-						break;
-				}
-			}
-			
-			return offsets;
-		}
-		
-		int OffsetToLineNumber(List<int> lineOffsets, int offset)
-		{
-			int lineNumber = lineOffsets.BinarySearch(offset);
-			if (lineNumber < 0)
-				lineNumber = (~lineNumber) - 1;
-			return lineNumber + 1;
 		}
 		
 		string ReadAll(Stream stream)
@@ -138,19 +105,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 			
 			return new DefaultVersionProvider().OpenBaseVersion(fileName);
-		}
-		
-		Stream GetCurrentVersion()
-		{
-			string fileName = ((ITextEditor)document.GetService(typeof(ITextEditor))).FileName;
-			
-			foreach (IDocumentVersionProvider provider in VersioningServices.Instance.DocumentVersionProviders) {
-				var result = provider.OpenCurrentVersion(fileName);
-				if (result != null)
-					return result;
-			}
-			
-			return new DefaultVersionProvider().OpenCurrentVersion(fileName);
 		}
 		
 		void UndoStackPropertyChanged(object sender, PropertyChangedEventArgs e)

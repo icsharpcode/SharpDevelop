@@ -19,14 +19,5 @@ namespace ICSharpCode.Svn
 			using (SvnClientWrapper client = new SvnClientWrapper())
 				return client.OpenBaseVersion(fileName);
 		}
-		
-		public Stream OpenCurrentVersion(string fileName)
-		{
-			if (!SvnClientWrapper.IsInSourceControl(fileName))
-				return null;
-			
-			using (SvnClientWrapper client = new SvnClientWrapper())
-				return client.OpenCurrentVersion(fileName);
-		}
 	}
 }

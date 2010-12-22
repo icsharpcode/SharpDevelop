@@ -16,18 +16,11 @@ namespace ICSharpCode.SharpDevelop.Editor
 		/// to disk or a base version provided by any VCS.
 		/// </summary>
 		Stream OpenBaseVersion(string fileName);
-		
-		Stream OpenCurrentVersion(string fileName);
 	}
 	
 	public sealed class DefaultVersionProvider : IDocumentVersionProvider
 	{
 		public Stream OpenBaseVersion(string fileName)
-		{
-			return File.OpenRead(fileName);
-		}
-		
-		public Stream OpenCurrentVersion(string fileName)
 		{
 			return File.OpenRead(fileName);
 		}
