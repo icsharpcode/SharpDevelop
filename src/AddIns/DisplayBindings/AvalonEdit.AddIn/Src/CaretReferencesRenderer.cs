@@ -22,15 +22,22 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	public class CaretReferencesRenderer
 	{
 		/// <summary>
-		/// Delays the highlighting after the caret position changes, so that Find references does not get called too often.
-		/// </summary>
-		DispatcherTimer delayTimer;
-		const int delayMilliseconds = 800;
-		/// <summary>
 		/// Delays the Resolve check so that it does not get called too often when user holds an arrow.
 		/// </summary>
 		DispatcherTimer delayMoveTimer;
-		const int delayMoveMilliseconds = 100;
+		const int delayMoveMs = 100;
+		
+		/// <summary>
+		/// Delays the Find references (and highlight) after the caret stays at one point for a while.
+		/// </summary>
+		DispatcherTimer delayTimer;
+		const int delayMs = 800;
+		
+		/// <summary>
+		/// Maximum time for Find references. After this time it gets cancelled and no highlight is displayed.
+		/// Useful for very large files.
+		/// </summary>
+		const int findReferencesTimeoutMs = 200;
 		
 		CodeEditorView editorView;
 		ITextEditor Editor { get { return editorView.Adapter; } }
@@ -53,10 +60,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			this.editorView = editorView;
 			this.highlightRenderer = new ExpressionHighlightRenderer(this.editorView.TextArea.TextView);
-			this.delayTimer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(delayMilliseconds) };
+			this.delayTimer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(delayMs) };
 			this.delayTimer.Stop();
 			this.delayTimer.Tick += TimerTick;
-			this.delayMoveTimer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(delayMoveMilliseconds) };
+			this.delayMoveTimer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(delayMoveMs) };
 			this.delayMoveTimer.Stop();
 			this.delayMoveTimer.Tick += TimerMoveTick;
 			this.editorView.TextArea.Caret.PositionChanged += CaretPositionChanged;
@@ -73,7 +80,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			if (!IsEnabled)
 				return;
-			var referencesToBeHighlighted = GetReferencesInCurrentFile(this.lastResolveResult);
+			var referencesToBeHighlighted = FindReferencesInCurrentFile(this.lastResolveResult);
 			this.highlightRenderer.SetHighlight(referencesToBeHighlighted);
 		}
 		
@@ -85,7 +92,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (!IsEnabled)
 				return;
 			
-			var resolveResult = GetExpressionUnderCaret();
+			var resolveResult = GetExpressionAtCaret();
 			if (resolveResult == null) {
 				this.lastResolveResult = resolveResult;
 				this.highlightRenderer.ClearHighlight();
@@ -115,7 +122,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// Resolves the current expression under caret.
 		/// This gets called on every caret position change, so quite often.
 		/// </summary>
-		ResolveResult GetExpressionUnderCaret()
+		ResolveResult GetExpressionAtCaret()
 		{
 			if (string.IsNullOrEmpty(Editor.FileName) || ParserService.LoadSolutionProjectsThreadRunning)
 				return null;
@@ -127,14 +134,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// <summary>
 		/// Finds references to resolved expression in the current file.
 		/// </summary>
-		List<Reference> GetReferencesInCurrentFile(ResolveResult resolveResult)
+		List<Reference> FindReferencesInCurrentFile(ResolveResult resolveResult)
 		{
 			var cancellationTokenSource = new CancellationTokenSource();
 			using (new Timer(
 				delegate {
-					LoggingService.Debug("Aborting GetReferencesInCurrentFile due to timeout");
+					LoggingService.Debug("Aborting FindReferencesInCurrentFile due to timeout");
 					cancellationTokenSource.Cancel();
-				}, null, 200, Timeout.Infinite)) 
+				}, null, findReferencesTimeoutMs, Timeout.Infinite)) 
 			{
 				var progressMonitor = new DummyProgressMonitor();
 				progressMonitor.CancellationToken = cancellationTokenSource.Token;
@@ -147,6 +154,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		/// <summary>
 		/// Returns true if the 2 ResolveResults refer to the same symbol.
+		/// So that when caret moves but stays inside the same symbol, symbol stays highlighted.
 		/// </summary>
 		bool SameResolveResult(ResolveResult resolveResult, ResolveResult resolveResult2)
 		{

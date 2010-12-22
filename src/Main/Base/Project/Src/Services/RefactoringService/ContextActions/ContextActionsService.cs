@@ -59,7 +59,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		ITextEditor editor { get; set; }
 		IList<IContextActionsProvider> providers { get; set; }
-		EditorContext context { get; set; }
 		
 		public EditorActionsProvider(ITextEditor editor, IList<IContextActionsProvider> providers)
 		{
@@ -70,7 +69,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			this.editor = editor;
 			this.providers = providers;
 			ParserService.ParseCurrentViewContent();
-			this.context = new EditorContext(editor);
 		}
 		
 		public IEnumerable<IContextAction> GetVisibleActions()
@@ -104,11 +102,16 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (ParserService.LoadSolutionProjectsThreadRunning)
 				yield break;
+			// Not necessary to reparse here because the ContextActionsRenderer timeout 
+			// is large enough for the standard parser to finish first - not completely reliable, but saves one full reparse.
+			// In case the standard parser does not finish in time, the DOM is a little outdated but nothing bad happens
+			// (context action can just display an old class/method).
+			
 			// DO NOT USE Wait on the main thread!
 			// causes deadlocks!
-			//parseTask.Wait();
+			// parseTask.Wait();
 			
-			var sw = new Stopwatch(); sw.Start();
+			// var sw = new Stopwatch(); sw.Start();
 			var editorContext = new EditorContext(this.editor);
 			long elapsedEditorContextMs = sw.ElapsedMilliseconds;
 			
