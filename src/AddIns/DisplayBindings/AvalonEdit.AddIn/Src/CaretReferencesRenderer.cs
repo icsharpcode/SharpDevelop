@@ -74,6 +74,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.highlightRenderer.ClearHighlight();
 		}
 
+		/// <summary>
+		/// In the current document, highlights all references to the expression
+		/// which is currently under the caret (local variable, class, property).
+		/// This gets called on every caret position change, so quite often.
+		/// </summary>
+		void CaretPositionChanged(object sender, EventArgs e)
+		{
+			Restart(this.delayMoveTimer);
+		}
+		
 		void TimerTick(object sender, EventArgs e)
 		{
 			this.delayTimer.Stop();
@@ -94,7 +104,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			var resolveResult = GetExpressionAtCaret();
 			if (resolveResult == null) {
-				this.lastResolveResult = resolveResult;
+				this.lastResolveResult = null;
 				this.highlightRenderer.ClearHighlight();
 				return;
 			}
@@ -104,18 +114,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				this.lastResolveResult = resolveResult;
 				this.highlightRenderer.ClearHighlight();
 				this.delayTimer.Start();
+			} else {
+				// highlight stays the same, both timers are stopped (will start again when caret moves)
 			}
-		}
-		
-		/// <summary>
-		/// In the current document, highlights all references to the expression
-		/// which is currently under the caret (local variable, class, property).
-		/// This gets called on every caret position change, so quite often.
-		/// </summary>
-		void CaretPositionChanged(object sender, EventArgs e)
-		{
-			this.delayMoveTimer.Stop();
-			this.delayMoveTimer.Start();
 		}
 		
 		/// <summary>
@@ -166,6 +167,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return false;*/
 			// TODO determine if 2 ResolveResults refer to the same symbol
 			return false;
+		}
+		
+		/// <summary>
+		/// Restarts a timer.
+		/// </summary>
+		void Restart(DispatcherTimer timer)
+		{
+			timer.Stop();
+			timer.Start();
 		}
 	}
 }

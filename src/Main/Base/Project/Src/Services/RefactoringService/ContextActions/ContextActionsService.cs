@@ -18,6 +18,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		private static ContextActionsService instance = new ContextActionsService();
 		
+		/// <summary>
+		/// Key for storing the names of disabled providers in PropertyService.
+		/// </summary>
 		const string PropertyServiceKey = "DisabledContextActionProviders";
 		
 		public static ContextActionsService Instance {
