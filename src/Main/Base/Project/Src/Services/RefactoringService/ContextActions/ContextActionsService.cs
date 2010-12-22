@@ -113,7 +113,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			
 			// var sw = new Stopwatch(); sw.Start();
 			var editorContext = new EditorContext(this.editor);
-			long elapsedEditorContextMs = sw.ElapsedMilliseconds;
+			// long elapsedEditorContextMs = sw.ElapsedMilliseconds;
 			
 			// could run providers in parallel
 			foreach (var provider in providers) {
