@@ -354,6 +354,26 @@ namespace ICSharpCode.AvalonEdit.Utils
 		}
 		
 		/// <summary>
+		/// Applies the conversion function to all elements in this CompressingTreeList.
+		/// </summary>
+		public void Transform(Func<T, T> converter)
+		{
+			if (root == null)
+				return;
+			Node prevNode = null;
+			for (Node n = root.LeftMost; n != null; n = n.Successor) {
+				n.value = converter(n.value);
+				if (prevNode != null && comparisonFunc(prevNode.value, n.value)) {
+					n.count += prevNode.count;
+					UpdateAugmentedData(n);
+					RemoveNode(prevNode);
+				}
+				prevNode = n;
+			}
+		}
+
+		
+		/// <summary>
 		/// Inserts the specified <paramref name="item"/> at <paramref name="index"/>
 		/// </summary>
 		public void Insert(int index, T item)

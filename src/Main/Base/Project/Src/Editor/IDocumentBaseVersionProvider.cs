@@ -64,6 +64,8 @@ namespace ICSharpCode.SharpDevelop.Editor
 	
 	public struct LineChangeInfo : IEquatable<LineChangeInfo>
 	{
+		public static readonly LineChangeInfo Empty = new LineChangeInfo(ChangeType.None, "");
+		
 		ChangeType change;
 		
 		public ChangeType Change {

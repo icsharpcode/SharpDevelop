@@ -87,13 +87,20 @@ namespace ICSharpCode.GitAddIn
 			runner.Start("cmd", "/c git ls-tree HEAD " + Path.GetFileName(fileName));
 			runner.WaitForExit();
 			
-			return runner.StandardOutput
-				.Trim()
-				.Split(new[] { " ", "\t" }, StringSplitOptions.RemoveEmptyEntries)[2];
+			string output = runner.StandardOutput.Trim();
+			string[] parts = output.Split(new[] { " ", "\t" }, StringSplitOptions.RemoveEmptyEntries);
+			
+			if (parts.Length < 3)
+				return null;
+			
+			return parts[2];
 		}
 		
 		Stream OpenOutput(string fileName, string blobHash)
 		{
+			if (blobHash == null)
+				return null;
+			
 			AnonymousPipeServerStream pipe = new AnonymousPipeServerStream(PipeDirection.In, HandleInheritability.Inheritable);
 			
 			StartupInfo startupInfo = new GitVersionProvider.StartupInfo();

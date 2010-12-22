@@ -47,7 +47,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 								drawingContext.DrawRectangle(Brushes.LightGreen, null, rect);
 								break;
 							case ChangeType.Modified:
-								drawingContext.DrawRectangle(Brushes.Blue, null, rect);
+								drawingContext.DrawRectangle(Brushes.LightBlue, null, rect);
 								break;
 							case ChangeType.Unsaved:
 								drawingContext.DrawRectangle(Brushes.Yellow, null, rect);

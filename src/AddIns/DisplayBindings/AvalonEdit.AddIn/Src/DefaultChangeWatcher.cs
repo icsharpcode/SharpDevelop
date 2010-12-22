@@ -24,6 +24,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		CompressingTreeList<LineChangeInfo> changeList;
 		IDocument document;
 		TextDocument textDocument;
+		IDocument baseDocument;
 		
 		public event EventHandler ChangeOccurred;
 		
@@ -51,44 +52,69 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.textDocument = ((TextView)document.GetService(typeof(TextView))).Document;
 			this.changeList = new CompressingTreeList<LineChangeInfo>((x, y) => x.Equals(y));
 			
-			SetupInitialFileState();
+			Stream baseFileStream = GetBaseVersion();
+			
+			if (baseFileStream != null)
+				baseDocument = DocumentUtilitites.LoadReadOnlyDocumentFromBuffer(new StringTextBuffer(ReadAll(baseFileStream)));
+			
+			SetupInitialFileState(false);
 			
 			lineTracker = WeakLineTracker.Register(this.textDocument, this);
 			this.textDocument.UndoStack.PropertyChanged += UndoStackPropertyChanged;
 		}
 		
-		void SetupInitialFileState()
+		LineChangeInfo TransformLineChangeInfo(LineChangeInfo info)
 		{
-			changeList.Clear();
+			if (info.Change == ChangeType.Unsaved)
+				info.Change = ChangeType.Added;
 			
-			Stream baseFileStream = GetBaseVersion();
-			string baseFile = ReadAll(baseFileStream);
-			
-			MyersDiff.MyersDiff diff = new MyersDiff.MyersDiff(
-				new StringSequence(baseFile),
-				new StringSequence(textDocument.Text)
-			);
-			
-			if (diff == null)
-				changeList.InsertRange(0, document.TotalNumberOfLines + 1, new LineChangeInfo(ChangeType.None, ""));
-			else {
+			return info;
+		}
+		
+		void SetupInitialFileState(bool update)
+		{
+			if (baseDocument == null) {
+				if (update)
+					changeList.Transform(TransformLineChangeInfo);
+				else
+					changeList.InsertRange(0, document.TotalNumberOfLines + 1, new LineChangeInfo(ChangeType.None, ""));
+			}else {
+				changeList.Clear();
+				
+				MyersDiff.MyersDiff diff = new MyersDiff.MyersDiff(
+					new DocumentSequence(baseDocument),
+					new DocumentSequence(document)
+				);
+				
 				changeList.Add(new LineChangeInfo(ChangeType.None, ""));
 				int lastEndLine = 0;
+				
 				foreach (Edit edit in diff.GetEdits()) {
 					Console.WriteLine(edit);
 					
-					int beginLine = textDocument.GetLineByOffset(edit.BeginB).LineNumber;
-					int endLine = textDocument.GetLineByOffset(edit.EndB).LineNumber;
-					changeList.InsertRange(changeList.Count, beginLine - lastEndLine, new LineChangeInfo(ChangeType.None, ""));
+					int beginLine = edit.BeginB;
+					int endLine = edit.EndB;
+					
+					changeList.InsertRange(changeList.Count, beginLine - lastEndLine, LineChangeInfo.Empty);
+					
 					if (edit.EditType == ChangeType.Deleted) {
 						LineChangeInfo change = changeList[beginLine];
-						change.DeletedLinesAfterThisLine += baseFile.Substring(edit.BeginA, edit.EndA - edit.BeginA);
+						
+						for (int i = edit.BeginA; i < edit.EndA; i++) {
+							var line = baseDocument.GetLine(i + 1);
+							change.DeletedLinesAfterThisLine += line.Text;
+						}
+						
 						changeList[beginLine] = change;
-					} else
-						changeList.InsertRange(changeList.Count, endLine - beginLine, new LineChangeInfo(edit.EditType, ""));
+					} else {
+						var change = new LineChangeInfo(edit.EditType, "");
+						changeList.InsertRange(changeList.Count, endLine - beginLine, change);
+					}
+					
 					lastEndLine = endLine;
 				}
-				changeList.InsertRange(changeList.Count, textDocument.LineCount - lastEndLine, new LineChangeInfo(ChangeType.None, ""));
+				
+				changeList.InsertRange(changeList.Count, textDocument.LineCount - lastEndLine, LineChangeInfo.Empty);
 			}
 			
 			OnChangeOccurred(EventArgs.Empty);
@@ -111,30 +137,18 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					return result;
 			}
 			
-			return new DefaultVersionProvider().OpenBaseVersion(fileName);
+			return null;
 		}
 		
 		void UndoStackPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (textDocument.UndoStack.IsOriginalFile)
-				SetupInitialFileState();
+				SetupInitialFileState(true);
 		}
 		
 		void ILineTracker.BeforeRemoveLine(DocumentLine line)
 		{
-			int index = line.LineNumber;
-			LineChangeInfo info = changeList[index];
-			LineChangeInfo lineBefore = changeList[index - 1];
-			
-			// TODO : add deleted text (GetText not allowed in ILineTracker callbacks)
-//			lineBefore.DeletedLinesAfterThisLine
-//				+= (textDocument.GetText(line.Offset, line.Length)
-//				    + Environment.NewLine + info.DeletedLinesAfterThisLine);
-//
-//			Debug.Assert(lineBefore.DeletedLinesAfterThisLine.EndsWith(Environment.NewLine));
-			
-			changeList[index - 1] = lineBefore;
-			changeList.RemoveAt(index);
+			changeList.RemoveAt(line.LineNumber);
 		}
 		
 		void ILineTracker.SetLineLength(DocumentLine line, int newTotalLength)
@@ -160,6 +174,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void ILineTracker.RebuildDocument()
 		{
+			changeList.Clear();
+			changeList.InsertRange(0, document.TotalNumberOfLines + 1, new LineChangeInfo(ChangeType.Unsaved, ""));
 		}
 		
 		bool disposed = false;
