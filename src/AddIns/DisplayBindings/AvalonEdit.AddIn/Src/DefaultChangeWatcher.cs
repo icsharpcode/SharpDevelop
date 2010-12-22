@@ -75,10 +75,17 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				changeList.Add(new LineChangeInfo(ChangeType.None, ""));
 				int lastEndLine = 0;
 				foreach (Edit edit in diff.GetEdits()) {
+					Console.WriteLine(edit);
+					
 					int beginLine = textDocument.GetLineByOffset(edit.BeginB).LineNumber;
 					int endLine = textDocument.GetLineByOffset(edit.EndB).LineNumber;
 					changeList.InsertRange(changeList.Count, beginLine - lastEndLine, new LineChangeInfo(ChangeType.None, ""));
-					changeList.InsertRange(changeList.Count, endLine - beginLine, new LineChangeInfo(edit.EditType, ""));
+					if (edit.EditType == ChangeType.Deleted) {
+						LineChangeInfo change = changeList[beginLine];
+						change.DeletedLinesAfterThisLine += baseFile.Substring(edit.BeginA, edit.EndA - edit.BeginA);
+						changeList[beginLine] = change;
+					} else
+						changeList.InsertRange(changeList.Count, endLine - beginLine, new LineChangeInfo(edit.EditType, ""));
 					lastEndLine = endLine;
 				}
 				changeList.InsertRange(changeList.Count, textDocument.LineCount - lastEndLine, new LineChangeInfo(ChangeType.None, ""));
@@ -109,8 +116,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void UndoStackPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-//			if (textDocument.UndoStack.IsOriginalFile)
-//				SetupInitialFileState();
+			if (textDocument.UndoStack.IsOriginalFile)
+				SetupInitialFileState();
 		}
 		
 		void ILineTracker.BeforeRemoveLine(DocumentLine line)

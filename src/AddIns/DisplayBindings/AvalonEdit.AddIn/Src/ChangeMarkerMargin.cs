@@ -56,8 +56,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 								throw new Exception("Invalid value for ChangeType");
 						}
 						
-						// not needed currently - TODO we have no complete SVN/Git support
-						/*if (!string.IsNullOrEmpty(info.DeletedLinesAfterThisLine)) {
+						if (!string.IsNullOrEmpty(info.DeletedLinesAfterThisLine)) {
 							Point pt1 = new Point(5,  line.VisualTop + line.Height - textView.ScrollOffset.Y - 4);
 							Point pt2 = new Point(10, line.VisualTop + line.Height - textView.ScrollOffset.Y);
 							Point pt3 = new Point(5,  line.VisualTop + line.Height - textView.ScrollOffset.Y + 4);
@@ -76,7 +75,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 								
 								drawingContext.DrawGeometry(Brushes.Red, null, new PathGeometry(new List<PathFigure>() { CreateNAngle(pt1, pt2, pt3) }));
 							}
-						}*/
+						}
 					}
 				}
 			}

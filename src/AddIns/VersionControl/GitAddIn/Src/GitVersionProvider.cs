@@ -107,8 +107,11 @@ namespace ICSharpCode.GitAddIn
 			
 			if (!CreateProcess(null, string.Format("cmd /c git cat-file blob {0}", blobHash),
 			                   IntPtr.Zero, IntPtr.Zero, true, 0, IntPtr.Zero, Path.GetDirectoryName(fileName), ref startupInfo,
-			                   out procInfo))
+			                   out procInfo)) {
+				pipe.DisposeLocalCopyOfClientHandle();
+				pipe.Close();
 				return null;
+			}
 			
 			pipe.DisposeLocalCopyOfClientHandle();
 			
