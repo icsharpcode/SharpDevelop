@@ -7,28 +7,33 @@ using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn.MyersDiff
 {
-	public class StringSequence : ISequence
+	public class DocumentSequence : ISequence
 	{
-		string content;
+		IDocument document;
+		List<int> hashCodes;
 		
-		public StringSequence(string content)
+		public DocumentSequence(IDocument document)
 		{
-			this.content = content;
+			this.document = document;
+			this.hashCodes = new List<int>();
 		}
 		
 		public int Size()
 		{
-			return content.Length;
+			return document.TotalNumberOfLines;
 		}
 		
 		public bool Equals(int i, ISequence other, int j)
 		{
-			StringSequence seq = other as StringSequence;
+			DocumentSequence seq = other as DocumentSequence;
 			
 			if (seq == null)
 				return false;
 			
-			return content[i] == seq.content[j];
+			IDocumentLine thisLine = document.GetLine(i + 1);
+			IDocumentLine otherLine = seq.document.GetLine(j + 1);
+			
+			return thisLine.Text == otherLine.Text;
 		}
 	}
 }
