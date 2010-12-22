@@ -94,7 +94,11 @@
     <Compile Include="Src\ContextActionsRenderer.cs" />
     <Compile Include="Src\DefaultChangeWatcher.cs" />
     <Compile Include="Src\ExpressionHighlightRenderer.cs" />
-    <Compile Include="Src\MyersDiff.cs" />
+    <Compile Include="Src\MyersDiff\Edit.cs" />
+    <Compile Include="Src\MyersDiff\ISequence.cs" />
+    <Compile Include="Src\MyersDiff\MyersDiff.cs" />
+    <Compile Include="Src\MyersDiff\StringSequence.cs" />
+    <Compile Include="Src\MyersDiff\Utils.cs" />
     <Compile Include="Src\NewLineConsistencyCheck.cs" />
     <Compile Include="Src\SharpDevelopTextEditor.cs" />
     <Compile Include="Src\Commands\FoldingCommands.cs" />
@@ -217,5 +221,8 @@
       <Name>ICSharpCode.SharpDevelop.Widgets</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src\MyersDiff" />
   </ItemGroup>
 </Project>

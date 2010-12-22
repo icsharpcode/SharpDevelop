@@ -1,46 +1,46 @@
 ﻿/*
-* Copyright (C) 2008-2009 Johannes E. Schindelin <johannes.schindelin@gmx.de>
-*
-* All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or
-* without modification, are permitted provided that the following
-* conditions are met:
-*
-* - Redistributions of source code must retain the above copyright
-* notice, this list of conditions and the following disclaimer.
-*
-* - Redistributions in binary form must reproduce the above
-* copyright notice, this list of conditions and the following
-* disclaimer in the documentation and/or other materials provided
-* with the distribution.
-*
-* - Neither the name of the Eclipse Foundation, Inc. nor the
-* names of its contributors may be used to endorse or promote
-* products derived from this software without specific prior
-* written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
-* CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-* INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
-* CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-* SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
-* NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-* CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-* ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ * Copyright (C) 2008, Johannes E. Schindelin <johannes.schindelin@gmx.de>
+ * Copyright (C) 2009, Gil Ran <gilrun@gmail.com>
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or
+ * without modification, are permitted provided that the following
+ * conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above
+ * copyright notice, this list of conditions and the following
+ * disclaimer in the documentation and/or other materials provided
+ * with the distribution.
+ *
+ * - Neither the name of the Git Development Community nor the
+ * names of its contributors may be used to endorse or promote
+ * products derived from this software without specific prior
+ * written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+ * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using ICSharpCode.SharpDevelop.Editor;
 
-namespace ICSharpCode.AvalonEdit.AddIn
+namespace ICSharpCode.AvalonEdit.AddIn.MyersDiff
 {
 	/// <summary>
 	/// Diff algorithm, based on "An O(ND) Difference Algorithm and its
@@ -304,8 +304,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			internal abstract class EditPaths
 			{
 				protected readonly MiddleEdit _middleEdit;
-				List<int> x = new List<int>();
-				List<long> _snake = new List<long>();
+				private List<int> x = new List<int>();
+				private List<long> _snake = new List<long>();
 				public int beginK;
 				public int endK;
 				public int middleK;
@@ -384,7 +384,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				
 				int Snake2y(long snake)
 				{
-					return (int)((ulong)snake >> 32);
+					return (int)(((ulong)snake << 32) >> 32);
 				}
 				
 				protected bool MakeEdit(long snake1, long snake2)
@@ -473,7 +473,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 							return true;
 						AdjustMinMaxK(k, newX);
 						i = GetIndex(d, k);
-						
 						x.Set(i, newX);
 						_snake.Set(i, newSnakeTmp);
 					}
@@ -590,416 +589,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					return true;
 				}
 			}
-		}
-	}
-	
-	/// <summary>
-	/// Arbitrary sequence of elements with fast comparison support.
-	/// <para />
-	/// A sequence of elements is defined to contain elements in the index range
-	/// <code>[0, <seealso cref="size()"/>)</code>, like a standard Java List implementation.
-	/// Unlike a List, the members of the sequence are not directly obtainable, but
-	/// element equality can be tested if two Sequences are the same implementation.
-	/// <para />
-	/// An implementation may chose to implement the equals semantic as necessary,
-	/// including fuzzy matching rules such as ignoring insignificant sub-elements,
-	/// e.g. ignoring whitespace differences in text.
-	/// <para />
-	/// Implementations of Sequence are primarily intended for use in content
-	/// difference detection algorithms, to produce an <seealso cref="EditList"/> of
-	/// <seealso cref="Edit"/> instances describing how two Sequence instances differ.
-	/// </summary>
-	public interface ISequence
-	{
-		/// <returns>
-		/// Total number of items in the sequence.
-		/// </returns>
-		int Size();
-
-		/// <summary>
-		/// Determine if the i-th member is equal to the j-th member.
-		/// <para />
-		/// Implementations must ensure <code>equals(thisIdx,other,otherIdx)</code>
-		/// returns the same as <code>other.equals(otherIdx,this,thisIdx)</code>.
-		/// </summary>
-		/// <param name="thisIdx">
-		/// Index within <code>this</code> sequence; must be in the range
-		/// <code>[ 0, this.size() )</code>.
-		/// </param>
-		/// <param name="other">
-		/// Another sequence; must be the same implementation class, that
-		/// is <code>this.getClass() == other.getClass()</code>. </param>
-		/// <param name="otherIdx">
-		/// Index within <code>other</code> sequence; must be in the range
-		/// <code>[ 0, other.size() )</code>. </param>
-		/// <returns>
-		/// true if the elements are equal; false if they are not equal.
-		/// </returns>
-		bool Equals(int thisIdx, ISequence other, int otherIdx);
-	}
-	
-	/// <summary>
-	/// A modified region detected between two versions of roughly the same content.
-	/// <para />
-	/// Regions should be specified using 0 based notation, so add 1 to the
-	/// start and end marks for line numbers in a file.
-	/// <para />
-	/// An edit where <code>beginA == endA &amp;&amp; beginB &gt; endB</code> is an insert edit,
-	/// that is sequence B inserted the elements in region
-	/// <code>[beginB, endB)</code> at <code>beginA</code>.
-	/// <para />
-	/// An edit where <code>beginA &gt; endA &amp;&amp; beginB &gt; endB</code> is a replace edit,
-	/// that is sequence B has replaced the range of elements between
-	/// <code>[beginA, endA)</code> with those found in <code>[beginB, endB)</code>.
-	/// </summary>
-	public class Edit
-	{
-		/// <summary>
-		/// Create a new empty edit.
-		/// </summary>
-		/// <param name="aStart">beginA: start and end of region in sequence A; 0 based.</param>
-		/// <param name="bStart">beginB: start and end of region in sequence B; 0 based.</param>
-		public Edit(int aStart, int bStart)
-			: this(aStart, aStart, bStart, bStart)
-		{
-		}
-
-		/// <summary>
-		/// Create a new empty edit.
-		/// </summary>
-		/// <param name="aStart">beginA: start and end of region in sequence A; 0 based.</param>
-		/// <param name="aEnd">endA: end of region in sequence A; must be >= as.</param>
-		/// <param name="bStart">beginB: start and end of region in sequence B; 0 based.</param>
-		/// <param name="bEnd">endB: end of region in sequence B; must be >= bs.</param>
-		public Edit(int aStart, int aEnd, int bStart, int bEnd)
-		{
-			BeginA = aStart;
-			EndA = aEnd;
-
-			BeginB = bStart;
-			EndB = bEnd;
-		}
-
-		/// <summary>
-		/// Gets the type of this region.
-		/// </summary>
-		public ChangeType EditType
-		{
-			get
-			{
-				if (BeginA == EndA && BeginB < EndB)
-					return ChangeType.Added;
-				if (BeginA < EndA && BeginB == EndB)
-					return ChangeType.Deleted;
-				if (BeginA == EndA && BeginB == EndB)
-					return ChangeType.None;
-
-				return ChangeType.Modified;
-			}
-		}
-
-		/// <summary>
-		/// Start point in sequence A.
-		/// </summary>
-		public int BeginA { get; set; }
-
-		/// <summary>
-		/// End point in sequence A.
-		/// </summary>
-		public int EndA { get; private set; }
-
-		/// <summary>
-		/// Start point in sequence B.
-		/// </summary>
-		public int BeginB { get; private set; }
-
-		/// <summary>
-		/// End point in sequence B.
-		/// </summary>
-		public int EndB { get; private set; }
-
-		/// <summary>
-		/// Increase <see cref="EndA"/> by 1.
-		/// </summary>
-		public void ExtendA()
-		{
-			EndA++;
-		}
-
-		/// <summary>
-		/// Increase <see cref="EndB"/> by 1.
-		/// </summary>
-		public void ExtendB()
-		{
-			EndB++;
-		}
-
-		/// <summary>
-		/// Swap A and B, so the edit goes the other direction.
-		/// </summary>
-		public void Swap()
-		{
-			int sBegin = BeginA;
-			int sEnd = EndA;
-
-			BeginA = BeginB;
-			EndA = EndB;
-
-			BeginB = sBegin;
-			EndB = sEnd;
-		}
-
-		public override int GetHashCode()
-		{
-			return BeginA ^ EndA;
-		}
-
-		/// <summary>
-		/// Determines whether the specified <see cref="T:System.Object"/> is
-		/// equal to the current <see cref="T:System.Object"/>.
-		/// </summary>
-		/// <returns>
-		/// true if the specified <see cref="T:System.Object"/> is equal to the
-		/// current <see cref="T:System.Object"/>; otherwise, false.
-		/// </returns>
-		/// <param name="obj">The <see cref="T:System.Object"/> to compare with
-		/// the current <see cref="T:System.Object"/>.
-		/// </param>
-		/// <exception cref="T:System.NullReferenceException">
-		/// The <paramref name="obj"/> parameter is null.
-		/// </exception>
-		/// <filterpriority>2</filterpriority>
-		public override bool Equals(object obj)
-		{
-			Edit e = (obj as Edit);
-			if (e != null)
-			{
-				return BeginA == e.BeginA && EndA == e.EndA && BeginB == e.BeginB && EndB == e.EndB;
-			}
-
-			return false;
-		}
-
-		public static bool operator ==(Edit left, Edit right)
-		{
-			return Equals(left, right);
-		}
-
-		public static bool operator !=(Edit left, Edit right)
-		{
-			return !Equals(left, right);
-		}
-
-		public override string ToString()
-		{
-			ChangeType t = EditType;
-			return t + "(" + BeginA + "-" + EndA + "," + BeginB + "-" + EndB + ")";
-		}
-	}
-	
-	/// <summary>
-	/// A sequence supporting UNIX formatted text in byte[] format.
-	/// <para />
-	/// Elements of the sequence are the lines of the file, as delimited by the UNIX
-	/// newline character ('\n'). The file content is treated as 8 bit binary text,
-	/// with no assumptions or requirements on character encoding.
-	/// <para />
-	/// Note that the first line of the file is element 0, as defined by the Sequence
-	/// interface API. Traditionally in a text editor a patch file the first line is
-	/// line number 1. Callers may need to subtract 1 prior to invoking methods if
-	/// they are converting from "line number" to "element index".
-	/// </summary>
-	public class RawText : ISequence
-	{
-		// The file content for this sequence.
-		readonly byte[] content;
-
-		/// <summary>
-		/// The content of the raw text as byte array.
-		/// </summary>
-		public byte[] Content {
-			get { return content; }
-		}
-
-		// Map of line number to starting position within content.
-		readonly List<int> lines;
-
-		/// <summary>
-		/// Represents starting points of lines in Content. Note: the line indices are 1-based and
-		/// are mapped to 0-based positions in the Content byte array. As line indices are based on 1 the result of line 0 is undefined.
-		/// </summary>
-		public List<int> LineStartIndices {
-			get { return lines; }
-		}
-
-		// Hash code for each line, for fast equality elimination.
-		private readonly List<int> hashes;
-
-		/// <summary>
-		/// Create a new sequence from an existing content byte array.
-		/// <para />
-		/// The entire array (indexes 0 through length-1) is used as the content.
-		/// </summary>
-		/// <param name="input">
-		/// the content array. The array is never modified, so passing
-		/// through cached arrays is safe.
-		/// </param>
-		public RawText(byte[] input)
-		{
-			content = input;
-			lines = RawParseUtils.LineMap(content, 0, content.Length);
-			hashes = computeHashes();
-		}
-		
-		public int Size()
-		{
-			// The line map is always 2 entries larger than the number of lines in
-			// the file. Index 0 is padded out/unused. The last index is the total
-			// length of the buffer, and acts as a sentinel.
-//
-			return lines.Count - 2;
-		}
-
-		public bool Equals(int thisIdx, ISequence other, int otherIdx)
-		{
-			return Equals(this, thisIdx + 1, (RawText) other, otherIdx + 1);
-		}
-
-		static bool Equals(RawText a, int ai, RawText b, int bi)
-		{
-			if (a.hashes[ai] != b.hashes[bi])
-				return false;
-
-			int a_start = a.lines[ai];
-			int b_start = b.lines[bi];
-			int a_end = a.lines[ai + 1];
-			int b_end = b.lines[bi + 1];
-
-			if (a_end - a_start != b_end - b_start)
-				return false;
-
-			while (a_start < a_end) {
-				if (a.content[a_start++] != b.content[b_start++])
-					return false;
-			}
-			return true;
-		}
-
-		/// <summary>
-		/// Write a specific line to the output stream, without its trailing LF.
-		/// <para />
-		/// The specified line is copied as-is, with no character encoding
-		/// translation performed.
-		/// <para />
-		/// If the specified line ends with an LF ('\n'), the LF is <b>not</b>
-		/// copied. It is up to the caller to write the LF, if desired, between
-		/// output lines.
-		/// </summary>
-		/// <param name="out">
-		/// Stream to copy the line data onto. </param>
-		/// <param name="i">
-		/// Index of the line to extract. Note this is 0-based, so line
-		/// number 1 is actually index 0. </param>
-		/// <exception cref="IOException">
-		/// the stream write operation failed.
-		/// </exception>
-		public void writeLine(Stream @out, int i)
-		{
-			int start = lines[i + 1];
-			int end = lines[i + 2];
-			if (content[end - 1] == '\n')
-			{
-				end--;
-			}
-			@out.Write(content, start, end - start);
-		}
-
-		/// <summary>
-		/// Determine if the file ends with a LF ('\n').
-		/// </summary>
-		/// <returns> true if the last line has an LF; false otherwise. </returns>
-		public bool isMissingNewlineAtEnd()
-		{
-			int end = lines[lines.Count - 1];
-			if (end == 0)
-				return true;
-			return content[end - 1] != '\n';
-		}
-
-		private List<int> computeHashes()
-		{
-			var r = new List<int>(lines.Count);
-			r.Add(0);
-			for (int lno = 1; lno < lines.Count - 1; lno++)
-			{
-				int ptr = lines[lno];
-				int end = lines[lno + 1];
-				r.Add(HashLine(content, ptr, end));
-			}
-			r.Add(0);
-			return r;
-		}
-
-		/// <summary>
-		/// Compute a hash code for a single line.
-		/// </summary>
-		/// <param name="raw">The raw file content. </param>
-		/// <param name="ptr">
-		/// First byte of the content line to hash. </param>
-		/// <param name="end">
-		/// 1 past the last byte of the content line.
-		/// </param>
-		/// <returns>
-		/// Hash code for the region <code>[ptr, end)</code> of raw.
-		/// </returns>
-		private static int HashLine(byte[] raw, int ptr, int end)
-		{
-			int hash = 5381;
-			for (; ptr < end; ptr++)
-			{
-				hash = (hash << 5) ^ (raw[ptr] & 0xff);
-			}
-			return hash;
-		}
-	}
-	
-	static class RawParseUtils
-	{
-		public static List<int> LineMap(byte[] buf, int ptr, int end)
-		{
-			// Experimentally derived from multiple source repositories
-			// the average number of bytes/line is 36. Its a rough guess
-			// to initially size our map close to the target.
-			
-			List<int> map = new List<int>((end - ptr) / 36);
-			map.Add(int.MinValue);
-			for (; ptr < end; ptr = buf.IndexOfAny(ptr + 1, 0xA))
-				map.Add(ptr);
-			map.Add(end);
-			return map;
-		}
-		
-		public static int IndexOfAny(this byte[] buf, int start, params byte[] search)
-		{
-			for (int i = start; i < buf.Length; i++) {
-				for (int j = 0; j < search.Length; j++) {
-					if (buf[i] == search[j])
-						return i;
-				}
-			}
-			
-			return buf.Length;
-		}
-		
-		public static void Set<T>(this IList<T> instance, int index, T value)
-		{
-			if (instance == null)
-				throw new ArgumentNullException("instance");
-			
-			if (index == instance.Count)
-				instance.Add(value);
-			else
-				instance[index] = value;
 		}
 	}
 }
