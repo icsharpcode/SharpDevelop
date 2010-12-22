@@ -815,7 +815,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return GetNamespaces(language).ContainsKey(name);
 		}
 		
-		bool MatchesRequest(ref SearchTypeRequest request, ref SearchTypeResult result)
+		bool MatchesRequest(SearchTypeRequest request, ref SearchTypeResult result)
 		{
 			if (result.NamespaceResult != null)
 				return request.TypeParameterCount == 0;
@@ -852,7 +852,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 							foreach (IClass innerClass in baseClass.InnerClasses) {
 								if (language.NameComparer.Equals(innerClass.Name, name)) {
 									result = new SearchTypeResult(innerClass);
-									if (MatchesRequest(ref request, ref result)) {
+									if (MatchesRequest(request, ref result)) {
 										return result;
 									}
 								}
@@ -873,50 +873,55 @@ namespace ICSharpCode.SharpDevelop.Dom
 				IClass c = GetClass(fullname, request.TypeParameterCount);
 				if (c != null) {
 					result = new SearchTypeResult(c);
-					if (MatchesRequest(ref request, ref result)) {
+					if (MatchesRequest(request, ref result)) {
 						return result;
 					}
 				}
 				if (NamespaceExists(fullname)) {
 					result = new SearchTypeResult(fullname, null);
-					if (MatchesRequest(ref request, ref result)) {
+					if (MatchesRequest(request, ref result)) {
 						return result;
 					}
 				}
 				
+				// prefer aliases over imported types
 				foreach (IUsing u in usingScope.Usings) {
-					foreach (IReturnType r in u.SearchType(name, request.TypeParameterCount)) {
-						result = new SearchTypeResult(r, u);
-						if (MatchesRequest(ref request, ref result)) {
+					if (u.HasAliases) {
+						if (SearchTypeInUsing(u, request, ref result))
 							return result;
-						}
 					}
-					string nsResult = u.SearchNamespace(name);
-					if (nsResult != null) {
-						result = new SearchTypeResult(nsResult, null);
-						if (MatchesRequest(ref request, ref result)) {
+				}
+				foreach (IUsing u in usingScope.Usings) {
+					if (!u.HasAliases) {
+						if (SearchTypeInUsing(u, request, ref result))
 							return result;
-						}
 					}
 				}
 			}
 			
 			if (defaultImports != null) {
-				foreach (IReturnType r in defaultImports.SearchType(name, request.TypeParameterCount)) {
-					result = new SearchTypeResult(r, defaultImports);
-					if (MatchesRequest(ref request, ref result)) {
-						return result;
-					}
-				}
-				string nsResult = defaultImports.SearchNamespace(name);
-				if (nsResult != null) {
-					result = new SearchTypeResult(nsResult, null);
-					if (MatchesRequest(ref request, ref result)) {
-						return result;
-					}
-				}
+				if (SearchTypeInUsing(defaultImports, request, ref result));
+					return result;
 			}
 			return result;
+		}
+
+		bool SearchTypeInUsing(IUsing u, SearchTypeRequest request, ref SearchTypeResult result)
+		{
+			foreach (IReturnType r in u.SearchType(request.Name, request.TypeParameterCount)) {
+				result = new SearchTypeResult(r, u);
+				if (MatchesRequest(request, ref result)) {
+					return true;
+				}
+			}
+			string nsResult = u.SearchNamespace(request.Name);
+			if (nsResult != null) {
+				result = new SearchTypeResult(nsResult, null);
+				if (MatchesRequest(request, ref result)) {
+					return true;
+				}
+			}
+			return false;
 		}
 		
 		/// <summary>
