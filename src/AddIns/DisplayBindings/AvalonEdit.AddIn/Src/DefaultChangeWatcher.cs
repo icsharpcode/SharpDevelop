@@ -92,8 +92,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				int lastEndLine = 0;
 				
 				foreach (Edit edit in diff.GetEdits()) {
-					Console.WriteLine(edit);
-					
 					int beginLine = edit.BeginB;
 					int endLine = edit.EndB;
 					
