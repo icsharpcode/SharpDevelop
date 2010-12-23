@@ -63,6 +63,7 @@
     <Compile Include="Src\GitGuiWrapper.cs" />
     <Compile Include="Src\GitMessageView.cs" />
     <Compile Include="Src\GitStatusCache.cs" />
+    <Compile Include="Src\GitVersionProvider.cs" />
     <Compile Include="Src\IsUnderGitControlCondition.cs" />
     <Compile Include="Src\OverlayIconManager.cs" />
     <Compile Include="Src\RegisterEventsCommand.cs" />

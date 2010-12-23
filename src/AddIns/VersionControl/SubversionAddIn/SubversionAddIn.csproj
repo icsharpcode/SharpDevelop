@@ -85,6 +85,7 @@
     <Compile Include="Src\Commands\CheckoutCommands.cs" />
     <Compile Include="Src\SubversionStateCondition.cs" />
     <Compile Include="Src\SvnClientWrapper.cs" />
+    <Compile Include="Src\SvnVersionProvider.cs" />
     <Compile Include="Src\SvnMessageView.cs" />
     <EmbeddedResource Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.resx">
       <DependentUpon>InfoPanel.cs</DependentUpon>

@@ -199,6 +199,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			textView.Services.AddService(typeof(IBookmarkMargin), iconBarManager);
 			codeEditorView.TextArea.LeftMargins.Insert(0, new IconBarMargin(iconBarManager));
 			
+			codeEditorView.TextArea.LeftMargins.Add(new ChangeMarkerMargin());
+			
 			textView.Services.AddService(typeof(ISyntaxHighlighter), new AvalonEditSyntaxHighlighterAdapter(textView));
 			
 			codeEditorView.TextArea.MouseRightButtonDown += TextAreaMouseRightButtonDown;
