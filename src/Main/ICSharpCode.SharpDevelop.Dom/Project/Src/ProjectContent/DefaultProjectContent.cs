@@ -900,7 +900,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			
 			if (defaultImports != null) {
-				if (SearchTypeInUsing(defaultImports, request, ref result));
+				if (SearchTypeInUsing(defaultImports, request, ref result))
 					return result;
 			}
 			return result;
