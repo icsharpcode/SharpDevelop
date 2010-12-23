@@ -26,15 +26,12 @@ namespace ICSharpCode.Core.Presentation
 			this.codon = codon;
 			this.caller = caller;
 			this.Command = CommandWrapper.GetCommand(codon, caller, createCommand);
-			
-			if (codon.Properties.Contains("icon")) {
-				var image = PresentationResourceService.GetImage(StringParser.Parse(codon.Properties["icon"]));
-				image.Height = 16;
-				image.SetResourceReference(StyleProperty, ToolBarService.ImageStyleKey);
-				this.Content = image;
-			} else {
-				this.Content = codon.Id;
+			this.Content = ToolBarService.CreateToolBarItemContent(codon);
+
+			if (codon.Properties.Contains("name")) {
+				this.Name = codon.Properties["name"];
 			}
+
 			if (!string.IsNullOrEmpty(codon.Properties["shortcut"])) {
 				KeyGesture kg = MenuService.ParseShortcut(codon.Properties["shortcut"]);
 				MenuCommand.AddGestureToInputBindingOwner(inputBindingOwner, kg, this.Command, GetFeatureName());

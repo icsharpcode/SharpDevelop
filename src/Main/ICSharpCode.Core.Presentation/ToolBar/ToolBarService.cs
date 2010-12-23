@@ -78,7 +78,10 @@ namespace ICSharpCode.Core.Presentation
 							new MenuService.MenuCreateContext { ActivationMethod = "ToolbarDropDownMenu" },
 							descriptor.SubItems));
 				case "Builder":
-					return codon.AddIn.CreateObject(codon.Properties["class"]);
+					object result = codon.AddIn.CreateObject(codon.Properties["class"]);
+					if (result is IToolBarItemBuilder)
+						((IToolBarItemBuilder)result).Initialize(inputBindingOwner, codon, caller);
+					return result;
 				default:
 					throw new System.NotSupportedException("unsupported menu item type : " + type);
 			}
@@ -129,5 +132,60 @@ namespace ICSharpCode.Core.Presentation
 			}
 			return toolBars.ToArray();
 		}
+
+		internal static object CreateToolBarItemContent(Codon codon)
+		{
+			object result = null;
+			Image image = null;
+			Label label = null;
+			bool isImage = false;
+			bool isLabel = false;
+			if (codon.Properties.Contains("icon"))
+			{
+				image = PresentationResourceService.GetImage(StringParser.Parse(codon.Properties["icon"]));
+				image.Height = 16;
+				image.SetResourceReference(FrameworkElement.StyleProperty, ToolBarService.ImageStyleKey);
+				isImage = true;
+			}
+			if (codon.Properties.Contains("label"))
+			{
+				label = new Label();
+				label.Content = StringParser.Parse(codon.Properties["label"]);
+				label.Padding = new Thickness(0);
+				label.VerticalContentAlignment = VerticalAlignment.Center;
+				isLabel = true;
+			}
+
+			if (isImage && isLabel)
+			{
+				StackPanel panel = new StackPanel();
+				panel.Orientation = Orientation.Horizontal;
+				image.Margin = new Thickness(0, 0, 5, 0);
+				panel.Children.Add(image);
+				panel.Children.Add(label);
+				result = panel;
+			}
+			else
+				if (isImage)
+				{
+					result = image;
+				}
+				else
+					if (isLabel)
+					{
+						result = label;
+					}
+					else
+					{
+						result = codon.Id;
+					}
+
+			return result;
+		}
+	}
+
+	public interface IToolBarItemBuilder
+	{
+		void Initialize(UIElement inputBindingOwner, Codon codon, object owner);
 	}
 }
