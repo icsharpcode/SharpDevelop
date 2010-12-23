@@ -247,7 +247,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		ExpressionResult GetExpressionAt(ITextEditor editor, int caretLine, int caretColumn)
 		{
 			ExpressionResult expr = ParserService.FindFullExpression(caretLine, caretColumn, editor.Document, editor.FileName);
-			// if no expression, look one character back (works better with method calls - Foo()(*caret*))
+			// if no expression, look one character back (works better with method calls, e.g. Foo()(*caret*))
 			if (string.IsNullOrWhiteSpace(expr.Expression) && caretColumn > 1)
 				expr = ParserService.FindFullExpression(caretLine, caretColumn - 1, editor.Document, editor.FileName);
 			return expr;

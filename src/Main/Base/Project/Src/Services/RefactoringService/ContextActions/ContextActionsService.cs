@@ -18,6 +18,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	{
 		private static ContextActionsService instance = new ContextActionsService();
 		
+		/// <summary>
+		/// Key for storing the names of disabled providers in PropertyService.
+		/// </summary>
 		const string PropertyServiceKey = "DisabledContextActionProviders";
 		
 		public static ContextActionsService Instance {
@@ -71,6 +74,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				throw new ArgumentNullException("providers");
 			this.editor = editor;
 			this.providers = providers;
+			// DO NOT USE Wait on the main thread!
+			// causes deadlocks!
+			// parseTask.Wait();
+			// Reparse so that we have up-to-date DOM.
 			ParserService.ParseCurrentViewContent();
 			this.EditorContext = new EditorContext(editor);
 		}
@@ -106,23 +113,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (ParserService.LoadSolutionProjectsThreadRunning)
 				yield break;
-			// DO NOT USE Wait on the main thread!
-			// causes deadlocks!
-			//parseTask.Wait();
-			
-			var sw = new Stopwatch(); sw.Start();
-			var editorContext = new EditorContext(this.editor);
-			long elapsedEditorContextMs = sw.ElapsedMilliseconds;
 			
 			// could run providers in parallel
 			foreach (var provider in providers) {
-				foreach (var action in provider.GetAvailableActions(editorContext)) {
+				foreach (var action in provider.GetAvailableActions(this.EditorContext)) {
 					providerForAction[action] = provider;
 					yield return action;
 				}
 			}
-//			ICSharpCode.Core.LoggingService.Debug(string.Format("Context actions elapsed {0}ms ({1}ms in EditorContext)",
-//			                                                    sw.ElapsedMilliseconds, elapsedEditorContextMs));
 		}
 	}
 }

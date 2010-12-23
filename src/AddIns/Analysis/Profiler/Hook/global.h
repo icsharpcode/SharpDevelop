@@ -10,8 +10,11 @@
 #include "LightweightStack.h"
 #include "LightweightList.h"
 
+#define NAME_BUFFER_SIZE 1024
+
+#define ASSEMBLY_INJECTION_NAME_LIST_LENGTH 3
 #define CONSOLE_GROUP_LENGTH 2
-#define WINFORMS_GROUP_LENGTH 1
+#define WINFORMS_GROUP_LENGTH 4
 #define WPF_GROUP_LENGTH 1
 
 extern fastAllocator stackAllocator;
@@ -21,6 +24,7 @@ extern HANDLE listMutex;
 extern LightweightList *allThreadLocalDatas;
 extern DWORD tls_index;
 
+extern WCHAR *assemblyInjectionNameList[ASSEMBLY_INJECTION_NAME_LIST_LENGTH];
 extern WCHAR *consoleGroupList[CONSOLE_GROUP_LENGTH];
 extern WCHAR *winFormsGroupList[WINFORMS_GROUP_LENGTH];
 extern WCHAR *wpfGroupList[WPF_GROUP_LENGTH];

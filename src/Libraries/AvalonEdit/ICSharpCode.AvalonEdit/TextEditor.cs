@@ -1102,6 +1102,11 @@ namespace ICSharpCode.AvalonEdit
 			TextView textView = textArea.TextView;
 			TextDocument document = textView.Document;
 			if (scrollViewer != null && document != null) {
+				if (line < 1)
+					line = 1;
+				if (line > document.LineCount)
+					line = document.LineCount;
+				
 				IScrollInfo scrollInfo = textView;
 				if (!scrollInfo.CanHorizontallyScroll) {
 					// Word wrap is enabled. Ensure that we have up-to-date info about line height so that we scroll
