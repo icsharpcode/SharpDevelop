@@ -20,7 +20,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 {
 	public class DefaultChangeWatcher : IChangeWatcher, ILineTracker
 	{
-		WeakLineTracker lineTracker;
 		CompressingTreeList<LineChangeInfo> changeList;
 		IDocument document;
 		TextDocument textDocument;
@@ -35,12 +34,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		public LineChangeInfo GetChange(IDocumentLine line)
+		public LineChangeInfo GetChange(int lineNumber)
 		{
-			if (line == null)
-				return changeList[0];
-			
-			return changeList[line.LineNumber];
+			return changeList[lineNumber];
 		}
 		
 		public void Initialize(IDocument document)
@@ -49,19 +45,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return;
 			
 			this.document = document;
-			this.textDocument = ((TextView)document.GetService(typeof(TextView))).Document;
+			this.textDocument = (TextDocument)document.GetService(typeof(TextDocument));
 			this.changeList = new CompressingTreeList<LineChangeInfo>((x, y) => x.Equals(y));
 			
 			Stream baseFileStream = GetBaseVersion();
 			
 			// TODO : update baseDocument on VCS actions
 			if (baseFileStream != null) {
+				// ReadAll() is taking care of closing the stream
 				baseDocument = DocumentUtilitites.LoadReadOnlyDocumentFromBuffer(new StringTextBuffer(ReadAll(baseFileStream)));
 			}
 			
 			SetupInitialFileState(false);
 			
-			lineTracker = WeakLineTracker.Register(this.textDocument, this);
+			this.textDocument.LineTrackers.Add(this);
 			this.textDocument.UndoStack.PropertyChanged += UndoStackPropertyChanged;
 		}
 		
@@ -144,7 +141,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		void UndoStackPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (textDocument.UndoStack.IsOriginalFile)
+			if (e.PropertyName == "IsOriginalFile" && textDocument.UndoStack.IsOriginalFile)
 				SetupInitialFileState(true);
 		}
 		
@@ -185,7 +182,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public void Dispose()
 		{
 			if (!disposed) {
-				lineTracker.Deregister();
+				this.textDocument.LineTrackers.Remove(this);
 				this.textDocument.UndoStack.PropertyChanged -= UndoStackPropertyChanged;
 				disposed = true;
 			}

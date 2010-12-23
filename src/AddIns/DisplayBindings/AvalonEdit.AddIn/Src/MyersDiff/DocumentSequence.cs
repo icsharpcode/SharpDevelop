@@ -15,6 +15,8 @@ namespace ICSharpCode.AvalonEdit.AddIn.MyersDiff
 		{
 			this.hashes = new int[document.TotalNumberOfLines];
 			
+			// Construct a perfect hash for the document lines, and store the 'hash code'
+			// (really just a unique identifier for each line content) in our array.
 			for (int i = 1; i <= document.TotalNumberOfLines; i++) {
 				string text = document.GetLine(i).Text;
 				int hash;

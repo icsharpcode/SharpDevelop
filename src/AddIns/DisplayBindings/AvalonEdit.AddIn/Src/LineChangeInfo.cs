@@ -9,11 +9,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	public interface IChangeWatcher : IDisposable
 	{
 		event EventHandler ChangeOccurred;
+		
 		/// <summary>
 		/// Returns the change information for a given line.
-		/// Pass null to get the changes before the first line.
+		/// Pass 0 to get the changes before the first line.
 		/// </summary>
-		LineChangeInfo GetChange(IDocumentLine line);
+		LineChangeInfo GetChange(int lineNumber);
 		void Initialize(IDocument document);
 	}
 	

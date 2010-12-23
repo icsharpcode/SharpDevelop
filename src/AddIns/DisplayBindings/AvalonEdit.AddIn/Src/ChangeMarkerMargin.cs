@@ -19,10 +19,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	{
 		IChangeWatcher changeWatcher;
 		
-		public ChangeMarkerMargin()
+		public ChangeMarkerMargin(IChangeWatcher changeWatcher)
 		{
-			changeWatcher = new DefaultChangeWatcher();
-			changeWatcher.ChangeOccurred += new EventHandler(ChangeOccurred);
+			this.changeWatcher = changeWatcher;
+			changeWatcher.ChangeOccurred += ChangeOccurred;
+		}
+		
+		bool disposed = false;
+		
+		public void Dispose()
+		{
+			if (!disposed) {
+				changeWatcher.ChangeOccurred -= ChangeOccurred;
+				disposed = true;
+			}
 		}
 		
 		protected override void OnRender(DrawingContext drawingContext)
@@ -31,13 +41,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			TextView textView = this.TextView;
 			
 			if (textView != null && textView.VisualLinesValid) {
-				ITextEditor editor = textView.Services.GetService(typeof(ITextEditor)) as ITextEditor;
-				changeWatcher.Initialize(editor.Document);
-				
 				foreach (VisualLine line in textView.VisualLines) {
 					Rect rect = new Rect(0, line.VisualTop - textView.ScrollOffset.Y, 5, line.Height);
 					
-					LineChangeInfo info = changeWatcher.GetChange(editor.Document.GetLine(line.FirstDocumentLine.LineNumber));
+					LineChangeInfo info = changeWatcher.GetChange(line.FirstDocumentLine.LineNumber);
 					
 					switch (info.Change) {
 						case ChangeType.None:
@@ -65,7 +72,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					
 					// special case for line 0
 					if (line.FirstDocumentLine.LineNumber == 1) {
-						info = changeWatcher.GetChange(null);
+						info = changeWatcher.GetChange(0);
 						
 						if (!string.IsNullOrEmpty(info.DeletedLinesAfterThisLine)) {
 							Point pt1 = new Point(5,  line.VisualTop - textView.ScrollOffset.Y - 4);
@@ -97,7 +104,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				oldTextView.VisualLinesChanged -= VisualLinesChanged;
 				oldTextView.ScrollOffsetChanged -= ScrollOffsetChanged;
 			}
-			
+			base.OnTextViewChanged(oldTextView, newTextView);
 			if (newTextView != null) {
 				newTextView.VisualLinesChanged += VisualLinesChanged;
 				newTextView.ScrollOffsetChanged += ScrollOffsetChanged;
@@ -122,18 +129,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		protected override Size MeasureOverride(Size availableSize)
 		{
 			return new Size(5, 0);
-		}
-		
-		bool disposed = false;
-		
-		public void Dispose()
-		{
-			if (!disposed) {
-				OnTextViewChanged(TextView, null);
-				changeWatcher.Dispose();
-				changeWatcher = null;
-				disposed = true;
-			}
 		}
 	}
 }

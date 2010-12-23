@@ -18,7 +18,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	/// <summary>
 	/// Icon bar: contains breakpoints and other icons.
 	/// </summary>
-	public class IconBarMargin : AbstractMargin
+	public class IconBarMargin : AbstractMargin, IDisposable
 	{
 		readonly IconBarManager manager;
 		
@@ -48,6 +48,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void OnRedrawRequested(object sender, EventArgs e)
 		{
 			InvalidateVisual();
+		}
+		
+		public virtual void Dispose()
+		{
+			this.TextView = null; // detach from TextView (will also detach from manager)
 		}
 		#endregion
 		
