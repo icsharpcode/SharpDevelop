@@ -98,6 +98,7 @@
     <Compile Include="Src\ExpressionHighlightRenderer.cs" />
     <Compile Include="Src\CodeManipulation.cs" />
     <Compile Include="Src\CaretHighlightAdorner.cs" />
+    <Compile Include="Src\LineChangeInfo.cs" />
     <Compile Include="Src\MyersDiff\DocumentSequence.cs" />
     <Compile Include="Src\MyersDiff\Edit.cs" />
     <Compile Include="Src\MyersDiff\ISequence.cs" />
