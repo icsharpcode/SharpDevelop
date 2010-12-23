@@ -71,6 +71,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				throw new ArgumentNullException("providers");
 			this.editor = editor;
 			this.providers = providers;
+			// DO NOT USE Wait on the main thread!
+			// causes deadlocks!
+			// parseTask.Wait();
+			// Reparse so that we have up-to-date DOM.
 			ParserService.ParseCurrentViewContent();
 		}
 		
@@ -105,18 +109,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			if (ParserService.LoadSolutionProjectsThreadRunning)
 				yield break;
-			// Not necessary to reparse here because the ContextActionsRenderer timeout 
-			// is large enough for the standard parser to finish first - not completely reliable, but saves one full reparse.
-			// In case the standard parser does not finish in time, the DOM is a little outdated but nothing bad happens
-			// (context action can just display an old class/method).
-			
-			// DO NOT USE Wait on the main thread!
-			// causes deadlocks!
-			// parseTask.Wait();
-			
-			// var sw = new Stopwatch(); sw.Start();
 			var editorContext = new EditorContext(this.editor);
-			// long elapsedEditorContextMs = sw.ElapsedMilliseconds;
 			
 			// could run providers in parallel
 			foreach (var provider in providers) {
@@ -125,8 +118,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					yield return action;
 				}
 			}
-//			ICSharpCode.Core.LoggingService.Debug(string.Format("Context actions elapsed {0}ms ({1}ms in EditorContext)",
-//			                                                    sw.ElapsedMilliseconds, elapsedEditorContextMs));
 		}
 	}
 }
