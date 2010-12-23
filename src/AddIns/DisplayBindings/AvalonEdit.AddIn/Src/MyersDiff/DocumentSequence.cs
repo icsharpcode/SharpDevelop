@@ -9,35 +9,36 @@ namespace ICSharpCode.AvalonEdit.AddIn.MyersDiff
 {
 	public class DocumentSequence : ISequence
 	{
-		IDocument document;
-		List<int> hashCodes;
+		int[] hashes;
 		
-		public DocumentSequence(IDocument document)
+		public DocumentSequence(IDocument document, Dictionary<string, int> hashDict)
 		{
-			this.document = document;
-			this.hashCodes = new List<int>();
+			this.hashes = new int[document.TotalNumberOfLines];
 			
 			for (int i = 1; i <= document.TotalNumberOfLines; i++) {
-				hashCodes.Add(document.GetLine(i).Text.GetHashCode());
+				string text = document.GetLine(i).Text;
+				int hash;
+				if (!hashDict.TryGetValue(text, out hash)) {
+					hash = hashDict.Count;
+					hashDict.Add(text, hash);
+				}
+				hashes[i - 1] = hash;
 			}
 		}
 		
 		public int Size()
 		{
-			return document.TotalNumberOfLines;
+			return hashes.Length;
 		}
 		
-		public bool Equals(int i, ISequence other, int j)
+		public bool Equals(int thisIdx, ISequence other, int otherIdx)
 		{
 			DocumentSequence seq = other as DocumentSequence;
 			
 			if (seq == null)
 				return false;
 			
-			int thisLineHash = hashCodes[i];
-			int otherLineHash = seq.hashCodes[j];
-			
-			return thisLineHash == otherLineHash;
+			return hashes[thisIdx] == seq.hashes[otherIdx];
 		}
 	}
 }

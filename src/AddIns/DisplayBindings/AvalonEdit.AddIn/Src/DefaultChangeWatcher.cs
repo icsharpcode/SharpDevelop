@@ -83,9 +83,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			} else {
 				changeList.Clear();
 				
+				Dictionary<string, int> hashes = new Dictionary<string, int>();
+				
 				MyersDiff.MyersDiff diff = new MyersDiff.MyersDiff(
-					new DocumentSequence(baseDocument),
-					new DocumentSequence(document)
+					new DocumentSequence(baseDocument, hashes),
+					new DocumentSequence(document, hashes)
 				);
 				
 				changeList.Add(new LineChangeInfo(ChangeType.None, ""));
