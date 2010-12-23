@@ -54,8 +54,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			Stream baseFileStream = GetBaseVersion();
 			
-			if (baseFileStream != null)
+			// TODO : update baseDocument on VCS actions
+			if (baseFileStream != null) {
 				baseDocument = DocumentUtilitites.LoadReadOnlyDocumentFromBuffer(new StringTextBuffer(ReadAll(baseFileStream)));
+			}
 			
 			SetupInitialFileState(false);
 			
@@ -77,8 +79,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (update)
 					changeList.Transform(TransformLineChangeInfo);
 				else
-					changeList.InsertRange(0, document.TotalNumberOfLines + 1, new LineChangeInfo(ChangeType.None, ""));
-			}else {
+					changeList.InsertRange(0, document.TotalNumberOfLines + 1, LineChangeInfo.Empty);
+			} else {
 				changeList.Clear();
 				
 				MyersDiff.MyersDiff diff = new MyersDiff.MyersDiff(
