@@ -16,6 +16,10 @@ namespace ICSharpCode.AvalonEdit.AddIn.MyersDiff
 		{
 			this.document = document;
 			this.hashCodes = new List<int>();
+			
+			for (int i = 1; i <= document.TotalNumberOfLines; i++) {
+				hashCodes.Add(document.GetLine(i).Text.GetHashCode());
+			}
 		}
 		
 		public int Size()
@@ -30,10 +34,10 @@ namespace ICSharpCode.AvalonEdit.AddIn.MyersDiff
 			if (seq == null)
 				return false;
 			
-			IDocumentLine thisLine = document.GetLine(i + 1);
-			IDocumentLine otherLine = seq.document.GetLine(j + 1);
+			int thisLineHash = hashCodes[i];
+			int otherLineHash = seq.hashCodes[j];
 			
-			return thisLine.Text == otherLine.Text;
+			return thisLineHash == otherLineHash;
 		}
 	}
 }
