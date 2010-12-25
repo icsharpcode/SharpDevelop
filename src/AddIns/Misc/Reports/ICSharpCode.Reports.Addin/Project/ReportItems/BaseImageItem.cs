@@ -60,12 +60,10 @@ namespace ICSharpCode.Reports.Addin
 			if (this.scaleImageToSize) {
 				graphics.DrawImageUnscaled(this.Image,this.Location.X,this.Location.Y);
 			} else {
-				Image im = this.image;
-				if (im != null) {
-					graphics.DrawImage(this.Image,this.ClientRectangle);
-				} 
+				graphics.DrawImage(this.Image,this.ClientRectangle);
 			}
 		}
+		
 		
 		
 		#region Property's
@@ -74,7 +72,9 @@ namespace ICSharpCode.Reports.Addin
 		public string ImageFileName {
 			get { return imageFileName; }
 			set { imageFileName = value;
-				this.relativeFileName = FileUtility.GetRelativePath(Path.GetFullPath(this.reportFileName),Path.GetFullPath(this.ImageFileName));
+				if (!String.IsNullOrEmpty(reportFileName)) {
+					this.relativeFileName = FileUtility.GetRelativePath(Path.GetFullPath(this.reportFileName),Path.GetFullPath(this.ImageFileName));
+				}
 			}
 		}
 		
@@ -138,15 +138,23 @@ namespace ICSharpCode.Reports.Addin
 				if (this.imageSource == GlobalEnums.ImageSource.Database ) {
 					text = "<Database>";
 				}
+				if (!String.IsNullOrEmpty(imageFileName)) {
+						this.image = this.LoadImage();
+						return this.image;
+					}
+				/*
 				this.image = FakeImage(base.Size,text);
 				if (this.image != null) {
 					return image;
 				} else {
+					var s = AbsoluteFileName;
 					if (!String.IsNullOrEmpty(imageFileName)) {
 						this.image = this.LoadImage();
 						return this.image;
 					}
 				}
+				return null;
+				*/
 				return null;
 			}
 			set {
@@ -212,16 +220,25 @@ namespace ICSharpCode.Reports.Addin
 		public string AbsoluteFileName
 		{
 			get {
-//D:\SharpDevelop3.0_WorkingCopy\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos				
+				//D:\SharpDevelop3.0_WorkingCopy\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos
 				
 				if (!string.IsNullOrEmpty(relativeFileName)) {
 					Console.WriteLine("");
-					string testFileName = FileUtility.NormalizePath(Path.Combine(Path.GetDirectoryName(this.reportFileName),this.relativeFileName));
+					
+					string testFileName = String.Empty;
+					if (! String.IsNullOrEmpty(reportFileName)) {
+						testFileName = FileUtility.NormalizePath(Path.Combine(Path.GetDirectoryName(this.reportFileName),this.relativeFileName));
+					} 
+					
+//					else 
+//					{
+//						testFileName = FileUtility.NormalizePath(Path.Combine(Path.GetDirectoryName(this.reportFileName),this.relativeFileName));
+//					}
 					if (File.Exists(testFileName)){
 						Console.WriteLine("Image found with Relative Filename");
-						Console.WriteLine("Report Filename {0}",this.reportFileName);
-						Console.WriteLine("Relative Filename {0}",this.relativeFileName);
-						Console.WriteLine("Image Filename {0}",this.ImageFileName);
+//						Console.WriteLine("Report Filename {0}",this.reportFileName);
+//						Console.WriteLine("Relative Filename {0}",this.relativeFileName);
+//						Console.WriteLine("Image Filename {0}",this.ImageFileName);
 						return testFileName;
 					} else {
 						Console.WriteLine("AbsoluteFileName can't load image");
