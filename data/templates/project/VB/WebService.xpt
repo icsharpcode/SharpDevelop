@@ -85,7 +85,7 @@ Public Class Soap
 End Class
 ]]></File>
 <File name="Default.asmx" language="XML">
-	<![CDATA[<%@ WebService Language="VB"  Class="${StandardNamespace}.Soap,Soap" %>]]>
+	<![CDATA[<%@ WebService Language="VB"  Class="${StandardNamespace}.Soap" %>]]>
 	</File>
 <!--*************************************************************************-->
 		<File name="Web.config" language="XML"><![CDATA[<?xml version="1.0"?>
