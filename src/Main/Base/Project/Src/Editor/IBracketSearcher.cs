@@ -40,13 +40,20 @@ namespace ICSharpCode.SharpDevelop.Editor
 
 		public int ClosingBracketLength { get; private set; }
 		
+		public string OpeningBracket { get; private set; }
+		
+		public string ClosingBracket { get; private set; }
+		
 		public BracketSearchResult(int openingBracketOffset, int openingBracketLength,
-		                           int closingBracketOffset, int closingBracketLength)
+		                           int closingBracketOffset, int closingBracketLength, 
+		                           string openingBracket = null, string closingBracket = null)
 		{
 			this.OpeningBracketOffset = openingBracketOffset;
 			this.OpeningBracketLength = openingBracketLength;
 			this.ClosingBracketOffset = closingBracketOffset;
 			this.ClosingBracketLength = closingBracketLength;
+			this.OpeningBracket 	  = openingBracket;
+			this.ClosingBracket 	  = closingBracket;
 		}
 	}
 }

@@ -196,6 +196,19 @@ namespace ICSharpCode.AvalonEdit.AddIn.Options
 			}
 		}
 		
+		bool showHiddenDefinitions = false;
+		
+		[DefaultValue(false)]
+		public bool ShowHiddenDefinitions {
+			get { return showHiddenDefinitions; }
+			set {
+				if (showHiddenDefinitions != value) {
+					showHiddenDefinitions = value;
+					OnPropertyChanged("ShowHiddenDefinitions");
+				}
+			}
+		}
+		
 		public void BindToTextEditor(TextEditor editor)
 		{
 			editor.Options = this;

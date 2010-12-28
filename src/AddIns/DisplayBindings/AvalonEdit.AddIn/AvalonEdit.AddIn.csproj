@@ -98,6 +98,11 @@
     <Compile Include="Src\ExpressionHighlightRenderer.cs" />
     <Compile Include="Src\CodeManipulation.cs" />
     <Compile Include="Src\CaretHighlightAdorner.cs" />
+    <Compile Include="Src\HiddenDefinition\HiddenDefinitionControl.xaml.cs">
+      <DependentUpon>HiddenDefinitionControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\HiddenDefinition\HiddenDefinitionRenderer.cs" />
     <Compile Include="Src\LineChangeInfo.cs" />
     <Compile Include="Src\MyersDiff\DocumentSequence.cs" />
     <Compile Include="Src\MyersDiff\Edit.cs" />
@@ -171,6 +176,7 @@
     <EmbeddedResource Include="Resources\ReverseIncrementalSearchCursor.cur" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\HiddenDefinition\HiddenDefinitionControl.xaml" />
     <Page Include="Src\SharpDevelopCompletionWindow.xaml">
       <DependentUpon>SharpDevelopCompletionWindow.cs</DependentUpon>
     </Page>
@@ -230,5 +236,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\MyersDiff" />
+    <Folder Include="Src\HiddenDefinition" />
   </ItemGroup>
 </Project>

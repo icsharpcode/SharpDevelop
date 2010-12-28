@@ -23,15 +23,21 @@ namespace ICSharpCode.VBNetBinding
 			if (offset > 0) {
 				char c = document.GetCharAt(offset - 1);
 				int index = openingBrackets.IndexOf(c);
-				int otherOffset = -1;
-				if (index > -1)
+				int otherOffset = -1; int ind = -1;
+				if (index > -1) {
 					otherOffset = SearchBracketForward(document, offset, openingBrackets[index], closingBrackets[index]);
+					ind = index;
+				}
 				index = closingBrackets.IndexOf(c);
-				if (index > -1)
+				if (index > -1) {
 					otherOffset = SearchBracketBackward(document, offset - 2, openingBrackets[index], closingBrackets[index]);
+					ind = index;
+				}
 				
 				if (otherOffset > -1)
-					return new BracketSearchResult(Math.Min(offset - 1, otherOffset), 1, Math.Max(offset - 1, otherOffset), 1);
+					return new BracketSearchResult(Math.Min(offset - 1, otherOffset), 1,
+					                               Math.Max(offset - 1, otherOffset), 1,
+					                               openingBrackets[ind].ToString(), closingBrackets[ind].ToString());
 				
 				int length;
 				VBStatement statement;
@@ -49,7 +55,8 @@ namespace ICSharpCode.VBNetBinding
 				}
 				
 				if (startIndex > -1 && endIndex > -1)
-					return new BracketSearchResult(startIndex, length, endIndex, statement.EndStatement.Length);
+					return new BracketSearchResult(startIndex, length, endIndex,
+					                               statement.EndStatement.Length);
 			}
 			
 			return null;

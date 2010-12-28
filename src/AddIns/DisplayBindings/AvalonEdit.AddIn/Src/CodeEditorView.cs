@@ -44,6 +44,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		BracketHighlightRenderer bracketRenderer;
 		CaretReferencesRenderer caretReferencesRenderer;
 		ContextActionsRenderer contextActionsRenderer;
+		HiddenDefinition.HiddenDefinitionRenderer hiddenDefinitionRenderer;
 		
 		public CodeEditorView()
 		{
@@ -52,6 +53,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			this.bracketRenderer = new BracketHighlightRenderer(this.TextArea.TextView);
 			this.caretReferencesRenderer = new CaretReferencesRenderer(this);
 			this.contextActionsRenderer = new ContextActionsRenderer(this);
+			this.hiddenDefinitionRenderer = new HiddenDefinition.HiddenDefinitionRenderer(this);
 			
 			UpdateCustomizedHighlighting();
 			
@@ -75,6 +77,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public virtual void Dispose()
 		{
 			contextActionsRenderer.Dispose();
+			hiddenDefinitionRenderer.Dispose();
 		}
 		
 		protected override string FileName {
@@ -110,6 +113,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				if (this.Adapter.Language != null) {
 					var bracketSearchResult = this.Adapter.Language.BracketSearcher.SearchBracket(this.Adapter.Document, this.TextArea.Caret.Offset);
 					this.bracketRenderer.SetHighlight(bracketSearchResult);
+					
+					if (CodeEditorOptions.Instance.ShowHiddenDefinitions) {
+						this.hiddenDefinitionRenderer.BracketSearchResult = bracketSearchResult;
+						this.hiddenDefinitionRenderer.Show();
+					} else {
+						this.hiddenDefinitionRenderer.ClosePopup();
+					}
 				}
 			} else {
 				this.bracketRenderer.SetHighlight(null);
