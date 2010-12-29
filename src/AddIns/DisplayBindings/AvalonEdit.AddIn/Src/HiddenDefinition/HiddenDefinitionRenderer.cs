@@ -2,11 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.ComponentModel.Design;
-using System.Linq;
 using System.Windows.Controls.Primitives;
-
-using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Editor;
 using ICSharpCode.SharpDevelop.Gui;
@@ -45,10 +41,14 @@ namespace ICSharpCode.AvalonEdit.AddIn.HiddenDefinition
 		{
 			ClosePopup();
 			
-			if (BracketSearchResult == null || BracketSearchResult.OpeningBracket != "{") return;
+			if (BracketSearchResult == null) return;
+			
+			// verify if we have a open bracket
+			if (this.editor.Document.GetCharAt(BracketSearchResult.OpeningBracketOffset) != '{')
+				return;
 			
 			var line = GetLineText(BracketSearchResult.OpeningBracketOffset);
-			if(line == null) return;			
+			if(line == null) return;
 			
 			control.DefinitionText = line;
 			popup.Child = control;
@@ -60,19 +60,23 @@ namespace ICSharpCode.AvalonEdit.AddIn.HiddenDefinition
 		
 		private string GetLineText(int offset)
 		{
-			// get folding manager
-			var container = this.editor.Adapter.GetService(typeof(IServiceContainer)) as IServiceContainer;
-			if (container == null) return null;
-			var folding = container.GetService(typeof(ParserFoldingStrategy)) as ParserFoldingStrategy;
-			if (folding == null) return null;
-			
-			// get folding
-			var f = folding.FoldingManager.GetFoldingsContaining(offset).LastOrDefault();
-			if (f == null) return null;
-			
 			// get line
-			var line = editor.Document.GetLineByOffset(f.StartOffset);
-			if (line == null || line.IsDeleted) return null;
+			var line = editor.Document.GetLineByOffset(offset);
+			string text = editor.Document.Text;
+			
+			while (true) {
+				if (line == null || line.IsDeleted) return null;
+				string lineString = text.Substring(line.Offset, line.Length).Trim();
+				
+				if (lineString != "{" && !string.IsNullOrEmpty(lineString) &&
+				    !lineString.StartsWith("//") && !lineString.StartsWith("/*") &&
+				    !lineString.StartsWith("*") && !lineString.StartsWith("'"))
+					break;
+				line = line.PreviousLine;
+			}
+			
+			if (!editor.TextArea.TextView.VisualLinesValid)
+				return null;
 			
 			// check whether the line is visible
 			int off = line.Offset;

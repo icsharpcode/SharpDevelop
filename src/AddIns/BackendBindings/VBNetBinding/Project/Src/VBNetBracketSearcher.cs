@@ -36,8 +36,7 @@ namespace ICSharpCode.VBNetBinding
 				
 				if (otherOffset > -1)
 					return new BracketSearchResult(Math.Min(offset - 1, otherOffset), 1,
-					                               Math.Max(offset - 1, otherOffset), 1,
-					                               openingBrackets[ind].ToString(), closingBrackets[ind].ToString());
+					                               Math.Max(offset - 1, otherOffset), 1);
 				
 				int length;
 				VBStatement statement;
