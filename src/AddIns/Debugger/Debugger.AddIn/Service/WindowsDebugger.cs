@@ -73,6 +73,12 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
+		/// <inheritdoc/>
+		public bool BreakAtBegining {
+			get;
+			set;
+		}
+		
 		protected virtual void OnProcessSelected(ProcessEventArgs e)
 		{
 			if (ProcessSelected != null) {
@@ -643,16 +649,21 @@ namespace ICSharpCode.SharpDevelop.Services
 		public void SelectProcess(Process process)
 		{
 			if (debuggedProcess != null) {
-				debuggedProcess.Paused                  -= debuggedProcess_DebuggingPaused;
-				debuggedProcess.ExceptionThrown         -= debuggedProcess_ExceptionThrown;
-				debuggedProcess.Resumed                 -= debuggedProcess_DebuggingResumed;
+				debuggedProcess.Paused          -= debuggedProcess_DebuggingPaused;
+				debuggedProcess.ExceptionThrown -= debuggedProcess_ExceptionThrown;
+				debuggedProcess.Resumed         -= debuggedProcess_DebuggingResumed;
 			}
 			debuggedProcess = process;
 			if (debuggedProcess != null) {
-				debuggedProcess.Paused                  += debuggedProcess_DebuggingPaused;
-				debuggedProcess.ExceptionThrown         += debuggedProcess_ExceptionThrown;
-				debuggedProcess.Resumed                 += debuggedProcess_DebuggingResumed;
+				debuggedProcess.Paused          += debuggedProcess_DebuggingPaused;
+				debuggedProcess.ExceptionThrown += debuggedProcess_ExceptionThrown;
+				debuggedProcess.Resumed         += debuggedProcess_DebuggingResumed;
+				
+				debuggedProcess.BreakAtBegining = BreakAtBegining;			
 			}
+			// reset
+			BreakAtBegining = false;
+			
 			JumpToCurrentLine();
 			OnProcessSelected(new ProcessEventArgs(process));
 		}

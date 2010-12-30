@@ -88,6 +88,12 @@ namespace Debugger
 			}
 		}
 		
+		public Breakpoint(NDebugger debugger, ICorDebugFunctionBreakpoint corBreakpoint)
+		{
+			this.debugger = debugger;
+			this.corBreakpoints.Add(corBreakpoint);
+		}
+		
 		public Breakpoint(NDebugger debugger, string fileName, byte[] checkSum, int line, int column, bool enabled)
 		{
 			this.debugger = debugger;
@@ -134,6 +140,9 @@ namespace Debugger
 		
 		internal bool SetBreakpoint(Module module)
 		{
+			if (this.fileName == null) 
+				return false;
+			
 			SourcecodeSegment segment = SourcecodeSegment.Resolve(module, FileName, CheckSum, Line, Column);
 			if (segment == null) return false;
 			

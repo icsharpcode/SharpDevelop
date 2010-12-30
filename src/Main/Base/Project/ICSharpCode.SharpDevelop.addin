@@ -928,9 +928,9 @@
 			</ComplexCondition>
 		</Condition>
 		
-		<Condition name="IsProcessRunning" isdebugging = "True">
-			<Condition name="DebuggerSupports" debuggersupports = "Stepping">
-				<Condition name="IsProcessRunning" isprocessrunning = "False" action = "Disable">
+		<Condition name="DebuggerSupports" debuggersupports = "Stepping">
+			<Condition name = "SolutionOpen" action = "Disable">
+				<Condition name="DebuggerSupports" debuggersupports = "Start">
 					<ToolbarItem id = "SteppingSeparator" type = "Separator"  />
 					<ToolbarItem id      = "Step over"
 					             icon    = "Icons.16x16.Debug.StepOver"
@@ -940,10 +940,12 @@
 					             icon    = "Icons.16x16.Debug.StepInto"
 					             tooltip = "${res:XML.MainMenu.DebugMenu.StepInto.Description}"
 					             class   = "ICSharpCode.SharpDevelop.Project.Commands.StepIntoDebuggingCommand"/>
-					<ToolbarItem id      = "Step out"
-					             icon    = "Icons.16x16.Debug.StepOut"
-					             tooltip = "${res:XML.MainMenu.DebugMenu.StepOut.Description}"
-					             class   = "ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand"/>
+					<Condition name="IsProcessRunning" isdebugging = "True">
+						<ToolbarItem id      = "Step out"
+						             icon    = "Icons.16x16.Debug.StepOut"
+						             tooltip = "${res:XML.MainMenu.DebugMenu.StepOut.Description}"
+						             class   = "ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand"/>
+					</Condition>
 				</Condition>
 			</Condition>
 		</Condition>
@@ -1548,23 +1550,27 @@
 			</Condition>
 			
 			<Condition name="DebuggerSupports" debuggersupports = "Stepping">
-				<Condition name="IsProcessRunning"  isprocessrunning = "False" isdebugging = "True" action = "Disable">
-					<MenuItem id = "BeforeSteppingSeparator" type = "Separator" />
-					<MenuItem id       = "Step over"
-					          label    = "${res:XML.MainMenu.DebugMenu.StepOver}"
-					          icon     = "Icons.16x16.Debug.StepOver"
-					          shortcut = "F10"
-					          class    = "ICSharpCode.SharpDevelop.Project.Commands.StepDebuggingCommand"/>
-					<MenuItem id       = "Step into"
-					          label    = "${res:XML.MainMenu.DebugMenu.StepInto}"
-					          icon     = "Icons.16x16.Debug.StepInto"
-					          shortcut = "F11"
-					          class    = "ICSharpCode.SharpDevelop.Project.Commands.StepIntoDebuggingCommand"/>
-					<MenuItem id       = "Step out"
-					          label    = "${res:XML.MainMenu.DebugMenu.StepOut}"
-					          icon     = "Icons.16x16.Debug.StepOut"
-					          shortcut = "Shift|F11"
-					          class    = "ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand"/>
+				<Condition name = "SolutionOpen" action = "Disable">
+					<Condition name="DebuggerSupports" debuggersupports = "Start">
+						<MenuItem id = "BeforeSteppingSeparator" type = "Separator" />
+						<MenuItem id       = "Step over"
+						          label    = "${res:XML.MainMenu.DebugMenu.StepOver}"
+						          icon     = "Icons.16x16.Debug.StepOver"
+						          shortcut = "F10"
+						          class    = "ICSharpCode.SharpDevelop.Project.Commands.StepDebuggingCommand"/>
+						<MenuItem id       = "Step into"
+						          label    = "${res:XML.MainMenu.DebugMenu.StepInto}"
+						          icon     = "Icons.16x16.Debug.StepInto"
+						          shortcut = "F11"
+						          class    = "ICSharpCode.SharpDevelop.Project.Commands.StepIntoDebuggingCommand"/>
+						<Condition name="IsProcessRunning" isdebugging = "True">
+							<MenuItem id       = "Step out"
+							          label    = "${res:XML.MainMenu.DebugMenu.StepOut}"
+							          icon     = "Icons.16x16.Debug.StepOut"
+							          shortcut = "Shift|F11"
+							          class    = "ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand"/>
+						</Condition>
+					</Condition>
 				</Condition>
 			</Condition>
 			
