@@ -132,8 +132,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			var bookmarkBase = (BookmarkPadBase)Owner;			
+			if (Owner == null || !(Owner is BookmarkPadBase)) return;
+			
+			var bookmarkBase = (BookmarkPadBase)Owner;
 			var item = bookmarkBase.CurrentItem;
+			
+			if (item == null) return;
 			
 			if (item.Mark is BreakpointBookmark) {
 				BookmarkManager.RemoveMark(item.Mark);
