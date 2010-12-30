@@ -25,6 +25,11 @@ namespace ICSharpCode.SharpDevelop.Debugging
 			}
 		}
 		
+		/// <inheritdoc/>
+		public bool BreakAtBegining {
+			get; set; 
+		}
+		
 		public bool CanDebug(IProject project)
 		{
 			return true;
