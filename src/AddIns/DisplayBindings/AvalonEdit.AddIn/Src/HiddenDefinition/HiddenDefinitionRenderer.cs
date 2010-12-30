@@ -58,30 +58,37 @@ namespace ICSharpCode.AvalonEdit.AddIn.HiddenDefinition
 			popup.IsOpen = true;
 		}
 		
+		/// <summary>
+		/// Gets the line text near the offset.
+		/// </summary>
+		/// <param name="offset">Offset.</param>
+		/// <returns></returns>
 		private string GetLineText(int offset)
 		{
-			// get line
-			var line = editor.Document.GetLineByOffset(offset);
-			string text = editor.Document.Text;
-			
-			while (true) {
-				if (line == null || line.IsDeleted) return null;
-				string lineString = text.Substring(line.Offset, line.Length).Trim();
-				
-				if (lineString != "{" && !string.IsNullOrEmpty(lineString) &&
-				    !lineString.StartsWith("//") && !lineString.StartsWith("/*") &&
-				    !lineString.StartsWith("*") && !lineString.StartsWith("'"))
-					break;
-				line = line.PreviousLine;
-			}
-			
 			if (!editor.TextArea.TextView.VisualLinesValid)
 				return null;
 			
+			// get line
+			var documentLine = editor.Document.GetLineByOffset(offset);
+			string documentText = editor.Document.Text;
+			string lineText = string.Empty;
+			int off, length;
+			
+			do {
+				if (documentLine == null || documentLine.IsDeleted) return null;
+				off = documentLine.Offset;
+				length = documentLine.Length;
+				lineText = documentText.Substring(off, length).Trim();
+				
+				documentLine = documentLine.PreviousLine;
+			}
+			while (lineText == "{" || string.IsNullOrEmpty(lineText) ||
+			       lineText.StartsWith("//") || lineText.StartsWith("/*") ||
+			       lineText.StartsWith("*") || lineText.StartsWith("'"));
+			
 			// check whether the line is visible
-			int off = line.Offset;
 			if (editor.TextArea.TextView.VisualLines[0].StartOffset > off) {
-				return this.editor.TextArea.TextView.Document.GetText(off, line.Length);
+				return this.editor.TextArea.TextView.Document.GetText(off, length);
 			}
 			
 			return null;
