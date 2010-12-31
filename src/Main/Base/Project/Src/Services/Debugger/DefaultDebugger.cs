@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		}
 		
 		/// <inheritdoc/>
-		public bool BreakAtBegining {
+		public bool BreakAtBeginning {
 			get; set; 
 		}
 		

@@ -171,5 +171,7 @@ namespace ICSharpCode.Scripting.Tests.Utils
 				DebugStopped(this, e);
 			}
 		}		
+		
+		public bool BreakAtBeginning { get; set; }
 	}
 }

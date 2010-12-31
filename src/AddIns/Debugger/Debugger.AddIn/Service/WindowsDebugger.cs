@@ -74,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		}
 		
 		/// <inheritdoc/>
-		public bool BreakAtBegining {
+		public bool BreakAtBeginning {
 			get;
 			set;
 		}
@@ -659,10 +659,10 @@ namespace ICSharpCode.SharpDevelop.Services
 				debuggedProcess.ExceptionThrown += debuggedProcess_ExceptionThrown;
 				debuggedProcess.Resumed         += debuggedProcess_DebuggingResumed;
 				
-				debuggedProcess.BreakAtBegining = BreakAtBegining;			
+				debuggedProcess.BreakAtBeginning = BreakAtBeginning;			
 			}
 			// reset
-			BreakAtBegining = false;
+			BreakAtBeginning = false;
 			
 			JumpToCurrentLine();
 			OnProcessSelected(new ProcessEventArgs(process));

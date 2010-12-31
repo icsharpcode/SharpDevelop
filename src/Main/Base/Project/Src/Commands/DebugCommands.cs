@@ -84,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			LoggingService.Info("Debugger Command: StepOver");
 			if (!DebuggerService.CurrentDebugger.IsDebugging) {
-				DebuggerService.CurrentDebugger.BreakAtBegining = true;
+				DebuggerService.CurrentDebugger.BreakAtBeginning = true;
 				new Execute().Run();
 			} else { 
 				DebuggerService.CurrentDebugger.StepOver();
@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			LoggingService.Info("Debugger Command: StepInto");
 			if (!DebuggerService.CurrentDebugger.IsDebugging) {
-				DebuggerService.CurrentDebugger.BreakAtBegining = true;
+				DebuggerService.CurrentDebugger.BreakAtBeginning = true;
 				new Execute().Run();
 			} else { 
 				DebuggerService.CurrentDebugger.StepOver();

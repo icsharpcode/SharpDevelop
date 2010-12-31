@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Debugging
 		/// <summary>
 		/// Gets or sets whether the debugger should break at the first line of execution.
 		/// </summary>
-		bool BreakAtBegining {
+		bool BreakAtBeginning {
 			get; set; 
 		}
 		

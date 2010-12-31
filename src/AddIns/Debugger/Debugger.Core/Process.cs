@@ -89,7 +89,7 @@ namespace Debugger
 			}
 		}
 		
-		public bool BreakAtBegining {
+		public bool BreakAtBeginning {
 			get;
 			set;
 		}
@@ -637,7 +637,7 @@ namespace Debugger
 		
 		private void OnModulesAdded(object sender, CollectionItemEventArgs<Module> e)
 		{
-			if (BreakAtBegining) {
+			if (BreakAtBeginning) {
 				if (e.Item.SymReader == null) return; // No symbols
 				// create a BP at entry point
 				uint entryPoint = e.Item.SymReader.GetUserEntryPoint();
@@ -654,7 +654,7 @@ namespace Debugger
 						breakpoint.Remove();
 					breakpoint = null;
 				};
-				BreakAtBegining = false;
+				BreakAtBeginning = false;
 			}
 		}
 		

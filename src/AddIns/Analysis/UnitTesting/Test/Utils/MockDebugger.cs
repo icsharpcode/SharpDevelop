@@ -168,5 +168,7 @@ namespace UnitTesting.Tests.Utils
 		{
 			throw new NotImplementedException();
 		}
+		
+		public bool BreakAtBeginning { get; set; }
 	}
 }
