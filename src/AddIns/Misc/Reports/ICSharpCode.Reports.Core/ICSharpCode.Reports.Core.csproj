@@ -137,7 +137,6 @@
     <Compile Include="Project\Exceptions\WrongColumnException.cs" />
     <Compile Include="Project\Exceptions\WrongSectionException.cs" />
     <Compile Include="Project\Exporter\Converters\GroupedTableConverter.cs" />
-    <Compile Include="Project\Exporter\Decorators\RectangleDecorator.cs" />
     <Compile Include="Project\Expressions\SimpleExpressionEvaluator\Compilation\Functions\ReportingService\FieldReference.cs" />
     <Compile Include="Project\Exporter\BasePager.cs" />
     <Compile Include="Project\Exporter\Converters\BaseConverter.cs" />

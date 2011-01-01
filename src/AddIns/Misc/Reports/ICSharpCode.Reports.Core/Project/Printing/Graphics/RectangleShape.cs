@@ -78,18 +78,21 @@ namespace ICSharpCode.Reports.Core {
 			if (contentByte == null) {
 				throw new ArgumentNullException("contentByte");
 			}
-			if (line == null) {
-				throw new ArgumentNullException("line");
-			}
+		
 			if (style == null) {
 				throw new ArgumentNullException("style");
 			}
 			if (rectangle == null) {
 				throw new ArgumentNullException("rectangle");
 			}
-			
+			float t;
+			if (line == null) {
+				t = 1;
+			} else {
+				t = line.Thickness;
+			}
 			BaseShape.SetupShape(contentByte,style);
-			contentByte.SetLineWidth(UnitConverter.FromPixel(line.Thickness).Point);
+			contentByte.SetLineWidth(UnitConverter.FromPixel(t).Point);
 			contentByte.RoundRectangle(rectangle.Left, rectangle.Bottom, rectangle.Width, rectangle.Height, CornerRadius);
 			BaseShape.FinishShape(contentByte);
 		}
