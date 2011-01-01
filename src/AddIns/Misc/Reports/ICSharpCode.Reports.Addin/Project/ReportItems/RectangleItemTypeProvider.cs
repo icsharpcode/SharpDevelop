@@ -57,15 +57,17 @@ namespace ICSharpCode.Reports.Addin
 			prop = props.Find("ForeColor",true);
 			allProperties.Add(prop);
 			
-			prop = props.Find("DrawBorder",true);
-			allProperties.Add(prop);
-			
+//			prop = props.Find("DrawBorder",true);
+//			allProperties.Add(prop);
+//			
 			prop = props.Find("DashStyle",true);
 			allProperties.Add(prop);
 			
 			prop = props.Find("Thickness",true);
 			allProperties.Add(prop);
 			
+			prop = props.Find("CornerRadius",true);
+			allProperties.Add(prop);
 			return new PropertyDescriptorCollection(allProperties.ToArray());
 		}
 	}

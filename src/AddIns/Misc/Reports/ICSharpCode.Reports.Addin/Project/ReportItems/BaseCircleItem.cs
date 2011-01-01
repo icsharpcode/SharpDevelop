@@ -62,15 +62,6 @@ namespace ICSharpCode.Reports.Addin
 		}
 		
 		
-		private BaseLine Baseline()
-		{
-			if (this.BackColor == GlobalValues.DefaultBackColor) {
-				return new BaseLine (this.ForeColor,this.DashStyle,this.Thickness);
-			} else {
-				return new BaseLine (this.BackColor,this.DashStyle,this.Thickness);
-			}
-		}
-		
 		
 		[Browsable(true),
 		 Category("Appearance"),

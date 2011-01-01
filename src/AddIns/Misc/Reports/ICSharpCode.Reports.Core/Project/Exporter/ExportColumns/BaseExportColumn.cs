@@ -123,6 +123,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			iTextSharp.text.Rectangle r = (iTextSharp.text.Rectangle)rectangleConverter.ConvertTo(null,System.Globalization.CultureInfo.InvariantCulture,
 			                                                                                      this.styleDecorator.DisplayRectangle,
 			                                                                                      typeof(iTextSharp.text.Rectangle));
+		
 			
 			iTextSharp.text.Rectangle rr = new iTextSharp.text.Rectangle(r.Left,r.Bottom -2,
 			                                                             r.Left + r.Width,r.Bottom  + r.Height);

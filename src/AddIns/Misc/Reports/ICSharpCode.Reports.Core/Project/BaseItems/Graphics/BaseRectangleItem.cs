@@ -3,8 +3,11 @@
 
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Exporter;
+
 
 /// <summary>
 /// This class draws a Rectangle
@@ -14,7 +17,9 @@ using ICSharpCode.Reports.Core.Exporter;
 /// 	created on - 29.09.2005 11:57:30
 /// </remarks>
 namespace ICSharpCode.Reports.Core {	
-	public class BaseRectangleItem : BaseGraphicItem,IExportColumnBuilder {
+	
+	public class BaseRectangleItem : BaseGraphicItem,IExportColumnBuilder
+	{
 		
 		RectangleShape shape = new RectangleShape();
 		
@@ -29,10 +34,12 @@ namespace ICSharpCode.Reports.Core {
 		#region IExportColumnBuilder
 		
 		public BaseExportColumn CreateExportColumn(){
+			shape.CornerRadius = CornerRadius;
 			IGraphicStyleDecorator style = base.CreateItemStyle(this.shape);
 			ExportGraphic item = new ExportGraphic(style,false);
 			return item as ExportGraphic;
 		}
+		
 		
 		#endregion
 		
@@ -42,12 +49,21 @@ namespace ICSharpCode.Reports.Core {
 			}
 			base.Render(rpea);
 			Rectangle rect = base.DisplayRectangle;
-			
 			StandardPrinter.FillBackground(rpea.PrintPageEventArgs.Graphics,this.BaseStyleDecorator);
-			shape.DrawShape (rpea.PrintPageEventArgs.Graphics,
-			                 base.Baseline(),
-			                 rect);
+			BaseLine line = new BaseLine(base.ForeColor,base.DashStyle,base.Thickness,LineCap.Round,LineCap.Round,DashCap.Round);
+			
+			using (Pen pen = line.CreatePen(line.Thickness)){
+				if (pen != null)
+				{
+					shape.CornerRadius = this.CornerRadius;
+					GraphicsPath path1 = shape.CreatePath(rect);
+					rpea.PrintPageEventArgs.Graphics.DrawPath(pen, path1);
+				}
+			}
 		}
+		
+		
+		public int CornerRadius {get;set;}
 		
 		
 		public override string ToString() {

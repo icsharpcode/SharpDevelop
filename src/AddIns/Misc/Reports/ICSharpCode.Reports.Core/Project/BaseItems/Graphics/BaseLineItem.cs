@@ -46,17 +46,17 @@ namespace ICSharpCode.Reports.Core {
 		
 		private LineDecorator CreateLineShape ()
 		{
-			LineDecorator ld = new LineDecorator(this.shape);
-			ld.Size = this.Size;
-			ld.Location = this.Location;
-			ld.BackColor = this.BackColor;
-			ld.ForeColor = this.ForeColor;
+			LineDecorator decorator = new LineDecorator(this.shape);
+			decorator.Size = this.Size;
+			decorator.Location = this.Location;
+			decorator.BackColor = this.BackColor;
+			decorator.ForeColor = this.ForeColor;
 			
-			ld.Thickness = base.Thickness;
-			ld.DashStyle = base.DashStyle;
-			ld.From = this.fromPoint;
-			ld.To = this.toPoint;
-			return ld;
+			decorator.Thickness = base.Thickness;
+			decorator.DashStyle = base.DashStyle;
+			decorator.From = this.fromPoint;
+			decorator.To = this.toPoint;
+			return decorator;
 		}
 		
 		
