@@ -28,7 +28,7 @@ namespace ICSharpCode.Reports.Addin
 			this.thickness = 1;
 			this.dashStyle = DashStyle.Solid;
 			this.Size = new Size(GlobalValues.PreferedSize.Width,2* GlobalValues.PreferedSize.Height);
-			TypeDescriptor.AddProvider(new RectangleItemTypeProvider(), typeof(BaseCircleItem));
+			TypeDescriptor.AddProvider(new CircleItemTypeProvider(), typeof(BaseCircleItem));
 		}
 		
 		

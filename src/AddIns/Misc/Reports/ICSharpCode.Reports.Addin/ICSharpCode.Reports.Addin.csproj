@@ -145,6 +145,7 @@
     <Compile Include="Project\ReportItems\BaseDataItem.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Project\ReportItems\CircleItemTypeProvider.cs" />
     <Compile Include="Project\ReportItems\GroupFooter.cs" />
     <Compile Include="Project\ReportItems\BaseImageItem.cs">
       <SubType>Component</SubType>
@@ -171,7 +172,16 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Project\ReportItems\GroupHeader.cs" />
-    <Compile Include="Project\ReportItems\RectangleItemTypeProvider.cs" />
+    <Compile Include="Project\ReportItems\TypeProviders\AbstractItemTypeProvider.cs" />
+    <Compile Include="Project\ReportItems\TypeProviders\DataItemTypeProvider.cs" />
+    <Compile Include="Project\ReportItems\TypeProviders\GroupedRowTypeProvider.cs" />
+    <Compile Include="Project\ReportItems\TypeProviders\ImageItemTypeProvider.cs" />
+    <Compile Include="Project\ReportItems\TypeProviders\LineItemTypeDescriptor.cs" />
+    <Compile Include="Project\ReportItems\TypeProviders\RectangleItemTypeProvider.cs" />
+    <Compile Include="Project\ReportItems\TypeProviders\RowItemTypeProvider.cs" />
+    <Compile Include="Project\ReportItems\TypeProviders\SectionItemTypeProvider.cs" />
+    <Compile Include="Project\ReportItems\TypeProviders\TableItemTypeProvider.cs" />
+    <Compile Include="Project\ReportItems\TypeProviders\TextItemTypeProvider.cs" />
     <Compile Include="Project\ReportManagers\BaseManager.cs" />
     <Compile Include="Project\ReportManagers\StandartPreviewManager.cs" />
     <Compile Include="Project\ReportWizard\Generators\AbstractReportGenerator.cs" />
@@ -337,6 +347,9 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Project\ReportItems\TypeProviders" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

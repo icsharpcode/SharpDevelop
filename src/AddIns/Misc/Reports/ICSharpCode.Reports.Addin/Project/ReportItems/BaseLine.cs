@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 
 using ICSharpCode.Reports.Addin.Designer;
+using ICSharpCode.Reports.Addin.TypeProviders;
 
 namespace ICSharpCode.Reports.Addin
 {
@@ -156,75 +157,7 @@ namespace ICSharpCode.Reports.Addin
 	}
 	
 	
-	internal class LineItemTypeProvider : TypeDescriptionProvider
-	{
-		public LineItemTypeProvider() :  base(TypeDescriptor.GetProvider(typeof(AbstractItem)))
-		{
-		}
-		
-//		public LineItemTypeProvider(TypeDescriptionProvider parent): base(parent)
-//		{
-//			
-//		}
-
-		
-		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
-		{
-			ICustomTypeDescriptor td = base.GetTypeDescriptor(objectType,instance);
-			return new LineItemTypeDescriptor(td, instance);
-		}
-	}
 	
-	internal class LineItemTypeDescriptor : CustomTypeDescriptor
-	{
-//		private BaseTextItem instance;
-		
-		public LineItemTypeDescriptor(ICustomTypeDescriptor parent, object instance)
-			: base(parent)
-		{
-//			instance = instance as BaseTextItem;
-		}
-
-		
-		public override PropertyDescriptorCollection GetProperties()
-		{
-			return GetProperties(null);
-		}
-
-		
-		public override PropertyDescriptorCollection GetProperties(Attribute[] attributes)
-		{
-			PropertyDescriptorCollection props = base.GetProperties(attributes);
-			List<PropertyDescriptor> allProperties = new List<PropertyDescriptor>();
-			
-			DesignerHelper.AddDefaultProperties(allProperties,props);
-			
-			PropertyDescriptor prop = null;
-			prop = props.Find("ForeColor",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("FromPoint",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("ToPoint",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("StartLineCap",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("EndLineCap",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("dashLineCap",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("DashStyle",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("Thickness",true);
-			allProperties.Add(prop);
-			
-			return new PropertyDescriptorCollection(allProperties.ToArray());
-		}
-	}
+	
+	
 }
