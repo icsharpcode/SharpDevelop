@@ -32,9 +32,7 @@ namespace ICSharpCode.Reports.Core {
 		public override GraphicsPath CreatePath(Rectangle rectangle )
 		{
 			//http://stackoverflow.com/questions/628261/how-to-draw-rounded-rectangle-with-variable-width-border-inside-of-specific-bound
-			//http://www.switchonthecode.com/tutorials/csharp-creating-rounded-rectangles-using-a-graphics-path
-			//http://www.codeproject.com/KB/GDI-plus/ExtendedGraphics.aspx
-			
+		
 			GraphicsPath gfxPath = new GraphicsPath();
 			if (CornerRadius == 0)
 			{
@@ -42,12 +40,10 @@ namespace ICSharpCode.Reports.Core {
 			}
 			else
 			{
-				
 				gfxPath.AddArc(rectangle.X, rectangle.Y,CornerRadius , CornerRadius, 180, 90);
 				gfxPath.AddArc(rectangle.X + rectangle.Width - CornerRadius, rectangle.Y, CornerRadius, CornerRadius, 270, 90);
 				gfxPath.AddArc(rectangle.X + rectangle.Width - CornerRadius, rectangle.Y + rectangle.Height - CornerRadius, CornerRadius, CornerRadius, 0, 90);
 				gfxPath.AddArc(rectangle.X, rectangle.Y + rectangle.Height - CornerRadius, CornerRadius, CornerRadius, 90, 90);
-				
 			}
 			gfxPath.CloseAllFigures();
 			return gfxPath;
@@ -75,6 +71,7 @@ namespace ICSharpCode.Reports.Core {
 		                                IBaseStyleDecorator style,
 		                                iTextSharp.text.Rectangle rectangle)
 		{
+		
 			if (contentByte == null) {
 				throw new ArgumentNullException("contentByte");
 			}
@@ -85,16 +82,17 @@ namespace ICSharpCode.Reports.Core {
 			if (rectangle == null) {
 				throw new ArgumentNullException("rectangle");
 			}
-			float t;
+		
 			if (line == null) {
-				t = 1;
-			} else {
-				t = line.Thickness;
+				BaseShape.FillBackGround(contentByte,style,rectangle);
+			} 
+			else
+			{
+				BaseShape.SetupShape(contentByte,style);
+				contentByte.SetLineWidth(UnitConverter.FromPixel(line.Thickness).Point);
+				contentByte.RoundRectangle(rectangle.Left, rectangle.Bottom, rectangle.Width, rectangle.Height, CornerRadius);
+				BaseShape.FinishShape(contentByte);
 			}
-			BaseShape.SetupShape(contentByte,style);
-			contentByte.SetLineWidth(UnitConverter.FromPixel(t).Point);
-			contentByte.RoundRectangle(rectangle.Left, rectangle.Bottom, rectangle.Width, rectangle.Height, CornerRadius);
-			BaseShape.FinishShape(contentByte);
 		}
 		
 		

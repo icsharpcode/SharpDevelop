@@ -80,11 +80,13 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected virtual void Decorate ()
 		{
 			RectangleShape shape = new RectangleShape();
+	
 			shape.DrawShape(this.pdfWriter.DirectContent,
 			            null,
 			            this.styleDecorator,
-			            ConvertToPdfRectangle());
+			            ConvertToPdfRectangle());        
 			this.DrawFrame();
+			
 		}
 		
 		#endregion
@@ -140,8 +142,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			return new Border(new BaseLine (this.styleDecorator.FrameColor,
 			                                    System.Drawing.Drawing2D.DashStyle.Solid,1));
 		}
-		
-		
 		
 		
 		private  void DrawFrame ()

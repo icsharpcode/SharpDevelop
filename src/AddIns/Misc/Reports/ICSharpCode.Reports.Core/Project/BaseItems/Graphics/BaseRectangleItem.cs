@@ -48,16 +48,20 @@ namespace ICSharpCode.Reports.Core {
 				throw new ArgumentNullException("rpea");
 			}
 			base.Render(rpea);
-			Rectangle rect = base.DisplayRectangle;
+			Rectangle rectangle = base.DisplayRectangle;
 			StandardPrinter.FillBackground(rpea.PrintPageEventArgs.Graphics,this.BaseStyleDecorator);
+			
 			BaseLine line = new BaseLine(base.ForeColor,base.DashStyle,base.Thickness,LineCap.Round,LineCap.Round,DashCap.Round);
 			
 			using (Pen pen = line.CreatePen(line.Thickness)){
 				if (pen != null)
 				{
 					shape.CornerRadius = this.CornerRadius;
-					GraphicsPath path1 = shape.CreatePath(rect);
-					rpea.PrintPageEventArgs.Graphics.DrawPath(pen, path1);
+
+					GraphicsPath gfxPath = shape.CreatePath(rectangle);
+					
+					rpea.PrintPageEventArgs.Graphics.FillPath(new SolidBrush(BackColor), gfxPath);;
+					rpea.PrintPageEventArgs.Graphics.DrawPath(pen, gfxPath);
 				}
 			}
 		}

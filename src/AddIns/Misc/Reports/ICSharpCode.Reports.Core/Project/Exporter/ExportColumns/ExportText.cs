@@ -59,6 +59,7 @@ namespace ICSharpCode.Reports.Core.Exporter {
 			}
 
 			base.Decorate();
+			
 			PdfContentByte contentByte = base.PdfWriter.DirectContent;
 		
 			CalculatePdfFormat pdfFormat = new CalculatePdfFormat(this.StyleDecorator,font);
@@ -75,6 +76,7 @@ namespace ICSharpCode.Reports.Core.Exporter {
 			}
 			
 			Chunk chunk = new Chunk(formatedText,font);
+
 			columnText.AddText(chunk);
 			
 			columnText.Go();
