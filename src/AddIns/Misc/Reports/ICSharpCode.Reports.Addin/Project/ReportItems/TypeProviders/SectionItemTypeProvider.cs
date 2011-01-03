@@ -20,10 +20,6 @@ namespace ICSharpCode.Reports.Addin.TypeProviders
 		{
 		}
 		
-//		public SectionItemTypeProvider(TypeDescriptionProvider parent): base(parent)
-//		{
-//		}
-
 	
 		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
 		{
@@ -35,12 +31,11 @@ namespace ICSharpCode.Reports.Addin.TypeProviders
 	
 	internal class SectionItemDescriptor : CustomTypeDescriptor
 	{
-//		private BaseTextItem instance;
+
 		
 		public SectionItemDescriptor(ICustomTypeDescriptor parent, object instance)
 			: base(parent)
 		{
-//			instance = instance as BaseTextItem;
 		}
 
 		

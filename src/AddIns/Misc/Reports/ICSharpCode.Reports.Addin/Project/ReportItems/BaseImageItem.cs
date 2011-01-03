@@ -2,16 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
-using System.Globalization;
 using System.IO;
 using System.Windows.Forms.Design;
 using System.Xml.Serialization;
 
-using ICSharpCode.Reports.Addin.Designer;
 using ICSharpCode.Reports.Addin.TypeProviders;
 using ICSharpCode.Reports.Core;
 
@@ -139,25 +136,17 @@ namespace ICSharpCode.Reports.Addin
 				if (this.imageSource == GlobalEnums.ImageSource.Database ) {
 					text = "<Database>";
 				}
+				
 				if (!String.IsNullOrEmpty(imageFileName)) {
 						this.image = this.LoadImage();
 						return this.image;
-					}
-				/*
-				this.image = FakeImage(base.Size,text);
-				if (this.image != null) {
-					return image;
-				} else {
-					var s = AbsoluteFileName;
-					if (!String.IsNullOrEmpty(imageFileName)) {
-						this.image = this.LoadImage();
-						return this.image;
-					}
+				} else
+				{
+					this.image = FakeImage(base.Size,text);
 				}
-				return null;
-				*/
-				return null;
+				return this.image;
 			}
+			
 			set {
 				this.image = value;
 				this.imageSource = GlobalEnums.ImageSource.External;
@@ -217,12 +206,10 @@ namespace ICSharpCode.Reports.Addin
 		
 		[XmlIgnoreAttribute]
 		[Category("Image")]
-//		[Browsable(false)]
+		[Browsable(false)]
 		public string AbsoluteFileName
 		{
 			get {
-				//D:\SharpDevelop3.0_WorkingCopy\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos
-				
 				if (!string.IsNullOrEmpty(relativeFileName)) {
 					Console.WriteLine("");
 					
@@ -230,16 +217,9 @@ namespace ICSharpCode.Reports.Addin
 					if (! String.IsNullOrEmpty(reportFileName)) {
 						testFileName = FileUtility.NormalizePath(Path.Combine(Path.GetDirectoryName(this.reportFileName),this.relativeFileName));
 					} 
-					
-//					else 
-//					{
-//						testFileName = FileUtility.NormalizePath(Path.Combine(Path.GetDirectoryName(this.reportFileName),this.relativeFileName));
-//					}
+
 					if (File.Exists(testFileName)){
 						Console.WriteLine("Image found with Relative Filename");
-//						Console.WriteLine("Report Filename {0}",this.reportFileName);
-//						Console.WriteLine("Relative Filename {0}",this.relativeFileName);
-//						Console.WriteLine("Image Filename {0}",this.ImageFileName);
 						return testFileName;
 					} else {
 						Console.WriteLine("AbsoluteFileName can't load image");

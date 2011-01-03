@@ -2,11 +2,9 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 
-using ICSharpCode.Reports.Addin.Designer;
 using ICSharpCode.Reports.Addin.Dialogs;
 using ICSharpCode.Reports.Addin.TypeProviders;
 using ICSharpCode.Reports.Core;
