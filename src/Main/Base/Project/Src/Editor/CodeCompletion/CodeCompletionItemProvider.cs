@@ -329,11 +329,7 @@ namespace ICSharpCode.SharpDevelop.Editor.CodeCompletion
 				int pos = itemText.LastIndexOf('<');
 				if (pos == -1)
 					return itemText;
-				int insertLen = pos + 1;
-				if (context.CompletionChar == '<') {
-					// don't insert '<' twice if user typed '<'
-					insertLen -= 1;
-				}
+				int insertLen = pos;
 				itemText = itemText.Substring(0, insertLen);
 			}
 			return itemText;
