@@ -261,37 +261,16 @@ namespace CSharpBinding
 								new ClassFinder(ParserService.GetParseInformation(editor.FileName), editor.Caret.Line, editor.Caret.Column)
 							), "");
 						if (suggestedClassName != c.Name) {
-							// create an IClass instance that includes the type arguments in its name
-							context.SuggestedItem = new RenamedClass(c, suggestedClassName);
+							// create a special code completion item that completes also the type arguments
+							context.SuggestedItem = new SuggestedCodeCompletionItem(c, suggestedClassName);
 						} else {
-							context.SuggestedItem = c;
+							context.SuggestedItem = new CodeCompletionItem(c);
 						}
 					}
 					return context;
 				}
 			}
 			return null;
-		}
-		
-		/// <summary>
-		/// A class that copies the properties important for the code completion display from another class,
-		/// but provides its own Name implementation.
-		/// Unlike the AbstractEntity.Name implementation, here 'Name' may include the namespace or type arguments.
-		/// </summary>
-		sealed class RenamedClass : DefaultClass, IClass
-		{
-			string newName;
-			
-			public RenamedClass(IClass c, string newName) : base(c.CompilationUnit, c.ClassType, c.Modifiers, c.Region, c.DeclaringType)
-			{
-				this.newName = newName;
-				CopyDocumentationFrom(c);
-				this.FullyQualifiedName = c.FullyQualifiedName;
-			}
-			
-			string ICompletionEntry.Name {
-				get { return newName; }
-			}
 		}
 		
 		#region "case"-keyword completion

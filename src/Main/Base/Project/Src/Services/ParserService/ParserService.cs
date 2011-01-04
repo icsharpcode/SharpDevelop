@@ -276,6 +276,12 @@ namespace ICSharpCode.SharpDevelop
 				return null;
 		}
 
+		public static ResolveResult Resolve(int offset, IDocument document, string fileName)
+		{
+			var position = document.OffsetToPosition(offset);
+			return Resolve(position.Line, position.Column, document, fileName);
+		}
+		
 		public static ExpressionResult FindFullExpression(int caretLine, int caretColumn, IDocument document, string fileName)
 		{
 			IExpressionFinder expressionFinder = GetExpressionFinder(fileName);
@@ -284,12 +290,6 @@ namespace ICSharpCode.SharpDevelop
 			if (caretColumn > document.GetLine(caretLine).Length)
 				return ExpressionResult.Empty;
 			return expressionFinder.FindFullExpression(document.Text, document.PositionToOffset(caretLine, caretColumn));
-		}
-		
-		public static ResolveResult Resolve(int offset, IDocument document, string fileName)
-		{
-			var position = document.OffsetToPosition(offset);
-			return Resolve(position.Line, position.Column, document, fileName);
 		}
 		#endregion
 		
