@@ -181,11 +181,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	----------------------
 	CurrentLineAST: {2}
 	----------------------
-	AstNodeAtCaret: {3}
+	CurrentASTNode: [{3}] {4}
 	----------------------
-	CurrentMemberAST: {4}
+	CurrentMemberAST: {5}
 	----------------------",
 				CurrentExpression, CurrentSymbol, CurrentLineAST,
+				CurrentElement == null ? "" : CurrentElement.GetType().ToString(),
 				CurrentElement == null ? "" : CurrentElement.ToString().TakeStartEllipsis(400),
 				CurrentMemberAST == null ? "" : CurrentMemberAST.ToString().TakeStartEllipsis(400)));
 		}
