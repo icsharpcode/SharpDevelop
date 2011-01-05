@@ -2,14 +2,13 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 
-using ICSharpCode.Reports.Addin.Designer;
+using ICSharpCode.Reports.Addin.Dialogs;
+using ICSharpCode.Reports.Addin.TypeProviders;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
-using ICSharpCode.Reports.Addin.Dialogs;
 
 namespace ICSharpCode.Reports.Addin
 {
@@ -160,71 +159,5 @@ namespace ICSharpCode.Reports.Addin
 			
 		#endregion
 	}
-	
-	#region TypeProvider
-	
-	internal class TextItemTypeProvider : TypeDescriptionProvider
-	{
-		public TextItemTypeProvider() :  base(TypeDescriptor.GetProvider(typeof(AbstractItem)))
-		{
-		}
-		
-	
-		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
-		{
-			ICustomTypeDescriptor td = base.GetTypeDescriptor(objectType,instance);
-			return new TextItemTypeDescriptor(td, instance);
-		}
-	}
-	
-	
-	internal class TextItemTypeDescriptor : CustomTypeDescriptor
-	{
-//		private BaseTextItem instance;
-		
-		public TextItemTypeDescriptor(ICustomTypeDescriptor parent, object instance)
-			: base(parent)
-		{
-//			instance = instance as BaseTextItem;
-		}
-
-		
-		public override PropertyDescriptorCollection GetProperties()
-		{
-			return GetProperties(null);
-		}
-
-		
-		public override PropertyDescriptorCollection GetProperties(Attribute[] attributes)
-		{
-			PropertyDescriptorCollection props = base.GetProperties(attributes);
-			List<PropertyDescriptor> allProperties = new List<PropertyDescriptor>();
-
-			DesignerHelper.AddDefaultProperties(allProperties,props);
-			
-			DesignerHelper.AddTextbasedProperties(allProperties,props);
-			
-			PropertyDescriptor prop = prop = props.Find("Text",true);
-			allProperties.Add(prop);
-		
-			prop = props.Find("DrawBorder",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("FrameColor",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("ForeColor",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("Visible",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("Expression",true);
-			allProperties.Add(prop);
-			
-			return new PropertyDescriptorCollection(allProperties.ToArray());
-		}
-	}
-	#endregion
 	
 }

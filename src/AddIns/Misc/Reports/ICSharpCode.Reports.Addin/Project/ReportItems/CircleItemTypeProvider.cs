@@ -1,40 +1,39 @@
-﻿// Copyright (c) AlphaSierraPapa for the SharpDevelop Team (for details please see \doc\copyright.txt)
-// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-
+﻿/*
+ * Created by SharpDevelop.
+ * User: Peter Forstmeier
+ * Date: 02.01.2011
+ * Time: 19:24
+ * 
+ * To change this template use Tools | Options | Coding | Edit Standard Headers.
+ */
 using System;
 using System.ComponentModel;
 using ICSharpCode.Reports.Addin.Designer;
 
+
 namespace ICSharpCode.Reports.Addin
 {
-	/// <summary>
-	/// Description of RectangleItemTypeProvider.
-	/// </summary>
-	internal class RectangleItemTypeProvider : TypeDescriptionProvider
+	
+	internal class CircleItemTypeProvider : TypeDescriptionProvider
 	{
-		public RectangleItemTypeProvider() :  base(TypeDescriptor.GetProvider(typeof(AbstractItem)))
+		public CircleItemTypeProvider() :  base(TypeDescriptor.GetProvider(typeof(AbstractItem)))
 		{
 		}
 		
-//		public RectangleItemTypeProvider(TypeDescriptionProvider parent): base(parent)
-//		{
-//			
-//		}
-
 		
 		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
 		{
 			ICustomTypeDescriptor td = base.GetTypeDescriptor(objectType,instance);
-			return new RectangleItemTypeDescriptor(td, instance);
+			return new CircleItemTypeDescriptor(td, instance);
 		}
 	}
 	
 	
 	
-	internal class RectangleItemTypeDescriptor : CustomTypeDescriptor
+	internal class CircleItemTypeDescriptor : CustomTypeDescriptor
 	{
-	
-		public RectangleItemTypeDescriptor(ICustomTypeDescriptor parent, object instance)
+		
+		public CircleItemTypeDescriptor(ICustomTypeDescriptor parent, object instance)
 			: base(parent)
 		{
 		}
@@ -57,16 +56,15 @@ namespace ICSharpCode.Reports.Addin
 			prop = props.Find("ForeColor",true);
 			allProperties.Add(prop);
 			
-			prop = props.Find("DrawBorder",true);
-			allProperties.Add(prop);
-			
 			prop = props.Find("DashStyle",true);
 			allProperties.Add(prop);
 			
 			prop = props.Find("Thickness",true);
 			allProperties.Add(prop);
 			
+			
 			return new PropertyDescriptorCollection(allProperties.ToArray());
 		}
 	}
 }
+

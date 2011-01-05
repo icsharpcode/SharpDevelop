@@ -33,6 +33,7 @@ namespace ICSharpCode.Reports.Core
 		{
 		}
 		
+		
 		public BaseLine(Color color, DashStyle dashStyle,float thickness, LineCap startLineCap, LineCap endLineCap, DashCap dashLineCap)
 		{
 			if (color == Color.White) {

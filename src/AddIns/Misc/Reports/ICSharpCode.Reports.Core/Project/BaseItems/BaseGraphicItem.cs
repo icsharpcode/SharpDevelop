@@ -19,11 +19,12 @@ namespace ICSharpCode.Reports.Core {
 	/// </remarks>
 	public class BaseGraphicItem : BaseReportItem {
 		
-		private int thickness = 1;
-		private DashStyle dashStyle = DashStyle.Solid;
-		
-		public BaseGraphicItem():base() {
+		public BaseGraphicItem():base()
+		{
+			this.Thickness = 1;
+			DashStyle = DashStyle.Solid;
 		}
+		
 		
 		protected IGraphicStyleDecorator CreateItemStyle (BaseShape shape) {
 			GraphicStyleDecorator style = new GraphicStyleDecorator(shape);
@@ -34,8 +35,8 @@ namespace ICSharpCode.Reports.Core {
 			style.ForeColor = this.ForeColor;
 			style.FrameColor = this.FrameColor;
 			
-			style.Thickness = this.thickness;
-			style.DashStyle = this.dashStyle;
+			style.Thickness = this.Thickness;
+			style.DashStyle = this.DashStyle;
 			return style;
 		}
 		
@@ -54,7 +55,8 @@ namespace ICSharpCode.Reports.Core {
 				return new BaseLine (this.BackColor,this.DashStyle,this.Thickness);
 			}
 		}
-			
+		
+		
 		#region Overrides
 		
 		public override string ToString()
@@ -70,41 +72,9 @@ namespace ICSharpCode.Reports.Core {
 		/// Line Thickness of graphical Element
 		/// </summary>
 		
-		public virtual int Thickness {
-			get {
-				return thickness;
-			}
-			set {
-				thickness = value;
-			}
-		}
+		public virtual int Thickness {get;set;}
 		
-	
-		public virtual DashStyle DashStyle {
-			get {
-				return dashStyle;
-			}
-			set {
-				dashStyle = value;
-			}
-		}
-		
-		
-		[XmlIgnoreAttribute]
-		[Browsable(false)]
-		public override bool DrawBorder {
-			get { return base.DrawBorder; }
-			set { base.DrawBorder = value; }
-		}
-		
-		
-		[XmlIgnoreAttribute]
-		[Browsable(false)]
-		public override Font Font {
-			get { return base.Font; }
-			set { base.Font = value; }
-		}
-		
+		public virtual DashStyle DashStyle {get;set;}	
 		
 		#endregion
 	}
