@@ -4,17 +4,15 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 using ICSharpCode.AvalonEdit.AddIn.MyersDiff;
 using ICSharpCode.AvalonEdit.Document;
-using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -54,6 +52,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (baseFileStream != null) {
 				// ReadAll() is taking care of closing the stream
 				baseDocument = DocumentUtilitites.LoadReadOnlyDocumentFromBuffer(new StringTextBuffer(ReadAll(baseFileStream)));
+			} else {
+				if (baseDocument == null) {
+					// if the file is not under subversion, the document is the opened document
+					var doc = new TextDocument(textDocument.Text);
+					baseDocument = new AvalonEditDocumentAdapter(doc, null);
+				}
 			}
 			
 			SetupInitialFileState(false);
@@ -186,6 +190,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				this.textDocument.UndoStack.PropertyChanged -= UndoStackPropertyChanged;
 				disposed = true;
 			}
+		}
+		
+		public IList<IDocumentLine> GetDiffsByLine(int line)
+		{
+			var result = new List<IDocumentLine>();
+			
+			if (baseDocument.TotalNumberOfLines < line)
+				result.Add(null);
+			else
+				result.Add(baseDocument.GetLine(line));
+			
+			result.Add(document.GetLine(line));
+			
+			return result;
 		}
 	}
 }

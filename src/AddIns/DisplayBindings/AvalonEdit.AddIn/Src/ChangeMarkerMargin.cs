@@ -4,11 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
+
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -130,5 +131,63 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			return new Size(5, 0);
 		}
+		
+		#region Diffs tooltip
+		
+		ToolTip tooltip = new ToolTip();
+		
+		protected override void OnMouseEnter(MouseEventArgs e)
+		{
+			var diffs = changeWatcher.GetDiffsByLine(GetLineFromMousePosition(e));
+			
+			if (diffs != null && diffs.Count > 0) {
+				StackPanel stack = new StackPanel() {
+					Background = Brushes.White
+				};
+				TextBlock oldTb = new TextBlock() {
+					FontFamily = new FontFamily("Courier New"),
+					Foreground = Brushes.Black,
+					Background = Brushes.White,
+					TextDecorations = TextDecorations.Strikethrough,
+				};
+				
+				if (diffs[0] != null)
+					oldTb.Text = diffs[0].Text;
+				
+				TextBlock newTb = new TextBlock() {
+					FontFamily = new FontFamily("Courier New"),
+					Foreground = Brushes.Black,
+					Background = Brushes.White,
+					Text = diffs[1].Text
+				};
+				
+				stack.Children.Add(oldTb);
+				stack.Children.Add(newTb);
+				tooltip.Content = stack;
+				tooltip.Background = Brushes.White;
+				tooltip.IsOpen = true;
+			}
+			
+			base.OnMouseEnter(e);
+		}
+		
+		protected override void OnMouseLeave(MouseEventArgs e)
+		{
+			tooltip.IsOpen = false;
+			base.OnMouseLeave(e);
+		}
+		
+		int GetLineFromMousePosition(MouseEventArgs e)
+		{
+			TextView textView = this.TextView;
+			if (textView == null)
+				return 0;
+			VisualLine vl = textView.GetVisualLineFromVisualTop(e.GetPosition(textView).Y + textView.ScrollOffset.Y);
+			if (vl == null)
+				return 0;
+			return vl.FirstDocumentLine.LineNumber;
+		}
+		
+		#endregion
 	}
 }

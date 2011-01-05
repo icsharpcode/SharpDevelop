@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Editor;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -16,6 +17,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		LineChangeInfo GetChange(int lineNumber);
 		void Initialize(IDocument document);
+		IList<IDocumentLine> GetDiffsByLine(int line);
 	}
 	
 	public enum ChangeType
