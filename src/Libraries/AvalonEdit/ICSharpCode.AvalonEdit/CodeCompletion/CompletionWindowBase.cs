@@ -159,6 +159,11 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 		
 		void TextViewScrollOffsetChanged(object sender, EventArgs e)
 		{
+			// Workaround for crash #1580 (reproduction steps unknown):
+			// NullReferenceException in System.Windows.Window.CreateSourceWindow()
+			if (!sourceIsInitialized)
+				return;
+			
 			IScrollInfo scrollInfo = this.TextArea.TextView;
 			Rect visibleRect = new Rect(scrollInfo.HorizontalOffset, scrollInfo.VerticalOffset, scrollInfo.ViewportWidth, scrollInfo.ViewportHeight);
 			// close completion window when the user scrolls so far that the anchor position is leaving the visible area
@@ -257,6 +262,8 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			}
 		}
 		
+		bool sourceIsInitialized;
+		
 		/// <inheritdoc/>
 		protected override void OnSourceInitialized(EventArgs e)
 		{
@@ -267,6 +274,7 @@ namespace ICSharpCode.AvalonEdit.CodeCompletion
 			} else {
 				SetPosition(this.TextArea.Caret.Position);
 			}
+			sourceIsInitialized = true;
 		}
 		
 		/// <inheritdoc/>
