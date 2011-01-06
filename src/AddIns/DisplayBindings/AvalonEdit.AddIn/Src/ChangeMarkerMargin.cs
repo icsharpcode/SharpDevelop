@@ -152,13 +152,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				};
 				
 				if (diffs[0] != null)
-					oldTb.Text = diffs[0].Text;
+					oldTb.Text = diffs[0].Text.Trim();
 				
 				TextBlock newTb = new TextBlock() {
 					FontFamily = new FontFamily("Courier New"),
 					Foreground = Brushes.Black,
 					Background = Brushes.White,
-					Text = diffs[1].Text
+					Text = diffs[1].Text.Trim()
 				};
 				
 				stack.Children.Add(oldTb);
