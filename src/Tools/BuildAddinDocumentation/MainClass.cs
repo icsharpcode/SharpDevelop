@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
+using System.Xml.Schema;
 
 namespace BuildAddinDocumentation
 {
@@ -71,13 +72,23 @@ namespace BuildAddinDocumentation
 			XmlDocument doc = new XmlDocument();
 			doc.Load(Path.Combine(srcDir, "..\\data\\schemas\\Addin.xsd"));
 			UpdateSchema(doc, doozers, conditions);
-			using (XmlTextWriter writer = new XmlTextWriter(Path.Combine(srcDir, "..\\data\\schemas\\Addin.xsd"), System.Text.Encoding.UTF8)) {
-				writer.Formatting = Formatting.Indented;
-				writer.IndentChar = '\t';
-				writer.Indentation = 1;
-				doc.Save(writer);
+			
+			// Test the schema
+			int errors = 0;
+			ValidationEventHandler validation = (sender, e) => { Debug.WriteLine(e.Message); errors++; };
+			XmlSchema.Read(new XmlNodeReader(doc.DocumentElement), validation).Compile(validation);
+			if (errors == 0) {
+				// save only if correct
+				using (XmlTextWriter writer = new XmlTextWriter(Path.Combine(srcDir, "..\\data\\schemas\\Addin.xsd"), System.Text.Encoding.UTF8)) {
+					writer.Formatting = Formatting.Indented;
+					writer.IndentChar = '\t';
+					writer.Indentation = 1;
+					doc.Save(writer);
+				}
+				Debug.WriteLine("Finished");
+			} else {
+				Debug.WriteLine("Finished (with errors)");
 			}
-			Debug.WriteLine("Finished");
 		}
 		
 		static void RecursiveInsertDoozerList(XmlElement e, List<XmlElement> doozers, List<XmlElement> conditionList)

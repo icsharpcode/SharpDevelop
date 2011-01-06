@@ -732,7 +732,7 @@
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="ComplexCondition" />
 					<xs:element ref="Condition" />
-					<xs:element ref="IOptionPanel" />
+					<xs:element ref="OptionPanel" />
 					<xs:element ref="Include" />
 				</xs:choice>
 				<xs:attribute name="class" use="optional" type="xs:string">

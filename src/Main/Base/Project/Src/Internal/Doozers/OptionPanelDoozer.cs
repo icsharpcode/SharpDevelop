@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop
 	/// <attribute name="label" use="required">
 	/// Caption of the dialog panel.
 	/// </attribute>
-	/// <children childTypes="IOptionPanel">
+	/// <children childTypes="OptionPanel">
 	/// In the SharpDevelop options, option pages can have subpages by specifying them
 	/// as children in the AddInTree.
 	/// </children>
