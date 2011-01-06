@@ -101,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				DebuggerService.CurrentDebugger.BreakAtBeginning = true;
 				new Execute().Run();
 			} else { 
-				DebuggerService.CurrentDebugger.StepOver();
+				DebuggerService.CurrentDebugger.StepInto();
 			}
 		}
 	}
