@@ -88,7 +88,7 @@ namespace ${StandardNamespace}
 	}
 }
 ]]></File>
-<File name="Default.asmx" language="XML"><![CDATA[<%@ WebService Language="C#"  Class="${StandardNamespace}.Soap,Soap" %>]]></File>
+<File name="Default.asmx" language="XML"><![CDATA[<%@ WebService Language="C#"  Class="${StandardNamespace}.Soap" %>]]></File>
 <!--*************************************************************************-->
 		<File name="Web.config" language="XML"><![CDATA[<?xml version="1.0"?>
 <configuration>

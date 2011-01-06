@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -28,7 +27,7 @@ namespace ICSharpCode.Reports.Addin
 			this.thickness = 1;
 			this.dashStyle = DashStyle.Solid;
 			this.Size = new Size(GlobalValues.PreferedSize.Width,2* GlobalValues.PreferedSize.Height);
-			TypeDescriptor.AddProvider(new RectangleItemTypeProvider(), typeof(BaseCircleItem));
+			TypeDescriptor.AddProvider(new CircleItemTypeProvider(), typeof(BaseCircleItem));
 		}
 		
 		
@@ -61,15 +60,6 @@ namespace ICSharpCode.Reports.Addin
 			}
 		}
 		
-		
-		private BaseLine Baseline()
-		{
-			if (this.BackColor == GlobalValues.DefaultBackColor) {
-				return new BaseLine (this.ForeColor,this.DashStyle,this.Thickness);
-			} else {
-				return new BaseLine (this.BackColor,this.DashStyle,this.Thickness);
-			}
-		}
 		
 		
 		[Browsable(true),

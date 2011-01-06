@@ -2,16 +2,14 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Design;
-using System.Globalization;
 using System.IO;
 using System.Windows.Forms.Design;
 using System.Xml.Serialization;
 
-using ICSharpCode.Reports.Addin.Designer;
+using ICSharpCode.Reports.Addin.TypeProviders;
 using ICSharpCode.Reports.Core;
 
 namespace ICSharpCode.Reports.Addin
@@ -60,12 +58,10 @@ namespace ICSharpCode.Reports.Addin
 			if (this.scaleImageToSize) {
 				graphics.DrawImageUnscaled(this.Image,this.Location.X,this.Location.Y);
 			} else {
-				Image im = this.image;
-				if (im != null) {
-					graphics.DrawImage(this.Image,this.ClientRectangle);
-				} 
+				graphics.DrawImage(this.Image,this.ClientRectangle);
 			}
 		}
+		
 		
 		
 		#region Property's
@@ -74,7 +70,9 @@ namespace ICSharpCode.Reports.Addin
 		public string ImageFileName {
 			get { return imageFileName; }
 			set { imageFileName = value;
-				this.relativeFileName = FileUtility.GetRelativePath(Path.GetFullPath(this.reportFileName),Path.GetFullPath(this.ImageFileName));
+				if (!String.IsNullOrEmpty(reportFileName)) {
+					this.relativeFileName = FileUtility.GetRelativePath(Path.GetFullPath(this.reportFileName),Path.GetFullPath(this.ImageFileName));
+				}
 			}
 		}
 		
@@ -138,17 +136,17 @@ namespace ICSharpCode.Reports.Addin
 				if (this.imageSource == GlobalEnums.ImageSource.Database ) {
 					text = "<Database>";
 				}
-				this.image = FakeImage(base.Size,text);
-				if (this.image != null) {
-					return image;
-				} else {
-					if (!String.IsNullOrEmpty(imageFileName)) {
+				
+				if (!String.IsNullOrEmpty(imageFileName)) {
 						this.image = this.LoadImage();
 						return this.image;
-					}
+				} else
+				{
+					this.image = FakeImage(base.Size,text);
 				}
-				return null;
+				return this.image;
 			}
+			
 			set {
 				this.image = value;
 				this.imageSource = GlobalEnums.ImageSource.External;
@@ -208,20 +206,20 @@ namespace ICSharpCode.Reports.Addin
 		
 		[XmlIgnoreAttribute]
 		[Category("Image")]
-//		[Browsable(false)]
+		[Browsable(false)]
 		public string AbsoluteFileName
 		{
 			get {
-//D:\SharpDevelop3.0_WorkingCopy\SharpDevelop\samples\SharpDevelopReports\SampleReports\Logos				
-				
 				if (!string.IsNullOrEmpty(relativeFileName)) {
 					Console.WriteLine("");
-					string testFileName = FileUtility.NormalizePath(Path.Combine(Path.GetDirectoryName(this.reportFileName),this.relativeFileName));
+					
+					string testFileName = String.Empty;
+					if (! String.IsNullOrEmpty(reportFileName)) {
+						testFileName = FileUtility.NormalizePath(Path.Combine(Path.GetDirectoryName(this.reportFileName),this.relativeFileName));
+					} 
+
 					if (File.Exists(testFileName)){
 						Console.WriteLine("Image found with Relative Filename");
-						Console.WriteLine("Report Filename {0}",this.reportFileName);
-						Console.WriteLine("Relative Filename {0}",this.relativeFileName);
-						Console.WriteLine("Image Filename {0}",this.ImageFileName);
 						return testFileName;
 					} else {
 						Console.WriteLine("AbsoluteFileName can't load image");
@@ -238,78 +236,5 @@ namespace ICSharpCode.Reports.Addin
 	}
 	
 	
-	internal class ImageItemTypeProvider : TypeDescriptionProvider
-	{
-		public ImageItemTypeProvider() :  base(TypeDescriptor.GetProvider(typeof(AbstractItem)))
-		{
-		}
-		
-//		public ImageItemTypeProvider(TypeDescriptionProvider parent): base(parent)
-//		{
-//
-//		}
-
-		
-		public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
-		{
-			ICustomTypeDescriptor td = base.GetTypeDescriptor(objectType,instance);
-			return new ImageItemTypeDescriptor(td, instance);
-		}
-	}
 	
-	
-	internal class ImageItemTypeDescriptor : CustomTypeDescriptor
-	{
-		
-		public ImageItemTypeDescriptor(ICustomTypeDescriptor parent, object instance)
-			: base(parent)
-		{
-//			instance = instance as BaseTextItem;
-		}
-
-		
-		public override PropertyDescriptorCollection GetProperties()
-		{
-			return GetProperties(null);
-		}
-
-		
-		public override PropertyDescriptorCollection GetProperties(Attribute[] attributes)
-		{
-			PropertyDescriptorCollection props = base.GetProperties(attributes);
-			List<PropertyDescriptor> allProperties = new List<PropertyDescriptor>();
-			
-
-			DesignerHelper.AddDefaultProperties(allProperties,props);
-			
-			PropertyDescriptor prop = prop = props.Find("imageFileName",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("Image",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("ScaleImageToSize",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("ImageSource",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("ReportFileName",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("RelativeFileName",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("AbsoluteFileName",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("ColumnName",true);
-			allProperties.Add(prop);
-			
-			prop = props.Find("BaseTableName",true);
-			allProperties.Add(prop);
-			
-			return new PropertyDescriptorCollection(allProperties.ToArray());
-		}
-	}
 }

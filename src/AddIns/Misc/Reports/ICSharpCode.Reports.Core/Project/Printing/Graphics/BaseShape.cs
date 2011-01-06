@@ -86,7 +86,7 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		public void DrawShape(Graphics graphics, BaseLine line, Rectangle rectangle)
+		public virtual void DrawShape(Graphics graphics, BaseLine line, Rectangle rectangle)
 		{
 			if (graphics == null) {
 				throw new ArgumentNullException("graphics");
@@ -113,6 +113,7 @@ namespace ICSharpCode.Reports.Core {
 			cb.SetColorStroke(style.PdfFrameColor);
 			cb.SetColorFill(style.PdfBackColor);
 		}
+		
 		
 		protected static void FillBackGround (iTextSharp.text.pdf.PdfContentByte contentByte,
 		                             IBaseStyleDecorator style,

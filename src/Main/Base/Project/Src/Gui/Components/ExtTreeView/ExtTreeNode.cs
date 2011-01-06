@@ -217,7 +217,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			isDisposed = true;
 			foreach (TreeNode node in Nodes) {
 				if (node is IDisposable) {
-					((ExtTreeNode)node).Dispose();
+					((IDisposable)node).Dispose();
 				}
 			}
 		}

@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
+using ICSharpCode.Reports.Addin.TypeProviders;
 using ICSharpCode.Reports.Core;
 
 namespace ICSharpCode.Reports.Addin
@@ -22,13 +23,14 @@ namespace ICSharpCode.Reports.Addin
 		
 		private DashStyle dashStyle;
 		private float thickness;
-		
+		private int cornerRadius;
 		
 		public BaseRectangleItem()
 		{
 			this.thickness = 1;
 			this.dashStyle = DashStyle.Solid;
 			this.Size = new Size(GlobalValues.PreferedSize.Width,2* GlobalValues.PreferedSize.Height);
+			cornerRadius = 1;
 			TypeDescriptor.AddProvider(new RectangleItemTypeProvider(), typeof(BaseRectangleItem));
 		}
 		
@@ -49,54 +51,62 @@ namespace ICSharpCode.Reports.Addin
 			}
 			
 			Rectangle rect = new Rectangle(this.ClientRectangle.Left,this.ClientRectangle.Top,
-			                                this.ClientRectangle.Right -1,
-			                                this.ClientRectangle.Bottom -1);
-			backgroundShape.FillShape(graphics,
-			                new SolidFillPattern(this.BackColor),
-			                rect);
+			                               this.ClientRectangle.Right -1,
+			                               this.ClientRectangle.Bottom -1);
+//			backgroundShape.FillShape(graphics,
+//			                new SolidFillPattern(this.BackColor),
+//			                rect);
+			
 			Border b = new Border(new BaseLine (this.ForeColor,System.Drawing.Drawing2D.DashStyle.Solid,1));
-			DrawFrame(graphics,b);
+//			DrawFrame(graphics,b);
+			BaseLine line = new BaseLine(base.ForeColor,DashStyle,Thickness,LineCap.Round,LineCap.Round,DashCap.Round);
+			using (Pen pen = line.CreatePen(line.Thickness)){
+				shape.CornerRadius = this.CornerRadius;
+				GraphicsPath path1 = shape.CreatePath(rect);
+				graphics.DrawPath(pen, path1);
+				
+			}
 			
-			shape.DrawShape (graphics,
-			                 this.Baseline(),
-			                 rect);
+//			shape.DrawShape (graphics,
+//			                 this.Baseline(),
+//			                 rect);
 			
 		}
 		
-		protected void DrawFrame (Graphics graphics,Border border) {
-			if (this.DrawBorder == true) {
-				border.DrawBorder(graphics,this.ClientRectangle);
-			}
-		}
-		
-		private BaseLine Baseline()
-		{
-			if (this.BackColor == GlobalValues.DefaultBackColor) {
-				return new BaseLine (this.ForeColor,this.DashStyle,this.Thickness);
-			} else {
-				return new BaseLine (this.BackColor,this.DashStyle,this.Thickness);
-			}
-		}
 		
 		[Browsable(true),
 		 Category("Appearance"),
 		 Description("Linestyle")]
 		public DashStyle DashStyle {
 			get { return dashStyle; }
-			set { dashStyle = value; }
+			set { dashStyle = value;
+				this.Invalidate();
+			}
 		}
 		
 		
 		[Browsable(true),
 		 Category("Appearance"),
 		 Description("Thickness of Line")]
-		
 		public float Thickness {
 			get { return thickness; }
-			set { thickness = value; }
+			set { thickness = value;
+				this.Invalidate();
+			}
 		}
 		
 		
+		[Browsable(true),
+		 Category("Appearance"),
+		 Description("Radius of Corners")]
+		public int CornerRadius
+		{
+			get{return this.cornerRadius;}
+			set{this.cornerRadius = value;
+				this.Invalidate();
+			}
+			
+		}
+		
 	}
-	
 }

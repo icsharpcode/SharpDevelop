@@ -80,11 +80,13 @@ namespace ICSharpCode.Reports.Core.Exporter
 		protected virtual void Decorate ()
 		{
 			RectangleShape shape = new RectangleShape();
+	
 			shape.DrawShape(this.pdfWriter.DirectContent,
 			            null,
 			            this.styleDecorator,
-			            ConvertToPdfRectangle());
+			            ConvertToPdfRectangle());        
 			this.DrawFrame();
+			
 		}
 		
 		#endregion
@@ -123,6 +125,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			iTextSharp.text.Rectangle r = (iTextSharp.text.Rectangle)rectangleConverter.ConvertTo(null,System.Globalization.CultureInfo.InvariantCulture,
 			                                                                                      this.styleDecorator.DisplayRectangle,
 			                                                                                      typeof(iTextSharp.text.Rectangle));
+		
 			
 			iTextSharp.text.Rectangle rr = new iTextSharp.text.Rectangle(r.Left,r.Bottom -2,
 			                                                             r.Left + r.Width,r.Bottom  + r.Height);
@@ -139,8 +142,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 			return new Border(new BaseLine (this.styleDecorator.FrameColor,
 			                                    System.Drawing.Drawing2D.DashStyle.Solid,1));
 		}
-		
-		
 		
 		
 		private  void DrawFrame ()

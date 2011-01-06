@@ -105,14 +105,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 			if (lineDecorator != null) {
 				PdfLineDrawer ();
 			}
-			else  {
+			else
+			{
+//				http://www.mikesdotnetting.com/Article/88/iTextSharp-Drawing-shapes-and-Graphics
 				IGraphicStyleDecorator style = base.StyleDecorator as GraphicStyleDecorator;
-				if (style != null) {
-					style.Shape.DrawShape(base.PdfWriter.DirectContent,
-					                      new BaseLine (style.ForeColor,style.DashStyle,style.Thickness),
-					                      style,
-					                      base.ConvertToPdfRectangle());
-				}
+				style.Shape.DrawShape(base.PdfWriter.DirectContent,
+				                      new BaseLine (style.ForeColor,style.DashStyle,style.Thickness),
+				                      style,
+				                      base.ConvertToPdfRectangle());
 			}
 		}
 		

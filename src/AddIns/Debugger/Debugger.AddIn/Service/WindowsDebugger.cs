@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -213,6 +214,8 @@ namespace ICSharpCode.SharpDevelop.Services
 					Process process = debugger.Attach(existingProcess);
 					attached = true;
 					SelectProcess(process);
+					
+					process.Modules.Added += process_Modules_Added;
 				} catch (System.Exception e) {
 					// CORDBG_E_DEBUGGER_ALREADY_ATTACHED
 					if (e is COMException || e is UnauthorizedAccessException) {
@@ -749,5 +752,12 @@ namespace ICSharpCode.SharpDevelop.Services
 			string[] buttonLabels = new string[] { StringParser.Parse("${res:XML.MainMenu.DebugMenu.Detach}"), StringParser.Parse("${res:MainWindow.Windows.Debug.ExceptionForm.Terminate}"), StringParser.Parse("${res:Global.CancelButtonText}") };
 			return (StopAttachedProcessDialogResult)MessageService.ShowCustomDialog(caption, message, (int)StopAttachedProcessDialogResult.Detach, (int)StopAttachedProcessDialogResult.Cancel, buttonLabels);
 		}
+		
+		void process_Modules_Added(object sender, CollectionItemEventArgs<Module> e)
+        {
+            ProjectService.OpenSolution.Projects
+                .Where(p => e.Item.Name.IndexOf(p.Name) >= 0)
+            	.ForEach(p => e.Item.LoadSymbolsFromDisk(new []{ Path.GetDirectoryName(p.OutputAssemblyFullPath) }));
+        }
 	}
 }

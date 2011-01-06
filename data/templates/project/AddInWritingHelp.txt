@@ -10,8 +10,8 @@ to write SharpDevelop AddIns:
 The next steps:
 - First, you have to add references to the SharpDevelop assemblies.
   An AddIn will work with the SharpDevelop version it was compiled for, or later service releases.
-  You might want to compile against SharpDevelop 3.0.0.3800 (the first official release of SharpDevelop 3)
-  to ensure your AddIn runs with all later 3.x versions of SharpDevelop.
+  You might want to compile against SharpDevelop 4.0.0.7070 (the first official release of SharpDevelop 4.0)
+  to ensure your AddIn runs with all later 4.0.x versions of SharpDevelop.
 
 - Include a <Manifest> section to your .addin for use with the SharpDevelop AddIn Manager.
     See SharpDevelop/doc/technotes/AddInManager.rtf for more information.
