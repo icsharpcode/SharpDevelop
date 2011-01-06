@@ -711,9 +711,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 					}
 				}
 			}
-			Dictionary<string, NamespaceStruct> dict = GetNamespaces(language);
-			foreach (var namespaceStruct in dict.Values) {
-				AddNamespaceStructContents(list, namespaceStruct, language, lookInReferences);
+			lock (namespaces) {
+				Dictionary<string, NamespaceStruct> dict = GetNamespaces(language);
+				foreach (var namespaceStruct in dict.Values) {
+					AddNamespaceStructContents(list, namespaceStruct, language, lookInReferences);
+				}
 			}
 		}
 		
@@ -735,10 +737,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
-			Dictionary<string, NamespaceStruct> dict = GetNamespaces(language);
-			if (dict.ContainsKey(nameSpace)) {
-				NamespaceStruct ns = dict[nameSpace];
-				AddNamespaceStructContents(list, ns, language, lookInReferences);
+			lock (namespaces) {
+				Dictionary<string, NamespaceStruct> dict = GetNamespaces(language);
+				if (dict.ContainsKey(nameSpace)) {
+					NamespaceStruct ns = dict[nameSpace];
+					AddNamespaceStructContents(list, ns, language, lookInReferences);
+				}
 			}
 		}
 
@@ -812,7 +816,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
-			return GetNamespaces(language).ContainsKey(name);
+			lock (namespaces) {
+				return GetNamespaces(language).ContainsKey(name);
+			}
 		}
 		
 		bool MatchesRequest(SearchTypeRequest request, ref SearchTypeResult result)
