@@ -145,7 +145,7 @@ namespace ICSharpCode.XmlEditor
 				Document.LoadXml(editor.Document.Text);
 				return true;
 			} catch (XmlException ex) {
-				AddTask(editor.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error);
+				AddTask(editor.FileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskType.Error);
 			} catch (WebException ex) {
 				AddTask(editor.FileName, ex.Message, 0, 0, TaskType.Error);
 			}
@@ -347,7 +347,7 @@ namespace ICSharpCode.XmlEditor
 						settings.Schemas.Add(schemaData.Schema);
 					}
 				} catch (XmlSchemaException ex) {
-					DisplayValidationError(schemaData.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1);
+					DisplayValidationError(schemaData.FileName, ex.Message, ex.LinePosition, ex.LineNumber);
 					ShowValidationFailedMessage();
 					ShowErrorList();
 					return false;
@@ -360,9 +360,9 @@ namespace ICSharpCode.XmlEditor
 				return true;
 				
 			} catch (XmlSchemaException ex) {
-				DisplayValidationError(File.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1);
+				DisplayValidationError(File.FileName, ex.Message, ex.LinePosition, ex.LineNumber);
 			} catch (XmlException ex) {
-				DisplayValidationError(File.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1);
+				DisplayValidationError(File.FileName, ex.Message, ex.LinePosition, ex.LineNumber);
 			}
 			ShowValidationFailedMessage();
 			ShowErrorList();
@@ -392,9 +392,9 @@ namespace ICSharpCode.XmlEditor
 					schemaSet.Compile();
 				}
 			} catch (XmlSchemaException ex) {
-				DisplayValidationError(File.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1);
+				DisplayValidationError(File.FileName, ex.Message, ex.LinePosition, ex.LineNumber);
 			} catch (XmlException ex) {
-				DisplayValidationError(File.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1);
+				DisplayValidationError(File.FileName, ex.Message, ex.LinePosition, ex.LineNumber);
 			} finally {
 				xmlReader.Close();
 			}
@@ -424,9 +424,9 @@ namespace ICSharpCode.XmlEditor
 		void SchemaValidation(object source, ValidationEventArgs e)
 		{
 			if (e.Severity == XmlSeverityType.Error) {
-				DisplayValidationError(File.FileName, e.Message, e.Exception.LinePosition - 1, e.Exception.LineNumber - 1);
+				DisplayValidationError(File.FileName, e.Message, e.Exception.LinePosition, e.Exception.LineNumber);
 			} else {
-				DisplayValidationWarning(File.FileName, e.Message, e.Exception.LinePosition - 1, e.Exception.LineNumber - 1);
+				DisplayValidationWarning(File.FileName, e.Message, e.Exception.LinePosition, e.Exception.LineNumber);
 			}
 		}
 		
@@ -458,7 +458,7 @@ namespace ICSharpCode.XmlEditor
 							string transformedXml = Transform(editor.Document.Text, xsl);
 							ShowTransformOutput(transformedXml);
 						} catch (XsltException ex) {
-							AddTask(GetFileNameFromInnerException(ex, StylesheetFileName), GetInnerExceptionErrorMessage(ex), ex.LineNumber - 1, ex.LinePosition - 1, TaskType.Error);
+							AddTask(GetFileNameFromInnerException(ex, StylesheetFileName), GetInnerExceptionErrorMessage(ex), ex.LineNumber, ex.LinePosition, TaskType.Error);
 						}
 					}
 				}
@@ -525,11 +525,11 @@ namespace ICSharpCode.XmlEditor
 
 				return true;
 			} catch(XsltCompileException ex) {
-				AddTask(StylesheetFileName, GetInnerExceptionErrorMessage(ex), ex.LineNumber - 1, ex.LinePosition - 1, TaskType.Error);
+				AddTask(StylesheetFileName, GetInnerExceptionErrorMessage(ex), ex.LineNumber, ex.LinePosition, TaskType.Error);
 			} catch(XsltException ex) {
-				AddTask(StylesheetFileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error);
+				AddTask(StylesheetFileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskType.Error);
 			} catch(XmlException ex) {
-				AddTask(StylesheetFileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error);
+				AddTask(StylesheetFileName, ex.Message, ex.LinePosition, ex.LineNumber, TaskType.Error);
 			}
 
 			return false;
