@@ -62,8 +62,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 					ElementHost host = new ElementHost();
 					host.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
 					host.Height = 160;
+					host.Width = 550;
 					host.Top = 240;
-					host.Left = 8;
+					host.Left = 8;					
 					host.Child = new WebProjectOptionsPanel(this);
 					Controls.Add(host);
 				}

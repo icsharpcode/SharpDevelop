@@ -153,14 +153,14 @@ namespace ICSharpCode.SharpDevelop.Services
 				}
 				
 				var project = ProjectService.CurrentProject as CompilableProject;
-				
+				System.Diagnostics.Process localProcess = null;
 				if (project != null) {
 					// start browser
 					if (project.StartAction == StartAction.StartURL)
-						System.Diagnostics.Process.Start(processStartInfo.FileName);
+						localProcess = System.Diagnostics.Process.Start(processStartInfo.FileName);
 					else
 						if (!string.IsNullOrEmpty(debugData.Data.ProjectUrl) && debugData.Data.WebServer == WebServer.IIS)
-							System.Diagnostics.Process.Start("iexplore.exe", debugData.Data.ProjectUrl);
+							localProcess = System.Diagnostics.Process.Start(debugData.Data.ProjectUrl);
 				}
 				
 				// try debug IIS WP
@@ -177,8 +177,16 @@ namespace ICSharpCode.SharpDevelop.Services
 				}
 				
 				if (!attached) {
-					string format = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.NoIISWP");
-					MessageService.ShowMessage(string.Format(format, processName));
+					if(debugData.Data.WebServer == WebServer.IIS) {
+						string format = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.NoIISWP");
+						MessageService.ShowMessage(string.Format(format, processName));
+					}
+					else {
+						Attach(localProcess);
+						if (!attached) {
+							MessageService.ShowMessage(ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.UnableToAttach"));
+						}
+					}
 				}
 			}
 			else {
@@ -241,6 +249,9 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void Attach(System.Diagnostics.Process existingProcess)
 		{
+			if (existingProcess == null)
+				return;
+			
 			if (IsDebugging) {
 				MessageService.ShowMessage(errorDebugging);
 				return;

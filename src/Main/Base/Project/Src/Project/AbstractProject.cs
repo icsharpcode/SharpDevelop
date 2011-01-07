@@ -382,7 +382,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				MessageService.ShowError(ex.Message);
 				return;
 			}
-			if (withDebugging && (!FileUtility.IsUrl(psi.FileName) || IsWebProject)) {
+			if (withDebugging) {
 				DebuggerService.CurrentDebugger.Start(psi);
 			} else {
 				DebuggerService.CurrentDebugger.StartWithoutDebugging(psi);

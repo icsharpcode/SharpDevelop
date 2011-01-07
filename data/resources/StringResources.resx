@@ -3782,6 +3782,9 @@ You can also choose to store the setting in the .user-file instead of the projec
   <data name="ICSharpCode.WepProjectOptionsPanel.ApplicationExists" xml:space="preserve">
     <value>Application already exists.</value>
   </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.UnableToAttach" xml:space="preserve">
+    <value>Debugger was unable to attach to process.</value>
+  </data>
   <data name="ICSharpCode.CodeCoverage.CodeCovered" xml:space="preserve">
     <value>Code Covered</value>
   </data>
