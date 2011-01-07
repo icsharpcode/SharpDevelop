@@ -137,7 +137,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		ToolTip tooltip = new ToolTip();
 		
-		protected override void OnMouseEnter(MouseEventArgs e)
+		protected override void OnMouseMove(MouseEventArgs e)
 		{
 			var diffs = changeWatcher.GetDiffsByLine(GetLineFromMousePosition(e));
 			
@@ -168,10 +168,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				stack.Children.Add(newTb);
 				tooltip.Content = stack;
 				tooltip.Background = Brushes.White;
+				
+				if (tooltip.IsOpen)
+					tooltip.IsOpen = false;
 				tooltip.IsOpen = true;
 			}
 			
-			base.OnMouseEnter(e);
+			base.OnMouseMove(e);
 		}
 		
 		protected override void OnMouseLeave(MouseEventArgs e)
