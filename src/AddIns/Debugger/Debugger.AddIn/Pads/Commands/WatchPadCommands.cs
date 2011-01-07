@@ -28,7 +28,7 @@ namespace Debugger.AddIn
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
 				
-				var inputWindow = new WatchInputBox(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.AddWatch}"), 
+				var inputWindow = new WatchInputBox(StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.AddWatch}"),
 				                                    StringParser.Parse("${res:MainWindow.Windows.Debug.Watch.EnterExpression}"));
 				inputWindow.Owner = ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWindow;
 				var result = inputWindow.ShowDialog();
@@ -39,13 +39,13 @@ namespace Debugger.AddIn
 				
 				if (!string.IsNullOrEmpty(input)) {
 					// get language
-					if (ProjectService.CurrentProject == null) return; 
+					if (ProjectService.CurrentProject == null) return;
 					
-					string language = ProjectService.CurrentProject.Language;	
+					string language = ProjectService.CurrentProject.Language;
 					
 					TextNode text = new TextNode(input,
 					                             language == "VB" || language == "VBNet" ? SupportedLanguage.VBNet : SupportedLanguage.CSharp);
-					var list = (WatchList)pad.Control;
+					var list = pad.WatchList;
 					
 					if(!list.WatchItems.ContainsItem(text))
 						list.WatchItems.Add(text);
@@ -62,15 +62,13 @@ namespace Debugger.AddIn
 		{
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
-				var list = (WatchList)pad.Control;
-				
+				var list = pad.WatchList;
 				var node = list.SelectedNode;
 				
 				if (node == null)
 					return;
 				
 				list.WatchItems.Remove(node);
-				
 				((WatchPad)this.Owner).RefreshPad();
 			}
 		}
@@ -92,7 +90,7 @@ namespace Debugger.AddIn
 		{
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
-				var list = (WatchList)pad.Control;
+				var list =  pad.WatchList;
 				list.WatchItems.Clear();
 			}
 		}
@@ -104,7 +102,7 @@ namespace Debugger.AddIn
 		{
 			if (this.Owner is WatchPad) {
 				WatchPad pad = (WatchPad)this.Owner;
-				var list = (WatchList)pad.Control;
+				var list =  pad.WatchList;
 				if (list.SelectedNode is ExpressionNode) {
 					string text = ((ExpressionNode)list.SelectedNode).FullText;
 					ClipboardWrapper.SetText(text);

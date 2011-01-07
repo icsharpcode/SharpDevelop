@@ -31,6 +31,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			get { return instance; }
 		}
 		
+		public WatchList WatchList {
+			get {
+				return watchList;
+			}
+		}
+		
 		public WatchPad()
 		{
 			instance = this;

@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
+using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
 
@@ -145,7 +146,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					Background = Brushes.White
 				};
 				TextBlock oldTb = new TextBlock() {
-					FontFamily = new FontFamily("Courier New"),
+					FontFamily = new FontFamily(CodeEditorOptions.Instance.FontFamily),
+					FontSize = CodeEditorOptions.Instance.FontSize,
 					Foreground = Brushes.Black,
 					Background = Brushes.White,
 					TextDecorations = TextDecorations.Strikethrough,
@@ -155,7 +157,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					oldTb.Text = diffs[0].Text.Trim();
 				
 				TextBlock newTb = new TextBlock() {
-					FontFamily = new FontFamily("Courier New"),
+					FontFamily = new FontFamily(CodeEditorOptions.Instance.FontFamily),
+					FontSize = CodeEditorOptions.Instance.FontSize,
 					Foreground = Brushes.Black,
 					Background = Brushes.White,
 					Text = diffs[1].Text.Trim()
