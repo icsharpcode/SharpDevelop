@@ -24,8 +24,9 @@ namespace ICSharpCode.XmlEditor
 				string stylesheetFileName = BrowseForStylesheetFile();
 
 				// Assign stylesheet.
-				if (stylesheetFileName != null)
+				if (stylesheetFileName != null) {
 					xmlView.StylesheetFileName = stylesheetFileName;
+				}
 			}
 		}
 		
@@ -39,21 +40,29 @@ namespace ICSharpCode.XmlEditor
 				
 				AddInTreeNode node = AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter");
 				if (node != null) {
+					string xmlFileFilter = GetFileFilter(node, "Xml");
+					string allFilesFilter = GetFileFilter(node, "AllFiles");
+					string xslFileFilter = GetFileFilter(node, "Xsl");
 					
-					string xmlFileFilter = (string)node.BuildChildItem("Xml", null, null);
-					string allFilesFilter = (string)node.BuildChildItem("AllFiles", null, null);
-					string xslFileFilter = (string)node.BuildChildItem("Xsl", null, null);
-					
-					dialog.Filter = string.Concat(xslFileFilter, "|", xmlFileFilter, "|", allFilesFilter);
+					dialog.Filter = String.Join("|", xslFileFilter, xmlFileFilter, allFilesFilter);
 					dialog.FilterIndex = 1;
 				}
 				
-				if (dialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
+				if (dialog.ShowDialog(WorkbenchSingleton.MainWin32Window) == DialogResult.OK) {
 					return dialog.FileName;
 				}
 			}
 			
 			return null;
+		}
+		
+		static string GetFileFilter(AddInTreeNode node, string filterName)
+		{
+			FileFilterDescriptor fileFilter = node.BuildChildItem(filterName, null, null) as FileFilterDescriptor;
+			if (fileFilter != null) {
+				return fileFilter.ToString();
+			}
+			return String.Empty;
 		}
 	}
 }
