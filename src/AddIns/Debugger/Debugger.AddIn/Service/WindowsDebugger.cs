@@ -139,38 +139,36 @@ namespace ICSharpCode.SharpDevelop.Services
 				InitializeService();
 			}
 			
-			if (FileUtility.IsUrl(processStartInfo.FileName))
-			{
-				if (ProjectService.CurrentProject == null) {
-					MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+			if (FileUtility.IsUrl(processStartInfo.FileName)) {
+				var project = ProjectService.OpenSolution.Preferences.StartupProject as CompilableProject;
+				
+				if (project == null) {
+					MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoStartupProject}");
 					return;
 				}
 				
-				var debugData = WebProjectsOptions.Instance.GetWebProjectOptions(ProjectService.CurrentProject.Name);
+				var debugData = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
 				if (debugData == null) {
 					MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
 					return;
 				}
 				
-				var project = ProjectService.CurrentProject as CompilableProject;
 				System.Diagnostics.Process localProcess = null;
-				if (project != null) {
-					// start browser
-					if (project.StartAction == StartAction.StartURL)
-						localProcess = System.Diagnostics.Process.Start(processStartInfo.FileName);
-					else
-						if (!string.IsNullOrEmpty(debugData.Data.ProjectUrl) && debugData.Data.WebServer == WebServer.IIS)
-							localProcess = System.Diagnostics.Process.Start(debugData.Data.ProjectUrl);
-				}
+				// start default application(e.g. browser)
+				if (project.StartAction == StartAction.StartURL)
+					localProcess = System.Diagnostics.Process.Start(processStartInfo.FileName);
+				else
+					if (!string.IsNullOrEmpty(debugData.Data.ProjectUrl) && debugData.Data.WebServer == WebServer.IIS)
+						localProcess = System.Diagnostics.Process.Start(debugData.Data.ProjectUrl);
 				
-				// try debug IIS WP
+				// try attach to IIS WP
 				var processes = System.Diagnostics.Process.GetProcesses();
 				string processName = WebProjectService.WorkerProcessName;
 				if (debugData.Data.WebServer == WebServer.IISExpress)
 					processName = "iisexpress";
 				
 				foreach(var process in processes) {
-					if (process.ProcessName.ToLower().IndexOf(processName) > -1) {
+					if (process.ProcessName.ToLower().IndexOf(processName) == 0) {
 						Attach(process);
 						break;
 					}

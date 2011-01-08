@@ -119,8 +119,8 @@ namespace ICSharpCode.SharpDevelop.Project
 					default:
 						using (var manager = new Microsoft.Web.Administration.ServerManager())
 						{
-							string name = "/" + virtualDirectoryName;
 							if (manager.Sites[DEFAULT_WEB_SITE] != null) {
+								string name = "/" + virtualDirectoryName;
 								if (manager.Sites[DEFAULT_WEB_SITE].Applications[name] == null) {
 									manager.Sites[DEFAULT_WEB_SITE].Applications.Add(name, physicalDirectoryPath);
 									manager.CommitChanges();

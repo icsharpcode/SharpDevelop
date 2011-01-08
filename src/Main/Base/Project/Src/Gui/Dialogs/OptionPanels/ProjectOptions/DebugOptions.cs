@@ -61,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				if (isWebProject) {
 					ElementHost host = new ElementHost();
 					host.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
-					host.Height = 160;
+					host.Height = 150;
 					host.Width = 550;
 					host.Top = 240;
 					host.Left = 8;					
