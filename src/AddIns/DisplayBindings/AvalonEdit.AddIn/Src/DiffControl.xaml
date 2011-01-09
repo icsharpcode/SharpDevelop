@@ -1,0 +1,11 @@
+﻿<UserControl x:Class="ICSharpCode.AvalonEdit.AddIn.DiffControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:ae="http://icsharpcode.net/sharpdevelop/avalonedit"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<StackPanel Orientation="Vertical">
+		<ToolBar>
+			<Button x:Name="undoButton" Content="Undo" />
+		</ToolBar>
+		<ae:TextEditor x:Name="editor" />
+	</StackPanel>
+</UserControl>

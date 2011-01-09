@@ -3,14 +3,20 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.AvalonEdit.AddIn
 {
@@ -64,26 +70,26 @@ namespace ICSharpCode.AvalonEdit.AddIn
 							throw new Exception("Invalid value for ChangeType");
 					}
 					
-					if (!string.IsNullOrEmpty(info.DeletedLinesAfterThisLine)) {
-						Point pt1 = new Point(5,  line.VisualTop + line.Height - textView.ScrollOffset.Y - 4);
-						Point pt2 = new Point(10, line.VisualTop + line.Height - textView.ScrollOffset.Y);
-						Point pt3 = new Point(5,  line.VisualTop + line.Height - textView.ScrollOffset.Y + 4);
-						
-						drawingContext.DrawGeometry(Brushes.Red, null, new PathGeometry(new List<PathFigure>() { CreateNAngle(pt1, pt2, pt3) }));
-					}
-					
-					// special case for line 0
-					if (line.FirstDocumentLine.LineNumber == 1) {
-						info = changeWatcher.GetChange(0);
-						
-						if (!string.IsNullOrEmpty(info.DeletedLinesAfterThisLine)) {
-							Point pt1 = new Point(5,  line.VisualTop - textView.ScrollOffset.Y - 4);
-							Point pt2 = new Point(10, line.VisualTop - textView.ScrollOffset.Y);
-							Point pt3 = new Point(5,  line.VisualTop - textView.ScrollOffset.Y + 4);
-							
-							drawingContext.DrawGeometry(Brushes.Red, null, new PathGeometry(new List<PathFigure>() { CreateNAngle(pt1, pt2, pt3) }));
-						}
-					}
+//					if (!string.IsNullOrEmpty(info.DeletedLinesAfterThisLine)) {
+//						Point pt1 = new Point(5,  line.VisualTop + line.Height - textView.ScrollOffset.Y - 4);
+//						Point pt2 = new Point(10, line.VisualTop + line.Height - textView.ScrollOffset.Y);
+//						Point pt3 = new Point(5,  line.VisualTop + line.Height - textView.ScrollOffset.Y + 4);
+//
+//						drawingContext.DrawGeometry(Brushes.Red, null, new PathGeometry(new List<PathFigure>() { CreateNAngle(pt1, pt2, pt3) }));
+//					}
+//
+//					// special case for line 0
+//					if (line.FirstDocumentLine.LineNumber == 1) {
+//						info = changeWatcher.GetChange(0);
+//
+//						if (!string.IsNullOrEmpty(info.DeletedLinesAfterThisLine)) {
+//							Point pt1 = new Point(5,  line.VisualTop - textView.ScrollOffset.Y - 4);
+//							Point pt2 = new Point(10, line.VisualTop - textView.ScrollOffset.Y);
+//							Point pt3 = new Point(5,  line.VisualTop - textView.ScrollOffset.Y + 4);
+//
+//							drawingContext.DrawGeometry(Brushes.Red, null, new PathGeometry(new List<PathFigure>() { CreateNAngle(pt1, pt2, pt3) }));
+//						}
+//					}
 				}
 			}
 		}
@@ -135,43 +141,80 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		#region Diffs tooltip
 		
-		ToolTip tooltip = new ToolTip();
+		Popup tooltip = new Popup() { StaysOpen = false };
+		ITextMarker marker;
+		ITextMarkerService markerService;
 		
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
-			var diffs = changeWatcher.GetDiffsByLine(GetLineFromMousePosition(e));
+			int line = GetLineFromMousePosition(e);
 			
-			if (diffs != null && diffs.Count > 0) {
-				StackPanel stack = new StackPanel() {
-					Background = Brushes.White
-				};
-				TextBlock oldTb = new TextBlock() {
-					FontFamily = new FontFamily(CodeEditorOptions.Instance.FontFamily),
-					FontSize = CodeEditorOptions.Instance.FontSize,
-					Foreground = Brushes.Black,
-					Background = Brushes.White,
-					TextDecorations = TextDecorations.Strikethrough,
+			if (line == 0)
+				return;
+			
+			int startLine;
+			string oldText = changeWatcher.GetOldVersionFromLine(line, out startLine);
+			
+			int offset, length;
+			
+			TextEditor editor = this.TextView.Services.GetService(typeof(TextEditor)) as TextEditor;
+			markerService = this.TextView.Services.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
+
+			
+			if (changeWatcher.GetNewVersionFromLine(line, out offset, out length)) {
+				if (marker != null)
+					markerService.Remove(marker);
+				marker = markerService.Create(offset, length);
+				marker.BackgroundColor = Colors.LightGreen;
+			}
+			
+			if (oldText != null) {
+				DiffControl differ = new DiffControl();
+				differ.editor.SyntaxHighlighting = editor.SyntaxHighlighting;
+				differ.editor.HorizontalScrollBarVisibility = ScrollBarVisibility.Hidden;
+				differ.editor.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
+				differ.editor.Document.Text = oldText;
+				differ.Background = Brushes.White;
+				
+				DocumentHighlighter mainHighlighter = TextView.Services.GetService(typeof(IHighlighter)) as DocumentHighlighter;
+				DocumentHighlighter popupHighlighter = differ.editor.TextArea.GetService(typeof(IHighlighter)) as DocumentHighlighter;
+				
+//				popupHighlighter.InitialSpanStack = mainHighlighter.GetSpanStack(
+				
+				if (oldText == string.Empty) {
+					differ.editor.Visibility = Visibility.Collapsed;
+				}
+				
+				differ.undoButton.Click += delegate {
+					if (marker != null) {
+						int delimiter = 0;
+						if (oldText == string.Empty)
+							delimiter = Document.GetLineByOffset(offset + length).DelimiterLength;
+						Document.Replace(offset, length + delimiter, oldText);
+						tooltip.IsOpen = false;
+					}
 				};
 				
-				if (diffs[0] != null)
-					oldTb.Text = diffs[0].Text.Trim();
-				
-				TextBlock newTb = new TextBlock() {
-					FontFamily = new FontFamily(CodeEditorOptions.Instance.FontFamily),
-					FontSize = CodeEditorOptions.Instance.FontSize,
-					Foreground = Brushes.Black,
-					Background = Brushes.White,
-					Text = diffs[1].Text.Trim()
+				tooltip.Child = new Border() {
+					Child = differ,
+					BorderBrush = Brushes.Black,
+					BorderThickness = new Thickness(1)
 				};
-				
-				stack.Children.Add(oldTb);
-				stack.Children.Add(newTb);
-				tooltip.Content = stack;
-				tooltip.Background = Brushes.White;
 				
 				if (tooltip.IsOpen)
 					tooltip.IsOpen = false;
+				
 				tooltip.IsOpen = true;
+				
+				tooltip.Closed += delegate {
+					if (marker != null) markerService.Remove(marker);
+				};
+				
+				tooltip.HorizontalOffset = -10;
+				tooltip.VerticalOffset =
+					TextView.GetVisualTopByDocumentLine(startLine) - TextView.ScrollOffset.Y;
+				tooltip.Placement = PlacementMode.Top;
+				tooltip.PlacementTarget = this.TextView;
 			}
 			
 			base.OnMouseMove(e);
@@ -179,7 +222,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		protected override void OnMouseLeave(MouseEventArgs e)
 		{
-			tooltip.IsOpen = false;
+			if (marker != null && !tooltip.IsOpen)
+				markerService.Remove(marker);
 			base.OnMouseLeave(e);
 		}
 		

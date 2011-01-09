@@ -17,7 +17,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		LineChangeInfo GetChange(int lineNumber);
 		void Initialize(IDocument document);
-		IList<IDocumentLine> GetDiffsByLine(int line);
+		string GetOldVersionFromLine(int lineNumber, out int newStartLine);
+		bool GetNewVersionFromLine(int lineNumber, out int offset, out int length);
 	}
 	
 	public enum ChangeType
@@ -31,7 +32,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 	
 	public struct LineChangeInfo : IEquatable<LineChangeInfo>
 	{
-		public static readonly LineChangeInfo Empty = new LineChangeInfo(ChangeType.None, "");
+		public static readonly LineChangeInfo Empty = new LineChangeInfo(ChangeType.None, -1, -1, -1, -1);
 		
 		ChangeType change;
 		
@@ -40,17 +41,41 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			set { change = value; }
 		}
 		
-		string deletedLinesAfterThisLine;
+		int oldStartLineNumber;
 		
-		public string DeletedLinesAfterThisLine {
-			get { return deletedLinesAfterThisLine; }
-			set { deletedLinesAfterThisLine = value; }
+		public int OldStartLineNumber {
+			get { return oldStartLineNumber; }
+			set { oldStartLineNumber = value; }
 		}
 		
-		public LineChangeInfo(ChangeType change, string deletedLinesAfterThisLine)
+		int newStartLineNumber;
+		
+		public int NewStartLineNumber {
+			get { return newStartLineNumber; }
+			set { newStartLineNumber = value; }
+		}
+		
+		int oldEndLineNumber;
+		
+		public int OldEndLineNumber {
+			get { return oldEndLineNumber; }
+			set { oldEndLineNumber = value; }
+		}
+		
+		int newEndLineNumber;
+		
+		public int NewEndLineNumber {
+			get { return newEndLineNumber; }
+			set { newEndLineNumber = value; }
+		}
+		
+		public LineChangeInfo(ChangeType change, int oldStartLineNumber, int newStartLineNumber, int oldEndLineNumber, int newEndLineNumber)
 		{
 			this.change = change;
-			this.deletedLinesAfterThisLine = deletedLinesAfterThisLine;
+			this.oldStartLineNumber = oldStartLineNumber;
+			this.newStartLineNumber = newStartLineNumber;
+			this.oldEndLineNumber = oldEndLineNumber;
+			this.newEndLineNumber = newEndLineNumber;
 		}
 		
 		#region Equals and GetHashCode implementation
@@ -61,7 +86,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		public bool Equals(LineChangeInfo other)
 		{
-			return this.change == other.change && this.deletedLinesAfterThisLine == other.deletedLinesAfterThisLine;
+			return this.change == other.change &&
+				this.oldEndLineNumber == other.oldEndLineNumber &&
+				this.newStartLineNumber == other.newStartLineNumber &&
+				this.oldStartLineNumber == other.oldStartLineNumber &&
+				this.newEndLineNumber == other.newEndLineNumber;
 		}
 		
 		public override int GetHashCode()
@@ -69,8 +98,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			int hashCode = 0;
 			unchecked {
 				hashCode += 1000000007 * change.GetHashCode();
-				if (deletedLinesAfterThisLine != null)
-					hashCode += 1000000009 * deletedLinesAfterThisLine.GetHashCode();
+				hashCode += 1000000009 * oldStartLineNumber.GetHashCode();
+				hashCode += 1000000021 * newStartLineNumber.GetHashCode();
+				hashCode += 1000000033 * oldEndLineNumber.GetHashCode();
+				hashCode += 1000000087 * newEndLineNumber.GetHashCode();
 			}
 			return hashCode;
 		}

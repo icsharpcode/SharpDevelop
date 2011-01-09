@@ -1409,6 +1409,17 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			return null;
 		}
 		
+		/// <summary>
+		/// Gets the visual top position (relative to start of document) from a document line number.
+		/// </summary>
+		public double GetVisualTopByDocumentLine(int line)
+		{
+			VerifyAccess();
+			if (heightTree == null)
+				throw ThrowUtil.NoDocumentAssigned();
+			return heightTree.GetVisualPosition(heightTree.GetLineByNumber(line));
+		}
+		
 		VisualLineElement GetVisualLineElementFromPosition(Point visualPosition)
 		{
 			VisualLine vl = GetVisualLineFromVisualTop(visualPosition.Y);

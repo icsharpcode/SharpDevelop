@@ -90,6 +90,22 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 			InvalidateHighlighting();
 		}
 		
+		ImmutableStack<HighlightingSpan> initialSpanStack = SpanStack.Empty;
+		
+		/// <summary>
+		/// Gets/sets the the initial span stack of the document. Default value is <see cref="SpanStack.Empty" />.
+		/// </summary>
+		public ImmutableStack<HighlightingSpan> InitialSpanStack {
+			get { return initialSpanStack; }
+			set {
+				if (value == null)
+					initialSpanStack = SpanStack.Empty;
+				else
+					initialSpanStack = value;
+				InvalidateHighlighting();
+			}
+		}
+		
 		/// <summary>
 		/// Invalidates all stored highlighting info.
 		/// When the document changes, the highlighting is invalidated automatically, this method
@@ -99,7 +115,7 @@ namespace ICSharpCode.AvalonEdit.Highlighting
 		{
 			CheckIsHighlighting();
 			storedSpanStacks.Clear();
-			storedSpanStacks.Add(SpanStack.Empty);
+			storedSpanStacks.Add(initialSpanStack);
 			storedSpanStacks.InsertRange(1, document.LineCount, null);
 			isValid.Clear();
 			isValid.Add(true);

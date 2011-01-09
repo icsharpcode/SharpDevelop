@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-
+using System.Text;
 using ICSharpCode.AvalonEdit.AddIn.MyersDiff;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Utils;
@@ -91,7 +91,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					new DocumentSequence(document, hashes)
 				);
 				
-				changeList.Add(new LineChangeInfo(ChangeType.None, ""));
+				changeList.Add(LineChangeInfo.Empty);
 				int lastEndLine = 0;
 				
 				foreach (Edit edit in diff.GetEdits()) {
@@ -100,17 +100,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					
 					changeList.InsertRange(changeList.Count, beginLine - lastEndLine, LineChangeInfo.Empty);
 					
-					if (edit.EditType == ChangeType.Deleted) {
-						LineChangeInfo change = changeList[beginLine];
-						
-						for (int i = edit.BeginA; i < edit.EndA; i++) {
-							var line = baseDocument.GetLine(i + 1);
-							change.DeletedLinesAfterThisLine += line.Text;
-						}
-						
-						changeList[beginLine] = change;
-					} else {
-						var change = new LineChangeInfo(edit.EditType, "");
+					if (edit.EditType != ChangeType.Deleted) {
+						var change = new LineChangeInfo(edit.EditType, edit.BeginA, edit.BeginB, edit.EndA, edit.EndB);
 						changeList.InsertRange(changeList.Count, endLine - beginLine, change);
 					}
 					
@@ -165,20 +156,16 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		void ILineTracker.LineInserted(DocumentLine insertionPos, DocumentLine newLine)
 		{
 			int index = insertionPos.LineNumber;
-			var firstLine = changeList[index];
-			var newLineInfo = new LineChangeInfo(ChangeType.Unsaved, firstLine.DeletedLinesAfterThisLine);
+			var newLineInfo = new LineChangeInfo(ChangeType.Unsaved, index, index, newLine.LineNumber, newLine.LineNumber);
 			
-			firstLine.Change = ChangeType.Unsaved;
-			firstLine.DeletedLinesAfterThisLine = "";
-			
+			changeList[index] = newLineInfo;
 			changeList.Insert(index + 1, newLineInfo);
-			changeList[index] = firstLine;
 		}
 		
 		void ILineTracker.RebuildDocument()
 		{
 			changeList.Clear();
-			changeList.InsertRange(0, document.TotalNumberOfLines + 1, new LineChangeInfo(ChangeType.Unsaved, ""));
+			changeList.InsertRange(0, document.TotalNumberOfLines + 1, new LineChangeInfo(ChangeType.Unsaved, 1, 1, baseDocument.TotalNumberOfLines, document.TotalNumberOfLines));
 		}
 		
 		bool disposed = false;
@@ -192,18 +179,40 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		public IList<IDocumentLine> GetDiffsByLine(int line)
+		public string GetOldVersionFromLine(int lineNumber, out int newStartLine)
 		{
-			var result = new List<IDocumentLine>();
+			LineChangeInfo info = changeList[lineNumber];
 			
-			if (baseDocument.TotalNumberOfLines < line)
-				result.Add(null);
-			else
-				result.Add(baseDocument.GetLine(line));
+			if (info.Change != ChangeType.None && info.Change != ChangeType.Unsaved) {
+				var startDocumentLine = baseDocument.GetLine(info.OldStartLineNumber + 1);
+				var endLine = baseDocument.GetLine(info.OldEndLineNumber);
+				newStartLine = info.NewStartLineNumber + 1;
+				
+				if (info.Change == ChangeType.Added)
+					return "";
+				
+				return baseDocument.GetText(startDocumentLine.Offset, endLine.EndOffset - startDocumentLine.Offset);
+			}
 			
-			result.Add(document.GetLine(line));
+			newStartLine = 0;
+			return null;
+		}
+		
+		public bool GetNewVersionFromLine(int lineNumber, out int offset, out int length)
+		{
+			LineChangeInfo info = changeList[lineNumber];
 			
-			return result;
+			if (info.Change != ChangeType.None) {
+				var startLine = document.GetLine(info.NewStartLineNumber + 1);
+				var endLine = document.GetLine(info.NewEndLineNumber);
+				
+				offset = startLine.Offset;
+				length = endLine.EndOffset - startLine.Offset;
+				return true;
+			}
+			
+			offset = length = 0;
+			return false;
 		}
 	}
 }

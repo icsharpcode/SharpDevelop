@@ -95,6 +95,10 @@
     <Compile Include="Src\CodeEditorView.cs" />
     <Compile Include="Src\ContextActionsRenderer.cs" />
     <Compile Include="Src\DefaultChangeWatcher.cs" />
+    <Compile Include="Src\DiffControl.xaml.cs">
+      <DependentUpon>DiffControl.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Src\ExpressionHighlightRenderer.cs" />
     <Compile Include="Src\CodeManipulation.cs" />
     <Compile Include="Src\CaretHighlightAdorner.cs" />
@@ -176,6 +180,7 @@
     <EmbeddedResource Include="Resources\ReverseIncrementalSearchCursor.cur" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Src\DiffControl.xaml" />
     <Page Include="Src\HiddenDefinition\HiddenDefinitionControl.xaml" />
     <Page Include="Src\SharpDevelopCompletionWindow.xaml">
       <DependentUpon>SharpDevelopCompletionWindow.cs</DependentUpon>
