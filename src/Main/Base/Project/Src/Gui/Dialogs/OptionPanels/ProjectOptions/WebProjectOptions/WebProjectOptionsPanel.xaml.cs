@@ -101,6 +101,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (!WebProjectService.IsIISInstalled) {
 				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
 				ProjectUrl.Text = string.Empty;
+				data.WebServer = WebServer.None;
 			}
 			else {
 				StatusLabel.Text = string.Empty;

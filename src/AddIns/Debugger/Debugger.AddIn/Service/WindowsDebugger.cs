@@ -45,6 +45,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		ICorPublish corPublish;
 		
 		Process debuggedProcess;
+		ProcessMonitor monitor;
 		
 		//DynamicTreeDebuggerRow currentTooltipRow;
 		//Expression             currentTooltipExpression;
@@ -148,41 +149,58 @@ namespace ICSharpCode.SharpDevelop.Services
 				}
 				
 				var debugData = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
-				if (debugData == null) {
+				if (debugData == null || debugData.Data == null) {
 					MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
 					return;
 				}
 				
-				System.Diagnostics.Process localProcess = null;
-				// start default application(e.g. browser)
-				if (project.StartAction == StartAction.StartURL)
-					localProcess = System.Diagnostics.Process.Start(processStartInfo.FileName);
-				else
-					if (!string.IsNullOrEmpty(debugData.Data.ProjectUrl) && debugData.Data.WebServer == WebServer.IIS)
-						localProcess = System.Diagnostics.Process.Start(debugData.Data.ProjectUrl);
-				
-				// try attach to IIS WP
-				var processes = System.Diagnostics.Process.GetProcesses();
-				string processName = WebProjectService.WorkerProcessName;
-				if (debugData.Data.WebServer == WebServer.IISExpress)
-					processName = "iisexpress";
-				
-				foreach(var process in processes) {
-					if (process.ProcessName.ToLower().IndexOf(processName) == 0) {
-						Attach(process);
-						break;
+				if (debugData.Data.WebServer != WebServer.None) {
+					
+					// try attach to IIS WP
+					var processes = System.Diagnostics.Process.GetProcesses();
+					string processName = WebProjectService.WorkerProcessName;
+					if (debugData.Data.WebServer == WebServer.IISExpress)
+						processName = WebProjectService.IIS_EXPRESS_PROCESS_NAME;
+					
+					System.Diagnostics.Process localProcess = null;
+					
+					// try find the worker process
+					int index = processes.FindIndex<System.Diagnostics.Process>(
+						p => p.ProcessName.IndexOf(processName, StringComparison.OrdinalIgnoreCase) == 0);
+					if (index > -1){
+						Attach(processes[index]);
+					} else {
+						this.monitor = new ProcessMonitor(processName);
+						this.monitor.ProcessCreated += delegate {
+							processes = System.Diagnostics.Process.GetProcesses();
+							index = processes.FindIndex<System.Diagnostics.Process>(
+								p => p.ProcessName.IndexOf(processName, StringComparison.OrdinalIgnoreCase) == 0);
+							Attach(processes[index]);
+							
+							if (!attached) {
+								if(debugData.Data.WebServer == WebServer.IIS) {
+									string format = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.NoIISWP");
+									MessageService.ShowMessage(string.Format(format, processName));
+								} else {
+									Attach(localProcess);
+									if (!attached) {
+										MessageService.ShowMessage(ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.UnableToAttach"));
+									}
+								}
+							}
+						};
+						this.monitor.Start();
 					}
-				}
-				
-				if (!attached) {
-					if(debugData.Data.WebServer == WebServer.IIS) {
-						string format = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.NoIISWP");
-						MessageService.ShowMessage(string.Format(format, processName));
-					}
+					
+					// start default application(e.g. browser)
+					if (project.StartAction == StartAction.StartURL)
+						localProcess = System.Diagnostics.Process.Start(processStartInfo.FileName);
 					else {
-						Attach(localProcess);
-						if (!attached) {
-							MessageService.ShowMessage(ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.UnableToAttach"));
+						if (!string.IsNullOrEmpty(debugData.Data.ProjectUrl) && debugData.Data.WebServer == WebServer.IIS)
+							localProcess = System.Diagnostics.Process.Start(debugData.Data.ProjectUrl);
+						else {
+							if (debugData.Data.WebServer == WebServer.IISExpress)
+								localProcess = System.Diagnostics.Process.Start(debugData.Data.ProjectUrl);
 						}
 					}
 				}
@@ -314,6 +332,12 @@ namespace ICSharpCode.SharpDevelop.Services
 				}
 			} else {
 				debuggedProcess.Terminate();
+			}
+			
+			if (monitor != null) {
+				monitor.Stop();
+				monitor.Dispose();
+				monitor = null;
 			}
 		}
 		
