@@ -153,6 +153,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				differ.editor.Document.Text = oldText;
 				differ.Background = Brushes.White;
 				
+				// TODO : deletions on line 0 cannot be displayed.
+				
 				LineChangeInfo prevLineInfo = changeWatcher.GetChange(startLine - 1);
 				LineChangeInfo lineInfo = changeWatcher.GetChange(startLine);
 				
@@ -163,6 +165,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				
 				if (oldText == string.Empty) {
 					differ.editor.Visibility = Visibility.Collapsed;
+					differ.copyButton.Visibility = Visibility.Collapsed;
 				} else {
 					var baseDocument = new TextDocument(changeWatcher.BaseDocument.Text);
 					var mainHighlighter = new DocumentHighlighter(baseDocument, differ.editor.SyntaxHighlighting.MainRuleSet);
@@ -174,7 +177,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						popupHighlighter.InitialSpanStack = mainHighlighter.GetSpanStack(lineInfo.OldStartLineNumber);
 				}
 				
-				differ.undoButton.Click += delegate {
+				differ.revertButton.Click += delegate {
 					if (hasNewVersion) {
 						int delimiter = 0;
 						DocumentLine l = Document.GetLineByOffset(offset + length);

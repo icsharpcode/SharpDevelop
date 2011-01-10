@@ -24,7 +24,20 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			InitializeComponent();
 			
-			undoButton.Content = PresentationResourceService.GetImage("Icons.16x16.UndoIcon");
+			revertButton.Content = PresentationResourceService.GetImage("Icons.16x16.UndoIcon");
+			copyButton.Content = PresentationResourceService.GetImage("Icons.16x16.CopyIcon");
+		}
+		
+		void CopyButtonClick(object sender, RoutedEventArgs e)
+		{
+			if (editor.SelectionLength == 0) {
+				int offset = editor.CaretOffset;
+				editor.SelectAll();
+				editor.Copy();
+				editor.Select(offset, 0);
+			} else {
+				editor.Copy();
+			}
 		}
 	}
 }
