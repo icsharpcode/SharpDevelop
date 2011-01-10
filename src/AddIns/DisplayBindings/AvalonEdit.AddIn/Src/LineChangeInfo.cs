@@ -17,8 +17,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		/// </summary>
 		LineChangeInfo GetChange(int lineNumber);
 		void Initialize(IDocument document);
-		string GetOldVersionFromLine(int lineNumber, out int newStartLine);
+		string GetOldVersionFromLine(int lineNumber, out int newStartLine, out bool added);
 		bool GetNewVersionFromLine(int lineNumber, out int offset, out int length);
+		IDocument CurrentDocument { get; }
+		IDocument BaseDocument { get; }
 	}
 	
 	public enum ChangeType

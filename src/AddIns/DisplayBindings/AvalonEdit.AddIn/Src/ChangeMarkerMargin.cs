@@ -10,12 +10,15 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+
 using ICSharpCode.AvalonEdit.AddIn.Options;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Widgets;
 
 namespace ICSharpCode.AvalonEdit.AddIn
@@ -60,6 +63,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						case ChangeType.Added:
 							drawingContext.DrawRectangle(Brushes.LightGreen, null, rect);
 							break;
+						case ChangeType.Deleted:
 						case ChangeType.Modified:
 							drawingContext.DrawRectangle(Brushes.LightBlue, null, rect);
 							break;
@@ -69,41 +73,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 						default:
 							throw new Exception("Invalid value for ChangeType");
 					}
-					
-//					if (!string.IsNullOrEmpty(info.DeletedLinesAfterThisLine)) {
-//						Point pt1 = new Point(5,  line.VisualTop + line.Height - textView.ScrollOffset.Y - 4);
-//						Point pt2 = new Point(10, line.VisualTop + line.Height - textView.ScrollOffset.Y);
-//						Point pt3 = new Point(5,  line.VisualTop + line.Height - textView.ScrollOffset.Y + 4);
-//
-//						drawingContext.DrawGeometry(Brushes.Red, null, new PathGeometry(new List<PathFigure>() { CreateNAngle(pt1, pt2, pt3) }));
-//					}
-//
-//					// special case for line 0
-//					if (line.FirstDocumentLine.LineNumber == 1) {
-//						info = changeWatcher.GetChange(0);
-//
-//						if (!string.IsNullOrEmpty(info.DeletedLinesAfterThisLine)) {
-//							Point pt1 = new Point(5,  line.VisualTop - textView.ScrollOffset.Y - 4);
-//							Point pt2 = new Point(10, line.VisualTop - textView.ScrollOffset.Y);
-//							Point pt3 = new Point(5,  line.VisualTop - textView.ScrollOffset.Y + 4);
-//
-//							drawingContext.DrawGeometry(Brushes.Red, null, new PathGeometry(new List<PathFigure>() { CreateNAngle(pt1, pt2, pt3) }));
-//						}
-//					}
 				}
 			}
-		}
-		
-		PathFigure CreateNAngle(params Point[] points)
-		{
-			if (points == null || points.Length == 0)
-				return new PathFigure();
-			
-			List<PathSegment> segs = new List<PathSegment>();
-			PathSegment seg = new PolyLineSegment(points, true);
-			segs.Add(seg);
-			
-			return new PathFigure(points[0], segs, true);
 		}
 		
 		protected override void OnTextViewChanged(TextView oldTextView, TextView newTextView)
@@ -153,19 +124,25 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				return;
 			
 			int startLine;
-			string oldText = changeWatcher.GetOldVersionFromLine(line, out startLine);
-			
-			int offset, length;
+			bool added;
+			string oldText = changeWatcher.GetOldVersionFromLine(line, out startLine, out added);
 			
 			TextEditor editor = this.TextView.Services.GetService(typeof(TextEditor)) as TextEditor;
 			markerService = this.TextView.Services.GetService(typeof(ITextMarkerService)) as ITextMarkerService;
-
 			
-			if (changeWatcher.GetNewVersionFromLine(line, out offset, out length)) {
+			int offset, length;
+			bool hasNewVersion = changeWatcher.GetNewVersionFromLine(line, out offset, out length);
+			
+			if (hasNewVersion) {
 				if (marker != null)
 					markerService.Remove(marker);
-				marker = markerService.Create(offset, length);
-				marker.BackgroundColor = Colors.LightGreen;
+				if (length <= 0) {
+					marker = null;
+					length = 0;
+				} else {
+					marker = markerService.Create(offset, length);
+					marker.BackgroundColor = Colors.LightGreen;
+				}
 			}
 			
 			if (oldText != null) {
@@ -176,20 +153,35 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				differ.editor.Document.Text = oldText;
 				differ.Background = Brushes.White;
 				
-				DocumentHighlighter mainHighlighter = TextView.Services.GetService(typeof(IHighlighter)) as DocumentHighlighter;
-				DocumentHighlighter popupHighlighter = differ.editor.TextArea.GetService(typeof(IHighlighter)) as DocumentHighlighter;
+				LineChangeInfo prevLineInfo = changeWatcher.GetChange(startLine - 1);
+				LineChangeInfo lineInfo = changeWatcher.GetChange(startLine);
 				
-//				popupHighlighter.InitialSpanStack = mainHighlighter.GetSpanStack(
+				if (prevLineInfo.Change == ChangeType.Deleted) {
+					var docLine = editor.Document.GetLineByNumber(startLine - 1);
+					differ.editor.Document.Insert(0, editor.Document.GetText(docLine.Offset, docLine.TotalLength));
+				}
 				
 				if (oldText == string.Empty) {
 					differ.editor.Visibility = Visibility.Collapsed;
+				} else {
+					var baseDocument = new TextDocument(changeWatcher.BaseDocument.Text);
+					var mainHighlighter = new DocumentHighlighter(baseDocument, differ.editor.SyntaxHighlighting.MainRuleSet);
+					var popupHighlighter = differ.editor.TextArea.GetService(typeof(IHighlighter)) as DocumentHighlighter;
+					
+					if (prevLineInfo.Change == ChangeType.Deleted)
+						popupHighlighter.InitialSpanStack = mainHighlighter.GetSpanStack(prevLineInfo.OldStartLineNumber);
+					else
+						popupHighlighter.InitialSpanStack = mainHighlighter.GetSpanStack(lineInfo.OldStartLineNumber);
 				}
 				
 				differ.undoButton.Click += delegate {
-					if (marker != null) {
+					if (hasNewVersion) {
 						int delimiter = 0;
-						if (oldText == string.Empty)
-							delimiter = Document.GetLineByOffset(offset + length).DelimiterLength;
+						DocumentLine l = Document.GetLineByOffset(offset + length);
+						if (added)
+							delimiter = l.DelimiterLength;
+						if (length == 0)
+							oldText += DocumentUtilitites.GetLineTerminator(new AvalonEditDocumentAdapter(Document, null), l.LineNumber);
 						Document.Replace(offset, length + delimiter, oldText);
 						tooltip.IsOpen = false;
 					}

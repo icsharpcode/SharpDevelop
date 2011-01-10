@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using ICSharpCode.AvalonEdit.AddIn.MyersDiff;
 using ICSharpCode.AvalonEdit.Document;
@@ -100,10 +101,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					
 					changeList.InsertRange(changeList.Count, beginLine - lastEndLine, LineChangeInfo.Empty);
 					
-					if (edit.EditType != ChangeType.Deleted) {
-						var change = new LineChangeInfo(edit.EditType, edit.BeginA, edit.BeginB, edit.EndA, edit.EndB);
+					LineChangeInfo change = new LineChangeInfo(edit.EditType, edit.BeginA, edit.BeginB, edit.EndA, edit.EndB);
+					if (endLine == beginLine)
+						changeList[changeList.Count - 1] = change;
+					else
 						changeList.InsertRange(changeList.Count, endLine - beginLine, change);
-					}
 					
 					lastEndLine = endLine;
 				}
@@ -179,9 +181,11 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			}
 		}
 		
-		public string GetOldVersionFromLine(int lineNumber, out int newStartLine)
+		public string GetOldVersionFromLine(int lineNumber, out int newStartLine, out bool added)
 		{
 			LineChangeInfo info = changeList[lineNumber];
+			
+			added = info.Change == ChangeType.Added;
 			
 			if (info.Change != ChangeType.None && info.Change != ChangeType.Unsaved) {
 				var startDocumentLine = baseDocument.GetLine(info.OldStartLineNumber + 1);
@@ -202,7 +206,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			LineChangeInfo info = changeList[lineNumber];
 			
-			if (info.Change != ChangeType.None) {
+			if (info.Change != ChangeType.None && info.Change != ChangeType.Unsaved) {
 				var startLine = document.GetLine(info.NewStartLineNumber + 1);
 				var endLine = document.GetLine(info.NewEndLineNumber);
 				
@@ -213,6 +217,14 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			
 			offset = length = 0;
 			return false;
+		}
+		
+		public IDocument CurrentDocument {
+			get { return document; }
+		}
+		
+		public IDocument BaseDocument {
+			get { return baseDocument; }
 		}
 	}
 }
