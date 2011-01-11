@@ -61,16 +61,22 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			this.txtSqlString.Text = String.Empty;
 			SqlQueryChecker.Check(model.ReportSettings.CommandType,
 			                      model.ReportSettings.CommandText);
+			
 			DataSet dataSet = ResultPanel.CreateDataSet ();
 			
 			
 			switch (model.ReportSettings.CommandType) {
 				case CommandType.Text:
 						this.txtSqlString.Text = model.ReportSettings.CommandText;
+						ICSharpCode.Data.Core.Interfaces.ITable t = reportStructure.IDatabaseObjectBase as ICSharpCode.Data.Core.Interfaces.ITable;
+						var v = reportStructure.IDatabaseObjectBase;
 						dataSet = BuildFromSqlString();
 					break;
 				case CommandType.StoredProcedure:
-					MessageService.ShowError("Stored Procedures are not suppurted at the moment");
+						ICSharpCode.Data.Core.Interfaces.IProcedure tt = reportStructure.IDatabaseObjectBase as ICSharpCode.Data.Core.Interfaces.IProcedure;
+						var vv = reportStructure.IDatabaseObjectBase;
+					
+					dataSet = DatasetFromStoredProcedure();
 					break;
 				case CommandType.TableDirect:
 					MessageService.ShowError("TableDirect is not suppurted at the moment");
@@ -104,6 +110,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 //			}
 			return dataSet;
 		}
+		
+		
 		
 		
 		private static DataSet CreateDataSet() 
@@ -210,6 +218,29 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				} 
 			}
 		}
+		
+		
+		DataSet DatasetFromStoredProcedure()
+		{
+//			MessageService.ShowError("Stored Procedures are not suppurted at the moment");
+			DbDataAdapter adapter = null;
+			string sqp = model.ReportSettings.CommandText;
+			
+			try {
+				
+				adapter = this.BuildAdapter();
+				
+				DataSet dataSet = ResultPanel.CreateDataSet();
+				
+				adapter.Fill(dataSet);
+				return dataSet;
+			} finally {
+				if (adapter.SelectCommand.Connection.State == ConnectionState.Open) {
+					adapter.SelectCommand.Connection.Close();
+				} 
+			}
+		}
+		
 		
 		#endregion
 		

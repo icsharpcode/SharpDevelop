@@ -5,6 +5,7 @@ using System;
 using System.Data;
 using System.Drawing;
 
+using ICSharpCode.Data.Core.Interfaces;
 using ICSharpCode.Reports.Core;
 
 /// <summary>
@@ -95,7 +96,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 	
 		public ICSharpCode.Reports.Core.GlobalEnums.PushPullModel DataModel {get;set;}
 			
-
+		public IDatabaseObjectBase IDatabaseObjectBase {get;set;}
+		
 		public ParameterCollection SqlQueryParameters {
 			get {
 				if (this.queryParameters == null) {
