@@ -3,9 +3,9 @@
 
 using System;
 using System.IO;
+using System.Web.Services.Description;
 using System.Windows;
 using System.Windows.Controls;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -24,39 +24,41 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			if (CurrentProjectDebugData == null)
 				CurrentProjectDebugData = new WebProjectDebugData();
 			
-			Loaded += delegate(object sender, RoutedEventArgs e) {
-				
-				if (!WebProjectService.IsIISInstalled) {
-					StatusLabel.Text = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
-					return;
-				}
-				
-				switch (CurrentProjectDebugData.WebServer)
-				{
-					case WebServer.IISExpress:
-						if (WebProjectService.IISVersion == IISVersion.IISExpress) {
-							UseIISExpress.IsChecked = true;
-							IISExpressGroup.IsEnabled = true;
-							CreateVirtualDirectoryButton.IsEnabled = true;
-							PortTextBox.Text = CurrentProjectDebugData.Port;
-						}
-						break;
-					case WebServer.IIS:
-						if (WebProjectService.IISVersion == IISVersion.IIS5 ||
-						    WebProjectService.IISVersion == IISVersion.IIS6 ||
-						    WebProjectService.IISVersion == IISVersion.IIS7 ||
-						    WebProjectService.IISVersion == IISVersion.IIS_Future) {
-							UseLocalIIS.IsChecked = true;
-							LocalIISGroup.IsEnabled = true;
-							CreateVirtualDirectoryButton.IsEnabled = true;
-							ProjectUrl.Text = CurrentProjectDebugData.ProjectUrl ?? string.Empty;
-						}
-						break;
-					default:
-						// do nothing
-						break;
-				}
-			};
+			Loaded += OnLoaded;
+		}
+
+		void OnLoaded(object sender, RoutedEventArgs e)
+		{
+			if (!WebProjectService.IsIISInstalled) {
+				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
+				return;
+			}
+			
+			switch (CurrentProjectDebugData.WebServer)
+			{
+				case WebServer.IISExpress:
+					if (WebProjectService.IISVersion == IISVersion.IISExpress) {
+						UseIISExpress.IsChecked = true;
+						PortTextBox.Text = CurrentProjectDebugData.Port;
+						
+						SelectIISExpress();
+					}
+					break;
+				case WebServer.IIS:
+					if (WebProjectService.IISVersion == IISVersion.IIS5 ||
+					    WebProjectService.IISVersion == IISVersion.IIS6 ||
+					    WebProjectService.IISVersion == IISVersion.IIS7 ||
+					    WebProjectService.IISVersion == IISVersion.IIS_Future) {
+						UseLocalIIS.IsChecked = true;
+						ProjectUrl.Text = CurrentProjectDebugData.ProjectUrl ?? string.Empty;
+						
+						SelectLocalIIS();
+					}
+					break;
+				default:
+					// do nothing
+					break;
+			}
 		}
 		
 		WebProjectDebugData CurrentProjectDebugData {
@@ -97,6 +99,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void UseIISExpress_Click(object sender, RoutedEventArgs e)
 		{
+			SelectIISExpress();
+		}
+		
+		void SelectIISExpress()
+		{
 			WebProjectDebugData data = new WebProjectDebugData();
 			data.WebServer = WebServer.IISExpress;
 			data.Port = PortTextBox.Text;
@@ -118,6 +125,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		}
 		
 		void UseLocalIIS_Click(object sender, RoutedEventArgs e)
+		{
+			SelectLocalIIS();
+		}
+		
+		void SelectLocalIIS()
 		{
 			WebProjectDebugData data = new WebProjectDebugData();
 			data.WebServer = WebServer.IIS;
@@ -181,6 +193,15 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			e.Handled = !AreAllValidNumericChars(e.Text);
 			base.OnPreviewTextInput(e);
+		}
+		
+		void PortTextBox_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+		{
+			WebProjectDebugData data = new WebProjectDebugData();
+			data.WebServer = WebServer.IISExpress;
+			data.Port = PortTextBox.Text;
+			data.ProjectUrl = string.Format(@"http://localhost:{0}/" + ProjectService.CurrentProject.Name, PortTextBox.Text);
+			CurrentProjectDebugData = data;
 		}
 	}
 }

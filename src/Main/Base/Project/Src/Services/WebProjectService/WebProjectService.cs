@@ -46,11 +46,30 @@ namespace ICSharpCode.SharpDevelop.Project
 		const string FRAMEWORK32 = @"Framework\";
 		const string FRAMEWORK64 = @"Framework64\";
 		
+		/// <summary>
+		/// Gets &quot;iisexpress&quot; string.
+		/// </summary>
 		public const string IIS_EXPRESS_PROCESS_NAME = "iisexpress"; 
+		
+		/// <summary>
+		/// Gets &quot;aspnet_wp&quot; string.
+		/// </summary>
 		public const string IIS_5_PROCESS_NAME = "aspnet_wp";
+		
+		/// <summary>
+		/// Gets &quot;w3wp&quot; string.
+		/// </summary>
 		public const string IIS_NEW_PROCESS_NAME = "w3wp";
 		
-		public const string IIS_EXPRESS_PROCESS_LOCATION = @"C:\Program Files\IIS Express\iisexpress.exe";
+		/// <summary>
+		/// Gets IIS Express process location.
+		/// </summary>
+		public static string IIISExpressProcessLocation {
+			get {
+				return Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFiles) +
+					@"\IIS Express\iisexpress.exe";
+			}
+		}
 		
 		/// <summary>
 		/// Gets the IIS worker process name.
@@ -158,7 +177,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (regValue > 4)
 					return (IISVersion)regValue;
 				
-				if (File.Exists(WebProjectService.IIS_EXPRESS_PROCESS_LOCATION))
+				if (File.Exists(IIISExpressProcessLocation))
 					return IISVersion.IISExpress;
 				
 				return IISVersion.None;

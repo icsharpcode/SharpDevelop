@@ -22,7 +22,9 @@
 						<ColumnDefinition Width="Auto"/>
 					</Grid.ColumnDefinitions>
 					<TextBlock Text="{core:Localize ICSharpCode.WepProjectOptionsPanel.Port}"/>
-					<TextBox Grid.Column="1" x:Name="PortTextBox" PreviewTextInput="PortTextBox_PreviewTextInput" Text="8080"/>
+					<TextBox Grid.Column="1" x:Name="PortTextBox"
+					         PreviewTextInput="PortTextBox_PreviewTextInput" Text="8080"
+							 KeyUp="PortTextBox_KeyUp" />
 				</Grid>
 			</widgets:StackPanelWithSpacing>
 			<!--IIS Local Server-->

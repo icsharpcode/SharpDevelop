@@ -166,7 +166,7 @@ namespace ICSharpCode.SharpDevelop.Services
 					if (options.Data.WebServer == WebServer.IISExpress) {
 						// start IIS express and attach to it
 						if (WebProjectService.IISVersion == IISVersion.IISExpress)
-							System.Diagnostics.Process.Start(WebProjectService.IIS_EXPRESS_PROCESS_LOCATION);
+							System.Diagnostics.Process.Start(WebProjectService.IIISExpressProcessLocation);
 						else {
 							MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
 							return;
@@ -302,7 +302,7 @@ namespace ICSharpCode.SharpDevelop.Services
 					if (options.Data.WebServer == WebServer.IISExpress) {
 						// start IIS express
 						if (WebProjectService.IISVersion == IISVersion.IISExpress)
-							System.Diagnostics.Process.Start(WebProjectService.IIS_EXPRESS_PROCESS_LOCATION);
+							System.Diagnostics.Process.Start(WebProjectService.IIISExpressProcessLocation);
 						else {
 							MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
 							return;

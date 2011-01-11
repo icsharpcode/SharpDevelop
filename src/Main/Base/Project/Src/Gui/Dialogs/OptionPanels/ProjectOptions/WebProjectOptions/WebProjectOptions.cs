@@ -62,10 +62,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		[DefaultValue(null)]
 		public string ProjectUrl { get; set; }
 		
-		[DefaultValue(WebServer.None)]
-		public WebServer WebServer { get; set; }
-		
 		[DefaultValue("8080")]
 		public string Port { get; set; }
+		
+		[DefaultValue(WebServer.None)]
+		public WebServer WebServer { get; set; }
 	}
 }
