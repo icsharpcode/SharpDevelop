@@ -59,6 +59,20 @@ namespace ICSharpCode.AvalonEdit.Folding
 				}
 			}
 			if (foldedUntil > offset && foldingSection != null) {
+				// Handle overlapping foldings: if there's another folded folding
+				// (starting within the foldingSection) that continues after the end of the folded section,
+				// then we'll extend our fold element to cover that overlapping folding.
+				bool foundOverlappingFolding;
+				do {
+					foundOverlappingFolding = false;
+					foreach (FoldingSection fs in foldingManager.GetFoldingsContaining(foldedUntil)) {
+						if (fs.IsFolded && fs.EndOffset > foldedUntil) {
+							foldedUntil = fs.EndOffset;
+							foundOverlappingFolding = true;
+						}
+					}
+				} while (foundOverlappingFolding);
+				
 				string title = foldingSection.Title;
 				if (string.IsNullOrEmpty(title))
 					title = "...";
