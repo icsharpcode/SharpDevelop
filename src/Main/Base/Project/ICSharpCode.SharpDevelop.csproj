@@ -44,7 +44,7 @@
     <DefineConstants>TRACE;PUBLICINTERPROCESS</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Web.Administration" />
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Mono.Cecil">
       <HintPath>..\..\..\Libraries\Mono.Cecil\Mono.Cecil.dll</HintPath>
       <Private>False</Private>

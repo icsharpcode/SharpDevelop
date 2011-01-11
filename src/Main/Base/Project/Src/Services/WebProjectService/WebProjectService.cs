@@ -3,6 +3,9 @@
 
 using System;
 using System.EnterpriseServices.Internal;
+using System.IO;
+using System.Reflection;
+
 using ICSharpCode.Core;
 using Microsoft.Win32;
 
@@ -10,6 +13,7 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public enum IISVersion
 	{
+		None = 0,
 		IIS5 = 5,
 		IIS6,
 		IIS7,
@@ -42,9 +46,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		const string FRAMEWORK32 = @"Framework\";
 		const string FRAMEWORK64 = @"Framework64\";
 		
-		public const string IIS_EXPRESS_PROCESS_NAME = "iisexpress";
+		public const string IIS_EXPRESS_PROCESS_NAME = "iisexpress"; 
 		public const string IIS_5_PROCESS_NAME = "aspnet_wp";
 		public const string IIS_NEW_PROCESS_NAME = "w3wp";
+		
+		public const string IIS_EXPRESS_PROCESS_LOCATION = @"C:\Program Files\IIS Express\iisexpress.exe";
 		
 		/// <summary>
 		/// Gets the IIS worker process name.
@@ -149,12 +155,18 @@ namespace ICSharpCode.SharpDevelop.Project
 					RegistryValueKind.DWord,
 					out regValue);
 				
-				return (IISVersion)regValue;
+				if (regValue > 4)
+					return (IISVersion)regValue;
+				
+				if (File.Exists(WebProjectService.IIS_EXPRESS_PROCESS_LOCATION))
+					return IISVersion.IISExpress;
+				
+				return IISVersion.None;
 			}
 		}
 		
 		/// <summary>
-		/// Creates a virtual directory in IIS.
+		/// Creates a virtual directory in local IIS or IIS Express.
 		/// </summary>
 		/// <param name="virtualDirectoryName">Virtual directory name.</param>
 		/// <param name="virtualDirectoryPath">Physical path.</param>
@@ -179,21 +191,40 @@ namespace ICSharpCode.SharpDevelop.Project
 						break;
 						
 					default:
-						using (var manager = new Microsoft.Web.Administration.ServerManager())
-						{
-							if (manager.Sites[DEFAULT_WEB_SITE] != null) {
-								string name = "/" + virtualDirectoryName;
-								if (manager.Sites[DEFAULT_WEB_SITE].Applications[name] == null) {
-									manager.Sites[DEFAULT_WEB_SITE].Applications.Add(name, physicalDirectoryPath);
-									manager.CommitChanges();
-									error = string.Empty;
-								} else {
-									error = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.ApplicationExists");
-								}
-							}
-							else
-								error = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.MultipleIISServers");
+						// TODO: find a better way to create IIS 7 applications without Microsoft.Web.Administration.ServerManager
+						string name = "/" + virtualDirectoryName;
+						// load from GAC - IIS7 is installed
+						Assembly webAdministrationAssembly;
+						try {
+							// iis 7
+							webAdministrationAssembly = Assembly.Load("Microsoft.Web.Administration, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
 						}
+						catch {
+							// iis express
+							webAdministrationAssembly = Assembly.Load("Microsoft.Web.Administration, Version=7.9.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35");
+						}
+						
+						// use dynamic because classic reflection is way TOO ugly
+						dynamic manager = webAdministrationAssembly.CreateInstance("Microsoft.Web.Administration.ServerManager");
+						
+						if (manager.Sites[DEFAULT_WEB_SITE] != null) {
+							if (manager.Sites[DEFAULT_WEB_SITE].Applications[name] == null) {
+								manager.Sites[DEFAULT_WEB_SITE].Applications.Add(name, physicalDirectoryPath);
+								manager.CommitChanges();
+								error = string.Empty;
+							} else {
+								error = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.ApplicationExists");
+							}
+						} else {
+							if (manager.Sites[0].Applications[name] == null) {
+								manager.Sites[0].Applications.Add(name, physicalDirectoryPath);
+								manager.CommitChanges();
+								error = string.Empty;
+							} else {
+								error = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.ApplicationExists");
+							}
+						}
+						manager.Dispose();
 						break;
 				}
 				

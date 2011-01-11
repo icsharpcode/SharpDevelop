@@ -25,16 +25,32 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				CurrentProjectDebugData = new WebProjectDebugData();
 			
 			Loaded += delegate(object sender, RoutedEventArgs e) {
+				
+				if (!WebProjectService.IsIISInstalled) {
+					StatusLabel.Text = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
+					return;
+				}
+				
 				switch (CurrentProjectDebugData.WebServer)
 				{
 					case WebServer.IISExpress:
-						UseIISExpress.IsChecked = true;
-						UseIISExpress_Click(null, null);
+						if (WebProjectService.IISVersion == IISVersion.IISExpress) {
+							UseIISExpress.IsChecked = true;
+							IISExpressGroup.IsEnabled = true;
+							CreateVirtualDirectoryButton.IsEnabled = true;
+							PortTextBox.Text = CurrentProjectDebugData.Port;
+						}
 						break;
 					case WebServer.IIS:
-						UseLocalIIS.IsChecked = true;
-						ProjectUrl.Text = CurrentProjectDebugData.ProjectUrl ?? string.Empty;
-						UseLocalIIS_Click(null, null);
+						if (WebProjectService.IISVersion == IISVersion.IIS5 ||
+						    WebProjectService.IISVersion == IISVersion.IIS6 ||
+						    WebProjectService.IISVersion == IISVersion.IIS7 ||
+						    WebProjectService.IISVersion == IISVersion.IIS_Future) {
+							UseLocalIIS.IsChecked = true;
+							LocalIISGroup.IsEnabled = true;
+							CreateVirtualDirectoryButton.IsEnabled = true;
+							ProjectUrl.Text = CurrentProjectDebugData.ProjectUrl ?? string.Empty;
+						}
 						break;
 					default:
 						// do nothing
@@ -63,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				else
 					data = new WebProjectOptions();
 				
-				WebProjectsOptions.Instance.SetWebProjectOptions(ProjectService.CurrentProject.Name, data);				
+				WebProjectsOptions.Instance.SetWebProjectOptions(ProjectService.CurrentProject.Name, data);
 			}
 		}
 		
@@ -83,12 +99,20 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			WebProjectDebugData data = new WebProjectDebugData();
 			data.WebServer = WebServer.IISExpress;
+			data.Port = PortTextBox.Text;
+			data.ProjectUrl = string.Format(@"http://localhost:{0}/" + ProjectService.CurrentProject.Name, PortTextBox.Text);
+			bool isIISExpressInstalled = WebProjectService.IISVersion == IISVersion.IISExpress;
 			
-			if (ProjectService.CurrentProject is CompilableProject) {
-				((CompilableProject)ProjectService.CurrentProject).StartAction = StartAction.Program;
-				parentPanel.SetStartAction(StartAction.Program);
+			if (!isIISExpressInstalled) {
+				UseIISExpress.IsChecked = false;
+				data.WebServer = WebServer.None;
+				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
+				data.ProjectUrl = string.Empty;
 			}
+			else
+				StatusLabel.Text = string.Empty;
 			
+			IISExpressGroup.IsEnabled = CreateVirtualDirectoryButton.IsEnabled = isIISExpressInstalled;
 			LocalIISGroup.IsEnabled = false;
 			CurrentProjectDebugData = data;
 		}
@@ -97,11 +121,16 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			WebProjectDebugData data = new WebProjectDebugData();
 			data.WebServer = WebServer.IIS;
+			data.Port = string.Empty;
+			bool isIISInstalled = WebProjectService.IISVersion == IISVersion.IIS5 ||
+				WebProjectService.IISVersion == IISVersion.IIS6 ||
+				WebProjectService.IISVersion == IISVersion.IIS7;
 			
-			if (!WebProjectService.IsIISInstalled) {
+			if (!isIISInstalled) {
 				StatusLabel.Text = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.IISNotFound");
 				ProjectUrl.Text = string.Empty;
 				data.WebServer = WebServer.None;
+				UseLocalIIS.IsChecked = false;
 			}
 			else {
 				StatusLabel.Text = string.Empty;
@@ -109,15 +138,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 			
 			data.ProjectUrl = ProjectUrl.Text;
-			CreateVirtualDirectoryButton.IsEnabled = WebProjectService.IsIISInstalled;
-			ProjectUrl.IsEnabled = WebProjectService.IsIISInstalled;
-			
-			if (ProjectService.CurrentProject is CompilableProject) {
-				((CompilableProject)ProjectService.CurrentProject).StartAction = StartAction.Project;
-				parentPanel.SetStartAction(StartAction.Project);
-			}
-			
-			LocalIISGroup.IsEnabled = true;
+			LocalIISGroup.IsEnabled = CreateVirtualDirectoryButton.IsEnabled = isIISInstalled;
+			IISExpressGroup.IsEnabled = false;
 			CurrentProjectDebugData = data;
 		}
 		
@@ -127,6 +149,38 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			data.WebServer = WebServer.IIS;
 			data.ProjectUrl = ProjectUrl.Text;
 			CurrentProjectDebugData = data;
+		}
+		
+		void ClearWebServerButton_Click(object sender, RoutedEventArgs e)
+		{
+			UseIISExpress.IsChecked = false;
+			UseLocalIIS.IsChecked = false;
+			CreateVirtualDirectoryButton.IsEnabled = false;
+			ProjectUrl.Text = string.Empty;
+			LocalIISGroup.IsEnabled = false;
+			IISExpressGroup.IsEnabled = false;
+			
+			WebProjectDebugData data = new WebProjectDebugData();
+			data.WebServer = WebServer.None;
+			data.ProjectUrl = string.Empty;
+			
+			CurrentProjectDebugData = data;
+		}
+		
+		bool AreAllValidNumericChars(string str)
+		{
+			foreach(char c in str)
+			{
+				if(!Char.IsNumber(c)) return false;
+			}
+
+			return true;
+		}
+		
+		void PortTextBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+		{
+			e.Handled = !AreAllValidNumericChars(e.Text);
+			base.OnPreviewTextInput(e);
 		}
 	}
 }

@@ -3756,13 +3756,13 @@ You can also choose to store the setting in the .user-file instead of the projec
     <value>Web Server</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.CreateVirtualDir" xml:space="preserve">
-    <value>Create virtual directory</value>
+    <value>Create application/virtual directory</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.IISNotFound" xml:space="preserve">
-    <value>IIS was not found</value>
+    <value>Local IIS or IIS Express was not found.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.VirtualDirCreated" xml:space="preserve">
-    <value>Virtual directory was created</value>
+    <value>Application/virtual directory was created.</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.ProjectUrl" xml:space="preserve">
     <value>Project Url:</value>
@@ -3771,7 +3771,7 @@ You can also choose to store the setting in the .user-file instead of the projec
     <value>Use local IIS Web server</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.UseIISExpress" xml:space="preserve">
-    <value>Use local IIS Express Web server</value>
+    <value>Use IIS Express Web server</value>
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction" xml:space="preserve">
     <value>There's no Project Url specified or external program. Check the web server at Project Properties -&gt; Debug tab.</value>
@@ -3784,6 +3784,12 @@ You can also choose to store the setting in the .user-file instead of the projec
   </data>
   <data name="ICSharpCode.WepProjectOptionsPanel.UnableToAttach" xml:space="preserve">
     <value>Debugger was unable to attach to process.</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.DisableWebServerButton" xml:space="preserve">
+    <value>Disable web server options</value>
+  </data>
+  <data name="ICSharpCode.WepProjectOptionsPanel.Port" xml:space="preserve">
+    <value>Server port:</value>
   </data>
   <data name="ICSharpCode.NoStartupProject" xml:space="preserve">
     <value>There is no startup project to debug.</value>

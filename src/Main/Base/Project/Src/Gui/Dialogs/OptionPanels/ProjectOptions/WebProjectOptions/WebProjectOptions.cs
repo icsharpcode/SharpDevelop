@@ -64,5 +64,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		[DefaultValue(WebServer.None)]
 		public WebServer WebServer { get; set; }
+		
+		[DefaultValue("8080")]
+		public string Port { get; set; }
 	}
 }

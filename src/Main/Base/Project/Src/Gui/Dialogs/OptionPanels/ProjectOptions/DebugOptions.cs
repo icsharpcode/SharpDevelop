@@ -61,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				if (isWebProject) {
 					ElementHost host = new ElementHost();
 					host.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
-					host.Height = 150;
+					host.Height = 175;
 					host.Width = 550;
 					host.Top = 240;
 					host.Left = 8;					
@@ -94,6 +94,14 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 			
 			UpdateEnabledStates(null, EventArgs.Empty);
+		}
+		
+		public void SetExternalProgram(string externalProgram)
+		{
+			if (externalProgram == null)
+				return;
+			
+			Get<TextBox>("startExternalProgram").Text = externalProgram;
 		}
 	}
 }

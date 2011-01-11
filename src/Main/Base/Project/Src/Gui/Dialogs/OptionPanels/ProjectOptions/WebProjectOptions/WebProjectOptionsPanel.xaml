@@ -4,30 +4,40 @@
 >
 	<GroupBox Margin="0, 0, 85, 0"
 	          Header="{core:Localize ICSharpCode.WepProjectOptionsPanel.Server}">
-		<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
+		<widgets:StackPanelWithSpacing SpaceBetweenItems="3">
 			<!--IIS Express-->
-			<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
+			<widgets:StackPanelWithSpacing SpaceBetweenItems="3">
 				<RadioButton
 					IsChecked="False"
 					GroupName="WebProject"
 					x:Name="UseIISExpress"
 					Click="UseIISExpress_Click"
 					Content="{core:Localize ICSharpCode.WepProjectOptionsPanel.UseIISExpress}" />
+				<Grid Margin="10, 3"
+				      IsEnabled="False"
+				      x:Name="IISExpressGroup"
+				      VerticalAlignment="Top">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="Auto"/>
+					</Grid.ColumnDefinitions>
+					<TextBlock Text="{core:Localize ICSharpCode.WepProjectOptionsPanel.Port}"/>
+					<TextBox Grid.Column="1" x:Name="PortTextBox" PreviewTextInput="PortTextBox_PreviewTextInput" Text="8080"/>
+				</Grid>
 			</widgets:StackPanelWithSpacing>
 			<!--IIS Local Server-->
-			<widgets:StackPanelWithSpacing SpaceBetweenItems="5">
+			<widgets:StackPanelWithSpacing SpaceBetweenItems="3">
 				<RadioButton
 					IsChecked="False"
 					GroupName="WebProject"
 					x:Name="UseLocalIIS"
 					Click="UseLocalIIS_Click"
 					Content="{core:Localize ICSharpCode.WepProjectOptionsPanel.UseLocalIIS}" />
-				<Grid Margin="10, 10"
+				<Grid Margin="10, 3"
 				      IsEnabled="False"
 				      x:Name="LocalIISGroup"
 				      VerticalAlignment="Top">
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto"/>
 						<ColumnDefinition Width="Auto"/>
 						<ColumnDefinition Width="Auto"/>
 					</Grid.ColumnDefinitions>
@@ -42,22 +52,28 @@
 						x:Name="ProjectUrl"
 						TextChanged="ProjectUrl_TextChanged"
 						MinWidth="250" />
-					<Button
-						Grid.Row="1"
-						Grid.Column="2"
-						Style="{x:Static core:GlobalStyles.ButtonStyle}"
-						Name="CreateVirtualDirectoryButton"
-						Content="{core:Localize ICSharpCode.WepProjectOptionsPanel.CreateVirtualDir}"
-						Click="CreateVirtualDirectory_Click" />
 				</Grid>
-				<TextBlock
-					Foreground="Red"
-					TextDecorations="Underline"
-					FontSize="12"
-					FontWeight="Bold"
-					TextWrapping="Wrap"
-					Name="StatusLabel" />
 			</widgets:StackPanelWithSpacing>
+			<TextBlock
+				Foreground="Red"
+				TextDecorations="Underline"
+				FontSize="12"
+				FontWeight="Bold"
+				TextWrapping="Wrap"
+				Name="StatusLabel" />
+			<widgets:UniformGridWithSpacing Columns="2" SpaceBetweenColumns="10">
+				<Button
+					IsEnabled="False"
+					Style="{x:Static core:GlobalStyles.ButtonStyle}"
+					Name="CreateVirtualDirectoryButton"
+					Content="{core:Localize ICSharpCode.WepProjectOptionsPanel.CreateVirtualDir}"
+					Click="CreateVirtualDirectory_Click" />
+				<Button
+					Style="{x:Static core:GlobalStyles.ButtonStyle}"
+					Name="ClearWebServerButton"
+					Content="{core:Localize ICSharpCode.WepProjectOptionsPanel.DisableWebServerButton}"
+					Click="ClearWebServerButton_Click" />
+			</widgets:UniformGridWithSpacing>
 		</widgets:StackPanelWithSpacing>
 	</GroupBox>
 </UserControl>

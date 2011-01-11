@@ -139,7 +139,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (!ServiceInitialized) {
 				InitializeService();
 			}
-			
+
 			if (FileUtility.IsUrl(processStartInfo.FileName)) {
 				var project = ProjectService.OpenSolution.Preferences.StartupProject as CompilableProject;
 				
@@ -156,33 +156,30 @@ namespace ICSharpCode.SharpDevelop.Services
 				
 				if (debugData.Data.WebServer != WebServer.None) {
 					
-					// try attach to IIS WP
-					var processes = System.Diagnostics.Process.GetProcesses();
+					System.Diagnostics.Process defaultAppProcess = null;
+					
 					string processName = WebProjectService.WorkerProcessName;
-					if (debugData.Data.WebServer == WebServer.IISExpress)
-						processName = WebProjectService.IIS_EXPRESS_PROCESS_NAME;
 					
-					System.Diagnostics.Process localProcess = null;
-					
-					// try find the worker process
-					int index = processes.FindIndex<System.Diagnostics.Process>(
-						p => p.ProcessName.IndexOf(processName, StringComparison.OrdinalIgnoreCase) == 0);
+					// try find the worker process directly or using the process monitor callback
+					var processes = System.Diagnostics.Process.GetProcesses();
+					int index = processes.FindIndex(p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
 					if (index > -1){
 						Attach(processes[index]);
 					} else {
 						this.monitor = new ProcessMonitor(processName);
 						this.monitor.ProcessCreated += delegate {
+							if (attached)
+								return;
 							processes = System.Diagnostics.Process.GetProcesses();
-							index = processes.FindIndex<System.Diagnostics.Process>(
-								p => p.ProcessName.IndexOf(processName, StringComparison.OrdinalIgnoreCase) == 0);
-							Attach(processes[index]);
+							index = processes.FindIndex(p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
+							WorkbenchSingleton.SafeThreadCall((Action)(() => Attach(processes[index])));
 							
 							if (!attached) {
 								if(debugData.Data.WebServer == WebServer.IIS) {
 									string format = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.NoIISWP");
 									MessageService.ShowMessage(string.Format(format, processName));
 								} else {
-									Attach(localProcess);
+									WorkbenchSingleton.SafeThreadCall((Action)(() => Attach(defaultAppProcess)));
 									if (!attached) {
 										MessageService.ShowMessage(ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.UnableToAttach"));
 									}
@@ -192,15 +189,23 @@ namespace ICSharpCode.SharpDevelop.Services
 						this.monitor.Start();
 					}
 					
+					if (debugData.Data.WebServer == WebServer.IISExpress) {
+						// start IIS express and attach to it
+						if (WebProjectService.IISVersion == IISVersion.IISExpress)
+							System.Diagnostics.Process.Start(WebProjectService.IIS_EXPRESS_PROCESS_LOCATION);
+						else
+							MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+					}
+					
 					// start default application(e.g. browser)
 					if (project.StartAction == StartAction.StartURL)
-						localProcess = System.Diagnostics.Process.Start(processStartInfo.FileName);
+						defaultAppProcess = System.Diagnostics.Process.Start(processStartInfo.FileName);
 					else {
 						if (!string.IsNullOrEmpty(debugData.Data.ProjectUrl) && debugData.Data.WebServer == WebServer.IIS)
-							localProcess = System.Diagnostics.Process.Start(debugData.Data.ProjectUrl);
+							defaultAppProcess = System.Diagnostics.Process.Start(debugData.Data.ProjectUrl);
 						else {
 							if (debugData.Data.WebServer == WebServer.IISExpress)
-								localProcess = System.Diagnostics.Process.Start(debugData.Data.ProjectUrl);
+								defaultAppProcess = System.Diagnostics.Process.Start(debugData.Data.ProjectUrl);
 						}
 					}
 				}
