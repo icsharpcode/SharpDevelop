@@ -142,22 +142,12 @@ namespace ICSharpCode.SharpDevelop.Services
 
 			if (FileUtility.IsUrl(processStartInfo.FileName)) {
 				var project = ProjectService.OpenSolution.Preferences.StartupProject as CompilableProject;
-				
-				if (project == null) {
-					MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoStartupProject}");
+				var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);				
+				if (!CheckWebProjectStartInfo(project, options))
 					return;
-				}
 				
-				var debugData = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
-				if (debugData == null || debugData.Data == null) {
-					MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
-					return;
-				}
-				
-				if (debugData.Data.WebServer != WebServer.None) {
-					
-					System.Diagnostics.Process defaultAppProcess = null;
-					
+				System.Diagnostics.Process defaultAppProcess = null;
+				if (options.Data.WebServer != WebServer.None) {					
 					string processName = WebProjectService.WorkerProcessName;
 					
 					// try find the worker process directly or using the process monitor callback
@@ -168,45 +158,31 @@ namespace ICSharpCode.SharpDevelop.Services
 					} else {
 						this.monitor = new ProcessMonitor(processName);
 						this.monitor.ProcessCreated += delegate {
-							if (attached)
-								return;
-							processes = System.Diagnostics.Process.GetProcesses();
-							index = processes.FindIndex(p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
-							WorkbenchSingleton.SafeThreadCall((Action)(() => Attach(processes[index])));
-							
-							if (!attached) {
-								if(debugData.Data.WebServer == WebServer.IIS) {
-									string format = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.NoIISWP");
-									MessageService.ShowMessage(string.Format(format, processName));
-								} else {
-									WorkbenchSingleton.SafeThreadCall((Action)(() => Attach(defaultAppProcess)));
-									if (!attached) {
-										MessageService.ShowMessage(ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.UnableToAttach"));
-									}
-								}
-							}
+							WorkbenchSingleton.SafeThreadCall((Action)(() => OnProcessCreated(defaultAppProcess, options)));
 						};
 						this.monitor.Start();
 					}
 					
-					if (debugData.Data.WebServer == WebServer.IISExpress) {
+					if (options.Data.WebServer == WebServer.IISExpress) {
 						// start IIS express and attach to it
 						if (WebProjectService.IISVersion == IISVersion.IISExpress)
 							System.Diagnostics.Process.Start(WebProjectService.IIS_EXPRESS_PROCESS_LOCATION);
-						else
-							MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
-					}
-					
-					// start default application(e.g. browser)
-					if (project.StartAction == StartAction.StartURL)
-						defaultAppProcess = System.Diagnostics.Process.Start(processStartInfo.FileName);
-					else {
-						if (!string.IsNullOrEmpty(debugData.Data.ProjectUrl) && debugData.Data.WebServer == WebServer.IIS)
-							defaultAppProcess = System.Diagnostics.Process.Start(debugData.Data.ProjectUrl);
 						else {
-							if (debugData.Data.WebServer == WebServer.IISExpress)
-								defaultAppProcess = System.Diagnostics.Process.Start(debugData.Data.ProjectUrl);
+							MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+							return;
 						}
+					}
+				}
+				
+				// start default application(e.g. browser)
+				if (project.StartAction == StartAction.StartURL)
+					defaultAppProcess = System.Diagnostics.Process.Start(project.StartUrl);
+				else {
+					if (!string.IsNullOrEmpty(options.Data.ProjectUrl) && options.Data.WebServer == WebServer.IIS)
+						defaultAppProcess = System.Diagnostics.Process.Start(options.Data.ProjectUrl);
+					else {
+						if (options.Data.WebServer == WebServer.IISExpress)
+							defaultAppProcess = System.Diagnostics.Process.Start(options.Data.ProjectUrl);
 					}
 				}
 			}
@@ -314,7 +290,42 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void StartWithoutDebugging(ProcessStartInfo processStartInfo)
 		{
-			System.Diagnostics.Process.Start(processStartInfo);
+			if (FileUtility.IsUrl(processStartInfo.FileName)) {
+				var project = ProjectService.OpenSolution.Preferences.StartupProject as CompilableProject;
+				var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);				
+				if (!CheckWebProjectStartInfo(project, options))
+					return;
+				
+				if (options.Data.WebServer != WebServer.None) {
+					string processName = WebProjectService.WorkerProcessName;
+					
+					if (options.Data.WebServer == WebServer.IISExpress) {
+						// start IIS express
+						if (WebProjectService.IISVersion == IISVersion.IISExpress)
+							System.Diagnostics.Process.Start(WebProjectService.IIS_EXPRESS_PROCESS_LOCATION);
+						else {
+							MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+							return;
+						}
+					}
+				}
+				
+				// start default application(e.g. browser)
+				if (project.StartAction == StartAction.StartURL)
+					System.Diagnostics.Process.Start(project.StartUrl);
+				else {
+					if (!string.IsNullOrEmpty(options.Data.ProjectUrl) && options.Data.WebServer == WebServer.IIS)
+						System.Diagnostics.Process.Start(options.Data.ProjectUrl);
+					else {
+						if (!string.IsNullOrEmpty(options.Data.ProjectUrl) && options.Data.WebServer == WebServer.IISExpress)
+							System.Diagnostics.Process.Start(options.Data.ProjectUrl);
+						else
+							System.Diagnostics.Process.Start(processStartInfo.FileName);
+					}
+				}
+			}
+			else
+				System.Diagnostics.Process.Start(processStartInfo);
 		}
 		
 		public void Stop()
@@ -343,6 +354,43 @@ namespace ICSharpCode.SharpDevelop.Services
 				monitor.Stop();
 				monitor.Dispose();
 				monitor = null;
+			}
+		}
+		
+		bool CheckWebProjectStartInfo(CompilableProject project, WebProjectOptions options)
+		{
+			if (project == null) {
+				MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoStartupProject}");
+				return false;
+			}
+			
+			if (options == null || options.Data == null) {
+				MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+				return false;
+			}
+			
+			return true;
+		}
+		
+		void OnProcessCreated(System.Diagnostics.Process defaultAppProcess, WebProjectOptions debugData)
+		{
+			if (attached)
+				return;
+			string processName = WebProjectService.WorkerProcessName;
+			var processes = System.Diagnostics.Process.GetProcesses();
+			int index = processes.FindIndex(p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
+			Attach(processes[index]);
+			
+			if (!attached) {
+				if(debugData.Data.WebServer == WebServer.IIS) {
+					string format = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.NoIISWP");
+					MessageService.ShowMessage(string.Format(format, processName));
+				} else {
+					Attach(defaultAppProcess);
+					if (!attached) {
+						MessageService.ShowMessage(ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.UnableToAttach"));
+					}
+				}
 			}
 		}
 		
