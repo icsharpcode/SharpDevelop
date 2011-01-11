@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				case WebServer.IISExpress:
 					if (WebProjectService.IISVersion == IISVersion.IISExpress) {
 						UseIISExpress.IsChecked = true;
-						PortTextBox.Text = CurrentProjectDebugData.Port;
+						PortTextBox.Text = CurrentProjectDebugData.Port ?? "8080";
 						
 						SelectIISExpress();
 					}
