@@ -161,7 +161,7 @@ namespace ${StandardNamespace}
 				<tr>
 					<td colspan="2">
 						<input id="_Button_No" type="submit" value="Oh No!" runat="server" />
-						<input id="ButtonOk" type="submit" value="Ok" runat="server" />
+						<input id="_Button_Ok" type="submit" value="Ok" runat="server" />
 					</td>
 				</tr>
 
