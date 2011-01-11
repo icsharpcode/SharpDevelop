@@ -639,21 +639,26 @@ namespace Debugger
 		{
 			if (BreakAtBeginning) {
 				if (e.Item.SymReader == null) return; // No symbols
-				// create a BP at entry point
-				uint entryPoint = e.Item.SymReader.GetUserEntryPoint();
-				if (entryPoint == 0) return; // no EP
-				var mainFunction = e.Item.CorModule.GetFunctionFromToken(entryPoint);
-				var corBreakpoint = mainFunction.CreateBreakpoint();
-				corBreakpoint.Activate(1);
 				
-				// create a SD BP
-				var breakpoint = new Breakpoint(this.debugger, corBreakpoint);
-				this.debugger.Breakpoints.Add(breakpoint);
-				breakpoint.Hit += delegate {
-					if (breakpoint != null)
-						breakpoint.Remove();
-					breakpoint = null;
-				};
+				try {
+					// create a BP at entry point
+					uint entryPoint = e.Item.SymReader.GetUserEntryPoint();
+					if (entryPoint == 0) return; // no EP
+					var mainFunction = e.Item.CorModule.GetFunctionFromToken(entryPoint);
+					var corBreakpoint = mainFunction.CreateBreakpoint();
+					corBreakpoint.Activate(1);
+					
+					// create a SD BP
+					var breakpoint = new Breakpoint(this.debugger, corBreakpoint);
+					this.debugger.Breakpoints.Add(breakpoint);
+					breakpoint.Hit += delegate {
+						if (breakpoint != null)
+							breakpoint.Remove();
+						breakpoint = null;
+					};
+				} catch { 
+					// the app does not have an entry point - COM exception
+				}
 				BreakAtBeginning = false;
 			}
 		}
