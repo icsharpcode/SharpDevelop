@@ -65,7 +65,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 				bool foundOverlappingFolding;
 				do {
 					foundOverlappingFolding = false;
-					foreach (FoldingSection fs in foldingManager.GetFoldingsContaining(foldedUntil)) {
+					foreach (FoldingSection fs in FoldingManager.GetFoldingsContaining(foldedUntil)) {
 						if (fs.IsFolded && fs.EndOffset > foldedUntil) {
 							foldedUntil = fs.EndOffset;
 							foundOverlappingFolding = true;
