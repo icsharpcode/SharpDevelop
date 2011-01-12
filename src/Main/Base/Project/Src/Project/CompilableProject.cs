@@ -217,6 +217,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (IsSilverlightProject) {
 					return TestPageFileName.Length > 0;
 				}
+				if (IsWebProject)
+					return true;
+				
 				switch (this.StartAction) {
 					case StartAction.Project:
 						return OutputType == OutputType.Exe || OutputType == OutputType.WinExe;
@@ -279,8 +282,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				string pagePath = "file:///" + Path.Combine(OutputFullPath, TestPageFileName);
 				return new  ProcessStartInfo(pagePath);
 			}
+			
 			switch (this.StartAction) {
 				case StartAction.Project:
+					if (IsWebProject)
+						return new ProcessStartInfo("http://localhost");
+					
 					return CreateStartInfo(this.OutputAssemblyFullPath);
 				case StartAction.Program:
 					return CreateStartInfo(this.StartProgram);
@@ -353,6 +360,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			get {
 				string guids = GetEvaluatedProperty("ProjectTypeGuids") ?? "";
 				return guids.Contains("A1591282-1198-4647-A2B1-27E5FF5F6F3B");
+			}
+		}
+		
+		[Browsable(false)]
+		public override bool IsWebProject {
+			get {
+				string guids = GetEvaluatedProperty("ProjectTypeGuids") ?? "";
+				return guids.Contains("349c5851-65df-11da-9384-00065b846f21");
 			}
 		}
 		

@@ -2,7 +2,11 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Forms.Integration;
+using System.Windows.Media;
+
 using ICSharpCode.SharpDevelop.Project;
 using RadioBinding = System.Collections.Generic.KeyValuePair<ICSharpCode.SharpDevelop.Project.StartAction, System.Windows.Forms.RadioButton>;
 
@@ -50,12 +54,54 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			UpdateEnabledStates(this, EventArgs.Empty);
 			
 			helper.AddConfigurationSelector(this);
+			
+			// add server for web projects
+			if (ProjectService.CurrentProject is CompilableProject) {
+				bool isWebProject = ((CompilableProject)ProjectService.CurrentProject).IsWebProject;
+				if (isWebProject) {
+					ElementHost host = new ElementHost();
+					host.Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
+					host.Height = 175;
+					host.Width = 550;
+					host.Top = 240;
+					host.Left = 8;					
+					host.Child = new WebProjectOptionsPanel(this);
+					Controls.Add(host);
+				}
+			}		
 		}
 		
 		void UpdateEnabledStates(object sender, EventArgs e)
 		{
 			Get<TextBox>("startExternalProgram").Enabled = Get<Button>("startExternalProgramBrowse").Enabled = Get<RadioButton>("startExternalProgram").Checked;
 			Get<TextBox>("startBrowserInURL").Enabled    = Get<RadioButton>("startBrowserInURL").Checked;
+		}
+		
+		public void SetStartAction(StartAction action) 
+		{
+			switch(action) {
+				case StartAction.Project:
+					Get<RadioButton>("startProject").Checked = true;
+					break;
+				case StartAction.Program:
+					Get<RadioButton>("startExternalProgram").Checked = true;
+					break;
+				case StartAction.StartURL:
+					Get<RadioButton>("startBrowserInURL").Checked = true;
+					break;
+				default:
+					throw new NotSupportedException("Unknown action!");
+			}
+			
+			UpdateEnabledStates(null, EventArgs.Empty);
+		}
+		
+		public void SetExternalProgram(string externalProgram)
+		{
+			if (externalProgram == null)
+				return;
+			
+			Get<TextBox>("startExternalProgram").Text = externalProgram;
 		}
 	}
 }

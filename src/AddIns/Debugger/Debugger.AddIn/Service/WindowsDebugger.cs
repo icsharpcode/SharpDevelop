@@ -14,7 +14,6 @@ using System.Windows.Forms;
 using Debugger;
 using Debugger.AddIn.Tooltips;
 using Debugger.AddIn.TreeModel;
-using Debugger.Interop;
 using Debugger.Interop.CorPublish;
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
@@ -24,6 +23,7 @@ using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
 using Process = Debugger.Process;
 
@@ -45,6 +45,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		ICorPublish corPublish;
 		
 		Process debuggedProcess;
+		ProcessMonitor monitor;
 		
 		//DynamicTreeDebuggerRow currentTooltipRow;
 		//Expression             currentTooltipExpression;
@@ -138,47 +139,97 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (!ServiceInitialized) {
 				InitializeService();
 			}
-			string version = debugger.GetProgramVersion(processStartInfo.FileName);
-			if (version.StartsWith("v1.0")) {
-				MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.Net10NotSupported}");
-			} else if (version.StartsWith("v1.1")) {
-				MessageService.ShowMessage(StringParser.Parse("${res:XML.MainMenu.DebugMenu.Error.Net10NotSupported}").Replace("1.0", "1.1"));
-//			} else if (string.IsNullOrEmpty(version)) {
-//				// Not a managed assembly
-//				MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.BadAssembly}");
-			} else if (debugger.IsKernelDebuggerEnabled) {
-				MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.KernelDebuggerEnabled}");
-			} else {
-				attached = false;
-				if (DebugStarting != null)
-					DebugStarting(this, EventArgs.Empty);
+
+			if (FileUtility.IsUrl(processStartInfo.FileName)) {
+				var project = ProjectService.OpenSolution.Preferences.StartupProject as CompilableProject;
+				var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);				
+				if (!CheckWebProjectStartInfo(project, options))
+					return;
 				
-				try {
-					Process process = debugger.Start(processStartInfo.FileName,
-					                                 processStartInfo.WorkingDirectory,
-					                                 processStartInfo.Arguments);
-					SelectProcess(process);
-				} catch (System.Exception e) {
-					// COMException: The request is not supported. (Exception from HRESULT: 0x80070032)
-					// COMException: The application has failed to start because its side-by-side configuration is incorrect. Please see the application event log for more detail. (Exception from HRESULT: 0x800736B1)
-					// COMException: The requested operation requires elevation. (Exception from HRESULT: 0x800702E4)
-					// COMException: The directory name is invalid. (Exception from HRESULT: 0x8007010B)
-					// BadImageFormatException:  is not a valid Win32 application. (Exception from HRESULT: 0x800700C1)
-					// UnauthorizedAccessException: Отказано в доступе. (Исключение из HRESULT: 0x80070005 (E_ACCESSDENIED))
-					if (e is COMException || e is BadImageFormatException || e is UnauthorizedAccessException) {
-						string msg = StringParser.Parse("${res:XML.MainMenu.DebugMenu.Error.CannotStartProcess}");
-						msg += " " + e.Message;
-						// TODO: Remove
-						if (e is COMException && ((uint)((COMException)e).ErrorCode == 0x80070032)) {
-							msg += Environment.NewLine + Environment.NewLine;
-							msg += "64-bit debugging is not supported.  Please set Project -> Project Options... -> Compiling -> Target CPU to 32bit.";
-						}
-						MessageService.ShowMessage(msg);
-						
-						if (DebugStopped != null)
-							DebugStopped(this, EventArgs.Empty);
+				System.Diagnostics.Process defaultAppProcess = null;
+				if (options.Data.WebServer != WebServer.None) {					
+					string processName = WebProjectService.WorkerProcessName;
+					
+					// try find the worker process directly or using the process monitor callback
+					var processes = System.Diagnostics.Process.GetProcesses();
+					int index = processes.FindIndex(p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
+					if (index > -1){
+						Attach(processes[index]);
 					} else {
-						throw;
+						this.monitor = new ProcessMonitor(processName);
+						this.monitor.ProcessCreated += delegate {
+							WorkbenchSingleton.SafeThreadCall((Action)(() => OnProcessCreated(defaultAppProcess, options)));
+						};
+						this.monitor.Start();
+					}
+					
+					if (options.Data.WebServer == WebServer.IISExpress) {
+						// start IIS express and attach to it
+						if (WebProjectService.IISVersion == IISVersion.IISExpress)
+							System.Diagnostics.Process.Start(WebProjectService.IIISExpressProcessLocation);
+						else {
+							MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+							return;
+						}
+					}
+				}
+				
+				// start default application(e.g. browser)
+				if (project.StartAction == StartAction.StartURL)
+					defaultAppProcess = System.Diagnostics.Process.Start(project.StartUrl);
+				else {
+					if (!string.IsNullOrEmpty(options.Data.ProjectUrl) && options.Data.WebServer == WebServer.IIS)
+						defaultAppProcess = System.Diagnostics.Process.Start(options.Data.ProjectUrl);
+					else {
+						if (options.Data.WebServer == WebServer.IISExpress)
+							defaultAppProcess = System.Diagnostics.Process.Start(options.Data.ProjectUrl);
+					}
+				}
+			}
+			else {
+				string version = debugger.GetProgramVersion(processStartInfo.FileName);
+				
+				if (version.StartsWith("v1.0")) {
+					MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.Net10NotSupported}");
+				} else if (version.StartsWith("v1.1")) {
+					MessageService.ShowMessage(StringParser.Parse("${res:XML.MainMenu.DebugMenu.Error.Net10NotSupported}").Replace("1.0", "1.1"));
+//					} else if (string.IsNullOrEmpty(version)) {
+//					// Not a managed assembly
+//					MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.BadAssembly}");
+				} else if (debugger.IsKernelDebuggerEnabled) {
+					MessageService.ShowMessage("${res:XML.MainMenu.DebugMenu.Error.KernelDebuggerEnabled}");
+				} else {
+					attached = false;
+					if (DebugStarting != null)
+						DebugStarting(this, EventArgs.Empty);
+					
+					try {
+						Process process = debugger.Start(processStartInfo.FileName,
+						                                 processStartInfo.WorkingDirectory,
+						                                 processStartInfo.Arguments);
+						SelectProcess(process);
+					} catch (System.Exception e) {
+						// COMException: The request is not supported. (Exception from HRESULT: 0x80070032)
+						// COMException: The application has failed to start because its side-by-side configuration is incorrect. Please see the application event log for more detail. (Exception from HRESULT: 0x800736B1)
+						// COMException: The requested operation requires elevation. (Exception from HRESULT: 0x800702E4)
+						// COMException: The directory name is invalid. (Exception from HRESULT: 0x8007010B)
+						// BadImageFormatException:  is not a valid Win32 application. (Exception from HRESULT: 0x800700C1)
+						// UnauthorizedAccessException: Отказано в доступе. (Исключение из HRESULT: 0x80070005 (E_ACCESSDENIED))
+						if (e is COMException || e is BadImageFormatException || e is UnauthorizedAccessException) {
+							string msg = StringParser.Parse("${res:XML.MainMenu.DebugMenu.Error.CannotStartProcess}");
+							msg += " " + e.Message;
+							// TODO: Remove
+							if (e is COMException && ((uint)((COMException)e).ErrorCode == 0x80070032)) {
+								msg += Environment.NewLine + Environment.NewLine;
+								msg += "64-bit debugging is not supported.  Please set Project -> Project Options... -> Compiling -> Target CPU to 32bit.";
+							}
+							MessageService.ShowMessage(msg);
+							
+							if (DebugStopped != null)
+								DebugStopped(this, EventArgs.Empty);
+						} else {
+							throw;
+						}
 					}
 				}
 			}
@@ -195,6 +246,9 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void Attach(System.Diagnostics.Process existingProcess)
 		{
+			if (existingProcess == null)
+				return;
+			
 			if (IsDebugging) {
 				MessageService.ShowMessage(errorDebugging);
 				return;
@@ -238,7 +292,42 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void StartWithoutDebugging(ProcessStartInfo processStartInfo)
 		{
-			System.Diagnostics.Process.Start(processStartInfo);
+			if (FileUtility.IsUrl(processStartInfo.FileName)) {
+				var project = ProjectService.OpenSolution.Preferences.StartupProject as CompilableProject;
+				var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);				
+				if (!CheckWebProjectStartInfo(project, options))
+					return;
+				
+				if (options.Data.WebServer != WebServer.None) {
+					string processName = WebProjectService.WorkerProcessName;
+					
+					if (options.Data.WebServer == WebServer.IISExpress) {
+						// start IIS express
+						if (WebProjectService.IISVersion == IISVersion.IISExpress)
+							System.Diagnostics.Process.Start(WebProjectService.IIISExpressProcessLocation);
+						else {
+							MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+							return;
+						}
+					}
+				}
+				
+				// start default application(e.g. browser)
+				if (project.StartAction == StartAction.StartURL)
+					System.Diagnostics.Process.Start(project.StartUrl);
+				else {
+					if (!string.IsNullOrEmpty(options.Data.ProjectUrl) && options.Data.WebServer == WebServer.IIS)
+						System.Diagnostics.Process.Start(options.Data.ProjectUrl);
+					else {
+						if (!string.IsNullOrEmpty(options.Data.ProjectUrl) && options.Data.WebServer == WebServer.IISExpress)
+							System.Diagnostics.Process.Start(options.Data.ProjectUrl);
+						else
+							System.Diagnostics.Process.Start(processStartInfo.FileName);
+					}
+				}
+			}
+			else
+				System.Diagnostics.Process.Start(processStartInfo);
 		}
 		
 		public void Stop()
@@ -261,6 +350,49 @@ namespace ICSharpCode.SharpDevelop.Services
 				}
 			} else {
 				debuggedProcess.Terminate();
+			}
+			
+			if (monitor != null) {
+				monitor.Stop();
+				monitor.Dispose();
+				monitor = null;
+			}
+		}
+		
+		bool CheckWebProjectStartInfo(CompilableProject project, WebProjectOptions options)
+		{
+			if (project == null) {
+				MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoStartupProject}");
+				return false;
+			}
+			
+			if (options == null || options.Data == null) {
+				MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+				return false;
+			}
+			
+			return true;
+		}
+		
+		void OnProcessCreated(System.Diagnostics.Process defaultAppProcess, WebProjectOptions debugData)
+		{
+			if (attached)
+				return;
+			string processName = WebProjectService.WorkerProcessName;
+			var processes = System.Diagnostics.Process.GetProcesses();
+			int index = processes.FindIndex(p => p.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase));
+			Attach(processes[index]);
+			
+			if (!attached) {
+				if(debugData.Data.WebServer == WebServer.IIS) {
+					string format = ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.NoIISWP");
+					MessageService.ShowMessage(string.Format(format, processName));
+				} else {
+					Attach(defaultAppProcess);
+					if (!attached) {
+						MessageService.ShowMessage(ResourceService.GetString("ICSharpCode.WepProjectOptionsPanel.UnableToAttach"));
+					}
+				}
 			}
 		}
 		
@@ -399,7 +531,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		bool CanEvaluate
 		{
-			get { 
+			get {
 				return debuggedProcess != null && !debuggedProcess.IsRunning && debuggedProcess.SelectedStackFrame != null;
 			}
 		}
@@ -422,7 +554,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		public ITreeNode GetNode(string variable, string currentImageName = null) 
+		public ITreeNode GetNode(string variable, string currentImageName = null)
 		{
 			try {
 				var expression = GetExpression(variable);
@@ -662,7 +794,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				debuggedProcess.ExceptionThrown += debuggedProcess_ExceptionThrown;
 				debuggedProcess.Resumed         += debuggedProcess_DebuggingResumed;
 				
-				debuggedProcess.BreakAtBeginning = BreakAtBeginning;			
+				debuggedProcess.BreakAtBeginning = BreakAtBeginning;
 			}
 			// reset
 			BreakAtBeginning = false;

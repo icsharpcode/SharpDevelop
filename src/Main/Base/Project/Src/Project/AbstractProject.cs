@@ -11,6 +11,7 @@ using System.IO;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -78,6 +79,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			properties.Set("files", files.ToArray());
+			
+			var webOptions = WebProjectsOptions.Instance.GetWebProjectOptions(Name);
+			if (webOptions != null)
+				properties.Set("WebProjectOptions", webOptions);
+			
 			return properties;
 		}
 		
@@ -91,6 +97,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (string fileName in memento.Get("files", new string[0])) {
 				filesToOpenAfterSolutionLoad.Add(fileName);
 			}
+			
+			WebProjectsOptions.Instance.SetWebProjectOptions(Name, memento.Get("WebProjectOptions", new WebProjectOptions()) as WebProjectOptions);
 		}
 		#endregion
 		
@@ -358,6 +366,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
+		public virtual bool IsWebProject {
+			get {
+				return false;
+			}
+		}
+		
 		public virtual void Start(bool withDebugging)
 		{
 			ProcessStartInfo psi;
@@ -367,7 +382,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				MessageService.ShowError(ex.Message);
 				return;
 			}
-			if (withDebugging && !FileUtility.IsUrl(psi.FileName)) {
+			if (withDebugging) {
 				DebuggerService.CurrentDebugger.Start(psi);
 			} else {
 				DebuggerService.CurrentDebugger.StartWithoutDebugging(psi);
