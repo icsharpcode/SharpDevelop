@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets IIS Express process location.
 		/// </summary>
-		public static string IIISExpressProcessLocation {
+		public static string IISExpressProcessLocation {
 			get {
 				return Environment.GetFolderPath(System.Environment.SpecialFolder.ProgramFiles) +
 					@"\IIS Express\iisexpress.exe";
@@ -177,7 +177,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (regValue > 4)
 					return (IISVersion)regValue;
 				
-				if (File.Exists(IIISExpressProcessLocation))
+				if (File.Exists(IISExpressProcessLocation))
 					return IISVersion.IISExpress;
 				
 				return IISVersion.None;
