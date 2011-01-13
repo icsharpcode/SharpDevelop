@@ -300,7 +300,7 @@
 	</UserControl.Resources>
 	<DockPanel>
 		<localControls:TreeListView
-			MouseDoubleClick="MyList_MouseDoubleClick"
+			PreviewMouseDoubleClick="MyList_PreviewMouseDoubleClick"
 			HorizontalAlignment="Stretch"
 			VerticalAlignment="Stretch"
 			ItemsSource="{Binding Path=WatchItems}"

@@ -97,7 +97,7 @@ namespace Debugger.AddIn.Pads.Controls
 			tb.Visibility = Visibility.Visible;
 		}
 		
-		void MyList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+		void MyList_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
 			if (WatchType != WatchListType.Watch)
 				return;
@@ -120,6 +120,7 @@ namespace Debugger.AddIn.Pads.Controls
 				// change visibility
 				tb.Visibility = Visibility.Collapsed;
 				cell.Visibility = Visibility.Visible;
+				e.Handled = true;
 			}
 		}
 	}
