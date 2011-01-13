@@ -99,10 +99,10 @@ namespace ICSharpCode.AvalonEdit.Folding
 				if (string.IsNullOrEmpty(title))
 					title = "...";
 				var p = new VisualLineElementTextRunProperties(CurrentContext.GlobalTextRunProperties);
-				p.SetForegroundBrush(Brushes.Gray);
+				p.SetForegroundBrush(textBrush);
 				var textFormatter = TextFormatterFactory.Create(CurrentContext.TextView);
 				var text = FormattedTextElement.PrepareText(textFormatter, title, p);
-				return new FoldingLineElement(foldingSection, text, foldedUntil - offset);
+				return new FoldingLineElement(foldingSection, text, foldedUntil - offset) { textBrush = textBrush };
 			} else {
 				return null;
 			}
@@ -112,6 +112,8 @@ namespace ICSharpCode.AvalonEdit.Folding
 		{
 			readonly FoldingSection fs;
 			
+			internal Brush textBrush;
+			
 			public FoldingLineElement(FoldingSection fs, TextLine text, int documentLength) : base(text, documentLength)
 			{
 				this.fs = fs;
@@ -119,7 +121,7 @@ namespace ICSharpCode.AvalonEdit.Folding
 			
 			public override TextRun CreateTextRun(int startVisualColumn, ITextRunConstructionContext context)
 			{
-				return new FoldingLineTextRun(this, this.TextRunProperties);
+				return new FoldingLineTextRun(this, this.TextRunProperties) { textBrush = textBrush };
 			}
 			
 			protected internal override void OnMouseDown(MouseButtonEventArgs e)
@@ -135,6 +137,8 @@ namespace ICSharpCode.AvalonEdit.Folding
 		
 		sealed class FoldingLineTextRun : FormattedTextRun
 		{
+			internal Brush textBrush;
+			
 			public FoldingLineTextRun(FormattedTextElement element, TextRunProperties properties)
 				: base(element, properties)
 			{
@@ -144,9 +148,18 @@ namespace ICSharpCode.AvalonEdit.Folding
 			{
 				var metrics = Format(double.PositiveInfinity);
 				Rect r = new Rect(origin.X, origin.Y - metrics.Baseline, metrics.Width, metrics.Height);
-				drawingContext.DrawRectangle(null, new Pen(Brushes.Gray, 1), r);
+				drawingContext.DrawRectangle(null, new Pen(textBrush, 1), r);
 				base.Draw(drawingContext, origin, rightToLeft, sideways);
 			}
+		}
+		
+		public static readonly Brush DefaultTextBrush = Brushes.Gray;
+		
+		static Brush textBrush = DefaultTextBrush;
+		
+		public static Brush TextBrush {
+			get { return textBrush; }
+			set { textBrush = value; }
 		}
 	}
 }
