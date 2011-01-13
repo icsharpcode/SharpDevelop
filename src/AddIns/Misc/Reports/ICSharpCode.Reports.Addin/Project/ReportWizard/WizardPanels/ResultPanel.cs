@@ -11,9 +11,9 @@ using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.Data.Core.Interfaces;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.SharpDevelop;
-
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
 {
@@ -58,24 +58,24 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			this.connectionObject = ConnectionObject.CreateInstance(this.model.ReportSettings.ConnectionString,
 			                                                      System.Data.Common.DbProviderFactories.GetFactory("System.Data.OleDb"));
 			
-			this.txtSqlString.Text = String.Empty;
+//			this.txtSqlString.Text = String.Empty;
 			SqlQueryChecker.Check(model.ReportSettings.CommandType,
 			                      model.ReportSettings.CommandText);
 			
 			DataSet dataSet = ResultPanel.CreateDataSet ();
 			
-			
+			this.txtSqlString.Text = model.ReportSettings.CommandText;
 			switch (model.ReportSettings.CommandType) {
 				case CommandType.Text:
-						this.txtSqlString.Text = model.ReportSettings.CommandText;
-						ICSharpCode.Data.Core.Interfaces.ITable t = reportStructure.IDatabaseObjectBase as ICSharpCode.Data.Core.Interfaces.ITable;
-						var v = reportStructure.IDatabaseObjectBase;
-						dataSet = BuildFromSqlString();
+						ITable t = reportStructure.IDatabaseObjectBase as ITable;
+						connectionObject.QueryString = model.ReportSettings.CommandText;
+						var d = new SqlDataAccessStrategy(model.ReportSettings,connectionObject);
+						dataSet = d.ReadData();
+						dataSet.Tables[0].TableName = t.Name;
 					break;
 				case CommandType.StoredProcedure:
-						ICSharpCode.Data.Core.Interfaces.IProcedure tt = reportStructure.IDatabaseObjectBase as ICSharpCode.Data.Core.Interfaces.IProcedure;
-						var vv = reportStructure.IDatabaseObjectBase;
-					
+						
+//						var vv = reportStructure.IDatabaseObjectBase;
 					dataSet = DatasetFromStoredProcedure();
 					break;
 				case CommandType.TableDirect:
@@ -111,8 +111,62 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			return dataSet;
 		}
 		
+		/*
+		private DataSet BuildFromSqlString () 
+		{
+			DbDataAdapter adapter = null;
+			try {
+				adapter = this.BuildAdapter();
+				DataSet dataSet = ResultPanel.CreateDataSet();
+				adapter.Fill(dataSet);
+				return dataSet;
+			} finally {
+				if (adapter.SelectCommand.Connection.State == ConnectionState.Open) {
+					adapter.SelectCommand.Connection.Close();
+				} 
+			}
+		}
+		*/
 		
+		DataSet DatasetFromStoredProcedure()
+		{
+			
+			DbDataAdapter adapter = null;
+			try {
+				DataSet dataSet = ResultPanel.CreateDataSet();
+				IProcedure tt = reportStructure.IDatabaseObjectBase as IProcedure;
+				var paramCollection = CheckParameters(tt);
+				
+				if (paramCollection.Count > 0) {
+					
+				}  else {
+					adapter = this.BuildAdapter();
+					
+				}
+				
+				adapter.Fill(dataSet);
+				return dataSet;
+			} finally {
+				if (adapter.SelectCommand.Connection.State == ConnectionState.Open) {
+					adapter.SelectCommand.Connection.Close();
+				}
+			}
+		}
 		
+		ParameterCollection CheckParameters(IProcedure procedure)
+		{
+			ParameterCollection col = new ParameterCollection();
+			
+//			foreach (var element in procedure.Items) {
+//				Console.WriteLine("{0} - {1}",element.Name,element.DataType);
+//				
+//				SqlParameter par = new SqlParameter(element.Name,element.DataType,"",element.ParameterMode);
+//				
+//				p.Add(par);
+//			
+//			}
+			return col;
+		}
 		
 		private static DataSet CreateDataSet() 
 		{
@@ -204,44 +258,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		}
 		
 */
-		private DataSet BuildFromSqlString () 
-		{
-			DbDataAdapter adapter = null;
-			try {
-				adapter = this.BuildAdapter();
-				DataSet dataSet = ResultPanel.CreateDataSet();
-				adapter.Fill(dataSet);
-				return dataSet;
-			} finally {
-				if (adapter.SelectCommand.Connection.State == ConnectionState.Open) {
-					adapter.SelectCommand.Connection.Close();
-				} 
-			}
-		}
-		
-		
-		DataSet DatasetFromStoredProcedure()
-		{
-//			MessageService.ShowError("Stored Procedures are not suppurted at the moment");
-			DbDataAdapter adapter = null;
-			string sqp = model.ReportSettings.CommandText;
-			
-			try {
-				
-				adapter = this.BuildAdapter();
-				
-				DataSet dataSet = ResultPanel.CreateDataSet();
-				
-				adapter.Fill(dataSet);
-				return dataSet;
-			} finally {
-				if (adapter.SelectCommand.Connection.State == ConnectionState.Open) {
-					adapter.SelectCommand.Connection.Close();
-				} 
-			}
-		}
-		
-		
 		#endregion
 		
 		
