@@ -34,6 +34,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		protected override void InitializeComponents()
 		{
 			localVarList = new WatchList();
+			localVarList.WatchType = WatchListType.LocalVar;
 			panel.Children.Add(localVarList);
 		}
 		

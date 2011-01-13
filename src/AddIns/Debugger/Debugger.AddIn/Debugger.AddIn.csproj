@@ -117,6 +117,9 @@
     <Compile Include="Pads\Controls\WatchList.xaml.cs">
       <DependentUpon>WatchList.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Pads\Controls\WatchListAutoCompleteCell.cs">
+      <DependentUpon>WatchListAutoCompleteCell.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Pads\ParallelPad\DrawSurface.xaml.cs">
       <DependentUpon>DrawSurface.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -393,6 +396,7 @@
     <Page Include="Pads\Controls\ConditionCell.xaml" />
     <Page Include="Pads\Controls\SimpleListViewControl.xaml" />
     <Page Include="Pads\Controls\WatchList.xaml" />
+    <Page Include="Pads\Controls\WatchListAutoCompleteCell.xaml" />
     <Page Include="Pads\ParallelPad\DrawSurface.xaml" />
     <Page Include="Pads\ParallelPad\ThreadStack.xaml" />
     <Page Include="Pads\WatchInputBox.xaml" />

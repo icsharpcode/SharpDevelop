@@ -2,10 +2,15 @@
 <UserControl
 	x:Class="Debugger.AddIn.Pads.Controls.WatchList" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:localControls="clr-namespace:Debugger.AddIn.Pads.Controls" xmlns:core="http://icsharpcode.net/sharpdevelop/core"
 	DataContext="{Binding RelativeSource={RelativeSource Self}}"
+	x:Name="ControlList"
 	Background="White">
 	<UserControl.Resources>
 		<localControls:BoolToVisibilityConverter
 			x:Key="boolToVisibility" />
+		
+		<localControls:BoolAndTypeToVisibilityConverter
+			x:Key="boolTypeToVisibility" />
+		
 		<localControls:TreeListViewConverter
 			x:Key="TreeListViewConverter" />
 		<Style
@@ -26,13 +31,11 @@
 		</Style>
 		<Style
 			TargetType="{x:Type TextBox}"
-			x:Key="TextBoxStyle">
+			x:Key="TextBoxValueStyle">
 			<Setter Property="BorderThickness" Value="0"/>
 			<Setter Property="BorderBrush" Value="Transparent"/>
 			<Setter Property="Background" Value="White"/>
-			<Setter
-				Property="VerticalAlignment"
-				Value="Center" />
+			<Setter Property="VerticalAlignment" Value="Center" />
 			<Setter
 				Property="Visibility">
 				<Setter.Value>
@@ -48,9 +51,27 @@
 				</Setter.Value>
 			</Setter>
 		</Style>
+		<Style TargetType="localControls:WatchListAutoCompleteCell"
+		       x:Key="TextBoxNameStyle">
+			<Setter
+				Property="Visibility">
+				<Setter.Value>
+					<MultiBinding
+						Converter="{StaticResource boolTypeToVisibility}"
+						ConverterParameter="True">
+						<Binding
+							Path="WatchType"
+							ElementName="ControlList"/>
+						<Binding
+							Path="IsSelected"
+							RelativeSource="{RelativeSource AncestorType=TreeViewItem}" />
+					</MultiBinding>
+				</Setter.Value>
+			</Setter>
+		</Style>
 		<Style
 			TargetType="{x:Type TextBlock}"
-			x:Key="TextBlockStyle">
+			x:Key="TextBlockValueStyle">
 			<Setter
 				Property="VerticalAlignment"
 				Value="Center" />
@@ -62,6 +83,28 @@
 						ConverterParameter="False">
 						<Binding
 							Path="CanSetText" />
+						<Binding
+							Path="IsSelected"
+							RelativeSource="{RelativeSource AncestorType=TreeViewItem}" />
+					</MultiBinding>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<Style
+			TargetType="{x:Type TextBlock}"
+			x:Key="TextBlockNameStyle">
+			<Setter
+				Property="VerticalAlignment"
+				Value="Center" />
+			<Setter
+				Property="Visibility">
+				<Setter.Value>
+					<MultiBinding
+						Converter="{StaticResource boolTypeToVisibility}"
+						ConverterParameter="False">
+						<Binding
+							Path="WatchType"
+							ElementName="ControlList"/>
 						<Binding
 							Path="IsSelected"
 							RelativeSource="{RelativeSource AncestorType=TreeViewItem}" />
@@ -256,7 +299,11 @@
 					MinWidth="400"
 					HorizontalAlignment="Stretch"
 					VerticalAlignment="Center"
-					Text="{Binding Path=Name}" />
+					Text="{Binding Path=Name}"
+					Style="{StaticResource TextBlockNameStyle}"	/>
+				<localControls:WatchListAutoCompleteCell
+					CommandText="{Binding Path=Name, Mode=OneWay}"
+					Style="{StaticResource TextBoxNameStyle}" CommandEntered="WatchListAutoCompleteCell_CommandEntered"/>
 			</StackPanel>
 			<DataTemplate.Triggers>
 				<DataTrigger
@@ -278,10 +325,10 @@
 					VerticalAlignment="Center"
 					MinWidth="200"
 					Text="{Binding Path=Text}"
-					Style="{StaticResource TextBlockStyle}" />
+					Style="{StaticResource TextBlockValueStyle}" />
 				<TextBox
 					Text="{Binding Path=Text, Mode=OneWay}"
-					Style="{StaticResource TextBoxStyle}" KeyUp="TextBox_KeyUp" />
+					Style="{StaticResource TextBoxValueStyle}" KeyUp="OnValueTextBoxKeyUp" />
 			</StackPanel>
 		</DataTemplate>
 		<!-- Type column -->
