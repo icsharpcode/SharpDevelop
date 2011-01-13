@@ -99,6 +99,7 @@
     <Compile Include="ToolBar\ToolBarService.cs" />
     <Compile Include="ToolBar\ToolBarSplitButton.cs" />
     <CodeAnalysisDictionary Include="Properties\CodeAnalysisDictionary.xml" />
+    <Compile Include="WpfTreeNavigation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Project\ICSharpCode.Core.csproj">

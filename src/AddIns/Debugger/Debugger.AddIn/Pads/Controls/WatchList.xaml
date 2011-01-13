@@ -6,13 +6,10 @@
 	Background="White">
 	<UserControl.Resources>
 		<localControls:BoolToVisibilityConverter
-			x:Key="boolToVisibility" />
-		
-		<localControls:BoolAndTypeToVisibilityConverter
-			x:Key="boolTypeToVisibility" />
-		
+			x:Key="boolToVisibility" />		
 		<localControls:TreeListViewConverter
 			x:Key="TreeListViewConverter" />
+		
 		<Style
 			x:Key="BorderStyle"
 			TargetType="Border">
@@ -51,24 +48,6 @@
 				</Setter.Value>
 			</Setter>
 		</Style>
-		<Style TargetType="localControls:WatchListAutoCompleteCell"
-		       x:Key="TextBoxNameStyle">
-			<Setter
-				Property="Visibility">
-				<Setter.Value>
-					<MultiBinding
-						Converter="{StaticResource boolTypeToVisibility}"
-						ConverterParameter="True">
-						<Binding
-							Path="WatchType"
-							ElementName="ControlList"/>
-						<Binding
-							Path="IsSelected"
-							RelativeSource="{RelativeSource AncestorType=TreeViewItem}" />
-					</MultiBinding>
-				</Setter.Value>
-			</Setter>
-		</Style>
 		<Style
 			TargetType="{x:Type TextBlock}"
 			x:Key="TextBlockValueStyle">
@@ -83,28 +62,6 @@
 						ConverterParameter="False">
 						<Binding
 							Path="CanSetText" />
-						<Binding
-							Path="IsSelected"
-							RelativeSource="{RelativeSource AncestorType=TreeViewItem}" />
-					</MultiBinding>
-				</Setter.Value>
-			</Setter>
-		</Style>
-		<Style
-			TargetType="{x:Type TextBlock}"
-			x:Key="TextBlockNameStyle">
-			<Setter
-				Property="VerticalAlignment"
-				Value="Center" />
-			<Setter
-				Property="Visibility">
-				<Setter.Value>
-					<MultiBinding
-						Converter="{StaticResource boolTypeToVisibility}"
-						ConverterParameter="False">
-						<Binding
-							Path="WatchType"
-							ElementName="ControlList"/>
 						<Binding
 							Path="IsSelected"
 							RelativeSource="{RelativeSource AncestorType=TreeViewItem}" />
@@ -300,10 +257,11 @@
 					HorizontalAlignment="Stretch"
 					VerticalAlignment="Center"
 					Text="{Binding Path=Name}"
-					Style="{StaticResource TextBlockNameStyle}"	/>
+					Visibility="Visible"/>
 				<localControls:WatchListAutoCompleteCell
 					CommandText="{Binding Path=Name, Mode=OneWay}"
-					Style="{StaticResource TextBoxNameStyle}" CommandEntered="WatchListAutoCompleteCell_CommandEntered"/>
+					Visibility="Collapsed"
+					CommandEntered="WatchListAutoCompleteCell_CommandEntered"/>
 			</StackPanel>
 			<DataTemplate.Triggers>
 				<DataTrigger
@@ -342,6 +300,7 @@
 	</UserControl.Resources>
 	<DockPanel>
 		<localControls:TreeListView
+			MouseDoubleClick="MyList_MouseDoubleClick"
 			HorizontalAlignment="Stretch"
 			VerticalAlignment="Stretch"
 			ItemsSource="{Binding Path=WatchItems}"

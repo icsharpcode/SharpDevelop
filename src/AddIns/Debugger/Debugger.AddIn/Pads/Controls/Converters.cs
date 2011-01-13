@@ -53,21 +53,4 @@ namespace Debugger.AddIn.Pads.Controls
 			throw new NotImplementedException();
 		}
 	}
-	
-	public class BoolAndTypeToVisibilityConverter : IMultiValueConverter
-	{
-		public object Convert(object[] values, Type targetType,
-			object parameter, CultureInfo culture)
-		{
-			bool val = bool.Parse(parameter.ToString());
-			return val == ((WatchListType)(values[0]) == WatchListType.Watch && 
-			               bool.Parse(values[1].ToString())) ? Visibility.Visible : Visibility.Collapsed;
-		}
-	
-		public object[] ConvertBack(object value, Type[] targetTypes,
-			object parameter, CultureInfo culture)
-		{
-			throw new NotImplementedException();
-		}
-	}
 }

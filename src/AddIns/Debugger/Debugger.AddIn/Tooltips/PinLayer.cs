@@ -10,6 +10,7 @@ using System.Windows.Media;
 
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
+using ICSharpCode.Core.Presentation;
 using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace Debugger.AddIn.Tooltips
@@ -175,49 +176,7 @@ namespace Debugger.AddIn.Tooltips
 		
 		static T TryFindChild<T>(DependencyObject root) where T : DependencyObject
 		{
-			return ContextActionsControl.SearchVisualTree<T>(root);
-		}
-		
-		static T TryFindParent<T>(DependencyObject child) where T : DependencyObject
-		{
-			if (child is T) return child as T;
-			
-			DependencyObject parentObject = GetParentObject(child);
-			if (parentObject == null) return null;
-
-			var parent = parentObject as T;
-			if (parent != null && parent is T)
-			{
-				return parent;
-			}
-			else
-			{
-				return TryFindParent<T>(parentObject);
-			}
-		}
-
-		static DependencyObject GetParentObject(DependencyObject child)
-		{
-			if (child == null) return null;
-
-			ContentElement contentElement = child as ContentElement;
-			if (contentElement != null)
-			{
-				DependencyObject parent = ContentOperations.GetParent(contentElement);
-				if (parent != null) return parent;
-
-				FrameworkContentElement fce = contentElement as FrameworkContentElement;
-				return fce != null ? fce.Parent : null;
-			}
-
-			FrameworkElement frameworkElement = child as FrameworkElement;
-			if (frameworkElement != null)
-			{
-				DependencyObject parent = frameworkElement.Parent;
-				if (parent != null) return parent;
-			}
-
-			return VisualTreeHelper.GetParent(child);
+			return WpfTreeNavigation.TryFindChild<T>(root);
 		}
 		
 		#endregion
