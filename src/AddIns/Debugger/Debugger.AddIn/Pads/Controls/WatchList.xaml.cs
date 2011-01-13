@@ -3,16 +3,13 @@
 
 using System;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
 
 using Debugger.AddIn.TreeModel;
 using ICSharpCode.Core.Presentation;
-using ICSharpCode.SharpDevelop.Debugging;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.Pads;
 
@@ -101,26 +98,49 @@ namespace Debugger.AddIn.Pads.Controls
 		{
 			if (WatchType != WatchListType.Watch)
 				return;
-			
+			TreeViewItem treeViewItem = null;
 			if (e.OriginalSource is TextBlock) {
 				var tb = (TextBlock)e.OriginalSource;
 				
 				// find TreeviewItem
-				var treeViewItem = WpfTreeNavigation.TryFindParent<TreeViewItem>(tb);
+				treeViewItem = WpfTreeNavigation.TryFindParent<TreeViewItem>(tb);
 				if (treeViewItem == null) return;
 				
-				// try find TreeViewItem parent of the current node 
+				// try find TreeViewItem parent of the current node
 				// if parent != null, we will not alow edit the value
 				var treeViewItemParent = WpfTreeNavigation.TryFindParent<TreeViewItem>(treeViewItem, false);
-				if (treeViewItemParent != null) return;
+				if (treeViewItemParent == null) {
+					// find cell
+					var cell = WpfTreeNavigation.TryFindChild<WatchListAutoCompleteCell>(treeViewItem);
+					
+					// change visibility
+					tb.Visibility = Visibility.Collapsed;
+					cell.Visibility = Visibility.Visible;
+					e.Handled = true;
+				}
+			}
+			
+			if (!e.Handled) {
+				ExpandChildren(SelectedNode, treeViewItem);
+			}
+		}
+		
+		void MyList_Expanded(object sender, RoutedEventArgs e)
+		{
+			var item = e.OriginalSource as TreeViewItem;
+			var node = item.Header as TreeNode;
+			
+			ExpandChildren(node, item);
+		}
+		
+		void ExpandChildren(TreeNode node, TreeViewItem treeViewItem)
+		{
+			if (node != null && node.HasChildNodes && treeViewItem != null) {
 				
-				// find cell
-				var cell = WpfTreeNavigation.TryFindChild<WatchListAutoCompleteCell>(treeViewItem);
-				
-				// change visibility
-				tb.Visibility = Visibility.Collapsed;
-				cell.Visibility = Visibility.Visible;
-				e.Handled = true;
+				WorkbenchSingleton.SafeThreadAsyncCall((Action)(() => {
+				                                                	((HierarchicalDataTemplate)treeViewItem.ItemTemplate).ItemsSource = new Binding("ChildNodes");
+				                                                	treeViewItem.ItemsSource = node.ChildNodes;
+				                                                }));
 			}
 		}
 	}

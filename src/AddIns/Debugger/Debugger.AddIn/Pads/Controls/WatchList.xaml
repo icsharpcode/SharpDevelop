@@ -301,13 +301,13 @@
 	<DockPanel>
 		<localControls:TreeListView
 			PreviewMouseDoubleClick="MyList_PreviewMouseDoubleClick"
+			TreeViewItem.Expanded="MyList_Expanded"
 			HorizontalAlignment="Stretch"
 			VerticalAlignment="Stretch"
 			ItemsSource="{Binding Path=WatchItems}"
 			x:Name="MyList">
 			<localControls:TreeListView.ItemTemplate>
-				<HierarchicalDataTemplate
-					ItemsSource="{Binding ChildNodes}"/>
+				<HierarchicalDataTemplate />
 			</localControls:TreeListView.ItemTemplate>
 			<localControls:TreeListView.Resources>
 				<Style x:Key="ColumnHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
