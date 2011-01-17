@@ -86,7 +86,7 @@ namespace ICSharpCode.Reports.Core
 		}
 		
 		
-		public static void BuildQueryParameters (IDbCommand cmd,
+		private static void BuildQueryParameters (IDbCommand cmd,
 		                                         ParameterCollection parameterCollection)
 		{
 			if (parameterCollection != null && parameterCollection.Count > 0) {

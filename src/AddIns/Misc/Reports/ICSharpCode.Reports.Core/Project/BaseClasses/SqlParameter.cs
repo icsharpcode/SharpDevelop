@@ -19,9 +19,7 @@ namespace ICSharpCode.Reports.Core
 	/// </remarks>
 	public class SqlParameter : BasicParameter {
 	
-		DbType	dataType;
-
-		ParameterDirection  parameterDirection = ParameterDirection.InputOutput;
+	//	ParameterDirection  parameterDirection = ParameterDirection.InputOutput;
 	
 		#region Constructor
 		public SqlParameter ()
@@ -50,7 +48,7 @@ namespace ICSharpCode.Reports.Core
 		                    ParameterDirection parameterDirection):base(parameterName,parameterValue)
 		{
 			this.DataType = dataType;
-			this.parameterDirection = parameterDirection;
+			this.ParameterDirection = parameterDirection;				
 		}
 		
 		#endregion
@@ -62,20 +60,15 @@ namespace ICSharpCode.Reports.Core
 		/// <see cref="System.Data.DbType">DbType</see>
 		/// </summary>
 		/// 
-		public DbType DataType {
-			get {return dataType;}
-			set {dataType = value;}
-		}
+		public DbType DataType {get;set;}
+		
 
-	
 		///<summary>
 		/// Direction of Parameter 
 		/// <see cref="System.Data.ParameterDirection">ParameterDirection</see>
 		///</summary>
 		
-		public ParameterDirection ParameterDirection {
-			get {return parameterDirection;}
-			set {parameterDirection = value;}
-		}
+		public ParameterDirection ParameterDirection {get;set;}
+		
 	}
 }

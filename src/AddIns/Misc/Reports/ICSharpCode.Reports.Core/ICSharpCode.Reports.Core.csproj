@@ -77,6 +77,7 @@
     <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
       <Link>Project\Configuration\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Project\BaseClasses\TypeHelpers.cs" />
     <Compile Include="Project\BaseClasses\CurrentItem.cs" />
     <Compile Include="Project\BaseClasses\GroupColumn.cs" />
     <Compile Include="Project\BaseClasses\PageInfo.cs" />

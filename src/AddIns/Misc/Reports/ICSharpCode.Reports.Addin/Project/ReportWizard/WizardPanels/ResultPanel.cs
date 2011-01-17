@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using System.Drawing;
@@ -11,8 +12,10 @@ using System.Xml;
 
 using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
+using ICSharpCode.Data.Core.Enums;
 using ICSharpCode.Data.Core.Interfaces;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Project.BaseClasses;
 using ICSharpCode.SharpDevelop;
 
 namespace ICSharpCode.Reports.Addin.ReportWizard
@@ -55,10 +58,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		private DataSet FillGrid() 
 		{
-			this.connectionObject = ConnectionObject.CreateInstance(this.model.ReportSettings.ConnectionString,
-			                                                      System.Data.Common.DbProviderFactories.GetFactory("System.Data.OleDb"));
-			
-//			this.txtSqlString.Text = String.Empty;
 			SqlQueryChecker.Check(model.ReportSettings.CommandType,
 			                      model.ReportSettings.CommandText);
 			
@@ -67,15 +66,15 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			this.txtSqlString.Text = model.ReportSettings.CommandText;
 			switch (model.ReportSettings.CommandType) {
 				case CommandType.Text:
+						
 						ITable t = reportStructure.IDatabaseObjectBase as ITable;
-						connectionObject.QueryString = model.ReportSettings.CommandText;
-						var d = new SqlDataAccessStrategy(model.ReportSettings,connectionObject);
-						dataSet = d.ReadData();
+						this.connectionObject = CreateConnection (t);
+						var dataAccess = new SqlDataAccessStrategy(model.ReportSettings,connectionObject);
+						dataSet = dataAccess.ReadData();
 						dataSet.Tables[0].TableName = t.Name;
 					break;
 				case CommandType.StoredProcedure:
-						
-//						var vv = reportStructure.IDatabaseObjectBase;
+					
 					dataSet = DatasetFromStoredProcedure();
 					break;
 				case CommandType.TableDirect:
@@ -111,62 +110,78 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			return dataSet;
 		}
 		
-		/*
-		private DataSet BuildFromSqlString () 
+		ConnectionObject CreateConnection(IDatabaseObjectBase t)
 		{
-			DbDataAdapter adapter = null;
-			try {
-				adapter = this.BuildAdapter();
-				DataSet dataSet = ResultPanel.CreateDataSet();
-				adapter.Fill(dataSet);
-				return dataSet;
-			} finally {
-				if (adapter.SelectCommand.Connection.State == ConnectionState.Open) {
-					adapter.SelectCommand.Connection.Close();
-				} 
-			}
+			
+			var conobj = ConnectionObject.CreateInstance(this.model.ReportSettings.ConnectionString,
+			                                             System.Data.Common.DbProviderFactories.GetFactory("System.Data.OleDb"));
+			conobj.QueryString = model.ReportSettings.CommandText;
+			return conobj;
+			
 		}
-		*/
 		
 		DataSet DatasetFromStoredProcedure()
 		{
 			
-			DbDataAdapter adapter = null;
-			try {
-				DataSet dataSet = ResultPanel.CreateDataSet();
-				IProcedure tt = reportStructure.IDatabaseObjectBase as IProcedure;
-				var paramCollection = CheckParameters(tt);
+			IProcedure procedure = reportStructure.IDatabaseObjectBase as IProcedure;
+			this.connectionObject = CreateConnection(procedure);
+			
+			DataSet dataSet = ResultPanel.CreateDataSet();
+			
+			var paramCollection = CheckParameters(procedure);
+			
+			
+			if (paramCollection.Count > 0) {
 				
-				if (paramCollection.Count > 0) {
-					
-				}  else {
-					adapter = this.BuildAdapter();
-					
-				}
+				FillParameters(paramCollection);
+				model.ReportSettings.ParameterCollection.AddRange(paramCollection);
+				reportStructure.SqlQueryParameters.AddRange(paramCollection);
 				
-				adapter.Fill(dataSet);
-				return dataSet;
-			} finally {
-				if (adapter.SelectCommand.Connection.State == ConnectionState.Open) {
-					adapter.SelectCommand.Connection.Close();
-				}
-			}
+			} 
+			
+			var dataAccess = new SqlDataAccessStrategy(model.ReportSettings,connectionObject);
+				dataSet = dataAccess.ReadData();
+				dataSet.Tables[0].TableName = procedure.Name;
+			
+			return dataSet;
 		}
+		
+		
+		
+		bool FillParameters(ParameterCollection paramCollection)
+		{
+			using (var p = new ParameterDialog(paramCollection))
+				{
+					p.ShowDialog();
+					if(p.DialogResult == DialogResult.OK)
+					{
+						
+					}
+				}
+			return true;
+		}
+		
 		
 		ParameterCollection CheckParameters(IProcedure procedure)
 		{
 			ParameterCollection col = new ParameterCollection();
+			SqlParameter par = null;
+			foreach (var element in procedure.Items) {
 			
-//			foreach (var element in procedure.Items) {
-//				Console.WriteLine("{0} - {1}",element.Name,element.DataType);
-//				
-//				SqlParameter par = new SqlParameter(element.Name,element.DataType,"",element.ParameterMode);
-//				
-//				p.Add(par);
-//			
-//			}
+				DbType dbType = TypeHelpers.DbTypeFromStringRepresenation(element.DataType);
+				par	 = new SqlParameter(element.Name,dbType,"",ParameterDirection.Input);
+				
+				if (element.ParameterMode == ParameterMode.In) {
+					par.ParameterDirection = ParameterDirection.Input;
+					
+				} else if (element.ParameterMode == ParameterMode. InOut){
+				par.ParameterDirection = ParameterDirection.InputOutput;
+				}
+				col.Add(par);		
+			}
 			return col;
 		}
+		
 		
 		private static DataSet CreateDataSet() 
 		{
@@ -175,89 +190,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			return dataSet;
 		}
 		
-		
-		private DbDataAdapter BuildAdapter () {
-				DbDataAdapter adapter = this.connectionObject.ProviderFactory.CreateDataAdapter();
-				adapter.SelectCommand = (DbCommand)this.BuildCommand();
-				return adapter;
-		}
-		
-		private  IDbCommand BuildCommand () 
-		{
-			if (this.connectionObject != null) {
-				IDbCommand command = this.connectionObject.Connection.CreateCommand();
-				command.CommandText = this.model.ReportSettings.CommandText;
-				command.CommandType = this.model.ReportSettings.CommandType;
-				return command;
-			}
-			throw new MissingDataSourceException();
-		}
 	
-		/*
-		private DataSet ExecuteStoredProc ()
-		{
-			
-			DbDataAdapter adapter = null;
-			try {
-				adapter = this.BuildAdapter();
-				DataSet dataSet = ResultPanel.CreateDataSet();
-				adapter.Fill(dataSet);
-				return dataSet;
-				
-			}finally {
-				if (adapter.SelectCommand.Connection.State == ConnectionState.Open) {
-					adapter.SelectCommand.Connection.Close();
-				}
-			}
-		}
-		*/
-		/*
-		private DataSet ExecuteStoredProc (SharpQueryProcedure procedure)
-		{
-			
-			SharpQuerySchemaClassCollection tmp = procedure.GetSchemaParameters();
-			this.sqlParamsCollection = new ParameterCollection();
-			SqlParameterConverter converter = new SqlParameterConverter();
-			
-			if (converter.CanConvertFrom(typeof(SharpQuerySchemaClassCollection))) {
-				if (converter.CanConvertTo(null,typeof(ParameterCollection))){
-					sqlParamsCollection = (ParameterCollection)converter.ConvertTo(null,
-					                                                                   CultureInfo.InstalledUICulture,
-					                                                                   tmp,
-					                                                                   typeof(ParameterCollection));
-				}
-			}
-			
-			if (sqlParamsCollection.Count > 0){
-				using (ParameterDialog inputform = new ParameterDialog(sqlParamsCollection)) {
-					if ( inputform.ShowDialog() != DialogResult.OK ){
-						return null;
-					}
-					else
-					{
-						IDbCommand command = this.BuildCommand();
-						DbDataAdapter adapter = this.BuildAdapter();
-						DataSet dataSet = ResultPanel.CreateDataSet();
-						try {
-							SqlDataAccessStrategy.BuildQueryParameters(command,sqlParamsCollection);
-							adapter.SelectCommand = (DbCommand)command;
-							
-							adapter.Fill (dataSet);
-							return dataSet;
-						} catch (Exception e) {	
-							MessageService.ShowError(e.Message);
-						} finally {
-							if (adapter.SelectCommand.Connection.State == ConnectionState.Open) {
-								adapter.SelectCommand.Connection.Close();
-							}
-						}
-					}
-				}
-			}
-			return null;
-		}
-		
-*/
 		#endregion
 		
 		
