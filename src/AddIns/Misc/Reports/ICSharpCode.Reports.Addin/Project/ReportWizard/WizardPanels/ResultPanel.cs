@@ -14,6 +14,7 @@ using ICSharpCode.Core;
 using ICSharpCode.Core.WinForms;
 using ICSharpCode.Data.Core.Enums;
 using ICSharpCode.Data.Core.Interfaces;
+using ICSharpCode.Reports.Addin.Commands;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Project.BaseClasses;
 using ICSharpCode.SharpDevelop;
@@ -66,7 +67,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			this.txtSqlString.Text = model.ReportSettings.CommandText;
 			switch (model.ReportSettings.CommandType) {
 				case CommandType.Text:
-						
 						ITable t = reportStructure.IDatabaseObjectBase as ITable;
 						this.connectionObject = CreateConnection (t);
 						var dataAccess = new SqlDataAccessStrategy(model.ReportSettings,connectionObject);
@@ -74,7 +74,6 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 						dataSet.Tables[0].TableName = t.Name;
 					break;
 				case CommandType.StoredProcedure:
-					
 					dataSet = DatasetFromStoredProcedure();
 					break;
 				case CommandType.TableDirect:
@@ -83,32 +82,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 				default:
 					throw new Exception("Invalid value for CommandType");
 			}
-			
-			
-			if (model.ReportSettings.CommandType == CommandType.StoredProcedure){
-				/*
-				if (reportStructure.SharpQueryProcedure == null) {
-					throw new IllegalQueryException();
-				}
-
-				SharpQueryProcedure procedure = reportStructure.SharpQueryProcedure;
-				SharpQuerySchemaClassCollection sc = procedure.GetSchemaParameters();
-				
-				if ((sc != null) && sc.Count > 0) {
-					dataSet = ExecuteStoredProc (procedure);
-				}else {
-					dataSet = ExecuteStoredProc ();
-				}
-				*/
-			}
-			
-			// from here we create from an SqlString like "Select...."
-//			if (model.ReportSettings.CommandType == CommandType.Text){
-//				this.txtSqlString.Text = model.ReportSettings.CommandText;
-//				dataSet = BuildFromSqlString();
-//			}
 			return dataSet;
 		}
+		
+		
 		
 		ConnectionObject CreateConnection(IDatabaseObjectBase t)
 		{
@@ -119,6 +96,10 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			return conobj;
 			
 		}
+		
+		
+		
+		
 		
 		DataSet DatasetFromStoredProcedure()
 		{
@@ -132,33 +113,24 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 			
 			if (paramCollection.Count > 0) {
-				
 				FillParameters(paramCollection);
-				model.ReportSettings.ParameterCollection.AddRange(paramCollection);
 				reportStructure.SqlQueryParameters.AddRange(paramCollection);
-				
-			} 
+			}
 			
 			var dataAccess = new SqlDataAccessStrategy(model.ReportSettings,connectionObject);
-				dataSet = dataAccess.ReadData();
-				dataSet.Tables[0].TableName = procedure.Name;
+			dataSet = dataAccess.ReadData();
+			dataSet.Tables[0].TableName = procedure.Name;
 			
 			return dataSet;
 		}
 		
 		
 		
-		bool FillParameters(ParameterCollection paramCollection)
+		void FillParameters(ParameterCollection paramCollection)
 		{
-			using (var p = new ParameterDialog(paramCollection))
-				{
-					p.ShowDialog();
-					if(p.DialogResult == DialogResult.OK)
-					{
-						
-					}
-				}
-			return true;
+			model.ReportSettings.ParameterCollection.AddRange(paramCollection);
+			CollectParametersCommand p = new CollectParametersCommand(model);
+			p.Run();
 		}
 		
 		

@@ -8,9 +8,6 @@ namespace ICSharpCode.Reports.Core
 {
 
 	/// <summary>
-	/// According to the definition in
-	/// http://msdn.microsoft.com/library/default.asp?url=/library/en-us/rsrdl/htm/rsp_ref_rdl_elements_qz_629g.asp
-	/// 
 	/// This Class definies a Reportparameter
 	/// </summary>
 	/// <remarks>
@@ -19,9 +16,9 @@ namespace ICSharpCode.Reports.Core
 	/// </remarks>
 	public class SqlParameter : BasicParameter {
 	
-	//	ParameterDirection  parameterDirection = ParameterDirection.InputOutput;
 	
 		#region Constructor
+		
 		public SqlParameter ()
 			:this(String.Empty,DbType.String,String.Empty,ParameterDirection.Input)
 		{
@@ -48,7 +45,8 @@ namespace ICSharpCode.Reports.Core
 		                    ParameterDirection parameterDirection):base(parameterName,parameterValue)
 		{
 			this.DataType = dataType;
-			this.ParameterDirection = parameterDirection;				
+			this.ParameterDirection = parameterDirection;	
+			base.Type = DataType.ToString();
 		}
 		
 		#endregion
