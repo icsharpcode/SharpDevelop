@@ -13,7 +13,9 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using System.Windows.Threading;
+
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -470,13 +472,13 @@ namespace ICSharpCode.AvalonEdit
 			TextEditor editor = (TextEditor)d;
 			var leftMargins = editor.TextArea.LeftMargins;
 			if ((bool)e.NewValue) {
-				var lineNumbers = new LineNumberMargin();
+				LineNumberMargin lineNumbers = new LineNumberMargin();
+				Line line = (Line)DottedLineMargin.Create();
 				leftMargins.Insert(0, lineNumbers);
-				leftMargins.Insert(1, DottedLineMargin.Create(editor));
-				lineNumbers.SetBinding(Control.ForegroundProperty,
-				                       new Binding("LineNumbersForeground") {
-				                       	Source = editor
-				                       });
+				leftMargins.Insert(1, line);
+				var lineNumbersForeground = new Binding("LineNumbersForeground") { Source = editor };
+				line.SetBinding(Line.StrokeProperty, lineNumbersForeground);
+				lineNumbers.SetBinding(Control.ForegroundProperty, lineNumbersForeground);
 			} else {
 				for (int i = 0; i < leftMargins.Count; i++) {
 					if (leftMargins[i] is LineNumberMargin) {
