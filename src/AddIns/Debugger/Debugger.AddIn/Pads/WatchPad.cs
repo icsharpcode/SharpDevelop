@@ -125,7 +125,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void ResetPad(object sender, EventArgs e)
 		{
-			string language = ProjectService.CurrentProject.Language;
+			string language = "CSharp";
+			
+			if (ProjectService.CurrentProject != null)
+				language = ProjectService.CurrentProject.Language;
 			
 			// rebuild list
 			var nodes = new List<TreeNode>();
