@@ -326,6 +326,7 @@
     <Compile Include="Src\Services\Debugger\Tooltips\ITreeNode.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\IVisualizerCommand.cs" />
     <Compile Include="Src\Services\Debugger\Tooltips\PinBookmark.cs" />
+    <Compile Include="Src\Services\DecompilerService\DecompilerService.cs" />
     <Compile Include="Src\Services\DisplayBinding\ExternalProcessDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ISecondaryDisplayBinding.cs" />
     <Compile Include="Src\Services\DisplayBinding\ShellExecuteDisplayBinding.cs" />
@@ -855,6 +856,7 @@
     <Folder Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\InnerExpand" />
     <Folder Include="Src\Gui\Pads\TaskList" />
     <Folder Include="Src\Services\Debugger\Tooltips" />
+    <Folder Include="Src\Services\DecompilerService" />
     <Folder Include="Src\Services\RefactoringService\ContextActions" />
     <Folder Include="Src\Services\WebProjectService" />
     <Folder Include="Src\Util" />
