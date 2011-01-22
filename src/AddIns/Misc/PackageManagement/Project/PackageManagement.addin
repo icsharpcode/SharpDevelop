@@ -1,0 +1,62 @@
+﻿<AddIn 
+	name="Package Management"
+	author="Matt Ward"
+	copyright="prj:///doc/copyright.txt"
+	url="http://sharpdevelop.com"
+	description="NuGet Package Management"
+	addInManagerHidden="preinstalled">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.PackageManagement"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly=":ICSharpCode.SharpDevelop"/>
+		<Import assembly="PackageManagement.dll"/>
+	</Runtime>
+	
+	<!-- Projects window context menu - project selected -->
+	<Path path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
+		<Condition name="WriteableProject" action="Disable">
+			<MenuItem
+				id="AddPackageReference"
+				label="Add Package Reference"
+				insertafter="AddReference"
+				insertbefore="AddWebReference"
+				class = "ICSharpCode.PackageManagement.AddPackageReferenceCommand"/>		
+		</Condition>
+	</Path>
+	
+	<!-- Projects window context menu - References selected -->
+	<Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceFolderNode">
+		<Condition name="WriteableProject" action="Disable">
+			<MenuItem
+				id="AddPackageReference"
+				label="Add Package Reference"
+				insertafter="AddReference"
+				insertbefore="AddWebReference"
+				class="ICSharpCode.PackageManagement.AddPackageReferenceCommand"/>
+		</Condition>
+	</Path>
+	
+	<!-- Project main menu -->
+	<Path name="/SharpDevelop/Workbench/MainMenu/Project">
+		<Condition name="WriteableProject" action="Disable">
+			<MenuItem
+				id="AddPackageReference"
+				label="Add Package Reference"
+				insertafter="AddReference"
+				insertbefore="AddWebReference"
+				class="ICSharpCode.PackageManagement.AddPackageReferenceCommand"/>				
+		</Condition>
+	</Path>
+
+	<!-- Tools options -->
+	<Path name="/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+		<OptionPanel
+			id="PackageManagementOptions"
+			label="Package Management"
+			class="ICSharpCode.PackageManagement.PackageManagementOptionsView"
+		/>
+	</Path>
+</AddIn>

@@ -1,0 +1,429 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!------------------------------------------------------------>
+<!--                           INTRODUCTION                                
+
+ The Code Project article submission template (HTML version)
+
+Using this template will help us post your article sooner. To use, just 
+follow the 3 easy steps below:
+ 
+     1. Fill in the article description details
+     2. Add links to your images and downloads
+     3. Include the main article text
+
+That's all there is to it! All formatting will be done by our submission
+scripts and style sheets. 
+
+-->  
+<!------------------------------------------------------------>
+<!--                        IGNORE THIS SECTION                            -->
+<html>
+<head>
+<title>AvalonEdit</title>
+<Style>
+BODY, P, TD { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt }
+H2,H3,H4,H5 { color: #ff9900; font-weight: bold; }
+H2 { font-size: 13pt; }
+H3 { font-size: 12pt; }
+H4 { font-size: 10pt; color: black; }
+PRE { BACKGROUND-COLOR: #FBEDBB; FONT-FAMILY: "Courier New", Courier, mono; WHITE-SPACE: pre; }
+CODE { COLOR: #990000; FONT-FAMILY: "Courier New", Courier, mono; }
+</style>
+<link rel="stylesheet" type="text/css" href="http://www.codeproject.com/App_Themes/NetCommunity/CodeProject.css">
+</head>
+<body bgcolor="#FFFFFF" color=#000000>
+<div style="width:600px; margin-left: 24px;">
+<!------------------------------------------------------------>
+
+
+<!------------------------------------------------------------>
+<!--  Fill in the details (CodeProject will reformat this section for you) -->
+
+
+<!------------------------------------------------------------>
+<!--  Include download and sample image information.                       --> 
+
+<ul class=download>
+<li><a href="AvalonEdit/AvalonEdit_Binaries.zip">Download binaries - 206.5 KB</a></li>
+<li><a href="AvalonEdit/AvalonEdit_Source.zip">Download source code - 391.3 KB</a></li>
+<li><a href="AvalonEdit/AvalonEdit_CHM_Documentation.zip">Download .chm documentation file - 1.88 MB</a></li>
+</ul>
+<p>The latest version of AvalonEdit can be found as part of the <a href="http://www.icsharpcode.net/OpenSource/SD/">SharpDevelop</a> project.
+For details on AvalonEdit, please see <a href="http://www.avalonedit.net/">www.avalonedit.net</a>.</p>
+
+<p><img src="AvalonEdit/screenshot.png" width="611" height="441" alt="Sample Image" /></p>
+
+
+<!------------------------------------------------------------>
+
+<!--  Add the article text. Please use simple formatting (<h2>, <p> etc)   --> 
+
+<h2>Introduction</h2>
+
+<p>ICSharpCode.AvalonEdit is the WPF-based text editor that I've written for SharpDevelop 4.0. It is meant as a replacement
+for <a href="http://www.codeproject.com/KB/edit/TextEditorControl.aspx">ICSharpCode.TextEditor</a>, but should be:
+<ul>
+<li>Extensible</li>
+<li>Easy to use</li>
+<li>Better at handling large files</li>
+</ul>
+<p>
+<b>Extensible</b> means that I wanted SharpDevelop AddIns to be able to add features to the text editor.
+For example, an AddIn should be able to allow inserting images into comments &ndash; this way you could put
+stuff like class diagrams right into the source code!
+<p>
+With, <b>Easy to use</b>, I'm referring to the programming API. It should just work.
+For example, this means if you change the document text,
+the editor should automatically redraw without having to call <code>Invalidate()</code>.
+
+And if you do something wrong, you should get a meaningful exception, not corrupted state and crash later at an unrelated location.
+
+<p>
+<b>Better at handling large files</b> means that the editor should be able to handle large files (e.g.
+the mscorlib XML documentation file, 7 MB, 74100 LOC), even when features like folding (code collapsing) are enabled.
+
+<h2>Using the Code</h2>
+
+<p>The main class of the editor is <code>ICSharpCode.AvalonEdit.TextEditor</code>.
+You can use it just similar to a normal WPF <code>TextBox</code>:
+<pre lang="xml">&lt;avalonEdit:TextEditor
+    xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+    Name="textEditor"
+    FontFamily="Consolas"
+    FontSize="10pt"/&gt;</pre>
+
+<p>To enable syntax highlighting, use:
+
+<pre lang="cs">textEditor.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");</pre>
+AvalonEdit has syntax highlighting definitions built in for:
+ASP.NET, Boo, Coco/R grammars, C++, C#, HTML, Java, JavaScript, Patch files, PHP, TeX, VB, XML
+
+<p>If you need more of AvalonEdit than a simple text box with syntax highlighting, you will first have to learn more about the architecture of AvalonEdit.
+
+<!------------------------------------------------------------>
+<h2>Architecture of AvalonEdit</h2>
+<img src="AvalonEdit/dependencies.png" width="583" height="439" alt="Namespace Dependency Graph"/>
+<p>
+As you can see in this dependency graph, AvalonEdit consists of a few sub-namespaces that have cleanly separated jobs.
+Most of the namespaces have a kind of 'main' class.
+<ul>
+<li>ICSharpCode.AvalonEdit.Utils: Various utility classes</li>
+<li>ICSharpCode.AvalonEdit.Document: <code>TextDocument</code> &mdash; text model</li>
+<li>ICSharpCode.AvalonEdit.Rendering: <code>TextView</code> &mdash; extensible view onto the document</li>
+<li>ICSharpCode.AvalonEdit.Editing: <code>TextArea</code> &mdash; controls text editing (e.g. caret, selection, handles user input)</li>
+<li>ICSharpCode.AvalonEdit.Folding: <code>FoldingManager</code> &mdash; enables code collapsing</li>
+<li>ICSharpCode.AvalonEdit.Highlighting: <code>HighlightingManager</code> &mdash; highlighting engine</li>
+<li>ICSharpCode.AvalonEdit.Highlighting.Xshd: <code>HighlightingLoader</code> &mdash; XML syntax highlighting definition support (.xshd files)</li>
+<li>ICSharpCode.AvalonEdit.CodeCompletion: <code>CompletionWindow</code> &mdash; shows a drop-down list for code completion</li>
+<li>ICSharpCode.AvalonEdit: <code>TextEditor</code> &mdash; the main control that brings it all together</li>
+</ul>
+
+<p>
+Here is the visual tree of the <code>TextEditor</code> control:<br>
+<img src="AvalonEdit/snoop.png" width="272" height="351" alt="Visual Tree"/>
+<p>
+It's important to understand that AvalonEdit is a composite control with the three layers: <code>TextEditor</code> (main control), <code>TextArea</code> (editing), <code>TextView</code> (rendering).
+While the main control provides some convenience methods for common tasks, for most advanced features you have to work directly with the inner controls. You can access them using <code>textEditor.TextArea</code>
+or <code>textEditor.TextArea.TextView</code>.
+
+<!------------------------------------------------------------>
+<h2>The Text Model: Document</h2>
+
+<p>The main class of the model is <code>ICSharpCode.AvalonEdit.Document.TextDocument</code>.
+Basically, the document is a <code>StringBuilder</code> with events.
+However, the <code>Document</code> namespace also contains several features that are useful to applications working with the text editor.
+
+<p>In the text editor, all three controls (<code>TextEditor</code>, <code>TextArea</code>, <code>TextView</code>) have a <code>Document</code> property pointing to the <code>TextDocument</code> instance.
+You can change the <code>Document</code> property to bind the editor to another document. It is possible to bind two editor instances to the same document; you can use this feature to create a split view.
+
+<p><i>Simplified</i> definition of <code>TextDocument</code>:
+<pre lang="cs">public sealed class TextDocument : ITextSource
+{
+    public event EventHandler&lt;DocumentChangeEventArgs&gt; Changing;
+    public event EventHandler&lt;DocumentChangeEventArgs&gt; Changed;
+    public event EventHandler TextChanged;
+
+    public IList&lt;DocumentLine&gt; Lines { get; }
+    public DocumentLine GetLineByNumber(int number);
+    public DocumentLine GetLineByOffset(int offset);
+    public TextLocation GetLocation(int offset);
+    public int GetOffset(int line, int column);
+
+    public char GetCharAt(int offset);
+    public string GetText(int offset, int length);
+
+    public void Insert(int offset, string text);
+    public void Remove(int offset, int length);
+    public void Replace(int offset, int length, string text);
+
+    public string Text { get; set; }
+    public int LineCount { get; }
+    public int TextLength { get; }
+    public UndoStack UndoStack { get; }
+}</pre>
+
+In AvalonEdit, an index into the document is called an <b>offset</b>.
+
+<p>Offsets usually represent the position between two characters.
+The first offset at the start of the document is 0; the offset after the first <code>char</code> in the document is 1.
+The last valid offset is <code>document.TextLength</code>, representing the end of the document.
+This is exactly the same as the 'index' parameter used by methods in the .NET <code>String</code> or <code>StringBuilder</code> classes.
+<p>
+Offsets are easy to use, but sometimes you need Line / Column pairs instead.
+AvalonEdit defines a <code>struct</code> called <code>TextLocation</code> for those.
+
+<p>The document provides the methods <code>GetLocation</code> and <code>GetOffset</code> to convert between offsets and <code>TextLocation</code>s.
+Those are convenience methods built on top of the <code>DocumentLine</code> class.
+
+<p>The <code>TextDocument.Lines</code> collection contains one <code>DocumentLine</code> instance for every line in the document.
+This collection is read-only to user code and is automatically updated to reflect the current document content.
+
+<!------------------------------------------------------------>
+<h2>Rendering: TextView</h2>
+
+In the whole 'Document' section, there was no mention of extensibility.
+The text rendering infrastructure now has to compensate for that by being completely extensible.
+
+<p>The <code>ICSharpCode.AvalonEdit.Rendering.TextView</code> class is the heart of AvalonEdit.
+It takes care of getting the document onto the screen.
+
+<p>To do this in an extensible way, the <code>TextView</code> uses its own kind of model: the <code>VisualLine</code>.
+Visual lines are created only for the visible part of the document.
+<p>The rendering process looks like this:<br>
+<img src="AvalonEdit/renderingPipeline.png" width="443" height="570" alt="rendering pipeline"/><br>
+The last step in the pipeline is the conversion to one or more <code>System.Windows.Media.TextFormatting.TextLine</code> instances. WPF then takes care of the actual text rendering.
+<p>
+The "element generators", "line transformers" and "background renderers" are the extension points; it is possible to add custom implementations of
+them to the <code>TextView</code> to implement additional features in the editor.
+<!--
+<p>
+The extensibility features of the rendering namespace are discussed in detail in the article "AvalonEdit Rendering". (to be published soon)
+-->
+
+<h2>Editing: TextArea</h2>
+
+The <code>TextArea</code> class is handling user input and executing the appropriate actions.
+Both the caret and the selection are controlled by the <code>TextArea</code>.
+<p>
+You can customize the text area by modifying the <code>TextArea.DefaultInputHandler</code> by adding new or replacing existing
+WPF input bindings in it. You can also set <code>TextArea.ActiveInputHandler</code> to something different than the default
+to switch the text area into another mode. You could use this to implement an "incremental search" feature, or even a VI emulator.
+<p>
+The text area has the <code>LeftMargins</code> property &ndash; use it to add controls to the left of the text view that look like
+they're inside the scroll viewer, but don't actually scroll. The <code>AbstractMargin</code> base class contains some useful code
+to detect when the margin is attached/detaching from a text view; or when the active document changes. However, you're not forced to use it;
+any <code>UIElement</code> can be used as margin.
+
+<h2>Folding</h2>
+Folding (code collapsing) is implemented as an extension to the editor.
+It could have been implemented in a separate assembly without having to modify the AvalonEdit code.
+A <code>VisualLineElementGenerator</code> takes care of the collapsed sections in the text document; and a custom margin draws the plus and minus
+buttons.
+<p>
+You could use the relevant classes separately; but, to make it a bit easier to use, the static <code>FoldingManager.Install</code>
+method will create and register the necessary parts automatically.
+<p>
+All that's left for you is to regularly call <code>FoldingManager.UpdateFoldings</code> with the list of foldings you want to provide.
+You could calculate that list yourself, or you could use a built-in folding strategy to do it for you.
+<p>
+Here is the full code required to enable folding:
+<pre lang="cs">foldingManager = FoldingManager.Install(textEditor.TextArea);
+foldingStrategy = new XmlFoldingStrategy();
+foldingStrategy.UpdateFoldings(foldingManager, textEditor.Document);</pre>
+If you want the folding markers to update when the text is changed, you have to repeat the <code>foldingStrategy.UpdateFoldings</code> call regularly.
+<p>
+Currently, only the <code>XmlFoldingStrategy</code> is built into AvalonEdit.
+The sample application to this article also contains the <code>BraceFoldingStrategy</code> that folds using { and }.
+However, it is a very simple implementation and does not handle { and } inside strings or comments correctly.
+
+<h2>Syntax Highlighting</h2>
+The highlighting engine in AvalonEdit is implemented in the class <code>DocumentHighlighter</code>.
+Highlighting is the process of taking a <code>DocumentLine</code> and constructing a <code>HighlightedLine</code> instance for it
+by assigning colors to different sections of the line.
+<p>
+The <code>HighlightingColorizer</code> class is the only link between highlighting and rendering. It uses a <code>DocumentHighlighter</code>
+to implement a line transformer that applies the highlighting to the visual lines in the rendering process.
+<p>
+Except for this single call, syntax highlighting is independent from the rendering namespace.
+To help with other potential uses of the highlighting engine, the <code>HighlightedLine</code> class has the method
+<code>ToHtml</code> to produces syntax highlighted HTML source code.
+<p>
+The rules for the highlighting are defined using an "extensible syntax highlighting definition" (.xshd) file.
+Here is a complete highlighting definition for a sub-set of C#:
+<pre lang="xml">&lt;SyntaxDefinition name="C#"
+        xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+    &lt;Color name="Comment" foreground="Green" />
+    &lt;Color name="String" foreground="Blue" />
+    
+    &lt;!-- This is the main ruleset. -->
+    &lt;RuleSet>
+        &lt;Span color="Comment" begin="//" />
+        &lt;Span color="Comment" multiline="true" begin="/\*" end="\*/" />
+        
+        &lt;Span color="String">
+            &lt;Begin>"&lt;/Begin>
+            &lt;End>"&lt;/End>
+            &lt;RuleSet>
+                &lt;!-- nested span for escape sequences -->
+                &lt;Span begin="\\" end="." />
+            &lt;/RuleSet>
+        &lt;/Span>
+        
+        &lt;Keywords fontWeight="bold" foreground="Blue">
+            &lt;Word>if&lt;/Word>
+            &lt;Word>else&lt;/Word>
+            &lt;!-- ... -->
+        &lt;/Keywords>
+        
+        &lt;!-- Digits -->
+        &lt;Rule foreground="DarkBlue">
+            \b0[xX][0-9a-fA-F]+  # hex number
+        |    \b
+            (    \d+(\.[0-9]+)?   #number with optional floating point
+            |    \.[0-9]+         #or just starting with floating point
+            )
+            ([eE][+-]?[0-9]+)? # optional exponent
+        &lt;/Rule>
+    &lt;/RuleSet>
+&lt;/SyntaxDefinition></pre>
+The highlighting engine works with "spans" and "rules" that each have a color assigned to them. In the XSHD format, colors can be both
+referenced (<code>color="Comment"</code>) or directly specified (<code>fontWeight="bold" foreground="Blue"</code>).
+<p>
+Spans consist of two regular expressions (begin+end), while rules are simply a single RegEx with a color. The <code>&lt;Keywords></code> element is just a nice
+syntax to define a highlighting rule that matches a set of words; internally a single RegEx will be used for the whole keyword list.
+<p>
+The highlighting engine works by first analyzing the spans: whenever a begin RegEx matches some text, that span is pushed onto a stack.
+Whenever the end RegEx of the current span matches some text, the span is popped from the stack.
+<p>
+Each span has a nested rule set associated with it, which is empty by default.
+This is why keywords won't be highlighted inside comments: the span's empty ruleset is active there, so the keyword rule is not applied.
+<p>
+This feature is also used in the string span: the nested span will match when a backslash is encountered, and the character following the backslash
+will be consumed by the end RegEx of the nested span (<code>.</code> matches any character).
+This ensures that <code>\"</code> does not denote the end of the string span; but <code>\\"</code> still does.
+<p>
+What's great about the highlighting engine is that it highlights only on-demand, works incrementally,
+and yet usually requires only a few KB of memory even for large code files.
+
+<p><i>On-demand</i> means that when a document is opened, only the lines initially visible will be highlighted. When the user scrolls down, highlighting will
+continue from the point where it stopped the last time.
+If the user scrolls quickly, so that the first visible line is far below the last highlighted line, then the highlighting engine still has to process all the
+lines in between &ndash; there might be comment starts in them. However, it will only scan that region for changes in the span stack; highlighting rules will not
+be tested.
+<p>The stack of active spans is stored at the beginning of every line. If the user scrolls back up, the lines getting into view can be highlighted immediately
+because the necessary context (the span stack) is still available.
+<p><i>Incrementally</i> means that even if the document is changed, the stored span stacks will be reused as far as possible. If the user types <code>/*</code>, that would
+theoretically cause the whole remainder of the file to become highlighted in the comment color. However, because the engine works on-demand, it will only update the
+span stacks within the currently visible region and keep a notice 'the highlighting state is not consistent between line X and line X+1', where X is the last line 
+in the visible region. Now, if the user would scroll down, the highlighting state would be updated and the 'not consistent' notice would be moved down.
+But usually, the user will continue typing and type <code>*/</code> only a few lines later. Now the highlighting state in the visible region will revert to the
+normal 'only the main ruleset is on the stack of active spans'. When the user now scrolls down below the line with the 'not consistent' marker;
+the engine will notice that the old stack and the new stack are identical; and will remove the 'not consistent' marker. This allows reusing the stored span stacks
+cached from before the user typed <code>/*</code>.
+
+<p>While the stack of active spans might change frequently inside the lines, it rarely changes from the beginning of one line to the beginning of the next line.
+With most languages, such changes happen only at the start and end of multiline comments. The highlighting engine exploits this property by storing
+the list of span stacks in a special data structure (<code>ICSharpCode.AvalonEdit.Utils.CompressingTreeList</code>).
+The memory usage of the highlighting engine is linear to the number of span stack changes; not to the total number of lines.
+This allows the highlighting engine to store the span stacks for big code files using only a tiny amount of memory,
+especially in languages like C# where sequences of <code>//</code> or <code>///</code> are more popular than <code>/* */</code> comments.
+
+<h2>Code Completion</h2>
+<p>AvalonEdit comes with a code completion drop down window.
+You only have to handle the text entering events to determine when you want to show the window; all the UI is already done for you.
+<p>
+Here's how you can use it:
+<pre lang="cs">    // in the constructor:
+    textEditor.TextArea.TextEntering += textEditor_TextArea_TextEntering;
+    textEditor.TextArea.TextEntered += textEditor_TextArea_TextEntered;
+}
+
+CompletionWindow completionWindow;
+
+void textEditor_TextArea_TextEntered(object sender, TextCompositionEventArgs e)
+{
+    if (e.Text == ".") {
+        // Open code completion after the user has pressed dot:
+        completionWindow = new CompletionWindow(textEditor.TextArea);
+        IList&lt;ICompletionData> data = completionWindow.CompletionList.CompletionData;
+        data.Add(new MyCompletionData("Item1"));
+        data.Add(new MyCompletionData("Item2"));
+        data.Add(new MyCompletionData("Item3"));
+        completionWindow.Show();
+        completionWindow.Closed += delegate {
+            completionWindow = null;
+        };
+    }
+}
+
+void textEditor_TextArea_TextEntering(object sender, TextCompositionEventArgs e)
+{
+    if (e.Text.Length > 0 &amp;&amp; completionWindow != null) {
+        if (!char.IsLetterOrDigit(e.Text[0])) {
+            // Whenever a non-letter is typed while the completion window is open,
+            // insert the currently selected element.
+            completionWindow.CompletionList.RequestInsertion(e);
+        }
+    }
+    // Do not set e.Handled=true.
+    // We still want to insert the character that was typed.
+}</pre>
+This code will open the code completion window whenever '.' is pressed.
+By default, the <code>CompletionWindow</code> only handles key presses like Tab and Enter to insert the currently selected item. To also make
+it complete when keys like '.' or ';' are pressed, we attach another handler to the <code>TextEntering</code> event and tell the
+completion window to insert the selected item.
+<p>
+The <code>CompletionWindow</code> will actually never have focus - instead, it hijacks the WPF keyboard input events
+on the text area and passes them through its <code>ListBox</code>.
+This allows selecting entries in the completion list using the keyboard and normal typing in the editor at the same time.
+<p>For the sake of completeness, here is the implementation of the <code>MyCompletionData</code> class used in the code above:
+<pre lang="cs">/// Implements AvalonEdit ICompletionData interface to provide the entries in the
+/// completion drop down.
+public class MyCompletionData : ICompletionData
+{
+    public MyCompletionData(string text)
+    {
+        this.Text = text;
+    }
+    
+    public System.Windows.Media.ImageSource Image {
+        get { return null; }
+    }
+    
+    public string Text { get; private set; }
+    
+    // Use this property if you want to show a fancy UIElement in the list.
+    public object Content {
+        get { return this.Text; }
+    }
+    
+    public object Description {
+        get { return "Description for " + this.Text; }
+    }
+    
+    public void Complete(TextArea textArea, ISegment completionSegment,
+        EventArgs insertionRequestEventArgs)
+    {
+        textArea.Document.Replace(completionSegment, this.Text);
+    }
+}</pre>
+Both the content and the description shown may be any content acceptable in WPF, including custom UIElements.
+You may also implement custom logic in the <code>Complete</code> method if you want to do more than simply inserting the text.
+The <code>insertionRequestEventArgs</code> can help decide which kind of insertion the user wants - depending on how the insertion
+was triggered, it is an instance of <code>TextCompositionEventArgs</code>, <code>KeyEventArgs</code> or <code>MouseEventArgs</code>.
+
+<h2>History</h2>
+
+<ul>
+<li>August 13, 2008: Work on AvalonEdit started</li>
+<li>November 7, 2008: First version of AvalonEdit added to SharpDevelop 4.0 trunk</li>
+<li>June 14, 2009: The SharpDevelop team switches to SharpDevelop 4 as their IDE for working on SharpDevelop; AvalonEdit starts to get used for real work</li>
+<li>October 4, 2009: This article first published on The Code Project</li>
+</ul>
+
+<p><b>Note: although my sample code is provided under the MIT license, ICSharpCode.AvalonEdit itself is provided under the terms of the GNU LGPL.</b>
+
+<!-------------------------------    That's it!   --------------------------->
+</div></body>
+
+</html>

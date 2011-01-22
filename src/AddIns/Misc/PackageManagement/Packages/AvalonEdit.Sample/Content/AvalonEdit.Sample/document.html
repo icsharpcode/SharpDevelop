@@ -1,0 +1,244 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!------------------------------------------------------------>
+<!--                           INTRODUCTION                                
+
+ The Code Project article submission template (HTML version)
+
+Using this template will help us post your article sooner. To use, just 
+follow the 3 easy steps below:
+ 
+     1. Fill in the article description details
+     2. Add links to your images and downloads
+     3. Include the main article text
+
+That's all there is to it! All formatting will be done by our submission
+scripts and style sheets. 
+
+-->  
+<!------------------------------------------------------------>
+<!--                        IGNORE THIS SECTION                            -->
+<html>
+<head>
+<title>Document</title>
+<Style>
+BODY, P, TD { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10pt }
+H2,H3,H4,H5 { color: #ff9900; font-weight: bold; }
+H2 { font-size: 13pt; }
+H3 { font-size: 12pt; }
+H4 { font-size: 10pt; color: black; }
+PRE { BACKGROUND-COLOR: #FBEDBB; FONT-FAMILY: "Courier New", Courier, mono; WHITE-SPACE: pre; }
+CODE { COLOR: #990000; FONT-FAMILY: "Courier New", Courier, mono; }
+</style>
+<link rel="stylesheet" type="text/css" href="http://www.codeproject.com/App_Themes/NetCommunity/CodeProject.css">
+</head>
+<body bgcolor="#FFFFFF" color=#000000>
+<div style="width:600px; margin-left: 24px;">
+<!------------------------------------------------------------>
+
+
+<!------------------------------------------------------------>
+<!--  Fill in the details (CodeProject will reformat this section for you) -->
+
+
+<!------------------------------------------------------------>
+<!--  Include download and sample image information.                       --> 
+
+For the sample application and source code download, please see the main article:
+<a href="http://www.codeproject.com/KB/edit/AvalonEdit.aspx">Using AvalonEdit (WPF Text Editor)</a>
+
+<p><img src="Article.gif" alt="Sample Image - maximum width is 600 pixels" width=400 height=200></p>
+
+
+<!------------------------------------------------------------>
+
+<!--  Add the article text. Please use simple formatting (<h2>, <p> etc)   --> 
+
+<h2>Introduction</h2>
+
+
+
+<h2>Using the Code</h2>
+
+
+<!------------------------------------------------------------>
+<h2>Document (The Text Model)</h2>
+
+<p>So, what is the model of a text editor that has support for complex features like syntax highlighting and folding?<br>
+Would you expect to be able to access collapsed text using the document model, given that the text is folded away?<br>
+Is the syntax highlighting part of the model?
+
+<p>In my quest for a good representation of the model, I decided on a radical strategy:
+<b>if it's not a <code>char</code>, it's not in the model</b>!
+
+<p>The main class of the model is <code>ICSharpCode.AvalonEdit.Document.TextDocument</code>.
+Basically, the document is a <code>StringBuilder</code> with events.
+However, the <code>Document</code> namespace also contains several features that are useful to applications working with the text editor.
+
+<p>In the text editor, all three controls (<code>TextEditor</code>, <code>TextArea</code>, <code>TextView</code>) have a <code>Document</code> property pointing to the <code>TextDocument</code> instance.
+You can change the <code>Document</code> property to bind the editor to another document; but please only do so on the outermost control (usually <code>TextEditor</code>), it will inform its child controls about that change.
+Changing the document only on a child control would leave the outer controls confused.
+<p>
+It is possible to bind two editor instances to the same document; you can use this feature to create a split view.
+
+<p><i>Simplified</i> definition of <code>TextDocument</code>:
+<pre lang="cs">public sealed class TextDocument : ITextSource
+{
+    public event EventHandler UpdateStarted;
+    public event EventHandler&lt;DocumentChangeEventArgs&gt; Changing;
+    public event EventHandler&lt;DocumentChangeEventArgs&gt; Changed;
+    public event EventHandler TextChanged;
+    public event EventHandler UpdateFinished;
+
+    public TextAnchor CreateAnchor(int offset);
+    public ITextSource CreateSnapshot();
+
+    public IList&lt;DocumentLine&gt; Lines { get; }
+    public DocumentLine GetLineByNumber(int number);
+    public DocumentLine GetLineByOffset(int offset);
+    public TextLocation GetLocation(int offset);
+    public int GetOffset(int line, int column);
+
+    public char GetCharAt(int offset);
+    public string GetText(int offset, int length);
+
+    public void BeginUpdate();
+    public bool IsInUpdate { get; }
+    public void EndUpdate();
+
+    public void Insert(int offset, string text);
+    public void Remove(int offset, int length);
+    public void Replace(int offset, int length, string text);
+
+    public string Text { get; set; }
+    public int LineCount { get; }
+    public int TextLength { get; }
+    public UndoStack UndoStack { get; }
+}</pre>
+
+<h3>Offsets</h3>
+In AvalonEdit, an index into the document is called an <b>offset</b>.
+
+<p>Offsets usually represent the position between two characters.
+The first offset at the start of the document is 0; the offset after the first <code>char</code> in the document is 1.
+The last valid offset is <code>document.TextLength</code>, representing the end of the document.
+
+<p>This is exactly the same as the 'index' parameter used by methods in the .NET <code>String</code> or <code>StringBuilder</code> classes.
+Offsets are used because they are dead simple. To all text between offset 10 and offset 30,
+simply call <code>document.GetText(10, 20)</code> &ndash; just like <code>String.Substring</code>, AvalonEdit usually uses <code>Offset / Length</code> pairs to refer to text segments.
+
+<p>To easily pass such segments around, AvalonEdit defines the <code>ISegment</code> interface:
+<pre lang="cs">public interface ISegment
+{
+    int Offset { get; }
+    int Length { get; } // must be non-negative
+    int EndOffset { get; } // must return Offset+Length
+}</pre>
+All <code>TextDocument</code> methods taking Offset/Length parameters also have an overload taking an <code>ISegment</code> instance &ndash; I have just removed those from the code listing above to make it easier to read.
+
+<h3>Lines</h3>
+Offsets are easy to use, but sometimes you need Line / Column pairs instead.
+AvalonEdit defines a <code>struct</code> called <code>TextLocation</code> for those.
+
+<p>The document provides the methods <code>GetLocation</code> and <code>GetOffset</code> to convert between offsets and <code>TextLocation</code>s.
+Those are convenience methods built on top of the <code>DocumentLine</code> class.
+
+<p>The <code>TextDocument.Lines</code> collection contains one <code>DocumentLine</code> instance for every line in the document.
+This collection is read-only to user code and is automatically updated to always<sup><small>*</small></sup> reflect the current document content.
+
+<p>Internally, the <code>DocumentLine</code> instances are arranged in a binary tree that allows for both efficient updates and lookup.
+Converting between offset and line number is possible in O(lg N) time, and the data structure also updates all offsets in O(lg N) whenever text is inserted/removed.
+
+
+<p><small>* tiny exception: it is possible to see the line collection in an inconsistent state inside <code>ILineTracker</code> callbacks. Don't use <code>ILineTracker</code>
+unless you know what you are doing!</small>
+
+<h3>Change Events</h3>
+
+Here is the order in which events are raised during a document update:
+
+<p><b>BeginUpdate()</b>
+<ul><li><code>UpdateStarted</code> event is raised</li></ul>
+
+<p><b>Insert() / Remove() / Replace()</b>
+<ul>
+<li><code>Changing</code> event is raised</li>
+<li>The document is changed</li>
+<li><code>TextAnchor.Deleted</code> events are raised if anchors were in the deleted text portion</li>
+<li><code>Changed</code> event is raised</li>
+</ul>
+
+<p><b>EndUpdate()</b>
+<ul><li><code>TextChanged</code> event is raised</li>
+<li><code>TextLengthChanged</code> event is raised</li>
+<li><code>LineCountChanged</code> event is raised</li>
+<li><code>UpdateFinished</code> event is raised</li></ul>
+
+<p>If the insert/remove/replace methods are called without a call to <code>BeginUpdate()</code>, they will call
+<code>BeginUpdate()</code> and <code>EndUpdate()</code> to ensure no change happens outside of <code>UpdateStarted</code>/<code>UpdateFinished</code>.
+
+<p>There can be multiple document changes between the <code>BeginUpdate()</code> and <code>EndUpdate()</code> calls.
+In this case, the events associated with <code>EndUpdate</code> will be raised only once after the whole document update is done.
+
+<p>The <code>UndoStack</code> listens to the <code>UpdateStarted</code> and <code>UpdateFinished</code> events to group
+all changes into a single undo step.
+
+<h3>TextAnchor</h3>
+If you are working with the text editor, you will likely run into the problem that you need to store an offset, but want it to adjust
+automatically whenever text is inserted prior to that offset.
+
+<p>Sure, you could listen to the <code>TextDocument.Changed</code> event and call <code>GetNewOffset</code> on the <code>DocumentChangeEventArgs</code> to translate
+the offset, but that gets tedious; especially when your object is short-lived and you have to deal with deregistering the event handler at the correct point of time.<br>
+
+<p>A much simpler solution is to use the <code>TextAnchor</code> class. Usage:
+<pre lang="cs">TextAnchor anchor = document.CreateAnchor(offset);
+ChangeMyDocument();
+int newOffset = anchor.Offset;</pre>
+
+<p>The document will automatically update all text anchors; and because it uses weak references to do so, the GC can simply collect the anchor object when you don't need it anymore.
+
+<p>Moreover, the document is able to efficiently update a large number of anchors without having to look at each anchor object individually. Updating the offsets of all anchors
+usually only takes time logarithmic to the number of anchors. Retrieving the <code>TextAnchor.Offset</code> property also runs in O(lg N).
+
+<p>When a piece of text containing an anchor is removed; that anchor will be deleted. First, the <code>TextAnchor.IsDeleted</code> property is set to true on all deleted anchors, then the
+<code>TextAnchor.Deleted</code> events are raised. You cannot retrieve the offset from an anchor that has been deleted.
+
+<p>This deletion behavior might be useful when using anchors for building a bookmark feature, but in other cases you want to still be able to use the anchor. For those cases, set <code>TextAnchor.SurviveDeletion = true</code>.
+
+<p>Note that anchor movement is ambiguous if text is inserted exactly at the anchor's location. Does the anchor stay before the inserted text, or does it move after it?
+The property <code>TextAnchor.MovementType</code> will be used to determine which of these two options the anchor will choose. The default value is <code>AnchorMovementType.BeforeInsertion</code>.
+
+<p>If you want to track a segment, you can use the <code>AnchorSegment</code> class which implements <code>ISegment</code> using two text anchors.
+
+<h3>TextSegmentCollection</h3>
+<p>Sometimes it is useful to store a list of segments and be able to efficiently find all segments overlapping with some other segment.<br>
+Example: you might want to store a large number of compiler warnings and render squiggly underlines only for those that are in the visible region of the document.
+
+<p>The <code>TextSegmentCollection</code> serves this purpose. Connected to a document, it will automatically update the offsets of all <code>TextSegment</code> instances inside the collection;
+but it also has the useful methods <code>FindOverlappingSegments</code> and <code>FindFirstSegmentWithStartAfter</code>.
+The underlying data structure is a hybrid between the one used for text anchors and an <a href="http://en.wikipedia.org/wiki/Interval_tree#Augmented_tree">interval tree</a>, so it is able to do both jobs quite fast.
+
+<h3>Thread Safety</h3>
+<p>The <code>TextDocument</code> class is not thread-safe. It expects to have a single owner thread and will throw an <code>InvalidOperationException</code> when accessed from another thread.
+
+<p>However, there is a single method that is thread-safe: <code>CreateSnapshot()</code><br>
+It returns an immutable snapshot of the document, and may be safely called even when the owner thread is concurrently modifying the document.
+This is very useful for features like a background parser that is running on its own thread.
+The overload <code>CreateSnapshot(out ChangeTrackingCheckpoint)</code> also returns a <code>ChangeTrackingCheckpoint</code> for the document snapshot.
+Once you have two checkpoints, you can call <code>GetChangesTo</code> to retrieve the complete list of document changes that happened between those versions of the document.
+
+
+<h2>Points of Interest</h2>
+
+<p>Did you learn anything interesting/fun/annoying while writing the code? Did you
+do anything particularly clever or wild or zany?
+
+<h2>History</h2>
+
+<p>Keep a running update of any changes or improvements you've made here.
+
+<p><b>Note: although my sample code is provided under the MIT license, ICSharpCode.AvalonEdit itself is provided under the terms of the GNU LGPL.</b>
+
+<!-------------------------------    That's it!   --------------------------->
+</div></body>
+
+</html>

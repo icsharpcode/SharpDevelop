@@ -498,6 +498,11 @@
 				<ComponentRef Id="ICSharpCodeReportsCoreDll"/>
 				<ComponentRef Id="IronyDll"/>
 				<ComponentRef Id="ITextSharpDll"/>
+			
+				<ComponentRef Id="NuGetCoreDll"/>
+				<ComponentRef Id="NuGetLicenseTxt"/>
+				<ComponentRef Id="PackageManagementAddin"/>
+				<ComponentRef Id="PackageManagementDll"/>
 			</Feature>
 			<Feature Id="SharpDevelopFileAssociations"
 			         Level="2"

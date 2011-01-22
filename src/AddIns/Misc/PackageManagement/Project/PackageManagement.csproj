@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <ProjectGuid>{AE4AB0FA-6087-4480-AF37-0FA1452B3DA1}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.PackageManagement</RootNamespace>
+    <AssemblyName>PackageManagement</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <OutputPath>..\..\..\..\..\AddIns\Misc\PackageManagement\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>None</DebugType>
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NuGet.Core">
+      <HintPath>..\RequiredLibraries\NuGet.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configuration" />
+    <Folder Include="Resources" />
+    <Folder Include="Src" />
+    <Folder Include="Src\Design" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\..\Main\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\AddPackageReferenceCommand.cs" />
+    <Compile Include="Src\AddPackageReferenceView.xaml.cs">
+      <DependentUpon>AddPackageReferenceView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\AddPackageReferenceViewModel.cs" />
+    <Compile Include="Src\AvailablePackagesViewModel.cs" />
+    <Compile Include="Src\BooleanToFontWeightConverter.cs" />
+    <Compile Include="Src\DelegateCommand.cs" />
+    <Compile Include="Src\Design\DesignTimeLicenseAcceptanceViewModel.cs" />
+    <Compile Include="Src\Design\DesignTimePackageManagementOptionsViewModel.cs" />
+    <Compile Include="Src\Design\DesignTimePackageManagementService.cs" />
+    <Compile Include="Src\Design\DesignTimePackagesViewModel.cs" />
+    <Compile Include="Src\Design\FakePackage.cs" />
+    <Compile Include="Src\Design\FakePackageManagementService.cs" />
+    <Compile Include="Src\Design\FakePackageRepository.cs" />
+    <Compile Include="Src\Design\FakeProjectManager.cs" />
+    <Compile Include="Src\Design\WpfDesigner.cs" />
+    <Compile Include="Src\ILicenseAcceptanceService.cs" />
+    <Compile Include="Src\InstalledPackagesViewModel.cs" />
+    <Compile Include="Src\IPackageManagementFileService.cs" />
+    <Compile Include="Src\IPackageManagementProjectService.cs" />
+    <Compile Include="Src\IPackageManagementService.cs" />
+    <Compile Include="Src\IPackageManagerFactory.cs" />
+    <Compile Include="Src\IPackageViewModelFactory.cs" />
+    <Compile Include="Src\ISharpDevelopPackageManager.cs" />
+    <Compile Include="Src\ISharpDevelopPackageRepositoryFactory.cs" />
+    <Compile Include="Src\ISharpDevelopProjectManager.cs" />
+    <Compile Include="Src\ISharpDevelopProjectSystemFactory.cs" />
+    <Compile Include="Src\LicenseAcceptanceService.cs" />
+    <Compile Include="Src\LicenseAcceptanceView.xaml.cs">
+      <DependentUpon>LicenseAcceptanceView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\LicenseAcceptanceViewModel.cs" />
+    <Compile Include="Src\ListBoxBehaviour.cs" />
+    <Compile Include="Src\OpenHyperlinkCommand.cs" />
+    <Compile Include="Src\PackageManagementFileService.cs" />
+    <Compile Include="Src\PackageManagementOptions.cs" />
+    <Compile Include="Src\PackageManagementOptionsView.xaml.cs">
+      <DependentUpon>PackageManagementOptionsView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\PackageManagementOptionsViewModel.cs" />
+    <Compile Include="Src\PackageManagementProjectService.cs" />
+    <Compile Include="Src\PackageManagementEnumerableExtensions.cs" />
+    <Compile Include="Src\PackageManagementService.cs" />
+    <Compile Include="Src\PackageRepositoryPaths.cs" />
+    <Compile Include="Src\PackageSourceConverter.cs" />
+    <Compile Include="Src\PackageSourceViewModel.cs" />
+    <Compile Include="Src\PackagesView.xaml.cs">
+      <DependentUpon>PackagesView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\PackagesViewModel.cs" />
+    <Compile Include="Src\PackageUpdatesViewModel.cs" />
+    <Compile Include="Src\PackageViewModel.cs" />
+    <Compile Include="Src\PackageViewModelFactory.cs" />
+    <Compile Include="Src\Page.cs" />
+    <Compile Include="Src\PagedResultsView.xaml.cs">
+      <DependentUpon>PagedResultsView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Src\Pages.cs" />
+    <Compile Include="Src\ProjectTargetFramework.cs" />
+    <Compile Include="Src\RegisteredPackageSource.cs" />
+    <Compile Include="Src\RegisteredPackageSources.cs" />
+    <Compile Include="Src\SelectedListBoxItemScrollingBehaviour.cs" />
+    <Compile Include="Src\SharpDevelopPackageManager.cs" />
+    <Compile Include="Src\SharpDevelopPackageManagerFactory.cs" />
+    <Compile Include="Src\SharpDevelopPackageRepositoryFactory.cs" />
+    <Compile Include="Src\SharpDevelopProjectManager.cs" />
+    <Compile Include="Src\SharpDevelopProjectSystem.cs" />
+    <Compile Include="Src\SharpDevelopProjectSystemFactory.cs" />
+    <Compile Include="Src\StringToStringCollectionConverter.cs" />
+    <Compile Include="Src\TextBoxBehaviour.cs" />
+    <Compile Include="Src\ViewModelBase.cs" />
+    <Compile Include="Src\ViewModelLocator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Src\AddPackageReferenceView.xaml" />
+    <Page Include="Src\LicenseAcceptanceView.xaml" />
+    <Page Include="Src\PackageManagementOptionsView.xaml" />
+    <Page Include="Src\PackagesView.xaml" />
+    <Page Include="Src\PagedResultsView.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\ICSharpCode.Core.Presentation\ICSharpCode.Core.Presentation.csproj">
+      <Project>{7E4A7172-7FF5-48D0-B719-7CD959DD1AC9}</Project>
+      <Name>ICSharpCode.Core.Presentation</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\RequiredLibraries\LICENSE.txt">
+      <Link>NuGet-LICENSE.txt</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="PackageManagement.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Resource Include="Resources\packageicon.png" />
+    <Resource Include="Resources\magnifier.png" />
+    <Resource Include="Resources\resultset_next.png" />
+    <Resource Include="Resources\resultset_previous.png" />
+    <Resource Include="Resources\accept.png" />
+    <None Include="Resources\license.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>
