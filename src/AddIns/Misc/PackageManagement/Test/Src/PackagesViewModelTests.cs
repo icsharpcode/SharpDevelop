@@ -683,5 +683,33 @@ namespace PackageManagement.Tests
 			
 			Assert.IsFalse(paged);
 		}
+		
+		[Test]
+		public void Search_BeforeSearchFivePagesOfPackagesShownAndSearchReturnsTwoPages_TwoPagesShownAfterSearch()
+		{
+			CreateViewModel();
+			viewModel.IsSearchable = true;
+			viewModel.PageSize = 2;
+			viewModel.MaximumSelectablePages = 5;
+			viewModel.AddSixFakePackages();
+			
+			viewModel.FakePackages.Add(new FakePackage("SearchedForId1"));
+			viewModel.FakePackages.Add(new FakePackage("SearchedForId2"));
+			viewModel.FakePackages.Add(new FakePackage("SearchedForId3"));
+			
+			viewModel.ReadPackages();
+			
+			ObservableCollection<Page> pages = viewModel.Pages;
+			
+			viewModel.SearchTerms = "SearchedForId";
+			viewModel.Search();
+			
+			var expectedPages = new Page[] {
+				new Page() { Number = 1, IsSelected = true },
+				new Page() { Number = 2 }
+			};
+			
+			PageCollectionAssert.AreEqual(expectedPages, pages);
+		}
 	}
 }

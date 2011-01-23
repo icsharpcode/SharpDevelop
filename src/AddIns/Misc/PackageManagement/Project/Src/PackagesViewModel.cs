@@ -132,6 +132,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			if (allPackages == null) {
 				IQueryable<IPackage> packages = GetAllPackages();
+				packages = packages.Find(searchTerms);
 				pages.TotalItems = packages.Count();
 				allPackages = GetFilteredPackagesBeforePagingResults(packages);
 			}
@@ -152,7 +153,6 @@ namespace ICSharpCode.PackageManagement
 		/// </summary>
 		protected virtual IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults(IQueryable<IPackage> allPackages)
 		{
-			allPackages = allPackages.Find(searchTerms);
 			IEnumerable<IPackage> bufferedPackages = GetBufferedPackages(allPackages);
 			return bufferedPackages;
 		}
