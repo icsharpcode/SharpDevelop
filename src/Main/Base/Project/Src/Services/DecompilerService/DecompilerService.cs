@@ -51,6 +51,11 @@ namespace ICSharpCode.SharpDevelop
 		
 		public static void ReadMetadata(IClass c, out string filePath)
 		{
+			if (c == null) {
+				filePath = null;
+				return;
+			}
+			
 			CodeCompileUnit compileUnit = new CodeCompileUnit();
 			
 			// add namespace
