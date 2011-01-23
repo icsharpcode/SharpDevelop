@@ -42,6 +42,18 @@ namespace ICSharpCode.SharpDevelop.Project
 			UpdateIcon();
 		}
 		
+		public override void Expanding()
+		{
+			foreach (var node in Nodes) {
+				if (!(node is ReferenceNode)) continue;
+				
+				var n = (ReferenceNode)node;
+				n.ShowNamespaces();
+			}
+				
+			base.Expanding();
+		}		
+		
 		protected override void Initialize()
 		{
 			ShowReferences();

@@ -2596,6 +2596,15 @@ Do you want to add the new file to the project ${CurrentProjectName}?</value>
   <data name="Dialog.Options.IDEOptions.SelectCulture.UILanguageSetToLabel" xml:space="preserve">
     <value>UI language set to:</value>
   </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.PanelName" xml:space="preserve">
+    <value>Sharp Develop UI options</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.GroupBoxHeader" xml:space="preserve">
+    <value>Sharp Develop UI options</value>
+  </data>
+  <data name="Dialog.Options.IDEOptions.SharpDevelop.GeneralUI.ExpandReferences" xml:space="preserve">
+    <value>Expand project references (reflect references)</value>
+  </data>
   <data name="Dialog.Options.IDEOptions.SelectStyle.SelectAmbienceLabel" xml:space="preserve">
     <value>Select your preferred &amp;ambience:</value>
   </data>
