@@ -391,9 +391,9 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			viewModel.PageSize = 3;
-			viewModel.SelectedPageNumber = 2;
 			viewModel.AddSixFakePackages();
 			viewModel.ReadPackages();
+			viewModel.SelectedPageNumber = 2;
 			
 			viewModel.ShowPreviousPageCommand.Execute(null);
 			
@@ -408,8 +408,8 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.AddThreeFakePackages();
 			viewModel.PageSize = 2;
-			viewModel.SelectedPageNumber = 2;
 			viewModel.ReadPackages();
+			viewModel.SelectedPageNumber = 2;
 			
 			viewModel.ShowPreviousPageCommand.Execute(null);
 			
@@ -425,9 +425,9 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			viewModel.PageSize = 2;
-			viewModel.SelectedPageNumber = 2;
 			viewModel.AddSixFakePackages();
 			viewModel.ReadPackages();
+			viewModel.SelectedPageNumber = 2;
 			
 			int pageNumber = 1;
 			viewModel.ShowPageCommand.Execute(pageNumber);
@@ -454,7 +454,6 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			viewModel.PageSize = 3;
-			viewModel.SelectedPageNumber = 1;
 			viewModel.AddSixFakePackages();
 			viewModel.ReadPackages();
 			viewModel.ReadPackages();
@@ -634,7 +633,6 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			viewModel.PageSize = 2;
-			viewModel.SelectedPageNumber = 2;
 			viewModel.AddSixFakePackages();
 			
 			var package = new FakePackage() {
@@ -643,6 +641,8 @@ namespace PackageManagement.Tests
 			};
 			viewModel.FakePackages.Add(package);
 			viewModel.ReadPackages();
+
+			viewModel.SelectedPageNumber = 2;
 			
 			viewModel.SearchTerms = "SearchedForId";
 			viewModel.Search();
@@ -660,12 +660,28 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			viewModel.PageSize = 2;
-			viewModel.SelectedPageNumber = 1;
 			viewModel.AddSixFakePackages();
 			viewModel.ReadPackages();
 			
 			int expectedPages = 3;
 			Assert.AreEqual(expectedPages, viewModel.PageCountBeforePackagesFiltered);
+		}
+		
+		[Test]
+		public void Search_ThreePagesOfPackagesBeforeSearchReturnsNoPackages_IsPagedIsFalseWhenPropertyChangedEventFired()
+		{
+			CreateViewModel();
+			viewModel.PageSize = 2;
+			viewModel.AddSixFakePackages();
+			viewModel.ReadPackages();
+			
+			viewModel.SearchTerms = "SearchedForId";
+			
+			bool paged = true;
+			viewModel.PropertyChanged += (sender, e) => paged = viewModel.IsPaged;
+			viewModel.Search();
+			
+			Assert.IsFalse(paged);
 		}
 	}
 }

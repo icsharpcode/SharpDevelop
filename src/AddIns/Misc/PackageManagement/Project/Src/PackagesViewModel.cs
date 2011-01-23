@@ -94,6 +94,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			allPackages = null;
 			pages.CollectionChanged -= PagesChanged;
+			SelectedPageNumber = 1;
 			UpdatePackageViewModels();
 			pages.CollectionChanged += PagesChanged;
 		}
@@ -246,8 +247,8 @@ namespace ICSharpCode.PackageManagement
 		
 		public void Search()
 		{
-			SelectedPageNumber = 1;
 			ReadPackages();
+			OnPropertyChanged(null);
 		}
 	}
 }
