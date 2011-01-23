@@ -93,10 +93,8 @@ namespace ICSharpCode.PackageManagement
 		public void ReadPackages()
 		{
 			allPackages = null;
-			pages.CollectionChanged -= PagesChanged;
 			SelectedPageNumber = 1;
 			UpdatePackageViewModels();
-			pages.CollectionChanged += PagesChanged;
 		}
 		
 		void PagesChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -107,9 +105,13 @@ namespace ICSharpCode.PackageManagement
 		
 		void UpdatePackageViewModels()
 		{
+			pages.CollectionChanged -= PagesChanged;
+			
 			IEnumerable<IPackage> packages = GetPackagesForSelectedPage();
 			pages.TotalItemsOnSelectedPage = packages.Count();
 			UpdatePackageViewModels(packages);
+			
+			pages.CollectionChanged += PagesChanged;
 		}
 		
 		IEnumerable<IPackage> GetPackagesForSelectedPage()
