@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project.InnerExpand;
 using Mono.Cecil;
 
@@ -38,6 +40,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void ShowNamespaces(bool forceRefresh = false)
 		{
+			if (!SharpDevelopUIOptions.ExpandReferences) 
+				return;
+			
 			if (namespaces.Count > 0 && !forceRefresh)
 				return;
 			

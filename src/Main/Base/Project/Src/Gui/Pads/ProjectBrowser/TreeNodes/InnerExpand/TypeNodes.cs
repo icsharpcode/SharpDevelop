@@ -3,7 +3,6 @@
 using System;
 using System.Text;
 using Mono.Cecil;
-using Services.DecompilerService;
 
 namespace ICSharpCode.SharpDevelop.Project.InnerExpand
 {
@@ -59,15 +58,6 @@ namespace ICSharpCode.SharpDevelop.Project.InnerExpand
 				
 				new PublicMethodNode(sb.ToString(), method, type).InsertSorted(this);
 			}
-		}
-		
-		public override void ActivateItem()
-		{
-			string filePath = null;
-			DecompilerService.ReadMetadata(type, out filePath);
-			FileService.OpenFile(filePath);
-			
-			base.ActivateItem();
 		}
 		
 		public override object AcceptVisitor(ProjectBrowserTreeNodeVisitor visitor, object data)

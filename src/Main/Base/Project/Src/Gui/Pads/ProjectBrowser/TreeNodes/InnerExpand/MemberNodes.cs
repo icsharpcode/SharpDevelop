@@ -2,7 +2,6 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using Mono.Cecil;
-using Services.DecompilerService;
 
 namespace ICSharpCode.SharpDevelop.Project.InnerExpand
 {
@@ -16,15 +15,6 @@ namespace ICSharpCode.SharpDevelop.Project.InnerExpand
 			this.member = member;
 			this.type = type;
 			Text = name;			
-		}
-		
-		public override void ActivateItem()
-		{
-			string filePath = null;
-			DecompilerService.ReadMetadata(type, out filePath);
-			FileService.OpenFile(filePath);
-			
-			base.ActivateItem();
 		}
 		
 		public override object AcceptVisitor(ProjectBrowserTreeNodeVisitor visitor, object data)
