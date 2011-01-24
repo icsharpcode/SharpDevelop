@@ -24,8 +24,19 @@ namespace PackageManagement.Tests.Helpers
 			Properties properties = new Properties();
 			Options = new PackageManagementOptions(properties);
 			RegisteredPackageSources = Options.PackageSources;
+			AddOnePackageSource();
+		}
+		
+		public void AddOnePackageSource()
+		{
 			RegisteredPackageSources.Clear();
 			RegisteredPackageSources.Add(PackageSource);
+		}
+		
+		public void AddTwoPackageSources()
+		{			
+			AddOnePackageSource();
+			RegisteredPackageSources.Add(new PackageSource("http://second.codeplex.com", "second"));
 		}
 	}
 }

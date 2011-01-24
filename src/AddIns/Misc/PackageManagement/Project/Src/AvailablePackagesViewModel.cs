@@ -15,6 +15,7 @@ namespace ICSharpCode.PackageManagement
 			: base(packageManagementService)
 		{
 			IsSearchable = true;
+			ShowPackageSources = packageManagementService.HasMultiplePackageSources;
 		}
 		
 		protected override IQueryable<IPackage> GetAllPackages()

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
+using NuGet;
 using NUnit.Framework;
 using PackageManagement.Tests.Helpers;
 
@@ -18,8 +19,71 @@ namespace PackageManagement.Tests
 		
 		void CreateViewModel()
 		{
+			CreatePackageManagementService();
+			CreateViewModel(packageManagementService);
+		}
+		
+		void CreatePackageManagementService()
+		{
 			packageManagementService = new FakePackageManagementService();
+		}
+		
+		void CreateViewModel(IPackageManagementService packageManagementService)
+		{
 			viewModel = new AvailablePackagesViewModel(packageManagementService);
+		}
+		
+		void AddOnePackageSourceToRegisteredSources()
+		{
+			packageManagementService.ClearPackageSources();
+			packageManagementService.AddOnePackageSource();
+			packageManagementService.HasMultiplePackageSources = false;
+		}
+		
+		void AddTwoPackageSourcesToRegisteredSources()
+		{
+			var expectedPackageSources = new PackageSource[] {
+				new PackageSource("http://first.com", "First"),
+				new PackageSource("http://second.com", "Second")
+			};
+			AddPackageSourcesToRegisteredSources(expectedPackageSources);
+			packageManagementService.HasMultiplePackageSources = true;
+		}
+				
+		void AddPackageSourcesToRegisteredSources(PackageSource[] sources)
+		{
+			packageManagementService.ClearPackageSources();
+			packageManagementService.AddPackageSources(sources);
+		}
+		
+		void CreateNewActiveRepositoryWithDifferentPackages()
+		{
+			var package = new FakePackage("NewRepositoryPackageId");
+			var newRepository = new FakePackageRepository();
+			newRepository.FakePackages.Add(package);
+			packageManagementService.FakeActivePackageRepository = newRepository;
+		}
+		
+		void SetUpTwoPackageSourcesAndViewModelHasReadPackages()
+		{
+			CreatePackageManagementService();
+			AddTwoPackageSourcesToRegisteredSources();
+			CreateViewModel(packageManagementService);
+			packageManagementService.ActivePackageSource = packageManagementService.Options.PackageSources[0];
+			viewModel.ReadPackages();	
+			CreateNewActiveRepositoryWithDifferentPackages();
+		}
+		
+		void ChangeSelectedPackageSourceToSecondSource()
+		{
+			var secondPackageSource = packageManagementService.Options.PackageSources[1];
+			viewModel.SelectedPackageSource = secondPackageSource;
+		}
+		
+		void ChangeSelectedPackageSourceToFirstSource()
+		{
+			var firstPackageSource = packageManagementService.Options.PackageSources[0];
+			viewModel.SelectedPackageSource = firstPackageSource;
 		}
 		
 		[Test]
@@ -139,6 +203,122 @@ namespace PackageManagement.Tests
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
 			Assert.IsTrue(collectionChangedEventFired);
+		}
+		
+		[Test]
+		public void ShowSources_TwoPackageSources_ReturnsTrue()
+		{
+			CreatePackageManagementService();
+			AddTwoPackageSourcesToRegisteredSources();
+			CreateViewModel(packageManagementService);
+			
+			Assert.IsTrue(viewModel.ShowPackageSources);
+		}
+		
+		[Test]
+		public void ShowPackageSources_OnePackageSources_ReturnsFalse()
+		{
+			CreatePackageManagementService();
+			AddOnePackageSourceToRegisteredSources();
+			CreateViewModel(packageManagementService);
+			
+			Assert.IsFalse(viewModel.ShowPackageSources);
+		}
+		
+		[Test]
+		public void PackageSources_TwoPackageSourcesInOptions_HasTwoRepositoriesInCollection()
+		{
+			CreatePackageManagementService();
+			AddTwoPackageSourcesToRegisteredSources();
+			CreateViewModel(packageManagementService);
+			
+			var expectedPackageSources = packageManagementService.Options.PackageSources;
+			
+			PackageSourceCollectionAssert.AreEqual(expectedPackageSources, viewModel.PackageSources);
+		}
+		
+		[Test]
+		public void SelectedPackageSource_TwoPackageSourcesInOptionsAndActivePackageSourceIsFirstSource_IsFirstPackageSource()
+		{
+			CreatePackageManagementService();
+			AddTwoPackageSourcesToRegisteredSources();
+			CreateViewModel(packageManagementService);
+			
+			var expectedPackageSource = packageManagementService.Options.PackageSources[0];
+			packageManagementService.ActivePackageSource = expectedPackageSource;
+			
+			Assert.AreEqual(expectedPackageSource, viewModel.SelectedPackageSource);
+		}
+		
+		[Test]
+		public void SelectedPackageSource_TwoPackageSourcesInOptionsAndActivePackageSourceIsSecondSource_IsSecondPackageSource()
+		{
+			CreatePackageManagementService();
+			AddTwoPackageSourcesToRegisteredSources();
+			CreateViewModel(packageManagementService);
+			
+			var expectedPackageSource = packageManagementService.Options.PackageSources[1];
+			packageManagementService.ActivePackageSource = expectedPackageSource;
+			
+			Assert.AreEqual(expectedPackageSource, viewModel.SelectedPackageSource);
+		}
+		
+		[Test]
+		public void SelectedPackageSource_Changed_PackageManagementServiceActivatePackageSourceChanged()
+		{
+			CreatePackageManagementService();
+			AddTwoPackageSourcesToRegisteredSources();
+			CreateViewModel(packageManagementService);
+			
+			packageManagementService.ActivePackageSource = packageManagementService.Options.PackageSources[0];
+			var expectedPackageSource = packageManagementService.Options.PackageSources[1];
+			viewModel.SelectedPackageSource = expectedPackageSource;
+			
+			Assert.AreEqual(expectedPackageSource, packageManagementService.ActivePackageSource);
+		}
+		
+		[Test]
+		public void SelectedPackageSource_PackageSourceChangedAfterReadingPackages_PackagesReadFromNewPackageSourceAndDisplayed()
+		{
+			SetUpTwoPackageSourcesAndViewModelHasReadPackages();
+			ChangeSelectedPackageSourceToSecondSource();
+			
+			var expectedPackages = packageManagementService.FakeActivePackageRepository.FakePackages;
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
+		
+		[Test]
+		public void SelectedPackageSource_PackageSourceChangedAfterReadingPackages_PropertyChangedEventFiredAfterPackagesAreRead()
+		{
+			SetUpTwoPackageSourcesAndViewModelHasReadPackages();
+			
+			int packageCountWhenPropertyChangedEventFired = -1;
+			viewModel.PropertyChanged += (sender, e) => packageCountWhenPropertyChangedEventFired = viewModel.PackageViewModels.Count;
+			ChangeSelectedPackageSourceToSecondSource();
+			
+			Assert.AreEqual(1, packageCountWhenPropertyChangedEventFired);
+		}
+		
+		[Test]
+		public void SelectedPackageSource_PackageSourceChangedButToSameSelectedPackageSource_PackagesAreNotRead()
+		{
+			SetUpTwoPackageSourcesAndViewModelHasReadPackages();
+			ChangeSelectedPackageSourceToFirstSource();
+			
+			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
+		}
+		
+		[Test]
+		public void SelectedPackageSource_PackageSourceChangedButToSameSelectedPackageSource_PropertyChangedEventNotFired()
+		{
+			SetUpTwoPackageSourcesAndViewModelHasReadPackages();
+			
+			bool fired = false;
+			viewModel.PropertyChanged += (sender, e) => fired = true;
+			ChangeSelectedPackageSourceToFirstSource();
+			
+			Assert.IsFalse(fired);
 		}
 	}
 }

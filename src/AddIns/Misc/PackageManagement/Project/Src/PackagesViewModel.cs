@@ -238,9 +238,7 @@ namespace ICSharpCode.PackageManagement
 			SelectedPageNumber = pageNumber;
 		}
 		
-		public bool IsSearchable {
-			get; set;
-		}
+		public bool IsSearchable { get; set; }
 		
 		public string SearchTerms {
 			get { return searchTerms; }
@@ -251,6 +249,23 @@ namespace ICSharpCode.PackageManagement
 		{
 			ReadPackages();
 			OnPropertyChanged(null);
+		}
+		
+		public bool ShowPackageSources { get; set; }
+		
+		public IEnumerable<PackageSource> PackageSources {
+			get { return packageManagementService.Options.PackageSources; }
+		}
+		
+		public PackageSource SelectedPackageSource {
+			get { return packageManagementService.ActivePackageSource; }
+			set {
+				if (packageManagementService.ActivePackageSource != value) {
+					packageManagementService.ActivePackageSource = value;
+					ReadPackages();
+					OnPropertyChanged(null);
+				}
+			}
 		}
 	}
 }

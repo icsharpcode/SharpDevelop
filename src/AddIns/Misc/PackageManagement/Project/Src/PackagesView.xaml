@@ -22,7 +22,11 @@
 			UriSource="pack://application:,,,/PackageManagement;component/Resources/magnifier.png"/>
 		<BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
 		
-		<DataTemplate x:Key="PackagesListBoxTemplate">
+		<DataTemplate x:Key="PackageSourceComboBoxItemTemplate">
+			<TextBlock Text="{Binding Path=Name}"/>
+		</DataTemplate>
+		
+		<DataTemplate x:Key="PackageListBoxItemTemplate">
 			<Grid>
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="60"/>
@@ -224,7 +228,7 @@
 				x:Name="allPackagesListBox"
 				Grid.Row="0"
 				SelectedIndex="0"
-				ItemTemplate="{StaticResource PackagesListBoxTemplate}"
+				ItemTemplate="{StaticResource PackageListBoxItemTemplate}"
 				ItemsSource="{Binding Path=PackageViewModels}"
 				HorizontalContentAlignment="Stretch"
 				ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
@@ -252,11 +256,25 @@
 					<ColumnDefinition />
 					<ColumnDefinition Width="Auto"/>
 				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition Height="Auto"/>
+				</Grid.RowDefinitions>
+				<ComboBox 
+					Grid.Row="0"
+					Grid.ColumnSpan="2"
+					Margin="0, 0, 0, 2"
+					SelectedItem="{Binding Path=SelectedPackageSource}"
+					ItemsSource="{Binding Path=PackageSources}"
+					ItemTemplate="{StaticResource PackageSourceComboBoxItemTemplate}"
+					Visibility="{Binding Path=ShowPackageSources, Converter={StaticResource BoolToVisibility}}"/>
 				<TextBox
+					Grid.Row="1"
 					Grid.Column="0"
 					pm:TextBoxBehaviour.EnterKeyCommand="{Binding Path=SearchCommand}"
 					Text="{Binding Path=SearchTerms, UpdateSourceTrigger=PropertyChanged}"/>
 				<TextBlock 
+					Grid.Row="1"
 					Grid.Column="1"
 					Margin="4">
 					<Hyperlink 

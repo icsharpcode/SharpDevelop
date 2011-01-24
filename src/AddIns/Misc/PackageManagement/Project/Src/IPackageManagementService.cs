@@ -19,5 +19,8 @@ namespace ICSharpCode.PackageManagement
 		void UninstallPackage(IPackageRepository repository, IPackage package);
 
 		PackageManagementOptions Options { get; }
+		
+		bool HasMultiplePackageSources { get; }
+		PackageSource ActivePackageSource { get; set; }
 	}
 }

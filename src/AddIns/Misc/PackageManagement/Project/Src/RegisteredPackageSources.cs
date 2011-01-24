@@ -42,15 +42,8 @@ namespace ICSharpCode.PackageManagement
 			get { return Count == 0; }
 		}
 		
-//		protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
-//		{
-//			options.UpdateSavedPackageSources();
-//			base.OnCollectionChanged(e);
-//		}
-//		
-//		void UpdateSavedPackageSources()
-//		{
-//			options.SavedRegisteredPackageSources = PackageSourceConverter.ConvertToRegisteredPackageSourcesList(this);
-//		}
+		public bool HasMultiplePackageSources {
+			get { return Count > 1; }
+		}
 	}
 }

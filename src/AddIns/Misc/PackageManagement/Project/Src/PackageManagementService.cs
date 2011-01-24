@@ -17,6 +17,7 @@ namespace ICSharpCode.PackageManagement
 		IPackageManagerFactory packageManagerFactory;
 		IPackageManagementProjectService projectService;
 		IPackageRepository activePackageRepository;
+		PackageSource activePackageSource;
 		
 		public PackageManagementService(PackageManagementOptions options,
 			ISharpDevelopPackageRepositoryFactory packageRepositoryFactory,
@@ -66,8 +67,7 @@ namespace ICSharpCode.PackageManagement
 		IPackageRepository GetActivePackageRepository()
 		{
 			if (activePackageRepository == null) {
-				PackageSource packageSource = options.PackageSources[0];
-				activePackageRepository =  packageRepositoryFactory.CreateRepository(packageSource);
+				activePackageRepository = packageRepositoryFactory.CreateRepository(ActivePackageSource);
 			}
 			return activePackageRepository;
 		}
@@ -103,6 +103,25 @@ namespace ICSharpCode.PackageManagement
 			packageManager.UninstallPackage(package);
 			projectService.RefreshProjectBrowser();
 			OnPackageUninstalled();
+		}
+		
+		public bool HasMultiplePackageSources {
+			get { return options.PackageSources.HasMultiplePackageSources; }
+		}
+		
+		public PackageSource ActivePackageSource {
+			get {
+				if (activePackageSource == null) {
+					activePackageSource = options.PackageSources[0];
+				}
+				return activePackageSource;
+			}
+			set {
+				if (activePackageSource != value) {
+					activePackageSource = value;
+					activePackageRepository = null;
+				}
+			}
 		}
 	}
 }

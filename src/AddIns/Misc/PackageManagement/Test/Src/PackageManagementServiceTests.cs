@@ -219,5 +219,100 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(expectedPackage, package);
 		}
+		
+		[Test]
+		public void HasMultiplePackageSources_OnePackageSource_ReturnsFalse()
+		{
+			CreatePackageManagementService();
+			packageSourcesHelper.AddOnePackageSource();
+			
+			bool result = packageManagementService.HasMultiplePackageSources;
+			Assert.IsFalse(result);
+		}
+		
+		[Test]
+		public void HasMultiplePackageSources_TwoPackageSources_ReturnsTrue()
+		{
+			CreatePackageManagementService();
+			packageSourcesHelper.AddTwoPackageSources();
+			
+			bool result = packageManagementService.HasMultiplePackageSources;
+			Assert.IsTrue(result);
+		}
+		
+		[Test]
+		public void ActivePackageSource_TwoPackageSources_ByDefaultReturnsFirstPackageSource()
+		{
+			CreatePackageManagementService();
+			packageSourcesHelper.AddTwoPackageSources();
+			
+			var expectedPackageSource = packageManagementService.Options.PackageSources[0];
+			var packageSource = packageManagementService.ActivePackageSource;
+			
+			Assert.AreEqual(expectedPackageSource, packageSource);
+		}
+		
+		[Test]
+		public void ActivePackageSource_ChangedToSecondRegisteredPackageSources_ReturnsSecondPackageSource()
+		{
+			CreatePackageManagementService();
+			packageSourcesHelper.AddTwoPackageSources();
+			
+			var expectedPackageSource = packageManagementService.Options.PackageSources[1];
+			packageManagementService.ActivePackageSource = expectedPackageSource;
+			var packageSource = packageManagementService.ActivePackageSource;
+			
+			Assert.AreEqual(expectedPackageSource, packageSource);
+		}
+		
+		[Test]
+		public void ActivePackageRepository_ActivePackageSourceChangedToSecondRegisteredPackageSource_CreatesRepositoryUsingSecondPackageSource()
+		{
+			CreatePackageManagementService();
+			packageSourcesHelper.AddTwoPackageSources();
+			
+			var expectedPackageSource = packageManagementService.Options.PackageSources[1];
+			packageManagementService.ActivePackageSource = expectedPackageSource;
+			
+			IPackageRepository repository = packageManagementService.ActivePackageRepository;
+			var packageSource = fakePackageRepositoryFactory.PackageSourcesPassedToCreateRepository[0];
+			
+			Assert.AreEqual(expectedPackageSource, packageSource);
+		}
+		
+		[Test]
+		public void ActivePackageRepository_ActivePackageSourceChangedAfterActivePackageRepositoryCreated_CreatesNewRepositoryUsingActivePackageSource()
+		{
+			CreatePackageManagementService();
+			packageSourcesHelper.AddTwoPackageSources();
+			
+			IPackageRepository initialRepository = packageManagementService.ActivePackageRepository;
+			fakePackageRepositoryFactory.PackageSourcesPassedToCreateRepository.Clear();
+			
+			var expectedPackageSource = packageManagementService.Options.PackageSources[1];
+			packageManagementService.ActivePackageSource = expectedPackageSource;
+			
+			IPackageRepository repository = packageManagementService.ActivePackageRepository;
+			var packageSource = fakePackageRepositoryFactory.PackageSourcesPassedToCreateRepository[0];
+			
+			Assert.AreEqual(expectedPackageSource, packageSource);
+		}
+		
+		[Test]
+		public void ActivePackageRepository_ActivePackageSourceSetToSameValueAfterActivePackageRepositoryCreated_NewRepositoryNotCreated()
+		{
+			CreatePackageManagementService();
+			packageSourcesHelper.AddOnePackageSource();
+			
+			IPackageRepository initialRepository = packageManagementService.ActivePackageRepository;
+			fakePackageRepositoryFactory.PackageSourcesPassedToCreateRepository.Clear();
+			
+			var expectedPackageSource = packageManagementService.Options.PackageSources[0];
+			packageManagementService.ActivePackageSource = expectedPackageSource;
+			
+			IPackageRepository repository = packageManagementService.ActivePackageRepository;
+			
+			Assert.AreEqual(0, fakePackageRepositoryFactory.PackageSourcesPassedToCreateRepository.Count);
+		}
 	}
 }

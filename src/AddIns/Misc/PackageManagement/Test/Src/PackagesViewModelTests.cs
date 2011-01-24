@@ -711,5 +711,13 @@ namespace PackageManagement.Tests
 			
 			PageCollectionAssert.AreEqual(expectedPages, pages);
 		}
+		
+		[Test]
+		public void ShowPackageSources_ByDefault_ReturnsFalse()
+		{
+			CreateViewModel();
+			
+			Assert.IsFalse(viewModel.ShowPackageSources);
+		}
 	}
 }

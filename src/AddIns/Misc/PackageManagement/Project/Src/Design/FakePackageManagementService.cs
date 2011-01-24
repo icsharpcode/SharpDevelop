@@ -38,13 +38,19 @@ namespace ICSharpCode.PackageManagement.Design
 		public IPackageRepository RepositoryPassedToUninstallPackage;
 		public IPackage PackagePassedToUninstallPackage;
 		
-		public FakeProjectManager FakeActiveProjectManager = new FakeProjectManager();
-		public FakePackageRepository FakeActivePackageRepository = new FakePackageRepository();
+		public FakeProjectManager FakeActiveProjectManager {
+			get { return ActiveProjectManager as FakeProjectManager; }
+			set { ActiveProjectManager = value; }
+		}
+		public FakePackageRepository FakeActivePackageRepository {
+			get { return ActivePackageRepository as FakePackageRepository; }
+			set { ActivePackageRepository = value; }
+		}
 		
 		public FakePackageManagementService()
 		{
-			ActiveProjectManager = FakeActiveProjectManager;
-			ActivePackageRepository = FakeActivePackageRepository;
+			FakeActiveProjectManager = new FakeProjectManager();
+			FakeActivePackageRepository = new FakePackageRepository();
 			FakeActiveProjectManager.FakeSourceRepository = FakeActivePackageRepository;
 		}
 		
@@ -82,5 +88,27 @@ namespace ICSharpCode.PackageManagement.Design
 		public PackageManagementOptions Options {
 			get { return options; }
 		}
+		
+		public void ClearPackageSources()
+		{
+			options.PackageSources.Clear();
+		}
+		
+		public void AddOnePackageSource()
+		{
+			var source = new PackageSource("http://sharpdevelop.codeplex.com", "Test");
+			options.PackageSources.Add(source);
+		}
+		
+		public bool HasMultiplePackageSources { get; set; }
+		
+		public void AddPackageSources(IEnumerable<PackageSource> sources)
+		{
+			foreach (PackageSource source in sources) {
+				options.PackageSources.Add(source);
+			}
+		}
+		
+		public PackageSource ActivePackageSource { get; set; }
 	}
 }
