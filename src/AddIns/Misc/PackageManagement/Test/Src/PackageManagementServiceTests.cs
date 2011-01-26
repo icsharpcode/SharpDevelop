@@ -22,19 +22,29 @@ namespace PackageManagement.Tests
 		FakePackageManagementProjectService fakeProjectService;
 		TestableProject testProject;
 		
+		void CreatePackageSources()
+		{
+			packageSourcesHelper = new OneRegisteredPackageSourceHelper();
+		}
+		
 		void CreatePackageManagementService()
+		{
+			CreatePackageSources();
+			CreatePackageManagementService(packageSourcesHelper.Options);
+		}
+		
+		void CreatePackageManagementService(PackageManagementOptions options)
 		{
 			testProject = ProjectHelper.CreateTestProject();
 			fakePackageRepositoryFactory = new FakePackageRepositoryFactory();
 			fakePackageManagerFactory = new FakePackageManagerFactory();
 			fakeProjectService = new FakePackageManagementProjectService();
 			fakeProjectService.CurrentProject = testProject;
-			packageSourcesHelper = new OneRegisteredPackageSourceHelper();
 			packageManagementService = 
-				new PackageManagementService(packageSourcesHelper.Options,
+				new PackageManagementService(options,
 					fakePackageRepositoryFactory,
 					fakePackageManagerFactory,
-					fakeProjectService);
+					fakeProjectService);		
 		}
 		
 		[Test]
@@ -313,6 +323,32 @@ namespace PackageManagement.Tests
 			IPackageRepository repository = packageManagementService.ActivePackageRepository;
 			
 			Assert.AreEqual(0, fakePackageRepositoryFactory.PackageSourcesPassedToCreateRepository.Count);
+		}
+		
+		[Test]
+		public void ActivePackageSource_ChangedToNonNullPackageSource_SavedInOptions()
+		{
+			CreatePackageManagementService();
+			
+			packageManagementService.Options.ActivePackageSource = null;
+			
+			var packageSource = new PackageSource("http://source-url", "Test");
+			packageManagementService.Options.PackageSources.Add(packageSource);
+			packageManagementService.ActivePackageSource = packageSource;
+			
+			Assert.AreEqual(packageSource, packageManagementService.Options.ActivePackageSource);
+		}
+		
+		[Test]
+		public void ActivePackageSource_ActivePackageSourceNonNullInOptionsBeforeInstanceCreate_ActivePackageSourceReadFromOptions()
+		{
+			CreatePackageSources();
+			var packageSource = new PackageSource("http://source-url", "Test");
+			packageSourcesHelper.Options.PackageSources.Add(packageSource);
+			packageSourcesHelper.Options.ActivePackageSource = packageSource;
+			CreatePackageManagementService(packageSourcesHelper.Options);
+			
+			Assert.AreEqual(packageSource, packageManagementService.ActivePackageSource);
 		}
 	}
 }

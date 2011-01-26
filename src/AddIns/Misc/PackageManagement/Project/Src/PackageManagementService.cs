@@ -111,6 +111,7 @@ namespace ICSharpCode.PackageManagement
 		
 		public PackageSource ActivePackageSource {
 			get {
+				activePackageSource = options.ActivePackageSource;
 				if (activePackageSource == null) {
 					activePackageSource = options.PackageSources[0];
 				}
@@ -119,6 +120,7 @@ namespace ICSharpCode.PackageManagement
 			set {
 				if (activePackageSource != value) {
 					activePackageSource = value;
+					options.ActivePackageSource = value;
 					activePackageRepository = null;
 				}
 			}

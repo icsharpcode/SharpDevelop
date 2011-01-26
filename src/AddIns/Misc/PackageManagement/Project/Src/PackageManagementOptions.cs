@@ -12,10 +12,12 @@ namespace ICSharpCode.PackageManagement
 {
 	public class PackageManagementOptions
 	{
-		Properties properties;
 		const string PackageSourcesPropertyName = "PackageSources";
 		const string PackageDirectoryPropertyName = "PackagesDirectory";
+		const string ActivePackageSourcePropertyName = "ActivePackageSource";
+
 		RegisteredPackageSources packageSources;
+		Properties properties;
 		
 		public PackageManagementOptions(Properties properties)
 		{
@@ -67,6 +69,27 @@ namespace ICSharpCode.PackageManagement
 		public string PackagesDirectory {
 			get { return properties.Get(PackageDirectoryPropertyName, "packages"); }
 			set { properties.Set(PackageDirectoryPropertyName, value); }
+		}
+		
+		public PackageSource ActivePackageSource {
+			get {
+				if (properties.Contains(ActivePackageSourcePropertyName)) {
+					var registeredPackageSource = properties.Get<RegisteredPackageSource>(ActivePackageSourcePropertyName, null);
+					var packageSource = registeredPackageSource.ToPackageSource();
+					if (PackageSources.Contains(packageSource)) {
+						return packageSource;
+					}
+				}
+				return null;
+			}
+			set {
+				if (value == null) {
+					properties.Remove(ActivePackageSourcePropertyName);
+				} else {
+					var packageSource = new RegisteredPackageSource(value);
+					properties.Set(ActivePackageSourcePropertyName, packageSource);
+				}
+			}
 		}
 	}
 }

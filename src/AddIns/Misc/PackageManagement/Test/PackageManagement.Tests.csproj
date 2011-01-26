@@ -105,6 +105,7 @@
     <Compile Include="Src\InstalledPackagesViewModelTests.cs" />
     <Compile Include="Src\LicenseAcceptanceViewModelTests.cs" />
     <Compile Include="Src\OpenHyperlinkCommandTests.cs" />
+    <Compile Include="Src\PackageManagementOptionsTests.cs" />
     <Compile Include="Src\PackageManagementOptionsViewModelTests.cs" />
     <Compile Include="Src\PackageManagementServiceTests.cs" />
     <Compile Include="Src\PackageRepositoryPathsTests.cs" />
