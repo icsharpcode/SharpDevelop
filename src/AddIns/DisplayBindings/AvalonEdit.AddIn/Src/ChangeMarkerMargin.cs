@@ -168,13 +168,15 @@ namespace ICSharpCode.AvalonEdit.AddIn
 					differ.copyButton.Visibility = Visibility.Collapsed;
 				} else {
 					var baseDocument = new TextDocument(changeWatcher.BaseDocument.Text);
-					var mainHighlighter = new DocumentHighlighter(baseDocument, differ.editor.SyntaxHighlighting.MainRuleSet);
-					var popupHighlighter = differ.editor.TextArea.GetService(typeof(IHighlighter)) as DocumentHighlighter;
-					
-					if (prevLineInfo.Change == ChangeType.Deleted)
-						popupHighlighter.InitialSpanStack = mainHighlighter.GetSpanStack(prevLineInfo.OldStartLineNumber);
-					else
-						popupHighlighter.InitialSpanStack = mainHighlighter.GetSpanStack(lineInfo.OldStartLineNumber);
+					if (differ.editor.SyntaxHighlighting != null) {
+						var mainHighlighter = new DocumentHighlighter(baseDocument, differ.editor.SyntaxHighlighting.MainRuleSet);
+						var popupHighlighter = differ.editor.TextArea.GetService(typeof(IHighlighter)) as DocumentHighlighter;
+						
+						if (prevLineInfo.Change == ChangeType.Deleted)
+							popupHighlighter.InitialSpanStack = mainHighlighter.GetSpanStack(prevLineInfo.OldStartLineNumber);
+						else
+							popupHighlighter.InitialSpanStack = mainHighlighter.GetSpanStack(lineInfo.OldStartLineNumber);
+					}
 				}
 				
 				differ.revertButton.Click += delegate {
