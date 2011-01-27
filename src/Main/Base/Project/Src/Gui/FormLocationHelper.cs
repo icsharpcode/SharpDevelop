@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			};
 		}
 		
-		static Rect Validate(Rect bounds)
+		public static Rect Validate(Rect bounds)
 		{
 			// Check if form is outside the screen and get it back if necessary.
 			// This is important when the user uses multiple screens, a window stores its location
