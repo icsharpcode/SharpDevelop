@@ -35,7 +35,7 @@ namespace ICSharpCode.PackageManagement
 		
 		IQueryable<IPackage> GetUpdatedPackages(IQueryable<IPackage> localPackages)
 		{
-			IPackageRepository sourceRepository = packageManagementService.ActivePackageRepository;
+			IPackageRepository sourceRepository = packageManagementService.CreateAggregatePackageRepository();
 			return sourceRepository.GetUpdates(localPackages).AsQueryable();
 		}
 	}

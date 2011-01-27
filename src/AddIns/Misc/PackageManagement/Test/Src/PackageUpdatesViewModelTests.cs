@@ -31,7 +31,7 @@ namespace PackageManagement.Tests
 		FakePackage AddPackageToSourceRepository(string version)
 		{
 			var package = CreatePackage(version);
-			packageManagementService.FakeActivePackageRepository.FakePackages.Add(package);
+			packageManagementService.FakeAggregateRepository.FakePackages.Add(package);
 			return package;
 		}
 		

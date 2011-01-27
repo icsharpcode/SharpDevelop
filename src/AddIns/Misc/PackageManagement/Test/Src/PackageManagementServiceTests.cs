@@ -3,6 +3,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using ICSharpCode.SharpDevelop.Project;
@@ -349,6 +351,36 @@ namespace PackageManagement.Tests
 			CreatePackageManagementService(packageSourcesHelper.Options);
 			
 			Assert.AreEqual(packageSource, packageManagementService.ActivePackageSource);
+		}
+		
+		[Test]
+		public void CreateAggregatePackageRepository_TwoRegisteredPackageRepositories_ReturnsPackagesFromBothRepositories()
+		{
+			CreatePackageSources();
+			packageSourcesHelper.AddTwoPackageSources();
+			CreatePackageManagementService(packageSourcesHelper.Options);
+			
+			var repository1Package = new FakePackage("One");
+			var repository1 = new FakePackageRepository();
+			repository1.FakePackages.Add(repository1Package);
+			
+			fakePackageRepositoryFactory.FakePackageRepositories.Add(packageSourcesHelper.RegisteredPackageSources[0], repository1);
+			
+			var repository2Package = new FakePackage("Two");
+			var repository2 = new FakePackageRepository();
+			repository2.FakePackages.Add(repository2Package);
+			
+			fakePackageRepositoryFactory.FakePackageRepositories.Add(packageSourcesHelper.RegisteredPackageSources[1], repository2);
+			
+			IPackageRepository repository = packageManagementService.CreateAggregatePackageRepository();
+			IQueryable<IPackage> packages = repository.GetPackages().OrderBy(x => x.Id);
+			
+			var expectedPackages = new FakePackage[] {
+				repository1Package,
+				repository2Package
+			};
+			
+			CollectionAssert.AreEqual(expectedPackages, packages);
 		}
 	}
 }

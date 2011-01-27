@@ -15,10 +15,19 @@ namespace PackageManagement.Tests.Helpers
 			= new List<PackageSource>();
 		
 		public FakePackageRepository FakePackageRepository = new FakePackageRepository();
+		
+		public Dictionary<PackageSource, FakePackageRepository> FakePackageRepositories =
+			new Dictionary<PackageSource, FakePackageRepository>();
 	
 		public IPackageRepository CreateRepository(PackageSource packageSource)
 		{
 			PackageSourcesPassedToCreateRepository.Add(packageSource);
+			
+			FakePackageRepository repository = null;
+			if (FakePackageRepositories.TryGetValue(packageSource, out repository)) {
+				return repository;
+			}
+			
 			return FakePackageRepository;
 		}
 		

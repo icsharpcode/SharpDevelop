@@ -110,5 +110,12 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public PackageSource ActivePackageSource { get; set; }
+		
+		public FakePackageRepository FakeAggregateRepository = new FakePackageRepository();
+		
+		public IPackageRepository CreateAggregatePackageRepository()
+		{
+			return FakeAggregateRepository;
+		}
 	}
 }

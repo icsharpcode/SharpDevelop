@@ -125,5 +125,23 @@ namespace ICSharpCode.PackageManagement
 				}
 			}
 		}
+		
+		public IPackageRepository CreateAggregatePackageRepository()
+		{
+			IEnumerable<IPackageRepository> allRepositories = CreateAllRepositories();
+			return new AggregateRepository(allRepositories);
+		}
+		
+		IEnumerable<IPackageRepository> CreateAllRepositories()
+		{
+			foreach (PackageSource source in options.PackageSources) {
+				yield return CreatePackageRepository(source);
+			}
+		}
+		
+		IPackageRepository CreatePackageRepository(PackageSource source)
+		{
+			return packageRepositoryFactory.CreateRepository(source);
+		}
 	}
 }

@@ -12,6 +12,7 @@ namespace ICSharpCode.PackageManagement
 		event EventHandler PackageInstalled;
 		event EventHandler PackageUninstalled;
 		
+		IPackageRepository CreateAggregatePackageRepository();
 		IPackageRepository ActivePackageRepository { get; }
 		IProjectManager ActiveProjectManager { get; }
 		

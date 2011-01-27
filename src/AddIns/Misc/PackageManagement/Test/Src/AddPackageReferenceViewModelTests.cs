@@ -79,11 +79,11 @@ namespace PackageManagement.Tests
 				Id = "Test",
 				Version = new Version("2.0.0.0")
 			};
-			fakePackageManagementService.FakeActivePackageRepository.FakePackages.Add(newPackage);
+			fakePackageManagementService.FakeAggregateRepository.FakePackages.Add(newPackage);
 			
 			CreateViewModel(fakePackageManagementService);
 			
-			List<FakePackage> expectedPackages = fakePackageManagementService.FakeActivePackageRepository.FakePackages;
+			List<FakePackage> expectedPackages = fakePackageManagementService.FakeAggregateRepository.FakePackages;
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageUpdatesViewModel.PackageViewModels);
 		}
