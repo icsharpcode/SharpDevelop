@@ -26,6 +26,11 @@ namespace ICSharpCode.SharpDevelop.Editor.AvalonEdit
 		readonly TextEditor textEditor;
 		AvalonEditDocumentAdapter document;
 		
+		public bool IsReadOnly { 
+			get { return textEditor.IsReadOnly; }
+			set { textEditor.IsReadOnly = value; }
+		}
+		
 		public TextEditor TextEditor {
 			get { return textEditor; }
 		}

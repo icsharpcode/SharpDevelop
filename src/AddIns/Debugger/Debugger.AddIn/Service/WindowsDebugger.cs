@@ -22,6 +22,8 @@ using ICSharpCode.NRefactory.Ast;
 using ICSharpCode.NRefactory.Visitors;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Debugging;
+using ICSharpCode.SharpDevelop.Editor;
+using ICSharpCode.SharpDevelop.Editor.AvalonEdit;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
@@ -142,12 +144,12 @@ namespace ICSharpCode.SharpDevelop.Services
 
 			if (FileUtility.IsUrl(processStartInfo.FileName)) {
 				var project = ProjectService.OpenSolution.Preferences.StartupProject as CompilableProject;
-				var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);				
+				var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
 				if (!CheckWebProjectStartInfo(project, options))
 					return;
 				
 				System.Diagnostics.Process defaultAppProcess = null;
-				if (options.Data.WebServer != WebServer.None) {					
+				if (options.Data.WebServer != WebServer.None) {
 					string processName = WebProjectService.WorkerProcessName;
 					
 					// try find the worker process directly or using the process monitor callback
@@ -294,7 +296,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			if (FileUtility.IsUrl(processStartInfo.FileName)) {
 				var project = ProjectService.OpenSolution.Preferences.StartupProject as CompilableProject;
-				var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);				
+				var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
 				if (!CheckWebProjectStartInfo(project, options))
 					return;
 				
@@ -764,9 +766,51 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (debugger.Processes.Count == 1) {
 				if (DebugStarted != null) {
 					DebugStarted(this, EventArgs.Empty);
+					SetActiveViewsReadonly(true);
 				}
 			}
 			e.Item.LogMessage += LogMessage;
+		}
+		
+		void SetActiveViewsReadonly(bool readOnly)
+		{
+			// TODO: don't forget about EnC
+			//if (DebuggingOptions.Instance.EnableEditAndContinue)
+			//	return;
+			
+			if (WorkbenchSingleton.Workbench == null)
+				return;
+			
+			if (WorkbenchSingleton.Workbench.WorkbenchWindowCollection.Count > 0) {
+				foreach(var window in WorkbenchSingleton.Workbench.WorkbenchWindowCollection) {
+					foreach (var content in window.ViewContents) {
+						if (content is ITextEditorProvider) {
+							((ITextEditorProvider)content).TextEditor.IsReadOnly = readOnly;
+						}
+					}
+					
+					// refresh tab icon
+					window.UpdateActiveViewContent();
+				}
+			}
+			
+			// make readonly the newly opened views
+			if (readOnly)
+				WorkbenchSingleton.Workbench.ViewOpened += OnViewOpened;
+			else
+				WorkbenchSingleton.Workbench.ViewOpened -= OnViewOpened;
+		}
+
+		void OnViewOpened(object sender, ViewContentEventArgs e)
+		{
+			if (!IsDebugging)
+				return;
+			
+			// TODO: don't forget about EnC
+			//if (!DebuggingOptions.Instance.EnableEditAndContinue)
+			if (e.Content is ITextEditorProvider) {
+				((ITextEditorProvider)e.Content).TextEditor.IsReadOnly = true;
+			}
 		}
 		
 		void debugger_ProcessExited(object sender, CollectionItemEventArgs<Process> e)
@@ -774,6 +818,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (debugger.Processes.Count == 0) {
 				if (DebugStopped != null) {
 					DebugStopped(this, e);
+					SetActiveViewsReadonly(false);
 				}
 				SelectProcess(null);
 			} else {
@@ -886,7 +931,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		}
 		
 		void process_Modules_Added(object sender, CollectionItemEventArgs<Module> e)
-        {
+		{
 			if (ProjectService.OpenSolution == null ||
 			    ProjectService.OpenSolution.Projects == null ||
 			    ProjectService.OpenSolution.Projects.Count() == 0)
@@ -894,9 +939,9 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			if (e == null || e.Item == null) return;
 			
-            ProjectService.OpenSolution.Projects
-                .Where(p => e.Item.Name.IndexOf(p.Name) >= 0)
-            	.ForEach(p => e.Item.LoadSymbolsFromDisk(new []{ Path.GetDirectoryName(p.OutputAssemblyFullPath) }));
-        }
+			ProjectService.OpenSolution.Projects
+				.Where(p => e.Item.Name.IndexOf(p.Name) >= 0)
+				.ForEach(p => e.Item.LoadSymbolsFromDisk(new []{ Path.GetDirectoryName(p.OutputAssemblyFullPath) }));
+		}
 	}
 }

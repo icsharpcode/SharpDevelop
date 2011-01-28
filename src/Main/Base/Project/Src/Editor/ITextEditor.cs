@@ -24,6 +24,8 @@ namespace ICSharpCode.SharpDevelop.Editor
 	/// </summary>
 	public interface ITextEditor : IServiceProvider
 	{
+		bool IsReadOnly { get; set; }
+		
 		/// <summary>
 		/// Gets the primary view if split-view is active.
 		/// If split-view is disabled, the current ITextEditor instance is returned.

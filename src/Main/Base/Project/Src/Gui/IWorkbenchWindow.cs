@@ -76,5 +76,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Is called when the title of this window has changed.
 		/// </summary>
 		event EventHandler TitleChanged;
+		
+		/// <summary>
+		/// Updates the content.
+		/// </summary>
+		void UpdateActiveViewContent();
 	}
 }
