@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		IViewContent oldActiveViewContent;
 		
-		public void UpdateActiveViewContent()
+		void UpdateActiveViewContent()
 		{
 			UpdateTitleAndInfoTip();
 			

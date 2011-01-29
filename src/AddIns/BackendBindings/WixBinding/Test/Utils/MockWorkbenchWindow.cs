@@ -69,10 +69,6 @@ namespace WixBinding.Tests.Utils
 			get { return selectWindowMethodCalled; }
 		}
 		
-		public void UpdateActiveViewContent() 
-		{
-		}
-		
 		public event EventHandler ActiveViewContentChanged;
 		
 		protected virtual void OnActiveViewContentChanged(EventArgs e)

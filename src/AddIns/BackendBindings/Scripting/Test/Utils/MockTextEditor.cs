@@ -62,8 +62,6 @@ namespace ICSharpCode.Scripting.Tests.Utils
 			}
 		}
 		
-		public bool IsReadOnly { get; set; }
-		
 		public int SelectionLength { get; set; }
 		
 		public string SelectedText { get; set; }

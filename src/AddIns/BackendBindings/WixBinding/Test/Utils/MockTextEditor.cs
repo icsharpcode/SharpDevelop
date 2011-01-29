@@ -110,8 +110,6 @@ namespace WixBinding.Tests.Utils
 			}
 		}
 		
-		public bool IsReadOnly { get; set; }
-		
 		public FileName FileName {
 			get {
 				throw new NotImplementedException();

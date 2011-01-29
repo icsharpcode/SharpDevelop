@@ -95,8 +95,6 @@ namespace XmlEditor.Tests.Utils
 			}
 		}
 		
-		public bool IsReadOnly { get; set; }
-		
 		public FileName FileName {
 			get { return fileName; }
 			set { fileName = value; }
