@@ -5,6 +5,7 @@ using System;
 using System.Drawing;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Interfaces;
+using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core.Exporter
 {
@@ -68,7 +69,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 				childSize  = section.Items[1].Size;
 			}
 			
-			
 			do {
 				base.SaveSectionSize(section.Size);
 				PrintHelper.AdjustSectionLocation (section);
@@ -103,8 +103,6 @@ namespace ICSharpCode.Reports.Core.Exporter
 							FillRow(simpleContainer,childNavigator);
 							FireRowRendering(simpleContainer,childNavigator);
 							PrepareContainerForConverting(section,simpleContainer);
- 
-//							FireRowRendering(simpleContainer,childNavigator);
 							base.CurrentPosition = ConvertStandardRow(exporterCollection,simpleContainer);
 							CheckForPageBreak(section,exporterCollection);
 						}
@@ -121,12 +119,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 				else
 				{
 					// No Grouping at all, the first item in section.items is the DetailRow
-					
 					Size containerSize = section.Items[0].Size;
 					FillRow(simpleContainer,base.DataNavigator);
 					FireRowRendering(simpleContainer,base.DataNavigator);
 					base.PrepareContainerForConverting(section,simpleContainer);
-//					FireRowRendering(simpleContainer,base.DataNavigator);
 					base.CurrentPosition = ConvertStandardRow (exporterCollection,simpleContainer);
 					section.Size = base.RestoreSectionSize;
 					section.Items[0].Size = containerSize;
@@ -180,10 +176,10 @@ namespace ICSharpCode.Reports.Core.Exporter
 				base.FireSectionRendering(section);
 				ExporterCollection list = StandardPrinter.ConvertPlainCollection(groupCollection,offset);
 				
-				StandardPrinter.EvaluateRow(base.Evaluator,list);
+				EvaluationHelper.EvaluateRow(base.Evaluator,list);
 				
 				exportList.AddRange(list);
-				AfterConverting (list);
+				//AfterConverting (list);
 				retVal =  new Point (DefaultLeftPosition,offset.Y + groupCollection[0].Size.Height + 20  + (3 *GlobalValues.GapBetweenContainer));
 			} else {
 				FillRow(groupedRows[0],base.DataNavigator);

@@ -179,6 +179,7 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		
 		#endregion
 	
+		
 		#region Container
 		
 		
@@ -228,48 +229,6 @@ namespace ICSharpCode.Reports.Core.BaseClasses.Printing
 		}
 		
 		#endregion
-		
-		#region Evaluate
-		
-		
-		public static IExpressionEvaluatorFacade  SetupEvaluator ()
-		{
-			return new ExpressionEvaluatorFacade(null);
-		}
-		
-		
-		public static IExpressionEvaluatorFacade  CreateEvaluator (ISinglePage singlePage,IDataNavigator dataNavigator)
-		{
-			if (singlePage == null) {
-			
-				throw new ArgumentNullException("singlePage");
-			}
-			if (dataNavigator == null) {
-				throw new ArgumentNullException("dataNavigator");
-			}
-			singlePage.IDataNavigator = dataNavigator;
-			IExpressionEvaluatorFacade evaluatorFacade = new ExpressionEvaluatorFacade(singlePage);
-			return evaluatorFacade;
-		}
-		
-		
-		public static void EvaluateRow(IExpressionEvaluatorFacade evaluator,ExporterCollection row)
-		{
-			try {
-				foreach (BaseExportColumn element in row) {
-					ExportText textItem = element as ExportText;
-					if (textItem != null) {
-//						if (textItem.Text.StartsWith("=",StringComparison.InvariantCulture)) {
-////							Console.WriteLine(textItem.Text);
-//						}
-						textItem.Text = evaluator.Evaluate(textItem.Text);
-					}
-				}
-			} catch (Exception) {
-				throw ;
-			}
-		}
-		
-		#endregion
+
 	}
 }

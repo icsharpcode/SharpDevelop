@@ -8,6 +8,7 @@ using System.Linq;
 
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Interfaces;
+using ICSharpCode.Reports.Expressions.ReportingLanguage;
 
 namespace ICSharpCode.Reports.Core.Exporter
 {
@@ -207,9 +208,9 @@ base.PrepareContainerForConverting(section,simpleContainer);
 				groupCollection = section.Items.ExtractGroupedColumns();
 				base.DataNavigator.Fill(groupCollection);
 				base.FireSectionRendering(section);
-				ExporterCollection list = StandardPrinter.ConvertPlainCollection(groupCollection,offset);
 				
-				StandardPrinter.EvaluateRow(base.Evaluator,list);
+				ExporterCollection list = StandardPrinter.ConvertPlainCollection(groupCollection,offset);
+				EvaluationHelper.EvaluateRow(base.Evaluator,list);
 				
 				exportList.AddRange(list);
 				AfterConverting (list);

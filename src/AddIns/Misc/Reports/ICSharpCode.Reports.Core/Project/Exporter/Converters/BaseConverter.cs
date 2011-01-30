@@ -48,7 +48,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 			this.DataNavigator = dataNavigator;
 			SectionBounds = this.SinglePage.SectionBounds;
 			this.Layouter = layouter;
-			this.Evaluator = StandardPrinter.CreateEvaluator(this.SinglePage,this.DataNavigator);
+			this.Evaluator = EvaluationHelper.CreateEvaluator(this.SinglePage,this.DataNavigator);
 		}
 		
 		
@@ -251,8 +251,14 @@ namespace ICSharpCode.Reports.Core.Exporter
 		{
 			var rowSize = simpleContainer.Size;
 Console.WriteLine("ConvertStandardRow");
-			Point curPos = ConvertContainer(mylist,simpleContainer,DefaultLeftPosition,CurrentPosition);
-			AfterConverting (mylist);
+		
+			Point curPos = new Point (DefaultLeftPosition,CurrentPosition.Y + simpleContainer.Size.Height);
+			
+			ExporterCollection ml = BaseConverter.ConvertItems (simpleContainer, curPos);
+			//curPos =  new Point (DefaultLeftPosition,curPos.Y + simpleContainer.Size.Height);
+			EvaluationHelper.EvaluateRow(Evaluator,ml);
+			mylist.AddRange(ml);
+			//
 			simpleContainer.Size = rowSize;
 			Console.WriteLine("");
 			return curPos;
@@ -260,9 +266,23 @@ Console.WriteLine("ConvertStandardRow");
 		}
 		
 		
+		/*
+		protected  Point ConvertStandardRow(ExporterCollection mylist,  ISimpleContainer simpleContainer)
+		{
+			var rowSize = simpleContainer.Size;
+Console.WriteLine("ConvertStandardRow");
+			Point curPos = ConvertContainer(mylist,simpleContainer,DefaultLeftPosition,CurrentPosition);
+			AfterConverting (mylist);
+			simpleContainer.Size = rowSize;
+			Console.WriteLine("");
+			return curPos;
+			
+		}
+		*/
+		
 		protected void AfterConverting (ExporterCollection convertedList)
 		{
-			StandardPrinter.EvaluateRow(Evaluator,convertedList);
+			EvaluationHelper.EvaluateRow(Evaluator,convertedList);
 		}
 		
 		
