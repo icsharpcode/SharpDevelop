@@ -94,6 +94,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 		
 		
 		#region Standart Enumerator
+		
 		[Test]
 		public void EnumeratorStartFromBegin ()
 		{
@@ -109,6 +110,44 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			while (dataNav.MoveNext());
 			Assert.AreEqual(this.contributorCollection.Count,start);
 		}
+		
+		
+		
+		[Test]
+		public void NullValue_In_Property_Should_Return_EmptyString ()
+		{
+			ContributorsList contributorsList = new ContributorsList();
+			var contColl = contributorsList.ContributorCollection;
+			
+			foreach (Contributor element in contColl) {
+				element.GroupItem = null;
+			}
+			
+			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(contColl, new ReportSettings());
+			IDataNavigator dataNav = dm.GetNavigator;
+			dataNav.MoveNext();
+			
+			ReportItemCollection searchCol = new ReportItemCollection();
+			searchCol.Add(new BaseDataItem ()
+			             {
+			             	Name ="GroupItem",
+			             	ColumnName ="GroupItem"
+			             		
+			             }
+			            );
+			
+			do 
+			{
+				dataNav.Fill(searchCol);
+				BaseDataItem resultItem = searchCol[0] as BaseDataItem;
+				
+				Assert.That (resultItem.Name,Is.EqualTo("GroupItem"));
+				Assert.That(resultItem.DBValue,Is.EqualTo(String.Empty));
+				
+			}
+			while (dataNav.MoveNext());
+		}
+			
 		
 		#endregion
 		

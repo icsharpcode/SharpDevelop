@@ -8,7 +8,7 @@ using System.Data;
 using ICSharpCode.Reports.Core.Test.TestHelpers;
 using NUnit.Framework;
 
-namespace ICSharpCode.Reports.Core.Test.DataManager
+namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 {
 	
 	[TestFixture]

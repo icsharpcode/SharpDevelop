@@ -6,7 +6,7 @@ using System.ComponentModel;
 using ICSharpCode.Reports.Core.Test.TestHelpers;
 using NUnit.Framework;
 
-namespace ICSharpCode.Reports.Core.Test.DataManager
+namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 {
 	[TestFixture]
 	public class GroupListFixture

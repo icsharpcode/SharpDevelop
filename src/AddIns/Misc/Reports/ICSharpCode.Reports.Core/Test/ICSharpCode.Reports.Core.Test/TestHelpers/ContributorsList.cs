@@ -132,7 +132,7 @@ namespace ICSharpCode.Reports.Core.Test.TestHelpers
 			get { return randomDate; }
 		}
 		
-		public string GroupItem {get; private set;}
+		public string GroupItem {get; set;}
 	
 		
 	}

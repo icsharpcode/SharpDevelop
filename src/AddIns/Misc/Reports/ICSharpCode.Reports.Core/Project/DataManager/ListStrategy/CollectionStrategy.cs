@@ -213,8 +213,15 @@ namespace ICSharpCode.Reports.Core {
 				BaseDataItem baseDataItem = item as BaseDataItem;
 				if (baseDataItem != null) {
 					PropertyDescriptor p = this.listProperties.Find(baseDataItem.ColumnName, true);
-					if (p != null) {
-						baseDataItem.DBValue = p.GetValue(this.Current).ToString();
+					if (p != null)
+					{
+						var o = p.GetValue(this.Current);
+						if (o != null) {
+							baseDataItem.DBValue = p.GetValue(this.Current).ToString();
+						} else {
+							baseDataItem.DBValue = String.Empty;
+						}
+						
 					} else {
 						baseDataItem.DBValue = string.Format(CultureInfo.InvariantCulture,"<{0}> missing!", baseDataItem.ColumnName);
 					}
@@ -233,6 +240,7 @@ namespace ICSharpCode.Reports.Core {
 				}
 			}
 		}
+		
 
 		#region test
 		/*
