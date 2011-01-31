@@ -172,10 +172,10 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 		
-		public static string UnboundName 
-		{
-			get {return unbound;}
-		}
+//		public static string UnboundName 
+//		{
+//			get {return unbound;}
+//		}
 		
 		public static string TableName
 		{

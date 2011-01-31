@@ -71,12 +71,12 @@
     <Compile Include="Collections\ParametersCollectionFixture.cs" />
     <Compile Include="Collections\ReportItemCollectionFixture.cs" />
     <Compile Include="DataManager\IConnectionDataManagerFixture.cs" />
-    <Compile Include="DataManager\IListDataManagerFixture.cs" />
     <Compile Include="DataManager\ListStrategy\GroupListFixture.cs" />
+    <Compile Include="DataManager\ListStrategy\IListDataManagerFixture.cs" />
     <Compile Include="DataManager\MockDataAccess.cs" />
-    <Compile Include="DataManager\Strategy\TableStrategyFixture.cs" />
     <Compile Include="DataManager\TableStragy\GroupTableFixture.cs" />
     <Compile Include="DataManager\TableStragy\TableDataManagerFixture.cs" />
+    <Compile Include="DataManager\TableStragy\TableStrategyFixture.cs" />
     <Compile Include="Printing\SectionBoundFixture.cs" />
     <Compile Include="Printing\Shapes\BaseLineFixture.cs" />
     <Compile Include="Printing\Shapes\EllipseShapeFixture.cs" />
@@ -119,7 +119,6 @@
     <Folder Include="BaseItems" />
     <Folder Include="DataManager\ListStrategy" />
     <Folder Include="DataManager\TableStragy" />
-    <Folder Include="DataManager\Strategy" />
     <Folder Include="DataManager" />
     <Folder Include="Collections" />
     <Folder Include="BaseClasses" />

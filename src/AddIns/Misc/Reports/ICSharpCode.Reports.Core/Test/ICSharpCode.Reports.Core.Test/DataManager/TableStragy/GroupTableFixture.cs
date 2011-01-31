@@ -17,6 +17,18 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 		
 		DataTable table;
 		
+		
+		[Test]
+		public void Can_add_GroupColumn ()
+		{
+			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
+			ReportSettings rs = new ReportSettings();
+			
+			rs.GroupColumnsCollection.Add(gc);
+			Assert.AreEqual(1,rs.GroupColumnsCollection.Count);
+		}
+		
+		
 		[Test]
 		public void GroupingCollection_EmptyGrouping_IsGrouped_False()
 		{
@@ -181,7 +193,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 	
 		
 		#endregion
-		
 		
 		
 		private IDataNavigator PrepareStringGrouping ()

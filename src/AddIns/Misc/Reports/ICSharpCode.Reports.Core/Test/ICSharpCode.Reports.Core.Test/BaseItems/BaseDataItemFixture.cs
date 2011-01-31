@@ -23,10 +23,9 @@ namespace ICSharpCode.Reports.Core.Test.BaseItems
 		{
 			BaseDataItem bdi = new BaseDataItem();
 			Assert.AreEqual("System.String",bdi.DataType);
-			Assert.AreEqual(GlobalValues.UnboundName,bdi.ColumnName);
 			Assert.IsTrue(String.IsNullOrEmpty(bdi.BaseTableName));
-			Assert.AreEqual("." + GlobalValues.UnboundName,bdi.MappingName);
 		}
+		
 		
 		[Test]
 		public void ConstructurWithColumnName()

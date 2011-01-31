@@ -7,7 +7,7 @@ using System.Data;
 using NUnit.Framework;
 using ICSharpCode.Reports.Core.Test.TestHelpers;
 
-namespace ICSharpCode.Reports.Core.Test.DataManager.Strategy
+namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 {
 
 	[TestFixture]
@@ -155,6 +155,9 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.Strategy
 		
 		#endregion
 		
+		
+		#region Setup7TearDown
+		
 		private ICSharpCode.Reports.Core.TableStrategy SortTableStrategyFactory (SortColumn sortColumn)
 		{
 			var reportSettings = new ReportSettings();
@@ -171,6 +174,8 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.Strategy
 			var tableStrategy = new ICSharpCode.Reports.Core.TableStrategy(this.table,reportSettings);
 			return tableStrategy;
 		}
+		
+		
 		[TestFixtureSetUp]
 		public void Init()
 		{
@@ -183,5 +188,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.Strategy
 		{
 			// TODO: Add tear down code.
 		}
+		
+		#endregion
 	}
 }

@@ -10,7 +10,7 @@ using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.Test.TestHelpers;
 using NUnit.Framework;
 
-namespace ICSharpCode.Reports.Core.Test.DataManager
+namespace ICSharpCode.Reports.Core.Test.DataManager.TableStrategy
 {
 	[TestFixture]
 	public class TableDataManagerFixture
@@ -109,19 +109,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager
 			DataNavigator dataNav = dm.GetNavigator;
 		}
 		
-		#region Grouping
-		
-		[Test]
-		public void can_add_GroupColumn ()
-		{
-			GroupColumn gc = new GroupColumn("GroupItem",1,ListSortDirection.Ascending);
-			ReportSettings rs = new ReportSettings();
-			
-			rs.GroupColumnsCollection.Add(gc);
-			Assert.AreEqual(1,rs.GroupColumnsCollection.Count);
-		}
-		
-		#endregion
 		
 		
 		#region Sorting

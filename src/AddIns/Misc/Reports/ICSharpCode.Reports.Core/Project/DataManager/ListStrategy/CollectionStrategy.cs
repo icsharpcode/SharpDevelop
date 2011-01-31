@@ -213,8 +213,10 @@ namespace ICSharpCode.Reports.Core {
 				BaseDataItem baseDataItem = item as BaseDataItem;
 				if (baseDataItem != null) {
 					PropertyDescriptor p = this.listProperties.Find(baseDataItem.ColumnName, true);
+					
 					if (p != null)
 					{
+//						Console.WriteLine("PPPPPPPPPPPP {0}",p.PropertyType);
 						var o = p.GetValue(this.Current);
 						if (o != null) {
 							baseDataItem.DBValue = p.GetValue(this.Current).ToString();

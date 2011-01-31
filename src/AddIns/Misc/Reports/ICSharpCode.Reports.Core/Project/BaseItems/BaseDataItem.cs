@@ -22,7 +22,7 @@ namespace ICSharpCode.Reports.Core
 	{
 
 		private string columnName;
-		private string dbValue;
+//		private string dbValue;
 
 
 		#region Constructor
@@ -40,16 +40,20 @@ namespace ICSharpCode.Reports.Core
 
 		#region privates
 
+		/*
 		private string CheckForNullValue()
 		{
+		
 			if (String.IsNullOrEmpty(this.dbValue)) {
 				if (String.IsNullOrEmpty(this.NullValue)) {
 					return GlobalValues.UnboundName;
 				} else
 					return this.NullValue;
 			}
+			
 			return this.dbValue;
 		}
+*/
 
 		#endregion
 
@@ -57,10 +61,10 @@ namespace ICSharpCode.Reports.Core
 
 		public new BaseExportColumn CreateExportColumn()
 		{
-			string toPrint = CheckForNullValue();
+//			string toPrint = CheckForNullValue();
 			TextStyleDecorator st = base.CreateItemStyle();
 			ExportText item = new ExportText(st, false);
-			item.Text = StandardFormatter.FormatOutput(toPrint, this.FormatString, base.DataType, this.NullValue);
+			item.Text = StandardFormatter.FormatOutput(DBValue, this.FormatString, base.DataType, this.NullValue);
 
 			return item;
 		}
@@ -69,8 +73,8 @@ namespace ICSharpCode.Reports.Core
 
 		public override void Render(ReportPageEventArgs rpea)
 		{
-			string toPrint = CheckForNullValue();
-			base.Text = StandardFormatter.FormatOutput(toPrint, this.FormatString, base.DataType, this.NullValue);
+//			string toPrint = CheckForNullValue();
+			base.Text = StandardFormatter.FormatOutput(DBValue, this.FormatString, base.DataType, this.NullValue);
 			base.Render(rpea);
 		}
 
@@ -83,17 +87,11 @@ namespace ICSharpCode.Reports.Core
 
 		[XmlIgnoreAttribute()]
 		[Browsable(false)]
-		public virtual string DBValue {
-			get { return dbValue; }
-			set { dbValue = value; }
-		}
-
+		public virtual string DBValue {get;set;}
+			
 
 		public virtual string ColumnName {
 			get {
-				if (String.IsNullOrEmpty(columnName)) {
-					this.columnName = GlobalValues.UnboundName;
-				}
 				return columnName;
 			}
 			set {
