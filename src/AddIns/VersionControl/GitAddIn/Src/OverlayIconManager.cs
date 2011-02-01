@@ -103,11 +103,7 @@ namespace ICSharpCode.GitAddIn
 				try {
 					RunStep(node);
 				} catch (Exception ex) {
-					#if SD4
 					MessageService.ShowException(ex);
-					#else
-					MessageService.ShowError(ex);
-					#endif
 				}
 			}
 		}

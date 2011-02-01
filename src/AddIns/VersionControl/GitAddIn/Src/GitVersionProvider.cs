@@ -2,6 +2,7 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Runtime.InteropServices;
@@ -77,26 +78,33 @@ namespace ICSharpCode.GitAddIn
 			if (!Git.IsInWorkingCopy(fileName))
 				return null;
 			
-			return OpenOutput(fileName, GetBlobHash(fileName));
+			string git = Git.FindGit();
+			if (git == null)
+				return null;
+			
+			return OpenOutput(git, fileName, GetBlobHash(git, fileName));
 		}
 		
-		string GetBlobHash(string fileName)
+		string GetBlobHash(string gitExe, string fileName)
 		{
 			ProcessRunner runner = new ProcessRunner();
 			runner.WorkingDirectory = Path.GetDirectoryName(fileName);
-			runner.Start("cmd", "/c git ls-tree HEAD " + Path.GetFileName(fileName));
+			runner.Start(gitExe, "ls-tree HEAD " + Path.GetFileName(fileName));
+			
+			string blobHash = null;
+			runner.OutputLineReceived += delegate(object sender, LineReceivedEventArgs e) {
+				string[] parts = e.Line.Split(new[] { " ", "\t" }, StringSplitOptions.RemoveEmptyEntries);
+				if (parts.Length >= 3) {
+					if (parts[2].Length == 40)
+						blobHash = parts[2];
+				}
+			};
+			
 			runner.WaitForExit();
-			
-			string output = runner.StandardOutput.Trim();
-			string[] parts = output.Split(new[] { " ", "\t" }, StringSplitOptions.RemoveEmptyEntries);
-			
-			if (parts.Length < 3)
-				return null;
-			
-			return parts[2];
+			return blobHash;
 		}
 		
-		Stream OpenOutput(string fileName, string blobHash)
+		Stream OpenOutput(string gitExe, string fileName, string blobHash)
 		{
 			if (blobHash == null)
 				return null;
@@ -112,8 +120,12 @@ namespace ICSharpCode.GitAddIn
 			
 			PROCESS_INFORMATION procInfo;
 			
-			if (!CreateProcess(null, string.Format("cmd /c git cat-file blob {0}", blobHash),
-			                   IntPtr.Zero, IntPtr.Zero, true, 0, IntPtr.Zero, Path.GetDirectoryName(fileName), ref startupInfo,
+			string commandLine = "\"" + gitExe + "\" cat-file blob " + blobHash;
+			string workingDir = Path.GetDirectoryName(fileName);
+			Debug.WriteLine(workingDir + "> " + commandLine);
+			const uint CREATE_NO_WINDOW = 0x08000000;
+			if (!CreateProcess(null, commandLine,
+			                   IntPtr.Zero, IntPtr.Zero, true, CREATE_NO_WINDOW, IntPtr.Zero, workingDir, ref startupInfo,
 			                   out procInfo)) {
 				pipe.DisposeLocalCopyOfClientHandle();
 				pipe.Close();
