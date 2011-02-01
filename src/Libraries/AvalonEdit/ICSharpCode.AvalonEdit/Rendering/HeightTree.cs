@@ -60,7 +60,24 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			this.weakLineTracker = null;
 		}
 		
-		public double DefaultLineHeight { get; set; }
+		double defaultLineHeight;
+		
+		public double DefaultLineHeight {
+			get { return defaultLineHeight; }
+			set {
+				double oldValue = defaultLineHeight;
+				if (oldValue == value)
+					return;
+				defaultLineHeight = value;
+				// update the stored value in all nodes:
+				foreach (var node in AllNodes) {
+					if (node.lineNode.height == oldValue) {
+						node.lineNode.height = value;
+						UpdateAugmentedData(node, UpdateAfterChildrenChangeRecursionMode.IfRequired);
+					}
+				}
+			}
+		}
 		
 		HeightTreeNode GetNode(DocumentLine ls)
 		{
@@ -87,7 +104,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			HeightTreeNode[] nodes = new HeightTreeNode[document.LineCount];
 			int lineNumber = 0;
 			foreach (DocumentLine ls in document.Lines) {
-				HeightTreeNode node = new HeightTreeNode(ls, DefaultLineHeight);
+				HeightTreeNode node = new HeightTreeNode(ls, defaultLineHeight);
 				dict.Add(ls, node);
 				nodes[lineNumber++] = node;
 			}
@@ -167,7 +184,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		HeightTreeNode InsertAfter(HeightTreeNode node, DocumentLine newLine)
 		{
-			HeightTreeNode newNode = new HeightTreeNode(newLine, DefaultLineHeight);
+			HeightTreeNode newNode = new HeightTreeNode(newLine, defaultLineHeight);
 			dict.Add(newLine, newNode);
 			if (node.right == null) {
 				if (node.lineNode.collapsedSections != null) {
