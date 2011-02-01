@@ -58,7 +58,24 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			this.weakLineTracker = null;
 		}
 		
-		public double DefaultLineHeight { get; set; }
+		double defaultLineHeight;
+		
+		public double DefaultLineHeight {
+			get { return defaultLineHeight; }
+			set {
+				double oldValue = defaultLineHeight;
+				if (oldValue == value)
+					return;
+				defaultLineHeight = value;
+				// update the stored value in all nodes:
+				foreach (var node in AllNodes) {
+					if (node.lineNode.height == oldValue) {
+						node.lineNode.height = value;
+						UpdateAugmentedData(node, UpdateAfterChildrenChangeRecursionMode.IfRequired);
+					}
+				}
+			}
+		}
 		
 		HeightTreeNode GetNode(DocumentLine ls)
 		{
@@ -84,7 +101,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			HeightTreeNode[] nodes = new HeightTreeNode[document.LineCount];
 			int lineNumber = 0;
 			foreach (DocumentLine ls in document.Lines) {
-				nodes[lineNumber++] = new HeightTreeNode(ls, DefaultLineHeight);
+				nodes[lineNumber++] = new HeightTreeNode(ls, defaultLineHeight);
 			}
 			Debug.Assert(nodes.Length > 0);
 			// now build the corresponding balanced tree
@@ -161,7 +178,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		HeightTreeNode InsertAfter(HeightTreeNode node, DocumentLine newLine)
 		{
-			HeightTreeNode newNode = new HeightTreeNode(newLine, DefaultLineHeight);
+			HeightTreeNode newNode = new HeightTreeNode(newLine, defaultLineHeight);
 			if (node.right == null) {
 				if (node.lineNode.collapsedSections != null) {
 					// we are inserting directly after node - so copy all collapsedSections

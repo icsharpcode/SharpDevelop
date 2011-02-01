@@ -529,25 +529,36 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		#endregion
 		
+		System.Windows.WindowState lastNonMinimizedWindowState = System.Windows.WindowState.Normal;
+		Rect restoreBoundsBeforeClosing;
+		
+		protected override void OnStateChanged(EventArgs e)
+		{
+			base.OnStateChanged(e);
+			if (this.WindowState != System.Windows.WindowState.Minimized)
+				lastNonMinimizedWindowState = this.WindowState;
+		}
+		
 		public Properties CreateMemento()
 		{
 			Properties prop = new Properties();
-			prop.Set("WindowState", this.WindowState);
-			if (this.WindowState == System.Windows.WindowState.Normal) {
-				prop.Set("Left", this.Left);
-				prop.Set("Top", this.Top);
-				prop.Set("Width", this.Width);
-				prop.Set("Height", this.Height);
+			prop.Set("WindowState", lastNonMinimizedWindowState);
+			var bounds = this.RestoreBounds;
+			if (bounds.IsEmpty) bounds = restoreBoundsBeforeClosing;
+			if (!bounds.IsEmpty) {
+				prop.Set("Bounds", bounds);
 			}
 			return prop;
 		}
 		
 		public void SetMemento(Properties memento)
 		{
-			this.Left = memento.Get("Left", 10.0);
-			this.Top = memento.Get("Top", 10.0);
-			this.Width = memento.Get("Width", 600.0);
-			this.Height = memento.Get("Height", 400.0);
+			Rect bounds = memento.Get("Bounds", new Rect(10, 10, 750, 550));
+			bounds = FormLocationHelper.Validate(bounds);
+			this.Left = bounds.Left;
+			this.Top = bounds.Top;
+			this.Width = bounds.Width;
+			this.Height = bounds.Height;
 			this.WindowState = memento.Get("WindowState", System.Windows.WindowState.Maximized);
 		}
 		
@@ -573,6 +584,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 				Project.ProjectService.CloseSolution();
 				ParserService.StopParserThread();
+				
+				restoreBoundsBeforeClosing = this.RestoreBounds;
 				
 				this.WorkbenchLayout = null;
 				

@@ -123,7 +123,12 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			Program.Log("In build thread");
 			bool success = false;
 			try {
-				success = buildWrapper.DoBuild(currentJob, new ForwardingLogger(this));
+				if (File.Exists(currentJob.ProjectFileName)) {
+					success = buildWrapper.DoBuild(currentJob, new ForwardingLogger(this));
+				} else {
+					success = false;
+					HostReportEvent(new BuildErrorEventArgs(null, null, currentJob.ProjectFileName, 0, 0, 0, 0, "Project file '" + Path.GetFileName(currentJob.ProjectFileName) + "' not found", null, null));
+				}
 			} catch (Exception ex) {
 				host.Writer.Write("ReportException");
 				host.Writer.Write(ex.ToString());
@@ -297,19 +302,5 @@ namespace ICSharpCode.SharpDevelop.BuildWorker
 			}
 		}
 		#endif
-		
-		[Serializable]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1064:ExceptionsShouldBePublic")]
-		sealed class BuildCancelException : Exception
-		{
-			public BuildCancelException()
-			{
-			}
-			
-			BuildCancelException(SerializationInfo info, StreamingContext context)
-				: base(info, context)
-			{
-			}
-		}
 	}
 }

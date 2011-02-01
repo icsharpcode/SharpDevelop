@@ -206,6 +206,7 @@ namespace ICSharpCode.AvalonEdit.Editing
 								textArea.Document.UndoStack.EndUndoGroup();
 							}
 						}
+						e.Handled = true;
 					}
 				}
 			} catch (Exception ex) {

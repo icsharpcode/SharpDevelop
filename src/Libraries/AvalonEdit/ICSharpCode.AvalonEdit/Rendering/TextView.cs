@@ -1233,18 +1233,15 @@ namespace ICSharpCode.AvalonEdit.Rendering
 					null))
 				{
 					wideSpaceWidth = Math.Max(1, line.WidthIncludingTrailingWhitespace);
-					defaultLineHeight = line.Height;
+					defaultLineHeight = Math.Max(1, line.Height);
 				}
 			} else {
 				wideSpaceWidth = FontSize / 2;
 				defaultLineHeight = FontSize + 3;
 			}
-		}
-		
-		void InvalidateWideSpaceWidthAndDefaultLineHeight()
-		{
-			wideSpaceWidth = 0;
-			defaultLineHeight = 0;
+			// Update heightTree.DefaultLineHeight, if a document is loaded.
+			if (heightTree != null)
+				heightTree.DefaultLineHeight = defaultLineHeight;
 		}
 		
 		static double ValidateVisualOffset(double offset)
@@ -1684,20 +1681,29 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			base.OnPropertyChanged(e);
 			if (TextFormatterFactory.PropertyChangeAffectsTextFormatter(e.Property)) {
-				RecreateCachedElements();
+				// first, create the new text formatter:
 				RecreateTextFormatter();
-				InvalidateWideSpaceWidthAndDefaultLineHeight();
+				// changing text formatter requires recreating the cached elements
+				RecreateCachedElements();
+				// and we need to re-measure the font metrics:
+				MeasureWideSpaceWidthAndDefaultLineHeight();
+			} else if (e.Property == Control.ForegroundProperty
+			           || e.Property == TextView.NonPrintableCharacterBrushProperty)
+			{
+				// changing brushes requires recreating the cached elements
+				RecreateCachedElements();
+				Redraw();
 			}
-			if (e.Property == Control.ForegroundProperty
-			    || e.Property == Control.FontFamilyProperty
+			if (e.Property == Control.FontFamilyProperty
 			    || e.Property == Control.FontSizeProperty
 			    || e.Property == Control.FontStretchProperty
 			    || e.Property == Control.FontStyleProperty
-			    || e.Property == Control.FontWeightProperty
-			    || e.Property == TextView.NonPrintableCharacterBrushProperty)
+			    || e.Property == Control.FontWeightProperty)
 			{
+				// changing font properties requires recreating cached elements
 				RecreateCachedElements();
-				InvalidateWideSpaceWidthAndDefaultLineHeight();
+				// and we need to re-measure the font metrics:
+				MeasureWideSpaceWidthAndDefaultLineHeight();
 				Redraw();
 			}
 		}
