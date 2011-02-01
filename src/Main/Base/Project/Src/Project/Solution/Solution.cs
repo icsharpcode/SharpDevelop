@@ -37,6 +37,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		#region Enumerate projects/folders
 		public IProject FindProjectContainingFile(string fileName)
 		{
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
+			
 			IProject currentProject = ProjectService.CurrentProject;
 			if (currentProject != null && currentProject.IsFileInProject(fileName))
 				return currentProject;
