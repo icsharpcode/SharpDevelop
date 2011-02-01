@@ -15,7 +15,7 @@
 		UpgradeCode="D6355909-87E1-4CC7-81EF-3057D540A103"
 		Version="4.0.$(var.PRODUCTBUILDVERSION)">
 
-		<Package Description="SharpDevelop 4.0.0.$(var.PRODUCTBUILDVERSION)"
+		<Package Description="SharpDevelop 4.0.1.$(var.PRODUCTBUILDVERSION)"
 			InstallerVersion="300"
 			Compressed="yes"/>
 		
