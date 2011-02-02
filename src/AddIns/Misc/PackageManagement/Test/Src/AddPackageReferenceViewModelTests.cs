@@ -16,11 +16,12 @@ namespace PackageManagement.Tests
 	public class AddPackageReferenceViewModelTests
 	{
 		AddPackageReferenceViewModel viewModel;
-		FakePackageManagementService fakePackageManagementService;	
+		FakePackageManagementService fakePackageManagementService;
+		FakeTaskFactory taskFactory;
 		
 		void CreatePackageManagementService()
 		{
-			fakePackageManagementService = new FakePackageManagementService();			
+			fakePackageManagementService = new FakePackageManagementService();
 		}
 		
 		void CreateViewModel()
@@ -31,7 +32,9 @@ namespace PackageManagement.Tests
 		
 		void CreateViewModel(FakePackageManagementService packageManagementService)
 		{
-			viewModel = new AddPackageReferenceViewModel(packageManagementService);
+			taskFactory = new FakeTaskFactory();
+			viewModel = new AddPackageReferenceViewModel(packageManagementService, taskFactory);
+			taskFactory.ExecuteAllFakeTasks();
 		}
 		
 		[Test]
@@ -39,7 +42,7 @@ namespace PackageManagement.Tests
 		{
 			CreatePackageManagementService();
 			var projectManager = new FakeProjectManager();
-			fakePackageManagementService.ActiveProjectManager = projectManager;
+			fakePackageManagementService.FakeActiveProjectManager = projectManager;
 			FakePackage package = new FakePackage();
 			projectManager.FakeLocalRepository.FakePackages.Add(package);
 			CreateViewModel(fakePackageManagementService);

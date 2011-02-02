@@ -24,7 +24,7 @@ namespace ICSharpCode.PackageManagement
 		void CreateAddPackageReferenceViewModel()
 		{
 			CreatePackageManagementService();
-			addPackageReferenceViewModel = new AddPackageReferenceViewModel(packageManagementService);
+			addPackageReferenceViewModel = new AddPackageReferenceViewModel(packageManagementService, new PackageManagementTaskFactory());
 		}
 		
 		void CreatePackageManagementService()

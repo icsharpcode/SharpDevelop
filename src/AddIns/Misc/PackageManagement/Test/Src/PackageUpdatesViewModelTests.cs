@@ -14,13 +14,20 @@ namespace PackageManagement.Tests
 	{
 		PackageUpdatesViewModel viewModel;
 		FakePackageManagementService packageManagementService;
+		FakeTaskFactory taskFactory;
 		
 		void CreateViewModel()
 		{
 			packageManagementService = new FakePackageManagementService();
-			viewModel = new PackageUpdatesViewModel(packageManagementService);
+			taskFactory = new FakeTaskFactory();
+			viewModel = new PackageUpdatesViewModel(packageManagementService, taskFactory);
 		}
 		
+		void CompleteReadPackagesTask()
+		{
+			taskFactory.ExecuteAllFakeTasks();
+		}
+
 		FakePackage AddPackageToLocalRepository(string version)
 		{
 			var package = CreatePackage(version);
@@ -53,6 +60,7 @@ namespace PackageManagement.Tests
 			var newerPackage = AddPackageToSourceRepository("1.1.0.0");
 			
 			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
 			
 			var expectedPackages = new FakePackage[] {
 				newerPackage
@@ -70,6 +78,7 @@ namespace PackageManagement.Tests
 			var newerPackage = AddPackageToSourceRepository("1.1.0.0");
 			
 			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
 			
 			var expectedPackages = new FakePackage[] {
 				newerPackage

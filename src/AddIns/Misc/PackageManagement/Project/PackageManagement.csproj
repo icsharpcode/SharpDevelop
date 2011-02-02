@@ -80,6 +80,7 @@
     <Compile Include="Src\Design\FakePackageRepository.cs" />
     <Compile Include="Src\Design\FakeProjectManager.cs" />
     <Compile Include="Src\Design\WpfDesigner.cs" />
+    <Compile Include="Src\PackagesForSelectedPageResult.cs" />
     <Compile Include="Src\ILicenseAcceptanceService.cs" />
     <Compile Include="Src\InstalledPackagesViewModel.cs" />
     <Compile Include="Src\IPackageManagementFileService.cs" />
@@ -91,6 +92,8 @@
     <Compile Include="Src\ISharpDevelopPackageRepositoryFactory.cs" />
     <Compile Include="Src\ISharpDevelopProjectManager.cs" />
     <Compile Include="Src\ISharpDevelopProjectSystemFactory.cs" />
+    <Compile Include="Src\ITask.cs" />
+    <Compile Include="Src\ITaskFactory.cs" />
     <Compile Include="Src\LicenseAcceptanceService.cs" />
     <Compile Include="Src\LicenseAcceptanceView.xaml.cs">
       <DependentUpon>LicenseAcceptanceView.xaml</DependentUpon>
@@ -109,6 +112,8 @@
     <Compile Include="Src\PackageManagementProjectService.cs" />
     <Compile Include="Src\PackageManagementEnumerableExtensions.cs" />
     <Compile Include="Src\PackageManagementService.cs" />
+    <Compile Include="Src\PackageManagementTask.cs" />
+    <Compile Include="Src\PackageManagementTaskFactory.cs" />
     <Compile Include="Src\PackageRepositoryPaths.cs" />
     <Compile Include="Src\PackageSourceConverter.cs" />
     <Compile Include="Src\PackageSourceViewModel.cs" />

@@ -24,33 +24,62 @@ namespace ICSharpCode.PackageManagement
 		
 		IPackageManagementService packageManagementService;
 		IPackageViewModelFactory packageViewModelFactory;
+		ITaskFactory taskFactory;
 		IProjectManager projectManager;
 		IEnumerable<IPackage> allPackages;
 		string searchTerms;
+		bool isReadingPackages;
+		ITask<PackagesForSelectedPageResult> task;
+		int totalItems;
+		bool hasError;
+		string errorMessage = String.Empty;
 		
-		public PackagesViewModel(IPackageManagementService packageManagementService)
-			: this(packageManagementService, new LicenseAcceptanceService())
+		public PackagesViewModel(IPackageManagementService packageManagementService, ITaskFactory taskFactory)
+			: this(
+				packageManagementService,
+				new LicenseAcceptanceService(),
+				taskFactory)
 		{
 		}
 		
 		public PackagesViewModel(
 			IPackageManagementService packageManagementService,
-			ILicenseAcceptanceService licenseAcceptanceService)
+			ILicenseAcceptanceService licenseAcceptanceService,
+			ITaskFactory taskFactory)
 			: this(
 				packageManagementService, 
-				new PackageViewModelFactory(packageManagementService, licenseAcceptanceService))
+				new PackageViewModelFactory(packageManagementService, licenseAcceptanceService),
+				taskFactory)
 		{
 		}
 		
 		public PackagesViewModel(
 			IPackageManagementService packageManagementService, 
-			IPackageViewModelFactory packageViewModelFactory)
+			IPackageViewModelFactory packageViewModelFactory,
+			ITaskFactory taskFactory)
 		{
 			this.packageManagementService = packageManagementService;
 			this.packageViewModelFactory = packageViewModelFactory;
-			this.projectManager = packageManagementService.ActiveProjectManager;
+			this.taskFactory = taskFactory;
 			
+			GetActiveProjectManager();
+
 			CreateCommands();
+		}
+		
+		void GetActiveProjectManager()
+		{
+			try {
+				this.projectManager = packageManagementService.ActiveProjectManager;
+			} catch (Exception ex) {
+				SaveError(ex);
+			}
+		}
+		
+		void SaveError(Exception ex)
+		{
+			hasError = true;
+			errorMessage = ex.Message;
 		}
 		
 		void CreateCommands()
@@ -77,6 +106,14 @@ namespace ICSharpCode.PackageManagement
 			get { return searchCommand; }
 		}
 		
+		public bool HasError {
+			get { return hasError; }
+		}
+		
+		public string ErrorMessage {
+			get { return errorMessage; }
+		}
+		
 		public ObservableCollection<PackageViewModel> PackageViewModels {
 			get { return packageViewModels; }
 			set { packageViewModels = value; }
@@ -90,28 +127,74 @@ namespace ICSharpCode.PackageManagement
 			get { return projectManager; }
 		}
 		
+		public bool IsReadingPackages {
+			get { return isReadingPackages; }
+		}
+		
 		public void ReadPackages()
 		{
 			allPackages = null;
 			SelectedPageNumber = 1;
-			UpdatePackageViewModels();
+			StartReadPackagesTask();
+		}
+		
+		void StartReadPackagesTask()
+		{
+			isReadingPackages = true;
+			ClearPackages();
+			CancelReadPackagesTask();
+			CreateReadPackagesTask();
+			task.Start();
+		}
+		
+		void CancelReadPackagesTask()
+		{
+			if (task != null) {
+				task.Cancel();
+			}
+		}
+		
+		void CreateReadPackagesTask()
+		{
+			task = taskFactory.CreateTask(
+				() => GetPackagesForSelectedPageResult(),
+				(result) => OnPackagesReadForSelectedPage(result));
+		}
+		
+		PackagesForSelectedPageResult GetPackagesForSelectedPageResult()
+		{
+			IEnumerable<IPackage> packages = GetPackagesForSelectedPage();
+			return new PackagesForSelectedPageResult(packages, totalItems);
+		}
+		
+		void OnPackagesReadForSelectedPage(ITask<PackagesForSelectedPageResult> task)
+		{
+			isReadingPackages = false;
+			if (task.IsFaulted) {
+				SaveError(task.Exception);
+			} else if (task.IsCancelled) {
+				// Ignore
+			} else {
+				UpdatePackagesForSelectedPage(task.Result);
+			}
+			base.OnPropertyChanged(null);
+		}
+		
+		void UpdatePackagesForSelectedPage(PackagesForSelectedPageResult result)
+		{			
+			pages.CollectionChanged -= PagesChanged;
+			
+			pages.TotalItems = result.TotalPackages;
+			pages.TotalItemsOnSelectedPage = result.TotalPackagesOnPage;
+			UpdatePackageViewModels(result.Packages);
+			
+			pages.CollectionChanged += PagesChanged;
 		}
 		
 		void PagesChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			UpdatePackageViewModels();
+			StartReadPackagesTask();
 			base.OnPropertyChanged(null);
-		}
-		
-		void UpdatePackageViewModels()
-		{
-			pages.CollectionChanged -= PagesChanged;
-			
-			IEnumerable<IPackage> packages = GetPackagesForSelectedPage();
-			pages.TotalItemsOnSelectedPage = packages.Count();
-			UpdatePackageViewModels(packages);
-			
-			pages.CollectionChanged += PagesChanged;
 		}
 		
 		IEnumerable<IPackage> GetPackagesForSelectedPage()
@@ -120,23 +203,23 @@ namespace ICSharpCode.PackageManagement
 			return GetPackagesForSelectedPage(filteredPackages);
 		}
 		
+		IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults()
+		{
+			if (allPackages == null) {
+				IQueryable<IPackage> packages = GetAllPackages();
+				packages = packages.Find(searchTerms);
+				totalItems = packages.Count();
+				allPackages = GetFilteredPackagesBeforePagingResults(packages);
+			}
+			return allPackages;
+		}
+		
 		IEnumerable<IPackage> GetPackagesForSelectedPage(IEnumerable<IPackage> allPackages)
 		{
 			int packagesToSkip = pages.ItemsBeforeFirstPage;
 			return allPackages
 				.Skip(packagesToSkip)
 				.Take(pages.PageSize);
-		}
-		
-		IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults()
-		{
-			if (allPackages == null) {
-				IQueryable<IPackage> packages = GetAllPackages();
-				packages = packages.Find(searchTerms);
-				pages.TotalItems = packages.Count();
-				allPackages = GetFilteredPackagesBeforePagingResults(packages);
-			}
-			return allPackages;
 		}
 		
 		/// <summary>
@@ -170,8 +253,13 @@ namespace ICSharpCode.PackageManagement
 		
 		void UpdatePackageViewModels(IEnumerable<PackageViewModel> newPackageViewModels)
 		{
-			PackageViewModels.Clear();
+			ClearPackages();
 			PackageViewModels.AddRange(newPackageViewModels);
+		}
+		
+		void ClearPackages()
+		{
+			PackageViewModels.Clear();
 		}
 		
 		public IEnumerable<PackageViewModel> ConvertToPackageViewModels(IEnumerable<IPackage> packages)
@@ -215,6 +303,10 @@ namespace ICSharpCode.PackageManagement
 		public int MaximumSelectablePages {
 			get { return pages.MaximumSelectablePages; }
 			set { pages.MaximumSelectablePages = value; }
+		}
+		
+		public int TotalItems {
+			get { return totalItems; }
 		}
 		
 		public void ShowNextPage()

@@ -232,6 +232,14 @@
 				ItemsSource="{Binding Path=PackageViewModels}"
 				HorizontalContentAlignment="Stretch"
 				ScrollViewer.HorizontalScrollBarVisibility="Disabled"/>
+			<ProgressBar
+				Grid.Row="0"
+				Height="20"
+				Width="100"
+				IsIndeterminate="True"
+				Visibility="{Binding Path=IsReadingPackages, Converter={StaticResource BoolToVisibility}}"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"/>
 			<pm:PagedResultsView
 				x:Name="pagedResultsView"
 				Grid.Row="1"

@@ -77,6 +77,8 @@
     <Compile Include="Src\Helpers\FakePackageManagementProjectService.cs" />
     <Compile Include="Src\Helpers\FakePackagePathResolver.cs" />
     <Compile Include="Src\Helpers\FakePackageTests.cs" />
+    <Compile Include="Src\Helpers\FakeTask.cs" />
+    <Compile Include="Src\Helpers\FakeTaskFactory.cs" />
     <Compile Include="Src\Helpers\FileProjectItemAssert.cs" />
     <Compile Include="Src\Helpers\PackageCollectionAssert.cs" />
     <Compile Include="Src\Helpers\PackageSourceCollectionAssert.cs" />

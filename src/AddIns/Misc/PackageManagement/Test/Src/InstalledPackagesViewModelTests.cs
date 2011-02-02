@@ -6,6 +6,7 @@ using ICSharpCode.PackageManagement;
 using ICSharpCode.PackageManagement.Design;
 using NuGet;
 using NUnit.Framework;
+using PackageManagement.Tests.Helpers;
 
 namespace PackageManagement.Tests
 {
@@ -14,11 +15,23 @@ namespace PackageManagement.Tests
 	{
 		InstalledPackagesViewModel viewModel;
 		FakePackageManagementService packageManagementService;
+		FakeTaskFactory taskFactory;
 		
 		void CreateViewModel()
 		{
 			packageManagementService = new FakePackageManagementService();
-			viewModel = new InstalledPackagesViewModel(packageManagementService);
+			taskFactory = new FakeTaskFactory();
+			viewModel = new InstalledPackagesViewModel(packageManagementService, taskFactory);
+		}
+		
+		void CompleteReadPackagesTask()
+		{
+			taskFactory.ExecuteAllFakeTasks();
+		}
+		
+		void ClearReadPackagesTasks()
+		{
+			taskFactory.ClearAllFakeTasks();
 		}
 		
 		[Test]
@@ -26,12 +39,15 @@ namespace PackageManagement.Tests
 		{
 			CreateViewModel();
 			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
 			FakePackage package = new FakePackage();
 			package.Id = "Test";
 			FakePackageRepository repository = packageManagementService.FakeActiveProjectManager.FakeLocalRepository;
 			repository.FakePackages.Add(package);
 			
+			ClearReadPackagesTasks();
 			packageManagementService.FirePackageInstalled();
+			CompleteReadPackagesTask();
 		
 			IPackage firstPackage = viewModel.PackageViewModels[0].GetPackage();
 			Assert.AreEqual(package, firstPackage);
@@ -46,10 +62,13 @@ namespace PackageManagement.Tests
 			FakePackageRepository repository = packageManagementService.FakeActiveProjectManager.FakeLocalRepository;
 			repository.FakePackages.Add(package);
 			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
 			
 			repository.FakePackages.Clear();
 			
+			ClearReadPackagesTasks();
 			packageManagementService.FirePackageUninstalled();
+			CompleteReadPackagesTask();
 		
 			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
 		}

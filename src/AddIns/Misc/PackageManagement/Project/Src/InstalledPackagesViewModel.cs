@@ -10,8 +10,10 @@ namespace ICSharpCode.PackageManagement
 {
 	public class InstalledPackagesViewModel : PackagesViewModel
 	{
-		public InstalledPackagesViewModel(IPackageManagementService packageManagementService)
-			: base(packageManagementService)
+		public InstalledPackagesViewModel(
+			IPackageManagementService packageManagementService,
+			ITaskFactory taskFactory)
+			: base(packageManagementService, taskFactory)
 		{
 			packageManagementService.PackageInstalled += PackageInstalled;
 			packageManagementService.PackageUninstalled += PackageUninstalled;

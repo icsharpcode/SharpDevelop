@@ -38,10 +38,8 @@ namespace ICSharpCode.PackageManagement.Design
 		public IPackageRepository RepositoryPassedToUninstallPackage;
 		public IPackage PackagePassedToUninstallPackage;
 		
-		public FakeProjectManager FakeActiveProjectManager {
-			get { return ActiveProjectManager as FakeProjectManager; }
-			set { ActiveProjectManager = value; }
-		}
+		public FakeProjectManager FakeActiveProjectManager { get; set; }
+		
 		public FakePackageRepository FakeActivePackageRepository {
 			get { return ActivePackageRepository as FakePackageRepository; }
 			set { ActivePackageRepository = value; }
@@ -55,7 +53,15 @@ namespace ICSharpCode.PackageManagement.Design
 		}
 		
 		public IPackageRepository ActivePackageRepository { get; set; }
-		public IProjectManager ActiveProjectManager { get; set; }
+		
+		public IProjectManager ActiveProjectManager {
+			get {
+				if (ActiveProjectManagerExeptionToThrow != null) {
+					throw ActiveProjectManagerExeptionToThrow;
+				}
+				return FakeActiveProjectManager;
+			}
+		}
 		
 		public void InstallPackage(IPackageRepository repository, IPackage package)
 		{
@@ -117,5 +123,7 @@ namespace ICSharpCode.PackageManagement.Design
 		{
 			return FakeAggregateRepository;
 		}
+		
+		public Exception ActiveProjectManagerExeptionToThrow { get; set; }
 	}
 }

@@ -14,6 +14,7 @@ namespace PackageManagement.Tests.Helpers
 	public class TestablePackagesViewModel : PackagesViewModel
 	{
 		public FakePackageManagementService FakePackageManagementService;
+		public FakeTaskFactory FakeTaskFactory;
 		public List<FakePackage> FakePackages = new List<FakePackage>();
 		public int GetAllPackagesCallCount;
 		public int PageCountBeforePackagesFiltered;
@@ -24,9 +25,15 @@ namespace PackageManagement.Tests.Helpers
 		}
 		
 		public TestablePackagesViewModel(FakePackageManagementService packageManagementService)
-			: base(packageManagementService)
+			: this(packageManagementService, new FakeTaskFactory())
+		{
+		}
+		
+		public TestablePackagesViewModel(FakePackageManagementService packageManagementService, FakeTaskFactory taskFactory)
+			: base(packageManagementService, taskFactory)
 		{
 			FakePackageManagementService = packageManagementService;
+			FakeTaskFactory = taskFactory;
 		}
 		
 		public void AddOneFakePackage()

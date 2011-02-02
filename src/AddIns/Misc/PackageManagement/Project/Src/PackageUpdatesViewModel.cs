@@ -14,8 +14,10 @@ namespace ICSharpCode.PackageManagement
 		List<IPackage> packages = new List<IPackage>();
 		IPackageManagementService packageManagementService;
 		
-		public PackageUpdatesViewModel(IPackageManagementService packageManagementService)
-			: base(packageManagementService)
+		public PackageUpdatesViewModel(
+			IPackageManagementService packageManagementService,
+			ITaskFactory taskFactory)
+			: base(packageManagementService, taskFactory)
 		{
 			this.packageManagementService = packageManagementService;
 		}

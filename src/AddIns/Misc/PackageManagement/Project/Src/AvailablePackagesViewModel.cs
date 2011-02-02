@@ -11,8 +11,10 @@ namespace ICSharpCode.PackageManagement
 {
 	public class AvailablePackagesViewModel : PackagesViewModel
 	{
-		public AvailablePackagesViewModel(IPackageManagementService packageManagementService)
-			: base(packageManagementService)
+		public AvailablePackagesViewModel(
+			IPackageManagementService packageManagementService,
+			ITaskFactory taskFactory)
+			: base(packageManagementService, taskFactory)
 		{
 			IsSearchable = true;
 			ShowPackageSources = packageManagementService.HasMultiplePackageSources;

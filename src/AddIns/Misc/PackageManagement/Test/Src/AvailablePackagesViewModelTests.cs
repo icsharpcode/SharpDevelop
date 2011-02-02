@@ -16,6 +16,7 @@ namespace PackageManagement.Tests
 	{
 		AvailablePackagesViewModel viewModel;
 		FakePackageManagementService packageManagementService;
+		FakeTaskFactory taskFactory = new FakeTaskFactory();
 		
 		void CreateViewModel()
 		{
@@ -30,9 +31,20 @@ namespace PackageManagement.Tests
 		
 		void CreateViewModel(IPackageManagementService packageManagementService)
 		{
-			viewModel = new AvailablePackagesViewModel(packageManagementService);
+			taskFactory = new FakeTaskFactory();
+			viewModel = new AvailablePackagesViewModel(packageManagementService, taskFactory);
 		}
 		
+		void CompleteReadPackagesTask()
+		{
+			taskFactory.ExecuteAllFakeTasks();
+		}
+		
+		void ClearReadPackagesTasks()
+		{
+			taskFactory.ClearAllFakeTasks();
+		}
+
 		void AddOnePackageSourceToRegisteredSources()
 		{
 			packageManagementService.ClearPackageSources();
@@ -70,7 +82,8 @@ namespace PackageManagement.Tests
 			AddTwoPackageSourcesToRegisteredSources();
 			CreateViewModel(packageManagementService);
 			packageManagementService.ActivePackageSource = packageManagementService.Options.PackageSources[0];
-			viewModel.ReadPackages();	
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
 			CreateNewActiveRepositoryWithDifferentPackages();
 		}
 		
@@ -110,6 +123,7 @@ namespace PackageManagement.Tests
 			packageManagementService.FakeActivePackageRepository.FakePackages.AddRange(packages);
 			
 			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
 			
 			var expectedPackages = new FakePackage[] {
 				package3
@@ -152,9 +166,12 @@ namespace PackageManagement.Tests
 			packageManagementService.FakeActivePackageRepository.FakePackages.AddRange(packages);
 			
 			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
 			
+			ClearReadPackagesTasks();
 			viewModel.SearchTerms = "NotAMatch";
 			viewModel.Search();
+			CompleteReadPackagesTask();
 			
 			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
 		}
@@ -192,10 +209,13 @@ namespace PackageManagement.Tests
 			packageManagementService.FakeActivePackageRepository.FakePackages.AddRange(packages);
 			
 			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
 			
+			ClearReadPackagesTasks();
 			bool collectionChangedEventFired = false;
 			viewModel.Pages.CollectionChanged += (sender, e) => collectionChangedEventFired = true;
 			viewModel.ShowNextPage();
+			CompleteReadPackagesTask();
 			
 			var expectedPackages = new FakePackage[] {
 				package4
@@ -281,7 +301,9 @@ namespace PackageManagement.Tests
 		public void SelectedPackageSource_PackageSourceChangedAfterReadingPackages_PackagesReadFromNewPackageSourceAndDisplayed()
 		{
 			SetUpTwoPackageSourcesAndViewModelHasReadPackages();
+			ClearReadPackagesTasks();
 			ChangeSelectedPackageSourceToSecondSource();
+			CompleteReadPackagesTask();
 			
 			var expectedPackages = packageManagementService.FakeActivePackageRepository.FakePackages;
 			
@@ -295,7 +317,9 @@ namespace PackageManagement.Tests
 			
 			int packageCountWhenPropertyChangedEventFired = -1;
 			viewModel.PropertyChanged += (sender, e) => packageCountWhenPropertyChangedEventFired = viewModel.PackageViewModels.Count;
+			ClearReadPackagesTasks();
 			ChangeSelectedPackageSourceToSecondSource();
+			CompleteReadPackagesTask();
 			
 			Assert.AreEqual(1, packageCountWhenPropertyChangedEventFired);
 		}
