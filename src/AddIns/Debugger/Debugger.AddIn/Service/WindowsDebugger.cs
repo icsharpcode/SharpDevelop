@@ -141,13 +141,14 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 
 			if (FileUtility.IsUrl(processStartInfo.FileName)) {
-				var project = ProjectService.OpenSolution.Preferences.StartupProject as CompilableProject;
-				var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);				
-				if (!CheckWebProjectStartInfo(project, options))
+				if (!CheckWebProjectStartInfo())
 					return;
 				
+				var project = ProjectService.OpenSolution.Preferences.StartupProject as CompilableProject;
+				var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
 				System.Diagnostics.Process defaultAppProcess = null;
-				if (options.Data.WebServer != WebServer.None) {					
+				
+				if (options.Data.WebServer != WebServer.None) {
 					string processName = WebProjectService.WorkerProcessName;
 					
 					// try find the worker process directly or using the process monitor callback
@@ -293,10 +294,11 @@ namespace ICSharpCode.SharpDevelop.Services
 		public void StartWithoutDebugging(ProcessStartInfo processStartInfo)
 		{
 			if (FileUtility.IsUrl(processStartInfo.FileName)) {
-				var project = ProjectService.OpenSolution.Preferences.StartupProject as CompilableProject;
-				var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);				
-				if (!CheckWebProjectStartInfo(project, options))
+				if (!CheckWebProjectStartInfo())
 					return;
+				
+				var project = ProjectService.OpenSolution.Preferences.StartupProject as CompilableProject;
+				var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
 				
 				if (options.Data.WebServer != WebServer.None) {
 					string processName = WebProjectService.WorkerProcessName;
@@ -359,14 +361,25 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		bool CheckWebProjectStartInfo(CompilableProject project, WebProjectOptions options)
+		bool CheckWebProjectStartInfo()
 		{
+			// check if we have startup project
+			var project = ProjectService.OpenSolution.Preferences.StartupProject as CompilableProject;
 			if (project == null) {
-				MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoStartupProject}");
+				MessageService.ShowError("${res:ICSharpCode.NoStartupProject}");
 				return false;
 			}
 			
-			if (options == null || options.Data == null) {
+			// check if we have options
+			if (WebProjectsOptions.Instance == null) {
+				MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
+				return false;
+			}
+			
+			// check the options
+			var options = WebProjectsOptions.Instance.GetWebProjectOptions(project.Name);
+			if (options == null || options.Data == null || string.IsNullOrEmpty(options.ProjectName) ||
+			    options.Data.WebServer == WebServer.None) {
 				MessageService.ShowError("${res:ICSharpCode.WepProjectOptionsPanel.NoProjectUrlOrProgramAction}");
 				return false;
 			}
@@ -886,7 +899,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		}
 		
 		void process_Modules_Added(object sender, CollectionItemEventArgs<Module> e)
-        {
+		{
 			if (ProjectService.OpenSolution == null ||
 			    ProjectService.OpenSolution.Projects == null ||
 			    ProjectService.OpenSolution.Projects.Count() == 0)
@@ -894,9 +907,9 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			if (e == null || e.Item == null) return;
 			
-            ProjectService.OpenSolution.Projects
-                .Where(p => e.Item.Name.IndexOf(p.Name) >= 0)
-            	.ForEach(p => e.Item.LoadSymbolsFromDisk(new []{ Path.GetDirectoryName(p.OutputAssemblyFullPath) }));
-        }
+			ProjectService.OpenSolution.Projects
+				.Where(p => e.Item.Name.IndexOf(p.Name) >= 0)
+				.ForEach(p => e.Item.LoadSymbolsFromDisk(new []{ Path.GetDirectoryName(p.OutputAssemblyFullPath) }));
+		}
 	}
 }
