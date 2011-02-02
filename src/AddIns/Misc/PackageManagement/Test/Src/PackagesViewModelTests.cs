@@ -1079,8 +1079,10 @@ namespace PackageManagement.Tests
 			CreateViewModel();
 			viewModel.AddSixFakePackages();
 			viewModel.ReadPackages();
-			AggregateException ex = new AggregateException("Test");
-			taskFactory.FirstFakeTaskCreated.Exception = ex;
+			
+			Exception ex = new Exception("Test");
+			AggregateException aggregateEx = new AggregateException(ex);
+			taskFactory.FirstFakeTaskCreated.Exception = aggregateEx;
 			taskFactory.FirstFakeTaskCreated.IsFaulted = true;
 			CompleteReadPackagesTask();
 			
@@ -1088,13 +1090,34 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void Constructor_ActiveProjectManagerThrowsException_HasErrorReturnsTrue()
+		public void HasError_ErrorMessageDisplayedAndReadPackagesRetriedAfterFailure_ReturnsFalse()
 		{
-			CreatePackageManagementService();
-			packageManagementService.ActiveProjectManagerExeptionToThrow = new Exception();
-			CreateViewModel(packageManagementService);
+			CreateViewModel();
+			viewModel.ReadPackages();
+			taskFactory.FirstFakeTaskCreated.IsFaulted = true;
+			CompleteReadPackagesTask();
+			viewModel.ReadPackages();
 			
-			Assert.IsTrue(viewModel.HasError);
+			Assert.IsFalse(viewModel.HasError);
+		}
+		
+		[Test]
+		public void HasError_ErrorMessageDisplayedAndSelectedPageChangedAfterFailure_ReturnsFalse()
+		{
+			CreateViewModel();
+			viewModel.PageSize = 2;
+			viewModel.AddSixFakePackages();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			ClearReadPackagesTasks();
+			
+			viewModel.SelectedPageNumber = 2;
+			taskFactory.FirstFakeTaskCreated.IsFaulted = true;
+			CompleteReadPackagesTask();
+			
+			viewModel.SelectedPageNumber = 3;
+			
+			Assert.IsFalse(viewModel.HasError);
 		}
 	}
 }

@@ -19,9 +19,19 @@ namespace PackageManagement.Tests
 		
 		void CreateViewModel()
 		{
+			CreatePackageManagementService();
+			CreateViewModel(packageManagementService);
+		}
+		
+		void CreatePackageManagementService()
+		{
 			packageManagementService = new FakePackageManagementService();
+		}
+		
+		void CreateViewModel(FakePackageManagementService packageManagementService)
+		{
 			taskFactory = new FakeTaskFactory();
-			viewModel = new InstalledPackagesViewModel(packageManagementService, taskFactory);
+			viewModel = new InstalledPackagesViewModel(packageManagementService, taskFactory);			
 		}
 		
 		void CompleteReadPackagesTask()
@@ -71,6 +81,38 @@ namespace PackageManagement.Tests
 			CompleteReadPackagesTask();
 		
 			Assert.AreEqual(0, viewModel.PackageViewModels.Count);
+		}
+		
+		[Test]
+		public void HasError_ActiveProjectManagerThrowsException_ReturnsTrue()
+		{
+			CreatePackageManagementService();
+			packageManagementService.ActiveProjectManagerExeptionToThrow = new Exception();
+			CreateViewModel(packageManagementService);
+			
+			Assert.IsTrue(viewModel.HasError);
+		}
+		
+		[Test]
+		public void ErrorMessage_ActiveProjectManagerThrowsException_ReturnsErrorMessageFromException()
+		{
+			CreatePackageManagementService();
+			packageManagementService.ActiveProjectManagerExeptionToThrow = new Exception("Test");
+			CreateViewModel(packageManagementService);
+			
+			Assert.AreEqual("Test", viewModel.ErrorMessage);
+		}
+		
+		[Test]
+		public void ReadPackages_ActiveProjectManagerThrowsException_ErrorMessageFromExceptionNotOverriddenByReadPackagesCall()
+		{
+			CreatePackageManagementService();
+			packageManagementService.ActiveProjectManagerExeptionToThrow = new Exception("Test");
+			CreateViewModel(packageManagementService);
+			viewModel.ReadPackages();
+			
+			ApplicationException ex = Assert.Throws<ApplicationException>(() => CompleteReadPackagesTask());
+			Assert.AreEqual("Test", ex.Message);
 		}
 	}
 }

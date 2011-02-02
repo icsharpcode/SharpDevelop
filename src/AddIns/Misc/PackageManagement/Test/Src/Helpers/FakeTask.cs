@@ -18,7 +18,7 @@ namespace PackageManagement.Tests.Helpers
 		{
 			this.function = function;
 			this.continueWith = continueWith;
-			Exception = new AggregateException();
+			Exception = new AggregateException(new Exception("FakeTaskAggregateInnerException"));
 		}
 		
 		public void Start()

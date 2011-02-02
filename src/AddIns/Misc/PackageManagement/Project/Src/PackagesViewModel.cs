@@ -25,7 +25,6 @@ namespace ICSharpCode.PackageManagement
 		IPackageManagementService packageManagementService;
 		IPackageViewModelFactory packageViewModelFactory;
 		ITaskFactory taskFactory;
-		IProjectManager projectManager;
 		IEnumerable<IPackage> allPackages;
 		string searchTerms;
 		bool isReadingPackages;
@@ -61,25 +60,8 @@ namespace ICSharpCode.PackageManagement
 			this.packageManagementService = packageManagementService;
 			this.packageViewModelFactory = packageViewModelFactory;
 			this.taskFactory = taskFactory;
-			
-			GetActiveProjectManager();
 
 			CreateCommands();
-		}
-		
-		void GetActiveProjectManager()
-		{
-			try {
-				this.projectManager = packageManagementService.ActiveProjectManager;
-			} catch (Exception ex) {
-				SaveError(ex);
-			}
-		}
-		
-		void SaveError(Exception ex)
-		{
-			hasError = true;
-			errorMessage = ex.Message;
 		}
 		
 		void CreateCommands()
@@ -123,10 +105,6 @@ namespace ICSharpCode.PackageManagement
 			get { return packageManagementService; }
 		}
 		
-		public IProjectManager ProjectManager {
-			get { return projectManager; }
-		}
-		
 		public bool IsReadingPackages {
 			get { return isReadingPackages; }
 		}
@@ -141,6 +119,7 @@ namespace ICSharpCode.PackageManagement
 		void StartReadPackagesTask()
 		{
 			isReadingPackages = true;
+			hasError = false;
 			ClearPackages();
 			CancelReadPackagesTask();
 			CreateReadPackagesTask();
@@ -180,6 +159,17 @@ namespace ICSharpCode.PackageManagement
 			base.OnPropertyChanged(null);
 		}
 		
+		protected void SaveError(AggregateException ex)
+		{
+			SaveError(ex.InnerException);
+		}
+		
+		protected void SaveError(Exception ex)
+		{
+			hasError = true;
+			errorMessage = ex.Message;
+		}
+
 		void UpdatePackagesForSelectedPage(PackagesForSelectedPageResult result)
 		{			
 			pages.CollectionChanged -= PagesChanged;

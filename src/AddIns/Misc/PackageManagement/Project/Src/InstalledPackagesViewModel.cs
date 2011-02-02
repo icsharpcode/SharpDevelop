@@ -10,6 +10,9 @@ namespace ICSharpCode.PackageManagement
 {
 	public class InstalledPackagesViewModel : PackagesViewModel
 	{
+		IProjectManager projectManager;
+		string errorMessage = String.Empty;
+
 		public InstalledPackagesViewModel(
 			IPackageManagementService packageManagementService,
 			ITaskFactory taskFactory)
@@ -17,8 +20,20 @@ namespace ICSharpCode.PackageManagement
 		{
 			packageManagementService.PackageInstalled += PackageInstalled;
 			packageManagementService.PackageUninstalled += PackageUninstalled;
+			
+			GetActiveProjectManager();
 		}
 		
+		void GetActiveProjectManager()
+		{
+			try {
+				this.projectManager = PackageManagementService.ActiveProjectManager;
+			} catch (Exception ex) {
+				SaveError(ex);
+				errorMessage = ErrorMessage;
+			}
+		}
+
 		void PackageInstalled(object sender, EventArgs e)
 		{
 			ReadPackages();
@@ -37,7 +52,15 @@ namespace ICSharpCode.PackageManagement
 		
 		IPackageRepository GetRepository()
 		{
-			return ProjectManager.LocalRepository;
+			if (projectManager == null) {
+				ThrowOriginalExceptionWhenTryingToGetProjectManager();
+			}
+			return projectManager.LocalRepository;
+		}
+		
+		void ThrowOriginalExceptionWhenTryingToGetProjectManager()
+		{
+			throw new ApplicationException(errorMessage);
 		}
 	}
 }

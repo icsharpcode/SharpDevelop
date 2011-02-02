@@ -240,6 +240,12 @@
 				Visibility="{Binding Path=IsReadingPackages, Converter={StaticResource BoolToVisibility}}"
 				HorizontalAlignment="Center"
 				VerticalAlignment="Center"/>
+			<TextBlock
+				x:Name="ErrorMessageText"
+				Grid.Row="0"
+				Visibility="{Binding Path=HasError, Converter={StaticResource BoolToVisibility}}"
+				Text="{Binding Path=ErrorMessage}"
+				TextWrapping="Wrap"/>
 			<pm:PagedResultsView
 				x:Name="pagedResultsView"
 				Grid.Row="1"
