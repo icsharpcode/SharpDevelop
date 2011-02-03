@@ -157,11 +157,16 @@ namespace ICSharpCode.SharpDevelop.Services
 					if (index > -1){
 						Attach(processes[index]);
 					} else {
-						this.monitor = new ProcessMonitor(processName);
-						this.monitor.ProcessCreated += delegate {
-							WorkbenchSingleton.SafeThreadCall((Action)(() => OnProcessCreated(defaultAppProcess, options)));
-						};
-						this.monitor.Start();
+						try {
+							this.monitor = new ProcessMonitor(processName);
+							this.monitor.ProcessCreated += delegate {
+								WorkbenchSingleton.SafeThreadCall((Action)(() => OnProcessCreated(defaultAppProcess, options)));
+							};
+							this.monitor.Start();
+						}
+						catch (System.Exception ex) {
+							LoggingService.ErrorFormatted("Process Monitor exception: {0}", ex.Message);
+						}
 					}
 					
 					if (options.Data.WebServer == WebServer.IISExpress) {
