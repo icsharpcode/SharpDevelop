@@ -311,16 +311,9 @@ namespace ICSharpCode.SharpDevelop
 		{
 			// temp file
 			string tempFolder = Path.GetTempPath();
-			string file = fileName + ".temp";
-			if (ProjectService.CurrentProject != null) {
-				string language = ProjectService.CurrentProject.Language.ToLower();
-				if (language == "c#" || language == "csharp")
-					file += ".cs";
-				else
-					if (language == "vb" || language == "vbnet")
-						file += ".vb";
-			}
-			
+			string file = fileName + ".temp." + 
+				ProjectService.CurrentProject.LanguageProperties.CodeDomProvider.FileExtension;
+						
 			string filePath = Path.Combine(tempFolder, file);
 
 			if (File.Exists(filePath))
@@ -337,6 +330,8 @@ namespace ICSharpCode.SharpDevelop
 						sw,
 						new CodeGeneratorOptions());
 			}
+			
+			File.SetAttributes(filePath, FileAttributes.ReadOnly);			
 			return filePath;
 		}
 	}

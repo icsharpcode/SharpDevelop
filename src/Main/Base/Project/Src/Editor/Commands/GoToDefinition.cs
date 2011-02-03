@@ -56,6 +56,10 @@ namespace ICSharpCode.SharpDevelop.Editor.Commands
 				
 				// jump to definition
 				var info = ParserService.ParseFile(filePath);
+				
+				if (info == null)
+					return;
+				
 				int line = 0, col = 0;
 				foreach(var c in info.CompilationUnit.Classes) {
 					if (s.ResolvedMember.EntityType == EntityType.Event) {
