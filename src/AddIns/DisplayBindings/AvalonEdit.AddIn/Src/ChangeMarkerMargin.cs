@@ -10,7 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-
+using System.Windows.Threading;
 using ICSharpCode.AvalonEdit.AddIn.Options;
 using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
@@ -33,6 +33,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public ChangeMarkerMargin(IChangeWatcher changeWatcher)
 		{
 			this.changeWatcher = changeWatcher;
+			this.delayTimer = new DispatcherTimer() {
+				Interval = TimeSpan.FromMilliseconds(displayDelayMs)
+			};
+			delayTimer.Tick += delegate { DisplayTooltip(); };
 			changeWatcher.ChangeOccurred += ChangeOccurred;
 		}
 		
@@ -82,12 +86,21 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			if (oldTextView != null) {
 				oldTextView.VisualLinesChanged -= VisualLinesChanged;
 				oldTextView.ScrollOffsetChanged -= ScrollOffsetChanged;
+				((TextArea)oldTextView.Services.GetService(typeof(TextArea))).KeyDown -= TextViewKeyDown;
 			}
 			base.OnTextViewChanged(oldTextView, newTextView);
 			if (newTextView != null) {
 				newTextView.VisualLinesChanged += VisualLinesChanged;
 				newTextView.ScrollOffsetChanged += ScrollOffsetChanged;
+				((TextArea)newTextView.Services.GetService(typeof(TextArea))).KeyDown += TextViewKeyDown;
 			}
+		}
+
+		void TextViewKeyDown(object sender, KeyEventArgs e)
+		{
+			// close tooltip on pressing Esc
+			if (e.Key == Key.Escape)
+				tooltip.IsOpen = false;
 		}
 		
 		void ChangeOccurred(object sender, EventArgs e)
@@ -115,10 +128,26 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		Popup tooltip = new Popup() { StaysOpen = false };
 		ITextMarker marker;
 		ITextMarkerService markerService;
+		DispatcherTimer delayTimer;
 		
-		protected override void OnMouseMove(MouseEventArgs e)
+		
+		/// <summary>
+		/// Time the mouse has to hover over the change margin before it displays the diff tooltip.
+		/// </summary>
+		const int displayDelayMs = 1000;
+		
+		protected override void OnMouseEnter(MouseEventArgs e)
 		{
-			int line = GetLineFromMousePosition(e);
+			delayTimer.Start();
+			
+			base.OnMouseEnter(e);
+		}
+
+		void DisplayTooltip()
+		{
+			delayTimer.Stop();
+			
+			int line = GetLineFromMousePosition();
 			
 			if (line == 0)
 				return;
@@ -206,30 +235,28 @@ namespace ICSharpCode.AvalonEdit.AddIn
 				tooltip.Closed += delegate {
 					if (marker != null) markerService.Remove(marker);
 				};
-				
 				tooltip.HorizontalOffset = -10;
 				tooltip.VerticalOffset =
 					TextView.GetVisualTopByDocumentLine(startLine) - TextView.ScrollOffset.Y;
 				tooltip.Placement = PlacementMode.Top;
 				tooltip.PlacementTarget = this.TextView;
 			}
-			
-			base.OnMouseMove(e);
 		}
 		
 		protected override void OnMouseLeave(MouseEventArgs e)
 		{
+			delayTimer.Stop();
 			if (marker != null && !tooltip.IsOpen)
 				markerService.Remove(marker);
 			base.OnMouseLeave(e);
 		}
 		
-		int GetLineFromMousePosition(MouseEventArgs e)
+		int GetLineFromMousePosition()
 		{
 			TextView textView = this.TextView;
 			if (textView == null)
 				return 0;
-			VisualLine vl = textView.GetVisualLineFromVisualTop(e.GetPosition(textView).Y + textView.ScrollOffset.Y);
+			VisualLine vl = textView.GetVisualLineFromVisualTop(Mouse.GetPosition(textView).Y + textView.ScrollOffset.Y);
 			if (vl == null)
 				return 0;
 			return vl.FirstDocumentLine.LineNumber;
