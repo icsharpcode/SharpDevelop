@@ -188,12 +188,13 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			added = info.Change == ChangeType.Added;
 			
 			if (info.Change != ChangeType.None && info.Change != ChangeType.Unsaved) {
-				var startDocumentLine = baseDocument.GetLine(info.OldStartLineNumber + 1);
-				var endLine = baseDocument.GetLine(info.OldEndLineNumber);
 				newStartLine = info.NewStartLineNumber + 1;
 				
 				if (info.Change == ChangeType.Added)
 					return "";
+				
+				var startDocumentLine = baseDocument.GetLine(info.OldStartLineNumber + 1);
+				var endLine = baseDocument.GetLine(info.OldEndLineNumber);
 				
 				return baseDocument.GetText(startDocumentLine.Offset, endLine.EndOffset - startDocumentLine.Offset);
 			}
