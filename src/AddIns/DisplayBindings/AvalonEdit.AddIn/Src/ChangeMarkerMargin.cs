@@ -34,7 +34,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			this.changeWatcher = changeWatcher;
 			this.delayTimer = new DispatcherTimer() {
-				Interval = TimeSpan.FromMilliseconds(displayDelayMs)
+				Interval = SystemParameters.MouseHoverTime
 			};
 			delayTimer.Tick += delegate { DisplayTooltip(); };
 			changeWatcher.ChangeOccurred += ChangeOccurred;
@@ -129,12 +129,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		ITextMarker marker;
 		ITextMarkerService markerService;
 		DispatcherTimer delayTimer;
-		
-		
-		/// <summary>
-		/// Time the mouse has to hover over the change margin before it displays the diff tooltip.
-		/// </summary>
-		const int displayDelayMs = 1000;
 		
 		protected override void OnMouseEnter(MouseEventArgs e)
 		{
