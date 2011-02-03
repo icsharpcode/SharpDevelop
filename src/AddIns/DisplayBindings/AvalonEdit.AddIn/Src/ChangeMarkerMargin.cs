@@ -33,10 +33,8 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		public ChangeMarkerMargin(IChangeWatcher changeWatcher)
 		{
 			this.changeWatcher = changeWatcher;
-			this.delayTimer = new DispatcherTimer() {
-				Interval = SystemParameters.MouseHoverTime
-			};
-			delayTimer.Tick += delegate { DisplayTooltip(); };
+			this.hoverLogic = new MouseHoverLogic(this);
+			this.hoverLogic.MouseHover += delegate { DisplayTooltip(); };
 			changeWatcher.ChangeOccurred += ChangeOccurred;
 		}
 		
@@ -128,19 +126,10 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		Popup tooltip = new Popup() { StaysOpen = false };
 		ITextMarker marker;
 		ITextMarkerService markerService;
-		DispatcherTimer delayTimer;
-		
-		protected override void OnMouseEnter(MouseEventArgs e)
-		{
-			delayTimer.Start();
-			
-			base.OnMouseEnter(e);
-		}
+		MouseHoverLogic hoverLogic;
 
 		void DisplayTooltip()
 		{
-			delayTimer.Stop();
-			
 			int line = GetLineFromMousePosition();
 			
 			if (line == 0)
@@ -239,7 +228,6 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		
 		protected override void OnMouseLeave(MouseEventArgs e)
 		{
-			delayTimer.Stop();
 			if (marker != null && !tooltip.IsOpen)
 				markerService.Remove(marker);
 			base.OnMouseLeave(e);

@@ -55,6 +55,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			
 			layers = new UIElementCollection(this, this);
 			InsertLayer(textLayer, KnownLayer.Text, LayerInsertionPosition.Replace);
+			
+			this.hoverLogic = new MouseHoverLogic(this);
+			this.hoverLogic.MouseHover += (sender, e) => RaiseHoverEventPair(e, PreviewMouseHoverEvent, MouseHoverEvent);
+			this.hoverLogic.MouseHoverStopped += (sender, e) => RaiseHoverEventPair(e, PreviewMouseHoverStoppedEvent, MouseHoverStoppedEvent);
 		}
 
 		#endregion
@@ -1566,63 +1570,12 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			remove { RemoveHandler(MouseHoverStoppedEvent, value); }
 		}
 		
-		DispatcherTimer mouseHoverTimer;
-		Point mouseHoverStartPoint;
-		MouseEventArgs mouseHoverLastEventArgs;
-		bool mouseHovering;
+		MouseHoverLogic hoverLogic;
 		
-		/// <inheritdoc/>
-		protected override void OnMouseMove(MouseEventArgs e)
+		void RaiseHoverEventPair(MouseEventArgs e, RoutedEvent tunnelingEvent, RoutedEvent bubblingEvent)
 		{
-			base.OnMouseMove(e);
-			Point newPosition = e.GetPosition(this);
-			Vector mouseMovement = mouseHoverStartPoint - newPosition;
-			if (Math.Abs(mouseMovement.X) > SystemParameters.MouseHoverWidth
-			    || Math.Abs(mouseMovement.Y) > SystemParameters.MouseHoverHeight)
-			{
-				StopHovering();
-				mouseHoverStartPoint = newPosition;
-				mouseHoverLastEventArgs = e;
-				mouseHoverTimer = new DispatcherTimer(SystemParameters.MouseHoverTime, DispatcherPriority.Background,
-				                                      OnMouseHoverTimerElapsed, this.Dispatcher);
-				mouseHoverTimer.Start();
-			}
-			// do not set e.Handled - allow others to also handle MouseMove
-		}
-		
-		/// <inheritdoc/>
-		protected override void OnMouseLeave(MouseEventArgs e)
-		{
-			base.OnMouseLeave(e);
-			StopHovering();
-			// do not set e.Handled - allow others to also handle MouseLeave
-		}
-		
-		void StopHovering()
-		{
-			if (mouseHoverTimer != null) {
-				mouseHoverTimer.Stop();
-				mouseHoverTimer = null;
-			}
-			if (mouseHovering) {
-				mouseHovering = false;
-				RaiseHoverEventPair(PreviewMouseHoverStoppedEvent, MouseHoverStoppedEvent);
-			}
-		}
-		
-		void OnMouseHoverTimerElapsed(object sender, EventArgs e)
-		{
-			mouseHoverTimer.Stop();
-			mouseHoverTimer = null;
-			
-			mouseHovering = true;
-			RaiseHoverEventPair(PreviewMouseHoverEvent, MouseHoverEvent);
-		}
-		
-		void RaiseHoverEventPair(RoutedEvent tunnelingEvent, RoutedEvent bubblingEvent)
-		{
-			var mouseDevice = mouseHoverLastEventArgs.MouseDevice;
-			var stylusDevice = mouseHoverLastEventArgs.StylusDevice;
+			var mouseDevice = e.MouseDevice;
+			var stylusDevice = e.StylusDevice;
 			int inputTime = Environment.TickCount;
 			var args1 = new MouseEventArgs(mouseDevice, inputTime, stylusDevice) {
 				RoutedEvent = tunnelingEvent,
@@ -1636,8 +1589,6 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			};
 			RaiseEvent(args2);
 		}
-
-		
 		#endregion
 		
 		/// <summary>
