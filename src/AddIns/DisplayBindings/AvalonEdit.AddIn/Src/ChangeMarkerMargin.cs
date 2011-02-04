@@ -34,7 +34,7 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		{
 			this.changeWatcher = changeWatcher;
 			this.hoverLogic = new MouseHoverLogic(this);
-			this.hoverLogic.MouseHover += delegate { DisplayTooltip(); };
+			this.hoverLogic.MouseHover += delegate(object sender, MouseEventArgs e) { DisplayTooltip(e); };
 			changeWatcher.ChangeOccurred += ChangeOccurred;
 		}
 		
@@ -128,9 +128,9 @@ namespace ICSharpCode.AvalonEdit.AddIn
 		ITextMarkerService markerService;
 		MouseHoverLogic hoverLogic;
 
-		void DisplayTooltip()
+		void DisplayTooltip(MouseEventArgs e)
 		{
-			int line = GetLineFromMousePosition();
+			int line = GetLineFromMousePosition(e);
 			
 			if (line == 0)
 				return;
@@ -233,12 +233,12 @@ namespace ICSharpCode.AvalonEdit.AddIn
 			base.OnMouseLeave(e);
 		}
 		
-		int GetLineFromMousePosition()
+		int GetLineFromMousePosition(MouseEventArgs e)
 		{
 			TextView textView = this.TextView;
 			if (textView == null)
 				return 0;
-			VisualLine vl = textView.GetVisualLineFromVisualTop(Mouse.GetPosition(textView).Y + textView.ScrollOffset.Y);
+			VisualLine vl = textView.GetVisualLineFromVisualTop(e.GetPosition(textView).Y + textView.ScrollOffset.Y);
 			if (vl == null)
 				return 0;
 			return vl.FirstDocumentLine.LineNumber;
