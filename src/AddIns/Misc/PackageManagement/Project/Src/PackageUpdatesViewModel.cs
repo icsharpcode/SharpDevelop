@@ -13,6 +13,8 @@ namespace ICSharpCode.PackageManagement
 	{
 		List<IPackage> packages = new List<IPackage>();
 		IPackageManagementService packageManagementService;
+		IPackageRepository localRepository;
+		IPackageRepository sourceRepository;
 		
 		public PackageUpdatesViewModel(
 			IPackageManagementService packageManagementService,
@@ -22,22 +24,22 @@ namespace ICSharpCode.PackageManagement
 			this.packageManagementService = packageManagementService;
 		}
 		
-		protected override IQueryable<IPackage> GetAllPackages()
-		{
-			IQueryable<IPackage> localPackages = GetLocalRepositoryPackages();
-			return GetUpdatedPackages(localPackages);
-		}
-		
-		IQueryable<IPackage> GetLocalRepositoryPackages()
+		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
 		{
 			IProjectManager projectManager = packageManagementService.ActiveProjectManager;
-			IPackageRepository localRepository = projectManager.LocalRepository;
-			return localRepository.GetPackages();
+			localRepository = projectManager.LocalRepository;
+			
+			sourceRepository = packageManagementService.CreateAggregatePackageRepository();
+		}
+		
+		protected override IQueryable<IPackage> GetAllPackages()
+		{
+			IQueryable<IPackage> localPackages = localRepository.GetPackages();
+			return GetUpdatedPackages(localPackages);
 		}
 		
 		IQueryable<IPackage> GetUpdatedPackages(IQueryable<IPackage> localPackages)
 		{
-			IPackageRepository sourceRepository = packageManagementService.CreateAggregatePackageRepository();
 			return sourceRepository.GetUpdates(localPackages).AsQueryable();
 		}
 	}

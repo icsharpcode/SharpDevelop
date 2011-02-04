@@ -86,5 +86,21 @@ namespace PackageManagement.Tests
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
 		}
+		
+		[Test]
+		public void ReadPackages_OneNewerPackage_RepositoriesNotCreatedByBackgroundThread()
+		{
+			CreateViewModel();
+			AddPackageToLocalRepository("1.0.0.0");
+			var newerPackage = AddPackageToSourceRepository("1.1.0.0");
+			
+			viewModel.ReadPackages();
+			
+			packageManagementService.FakeAggregateRepository = null;
+			packageManagementService.FakeActiveProjectManager.LocalRepository = null;
+			CompleteReadPackagesTask();
+			
+			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
+		}
 	}
 }

@@ -344,5 +344,20 @@ namespace PackageManagement.Tests
 			
 			Assert.IsFalse(fired);
 		}
+		
+		[Test]
+		public void GetAllPackages_OnePackageInRepository_RepositoryNotCreatedByBackgroundThread()
+		{
+			CreatePackageManagementService();
+			AddOnePackageSourceToRegisteredSources();
+			packageManagementService.FakeActivePackageRepository.FakePackages.Add(new FakePackage());
+			CreateViewModel(packageManagementService);
+			viewModel.ReadPackages();
+			
+			packageManagementService.FakeActivePackageRepository = null;
+			CompleteReadPackagesTask();
+			
+			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
+		}
 	}
 }

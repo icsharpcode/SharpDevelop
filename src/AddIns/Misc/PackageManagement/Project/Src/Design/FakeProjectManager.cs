@@ -8,15 +8,22 @@ namespace ICSharpCode.PackageManagement.Design
 {
 	public class FakeProjectManager : ISharpDevelopProjectManager
 	{
-		public FakePackageRepository FakeLocalRepository = new FakePackageRepository();
-		public FakePackageRepository FakeSourceRepository = new FakePackageRepository();
+		public FakePackageRepository FakeLocalRepository {
+			get { return LocalRepository as FakePackageRepository; }
+			set { LocalRepository = value; }
+		}
+		
+		public FakePackageRepository FakeSourceRepository {
+			get { return SourceRepository as FakePackageRepository; }
+			set { SourceRepository = value; }
+		}
 		
 		public bool IsInstalledReturnValue;
 		
 		public FakeProjectManager()
 		{
-			LocalRepository = FakeLocalRepository;
-			SourceRepository = FakeSourceRepository;
+			LocalRepository = new FakePackageRepository();
+			SourceRepository = new FakePackageRepository();
 		}
 		
 		public event EventHandler<PackageOperationEventArgs> PackageReferenceAdded;

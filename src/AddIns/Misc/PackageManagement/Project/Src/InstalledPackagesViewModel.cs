@@ -11,6 +11,7 @@ namespace ICSharpCode.PackageManagement
 	public class InstalledPackagesViewModel : PackagesViewModel
 	{
 		IProjectManager projectManager;
+		IPackageRepository repository;
 		string errorMessage = String.Empty;
 
 		public InstalledPackagesViewModel(
@@ -44,18 +45,19 @@ namespace ICSharpCode.PackageManagement
 			ReadPackages();
 		}
 		
-		protected override IQueryable<IPackage> GetAllPackages()
+		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
 		{
-			IPackageRepository repository = GetRepository();
-			return repository.GetPackages();
+			if (projectManager != null) {
+				repository = projectManager.LocalRepository;
+			}
 		}
 		
-		IPackageRepository GetRepository()
+		protected override IQueryable<IPackage> GetAllPackages()
 		{
 			if (projectManager == null) {
 				ThrowOriginalExceptionWhenTryingToGetProjectManager();
 			}
-			return projectManager.LocalRepository;
+			return repository.GetPackages();
 		}
 		
 		void ThrowOriginalExceptionWhenTryingToGetProjectManager()

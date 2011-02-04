@@ -113,6 +113,7 @@ namespace ICSharpCode.PackageManagement
 		{
 			allPackages = null;
 			SelectedPageNumber = 1;
+			UpdateRepositoryBeforeReadPackagesTaskStarts();
 			StartReadPackagesTask();
 		}
 		
@@ -124,6 +125,10 @@ namespace ICSharpCode.PackageManagement
 			CancelReadPackagesTask();
 			CreateReadPackagesTask();
 			task.Start();
+		}
+		
+		protected virtual void UpdateRepositoryBeforeReadPackagesTaskStarts()
+		{
 		}
 		
 		void CancelReadPackagesTask()

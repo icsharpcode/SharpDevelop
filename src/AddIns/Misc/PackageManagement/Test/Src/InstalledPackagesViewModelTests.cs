@@ -114,5 +114,19 @@ namespace PackageManagement.Tests
 			ApplicationException ex = Assert.Throws<ApplicationException>(() => CompleteReadPackagesTask());
 			Assert.AreEqual("Test", ex.Message);
 		}
+		
+		[Test]
+		public void ReadPackages_OnePackageInLocalRepository_RepositoryIsNotCreatedByBackgroundThread()
+		{
+			CreatePackageManagementService();
+			packageManagementService.AddPackageToProjectLocalRepository(new FakePackage());
+			CreateViewModel(packageManagementService);
+			viewModel.ReadPackages();
+			
+			packageManagementService.FakeActiveProjectManager.FakeLocalRepository = null;
+			CompleteReadPackagesTask();
+			
+			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
+		}
 	}
 }

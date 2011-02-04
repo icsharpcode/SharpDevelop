@@ -11,6 +11,8 @@ namespace ICSharpCode.PackageManagement
 {
 	public class AvailablePackagesViewModel : PackagesViewModel
 	{
+		IPackageRepository repository;
+		
 		public AvailablePackagesViewModel(
 			IPackageManagementService packageManagementService,
 			ITaskFactory taskFactory)
@@ -20,9 +22,14 @@ namespace ICSharpCode.PackageManagement
 			ShowPackageSources = packageManagementService.HasMultiplePackageSources;
 		}
 		
+		protected override void UpdateRepositoryBeforeReadPackagesTaskStarts()
+		{
+			repository = PackageManagementService.ActivePackageRepository;
+		}
+		
 		protected override IQueryable<IPackage> GetAllPackages()
 		{
-			return PackageManagementService.ActivePackageRepository.GetPackages();
+			return repository.GetPackages();
 		}
 		
 		protected override IEnumerable<IPackage> GetFilteredPackagesBeforePagingResults(IQueryable<IPackage> allPackages)
