@@ -133,9 +133,24 @@ namespace ICSharpCode.Reports.Core.Test.TestHelpers
 		}
 		
 		public string GroupItem {get; set;}
-	
+		
+		public MyDummyClass DummyClass {get;set;}
 		
 	}
+	
+	
+	
+	public class MyDummyClass
+	{
+		public MyDummyClass()
+		{
+			
+		}
+			
+		public string DummyString {get;set;}
+		public int DummyInt {get;set;}
+	}
+	
 	
 	public class ContributorCollection: List<Contributor>
 	{

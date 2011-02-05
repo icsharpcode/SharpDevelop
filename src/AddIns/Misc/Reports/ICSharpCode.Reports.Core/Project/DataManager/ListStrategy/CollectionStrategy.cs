@@ -52,7 +52,7 @@ namespace ICSharpCode.Reports.Core {
 			
 			for (int criteriaIndex = 0; criteriaIndex < col.Count; criteriaIndex++){
 				PropertyDescriptor descriptor = c.Find (col[criteriaIndex].ColumnName,true);
-		
+				
 				if (descriptor == null){
 					throw new InvalidOperationException(String.Format(CultureInfo.CurrentCulture,
 					                                                  "Die Liste enthält keine Spalte [{0}].",
@@ -64,7 +64,7 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		private  IndexList BuildSortIndex(SortColumnCollection col) 
+		private  IndexList BuildSortIndex(SortColumnCollection col)
 		{
 			IndexList arrayList = new IndexList();
 			PropertyDescriptor[] sortProperties = BuildSortProperties (col);
@@ -113,9 +113,9 @@ namespace ICSharpCode.Reports.Core {
 			}
 			return arrayList;
 		}
-	
 		
-		private void BuildAvailableFields () 
+		
+		private void BuildAvailableFields ()
 		{
 			base.AvailableFields.Clear();
 			foreach (PropertyDescriptor p in this.listProperties){
@@ -149,7 +149,7 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 		
-		public override  int CurrentPosition 
+		public override  int CurrentPosition
 		{
 			get {
 				return base.IndexList.CurrentPosition;
@@ -171,9 +171,9 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		public override void Sort() 
+		public override void Sort()
 		{
-			base.Sort();		
+			base.Sort();
 			if ((base.ReportSettings.SortColumnsCollection != null)) {
 				if (base.ReportSettings.SortColumnsCollection.Count > 0) {
 
@@ -187,7 +187,7 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		
-		public override void Reset() 
+		public override void Reset()
 		{
 			this.CurrentPosition = 0;
 			base.Reset();
@@ -208,6 +208,92 @@ namespace ICSharpCode.Reports.Core {
 		#endregion
 		
 		public override void Fill(IDataItem item)
+		{
+			if (current != null) {
+				BaseDataItem baseDataItem = item as BaseDataItem;
+				
+				if (baseDataItem != null) {
+					
+					if (baseDataItem.ColumnName.Contains(".")) {
+						
+						string[] splittedNames = SplitNames(ref baseDataItem);
+						
+						
+						PropertyDescriptor p = this.listProperties.Find(splittedNames[0], true);
+						
+						var propCollection = ExtendedTypeDescriptor.GetProperties(p.PropertyType);
+						
+						
+						foreach (ExtendedPropertyDescriptor element in propCollection)
+						{
+							Console.WriteLine ("{0} - {1} - {2}",element.Name,element.ComponentType,element.PropertyType);
+						}
+						
+						
+						PropertyDescriptor ppp = propCollection.Find(splittedNames[1], true);
+						object classValue = p.GetValue(this.Current);
+						var v = ppp.GetValue(classValue);
+						
+						baseDataItem.DBValue = v.ToString();
+
+//						Console.WriteLine("{0} - {1}",p.Name,p.PropertyType);
+						
+						
+					}
+					else
+						
+					{
+						PropertyDescriptor p = this.listProperties.Find(baseDataItem.ColumnName, true);
+					
+						if (p != null)
+						{
+							var o = p.GetValue(this.Current);
+							
+							if (o != null) {
+//								baseDataItem.DBValue = p.GetValue(this.Current).ToString();
+								baseDataItem.DBValue = o.ToString();
+							} else {
+								baseDataItem.DBValue = String.Empty;
+							}
+							
+						} else {
+							baseDataItem.DBValue = string.Format(CultureInfo.InvariantCulture,"<{0}> missing!", baseDataItem.ColumnName);
+						}
+					}
+					
+					
+					return;
+				}
+				
+				//image processing from IList
+				BaseImageItem baseImageItem = item as BaseImageItem;
+				
+				if (baseImageItem != null) {
+					PropertyDescriptor p = this.listProperties.Find(baseImageItem.ColumnName, true);
+					if (p != null) {
+						baseImageItem.Image = p.GetValue(this.Current) as System.Drawing.Image;
+					}
+					return;
+				}
+			}
+		}
+		
+		object getvalueFromproperty(PropertyDescriptor p)
+		{
+			throw new NotImplementedException();
+		}
+
+		string[] SplitNames(ref BaseDataItem baseDataItem)
+		{
+			var i = baseDataItem.ColumnName.IndexOf(".");
+			char[] delimiters = new char[] { '.' };
+			var splittedNames = baseDataItem.ColumnName.Split(delimiters);
+			return splittedNames;
+		}
+		
+		
+		
+		public  void old_Fill(IDataItem item)
 		{
 			if (current != null) {
 				BaseDataItem baseDataItem = item as BaseDataItem;
@@ -264,7 +350,7 @@ namespace ICSharpCode.Reports.Core {
 			}
 			return ci;
 		}
-		*/
+		 */
 		
 		public override CurrentItemsCollection FillDataRow()
 		{
@@ -284,7 +370,7 @@ namespace ICSharpCode.Reports.Core {
 		}
 		
 		#endregion
-	
+		
 		#region IDisposable
 		
 		public override void Dispose(){

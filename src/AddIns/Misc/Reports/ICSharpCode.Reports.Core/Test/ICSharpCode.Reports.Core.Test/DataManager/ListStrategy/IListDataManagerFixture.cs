@@ -23,7 +23,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		public void DefaultConstructor()
 		{
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection as System.Collections.IList,new ReportSettings());
-			Assert.IsNotNull(dm,"IDataanager should not be 'null'");
+			Assert.IsNotNull(dm,"IDataManager should not be 'null'");
 		}
 		
 		
@@ -158,7 +158,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		{
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,new ReportSettings());
 			DataNavigator dataNav = dm.GetNavigator;
-			Assert.AreEqual(6,dataNav.AvailableFields.Count);
+			Assert.AreEqual(7,dataNav.AvailableFields.Count);
 		}
 		
 		
@@ -391,9 +391,90 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		*/
 		#endregion
 		
-		#region Setup/TearDown
-		[TestFixtureSetUp]
+		#region get included class
+		[Test]
+		public void checkIfPropIsClass()
+		{
+			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,new ReportSettings());
+			IDataNavigator dn = dm.GetNavigator;
+			int start = 0;
+			MyDummyClass dummy = new MyDummyClass();
+			
+			while (dn.MoveNext()) {
+				dummy.DummyString = "dummy" + start.ToString();
+				dummy.DummyInt = start;
+				Contributor view = dn.Current as Contributor;
+				view.DummyClass = dummy;
+				Console.WriteLine(view.Last);
+				start ++;
+			}
+				
+			dn.Reset();
+			dn.MoveNext();
+			start = 0;
+			while (dn.MoveNext()) {
+				Contributor view = dn.Current as Contributor;
+				Console.WriteLine("{0} - {1} - {2}",view.Last,view.DummyClass.DummyInt,view.DummyClass.DummyString);
+			start ++;
+			}
+			Console.WriteLine(start);
+		}
+			
+		ContributorCollection ModifyCollection ()
+		{
+			var newcol = this.contributorCollection;
+			MyDummyClass dummy;
+			int start = 0;
+			foreach (var element in newcol) 
+			{
+				dummy = new MyDummyClass();
+				dummy.DummyString = "dummy" + start.ToString();
+				dummy.DummyInt = start;
+				element.DummyClass = dummy;
+				start ++;
+			}
+			return newcol;
+		}
 		
+		
+		[Test]
+		public void Prop ()
+		{
+			var modifyedCollection = this.ModifyCollection();
+			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(modifyedCollection,new ReportSettings());
+			IDataNavigator dn = dm.GetNavigator;
+			ReportItemCollection searchCol = new ReportItemCollection();
+			searchCol.Add(new BaseDataItem ()
+			              {
+			              	Name ="GroupItem",
+			              	ColumnName ="DummyClass.DummyString"			     
+			              }
+			             );
+			
+				searchCol.Add(new BaseDataItem ()
+			              {
+			              	Name ="GroupItem",			           
+			              	ColumnName ="GroupItem"	
+			              }
+			             );
+			
+			dn.Reset();
+			dn.MoveNext();
+
+			while (dn.MoveNext()) {
+				dn.Fill(searchCol);
+				var a = (BaseDataItem)searchCol[0];
+				var b = (BaseDataItem)searchCol[1];
+				var c = modifyedCollection[dn.CurrentRow];
+//				Console.WriteLine ("{0} - {1} - {2}",a.DBValue,b.DBValue,c.DummyClass.DummyString);
+				Assert.AreEqual(a.DBValue,c.DummyClass.DummyString);
+				Assert.AreEqual(b.DBValue,c.GroupItem);
+			}
+		}
+		
+		#region Setup/TearDown
+		#endregion
+		[TestFixtureSetUp]
 		public void Init()
 		{
 			ContributorsList contributorsList = new ContributorsList();
