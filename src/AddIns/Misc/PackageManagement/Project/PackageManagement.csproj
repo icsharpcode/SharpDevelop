@@ -137,6 +137,7 @@
     <Compile Include="Src\RegisteredPackageSource.cs" />
     <Compile Include="Src\RegisteredPackageSources.cs" />
     <Compile Include="Src\SelectedListBoxItemScrollingBehaviour.cs" />
+    <Compile Include="Src\ServiceLocator.cs" />
     <Compile Include="Src\SharpDevelopPackageManager.cs" />
     <Compile Include="Src\SharpDevelopPackageManagerFactory.cs" />
     <Compile Include="Src\SharpDevelopPackageRepositoryFactory.cs" />

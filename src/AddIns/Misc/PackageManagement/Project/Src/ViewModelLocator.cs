@@ -33,7 +33,7 @@ namespace ICSharpCode.PackageManagement
 				if (IsInDesignMode()) {
 					packageManagementService = new DesignTimePackageManagementService();
 				}
-				packageManagementService = new PackageManagementService();
+				packageManagementService = ServiceLocator.PackageManagementService;
 			}
 		}
 		
