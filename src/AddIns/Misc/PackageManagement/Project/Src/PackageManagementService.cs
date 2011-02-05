@@ -13,26 +13,26 @@ namespace ICSharpCode.PackageManagement
 	public class PackageManagementService : IPackageManagementService
 	{
 		PackageManagementOptions options;
-		ISharpDevelopPackageRepositoryFactory packageRepositoryFactory;
+		IPackageRepositoryCache packageRepositoryCache;
 		IPackageManagerFactory packageManagerFactory;
 		IPackageManagementProjectService projectService;
 		IPackageRepository activePackageRepository;
 		PackageSource activePackageSource;
 		
 		public PackageManagementService(PackageManagementOptions options,
-			ISharpDevelopPackageRepositoryFactory packageRepositoryFactory,
+			IPackageRepositoryCache packageRepositoryCache,
 			IPackageManagerFactory packageManagerFactory,
 			IPackageManagementProjectService projectService)
 		{
 			this.options = options;
-			this.packageRepositoryFactory = packageRepositoryFactory;
+			this.packageRepositoryCache = packageRepositoryCache;
 			this.packageManagerFactory = packageManagerFactory;
 			this.projectService = projectService;
 		}
 		
 		public PackageManagementService()
 			: this(new PackageManagementOptions(),
-				new SharpDevelopPackageRepositoryFactory(),
+				new PackageRepositoryCache(),
 				new SharpDevelopPackageManagerFactory(),
 				new PackageManagementProjectService())
 		{
@@ -67,7 +67,7 @@ namespace ICSharpCode.PackageManagement
 		IPackageRepository GetActivePackageRepository()
 		{
 			if (activePackageRepository == null) {
-				activePackageRepository = packageRepositoryFactory.CreateRepository(ActivePackageSource);
+				activePackageRepository = packageRepositoryCache.CreateRepository(ActivePackageSource);
 			}
 			return activePackageRepository;
 		}
@@ -141,7 +141,7 @@ namespace ICSharpCode.PackageManagement
 		
 		IPackageRepository CreatePackageRepository(PackageSource source)
 		{
-			return packageRepositoryFactory.CreateRepository(source);
+			return packageRepositoryCache.CreateRepository(source);
 		}
 	}
 }

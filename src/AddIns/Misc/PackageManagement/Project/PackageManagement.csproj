@@ -80,6 +80,8 @@
     <Compile Include="Src\Design\FakePackageRepository.cs" />
     <Compile Include="Src\Design\FakeProjectManager.cs" />
     <Compile Include="Src\Design\WpfDesigner.cs" />
+    <Compile Include="Src\IPackageRepositoryCache.cs" />
+    <Compile Include="Src\PackageRepositoryCache.cs" />
     <Compile Include="Src\PackagesForSelectedPageResult.cs" />
     <Compile Include="Src\ILicenseAcceptanceService.cs" />
     <Compile Include="Src\InstalledPackagesViewModel.cs" />

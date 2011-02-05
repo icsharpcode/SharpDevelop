@@ -9,10 +9,14 @@ using NuGet;
 
 namespace PackageManagement.Tests.Helpers
 {
-	public class FakePackageRepositoryFactory : ISharpDevelopPackageRepositoryFactory
+	public class FakePackageRepositoryFactory : IPackageRepositoryCache
 	{
 		public List<PackageSource> PackageSourcesPassedToCreateRepository
 			= new List<PackageSource>();
+		
+		public PackageSource FirstPackageSourcePassedToCreateRepository {
+			get { return PackageSourcesPassedToCreateRepository[0]; }
+		}
 		
 		public FakePackageRepository FakePackageRepository = new FakePackageRepository();
 		

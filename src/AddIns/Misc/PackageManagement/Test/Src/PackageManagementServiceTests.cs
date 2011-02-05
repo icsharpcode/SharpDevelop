@@ -125,7 +125,7 @@ namespace PackageManagement.Tests
 			CreatePackageManagementService();
 			IPackageRepository activeRepository = packageManagementService.ActivePackageRepository;
 			
-			PackageSource actualPackageSource = fakePackageRepositoryFactory.PackageSourcesPassedToCreateRepository[0];
+			PackageSource actualPackageSource = fakePackageRepositoryFactory.FirstPackageSourcePassedToCreateRepository;
 			
 			Assert.AreEqual(packageSourcesHelper.PackageSource, actualPackageSource);
 		}
@@ -287,7 +287,7 @@ namespace PackageManagement.Tests
 			packageManagementService.ActivePackageSource = expectedPackageSource;
 			
 			IPackageRepository repository = packageManagementService.ActivePackageRepository;
-			var packageSource = fakePackageRepositoryFactory.PackageSourcesPassedToCreateRepository[0];
+			var packageSource = fakePackageRepositoryFactory.FirstPackageSourcePassedToCreateRepository;
 			
 			Assert.AreEqual(expectedPackageSource, packageSource);
 		}
@@ -305,7 +305,7 @@ namespace PackageManagement.Tests
 			packageManagementService.ActivePackageSource = expectedPackageSource;
 			
 			IPackageRepository repository = packageManagementService.ActivePackageRepository;
-			var packageSource = fakePackageRepositoryFactory.PackageSourcesPassedToCreateRepository[0];
+			var packageSource = fakePackageRepositoryFactory.FirstPackageSourcePassedToCreateRepository;
 			
 			Assert.AreEqual(expectedPackageSource, packageSource);
 		}
