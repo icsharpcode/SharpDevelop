@@ -41,7 +41,7 @@ namespace PackageManagement.Tests.Helpers
 			AddFakePackage("Test");
 		}
 		
-		void AddFakePackage(string packageId)
+		public void AddFakePackage(string packageId)
 		{
 			FakePackage package = CreateFakePackage(packageId);
 			FakePackages.Add(package);

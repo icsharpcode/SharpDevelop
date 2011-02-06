@@ -1119,5 +1119,27 @@ namespace PackageManagement.Tests
 			
 			Assert.IsFalse(viewModel.HasError);
 		}
+		
+		[Test]
+		public void ReadPackages_PackagesReturnedNotSortedFromRepository_PackagesDisplayedSortedById()
+		{
+			CreateViewModel();
+			viewModel.AddFakePackage("Z");
+			viewModel.AddFakePackage("C");
+			viewModel.AddFakePackage("A");
+			viewModel.AddFakePackage("B");
+			viewModel.ReadPackages();
+			
+			CompleteReadPackagesTask();
+			
+			var expectedPackages = new FakePackage[] {
+				viewModel.FakePackages[2],
+				viewModel.FakePackages[3],
+				viewModel.FakePackages[1],
+				viewModel.FakePackages[0]
+			};
+			
+			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
 	}
 }

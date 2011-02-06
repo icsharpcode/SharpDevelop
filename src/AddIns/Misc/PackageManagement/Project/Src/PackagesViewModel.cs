@@ -202,11 +202,18 @@ namespace ICSharpCode.PackageManagement
 		{
 			if (allPackages == null) {
 				IQueryable<IPackage> packages = GetAllPackages();
+				packages = OrderPackages(packages);
 				packages = packages.Find(searchTerms);
 				totalItems = packages.Count();
 				allPackages = GetFilteredPackagesBeforePagingResults(packages);
 			}
 			return allPackages;
+		}
+		
+		IQueryable<IPackage> OrderPackages(IQueryable<IPackage> packages)
+		{
+			return packages
+				.OrderBy(package => package.Id);
 		}
 		
 		IEnumerable<IPackage> GetPackagesForSelectedPage(IEnumerable<IPackage> allPackages)
