@@ -302,7 +302,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			get { return layers; }
 		}
 		
-				sealed class LayerCollection : UIElementCollection
+		sealed class LayerCollection : UIElementCollection
 		{
 			readonly TextView textView;
 			
@@ -416,36 +416,79 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		#endregion
 		
 		#region Inline object handling
-		internal List<InlineObjectRun> inlineObjects = new List<InlineObjectRun>();
+		List<InlineObjectRun> inlineObjects = new List<InlineObjectRun>();
 		
 		/// <summary>
 		/// Adds a new inline object.
 		/// </summary>
 		internal void AddInlineObject(InlineObjectRun inlineObject)
 		{
+			Debug.Assert(inlineObject.VisualLine != null);
+			
+			// Remove inline object if its already added, can happen e.g. when recreating textrun for word-wrapping
+			bool alreadyAdded = false;
+			for (int i = 0; i < inlineObjects.Count; i++) {
+				if (inlineObjects[i].Element == inlineObject.Element) {
+					RemoveInlineObjectRun(inlineObjects[i], true);
+					inlineObjects.RemoveAt(i);
+					alreadyAdded = true;
+					break;
+				}
+			}
+			
 			inlineObjects.Add(inlineObject);
-			AddVisualChild(inlineObject.Element);
+			if (!alreadyAdded) {
+				AddVisualChild(inlineObject.Element);
+			}
 			inlineObject.Element.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+			inlineObject.desiredSize = inlineObject.Element.DesiredSize;
+		}
+		
+		void MeasureInlineObjects()
+		{
+			// As part of MeasureOverride(), re-measure the inline objects
+			foreach (InlineObjectRun inlineObject in inlineObjects) {
+				if (inlineObject.VisualLine.IsDisposed) {
+					// Don't re-measure inline objects that are going to be removed anyways.
+					// If the inline object will be reused in a different VisualLine, we'll measure it in the AddInlineObject() call.
+					continue;
+				}
+				inlineObject.Element.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+				if (!inlineObject.Element.DesiredSize.IsClose(inlineObject.desiredSize)) {
+					// the element changed size -> recreate its parent visual line
+					inlineObject.desiredSize = inlineObject.Element.DesiredSize;
+					if (allVisualLines.Remove(inlineObject.VisualLine)) {
+						DisposeVisualLine(inlineObject.VisualLine);
+					}
+				}
+			}
 		}
 		
 		List<VisualLine> visualLinesWithOutstandingInlineObjects = new List<VisualLine>();
 		
-		internal void RemoveInlineObjects(VisualLine visualLine)
+		void RemoveInlineObjects(VisualLine visualLine)
 		{
 			// Delay removing inline objects:
 			// A document change immediately invalidates affected visual lines, but it does not
 			// cause an immediate redraw.
 			// To prevent inline objects from flickering when they are recreated, we delay removing
 			// inline objects until the next redraw.
-			visualLinesWithOutstandingInlineObjects.Add(visualLine);
+			if (visualLine.hasInlineObjects) {
+				visualLinesWithOutstandingInlineObjects.Add(visualLine);
+			}
 		}
 		
-		internal void RemoveInlineObjectsNow()
+		/// <summary>
+		/// Remove the inline objects that were marked for removal.
+		/// </summary>
+		void RemoveInlineObjectsNow()
 		{
+			if (visualLinesWithOutstandingInlineObjects.Count == 0)
+				return;
 			inlineObjects.RemoveAll(
 				ior => {
 					if (visualLinesWithOutstandingInlineObjects.Contains(ior.VisualLine)) {
-						RemoveInlineObjectRun(ior);
+						RemoveInlineObjectRun(ior, false);
 						return true;
 					}
 					return false;
@@ -455,9 +498,9 @@ namespace ICSharpCode.AvalonEdit.Rendering
 
 		// Remove InlineObjectRun.Element from TextLayer.
 		// Caller of RemoveInlineObjectRun will remove it from inlineObjects collection.
-		void RemoveInlineObjectRun(InlineObjectRun ior)
+		void RemoveInlineObjectRun(InlineObjectRun ior, bool keepElement)
 		{
-			if (ior.Element.IsKeyboardFocusWithin) {
+			if (!keepElement && ior.Element.IsKeyboardFocusWithin) {
 				// When the inline element that has the focus is removed, WPF will reset the
 				// focus to the main window without raising appropriate LostKeyboardFocus events.
 				// To work around this, we manually set focus to the next focusable parent.
@@ -469,22 +512,8 @@ namespace ICSharpCode.AvalonEdit.Rendering
 					Keyboard.Focus(element);
 			}
 			ior.VisualLine = null;
-			RemoveVisualChild(ior.Element);
-		}
-		
-		/// <summary>
-		/// Removes the inline object that displays the specified UIElement.
-		/// </summary>
-		internal void RemoveInlineObject(UIElement element)
-		{
-			inlineObjects.RemoveAll(
-				ior => {
-					if (ior.Element == element) {
-						RemoveInlineObjectRun(ior);
-						return true;
-					}
-					return false;
-				});
+			if (!keepElement)
+				RemoveVisualChild(ior.Element);
 		}
 		#endregion
 		
@@ -531,7 +560,6 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		{
 			VerifyAccess();
 			if (allVisualLines.Remove(visualLine)) {
-				visibleVisualLines = null;
 				DisposeVisualLine(visualLine);
 				InvalidateMeasure(redrawPriority);
 			}
@@ -543,7 +571,6 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		public void Redraw(int offset, int length, DispatcherPriority redrawPriority)
 		{
 			VerifyAccess();
-			bool removedLine = false;
 			bool changedSomethingBeforeOrInLine = false;
 			for (int i = 0; i < allVisualLines.Count; i++) {
 				VisualLine visualLine = allVisualLines[i];
@@ -552,14 +579,10 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				if (offset <= lineEnd) {
 					changedSomethingBeforeOrInLine = true;
 					if (offset + length >= lineStart) {
-						removedLine = true;
 						allVisualLines.RemoveAt(i--);
 						DisposeVisualLine(visualLine);
 					}
 				}
-			}
-			if (removedLine) {
-				visibleVisualLines = null;
 			}
 			if (changedSomethingBeforeOrInLine) {
 				// Repaint not only when something in visible area was changed, but also when anything in front of it
@@ -613,6 +636,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			if (newVisualLines != null && newVisualLines.Contains(visualLine)) {
 				throw new ArgumentException("Cannot dispose visual line because it is in construction!");
 			}
+			visibleVisualLines = null;
 			visualLine.IsDisposed = true;
 			foreach (TextLine textLine in visualLine.TextLines) {
 				textLine.Dispose();
@@ -798,11 +822,11 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				ClearVisualLines();
 			lastAvailableSize = availableSize;
 			
-			RemoveInlineObjectsNow();
-			
 			foreach (UIElement layer in layers) {
 				layer.Measure(availableSize);
 			}
+			MeasureInlineObjects();
+			
 			InvalidateVisual(); // = InvalidateArrange+InvalidateRender
 			textLayer.InvalidateVisual();
 			
@@ -821,6 +845,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				}
 			}
 			
+			// remove inline objects only at the end, so that inline objects that were re-used are not removed from the editor
 			RemoveInlineObjectsNow();
 			
 			maxWidth += AdditionalHorizontalScrollAmount;
