@@ -89,7 +89,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 			items.Add(item);
 			dataNav.Fill(items);
 			string str = "<" + item.ColumnName +">";
-			Assert.That(item.DBValue.Contains(str));
+			Assert.That(item.DBValue.StartsWith("Error"));
 		}
 		
 		
@@ -288,8 +288,6 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 				Contributor view = dataNav.Current as Contributor;
 				string actual = view.Last;
 				Assert.GreaterOrEqual(compareTo,actual);
-//				string ss = String.Format("< {0} > <{1}>",compareTo,actual);
-//				Console.WriteLine(ss);
 				compareTo = actual;
 			}
 			Assert.IsTrue(dataNav.IsSorted);
@@ -392,33 +390,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		#endregion
 		
 		#region get included class
-		[Test]
-		public void checkIfPropIsClass()
-		{
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,new ReportSettings());
-			IDataNavigator dn = dm.GetNavigator;
-			int start = 0;
-			MyDummyClass dummy = new MyDummyClass();
-			
-			while (dn.MoveNext()) {
-				dummy.DummyString = "dummy" + start.ToString();
-				dummy.DummyInt = start;
-				Contributor view = dn.Current as Contributor;
-				view.DummyClass = dummy;
-				Console.WriteLine(view.Last);
-				start ++;
-			}
-				
-			dn.Reset();
-			dn.MoveNext();
-			start = 0;
-			while (dn.MoveNext()) {
-				Contributor view = dn.Current as Contributor;
-				Console.WriteLine("{0} - {1} - {2}",view.Last,view.DummyClass.DummyInt,view.DummyClass.DummyString);
-			start ++;
-			}
-			Console.WriteLine(start);
-		}
+		
 			
 		ContributorCollection ModifyCollection ()
 		{
@@ -438,15 +410,15 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		
 		
 		[Test]
-		public void Prop ()
+		public void Collection_Contains_Subclass ()
 		{
 			var modifyedCollection = this.ModifyCollection();
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(modifyedCollection,new ReportSettings());
 			IDataNavigator dn = dm.GetNavigator;
+			
 			ReportItemCollection searchCol = new ReportItemCollection();
 			searchCol.Add(new BaseDataItem ()
 			              {
-			              	Name ="GroupItem",
 			              	ColumnName ="DummyClass.DummyString"			     
 			              }
 			             );
@@ -466,14 +438,63 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 				var a = (BaseDataItem)searchCol[0];
 				var b = (BaseDataItem)searchCol[1];
 				var c = modifyedCollection[dn.CurrentRow];
-//				Console.WriteLine ("{0} - {1} - {2}",a.DBValue,b.DBValue,c.DummyClass.DummyString);
 				Assert.AreEqual(a.DBValue,c.DummyClass.DummyString);
 				Assert.AreEqual(b.DBValue,c.GroupItem);
 			}
 		}
 		
-		#region Setup/TearDown
+		
+		[Test]
+		public void SubClassName_Is_Wrong ()
+		{
+			var modifyedCollection = this.ModifyCollection();
+			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(modifyedCollection,new ReportSettings());
+			IDataNavigator dn = dm.GetNavigator;
+			ReportItemCollection searchCol = new ReportItemCollection();
+			searchCol.Add(new BaseDataItem ()
+			              {
+			              	ColumnName ="wrong.DummyString",
+							DataType = "System.Int32"		              	
+			              }
+			             );
+			
+			dn.Reset();
+			dn.MoveNext();
+
+			while (dn.MoveNext()) {
+				dn.Fill(searchCol);
+				var a = (BaseDataItem)searchCol[0];
+				Assert.That(a.DBValue.StartsWith("Error"));
+			}
+		}
+		
+		[Test]
+		public void SubPropertyName_Is_Wrong ()
+		{
+			var modifyedCollection = this.ModifyCollection();
+			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(modifyedCollection,new ReportSettings());
+			IDataNavigator dn = dm.GetNavigator;
+			ReportItemCollection searchCol = new ReportItemCollection();
+			searchCol.Add(new BaseDataItem ()
+			              {
+			              	Name ="GroupItem",
+			              	ColumnName ="DummyClass.Wrong",
+							DataType = "System.Int32"		              	
+			              }
+			             );
+			dn.Reset();
+			dn.MoveNext();
+			while (dn.MoveNext()) {
+				dn.Fill(searchCol);
+				var a = (BaseDataItem)searchCol[0];
+				Assert.That(a.DBValue.StartsWith("Error"));
+			}
+		}
+		
 		#endregion
+		
+		#region Setup/TearDown
+	
 		[TestFixtureSetUp]
 		public void Init()
 		{

@@ -207,63 +207,47 @@ namespace ICSharpCode.Reports.Core {
 		
 		#endregion
 		
+		
 		public override void Fill(IDataItem item)
 		{
-			if (current != null) {
-				BaseDataItem baseDataItem = item as BaseDataItem;
-				
-				if (baseDataItem != null) {
+			if (item is BaseDataItem)
+			{
+				if (item.ColumnName.Contains(".")) {
+					string[] splittedNames = SplitNames(ref item);
 					
-					if (baseDataItem.ColumnName.Contains(".")) {
-						
-						string[] splittedNames = SplitNames(ref baseDataItem);
-						
-						
-						PropertyDescriptor p = this.listProperties.Find(splittedNames[0], true);
-						
-						var propCollection = ExtendedTypeDescriptor.GetProperties(p.PropertyType);
-						
-						
-						foreach (ExtendedPropertyDescriptor element in propCollection)
-						{
-							Console.WriteLine ("{0} - {1} - {2}",element.Name,element.ComponentType,element.PropertyType);
-						}
-						
-						
-						PropertyDescriptor ppp = propCollection.Find(splittedNames[1], true);
-						object classValue = p.GetValue(this.Current);
-						var v = ppp.GetValue(classValue);
-						
-						baseDataItem.DBValue = v.ToString();
-
-//						Console.WriteLine("{0} - {1}",p.Name,p.PropertyType);
-						
-						
+					// PropDes for SubClass
+					
+					PropertyDescriptor classProperty = this.listProperties.Find(splittedNames[0], true);
+					if (classProperty == null)
+					{
+						WrongColumnName (item);
 					}
 					else
-						
 					{
-						PropertyDescriptor p = this.listProperties.Find(baseDataItem.ColumnName, true);
-					
-						if (p != null)
-						{
-							var o = p.GetValue(this.Current);
-							
-							if (o != null) {
-//								baseDataItem.DBValue = p.GetValue(this.Current).ToString();
-								baseDataItem.DBValue = o.ToString();
-							} else {
-								baseDataItem.DBValue = String.Empty;
-							}
-							
-						} else {
-							baseDataItem.DBValue = string.Format(CultureInfo.InvariantCulture,"<{0}> missing!", baseDataItem.ColumnName);
-						}
+						//all Props for SubClass
+						var propCollection = ExtendedTypeDescriptor.GetProperties(classProperty.PropertyType);
+						
+						var subProperty = propCollection.Find(splittedNames[1], true);
+						
+						var classValue = classProperty.GetValue(this.Current);
+						SetReturnValue(subProperty,classValue,item);
+					}
+				}
+				else
+				{
+					PropertyDescriptor p = this.listProperties.Find(item.ColumnName, true);
+					if (p != null) {
+						SetReturnValue(p,this.Current,item);
+					} else {
+						WrongColumnName (item);
 					}
 					
-					
-					return;
 				}
+				
+				return;
+			}
+			else
+			{
 				
 				//image processing from IList
 				BaseImageItem baseImageItem = item as BaseImageItem;
@@ -277,80 +261,42 @@ namespace ICSharpCode.Reports.Core {
 				}
 			}
 		}
+
 		
-		object getvalueFromproperty(PropertyDescriptor p)
+		void WrongColumnName(IDataItem item)
 		{
-			throw new NotImplementedException();
+			item.DBValue = string.Format(CultureInfo.InvariantCulture, "Error : <{0}> missing!", item.ColumnName);
+		}
+			
+		
+		void SetReturnValue(PropertyDescriptor p,object component,IDataItem item)
+		{
+			if (p != null)
+			{
+				var o = p.GetValue(component);
+				
+				if (o != null) {
+					item.DBValue = o.ToString();
+				} else {
+					item.DBValue = String.Empty;
+				}
+				
+			} else {
+				WrongColumnName(item);
+			}
 		}
 
-		string[] SplitNames(ref BaseDataItem baseDataItem)
+		
+		string[] SplitNames(ref IDataItem item)
 		{
-			var i = baseDataItem.ColumnName.IndexOf(".");
+			var i = item.ColumnName.IndexOf(".");
 			char[] delimiters = new char[] { '.' };
-			var splittedNames = baseDataItem.ColumnName.Split(delimiters);
+			var splittedNames = item.ColumnName.Split(delimiters);
 			return splittedNames;
 		}
 		
 		
-		
-		public  void old_Fill(IDataItem item)
-		{
-			if (current != null) {
-				BaseDataItem baseDataItem = item as BaseDataItem;
-				if (baseDataItem != null) {
-					PropertyDescriptor p = this.listProperties.Find(baseDataItem.ColumnName, true);
-					
-					if (p != null)
-					{
-//						Console.WriteLine("PPPPPPPPPPPP {0}",p.PropertyType);
-						var o = p.GetValue(this.Current);
-						if (o != null) {
-							baseDataItem.DBValue = p.GetValue(this.Current).ToString();
-						} else {
-							baseDataItem.DBValue = String.Empty;
-						}
-						
-					} else {
-						baseDataItem.DBValue = string.Format(CultureInfo.InvariantCulture,"<{0}> missing!", baseDataItem.ColumnName);
-					}
-					return;
-				}
-				
-				//image processing from IList
-				BaseImageItem baseImageItem = item as BaseImageItem;
-				
-				if (baseImageItem != null) {
-					PropertyDescriptor p = this.listProperties.Find(baseImageItem.ColumnName, true);
-					if (p != null) {
-						baseImageItem.Image = p.GetValue(this.Current) as System.Drawing.Image;
-					}
-					return;
-				}
-			}
-		}
-		
-
 		#region test
-		/*
-		public override CurrentItems FillDataRow()
-		{
-			CurrentItems ci = base.FillDataRow();
-			DataRow row = this.Current as DataRow;
-			
-			if (row != null) {
-				CurrentItem c = null;
-				
-				foreach (DataColumn dc in table.Columns)
-				{
-					c = new CurrentItem();
-					c.ColumnName = dc.ColumnName;
-					c.Value = row[dc.ColumnName];
-					ci.Add(c);
-				}
-			}
-			return ci;
-		}
-		 */
 		
 		public override CurrentItemsCollection FillDataRow()
 		{

@@ -22,8 +22,6 @@ namespace ICSharpCode.Reports.Core
 	{
 
 		private string columnName;
-//		private string dbValue;
-
 
 		#region Constructor
 
