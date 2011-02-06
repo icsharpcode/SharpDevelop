@@ -30,11 +30,7 @@ namespace XmlEditor.Tests.Tree
 		public void Init()
 		{
 			treeViewContainer = new DerivedXmlTreeViewContainerControl();
-							
-			XmlSchemaCompletion xhtmlSchema = new XmlSchemaCompletion(ResourceManager.ReadXhtmlStrictSchema());
-			XmlSchemaCompletionCollection schemas = new XmlSchemaCompletionCollection();
-			
-			treeViewContainer.LoadXml("<html><body></body></html>", schemas, null);
+			treeViewContainer.LoadXml("<html><body></body></html>");
 			doc = treeViewContainer.Document;
 			treeView = treeViewContainer.TreeView;
 			

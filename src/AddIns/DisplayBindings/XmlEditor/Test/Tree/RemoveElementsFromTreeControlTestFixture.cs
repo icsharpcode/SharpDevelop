@@ -6,6 +6,7 @@ using System.Xml;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.XmlEditor;
 using NUnit.Framework;
+using XmlEditor.Tests.Utils;
 
 namespace XmlEditor.Tests.Tree
 {
@@ -13,15 +14,15 @@ namespace XmlEditor.Tests.Tree
 	public class RemoveElementsFromTreeControlTestFixture
 	{		
 		XmlDocument doc;
-		XmlTreeViewContainerControl treeViewContainerControl; 
+		DerivedXmlTreeViewContainerControl treeViewContainerControl; 
 		XmlTreeViewControl treeView;
 		
 		[SetUp]
 		public void SetUp()
 		{
-			treeViewContainerControl = new XmlTreeViewContainerControl();
+			treeViewContainerControl = new DerivedXmlTreeViewContainerControl();
 			treeView = treeViewContainerControl.TreeView;
-			treeViewContainerControl.LoadXml("<root><child></child></root>", new XmlSchemaCompletionCollection(), null);
+			treeViewContainerControl.LoadXml("<root><child></child></root>");
 			doc = treeViewContainerControl.Document;
 		}
 		

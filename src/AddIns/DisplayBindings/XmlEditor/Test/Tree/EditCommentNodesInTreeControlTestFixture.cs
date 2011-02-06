@@ -35,7 +35,7 @@ namespace XmlEditor.Tests.Tree
 		{
 			treeViewContainer = new DerivedXmlTreeViewContainerControl();
 			string xml = "<!-- Root comment --><root><!-- Child comment --><child></child></root>";
-			treeViewContainer.LoadXml(xml, new XmlSchemaCompletionCollection(), null);
+			treeViewContainer.LoadXml(xml);
 			
 			doc = treeViewContainer.Document;
 			treeView = treeViewContainer.TreeView;

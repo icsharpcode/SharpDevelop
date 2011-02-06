@@ -17,55 +17,23 @@ namespace XmlEditor.Tests.Utils
 	/// </summary>
 	public class DerivedXmlTreeViewContainerControl : XmlTreeViewContainerControl
 	{
-		List<string> addElementDialogElementNamesReturned = new List<string>();
-		DialogResult addElementDialogResult = DialogResult.OK;
-		List<string> addAttributeDialogAttributeNamesReturned = new List<string>();
-		DialogResult addAttributeDialogResult = DialogResult.OK;
+		public List<string> AddElementDialogElementNamesReturned = new List<string>();
+		public DialogResult AddElementDialogResult = DialogResult.OK;
+		public List<string> AddAttributeDialogAttributeNamesReturned = new List<string>();
+		public DialogResult AddAttributeDialogResult = DialogResult.OK;
+		public XmlSchemaCompletionCollection Schemas;
 		
-		/// <summary>
-		/// This is the list of element names that will be returned from
-		/// the mock AddElementDialog.
-		/// </summary>
-		public List<string> AddElementDialogElementNamesReturned {
-			get {
-				return addElementDialogElementNamesReturned;
-			}
+		public DerivedXmlTreeViewContainerControl()
+			: this(new XmlSchemaCompletionCollection())
+		{
 		}
 		
-		/// <summary>
-		/// Gets or sets the dialog result for the AddElementDialog.
-		/// </summary>
-		public DialogResult AddElementDialogResult {
-			get {
-				return addElementDialogResult;
-			}
-			set {
-				addElementDialogResult = value;
-			}
+		public DerivedXmlTreeViewContainerControl(XmlSchemaCompletionCollection schemas)
+			: base(schemas, null)
+		{
+			this.Schemas = schemas;
 		}
-		
-		/// <summary>
-		/// Gets the list of attribute names that will be returned
-		/// from the mock AddAttributeDialog.
-		/// </summary>
-		public List<string> AddAttributeDialogAttributeNamesReturned {
-			get {
-				return addAttributeDialogAttributeNamesReturned;
-			}
-		}
-		
-		/// <summary>
-		/// Gets or sets the dialog result for the AddAttributeDialog.
-		/// </summary>
-		public DialogResult AddAttributeDialogResult {
-			get {
-				return addAttributeDialogResult;
-			}
-			set {
-				addAttributeDialogResult = value;
-			}
-		}
-		
+				
 		/// <summary>
 		/// Allows us to call the XmlTreeViewContainerControl's 
 		/// TextBoxChanged method to fake the user typing in text 
@@ -128,8 +96,8 @@ namespace XmlEditor.Tests.Utils
 		protected override IAddXmlNodeDialog CreateAddElementDialog(string[] elementNames)
 		{
 			MockAddXmlNodeDialog dialog = new MockAddXmlNodeDialog();
-			dialog.SetNamesToReturn(addElementDialogElementNamesReturned.ToArray());
-			dialog.SetDialogResult(addElementDialogResult);
+			dialog.SetNamesToReturn(AddElementDialogElementNamesReturned.ToArray());
+			dialog.SetDialogResult(AddElementDialogResult);
 			return dialog;
 		}
 		
@@ -139,8 +107,8 @@ namespace XmlEditor.Tests.Utils
 		protected override IAddXmlNodeDialog CreateAddAttributeDialog(string[] attributeNames)
 		{
 			MockAddXmlNodeDialog dialog = new MockAddXmlNodeDialog();
-			dialog.SetNamesToReturn(addAttributeDialogAttributeNamesReturned.ToArray());
-			dialog.SetDialogResult(addAttributeDialogResult);
+			dialog.SetNamesToReturn(AddAttributeDialogAttributeNamesReturned.ToArray());
+			dialog.SetDialogResult(AddAttributeDialogResult);
 			return dialog;
 		}
 	}

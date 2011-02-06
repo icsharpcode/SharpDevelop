@@ -17,13 +17,12 @@ namespace XmlEditor.Tests.Tree
 	/// tests do not really fit into any other test fixture.
 	/// </summary>
 	[TestFixture]
-	public class XmlTreeViewContainerTestFixture
+	public class XmlTreeViewContainerTests
 	{
 		XmlDocument doc;
 		XmlTreeViewControl treeView;
 		DerivedXmlTreeViewContainerControl treeViewContainer;
 		RichTextBox textBox;
-		XmlSchemaCompletionCollection schemas;
 		PropertyGrid attributesGrid;
 		SplitContainer splitContainer;	
 		RichTextBox errorMessageTextBox;
@@ -43,11 +42,8 @@ namespace XmlEditor.Tests.Tree
 		{
 			treeViewContainer = new DerivedXmlTreeViewContainerControl();
 			treeViewContainer.DirtyChanged += TreeViewContainerDirtyChanged;
-							
-			XmlSchemaCompletion xhtmlSchema = new XmlSchemaCompletion(ResourceManager.ReadXhtmlStrictSchema());
-			schemas = new XmlSchemaCompletionCollection();
 			
-			treeViewContainer.LoadXml("<html id='a'>text<body></body></html>", schemas, null);
+			treeViewContainer.LoadXml("<html id='a'>text<body></body></html>");
 			doc = treeViewContainer.Document;
 			treeView = treeViewContainer.TreeView;
 			
@@ -60,6 +56,11 @@ namespace XmlEditor.Tests.Tree
 			textBox = (RichTextBox)splitContainer.Panel2.Controls["textBox"];
 			errorMessageTextBox = (RichTextBox)splitContainer.Panel2.Controls["errorMessageTextBox"];
 			attributesGrid = (PropertyGrid)splitContainer.Panel2.Controls["attributesGrid"];
+		}
+		
+		void CreateTreeViewContainer()
+		{
+			treeViewContainer = new DerivedXmlTreeViewContainerControl();
 		}
 		
 		[TearDown]
@@ -126,7 +127,7 @@ namespace XmlEditor.Tests.Tree
 		public void TextBoxClearedAfterLoadXml()
 		{
 			treeViewContainer.ShowTextContent("test");
-			treeViewContainer.LoadXml("<html/>", schemas, null);
+			treeViewContainer.LoadXml("<html/>");
 			
 			Assert.AreEqual(String.Empty, textBox.Text);
 			AttributesGridOnTop();
@@ -148,7 +149,7 @@ namespace XmlEditor.Tests.Tree
 			Assert.IsNotNull(attributesGrid.SelectedObject);
 			
 			// Loading new xml should clear the attributes grid.
-			treeViewContainer.LoadXml("<html/>", schemas, null);
+			treeViewContainer.LoadXml("<html/>");
 			
 			Assert.IsNull(attributesGrid.SelectedObject, 
 				"Should be no SelectedObject in the attributes grid after loading new xml.");
@@ -435,6 +436,15 @@ namespace XmlEditor.Tests.Tree
 		void TreeViewContainerDirtyChanged(object source, EventArgs e)
 		{
 			dirtyChanged = true;
+		}
+		
+		[Test]
+		public void EnableDelete_XmlNotLoadedIntoEditor_DoesNotThrowNullReferenceException()
+		{
+			CreateTreeViewContainer();
+			
+			bool result = false;
+			Assert.DoesNotThrow(() => result = treeViewContainer.EnableDelete);
 		}
 	}
 }
