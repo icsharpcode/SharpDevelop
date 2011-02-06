@@ -53,7 +53,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			this.Options = new TextEditorOptions();
 			Debug.Assert(singleCharacterElementGenerator != null); // assert that the option change created the builtin element generators
 			
-			layers = new UIElementCollection(this, this);
+			layers = new LayerCollection(this);
 			InsertLayer(textLayer, KnownLayer.Text, LayerInsertionPosition.Replace);
 		}
 		#endregion
@@ -293,13 +293,54 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		#region Layers
 		internal readonly TextLayer textLayer;
-		readonly UIElementCollection layers;
+		readonly LayerCollection layers;
 		
 		/// <summary>
 		/// Gets the list of layers displayed in the text view.
 		/// </summary>
 		public UIElementCollection Layers {
 			get { return layers; }
+		}
+		
+				sealed class LayerCollection : UIElementCollection
+		{
+			readonly TextView textView;
+			
+			public LayerCollection(TextView textView)
+				: base(textView, textView)
+			{
+				this.textView = textView;
+			}
+			
+			public override void Clear()
+			{
+				base.Clear();
+				textView.LayersChanged();
+			}
+			
+			public override int Add(UIElement element)
+			{
+				int r = base.Add(element);
+				textView.LayersChanged();
+				return r;
+			}
+			
+			public override void RemoveAt(int index)
+			{
+				base.RemoveAt(index);
+				textView.LayersChanged();
+			}
+			
+			public override void RemoveRange(int index, int count)
+			{
+				base.RemoveRange(index, count);
+				textView.LayersChanged();
+			}
+		}
+		
+		void LayersChanged()
+		{
+			textLayer.index = layers.IndexOf(textLayer);
 		}
 		
 		/// <summary>
@@ -351,18 +392,99 @@ namespace ICSharpCode.AvalonEdit.Rendering
 		
 		/// <inheritdoc/>
 		protected override int VisualChildrenCount {
-			get { return layers.Count; }
+			get { return layers.Count + inlineObjects.Count; }
 		}
 		
 		/// <inheritdoc/>
 		protected override Visual GetVisualChild(int index)
 		{
-			return layers[index];
+			int cut = textLayer.index + 1;
+			if (index < cut)
+				return layers[index];
+			else if (index < cut + inlineObjects.Count)
+				return inlineObjects[index - cut].Element;
+			else
+				return layers[index - inlineObjects.Count];
 		}
 		
 		/// <inheritdoc/>
 		protected override System.Collections.IEnumerator LogicalChildren {
-			get { return layers.GetEnumerator(); }
+			get {
+				return inlineObjects.Select(io => io.Element).Concat(layers.Cast<UIElement>()).GetEnumerator();
+			}
+		}
+		#endregion
+		
+		#region Inline object handling
+		internal List<InlineObjectRun> inlineObjects = new List<InlineObjectRun>();
+		
+		/// <summary>
+		/// Adds a new inline object.
+		/// </summary>
+		internal void AddInlineObject(InlineObjectRun inlineObject)
+		{
+			inlineObjects.Add(inlineObject);
+			AddVisualChild(inlineObject.Element);
+			inlineObject.Element.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+		}
+		
+		List<VisualLine> visualLinesWithOutstandingInlineObjects = new List<VisualLine>();
+		
+		internal void RemoveInlineObjects(VisualLine visualLine)
+		{
+			// Delay removing inline objects:
+			// A document change immediately invalidates affected visual lines, but it does not
+			// cause an immediate redraw.
+			// To prevent inline objects from flickering when they are recreated, we delay removing
+			// inline objects until the next redraw.
+			visualLinesWithOutstandingInlineObjects.Add(visualLine);
+		}
+		
+		internal void RemoveInlineObjectsNow()
+		{
+			inlineObjects.RemoveAll(
+				ior => {
+					if (visualLinesWithOutstandingInlineObjects.Contains(ior.VisualLine)) {
+						RemoveInlineObjectRun(ior);
+						return true;
+					}
+					return false;
+				});
+			visualLinesWithOutstandingInlineObjects.Clear();
+		}
+
+		// Remove InlineObjectRun.Element from TextLayer.
+		// Caller of RemoveInlineObjectRun will remove it from inlineObjects collection.
+		void RemoveInlineObjectRun(InlineObjectRun ior)
+		{
+			if (ior.Element.IsKeyboardFocusWithin) {
+				// When the inline element that has the focus is removed, WPF will reset the
+				// focus to the main window without raising appropriate LostKeyboardFocus events.
+				// To work around this, we manually set focus to the next focusable parent.
+				UIElement element = this;
+				while (element != null && !element.Focusable) {
+					element = VisualTreeHelper.GetParent(element) as UIElement;
+				}
+				if (element != null)
+					Keyboard.Focus(element);
+			}
+			ior.VisualLine = null;
+			RemoveVisualChild(ior.Element);
+		}
+		
+		/// <summary>
+		/// Removes the inline object that displays the specified UIElement.
+		/// </summary>
+		internal void RemoveInlineObject(UIElement element)
+		{
+			inlineObjects.RemoveAll(
+				ior => {
+					if (ior.Element == element) {
+						RemoveInlineObjectRun(ior);
+						return true;
+					}
+					return false;
+				});
 		}
 		#endregion
 		
@@ -495,7 +617,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 			foreach (TextLine textLine in visualLine.TextLines) {
 				textLine.Dispose();
 			}
-			textLayer.RemoveInlineObjects(visualLine);
+			RemoveInlineObjects(visualLine);
 		}
 		#endregion
 		
@@ -676,7 +798,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				ClearVisualLines();
 			lastAvailableSize = availableSize;
 			
-			textLayer.RemoveInlineObjectsNow();
+			RemoveInlineObjectsNow();
 			
 			foreach (UIElement layer in layers) {
 				layer.Measure(availableSize);
@@ -699,7 +821,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 				}
 			}
 			
-			textLayer.RemoveInlineObjectsNow();
+			RemoveInlineObjectsNow();
 			
 			maxWidth += AdditionalHorizontalScrollAmount;
 			double heightTreeHeight = this.DocumentHeight;
@@ -946,7 +1068,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 						foreach (var span in textLine.GetTextRunSpans()) {
 							InlineObjectRun inline = span.Value as InlineObjectRun;
 							if (inline != null && inline.VisualLine != null) {
-								Debug.Assert(textLayer.inlineObjects.Contains(inline));
+								Debug.Assert(inlineObjects.Contains(inline));
 								double distance = textLine.GetDistanceFromCharacterHit(new CharacterHit(offset, 0));
 								inline.Element.Arrange(new Rect(new Point(pos.X + distance, pos.Y), inline.Element.DesiredSize));
 							}

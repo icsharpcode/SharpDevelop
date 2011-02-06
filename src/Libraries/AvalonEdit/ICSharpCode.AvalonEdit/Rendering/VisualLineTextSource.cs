@@ -42,7 +42,7 @@ namespace ICSharpCode.AvalonEdit.Rendering
 						InlineObjectRun inlineRun = run as InlineObjectRun;
 						if (inlineRun != null) {
 							inlineRun.VisualLine = VisualLine;
-							TextView.textLayer.AddInlineObject(inlineRun);
+							TextView.AddInlineObject(inlineRun);
 						}
 						return run;
 					}
