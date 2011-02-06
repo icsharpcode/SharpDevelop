@@ -1401,12 +1401,6 @@
 										<File Source="..\..\AddIns\Misc\SearchAndReplace\SearchAndReplace.dll" Id="SearchAndReplace.dll" Name="SearchAndReplace.dll" />
 									</Component>
 								</Directory>
-								<Directory Id="ReflectorAddInFolder" Name="ReflectorAddIn">
-									<Component Guid="7909D3B7-FC01-4897-AF29-4B0C45D4680F" Id="ReflectorAddInDll" DiskId="1">
-										<File Source="..\..\AddIns\Misc\ReflectorAddIn\ReflectorAddIn.dll" Name="ReflectorAddIn.dll" Id="ReflectorAddIn.dll" Assembly=".net" AssemblyApplication="ReflectorAddIn.dll" AssemblyManifest="ReflectorAddIn.dll" KeyPath="yes" />
-										<File Source="..\..\AddIns\Misc\ReflectorAddIn\ReflectorAddIn.addin" Name="ReflectorAddIn.addin" Id="ReflectorAddIn.addin" />
-									</Component>
-								</Directory>
 								<Directory Id="SharpRefactoring" Name="SharpRefactoring">
 									<Component Guid="BCC6D49B-5CC9-4B5D-80DE-A70E90E67ABD" Id="SharpRefactoringAddin" DiskId="1">
 										<File Source="..\..\AddIns\Misc\SharpRefactoring\SharpRefactoring.addin" Name="SharpRefactoring.addin" Id="SharpRefactoring.addin" KeyPath="yes" />
