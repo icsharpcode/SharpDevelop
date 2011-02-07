@@ -79,7 +79,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Nothing             = 0,
 			FileDirty           = 1,
 			FileReadOnly        = 2,
-			FileUntitled        = 4
+			FileUntitled        = 4,
+			ViewContentWithoutFile = 8
 		}
 		
 		public System.Enum InternalState {
@@ -93,6 +94,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 						state |= OpenFileTabStates.FileReadOnly;
 					if (content.PrimaryFile != null && content.PrimaryFile.IsUntitled)
 						state |= OpenFileTabStates.FileUntitled;
+					if (content.PrimaryFile == null)
+						state |= OpenFileTabStates.ViewContentWithoutFile;
 				}
 				return state;
 			}

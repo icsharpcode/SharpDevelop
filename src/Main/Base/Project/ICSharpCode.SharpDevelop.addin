@@ -1037,16 +1037,10 @@
 		<MenuItem id = "SaveAs"
 		          label = "${res:OpenFileTabEventHandler.ContextMenu.SaveAs}"
 		          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.SaveFileAsTab"/>
-		<Condition name = "OpenWindowState" openwindowstate="Dirty" action="Disable">
-			<MenuItem id = "SaveAll"
-			          icon = "Icons.16x16.SaveAllIcon"
-			          label = "${res:XML.MainMenu.FileMenu.SaveAll.Description}"
-			          class = "ICSharpCode.SharpDevelop.Commands.SaveAllFiles"/>
-		</Condition>
 		<MenuItem id = "SaveSeparator" type = "Separator" />
 		<ComplexCondition action="Disable">
 			<Not>
-				<Condition name = "Ownerstate" ownerstate="FileUntitled" />
+				<Condition name = "Ownerstate" ownerstate="FileUntitled,ViewContentWithoutFile" />
 			</Not>
 			<MenuItem id = "CopyPathName"
 			          label = "${res:OpenFileTabEventHandler.CopyPathName}"
