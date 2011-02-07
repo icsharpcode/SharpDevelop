@@ -285,8 +285,13 @@
 				<TextBox
 					Grid.Row="1"
 					Grid.Column="0"
-					pm:TextBoxBehaviour.EnterKeyCommand="{Binding Path=SearchCommand}"
-					Text="{Binding Path=SearchTerms, UpdateSourceTrigger=PropertyChanged}"/>
+					Text="{Binding Path=SearchTerms, UpdateSourceTrigger=PropertyChanged}">
+					<TextBox.InputBindings>
+						<KeyBinding
+							Key="Enter"
+							Command="{Binding Path=SearchCommand}"/>
+					</TextBox.InputBindings>
+				</TextBox>
 				<TextBlock 
 					Grid.Row="1"
 					Grid.Column="1"

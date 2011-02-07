@@ -145,7 +145,6 @@
     <Compile Include="Src\SharpDevelopProjectSystem.cs" />
     <Compile Include="Src\SharpDevelopProjectSystemFactory.cs" />
     <Compile Include="Src\StringToStringCollectionConverter.cs" />
-    <Compile Include="Src\TextBoxBehaviour.cs" />
     <Compile Include="Src\ViewModelBase.cs" />
     <Compile Include="Src\ViewModelLocator.cs" />
   </ItemGroup>
