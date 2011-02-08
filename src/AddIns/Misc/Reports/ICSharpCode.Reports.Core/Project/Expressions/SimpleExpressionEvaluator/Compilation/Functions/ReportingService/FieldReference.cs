@@ -33,7 +33,7 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.ReportingService
 			Variable variable = Arguments[0] as Variable;
 			
 			if (singlePage.IDataNavigator.CurrentRow > -1) {
-				var dataRow = singlePage.IDataNavigator.GetDataRow();
+				var dataRow = singlePage.IDataNavigator.GetDataRow;
 				var item = dataRow.Find(variable.VariableName);
 				
 				string retval;

@@ -87,7 +87,7 @@ namespace ICSharpCode.Reports.Core.Exporter
 					do {
 						
 						// GetType child navigator
-						IDataNavigator childNavigator = base.DataNavigator.GetChildNavigator();
+						IDataNavigator childNavigator = base.DataNavigator.GetChildNavigator;
 						
 						base.Evaluator.SinglePage.IDataNavigator = childNavigator;
 						// Convert Grouping Header
@@ -148,7 +148,6 @@ base.PrepareContainerForConverting(section,simpleContainer);
 						CheckForPageBreak(section,simpleContainer,headerRow,exporterCollection);
 						
 						FillRow(simpleContainer,base.DataNavigator);
-//						base.PrepareContainerForConverting(section,simpleContainer);
 						FireRowRendering(simpleContainer,base.DataNavigator);
 						base.PrepareContainerForConverting(section,simpleContainer);
 						
@@ -177,7 +176,6 @@ base.PrepareContainerForConverting(section,simpleContainer);
 			if (PrintHelper.IsPageFull(pageBreakRect,base.SectionBounds))
 			{
 				base.CurrentPosition = ForcePageBreak(exporterCollection,section);
-				
 				base.CurrentPosition = ConvertStandardRow (exporterCollection,headerRow);
 			}
 

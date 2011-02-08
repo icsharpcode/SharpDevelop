@@ -38,7 +38,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		{
 			var dataNavigator = PrepareStringGrouping();
 			dataNavigator.MoveNext();
-			IDataNavigator child = dataNavigator.GetChildNavigator();
+			IDataNavigator child = dataNavigator.GetChildNavigator;
 			AvailableFieldsCollection availableFieldsCollection = child.AvailableFields;
 			Assert.That(availableFieldsCollection,Is.Not.Null);
 			Assert.That(availableFieldsCollection.Count,Is.GreaterThan(0));
@@ -64,7 +64,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 			{
 				if (dataNavigator.HasChildren)
 				{
-					var childNavigator = dataNavigator.GetChildNavigator();
+					var childNavigator = dataNavigator.GetChildNavigator;
 					Assert.That(childNavigator.Count,Is.GreaterThan(0));
 				}
 			}
@@ -78,7 +78,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 			while (dataNavigator.MoveNext()) {
 				if (dataNavigator.HasChildren)
 				{
-					var childNavigator = dataNavigator.GetChildNavigator();
+					var childNavigator = dataNavigator.GetChildNavigator;
 					do
 					{
 						Assert.That(dataNavigator.HasChildren,Is.True);
@@ -106,7 +106,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 			Console.WriteLine("start datetime");
 			while (dataNavigator.MoveNext()) {
 				if (dataNavigator.HasChildren) {
-					var childNavigator = dataNavigator.GetChildNavigator();
+					var childNavigator = dataNavigator.GetChildNavigator;
 					do
 					{
 						

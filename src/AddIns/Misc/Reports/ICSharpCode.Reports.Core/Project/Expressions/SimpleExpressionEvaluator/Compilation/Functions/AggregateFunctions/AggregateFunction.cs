@@ -112,7 +112,7 @@ namespace SimpleExpressionEvaluator.Compilation.Functions.AggregateFunctions
         	navigator.Reset();
         	List<object> list = new List<object>();
         	while ( navigator.MoveNext()) {
-        		CurrentItemsCollection row = navigator.GetDataRow();
+        		CurrentItemsCollection row = navigator.GetDataRow;
         		CurrentItem currentItem = ExtractItemFromDataSet (row,data);
         		
         		if (currentItem != null) {

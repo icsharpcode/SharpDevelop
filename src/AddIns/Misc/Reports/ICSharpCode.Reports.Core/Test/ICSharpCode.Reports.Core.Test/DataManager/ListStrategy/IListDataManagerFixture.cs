@@ -304,7 +304,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,rs);
 			DataNavigator dataNav = dm.GetNavigator;
 			while (dataNav.MoveNext()) {
-				CurrentItemsCollection c = dataNav.GetDataRow();
+				CurrentItemsCollection c = dataNav.GetDataRow;
 				Assert.AreEqual(typeof(string),c[0].DataType);
 				Assert.AreEqual(typeof(string),c[1].DataType);
 				Assert.AreEqual(typeof(string),c[2].DataType);
@@ -321,7 +321,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 			DataNavigator dataNav = dm.GetNavigator;
 			int count = 0;
 			while (dataNav.MoveNext()) {
-				CurrentItemsCollection c = dataNav.GetDataRow();
+				CurrentItemsCollection c = dataNav.GetDataRow;
 				if ( c != null) {
 					count ++;
 				}

@@ -12,7 +12,8 @@ using System.ComponentModel;
  		bool MoveNext () ;
  		void Reset();
  		
- 		CurrentItemsCollection GetDataRow();
+ 		CurrentItemsCollection GetDataRow {get;}
+ 			
  		
  		bool HasMoreData {
  			get;
@@ -20,7 +21,7 @@ using System.ComponentModel;
  		
  		#region Try make recursive with ChildNavigator
  		
- 		IDataNavigator GetChildNavigator();
+ 		IDataNavigator GetChildNavigator{get;}
  		
  		#endregion
  		

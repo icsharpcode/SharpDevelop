@@ -109,20 +109,25 @@ namespace ICSharpCode.Reports.Core
 			this.indexList.CurrentPosition = -1;
 		}
 		
-		public CurrentItemsCollection GetDataRow()
+		
+		public CurrentItemsCollection GetDataRow
 		{
-			var st= store as TableStrategy;
-			return st.FillDataRow(this.indexList[CurrentRow].ListIndex);
+			get {
+				var st= store as TableStrategy;
+				return st.FillDataRow(this.indexList[CurrentRow].ListIndex);
+			}
 		}
 		
 		
-		public IDataNavigator GetChildNavigator()
+		public IDataNavigator GetChildNavigator
 		{
-			var i = BuildChildList();
-			if ((i == null) || (i.Count == 0)) {
-				return null;
-			} 
-			return new ChildNavigator(this.store,i);
+			get {
+				var i = BuildChildList();
+				if ((i == null) || (i.Count == 0)) {
+					return null;
+				}
+				return new ChildNavigator(this.store,i);
+			}
 		}
 		
 		

@@ -263,13 +263,13 @@ namespace ICSharpCode.Reports.Core {
 		}
 
 		
-		void WrongColumnName(IDataItem item)
+		static void WrongColumnName(IDataItem item)
 		{
 			item.DBValue = string.Format(CultureInfo.InvariantCulture, "Error : <{0}> missing!", item.ColumnName);
 		}
 			
 		
-		void SetReturnValue(PropertyDescriptor p,object component,IDataItem item)
+		static void SetReturnValue(PropertyDescriptor p,object component,IDataItem item)
 		{
 			if (p != null)
 			{
@@ -287,9 +287,8 @@ namespace ICSharpCode.Reports.Core {
 		}
 
 		
-		string[] SplitNames(ref IDataItem item)
+		static string[] SplitNames(ref IDataItem item)
 		{
-			var i = item.ColumnName.IndexOf(".");
 			char[] delimiters = new char[] { '.' };
 			var splittedNames = item.ColumnName.Split(delimiters);
 			return splittedNames;
