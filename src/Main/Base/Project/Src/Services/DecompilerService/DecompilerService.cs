@@ -317,7 +317,7 @@ namespace ICSharpCode.SharpDevelop
 			string filePath = Path.Combine(tempFolder, file);
 
 			if (File.Exists(filePath))
-				File.Delete(filePath);
+				File.SetAttributes(filePath, FileAttributes.Temporary);	
 			
 			// write file
 			using (var sw = new StreamWriter(filePath, false))
