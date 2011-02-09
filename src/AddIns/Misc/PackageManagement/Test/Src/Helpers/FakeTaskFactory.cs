@@ -11,6 +11,7 @@ namespace PackageManagement.Tests.Helpers
 	public class FakeTaskFactory : ITaskFactory
 	{
 		public bool IsCreateTaskCalled;
+		public bool RunTasksSynchronously;
 		
 		public FakeTask<PackagesForSelectedPageResult> FirstFakeTaskCreated { 
 			get { return FakeTasksCreated[0] as FakeTask<PackagesForSelectedPageResult>; }
@@ -23,7 +24,7 @@ namespace PackageManagement.Tests.Helpers
 			Action<ITask<TResult>> continueWith)
 		{
 			IsCreateTaskCalled = true;
-			var task = new FakeTask<TResult>(function, continueWith);
+			var task = new FakeTask<TResult>(function, continueWith, RunTasksSynchronously);
 			FakeTasksCreated.Add(task);
 			return task;
 		}

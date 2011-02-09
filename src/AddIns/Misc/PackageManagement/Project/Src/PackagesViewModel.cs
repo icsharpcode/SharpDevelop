@@ -112,7 +112,7 @@ namespace ICSharpCode.PackageManagement
 		public void ReadPackages()
 		{
 			allPackages = null;
-			SelectedPageNumber = 1;
+			pages.SelectedPageNumber = 1;
 			UpdateRepositoryBeforeReadPackagesTaskStarts();
 			StartReadPackagesTask();
 		}
@@ -177,13 +177,9 @@ namespace ICSharpCode.PackageManagement
 
 		void UpdatePackagesForSelectedPage(PackagesForSelectedPageResult result)
 		{			
-			pages.CollectionChanged -= PagesChanged;
-			
 			pages.TotalItems = result.TotalPackages;
 			pages.TotalItemsOnSelectedPage = result.TotalPackagesOnPage;
 			UpdatePackageViewModels(result.Packages);
-			
-			pages.CollectionChanged += PagesChanged;
 		}
 		
 		void PagesChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -278,7 +274,13 @@ namespace ICSharpCode.PackageManagement
 		
 		public int SelectedPageNumber {
 			get { return pages.SelectedPageNumber; }
-			set { pages.SelectedPageNumber = value; }
+			set {
+				if (pages.SelectedPageNumber != value) {
+					pages.SelectedPageNumber = value;
+					StartReadPackagesTask();
+					base.OnPropertyChanged(null);
+				}
+			}
 		}
 		
 		public int PageSize {

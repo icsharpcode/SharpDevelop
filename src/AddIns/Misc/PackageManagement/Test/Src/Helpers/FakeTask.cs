@@ -11,19 +11,25 @@ namespace PackageManagement.Tests.Helpers
 		public bool IsStartCalled;
 		public bool IsCancelCalled;
 		
+		public bool RunTaskSynchronously;
+		
 		Func<TResult> function;
 		Action<ITask<TResult>> continueWith;
 		
-		public FakeTask(Func<TResult> function, Action<ITask<TResult>> continueWith)
+		public FakeTask(Func<TResult> function, Action<ITask<TResult>> continueWith, bool runTaskSynchronously)
 		{
 			this.function = function;
 			this.continueWith = continueWith;
+			RunTaskSynchronously = runTaskSynchronously;
 			Exception = new AggregateException(new Exception("FakeTaskAggregateInnerException"));
 		}
 		
 		public void Start()
 		{
 			IsStartCalled = true;
+			if (RunTaskSynchronously) {
+				ExecuteTaskCompletely();
+			}
 		}
 		
 		public TResult Result { get; set; }

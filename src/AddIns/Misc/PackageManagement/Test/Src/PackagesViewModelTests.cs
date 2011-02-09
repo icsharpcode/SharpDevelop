@@ -508,7 +508,7 @@ namespace PackageManagement.Tests
 		}
 		
 		[Test]
-		public void ReadPackages_CalledThreeTimesAndThenSelectedPageChanged_ViewModelPropertiesChangedEventFiresFourTimesWhenSelectedPageChanged()
+		public void ReadPackages_CalledThreeTimesAndThenSelectedPageChanged_ViewModelPropertiesChangedEventFiresOnceWhenSelectedPageChanged()
 		{
 			CreateViewModel();
 			viewModel.PageSize = 3;
@@ -527,16 +527,7 @@ namespace PackageManagement.Tests
 			viewModel.PropertyChanged += (sender, e) => count++;
 			viewModel.SelectedPageNumber = 2;
 			
-			// PropertyChanged fired for clearing the pages. 
-			int propertyChangedEventFiredForClearingPagesCount = 1;
-			
-			// PropertyChanged fired once for each page.
-			int propertyChangedEventFiredForAddingPagesCount = 2;
-			
-			int totalExpectedPropertyChangedFiredCount =
-				propertyChangedEventFiredForClearingPagesCount + propertyChangedEventFiredForAddingPagesCount;
-			
-			Assert.AreEqual(totalExpectedPropertyChangedFiredCount, count);
+			Assert.AreEqual(1, count);
 		}
 		
 		[Test]
@@ -1140,6 +1131,69 @@ namespace PackageManagement.Tests
 			};
 			
 			PackageCollectionAssert.AreEqual(expectedPackages, viewModel.PackageViewModels);
+		}
+		
+		[Test]
+		public void SelectedPageNumber_SixPackagesAndPageSizeIsFiveAndSelectedPageNumberIsChangedToTwo_OneReadPackagesTaskCreated()
+		{
+			CreateViewModel();
+			viewModel.PageSize = 5;
+			viewModel.AddSixFakePackages();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			ClearReadPackagesTasks();
+			
+			viewModel.SelectedPageNumber = 2;
+			
+			Assert.AreEqual(1, taskFactory.FakeTasksCreated.Count);
+		}
+		
+		[Test]
+		public void SelectedPageNumber_SixPackagesAndSelectedPageNumberIsSetToPageOneButUnchanged_NoReadPackagesTaskCreated()
+		{
+			CreateViewModel();
+			viewModel.PageSize = 5;
+			viewModel.AddSixFakePackages();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			ClearReadPackagesTasks();
+			
+			viewModel.SelectedPageNumber = 1;
+			
+			Assert.AreEqual(0, taskFactory.FakeTasksCreated.Count);
+		}
+		
+		[Test]
+		public void SelectedPageNumber_SixPackagesAndPageSizeIsFiveAndSelectedPageNumberIsChangedToTwo_PropertyChangedEventFiredAfterSelectedPageNumberChanged()
+		{
+			CreateViewModel();
+			viewModel.PageSize = 5;
+			viewModel.AddSixFakePackages();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			ClearReadPackagesTasks();
+			
+			int selectedPageNumber = 0;
+			viewModel.PropertyChanged += (source, e) => selectedPageNumber = viewModel.SelectedPageNumber;
+			viewModel.SelectedPageNumber = 2;
+			
+			Assert.AreEqual(2, selectedPageNumber);
+		}
+		
+		[Test]
+		public void SelectedPageNumber_SixPackagesAndPageSizeIsFiveAndSelectedPageNumberIsChangedToTwo_SelectedPageNumberChangedBeforeReadPackagesTaskStarted()
+		{
+			CreateViewModel();
+			viewModel.PageSize = 5;
+			viewModel.AddSixFakePackages();
+			viewModel.ReadPackages();
+			CompleteReadPackagesTask();
+			ClearReadPackagesTasks();
+			
+			taskFactory.RunTasksSynchronously = true;
+			viewModel.SelectedPageNumber = 2;
+			
+			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
 		}
 	}
 }
