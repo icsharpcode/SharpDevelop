@@ -18,6 +18,7 @@ namespace PackageManagement.Tests.Helpers
 		public List<FakePackage> FakePackages = new List<FakePackage>();
 		public int GetAllPackagesCallCount;
 		public int PageCountBeforePackagesFiltered;
+		public string SearchCriteriaPassedToFilterPackagesBySearchCriteria;
 		
 		public TestablePackagesViewModel()
 			: this(new FakePackageManagementService())
@@ -87,6 +88,12 @@ namespace PackageManagement.Tests.Helpers
 		public void AddThreeFakePackages()
 		{
 			AddFakePackages(howMany: 3);
+		}
+		
+		protected override IQueryable<IPackage> FilterPackagesBySearchCriteria(IQueryable<IPackage> packages, string searchTerms)
+		{
+			SearchCriteriaPassedToFilterPackagesBySearchCriteria = searchTerms;
+			return base.FilterPackagesBySearchCriteria(packages, searchTerms);
 		}
 	}
 }

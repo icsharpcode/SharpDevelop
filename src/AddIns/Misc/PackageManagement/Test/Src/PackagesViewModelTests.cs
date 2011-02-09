@@ -1195,5 +1195,45 @@ namespace PackageManagement.Tests
 			
 			Assert.AreEqual(1, viewModel.PackageViewModels.Count);
 		}
+		
+		[Test]
+		public void Search_RepositoryHasPackageWithIdOfEmptyString_SearchCriteriaUsedIsNull()
+		{
+			CreateViewModel();
+			viewModel.PageSize = 2;
+			viewModel.FakePackages.Add(new FakePackage() {
+				Id = "",
+				Description = "abc"
+			});
+			taskFactory.RunTasksSynchronously = true;
+			viewModel.ReadPackages();
+			
+			ClearReadPackagesTasks();
+			
+			viewModel.SearchTerms = "";
+			viewModel.Search();
+			
+			Assert.IsNull(viewModel.SearchCriteriaPassedToFilterPackagesBySearchCriteria);
+		}
+		
+		[Test]
+		public void Search_RepositoryHasPackageWithIdOfWhitespaceString_SearchCriteriaUsedIsNull()
+		{
+			CreateViewModel();
+			viewModel.PageSize = 2;
+			viewModel.FakePackages.Add(new FakePackage() {
+				Id = "",
+				Description = "abc"
+			});
+			taskFactory.RunTasksSynchronously = true;
+			viewModel.ReadPackages();
+			
+			ClearReadPackagesTasks();
+			
+			viewModel.SearchTerms = "   ";
+			viewModel.Search();
+			
+			Assert.IsNull(viewModel.SearchCriteriaPassedToFilterPackagesBySearchCriteria);
+		}
 	}
 }

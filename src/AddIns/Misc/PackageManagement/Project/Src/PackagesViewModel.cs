@@ -199,7 +199,7 @@ namespace ICSharpCode.PackageManagement
 			if (allPackages == null) {
 				IQueryable<IPackage> packages = GetAllPackages();
 				packages = OrderPackages(packages);
-				packages = packages.Find(searchTerms);
+				packages = FilterPackagesBySearchCriteria(packages);
 				totalItems = packages.Count();
 				allPackages = GetFilteredPackagesBeforePagingResults(packages);
 			}
@@ -210,6 +210,25 @@ namespace ICSharpCode.PackageManagement
 		{
 			return packages
 				.OrderBy(package => package.Id);
+		}
+		
+		IQueryable<IPackage> FilterPackagesBySearchCriteria(IQueryable<IPackage> packages)
+		{
+			string searchCriteria = GetSearchCriteria();
+			return FilterPackagesBySearchCriteria(packages, searchCriteria);
+		}
+		
+		string GetSearchCriteria()
+		{
+			if (String.IsNullOrWhiteSpace(searchTerms)) {
+				return null;
+			}
+			return searchTerms;
+		}
+
+		protected virtual IQueryable<IPackage> FilterPackagesBySearchCriteria(IQueryable<IPackage> packages, string searchCriteria)
+		{
+			return packages.Find(searchCriteria);
 		}
 		
 		IEnumerable<IPackage> GetPackagesForSelectedPage(IEnumerable<IPackage> allPackages)
