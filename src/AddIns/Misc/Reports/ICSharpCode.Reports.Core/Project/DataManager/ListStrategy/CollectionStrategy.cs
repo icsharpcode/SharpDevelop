@@ -4,9 +4,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
+using System.Reflection;
 
 /// <summary>
 /// This Class handles all List's with IList
@@ -207,6 +207,7 @@ namespace ICSharpCode.Reports.Core {
 		
 		#endregion
 		
+		/*
 		
 		public override void Fill(IDataItem item)
 		{
@@ -262,13 +263,92 @@ namespace ICSharpCode.Reports.Core {
 			}
 		}
 
+		*/
 		
-		static void WrongColumnName(IDataItem item)
+		public override void Fill(IDataItem item)
 		{
-			item.DBValue = string.Format(CultureInfo.InvariantCulture, "Error : <{0}> missing!", item.ColumnName);
+			if (item is BaseDataItem)
+			{
+				
+				var retVal = FollowPropertyPath(Current,item.ColumnName);
+				//var retVal1 = ResolveValue(Current,item.ColumnName);
+				if (retVal != null) {
+					item.DBValue = retVal.ToString();
+				} else {
+					item.DBValue = String.Empty;
+				}
+			}
+			
+			else
+			{
+				
+				//image processing from IList
+				BaseImageItem baseImageItem = item as BaseImageItem;
+				
+				if (baseImageItem != null) {
+					PropertyDescriptor p = this.listProperties.Find(baseImageItem.ColumnName, true);
+					if (p != null) {
+						baseImageItem.Image = p.GetValue(this.Current) as System.Drawing.Image;
+					}
+					return;
+				}
+			}
+		}
+		
+		#region Proppath from StackOverflow
+	
+		//http://stackoverflow.com/questions/366332/best-way-to-get-sub-properties-using-getproperty
+		
+		
+		private static object FollowPropertyPath(object value, string path)
+		{
+			Type currentType = value.GetType();
+			foreach (string propertyName in path.Split('.'))
+			{
+				
+				PropertyInfo property = currentType.GetProperty(propertyName);
+				
+				if (property != null) {
+					
+					value = property.GetValue(value, null);
+					currentType = property.PropertyType;
+				} else {
+					
+					return WrongColumnName(path);
+				}
+			}
+			return value;
+		}
+		
+		/*
+		static object ResolveValue(object component, string path) 
+		{   
+			foreach(string segment in path.Split('.'))
+			{   
+				if (component == null) return null; 
+				if(component is IListSource)
+				{  
+					component = ((IListSource)component).GetList();
+				} 
+				if (component is IList)
+				{    
+					component = ((IList)component)[0];
+				} 
+				var r = ExtendedTypeDescriptor.GetProperties(component.GetType());
+				                                             
+				//component = GetValue(component, segment); 
+			}  
+			return component; 
+		}
+		*/
+		#endregion
+			
+		static string  WrongColumnName(string propertyName)
+		{
+			return String.Format(CultureInfo.InvariantCulture, "Error : <{0}> missing!", propertyName);
 		}
 			
-		
+		/*
 		static void SetReturnValue(PropertyDescriptor p,object component,IDataItem item)
 		{
 			if (p != null)
@@ -294,7 +374,7 @@ namespace ICSharpCode.Reports.Core {
 			return splittedNames;
 		}
 		
-		
+		*/
 		#region test
 		
 		public override CurrentItemsCollection FillDataRow()

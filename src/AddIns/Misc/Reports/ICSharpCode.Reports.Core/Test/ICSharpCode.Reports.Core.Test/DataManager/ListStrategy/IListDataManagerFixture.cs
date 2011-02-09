@@ -81,14 +81,16 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 		[Test]
 		public void DataNavigator_Return_ErrMessage_If_ColumnName_NotExist ()
 		{
-			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection as System.Collections.IList,new ReportSettings());
+			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(this.contributorCollection,new ReportSettings());
 			IDataNavigator dataNav = dm.GetNavigator;
 			BaseDataItem item = new BaseDataItem();
 			item.ColumnName = "ColumnNotExist";
 			var items = new ReportItemCollection();
 			items.Add(item);
+			dataNav.Reset();
+			dataNav.MoveNext();
 			dataNav.Fill(items);
-			string str = "<" + item.ColumnName +">";
+//			string str = "<" + item.ColumnName +">";
 			Assert.That(item.DBValue.StartsWith("Error"));
 		}
 		
@@ -125,7 +127,7 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 			
 			IDataManager dm = ICSharpCode.Reports.Core.DataManager.CreateInstance(contColl, new ReportSettings());
 			IDataNavigator dataNav = dm.GetNavigator;
-			dataNav.MoveNext();
+			
 			
 			ReportItemCollection searchCol = new ReportItemCollection();
 			searchCol.Add(new BaseDataItem ()
@@ -135,7 +137,8 @@ namespace ICSharpCode.Reports.Core.Test.DataManager.ListStrategy
 			             		
 			             }
 			            );
-			
+			dataNav.Reset();
+			dataNav.MoveNext();
 			do 
 			{
 				dataNav.Fill(searchCol);
