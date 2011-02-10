@@ -40,6 +40,9 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
+    <Reference Include="Irony">
+      <HintPath>..\..\..\Libraries\Irony.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\..\..\..\..\..\Tools\NUnit\nunit.framework.dll</HintPath>
     </Reference>
@@ -108,10 +111,6 @@
     <EmbeddedResource Include="Resources\ArtikelSchema_Data.xsd" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Irony\Irony.csproj">
-      <Project>{D81F5C91-D7DB-46E5-BC99-49488FB6814C}</Project>
-      <Name>Irony</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\ICSharpCode.Reports.Core.csproj">
       <Project>{4B2239FF-8FD6-431D-9D22-1B8049BA6917}</Project>
       <Name>ICSharpCode.Reports.Core</Name>
