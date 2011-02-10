@@ -32,6 +32,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		#endregion
 		
+		public new Statement Clone()
+		{
+			return (Statement)base.Clone();
+		}
+		
 		public override NodeType NodeType {
 			get { return NodeType.Statement; }
 		}

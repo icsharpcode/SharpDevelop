@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		AstNode nextSibling;
 		AstNode firstChild;
 		AstNode lastChild;
-		Role role;
+		Role role = Roles.Root;
 		
 		public abstract NodeType NodeType {
 			get;
@@ -192,6 +192,14 @@ namespace ICSharpCode.NRefactory.CSharp
 				throw new InvalidOperationException("Cannot add children to null nodes");
 			if (child.parent != null)
 				throw new ArgumentException ("Node is already used in another tree.", "child");
+			AddChildUnsafe(child, role);
+		}
+		
+		/// <summary>
+		/// Adds a child without performing any safety checks.
+		/// </summary>
+		void AddChildUnsafe(AstNode child, Role role)
+		{
 			child.parent = this;
 			child.role = role;
 			if (firstChild == null) {
@@ -262,6 +270,7 @@ namespace ICSharpCode.NRefactory.CSharp
 					parent.lastChild = prevSibling;
 				}
 				parent = null;
+				role = Roles.Root;
 				prevSibling = null;
 				nextSibling = null;
 			}
@@ -309,13 +318,38 @@ namespace ICSharpCode.NRefactory.CSharp
 				parent = null;
 				prevSibling = null;
 				nextSibling = null;
+				role = Roles.Root;
 			}
+		}
+		
+		public AstNode Clone()
+		{
+			AstNode copy = (AstNode)MemberwiseClone();
+			// First, reset the shallow pointer copies
+			copy.parent = null;
+			copy.role = Roles.Root;
+			copy.firstChild = null;
+			copy.lastChild = null;
+			copy.prevSibling = null;
+			copy.nextSibling = null;
+			
+			// Then perform a deep copy:
+			for (AstNode cur = firstChild; cur != null; cur = cur.nextSibling) {
+				copy.AddChildUnsafe(cur.Clone(), cur.role);
+			}
+			
+			return copy;
 		}
 		
 		public abstract S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data);
 		
 		public static class Roles
 		{
+			/// <summary>
+			/// Root of an abstract syntax tree.
+			/// </summary>
+			public static readonly Role<AstNode> Root = new Role<AstNode>("Root", CSharp.AstNode.Null);
+			
 			// some pre defined constants for common roles
 			public static readonly Role<Identifier> Identifier = new Role<Identifier>("Identifier", CSharp.Identifier.Null);
 			

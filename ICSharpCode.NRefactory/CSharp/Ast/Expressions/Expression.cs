@@ -40,6 +40,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public new Expression Clone()
+		{
+			return (Expression)base.Clone();
+		}
+		
 		#region Builder methods
 		/// <summary>
 		/// Builds an member reference expression using this expression as target.
