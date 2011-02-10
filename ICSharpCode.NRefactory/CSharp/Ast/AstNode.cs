@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -322,6 +323,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		/// <summary>
+		/// Clones the whole subtree starting at this AST node.
+		/// </summary>
+		/// <remarks>Annotations are copied over to the new nodes; and any annotations implementating ICloneable will be cloned.</remarks>
 		public AstNode Clone()
 		{
 			AstNode copy = (AstNode)MemberwiseClone();
@@ -338,8 +343,186 @@ namespace ICSharpCode.NRefactory.CSharp
 				copy.AddChildUnsafe(cur.Clone(), cur.role);
 			}
 			
+			// Finally, clone the annotation, if necessary
+			ICloneable annotations = copy.annotations as ICloneable; // read from copy (for thread-safety)
+			if (annotations != null)
+				copy.annotations = annotations.Clone();
+			
 			return copy;
 		}
+		
+		#region Annotation support
+		// Annotations: points either null (no annotations), to the single annotation,
+		// or to an AnnotationList.
+		// Once it is pointed at an AnnotationList, it will never change (this allows thread-safety support by locking the list)
+		object annotations;
+		
+		sealed class AnnotationList : List<object>, ICloneable
+		{
+			// There are two uses for this custom list type:
+			// 1) it's private, and thus (unlike List<object>) cannot be confused with real annotations
+			// 2) It allows us to simplify the cloning logic by making the list behave the same as a clonable annotation.
+			public AnnotationList(int initialCapacity) : base(initialCapacity)
+			{
+			}
+			
+			public object Clone()
+			{
+				AnnotationList copy = new AnnotationList(this.Count);
+				for (int i = 0; i < this.Count; i++) {
+					object obj = this[i];
+					ICloneable c = obj as ICloneable;
+					copy.Add(c != null ? c.Clone() : obj);
+				}
+				return copy;
+			}
+		}
+		
+		public void AddAnnotation(object annotation)
+		{
+			if (annotation == null)
+				throw new ArgumentNullException("annotation");
+		retry: // Retry until successful
+			object oldAnnotation = Interlocked.CompareExchange(ref this.annotations, annotation, null);
+			if (oldAnnotation == null) {
+				return; // we successfully added a single annotation
+			}
+			AnnotationList list = oldAnnotation as AnnotationList;
+			if (list == null) {
+				// we need to transform the old annotation into a list
+				list = new AnnotationList(4);
+				list.Add(oldAnnotation);
+				list.Add(annotation);
+				if (Interlocked.CompareExchange(ref this.annotations, list, oldAnnotation) != oldAnnotation) {
+					// the transformation failed (some other thread wrote to this.annotations first)
+					goto retry;
+				}
+			} else {
+				// once there's a list, use simple locking
+				lock (list) {
+					list.Add(annotation);
+				}
+			}
+		}
+		
+		public void RemoveAnnotations<T>() where T : class
+		{
+		retry: // Retry until successful
+			object oldAnnotations = this.annotations;
+			AnnotationList list = oldAnnotations as AnnotationList;
+			if (list != null) {
+				lock (list)
+					list.RemoveAll(obj => obj is T);
+			} else if (oldAnnotations is T) {
+				if (Interlocked.CompareExchange(ref this.annotations, null, oldAnnotations) != oldAnnotations) {
+					// Operation failed (some other thread wrote to this.annotations first)
+					goto retry;
+				}
+			}
+		}
+		
+		public void RemoveAnnotations(Type type)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+		retry: // Retry until successful
+			object oldAnnotations = this.annotations;
+			AnnotationList list = oldAnnotations as AnnotationList;
+			if (list != null) {
+				lock (list)
+					list.RemoveAll(obj => type.IsInstanceOfType(obj));
+			} else if (type.IsInstanceOfType(oldAnnotations)) {
+				if (Interlocked.CompareExchange(ref this.annotations, null, oldAnnotations) != oldAnnotations) {
+					// Operation failed (some other thread wrote to this.annotations first)
+					goto retry;
+				}
+			}
+		}
+		
+		public T Annotation<T>() where T: class
+		{
+			object annotations = this.annotations;
+			AnnotationList list = annotations as AnnotationList;
+			if (list != null) {
+				lock (list) {
+					foreach (object obj in list) {
+						T t = obj as T;
+						if (t != null)
+							return t;
+					}
+					return null;
+				}
+			} else {
+				return annotations as T;
+			}
+		}
+		
+		public object Annotation(Type type)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			object annotations = this.annotations;
+			AnnotationList list = annotations as AnnotationList;
+			if (list != null) {
+				lock (list) {
+					foreach (object obj in list) {
+						if (type.IsInstanceOfType(obj))
+							return obj;
+					}
+				}
+			} else {
+				if (type.IsInstanceOfType(annotations))
+					return annotations;
+			}
+			return null;
+		}
+		
+		public IEnumerable<T> Annotations<T>() where T: class
+		{
+			object annotations = this.annotations;
+			AnnotationList list = annotations as AnnotationList;
+			if (list != null) {
+				List<T> result = new List<T>();
+				lock (list) {
+					foreach (object obj in list) {
+						T t = obj as T;
+						if (t != null)
+							result.Add(t);
+					}
+				}
+				return result;
+			} else {
+				T t = annotations as T;
+				if (t != null)
+					return new T[] { t };
+				else
+					return Enumerable.Empty<T>();
+			}
+		}
+		
+		public IEnumerable<object> Annotations(Type type)
+		{
+			if (type == null)
+				throw new ArgumentNullException("type");
+			object annotations = this.annotations;
+			AnnotationList list = annotations as AnnotationList;
+			if (list != null) {
+				List<object> result = new List<object>();
+				lock (list) {
+					foreach (object obj in list) {
+						if (type.IsInstanceOfType(obj))
+							result.Add(obj);
+					}
+				}
+				return result;
+			} else {
+				if (type.IsInstanceOfType(annotations))
+					return new object[] { annotations };
+				else
+					return Enumerable.Empty<object>();
+			}
+		}
+		#endregion
 		
 		public abstract S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data);
 		
