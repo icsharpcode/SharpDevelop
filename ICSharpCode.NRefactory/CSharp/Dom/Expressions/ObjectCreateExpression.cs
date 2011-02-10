@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		public readonly static Role<ArrayInitializerExpression> InitializerRole = ArrayCreateExpression.InitializerRole;
 		
-		public DomType Type {
+		public AstType Type {
 			get { return GetChildByRole (Roles.Type); }
 			set { SetChildByRole (Roles.Type, value); }
 		}
@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole (InitializerRole, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitObjectCreateExpression (this, data);
 		}

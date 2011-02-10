@@ -31,23 +31,23 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class BaseReferenceExpression : Expression
 	{
-		public DomLocation Location {
+		public AstLocation Location {
 			get;
 			set;
 		}
 		
-		public override DomLocation StartLocation {
+		public override AstLocation StartLocation {
 			get {
 				return Location;
 			}
 		}
-		public override DomLocation EndLocation {
+		public override AstLocation EndLocation {
 			get {
-				return new DomLocation (Location.Line, Location.Column + "base".Length);
+				return new AstLocation (Location.Line, Location.Column + "base".Length);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitBaseReferenceExpression (this, data);
 		}

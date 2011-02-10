@@ -8,7 +8,7 @@ using System.Diagnostics.Contracts;
 namespace ICSharpCode.NRefactory.TypeSystem
 {
 	/// <summary>
-	/// Interface for DOM objects that support interning.
+	/// Interface for TypeSystem objects that support interning.
 	/// See <see cref="IInterningProvider"/> for more information.
 	/// </summary>
 	[ContractClass(typeof(ISupportsInterningContract))]

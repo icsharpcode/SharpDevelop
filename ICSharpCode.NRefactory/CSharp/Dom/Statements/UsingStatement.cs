@@ -31,12 +31,12 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class UsingStatement : Statement
 	{
-		public static readonly Role<DomNode> ResourceAcquisitionRole = new Role<DomNode>("ResourceAcquisition", DomNode.Null);
+		public static readonly Role<AstNode> ResourceAcquisitionRole = new Role<AstNode>("ResourceAcquisition", AstNode.Null);
 		
 		/// <summary>
 		/// Either a VariableDeclarationStatement, or an Expression.
 		/// </summary>
-		public DomNode ResourceAcquisition {
+		public AstNode ResourceAcquisition {
 			get { return GetChildByRole (ResourceAcquisitionRole); }
 			set { SetChildByRole (ResourceAcquisitionRole, value); }
 		}
@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole (Roles.EmbeddedStatement, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitUsingStatement (this, data);
 		}

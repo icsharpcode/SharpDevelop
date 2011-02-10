@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return NodeType.Member; }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitConstructorDeclaration (this, data);
 		}
@@ -63,7 +63,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		This
 	}
 	
-	public class ConstructorInitializer : DomNode
+	public class ConstructorInitializer : AstNode
 	{
 		public static readonly new ConstructorInitializer Null = new NullConstructorInitializer ();
 		class NullConstructorInitializer : ConstructorInitializer
@@ -80,7 +80,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 			{
 				return default (S);
 			}
@@ -97,13 +97,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
-		public IEnumerable<DomNode> Arguments {
+		public IEnumerable<AstNode> Arguments {
 			get {
 				return base.GetChildrenByRole (Roles.Parameter);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitConstructorInitializer (this, data);
 		}

@@ -14,7 +14,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// This class is useful even though it doesn't provide any additional functionality:
 	/// It can be used to communicate more information in APIs, e.g. "this subnode will always be an expression"
 	/// </remarks>
-	public abstract class Expression : DomNode
+	public abstract class Expression : AstNode
 	{
 		#region Null
 		public new static readonly Expression Null = new NullExpression ();
@@ -27,7 +27,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 			{
 				return default (S);
 			}
@@ -84,7 +84,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Builds an invocation expression using this expression as target.
 		/// </summary>
-		public InvocationExpression Invoke(string methodName, IEnumerable<DomType> typeArguments, IEnumerable<Expression> arguments)
+		public InvocationExpression Invoke(string methodName, IEnumerable<AstType> typeArguments, IEnumerable<Expression> arguments)
 		{
 			return new InvocationExpression {
 				Target = new MemberReferenceExpression {

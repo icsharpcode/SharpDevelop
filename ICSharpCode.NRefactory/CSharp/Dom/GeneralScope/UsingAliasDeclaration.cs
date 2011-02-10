@@ -29,10 +29,10 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// using Alias = Import;
 	/// </summary>
-	public class UsingAliasDeclaration : DomNode
+	public class UsingAliasDeclaration : AstNode
 	{
 		public static readonly Role<Identifier> AliasRole = new Role<Identifier>("Alias", Identifier.Null);
-		public static readonly Role<DomType> ImportRole = UsingDeclaration.ImportRole;
+		public static readonly Role<AstType> ImportRole = UsingDeclaration.ImportRole;
 		
 		public override NodeType NodeType {
 			get {
@@ -45,16 +45,16 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole (AliasRole).Name;
 			}
 			set {
-				SetChildByRole(AliasRole, new Identifier(value, DomLocation.Empty));
+				SetChildByRole(AliasRole, new Identifier(value, AstLocation.Empty));
 			}
 		}
 		
-		public DomType Import {
+		public AstType Import {
 			get { return GetChildByRole (ImportRole); }
 			set { SetChildByRole (ImportRole, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitUsingAliasDeclaration (this, data);
 		}

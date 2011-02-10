@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole (FinallyBlockRole, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitTryCatchStatement (this, data);
 		}
@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// catch (Type VariableName) { Body }
 	/// </summary>
-	public class CatchClause : DomNode
+	public class CatchClause : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public DomType Type {
+		public AstType Type {
 			get { return GetChildByRole (Roles.Type); }
 			set { SetChildByRole (Roles.Type, value); }
 		}
@@ -83,7 +83,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (string.IsNullOrEmpty(value))
 					SetChildByRole (Roles.Identifier, null);
 				else
-					SetChildByRole (Roles.Identifier, new Identifier(value, DomLocation.Empty));
+					SetChildByRole (Roles.Identifier, new Identifier(value, AstLocation.Empty));
 			}
 		}
 		
@@ -92,7 +92,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole (Roles.Body, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitCatchClause (this, data);
 		}

@@ -34,12 +34,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// Moreover, there is the <c>ResolveAll</c> mode - it works similar to resolving mode, but will not switch back to scanning mode.
 	/// The whole subtree will be resolved without notifying the navigator.
 	/// </remarks>
-	public sealed class ResolveVisitor : DomVisitor<object, ResolveResult>
+	public sealed class ResolveVisitor : AstVisitor<object, ResolveResult>
 	{
 		static readonly ResolveResult errorResult = new ErrorResolveResult(SharedTypes.UnknownType);
 		CSharpResolver resolver;
 		readonly ParsedFile parsedFile;
-		readonly Dictionary<DomNode, ResolveResult> cache = new Dictionary<DomNode, ResolveResult>();
+		readonly Dictionary<AstNode, ResolveResult> cache = new Dictionary<AstNode, ResolveResult>();
 		
 		readonly IResolveVisitorNavigator navigator;
 		ResolveVisitorNavigationMode mode = ResolveVisitorNavigationMode.Scan;
@@ -79,7 +79,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			get { return mode != ResolveVisitorNavigationMode.Scan; }
 		}
 		
-		public void Scan(DomNode node)
+		public void Scan(AstNode node)
 		{
 			if (node == null)
 				return;
@@ -109,7 +109,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public ResolveResult Resolve(DomNode node)
+		public ResolveResult Resolve(AstNode node)
 		{
 			if (node == null)
 				return errorResult;
@@ -125,9 +125,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return result;
 		}
 		
-		void ScanChildren(DomNode node)
+		void ScanChildren(AstNode node)
 		{
-			for (DomNode child = node.FirstChild; child != null; child = child.NextSibling) {
+			for (AstNode child = node.FirstChild; child != null; child = child.NextSibling) {
 				Scan(child);
 			}
 		}
@@ -138,7 +138,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Gets the cached resolve result for the specified node.
 		/// Returns <c>null</c> if no cached result was found (e.g. if the node was not visited; or if it was visited in scanning mode).
 		/// </summary>
-		public ResolveResult GetResolveResult(DomNode node)
+		public ResolveResult GetResolveResult(AstNode node)
 		{
 			ResolveResult result;
 			if (cache.TryGetValue(node, out result))
@@ -178,7 +178,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Track CurrentTypeDefinition
-		ResolveResult VisitTypeOrDelegate(DomNode typeDeclaration)
+		ResolveResult VisitTypeOrDelegate(AstNode typeDeclaration)
 		{
 			ITypeDefinition previousTypeDefinition = resolver.CurrentTypeDefinition;
 			try {
@@ -218,7 +218,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			int initializerCount = fieldDeclaration.Variables.Count();
 			ResolveResult result = null;
-			for (DomNode node = fieldDeclaration.FirstChild; node != null; node = node.NextSibling) {
+			for (AstNode node = fieldDeclaration.FirstChild; node != null; node = node.NextSibling) {
 				if (node.Role == FieldDeclaration.Roles.Variable) {
 					if (resolver.CurrentTypeDefinition != null) {
 						resolver.CurrentMember = resolver.CurrentTypeDefinition.Fields.FirstOrDefault(f => f.Region.IsInside(node.StartLocation));
@@ -306,7 +306,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					resolver.CurrentMember = resolver.CurrentTypeDefinition.Properties.FirstOrDefault(p => p.Region.IsInside(propertyDeclaration.StartLocation));
 				}
 				
-				for (DomNode node = propertyDeclaration.FirstChild; node != null; node = node.NextSibling) {
+				for (AstNode node = propertyDeclaration.FirstChild; node != null; node = node.NextSibling) {
 					if (node.Role == PropertyDeclaration.SetterRole && resolver.CurrentMember != null) {
 						resolver.PushBlock();
 						resolver.AddVariable(resolver.CurrentMember.ReturnType, "value");
@@ -456,13 +456,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Visit Expressions
-		static bool IsTargetOfInvocation(DomNode node)
+		static bool IsTargetOfInvocation(AstNode node)
 		{
 			InvocationExpression ie = node.Parent as InvocationExpression;
 			return ie != null && ie.Target == node;
 		}
 		
-		IType ResolveType(DomNode node)
+		IType ResolveType(AstNode node)
 		{
 			return MakeTypeReference(node).Resolve(resolver.Context);
 		}
@@ -583,12 +583,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		ResolveResult[] GetArguments(IEnumerable<DomNode> argumentExpressions, out string[] argumentNames)
+		ResolveResult[] GetArguments(IEnumerable<AstNode> argumentExpressions, out string[] argumentNames)
 		{
 			argumentNames = null; // TODO: add support for named arguments
 			ResolveResult[] arguments = new ResolveResult[argumentExpressions.Count()];
 			int i = 0;
-			foreach (DomNode argument in argumentExpressions) {
+			foreach (AstNode argument in argumentExpressions) {
 				arguments[i++] = Resolve(argument);
 			}
 			return arguments;
@@ -635,7 +635,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolverEnabled) {
 				ResolveResult target = Resolve(memberReferenceExpression.Target);
-				List<DomType> typeArgumentNodes = memberReferenceExpression.TypeArguments.ToList();
+				List<AstType> typeArgumentNodes = memberReferenceExpression.TypeArguments.ToList();
 				// TODO: type arguments?
 				return resolver.ResolveMemberAccess(target, memberReferenceExpression.MemberName,
 				                                    EmptyList<IType>.Instance,
@@ -914,7 +914,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			int initializerCount = variableDeclarationStatement.Variables.Count();
 			ResolveResult result = null;
-			for (DomNode node = variableDeclarationStatement.FirstChild; node != null; node = node.NextSibling) {
+			for (AstNode node = variableDeclarationStatement.FirstChild; node != null; node = node.NextSibling) {
 				if (node.Role == FieldDeclaration.Roles.Variable) {
 					VariableInitializer vi = (VariableInitializer)node;
 					
@@ -941,7 +941,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Creates a type reference for the specified type node.
 		/// If the type node is 'var', performs type inference on the initializer expression.
 		/// </summary>
-		ITypeReference MakeTypeReference(DomNode type, DomNode initializerExpression, bool isForEach)
+		ITypeReference MakeTypeReference(AstNode type, AstNode initializerExpression, bool isForEach)
 		{
 			if (initializerExpression != null && IsVar(type)) {
 				return new VarTypeReference(this, resolver.Clone(), initializerExpression, isForEach);
@@ -950,12 +950,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		ITypeReference MakeTypeReference(DomNode type)
+		ITypeReference MakeTypeReference(AstNode type)
 		{
 			return TypeSystemConvertVisitor.ConvertType(type, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.UsingScope, false);
 		}
 		
-		static bool IsVar(DomNode returnType)
+		static bool IsVar(AstNode returnType)
 		{
 			return returnType is IdentifierExpression && ((IdentifierExpression)returnType).Identifier == "var";
 		}
@@ -964,12 +964,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			ResolveVisitor visitor;
 			CSharpResolver storedContext;
-			DomNode initializerExpression;
+			AstNode initializerExpression;
 			bool isForEach;
 			
 			IType result;
 			
-			public VarTypeReference(ResolveVisitor visitor, CSharpResolver storedContext, DomNode initializerExpression, bool isForEach)
+			public VarTypeReference(ResolveVisitor visitor, CSharpResolver storedContext, AstNode initializerExpression, bool isForEach)
 			{
 				this.visitor = visitor;
 				this.storedContext = storedContext;

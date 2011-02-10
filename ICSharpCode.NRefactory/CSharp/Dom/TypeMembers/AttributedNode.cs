@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class AttributedNode : DomNode
+	public abstract class AttributedNode : AstNode
 	{
 		public static readonly Role<AttributeSection> AttributeRole = new Role<AttributeSection>("Attribute");
 		public static readonly Role<CSharpModifierToken> ModifierRole = new Role<CSharpModifierToken>("Modifier");
@@ -21,7 +21,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetModifiers(this, value); }
 		}
 		
-		internal static Modifiers GetModifiers(DomNode node)
+		internal static Modifiers GetModifiers(AstNode node)
 		{
 			Modifiers m = 0;
 			foreach (CSharpModifierToken t in node.GetChildrenByRole (ModifierRole)) {
@@ -30,15 +30,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			return m;
 		}
 		
-		internal static void SetModifiers(DomNode node, Modifiers newValue)
+		internal static void SetModifiers(AstNode node, Modifiers newValue)
 		{
 			Modifiers oldValue = GetModifiers(node);
-			DomNode insertionPos = node.GetChildrenByRole(AttributeRole).LastOrDefault();
+			AstNode insertionPos = node.GetChildrenByRole(AttributeRole).LastOrDefault();
 			foreach (Modifiers m in CSharpModifierToken.AllModifiers) {
 				if ((m & newValue) != 0) {
 					if ((m & oldValue) == 0) {
 						// Modifier was added
-						node.InsertChildAfter(insertionPos, new CSharpModifierToken(DomLocation.Empty, m), ModifierRole);
+						node.InsertChildAfter(insertionPos, new CSharpModifierToken(AstLocation.Empty, m), ModifierRole);
 					} else {
 						// Modifier already exists
 						insertionPos = node.GetChildrenByRole(ModifierRole).First(t => t.Modifier == m);

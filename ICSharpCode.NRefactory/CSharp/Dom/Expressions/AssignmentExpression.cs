@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole(RightRole, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitAssignmentExpression (this, data);
 		}

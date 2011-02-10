@@ -31,13 +31,13 @@ using System.Text;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class MemberType : DomType
+	public class MemberType : AstType
 	{
-		public static readonly Role<DomType> TargetRole = new Role<DomType>("Target", DomType.Null);
+		public static readonly Role<AstType> TargetRole = new Role<AstType>("Target", AstType.Null);
 		
 		public bool IsDoubleColon { get; set; }
 		
-		public DomType Target {
+		public AstType Target {
 			get { return GetChildByRole(TargetRole); }
 			set { SetChildByRole(TargetRole, value); }
 		}
@@ -47,16 +47,16 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole (Roles.Identifier).Name;
 			}
 			set {
-				SetChildByRole (Roles.Identifier, new Identifier(value, DomLocation.Empty));
+				SetChildByRole (Roles.Identifier, new Identifier(value, AstLocation.Empty));
 			}
 		}
 		
-		public IEnumerable<DomType> TypeArguments {
+		public IEnumerable<AstType> TypeArguments {
 			get { return GetChildrenByRole (Roles.TypeArgument); }
 			set { SetChildrenByRole (Roles.TypeArgument, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitMemberType (this, data);
 		}

@@ -34,19 +34,19 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class LambdaExpression : Expression
 	{
 		public readonly static Role<CSharpTokenNode> ArrowRole = new Role<CSharpTokenNode>("Arror", CSharpTokenNode.Null);
-		public static readonly Role<DomNode> BodyRole = new Role<DomNode>("Body", DomNode.Null);
+		public static readonly Role<AstNode> BodyRole = new Role<AstNode>("Body", AstNode.Null);
 		
 		public IEnumerable<ParameterDeclaration> Parameters { 
 			get { return GetChildrenByRole (Roles.Parameter); }
 			set { SetChildrenByRole (Roles.Parameter, value); }
 		}
 		
-		public DomNode Body {
+		public AstNode Body {
 			get { return GetChildByRole (BodyRole); }
 			set { SetChildByRole (BodyRole, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitLambdaExpression (this, data);
 		}

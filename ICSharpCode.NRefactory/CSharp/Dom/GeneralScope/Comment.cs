@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Comment.cs
 //  
 // Author:
@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		Documentation
 	}
 	
-	public class Comment : DomNode
+	public class Comment : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -55,28 +55,28 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
-		DomLocation startLocation;
-		public override DomLocation StartLocation {
+		AstLocation startLocation;
+		public override AstLocation StartLocation {
 			get { 
 				return startLocation;
 			}
 		}
 		
-		DomLocation endLocation;
-		public override DomLocation EndLocation {
+		AstLocation endLocation;
+		public override AstLocation EndLocation {
 			get {
 				return endLocation;
 			}
 		}
 		
-		public Comment (CommentType commentType, DomLocation startLocation, DomLocation endLocation)
+		public Comment (CommentType commentType, AstLocation startLocation, AstLocation endLocation)
 		{
 			this.CommentType = commentType;
 			this.startLocation = startLocation;
 			this.endLocation = endLocation;
 		}
 
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitComment (this, data);
 		}

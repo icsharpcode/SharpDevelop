@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// [AttributeTarget: Attributes]
 	/// </summary>
-	public class AttributeSection : DomNode
+	public class AttributeSection : AstNode
 	{
 		public static readonly Role<Attribute> AttributeRole = new Role<Attribute>("Attribute");
 		public static readonly Role<CSharpTokenNode> TargetRole = new Role<CSharpTokenNode>("Target", CSharpTokenNode.Null);
@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildrenByRole (AttributeRole, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitAttributeSection (this, data);
 		}

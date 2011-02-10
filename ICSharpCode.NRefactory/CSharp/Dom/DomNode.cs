@@ -31,12 +31,12 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class DomNode
+	public abstract class AstNode
 	{
 		#region Null
-		public static readonly DomNode Null = new NullAstNode ();
+		public static readonly AstNode Null = new NullAstNode ();
 		
-		sealed class NullAstNode : DomNode
+		sealed class NullAstNode : AstNode
 		{
 			public override NodeType NodeType {
 				get {
@@ -50,18 +50,18 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 			{
 				return default (S);
 			}
 		}
 		#endregion
 		
-		DomNode parent;
-		DomNode prevSibling;
-		DomNode nextSibling;
-		DomNode firstChild;
-		DomNode lastChild;
+		AstNode parent;
+		AstNode prevSibling;
+		AstNode nextSibling;
+		AstNode firstChild;
+		AstNode lastChild;
 		Role role;
 		
 		public abstract NodeType NodeType {
@@ -74,25 +74,25 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public virtual DomLocation StartLocation {
+		public virtual AstLocation StartLocation {
 			get {
 				var child = firstChild;
 				if (child == null)
-					return DomLocation.Empty;
+					return AstLocation.Empty;
 				return child.StartLocation;
 			}
 		}
 		
-		public virtual DomLocation EndLocation {
+		public virtual AstLocation EndLocation {
 			get {
 				var child = lastChild;
 				if (child == null)
-					return DomLocation.Empty;
+					return AstLocation.Empty;
 				return child.EndLocation;
 			}
 		}
 		
-		public DomNode Parent {
+		public AstNode Parent {
 			get { return parent; }
 		}
 		
@@ -100,26 +100,26 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return role; }
 		}
 		
-		public DomNode NextSibling {
+		public AstNode NextSibling {
 			get { return nextSibling; }
 		}
 		
-		public DomNode PrevSibling {
+		public AstNode PrevSibling {
 			get { return prevSibling; }
 		}
 		
-		public DomNode FirstChild {
+		public AstNode FirstChild {
 			get { return firstChild; }
 		}
 		
-		public DomNode LastChild {
+		public AstNode LastChild {
 			get { return lastChild; }
 		}
 		
-		public IEnumerable<DomNode> Children {
+		public IEnumerable<AstNode> Children {
 			get {
-				DomNode next;
-				for (DomNode cur = firstChild; cur != null; cur = next) {
+				AstNode next;
+				for (AstNode cur = firstChild; cur != null; cur = next) {
 					// Remember next before yielding cur.
 					// This allows removing/replacing nodes while iterating through the list.
 					next = cur.nextSibling;
@@ -132,7 +132,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// Gets the first child with the specified role.
 		/// Returns the role's null object if the child is not found.
 		/// </summary>
-		public T GetChildByRole<T>(Role<T> role) where T : DomNode
+		public T GetChildByRole<T>(Role<T> role) where T : AstNode
 		{
 			if (role == null)
 				throw new ArgumentNullException("role");
@@ -143,10 +143,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			return role.NullObject;
 		}
 		
-		public IEnumerable<T> GetChildrenByRole<T>(Role<T> role) where T : DomNode
+		public IEnumerable<T> GetChildrenByRole<T>(Role<T> role) where T : AstNode
 		{
-			DomNode next;
-			for (DomNode cur = firstChild; cur != null; cur = next) {
+			AstNode next;
+			for (AstNode cur = firstChild; cur != null; cur = next) {
 				// Remember next before yielding cur.
 				// This allows removing/replacing nodes while iterating through the list.
 				next = cur.nextSibling;
@@ -155,16 +155,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		protected void SetChildByRole<T>(Role<T> role, T newChild) where T : DomNode
+		protected void SetChildByRole<T>(Role<T> role, T newChild) where T : AstNode
 		{
-			DomNode oldChild = GetChildByRole(role);
+			AstNode oldChild = GetChildByRole(role);
 			if (oldChild != null)
 				oldChild.ReplaceWith(newChild);
 			else
 				AddChild(newChild, role);
 		}
 		
-		protected void SetChildrenByRole<T>(Role<T> role, IEnumerable<T> newChildren) where T : DomNode
+		protected void SetChildrenByRole<T>(Role<T> role, IEnumerable<T> newChildren) where T : AstNode
 		{
 			// Evaluate 'newChildren' first, since it might change when we remove the old children
 			// Example: SetChildren(role, GetChildrenByRole(role));
@@ -172,7 +172,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				newChildren = newChildren.ToList();
 			
 			// remove old children
-			foreach (DomNode node in GetChildrenByRole(role))
+			foreach (AstNode node in GetChildrenByRole(role))
 				node.Remove();
 			// add new children
 			if (newChildren != null) {
@@ -182,7 +182,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public void AddChild<T>(T child, Role<T> role) where T : DomNode
+		public void AddChild<T>(T child, Role<T> role) where T : AstNode
 		{
 			if (role == null)
 				throw new ArgumentNullException("role");
@@ -203,7 +203,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public void InsertChildBefore<T>(DomNode nextSibling, T child, Role<T> role) where T : DomNode
+		public void InsertChildBefore<T>(AstNode nextSibling, T child, Role<T> role) where T : AstNode
 		{
 			if (role == null)
 				throw new ArgumentNullException("role");
@@ -236,7 +236,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			nextSibling.prevSibling = child;
 		}
 		
-		public void InsertChildAfter<T>(DomNode prevSibling, T child, Role<T> role) where T : DomNode
+		public void InsertChildAfter<T>(AstNode prevSibling, T child, Role<T> role) where T : AstNode
 		{
 			InsertChildBefore((prevSibling == null || prevSibling.IsNull) ? firstChild : prevSibling.nextSibling, child, role);
 		}
@@ -270,7 +270,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Replaces this node with the new node.
 		/// </summary>
-		public void ReplaceWith(DomNode newNode)
+		public void ReplaceWith(AstNode newNode)
 		{
 			if (newNode == null || newNode.IsNull) {
 				Remove();
@@ -312,7 +312,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public abstract S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data);
+		public abstract S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data);
 		
 		public static class Roles
 		{
@@ -322,13 +322,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			public static readonly Role<BlockStatement> Body = new Role<BlockStatement>("Body", CSharp.BlockStatement.Null);
 			public static readonly Role<ParameterDeclaration> Parameter = new Role<ParameterDeclaration>("Parameter");
 			public static readonly Role<Expression> Argument = new Role<Expression>("Argument", CSharp.Expression.Null);
-			public static readonly Role<DomType> Type = new Role<DomType>("Type", CSharp.DomType.Null);
+			public static readonly Role<AstType> Type = new Role<AstType>("Type", CSharp.AstType.Null);
 			public static readonly Role<Expression> Expression = new Role<Expression>("Expression", CSharp.Expression.Null);
 			public static readonly Role<Expression> TargetExpression = new Role<Expression>("Target", CSharp.Expression.Null);
 			public readonly static Role<Expression> Condition = new Role<Expression>("Condition", CSharp.Expression.Null);
 			
 			public static readonly Role<TypeParameterDeclaration> TypeParameter = new Role<TypeParameterDeclaration>("TypeParameter");
-			public static readonly Role<DomType> TypeArgument = new Role<DomType>("TypeArgument", CSharp.DomType.Null);
+			public static readonly Role<AstType> TypeArgument = new Role<AstType>("TypeArgument", CSharp.AstType.Null);
 			public readonly static Role<Constraint> Constraint = new Role<Constraint>("Constraint");
 			public static readonly Role<VariableInitializer> Variable = new Role<VariableInitializer>("Variable");
 			public static readonly Role<Statement> EmbeddedStatement = new Role<Statement>("EmbeddedStatement", CSharp.Statement.Null);

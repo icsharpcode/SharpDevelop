@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class ContinueStatement : Statement
 	{
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitContinueStatement (this, data);
 		}

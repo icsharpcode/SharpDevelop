@@ -30,13 +30,13 @@ using System.Text;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class ComposedType : DomType
+	public class ComposedType : AstType
 	{
 		public static readonly Role<CSharpTokenNode> NullableRole = new Role<CSharpTokenNode>("Nullable", CSharpTokenNode.Null);
 		public static readonly Role<CSharpTokenNode> PointerRole = new Role<CSharpTokenNode>("Pointer", CSharpTokenNode.Null);
 		public static readonly Role<ArraySpecifier> ArraySpecifierRole = new Role<ArraySpecifier>("ArraySpecifier");
 		
-		public DomType BaseType {
+		public AstType BaseType {
 			get { return GetChildByRole(Roles.Type); }
 			set { SetChildByRole(Roles.Type, value); }
 		}
@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole(NullableRole) != null;
 			}
 			set {
-				SetChildByRole(NullableRole, value ? new CSharpTokenNode(DomLocation.Empty, 1) : null);
+				SetChildByRole(NullableRole, value ? new CSharpTokenNode(AstLocation.Empty, 1) : null);
 			}
 		}
 		
@@ -56,11 +56,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			set {
 				// remove old children
-				foreach (DomNode node in GetChildrenByRole(PointerRole))
+				foreach (AstNode node in GetChildrenByRole(PointerRole))
 					node.Remove();
 				// add new children
 				for (int i = 0; i < value; i++) {
-					AddChild(new CSharpTokenNode(DomLocation.Empty, 1), PointerRole);
+					AddChild(new CSharpTokenNode(AstLocation.Empty, 1), PointerRole);
 				}
 			}
 		}
@@ -70,7 +70,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildrenByRole (ArraySpecifierRole, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitComposedType (this, data);
 		}
@@ -94,7 +94,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// [,,,]
 	/// </summary>
-	public class ArraySpecifier : DomNode
+	public class ArraySpecifier : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -106,7 +106,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return 1 + GetChildrenByRole(Roles.Comma).Count(); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return default (S);
 		}

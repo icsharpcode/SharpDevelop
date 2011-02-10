@@ -12,7 +12,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// This class is useful even though it doesn't provide any additional functionality:
 	/// It can be used to communicate more information in APIs, e.g. "this subnode will always be a statement"
 	/// </remarks>
-	public abstract class Statement : DomNode
+	public abstract class Statement : AstNode
 	{
 		#region Null
 		public new static readonly Statement Null = new NullStatement ();
@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 			{
 				return default (S);
 			}

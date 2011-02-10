@@ -29,7 +29,7 @@ public class Form1 {
 		{
 			string program = @"[assembly: System.Attribute()]";
 			AttributeSection decl = ParseUtilCSharp.ParseGlobal<AttributeSection>(program);
-			Assert.AreEqual(new DomLocation(1, 1), decl.StartLocation);
+			Assert.AreEqual(new AstLocation(1, 1), decl.StartLocation);
 			Assert.AreEqual("assembly", decl.AttributeTarget);
 		}
 		
@@ -51,7 +51,7 @@ public class Form1 {
 		{
 			string program = @"[module: System.Attribute()]";
 			AttributeSection decl = ParseUtilCSharp.ParseGlobal<AttributeSection>(program);
-			Assert.AreEqual(new DomLocation(1, 1), decl.StartLocation);
+			Assert.AreEqual(new AstLocation(1, 1), decl.StartLocation);
 			Assert.AreEqual(AttributeTarget.Module, decl.AttributeTarget);
 		}
 		
@@ -61,7 +61,7 @@ public class Form1 {
 			string program = @"[type: System.Attribute()] class Test {}";
 			TypeDeclaration type = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
 			AttributeSection decl = type.Attributes.Single();
-			Assert.AreEqual(new DomLocation(1, 1), decl.StartLocation);
+			Assert.AreEqual(new AstLocation(1, 1), decl.StartLocation);
 			Assert.AreEqual(AttributeTarget.Type, decl.AttributeTarget);
 		}
 	}

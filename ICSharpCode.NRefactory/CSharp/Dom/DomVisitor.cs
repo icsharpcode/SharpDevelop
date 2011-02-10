@@ -1,5 +1,5 @@
 ﻿// 
-// DomVisitor.cs
+// AstVisitor.cs
 //
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
@@ -28,11 +28,11 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class DomVisitor<T, S>
+	public abstract class AstVisitor<T, S>
 	{
-		protected virtual S VisitChildren (DomNode node, T data)
+		protected virtual S VisitChildren (AstNode node, T data)
 		{
-			DomNode next;
+			AstNode next;
 			for (var child = node.FirstChild; child != null; child = next) {
 				// Store next to allow the loop to continue
 				// if the visitor removes/replaces child.

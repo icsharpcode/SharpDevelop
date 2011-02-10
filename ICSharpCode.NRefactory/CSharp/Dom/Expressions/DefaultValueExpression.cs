@@ -31,12 +31,12 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class DefaultValueExpression : Expression
 	{
-		public DomType Type {
+		public AstType Type {
 			get { return GetChildByRole (Roles.Type); }
 			set { SetChildByRole(Roles.Type, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitDefaultValueExpression (this, data);
 		}

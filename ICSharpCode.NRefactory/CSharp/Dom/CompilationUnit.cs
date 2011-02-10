@@ -28,9 +28,9 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class CompilationUnit : DomNode 
+	public class CompilationUnit : AstNode 
 	{
-		public static readonly Role<DomNode> MemberRole = new Role<DomNode>("Member", DomNode.Null);
+		public static readonly Role<AstNode> MemberRole = new Role<AstNode>("Member", AstNode.Null);
 		
 		public override NodeType NodeType {
 			get {
@@ -42,14 +42,14 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 		}
 		
-		public DomNode GetNodeAt (int line, int column)
+		public AstNode GetNodeAt (int line, int column)
 		{
-			return GetNodeAt (new DomLocation (line, column));
+			return GetNodeAt (new AstLocation (line, column));
 		}
 		
-		public DomNode GetNodeAt (DomLocation location)
+		public AstNode GetNodeAt (AstLocation location)
 		{
-			DomNode node = this;
+			AstNode node = this;
 			while (node.FirstChild != null) {
 				var child = node.FirstChild;
 				while (child != null) {
@@ -66,16 +66,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			return node;
 		}
 		
-		public IEnumerable<DomNode> GetNodesBetween (int startLine, int startColumn, int endLine, int endColumn)
+		public IEnumerable<AstNode> GetNodesBetween (int startLine, int startColumn, int endLine, int endColumn)
 		{
-			return GetNodesBetween (new DomLocation (startLine, startColumn), new DomLocation (endLine, endColumn));
+			return GetNodesBetween (new AstLocation (startLine, startColumn), new AstLocation (endLine, endColumn));
 		}
 		
-		public IEnumerable<DomNode> GetNodesBetween (DomLocation start, DomLocation end)
+		public IEnumerable<AstNode> GetNodesBetween (AstLocation start, AstLocation end)
 		{
-			DomNode node = this;
+			AstNode node = this;
 			while (node != null) {
-				DomNode next;
+				AstNode next;
 				if (start <= node.StartLocation && node.EndLocation < end) {
 					// Remember next before yielding node.
 					// This allows iteration to continue when the caller removes/replaces the node.
@@ -95,7 +95,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitCompilationUnit (this, data);
 		}

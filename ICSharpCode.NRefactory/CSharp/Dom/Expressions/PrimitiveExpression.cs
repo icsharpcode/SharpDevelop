@@ -28,17 +28,17 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class PrimitiveExpression : Expression
 	{
-		DomLocation startLocation;
-		public override DomLocation StartLocation {
+		AstLocation startLocation;
+		public override AstLocation StartLocation {
 			get {
 				return startLocation;
 			}
 		}
 		
 		int length;
-		public override DomLocation EndLocation {
+		public override AstLocation EndLocation {
 			get {
-				return new DomLocation (StartLocation.Line, StartLocation.Column + length);
+				return new AstLocation (StartLocation.Line, StartLocation.Column + length);
 			}
 		}
 		
@@ -52,14 +52,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.Value = value;
 		}
 		
-		public PrimitiveExpression (object value, DomLocation startLocation, int length)
+		public PrimitiveExpression (object value, AstLocation startLocation, int length)
 		{
 			this.Value = value;
 			this.startLocation = startLocation;
 			this.length = length;
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitPrimitiveExpression (this, data);
 		}

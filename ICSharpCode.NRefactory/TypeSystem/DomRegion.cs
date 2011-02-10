@@ -92,7 +92,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				(line != EndLine   || column <= EndColumn);
 		}
 		
-		public bool IsInside(DomLocation location)
+		public bool IsInside(AstLocation location)
 		{
 			return IsInside(location.Line, location.Column);
 		}

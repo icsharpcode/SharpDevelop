@@ -46,13 +46,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildrenByRole (SwitchSectionRole, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitSwitchStatement (this, data);
 		}
 	}
 	
-	public class SwitchSection : DomNode
+	public class SwitchSection : AstNode
 	{
 		public static readonly Role<CaseLabel> CaseLabelRole = new Role<CaseLabel>("CaseLabel");
 		
@@ -72,13 +72,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildrenByRole (Roles.EmbeddedStatement, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitSwitchSection (this, data);
 		}
 	}
 	
-	public class CaseLabel : DomNode
+	public class CaseLabel : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -91,7 +91,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitCaseLabel (this, data);
 		}

@@ -5,12 +5,12 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// A type reference in the C# AST.
 	/// </summary>
-	public abstract class DomType : DomNode
+	public abstract class AstType : AstNode
 	{
 		#region Null
-		public new static readonly DomType Null = new NullDomType ();
+		public new static readonly AstType Null = new NullAstType ();
 		
-		sealed class NullDomType : DomType
+		sealed class NullAstType : AstType
 		{
 			public override bool IsNull {
 				get {
@@ -18,7 +18,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 			{
 				return default (S);
 			}

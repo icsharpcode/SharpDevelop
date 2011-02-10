@@ -31,13 +31,13 @@ using System;
 namespace ICSharpCode.NRefactory.CSharp
 {
 	[Serializable]
-	public struct DomLocation : IComparable<DomLocation>, IEquatable<DomLocation>
+	public struct AstLocation : IComparable<AstLocation>, IEquatable<AstLocation>
 	{
-		public static readonly DomLocation Empty = new DomLocation(0, 0);
+		public static readonly AstLocation Empty = new AstLocation(0, 0);
 		
 		readonly int line, column;
 		
-		public DomLocation (int line, int column)
+		public AstLocation (int line, int column)
 		{
 			this.line   = line;
 			this.column = column;
@@ -59,9 +59,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override bool Equals (object other)
 		{
-			if (!(other is DomLocation))
+			if (!(other is AstLocation))
 				return false;
-			return (DomLocation)other == this;
+			return (AstLocation)other == this;
 		}
 		
 		public override int GetHashCode ()
@@ -71,12 +71,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public bool Equals (DomLocation other)
+		public bool Equals (AstLocation other)
 		{
 			return other == this;
 		}
 		
-		public int CompareTo (DomLocation other)
+		public int CompareTo (AstLocation other)
 		{
 			if (this == other)
 				return 0;
@@ -90,14 +90,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			return String.Format ("(Line {0}, Column {1})", Line, Column);
 		}
 
-		public static DomLocation FromInvariantString (string invariantString)
+		public static AstLocation FromInvariantString (string invariantString)
 		{
 			if (string.Equals(invariantString, "EMPTY", StringComparison.OrdinalIgnoreCase))
-				return DomLocation.Empty;
+				return AstLocation.Empty;
 			string[] splits = invariantString.Split (',', '/');
 			if (splits.Length == 2)
-				return new DomLocation (Int32.Parse (splits[0]), Int32.Parse (splits[1]));
-			return DomLocation.Empty;
+				return new AstLocation (Int32.Parse (splits[0]), Int32.Parse (splits[1]));
+			return AstLocation.Empty;
 		}
 		
 		public string ToInvariantString ()
@@ -107,29 +107,29 @@ namespace ICSharpCode.NRefactory.CSharp
 			return String.Format ("{0}/{1}", line, column);
 		}
 		
-		public static bool operator==(DomLocation left, DomLocation right)
+		public static bool operator==(AstLocation left, AstLocation right)
 		{
 			return left.line == right.line && left.column == right.column;
 		}
 		
-		public static bool operator!=(DomLocation left, DomLocation right)
+		public static bool operator!=(AstLocation left, AstLocation right)
 		{
 			return left.line != right.line || left.column != right.column;
 		}
 		
-		public static bool operator<(DomLocation left, DomLocation right)
+		public static bool operator<(AstLocation left, AstLocation right)
 		{
 			return left.line < right.line || left.line == right.line && left.column < right.column;
 		}
-		public static bool operator>(DomLocation left, DomLocation right)
+		public static bool operator>(AstLocation left, AstLocation right)
 		{
 			return left.line > right.line || left.line == right.line && left.column > right.column;
 		}
-		public static bool operator<=(DomLocation left, DomLocation right)
+		public static bool operator<=(AstLocation left, AstLocation right)
 		{
 			return !(left > right);
 		}
-		public static bool operator>=(DomLocation left, DomLocation right)
+		public static bool operator>=(AstLocation left, AstLocation right)
 		{
 			return !(left < right);
 		}

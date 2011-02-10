@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class TypeDeclaration : AttributedNode
 	{
 		public readonly static Role<CSharpTokenNode> ColonRole = new Role<CSharpTokenNode>("Colon", CSharpTokenNode.Null);
-		public readonly static Role<DomType> BaseTypeRole = new Role<DomType>("BaseType", DomType.Null);
+		public readonly static Role<AstType> BaseTypeRole = new Role<AstType>("BaseType", AstType.Null);
 		public readonly static Role<AttributedNode> MemberRole = new Role<AttributedNode>("Member");
 		
 		public override NodeType NodeType {
@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole (Roles.Identifier).Name;
 			}
 			set {
-				SetChildByRole (Roles.Identifier, new Identifier(value, DomLocation.Empty));
+				SetChildByRole (Roles.Identifier, new Identifier(value, AstLocation.Empty));
 			}
 		}
 		
@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildrenByRole (Roles.TypeParameter, value); }
 		}
 		
-		public IEnumerable<DomType> BaseTypes {
+		public IEnumerable<AstType> BaseTypes {
 			get { return GetChildrenByRole (BaseTypeRole); }
 			set { SetChildrenByRole (BaseTypeRole, value); }
 		}
@@ -79,7 +79,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildrenByRole (MemberRole, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitTypeDeclaration (this, data);
 		}

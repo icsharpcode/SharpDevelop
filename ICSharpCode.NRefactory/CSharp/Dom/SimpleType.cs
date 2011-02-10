@@ -31,23 +31,23 @@ using System.Text;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class SimpleType : DomType
+	public class SimpleType : AstType
 	{
 		public string Identifier {
 			get {
 				return GetChildByRole (Roles.Identifier).Name;
 			}
 			set {
-				SetChildByRole (Roles.Identifier, new Identifier(value, DomLocation.Empty));
+				SetChildByRole (Roles.Identifier, new Identifier(value, AstLocation.Empty));
 			}
 		}
 		
-		public IEnumerable<DomType> TypeArguments {
+		public IEnumerable<AstType> TypeArguments {
 			get { return GetChildrenByRole (Roles.TypeArgument); }
 			set { SetChildrenByRole (Roles.TypeArgument, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitSimpleType (this, data);
 		}

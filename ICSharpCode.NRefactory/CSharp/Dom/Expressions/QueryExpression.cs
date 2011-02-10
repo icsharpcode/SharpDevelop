@@ -28,12 +28,12 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	/* TODO: how do we represent clauses? is QueryExpressionFromClause an expression,
 	 * or do we introduce a parent QueryExpression?
-	public class QueryExpressionFromClause : DomNode
+	public class QueryExpressionFromClause : AstNode
 	{
 		public const int FromKeywordRole = 100;
 		public const int InKeywordRole = 101;
 		
-		public DomType Type {
+		public AstType Type {
 			get { return GetChildByRole (Roles.Type); }
 			set { SetChildByRole (Roles.Type, value); }
 		}
@@ -50,11 +50,11 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public DomNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
+		public AstNode Expression {
+			get { return GetChildByRole (Roles.Expression) ?? AstNode.Null; }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionFromClause (this, data);
 		}
@@ -89,13 +89,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		
-		public DomNode OnExpression {
+		public AstNode OnExpression {
 			get {
 				return GetChildByRole (OnExpressionRole);
 			}
 		}
 		
-		public DomNode EqualsExpression {
+		public AstNode EqualsExpression {
 			get {
 				return GetChildByRole (EqualsExpressionRole);
 			}
@@ -113,19 +113,19 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public DomNode InExpression {
+		public AstNode InExpression {
 			get {
 				return GetChildByRole (Roles.Expression);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionJoinClause (this, data);
 		}
 	}
 	
-	public class QueryExpressionGroupClause : DomNode
+	public class QueryExpressionGroupClause : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -147,25 +147,25 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return (CSharpTokenNode)GetChildByRole (ByKeywordRole); }
 		}
 		
-		public DomNode Projection {
+		public AstNode Projection {
 			get {
 				return GetChildByRole (ProjectionExpressionRole);
 			}
 		}
 		
-		public DomNode GroupBy {
+		public AstNode GroupBy {
 			get {
 				return GetChildByRole (GroupByExpressionRole);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionGroupClause (this, data);
 		}
 	}
 	
-	public class QueryExpressionLetClause : DomNode 
+	public class QueryExpressionLetClause : AstNode 
 	{
 		public override NodeType NodeType {
 			get {
@@ -185,7 +185,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public DomNode Expression {
+		public AstNode Expression {
 			get {
 				return GetChildByRole (Roles.Expression);
 			}
@@ -195,19 +195,19 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
-		public DomNode Assign {
+		public AstNode Assign {
 			get {
 				return GetChildByRole (Roles.Assign);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionLetClause (this, data);
 		}
 	}
 	
-	public class QueryExpressionOrderClause : DomNode
+	public class QueryExpressionOrderClause : AstNode
 	{
 		public const int OrderingRole = 100;
 		
@@ -222,7 +222,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
-		public DomNode Expression {
+		public AstNode Expression {
 			get {
 				return GetChildByRole (Roles.Expression);
 			}
@@ -232,13 +232,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionOrderClause (this, data);
 		}
 	}
 	
-	public class QueryExpressionOrdering : DomNode
+	public class QueryExpressionOrdering : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -251,13 +251,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
-		public DomNode Criteria {
+		public AstNode Criteria {
 			get {
 				return GetChildByRole (Roles.Expression);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionOrdering (this, data);
 		}
@@ -270,7 +270,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		Descending
 	}
 	
-	public class QueryExpressionSelectClause : DomNode 
+	public class QueryExpressionSelectClause : AstNode 
 	{
 		public override NodeType NodeType {
 			get {
@@ -282,19 +282,19 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
-		public DomNode Projection {
+		public AstNode Projection {
 			get {
 				return GetChildByRole (Roles.Expression);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionSelectClause (this, data);
 		}
 	}
 	
-	public class QueryExpressionWhereClause : DomNode 
+	public class QueryExpressionWhereClause : AstNode 
 	{
 		public override NodeType NodeType {
 			get {
@@ -306,13 +306,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
 		}
 		
-		public DomNode Condition {
+		public AstNode Condition {
 			get {
 				return GetChildByRole (Roles.Condition);
 			}
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitQueryExpressionWhereClause (this, data);
 		}

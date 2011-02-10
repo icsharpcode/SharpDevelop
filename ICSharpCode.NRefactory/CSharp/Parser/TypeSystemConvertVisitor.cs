@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// Produces type and member definitions from the DOM.
 	/// </summary>
-	public class TypeSystemConvertVisitor : DomVisitor<object, IEntity>
+	public class TypeSystemConvertVisitor : AstVisitor<object, IEntity>
 	{
 		readonly ParsedFile parsedFile;
 		UsingScope usingScope;
@@ -56,12 +56,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return parsedFile; }
 		}
 		
-		DomRegion MakeRegion(DomLocation start, DomLocation end)
+		DomRegion MakeRegion(AstLocation start, AstLocation end)
 		{
 			return new DomRegion(parsedFile.FileName, start.Line, start.Column, end.Line, end.Column);
 		}
 		
-		DomRegion MakeRegion(DomNode node)
+		DomRegion MakeRegion(AstNode node)
 		{
 			if (node == null || node.IsNull)
 				return DomRegion.Empty;
@@ -69,13 +69,13 @@ namespace ICSharpCode.NRefactory.CSharp
 				return MakeRegion(node.StartLocation, node.EndLocation);
 		}
 		
-		DomRegion MakeBraceRegion(DomNode node)
+		DomRegion MakeBraceRegion(AstNode node)
 		{
 			if (node == null || node.IsNull)
 				return DomRegion.Empty;
 			else
-				return MakeRegion(node.GetChildByRole(DomNode.Roles.LBrace).StartLocation,
-				                  node.GetChildByRole(DomNode.Roles.RBrace).EndLocation);
+				return MakeRegion(node.GetChildByRole(AstNode.Roles.LBrace).StartLocation,
+				                  node.GetChildByRole(AstNode.Roles.RBrace).EndLocation);
 		}
 		
 		#region Using Declarations
@@ -318,7 +318,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return m;
 		}
 		
-		DefaultExplicitInterfaceImplementation ConvertInterfaceImplementation(DomNode interfaceType, string memberName)
+		DefaultExplicitInterfaceImplementation ConvertInterfaceImplementation(AstNode interfaceType, string memberName)
 		{
 			return new DefaultExplicitInterfaceImplementation(ConvertType(interfaceType), memberName);
 		}
@@ -507,12 +507,12 @@ namespace ICSharpCode.NRefactory.CSharp
 		#endregion
 		
 		#region Types
-		ITypeReference ConvertType(DomNode node, bool isInUsingDeclaration = false)
+		ITypeReference ConvertType(AstNode node, bool isInUsingDeclaration = false)
 		{
 			return ConvertType(node, currentTypeDefinition, currentMethod, usingScope, isInUsingDeclaration);
 		}
 		
-		internal static ITypeReference ConvertType(DomNode node, ITypeDefinition parentTypeDefinition, IMethod parentMethodDefinition, UsingScope parentUsingScope, bool isInUsingDeclaration)
+		internal static ITypeReference ConvertType(AstNode node, ITypeDefinition parentTypeDefinition, IMethod parentMethodDefinition, UsingScope parentUsingScope, bool isInUsingDeclaration)
 		{
 			SimpleType s = node as SimpleType;
 			if (s != null) {
@@ -628,7 +628,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		#endregion
 		
 		#region Constant Values
-		IConstantValue ConvertConstantValue(ITypeReference targetType, DomNode expression)
+		IConstantValue ConvertConstantValue(ITypeReference targetType, AstNode expression)
 		{
 			// TODO: implement ConvertConstantValue
 			return new SimpleConstantValue(targetType, null);

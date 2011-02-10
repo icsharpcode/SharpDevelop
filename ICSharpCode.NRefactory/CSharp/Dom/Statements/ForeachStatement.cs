@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class ForeachStatement : Statement
 	{
-		public DomType VariableType {
+		public AstType VariableType {
 			get { return GetChildByRole (Roles.Type); }
 			set { SetChildByRole (Roles.Type, value); }
 		}
@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole (Roles.Identifier).Name;
 			}
 			set {
-				SetChildByRole(Roles.Identifier, new Identifier(value, DomLocation.Empty));
+				SetChildByRole(Roles.Identifier, new Identifier(value, AstLocation.Empty));
 			}
 		}
 		
@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole (Roles.EmbeddedStatement, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitForeachStatement (this, data);
 		}

@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class FixedStatement : Statement
 	{
-		public DomType Type {
+		public AstType Type {
 			get { return GetChildByRole (Roles.Type); }
 			set { SetChildByRole (Roles.Type, value); }
 		}
@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole (Roles.EmbeddedStatement, value); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitFixedStatement (this, data);
 		}

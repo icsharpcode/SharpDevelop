@@ -58,12 +58,12 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 			CSharpParser parser = new CSharpParser();
 			CompilationUnit cu = parser.Parse(new StringReader(code));
 			PropertyDeclaration pd = (PropertyDeclaration)cu.Children.Single().GetChildByRole(TypeDeclaration.MemberRole);
-			Assert.AreEqual(new DomLocation(2, code.IndexOf("{\n\t\tget") - line2Pos + 1), pd.GetChildByRole(DomNode.Roles.LBrace).StartLocation);
-			Assert.AreEqual(new DomLocation(5, 3), pd.EndLocation);
-			Assert.AreEqual(new DomLocation(3, code.IndexOf("{ return") - line3Pos + 1), pd.Getter.Body.StartLocation);
-			Assert.AreEqual(new DomLocation(3, code.IndexOf("}\n\t\tset") + 1 - line3Pos + 1), pd.Getter.Body.EndLocation);
-			Assert.AreEqual(new DomLocation(4, code.IndexOf("{ f =") - line4Pos + 1), pd.Setter.Body.StartLocation);
-			Assert.AreEqual(new DomLocation(4, code.IndexOf("}\n\t}") + 1 - line4Pos + 1), pd.Setter.Body.EndLocation);
+			Assert.AreEqual(new AstLocation(2, code.IndexOf("{\n\t\tget") - line2Pos + 1), pd.GetChildByRole(AstNode.Roles.LBrace).StartLocation);
+			Assert.AreEqual(new AstLocation(5, 3), pd.EndLocation);
+			Assert.AreEqual(new AstLocation(3, code.IndexOf("{ return") - line3Pos + 1), pd.Getter.Body.StartLocation);
+			Assert.AreEqual(new AstLocation(3, code.IndexOf("}\n\t\tset") + 1 - line3Pos + 1), pd.Getter.Body.EndLocation);
+			Assert.AreEqual(new AstLocation(4, code.IndexOf("{ f =") - line4Pos + 1), pd.Setter.Body.StartLocation);
+			Assert.AreEqual(new AstLocation(4, code.IndexOf("}\n\t}") + 1 - line4Pos + 1), pd.Setter.Body.EndLocation);
 		}
 		
 		[Test, Ignore("type references not yet implemented")]

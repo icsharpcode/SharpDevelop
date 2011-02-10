@@ -28,7 +28,7 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class Identifier : DomNode
+	public class Identifier : AstNode
 	{
 		public static readonly new Identifier Null = new NullIdentifier ();
 		class NullIdentifier : Identifier
@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 			}
 			
-			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+			public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 			{
 				return default (S);
 			}
@@ -61,16 +61,16 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		DomLocation startLocation;
-		public override DomLocation StartLocation {
+		AstLocation startLocation;
+		public override AstLocation StartLocation {
 			get {
 				return startLocation;
 			}
 		}
 		
-		public override DomLocation EndLocation {
+		public override AstLocation EndLocation {
 			get {
-				return new DomLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length);
+				return new AstLocation (StartLocation.Line, StartLocation.Column + (Name ?? "").Length);
 			}
 		}
 		
@@ -79,7 +79,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.name = string.Empty;
 		}
 		
-		public Identifier (string name, DomLocation location)
+		public Identifier (string name, AstLocation location)
 		{
 			if (name == null)
 				throw new ArgumentNullException("name");
@@ -87,7 +87,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			this.startLocation = location;
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitIdentifier (this, data);
 		}

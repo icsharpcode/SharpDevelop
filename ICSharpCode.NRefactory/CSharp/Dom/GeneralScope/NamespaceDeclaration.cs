@@ -33,9 +33,9 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// namespace Name { Members }
 	/// </summary>
-	public class NamespaceDeclaration : DomNode
+	public class NamespaceDeclaration : AstNode
 	{
-		public static readonly Role<DomNode> MemberRole = CompilationUnit.MemberRole;
+		public static readonly Role<AstNode> MemberRole = CompilationUnit.MemberRole;
 		
 		public override NodeType NodeType {
 			get {
@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return builder.ToString ();
 			}
 			set {
-				SetChildrenByRole (Roles.Identifier, value.Split('.').Select(ident => new Identifier(ident, DomLocation.Empty)));
+				SetChildrenByRole (Roles.Identifier, value.Split('.').Select(ident => new Identifier(ident, AstLocation.Empty)));
 			}
 		}
 		
@@ -75,7 +75,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public IEnumerable<DomNode> Members {
+		public IEnumerable<AstNode> Members {
 			get { return GetChildrenByRole(MemberRole); }
 			set { SetChildrenByRole(MemberRole, value); }
 		}
@@ -90,7 +90,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitNamespaceDeclaration (this, data);
 		}

@@ -29,11 +29,11 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class PrimitiveType : DomType
+	public class PrimitiveType : AstType
 	{
 		public string Keyword { get; set; }
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitPrimitiveType (this, data);
 		}

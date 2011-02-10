@@ -28,9 +28,9 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public abstract class MemberDeclaration : AttributedNode
 	{
-		public static readonly Role<DomType> PrivateImplementationTypeRole = new Role<DomType>("PrivateImplementationType", DomType.Null);
+		public static readonly Role<AstType> PrivateImplementationTypeRole = new Role<AstType>("PrivateImplementationType", AstType.Null);
 		
-		public DomType ReturnType {
+		public AstType ReturnType {
 			get { return GetChildByRole (Roles.Type); }
 			set { SetChildByRole(Roles.Type, value); }
 		}
@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Only supported on members that can be declared in an interface.
 		/// </summary>
-		public DomType PrivateImplementationType {
+		public AstType PrivateImplementationType {
 			get { return GetChildByRole (PrivateImplementationTypeRole); }
 			set { SetChildByRole (PrivateImplementationTypeRole, value); }
 		}
@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				return GetChildByRole (Roles.Identifier).Name;
 			}
 			set {
-				SetChildByRole (Roles.Identifier, new Identifier(value, DomLocation.Empty));
+				SetChildByRole (Roles.Identifier, new Identifier(value, AstLocation.Empty));
 			}
 		}
 		

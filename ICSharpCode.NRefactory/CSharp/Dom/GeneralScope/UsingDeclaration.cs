@@ -33,9 +33,9 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// using Import;
 	/// </summary>
-	public class UsingDeclaration : DomNode
+	public class UsingDeclaration : AstNode
 	{
-		public static readonly Role<DomType> ImportRole = new Role<DomType>("Import", DomType.Null);
+		public static readonly Role<AstType> ImportRole = new Role<AstType>("Import", AstType.Null);
 		
 		public override NodeType NodeType {
 			get {
@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public DomType Import {
+		public AstType Import {
 			get { return GetChildByRole (ImportRole); }
 			set { SetChildByRole (ImportRole, value); }
 		}
@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return this.Import.ToString(); }
 		}
 		
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitUsingDeclaration (this, data);
 		}

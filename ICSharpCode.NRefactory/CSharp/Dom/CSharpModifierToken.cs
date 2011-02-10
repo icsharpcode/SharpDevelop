@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return lengthTable.Keys; }
 		}
 		
-		public CSharpModifierToken (DomLocation location, Modifiers modifier) : base (location, 0)
+		public CSharpModifierToken (AstLocation location, Modifiers modifier) : base (location, 0)
 		{
 			this.Modifier = modifier;
 		}

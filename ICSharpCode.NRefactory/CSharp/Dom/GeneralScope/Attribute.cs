@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// Attribute(Arguments)
 	/// </summary>
-	public class Attribute : DomNode
+	public class Attribute : AstNode
 	{
 		public override NodeType NodeType {
 			get {
@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		public DomType Type {
+		public AstType Type {
 			get { return GetChildByRole (Roles.Type); }
 			set { SetChildByRole (Roles.Type, value); }
 		}
@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildrenByRole (Roles.Argument, value); }
 		}
 
-		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitAttribute (this, data);
 		}
