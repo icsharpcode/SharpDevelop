@@ -9,7 +9,7 @@
             Copyright (c) Microsoft Corporation.  All rights reserved.
             
             The use and distribution terms for this software are covered by the
-            Common Public License 1.0 (http://opensource.org/licenses/cpl.php)
+            Common Public License 1.0 (http://opensource.org/licenses/cpl1.0.php)
             which can be found in the file CPL.TXT at the root of this distribution.
             By using this software in any fashion, you are agreeing to be bound by
             the terms of this license.
@@ -67,6 +67,86 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:element name="LayoutDirectory">
+        <xs:annotation>
+            <xs:documentation>Representation of layout directory.</xs:documentation>
+            <xs:appinfo>
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Fragment" />
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Product" />
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Module" />
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Patch" />
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="PatchCreation" />
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="LayoutDirectoryRef" />
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="LayoutDirectory"/>
+                <xs:element ref="LayoutDirectoryRef"/>
+                <xs:element ref="LayoutFile"/>
+            </xs:choice>
+            <xs:attribute name="Name" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation>The destination path of this layout. It can contain multiple levels of directory structure (i.e. src\files\product)</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Id" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>Identifier for LayoutDirectory. Only required if this is shared and is referenced by LayoutDirectoryRef.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="LayoutDirectoryRef">
+        <xs:annotation>
+            <xs:documentation>Create a reference to an existing LayoutDirectory element.</xs:documentation>
+            <xs:appinfo>
+                <xse:seeAlso ref="LayoutDirectory"/>
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="LayoutDirectory" />
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Fragment" />
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Product" />
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Module" />
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Patch" />
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="PatchCreation" />
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+                <xs:element ref="LayoutDirectory"/>
+                <xs:element ref="LayoutDirectoryRef"/>
+                <xs:element ref="LayoutFile"/>
+            </xs:choice>
+            <xs:attribute name="Id" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation>The identifier of LayoutDirectory element to reference.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="LayoutFile">
+        <xs:annotation>
+            <xs:documentation>Describes the file to copy into the final layout.</xs:documentation>
+            <xs:appinfo>
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="LayoutDirectory" />
+                <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="LayoutDirectoryRef"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name="SourceFile" type="xs:string" use="required">
+                <xs:annotation>
+                    <xs:documentation>Location of the source file.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="Name" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>The destination path and file name for this file. The default is the source file name.</xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
     <xs:element name="Product">
         <xs:annotation>
             <xs:documentation>
@@ -75,7 +155,7 @@
             </xs:documentation>
             <xs:appinfo>
                 <xse:remarks>
-                    <html:p>You can specify any valid Windows code by integer like 1252, or by web name like Windows-1252. See <a href="/html/codepage.htm">Code Pages</a> for more information.</html:p>
+                    <html:p>You can specify any valid Windows code by integer like 1252, or by web name like Windows-1252. See <html:a href="codepage.htm">Code Pages</html:a> for more information.</html:p>
                 </xse:remarks>
             </xs:appinfo>
         </xs:annotation>
@@ -102,6 +182,9 @@
                     <xs:element ref="FeatureGroupRef"/>
                     <xs:element ref="Icon"/>
                     <xs:element ref="InstanceTransforms"/>
+                    <xs:element ref="LayoutDirectory" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="LayoutDirectoryRef" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="MajorUpgrade"/>
                     <xs:element ref="Media"/>
                     <xs:element ref="PackageCertificates"/>
                     <xs:element ref="PatchCertificates"/>
@@ -184,7 +267,7 @@
             </xs:documentation>
             <xs:appinfo>
                 <xse:remarks>
-                    <html:p>You can specify any valid Windows code by by integer like 1252, or by web name like Windows-1252. See <a href="/html/codepage.htm">Code Pages</a> for more information.</html:p>
+                    <html:p>You can specify any valid Windows code by by integer like 1252, or by web name like Windows-1252. See <html:a href="codepage.htm">Code Pages</html:a> for more information.</html:p>
                 </xse:remarks>
             </xs:appinfo>
         </xs:annotation>
@@ -211,6 +294,8 @@
                     <xs:element ref="Icon"/>
                     <xs:element ref="IgnoreModularization"/>
                     <xs:element ref="IgnoreTable"/>
+                    <xs:element ref="LayoutDirectory" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="LayoutDirectoryRef" minOccurs="0" maxOccurs="unbounded"/>
                     <xs:element ref="Property"/>
                     <xs:element ref="PropertyRef"/>
                     <xs:element ref="SetDirectory"/>
@@ -428,6 +513,8 @@
                 <xs:element ref="FeatureRef"/>
                 <xs:element ref="Icon"/>
                 <xs:element ref="IgnoreModularization"/>
+                <xs:element ref="LayoutDirectory"/>
+                <xs:element ref="LayoutDirectoryRef"/>
                 <xs:element ref="Media"/>
                 <xs:element ref="PackageCertificates"/>
                 <xs:element ref="PatchCertificates"/>
@@ -472,15 +559,23 @@
             </xs:documentation>
             <xs:appinfo>
                 <xse:remarks>
-                    <html:p>You can specify any valid Windows code by by integer like 1252, or by web name like Windows-1252. See <a href="/html/codepage.htm">Code Pages</a> for more information.</html:p>
+                    <html:p>You can specify any valid Windows code by by integer like 1252, or by web name like Windows-1252. See <html:a href="codepage.htm">Code Pages</html:a> for more information.</html:p>
                     <html:p>The ClientPatchId attribute allows you to specify an easily referenced identity that you can use in product authoring. This identity prefixes properties added by WiX to a patch transform, such as <html:i>ClientPatchId</html:i>.PatchCode and <html:i>ClientPatchId</html:i>.AllowRemoval. If the patch code GUID is auto-generated you could not reference any properties using this auto-generated prefix.</html:p>
-                    <html:p>For example, if you were planning to ship a patch referred to as "QFE1" and needed to write your own registry values for Add/Remove Programs in product authoring such as the UninstallString for this patch, you could author a RegistryValue with the name UninstallString and the value <html:code><html:nobr>[SystemFolder]msiexec.exe</html:nobr> /package [ProductCode] /uninstall [QFE1.PatchCode]</html:code>. In your patch authoring you would then set ClientPatchId to "QFE1" and WiX will add the QFE1.PatchCode property to the patch transform when the patch is created. If the Id attribute specified the patch code to be generated automatically, you could not reference the <html:i>prefix</html:i>.PatchCode property as shown above.</html:p>
+					<html:p>For example, if you were planning to ship a patch referred to as "QFE1" and needed to write your own registry values for Add/Remove Programs in product authoring such as the UninstallString for this patch, you could author a RegistryValue with the name UninstallString and the value <html:code><html:nobr>[SystemFolder]msiexec.exe</html:nobr> /package [ProductCode] /uninstall [QFE1.PatchCode]</html:code>. In your patch authoring you would then set ClientPatchId to "QFE1" and WiX will add the QFE1.PatchCode property to the patch transform when the patch is created. If the Id attribute specified the patch code to be generated automatically, you could not reference the <html:i>prefix</html:i>.PatchCode property as shown above.</html:p>
+					<html:p>The summary information is automatically populated from attribute values of the Patch element including the code page. If you want to override some of these summary information properties or use a different code page for the summary information itself, author the PatchInformation element.</html:p>
                 </xse:remarks>
             </xs:appinfo>
         </xs:annotation>
         <xs:complexType>
             <xs:sequence>
                 <xs:choice minOccurs="0" maxOccurs="unbounded">
+                     <xs:element ref="PatchInformation" minOccurs="0" maxOccurs="1">
+                        <xs:annotation>
+                            <xs:documentation>Optional element that allows overriding summary information properties.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element ref="LayoutDirectory" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="LayoutDirectoryRef" minOccurs="0" maxOccurs="unbounded"/>
                     <xs:element ref="Media" minOccurs="1" maxOccurs="unbounded"/>
                     <xs:element ref="OptimizeCustomActions" minOccurs="0" maxOccurs="1">
                         <xs:annotation><xs:documentation>Indicates whether custom actions can be skipped when applying the patch.</xs:documentation></xs:annotation>
@@ -511,9 +606,9 @@
                     <xs:documentation>Whether this is an uninstallable patch.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
-            <xs:attribute name="Classification" type="PatchClassificationType" use="required">
+            <xs:attribute name="Classification" type="xs:string" use="required">
                 <xs:annotation>
-                    <xs:documentation>Category of updates.</xs:documentation>
+                    <xs:documentation>Category of updates. Recommended values are Critical Update, Hotfix, Security Rollup, Security Update, Service Pack, Update, Update Rollup.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="ClientPatchId" type="xs:string">
@@ -811,7 +906,7 @@
             </xs:documentation>
             <xs:appinfo>
                 <xse:remarks>
-                    <html:p>You can specify any valid Windows code by by integer like 1252, or by web name like Windows-1252. See <a href="/html/codepage.htm">Code Pages</a> for more information.</html:p>
+                    <html:p>You can specify any valid Windows code by by integer like 1252, or by web name like Windows-1252. See <html:a href="codepage.htm">Code Pages</html:a> for more information.</html:p>
                 </xse:remarks>
             </xs:appinfo>
         </xs:annotation>
@@ -821,6 +916,8 @@
                 <xs:element ref="PatchMetadata" minOccurs="0"/>
                 <xs:element ref="Family" maxOccurs="unbounded"/>
                 <xs:choice minOccurs="0" maxOccurs="unbounded">
+                    <xs:element ref="LayoutDirectory" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="LayoutDirectoryRef" minOccurs="0" maxOccurs="unbounded"/>
                     <xs:element ref="PatchProperty"/>
                     <xs:element ref="PatchSequence"/>
                     <xs:element ref="ReplacePatch"/>
@@ -832,28 +929,28 @@
                 <xs:annotation><xs:documentation>PatchCreation identifier; this is the primary key for identifying patches.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="AllowMajorVersionMismatches" type="YesNoType">
-                <xs:annotation><xs:documentation>Use this to set whether the major versions between the upgrade and target images match. See <a href="http://msdn2.microsoft.com/library/aa370890.aspx" target="_blank">AllowProductVersionMajorMismatches</a> for more information.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Use this to set whether the major versions between the upgrade and target images match. See <html:a href="http://msdn2.microsoft.com/library/aa370890.aspx" target="_blank">AllowProductVersionMajorMismatches</html:a> for more information.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="AllowProductCodeMismatches" type="YesNoType">
-                <xs:annotation><xs:documentation>Use this to set whether the product code between the upgrade and target images match. See <a href="http://msdn2.microsoft.com/library/aa370890.aspx" target="_blank">AllowProductCodeMismatches</a> for more information.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Use this to set whether the product code between the upgrade and target images match. See <html:a href="http://msdn2.microsoft.com/library/aa370890.aspx" target="_blank">AllowProductCodeMismatches</html:a> for more information.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="CleanWorkingFolder" type="YesNoType">
-                <xs:annotation><xs:documentation>Use this to set whether Patchwiz should clean the temp folder when finished. See <a href="http://msdn2.microsoft.com/library/aa370890.aspx" target="_blank">DontRemoveTempFolderWhenFinished</a> for more information.	</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Use this to set whether Patchwiz should clean the temp folder when finished. See <html:a href="http://msdn2.microsoft.com/library/aa370890.aspx" target="_blank">DontRemoveTempFolderWhenFinished</html:a> for more information.	</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Codepage" type="xs:string">
                 <xs:annotation><xs:documentation>The code page integer value or web name for the resulting PCP. See remarks for more information.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="OutputPath" type="xs:string">
-                <xs:annotation><xs:documentation>The full path, including file name, of the patch package file that is to be generated. See <a href="http://msdn2.microsoft.com/library/aa370890.aspx" target="_blank">PatchOutputPath</a> for more information.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>The full path, including file name, of the patch package file that is to be generated. See <html:a href="http://msdn2.microsoft.com/library/aa370890.aspx" target="_blank">PatchOutputPath</html:a> for more information.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="SourceList" type="xs:string">
-                <xs:annotation><xs:documentation>Used to locate the .msp file for the patch if the cached copy is unavailable. See <a href="http://msdn2.microsoft.com/library/aa370890.aspx" target="_blank">PatchSourceList</a> for more information.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Used to locate the .msp file for the patch if the cached copy is unavailable. See <html:a href="http://msdn2.microsoft.com/library/aa370890.aspx" target="_blank">PatchSourceList</html:a> for more information.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="SymbolFlags" type="xs:int">
-                <xs:annotation><xs:documentation>An 8-digit hex integer representing the combination of patch symbol usage flags to use when creating a binary file patch. See <a href="http://msdn2.microsoft.com/library/aa370890.aspx" target="_blank">ApiPatchingSymbolFlags</a> for more information.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>An 8-digit hex integer representing the combination of patch symbol usage flags to use when creating a binary file patch. See <html:a href="http://msdn2.microsoft.com/library/aa370890.aspx" target="_blank">ApiPatchingSymbolFlags</html:a> for more information.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="WholeFilesOnly" type="YesNoType">
-                <xs:annotation><xs:documentation>Use this to set whether changing files should be included in their entirety. See <a href="http://msdn2.microsoft.com/library/aa370890.aspx" target="_blank">IncludeWholeFilesOnly</a> for more information.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Use this to set whether changing files should be included in their entirety. See <html:a href="http://msdn2.microsoft.com/library/aa370890.aspx" target="_blank">IncludeWholeFilesOnly</html:a> for more information.</xs:documentation></xs:annotation>
             </xs:attribute>
         </xs:complexType>
     </xs:element>
@@ -862,39 +959,43 @@
             <xs:documentation>Properties about the patch to be placed in the Summary Information Stream.  These are visible from COM through the IStream interface, and these properties can be seen on the package in Explorer.</xs:documentation>
             <xs:appinfo>
                 <xse:remarks>
-                    <html:p>You can specify any valid Windows code by by integer like 1252, or by web name like Windows-1252. See <a href="/html/codepage.htm">Code Pages</a> for more information.</html:p>
+                    <html:p>You can specify any valid Windows code by by integer like 1252, or by web name like Windows-1252. See <html:a href="codepage.htm">Code Pages</html:a> for more information.</html:p>
                 </xse:remarks>
             </xs:appinfo>
         </xs:annotation>
         <xs:complexType>
             <xs:attribute name="Description" type="xs:string">
                 <xs:annotation>
-                    <xs:documentation>Product full name or description</xs:documentation>
+                    <xs:documentation>A short description of the patch that includes the name of the product.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="Platforms" type="xs:string">
                 <xs:annotation>
-                    <xs:documentation>List of platforms supported in package</xs:documentation>
+                    <xs:appinfo>
+                        <xse:deprecated />
+                    </xs:appinfo>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="Languages" type="xs:string">
                 <xs:annotation>
-                    <xs:documentation>List of language IDs supported in package</xs:documentation>
+                    <xs:appinfo>
+                        <xse:deprecated />
+                    </xs:appinfo>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="Manufacturer" type="xs:string">
                 <xs:annotation>
-                    <xs:documentation>Vendor releasing the package</xs:documentation>
+                    <xs:documentation>The name of the manufacturer of the patch package.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="Keywords" type="xs:string">
                 <xs:annotation>
-                    <xs:documentation>Optional keywords for browsing</xs:documentation>
+                    <xs:documentation>A semicolon-delimited list of network or URL locations for alternate sources of the patch. The default is "Installer,Patching,PCP,Database".</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="Comments" type="xs:string">
                 <xs:annotation>
-                    <xs:documentation>Optional comments for browsing</xs:documentation>
+					<xs:documentation>General purpose of the patch package. For example, "This patch contains the logic and data required to install <html:i>&lt;product&gt;</html:i>."</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="ReadOnly" type="YesNoDefaultType">
@@ -908,22 +1009,28 @@
             </xs:attribute>
             <xs:attribute name="SummaryCodepage" type="xs:string">
                 <xs:annotation>
-                    <xs:documentation>The code page integer value or web name for summary info strings only.  See remarks for more information.</xs:documentation>
+                    <xs:documentation>The code page integer value or web name for summary info strings only.  The default is 1252.  See remarks for more information.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="ShortNames" type="YesNoType">
                 <xs:annotation>
-                    <xs:documentation>Short filenames on source</xs:documentation>
+                    <xs:appinfo>
+                        <xse:deprecated />
+                    </xs:appinfo>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="Compressed" type="YesNoType">
                 <xs:annotation>
-                    <xs:documentation>Compressed files on source</xs:documentation>
+                    <xs:appinfo>
+                        <xse:deprecated />
+                    </xs:appinfo>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="AdminImage" type="YesNoType">
                 <xs:annotation>
-                    <xs:documentation>Source is an admin image</xs:documentation>
+                    <xs:appinfo>
+                        <xse:deprecated />
+                    </xs:appinfo>
                 </xs:annotation>
             </xs:attribute>
         </xs:complexType>
@@ -953,12 +1060,12 @@
                     <xs:documentation>Whether this is an uninstallable patch.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
-            <xs:attribute name="Classification" type="PatchClassificationType" use="required">
-                <xs:annotation>
-                    <xs:documentation>Category of update.</xs:documentation>
-                </xs:annotation>
-            </xs:attribute>
-            <xs:attribute name="CreationTimeUTC" type="xs:string">
+          <xs:attribute name="Classification" type="xs:string" use="required">
+            <xs:annotation>
+              <xs:documentation>Category of updates. Recommended values are Critical Update, Hotfix, Security Rollup, Security Update, Service Pack, Update, Update Rollup.</xs:documentation>
+            </xs:annotation>
+          </xs:attribute>
+          <xs:attribute name="CreationTimeUTC" type="xs:string">
                 <xs:annotation>
                     <xs:documentation>Creation time of the .msp file in the form mm-dd-yy HH:MM (month-day-year hour:minute).</xs:documentation>
                 </xs:annotation>
@@ -1400,7 +1507,7 @@
             </xs:documentation>
             <xs:appinfo>
                 <xse:remarks>
-                    <html:p>You can specify any valid Windows code by by integer like 1252, or by web name like Windows-1252. See <a href="/html/codepage.htm">Code Pages</a> for more information.</html:p>
+                    <html:p>You can specify any valid Windows code by by integer like 1252, or by web name like Windows-1252. See <html:a href="codepage.htm">Code Pages</html:a> for more information.</html:p>
                 </xse:remarks>
             </xs:appinfo>
         </xs:annotation>
@@ -1492,7 +1599,8 @@
                     <xs:documentation>
                         The minimum version of the Windows Installer required to install this package. Take the major version of the required Windows Installer
                         and multiply by a 100 then add the minor version of the Windows Installer. For example, "200" would represent Windows Installer 2.0 and
-                        "405" would represent Windows Installer 4.5. For 64-bit Windows Installer packages, this property must be set to 200 or greater.
+                        "405" would represent Windows Installer 4.5. For 64-bit Windows Installer packages, this property is set to 200 by default as
+                        Windows Installer 2.0 was the first version to support 64-bit packages.
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
@@ -1937,7 +2045,7 @@
                 <xse:msiRef table="Signature" href="http://msdn.microsoft.com/library/aa371853.aspx"/>
                 <xse:howtoRef href="check_the_version_number.htm">How To: Check the version number of a file during installation</xse:howtoRef>
                 <xse:remarks>
-                    <html:a>When the parent DirectorySearch/@Depth attribute is greater than 1, the FileSearch/@Id attribute must be absent or the same as the parent DirectorySearch/@Id attribute value, unless the parent DirectorySearch/@AssignToProperty attribute value is 'yes'.</html:a>
+                    <html:a>When the parent DirectorySearch/@Depth attribute is greater than 0, the FileSearch/@Id attribute must be absent or the same as the parent DirectorySearch/@Id attribute value, unless the parent DirectorySearch/@AssignToProperty attribute value is 'yes'.</html:a>
                 </xse:remarks>
             </xs:appinfo>
             <xs:documentation>Searches for file and assigns to fullpath value of parent Property</xs:documentation>
@@ -2297,7 +2405,7 @@
                 <xs:annotation><xs:documentation>Key for the registry value.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Name" type="xs:string">
-                <xs:annotation><xs:documentation>Registry value name.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Registry value name. If this value is null, then the value from the key's unnamed or default value, if any, is retrieved.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Type" use="required">
                 <xs:annotation>
@@ -2344,7 +2452,7 @@
                 </xs:simpleType>
             </xs:attribute>
             <xs:attribute name="Win64" type="YesNoType">
-                <xs:annotation><xs:documentation>Instructs the search to look in the 64-bit registry when the value is 'yes'.  Default is 'no' and search looks in the 32-bit registry.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Instructs the search to look in the 64-bit registry when the value is 'yes'. When the value is 'no', the search looks in the 32-bit registry. The default value depends on the value of the Package/@Platform attribute: if the @Platform attribute value is 'x86', the default @Win64 attribute value is 'no'; otherwise, the default value is 'yes'.</xs:documentation></xs:annotation>
             </xs:attribute>
         </xs:complexType>
     </xs:element>
@@ -3176,7 +3284,7 @@
                 </xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Source" type="xs:string">
-                <xs:annotation><xs:documentation>Specifies the path to the File in the build process. Overrides default source path set by parent directories and Name attribute. This attribute must be set if no source information can be gathered from parent directories. For more information, see <a href="\html\specifying_source_files.htm">Specifying source files</a>.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Specifies the path to the File in the build process. Overrides default source path set by parent directories and Name attribute. This attribute must be set if no source information can be gathered from parent directories. For more information, see <html:a href="specifying_source_files.htm">Specifying source files</html:a>.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="src" type="xs:string">
                 <xs:annotation>
@@ -3284,6 +3392,8 @@
                             <xs:annotation>
                                 <xs:documentation>
                                     Creates the key, if absent, when the parent component is installed then remove the key with all its values and subkeys when the parent component is uninstalled.
+                                    Note that this value is useful only if your program creates additional values or subkeys under this key and you want an uninstall to remove them. MSI already
+                                    removes all values and subkeys that it creates, so this option just adds additional overhead to uninstall.
                                 </xs:documentation>
                             </xs:annotation>
                         </xs:enumeration>
@@ -3840,37 +3950,15 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
-            <xs:attribute name="On" use="required">
+            <xs:attribute name="On" type="InstallUninstallType" use="required">
                 <xs:annotation>
                     <xs:documentation>
-                        This value determines the time at which the file(s) may be removed.
+                        This value determines the time at which the file(s) may be removed. For 'install', the file will
+                        be removed only when the parent component is being installed (msiInstallStateLocal or
+                        msiInstallStateSource); for 'uninstall', the file will be removed only when the parent component
+                        is being removed (msiInstallStateAbsent); for 'both', the file will be removed in both cases.
                     </xs:documentation>
                 </xs:annotation>
-                <xs:simpleType>
-                    <xs:restriction base="xs:NMTOKEN">
-                        <xs:enumeration value="install">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    Removes the file only when the parent component is being installed (msiInstallStateLocal or msiInstallStateSource).
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:enumeration>
-                        <xs:enumeration value="uninstall">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    Removes the file only when the parent component is being removed (msiInstallStateAbsent).
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:enumeration>
-                        <xs:enumeration value="both">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    Removes the file when the parent component is being installed or removed.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:enumeration>
-                    </xs:restriction>
-                </xs:simpleType>
             </xs:attribute>
         </xs:complexType>
     </xs:element>
@@ -3906,37 +3994,15 @@
                     action, on the command line, etc.  This attribute cannot be specified in conjunction with the Directory attribute.
                 </xs:documentation></xs:annotation>
             </xs:attribute>
-            <xs:attribute name="On" use="required">
+            <xs:attribute name="On" type="InstallUninstallType" use="required">
                 <xs:annotation>
                     <xs:documentation>
-                        This value determines the time at which the folder may be removed.
+                        This value determines the time at which the folder may be removed, based on the install/uninstall of the parent component.
+                        For 'install', the folder will be removed only when the parent component is being installed (msiInstallStateLocal or
+                        msiInstallStateSource); for 'uninstall', the folder will be removed only when the parent component
+                        is being removed (msiInstallStateAbsent); for 'both', the folder will be removed in both cases.
                     </xs:documentation>
                 </xs:annotation>
-                <xs:simpleType>
-                    <xs:restriction base="xs:NMTOKEN">
-                        <xs:enumeration value="install">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    Removes the folder only when the parent component is being installed (msiInstallStateLocal or msiInstallStateSource).
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:enumeration>
-                        <xs:enumeration value="uninstall">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    Removes the folder only when the parent component is being removed (msiInstallStateAbsent).
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:enumeration>
-                        <xs:enumeration value="both">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    Removes the folder when the parent component is being installed or removed.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:enumeration>
-                    </xs:restriction>
-                </xs:simpleType>
             </xs:attribute>
         </xs:complexType>
     </xs:element>
@@ -4221,7 +4287,7 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element ref="ProgId" minOccurs="0" maxOccurs="unbounded">
-                    <xs:annotation><xs:documentation>The version-independent ProgId must be the first child element of actual ProgId.  Nesting other ProgId elements within the Version-independent ProgId will create COM+ aliases, see <a href="http://support.microsoft.com/kb/305745">http://support.microsoft.com/kb/305745</a> for more information.</xs:documentation></xs:annotation>
+                    <xs:annotation><xs:documentation>The version-independent ProgId must be the first child element of actual ProgId.  Nesting other ProgId elements within the Version-independent ProgId will create COM+ aliases, see <html:a href="http://support.microsoft.com/kb/305745">http://support.microsoft.com/kb/305745</html:a> for more information.</xs:documentation></xs:annotation>
                 </xs:element>
                 <xs:element ref="Extension" minOccurs="0" maxOccurs="unbounded">
                     <xs:annotation><xs:documentation>Extensions that refer to this ProgId</xs:documentation></xs:annotation>
@@ -5160,92 +5226,32 @@
             <xs:attribute name="Name" type="xs:string" use="required">
                 <xs:annotation><xs:documentation>Name of the service.</xs:documentation></xs:annotation>
             </xs:attribute>
-            <xs:attribute name="Start">
-                <xs:annotation><xs:documentation>Specifies whether the service should be started on install, uninstall or both.</xs:documentation></xs:annotation>
-                <xs:simpleType>
-                    <xs:restriction base="xs:NMTOKEN">
-                        <xs:enumeration value="install">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    The service will be started by the StartServices action during install.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:enumeration>
-                        <xs:enumeration value="uninstall">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    The service will be started by the StartServices action during uninstall.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:enumeration>
-                        <xs:enumeration value="both">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    The service will be started by the StartServices action during install and uninstall.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:enumeration>
-                    </xs:restriction>
-                </xs:simpleType>
+            <xs:attribute name="Start" type="InstallUninstallType">
+                <xs:annotation><xs:documentation>
+                    Specifies whether the service should be started by the StartServices action on install, uninstall or both.
+                    For 'install', the service will be started only when the parent component is being installed (msiInstallStateLocal or
+                    msiInstallStateSource); for 'uninstall', the service will be started only when the parent component
+                    is being removed (msiInstallStateAbsent); for 'both', the service will be started in both cases.
+                </xs:documentation></xs:annotation>
             </xs:attribute>
-            <xs:attribute name="Stop">
-                <xs:annotation><xs:documentation>Specifies whether the service should be stopped on install, uninstall or both.</xs:documentation></xs:annotation>
-                <xs:simpleType>
-                    <xs:restriction base="xs:NMTOKEN">
-                        <xs:enumeration value="install">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    The service will be stopped by the StopServices action during install.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:enumeration>
-                        <xs:enumeration value="uninstall">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    The service will be stopped by the StopServices action during uninstall.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:enumeration>
-                        <xs:enumeration value="both">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    The service will be stopped by the StopServices action during install and uninstall.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:enumeration>
-                    </xs:restriction>
-                </xs:simpleType>
+            <xs:attribute name="Stop" type="InstallUninstallType">
+                <xs:annotation><xs:documentation>
+                    Specifies whether the service should be stopped by the StopServices action on install, uninstall or both.
+                    For 'install', the service will be stopped only when the parent component is being installed (msiInstallStateLocal or
+                    msiInstallStateSource); for 'uninstall', the service will be stopped only when the parent component
+                    is being removed (msiInstallStateAbsent); for 'both', the service will be stopped in both cases.
+                </xs:documentation></xs:annotation>
             </xs:attribute>
-            <xs:attribute name="Remove">
-                <xs:annotation><xs:documentation>Specifies whether the service should be removed on install, uninstall or both.</xs:documentation></xs:annotation>
-                <xs:simpleType>
-                    <xs:restriction base="xs:NMTOKEN">
-                        <xs:enumeration value="install">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    The service will be deleted by the DeleteServices action during install.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:enumeration>
-                        <xs:enumeration value="uninstall">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    The service will be deleted by the DeleteServices action during uninstall.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:enumeration>
-                        <xs:enumeration value="both">
-                            <xs:annotation>
-                                <xs:documentation>
-                                    The service will be deleted by the DeleteServices action during install and uninstall.
-                                </xs:documentation>
-                            </xs:annotation>
-                        </xs:enumeration>
-                    </xs:restriction>
-                </xs:simpleType>
+            <xs:attribute name="Remove" type="InstallUninstallType">
+                <xs:annotation><xs:documentation>
+                    Specifies whether the service should be removed by the DeleteServices action on install, uninstall or both.
+                    For 'install', the service will be removed only when the parent component is being installed (msiInstallStateLocal or
+                    msiInstallStateSource); for 'uninstall', the service will be removed only when the parent component
+                    is being removed (msiInstallStateAbsent); for 'both', the service will be removed in both cases.
+                </xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Wait" type="YesNoType">
-                <xs:annotation><xs:documentation>Specifies whether or not to wait for the service to complete before continuing.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Specifies whether or not to wait for the service to complete before continuing. The default is 'yes'.</xs:documentation></xs:annotation>
             </xs:attribute>
         </xs:complexType>
     </xs:element>
@@ -5253,7 +5259,7 @@
     <xs:element name="RequiredPrivilege" type="xs:string">
         <xs:annotation>
             <xs:documentation>
-                Privilege required by service configured by ServiceConfig parent. Valid values are a <a href="http://msdn.microsoft.com/en-us/library/bb530716.aspx">privilege constant</a> or a
+                Privilege required by service configured by ServiceConfig parent. Valid values are a <html:a href="http://msdn.microsoft.com/en-us/library/bb530716.aspx">privilege constant</html:a> or a
                 Formatted property that resolves to a privilege constant.
             </xs:documentation>
             <xs:appinfo>
@@ -5701,8 +5707,15 @@
                 </xs:any>
             </xs:choice>
 
-            <xs:attribute name="Id" type="xs:string" use="required">
-                <xs:annotation><xs:documentation>Component identifier; this is the primary key for identifying components.</xs:documentation></xs:annotation>
+            <xs:attribute name="Id" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>
+                        Component identifier; this is the primary key for identifying components. If omitted,
+                        the compiler defaults the identifier to the identifier of the resource that is the
+                        explicit keypath of the component (for example, a child File element with KeyPath
+                        attribute with value 'yes'.
+                    </xs:documentation>
+                </xs:annotation>
             </xs:attribute>
             <xs:attribute name="ComPlusFlags" type="xs:integer">
                 <xs:annotation>
@@ -5753,10 +5766,13 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
-            <xs:attribute name="Guid" type="ComponentGuid" use="required">
+            <xs:attribute name="Guid" type="ComponentGuid">
                 <xs:annotation>
                     <xs:documentation>
                         This value should be a guid that uniquely identifies this component's contents, language, platform, and version.
+                        If omitted, the default value is '*' which indicates that the linker should generate a stable guid.
+                        Generatable guids are supported only for components with a single file as the component's keypath 
+                        or no files and a registry value as the keypath.
                         It's also possible to set the value to an empty string to specify an unmanaged component.
                         Unmanaged components are a security vulnerability because the component cannot be removed or repaired
                         by Windows Installer (it is essentially an unpatchable, permanent component).  Therefore, a guid should
@@ -5768,8 +5784,13 @@
                 <xs:annotation>
                     <xs:documentation>
                         If this attribute's value is set to 'yes', then the Directory of this Component is used
-                        as the KeyPath.  To set a Registry key or File as the KeyPath of a component, set the
-                        KeyPath attribute to 'yes' on one of those child elements.
+                        as the KeyPath. To set a Registry value or File as the KeyPath of a component, set the
+                        KeyPath attribute to 'yes' on one of those child elements. If KeyPath is not set to 'yes' for the
+                        Component or for a child Registry value or File, WiX will look at the child elements under the
+                        Component in sequential order and try to automatically select one of them as a key path. Allowing
+                        WiX to automatically select a key path can be dangerous because adding or removing child elements
+                        under the Component can inadvertantly cause the key path to change, which can lead to
+                        installation problems.
                     </xs:documentation>
                 </xs:annotation>
             </xs:attribute>
@@ -6149,7 +6170,7 @@
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="FileSource" type="xs:string">
-                <xs:annotation><xs:documentation>Used to set the file system source for this directory's child elements. For more information, see <a href="\html\specifying_source_files.htm">Specifying source files</a>.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Used to set the file system source for this directory's child elements. For more information, see <html:a href="specifying_source_files.htm">Specifying source files</html:a>.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="LongName" type="LongFileNameType">
                 <xs:annotation>
@@ -6275,7 +6296,7 @@
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="FileSource" type="xs:string">
-                <xs:annotation><xs:documentation>Used to set the file system source for this DirectoryRef's child elements. For more information, see <a href="\html\specifying_source_files.htm">Specifying source files</a>.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>Used to set the file system source for this DirectoryRef's child elements. For more information, see <html:a href="specifying_source_files.htm">Specifying source files</html:a>.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="src" type="xs:string">
                 <xs:annotation>
@@ -6318,7 +6339,7 @@
                         <xs:annotation><xs:documentation>The installer sets the REMOVE property to features specified in this column.  The features to be removed can be determined at run time.  The Formatted string entered in this field must evaluate to a comma-delimited list of feature names.  For example: [Feature1],[Feature2],[Feature3].  No features are removed if the field contains formatted text that evaluates to an empty string.  The installer sets REMOVE=ALL only if the Remove field is empty.</xs:documentation></xs:annotation>
                     </xs:attribute>
                     <xs:attribute name="Property" type="xs:string" use="required">
-                        <xs:annotation><xs:documentation>When the FindRelatedProducts action detects a related product installed on the system, it appends the product code to the property specified in this field.  Windows Installer documentation for the <a href="http://msdn2.microsoft.com/library/aa372379.aspx" target="_blank">Upgrade table</a> states that the property specified in this field must be a public property and must be added to the <a href="http://msdn2.microsoft.com/library/aa371571.aspx" target="_blank">SecureCustomProperties</a> property.  WiX automatically appends the property specified in this field to the SecureCustomProperties property when creating an MSI.  Each UpgradeVersion must have a unique Property value.  After the FindRelatedProducts action is run, the value of this property is a list product codes, separated by semicolons (;), detected on the system.</xs:documentation></xs:annotation>
+                        <xs:annotation><xs:documentation>When the FindRelatedProducts action detects a related product installed on the system, it appends the product code to the property specified in this field.  Windows Installer documentation for the <html:a href="http://msdn2.microsoft.com/library/aa372379.aspx" target="_blank">Upgrade table</html:a> states that the property specified in this field must be a public property and must be added to the <html:a href="http://msdn2.microsoft.com/library/aa371571.aspx" target="_blank">SecureCustomProperties</html:a> property.  WiX automatically appends the property specified in this field to the SecureCustomProperties property when creating an MSI.  Each UpgradeVersion must have a unique Property value.  After the FindRelatedProducts action is run, the value of this property is a list of product codes, separated by semicolons (;), detected on the system.</xs:documentation></xs:annotation>
                     </xs:attribute>
                     <xs:attribute name="MigrateFeatures" type="YesNoType">
                         <xs:annotation><xs:documentation>Set to "yes" to migrate feature states from upgraded products by enabling the logic in the MigrateFeatureStates action.</xs:documentation></xs:annotation>
@@ -6873,7 +6894,7 @@
                         The text node is only valid if the Script attribute is specified.  In that case, the text node contains the script to embed.
                     </xs:documentation></xs:annotation>
 
-                    <xs:attribute name="Id" type="xs:string">
+                    <xs:attribute name="Id" type="xs:string" use="required">
                         <xs:annotation><xs:documentation>
                             The identifier of the custom action.
                         </xs:documentation></xs:annotation>
@@ -7210,37 +7231,15 @@
                             </xs:documentation>
                         </xs:annotation>
                     </xs:attribute>
-                    <xs:attribute name="Sequence">
+                    <xs:attribute name="Sequence" type="SequenceType">
                         <xs:annotation>
                             <xs:documentation>
-                                Controls which sequences the Directory assignment is sequenced in. The default is both.
+                                Controls which sequences the Directory assignment is sequenced in.
+                                For 'execute', the assignment is scheduled in the InstallExecuteSequence. For 'ui', the
+                                assignment is scheduled in the InstallUISequence.  For 'both', the assignment is scheduled
+                                in both the InstallUISequence and the InstallExecuteSequence. The default is both.
                             </xs:documentation>
                         </xs:annotation>
-                        <xs:simpleType>
-                            <xs:restriction base="xs:NMTOKEN">
-                                <xs:enumeration value="both">
-                                    <xs:annotation>
-                                        <xs:documentation>
-                                            Schedules the assignment in the InstallUISequence and the InstallExecuteSequence.
-                                        </xs:documentation>
-                                    </xs:annotation>
-                                </xs:enumeration>
-                                <xs:enumeration value="execute">
-                                    <xs:annotation>
-                                        <xs:documentation>
-                                            Schedules the assignment only in the the InstallExecuteSequence.
-                                        </xs:documentation>
-                                    </xs:annotation>
-                                </xs:enumeration>
-                                <xs:enumeration value="ui">
-                                    <xs:annotation>
-                                        <xs:documentation>
-                                            Schedules the assignment only in the the InstallUISequence.
-                                        </xs:documentation>
-                                    </xs:annotation>
-                                </xs:enumeration>
-                            </xs:restriction>
-                        </xs:simpleType>
                     </xs:attribute>
                     <xs:attribute name="Value" type="xs:string">
                         <xs:annotation>
@@ -7296,37 +7295,15 @@
                             </xs:documentation>
                         </xs:annotation>
                     </xs:attribute>
-                    <xs:attribute name="Sequence">
+                    <xs:attribute name="Sequence" type="SequenceType">
                         <xs:annotation>
                             <xs:documentation>
-                                Controls which sequences the Property assignment is sequenced in. The default is both.
+                                Controls which sequences the Property assignment is sequenced in.
+                                For 'execute', the assignment is scheduled in the InstallExecuteSequence. For 'ui', the
+                                assignment is scheduled in the InstallUISequence.  For 'both', the assignment is scheduled
+                                in both the InstallUISequence and the InstallExecuteSequence. The default is both.
                             </xs:documentation>
                         </xs:annotation>
-                        <xs:simpleType>
-                            <xs:restriction base="xs:NMTOKEN">
-                                <xs:enumeration value="both">
-                                    <xs:annotation>
-                                        <xs:documentation>
-                                            Schedules the assignment in the InstallUISequence and the InstallExecuteSequence.
-                                        </xs:documentation>
-                                    </xs:annotation>
-                                </xs:enumeration>
-                                <xs:enumeration value="execute">
-                                    <xs:annotation>
-                                        <xs:documentation>
-                                            Schedules the assignment only in the the InstallExecuteSequence.
-                                        </xs:documentation>
-                                    </xs:annotation>
-                                </xs:enumeration>
-                                <xs:enumeration value="ui">
-                                    <xs:annotation>
-                                        <xs:documentation>
-                                            Schedules the assignment only in the the InstallUISequence.
-                                        </xs:documentation>
-                                    </xs:annotation>
-                                </xs:enumeration>
-                            </xs:restriction>
-                        </xs:simpleType>
                     </xs:attribute>
                     <xs:attribute name="Value" type="xs:string">
                         <xs:annotation>
@@ -8002,16 +7979,8 @@
                     <xs:attribute name="Action" type="xs:string" use="required">
                         <xs:annotation><xs:documentation>The action to which the Custom element applies.</xs:documentation></xs:annotation>
                     </xs:attribute>
-                    <xs:attribute name="OnExit">
+                    <xs:attribute name="OnExit" type="ExitType">
                         <xs:annotation><xs:documentation>Mutually exclusive with Before, After, and Sequence attributes</xs:documentation></xs:annotation>
-                        <xs:simpleType>
-                            <xs:restriction base="xs:NMTOKEN">
-                                <xs:enumeration value="success"/>
-                                <xs:enumeration value="cancel"/>
-                                <xs:enumeration value="error"/>
-                                <xs:enumeration value="suspend"/>
-                            </xs:restriction>
-                        </xs:simpleType>
                     </xs:attribute>
                     <xs:attribute name="Before" type="xs:string">
                         <xs:annotation><xs:documentation>The name of the standard or custom action before which this action should be performed. Mutually exclusive with OnExit, After, and Sequence attributes</xs:documentation></xs:annotation>
@@ -8038,16 +8007,8 @@
             <xs:simpleContent>
                 <xs:extension base="xs:string">
                     <xs:attribute name="Dialog" type="xs:string" use="required"/>
-                    <xs:attribute name="OnExit">
+                    <xs:attribute name="OnExit" type="ExitType">
                         <xs:annotation><xs:documentation>mutually exclusive with Before, After, and Sequence attributes</xs:documentation></xs:annotation>
-                        <xs:simpleType>
-                            <xs:restriction base="xs:NMTOKEN">
-                                <xs:enumeration value="success"/>
-                                <xs:enumeration value="cancel"/>
-                                <xs:enumeration value="error"/>
-                                <xs:enumeration value="suspend"/>
-                            </xs:restriction>
-                        </xs:simpleType>
                     </xs:attribute>
                     <xs:attribute name="Before" type="xs:string"/>
                     <xs:attribute name="After" type="xs:string"/>
@@ -8438,6 +8399,9 @@
                 <xs:element ref="InstallFiles">
                     <xs:annotation><xs:documentation>Copies files specified in the File table from the source directory to the destination directory.</xs:documentation></xs:annotation>
                 </xs:element>
+                <xs:element ref="PatchFiles">
+                    <xs:annotation><xs:documentation>Queries the Patch table to determine which patches are to be applied.</xs:documentation></xs:annotation>
+                </xs:element>
                 <xs:element ref="InstallFinalize">
                     <xs:annotation><xs:documentation>Marks the end of a sequence of actions that change the system.</xs:documentation></xs:annotation>
                 </xs:element>
@@ -8626,7 +8590,7 @@
                     <xs:attribute name="BinarySource" type="xs:string">
                         <xs:annotation>
                             <xs:documentation>
-                                Reference to the Binary element that contains the chainer executeable. Mutually exclusive with
+                                Reference to the Binary element that contains the chainer executable. Mutually exclusive with
                                 the FileSource and PropertySource attributes.
                             </xs:documentation>
                         </xs:annotation>
@@ -8634,7 +8598,7 @@
                     <xs:attribute name="FileSource" type="xs:string">
                         <xs:annotation>
                             <xs:documentation>
-                                Reference to the File element that is the chainer executeable. Mutually exclusive with
+                                Reference to the File element that is the chainer executable. Mutually exclusive with
                                 the BinarySource and PropertySource attributes.
                             </xs:documentation>
                         </xs:annotation>
@@ -8642,7 +8606,7 @@
                     <xs:attribute name="PropertySource" type="xs:string">
                         <xs:annotation>
                             <xs:documentation>
-                                Reference to a Property that resolves to the full path to the chainer executeable. Mutually exclusive with
+                                Reference to a Property that resolves to the full path to the chainer executable. Mutually exclusive with
                                 the BinarySource and FileSource attributes.
                             </xs:documentation>
                         </xs:annotation>
@@ -9047,7 +9011,7 @@
                 <xs:annotation><xs:documentation>The name of a defined property to be linked to this control. This column is required for active controls.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Text" type="xs:string">
-                <xs:annotation><xs:documentation>A localizable string used to set the initial text contained in a control. This attribute can contain a formatted string that is processed at install time to insert the values of properties using [PropertyName] syntax. Also supported are environment variables, file installation paths, and component installation directories; see <a href="http://msdn2.microsoft.com/library/aa368609.aspx" target="_blank">Formatted</a> for details.</xs:documentation></xs:annotation>
+                <xs:annotation><xs:documentation>A localizable string used to set the initial text contained in a control. This attribute can contain a formatted string that is processed at install time to insert the values of properties using [PropertyName] syntax. Also supported are environment variables, file installation paths, and component installation directories; see <html:a href="http://msdn2.microsoft.com/library/aa368609.aspx" target="_blank">Formatted</html:a> for details.</xs:documentation></xs:annotation>
             </xs:attribute>
             <xs:attribute name="Help" type="xs:string">
                 <xs:annotation><xs:documentation>This attribute is reserved for future use. There is no need to use this until Windows Installer uses it for something.</xs:documentation></xs:annotation>
@@ -9886,7 +9850,7 @@
                 This element exposes advanced WiX functionality.  Use this element to declare WiX variables
                 from directly within your authoring.  WiX variables are not resolved until the final msi/msm/pcp
                 file is actually generated.  WiX variables do not persist into the msi/msm/pcp file, so they cannot
-                be used when an MSI file is being installed; its a WiX-only concept.
+                be used when an MSI file is being installed; it's a WiX-only concept.
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
@@ -9965,6 +9929,193 @@
         </xs:complexType>
     </xs:element>
 
+  <xs:element name="MajorUpgrade">
+    <xs:annotation>
+      <xs:documentation>
+                Simplifies authoring for major upgrades, including support for preventing downgrades.
+
+                The parent Product element must have valid UpgradeCode and Version attributes.
+
+                When the FindRelatedProducts action detects a related product installed on the system, 
+                it appends the product code to the property named WIX_UPGRADE_DETECTED. After the 
+                FindRelatedProducts action is run, the value of the WIX_UPGRADE_DETECTED property is a 
+                list of product codes, separated by semicolons (;), detected on the system.
+            </xs:documentation>
+      <xs:appinfo>
+        <xse:parent namespace="http://schemas.microsoft.com/wix/2006/wi" ref="Product" />
+      </xs:appinfo>
+    </xs:annotation>
+    <xs:complexType>
+        <xs:attribute name="AllowDowngrades" type="YesNoType">
+            <xs:annotation>
+                <xs:documentation>
+                    When set to no (the default), products with lower version numbers are blocked from
+                    installing when a product with a higher version is installed; the DowngradeErrorMessage
+                    attribute must also be specified.
+
+                    When set to yes, any version can be installed over any other version.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="AllowSameVersionUpgrades" type="YesNoType">
+            <xs:annotation>
+                <xs:documentation>
+                    When set to no (the default), installing a product with the same version and upgrade code
+                    (but different product code) is allowed and treated by MSI as two products. When set to yes,
+                    WiX sets the msidbUpgradeAttributesVersionMaxInclusive attribute, which tells MSI to treat
+                    a product with the same version as a major upgrade.
+
+                    This is useful when two product versions differ only in the fourth version field. MSI
+                    specifically ignores that field when comparing product versions, so two products that
+                    differ only in the fourth version field are the same product and need this attribute set to
+                    yes to be detected.
+
+                    Note that because MSI ignores the fourth product version field, setting this attribute to
+                    yes also allows downgrades when the first three product version fields are identical. 
+                    For example, product version 1.0.0.1 will "upgrade" 1.0.0.2998 because they're seen as the
+                    same version (1.0.0). That could reintroduce serious bugs so the safest choice is to change 
+                    the first three version fields and omit this attribute to get the default of no.
+
+                    This attribute cannot be "yes" when AllowDowngrades is also "yes" -- AllowDowngrades
+                    already allows two products with the same version number to upgrade each other.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="Disallow" type="YesNoType">
+              <xs:annotation>
+                  <xs:documentation>
+                      When set to yes, products with higer version numbers are blocked from
+                      installing when a product with a lower version is installed; the UpgradeErrorMessage
+                      attribute must also be specified.
+
+                      When set to no (the default), any version can be installed over any lower version.
+                  </xs:documentation>
+              </xs:annotation>
+          </xs:attribute>
+      <xs:attribute name="DowngradeErrorMessage" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+                        The message displayed if users try to install a product with a lower version number
+                        when a product with a higher version is installed. Used only when AllowDowngrades
+                        is no (the default).
+          </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="DisallowUpgradeErrorMessage" type="xs:string">
+          <xs:annotation>
+              <xs:documentation>
+                  The message displayed if users try to install a product with a higer version number
+                  when a product with a lower version is installed. Used only when Disallow
+                  is yes.
+              </xs:documentation>
+          </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="MigrateFeatures" type="YesNoType">
+        <xs:annotation>
+          <xs:documentation>
+                        When set to yes (the default), the MigrateFeatureStates standard action will set the
+                        feature states of the upgrade product to those of the installed product.
+
+                        When set to no, the installed features have no effect on the upgrade installation.
+                    </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="IgnoreRemoveFailure" type="YesNoType">
+        <xs:annotation>
+          <xs:documentation>
+                        When set to yes, failures removing the installed product during the upgrade will be
+                        ignored.
+
+                        When set to no (the default), failures removing the installed product during the upgrade
+                        will be considered a failure and, depending on the scheduling, roll back the upgrade.
+                    </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="RemoveFeatures" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>
+                        A formatted string that contains the list of features to remove from the installed
+                        product. The default is to remove all features. Note that if you use formatted property
+                        values that evaluate to an empty string, no features will be removed; only omitting
+                        this attribute defaults to removing all features.
+                    </xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="Schedule" default="afterInstallValidate">
+        <xs:annotation>
+          <xs:documentation>
+                        Determines the scheduling of the RemoveExistingProducts standard action, which is when
+                        the installed product is removed. The default is "afterInstallValidate" which removes
+                        the installed product entirely before installing the upgrade product. It's slowest but
+                        gives the most flexibility in changing components and features in the upgrade product.
+
+                        For more information, see <html:a href="http://msdn.microsoft.com/en-us/library/aa371197.aspx" target="_blank">RemoveExistingProducts</html:a>.
+                    </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="afterInstallValidate">
+              <xs:annotation>
+                <xs:documentation>
+                                    (Default) Schedules RemoveExistingProducts after the InstallValidate standard
+                                    action. This scheduling removes the installed product entirely before installing
+                                    the upgrade product. It's slowest but gives the most flexibility in changing
+                                    components and features in the upgrade product. Note that if the installation
+                                    of the upgrade product fails, the machine will have neither version installed.
+                                </xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="afterInstallInitialize">
+              <xs:annotation>
+                <xs:documentation>
+                                    Schedules RemoveExistingProducts after the InstallInitialize standard action.
+                                    This is similar to the afterInstallValidate scheduling, but if the installation
+                                    of the upgrade product fails, Windows Installer also rolls back the removal of
+                                    the installed product -- in other words, reinstalls it.
+                                </xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="afterInstallExecute">
+              <xs:annotation>
+                <xs:documentation>
+                                    Schedules RemoveExistingProducts between the InstallExecute and InstallFinalize standard actions.
+                                    This scheduling installs the upgrade product "on top of" the installed product then lets
+                                    RemoveExistingProducts uninstall any components that don't also exist in the upgrade product.
+                                    Note that this scheduling requires strict adherence to the component rules because it relies
+                                    on component reference counts to be accurate during installation of the upgrade product and
+                                    removal of the installed product. For more information, see
+                                    <html:a href="http://www.joyofsetup.com/2008/12/30/paying-for-upgrades/" target="_blank">
+                                        Bob Arnson's blog post "Paying for Upgrades"
+                                    </html:a> for details. If installation of the upgrade product fails, Windows Installer
+                                    also rolls back the removal of the installed product -- in other words, reinstalls it.
+                                </xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="afterInstallExecuteAgain">
+              <xs:annotation>
+                <xs:documentation>
+                                    Schedules RemoveExistingProducts between the InstallExecuteAgain and InstallFinalize standard actions.
+                                    This is identical to the afterInstallExecute scheduling but after the InstallExecuteAgain standard
+                                    action instead of InstallExecute.
+                                </xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="afterInstallFinalize">
+              <xs:annotation>
+                <xs:documentation>
+                                    Schedules RemoveExistingProducts after the InstallFinalize standard action. This is similar to the
+                                    afterInstallExecute and afterInstallExecuteAgain schedulings but takes place outside the
+                                    installation transaction so if installation of the upgrade product fails, Windows Installer does
+                                    not roll back the removal of the installed product, so the machine will have both versions
+                                    installed.
+                                </xs:documentation>
+              </xs:annotation>
+            </xs:enumeration>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
     <!-- - - - - - - - - - - Complex Type Definitions  - - - - - - - - - - - -->
 
     <xs:complexType name="ActionModuleSequenceType">
@@ -10142,41 +10293,77 @@
             </xs:enumeration>
         </xs:restriction>
     </xs:simpleType>
-    <xs:simpleType name="PatchClassificationType">
+
+    <xs:simpleType name="ExitType">
         <xs:annotation>
-            <xs:documentation>Category of update.</xs:documentation>
+            <xs:documentation>TODO: What does this type mean?</xs:documentation>
         </xs:annotation>
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="Critical Update">
+        <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="success"/>
+            <xs:enumeration value="cancel"/>
+            <xs:enumeration value="error"/>
+            <xs:enumeration value="suspend"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="InstallUninstallType">
+        <xs:annotation>
+            <xs:documentation>Specifies whether an action occur on install, uninstall or both.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="install">
                 <xs:annotation>
-                    <xs:documentation>A broadly released fix for a specific problem addressing a critical, non-security related bug.</xs:documentation>
+                    <xs:documentation>
+                        The action should happen during install (msiInstallStateLocal or msiInstallStateSource).
+                    </xs:documentation>
                 </xs:annotation>
             </xs:enumeration>
-            <xs:enumeration value="Hotfix">
+            <xs:enumeration value="uninstall">
                 <xs:annotation>
-                    <xs:documentation>Hotfixes address a specific customer situation and generally should not be distributed outside the customer's organization.</xs:documentation>
+                    <xs:documentation>
+                        The action should happen during uninstall (msiInstallStateAbsent).
+                    </xs:documentation>
                 </xs:annotation>
             </xs:enumeration>
-            <xs:enumeration value="Security Rollup">
+            <xs:enumeration value="both">
                 <xs:annotation>
-                    <xs:documentation>A broadly released fix for a specific security-related related vulnerability.</xs:documentation>
-                </xs:annotation>
-            </xs:enumeration>
-            <xs:enumeration value="Service Pack">
-                <xs:annotation>
-                    <xs:documentation>A cumulative set of all hotfixes, security rollups, critical updates, and updates, as well as additional fixes and even new features found since the release of the product.</xs:documentation>
-                </xs:annotation>
-            </xs:enumeration>
-            <xs:enumeration value="Update">
-                <xs:annotation>
-                    <xs:documentation>A broadly released fix for a specific problem addressing a non-critical, non-security related bug.</xs:documentation>
-                </xs:annotation>
-            </xs:enumeration>
-            <xs:enumeration value="Update Rollup">
-                <xs:annotation>
-                    <xs:documentation>A cumulative set of hotfixes, security rollups, critical updates, and updates packaged together which typically targets a specific area of a product.</xs:documentation>
+                    <xs:documentation>
+                        The action should happen during both install and uninstall.
+                    </xs:documentation>
                 </xs:annotation>
             </xs:enumeration>
         </xs:restriction>
     </xs:simpleType>
+
+    <xs:simpleType name="SequenceType">
+        <xs:annotation>
+            <xs:documentation>
+                Controls which sequences the item assignment is sequenced in.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:NMTOKEN">
+            <xs:enumeration value="both">
+                <xs:annotation>
+                    <xs:documentation>
+                        Schedules the assignment in the InstallUISequence and the InstallExecuteSequence.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="execute">
+                <xs:annotation>
+                    <xs:documentation>
+                        Schedules the assignment only in the the InstallExecuteSequence.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="ui">
+                <xs:annotation>
+                    <xs:documentation>
+                        Schedules the assignment only in the the InstallUISequence.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
 </xs:schema>

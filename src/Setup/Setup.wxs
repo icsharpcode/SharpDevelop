@@ -212,6 +212,14 @@
 				
 				<ComponentRef Id="DariceCub"/>
 				<ComponentRef Id="HeatExe"/>
+				<ComponentRef Id="InsigniaExe"/>
+				<ComponentRef Id="InsigniaExeConfig"/>
+				<ComponentRef Id="NitExe"/>
+				<ComponentRef Id="NitExeConfig"/>
+				<ComponentRef Id="LuxExe"/>
+				<ComponentRef Id="LuxExeConfig"/>
+				<ComponentRef Id="LuxTargets"/>
+				<ComponentRef Id="LuxTasksDll"/>
 				<ComponentRef Id="MeltExe"/>
 				<ComponentRef Id="MergeModCub"/>
 				<ComponentRef Id="MSPatchCDll"/>
@@ -222,8 +230,7 @@
 				<ComponentRef Id="WuiDll"/>
 				<ComponentRef Id="WixDifxAppExtensionDll"/>
 				<ComponentRef Id="WixIIsExtensionDll"/>
-				<ComponentRef Id="WixIsolatedAppExtensionDll"/>
-				<ComponentRef Id="WixOfficeExtensionDll"/>
+				<ComponentRef Id="WixLuxExtensionDll"/>
 				<ComponentRef Id="WixPSExtensionDll"/>
 				<ComponentRef Id="WixSqlExtensionDll"/>
 				<ComponentRef Id="WixUIExtensionDll"/>
@@ -233,7 +240,6 @@
 				<ComponentRef Id="WixDirectXExtensionDll"/>
 				<ComponentRef Id="WixFirewallExtensionDll"/>
 				<ComponentRef Id="WixGamingExtensionDll"/>
-				<ComponentRef Id="WixComPlusSchema"/>
 				<ComponentRef Id="WixDIfxAppSchema"/>
 				<ComponentRef Id="WixIisSchema"/>
 				<ComponentRef Id="WixMSMQSchema"/>
@@ -247,6 +253,7 @@
 				<ComponentRef Id="WixLicenseFiles"/>
 				<ComponentRef Id="WixBitmapFiles"/>
 				<ComponentRef Id="WixVSExtension"/>
+				<ComponentRef Id="Difxapp_ia64Wixlib"/>
 				<ComponentRef Id="Difxapp_x64Wixlib"/>
 				<ComponentRef Id="Difxapp_x86Wixlib"/>
 				<ComponentRef Id="EmptyWixFileTemplate"/>				
@@ -260,9 +267,12 @@
 				<ComponentRef Id="LightExe"/>
 				<ComponentRef Id="LitExe"/>
 				<ComponentRef Id="MergeModDll"/>
+				<ComponentRef Id="MicrosoftDeploymentWindowsInstallerDll"/>
 				<ComponentRef Id="MicrosoftToolsWindowsInstallerXmlNAntTasksDll"/>
 				<ComponentRef Id="WInteropDll"/>
 				<ComponentRef Id="WixDll"/>
+				<ComponentRef Id="Wix200xTargets"/>
+				<ComponentRef Id="Wix2010Targets"/>
 				<ComponentRef Id="WixCopExe"/>
 				<ComponentRef Id="WixNetFxExtensionDll"/>
 				<ComponentRef Id="WixTasksDll"/>
@@ -410,7 +420,7 @@
 				<ComponentRef Id="PythonBindingLibRunpyPy"/>
 				<ComponentRef Id="PythonBindingLibSitePy"/>
 				<ComponentRef Id="PythonBindingLibFuturePy"/>
-				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>		
+				<ComponentRef Id="SharpDevelopBuildPythonTargets"/>
 				<ComponentRef Id="PythonBindingSdTestPy"/>
 				<ComponentRef Id="PythonBindingSdTestRunnerPy"/>
 				

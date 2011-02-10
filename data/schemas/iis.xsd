@@ -10,7 +10,7 @@
             Copyright (c) Microsoft Corporation.  All rights reserved.
             
             The use and distribution terms for this software are covered by the
-            Common Public License 1.0 (http://opensource.org/licenses/cpl.php)
+            Common Public License 1.0 (http://opensource.org/licenses/cpl1.0.php)
             which can be found in the file CPL.TXT at the root of this distribution.
             By using this software in any fashion, you are agreeing to be bound by
             the terms of this license.
@@ -407,6 +407,29 @@
                     </xs:restriction>
                 </xs:simpleType>
             </xs:attribute>
+          <xs:attribute name="ManagedPipelineMode">
+            <xs:annotation>
+              <xs:documentation>Specifies the request-processing mode that is used to process requests for managed content.  Only available on IIS7, ignored on IIS6.</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="classic"/>
+                <xs:enumeration value="integrated"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+          <xs:attribute name="ManagedRuntimeVersion">
+            <xs:annotation>
+              <xs:documentation>Specifies the .NET Framework version to be used by the application pool.  Only available on IIS7, ignored on IIS6.</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="v1.1"/>
+                <xs:enumeration value="v2.0"/>
+                <xs:enumeration value="v4.0"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
         </xs:complexType>
     </xs:element>
 
@@ -712,7 +735,7 @@
             </xs:attribute>
             <xs:attribute name="ScriptTimeout" type="xs:integer">
                 <xs:annotation>
-                    <xs:documentation>Sets the timeout value for executing ASP scripts.</xs:documentation>
+                    <xs:documentation>Sets the timeout value in seconds for executing ASP scripts.</xs:documentation>
                 </xs:annotation>
             </xs:attribute>
             <xs:attribute name="ServerDebugging" type="YesNoDefaultType">

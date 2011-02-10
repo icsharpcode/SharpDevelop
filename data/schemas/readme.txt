@@ -30,11 +30,11 @@ GNU General Public License.
 WiX schemas
 -----------
 
-complus.xsd
 difxapp.xsd
 firewall.xsd
 gaming.xsd
 iis.xsd
+lux.xsd
 msmq.xsd
 netfx.xsd
 ps.xsd

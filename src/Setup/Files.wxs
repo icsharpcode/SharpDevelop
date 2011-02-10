@@ -301,12 +301,6 @@
 									<Component Guid="7EFD65B5-BD14-4C38-B089-690FBBC7F2C7" Id="WixIIsExtensionDll" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\WixIIsExtension.dll" Name="WixIIsExtension.dll" Id="WixIIsExtension.dll" KeyPath="yes" />
 									</Component>
-									<Component Guid="C9B3D00C-723A-46E8-B989-CCE271F7ABA8" Id="WixIsolatedAppExtensionDll" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixIsolatedAppExtension.dll" Name="WixIsolatedAppExtension.dll" Id="WixIsolatedAppExtension.dll" KeyPath="yes" />
-									</Component>
-									<Component Guid="83B4462D-C479-4BF5-BD90-68CC8C6CBE0F" Id="WixOfficeExtensionDll" DiskId="1">
-										<File Source="..\..\bin\Tools\Wix\WixOfficeExtension.dll" Name="WixOfficeExtension.dll" Id="WixOfficeExtension.dll" KeyPath="yes" />
-									</Component>
 									<Component Guid="AE8B607B-A4DF-4282-A013-8588D884144F" Id="WixPSExtensionDll" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\WixPSExtension.dll" Name="WixPSExtension.dll" Id="WixPSExtension.dll" KeyPath="yes" />
 									</Component>
@@ -339,6 +333,45 @@
 									</Component>
 									<Component Guid="686E31B0-4BE9-4AA2-8C04-D17BAF820A86" Id="Difxapp_x86Wixlib" DiskId="1">
 										<File Source="..\..\bin\Tools\Wix\difxapp_x86.wixlib" Name="difxapp_x86.wixlib" Id="difxapp_x86.wixlib" KeyPath="yes" />
+									</Component>
+									<Component Id="Difxapp_ia64Wixlib" Guid="D125EF4D-DACC-47BB-8B1E-8CAE67D7B8EA" DiskId="1">
+										<File Id="difxapp_ia64.wixlib" Name="difxapp_ia64.wixlib" Source="..\..\bin\Tools\Wix\difxapp_ia64.wixlib" KeyPath="yes" />
+									</Component>
+									<Component Id="InsigniaExe" Guid="C69A068B-F60C-4ED1-A731-6B266C9CE852" DiskId="1">
+										<File Id="insignia.exe" Name="insignia.exe" Source="..\..\bin\Tools\Wix\insignia.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="insignia.exe" AssemblyManifest="insignia.exe" />
+									</Component>
+									<Component Id="InsigniaExeConfig" Guid="69BC0DB5-A147-4C55-97DD-7C71DD0B8158" DiskId="1">
+										<File Id="insignia.exe.config" Name="insignia.exe.config" Source="..\..\bin\Tools\Wix\insignia.exe.config" KeyPath="yes" />
+									</Component>
+									<Component Id="LuxExe" Guid="06D047A2-5AF0-4B8B-9181-6E9A76BE4530" DiskId="1">
+										<File Id="lux.exe" Name="lux.exe" Source="..\..\bin\Tools\Wix\lux.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="lux.exe" AssemblyManifest="lux.exe" />
+									</Component>
+									<Component Id="LuxExeConfig" Guid="20F2D2E5-0908-41B0-8FD5-70FA530B678A" DiskId="1">
+										<File Id="lux.exe.config" Name="lux.exe.config" Source="..\..\bin\Tools\Wix\lux.exe.config" KeyPath="yes" />
+									</Component>
+									<Component Id="LuxTargets" Guid="2A1C1410-82A4-4A37-A7AB-421FAAC377D1" DiskId="1">
+										<File Id="lux.targets" Name="lux.targets" Source="..\..\bin\Tools\Wix\lux.targets" KeyPath="yes" />
+									</Component>
+									<Component Id="LuxTasksDll" Guid="6CE43C66-3596-4C6D-9296-CBFDF62DB06E" DiskId="1">
+										<File Id="LuxTasks.dll" Name="LuxTasks.dll" Source="..\..\bin\Tools\Wix\LuxTasks.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="LuxTasks.dll" AssemblyManifest="LuxTasks.dll" />
+									</Component>
+									<Component Id="MicrosoftDeploymentWindowsInstallerDll" Guid="3EDECF4C-9057-4A5A-81AE-822D380D53C7" DiskId="1">
+										<File Id="Microsoft.Deployment.WindowsInstaller.dll" Name="Microsoft.Deployment.WindowsInstaller.dll" Source="..\..\bin\Tools\Wix\Microsoft.Deployment.WindowsInstaller.dll" KeyPath="yes" />
+									</Component>
+									<Component Id="NitExe" Guid="3C48B422-7827-47EE-92CD-8F03EAABE812" DiskId="1">
+										<File Id="nit.exe" Name="nit.exe" Source="..\..\bin\Tools\Wix\nit.exe" KeyPath="yes" Assembly=".net" AssemblyApplication="nit.exe" AssemblyManifest="nit.exe" />
+									</Component>
+									<Component Id="NitExeConfig" Guid="55C9BB7F-7AC2-476D-A1CC-5A12A4DEC242" DiskId="1">
+										<File Id="nit.exe.config" Name="nit.exe.config" Source="..\..\bin\Tools\Wix\nit.exe.config" KeyPath="yes" />
+									</Component>
+									<Component Id="Wix200xTargets" Guid="C00D650D-AAB4-4EB6-82AE-EFF944921519" DiskId="1">
+										<File Id="wix200x.targets" Name="wix200x.targets" Source="..\..\bin\Tools\Wix\wix200x.targets" KeyPath="yes" />
+									</Component>
+									<Component Id="Wix2010Targets" Guid="272EB1AD-F771-4661-94A8-936BEA072356" DiskId="1">
+										<File Id="wix2010.targets" Name="wix2010.targets" Source="..\..\bin\Tools\Wix\wix2010.targets" KeyPath="yes" />
+									</Component>
+									<Component Id="WixLuxExtensionDll" Guid="D9C14B60-3E2E-48F1-A9AC-B41617639863" DiskId="1">
+										<File Id="WixLuxExtension.dll" Name="WixLuxExtension.dll" Source="..\..\bin\Tools\Wix\WixLuxExtension.dll" KeyPath="yes" Assembly=".net" AssemblyApplication="WixLuxExtension.dll" AssemblyManifest="WixLuxExtension.dll" />
 									</Component>
 								</Directory>
 								<Directory Id="NUnitFolder" Name="NUnit">
@@ -624,9 +657,6 @@
 								</Component>
 								<Component Guid="796AF8D7-5647-4E92-9DFD-4C55C578F994" Id="WixVSSchema" DiskId="1">
 									<File Source="..\..\data\schemas\vs.xsd" Name="vs.xsd" Id="schemas.vs.xsd" KeyPath="yes" />
-								</Component>
-								<Component Guid="57266D3B-90C5-4DDF-8744-DB8EFD6707BF" Id="WixComPlusSchema" DiskId="1">
-									<File Source="..\..\data\schemas\complus.xsd" Name="complus.xsd" Id="schemas.complus.xsd" KeyPath="yes" />
 								</Component>
 								<Component Guid="D79044D2-CAF6-4006-AF88-367FC97E86B6" Id="WixMSMQSchema" DiskId="1">
 									<File Source="..\..\data\schemas\msmq.xsd" Name="msmq.xsd" Id="schemas.msmq.xsd" KeyPath="yes" />
