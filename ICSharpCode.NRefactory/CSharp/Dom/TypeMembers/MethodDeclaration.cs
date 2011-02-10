@@ -1,4 +1,4 @@
-// 
+﻿// 
 // MethodDeclaration.cs
 //  
 // Author:
@@ -29,36 +29,26 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class MethodDeclaration : AbstractMember
+	public class MethodDeclaration : MemberDeclaration
 	{
-		public IEnumerable<DomNode> TypeParameters {
+		public IEnumerable<TypeParameterDeclaration> TypeParameters {
 			get { return GetChildrenByRole (Roles.TypeParameter); }
-		}
-		
-		public IEnumerable<Constraint> Constraints { 
-			get {
-				return base.GetChildrenByRole (Roles.Constraint).Cast <Constraint> ();
-			}
+			set { SetChildrenByRole (Roles.TypeParameter, value); }
 		}
 		
 		public IEnumerable<ParameterDeclaration> Parameters { 
-			get {
-				return base.GetChildrenByRole (Roles.Parameter).Cast <ParameterDeclaration> ();
-			}
+			get { return GetChildrenByRole (Roles.Parameter); }
+			set { SetChildrenByRole (Roles.Parameter, value); }
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public IEnumerable<Constraint> Constraints { 
+			get { return GetChildrenByRole (Roles.Constraint); }
+			set { SetChildrenByRole (Roles.Constraint, value); }
 		}
 		
 		public BlockStatement Body {
-			get {
-				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
-			}
+			get { return GetChildByRole (Roles.Body); }
+			set { SetChildByRole (Roles.Body, value); }
 		}
 		
 		public bool IsExtensionMethod {

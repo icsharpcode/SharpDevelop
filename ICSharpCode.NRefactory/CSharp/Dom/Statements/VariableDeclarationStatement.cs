@@ -1,4 +1,4 @@
-// 
+﻿// 
 // VariableDeclarationStatement.cs
 //  
 // Author:
@@ -29,40 +29,23 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class VariableDeclarationStatement : DomNode
+	public class VariableDeclarationStatement : Statement
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-		
-		public IEnumerable<CSharpModifierToken> ModifierTokens {
-			get {
-				return base.GetChildrenByRole (Roles.Modifier).Cast <CSharpModifierToken>();
-			}
-		}
+		public static readonly Role<CSharpModifierToken> ModifierRole = AttributedNode.ModifierRole;
 		
 		public Modifiers Modifiers {
-			get {
-				Modifiers m = 0;
-				foreach (CSharpModifierToken t in this.ModifierTokens) {
-					m |= t.Modifier;
-				}
-				return m;
-			}
+			get { return AttributedNode.GetModifiers(this); }
+			set { AttributedNode.SetModifiers(this, value); }
 		}
 		
-		public DomNode ReturnType {
-			get { return GetChildByRole (Roles.ReturnType) ?? DomNode.Null; }
+		public DomType Type {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole (Roles.Type, value); }
 		}
 		
 		public IEnumerable<VariableInitializer> Variables {
-			get { return base.GetChildrenByRole (Roles.Initializer).Cast<VariableInitializer> (); }
-		}
-		
-		public CSharpTokenNode Semicolon {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Semicolon) ?? CSharpTokenNode.Null; }
+			get { return GetChildrenByRole (Roles.Variable); }
+			set { SetChildrenByRole (Roles.Variable, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

@@ -27,31 +27,24 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class SimpleType : DomNode
+	public class SimpleType : DomType
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Type;
-			}
-		}
-		
-		public Identifier IdentifierToken {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? CSharp.Identifier.Null;
-			}
-		}
-		
 		public string Identifier {
-			get { return IdentifierToken.Name; }
+			get {
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole (Roles.Identifier, new Identifier(value, DomLocation.Empty));
+			}
 		}
 		
-		public IEnumerable<DomNode> TypeArguments {
-			get {
-				return GetChildrenByRole (Roles.TypeArgument);
-			}
+		public IEnumerable<DomType> TypeArguments {
+			get { return GetChildrenByRole (Roles.TypeArgument); }
+			set { SetChildrenByRole (Roles.TypeArgument, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
@@ -61,7 +54,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override string ToString()
 		{
-			return Identifier ?? base.ToString();
+			StringBuilder b = new StringBuilder(this.Identifier);
+			if (this.TypeArguments.Any()) {
+				b.Append('<');
+				b.Append(string.Join(", ", this.TypeArguments));
+				b.Append('>');
+			}
+			return b.ToString();
 		}
 	}
 }

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // UnaryOperatorExpression.cs
 //  
 // Author:
@@ -26,23 +26,21 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class UnaryOperatorExpression : DomNode
+	/// <summary>
+	/// Operator Expression
+	/// </summary>
+	public class UnaryOperatorExpression : Expression
 	{
-		public const int Operator = 100;
+		public readonly static Role<CSharpTokenNode> OperatorRole = BinaryOperatorExpression.OperatorRole;
 		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public UnaryOperatorType UnaryOperatorType {
+		public UnaryOperatorType Operator {
 			get;
 			set;
 		}
 		
-		public DomNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
+		public Expression Expression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

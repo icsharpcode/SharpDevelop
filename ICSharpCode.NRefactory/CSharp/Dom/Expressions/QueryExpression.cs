@@ -1,4 +1,4 @@
-// 
+﻿// 
 // QueryExpression.cs
 //  
 // Author:
@@ -26,21 +26,16 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
+	/* TODO: how do we represent clauses? is QueryExpressionFromClause an expression,
+	 * or do we introduce a parent QueryExpression?
 	public class QueryExpressionFromClause : DomNode
 	{
 		public const int FromKeywordRole = 100;
 		public const int InKeywordRole = 101;
 		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public DomNode Type {
-			get {
-				return GetChildByRole (Roles.ReturnType) ?? DomNode.Null;
-			}
+		public DomType Type {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole (Roles.Type, value); }
 		}
 		
 		public string Identifier {
@@ -323,5 +318,5 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 	}
-	
+	*/
 }

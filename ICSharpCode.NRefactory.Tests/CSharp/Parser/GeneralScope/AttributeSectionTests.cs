@@ -40,7 +40,7 @@ public class Form1 {
 			AttributeSection decl = ParseUtilCSharp.ParseGlobal<AttributeSection>(program);
 			Assert.AreEqual("assembly", decl.AttributeTarget);
 			var a = decl.Attributes.Single();
-			Assert.AreEqual("Foo", a.Name);
+			Assert.AreEqual("Foo", a.Type);
 			Assert.AreEqual(3, a.Arguments.Count());
 			
 			// TODO: check arguments

@@ -1,6 +1,6 @@
-// 
+﻿// 
 // ConstructorDeclaration.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -29,32 +29,27 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class ConstructorDeclaration : AbstractMemberBase
+	public class ConstructorDeclaration : AttributedNode
 	{
-		public BlockStatement Body {
-			get {
-				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
-			}
-		}
+		public static readonly Role<ConstructorInitializer> InitializerRole = new Role<ConstructorInitializer>("Initializer", ConstructorInitializer.Null);
 		
-		public IEnumerable<ParameterDeclaration> Parameters { 
-			get {
-				return base.GetChildrenByRole (Roles.Parameter).Cast <ParameterDeclaration> ();
-			}
-		}
-		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public IEnumerable<ParameterDeclaration> Parameters {
+			get { return GetChildrenByRole (Roles.Parameter); }
+			set { SetChildrenByRole (Roles.Parameter, value); }
 		}
 		
 		public ConstructorInitializer Initializer {
-			get {
-				return (ConstructorInitializer)base.GetChildByRole (Roles.Initializer) ?? ConstructorInitializer.Null;
-			}
+			get { return GetChildByRole (InitializerRole); }
+			set { SetChildByRole( InitializerRole, value); }
+		}
+		
+		public BlockStatement Body {
+			get { return GetChildByRole (Roles.Body); }
+			set { SetChildByRole (Roles.Body, value); }
+		}
+		
+		public override NodeType NodeType {
+			get { return NodeType.Member; }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
@@ -102,7 +97,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
-		public IEnumerable<DomNode> Arguments { 
+		public IEnumerable<DomNode> Arguments {
 			get {
 				return base.GetChildrenByRole (Roles.Parameter);
 			}

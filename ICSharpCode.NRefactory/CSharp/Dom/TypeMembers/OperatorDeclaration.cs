@@ -66,48 +66,24 @@ namespace ICSharpCode.NRefactory.CSharp
 		Explicit
 	}
 	
-	public class OperatorDeclaration : AbstractMember
+	public class OperatorDeclaration : MemberDeclaration
 	{
-		// AbstractMember.PrivateImplementationTypeRole is 100
-		public const int OperatorKeywordRole = 101;
-		public const int OperatorTypeRole = 102;
+		public static readonly Role<CSharpTokenNode> OperatorTypeRole = new Role<CSharpTokenNode>("OperatorType", CSharpTokenNode.Null);
+		public static readonly Role<CSharpTokenNode> OperatorKeywordRole = Roles.Keyword;
 		
 		public OperatorType OperatorType {
 			get;
 			set;
 		}
 		
-		public string OverloadOperator {
-			get;
-			set;
-		}
-		
-		public CSharpTokenNode OperatorKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (OperatorKeywordRole); }
-		}
-		
-		public CSharpTokenNode OperatorTypeKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (OperatorTypeRole); }
-		}
-		
 		public IEnumerable<ParameterDeclaration> Parameters { 
-			get {
-				return base.GetChildrenByRole (Roles.Parameter).Cast <ParameterDeclaration> ();
-			}
-		}
-		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+			get { return GetChildrenByRole (Roles.Parameter); }
+			set { SetChildrenByRole (Roles.Parameter, value); }
 		}
 		
 		public BlockStatement Body {
-			get {
-				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
-			}
+			get { return GetChildByRole (Roles.Body); }
+			set { SetChildByRole (Roles.Body, value); }
 		}
 		
 		public static string GetName(OperatorType type)

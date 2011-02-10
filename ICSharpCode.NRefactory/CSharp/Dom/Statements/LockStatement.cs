@@ -1,4 +1,4 @@
-// 
+﻿// 
 // LockStatement.cs
 //  
 // Author:
@@ -26,28 +26,19 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class LockStatement : DomNode
+	/// <summary>
+	/// lock (Expression) EmbeddedStatement;
+	/// </summary>
+	public class LockStatement : Statement
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public DomNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
+		public Expression Expression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
-		public DomNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement) ?? DomNode.Null; }
-		}
-		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public Statement EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement); }
+			set { SetChildByRole (Roles.EmbeddedStatement, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

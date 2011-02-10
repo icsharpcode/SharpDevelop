@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 			ExpressionStatement se = ParseUtilCSharp.ParseStatement<ExpressionStatement>("yield = 3;");
 			AssignmentExpression ae = se.Expression as AssignmentExpression;
 			
-			Assert.AreEqual(AssignmentOperatorType.Assign, ae.AssignmentOperatorType);
+			Assert.AreEqual(AssignmentOperatorType.Assign, ae.Operator);
 			
 			Assert.IsTrue(ae.Left is IdentifierExpression);
 			Assert.AreEqual("yield", ((IdentifierExpression)ae.Left).Identifier);

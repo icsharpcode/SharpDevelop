@@ -26,42 +26,19 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class StackAllocExpression : DomNode
+	/// <summary>
+	/// stackalloc Type[Count]
+	/// </summary>
+	public class StackAllocExpression : Expression
 	{
-		public const int StackAllocKeywordRole = 100;
-		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public DomNode Type {
-			get {
-				return GetChildByRole (Roles.ReturnType) ?? DomNode.Null;
-			}
+		public DomType Type {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole(Roles.Type, value); }
 		}
 		
-		public DomNode CountExpression {
-			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
-		}
-		
-		public CSharpTokenNode StackAllocKeyword {
-			get {
-				return (CSharpTokenNode)GetChildByRole (StackAllocKeywordRole) ?? CSharpTokenNode.Null;
-			}
-		}
-		
-		public CSharpTokenNode LBracket {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBracket) ?? CSharpTokenNode.Null;
-			}
-		}
-		
-		public CSharpTokenNode RBracket {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBracket) ?? CSharpTokenNode.Null;
-			}
+		public Expression CountExpression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

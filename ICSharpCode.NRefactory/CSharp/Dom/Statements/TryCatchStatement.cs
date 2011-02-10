@@ -1,6 +1,6 @@
-// 
+﻿// 
 // TryCatchStatement.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -29,38 +29,30 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class TryCatchStatement : DomNode
+	/// <summary>
+	/// try { TryBlock } CatchClauses finally { FinallyBlock }
+	/// </summary>
+	public class TryCatchStatement : Statement
 	{
-		public const int TryKeywordRole     = 100;
-		public const int FinallyKeywordRole = 101;
-		public const int TryBlockRole       = 102;
-		public const int FinallyBlockRole   = 103;
-		public const int CatchClauseRole    = 104;
-		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public CSharpTokenNode TryKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (TryKeywordRole) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode FinallyKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (FinallyKeywordRole) ?? CSharpTokenNode.Null; }
-		}
+		public static readonly Role<CSharpTokenNode> TryKeywordRole = new Role<CSharpTokenNode>("TryKeyword", CSharpTokenNode.Null);
+		public static readonly Role<BlockStatement> TryBlockRole = new Role<BlockStatement>("TryBlock", BlockStatement.Null);
+		public static readonly Role<CatchClause> CatchClauseRole = new Role<CatchClause>("CatchClause");
+		public static readonly Role<CSharpTokenNode> FinallyKeywordRole = new Role<CSharpTokenNode>("FinallyKeyword", CSharpTokenNode.Null);
+		public static readonly Role<BlockStatement> FinallyBlockRole = new Role<BlockStatement>("FinallyBlock", BlockStatement.Null);
 		
 		public BlockStatement TryBlock {
-			get { return (BlockStatement)GetChildByRole (TryBlockRole) ?? BlockStatement.Null; }
-		}
-		
-		public BlockStatement FinallyBlock {
-			get { return (BlockStatement)GetChildByRole (FinallyBlockRole) ?? BlockStatement.Null; }
+			get { return GetChildByRole (TryBlockRole); }
+			set { SetChildByRole (TryBlockRole, value); }
 		}
 		
 		public IEnumerable<CatchClause> CatchClauses {
-			get { return GetChildrenByRole (CatchClauseRole).Cast<CatchClause> (); }
+			get { return GetChildrenByRole (CatchClauseRole); }
+			set { SetChildrenByRole (CatchClauseRole, value); }
+		}
+		
+		public BlockStatement FinallyBlock {
+			get { return GetChildByRole (FinallyBlockRole); }
+			set { SetChildByRole (FinallyBlockRole, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
@@ -69,6 +61,9 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 	}
 	
+	/// <summary>
+	/// catch (Type VariableName) { Body }
+	/// </summary>
 	public class CatchClause : DomNode
 	{
 		public override NodeType NodeType {
@@ -77,32 +72,24 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public DomNode ReturnType {
-			get { return GetChildByRole (Roles.ReturnType); }
+		public DomType Type {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole (Roles.Type, value); }
 		}
 		
 		public string VariableName {
-			get { return VariableNameIdentifier.Name; }
-		}
-
-		public Identifier VariableNameIdentifier {
-			get { return (Identifier)GetChildByRole (Roles.Identifier); }
-		}
-		
-		public BlockStatement Block {
-			get { return (BlockStatement)GetChildByRole (Roles.Body); }
+			get { return GetChildByRole (Roles.Identifier).Name; }
+			set {
+				if (string.IsNullOrEmpty(value))
+					SetChildByRole (Roles.Identifier, null);
+				else
+					SetChildByRole (Roles.Identifier, new Identifier(value, DomLocation.Empty));
+			}
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar); }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar); }
-		}
-		
-		public CSharpTokenNode CatchKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword); }
+		public BlockStatement Body {
+			get { return GetChildByRole (Roles.Body); }
+			set { SetChildByRole (Roles.Body, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

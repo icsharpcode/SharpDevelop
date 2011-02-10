@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ThrowStatement.cs
 //  
 // Author:
@@ -26,16 +26,14 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class ThrowStatement : DomNode
+	/// <summary>
+	/// throw Expression;
+	/// </summary>
+	public class ThrowStatement : Statement
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public DomNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
+		public Expression Expression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

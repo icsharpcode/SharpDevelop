@@ -1,4 +1,4 @@
-// 
+﻿// 
 // UsingStatement.cs
 //  
 // Author:
@@ -26,30 +26,25 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class UsingStatement : DomNode
+	/// <summary>
+	/// using (ResourceAcquisition) EmbeddedStatement
+	/// </summary>
+	public class UsingStatement : Statement
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public DomNode Statement {
-			get { return GetChildByRole (Roles.Statement) ?? DomNode.Null; }
+		public static readonly Role<DomNode> ResourceAcquisitionRole = new Role<DomNode>("ResourceAcquisition", DomNode.Null);
+		
+		/// <summary>
+		/// Either a VariableDeclarationStatement, or an Expression.
+		/// </summary>
+		public DomNode ResourceAcquisition {
+			get { return GetChildByRole (ResourceAcquisitionRole); }
+			set { SetChildByRole (ResourceAcquisitionRole, value); }
 		}
 		
-		public DomNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement) ?? DomNode.Null; }
+		public Statement EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement); }
+			set { SetChildByRole (Roles.EmbeddedStatement, value); }
 		}
-		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
-		}
-		
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{

@@ -1,6 +1,6 @@
-// 
+﻿// 
 // AttributeSection.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -29,9 +29,13 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
+	/// <summary>
+	/// [AttributeTarget: Attributes]
+	/// </summary>
 	public class AttributeSection : DomNode
 	{
-		const int TargetRole = 101;
+		public static readonly Role<Attribute> AttributeRole = new Role<Attribute>("Attribute");
+		public static readonly Role<CSharpTokenNode> TargetRole = new Role<CSharpTokenNode>("Target", CSharpTokenNode.Null);
 		
 		public override NodeType NodeType {
 			get {
@@ -43,15 +47,12 @@ namespace ICSharpCode.NRefactory.CSharp
 			get;
 			set;
 		}
-
-		public Identifier TargetIdentifier {
-			get { return (Identifier)GetChildByRole (TargetRole) ?? Identifier.Null; }
-		}
-
+		
 		public IEnumerable<Attribute> Attributes {
-			get { return base.GetChildrenByRole (Roles.Attribute).Cast<Attribute> (); }
+			get { return base.GetChildrenByRole (AttributeRole); }
+			set { SetChildrenByRole (AttributeRole, value); }
 		}
-
+		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitAttributeSection (this, data);

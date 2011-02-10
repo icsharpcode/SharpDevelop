@@ -1,4 +1,4 @@
-// 
+﻿// 
 // NodeType.cs
 //  
 // Author:
@@ -31,8 +31,14 @@ namespace ICSharpCode.NRefactory.CSharp
 	public enum NodeType
 	{
 		Unknown,
-		
-		Type,
+		/// <summary>
+		/// DomType
+		/// </summary>
+		TypeReference,
+		/// <summary>
+		/// Type or delegate declaration
+		/// </summary>
+		TypeDeclaration,
 		Member,
 		Statement,
 		Expression,

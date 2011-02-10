@@ -1,6 +1,6 @@
-// 
+﻿// 
 // InvocationExpression.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -28,28 +28,19 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class InvocationExpression : DomNode
+	/// <summary>
+	/// Target(Arguments)
+	/// </summary>
+	public class InvocationExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public DomNode Target {
-			get { return GetChildByRole (Roles.TargetExpression) ?? DomNode.Null; }
+		public Expression Target {
+			get { return GetChildByRole (Roles.TargetExpression); }
+			set { SetChildByRole(Roles.TargetExpression, value); }
 		}
 		
-		public IEnumerable<DomNode> Arguments {
-			get { return GetChildrenByRole (Roles.Parameter); }
-		}
-		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public IEnumerable<Expression> Arguments {
+			get { return GetChildrenByRole<Expression>(Roles.Argument); }
+			set { SetChildrenByRole(Roles.Argument, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

@@ -58,19 +58,17 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			Assert.IsTrue(cu.Children.ElementAt(0) is UsingAliasDeclaration);
 			UsingAliasDeclaration ud = (UsingAliasDeclaration)cu.Children.ElementAt(0);
 			Assert.AreEqual("TESTME", ud.Alias);
-			Assert.AreEqual("System", ud.Namespace);
+			Assert.AreEqual("System", ud.Import.ToString());
 			
 			Assert.IsTrue(cu.Children.ElementAt(1) is UsingAliasDeclaration);
 			ud = (UsingAliasDeclaration)cu.Children.ElementAt(1);
 			Assert.AreEqual("myAlias", ud.Alias);
-			Assert.AreEqual("My.Name.Space", ud.Namespace);
+			Assert.AreEqual("My.Name.Space", ud.Import.ToString());
 			
 			Assert.IsTrue(cu.Children.ElementAt(2) is UsingAliasDeclaration);
 			ud = (UsingAliasDeclaration)cu.Children.ElementAt(2);
 			Assert.AreEqual("StringCollection", ud.Alias);
-			//Assert.AreEqual("System.Collections.Generic.List", ud.Alias.Type);
-			//Assert.AreEqual("System.String", ud.Alias.GenericTypes[0].Type);
-			Assert.Ignore("generic alias?"); // TODO
+			Assert.AreEqual("System.Collections.Generic.List<string>", ud.Import.ToString());
 		}
 		
 		[Test]
@@ -93,8 +91,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			Assert.IsTrue(cu.Children.ElementAt(1) is UsingAliasDeclaration);
 			UsingAliasDeclaration uad = (UsingAliasDeclaration)cu.Children.ElementAt(1);
 			Assert.AreEqual("myAlias", uad.Alias);
-			Assert.AreEqual("global::My.Name.Space", uad.Namespace);
-			//Assert.IsTrue(uad.NameIdentifier.HasDoubleColon);
+			Assert.AreEqual("global::My.Name.Space", uad.Import.ToString());
 			
 			Assert.IsTrue(cu.Children.ElementAt(2) is UsingDeclaration);
 			Assert.IsFalse(cu.Children.ElementAt(2) is UsingAliasDeclaration);

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ArgListExpression.cs
 //  
 // Author:
@@ -31,33 +31,15 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// Represents the undocumented __arglist keyword.
 	/// </summary>
-	public class ArgListExpression : DomNode
+	public class ArgListExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public bool IsAccess { // access is __arglist, otherwise it's __arlist (a1, a2, ..., an)
-			get;
-			set;
+		public bool IsAccess { // access is __arglist, otherwise it's __arglist (a1, a2, ..., an)
+			get; set;
 		}
 		
-		public CSharpTokenNode Keyword {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public IEnumerable<DomNode> Arguments {
-			get { return GetChildrenByRole (Roles.Parameter); }
+		public IEnumerable<Expression> Arguments {
+			get { return GetChildrenByRole(Roles.Argument); }
+			set { SetChildrenByRole(Roles.Argument, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

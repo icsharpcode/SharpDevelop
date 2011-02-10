@@ -1,6 +1,6 @@
-// 
+﻿// 
 // Attribute.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -28,6 +28,9 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
+	/// <summary>
+	/// Attribute(Arguments)
+	/// </summary>
 	public class Attribute : DomNode
 	{
 		public override NodeType NodeType {
@@ -36,23 +39,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 
-		public string Name {
-			get {
-				return NameIdentifier.QualifiedName;
-			}
+		public DomType Type {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole (Roles.Type, value); }
 		}
 		
-		public QualifiedIdentifier NameIdentifier {
-			get {
-				return (QualifiedIdentifier)GetChildByRole (Roles.Identifier);
-			}
-		}
-		
-		// Todo: Arguments should not be nodes, instead it should be expressions, change when it's implemented.
-		public IEnumerable<DomNode> Arguments { 
-			get {
-				return base.GetChildrenByRole (Roles.Parameter);
-			}
+		public IEnumerable<Expression> Arguments {
+			get { return base.GetChildrenByRole (Roles.Argument); }
+			set { SetChildrenByRole (Roles.Argument, value); }
 		}
 
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

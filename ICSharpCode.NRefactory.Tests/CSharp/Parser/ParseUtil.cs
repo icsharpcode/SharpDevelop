@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			return (T)parsedExpression;
 		}
 		
-		public static T ParseTypeMember<T>(string expr, bool expectErrors = false) where T : AbstractMemberBase
+		public static T ParseTypeMember<T>(string expr, bool expectErrors = false) where T : AttributedNode
 		{
 			if (expectErrors) Assert.Ignore("errors not yet implemented");
 			
@@ -62,7 +62,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser
 			
 			Assert.AreEqual(expectErrors, parser.HasErrors, "HasErrors");
 			
-			AbstractMemberBase m = members.Single();
+			AttributedNode m = members.Single();
 			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(m.GetType()), String.Format("Parsed member was {0} instead of {1} ({2})", m.GetType(), type, m));
 			return (T)m;

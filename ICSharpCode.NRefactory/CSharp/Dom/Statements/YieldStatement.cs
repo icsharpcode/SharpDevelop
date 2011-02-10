@@ -1,6 +1,6 @@
-// 
+﻿// 
 // YieldStatement.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -26,20 +26,15 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class YieldStatement : DomNode
+	public class YieldStatement : Statement
 	{
-		public const int YieldKeywordRole = 100;
-		public const int ReturnKeywordRole = 101;
-		public const int BreakKeywordRole = 102;
+		public static readonly Role<CSharpTokenNode> YieldKeywordRole = new Role<CSharpTokenNode>("YieldKeyword", CSharpTokenNode.Null);
+		public static readonly Role<CSharpTokenNode> ReturnKeywordRole = new Role<CSharpTokenNode>("ReturnKeyword", CSharpTokenNode.Null);
+		public static readonly Role<CSharpTokenNode> BreakKeywordRole = new Role<CSharpTokenNode>("BreakKeyword", CSharpTokenNode.Null);
 		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public DomNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
+		public Expression Expression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

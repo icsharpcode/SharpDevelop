@@ -30,9 +30,12 @@ using System.Text;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
+	/// <summary>
+	/// using Import;
+	/// </summary>
 	public class UsingDeclaration : DomNode
 	{
-		public const int ImportRole = 100;
+		public static readonly Role<DomType> ImportRole = new Role<DomType>("Import", DomType.Null);
 		
 		public override NodeType NodeType {
 			get {
@@ -40,40 +43,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		public DomType Import {
+			get { return GetChildByRole (ImportRole); }
+			set { SetChildByRole (ImportRole, value); }
+		}
+		
 		public string Namespace {
-			get {
-				StringBuilder b = new StringBuilder();
-				if (AppendName(b, this.Import))
-					return b.ToString();
-				else
-					return null;
-			}
-		}
-		
-		static bool AppendName(StringBuilder b, DomNode import)
-		{
-			MemberType m = import as MemberType;
-			if (m != null && !m.TypeArguments.Any()) {
-				AppendName(b, m.Target);
-				if (m.IsDoubleColon)
-					b.Append("::");
-				else
-					b.Append('.');
-				b.Append(m.Identifier);
-				return true;
-			}
-			SimpleType t = import as SimpleType;
-			if (t != null && !t.TypeArguments.Any()) {
-				b.Append(t.Identifier);
-				return true;
-			}
-			return false;
-		}
-		
-		public DomNode Import {
-			get {
-				return GetChildByRole (ImportRole) ?? DomNode.Null;
-			}
+			get { return this.Import.ToString(); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

@@ -32,10 +32,12 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		protected virtual S VisitChildren (DomNode node, T data)
 		{
-			var child = node.FirstChild;
-			while (child != null) {
+			DomNode next;
+			for (var child = node.FirstChild; child != null; child = next) {
+				// Store next to allow the loop to continue
+				// if the visitor removes/replaces child.
+				next = child.NextSibling;
 				child.AcceptVisitor (this, data);
-				child = child.NextSibling;
 			}
 			return default (S);
 		}
@@ -98,6 +100,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		public virtual S VisitTypeDeclaration (TypeDeclaration typeDeclaration, T data)
 		{
 			return VisitChildren (typeDeclaration, data);
+		}
+		
+		public virtual S VisitTypeParameterDeclaration (TypeParameterDeclaration typeParameterDeclaration, T data)
+		{
+			return VisitChildren (typeParameterDeclaration, data);
 		}
 		
 		public virtual S VisitEnumMemberDeclaration (EnumMemberDeclaration enumMemberDeclaration, T data)
@@ -435,6 +442,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (uncheckedExpression, data);
 		}
 		
+		/*
 		public virtual S VisitQueryExpressionFromClause (QueryExpressionFromClause queryExpressionFromClause, T data)
 		{
 			return VisitChildren (queryExpressionFromClause, data);
@@ -474,6 +482,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return VisitChildren (queryExpressionSelectClause, data);
 		}
+		*/
 		
 		public virtual S VisitAsExpression (AsExpression asExpression, T data)
 		{

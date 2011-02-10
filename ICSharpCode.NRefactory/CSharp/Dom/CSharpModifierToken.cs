@@ -42,26 +42,26 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		static Dictionary<Modifiers, int> lengthTable = new Dictionary<Modifiers, int> ();
-		static CSharpModifierToken ()
-		{
-			lengthTable[Modifiers.New] = "new".Length;
-			lengthTable[Modifiers.Public] = "public".Length;
-			lengthTable[Modifiers.Protected] = "protected".Length;
-			lengthTable[Modifiers.Private] = "private".Length;
-			lengthTable[Modifiers.Internal] = "internal".Length;
-			lengthTable[Modifiers.Abstract] = "abstract".Length;
-			lengthTable[Modifiers.Virtual] = "virtual".Length;
-			lengthTable[Modifiers.Sealed] = "sealed".Length;
-			lengthTable[Modifiers.Static] = "static".Length;
-			lengthTable[Modifiers.Override] = "override".Length;
-			lengthTable[Modifiers.Readonly] = "readonly".Length;
-			lengthTable[Modifiers.Const] = "const".Length;
-			lengthTable[Modifiers.Partial] = "partial".Length;
-			lengthTable[Modifiers.Extern] = "extern".Length;
-			lengthTable[Modifiers.Volatile] = "volatile".Length;
-			lengthTable[Modifiers.Unsafe] = "unsafe".Length;
-			lengthTable[Modifiers.Override] = "override".Length; 
+		static Dictionary<Modifiers, int> lengthTable = new Dictionary<Modifiers, int> () {
+			{ Modifiers.Public, "public".Length },
+			{ Modifiers.Protected, "protected".Length },
+			{ Modifiers.Private, "private".Length },
+			{ Modifiers.Internal, "internal".Length },
+			{ Modifiers.New, "new".Length },
+			{ Modifiers.Unsafe, "unsafe".Length },
+			{ Modifiers.Abstract, "abstract".Length },
+			{ Modifiers.Virtual, "virtual".Length },
+			{ Modifiers.Sealed, "sealed".Length },
+			{ Modifiers.Static, "static".Length },
+			{ Modifiers.Override, "override".Length },
+			{ Modifiers.Readonly, "readonly".Length },
+			{ Modifiers.Volatile, "volatile".Length },
+			{ Modifiers.Extern, "extern".Length },
+			{ Modifiers.Partial, "partial".Length },
+		};
+		
+		public static ICollection<Modifiers> AllModifiers {
+			get { return lengthTable.Keys; }
 		}
 		
 		public CSharpModifierToken (DomLocation location, Modifiers modifier) : base (location, 0)

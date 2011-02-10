@@ -1,4 +1,4 @@
-// 
+﻿// 
 // EmptyStatement.cs
 //  
 // Author:
@@ -26,14 +26,11 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class EmptyStatement : DomNode
+	/// <summary>
+	/// ;
+	/// </summary>
+	public class EmptyStatement : Statement
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
 		public DomLocation Location {
 			get;
 			set;

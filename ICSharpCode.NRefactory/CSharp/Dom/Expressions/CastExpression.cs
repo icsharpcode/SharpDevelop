@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CastExpression.cs
 //  
 // Author:
@@ -26,28 +26,19 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class CastExpression : DomNode
+	/// <summary>
+	/// (CastTo)Expression
+	/// </summary>
+	public class CastExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public DomNode CastTo {
-			get { return GetChildByRole (Roles.ReturnType) ?? DomNode.Null; }
+		public DomType CastTo {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole (Roles.Type, value); }
 		}
 		
-		public DomNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
-		}
-		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public Expression Expression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

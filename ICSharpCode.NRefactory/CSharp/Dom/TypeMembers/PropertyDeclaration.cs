@@ -26,34 +26,19 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class PropertyDeclaration : AbstractMember
+	public class PropertyDeclaration : MemberDeclaration
 	{
-		// AbstractMember.PrivateImplementationTypeRole is 100
-		public const int PropertyGetRole = 101;
-		public const int PropertySetRole = 102;
+		public static readonly Role<Accessor> GetterRole = new Role<Accessor>("Getter", Accessor.Null);
+		public static readonly Role<Accessor> SetterRole = new Role<Accessor>("Setter", Accessor.Null);
 		
-		public CSharpTokenNode LBrace {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBrace) ?? CSharpTokenNode.Null;
-			}
+		public Accessor Getter {
+			get { return GetChildByRole(GetterRole); }
+			set { SetChildByRole(GetterRole, value); }
 		}
 		
-		public CSharpTokenNode RBrace {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBrace) ?? CSharpTokenNode.Null;
-			}
-		}
-		
-		public Accessor GetAccessor {
-			get {
-				return (Accessor)GetChildByRole (PropertyGetRole) ?? Accessor.Null;
-			}
-		}
-		
-		public Accessor SetAccessor {
-			get {
-				return (Accessor)GetChildByRole (PropertySetRole) ?? Accessor.Null;
-			}
+		public Accessor Setter {
+			get { return GetChildByRole(SetterRole); }
+			set { SetChildByRole(SetterRole, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

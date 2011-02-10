@@ -1,6 +1,6 @@
-// 
+﻿// 
 // AnonymousMethodExpression.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -29,39 +29,26 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class AnonymousMethodExpression : DomNode
+	/// <summary>
+	/// delegate(Parameters) {Body}
+	/// </summary>
+	public class AnonymousMethodExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
+		public static readonly Role<BlockStatement> BodyRole = new Role<BlockStatement>("Body", BlockStatement.Null);
 		
-		// used to make a difference between delegate {} and delegate () {} 
+		// used to make a difference between delegate {} and delegate () {}
 		public bool HasParameterList {
-			get {
-				return GetChildByRole (Roles.LPar) != null;
-			}
+			get; set;
 		}
 		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public IEnumerable<ParameterDeclaration> Parameters { 
-			get {
-				return base.GetChildrenByRole (Roles.Parameter).Cast <ParameterDeclaration> ();
-			}
+		public IEnumerable<ParameterDeclaration> Parameters {
+			get { return GetChildrenByRole (Roles.Parameter); }
+			set { SetChildrenByRole (Roles.Parameter, value); }
 		}
 		
 		public BlockStatement Body {
-			get {
-				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
-			}
+			get { return GetChildByRole (BodyRole); }
+			set { SetChildByRole (BodyRole, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

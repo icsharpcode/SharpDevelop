@@ -1,4 +1,4 @@
-// 
+﻿// 
 // EnumMemberDeclaration.cs
 //  
 // Author:
@@ -27,24 +27,26 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class EnumMemberDeclaration : AbstractMemberBase
+	public class EnumMemberDeclaration : AttributedNode
 	{
+		public static readonly Role<Expression> InitializerRole = new Role<Expression>("Initializer", Expression.Null);
+		
 		public string Name {
 			get {
-				return NameIdentifier.Name;
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole (Roles.Identifier, new Identifier(value, DomLocation.Empty));
 			}
 		}
 		
-		public Identifier NameIdentifier {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
-			}
+		public Expression Initializer {
+			get { return GetChildByRole (InitializerRole); }
+			set { SetChildByRole (InitializerRole, value); }
 		}
 		
-		public DomNode Initializer {
-			get {
-				return GetChildByRole (Roles.Initializer) ?? DomNode.Null;
-			}
+		public override NodeType NodeType {
+			get { return NodeType.Member; }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

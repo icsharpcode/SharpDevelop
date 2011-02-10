@@ -1,4 +1,4 @@
-// 
+﻿// 
 // BreakStatement.cs
 //  
 // Author:
@@ -26,20 +26,11 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class BreakStatement : DomNode
+	/// <summary>
+	/// break;
+	/// </summary>
+	public class BreakStatement : Statement
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public CSharpTokenNode BreakKeyword {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null;
-			}
-		}
-		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitBreakStatement (this, data);

@@ -26,20 +26,19 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class AsExpression : DomNode
+	/// <summary>
+	/// Expression as TypeReference
+	/// </summary>
+	public class AsExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public DomNode TypeReference {
-			get { return GetChildByRole (Roles.ReturnType) ?? DomNode.Null; }
+		public Expression Expression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole(Roles.Expression, value); }
 		}
 		
-		public DomNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
+		public DomType Type {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole(Roles.Type, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

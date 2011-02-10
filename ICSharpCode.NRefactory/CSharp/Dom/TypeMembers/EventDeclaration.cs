@@ -1,6 +1,6 @@
 ﻿// 
 // EventDeclaration.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -26,34 +26,19 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class EventDeclaration : AbstractMember
+	public class EventDeclaration : MemberDeclaration
 	{
-		// AbstractMember.PrivateImplementationTypeRole is 100
-		public const int EventAddRole = 101;
-		public const int EventRemoveRole = 102;
-		
-		public CSharpTokenNode LBrace {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBrace) ?? CSharpTokenNode.Null;
-			}
-		}
-		
-		public CSharpTokenNode RBrace {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBrace) ?? CSharpTokenNode.Null;
-			}
-		}
+		public static readonly Role<Accessor> AddAccessorRole = new Role<Accessor>("AddAccessor", Accessor.Null);
+		public static readonly Role<Accessor> RemoveAccessorRole = new Role<Accessor>("RemoveAccessor", Accessor.Null);
 		
 		public Accessor AddAccessor {
-			get {
-				return (Accessor)GetChildByRole (EventAddRole) ?? Accessor.Null;
-			}
+			get { return GetChildByRole (AddAccessorRole); }
+			set { SetChildByRole (AddAccessorRole, value); }
 		}
 		
 		public Accessor RemoveAccessor {
-			get {
-				return (Accessor)GetChildByRole (EventRemoveRole) ?? Accessor.Null;
-			}
+			get { return GetChildByRole (RemoveAccessorRole); }
+			set { SetChildByRole (RemoveAccessorRole, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

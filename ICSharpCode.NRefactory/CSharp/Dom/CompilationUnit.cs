@@ -1,4 +1,4 @@
-// 
+﻿// 
 // CompilationUnit.cs
 //  
 // Author:
@@ -30,6 +30,8 @@ namespace ICSharpCode.NRefactory.CSharp
 {
 	public class CompilationUnit : DomNode 
 	{
+		public static readonly Role<DomNode> MemberRole = new Role<DomNode>("Member", DomNode.Null);
+		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Unknown;
@@ -75,8 +77,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			while (node != null) {
 				DomNode next;
 				if (start <= node.StartLocation && node.EndLocation < end) {
-					yield return node;
+					// Remember next before yielding node.
+					// This allows iteration to continue when the caller removes/replaces the node.
 					next = node.NextSibling;
+					yield return node;
 				} else {
 					if (node.EndLocation < start) {
 						next = node.NextSibling; 

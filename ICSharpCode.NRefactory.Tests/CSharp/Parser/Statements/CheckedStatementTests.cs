@@ -14,14 +14,14 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		public void CheckedStatementTest()
 		{
 			CheckedStatement checkedStatement = ParseUtilCSharp.ParseStatement<CheckedStatement>("checked { }");
-			Assert.IsFalse(checkedStatement.Block.IsNull);
+			Assert.IsFalse(checkedStatement.Body.IsNull);
 		}
 		
 		[Test]
 		public void CheckedStatementAndExpressionTest()
 		{
 			CheckedStatement checkedStatement = ParseUtilCSharp.ParseStatement<CheckedStatement>("checked { checked(++i).ToString(); }");
-			ExpressionStatement es = (ExpressionStatement)checkedStatement.Block.Statements.Single();
+			ExpressionStatement es = (ExpressionStatement)checkedStatement.Body.Statements.Single();
 			CheckedExpression ce = (CheckedExpression)((MemberReferenceExpression)((InvocationExpression)es.Expression).Target).Target;
 			Assert.IsTrue(ce.Expression is UnaryOperatorExpression);
 		}
@@ -30,14 +30,14 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		public void UncheckedStatementTest()
 		{
 			UncheckedStatement uncheckedStatement = ParseUtilCSharp.ParseStatement<UncheckedStatement>("unchecked { }");
-			Assert.IsFalse(uncheckedStatement.Block.IsNull);
+			Assert.IsFalse(uncheckedStatement.Body.IsNull);
 		}
 		
 		[Test]
 		public void UncheckedStatementAndExpressionTest()
 		{
 			UncheckedStatement uncheckedStatement = ParseUtilCSharp.ParseStatement<UncheckedStatement>("unchecked { unchecked(++i).ToString(); }");
-			ExpressionStatement es = (ExpressionStatement)uncheckedStatement.Block.Statements.Single();
+			ExpressionStatement es = (ExpressionStatement)uncheckedStatement.Body.Statements.Single();
 			UncheckedExpression ce = (UncheckedExpression)((MemberReferenceExpression)((InvocationExpression)es.Expression).Target).Target;
 			Assert.IsTrue(ce.Expression is UnaryOperatorExpression);
 		}

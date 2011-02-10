@@ -1,4 +1,4 @@
-// 
+﻿// 
 // DestructorDeclaration.cs
 //  
 // Author:
@@ -26,14 +26,17 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class DestructorDeclaration : AbstractMemberBase
+	public class DestructorDeclaration : AttributedNode
 	{
-		public const int TildeRole = 100;
+		public static readonly Role<CSharpTokenNode> TildeRole = new Role<CSharpTokenNode>("Tilde", CSharpTokenNode.Null);
 		
 		public BlockStatement Body {
-			get {
-				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
-			}
+			get { return GetChildByRole (Roles.Body); }
+			set { SetChildByRole (Roles.Body, value); }
+		}
+		
+		public override NodeType NodeType {
+			get { return NodeType.Member; }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

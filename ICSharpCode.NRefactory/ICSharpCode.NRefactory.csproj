@@ -63,6 +63,7 @@
     <Compile Include="CSharp\Dom\CSharpModifierToken.cs" />
     <Compile Include="CSharp\Dom\CSharpTokenNode.cs" />
     <Compile Include="CSharp\Dom\DomLocation.cs" />
+    <Compile Include="CSharp\Dom\DomType.cs" />
     <Compile Include="CSharp\Dom\Expressions\AnonymousMethodExpression.cs" />
     <Compile Include="CSharp\Dom\Expressions\ArgListExpression.cs" />
     <Compile Include="CSharp\Dom\Expressions\AsExpression.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="CSharp\Dom\Expressions\CheckedExpression.cs" />
     <Compile Include="CSharp\Dom\Expressions\ConditionalExpression.cs" />
     <Compile Include="CSharp\Dom\Expressions\DefaultValueExpression.cs" />
+    <Compile Include="CSharp\Dom\Expressions\Expression.cs" />
     <Compile Include="CSharp\Dom\Expressions\IdentifierExpression.cs" />
     <Compile Include="CSharp\Dom\Expressions\IndexerExpression.cs" />
     <Compile Include="CSharp\Dom\Expressions\InvocationExpression.cs" />
@@ -91,6 +93,7 @@
     <Compile Include="CSharp\Dom\Expressions\TypeOfExpression.cs" />
     <Compile Include="CSharp\Dom\Expressions\UnaryOperatorExpression.cs" />
     <Compile Include="CSharp\Dom\Expressions\UncheckedExpression.cs" />
+    <Compile Include="CSharp\Dom\GeneralScope\TypeParameterDeclaration.cs" />
     <Compile Include="CSharp\Dom\MemberType.cs" />
     <Compile Include="CSharp\Dom\PrimitiveType.cs" />
     <Compile Include="CSharp\Dom\GeneralScope\Attribute.cs" />
@@ -103,7 +106,7 @@
     <Compile Include="CSharp\Dom\GeneralScope\UsingDeclaration.cs" />
     <Compile Include="CSharp\Dom\Identifier.cs" />
     <Compile Include="CSharp\Dom\Modifiers.cs" />
-    <Compile Include="CSharp\Dom\QualifiedIdentifier.cs" />
+    <Compile Include="CSharp\Dom\Role.cs" />
     <Compile Include="CSharp\Dom\SimpleType.cs" />
     <Compile Include="CSharp\Dom\Statements\BlockStatement.cs" />
     <Compile Include="CSharp\Dom\Statements\BreakStatement.cs" />
@@ -119,6 +122,7 @@
     <Compile Include="CSharp\Dom\Statements\LabelStatement.cs" />
     <Compile Include="CSharp\Dom\Statements\LockStatement.cs" />
     <Compile Include="CSharp\Dom\Statements\ReturnStatement.cs" />
+    <Compile Include="CSharp\Dom\Statements\Statement.cs" />
     <Compile Include="CSharp\Dom\Statements\SwitchStatement.cs" />
     <Compile Include="CSharp\Dom\Statements\ThrowStatement.cs" />
     <Compile Include="CSharp\Dom\Statements\TryCatchStatement.cs" />
@@ -128,8 +132,8 @@
     <Compile Include="CSharp\Dom\Statements\VariableDeclarationStatement.cs" />
     <Compile Include="CSharp\Dom\Statements\WhileStatement.cs" />
     <Compile Include="CSharp\Dom\Statements\YieldStatement.cs" />
-    <Compile Include="CSharp\Dom\TypeMembers\AbstractMember.cs" />
-    <Compile Include="CSharp\Dom\TypeMembers\AbstractMemberBase.cs" />
+    <Compile Include="CSharp\Dom\TypeMembers\MemberDeclaration.cs" />
+    <Compile Include="CSharp\Dom\TypeMembers\AttributedNode.cs" />
     <Compile Include="CSharp\Dom\TypeMembers\ConstructorDeclaration.cs" />
     <Compile Include="CSharp\Dom\TypeMembers\DestructorDeclaration.cs" />
     <Compile Include="CSharp\Dom\TypeMembers\EventDeclaration.cs" />

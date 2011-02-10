@@ -26,10 +26,13 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class Accessor : AbstractMemberBase
+	/// <summary>
+	/// get/set/add/remove
+	/// </summary>
+	public class Accessor : AttributedNode
 	{
 		public static readonly new Accessor Null = new NullAccessor ();
-		class NullAccessor : Accessor
+		sealed class NullAccessor : Accessor
 		{
 			public override bool IsNull {
 				get {
@@ -43,15 +46,13 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public DomLocation Location {
-			get;
-			set;
+		public override NodeType NodeType {
+			get { return NodeType.Unknown; }
 		}
 		
 		public BlockStatement Body {
-			get {
-				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
-			}
+			get { return GetChildByRole (Roles.Body); }
+			set { SetChildByRole (Roles.Body, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

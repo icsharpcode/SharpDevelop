@@ -26,26 +26,14 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class SizeOfExpression : DomNode
+	/// <summary>
+	/// sizeof(Type)
+	/// </summary>
+	public class SizeOfExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public DomNode Type {
-			get {
-				return GetChildByRole (Roles.ReturnType) ?? DomNode.Null;
-			}
-		}
-		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public DomType Type {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole(Roles.Type, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

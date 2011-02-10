@@ -15,8 +15,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 		{
 			IndexerDeclaration id = ParseUtilCSharp.ParseTypeMember<IndexerDeclaration>("int this[int a, string b] { get { } set { } }");
 			Assert.AreEqual(2, id.Parameters.Count());
-			Assert.IsNotNull(id.GetAccessor, "No get region found!");
-			Assert.IsNotNull(id.SetAccessor, "No set region found!");
+			Assert.IsNotNull(id.Getter, "No get region found!");
+			Assert.IsNotNull(id.Setter, "No set region found!");
 		}
 		
 		[Test, Ignore("type reference is not yet implemented")]
@@ -24,8 +24,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.TypeMembers
 		{
 			IndexerDeclaration id = ParseUtilCSharp.ParseTypeMember<IndexerDeclaration>("int MyInterface.this[int a, string b] { get { } set { } }");
 			Assert.AreEqual(2, id.Parameters.Count());
-			Assert.IsNotNull(id.GetAccessor, "No get region found!");
-			Assert.IsNotNull(id.SetAccessor, "No set region found!");
+			Assert.IsNotNull(id.Getter, "No get region found!");
+			Assert.IsNotNull(id.Setter, "No set region found!");
 			
 			Assert.AreEqual("MyInterface", id.PrivateImplementationType);
 		}

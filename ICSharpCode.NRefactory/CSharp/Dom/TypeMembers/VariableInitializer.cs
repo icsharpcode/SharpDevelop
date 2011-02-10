@@ -1,6 +1,6 @@
-// 
+﻿// 
 // VariableInitializer.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -36,25 +36,16 @@ namespace ICSharpCode.NRefactory.CSharp
 
 		public string Name {
 			get {
-				return NameIdentifier.Name;
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole (Roles.Identifier, new Identifier(value, DomLocation.Empty));
 			}
 		}
 		
-		public Identifier NameIdentifier {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
-			}
-		}
-		
-		public CSharpTokenNode Assign {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Assign) ?? CSharpTokenNode.Null; }
-		}
-		
-		
-		public DomNode Initializer {
-			get {
-				return GetChildByRole (Roles.Initializer) ?? DomNode.Null;
-			}
+		public Expression Initializer {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

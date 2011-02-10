@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.Demo
 		string GetNodeTitle(DomNode node)
 		{
 			StringBuilder b = new StringBuilder();
-			b.Append(DecodeRole(node.Role, node.Parent != null ? node.Parent.GetType() : null));
+			b.Append(node.Role.ToString());
 			b.Append(": ");
 			b.Append(node.GetType().Name);
 			bool hasProperties = false;
@@ -94,22 +94,6 @@ namespace ICSharpCode.NRefactory.Demo
 			if (hasProperties)
 				b.Append(")");
 			return b.ToString();
-		}
-		
-		string DecodeRole(int role, Type type)
-		{
-			if (type != null) {
-				foreach (FieldInfo field in type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)) {
-					if (field.FieldType == typeof(int) && (int)field.GetValue(null) == role)
-						return field.Name;
-				}
-			}
-			foreach (FieldInfo field in typeof(DomNode.Roles).GetFields(BindingFlags.Public | BindingFlags.Static)) {
-				if (field.FieldType == typeof(int) && (int)field.GetValue(null) == role)
-					return field.Name;
-			}
-			
-			return role.ToString();
 		}
 		
 		bool SelectCurrentNode(TreeNodeCollection c)

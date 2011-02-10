@@ -1,4 +1,4 @@
-// 
+﻿// 
 // IndexerExpression.cs
 //  
 // Author:
@@ -28,32 +28,19 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class IndexerExpression : DomNode
+	/// <summary>
+	/// Target[Arguments]
+	/// </summary>
+	public class IndexerExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public DomNode Target {
+		public Expression Target {
 			get { return GetChildByRole (Roles.TargetExpression); }
+			set { SetChildByRole(Roles.TargetExpression, value); }
 		}
 		
-		public CSharpTokenNode LBracket {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.LBracket) ?? CSharpTokenNode.Null;
-			}
-		}
-		
-		public CSharpTokenNode RBracket {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.RBracket) ?? CSharpTokenNode.Null;
-			}
-		}
-		
-		public IEnumerable<DomNode> Arguments {
-			get { return GetChildrenByRole (Roles.Parameter); }
+		public IEnumerable<Expression> Arguments {
+			get { return GetChildrenByRole<Expression>(Roles.Argument); }
+			set { SetChildrenByRole(Roles.Argument, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

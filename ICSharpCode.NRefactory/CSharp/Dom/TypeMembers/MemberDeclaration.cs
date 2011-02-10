@@ -1,6 +1,6 @@
 ﻿// 
 // AbstractMember.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -26,35 +26,34 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class AbstractMember : AbstractMemberBase
+	public abstract class MemberDeclaration : AttributedNode
 	{
-		public const int PrivateImplementationTypeRole = 100;
+		public static readonly Role<DomType> PrivateImplementationTypeRole = new Role<DomType>("PrivateImplementationType", DomType.Null);
 		
-		public DomNode ReturnType {
-			get {
-				return GetChildByRole (Roles.ReturnType) ?? DomNode.Null;
-			}
+		public DomType ReturnType {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole(Roles.Type, value); }
 		}
 		
 		/// <summary>
 		/// Only supported on members that can be declared in an interface.
 		/// </summary>
-		public DomNode PrivateImplementationType {
-			get {
-				return GetChildByRole (PrivateImplementationTypeRole) ?? DomNode.Null;
-			}
-		}
-		
-		public Identifier NameIdentifier {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
-			}
+		public DomType PrivateImplementationType {
+			get { return GetChildByRole (PrivateImplementationTypeRole); }
+			set { SetChildByRole (PrivateImplementationTypeRole, value); }
 		}
 		
 		public string Name {
 			get {
-				return NameIdentifier.Name;
+				return GetChildByRole (Roles.Identifier).Name;
 			}
+			set {
+				SetChildByRole (Roles.Identifier, new Identifier(value, DomLocation.Empty));
+			}
+		}
+		
+		public override NodeType NodeType {
+			get { return NodeType.Member; }
 		}
 	}
 }

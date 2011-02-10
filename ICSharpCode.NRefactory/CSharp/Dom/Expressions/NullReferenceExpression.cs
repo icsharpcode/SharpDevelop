@@ -1,4 +1,4 @@
-// 
+﻿// 
 // NullReferenceExpression.cs
 //  
 // Author:
@@ -26,14 +26,11 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class NullReferenceExpression : DomNode
+	/// <summary>
+	/// null
+	/// </summary>
+	public class NullReferenceExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitNullReferenceExpression (this, data);

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // PrimitiveExpression.cs
 //  
 // Author:
@@ -26,14 +26,8 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class PrimitiveExpression : DomNode
+	public class PrimitiveExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
 		DomLocation startLocation;
 		public override DomLocation StartLocation {
 			get {
@@ -53,13 +47,17 @@ namespace ICSharpCode.NRefactory.CSharp
 			private set;
 		}
 		
+		public PrimitiveExpression (object value)
+		{
+			this.Value = value;
+		}
+		
 		public PrimitiveExpression (object value, DomLocation startLocation, int length)
 		{
 			this.Value = value;
 			this.startLocation = startLocation;
 			this.length = length;
 		}
-		
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Identifier.cs
 //  
 // Author:
@@ -23,6 +23,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -49,9 +51,14 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
+		string name;
 		public string Name {
-			get;
-			set;
+			get { return this.name; }
+			set { 
+				if (value == null)
+					throw new ArgumentNullException("value");
+				this.name = value;
+			}
 		}
 		
 		DomLocation startLocation;
@@ -67,18 +74,15 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		/*
-		public ISegment Segment {
-			get {
-				return new Segment (Offset, Name != null ? Name.Length : 0);
-			}
-		}*/
-		
-		public Identifier ()
+		private Identifier ()
 		{
+			this.name = string.Empty;
 		}
+		
 		public Identifier (string name, DomLocation location)
 		{
+			if (name == null)
+				throw new ArgumentNullException("name");
 			this.Name = name;
 			this.startLocation = location;
 		}

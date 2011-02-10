@@ -30,7 +30,7 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	// For compatibility with nrefactory - same flags.
+	// For compatibility with old nrefactory - same flags.
 	[Flags]
 	public enum Modifiers
 	{

@@ -1,6 +1,6 @@
 ﻿// 
 // MemberReferenceExpression.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -28,32 +28,28 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class MemberReferenceExpression : DomNode
+	/// <summary>
+	/// Target.MemberName
+	/// </summary>
+	public class MemberReferenceExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public DomNode Target {
-			get { return GetChildByRole (Roles.TargetExpression) ?? DomNode.Null; }
-		}
-		
-		public Identifier Identifier {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
-			}
+		public Expression Target {
+			get { return GetChildByRole (Roles.TargetExpression); }
+			set { SetChildByRole(Roles.TargetExpression, value); }
 		}
 		
 		public string MemberName {
 			get {
-				return this.Identifier.Name;
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole(Roles.Identifier, new Identifier(value, DomLocation.Empty));
 			}
 		}
 		
-		public IEnumerable<DomNode> TypeArguments {
+		public IEnumerable<DomType> TypeArguments {
 			get { return GetChildrenByRole (Roles.TypeArgument); }
+			set { SetChildrenByRole (Roles.TypeArgument, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

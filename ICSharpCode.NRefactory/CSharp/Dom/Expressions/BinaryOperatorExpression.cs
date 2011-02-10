@@ -1,4 +1,4 @@
-// 
+﻿// 
 // BinaryOperatorExpression.cs
 //  
 // Author:
@@ -26,33 +26,28 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class BinaryOperatorExpression : DomNode
+	/// <summary>
+	/// Left Operator Right
+	/// </summary>
+	public class BinaryOperatorExpression : Expression
 	{
-		public const int LeftExpressionRole = 100;
-		public const int RightExpressionRole = 101;
-		public const int OperatorRole = 102;
+		public readonly static Role<Expression> LeftRole = new Role<Expression>("Left", Expression.Null);
+		public readonly static Role<CSharpTokenNode> OperatorRole = new Role<CSharpTokenNode>("Operator", CSharpTokenNode.Null);
+		public readonly static Role<Expression> RightRole = new Role<Expression>("Right", Expression.Null);
 		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public BinaryOperatorType BinaryOperatorType {
+		public BinaryOperatorType Operator {
 			get;
 			set;
 		}
 		
-		public CSharpTokenNode Operator {
-			get { return (CSharpTokenNode)GetChildByRole (OperatorRole) ?? CSharpTokenNode.Null; }
+		public Expression Left {
+			get { return GetChildByRole (LeftRole); }
+			set { SetChildByRole(LeftRole, value); }
 		}
 		
-		public DomNode Left {
-			get { return GetChildByRole (LeftExpressionRole) ?? DomNode.Null; }
-		}
-		
-		public DomNode Right {
-			get { return GetChildByRole (RightExpressionRole) ?? DomNode.Null; }
+		public Expression Right {
+			get { return GetChildByRole (RightRole); }
+			set { SetChildByRole(RightRole, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

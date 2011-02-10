@@ -1,6 +1,6 @@
 ﻿// 
 // Constraint.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -28,9 +28,13 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
+	/// <summary>
+	/// where TypeParameter : BaseTypes
+	/// </summary>
 	public class Constraint : DomNode
 	{
-		public const int BaseTypeRole = 100;
+		public readonly static Role<CSharpTokenNode> ColonRole = TypeDeclaration.ColonRole;
+		public readonly static Role<DomType> BaseTypeRole = TypeDeclaration.BaseTypeRole;
 		
 		public override NodeType NodeType {
 			get {
@@ -38,20 +42,20 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public CSharpTokenNode WhereKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null; }
+		public string TypeParameter {
+			get {
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole(Roles.Identifier, new Identifier(value, DomLocation.Empty));
+			}
 		}
 		
-		public Identifier TypeParameter {
-			get { return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null; }
-		}
+		// TODO: what about new(), struct and class constraints?
 		
-		public CSharpTokenNode Colon {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Colon) ?? CSharpTokenNode.Null; }
-		}
-		
-		public IEnumerable<DomNode> BaseTypes {
+		public IEnumerable<DomType> BaseTypes {
 			get { return GetChildrenByRole (BaseTypeRole); }
+			set { SetChildrenByRole (BaseTypeRole, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

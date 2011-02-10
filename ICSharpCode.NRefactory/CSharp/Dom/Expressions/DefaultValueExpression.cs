@@ -26,16 +26,14 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class DefaultValueExpression : DomNode
+	/// <summary>
+	/// default(Type)
+	/// </summary>
+	public class DefaultValueExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public DomNode TypeReference {
-			get { return GetChildByRole (Roles.ReturnType) ?? DomNode.Null; }
+		public DomType Type {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole(Roles.Type, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

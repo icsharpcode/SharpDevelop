@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ExpressionStatement.cs
 //  
 // Author:
@@ -26,18 +26,14 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class ExpressionStatement : DomNode
+	/// <summary>
+	/// Expression;
+	/// </summary>
+	public class ExpressionStatement : Statement
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-		
-		public DomNode Expression {
-			get {
-				return GetChildByRole (Roles.Expression);
-			}
+		public Expression Expression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

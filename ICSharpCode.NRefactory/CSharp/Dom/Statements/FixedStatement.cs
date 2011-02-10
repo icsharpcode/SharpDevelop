@@ -1,6 +1,6 @@
-// 
+﻿// 
 // FixedStatement.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -24,26 +24,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class FixedStatement : DomNode
+	/// <summary>
+	/// fixed (Type Variables) EmbeddedStatement
+	/// </summary>
+	public class FixedStatement : Statement
 	{
-		public const int PointerDeclarationRole = 100;
-		public const int FixedKeywordRole = 101;
-		public const int DeclaratorRole = 102;
-		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public DomNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement) ?? DomNode.Null; }
+		public DomType Type {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole (Roles.Type, value); }
 		}
 		
-		public DomNode PointerDeclaration {
-			get { return GetChildByRole (PointerDeclarationRole) ?? DomNode.Null; }
+		public IEnumerable<VariableInitializer> Variables {
+			get { return GetChildrenByRole (Roles.Variable); }
+			set { SetChildrenByRole (Roles.Variable, value); }
+		}
+		
+		public Statement EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement); }
+			set { SetChildByRole (Roles.EmbeddedStatement, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

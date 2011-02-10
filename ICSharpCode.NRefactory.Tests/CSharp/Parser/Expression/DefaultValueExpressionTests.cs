@@ -13,7 +13,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		public void SimpleDefaultValue()
 		{
 			DefaultValueExpression toe = ParseUtilCSharp.ParseExpression<DefaultValueExpression>("default(T)");
-			Assert.AreEqual("T", toe.TypeReference);
+			Assert.AreEqual("T", toe.Type);
 		}
 		
 		/*

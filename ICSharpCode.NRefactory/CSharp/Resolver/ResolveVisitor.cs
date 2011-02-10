@@ -219,7 +219,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			int initializerCount = fieldDeclaration.Variables.Count();
 			ResolveResult result = null;
 			for (DomNode node = fieldDeclaration.FirstChild; node != null; node = node.NextSibling) {
-				if (node.Role == FieldDeclaration.Roles.Initializer) {
+				if (node.Role == FieldDeclaration.Roles.Variable) {
 					if (resolver.CurrentTypeDefinition != null) {
 						resolver.CurrentMember = resolver.CurrentTypeDefinition.Fields.FirstOrDefault(f => f.Region.IsInside(node.StartLocation));
 					}
@@ -260,7 +260,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		ResolveResult VisitMethodMember(AbstractMemberBase member)
+		ResolveResult VisitMethodMember(AttributedNode member)
 		{
 			try {
 				if (resolver.CurrentTypeDefinition != null) {
@@ -307,7 +307,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				
 				for (DomNode node = propertyDeclaration.FirstChild; node != null; node = node.NextSibling) {
-					if (node.Role == PropertyDeclaration.PropertySetRole && resolver.CurrentMember != null) {
+					if (node.Role == PropertyDeclaration.SetterRole && resolver.CurrentMember != null) {
 						resolver.PushBlock();
 						resolver.AddVariable(resolver.CurrentMember.ReturnType, "value");
 						Scan(node);
@@ -487,7 +487,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolverEnabled) {
 				Scan(asExpression.Expression);
-				return new ResolveResult(ResolveType(asExpression.TypeReference));
+				return new ResolveResult(ResolveType(asExpression.Type));
 			} else {
 				ScanChildren(asExpression);
 				return null;
@@ -521,7 +521,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (resolverEnabled) {
 				ResolveResult left = Resolve(binaryOperatorExpression.Left);
 				ResolveResult right = Resolve(binaryOperatorExpression.Right);
-				return resolver.ResolveBinaryOperator(binaryOperatorExpression.BinaryOperatorType, left, right);
+				return resolver.ResolveBinaryOperator(binaryOperatorExpression.Operator, left, right);
 			} else {
 				ScanChildren(binaryOperatorExpression);
 				return null;
@@ -553,7 +553,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
 		{
 			if (resolverEnabled) {
-				return new ConstantResolveResult(ResolveType(defaultValueExpression.TypeReference), null);
+				return new ConstantResolveResult(ResolveType(defaultValueExpression.Type), null);
 			} else {
 				ScanChildren(defaultValueExpression);
 				return null;
@@ -635,7 +635,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolverEnabled) {
 				ResolveResult target = Resolve(memberReferenceExpression.Target);
-				List<DomNode> typeArgumentNodes = memberReferenceExpression.TypeArguments.ToList();
+				List<DomType> typeArgumentNodes = memberReferenceExpression.TypeArguments.ToList();
 				// TODO: type arguments?
 				return resolver.ResolveMemberAccess(target, memberReferenceExpression.MemberName,
 				                                    EmptyList<IType>.Instance,
@@ -733,7 +733,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolverEnabled) {
 				ResolveResult expr = Resolve(unaryOperatorExpression.Expression);
-				return resolver.ResolveUnaryOperator(unaryOperatorExpression.UnaryOperatorType, expr);
+				return resolver.ResolveUnaryOperator(unaryOperatorExpression.Operator, expr);
 			} else {
 				ScanChildren(unaryOperatorExpression);
 				return null;
@@ -778,7 +778,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitForeachStatement(ForeachStatement foreachStatement, object data)
 		{
 			resolver.PushBlock();
-			ITypeReference type = MakeTypeReference(foreachStatement.VariableType, foreachStatement.Expression, true);
+			ITypeReference type = MakeTypeReference(foreachStatement.VariableType, foreachStatement.InExpression, true);
 			resolver.AddVariable(type, foreachStatement.VariableName);
 			ScanChildren(foreachStatement);
 			resolver.PopBlock();
@@ -895,7 +895,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			resolver.PushBlock();
 			if (catchClause.VariableName != null) {
-				resolver.AddVariable(MakeTypeReference(catchClause.ReturnType, null, false), catchClause.VariableName);
+				resolver.AddVariable(MakeTypeReference(catchClause.Type, null, false), catchClause.VariableName);
 			}
 			ScanChildren(catchClause);
 			resolver.PopBlock();
@@ -908,14 +908,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			bool isConst = (variableDeclarationStatement.Modifiers & Modifiers.Const) != 0;
 			VariableInitializer firstInitializer = variableDeclarationStatement.Variables.FirstOrDefault();
-			ITypeReference type = MakeTypeReference(variableDeclarationStatement.ReturnType,
+			ITypeReference type = MakeTypeReference(variableDeclarationStatement.Type,
 			                                        firstInitializer != null ? firstInitializer.Initializer : null,
 			                                        false);
 			
 			int initializerCount = variableDeclarationStatement.Variables.Count();
 			ResolveResult result = null;
 			for (DomNode node = variableDeclarationStatement.FirstChild; node != null; node = node.NextSibling) {
-				if (node.Role == FieldDeclaration.Roles.Initializer) {
+				if (node.Role == FieldDeclaration.Roles.Variable) {
 					VariableInitializer vi = (VariableInitializer)node;
 					
 					IConstantValue cv = null;
@@ -1085,6 +1085,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Query Expressions
+		/*
 		public override ResolveResult VisitQueryExpressionFromClause(QueryExpressionFromClause queryExpressionFromClause, object data)
 		{
 			throw new NotImplementedException();
@@ -1124,6 +1125,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			throw new NotImplementedException();
 		}
+		*/
 		#endregion
 		
 		public override ResolveResult VisitIdentifier(Identifier identifier, object data)

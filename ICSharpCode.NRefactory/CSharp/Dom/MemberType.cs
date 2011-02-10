@@ -27,37 +27,33 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class MemberType : DomNode
+	public class MemberType : DomType
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Type;
-			}
-		}
+		public static readonly Role<DomType> TargetRole = new Role<DomType>("Target", DomType.Null);
 		
 		public bool IsDoubleColon { get; set; }
 		
-		public DomNode Target {
-			get { return GetChildByRole(Roles.TargetExpression) ?? DomNode.Null; }
+		public DomType Target {
+			get { return GetChildByRole(TargetRole); }
+			set { SetChildByRole(TargetRole, value); }
 		}
 		
-		public Identifier IdentifierToken {
+		public string MemberName {
 			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? CSharp.Identifier.Null;
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole (Roles.Identifier, new Identifier(value, DomLocation.Empty));
 			}
 		}
 		
-		public string Identifier {
-			get { return IdentifierToken.Name; }
-		}
-		
-		public IEnumerable<DomNode> TypeArguments {
-			get {
-				return GetChildrenByRole (Roles.TypeArgument);
-			}
+		public IEnumerable<DomType> TypeArguments {
+			get { return GetChildrenByRole (Roles.TypeArgument); }
+			set { SetChildrenByRole (Roles.TypeArgument, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
@@ -67,7 +63,19 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override string ToString()
 		{
-			return Identifier ?? base.ToString();
+			StringBuilder b = new StringBuilder();
+			b.Append(this.Target);
+			if (IsDoubleColon)
+				b.Append("::");
+			else
+				b.Append('.');
+			b.Append(this.MemberName);
+			if (this.TypeArguments.Any()) {
+				b.Append('<');
+				b.Append(string.Join(", ", this.TypeArguments));
+				b.Append('>');
+			}
+			return b.ToString();
 		}
 	}
 }

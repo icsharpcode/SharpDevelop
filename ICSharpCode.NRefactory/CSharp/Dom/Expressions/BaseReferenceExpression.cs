@@ -1,4 +1,4 @@
-// 
+﻿// 
 // BaseReferenceExpression.cs
 //  
 // Author:
@@ -26,14 +26,11 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class BaseReferenceExpression : DomNode
+	/// <summary>
+	/// base
+	/// </summary>
+	public class BaseReferenceExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
 		public DomLocation Location {
 			get;
 			set;

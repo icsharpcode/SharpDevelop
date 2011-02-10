@@ -1,6 +1,6 @@
-// 
+﻿// 
 // ParameterDeclarationExpression.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -40,10 +40,18 @@ namespace ICSharpCode.NRefactory.CSharp
 	
 	public class ParameterDeclaration : DomNode
 	{
+		public static readonly Role<AttributeSection> AttributeRole = AttributedNode.AttributeRole;
+		public static readonly Role<CSharpTokenNode> ModifierRole = new Role<CSharpTokenNode>("Modifier", CSharpTokenNode.Null);
+		
 		public override NodeType NodeType {
 			get {
 				return NodeType.Unknown;
 			}
+		}
+		
+		public IEnumerable<AttributeSection> Attributes {
+			get { return GetChildrenByRole (AttributeRole); }
+			set { SetChildrenByRole (AttributeRole, value); }
 		}
 		
 		public ParameterModifier ParameterModifier {
@@ -51,33 +59,23 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
-		public Identifier Identifier {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
-			}
+		public DomType Type {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole (Roles.Type, value); }
 		}
 		
 		public string Name {
 			get {
-				Identifier i = this.Identifier;
-				return i != null ? i.Name : null;
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole (Roles.Identifier, new Identifier(value, DomLocation.Empty));
 			}
 		}
 		
-		public DomNode DefaultExpression {
-			get {
-				return GetChildByRole (Roles.Expression) ?? DomNode.Null;
-			}
-		}
-		
-		public DomNode Type {
-			get { return GetChildByRole (Roles.ReturnType) ?? DomNode.Null; }
-		}
-		
-		public IEnumerable<AttributeSection> Attributes {
-			get {
-				return base.GetChildrenByRole (Roles.Attribute).Cast <AttributeSection>();
-			}
+		public Expression DefaultExpression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

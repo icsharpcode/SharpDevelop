@@ -1,4 +1,4 @@
-// 
+﻿// 
 // PointerReferenceExpression.cs
 //  
 // Author:
@@ -24,26 +24,32 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+
 namespace ICSharpCode.NRefactory.CSharp
 {
 	/// <summary>
-	/// Same as member reference, only with pointer as base (a->b)
+	/// Target->MemberName
 	/// </summary>
-	public class PointerReferenceExpression : MemberReferenceExpression
+	public class PointerReferenceExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public DomNode Expression {
-			get { return GetChildByRole (Roles.TargetExpression) ?? DomNode.Null; }
+		public Expression Target {
+			get { return GetChildByRole (Roles.TargetExpression); }
+			set { SetChildByRole(Roles.TargetExpression, value); }
 		}
 		
-		public string Dim {
-			get;
-			set;
+		public string MemberName {
+			get {
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole(Roles.Identifier, new Identifier(value, DomLocation.Empty));
+			}
+		}
+		
+		public IEnumerable<DomType> TypeArguments {
+			get { return GetChildrenByRole (Roles.TypeArgument); }
+			set { SetChildrenByRole (Roles.TypeArgument, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

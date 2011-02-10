@@ -27,31 +27,33 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class IdentifierExpression : DomNode
+	public class IdentifierExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
+		public IdentifierExpression()
+		{
 		}
 		
-		public  Identifier IdentifierToken {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? ICSharpCode.NRefactory.CSharp.Identifier.Null;
-			}
+		public IdentifierExpression(string identifier)
+		{
+			this.Identifier = identifier;
 		}
+		
+//		public Identifier IdentifierToken {
+//			get { return GetChildByRole (Roles.Identifier); }
+//		}
 		
 		public string Identifier {
 			get {
-				Identifier i = this.IdentifierToken;
-				return !i.IsNull ? i.Name : null;
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole(Roles.Identifier, new Identifier(value, DomLocation.Empty));
 			}
 		}
 		
-		public IEnumerable<DomNode> TypeArguments {
-			get {
-				return GetChildrenByRole (Roles.TypeArgument);
-			}
+		public IEnumerable<DomType> TypeArguments {
+			get { return GetChildrenByRole (Roles.TypeArgument); }
+			set { SetChildrenByRole (Roles.TypeArgument, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

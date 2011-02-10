@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ThisReferenceExpression.cs
 //  
 // Author:
@@ -26,19 +26,13 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class ThisReferenceExpression : DomNode
+	public class ThisReferenceExpression : Expression
 	{
 		public DomLocation Location {
 			get;
 			set;
 		}
 		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
 		public override DomLocation StartLocation {
 			get {
 				return Location;
@@ -49,7 +43,6 @@ namespace ICSharpCode.NRefactory.CSharp
 				return new DomLocation (Location.Line, Location.Column + "this".Length);
 			}
 		}
-
 
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{

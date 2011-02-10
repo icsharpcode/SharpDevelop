@@ -1,6 +1,6 @@
-// 
+﻿// 
 // LabelStatement.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -26,20 +26,18 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class LabelStatement : DomNode
+	/// <summary>
+	/// Label:
+	/// </summary>
+	public class LabelStatement : Statement
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
 		public string Label {
-			get { return LabelIdentifier.Name; }
-		}
-
-		public Identifier LabelIdentifier {
-			get { return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null; }
+			get {
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole(Roles.Identifier, new Identifier(value, DomLocation.Empty));
+			}
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

@@ -1,6 +1,6 @@
-// 
+﻿// 
 // ArrayInitializerExpression.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -24,16 +24,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
+
 namespace ICSharpCode.NRefactory.CSharp
-{ 
-	public class ArrayInitializerExpression : DomNode
+{
+	/// <summary>
+	/// { Elements }
+	/// </summary>
+	public class ArrayInitializerExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
+		#region Null
+		public new static readonly ArrayInitializerExpression Null = new NullArrayInitializerExpression ();
+		
+		sealed class NullArrayInitializerExpression : ArrayInitializerExpression
+		{
+			public override bool IsNull {
+				get {
+					return true;
+				}
+			}
+			
+			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
+			{
+				return default (S);
 			}
 		}
+		#endregion
 		
+		public IEnumerable<Expression> Elements {
+			get { return GetChildrenByRole(Roles.Expression); }
+			set { SetChildrenByRole(Roles.Expression, value); }
+		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{

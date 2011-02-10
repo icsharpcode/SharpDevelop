@@ -1,6 +1,6 @@
-// 
+﻿// 
 // ForeachStatement.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -26,47 +26,33 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class ForeachStatement : DomNode
+	/// <summary>
+	/// foreach (Type VariableName in InExpression) EmbeddedStatement
+	/// </summary>
+	public class ForeachStatement : Statement
 	{
-		public const int ForEachKeywordRole = 100;
-		public const int InKeywordRole = 101;
-		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public DomNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement) ?? DomNode.Null; }
-		}
-		
-		public DomNode Expression {
-			get { return GetChildByRole (Roles.Initializer) ?? DomNode.Null; }
-		}
-		
-		public DomNode VariableType {
-			get { return GetChildByRole (Roles.ReturnType) ?? DomNode.Null; }
-		}
-		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public DomType VariableType {
+			get { return GetChildByRole (Roles.Type); }
+			set { SetChildByRole (Roles.Type, value); }
 		}
 		
 		public string VariableName {
 			get {
-				return VariableNameIdentifier.Name;
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				SetChildByRole(Roles.Identifier, new Identifier(value, DomLocation.Empty));
 			}
 		}
 		
-		public Identifier VariableNameIdentifier {
-			get {
-				return (Identifier)GetChildByRole (Roles.Identifier) ?? Identifier.Null;
-			}
+		public Expression InExpression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
+		}
+		
+		public Statement EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement); }
+			set { SetChildByRole (Roles.EmbeddedStatement, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

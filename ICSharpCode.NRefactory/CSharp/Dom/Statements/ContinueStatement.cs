@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ContinueStatement.cs
 //  
 // Author:
@@ -26,18 +26,11 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class ContinueStatement : DomNode
+	/// <summary>
+	/// continue;
+	/// </summary>
+	public class ContinueStatement : Statement
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public CSharpTokenNode ContinueKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null; }
-		}
-		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
 			return visitor.VisitContinueStatement (this, data);

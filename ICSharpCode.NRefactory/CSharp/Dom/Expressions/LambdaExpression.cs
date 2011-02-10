@@ -1,4 +1,4 @@
-// 
+﻿// 
 // LambdaExpression.cs
 //  
 // Author:
@@ -28,36 +28,22 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class LambdaExpression : DomNode
+	/// <summary>
+	/// Parameters => Body
+	/// </summary>
+	public class LambdaExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
+		public readonly static Role<CSharpTokenNode> ArrowRole = new Role<CSharpTokenNode>("Arror", CSharpTokenNode.Null);
+		public static readonly Role<DomNode> BodyRole = new Role<DomNode>("Body", DomNode.Null);
+		
 		public IEnumerable<ParameterDeclaration> Parameters { 
-			get {
-				return base.GetChildrenByRole (Roles.Parameter).Cast <ParameterDeclaration>();
-			}
+			get { return GetChildrenByRole (Roles.Parameter); }
+			set { SetChildrenByRole (Roles.Parameter, value); }
 		}
 		
-		public BlockStatement Body {
-			get {
-				return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null;
-			}
-		}
-		
-		public CSharpTokenNode Arrow {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Assign) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public DomNode Body {
+			get { return GetChildByRole (BodyRole); }
+			set { SetChildByRole (BodyRole, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

@@ -1,6 +1,6 @@
 ﻿// 
 // ComposedType.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -30,34 +30,44 @@ using System.Text;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class ComposedType : DomNode
+	public class ComposedType : DomType
 	{
-		public const int NullableRole  = 100;
-		public const int PointerRole   = 101;
-		public const int ArraySpecRole = 102;
+		public static readonly Role<CSharpTokenNode> NullableRole = new Role<CSharpTokenNode>("Nullable", CSharpTokenNode.Null);
+		public static readonly Role<CSharpTokenNode> PointerRole = new Role<CSharpTokenNode>("Pointer", CSharpTokenNode.Null);
+		public static readonly Role<ArraySpecifier> ArraySpecifierRole = new Role<ArraySpecifier>("ArraySpecifier");
 		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Unknown;
-			}
-		}
-		
-		public DomNode BaseType {
-			get {
-				return GetChildByRole (Roles.ReturnType);
-			}
+		public DomType BaseType {
+			get { return GetChildByRole(Roles.Type); }
+			set { SetChildByRole(Roles.Type, value); }
 		}
 		
 		public bool HasNullableSpecifier {
-			get { return GetChildByRole(NullableRole) != null; }
+			get {
+				return GetChildByRole(NullableRole) != null;
+			}
+			set {
+				SetChildByRole(NullableRole, value ? new CSharpTokenNode(DomLocation.Empty, 1) : null);
+			}
 		}
 		
 		public int PointerRank {
-			get { return GetChildrenByRole(PointerRole).Count(); }
+			get {
+				return GetChildrenByRole(PointerRole).Count();
+			}
+			set {
+				// remove old children
+				foreach (DomNode node in GetChildrenByRole(PointerRole))
+					node.Remove();
+				// add new children
+				for (int i = 0; i < value; i++) {
+					AddChild(new CSharpTokenNode(DomLocation.Empty, 1), PointerRole);
+				}
+			}
 		}
 		
 		public IEnumerable<ArraySpecifier> ArraySpecifiers {
-			get { return GetChildrenByRole (ArraySpecRole).Cast<ArraySpecifier> (); }
+			get { return GetChildrenByRole (ArraySpecifierRole); }
+			set { SetChildrenByRole (ArraySpecifierRole, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
@@ -68,7 +78,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		public override string ToString()
 		{
 			StringBuilder b = new StringBuilder();
-			b.Append(BaseType.ToString());
+			b.Append(this.BaseType.ToString());
 			if (this.HasNullableSpecifier)
 				b.Append('?');
 			b.Append('*', this.PointerRank);
@@ -79,31 +89,31 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			return b.ToString();
 		}
-
-		public class ArraySpecifier : DomNode
+	}
+	
+	/// <summary>
+	/// [,,,]
+	/// </summary>
+	public class ArraySpecifier : DomNode
+	{
+		public override NodeType NodeType {
+			get {
+				return NodeType.Unknown;
+			}
+		}
+		
+		public int Dimensions {
+			get { return 1 + GetChildrenByRole(Roles.Comma).Count(); }
+		}
+		
+		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{
-			public override NodeType NodeType {
-				get {
-					return NodeType.Unknown;
-				}
-			}
-			
-			public CSharpTokenNode LBracket {
-				get { return (CSharpTokenNode)GetChildByRole (Roles.LBracket); }
-			}
-			
-			public int Dimensions {
-				get { return 1 + GetChildrenByRole(Roles.Comma).Count(); }
-			}
-			
-			public CSharpTokenNode RBracket {
-				get { return (CSharpTokenNode)GetChildByRole (Roles.RBracket); }
-			}
-			
-			public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
-			{
-				return default (S);
-			}
+			return default (S);
+		}
+		
+		public override string ToString()
+		{
+			return "[" + new string(',', this.Dimensions - 1) + "]";
 		}
 	}
 }

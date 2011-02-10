@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		public void NullableIsExpression()
 		{
 			IsExpression ce = ParseUtilCSharp.ParseExpression<IsExpression>("o is int?");
-			ComposedType type = (ComposedType)ce.TypeReference;
+			ComposedType type = (ComposedType)ce.Type;
 			Assert.IsTrue(type.HasNullableSpecifier);
 			Assert.AreEqual("int", ((PrimitiveType)type.BaseType).Keyword);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			BinaryOperatorExpression boe;
 			boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>("o is int? == true");
 			IsExpression ce = (IsExpression)boe.Left;
-			ComposedType type = (ComposedType)ce.TypeReference;
+			ComposedType type = (ComposedType)ce.Type;
 			Assert.IsTrue(type.HasNullableSpecifier);
 			Assert.AreEqual("int", ((PrimitiveType)type.BaseType).Keyword);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);

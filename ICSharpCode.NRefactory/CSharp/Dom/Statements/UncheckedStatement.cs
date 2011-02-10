@@ -1,4 +1,4 @@
-// 
+﻿// 
 // UncheckedStatement.cs
 //  
 // Author:
@@ -26,18 +26,15 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class UncheckedStatement : DomNode
+	/// <summary>
+	/// unchecked { Body }
+	/// </summary>
+	public class UncheckedStatement : Statement
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
+		public BlockStatement Body {
+			get { return GetChildByRole (Roles.Body); }
+			set { SetChildByRole (Roles.Body, value); }
 		}
-
-		public BlockStatement Block {
-			get { return (BlockStatement)GetChildByRole (Roles.Body) ?? BlockStatement.Null; }
-		}
-		
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
 		{

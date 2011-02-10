@@ -63,10 +63,19 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		DomRegion MakeRegion(DomNode node)
 		{
-			if (node == null)
+			if (node == null || node.IsNull)
 				return DomRegion.Empty;
 			else
 				return MakeRegion(node.StartLocation, node.EndLocation);
+		}
+		
+		DomRegion MakeBraceRegion(DomNode node)
+		{
+			if (node == null || node.IsNull)
+				return DomRegion.Empty;
+			else
+				return MakeRegion(node.GetChildByRole(DomNode.Roles.LBrace).StartLocation,
+				                  node.GetChildByRole(DomNode.Roles.RBrace).EndLocation);
 		}
 		
 		#region Using Declarations
@@ -94,7 +103,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			DomRegion region = MakeRegion(namespaceDeclaration);
 			UsingScope previousUsingScope = usingScope;
-			foreach (Identifier ident in namespaceDeclaration.NameIdentifier.NameParts) {
+			foreach (Identifier ident in namespaceDeclaration.Identifiers) {
 				usingScope = new UsingScope(usingScope, NamespaceDeclaration.BuildQualifiedName(usingScope.NamespaceName, ident.Name));
 				usingScope.Region = region;
 			}
@@ -126,7 +135,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			var td = currentTypeDefinition = CreateTypeDefinition(typeDeclaration.Name);
 			td.ClassType = typeDeclaration.ClassType;
 			td.Region = MakeRegion(typeDeclaration);
-			td.BodyRegion = MakeRegion(typeDeclaration.LBrace.StartLocation, typeDeclaration.RBrace.EndLocation);
+			td.BodyRegion = MakeBraceRegion(typeDeclaration);
 			td.AddDefaultConstructorIfRequired = true;
 			
 			ConvertAttributes(td.Attributes, typeDeclaration.Attributes);
@@ -140,7 +149,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			
 			// TODO: base type references?
 			
-			foreach (AbstractMemberBase member in typeDeclaration.Members) {
+			foreach (AttributedNode member in typeDeclaration.Members) {
 				member.AcceptVisitor(this, data);
 			}
 			
@@ -394,7 +403,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		void HandlePropertyOrIndexer(DefaultProperty p, PropertyDeclaration propertyDeclaration)
 		{
 			p.Region = MakeRegion(propertyDeclaration);
-			p.BodyRegion = MakeRegion(propertyDeclaration.LBrace.StartLocation, propertyDeclaration.RBrace.EndLocation);
+			p.BodyRegion = MakeBraceRegion(propertyDeclaration);
 			ApplyModifiers(p, propertyDeclaration.Modifiers);
 			p.ReturnType = ConvertType(propertyDeclaration.ReturnType);
 			ConvertAttributes(p.Attributes, propertyDeclaration.Attributes);
@@ -402,8 +411,8 @@ namespace ICSharpCode.NRefactory.CSharp
 				p.Accessibility = Accessibility.None;
 				p.InterfaceImplementations.Add(ConvertInterfaceImplementation(propertyDeclaration.PrivateImplementationType, p.Name));
 			}
-			p.Getter = ConvertAccessor(propertyDeclaration.GetAccessor, p.Accessibility);
-			p.Setter = ConvertAccessor(propertyDeclaration.SetAccessor, p.Accessibility);
+			p.Getter = ConvertAccessor(propertyDeclaration.Getter, p.Accessibility);
+			p.Setter = ConvertAccessor(propertyDeclaration.Setter, p.Accessibility);
 		}
 		
 		public override IEntity VisitIndexerDeclaration(IndexerDeclaration indexerDeclaration, object data)
@@ -431,7 +440,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			DefaultEvent e = new DefaultEvent(currentTypeDefinition, eventDeclaration.Name);
 			e.Region = MakeRegion(eventDeclaration);
-			e.BodyRegion = MakeRegion(eventDeclaration.LBrace.StartLocation, eventDeclaration.RBrace.EndLocation);
+			e.BodyRegion = MakeBraceRegion(eventDeclaration);
 			ApplyModifiers(e, eventDeclaration.Modifiers);
 			e.ReturnType = ConvertType(eventDeclaration.ReturnType);
 			ConvertAttributes(e.Attributes, eventDeclaration.Attributes);
@@ -597,7 +606,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				foreach (var ta in m.TypeArguments) {
 					typeArguments.Add(ConvertType(ta, parentTypeDefinition, parentMethodDefinition, parentUsingScope, isInUsingDeclaration));
 				}
-				return new MemberTypeOrNamespaceReference(t, m.Identifier, typeArguments, parentTypeDefinition, parentUsingScope);
+				return new MemberTypeOrNamespaceReference(t, m.MemberName, typeArguments, parentTypeDefinition, parentUsingScope);
 			}
 			ComposedType c = node as ComposedType;
 			if (c != null) {

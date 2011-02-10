@@ -1,6 +1,6 @@
-// 
+﻿// 
 // ConditionalExpression.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -27,37 +27,29 @@
 namespace ICSharpCode.NRefactory.CSharp
 {
 	/// <summary>
-	/// cond ? true : false
+	/// Condition ? TrueExpression : FalseExpression
 	/// </summary>
-	public class ConditionalExpression : DomNode
+	public class ConditionalExpression : Expression
 	{
-		public const int TrueExpressionRole = 100;
-		public const int FalseExpressionRole = 101;
+		public readonly static Role<Expression> ConditionRole = Roles.Condition;
+		public readonly static Role<CSharpTokenNode> QuestionMarkRole = new Role<CSharpTokenNode>("QuestionMark", CSharpTokenNode.Null);
+		public readonly static Role<Expression> TrueRole = new Role<Expression>("True", Expression.Null);
+		public readonly static Role<CSharpTokenNode> ColonRole = new Role<CSharpTokenNode>("Colon", CSharpTokenNode.Null);
+		public readonly static Role<Expression> FalseRole = new Role<Expression>("False", Expression.Null);
 		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-
-		public DomNode TrueExpression {
-			get { return GetChildByRole (TrueExpressionRole) ?? DomNode.Null; }
+		public Expression Condition {
+			get { return GetChildByRole(ConditionRole); }
+			set { SetChildByRole(ConditionRole, value); }
 		}
 		
-		public DomNode FalseExpression {
-			get { return GetChildByRole (FalseExpressionRole) ?? DomNode.Null; }
-		}
-
-		public DomNode Condition {
-			get { return GetChildByRole (Roles.Condition) ?? DomNode.Null; }
+		public Expression TrueExpression {
+			get { return GetChildByRole(TrueRole); }
+			set { SetChildByRole(TrueRole, value); }
 		}
 		
-		public CSharpTokenNode QuestionMark {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.QuestionMark) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode Colon {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Colon) ?? CSharpTokenNode.Null; }
+		public Expression FalseExpression {
+			get { return GetChildByRole(FalseRole); }
+			set { SetChildByRole(FalseRole, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

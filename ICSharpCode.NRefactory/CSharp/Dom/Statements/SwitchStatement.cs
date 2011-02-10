@@ -1,6 +1,6 @@
-// 
+﻿// 
 // SwitchStatement.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -29,38 +29,21 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class SwitchStatement : DomNode
+	/// <summary>
+	/// switch (Expression) { SwitchSections }
+	/// </summary>
+	public class SwitchStatement : Statement
 	{
-		public const int SwitchSectionRole = 100;
+		public static readonly Role<SwitchSection> SwitchSectionRole = new Role<SwitchSection>("SwitchSection");
 		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
-		public DomNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
+		public Expression Expression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
 		public IEnumerable<SwitchSection> SwitchSections {
-			get { return GetChildrenByRole (SwitchSectionRole).Cast<SwitchSection> (); }
-		}
-		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode LBrace {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LBrace) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RBrace {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RBrace) ?? CSharpTokenNode.Null; }
+			get { return GetChildrenByRole (SwitchSectionRole); }
+			set { SetChildrenByRole (SwitchSectionRole, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
@@ -71,7 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	
 	public class SwitchSection : DomNode
 	{
-		public const int CaseLabelRole = 100;
+		public static readonly Role<CaseLabel> CaseLabelRole = new Role<CaseLabel>("CaseLabel");
 		
 		public override NodeType NodeType {
 			get {
@@ -80,16 +63,13 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public IEnumerable<CaseLabel> CaseLabels {
-			get { return GetChildrenByRole (CaseLabelRole).Cast<CaseLabel> (); }
+			get { return GetChildrenByRole (CaseLabelRole); }
+			set { SetChildrenByRole (CaseLabelRole, value); }
 		}
 		
-		public IEnumerable<DomNode> Statements {
-			get {
-				var body = GetChildByRole (Roles.Body);
-				if (body is BlockStatement)
-					return ((BlockStatement)body).Statements;
-				return new DomNode[] { body };
-			}
+		public IEnumerable<Statement> Statements {
+			get { return GetChildrenByRole (Roles.EmbeddedStatement); }
+			set { SetChildrenByRole (Roles.EmbeddedStatement, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
@@ -106,8 +86,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public DomNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
+		public Expression Expression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

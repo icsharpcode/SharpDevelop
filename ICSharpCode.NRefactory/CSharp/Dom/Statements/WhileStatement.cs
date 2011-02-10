@@ -1,4 +1,4 @@
-// 
+﻿// 
 // WhileStatement.cs
 //  
 // Author:
@@ -26,44 +26,28 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class WhileStatement : DomNode
+	/// <summary>
+	/// "while (Condition) EmbeddedStatement"
+	/// or "do EmbeddedStatement while(Condition);"
+	/// </summary>
+	public class WhileStatement : Statement
 	{
-		public const int DoKeywordRole = 101;
-		public const int WhileKeywordRole = 102;
+		public static readonly Role<CSharpTokenNode> DoKeywordRole = new Role<CSharpTokenNode>("DoKeyword", CSharpTokenNode.Null);
+		public static readonly Role<CSharpTokenNode> WhileKeywordRole = new Role<CSharpTokenNode>("WhileKeyword", CSharpTokenNode.Null);
 		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
 		public WhilePosition WhilePosition {
 			get;
 			set;
 		}
 		
-		public DomNode EmbeddedStatement {
-			get { return GetChildByRole (Roles.EmbeddedStatement) ?? DomNode.Null; }
+		public Expression Condition {
+			get { return GetChildByRole (Roles.Condition); }
+			set { SetChildByRole (Roles.Condition, value); }
 		}
 		
-		public DomNode Condition {
-			get { return GetChildByRole (Roles.Condition) ?? DomNode.Null; }
-		}
-		
-		public CSharpTokenNode DoKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (DoKeywordRole) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode WhileKeyword {
-			get { return (CSharpTokenNode)GetChildByRole (WhileKeywordRole) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode LPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.LPar) ?? CSharpTokenNode.Null; }
-		}
-		
-		public CSharpTokenNode RPar {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.RPar) ?? CSharpTokenNode.Null; }
+		public Statement EmbeddedStatement {
+			get { return GetChildByRole (Roles.EmbeddedStatement); }
+			set { SetChildByRole (Roles.EmbeddedStatement, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

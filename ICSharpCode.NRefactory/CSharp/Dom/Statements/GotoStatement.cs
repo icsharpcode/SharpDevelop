@@ -1,6 +1,6 @@
-// 
+﻿// 
 // GotoStatement.cs
-//  
+//
 // Author:
 //       Mike Krüger <mkrueger@novell.com>
 // 
@@ -26,28 +26,39 @@
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class GotoStatement : DomNode
+	/// <summary>
+	/// "goto Label;"
+	/// or "goto case LabelExpression;"
+	/// or "goto default;"
+	/// </summary>
+	public class GotoStatement : Statement
 	{
-		public const int DefaultKeywordRole = 100;
-		public const int CaseKeywordRole = 101;
+		public static readonly Role<CSharpTokenNode> DefaultKeywordRole = new Role<CSharpTokenNode>("DefaultKeyword", CSharpTokenNode.Null);
+		public static readonly Role<CSharpTokenNode> CaseKeywordRole = new Role<CSharpTokenNode>("CaseKeyword", CSharpTokenNode.Null);
 		
-		public override NodeType NodeType {
-			get {
-				return NodeType.Statement;
-			}
-		}
-
 		public GotoType GotoType {
 			get;
 			set;
 		}
 		
 		public string Label {
-			get { return ((Identifier)LabelExpression).Name; }
+			get {
+				return GetChildByRole (Roles.Identifier).Name;
+			}
+			set {
+				if (string.IsNullOrEmpty(value))
+					SetChildByRole(Roles.Identifier, null);
+				else
+					SetChildByRole(Roles.Identifier, new Identifier(value, DomLocation.Empty));
+			}
 		}
-
-		public DomNode LabelExpression {
-			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
+		
+		/// <summary>
+		/// Used for "goto case LabelExpression;"
+		/// </summary>
+		public Expression LabelExpression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
@@ -59,8 +70,6 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			this.GotoType = gotoType;
 		}
-		
-		
 	}
 	
 	public enum GotoType {

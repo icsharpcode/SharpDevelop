@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
@@ -34,6 +35,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		#region Null
 		public static readonly DomNode Null = new NullAstNode ();
+		
 		sealed class NullAstNode : DomNode
 		{
 			public override NodeType NodeType {
@@ -60,7 +62,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		DomNode nextSibling;
 		DomNode firstChild;
 		DomNode lastChild;
-		int role;
+		Role role;
 		
 		public abstract NodeType NodeType {
 			get;
@@ -94,7 +96,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return parent; }
 		}
 		
-		public int Role {
+		public Role Role {
 			get { return role; }
 		}
 		
@@ -116,39 +118,78 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public IEnumerable<DomNode> Children {
 			get {
-				var cur = firstChild;
-				while (cur != null) {
+				DomNode next;
+				for (DomNode cur = firstChild; cur != null; cur = next) {
+					// Remember next before yielding cur.
+					// This allows removing/replacing nodes while iterating through the list.
+					next = cur.nextSibling;
 					yield return cur;
-					cur = cur.nextSibling;
 				}
 			}
 		}
 		
-		public DomNode GetChildByRole (int role)
+		/// <summary>
+		/// Gets the first child with the specified role.
+		/// Returns the role's null object if the child is not found.
+		/// </summary>
+		public T GetChildByRole<T>(Role<T> role) where T : DomNode
 		{
-			var cur = firstChild;
-			while (cur != null) {
+			if (role == null)
+				throw new ArgumentNullException("role");
+			for (var cur = firstChild; cur != null; cur = cur.nextSibling) {
 				if (cur.role == role)
-					return cur;
-				cur = cur.nextSibling;
+					return (T)cur;
 			}
-			return null;
+			return role.NullObject;
 		}
 		
-		public IEnumerable<DomNode> GetChildrenByRole (int role)
+		public IEnumerable<T> GetChildrenByRole<T>(Role<T> role) where T : DomNode
 		{
-			var cur = firstChild;
-			while (cur != null) {
+			DomNode next;
+			for (DomNode cur = firstChild; cur != null; cur = next) {
+				// Remember next before yielding cur.
+				// This allows removing/replacing nodes while iterating through the list.
+				next = cur.nextSibling;
 				if (cur.role == role)
-					yield return cur;
-				cur = cur.nextSibling;
+					yield return (T)cur;
 			}
 		}
 		
-		public void AddChild (DomNode child, int role)
+		protected void SetChildByRole<T>(Role<T> role, T newChild) where T : DomNode
 		{
-			if (child == null)
+			DomNode oldChild = GetChildByRole(role);
+			if (oldChild != null)
+				oldChild.ReplaceWith(newChild);
+			else
+				AddChild(newChild, role);
+		}
+		
+		protected void SetChildrenByRole<T>(Role<T> role, IEnumerable<T> newChildren) where T : DomNode
+		{
+			// Evaluate 'newChildren' first, since it might change when we remove the old children
+			// Example: SetChildren(role, GetChildrenByRole(role));
+			if (newChildren != null)
+				newChildren = newChildren.ToList();
+			
+			// remove old children
+			foreach (DomNode node in GetChildrenByRole(role))
+				node.Remove();
+			// add new children
+			if (newChildren != null) {
+				foreach (T node in newChildren) {
+					AddChild(node, role);
+				}
+			}
+		}
+		
+		public void AddChild<T>(T child, Role<T> role) where T : DomNode
+		{
+			if (role == null)
+				throw new ArgumentNullException("role");
+			if (child == null || child.IsNull)
 				return;
+			if (this.IsNull)
+				throw new InvalidOperationException("Cannot add children to null nodes");
 			if (child.parent != null)
 				throw new ArgumentException ("Node is already used in another tree.", "child");
 			child.parent = this;
@@ -162,19 +203,23 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 		}
 		
-		public void InsertChildBefore (DomNode nextSibling, DomNode child, int role)
+		public void InsertChildBefore<T>(DomNode nextSibling, T child, Role<T> role) where T : DomNode
 		{
+			if (role == null)
+				throw new ArgumentNullException("role");
 			if (nextSibling == null) {
-				AddChild (child, role);
+				AddChild(child, role);
 				return;
 			}
 			
-			if (child == null)
+			if (child == null || child.IsNull)
 				return;
 			if (child.parent != null)
 				throw new ArgumentException ("Node is already used in another tree.", "child");
 			if (nextSibling.parent != this)
 				throw new ArgumentException ("NextSibling is not a child of this node.", "nextSibling");
+			// No need to test for "Cannot add children to null nodes",
+			// as there isn't any valid nextSibling in null nodes.
 			
 			child.parent = this;
 			child.role = role;
@@ -189,6 +234,11 @@ namespace ICSharpCode.NRefactory.CSharp
 				firstChild = child;
 			}
 			nextSibling.prevSibling = child;
+		}
+		
+		public void InsertChildAfter<T>(DomNode prevSibling, T child, Role<T> role) where T : DomNode
+		{
+			InsertChildBefore((prevSibling == null || prevSibling.IsNull) ? firstChild : prevSibling.nextSibling, child, role);
 		}
 		
 		/// <summary>
@@ -220,14 +270,23 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// <summary>
 		/// Replaces this node with the new node.
 		/// </summary>
-		public void Replace(DomNode newNode)
+		public void ReplaceWith(DomNode newNode)
 		{
-			if (newNode == null) {
+			if (newNode == null || newNode.IsNull) {
 				Remove();
 				return;
 			}
-			if (newNode.parent != null)
+			if (newNode.parent != null) {
+				// TODO: what if newNode is used within *this* tree?
+				// e.g. "parenthesizedExpr.ReplaceWith(parenthesizedExpr.Expression);"
+				// We'll probably want to allow that.
 				throw new ArgumentException ("Node is already used in another tree.", "newNode");
+			}
+			// Because this method doesn't statically check the new node's type with the role,
+			// we perform a runtime test:
+			if (!role.IsValid(newNode)) {
+				throw new ArgumentException (string.Format("The new node '{0}' is not valid in the role {1}", newNode.GetType().Name, role.ToString()), "newNode");
+			}
 			newNode.parent = parent;
 			newNode.role = role;
 			newNode.prevSibling = prevSibling;
@@ -258,49 +317,40 @@ namespace ICSharpCode.NRefactory.CSharp
 		public static class Roles
 		{
 			// some pre defined constants for common roles
-			public const int Identifier    = 1;
-			public const int Keyword   = 2;
-			public const int Parameter  = 3;
-			public const int Attribute = 4;
-			public const int ReturnType = 5;
-			public const int Modifier  = 6;
-			public const int Body       = 7;
-			public const int Initializer = 8;
-			public const int Condition = 9;
-			public const int EmbeddedStatement = 10;
-			public const int Iterator = 11;
-			public const int Expression = 12;
-			public const int Statement = 13;
-			public const int TargetExpression = 14;
-			public const int Member = 15;
+			public static readonly Role<Identifier> Identifier = new Role<Identifier>("Identifier", CSharp.Identifier.Null);
+			
+			public static readonly Role<BlockStatement> Body = new Role<BlockStatement>("Body", CSharp.BlockStatement.Null);
+			public static readonly Role<ParameterDeclaration> Parameter = new Role<ParameterDeclaration>("Parameter");
+			public static readonly Role<Expression> Argument = new Role<Expression>("Argument", CSharp.Expression.Null);
+			public static readonly Role<DomType> Type = new Role<DomType>("Type", CSharp.DomType.Null);
+			public static readonly Role<Expression> Expression = new Role<Expression>("Expression", CSharp.Expression.Null);
+			public static readonly Role<Expression> TargetExpression = new Role<Expression>("Target", CSharp.Expression.Null);
+			public readonly static Role<Expression> Condition = new Role<Expression>("Condition", CSharp.Expression.Null);
+			
+			public static readonly Role<TypeParameterDeclaration> TypeParameter = new Role<TypeParameterDeclaration>("TypeParameter");
+			public static readonly Role<DomType> TypeArgument = new Role<DomType>("TypeArgument", CSharp.DomType.Null);
+			public readonly static Role<Constraint> Constraint = new Role<Constraint>("Constraint");
+			public static readonly Role<VariableInitializer> Variable = new Role<VariableInitializer>("Variable");
+			public static readonly Role<Statement> EmbeddedStatement = new Role<Statement>("EmbeddedStatement", CSharp.Statement.Null);
+			
+			public static readonly Role<CSharpTokenNode> Keyword = new Role<CSharpTokenNode>("Keyword", CSharpTokenNode.Null);
+			public static readonly Role<CSharpTokenNode> InKeyword = new Role<CSharpTokenNode>("InKeyword", CSharpTokenNode.Null);
 			
 			// some pre defined constants for most used punctuation
+			public static readonly Role<CSharpTokenNode> LPar = new Role<CSharpTokenNode>("LPar", CSharpTokenNode.Null);
+			public static readonly Role<CSharpTokenNode> RPar = new Role<CSharpTokenNode>("RPar", CSharpTokenNode.Null);
+			public static readonly Role<CSharpTokenNode> LBracket = new Role<CSharpTokenNode>("LBracket", CSharpTokenNode.Null);
+			public static readonly Role<CSharpTokenNode> RBracket = new Role<CSharpTokenNode>("RBracket", CSharpTokenNode.Null);
+			public static readonly Role<CSharpTokenNode> LBrace = new Role<CSharpTokenNode>("LBrace", CSharpTokenNode.Null);
+			public static readonly Role<CSharpTokenNode> RBrace = new Role<CSharpTokenNode>("RBrace", CSharpTokenNode.Null);
+			public static readonly Role<CSharpTokenNode> LChevron = new Role<CSharpTokenNode>("LChevron", CSharpTokenNode.Null);
+			public static readonly Role<CSharpTokenNode> RChevron = new Role<CSharpTokenNode>("RChevron", CSharpTokenNode.Null);
+			public static readonly Role<CSharpTokenNode> Comma = new Role<CSharpTokenNode>("Comma", CSharpTokenNode.Null);
+			public static readonly Role<CSharpTokenNode> Semicolon = new Role<CSharpTokenNode>("Semicolon", CSharpTokenNode.Null);
+			public static readonly Role<CSharpTokenNode> Assign = new Role<CSharpTokenNode>("Assign", CSharpTokenNode.Null);
 			
-			public const int LPar = 50; // (
-			public const int RPar = 51; // )
+			public static readonly Role<Comment> Comment = new Role<Comment>("Comment");
 			
-			public const int LBrace = 52; // {
-			public const int RBrace = 53; // }
-			
-			public const int LBracket = 54; // [
-			public const int RBracket = 55; // ]
-			
-			public const int LChevron = 56; // <
-			public const int RChevron = 57; // >
-			
-			public const int Dot = 58; // ,
-			public const int Comma = 59; // ,
-			public const int Colon = 60; // :
-			public const int Semicolon = 61; // ;
-			public const int QuestionMark = 62; // ?
-			
-			public const int Assign = 63; // =
-			
-			public const int TypeParameter = 64;
-			public const int Constraint = 65;
-			public const int TypeArgument = 66;
-			
-			public const int Comment = 67;
 		}
 	}
 }

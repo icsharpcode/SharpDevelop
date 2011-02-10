@@ -9,11 +9,11 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 	[TestFixture]
 	public class UnsafeStatementTests
 	{
-			[Test]
+		[Test]
 		public void UnsafeStatementTest()
 		{
 			UnsafeStatement unsafeStatement = ParseUtilCSharp.ParseStatement<UnsafeStatement>("unsafe { }");
-			Assert.IsFalse(unsafeStatement.Block.IsNull);
+			Assert.IsFalse(unsafeStatement.Body.IsNull);
 		}
 	}
 }

@@ -1,4 +1,4 @@
-// 
+﻿// 
 // DirectionExpression.cs
 //  
 // Author:
@@ -33,26 +33,19 @@ namespace ICSharpCode.NRefactory.CSharp
 		Ref
 	}
 	
-	public class DirectionExpression  : DomNode
+	/// <summary>
+	/// ref Expression
+	/// </summary>
+	public class DirectionExpression : Expression
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Expression;
-			}
-		}
-		
 		public FieldDirection FieldDirection {
 			get;
 			set;
 		}
 		
-		
-		public CSharpTokenNode Keyword {
-			get { return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null; }
-		}
-		
-		public DomNode Expression {
-			get { return GetChildByRole (Roles.Expression) ?? DomNode.Null; }
+		public Expression Expression {
+			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)

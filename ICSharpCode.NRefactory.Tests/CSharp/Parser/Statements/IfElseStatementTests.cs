@@ -14,8 +14,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		{
 			IfElseStatement ifElseStatement = ParseUtilCSharp.ParseStatement<IfElseStatement>("if (true) { }");
 			Assert.IsTrue(ifElseStatement.Condition is PrimitiveExpression);
-			Assert.IsTrue(ifElseStatement.TrueEmbeddedStatement is BlockStatement);
-			Assert.IsTrue(ifElseStatement.FalseEmbeddedStatement.IsNull);
+			Assert.IsTrue(ifElseStatement.TrueStatement is BlockStatement);
+			Assert.IsTrue(ifElseStatement.FalseStatement.IsNull);
 		}
 		
 		[Test]
@@ -23,8 +23,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		{
 			IfElseStatement ifElseStatement = ParseUtilCSharp.ParseStatement<IfElseStatement>("if (true) { } else { }");
 			Assert.IsTrue(ifElseStatement.Condition is PrimitiveExpression);
-			Assert.IsTrue(ifElseStatement.TrueEmbeddedStatement is BlockStatement);
-			Assert.IsTrue(ifElseStatement.FalseEmbeddedStatement is BlockStatement);
+			Assert.IsTrue(ifElseStatement.TrueStatement is BlockStatement);
+			Assert.IsTrue(ifElseStatement.FalseStatement is BlockStatement);
 		}
 		
 		[Test]
@@ -32,8 +32,8 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Statements
 		{
 			IfElseStatement ifElseStatement = ParseUtilCSharp.ParseStatement<IfElseStatement>("if (1) { } else if (2) { } else if (3) { } else { }");
 			Assert.IsTrue(ifElseStatement.Condition is PrimitiveExpression);
-			Assert.IsTrue(ifElseStatement.TrueEmbeddedStatement is BlockStatement);
-			Assert.IsTrue(ifElseStatement.FalseEmbeddedStatement is IfElseStatement);
+			Assert.IsTrue(ifElseStatement.TrueStatement is BlockStatement);
+			Assert.IsTrue(ifElseStatement.FalseStatement is IfElseStatement);
 		}
 	}
 }

@@ -29,20 +29,8 @@ using System.Linq;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public class PrimitiveType : DomNode
+	public class PrimitiveType : DomType
 	{
-		public override NodeType NodeType {
-			get {
-				return NodeType.Type;
-			}
-		}
-		
-		public CSharpTokenNode TypeKeyword {
-			get {
-				return (CSharpTokenNode)GetChildByRole (Roles.Keyword) ?? CSharpTokenNode.Null;
-			}
-		}
-		
 		public string Keyword { get; set; }
 		
 		public override S AcceptVisitor<T, S> (DomVisitor<T, S> visitor, T data)
