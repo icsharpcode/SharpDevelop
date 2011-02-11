@@ -80,6 +80,7 @@
     <Compile Include="DataManager\TableStragy\GroupTableFixture.cs" />
     <Compile Include="DataManager\TableStragy\TableDataManagerFixture.cs" />
     <Compile Include="DataManager\TableStragy\TableStrategyFixture.cs" />
+    <Compile Include="Globals\ServiceContainerFixture.cs" />
     <Compile Include="Printing\SectionBoundFixture.cs" />
     <Compile Include="Printing\Shapes\BaseLineFixture.cs" />
     <Compile Include="Printing\Shapes\EllipseShapeFixture.cs" />
@@ -121,6 +122,7 @@
     <Folder Include="DataManager" />
     <Folder Include="Collections" />
     <Folder Include="BaseClasses" />
+    <Folder Include="Globals" />
     <Folder Include="Printing\Shapes" />
     <Folder Include="TestHelpers" />
     <Folder Include="Printing" />

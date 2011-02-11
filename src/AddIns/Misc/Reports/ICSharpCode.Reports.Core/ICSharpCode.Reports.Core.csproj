@@ -244,6 +244,7 @@
     <Compile Include="Project\Factories\DisplayNameAttribute.cs" />
     <Compile Include="Project\Factories\RendererFactory.cs" />
     <Compile Include="Project\Factories\SectionFactory.cs" />
+    <Compile Include="Project\Globals\ServiceContainer.cs" />
     <Compile Include="Project\Globals\CreateGraphicObject.cs" />
     <Compile Include="Project\Globals\FilePathConverter.cs" />
     <Compile Include="Project\Globals\FileUtility.cs" />
