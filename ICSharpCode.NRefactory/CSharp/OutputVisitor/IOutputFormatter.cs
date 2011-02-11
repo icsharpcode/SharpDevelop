@@ -6,9 +6,9 @@ using System;
 namespace ICSharpCode.NRefactory.CSharp
 {
 	/// <summary>
-	/// Output formatter for the output visitor.
+	/// Output formatter for the Output visitor.
 	/// </summary>
-	public class OutputFormatter
+	public interface IOutputFormatter
 	{
 		void WriteIdentifier(string ident);
 		void WriteKeyword(string keyword);

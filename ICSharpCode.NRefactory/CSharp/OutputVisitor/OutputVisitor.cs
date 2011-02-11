@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-
 using ICSharpCode.NRefactory.TypeSystem;
 
 namespace ICSharpCode.NRefactory.CSharp
@@ -17,13 +17,24 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class OutputVisitor : AstVisitor<object, object>
 	{
-		readonly OutputFormatter formatter;
+		readonly IOutputFormatter formatter;
 		readonly CSharpFormattingPolicy policy;
 		
 		AstNode currentContainerNode;
 		readonly Stack<AstNode> positionStack = new Stack<AstNode>();
+		char lastChar;
 		
-		public OutputVisitor(OutputFormatter formatter, CSharpFormattingPolicy formattingPolicy)
+		public OutputVisitor(TextWriter textWriter, CSharpFormattingPolicy formattingPolicy)
+		{
+			if (textWriter == null)
+				throw new ArgumentNullException("textWriter");
+			if (formattingPolicy == null)
+				throw new ArgumentNullException("formattingPolicy");
+			this.formatter = new TextWriterOutputFormatter(textWriter);
+			this.policy = formattingPolicy;
+		}
+		
+		public OutputVisitor(IOutputFormatter formatter, CSharpFormattingPolicy formattingPolicy)
 		{
 			if (formatter == null)
 				throw new ArgumentNullException("formatter");
@@ -119,7 +130,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			WriteSpecialsUpToRole(AstNode.Roles.Comma, nextNode);
 			Space(policy.SpacesBeforeComma);
-			formatter.WriteToken(",");
+			formatter.WriteToken(","); 
+			lastChar = ',';
 			Space(policy.SpacesAfterComma);
 		}
 		
@@ -166,19 +178,26 @@ namespace ICSharpCode.NRefactory.CSharp
 		void WriteKeyword(string keyword, Role<CSharpTokenNode> tokenRole = null)
 		{
 			WriteSpecialsUpToRole(tokenRole ?? AstNode.Roles.Keyword);
+			if (lastChar == 'a')
+				Space();
 			formatter.WriteKeyword(keyword);
+			lastChar = 'a';
 		}
 		
 		void WriteIdentifier(string identifier, Role<Identifier> identifierRole = null)
 		{
 			WriteSpecialsUpToRole(identifierRole ?? AstNode.Roles.Identifier);
+			if (lastChar == 'a')
+				Space();
 			formatter.WriteIdentifier(identifier);
+			lastChar = 'a';
 		}
 		
 		void WriteToken(string token, Role<CSharpTokenNode> tokenRole)
 		{
 			WriteSpecialsUpToRole(tokenRole);
-			formatter.WriteToken(token);
+			formatter.WriteToken(token); 
+			lastChar = token[token.Length - 1];
 		}
 		
 		void LPar()
@@ -198,7 +217,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			if (!(currentContainerNode.Parent is ForStatement)) {
 				WriteToken(";", AstNode.Roles.Semicolon);
-				formatter.NewLine();
+				NewLine();
 			}
 		}
 		
@@ -207,20 +226,30 @@ namespace ICSharpCode.NRefactory.CSharp
 		/// </summary>
 		void Space(bool addSpace = true)
 		{
-			if (addSpace)
+			if (addSpace) {
 				formatter.Space();
+				lastChar = ' ';
+			}
+		}
+		
+		void NewLine()
+		{
+			formatter.NewLine();
+			lastChar = '\n';
 		}
 		
 		void OpenBrace(BraceStyle style)
 		{
 			WriteSpecialsUpToRole(AstNode.Roles.LBrace);
 			formatter.OpenBrace();
+			lastChar = '{';
 		}
 		
 		void CloseBrace(BraceStyle style)
 		{
 			WriteSpecialsUpToRole(AstNode.Roles.RBrace);
 			formatter.CloseBrace();
+			lastChar = '}';
 		}
 		#endregion
 		
@@ -262,6 +291,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				}
 				WriteSpecialsUpToNode(ident);
 				formatter.WriteIdentifier(ident.Name);
+				lastChar = 'a';
 			}
 		}
 		
@@ -585,7 +615,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		public object VisitPrimitiveExpression(PrimitiveExpression primitiveExpression, object data)
 		{
 			StartNode(primitiveExpression);
-			formatter.WriteToken(ToCSharpString(primitiveExpression));
+			formatter.WriteToken(ToCSharpString(primitiveExpression)); 
+			lastChar = 'a';
 			return EndNode(primitiveExpression);
 		}
 		
@@ -785,7 +816,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			}
 			WriteCommaSeparatedList(attributeSection.Attributes);
 			WriteToken("]", AstNode.Roles.RBracket);
-			formatter.NewLine();
+			NewLine();
 			return EndNode(attributeSection);
 		}
 		
@@ -816,7 +847,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			foreach (var member in namespaceDeclaration.Members)
 				member.AcceptVisitor(this, data);
 			CloseBrace(policy.NamespaceBraceStyle);
-			formatter.NewLine();
+			NewLine();
 			return EndNode(namespaceDeclaration);
 		}
 		
@@ -860,7 +891,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				member.AcceptVisitor(this, data);
 			}
 			CloseBrace(braceStyle);
-			formatter.NewLine();
+			NewLine();
 			return EndNode(typeDeclaration);
 		}
 		
@@ -919,7 +950,7 @@ namespace ICSharpCode.NRefactory.CSharp
 				node.AcceptVisitor(this, data);
 			}
 			CloseBrace(style);
-			formatter.NewLine();
+			NewLine();
 			return EndNode(blockStatement);
 		}
 		
@@ -1060,7 +1091,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			StartNode(labelStatement);
 			WriteIdentifier(labelStatement.Label);
 			WriteToken(":", LabelStatement.Roles.Colon);
-			formatter.NewLine();
+			NewLine();
 			return EndNode(labelStatement);
 		}
 		
@@ -1104,7 +1135,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			foreach (var section in switchStatement.SwitchSections)
 				section.AcceptVisitor(this, data);
 			CloseBrace(policy.StatementBraceStyle);
-			formatter.NewLine();
+			NewLine();
 			return EndNode(switchStatement);
 		}
 		
@@ -1125,7 +1156,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			Space();
 			caseLabel.Expression.AcceptVisitor(this, data);
 			WriteToken(":", CaseLabel.Roles.Colon);
-			formatter.NewLine();
+			NewLine();
 			return EndNode(caseLabel);
 		}
 		
@@ -1557,7 +1588,8 @@ namespace ICSharpCode.NRefactory.CSharp
 			WriteToken("[", ArraySpecifier.Roles.LBracket);
 			foreach (var comma in arraySpecifier.GetChildrenByRole(ArraySpecifier.Roles.Comma)) {
 				WriteSpecialsUpToNode(comma);
-				formatter.WriteToken(",");
+				formatter.WriteToken(","); 
+				lastChar = ',';
 			}
 			WriteToken("]", ArraySpecifier.Roles.RBracket);
 			return EndNode(arraySpecifier);

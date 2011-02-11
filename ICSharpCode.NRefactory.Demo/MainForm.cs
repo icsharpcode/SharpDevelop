@@ -125,7 +125,10 @@ namespace ICSharpCode.NRefactory.Demo
 		
 		void CSharpGenerateCodeButtonClick(object sender, EventArgs e)
 		{
-			throw new NotImplementedException();
+			StringWriter w = new StringWriter();
+			OutputVisitor output = new OutputVisitor(w, new CSharpFormattingPolicy());
+			compilationUnit.AcceptVisitor(output, null);
+			csharpCodeTextBox.Text = w.ToString();
 		}
 		
 		int GetOffset(TextBox textBox, AstLocation location)
