@@ -46,6 +46,10 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole(LeftRole, value); }
 		}
 		
+		public CSharpTokenNode OperatorToken {
+			get { return GetChildByRole (OperatorRole); }
+		}
+		
 		public Expression Right {
 			get { return GetChildByRole (RightRole); }
 			set { SetChildByRole(RightRole, value); }

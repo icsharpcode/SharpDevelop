@@ -39,9 +39,21 @@ namespace ICSharpCode.NRefactory.CSharp
 			get; set;
 		}
 		
+		public CSharpTokenNode DelegateKeyword {
+			get { return GetChildrenByRole (Roles.Keyword); }
+		}
+		
+		public CSharpTokenNode LPar {
+			get { return GetChildrenByRole (Roles.LPar); }
+		}
+		
 		public IEnumerable<ParameterDeclaration> Parameters {
 			get { return GetChildrenByRole (Roles.Parameter); }
 			set { SetChildrenByRole (Roles.Parameter, value); }
+		}
+		
+		public CSharpTokenNode RPar {
+			get { return GetChildrenByRole (Roles.RPar); }
 		}
 		
 		public BlockStatement Body {
