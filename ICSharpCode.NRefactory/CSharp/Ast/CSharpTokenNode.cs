@@ -77,7 +77,7 @@ namespace ICSharpCode.NRefactory.CSharp
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{
-			return default (S);
+			return visitor.VisitCSharpTokenNode (this, data);
 		}
 		
 		public override string ToString ()

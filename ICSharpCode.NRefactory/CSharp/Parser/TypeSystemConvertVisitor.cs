@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// <summary>
 	/// Produces type and member definitions from the DOM.
 	/// </summary>
-	public class TypeSystemConvertVisitor : AstVisitor<object, IEntity>
+	public class TypeSystemConvertVisitor : DepthFirstAstVisitor<object, IEntity>
 	{
 		readonly ParsedFile parsedFile;
 		UsingScope usingScope;

@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// Moreover, there is the <c>ResolveAll</c> mode - it works similar to resolving mode, but will not switch back to scanning mode.
 	/// The whole subtree will be resolved without notifying the navigator.
 	/// </remarks>
-	public sealed class ResolveVisitor : AstVisitor<object, ResolveResult>
+	public sealed class ResolveVisitor : DepthFirstAstVisitor<object, ResolveResult>
 	{
 		static readonly ResolveResult errorResult = new ErrorResolveResult(SharedTypes.UnknownType);
 		CSharpResolver resolver;
@@ -1155,9 +1155,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return null;
 		}
 		
-		public override ResolveResult VisitAccessorDeclaration(Accessor accessorDeclaration, object data)
+		public override ResolveResult VisitAccessor(Accessor accessor, object data)
 		{
-			ScanChildren(accessorDeclaration);
+			ScanChildren(accessor);
 			return null;
 		}
 	}

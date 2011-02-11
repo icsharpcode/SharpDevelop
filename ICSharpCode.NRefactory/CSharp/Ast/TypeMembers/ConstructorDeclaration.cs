@@ -105,10 +105,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			set;
 		}
 		
-		public IEnumerable<AstNode> Arguments {
-			get {
-				return base.GetChildrenByRole (Roles.Parameter);
-			}
+		public IEnumerable<Expression> Arguments {
+			get { return GetChildrenByRole (Roles.Argument); }
+			set { SetChildrenByRole (Roles.Argument, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

@@ -58,6 +58,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CSharp\Ast\IAstVisitor.cs" />
     <Compile Include="CSharp\Ast\CompilationUnit.cs" />
     <Compile Include="CSharp\Ast\CSharpModifierToken.cs" />
     <Compile Include="CSharp\Ast\CSharpTokenNode.cs" />
@@ -148,6 +149,7 @@
     <Compile Include="CSharp\Formatter\DomIndentationVisitor.cs" />
     <Compile Include="CSharp\Formatter\DomSpacingVisitor.cs" />
     <Compile Include="CSharp\Formatter\Indent.cs" />
+    <Compile Include="CSharp\OutputVisitor\OutputVisitor.cs" />
     <Compile Include="CSharp\Parser\CSharpParser.cs" />
     <Compile Include="CSharp\Parser\mcs\CryptoConvert.cs" />
     <Compile Include="CSharp\Parser\mcs\MonoSymbolFile.cs" />
@@ -317,7 +319,7 @@
     <Compile Include="CSharp\Ast\Expressions\ArrayCreateExpression.cs" />
     <Compile Include="CSharp\Ast\Expressions\ArrayInitializerExpression.cs" />
     <Compile Include="CSharp\Ast\AstNode.cs" />
-    <Compile Include="CSharp\Ast\AstVisitor.cs" />
+    <Compile Include="CSharp\Ast\DepthFirstAstVisitor.cs" />
     <Compile Include="CSharp\Ast\NodeType.cs" />
     <Compile Include="CSharp\Ast\TypeMembers\Accessor.cs" />
     <Compile Include="CSharp\Parser\mcs\assembly.cs" />
@@ -327,6 +329,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CSharp\" />
+    <Folder Include="CSharp\OutputVisitor" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

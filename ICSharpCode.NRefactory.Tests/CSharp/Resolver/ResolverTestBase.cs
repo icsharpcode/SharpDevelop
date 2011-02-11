@@ -180,7 +180,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return Resolve<T>(code.Replace(exprToResolve, "$" + exprToResolve + "$"));
 		}
 		
-		sealed class FindNodeVisitor : AstVisitor<object, object>
+		sealed class FindNodeVisitor : DepthFirstAstVisitor<object, object>
 		{
 			readonly AstLocation start;
 			readonly AstLocation end;

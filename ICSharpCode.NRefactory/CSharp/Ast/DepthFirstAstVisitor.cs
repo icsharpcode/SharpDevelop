@@ -28,7 +28,10 @@ using System;
 
 namespace ICSharpCode.NRefactory.CSharp
 {
-	public abstract class AstVisitor<T, S>
+	/// <summary>
+	/// AST visitor with a default implementation that visits all node depth-first.
+	/// </summary>
+	public abstract class DepthFirstAstVisitor<T, S> : AstVisitor<T, S>
 	{
 		protected virtual S VisitChildren (AstNode node, T data)
 		{
@@ -53,6 +56,11 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public virtual S VisitIdentifier (Identifier identifier, T data)
+		{
+			return default (S);
+		}
+		
+		public virtual S VisitCSharpTokenNode (CSharpTokenNode token, T data)
 		{
 			return default (S);
 		}
@@ -172,9 +180,9 @@ namespace ICSharpCode.NRefactory.CSharp
 			return VisitChildren (propertyDeclaration, data);
 		}
 		
-		public virtual S VisitAccessorDeclaration (Accessor accessorDeclaration, T data)
+		public virtual S VisitAccessor (Accessor accessor, T data)
 		{
-			return VisitChildren (accessorDeclaration, data);
+			return VisitChildren (accessor, data);
 		}
 		
 		public virtual S VisitVariableInitializer (VariableInitializer variableInitializer, T data)
