@@ -1398,6 +1398,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public override object Visit (TypeExpression typeExpression)
 			{
 				var result = new PrimitiveType ();
+				result.Location = Convert (typeExpression.Location);
 				if (typeExpression.Type == TypeManager.void_type) {
 					result.Keyword = "void";
 				} else if (typeExpression.Type == TypeManager.string_type) {
@@ -1428,9 +1429,6 @@ namespace ICSharpCode.NRefactory.CSharp
 					result.Keyword = "decimal";
 				} else {
 					throw new NotImplementedException();
-				}
-				if (result.Keyword != null) {
-					result.AddChild (new CSharpTokenNode (Convert (typeExpression.Location), result.Keyword.Length), PrimitiveType.Roles.Keyword);
 				}
 				return result;
 			}
@@ -1927,9 +1925,9 @@ namespace ICSharpCode.NRefactory.CSharp
 				if (arrayCreationExpression.Arguments != null) {
 					var commaLocations = LocationsBag.GetLocations (arrayCreationExpression.Arguments);
 					for (int i = 0 ;i < arrayCreationExpression.Arguments.Count; i++) {
-						result.AddChild ((Expression)arrayCreationExpression.Arguments[i].Accept (this), ObjectCreateExpression.Roles.Argument);
+						result.AddChild ((Expression)arrayCreationExpression.Arguments[i].Accept (this), ArrayCreateExpression.Roles.Argument);
 						if (commaLocations != null && i > 0)
-							result.AddChild (new CSharpTokenNode (Convert (commaLocations [commaLocations.Count - i]), 1), IndexerExpression.Roles.Comma);
+							result.AddChild (new CSharpTokenNode (Convert (commaLocations [commaLocations.Count - i]), 1), ArrayCreateExpression.Roles.Comma);
 					}
 				}
 				if (location != null)

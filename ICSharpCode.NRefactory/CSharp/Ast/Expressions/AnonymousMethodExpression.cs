@@ -34,8 +34,6 @@ namespace ICSharpCode.NRefactory.CSharp
 	/// </summary>
 	public class AnonymousMethodExpression : Expression
 	{
-		public static readonly Role<BlockStatement> BodyRole = new Role<BlockStatement>("Body", BlockStatement.Null);
-		
 		// used to make a difference between delegate {} and delegate () {}
 		public bool HasParameterList {
 			get; set;
@@ -47,8 +45,8 @@ namespace ICSharpCode.NRefactory.CSharp
 		}
 		
 		public BlockStatement Body {
-			get { return GetChildByRole (BodyRole); }
-			set { SetChildByRole (BodyRole, value); }
+			get { return GetChildByRole (Roles.Body); }
+			set { SetChildByRole (Roles.Body, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

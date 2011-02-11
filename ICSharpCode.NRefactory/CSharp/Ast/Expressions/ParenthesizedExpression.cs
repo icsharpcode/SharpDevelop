@@ -30,6 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp
 	{
 		public Expression Expression {
 			get { return GetChildByRole (Roles.Expression); }
+			set { SetChildByRole (Roles.Expression, value); }
 		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)

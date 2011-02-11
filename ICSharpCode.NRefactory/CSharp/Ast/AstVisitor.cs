@@ -508,5 +508,10 @@ namespace ICSharpCode.NRefactory.CSharp
 		{
 			return VisitChildren (arrayInitializerExpression, data);
 		}
+		
+		public virtual S VisitNamedArgumentExpression(NamedArgumentExpression namedArgumentExpression, T data)
+		{
+			return VisitChildren (namedArgumentExpression, data);
+		}
 	}
 }

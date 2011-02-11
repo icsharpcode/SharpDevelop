@@ -565,6 +565,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			public static readonly Role<CSharpTokenNode> Comma = new Role<CSharpTokenNode>("Comma", CSharpTokenNode.Null);
 			public static readonly Role<CSharpTokenNode> Semicolon = new Role<CSharpTokenNode>("Semicolon", CSharpTokenNode.Null);
 			public static readonly Role<CSharpTokenNode> Assign = new Role<CSharpTokenNode>("Assign", CSharpTokenNode.Null);
+			public static readonly Role<CSharpTokenNode> Colon = new Role<CSharpTokenNode>("Colon", CSharpTokenNode.Null);
 			
 			public static readonly Role<Comment> Comment = new Role<Comment>("Comment");
 			

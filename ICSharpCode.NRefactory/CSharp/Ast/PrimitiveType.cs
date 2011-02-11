@@ -32,6 +32,18 @@ namespace ICSharpCode.NRefactory.CSharp
 	public class PrimitiveType : AstType
 	{
 		public string Keyword { get; set; }
+		public AstLocation Location { get; set; }
+		
+		public override AstLocation StartLocation {
+			get {
+				return Location;
+			}
+		}
+		public override AstLocation EndLocation {
+			get {
+				return new AstLocation (Location.Line, Location.Column + Keyword != null ? Keyword.Length : 0);
+			}
+		}
 		
 		public override S AcceptVisitor<T, S> (AstVisitor<T, S> visitor, T data)
 		{

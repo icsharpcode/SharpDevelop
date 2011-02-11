@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			set { SetChildByRole (Roles.Type, value); }
 		}
 		
-		public IEnumerable<Expression> Dimensions {
+		public IEnumerable<Expression> Arguments {
 			get { return GetChildrenByRole (Roles.Argument); }
 			set { SetChildrenByRole (Roles.Argument, value); }
 		}

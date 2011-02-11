@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
   <PropertyGroup>
     <ProjectGuid>{3B2A5653-EC97-4001-BB9B-D90F1AF2C371}</ProjectGuid>
@@ -80,6 +80,7 @@
     <Compile Include="CSharp\Ast\Expressions\IsExpression.cs" />
     <Compile Include="CSharp\Ast\Expressions\LambdaExpression.cs" />
     <Compile Include="CSharp\Ast\Expressions\MemberReferenceExpression.cs" />
+    <Compile Include="CSharp\Ast\Expressions\NamedArgumentExpression.cs" />
     <Compile Include="CSharp\Ast\Expressions\NullReferenceExpression.cs" />
     <Compile Include="CSharp\Ast\Expressions\ObjectCreateExpression.cs" />
     <Compile Include="CSharp\Ast\Expressions\ParenthesizedExpression.cs" />
