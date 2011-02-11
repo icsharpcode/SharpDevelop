@@ -4,7 +4,7 @@
 using System;
 using iTextSharp.text;
 
-namespace ICSharpCode.Reports.Core
+namespace ICSharpCode.Reports.Core.Globals
 {
 	/// <summary>
 	/// Description of PdHelper.

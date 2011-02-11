@@ -11,9 +11,10 @@ using System.Globalization;
 using System.Windows.Forms;
 
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
-using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Core.Exporter;
 using ICSharpCode.Reports.Core.Exporter.ExportRenderer;
+using ICSharpCode.Reports.Core.Globals;
+using ICSharpCode.Reports.Core.Interfaces;
 
 namespace ICSharpCode.Reports.Core.ReportViewer
 {

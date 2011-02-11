@@ -7,6 +7,7 @@ using System.Drawing;
 
 using ICSharpCode.Data.Core.Interfaces;
 using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
 
 /// <summary>
 /// This class creates settings for a report
@@ -75,7 +76,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		public string ReportName {get;set;}
 		
 	
-		public ICSharpCode.Reports.Core.GlobalEnums.ReportType ReportType {get;set;}
+		public ICSharpCode.Reports.Core.Globals.GlobalEnums.ReportType ReportType {get;set;}
 		
 		public string FileName {get;set;}
 		
@@ -94,7 +95,7 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 		
 		public CommandType CommandType {get;set;}
 	
-		public ICSharpCode.Reports.Core.GlobalEnums.PushPullModel DataModel {get;set;}
+		public ICSharpCode.Reports.Core.Globals.GlobalEnums.PushPullModel DataModel {get;set;}
 			
 		public IDatabaseObjectBase IDatabaseObjectBase {get;set;}
 		

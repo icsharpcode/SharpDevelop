@@ -3,6 +3,7 @@
 
 using System;
 using System.Drawing;
+using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Core.BaseClasses
 {

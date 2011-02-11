@@ -8,6 +8,7 @@ using System.Xml.Serialization;
 
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
 using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.Globals;
 
 /// <summary>
 /// This Class is the BaseClass for <see cref="BaseTextItem"></see>

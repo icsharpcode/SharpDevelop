@@ -10,8 +10,9 @@ using System.Windows.Forms;
 using System.Xml;
 
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
-using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.Globals;
+using ICSharpCode.Reports.Core.Interfaces;
 
 /// <summary>
 /// This Class contains the basic Functions to handle reports

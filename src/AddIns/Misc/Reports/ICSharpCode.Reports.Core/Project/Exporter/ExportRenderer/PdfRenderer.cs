@@ -4,10 +4,11 @@
 using System;
 using System.Drawing.Printing;
 using System.IO;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
-using iTextSharp.text.factories;
 
+using ICSharpCode.Reports.Core.Globals;
+using iTextSharp.text;
+using iTextSharp.text.factories;
+using iTextSharp.text.pdf;
 
 namespace ICSharpCode.Reports.Core.Exporter.ExportRenderer
 {

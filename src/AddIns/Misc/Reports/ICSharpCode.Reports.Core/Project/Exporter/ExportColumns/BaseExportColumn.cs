@@ -3,8 +3,9 @@
 
 using System;
 using System.Drawing;
-using iTextSharp.text.pdf;
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
+using ICSharpCode.Reports.Core.Globals;
+using iTextSharp.text.pdf;
 
 namespace ICSharpCode.Reports.Core.Exporter
 {

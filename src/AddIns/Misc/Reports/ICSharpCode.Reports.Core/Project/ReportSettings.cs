@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 
 using ICSharpCode.Reports.Core.Dialogs;
+using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Core{
 	/// <summary>

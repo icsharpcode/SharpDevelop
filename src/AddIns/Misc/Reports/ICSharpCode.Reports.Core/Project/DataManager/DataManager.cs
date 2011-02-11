@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Globalization;
 
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Project.Interfaces;
 
 /// <summary>

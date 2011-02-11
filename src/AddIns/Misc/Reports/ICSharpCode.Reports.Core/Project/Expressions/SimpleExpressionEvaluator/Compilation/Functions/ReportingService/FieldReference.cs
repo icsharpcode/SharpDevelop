@@ -9,6 +9,7 @@
 using System;
 using ICSharpCode.Reports.Core;
 using ICSharpCode.Reports.Core.BaseClasses;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 using SimpleExpressionEvaluator.Compilation.Functions.AggregateFunctions;
 using SimpleExpressionEvaluator.Utilities;

@@ -19,7 +19,8 @@ using System.Text;
 /// 	created on - 19.01.2005 10:57:33
 /// </remarks>
 	
-namespace ICSharpCode.Reports.Core {
+namespace ICSharpCode.Reports.Core.Globals
+{
 	public sealed class GlobalValues
 	{
 

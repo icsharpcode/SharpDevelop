@@ -5,9 +5,12 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Xml;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.Reports.Core;
+
 using ICSharpCode.Core;
+using ICSharpCode.Reports.Core;
+using ICSharpCode.Reports.Core.Globals;
+using ICSharpCode.SharpDevelop;
+
 /// <summary>
 /// Abstract Class for all ReportGenerators
 /// </summary>
@@ -81,9 +84,8 @@ namespace ICSharpCode.Reports.Addin.ReportWizard
 			
 			settings.GroupColumnsCollection.Clear();
 			settings.GroupColumnsCollection.AddRange(this.groupColumnCollection);
-//			settings.ParameterCollection.Clear();
-//			settings.ParameterCollection.AddRange(this.SqlQueryParameters);
 		}
+		
 		
 		private void AdjustSectionToDefault () {
 			

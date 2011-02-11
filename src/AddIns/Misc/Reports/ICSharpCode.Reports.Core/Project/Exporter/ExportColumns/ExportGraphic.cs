@@ -3,8 +3,10 @@
 
 using System;
 using System.Drawing;
+using ICSharpCode.Reports.Core.Globals;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+
 namespace ICSharpCode.Reports.Core.Exporter
 {
 	/// <summary>

@@ -14,6 +14,7 @@ using System.Globalization;
 using System.IO;
 
 using ICSharpCode.Reports.Core.Exporter;
+using ICSharpCode.Reports.Core.Globals;
 
 namespace ICSharpCode.Reports.Core {
 	

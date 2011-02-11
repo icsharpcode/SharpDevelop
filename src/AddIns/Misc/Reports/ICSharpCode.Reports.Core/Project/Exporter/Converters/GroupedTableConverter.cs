@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Linq;
 
 using ICSharpCode.Reports.Core.BaseClasses.Printing;
+using ICSharpCode.Reports.Core.Globals;
 using ICSharpCode.Reports.Core.Interfaces;
 using ICSharpCode.Reports.Expressions.ReportingLanguage;
 

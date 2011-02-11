@@ -9,7 +9,7 @@ using System.Collections;
 /// Use this code to have the same functionnames as SLQReportingServer
 /// See <see cref="http://www.fyireporting.com/"></see>
 /// </summary>
-namespace ICSharpCode.Reports.Core
+namespace ICSharpCode.Reports.Core.Globals
 {
 	/// <summary>
 	/// Description of GlobalLists.
