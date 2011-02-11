@@ -13,7 +13,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		public void SizeOfExpressionTest()
 		{
 			SizeOfExpression soe = ParseUtilCSharp.ParseExpression<SizeOfExpression>("sizeof(MyType)");
-			Assert.AreEqual("MyType", soe.Type.Identifier.Name);
+			Assert.AreEqual("MyType", soe.Type);
 		}
 	}
 }

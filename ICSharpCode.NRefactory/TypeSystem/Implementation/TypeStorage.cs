@@ -21,12 +21,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		#region FullNameAndTypeParameterCount
 		struct FullNameAndTypeParameterCount
 		{
-			public readonly string FullName;
+			public readonly string Namespace;
+			public readonly string Name;
 			public readonly int TypeParameterCount;
 			
-			public FullNameAndTypeParameterCount(string fullName, int typeParameterCount)
+			public FullNameAndTypeParameterCount(string nameSpace, string name, int typeParameterCount)
 			{
-				this.FullName = fullName;
+				this.Namespace = nameSpace;
+				this.Name = name;
 				this.TypeParameterCount = typeParameterCount;
 			}
 		}
@@ -44,12 +46,14 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			
 			public bool Equals(FullNameAndTypeParameterCount x, FullNameAndTypeParameterCount y)
 			{
-				return x.TypeParameterCount == y.TypeParameterCount && NameComparer.Equals(x.FullName, y.FullName);
+				return x.TypeParameterCount == y.TypeParameterCount 
+					&& NameComparer.Equals(x.Name, y.Name)
+					&& NameComparer.Equals(x.Namespace, y.Namespace);
 			}
 			
 			public int GetHashCode(FullNameAndTypeParameterCount obj)
 			{
-				return NameComparer.GetHashCode(obj.FullName);
+				return NameComparer.GetHashCode(obj.Name) ^ NameComparer.GetHashCode(obj.Namespace) ^ obj.TypeParameterCount;
 			}
 		}
 		#endregion
@@ -157,13 +161,16 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		
 		#region ITypeResolveContext implementation
 		/// <inheritdoc/>
-		public ITypeDefinition GetClass(string fullTypeName, int typeParameterCount, StringComparer nameComparer)
+		public ITypeDefinition GetClass(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
 		{
-			if (fullTypeName == null)
-				throw new ArgumentNullException("fullTypeName");
+			if (nameSpace == null)
+				throw new ArgumentNullException("nameSpace");
+			if (name == null)
+				throw new ArgumentNullException("name");
 			if (nameComparer == null)
 				throw new ArgumentNullException("nameComparer");
-			var key = new FullNameAndTypeParameterCount(fullTypeName, typeParameterCount);
+			
+			var key = new FullNameAndTypeParameterCount(nameSpace, name, typeParameterCount);
 			ITypeDefinition result;
 			if (GetTypeDictionary(nameComparer).TryGetValue(key, out result))
 				return result;
@@ -235,7 +242,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			if (typeDefinition == null)
 				throw new ArgumentNullException("typeDefinition");
-			var key = new FullNameAndTypeParameterCount(typeDefinition.FullName, typeDefinition.TypeParameterCount);
+			var key = new FullNameAndTypeParameterCount(typeDefinition.Namespace, typeDefinition.Name, typeDefinition.TypeParameterCount);
 			bool wasRemoved = false;
 			foreach (var dict in _typeDicts) {
 				ITypeDefinition defInDict;
@@ -267,7 +274,7 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		{
 			if (typeDefinition == null)
 				throw new ArgumentNullException("typeDefinition");
-			var key = new FullNameAndTypeParameterCount(typeDefinition.FullName, typeDefinition.TypeParameterCount);
+			var key = new FullNameAndTypeParameterCount(typeDefinition.Namespace, typeDefinition.Name, typeDefinition.TypeParameterCount);
 			bool isNew = !_typeDicts[0].ContainsKey(key);
 			foreach (var dict in _typeDicts) {
 				dict[key] = typeDefinition;

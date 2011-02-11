@@ -12,7 +12,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		void TestUnaryOperatorExpressionTest(string program, UnaryOperatorType op)
 		{
 			UnaryOperatorExpression uoe = ParseUtilCSharp.ParseExpression<UnaryOperatorExpression>(program);
-			Assert.AreEqual(op, uoe.UnaryOperatorType);
+			Assert.AreEqual(op, uoe.Operator);
 			
 			Assert.IsTrue(uoe.Expression is IdentifierExpression);
 		}
@@ -81,7 +81,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		public void DereferenceAfterCast()
 		{
 			UnaryOperatorExpression uoe = ParseUtilCSharp.ParseExpression<UnaryOperatorExpression>("*((SomeType*) &w)");
-			Assert.AreEqual(UnaryOperatorType.Dereference, uoe.UnaryOperatorType);
+			Assert.AreEqual(UnaryOperatorType.Dereference, uoe.Operator);
 			ParenthesizedExpression pe = (ParenthesizedExpression)uoe.Expression;
 			CastExpression ce = (CastExpression)pe.Expression;
 			//Assert.AreEqual("SomeType", ce.CastTo.Type);
@@ -89,7 +89,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 			Assert.Ignore("need to check target type"); // TODO
 			
 			UnaryOperatorExpression adrOf = (UnaryOperatorExpression)ce.Expression;
-			Assert.AreEqual(UnaryOperatorType.AddressOf, adrOf.UnaryOperatorType);
+			Assert.AreEqual(UnaryOperatorType.AddressOf, adrOf.Operator);
 		}
 	}
 }

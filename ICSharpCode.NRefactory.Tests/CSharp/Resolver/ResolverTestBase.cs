@@ -121,13 +121,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			Assert.AreEqual(expectedType.ToTypeReference().Resolve(context), rr.Type);
 		}
 		
-		IEnumerable<DomLocation> FindDollarSigns(string code)
+		IEnumerable<AstLocation> FindDollarSigns(string code)
 		{
 			int line = 1;
 			int col = 1;
 			foreach (char c in code) {
 				if (c == '$') {
-					yield return new DomLocation(line, col);
+					yield return new AstLocation(line, col);
 				} else if (c == '\n') {
 					line++;
 					col = 1;
@@ -141,7 +141,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			CompilationUnit cu = new CSharpParser().Parse(new StringReader(code.Replace("$", "")));
 			
-			DomLocation[] dollars = FindDollarSigns(code).ToArray();
+			AstLocation[] dollars = FindDollarSigns(code).ToArray();
 			Assert.AreEqual(2, dollars.Length, "Expected 2 dollar signs marking start+end of desired node");
 			
 			UsingScope rootUsingScope = resolver.UsingScope;
@@ -175,19 +175,24 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return (T)rr;
 		}
 		
-		sealed class FindNodeVisitor : DomVisitor<object, object>
+		protected T Resolve<T>(string code, string exprToResolve) where T : ResolveResult
 		{
-			readonly DomLocation start;
-			readonly DomLocation end;
-			public DomNode ResultNode;
+			return Resolve<T>(code.Replace(exprToResolve, "$" + exprToResolve + "$"));
+		}
+		
+		sealed class FindNodeVisitor : AstVisitor<object, object>
+		{
+			readonly AstLocation start;
+			readonly AstLocation end;
+			public AstNode ResultNode;
 			
-			public FindNodeVisitor(DomLocation start, DomLocation end)
+			public FindNodeVisitor(AstLocation start, AstLocation end)
 			{
 				this.start = start;
 				this.end = end;
 			}
 			
-			protected override object VisitChildren(DomNode node, object data)
+			protected override object VisitChildren(AstNode node, object data)
 			{
 				if (node.StartLocation == start && node.EndLocation == end) {
 					if (ResultNode != null)

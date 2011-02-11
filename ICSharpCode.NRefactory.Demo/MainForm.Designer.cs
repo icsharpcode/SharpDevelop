@@ -40,6 +40,8 @@ namespace ICSharpCode.NRefactory.Demo
 			this.csharpParseButton = new System.Windows.Forms.Button();
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.miniToolStrip = new System.Windows.Forms.ToolStrip();
+			this.vbDemo1 = new ICSharpCode.NRefactory.Demo.VBDemo();
+			this.tabPage2.SuspendLayout();
 			this.tabPage1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
 			this.splitContainer1.Panel1.SuspendLayout();
@@ -50,6 +52,7 @@ namespace ICSharpCode.NRefactory.Demo
 			// 
 			// tabPage2
 			// 
+			this.tabPage2.Controls.Add(this.vbDemo1);
 			this.tabPage2.Location = new System.Drawing.Point(4, 22);
 			this.tabPage2.Name = "tabPage2";
 			this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -177,6 +180,14 @@ namespace ICSharpCode.NRefactory.Demo
 			this.miniToolStrip.Size = new System.Drawing.Size(16, 25);
 			this.miniToolStrip.TabIndex = 3;
 			// 
+			// vbDemo1
+			// 
+			this.vbDemo1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.vbDemo1.Location = new System.Drawing.Point(3, 3);
+			this.vbDemo1.Name = "vbDemo1";
+			this.vbDemo1.Size = new System.Drawing.Size(501, 452);
+			this.vbDemo1.TabIndex = 0;
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -185,6 +196,7 @@ namespace ICSharpCode.NRefactory.Demo
 			this.Controls.Add(this.tabControl1);
 			this.Name = "MainForm";
 			this.Text = "NRefactory Demo";
+			this.tabPage2.ResumeLayout(false);
 			this.tabPage1.ResumeLayout(false);
 			this.splitContainer1.Panel1.ResumeLayout(false);
 			this.splitContainer1.Panel1.PerformLayout();
@@ -194,6 +206,7 @@ namespace ICSharpCode.NRefactory.Demo
 			this.tabControl1.ResumeLayout(false);
 			this.ResumeLayout(false);
 		}
+		private ICSharpCode.NRefactory.Demo.VBDemo vbDemo1;
 		private System.Windows.Forms.Button resolveButton;
 		private System.Windows.Forms.ToolStrip miniToolStrip;
 		private System.Windows.Forms.TreeView csharpTreeView;

@@ -15,20 +15,20 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		{
 			string program = "a " + weakOperator + " b " + strongOperator + " c";
 			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>(program);
-			Assert.AreEqual(weakOperatorType, boe.BinaryOperatorType);
+			Assert.AreEqual(weakOperatorType, boe.Operator);
 			Assert.IsTrue(boe.Left is IdentifierExpression);
 			boe = (BinaryOperatorExpression)boe.Right;
-			Assert.AreEqual(strongOperatorType, boe.BinaryOperatorType);
+			Assert.AreEqual(strongOperatorType, boe.Operator);
 			Assert.IsTrue(boe.Left is IdentifierExpression);
 			Assert.IsTrue(boe.Right is IdentifierExpression);
 			
 			program = "a " + strongOperator + " b " + weakOperator + " c";
 			
 			boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>(program);
-			Assert.AreEqual(weakOperatorType, boe.BinaryOperatorType);
+			Assert.AreEqual(weakOperatorType, boe.Operator);
 			Assert.IsTrue(boe.Right is IdentifierExpression);
 			boe = (BinaryOperatorExpression)boe.Left;
-			Assert.AreEqual(strongOperatorType, boe.BinaryOperatorType);
+			Assert.AreEqual(strongOperatorType, boe.Operator);
 			Assert.IsTrue(boe.Left is IdentifierExpression);
 			Assert.IsTrue(boe.Right is IdentifierExpression);
 		}
@@ -38,19 +38,19 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		{
 			string program = "a " + secondOperator + " b " + firstOperator + " c";
 			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>(program);
-			Assert.AreEqual(firstOperatorType, boe.BinaryOperatorType);
+			Assert.AreEqual(firstOperatorType, boe.Operator);
 			Assert.IsTrue(boe.Right is IdentifierExpression);
 			boe = (BinaryOperatorExpression)boe.Left;
-			Assert.AreEqual(secondOperatorType, boe.BinaryOperatorType);
+			Assert.AreEqual(secondOperatorType, boe.Operator);
 			Assert.IsTrue(boe.Left is IdentifierExpression);
 			Assert.IsTrue(boe.Right is IdentifierExpression);
 			
 			program = "a " + firstOperator + " b " + secondOperator + " c";
 			boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>(program);
-			Assert.AreEqual(secondOperatorType, boe.BinaryOperatorType);
+			Assert.AreEqual(secondOperatorType, boe.Operator);
 			Assert.IsTrue(boe.Right is IdentifierExpression);
 			boe = (BinaryOperatorExpression)boe.Left;
-			Assert.AreEqual(firstOperatorType, boe.BinaryOperatorType);
+			Assert.AreEqual(firstOperatorType, boe.Operator);
 			Assert.IsTrue(boe.Left is IdentifierExpression);
 			Assert.IsTrue(boe.Right is IdentifierExpression);
 		}
@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		void TestBinaryOperatorExpressionTest(string program, BinaryOperatorType op)
 		{
 			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>(program);
-			Assert.AreEqual(op, boe.BinaryOperatorType);
+			Assert.AreEqual(op, boe.Operator);
 			
 			Assert.IsTrue(boe.Left is IdentifierExpression);
 			Assert.IsTrue(boe.Right is IdentifierExpression);
@@ -221,7 +221,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		{
 			const string expr = "i1 < 0 || i1 > (Count - 1)";
 			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>(expr);
-			Assert.AreEqual(BinaryOperatorType.LogicalOr, boe.BinaryOperatorType);
+			Assert.AreEqual(BinaryOperatorType.LogicalOr, boe.Operator);
 		}
 	}
 }

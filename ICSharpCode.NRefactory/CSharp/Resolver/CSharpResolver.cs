@@ -439,7 +439,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			switch (op) {
 				case UnaryOperatorType.Minus:
 					if (code == TypeCode.UInt32) {
-						IType targetType = TypeCode.Int64.ToTypeReference().Resolve(context);
+						IType targetType = KnownTypeReference.Int64.Resolve(context);
 						type = targetType;
 						if (isNullable) targetType = NullableType.Create(targetType, context);
 						return ResolveCast(targetType, expression);
@@ -448,7 +448,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				case UnaryOperatorType.Plus:
 				case UnaryOperatorType.BitNot:
 					if (code >= TypeCode.Char && code <= TypeCode.UInt16) {
-						IType targetType = TypeCode.Int32.ToTypeReference().Resolve(context);
+						IType targetType = KnownTypeReference.Int32.Resolve(context);
 						type = targetType;
 						if (isNullable) targetType = NullableType.Create(targetType, context);
 						return ResolveCast(targetType, expression);
@@ -700,7 +700,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						if (lhsType is PointerType && IsInteger(ReflectionHelper.GetTypeCode(rhsType))) {
 							return new ResolveResult(lhsType);
 						} else if (lhsType is PointerType && lhsType.Equals(rhsType)) {
-							return new ResolveResult(TypeCode.Int64.ToTypeReference().Resolve(context));
+							return new ResolveResult(KnownTypeReference.Int64.Resolve(context));
 						}
 						if (lhsType == SharedTypes.Null && rhsType == SharedTypes.Null)
 							return new ErrorResolveResult(SharedTypes.Null);
@@ -727,7 +727,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							// bool operator op(E x, E y);
 							return HandleEnumComparison(op, rhsType, isNullable, lhs, rhs);
 						} else if (lhsType is PointerType && rhsType is PointerType) {
-							return new ResolveResult(TypeCode.Boolean.ToTypeReference().Resolve(context));
+							return new ResolveResult(KnownTypeReference.Boolean.Resolve(context));
 						}
 						switch (op) {
 							case BinaryOperatorType.Equality:
@@ -829,7 +829,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					return rhs;
 				return ResolveBinaryOperator(op, lhs, rhs);
 			}
-			return new ResolveResult(TypeCode.Boolean.ToTypeReference().Resolve(context));
+			return new ResolveResult(KnownTypeReference.Boolean.Resolve(context));
 		}
 		
 		/// <summary>
@@ -1164,7 +1164,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			public StringConcatenation(TypeCode p1, TypeCode p2)
 			{
 				this.canEvaluateAtCompileTime = p1 == TypeCode.String && p2 == TypeCode.String;
-				this.ReturnType = TypeCode.String.ToTypeReference();
+				this.ReturnType = KnownTypeReference.String;
 				this.Parameters.Add(MakeParameter(p1));
 				this.Parameters.Add(MakeParameter(p2));
 			}
@@ -1224,7 +1224,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			{
 				this.Negate = negate;
 				this.Type = type;
-				this.ReturnType = TypeCode.Boolean.ToTypeReference();
+				this.ReturnType = KnownTypeReference.Boolean;
 				this.Parameters.Add(MakeParameter(type));
 				this.Parameters.Add(MakeParameter(type));
 			}
@@ -1309,7 +1309,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			public RelationalOperatorMethod(Func<T1, T2, bool> func)
 			{
-				this.ReturnType = TypeCode.Boolean.ToTypeReference();
+				this.ReturnType = KnownTypeReference.Boolean;
 				this.Parameters.Add(MakeParameter(Type.GetTypeCode(typeof(T1))));
 				this.Parameters.Add(MakeParameter(Type.GetTypeCode(typeof(T2))));
 				this.func = func;
@@ -1500,14 +1500,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				foreach (IVariable v in this.LocalVariables) {
 					if (v.Name == identifier) {
 						object constantValue = v.IsConst ? v.ConstantValue.GetValue(context) : null;
-						return new VariableResolveResult(v, v.Type.Resolve(context), constantValue);
+						return new LocalResolveResult(v, v.Type.Resolve(context), constantValue);
 					}
 				}
 				IParameterizedMember parameterizedMember = this.CurrentMember as IParameterizedMember;
 				if (parameterizedMember != null) {
 					foreach (IParameter p in parameterizedMember.Parameters) {
 						if (p.Name == identifier) {
-							return new VariableResolveResult(p, p.Type.Resolve(context));
+							return new LocalResolveResult(p, p.Type.Resolve(context));
 						}
 					}
 				}
@@ -1561,21 +1561,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				
+				MemberLookup lookup = new MemberLookup(context, t, t.ProjectContent);
+				ResolveResult r;
 				if (lookupMode == SimpleNameLookupMode.Expression || lookupMode == SimpleNameLookupMode.InvocationTarget) {
-					MemberLookup lookup = new MemberLookup(context, t, t.ProjectContent);
-					ResolveResult r = lookup.Lookup(t, identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
-					if (!(r is UnknownMemberResolveResult)) // but do return AmbiguousMemberResolveResult
-						return r;
+					r = lookup.Lookup(t, identifier, typeArguments, lookupMode == SimpleNameLookupMode.InvocationTarget);
 				} else {
-					// TODO: perform member lookup within the type t, restricted to finding types
-					throw new NotImplementedException();
+					r = lookup.LookupType(t, identifier, typeArguments);
 				}
+				if (!(r is UnknownMemberResolveResult)) // but do return AmbiguousMemberResolveResult
+					return r;
 			}
 			// look in current namespace definitions
 			for (UsingScope n = this.UsingScope; n != null; n = n.Parent) {
-				string fullName = NamespaceDeclaration.BuildQualifiedName(n.NamespaceName, identifier);
 				// first look for a namespace
 				if (k == 0) {
+					string fullName = NamespaceDeclaration.BuildQualifiedName(n.NamespaceName, identifier);
 					if (context.GetNamespace(fullName, StringComparer.Ordinal) != null) {
 						if (n.HasAlias(identifier))
 							return new AmbiguousTypeResolveResult(SharedTypes.UnknownType);
@@ -1583,7 +1583,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				// then look for a type
-				ITypeDefinition def = context.GetClass(fullName, k, StringComparer.Ordinal);
+				ITypeDefinition def = context.GetClass(n.NamespaceName, identifier, k, StringComparer.Ordinal);
 				if (def != null) {
 					IType result = def;
 					if (k != 0) {
@@ -1617,8 +1617,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					foreach (var u in n.Usings) {
 						NamespaceResolveResult ns = u.ResolveNamespace(context);
 						if (ns != null) {
-							fullName = NamespaceDeclaration.BuildQualifiedName(ns.NamespaceName, identifier);
-							def = context.GetClass(fullName, k, StringComparer.Ordinal);
+							def = context.GetClass(ns.NamespaceName, identifier, k, StringComparer.Ordinal);
 							if (firstResult == null) {
 								if (k == 0)
 									firstResult = def;
@@ -1674,12 +1673,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			NamespaceResolveResult nrr = target as NamespaceResolveResult;
 			if (nrr != null) {
-				string fullName = NamespaceDeclaration.BuildQualifiedName(nrr.NamespaceName, identifier);
 				if (typeArguments.Count == 0) {
+					string fullName = NamespaceDeclaration.BuildQualifiedName(nrr.NamespaceName, identifier);
 					if (context.GetNamespace(fullName, StringComparer.Ordinal) != null)
 						return new NamespaceResolveResult(fullName);
 				}
-				ITypeDefinition def = context.GetClass(fullName, typeArguments.Count, StringComparer.Ordinal);
+				ITypeDefinition def = context.GetClass(nrr.NamespaceName, identifier, typeArguments.Count, StringComparer.Ordinal);
 				if (def != null)
 					return new TypeResolveResult(def);
 				return ErrorResult;
@@ -1689,12 +1688,76 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return DynamicResult;
 			
 			MemberLookup lookup = CreateMemberLookup();
-			return lookup.Lookup(target.Type, identifier, typeArguments, isInvocationTarget);
+			ResolveResult result = lookup.Lookup(target.Type, identifier, typeArguments, isInvocationTarget);
+			if (result is UnknownMemberResolveResult) {
+				var extensionMethods = GetExtensionMethods(target.Type, identifier, typeArguments.Count);
+				if (extensionMethods.Count > 0) {
+					return new MethodGroupResolveResult(target.Type, identifier, EmptyList<IMethod>.Instance, typeArguments) {
+						ExtensionMethods = extensionMethods
+					};
+				}
+			}
+			return result;
 		}
 		
 		MemberLookup CreateMemberLookup()
 		{
 			return new MemberLookup(context, this.CurrentTypeDefinition, this.UsingScope != null ? this.UsingScope.ProjectContent : null);
+		}
+		#endregion
+		
+		#region GetExtensionMethods
+		/// <summary>
+		/// Gets the extension methods that are called 'name', and can be called with 'typeArgumentCount' explicit type arguments;
+		/// and are applicable with a first argument type of 'targetType'.
+		/// </summary>
+		List<List<IMethod>> GetExtensionMethods(IType targetType, string name, int typeArgumentCount)
+		{
+			List<List<IMethod>> extensionMethodGroups = new List<List<IMethod>>();
+			foreach (var inputGroup in GetAllExtensionMethods()) {
+				List<IMethod> outputGroup = new List<IMethod>();
+				foreach (var method in inputGroup) {
+					if (method.Name == name && (typeArgumentCount == 0 || method.TypeParameters.Count == typeArgumentCount)) {
+						// TODO: verify targetType
+						outputGroup.Add(method);
+					}
+				}
+				if (outputGroup.Count > 0)
+					extensionMethodGroups.Add(outputGroup);
+			}
+			return extensionMethodGroups;
+		}
+		
+		List<List<IMethod>> GetAllExtensionMethods()
+		{
+			// TODO: maybe cache the result?
+			List<List<IMethod>> extensionMethodGroups = new List<List<IMethod>>();
+			List<IMethod> m;
+			for (UsingScope scope = this.UsingScope; scope != null; scope = scope.Parent) {
+				m = GetExtensionMethods(scope.NamespaceName).ToList();
+				if (m.Count > 0)
+					extensionMethodGroups.Add(m);
+				
+				m = (
+					from u in scope.Usings
+					select u.ResolveNamespace(context) into ns
+					where ns != null
+					select ns.NamespaceName
+				).Distinct().SelectMany(ns => GetExtensionMethods(ns)).ToList();
+				if (m.Count > 0)
+					extensionMethodGroups.Add(m);
+			}
+			return extensionMethodGroups;
+		}
+		
+		IEnumerable<IMethod> GetExtensionMethods(string namespaceName)
+		{
+			return
+				from c in context.GetClasses(namespaceName, StringComparer.Ordinal)
+				where c.IsStatic
+				from m in c.Methods
+				where (m.IsExtensionMethod)
+				select m;
 		}
 		#endregion
 		
@@ -1710,15 +1773,57 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			MethodGroupResolveResult mgrr = target as MethodGroupResolveResult;
 			if (mgrr != null) {
-				OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, mgrr.TypeArguments.ToArray());
+				var typeArgumentArray = mgrr.TypeArguments.ToArray();
+				OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, typeArgumentArray);
 				foreach (IMethod method in mgrr.Methods) {
 					// TODO: grouping by class definition?
 					or.AddCandidate(method);
 				}
-				// TODO: extension methods?
-				IType returnType = or.BestCandidate.ReturnType.Resolve(context);
-				returnType = returnType.AcceptVisitor(new MethodTypeParameterSubstitution(or.InferredTypeArguments));
-				return new MemberResolveResult(or.BestCandidate, returnType);
+				if (!or.FoundApplicableCandidate) {
+					// No applicable match found, so let's try extension methods.
+					
+					var extensionMethods = mgrr.ExtensionMethods;
+					// Look in extension methods pre-calcalculated by ResolveMemberAccess if possible;
+					// otherwise call GetExtensionMethods().
+					if (extensionMethods == null)
+						extensionMethods = GetExtensionMethods(mgrr.TargetType, mgrr.MethodName, mgrr.TypeArguments.Count);
+					
+					if (extensionMethods.Count > 0) {
+						ResolveResult[] extArguments = new ResolveResult[arguments.Length + 1];
+						extArguments[0] = new ResolveResult(mgrr.TargetType);
+						arguments.CopyTo(extArguments, 1);
+						string[] extArgumentNames = null;
+						if (argumentNames != null) {
+							extArgumentNames = new string[argumentNames.Length + 1];
+							argumentNames.CopyTo(extArgumentNames, 1);
+						}
+						var extOr = new OverloadResolution(context, extArguments, extArgumentNames, typeArgumentArray);
+						
+						foreach (var g in extensionMethods) {
+							foreach (var m in g) {
+								extOr.AddCandidate(m);
+							}
+							if (extOr.FoundApplicableCandidate)
+								break;
+						}
+						// For the lack of a better comparison function (the one within OverloadResolution
+						// cannot be used as it depends on the argument set):
+						if (extOr.FoundApplicableCandidate || or.BestCandidate == null) {
+							// Consider an extension method result better than the normal result only
+							// if it's applicable; or if there is no normal result.
+							or = extOr;
+						}
+					}
+				}
+				if (or.BestCandidate != null) {
+					IType returnType = or.BestCandidate.ReturnType.Resolve(context);
+					returnType = returnType.AcceptVisitor(new MethodTypeParameterSubstitution(or.InferredTypeArguments));
+					return new MemberResolveResult(or.BestCandidate, returnType);
+				} else {
+					// No candidate found at all (not even an inapplicable one).
+					// This can happen with empty method groups (as sometimes used with extension methods)
+					return new UnknownMethodResolveResult(mgrr.TargetType, mgrr.MethodName, mgrr.TypeArguments, CreateParameters(arguments, argumentNames));
+				}
 			}
 			UnknownMemberResolveResult umrr = target as UnknownMemberResolveResult;
 			if (umrr != null) {
@@ -1773,7 +1878,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					// argument might be a lambda or delegate type, so we have to try to guess the delegate type
 					IType type = arguments[i].Type;
 					if (type == SharedTypes.Null || type == SharedTypes.UnknownType) {
-						list.Add(new DefaultParameter(TypeCode.Object.ToTypeReference(), argumentNames[i]));
+						list.Add(new DefaultParameter(KnownTypeReference.Object, argumentNames[i]));
 					} else {
 						list.Add(new DefaultParameter(type, argumentNames[i]));
 					}
@@ -1796,7 +1901,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (mgrr != null && mgrr.Methods.Count > 0)
 				return mgrr.Methods[0].Name;
 			
-			VariableResolveResult vrr = rr as VariableResolveResult;
+			LocalResolveResult vrr = rr as LocalResolveResult;
 			if (vrr != null)
 				return MakeParameterName(vrr.Variable.Name);
 			
@@ -1827,7 +1932,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, new IType[0]);
 			MemberLookup lookup = CreateMemberLookup();
-			bool allowProtectedAccess = lookup.AllowProtectedAccess(target.Type);
+			bool allowProtectedAccess = lookup.IsProtectedAccessAllowed(target.Type);
 			var indexers = target.Type.GetProperties(context, p => p.IsIndexer && lookup.IsAccessible(p, allowProtectedAccess));
 			// TODO: filter indexers hiding other indexers?
 			foreach (IProperty p in indexers) {
@@ -1849,7 +1954,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			OverloadResolution or = new OverloadResolution(context, arguments, argumentNames, new IType[0]);
 			MemberLookup lookup = CreateMemberLookup();
-			bool allowProtectedAccess = lookup.AllowProtectedAccess(type);
+			bool allowProtectedAccess = lookup.IsProtectedAccessAllowed(type);
 			var constructors = type.GetConstructors(context, m => lookup.IsAccessible(m, allowProtectedAccess));
 			foreach (IMethod ctor in constructors) {
 				or.AddCandidate(ctor);
@@ -1868,7 +1973,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// </summary>
 		public ResolveResult ResolveSizeOf(IType type)
 		{
-			IType int32 = TypeCode.Int32.ToTypeReference().Resolve(context);
+			IType int32 = KnownTypeReference.Int32.Resolve(context);
 			int size;
 			switch (ReflectionHelper.GetTypeCode(type)) {
 				case TypeCode.Boolean:

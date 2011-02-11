@@ -220,7 +220,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 			} else {
-				TypeInference ti = new TypeInference(context);
+				TypeInference ti = new TypeInference(context, conversions);
 				bool success;
 				candidate.InferredTypes = ti.InferTypeArguments(method.TypeParameters, arguments, candidate.ParameterTypes, out success);
 				if (!success)
@@ -520,6 +520,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					err |= OverloadResolutionErrors.AmbiguousMatch;
 				return err;
 			}
+		}
+		
+		public bool FoundApplicableCandidate {
+			get { return bestCandidate != null && bestCandidate.Errors == OverloadResolutionErrors.None; }
 		}
 		
 		public IParameterizedMember BestCandidateAmbiguousWith {

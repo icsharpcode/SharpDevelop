@@ -56,5 +56,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			TypeResolveResult rr = DoResolve(context) as TypeResolveResult;
 			return rr != null ? rr.Type : SharedTypes.UnknownType;
 		}
+		
+		public override string ToString()
+		{
+			if (typeArguments.Count == 0)
+				return target.ToString() + "." + identifier;
+			else
+				return target.ToString() + "." + identifier + "<" + string.Join(",", typeArguments) + ">";
+		}
 	}
 }

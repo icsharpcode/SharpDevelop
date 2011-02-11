@@ -12,6 +12,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	public class MemberResolveResult : ResolveResult
 	{
 		readonly IMember member;
+		readonly bool isConstant;
+		readonly object constantValue;
 		
 		public MemberResolveResult(IMember member, IType returnType) : base(returnType)
 		{
@@ -20,8 +22,36 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			this.member = member;
 		}
 		
+		public MemberResolveResult(IMember member, IType returnType, object constantValue) : base(returnType)
+		{
+			if (member == null)
+				throw new ArgumentNullException("member");
+			this.member = member;
+			this.isConstant = true;
+			this.constantValue = constantValue;
+		}
+		
+		public MemberResolveResult(IMember member, ITypeResolveContext context) : base(member.ReturnType.Resolve(context))
+		{
+			this.member = member;
+			IField field = member as IField;
+			if (field != null) {
+				isConstant = field.IsConst;
+				if (isConstant)
+					constantValue = field.ConstantValue.GetValue(context);
+			}
+		}
+		
 		public IMember Member {
 			get { return member; }
+		}
+		
+		public override bool IsCompileTimeConstant {
+			get { return isConstant; }
+		}
+		
+		public override object ConstantValue {
+			get { return constantValue; }
 		}
 		
 		public override string ToString()

@@ -2,6 +2,7 @@
 // This code is distributed under MIT X11 license (for details please see \doc\license.txt)
 
 using System;
+using ICSharpCode.NRefactory.CSharp;
 using ICSharpCode.NRefactory.Utils;
 
 namespace ICSharpCode.NRefactory.TypeSystem.Implementation
@@ -11,15 +12,33 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 	/// </summary>
 	public sealed class GetClassTypeReference : ITypeReference, ISupportsInterning
 	{
-		string fullTypeName;
+		string nameSpace, name;
 		int typeParameterCount;
 		//volatile CachedResult v_cachedResult;
+		
+		public GetClassTypeReference(string nameSpace, string name, int typeParameterCount)
+		{
+			if (nameSpace == null)
+				throw new ArgumentNullException("nameSpace");
+			if (name == null)
+				throw new ArgumentNullException("name");
+			this.nameSpace = nameSpace;
+			this.name = name;
+			this.typeParameterCount = typeParameterCount;
+		}
 		
 		public GetClassTypeReference(string fullTypeName, int typeParameterCount)
 		{
 			if (fullTypeName == null)
 				throw new ArgumentNullException("fullTypeName");
-			this.fullTypeName = fullTypeName;
+			int pos = fullTypeName.LastIndexOf('.');
+			if (pos < 0) {
+				nameSpace = string.Empty;
+				name = fullTypeName;
+			} else {
+				nameSpace = fullTypeName.Substring(0, pos);
+				name = fullTypeName.Substring(pos + 1);
+			}
 			this.typeParameterCount = typeParameterCount;
 		}
 		
@@ -64,31 +83,32 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 		IType DoResolve(ITypeResolveContext context)
 		{
 			 */
-			return context.GetClass(fullTypeName, typeParameterCount, StringComparer.Ordinal) ?? SharedTypes.UnknownType;
+			return context.GetClass(nameSpace, name, typeParameterCount, StringComparer.Ordinal) ?? SharedTypes.UnknownType;
 		}
 		
 		public override string ToString()
 		{
 			if (typeParameterCount == 0)
-				return fullTypeName;
+				return NamespaceDeclaration.BuildQualifiedName(nameSpace, name);
 			else
-				return fullTypeName + "`" + typeParameterCount;
+				return NamespaceDeclaration.BuildQualifiedName(nameSpace, name) + "`" + typeParameterCount;
 		}
 		
 		void ISupportsInterning.PrepareForInterning(IInterningProvider provider)
 		{
-			fullTypeName = provider.Intern(fullTypeName);
+			nameSpace = provider.Intern(nameSpace);
+			name = provider.Intern(name);
 		}
 		
 		int ISupportsInterning.GetHashCodeForInterning()
 		{
-			return fullTypeName.GetHashCode() ^ typeParameterCount;
+			return nameSpace.GetHashCode() ^ name.GetHashCode() ^ typeParameterCount;
 		}
 		
 		bool ISupportsInterning.EqualsForInterning(ISupportsInterning other)
 		{
 			GetClassTypeReference o = other as GetClassTypeReference;
-			return o != null && fullTypeName == o.fullTypeName && typeParameterCount == o.typeParameterCount;
+			return o != null && name == o.name && nameSpace == o.nameSpace && typeParameterCount == o.typeParameterCount;
 		}
 	}
 }

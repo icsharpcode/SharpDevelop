@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.GeneralScope
 			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
 			Assert.AreEqual(1, td.StartLocation.Line, "StartLocation.Y");
 			Assert.AreEqual(1, td.StartLocation.Column, "StartLocation.X");
-			DomLocation bodyStartLocation = td.LBrace.PrevSibling.EndLocation;
+			AstLocation bodyStartLocation = td.GetChildByRole(AstNode.Roles.LBrace).PrevSibling.EndLocation;
 			Assert.AreEqual(1, bodyStartLocation.Line, "BodyStartLocation.Y");
 			Assert.AreEqual(14, bodyStartLocation.Column, "BodyStartLocation.X");
 			Assert.AreEqual(3, td.EndLocation.Line, "EndLocation.Y");

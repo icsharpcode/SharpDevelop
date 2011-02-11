@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			get { return topLevelTypeDefinitions; }
 		}
 		
-		public UsingScope GetUsingScope(DomLocation location)
+		public UsingScope GetUsingScope(AstLocation location)
 		{
 			foreach (UsingScope scope in usingScopes) {
 				if (scope.Region.IsInside(location.Line, location.Column))
@@ -63,7 +63,7 @@ namespace ICSharpCode.NRefactory.CSharp
 			return rootUsingScope;
 		}
 		
-		public ITypeDefinition GetTopLevelTypeDefinition(DomLocation location)
+		public ITypeDefinition GetTopLevelTypeDefinition(AstLocation location)
 		{
 			foreach (ITypeDefinition typeDef in topLevelTypeDefinitions) {
 				if (typeDef.Region.IsInside(location.Line, location.Column))

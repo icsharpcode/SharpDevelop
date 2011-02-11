@@ -222,10 +222,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.IsFalse(getDecoder.IsStatic);
 			Assert.IsFalse(getDecoder.IsAbstract);
 			Assert.IsFalse(getDecoder.IsSealed);
-			// Should be override, but actually is 'virtual'. We cannot do better because 'override' is not encoded in the metadata
-			// (the .override directive is unrelated; it's meant for explicit interface implementations)
-			Assert.IsTrue(getDecoder.IsVirtual);
-			Assert.IsFalse(getDecoder.IsOverride);
+			Assert.IsFalse(getDecoder.IsVirtual);
+			Assert.IsTrue(getDecoder.IsOverride);
 		}
 		
 		[Test]
@@ -241,10 +239,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			Assert.IsFalse(getDecoder.IsStatic);
 			Assert.IsFalse(getDecoder.IsAbstract);
 			Assert.IsFalse(getDecoder.IsSealed);
-			// Should be override, but actually is 'virtual'. We cannot do better because 'override' is not encoded in the metadata
-			// (the .override directive is unrelated; it's meant for explicit interface implementations)
-			Assert.IsTrue(getDecoder.IsVirtual);
-			Assert.IsFalse(getDecoder.IsOverride);
+			Assert.IsFalse(getDecoder.IsVirtual);
+			Assert.IsTrue(getDecoder.IsOverride);
 		}
 	}
 }

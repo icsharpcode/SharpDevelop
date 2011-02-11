@@ -13,7 +13,7 @@ namespace ICSharpCode.NRefactory.CSharp.Parser.Expression
 		{
 			AssignmentExpression ae = ParseUtilCSharp.ParseExpression<AssignmentExpression>(program);
 			
-			Assert.AreEqual(op, ae.AssignmentOperatorType);
+			Assert.AreEqual(op, ae.Operator);
 			
 			Assert.IsTrue(ae.Left is IdentifierExpression);
 			Assert.IsTrue(ae.Right is IdentifierExpression);

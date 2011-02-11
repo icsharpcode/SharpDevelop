@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		
 		#region IsAccessible
-		public bool AllowProtectedAccess(IType targetType)
+		public bool IsProtectedAccessAllowed(IType targetType)
 		{
 			ITypeDefinition typeDef = targetType.GetDefinition();
 			return typeDef != null && typeDef.IsDerivedFrom(currentTypeDefinition, context);
@@ -99,6 +99,54 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		public ResolveResult LookupType(IType declaringType, string name, IList<IType> typeArguments)
+		{
+			int typeArgumentCount = typeArguments.Count;
+			Predicate<ITypeDefinition> typeFilter = delegate (ITypeDefinition d) {
+				return d.TypeParameterCount == typeArgumentCount && d.Name == name && IsAccessible(d, true);
+			};
+			List<IType> types = declaringType.GetNestedTypes(context, typeFilter).ToList();
+			RemoveTypesHiddenByOtherTypes(types);
+			if (types.Count > 0)
+				return CreateTypeResolveResult(types[0], types.Count > 1, typeArguments);
+			else
+				return new UnknownMemberResolveResult(declaringType, name, typeArguments);
+		}
+		
+		void RemoveTypesHiddenByOtherTypes(List<IType> types)
+		{
+			for (int i = types.Count - 1; i >= 0; i--) {
+				ITypeDefinition d = GetDeclaringTypeDef(types[i]);
+				if (d == null)
+					continue;
+				// nested loop depends on the fact that the members of more derived classes appear later in the list
+				for (int j = i + 1; j < types.Count; j++) {
+					if (types[i].TypeParameterCount != types[j].TypeParameterCount)
+						continue;
+					ITypeDefinition s = GetDeclaringTypeDef(types[j]);
+					if (s != null && s != d && s.IsDerivedFrom(d, context)) {
+						// types[j] hides types[i]
+						types.RemoveAt(i);
+						break;
+					}
+				}
+			}
+		}
+		
+		ResolveResult CreateTypeResolveResult(IType returnedType, bool isAmbiguous, IList<IType> typeArguments)
+		{
+			if (typeArguments.Count > 0) {
+				// parameterize the type if necessary
+				ITypeDefinition returnedTypeDef = returnedType as ITypeDefinition;
+				if (returnedTypeDef != null)
+					returnedType = new ParameterizedType(returnedTypeDef, typeArguments);
+			}
+			if (isAmbiguous)
+				return new AmbiguousTypeResolveResult(returnedType);
+			else
+				return new TypeResolveResult(returnedType);
+		}
+		
 		/// <summary>
 		/// Performs a member lookup.
 		/// </summary>
@@ -110,12 +158,13 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			List<IMember> members = new List<IMember>();
 			if (!isInvocation) {
 				// Consider nested types only if it's not an invocation. The type parameter count must match in this case.
-				types.AddRange(type.GetNestedTypes(context,
-				                                   d => d.TypeParameterCount == typeArgumentCount
-				                                   && d.Name == name && IsAccessible(d, true)));
+				Predicate<ITypeDefinition> typeFilter = delegate (ITypeDefinition d) {
+					return d.TypeParameterCount == typeArgumentCount && d.Name == name && IsAccessible(d, true);
+				};
+				types.AddRange(type.GetNestedTypes(context, typeFilter));
 			}
 			
-			bool allowProtectedAccess = AllowProtectedAccess(type);
+			bool allowProtectedAccess = IsProtectedAccessAllowed(type);
 			
 			if (typeArgumentCount == 0) {
 				Predicate<IMember> memberFilter = delegate(IMember member) {
@@ -139,23 +188,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			// TODO: can't members also hide types?
 			
-			// remove types hidden by other types
-			for (int i = types.Count - 1; i >= 0; i--) {
-				ITypeDefinition d = GetDeclaringTypeDef(types[i]);
-				if (d == null)
-					continue;
-				// nested loop depends on the fact that the members of more derived classes appear later in the list
-				for (int j = i + 1; j < types.Count; j++) {
-					if (types[i].TypeParameterCount != types[j].TypeParameterCount)
-						continue;
-					ITypeDefinition s = GetDeclaringTypeDef(types[j]);
-					if (s != null && s != d && s.IsDerivedFrom(d, context)) {
-						// types[j] hides types[i]
-						types.RemoveAt(i);
-						break;
-					}
-				}
-			}
+			RemoveTypesHiddenByOtherTypes(types);
 			// remove members hidden by types
 			for (int i = 0; i < types.Count; i++) {
 				ITypeDefinition d = GetDeclaringTypeDef(types[i]);
@@ -206,28 +239,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			
 			if (types.Count > 0) {
-				IType returnedType = types[0];
-				if (typeArguments.Count > 0) {
-					// parameterize the type if necessary
-					ITypeDefinition returnedTypeDef = returnedType as ITypeDefinition;
-					if (returnedTypeDef != null)
-						returnedType = new ParameterizedType(returnedTypeDef, typeArguments);
-				}
-				if (types.Count == 1 && members.Count == 0)
-					return new TypeResolveResult(types[0]);
-				else
-					return new AmbiguousTypeResolveResult(types[0]);
+				bool isAmbiguous = !(types.Count == 1 && members.Count == 0);
+				return CreateTypeResolveResult(types[0], isAmbiguous, typeArguments);
 			}
 			if (members.Count == 0)
 				return new UnknownMemberResolveResult(type, name, typeArguments);
 			IMember firstNonMethod = members.FirstOrDefault(m => !(m is IMethod));
 			if (members.Count == 1 && firstNonMethod != null)
-				return new MemberResolveResult(firstNonMethod, firstNonMethod.ReturnType.Resolve(context));
+				return new MemberResolveResult(firstNonMethod, context);
 			if (firstNonMethod == null)
-				return new MethodGroupResolveResult(members.ConvertAll(m => (IMethod)m), typeArguments);
+				return new MethodGroupResolveResult(type, name, members.ConvertAll(m => (IMethod)m), typeArguments);
 			return new AmbiguousMemberResultResult(firstNonMethod, firstNonMethod.ReturnType.Resolve(context));
 		}
-		
+
 		static bool IsNonInterfaceType(ITypeDefinition def)
 		{
 			// return type if def is neither an interface nor System.Object

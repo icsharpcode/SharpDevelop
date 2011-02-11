@@ -42,5 +42,10 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			return SharedTypes.UnknownType;
 		}
+		
+		public override string ToString()
+		{
+			return identifier + "::";
+		}
 	}
 }

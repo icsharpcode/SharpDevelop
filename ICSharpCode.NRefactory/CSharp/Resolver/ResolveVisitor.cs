@@ -34,12 +34,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 	/// Moreover, there is the <c>ResolveAll</c> mode - it works similar to resolving mode, but will not switch back to scanning mode.
 	/// The whole subtree will be resolved without notifying the navigator.
 	/// </remarks>
-	public sealed class ResolveVisitor : DomVisitor<object, ResolveResult>
+	public sealed class ResolveVisitor : AstVisitor<object, ResolveResult>
 	{
 		static readonly ResolveResult errorResult = new ErrorResolveResult(SharedTypes.UnknownType);
 		CSharpResolver resolver;
 		readonly ParsedFile parsedFile;
-		readonly Dictionary<DomNode, ResolveResult> cache = new Dictionary<DomNode, ResolveResult>();
+		readonly Dictionary<AstNode, ResolveResult> cache = new Dictionary<AstNode, ResolveResult>();
 		
 		readonly IResolveVisitorNavigator navigator;
 		ResolveVisitorNavigationMode mode = ResolveVisitorNavigationMode.Scan;
@@ -79,7 +79,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			get { return mode != ResolveVisitorNavigationMode.Scan; }
 		}
 		
-		public void Scan(DomNode node)
+		public void Scan(AstNode node)
 		{
 			if (node == null)
 				return;
@@ -109,7 +109,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		public ResolveResult Resolve(DomNode node)
+		public ResolveResult Resolve(AstNode node)
 		{
 			if (node == null)
 				return errorResult;
@@ -125,9 +125,9 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return result;
 		}
 		
-		void ScanChildren(DomNode node)
+		void ScanChildren(AstNode node)
 		{
-			for (DomNode child = node.FirstChild; child != null; child = child.NextSibling) {
+			for (AstNode child = node.FirstChild; child != null; child = child.NextSibling) {
 				Scan(child);
 			}
 		}
@@ -138,7 +138,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Gets the cached resolve result for the specified node.
 		/// Returns <c>null</c> if no cached result was found (e.g. if the node was not visited; or if it was visited in scanning mode).
 		/// </summary>
-		public ResolveResult GetResolveResult(DomNode node)
+		public ResolveResult GetResolveResult(AstNode node)
 		{
 			ResolveResult result;
 			if (cache.TryGetValue(node, out result))
@@ -178,7 +178,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Track CurrentTypeDefinition
-		ResolveResult VisitTypeOrDelegate(DomNode typeDeclaration)
+		ResolveResult VisitTypeOrDelegate(AstNode typeDeclaration)
 		{
 			ITypeDefinition previousTypeDefinition = resolver.CurrentTypeDefinition;
 			try {
@@ -218,8 +218,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			int initializerCount = fieldDeclaration.Variables.Count();
 			ResolveResult result = null;
-			for (DomNode node = fieldDeclaration.FirstChild; node != null; node = node.NextSibling) {
-				if (node.Role == FieldDeclaration.Roles.Initializer) {
+			for (AstNode node = fieldDeclaration.FirstChild; node != null; node = node.NextSibling) {
+				if (node.Role == FieldDeclaration.Roles.Variable) {
 					if (resolver.CurrentTypeDefinition != null) {
 						resolver.CurrentMember = resolver.CurrentTypeDefinition.Fields.FirstOrDefault(f => f.Region.IsInside(node.StartLocation));
 					}
@@ -250,7 +250,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					foreach (IVariable v in resolver.LocalVariables) {
 						if (v.Name == identifier) {
 							object constantValue = v.IsConst ? v.ConstantValue.GetValue(resolver.Context) : null;
-							return new VariableResolveResult(v, v.Type.Resolve(resolver.Context), constantValue);
+							return new LocalResolveResult(v, v.Type.Resolve(resolver.Context), constantValue);
 						}
 					}
 				}
@@ -260,7 +260,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		ResolveResult VisitMethodMember(AbstractMemberBase member)
+		ResolveResult VisitMethodMember(AttributedNode member)
 		{
 			try {
 				if (resolver.CurrentTypeDefinition != null) {
@@ -270,7 +270,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ScanChildren(member);
 				
 				if (resolverEnabled && resolver.CurrentMember != null)
-					return new MemberResolveResult(resolver.CurrentMember, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
+					return new MemberResolveResult(resolver.CurrentMember, resolver.Context);
 				else
 					return errorResult;
 			} finally {
@@ -306,8 +306,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					resolver.CurrentMember = resolver.CurrentTypeDefinition.Properties.FirstOrDefault(p => p.Region.IsInside(propertyDeclaration.StartLocation));
 				}
 				
-				for (DomNode node = propertyDeclaration.FirstChild; node != null; node = node.NextSibling) {
-					if (node.Role == PropertyDeclaration.PropertySetRole && resolver.CurrentMember != null) {
+				for (AstNode node = propertyDeclaration.FirstChild; node != null; node = node.NextSibling) {
+					if (node.Role == PropertyDeclaration.SetterRole && resolver.CurrentMember != null) {
 						resolver.PushBlock();
 						resolver.AddVariable(resolver.CurrentMember.ReturnType, "value");
 						Scan(node);
@@ -317,7 +317,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 					}
 				}
 				if (resolverEnabled && resolver.CurrentMember != null)
-					return new MemberResolveResult(resolver.CurrentMember, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
+					return new MemberResolveResult(resolver.CurrentMember, resolver.Context);
 				else
 					return errorResult;
 			} finally {
@@ -352,7 +352,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 				
 				if (resolverEnabled && resolver.CurrentMember != null)
-					return new MemberResolveResult(resolver.CurrentMember, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
+					return new MemberResolveResult(resolver.CurrentMember, resolver.Context);
 				else
 					return errorResult;
 			} finally {
@@ -368,7 +368,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				if (pm != null) {
 					foreach (IParameter p in pm.Parameters) {
 						if (p.Name == parameterDeclaration.Name) {
-							return new VariableResolveResult(p, p.Type.Resolve(resolver.Context));
+							return new LocalResolveResult(p, p.Type.Resolve(resolver.Context));
 						}
 					}
 				}
@@ -388,7 +388,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				ScanChildren(enumMemberDeclaration);
 				
 				if (resolverEnabled && resolver.CurrentMember != null)
-					return new MemberResolveResult(resolver.CurrentMember, resolver.CurrentMember.ReturnType.Resolve(resolver.Context));
+					return new MemberResolveResult(resolver.CurrentMember, resolver.Context);
 				else
 					return errorResult;
 			} finally {
@@ -456,15 +456,15 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#endregion
 		
 		#region Visit Expressions
-		static bool IsTargetOfInvocation(DomNode node)
+		static bool IsTargetOfInvocation(AstNode node)
 		{
 			InvocationExpression ie = node.Parent as InvocationExpression;
 			return ie != null && ie.Target == node;
 		}
 		
-		IType ResolveType(DomNode node)
+		IType ResolveType(AstNode node)
 		{
-			return SharedTypes.UnknownType;
+			return MakeTypeReference(node).Resolve(resolver.Context);
 		}
 		
 		public override ResolveResult VisitAnonymousMethodExpression(AnonymousMethodExpression anonymousMethodExpression, object data)
@@ -487,7 +487,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolverEnabled) {
 				Scan(asExpression.Expression);
-				return new ResolveResult(ResolveType(asExpression.TypeReference));
+				return new ResolveResult(ResolveType(asExpression.Type));
 			} else {
 				ScanChildren(asExpression);
 				return null;
@@ -521,7 +521,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (resolverEnabled) {
 				ResolveResult left = Resolve(binaryOperatorExpression.Left);
 				ResolveResult right = Resolve(binaryOperatorExpression.Right);
-				return resolver.ResolveBinaryOperator(binaryOperatorExpression.BinaryOperatorType, left, right);
+				return resolver.ResolveBinaryOperator(binaryOperatorExpression.Operator, left, right);
 			} else {
 				ScanChildren(binaryOperatorExpression);
 				return null;
@@ -553,7 +553,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
 		{
 			if (resolverEnabled) {
-				return new ConstantResolveResult(ResolveType(defaultValueExpression.TypeReference), null);
+				return new ConstantResolveResult(ResolveType(defaultValueExpression.Type), null);
 			} else {
 				ScanChildren(defaultValueExpression);
 				return null;
@@ -583,12 +583,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
-		ResolveResult[] GetArguments(IEnumerable<DomNode> argumentExpressions, out string[] argumentNames)
+		ResolveResult[] GetArguments(IEnumerable<AstNode> argumentExpressions, out string[] argumentNames)
 		{
 			argumentNames = null; // TODO: add support for named arguments
 			ResolveResult[] arguments = new ResolveResult[argumentExpressions.Count()];
 			int i = 0;
-			foreach (DomNode argument in argumentExpressions) {
+			foreach (AstNode argument in argumentExpressions) {
 				arguments[i++] = Resolve(argument);
 			}
 			return arguments;
@@ -623,7 +623,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitIsExpression(IsExpression isExpression, object data)
 		{
 			ScanChildren(isExpression);
-			return new ResolveResult(TypeCode.Boolean.ToTypeReference().Resolve(resolver.Context));
+			return new ResolveResult(KnownTypeReference.Boolean.Resolve(resolver.Context));
 		}
 		
 		public override ResolveResult VisitLambdaExpression(LambdaExpression lambdaExpression, object data)
@@ -635,7 +635,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolverEnabled) {
 				ResolveResult target = Resolve(memberReferenceExpression.Target);
-				List<DomNode> typeArgumentNodes = memberReferenceExpression.TypeArguments.ToList();
+				List<AstType> typeArgumentNodes = memberReferenceExpression.TypeArguments.ToList();
 				// TODO: type arguments?
 				return resolver.ResolveMemberAccess(target, memberReferenceExpression.MemberName,
 				                                    EmptyList<IType>.Instance,
@@ -718,7 +718,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			return resolver.ResolveThisReference();
 		}
 		
-		static readonly GetClassTypeReference systemType = new GetClassTypeReference("System.Type", 0);
+		static readonly GetClassTypeReference systemType = new GetClassTypeReference("System", "Type", 0);
 		
 		public override ResolveResult VisitTypeOfExpression(TypeOfExpression typeOfExpression, object data)
 		{
@@ -733,7 +733,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			if (resolverEnabled) {
 				ResolveResult expr = Resolve(unaryOperatorExpression.Expression);
-				return resolver.ResolveUnaryOperator(unaryOperatorExpression.UnaryOperatorType, expr);
+				return resolver.ResolveUnaryOperator(unaryOperatorExpression.Operator, expr);
 			} else {
 				ScanChildren(unaryOperatorExpression);
 				return null;
@@ -778,7 +778,8 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		public override ResolveResult VisitForeachStatement(ForeachStatement foreachStatement, object data)
 		{
 			resolver.PushBlock();
-			ITypeReference type = MakeTypeReference(foreachStatement.VariableType, foreachStatement.Expression, true);
+			ITypeReference type = MakeTypeReference(foreachStatement.VariableType, foreachStatement.InExpression, true);
+			resolver.AddVariable(type, foreachStatement.VariableName);
 			ScanChildren(foreachStatement);
 			resolver.PopBlock();
 			return null;
@@ -894,7 +895,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			resolver.PushBlock();
 			if (catchClause.VariableName != null) {
-				resolver.AddVariable(MakeTypeReference(catchClause.ReturnType, null, false), catchClause.VariableName);
+				resolver.AddVariable(MakeTypeReference(catchClause.Type, null, false), catchClause.VariableName);
 			}
 			ScanChildren(catchClause);
 			resolver.PopBlock();
@@ -907,14 +908,14 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			bool isConst = (variableDeclarationStatement.Modifiers & Modifiers.Const) != 0;
 			VariableInitializer firstInitializer = variableDeclarationStatement.Variables.FirstOrDefault();
-			ITypeReference type = MakeTypeReference(variableDeclarationStatement.ReturnType,
+			ITypeReference type = MakeTypeReference(variableDeclarationStatement.Type,
 			                                        firstInitializer != null ? firstInitializer.Initializer : null,
 			                                        false);
 			
 			int initializerCount = variableDeclarationStatement.Variables.Count();
 			ResolveResult result = null;
-			for (DomNode node = variableDeclarationStatement.FirstChild; node != null; node = node.NextSibling) {
-				if (node.Role == FieldDeclaration.Roles.Initializer) {
+			for (AstNode node = variableDeclarationStatement.FirstChild; node != null; node = node.NextSibling) {
+				if (node.Role == FieldDeclaration.Roles.Variable) {
 					VariableInitializer vi = (VariableInitializer)node;
 					
 					IConstantValue cv = null;
@@ -940,16 +941,21 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// Creates a type reference for the specified type node.
 		/// If the type node is 'var', performs type inference on the initializer expression.
 		/// </summary>
-		ITypeReference MakeTypeReference(DomNode type, DomNode initializerExpression, bool isForEach)
+		ITypeReference MakeTypeReference(AstNode type, AstNode initializerExpression, bool isForEach)
 		{
 			if (initializerExpression != null && IsVar(type)) {
 				return new VarTypeReference(this, resolver.Clone(), initializerExpression, isForEach);
 			} else {
-				return TypeSystemConvertVisitor.ConvertType(type);
+				return MakeTypeReference(type);
 			}
 		}
 		
-		static bool IsVar(DomNode returnType)
+		ITypeReference MakeTypeReference(AstNode type)
+		{
+			return TypeSystemConvertVisitor.ConvertType(type, resolver.CurrentTypeDefinition, resolver.CurrentMember as IMethod, resolver.UsingScope, false);
+		}
+		
+		static bool IsVar(AstNode returnType)
 		{
 			return returnType is IdentifierExpression && ((IdentifierExpression)returnType).Identifier == "var";
 		}
@@ -958,12 +964,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			ResolveVisitor visitor;
 			CSharpResolver storedContext;
-			DomNode initializerExpression;
+			AstNode initializerExpression;
 			bool isForEach;
 			
 			IType result;
 			
-			public VarTypeReference(ResolveVisitor visitor, CSharpResolver storedContext, DomNode initializerExpression, bool isForEach)
+			public VarTypeReference(ResolveVisitor visitor, CSharpResolver storedContext, AstNode initializerExpression, bool isForEach)
 			{
 				this.visitor = visitor;
 				this.storedContext = storedContext;
@@ -1010,7 +1016,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 								return pt.TypeArguments[0];
 							}
 						} else if (baseTypeDef.Namespace == "System.Collections" && baseTypeDef.TypeParameterCount == 0) {
-							return TypeCode.Object.ToTypeReference().Resolve(storedContext.Context);
+							return KnownTypeReference.Object.Resolve(storedContext.Context);
 						}
 					}
 				}
@@ -1043,28 +1049,43 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		#region Using Declaration
 		public override ResolveResult VisitUsingDeclaration(UsingDeclaration usingDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 		
 		public override ResolveResult VisitUsingAliasDeclaration(UsingAliasDeclaration usingDeclaration, object data)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 		#endregion
 		
 		#region Type References
-		public override ResolveResult VisitFullTypeName(FullTypeName fullTypeName, object data)
+		public override ResolveResult VisitPrimitiveType(PrimitiveType primitiveType, object data)
 		{
-			throw new NotImplementedException();
+			ScanChildren(primitiveType);
+			return new TypeResolveResult(MakeTypeReference(primitiveType).Resolve(resolver.Context));
+		}
+		
+		public override ResolveResult VisitSimpleType(SimpleType simpleType, object data)
+		{
+			ScanChildren(simpleType);
+			return new TypeResolveResult(MakeTypeReference(simpleType).Resolve(resolver.Context));
+		}
+		
+		public override ResolveResult VisitMemberType(MemberType memberType, object data)
+		{
+			ScanChildren(memberType);
+			return new TypeResolveResult(MakeTypeReference(memberType).Resolve(resolver.Context));
 		}
 		
 		public override ResolveResult VisitComposedType(ComposedType composedType, object data)
 		{
-			throw new NotImplementedException();
+			ScanChildren(composedType);
+			return new TypeResolveResult(MakeTypeReference(composedType).Resolve(resolver.Context));
 		}
 		#endregion
 		
 		#region Query Expressions
+		/*
 		public override ResolveResult VisitQueryExpressionFromClause(QueryExpressionFromClause queryExpressionFromClause, object data)
 		{
 			throw new NotImplementedException();
@@ -1104,6 +1125,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		{
 			throw new NotImplementedException();
 		}
+		*/
 		#endregion
 		
 		public override ResolveResult VisitIdentifier(Identifier identifier, object data)
@@ -1113,16 +1135,19 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		public override ResolveResult VisitConstraint(Constraint constraint, object data)
 		{
+			ScanChildren(constraint);
 			return null;
 		}
 		
 		public override ResolveResult VisitConstructorInitializer(ConstructorInitializer constructorInitializer, object data)
 		{
+			ScanChildren(constructorInitializer);
 			return null;
 		}
 		
 		public override ResolveResult VisitAccessorDeclaration(Accessor accessorDeclaration, object data)
 		{
+			ScanChildren(accessorDeclaration);
 			return null;
 		}
 	}

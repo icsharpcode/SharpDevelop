@@ -18,12 +18,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// <summary>
 		/// Retrieves a class.
 		/// </summary>
-		/// <param name="fullTypeName">Full name of the class</param>
+		/// <param name="nameSpace">Namespace that contains the class</param>
+		/// <param name="name">Name of the class</param>
 		/// <param name="typeParameterCount">Number of type parameters</param>
 		/// <param name="nameComparer">Language-specific rules for how class names are compared</param>
 		/// <returns>The type definition for the class; or null if no such class exists.</returns>
 		/// <remarks>This method never returns inner classes; it can be used only with top-level classes.</remarks>
-		ITypeDefinition GetClass(string fullTypeName, int typeParameterCount, StringComparer nameComparer);
+		ITypeDefinition GetClass(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer);
 		
 		/// <summary>
 		/// Retrieves all top-level classes.
@@ -93,9 +94,10 @@ namespace ICSharpCode.NRefactory.TypeSystem
 	[ContractClassFor(typeof(ITypeResolveContext))]
 	abstract class ITypeResolveContextContract : ITypeResolveContext
 	{
-		ITypeDefinition ITypeResolveContext.GetClass(string fullTypeName, int typeParameterCount, StringComparer nameComparer)
+		ITypeDefinition ITypeResolveContext.GetClass(string nameSpace, string name, int typeParameterCount, StringComparer nameComparer)
 		{
-			Contract.Requires(fullTypeName != null);
+			Contract.Requires(nameSpace != null);
+			Contract.Requires(name != null);
 			Contract.Requires(typeParameterCount >= 0);
 			Contract.Requires(nameComparer != null);
 			return null;

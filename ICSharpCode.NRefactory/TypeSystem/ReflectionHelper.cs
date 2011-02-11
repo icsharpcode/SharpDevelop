@@ -53,8 +53,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return null;
 			} else {
 				int typeParameterCount;
-				string name = SplitTypeParameterCountFromReflectionName(type.FullName, out typeParameterCount);
-				return context.GetClass(name, typeParameterCount, StringComparer.Ordinal);
+				string name = SplitTypeParameterCountFromReflectionName(type.Name, out typeParameterCount);
+				return context.GetClass(type.Namespace, name, typeParameterCount, StringComparer.Ordinal);
 			}
 		}
 		#endregion
@@ -113,8 +113,8 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				return new NestedTypeReference(baseTypeRef, name, typeParameterCount);
 			} else {
 				int typeParameterCount;
-				string name = SplitTypeParameterCountFromReflectionName(type.FullName, out typeParameterCount);
-				return new GetClassTypeReference(name, typeParameterCount);
+				string name = SplitTypeParameterCountFromReflectionName(type.Name, out typeParameterCount);
+				return new GetClassTypeReference(type.Namespace, name, typeParameterCount);
 			}
 		}
 		#endregion
@@ -157,24 +157,24 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#region TypeCode.ToTypeReference()
 		static readonly ITypeReference[] primitiveTypeReferences = {
 			SharedTypes.UnknownType, // TypeCode.Empty
-			new GetClassTypeReference("System.Object", 0),
-			new GetClassTypeReference("System.DBNull", 0),
-			new GetClassTypeReference("System.Boolean", 0),
-			new GetClassTypeReference("System.Char", 0),
-			new GetClassTypeReference("System.SByte", 0),
-			new GetClassTypeReference("System.Byte", 0),
-			new GetClassTypeReference("System.Int16", 0),
-			new GetClassTypeReference("System.UInt16", 0),
-			new GetClassTypeReference("System.Int32", 0),
-			new GetClassTypeReference("System.UInt32", 0),
-			new GetClassTypeReference("System.Int64", 0),
-			new GetClassTypeReference("System.UInt64", 0),
-			new GetClassTypeReference("System.Single", 0),
-			new GetClassTypeReference("System.Double", 0),
-			new GetClassTypeReference("System.Decimal", 0),
-			new GetClassTypeReference("System.DateTime", 0),
+			KnownTypeReference.Object,
+			new GetClassTypeReference("System", "DBNull", 0),
+			KnownTypeReference.Boolean,
+			KnownTypeReference.Char,
+			KnownTypeReference.SByte,
+			KnownTypeReference.Byte,
+			KnownTypeReference.Int16,
+			KnownTypeReference.UInt16,
+			KnownTypeReference.Int32,
+			KnownTypeReference.UInt32,
+			KnownTypeReference.Int64,
+			KnownTypeReference.UInt64,
+			KnownTypeReference.Single,
+			KnownTypeReference.Double,
+			new GetClassTypeReference("System", "Decimal", 0),
+			new GetClassTypeReference("System", "DateTime", 0),
 			SharedTypes.UnknownType, // (TypeCode)17 has no enum value?
-			new GetClassTypeReference("System.String", 0)
+			KnownTypeReference.String
 		};
 		
 		/// <summary>
@@ -190,23 +190,23 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		
 		#region GetTypeCode
 		static readonly Dictionary<string, TypeCode> typeNameToCodeDict = new Dictionary<string, TypeCode> {
-			{ "System.Object",   TypeCode.Object },
-			{ "System.DBNull",   TypeCode.DBNull },
-			{ "System.Boolean",  TypeCode.Boolean },
-			{ "System.Char",     TypeCode.Char },
-			{ "System.SByte",    TypeCode.SByte },
-			{ "System.Byte",     TypeCode.Byte },
-			{ "System.Int16",    TypeCode.Int16 },
-			{ "System.UInt16",   TypeCode.UInt16 },
-			{ "System.Int32",    TypeCode.Int32 },
-			{ "System.UInt32",   TypeCode.UInt32 },
-			{ "System.Int64",    TypeCode.Int64 },
-			{ "System.UInt64",   TypeCode.UInt64 },
-			{ "System.Single",   TypeCode.Single },
-			{ "System.Double",   TypeCode.Double },
-			{ "System.Decimal",  TypeCode.Decimal },
-			{ "System.DateTime", TypeCode.DateTime },
-			{ "System.String",   TypeCode.String }
+			{ "Object",   TypeCode.Object },
+			{ "DBNull",   TypeCode.DBNull },
+			{ "Boolean",  TypeCode.Boolean },
+			{ "Char",     TypeCode.Char },
+			{ "SByte",    TypeCode.SByte },
+			{ "Byte",     TypeCode.Byte },
+			{ "Int16",    TypeCode.Int16 },
+			{ "UInt16",   TypeCode.UInt16 },
+			{ "Int32",    TypeCode.Int32 },
+			{ "UInt32",   TypeCode.UInt32 },
+			{ "Int64",    TypeCode.Int64 },
+			{ "UInt64",   TypeCode.UInt64 },
+			{ "Single",   TypeCode.Single },
+			{ "Double",   TypeCode.Double },
+			{ "Decimal",  TypeCode.Decimal },
+			{ "DateTime", TypeCode.DateTime },
+			{ "String",   TypeCode.String }
 		};
 		
 		/// <summary>
@@ -216,7 +216,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			ITypeDefinition def = type as ITypeDefinition;
 			TypeCode typeCode;
-			if (def != null && def.TypeParameterCount == 0 && typeNameToCodeDict.TryGetValue(def.FullName, out typeCode))
+			if (def != null && def.TypeParameterCount == 0 && def.Namespace == "System" && typeNameToCodeDict.TryGetValue(def.Name, out typeCode))
 				return typeCode;
 			else
 				return TypeCode.Empty;

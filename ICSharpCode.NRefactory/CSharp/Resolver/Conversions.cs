@@ -21,7 +21,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (context == null)
 				throw new ArgumentNullException("context");
 			this.context = context;
-			this.objectType = TypeCode.Object.ToTypeReference().Resolve(context);
+			this.objectType = KnownTypeReference.Object.Resolve(context);
 			this.dynamicErasure = new DynamicErasure(this);
 		}
 		
@@ -194,7 +194,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						|| ImplicitReferenceConversion(fromArray.ElementType, toPT.TypeArguments[0]);
 				}
 				// conversion from any array to System.Array and the interfaces it implements:
-				ITypeDefinition systemArray = context.GetClass("System.Array", 0, StringComparer.Ordinal);
+				ITypeDefinition systemArray = context.GetClass("System", "Array", 0, StringComparer.Ordinal);
 				return systemArray != null && (systemArray.Equals(toType) || ImplicitReferenceConversion(systemArray, toType));
 			}
 			

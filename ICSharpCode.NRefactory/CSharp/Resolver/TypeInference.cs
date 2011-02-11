@@ -10,44 +10,146 @@ using ICSharpCode.NRefactory.TypeSystem.Implementation;
 
 namespace ICSharpCode.NRefactory.CSharp.Resolver
 {
+	public enum TypeInferenceAlgorithm
+	{
+		/// <summary>
+		/// C# 4.0 type inference.
+		/// </summary>
+		CSharp4,
+		/// <summary>
+		/// Improved algorithm (not part of any specification) using FindTypeInBounds for fixing.
+		/// </summary>
+		Improved,
+		/// <summary>
+		/// Improved algorithm (not part of any specification) using FindTypeInBounds for fixing;
+		/// uses <see cref="IntersectionType"/> to report all results (in case of ambiguities).
+		/// </summary>
+		ImprovedReturnAllResults
+	}
+	
 	/// <summary>
 	/// Implements C# 4.0 Type Inference (§7.5.2).
 	/// </summary>
-	public class TypeInference
+	public sealed class TypeInference
 	{
 		readonly ITypeResolveContext context;
+		readonly Conversions conversions;
+		TypeInferenceAlgorithm algorithm = TypeInferenceAlgorithm.CSharp4;
 		
-		public TypeInference(ITypeResolveContext context)
+		// determines the maximum generic nesting level; necessary to avoid infinite recursion in 'Improved' mode.
+		const int maxNestingLevel = 5;
+		int nestingLevel;
+		
+		#region Constructor
+		public TypeInference(ITypeResolveContext context, Conversions conversions = null)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
 			this.context = context;
+			this.conversions = conversions ?? new Conversions(context);
+		}
+		#endregion
+		
+		#region Properties
+		/// <summary>
+		/// Gets/Sets the type inference algorithm used.
+		/// </summary>
+		public TypeInferenceAlgorithm Algorithm {
+			get { return algorithm; }
+			set { algorithm = value; }
 		}
 		
+		TypeInference CreateNestedInstance()
+		{
+			TypeInference c = new TypeInference(context, conversions);
+			c.algorithm = algorithm;
+			c.nestingLevel = nestingLevel + 1;
+			return c;
+		}
+		#endregion
+		
+		TP[] typeParameters;
+		IType[] parameterTypes;
+		ResolveResult[] arguments;
+		bool[,] dependencyMatrix;
+		
+		#region InferTypeArguments (main function)
 		public IType[] InferTypeArguments(IList<ITypeParameter> typeParameters, IList<ResolveResult> arguments, IList<IType> parameterTypes, out bool success)
 		{
+			if (typeParameters == null)
+				throw new ArgumentNullException("typeParameters");
+			if (arguments == null)
+				throw new ArgumentNullException("arguments");
+			if (parameterTypes == null)
+				throw new ArgumentNullException("parameterTypes");
+			try {
+				this.typeParameters = new TP[typeParameters.Count];
+				for (int i = 0; i < this.typeParameters.Length; i++) {
+					if (i != typeParameters[i].Index)
+						throw new ArgumentException("Type parameter has wrong index");
+					this.typeParameters[i] = new TP(typeParameters[i]);
+				}
+				this.parameterTypes = new IType[Math.Min(arguments.Count, parameterTypes.Count)];
+				this.arguments = new ResolveResult[this.parameterTypes.Length];
+				for (int i = 0; i < this.parameterTypes.Length; i++) {
+					if (arguments[i] == null || parameterTypes[i] == null)
+						throw new ArgumentNullException();
+					this.arguments[i] = arguments[i];
+					this.parameterTypes[i] = parameterTypes[i];
+				}
+				PhaseOne();
+				success = PhaseTwo();
+				return this.typeParameters.Select(tp => tp.FixedTo ?? SharedTypes.UnknownType).ToArray();
+			} finally {
+				Reset();
+			}
+		}
+		
+		void Reset()
+		{
+			// clean up so that memory used by the operation can be garbage collected as soon as possible
+			this.typeParameters = null;
+			this.parameterTypes = null;
+			this.arguments = null;
+			this.dependencyMatrix = null;
+		}
+		
+		/// <summary>
+		/// Infers type arguments for the <paramref name="typeParameters"/> occurring in the <paramref name="targetType"/>
+		/// so that the resulting type (after substition) satisfies the given bounds.
+		/// </summary>
+		public IType[] InferTypeArgumentsFromBounds(IList<ITypeParameter> typeParameters, IType targetType, IList<IType> lowerBounds, IList<IType> upperBounds, out bool success)
+		{
+			if (typeParameters == null)
+				throw new ArgumentNullException("typeParameters");
+			if (targetType == null)
+				throw new ArgumentNullException("targetType");
+			if (lowerBounds == null)
+				throw new ArgumentNullException("lowerBounds");
+			if (upperBounds == null)
+				throw new ArgumentNullException("upperBounds");
 			this.typeParameters = new TP[typeParameters.Count];
 			for (int i = 0; i < this.typeParameters.Length; i++) {
 				if (i != typeParameters[i].Index)
 					throw new ArgumentException("Type parameter has wrong index");
 				this.typeParameters[i] = new TP(typeParameters[i]);
 			}
-			this.parameterTypes = new IType[Math.Min(arguments.Count, parameterTypes.Count)];
-			this.arguments = new ResolveResult[this.parameterTypes.Length];
-			for (int i = 0; i < this.parameterTypes.Length; i++) {
-				if (arguments[i] == null || parameterTypes[i] == null)
-					throw new ArgumentNullException();
-				this.arguments[i] = arguments[i];
-				this.parameterTypes[i] = parameterTypes[i];
+			foreach (IType b in lowerBounds) {
+				MakeLowerBoundInference(b, targetType);
 			}
-			PhaseOne();
-			success = PhaseTwo();
-			return this.typeParameters.Select(tp => tp.FixedTo ?? SharedTypes.UnknownType).ToArray();
+			foreach (IType b in upperBounds) {
+				MakeUpperBoundInference(b, targetType);
+			}
+			IType[] result = new IType[this.typeParameters.Length];
+			success = true;
+			for (int i = 0; i < result.Length; i++) {
+				success &= Fix(this.typeParameters[i]);
+				result[i] = this.typeParameters[i].FixedTo ?? SharedTypes.UnknownType;
+			}
+			Reset();
+			return result;
 		}
-		
-		TP[] typeParameters;
-		IType[] parameterTypes;
-		ResolveResult[] arguments;
+		#endregion
 		
 		sealed class TP
 		{
@@ -56,7 +158,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			public readonly ITypeParameter TypeParameter;
 			public IType FixedTo;
 			
-			public bool Fixed { // TODO: rename to IsFixed
+			public bool IsFixed {
 				get { return FixedTo != null; }
 			}
 			
@@ -97,6 +199,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 		}
 		
+		#region Inference Phases
 		void PhaseOne()
 		{
 			// C# 4.0 spec: §7.5.2.1 The first phase
@@ -123,7 +226,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			// All unfixed type variables Xi which do not depend on any Xj are fixed.
 			List<TP> typeParametersToFix = new List<TP>();
 			foreach (TP Xi in typeParameters) {
-				if (Xi.Fixed == false) {
+				if (Xi.IsFixed == false) {
 					if (!typeParameters.Any((TP Xj) => DependsOn(Xi, Xj))) {
 						typeParametersToFix.Add(Xi);
 					}
@@ -133,7 +236,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			if (typeParametersToFix.Count == 0) {
 				foreach (TP Xi in typeParameters) {
 					// Xi has a non­empty set of bounds
-					if (!Xi.Fixed && Xi.HasBounds) {
+					if (!Xi.IsFixed && Xi.HasBounds) {
 						// There is at least one type variable Xj that depends on Xi
 						if (typeParameters.Any((TP Xj) => DependsOn(Xj, Xi))) {
 							typeParametersToFix.Add(Xi);
@@ -149,7 +252,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			}
 			if (errorDuringFix)
 				return false;
-			bool unfixedTypeVariablesExist = typeParameters.Any((TP X) => X.Fixed == false);
+			bool unfixedTypeVariablesExist = typeParameters.Any((TP X) => X.IsFixed == false);
 			if (typeParametersToFix.Count == 0 && unfixedTypeVariablesExist) {
 				// If no such type variables exist and there are still unfixed type variables, type inference fails.
 				return false;
@@ -173,6 +276,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				return PhaseTwo();
 			}
 		}
+		#endregion
 		
 		#region Input Types / Output Types (§7.5.2.3 + §7.5.2.4)
 		static readonly IType[] emptyTypeArray = new IType[0];
@@ -224,7 +328,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				type.AcceptVisitor(o);
 			}
 			for (int i = 0; i < typeParameters.Length; i++) {
-				if (!typeParameters[i].Fixed && o.Occurs[i])
+				if (!typeParameters[i].IsFixed && o.Occurs[i])
 					return true;
 			}
 			return false;
@@ -233,7 +337,6 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		
 		#region DependsOn (§7.5.2.5)
 		// C# 4.0 spec: §7.5.2.5 Dependance
-		bool[,] dependencyMatrix;
 		
 		void CalculateDependencyMatrix()
 		{
@@ -312,6 +415,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
+		#region MakeExplicitParameterTypeInference (§7.5.2.7)
 		void MakeExplicitParameterTypeInference(ResolveResult e, IType t)
 		{
 			// C# 4.0 spec: §7.5.2.7 Explicit parameter type inferences
@@ -326,19 +430,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 				}
 			}*/
 		}
+		#endregion
 		
-		#region MakeExactInference
+		#region MakeExactInference (§7.5.2.8)
 		/// <summary>
 		/// Make exact inference from U to V.
-		/// C# 4.0 spec: 7.5.2.8 Exact inferences
+		/// C# 4.0 spec: §7.5.2.8 Exact inferences
 		/// </summary>
 		void MakeExactInference(IType U, IType V)
 		{
-			Log(" MakeExactInference from " + U + " to " + V);
+			Log("MakeExactInference from " + U + " to " + V);
 			
 			// If V is one of the unfixed Xi then U is added to the set of bounds for Xi.
 			TP tp = GetTPForType(V);
-			if (tp != null && tp.Fixed == false) {
+			if (tp != null && tp.IsFixed == false) {
 				Log(" Add exact bound '" + U + "' to " + tp);
 				tp.LowerBounds.Add(U);
 				tp.UpperBounds.Add(U);
@@ -365,9 +470,11 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			    && object.Equals(pU.GetDefinition(), pV.GetDefinition())
 			    && pU.TypeParameterCount == pV.TypeParameterCount)
 			{
+				Debug.Indent();
 				for (int i = 0; i < pU.TypeParameterCount; i++) {
 					MakeExactInference(pU.TypeArguments[i], pV.TypeArguments[i]);
 				}
+				Debug.Unindent();
 			}
 		}
 		
@@ -383,7 +490,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
-		#region MakeLowerBoundInference
+		#region MakeLowerBoundInference (§7.5.2.9)
 		/// <summary>
 		/// Make lower bound inference from U to V.
 		/// C# 4.0 spec: §7.5.2.9 Lower-bound inferences
@@ -394,7 +501,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			// If V is one of the unfixed Xi then U is added to the set of bounds for Xi.
 			TP tp = GetTPForType(V);
-			if (tp != null && tp.Fixed == false) {
+			if (tp != null && tp.IsFixed == false) {
 				Log("  Add lower bound '" + U + "' to " + tp);
 				tp.LowerBounds.Add(U);
 				return;
@@ -422,6 +529,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							return; // cannot make an inference because it's not unique
 					}
 				}
+				Debug.Indent();
 				if (uniqueBaseType != null) {
 					for (int i = 0; i < uniqueBaseType.TypeParameterCount; i++) {
 						IType Ui = uniqueBaseType.TypeArguments[i];
@@ -446,6 +554,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						}
 					}
 				}
+				Debug.Unindent();
 			}
 		}
 		
@@ -464,7 +573,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		}
 		#endregion
 		
-		#region MakeUpperBoundInference
+		#region MakeUpperBoundInference (§7.5.2.10)
 		/// <summary>
 		/// Make upper bound inference from U to V.
 		/// C# 4.0 spec: §7.5.2.10 Upper-bound inferences
@@ -475,7 +584,7 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			
 			// If V is one of the unfixed Xi then U is added to the set of bounds for Xi.
 			TP tp = GetTPForType(V);
-			if (tp != null && tp.Fixed == false) {
+			if (tp != null && tp.IsFixed == false) {
 				Log("  Add upper bound '" + U + "' to " + tp);
 				tp.UpperBounds.Add(U);
 				return;
@@ -503,11 +612,12 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 							return; // cannot make an inference because it's not unique
 					}
 				}
+				Debug.Indent();
 				if (uniqueBaseType != null) {
 					for (int i = 0; i < uniqueBaseType.TypeParameterCount; i++) {
 						IType Ui = pU.TypeArguments[i];
 						IType Vi = uniqueBaseType.TypeArguments[i];
-						if (Vi.IsReferenceType == true) {
+						if (Ui.IsReferenceType == true) {
 							// look for variance
 							ITypeParameter Xi = pU.GetDefinition().TypeParameters[i];
 							switch (Xi.Variance) {
@@ -527,39 +637,27 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 						}
 					}
 				}
+				Debug.Unindent();
 			}
 		}
 		#endregion
 		
-		#region Fixing
+		#region Fixing (§7.5.2.11)
 		bool Fix(TP tp)
 		{
-			Log("Trying to fix " + tp);
-			Debug.Assert(!tp.Fixed);
-			Log("  Lower bounds: ", tp.LowerBounds);
-			Log("  Upper bounds: ", tp.UpperBounds);
-			Conversions conversions = new Conversions(context);
-			IEnumerable<IType> candidates = tp.LowerBounds.Union(tp.UpperBounds);
-			// keep only the candidates that are within all bounds
-			candidates = candidates.Where(c => tp.LowerBounds.All(b => conversions.ImplicitConversion(b, c)));
-			candidates = candidates.Where(c => tp.UpperBounds.All(b => conversions.ImplicitConversion(c, b)));
-			candidates = candidates.ToList(); // evaluate the query only once
-			Log("  Candidates: ", candidates);
-			IType solution = null;
-			foreach (var c in candidates) {
-				if (candidates.All(o => conversions.ImplicitConversion(c, o))) {
-					if (solution == null)
-						solution = c;
-					else
-						return false; // solution is not unique
-				}
-			}
-			if (solution != null) {
-				Log("  " + tp + " was fixed to " + solution);
-				tp.FixedTo = solution;
-				return true;
+			Log(" Trying to fix " + tp);
+			Debug.Assert(!tp.IsFixed);
+			Debug.Indent();
+			var types = CreateNestedInstance().FindTypesInBounds(tp.LowerBounds.ToArray(), tp.UpperBounds.ToArray());
+			Debug.Unindent();
+			if (algorithm == TypeInferenceAlgorithm.ImprovedReturnAllResults) {
+				tp.FixedTo = IntersectionType.Create(types);
+				Log("  T was fixed " + (types.Count >= 1 ? "successfully" : "(with errors)") + " to " + tp.FixedTo);
+				return types.Count >= 1;
 			} else {
-				return false;
+				tp.FixedTo = GetFirstTypePreferNonInterfaces(types);
+				Log("  T was fixed " + (types.Count == 1 ? "successfully" : "(with errors)") + " to " + tp.FixedTo);
+				return types.Count == 1;
 			}
 		}
 		#endregion
@@ -568,20 +666,20 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 		/// <summary>
 		/// Gets the best common type (C# 4.0 spec: §7.5.2.14) of a set of expressions.
 		/// </summary>
-		public IType GetBestCommonType(IList<ResolveResult> expressions, out bool success)
+		public IType GetBestCommonType(IEnumerable<ResolveResult> expressions, out bool success)
 		{
-			this.typeParameters = new TP[1];
-			typeParameters[0] = new TP(DummyTypeParameter.Instance);
-			this.arguments = expressions.ToArray();
-			this.parameterTypes = new IType[expressions.Count];
-			for (int i = 0; i < parameterTypes.Length; i++) {
-				parameterTypes[i] = DummyTypeParameter.Instance;
+			if (expressions == null)
+				throw new ArgumentNullException("expressions");
+			try {
+				this.typeParameters = new TP[1] { new TP(DummyTypeParameter.Instance) };
+				foreach (ResolveResult r in expressions) {
+					MakeOutputTypeInference(r, DummyTypeParameter.Instance);
+				}
+				success = Fix(typeParameters[0]);
+				return typeParameters[0].FixedTo ?? SharedTypes.UnknownType;
+			} finally {
+				Reset();
 			}
-			for (int i = 0; i < arguments.Length; i++) {
-				MakeOutputTypeInference(arguments[i], DummyTypeParameter.Instance);
-			}
-			success = Fix(typeParameters[0]);
-			return typeParameters[0].FixedTo ?? SharedTypes.UnknownType;
 		}
 		
 		sealed class DummyTypeParameter : AbstractType, ITypeParameter
@@ -661,6 +759,139 @@ namespace ICSharpCode.NRefactory.CSharp.Resolver
 			void IFreezable.Freeze()
 			{
 			}
+		}
+		#endregion
+		
+		#region FindTypeInBounds
+		/// <summary>
+		/// Finds a type that satisfies the given lower and upper bounds.
+		/// </summary>
+		public IType FindTypeInBounds(IList<IType> lowerBounds, IList<IType> upperBounds)
+		{
+			if (lowerBounds == null)
+				throw new ArgumentNullException("lowerBounds");
+			if (upperBounds == null)
+				throw new ArgumentNullException("upperBounds");
+			
+			IList<IType> result = FindTypesInBounds(lowerBounds, upperBounds);
+			
+			if (algorithm == TypeInferenceAlgorithm.ImprovedReturnAllResults) {
+				return IntersectionType.Create(result);
+			} else {
+				// return any of the candidates (prefer non-interfaces)
+				return GetFirstTypePreferNonInterfaces(result);
+			}
+		}
+		
+		static IType GetFirstTypePreferNonInterfaces(IList<IType> result)
+		{
+			return result.FirstOrDefault(c => c.GetDefinition().ClassType != ClassType.Interface)
+				?? result.FirstOrDefault() ?? SharedTypes.UnknownType;
+		}
+		
+		IList<IType> FindTypesInBounds(IList<IType> lowerBounds, IList<IType> upperBounds)
+		{
+			// If there's only a single type; return that single type.
+			// If both inputs are empty, return the empty list.
+			if (lowerBounds.Count == 0 && upperBounds.Count <= 1)
+				return upperBounds;
+			if (upperBounds.Count == 0 && lowerBounds.Count <= 1)
+				return lowerBounds;
+			if (nestingLevel > maxNestingLevel)
+				return EmptyList<IType>.Instance;
+			
+			// Finds a type X so that "LB <: X <: UB"
+			Log("FindTypesInBound, LowerBounds=", lowerBounds);
+			Log("FindTypesInBound, UpperBounds=", upperBounds);
+			Debug.Indent();
+			
+			// First try the Fixing algorithm from the C# spec (§7.5.2.11)
+			List<IType> candidateTypes = lowerBounds.Union(upperBounds)
+				.Where(c => lowerBounds.All(b => conversions.ImplicitConversion(b, c)))
+				.Where(c => upperBounds.All(b => conversions.ImplicitConversion(c, b)))
+				.ToList(); // evaluate the query only once
+			
+			candidateTypes = candidateTypes.Where(
+				c => candidateTypes.All(o => conversions.ImplicitConversion(c, o))
+			).ToList();
+			// If the specified algorithm produces a single candidate, we return
+			// that candidate.
+			// We also return the whole candidate list if we're not using the improved
+			// algorithm.
+			if (candidateTypes.Count == 1 || !(algorithm == TypeInferenceAlgorithm.Improved || algorithm == TypeInferenceAlgorithm.ImprovedReturnAllResults))
+			{
+				return candidateTypes;
+			}
+			candidateTypes.Clear();
+			
+			// Now try the improved algorithm
+			List<ITypeDefinition> candidateTypeDefinitions;
+			if (lowerBounds.Count > 0) {
+				// Find candidates by using the lower bounds:
+				var hashSet = new HashSet<ITypeDefinition>(lowerBounds[0].GetAllBaseTypeDefinitions(context));
+				for (int i = 1; i < lowerBounds.Count; i++) {
+					hashSet.IntersectWith(lowerBounds[i].GetAllBaseTypeDefinitions(context));
+				}
+				candidateTypeDefinitions = hashSet.ToList();
+			} else {
+				// Find candidates by looking at all classes in the project:
+				candidateTypeDefinitions = context.GetAllClasses().ToList();
+			}
+			
+			// Now filter out candidates that violate the upper bounds:
+			foreach (IType ub in upperBounds) {
+				ITypeDefinition ubDef = ub.GetDefinition();
+				if (ubDef != null) {
+					candidateTypeDefinitions.RemoveAll(c => !c.IsDerivedFrom(ubDef, context));
+				}
+			}
+			
+			foreach (ITypeDefinition candidateDef in candidateTypeDefinitions) {
+				// determine the type parameters for the candidate:
+				IType candidate;
+				if (candidateDef.TypeParameterCount == 0) {
+					candidate = candidateDef;
+				} else {
+					Log("Inferring arguments for candidate type definition: " + candidateDef);
+					bool success;
+					IType[] result = InferTypeArgumentsFromBounds(
+						candidateDef.TypeParameters,
+						new ParameterizedType(candidateDef, candidateDef.TypeParameters),
+						lowerBounds, upperBounds,
+						out success);
+					if (success) {
+						candidate = new ParameterizedType(candidateDef, result);
+					} else {
+						Log("Inference failed; ignoring candidate");
+						continue;
+					}
+				}
+				Log("Candidate type: " + candidate);
+				
+				if (lowerBounds.Count > 0) {
+					// if there were lower bounds, we aim for the most specific candidate:
+					
+					// if this candidate isn't made redundant by an existing, more specific candidate:
+					if (!candidateTypes.Any(c => c.GetDefinition().IsDerivedFrom(candidateDef, context))) {
+						// remove all existing candidates made redundant by this candidate:
+						candidateTypes.RemoveAll(c => candidateDef.IsDerivedFrom(c.GetDefinition(), context));
+						// add new candidate
+						candidateTypes.Add(candidate);
+					}
+				} else {
+					// if there only were upper bounds, we aim for the least specific candidate:
+					
+					// if this candidate isn't made redundant by an existing, less specific candidate:
+					if (!candidateTypes.Any(c => candidateDef.IsDerivedFrom(c.GetDefinition(), context))) {
+						// remove all existing candidates made redundant by this candidate:
+						candidateTypes.RemoveAll(c => c.GetDefinition().IsDerivedFrom(candidateDef, context));
+						// add new candidate
+						candidateTypes.Add(candidate);
+					}
+				}
+			}
+			Debug.Unindent();
+			return candidateTypes;
 		}
 		#endregion
 		

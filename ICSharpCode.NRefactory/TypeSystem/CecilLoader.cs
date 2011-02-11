@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -32,6 +33,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		/// Specifies whether to include internal members. The default is false.
 		/// </summary>
 		public bool IncludeInternalMembers { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets the documentation provider that is used to retrive the XML documentation for all members.
+		/// </summary>
+		public IDocumentationProvider DocumentationProvider { get; set; }
+		
+		/// <summary>
+		/// Gets/Sets the interning provider.
+		/// </summary>
+		public IInterningProvider InterningProvider { get; set; }
 		#endregion
 		
 		#region Load From AssemblyDefinition
@@ -41,12 +52,16 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				throw new ArgumentNullException("assemblyDefinition");
 			ITypeResolveContext oldEarlyBindContext = this.EarlyBindContext;
 			try {
-				List<IAttribute> assemblyAttributes = new List<IAttribute>();
+				IList<IAttribute> assemblyAttributes = new List<IAttribute>();
 				foreach (var attr in assemblyDefinition.CustomAttributes) {
 					assemblyAttributes.Add(ReadAttribute(attr));
 				}
+				if (this.InterningProvider != null)
+					assemblyAttributes = this.InterningProvider.InternList(assemblyAttributes);
+				else
+					assemblyAttributes = new ReadOnlyCollection<IAttribute>(assemblyAttributes);
 				TypeStorage typeStorage = new TypeStorage();
-				CecilProjectContent pc = new CecilProjectContent(typeStorage, assemblyDefinition.Name.FullName, assemblyAttributes.AsReadOnly());
+				CecilProjectContent pc = new CecilProjectContent(typeStorage, assemblyDefinition.Name.FullName, assemblyAttributes, this.DocumentationProvider);
 				
 				this.EarlyBindContext = CompositeTypeResolveContext.Combine(pc, this.EarlyBindContext);
 				List<CecilTypeDefinition> types = new List<CecilTypeDefinition>();
@@ -96,16 +111,20 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region IProjectContent implementation
-		sealed class CecilProjectContent : ProxyTypeResolveContext, IProjectContent, ISynchronizedTypeResolveContext
+		sealed class CecilProjectContent : ProxyTypeResolveContext, IProjectContent, ISynchronizedTypeResolveContext, IDocumentationProvider
 		{
 			readonly string assemblyName;
-			readonly ReadOnlyCollection<IAttribute> assemblyAttributes;
+			readonly IList<IAttribute> assemblyAttributes;
+			readonly IDocumentationProvider documentationProvider;
 			
-			public CecilProjectContent(TypeStorage types, string assemblyName, ReadOnlyCollection<IAttribute> assemblyAttributes)
+			public CecilProjectContent(TypeStorage types, string assemblyName, IList<IAttribute> assemblyAttributes, IDocumentationProvider documentationProvider)
 				: base(types)
 			{
+				Debug.Assert(assemblyName != null);
+				Debug.Assert(assemblyAttributes != null);
 				this.assemblyName = assemblyName;
 				this.assemblyAttributes = assemblyAttributes;
+				this.documentationProvider = documentationProvider;
 			}
 			
 			public IList<IAttribute> AssemblyAttributes {
@@ -125,6 +144,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			public void Dispose()
 			{
+				// Disposibng the synchronization context has no effect
+			}
+			
+			string IDocumentationProvider.GetDocumentation(IEntity entity)
+			{
+				if (documentationProvider != null)
+					return documentationProvider.GetDocumentation(entity);
+				else
+					return null;
 			}
 		}
 		#endregion
@@ -232,51 +260,41 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					}
 					return SharedTypes.UnknownType;
 				}
+			} else if (type.IsNested) {
+				ITypeReference typeRef = CreateType(type.DeclaringType, entity, typeAttributes, ref typeIndex);
+				int partTypeParameterCount;
+				string namepart = ReflectionHelper.SplitTypeParameterCountFromReflectionName(type.Name, out partTypeParameterCount);
+				return new NestedTypeReference(typeRef, namepart, partTypeParameterCount);
 			} else {
-				string name = type.FullName;
+				string ns = type.Namespace ?? string.Empty;
+				string name = type.Name;
 				if (name == null)
-					throw new InvalidOperationException("type.FullName returned null. Type: " + type.ToString());
+					throw new InvalidOperationException("type.Name returned null. Type: " + type.ToString());
 				
-				if (name.IndexOf('/') > 0) {
-					string[] nameparts = name.Split('/');
-					ITypeReference typeRef = GetSimpleType(nameparts[0]);
-					for (int i = 1; i < nameparts.Length; i++) {
-						int partTypeParameterCount;
-						string namepart = ReflectionHelper.SplitTypeParameterCountFromReflectionName(nameparts[i], out partTypeParameterCount);
-						typeRef = new NestedTypeReference(typeRef, namepart, partTypeParameterCount);
-					}
-					return typeRef;
-				} else if (name == "System.Object" && HasDynamicAttribute(typeAttributes, typeIndex)) {
+				if (name == "Object" && ns == "System" && HasDynamicAttribute(typeAttributes, typeIndex)) {
 					return SharedTypes.Dynamic;
 				} else {
-					return GetSimpleType(name);
+					int typeParameterCount;
+					name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(name, out typeParameterCount);
+					var earlyBindContext = this.EarlyBindContext;
+					if (earlyBindContext != null) {
+						IType c = earlyBindContext.GetClass(ns, name, typeParameterCount, StringComparer.Ordinal);
+						if (c != null)
+							return c;
+					}
+					return new GetClassTypeReference(ns, name, typeParameterCount);
 				}
 			}
 		}
 		
-		/// <summary>
-		/// Gets a type reference for a reflection name.
-		/// This method does not handle nested types -- it can be only used with top-level types.
-		/// </summary>
-		ITypeReference GetSimpleType(string reflectionName)
-		{
-			int typeParameterCount;
-			string name = ReflectionHelper.SplitTypeParameterCountFromReflectionName(reflectionName, out typeParameterCount);
-			var earlyBindContext = this.EarlyBindContext;
-			if (earlyBindContext != null) {
-				IType c = earlyBindContext.GetClass(name, typeParameterCount, StringComparer.Ordinal);
-				if (c != null)
-					return c;
-			}
-			return new GetClassTypeReference(name, typeParameterCount);
-		}
+		static readonly string DynamicAttributeFullName = typeof(DynamicAttribute).FullName;
 		
 		static bool HasDynamicAttribute(ICustomAttributeProvider attributeProvider, int typeIndex)
 		{
 			if (attributeProvider == null || !attributeProvider.HasCustomAttributes)
 				return false;
 			foreach (CustomAttribute a in attributeProvider.CustomAttributes) {
-				if (a.Constructor.DeclaringType.FullName == typeof(DynamicAttribute).FullName) {
+				if (a.Constructor.DeclaringType.FullName == DynamicAttributeFullName) {
 					if (a.ConstructorArguments.Count == 1) {
 						CustomAttributeArgument[] values = a.ConstructorArguments[0].Value as CustomAttributeArgument[];
 						if (values != null && typeIndex < values.Length && values[typeIndex].Value is bool)
@@ -293,31 +311,28 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		void AddAttributes(ICustomAttributeProvider customAttributeProvider, IEntity targetEntity)
 		{
 			if (customAttributeProvider.HasCustomAttributes) {
-				foreach (var cecilAttribute in customAttributeProvider.CustomAttributes) {
-					targetEntity.Attributes.Add(ReadAttribute(cecilAttribute));
-				}
+				AddCustomAttributes(customAttributeProvider.CustomAttributes, targetEntity.Attributes);
 			}
 		}
 		
 		void AddAttributes(ParameterDefinition parameter, DefaultParameter targetParameter)
 		{
 			if (parameter.HasCustomAttributes) {
-				foreach (var cecilAttribute in parameter.CustomAttributes) {
-					targetParameter.Attributes.Add(ReadAttribute(cecilAttribute));
-				}
+				AddCustomAttributes(parameter.CustomAttributes, targetParameter.Attributes);
 			}
 		}
 		
 		void AddAttributes(MethodDefinition accessorMethod, DefaultAccessor targetAccessor)
 		{
 			if (accessorMethod.HasCustomAttributes) {
-				foreach (var cecilAttribute in accessorMethod.CustomAttributes) {
-					targetAccessor.Attributes.Add(ReadAttribute(cecilAttribute));
-				}
+				AddCustomAttributes(accessorMethod.CustomAttributes, targetAccessor.Attributes);
 			}
 		}
 		
 		static readonly DefaultAttribute serializableAttribute = new DefaultAttribute(typeof(SerializableAttribute).ToTypeReference());
+		static readonly ITypeReference structLayoutAttributeTypeRef = typeof(StructLayoutAttribute).ToTypeReference();
+		static readonly ITypeReference layoutKindTypeRef = typeof(LayoutKind).ToTypeReference();
+		static readonly ITypeReference charSetTypeRef = typeof(CharSet).ToTypeReference();
 		
 		void AddAttributes(TypeDefinition typeDefinition, ITypeDefinition targetEntity)
 		{
@@ -349,30 +364,37 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					break;
 			}
 			if (layoutKind != LayoutKind.Auto || charSet != CharSet.Ansi || typeDefinition.PackingSize > 0 || typeDefinition.ClassSize > 0) {
-				DefaultAttribute structLayout = new DefaultAttribute(typeof(StructLayoutAttribute).ToTypeReference());
-				structLayout.PositionalArguments.Add(new SimpleConstantValue(typeof(LayoutKind).ToTypeReference(), (int)layoutKind));
+				DefaultAttribute structLayout = new DefaultAttribute(structLayoutAttributeTypeRef);
+				structLayout.PositionalArguments.Add(new SimpleConstantValue(layoutKindTypeRef, (int)layoutKind));
 				if (charSet != CharSet.Ansi) {
 					structLayout.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(
 						"CharSet",
-						new SimpleConstantValue(typeof(CharSet).ToTypeReference(), (int)charSet)));
+						new SimpleConstantValue(charSetTypeRef, (int)charSet)));
 				}
 				if (typeDefinition.PackingSize > 0) {
 					structLayout.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(
 						"Pack",
-						new SimpleConstantValue(typeof(int).ToTypeReference(), (int)typeDefinition.PackingSize)));
+						new SimpleConstantValue(KnownTypeReference.Int32, (int)typeDefinition.PackingSize)));
 				}
 				if (typeDefinition.ClassSize > 0) {
 					structLayout.NamedArguments.Add(new KeyValuePair<string, IConstantValue>(
 						"Size",
-						new SimpleConstantValue(typeof(int).ToTypeReference(), (int)typeDefinition.ClassSize)));
+						new SimpleConstantValue(KnownTypeReference.Int32, (int)typeDefinition.ClassSize)));
 				}
 				targetEntity.Attributes.Add(structLayout);
 			}
 			#endregion
 			
 			if (typeDefinition.HasCustomAttributes) {
-				foreach (var cecilAttribute in typeDefinition.CustomAttributes) {
-					targetEntity.Attributes.Add(ReadAttribute(cecilAttribute));
+				AddCustomAttributes(typeDefinition.CustomAttributes, targetEntity.Attributes);
+			}
+		}
+		
+		void AddCustomAttributes(Mono.Collections.Generic.Collection<CustomAttribute> attributes, IList<IAttribute> targetCollection)
+		{
+			foreach (var cecilAttribute in attributes) {
+				if (cecilAttribute.AttributeType.FullName != DynamicAttributeFullName) {
+					targetCollection.Add(ReadAttribute(cecilAttribute));
 				}
 			}
 		}
@@ -412,6 +434,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		{
 			ITypeReference type = ReadTypeReference(arg.Type);
 			object value = arg.Value;
+			CustomAttributeArgument[] array = value as CustomAttributeArgument[];
+			if (array != null) {
+				// TODO: write unit test for this
+				// TODO: are multi-dimensional arrays possible as well?
+				throw new NotImplementedException();
+			}
+			
 			TypeReference valueType = value as TypeReference;
 			if (valueType != null)
 				value = ReadTypeReference(valueType);
@@ -488,6 +517,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				
 				this.typeDefinition = null;
 				Freeze(); // freeze after initialization
+				ApplyInterningProvider(loader.InterningProvider);
 			}
 			
 			void InitNestedTypes(CecilLoader loader)
@@ -612,23 +642,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 					}
 				}
 				if (typeDefinition.HasProperties) {
+					string defaultMemberName = null;
+					var defaultMemberAttribute = typeDefinition.CustomAttributes.FirstOrDefault(
+						a => a.AttributeType.FullName == typeof(System.Reflection.DefaultMemberAttribute).FullName);
+					if (defaultMemberAttribute != null && defaultMemberAttribute.ConstructorArguments.Count == 1) {
+						defaultMemberName = defaultMemberAttribute.ConstructorArguments[0].Value as string;
+					}
 					foreach (PropertyDefinition property in typeDefinition.Properties) {
 						bool getterVisible = property.GetMethod != null && loader.IsVisible(property.GetMethod.Attributes);
 						bool setterVisible = property.SetMethod != null && loader.IsVisible(property.SetMethod.Attributes);
 						if (getterVisible || setterVisible) {
-							this.Properties.Add(loader.ReadProperty(property, this));
-						}
-					}
-					var defaultMemberAttribute = typeDefinition.CustomAttributes.FirstOrDefault(
-						a => a.AttributeType.FullName == typeof(System.Reflection.DefaultMemberAttribute).FullName);
-					if (defaultMemberAttribute != null && defaultMemberAttribute.ConstructorArguments.Count == 1) {
-						string defaultMemberName = defaultMemberAttribute.ConstructorArguments[0].Value as string;
-						if (defaultMemberName != null) {
-							foreach (DefaultProperty p in this.Properties) {
-								if (p.Name == defaultMemberName) {
-									p.EntityType = EntityType.Indexer;
-								}
-							}
+							EntityType type = property.Name == defaultMemberName ? EntityType.Indexer : EntityType.Property;
+							this.Properties.Add(loader.ReadProperty(property, this, type));
 						}
 					}
 				}
@@ -644,7 +669,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Method
-		IMethod ReadMethod(MethodDefinition method, ITypeDefinition parentType, EntityType methodType)
+		public IMethod ReadMethod(MethodDefinition method, ITypeDefinition parentType, EntityType methodType = EntityType.Method)
 		{
 			DefaultMethod m = new DefaultMethod(parentType, method.Name);
 			m.EntityType = methodType;
@@ -681,6 +706,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				}
 			}
 			
+			FinishReadMember(m);
 			return m;
 		}
 		
@@ -719,12 +745,18 @@ namespace ICSharpCode.NRefactory.TypeSystem
 				m.IsAbstract = true;
 			} else {
 				m.Accessibility = GetAccessibility(method.Attributes);
-				if (method.IsAbstract)
+				if (method.IsAbstract) {
 					m.IsAbstract = true;
-				else if (method.IsFinal)
+					m.IsOverride = !method.IsNewSlot;
+				} else if (method.IsFinal) {
 					m.IsSealed = true;
-				else if (method.IsVirtual)
-					m.IsVirtual = true;
+					m.IsOverride = !method.IsNewSlot;
+				} else if (method.IsVirtual) {
+					if (method.IsNewSlot)
+						m.IsVirtual = true;
+					else
+						m.IsOverride = true;
+				}
 				m.IsStatic = method.IsStatic;
 			}
 		}
@@ -790,11 +822,13 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			AddAttributes(field, f);
 			
+			f.ReturnType = ReadTypeReference(field.FieldType, typeAttributes: field, entity: f);
 			RequiredModifierType modreq = field.FieldType as RequiredModifierType;
 			if (modreq != null && modreq.ModifierType.FullName == typeof(IsVolatile).FullName) {
 				f.IsVolatile = true;
 			}
 			
+			FinishReadMember(f);
 			return f;
 		}
 		
@@ -842,13 +876,14 @@ namespace ICSharpCode.NRefactory.TypeSystem
 		#endregion
 		
 		#region Read Property
-		public IProperty ReadProperty(PropertyDefinition property, ITypeDefinition parentType)
+		public IProperty ReadProperty(PropertyDefinition property, ITypeDefinition parentType, EntityType propertyType = EntityType.Property)
 		{
 			if (property == null)
 				throw new ArgumentNullException("property");
 			if (parentType == null)
 				throw new ArgumentNullException("parentType");
 			DefaultProperty p = new DefaultProperty(parentType, property.Name);
+			p.EntityType = propertyType;
 			TranslateModifiers(property.GetMethod ?? property.SetMethod, p);
 			p.ReturnType = ReadTypeReference(property.PropertyType, typeAttributes: property, entity: p);
 			
@@ -862,6 +897,7 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			}
 			AddAttributes(property, p);
 			
+			FinishReadMember(p);
 			return p;
 		}
 		
@@ -901,8 +937,15 @@ namespace ICSharpCode.NRefactory.TypeSystem
 			
 			AddAttributes(ev, e);
 			
+			FinishReadMember(e);
 			return e;
 		}
 		#endregion
+		
+		void FinishReadMember(AbstractMember member)
+		{
+			member.Freeze();
+			member.ApplyInterningProvider(this.InterningProvider);
+		}
 	}
 }

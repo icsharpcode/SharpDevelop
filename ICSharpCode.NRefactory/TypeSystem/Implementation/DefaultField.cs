@@ -34,10 +34,11 @@ namespace ICSharpCode.NRefactory.TypeSystem.Implementation
 			this.IsVolatile = f.IsVolatile;
 		}
 		
-		public override void PrepareForInterning(IInterningProvider provider)
+		public override void ApplyInterningProvider(IInterningProvider provider)
 		{
-			base.PrepareForInterning(provider);
-			constantValue = provider.Intern(constantValue);
+			base.ApplyInterningProvider(provider);
+			if (provider != null)
+				constantValue = provider.Intern(constantValue);
 		}
 		
 		public bool IsConst {
